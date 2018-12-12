@@ -1,66 +1,73 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [RFC][PATCHv2 3/4] serial: introduce uart_port locking helpers
-Date: Wed, 12 Dec 2018 12:08:38 +0100
-Message-ID: <20181212110838.GA11361@kroah.com>
-References: <20181016050428.17966-1-sergey.senozhatsky@gmail.com>
- <20181016050428.17966-4-sergey.senozhatsky@gmail.com>
- <20181208031249.GA443@jagdpanzerIV>
+From: =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
+Subject: Re: [PATCH v4 15/15] MAINTAINERS: Add entry for RDA Micro SoC
+ architecture
+Date: Wed, 12 Dec 2018 14:53:42 +0100
+Message-ID: <3e4b7143-6ed8-6006-cb07-d72bca40ce5f@suse.de>
+References: <20181210173550.29643-1-manivannan.sadhasivam@linaro.org>
+ <20181210173550.29643-16-manivannan.sadhasivam@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181208031249.GA443@jagdpanzerIV>
+In-Reply-To: <20181210173550.29643-16-manivannan.sadhasivam@linaro.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, Daniel Wang <wonderfly@google.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc: olof@lixom.net, arnd@arndb.de, robh+dt@kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, daniel.lezcano@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, devicetree@vger.kernel.org, linus.walleij@linaro.org, linux-kernel@vger.kernel.org, amit.kucheria@linaro.org, linux-unisoc@lists.infradead.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Dec 08, 2018 at 12:12:49PM +0900, Sergey Senozhatsky wrote:
-> On (10/16/18 14:04), Sergey Senozhatsky wrote:
-> [..]
-> > - The first entry point is console ->write() callback, which we call
-> >   from printk(). A possible deadlock scenario there is:
-> > 
-> >   CPU0
-> > 	<NMI>
-> > 	spin_lock_irqsave(&port->lock, flags)      << deadlock
-> > 	serial_foo_write()
-> > 	call_console_drivers()
-> > 	console_unlock()
-> > 	console_flush_on_panic()
-> > 	panic()
-> > 	<NMI/>
-> > 	spin_lock_irqsave(&port->lock, flags)
-> > 	serial_foo_write()
-> > 	call_console_drivers()
-> > 	console_unlock()
-> > 	printk()
-> > 	...
-> 
-> [..]
-> > - The rest (of entry points) requires a bit different handling.
-> >   Let's take a look at the following backtrace:
-> > 
-> >   	CPU0
-> > 	<IRQ>
-> > 	spin_lock_irqsave(&port->lock, flags)      << deadlock
-> > 	serial_foo_write()
-> > 	call_console_drivers()
-> > 	console_unlock()
-> > 	printk()
-> > 	__queue_work()
-> > 	tty_flip_buffer_push()
-> > 	spin_lock_irqsave(&port->lock, flags)
-> > 	serial_foo_handle_IRQ()
-> > 	<IRQ/>
-> >
-> >   Serial drivers invoke tons of core kernel functions - WQ, MM, etc. All
-> >   of which may printk() in various cases. So we can't really just
-> >   "remove those printk-s". The simples way to address this seems to be
-> >   PRINTK_SAFE_CONTEXT_MASK.
-> 
-> serial/UART and printk guys, sorry to bother you, do you hate this
-> idea of removing console_driver->CORE KERNEL->printk->console_driver
-> deadlock path? Or is there any chance we can move forward?
+Hi Mani,
 
-If done in a sane manner, no objection from me.
+Am 10.12.18 um 18:35 schrieb Manivannan Sadhasivam:
+> Add MAINTAINERS entry for RDA Micro SoC architecture with myself
+> and Andreas Färber as the maintainers.
+> 
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> ---
+>  MAINTAINERS | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 6c3fbbb361f8..6411fb222590 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -1945,6 +1945,21 @@ M:	Lennert Buytenhek <kernel@wantstofly.org>
+>  L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+>  S:	Maintained
+>  
+> +ARM/RDA MICRO ARCHITECTURE
+> +M:	Andreas Färber <afaerber@suse.de>
+> +M:	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+
+I'd suggest you swap the two of us here, making you the primary
+maintainer. Or drop me, as I should be copied via linux-unisoc anyway.
+
+I won't realistically have the bandwidth to drive review and more pull
+requests at the moment, with Realtek already stuck in irqchip regression
+for too long and LoRa making only slow progress.
+
+Regards,
+Andreas
+
+> +L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+> +L:	linux-unisoc@lists.infradead.org (moderated for non-subscribers)
+> +S:	Maintained
+> +F:	arch/arm/boot/dts/rda8810pl-*
+> +F:	drivers/clocksource/timer-rda.c
+> +F:	drivers/irqchip/irq-rda-intc.c
+> +F:	drivers/tty/serial/rda-uart.c
+> +F:	Documentation/devicetree/bindings/arm/rda.txt
+> +F:	Documentation/devicetree/bindings/interrupt-controller/rda,8810pl-intc.txt
+> +F:	Documentation/devicetree/bindings/serial/rda,8810pl-uart.txt
+> +F:	Documentation/devicetree/bindings/timer/rda,8810pl-timer.txt
+> +
+>  ARM/REALTEK ARCHITECTURE
+>  M:	Andreas Färber <afaerber@suse.de>
+>  L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+> 
+
+
+-- 
+SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
+GF: Felix Imendörffer, Jane Smithard, Graham Norton
+HRB 21284 (AG Nürnberg)
