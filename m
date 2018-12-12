@@ -1,132 +1,278 @@
-From: Dmitry Safonov <dima@arista.com>
-Subject: Re: [LKP] [tty] c96cf923a9:
- WARNING:possible_circular_locking_dependency_detected
-Date: Wed, 12 Dec 2018 14:54:20 +0000
-Message-ID: <137479ad-d38e-7d26-dae4-a4e721d69928@arista.com>
-References: <20181211091154.GL23332@shao2-debian>
- <b8a5b151-9eaa-b098-f24f-b17c1886f456@suse.cz>
- <2780774e-b397-dcc2-6950-cccb527d5014@arista.com>
- <20181212034252.GD431@jagdpanzerIV>
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: Re: [PATCH v4 11/15] clocksource: Add clock driver for RDA8810PL SoC
+Date: Wed, 12 Dec 2018 16:07:53 +0100
+Message-ID: <0b90a179-aa4b-57f7-0874-996d5c535ea9@linaro.org>
+References: <20181210173550.29643-1-manivannan.sadhasivam@linaro.org>
+ <20181210173550.29643-12-manivannan.sadhasivam@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181212034252.GD431@jagdpanzerIV>
+In-Reply-To: <20181210173550.29643-12-manivannan.sadhasivam@linaro.org>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: Jiri Slaby <jslaby@suse.cz>, kernel test robot <rong.a.chen@intel.com>, lkp@01.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mikulas Patocka <mpatocka@redhat.com>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Peter Zijlstra <peterz@infradead.org>, Waiman Long <longman@redhat.com>
+To: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>, olof@lixom.net, arnd@arndb.de, robh+dt@kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: linux-unisoc@lists.infradead.org, afaerber@suse.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, amit.kucheria@linaro.org, linus.walleij@linaro.org, zhao_steven@263.net
 List-Id: linux-serial@vger.kernel.org
 
-Hi Sergey,
+On 10/12/2018 18:35, Manivannan Sadhasivam wrote:
+> Add clock driver for RDA Micro RDA8810PL SoC supporting OSTIMER
+> and HWTIMER.
+> 
+> RDA8810PL has two independent timers: OSTIMER (56 bit) and HWTIMER
+> (64 bit). Each timer provides optional interrupt support. In this
+> driver, OSTIMER is used for clockevents and HWTIMER is used for
+> clocksource.
+> 
+> Signed-off-by: Andreas Färber <afaerber@suse.de>
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-On 12/12/18 3:42 AM, Sergey Senozhatsky wrote:
-[..]
-> 
-> db->lock -> console_sem -> uart_port->lock
-> 
->    obj_hash[i].lock
->    /* db->lock */
->     __debug_object_init()
->       debug_print_object()
->        printk()
->         spin_lock_irqsave(uart->port_lock)
-> 
-> BTW, there is a patch from Waiman which moves debug_print_object()
-> out of db->lock scope [1].
+The driver looks good to me. Do you want me to pick it up via my tree?
 
-Thanks much for pointing this, didn't know about that and started to
-write something like that yesterday :)
+> ---
+>  drivers/clocksource/Kconfig     |   8 ++
+>  drivers/clocksource/Makefile    |   1 +
+>  drivers/clocksource/timer-rda.c | 195 ++++++++++++++++++++++++++++++++
+>  3 files changed, 204 insertions(+)
+>  create mode 100644 drivers/clocksource/timer-rda.c
+> 
+> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
+> index 55c77e44bb2d..598b592e03d7 100644
+> --- a/drivers/clocksource/Kconfig
+> +++ b/drivers/clocksource/Kconfig
+> @@ -105,6 +105,14 @@ config OWL_TIMER
+>  	help
+>  	  Enables the support for the Actions Semi Owl timer driver.
+>  
+> +config RDA_TIMER
+> +	bool "RDA timer driver" if COMPILE_TEST
+> +	depends on GENERIC_CLOCKEVENTS
+> +	select CLKSRC_MMIO
+> +	select TIMER_OF
+> +	help
+> +	  Enables the support for the RDA Micro timer driver.
+> +
+>  config SUN4I_TIMER
+>  	bool "Sun4i timer driver" if COMPILE_TEST
+>  	depends on HAS_IOMEM
+> diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
+> index dd9138104568..150020a90707 100644
+> --- a/drivers/clocksource/Makefile
+> +++ b/drivers/clocksource/Makefile
+> @@ -57,6 +57,7 @@ obj-$(CONFIG_OXNAS_RPS_TIMER)	+= timer-oxnas-rps.o
+>  obj-$(CONFIG_OWL_TIMER)		+= timer-owl.o
+>  obj-$(CONFIG_SPRD_TIMER)	+= timer-sprd.o
+>  obj-$(CONFIG_NPCM7XX_TIMER)	+= timer-npcm7xx.o
+> +obj-$(CONFIG_RDA_TIMER)		+= timer-rda.o
+>  
+>  obj-$(CONFIG_ARC_TIMERS)		+= arc_timer.o
+>  obj-$(CONFIG_ARM_ARCH_TIMER)		+= arm_arch_timer.o
+> diff --git a/drivers/clocksource/timer-rda.c b/drivers/clocksource/timer-rda.c
+> new file mode 100644
+> index 000000000000..fd1199c189bf
+> --- /dev/null
+> +++ b/drivers/clocksource/timer-rda.c
+> @@ -0,0 +1,195 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/*
+> + * RDA8810PL SoC timer driver
+> + *
+> + * Copyright RDA Microelectronics Company Limited
+> + * Copyright (c) 2017 Andreas Färber
+> + * Copyright (c) 2018 Manivannan Sadhasivam
+> + *
+> + * RDA8810PL has two independent timers: OSTIMER (56 bit) and HWTIMER (64 bit).
+> + * Each timer provides optional interrupt support. In this driver, OSTIMER is
+> + * used for clockevents and HWTIMER is used for clocksource.
+> + */
+> +
+> +#include <linux/init.h>
+> +#include <linux/interrupt.h>
+> +
+> +#include "timer-of.h"
+> +
+> +#define RDA_OSTIMER_LOADVAL_L	0x000
+> +#define RDA_OSTIMER_CTRL	0x004
+> +#define RDA_HWTIMER_LOCKVAL_L	0x024
+> +#define RDA_HWTIMER_LOCKVAL_H	0x028
+> +#define RDA_TIMER_IRQ_MASK_SET	0x02c
+> +#define RDA_TIMER_IRQ_MASK_CLR	0x030
+> +#define RDA_TIMER_IRQ_CLR	0x034
+> +
+> +#define RDA_OSTIMER_CTRL_ENABLE		BIT(24)
+> +#define RDA_OSTIMER_CTRL_REPEAT		BIT(28)
+> +#define RDA_OSTIMER_CTRL_LOAD		BIT(30)
+> +
+> +#define RDA_TIMER_IRQ_MASK_OSTIMER	BIT(0)
+> +
+> +#define RDA_TIMER_IRQ_CLR_OSTIMER	BIT(0)
+> +
+> +static int rda_ostimer_start(void __iomem *base, bool periodic, u64 cycles)
+> +{
+> +	u32 ctrl, load_l;
+> +
+> +	load_l = (u32)cycles;
+> +	ctrl = ((cycles >> 32) & 0xffffff);
+> +	ctrl |= RDA_OSTIMER_CTRL_LOAD | RDA_OSTIMER_CTRL_ENABLE;
+> +	if (periodic)
+> +		ctrl |= RDA_OSTIMER_CTRL_REPEAT;
+> +	/* Enable ostimer interrupt first */
+> +	writel_relaxed(RDA_TIMER_IRQ_MASK_OSTIMER,
+> +		       base + RDA_TIMER_IRQ_MASK_SET);
+> +
+> +	/* Write low 32 bits first, high 24 bits are with ctrl */
+> +	writel_relaxed(load_l, base + RDA_OSTIMER_LOADVAL_L);
+> +	writel_relaxed(ctrl, base + RDA_OSTIMER_CTRL);
+> +
+> +	return 0;
+> +}
+> +
+> +static int rda_ostimer_stop(void __iomem *base)
+> +{
+> +	/* Disable ostimer interrupt first */
+> +	writel_relaxed(RDA_TIMER_IRQ_MASK_OSTIMER,
+> +		       base + RDA_TIMER_IRQ_MASK_CLR);
+> +
+> +	writel_relaxed(0, base + RDA_OSTIMER_CTRL);
+> +
+> +	return 0;
+> +}
+> +
+> +static int rda_ostimer_set_state_shutdown(struct clock_event_device *evt)
+> +{
+> +	struct timer_of *to = to_timer_of(evt);
+> +
+> +	rda_ostimer_stop(timer_of_base(to));
+> +
+> +	return 0;
+> +}
+> +
+> +static int rda_ostimer_set_state_oneshot(struct clock_event_device *evt)
+> +{
+> +	struct timer_of *to = to_timer_of(evt);
+> +
+> +	rda_ostimer_stop(timer_of_base(to));
+> +
+> +	return 0;
+> +}
+> +
+> +static int rda_ostimer_set_state_periodic(struct clock_event_device *evt)
+> +{
+> +	struct timer_of *to = to_timer_of(evt);
+> +	unsigned long cycles_per_jiffy;
+> +
+> +	rda_ostimer_stop(timer_of_base(to));
+> +
+> +	cycles_per_jiffy = ((unsigned long long)NSEC_PER_SEC / HZ *
+> +			     evt->mult) >> evt->shift;
+> +	rda_ostimer_start(timer_of_base(to), true, cycles_per_jiffy);
+> +
+> +	return 0;
+> +}
+> +
+> +static int rda_ostimer_tick_resume(struct clock_event_device *evt)
+> +{
+> +	return 0;
+> +}
+> +
+> +static int rda_ostimer_set_next_event(unsigned long evt,
+> +				      struct clock_event_device *ev)
+> +{
+> +	struct timer_of *to = to_timer_of(ev);
+> +
+> +	rda_ostimer_start(timer_of_base(to), false, evt);
+> +
+> +	return 0;
+> +}
+> +
+> +static irqreturn_t rda_ostimer_interrupt(int irq, void *dev_id)
+> +{
+> +	struct clock_event_device *evt = dev_id;
+> +	struct timer_of *to = to_timer_of(evt);
+> +
+> +	/* clear timer int */
+> +	writel_relaxed(RDA_TIMER_IRQ_CLR_OSTIMER,
+> +		       timer_of_base(to) + RDA_TIMER_IRQ_CLR);
+> +
+> +	if (evt->event_handler)
+> +		evt->event_handler(evt);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static struct timer_of rda_ostimer_of = {
+> +	.flags = TIMER_OF_IRQ | TIMER_OF_BASE,
+> +
+> +	.clkevt = {
+> +		.name = "rda-ostimer",
+> +		.rating = 250,
+> +		.features = CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT |
+> +			    CLOCK_EVT_FEAT_DYNIRQ,
+> +		.set_state_shutdown = rda_ostimer_set_state_shutdown,
+> +		.set_state_oneshot = rda_ostimer_set_state_oneshot,
+> +		.set_state_periodic = rda_ostimer_set_state_periodic,
+> +		.tick_resume = rda_ostimer_tick_resume,
+> +		.set_next_event	= rda_ostimer_set_next_event,
+> +	},
+> +
+> +	.of_base = {
+> +		.name = "rda-timer",
+> +		.index = 0,
+> +	},
+> +
+> +	.of_irq = {
+> +		.name = "ostimer",
+> +		.handler = rda_ostimer_interrupt,
+> +		.flags = IRQF_TIMER,
+> +	},
+> +};
+> +
+> +static u64 rda_hwtimer_read(struct clocksource *cs)
+> +{
+> +	void __iomem *base = timer_of_base(&rda_ostimer_of);
+> +	u32 lo, hi;
+> +
+> +	/* Always read low 32 bits first */
+> +	do {
+> +		lo = readl_relaxed(base + RDA_HWTIMER_LOCKVAL_L);
+> +		hi = readl_relaxed(base + RDA_HWTIMER_LOCKVAL_H);
+> +	} while (hi != readl_relaxed(base + RDA_HWTIMER_LOCKVAL_H));
+> +
+> +	return ((u64)hi << 32) | lo;
+> +}
+> +
+> +static struct clocksource rda_hwtimer_clocksource = {
+> +	.name           = "rda-timer",
+> +	.rating         = 400,
+> +	.read           = rda_hwtimer_read,
+> +	.mask           = CLOCKSOURCE_MASK(64),
+> +	.flags          = CLOCK_SOURCE_IS_CONTINUOUS,
+> +};
+> +
+> +static int __init rda_timer_init(struct device_node *np)
+> +{
+> +	unsigned long rate = 2000000;
+> +	int ret;
+> +
+> +	ret = timer_of_init(np, &rda_ostimer_of);
+> +	if (ret)
+> +		return ret;
+> +
+> +	clocksource_register_hz(&rda_hwtimer_clocksource, rate);
+> +
+> +	clockevents_config_and_register(&rda_ostimer_of.clkevt, rate,
+> +					0x2, UINT_MAX);
+> +
+> +	return 0;
+> +}
+> +
+> +TIMER_OF_DECLARE(rda8810pl, "rda,8810pl-timer", rda_timer_init);
+> 
 
->>>> [   87.239071] -> #0 (&obj_hash[i].lock){-.-.}:
->>>> [   87.239904]        __lock_acquire+0x1f78/0x22d1
->>>> [   87.240556]        lock_acquire+0x28c/0x2e7
->>>> [   87.241173]        _raw_spin_lock_irqsave+0x35/0x49
->>>> [   87.241882]        debug_check_no_obj_freed+0xb4/0x302
->>>> [   87.242620]        free_unref_page_prepare+0x33a/0x483
->>>> [   87.243368]        free_unref_page+0x48/0x80
->>>> [   87.243991]        __free_pages+0x2e/0x40
->>>> [   87.244611]        free_pages+0x54/0x5a
->>>> [   87.245188]        uart_shutdown+0x3df/0x4e2
->>>> [   87.245817]        uart_hangup+0x123/0x280
->>>> [   87.246406]        __tty_hangup+0x4da/0x50f
->>>> [   87.247025]        tty_vhangup_session+0xe/0x10
->>>> [   87.247680]        disassociate_ctty+0xeb/0x5c5
->>>> [   87.248349]        do_exit+0xc97/0x1daf
->>>> [   87.248920]        __x64_sys_exit_group+0x0/0x3e
->>>> [   87.249587]        __wake_up_parent+0x0/0x52
->>>> [   87.250211]        do_syscall_64+0x5e8/0x881
->>>> [   87.250839]        entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> 
-> But I think what really makes lockdep nervous is this thing:
-> 
-> 	uart_shutdown()
-> 	 uart_port_lock()  //  spin_lock_irqsave(uart_port->lock)
-> 	  free_page()
-> 	   debug_check_no_obj_freed()
-> 	    db->lock
-> 	     debug_print_object()
-> 	      printk()
-> 	       spin_lock_irqsave(uart_port->lock)
-> 
-> 
-> Lockdep complains about:   uart_port->lock -> db->lock
-> 
-> It knows that we already have the reverse chain: db->lock -> uart_port->lock
-> From
-> 	db->lock -> debug_print_object() -> printk() -> console_sem -> uart_port->lock
-> 
-> 
->>>> [   87.255156]        CPU0                    CPU1
->>>> [   87.255813]        ----                    ----
->>>> [   87.256460]   lock(&port_lock_key);
->>>> [   87.256973]                                lock(console_owner);
->>>> [   87.257829]                                lock(&port_lock_key);
->>>> [   87.258680]   lock(&obj_hash[i].lock);
-> 
-> 
-> So it's like
-> 
-> 	CPU0					CPU1
-> 
-> 	uart_shutdown()				db->lock
-> 	 uart_port->lock			 debug_print_object()
-> 	  free_page()				  printk
-> 	   debug_check_no_obj_freed		   uart_port->lock
-> 	    db->lock
-> 
-> 
-> In this particular case we probably can just move free_page()
-> out of uart_port lock scope. Note that free_page()->MM can printk()
-> on its own.
-> 
-> 
-> Something like this (not tested):
 
-Looks good to me.
-Probably, it's worth to update comment about freeing just to make sure
-no one will "refactor"/"simplify" it some day.
-
-Does it make sense to add this to your patch?
-
---->8---
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -205,10 +205,11 @@ static int uart_port_startup(struct tty_struct
-*tty, struct uar>
-        if (!state->xmit.buf) {
-                state->xmit.buf = (unsigned char *) page;
-                uart_circ_clear(&state->xmit);
-+               uart_port_unlock(uport, flags);
-        } else {
-+               uart_port_unlock(uport, flags);
-                free_page(page);
-        }
--       uart_port_unlock(uport, flags);
-
-        retval = uport->ops->startup(uport);
-        if (retval == 0) {
 -- 
+ <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
-Thanks,
-          Dima
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
