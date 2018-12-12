@@ -1,84 +1,132 @@
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: Re: [PATCH v4 15/15] MAINTAINERS: Add entry for RDA Micro SoC
- architecture
-Date: Wed, 12 Dec 2018 20:16:46 +0530
-Message-ID: <20181212144646.GA27625@Mani-XPS-13-9360>
-References: <20181210173550.29643-1-manivannan.sadhasivam@linaro.org>
- <20181210173550.29643-16-manivannan.sadhasivam@linaro.org>
- <3e4b7143-6ed8-6006-cb07-d72bca40ce5f@suse.de>
+From: Dmitry Safonov <dima@arista.com>
+Subject: Re: [LKP] [tty] c96cf923a9:
+ WARNING:possible_circular_locking_dependency_detected
+Date: Wed, 12 Dec 2018 14:54:20 +0000
+Message-ID: <137479ad-d38e-7d26-dae4-a4e721d69928@arista.com>
+References: <20181211091154.GL23332@shao2-debian>
+ <b8a5b151-9eaa-b098-f24f-b17c1886f456@suse.cz>
+ <2780774e-b397-dcc2-6950-cccb527d5014@arista.com>
+ <20181212034252.GD431@jagdpanzerIV>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <3e4b7143-6ed8-6006-cb07-d72bca40ce5f@suse.de>
+In-Reply-To: <20181212034252.GD431@jagdpanzerIV>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>
-Cc: olof@lixom.net, arnd@arndb.de, robh+dt@kernel.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, daniel.lezcano@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com, devicetree@vger.kernel.org, linus.walleij@linaro.org, linux-kernel@vger.kernel.org, amit.kucheria@linaro.org, linux-unisoc@lists.infradead.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: Jiri Slaby <jslaby@suse.cz>, kernel test robot <rong.a.chen@intel.com>, lkp@01.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mikulas Patocka <mpatocka@redhat.com>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Peter Zijlstra <peterz@infradead.org>, Waiman Long <longman@redhat.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Andreas,
+Hi Sergey,
 
-On Wed, Dec 12, 2018 at 02:53:42PM +0100, Andreas Färber wrote:
-> Hi Mani,
+On 12/12/18 3:42 AM, Sergey Senozhatsky wrote:
+[..]
 > 
-> Am 10.12.18 um 18:35 schrieb Manivannan Sadhasivam:
-> > Add MAINTAINERS entry for RDA Micro SoC architecture with myself
-> > and Andreas Färber as the maintainers.
-> > 
-> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> > ---
-> >  MAINTAINERS | 15 +++++++++++++++
-> >  1 file changed, 15 insertions(+)
-> > 
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index 6c3fbbb361f8..6411fb222590 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -1945,6 +1945,21 @@ M:	Lennert Buytenhek <kernel@wantstofly.org>
-> >  L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
-> >  S:	Maintained
-> >  
-> > +ARM/RDA MICRO ARCHITECTURE
-> > +M:	Andreas Färber <afaerber@suse.de>
-> > +M:	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> db->lock -> console_sem -> uart_port->lock
 > 
-> I'd suggest you swap the two of us here, making you the primary
-> maintainer. Or drop me, as I should be copied via linux-unisoc anyway.
+>    obj_hash[i].lock
+>    /* db->lock */
+>     __debug_object_init()
+>       debug_print_object()
+>        printk()
+>         spin_lock_irqsave(uart->port_lock)
 > 
-> I won't realistically have the bandwidth to drive review and more pull
-> requests at the moment, with Realtek already stuck in irqchip regression
-> for too long and LoRa making only slow progress.
-> 
+> BTW, there is a patch from Waiman which moves debug_print_object()
+> out of db->lock scope [1].
 
-Okay, no issues. Will drop you from the MAINTAINERS entry so that you
-won't get bugged.
+Thanks much for pointing this, didn't know about that and started to
+write something like that yesterday :)
+
+>>>> [   87.239071] -> #0 (&obj_hash[i].lock){-.-.}:
+>>>> [   87.239904]        __lock_acquire+0x1f78/0x22d1
+>>>> [   87.240556]        lock_acquire+0x28c/0x2e7
+>>>> [   87.241173]        _raw_spin_lock_irqsave+0x35/0x49
+>>>> [   87.241882]        debug_check_no_obj_freed+0xb4/0x302
+>>>> [   87.242620]        free_unref_page_prepare+0x33a/0x483
+>>>> [   87.243368]        free_unref_page+0x48/0x80
+>>>> [   87.243991]        __free_pages+0x2e/0x40
+>>>> [   87.244611]        free_pages+0x54/0x5a
+>>>> [   87.245188]        uart_shutdown+0x3df/0x4e2
+>>>> [   87.245817]        uart_hangup+0x123/0x280
+>>>> [   87.246406]        __tty_hangup+0x4da/0x50f
+>>>> [   87.247025]        tty_vhangup_session+0xe/0x10
+>>>> [   87.247680]        disassociate_ctty+0xeb/0x5c5
+>>>> [   87.248349]        do_exit+0xc97/0x1daf
+>>>> [   87.248920]        __x64_sys_exit_group+0x0/0x3e
+>>>> [   87.249587]        __wake_up_parent+0x0/0x52
+>>>> [   87.250211]        do_syscall_64+0x5e8/0x881
+>>>> [   87.250839]        entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> 
+> But I think what really makes lockdep nervous is this thing:
+> 
+> 	uart_shutdown()
+> 	 uart_port_lock()  //  spin_lock_irqsave(uart_port->lock)
+> 	  free_page()
+> 	   debug_check_no_obj_freed()
+> 	    db->lock
+> 	     debug_print_object()
+> 	      printk()
+> 	       spin_lock_irqsave(uart_port->lock)
+> 
+> 
+> Lockdep complains about:   uart_port->lock -> db->lock
+> 
+> It knows that we already have the reverse chain: db->lock -> uart_port->lock
+> From
+> 	db->lock -> debug_print_object() -> printk() -> console_sem -> uart_port->lock
+> 
+> 
+>>>> [   87.255156]        CPU0                    CPU1
+>>>> [   87.255813]        ----                    ----
+>>>> [   87.256460]   lock(&port_lock_key);
+>>>> [   87.256973]                                lock(console_owner);
+>>>> [   87.257829]                                lock(&port_lock_key);
+>>>> [   87.258680]   lock(&obj_hash[i].lock);
+> 
+> 
+> So it's like
+> 
+> 	CPU0					CPU1
+> 
+> 	uart_shutdown()				db->lock
+> 	 uart_port->lock			 debug_print_object()
+> 	  free_page()				  printk
+> 	   debug_check_no_obj_freed		   uart_port->lock
+> 	    db->lock
+> 
+> 
+> In this particular case we probably can just move free_page()
+> out of uart_port lock scope. Note that free_page()->MM can printk()
+> on its own.
+> 
+> 
+> Something like this (not tested):
+
+Looks good to me.
+Probably, it's worth to update comment about freeing just to make sure
+no one will "refactor"/"simplify" it some day.
+
+Does it make sense to add this to your patch?
+
+--->8---
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -205,10 +205,11 @@ static int uart_port_startup(struct tty_struct
+*tty, struct uar>
+        if (!state->xmit.buf) {
+                state->xmit.buf = (unsigned char *) page;
+                uart_circ_clear(&state->xmit);
++               uart_port_unlock(uport, flags);
+        } else {
++               uart_port_unlock(uport, flags);
+                free_page(page);
+        }
+-       uart_port_unlock(uport, flags);
+
+        retval = uport->ops->startup(uport);
+        if (retval == 0) {
+-- 
 
 Thanks,
-Mani
-
-> Regards,
-> Andreas
-> 
-> > +L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
-> > +L:	linux-unisoc@lists.infradead.org (moderated for non-subscribers)
-> > +S:	Maintained
-> > +F:	arch/arm/boot/dts/rda8810pl-*
-> > +F:	drivers/clocksource/timer-rda.c
-> > +F:	drivers/irqchip/irq-rda-intc.c
-> > +F:	drivers/tty/serial/rda-uart.c
-> > +F:	Documentation/devicetree/bindings/arm/rda.txt
-> > +F:	Documentation/devicetree/bindings/interrupt-controller/rda,8810pl-intc.txt
-> > +F:	Documentation/devicetree/bindings/serial/rda,8810pl-uart.txt
-> > +F:	Documentation/devicetree/bindings/timer/rda,8810pl-timer.txt
-> > +
-> >  ARM/REALTEK ARCHITECTURE
-> >  M:	Andreas Färber <afaerber@suse.de>
-> >  L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
-> > 
-> 
-> 
-> -- 
-> SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
-> GF: Felix Imendörffer, Jane Smithard, Graham Norton
-> HRB 21284 (AG Nürnberg)
+          Dima
