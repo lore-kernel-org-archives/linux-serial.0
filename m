@@ -1,43 +1,116 @@
-From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 15/41] drivers/tty: add missing of_node_put()
-Date: Wed, 12 Dec 2018 23:30:28 -0500
-Message-ID: <20181213043054.75891-15-sashal@kernel.org>
-References: <20181213043054.75891-1-sashal@kernel.org>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: [PATCH] tty/serial: do not free trasnmit buffer page under port lock
+Date: Thu, 13 Dec 2018 13:58:39 +0900
+Message-ID: <20181213045839.9692-1-sergey.senozhatsky@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181213043054.75891-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Yangtao Li <tiny.windzz@gmail.com>, "David S . Miller" <davem@davemloft.net>, Sasha Levin <sashal@kernel.org>, sparclinux@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Andrew Morton <akpm@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Waiman Long <longman@redhat.com>, Dmitry Safonov <dima@arista.com>, Steven Rostedt <rostedt@goodmis.org>, Petr Mladek <pmladek@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Yangtao Li <tiny.windzz@gmail.com>
+LKP has hit yet another circular locking dependency between uart
+console drivers and debugobjects [1]:
 
-[ Upstream commit dac097c4546e4c5b16dd303a1e97c1d319c8ab3e ]
+     CPU0                                    CPU1
 
-of_find_node_by_path() acquires a reference to the node
-returned by it and that reference needs to be dropped by its caller.
-This place is not doing this, so fix it.
+                                            rhltable_init()
+                                             __init_work()
+                                              debug_object_init
+     uart_shutdown()                          /* db->lock */
+      /* uart_port->lock */                    debug_print_object()
+       free_page()                              printk()
+                                                 call_console_drivers()
+        debug_check_no_obj_freed()                /* uart_port->lock */
+         /* db->lock */
+          debug_print_object()
 
-Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+So there are two dependency chains:
+	uart_port->lock -> db->lock
+And
+	db->lock -> uart_port->lock
+
+This particular circular locking dependency can be addressed in several
+ways:
+
+a) One way would be to move debug_print_object() out of db->lock scope
+   and, thus, break the db->lock -> uart_port->lock chain.
+b) Another one would be to free() transmit buffer page out of db->lock
+   in UART code; which is what this patch does.
+
+It makes sense to apply a) and b) independently: there are too many things
+going on behind free(), none of which depend on uart_port->lock.
+
+The patch fixes transmit buffer page free() in uart_shutdown() and,
+additionally, in uart_port_startup() (as was suggested by Dmitry Safonov).
+
+[1] https://lore.kernel.org/lkml/20181211091154.GL23332@shao2-debian/T/#u
+Signed-off-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Waiman Long <longman@redhat.com>
+Cc: Dmitry Safonov <dima@arista.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Petr Mladek <pmladek@suse.com>
 ---
- drivers/tty/serial/suncore.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/serial_core.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/suncore.c b/drivers/tty/serial/suncore.c
-index 127472bd6a7c..209f314745ab 100644
---- a/drivers/tty/serial/suncore.c
-+++ b/drivers/tty/serial/suncore.c
-@@ -111,6 +111,7 @@ void sunserial_console_termios(struct console *con, struct device_node *uart_dp)
- 		mode = of_get_property(dp, mode_prop, NULL);
- 		if (!mode)
- 			mode = "9600,8,n,1,-";
-+		of_node_put(dp);
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index c439a5a1e6c0..d4cca5bdaf1c 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -205,10 +205,15 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
+ 	if (!state->xmit.buf) {
+ 		state->xmit.buf = (unsigned char *) page;
+ 		uart_circ_clear(&state->xmit);
++		uart_port_unlock(uport, flags);
+ 	} else {
++		uart_port_unlock(uport, flags);
++		/*
++		 * Do not free() the page under the port lock, see
++		 * uart_shutdown().
++		 */
+ 		free_page(page);
  	}
+-	uart_port_unlock(uport, flags);
  
- 	cflag = CREAD | HUPCL | CLOCAL;
+ 	retval = uport->ops->startup(uport);
+ 	if (retval == 0) {
+@@ -268,6 +273,7 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
+ 	struct uart_port *uport = uart_port_check(state);
+ 	struct tty_port *port = &state->port;
+ 	unsigned long flags = 0;
++	char *xmit_buf = NULL;
+ 
+ 	/*
+ 	 * Set the TTY IO error marker
+@@ -298,14 +304,18 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
+ 	tty_port_set_suspended(port, 0);
+ 
+ 	/*
+-	 * Free the transmit buffer page.
++	 * Do not free() the transmit buffer page under the port lock since
++	 * this can create various circular locking scenarios. For instance,
++	 * console driver may need to allocate/free a debug object, which
++	 * can endup in printk() recursion.
+ 	 */
+ 	uart_port_lock(state, flags);
+-	if (state->xmit.buf) {
+-		free_page((unsigned long)state->xmit.buf);
+-		state->xmit.buf = NULL;
+-	}
++	xmit_buf = state->xmit.buf;
++	state->xmit.buf = NULL;
+ 	uart_port_unlock(uport, flags);
++
++	if (xmit_buf)
++		free_page((unsigned long)xmit_buf);
+ }
+ 
+ /**
 -- 
-2.19.1
+2.20.0
