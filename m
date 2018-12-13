@@ -1,45 +1,88 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: [LKP] [tty] c96cf923a9:
- WARNING:possible_circular_locking_dependency_detected
-Date: Thu, 13 Dec 2018 14:38:34 +0900
-Message-ID: <20181213053834.GH4860@jagdpanzerIV>
-References: <20181211091154.GL23332@shao2-debian>
- <b8a5b151-9eaa-b098-f24f-b17c1886f456@suse.cz>
- <2780774e-b397-dcc2-6950-cccb527d5014@arista.com>
- <20181212034252.GD431@jagdpanzerIV>
- <20181212090751.GU5289@hirez.programming.kicks-ass.net>
+From: Yingjoe Chen <yingjoe.chen@mediatek.com>
+Subject: Re: [PATCH v5 2/2] arm: dts: mt2712: add uart APDMA to device tree
+Date: Thu, 13 Dec 2018 14:18:07 +0800
+Message-ID: <1544681887.32198.1.camel@mtksdaap41>
+References: <1544506645-27979-1-git-send-email-long.cheng@mediatek.com>
+         <1544506645-27979-3-git-send-email-long.cheng@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181212090751.GU5289@hirez.programming.kicks-ass.net>
+In-Reply-To: <1544506645-27979-3-git-send-email-long.cheng@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Dmitry Safonov <dima@arista.com>, Jiri Slaby <jslaby@suse.cz>, kernel test robot <rong.a.chen@intel.com>, lkp@01.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mikulas Patocka <mpatocka@redhat.com>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Waiman Long <longman@redhat.com>
+To: Long Cheng <long.cheng@mediatek.com>
+Cc: Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, Sean Wang <sean.wang@kernel.org>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, YT Shen <yt.shen@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-On (12/12/18 10:07), Peter Zijlstra wrote:
-> > +	uart_port_lock(state, flags);
-> > +	xmit_buf = state->xmit.buf;
-> > +	state->xmit.buf = NULL;
-> > +	uart_port_unlock(uport, flags);
-> > +
-> >  	/*
-> >  	 * Free the transmit buffer page.
-> >  	 */
-> > -	uart_port_lock(state, flags);
-> > -	if (state->xmit.buf) {
-> > -		free_page((unsigned long)state->xmit.buf);
-> > -		state->xmit.buf = NULL;
-> > -	}
-> > -	uart_port_unlock(uport, flags);
-> > +	if (xmit_buf)
-> > +		free_page((unsigned long)xmit_buf);
-> >  }
+On Tue, 2018-12-11 at 13:37 +0800, Long Cheng wrote:
+> 1. add uart APDMA controller device node
+> 2. add uart 0/1/2/3/4/5 DMA function
 > 
-> That looks sensible anyhow. One should strive to not do alloc or free
-> under locks as much as possible anyway.
+> Signed-off-by: Long Cheng <long.cheng@mediatek.com>
+> ---
+>  arch/arm64/boot/dts/mediatek/mt2712e.dtsi |   50 +++++++++++++++++++++++++++++
+>  1 file changed, 50 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+> index 976d92a..a59728b 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+> @@ -300,6 +300,9 @@
+>  		interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_LOW>;
+>  		clocks = <&baud_clk>, <&sys_clk>;
+>  		clock-names = "baud", "bus";
+> +		dmas = <&apdma 10
+> +			&apdma 11>;
+> +		dma-names = "tx", "rx";
+>  		status = "disabled";
+>  	};
+>  
+> @@ -378,6 +381,38 @@
+>  		status = "disabled";
+>  	};
+>  
+> +	apdma: dma-controller@11000400 {
+> +		compatible = "mediatek,mt2712-uart-dma",
+> +			     "mediatek,mt6577-uart-dma";
 
-Right, good point.
+Sorting, please make sure this is before 
 
-	-ss
+        auxadc: adc@11001000 {
+
+
+> +		reg = <0 0x11000400 0 0x80>,
+> +		      <0 0x11000480 0 0x80>,
+> +		      <0 0x11000500 0 0x80>,
+> +		      <0 0x11000580 0 0x80>,
+> +		      <0 0x11000600 0 0x80>,
+> +		      <0 0x11000680 0 0x80>,
+> +		      <0 0x11000700 0 0x80>,
+> +		      <0 0x11000780 0 0x80>,
+> +		      <0 0x11000800 0 0x80>,
+> +		      <0 0x11000880 0 0x80>,
+> +		      <0 0x11000900 0 0x80>,
+> +		      <0 0x11000980 0 0x80>;
+> +		interrupts = <GIC_SPI 103 IRQ_TYPE_LEVEL_LOW>,
+> +			     <GIC_SPI 104 IRQ_TYPE_LEVEL_LOW>,
+> +			     <GIC_SPI 105 IRQ_TYPE_LEVEL_LOW>,
+> +			     <GIC_SPI 106 IRQ_TYPE_LEVEL_LOW>,
+> +			     <GIC_SPI 107 IRQ_TYPE_LEVEL_LOW>,
+> +			     <GIC_SPI 108 IRQ_TYPE_LEVEL_LOW>,
+> +			     <GIC_SPI 109 IRQ_TYPE_LEVEL_LOW>,
+> +			     <GIC_SPI 110 IRQ_TYPE_LEVEL_LOW>,
+> +			     <GIC_SPI 111 IRQ_TYPE_LEVEL_LOW>,
+> +			     <GIC_SPI 112 IRQ_TYPE_LEVEL_LOW>,
+> +			     <GIC_SPI 113 IRQ_TYPE_LEVEL_LOW>,
+> +			     <GIC_SPI 114 IRQ_TYPE_LEVEL_LOW>;
+> +		clocks = <&pericfg CLK_PERI_AP_DMA>;
+> +		clock-names = "apdma";
+> +		#dma-cells = <1>;
+> +	};
+> +
+>  	uart0: serial@11002000 {
+>  		compatible = "mediatek,mt2712-uart",
+>  			     "mediatek,mt6577-uart";
+> @@ -385,6 +420,9 @@
+
+
+...deleted
