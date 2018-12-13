@@ -1,1098 +1,189 @@
-From: Long Cheng <long.cheng@mediatek.com>
-Subject: Re: [PATCH v5 1/2] dmaengine: 8250_mtk_dma: add Mediatek uart DMA
- support
-Date: Thu, 13 Dec 2018 19:36:25 +0800
-Message-ID: <1544700985.28871.26.camel@mhfsdcap03>
-References: <1544506645-27979-1-git-send-email-long.cheng@mediatek.com>
-         <1544506645-27979-2-git-send-email-long.cheng@mediatek.com>
-         <CAGp9LzqB=hzkOHZqa-ZzRLcJujU--7gxYZczXiEj3DiH+FmhbQ@mail.gmail.com>
+From: Marek Vasut <marex@denx.de>
+Subject: Re: [PATCH] serial: 8250: Fix clearing FIFOs in RS485 mode again
+Date: Thu, 13 Dec 2018 15:51:02 +0100
+Message-ID: <372cccd7-a175-2737-5af8-3072606c6b1c@denx.de>
+References: <20181213004120.yn35mzfo4skffabv@pburton-laptop>
+ <cd3e2787-48e1-ce70-0fa7-94df6dc81794@denx.de>
+ <20181213014805.77u5dzydo23cm6fq@pburton-laptop>
+ <117fda17-40e6-664b-2b8a-f1032610bf0b@denx.de>
+ <20181213033301.febmn5qt3chn3vqb@pburton-laptop>
+ <b8525991-f539-a180-2e88-a70b29319413@denx.de>
+ <20181213051154.57h2ddfcbrgh65gy@pburton-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAGp9LzqB=hzkOHZqa-ZzRLcJujU--7gxYZczXiEj3DiH+FmhbQ@mail.gmail.com>
+In-Reply-To: <20181213051154.57h2ddfcbrgh65gy@pburton-laptop>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sean Wang <sean.wang@kernel.org>
-Cc: vkoul@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com, ryder.lee@mediatek.com, Matthias Brugger <matthias.bgg@gmail.com>, dan.j.williams@intel.com, gregkh@linuxfoundation.org, jslaby@suse.com, Sean Wang =?UTF-8?Q?=28=E7=8E=8B=E5=BF=97=E4=BA=98=29?= <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, yingjoe.chen@mediatek.com, YT Shen <yt.shen@mediatek.com>, Long Cheng <long.cheng@mediatek.com>
+To: Paul Burton <paul.burton@mips.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 2018-12-11 at 15:12 -0800, Sean Wang wrote:
-> Sorry for that I didn't have a full review at one time in the earlier version
-> 
->        On Mon, Dec 10, 2018 at 9:37 PM Long Cheng
-> <long.cheng@mediatek.com> wrote:
-> >
-> > In DMA engine framework, add 8250 mtk dma to support it.
-> 
-> It looks like there are still many rooms to improve the description,
-> especially it's a totally new driver.
-> 
-> >
-> > Signed-off-by: Long Cheng <long.cheng@mediatek.com>
-> > ---
-> >  drivers/dma/mediatek/8250_mtk_dma.c |  830 +++++++++++++++++++++++++++++++++++
-> >  drivers/dma/mediatek/Kconfig        |   11 +
-> >  drivers/dma/mediatek/Makefile       |    1 +
-> >  3 files changed, 842 insertions(+)
-> >  create mode 100644 drivers/dma/mediatek/8250_mtk_dma.c
-> >
-> > diff --git a/drivers/dma/mediatek/8250_mtk_dma.c b/drivers/dma/mediatek/8250_mtk_dma.c
-> > new file mode 100644
-> > index 0000000..f79d180
-> > --- /dev/null
-> > +++ b/drivers/dma/mediatek/8250_mtk_dma.c
-> > @@ -0,0 +1,830 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * Mediatek 8250 DMA driver.
-> 
-> MediaTek
-> 
-> > + *
-> > + * Copyright (c) 2018 MediaTek Inc.
-> > + * Author: Long Cheng <long.cheng@mediatek.com>
-> > + */
-> > +
-> > +#include <linux/clk.h>
-> > +#include <linux/dmaengine.h>
-> > +#include <linux/dma-mapping.h>
-> > +#include <linux/err.h>
-> > +#include <linux/init.h>
-> > +#include <linux/interrupt.h>
-> > +#include <linux/list.h>
-> > +#include <linux/kernel.h>
-> > +#include <linux/module.h>
-> > +#include <linux/of_dma.h>
-> > +#include <linux/of_device.h>
-> > +#include <linux/platform_device.h>
-> > +#include <linux/slab.h>
-> > +#include <linux/spinlock.h>
-> > +#include <linux/pm_runtime.h>
-> > +#include <linux/iopoll.h>
-> > +
-> > +#include "../virt-dma.h"
-> > +
-> > +#define MTK_APDMA_DEFAULT_REQUESTS     127
-> > +#define MTK_APDMA_CHANNELS             (CONFIG_SERIAL_8250_NR_UARTS * 2)
-> > +
-> > +#define VFF_EN_B               BIT(0)
-> > +#define VFF_STOP_B             BIT(0)
-> > +#define VFF_FLUSH_B            BIT(0)
-> > +#define VFF_4G_SUPPORT_B       BIT(0)
-> > +#define VFF_RX_INT_EN0_B       BIT(0)  /*rx valid size >=  vff thre*/
-> > +#define VFF_RX_INT_EN1_B       BIT(1)
-> > +#define VFF_TX_INT_EN_B                BIT(0)  /*tx left size >= vff thre*/
-> > +#define VFF_WARM_RST_B         BIT(0)
-> > +#define VFF_RX_INT_FLAG_CLR_B  (BIT(0) | BIT(1))
-> > +#define VFF_TX_INT_FLAG_CLR_B  0
-> > +#define VFF_STOP_CLR_B         0
-> > +#define VFF_FLUSH_CLR_B                0
-> > +#define VFF_INT_EN_CLR_B       0
-> > +#define VFF_4G_SUPPORT_CLR_B   0
-> > +
-> > +/* interrupt trigger level for tx */
-> > +#define VFF_TX_THRE(n)         ((n) * 7 / 8)
-> > +/* interrupt trigger level for rx */
-> > +#define VFF_RX_THRE(n)         ((n) * 3 / 4)
-> > +
-> > +#define MTK_DMA_RING_SIZE      0xffffU
-> > +/* invert this bit when wrap ring head again*/
-> > +#define MTK_DMA_RING_WRAP      0x10000U
-> > +
-> > +#define VFF_INT_FLAG           0x00
-> > +#define VFF_INT_EN             0x04
-> > +#define VFF_EN                 0x08
-> > +#define VFF_RST                        0x0c
-> > +#define VFF_STOP               0x10
-> > +#define VFF_FLUSH              0x14
-> > +#define VFF_ADDR               0x1c
-> > +#define VFF_LEN                        0x24
-> > +#define VFF_THRE               0x28
-> > +#define VFF_WPT                        0x2c
-> > +#define VFF_RPT                        0x30
-> > +/*TX: the buffer size HW can read. RX: the buffer size SW can read.*/
-> > +#define VFF_VALID_SIZE         0x3c
-> > +/*TX: the buffer size SW can write. RX: the buffer size HW can write.*/
-> > +#define VFF_LEFT_SIZE          0x40
-> > +#define VFF_DEBUG_STATUS       0x50
-> > +#define VFF_4G_SUPPORT         0x54
-> > +
-> > +struct mtk_dmadev {
-> > +       struct dma_device ddev;
-> > +       void __iomem *mem_base[MTK_APDMA_CHANNELS];
-> > +       spinlock_t lock; /* dma dev lock */
-> > +       struct tasklet_struct task;
-> 
-> we can drop tasklet and instead allows descriptors to be handled as
-> fast as possible.
-> similar suggestions have been made in the other dmaengine [1] and mtk-hsdma.c
-> 
+On 12/13/2018 06:11 AM, Paul Burton wrote:
+> Hi Marek,
 
-OK, i will remove these, and improve it.
+Hi,
 
-> [1] https://lkml.org/lkml/2018/11/11/146
+> On Thu, Dec 13, 2018 at 05:18:19AM +0100, Marek Vasut wrote:
+>>>>> I wonder whether the issue may be the JZ4780 UART not automatically
+>>>>> resetting the FIFOs when FCR[0] changes. This is a guess, but the manual
+>>>>> doesn't explicitly say it'll happen & the programming example it gives
+>>>>> says to explicitly clear the FIFOs using FCR[2:1]. Since this is what
+>>>>> the kernel has been doing for at least the whole git era I wouldn't be
+>>>>> surprised if other devices are bitten by the change as people start
+>>>>> trying 4.20 on them.
+>>>>
+>>>> The patch you're complaining about is doing exactly that -- it sets
+>>>> UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT in FCR , and then clears it.
+>>>> Those two bits are exactly FCR[2:1]. It also explicitly does not touch
+>>>> any other bits in FCR.
+>>>
+>>> No - your patch does that *only* if the FIFO enable bit is set, and
+>>> presumes that clearing FIFOs is a no-op when they're disabled. I don't
+>>> believe that's true on my system. I also believe that not touching the
+>>> FIFO enable bit is problematic, since some callers clearly expect that
+>>> to be cleared.
+>>
+>> Why would you disable FIFO to clear it ? This doesn't make sense to me,
+>> the FIFO must be operational for it to be cleared. Moreover, it
+>> contradicts your previous statement, "the programming example it gives
+>> says to explicitly clear the FIFOs using FCR[2:1]" .
 > 
-> > +       struct list_head pending;
-> > +       struct clk *clk;
-> > +       unsigned int dma_requests;
-> > +       bool support_33bits;
-> > +       unsigned int dma_irq[MTK_APDMA_CHANNELS];
-> > +       struct mtk_chan *ch[MTK_APDMA_CHANNELS];
-> > +};
-> > +
-> > +struct mtk_chan {
-> > +       struct virt_dma_chan vc;
-> > +       struct list_head node;
-> > +       struct dma_slave_config cfg;
-> > +       void __iomem *base;
-> > +       struct mtk_dma_desc *desc;
-> > +
-> > +       bool stop;
-> > +       bool requested;
-> > +
-> > +       unsigned int rx_status;
-> > +};
-> > +
-> > +struct mtk_dma_sg {
-> > +       dma_addr_t addr;
-> > +       unsigned int en;                /* number of elements (24-bit) */
-> > +       unsigned int fn;                /* number of frames (16-bit) */
-> > +};
-> > +
-> > +struct mtk_dma_desc {
-> > +       struct virt_dma_desc vd;
-> > +       enum dma_transfer_direction dir;
-> > +
-> > +       unsigned int sglen;
-> > +       struct mtk_dma_sg sg[0];
-> > +
-> > +       unsigned int len;
-> > +};
-> > +
-> > +static inline struct mtk_dmadev *to_mtk_dma_dev(struct dma_device *d)
-> > +{
-> > +       return container_of(d, struct mtk_dmadev, ddev);
-> > +}
-> > +
-> > +static inline struct mtk_chan *to_mtk_dma_chan(struct dma_chan *c)
-> > +{
-> > +       return container_of(c, struct mtk_chan, vc.chan);
-> > +}
-> > +
-> > +static inline struct mtk_dma_desc *to_mtk_dma_desc
-> > +       (struct dma_async_tx_descriptor *t)
-> > +{
-> > +       return container_of(t, struct mtk_dma_desc, vd.tx);
-> > +}
-> > +
-> > +static void mtk_dma_chan_write(struct mtk_chan *c,
-> > +                              unsigned int reg, unsigned int val)
-> > +{
-> > +       writel(val, c->base + reg);
-> > +}
-> > +
-> > +static unsigned int mtk_dma_chan_read(struct mtk_chan *c, unsigned int reg)
-> > +{
-> > +       return readl(c->base + reg);
-> > +}
-> > +
-> > +static void mtk_dma_desc_free(struct virt_dma_desc *vd)
-> > +{
-> > +       struct dma_chan *chan = vd->tx.chan;
-> > +       struct mtk_chan *c = to_mtk_dma_chan(chan);
-> > +
-> > +       kfree(c->desc);
-> > +       c->desc = NULL;
-> > +}
-> > +
-> > +static void mtk_dma_tx_flush(struct dma_chan *chan)
-> > +{
+> No, no, not at all... I'm saying that my theory is:
 > 
-> If the user is only one, let's span the content into where the user is.
-> 
-> > +       struct mtk_chan *c = to_mtk_dma_chan(chan);
-> > +
-> > +       if (mtk_dma_chan_read(c, VFF_FLUSH) == 0U)
-> > +               mtk_dma_chan_write(c, VFF_FLUSH, VFF_FLUSH_B);
-> > +}
-> > +
-> > +static void mtk_dma_tx_write(struct dma_chan *chan)
-> > +{
-> 
-> If the user is only one, let's span the content into where the user is.
-> 
-> > +       struct mtk_chan *c = to_mtk_dma_chan(chan);
-> > +       unsigned int txcount = c->desc->len;
-> > +       unsigned int len, send, left, wpt, wrap;
-> > +
-> > +       len = mtk_dma_chan_read(c, VFF_LEN);
-> > +
-> > +       while ((left = mtk_dma_chan_read(c, VFF_LEFT_SIZE)) > 0U) {
-> > +               if (c->desc->len == 0U)
-> 
-> merge the condition back into the condition in while
-> 
-> > +                       break;
-> > +               send = min_t(unsigned int, left, c->desc->len);
-> > +               wpt = mtk_dma_chan_read(c, VFF_WPT);
-> > +               wrap = wpt & MTK_DMA_RING_WRAP ? 0U : MTK_DMA_RING_WRAP;
-> > +
-> > +               if ((wpt & (len - 1U)) + send < len)
-> > +                       mtk_dma_chan_write(c, VFF_WPT, wpt + send);
-> > +               else
-> > +                       mtk_dma_chan_write(c, VFF_WPT,
-> > +                                          ((wpt + send) & (len - 1U))
-> > +                                          | wrap);
-> > +
-> > +               c->desc->len -= send;
-> 
-> ->len can be renamed to ->avail_len to say it's variable during the work
-> 
-> > +       }
-> > +
-> > +       if (txcount != c->desc->len) {
-> > +               mtk_dma_chan_write(c, VFF_INT_EN, VFF_TX_INT_EN_B);
-> > +               mtk_dma_tx_flush(chan);
-> > +       }
-> > +}
-> > +
-> > +static void mtk_dma_start_tx(struct mtk_chan *c)
-> > +{
-> > +       if (mtk_dma_chan_read(c, VFF_LEFT_SIZE) == 0U)
-> > +               mtk_dma_chan_write(c, VFF_INT_EN, VFF_TX_INT_EN_B);
-> > +       else
-> > +               mtk_dma_tx_write(&c->vc.chan);
-> > +
-> > +       c->stop = false;
-> > +}
-> > +
-> > +static void mtk_dma_get_rx_size(struct mtk_chan *c)
-> > +{
-> 
-> If the user is only one, let's span the content into where the user is.
-> 
-> > +       unsigned int rx_size = mtk_dma_chan_read(c, VFF_LEN);
-> > +       unsigned int rdptr, wrptr, wrreg, rdreg, count;
-> 
-> too much variable seems a little lousy, two variables are enough
-> 
-> unsigned int rd, wr;
-> 
-> > +
-> > +       rdreg = mtk_dma_chan_read(c, VFF_RPT);
-> > +       wrreg = mtk_dma_chan_read(c, VFF_WPT);
-> > +       rdptr = rdreg & MTK_DMA_RING_SIZE;
-> > +       wrptr = wrreg & MTK_DMA_RING_SIZE;
-> 
-> rd = mtk_dma_chan_read(c, VFF_RPT) & MTK_DMA_RING_SIZE;
-> wr = mtk_dma_chan_read(c, VFF_WPT) & MTK_DMA_RING_SIZE
-> 
-> > +       count = ((rdreg ^ wrreg) & MTK_DMA_RING_WRAP) ?
-> > +                       (wrptr + rx_size - rdptr) : (wrptr - rdptr);
-> > +
-> > +       c->rx_status = count;
-> 
-> drop the variable count and have a direct assignment
-> 
-> > +
-> > +       mtk_dma_chan_write(c, VFF_RPT, wrreg);
-> > +}
-> > +
-> > +static void mtk_dma_start_rx(struct mtk_chan *c)
-> > +{
-> > +       struct dma_chan *chan = &c->vc.chan;
-> > +       struct mtk_dmadev *mtkd = to_mtk_dma_dev(chan->device);
-> > +       struct mtk_dma_desc *d = c->desc;
-> > +
-> > +       if (mtk_dma_chan_read(c, VFF_VALID_SIZE) == 0U)
-> > +               return;
-> > +
-> > +       if (d && vchan_next_desc(&c->vc)) {
-> > +               mtk_dma_get_rx_size(c);
-> > +               list_del(&d->vd.node);
-> > +               vchan_cookie_complete(&d->vd);
-> > +       } else {
-> > +               spin_lock(&mtkd->lock);
-> > +               if (list_empty(&mtkd->pending))
-> > +                       list_add_tail(&c->node, &mtkd->pending);
-> > +               spin_unlock(&mtkd->lock);
-> > +               tasklet_schedule(&mtkd->task);
-> > +       }
-> > +}
-> > +
-> > +static void mtk_dma_reset(struct mtk_chan *c)
-> > +{
-> 
-> If the user is only one, let's span the content into where the user is.
-> 
-> > +       struct mtk_dmadev *mtkd = to_mtk_dma_dev(c->vc.chan.device);
-> > +       u32 status;
-> > +       int ret;
-> > +
-> > +       mtk_dma_chan_write(c, VFF_ADDR, 0);
-> > +       mtk_dma_chan_write(c, VFF_THRE, 0);
-> > +       mtk_dma_chan_write(c, VFF_LEN, 0);
-> > +       mtk_dma_chan_write(c, VFF_RST, VFF_WARM_RST_B);
-> > +
-> > +       ret = readx_poll_timeout(readl,
-> > +                                c->base + VFF_EN,
-> > +                                status, status == 0, 10, 100);
-> > +       if (ret) {
-> > +               dev_err(c->vc.chan.device->dev,
-> > +                               "dma reset: fail, timeout\n");
-> > +               return;
-> > +       }
-> > +
-> > +       if (c->cfg.direction == DMA_DEV_TO_MEM)
-> > +               mtk_dma_chan_write(c, VFF_RPT, 0);
-> > +       else if (c->cfg.direction == DMA_MEM_TO_DEV)
-> > +               mtk_dma_chan_write(c, VFF_WPT, 0);
-> 
-> using switch and case statement
-> 
-> > +
-> > +       if (mtkd->support_33bits)
-> > +               mtk_dma_chan_write(c, VFF_4G_SUPPORT, VFF_4G_SUPPORT_CLR_B);
-> > +}
-> > +
-> > +static void mtk_dma_stop(struct mtk_chan *c)
-> 
-> If the user is only one, let's span the content into where the user is.
-> 
-> > +{
-> > +       u32 status;
-> > +       int ret;
-> > +
-> > +       mtk_dma_chan_write(c, VFF_FLUSH, VFF_FLUSH_CLR_B);
-> > +       /* Wait for flush */
-> > +       ret = readx_poll_timeout(readl,
-> > +                                c->base + VFF_FLUSH,
-> > +                                status,
-> > +                                (status & VFF_FLUSH_B) != VFF_FLUSH_B,
-> > +                                10, 100);
-> > +       if (ret)
-> > +               dev_err(c->vc.chan.device->dev,
-> > +                       "dma stop: polling FLUSH fail, DEBUG=0x%x\n",
-> > +                       mtk_dma_chan_read(c, VFF_DEBUG_STATUS));
-> > +
-> > +       /*set stop as 1 -> wait until en is 0 -> set stop as 0*/
-> > +       mtk_dma_chan_write(c, VFF_STOP, VFF_STOP_B);
-> > +       ret = readx_poll_timeout(readl,
-> > +                                c->base + VFF_EN,
-> > +                                status, status == 0, 10, 100);
-> > +       if (ret)
-> > +               dev_err(c->vc.chan.device->dev,
-> > +                       "dma stop: polling VFF_EN fail, DEBUG=0x%x\n",
-> > +                       mtk_dma_chan_read(c, VFF_DEBUG_STATUS));
-> > +
-> > +       mtk_dma_chan_write(c, VFF_STOP, VFF_STOP_CLR_B);
-> > +       mtk_dma_chan_write(c, VFF_INT_EN, VFF_INT_EN_CLR_B);
-> > +
-> > +       if (c->cfg.direction == DMA_DEV_TO_MEM)
-> > +               mtk_dma_chan_write(c, VFF_INT_FLAG, VFF_RX_INT_FLAG_CLR_B);
-> > +       else
-> > +               mtk_dma_chan_write(c, VFF_INT_FLAG, VFF_TX_INT_FLAG_CLR_B);
-> 
-> using switch and case statement
-> 
-> > +
-> > +       c->stop = true;
-> > +}
-> > +
-> > +/*
-> > + * This callback schedules all pending channels. We could be more
-> > + * clever here by postponing allocation of the real DMA channels to
-> > + * this point, and freeing them when our virtual channel becomes idle.
-> > + *
-> > + * We would then need to deal with 'all channels in-use'
-> > + */
-> > +static void mtk_dma_sched(unsigned long data)
-> > +{
-> 
-> As at the initial be said, try to make descriptors submit as fast as
-> possible without involving in a tasklet. The same improvement had been
-> done at mtk-hsdma.c  so you could have a reference to it first if you
-> have no much idea of how to begin to improve.
-> 
-> > +       struct mtk_dmadev *mtkd = (struct mtk_dmadev *)data;
-> > +       struct virt_dma_desc *vd;
-> > +       struct mtk_chan *c;
-> > +       unsigned long flags;
-> > +       LIST_HEAD(head);
-> > +
-> > +       spin_lock_irq(&mtkd->lock);
-> > +       list_splice_tail_init(&mtkd->pending, &head);
-> > +       spin_unlock_irq(&mtkd->lock);
-> > +
-> > +       if (!list_empty(&head)) {
-> > +               c = list_first_entry(&head, struct mtk_chan, node);
-> > +
-> > +               spin_lock_irqsave(&c->vc.lock, flags);
-> > +               if (c->cfg.direction == DMA_DEV_TO_MEM) {
-> > +                       list_del_init(&c->node);
-> > +                       mtk_dma_start_rx(c);
-> > +               } else if (c->cfg.direction == DMA_MEM_TO_DEV) {
-> > +                       vd = vchan_next_desc(&c->vc);
-> > +                       c->desc = to_mtk_dma_desc(&vd->tx);
-> > +                       list_del_init(&c->node);
-> > +                       mtk_dma_start_tx(c);
-> > +               }
-> > +               spin_unlock_irqrestore(&c->vc.lock, flags);
-> > +       }
-> > +}
-> > +
-> > +static int mtk_dma_alloc_chan_resources(struct dma_chan *chan)
-> > +{
-> > +       struct mtk_dmadev *mtkd = to_mtk_dma_dev(chan->device);
-> > +       struct mtk_chan *c = to_mtk_dma_chan(chan);
-> > +       int ret = -EBUSY;
-> > +
-> > +       pm_runtime_get_sync(mtkd->ddev.dev);
-> > +
-> > +       if (!mtkd->ch[chan->chan_id]) {
-> > +               c->base = mtkd->mem_base[chan->chan_id]
-> 
-> mtkd->mem_base is unnecessary, we can directly decide c->base in the
-> driver probe stage
-> 
-> > +               mtkd->ch[chan->chan_id] = c;
-> 
-> mtkd->ch is also unnecessary, the core always pass struct dma_chan
-> *chan to each callback function
-> 
-> > +               ret = 1;
-> 
-> ret be 1 seems be wrong
-> 
-> > +       }
-> > +       c->requested = false;
-> > +       mtk_dma_reset(c);
-> > +
-> > +       return ret;
-> > +}
-> > +
-> > +static void mtk_dma_free_chan_resources(struct dma_chan *chan)
-> > +{
-> > +       struct mtk_dmadev *mtkd = to_mtk_dma_dev(chan->device);
-> > +       struct mtk_chan *c = to_mtk_dma_chan(chan);
-> > +
-> > +       if (c->requested) {
-> > +               c->requested = false;
-> > +               free_irq(mtkd->dma_irq[chan->chan_id], chan);
-> 
-> it makes not consistent because there are not request_irq present at
-> mtk_dma_alloc_chan_resources. but I'd prefer a  devm_request_irq is
-> being done
-> as the driver got probe.
-> 
-> > +       }
-> > +
-> > +       tasklet_kill(&mtkd->task);
-> > +       tasklet_kill(&c->vc.task);
-> > +
-> > +       c->base = NULL;
-> > +       mtkd->ch[chan->chan_id] = NULL;
-> > +       vchan_free_chan_resources(&c->vc);
-> > +
-> > +       pm_runtime_put_sync(mtkd->ddev.dev);
-> > +}
-> > +
-> > +static enum dma_status mtk_dma_tx_status(struct dma_chan *chan,
-> > +                                        dma_cookie_t cookie,
-> > +                                        struct dma_tx_state *txstate)
-> > +{
-> > +       struct mtk_chan *c = to_mtk_dma_chan(chan);
-> > +       enum dma_status ret;
-> > +       unsigned long flags;
-> > +
-> > +       if (!txstate)
-> > +               return DMA_ERROR;
-> > +
-> > +       ret = dma_cookie_status(chan, cookie, txstate);
-> > +       spin_lock_irqsave(&c->vc.lock, flags);
-> > +       if (ret == DMA_IN_PROGRESS) {
-> > +               c->rx_status = mtk_dma_chan_read(c, VFF_RPT)
-> > +                            & MTK_DMA_RING_SIZE;
-> > +               dma_set_residue(txstate, c->rx_status);
-> > +       } else if (ret == DMA_COMPLETE && c->cfg.direction == DMA_DEV_TO_MEM) {
-> > +               dma_set_residue(txstate, c->rx_status);
-> > +       } else {
-> > +               dma_set_residue(txstate, 0);
-> > +       }
-> > +       spin_unlock_irqrestore(&c->vc.lock, flags);
-> > +
-> > +       return ret;
-> > +}
-> > +
-> > +static struct dma_async_tx_descriptor *mtk_dma_prep_slave_sg
-> > +       (struct dma_chan *chan, struct scatterlist *sgl,
-> > +       unsigned int sglen,     enum dma_transfer_direction dir,
-> > +       unsigned long tx_flags, void *context)
-> > +{
-> > +       struct mtk_chan *c = to_mtk_dma_chan(chan);
-> > +       struct scatterlist *sgent;
-> > +       struct mtk_dma_desc *d;
-> > +       struct mtk_dma_sg *sg;
-> > +       unsigned int size, i, j, en;
-> > +
-> > +       en = 1;
-> > +
-> > +       if ((dir != DMA_DEV_TO_MEM) &&
-> > +               (dir != DMA_MEM_TO_DEV)) {
-> > +               dev_err(chan->device->dev, "bad direction\n");
-> > +               return NULL;
-> > +       }
-> > +
-> > +       /* Now allocate and setup the descriptor. */
-> > +       d = kzalloc(sizeof(*d) + sglen * sizeof(d->sg[0]), GFP_ATOMIC);
-> > +       if (!d)
-> > +               return NULL;
-> > +
-> > +       d->dir = dir;
-> > +
-> > +       j = 0;
-> > +       for_each_sg(sgl, sgent, sglen, i) {
-> > +               d->sg[j].addr = sg_dma_address(sgent);
-> > +               d->sg[j].en = en;
-> > +               d->sg[j].fn = sg_dma_len(sgent) / en;
-> > +               j++;
-> > +       }
-> > +
-> > +       d->sglen = j;
-> > +
-> > +       if (dir == DMA_MEM_TO_DEV) {
-> > +               for (size = i = 0; i < d->sglen; i++) {
-> > +                       sg = &d->sg[i];
-> > +                       size += sg->en * sg->fn;
-> > +               }
-> > +               d->len = size;
-> > +       }
-> > +
-> 
-> The driver always only handles data move for the single contiguous
-> area, but it seems the callback must provide the scatter-gather
-> function to the dmaegine. otherwise, why is the callback be called
-> device_prep_slave_sg?
-> 
+>   - The JZ4780 requires that the FIFO be reset using FCR[2:1] in order
+>     to not read garbage.
 
-because in 8250 UART native code, call the device_prep_slave_sg. we just
-use one ring buffer.
+Which we do
 
-> > +       return vchan_tx_prep(&c->vc, &d->vd, tx_flags);
-> > +}
-> > +
-> > +static void mtk_dma_issue_pending(struct dma_chan *chan)
-> > +{
-> > +       struct mtk_chan *c = to_mtk_dma_chan(chan);
-> > +       struct virt_dma_desc *vd;
-> > +       struct mtk_dmadev *mtkd;
-> > +       unsigned long flags;
-> > +
-> > +       spin_lock_irqsave(&c->vc.lock, flags);
-> > +       if (c->cfg.direction == DMA_DEV_TO_MEM) {
-> > +               mtkd = to_mtk_dma_dev(chan->device);
-> 
-> mtkd can be dropped as it seems no users
-> 
-> > +               if (vchan_issue_pending(&c->vc) && !c->desc) {
-> > +                       vd = vchan_next_desc(&c->vc);
-> > +                       c->desc = to_mtk_dma_desc(&vd->tx);
-> > +               }
-> > +       } else if (c->cfg.direction == DMA_MEM_TO_DEV) {
-> > +               if (vchan_issue_pending(&c->vc) && !c->desc) {
-> > +                       vd = vchan_next_desc(&c->vc);
-> > +                       c->desc = to_mtk_dma_desc(&vd->tx);
-> > +                       mtk_dma_start_tx(c);
-> > +               }
-> > +       }
-> > +       spin_unlock_irqrestore(&c->vc.lock, flags);
-> > +}
-> > +
-> > +static irqreturn_t mtk_dma_rx_interrupt(int irq, void *dev_id)
-> > +{
-> > +       struct dma_chan *chan = (struct dma_chan *)dev_id;
-> > +       struct mtk_chan *c = to_mtk_dma_chan(chan);
-> > +       unsigned long flags;
-> > +
-> > +       spin_lock_irqsave(&c->vc.lock, flags);
-> > +       mtk_dma_chan_write(c, VFF_INT_FLAG, VFF_RX_INT_FLAG_CLR_B);
-> > +
-> > +       mtk_dma_start_rx(c);
-> > +
-> > +       spin_unlock_irqrestore(&c->vc.lock, flags);
-> > +
-> > +       return IRQ_HANDLED;
-> > +}
-> > +
-> > +static irqreturn_t mtk_dma_tx_interrupt(int irq, void *dev_id)
-> > +{
-> > +       struct dma_chan *chan = (struct dma_chan *)dev_id;
-> > +       struct mtk_dmadev *mtkd = to_mtk_dma_dev(chan->device);
-> > +       struct mtk_chan *c = to_mtk_dma_chan(chan);
-> > +       struct mtk_dma_desc *d = c->desc;
-> > +       unsigned long flags;
-> > +
-> > +       spin_lock_irqsave(&c->vc.lock, flags);
-> > +       if (d->len != 0U) {
-> > +               list_add_tail(&c->node, &mtkd->pending);
-> > +               tasklet_schedule(&mtkd->task);
-> > +       } else {
-> > +               list_del(&d->vd.node);
-> > +               vchan_cookie_complete(&d->vd);
-> > +       }
-> > +       spin_unlock_irqrestore(&c->vc.lock, flags);
-> > +
-> > +       mtk_dma_chan_write(c, VFF_INT_FLAG, VFF_TX_INT_FLAG_CLR_B);
-> > +
-> > +       return IRQ_HANDLED;
-> > +}
-> > +
-> > +static int mtk_dma_slave_config(struct dma_chan *chan,
-> > +                               struct dma_slave_config *cfg)
-> > +{
-> > +       struct mtk_chan *c = to_mtk_dma_chan(chan);
-> > +       struct mtk_dmadev *mtkd = to_mtk_dma_dev(c->vc.chan.device);
-> > +       int ret;
-> > +
-> > +       c->cfg = *cfg;
-> > +
-> > +       if (cfg->direction == DMA_DEV_TO_MEM) {
-> > +               unsigned int rx_len = cfg->src_addr_width * 1024;
-> 
-> it seems you should use cfg->src_port_window_size as the comments explains
-> 
-> * @src_port_window_size: The length of the register area in words the data need
->  * to be accessed on the device side. It is only used for devices which is using
->  * an area instead of a single register to receive the data. Typically the DMA
->  * loops in this area in order to transfer the data.
->  * @dst_port_window_size: same as src_port_window_size but for the destination
->  * port.
-> 
+>   - Prior to your patch serial8250_clear_fifos() did this,
+>     unconditionally.
 
-in 8250 UART native code, will set the parameter. if want to modify
-this, i think that maybe at next kernel release, we can modify it. i
-suggest that not modify it at this patch. because it relate of 8250 uart
-code. thanks.
+btw originally, this also cleared the UME bit. Could this be what made
+the difference on the JZ4780 ?
 
-> > +
-> > +               mtk_dma_chan_write(c, VFF_ADDR, cfg->src_addr);
-> > +               mtk_dma_chan_write(c, VFF_LEN, rx_len);
-> > +               mtk_dma_chan_write(c, VFF_THRE, VFF_RX_THRE(rx_len));
-> > +               mtk_dma_chan_write(c,
-> > +                                  VFF_INT_EN, VFF_RX_INT_EN0_B
-> > +                                  | VFF_RX_INT_EN1_B);
-> > +               mtk_dma_chan_write(c, VFF_INT_FLAG, VFF_RX_INT_FLAG_CLR_B);
-> > +               mtk_dma_chan_write(c, VFF_EN, VFF_EN_B);
-> 
-> I'd prefer to move those channel interrupt enablement to
-> .device_alloc_chan_resources
-> and related disablement to .device_free_chan_resources
-> 
+Can you try this patch on the JZ4780 , just out of curiosity ?
 
-i think that, first need set the config to HW, and the enable the DMA. 
+diff --git a/drivers/tty/serial/8250/8250_port.c
+b/drivers/tty/serial/8250/8250_port.c
+index c39482b961110..3dce99f4c6802 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -553,7 +553,7 @@ static unsigned int serial_icr_read(struct
+uart_8250_port *up, int offset)
+ static void serial8250_clear_fifos(struct uart_8250_port *p)
+ {
+        unsigned char fcr;
+-       unsigned char clr_mask = UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT;
++       unsigned char clr_mask = UART_FCR_CLEAR_RCVR |
+UART_FCR_CLEAR_XMIT | BIT(4) /* UME */;
 
-> > +
-> > +               if (!c->requested) {
-> > +                       c->requested = true;
-> > +                       ret = request_irq(mtkd->dma_irq[chan->chan_id],
-> > +                                         mtk_dma_rx_interrupt,
-> > +                                         IRQF_TRIGGER_NONE,
-> > +                                         KBUILD_MODNAME, chan);
-> 
-> ISR registration usually happens as the driver got probe, it can give
-> the system more flexibility to manage such IRQ affinity on the fly.
-> 
+        if (p->capabilities & UART_CAP_FIFO) {
 
-i will move the request irq to alloc channel.
+>   - After your patch serial8250_clear_fifos() only clears the FIFOs if
+>     the FIFO is already enabled.
 
-> > +                       if (ret < 0) {
-> > +                               dev_err(chan->device->dev, "Can't request rx dma IRQ\n");
-> > +                               return -EINVAL;
-> > +                       }
-> > +               }
-> > +       } else if (cfg->direction == DMA_MEM_TO_DEV)    {
-> > +               unsigned int tx_len = cfg->dst_addr_width * 1024;
-> 
-> Ditto as above, it seems you should use cfg->dst_port_window_size
-> 
-> > +
-> > +               mtk_dma_chan_write(c, VFF_ADDR, cfg->dst_addr);
-> > +               mtk_dma_chan_write(c, VFF_LEN, tx_len);
-> > +               mtk_dma_chan_write(c, VFF_THRE, VFF_TX_THRE(tx_len));
-> > +               mtk_dma_chan_write(c, VFF_INT_FLAG, VFF_TX_INT_FLAG_CLR_B);
-> > +               mtk_dma_chan_write(c, VFF_EN, VFF_EN_B);
-> 
-> ditto, I'd prefer to move those channel interrupt enablement to
-> .device_alloc_chan_resources and related disablement to
-> .device_free_chan_resources
-> 
-> > +
-> > +               if (!c->requested) {
-> > +                       c->requested = true;
-> > +                       ret = request_irq(mtkd->dma_irq[chan->chan_id],
-> > +                                         mtk_dma_tx_interrupt,
-> > +                                         IRQF_TRIGGER_NONE,
-> > +                                         KBUILD_MODNAME, chan);
-> 
-> ditto, we can request ISR with devm_request_irq in the driver got
-> probe and trim the c->request member
-> 
-> > +                       if (ret < 0) {
-> > +                               dev_err(chan->device->dev, "Can't request tx dma IRQ\n");
-> > +                               return -EINVAL;
-> > +                       }
-> > +               }
-> > +       }
-> > +
-> > +       if (mtkd->support_33bits)
-> > +               mtk_dma_chan_write(c, VFF_4G_SUPPORT, VFF_4G_SUPPORT_B);
-> > +
-> > +       if (mtk_dma_chan_read(c, VFF_EN) != VFF_EN_B) {
-> > +               dev_err(chan->device->dev,
-> > +                       "config dma dir[%d] fail\n", cfg->direction);
-> > +               return -EINVAL;
-> > +       }
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +static int mtk_dma_terminate_all(struct dma_chan *chan)
-> > +{
-> > +       struct mtk_chan *c = to_mtk_dma_chan(chan);
-> > +       unsigned long flags;
-> > +
-> > +       spin_lock_irqsave(&c->vc.lock, flags);
-> > +       list_del_init(&c->node);
-> > +       mtk_dma_stop(c);
-> > +       spin_unlock_irqrestore(&c->vc.lock, flags);
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +static int mtk_dma_device_pause(struct dma_chan *chan)
-> > +{
-> > +       /* just for check caps pass */
-> > +       return -EINVAL;
-> 
-> always return error code seems not the client driver wants us to do.
-> 
-> maybe if the hardware doesn't support pause, we can make a software
-> pause, that waits until all active descriptors in hardware done, then
-> disable interrupt and then stop handling the following vd in the
-> vchan.
-> 
-> > +}
+I'd suppose this is OK, since clearing a disabled FIFO makes no sense ?
 
-the code can't run. just for 8250 native code to check the function
-pointer. in the future, if the function useful, we can realize. thanks.
+>   - When called from serial8250_do_startup() during boot, the FIFO may
+>     not be enabled - for example if the bootloader didn't use the FIFO,
+>     or if the UART is used with 8250_early which zeroes FCR.
 
-> > +
-> > +static int mtk_dma_device_resume(struct dma_chan *chan)
-> > +{
-> > +       /* just for check caps pass */
-> > +       return -EINVAL;
-> 
-> similar to the above
-> 
-> > +}
-> > +
-> > +static void mtk_dma_free(struct mtk_dmadev *mtkd)
-> > +{
-> > +       tasklet_kill(&mtkd->task);
-> > +       while (list_empty(&mtkd->ddev.channels) == 0) {
-> !list_empty(&mtkd->ddev.channels)
-> > +               struct mtk_chan *c = list_first_entry(&mtkd->ddev.channels,
-> > +                       struct mtk_chan, vc.chan.device_node);
-> > +
-> > +               list_del(&c->vc.chan.device_node);
-> > +               tasklet_kill(&c->vc.task);
-> > +               devm_kfree(mtkd->ddev.dev, c);
-> 
-> no need to call devm_kfree, the core would help do this
-> 
-> > +       }
-> > +}
-> > +
-> > +static const struct of_device_id mtk_uart_dma_match[] = {
-> > +       { .compatible = "mediatek,mt6577-uart-dma", },
-> > +       { /* sentinel */ },
-> > +};
-> > +MODULE_DEVICE_TABLE(of, mtk_uart_dma_match);
-> > +
-> > +static int mtk_apdma_probe(struct platform_device *pdev)
-> > +{
-> > +       struct mtk_dmadev *mtkd;
-> > +       struct resource *res;
-> > +       struct mtk_chan *c;
-> > +       unsigned int i;
-> > +       int rc;
-> > +
-> > +       mtkd = devm_kzalloc(&pdev->dev, sizeof(*mtkd), GFP_KERNEL);
-> > +       if (!mtkd)
-> > +               return -ENOMEM;
-> > +
-> > +       for (i = 0; i < MTK_APDMA_CHANNELS; i++) {
-> > +               res = platform_get_resource(pdev, IORESOURCE_MEM, i);
-> > +               if (!res)
-> > +                       return -ENODEV;
-> > +               mtkd->mem_base[i] = devm_ioremap_resource(&pdev->dev, res);
-> > +               if (IS_ERR(mtkd->mem_base[i]))
-> > +                       return PTR_ERR(mtkd->mem_base[i]);
-> > +       }
-> > +
-> > +       for (i = 0; i < MTK_APDMA_CHANNELS; i++) {
-> > +               mtkd->dma_irq[i] = platform_get_irq(pdev, i);
-> > +               if ((int)mtkd->dma_irq[i] < 0) {
-> > +                       dev_err(&pdev->dev, "failed to get IRQ[%d]\n", i);
-> > +                       return -EINVAL;
-> > +               }
-> > +       }
-> > +
-> > +       mtkd->clk = devm_clk_get(&pdev->dev, NULL);
-> > +       if (IS_ERR(mtkd->clk)) {
-> > +               dev_err(&pdev->dev, "No clock specified\n");
-> > +               return PTR_ERR(mtkd->clk);
-> > +       }
-> > +
-> > +       if (of_property_read_bool(pdev->dev.of_node, "dma-33bits")) {
-> > +               dev_info(&pdev->dev, "Support dma 33bits\n");
-> > +               mtkd->support_33bits = true;
-> > +       }
-> > +
-> > +       if (mtkd->support_33bits)
-> > +               rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(33));
-> > +       else
-> > +               rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-> 
->  rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32 |
-> mtkd->support_33bits));
-> 
-> > +       if (rc)
-> > +               return rc;
-> > +
-> > +       dma_cap_set(DMA_SLAVE, mtkd->ddev.cap_mask);
-> > +       mtkd->ddev.device_alloc_chan_resources = mtk_dma_alloc_chan_resources;
-> > +       mtkd->ddev.device_free_chan_resources = mtk_dma_free_chan_resources;
-> > +       mtkd->ddev.device_tx_status = mtk_dma_tx_status;
-> > +       mtkd->ddev.device_issue_pending = mtk_dma_issue_pending;
-> > +       mtkd->ddev.device_prep_slave_sg = mtk_dma_prep_slave_sg;
-> > +       mtkd->ddev.device_config = mtk_dma_slave_config;
-> > +       mtkd->ddev.device_pause = mtk_dma_device_pause;
-> > +       mtkd->ddev.device_resume = mtk_dma_device_resume;
-> > +       mtkd->ddev.device_terminate_all = mtk_dma_terminate_all;
-> > +       mtkd->ddev.src_addr_widths = BIT(DMA_SLAVE_BUSWIDTH_1_BYTE);
-> > +       mtkd->ddev.dst_addr_widths = BIT(DMA_SLAVE_BUSWIDTH_1_BYTE);
-> > +       mtkd->ddev.directions = BIT(DMA_DEV_TO_MEM) | BIT(DMA_MEM_TO_DEV);
-> > +       mtkd->ddev.residue_granularity = DMA_RESIDUE_GRANULARITY_SEGMENT;
-> > +       mtkd->ddev.dev = &pdev->dev;
-> > +       INIT_LIST_HEAD(&mtkd->ddev.channels);
-> > +       INIT_LIST_HEAD(&mtkd->pending);
-> > +
-> > +       spin_lock_init(&mtkd->lock);
-> > +       tasklet_init(&mtkd->task, mtk_dma_sched, (unsigned long)mtkd);
-> > +
-> > +       mtkd->dma_requests = MTK_APDMA_DEFAULT_REQUESTS;
-> > +       if (of_property_read_u32(pdev->dev.of_node,
-> > +                                "dma-requests", &mtkd->dma_requests)) {
-> > +               dev_info(&pdev->dev,
-> > +                        "Missing dma-requests property, using %u.\n",
-> > +                        MTK_APDMA_DEFAULT_REQUESTS);
-> > +       }
-> > +
-> > +       for (i = 0; i < MTK_APDMA_CHANNELS; i++) {
-> > +               c = devm_kzalloc(mtkd->ddev.dev, sizeof(*c), GFP_KERNEL);
-> > +               if (!c)
-> > +                       goto err_no_dma;
-> > +
-> > +               c->vc.desc_free = mtk_dma_desc_free;
-> > +               vchan_init(&c->vc, &mtkd->ddev);
-> > +               INIT_LIST_HEAD(&c->node);
-> > +       }
-> > +
-> > +       pm_runtime_enable(&pdev->dev);
-> > +       pm_runtime_set_active(&pdev->dev);
-> > +
-> > +       rc = dma_async_device_register(&mtkd->ddev);
-> > +       if (rc)
-> > +               goto rpm_disable;
-> > +
-> > +       platform_set_drvdata(pdev, mtkd);
-> > +
-> > +       if (pdev->dev.of_node) {
-> > +               /* Device-tree DMA controller registration */
-> > +               rc = of_dma_controller_register(pdev->dev.of_node,
-> > +                                               of_dma_xlate_by_chan_id,
-> > +                                               mtkd);
-> > +               if (rc)
-> > +                       goto dma_remove;
-> > +       }
-> > +
-> > +       return rc;
-> > +
-> > +dma_remove:
-> > +       dma_async_device_unregister(&mtkd->ddev);
-> > +rpm_disable:
-> > +       pm_runtime_disable(&pdev->dev);
-> > +err_no_dma:
-> > +       mtk_dma_free(mtkd);
-> > +       return rc;
-> > +}
-> > +
-> > +static int mtk_apdma_remove(struct platform_device *pdev)
-> > +{
-> > +       struct mtk_dmadev *mtkd = platform_get_drvdata(pdev);
-> > +
-> > +       if (pdev->dev.of_node)
-> > +               of_dma_controller_free(pdev->dev.of_node);
-> > +
-> > +       pm_runtime_disable(&pdev->dev);
-> > +       pm_runtime_put_noidle(&pdev->dev);
-> > +
-> > +       dma_async_device_unregister(&mtkd->ddev);
-> > +
-> > +       mtk_dma_free(mtkd);
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +#ifdef CONFIG_PM_SLEEP
-> > +static int mtk_dma_suspend(struct device *dev)
-> > +{
-> > +       struct mtk_dmadev *mtkd = dev_get_drvdata(dev);
-> > +
-> > +       if (!pm_runtime_suspended(dev))
-> > +               clk_disable_unprepare(mtkd->clk);
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +static int mtk_dma_resume(struct device *dev)
-> > +{
-> > +       int ret;
-> > +       struct mtk_dmadev *mtkd = dev_get_drvdata(dev);
-> > +
-> > +       if (!pm_runtime_suspended(dev)) {
-> > +               ret = clk_prepare_enable(mtkd->clk);
-> > +               if (ret)
-> > +                       return ret;
-> > +       }
-> > +
-> > +       return 0;
-> > +}
-> > +#endif /* CONFIG_PM_SLEEP */
-> > +
-> > +#ifdef CONFIG_PM
-> > +static int mtk_dma_runtime_suspend(struct device *dev)
-> > +{
-> > +       struct mtk_dmadev *mtkd = dev_get_drvdata(dev);
-> > +
-> > +       clk_disable_unprepare(mtkd->clk);
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +static int mtk_dma_runtime_resume(struct device *dev)
-> > +{
-> > +       int ret;
-> > +       struct mtk_dmadev *mtkd = dev_get_drvdata(dev);
-> > +
-> > +       ret = clk_prepare_enable(mtkd->clk);
-> > +       if (ret)
-> > +               return ret;
-> > +
-> > +       return 0;
-> > +}
-> > +#endif /* CONFIG_PM */
-> > +
-> > +static const struct dev_pm_ops mtk_dma_pm_ops = {
-> > +       SET_SYSTEM_SLEEP_PM_OPS(mtk_dma_suspend, mtk_dma_resume)
-> > +       SET_RUNTIME_PM_OPS(mtk_dma_runtime_suspend,
-> > +                          mtk_dma_runtime_resume, NULL)
-> > +};
-> > +
-> > +static struct platform_driver mtk_dma_driver = {
-> 
-> mtk_dma is much general and all functions and structures in the driver
-> should be all consistent.  I'd prefer to have all naming starts with
-> mtk_uart_apdma.
-> 
+If it's not enabled, do you need to clear it ?
 
-the function name and parameters' name, i will modify it. but before the
-8250_mtk.c and the Doc. are recorded. if modify file name and Kconfig,
-will bring about the disorder. i suggest that after the patch is
-recorded, modify this. thanks.
+>   - Therefore after your patch the FIFO reset bits are never set if the
+>     UART was used with 8250_early, or if it wasn't but the bootloader
+>     didn't enable the FIFO.
 
-> > +       .probe  = mtk_apdma_probe,
+Hence my question above, do you need to clear the FIFO even if it was
+not enabled ?
+
+> I suspect that you get away with that because according to the PC16550D
+> documentation the FIFOs should reset when the FIFO enable bit changes,
+> so when the FIFO is later enabled it gets reset. I suspect that in the
+> JZ4780 this does not happen, and the FIFO contains garbage. Our previous
+> behaviour (always set FCR[2:1] to reset the FIFO) has been around for a
+> long time, so I would not be surprised to find other devices relying
+> upon it.
+
+It is well possible, but I'd like to understand what really happens
+here, not just guess.
+
+> I'm also saying that if the FIFOs are enabled during boot then your
+> patch will leave them enabled after serial8250_do_startup() calls
+> serial8250_clear_fifos(), which a comment in serial8250_do_startup()
+> clearly states is not the expected behaviour:
+
+In that case, that needs to be fixed. But serial8250_clear_fifos()
+should only do what the name says -- clear FIFOs -- not disable them.
+
+>> Clear the FIFO buffers and disable them.
+>> (they will be reenabled in set_termios())
 > 
-> such  as
-> mtk_uart_apdma_probe
+> (From https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/tty/serial/8250/8250_port.c?h=v4.20-rc6#n2209)
 > 
-> > +       .remove = mtk_apdma_remove,
+> And further, with your patch serial8250_do_shutdown() will leave the
+> FIFO enabled which again does not match what comments suggest it expects
+> ("Disable break condition and FIFOs").
 > 
-> mtk_uart_apdma_remove
+>> What exactly does your programming example for the JZ4780 say about the
+>> FIFO clearing ? And does it work in that example ?
 > 
-> > +       .driver = {
-> > +               .name           = KBUILD_MODNAME,
-> > +               .pm             = &mtk_dma_pm_ops,
+> It says to set FCR[2:1] to reset the FIFO after enabling it, which as
+> far as I can tell from the PC16550D documentation would not be necessary
+> there because when you enable the FIFO it would automatically be reset.
+> Linux did this until your patch.
+
+Linux sets the FCR[2:1] if the FIFO is enabled even now.
+
+>>>>> @@ -558,25 +558,26 @@ static void serial8250_clear_fifos(struct uart_8250_port *p)
+>>>>>  	if (p->capabilities & UART_CAP_FIFO) {
+>>>>>  		/*
+>>>>>  		 * Make sure to avoid changing FCR[7:3] and ENABLE_FIFO bits.
+>>>>> -		 * In case ENABLE_FIFO is not set, there is nothing to flush
+>>>>> -		 * so just return. Furthermore, on certain implementations of
+>>>>> -		 * the 8250 core, the FCR[7:3] bits may only be changed under
+>>>>> -		 * specific conditions and changing them if those conditions
+>>>>> -		 * are not met can have nasty side effects. One such core is
+>>>>> -		 * the 8250-omap present in TI AM335x.
+>>>>> +		 * On certain implementations of the 8250 core, the FCR[7:3]
+>>>>> +		 * bits may only be changed under specific conditions and
+>>>>> +		 * changing them if those conditions are not met can have nasty
+>>>>> +		 * side effects. One such core is the 8250-omap present in TI
+>>>>> +		 * AM335x.
+>>>>>  		 */
+>>>>>  		fcr = serial_in(p, UART_FCR);
+>>>>> +		serial_out(p, UART_FCR, fcr | clr_mask);
+>>>>> +		serial_out(p, UART_FCR, fcr & ~clr);
+>>>>
+>>>> Note that, if I understand the patch correctly, this will _not_ restore
+>>>> the original (broken) behavior. The original behavior cleared the entire
+>>>> FCR at the end, which cleared even bits that were not supposed to be
+>>>> cleared .
+>>>
+>>> It will restore the original behaviour with regards to disabling the
+>>> FIFOs, so long as callers that expect that use
+>>> serial8250_clear_and_disable_fifos().
+>>
+>> Does your platform need the FIFO to be explicitly disabled for it to be
+>> cleared, can you confirm that ? And if so, does this apply to other
+>> platforms with 8250 UART or is this specific to JZ4780 implementation of
+>> the UART block ?
+>>
+>> I just remembered U-Boot has this patch for JZ4780 UART [1], which
+>> touches the FCR UME bit, so the FCR behavior on JZ4780 does differ from
+>> the generic 8250 core. Could it be that this is what you're hitting ?
 > 
-> mtk_uart_apdma_pm_ops
-> 
-> > +               .of_match_table = of_match_ptr(mtk_uart_dma_match),
-> 
-> mtk_uart_apdma_match
-> 
-> > +       },
-> > +};
-> > +
-> > +module_platform_driver(mtk_dma_driver);
-> 
-> mtk_uart_apdma_driver
-> 
-> > +
-> > +MODULE_DESCRIPTION("MediaTek UART APDMA Controller Driver");
-> > +MODULE_AUTHOR("Long Cheng <long.cheng@mediatek.com>");
-> > +MODULE_LICENSE("GPL v2");
-> > +
-> > diff --git a/drivers/dma/mediatek/Kconfig b/drivers/dma/mediatek/Kconfig
-> > index 27bac0b..d399624 100644
-> > --- a/drivers/dma/mediatek/Kconfig
-> > +++ b/drivers/dma/mediatek/Kconfig
-> > @@ -1,4 +1,15 @@
-> >
-> > +config DMA_MTK_UART
-> 
-> MTK_UART_APDMA to align the other drivers
-> 
-> > +       tristate "MediaTek SoCs APDMA support for UART"
-> > +       depends on OF && SERIAL_8250_MT6577
-> > +       select DMA_ENGINE
-> > +       select DMA_VIRTUAL_CHANNELS
-> > +       help
-> > +         Support for the UART DMA engine found on MediaTek MTK SoCs.
-> > +         when 8250 mtk uart is enabled, and if you want to using DMA,
-> 
-> 8250 mtk uart should be changed to SERIAL_8250_MT6577 to be more intuitive
-> 
-> > +         you can enable the config. the DMA engine just only be used
-> > +         with MediaTek Socs.
-> 
-> SoCs
-> 
-> > +
-> >  config MTK_HSDMA
-> >         tristate "MediaTek High-Speed DMA controller support"
-> >         depends on ARCH_MEDIATEK || COMPILE_TEST
-> > diff --git a/drivers/dma/mediatek/Makefile b/drivers/dma/mediatek/Makefile
-> > index 6e778f8..2f2efd9 100644
-> > --- a/drivers/dma/mediatek/Makefile
-> > +++ b/drivers/dma/mediatek/Makefile
-> > @@ -1 +1,2 @@
-> > +obj-$(CONFIG_DMA_MTK_UART) += 8250_mtk_dma.o
-> 
-> obj-$(CONFIG_MTK_UART_APDMA) += mtk-uart-apdma.o
-> to align the other dirvers
-> 
-> >  obj-$(CONFIG_MTK_HSDMA) += mtk-hsdma.o
-> > --
-> > 1.7.9.5
-> >
+> No - we already set the UME bit & this has all worked fine until your
+> patch changed the FIFO reset behaviour.
+
+The UME bit is in the FCR, serial8250_clear_fifos() originally cleared
+it, cfr:
+-               serial_out(p, UART_FCR, 0);
+in f6aa5beb45be27968a4df90176ca36dfc4363d37 . So the code was originally
+completely disabling the UART on JZ4780 .
+
+-- 
+Best regards,
+Marek Vasut
