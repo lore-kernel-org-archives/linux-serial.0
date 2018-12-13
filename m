@@ -1,12 +1,12 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 30/73] drivers/tty: add missing of_node_put()
-Date: Wed, 12 Dec 2018 23:27:55 -0500
-Message-ID: <20181213042838.75160-30-sashal@kernel.org>
-References: <20181213042838.75160-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 3.18 09/16] drivers/tty: add missing of_node_put()
+Date: Wed, 12 Dec 2018 23:33:36 -0500
+Message-ID: <20181213043343.76896-9-sashal@kernel.org>
+References: <20181213043343.76896-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181213042838.75160-1-sashal@kernel.org>
+In-Reply-To: <20181213043343.76896-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Yangtao Li <tiny.windzz@gmail.com>, "David S . Miller" <davem@davemloft.net>, Sasha Levin <sashal@kernel.org>, sparclinux@vger.kernel.org, linux-serial@vger.kernel.org
@@ -28,7 +28,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/tty/serial/suncore.c b/drivers/tty/serial/suncore.c
-index 70a4ea4eaa6e..990376576970 100644
+index 6e4ac8db2d79..2b06c1603f23 100644
 --- a/drivers/tty/serial/suncore.c
 +++ b/drivers/tty/serial/suncore.c
 @@ -112,6 +112,7 @@ void sunserial_console_termios(struct console *con, struct device_node *uart_dp)
