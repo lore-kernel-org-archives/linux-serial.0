@@ -1,12 +1,12 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.9 13/34] drivers/tty: add missing of_node_put()
-Date: Wed, 12 Dec 2018 23:31:39 -0500
-Message-ID: <20181213043200.76295-13-sashal@kernel.org>
-References: <20181213043200.76295-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 15/41] drivers/tty: add missing of_node_put()
+Date: Wed, 12 Dec 2018 23:30:28 -0500
+Message-ID: <20181213043054.75891-15-sashal@kernel.org>
+References: <20181213043054.75891-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181213043200.76295-1-sashal@kernel.org>
+In-Reply-To: <20181213043054.75891-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Yangtao Li <tiny.windzz@gmail.com>, "David S . Miller" <davem@davemloft.net>, Sasha Levin <sashal@kernel.org>, sparclinux@vger.kernel.org, linux-serial@vger.kernel.org
