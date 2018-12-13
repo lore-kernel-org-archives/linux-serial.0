@@ -1,189 +1,120 @@
-From: Marek Vasut <marex@denx.de>
-Subject: Re: [PATCH] serial: 8250: Fix clearing FIFOs in RS485 mode again
-Date: Thu, 13 Dec 2018 15:51:02 +0100
-Message-ID: <372cccd7-a175-2737-5af8-3072606c6b1c@denx.de>
-References: <20181213004120.yn35mzfo4skffabv@pburton-laptop>
- <cd3e2787-48e1-ce70-0fa7-94df6dc81794@denx.de>
- <20181213014805.77u5dzydo23cm6fq@pburton-laptop>
- <117fda17-40e6-664b-2b8a-f1032610bf0b@denx.de>
- <20181213033301.febmn5qt3chn3vqb@pburton-laptop>
- <b8525991-f539-a180-2e88-a70b29319413@denx.de>
- <20181213051154.57h2ddfcbrgh65gy@pburton-laptop>
+From: Doug Anderson <dianders@chromium.org>
+Subject: Re: [PATCH] tty: serial: qcom_geni_serial: Remove interrupt storm
+Date: Thu, 13 Dec 2018 09:36:20 -0800
+Message-ID: <CAD=FV=XyG0z3BvDyWiXTNz5mwf3cFH-U9=1fhury9+csW5TVjw@mail.gmail.com>
+References: <20181212003522.239189-1-ryandcase@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181213051154.57h2ddfcbrgh65gy@pburton-laptop>
-Content-Language: en-US
+In-Reply-To: <20181212003522.239189-1-ryandcase@chromium.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Burton <paul.burton@mips.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>
+To: Ryan Case <ryandcase@chromium.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>
 List-Id: linux-serial@vger.kernel.org
-
-On 12/13/2018 06:11 AM, Paul Burton wrote:
-> Hi Marek,
 
 Hi,
 
-> On Thu, Dec 13, 2018 at 05:18:19AM +0100, Marek Vasut wrote:
->>>>> I wonder whether the issue may be the JZ4780 UART not automatically
->>>>> resetting the FIFOs when FCR[0] changes. This is a guess, but the manual
->>>>> doesn't explicitly say it'll happen & the programming example it gives
->>>>> says to explicitly clear the FIFOs using FCR[2:1]. Since this is what
->>>>> the kernel has been doing for at least the whole git era I wouldn't be
->>>>> surprised if other devices are bitten by the change as people start
->>>>> trying 4.20 on them.
->>>>
->>>> The patch you're complaining about is doing exactly that -- it sets
->>>> UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT in FCR , and then clears it.
->>>> Those two bits are exactly FCR[2:1]. It also explicitly does not touch
->>>> any other bits in FCR.
->>>
->>> No - your patch does that *only* if the FIFO enable bit is set, and
->>> presumes that clearing FIFOs is a no-op when they're disabled. I don't
->>> believe that's true on my system. I also believe that not touching the
->>> FIFO enable bit is problematic, since some callers clearly expect that
->>> to be cleared.
->>
->> Why would you disable FIFO to clear it ? This doesn't make sense to me,
->> the FIFO must be operational for it to be cleared. Moreover, it
->> contradicts your previous statement, "the programming example it gives
->> says to explicitly clear the FIFOs using FCR[2:1]" .
-> 
-> No, no, not at all... I'm saying that my theory is:
-> 
->   - The JZ4780 requires that the FIFO be reset using FCR[2:1] in order
->     to not read garbage.
+On Tue, Dec 11, 2018 at 4:36 PM Ryan Case <ryandcase@chromium.org> wrote:
+>
+> Disable M_TX_FIFO_WATERMARK_EN after we've sent all data for a given
+> transaction so we don't continue to receive a flurry of free space
+> interrupts while waiting for the M_CMD_DONE notification. Re-enable the
+> watermark when establishing the next transaction.
+>
+> Also clear the watermark interrupt after filling the FIFO so we do not
+> receive notification again prior to actually having free space.
+>
+> Signed-off-by: Ryan Case <ryandcase@chromium.org>
+> ---
+>
+>  drivers/tty/serial/qcom_geni_serial.c | 16 ++++++++++++++--
+>  1 file changed, 14 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 6e38498362ef..965aefa54114 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -724,10 +724,12 @@ static void qcom_geni_serial_handle_tx(struct uart_port *uport, bool done,
+>         size_t pending;
+>         int i;
+>         u32 status;
+> +       u32 irq_en;
+>         unsigned int chunk;
+>         int tail;
+>
+>         status = readl_relaxed(uport->membase + SE_GENI_TX_FIFO_STATUS);
+> +       irq_en = readl_relaxed(uport->membase + SE_GENI_M_IRQ_EN);
+>
+>         /* Complete the current tx command before taking newly added data */
+>         if (active)
+> @@ -752,6 +754,9 @@ static void qcom_geni_serial_handle_tx(struct uart_port *uport, bool done,
+>         if (!port->tx_remaining) {
+>                 qcom_geni_serial_setup_tx(uport, pending);
+>                 port->tx_remaining = pending;
+> +
+> +               irq_en |= M_TX_FIFO_WATERMARK_EN;
+> +               writel_relaxed(irq_en, uport->membase + SE_GENI_M_IRQ_EN);
 
-Which we do
+I notice other places that turn on the watermark only do so if
+"xfer_mode == GENI_SE_FIFO".  ...but it looks as if the mode is always
+FIFO mode, so you should be fine.  Probably the right thing to do is
+that someone should do a future patch to kill all the "if xfer_mode ==
+GENI_SE_FIFO" stuff and if/when someone wants to add DMA then they can
+do it from scratch.
 
->   - Prior to your patch serial8250_clear_fifos() did this,
->     unconditionally.
 
-btw originally, this also cleared the UME bit. Could this be what made
-the difference on the JZ4780 ?
+>         }
+>
+>         remaining = chunk;
+> @@ -775,7 +780,15 @@ static void qcom_geni_serial_handle_tx(struct uart_port *uport, bool done,
+>         }
+>
+>         xmit->tail = tail & (UART_XMIT_SIZE - 1);
+> +       writel_relaxed(M_TX_FIFO_WATERMARK_EN,
+> +                       uport->membase + SE_GENI_M_IRQ_CLEAR);
 
-Can you try this patch on the JZ4780 , just out of curiosity ?
+Worth a comment saying that the watermark is "level-triggered and
+latched" so it's obvious why it's not a race (because it will just
+re-assert itself) and also why we need to ACK it at the end of the
+function (because it'll keep re-latching itself until you put
+something in the FIFO)?
 
-diff --git a/drivers/tty/serial/8250/8250_port.c
-b/drivers/tty/serial/8250/8250_port.c
-index c39482b961110..3dce99f4c6802 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -553,7 +553,7 @@ static unsigned int serial_icr_read(struct
-uart_8250_port *up, int offset)
- static void serial8250_clear_fifos(struct uart_8250_port *p)
- {
-        unsigned char fcr;
--       unsigned char clr_mask = UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT;
-+       unsigned char clr_mask = UART_FCR_CLEAR_RCVR |
-UART_FCR_CLEAR_XMIT | BIT(4) /* UME */;
 
-        if (p->capabilities & UART_CAP_FIFO) {
+> +
+>  out_write_wakeup:
+> +       if (!port->tx_remaining) {
+> +               irq_en &= ~M_TX_FIFO_WATERMARK_EN;
+> +               writel_relaxed(irq_en, uport->membase + SE_GENI_M_IRQ_EN);
 
->   - After your patch serial8250_clear_fifos() only clears the FIFOs if
->     the FIFO is already enabled.
+I think you should change this (and probably the other write to
+irq_en) to a read/modify/write rather than using the value you read at
+the top of the function.  Specifically there are enough helper
+functions called that might also be touching irq_en and I'd be worried
+that the value you read at the top of the function might not be truth
+anymore.  I also wonder if it's worth an "if" test to only do the
+writel_relaxed() if the value wasn't already right since sometimes IO
+writes can be slow.
 
-I'd suppose this is OK, since clearing a disabled FIFO makes no sense ?
+If I followed the code correctly, doing the read/modify/write actually
+might matter.  The code calls qcom_geni_serial_stop_tx() which _does_
+modify irq_en.  Then the code does "goto out_write_wakeup" where it'll
+clobber qcom_geni_serial_stop_tx()'s modifications.
 
->   - When called from serial8250_do_startup() during boot, the FIFO may
->     not be enabled - for example if the bootloader didn't use the FIFO,
->     or if the UART is used with 8250_early which zeroes FCR.
 
-If it's not enabled, do you need to clear it ?
+> +       }
+> +
+>         if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+>                 uart_write_wakeup(uport);
+>  }
+> @@ -811,8 +824,7 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
+>                 tty_insert_flip_char(tport, 0, TTY_OVERRUN);
+>         }
+>
+> -       if (m_irq_status & (M_TX_FIFO_WATERMARK_EN | M_CMD_DONE_EN) &&
+> -           m_irq_en & (M_TX_FIFO_WATERMARK_EN | M_CMD_DONE_EN))
+> +       if (m_irq_status & m_irq_en & (M_TX_FIFO_WATERMARK_EN | M_CMD_DONE_EN))
 
->   - Therefore after your patch the FIFO reset bits are never set if the
->     UART was used with 8250_early, or if it wasn't but the bootloader
->     didn't enable the FIFO.
+Unrelated to everything else in this patch, but seems OK to me.
 
-Hence my question above, do you need to clear the FIFO even if it was
-not enabled ?
 
-> I suspect that you get away with that because according to the PC16550D
-> documentation the FIFOs should reset when the FIFO enable bit changes,
-> so when the FIFO is later enabled it gets reset. I suspect that in the
-> JZ4780 this does not happen, and the FIFO contains garbage. Our previous
-> behaviour (always set FCR[2:1] to reset the FIFO) has been around for a
-> long time, so I would not be surprised to find other devices relying
-> upon it.
-
-It is well possible, but I'd like to understand what really happens
-here, not just guess.
-
-> I'm also saying that if the FIFOs are enabled during boot then your
-> patch will leave them enabled after serial8250_do_startup() calls
-> serial8250_clear_fifos(), which a comment in serial8250_do_startup()
-> clearly states is not the expected behaviour:
-
-In that case, that needs to be fixed. But serial8250_clear_fifos()
-should only do what the name says -- clear FIFOs -- not disable them.
-
->> Clear the FIFO buffers and disable them.
->> (they will be reenabled in set_termios())
-> 
-> (From https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/tty/serial/8250/8250_port.c?h=v4.20-rc6#n2209)
-> 
-> And further, with your patch serial8250_do_shutdown() will leave the
-> FIFO enabled which again does not match what comments suggest it expects
-> ("Disable break condition and FIFOs").
-> 
->> What exactly does your programming example for the JZ4780 say about the
->> FIFO clearing ? And does it work in that example ?
-> 
-> It says to set FCR[2:1] to reset the FIFO after enabling it, which as
-> far as I can tell from the PC16550D documentation would not be necessary
-> there because when you enable the FIFO it would automatically be reset.
-> Linux did this until your patch.
-
-Linux sets the FCR[2:1] if the FIFO is enabled even now.
-
->>>>> @@ -558,25 +558,26 @@ static void serial8250_clear_fifos(struct uart_8250_port *p)
->>>>>  	if (p->capabilities & UART_CAP_FIFO) {
->>>>>  		/*
->>>>>  		 * Make sure to avoid changing FCR[7:3] and ENABLE_FIFO bits.
->>>>> -		 * In case ENABLE_FIFO is not set, there is nothing to flush
->>>>> -		 * so just return. Furthermore, on certain implementations of
->>>>> -		 * the 8250 core, the FCR[7:3] bits may only be changed under
->>>>> -		 * specific conditions and changing them if those conditions
->>>>> -		 * are not met can have nasty side effects. One such core is
->>>>> -		 * the 8250-omap present in TI AM335x.
->>>>> +		 * On certain implementations of the 8250 core, the FCR[7:3]
->>>>> +		 * bits may only be changed under specific conditions and
->>>>> +		 * changing them if those conditions are not met can have nasty
->>>>> +		 * side effects. One such core is the 8250-omap present in TI
->>>>> +		 * AM335x.
->>>>>  		 */
->>>>>  		fcr = serial_in(p, UART_FCR);
->>>>> +		serial_out(p, UART_FCR, fcr | clr_mask);
->>>>> +		serial_out(p, UART_FCR, fcr & ~clr);
->>>>
->>>> Note that, if I understand the patch correctly, this will _not_ restore
->>>> the original (broken) behavior. The original behavior cleared the entire
->>>> FCR at the end, which cleared even bits that were not supposed to be
->>>> cleared .
->>>
->>> It will restore the original behaviour with regards to disabling the
->>> FIFOs, so long as callers that expect that use
->>> serial8250_clear_and_disable_fifos().
->>
->> Does your platform need the FIFO to be explicitly disabled for it to be
->> cleared, can you confirm that ? And if so, does this apply to other
->> platforms with 8250 UART or is this specific to JZ4780 implementation of
->> the UART block ?
->>
->> I just remembered U-Boot has this patch for JZ4780 UART [1], which
->> touches the FCR UME bit, so the FCR behavior on JZ4780 does differ from
->> the generic 8250 core. Could it be that this is what you're hitting ?
-> 
-> No - we already set the UME bit & this has all worked fine until your
-> patch changed the FIFO reset behaviour.
-
-The UME bit is in the FCR, serial8250_clear_fifos() originally cleared
-it, cfr:
--               serial_out(p, UART_FCR, 0);
-in f6aa5beb45be27968a4df90176ca36dfc4363d37 . So the code was originally
-completely disabling the UART on JZ4780 .
-
--- 
-Best regards,
-Marek Vasut
+-Doug
