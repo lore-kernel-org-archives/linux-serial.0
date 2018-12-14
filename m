@@ -1,38 +1,49 @@
-From: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-Subject: [PATCH] serial: sh-sci: Document r8a774c0 bindings
-Date: Thu, 13 Dec 2018 20:17:54 +0000
-Message-ID: <1544732274-5904-1-git-send-email-fabrizio.castro@bp.renesas.com>
+From: Doug Anderson <dianders@chromium.org>
+Subject: Re: [PATCH v2] tty: serial: qcom_geni_serial: Remove interrupt storm
+Date: Thu, 13 Dec 2018 16:59:09 -0800
+Message-ID: <CAD=FV=XoZKLppEzh+MSK7wMTCNvzE174aLYTtjvbgY00dDTLCQ@mail.gmail.com>
+References: <20181213194321.240148-1-ryandcase@chromium.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181213194321.240148-1-ryandcase@chromium.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
-Cc: Fabrizio Castro <fabrizio.castro@bp.renesas.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Simon Horman <horms@verge.net.au>, Geert Uytterhoeven <geert+renesas@glider.be>, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, linux-renesas-soc@vger.kernel.org
+To: Ryan Case <ryandcase@chromium.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>
 List-Id: linux-serial@vger.kernel.org
 
-RZ/G2E (R8A774C0) SoC also has the R-Car Gen3 compatible SCIF and
-HSCIF ports, so document the SoC specific bindings.
+Hi,
 
-Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+On Thu, Dec 13, 2018 at 11:43 AM Ryan Case <ryandcase@chromium.org> wrote:
+>
+> Disable M_TX_FIFO_WATERMARK_EN after we've sent all data for a given
+> transaction so we don't continue to receive a flurry of free space
+> interrupts while waiting for the M_CMD_DONE notification. Re-enable the
+> watermark when establishing the next transaction.
+>
+> Also clear the watermark interrupt after filling the FIFO so we do not
+> receive notification again prior to actually having free space.
+>
+> Signed-off-by: Ryan Case <ryandcase@chromium.org>
+> ---
+>
+> Changes in v2:
+> Addressed Doug's comments
+>  - Avoid M_TX_WATERMARK_EN writes when values already match
+>  - Added note about M_TX_WATERMARK_EN triggering and latching
+>
+>  drivers/tty/serial/qcom_geni_serial.c | 25 +++++++++++++++++++++++--
+>  1 file changed, 23 insertions(+), 2 deletions(-)
 
----
+Thanks!
 
-This patch depends on:
-https://patchwork.kernel.org/patch/10565543/
----
- Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 2 ++
- 1 file changed, 2 insertions(+)
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-index 21526e8..20232ad 100644
---- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-+++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-@@ -26,6 +26,8 @@ Required properties:
-     - "renesas,hscif-r8a77470" for R8A77470 (RZ/G1C) HSCIF compatible UART.
-     - "renesas,scif-r8a774a1" for R8A774A1 (RZ/G2M) SCIF compatible UART.
-     - "renesas,hscif-r8a774a1" for R8A774A1 (RZ/G2M) HSCIF compatible UART.
-+    - "renesas,scif-r8a774c0" for R8A774C0 (RZ/G2E) SCIF compatible UART.
-+    - "renesas,hscif-r8a774c0" for R8A774C0 (RZ/G2E) HSCIF compatible UART.
-     - "renesas,scif-r8a7778" for R8A7778 (R-Car M1) SCIF compatible UART.
-     - "renesas,scif-r8a7779" for R8A7779 (R-Car H1) SCIF compatible UART.
-     - "renesas,scif-r8a7790" for R8A7790 (R-Car H2) SCIF compatible UART.
--- 
-2.7.4
+If I echo something out the serial port I now see 2 interrupts fire.
+That seems about right compared to before where we'd get boatloads.
+Thus:
+
+Tested-by: Douglas Anderson <dianders@chromium.org>
+
+
+-Doug
