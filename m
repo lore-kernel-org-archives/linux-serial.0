@@ -1,49 +1,36 @@
-From: Doug Anderson <dianders@chromium.org>
-Subject: Re: [PATCH v2] tty: serial: qcom_geni_serial: Remove interrupt storm
-Date: Thu, 13 Dec 2018 16:59:09 -0800
-Message-ID: <CAD=FV=XoZKLppEzh+MSK7wMTCNvzE174aLYTtjvbgY00dDTLCQ@mail.gmail.com>
-References: <20181213194321.240148-1-ryandcase@chromium.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] serial: sh-sci: Document r8a774c0 bindings
+Date: Fri, 14 Dec 2018 11:05:07 +0100
+Message-ID: <CAMuHMdWbBPue+n=Z9GOJVFFKr-stRV4-ozH0sxWjUbRmjDqN6g@mail.gmail.com>
+References: <1544732274-5904-1-git-send-email-fabrizio.castro@bp.renesas.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181213194321.240148-1-ryandcase@chromium.org>
+In-Reply-To: <1544732274-5904-1-git-send-email-fabrizio.castro@bp.renesas.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ryan Case <ryandcase@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>
+To: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Simon Horman <horms@verge.net.au>, Geert Uytterhoeven <geert+renesas@glider.be>, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+On Thu, Dec 13, 2018 at 9:18 PM Fabrizio Castro
+<fabrizio.castro@bp.renesas.com> wrote:
 
-On Thu, Dec 13, 2018 at 11:43 AM Ryan Case <ryandcase@chromium.org> wrote:
+dt-bindings: ...
+
+> RZ/G2E (R8A774C0) SoC also has the R-Car Gen3 compatible SCIF and
+> HSCIF ports, so document the SoC specific bindings.
 >
-> Disable M_TX_FIFO_WATERMARK_EN after we've sent all data for a given
-> transaction so we don't continue to receive a flurry of free space
-> interrupts while waiting for the M_CMD_DONE notification. Re-enable the
-> watermark when establishing the next transaction.
->
-> Also clear the watermark interrupt after filling the FIFO so we do not
-> receive notification again prior to actually having free space.
->
-> Signed-off-by: Ryan Case <ryandcase@chromium.org>
-> ---
->
-> Changes in v2:
-> Addressed Doug's comments
->  - Avoid M_TX_WATERMARK_EN writes when values already match
->  - Added note about M_TX_WATERMARK_EN triggering and latching
->
->  drivers/tty/serial/qcom_geni_serial.c | 25 +++++++++++++++++++++++--
->  1 file changed, 23 insertions(+), 2 deletions(-)
+> Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
 
-Thanks!
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Gr{oetje,eeting}s,
 
-If I echo something out the serial port I now see 2 interrupts fire.
-That seems about right compared to before where we'd get boatloads.
-Thus:
+                        Geert
 
-Tested-by: Douglas Anderson <dianders@chromium.org>
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-
--Doug
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
