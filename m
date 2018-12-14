@@ -1,40 +1,22 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH 3/4] tty: serial: samsung: Increase maximum baudrate
-Date: Fri, 14 Dec 2018 12:34:09 +0100
-Message-ID: <20181214113410.22848-4-m.szyprowski@samsung.com>
-References: <20181214113410.22848-1-m.szyprowski@samsung.com>
-        <CGME20181214113418eucas1p2bfb6f0d04010e73f6ca35c3a6664b316@eucas1p2.samsung.com>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH] serial: sh-sci: Document r8a774c0 bindings
+Date: Fri, 14 Dec 2018 17:39:24 +0100
+Message-ID: <20181214163924.p2h3ibavytaipguh@verge.net.au>
+References: <1544732274-5904-1-git-send-email-fabrizio.castro@bp.renesas.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <20181214113410.22848-1-m.szyprowski@samsung.com>
+Content-Disposition: inline
+In-Reply-To: <1544732274-5904-1-git-send-email-fabrizio.castro@bp.renesas.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Beomho Seo <beomho.seo@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, linux-renesas-soc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Seung-Woo Kim <sw0312.kim@samsung.com>
+On Thu, Dec 13, 2018 at 08:17:54PM +0000, Fabrizio Castro wrote:
+> RZ/G2E (R8A774C0) SoC also has the R-Car Gen3 compatible SCIF and
+> HSCIF ports, so document the SoC specific bindings.
+> 
+> Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
 
-This driver can be used to communicate with Bluetooth chip in high-speed
-UART mode, so increase the maximum baudrate to 3Mbps.
-
-Signed-off-by: Seung-Woo Kim <sw0312.kim@samsung.com>
-[mszyprow: rephrased commit message]
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
- drivers/tty/serial/samsung.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 2a49b6d876b8..9fc3559f80d9 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1287,7 +1287,7 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
- 	 * Ask the core to calculate the divisor for us.
- 	 */
- 
--	baud = uart_get_baud_rate(port, termios, old, 0, 115200*8);
-+	baud = uart_get_baud_rate(port, termios, old, 0, 3000000);
- 	quot = s3c24xx_serial_getclk(ourport, baud, &clk, &clk_sel);
- 	if (baud == 38400 && (port->flags & UPF_SPD_MASK) == UPF_SPD_CUST)
- 		quot = port->custom_divisor;
--- 
-2.17.1
+Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
