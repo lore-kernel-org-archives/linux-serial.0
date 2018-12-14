@@ -1,45 +1,44 @@
-From: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-Subject: RE: [PATCH] serial: sh-sci: Document r8a774c0 bindings
-Date: Fri, 14 Dec 2018 10:23:45 +0000
-Message-ID: <TY1PR01MB1770B6FE81A7AE8C9391670DC0A10@TY1PR01MB1770.jpnprd01.prod.outlook.com>
-References: <1544732274-5904-1-git-send-email-fabrizio.castro@bp.renesas.com>
- <CAMuHMdWbBPue+n=Z9GOJVFFKr-stRV4-ozH0sxWjUbRmjDqN6g@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCH 0/4] Samsung TM2(e): add Bluetooth support (resend)
+Date: Fri, 14 Dec 2018 12:34:06 +0100
+Message-ID: <20181214113410.22848-1-m.szyprowski@samsung.com>
+References: <CGME20181214113415eucas1p16dd61a4312d88216cb0d737887c751b7@eucas1p1.samsung.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdWbBPue+n=Z9GOJVFFKr-stRV4-ozH0sxWjUbRmjDqN6g@mail.gmail.com>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Simon Horman <horms@verge.net.au>, Geert Uytterhoeven <geert+renesas@glider.be>, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Beomho Seo <beomho.seo@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-SGVsbG8gR2VlcnQsDQoNClRoYW5rIHlvdSBmb3IgeW91ciBmZWVkYmFjayENCg0KPiBGcm9tOiBH
-ZWVydCBVeXR0ZXJob2V2ZW4gPGdlZXJ0QGxpbnV4LW02OGsub3JnPg0KPiBTZW50OiAxNCBEZWNl
-bWJlciAyMDE4IDEwOjA1DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIHNlcmlhbDogc2gtc2NpOiBE
-b2N1bWVudCByOGE3NzRjMCBiaW5kaW5ncw0KPg0KPiBPbiBUaHUsIERlYyAxMywgMjAxOCBhdCA5
-OjE4IFBNIEZhYnJpemlvIENhc3Rybw0KPiA8ZmFicml6aW8uY2FzdHJvQGJwLnJlbmVzYXMuY29t
-PiB3cm90ZToNCj4NCj4gZHQtYmluZGluZ3M6IC4uLg0KDQpXaWxsIHNlbmQgYSB2MiB0byBmaXgg
-dGhpcw0KDQpUaGFua3MsDQpGYWINCg0KPg0KPiA+IFJaL0cyRSAoUjhBNzc0QzApIFNvQyBhbHNv
-IGhhcyB0aGUgUi1DYXIgR2VuMyBjb21wYXRpYmxlIFNDSUYgYW5kDQo+ID4gSFNDSUYgcG9ydHMs
-IHNvIGRvY3VtZW50IHRoZSBTb0Mgc3BlY2lmaWMgYmluZGluZ3MuDQo+ID4NCj4gPiBTaWduZWQt
-b2ZmLWJ5OiBGYWJyaXppbyBDYXN0cm8gPGZhYnJpemlvLmNhc3Ryb0BicC5yZW5lc2FzLmNvbT4N
-Cj4NCj4gUmV2aWV3ZWQtYnk6IEdlZXJ0IFV5dHRlcmhvZXZlbiA8Z2VlcnQrcmVuZXNhc0BnbGlk
-ZXIuYmU+DQo+DQo+IEdye29ldGplLGVldGluZ31zLA0KPg0KPiAgICAgICAgICAgICAgICAgICAg
-ICAgICBHZWVydA0KPg0KPiAtLQ0KPiBHZWVydCBVeXR0ZXJob2V2ZW4gLS0gVGhlcmUncyBsb3Rz
-IG9mIExpbnV4IGJleW9uZCBpYTMyIC0tIGdlZXJ0QGxpbnV4LW02OGsub3JnDQo+DQo+IEluIHBl
-cnNvbmFsIGNvbnZlcnNhdGlvbnMgd2l0aCB0ZWNobmljYWwgcGVvcGxlLCBJIGNhbGwgbXlzZWxm
-IGEgaGFja2VyLiBCdXQNCj4gd2hlbiBJJ20gdGFsa2luZyB0byBqb3VybmFsaXN0cyBJIGp1c3Qg
-c2F5ICJwcm9ncmFtbWVyIiBvciBzb21ldGhpbmcgbGlrZSB0aGF0Lg0KPiAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgIC0tIExpbnVzIFRvcnZhbGRzDQoNCg0KW2h0dHBzOi8vd3d3Mi5y
-ZW5lc2FzLmV1L21lZGlhL2VtYWlsL3VuaWNlZi5qcGddDQoNClRoaXMgQ2hyaXN0bWFzLCBpbnN0
-ZWFkIG9mIHNlbmRpbmcgb3V0IGNhcmRzLCBSZW5lc2FzIEVsZWN0cm9uaWNzIEV1cm9wZSBoYXZl
-IGRlY2lkZWQgdG8gc3VwcG9ydCBVbmljZWYgd2l0aCBhIGRvbmF0aW9uLiBGb3IgZnVydGhlciBk
-ZXRhaWxzIGNsaWNrIGhlcmU8aHR0cHM6Ly93d3cudW5pY2VmLm9yZy8+IHRvIGZpbmQgb3V0IGFi
-b3V0IHRoZSB2YWx1YWJsZSB3b3JrIHRoZXkgZG8sIGhlbHBpbmcgY2hpbGRyZW4gYWxsIG92ZXIg
-dGhlIHdvcmxkLg0KV2Ugd291bGQgbGlrZSB0byB0YWtlIHRoaXMgb3Bwb3J0dW5pdHkgdG8gd2lz
-aCB5b3UgYSBNZXJyeSBDaHJpc3RtYXMgYW5kIGEgcHJvc3Blcm91cyBOZXcgWWVhci4NCg0KDQoN
-ClJlbmVzYXMgRWxlY3Ryb25pY3MgRXVyb3BlIEx0ZCwgRHVrZXMgTWVhZG93LCBNaWxsYm9hcmQg
-Um9hZCwgQm91cm5lIEVuZCwgQnVja2luZ2hhbXNoaXJlLCBTTDggNUZILCBVSy4gUmVnaXN0ZXJl
-ZCBpbiBFbmdsYW5kICYgV2FsZXMgdW5kZXIgUmVnaXN0ZXJlZCBOby4gMDQ1ODY3MDkuDQo=
+Hi All
+
+This patchset enables Bluetooth support on TM2/TM2e boards using mainline
+HCI_BCM driver. It requires a few fixes to Samsung serial driver and
+adding a proper node to device tree description of the mentioned boards.
+Patches can be applied independently to each subsystem.
+
+Best regards
+Marek Szyprowski
+Samsung R&D Institute Poland
+
+
+(resend reason: added respective maintainers and lists to cc)
+
+Patch summary:
+
+Beomho Seo (2):
+  mfd: exynos-lpass: Enable UART module support
+  tty: serial: samsung: Properly set flags in autoCTS mode
+
+Marek Szyprowski (1):
+  arm64: dts: exynos: Add Bluetooth chip to TM2(e) boards
+
+Seung-Woo Kim (1):
+  tty: serial: samsung: Increase maximum baudrate
+
+ .../boot/dts/exynos/exynos5433-tm2-common.dtsi     | 14 ++++++++++++++
+ drivers/mfd/exynos-lpass.c                         |  4 +++-
+ drivers/tty/serial/samsung.c                       |  5 ++++-
+ 3 files changed, 21 insertions(+), 2 deletions(-)
+
+-- 
+2.17.1
