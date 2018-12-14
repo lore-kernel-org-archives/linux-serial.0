@@ -1,9 +1,10 @@
 From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH 4/4] arm64: dts: exynos: Add Bluetooth chip to TM2(e) boards
-Date: Fri, 14 Dec 2018 12:34:10 +0100
-Message-ID: <20181214113410.22848-5-m.szyprowski@samsung.com>
+Subject: [PATCH 2/4] tty: serial: samsung: Properly set flags in autoCTS
+ mode
+Date: Fri, 14 Dec 2018 12:34:08 +0100
+Message-ID: <20181214113410.22848-3-m.szyprowski@samsung.com>
 References: <20181214113410.22848-1-m.szyprowski@samsung.com>
-        <CGME20181214113419eucas1p2473172a49bf798ddd95265fa31125d96@eucas1p2.samsung.com>
+        <CGME20181214113417eucas1p2624705c077ae79267082bbf4628951ed@eucas1p2.samsung.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-reply-to: <20181214113410.22848-1-m.szyprowski@samsung.com>
 Sender: linux-kernel-owner@vger.kernel.org
@@ -11,39 +12,40 @@ To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-so
 Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Beomho Seo <beomho.seo@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-TM2(e) boards have a Broadcom Bluetooth chip connected to 3rd UART port.
-Add a device tree node describing it and its resources (control GPIO lines
-and clock).
+From: Beomho Seo <beomho.seo@samsung.com>
 
+Commit 391f93f2ec9f ("serial: core: Rework hw-assited flow control support")
+has changed the way the autoCTS mode is handled.
+
+According to that change, serial drivers which enable H/W autoCTS mode must
+set UPSTAT_AUTOCTS to prevent the serial core from inadvertently disabling
+TX. This patch adds proper handling of UPSTAT_AUTOCTS flag.
+
+Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
+[mszyprow: rephrased commit message]
 Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- .../boot/dts/exynos/exynos5433-tm2-common.dtsi     | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/tty/serial/samsung.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/exynos/exynos5433-tm2-common.dtsi b/arch/arm64/boot/dts/exynos/exynos5433-tm2-common.dtsi
-index f3ed4c078ba5..d88e2f0e179a 100644
---- a/arch/arm64/boot/dts/exynos/exynos5433-tm2-common.dtsi
-+++ b/arch/arm64/boot/dts/exynos/exynos5433-tm2-common.dtsi
-@@ -1202,6 +1202,20 @@
- 	status = "okay";
- };
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index da1bd4bba8a9..2a49b6d876b8 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -1365,11 +1365,14 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
+ 	wr_regl(port, S3C2410_ULCON, ulcon);
+ 	wr_regl(port, S3C2410_UBRDIV, quot);
  
-+&serial_3 {
-+	status = "okay";
++	port->status &= ~UPSTAT_AUTOCTS;
 +
-+	bluetooth {
-+		compatible = "brcm,bcm43438-bt";
-+		max-speed = <3000000>;
-+		shutdown-gpios = <&gpd4 0 GPIO_ACTIVE_HIGH>;
-+		device-wakeup-gpios = <&gpr3 7 GPIO_ACTIVE_HIGH>;
-+		host-wakeup-gpios = <&gpa2 2 GPIO_ACTIVE_HIGH>;
-+		clocks = <&s2mps13_osc S2MPS11_CLK_BT>;
-+		clock-names = "extclk";
-+	};
-+};
-+
- &spi_1 {
- 	cs-gpios = <&gpd6 3 GPIO_ACTIVE_HIGH>;
- 	status = "okay";
+ 	umcon = rd_regl(port, S3C2410_UMCON);
+ 	if (termios->c_cflag & CRTSCTS) {
+ 		umcon |= S3C2410_UMCOM_AFC;
+ 		/* Disable RTS when RX FIFO contains 63 bytes */
+ 		umcon &= ~S3C2412_UMCON_AFC_8;
++		port->status = UPSTAT_AUTOCTS;
+ 	} else {
+ 		umcon &= ~S3C2410_UMCOM_AFC;
+ 	}
 -- 
 2.17.1
