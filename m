@@ -1,17 +1,17 @@
 From: Marek Vasut <marex@denx.de>
 Subject: Re: [PATCH] Revert "serial: 8250: Fix clearing FIFOs in RS485 mode
  again"
-Date: Sun, 16 Dec 2018 21:32:19 +0100
-Message-ID: <f5a76d73-862f-3ebc-cd07-effc5c432103@denx.de>
+Date: Sun, 16 Dec 2018 22:08:48 +0100
+Message-ID: <93a3c76b-f4ba-57ae-9d80-6e945b4f3181@denx.de>
 References: <20181213174834.kxdy6fphaeoivqgh@pburton-laptop>
  <20181216200833.27928-1-paul.burton@mips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <stable-owner@vger.kernel.org>
 In-Reply-To: <20181216200833.27928-1-paul.burton@mips.com>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: stable-owner@vger.kernel.org
 To: Paul Burton <paul.burton@mips.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Paul Burton <pburton@wavecomp.com>, Daniel Jedrychowski <avistel@gmail.com>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, stable <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
@@ -62,14 +62,80 @@ On 12/16/2018 09:10 PM, Paul Burton wrote:
 > Cc: linux-mips@vger.kernel.org
 > Cc: linux-serial@vger.kernel.org
 > Cc: stable <stable@vger.kernel.org> # 4.10+
-I am unable to test it on such a short notice as I'm currently ill, so I
-cannot tell if your change breaks the OMAP3/AM335x boards or not. Given
-that there are very few CI20 boards in use, I'd like to ask you for some
-extra time to investigate this on the OMAP3 too.
+> ---
+> I did suggest an alternative approach which would rename
+> serial8250_clear_fifos() and split it into 2 variants - one that
+> disables FIFOs & one that does not, then use the latter in
+> __do_stop_tx_rs485():
+> 
+> https://lore.kernel.org/lkml/20181213014805.77u5dzydo23cm6fq@pburton-laptop/
+> 
+> However I have no access to the OMAP3 hardware that Marek's patch was
+> attempting to fix & have heard nothing back with regards to him testing
+> that approach, so here's a simple revert that fixes the Ingenic JZ4780.
+> 
+> I've marked for stable back to v4.10 presuming that this is how far the
+> broken patch may be backported, given that this is where commit
+> 2bed8a8e7072 ("Clearing FIFOs in RS485 emulation mode causes subsequent
+> transmits to break") that it tried to fix was introduced.
 
-btw what strikes me as curious is that this patch emerged shortly after
-Ezequiel re-posted the CI20 U-Boot patches after an year-long hiatus, is
-it somehow related ?
+OK, I tested this on AM335x / OMAP3 and the system is again broken, so
+that's a NAK.
+
+> ---
+>  drivers/tty/serial/8250/8250_port.c | 29 +++++------------------------
+>  1 file changed, 5 insertions(+), 24 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index f776b3eafb96..3f779d25ec0c 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -552,30 +552,11 @@ static unsigned int serial_icr_read(struct uart_8250_port *up, int offset)
+>   */
+>  static void serial8250_clear_fifos(struct uart_8250_port *p)
+>  {
+> -	unsigned char fcr;
+> -	unsigned char clr_mask = UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT;
+> -
+>  	if (p->capabilities & UART_CAP_FIFO) {
+> -		/*
+> -		 * Make sure to avoid changing FCR[7:3] and ENABLE_FIFO bits.
+> -		 * In case ENABLE_FIFO is not set, there is nothing to flush
+> -		 * so just return. Furthermore, on certain implementations of
+> -		 * the 8250 core, the FCR[7:3] bits may only be changed under
+> -		 * specific conditions and changing them if those conditions
+> -		 * are not met can have nasty side effects. One such core is
+> -		 * the 8250-omap present in TI AM335x.
+> -		 */
+> -		fcr = serial_in(p, UART_FCR);
+> -
+> -		/* FIFO is not enabled, there's nothing to clear. */
+> -		if (!(fcr & UART_FCR_ENABLE_FIFO))
+> -			return;
+> -
+> -		fcr |= clr_mask;
+> -		serial_out(p, UART_FCR, fcr);
+> -
+> -		fcr &= ~clr_mask;
+> -		serial_out(p, UART_FCR, fcr);
+> +		serial_out(p, UART_FCR, UART_FCR_ENABLE_FIFO);
+> +		serial_out(p, UART_FCR, UART_FCR_ENABLE_FIFO |
+> +			       UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
+> +		serial_out(p, UART_FCR, 0);
+>  	}
+>  }
+>  
+> @@ -1467,7 +1448,7 @@ static void __do_stop_tx_rs485(struct uart_8250_port *p)
+>  	 * Enable previously disabled RX interrupts.
+>  	 */
+>  	if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX)) {
+> -		serial8250_clear_fifos(p);
+> +		serial8250_clear_and_reinit_fifos(p);
+>  
+>  		p->ier |= UART_IER_RLSI | UART_IER_RDI;
+>  		serial_port_out(&p->port, UART_IER, p->ier);
+> 
+
 
 -- 
 Best regards,
