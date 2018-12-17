@@ -1,85 +1,31 @@
-From: Marek Vasut <marex@denx.de>
-Subject: Re: [PATCH] Revert "serial: 8250: Fix clearing FIFOs in RS485 mode
- again"
-Date: Mon, 17 Dec 2018 18:20:15 +0100
-Message-ID: <61a3177f-4e8d-fc51-1e81-95af3baab3a8@denx.de>
-References: <20181213174834.kxdy6fphaeoivqgh@pburton-laptop>
- <20181216200833.27928-1-paul.burton@mips.com>
- <f5a76d73-862f-3ebc-cd07-effc5c432103@denx.de>
- <20181216213133.kwe24pif3v4wcgwp@pburton-laptop>
- <949fdd3d-535e-d235-f406-d5bde4658c5e@denx.de>
- <CAAEAJfAad75bHX39ETCdVv9vP0dF7PLz2vvFLLqgtyikPHqJyA@mail.gmail.com>
- <20181216222411.5jkexuaqxpfudj7b@pburton-laptop>
- <CAAEAJfAQ9=B6sm=Ard+YTDN5g5r03o=t9xU3Nu2QaKrXXZ4pGw@mail.gmail.com>
- <20181216223510.hxsdotf332ousinh@pburton-laptop>
- <CAAEAJfDHvGTPN9u4zwWRFvK1WmpLmz87CjsjzmyhcExTGHQPmA@mail.gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH 4/4] arm64: dts: exynos: Add Bluetooth chip to TM2(e)
+ boards
+Date: Mon, 17 Dec 2018 22:23:19 +0100
+Message-ID: <20181217212319.GA24130@kozik-lap>
+References: <20181214113410.22848-1-m.szyprowski@samsung.com>
+ <CGME20181214113419eucas1p2473172a49bf798ddd95265fa31125d96@eucas1p2.samsung.com>
+ <20181214113410.22848-5-m.szyprowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAAEAJfDHvGTPN9u4zwWRFvK1WmpLmz87CjsjzmyhcExTGHQPmA@mail.gmail.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20181214113410.22848-5-m.szyprowski@samsung.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>, Paul Burton <paul.burton@mips.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Paul Burton <pburton@wavecomp.com>, Daniel Jedrychowski <avistel@gmail.com>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, stable <stable@vger.kernel.org>, Ezequiel Garcia <ezequiel@collabora.com>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Beomho Seo <beomho.seo@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 12/17/2018 05:30 PM, Ezequiel Garcia wrote:
-> On Sun, 16 Dec 2018 at 19:35, Paul Burton <paul.burton@mips.com> wrote:
->>
->> Hi Ezequiel,
->>
->> On Sun, Dec 16, 2018 at 07:28:22PM -0300, Ezequiel Garcia wrote:
->>> On Sun, 16 Dec 2018 at 19:24, Paul Burton <paul.burton@mips.com> wrote:
->>>> This helps, but it only addresses one part of one of the 4 reasons I
->>>> listed as motivation for my revert. For example serial8250_do_shutdown()
->>>> also clearly intends to disable the FIFOs.
->>>>
->>>
->>> OK. So, let's fix that :-)
->>
->> I already did, or at least tried to, on Thursday [1].
->>
->>> By all means, it would be really nice to push forward and fix the garbage
->>> issue on JZ4780, as well as the transmission issue on AM335x.
->>>
->>> AM335x is a wildly popular platform, and it's not funny to break it.
->>
->> Well, clearly not if it was broken in v4.10 & only just fixed..? And
->> from Marek's commit message the patch in v4.10 doesn't break the whole
->> system just RS485.
->>
+On Fri, Dec 14, 2018 at 12:34:10PM +0100, Marek Szyprowski wrote:
+> TM2(e) boards have a Broadcom Bluetooth chip connected to 3rd UART port.
+> Add a device tree node describing it and its resources (control GPIO lines
+> and clock).
 > 
-> Careful here. It's naive to consider v4.10 as old in this context.
-> 
-> AM335x is used in hundreds of thousands of products, probably
-> "industrial" products.
-> Manufacturers don't always follow the kernel, and it's entirely
-> likely that they notice a regression only when developing a new product,
-> or when rebasing on top of a newer longterm kernel.
-> 
-> Then again, I don't have any details about what is Marek's original fix
-> actually fixing.
-> 
-> Marek: could you please post the test case that you used to validate your fix?
-> I can't find that anywhere.
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> ---
+>  .../boot/dts/exynos/exynos5433-tm2-common.dtsi     | 14 ++++++++++++++
 
-I can't share the testcase itself because it has no license and I didn't
-write it, but I can tell you what it's doing. (I'll check if I can share
-the testcase verbatim too, I just sent an email to the author)
+Thanks, applied.
 
-The test spawns two threads, one sending , one receiving. The sending
-thread sends 8 bytes of data from /dev/ttyS4 , the receiving thread
-receives the data on /dev/ttyS2 and compares the pattern. The port
-settings is B1000000 8N1 with rs485conf.flags set to SER_RS485_ENABLED
-and SER_RS485_RTS_AFTER_SEND. Sometimes the received data do not match
-the sent data, but rather look as if one character was left over from
-the previous transmission in the FIFO.
-
-Those two UARTs are connected together by two wires, without any real
-RS485 hardware to minimize the hardware complexity (it's easy to
-implement that on the pocketbeagle, which is the cheap option here).
-
--- 
 Best regards,
-Marek Vasut
+Krzysztof
