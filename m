@@ -1,52 +1,32 @@
-From: Aisheng Dong <aisheng.dong@nxp.com>
-Subject: [PATCH V5 1/4] dt-bindings: serial: lpuart: add imx8qxp compatible
- string
-Date: Mon, 17 Dec 2018 15:00:51 +0000
-Message-ID: <1545058517-18643-2-git-send-email-aisheng.dong@nxp.com>
-References: <1545058517-18643-1-git-send-email-aisheng.dong@nxp.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial: uartps: Add the device_init_wakeup
+Date: Mon, 17 Dec 2018 16:15:20 +0100
+Message-ID: <20181217151520.GA12453@kroah.com>
+References: <ec9fdbdf1c444dc60edfc75a31583630e76a9b72.1544016009.git.michal.simek@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1545058517-18643-1-git-send-email-aisheng.dong@nxp.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-Cc: Aisheng Dong <aisheng.dong@nxp.com>, Mark Rutland <mark.rutland@arm.com>, "dongas86@gmail.com" <dongas86@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Fabio Estevam <fabio.estevam@nxp.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <ec9fdbdf1c444dc60edfc75a31583630e76a9b72.1544016009.git.michal.simek@xilinx.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Michal Simek <michal.simek@xilinx.com>
+Cc: linux-kernel@vger.kernel.org, monstr@monstr.eu, Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Add imx8qxp compatible string
+On Wed, Dec 05, 2018 at 02:20:11PM +0100, Michal Simek wrote:
+> From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+> 
+> Initialise the device wakeup.
 
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: linux-serial@vger.kernel.org
-Cc: devicetree@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
----
- Documentation/devicetree/bindings/serial/fsl-lpuart.txt | 2 ++
- 1 file changed, 2 insertions(+)
+Why?  This says what happened, which you can see from the patch itself,
+but it does not say why this is needed at all.
 
-diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
-index 6bd3f2e..21483ba 100644
---- a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
-+++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
-@@ -8,6 +8,8 @@ Required properties:
-     on LS1021A SoC with 32-bit big-endian register organization
-   - "fsl,imx7ulp-lpuart" for lpuart compatible with the one integrated
-     on i.MX7ULP SoC with 32-bit little-endian register organization
-+  - "fsl,imx8qxp-lpuart" for lpuart compatible with the one integrated
-+    on i.MX8QXP SoC with 32-bit little-endian register organization
- - reg : Address and length of the register set for the device
- - interrupts : Should contain uart interrupt
- - clocks : phandle + clock specifier pairs, one for each entry in clock-names
--- 
-2.7.4
+Also, you sent 4 patches, without any numbering, so I have no idea what
+order to apply them in.
+
+Please fix the changelog entries up and send this as a patch series so
+that I can correctly apply them.
+
+thanks,
+
+greg k-h
