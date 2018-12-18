@@ -1,7 +1,7 @@
 From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v6 06/11] ARM: dts: Add devicetree for OrangePi i96 board
-Date: Tue, 18 Dec 2018 13:35:22 +0530
-Message-ID: <20181218080527.10801-7-manivannan.sadhasivam@linaro.org>
+Subject: [PATCH v6 07/11] ARM: dts: rda8810pl: Add timer support
+Date: Tue, 18 Dec 2018 13:35:23 +0530
+Message-ID: <20181218080527.10801-8-manivannan.sadhasivam@linaro.org>
 References: <20181218080527.10801-1-manivannan.sadhasivam@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -13,86 +13,41 @@ To: olof@lixom.net, arnd@arndb.de, robh+dt@kernel.org, gregkh@linuxfoundation.or
 Cc: linux-unisoc@lists.infradead.org, afaerber@suse.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, amit.kucheria@linaro.org, linus.walleij@linaro.org, zhao_steven@263.net, Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Add initial devicetree for Orange Pi i96 board from Xunlong. It
-is one of the 96Boards IoT Edition board.
+Add timer support for RDA Micro RDA8810PL SoC.
 
 Signed-off-by: Andreas Färber <afaerber@suse.de>
 Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 ---
- arch/arm/boot/dts/Makefile                   |  3 +-
- arch/arm/boot/dts/rda8810pl-orangepi-i96.dts | 50 ++++++++++++++++++++
- 2 files changed, 52 insertions(+), 1 deletion(-)
- create mode 100644 arch/arm/boot/dts/rda8810pl-orangepi-i96.dts
+ arch/arm/boot/dts/rda8810pl.dtsi | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index a0fdad8f10dd..cfb08ea33872 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -807,7 +807,8 @@ dtb-$(CONFIG_ARCH_QCOM) += \
- 	qcom-msm8974-sony-xperia-honami.dtb \
- 	qcom-mdm9615-wp8548-mangoh-green.dtb
- dtb-$(CONFIG_ARCH_RDA) += \
--	rda8810pl-orangepi-2g-iot.dtb
-+	rda8810pl-orangepi-2g-iot.dtb \
-+	rda8810pl-orangepi-i96.dtb
- dtb-$(CONFIG_ARCH_REALVIEW) += \
- 	arm-realview-pb1176.dtb \
- 	arm-realview-pb11mp.dtb \
-diff --git a/arch/arm/boot/dts/rda8810pl-orangepi-i96.dts b/arch/arm/boot/dts/rda8810pl-orangepi-i96.dts
-new file mode 100644
-index 000000000000..728f76931b99
---- /dev/null
-+++ b/arch/arm/boot/dts/rda8810pl-orangepi-i96.dts
-@@ -0,0 +1,50 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Copyright (c) 2017 Andreas Färber
-+ * Copyright (c) 2018 Manivannan Sadhasivam
-+ */
+diff --git a/arch/arm/boot/dts/rda8810pl.dtsi b/arch/arm/boot/dts/rda8810pl.dtsi
+index 15547b138977..84baa4c0a14c 100644
+--- a/arch/arm/boot/dts/rda8810pl.dtsi
++++ b/arch/arm/boot/dts/rda8810pl.dtsi
+@@ -6,6 +6,8 @@
+  * Copyright (c) 2018 Manivannan Sadhasivam
+  */
+ 
++#include <dt-bindings/interrupt-controller/irq.h>
 +
-+/dts-v1/;
+ / {
+ 	compatible = "rda,8810pl";
+ 	interrupt-parent = <&intc>;
+@@ -50,6 +52,14 @@
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		ranges = <0x0 0x20900000 0x100000>;
 +
-+#include "rda8810pl.dtsi"
-+
-+/ {
-+	compatible = "xunlong,orangepi-i96", "rda,8810pl";
-+	model = "Orange Pi i96";
-+
-+	aliases {
-+		serial0 = &uart2;
-+		serial1 = &uart1;
-+		serial2 = &uart3;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial2:921600n8";
-+	};
-+
-+	memory@80000000 {
-+		device_type = "memory";
-+		reg = <0x80000000 0x10000000>;
-+	};
-+
-+	uart_clk: uart-clk {
-+		compatible = "fixed-clock";
-+		clock-frequency = <921600>;
-+		#clock-cells = <0>;
-+	};
-+};
-+
-+&uart1 {
-+	status = "okay";
-+	clocks = <&uart_clk>;
-+};
-+
-+&uart2 {
-+	status = "okay";
-+	clocks = <&uart_clk>;
-+};
-+
-+&uart3 {
-+	status = "okay";
-+	clocks = <&uart_clk>;
-+};
++		timer@10000 {
++			compatible = "rda,8810pl-timer";
++			reg = <0x10000 0x1000>;
++			interrupts = <16 IRQ_TYPE_LEVEL_HIGH>,
++				     <17 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "hwtimer", "ostimer";
++		};
+ 	};
+ 
+ 	apb@20a00000 {
 -- 
 2.17.1
