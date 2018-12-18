@@ -1,7 +1,7 @@
 From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH v2 4/4] serial: uartps: Fix interrupt mask issue to handle the RX interrupts properly
-Date: Tue, 18 Dec 2018 13:18:42 +0100
-Message-ID: <b0ec59d6fb0837c316e2365b2361576d0c8a82fd.1545135519.git.michal.simek@xilinx.com>
+Subject: [PATCH v2 2/4] serial: uartps: Check if the device is a console
+Date: Tue, 18 Dec 2018 13:18:40 +0100
+Message-ID: <863488c6f6d7f3d8c53d46f442f25ec2f46ee651.1545135519.git.michal.simek@xilinx.com>
 References: <cover.1545135519.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1545135519.git.michal.simek@xilinx.com>
@@ -9,46 +9,44 @@ In-Reply-To: <cover.1545135519.git.michal.simek@xilinx.com>
 References: <cover.1545135519.git.michal.simek@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, monstr@monstr.eu, michal.simek@xilinx.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Cc: Nava kishore Manne <nava.manne@xilinx.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Nava kishore Manne <nava.manne@xilinx.com>
+From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 
-This patch Correct the RX interrupt mask value to handle the
-RX interrupts properly.
+While checking for console_suspend_enabled also check if the
+device is a console.
 
-Fixes: c8dbdc842d30 ("serial: xuartps: Rewrite the interrupt handling logic")
-Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 ---
 
-Changes in v2:
-- Fix Nava's email address to align with patch email address
+Changes in v2: None
 
  drivers/tty/serial/xilinx_uartps.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index c6d38617d622..094f2958cb2b 100644
+index 0140644391df..9cdc36be5b13 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -123,7 +123,7 @@
- #define CDNS_UART_IXR_RXTRIG	0x00000001 /* RX FIFO trigger interrupt */
- #define CDNS_UART_IXR_RXFULL	0x00000004 /* RX FIFO full interrupt. */
- #define CDNS_UART_IXR_RXEMPTY	0x00000002 /* RX FIFO empty interrupt. */
--#define CDNS_UART_IXR_MASK	0x00001FFF /* Valid bit mask */
-+#define CDNS_UART_IXR_RXMASK	0x000021e7 /* Valid RX bit mask */
+@@ -1255,7 +1255,7 @@ static int cdns_uart_suspend(struct device *device)
  
- 	/*
- 	 * Do not enable parity error interrupt for the following
-@@ -364,7 +364,7 @@ static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
- 		cdns_uart_handle_tx(dev_id);
- 		isrstatus &= ~CDNS_UART_IXR_TXEMPTY;
- 	}
--	if (isrstatus & CDNS_UART_IXR_MASK)
-+	if (isrstatus & CDNS_UART_IXR_RXMASK)
- 		cdns_uart_handle_rx(dev_id, isrstatus);
+ 	may_wake = device_may_wakeup(device);
  
- 	spin_unlock(&port->lock);
+-	if (console_suspend_enabled && may_wake) {
++	if (console_suspend_enabled && uart_console(port) && may_wake) {
+ 		unsigned long flags = 0;
+ 
+ 		spin_lock_irqsave(&port->lock, flags);
+@@ -1293,7 +1293,7 @@ static int cdns_uart_resume(struct device *device)
+ 
+ 	may_wake = device_may_wakeup(device);
+ 
+-	if (console_suspend_enabled && !may_wake) {
++	if (console_suspend_enabled && uart_console(port) && !may_wake) {
+ 		clk_enable(cdns_uart->pclk);
+ 		clk_enable(cdns_uart->uartclk);
+ 
 -- 
 1.9.1
