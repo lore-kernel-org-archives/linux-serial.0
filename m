@@ -1,7 +1,7 @@
 From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v6 07/11] ARM: dts: rda8810pl: Add timer support
-Date: Tue, 18 Dec 2018 13:35:23 +0530
-Message-ID: <20181218080527.10801-8-manivannan.sadhasivam@linaro.org>
+Subject: [PATCH v6 08/11] dt-bindings: serial: Document RDA Micro UART
+Date: Tue, 18 Dec 2018 13:35:24 +0530
+Message-ID: <20181218080527.10801-9-manivannan.sadhasivam@linaro.org>
 References: <20181218080527.10801-1-manivannan.sadhasivam@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -13,41 +13,39 @@ To: olof@lixom.net, arnd@arndb.de, robh+dt@kernel.org, gregkh@linuxfoundation.or
 Cc: linux-unisoc@lists.infradead.org, afaerber@suse.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, amit.kucheria@linaro.org, linus.walleij@linaro.org, zhao_steven@263.net, Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-Add timer support for RDA Micro RDA8810PL SoC.
+From: Andreas Färber <afaerber@suse.de>
+
+Add an initial binding for the UART in RDA Micro RDA8810PL SoC.
 
 Signed-off-by: Andreas Färber <afaerber@suse.de>
 Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 ---
- arch/arm/boot/dts/rda8810pl.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ .../bindings/serial/rda,8810pl-uart.txt         | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/rda,8810pl-uart.txt
 
-diff --git a/arch/arm/boot/dts/rda8810pl.dtsi b/arch/arm/boot/dts/rda8810pl.dtsi
-index 15547b138977..84baa4c0a14c 100644
---- a/arch/arm/boot/dts/rda8810pl.dtsi
-+++ b/arch/arm/boot/dts/rda8810pl.dtsi
-@@ -6,6 +6,8 @@
-  * Copyright (c) 2018 Manivannan Sadhasivam
-  */
- 
-+#include <dt-bindings/interrupt-controller/irq.h>
+diff --git a/Documentation/devicetree/bindings/serial/rda,8810pl-uart.txt b/Documentation/devicetree/bindings/serial/rda,8810pl-uart.txt
+new file mode 100644
+index 000000000000..a08df97a69e6
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/rda,8810pl-uart.txt
+@@ -0,0 +1,17 @@
++RDA Micro UART
 +
- / {
- 	compatible = "rda,8810pl";
- 	interrupt-parent = <&intc>;
-@@ -50,6 +52,14 @@
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		ranges = <0x0 0x20900000 0x100000>;
++Required properties:
++- compatible :  "rda,8810pl-uart" for RDA8810PL SoCs.
++- reg        :  Offset and length of the register set for the device.
++- interrupts :  Should contain UART interrupt.
++- clocks     :  Phandle to the input clock.
 +
-+		timer@10000 {
-+			compatible = "rda,8810pl-timer";
-+			reg = <0x10000 0x1000>;
-+			interrupts = <16 IRQ_TYPE_LEVEL_HIGH>,
-+				     <17 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "hwtimer", "ostimer";
++
++Example:
++
++		uart2: serial@20a90000 {
++			compatible = "rda,8810pl-uart";
++			reg = <0x20a90000 0x1000>;
++			interrupts = <11 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&uart_clk>;
 +		};
- 	};
- 
- 	apb@20a00000 {
 -- 
 2.17.1
