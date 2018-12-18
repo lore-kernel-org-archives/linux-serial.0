@@ -1,52 +1,34 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH v2 2/4] serial: uartps: Check if the device is a console
-Date: Tue, 18 Dec 2018 13:18:40 +0100
-Message-ID: <863488c6f6d7f3d8c53d46f442f25ec2f46ee651.1545135519.git.michal.simek@xilinx.com>
-References: <cover.1545135519.git.michal.simek@xilinx.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v5 03/11] ARM: Prepare RDA8810PL SoC
+Date: Tue, 18 Dec 2018 14:51:32 +0100
+Message-ID: <CAK8P3a3h8upNttd15EfBTAAP_EQEbQ0fsqtjjzYy9QZdzj=jmQ@mail.gmail.com>
+References: <20181218034132.5070-1-manivannan.sadhasivam@linaro.org> <20181218034132.5070-4-manivannan.sadhasivam@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1545135519.git.michal.simek@xilinx.com>
-In-Reply-To: <cover.1545135519.git.michal.simek@xilinx.com>
-References: <cover.1545135519.git.michal.simek@xilinx.com>
+In-Reply-To: <20181218034132.5070-4-manivannan.sadhasivam@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, monstr@monstr.eu, michal.simek@xilinx.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc: Olof Johansson <olof@lixom.net>, Rob Herring <robh+dt@kernel.org>, gregkh <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-unisoc@lists.infradead.org, =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, DTML <devicetree@vger.kernel.org>, linux-serial@vger.kernel.org, Amit Kucheria <amit.kucheria@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, zhao_steven@263.net
 List-Id: linux-serial@vger.kernel.org
 
-From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+On Tue, Dec 18, 2018 at 4:42 AM Manivannan Sadhasivam
+<manivannan.sadhasivam@linaro.org> wrote:
 
-While checking for console_suspend_enabled also check if the
-device is a console.
+> --- /dev/null
+> +++ b/arch/arm/mach-rda/Kconfig
+> @@ -0,0 +1,9 @@
+> +menuconfig ARCH_RDA
+> +       bool "RDA Micro SoCs"
+> +       depends on ARCH_MULTI_V7
+> +       select COMMON_CLK
+> +       select GENERIC_IRQ_CHIP
+> +       select RDA_INTC
+> +       select RDA_TIMER
+> +       help
+> +         This enables support for the RDA Micro 8810PL SoC family.
 
-Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
----
+I would drop the 'COMMON_CLK' and 'GENERIC_IRQ_CHIP' selects here,
+as they are implied by ARCH_MULTI_V7.
 
-Changes in v2: None
-
- drivers/tty/serial/xilinx_uartps.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 0140644391df..9cdc36be5b13 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1255,7 +1255,7 @@ static int cdns_uart_suspend(struct device *device)
- 
- 	may_wake = device_may_wakeup(device);
- 
--	if (console_suspend_enabled && may_wake) {
-+	if (console_suspend_enabled && uart_console(port) && may_wake) {
- 		unsigned long flags = 0;
- 
- 		spin_lock_irqsave(&port->lock, flags);
-@@ -1293,7 +1293,7 @@ static int cdns_uart_resume(struct device *device)
- 
- 	may_wake = device_may_wakeup(device);
- 
--	if (console_suspend_enabled && !may_wake) {
-+	if (console_suspend_enabled && uart_console(port) && !may_wake) {
- 		clk_enable(cdns_uart->pclk);
- 		clk_enable(cdns_uart->uartclk);
- 
--- 
-1.9.1
+      Arnd
