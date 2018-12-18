@@ -1,51 +1,34 @@
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v7 11/11] MAINTAINERS: Add entry for RDA Micro SoC architecture
-Date: Tue, 18 Dec 2018 20:32:38 +0530
-Message-ID: <20181218150238.23010-12-manivannan.sadhasivam@linaro.org>
-References: <20181218150238.23010-1-manivannan.sadhasivam@linaro.org>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2] dt-bindings: serial: sh-sci: Document r8a774c0
+ bindings
+Date: Tue, 18 Dec 2018 11:48:38 -0600
+Message-ID: <20181218174838.GA28308@bogus>
+References: <1545134590-22510-1-git-send-email-fabrizio.castro@bp.renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181218150238.23010-1-manivannan.sadhasivam@linaro.org>
+Content-Disposition: inline
+In-Reply-To: <1545134590-22510-1-git-send-email-fabrizio.castro@bp.renesas.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: olof@lixom.net, arnd@arndb.de, arm@kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: robh+dt@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com, linux-unisoc@lists.infradead.org, afaerber@suse.de, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, amit.kucheria@linaro.org, linus.walleij@linaro.org, zhao_steven@263.net, Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Simon Horman <horms@verge.net.au>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Fabrizio Castro <fabrizio.castro@bp.renesas.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, linux-renesas-soc@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Add MAINTAINERS entry for RDA Micro SoC architecture with myself
-as the maintainer.
+On Tue, 18 Dec 2018 12:03:10 +0000, Fabrizio Castro wrote:
+> RZ/G2E (R8A774C0) SoC also has the R-Car Gen3 compatible SCIF and
+> HSCIF ports, so document the SoC specific bindings.
+> 
+> Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+> ---
+> v1->v2:
+> * Fixed title according to Geert's comment
+> 
+> This patch depends on:
+> https://patchwork.kernel.org/patch/10565543/
+> 
+>  Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
 
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
----
- MAINTAINERS | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 3318f30903b2..da2149949fd7 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1950,6 +1950,20 @@ M:	Lennert Buytenhek <kernel@wantstofly.org>
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
- S:	Maintained
- 
-+ARM/RDA MICRO ARCHITECTURE
-+M:	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-+L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
-+L:	linux-unisoc@lists.infradead.org (moderated for non-subscribers)
-+S:	Maintained
-+F:	arch/arm/boot/dts/rda8810pl-*
-+F:	drivers/clocksource/timer-rda.c
-+F:	drivers/irqchip/irq-rda-intc.c
-+F:	drivers/tty/serial/rda-uart.c
-+F:	Documentation/devicetree/bindings/arm/rda.txt
-+F:	Documentation/devicetree/bindings/interrupt-controller/rda,8810pl-intc.txt
-+F:	Documentation/devicetree/bindings/serial/rda,8810pl-uart.txt
-+F:	Documentation/devicetree/bindings/timer/rda,8810pl-timer.txt
-+
- ARM/REALTEK ARCHITECTURE
- M:	Andreas Färber <afaerber@suse.de>
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
--- 
-2.17.1
+Reviewed-by: Rob Herring <robh@kernel.org>
