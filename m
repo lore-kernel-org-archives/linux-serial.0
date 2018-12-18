@@ -1,41 +1,43 @@
-From: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-Subject: [PATCH v2] dt-bindings: serial: sh-sci: Document r8a774c0 bindings
-Date: Tue, 18 Dec 2018 12:03:10 +0000
-Message-ID: <1545134590-22510-1-git-send-email-fabrizio.castro@bp.renesas.com>
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: [PATCH v2 0/4] serial: uartps: Driver updates
+Date: Tue, 18 Dec 2018 13:18:38 +0100
+Message-ID: <cover.1545135519.git.michal.simek@xilinx.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert+renesas@glider.be>, Simon Horman <horms@verge.net.au>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
-Cc: Fabrizio Castro <fabrizio.castro@bp.renesas.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, linux-renesas-soc@vger.kernel.org
+To: linux-kernel@vger.kernel.org, monstr@monstr.eu, michal.simek@xilinx.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-RZ/G2E (R8A774C0) SoC also has the R-Car Gen3 compatible SCIF and
-HSCIF ports, so document the SoC specific bindings.
+Hi,
 
-Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
----
-v1->v2:
-* Fixed title according to Geert's comment
+I am sending 4 patches in series to fix some issues we found.
+Patches were sent separately but I have been asked to send them in
+serial that's why I am also adding cover letter to explain this v2
+version.
 
-This patch depends on:
-https://patchwork.kernel.org/patch/10565543/
+Thanks,
+Michal
 
- Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 2 ++
- 1 file changed, 2 insertions(+)
+Changes in v2:
+- Change description based on request from Greg
+- Fix Nava's email address to align with patch email address
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-index 21526e8..20232ad 100644
---- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-+++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
-@@ -26,6 +26,8 @@ Required properties:
-     - "renesas,hscif-r8a77470" for R8A77470 (RZ/G1C) HSCIF compatible UART.
-     - "renesas,scif-r8a774a1" for R8A774A1 (RZ/G2M) SCIF compatible UART.
-     - "renesas,hscif-r8a774a1" for R8A774A1 (RZ/G2M) HSCIF compatible UART.
-+    - "renesas,scif-r8a774c0" for R8A774C0 (RZ/G2E) SCIF compatible UART.
-+    - "renesas,hscif-r8a774c0" for R8A774C0 (RZ/G2E) HSCIF compatible UART.
-     - "renesas,scif-r8a7778" for R8A7778 (R-Car M1) SCIF compatible UART.
-     - "renesas,scif-r8a7779" for R8A7779 (R-Car H1) SCIF compatible UART.
-     - "renesas,scif-r8a7790" for R8A7790 (R-Car H2) SCIF compatible UART.
+Michal Simek (1):
+  serial: uartps: Fix error path when alloc failed
+
+Nava kishore Manne (1):
+  serial: uartps: Fix interrupt mask issue to handle the RX interrupts
+    properly
+
+Shubhrajyoti Datta (2):
+  serial: uartps: Add the device_init_wakeup
+  serial: uartps: Check if the device is a console
+
+ drivers/tty/serial/xilinx_uartps.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
+
 -- 
-2.7.4
+1.9.1
