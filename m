@@ -1,74 +1,43 @@
-From: Matthias Kaehlcke <mka@chromium.org>
-Subject: [PATCH] tty: serial: qcom_geni_serial: Fix wrap around of TX buffer
-Date: Wed, 19 Dec 2018 10:17:47 -0800
-Message-ID: <20181219181747.118278-1-mka@chromium.org>
+From: Maarten Brock <m.brock@vanmierlo.com>
+Subject: Re: [PATCH v2 0/4] serial: uartps: Driver updates
+Date: Wed, 19 Dec 2018 19:40:01 +0100
+Message-ID: <06bcd18cb2e0e81d3051ef6305139d40@vanmierlo.com>
+References: <cover.1545135519.git.michal.simek@xilinx.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Mukesh Kumar Savaliya <msavaliy@codeaurora.org>, Ryan Case <ryandcase@chromium.org>, Douglas Anderson <dianders@chromium.org>, Evan Green <evgreen@chromium.org>, Matthias Kaehlcke <mka@chromium.org>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <cover.1545135519.git.michal.simek@xilinx.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Michal Simek <michal.simek@xilinx.com>
+Cc: monstr@monstr.eu, linux-serial-owner@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Before commit a1fee899e5bed ("tty: serial: qcom_geni_serial: Fix
-softlock") the size of TX transfers was limited to the TX FIFO size,
-and wrap arounds of the UART circular buffer were split into two
-transfers. With the commit wrap around are allowed within a transfer.
-The TX FIFO of the geni serial port uses a word size of 4 bytes. In
-case of a circular buffer wrap within a transfer the driver currently
-may write an incomplete word to the FIFO, with some bytes containing
-data from the circular buffer and others being zero. Since the
-transfer isn't completed yet the zero bytes are sent as if they were
-actual data.
+Hello Michal,
 
-Handle wrap arounds of the TX buffer properly and ensure that words
-written to the TX FIFO always contain valid data (unless the transfer
-is completed).
+On 2018-12-18 13:18, Michal Simek wrote:
+> Hi,
+> 
+> I am sending 4 patches in series to fix some issues we found.
+> Patches were sent separately but I have been asked to send them in
+> serial that's why I am also adding cover letter to explain this v2
+> version.
+> 
+> Thanks,
+> Michal
 
-Fixes: a1fee899e5bed ("tty: serial: qcom_geni_serial: Fix softlock")
-Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
----
- drivers/tty/serial/qcom_geni_serial.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+I'm wondering why, when reading the linux-serial mailing list, I can 
+only see this cover letter.
+Are you perhaps using a different To/Cc for the actual patches? And if 
+so, is that on purpose?
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index cf7a95e339ad9..2ee2d3286a6b4 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -744,7 +744,7 @@ static void qcom_geni_serial_handle_tx(struct uart_port *uport, bool done,
- 	avail *= port->tx_bytes_pw;
- 
- 	tail = xmit->tail;
--	chunk = min3(avail, pending, (size_t)(UART_XMIT_SIZE - tail));
-+	chunk = min(avail, pending);
- 	if (!chunk)
- 		goto out_write_wakeup;
- 
-@@ -766,19 +766,21 @@ static void qcom_geni_serial_handle_tx(struct uart_port *uport, bool done,
- 
- 		memset(buf, 0, ARRAY_SIZE(buf));
- 		tx_bytes = min_t(size_t, remaining, port->tx_bytes_pw);
--		for (c = 0; c < tx_bytes ; c++)
--			buf[c] = xmit->buf[tail + c];
-+
-+		for (c = 0; c < tx_bytes ; c++) {
-+			buf[c] = xmit->buf[tail++];
-+			tail &= UART_XMIT_SIZE - 1;
-+		}
- 
- 		iowrite32_rep(uport->membase + SE_GENI_TX_FIFOn, buf, 1);
- 
- 		i += tx_bytes;
--		tail += tx_bytes;
- 		uport->icount.tx += tx_bytes;
- 		remaining -= tx_bytes;
- 		port->tx_remaining -= tx_bytes;
- 	}
- 
--	xmit->tail = tail & (UART_XMIT_SIZE - 1);
-+	xmit->tail = tail;
- 
- 	/*
- 	 * The tx fifo watermark is level triggered and latched. Though we had
--- 
-2.20.0.405.gbc1bbc6f85-goog
+Kind regards,
+Maarten
