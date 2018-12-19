@@ -1,47 +1,58 @@
-From: Long Cheng <long.cheng@mediatek.com>
-Subject: [PATCH v6 0/2] add uart DMA function
-Date: Wed, 19 Dec 2018 10:20:20 +0800
-Message-ID: <1545186022-3712-1-git-send-email-long.cheng@mediatek.com>
+From: Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v6 1/2] dmaengine: 8250_mtk_dma: add MediaTek uart DMA
+ support
+Date: Tue, 18 Dec 2018 19:12:33 -0800
+Message-ID: <46c746fc-b400-ec6e-d6b1-899c3d594b19@infradead.org>
+References: <1545186022-3712-1-git-send-email-long.cheng@mediatek.com>
+ <1545186022-3712-2-git-send-email-long.cheng@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, Sean Wang <sean.wang@kernel.org>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>, Long Cheng <long.cheng@mediatek.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1545186022-3712-2-git-send-email-long.cheng@mediatek.com>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Long Cheng <long.cheng@mediatek.com>, Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>
+Cc: devicetree@vger.kernel.org, Sean Wang <sean.wang@kernel.org>, srv_heupstream@mediatek.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sean Wang <sean.wang@mediatek.com>, linux-kernel@vger.kernel.org, YT Shen <yt.shen@mediatek.com>, dmaengine@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Matthias Brugger <matthias.bgg@gmail.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>, Dan Williams <dan.j.williams@intel.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-In Mediatek SOCs, the uart can support DMA function.
-Base on DMA engine formwork, we add the DMA code to support uart. And put the code under drivers/dma.
+Hi,
+A few small corrections...
 
-This series contains document bindings, Kconfig to control the function enable or not,
-device tree including interrupt and dma device node, the code of UART DM
+On 12/18/18 6:20 PM, Long Cheng wrote:
+> diff --git a/drivers/dma/mediatek/Kconfig b/drivers/dma/mediatek/Kconfig
+> index 27bac0b..2c082c9 100644
+> --- a/drivers/dma/mediatek/Kconfig
+> +++ b/drivers/dma/mediatek/Kconfig
+> @@ -1,4 +1,15 @@
+>  
+> +config DMA_MTK_UART
+> +	tristate "MediaTek SoCs APDMA support for UART"
+> +	depends on OF && SERIAL_8250_MT6577
+> +	select DMA_ENGINE
+> +	select DMA_VIRTUAL_CHANNELS
+> +	help
+> +	  Support for the UART DMA engine found on MediaTek MTK SoCs.
+> +	  when SERIAL_8250_MT6577 is enabled, and if you want to using DMA,
 
-Changes compared to v5:
--move 'requst irqs' to alloc channel
--remove tasklet.
-Changes compared to v4:
--modify Kconfig depends on.
-Changes compared to v3:
--fix CONFIG_PM, will cause build fail
-Changes compared to v2:
--remove unimportant parameters
--instead of cookie, use APIs of virtual channel.
--use of_dma_xlate_by_chan_id.
-Changes compared to v1:
--mian revised file, 8250_mtk_dma.c
---parameters renamed for standard
---remove atomic operation
+	  When                                                to use DMA,
 
-Long Cheng (2):
-  dmaengine: 8250_mtk_dma: add MediaTek uart DMA support
-  arm: dts: mt2712: add uart APDMA to device tree
+> +	  you can enable the config. the DMA engine just only be used
 
- arch/arm64/boot/dts/mediatek/mt2712e.dtsi |   50 +++
- drivers/dma/mediatek/8250_mtk_dma.c       |  694 +++++++++++++++++++++++++++++
- drivers/dma/mediatek/Kconfig              |   11 +
- drivers/dma/mediatek/Makefile             |    1 +
- 4 files changed, 756 insertions(+)
- create mode 100644 drivers/dma/mediatek/8250_mtk_dma.c
+	                             The DMA engine can only be used
 
+> +	  with MediaTek SoCs.
+> +
+
+
+cheers,
 -- 
-1.7.9.5
+~Randy
