@@ -1,38 +1,74 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v2 1/2] dt-bindings: serial: sh-sci: Document r8a774a1 bindings
-Date: Wed, 19 Dec 2018 11:19:58 +0100
-Message-ID: <CAMuHMdUmjR7qVmsHtE5OfRer_RNOpoCt6G90UQxAXdTFEUhqbg@mail.gmail.com>
-References: <1545213985-30341-1-git-send-email-fabrizio.castro@bp.renesas.com> <1545213985-30341-2-git-send-email-fabrizio.castro@bp.renesas.com>
+From: Matthias Kaehlcke <mka@chromium.org>
+Subject: [PATCH] tty: serial: qcom_geni_serial: Fix wrap around of TX buffer
+Date: Wed, 19 Dec 2018 10:17:47 -0800
+Message-ID: <20181219181747.118278-1-mka@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1545213985-30341-2-git-send-email-fabrizio.castro@bp.renesas.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Simon Horman <horms@verge.net.au>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Mukesh Kumar Savaliya <msavaliy@codeaurora.org>, Ryan Case <ryandcase@chromium.org>, Douglas Anderson <dianders@chromium.org>, Evan Green <evgreen@chromium.org>, Matthias Kaehlcke <mka@chromium.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Dec 19, 2018 at 11:06 AM Fabrizio Castro
-<fabrizio.castro@bp.renesas.com> wrote:
-> RZ/G2M (R8A774A1) SoC also has the R-Car Gen3 compatible SCIF and
-> HSCIF ports, so document the SoC specific bindings. While at it,
-> update the RZ/G1 and RZ/G2 family specific strings description as
-> outdated.
->
-> Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-> Reviewed-by: Biju Das <biju.das@bp.renesas.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+Before commit a1fee899e5bed ("tty: serial: qcom_geni_serial: Fix
+softlock") the size of TX transfers was limited to the TX FIFO size,
+and wrap arounds of the UART circular buffer were split into two
+transfers. With the commit wrap around are allowed within a transfer.
+The TX FIFO of the geni serial port uses a word size of 4 bytes. In
+case of a circular buffer wrap within a transfer the driver currently
+may write an incomplete word to the FIFO, with some bytes containing
+data from the circular buffer and others being zero. Since the
+transfer isn't completed yet the zero bytes are sent as if they were
+actual data.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Handle wrap arounds of the TX buffer properly and ensure that words
+written to the TX FIFO always contain valid data (unless the transfer
+is completed).
 
-Gr{oetje,eeting}s,
+Fixes: a1fee899e5bed ("tty: serial: qcom_geni_serial: Fix softlock")
+Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-                        Geert
-
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index cf7a95e339ad9..2ee2d3286a6b4 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -744,7 +744,7 @@ static void qcom_geni_serial_handle_tx(struct uart_port *uport, bool done,
+ 	avail *= port->tx_bytes_pw;
+ 
+ 	tail = xmit->tail;
+-	chunk = min3(avail, pending, (size_t)(UART_XMIT_SIZE - tail));
++	chunk = min(avail, pending);
+ 	if (!chunk)
+ 		goto out_write_wakeup;
+ 
+@@ -766,19 +766,21 @@ static void qcom_geni_serial_handle_tx(struct uart_port *uport, bool done,
+ 
+ 		memset(buf, 0, ARRAY_SIZE(buf));
+ 		tx_bytes = min_t(size_t, remaining, port->tx_bytes_pw);
+-		for (c = 0; c < tx_bytes ; c++)
+-			buf[c] = xmit->buf[tail + c];
++
++		for (c = 0; c < tx_bytes ; c++) {
++			buf[c] = xmit->buf[tail++];
++			tail &= UART_XMIT_SIZE - 1;
++		}
+ 
+ 		iowrite32_rep(uport->membase + SE_GENI_TX_FIFOn, buf, 1);
+ 
+ 		i += tx_bytes;
+-		tail += tx_bytes;
+ 		uport->icount.tx += tx_bytes;
+ 		remaining -= tx_bytes;
+ 		port->tx_remaining -= tx_bytes;
+ 	}
+ 
+-	xmit->tail = tail & (UART_XMIT_SIZE - 1);
++	xmit->tail = tail;
+ 
+ 	/*
+ 	 * The tx fifo watermark is level triggered and latched. Though we had
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+2.20.0.405.gbc1bbc6f85-goog
