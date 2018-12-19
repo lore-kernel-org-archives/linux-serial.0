@@ -1,307 +1,755 @@
-From: Marek Vasut <marex@denx.de>
-Subject: Re: [PATCH] Revert "serial: 8250: Fix clearing FIFOs in RS485 mode
- again"
-Date: Wed, 19 Dec 2018 01:12:01 +0100
-Message-ID: <3086d1b7-9ed9-9d48-4371-89139c356d22@denx.de>
-References: <20181213174834.kxdy6fphaeoivqgh@pburton-laptop>
- <20181216200833.27928-1-paul.burton@mips.com>
- <f5a76d73-862f-3ebc-cd07-effc5c432103@denx.de>
- <20181216213133.kwe24pif3v4wcgwp@pburton-laptop>
- <949fdd3d-535e-d235-f406-d5bde4658c5e@denx.de>
- <CAAEAJfAad75bHX39ETCdVv9vP0dF7PLz2vvFLLqgtyikPHqJyA@mail.gmail.com>
- <20181216222411.5jkexuaqxpfudj7b@pburton-laptop>
- <CAAEAJfAQ9=B6sm=Ard+YTDN5g5r03o=t9xU3Nu2QaKrXXZ4pGw@mail.gmail.com>
- <20181216223510.hxsdotf332ousinh@pburton-laptop>
- <CAAEAJfDHvGTPN9u4zwWRFvK1WmpLmz87CjsjzmyhcExTGHQPmA@mail.gmail.com>
- <61a3177f-4e8d-fc51-1e81-95af3baab3a8@denx.de>
+From: Long Cheng <long.cheng@mediatek.com>
+Subject: [PATCH v6 1/2] dmaengine: 8250_mtk_dma: add MediaTek uart DMA support
+Date: Wed, 19 Dec 2018 10:20:21 +0800
+Message-ID: <1545186022-3712-2-git-send-email-long.cheng@mediatek.com>
+References: <1545186022-3712-1-git-send-email-long.cheng@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <61a3177f-4e8d-fc51-1e81-95af3baab3a8@denx.de>
-Content-Language: en-US
-Sender: stable-owner@vger.kernel.org
-To: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>, Paul Burton <paul.burton@mips.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Paul Burton <pburton@wavecomp.com>, Daniel Jedrychowski <avistel@gmail.com>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, stable <stable@vger.kernel.org>, Ezequiel Garcia <ezequiel@collabora.com>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1545186022-3712-1-git-send-email-long.cheng@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, Sean Wang <sean.wang@kernel.org>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>, Long Cheng <long.cheng@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 12/17/2018 06:20 PM, Marek Vasut wrote:
-> On 12/17/2018 05:30 PM, Ezequiel Garcia wrote:
->> On Sun, 16 Dec 2018 at 19:35, Paul Burton <paul.burton@mips.com> wrote:
->>>
->>> Hi Ezequiel,
->>>
->>> On Sun, Dec 16, 2018 at 07:28:22PM -0300, Ezequiel Garcia wrote:
->>>> On Sun, 16 Dec 2018 at 19:24, Paul Burton <paul.burton@mips.com> wrote:
->>>>> This helps, but it only addresses one part of one of the 4 reasons I
->>>>> listed as motivation for my revert. For example serial8250_do_shutdown()
->>>>> also clearly intends to disable the FIFOs.
->>>>>
->>>>
->>>> OK. So, let's fix that :-)
->>>
->>> I already did, or at least tried to, on Thursday [1].
->>>
->>>> By all means, it would be really nice to push forward and fix the garbage
->>>> issue on JZ4780, as well as the transmission issue on AM335x.
->>>>
->>>> AM335x is a wildly popular platform, and it's not funny to break it.
->>>
->>> Well, clearly not if it was broken in v4.10 & only just fixed..? And
->>> from Marek's commit message the patch in v4.10 doesn't break the whole
->>> system just RS485.
->>>
->>
->> Careful here. It's naive to consider v4.10 as old in this context.
->>
->> AM335x is used in hundreds of thousands of products, probably
->> "industrial" products.
->> Manufacturers don't always follow the kernel, and it's entirely
->> likely that they notice a regression only when developing a new product,
->> or when rebasing on top of a newer longterm kernel.
->>
->> Then again, I don't have any details about what is Marek's original fix
->> actually fixing.
->>
->> Marek: could you please post the test case that you used to validate your fix?
->> I can't find that anywhere.
-> 
-> I can't share the testcase itself because it has no license and I didn't
-> write it, but I can tell you what it's doing. (I'll check if I can share
-> the testcase verbatim too, I just sent an email to the author)
-> 
-> The test spawns two threads, one sending , one receiving. The sending
-> thread sends 8 bytes of data from /dev/ttyS4 , the receiving thread
-> receives the data on /dev/ttyS2 and compares the pattern. The port
-> settings is B1000000 8N1 with rs485conf.flags set to SER_RS485_ENABLED
-> and SER_RS485_RTS_AFTER_SEND. Sometimes the received data do not match
-> the sent data, but rather look as if one character was left over from
-> the previous transmission in the FIFO.
-> 
-> Those two UARTs are connected together by two wires, without any real
-> RS485 hardware to minimize the hardware complexity (it's easy to
-> implement that on the pocketbeagle, which is the cheap option here).
+In DMA engine framework, add 8250 uart dma to support MediaTek uart.
+If MediaTek uart enabled(SERIAL_8250_MT6577), and want to improve
+the performance, can enable the function.
 
-Test code is below . On the pocketbeagle, connect SPI0:CLK with U4:TX
-and SPI0:MISO with U4:RX , apply the DT patch below and run the example.
-It'll fail after a few iterations.
+Signed-off-by: Long Cheng <long.cheng@mediatek.com>
+---
+ drivers/dma/mediatek/8250_mtk_dma.c |  694 +++++++++++++++++++++++++++++++++++
+ drivers/dma/mediatek/Kconfig        |   11 +
+ drivers/dma/mediatek/Makefile       |    1 +
+ 3 files changed, 706 insertions(+)
+ create mode 100644 drivers/dma/mediatek/8250_mtk_dma.c
 
-#include <errno.h>
-#include <fcntl.h>
-#include <string.h>
-#include <termios.h>
-#include <unistd.h>
-
-#include <iostream>
-#include <iomanip>
-#include <atomic>
-#include <thread>
-
-#include <linux/serial.h>
-#include <sys/ioctl.h>
-
-std::atomic<bool> running{true};
-
-int set_interface_attribs (int fd, int speed, int parity)
-{
-        struct termios tty;
-        memset (&tty, 0, sizeof tty);
-        if (tcgetattr (fd, &tty) != 0)
-        {
-                std::cerr << "Error from tcgetattr" << std::endl;
-                return -1;
-        }
-
-        cfsetospeed (&tty, speed);
-        cfsetispeed (&tty, speed);
-
-        tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;
-        tty.c_iflag &= ~IGNBRK;
-        tty.c_lflag = 0;
-
-        tty.c_oflag = 0;
-        tty.c_cc[VMIN]  = 8;
-        tty.c_cc[VTIME] = 0;
-
-        tty.c_iflag &= ~(IXON | IXOFF | IXANY);
-
-        tty.c_cflag |= (CLOCAL | CREAD);
-        tty.c_cflag &= ~(PARENB | PARODD);
-        tty.c_cflag |= parity;
-        tty.c_cflag &= ~CSTOPB;
-        tty.c_cflag &= ~CRTSCTS;
-
-        if (tcsetattr (fd, TCSANOW, &tty) != 0)
-        {
-                std::cerr << "Error from tcsetattr" << std::endl;
-                return -1;
-        }
-        return 0;
-}
-
-void enable_rts(int fd, int rts)
-{
-     struct serial_rs485 rs485conf;
-      if (rts) {
-              rs485conf.flags = SER_RS485_ENABLED ;
-              rs485conf.flags |= SER_RS485_RTS_AFTER_SEND;
-              rs485conf.flags &= ~(SER_RS485_RTS_ON_SEND);
-              rs485conf.delay_rts_before_send = 0;
-              rs485conf.delay_rts_after_send = 0;
-      } else {
-              rs485conf.flags = 0 ;
-      }
-
-      if (ioctl( fd, TIOCSRS485, &rs485conf) < 0){
-          std::cerr << "Cannot set device in RS485 mode" << std::endl;
-      }
-}
-
-void output_function(int fd)
-{
-   while(running) {
-    write (fd, "asdfghjk", 8);
-    usleep (20000);
-   }
-}
-
-void input_function(int fd)
-{
-  char buf [100];
-  size_t count=0;
-  std::cout << std::unitbuf;
-  while(running){
-    int n = read (fd, buf, sizeof buf);
-    if( (n >0) && (buf[0] != 'a') ){
-        std::cout << "\nunexpected receive! " << std::string(buf,8) <<
-std::endl;
-        running = false;
-    } else {
-       ++count;
-       if(count%100 == 0){
-          std::cout << "\r" << std::setw(8) << count << " possibly ok";
-       }
-    }
-  }
-}
-
-int main(int argc, char** argv)
-{
-  std::string in_port  = "/dev/ttyS2";
-  std::string out_port = "/dev/ttyS4";
-
-  int c, rts = 1;
-
-  while ((c = getopt (argc, argv, "i:o:r")) != -1)
-  {
-    switch (c)
-      {
-      case 'i':
-        in_port = std::string(optarg);
-        break;
-      case 'o':
-        out_port = std::string(optarg);
-        break;
-      case 'r':
-        rts = 0;
-        break;
-      case '?':
-        return 1;
-      default:
-        break;
-      }
-    }
-
-    std::cout << "opening output " << out_port << std::endl;
-    int outfd = open ( out_port.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
-    if (outfd < 0)
-    {
-            std::cerr << "Could not open " << out_port << std::endl;
-            return 1;
-    }
-
-    std::cout << "opening input " << in_port << std::endl;
-    int infd = open ( in_port.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
-    if (infd < 0)
-    {
-            std::cerr << "Could not open " << in_port << std::endl;
-            return 1;
-    }
-
-    set_interface_attribs (infd,  B1000000, 0);
-    set_interface_attribs (outfd, B1000000, 0);
-
-    enable_rts(outfd, rts);
-    enable_rts(infd, rts);
-
-    std::thread in(input_function, infd);
-    std::thread out(output_function, outfd);
-
-    in.join();
-    out.join();
-
-    close(infd);
-    close(outfd);
-}
-
-diff --git a/arch/arm/boot/dts/am335x-pocketbeagle.dts
-b/arch/arm/boot/dts/am335x-pocketbeagle.dts
-index 62fe5cab9fae..d9b8f09920a6 100644
---- a/arch/arm/boot/dts/am335x-pocketbeagle.dts
-+++ b/arch/arm/boot/dts/am335x-pocketbeagle.dts
-@@ -92,15 +92,6 @@
-                >;
-        };
-
--       spi0_pins: pinmux-spi0-pins {
--               pinctrl-single,pins = <
--                       AM33XX_IOPAD(0x950, PIN_INPUT_PULLUP |
-MUX_MODE0)       /* (A17) spi0_sclk.spi0_sclk */
--                       AM33XX_IOPAD(0x954, PIN_INPUT_PULLUP |
-MUX_MODE0)       /* (B17) spi0_d0.spi0_d0 */
--                       AM33XX_IOPAD(0x958, PIN_INPUT_PULLUP |
-MUX_MODE0)       /* (B16) spi0_d1.spi0_d1 */
--                       AM33XX_IOPAD(0x95c, PIN_INPUT_PULLUP |
-MUX_MODE0)       /* (A16) spi0_cs0.spi0_cs0 */
--               >;
--       };
--
-        spi1_pins: pinmux-spi1-pins {
-                pinctrl-single,pins = <
-                        AM33XX_IOPAD(0x964, PIN_INPUT_PULLUP |
-MUX_MODE4)       /* (C18) eCAP0_in_PWM0_out.spi1_sclk */
-@@ -126,6 +117,13 @@
-                >;
-        };
-
-+       uart2_pins: pinmux-uart2-pins {
-+               pinctrl-single,pins = <
-+                       AM33XX_IOPAD(0x950, PIN_INPUT | MUX_MODE1)
-       /* spi0_sclk.uart2_rxd */
-+                       AM33XX_IOPAD(0x954, PIN_OUTPUT | MUX_MODE1)
-       /* spi0_d0.uart2_txd */
-+               >;
-+       };
+diff --git a/drivers/dma/mediatek/8250_mtk_dma.c b/drivers/dma/mediatek/8250_mtk_dma.c
+new file mode 100644
+index 0000000..c4090f2
+--- /dev/null
++++ b/drivers/dma/mediatek/8250_mtk_dma.c
+@@ -0,0 +1,694 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * MediaTek 8250 DMA driver.
++ *
++ * Copyright (c) 2018 MediaTek Inc.
++ * Author: Long Cheng <long.cheng@mediatek.com>
++ */
 +
-        uart4_pins: pinmux-uart4-pins {
-                pinctrl-single,pins = <
-                        AM33XX_IOPAD(0x870, PIN_INPUT_PULLUP |
-MUX_MODE6)       /* (T17) gpmc_wait0.uart4_rxd */
-@@ -199,6 +197,13 @@
-        status = "okay";
- };
-
-+&uart2 {
-+       pinctrl-names = "default";
-+       pinctrl-0 = <&uart2_pins>;
++#include <linux/clk.h>
++#include <linux/dmaengine.h>
++#include <linux/dma-mapping.h>
++#include <linux/err.h>
++#include <linux/init.h>
++#include <linux/interrupt.h>
++#include <linux/list.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of_dma.h>
++#include <linux/of_device.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++#include <linux/spinlock.h>
++#include <linux/pm_runtime.h>
++#include <linux/iopoll.h>
 +
-+       status = "okay";
++#include "../virt-dma.h"
++
++#define MTK_UART_APDMA_CHANNELS		(CONFIG_SERIAL_8250_NR_UARTS * 2)
++
++#define VFF_EN_B		BIT(0)
++#define VFF_STOP_B		BIT(0)
++#define VFF_FLUSH_B		BIT(0)
++#define VFF_4G_SUPPORT_B	BIT(0)
++#define VFF_RX_INT_EN0_B	BIT(0)	/*rx valid size >=  vff thre*/
++#define VFF_RX_INT_EN1_B	BIT(1)
++#define VFF_TX_INT_EN_B		BIT(0)	/*tx left size >= vff thre*/
++#define VFF_WARM_RST_B		BIT(0)
++#define VFF_RX_INT_FLAG_CLR_B	(BIT(0) | BIT(1))
++#define VFF_TX_INT_FLAG_CLR_B	0
++#define VFF_STOP_CLR_B		0
++#define VFF_FLUSH_CLR_B		0
++#define VFF_INT_EN_CLR_B	0
++#define VFF_4G_SUPPORT_CLR_B	0
++
++/* interrupt trigger level for tx */
++#define VFF_TX_THRE(n)		((n) * 7 / 8)
++/* interrupt trigger level for rx */
++#define VFF_RX_THRE(n)		((n) * 3 / 4)
++
++#define MTK_UART_APDMA_RING_SIZE	0xffffU
++/* invert this bit when wrap ring head again*/
++#define MTK_UART_APDMA_RING_WRAP	0x10000U
++
++#define VFF_INT_FLAG		0x00
++#define VFF_INT_EN		0x04
++#define VFF_EN			0x08
++#define VFF_RST			0x0c
++#define VFF_STOP		0x10
++#define VFF_FLUSH		0x14
++#define VFF_ADDR		0x1c
++#define VFF_LEN			0x24
++#define VFF_THRE		0x28
++#define VFF_WPT			0x2c
++#define VFF_RPT			0x30
++/*TX: the buffer size HW can read. RX: the buffer size SW can read.*/
++#define VFF_VALID_SIZE		0x3c
++/*TX: the buffer size SW can write. RX: the buffer size HW can write.*/
++#define VFF_LEFT_SIZE		0x40
++#define VFF_DEBUG_STATUS	0x50
++#define VFF_4G_SUPPORT		0x54
++
++struct mtk_uart_apdmadev {
++	struct dma_device ddev;
++	struct clk *clk;
++	bool support_33bits;
++	unsigned int dma_irq[MTK_UART_APDMA_CHANNELS];
 +};
 +
- &uart4 {
-        pinctrl-names = "default";
-        pinctrl-0 = <&uart4_pins>;
-
++struct mtk_uart_apdma_desc {
++	struct virt_dma_desc vd;
++
++	unsigned int avail_len;
++};
++
++struct mtk_chan {
++	struct virt_dma_chan vc;
++	struct dma_slave_config	cfg;
++	void __iomem *base;
++	struct mtk_uart_apdma_desc *desc;
++
++	bool requested;
++
++	unsigned int rx_status;
++};
++
++static inline struct mtk_uart_apdmadev *
++to_mtk_uart_apdma_dev(struct dma_device *d)
++{
++	return container_of(d, struct mtk_uart_apdmadev, ddev);
++}
++
++static inline struct mtk_chan *to_mtk_uart_apdma_chan(struct dma_chan *c)
++{
++	return container_of(c, struct mtk_chan, vc.chan);
++}
++
++static inline struct mtk_uart_apdma_desc *to_mtk_uart_apdma_desc
++	(struct dma_async_tx_descriptor *t)
++{
++	return container_of(t, struct mtk_uart_apdma_desc, vd.tx);
++}
++
++static void mtk_uart_apdma_chan_write(struct mtk_chan *c,
++			       unsigned int reg, unsigned int val)
++{
++	writel(val, c->base + reg);
++}
++
++static unsigned int
++mtk_uart_apdma_chan_read(struct mtk_chan *c, unsigned int reg)
++{
++	return readl(c->base + reg);
++}
++
++static void mtk_uart_apdma_desc_free(struct virt_dma_desc *vd)
++{
++	struct dma_chan *chan = vd->tx.chan;
++	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
++
++	kfree(c->desc);
++	c->desc = NULL;
++}
++
++static void mtk_uart_apdma_start_tx(struct mtk_chan *c)
++{
++	unsigned int txcount = c->desc->avail_len;
++	unsigned int len, send, left, wpt, wrap;
++
++	if (mtk_uart_apdma_chan_read(c, VFF_LEFT_SIZE) == 0U) {
++		mtk_uart_apdma_chan_write(c, VFF_INT_EN, VFF_TX_INT_EN_B);
++	} else {
++		len = mtk_uart_apdma_chan_read(c, VFF_LEN);
++
++		while (((left = mtk_uart_apdma_chan_read(c,
++					VFF_LEFT_SIZE)) > 0U)
++				&& (c->desc->avail_len != 0U)) {
++			send = min_t(unsigned int, left, c->desc->avail_len);
++			wpt = mtk_uart_apdma_chan_read(c, VFF_WPT);
++			wrap = wpt & MTK_UART_APDMA_RING_WRAP ?
++					0U : MTK_UART_APDMA_RING_WRAP;
++
++			if ((wpt & (len - 1U)) + send < len)
++				mtk_uart_apdma_chan_write(c,
++						VFF_WPT, wpt + send);
++			else
++				mtk_uart_apdma_chan_write(c, VFF_WPT,
++						   ((wpt + send) & (len - 1U))
++						   | wrap);
++
++			c->desc->avail_len -= send;
++		}
++
++		if (txcount != c->desc->avail_len) {
++			mtk_uart_apdma_chan_write(c,
++					VFF_INT_EN, VFF_TX_INT_EN_B);
++			if (mtk_uart_apdma_chan_read(c,
++						VFF_FLUSH) == 0U)
++				mtk_uart_apdma_chan_write(c,
++						VFF_FLUSH, VFF_FLUSH_B);
++		}
++	}
++}
++
++static void mtk_uart_apdma_start_rx(struct mtk_chan *c)
++{
++	struct mtk_uart_apdma_desc *d = c->desc;
++	unsigned int rx_len, wg, rg, count;
++
++	if (mtk_uart_apdma_chan_read(c, VFF_VALID_SIZE) == 0U)
++		return;
++
++	if (d && vchan_next_desc(&c->vc)) {
++		rx_len = mtk_uart_apdma_chan_read(c, VFF_LEN);
++		rg = mtk_uart_apdma_chan_read(c, VFF_RPT);
++		wg = mtk_uart_apdma_chan_read(c, VFF_WPT);
++		count = ((rg ^ wg) & MTK_UART_APDMA_RING_WRAP) ?
++				((wg & MTK_UART_APDMA_RING_SIZE) +
++				rx_len - (rg & MTK_UART_APDMA_RING_SIZE)) :
++				((wg & MTK_UART_APDMA_RING_SIZE) -
++				(rg & MTK_UART_APDMA_RING_SIZE));
++
++		c->rx_status = count;
++		mtk_uart_apdma_chan_write(c, VFF_RPT, wg);
++
++		list_del(&d->vd.node);
++		vchan_cookie_complete(&d->vd);
++	}
++}
++
++static irqreturn_t mtk_uart_apdma_irq_handler(int irq, void *dev_id)
++{
++	struct dma_chan *chan = (struct dma_chan *)dev_id;
++	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
++	struct mtk_uart_apdma_desc *d;
++	unsigned long flags;
++
++	spin_lock_irqsave(&c->vc.lock, flags);
++	switch (c->cfg.direction) {
++	case DMA_DEV_TO_MEM:
++		mtk_uart_apdma_chan_write(c,
++				VFF_INT_FLAG, VFF_RX_INT_FLAG_CLR_B);
++		mtk_uart_apdma_start_rx(c);
++		break;
++	case DMA_MEM_TO_DEV:
++		d = c->desc;
++
++		mtk_uart_apdma_chan_write(c,
++				VFF_INT_FLAG, VFF_TX_INT_FLAG_CLR_B);
++
++		if (d->avail_len != 0U) {
++			mtk_uart_apdma_start_tx(c);
++		} else {
++			list_del(&d->vd.node);
++			vchan_cookie_complete(&d->vd);
++		}
++		break;
++	default:
++		break;
++	}
++	spin_unlock_irqrestore(&c->vc.lock, flags);
++
++	return IRQ_HANDLED;
++}
++
++static int mtk_uart_apdma_alloc_chan_resources(struct dma_chan *chan)
++{
++	struct mtk_uart_apdmadev *mtkd = to_mtk_uart_apdma_dev(chan->device);
++	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
++	u32 status;
++	int ret = -EBUSY;
++
++	pm_runtime_get_sync(mtkd->ddev.dev);
++
++	mtk_uart_apdma_chan_write(c, VFF_ADDR, 0);
++	mtk_uart_apdma_chan_write(c, VFF_THRE, 0);
++	mtk_uart_apdma_chan_write(c, VFF_LEN, 0);
++	mtk_uart_apdma_chan_write(c, VFF_RST, VFF_WARM_RST_B);
++
++	ret = readx_poll_timeout(readl,
++				 c->base + VFF_EN,
++				 status, status == 0, 10, 100);
++	if (ret) {
++		dev_err(c->vc.chan.device->dev,
++				"dma reset: fail, timeout\n");
++		goto exit;
++	}
++
++	if (!c->requested) {
++		c->requested = true;
++		ret = request_irq(mtkd->dma_irq[chan->chan_id],
++				  mtk_uart_apdma_irq_handler,
++				  IRQF_TRIGGER_NONE,
++				  KBUILD_MODNAME, chan);
++		if (ret < 0) {
++			dev_err(chan->device->dev, "Can't request dma IRQ\n");
++			return -EINVAL;
++		}
++	}
++
++	if (mtkd->support_33bits)
++		mtk_uart_apdma_chan_write(c,
++				VFF_4G_SUPPORT, VFF_4G_SUPPORT_CLR_B);
++
++exit:
++	return ret;
++}
++
++static void mtk_uart_apdma_free_chan_resources(struct dma_chan *chan)
++{
++	struct mtk_uart_apdmadev *mtkd = to_mtk_uart_apdma_dev(chan->device);
++	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
++
++	if (c->requested) {
++		c->requested = false;
++		free_irq(mtkd->dma_irq[chan->chan_id], chan);
++	}
++
++	tasklet_kill(&c->vc.task);
++
++	vchan_free_chan_resources(&c->vc);
++
++	pm_runtime_put_sync(mtkd->ddev.dev);
++}
++
++static enum dma_status mtk_uart_apdma_tx_status(struct dma_chan *chan,
++					 dma_cookie_t cookie,
++					 struct dma_tx_state *txstate)
++{
++	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
++	enum dma_status ret;
++	unsigned long flags;
++
++	if (!txstate)
++		return DMA_ERROR;
++
++	ret = dma_cookie_status(chan, cookie, txstate);
++	spin_lock_irqsave(&c->vc.lock, flags);
++	if (ret == DMA_IN_PROGRESS) {
++		c->rx_status = mtk_uart_apdma_chan_read(c, VFF_RPT)
++			     & MTK_UART_APDMA_RING_SIZE;
++		dma_set_residue(txstate, c->rx_status);
++	} else if (ret == DMA_COMPLETE && c->cfg.direction == DMA_DEV_TO_MEM) {
++		dma_set_residue(txstate, c->rx_status);
++	} else {
++		dma_set_residue(txstate, 0);
++	}
++	spin_unlock_irqrestore(&c->vc.lock, flags);
++
++	return ret;
++}
++
++/*
++ * dmaengine_prep_slave_single will call the function. and sglen is 1.
++ * 8250 uart using one ring buffer, and deal with one sg.
++ */
++static struct dma_async_tx_descriptor *mtk_uart_apdma_prep_slave_sg
++	(struct dma_chan *chan, struct scatterlist *sgl,
++	unsigned int sglen,	enum dma_transfer_direction dir,
++	unsigned long tx_flags, void *context)
++{
++	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
++	struct mtk_uart_apdma_desc *d;
++
++	if ((dir != DMA_DEV_TO_MEM) &&
++		(dir != DMA_MEM_TO_DEV)) {
++		dev_err(chan->device->dev, "bad direction\n");
++		return NULL;
++	}
++
++	/* Now allocate and setup the descriptor */
++	d = kzalloc(sizeof(*d), GFP_ATOMIC);
++	if (!d)
++		return NULL;
++
++	/* sglen is 1 */
++	d->avail_len = sg_dma_len(sgl);
++
++	return vchan_tx_prep(&c->vc, &d->vd, tx_flags);
++}
++
++static void mtk_uart_apdma_issue_pending(struct dma_chan *chan)
++{
++	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
++	struct virt_dma_desc *vd;
++	unsigned long flags;
++
++	spin_lock_irqsave(&c->vc.lock, flags);
++	if (c->cfg.direction == DMA_DEV_TO_MEM) {
++		if (vchan_issue_pending(&c->vc) && !c->desc) {
++			vd = vchan_next_desc(&c->vc);
++			c->desc = to_mtk_uart_apdma_desc(&vd->tx);
++			mtk_uart_apdma_start_rx(c);
++		}
++	} else if (c->cfg.direction == DMA_MEM_TO_DEV) {
++		if (vchan_issue_pending(&c->vc) && !c->desc) {
++			vd = vchan_next_desc(&c->vc);
++			c->desc = to_mtk_uart_apdma_desc(&vd->tx);
++			mtk_uart_apdma_start_tx(c);
++		}
++	}
++	spin_unlock_irqrestore(&c->vc.lock, flags);
++}
++
++static int mtk_uart_apdma_slave_config(struct dma_chan *chan,
++				struct dma_slave_config *cfg)
++{
++	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
++	struct mtk_uart_apdmadev *mtkd =
++				to_mtk_uart_apdma_dev(c->vc.chan.device);
++
++	c->cfg = *cfg;
++
++	if (cfg->direction == DMA_DEV_TO_MEM) {
++		unsigned int rx_len = cfg->src_addr_width * 1024;
++
++		mtk_uart_apdma_chan_write(c, VFF_ADDR, cfg->src_addr);
++		mtk_uart_apdma_chan_write(c, VFF_LEN, rx_len);
++		mtk_uart_apdma_chan_write(c, VFF_THRE, VFF_RX_THRE(rx_len));
++		mtk_uart_apdma_chan_write(c,
++				VFF_INT_EN, VFF_RX_INT_EN0_B
++				| VFF_RX_INT_EN1_B);
++		mtk_uart_apdma_chan_write(c, VFF_RPT, 0);
++		mtk_uart_apdma_chan_write(c,
++				VFF_INT_FLAG, VFF_RX_INT_FLAG_CLR_B);
++		mtk_uart_apdma_chan_write(c, VFF_EN, VFF_EN_B);
++	} else if (cfg->direction == DMA_MEM_TO_DEV)	{
++		unsigned int tx_len = cfg->dst_addr_width * 1024;
++
++		mtk_uart_apdma_chan_write(c, VFF_ADDR, cfg->dst_addr);
++		mtk_uart_apdma_chan_write(c, VFF_LEN, tx_len);
++		mtk_uart_apdma_chan_write(c, VFF_THRE, VFF_TX_THRE(tx_len));
++		mtk_uart_apdma_chan_write(c, VFF_WPT, 0);
++		mtk_uart_apdma_chan_write(c,
++				VFF_INT_FLAG, VFF_TX_INT_FLAG_CLR_B);
++		mtk_uart_apdma_chan_write(c, VFF_EN, VFF_EN_B);
++	}
++
++	if (mtkd->support_33bits)
++		mtk_uart_apdma_chan_write(c, VFF_4G_SUPPORT, VFF_4G_SUPPORT_B);
++
++	if (mtk_uart_apdma_chan_read(c, VFF_EN) != VFF_EN_B) {
++		dev_err(chan->device->dev,
++			"config dma dir[%d] fail\n", cfg->direction);
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int mtk_uart_apdma_terminate_all(struct dma_chan *chan)
++{
++	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
++	unsigned long flags;
++	u32 status;
++	int ret;
++
++	spin_lock_irqsave(&c->vc.lock, flags);
++
++	mtk_uart_apdma_chan_write(c, VFF_FLUSH, VFF_FLUSH_CLR_B);
++	/* Wait for flush */
++	ret = readx_poll_timeout(readl,
++				 c->base + VFF_FLUSH,
++				 status,
++				 (status & VFF_FLUSH_B) != VFF_FLUSH_B,
++				 10, 100);
++	if (ret)
++		dev_err(c->vc.chan.device->dev,
++			"dma stop: polling FLUSH fail, DEBUG=0x%x\n",
++			mtk_uart_apdma_chan_read(c, VFF_DEBUG_STATUS));
++
++	/*set stop as 1 -> wait until en is 0 -> set stop as 0*/
++	mtk_uart_apdma_chan_write(c, VFF_STOP, VFF_STOP_B);
++	ret = readx_poll_timeout(readl,
++				 c->base + VFF_EN,
++				 status, status == 0, 10, 100);
++	if (ret)
++		dev_err(c->vc.chan.device->dev,
++			"dma stop: polling VFF_EN fail, DEBUG=0x%x\n",
++			mtk_uart_apdma_chan_read(c, VFF_DEBUG_STATUS));
++
++	mtk_uart_apdma_chan_write(c, VFF_STOP, VFF_STOP_CLR_B);
++	mtk_uart_apdma_chan_write(c, VFF_INT_EN, VFF_INT_EN_CLR_B);
++
++	switch (c->cfg.direction) {
++	case DMA_DEV_TO_MEM:
++		mtk_uart_apdma_chan_write(c,
++				VFF_INT_FLAG, VFF_RX_INT_FLAG_CLR_B);
++		break;
++	case DMA_MEM_TO_DEV:
++		mtk_uart_apdma_chan_write(c,
++				VFF_INT_FLAG, VFF_TX_INT_FLAG_CLR_B);
++		break;
++	default:
++		break;
++	}
++
++	spin_unlock_irqrestore(&c->vc.lock, flags);
++
++	return 0;
++}
++
++static int mtk_uart_apdma_device_pause(struct dma_chan *chan)
++{
++	/* just for check caps pass */
++	return 0;
++}
++
++static int mtk_uart_apdma_device_resume(struct dma_chan *chan)
++{
++	/* just for check caps pass */
++	return 0;
++}
++
++static void mtk_uart_apdma_free(struct mtk_uart_apdmadev *mtkd)
++{
++	while (list_empty(&mtkd->ddev.channels) == 0) {
++		struct mtk_chan *c = list_first_entry(&mtkd->ddev.channels,
++			struct mtk_chan, vc.chan.device_node);
++
++		list_del(&c->vc.chan.device_node);
++		tasklet_kill(&c->vc.task);
++	}
++}
++
++static const struct of_device_id mtk_uart_apdma_match[] = {
++	{ .compatible = "mediatek,mt6577-uart-dma", },
++	{ /* sentinel */ },
++};
++MODULE_DEVICE_TABLE(of, mtk_uart_apdma_match);
++
++static int mtk_uart_apdma_probe(struct platform_device *pdev)
++{
++	struct mtk_uart_apdmadev *mtkd;
++	struct resource *res;
++	struct mtk_chan *c;
++	unsigned int i;
++	int rc;
++
++	mtkd = devm_kzalloc(&pdev->dev, sizeof(*mtkd), GFP_KERNEL);
++	if (!mtkd)
++		return -ENOMEM;
++
++	mtkd->clk = devm_clk_get(&pdev->dev, NULL);
++	if (IS_ERR(mtkd->clk)) {
++		dev_err(&pdev->dev, "No clock specified\n");
++		rc = PTR_ERR(mtkd->clk);
++		goto err_no_dma;
++	}
++
++	if (of_property_read_bool(pdev->dev.of_node, "dma-33bits")) {
++		dev_info(&pdev->dev, "Support dma 33bits\n");
++		mtkd->support_33bits = true;
++	}
++
++	rc = dma_set_mask_and_coherent(&pdev->dev,
++				DMA_BIT_MASK(32 | mtkd->support_33bits));
++	if (rc)
++		goto err_no_dma;
++
++	dma_cap_set(DMA_SLAVE, mtkd->ddev.cap_mask);
++	mtkd->ddev.device_alloc_chan_resources =
++				mtk_uart_apdma_alloc_chan_resources;
++	mtkd->ddev.device_free_chan_resources =
++				mtk_uart_apdma_free_chan_resources;
++	mtkd->ddev.device_tx_status = mtk_uart_apdma_tx_status;
++	mtkd->ddev.device_issue_pending = mtk_uart_apdma_issue_pending;
++	mtkd->ddev.device_prep_slave_sg = mtk_uart_apdma_prep_slave_sg;
++	mtkd->ddev.device_config = mtk_uart_apdma_slave_config;
++	mtkd->ddev.device_pause = mtk_uart_apdma_device_pause;
++	mtkd->ddev.device_resume = mtk_uart_apdma_device_resume;
++	mtkd->ddev.device_terminate_all = mtk_uart_apdma_terminate_all;
++	mtkd->ddev.src_addr_widths = BIT(DMA_SLAVE_BUSWIDTH_1_BYTE);
++	mtkd->ddev.dst_addr_widths = BIT(DMA_SLAVE_BUSWIDTH_1_BYTE);
++	mtkd->ddev.directions = BIT(DMA_DEV_TO_MEM) | BIT(DMA_MEM_TO_DEV);
++	mtkd->ddev.residue_granularity = DMA_RESIDUE_GRANULARITY_SEGMENT;
++	mtkd->ddev.dev = &pdev->dev;
++	INIT_LIST_HEAD(&mtkd->ddev.channels);
++
++	for (i = 0; i < MTK_UART_APDMA_CHANNELS; i++) {
++		c = devm_kzalloc(mtkd->ddev.dev, sizeof(*c), GFP_KERNEL);
++		if (!c) {
++			rc = -ENODEV;
++			goto err_no_dma;
++		}
++
++		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
++		if (!res) {
++			rc = -ENODEV;
++			goto err_no_dma;
++		}
++
++		c->base = devm_ioremap_resource(&pdev->dev, res);
++		if (IS_ERR(c->base)) {
++			rc = PTR_ERR(c->base);
++			goto err_no_dma;
++		}
++		c->requested = false;
++		c->vc.desc_free = mtk_uart_apdma_desc_free;
++		vchan_init(&c->vc, &mtkd->ddev);
++
++		mtkd->dma_irq[i] = platform_get_irq(pdev, i);
++		if ((int)mtkd->dma_irq[i] < 0) {
++			dev_err(&pdev->dev, "failed to get IRQ[%d]\n", i);
++			rc = -EINVAL;
++			goto err_no_dma;
++		}
++	}
++
++	pm_runtime_enable(&pdev->dev);
++	pm_runtime_set_active(&pdev->dev);
++
++	rc = dma_async_device_register(&mtkd->ddev);
++	if (rc)
++		goto rpm_disable;
++
++	platform_set_drvdata(pdev, mtkd);
++
++	if (pdev->dev.of_node) {
++		/* Device-tree DMA controller registration */
++		rc = of_dma_controller_register(pdev->dev.of_node,
++						of_dma_xlate_by_chan_id,
++						mtkd);
++		if (rc)
++			goto dma_remove;
++	}
++
++	return rc;
++
++dma_remove:
++	dma_async_device_unregister(&mtkd->ddev);
++rpm_disable:
++	pm_runtime_disable(&pdev->dev);
++err_no_dma:
++	mtk_uart_apdma_free(mtkd);
++	return rc;
++}
++
++static int mtk_uart_apdma_remove(struct platform_device *pdev)
++{
++	struct mtk_uart_apdmadev *mtkd = platform_get_drvdata(pdev);
++
++	if (pdev->dev.of_node)
++		of_dma_controller_free(pdev->dev.of_node);
++
++	pm_runtime_disable(&pdev->dev);
++	pm_runtime_put_noidle(&pdev->dev);
++
++	dma_async_device_unregister(&mtkd->ddev);
++	mtk_uart_apdma_free(mtkd);
++
++	return 0;
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int mtk_uart_apdma_suspend(struct device *dev)
++{
++	struct mtk_uart_apdmadev *mtkd = dev_get_drvdata(dev);
++
++	if (!pm_runtime_suspended(dev))
++		clk_disable_unprepare(mtkd->clk);
++
++	return 0;
++}
++
++static int mtk_uart_apdma_resume(struct device *dev)
++{
++	int ret;
++	struct mtk_uart_apdmadev *mtkd = dev_get_drvdata(dev);
++
++	if (!pm_runtime_suspended(dev)) {
++		ret = clk_prepare_enable(mtkd->clk);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++#endif /* CONFIG_PM_SLEEP */
++
++#ifdef CONFIG_PM
++static int mtk_uart_apdma_runtime_suspend(struct device *dev)
++{
++	struct mtk_uart_apdmadev *mtkd = dev_get_drvdata(dev);
++
++	clk_disable_unprepare(mtkd->clk);
++
++	return 0;
++}
++
++static int mtk_uart_apdma_runtime_resume(struct device *dev)
++{
++	int ret;
++	struct mtk_uart_apdmadev *mtkd = dev_get_drvdata(dev);
++
++	ret = clk_prepare_enable(mtkd->clk);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++#endif /* CONFIG_PM */
++
++static const struct dev_pm_ops mtk_uart_apdma_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(mtk_uart_apdma_suspend, mtk_uart_apdma_resume)
++	SET_RUNTIME_PM_OPS(mtk_uart_apdma_runtime_suspend,
++			   mtk_uart_apdma_runtime_resume, NULL)
++};
++
++static struct platform_driver mtk_uart_apdma_driver = {
++	.probe	= mtk_uart_apdma_probe,
++	.remove	= mtk_uart_apdma_remove,
++	.driver = {
++		.name		= KBUILD_MODNAME,
++		.pm		= &mtk_uart_apdma_pm_ops,
++		.of_match_table = of_match_ptr(mtk_uart_apdma_match),
++	},
++};
++
++module_platform_driver(mtk_uart_apdma_driver);
++
++MODULE_DESCRIPTION("MediaTek UART APDMA Controller Driver");
++MODULE_AUTHOR("Long Cheng <long.cheng@mediatek.com>");
++MODULE_LICENSE("GPL v2");
++
+diff --git a/drivers/dma/mediatek/Kconfig b/drivers/dma/mediatek/Kconfig
+index 27bac0b..2c082c9 100644
+--- a/drivers/dma/mediatek/Kconfig
++++ b/drivers/dma/mediatek/Kconfig
+@@ -1,4 +1,15 @@
+ 
++config DMA_MTK_UART
++	tristate "MediaTek SoCs APDMA support for UART"
++	depends on OF && SERIAL_8250_MT6577
++	select DMA_ENGINE
++	select DMA_VIRTUAL_CHANNELS
++	help
++	  Support for the UART DMA engine found on MediaTek MTK SoCs.
++	  when SERIAL_8250_MT6577 is enabled, and if you want to using DMA,
++	  you can enable the config. the DMA engine just only be used
++	  with MediaTek SoCs.
++
+ config MTK_HSDMA
+ 	tristate "MediaTek High-Speed DMA controller support"
+ 	depends on ARCH_MEDIATEK || COMPILE_TEST
+diff --git a/drivers/dma/mediatek/Makefile b/drivers/dma/mediatek/Makefile
+index 6e778f8..2f2efd9 100644
+--- a/drivers/dma/mediatek/Makefile
++++ b/drivers/dma/mediatek/Makefile
+@@ -1 +1,2 @@
++obj-$(CONFIG_DMA_MTK_UART) += 8250_mtk_dma.o
+ obj-$(CONFIG_MTK_HSDMA) += mtk-hsdma.o
 -- 
-Best regards,
-Marek Vasut
+1.7.9.5
