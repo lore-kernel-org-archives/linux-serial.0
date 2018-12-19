@@ -1,34 +1,307 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2] dt-bindings: serial: sh-sci: Document r8a774c0
- bindings
-Date: Tue, 18 Dec 2018 11:48:38 -0600
-Message-ID: <20181218174838.GA28308@bogus>
-References: <1545134590-22510-1-git-send-email-fabrizio.castro@bp.renesas.com>
+From: Marek Vasut <marex@denx.de>
+Subject: Re: [PATCH] Revert "serial: 8250: Fix clearing FIFOs in RS485 mode
+ again"
+Date: Wed, 19 Dec 2018 01:12:01 +0100
+Message-ID: <3086d1b7-9ed9-9d48-4371-89139c356d22@denx.de>
+References: <20181213174834.kxdy6fphaeoivqgh@pburton-laptop>
+ <20181216200833.27928-1-paul.burton@mips.com>
+ <f5a76d73-862f-3ebc-cd07-effc5c432103@denx.de>
+ <20181216213133.kwe24pif3v4wcgwp@pburton-laptop>
+ <949fdd3d-535e-d235-f406-d5bde4658c5e@denx.de>
+ <CAAEAJfAad75bHX39ETCdVv9vP0dF7PLz2vvFLLqgtyikPHqJyA@mail.gmail.com>
+ <20181216222411.5jkexuaqxpfudj7b@pburton-laptop>
+ <CAAEAJfAQ9=B6sm=Ard+YTDN5g5r03o=t9xU3Nu2QaKrXXZ4pGw@mail.gmail.com>
+ <20181216223510.hxsdotf332ousinh@pburton-laptop>
+ <CAAEAJfDHvGTPN9u4zwWRFvK1WmpLmz87CjsjzmyhcExTGHQPmA@mail.gmail.com>
+ <61a3177f-4e8d-fc51-1e81-95af3baab3a8@denx.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1545134590-22510-1-git-send-email-fabrizio.castro@bp.renesas.com>
-Sender: linux-kernel-owner@vger.kernel.org
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Simon Horman <horms@verge.net.au>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Fabrizio Castro <fabrizio.castro@bp.renesas.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, linux-renesas-soc@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <61a3177f-4e8d-fc51-1e81-95af3baab3a8@denx.de>
+Content-Language: en-US
+Sender: stable-owner@vger.kernel.org
+To: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>, Paul Burton <paul.burton@mips.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Paul Burton <pburton@wavecomp.com>, Daniel Jedrychowski <avistel@gmail.com>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, stable <stable@vger.kernel.org>, Ezequiel Garcia <ezequiel@collabora.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 18 Dec 2018 12:03:10 +0000, Fabrizio Castro wrote:
-> RZ/G2E (R8A774C0) SoC also has the R-Car Gen3 compatible SCIF and
-> HSCIF ports, so document the SoC specific bindings.
+On 12/17/2018 06:20 PM, Marek Vasut wrote:
+> On 12/17/2018 05:30 PM, Ezequiel Garcia wrote:
+>> On Sun, 16 Dec 2018 at 19:35, Paul Burton <paul.burton@mips.com> wrote:
+>>>
+>>> Hi Ezequiel,
+>>>
+>>> On Sun, Dec 16, 2018 at 07:28:22PM -0300, Ezequiel Garcia wrote:
+>>>> On Sun, 16 Dec 2018 at 19:24, Paul Burton <paul.burton@mips.com> wrote:
+>>>>> This helps, but it only addresses one part of one of the 4 reasons I
+>>>>> listed as motivation for my revert. For example serial8250_do_shutdown()
+>>>>> also clearly intends to disable the FIFOs.
+>>>>>
+>>>>
+>>>> OK. So, let's fix that :-)
+>>>
+>>> I already did, or at least tried to, on Thursday [1].
+>>>
+>>>> By all means, it would be really nice to push forward and fix the garbage
+>>>> issue on JZ4780, as well as the transmission issue on AM335x.
+>>>>
+>>>> AM335x is a wildly popular platform, and it's not funny to break it.
+>>>
+>>> Well, clearly not if it was broken in v4.10 & only just fixed..? And
+>>> from Marek's commit message the patch in v4.10 doesn't break the whole
+>>> system just RS485.
+>>>
+>>
+>> Careful here. It's naive to consider v4.10 as old in this context.
+>>
+>> AM335x is used in hundreds of thousands of products, probably
+>> "industrial" products.
+>> Manufacturers don't always follow the kernel, and it's entirely
+>> likely that they notice a regression only when developing a new product,
+>> or when rebasing on top of a newer longterm kernel.
+>>
+>> Then again, I don't have any details about what is Marek's original fix
+>> actually fixing.
+>>
+>> Marek: could you please post the test case that you used to validate your fix?
+>> I can't find that anywhere.
 > 
-> Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
-> ---
-> v1->v2:
-> * Fixed title according to Geert's comment
+> I can't share the testcase itself because it has no license and I didn't
+> write it, but I can tell you what it's doing. (I'll check if I can share
+> the testcase verbatim too, I just sent an email to the author)
 > 
-> This patch depends on:
-> https://patchwork.kernel.org/patch/10565543/
+> The test spawns two threads, one sending , one receiving. The sending
+> thread sends 8 bytes of data from /dev/ttyS4 , the receiving thread
+> receives the data on /dev/ttyS2 and compares the pattern. The port
+> settings is B1000000 8N1 with rs485conf.flags set to SER_RS485_ENABLED
+> and SER_RS485_RTS_AFTER_SEND. Sometimes the received data do not match
+> the sent data, but rather look as if one character was left over from
+> the previous transmission in the FIFO.
 > 
->  Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+> Those two UARTs are connected together by two wires, without any real
+> RS485 hardware to minimize the hardware complexity (it's easy to
+> implement that on the pocketbeagle, which is the cheap option here).
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Test code is below . On the pocketbeagle, connect SPI0:CLK with U4:TX
+and SPI0:MISO with U4:RX , apply the DT patch below and run the example.
+It'll fail after a few iterations.
+
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
+#include <termios.h>
+#include <unistd.h>
+
+#include <iostream>
+#include <iomanip>
+#include <atomic>
+#include <thread>
+
+#include <linux/serial.h>
+#include <sys/ioctl.h>
+
+std::atomic<bool> running{true};
+
+int set_interface_attribs (int fd, int speed, int parity)
+{
+        struct termios tty;
+        memset (&tty, 0, sizeof tty);
+        if (tcgetattr (fd, &tty) != 0)
+        {
+                std::cerr << "Error from tcgetattr" << std::endl;
+                return -1;
+        }
+
+        cfsetospeed (&tty, speed);
+        cfsetispeed (&tty, speed);
+
+        tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;
+        tty.c_iflag &= ~IGNBRK;
+        tty.c_lflag = 0;
+
+        tty.c_oflag = 0;
+        tty.c_cc[VMIN]  = 8;
+        tty.c_cc[VTIME] = 0;
+
+        tty.c_iflag &= ~(IXON | IXOFF | IXANY);
+
+        tty.c_cflag |= (CLOCAL | CREAD);
+        tty.c_cflag &= ~(PARENB | PARODD);
+        tty.c_cflag |= parity;
+        tty.c_cflag &= ~CSTOPB;
+        tty.c_cflag &= ~CRTSCTS;
+
+        if (tcsetattr (fd, TCSANOW, &tty) != 0)
+        {
+                std::cerr << "Error from tcsetattr" << std::endl;
+                return -1;
+        }
+        return 0;
+}
+
+void enable_rts(int fd, int rts)
+{
+     struct serial_rs485 rs485conf;
+      if (rts) {
+              rs485conf.flags = SER_RS485_ENABLED ;
+              rs485conf.flags |= SER_RS485_RTS_AFTER_SEND;
+              rs485conf.flags &= ~(SER_RS485_RTS_ON_SEND);
+              rs485conf.delay_rts_before_send = 0;
+              rs485conf.delay_rts_after_send = 0;
+      } else {
+              rs485conf.flags = 0 ;
+      }
+
+      if (ioctl( fd, TIOCSRS485, &rs485conf) < 0){
+          std::cerr << "Cannot set device in RS485 mode" << std::endl;
+      }
+}
+
+void output_function(int fd)
+{
+   while(running) {
+    write (fd, "asdfghjk", 8);
+    usleep (20000);
+   }
+}
+
+void input_function(int fd)
+{
+  char buf [100];
+  size_t count=0;
+  std::cout << std::unitbuf;
+  while(running){
+    int n = read (fd, buf, sizeof buf);
+    if( (n >0) && (buf[0] != 'a') ){
+        std::cout << "\nunexpected receive! " << std::string(buf,8) <<
+std::endl;
+        running = false;
+    } else {
+       ++count;
+       if(count%100 == 0){
+          std::cout << "\r" << std::setw(8) << count << " possibly ok";
+       }
+    }
+  }
+}
+
+int main(int argc, char** argv)
+{
+  std::string in_port  = "/dev/ttyS2";
+  std::string out_port = "/dev/ttyS4";
+
+  int c, rts = 1;
+
+  while ((c = getopt (argc, argv, "i:o:r")) != -1)
+  {
+    switch (c)
+      {
+      case 'i':
+        in_port = std::string(optarg);
+        break;
+      case 'o':
+        out_port = std::string(optarg);
+        break;
+      case 'r':
+        rts = 0;
+        break;
+      case '?':
+        return 1;
+      default:
+        break;
+      }
+    }
+
+    std::cout << "opening output " << out_port << std::endl;
+    int outfd = open ( out_port.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
+    if (outfd < 0)
+    {
+            std::cerr << "Could not open " << out_port << std::endl;
+            return 1;
+    }
+
+    std::cout << "opening input " << in_port << std::endl;
+    int infd = open ( in_port.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
+    if (infd < 0)
+    {
+            std::cerr << "Could not open " << in_port << std::endl;
+            return 1;
+    }
+
+    set_interface_attribs (infd,  B1000000, 0);
+    set_interface_attribs (outfd, B1000000, 0);
+
+    enable_rts(outfd, rts);
+    enable_rts(infd, rts);
+
+    std::thread in(input_function, infd);
+    std::thread out(output_function, outfd);
+
+    in.join();
+    out.join();
+
+    close(infd);
+    close(outfd);
+}
+
+diff --git a/arch/arm/boot/dts/am335x-pocketbeagle.dts
+b/arch/arm/boot/dts/am335x-pocketbeagle.dts
+index 62fe5cab9fae..d9b8f09920a6 100644
+--- a/arch/arm/boot/dts/am335x-pocketbeagle.dts
++++ b/arch/arm/boot/dts/am335x-pocketbeagle.dts
+@@ -92,15 +92,6 @@
+                >;
+        };
+
+-       spi0_pins: pinmux-spi0-pins {
+-               pinctrl-single,pins = <
+-                       AM33XX_IOPAD(0x950, PIN_INPUT_PULLUP |
+MUX_MODE0)       /* (A17) spi0_sclk.spi0_sclk */
+-                       AM33XX_IOPAD(0x954, PIN_INPUT_PULLUP |
+MUX_MODE0)       /* (B17) spi0_d0.spi0_d0 */
+-                       AM33XX_IOPAD(0x958, PIN_INPUT_PULLUP |
+MUX_MODE0)       /* (B16) spi0_d1.spi0_d1 */
+-                       AM33XX_IOPAD(0x95c, PIN_INPUT_PULLUP |
+MUX_MODE0)       /* (A16) spi0_cs0.spi0_cs0 */
+-               >;
+-       };
+-
+        spi1_pins: pinmux-spi1-pins {
+                pinctrl-single,pins = <
+                        AM33XX_IOPAD(0x964, PIN_INPUT_PULLUP |
+MUX_MODE4)       /* (C18) eCAP0_in_PWM0_out.spi1_sclk */
+@@ -126,6 +117,13 @@
+                >;
+        };
+
++       uart2_pins: pinmux-uart2-pins {
++               pinctrl-single,pins = <
++                       AM33XX_IOPAD(0x950, PIN_INPUT | MUX_MODE1)
+       /* spi0_sclk.uart2_rxd */
++                       AM33XX_IOPAD(0x954, PIN_OUTPUT | MUX_MODE1)
+       /* spi0_d0.uart2_txd */
++               >;
++       };
++
+        uart4_pins: pinmux-uart4-pins {
+                pinctrl-single,pins = <
+                        AM33XX_IOPAD(0x870, PIN_INPUT_PULLUP |
+MUX_MODE6)       /* (T17) gpmc_wait0.uart4_rxd */
+@@ -199,6 +197,13 @@
+        status = "okay";
+ };
+
++&uart2 {
++       pinctrl-names = "default";
++       pinctrl-0 = <&uart2_pins>;
++
++       status = "okay";
++};
++
+ &uart4 {
+        pinctrl-names = "default";
+        pinctrl-0 = <&uart4_pins>;
+
+-- 
+Best regards,
+Marek Vasut
