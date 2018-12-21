@@ -1,16 +1,16 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH 1/4] mfd: exynos-lpass: Enable UART module support
-Date: Fri, 21 Dec 2018 10:13:06 +0000
-Message-ID: <20181221101306.GH13248@dell>
+Subject: Re: [PATCH 3/4] tty: serial: samsung: Increase maximum baudrate
+Date: Fri, 21 Dec 2018 10:15:53 +0000
+Message-ID: <20181221101553.GI13248@dell>
 References: <20181214113410.22848-1-m.szyprowski@samsung.com>
- <CGME20181214113416eucas1p2002adf7b5438c525c34ff3274ceacbd1@eucas1p2.samsung.com>
- <20181214113410.22848-2-m.szyprowski@samsung.com>
+ <CGME20181214113418eucas1p2bfb6f0d04010e73f6ca35c3a6664b316@eucas1p2.samsung.com>
+ <20181214113410.22848-4-m.szyprowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181214113410.22848-2-m.szyprowski@samsung.com>
+In-Reply-To: <20181214113410.22848-4-m.szyprowski@samsung.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Marek Szyprowski <m.szyprowski@samsung.com>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Beomho Seo <beomho.seo@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -18,43 +18,36 @@ List-Id: linux-serial@vger.kernel.org
 
 On Fri, 14 Dec 2018, Marek Szyprowski wrote:
 
-> From: Beomho Seo <beomho.seo@samsung.com>
+> From: Seung-Woo Kim <sw0312.kim@samsung.com>
 > 
-> This patch enables support for UART module in Exynos Audio SubSystem.
-> There are boards (for example TM2), which use it for communication with
-> bluetooth chip.
-
-Does it though?  Or does it enable the interrupt and reset something?
-These calls would probably benefit from some documentation by way of
-comments.
-
-> Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
-> [mszyprow: rephrased commit message, added UART reset]
+> This driver can be used to communicate with Bluetooth chip in high-speed
+> UART mode, so increase the maximum baudrate to 3Mbps.
+> 
+> Signed-off-by: Seung-Woo Kim <sw0312.kim@samsung.com>
+> [mszyprow: rephrased commit message]
 > Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Reviewed-by: Sylwester Nawrocki <s.nawrocki@samsung.com>
 > ---
->  drivers/mfd/exynos-lpass.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+>  drivers/tty/serial/samsung.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/mfd/exynos-lpass.c b/drivers/mfd/exynos-lpass.c
-> index ca829f85672f..2713de989f05 100644
-> --- a/drivers/mfd/exynos-lpass.c
-> +++ b/drivers/mfd/exynos-lpass.c
-> @@ -82,11 +82,13 @@ static void exynos_lpass_enable(struct exynos_lpass *lpass)
->  		     LPASS_INTR_SFR | LPASS_INTR_DMA | LPASS_INTR_I2S);
+> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+> index 2a49b6d876b8..9fc3559f80d9 100644
+> --- a/drivers/tty/serial/samsung.c
+> +++ b/drivers/tty/serial/samsung.c
+> @@ -1287,7 +1287,7 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
+>  	 * Ask the core to calculate the divisor for us.
+>  	 */
 >  
->  	regmap_write(lpass->top, SFR_LPASS_INTR_CPU_MASK,
-> -		     LPASS_INTR_SFR | LPASS_INTR_DMA | LPASS_INTR_I2S);
-> +		     LPASS_INTR_SFR | LPASS_INTR_DMA | LPASS_INTR_I2S |
-> +		     LPASS_INTR_UART);
->  
->  	exynos_lpass_core_sw_reset(lpass, LPASS_I2S_SW_RESET);
->  	exynos_lpass_core_sw_reset(lpass, LPASS_DMA_SW_RESET);
->  	exynos_lpass_core_sw_reset(lpass, LPASS_MEM_SW_RESET);
-> +	exynos_lpass_core_sw_reset(lpass, LPASS_UART_SW_RESET);
->  }
->  
->  static void exynos_lpass_disable(struct exynos_lpass *lpass)
+> -	baud = uart_get_baud_rate(port, termios, old, 0, 115200*8);
+> +	baud = uart_get_baud_rate(port, termios, old, 0, 3000000);
+
+Does that mean the low speed devices will stop working?  It looks like
+this should be dynamically configurable based on what device is
+connected to it, no?
+
+>  	quot = s3c24xx_serial_getclk(ourport, baud, &clk, &clk_sel);
+>  	if (baud == 38400 && (port->flags & UPF_SPD_MASK) == UPF_SPD_CUST)
+>  		quot = port->custom_divisor;
 
 -- 
 Lee Jones [李琼斯]
