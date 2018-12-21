@@ -1,40 +1,63 @@
-From: Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH] Revert "serial: 8250: Default SERIAL_OF_PLATFORM to SERIAL_8250"
-Date: Thu, 20 Dec 2018 20:27:16 -0800
-Message-ID: <20181221042719.29954-1-f.fainelli@gmail.com>
-References: <20181220173844.GA5838@roeck-us.net>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH 1/4] mfd: exynos-lpass: Enable UART module support
+Date: Fri, 21 Dec 2018 10:13:06 +0000
+Message-ID: <20181221101306.GH13248@dell>
+References: <20181214113410.22848-1-m.szyprowski@samsung.com>
+ <CGME20181214113416eucas1p2002adf7b5438c525c34ff3274ceacbd1@eucas1p2.samsung.com>
+ <20181214113410.22848-2-m.szyprowski@samsung.com>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181220173844.GA5838@roeck-us.net>
+Content-Disposition: inline
+In-Reply-To: <20181214113410.22848-2-m.szyprowski@samsung.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-vger@kernel.org
-Cc: linux-serial@vger.kernel.org, mpe@ellerman.id.au, arnd@arndb.de, gregkh@linuxfoundation.org, linux@roeck-us.net, benh@kernel.crashing.org, paulus@samba.org, linuxppc-dev@lists.ozlabs.org, Florian Fainelli <f.fainelli@gmail.com>, Jiri Slaby <jslaby@suse.com>, Nishanth Menon <nm@ti.com>, Tony Lindgren <tony@atomide.com>, Vignesh R <vigneshr@ti.com>, Lokesh Vutla <lokeshvutla@ti.com>, Michael Moese <mmoese@suse.de>, open list <linux-kernel@vger.kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-samsung-soc@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Beomho Seo <beomho.seo@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-This reverts commit 6d11023c345e369bcb9d5a68b271764e362c1f6e ("serial:
-8250: Default SERIAL_OF_PLATFORM to SERIAL_8250") since that breaks at
-least mpc8544ds (PowerPC) using arch/powerpc/kernel/legacy_serial.c.
+On Fri, 14 Dec 2018, Marek Szyprowski wrote:
 
-See https://lkml.org/lkml/2018/12/5/1491 for discussion and analysis
+> From: Beomho Seo <beomho.seo@samsung.com>
+> 
+> This patch enables support for UART module in Exynos Audio SubSystem.
+> There are boards (for example TM2), which use it for communication with
+> bluetooth chip.
 
-Fixes: 6d11023c345e ("serial: 8250: Default SERIAL_OF_PLATFORM to SERIAL_8250")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/tty/serial/8250/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+Does it though?  Or does it enable the interrupt and reset something?
+These calls would probably benefit from some documentation by way of
+comments.
 
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index d7737dca0e48..15c2c5463835 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -484,7 +484,6 @@ config SERIAL_8250_PXA
- config SERIAL_OF_PLATFORM
- 	tristate "Devicetree based probing for 8250 ports"
- 	depends on SERIAL_8250 && OF
--	default SERIAL_8250
- 	help
- 	  This option is used for all 8250 compatible serial ports that
- 	  are probed through devicetree, including Open Firmware based
+> Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
+> [mszyprow: rephrased commit message, added UART reset]
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Reviewed-by: Sylwester Nawrocki <s.nawrocki@samsung.com>
+> ---
+>  drivers/mfd/exynos-lpass.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/mfd/exynos-lpass.c b/drivers/mfd/exynos-lpass.c
+> index ca829f85672f..2713de989f05 100644
+> --- a/drivers/mfd/exynos-lpass.c
+> +++ b/drivers/mfd/exynos-lpass.c
+> @@ -82,11 +82,13 @@ static void exynos_lpass_enable(struct exynos_lpass *lpass)
+>  		     LPASS_INTR_SFR | LPASS_INTR_DMA | LPASS_INTR_I2S);
+>  
+>  	regmap_write(lpass->top, SFR_LPASS_INTR_CPU_MASK,
+> -		     LPASS_INTR_SFR | LPASS_INTR_DMA | LPASS_INTR_I2S);
+> +		     LPASS_INTR_SFR | LPASS_INTR_DMA | LPASS_INTR_I2S |
+> +		     LPASS_INTR_UART);
+>  
+>  	exynos_lpass_core_sw_reset(lpass, LPASS_I2S_SW_RESET);
+>  	exynos_lpass_core_sw_reset(lpass, LPASS_DMA_SW_RESET);
+>  	exynos_lpass_core_sw_reset(lpass, LPASS_MEM_SW_RESET);
+> +	exynos_lpass_core_sw_reset(lpass, LPASS_UART_SW_RESET);
+>  }
+>  
+>  static void exynos_lpass_disable(struct exynos_lpass *lpass)
+
 -- 
-2.19.1
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
