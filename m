@@ -1,13 +1,13 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.4 21/21] serial/sunsu: fix refcount leak
-Date: Wed, 26 Dec 2018 17:54:59 -0500
-Message-ID: <20181226225501.151365-21-sashal@kernel.org>
-References: <20181226225501.151365-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 3.18 12/12] serial/sunsu: fix refcount leak
+Date: Wed, 26 Dec 2018 17:57:40 -0500
+Message-ID: <20181226225741.151608-12-sashal@kernel.org>
+References: <20181226225741.151608-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181226225501.151365-1-sashal@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20181226225741.151608-1-sashal@kernel.org>
+Sender: stable-owner@vger.kernel.org
 To: stable@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc: Yangtao Li <tiny.windzz@gmail.com>, "David S . Miller" <davem@davemloft.net>, Sasha Levin <sashal@kernel.org>, sparclinux@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -34,10 +34,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 26 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
-index e124d2e88996..d6c9d5b458a0 100644
+index 5326ae195e5f..298c11556850 100644
 --- a/drivers/tty/serial/sunsu.c
 +++ b/drivers/tty/serial/sunsu.c
-@@ -1393,22 +1393,43 @@ static inline struct console *SUNSU_CONSOLE(void)
+@@ -1380,22 +1380,43 @@ static inline struct console *SUNSU_CONSOLE(void)
  static enum su_type su_get_type(struct device_node *dp)
  {
  	struct device_node *ap = of_find_node_by_path("/aliases");
