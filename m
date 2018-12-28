@@ -1,90 +1,70 @@
-From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 3.18 12/12] serial/sunsu: fix refcount leak
-Date: Wed, 26 Dec 2018 17:57:40 -0500
-Message-ID: <20181226225741.151608-12-sashal@kernel.org>
-References: <20181226225741.151608-1-sashal@kernel.org>
+From: Stephen Boyd <sboyd@kernel.org>
+Subject: Re: [PATCH 07/14] clock: milbeaut: Add Milbeaut M10V clock control
+Date: Thu, 27 Dec 2018 16:39:26 -0800
+Message-ID: <154595756614.179992.794211301759568891@swboyd.mtv.corp.google.com>
+References: <1542589274-13878-1-git-send-email-sugaya.taichi@socionext.com> <1542589274-13878-8-git-send-email-sugaya.taichi@socionext.com> <154356669840.88331.4455990896653868594@swboyd.mtv.corp.google.com> <9fba4689-b20f-c18a-ea11-d961de497ea3@socionext.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20181226225741.151608-1-sashal@kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: stable@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Yangtao Li <tiny.windzz@gmail.com>, "David S . Miller" <davem@davemloft.net>, Sasha Levin <sashal@kernel.org>, sparclinux@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <9fba4689-b20f-c18a-ea11-d961de497ea3@socionext.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Sugaya, Taichi" <sugaya.taichi@socionext.com>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Michael Turquette <mturquette@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, Jassi Brar <jaswinder.singh@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Yangtao Li <tiny.windzz@gmail.com>
+Quoting Sugaya, Taichi (2018-12-25 17:35:27)
+> Hi
+>=20
+> On 2018/11/30 17:31, Stephen Boyd wrote:
+> >> +       init.num_parents =3D parents;
+> >> +       init.parent_names =3D parent_names;
+> >> +
+> >> +       mcm->cname =3D clk_name;
+> >> +       mcm->parent =3D 0;
+> >> +       mcm->hw.init =3D &init;
+> >> +
+> >> +       clk =3D clk_register(NULL, &mcm->hw);
+> >> +       if (IS_ERR(clk))
+> >> +               goto err_clk;
+> >> +
+> >> +       of_clk_add_provider(node, of_clk_src_simple_get, clk);
+> >> +       return;
+> >> +
+> >> +err_clk:
+> >> +       kfree(mcm);
+> >> +err_mcm:
+> >> +       kfree(parent_names);
+> >> +}
+> >> +CLK_OF_DECLARE(m10v_clk_mux, "socionext,milbeaut-m10v-clk-mux",
+> >> +                       m10v_clk_mux_setup);
+> >=20
+> > Any chance you can use a platform driver?
+> >=20
+>=20
+> Excuse me to re-ask you.
+> Why do you recommend to use a platform driver? Is that current fad?
 
-[ Upstream commit d430aff8cd0c57502d873909c184e3b5753f8b88 ]
+Not exactly a fad. We've been doing it for some time now. From an older
+email on the list:
 
-The function of_find_node_by_path() acquires a reference to the node
-returned by it and that reference needs to be dropped by its caller.
+Reasons (in no particular order):
 
-su_get_type() doesn't do that. The match node are used as an identifier
-to compare against the current node, so we can directly drop the refcount
-after getting the node from the path as it is not used as pointer.
+  1. We get a dev pointer to use with clk_hw_register()
 
-Fix this by use a single variable and drop the refcount right after
-of_find_node_by_path().
+  2. We can handle probe defer if some resource is not available
 
-Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/sunsu.c | 31 ++++++++++++++++++++++++++-----
- 1 file changed, 26 insertions(+), 5 deletions(-)
+  3. Using device model gets us a hook into power management frameworks
+     like runtime PM and system PM for things like suspend and hibernate
 
-diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
-index 5326ae195e5f..298c11556850 100644
---- a/drivers/tty/serial/sunsu.c
-+++ b/drivers/tty/serial/sunsu.c
-@@ -1380,22 +1380,43 @@ static inline struct console *SUNSU_CONSOLE(void)
- static enum su_type su_get_type(struct device_node *dp)
- {
- 	struct device_node *ap = of_find_node_by_path("/aliases");
-+	enum su_type rc = SU_PORT_PORT;
- 
- 	if (ap) {
- 		const char *keyb = of_get_property(ap, "keyboard", NULL);
- 		const char *ms = of_get_property(ap, "mouse", NULL);
-+		struct device_node *match;
- 
- 		if (keyb) {
--			if (dp == of_find_node_by_path(keyb))
--				return SU_PORT_KBD;
-+			match = of_find_node_by_path(keyb);
-+
-+			/*
-+			 * The pointer is used as an identifier not
-+			 * as a pointer, we can drop the refcount on
-+			 * the of__node immediately after getting it.
-+			 */
-+			of_node_put(match);
-+
-+			if (dp == match) {
-+				rc = SU_PORT_KBD;
-+				goto out;
-+			}
- 		}
- 		if (ms) {
--			if (dp == of_find_node_by_path(ms))
--				return SU_PORT_MS;
-+			match = of_find_node_by_path(ms);
-+
-+			of_node_put(match);
-+
-+			if (dp == match) {
-+				rc = SU_PORT_MS;
-+				goto out;
-+			}
- 		}
- 	}
- 
--	return SU_PORT_PORT;
-+out:
-+	of_node_put(ap);
-+	return rc;
- }
- 
- static int su_probe(struct platform_device *op)
--- 
-2.19.1
+  4. It encourages a single DT node clk controller style binding
+     instead of a single node per clk style binding
+
+  5. We can use non-DT specific functions like devm_ioremap_resource() to m=
+ap
+     registers and acquire other resources, leading to more portable and
+     generic code
+
+  6. We may be able to make the device driver a module, which will
+     make distros happy if we don't have to compile in all
+     these clk drivers to the resulting vmlinux
