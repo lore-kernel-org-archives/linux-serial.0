@@ -1,19 +1,19 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.9 20/22] panic: avoid deadlocks in re-entrant console drivers
-Date: Fri, 28 Dec 2018 12:52:57 +0100
-Message-ID: <20181228113127.547233295@linuxfoundation.org>
-References: <20181228113126.144310132@linuxfoundation.org>
+Subject: [PATCH 4.14 28/36] panic: avoid deadlocks in re-entrant console drivers
+Date: Fri, 28 Dec 2018 12:52:44 +0100
+Message-ID: <20181228113128.420053290@linuxfoundation.org>
+References: <20181228113126.526729877@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181228113126.144310132@linuxfoundation.org>
+In-Reply-To: <20181228113126.526729877@linuxfoundation.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Petr Mladek <pmladek@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-4.9-stable review patch.  If anyone has any objections, please let me know.
+4.14-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
@@ -105,7 +105,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -13,6 +13,7 @@
+@@ -14,6 +14,7 @@
  #include <linux/kmsg_dump.h>
  #include <linux/kallsyms.h>
  #include <linux/notifier.h>
@@ -113,7 +113,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  #include <linux/module.h>
  #include <linux/random.h>
  #include <linux/ftrace.h>
-@@ -228,7 +229,10 @@ void panic(const char *fmt, ...)
+@@ -230,7 +231,10 @@ void panic(const char *fmt, ...)
  	if (_crash_kexec_post_notifiers)
  		__crash_kexec(NULL);
  
