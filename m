@@ -1,25 +1,177 @@
-From: Stephen Boyd <swboyd@chromium.org>
-Subject: Re: [PATCH 4/4] tty: serial: qcom_geni_serial: Use u32 for register variables
-Date: Thu, 03 Jan 2019 13:22:15 -0800
-Message-ID: <154655053537.15366.12329201016969398011@swboyd.mtv.corp.google.com>
-References: <20190102213636.40866-1-ryandcase@chromium.org> <20190102213636.40866-5-ryandcase@chromium.org>
+From: Zhiyong Tao <zhiyong.tao@mediatek.com>
+Subject: Re: [PATCH v5 5/6] dt-bindings: pinctrl: mt8183: add binding
+ document
+Date: Fri, 4 Jan 2019 15:08:43 +0800
+Message-ID: <1546585723.21915.7.camel@mhfsdcap03>
+References: <1545984581-25843-1-git-send-email-erin.lo@mediatek.com>
+         <1545984581-25843-6-git-send-email-erin.lo@mediatek.com>
+         <20181228220405.GA8739@bogus>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190102213636.40866-5-ryandcase@chromium.org>
+In-Reply-To: <20181228220405.GA8739@bogus>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Evan Green <evgreen@chromium.org>, Doug Anderson <dianders@chromium.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Ryan Case <ryandcase@chromium.org>
+To: Rob Herring <robh@kernel.org>
+Cc: Erin Lo =?UTF-8?Q?=28=E7=BE=85=E9=9B=85=E9=BD=A1=29?= <erin.lo@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, srv_heupstream <srv_heupstream@mediatek.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Yingjoe
 List-Id: linux-serial@vger.kernel.org
 
-Quoting Ryan Case (2019-01-02 13:36:36)
-> Signed-off-by: Ryan Case <ryandcase@chromium.org>
-> ---
+On Sat, 2018-12-29 at 06:04 +0800, Rob Herring wrote:
+> On Fri, Dec 28, 2018 at 04:09:40PM +0800, Erin Lo wrote:
+> > From: Zhiyong Tao <zhiyong.tao@mediatek.com>
+> > 
+> > The commit adds mt8183 compatible node in binding document.
+> > 
+> > Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
+> > Signed-off-by: Erin Lo <erin.lo@mediatek.com>
+> > ---
+> >  .../devicetree/bindings/pinctrl/pinctrl-mt8183.txt | 110 +++++++++++++++++++++
+> >  1 file changed, 110 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
+> > 
+> > diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
+> > new file mode 100644
+> > index 0000000..7b5285e
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
+> > @@ -0,0 +1,110 @@
+> > +* Mediatek MT8183 Pin Controller
+> > +
+> > +The Mediatek's Pin controller is used to control SoC pins.
+> > +
+> > +Required properties:
+> > +- compatible: value should be one of the following.
+> > +	"mediatek,mt8183-pinctrl", compatible with mt8183 pinctrl.
+> > +- gpio-controller : Marks the device node as a gpio controller.
+> > +- #gpio-cells: number of cells in GPIO specifier. Since the generic GPIO
+> > +  binding is used, the amount of cells must be specified as 2. See the below
+> > +  mentioned gpio binding representation for description of particular cells.
+> > +- gpio-ranges : gpio valid number range.
+> > +
+> > +	Eg: <&pio 6 0>
+> > +	<[phandle of the gpio controller node]
+> > +	[line number within the gpio controller]
+> > +	[flags]>
+> > +
+> > +	Values for gpio specifier:
+> > +	- Line number: is a value between 0 to 202.
+> > +	- Flags:  bit field of flags, as defined in <dt-bindings/gpio/gpio.h>.
+> > +            Only the following flags are supported:
+> > +            0 - GPIO_ACTIVE_HIGH
+> > +            1 - GPIO_ACTIVE_LOW
+> > +
+> > +Optional properties:
+> > +- reg: physicall address base for gpio base registers.
+> 
+> s/physicall/physical/
+> 
+> reg should never be optional. 
+> 
+> Need to say how many reg entries.
 
-It'd be nice to have any sort of commit text here with the motivation
-for the change (code clarity is my motivation).
+==> Thanks for your suggestion. We will change 'reg' to Required
+properties and add the reg entries in next version.
+> 
+> > +- reg-names: gpio base registers name.
+> 
+> Need to say what are the names. However, I don't find the names in the 
+> example all that useful, so I'd just drop it.
 
-Besides that nitpick
+==> we will add the reg-names in next version.
+They are used in the sample code, such as:
+> +		reg-names = "iocfg0", "iocfg1", "iocfg2",
+> > +			    "iocfg3", "iocfg4", "iocfg5",
+> > +			    "iocfg6", "iocfg7", "iocfg8";
 
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> 
+> > +- interrupt-controller: Marks the device node as an interrupt controller
+> > +- #interrupt-cells: Should be two.
+> > +- interrupts : The interrupt outputs from the controller.
+> > +
+> > +Please refer to pinctrl-bindings.txt in this directory for details of the
+> > +common pinctrl bindings used by client devices.
+> > +
+> > +Subnode format
+> > +A pinctrl node should contain at least one subnodes representing the
+> > +pinctrl groups available on the machine. Each subnode will list the
+> > +pins it needs, and how they should be configured, with regard to muxer
+> > +configuration, pullups, drive strength, input enable/disable and input schmitt.
+> > +
+> > +    node {
+> > +	pinmux = <PIN_NUMBER_PINMUX>;
+> > +	GENERIC_PINCONFIG;
+> > +    };
+> > +
+> > +Required properties:
+> > +- pinmux: integer array, represents gpio pin number and mux setting.
+> > +    Supported pin number and mux varies for different SoCs, and are defined
+> > +    as macros in boot/dts/<soc>-pinfunc.h directly.
+> > +
+> > +Optional properties:
+> > +- GENERIC_PINCONFIG: is the generic pinconfig options to use, bias-disable,
+> > +    bias-pull-down, bias-pull-up, input-enable, input-disable, output-low, output-high,
+> > +    input-schmitt-enable, input-schmitt-disable and drive-strength are valid.
+> > +
+> > +    Some special pins have extra pull up strength, there are R0 and R1 pull-up
+> > +    resistors available, but for user, it's only need to set R1R0 as 00, 01, 10 or 11.
+> > +    So when config mediatek,pull-up-adv or mediatek,pull-down-adv,
+> > +    it support arguments for those special pins.
+> > +
+> > +    When config drive-strength, it can support some arguments, such as
+> > +    MTK_DRIVE_4mA, MTK_DRIVE_6mA, etc. See dt-bindings/pinctrl/mt65xx.h.
+> > +
+> > +Examples:
+> > +
+> > +#include "mt8183-pinfunc.h"
+> > +
+> > +...
+> > +{
+> > +	pio: pinctrl@10005000 {
+> > +		compatible = "mediatek,mt8183-pinctrl";
+> > +		reg = <0 0x10005000 0 0x1000>,
+> > +		      <0 0x11F20000 0 0x1000>,
+> > +		      <0 0x11E80000 0 0x1000>,
+> > +		      <0 0x11E70000 0 0x1000>,
+> > +		      <0 0x11E90000 0 0x1000>,
+> > +		      <0 0x11D30000 0 0x1000>,
+> > +		      <0 0x11D20000 0 0x1000>,
+> > +		      <0 0x11C50000 0 0x1000>,
+> > +		      <0 0x11F30000 0 0x1000>;
+> > +		reg-names = "iocfg0", "iocfg1", "iocfg2",
+> > +			    "iocfg3", "iocfg4", "iocfg5",
+> > +			    "iocfg6", "iocfg7", "iocfg8";
+> > +		gpio-controller;
+> > +		#gpio-cells = <2>;
+> > +		gpio-ranges = <&pio 0 0 192>;
+> > +		interrupt-controller;
+> > +		interrupts = <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>;
+> > +		interrupt-parent = <&gic>;
+> > +		#interrupt-cells = <2>;
+> > +
+> > +		i2c0_pins_a: i2c0@0 {
+> 
+> unit-address without reg property is not valid.
+
+==> we will change "i2c0_pins_a: i2c0@0" to "i2c0_pins_a: i2c0" in the
+next version.
+> 
+> > +			pins1 {
+> > +				pinmux = <PINMUX_GPIO48__FUNC_SCL5>,
+> > +					 <PINMUX_GPIO49__FUNC_SDA5>;
+> > +				mediatek,pull-up-adv = <11>;
+> > +			};
+> > +		};
+> > +
+> > +		i2c1_pins_a: i2c1@0 {
+> > +			pins {
+> > +				pinmux = <PINMUX_GPIO50__FUNC_SCL3>,
+> > +					 <PINMUX_GPIO51__FUNC_SDA3>;
+> > +				mediatek,pull-down-adv = <10>;
+> > +			};
+> > +		};
+> > +		...
+> > +	};
+> > +};
+> > -- 
+> > 1.9.1
+> > 
