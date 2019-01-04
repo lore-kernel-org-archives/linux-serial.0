@@ -1,74 +1,52 @@
-From: Evan Green <evgreen@chromium.org>
-Subject: Re: [PATCH 4/4] tty: serial: qcom_geni_serial: Use u32 for register variables
-Date: Fri, 4 Jan 2019 11:05:10 -0800
-Message-ID: <CAE=gft7X=bjjNivhOWTM3Y0MSXQJ0rFG4jkPrRKHJZaJ3g8mYQ@mail.gmail.com>
-References: <20190102213636.40866-1-ryandcase@chromium.org> <20190102213636.40866-5-ryandcase@chromium.org>
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH] serial: max310x: Use struct_size() in devm_kzalloc()
+Date: Fri, 4 Jan 2019 15:39:13 -0600
+Message-ID: <20190104213913.GA21248@embeddedor>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190102213636.40866-5-ryandcase@chromium.org>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ryan Case <ryandcase@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Doug Anderson <dianders@chromium.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "Gustavo A. R. Silva" <gustavo@embeddedor.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jan 2, 2019 at 1:37 PM Ryan Case <ryandcase@chromium.org> wrote:
->
-> Signed-off-by: Ryan Case <ryandcase@chromium.org>
-> ---
->
->  drivers/tty/serial/qcom_geni_serial.c | 22 +++++++++++-----------
->  1 file changed, 11 insertions(+), 11 deletions(-)
->
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 3103aa0adc86..fa67a2ced420 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -765,12 +765,12 @@ static void qcom_geni_serial_handle_tx(struct uart_port *uport, bool done,
->
->  static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
->  {
-> -       unsigned int m_irq_status;
-> -       unsigned int s_irq_status;
-> -       unsigned int geni_status;
-> +       u32 m_irq_en;
-> +       u32 m_irq_status;
-> +       u32 s_irq_status;
-> +       u32 geni_status;
->         struct uart_port *uport = dev;
->         unsigned long flags;
-> -       unsigned int m_irq_en;
->         bool drop_rx = false;
->         struct tty_port *tport = &uport->state->port;
->         struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
-> @@ -948,14 +948,14 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
->                                 struct ktermios *termios, struct ktermios *old)
->  {
->         unsigned int baud;
-> -       unsigned int bits_per_char;
-> -       unsigned int tx_trans_cfg;
-> -       unsigned int tx_parity_cfg;
-> -       unsigned int rx_trans_cfg;
-> -       unsigned int rx_parity_cfg;
-> -       unsigned int stop_bit_len;
-> +       u32 bits_per_char;
-> +       u32 tx_trans_cfg;
-> +       u32 tx_parity_cfg;
-> +       u32 rx_trans_cfg;
-> +       u32 rx_parity_cfg;
-> +       u32 stop_bit_len;
->         unsigned int clk_div;
-> -       unsigned long ser_clk_cfg;
-> +       u32 ser_clk_cfg;
->         struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
->         unsigned long clk_rate;
->
-> --
-> 2.20.1.415.g653613c723-goog
->
+One of the more common cases of allocation size calculations is finding
+the size of a structure that has a zero-sized array at the end, along
+with memory for some number of elements for that array. For example:
 
-I did a brief search tour of unsigned in this file, and also found
-rxstale in qcom_geni_serial_port_setup. Other than that and the commit
-message:
+struct foo {
+    int stuff;
+    void *entry[];
+};
 
-Reviewed-by: Evan Green <evgreen@chromium.org>
+instance = devm_kzalloc(dev, sizeof(struct foo) + sizeof(void *) * count, GFP_KERNEL);
+
+Instead of leaving these open-coded and prone to type mistakes, we can
+now use the new struct_size() helper:
+
+instance = devm_kzalloc(dev, struct_size(instance, entry, count), GFP_KERNEL);
+
+This code was detected with the help of Coccinelle.
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ drivers/tty/serial/max310x.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index 4f479841769a..1d700a8ab517 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -1197,8 +1197,7 @@ static int max310x_probe(struct device *dev, struct max310x_devtype *devtype,
+ 		return PTR_ERR(regmap);
+ 
+ 	/* Alloc port structure */
+-	s = devm_kzalloc(dev, sizeof(*s) +
+-			 sizeof(struct max310x_one) * devtype->nr, GFP_KERNEL);
++	s = devm_kzalloc(dev, struct_size(s, p, devtype->nr), GFP_KERNEL);
+ 	if (!s) {
+ 		dev_err(dev, "Error allocating port structure\n");
+ 		return -ENOMEM;
+-- 
+2.20.1
