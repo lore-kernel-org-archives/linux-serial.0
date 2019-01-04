@@ -1,12 +1,12 @@
 From: Evan Green <evgreen@chromium.org>
-Subject: Re: [PATCH 3/4] tty: serial: qcom_geni_serial: Remove xfer_mode variable
-Date: Fri, 4 Jan 2019 11:04:44 -0800
-Message-ID: <CAE=gft5Af_y20a1Vh4oTVcizMz6RB_UkuA3CwLWvWwTqRRoNhA@mail.gmail.com>
-References: <20190102213636.40866-1-ryandcase@chromium.org> <20190102213636.40866-4-ryandcase@chromium.org>
+Subject: Re: [PATCH 4/4] tty: serial: qcom_geni_serial: Use u32 for register variables
+Date: Fri, 4 Jan 2019 11:05:10 -0800
+Message-ID: <CAE=gft7X=bjjNivhOWTM3Y0MSXQJ0rFG4jkPrRKHJZaJ3g8mYQ@mail.gmail.com>
+References: <20190102213636.40866-1-ryandcase@chromium.org> <20190102213636.40866-5-ryandcase@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190102213636.40866-4-ryandcase@chromium.org>
+In-Reply-To: <20190102213636.40866-5-ryandcase@chromium.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Ryan Case <ryandcase@chromium.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Doug Anderson <dianders@chromium.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>
@@ -14,82 +14,61 @@ List-Id: linux-serial@vger.kernel.org
 
 On Wed, Jan 2, 2019 at 1:37 PM Ryan Case <ryandcase@chromium.org> wrote:
 >
-> The driver only supports FIFO mode so setting and checking this variable
-> is unnecessary. If DMA support is ever addedd then such checks can be
-
-s/addedd/added/
-
-> introduced.
->
 > Signed-off-by: Ryan Case <ryandcase@chromium.org>
 > ---
 >
->  drivers/tty/serial/qcom_geni_serial.c | 66 ++++++++++-----------------
->  1 file changed, 24 insertions(+), 42 deletions(-)
+>  drivers/tty/serial/qcom_geni_serial.c | 22 +++++++++++-----------
+>  1 file changed, 11 insertions(+), 11 deletions(-)
 >
 > diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 5521ed4a0708..3103aa0adc86 100644
+> index 3103aa0adc86..fa67a2ced420 100644
 > --- a/drivers/tty/serial/qcom_geni_serial.c
 > +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -105,7 +105,6 @@ struct qcom_geni_serial_port {
->         u32 tx_fifo_depth;
->         u32 tx_fifo_width;
->         u32 rx_fifo_depth;
-> -       enum geni_se_xfer_mode xfer_mode;
->         bool setup;
->         int (*handle_rx)(struct uart_port *uport, u32 bytes, bool drop);
->         unsigned int baud;
-> @@ -555,29 +554,20 @@ static int handle_rx_uart(struct uart_port *uport, u32 bytes, bool drop)
->  static void qcom_geni_serial_start_tx(struct uart_port *uport)
+> @@ -765,12 +765,12 @@ static void qcom_geni_serial_handle_tx(struct uart_port *uport, bool done,
+>
+>  static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
 >  {
->         u32 irq_en;
-> -       struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
->         u32 status;
+> -       unsigned int m_irq_status;
+> -       unsigned int s_irq_status;
+> -       unsigned int geni_status;
+> +       u32 m_irq_en;
+> +       u32 m_irq_status;
+> +       u32 s_irq_status;
+> +       u32 geni_status;
+>         struct uart_port *uport = dev;
+>         unsigned long flags;
+> -       unsigned int m_irq_en;
+>         bool drop_rx = false;
+>         struct tty_port *tport = &uport->state->port;
+>         struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
+> @@ -948,14 +948,14 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+>                                 struct ktermios *termios, struct ktermios *old)
+>  {
+>         unsigned int baud;
+> -       unsigned int bits_per_char;
+> -       unsigned int tx_trans_cfg;
+> -       unsigned int tx_parity_cfg;
+> -       unsigned int rx_trans_cfg;
+> -       unsigned int rx_parity_cfg;
+> -       unsigned int stop_bit_len;
+> +       u32 bits_per_char;
+> +       u32 tx_trans_cfg;
+> +       u32 tx_parity_cfg;
+> +       u32 rx_trans_cfg;
+> +       u32 rx_parity_cfg;
+> +       u32 stop_bit_len;
+>         unsigned int clk_div;
+> -       unsigned long ser_clk_cfg;
+> +       u32 ser_clk_cfg;
+>         struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
+>         unsigned long clk_rate;
 >
-> -       if (port->xfer_mode == GENI_SE_FIFO) {
-> -               /*
-> -                * readl ensures reading & writing of IRQ_EN register
-> -                * is not re-ordered before checking the status of the
-> -                * Serial Engine.
-> -                */
-> -               status = readl(uport->membase + SE_GENI_STATUS);
-> -               if (status & M_GENI_CMD_ACTIVE)
-> -                       return;
-> +       status = readl(uport->membase + SE_GENI_STATUS);
-> +       if (status & M_GENI_CMD_ACTIVE)
-> +               return;
+> --
+> 2.20.1.415.g653613c723-goog
 >
-> -               if (!qcom_geni_serial_tx_empty(uport))
-> -                       return;
-> +       if (!qcom_geni_serial_tx_empty(uport))
-> +               return;
->
-> -               irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
-> -               irq_en |= M_TX_FIFO_WATERMARK_EN | M_CMD_DONE_EN;
-> +       irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
-> +       irq_en |= M_TX_FIFO_WATERMARK_EN | M_CMD_DONE_EN;
->
-> -               writel(DEF_TX_WM, uport->membase +
-> -                                               SE_GENI_TX_WATERMARK_REG);
-> -               writel(irq_en, uport->membase + SE_GENI_M_IRQ_EN);
-> -       }
-> +       writel(DEF_TX_WM, uport->membase + SE_GENI_TX_WATERMARK_REG);
-> +       writel(irq_en, uport->membase + SE_GENI_M_IRQ_EN);
->  }
->
->  static void qcom_geni_serial_stop_tx(struct uart_port *uport)
-> @@ -588,11 +578,8 @@ static void qcom_geni_serial_stop_tx(struct uart_port *uport)
->
->         irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
->         irq_en &= ~M_CMD_DONE_EN;
-> -       if (port->xfer_mode == GENI_SE_FIFO) {
-> -               irq_en &= ~M_TX_FIFO_WATERMARK_EN;
-> -               writel(0, uport->membase +
-> -                                    SE_GENI_TX_WATERMARK_REG);
-> -       }
-> +       irq_en &= ~M_TX_FIFO_WATERMARK_EN;
 
-This could be further coalesced into irq_en &= ~(M_CMD_DONE_EN |
-M_TX_FIFO_WATERMARK_EN);
+I did a brief search tour of unsigned in this file, and also found
+rxstale in qcom_geni_serial_port_setup. Other than that and the commit
+message:
 
 Reviewed-by: Evan Green <evgreen@chromium.org>
