@@ -1,57 +1,116 @@
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: Re: [BUG] tty: serial: mxs-auart: possible concurrency use-after-free
- bugs in mxs_auart_dma_exit_channel()
-Date: Mon, 7 Jan 2019 17:03:55 +0800
-Message-ID: <21a86d5e-ff1c-74ec-c683-cc76a7c6e670@gmail.com>
-References: <8da85649-f539-9c36-a97e-3582844e82fb@gmail.com>
- <20190107085224.GA26384@kroah.com>
+From: Oliver Neukum <oneukum@suse.com>
+Subject: Re: [PATCH lora-next 3/5] net: lora: sx130x: Add PicoCell serdev
+ driver
+Date: Mon, 07 Jan 2019 13:11:15 +0100
+Message-ID: <1546863075.3037.33.camel@suse.com>
+References: <20190104112131.14451-1-afaerber@suse.de>
+         <20190104112131.14451-4-afaerber@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190107085224.GA26384@kroah.com>
-Content-Language: en-US
+In-Reply-To: <20190104112131.14451-4-afaerber@suse.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Andreas =?ISO-8859-1?Q?F=E4rber?= <afaerber@suse.de>, linux-lpwan@lists.infradead.org, linux-serial@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>, Johan Hovold <johan@kernel.org>, Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org, netdev@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+On Fr, 2019-01-04 at 12:21 +0100, Andreas Färber  wrote:
+> 
+> +struct picogw_device {
+> +	struct serdev_device *serdev;
+> +
+> +	u8 rx_buf[1024];
 
+No, you cannot do that. AFAICT this buffer can be used for DMA.
+Thus putting it into another data structure violates the rules
+of DMA coherency. You must allocate it separately.
 
-On 2019/1/7 16:52, Greg KH wrote:
-> On Mon, Jan 07, 2019 at 04:47:43PM +0800, Jia-Ju Bai wrote:
->> The driver functions mxs_auart_settermios(), dma_rx_callback() and dma_tx_callback() can be concurrently executed.
->>
->> In Linux 4.19:
->>
->> mxs_auart_settermios
->>    mxs_auart_dma_exit
->>      mxs_auart_dma_exit_channel
->>        line 918: kfree(s->tx_dma_buf);
->>        line 919: kfree(s->rx_dma_buf);
->>
->> dma_rx_callback
->>    line 862: tty_insert_flip_string(port, s->rx_dma_buf, count);
->>    mxs_auart_dma_prep_rx
->>      line 890: sg_init_one(sgl, s->rx_dma_buf, UART_XMIT_SIZE);
->>
->> dma_tx_callback
->>    mxs_auart_tx_chars
->>      line 590: void *buffer = s->tx_dma_buf;
->>      mxs_auart_dma_tx
->>        line 566: sg_init_one(sgl, s->tx_dma_buf, size);
->>
->> Thus, possible concurrency use-after-free bugs may occur.
->>
->> These possible bugs are found by a static analysis tool written by myself and my manual code review.
-> Care to send a patch to fix up this issue?
+> +static int picogw_send_cmd(struct picogw_device *picodev, char cmd,
+> +	u8 addr, const void *data, u16 data_len)
+> +{
+> +	struct serdev_device *sdev = picodev->serdev;
+> +	u8 buf[4];
+> +	int i, ret;
+> +
+> +	buf[0] = cmd;
+> +	buf[1] = (data_len >> 8) & 0xff;
+> +	buf[2] = (data_len >> 0) & 0xff;
 
-I would like to, but I do not know how to fix these bugs properly...
-There is no lock and lock-related function call in 
-drivers/tty/serial/mxs-auart.c.
-Thus, we may need to introduce a new lock in this source file.
-What is your opinion?
+We have macros for converting endianness and unaligned access.
 
+> +	buf[3] = addr;
+> +
+> +	dev_dbg(&sdev->dev, "%s: %c %02x %02x %02x\n", __func__, buf[0],
+> +		(unsigned int)buf[1], (unsigned int)buf[2], (unsigned int)buf[3]);
+> +	for (i = 0; i < data_len; i++) {
+> +		dev_dbg(&sdev->dev, "%s: data %02x\n", __func__, (unsigned int)((const u8*)data)[i]);
+> +	}
+> +
+> +	ret = serdev_device_write_buf(sdev, buf, 4);
+> +	if (ret < 0)
+> +		return ret;
+> +	if (ret != 4)
+> +		return -EIO;
+> +
+> +	if (data_len) {
+> +		ret = serdev_device_write_buf(sdev, data, data_len);
+> +		if (ret < 0)
+> +			return ret;
+> +		if (ret != data_len)
+> +			return -EIO;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int picogw_recv_answer(struct picogw_device *picodev,
+> +	char *cmd, bool *ack, void *buf, int buf_len,
+> +	unsigned long timeout)
+> +{
+> +	int len;
+> +
+> +	timeout = wait_for_completion_timeout(&picodev->answer_comp, timeout);
+> +	if (!timeout)
+> +		return -ETIMEDOUT;
 
-Best wishes,
-Jia-Ju Bai
+And? The IO is still scheduled. Simply erroring out is problematic.
+If you see a timeout you need to kill the scheduled IO.
+
+> +static int picogw_handle_answer(struct picogw_device *picodev)
+> +{
+> +	struct device *dev = &picodev->serdev->dev;
+> +	unsigned int data_len = ((u16)picodev->rx_buf[1] << 8) | picodev->rx_buf[2];
+> +	int cmd_len = 4 + data_len;
+> +	int i, ret;
+> +
+> +	if (picodev->rx_len < 4)
+> +		return 0;
+> +
+> +	if (cmd_len > sizeof(picodev->rx_buf)) {
+> +		dev_warn(dev, "answer too long (%u)\n", data_len);
+> +		return 0;
+> +	}
+> +
+> +	if (picodev->rx_len < cmd_len) {
+> +		dev_dbg(dev, "got %u, need %u bytes\n", picodev->rx_len, cmd_len);
+> +		return 0;
+> +	}
+> +
+> +	dev_dbg(dev, "Answer %c =%u %s (%u)\n", picodev->rx_buf[0],
+> +		(unsigned int)picodev->rx_buf[3],
+> +		(picodev->rx_buf[3] == 1) ? "OK" : "K0",
+> +		data_len);
+> +	for (i = 0; i < data_len; i++) {
+> +		//dev_dbg(dev, "%s: %02x\n", __func__, (unsigned int)picodev->rx_buf[4 + i]);
+> +	}
+> +
+> +	complete(&picodev->answer_comp);
+> +	ret = wait_for_completion_interruptible_timeout(&picodev->answer_read_comp, HZ / 2);
+
+Problematic. You have no idea when that complete() will have an effect.
+You are operating with an undefined timeout here. Theoretically it
+could be negative.
+
+	Regards
+		Oliver
