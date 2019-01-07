@@ -1,552 +1,211 @@
-From: Ben Whitten <ben.whitten@gmail.com>
-Subject: Re: [PATCH lora-next 3/5] net: lora: sx130x: Add PicoCell serdev
- driver
-Date: Sat, 5 Jan 2019 18:18:22 +0900
-Message-ID: <0e1aed6e-d076-d5b9-4d05-2a3fb3f5e8af@gmail.com>
-References: <20190104112131.14451-1-afaerber@suse.de>
- <20190104112131.14451-4-afaerber@suse.de>
+From: Zhiyong Tao <zhiyong.tao@mediatek.com>
+Subject: Re: [PATCH v5 5/6] dt-bindings: pinctrl: mt8183: add binding
+ document
+Date: Mon, 7 Jan 2019 10:02:50 +0800
+Message-ID: <1546826570.3267.0.camel@mhfsdcap03>
+References: <1545984581-25843-1-git-send-email-erin.lo@mediatek.com>
+         <1545984581-25843-6-git-send-email-erin.lo@mediatek.com>
+         <20181228220405.GA8739@bogus> <1546585723.21915.7.camel@mhfsdcap03>
+         <CAGp9LzoAyZqC53eo4JKcouu=pNgsGm9FFm1GaxbH1Jc1OD8Bvw@mail.gmail.com>
+         <1546594814.21915.16.camel@mhfsdcap03>
+         <CAGp9LzpNTKxgPyPOFQefJ1B_459dFtGUseW2sKHTiESDVLj9jw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <20190104112131.14451-4-afaerber@suse.de>
-Content-Language: en-GB
-Sender: netdev-owner@vger.kernel.org
-To: =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>, linux-lpwan@lists.infradead.org, linux-serial@vger.kernel.org
-Cc: Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org, netdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>, "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAGp9LzpNTKxgPyPOFQefJ1B_459dFtGUseW2sKHTiESDVLj9jw@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sean Wang <sean.wang@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Jason Cooper <jason@lakedaemon.net>, srv_heupstream <srv_heupstream@mediatek.com>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Erin Lo =?UTF-8?Q?=28=E7=BE=85=E9=9B=85=E9=BD=A1=29?= <erin.lo@mediatek.com>, Stephen Boyd <sboyd@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Mars Cheng =?UTF-8?Q?=28=E9=84=AD=E6=A3=AE=E5=8F=8B=29?= <Mars.Cheng@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Yingjoe
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
-
-On 04/01/2019 20:21, Andreas Färber wrote:
-> The picoGW reference MCU firmware implements a USB CDC or UART interface
-> with a set of serial commands. It can be found on multiple mPCIe cards
-> as well as USB adapters.
+On Fri, 2019-01-04 at 01:55 -0800, Sean Wang wrote:
+> On Fri, Jan 4, 2019 at 1:40 AM Zhiyong Tao <zhiyong.tao@mediatek.com> wrote:
+> >
+> > On Fri, 2019-01-04 at 01:14 -0800, Sean Wang wrote:
+> > > On Thu, Jan 3, 2019 at 11:09 PM Zhiyong Tao <zhiyong.tao@mediatek.com> wrote:
+> > > >
+> > > > On Sat, 2018-12-29 at 06:04 +0800, Rob Herring wrote:
+> > > > > On Fri, Dec 28, 2018 at 04:09:40PM +0800, Erin Lo wrote:
+> > > > > > From: Zhiyong Tao <zhiyong.tao@mediatek.com>
+> > > > > >
+> > > > > > The commit adds mt8183 compatible node in binding document.
+> > > > > >
+> > > > > > Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
+> > > > > > Signed-off-by: Erin Lo <erin.lo@mediatek.com>
+> > > > > > ---
+> > > > > >  .../devicetree/bindings/pinctrl/pinctrl-mt8183.txt | 110 +++++++++++++++++++++
+> > > > > >  1 file changed, 110 insertions(+)
+> > > > > >  create mode 100644 Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
+> > > > > >
+> > > > > > diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
+> > > > > > new file mode 100644
+> > > > > > index 0000000..7b5285e
+> > > > > > --- /dev/null
+> > > > > > +++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
+> > > > > > @@ -0,0 +1,110 @@
+> > > > > > +* Mediatek MT8183 Pin Controller
+> > > > > > +
+> > > > > > +The Mediatek's Pin controller is used to control SoC pins.
+> > > > > > +
+> > > > > > +Required properties:
+> > > > > > +- compatible: value should be one of the following.
+> > > > > > +   "mediatek,mt8183-pinctrl", compatible with mt8183 pinctrl.
+> > > > > > +- gpio-controller : Marks the device node as a gpio controller.
+> > > > > > +- #gpio-cells: number of cells in GPIO specifier. Since the generic GPIO
+> > > > > > +  binding is used, the amount of cells must be specified as 2. See the below
+> > > > > > +  mentioned gpio binding representation for description of particular cells.
+> > > > > > +- gpio-ranges : gpio valid number range.
+> > > > > > +
+> > > > > > +   Eg: <&pio 6 0>
+> > > > > > +   <[phandle of the gpio controller node]
+> > > > > > +   [line number within the gpio controller]
+> > > > > > +   [flags]>
+> > > > > > +
+> > > > > > +   Values for gpio specifier:
+> > > > > > +   - Line number: is a value between 0 to 202.
+> > > > > > +   - Flags:  bit field of flags, as defined in <dt-bindings/gpio/gpio.h>.
+> > > > > > +            Only the following flags are supported:
+> > > > > > +            0 - GPIO_ACTIVE_HIGH
+> > > > > > +            1 - GPIO_ACTIVE_LOW
+> > > > > > +
+> > > > > > +Optional properties:
+> > > > > > +- reg: physicall address base for gpio base registers.
+> > > > >
+> > > > > s/physicall/physical/
+> > > > >
+> > > > > reg should never be optional.
+> > > > >
+> > > > > Need to say how many reg entries.
+> > > >
+> > > > ==> Thanks for your suggestion. We will change 'reg' to Required
+> > > > properties and add the reg entries in next version.
+> > > > >
+> > > > > > +- reg-names: gpio base registers name.
+> > > > >
+> > > > > Need to say what are the names. However, I don't find the names in the
+> > > > > example all that useful, so I'd just drop it.
+> > > >
+> > > > ==> we will add the reg-names in next version.
+> > > > They are used in the sample code, such as:
+> > > > > +             reg-names = "iocfg0", "iocfg1", "iocfg2",
+> > > > > > +                       "iocfg3", "iocfg4", "iocfg5",
+> > > > > > +                       "iocfg6", "iocfg7", "iocfg8";
+> > > >
+> > > > >
+> > > > > > +- interrupt-controller: Marks the device node as an interrupt controller
+> > > > > > +- #interrupt-cells: Should be two.
+> > > > > > +- interrupts : The interrupt outputs from the controller.
+> > > > > > +
+> > > > > > +Please refer to pinctrl-bindings.txt in this directory for details of the
+> > > > > > +common pinctrl bindings used by client devices.
+> > > > > > +
+> > > > > > +Subnode format
+> > > > > > +A pinctrl node should contain at least one subnodes representing the
+> > > > > > +pinctrl groups available on the machine. Each subnode will list the
+> > > > > > +pins it needs, and how they should be configured, with regard to muxer
+> > > > > > +configuration, pullups, drive strength, input enable/disable and input schmitt.
+> > > > > > +
+> > > > > > +    node {
+> > > > > > +   pinmux = <PIN_NUMBER_PINMUX>;
+> > > > > > +   GENERIC_PINCONFIG;
+> > > > > > +    };
+> > > > > > +
+> > > > > > +Required properties:
+> > > > > > +- pinmux: integer array, represents gpio pin number and mux setting.
+> > > > > > +    Supported pin number and mux varies for different SoCs, and are defined
+> > > > > > +    as macros in boot/dts/<soc>-pinfunc.h directly.
+> > > > > > +
+> > > > > > +Optional properties:
+> > > > > > +- GENERIC_PINCONFIG: is the generic pinconfig options to use, bias-disable,
+> > > > > > +    bias-pull-down, bias-pull-up, input-enable, input-disable, output-low, output-high,
+> > > > > > +    input-schmitt-enable, input-schmitt-disable and drive-strength are valid.
+> > > > > > +
+> > > > > > +    Some special pins have extra pull up strength, there are R0 and R1 pull-up
+> > > > > > +    resistors available, but for user, it's only need to set R1R0 as 00, 01, 10 or 11.
+> > > > > > +    So when config mediatek,pull-up-adv or mediatek,pull-down-adv,
+> > > > > > +    it support arguments for those special pins.
+> > > > > > +
+> > > > > > +    When config drive-strength, it can support some arguments, such as
+> > > > > > +    MTK_DRIVE_4mA, MTK_DRIVE_6mA, etc. See dt-bindings/pinctrl/mt65xx.h.
+> > > > > > +
+> > >
+> > > One point we can fix more is the drive-strength already is supported
+> > > as the generic one, not need to depend on a dedicated header file.
+> >
+> > ==> We think that we use MTK_DRIVE_4mA to set as driving in dts. it it
+> > more clear in v2 common driver for single pin -> single group mode.
+> > How about the idea?
+> >
 > 
->    https://github.com/Lora-net/picoGW_mcu
-> 
-> That MCU design superseded earlier attempts of using FTDI chips (MPSSE)
-> for controlling the SPI based chip directly from the host.
-> 
-> This commit adds a serdev driver implementing another regmap_bus to
-> abstract the register access and reuses our existing regmap driver on top.
-> Thereby we have an early proof of concept that we can drive both types
-> of modules/cards with a single driver core!
-> 
-> It assumes there is only one SX130x (with its radios) accessible, whereas
-> some new cards reportedly also have an SX127x on-board. So the DT/driver
-> design may need to be reconsidered once such a card or documentation
-> becomes available.
-> It also assumes SX1255/1258 are fully compatible with "semtech,sx1257".
-> 
-> Currently there's still some bugs to be investigated, with communication
-> stalling on one device and another reading the radio versions wrong
-> (07 / 1f instead of 21, also observed on spi once).
-> 
-> Signed-off-by: Andreas Färber <afaerber@suse.de>
-> ---
->   drivers/net/lora/Makefile        |   2 +
->   drivers/net/lora/sx130x_picogw.c | 466 +++++++++++++++++++++++++++++++++++++++
+> Sure, thank for post your idea and it sounds not bad to keep the
+> convention for the single pin -> single group mode binding.
 
-We are missing a Kconfig select or depend, compilation fails if 
-CONFIG_SERIAL_DEV_BUS is not selected.
-
->   2 files changed, 468 insertions(+)
->   create mode 100644 drivers/net/lora/sx130x_picogw.c
+Thanks for your confirm. We will keep it in next version.
 > 
-> diff --git a/drivers/net/lora/Makefile b/drivers/net/lora/Makefile
-> index c6a0410f80ce..5fef38abf5ed 100644
-> --- a/drivers/net/lora/Makefile
-> +++ b/drivers/net/lora/Makefile
-> @@ -25,6 +25,8 @@ lora-sx127x-y := sx127x.o
->   obj-$(CONFIG_LORA_SX130X) += lora-sx130x.o
->   lora-sx130x-y := sx130x.o
->   lora-sx130x-y += sx130x_radio.o
-> +obj-$(CONFIG_LORA_SX130X) += lora-sx130x-picogw.o
-> +lora-sx130x-picogw-y := sx130x_picogw.o
->   
->   obj-$(CONFIG_LORA_USI) += lora-usi.o
->   lora-usi-y := usi.o
-> diff --git a/drivers/net/lora/sx130x_picogw.c b/drivers/net/lora/sx130x_picogw.c
-> new file mode 100644
-> index 000000000000..577f9fb71d46
-> --- /dev/null
-> +++ b/drivers/net/lora/sx130x_picogw.c
-> @@ -0,0 +1,466 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +/*
-> + * Semtech SX1301/1308 PicoCell gateway serial MCU interface
-> + *
-> + * Copyright (c) 2018-2019 Andreas Färber
-> + */
-> +#include <linux/completion.h>
-> +#include <linux/lora/sx130x.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/regmap.h>
-> +#include <linux/serdev.h>
-> +#include <linux/serial.h>
-> +#include <linux/slab.h>
-> +
-> +struct picogw_device {
-> +	struct serdev_device *serdev;
-> +
-> +	u8 rx_buf[1024];
-> +	int rx_len;
-> +
-> +	struct completion answer_comp;
-> +	struct completion answer_read_comp;
-> +};
-> +
-> +static inline struct picogw_device *picogw_get_drvdata(struct serdev_device *sdev)
-> +{
-> +	return sx130x_get_drvdata(&sdev->dev);
-> +}
-> +
-> +static bool picogw_valid_cmd(char ch)
-> +{
-> +	switch (ch) {
-> +	case 'k': /* invalid command error */
-> +	case 'r':
-> +	case 'w':
-> +	case 'l':
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +static int picogw_send_cmd(struct picogw_device *picodev, char cmd,
-> +	u8 addr, const void *data, u16 data_len)
-> +{
-> +	struct serdev_device *sdev = picodev->serdev;
-> +	u8 buf[4];
-> +	int i, ret;
-> +
-> +	buf[0] = cmd;
-> +	buf[1] = (data_len >> 8) & 0xff;
-> +	buf[2] = (data_len >> 0) & 0xff;
-> +	buf[3] = addr;
-> +
-> +	dev_dbg(&sdev->dev, "%s: %c %02x %02x %02x\n", __func__, buf[0],
-> +		(unsigned int)buf[1], (unsigned int)buf[2], (unsigned int)buf[3]);
-> +	for (i = 0; i < data_len; i++) {
-> +		dev_dbg(&sdev->dev, "%s: data %02x\n", __func__, (unsigned int)((const u8*)data)[i]);
-> +	}
-> +
-> +	ret = serdev_device_write_buf(sdev, buf, 4);
-> +	if (ret < 0)
-> +		return ret;
-> +	if (ret != 4)
-> +		return -EIO;
-> +
-> +	if (data_len) {
-> +		ret = serdev_device_write_buf(sdev, data, data_len);
-> +		if (ret < 0)
-> +			return ret;
-> +		if (ret != data_len)
-> +			return -EIO;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int picogw_recv_answer(struct picogw_device *picodev,
-> +	char *cmd, bool *ack, void *buf, int buf_len,
-> +	unsigned long timeout)
-> +{
-> +	int len;
-> +
-> +	timeout = wait_for_completion_timeout(&picodev->answer_comp, timeout);
-> +	if (!timeout)
-> +		return -ETIMEDOUT;
-> +
-> +	if (cmd)
-> +		*cmd = picodev->rx_buf[0];
-> +
-> +	if (ack)
-> +		*ack = (picodev->rx_buf[3] == 1);
-> +
-> +	len = min(picodev->rx_len - 4, buf_len);
-> +	if (buf)
-> +		memcpy(buf, picodev->rx_buf + 4, len);
-> +
-> +	reinit_completion(&picodev->answer_comp);
-> +	complete(&picodev->answer_read_comp);
-> +
-> +	return len;
-> +}
-> +
-> +static int picogw_reg_read(struct picogw_device *picodev, u8 addr, u8 *val, unsigned long timeout)
-> +{
-> +	const u8 dummy = 0;
-> +	char cmd;
-> +	bool ack;
-> +	int ret;
-> +
-> +	ret = picogw_send_cmd(picodev, 'r', addr, &dummy, false ? 1 : 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = picogw_recv_answer(picodev, &cmd, &ack, val, 1, timeout);
-> +	if (ret < 0)
-> +		return ret;
-> +	if (cmd != 'r')
-> +		return -EIO;
-> +	if (!ack || ret != 1)
-> +		return -EIO;
-> +
-> +	return 0;
-> +}
-> +
-> +static int picogw_reg_write(struct picogw_device *picodev, u8 addr, u8 val, unsigned long timeout)
-> +{
-> +	char cmd;
-> +	bool ack;
-> +	int ret;
-> +
-> +	ret = picogw_send_cmd(picodev, 'w', addr, &val, 1);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = picogw_recv_answer(picodev, &cmd, &ack, NULL, 0, timeout);
-> +	if (ret < 0)
-> +		return ret;
-> +	if (cmd != 'w')
-> +		return -EIO;
-> +	if (!ack || ret != 0)
-> +		return -EIO;
-> +
-> +	return 0;
-> +}
-> +
-> +static int picogw_mcu_fw_check(struct picogw_device *picodev,
-> +	u32 fw_version, u8 *id, unsigned long timeout)
-> +{
-> +	char cmd;
-> +	bool ack;
-> +	int ret;
-> +
-> +	fw_version = cpu_to_be32(fw_version);
-> +	ret = picogw_send_cmd(picodev, 'l', 0, &fw_version, sizeof(fw_version));
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = picogw_recv_answer(picodev, &cmd, &ack, id, id ? 8 : 0, timeout);
-> +	if (ret < 0)
-> +		return ret;
-> +	if (cmd != 'l')
-> +		return -EIO;
-> +	if (id && ret != 8)
-> +		return -EIO;
-> +
-> +	return ack ? 0 : -ENOTSUPP;
-> +}
-> +
-> +static int picogw_regmap_gather_write(void *context,
-> +	const void *reg_buf, size_t reg_size, const void *val_buf, size_t val_size)
-> +{
-> +	struct picogw_device *picodev = context;
-> +	const u8 *addr_buf = reg_buf;
-> +	const u8 *val = val_buf;
-> +	u8 addr;
-> +	int ret;
-> +
-> +	//dev_dbg(&picodev->serdev->dev, "%s: 0x%x (reg_size %zu) 0x%x (val_size %zu)\n",
-> +	//	__func__, (unsigned int)addr_buf[0], reg_size, (unsigned int)val[0], val_size);
-> +
-> +	if (reg_size != 1 || val_size > 0xffff)
-> +		return -EINVAL;
-> +
-> +	addr = addr_buf[0] & ~BIT(7);
-> +	if (val_size == 1) {
-> +		ret = picogw_reg_write(picodev, addr, val[0], HZ);
-> +		if (ret)
-> +			return ret;
-> +		return 0;
-> +	} else {
-> +		/* TODO burst mode */
-> +		dev_err(&picodev->serdev->dev, "burst mode write not yet implemented\n");
-> +		return -ENOTSUPP;
-> +	}
-> +}
-> +
-> +static int picogw_regmap_write(void *context,
-> +	const void *data_buf, size_t count)
-> +{
-> +	const u8 *data = data_buf;
-> +	if (count < 1)
-> +		return -EINVAL;
-> +
-> +	return picogw_regmap_gather_write(context, data, 1, data + 1, count - 1);
-> +}
-> +
-> +static int picogw_regmap_read(void *context,
-> +	const void *reg_buf, size_t reg_size, void *val_buf, size_t val_size)
-> +{
-> +	struct picogw_device *picodev = context;
-> +	const u8 *addr_buf = reg_buf;
-> +	u8 addr;
-> +	int ret;
-> +
-> +	//dev_dbg(&picodev->serdev->dev, "%s: 0x%x (reg_size %zu) (val_size %zu)\n", __func__, (unsigned int)addr_buf[0], reg_size, val_size);
-> +
-> +	if (reg_size != 1 || val_size > 0xffff)
-> +		return -EINVAL;
-> +
-> +	addr = addr_buf[0] & ~BIT(7);
-> +	if (val_size == 1) {
-> +		ret = picogw_reg_read(picodev, addr, val_buf, HZ);
-> +		if (ret)
-> +			return ret;
-> +		return 0;
-> +	} else {
-> +		/* TODO burst mode */
-> +		dev_err(&picodev->serdev->dev, "burst mode read not yet implemented\n");
-> +		return -ENOTSUPP;
-> +	}
-> +}
-> +
-> +static const struct regmap_bus picogw_regmap_bus = {
-> +	.write = picogw_regmap_write,
-> +	.gather_write = picogw_regmap_gather_write,
-> +	.read = picogw_regmap_read,
-> +
-> +	.max_raw_write = 0xffff,
-> +	.max_raw_read = 0xffff,
-> +};
-> +
-> +static int picogw_handle_answer(struct picogw_device *picodev)
-> +{
-> +	struct device *dev = &picodev->serdev->dev;
-> +	unsigned int data_len = ((u16)picodev->rx_buf[1] << 8) | picodev->rx_buf[2];
-> +	int cmd_len = 4 + data_len;
-> +	int i, ret;
-> +
-> +	if (picodev->rx_len < 4)
-> +		return 0;
-> +
-> +	if (cmd_len > sizeof(picodev->rx_buf)) {
-> +		dev_warn(dev, "answer too long (%u)\n", data_len);
-> +		return 0;
-> +	}
-> +
-> +	if (picodev->rx_len < cmd_len) {
-> +		dev_dbg(dev, "got %u, need %u bytes\n", picodev->rx_len, cmd_len);
-> +		return 0;
-> +	}
-> +
-> +	dev_dbg(dev, "Answer %c =%u %s (%u)\n", picodev->rx_buf[0],
-> +		(unsigned int)picodev->rx_buf[3],
-> +		(picodev->rx_buf[3] == 1) ? "OK" : "K0",
-> +		data_len);
-> +	for (i = 0; i < data_len; i++) {
-> +		//dev_dbg(dev, "%s: %02x\n", __func__, (unsigned int)picodev->rx_buf[4 + i]);
-> +	}
-> +
-> +	complete(&picodev->answer_comp);
-> +	ret = wait_for_completion_interruptible_timeout(&picodev->answer_read_comp, HZ / 2);
-> +	if (ret < 0)
-> +		return 0;
-> +
-> +	reinit_completion(&picodev->answer_read_comp);
-> +
-> +	return cmd_len;
-> +}
-> +
-> +static int picogw_receive_buf(struct serdev_device *sdev, const u8 *data, size_t count)
-> +{
-> +	struct picogw_device *picodev = picogw_get_drvdata(sdev);
-> +	size_t i;
-> +	int len = 0;
-> +
-> +	dev_dbg(&sdev->dev, "Receive (%zu)\n", count);
-> +
-> +	if (completion_done(&picodev->answer_comp)) {
-> +		dev_info(&sdev->dev, "RX waiting on completion\n");
-> +		return 0;
-> +	}
-> +	if (picodev->rx_len == sizeof(picodev->rx_buf)) {
-> +		dev_warn(&sdev->dev, "RX buffer full\n");
-> +		return 0;
-> +	}
-> +
-> +	i = min(count, sizeof(picodev->rx_buf) - picodev->rx_len);
-> +	if (i > 0) {
-> +		memcpy(&picodev->rx_buf[picodev->rx_len], data, i);
-> +		picodev->rx_len += i;
-> +		len += i;
-> +	}
-> +
-> +	while (picodev->rx_len > 0) {
-> +		/* search for valid beginning */
-> +		for (i = 0; i < picodev->rx_len; i++) {
-> +			if (picogw_valid_cmd(picodev->rx_buf[i]))
-> +				break;
-> +		}
-> +		if (i > 0) {
-> +			dev_dbg(&sdev->dev, "skipping %zu bytes of garbage\n", i);
-> +			if (i < picodev->rx_len) {
-> +				memmove(picodev->rx_buf, &picodev->rx_buf[i], picodev->rx_len - i);
-> +				picodev->rx_len -= i;
-> +			} else
-> +				picodev->rx_len = 0;
-> +		}
-> +
-> +		i = picogw_handle_answer(picodev);
-> +		if (i == 0)
-> +			break;
-> +
-> +		if (i % 64 == 0) {
-> +			dev_info(&sdev->dev, "skipping padding byte\n");
-> +			i++;
-> +		}
-> +		if (picodev->rx_len > i)
-> +			memmove(picodev->rx_buf, &picodev->rx_buf[i], picodev->rx_len - i);
-> +		if (picodev->rx_len >= i)
-> +			picodev->rx_len -= i;
-> +	}
-> +
-> +	return len;
-> +}
-> +
-> +static const struct serdev_device_ops picogw_serdev_client_ops = {
-> +	.receive_buf = picogw_receive_buf,
-> +	.write_wakeup = serdev_device_write_wakeup,
-> +};
-> +
-> +static int picogw_serdev_probe(struct serdev_device *sdev)
-> +{
-> +	struct picogw_device *picodev;
-> +	struct regmap *regmap;
-> +	u32 fw_version = 0x010a0006;
-
-Worth moving the version to a define?
-
-> +	u8 mac[8];here
-> +	int ret;
-> +
-> +	//dev_info(&sdev->dev, "Probing\n");
-> +
-> +	picodev = devm_kzalloc(&sdev->dev, sizeof(*picodev), GFP_KERNEL);
-> +	if (!picodev)
-> +		return -ENOMEM;
-> +
-> +	picodev->serdev = sdev;
-> +	init_completion(&picodev->answer_comp);
-> +	init_completion(&picodev->answer_read_comp);
-> +
-> +	ret = serdev_device_open(sdev);
-> +	if (ret) {
-> +		dev_err(&sdev->dev, "Failed to open (%d)\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	serdev_device_set_baudrate(sdev, 115200);
-> +	serdev_device_set_parity(sdev, SERDEV_PARITY_NONE);
-> +	serdev_device_set_flow_control(sdev, true);
-> +
-> +	regmap = devm_regmap_init(&sdev->dev, &picogw_regmap_bus, picodev, &sx130x_regmap_config);
-> +	if (IS_ERR(regmap)) {
-> +		ret = PTR_ERR(regmap);
-> +		dev_err(&sdev->dev, "error initializing regmap (%d)\n", ret);
-> +		serdev_device_close(sdev);
-> +		return ret;
-> +	}
-> +
-> +	ret = sx130x_early_probe(regmap, NULL);
-> +	if (ret) {
-> +		serdev_device_close(sdev);
-> +		return ret;
-> +	}
-> +
-> +	sx130x_set_drvdata(&sdev->dev, picodev);
-> +	serdev_device_set_client_ops(sdev, &picogw_serdev_client_ops);
-> +
-> +	//msleep(1000);
-> +	ret = picogw_mcu_fw_check(picodev, fw_version, mac, HZ);
-> +	if (!ret || ret == -ENOTSUPP)
-> +		dev_info(&sdev->dev, "ID = %02x%02x%02x%02x%02x%02x%02x%02x\n",
-> +			(unsigned int)mac[0],
-> +			(unsigned int)mac[1],
-> +			(unsigned int)mac[2],
-> +			(unsigned int)mac[3],
-> +			(unsigned int)mac[4],
-> +			(unsigned int)mac[5],
-> +			(unsigned int)mac[6],
-> +			(unsigned int)mac[7]);
-> +	while (ret == -ENOTSUPP && ((fw_version & 0xff) > 4)) {
-> +		ret = picogw_mcu_fw_check(picodev, --fw_version, NULL, HZ);
-> +	}
-> +	if (ret == -ENOTSUPP) {
-> +		dev_warn(&sdev->dev, "firmware check failed (%08x)\n", fw_version);
-> +	} else {
-> +		dev_err(&sdev->dev, "ID retrieval failed (%d)\n", ret);
-> +		serdev_device_close(sdev);
-> +		return ret;
-> +	}
-> +
-> +	ret = sx130x_probe(&sdev->dev);
-> +	if (ret) {
-> +		serdev_device_close(sdev);
-> +		return ret;
-> +	}
-> +
-> +	//dev_info(&sdev->dev, "Done.\n");
-> +
-> +	return 0;
-> +}
-> +
-> +static void picogw_serdev_remove(struct serdev_device *sdev)
-> +{
-> +	sx130x_remove(&sdev->dev);
-> +
-> +	serdev_device_close(sdev);
-> +
-> +	//dev_info(&sdev->dev, "Removed\n");
-> +}
-> +
-> +static const struct of_device_id picogw_serdev_of_match[] = {
-> +	{ .compatible = "semtech,lora-picocell" },
-
-lora-picocell or lora-picogw... picocell has mobile connotations, should 
-we match the module name?
-
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(of, picogw_serdev_of_match);
-> +
-> +static struct serdev_device_driver picogw_serdev_driver = {
-> +	.probe = picogw_serdev_probe,
-> +	.remove = picogw_serdev_remove,
-> +	.driver = {
-> +		.name = "lora-picogw",
-> +		.of_match_table = picogw_serdev_of_match,
-> +	},
-> +};
-> +
-> +static int __init picogw_serdev_init(void)
-> +{
-> +	int ret;
-> +
-> +	ret = serdev_device_driver_register(&picogw_serdev_driver);
-> +	if (ret) {
-> +		pr_err("serdev_device_driver_register failed (%d)", ret);
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +module_init(picogw_serdev_init);
-> +
-> +static void __exit picogw_serdev_exit(void)
-> +{
-> +	serdev_device_driver_unregister(&picogw_serdev_driver);
-> +}
-> +module_exit(picogw_serdev_exit);
-> +
-> +MODULE_LICENSE("GPL");
-> 
-
-Thanks,
-Ben Whitten
+> > Thanks.
+> > >
+> > > > > > +Examples:
+> > > > > > +
+> > > > > > +#include "mt8183-pinfunc.h"
+> > > > > > +
+> > > > > > +...
+> > > > > > +{
+> > > > > > +   pio: pinctrl@10005000 {
+> > > > > > +           compatible = "mediatek,mt8183-pinctrl";
+> > > > > > +           reg = <0 0x10005000 0 0x1000>,
+> > > > > > +                 <0 0x11F20000 0 0x1000>,
+> > > > > > +                 <0 0x11E80000 0 0x1000>,
+> > > > > > +                 <0 0x11E70000 0 0x1000>,
+> > > > > > +                 <0 0x11E90000 0 0x1000>,
+> > > > > > +                 <0 0x11D30000 0 0x1000>,
+> > > > > > +                 <0 0x11D20000 0 0x1000>,
+> > > > > > +                 <0 0x11C50000 0 0x1000>,
+> > > > > > +                 <0 0x11F30000 0 0x1000>;
+> > > > > > +           reg-names = "iocfg0", "iocfg1", "iocfg2",
+> > > > > > +                       "iocfg3", "iocfg4", "iocfg5",
+> > > > > > +                       "iocfg6", "iocfg7", "iocfg8";
+> > > > > > +           gpio-controller;
+> > > > > > +           #gpio-cells = <2>;
+> > > > > > +           gpio-ranges = <&pio 0 0 192>;
+> > > > > > +           interrupt-controller;
+> > > > > > +           interrupts = <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>;
+> > > > > > +           interrupt-parent = <&gic>;
+> > > > > > +           #interrupt-cells = <2>;
+> > > > > > +
+> > > > > > +           i2c0_pins_a: i2c0@0 {
+> > > > >
+> > > > > unit-address without reg property is not valid.
+> > > >
+> > > > ==> we will change "i2c0_pins_a: i2c0@0" to "i2c0_pins_a: i2c0" in the
+> > > > next version.
+> > > > >
+> > > > > > +                   pins1 {
+> > > > > > +                           pinmux = <PINMUX_GPIO48__FUNC_SCL5>,
+> > > > > > +                                    <PINMUX_GPIO49__FUNC_SDA5>;
+> > > > > > +                           mediatek,pull-up-adv = <11>;
+> > > > > > +                   };
+> > > > > > +           };
+> > > > > > +
+> > > > > > +           i2c1_pins_a: i2c1@0 {
+> > > > > > +                   pins {
+> > > > > > +                           pinmux = <PINMUX_GPIO50__FUNC_SCL3>,
+> > > > > > +                                    <PINMUX_GPIO51__FUNC_SDA3>;
+> > > > > > +                           mediatek,pull-down-adv = <10>;
+> > > > > > +                   };
+> > > > > > +           };
+> > > > > > +           ...
+> > > > > > +   };
+> > > > > > +};
+> > > > > > --
+> > > > > > 1.9.1
+> > > > > >
+> > > >
+> > > >
+> > > >
+> > > > _______________________________________________
+> > > > Linux-mediatek mailing list
+> > > > Linux-mediatek@lists.infradead.org
+> > > > http://lists.infradead.org/mailman/listinfo/linux-mediatek
+> >
+> >
