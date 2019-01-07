@@ -1,127 +1,36 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.20 001/145] panic: avoid deadlocks in re-entrant console drivers
-Date: Mon,  7 Jan 2019 13:30:38 +0100
-Message-ID: <20190107104437.506029025@linuxfoundation.org>
-References: <20190107104437.308206189@linuxfoundation.org>
+From: Oliver Neukum <oneukum@suse.com>
+Subject: Re: [PATCH RFC 4/5] usb: cdc-acm: Enable serdev support
+Date: Mon, 07 Jan 2019 14:48:26 +0100
+Message-ID: <1546868906.3037.37.camel@suse.com>
+References: <20190104112131.14451-1-afaerber@suse.de>
+         <20190104112131.14451-5-afaerber@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20190107104437.308206189@linuxfoundation.org>
-Sender: stable-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Petr Mladek <pmladek@suse.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190104112131.14451-5-afaerber@suse.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andreas =?ISO-8859-1?Q?F=E4rber?= <afaerber@suse.de>, linux-lpwan@lists.infradead.org, linux-serial@vger.kernel.org
+Cc: Johan Hovold <johan@kernel.org>, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-4.20-stable review patch.  If anyone has any objections, please let me know.
+On Fr, 2019-01-04 at 12:21 +0100, Andreas Färber  wrote:
+> Switch from tty_port_register_device() to tty_port_register_device_serdev()
+> and from tty_unregister_device() to tty_port_unregister_device().
+> 
+> On removal of a serdev driver sometimes count mismatch warnings were seen:
+> 
+>   ttyACM ttyACM0: tty_hangup: tty->count(1) != (#fd's(0) + #kopen's(0))
+>   ttyACM ttyACM0: tty_port_close_start: tty->count = 1 port count = 0
+> 
+> Note: The serdev drivers appear to probe asynchronously as soon as they
+> are registered. Should the USB quirks in probe be moved before registration?
+> No noticeable difference for the devices at hand.
 
-------------------
+That is quite drastic a change.
+Johan, how complete in terms of features is serdev?
 
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Are you refering to CLEAR_HALT_CONDITIONS in terms of quirks?
 
-commit c7c3f05e341a9a2bd1a92993d4f996cfd6e7348e upstream.
-
->From printk()/serial console point of view panic() is special, because
-it may force CPU to re-enter printk() or/and serial console driver.
-Therefore, some of serial consoles drivers are re-entrant. E.g. 8250:
-
-serial8250_console_write()
-{
-	if (port->sysrq)
-		locked = 0;
-	else if (oops_in_progress)
-		locked = spin_trylock_irqsave(&port->lock, flags);
-	else
-		spin_lock_irqsave(&port->lock, flags);
-	...
-}
-
-panic() does set oops_in_progress via bust_spinlocks(1), so in theory
-we should be able to re-enter serial console driver from panic():
-
-	CPU0
-	<NMI>
-	uart_console_write()
-	serial8250_console_write()		// if (oops_in_progress)
-						//    spin_trylock_irqsave()
-	call_console_drivers()
-	console_unlock()
-	console_flush_on_panic()
-	bust_spinlocks(1)			// oops_in_progress++
-	panic()
-	<NMI/>
-	spin_lock_irqsave(&port->lock, flags)   // spin_lock_irqsave()
-	serial8250_console_write()
-	call_console_drivers()
-	console_unlock()
-	printk()
-	...
-
-However, this does not happen and we deadlock in serial console on
-port->lock spinlock. And the problem is that console_flush_on_panic()
-called after bust_spinlocks(0):
-
-void panic(const char *fmt, ...)
-{
-	bust_spinlocks(1);
-	...
-	bust_spinlocks(0);
-	console_flush_on_panic();
-	...
-}
-
-bust_spinlocks(0) decrements oops_in_progress, so oops_in_progress
-can go back to zero. Thus even re-entrant console drivers will simply
-spin on port->lock spinlock. Given that port->lock may already be
-locked either by a stopped CPU, or by the very same CPU we execute
-panic() on (for instance, NMI panic() on printing CPU) the system
-deadlocks and does not reboot.
-
-Fix this by removing bust_spinlocks(0), so oops_in_progress is always
-set in panic() now and, thus, re-entrant console drivers will trylock
-the port->lock instead of spinning on it forever, when we call them
-from console_flush_on_panic().
-
-Link: http://lkml.kernel.org/r/20181025101036.6823-1-sergey.senozhatsky@gmail.com
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Daniel Wang <wonderfly@google.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Peter Feiner <pfeiner@google.com>
-Cc: linux-serial@vger.kernel.org
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
----
- kernel/panic.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
---- a/kernel/panic.c
-+++ b/kernel/panic.c
-@@ -14,6 +14,7 @@
- #include <linux/kmsg_dump.h>
- #include <linux/kallsyms.h>
- #include <linux/notifier.h>
-+#include <linux/vt_kern.h>
- #include <linux/module.h>
- #include <linux/random.h>
- #include <linux/ftrace.h>
-@@ -237,7 +238,10 @@ void panic(const char *fmt, ...)
- 	if (_crash_kexec_post_notifiers)
- 		__crash_kexec(NULL);
- 
--	bust_spinlocks(0);
-+#ifdef CONFIG_VT
-+	unblank_screen();
-+#endif
-+	console_unblank();
- 
- 	/*
- 	 * We may have ended up stopping the CPU holding the lock (in
+	Regards
+		Oliver
