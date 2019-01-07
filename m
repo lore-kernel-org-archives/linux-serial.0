@@ -1,116 +1,127 @@
-From: Oliver Neukum <oneukum@suse.com>
-Subject: Re: [PATCH lora-next 3/5] net: lora: sx130x: Add PicoCell serdev
- driver
-Date: Mon, 07 Jan 2019 13:11:15 +0100
-Message-ID: <1546863075.3037.33.camel@suse.com>
-References: <20190104112131.14451-1-afaerber@suse.de>
-         <20190104112131.14451-4-afaerber@suse.de>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH 4.20 001/145] panic: avoid deadlocks in re-entrant console drivers
+Date: Mon,  7 Jan 2019 13:30:38 +0100
+Message-ID: <20190107104437.506029025@linuxfoundation.org>
+References: <20190107104437.308206189@linuxfoundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190104112131.14451-4-afaerber@suse.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andreas =?ISO-8859-1?Q?F=E4rber?= <afaerber@suse.de>, linux-lpwan@lists.infradead.org, linux-serial@vger.kernel.org
-Cc: "David S. Miller" <davem@davemloft.net>, Johan Hovold <johan@kernel.org>, Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20190107104437.308206189@linuxfoundation.org>
+Sender: stable-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Petr Mladek <pmladek@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fr, 2019-01-04 at 12:21 +0100, Andreas Färber  wrote:
-> 
-> +struct picogw_device {
-> +	struct serdev_device *serdev;
-> +
-> +	u8 rx_buf[1024];
+4.20-stable review patch.  If anyone has any objections, please let me know.
 
-No, you cannot do that. AFAICT this buffer can be used for DMA.
-Thus putting it into another data structure violates the rules
-of DMA coherency. You must allocate it separately.
+------------------
 
-> +static int picogw_send_cmd(struct picogw_device *picodev, char cmd,
-> +	u8 addr, const void *data, u16 data_len)
-> +{
-> +	struct serdev_device *sdev = picodev->serdev;
-> +	u8 buf[4];
-> +	int i, ret;
-> +
-> +	buf[0] = cmd;
-> +	buf[1] = (data_len >> 8) & 0xff;
-> +	buf[2] = (data_len >> 0) & 0xff;
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
 
-We have macros for converting endianness and unaligned access.
+commit c7c3f05e341a9a2bd1a92993d4f996cfd6e7348e upstream.
 
-> +	buf[3] = addr;
-> +
-> +	dev_dbg(&sdev->dev, "%s: %c %02x %02x %02x\n", __func__, buf[0],
-> +		(unsigned int)buf[1], (unsigned int)buf[2], (unsigned int)buf[3]);
-> +	for (i = 0; i < data_len; i++) {
-> +		dev_dbg(&sdev->dev, "%s: data %02x\n", __func__, (unsigned int)((const u8*)data)[i]);
-> +	}
-> +
-> +	ret = serdev_device_write_buf(sdev, buf, 4);
-> +	if (ret < 0)
-> +		return ret;
-> +	if (ret != 4)
-> +		return -EIO;
-> +
-> +	if (data_len) {
-> +		ret = serdev_device_write_buf(sdev, data, data_len);
-> +		if (ret < 0)
-> +			return ret;
-> +		if (ret != data_len)
-> +			return -EIO;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int picogw_recv_answer(struct picogw_device *picodev,
-> +	char *cmd, bool *ack, void *buf, int buf_len,
-> +	unsigned long timeout)
-> +{
-> +	int len;
-> +
-> +	timeout = wait_for_completion_timeout(&picodev->answer_comp, timeout);
-> +	if (!timeout)
-> +		return -ETIMEDOUT;
+>From printk()/serial console point of view panic() is special, because
+it may force CPU to re-enter printk() or/and serial console driver.
+Therefore, some of serial consoles drivers are re-entrant. E.g. 8250:
 
-And? The IO is still scheduled. Simply erroring out is problematic.
-If you see a timeout you need to kill the scheduled IO.
+serial8250_console_write()
+{
+	if (port->sysrq)
+		locked = 0;
+	else if (oops_in_progress)
+		locked = spin_trylock_irqsave(&port->lock, flags);
+	else
+		spin_lock_irqsave(&port->lock, flags);
+	...
+}
 
-> +static int picogw_handle_answer(struct picogw_device *picodev)
-> +{
-> +	struct device *dev = &picodev->serdev->dev;
-> +	unsigned int data_len = ((u16)picodev->rx_buf[1] << 8) | picodev->rx_buf[2];
-> +	int cmd_len = 4 + data_len;
-> +	int i, ret;
-> +
-> +	if (picodev->rx_len < 4)
-> +		return 0;
-> +
-> +	if (cmd_len > sizeof(picodev->rx_buf)) {
-> +		dev_warn(dev, "answer too long (%u)\n", data_len);
-> +		return 0;
-> +	}
-> +
-> +	if (picodev->rx_len < cmd_len) {
-> +		dev_dbg(dev, "got %u, need %u bytes\n", picodev->rx_len, cmd_len);
-> +		return 0;
-> +	}
-> +
-> +	dev_dbg(dev, "Answer %c =%u %s (%u)\n", picodev->rx_buf[0],
-> +		(unsigned int)picodev->rx_buf[3],
-> +		(picodev->rx_buf[3] == 1) ? "OK" : "K0",
-> +		data_len);
-> +	for (i = 0; i < data_len; i++) {
-> +		//dev_dbg(dev, "%s: %02x\n", __func__, (unsigned int)picodev->rx_buf[4 + i]);
-> +	}
-> +
-> +	complete(&picodev->answer_comp);
-> +	ret = wait_for_completion_interruptible_timeout(&picodev->answer_read_comp, HZ / 2);
+panic() does set oops_in_progress via bust_spinlocks(1), so in theory
+we should be able to re-enter serial console driver from panic():
 
-Problematic. You have no idea when that complete() will have an effect.
-You are operating with an undefined timeout here. Theoretically it
-could be negative.
+	CPU0
+	<NMI>
+	uart_console_write()
+	serial8250_console_write()		// if (oops_in_progress)
+						//    spin_trylock_irqsave()
+	call_console_drivers()
+	console_unlock()
+	console_flush_on_panic()
+	bust_spinlocks(1)			// oops_in_progress++
+	panic()
+	<NMI/>
+	spin_lock_irqsave(&port->lock, flags)   // spin_lock_irqsave()
+	serial8250_console_write()
+	call_console_drivers()
+	console_unlock()
+	printk()
+	...
 
-	Regards
-		Oliver
+However, this does not happen and we deadlock in serial console on
+port->lock spinlock. And the problem is that console_flush_on_panic()
+called after bust_spinlocks(0):
+
+void panic(const char *fmt, ...)
+{
+	bust_spinlocks(1);
+	...
+	bust_spinlocks(0);
+	console_flush_on_panic();
+	...
+}
+
+bust_spinlocks(0) decrements oops_in_progress, so oops_in_progress
+can go back to zero. Thus even re-entrant console drivers will simply
+spin on port->lock spinlock. Given that port->lock may already be
+locked either by a stopped CPU, or by the very same CPU we execute
+panic() on (for instance, NMI panic() on printing CPU) the system
+deadlocks and does not reboot.
+
+Fix this by removing bust_spinlocks(0), so oops_in_progress is always
+set in panic() now and, thus, re-entrant console drivers will trylock
+the port->lock instead of spinning on it forever, when we call them
+from console_flush_on_panic().
+
+Link: http://lkml.kernel.org/r/20181025101036.6823-1-sergey.senozhatsky@gmail.com
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Daniel Wang <wonderfly@google.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Peter Feiner <pfeiner@google.com>
+Cc: linux-serial@vger.kernel.org
+Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ kernel/panic.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -14,6 +14,7 @@
+ #include <linux/kmsg_dump.h>
+ #include <linux/kallsyms.h>
+ #include <linux/notifier.h>
++#include <linux/vt_kern.h>
+ #include <linux/module.h>
+ #include <linux/random.h>
+ #include <linux/ftrace.h>
+@@ -237,7 +238,10 @@ void panic(const char *fmt, ...)
+ 	if (_crash_kexec_post_notifiers)
+ 		__crash_kexec(NULL);
+ 
+-	bust_spinlocks(0);
++#ifdef CONFIG_VT
++	unblank_screen();
++#endif
++	console_unblank();
+ 
+ 	/*
+ 	 * We may have ended up stopping the CPU holding the lock (in
