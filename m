@@ -1,12 +1,12 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 05/53] serial: set suppress_bind_attrs flag only if builtin
-Date: Tue,  8 Jan 2019 14:31:33 -0500
-Message-ID: <20190108193222.123316-5-sashal@kernel.org>
-References: <20190108193222.123316-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 04/36] serial: set suppress_bind_attrs flag only if builtin
+Date: Tue,  8 Jan 2019 14:33:16 -0500
+Message-ID: <20190108193348.123880-4-sashal@kernel.org>
+References: <20190108193348.123880-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190108193222.123316-1-sashal@kernel.org>
+In-Reply-To: <20190108193348.123880-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Anders Roxell <anders.roxell@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
@@ -89,10 +89,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  3 files changed, 4 insertions(+)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index c9f701aca677..4a4a9f33715c 100644
+index 41b0dd67fcce..2d8089fc2139 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -2800,6 +2800,7 @@ static struct platform_driver arm_sbsa_uart_platform_driver = {
+@@ -2712,6 +2712,7 @@ static struct platform_driver arm_sbsa_uart_platform_driver = {
  		.name	= "sbsa-uart",
  		.of_match_table = of_match_ptr(sbsa_uart_of_match),
  		.acpi_match_table = ACPI_PTR(sbsa_uart_acpi_match),
@@ -100,7 +100,7 @@ index c9f701aca677..4a4a9f33715c 100644
  	},
  };
  
-@@ -2828,6 +2829,7 @@ static struct amba_driver pl011_driver = {
+@@ -2740,6 +2741,7 @@ static struct amba_driver pl011_driver = {
  	.drv = {
  		.name	= "uart-pl011",
  		.pm	= &pl011_dev_pm_ops,
@@ -109,7 +109,7 @@ index c9f701aca677..4a4a9f33715c 100644
  	.id_table	= pl011_ids,
  	.probe		= pl011_probe,
 diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
-index 00a33eb859d3..e3d7d9d6c599 100644
+index 7f8e99bbcb73..fb77d55a8d95 100644
 --- a/drivers/tty/serial/pic32_uart.c
 +++ b/drivers/tty/serial/pic32_uart.c
 @@ -920,6 +920,7 @@ static struct platform_driver pic32_uart_platform_driver = {
@@ -121,10 +121,10 @@ index 00a33eb859d3..e3d7d9d6c599 100644
  };
  
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 21c35ad72b99..772d07f85b3d 100644
+index 7497f1d4a818..f8b09dc4a583 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1644,6 +1644,7 @@ static struct platform_driver cdns_uart_platform_driver = {
+@@ -1602,6 +1602,7 @@ static struct platform_driver cdns_uart_platform_driver = {
  		.name = CDNS_UART_NAME,
  		.of_match_table = cdns_uart_of_match,
  		.pm = &cdns_uart_dev_pm_ops,
