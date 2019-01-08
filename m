@@ -1,13 +1,13 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 33/53] tty/serial: do not free trasnmit buffer page under port lock
-Date: Tue,  8 Jan 2019 14:32:01 -0500
-Message-ID: <20190108193222.123316-33-sashal@kernel.org>
-References: <20190108193222.123316-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.20 077/117] tty/serial: do not free trasnmit buffer page under port lock
+Date: Tue,  8 Jan 2019 14:25:45 -0500
+Message-ID: <20190108192628.121270-77-sashal@kernel.org>
+References: <20190108192628.121270-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190108193222.123316-1-sashal@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20190108192628.121270-1-sashal@kernel.org>
+Sender: stable-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andrew Morton <akpm@linux-foundation.org>, Waiman Long <longman@redhat.com>, Dmitry Safonov <dima@arista.com>, Steven Rostedt <rostedt@goodmis.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -68,10 +68,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 16 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 6db8844ef3ec..543d0f95f094 100644
+index c439a5a1e6c0..d4cca5bdaf1c 100644
 --- a/drivers/tty/serial/serial_core.c
 +++ b/drivers/tty/serial/serial_core.c
-@@ -218,10 +218,15 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
+@@ -205,10 +205,15 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
  	if (!state->xmit.buf) {
  		state->xmit.buf = (unsigned char *) page;
  		uart_circ_clear(&state->xmit);
@@ -88,7 +88,7 @@ index 6db8844ef3ec..543d0f95f094 100644
  
  	retval = uport->ops->startup(uport);
  	if (retval == 0) {
-@@ -281,6 +286,7 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
+@@ -268,6 +273,7 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
  	struct uart_port *uport = uart_port_check(state);
  	struct tty_port *port = &state->port;
  	unsigned long flags = 0;
@@ -96,7 +96,7 @@ index 6db8844ef3ec..543d0f95f094 100644
  
  	/*
  	 * Set the TTY IO error marker
-@@ -311,14 +317,18 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
+@@ -298,14 +304,18 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
  	tty_port_set_suspended(port, 0);
  
  	/*
