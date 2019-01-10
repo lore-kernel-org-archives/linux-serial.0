@@ -1,51 +1,36 @@
-From: Anup Patel <anup@brainfault.org>
+From: Andreas Schwab <schwab@suse.de>
 Subject: Re: [PATCH] tty/serial: emit CR before NL in RISC-V SBL console
-Date: Thu, 10 Jan 2019 20:46:51 +0530
-Message-ID: <CAAhSdy3-SaP7RBbgx7kZgkkxeN2W-Ue8QDFXkOgFG5GiAg52-g@mail.gmail.com>
-References: <20181204135507.3706-1-anup@brainfault.org> <20181204135507.3706-2-anup@brainfault.org>
- <mvmbm4oehd5.fsf_-_@suse.de>
+Date: Thu, 10 Jan 2019 16:26:46 +0100
+Message-ID: <mvm7efcedop.fsf@suse.de>
+References: <20181204135507.3706-1-anup@brainfault.org>
+        <20181204135507.3706-2-anup@brainfault.org>
+        <mvmbm4oehd5.fsf_-_@suse.de>
+        <CAAhSdy3-SaP7RBbgx7kZgkkxeN2W-Ue8QDFXkOgFG5GiAg52-g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <mvmbm4oehd5.fsf_-_@suse.de>
+In-Reply-To: <CAAhSdy3-SaP7RBbgx7kZgkkxeN2W-Ue8QDFXkOgFG5GiAg52-g@mail.gmail.com>
+        (Anup Patel's message of "Thu, 10 Jan 2019 20:46:51 +0530")
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andreas Schwab <schwab@suse.de>
+To: Anup Patel <anup@brainfault.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Palmer Dabbelt <palmer@sifive.com>, Albert Ou <aou@eecs.berkeley.edu>, Atish Patra <atish.patra@wdc.com>, Christoph Hellwig <hch@infradead.org>, Rob Herring <robh@kernel.org>, linux-riscv@lists.infradead.org, "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jan 10, 2019 at 7:37 PM Andreas Schwab <schwab@suse.de> wrote:
->
-> Signed-off-by: Andreas Schwab <schwab@suse.de>
-> ---
->  drivers/tty/serial/earlycon-riscv-sbi.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/earlycon-riscv-sbi.c b/drivers/tty/serial/earlycon-riscv-sbi.c
-> index e1a551aae3..9c51b945b5 100644
-> --- a/drivers/tty/serial/earlycon-riscv-sbi.c
-> +++ b/drivers/tty/serial/earlycon-riscv-sbi.c
-> @@ -15,8 +15,11 @@ static void sbi_console_write(struct console *con,
->  {
->         int i;
->
-> -       for (i = 0; i < n; ++i)
-> +       for (i = 0; i < n; ++i) {
-> +               if (s[i] == '\n')
-> +                       sbi_console_putchar('\r');
+On Jan 10 2019, Anup Patel <anup@brainfault.org> wrote:
 
-Instead of doing '\n' handling here, we should do it in BBL or
-OpenSBI (i.e. SBI runtime firmware) otherwise all users of
-SBI_CONSOLE_PUTCHAR (namely, Linux, FreeBSD,
-FreeRTOS, U-Boot S-mode, etc) will endup having '\n'
-handling.
+> Instead of doing '\n' handling here, we should do it in BBL or
+> OpenSBI (i.e. SBI runtime firmware) otherwise all users of
+> SBI_CONSOLE_PUTCHAR (namely, Linux, FreeBSD,
+> FreeRTOS, U-Boot S-mode, etc) will endup having '\n'
+> handling.
 
-Currently, the BBL does not handle it but we have already
-handled this in upcoming OpenSBI.
+I don't think the serial driver should do NLCR handling on its own,
+without being instructed by the tty layer.  Since the earlycon does not
+have a tty layer, it needs to handle it explicitly.
 
-The SBI_CONSOLE_PUTCHAR is comparable to ARM
-semihosting early prints (refer, tty/serial/earlycon-arm-semihost.c).
-Even in ARM semihosting early prints the '\n' is not explicitly
-handled.
+Andreas.
 
-Regards,
-Anup
+-- 
+Andreas Schwab, SUSE Labs, schwab@suse.de
+GPG Key fingerprint = 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D7
+"And now for something completely different."
