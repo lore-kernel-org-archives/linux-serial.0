@@ -1,82 +1,274 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] 8250_pci.c: Only check for communication class in
- serial_pci_guess_board
-Date: Thu, 10 Jan 2019 10:36:24 +0100
-Message-ID: <20190110093624.GA11265@kroah.com>
-References: <1547107932-3714-1-git-send-email-guan.yung.tseng@ni.com>
+From: Long Cheng <long.cheng@mediatek.com>
+Subject: Re: [PATCH v9 1/2] dmaengine: 8250_mtk_dma: add MediaTek uart DMA
+ support
+Date: Thu, 10 Jan 2019 18:33:51 +0800
+Message-ID: <1547116431.3831.43.camel@mhfsdcap03>
+References: <1546395178-8880-1-git-send-email-long.cheng@mediatek.com>
+         <1546395178-8880-2-git-send-email-long.cheng@mediatek.com>
+         <20190104171953.GQ13372@vkoul-mobl.Dlink>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1547107932-3714-1-git-send-email-guan.yung.tseng@ni.com>
+In-Reply-To: <20190104171953.GQ13372@vkoul-mobl.Dlink>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Guan Yung Tseng <guan.yung.tseng@ni.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Vinod Koul <vkoul@kernel.org>
+Cc: Randy Dunlap <rdunlap@infradead.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Sean Wang <sean.wang@kernel.org>, Nicolas Boichat <drinkcat@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>, Zhenbao Liu <zhenbao.liu@me>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jan 10, 2019 at 04:12:12PM +0800, Guan Yung Tseng wrote:
-> Some multiport serial cards, such as the NI PXI-8430/2, NI PXI-8430/8,
-> and NI PXI-8432/4 use PCI_CLASS_COMMUNICATION_OTHER and this fail the
-> serial_pci_is_class_communication test added in the commit 7d8905d06405
-> ("serial: 8250_pci: Enable device after we check black list").
+On Fri, 2019-01-04 at 22:49 +0530, Vinod Koul wrote:
+> On 02-01-19, 10:12, Long Cheng wrote:
+> > In DMA engine framework, add 8250 uart dma to support MediaTek uart.
+> > If MediaTek uart enabled(SERIAL_8250_MT6577), and want to improve
+> > the performance, can enable the function.
 > 
-> Since these devices are correctly listed in serial_pci_tbl, we
-> shouldn't need to check the PCI class IDs. This change relocates the
-> class checking solely into "serial_pci_guess_board" where it had been
-> before so that the class-check doesn't hinder initialization.
+> Is the DMA controller UART specific, can it work with other controllers
+> as well, if so you should get rid of uart name in patch
 > 
-> Signed-off-by: Guan Yung Tseng <guan.yung.tseng@ni.com>
-> ---
->  drivers/tty/serial/8250/8250_pci.c | 28 +++++++++-------------------
->  1 file changed, 9 insertions(+), 19 deletions(-)
+
+I don't know that it can work or not on other controller. but it's for
+MediaTek SOC
+
+> > +#define MTK_UART_APDMA_CHANNELS		(CONFIG_SERIAL_8250_NR_UARTS * 2)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> index 4986b4a..e33a869 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -3382,21 +3382,6 @@ static const struct pci_device_id blacklist[] = {
->  	{ PCI_VDEVICE(COMMTECH, PCI_ANY_ID), },
->  };
->  
-> -static int serial_pci_is_class_communication(struct pci_dev *dev)
-> -{
-> -	/*
-> -	 * If it is not a communications device or the programming
-> -	 * interface is greater than 6, give up.
-> -	 */
-> -	if ((((dev->class >> 8) != PCI_CLASS_COMMUNICATION_SERIAL) &&
-> -	     ((dev->class >> 8) != PCI_CLASS_COMMUNICATION_MULTISERIAL) &&
-> -	     ((dev->class >> 8) != PCI_CLASS_COMMUNICATION_MODEM)) ||
-> -	    (dev->class & 0xff) > 6)
-> -		return -ENODEV;
-> -
-> -	return 0;
-> -}
+> Why are the channels not coming from DT?
+> 
 
-Please leave this as a function, no need to move it inside another
-function at this point in time.
+i will using dma-requests install of it.
 
->  static int serial_pci_is_blacklisted(struct pci_dev *dev)
->  {
->  	const struct pci_device_id *bldev;
-> @@ -3427,6 +3412,15 @@ serial_pci_guess_board(struct pci_dev *dev, struct pciserial_board *board)
->  	int num_iomem, num_port, first_port = -1, i;
->  
->  	/*
-> +	 * If it is not a communications device or the programming
-> +	 * interface is greater than 6, give up.
-> +	 *
-> +	 */
-> +	if ((((dev->class >> 8) != PCI_CLASS_COMMUNICATION_SERIAL) &&
-> +	     ((dev->class >> 8) != PCI_CLASS_COMMUNICATION_MODEM)) ||
-> +	    (dev->class & 0xff) > 6)
-> +		return -ENODEV;
-> +	/*
+> > +
+> > +#define VFF_EN_B		BIT(0)
+> > +#define VFF_STOP_B		BIT(0)
+> > +#define VFF_FLUSH_B		BIT(0)
+> > +#define VFF_4G_SUPPORT_B	BIT(0)
+> > +#define VFF_RX_INT_EN0_B	BIT(0)	/*rx valid size >=  vff thre*/
+> > +#define VFF_RX_INT_EN1_B	BIT(1)
+> > +#define VFF_TX_INT_EN_B		BIT(0)	/*tx left size >= vff thre*/
+> 
+> space around /* space */ also run checkpatch to check for style errors
+> 
 
-what happened to the multiserial check?
+ok.
 
-You should just call the function here.
+> > +static void mtk_uart_apdma_start_tx(struct mtk_chan *c)
+> > +{
+> > +	unsigned int len, send, left, wpt, d_wpt, tmp;
+> > +	int ret;
+> > +
+> > +	left = mtk_uart_apdma_read(c, VFF_LEFT_SIZE);
+> > +	if (!left) {
+> > +		mtk_uart_apdma_write(c, VFF_INT_EN, VFF_TX_INT_EN_B);
+> > +		return;
+> > +	}
+> > +
+> > +	/* Wait 1sec for flush,  can't sleep*/
+> > +	ret = readx_poll_timeout(readl, c->base + VFF_FLUSH, tmp,
+> > +			tmp != VFF_FLUSH_B, 0, 1000000);
+> > +	if (ret)
+> > +		dev_warn(c->vc.chan.device->dev, "tx: fail, debug=0x%x\n",
+> > +			mtk_uart_apdma_read(c, VFF_DEBUG_STATUS));
+> > +
+> > +	send = min_t(unsigned int, left, c->desc->avail_len);
+> > +	wpt = mtk_uart_apdma_read(c, VFF_WPT);
+> > +	len = mtk_uart_apdma_read(c, VFF_LEN);
+> > +
+> > +	d_wpt = wpt + send;
+> > +	if ((d_wpt & VFF_RING_SIZE) >= len) {
+> > +		d_wpt = d_wpt - len;
+> > +		d_wpt = d_wpt ^ VFF_RING_WRAP;
+> > +	}
+> > +	mtk_uart_apdma_write(c, VFF_WPT, d_wpt);
+> > +
+> > +	c->desc->avail_len -= send;
+> > +
+> > +	mtk_uart_apdma_write(c, VFF_INT_EN, VFF_TX_INT_EN_B);
+> > +	if (mtk_uart_apdma_read(c, VFF_FLUSH) == 0U)
+> > +		mtk_uart_apdma_write(c, VFF_FLUSH, VFF_FLUSH_B);
+> > +}
+> > +
+> > +static void mtk_uart_apdma_start_rx(struct mtk_chan *c)
+> > +{
+> > +	struct mtk_uart_apdma_desc *d = c->desc;
+> > +	unsigned int len, wg, rg, cnt;
+> > +
+> > +	if ((mtk_uart_apdma_read(c, VFF_VALID_SIZE) == 0U) ||
+> > +		!d || !vchan_next_desc(&c->vc))
+> > +		return;
+> > +
+> > +	len = mtk_uart_apdma_read(c, VFF_LEN);
+> > +	rg = mtk_uart_apdma_read(c, VFF_RPT);
+> > +	wg = mtk_uart_apdma_read(c, VFF_WPT);
+> > +	if ((rg ^ wg) & VFF_RING_WRAP)
+> > +		cnt = (wg & VFF_RING_SIZE) + len - (rg & VFF_RING_SIZE);
+> > +	else
+> > +		cnt = (wg & VFF_RING_SIZE) - (rg & VFF_RING_SIZE);
+> > +
+> > +	c->rx_status = cnt;
+> > +	mtk_uart_apdma_write(c, VFF_RPT, wg);
+> > +
+> > +	list_del(&d->vd.node);
+> > +	vchan_cookie_complete(&d->vd);
+> > +}
+> 
+> this looks odd, why do you have different rx and tx start routines?
+> 
 
-thanks,
+Would you like explain it in more detail? thanks.
+In tx function, will wait the last data flush done. and the count the
+size that send.
+In Rx function, will count the size that receive.
+Any way, in rx / tx, need andle WPT or RPT.
 
-greg k-h
+> > +static int mtk_uart_apdma_alloc_chan_resources(struct dma_chan *chan)
+> > +{
+> > +	struct mtk_uart_apdmadev *mtkd = to_mtk_uart_apdma_dev(chan->device);
+> > +	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
+> > +	u32 tmp;
+> > +	int ret;
+> > +
+> > +	pm_runtime_get_sync(mtkd->ddev.dev);
+> > +
+> > +	mtk_uart_apdma_write(c, VFF_ADDR, 0);
+> > +	mtk_uart_apdma_write(c, VFF_THRE, 0);
+> > +	mtk_uart_apdma_write(c, VFF_LEN, 0);
+> > +	mtk_uart_apdma_write(c, VFF_RST, VFF_WARM_RST_B);
+> > +
+> > +	ret = readx_poll_timeout(readl, c->base + VFF_EN, tmp,
+> > +			tmp == 0, 10, 100);
+> > +	if (ret) {
+> > +		dev_err(chan->device->dev, "dma reset: fail, timeout\n");
+> > +		return ret;
+> > +	}
+> 
+> register read does reset?
+> 
+
+'mtk_uart_apdma_write(c, VFF_RST, VFF_WARM_RST_B);' is reset. resd just
+poll reset done.
+
+> > +
+> > +	if (!c->requested) {
+> > +		c->requested = true;
+> > +		ret = request_irq(mtkd->dma_irq[chan->chan_id],
+> > +				  mtk_uart_apdma_irq_handler, IRQF_TRIGGER_NONE,
+> > +				  KBUILD_MODNAME, chan);
+> 
+> why is the irq not requested in driver probe?
+> 
+
+I have explained in below,
+http://lists.infradead.org/pipermail/linux-mediatek/2018-December/016418.html
+
+> > +static enum dma_status mtk_uart_apdma_tx_status(struct dma_chan *chan,
+> > +					 dma_cookie_t cookie,
+> > +					 struct dma_tx_state *txstate)
+> > +{
+> > +	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
+> > +	enum dma_status ret;
+> > +	unsigned long flags;
+> > +
+> > +	if (!txstate)
+> > +		return DMA_ERROR;
+> > +
+> > +	ret = dma_cookie_status(chan, cookie, txstate);
+> > +	spin_lock_irqsave(&c->vc.lock, flags);
+> > +	if (ret == DMA_IN_PROGRESS) {
+> > +		c->rx_status = mtk_uart_apdma_read(c, VFF_RPT) & VFF_RING_SIZE;
+> > +		dma_set_residue(txstate, c->rx_status);
+> > +	} else if (ret == DMA_COMPLETE && c->cfg.direction == DMA_DEV_TO_MEM) {
+> 
+> why set reside when it is complete? also reside can be null, that should
+> be checked as well
+> 
+In different status, set different reside.
+
+> > +static struct dma_async_tx_descriptor *mtk_uart_apdma_prep_slave_sg
+> > +	(struct dma_chan *chan, struct scatterlist *sgl,
+> > +	unsigned int sglen, enum dma_transfer_direction dir,
+> > +	unsigned long tx_flags, void *context)
+> > +{
+> > +	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
+> > +	struct mtk_uart_apdma_desc *d;
+> > +
+> > +	if ((dir != DMA_DEV_TO_MEM) &&
+> > +		(dir != DMA_MEM_TO_DEV)) {
+> > +		dev_err(chan->device->dev, "bad direction\n");
+> > +		return NULL;
+> > +	}
+> 
+> we have a macro for this
+
+Thanks for your suggestion. i will modify it.
+> 
+> > +
+> > +	/* Now allocate and setup the descriptor */
+> > +	d = kzalloc(sizeof(*d), GFP_ATOMIC);
+> > +	if (!d)
+> > +		return NULL;
+> > +
+> > +	/* sglen is 1 */
+> 
+> ?
+> 
+> > +static int mtk_uart_apdma_slave_config(struct dma_chan *chan,
+> > +				struct dma_slave_config *cfg)
+> > +{
+> > +	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
+> > +	struct mtk_uart_apdmadev *mtkd =
+> > +				to_mtk_uart_apdma_dev(c->vc.chan.device);
+> > +
+> > +	c->cfg = *cfg;
+> > +
+> > +	if (cfg->direction == DMA_DEV_TO_MEM) {
+> 
+> fg->direction is deprecated, in fact I have removed all users recently,
+> please do not use this
+
+You will remove 'direction' in 'struct dma_slave_config'? if remove, how
+do confirm direction?
+
+> 
+> > +		unsigned int rx_len = cfg->src_addr_width * 1024;
+> > +
+> > +		mtk_uart_apdma_write(c, VFF_ADDR, cfg->src_addr);
+> > +		mtk_uart_apdma_write(c, VFF_LEN, rx_len);
+> > +		mtk_uart_apdma_write(c, VFF_THRE, VFF_RX_THRE(rx_len));
+> > +		mtk_uart_apdma_write(c, VFF_INT_EN,
+> > +				VFF_RX_INT_EN0_B | VFF_RX_INT_EN1_B);
+> > +		mtk_uart_apdma_write(c, VFF_RPT, 0);
+> > +		mtk_uart_apdma_write(c, VFF_INT_FLAG, VFF_RX_INT_FLAG_CLR_B);
+> > +		mtk_uart_apdma_write(c, VFF_EN, VFF_EN_B);
+> 
+> why are we writing this here, we are supposed to do that when txn
+> starts!
+> 
+
+also you can review the link
+http://lists.infradead.org/pipermail/linux-mediatek/2018-December/016418.html
+
+> > +static int mtk_uart_apdma_device_resume(struct dma_chan *chan)
+> > +{
+> > +	/* just for check caps pass */
+> > +	return 0;
+> > +}
+> 
+> if you do not support this please remove this!
+> 
+> > +static void mtk_uart_apdma_free(struct mtk_uart_apdmadev *mtkd)
+> > +{
+> > +	while (list_empty(&mtkd->ddev.channels) == 0) {
+> > +		struct mtk_chan *c = list_first_entry(&mtkd->ddev.channels,
+> > +			struct mtk_chan, vc.chan.device_node);
+> > +
+> > +		list_del(&c->vc.chan.device_node);
+> > +		tasklet_kill(&c->vc.task);
+> > +	}
+> > +}
+> > +
+> > +static const struct of_device_id mtk_uart_apdma_match[] = {
+> > +	{ .compatible = "mediatek,mt6577-uart-dma", },
+> 
+> where is the binding document for ediatek,mt6577-uart-dma ??
+> 
+
+http://lists.infradead.org/pipermail/linux-mediatek/2018-December/016154.html
