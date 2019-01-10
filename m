@@ -1,71 +1,82 @@
-From: Long Cheng <long.cheng@mediatek.com>
-Subject: Re: [PATCH v9 1/2] dmaengine: 8250_mtk_dma: add MediaTek uart DMA
- support
-Date: Thu, 10 Jan 2019 16:50:25 +0800
-Message-ID: <1547110225.3831.24.camel@mhfsdcap03>
-References: <1546395178-8880-1-git-send-email-long.cheng@mediatek.com>
-         <1546395178-8880-2-git-send-email-long.cheng@mediatek.com>
-         <CANMq1KB=yuEJxUdi8M9deDhAv24WZ-4h+26cFq7AzBi8uyd88Q@mail.gmail.com>
-         <d60c25c2-efe4-9294-dc7e-98f0333bff76@infradead.org>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] 8250_pci.c: Only check for communication class in
+ serial_pci_guess_board
+Date: Thu, 10 Jan 2019 10:36:24 +0100
+Message-ID: <20190110093624.GA11265@kroah.com>
+References: <1547107932-3714-1-git-send-email-guan.yung.tseng@ni.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <d60c25c2-efe4-9294-dc7e-98f0333bff76@infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1547107932-3714-1-git-send-email-guan.yung.tseng@ni.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Randy Dunlap <rdunlap@infradead.org>
-Cc: Nicolas Boichat <drinkcat@chromium.org>, Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Sean Wang <sean.wang@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, linux-mediatek@lists.infradead.org, lkml <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>, Zhen
+To: Guan Yung Tseng <guan.yung.tseng@ni.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2019-01-02 at 18:03 -0800, Randy Dunlap wrote:
-> Hi,
+On Thu, Jan 10, 2019 at 04:12:12PM +0800, Guan Yung Tseng wrote:
+> Some multiport serial cards, such as the NI PXI-8430/2, NI PXI-8430/8,
+> and NI PXI-8432/4 use PCI_CLASS_COMMUNICATION_OTHER and this fail the
+> serial_pci_is_class_communication test added in the commit 7d8905d06405
+> ("serial: 8250_pci: Enable device after we check black list").
 > 
-> While you are making changes, here are a few more:
+> Since these devices are correctly listed in serial_pci_tbl, we
+> shouldn't need to check the PCI class IDs. This change relocates the
+> class checking solely into "serial_pci_guess_board" where it had been
+> before so that the class-check doesn't hinder initialization.
 > 
+> Signed-off-by: Guan Yung Tseng <guan.yung.tseng@ni.com>
+> ---
+>  drivers/tty/serial/8250/8250_pci.c | 28 +++++++++-------------------
+>  1 file changed, 9 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> index 4986b4a..e33a869 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -3382,21 +3382,6 @@ static const struct pci_device_id blacklist[] = {
+>  	{ PCI_VDEVICE(COMMTECH, PCI_ANY_ID), },
+>  };
+>  
+> -static int serial_pci_is_class_communication(struct pci_dev *dev)
+> -{
+> -	/*
+> -	 * If it is not a communications device or the programming
+> -	 * interface is greater than 6, give up.
+> -	 */
+> -	if ((((dev->class >> 8) != PCI_CLASS_COMMUNICATION_SERIAL) &&
+> -	     ((dev->class >> 8) != PCI_CLASS_COMMUNICATION_MULTISERIAL) &&
+> -	     ((dev->class >> 8) != PCI_CLASS_COMMUNICATION_MODEM)) ||
+> -	    (dev->class & 0xff) > 6)
+> -		return -ENODEV;
+> -
+> -	return 0;
+> -}
 
-hi
+Please leave this as a function, no need to move it inside another
+function at this point in time.
 
-OK, thanks for your comments.
+>  static int serial_pci_is_blacklisted(struct pci_dev *dev)
+>  {
+>  	const struct pci_device_id *bldev;
+> @@ -3427,6 +3412,15 @@ serial_pci_guess_board(struct pci_dev *dev, struct pciserial_board *board)
+>  	int num_iomem, num_port, first_port = -1, i;
+>  
+>  	/*
+> +	 * If it is not a communications device or the programming
+> +	 * interface is greater than 6, give up.
+> +	 *
+> +	 */
+> +	if ((((dev->class >> 8) != PCI_CLASS_COMMUNICATION_SERIAL) &&
+> +	     ((dev->class >> 8) != PCI_CLASS_COMMUNICATION_MODEM)) ||
+> +	    (dev->class & 0xff) > 6)
+> +		return -ENODEV;
+> +	/*
 
-> 
-> On 1/2/19 5:39 PM, Nicolas Boichat wrote:
-> > diff --git a/drivers/dma/mediatek/Kconfig b/drivers/dma/mediatek/Kconfig
-> > index 27bac0b..1a523c87 100644
-> > --- a/drivers/dma/mediatek/Kconfig
-> > +++ b/drivers/dma/mediatek/Kconfig
-> > @@ -1,4 +1,15 @@
-> > 
-> > +config DMA_MTK_UART
-> > +       tristate "MediaTek SoCs APDMA support for UART"
-> > +       depends on OF && SERIAL_8250_MT6577
-> > +       select DMA_ENGINE
-> > +       select DMA_VIRTUAL_CHANNELS
-> > +       help
-> > +         Support for the UART DMA engine found on MediaTek MTK SoCs.
-> > +         when SERIAL_8250_MT6577 is enabled, and if you want to use DMA,
-> 
-> 	    When
-> 
-> > +         you can enable the config. the DMA engine can only be used
-> 
-> 	                               The
-> 
-> > +         with MediaTek SoCs.
-> > +
-> 
+what happened to the multiserial check?
 
-above, i will modify.
+You should just call the function here.
 
-> Also, use tabs to indent instead of spaces.
-> The lines (tristate, depends, select, and help) should be indented with one tab.
-> The help text lines should be indented with one tab + 2 spaces.
-> 
+thanks,
 
-in my patch, i already do this. So don't need modify.
-
-> >  config MTK_HSDMA
-> >         tristate "MediaTek High-Speed DMA controller support"
-> >         depends on ARCH_MEDIATEK || COMPILE_TEST
-> 
-> 
-> thanks,
+greg k-h
