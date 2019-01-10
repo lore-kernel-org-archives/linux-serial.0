@@ -1,62 +1,73 @@
-From: Andreas Schwab <schwab@suse.de>
-Subject: [PATCH] tty/serial: use uart_console_write in the RISC-V SBL early
- console
-Date: Thu, 10 Jan 2019 18:11:39 +0100
-Message-ID: <mvmsgy0cu9g.fsf_-_@suse.de>
-References: <20181204135507.3706-1-anup@brainfault.org>
-        <20181204135507.3706-2-anup@brainfault.org>
-        <mvmbm4oehd5.fsf_-_@suse.de>
-        <CAAhSdy3-SaP7RBbgx7kZgkkxeN2W-Ue8QDFXkOgFG5GiAg52-g@mail.gmail.com>
-        <mvm7efcedop.fsf@suse.de>
-        <CAAhSdy0suSgKpdz+NUrXzS9Ozp75hMC6ovW4yLf5s0KYJwwocw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: Palmer Dabbelt <palmer@sifive.com>
+Subject: Re: [PATCH] tty/serial: emit CR before NL in RISC-V SBL console
+Date: Thu, 10 Jan 2019 12:54:44 -0800 (PST)
+Message-ID: <mhng-e8479556-154c-443f-9d41-dc182aafa2ae@palmer-si-x1c4>
+References: <CAAhSdy0suSgKpdz+NUrXzS9Ozp75hMC6ovW4yLf5s0KYJwwocw@mail.gmail.com>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <mvm7efcedop.fsf@suse.de>
 In-Reply-To: <CAAhSdy0suSgKpdz+NUrXzS9Ozp75hMC6ovW4yLf5s0KYJwwocw@mail.gmail.com>
-        (Anup Patel's message of "Thu, 10 Jan 2019 21:47:07 +0530")
 Sender: linux-kernel-owner@vger.kernel.org
-To: Anup Patel <anup@brainfault.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Palmer Dabbelt <palmer@sifive.com>, Albert Ou <aou@eecs.berkeley.edu>, Atish Patra <atish.patra@wdc.com>, Christoph Hellwig <hch@infradead.org>, Rob Herring <robh@kernel.org>, linux-riscv@lists.infradead.org, "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+To: schwab@suse.de, anup@brainfault.org
+Cc: Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com, aou@eecs.berkeley.edu, atish.patra@wdc.com, Christoph Hellwig <hch@infradead.org>, robh@kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-This enables proper NLCR processing.
+On Thu, 10 Jan 2019 07:26:46 PST (-0800), schwab@suse.de wrote:
+> On Jan 10 2019, Anup Patel <anup@brainfault.org> wrote:
+>
+>> Instead of doing '\n' handling here, we should do it in BBL or
+>> OpenSBI (i.e. SBI runtime firmware) otherwise all users of
+>> SBI_CONSOLE_PUTCHAR (namely, Linux, FreeBSD,
+>> FreeRTOS, U-Boot S-mode, etc) will endup having '\n'
+>> handling.
+>
+> I don't think the serial driver should do NLCR handling on its own,
+> without being instructed by the tty layer.  Since the earlycon does not
+> have a tty layer, it needs to handle it explicitly.
 
-Suggested-by: Anup Patel <anup@brainfault.org>
-Signed-off-by: Andreas Schwab <schwab@suse.de>
----
- drivers/tty/serial/earlycon-riscv-sbi.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+I think it's best if we have the SBI interfaces be defined to be bit-exact.  It
+does mean that everyone who uses the interfaces needs to do this handling, but
+I think that's actually a feature because it'll be subtly different everywhere.
 
-diff --git a/drivers/tty/serial/earlycon-riscv-sbi.c b/drivers/tty/serial/earlycon-riscv-sbi.c
-index e1a551aae3..ce81523c31 100644
---- a/drivers/tty/serial/earlycon-riscv-sbi.c
-+++ b/drivers/tty/serial/earlycon-riscv-sbi.c
-@@ -10,13 +10,16 @@
- #include <linux/serial_core.h>
- #include <asm/sbi.h>
- 
--static void sbi_console_write(struct console *con,
--			      const char *s, unsigned int n)
-+static void sbi_putc(struct uart_port *port, int c)
- {
--	int i;
-+	sbi_console_putchar(c);
-+}
- 
--	for (i = 0; i < n; ++i)
--		sbi_console_putchar(s[i]);
-+static void sbi_console_write(struct console *con,
-+			      const char *s, unsigned n)
-+{
-+	struct earlycon_device *dev = con->data;
-+	uart_console_write(&dev->port, s, n, sbi_putc);
- }
- 
- static int __init early_sbi_setup(struct earlycon_device *device,
--- 
-2.20.1
+This also has the advantage of being compatible with what we currently do in
+BBL and what we current expect in Linux everywhere but this earlycon driver
+(and will do assuming we merge this patch).
 
--- 
-Andreas Schwab, SUSE Labs, schwab@suse.de
-GPG Key fingerprint = 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D7
-"And now for something completely different."
+On Thu, 10 Jan 2019 08:17:07 PST (-0800), anup@brainfault.org wrote:
+> On Thu, Jan 10, 2019 at 8:56 PM Andreas Schwab <schwab@suse.de> wrote:
+>>
+>> On Jan 10 2019, Anup Patel <anup@brainfault.org> wrote:
+>>
+>> > Instead of doing '\n' handling here, we should do it in BBL or
+>> > OpenSBI (i.e. SBI runtime firmware) otherwise all users of
+>> > SBI_CONSOLE_PUTCHAR (namely, Linux, FreeBSD,
+>> > FreeRTOS, U-Boot S-mode, etc) will endup having '\n'
+>> > handling.
+>>
+>> I don't think the serial driver should do NLCR handling on its own,
+>> without being instructed by the tty layer.  Since the earlycon does not
+>> have a tty layer, it needs to handle it explicitly.
+>
+> I tried to investigate more. What you suggest is correct
+> but we should use uart_console_write() API.
+>
+> Instead of explicitly doing NLCR here, we should do
+> something as follows:
+>
+> static void sbi_putc(struct uart_port *port, int c)
+> {
+>     sbi_console_putchar(c);
+> }
+>
+> static void sbi_console_write(struct console *con,
+>                                                const char *s, unsigned n)
+> {
+>     struct earlycon_device *dev = con->data;
+>     uart_console_write(&dev->port, s, n, sbi_putc);
+> }
+>
+> The uart_console_write() does the NLCR handling.
+
+That does look cleaner.  I'll expect a v2 :)
