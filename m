@@ -1,283 +1,170 @@
-From: Long Cheng <long.cheng@mediatek.com>
-Subject: Re: [PATCH v9 1/2] dmaengine: 8250_mtk_dma: add MediaTek uart DMA
- support
-Date: Fri, 11 Jan 2019 09:18:42 +0800
-Message-ID: <1547169522.3831.47.camel@mhfsdcap03>
-References: <1546395178-8880-1-git-send-email-long.cheng@mediatek.com>
-         <1546395178-8880-2-git-send-email-long.cheng@mediatek.com>
-         <20190104171953.GQ13372@vkoul-mobl.Dlink>
-         <1547116431.3831.43.camel@mhfsdcap03>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+From: Li RongQing <lirongqing@baidu.com>
+Subject: [PATCH][V2][resend] tty: fix race between flush_to_ldisc and tty_open
+Date: Fri, 11 Jan 2019 11:03:04 +0800
+Message-ID: <1547175784-9192-1-git-send-email-lirongqing@baidu.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1547116431.3831.43.camel@mhfsdcap03>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vinod Koul <vkoul@kernel.org>
-Cc: Randy Dunlap <rdunlap@infradead.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Sean Wang <sean.wang@kernel.org>, Nicolas Boichat <drinkcat@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>, Zhenbao Liu <zhenbao.li>
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jslaby@suse.com, gregkh@linuxfoundation.org, gkohli@codeaurora.org, alan@linux.intel.com, robh@kernel.org, lirongqing@baidu.com
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 2019-01-10 at 18:33 +0800, Long Cheng wrote:
-fix spell error
+There still is a race window after the commit b027e2298bd588
+("tty: fix data race between tty_init_dev and flush of buf"),
+if receive_buf call comes before tty initialization completes
+in n_tty_open and tty->driver_data may be NULL.
 
-> On Fri, 2019-01-04 at 22:49 +0530, Vinod Koul wrote:
-> > On 02-01-19, 10:12, Long Cheng wrote:
-> > > In DMA engine framework, add 8250 uart dma to support MediaTek uart.
-> > > If MediaTek uart enabled(SERIAL_8250_MT6577), and want to improve
-> > > the performance, can enable the function.
-> > 
-> > Is the DMA controller UART specific, can it work with other controllers
-> > as well, if so you should get rid of uart name in patch
-> > 
-> 
-> I don't know that it can work or not on other controller. but it's for
-> MediaTek SOC
-> 
-> > > +#define MTK_UART_APDMA_CHANNELS		(CONFIG_SERIAL_8250_NR_UARTS * 2)
-> > 
-> > Why are the channels not coming from DT?
-> > 
-> 
-> i will using dma-requests install of it.
-> 
-i will using 'dma-requests' instead of it.
+CPU0                                    CPU1
+----                                    ----
+                                 n_tty_open
+                                   tty_init_dev
+                                     tty_ldisc_unlock
+                                       schedule
+flush_to_ldisc
+  n_tty_receive_buf
+    uart_flush_chars
+      uart_start
+      /*tty->driver_data is NULL*/
+                                   tty->ops->open
+                                   /*init tty->driver_data*/
 
-> > > +
-> > > +#define VFF_EN_B		BIT(0)
-> > > +#define VFF_STOP_B		BIT(0)
-> > > +#define VFF_FLUSH_B		BIT(0)
-> > > +#define VFF_4G_SUPPORT_B	BIT(0)
-> > > +#define VFF_RX_INT_EN0_B	BIT(0)	/*rx valid size >=  vff thre*/
-> > > +#define VFF_RX_INT_EN1_B	BIT(1)
-> > > +#define VFF_TX_INT_EN_B		BIT(0)	/*tx left size >= vff thre*/
-> > 
-> > space around /* space */ also run checkpatch to check for style errors
-> > 
-> 
-> ok.
-> 
-> > > +static void mtk_uart_apdma_start_tx(struct mtk_chan *c)
-> > > +{
-> > > +	unsigned int len, send, left, wpt, d_wpt, tmp;
-> > > +	int ret;
-> > > +
-> > > +	left = mtk_uart_apdma_read(c, VFF_LEFT_SIZE);
-> > > +	if (!left) {
-> > > +		mtk_uart_apdma_write(c, VFF_INT_EN, VFF_TX_INT_EN_B);
-> > > +		return;
-> > > +	}
-> > > +
-> > > +	/* Wait 1sec for flush,  can't sleep*/
-> > > +	ret = readx_poll_timeout(readl, c->base + VFF_FLUSH, tmp,
-> > > +			tmp != VFF_FLUSH_B, 0, 1000000);
-> > > +	if (ret)
-> > > +		dev_warn(c->vc.chan.device->dev, "tx: fail, debug=0x%x\n",
-> > > +			mtk_uart_apdma_read(c, VFF_DEBUG_STATUS));
-> > > +
-> > > +	send = min_t(unsigned int, left, c->desc->avail_len);
-> > > +	wpt = mtk_uart_apdma_read(c, VFF_WPT);
-> > > +	len = mtk_uart_apdma_read(c, VFF_LEN);
-> > > +
-> > > +	d_wpt = wpt + send;
-> > > +	if ((d_wpt & VFF_RING_SIZE) >= len) {
-> > > +		d_wpt = d_wpt - len;
-> > > +		d_wpt = d_wpt ^ VFF_RING_WRAP;
-> > > +	}
-> > > +	mtk_uart_apdma_write(c, VFF_WPT, d_wpt);
-> > > +
-> > > +	c->desc->avail_len -= send;
-> > > +
-> > > +	mtk_uart_apdma_write(c, VFF_INT_EN, VFF_TX_INT_EN_B);
-> > > +	if (mtk_uart_apdma_read(c, VFF_FLUSH) == 0U)
-> > > +		mtk_uart_apdma_write(c, VFF_FLUSH, VFF_FLUSH_B);
-> > > +}
-> > > +
-> > > +static void mtk_uart_apdma_start_rx(struct mtk_chan *c)
-> > > +{
-> > > +	struct mtk_uart_apdma_desc *d = c->desc;
-> > > +	unsigned int len, wg, rg, cnt;
-> > > +
-> > > +	if ((mtk_uart_apdma_read(c, VFF_VALID_SIZE) == 0U) ||
-> > > +		!d || !vchan_next_desc(&c->vc))
-> > > +		return;
-> > > +
-> > > +	len = mtk_uart_apdma_read(c, VFF_LEN);
-> > > +	rg = mtk_uart_apdma_read(c, VFF_RPT);
-> > > +	wg = mtk_uart_apdma_read(c, VFF_WPT);
-> > > +	if ((rg ^ wg) & VFF_RING_WRAP)
-> > > +		cnt = (wg & VFF_RING_SIZE) + len - (rg & VFF_RING_SIZE);
-> > > +	else
-> > > +		cnt = (wg & VFF_RING_SIZE) - (rg & VFF_RING_SIZE);
-> > > +
-> > > +	c->rx_status = cnt;
-> > > +	mtk_uart_apdma_write(c, VFF_RPT, wg);
-> > > +
-> > > +	list_del(&d->vd.node);
-> > > +	vchan_cookie_complete(&d->vd);
-> > > +}
-> > 
-> > this looks odd, why do you have different rx and tx start routines?
-> > 
-> 
-> Would you like explain it in more detail? thanks.
-> In tx function, will wait the last data flush done. and the count the
-> size that send.
-> In Rx function, will count the size that receive.
-> Any way, in rx / tx, need andle WPT or RPT.
-> 
-Any way, in rx / tx, need handle WPT or RPT.
+Extending ldisc semaphore lock in tty_init_dev to driver_data
+initialized completely after tty->ops->open().
 
-> > > +static int mtk_uart_apdma_alloc_chan_resources(struct dma_chan *chan)
-> > > +{
-> > > +	struct mtk_uart_apdmadev *mtkd = to_mtk_uart_apdma_dev(chan->device);
-> > > +	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
-> > > +	u32 tmp;
-> > > +	int ret;
-> > > +
-> > > +	pm_runtime_get_sync(mtkd->ddev.dev);
-> > > +
-> > > +	mtk_uart_apdma_write(c, VFF_ADDR, 0);
-> > > +	mtk_uart_apdma_write(c, VFF_THRE, 0);
-> > > +	mtk_uart_apdma_write(c, VFF_LEN, 0);
-> > > +	mtk_uart_apdma_write(c, VFF_RST, VFF_WARM_RST_B);
-> > > +
-> > > +	ret = readx_poll_timeout(readl, c->base + VFF_EN, tmp,
-> > > +			tmp == 0, 10, 100);
-> > > +	if (ret) {
-> > > +		dev_err(chan->device->dev, "dma reset: fail, timeout\n");
-> > > +		return ret;
-> > > +	}
-> > 
-> > register read does reset?
-> > 
-> 
-> 'mtk_uart_apdma_write(c, VFF_RST, VFF_WARM_RST_B);' is reset. resd just
-> poll reset done.
-> 
-> > > +
-> > > +	if (!c->requested) {
-> > > +		c->requested = true;
-> > > +		ret = request_irq(mtkd->dma_irq[chan->chan_id],
-> > > +				  mtk_uart_apdma_irq_handler, IRQF_TRIGGER_NONE,
-> > > +				  KBUILD_MODNAME, chan);
-> > 
-> > why is the irq not requested in driver probe?
-> > 
-> 
-> I have explained in below,
-> http://lists.infradead.org/pipermail/linux-mediatek/2018-December/016418.html
-> 
-> > > +static enum dma_status mtk_uart_apdma_tx_status(struct dma_chan *chan,
-> > > +					 dma_cookie_t cookie,
-> > > +					 struct dma_tx_state *txstate)
-> > > +{
-> > > +	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
-> > > +	enum dma_status ret;
-> > > +	unsigned long flags;
-> > > +
-> > > +	if (!txstate)
-> > > +		return DMA_ERROR;
-> > > +
-> > > +	ret = dma_cookie_status(chan, cookie, txstate);
-> > > +	spin_lock_irqsave(&c->vc.lock, flags);
-> > > +	if (ret == DMA_IN_PROGRESS) {
-> > > +		c->rx_status = mtk_uart_apdma_read(c, VFF_RPT) & VFF_RING_SIZE;
-> > > +		dma_set_residue(txstate, c->rx_status);
-> > > +	} else if (ret == DMA_COMPLETE && c->cfg.direction == DMA_DEV_TO_MEM) {
-> > 
-> > why set reside when it is complete? also reside can be null, that should
-> > be checked as well
-> > 
-> In different status, set different reside.
-> 
-> > > +static struct dma_async_tx_descriptor *mtk_uart_apdma_prep_slave_sg
-> > > +	(struct dma_chan *chan, struct scatterlist *sgl,
-> > > +	unsigned int sglen, enum dma_transfer_direction dir,
-> > > +	unsigned long tx_flags, void *context)
-> > > +{
-> > > +	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
-> > > +	struct mtk_uart_apdma_desc *d;
-> > > +
-> > > +	if ((dir != DMA_DEV_TO_MEM) &&
-> > > +		(dir != DMA_MEM_TO_DEV)) {
-> > > +		dev_err(chan->device->dev, "bad direction\n");
-> > > +		return NULL;
-> > > +	}
-> > 
-> > we have a macro for this
-> 
-> Thanks for your suggestion. i will modify it.
-> > 
-> > > +
-> > > +	/* Now allocate and setup the descriptor */
-> > > +	d = kzalloc(sizeof(*d), GFP_ATOMIC);
-> > > +	if (!d)
-> > > +		return NULL;
-> > > +
-> > > +	/* sglen is 1 */
-> > 
-> > ?
-> > 
-> > > +static int mtk_uart_apdma_slave_config(struct dma_chan *chan,
-> > > +				struct dma_slave_config *cfg)
-> > > +{
-> > > +	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
-> > > +	struct mtk_uart_apdmadev *mtkd =
-> > > +				to_mtk_uart_apdma_dev(c->vc.chan.device);
-> > > +
-> > > +	c->cfg = *cfg;
-> > > +
-> > > +	if (cfg->direction == DMA_DEV_TO_MEM) {
-> > 
-> > fg->direction is deprecated, in fact I have removed all users recently,
-> > please do not use this
-> 
-> You will remove 'direction' in 'struct dma_slave_config'? if remove, how
-> do confirm direction?
-> 
-> > 
-> > > +		unsigned int rx_len = cfg->src_addr_width * 1024;
-> > > +
-> > > +		mtk_uart_apdma_write(c, VFF_ADDR, cfg->src_addr);
-> > > +		mtk_uart_apdma_write(c, VFF_LEN, rx_len);
-> > > +		mtk_uart_apdma_write(c, VFF_THRE, VFF_RX_THRE(rx_len));
-> > > +		mtk_uart_apdma_write(c, VFF_INT_EN,
-> > > +				VFF_RX_INT_EN0_B | VFF_RX_INT_EN1_B);
-> > > +		mtk_uart_apdma_write(c, VFF_RPT, 0);
-> > > +		mtk_uart_apdma_write(c, VFF_INT_FLAG, VFF_RX_INT_FLAG_CLR_B);
-> > > +		mtk_uart_apdma_write(c, VFF_EN, VFF_EN_B);
-> > 
-> > why are we writing this here, we are supposed to do that when txn
-> > starts!
-> > 
-> 
-> also you can review the link
-> http://lists.infradead.org/pipermail/linux-mediatek/2018-December/016418.html
-> 
-> > > +static int mtk_uart_apdma_device_resume(struct dma_chan *chan)
-> > > +{
-> > > +	/* just for check caps pass */
-> > > +	return 0;
-> > > +}
-> > 
-> > if you do not support this please remove this!
-> > 
-> > > +static void mtk_uart_apdma_free(struct mtk_uart_apdmadev *mtkd)
-> > > +{
-> > > +	while (list_empty(&mtkd->ddev.channels) == 0) {
-> > > +		struct mtk_chan *c = list_first_entry(&mtkd->ddev.channels,
-> > > +			struct mtk_chan, vc.chan.device_node);
-> > > +
-> > > +		list_del(&c->vc.chan.device_node);
-> > > +		tasklet_kill(&c->vc.task);
-> > > +	}
-> > > +}
-> > > +
-> > > +static const struct of_device_id mtk_uart_apdma_match[] = {
-> > > +	{ .compatible = "mediatek,mt6577-uart-dma", },
-> > 
-> > where is the binding document for ediatek,mt6577-uart-dma ??
-> > 
-> 
-> http://lists.infradead.org/pipermail/linux-mediatek/2018-December/016154.html
-> 
+Signed-off-by: Zhang Yu <zhangyu31@baidu.com>
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
+---
+ drivers/staging/speakup/spk_ttyio.c |  1 +
+ drivers/tty/pty.c                   |  2 ++
+ drivers/tty/serdev/serdev-ttyport.c |  2 ++
+ drivers/tty/tty_io.c                | 14 +++++++++++---
+ drivers/tty/tty_ldisc.c             |  1 +
+ 5 files changed, 17 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/staging/speakup/spk_ttyio.c b/drivers/staging/speakup/spk_ttyio.c
+index 979e3ae249c1..c31f08c98383 100644
+--- a/drivers/staging/speakup/spk_ttyio.c
++++ b/drivers/staging/speakup/spk_ttyio.c
+@@ -155,6 +155,7 @@ static int spk_ttyio_initialise_ldisc(struct spk_synth *synth)
+ 	else
+ 		ret = -ENODEV;
+ 
++	tty_ldisc_unlock(tty);
+ 	if (ret) {
+ 		tty_unlock(tty);
+ 		return ret;
+diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+index 00099a8439d2..1b9684d4f718 100644
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -873,9 +873,11 @@ static int ptmx_open(struct inode *inode, struct file *filp)
+ 
+ 	tty_debug_hangup(tty, "opening (count=%d)\n", tty->count);
+ 
++	tty_ldisc_unlock(tty);
+ 	tty_unlock(tty);
+ 	return 0;
+ err_release:
++	tty_ldisc_unlock(tty);
+ 	tty_unlock(tty);
+ 	// This will also put-ref the fsi
+ 	tty_release(inode, filp);
+diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+index fa1672993b4c..ce16cb303e28 100644
+--- a/drivers/tty/serdev/serdev-ttyport.c
++++ b/drivers/tty/serdev/serdev-ttyport.c
+@@ -123,6 +123,7 @@ static int ttyport_open(struct serdev_controller *ctrl)
+ 	if (ret)
+ 		goto err_close;
+ 
++	tty_ldisc_unlock(tty);
+ 	tty_unlock(serport->tty);
+ 
+ 	/* Bring the UART into a known 8 bits no parity hw fc state */
+@@ -145,6 +146,7 @@ static int ttyport_open(struct serdev_controller *ctrl)
+ err_close:
+ 	tty->ops->close(tty, NULL);
+ err_unlock:
++	tty_ldisc_unlock(tty);
+ 	tty_unlock(tty);
+ 	tty_release_struct(tty, serport->tty_idx);
+ 
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 687250ec8032..199f45e2e1b1 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -1351,7 +1351,6 @@ struct tty_struct *tty_init_dev(struct tty_driver *driver, int idx)
+ 	retval = tty_ldisc_setup(tty, tty->link);
+ 	if (retval)
+ 		goto err_release_tty;
+-	tty_ldisc_unlock(tty);
+ 	/* Return the tty locked so that it cannot vanish under the caller */
+ 	return tty;
+ 
+@@ -1926,7 +1925,7 @@ EXPORT_SYMBOL_GPL(tty_kopen);
+  *	  - concurrent tty removal from driver table
+  */
+ static struct tty_struct *tty_open_by_driver(dev_t device, struct inode *inode,
+-					     struct file *filp)
++					     struct file *filp, bool *unlock)
+ {
+ 	struct tty_struct *tty;
+ 	struct tty_driver *driver = NULL;
+@@ -1970,6 +1969,7 @@ static struct tty_struct *tty_open_by_driver(dev_t device, struct inode *inode,
+ 		}
+ 	} else { /* Returns with the tty_lock held for now */
+ 		tty = tty_init_dev(driver, index);
++		*unlock = true;
+ 		mutex_unlock(&tty_mutex);
+ 	}
+ out:
+@@ -2007,6 +2007,7 @@ static int tty_open(struct inode *inode, struct file *filp)
+ 	int noctty, retval;
+ 	dev_t device = inode->i_rdev;
+ 	unsigned saved_flags = filp->f_flags;
++	bool unlock = false;
+ 
+ 	nonseekable_open(inode, filp);
+ 
+@@ -2017,7 +2018,7 @@ static int tty_open(struct inode *inode, struct file *filp)
+ 
+ 	tty = tty_open_current_tty(device, filp);
+ 	if (!tty)
+-		tty = tty_open_by_driver(device, inode, filp);
++		tty = tty_open_by_driver(device, inode, filp, &unlock);
+ 
+ 	if (IS_ERR(tty)) {
+ 		tty_free_file(filp);
+@@ -2042,6 +2043,10 @@ static int tty_open(struct inode *inode, struct file *filp)
+ 	if (retval) {
+ 		tty_debug_hangup(tty, "open error %d, releasing\n", retval);
+ 
++		if (unlock) {
++			unlock = false;
++			tty_ldisc_unlock(tty);
++		}
+ 		tty_unlock(tty); /* need to call tty_release without BTM */
+ 		tty_release(inode, filp);
+ 		if (retval != -ERESTARTSYS)
+@@ -2067,6 +2072,9 @@ static int tty_open(struct inode *inode, struct file *filp)
+ 		  tty->driver->subtype == PTY_TYPE_MASTER);
+ 	if (!noctty)
+ 		tty_open_proc_set_tty(filp, tty);
++
++	if (unlock)
++		tty_ldisc_unlock(tty);
+ 	tty_unlock(tty);
+ 	return 0;
+ }
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index fc4c97cae01e..dd9b41f66c18 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -339,6 +339,7 @@ void tty_ldisc_unlock(struct tty_struct *tty)
+ 	clear_bit(TTY_LDISC_HALTED, &tty->flags);
+ 	__tty_ldisc_unlock(tty);
+ }
++EXPORT_SYMBOL_GPL(tty_ldisc_unlock);
+ 
+ static int
+ tty_ldisc_lock_pair_timeout(struct tty_struct *tty, struct tty_struct *tty2,
+-- 
+2.16.2
