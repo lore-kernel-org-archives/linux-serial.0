@@ -1,68 +1,50 @@
-From: Anup Patel <anup@brainfault.org>
-Subject: Re: [PATCH] tty/serial: use uart_console_write in the RISC-V SBL
- early console
-Date: Fri, 11 Jan 2019 16:43:30 +0530
-Message-ID: <CAAhSdy07AeWeMxQJvzRGzMQ84Sxc6O899T0dWO1vz0LB89ORyw@mail.gmail.com>
-References: <20181204135507.3706-1-anup@brainfault.org> <20181204135507.3706-2-anup@brainfault.org>
- <mvmbm4oehd5.fsf_-_@suse.de> <CAAhSdy3-SaP7RBbgx7kZgkkxeN2W-Ue8QDFXkOgFG5GiAg52-g@mail.gmail.com>
- <mvm7efcedop.fsf@suse.de> <CAAhSdy0suSgKpdz+NUrXzS9Ozp75hMC6ovW4yLf5s0KYJwwocw@mail.gmail.com>
- <mvmsgy0cu9g.fsf_-_@suse.de>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial fixes for 5.0-rc2
+Date: Sun, 13 Jan 2019 11:23:16 +0100
+Message-ID: <20190113102316.GA17169@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <mvmsgy0cu9g.fsf_-_@suse.de>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andreas Schwab <schwab@suse.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Palmer Dabbelt <palmer@sifive.com>, Albert Ou <aou@eecs.berkeley.edu>, Atish Patra <atish.patra@wdc.com>, Christoph Hellwig <hch@infradead.org>, Rob Herring <robh@kernel.org>, linux-riscv@lists.infradead.org, "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jan 10, 2019 at 10:41 PM Andreas Schwab <schwab@suse.de> wrote:
->
-> This enables proper NLCR processing.
->
-> Suggested-by: Anup Patel <anup@brainfault.org>
-> Signed-off-by: Andreas Schwab <schwab@suse.de>
-> ---
->  drivers/tty/serial/earlycon-riscv-sbi.c | 13 ++++++++-----
->  1 file changed, 8 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/tty/serial/earlycon-riscv-sbi.c b/drivers/tty/serial/earlycon-riscv-sbi.c
-> index e1a551aae3..ce81523c31 100644
-> --- a/drivers/tty/serial/earlycon-riscv-sbi.c
-> +++ b/drivers/tty/serial/earlycon-riscv-sbi.c
-> @@ -10,13 +10,16 @@
->  #include <linux/serial_core.h>
->  #include <asm/sbi.h>
->
-> -static void sbi_console_write(struct console *con,
-> -                             const char *s, unsigned int n)
-> +static void sbi_putc(struct uart_port *port, int c)
->  {
-> -       int i;
-> +       sbi_console_putchar(c);
-> +}
->
-> -       for (i = 0; i < n; ++i)
-> -               sbi_console_putchar(s[i]);
-> +static void sbi_console_write(struct console *con,
-> +                             const char *s, unsigned n)
-> +{
-> +       struct earlycon_device *dev = con->data;
-> +       uart_console_write(&dev->port, s, n, sbi_putc);
->  }
->
->  static int __init early_sbi_setup(struct earlycon_device *device,
-> --
-> 2.20.1
->
-> --
-> Andreas Schwab, SUSE Labs, schwab@suse.de
-> GPG Key fingerprint = 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D7
-> "And now for something completely different."
+The following changes since commit bfeffd155283772bbe78c6a05dec7c0128ee500c:
 
-Looks good to me.
+  Linux 5.0-rc1 (2019-01-06 17:08:20 -0800)
 
-Reviewed-by: Anup Patel <anup@brainfault.org>
+are available in the Git repository at:
 
-Regards,
-Anup
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.0-rc2
+
+for you to fetch changes up to d3736d82e8169768218ee0ef68718875918091a0:
+
+  tty: Don't hold ldisc lock in tty_reopen() if ldisc present (2019-01-11 17:03:42 +0100)
+
+----------------------------------------------------------------
+tty/serial fixes for 5.0-rc2
+
+Here are 2 tty and serial fixes for 5.0-rc2 that resolve some reported
+issues.
+
+The first is a simple serial driver fix for a regression that showed up
+in 5.0-rc1.  The second one resolves a number of reported issues with
+the recent tty locking fixes that went into 5.0-rc1.  Lots of people
+have tested the second one and say it resolves their issues.
+
+Both have been in linux-next with no reported issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Dmitry Safonov (1):
+      tty: Don't hold ldisc lock in tty_reopen() if ldisc present
+
+Hauke Mehrtens (1):
+      serial: lantiq: Do not swap register read/writes
+
+ drivers/tty/serial/lantiq.c | 36 +++++++++++++++++++-----------------
+ drivers/tty/tty_io.c        | 20 +++++++++++++-------
+ 2 files changed, 32 insertions(+), 24 deletions(-)
