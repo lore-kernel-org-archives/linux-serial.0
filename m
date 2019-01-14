@@ -1,63 +1,60 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH] tty: not call tty close in fallback
-Date: Mon, 14 Jan 2019 08:51:19 +0100
-Message-ID: <4b6e790b-ea6a-f715-6290-4d026921b632@suse.cz>
-References: <1547448961-9588-1-git-send-email-yes>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH 2/2] dt-bindings: serial: Move renesas,rzn1-uart into the
+ snps-dw-apb-uart binding
+Date: Mon, 14 Jan 2019 10:30:25 +0100
+Message-ID: <20190114093025.ntshd3oioqacvkm2@verge.net.au>
+References: <20190110222017.6390-1-robh@kernel.org>
+ <20190110222017.6390-2-robh@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1547448961-9588-1-git-send-email-yes>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <20190110222017.6390-2-robh@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: lirongqing@baidu.com, robh@kernel.org, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Phil Edworthy <phil.edworthy@renesas.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-yes@hpe.com:
+On Thu, Jan 10, 2019 at 04:20:17PM -0600, Rob Herring wrote:
+> The renesas,rzn1-uart binding only differs in compatible string from the
+> snps-dw-apb-uart binding. Move it there, converting it to json-schema in
+> the process.
 
-550 5.1.1 User Unknown
+This confused me slightly as this patch removes renesas,rzn1-uart.txt
+but doesn't add the renesas bindings elsewhere. I now see that is done
+in patch 1/2, which is fine. But it might be worth rewording the changelog.
 
-You are sending e-mails/patches from a non-existant address?
+That notwithstanding:
 
-On 14. 01. 19, 7:56, yes@hpe.com wrote:
-> From: Li RongQing <lirongqing@baidu.com>
-> 
-> when fail to open tty, tty is not in open status and not need
-> to call close
+Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
 
-But tty drivers are special and expect close even on failed open, right?
-See tty_open.
 
-> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+> Cc: Phil Edworthy <phil.edworthy@renesas.com>
+> Cc: Simon Horman <horms+renesas@verge.net.au>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-serial@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
 > ---
->  drivers/tty/serdev/serdev-ttyport.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
+>  .../devicetree/bindings/serial/renesas,rzn1-uart.txt   | 10 ----------
+>  1 file changed, 10 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/serial/renesas,rzn1-uart.txt
 > 
-> diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
-> index fa1672993b4c..bcc1e27d00de 100644
-> --- a/drivers/tty/serdev/serdev-ttyport.c
-> +++ b/drivers/tty/serdev/serdev-ttyport.c
-> @@ -121,7 +121,7 @@ static int ttyport_open(struct serdev_controller *ctrl)
->  
->  	ret = tty->ops->open(serport->tty, NULL);
->  	if (ret)
-> -		goto err_close;
-> +		goto err_unlock;
->  
->  	tty_unlock(serport->tty);
->  
-> @@ -142,8 +142,6 @@ static int ttyport_open(struct serdev_controller *ctrl)
->  
->  	return 0;
->  
-> -err_close:
-> -	tty->ops->close(tty, NULL);
->  err_unlock:
->  	tty_unlock(tty);
->  	tty_release_struct(tty, serport->tty_idx);
+> diff --git a/Documentation/devicetree/bindings/serial/renesas,rzn1-uart.txt b/Documentation/devicetree/bindings/serial/renesas,rzn1-uart.txt
+> deleted file mode 100644
+> index 8b9e0d4dc2e4..000000000000
+> --- a/Documentation/devicetree/bindings/serial/renesas,rzn1-uart.txt
+> +++ /dev/null
+> @@ -1,10 +0,0 @@
+> -Renesas RZ/N1 UART
+> -
+> -This controller is based on the Synopsys DesignWare ABP UART and inherits all
+> -properties defined in snps-dw-apb-uart.txt except for the compatible property.
+> -
+> -Required properties:
+> -- compatible : The device specific string followed by the generic RZ/N1 string.
+> -   Therefore it must be one of:
+> -   "renesas,r9a06g032-uart", "renesas,rzn1-uart"
+> -   "renesas,r9a06g033-uart", "renesas,rzn1-uart"
+> -- 
+> 2.19.1
 > 
-
-thanks,
--- 
-js
-suse labs
