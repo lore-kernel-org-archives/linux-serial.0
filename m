@@ -1,62 +1,147 @@
-From: Pavel Machek <pavel@ucw.cz>
-Subject: Re: [PATCH 0/3] serdev support for n_gsm
-Date: Mon, 14 Jan 2019 10:38:27 +0100
-Message-ID: <20190114093827.GA20510@amd>
-References: <20190114012528.2367-1-tony@atomide.com>
+From: Guan Yung Tseng <guan.yung.tseng@ni.com>
+Subject: [PATCH] 8250_pci.c: Update NI specific devices class to multi serial
+Date: Mon, 14 Jan 2019 22:10:05 +0800
+Message-ID: <1547475005-23435-1-git-send-email-guan.yung.tseng@ni.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="UlVJffcvxoiEqYs2"
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190114012528.2367-1-tony@atomide.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Jiri Slaby <jslaby@suse.cz>, Johan Hovold <johan@kernel.org>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Guan Yung Tseng <guan.yung.tseng@ni.com>
 List-Id: linux-serial@vger.kernel.org
 
+Modified NI devices class to PCI_CLASS_COMMUNICATION_MULTISERIAL.
+The reason of doing this is because all NI multi port serial cards
+use PCI_CLASS_COMMUNICATION_OTHER class and thus fail the
+serial_pci_is_class_communication test added in the commit 7d8905d06405
+("serial: 8250_pci: Enable device after we check black list").
 
---UlVJffcvxoiEqYs2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Guan Yung Tseng <guan.yung.tseng@ni.com>
+---
+ drivers/tty/serial/8250/8250_pci.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-On Sun 2019-01-13 17:25:25, Tony Lindgren wrote:
-> Hi all,
->=20
-> Here's a series of patches to add initial serdev support to n_gsm
-> TS 27.010 line discipline.
->=20
-> This allows handling vendor specific protocols on top of TS 27.010 and
-> allows creating simple serdev drivers where it makes sense. So far I've
-> tested it with droid 4 for it's modem to provide char devices for AT
-> ports, modem PM support, and serdev drivers for GNSS and Alsa ASoC.
->=20
-> I'll be posting the related MFD, GNSS and Alsa ASoC drivers separately.
-> For reference, the MFD driver is at [0], the GNSS driver at [1], and
-> the Alsa ASoC driver at [2] below.
-
-For the series:
-
-Acked-by: Pavel Machek <pavel@ucw.cz>
-
-Thanks for doing this!
-								Pavel
-							=09
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---UlVJffcvxoiEqYs2
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlw8WJMACgkQMOfwapXb+vKm5wCfcgQc/RoV7ugMqwQ/9ftNQuFK
-KggAnj+WGa+X3casYnsEbEIhVrJK4CG9
-=vRKC
------END PGP SIGNATURE-----
-
---UlVJffcvxoiEqYs2--
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 4986b4a..0949db1 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -663,6 +663,13 @@ static int pci_xircom_init(struct pci_dev *dev)
+ 	return 0;
+ }
+ 
++static int pci_ni_probe(struct pci_dev *dev)
++{
++	dev->class = PCI_CLASS_COMMUNICATION_MULTISERIAL << 8 |
++			(dev->class & 0xff);
++	return 0;
++}
++
+ static int pci_ni8420_init(struct pci_dev *dev)
+ {
+ 	void __iomem *p;
+@@ -1850,6 +1857,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.device		= PCI_DEVICE_ID_NI_PCI23216,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
++		.probe		= pci_ni_probe,
+ 		.init		= pci_ni8420_init,
+ 		.setup		= pci_default_setup,
+ 		.exit		= pci_ni8420_exit,
+@@ -1859,6 +1867,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.device		= PCI_DEVICE_ID_NI_PCI2328,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
++		.probe		= pci_ni_probe,
+ 		.init		= pci_ni8420_init,
+ 		.setup		= pci_default_setup,
+ 		.exit		= pci_ni8420_exit,
+@@ -1868,6 +1877,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.device		= PCI_DEVICE_ID_NI_PCI2324,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
++		.probe		= pci_ni_probe,
+ 		.init		= pci_ni8420_init,
+ 		.setup		= pci_default_setup,
+ 		.exit		= pci_ni8420_exit,
+@@ -1877,6 +1887,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.device		= PCI_DEVICE_ID_NI_PCI2322,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
++		.probe		= pci_ni_probe,
+ 		.init		= pci_ni8420_init,
+ 		.setup		= pci_default_setup,
+ 		.exit		= pci_ni8420_exit,
+@@ -1886,6 +1897,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.device		= PCI_DEVICE_ID_NI_PCI2324I,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
++		.probe		= pci_ni_probe,
+ 		.init		= pci_ni8420_init,
+ 		.setup		= pci_default_setup,
+ 		.exit		= pci_ni8420_exit,
+@@ -1895,6 +1907,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.device		= PCI_DEVICE_ID_NI_PCI2322I,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
++		.probe		= pci_ni_probe,
+ 		.init		= pci_ni8420_init,
+ 		.setup		= pci_default_setup,
+ 		.exit		= pci_ni8420_exit,
+@@ -1904,6 +1917,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.device		= PCI_DEVICE_ID_NI_PXI8420_23216,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
++		.probe		= pci_ni_probe,
+ 		.init		= pci_ni8420_init,
+ 		.setup		= pci_default_setup,
+ 		.exit		= pci_ni8420_exit,
+@@ -1913,6 +1927,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.device		= PCI_DEVICE_ID_NI_PXI8420_2328,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
++		.probe		= pci_ni_probe,
+ 		.init		= pci_ni8420_init,
+ 		.setup		= pci_default_setup,
+ 		.exit		= pci_ni8420_exit,
+@@ -1922,6 +1937,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.device		= PCI_DEVICE_ID_NI_PXI8420_2324,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
++		.probe		= pci_ni_probe,
+ 		.init		= pci_ni8420_init,
+ 		.setup		= pci_default_setup,
+ 		.exit		= pci_ni8420_exit,
+@@ -1931,6 +1947,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.device		= PCI_DEVICE_ID_NI_PXI8420_2322,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
++		.probe		= pci_ni_probe,
+ 		.init		= pci_ni8420_init,
+ 		.setup		= pci_default_setup,
+ 		.exit		= pci_ni8420_exit,
+@@ -1940,6 +1957,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.device		= PCI_DEVICE_ID_NI_PXI8422_2324,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
++		.probe		= pci_ni_probe,
+ 		.init		= pci_ni8420_init,
+ 		.setup		= pci_default_setup,
+ 		.exit		= pci_ni8420_exit,
+@@ -1949,6 +1967,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.device		= PCI_DEVICE_ID_NI_PXI8422_2322,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
++		.probe		= pci_ni_probe,
+ 		.init		= pci_ni8420_init,
+ 		.setup		= pci_default_setup,
+ 		.exit		= pci_ni8420_exit,
+@@ -1958,6 +1977,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.device		= PCI_ANY_ID,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
++		.probe		= pci_ni_probe,
+ 		.init		= pci_ni8430_init,
+ 		.setup		= pci_ni8430_setup,
+ 		.exit		= pci_ni8430_exit,
+-- 
+2.7.4
