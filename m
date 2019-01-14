@@ -1,7 +1,7 @@
 From: Jiri Slaby <jslaby@suse.cz>
 Subject: Re: [PATCH] tty: not call tty close in fallback
-Date: Mon, 14 Jan 2019 08:20:13 +0100
-Message-ID: <5870cf42-415f-f24e-2e29-13affea6fc3a@suse.cz>
+Date: Mon, 14 Jan 2019 08:51:19 +0100
+Message-ID: <4b6e790b-ea6a-f715-6290-4d026921b632@suse.cz>
 References: <1547448961-9588-1-git-send-email-yes>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-2
@@ -10,8 +10,14 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1547448961-9588-1-git-send-email-yes>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: yes@hpe.com, robh@kernel.org, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: lirongqing@baidu.com, robh@kernel.org, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
+
+yes@hpe.com:
+
+550 5.1.1 User Unknown
+
+You are sending e-mails/patches from a non-existant address?
 
 On 14. 01. 19, 7:56, yes@hpe.com wrote:
 > From: Li RongQing <lirongqing@baidu.com>
