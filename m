@@ -1,66 +1,40 @@
-From: Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 2/2] dt-bindings: serial: Move renesas,rzn1-uart into the snps-dw-apb-uart binding
-Date: Mon, 14 Jan 2019 11:29:30 -0600
-Message-ID: <20190114172930.7508-2-robh@kernel.org>
-References: <20190114172930.7508-1-robh@kernel.org>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH 1/2] dt-bindings: serial: Convert snps,dw-apb-uart to
+ json-schema
+Date: Tue, 15 Jan 2019 09:02:38 +0100
+Message-ID: <20190115080233.dllow4e4vsdp3k63@verge.net.au>
+References: <20190110222017.6390-1-robh@kernel.org>
+ <20190114093022.hjouckoss2zemefg@verge.net.au>
+ <CAL_JsqJd_kHi+XU7_oe0upg1iJT2rjjEup3YpyrDQA-OhkgKTw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190114172930.7508-1-robh@kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAL_JsqJd_kHi+XU7_oe0upg1iJT2rjjEup3YpyrDQA-OhkgKTw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Simon Horman <horms+renesas@verge.net.au>, Phil Edworthy <phil.edworthy@renesas.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: devicetree@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-The renesas,rzn1-uart binding only differs in compatible string from the
-snps-dw-apb-uart binding. Move it there, converting it to json-schema in
-the process.
+On Mon, Jan 14, 2019 at 10:23:15AM -0600, Rob Herring wrote:
+> On Mon, Jan 14, 2019 at 3:30 AM Simon Horman <horms@verge.net.au> wrote:
+> >
+> > On Thu, Jan 10, 2019 at 04:20:16PM -0600, Rob Herring wrote:
+> > > Convert the snps,dw-apb-uart binding to DT schema using json-schema.
+> > >
+> > > The Rockchip and Broadcom compatible strings were not documented,
+> > > so add them here.
+> >
+> > I believe the documentation of the Renesas compatible strings is also new
+> > in this file. Perhaps it would be worth mentioning that too.
+> 
+> Ah, that should be in patch 2. Will respin.
 
-Cc: Phil Edworthy <phil.edworthy@renesas.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
-Signed-off-by: Rob Herring <robh@kernel.org>
----
-v2:
-- Move Renesas compatible strings to this patch
+Thanks!
 
- .../devicetree/bindings/serial/renesas,rzn1-uart.txt   | 10 ----------
- .../devicetree/bindings/serial/snps-dw-apb-uart.yaml   |  5 +++++
- 2 files changed, 5 insertions(+), 10 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/serial/renesas,rzn1-uart.txt
-
-diff --git a/Documentation/devicetree/bindings/serial/renesas,rzn1-uart.txt b/Documentation/devicetree/bindings/serial/renesas,rzn1-uart.txt
-deleted file mode 100644
-index 8b9e0d4dc2e4..000000000000
---- a/Documentation/devicetree/bindings/serial/renesas,rzn1-uart.txt
-+++ /dev/null
-@@ -1,10 +0,0 @@
--Renesas RZ/N1 UART
--
--This controller is based on the Synopsys DesignWare ABP UART and inherits all
--properties defined in snps-dw-apb-uart.txt except for the compatible property.
--
--Required properties:
--- compatible : The device specific string followed by the generic RZ/N1 string.
--   Therefore it must be one of:
--   "renesas,r9a06g032-uart", "renesas,rzn1-uart"
--   "renesas,r9a06g033-uart", "renesas,rzn1-uart"
-diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-index 3e90c790d720..b42002542690 100644
---- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-@@ -15,6 +15,11 @@ allOf:
- properties:
-   compatible:
-     oneOf:
-+      - items:
-+          - enum:
-+              - renesas,r9a06g032-uart
-+              - renesas,r9a06g033-uart
-+          - const: renesas,rzn1-uart
-       - items:
-           - enum:
-               - rockchip,px30-uart
--- 
-2.19.1
+> 
+> > In any case
+> >
+> > Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+> >
+> 
