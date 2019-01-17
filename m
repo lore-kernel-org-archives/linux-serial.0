@@ -1,74 +1,72 @@
-From: Tycho Andersen <tycho@tycho.ws>
-Subject: Re: [PATCH] uart: Fix crash in uart_write and uart_put_char
-Date: Wed, 16 Jan 2019 11:40:03 -0700
-Message-ID: <20190116184003.GF1642@cisco>
-References: <1547663287-4890-1-git-send-email-samir@embedur.com>
+From: <zhe.he@windriver.com>
+Subject: [PATCH] serial: 8250: Fix serial8250 initialization crash
+Date: Thu, 17 Jan 2019 17:00:19 +0800
+Message-ID: <1547715619-181299-1-git-send-email-zhe.he@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1547663287-4890-1-git-send-email-samir@embedur.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: samir@embedur.com
-Cc: gregkh@linuxfoundation.org, jslaby@suse.co, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com, andriy.shevchenko@linux.intel.com, bigeasy@linutronix.de, Jisheng.Zhang@synaptics.com, darwin.dingel@alliedtelesis.co.nz, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, zhe.he@windriver.com
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jan 16, 2019 at 10:28:07AM -0800, samir@embedur.com wrote:
-> From: Samir Virmani <samir@embedur.com>
-> 
-> We were experiencing a crash similar to the one reported as part of
-> commit:a5ba1d95e46e ("uart: fix race between uart_put_char() and
-> uart_shutdown()") in our testbed as well. We continue to observe the same
-> crash after integrating the commit a5ba1d95e46e ("uart: fix race between
-> uart_put_char() and uart_shutdown()")
-> 
-> On reviewing the change, the port lock should be taken prior to checking for
-> if (!circ->buf) in fn. __uart_put_char and other fns. that update the buffer
-> uart_state->xmit.
-> 
-> Traceback:
-> 
-> [11/27/2018 06:24:32.4870] Unable to handle kernel NULL pointer dereference
->                            at virtual address 0000003b
-> 
-> [11/27/2018 06:24:32.4950] PC is at memcpy+0x48/0x180
-> [11/27/2018 06:24:32.4950] LR is at uart_write+0x74/0x120
-> [11/27/2018 06:24:32.4950] pc : [<ffffffc0002e6808>]
->                            lr : [<ffffffc0003747cc>] pstate: 000001c5
-> [11/27/2018 06:24:32.4950] sp : ffffffc076433d30
-> [11/27/2018 06:24:32.4950] x29: ffffffc076433d30 x28: 0000000000000140
-> [11/27/2018 06:24:32.4950] x27: ffffffc0009b9d5e x26: ffffffc07ce36580
-> [11/27/2018 06:24:32.4950] x25: 0000000000000000 x24: 0000000000000140
-> [11/27/2018 06:24:32.4950] x23: ffffffc000891200 x22: ffffffc01fc34000
-> [11/27/2018 06:24:32.4950] x21: 0000000000000fff x20: 0000000000000076
-> [11/27/2018 06:24:32.4950] x19: 0000000000000076 x18: 0000000000000000
-> [11/27/2018 06:24:32.4950] x17: 000000000047cf08 x16: ffffffc000099e68
-> [11/27/2018 06:24:32.4950] x15: 0000000000000018 x14: 776d726966205948
-> [11/27/2018 06:24:32.4950] x13: 50203a6c6974755f x12: 74647075205d3333
-> [11/27/2018 06:24:32.4950] x11: 3a35323a36203831 x10: 30322f37322f3131
-> [11/27/2018 06:24:32.4950] x9 : 5b205d303638342e x8 : 746164206f742070
-> [11/27/2018 06:24:32.4950] x7 : 7520736920657261 x6 : 000000000000003b
-> [11/27/2018 06:24:32.4950] x5 : 000000000000817a x4 : 0000000000000008
-> [11/27/2018 06:24:32.4950] x3 : 2f37322f31312a5b x2 : 000000000000006e
-> [11/27/2018 06:24:32.4950] x1 : ffffffc0009b9cf0 x0 : 000000000000003b
-> 
-> [11/27/2018 06:24:32.4950] CPU2: stopping
-> [11/27/2018 06:24:32.4950] CPU: 2 PID: 0 Comm: swapper/2 Tainted: P      D    O    4.1.51 #3
-> [11/27/2018 06:24:32.4950] Hardware name: Broadcom-v8A (DT)
-> [11/27/2018 06:24:32.4950] Call trace:
-> [11/27/2018 06:24:32.4950] [<ffffffc0000883b8>] dump_backtrace+0x0/0x150
-> [11/27/2018 06:24:32.4950] [<ffffffc00008851c>] show_stack+0x14/0x20
-> [11/27/2018 06:24:32.4950] [<ffffffc0005ee810>] dump_stack+0x90/0xb0
-> [11/27/2018 06:24:32.4950] [<ffffffc00008e844>] handle_IPI+0x18c/0x1a0
-> [11/27/2018 06:24:32.4950] [<ffffffc000080c68>] gic_handle_irq+0x88/0x90
-> 
-> Fixes: a5ba1d95e46e ("uart: fix race between uart_put_char() and
->                       uart_shutdown()")
-> Signed-off-by: Samir Virmani <samir@embedur.com>
-> Cc: Tycho Andersen <tycho@tycho.ws>
+From: He Zhe <zhe.he@windriver.com>
 
-Acked-by: Tycho Andersen <tycho@tycho.ws>
+The initialization code of interrupt backoff work might reference NULL
+pointer and cause the following crash, if no port was found.
 
-Thanks,
+[   10.017727] CPU 0 Unable to handle kernel paging request at virtual address 000001b0, epc == 807088e0, ra == 8070863c
+---- snip ----
+[   11.704470] [<807088e0>] serial8250_register_8250_port+0x318/0x4ac
+[   11.747251] [<80708d74>] serial8250_probe+0x148/0x1c0
+[   11.789301] [<80728450>] platform_drv_probe+0x40/0x94
+[   11.830515] [<807264f8>] really_probe+0xf8/0x318
+[   11.870876] [<80726b7c>] __driver_attach+0x110/0x12c
+[   11.910960] [<80724374>] bus_for_each_dev+0x78/0xcc
+[   11.951134] [<80725958>] bus_add_driver+0x200/0x234
+[   11.989756] [<807273d8>] driver_register+0x84/0x148
+[   12.029832] [<80d72f84>] serial8250_init+0x138/0x198
+[   12.070447] [<80100e6c>] do_one_initcall+0x5c/0x2a0
+[   12.110104] [<80d3a208>] kernel_init_freeable+0x370/0x484
+[   12.150722] [<80a49420>] kernel_init+0x10/0xf8
+[   12.191517] [<8010756c>] ret_from_kernel_thread+0x14/0x1c
 
-Tycho
+This patch makes sure the initialization code can be reached only if a port
+is found.
+
+Fixes: commit 6d7f677a2afa ("serial: 8250: Rate limit serial port rx interrupts during input overruns")
+Signed-off-by: He Zhe <zhe.he@windriver.com>
+---
+ drivers/tty/serial/8250/8250_core.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 189ab12..e441221 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -1070,15 +1070,16 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+ 
+ 			ret = 0;
+ 		}
+-	}
+ 
+-	/* Initialise interrupt backoff work if required */
+-	if (up->overrun_backoff_time_ms > 0) {
+-		uart->overrun_backoff_time_ms = up->overrun_backoff_time_ms;
+-		INIT_DELAYED_WORK(&uart->overrun_backoff,
+-				  serial_8250_overrun_backoff_work);
+-	} else {
+-		uart->overrun_backoff_time_ms = 0;
++		/* Initialise interrupt backoff work if required */
++		if (up->overrun_backoff_time_ms > 0) {
++			uart->overrun_backoff_time_ms =
++				up->overrun_backoff_time_ms;
++			INIT_DELAYED_WORK(&uart->overrun_backoff,
++					serial_8250_overrun_backoff_work);
++		} else {
++			uart->overrun_backoff_time_ms = 0;
++		}
+ 	}
+ 
+ 	mutex_unlock(&serial_mutex);
+-- 
+2.7.4
