@@ -1,7 +1,7 @@
 From: Long Cheng <long.cheng@mediatek.com>
-Subject: [PATCH v10 3/3] dt-bindings: dma: uart: rename binding
-Date: Fri, 18 Jan 2019 11:10:16 +0800
-Message-ID: <1547781016-890-4-git-send-email-long.cheng@mediatek.com>
+Subject: [PATCH v10 2/3] arm: dts: mt2712: add uart APDMA to device tree
+Date: Fri, 18 Jan 2019 11:10:15 +0800
+Message-ID: <1547781016-890-3-git-send-email-long.cheng@mediatek.com>
 References: <1547781016-890-1-git-send-email-long.cheng@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,94 +12,117 @@ To: Vinod Koul <vkoul@kernel.org>, Randy Dunlap <rdunlap@infradead.org>, Rob Her
 Cc: Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>, Zhenbao Liu <zhenbao.liu@mediatek.com>, Long Cheng <long.cheng@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-The filename matches mtk-uart-apdma.c.
-So using "mtk-uart-apdma.txt" should be better.
+1. add uart APDMA controller device node
+2. add uart 0/1/2/3/4/5 DMA function
 
 Signed-off-by: Long Cheng <long.cheng@mediatek.com>
 ---
- .../devicetree/bindings/dma/8250_mtk_dma.txt       |   33 --------------------
- .../devicetree/bindings/dma/mtk-uart-apdma.txt     |   33 ++++++++++++++++++++
- 2 files changed, 33 insertions(+), 33 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/dma/8250_mtk_dma.txt
- create mode 100644 Documentation/devicetree/bindings/dma/mtk-uart-apdma.txt
+ arch/arm64/boot/dts/mediatek/mt2712e.dtsi |   51 +++++++++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/dma/8250_mtk_dma.txt b/Documentation/devicetree/bindings/dma/8250_mtk_dma.txt
-deleted file mode 100644
-index 3fe0961..0000000
---- a/Documentation/devicetree/bindings/dma/8250_mtk_dma.txt
-+++ /dev/null
-@@ -1,33 +0,0 @@
--* Mediatek UART APDMA Controller
--
--Required properties:
--- compatible should contain:
--  * "mediatek,mt2712-uart-dma" for MT2712 compatible APDMA
--  * "mediatek,mt6577-uart-dma" for MT6577 and all of the above
--
--- reg: The base address of the APDMA register bank.
--
--- interrupts: A single interrupt specifier.
--
--- clocks : Must contain an entry for each entry in clock-names.
--  See ../clocks/clock-bindings.txt for details.
--- clock-names: The APDMA clock for register accesses
--
--Examples:
--
--	apdma: dma-controller@11000380 {
--		compatible = "mediatek,mt2712-uart-dma";
--		reg = <0 0x11000380 0 0x400>;
--		interrupts = <GIC_SPI 63 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 64 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 65 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 66 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 67 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 68 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 69 IRQ_TYPE_LEVEL_LOW>,
--			     <GIC_SPI 70 IRQ_TYPE_LEVEL_LOW>;
--		clocks = <&pericfg CLK_PERI_AP_DMA>;
--		clock-names = "apdma";
--		#dma-cells = <1>;
--	};
--
-diff --git a/Documentation/devicetree/bindings/dma/mtk-uart-apdma.txt b/Documentation/devicetree/bindings/dma/mtk-uart-apdma.txt
-new file mode 100644
-index 0000000..3fe0961
---- /dev/null
-+++ b/Documentation/devicetree/bindings/dma/mtk-uart-apdma.txt
-@@ -0,0 +1,33 @@
-+* Mediatek UART APDMA Controller
-+
-+Required properties:
-+- compatible should contain:
-+  * "mediatek,mt2712-uart-dma" for MT2712 compatible APDMA
-+  * "mediatek,mt6577-uart-dma" for MT6577 and all of the above
-+
-+- reg: The base address of the APDMA register bank.
-+
-+- interrupts: A single interrupt specifier.
-+
-+- clocks : Must contain an entry for each entry in clock-names.
-+  See ../clocks/clock-bindings.txt for details.
-+- clock-names: The APDMA clock for register accesses
-+
-+Examples:
-+
-+	apdma: dma-controller@11000380 {
-+		compatible = "mediatek,mt2712-uart-dma";
-+		reg = <0 0x11000380 0 0x400>;
-+		interrupts = <GIC_SPI 63 IRQ_TYPE_LEVEL_LOW>,
-+			     <GIC_SPI 64 IRQ_TYPE_LEVEL_LOW>,
-+			     <GIC_SPI 65 IRQ_TYPE_LEVEL_LOW>,
-+			     <GIC_SPI 66 IRQ_TYPE_LEVEL_LOW>,
-+			     <GIC_SPI 67 IRQ_TYPE_LEVEL_LOW>,
-+			     <GIC_SPI 68 IRQ_TYPE_LEVEL_LOW>,
-+			     <GIC_SPI 69 IRQ_TYPE_LEVEL_LOW>,
-+			     <GIC_SPI 70 IRQ_TYPE_LEVEL_LOW>;
+diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+index ee627a7..3469a6c 100644
+--- a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+@@ -298,6 +298,9 @@
+ 		interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_LOW>;
+ 		clocks = <&baud_clk>, <&sys_clk>;
+ 		clock-names = "baud", "bus";
++		dmas = <&apdma 10
++			&apdma 11>;
++		dma-names = "tx", "rx";
+ 		status = "disabled";
+ 	};
+ 
+@@ -346,6 +349,39 @@
+ 			 (GIC_CPU_MASK_RAW(0x13) | IRQ_TYPE_LEVEL_HIGH)>;
+ 	};
+ 
++	apdma: dma-controller@11000400 {
++		compatible = "mediatek,mt2712-uart-dma",
++			     "mediatek,mt6577-uart-dma";
++		reg = <0 0x11000400 0 0x80>,
++		      <0 0x11000480 0 0x80>,
++		      <0 0x11000500 0 0x80>,
++		      <0 0x11000580 0 0x80>,
++		      <0 0x11000600 0 0x80>,
++		      <0 0x11000680 0 0x80>,
++		      <0 0x11000700 0 0x80>,
++		      <0 0x11000780 0 0x80>,
++		      <0 0x11000800 0 0x80>,
++		      <0 0x11000880 0 0x80>,
++		      <0 0x11000900 0 0x80>,
++		      <0 0x11000980 0 0x80>;
++		interrupts = <GIC_SPI 103 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 104 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 105 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 106 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 107 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 108 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 109 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 110 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 111 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 112 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 113 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 114 IRQ_TYPE_LEVEL_LOW>;
++		dma-requests = <12>;
 +		clocks = <&pericfg CLK_PERI_AP_DMA>;
 +		clock-names = "apdma";
 +		#dma-cells = <1>;
 +	};
 +
+ 	auxadc: adc@11001000 {
+ 		compatible = "mediatek,mt2712-auxadc";
+ 		reg = <0 0x11001000 0 0x1000>;
+@@ -362,6 +398,9 @@
+ 		interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_LOW>;
+ 		clocks = <&baud_clk>, <&sys_clk>;
+ 		clock-names = "baud", "bus";
++		dmas = <&apdma 0
++			&apdma 1>;
++		dma-names = "tx", "rx";
+ 		status = "disabled";
+ 	};
+ 
+@@ -372,6 +411,9 @@
+ 		interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_LOW>;
+ 		clocks = <&baud_clk>, <&sys_clk>;
+ 		clock-names = "baud", "bus";
++		dmas = <&apdma 2
++			&apdma 3>;
++		dma-names = "tx", "rx";
+ 		status = "disabled";
+ 	};
+ 
+@@ -382,6 +424,9 @@
+ 		interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_LOW>;
+ 		clocks = <&baud_clk>, <&sys_clk>;
+ 		clock-names = "baud", "bus";
++		dmas = <&apdma 4
++			&apdma 5>;
++		dma-names = "tx", "rx";
+ 		status = "disabled";
+ 	};
+ 
+@@ -392,6 +437,9 @@
+ 		interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_LOW>;
+ 		clocks = <&baud_clk>, <&sys_clk>;
+ 		clock-names = "baud", "bus";
++		dmas = <&apdma 6
++			&apdma 7>;
++		dma-names = "tx", "rx";
+ 		status = "disabled";
+ 	};
+ 
+@@ -402,6 +450,9 @@
+ 		interrupts = <GIC_SPI 126 IRQ_TYPE_LEVEL_LOW>;
+ 		clocks = <&baud_clk>, <&sys_clk>;
+ 		clock-names = "baud", "bus";
++		dmas = <&apdma 8
++			&apdma 9>;
++		dma-names = "tx", "rx";
+ 		status = "disabled";
+ 	};
+ 
 -- 
 1.7.9.5
