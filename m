@@ -1,54 +1,39 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] 8250_pci.c: Update NI specific devices class to multi
- serial
-Date: Fri, 18 Jan 2019 12:57:18 +0100
-Message-ID: <20190118115718.GA16370@kroah.com>
-References: <1547475005-23435-1-git-send-email-guan.yung.tseng@ni.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 0/3] serdev support for n_gsm
+Date: Fri, 18 Jan 2019 12:59:58 +0100
+Message-ID: <20190118115958.GA5532@kroah.com>
+References: <20190114012528.2367-1-tony@atomide.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1547475005-23435-1-git-send-email-guan.yung.tseng@ni.com>
+In-Reply-To: <20190114012528.2367-1-tony@atomide.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Guan Yung Tseng <guan.yung.tseng@ni.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: linux-kernel@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Jiri Slaby <jslaby@suse.cz>, Johan Hovold <johan@kernel.org>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 14, 2019 at 10:10:05PM +0800, Guan Yung Tseng wrote:
-> Modified NI devices class to PCI_CLASS_COMMUNICATION_MULTISERIAL.
-> The reason of doing this is because all NI multi port serial cards
-> use PCI_CLASS_COMMUNICATION_OTHER class and thus fail the
-> serial_pci_is_class_communication test added in the commit 7d8905d06405
-> ("serial: 8250_pci: Enable device after we check black list").
+On Sun, Jan 13, 2019 at 05:25:25PM -0800, Tony Lindgren wrote:
+> Hi all,
 > 
-> Signed-off-by: Guan Yung Tseng <guan.yung.tseng@ni.com>
-> ---
->  drivers/tty/serial/8250/8250_pci.c | 20 ++++++++++++++++++++
->  1 file changed, 20 insertions(+)
+> Here's a series of patches to add initial serdev support to n_gsm
+> TS 27.010 line discipline.
 > 
-> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> index 4986b4a..0949db1 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -663,6 +663,13 @@ static int pci_xircom_init(struct pci_dev *dev)
->  	return 0;
->  }
->  
-> +static int pci_ni_probe(struct pci_dev *dev)
-> +{
-> +	dev->class = PCI_CLASS_COMMUNICATION_MULTISERIAL << 8 |
-> +			(dev->class & 0xff);
+> This allows handling vendor specific protocols on top of TS 27.010 and
+> allows creating simple serdev drivers where it makes sense. So far I've
+> tested it with droid 4 for it's modem to provide char devices for AT
+> ports, modem PM support, and serdev drivers for GNSS and Alsa ASoC.
+> 
+> I'll be posting the related MFD, GNSS and Alsa ASoC drivers separately.
+> For reference, the MFD driver is at [0], the GNSS driver at [1], and
+> the Alsa ASoC driver at [2] below.
 
-As Christoph said, this looks really odd.  This field comes from the
-PCI structure on the device, it should not be modified by the kernel.
+I have applied the first two patches to my tree, as those are nice
+cleanups.
 
-Unless the device is broken and needs to be fixed up in the kernel?
-
-Also, you have sent 2 different patches here for this type of issue, are
-both needed?  If so, please resend both of them as a patch series, with
-more explainations in this one as to why you are modifying this field.
-
-I've dropped all pending patches from you from my queue now.
+The last one I want some feedback from the serdev developers to verify
+all is set up properly, and Johan, to see if this ends up conflicting
+with the gnss code, as that would not be good.
 
 thanks,
 
