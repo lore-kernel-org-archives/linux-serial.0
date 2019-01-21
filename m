@@ -1,58 +1,166 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [BUG] tiocsti() NULL dereference if ld->ops->receive_buf==NULL
-Date: Mon, 21 Jan 2019 17:14:21 +0100
-Message-ID: <20190121161421.GB29858@kroah.com>
-References: <CAG48ez06mDExELyTYN7MZQ3FjGcLx9ASc5HnxW8NQbfTAPX=Qg@mail.gmail.com>
- <20190119091108.GF10836@kroah.com>
- <20190120095205.GB28267@kroah.com>
- <CAG48ez0=Mcgk15EWBfVw-X7gB2hMJFULRA_w429-uyPZotdqNA@mail.gmail.com>
+Subject: [PATCH] tty: ldisc: add sysctl to prevent autoloading of ldiscs
+Date: Mon, 21 Jan 2019 17:26:42 +0100
+Message-ID: <20190121162642.GA2944@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAG48ez0=Mcgk15EWBfVw-X7gB2hMJFULRA_w429-uyPZotdqNA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jann Horn <jannh@google.com>
-Cc: Jiri Slaby <jslaby@suse.com>, kernel list <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+To: kernel-hardening@lists.openwall.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 21, 2019 at 04:38:33PM +0100, Jann Horn wrote:
-> On Sun, Jan 20, 2019 at 10:52 AM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Sat, Jan 19, 2019 at 10:11:08AM +0100, Greg Kroah-Hartman wrote:
-> > > On Fri, Jan 18, 2019 at 08:09:07PM +0100, Jann Horn wrote:
-> > > > Hi!
-> > > >
-> > > > When a line discipline doesn't have a ->receive_buf handler, tiocsti()
-> > > > attempts to call a NULL pointer. Both tty_n_tracesink and
-> > > > spk_ttyio_ldisc_ops don't have such a handler.
-> > > >
-> > > > To reproduce, build a kernel with CONFIG_SPEAKUP=y and
-> > > > CONFIG_SPEAKUP_SYNTH_SOFT=y, set speakup.synth=soft in the kernel
-> > > > command line, and run the following code as root:
-> > >
-> > > <snip>
-> > >
-> > > Ugh, thanks for finding this.  I'll look at it later this afternoon...
-> >
-> > It looks to be a simple change.  We can't really "fail" this ioctl if
-> > there's nothing wrong with the structure of the call, so we can just
-> > quietly "eat" the character, given that the line discipline doesn't care
-> > about it.
-> >
-> > So, any objections to the patch below?
-> 
-> No objection from me.
-> 
-> (spk_ttyio_ldisc_ops has a receive_buf2 handler, but I don't know
-> whether that should be invoked here or not.)
+By default, the kernel will automatically load the module of any line
+dicipline that is asked for.  As this sometimes isn't the safest thing
+to do, provide a sysctl to disable this feature.
 
-No, receive_buf2 can fail, or do a short "receive", which receive_buf()
-can't do, and tiocsti can't fail (it's only used to fake input data).
+By default, we set this to 'y' as that is the historical way that Linux
+has worked, and we do not want to break working systems.  But in the
+future, perhaps this can default to 'n' to prevent this functionality.
 
-Yeah, the tty layer is strange :(
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
 
-thanks,
+Every once in a while people are really surprised that any line
+discipline can be loaded by any user.  Despite the ability to just
+disable the modules from the modules.conf file, sometimes it is good to
+provide protection from within the kernel instead of relying on a module
+configuration file.
 
-greg k-h
+So that's why I wrote this patch up.  Anyone have any objections to it.
+It keeps the functionality that we have today by default, but allows
+admins to disable the auto-loading if they want to at runtime.
+
+
+
+ drivers/tty/Kconfig     | 24 +++++++++++++++++++++
+ drivers/tty/tty_io.c    |  3 +++
+ drivers/tty/tty_ldisc.c | 47 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 74 insertions(+)
+
+diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig
+index 0840d27381ea..e0a04bfc873e 100644
+--- a/drivers/tty/Kconfig
++++ b/drivers/tty/Kconfig
+@@ -441,4 +441,28 @@ config VCC
+ 	depends on SUN_LDOMS
+ 	help
+ 	  Support for Sun logical domain consoles.
++
++config LDISC_AUTOLOAD
++	bool "Automatically load TTY Line Disciplines"
++	default y
++	help
++	  Historically the kernel has always automatically loaded any
++	  line discipline that is in a kernel module when a user asks
++	  for it to be loaded with the TIOCSETD ioctl, or through other
++	  means.  This is not always the best thing to do on systems
++	  where you know you will not be using some of the more
++	  "ancient" line disciplines, so prevent the kernel from doing
++	  this unless the request is coming from a process with the
++	  CAP_SYS_MODULE permissions.
++
++	  Say 'Y' here if you trust your userspace users to do the right
++	  thing, or if you have only provided the line disciplines that
++	  you know you will be using, or if you wish to continue to use
++	  the traditional method of on-demand loading of these modules
++	  by any user.
++
++	  This functionality can be changed at runtime with the
++	  dev.tty.ldisc_autoload sysctl, this configuration option will
++	  only set the default value of this functionality.
++
+ endif # TTY
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 21ffcce16927..5fa250157025 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -513,6 +513,8 @@ static const struct file_operations hung_up_tty_fops = {
+ static DEFINE_SPINLOCK(redirect_lock);
+ static struct file *redirect;
+ 
++extern void tty_sysctl_init(void);
++
+ /**
+  *	tty_wakeup	-	request more data
+  *	@tty: terminal
+@@ -3483,6 +3485,7 @@ void console_sysfs_notify(void)
+  */
+ int __init tty_init(void)
+ {
++	tty_sysctl_init();
+ 	cdev_init(&tty_cdev, &tty_fops);
+ 	if (cdev_add(&tty_cdev, MKDEV(TTYAUX_MAJOR, 0), 1) ||
+ 	    register_chrdev_region(MKDEV(TTYAUX_MAJOR, 0), 1, "/dev/tty") < 0)
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index 45eda69b150c..e38f104db174 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -156,6 +156,13 @@ static void put_ldops(struct tty_ldisc_ops *ldops)
+  *		takes tty_ldiscs_lock to guard against ldisc races
+  */
+ 
++#if defined(CONFIG_LDISC_AUTOLOAD)
++	#define INITIAL_AUTOLOAD_STATE	1
++#else
++	#define INITIAL_AUTOLOAD_STATE	0
++#endif
++static int tty_ldisc_autoload = INITIAL_AUTOLOAD_STATE;
++
+ static struct tty_ldisc *tty_ldisc_get(struct tty_struct *tty, int disc)
+ {
+ 	struct tty_ldisc *ld;
+@@ -170,6 +177,8 @@ static struct tty_ldisc *tty_ldisc_get(struct tty_struct *tty, int disc)
+ 	 */
+ 	ldops = get_ldops(disc);
+ 	if (IS_ERR(ldops)) {
++		if (!capable(CAP_SYS_MODULE) && !tty_ldisc_autoload)
++			return ERR_PTR(-EPERM);
+ 		request_module("tty-ldisc-%d", disc);
+ 		ldops = get_ldops(disc);
+ 		if (IS_ERR(ldops))
+@@ -845,3 +854,41 @@ void tty_ldisc_deinit(struct tty_struct *tty)
+ 		tty_ldisc_put(tty->ldisc);
+ 	tty->ldisc = NULL;
+ }
++
++static int zero;
++static int one = 1;
++static struct ctl_table tty_table[] = {
++	{
++		.procname	= "ldisc_autoload",
++		.data		= &tty_ldisc_autoload,
++		.maxlen		= sizeof(tty_ldisc_autoload),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec,
++		.extra1		= &zero,
++		.extra2		= &one,
++	},
++	{ }
++};
++
++static struct ctl_table tty_dir_table[] = {
++	{
++		.procname	= "tty",
++		.mode		= 0555,
++		.child		= tty_table,
++	},
++	{ }
++};
++
++static struct ctl_table tty_root_table[] = {
++	{
++		.procname	= "dev",
++		.mode		= 0555,
++		.child		= tty_dir_table,
++	},
++	{ }
++};
++
++void tty_sysctl_init(void)
++{
++	register_sysctl_table(tty_root_table);
++}
+-- 
+2.20.1
