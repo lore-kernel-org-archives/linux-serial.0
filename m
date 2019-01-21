@@ -1,66 +1,78 @@
-From: msavaliy@codeaurora.org
-Subject: Re: [PATCH] tty: serial: qcom_geni_serial: Allow mctrl when flow
- control is disabled
-Date: Mon, 21 Jan 2019 20:05:10 +0530
-Message-ID: <3d739661db11d669cf8a9cba3f0853fa@codeaurora.org>
-References: <20190119002305.16639-1-mka@chromium.org>
+From: Jann Horn <jannh@google.com>
+Subject: Re: [BUG] tiocsti() NULL dereference if ld->ops->receive_buf==NULL
+Date: Mon, 21 Jan 2019 16:38:33 +0100
+Message-ID: <CAG48ez0=Mcgk15EWBfVw-X7gB2hMJFULRA_w429-uyPZotdqNA@mail.gmail.com>
+References: <CAG48ez06mDExELyTYN7MZQ3FjGcLx9ASc5HnxW8NQbfTAPX=Qg@mail.gmail.com>
+ <20190119091108.GF10836@kroah.com> <20190120095205.GB28267@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190119002305.16639-1-mka@chromium.org>
+In-Reply-To: <20190120095205.GB28267@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Kaehlcke <mka@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>, Balakrishna Godavarthi <bgodavar@codeaurora.org>, linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, kernel list <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 2019-01-19 05:53, Matthias Kaehlcke wrote:
-> The geni set/get_mctrl() functions currently do nothing unless
-> hardware flow control is enabled. Remove this arbitrary limitation.
-> 
-> Suggested-by: Johan Hovold <johan@kernel.org>
-> Fixes: 8a8a66a1a18a ("tty: serial: qcom_geni_serial: Add support for
-> flow control")
-> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-> ---
->  drivers/tty/serial/qcom_geni_serial.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c
-> b/drivers/tty/serial/qcom_geni_serial.c
-> index a72d6d9fb9834..38016609c7fa9 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -225,7 +225,7 @@ static unsigned int
-> qcom_geni_serial_get_mctrl(struct uart_port *uport)
->  	unsigned int mctrl = TIOCM_DSR | TIOCM_CAR;
->  	u32 geni_ios;
-> 
-> -	if (uart_console(uport) || !uart_cts_enabled(uport)) {
-> +	if (uart_console(uport)) {
->  		mctrl |= TIOCM_CTS;
->  	} else {
->  		geni_ios = readl_relaxed(uport->membase + SE_GENI_IOS);
-> @@ -241,7 +241,7 @@ static void qcom_geni_serial_set_mctrl(struct
-> uart_port *uport,
->  {
->  	u32 uart_manual_rfr = 0;
-> 
-> -	if (uart_console(uport) || !uart_cts_enabled(uport))
-> +	if (uart_console(uport))
->  		return;
-> 
->  	if (!(mctrl & TIOCM_RTS))
+On Sun, Jan 20, 2019 at 10:52 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Sat, Jan 19, 2019 at 10:11:08AM +0100, Greg Kroah-Hartman wrote:
+> > On Fri, Jan 18, 2019 at 08:09:07PM +0100, Jann Horn wrote:
+> > > Hi!
+> > >
+> > > When a line discipline doesn't have a ->receive_buf handler, tiocsti()
+> > > attempts to call a NULL pointer. Both tty_n_tracesink and
+> > > spk_ttyio_ldisc_ops don't have such a handler.
+> > >
+> > > To reproduce, build a kernel with CONFIG_SPEAKUP=y and
+> > > CONFIG_SPEAKUP_SYNTH_SOFT=y, set speakup.synth=soft in the kernel
+> > > command line, and run the following code as root:
+> >
+> > <snip>
+> >
+> > Ugh, thanks for finding this.  I'll look at it later this afternoon...
+>
+> It looks to be a simple change.  We can't really "fail" this ioctl if
+> there's nothing wrong with the structure of the call, so we can just
+> quietly "eat" the character, given that the line discipline doesn't care
+> about it.
+>
+> So, any objections to the patch below?
 
-Though late but wanted to check on why flow control is disabled in a BT 
-case ?
-If i understand, CRTSCTS at serial core is what makes flow as enabled 
-with UPSTAT_CTS_ENABLE set and that in turn returned by 
-uart_cts_enabled(uport).
-So is there any settings or configuration missing to enable flow control 
-?
-There could be a case to have 2 wire UART without flow control 
-enablement, In that case we may need check for uart_cts_enabled() right 
-?
-Please add/correct if i missed something.
+No objection from me.
+
+(spk_ttyio_ldisc_ops has a receive_buf2 handler, but I don't know
+whether that should be invoked here or not.)
+
+> -----------------
+>
+> Subject: [PATCH] tty: Handle problem if line discipline does not have receive_buf
+>
+> Some tty line disciplines do not have a receive buf callback, so
+> properly check for that before calling it.  If they do not have this
+> callback, just eat the character quietly, as we can't fail this call.
+>
+> Reported-by: Jann Horn <jannh@google.com>
+> Cc: stable <stable@vger.kernel.org>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>  drivers/tty/tty_io.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+> index 23c6fd238422..21ffcce16927 100644
+> --- a/drivers/tty/tty_io.c
+> +++ b/drivers/tty/tty_io.c
+> @@ -2189,7 +2189,8 @@ static int tiocsti(struct tty_struct *tty, char __user *p)
+>         ld = tty_ldisc_ref_wait(tty);
+>         if (!ld)
+>                 return -EIO;
+> -       ld->ops->receive_buf(tty, &ch, &mbz, 1);
+> +       if (ld->ops->receive_buf)
+> +               ld->ops->receive_buf(tty, &ch, &mbz, 1);
+>         tty_ldisc_deref(ld);
+>         return 0;
+>  }
+> --
+> 2.20.1
+>
