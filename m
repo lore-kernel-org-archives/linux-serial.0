@@ -1,166 +1,148 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH] tty: ldisc: add sysctl to prevent autoloading of ldiscs
-Date: Mon, 21 Jan 2019 17:26:42 +0100
-Message-ID: <20190121162642.GA2944@kroah.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH 0/3] serdev support for n_gsm
+Date: Mon, 21 Jan 2019 09:01:16 -0800
+Message-ID: <20190121170116.GA5544@atomide.com>
+References: <20190114012528.2367-1-tony@atomide.com>
+ <20190118115958.GA5532@kroah.com>
+ <20190121105735.GI3691@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
+In-Reply-To: <20190121105735.GI3691@localhost>
 Sender: linux-kernel-owner@vger.kernel.org
-To: kernel-hardening@lists.openwall.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jslaby@suse.com>
+To: Johan Hovold <johan@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Jiri Slaby <jslaby@suse.cz>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, linux-serial@vger.kernel.org, Marcel Holtmann <marcel@holtmann.org>
 List-Id: linux-serial@vger.kernel.org
 
-By default, the kernel will automatically load the module of any line
-dicipline that is asked for.  As this sometimes isn't the safest thing
-to do, provide a sysctl to disable this feature.
+Hi,
 
-By default, we set this to 'y' as that is the historical way that Linux
-has worked, and we do not want to break working systems.  But in the
-future, perhaps this can default to 'n' to prevent this functionality.
+* Johan Hovold <johan@kernel.org> [190121 10:57]:
+> Adding Marcel on CC.
+> 
+> On Fri, Jan 18, 2019 at 12:59:58PM +0100, Greg Kroah-Hartman wrote:
+> > On Sun, Jan 13, 2019 at 05:25:25PM -0800, Tony Lindgren wrote:
+> > > Hi all,
+> > > 
+> > > Here's a series of patches to add initial serdev support to n_gsm
+> > > TS 27.010 line discipline.
+> > > 
+> > > This allows handling vendor specific protocols on top of TS 27.010 and
+> > > allows creating simple serdev drivers where it makes sense. So far I've
+> > > tested it with droid 4 for it's modem to provide char devices for AT
+> > > ports, modem PM support, and serdev drivers for GNSS and Alsa ASoC.
+> > > 
+> > > I'll be posting the related MFD, GNSS and Alsa ASoC drivers separately.
+> > > For reference, the MFD driver is at [0], the GNSS driver at [1], and
+> > > the Alsa ASoC driver at [2] below.
+> > 
+> > I have applied the first two patches to my tree, as those are nice
+> > cleanups.
+> > 
+> > The last one I want some feedback from the serdev developers to verify
+> > all is set up properly, and Johan, to see if this ends up conflicting
+> > with the gnss code, as that would not be good.
+> 
+> I think we need to have a discussion about how to model modems generally
+> before getting into implementation details.
+> 
+> Modems are currently managed by user space (e.g. through ofono) and
+> I'm not sure that moving only parts of its responsibilities into the
+> kernel is necessarily the right thing to do. You still need coordination
+> between the various components for things like power management.
 
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
+At least now we do have the option of doing kernel drivers or user
+space apps whichever way we want to :)
 
-Every once in a while people are really surprised that any line
-discipline can be loaded by any user.  Despite the ability to just
-disable the modules from the modules.conf file, sometimes it is good to
-provide protection from within the kernel instead of relying on a module
-configuration file.
+And we can now do the user space apps without having to implement
+any of the Motorola custom packet numbering layer on top of TS 27.010
+for each app.
 
-So that's why I wrote this patch up.  Anyone have any objections to it.
-It keeps the functionality that we have today by default, but allows
-admins to disable the auto-loading if they want to at runtime.
+For some user space examples, I have posted scripts to send and receive
+SMS at [3], and Pavel has ofono patches [4] below. Seems like we can
+also add support to ModemManager along the similar lines. And for the
+serdev drivers, those implement standard Linux interfaces for apps
+to use.
+
+For PM, about a year ago I tried making things work with a user space
+solution and it sucked big time[5]. The power management makes sense
+to do in the kernel driver at least in this case as there are shared
+GPIO pins between the USB PHY and TS 27.010 UART. The shared GPIOs
+are handled by the phy-mapphone-mdm6600 driver.
+
+With the serdev n_gsm MFD driver, the only thing that needs to be done
+to idle the modem is to enable autosuspend for the OHCI interface. So
+no spefific coordination between various components is needed for PM
+beyond that. Things idle just fine using PM runtime.
+
+> TS 27.010 may make it seem like we can move everything into the kernel,
+> but Tony's to-be-posted Motorola MFD driver is still exposing character
+> devices for most of the muxed ports. If I understand things correctly,
+> there also still needs to be some coordination with USB over which some
+> channels are handled (e.g. IP over USB, gnss over muxed UART).
+
+Hmm yes now we can do either user space daemons or kernel serdev
+drivers.
+
+For USB, the modem data connection already works with USB OHCI over
+QMI. So it's is already handled and separated out of this. The USB
+PHY and TS 27.010 UART have shared GPIO pins handled by the USB PHY
+driver. The USB PHY is integrated into the modem with the shared
+GPIO pins controlling the PHY and the TS 27.010 UART PM..
+But it's working for PM and like I mentioned modem PM works as long
+as OHCI is set to autosuspend. Well the modem also wants to see
+TS 27.010 connected before idling.
+
+> Instead of adding these extra layers, only to export most ports to user
+> space again, it may be better to hook into the various kernel subsystems
+> through dedicated user-space-implementation interfaces such as the
+> suggested ugnss interface, which means that user space feeds gnss data
+> into the kernel which in turn makes it available through a standard
+> interface.
+
+Sure that's doable. But notice that we actually need to kick the
+serdev GNSS interface to get more data. It's not a passive GNSS
+data feed in this case. So it's not going to be just a case of
+cat /dev/motmdm4 > /dev/ugnss. Without the serdev GNSS driver,
+it would be some-custom-app -i /dev/motmdm4 -o /dev/ugnss.
+
+And without the n_gsm serdev support, it's a mess of some app
+similar to [5] initializing n_gsm, trying to deal with the USB
+PHY PM, dealing with Motorola custom packet numbering, kicking
+GNSS device, feeding data to /dev/ugnss. Hmm I think I've already
+been there just to be able to type AT commands to the modem and
+it did not work :)
+
+Anyways, for the serdev kernel drivers, the criteria I've tried
+to follow is: "Can this serdev device driver make user space
+apps use standard Linux interfaces for the hardware?"
+
+So for the serdev Alsa ASoC driver, user space can use the standard
+Alsa interface for setting voice call volume. And for the serdev
+GNSS driver, user space can use /dev/gnss0.
+
+I don't think it makes sense to do the GNSS driver in user space
+in this case because of the kicking needed. But at least it
+certainly is doable with /dev/ugnss.
+
+> This would also allow things to work for other transports such as USB
+> CDC for which the mux protocol isn't used.
+
+Yeah I agree it would be nice to have GNSS framework have ugnss
+device similar to drivers/input/misc/uinput.c. Anyways, having
+a serdev GNSS driver in this case does not prevent a USB driver
+from feeding data to the /dev/ugnss interface. In this case
+doing GNSS driver over UART is preferred for smaller power
+consumption.
+
+Regards,
+
+Tony
 
 
-
- drivers/tty/Kconfig     | 24 +++++++++++++++++++++
- drivers/tty/tty_io.c    |  3 +++
- drivers/tty/tty_ldisc.c | 47 +++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 74 insertions(+)
-
-diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig
-index 0840d27381ea..e0a04bfc873e 100644
---- a/drivers/tty/Kconfig
-+++ b/drivers/tty/Kconfig
-@@ -441,4 +441,28 @@ config VCC
- 	depends on SUN_LDOMS
- 	help
- 	  Support for Sun logical domain consoles.
-+
-+config LDISC_AUTOLOAD
-+	bool "Automatically load TTY Line Disciplines"
-+	default y
-+	help
-+	  Historically the kernel has always automatically loaded any
-+	  line discipline that is in a kernel module when a user asks
-+	  for it to be loaded with the TIOCSETD ioctl, or through other
-+	  means.  This is not always the best thing to do on systems
-+	  where you know you will not be using some of the more
-+	  "ancient" line disciplines, so prevent the kernel from doing
-+	  this unless the request is coming from a process with the
-+	  CAP_SYS_MODULE permissions.
-+
-+	  Say 'Y' here if you trust your userspace users to do the right
-+	  thing, or if you have only provided the line disciplines that
-+	  you know you will be using, or if you wish to continue to use
-+	  the traditional method of on-demand loading of these modules
-+	  by any user.
-+
-+	  This functionality can be changed at runtime with the
-+	  dev.tty.ldisc_autoload sysctl, this configuration option will
-+	  only set the default value of this functionality.
-+
- endif # TTY
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 21ffcce16927..5fa250157025 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -513,6 +513,8 @@ static const struct file_operations hung_up_tty_fops = {
- static DEFINE_SPINLOCK(redirect_lock);
- static struct file *redirect;
- 
-+extern void tty_sysctl_init(void);
-+
- /**
-  *	tty_wakeup	-	request more data
-  *	@tty: terminal
-@@ -3483,6 +3485,7 @@ void console_sysfs_notify(void)
-  */
- int __init tty_init(void)
- {
-+	tty_sysctl_init();
- 	cdev_init(&tty_cdev, &tty_fops);
- 	if (cdev_add(&tty_cdev, MKDEV(TTYAUX_MAJOR, 0), 1) ||
- 	    register_chrdev_region(MKDEV(TTYAUX_MAJOR, 0), 1, "/dev/tty") < 0)
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 45eda69b150c..e38f104db174 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -156,6 +156,13 @@ static void put_ldops(struct tty_ldisc_ops *ldops)
-  *		takes tty_ldiscs_lock to guard against ldisc races
-  */
- 
-+#if defined(CONFIG_LDISC_AUTOLOAD)
-+	#define INITIAL_AUTOLOAD_STATE	1
-+#else
-+	#define INITIAL_AUTOLOAD_STATE	0
-+#endif
-+static int tty_ldisc_autoload = INITIAL_AUTOLOAD_STATE;
-+
- static struct tty_ldisc *tty_ldisc_get(struct tty_struct *tty, int disc)
- {
- 	struct tty_ldisc *ld;
-@@ -170,6 +177,8 @@ static struct tty_ldisc *tty_ldisc_get(struct tty_struct *tty, int disc)
- 	 */
- 	ldops = get_ldops(disc);
- 	if (IS_ERR(ldops)) {
-+		if (!capable(CAP_SYS_MODULE) && !tty_ldisc_autoload)
-+			return ERR_PTR(-EPERM);
- 		request_module("tty-ldisc-%d", disc);
- 		ldops = get_ldops(disc);
- 		if (IS_ERR(ldops))
-@@ -845,3 +854,41 @@ void tty_ldisc_deinit(struct tty_struct *tty)
- 		tty_ldisc_put(tty->ldisc);
- 	tty->ldisc = NULL;
- }
-+
-+static int zero;
-+static int one = 1;
-+static struct ctl_table tty_table[] = {
-+	{
-+		.procname	= "ldisc_autoload",
-+		.data		= &tty_ldisc_autoload,
-+		.maxlen		= sizeof(tty_ldisc_autoload),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec,
-+		.extra1		= &zero,
-+		.extra2		= &one,
-+	},
-+	{ }
-+};
-+
-+static struct ctl_table tty_dir_table[] = {
-+	{
-+		.procname	= "tty",
-+		.mode		= 0555,
-+		.child		= tty_table,
-+	},
-+	{ }
-+};
-+
-+static struct ctl_table tty_root_table[] = {
-+	{
-+		.procname	= "dev",
-+		.mode		= 0555,
-+		.child		= tty_dir_table,
-+	},
-+	{ }
-+};
-+
-+void tty_sysctl_init(void)
-+{
-+	register_sysctl_table(tty_root_table);
-+}
--- 
-2.20.1
+[0] https://git.kernel.org/pub/scm/linux/kernel/git/tmlind/linux-omap.git/tree/drivers/mfd/motorola-mdm.c?h=droid4-pending-mdm-v4.20
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/tmlind/linux-omap.git/tree/drivers/gnss/motmdm.c?h=droid4-pending-mdm-v4.20
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/tmlind/linux-omap.git/tree/sound/soc/codecs/motmdm.c?h=droid4-pending-mdm-v4.20
+[3] https://github.com/tmlind/droid4-sms-tools
+[4] https://github.com/pavelmachek/ofono
+[5] https://github.com/tmlind/droid4-ngsm
