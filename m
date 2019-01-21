@@ -1,65 +1,66 @@
 From: Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH] tty: serial: qcom_geni_serial: Allow mctrl when flow
- control is disabled
-Date: Mon, 21 Jan 2019 09:47:19 +0100
-Message-ID: <20190121084719.GF3691@localhost>
-References: <20190119002305.16639-1-mka@chromium.org>
+Subject: Re: [PATCH 0/3] serdev support for n_gsm
+Date: Mon, 21 Jan 2019 11:57:35 +0100
+Message-ID: <20190121105735.GI3691@localhost>
+References: <20190114012528.2367-1-tony@atomide.com>
+ <20190118115958.GA5532@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190119002305.16639-1-mka@chromium.org>
+In-Reply-To: <20190118115958.GA5532@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Kaehlcke <mka@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>, Balakrishna Godavarthi <bgodavar@codeaurora.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Tony Lindgren <tony@atomide.com>, linux-kernel@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Jiri Slaby <jslaby@suse.cz>, Johan Hovold <johan@kernel.org>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, linux-serial@vger.kernel.org, Marcel Holtmann <marcel@holtmann.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jan 18, 2019 at 04:23:05PM -0800, Matthias Kaehlcke wrote:
-> The geni set/get_mctrl() functions currently do nothing unless
-> hardware flow control is enabled. Remove this arbitrary limitation.
+Adding Marcel on CC.
+
+On Fri, Jan 18, 2019 at 12:59:58PM +0100, Greg Kroah-Hartman wrote:
+> On Sun, Jan 13, 2019 at 05:25:25PM -0800, Tony Lindgren wrote:
+> > Hi all,
+> > 
+> > Here's a series of patches to add initial serdev support to n_gsm
+> > TS 27.010 line discipline.
+> > 
+> > This allows handling vendor specific protocols on top of TS 27.010 and
+> > allows creating simple serdev drivers where it makes sense. So far I've
+> > tested it with droid 4 for it's modem to provide char devices for AT
+> > ports, modem PM support, and serdev drivers for GNSS and Alsa ASoC.
+> > 
+> > I'll be posting the related MFD, GNSS and Alsa ASoC drivers separately.
+> > For reference, the MFD driver is at [0], the GNSS driver at [1], and
+> > the Alsa ASoC driver at [2] below.
 > 
-> Suggested-by: Johan Hovold <johan@kernel.org>
-> Fixes: 8a8a66a1a18a ("tty: serial: qcom_geni_serial: Add support for flow control")
-> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-
-Good to hear this was all that was needed. There don't happen to be any
-publicly available documentation of these registers?
-
-> ---
->  drivers/tty/serial/qcom_geni_serial.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> I have applied the first two patches to my tree, as those are nice
+> cleanups.
 > 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index a72d6d9fb9834..38016609c7fa9 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -225,7 +225,7 @@ static unsigned int qcom_geni_serial_get_mctrl(struct uart_port *uport)
->  	unsigned int mctrl = TIOCM_DSR | TIOCM_CAR;
->  	u32 geni_ios;
->  
-> -	if (uart_console(uport) || !uart_cts_enabled(uport)) {
-> +	if (uart_console(uport)) {
->  		mctrl |= TIOCM_CTS;
->  	} else {
->  		geni_ios = readl_relaxed(uport->membase + SE_GENI_IOS);
-> @@ -241,7 +241,7 @@ static void qcom_geni_serial_set_mctrl(struct uart_port *uport,
->  {
->  	u32 uart_manual_rfr = 0;
->  
-> -	if (uart_console(uport) || !uart_cts_enabled(uport))
-> +	if (uart_console(uport))
->  		return;
->  
->  	if (!(mctrl & TIOCM_RTS))
+> The last one I want some feedback from the serdev developers to verify
+> all is set up properly, and Johan, to see if this ends up conflicting
+> with the gnss code, as that would not be good.
 
-Ignoring mctrl when the port is a console looks broken too by the way.
-The driver parses and handles the flow control parameter, but these
-conditionals later overrides it.
+I think we need to have a discussion about how to model modems generally
+before getting into implementation details.
 
-Could be fixed in the same patch or in a follow-up patch.
+Modems are currently managed by user space (e.g. through ofono) and
+I'm not sure that moving only parts of its responsibilities into the
+kernel is necessarily the right thing to do. You still need coordination
+between the various components for things like power management.
 
-Either way, you can add my 
+TS 27.010 may make it seem like we can move everything into the kernel,
+but Tony's to-be-posted Motorola MFD driver is still exposing character
+devices for most of the muxed ports. If I understand things correctly,
+there also still needs to be some coordination with USB over which some
+channels are handled (e.g. IP over USB, gnss over muxed UART).
 
-Reviewed-by: Johan Hovold <johan@kernel.org>
+Instead of adding these extra layers, only to export most ports to user
+space again, it may be better to hook into the various kernel subsystems
+through dedicated user-space-implementation interfaces such as the
+suggested ugnss interface, which means that user space feeds gnss data
+into the kernel which in turn makes it available through a standard
+interface.
+
+This would also allow things to work for other transports such as USB
+CDC for which the mux protocol isn't used.
 
 Johan
