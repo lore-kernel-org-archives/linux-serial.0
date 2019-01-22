@@ -1,42 +1,46 @@
-From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH] tty: serial: 8250_mtk: Fix potential NULL pointer dereference
-Date: Tue, 22 Jan 2019 13:57:19 -0600
-Message-ID: <20190122195719.GA21846@embeddedor>
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH 4/6] spi: spi-geni-qcom: Add interconnect support
+Date: Tue, 22 Jan 2019 20:29:24 +0000
+Message-ID: <20190122202924.GL7579@sirena.org.uk>
+References: <1548138816-1149-1-git-send-email-alokc@codeaurora.org>
+ <1548138816-1149-5-git-send-email-alokc@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="wIc/V6YLA2QdyfT4"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
+In-Reply-To: <1548138816-1149-5-git-send-email-alokc@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To: Alok Chauhan <alokc@codeaurora.org>
+Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, andy.gross@linaro.org, david.brown@linaro.org, georgi.djakov@linaro.org, dianders@chromium.org, swboyd@chromium.org, bjorn.andersson@linaro.org
 List-Id: linux-serial@vger.kernel.org
 
-There is a potential NULL pointer dereference in case devm_kzalloc()
-fails and returns NULL.
 
-Fix this by adding a NULL check on data->dma
+--wIc/V6YLA2QdyfT4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-This bug was detected with the help of Coccinelle.
+On Tue, Jan 22, 2019 at 12:03:34PM +0530, Alok Chauhan wrote:
 
-Fixes: 85b5c1dd0456 ("serial: 8250-mtk: add uart DMA support")
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- drivers/tty/serial/8250/8250_mtk.c | 3 +++
- 1 file changed, 3 insertions(+)
+> Get the interconnect paths for SPI based Serial Engine device
+> and vote accordingly based on maximum supported SPI frequency.
 
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index e2c407656fa6..c1fdbc0b6840 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -357,6 +357,9 @@ static int mtk8250_probe_of(struct platform_device *pdev, struct uart_port *p,
- 	if (dmacnt == 2) {
- 		data->dma = devm_kzalloc(&pdev->dev, sizeof(*data->dma),
- 					 GFP_KERNEL);
-+		if (!data->dma)
-+			return -ENOMEM;
-+
- 		data->dma->fn = mtk8250_dma_filter;
- 		data->dma->rx_size = MTK_UART_RX_SIZE;
- 		data->dma->rxconf.src_maxburst = MTK_UART_RX_TRIGGER;
--- 
-2.20.1
+Still not seeing anything except this patch here in my inbox - like I
+said what's the story with dependencies?
+
+--wIc/V6YLA2QdyfT4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAlxHfSMACgkQJNaLcl1U
+h9DqqAf8CaMWvbpCWug3/SP/1Wojbdc+Z24TR24YSW41nHTz0VMhLtkOEtJWyRgp
+1H9iY6cqsqqVJzFO42nBJgT1rk8hcdcvEHw9cGJ6MqUhnwd5IDUhosRiUNPijkgh
+g1pcCZ8Y3hyC+6sKddlOomv744hJmluB1QEy9IeAEBykpE6ScHAhXgebO/iIk38j
+Hj+4VdGyBq/9O5c72J3s7LumYm5JPqAtgjIYIjL9hMgeSXj39hgqX1/mUObI8X9O
+xoZ1irHhtBaeP2jPyZt15XwFaCwbz2vEDUez7e7OOIY6jek1lnTUGUCYbr6tmcEF
+vev6Ccup/Puey+hycNBosXTobNpIOw==
+=R7VJ
+-----END PGP SIGNATURE-----
+
+--wIc/V6YLA2QdyfT4--
