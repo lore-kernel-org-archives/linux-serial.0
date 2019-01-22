@@ -1,33 +1,63 @@
-From: Peter Rosin <peda@axentia.se>
-Subject: Re: [PATCH 3/6] i2c: i2c-qcom-geni: Add interconnect support
-Date: Tue, 22 Jan 2019 09:13:26 +0000
-Message-ID: <d44cdb5e-2408-493c-3f86-db97c224dc3f@axentia.se>
-References: <1548138816-1149-1-git-send-email-alokc@codeaurora.org>
- <1548138816-1149-4-git-send-email-alokc@codeaurora.org>
+From: Guan Yung Tseng <guan.yung.tseng@ni.com>
+Subject: [PATCH v2] 8250_pci.c: Update NI specific devices class to multi serial
+Date: Tue, 22 Jan 2019 17:19:42 +0800
+Message-ID: <1548148782-3414-1-git-send-email-guan.yung.tseng@ni.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1548138816-1149-4-git-send-email-alokc@codeaurora.org>
-Content-Language: en-US
-Content-ID: <C38BDEC1F2845543840C4E8294DB0415@eurprd02.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alok Chauhan <alokc@codeaurora.org>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
-Cc: "andy.gross@linaro.org" <andy.gross@linaro.org>, "david.brown@linaro.org" <david.brown@linaro.org>, "georgi.djakov@linaro.org" <georgi.djakov@linaro.org>, "dianders@chromium.org" <dianders@chromium.org>, "swboyd@chromium.org" <swboyd@chromium.org>, "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>
+To: gregkh@linuxfoundation.org, hch@infradead.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Guan Yung Tseng <guan.yung.tseng@ni.com>
 List-Id: linux-serial@vger.kernel.org
 
-T24gMjAxOS0wMS0yMiAwNzozMywgQWxvayBDaGF1aGFuIHdyb3RlOg0KPiBHZXQgdGhlIGludGVy
-Y29ubmVjdCBwYXRocyBmb3IgSTJDIGJhc2VkIFNlcmlhbCBFbmdpbmUgZGV2aWNlDQo+IGFuZCB2
-b3RlIGFjY29yZGluZ2x5IGJhc2VkIG9uIG1heGltdW0gc3VwcG9ydGVkIEkyQyBmcmVxdWVuY3ku
-DQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBBbG9rIENoYXVoYW4gPGFsb2tjQGNvZGVhdXJvcmEub3Jn
-Pg0KPiAtLS0NCj4gIGRyaXZlcnMvaTJjL2J1c3Nlcy9pMmMtcWNvbS1nZW5pLmMgfCAxMyArKysr
-KysrKysrKysrDQo+ICAxIGZpbGUgY2hhbmdlZCwgMTMgaW5zZXJ0aW9ucygrKQ0KPiANCj4gZGlm
-ZiAtLWdpdCBhL2RyaXZlcnMvaTJjL2J1c3Nlcy9pMmMtcWNvbS1nZW5pLmMgYi9kcml2ZXJzL2ky
-Yy9idXNzZXMvaTJjLXFjb20tZ2VuaS5jDQo+IGluZGV4IGRiMDc1YmMuLmU4ZmU2M2EgMTAwNjQ0
-DQo+IC0tLSBhL2RyaXZlcnMvaTJjL2J1c3Nlcy9pMmMtcWNvbS1nZW5pLmMNCj4gKysrIGIvZHJp
-dmVycy9pMmMvYnVzc2VzL2kyYy1xY29tLWdlbmkuYw0KPiBAQCAtMTQsNiArMTQsNyBAQA0KPiAg
-I2luY2x1ZGUgPGxpbnV4L3BtX3J1bnRpbWUuaD4NCj4gICNpbmNsdWRlIDxsaW51eC9xY29tLWdl
-bmktc2UuaD4NCj4gICNpbmNsdWRlIDxsaW51eC9zcGlubG9jay5oPg0KPiArI2luY2x1ZGUgPGxp
-bnV4L2ludGVyY29ubmVjdC5oPg0KDQpQbGVhc2Uga2VlcCB0aGUgaW5jbHVkZXMgc29ydGVkLiBQ
-cm9iYWJseSBhcHBsaWVzIGZvciB0aGUgb3RoZXIgcGF0Y2hlcw0KaW4gdGhlIHNlcmllcyBhcyB3
-ZWxsPw0KDQpDaGVlcnMsDQpQZXRlcg0K
+On, Jan 14, 2019 at 10:10:05PM +0800, Guan Yung Tseng wrote:
+>> Modified NI devices class to PCI_CLASS_COMMUNICATION_MULTISERIAL.
+>> The reason of doing this is because all NI multi port serial cards
+>> use PCI_CLASS_COMMUNICATION_OTHER class and thus fail the
+>> serial_pci_is_class_communication test added in the commit 7d8905d06405
+>> ("serial: 8250_pci: Enable device after we check black list").
+>> 
+>> Signed-off-by: Guan Yung Tseng <guan.yung.tseng@ni.com>
+>> ---
+>>  drivers/tty/serial/8250/8250_pci.c | 20 ++++++++++++++++++++
+>>  1 file changed, 20 insertions(+)
+>> 
+>> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+>> index 4986b4a..0949db1 100644
+>> --- a/drivers/tty/serial/8250/8250_pci.c
+>> +++ b/drivers/tty/serial/8250/8250_pci.c
+>> @@ -663,6 +663,13 @@ static int pci_xircom_init(struct pci_dev *dev)
+>>  	return 0;
+>>  }
+>>  
+>> +static int pci_ni_probe(struct pci_dev *dev)
+>> +{
+>> +	dev->class = PCI_CLASS_COMMUNICATION_MULTISERIAL << 8 |
+>> +			(dev->class & 0xff);
+
+>
+> As Christoph said, this looks really odd.  This field comes from the
+> PCI structure on the device, it should not be modified by the kernel.
+> 
+> Unless the device is broken and needs to be fixed up in the kernel?
+> 
+> Also, you have sent 2 different patches here for this type of issue, are
+> both needed?  If so, please resend both of them as a patch series, with
+> more explainations in this one as to why you are modifying this field.
+> 
+> I've dropped all pending patches from you from my queue now.
+> 
+
+Hi Christoph and Greg,
+
+Sorry for the confusion sending 2 different patches to solve the same
+issue. I should have wait for your response before sending antoher
+patch to solve the similar issue.
+
+For some historical reason, NI serial devices use
+PCI_CLASS_COMMUNICATION_OTHER class code. Yes, I understand that
+the class code should read from config space instead modified from
+kernel. But these devices are shipped to the market for many years.
+That's why I am trying to fix the problem in the kernel.
+
+I will send another simple patch again to fix the problem.
