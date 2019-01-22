@@ -1,48 +1,51 @@
 From: Alok Chauhan <alokc@codeaurora.org>
-Subject: [PATCH 0/6] Add interconnect support for GENI QUPs
-Date: Tue, 22 Jan 2019 12:03:30 +0530
-Message-ID: <1548138816-1149-1-git-send-email-alokc@codeaurora.org>
+Subject: [PATCH 1/6] dt-bindings: soc: qcom: Add interconnect binding for GENI QUP
+Date: Tue, 22 Jan 2019 12:03:31 +0530
+Message-ID: <1548138816-1149-2-git-send-email-alokc@codeaurora.org>
+References: <1548138816-1149-1-git-send-email-alokc@codeaurora.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1548138816-1149-1-git-send-email-alokc@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: andy.gross@linaro.org, david.brown@linaro.org, georgi.djakov@linaro.org, dianders@chromium.org, swboyd@chromium.org, bjorn.andersson@linaro.org, Alok Chauhan <alokc@codeaurora.org>
+To: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+Cc: georgi.djakov@linaro.org, dianders@chromium.org, swboyd@chromium.org, bjorn.andersson@linaro.org, Alok Chauhan <alokc@codeaurora.org>
 List-Id: linux-serial@vger.kernel.org
 
-This patch series contains following:
-* Add wrapper framework to support interconnect path from GENI QUPs.
-  This wrapper enabled and help individual SEs to put their BW request.
-  Adding this wrapper make sense because we don't want individual SEs
-  to request to interconnect driver separately and put individual bw
-  votes from QUP.
+Add documentation for the interconnect and interconnect-names bindings
+for the GENI QUP as detailed by bindings/interconnect/interconnect.txt.
 
-  This wrapper framework does the following:
-  - Request for interconnect path handle
-  - Maintain record of individual SEs' avg/peak bw.
-  - Aggregated avg/peak bw based on how many SE's are active and put
-    single bw request from QUP
+Signed-off-by: Alok Chauhan <alokc@codeaurora.org>
+---
+ Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-* Interconnect wrapper API calling from I2C, SPI & Uart driver
-* dt binding in sdm845 soc for Interconnect path for GENI QUPs
-* dt binding documentation
-
-
-Alok Chauhan (6):
-  dt-bindings: soc: qcom: Add interconnect binding for GENI QUP
-  soc: qcom: Add wrapper to support for Interconnect path
-  i2c: i2c-qcom-geni: Add interconnect support
-  spi: spi-geni-qcom: Add interconnect support
-  tty: serial: qcom_geni_serial: Add interconnect support
-  arm64: dts: sdm845: Add interconnect for GENI QUP
-
- .../devicetree/bindings/soc/qcom/qcom,geni-se.txt  |  10 ++
- arch/arm64/boot/dts/qcom/sdm845.dtsi               |  14 +++
- drivers/i2c/busses/i2c-qcom-geni.c                 |  13 +++
- drivers/soc/qcom/qcom-geni-se.c                    | 129 +++++++++++++++++++++
- drivers/spi/spi-geni-qcom.c                        |  20 +++-
- drivers/tty/serial/qcom_geni_serial.c              |  27 ++++-
- include/linux/qcom-geni-se.h                       |  11 ++
- 7 files changed, 222 insertions(+), 2 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
+index dab7ca9..44d7e02 100644
+--- a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
++++ b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
+@@ -17,6 +17,12 @@ Required properties if child node exists:
+ - #address-cells: 	Must be <1> for Serial Engine Address
+ - #size-cells: 		Must be <1> for Serial Engine Address Size
+ - ranges: 		Must be present
++- interconnects:	phandle to a interconnect provider. Please refer
++			../interconnect/interconnect.txt for details.
++			Must be 2 paths corresponding to 2 AXI ports.
++- interconnect-names:	Port names to differentiate between the
++			2 interconnect paths defined with interconnect
++			specifier.
+ 
+ Properties for children:
+ 
+@@ -67,6 +73,10 @@ Example:
+ 		#size-cells = <1>;
+ 		ranges;
+ 
++		interconnects = <&qnoc 11 &qnoc 512>,
++				<&qnoc 0 &qnoc 543>;
++		interconnect-names = "qup-memory", "qup-config";
++
+ 		i2c0: i2c@a94000 {
+ 			compatible = "qcom,geni-i2c";
+ 			reg = <0xa94000 0x4000>;
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
