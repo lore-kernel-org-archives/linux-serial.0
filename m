@@ -1,43 +1,30 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH] 8250_pci.c: Update NI specific devices class to multi
- serial
-Date: Wed, 23 Jan 2019 16:11:06 +0200
-Message-ID: <20190123141106.GG9224@smile.fi.intel.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH] 8250_pci.c: Update NI specific devices class to multi serial
+Date: Wed, 23 Jan 2019 17:18:48 +0200
+Message-ID: <CAHp75VcxtSi64qsK6tHx+vtEeRsX3ZVwfzRYOVuyS=qSTnK0qQ@mail.gmail.com>
 References: <1547475005-23435-1-git-send-email-guan.yung.tseng@ni.com>
- <20190122115508.GB22960@kuha.fi.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190122115508.GB22960@kuha.fi.intel.com>
+In-Reply-To: <1547475005-23435-1-git-send-email-guan.yung.tseng@ni.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: Guan Yung Tseng <guan.yung.tseng@ni.com>, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Guan Yung Tseng <guan.yung.tseng@ni.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jan 22, 2019 at 01:55:08PM +0200, Heikki Krogerus wrote:
-> On Mon, Jan 14, 2019 at 10:10:05PM +0800, Guan Yung Tseng wrote:
-> > Modified NI devices class to PCI_CLASS_COMMUNICATION_MULTISERIAL.
-> > The reason of doing this is because all NI multi port serial cards
-> > use PCI_CLASS_COMMUNICATION_OTHER class and thus fail the
-> > serial_pci_is_class_communication test added in the commit 7d8905d06405
-> > ("serial: 8250_pci: Enable device after we check black list").
-> 
-> OK, so commit 7d8905d06405 ("serial: 8250_pci: Enable device after we
-> check black list") has created a regression. If the device does not
-> use PCI_CLASS_COMMUNICATION*SERIAL class, probe will fail, and I
-> don't think that is how the driver should function.
-> 
-> If the device id is listed in serial_pci_tbl, we need to probe the
-> device, regardless of the class id.
+On Mon, Jan 14, 2019 at 4:13 PM Guan Yung Tseng <guan.yung.tseng@ni.com> wrote:
+>
+> Modified NI devices class to PCI_CLASS_COMMUNICATION_MULTISERIAL.
+> The reason of doing this is because all NI multi port serial cards
+> use PCI_CLASS_COMMUNICATION_OTHER class and thus fail the
+> serial_pci_is_class_communication test added in the commit 7d8905d06405
+> ("serial: 8250_pci: Enable device after we check black list").
 
-I need to check what should be a better fix.
+Guan, can you provide an output of the
 
-> This is only working around the regression that 7d8905d064058 created,
-> and only with your UART. There may be others.
-> 
-> We need to fix the regression, not work around it. How about something
-> like the attached diff?
+lspci -nk -xx -vv -s <BDF>
+
+of your device, where <BDF> is a PCI address in a form of bus:device.function?
 
 -- 
 With Best Regards,
