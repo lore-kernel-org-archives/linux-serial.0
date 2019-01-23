@@ -1,63 +1,44 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH 4/6] spi: spi-geni-qcom: Add interconnect support
-Date: Wed, 23 Jan 2019 10:58:21 +0000
-Message-ID: <20190123105821.GA7503@sirena.org.uk>
-References: <1548138816-1149-1-git-send-email-alokc@codeaurora.org>
- <1548138816-1149-5-git-send-email-alokc@codeaurora.org>
- <20190122202924.GL7579@sirena.org.uk>
- <775cdd29a7d536772330a15a7013f251@codeaurora.org>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH] 8250_pci.c: Update NI specific devices class to multi
+ serial
+Date: Wed, 23 Jan 2019 16:11:06 +0200
+Message-ID: <20190123141106.GG9224@smile.fi.intel.com>
+References: <1547475005-23435-1-git-send-email-guan.yung.tseng@ni.com>
+ <20190122115508.GB22960@kuha.fi.intel.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="LQksG6bCIzRHxTLp"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <775cdd29a7d536772330a15a7013f251@codeaurora.org>
+In-Reply-To: <20190122115508.GB22960@kuha.fi.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: alokc@codeaurora.org
-Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, andy.gross@linaro.org, david.brown@linaro.org, georgi.djakov@linaro.org, dianders@chromium.org, swboyd@chromium.org, bjorn.andersson@linaro.org, linux-serial-owner@vger.kernel.org
+To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: Guan Yung Tseng <guan.yung.tseng@ni.com>, gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+On Tue, Jan 22, 2019 at 01:55:08PM +0200, Heikki Krogerus wrote:
+> On Mon, Jan 14, 2019 at 10:10:05PM +0800, Guan Yung Tseng wrote:
+> > Modified NI devices class to PCI_CLASS_COMMUNICATION_MULTISERIAL.
+> > The reason of doing this is because all NI multi port serial cards
+> > use PCI_CLASS_COMMUNICATION_OTHER class and thus fail the
+> > serial_pci_is_class_communication test added in the commit 7d8905d06405
+> > ("serial: 8250_pci: Enable device after we check black list").
+> 
+> OK, so commit 7d8905d06405 ("serial: 8250_pci: Enable device after we
+> check black list") has created a regression. If the device does not
+> use PCI_CLASS_COMMUNICATION*SERIAL class, probe will fail, and I
+> don't think that is how the driver should function.
+> 
+> If the device id is listed in serial_pci_tbl, we need to probe the
+> device, regardless of the class id.
 
---LQksG6bCIzRHxTLp
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+I need to check what should be a better fix.
 
-On Wed, Jan 23, 2019 at 12:45:30PM +0530, alokc@codeaurora.org wrote:
-> On 2019-01-23 01:59, Mark Brown wrote:
+> This is only working around the regression that 7d8905d064058 created,
+> and only with your UART. There may be others.
+> 
+> We need to fix the regression, not work around it. How about something
+> like the attached diff?
 
-> > Still not seeing anything except this patch here in my inbox - like I
-> > said what's the story with dependencies?
-
-> I've added linux-spi mailing list to all the patches sent as part of this
-> series. Not sure why you didn't get other patches. Today I've explicitly
-> added you in all the patches.
-
-You really need to ensure that things end up in people's inboxes -
-sending them to a mailing list usually means they'll go to a completely
-different folder.
-
-> This change series basically enabled interconnect (as per
-> bindings/interconnect/interconnect.txt) support in GENI QUPs based drivers
-> so appropriate BW request can be put based on SE usages.
-> here is my complete change series: https://lore.kernel.org/lkml/1548069703-26595-1-git-send-email-alokc@codeaurora.org/
-> I hope I answer to your question properly.
-
-So it looks like there is a dependency on earlier patches in the series,
-that's what I needed to know.
-
---LQksG6bCIzRHxTLp
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAlxISMwACgkQJNaLcl1U
-h9CoTgf+PA29xBdCek5fu2oi7M3F4k1fLvkUkXx08R30Xh2AEVPfA9BZTIBp64Jd
-6kpDFuGII2h38T7Y02pZhtZtT+36Q0YA6WD9H7AuzupmP7K0CsqOlysR06e43DwX
-8d6tloJYmZlK6isHO+iHG9ID3McrL/9EBng8OCpnIAEAgqR/Dm07L4nAx10NeU4O
-n8WzQJkhCmtvgnSt+ZvF/vVdxGUEKYVmdDsNPUyNmNmH+quhPk52qnVjjWXQIUog
-pULdWHaJADV5o+ewWyAj/67QXWHiq52k63uG80u0/Kp+lstEDfhhL4NkGsixeEpH
-g+6VqKfMx9hBGOpnbcVgX2QpBpvhxQ==
-=ssTu
------END PGP SIGNATURE-----
-
---LQksG6bCIzRHxTLp--
+-- 
+With Best Regards,
+Andy Shevchenko
