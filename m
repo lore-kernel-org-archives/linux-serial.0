@@ -1,37 +1,58 @@
-From: Vladimir Zapolskiy <vz@mleia.com>
-Subject: Re: [PATCH] tty: serial: lpc32xx_hs: fix missing console boot
- messages
-Date: Wed, 23 Jan 2019 00:38:50 +0200
-Message-ID: <e7fb8d2d-5daf-afdf-bd8e-472c76701650@mleia.com>
-References: <20190115171814.21789-1-alexandre.belloni@bootlin.com>
+From: alokc@codeaurora.org
+Subject: Re: [PATCH 0/6] Add interconnect support for GENI QUPs
+Date: Wed, 23 Jan 2019 12:15:10 +0530
+Message-ID: <74b768d6573665fe2a4533a23ad23a9e@codeaurora.org>
+References: <1548138816-1149-1-git-send-email-alokc@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190115171814.21789-1-alexandre.belloni@bootlin.com>
-Content-Language: en-US
+In-Reply-To: <1548138816-1149-1-git-send-email-alokc@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Roland Stigge <stigge@antcom.de>, Sylvain Lemieux <slemieux.tyco@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org
+To: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Cc: andy.gross@linaro.org, david.brown@linaro.org, georgi.djakov@linaro.org, dianders@chromium.org, swboyd@chromium.org, bjorn.andersson@linaro.org, linux-arm-msm-owner@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Alexandre,
++Mark Brown
 
-On 01/15/2019 07:18 PM, Alexandre Belloni wrote:
-> When probing the HSUART, it is put in loopback mode in order to prevent a
-> potential issue that may happen on RX (Errata HSUART.1).
+On 2019-01-22 12:03, Alok Chauhan wrote:
+> This patch series contains following:
+> * Add wrapper framework to support interconnect path from GENI QUPs.
+>   This wrapper enabled and help individual SEs to put their BW request.
+>   Adding this wrapper make sense because we don't want individual SEs
+>   to request to interconnect driver separately and put individual bw
+>   votes from QUP.
 > 
-> serial_lpc32xx_startup() moves it out of loopback mode but this is too late
-> to get the kernel boot messages before userspace opens the device.
+>   This wrapper framework does the following:
+>   - Request for interconnect path handle
+>   - Maintain record of individual SEs' avg/peak bw.
+>   - Aggregated avg/peak bw based on how many SE's are active and put
+>     single bw request from QUP
 > 
-> Also get out of loopback mode in lpc32xx_hsuart_console_setup().
+> * Interconnect wrapper API calling from I2C, SPI & Uart driver
+> * dt binding in sdm845 soc for Interconnect path for GENI QUPs
+> * dt binding documentation
 > 
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> 
+> Alok Chauhan (6):
+>   dt-bindings: soc: qcom: Add interconnect binding for GENI QUP
+>   soc: qcom: Add wrapper to support for Interconnect path
+>   i2c: i2c-qcom-geni: Add interconnect support
+>   spi: spi-geni-qcom: Add interconnect support
+>   tty: serial: qcom_geni_serial: Add interconnect support
+>   arm64: dts: sdm845: Add interconnect for GENI QUP
+> 
+>  .../devicetree/bindings/soc/qcom/qcom,geni-se.txt  |  10 ++
+>  arch/arm64/boot/dts/qcom/sdm845.dtsi               |  14 +++
+>  drivers/i2c/busses/i2c-qcom-geni.c                 |  13 +++
+>  drivers/soc/qcom/qcom-geni-se.c                    | 129 
+> +++++++++++++++++++++
+>  drivers/spi/spi-geni-qcom.c                        |  20 +++-
+>  drivers/tty/serial/qcom_geni_serial.c              |  27 ++++-
+>  include/linux/qcom-geni-se.h                       |  11 ++
+>  7 files changed, 222 insertions(+), 2 deletions(-)
 
-the change looks good, thank you.
-
-Acked-by: Vladimir Zapolskiy <vz@mleia.com>
-
---
-Best wishes,
-Vladimir
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora 
+Forum,a Linux Foundation Collaborative Project
