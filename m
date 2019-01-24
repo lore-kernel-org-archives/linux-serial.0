@@ -1,48 +1,94 @@
-From: Evan Green <evgreen@chromium.org>
-Subject: Re: [PATCH 4/6] spi: spi-geni-qcom: Add interconnect support
-Date: Wed, 23 Jan 2019 17:20:52 -0800
-Message-ID: <CAE=gft7+=k-KcN9pk1fRR8RuGkdskkJPzn70FFZjOhAyr_-9aQ@mail.gmail.com>
-References: <1548138816-1149-1-git-send-email-alokc@codeaurora.org> <1548138816-1149-5-git-send-email-alokc@codeaurora.org>
+From: Guan Yung Tseng <guan.yung.tseng@ni.com>
+Subject: [PATCH] 8250_pci.c: Update NI specific devices class to multi serial
+Date: Thu, 24 Jan 2019 15:07:47 +0800
+Message-ID: <1548313667-125014-1-git-send-email-guan.yung.tseng@ni.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1548138816-1149-5-git-send-email-alokc@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alok Chauhan <alokc@codeaurora.org>
-Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>, devicetree@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, Mark Brown <broonie@kernel.org>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Georgi Djakov <georgi.djakov@linaro.org>, Doug Anderson <dianders@chromium.org>, Stephen Boyd <swboyd@chromium.org>, Bjorn Andersson <bjorn.andersson@linaro.org>
+To: andy.shevchenko@gmail.com
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Guan Yung Tseng <guan.yung.tseng@ni.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jan 21, 2019 at 10:34 PM Alok Chauhan <alokc@codeaurora.org> wrote:
+> On Wed, Jan 23, 2019 at 5:18 PM Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> >
+> > On Mon, Jan 14, 2019 at 4:13 PM Guan Yung Tseng <guan.yung.tseng@ni.com> wrote:
+> > >
+> > > Modified NI devices class to PCI_CLASS_COMMUNICATION_MULTISERIAL.
+> > > The reason of doing this is because all NI multi port serial cards 
+> > > use PCI_CLASS_COMMUNICATION_OTHER class and thus fail the 
+> > > serial_pci_is_class_communication test added in the commit 
+> > > 7d8905d06405
+> > > ("serial: 8250_pci: Enable device after we check black list").
+> >
+> > Guan, can you provide an output of the
+> >
+> > lspci -nk -xx -vv -s <BDF>
+> >
+> > of your device, where <BDF> is a PCI address in a form of bus:device.function?
 >
-> Get the interconnect paths for SPI based Serial Engine device
-> and vote accordingly based on maximum supported SPI frequency.
->
-> Signed-off-by: Alok Chauhan <alokc@codeaurora.org>
-> ---
->  drivers/spi/spi-geni-qcom.c | 20 +++++++++++++++++++-
->  1 file changed, 19 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/spi/spi-geni-qcom.c b/drivers/spi/spi-geni-qcom.c
-> index fdb7cb88..7bbbe9d 100644
-> --- a/drivers/spi/spi-geni-qcom.c
-> +++ b/drivers/spi/spi-geni-qcom.c
-> @@ -12,6 +12,7 @@
->  #include <linux/qcom-geni-se.h>
->  #include <linux/spi/spi.h>
->  #include <linux/spinlock.h>
-> +#include <linux/interconnect.h>
 
-Sorted includes please, as mentioned by others.
+Output of lspci before applied the patch
 
->
->  /* SPI SE specific registers and respective register fields */
->  #define SE_SPI_CPHA            0x224
-> @@ -589,6 +590,15 @@ static int spi_geni_probe(struct platform_device *pdev)
->         spin_lock_init(&mas->lock);
->         pm_runtime_enable(&pdev->dev);
->
-> +       /* Set the bus quota to a reasonable value */
-> +       mas->se.avg_bw = Bps_to_icc(2500);
-> +       mas->se.peak_bw = Bps_to_icc(200000000);
+admin@NI-PXIe-8840Quad-Core-0308D657:~# lspci -nk -xx -vv -s 0d:0e.0
+0d:0e.0 0780: 1093:70e8
+        Subsystem: 1093:70e8
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping
+- SERR+ FastB2B- DisINTx-
+        Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <M
+Abort- >SERR- <PERR- INTx-
+        Interrupt: pin A routed to IRQ 10
+        Region 0: Memory at fe201000 (32-bit, non-prefetchable) [disabled] [size=4K]
+00: 93 10 e8 70 40 01 80 02 00 00 80 07 10 20 00 00
+10: 00 10 20 fe 00 00 00 00 00 00 00 00 00 00 00 00
+20: 00 00 00 00 00 00 00 00 00 00 00 00 93 10 e8 70
+30: 00 00 00 00 f0 00 00 00 00 00 00 00 0a 01 00 00
 
-Like the i2c case, can we compute real value based on clock speed?
+admin@NI-PXIe-8840Quad-Core-0308D657:~# lspci -nk -xx -vv -s 0d:0f.0
+0d:0f.0 0780: 1093:70ec
+        Subsystem: 1093:70ec
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping
+- SERR+ FastB2B- DisINTx-
+        Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <M
+Abort- >SERR- <PERR- INTx-
+        Interrupt: pin A routed to IRQ 11
+        Region 0: Memory at fe200000 (32-bit, non-prefetchable) [disabled] [size=4K]
+00: 93 10 ec 70 40 01 80 02 00 00 80 07 10 20 00 00
+10: 00 00 20 fe 00 00 00 00 00 00 00 00 00 00 00 00
+20: 00 00 00 00 00 00 00 00 00 00 00 00 93 10 ec 70
+30: 00 00 00 00 f0 00 00 00 00 00 00 00 0b 01 00 00
+
+> While I'm still wondering of the above, can you also test the bellow patch if it fixes your issue?
+
+The patch fixes the issue. The devices bind to the serial kernel driver successfully.
+Below is the output of lspci -nk -xx -vv -s <BDF> for the same devices after I applied the patch.
+
+admin@NI-PXIe-8840Quad-Core-0308D657:~# lspci -nk -xx -vv -s 0d:0e.0
+0d:0e.0 0780: 1093:70e8
+        Subsystem: 1093:70e8
+        Control: I/O- Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping
+- SERR+ FastB2B- DisINTx-
+        Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <M
+Abort- >SERR- <PERR- INTx-
+        Interrupt: pin A routed to IRQ 17
+        Region 0: Memory at fe201000 (32-bit, non-prefetchable) [size=4K]
+        Kernel driver in use: serial
+00: 93 10 e8 70 42 01 80 02 00 00 80 07 10 20 00 00
+10: 00 10 20 fe 00 00 00 00 00 00 00 00 00 00 00 00
+20: 00 00 00 00 00 00 00 00 00 00 00 00 93 10 e8 70
+30: 00 00 00 00 f0 00 00 00 00 00 00 00 0a 01 00 00
+
+admin@NI-PXIe-8840Quad-Core-0308D657:~# lspci -nk -xx -vv -s 0d:0f.0
+0d:0f.0 0780: 1093:70ec
+        Subsystem: 1093:70ec
+        Control: I/O- Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping
+- SERR+ FastB2B- DisINTx-
+        Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <M
+Abort- >SERR- <PERR- INTx-
+        Interrupt: pin A routed to IRQ 18
+        Region 0: Memory at fe200000 (32-bit, non-prefetchable) [size=4K]
+        Kernel driver in use: serial
+00: 93 10 ec 70 42 01 80 02 00 00 80 07 10 20 00 00
+10: 00 00 20 fe 00 00 00 00 00 00 00 00 00 00 00 00
+20: 00 00 00 00 00 00 00 00 00 00 00 00 93 10 ec 70
+30: 00 00 00 00 f0 00 00 00 00 00 00 00 0b 01 00 00
