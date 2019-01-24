@@ -1,223 +1,180 @@
-From: Johan Hovold <johan@kernel.org>
+From: Tony Lindgren <tony@atomide.com>
 Subject: Re: [PATCH 0/3] serdev support for n_gsm
-Date: Thu, 24 Jan 2019 17:39:32 +0100
-Message-ID: <20190124163932.GZ3691@localhost>
+Date: Thu, 24 Jan 2019 12:53:36 -0800
+Message-ID: <20190124205335.GV5720@atomide.com>
 References: <20190114012528.2367-1-tony@atomide.com>
  <20190118115958.GA5532@kroah.com>
  <20190121105735.GI3691@localhost>
  <20190121170116.GA5544@atomide.com>
+ <20190124163932.GZ3691@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190121170116.GA5544@atomide.com>
+In-Reply-To: <20190124163932.GZ3691@localhost>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Johan Hovold <johan@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Jiri Slaby <jslaby@suse.cz>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, linux-serial@vger.kernel.org, Marcel Holtmann <marcel@holtmann.org>, Kishon Vijay Abraham I <kishon@ti.com>, Mark Brown <broonie@kernel.org>
+To: Johan Hovold <johan@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Jiri Slaby <jslaby@suse.cz>, Pavel Machek <pavel@ucw.cz>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, linux-serial@vger.kernel.org, Marcel Holtmann <marcel@holtmann.org>, Kishon Vijay Abraham I <kishon@ti.com>, Mark Brown <broonie@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Tony,
+Hi,
 
-and sorry about the reply latency. This is quite a lot to think about.
+* Johan Hovold <johan@kernel.org> [190124 16:39]:
+> This series adds a new interface (gsm_serdev) but no users, which is not
+> something we normally accept. I think you need to post the lot, at least
+> as an RFC in order for the full picture to be visible.
 
-I'm also adding Kishon and Mark on CC (e.g. for the phy and ASoC bits).
+Sure I can post them all as RFC series maybe this coming
+weekend when I get a chance.
 
-On Mon, Jan 21, 2019 at 09:01:16AM -0800, Tony Lindgren wrote:
-> Hi,
+> Similarly, including an example device tree would also help with the
+> overall picture. I've been able to derive the following (from your code
+> and already merged phy driver binding doc):
 > 
-> * Johan Hovold <johan@kernel.org> [190121 10:57]:
-> > Adding Marcel on CC.
+>    	mdm6600_phy: usb-phy {
+> 		compatible = "motorola,mapphone-mdm6600";
+> 		enable-gpios = <&gpio3 31 GPIO_ACTIVE_LOW>;
+> 		power-gpios = <&gpio2 22 GPIO_ACTIVE_HIGH>;
+> 		reset-gpios = <&gpio2 17 GPIO_ACTIVE_HIGH>;
+> 		motorola,mode-gpios = <&gpio5 20 GPIO_ACTIVE_HIGH>,
+> 				      <&gpio5 21 GPIO_ACTIVE_HIGH>;
+> 		motorola,cmd-gpios = <&gpio4 7 GPIO_ACTIVE_HIGH>,
+> 				     <&gpio4 8 GPIO_ACTIVE_HIGH>,
+> 				     <&gpio5 14 GPIO_ACTIVE_HIGH>;
+> 		motorola,status-gpios = <&gpio2 20 GPIO_ACTIVE_HIGH>,
+> 					<&gpio2 21 GPIO_ACTIVE_HIGH>,
+> 					<&gpio2 23 GPIO_ACTIVE_HIGH>;
+> 		#phy-cells = <0>;
+> 	};
+> 
+> 	&uart {
+> 		gsm-mux? {
+> 			compatible = "motorola,mapphone-mdm6600-serdev";
+> 			phy = <&mdm6600_phy>;
+> 
+> 			gnss {
+> 				compatible = "motorola,mapphone-mdm6600-gnss";
+> 			};
+> 
+> 			audio-codec {
+> 
+> 			};
+> 		};
+> 	};
+> 
+> 	&ohci {
+> 		phys = <&mdm6600_phy>;
+> 	};
+> 
+> Which brings us back to the question of how to model modems. You've
+> already added a phy-driver for something which really is some sort of
+> modem representation.
+
+That is not a "modem representation".
+
+It's just doing what's typically done for drivers with firmware
+like let's say WLAN pwrseq driver on SDIO bus. So start device,
+enable clocks for the PHY so Linux won't oops when loading
+ohci-platform device driver. It does not have much anything to
+do beyond enabling communication over Linux standard buses like
+TS 27.010 and USB. For more info, please see commit 5d1ebbda0318
+("phy: mapphone-mdm6600: Add USB PHY driver for MDM6600 on
+Droid 4").
+
+It's too bad the USB PHY for the Linux SoC OHCI is on the modem
+and clocked from the modem instead of what is usually done
+where it would be clocked by the Linux running SoC. And too bad
+some of the GPIO pins are shared with the TS 27.010 port. But hey,
+it's just bad hardware design and not much we can do about it.
+And it can be all isolated in the USB PHY driver.
+
+> > And without the n_gsm serdev support, it's a mess of some app
+> > similar to [5] initializing n_gsm, trying to deal with the USB
+> > PHY PM, dealing with Motorola custom packet numbering, kicking
+> > GNSS device, feeding data to /dev/ugnss. Hmm I think I've already
+> > been there just to be able to type AT commands to the modem and
+> > it did not work :)
+> 
+> It's a mess indeed, but I'd rather see user-space dealing with until we
+> figure out how best to do it in the kernel. ;)
+
+Well we really do not have user space dealing with it. And I'm
+not planning on working on the user space approach any longer
+for n_gsm, Motorola custom packet layer, and shared GPIO pins
+for PM. That was proven to be a dead end alread and not worth
+continuing.
+
+For kicking the GNSS, that can be certainly done with a kernel
+serdev driver or some custom user space app. With the $subject
+patch we now have both options available unlike earlier.
+
+> > Anyways, for the serdev kernel drivers, the criteria I've tried
+> > to follow is: "Can this serdev device driver make user space
+> > apps use standard Linux interfaces for the hardware?"
 > > 
-> > On Fri, Jan 18, 2019 at 12:59:58PM +0100, Greg Kroah-Hartman wrote:
-> > > On Sun, Jan 13, 2019 at 05:25:25PM -0800, Tony Lindgren wrote:
-> > > > Hi all,
-> > > > 
-> > > > Here's a series of patches to add initial serdev support to n_gsm
-> > > > TS 27.010 line discipline.
-> > > > 
-> > > > This allows handling vendor specific protocols on top of TS 27.010 and
-> > > > allows creating simple serdev drivers where it makes sense. So far I've
-> > > > tested it with droid 4 for it's modem to provide char devices for AT
-> > > > ports, modem PM support, and serdev drivers for GNSS and Alsa ASoC.
-> > > > 
-> > > > I'll be posting the related MFD, GNSS and Alsa ASoC drivers separately.
-> > > > For reference, the MFD driver is at [0], the GNSS driver at [1], and
-> > > > the Alsa ASoC driver at [2] below.
-> > > 
-> > > I have applied the first two patches to my tree, as those are nice
-> > > cleanups.
-> > > 
-> > > The last one I want some feedback from the serdev developers to verify
-> > > all is set up properly, and Johan, to see if this ends up conflicting
-> > > with the gnss code, as that would not be good.
-> > 
-> > I think we need to have a discussion about how to model modems generally
-> > before getting into implementation details.
-> > 
-> > Modems are currently managed by user space (e.g. through ofono) and
-> > I'm not sure that moving only parts of its responsibilities into the
-> > kernel is necessarily the right thing to do. You still need coordination
-> > between the various components for things like power management.
+> > So for the serdev Alsa ASoC driver, user space can use the standard
+> > Alsa interface for setting voice call volume. And for the serdev
+> > GNSS driver, user space can use /dev/gnss0.
 > 
-> At least now we do have the option of doing kernel drivers or user
-> space apps whichever way we want to :)
-> 
-> And we can now do the user space apps without having to implement
-> any of the Motorola custom packet numbering layer on top of TS 27.010
-> for each app.
-> 
-> For some user space examples, I have posted scripts to send and receive
-> SMS at [3], and Pavel has ofono patches [4] below. Seems like we can
-> also add support to ModemManager along the similar lines. And for the
-> serdev drivers, those implement standard Linux interfaces for apps
-> to use.
-> 
-> For PM, about a year ago I tried making things work with a user space
-> solution and it sucked big time[5]. The power management makes sense
-> to do in the kernel driver at least in this case as there are shared
-> GPIO pins between the USB PHY and TS 27.010 UART. The shared GPIOs
-> are handled by the phy-mapphone-mdm6600 driver.
-> 
-> With the serdev n_gsm MFD driver, the only thing that needs to be done
-> to idle the modem is to enable autosuspend for the OHCI interface. So
-> no spefific coordination between various components is needed for PM
-> beyond that. Things idle just fine using PM runtime.
+> I understand. Both drivers appears to be using AT commands for control.
+> It would be interesting to hear what Mark has to say about the codec
+> driver too. Moving AT handling into the kernel scares me a bit. If we
+> already have a telephony stack to deal with it in user-space, my
+> inclination is to let it continue to handle it.
 
-Yeah, I don't envy you trying to get this to work (and now I'm getting
-dragged into it ;) ).
+Right, too bad it's AT commands instead of let's say just
+register offsets to a mem region on the modem. Or even some
+enumerated commands. And yes it's the firmware doing all
+kinds of things, just like with a let's say a WLAN driver.
 
-It would really help with a high-level outline of the modem and its
-components. I've done my best to derive it from these patches and the
-code you link to, but that info needs to go in the patch descriptions
-(or cover letter).
+And no, we don't really have a telephony stack to deal with it
+in the user-space. But with the $subject patch it becomes doable
+for the parts it makes sense to do, for ofono, ModemManager and
+my phone scripts too.
 
-This series adds a new interface (gsm_serdev) but no users, which is not
-something we normally accept. I think you need to post the lot, at least
-as an RFC in order for the full picture to be visible.
+For the Alsa driver, we need to configure the i2s channel
+on the PMIC for time division multiplexing with set_tdm_slot()
+for voice calls as the PMIC is the clock master.
 
-Similarly, including an example device tree would also help with the
-overall picture. I've been able to derive the following (from your code
-and already merged phy driver binding doc):
+> Modem-managed GNSS is also different from receivers connected directly
+> to the host. It's really the modem that drives the GNSS receiver, and
+> offers a higher-level interface to the host, for example, by buffering
+> output which the host can later request. It may or may not be the
+> kernel's job to periodically poll the modem to recreate an NMEA feed so
+> to speak.
 
-   	mdm6600_phy: usb-phy {
-		compatible = "motorola,mapphone-mdm6600";
-		enable-gpios = <&gpio3 31 GPIO_ACTIVE_LOW>;
-		power-gpios = <&gpio2 22 GPIO_ACTIVE_HIGH>;
-		reset-gpios = <&gpio2 17 GPIO_ACTIVE_HIGH>;
-		motorola,mode-gpios = <&gpio5 20 GPIO_ACTIVE_HIGH>,
-				      <&gpio5 21 GPIO_ACTIVE_HIGH>;
-		motorola,cmd-gpios = <&gpio4 7 GPIO_ACTIVE_HIGH>,
-				     <&gpio4 8 GPIO_ACTIVE_HIGH>,
-				     <&gpio5 14 GPIO_ACTIVE_HIGH>;
-		motorola,status-gpios = <&gpio2 20 GPIO_ACTIVE_HIGH>,
-					<&gpio2 21 GPIO_ACTIVE_HIGH>,
-					<&gpio2 23 GPIO_ACTIVE_HIGH>;
-		#phy-cells = <0>;
-	};
+This is very similar to what we're doing with any driver that needs
+firmware loaded, let's say again WLAN on SDIO. Or Bluetooth on SDIO.
+Or a USB device with firmware :)
 
-	&uart {
-		gsm-mux? {
-			compatible = "motorola,mapphone-mdm6600-serdev";
-			phy = <&mdm6600_phy>;
+> But the end-result of having it accessible through a standard interface
+> is of course appealing.
 
-			gnss {
-				compatible = "motorola,mapphone-mdm6600-gnss";
-			};
+Yes I agree. That's the best way to make things work in a
+standard way for Linux distros.
 
-			audio-codec {
+Based on my experience with trying to make embedded devices usable
+with standard Linux distros, the irattach/ldattach/hciattach
+route never worked well from user point of view.
 
-			};
-		};
-	};
+If we can make things usable out of the box with simple channel
+specific device drivers or user space apps it's a big improvment
+for users. If we can also get rid of some duplicate copies of the
+same code implementing the same thing in favor of using Linux
+generic interfaces then even better :)
 
-	&ohci {
-		phys = <&mdm6600_phy>;
-	};
+Then maybe later on if it turns out we have three or more
+modems from various vendors needing similar feature it might
+make sense to attempt to move some of the handling to a generic
+framework like you did for GNSS. But currently I do not see
+a need for that and for QMI based modems things are handled
+in a different way anyways.
 
-Which brings us back to the question of how to model modems. You've
-already added a phy-driver for something which really is some sort of
-modem representation.
+> I have some more comments on the gsm_serdev interface and motorola mfd,
+> but let's start with the above.
 
-I'm not saying I have a solution for this, but again, I think this needs
-to be discussed before merging more code.
+Sure thanks, I'll post the RFC series of the pending patches.
 
-> > TS 27.010 may make it seem like we can move everything into the kernel,
-> > but Tony's to-be-posted Motorola MFD driver is still exposing character
-> > devices for most of the muxed ports. If I understand things correctly,
-> > there also still needs to be some coordination with USB over which some
-> > channels are handled (e.g. IP over USB, gnss over muxed UART).
-> 
-> Hmm yes now we can do either user space daemons or kernel serdev
-> drivers.
-> 
-> For USB, the modem data connection already works with USB OHCI over
-> QMI. So it's is already handled and separated out of this. The USB
-> PHY and TS 27.010 UART have shared GPIO pins handled by the USB PHY
-> driver. The USB PHY is integrated into the modem with the shared
-> GPIO pins controlling the PHY and the TS 27.010 UART PM..
-> But it's working for PM and like I mentioned modem PM works as long
-> as OHCI is set to autosuspend. Well the modem also wants to see
-> TS 27.010 connected before idling.
-> 
-> > Instead of adding these extra layers, only to export most ports to user
-> > space again, it may be better to hook into the various kernel subsystems
-> > through dedicated user-space-implementation interfaces such as the
-> > suggested ugnss interface, which means that user space feeds gnss data
-> > into the kernel which in turn makes it available through a standard
-> > interface.
-> 
-> Sure that's doable. But notice that we actually need to kick the
-> serdev GNSS interface to get more data. It's not a passive GNSS
-> data feed in this case. So it's not going to be just a case of
-> cat /dev/motmdm4 > /dev/ugnss. Without the serdev GNSS driver,
-> it would be some-custom-app -i /dev/motmdm4 -o /dev/ugnss.
+Regards,
 
-Yeah, I remember us discussing that briefly off list.
- 
-> And without the n_gsm serdev support, it's a mess of some app
-> similar to [5] initializing n_gsm, trying to deal with the USB
-> PHY PM, dealing with Motorola custom packet numbering, kicking
-> GNSS device, feeding data to /dev/ugnss. Hmm I think I've already
-> been there just to be able to type AT commands to the modem and
-> it did not work :)
-
-It's a mess indeed, but I'd rather see user-space dealing with until we
-figure out how best to do it in the kernel. ;)
-
-> Anyways, for the serdev kernel drivers, the criteria I've tried
-> to follow is: "Can this serdev device driver make user space
-> apps use standard Linux interfaces for the hardware?"
-> 
-> So for the serdev Alsa ASoC driver, user space can use the standard
-> Alsa interface for setting voice call volume. And for the serdev
-> GNSS driver, user space can use /dev/gnss0.
-
-I understand. Both drivers appears to be using AT commands for control.
-It would be interesting to hear what Mark has to say about the codec
-driver too. Moving AT handling into the kernel scares me a bit. If we
-already have a telephony stack to deal with it in user-space, my
-inclination is to let it continue to handle it.
-
-Modem-managed GNSS is also different from receivers connected directly
-to the host. It's really the modem that drives the GNSS receiver, and
-offers a higher-level interface to the host, for example, by buffering
-output which the host can later request. It may or may not be the
-kernel's job to periodically poll the modem to recreate an NMEA feed so
-to speak.
-
-But the end-result of having it accessible through a standard interface
-is of course appealing.
-
-
-I have some more comments on the gsm_serdev interface and motorola mfd,
-but let's start with the above.
-
-Johan
-
-
-> [0] https://git.kernel.org/pub/scm/linux/kernel/git/tmlind/linux-omap.git/tree/drivers/mfd/motorola-mdm.c?h=droid4-pending-mdm-v4.20
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/tmlind/linux-omap.git/tree/drivers/gnss/motmdm.c?h=droid4-pending-mdm-v4.20
-> [2] https://git.kernel.org/pub/scm/linux/kernel/git/tmlind/linux-omap.git/tree/sound/soc/codecs/motmdm.c?h=droid4-pending-mdm-v4.20
-> [3] https://github.com/tmlind/droid4-sms-tools
-> [4] https://github.com/pavelmachek/ofono
-> [5] https://github.com/tmlind/droid4-ngsm
+Tony
