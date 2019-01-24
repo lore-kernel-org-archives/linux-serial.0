@@ -1,69 +1,37 @@
-From: Palmer Dabbelt <palmer@sifive.com>
-Subject: Re: [PATCH] tty/serial: use uart_console_write in the RISC-V SBL early console
-Date: Wed, 23 Jan 2019 15:58:43 -0800 (PST)
-Message-ID: <mhng-2f2fd42e-7dc1-4a21-9105-e129d55f1e5b@palmer-si-x1c4>
-References: <CAAhSdy07AeWeMxQJvzRGzMQ84Sxc6O899T0dWO1vz0LB89ORyw@mail.gmail.com>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+From: Evan Green <evgreen@chromium.org>
+Subject: Re: [PATCH 1/6] dt-bindings: soc: qcom: Add interconnect binding for
+ GENI QUP
+Date: Wed, 23 Jan 2019 17:10:07 -0800
+Message-ID: <CAE=gft5+OJCHTVszSW2Tt9HX3UA-LuTzK95Q4-R3v=DUqff9OA@mail.gmail.com>
+References: <1548138816-1149-1-git-send-email-alokc@codeaurora.org> <1548138816-1149-2-git-send-email-alokc@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAAhSdy07AeWeMxQJvzRGzMQ84Sxc6O899T0dWO1vz0LB89ORyw@mail.gmail.com>
+In-Reply-To: <1548138816-1149-2-git-send-email-alokc@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: anup@brainfault.org
-Cc: schwab@suse.de, Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com, aou@eecs.berkeley.edu, atish.patra@wdc.com, Christoph Hellwig <hch@infradead.org>, robh@kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Alok Chauhan <alokc@codeaurora.org>
+Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>, devicetree@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Georgi Djakov <georgi.djakov@linaro.org>, Doug Anderson <dianders@chromium.org>, Stephen Boyd <swboyd@chromium.org>, Bjorn Andersson <bjorn.andersson@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 11 Jan 2019 03:13:30 PST (-0800), anup@brainfault.org wrote:
-> On Thu, Jan 10, 2019 at 10:41 PM Andreas Schwab <schwab@suse.de> wrote:
->>
->> This enables proper NLCR processing.
->>
->> Suggested-by: Anup Patel <anup@brainfault.org>
->> Signed-off-by: Andreas Schwab <schwab@suse.de>
->> ---
->>  drivers/tty/serial/earlycon-riscv-sbi.c | 13 ++++++++-----
->>  1 file changed, 8 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/tty/serial/earlycon-riscv-sbi.c b/drivers/tty/serial/earlycon-riscv-sbi.c
->> index e1a551aae3..ce81523c31 100644
->> --- a/drivers/tty/serial/earlycon-riscv-sbi.c
->> +++ b/drivers/tty/serial/earlycon-riscv-sbi.c
->> @@ -10,13 +10,16 @@
->>  #include <linux/serial_core.h>
->>  #include <asm/sbi.h>
->>
->> -static void sbi_console_write(struct console *con,
->> -                             const char *s, unsigned int n)
->> +static void sbi_putc(struct uart_port *port, int c)
->>  {
->> -       int i;
->> +       sbi_console_putchar(c);
->> +}
->>
->> -       for (i = 0; i < n; ++i)
->> -               sbi_console_putchar(s[i]);
->> +static void sbi_console_write(struct console *con,
->> +                             const char *s, unsigned n)
->> +{
->> +       struct earlycon_device *dev = con->data;
->> +       uart_console_write(&dev->port, s, n, sbi_putc);
->>  }
->>
->>  static int __init early_sbi_setup(struct earlycon_device *device,
->> --
->> 2.20.1
->>
->> --
->> Andreas Schwab, SUSE Labs, schwab@suse.de
->> GPG Key fingerprint = 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D7
->> "And now for something completely different."
+On Mon, Jan 21, 2019 at 10:34 PM Alok Chauhan <alokc@codeaurora.org> wrote:
 >
-> Looks good to me.
+> Add documentation for the interconnect and interconnect-names bindings
+> for the GENI QUP as detailed by bindings/interconnect/interconnect.txt.
 >
-> Reviewed-by: Anup Patel <anup@brainfault.org>
+> Signed-off-by: Alok Chauhan <alokc@codeaurora.org>
+> ---
+>  Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
 >
-> Regards,
-> Anup
+> diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
+> index dab7ca9..44d7e02 100644
+> --- a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
+> +++ b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
+> @@ -17,6 +17,12 @@ Required properties if child node exists:
+>  - #address-cells:      Must be <1> for Serial Engine Address
+>  - #size-cells:                 Must be <1> for Serial Engine Address Size
+>  - ranges:              Must be present
+> +- interconnects:       phandle to a interconnect provider. Please refer
+> +                       ../interconnect/interconnect.txt for details.
 
-Thanks.  I'm going to include this in my next PR, as it's pretty self contained 
-and is necessary to actually use this sanely.
+This path to the interconnect documentation is not correct.
