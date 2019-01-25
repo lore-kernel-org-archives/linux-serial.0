@@ -1,7 +1,7 @@
 From: Vladimir Murzin <vladimir.murzin@arm.com>
-Subject: [PATCH 2/2] serial: mps2-uart: support combined tx and rx irq
-Date: Fri, 25 Jan 2019 14:13:17 +0000
-Message-ID: <1548425597-38175-3-git-send-email-vladimir.murzin@arm.com>
+Subject: [PATCH 1/2] serial: mps2-uart: move to dynamic port allocation
+Date: Fri, 25 Jan 2019 14:13:16 +0000
+Message-ID: <1548425597-38175-2-git-send-email-vladimir.murzin@arm.com>
 References: <1548425597-38175-1-git-send-email-vladimir.murzin@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,175 +21,125 @@ To: linux-serial@vger.kernel.org
 Cc: linux-arm-kernel@lists.infradead.org, sudeep.holla@arm.com
 List-Id: linux-serial@vger.kernel.org
 
-It turns out that some designs went for implementing only combined tx
-and rx interrupt, which is currently not supported by the driver.
-Support of combined irq is built on top of existent irq handlers and
-activated by the hint form device tree.
+Some designs, like MPS3, expose number of virtual serial ports which
+already close or exceeds MPS2_MAX_PORTS. Increasing MPS2_MAX_PORTS
+would have negative impact (in terms of memory consumption) on tiny
+MPS2 platform which, in fact, has only one physically populated UART.
+
+Start with converting existent static port array to idr. As a bonus it
+make driver not to fail in case when no alias was specified in device
+tree.
 
 Signed-off-by: Vladimir Murzin <vladimir.murzin@arm.com>
 ---
- drivers/tty/serial/mps2-uart.c | 89 ++++++++++++++++++++++++++++++------------
- 1 file changed, 64 insertions(+), 25 deletions(-)
+ drivers/tty/serial/mps2-uart.c | 47 ++++++++++++++++++++++++++++--------------
+ 1 file changed, 31 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/tty/serial/mps2-uart.c b/drivers/tty/serial/mps2-uart.c
-index 6da0633..e5fe764 100644
+index 9f8f637..6da0633 100644
 --- a/drivers/tty/serial/mps2-uart.c
 +++ b/drivers/tty/serial/mps2-uart.c
-@@ -66,11 +66,17 @@
+@@ -22,6 +22,7 @@
+ #include <linux/serial_core.h>
+ #include <linux/tty_flip.h>
+ #include <linux/types.h>
++#include <linux/idr.h>
  
- #define MPS2_MAX_PORTS		3
- 
-+#define UART_PORT_COMBINED_IRQS	BIT(0)
-+
- struct mps2_uart_port {
- 	struct uart_port port;
- 	struct clk *clk;
--	unsigned int tx_irq;
-+	union {
-+		unsigned int combined_irq;
-+		unsigned int tx_irq;
-+	};
- 	unsigned int rx_irq;
-+	unsigned int flags;
+ #define SERIAL_NAME	"ttyMPS"
+ #define DRIVER_NAME	"mps2-uart"
+@@ -397,7 +398,7 @@ static const struct uart_ops mps2_uart_pops = {
+ 	.verify_port = mps2_uart_verify_port,
  };
  
- static inline struct mps2_uart_port *to_mps2_port(struct uart_port *port)
-@@ -232,6 +238,17 @@ static irqreturn_t mps2_uart_txirq(int irq, void *data)
- 	return IRQ_HANDLED;
- }
+-static struct mps2_uart_port mps2_uart_ports[MPS2_MAX_PORTS];
++static DEFINE_IDR(ports_idr);
  
-+static irqreturn_t mps2_uart_combinedirq(int irq, void *data)
-+{
-+	if (mps2_uart_rxirq(irq, data) == IRQ_HANDLED)
-+		return IRQ_HANDLED;
-+
-+	if (mps2_uart_txirq(irq, data) == IRQ_HANDLED)
-+		return IRQ_HANDLED;
-+
-+	return IRQ_NONE;
-+}
-+
- static irqreturn_t mps2_uart_oerrirq(int irq, void *data)
+ #ifdef CONFIG_SERIAL_MPS2_UART_CONSOLE
+ static void mps2_uart_console_putchar(struct uart_port *port, int ch)
+@@ -410,7 +411,8 @@ static void mps2_uart_console_putchar(struct uart_port *port, int ch)
+ 
+ static void mps2_uart_console_write(struct console *co, const char *s, unsigned int cnt)
  {
- 	irqreturn_t handled = IRQ_NONE;
-@@ -275,26 +292,35 @@ static int mps2_uart_startup(struct uart_port *port)
+-	struct uart_port *port = &mps2_uart_ports[co->index].port;
++	struct mps2_uart_port *mps_port = idr_find(&ports_idr, co->index);
++	struct uart_port *port = &mps_port->port;
  
- 	mps2_uart_write8(port, control, UARTn_CTRL);
- 
--	ret = request_irq(mps_port->rx_irq, mps2_uart_rxirq, 0,
--			  MAKE_NAME(-rx), mps_port);
--	if (ret) {
--		dev_err(port->dev, "failed to register rxirq (%d)\n", ret);
--		return ret;
--	}
--
--	ret = request_irq(mps_port->tx_irq, mps2_uart_txirq, 0,
--			  MAKE_NAME(-tx), mps_port);
--	if (ret) {
--		dev_err(port->dev, "failed to register txirq (%d)\n", ret);
--		goto err_free_rxirq;
--	}
--
- 	ret = request_irq(port->irq, mps2_uart_oerrirq, IRQF_SHARED,
- 			  MAKE_NAME(-overrun), mps_port);
- 
- 	if (ret) {
- 		dev_err(port->dev, "failed to register oerrirq (%d)\n", ret);
--		goto err_free_txirq;
-+		return ret;
-+	}
-+
-+	if (mps_port->flags & UART_PORT_COMBINED_IRQS) {
-+		ret = request_irq(mps_port->combined_irq, mps2_uart_combinedirq, 0,
-+				  MAKE_NAME(-combined), mps_port);
-+		if (ret) {
-+			dev_err(port->dev, "failed to register combinedirq (%d)\n", ret);
-+			goto err_free_oerrirq;
-+		}
-+	} else {
-+		ret = request_irq(mps_port->rx_irq, mps2_uart_rxirq, 0,
-+			  MAKE_NAME(-rx), mps_port);
-+		if (ret) {
-+			dev_err(port->dev, "failed to register rxirq (%d)\n", ret);
-+			goto err_free_oerrirq;
-+		}
-+
-+		ret = request_irq(mps_port->tx_irq, mps2_uart_txirq, 0,
-+			  MAKE_NAME(-tx), mps_port);
-+		if (ret) {
-+			dev_err(port->dev, "failed to register txirq (%d)\n", ret);
-+			goto err_free_rxirq;
-+		}
- 	}
- 
- 	control |= UARTn_CTRL_RX_GRP | UARTn_CTRL_TX_GRP;
-@@ -303,10 +329,10 @@ static int mps2_uart_startup(struct uart_port *port)
- 
- 	return 0;
- 
--err_free_txirq:
--	free_irq(mps_port->tx_irq, mps_port);
- err_free_rxirq:
- 	free_irq(mps_port->rx_irq, mps_port);
-+err_free_oerrirq:
-+	free_irq(port->irq, mps_port);
- 
- 	return ret;
+ 	uart_console_write(port, s, cnt, mps2_uart_console_putchar);
  }
-@@ -320,8 +346,13 @@ static void mps2_uart_shutdown(struct uart_port *port)
+@@ -426,7 +428,10 @@ static int mps2_uart_console_setup(struct console *co, char *options)
+ 	if (co->index < 0 || co->index >= MPS2_MAX_PORTS)
+ 		return -ENODEV;
  
- 	mps2_uart_write8(port, control, UARTn_CTRL);
- 
--	free_irq(mps_port->rx_irq, mps_port);
--	free_irq(mps_port->tx_irq, mps_port);
-+	if (mps_port->flags & UART_PORT_COMBINED_IRQS) {
-+		free_irq(mps_port->combined_irq, mps_port);
-+	} else {
-+		free_irq(mps_port->rx_irq, mps_port);
-+		free_irq(mps_port->tx_irq, mps_port);
-+	}
+-	mps_port = &mps2_uart_ports[co->index];
++	mps_port = idr_find(&ports_idr, co->index);
 +
- 	free_irq(port->irq, mps_port);
- }
++	if (!mps_port)
++		return -ENODEV;
  
-@@ -511,6 +542,9 @@ static int mps2_of_get_port(struct platform_device *pdev,
+ 	if (options)
+ 		uart_parse_options(options, &baud, &parity, &bits, &flow);
+@@ -487,27 +492,32 @@ static struct uart_driver mps2_uart_driver = {
+ 	.cons = MPS2_SERIAL_CONSOLE,
+ };
+ 
+-static struct mps2_uart_port *mps2_of_get_port(struct platform_device *pdev)
++static int mps2_of_get_port(struct platform_device *pdev,
++			    struct mps2_uart_port *mps_port)
+ {
+ 	struct device_node *np = pdev->dev.of_node;
+ 	int id;
+ 
+ 	if (!np)
+-		return NULL;
++		return -ENODEV;
+ 
+ 	id = of_alias_get_id(np, "serial");
++
++	if (id < 0)
++		id = idr_alloc_cyclic(&ports_idr, (void *)mps_port, 0, MPS2_MAX_PORTS, GFP_KERNEL);
++	else
++		id = idr_alloc(&ports_idr, (void *)mps_port, id, MPS2_MAX_PORTS, GFP_KERNEL);
++
  	if (id < 0)
- 		return id;
+-		id = 0;
++		return id;
  
-+	if (of_property_read_bool(np, "arm,mps2-combined-irq-only"))
-+		mps_port->flags |= UART_PORT_COMBINED_IRQS;
-+
- 	mps_port->port.line = id;
+-	if (WARN_ON(id >= MPS2_MAX_PORTS))
+-		return NULL;
++	mps_port->port.line = id;
  
- 	return 0;
-@@ -529,11 +563,6 @@ static int mps2_init_port(struct platform_device *pdev,
- 
- 	mps_port->port.mapbase = res->start;
- 	mps_port->port.mapsize = resource_size(res);
--
--	mps_port->rx_irq = platform_get_irq(pdev, 0);
--	mps_port->tx_irq = platform_get_irq(pdev, 1);
--	mps_port->port.irq = platform_get_irq(pdev, 2);
--
- 	mps_port->port.iotype = UPIO_MEM;
- 	mps_port->port.flags = UPF_BOOT_AUTOCONF;
- 	mps_port->port.fifosize = 1;
-@@ -552,6 +581,16 @@ static int mps2_init_port(struct platform_device *pdev,
- 
- 	clk_disable_unprepare(mps_port->clk);
- 
-+
-+	if (mps_port->flags & UART_PORT_COMBINED_IRQS) {
-+		mps_port->combined_irq = platform_get_irq(pdev, 0);
-+		mps_port->port.irq = platform_get_irq(pdev, 1);
-+	} else {
-+		mps_port->rx_irq = platform_get_irq(pdev, 0);
-+		mps_port->tx_irq = platform_get_irq(pdev, 1);
-+		mps_port->port.irq = platform_get_irq(pdev, 2);
-+	}
-+
- 	return ret;
+-	mps2_uart_ports[id].port.line = id;
+-	return &mps2_uart_ports[id];
++	return 0;
  }
+ 
+-static int mps2_init_port(struct mps2_uart_port *mps_port,
+-			  struct platform_device *pdev)
++static int mps2_init_port(struct platform_device *pdev,
++			  struct mps2_uart_port *mps_port)
+ {
+ 	struct resource *res;
+ 	int ret;
+@@ -550,11 +560,16 @@ static int mps2_serial_probe(struct platform_device *pdev)
+ 	struct mps2_uart_port *mps_port;
+ 	int ret;
+ 
+-	mps_port = mps2_of_get_port(pdev);
+-	if (!mps_port)
+-		return -ENODEV;
++	mps_port = devm_kzalloc(&pdev->dev, sizeof(struct mps2_uart_port), GFP_KERNEL);
++
++        if (!mps_port)
++                return -ENOMEM;
++
++	ret = mps2_of_get_port(pdev, mps_port);
++	if (ret)
++		return ret;
+ 
+-	ret = mps2_init_port(mps_port, pdev);
++	ret = mps2_init_port(pdev, mps_port);
+ 	if (ret)
+ 		return ret;
  
 -- 
 2.7.4
