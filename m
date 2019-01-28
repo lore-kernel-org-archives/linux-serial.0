@@ -1,14 +1,14 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.4 11/80] serial: fsl_lpuart: clear parity enable bit when disable parity
-Date: Mon, 28 Jan 2019 11:22:52 -0500
-Message-ID: <20190128162401.58841-11-sashal@kernel.org>
-References: <20190128162401.58841-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 3.18 08/61] serial: fsl_lpuart: clear parity enable bit when disable parity
+Date: Mon, 28 Jan 2019 11:25:30 -0500
+Message-ID: <20190128162623.59854-8-sashal@kernel.org>
+References: <20190128162623.59854-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190128162401.58841-1-sashal@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20190128162623.59854-1-sashal@kernel.org>
+Sender: stable-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Andy Duan <fugang.duan@nxp.com>, Lukas Wunner <lukas@wunner.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -32,10 +32,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 4 insertions(+)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 01e2274b23f2..8b5ec9386f0f 100644
+index 92b7a5bf7c4d..839e65da4d3f 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1267,6 +1267,8 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
+@@ -1284,6 +1284,8 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
  			else
  				cr1 &= ~UARTCR1_PT;
  		}
@@ -44,7 +44,7 @@ index 01e2274b23f2..8b5ec9386f0f 100644
  	}
  
  	/* ask the core to calculate the divisor */
-@@ -1402,6 +1404,8 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
+@@ -1419,6 +1421,8 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
  			else
  				ctrl &= ~UARTCTRL_PT;
  		}
