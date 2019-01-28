@@ -1,57 +1,55 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 020/170] serial: fsl_lpuart: clear parity enable bit when disable parity
-Date: Mon, 28 Jan 2019 11:09:30 -0500
-Message-ID: <20190128161200.55107-20-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 105/170] tty: serial: samsung: Properly set flags in autoCTS mode
+Date: Mon, 28 Jan 2019 11:10:55 -0500
+Message-ID: <20190128161200.55107-105-sashal@kernel.org>
 References: <20190128161200.55107-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190128161200.55107-1-sashal@kernel.org>
-Sender: stable-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Andy Duan <fugang.duan@nxp.com>, Lukas Wunner <lukas@wunner.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Cc: Beomho Seo <beomho.seo@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Andy Duan <fugang.duan@nxp.com>
+From: Beomho Seo <beomho.seo@samsung.com>
 
-[ Upstream commit 397bd9211fe014b347ca8f95a8f4e1017bac1aeb ]
+[ Upstream commit 31e933645742ee6719d37573a27cce0761dcf92b ]
 
-Current driver only enable parity enable bit and never clear it
-when user set the termios. The fix clear the parity enable bit when
-PARENB flag is not set in termios->c_cflag.
+Commit 391f93f2ec9f ("serial: core: Rework hw-assited flow control support")
+has changed the way the autoCTS mode is handled.
 
-Cc: Lukas Wunner <lukas@wunner.de>
-Signed-off-by: Andy Duan <fugang.duan@nxp.com>
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+According to that change, serial drivers which enable H/W autoCTS mode must
+set UPSTAT_AUTOCTS to prevent the serial core from inadvertently disabling
+TX. This patch adds proper handling of UPSTAT_AUTOCTS flag.
+
+Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
+[mszyprow: rephrased commit message]
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/fsl_lpuart.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/tty/serial/samsung.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index fd64ac2c1a74..716c33b2a11c 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1482,6 +1482,8 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
- 			else
- 				cr1 &= ~UARTCR1_PT;
- 		}
-+	} else {
-+		cr1 &= ~UARTCR1_PE;
- 	}
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index 57baa84ccf86..f4b8e4e17a86 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -1343,11 +1343,14 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
+ 	wr_regl(port, S3C2410_ULCON, ulcon);
+ 	wr_regl(port, S3C2410_UBRDIV, quot);
  
- 	/* ask the core to calculate the divisor */
-@@ -1694,6 +1696,8 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
- 			else
- 				ctrl &= ~UARTCTRL_PT;
- 		}
-+	} else {
-+		ctrl &= ~UARTCTRL_PE;
++	port->status &= ~UPSTAT_AUTOCTS;
++
+ 	umcon = rd_regl(port, S3C2410_UMCON);
+ 	if (termios->c_cflag & CRTSCTS) {
+ 		umcon |= S3C2410_UMCOM_AFC;
+ 		/* Disable RTS when RX FIFO contains 63 bytes */
+ 		umcon &= ~S3C2412_UMCON_AFC_8;
++		port->status = UPSTAT_AUTOCTS;
+ 	} else {
+ 		umcon &= ~S3C2410_UMCOM_AFC;
  	}
- 
- 	/* ask the core to calculate the divisor */
 -- 
 2.19.1
