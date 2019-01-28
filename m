@@ -1,55 +1,103 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.20 195/304] tty: serial: samsung: Properly set flags in autoCTS mode
-Date: Mon, 28 Jan 2019 10:41:52 -0500
-Message-ID: <20190128154341.47195-195-sashal@kernel.org>
-References: <20190128154341.47195-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 162/258] serial: sh-sci: Fix locking in sci_submit_rx()
+Date: Mon, 28 Jan 2019 10:57:48 -0500
+Message-ID: <20190128155924.51521-162-sashal@kernel.org>
+References: <20190128155924.51521-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190128154341.47195-1-sashal@kernel.org>
+In-Reply-To: <20190128155924.51521-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Beomho Seo <beomho.seo@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Beomho Seo <beomho.seo@samsung.com>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit 31e933645742ee6719d37573a27cce0761dcf92b ]
+[ Upstream commit dd1f2250da95e87cb3e612858f94b14f99445a7c ]
 
-Commit 391f93f2ec9f ("serial: core: Rework hw-assited flow control support")
-has changed the way the autoCTS mode is handled.
+Some callers of sci_submit_rx() hold the port spinlock, others don't.
+During fallback to PIO, the driver needs to obtain the port spinlock.
+If the lock was already held, spinlock recursion is detected, causing a
+deadlock: BUG: spinlock recursion on CPU#0.
 
-According to that change, serial drivers which enable H/W autoCTS mode must
-set UPSTAT_AUTOCTS to prevent the serial core from inadvertently disabling
-TX. This patch adds proper handling of UPSTAT_AUTOCTS flag.
+Fix this by adding a flag parameter to sci_submit_rx() for the caller to
+indicate the port spinlock is already held, so spinlock recursion can be
+avoided.
 
-Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
-[mszyprow: rephrased commit message]
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Move the spin_lock_irqsave() up, so all DMA disable steps are protected,
+which is safe as the recently introduced dmaengine_terminate_async() can
+be called in atomic context.
+
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/samsung.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/serial/sh-sci.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index da1bd4bba8a9..2a49b6d876b8 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1365,11 +1365,14 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
- 	wr_regl(port, S3C2410_ULCON, ulcon);
- 	wr_regl(port, S3C2410_UBRDIV, quot);
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index effba6ce0caa..5fdd7944b73b 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1331,7 +1331,7 @@ static void sci_tx_dma_release(struct sci_port *s)
+ 	dma_release_channel(chan);
+ }
  
-+	port->status &= ~UPSTAT_AUTOCTS;
-+
- 	umcon = rd_regl(port, S3C2410_UMCON);
- 	if (termios->c_cflag & CRTSCTS) {
- 		umcon |= S3C2410_UMCOM_AFC;
- 		/* Disable RTS when RX FIFO contains 63 bytes */
- 		umcon &= ~S3C2412_UMCON_AFC_8;
-+		port->status = UPSTAT_AUTOCTS;
- 	} else {
- 		umcon &= ~S3C2410_UMCOM_AFC;
+-static void sci_submit_rx(struct sci_port *s)
++static void sci_submit_rx(struct sci_port *s, bool port_lock_held)
+ {
+ 	struct dma_chan *chan = s->chan_rx;
+ 	struct uart_port *port = &s->port;
+@@ -1362,16 +1362,18 @@ static void sci_submit_rx(struct sci_port *s)
+ 	return;
+ 
+ fail:
++	/* Switch to PIO */
++	if (!port_lock_held)
++		spin_lock_irqsave(&port->lock, flags);
+ 	if (i)
+ 		dmaengine_terminate_async(chan);
+ 	for (i = 0; i < 2; i++)
+ 		s->cookie_rx[i] = -EINVAL;
+ 	s->active_rx = -EINVAL;
+-	/* Switch to PIO */
+-	spin_lock_irqsave(&port->lock, flags);
+ 	s->chan_rx = NULL;
+ 	sci_start_rx(port);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	if (!port_lock_held)
++		spin_unlock_irqrestore(&port->lock, flags);
+ }
+ 
+ static void work_fn_tx(struct work_struct *work)
+@@ -1491,7 +1493,7 @@ static enum hrtimer_restart rx_timer_fn(struct hrtimer *t)
  	}
+ 
+ 	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
+-		sci_submit_rx(s);
++		sci_submit_rx(s, true);
+ 
+ 	/* Direct new serial port interrupts back to CPU */
+ 	scr = serial_port_in(port, SCSCR);
+@@ -1617,7 +1619,7 @@ static void sci_request_dma(struct uart_port *port)
+ 		s->chan_rx_saved = s->chan_rx = chan;
+ 
+ 		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
+-			sci_submit_rx(s);
++			sci_submit_rx(s, false);
+ 	}
+ }
+ 
+@@ -1667,7 +1669,7 @@ static irqreturn_t sci_rx_interrupt(int irq, void *ptr)
+ 			scr |= SCSCR_RDRQE;
+ 		} else {
+ 			scr &= ~SCSCR_RIE;
+-			sci_submit_rx(s);
++			sci_submit_rx(s, false);
+ 		}
+ 		serial_port_out(port, SCSCR, scr);
+ 		/* Clear current interrupt */
 -- 
 2.19.1
