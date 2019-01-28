@@ -1,7 +1,7 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.20 193/304] serial: sh-sci: Fix locking in sci_submit_rx()
-Date: Mon, 28 Jan 2019 10:41:50 -0500
-Message-ID: <20190128154341.47195-193-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.20 194/304] serial: sh-sci: Resume PIO in sci_rx_interrupt() on DMA failure
+Date: Mon, 28 Jan 2019 10:41:51 -0500
+Message-ID: <20190128154341.47195-194-sashal@kernel.org>
 References: <20190128154341.47195-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -14,90 +14,74 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit dd1f2250da95e87cb3e612858f94b14f99445a7c ]
+[ Upstream commit 71ab1c0336c71ace5725740f200beca9667a339f ]
 
-Some callers of sci_submit_rx() hold the port spinlock, others don't.
-During fallback to PIO, the driver needs to obtain the port spinlock.
-If the lock was already held, spinlock recursion is detected, causing a
-deadlock: BUG: spinlock recursion on CPU#0.
+On (H)SCIF, sci_submit_rx() is called in the receive interrupt handler.
+Hence if DMA submission fails, the interrupt handler should resume
+handling reception using PIO, else no more data is received.
 
-Fix this by adding a flag parameter to sci_submit_rx() for the caller to
-indicate the port spinlock is already held, so spinlock recursion can be
-avoided.
-
-Move the spin_lock_irqsave() up, so all DMA disable steps are protected,
-which is safe as the recently introduced dmaengine_terminate_async() can
-be called in atomic context.
+Make sci_submit_rx() return an error indicator, so the receive interrupt
+handler can act appropriately.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+Acked-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sh-sci.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ drivers/tty/serial/sh-sci.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index cc56cb3b3eca..613007d7165e 100644
+index 613007d7165e..21fd3f6ad28e 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
 @@ -1331,7 +1331,7 @@ static void sci_tx_dma_release(struct sci_port *s)
  	dma_release_channel(chan);
  }
  
--static void sci_submit_rx(struct sci_port *s)
-+static void sci_submit_rx(struct sci_port *s, bool port_lock_held)
+-static void sci_submit_rx(struct sci_port *s, bool port_lock_held)
++static int sci_submit_rx(struct sci_port *s, bool port_lock_held)
  {
  	struct dma_chan *chan = s->chan_rx;
  	struct uart_port *port = &s->port;
-@@ -1362,16 +1362,18 @@ static void sci_submit_rx(struct sci_port *s)
- 	return;
+@@ -1359,7 +1359,7 @@ static void sci_submit_rx(struct sci_port *s, bool port_lock_held)
+ 	s->active_rx = s->cookie_rx[0];
+ 
+ 	dma_async_issue_pending(chan);
+-	return;
++	return 0;
  
  fail:
-+	/* Switch to PIO */
-+	if (!port_lock_held)
-+		spin_lock_irqsave(&port->lock, flags);
- 	if (i)
- 		dmaengine_terminate_async(chan);
- 	for (i = 0; i < 2; i++)
- 		s->cookie_rx[i] = -EINVAL;
- 	s->active_rx = -EINVAL;
--	/* Switch to PIO */
--	spin_lock_irqsave(&port->lock, flags);
- 	s->chan_rx = NULL;
+ 	/* Switch to PIO */
+@@ -1374,6 +1374,7 @@ fail:
  	sci_start_rx(port);
--	spin_unlock_irqrestore(&port->lock, flags);
-+	if (!port_lock_held)
-+		spin_unlock_irqrestore(&port->lock, flags);
+ 	if (!port_lock_held)
+ 		spin_unlock_irqrestore(&port->lock, flags);
++	return -EAGAIN;
  }
  
  static void work_fn_tx(struct work_struct *work)
-@@ -1491,7 +1493,7 @@ static enum hrtimer_restart rx_timer_fn(struct hrtimer *t)
- 	}
- 
- 	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
--		sci_submit_rx(s);
-+		sci_submit_rx(s, true);
- 
- 	/* Direct new serial port interrupts back to CPU */
- 	scr = serial_port_in(port, SCSCR);
-@@ -1617,7 +1619,7 @@ static void sci_request_dma(struct uart_port *port)
- 		s->chan_rx_saved = s->chan_rx = chan;
- 
- 		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
--			sci_submit_rx(s);
-+			sci_submit_rx(s, false);
- 	}
- }
- 
-@@ -1667,7 +1669,7 @@ static irqreturn_t sci_rx_interrupt(int irq, void *ptr)
+@@ -1668,8 +1669,10 @@ static irqreturn_t sci_rx_interrupt(int irq, void *ptr)
+ 			disable_irq_nosync(irq);
  			scr |= SCSCR_RDRQE;
  		} else {
++			if (sci_submit_rx(s, false) < 0)
++				goto handle_pio;
++
  			scr &= ~SCSCR_RIE;
--			sci_submit_rx(s);
-+			sci_submit_rx(s, false);
+-			sci_submit_rx(s, false);
  		}
  		serial_port_out(port, SCSCR, scr);
  		/* Clear current interrupt */
+@@ -1681,6 +1684,8 @@ static irqreturn_t sci_rx_interrupt(int irq, void *ptr)
+ 
+ 		return IRQ_HANDLED;
+ 	}
++
++handle_pio:
+ #endif
+ 
+ 	if (s->rx_trigger > 1 && s->rx_fifo_timeout > 0) {
 -- 
 2.19.1
