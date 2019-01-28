@@ -1,37 +1,57 @@
-From: Zhou Yanjie <zhouyanjie@zoho.com>
-Subject: [PATCH v2 2/2] Serial: Ingenic: Add X1000 suppor for the UART driver.
-Date: Mon, 28 Jan 2019 21:57:01 +0800
-Message-ID: <1548683821-120924-3-git-send-email-zhouyanjie@zoho.com>
-References: <1548667176-119830-1-git-send-email-zhouyanjie@zoho.com>
- <1548683821-120924-1-git-send-email-zhouyanjie@zoho.com>
+From: Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.20 034/304] serial: fsl_lpuart: clear parity enable bit when disable parity
+Date: Mon, 28 Jan 2019 10:39:11 -0500
+Message-ID: <20190128154341.47195-34-sashal@kernel.org>
+References: <20190128154341.47195-1-sashal@kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1548683821-120924-1-git-send-email-zhouyanjie@zoho.com>
+In-Reply-To: <20190128154341.47195-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-mips@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, robh+dt@kernel.org, paul.burton@mips.com, gregkh@linuxfoundation.org, jslaby@suse.com, mark.rutland@arm.com, syq@debian.org, jiaxun.yang@flygoat.com, 772753199@qq.com
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: Andy Duan <fugang.duan@nxp.com>, Lukas Wunner <lukas@wunner.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Add support for probing the 8250_ingenic driver on the
-X1000 Soc from Ingenic.
+From: Andy Duan <fugang.duan@nxp.com>
 
-Signed-off-by: Zhou Yanjie <zhouyanjie@zoho.com>
+[ Upstream commit 397bd9211fe014b347ca8f95a8f4e1017bac1aeb ]
+
+Current driver only enable parity enable bit and never clear it
+when user set the termios. The fix clear the parity enable bit when
+PARENB flag is not set in termios->c_cflag.
+
+Cc: Lukas Wunner <lukas@wunner.de>
+Signed-off-by: Andy Duan <fugang.duan@nxp.com>
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/serial/ingenic,uart.txt | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/serial/fsl_lpuart.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/serial/ingenic,uart.txt b/Documentation/devicetree/bindings/serial/ingenic,uart.txt
-index c3c6406..24ed876 100644
---- a/Documentation/devicetree/bindings/serial/ingenic,uart.txt
-+++ b/Documentation/devicetree/bindings/serial/ingenic,uart.txt
-@@ -6,7 +6,8 @@ Required properties:
-   - "ingenic,jz4760-uart",
-   - "ingenic,jz4770-uart",
-   - "ingenic,jz4775-uart",
--  - "ingenic,jz4780-uart".
-+  - "ingenic,jz4780-uart",
-+  - "ingenic,x1000-uart".
- - reg : offset and length of the register set for the device.
- - interrupts : should contain uart interrupt.
- - clocks : phandles to the module & baud clocks.
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 00c220e4f43c..086642ea4b26 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -1479,6 +1479,8 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 			else
+ 				cr1 &= ~UARTCR1_PT;
+ 		}
++	} else {
++		cr1 &= ~UARTCR1_PE;
+ 	}
+ 
+ 	/* ask the core to calculate the divisor */
+@@ -1690,6 +1692,8 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
+ 			else
+ 				ctrl &= ~UARTCTRL_PT;
+ 		}
++	} else {
++		ctrl &= ~UARTCTRL_PE;
+ 	}
+ 
+ 	/* ask the core to calculate the divisor */
 -- 
-2.7.4
+2.19.1
