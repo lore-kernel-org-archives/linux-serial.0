@@ -1,36 +1,55 @@
-From: Zhou Yanjie <zhouyanjie@zoho.com>
-Subject: [PATCH v3 2/2] Dt-bindings: Serial: Add X1000 serial bindings.
-Date: Tue, 29 Jan 2019 01:03:49 +0800
-Message-ID: <1548695029-11900-3-git-send-email-zhouyanjie@zoho.com>
-References: <1548667176-119830-1-git-send-email-zhouyanjie@zoho.com>
- <1548695029-11900-1-git-send-email-zhouyanjie@zoho.com>
+From: Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 164/258] tty: serial: samsung: Properly set flags in autoCTS mode
+Date: Mon, 28 Jan 2019 10:57:50 -0500
+Message-ID: <20190128155924.51521-164-sashal@kernel.org>
+References: <20190128155924.51521-1-sashal@kernel.org>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1548695029-11900-1-git-send-email-zhouyanjie@zoho.com>
+In-Reply-To: <20190128155924.51521-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-mips@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, robh+dt@kernel.org, paul.burton@mips.com, gregkh@linuxfoundation.org, jslaby@suse.com, mark.rutland@arm.com, syq@debian.org, jiaxun.yang@flygoat.com, 772753199@qq.com
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: Beomho Seo <beomho.seo@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Add the serial bindings for the X1000 Soc from Ingenic.
+From: Beomho Seo <beomho.seo@samsung.com>
 
-Signed-off-by: Zhou Yanjie <zhouyanjie@zoho.com>
+[ Upstream commit 31e933645742ee6719d37573a27cce0761dcf92b ]
+
+Commit 391f93f2ec9f ("serial: core: Rework hw-assited flow control support")
+has changed the way the autoCTS mode is handled.
+
+According to that change, serial drivers which enable H/W autoCTS mode must
+set UPSTAT_AUTOCTS to prevent the serial core from inadvertently disabling
+TX. This patch adds proper handling of UPSTAT_AUTOCTS flag.
+
+Signed-off-by: Beomho Seo <beomho.seo@samsung.com>
+[mszyprow: rephrased commit message]
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/serial/ingenic,uart.txt | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/serial/samsung.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/serial/ingenic,uart.txt b/Documentation/devicetree/bindings/serial/ingenic,uart.txt
-index c3c6406..24ed876 100644
---- a/Documentation/devicetree/bindings/serial/ingenic,uart.txt
-+++ b/Documentation/devicetree/bindings/serial/ingenic,uart.txt
-@@ -6,7 +6,8 @@ Required properties:
-   - "ingenic,jz4760-uart",
-   - "ingenic,jz4770-uart",
-   - "ingenic,jz4775-uart",
--  - "ingenic,jz4780-uart".
-+  - "ingenic,jz4780-uart",
-+  - "ingenic,x1000-uart".
- - reg : offset and length of the register set for the device.
- - interrupts : should contain uart interrupt.
- - clocks : phandles to the module & baud clocks.
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index 2f8fa184aafa..c6058b52d5d5 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -1365,11 +1365,14 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
+ 	wr_regl(port, S3C2410_ULCON, ulcon);
+ 	wr_regl(port, S3C2410_UBRDIV, quot);
+ 
++	port->status &= ~UPSTAT_AUTOCTS;
++
+ 	umcon = rd_regl(port, S3C2410_UMCON);
+ 	if (termios->c_cflag & CRTSCTS) {
+ 		umcon |= S3C2410_UMCOM_AFC;
+ 		/* Disable RTS when RX FIFO contains 63 bytes */
+ 		umcon &= ~S3C2412_UMCON_AFC_8;
++		port->status = UPSTAT_AUTOCTS;
+ 	} else {
+ 		umcon &= ~S3C2410_UMCOM_AFC;
+ 	}
 -- 
-2.7.4
+2.19.1
