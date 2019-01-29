@@ -1,7 +1,7 @@
 From: Stephen Boyd <swboyd@chromium.org>
-Subject: [RFC/PATCH 3/5] tty: serial: qcom_geni_serial: Use OPP API to set clk/perf state
-Date: Mon, 28 Jan 2019 17:55:45 -0800
-Message-ID: <20190129015547.213276-4-swboyd@chromium.org>
+Subject: [RFC/PATCH 4/5] spi: spi-geni-qcom: Use OPP API to set clk/perf state
+Date: Mon, 28 Jan 2019 17:55:46 -0800
+Message-ID: <20190129015547.213276-5-swboyd@chromium.org>
 References: <20190129015547.213276-1-swboyd@chromium.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -14,7 +14,7 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Rajendra Nayak <rnayak@codeaurora.org>
 
-geni serial needs to express a perforamnce state requirement on CX
+geni spi needs to express a perforamnce state requirement on CX
 depending on the frequency of the clock rates. Use OPP table from
 DT to register with OPP framework and use dev_pm_opp_set_rate() to
 set the clk/perf state.
@@ -22,61 +22,28 @@ set the clk/perf state.
 Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
 Signed-off-by: Stephen Boyd <swboyd@chromium.org>
 ---
- drivers/tty/serial/qcom_geni_serial.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/spi/spi-geni-qcom.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index a72d6d9fb983..dca8f6845463 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -12,6 +12,7 @@
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/pm_opp.h>
- #include <linux/platform_device.h>
- #include <linux/qcom-geni-se.h>
- #include <linux/serial.h>
-@@ -119,6 +120,7 @@ struct qcom_geni_serial_port {
- 	bool brk;
+diff --git a/drivers/spi/spi-geni-qcom.c b/drivers/spi/spi-geni-qcom.c
+index fdb7cb88fb56..3ffb6b25b58d 100644
+--- a/drivers/spi/spi-geni-qcom.c
++++ b/drivers/spi/spi-geni-qcom.c
+@@ -116,9 +116,9 @@ static int get_spi_clk_cfg(unsigned int speed_hz,
  
- 	unsigned int tx_remaining;
-+	struct device *dev;
- };
- 
- static const struct uart_ops qcom_geni_console_pops;
-@@ -1028,7 +1030,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 		goto out_restart_rx;
- 
- 	uport->uartclk = clk_rate;
--	clk_set_rate(port->se.clk, clk_rate);
-+	dev_pm_opp_set_rate(port->dev, clk_rate);
- 	ser_clk_cfg = SER_CLK_EN;
- 	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
- 
-@@ -1265,8 +1267,10 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
- 	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
- 		geni_se_resources_on(&port->se);
- 	else if (new_state == UART_PM_STATE_OFF &&
--			old_state == UART_PM_STATE_ON)
-+			old_state == UART_PM_STATE_ON) {
-+		dev_pm_opp_set_rate(port->dev, 0);
- 		geni_se_resources_off(&port->se);
-+	}
+ 	dev_dbg(mas->dev, "req %u=>%u sclk %lu, idx %d, div %d\n", speed_hz,
+ 				actual_hz, sclk_freq, *clk_idx, *clk_div);
+-	ret = clk_set_rate(se->clk, sclk_freq);
++	ret = dev_pm_opp_set_rate(mas->dev, sclk_freq);
+ 	if (ret)
+-		dev_err(mas->dev, "clk_set_rate failed %d\n", ret);
++		dev_err(mas->dev, "dev_pm_opp_set_rate failed %d\n", ret);
+ 	return ret;
  }
  
- static const struct uart_ops qcom_geni_console_pops = {
-@@ -1332,6 +1336,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 		dev_err(&pdev->dev, "Invalid line %d\n", line);
- 		return PTR_ERR(port);
- 	}
-+	port->dev = &pdev->dev;
- 
- 	uport = &port->uport;
- 	/* Don't allow 2 drivers to access the same port */
-@@ -1353,6 +1358,12 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	uport->mapbase = res->start;
+@@ -564,6 +564,12 @@ static int spi_geni_probe(struct platform_device *pdev)
+ 	if (!spi)
+ 		return -ENOMEM;
  
 +	ret = dev_pm_opp_of_add_table(&pdev->dev);
 +	if (ret < 0) {
@@ -84,8 +51,17 @@ index a72d6d9fb983..dca8f6845463 100644
 +		return ret;
 +	}
 +
- 	port->tx_fifo_depth = DEF_FIFO_DEPTH_WORDS;
- 	port->rx_fifo_depth = DEF_FIFO_DEPTH_WORDS;
- 	port->tx_fifo_width = DEF_FIFO_WIDTH_BITS;
+ 	platform_set_drvdata(pdev, spi);
+ 	mas = spi_master_get_devdata(spi);
+ 	mas->irq = irq;
+@@ -629,6 +635,8 @@ static int __maybe_unused spi_geni_runtime_suspend(struct device *dev)
+ 	struct spi_master *spi = dev_get_drvdata(dev);
+ 	struct spi_geni_master *mas = spi_master_get_devdata(spi);
+ 
++	/* Drop the performance state vote */
++	dev_pm_opp_set_rate(dev, 0);
+ 	return geni_se_resources_off(&mas->se);
+ }
+ 
 -- 
 Sent by a computer through tubes
