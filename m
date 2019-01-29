@@ -1,156 +1,99 @@
-From: shuah <shuah@kernel.org>
-Subject: Re: [PATCH] tty: Fix WARNING in tty_set_termios
-Date: Mon, 28 Jan 2019 14:29:22 -0700
-Message-ID: <fe4018a7-19e4-cdd1-3095-bbe88a82788e@kernel.org>
-References: <20190125232905.21727-1-shuah@kernel.org>
- <20190126041416.GF2217@ZenIV.linux.org.uk>
+From: Stephen Boyd <swboyd@chromium.org>
+Subject: [RFC/PATCH 0/5] DVFS in the OPP core
+Date: Mon, 28 Jan 2019 17:55:42 -0800
+Message-ID: <20190129015547.213276-1-swboyd@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190126041416.GF2217@ZenIV.linux.org.uk>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Al Viro <viro@zeniv.linux.org.uk>
-Cc: marcel@holtmann.org, johan.hedberg@gmail.com, w.d.hubbs@gmail.com, chris@the-brannons.com, kirk@reisers.ca, samuel.thibault@ens-lyon.org, gregkh@linuxfoundation.org, robh@kernel.org, jslaby@suse.com, sameo@linux.intel.com, davem@davemloft.net, arnd@arndb.de, nishka.dasgupta_ug18@ashoka.edu.in, m.maya.nakamura@gmail.com, santhameena13@gmail.com, zhongjiang@huawei.com, linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org, speakup@linux-speakup.org, devel@driverdev.osuosl.org, linux-serial@vger.kernel.org, linux-wireless@vger.kernel.org, netdev@vger.kernel.org, shuah <shuah@kernel.org>
+To: linux-kernel@vger.kernel.org
+Cc: linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, Rajendra Nayak <rnayak@codeaurora.org>, Ulf Hansson <ulf.hansson@linaro.org>, Viresh Kumar <viresh.kumar@linaro.org>, Doug Anderson <dianders@chromium.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 1/25/19 9:14 PM, Al Viro wrote:
-> On Fri, Jan 25, 2019 at 04:29:05PM -0700, Shuah Khan wrote:
->> tty_set_termios() has the following WARMN_ON which can be triggered with a
->> syscall to invoke TIOCGETD __NR_ioctl.
->>
->> WARN_ON(tty->driver->type == TTY_DRIVER_TYPE_PTY &&
->>                  tty->driver->subtype == PTY_TYPE_MASTER);
->> Reference: https://syzkaller.appspot.com/bug?id=2410d22f1d8e5984217329dd0884b01d99e3e48d
->>
->> A simple change would have been to print error message instead of WARN_ON.
->> However, the callers assume that tty_set_termios() always returns 0 and
->> don't check return value. The complete solution is fixing all the callers
->> to check error and bail out to fix the WARN_ON.
->>
->> This fix changes tty_set_termios() to return error and all the callers
->> to check error and bail out. The reproducer is used to reproduce the
->> problem and verify the fix.
-> 
->> --- a/drivers/bluetooth/hci_ldisc.c
->> +++ b/drivers/bluetooth/hci_ldisc.c
->> @@ -321,6 +321,8 @@ void hci_uart_set_flow_control(struct hci_uart *hu, bool enable)
->>   		status = tty_set_termios(tty, &ktermios);
->>   		BT_DBG("Disabling hardware flow control: %s",
->>   		       status ? "failed" : "success");
->> +		if (status)
->> +			return;
-> 
-> Can that ldisc end up set on pty master?  And does it make any sense there?
+This patch series is an RFC around how we can implement DVFS for devices
+that aren't your typical OPPish device (i.e. GPU/CPU). They don't have a
+strict set of frequencies that they have been tested at to derive some
+operating performance point. Instead they have a coarser set of
+frequency max or 'fmax' OPPs that describe the maiximum frequency the
+device can operate at with a given voltage.
 
-The initial objective of the patch is to prevent the WARN_ON by making
-the change to return error instead of WARN_ON. However, without changes
-to places that don't check the return and keep making progress, there
-will be secondary problems.
+The approach we take is to let the devm_pm_opp_set_rate() API accept 0
+as a valid frequency indicating the frequency isn't required anymore and
+to make the same API use the clk framework to round the frequency passed
+in instead of relying on the OPP table to specify each frequency that
+can be used. Once we have these two patches in place, we can use the OPP
+API to change clk rates instead of clk_set_rate() and use all the recent
+OPP enhancements that have been made around required-opps and genpd
+performance states to do DVFS for all devices.
 
-Without this change to return here, instead of WARN_ON, it will fail
-with the following NULL pointer dereference at the next thing 
-hci_uart_set_flow_control() attempts.
+One nice feature of this approach is that we don't need to change the
+OPP binding to support this. We can specify only the max frequencies and
+the voltage requirements in DT with the existing binding and slightly
+tweak the OPP code to achieve these results. 
 
-status = tty->driver->ops->tiocmget(tty);
+This series includes a conversion of the uart and spi drivers on
+qcom sdm845 where these patches are being developed. It shows how a
+driver is converted from the clk APIs to the OPP APIs and how
+enable/disable state of the clk is communicated to the OPP layer.
 
-kernel: [10140.649783] BUG: unable to handle kernel NULL pointer 
-dereference at 0000000000000000
-kernel: [10140.649786] #PF error: [INSTR]
-kernel: [10140.649787] PGD 0 P4D 0
-kernel: [10140.649790] Oops: 0010 [#1] SMP PTI
-Jan 24 15:33:35 deneb kernel: [10140.649793] CPU: 2 PID: 55 Comm: 
-kworker/u33:0 Tainted: G        W         5.0.0-rc3+ #5
-kernel: [10140.649794] Hardware name: Dell Inc. OptiPlex 790/0HY9JP, 
-BIOS A18 09/24/2013
-Workqueue: hci0 hci_power_on [bluetooth]
-kernel: [10140.649805] RIP: 0010:          (null)
-kernel: [10140.649809] Code: Bad RIP value.
-kernel: [10140.649810] RSP: 0018:ffffa01a8153fd28 EFLAGS: 00010282
-kernel: [10140.649812] RAX: 0000000000000000 RBX: ffff8958d6bc4800 RCX: 
-35ad8b0300000000
-kernel: [10140.649814] RDX: ffffffff00000001 RSI: 0000000000000000 RDI: 
-ffff8958d6bc4800
-kernel: [10140.649816] RBP: ffffa01a8153fd78 R08: 0000000091773f09 R09: 
-0000000000000003
-kernel: [10140.649817] R10: ffff8958d6bc4a98 R11: 0000000000000720 R12: 
-ffff895814500c00
-kernel: [10140.649819] R13: ffff8958a858e000 R14: 0000000000000000 R15: 
-ffff8958af1af440
-kernel: [10140.649821] FS:  0000000000000000(0000) 
-GS:ffff895925880000(0000) knlGS:0000000000000000
-kernel: [10140.649823] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-kernel: [10140.649824] CR2: ffffffffffffffd6 CR3: 0000000083f46002 CR4: 
-00000000000606e0
-kernel: [10140.649826] Call Trace:
-kernel: [10140.649830]  ? hci_uart_set_flow_control+0x20e/0x2c0 [hci_uart]
-kernel: [10140.649836]  mrvl_setup+0x17/0x80 [hci_uart]
-kernel: [10140.649840]  hci_uart_setup+0x56/0x160 [hci_uart]
-kernel: [10140.649850]  hci_dev_do_open+0xe6/0x630 [bluetooth]
-kernel: [10140.649860]  hci_power_on+0x52/0x220 [bluetooth]
+Some open topics and initial points for discussion are:
 
-> 
-> IOW, I don't believe that this patch makes any sense.  If anything,
-> we need to prevent unconditional tty_set_termios() on the path
-> that *does* lead to calling it for pty.
-> 
+1) The dev_pm_opp_set_rate() API changes may break something that's 
+relying on the rate rounding that OPP provides. If those exist,
+we may need to implement another API that is more explicit about using
+the clk API instead of the OPP tables.
 
-I don't think preventing unconditional tty_set_termios() is enough to
-prevent secondary problems such as the one above.
+2) dev_pm_opp_set_rate(0) is an interesting solution to the problem of
+dropping the rate requirement. Is there anything better than this?
 
-For example, the following call chain leads to the WARN_ON that was
-reported. Even if void hci_uart_set_baudrate() prevents the very first
-tty_set_termios() call, its caller hci_uart_setup() continues with
-more tty setup. It goes ahead to call driver setup callback. The
-driver callback goes on to do more setup calling tty_set_termios().
+3) How do we handle devices that already have power-domains specified in
+DT? The opp binding for required-opps doesn't let us specify the power
+domain to target, instead it assumes that whatever power domain is
+attached to a device is the one that OPP needs to use to change the
+genpd performance state. Do we need a
+dev_pm_opp_set_required_opps_name() or something to be explicit about
+this? Can we have some way for the power domain that required-opps
+correspond to be expressed in the OPP tables themselves?
 
-WARN_ON call path:
-  hci_uart_set_baudrate+0x1cc/0x250 drivers/bluetooth/hci_ldisc.c:378
-  hci_uart_setup+0xa2/0x490 drivers/bluetooth/hci_ldisc.c:401
-  hci_dev_do_open+0x6b1/0x1920 net/bluetooth/hci_core.c:1423
+4) How do we achieve the "full constraint" state? i.e. what do we do
+about some devices being active and others being inactive during boot
+and making sure that the voltage for the shared power domains doesn't
+drop until all devices requiring it have informed OPP about their
+power requirements?
 
-Once this WARN_ON is changed to return error, the following
-happens, when hci_uart_setup() does driver setup callback.
+Rajendra Nayak (4):
+  OPP: Make dev_pm_opp_set_rate() with freq=0 as valid
+  tty: serial: qcom_geni_serial: Use OPP API to set clk/perf state
+  spi: spi-geni-qcom: Use OPP API to set clk/perf state
+  arm64: dts: sdm845: Add OPP table for all qup devices
 
-kernel: [10140.649836]  mrvl_setup+0x17/0x80 [hci_uart]
-kernel: [10140.649840]  hci_uart_setup+0x56/0x160 [hci_uart]
-kernel: [10140.649850]  hci_dev_do_open+0xe6/0x630 [bluetooth]
-kernel: [10140.649860]  hci_power_on+0x52/0x220 [bluetooth]
+Stephen Boyd (1):
+  OPP: Don't overwrite rounded clk rate
 
-I think continuing to catch the invalid condition in tty_set_termios()
-and preventing progress by checking return value is a straight forward
-change to avoid secondary problems, and it might be difficult to catch
-all the cases where it could fail. Here is the reproducer for reference:
+ arch/arm64/boot/dts/qcom/sdm845.dtsi  | 115 ++++++++++++++++++++++++++
+ drivers/opp/core.c                    |  26 ++++--
+ drivers/spi/spi-geni-qcom.c           |  12 ++-
+ drivers/tty/serial/qcom_geni_serial.c |  15 +++-
+ 4 files changed, 155 insertions(+), 13 deletions(-)
 
+For the interested, these patches are located here:
 
-#define _GNU_SOURCE
+   https://github.com/rrnayak/linux/ v5.0-rc3/opp-corners-wip
 
-#include <endian.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/syscall.h>
-#include <sys/types.h>
-#include <unistd.h>
+I've generated these patches by cutting off the top of that tree and
+massaging the commit text a bit for the first patch.
 
-uint64_t r[1] = {0xffffffffffffffff};
-
-int main(void)
-{
-   syscall(__NR_mmap, 0x20000000, 0x1000000, 3, 0x32, -1, 0);
-   long res = 0;
-   memcpy((void*)0x20000100, "/dev/ptmx\x00", 10);
-   res = syscall(__NR_openat, 0xffffffffffffff9c, 0x20000100, 0, 0);
-   if (res != -1)
-     r[0] = res;
-   *(uint32_t*)0x200000c0 = 0xf;
-   syscall(__NR_ioctl, r[0], 0x5423, 0x200000c0);
-   syscall(__NR_ioctl, r[0], 0x400455c8, 0xb);
-   return 0;
-}
-
-
-thanks,
--- Shuah
+base-commit: 49a57857aeea06ca831043acbb0fa5e0f50602fd
+prerequisite-patch-id: 9c3ee728603596b8b0ba06ffd66084bdc21b1271
+prerequisite-patch-id: f160e050bcd74f5de6fad66329381853869a6a97
+prerequisite-patch-id: aa23548d2b486c29489b4304d85799d08762254e
+prerequisite-patch-id: 40dd117c45fecb4308298352346546612db94b64
+prerequisite-patch-id: cd102fa42bab19897c2295e8b990b2156626054a
+prerequisite-patch-id: 3b9e5c8ed65ee96cc0f1c50166cf6bbb597ef582
+prerequisite-patch-id: 7e71b957b90ad51d0619944d5ebc859380e8e3e4
+prerequisite-patch-id: 5abd2bd6b3ae3e91551e2b8f9295169019ba82c7
+prerequisite-patch-id: 68bb3e44cf4e5dbd363a1a1750e4d378971ed393
+prerequisite-patch-id: 882b14ef9527b15d22cfddbb5fa2b9d43df1ff04
+prerequisite-patch-id: 6fc14ddeb074fb0826f1f40031e9d161f1361666
+-- 
+Sent by a computer through tubes
