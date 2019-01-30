@@ -1,47 +1,34 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: [PATCH] serdev: ttyport: call tiocmget and tiocmset ops directly
-Date: Wed, 30 Jan 2019 10:52:03 +0100
-Message-ID: <20190130095203.4402-1-johan@kernel.org>
+From: Vladimir Murzin <vladimir.murzin@arm.com>
+Subject: [PATCH v2 0/2] serial: mps2-uart: minor improvements
+Date: Wed, 30 Jan 2019 09:55:13 +0000
+Message-ID: <1548842115-14782-1-git-send-email-vladimir.murzin@arm.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-serial@vger.kernel.org
+Cc: greg@kroah.com, linux-arm-kernel@lists.infradead.org, sudeep.holla@arm.com
 List-Id: linux-serial@vger.kernel.org
 
-The tty struct holds a pointer to the driver's tty operations so drop
-the unnecessary driver dereference when calling tiocmget and tiocmset.
+This mini series is supposed to improve MPS2 uart driver for:
+ 1. platforms with number of virtual serial ports, like MPS3
+ 2. platforms with combined irq
 
-Note that this also makes the calls match the preceding sanity checks as
-expected.
+Vladimir Murzin (2):
+  serial: mps2-uart: move to dynamic port allocation
+  serial: mps2-uart: support combined irq
 
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/tty/serdev/serdev-ttyport.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/mps2-uart.c | 138 ++++++++++++++++++++++++++++-------------
+ 1 file changed, 96 insertions(+), 42 deletions(-)
 
-diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
-index fa1672993b4c..d1cdd2ab8b4c 100644
---- a/drivers/tty/serdev/serdev-ttyport.c
-+++ b/drivers/tty/serdev/serdev-ttyport.c
-@@ -233,7 +233,7 @@ static int ttyport_get_tiocm(struct serdev_controller *ctrl)
- 	if (!tty->ops->tiocmget)
- 		return -ENOTSUPP;
- 
--	return tty->driver->ops->tiocmget(tty);
-+	return tty->ops->tiocmget(tty);
- }
- 
- static int ttyport_set_tiocm(struct serdev_controller *ctrl, unsigned int set, unsigned int clear)
-@@ -244,7 +244,7 @@ static int ttyport_set_tiocm(struct serdev_controller *ctrl, unsigned int set, u
- 	if (!tty->ops->tiocmset)
- 		return -ENOTSUPP;
- 
--	return tty->driver->ops->tiocmset(tty, set, clear);
-+	return tty->ops->tiocmset(tty, set, clear);
- }
- 
- static const struct serdev_controller_ops ctrl_ops = {
 -- 
-2.20.1
+2.7.4
