@@ -1,67 +1,30 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [PATCH 1/2] serial: mps2-uart: move to dynamic port allocation
-Date: Wed, 30 Jan 2019 09:27:53 +0100
-Message-ID: <20190130082753.GA24317@kroah.com>
-References: <1548425597-38175-1-git-send-email-vladimir.murzin@arm.com>
- <1548425597-38175-2-git-send-email-vladimir.murzin@arm.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] tty: ldisc: add sysctl to prevent autoloading of ldiscs
+Date: Wed, 30 Jan 2019 09:28:57 +0100
+Message-ID: <20190130082857.GB24317@kroah.com>
+References: <20190121162642.GA2944@kroah.com>
+ <20190122000142.GB19379@mit.edu>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1548425597-38175-2-git-send-email-vladimir.murzin@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Vladimir Murzin <vladimir.murzin@arm.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, sudeep.holla@arm.com
+In-Reply-To: <20190122000142.GB19379@mit.edu>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Theodore Y. Ts'o" <tytso@mit.edu>, kernel-hardening@lists.openwall.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jan 25, 2019 at 02:13:16PM +0000, Vladimir Murzin wrote:
-> Some designs, like MPS3, expose number of virtual serial ports which
-> already close or exceeds MPS2_MAX_PORTS. Increasing MPS2_MAX_PORTS
-> would have negative impact (in terms of memory consumption) on tiny
-> MPS2 platform which, in fact, has only one physically populated UART.
+On Mon, Jan 21, 2019 at 07:01:42PM -0500, Theodore Y. Ts'o wrote:
+> On Mon, Jan 21, 2019 at 05:26:42PM +0100, Greg Kroah-Hartman wrote:
+> > By default, the kernel will automatically load the module of any line
+> > dicipline that is asked for.  As this sometimes isn't the safest thing
+> > to do, provide a sysctl to disable this feature.
+> > 
+> > By default, we set this to 'y' as that is the historical way that Linux
+> > has worked, and we do not want to break working systems.  But in the
+> > future, perhaps this can default to 'n' to prevent this functionality.
+> > 
+> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > 
-> Start with converting existent static port array to idr. As a bonus it
-> make driver not to fail in case when no alias was specified in device
-> tree.
-> 
-> Signed-off-by: Vladimir Murzin <vladimir.murzin@arm.com>
-> ---
->  drivers/tty/serial/mps2-uart.c | 47 ++++++++++++++++++++++++++++--------------
->  1 file changed, 31 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/mps2-uart.c b/drivers/tty/serial/mps2-uart.c
-> index 9f8f637..6da0633 100644
-> --- a/drivers/tty/serial/mps2-uart.c
-> +++ b/drivers/tty/serial/mps2-uart.c
-> @@ -22,6 +22,7 @@
->  #include <linux/serial_core.h>
->  #include <linux/tty_flip.h>
->  #include <linux/types.h>
-> +#include <linux/idr.h>
->  
->  #define SERIAL_NAME	"ttyMPS"
->  #define DRIVER_NAME	"mps2-uart"
-> @@ -397,7 +398,7 @@ static const struct uart_ops mps2_uart_pops = {
->  	.verify_port = mps2_uart_verify_port,
->  };
->  
-> -static struct mps2_uart_port mps2_uart_ports[MPS2_MAX_PORTS];
-> +static DEFINE_IDR(ports_idr);
+> Reviewed-by: Theodore Ts'o <tytso@mit.edu>
 
-You forgot to call idr_destroy() when your code unloads :(
-
-Yeah, it's not an obvious design pattern, I think someone will fix it up
-someday...
-
-thanks,
-
-greg k-h
+Thanks for the review!
