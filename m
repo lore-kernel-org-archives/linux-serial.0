@@ -1,203 +1,74 @@
-From: Vladimir Murzin <vladimir.murzin@arm.com>
-Subject: [PATCH v2 2/2] serial: mps2-uart: support combined irq
-Date: Wed, 30 Jan 2019 09:55:15 +0000
-Message-ID: <1548842115-14782-3-git-send-email-vladimir.murzin@arm.com>
-References: <1548842115-14782-1-git-send-email-vladimir.murzin@arm.com>
+From: "Li,Rongqing" <lirongqing@baidu.com>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0hdW3Y0XSB0dHk6IGZpeCByYWNlIGJldHdlZW4gZmx1?=
+ =?utf-8?B?c2hfdG9fbGRpc2MgYW5kIHR0eV9vcGVu?=
+Date: Wed, 30 Jan 2019 09:29:29 +0000
+Message-ID: <4aac24e895cb4a1881bcbada05de1884@baidu.com>
+References: <1547803637-29135-1-git-send-email-lirongqing@baidu.com>
+ <ae44b1c5-4d33-110b-a4da-f526d156be2a@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1548842115-14782-1-git-send-email-vladimir.murzin@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-serial@vger.kernel.org
-Cc: greg@kroah.com, linux-arm-kernel@lists.infradead.org, sudeep.holla@arm.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <ae44b1c5-4d33-110b-a4da-f526d156be2a@codeaurora.org>
+Content-Language: zh-CN
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Kohli, Gaurav" <gkohli@codeaurora.org>, "jslaby@suse.com" <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-It turns out that some designs went for implementing only combined
-interrupt for rx, tx and overrun, which is currently not supported
-by the driver.  Support of combined irq is built on top of existent
-irq handlers and activated automatically if only single irq was
-specified in device tree.
-
-Signed-off-by: Vladimir Murzin <vladimir.murzin@arm.com>
----
-Changelog
-	v1 -> v2
-	   - overrun interrupt also combined with rx and tx
-	   - count number of irqs provided via dt to detect
-	     use of combined irq.
-
- drivers/tty/serial/mps2-uart.c | 91 ++++++++++++++++++++++++++++++------------
- 1 file changed, 65 insertions(+), 26 deletions(-)
-
-diff --git a/drivers/tty/serial/mps2-uart.c b/drivers/tty/serial/mps2-uart.c
-index 6da0633..4404eb7 100644
---- a/drivers/tty/serial/mps2-uart.c
-+++ b/drivers/tty/serial/mps2-uart.c
-@@ -66,11 +66,14 @@
- 
- #define MPS2_MAX_PORTS		3
- 
-+#define UART_PORT_COMBINED_IRQ	BIT(0)
-+
- struct mps2_uart_port {
- 	struct uart_port port;
- 	struct clk *clk;
- 	unsigned int tx_irq;
- 	unsigned int rx_irq;
-+	unsigned int flags;
- };
- 
- static inline struct mps2_uart_port *to_mps2_port(struct uart_port *port)
-@@ -265,6 +268,20 @@ static irqreturn_t mps2_uart_oerrirq(int irq, void *data)
- 	return handled;
- }
- 
-+static irqreturn_t mps2_uart_combinedirq(int irq, void *data)
-+{
-+	if (mps2_uart_rxirq(irq, data) == IRQ_HANDLED)
-+		return IRQ_HANDLED;
-+
-+	if (mps2_uart_txirq(irq, data) == IRQ_HANDLED)
-+		return IRQ_HANDLED;
-+
-+	if (mps2_uart_oerrirq(irq, data) == IRQ_HANDLED)
-+		return IRQ_HANDLED;
-+
-+	return IRQ_NONE;
-+}
-+
- static int mps2_uart_startup(struct uart_port *port)
- {
- 	struct mps2_uart_port *mps_port = to_mps2_port(port);
-@@ -275,26 +292,37 @@ static int mps2_uart_startup(struct uart_port *port)
- 
- 	mps2_uart_write8(port, control, UARTn_CTRL);
- 
--	ret = request_irq(mps_port->rx_irq, mps2_uart_rxirq, 0,
--			  MAKE_NAME(-rx), mps_port);
--	if (ret) {
--		dev_err(port->dev, "failed to register rxirq (%d)\n", ret);
--		return ret;
--	}
-+	if (mps_port->flags & UART_PORT_COMBINED_IRQ) {
-+		ret = request_irq(port->irq, mps2_uart_combinedirq, 0,
-+				  MAKE_NAME(-combined), mps_port);
- 
--	ret = request_irq(mps_port->tx_irq, mps2_uart_txirq, 0,
--			  MAKE_NAME(-tx), mps_port);
--	if (ret) {
--		dev_err(port->dev, "failed to register txirq (%d)\n", ret);
--		goto err_free_rxirq;
--	}
-+		if (ret) {
-+			dev_err(port->dev, "failed to register combinedirq (%d)\n", ret);
-+			return ret;
-+		}
-+	} else {
-+		ret = request_irq(port->irq, mps2_uart_oerrirq, IRQF_SHARED,
-+				  MAKE_NAME(-overrun), mps_port);
-+
-+		if (ret) {
-+			dev_err(port->dev, "failed to register oerrirq (%d)\n", ret);
-+			return ret;
-+		}
- 
--	ret = request_irq(port->irq, mps2_uart_oerrirq, IRQF_SHARED,
--			  MAKE_NAME(-overrun), mps_port);
-+		ret = request_irq(mps_port->rx_irq, mps2_uart_rxirq, 0,
-+				  MAKE_NAME(-rx), mps_port);
-+		if (ret) {
-+			dev_err(port->dev, "failed to register rxirq (%d)\n", ret);
-+			goto err_free_oerrirq;
-+		}
-+
-+		ret = request_irq(mps_port->tx_irq, mps2_uart_txirq, 0,
-+				  MAKE_NAME(-tx), mps_port);
-+		if (ret) {
-+			dev_err(port->dev, "failed to register txirq (%d)\n", ret);
-+			goto err_free_rxirq;
-+		}
- 
--	if (ret) {
--		dev_err(port->dev, "failed to register oerrirq (%d)\n", ret);
--		goto err_free_txirq;
- 	}
- 
- 	control |= UARTn_CTRL_RX_GRP | UARTn_CTRL_TX_GRP;
-@@ -303,10 +331,10 @@ static int mps2_uart_startup(struct uart_port *port)
- 
- 	return 0;
- 
--err_free_txirq:
--	free_irq(mps_port->tx_irq, mps_port);
- err_free_rxirq:
- 	free_irq(mps_port->rx_irq, mps_port);
-+err_free_oerrirq:
-+	free_irq(port->irq, mps_port);
- 
- 	return ret;
- }
-@@ -320,8 +348,11 @@ static void mps2_uart_shutdown(struct uart_port *port)
- 
- 	mps2_uart_write8(port, control, UARTn_CTRL);
- 
--	free_irq(mps_port->rx_irq, mps_port);
--	free_irq(mps_port->tx_irq, mps_port);
-+	if (!mps_port->flags & UART_PORT_COMBINED_IRQ) {
-+		free_irq(mps_port->rx_irq, mps_port);
-+		free_irq(mps_port->tx_irq, mps_port);
-+	}
-+
- 	free_irq(port->irq, mps_port);
- }
- 
-@@ -511,6 +542,10 @@ static int mps2_of_get_port(struct platform_device *pdev,
- 	if (id < 0)
- 		return id;
- 
-+	/* Only combined irq is presesnt */
-+	if (platform_irq_count(pdev) == 1)
-+		mps_port->flags |= UART_PORT_COMBINED_IRQ;
-+
- 	mps_port->port.line = id;
- 
- 	return 0;
-@@ -529,11 +564,6 @@ static int mps2_init_port(struct platform_device *pdev,
- 
- 	mps_port->port.mapbase = res->start;
- 	mps_port->port.mapsize = resource_size(res);
--
--	mps_port->rx_irq = platform_get_irq(pdev, 0);
--	mps_port->tx_irq = platform_get_irq(pdev, 1);
--	mps_port->port.irq = platform_get_irq(pdev, 2);
--
- 	mps_port->port.iotype = UPIO_MEM;
- 	mps_port->port.flags = UPF_BOOT_AUTOCONF;
- 	mps_port->port.fifosize = 1;
-@@ -552,6 +582,15 @@ static int mps2_init_port(struct platform_device *pdev,
- 
- 	clk_disable_unprepare(mps_port->clk);
- 
-+
-+	if (mps_port->flags & UART_PORT_COMBINED_IRQ) {
-+		mps_port->port.irq = platform_get_irq(pdev, 0);
-+	} else {
-+		mps_port->rx_irq = platform_get_irq(pdev, 0);
-+		mps_port->tx_irq = platform_get_irq(pdev, 1);
-+		mps_port->port.irq = platform_get_irq(pdev, 2);
-+	}
-+
- 	return ret;
- }
- 
--- 
-2.7.4
+DQoNCj4gLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0KPiDlj5Hku7bkuro6IEtvaGxpLCBHYXVyYXYg
+W21haWx0bzpna29obGlAY29kZWF1cm9yYS5vcmddDQo+IOWPkemAgeaXtumXtDogMjAxOeW5tDHm
+nIgxOOaXpSAyMDo1MQ0KPiDmlLbku7bkuro6IExpLFJvbmdxaW5nIDxsaXJvbmdxaW5nQGJhaWR1
+LmNvbT47IGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnOw0KPiBqc2xhYnlAc3VzZS5jb207IGxp
+bnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4g5Li76aKYOiBSZTogW1BBVENIXVt2NF0gdHR5
+OiBmaXggcmFjZSBiZXR3ZWVuIGZsdXNoX3RvX2xkaXNjIGFuZCB0dHlfb3Blbg0KPiANCj4gDQo+
+IA0KPiBPbiAxLzE4LzIwMTkgMjo1NyBQTSwgTGkgUm9uZ1Fpbmcgd3JvdGU6DQo+ID4gVGhlcmUg
+c3RpbGwgaXMgYSByYWNlIHdpbmRvdyBhZnRlciB0aGUgY29tbWl0IGIwMjdlMjI5OGJkNTg4DQo+
+ID4gKCJ0dHk6IGZpeCBkYXRhIHJhY2UgYmV0d2VlbiB0dHlfaW5pdF9kZXYgYW5kIGZsdXNoIG9m
+IGJ1ZiIpLCBhbmQgd2UNCj4gPiBlbmNvdW50ZXJlZCB0aGlzIGNyYXNoIGlzc3VlIGlmIHJlY2Vp
+dmVfYnVmIGNhbGwgY29tZXMgYmVmb3JlIHR0eQ0KPiA+IGluaXRpYWxpemF0aW9uIGNvbXBsZXRl
+cyBpbiBuX3R0eV9vcGVuIGFuZA0KPiA+IHR0eS0+ZHJpdmVyX2RhdGEgbWF5IGJlIE5VTEwuDQo+
+ID4NCj4gPiBDUFUwICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQ1BVMQ0KPiA+
+IC0tLS0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAtLS0tDQo+ID4gICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIG5fdHR5X29wZW4NCj4gPiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICB0dHlfaW5pdF9kZXYNCj4gPiAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIHR0eV9sZGlzY191bmxvY2sNCj4gPiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgc2NoZWR1bGUgZmx1c2hfdG9fbGRpc2MNCj4gPiAg
+IHJlY2VpdmVfYnVmDQo+ID4gICAgdHR5X3BvcnRfZGVmYXVsdF9yZWNlaXZlX2J1Zg0KPiA+ICAg
+ICB0dHlfbGRpc2NfcmVjZWl2ZV9idWYNCj4gPiAgICAgIG5fdHR5X3JlY2VpdmVfYnVmX2NvbW1v
+bg0KPiA+ICAgICAgICBfX3JlY2VpdmVfYnVmDQo+ID4gICAgICAgICB1YXJ0X2ZsdXNoX2NoYXJz
+DQo+ID4gICAgICAgICAgdWFydF9zdGFydA0KPiA+ICAgICAgICAgIC8qdHR5LT5kcml2ZXJfZGF0
+YSBpcyBOVUxMKi8NCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0dHkt
+Pm9wcy0+b3Blbg0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC8qaW5p
+dCB0dHktPmRyaXZlcl9kYXRhKi8NCj4gPg0KPiA+IGl0IGNhbiBiZSBmaXhlZCBieSBleHRlbmRp
+bmcgbGRpc2Mgc2VtYXBob3JlIGxvY2sgaW4gdHR5X2luaXRfZGV2IHRvDQo+ID4gZHJpdmVyX2Rh
+dGEgaW5pdGlhbGl6ZWQgY29tcGxldGVseSBhZnRlciB0dHktPm9wcy0+b3BlbigpLCBidXQgdGhp
+cw0KPiA+IHdpbGwgbGVhZCB0byBwdXQgbG9jayBvbiBvbmUgZnVuY3Rpb24gYW5kIHVubG9jayBp
+biBzb21lIG90aGVyDQo+ID4gZnVuY3Rpb24sIGFuZCBoYXJkIHRvIG1haW50YWluLCBzbyBmaXgg
+dGhpcyByYWNlIG9ubHkgYnkgY2hlY2tpbmcNCj4gPiB0dHktPmRyaXZlcl9kYXRhIHdoZW4gcmVj
+ZWl2aW5nLCBhbmQgcmV0dXJuIGlmIHR0eS0+ZHJpdmVyX2RhdGENCj4gPiBpcyBOVUxMDQo+ID4N
+Cj4gPiBTaWduZWQtb2ZmLWJ5OiBXYW5nIExpIDx3YW5nbGkzOUBiYWlkdS5jb20+DQo+ID4gU2ln
+bmVkLW9mZi1ieTogWmhhbmcgWXUgPHpoYW5neXUzMUBiYWlkdS5jb20+DQo+ID4gU2lnbmVkLW9m
+Zi1ieTogTGkgUm9uZ1FpbmcgPGxpcm9uZ3FpbmdAYmFpZHUuY29tPg0KPiA+IC0tLQ0KPiA+IFY0
+OiBhZGQgdmVyc2lvbiBpbmZvcm1hdGlvbg0KPiA+IFYzOiBub3QgdXNlZCBsZGlzYyBzZW1hcGhv
+cmUgbG9jaywgb25seSBjaGVja2luZyB0dHktPmRyaXZlcl9kYXRhIHdpdGgNCj4gPiBOVUxMDQo+
+ID4gVjI6IGZpeCBidWlsZGluZyBlcnJvciBieSBFWFBPUlRfU1lNQk9MIHR0eV9sZGlzY191bmxv
+Y2sNCj4gPiBWMTogZXh0ZW5kIGxkaXNjIGxvY2sgdG8gcHJvdGVjdCB0aGF0IHR0eS0+ZHJpdmVy
+X2RhdGEgaXMgaW5pdGVkDQo+ID4NCj4gPiBkcml2ZXJzL3R0eS90dHlfcG9ydC5jIHwgMyArKysN
+Cj4gPiAgIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKykNCj4gPg0KPiA+IGRpZmYgLS1n
+aXQgYS9kcml2ZXJzL3R0eS90dHlfcG9ydC5jIGIvZHJpdmVycy90dHkvdHR5X3BvcnQuYyBpbmRl
+eA0KPiA+IDA0NGMzY2JkY2ZhNC4uODZkMGJlYzM4MzIyIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZl
+cnMvdHR5L3R0eV9wb3J0LmMNCj4gPiArKysgYi9kcml2ZXJzL3R0eS90dHlfcG9ydC5jDQo+ID4g
+QEAgLTMxLDYgKzMxLDkgQEAgc3RhdGljIGludCB0dHlfcG9ydF9kZWZhdWx0X3JlY2VpdmVfYnVm
+KHN0cnVjdCB0dHlfcG9ydA0KPiAqcG9ydCwNCj4gPiAgIAlpZiAoIXR0eSkNCj4gPiAgIAkJcmV0
+dXJuIDA7DQo+ID4NCj4gPiArCWlmICghdHR5LT5kcml2ZXJfZGF0YSkNCj4gPiArCQlyZXR1cm4g
+MDsNCj4gPiArDQo+ID4gICAJZGlzYyA9IHR0eV9sZGlzY19yZWYodHR5KTsNCj4gPiAgIAlpZiAo
+IWRpc2MpDQo+ID4gICAJCXJldHVybiAwOw0KPiA+DQo+IEFja2VkLWJ5OiBHYXVyYXYgS29obGkg
+PGdrb2hsaUBjb2RlYXVyb3JhLm9yZz4NCj4gDQo+IEl0IGxvb2tzIGdvb2QgdG8gbWUgdy5yLnQg
+cHJldmlvdXMgYXBwcm9hY2gsIGJ1dCBMZXQncyBNYWludGFpbmVyIGRlY2lkZSBvbmNlLg0KPiAN
+Cg0KVGhhbmtzIGZvciB5b3VyIHJldmlldywgdGhpcyBvbmUgaXMgc2ltcGxlIGFuZCBzYWZlLCBp
+dCBpcyB1c2VkIGFzIGxpdmUtcGF0Y2ggb25saW5lDQoNCi1Sb25nUWluZw0KDQoNCj4gUmVnYXJk
+cw0KPiBHYXVyYXYNCj4gLS0NCj4gUXVhbGNvbW0gSW5kaWEgUHJpdmF0ZSBMaW1pdGVkLCBvbiBi
+ZWhhbGYgb2YgUXVhbGNvbW0gSW5ub3ZhdGlvbiBDZW50ZXIsIEluYy4NCj4gaXMgYSBtZW1iZXIg
+b2YgdGhlIENvZGUgQXVyb3JhIEZvcnVtLCBhIExpbnV4IEZvdW5kYXRpb24gQ29sbGFib3JhdGl2
+ZQ0KPiBQcm9qZWN0Lg0K
