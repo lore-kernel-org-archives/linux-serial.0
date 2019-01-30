@@ -1,74 +1,116 @@
-From: "Li,Rongqing" <lirongqing@baidu.com>
-Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0hdW3Y0XSB0dHk6IGZpeCByYWNlIGJldHdlZW4gZmx1?=
- =?utf-8?B?c2hfdG9fbGRpc2MgYW5kIHR0eV9vcGVu?=
-Date: Wed, 30 Jan 2019 09:29:29 +0000
-Message-ID: <4aac24e895cb4a1881bcbada05de1884@baidu.com>
-References: <1547803637-29135-1-git-send-email-lirongqing@baidu.com>
- <ae44b1c5-4d33-110b-a4da-f526d156be2a@codeaurora.org>
+From: Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH] tty: Fix WARNING in tty_set_termios
+Date: Wed, 30 Jan 2019 11:32:27 +0100
+Message-ID: <20190130103227.GR3691@localhost>
+References: <20190125232905.21727-1-shuah@kernel.org>
+ <20190126041416.GF2217@ZenIV.linux.org.uk>
+ <fe4018a7-19e4-cdd1-3095-bbe88a82788e@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <ae44b1c5-4d33-110b-a4da-f526d156be2a@codeaurora.org>
-Content-Language: zh-CN
+Content-Disposition: inline
+In-Reply-To: <fe4018a7-19e4-cdd1-3095-bbe88a82788e@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Kohli, Gaurav" <gkohli@codeaurora.org>, "jslaby@suse.com" <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: shuah <shuah@kernel.org>
+Cc: Al Viro <viro@zeniv.linux.org.uk>, linux-wireless@vger.kernel.org, chris@the-brannons.com, devel@driverdev.osuosl.org, robh@kernel.org, sameo@linux.intel.com, linux-serial@vger.kernel.org, jslaby@suse.com, santhameena13@gmail.com, kirk@reisers.ca, johan.hedberg@gmail.com, arnd@arndb.de, marcel@holtmann.org, samuel.thibault@ens-lyon.org, m.maya.nakamura@gmail.com, zhongjiang@huawei.com, gregkh@linuxfoundation.org, speakup@linux-speakup.org, linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org, nishka.dasgupta_ug18@ashoka.edu.in, davem@davemloft.net
 List-Id: linux-serial@vger.kernel.org
 
-DQoNCj4gLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0KPiDlj5Hku7bkuro6IEtvaGxpLCBHYXVyYXYg
-W21haWx0bzpna29obGlAY29kZWF1cm9yYS5vcmddDQo+IOWPkemAgeaXtumXtDogMjAxOeW5tDHm
-nIgxOOaXpSAyMDo1MQ0KPiDmlLbku7bkuro6IExpLFJvbmdxaW5nIDxsaXJvbmdxaW5nQGJhaWR1
-LmNvbT47IGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnOw0KPiBqc2xhYnlAc3VzZS5jb207IGxp
-bnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4g5Li76aKYOiBSZTogW1BBVENIXVt2NF0gdHR5
-OiBmaXggcmFjZSBiZXR3ZWVuIGZsdXNoX3RvX2xkaXNjIGFuZCB0dHlfb3Blbg0KPiANCj4gDQo+
-IA0KPiBPbiAxLzE4LzIwMTkgMjo1NyBQTSwgTGkgUm9uZ1Fpbmcgd3JvdGU6DQo+ID4gVGhlcmUg
-c3RpbGwgaXMgYSByYWNlIHdpbmRvdyBhZnRlciB0aGUgY29tbWl0IGIwMjdlMjI5OGJkNTg4DQo+
-ID4gKCJ0dHk6IGZpeCBkYXRhIHJhY2UgYmV0d2VlbiB0dHlfaW5pdF9kZXYgYW5kIGZsdXNoIG9m
-IGJ1ZiIpLCBhbmQgd2UNCj4gPiBlbmNvdW50ZXJlZCB0aGlzIGNyYXNoIGlzc3VlIGlmIHJlY2Vp
-dmVfYnVmIGNhbGwgY29tZXMgYmVmb3JlIHR0eQ0KPiA+IGluaXRpYWxpemF0aW9uIGNvbXBsZXRl
-cyBpbiBuX3R0eV9vcGVuIGFuZA0KPiA+IHR0eS0+ZHJpdmVyX2RhdGEgbWF5IGJlIE5VTEwuDQo+
-ID4NCj4gPiBDUFUwICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQ1BVMQ0KPiA+
-IC0tLS0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAtLS0tDQo+ID4gICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIG5fdHR5X29wZW4NCj4gPiAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICB0dHlfaW5pdF9kZXYNCj4gPiAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIHR0eV9sZGlzY191bmxvY2sNCj4gPiAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgc2NoZWR1bGUgZmx1c2hfdG9fbGRpc2MNCj4gPiAg
-IHJlY2VpdmVfYnVmDQo+ID4gICAgdHR5X3BvcnRfZGVmYXVsdF9yZWNlaXZlX2J1Zg0KPiA+ICAg
-ICB0dHlfbGRpc2NfcmVjZWl2ZV9idWYNCj4gPiAgICAgIG5fdHR5X3JlY2VpdmVfYnVmX2NvbW1v
-bg0KPiA+ICAgICAgICBfX3JlY2VpdmVfYnVmDQo+ID4gICAgICAgICB1YXJ0X2ZsdXNoX2NoYXJz
-DQo+ID4gICAgICAgICAgdWFydF9zdGFydA0KPiA+ICAgICAgICAgIC8qdHR5LT5kcml2ZXJfZGF0
-YSBpcyBOVUxMKi8NCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0dHkt
-Pm9wcy0+b3Blbg0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC8qaW5p
-dCB0dHktPmRyaXZlcl9kYXRhKi8NCj4gPg0KPiA+IGl0IGNhbiBiZSBmaXhlZCBieSBleHRlbmRp
-bmcgbGRpc2Mgc2VtYXBob3JlIGxvY2sgaW4gdHR5X2luaXRfZGV2IHRvDQo+ID4gZHJpdmVyX2Rh
-dGEgaW5pdGlhbGl6ZWQgY29tcGxldGVseSBhZnRlciB0dHktPm9wcy0+b3BlbigpLCBidXQgdGhp
-cw0KPiA+IHdpbGwgbGVhZCB0byBwdXQgbG9jayBvbiBvbmUgZnVuY3Rpb24gYW5kIHVubG9jayBp
-biBzb21lIG90aGVyDQo+ID4gZnVuY3Rpb24sIGFuZCBoYXJkIHRvIG1haW50YWluLCBzbyBmaXgg
-dGhpcyByYWNlIG9ubHkgYnkgY2hlY2tpbmcNCj4gPiB0dHktPmRyaXZlcl9kYXRhIHdoZW4gcmVj
-ZWl2aW5nLCBhbmQgcmV0dXJuIGlmIHR0eS0+ZHJpdmVyX2RhdGENCj4gPiBpcyBOVUxMDQo+ID4N
-Cj4gPiBTaWduZWQtb2ZmLWJ5OiBXYW5nIExpIDx3YW5nbGkzOUBiYWlkdS5jb20+DQo+ID4gU2ln
-bmVkLW9mZi1ieTogWmhhbmcgWXUgPHpoYW5neXUzMUBiYWlkdS5jb20+DQo+ID4gU2lnbmVkLW9m
-Zi1ieTogTGkgUm9uZ1FpbmcgPGxpcm9uZ3FpbmdAYmFpZHUuY29tPg0KPiA+IC0tLQ0KPiA+IFY0
-OiBhZGQgdmVyc2lvbiBpbmZvcm1hdGlvbg0KPiA+IFYzOiBub3QgdXNlZCBsZGlzYyBzZW1hcGhv
-cmUgbG9jaywgb25seSBjaGVja2luZyB0dHktPmRyaXZlcl9kYXRhIHdpdGgNCj4gPiBOVUxMDQo+
-ID4gVjI6IGZpeCBidWlsZGluZyBlcnJvciBieSBFWFBPUlRfU1lNQk9MIHR0eV9sZGlzY191bmxv
-Y2sNCj4gPiBWMTogZXh0ZW5kIGxkaXNjIGxvY2sgdG8gcHJvdGVjdCB0aGF0IHR0eS0+ZHJpdmVy
-X2RhdGEgaXMgaW5pdGVkDQo+ID4NCj4gPiBkcml2ZXJzL3R0eS90dHlfcG9ydC5jIHwgMyArKysN
-Cj4gPiAgIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKykNCj4gPg0KPiA+IGRpZmYgLS1n
-aXQgYS9kcml2ZXJzL3R0eS90dHlfcG9ydC5jIGIvZHJpdmVycy90dHkvdHR5X3BvcnQuYyBpbmRl
-eA0KPiA+IDA0NGMzY2JkY2ZhNC4uODZkMGJlYzM4MzIyIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZl
-cnMvdHR5L3R0eV9wb3J0LmMNCj4gPiArKysgYi9kcml2ZXJzL3R0eS90dHlfcG9ydC5jDQo+ID4g
-QEAgLTMxLDYgKzMxLDkgQEAgc3RhdGljIGludCB0dHlfcG9ydF9kZWZhdWx0X3JlY2VpdmVfYnVm
-KHN0cnVjdCB0dHlfcG9ydA0KPiAqcG9ydCwNCj4gPiAgIAlpZiAoIXR0eSkNCj4gPiAgIAkJcmV0
-dXJuIDA7DQo+ID4NCj4gPiArCWlmICghdHR5LT5kcml2ZXJfZGF0YSkNCj4gPiArCQlyZXR1cm4g
-MDsNCj4gPiArDQo+ID4gICAJZGlzYyA9IHR0eV9sZGlzY19yZWYodHR5KTsNCj4gPiAgIAlpZiAo
-IWRpc2MpDQo+ID4gICAJCXJldHVybiAwOw0KPiA+DQo+IEFja2VkLWJ5OiBHYXVyYXYgS29obGkg
-PGdrb2hsaUBjb2RlYXVyb3JhLm9yZz4NCj4gDQo+IEl0IGxvb2tzIGdvb2QgdG8gbWUgdy5yLnQg
-cHJldmlvdXMgYXBwcm9hY2gsIGJ1dCBMZXQncyBNYWludGFpbmVyIGRlY2lkZSBvbmNlLg0KPiAN
-Cg0KVGhhbmtzIGZvciB5b3VyIHJldmlldywgdGhpcyBvbmUgaXMgc2ltcGxlIGFuZCBzYWZlLCBp
-dCBpcyB1c2VkIGFzIGxpdmUtcGF0Y2ggb25saW5lDQoNCi1Sb25nUWluZw0KDQoNCj4gUmVnYXJk
-cw0KPiBHYXVyYXYNCj4gLS0NCj4gUXVhbGNvbW0gSW5kaWEgUHJpdmF0ZSBMaW1pdGVkLCBvbiBi
-ZWhhbGYgb2YgUXVhbGNvbW0gSW5ub3ZhdGlvbiBDZW50ZXIsIEluYy4NCj4gaXMgYSBtZW1iZXIg
-b2YgdGhlIENvZGUgQXVyb3JhIEZvcnVtLCBhIExpbnV4IEZvdW5kYXRpb24gQ29sbGFib3JhdGl2
-ZQ0KPiBQcm9qZWN0Lg0K
+On Mon, Jan 28, 2019 at 02:29:22PM -0700, shuah wrote:
+> On 1/25/19 9:14 PM, Al Viro wrote:
+> > On Fri, Jan 25, 2019 at 04:29:05PM -0700, Shuah Khan wrote:
+> >> tty_set_termios() has the following WARMN_ON which can be triggered with a
+> >> syscall to invoke TIOCGETD __NR_ioctl.
+
+You meant TIOCSETD here, and in fact its the call which sets the uart
+protocol that triggers the warning.
+
+> >> WARN_ON(tty->driver->type == TTY_DRIVER_TYPE_PTY &&
+> >>                  tty->driver->subtype == PTY_TYPE_MASTER);
+> >> Reference: https://syzkaller.appspot.com/bug?id=2410d22f1d8e5984217329dd0884b01d99e3e48d
+> >>
+> >> A simple change would have been to print error message instead of WARN_ON.
+> >> However, the callers assume that tty_set_termios() always returns 0 and
+> >> don't check return value. The complete solution is fixing all the callers
+> >> to check error and bail out to fix the WARN_ON.
+> >>
+> >> This fix changes tty_set_termios() to return error and all the callers
+> >> to check error and bail out. The reproducer is used to reproduce the
+> >> problem and verify the fix.
+> > 
+> >> --- a/drivers/bluetooth/hci_ldisc.c
+> >> +++ b/drivers/bluetooth/hci_ldisc.c
+> >> @@ -321,6 +321,8 @@ void hci_uart_set_flow_control(struct hci_uart *hu, bool enable)
+> >>   		status = tty_set_termios(tty, &ktermios);
+> >>   		BT_DBG("Disabling hardware flow control: %s",
+> >>   		       status ? "failed" : "success");
+> >> +		if (status)
+> >> +			return;
+> > 
+> > Can that ldisc end up set on pty master?  And does it make any sense there?
+> 
+> The initial objective of the patch is to prevent the WARN_ON by making
+> the change to return error instead of WARN_ON. However, without changes
+> to places that don't check the return and keep making progress, there
+> will be secondary problems.
+> 
+> Without this change to return here, instead of WARN_ON, it will fail
+> with the following NULL pointer dereference at the next thing 
+> hci_uart_set_flow_control() attempts.
+> 
+> status = tty->driver->ops->tiocmget(tty);
+> 
+> kernel: [10140.649783] BUG: unable to handle kernel NULL pointer 
+
+That's a separate issue, which is being fixed:
+
+	https://lkml.kernel.org/r/20190130095938.GP3691@localhost
+
+> > IOW, I don't believe that this patch makes any sense.  If anything,
+> > we need to prevent unconditional tty_set_termios() on the path
+> > that *does* lead to calling it for pty.
+> 
+> I don't think preventing unconditional tty_set_termios() is enough to
+> prevent secondary problems such as the one above.
+> 
+> For example, the following call chain leads to the WARN_ON that was
+> reported. Even if void hci_uart_set_baudrate() prevents the very first
+> tty_set_termios() call, its caller hci_uart_setup() continues with
+> more tty setup. It goes ahead to call driver setup callback. The
+> driver callback goes on to do more setup calling tty_set_termios().
+> 
+> WARN_ON call path:
+>   hci_uart_set_baudrate+0x1cc/0x250 drivers/bluetooth/hci_ldisc.c:378
+>   hci_uart_setup+0xa2/0x490 drivers/bluetooth/hci_ldisc.c:401
+>   hci_dev_do_open+0x6b1/0x1920 net/bluetooth/hci_core.c:1423
+> 
+> Once this WARN_ON is changed to return error, the following
+> happens, when hci_uart_setup() does driver setup callback.
+> 
+> kernel: [10140.649836]  mrvl_setup+0x17/0x80 [hci_uart]
+> kernel: [10140.649840]  hci_uart_setup+0x56/0x160 [hci_uart]
+> kernel: [10140.649850]  hci_dev_do_open+0xe6/0x630 [bluetooth]
+> kernel: [10140.649860]  hci_power_on+0x52/0x220 [bluetooth]
+> 
+> I think continuing to catch the invalid condition in tty_set_termios()
+> and preventing progress by checking return value is a straight forward
+> change to avoid secondary problems, and it might be difficult to catch
+> all the cases where it could fail.
+
+I agree with Al that this change doesn't make much sense. The WARN_ON
+is there to catch any bugs leading to the termios being changed for a
+master side pty. Those should bugs should be fixed, and not worked
+around in order to silence a WARN_ON.
+
+The problem started with 7721383f4199 ("Bluetooth: hci_uart: Support
+operational speed during setup") which introduced a new way for how
+tty_set_termios() could end up being called for a master pty.
+
+As Al hinted at, setting these ldiscs for a master pty really makes no
+sense and perhaps that is what we should prevent unless simply making
+sure they do not call tty_set_termios() is sufficient for the time
+being.
+
+Finally, note that serdev never operates on a pty, and that this is only
+an issue for (the three) line disciplines.
+
+Johan
