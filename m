@@ -1,27 +1,91 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3 2/2] Dt-bindings: Serial: Add X1000 serial bindings.
-Date: Wed, 30 Jan 2019 12:46:47 -0600
-Message-ID: <20190130184647.GA9520@bogus>
-References: <1548667176-119830-1-git-send-email-zhouyanjie@zoho.com>
- <1548695029-11900-1-git-send-email-zhouyanjie@zoho.com>
- <1548695029-11900-3-git-send-email-zhouyanjie@zoho.com>
+From: alokc@codeaurora.org
+Subject: Re: [PATCH 1/6] dt-bindings: soc: qcom: Add interconnect binding for
+ GENI QUP
+Date: Wed, 30 Jan 2019 14:29:52 -0800
+Message-ID: <77a4841746b00a67a14daa42886be57b@codeaurora.org>
+References: <1548138816-1149-1-git-send-email-alokc@codeaurora.org>
+ <1548138816-1149-2-git-send-email-alokc@codeaurora.org>
+ <c4260d66-5ca4-b194-0cbc-2a682a99db4b@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1548695029-11900-3-git-send-email-zhouyanjie@zoho.com>
+In-Reply-To: <c4260d66-5ca4-b194-0cbc-2a682a99db4b@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Zhou Yanjie <zhouyanjie@zoho.com>
-Cc: linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, robh+dt@kernel.org, paul.burton@mips.com, gregkh@linuxfoundation.org, jslaby@suse.com, mark.rutland@arm.com, syq@debian.org, jiaxun.yang@flygoat.com, 772753199@qq.com
+To: Georgi Djakov <georgi.djakov@linaro.org>
+Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, dianders@chromium.org, swboyd@chromium.org, bjorn.andersson@linaro.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 29 Jan 2019 01:03:49 +0800, Zhou Yanjie wrote:
-> Add the serial bindings for the X1000 Soc from Ingenic.
+On 2019-01-23 10:35, Georgi Djakov wrote:
+> Hi Alok,
 > 
-> Signed-off-by: Zhou Yanjie <zhouyanjie@zoho.com>
-> ---
->  Documentation/devicetree/bindings/serial/ingenic,uart.txt | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+> Thanks for the patches!
 > 
+> On 1/22/19 08:33, Alok Chauhan wrote:
+>> Add documentation for the interconnect and interconnect-names bindings
+> 
+> s/interconnect /interconnects /
+> 
+>> for the GENI QUP as detailed by 
+>> bindings/interconnect/interconnect.txt.
+>> 
+>> Signed-off-by: Alok Chauhan <alokc@codeaurora.org>
+>> ---
+>>  Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt | 10 
+>> ++++++++++
+>>  1 file changed, 10 insertions(+)
+>> 
+>> diff --git 
+>> a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt 
+>> b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
+>> index dab7ca9..44d7e02 100644
+>> --- a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
+>> +++ b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
+>> @@ -17,6 +17,12 @@ Required properties if child node exists:
+>>  - #address-cells: 	Must be <1> for Serial Engine Address
+>>  - #size-cells: 		Must be <1> for Serial Engine Address Size
+>>  - ranges: 		Must be present
+>> +- interconnects:	phandle to a interconnect provider. Please refer
+> 
+> s/a interconnect/an interconnect/
+sure, will do.
+> 
+>> +			../interconnect/interconnect.txt for details.
+>> +			Must be 2 paths corresponding to 2 AXI ports.
+>> +- interconnect-names:	Port names to differentiate between the
+>> +			2 interconnect paths defined with interconnect
+>> +			specifier.
+>> 
+>>  Properties for children:
+>> 
+>> @@ -67,6 +73,10 @@ Example:
+>>  		#size-cells = <1>;
+>>  		ranges;
+>> 
+>> +		interconnects = <&qnoc 11 &qnoc 512>,
+>> +				<&qnoc 0 &qnoc 543>;
+> 
+> Please take a snippet from your patch 6/6 and put it here instead of 
+> the
+> hard-coded integers above.
+sure
+> 
+>> +		interconnect-names = "qup-memory", "qup-config";
+>> +
+>>  		i2c0: i2c@a94000 {
+>>  			compatible = "qcom,geni-i2c";
+>>  			reg = <0xa94000 0x4000>;
+>> 
+> 
+> When you post a new version, please change the subject of the patch
+> series to PATCH v2, PATCH v3 etc, in order to be able to distinguish
+> between different versions.
+sure, will do this.
+> 
+> Thanks,
+> Georgi
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora 
+Forum,a Linux Foundation Collaborative Project
