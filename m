@@ -1,182 +1,129 @@
-From: Zhiyong Tao <zhiyong.tao@mediatek.com>
-Subject: Re: [PATCH v6 5/6] dt-bindings: pinctrl: mt8183: add binding
- document
-Date: Thu, 31 Jan 2019 16:30:22 +0800
-Message-ID: <1548923422.4739.10.camel@mhfsdcap03>
-References: <1548317240-44682-1-git-send-email-erin.lo@mediatek.com>
-         <1548317240-44682-6-git-send-email-erin.lo@mediatek.com>
-         <20190130161714.GA24352@bogus>
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re: [RFC/PATCH 0/5] DVFS in the OPP core
+Date: Thu, 31 Jan 2019 14:53:49 +0530
+Message-ID: <20190131092349.fksfqemm23qddkhw@vireshk-i7>
+References: <20190129015547.213276-1-swboyd@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190130161714.GA24352@bogus>
+Content-Disposition: inline
+In-Reply-To: <20190129015547.213276-1-swboyd@chromium.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Erin Lo <erin.lo@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, devicetree@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, yingjoe.chen@mediatek.com, mars.cheng@mediatek.com, eddie.huang@mediatek.com, linux-clk@vger.kernel.org
+To: Stephen Boyd <swboyd@chromium.org>, mturquette@baylibre.com, grahamr@codeaurora.org
+Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, Rajendra Nayak <rnayak@codeaurora.org>, Ulf Hansson <ulf.hansson@linaro.org>, Doug Anderson <dianders@chromium.org>, vincent.guittot@linaro.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2019-01-30 at 10:17 -0600, Rob Herring wrote:
-> On Thu, Jan 24, 2019 at 04:07:19PM +0800, Erin Lo wrote:
-> > From: Zhiyong Tao <zhiyong.tao@mediatek.com>
-> > 
-> > The commit adds mt8183 compatible node in binding document.
-> > 
-> > Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
-> > Signed-off-by: Erin Lo <erin.lo@mediatek.com>
-> > ---
-> >  .../devicetree/bindings/pinctrl/pinctrl-mt8183.txt | 115 +++++++++++++++++++++
-> >  1 file changed, 115 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
-> > 
-> > diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
-> > new file mode 100644
-> > index 0000000..364e673
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
-> > @@ -0,0 +1,115 @@
-> > +* Mediatek MT8183 Pin Controller
-> > +
-> > +The Mediatek's Pin controller is used to control SoC pins.
-> > +
-> > +Required properties:
-> > +- compatible: value should be one of the following.
-> > +	"mediatek,mt8183-pinctrl", compatible with mt8183 pinctrl.
-> > +- gpio-controller : Marks the device node as a gpio controller.
-> > +- #gpio-cells: number of cells in GPIO specifier. Since the generic GPIO
-> > +  binding is used, the amount of cells must be specified as 2. See the below
-> > +  mentioned gpio binding representation for description of particular cells.
-> > +- gpio-ranges : gpio valid number range.
-> > +- reg: physicall address base for gpio base registers. There are nine
-> > +  physicall address base in mt8183. They are 0x10005000, 0x11F20000,
-> 
-> Still have a typo in 'physicall'
+Adding few folks to the thread who might be interested in this stuff.
 
-==>sorry, we will change it in next version.
+On 28-01-19, 17:55, Stephen Boyd wrote:
+> This patch series is an RFC around how we can implement DVFS for devices
+> that aren't your typical OPPish device (i.e. GPU/CPU). They don't have a
+> strict set of frequencies that they have been tested at to derive some
+> operating performance point. Instead they have a coarser set of
+> frequency max or 'fmax' OPPs that describe the maiximum frequency the
+> device can operate at with a given voltage.
 > 
-> > +  0x11E80000, 0x11E70000, 0x11E90000, 0x11D30000, 0x11D20000, 0x11C50000,
-> > +  0x11F30000.
-> 
-> You don't need to list the address values. Only how many and what each 
-> one is.
-==>ok, because every base address don't have the detailed name. We will
-remove the address values list and change it like this:
-- reg: physical address base for gpio base registers. There are nine
-  physical address base in mt8183.
-> 
-> > +
-> > +	Eg: <&pio 6 0>
-> > +	<[phandle of the gpio controller node]
-> > +	[line number within the gpio controller]
-> > +	[flags]>
-> > +
-> > +	Values for gpio specifier:
-> > +	- Line number: is a value between 0 to 202.
-> > +	- Flags:  bit field of flags, as defined in <dt-bindings/gpio/gpio.h>.
-> > +            Only the following flags are supported:
-> > +            0 - GPIO_ACTIVE_HIGH
-> > +            1 - GPIO_ACTIVE_LOW
-> > +
-> > +Optional properties:
-> > +- reg-names: gpio base register names. There are nine gpio base register
-> > +  names in mt8183. They are "iocfg0", "iocfg1", "iocfg2", "iocfg3", "iocfg4",
-> > +  "iocfg5", "iocfg6", "iocfg7", "iocfg8".
-> 
-> As I said before, these names aren't useful. There's already 
-> inheritently an index with 'reg'.
-> 
-> Unless some are optional and can be sparsely populated.
+> The approach we take is to let the devm_pm_opp_set_rate() API accept 0
+> as a valid frequency indicating the frequency isn't required anymore and
+> to make the same API use the clk framework to round the frequency passed
+> in instead of relying on the OPP table to specify each frequency that
+> can be used. Once we have these two patches in place, we can use the OPP
+> API to change clk rates instead of clk_set_rate() and use all the recent
+> OPP enhancements that have been made around required-opps and genpd
+> performance states to do DVFS for all devices.
 
-==> Do you mean that we can remove Optional properties the reg-names
-description?
-> 
-> > +- interrupt-controller: Marks the device node as an interrupt controller
-> > +- #interrupt-cells: Should be two.
-> > +- interrupts : The interrupt outputs from the controller.
-> > +
-> > +Please refer to pinctrl-bindings.txt in this directory for details of the
-> > +common pinctrl bindings used by client devices.
-> > +
-> > +Subnode format
-> > +A pinctrl node should contain at least one subnodes representing the
-> > +pinctrl groups available on the machine. Each subnode will list the
-> > +pins it needs, and how they should be configured, with regard to muxer
-> > +configuration, pullups, drive strength, input enable/disable and input schmitt.
-> > +
-> > +    node {
-> > +	pinmux = <PIN_NUMBER_PINMUX>;
-> > +	GENERIC_PINCONFIG;
-> > +    };
-> > +
-> > +Required properties:
-> > +- pinmux: integer array, represents gpio pin number and mux setting.
-> > +    Supported pin number and mux varies for different SoCs, and are defined
-> > +    as macros in boot/dts/<soc>-pinfunc.h directly.
-> > +
-> > +Optional properties:
-> > +- GENERIC_PINCONFIG: is the generic pinconfig options to use, bias-disable,
-> > +    bias-pull-down, bias-pull-up, input-enable, input-disable, output-low, output-high,
-> > +    input-schmitt-enable, input-schmitt-disable and drive-strength are valid.
-> > +
-> > +    Some special pins have extra pull up strength, there are R0 and R1 pull-up
-> > +    resistors available, but for user, it's only need to set R1R0 as 00, 01, 10 or 11.
-> > +    So when config mediatek,pull-up-adv or mediatek,pull-down-adv,
-> > +    it support arguments for those special pins.
-> > +
-> > +    When config drive-strength, it can support some arguments, such as
-> > +    MTK_DRIVE_4mA, MTK_DRIVE_6mA, etc. See dt-bindings/pinctrl/mt65xx.h.
-> > +
-> > +Examples:
-> > +
-> > +#include "mt8183-pinfunc.h"
-> > +
-> > +...
-> > +{
-> > +	pio: pinctrl@10005000 {
-> > +		compatible = "mediatek,mt8183-pinctrl";
-> > +		reg = <0 0x10005000 0 0x1000>,
-> > +		      <0 0x11F20000 0 0x1000>,
-> > +		      <0 0x11E80000 0 0x1000>,
-> > +		      <0 0x11E70000 0 0x1000>,
-> > +		      <0 0x11E90000 0 0x1000>,
-> > +		      <0 0x11D30000 0 0x1000>,
-> > +		      <0 0x11D20000 0 0x1000>,
-> > +		      <0 0x11C50000 0 0x1000>,
-> > +		      <0 0x11F30000 0 0x1000>;
-> 
-> Use lowercase hex.
+Generally speaking I am fine with such an approach but I am not sure
+about what others would say on this as they had objections to using
+OPP core for setting the rate itself.
 
-==> we will change it in the next version.
+FWIW, I suggested exactly this solution sometime back [1]
+
+- Drivers need to use two API sets to change clock rate (OPP helpers)
+  and enable/disable them (CLK framework helpers) and this leads us to
+  exactly that combination. Is that acceptable ? It doesn't look great
+  to me as well..
+
+- Do we expect the callers will disable clk before calling
+  opp-set-rate with 0 ? We should remove the regulator requirements as
+  well along with perf-state.
+
+- What about enabling/disabling clock as well from OPP framework. We
+  can enable it on the very first call to opp-set-rate and disable
+  when freq is 0. That will simplify the drivers as well.
+
+> One nice feature of this approach is that we don't need to change the
+> OPP binding to support this. We can specify only the max frequencies and
+> the voltage requirements in DT with the existing binding and slightly
+> tweak the OPP code to achieve these results. 
 > 
-> > +		reg-names = "iocfg0", "iocfg1", "iocfg2",
-> > +			    "iocfg3", "iocfg4", "iocfg5",
-> > +			    "iocfg6", "iocfg7", "iocfg8";
-> > +		gpio-controller;
-> > +		#gpio-cells = <2>;
-> > +		gpio-ranges = <&pio 0 0 192>;
-> > +		interrupt-controller;
-> > +		interrupts = <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>;
-> > +		interrupt-parent = <&gic>;
-> > +		#interrupt-cells = <2>;
-> > +
-> > +		i2c0_pins_a: i2c0 {
-> > +			pins1 {
-> > +				pinmux = <PINMUX_GPIO48__FUNC_SCL5>,
-> > +					 <PINMUX_GPIO49__FUNC_SDA5>;
-> > +				mediatek,pull-up-adv = <11>;
-> > +			};
-> > +		};
-> > +
-> > +		i2c1_pins_a: i2c1 {
-> > +			pins {
-> > +				pinmux = <PINMUX_GPIO50__FUNC_SCL3>,
-> > +					 <PINMUX_GPIO51__FUNC_SDA3>;
-> > +				mediatek,pull-down-adv = <10>;
-> > +			};
-> > +		};
-> > +		...
-> > +	};
-> > +};
-> > -- 
-> > 1.9.1
-> > 
+> This series includes a conversion of the uart and spi drivers on
+> qcom sdm845 where these patches are being developed. It shows how a
+> driver is converted from the clk APIs to the OPP APIs and how
+> enable/disable state of the clk is communicated to the OPP layer.
+> 
+> Some open topics and initial points for discussion are:
+> 
+> 1) The dev_pm_opp_set_rate() API changes may break something that's 
+> relying on the rate rounding that OPP provides. If those exist,
+> we may need to implement another API that is more explicit about using
+> the clk API instead of the OPP tables.
+> 
+> 2) dev_pm_opp_set_rate(0) is an interesting solution to the problem of
+> dropping the rate requirement. Is there anything better than this?
+> 
+> 3) How do we handle devices that already have power-domains specified in
+> DT? The opp binding for required-opps doesn't let us specify the power
+> domain to target, instead it assumes that whatever power domain is
+> attached to a device is the one that OPP needs to use to change the
+> genpd performance state. Do we need a
+> dev_pm_opp_set_required_opps_name() or something to be explicit about
+> this? Can we have some way for the power domain that required-opps
+> correspond to be expressed in the OPP tables themselves?
+> 
+> 4) How do we achieve the "full constraint" state? i.e. what do we do
+> about some devices being active and others being inactive during boot
+> and making sure that the voltage for the shared power domains doesn't
+> drop until all devices requiring it have informed OPP about their
+> power requirements?
+> 
+> Rajendra Nayak (4):
+>   OPP: Make dev_pm_opp_set_rate() with freq=0 as valid
+>   tty: serial: qcom_geni_serial: Use OPP API to set clk/perf state
+>   spi: spi-geni-qcom: Use OPP API to set clk/perf state
+>   arm64: dts: sdm845: Add OPP table for all qup devices
+> 
+> Stephen Boyd (1):
+>   OPP: Don't overwrite rounded clk rate
+> 
+>  arch/arm64/boot/dts/qcom/sdm845.dtsi  | 115 ++++++++++++++++++++++++++
+>  drivers/opp/core.c                    |  26 ++++--
+>  drivers/spi/spi-geni-qcom.c           |  12 ++-
+>  drivers/tty/serial/qcom_geni_serial.c |  15 +++-
+>  4 files changed, 155 insertions(+), 13 deletions(-)
+> 
+> For the interested, these patches are located here:
+> 
+>    https://github.com/rrnayak/linux/ v5.0-rc3/opp-corners-wip
+> 
+> I've generated these patches by cutting off the top of that tree and
+> massaging the commit text a bit for the first patch.
+> 
+> base-commit: 49a57857aeea06ca831043acbb0fa5e0f50602fd
+> prerequisite-patch-id: 9c3ee728603596b8b0ba06ffd66084bdc21b1271
+> prerequisite-patch-id: f160e050bcd74f5de6fad66329381853869a6a97
+> prerequisite-patch-id: aa23548d2b486c29489b4304d85799d08762254e
+> prerequisite-patch-id: 40dd117c45fecb4308298352346546612db94b64
+> prerequisite-patch-id: cd102fa42bab19897c2295e8b990b2156626054a
+> prerequisite-patch-id: 3b9e5c8ed65ee96cc0f1c50166cf6bbb597ef582
+> prerequisite-patch-id: 7e71b957b90ad51d0619944d5ebc859380e8e3e4
+> prerequisite-patch-id: 5abd2bd6b3ae3e91551e2b8f9295169019ba82c7
+> prerequisite-patch-id: 68bb3e44cf4e5dbd363a1a1750e4d378971ed393
+> prerequisite-patch-id: 882b14ef9527b15d22cfddbb5fa2b9d43df1ff04
+> prerequisite-patch-id: 6fc14ddeb074fb0826f1f40031e9d161f1361666
+> -- 
+> Sent by a computer through tubes
+
+-- 
+viresh
+
+[1] https://lore.kernel.org/linux-clk/20180704065522.p4qpfnpayeobaok3@vireshk-i7/
