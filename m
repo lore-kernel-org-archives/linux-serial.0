@@ -1,57 +1,94 @@
-From: shuah <shuah@kernel.org>
-Subject: Re: [PATCH] tty: Fix WARNING in tty_set_termios
-Date: Thu, 31 Jan 2019 16:23:02 -0700
-Message-ID: <2812690e-d9d6-9755-ecb1-045e2acb4323@kernel.org>
-References: <20190125232905.21727-1-shuah@kernel.org>
- <20190126041416.GF2217@ZenIV.linux.org.uk>
- <fe4018a7-19e4-cdd1-3095-bbe88a82788e@kernel.org>
- <20190130103227.GR3691@localhost>
- <D0EE5C33-2930-4286-998C-822DD7898B76@holtmann.org>
- <20190131153306.GT3691@localhost>
+From: Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH 0/3] serdev support for n_gsm
+Date: Fri, 1 Feb 2019 00:34:45 +0100
+Message-ID: <20190131233445.GA21200@amd>
+References: <20190114012528.2367-1-tony@atomide.com>
+ <20190118115958.GA5532@kroah.com>
+ <20190121105735.GI3691@localhost>
+ <20190121170116.GA5544@atomide.com>
+ <20190124163932.GZ3691@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="RnlQjJ0d97Da+TV1"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190131153306.GT3691@localhost>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20190124163932.GZ3691@localhost>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Johan Hovold <johan@kernel.org>, Marcel Holtmann <marcel@holtmann.org>
-Cc: Al Viro <viro@zeniv.linux.org.uk>, "open list:NFC SUBSYSTEM" <linux-wireless@vger.kernel.org>, chris@the-brannons.com, devel@driverdev.osuosl.org, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, santhameena13@gmail.com, kirk@reisers.ca, Johan Hedberg <johan.hedberg@gmail.com>, Arnd Bergmann <arnd@arndb.de>, samuel.thibault@ens-lyon.org, m.maya.nakamura@gmail.com, zhongjiang@huawei.com, Greg KH <gregkh@linuxfoundation.org>, speakup@linux-speakup.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Bluez mailing list <linux-bluetooth@vger.kernel.org>, netdev <netdev@vger.kernel.org>, nishka.dasgupta_ug18@ashoka.edu.in, "David S. Miller" <dave>
+To: Johan Hovold <johan@kernel.org>
+Cc: Tony Lindgren <tony@atomide.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Alan Cox <alan@llwyncelyn.cymru>, Jiri Slaby <jslaby@suse.cz>, Peter Hurley <peter@hurleysoftware.com>, Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>, linux-serial@vger.kernel.org, Marcel Holtmann <marcel@holtmann.org>, Kishon Vijay Abraham I <kishon@ti.com>, Mark Brown <broonie@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 1/31/19 8:33 AM, Johan Hovold wrote:
-> On Thu, Jan 31, 2019 at 04:18:33PM +0100, Marcel Holtmann wrote:
-> 
->>> I agree with Al that this change doesn't make much sense. The WARN_ON
->>> is there to catch any bugs leading to the termios being changed for a
->>> master side pty. Those should bugs should be fixed, and not worked
->>> around in order to silence a WARN_ON.
->>>
->>> The problem started with 7721383f4199 ("Bluetooth: hci_uart: Support
->>> operational speed during setup") which introduced a new way for how
->>> tty_set_termios() could end up being called for a master pty.
->>>
->>> As Al hinted at, setting these ldiscs for a master pty really makes no
->>> sense and perhaps that is what we should prevent unless simply making
->>> sure they do not call tty_set_termios() is sufficient for the time
->>> being.
->>>
->>> Finally, note that serdev never operates on a pty, and that this is only
->>> an issue for (the three) line disciplines.
->>
->> I think for PTYs we should just fail setting the HCI line discipline.
->> Fail early and just move on with life.
-> 
-> Sounds good to me. At least for the pty master. There may be some people
-> trying to use a bluetooth device connected to a remote serial port (I've
-> seen descriptions of such setups at least), and maybe we need not prevent
-> that.
-> 
 
-Thanks for the feedback on the patch. Changes to prevent setting the HCI
-line discipline from hci_uart fixes the problem.
+--RnlQjJ0d97Da+TV1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I am sending v2 in a just a bit.
+Hi!
 
-thanks,
--- Shuah
+> > And without the n_gsm serdev support, it's a mess of some app
+> > similar to [5] initializing n_gsm, trying to deal with the USB
+> > PHY PM, dealing with Motorola custom packet numbering, kicking
+> > GNSS device, feeding data to /dev/ugnss. Hmm I think I've already
+> > been there just to be able to type AT commands to the modem and
+> > it did not work :)
+>=20
+> It's a mess indeed, but I'd rather see user-space dealing with until we
+> figure out how best to do it in the kernel. ;)
+>=20
+> > Anyways, for the serdev kernel drivers, the criteria I've tried
+> > to follow is: "Can this serdev device driver make user space
+> > apps use standard Linux interfaces for the hardware?"
+> >=20
+> > So for the serdev Alsa ASoC driver, user space can use the standard
+> > Alsa interface for setting voice call volume. And for the serdev
+> > GNSS driver, user space can use /dev/gnss0.
+>=20
+> I understand. Both drivers appears to be using AT commands for control.
+> It would be interesting to hear what Mark has to say about the codec
+> driver too. Moving AT handling into the kernel scares me a bit. If we
+> already have a telephony stack to deal with it in user-space, my
+> inclination is to let it continue to handle it.
+
+The userspace part of the telephony stack uses ALSA mixers to
+do... well... audio mixer configuration for phone calls, and it would
+be good if Droid 4 could keep the same interface.
+
+> Modem-managed GNSS is also different from receivers connected directly
+> to the host. It's really the modem that drives the GNSS receiver, and
+> offers a higher-level interface to the host, for example, by buffering
+> output which the host can later request. It may or may not be the
+> kernel's job to periodically poll the modem to recreate an NMEA feed so
+> to speak.
+>=20
+> But the end-result of having it accessible through a standard interface
+> is of course appealing.
+
+Yes please. On N900, there's special (socket-based) interface to the
+GPS... and it si painful.
+
+Plus, it will take some time before modem support on Droid 4
+stabilizes... and it would be very welcome to be able to use the GPS
+in the meantime.
+
+Best regards,
+
+									Pavel
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
+
+--RnlQjJ0d97Da+TV1
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAlxThhUACgkQMOfwapXb+vJx3ACgofj+yxrp/4p5cuhPEPiAS+O2
+nYkAoKvUwdB7quhD5kxVNlzcN+l4sJGs
+=jqTU
+-----END PGP SIGNATURE-----
+
+--RnlQjJ0d97Da+TV1--
