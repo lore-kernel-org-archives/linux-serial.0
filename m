@@ -1,179 +1,148 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: =?utf-8?B?562U5aSNOiDnrZTlpI06IFtQQVRD?= =?utf-8?B?SF1bdjRd?=
- tty: fix race between flush_to_ldisc and tty_open
-Date: Thu, 31 Jan 2019 07:52:15 +0100
-Message-ID: <20190131065215.GB30992@kroah.com>
+From: "Li,Rongqing" <lirongqing@baidu.com>
+Subject: =?utf-8?B?562U5aSNOiDnrZTlpI06IOetlOWkjTogW1BBVENIXVt2NF0gdHR5OiBmaXgg?=
+ =?utf-8?B?cmFjZSBiZXR3ZWVuIGZsdXNoX3RvX2xkaXNjIGFuZCB0dHlfb3Blbg==?=
+Date: Thu, 31 Jan 2019 07:40:48 +0000
+Message-ID: <c8a2c4dc33834ee7bb0f5a3f606c4546@baidu.com>
 References: <1547803637-29135-1-git-send-email-lirongqing@baidu.com>
  <20190130101914.GA30587@kroah.com>
  <f13cb07ed77d428b8b43459ff71adcae@baidu.com>
  <20190130131641.GA10795@kroah.com>
  <b1388c835686492fbbfa91e9711470d4@baidu.com>
+ <20190131065215.GB30992@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <b1388c835686492fbbfa91e9711470d4@baidu.com>
+In-Reply-To: <20190131065215.GB30992@kroah.com>
+Content-Language: zh-CN
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Li,Rongqing" <lirongqing@baidu.com>
+To: Greg KH <gregkh@linuxfoundation.org>
 Cc: "jslaby@suse.com" <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "gkohli@codeaurora.org" <gkohli@codeaurora.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jan 31, 2019 at 02:15:35AM +0000, Li,Rongqing wrote:
-> 
-> 
-> > -----邮件原件-----
-> > 发件人: Greg KH [mailto:gregkh@linuxfoundation.org]
-> > 发送时间: 2019年1月30日 21:17
-> > 收件人: Li,Rongqing <lirongqing@baidu.com>
-> > 抄送: jslaby@suse.com; linux-kernel@vger.kernel.org; gkohli@codeaurora.org;
-> > linux-serial@vger.kernel.org
-> > 主题: Re: 答复: [PATCH][v4] tty: fix race between flush_to_ldisc and tty_open
-> > 
-> > On Wed, Jan 30, 2019 at 12:48:42PM +0000, Li,Rongqing wrote:
-> > >
-> > >
-> > > > -----邮件原件-----
-> > > > 发件人: linux-kernel-owner@vger.kernel.org
-> > > > [mailto:linux-kernel-owner@vger.kernel.org] 代表 Greg KH
-> > > > 发送时间: 2019年1月30日 18:19
-> > > > 收件人: Li,Rongqing <lirongqing@baidu.com>
-> > > > 抄送: jslaby@suse.com; linux-kernel@vger.kernel.org;
-> > > > gkohli@codeaurora.org
-> > > > 主题: Re: [PATCH][v4] tty: fix race between flush_to_ldisc and
-> > > > tty_open
-> > > >
-> > > > On Fri, Jan 18, 2019 at 05:27:17PM +0800, Li RongQing wrote:
-> > > > > There still is a race window after the commit b027e2298bd588
-> > > > > ("tty: fix data race between tty_init_dev and flush of buf"), and
-> > > > > we encountered this crash issue if receive_buf call comes before
-> > > > > tty initialization completes in n_tty_open and
-> > > > > tty->driver_data may be NULL.
-> > > > >
-> > > > > CPU0                                    CPU1
-> > > > > ----                                    ----
-> > > > >                                  n_tty_open
-> > > > >                                    tty_init_dev
-> > > > >                                      tty_ldisc_unlock
-> > > > >                                        schedule flush_to_ldisc
-> > > > > receive_buf
-> > > > >   tty_port_default_receive_buf
-> > > > >    tty_ldisc_receive_buf
-> > > > >     n_tty_receive_buf_common
-> > > > >       __receive_buf
-> > > > >        uart_flush_chars
-> > > > >         uart_start
-> > > > >         /*tty->driver_data is NULL*/
-> > > > >                                    tty->ops->open
-> > > > >                                    /*init tty->driver_data*/
-> > > > >
-> > > > > it can be fixed by extending ldisc semaphore lock in tty_init_dev
-> > > > > to driver_data initialized completely after tty->ops->open(), but
-> > > > > this will lead to put lock on one function and unlock in some
-> > > > > other function, and hard to maintain, so fix this race only by
-> > > > > checking
-> > > > > tty->driver_data when receiving, and return if tty->driver_data
-> > > > > is NULL
-> > > > >
-> > > > > Signed-off-by: Wang Li <wangli39@baidu.com>
-> > > > > Signed-off-by: Zhang Yu <zhangyu31@baidu.com>
-> > > > > Signed-off-by: Li RongQing <lirongqing@baidu.com>
-> > > > > ---
-> > > > > V4: add version information
-> > > > > V3: not used ldisc semaphore lock, only checking tty->driver_data
-> > > > > with NULL
-> > > > > V2: fix building error by EXPORT_SYMBOL tty_ldisc_unlock
-> > > > > V1: extend ldisc lock to protect that tty->driver_data is inited
-> > > > >
-> > > > > drivers/tty/tty_port.c | 3 +++
-> > > > >  1 file changed, 3 insertions(+)
-> > > > >
-> > > > > diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c index
-> > > > > 044c3cbdcfa4..86d0bec38322 100644
-> > > > > --- a/drivers/tty/tty_port.c
-> > > > > +++ b/drivers/tty/tty_port.c
-> > > > > @@ -31,6 +31,9 @@ static int tty_port_default_receive_buf(struct
-> > > > > tty_port
-> > > > *port,
-> > > > >  	if (!tty)
-> > > > >  		return 0;
-> > > > >
-> > > > > +	if (!tty->driver_data)
-> > > > > +		return 0;
-> > > > > +
-> > > >
-> > > > How is this working?  What is setting driver_data to NULL to "stop" this
-> > race?
-> > > >
-> > >
-> > >
-> > > if tty->driver_data is NULL and return,  tty_port_default_receive_buf
-> > > will not step to uart_start which access tty->driver_data and trigger
-> > > panic before tty_open, so it can fix the system panic
-> > >
-> > > > There's no requirement that a tty driver set this field to NULL when it is
-> > "done"
-> > > > with the tty device, so I think you are just getting lucky in that
-> > > > your specific driver happens to be doing this.
-> > > >
-> > >
-> > > when tty_open is running, tty is allocated by kzalloc in tty_init_dev
-> > > which called by tty_open_by_driver, tty is inited to 0
-> > >
-> > > > What driver are you testing this against?
-> > > >
-> > >
-> > > 8250
-> > 
-> > Ok, as this is specific to the uart core, how about this patch instead:
-> > 
-> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> > index 5c01bb6d1c24..b56a6250df3f 100644
-> > --- a/drivers/tty/serial/serial_core.c
-> > +++ b/drivers/tty/serial/serial_core.c
-> > @@ -130,6 +130,9 @@ static void uart_start(struct tty_struct *tty)
-> >  	struct uart_port *port;
-> >  	unsigned long flags;
-> > 
-> > +	if (!state)
-> > +		return;
-> > +
-> >  	port = uart_port_lock(state, flags);
-> >  	__uart_start(tty);
-> >  	uart_port_unlock(port, flags);
-> 
-> 
-> If move the check into uart_start, i am afraid that it maybe not fully fix this issue,
-> Since n_tty_receive_buf_common maybe call n_tty_check_throttle/ 
-> tty_unthrottle_safe which maybe use the tty->driver_data
-> 
-> if tty is not fully opened, I think no gain to step into more function
-
-But as I said, the tty core has no knowledge of the "driver_data",
-field.  It does not know if a driver really is even using that field, so
-it means nothing to the tty core, so it can not check it.  Your specific
-tty driver does happen to use it, so it can check it.
-
-If you also need to check this in unthrottle, how about this patch too?
-Does the combination of these two patches solve the problem for your
-systems?
-
-thanks,
-
-greg k-h
-
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 5c01bb6d1c24..e33d4c181123 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -727,6 +727,9 @@ static void uart_unthrottle(struct tty_struct *tty)
- 	upstat_t mask = UPSTAT_SYNC_FIFO;
- 	struct uart_port *port;
- 
-+	if (!state)
-+		return;
-+
- 	port = uart_port_ref(state);
- 	if (!port)
- 		return;
+DQoNCj4gLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0KPiDlj5Hku7bkuro6IEdyZWcgS0ggW21haWx0
+bzpncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZ10NCj4g5Y+R6YCB5pe26Ze0OiAyMDE55bm0Meac
+iDMx5pelIDE0OjUyDQo+IOaUtuS7tuS6ujogTGksUm9uZ3FpbmcgPGxpcm9uZ3FpbmdAYmFpZHUu
+Y29tPg0KPiDmioTpgIE6IGpzbGFieUBzdXNlLmNvbTsgbGludXgta2VybmVsQHZnZXIua2VybmVs
+Lm9yZzsgZ2tvaGxpQGNvZGVhdXJvcmEub3JnOw0KPiBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwu
+b3JnDQo+IOS4u+mimDogUmU6IOetlOWkjTog562U5aSNOiBbUEFUQ0hdW3Y0XSB0dHk6IGZpeCBy
+YWNlIGJldHdlZW4gZmx1c2hfdG9fbGRpc2MgYW5kDQo+IHR0eV9vcGVuDQo+IA0KPiBPbiBUaHUs
+IEphbiAzMSwgMjAxOSBhdCAwMjoxNTozNUFNICswMDAwLCBMaSxSb25ncWluZyB3cm90ZToNCj4g
+Pg0KPiA+DQo+ID4gPiAtLS0tLemCruS7tuWOn+S7ti0tLS0tDQo+ID4gPiDlj5Hku7bkuro6IEdy
+ZWcgS0ggW21haWx0bzpncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZ10NCj4gPiA+IOWPkemAgeaX
+tumXtDogMjAxOeW5tDHmnIgzMOaXpSAyMToxNw0KPiA+ID4g5pS25Lu25Lq6OiBMaSxSb25ncWlu
+ZyA8bGlyb25ncWluZ0BiYWlkdS5jb20+DQo+ID4gPiDmioTpgIE6IGpzbGFieUBzdXNlLmNvbTsg
+bGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsNCj4gPiA+IGdrb2hsaUBjb2RlYXVyb3JhLm9y
+ZzsgbGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZw0KPiA+ID4g5Li76aKYOiBSZTog562U5aSN
+OiBbUEFUQ0hdW3Y0XSB0dHk6IGZpeCByYWNlIGJldHdlZW4gZmx1c2hfdG9fbGRpc2MgYW5kDQo+
+ID4gPiB0dHlfb3Blbg0KPiA+ID4NCj4gPiA+IE9uIFdlZCwgSmFuIDMwLCAyMDE5IGF0IDEyOjQ4
+OjQyUE0gKzAwMDAsIExpLFJvbmdxaW5nIHdyb3RlOg0KPiA+ID4gPg0KPiA+ID4gPg0KPiA+ID4g
+PiA+IC0tLS0t6YKu5Lu25Y6f5Lu2LS0tLS0NCj4gPiA+ID4gPiDlj5Hku7bkuro6IGxpbnV4LWtl
+cm5lbC1vd25lckB2Z2VyLmtlcm5lbC5vcmcNCj4gPiA+ID4gPiBbbWFpbHRvOmxpbnV4LWtlcm5l
+bC1vd25lckB2Z2VyLmtlcm5lbC5vcmddIOS7o+ihqCBHcmVnIEtIDQo+ID4gPiA+ID4g5Y+R6YCB
+5pe26Ze0OiAyMDE55bm0MeaciDMw5pelIDE4OjE5DQo+ID4gPiA+ID4g5pS25Lu25Lq6OiBMaSxS
+b25ncWluZyA8bGlyb25ncWluZ0BiYWlkdS5jb20+DQo+ID4gPiA+ID4g5oqE6YCBOiBqc2xhYnlA
+c3VzZS5jb207IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7DQo+ID4gPiA+ID4gZ2tvaGxp
+QGNvZGVhdXJvcmEub3JnDQo+ID4gPiA+ID4g5Li76aKYOiBSZTogW1BBVENIXVt2NF0gdHR5OiBm
+aXggcmFjZSBiZXR3ZWVuIGZsdXNoX3RvX2xkaXNjIGFuZA0KPiA+ID4gPiA+IHR0eV9vcGVuDQo+
+ID4gPiA+ID4NCj4gPiA+ID4gPiBPbiBGcmksIEphbiAxOCwgMjAxOSBhdCAwNToyNzoxN1BNICsw
+ODAwLCBMaSBSb25nUWluZyB3cm90ZToNCj4gPiA+ID4gPiA+IFRoZXJlIHN0aWxsIGlzIGEgcmFj
+ZSB3aW5kb3cgYWZ0ZXIgdGhlIGNvbW1pdCBiMDI3ZTIyOThiZDU4OA0KPiA+ID4gPiA+ID4gKCJ0
+dHk6IGZpeCBkYXRhIHJhY2UgYmV0d2VlbiB0dHlfaW5pdF9kZXYgYW5kIGZsdXNoIG9mIGJ1ZiIp
+LA0KPiA+ID4gPiA+ID4gYW5kIHdlIGVuY291bnRlcmVkIHRoaXMgY3Jhc2ggaXNzdWUgaWYgcmVj
+ZWl2ZV9idWYgY2FsbCBjb21lcw0KPiA+ID4gPiA+ID4gYmVmb3JlIHR0eSBpbml0aWFsaXphdGlv
+biBjb21wbGV0ZXMgaW4gbl90dHlfb3BlbiBhbmQNCj4gPiA+ID4gPiA+IHR0eS0+ZHJpdmVyX2Rh
+dGEgbWF5IGJlIE5VTEwuDQo+ID4gPiA+ID4gPg0KPiA+ID4gPiA+ID4gQ1BVMCAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgIENQVTENCj4gPiA+ID4gPiA+IC0tLS0gICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAtLS0tDQo+ID4gPiA+ID4gPiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICBuX3R0eV9vcGVuDQo+ID4gPiA+ID4gPiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIHR0eV9pbml0X2Rldg0KPiA+ID4gPiA+ID4gICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHR0eV9sZGlzY191bmxvY2sNCj4gPiA+ID4gPiA+
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNjaGVkdWxlDQo+IGZsdXNo
+X3RvX2xkaXNjDQo+ID4gPiA+ID4gPiByZWNlaXZlX2J1Zg0KPiA+ID4gPiA+ID4gICB0dHlfcG9y
+dF9kZWZhdWx0X3JlY2VpdmVfYnVmDQo+ID4gPiA+ID4gPiAgICB0dHlfbGRpc2NfcmVjZWl2ZV9i
+dWYNCj4gPiA+ID4gPiA+ICAgICBuX3R0eV9yZWNlaXZlX2J1Zl9jb21tb24NCj4gPiA+ID4gPiA+
+ICAgICAgIF9fcmVjZWl2ZV9idWYNCj4gPiA+ID4gPiA+ICAgICAgICB1YXJ0X2ZsdXNoX2NoYXJz
+DQo+ID4gPiA+ID4gPiAgICAgICAgIHVhcnRfc3RhcnQNCj4gPiA+ID4gPiA+ICAgICAgICAgLyp0
+dHktPmRyaXZlcl9kYXRhIGlzIE5VTEwqLw0KPiA+ID4gPiA+ID4gICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICB0dHktPm9wcy0+b3Blbg0KPiA+ID4gPiA+ID4gICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAvKmluaXQgdHR5LT5kcml2ZXJfZGF0YSovDQo+ID4gPiA+
+ID4gPg0KPiA+ID4gPiA+ID4gaXQgY2FuIGJlIGZpeGVkIGJ5IGV4dGVuZGluZyBsZGlzYyBzZW1h
+cGhvcmUgbG9jayBpbg0KPiA+ID4gPiA+ID4gdHR5X2luaXRfZGV2IHRvIGRyaXZlcl9kYXRhIGlu
+aXRpYWxpemVkIGNvbXBsZXRlbHkgYWZ0ZXINCj4gPiA+ID4gPiA+IHR0eS0+b3BzLT5vcGVuKCks
+IGJ1dCB0aGlzIHdpbGwgbGVhZCB0byBwdXQgbG9jayBvbiBvbmUNCj4gPiA+ID4gPiA+IGZ1bmN0
+aW9uIGFuZCB1bmxvY2sgaW4gc29tZSBvdGhlciBmdW5jdGlvbiwgYW5kIGhhcmQgdG8NCj4gPiA+
+ID4gPiA+IG1haW50YWluLCBzbyBmaXggdGhpcyByYWNlIG9ubHkgYnkgY2hlY2tpbmcNCj4gPiA+
+ID4gPiA+IHR0eS0+ZHJpdmVyX2RhdGEgd2hlbiByZWNlaXZpbmcsIGFuZCByZXR1cm4gaWYNCj4g
+PiA+ID4gPiA+IHR0eS0+dHR5LT5kcml2ZXJfZGF0YQ0KPiA+ID4gPiA+ID4gaXMgTlVMTA0KPiA+
+ID4gPiA+ID4NCj4gPiA+ID4gPiA+IFNpZ25lZC1vZmYtYnk6IFdhbmcgTGkgPHdhbmdsaTM5QGJh
+aWR1LmNvbT4NCj4gPiA+ID4gPiA+IFNpZ25lZC1vZmYtYnk6IFpoYW5nIFl1IDx6aGFuZ3l1MzFA
+YmFpZHUuY29tPg0KPiA+ID4gPiA+ID4gU2lnbmVkLW9mZi1ieTogTGkgUm9uZ1FpbmcgPGxpcm9u
+Z3FpbmdAYmFpZHUuY29tPg0KPiA+ID4gPiA+ID4gLS0tDQo+ID4gPiA+ID4gPiBWNDogYWRkIHZl
+cnNpb24gaW5mb3JtYXRpb24NCj4gPiA+ID4gPiA+IFYzOiBub3QgdXNlZCBsZGlzYyBzZW1hcGhv
+cmUgbG9jaywgb25seSBjaGVja2luZw0KPiA+ID4gPiA+ID4gdHR5LT5kcml2ZXJfZGF0YSB3aXRo
+IE5VTEwNCj4gPiA+ID4gPiA+IFYyOiBmaXggYnVpbGRpbmcgZXJyb3IgYnkgRVhQT1JUX1NZTUJP
+TCB0dHlfbGRpc2NfdW5sb2NrDQo+ID4gPiA+ID4gPiBWMTogZXh0ZW5kIGxkaXNjIGxvY2sgdG8g
+cHJvdGVjdCB0aGF0IHR0eS0+ZHJpdmVyX2RhdGEgaXMNCj4gPiA+ID4gPiA+IGluaXRlZA0KPiA+
+ID4gPiA+ID4NCj4gPiA+ID4gPiA+IGRyaXZlcnMvdHR5L3R0eV9wb3J0LmMgfCAzICsrKw0KPiA+
+ID4gPiA+ID4gIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKykNCj4gPiA+ID4gPiA+DQo+
+ID4gPiA+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvdHR5X3BvcnQuYyBiL2RyaXZlcnMv
+dHR5L3R0eV9wb3J0LmMNCj4gPiA+ID4gPiA+IGluZGV4DQo+ID4gPiA+ID4gPiAwNDRjM2NiZGNm
+YTQuLjg2ZDBiZWMzODMyMiAxMDA2NDQNCj4gPiA+ID4gPiA+IC0tLSBhL2RyaXZlcnMvdHR5L3R0
+eV9wb3J0LmMNCj4gPiA+ID4gPiA+ICsrKyBiL2RyaXZlcnMvdHR5L3R0eV9wb3J0LmMNCj4gPiA+
+ID4gPiA+IEBAIC0zMSw2ICszMSw5IEBAIHN0YXRpYyBpbnQNCj4gPiA+ID4gPiA+IHR0eV9wb3J0
+X2RlZmF1bHRfcmVjZWl2ZV9idWYoc3RydWN0DQo+ID4gPiA+ID4gPiB0dHlfcG9ydA0KPiA+ID4g
+PiA+ICpwb3J0LA0KPiA+ID4gPiA+ID4gIAlpZiAoIXR0eSkNCj4gPiA+ID4gPiA+ICAJCXJldHVy
+biAwOw0KPiA+ID4gPiA+ID4NCj4gPiA+ID4gPiA+ICsJaWYgKCF0dHktPmRyaXZlcl9kYXRhKQ0K
+PiA+ID4gPiA+ID4gKwkJcmV0dXJuIDA7DQo+ID4gPiA+ID4gPiArDQo+ID4gPiA+ID4NCj4gPiA+
+ID4gPiBIb3cgaXMgdGhpcyB3b3JraW5nPyAgV2hhdCBpcyBzZXR0aW5nIGRyaXZlcl9kYXRhIHRv
+IE5VTEwgdG8NCj4gPiA+ID4gPiAic3RvcCIgdGhpcw0KPiA+ID4gcmFjZT8NCj4gPiA+ID4gPg0K
+PiA+ID4gPg0KPiA+ID4gPg0KPiA+ID4gPiBpZiB0dHktPmRyaXZlcl9kYXRhIGlzIE5VTEwgYW5k
+IHJldHVybiwNCj4gPiA+ID4gdHR5X3BvcnRfZGVmYXVsdF9yZWNlaXZlX2J1ZiB3aWxsIG5vdCBz
+dGVwIHRvIHVhcnRfc3RhcnQgd2hpY2gNCj4gPiA+ID4gYWNjZXNzIHR0eS0+ZHJpdmVyX2RhdGEg
+YW5kIHRyaWdnZXIgcGFuaWMgYmVmb3JlIHR0eV9vcGVuLCBzbyBpdA0KPiA+ID4gPiBjYW4gZml4
+IHRoZSBzeXN0ZW0gcGFuaWMNCj4gPiA+ID4NCj4gPiA+ID4gPiBUaGVyZSdzIG5vIHJlcXVpcmVt
+ZW50IHRoYXQgYSB0dHkgZHJpdmVyIHNldCB0aGlzIGZpZWxkIHRvIE5VTEwNCj4gPiA+ID4gPiB3
+aGVuIGl0IGlzDQo+ID4gPiAiZG9uZSINCj4gPiA+ID4gPiB3aXRoIHRoZSB0dHkgZGV2aWNlLCBz
+byBJIHRoaW5rIHlvdSBhcmUganVzdCBnZXR0aW5nIGx1Y2t5IGluDQo+ID4gPiA+ID4gdGhhdCB5
+b3VyIHNwZWNpZmljIGRyaXZlciBoYXBwZW5zIHRvIGJlIGRvaW5nIHRoaXMuDQo+ID4gPiA+ID4N
+Cj4gPiA+ID4NCj4gPiA+ID4gd2hlbiB0dHlfb3BlbiBpcyBydW5uaW5nLCB0dHkgaXMgYWxsb2Nh
+dGVkIGJ5IGt6YWxsb2MgaW4NCj4gPiA+ID4gdHR5X2luaXRfZGV2IHdoaWNoIGNhbGxlZCBieSB0
+dHlfb3Blbl9ieV9kcml2ZXIsIHR0eSBpcyBpbml0ZWQgdG8NCj4gPiA+ID4gMA0KPiA+ID4gPg0K
+PiA+ID4gPiA+IFdoYXQgZHJpdmVyIGFyZSB5b3UgdGVzdGluZyB0aGlzIGFnYWluc3Q/DQo+ID4g
+PiA+ID4NCj4gPiA+ID4NCj4gPiA+ID4gODI1MA0KPiA+ID4NCj4gPiA+IE9rLCBhcyB0aGlzIGlz
+IHNwZWNpZmljIHRvIHRoZSB1YXJ0IGNvcmUsIGhvdyBhYm91dCB0aGlzIHBhdGNoIGluc3RlYWQ6
+DQo+ID4gPg0KPiA+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9zZXJpYWxfY29y
+ZS5jDQo+ID4gPiBiL2RyaXZlcnMvdHR5L3NlcmlhbC9zZXJpYWxfY29yZS5jDQo+ID4gPiBpbmRl
+eCA1YzAxYmI2ZDFjMjQuLmI1NmE2MjUwZGYzZiAxMDA2NDQNCj4gPiA+IC0tLSBhL2RyaXZlcnMv
+dHR5L3NlcmlhbC9zZXJpYWxfY29yZS5jDQo+ID4gPiArKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwv
+c2VyaWFsX2NvcmUuYw0KPiA+ID4gQEAgLTEzMCw2ICsxMzAsOSBAQCBzdGF0aWMgdm9pZCB1YXJ0
+X3N0YXJ0KHN0cnVjdCB0dHlfc3RydWN0ICp0dHkpDQo+ID4gPiAgCXN0cnVjdCB1YXJ0X3BvcnQg
+KnBvcnQ7DQo+ID4gPiAgCXVuc2lnbmVkIGxvbmcgZmxhZ3M7DQo+ID4gPg0KPiA+ID4gKwlpZiAo
+IXN0YXRlKQ0KPiA+ID4gKwkJcmV0dXJuOw0KPiA+ID4gKw0KPiA+ID4gIAlwb3J0ID0gdWFydF9w
+b3J0X2xvY2soc3RhdGUsIGZsYWdzKTsNCj4gPiA+ICAJX191YXJ0X3N0YXJ0KHR0eSk7DQo+ID4g
+PiAgCXVhcnRfcG9ydF91bmxvY2socG9ydCwgZmxhZ3MpOw0KPiA+DQo+ID4NCj4gPiBJZiBtb3Zl
+IHRoZSBjaGVjayBpbnRvIHVhcnRfc3RhcnQsIGkgYW0gYWZyYWlkIHRoYXQgaXQgbWF5YmUgbm90
+IGZ1bGx5DQo+ID4gZml4IHRoaXMgaXNzdWUsIFNpbmNlIG5fdHR5X3JlY2VpdmVfYnVmX2NvbW1v
+biBtYXliZSBjYWxsDQo+ID4gbl90dHlfY2hlY2tfdGhyb3R0bGUvIHR0eV91bnRocm90dGxlX3Nh
+ZmUgd2hpY2ggbWF5YmUgdXNlIHRoZQ0KPiA+IHR0eS0+ZHJpdmVyX2RhdGENCj4gPg0KPiA+IGlm
+IHR0eSBpcyBub3QgZnVsbHkgb3BlbmVkLCBJIHRoaW5rIG5vIGdhaW4gdG8gc3RlcCBpbnRvIG1v
+cmUgZnVuY3Rpb24NCj4gDQo+IEJ1dCBhcyBJIHNhaWQsIHRoZSB0dHkgY29yZSBoYXMgbm8ga25v
+d2xlZGdlIG9mIHRoZSAiZHJpdmVyX2RhdGEiLCBmaWVsZC4gIEl0DQo+IGRvZXMgbm90IGtub3cg
+aWYgYSBkcml2ZXIgcmVhbGx5IGlzIGV2ZW4gdXNpbmcgdGhhdCBmaWVsZCwgc28gaXQgbWVhbnMg
+bm90aGluZyB0bw0KPiB0aGUgdHR5IGNvcmUsIHNvIGl0IGNhbiBub3QgY2hlY2sgaXQuICBZb3Vy
+IHNwZWNpZmljIHR0eSBkcml2ZXIgZG9lcyBoYXBwZW4gdG8gdXNlDQo+IGl0LCBzbyBpdCBjYW4g
+Y2hlY2sgaXQuDQo+IA0KPiBJZiB5b3UgYWxzbyBuZWVkIHRvIGNoZWNrIHRoaXMgaW4gdW50aHJv
+dHRsZSwgaG93IGFib3V0IHRoaXMgcGF0Y2ggdG9vPw0KPiBEb2VzIHRoZSBjb21iaW5hdGlvbiBv
+ZiB0aGVzZSB0d28gcGF0Y2hlcyBzb2x2ZSB0aGUgcHJvYmxlbSBmb3IgeW91cg0KPiBzeXN0ZW1z
+Pw0KPiANCj4gdGhhbmtzLA0KPiANCj4gZ3JlZyBrLWgNCj4gDQoNClRoYW5rcyBmb3IgeW91IGV4
+cGxhbmF0aW9uLCBJIHNlZSBub3cNCllvdXIgc3VnZ2VzdGlvbiBzaG91bGQgd29yaywgSSB3aWxs
+IHNlbmQgVjUgYmFzZWQgb24geW91ciBzdWdnZXN0aW9uDQoNCi1Sb25nUWluZw0KDQo+IA0KPiBk
+aWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL3NlcmlhbF9jb3JlLmMgYi9kcml2ZXJzL3R0
+eS9zZXJpYWwvc2VyaWFsX2NvcmUuYw0KPiBpbmRleCA1YzAxYmI2ZDFjMjQuLmUzM2Q0YzE4MTEy
+MyAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL3NlcmlhbF9jb3JlLmMNCj4gKysr
+IGIvZHJpdmVycy90dHkvc2VyaWFsL3NlcmlhbF9jb3JlLmMNCj4gQEAgLTcyNyw2ICs3MjcsOSBA
+QCBzdGF0aWMgdm9pZCB1YXJ0X3VudGhyb3R0bGUoc3RydWN0IHR0eV9zdHJ1Y3QgKnR0eSkNCj4g
+IAl1cHN0YXRfdCBtYXNrID0gVVBTVEFUX1NZTkNfRklGTzsNCj4gIAlzdHJ1Y3QgdWFydF9wb3J0
+ICpwb3J0Ow0KPiANCj4gKwlpZiAoIXN0YXRlKQ0KPiArCQlyZXR1cm47DQo+ICsNCj4gIAlwb3J0
+ID0gdWFydF9wb3J0X3JlZihzdGF0ZSk7DQo+ICAJaWYgKCFwb3J0KQ0KPiAgCQlyZXR1cm47DQo=
