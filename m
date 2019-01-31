@@ -1,78 +1,100 @@
-From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: Re: [RFC/PATCH 0/5] DVFS in the OPP core
-Date: Thu, 31 Jan 2019 16:11:53 +0530
-Message-ID: <20190131104153.ojyp3razjbzm6pnc@vireshk-i7>
-References: <20190129015547.213276-1-swboyd@chromium.org>
- <20190131092349.fksfqemm23qddkhw@vireshk-i7>
- <CAJZ5v0jY5Zjg0R7uC6ewJT5Pi-15Mohotj=im9k8w4THJSM0Dw@mail.gmail.com>
- <20190131100628.6ex6ic3kspuxxxt7@vireshk-i7>
- <CAJZ5v0jA0U1Z=AeRrEGXH2j+AenzNaiD+tV-yKwKanKwiNVW7g@mail.gmail.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH][V5] tty: fix race between flush_to_ldisc and tty_open
+Date: Thu, 31 Jan 2019 11:55:27 +0100
+Message-ID: <20190131105527.GB8271@kroah.com>
+References: <1548927796-11348-1-git-send-email-lirongqing@baidu.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAJZ5v0jA0U1Z=AeRrEGXH2j+AenzNaiD+tV-yKwKanKwiNVW7g@mail.gmail.com>
+In-Reply-To: <1548927796-11348-1-git-send-email-lirongqing@baidu.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Stephen Boyd <swboyd@chromium.org>, Michael Turquette <mturquette@baylibre.com>, grahamr@codeaurora.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Linux PM <linux-pm@vger.kernel.org>, linux-serial@vger.kernel.org, linux-spi <linux-spi@vger.kernel.org>, Rajendra Nayak <rnayak@codeaurora.org>, Ulf Hansson <ulf.hansson@linaro.org>, Doug Anderson <dianders@chromium.org>, Vincent Guittot <vincent.guittot@linaro.org>
+To: Li RongQing <lirongqing@baidu.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, jslaby@suse.com, gkohli@codeaurora.org
 List-Id: linux-serial@vger.kernel.org
 
-On 31-01-19, 11:36, Rafael J. Wysocki wrote:
-> On Thu, Jan 31, 2019 at 11:06 AM Viresh Kumar <viresh.kumar@linaro.org> wrote:
-> >
-> > On 31-01-19, 10:58, Rafael J. Wysocki wrote:
-> > > On Thu, Jan 31, 2019 at 10:23 AM Viresh Kumar <viresh.kumar@linaro.org> wrote:
-> > > >
-> > > > Adding few folks to the thread who might be interested in this stuff.
-> > > >
-> > > > On 28-01-19, 17:55, Stephen Boyd wrote:
-> > > > > This patch series is an RFC around how we can implement DVFS for devices
-> > > > > that aren't your typical OPPish device (i.e. GPU/CPU). They don't have a
-> > > > > strict set of frequencies that they have been tested at to derive some
-> > > > > operating performance point. Instead they have a coarser set of
-> > > > > frequency max or 'fmax' OPPs that describe the maiximum frequency the
-> > > > > device can operate at with a given voltage.
-> > > > >
-> > > > > The approach we take is to let the devm_pm_opp_set_rate() API accept 0
-> > > > > as a valid frequency indicating the frequency isn't required anymore and
-> > > > > to make the same API use the clk framework to round the frequency passed
-> > > > > in instead of relying on the OPP table to specify each frequency that
-> > > > > can be used. Once we have these two patches in place, we can use the OPP
-> > > > > API to change clk rates instead of clk_set_rate() and use all the recent
-> > > > > OPP enhancements that have been made around required-opps and genpd
-> > > > > performance states to do DVFS for all devices.
-> > > >
-> > > > Generally speaking I am fine with such an approach but I am not sure
-> > > > about what others would say on this as they had objections to using
-> > > > OPP core for setting the rate itself.
-> > > >
-> > > > FWIW, I suggested exactly this solution sometime back [1]
-> > > >
-> > > > - Drivers need to use two API sets to change clock rate (OPP helpers)
-> > > >   and enable/disable them (CLK framework helpers) and this leads us to
-> > > >   exactly that combination. Is that acceptable ? It doesn't look great
-> > > >   to me as well..
-> > >
-> > > I agree here.
-> > >
-> > > > - Do we expect the callers will disable clk before calling
-> > > >   opp-set-rate with 0 ? We should remove the regulator requirements as
-> > > >   well along with perf-state.
-> > >
-> > > Well, disabling clk affects HW in general, doesn't it?
-> >
-> > Yeah, but the regulator may be shared and is running at higher
-> > voltages just because of the clock requirement of the device getting
-> > disabled here. Or did I misunderstood what you wanted to say ?
+On Thu, Jan 31, 2019 at 05:43:16PM +0800, Li RongQing wrote:
+> There still is a race window after the commit b027e2298bd588
+> ("tty: fix data race between tty_init_dev and flush of buf"),
+> and we encountered this crash issue if receive_buf call comes
+> before tty initialization completes in tty_open and
+> tty->driver_data may be NULL.
 > 
-> What I wanted to say is that if the caller is required to disable clk
-> beforehand, that may be as good as setting its rate to zero already.
+> CPU0                                    CPU1
+> ----                                    ----
+>                                   tty_open
+>                                    tty_init_dev
+>                                      tty_ldisc_unlock
+>                                        schedule
+> flush_to_ldisc
+>  receive_buf
+>   tty_port_default_receive_buf
+>    tty_ldisc_receive_buf
+>     n_tty_receive_buf_common
+>       __receive_buf
+>        uart_flush_chars
+>         uart_start
+>         /*tty->driver_data is NULL*/
+>                                    tty->ops->open
+>                                    /*init tty->driver_data*/
+> 
+> it can be fixed by extending ldisc semaphore lock in tty_init_dev
+> to driver_data initialized completely after tty->ops->open(), but
+> this will lead to get lock on one function and unlock in some other
+> function, and hard to maintain, so fix this race only by checking
+> tty->driver_data when receiving, and return if tty->driver_data
+> is NULL, and n_tty_receive_buf_common maybe calls uart_unthrottle,
+> so add the same check
+> 
+> Signed-off-by: Wang Li <wangli39@baidu.com>
+> Signed-off-by: Zhang Yu <zhangyu31@baidu.com>
+> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+> ---
+> V5: move check into uart_start from n_tty_receive_buf_common
+> V4: add version information
+> V3: not used ldisc semaphore lock, only checking tty->driver_data with NULL
+> V2: fix building error by EXPORT_SYMBOL tty_ldisc_unlock
+> V1: extend ldisc lock to protect that tty->driver_data is inited
+> 
+>  drivers/tty/serial/serial_core.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 5c01bb6d1c24..556f50aa1b58 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -130,6 +130,9 @@ static void uart_start(struct tty_struct *tty)
+>  	struct uart_port *port;
+>  	unsigned long flags;
+>  
+> +	if (!state)
+> +		return;
+> +
+>  	port = uart_port_lock(state, flags);
+>  	__uart_start(tty);
+>  	uart_port_unlock(port, flags);
+> @@ -727,6 +730,9 @@ static void uart_unthrottle(struct tty_struct *tty)
+>  	upstat_t mask = UPSTAT_SYNC_FIFO;
+>  	struct uart_port *port;
+>  
+> +	if (!state)
+> +		return;
+> +
+>  	port = uart_port_ref(state);
+>  	if (!port)
+>  		return;
+> -- 
+> 2.16.2
 
-Right, but that doesn't mean that the requirements put on the
-regulator and genpd are gone as well and that is why I favor the OPP
-core to handle all the parts otherwise write the rules explicitly. If
-the OPP core doesn't disable the clock and the caller also hasn't done
-the same, then disabling the genpd/regulator may break things up.
 
--- 
-viresh
+Hm, I wrote this patch, not you, right?  So shouldn't I get the
+credit/blame for it?  :)
+
+Also, this is a bug in the serial code, not necessarily the tty layer,
+so the subject should change...
+
+And you did test this, right?
+
+thanks,
+
+greg k-h
