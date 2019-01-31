@@ -1,85 +1,122 @@
-From: "Li,Rongqing" <lirongqing@baidu.com>
-Subject: =?gb2312?B?tPC4tDogW1BBVENIXVtWNV0gdHR5OiBmaXggcmFjZSBiZXR3ZWVuIGZsdXNo?=
- =?gb2312?B?X3RvX2xkaXNjIGFuZCB0dHlfb3Blbg==?=
-Date: Thu, 31 Jan 2019 11:15:48 +0000
-Message-ID: <22a5d8639b154119af7d7661e17025f2@baidu.com>
-References: <1548927796-11348-1-git-send-email-lirongqing@baidu.com>
- <20190131105527.GB8271@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+From: Marcel Holtmann <marcel@holtmann.org>
+Subject: Re: [PATCH] tty: Fix WARNING in tty_set_termios
+Date: Thu, 31 Jan 2019 16:18:33 +0100
+Message-ID: <D0EE5C33-2930-4286-998C-822DD7898B76@holtmann.org>
+References: <20190125232905.21727-1-shuah@kernel.org>
+ <20190126041416.GF2217@ZenIV.linux.org.uk>
+ <fe4018a7-19e4-cdd1-3095-bbe88a82788e@kernel.org>
+ <20190130103227.GR3691@localhost>
+Mime-Version: 1.0 (Mac OS X Mail 12.2 \(3445.102.3\))
+Content-Type: text/plain;
+        charset=us-ascii
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190131105527.GB8271@kroah.com>
-Content-Language: zh-CN
+In-Reply-To: <20190130103227.GR3691@localhost>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, "gkohli@codeaurora.org" <gkohli@codeaurora.org>
+To: Johan Hovold <johan@kernel.org>
+Cc: shuah <shuah@kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, "open list:NFC SUBSYSTEM" <linux-wireless@vger.kernel.org>, chris@the-brannons.com, devel@driverdev.osuosl.org, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, santhameena13@gmail.com, kirk@reisers.ca, Johan Hedberg <johan.hedberg@gmail.com>, Arnd Bergmann <arnd@arndb.de>, samuel.thibault@ens-lyon.org, m.maya.nakamura@gmail.com, zhongjiang@huawei.com, Greg KH <gregkh@linuxfoundation.org>, speakup@linux-speakup.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Bluez mailing list <linux-bluetooth@vger.kernel.org>, netdev <netdev@vger.kernel.org>, nishka.dasgupta_ug18@ashoka.edu.in
 List-Id: linux-serial@vger.kernel.org
 
-DQoNCj4gLS0tLS3Tyrz+1K28/i0tLS0tDQo+ILeivP7IyzogbGludXgta2VybmVsLW93bmVyQHZn
-ZXIua2VybmVsLm9yZw0KPiBbbWFpbHRvOmxpbnV4LWtlcm5lbC1vd25lckB2Z2VyLmtlcm5lbC5v
-cmddILT6se0gR3JlZyBLcm9haC1IYXJ0bWFuDQo+ILeiy83KsbzkOiAyMDE5xOox1MIzMcjVIDE4
-OjU1DQo+IMrVvP7IyzogTGksUm9uZ3FpbmcgPGxpcm9uZ3FpbmdAYmFpZHUuY29tPg0KPiCzrcvN
-OiBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwu
-b3JnOw0KPiBqc2xhYnlAc3VzZS5jb207IGdrb2hsaUBjb2RlYXVyb3JhLm9yZw0KPiDW98ziOiBS
-ZTogW1BBVENIXVtWNV0gdHR5OiBmaXggcmFjZSBiZXR3ZWVuIGZsdXNoX3RvX2xkaXNjIGFuZCB0
-dHlfb3Blbg0KPiANCj4gT24gVGh1LCBKYW4gMzEsIDIwMTkgYXQgMDU6NDM6MTZQTSArMDgwMCwg
-TGkgUm9uZ1Fpbmcgd3JvdGU6DQo+ID4gVGhlcmUgc3RpbGwgaXMgYSByYWNlIHdpbmRvdyBhZnRl
-ciB0aGUgY29tbWl0IGIwMjdlMjI5OGJkNTg4DQo+ID4gKCJ0dHk6IGZpeCBkYXRhIHJhY2UgYmV0
-d2VlbiB0dHlfaW5pdF9kZXYgYW5kIGZsdXNoIG9mIGJ1ZiIpLCBhbmQgd2UNCj4gPiBlbmNvdW50
-ZXJlZCB0aGlzIGNyYXNoIGlzc3VlIGlmIHJlY2VpdmVfYnVmIGNhbGwgY29tZXMgYmVmb3JlIHR0
-eQ0KPiA+IGluaXRpYWxpemF0aW9uIGNvbXBsZXRlcyBpbiB0dHlfb3BlbiBhbmQNCj4gPiB0dHkt
-PmRyaXZlcl9kYXRhIG1heSBiZSBOVUxMLg0KPiA+DQo+ID4gQ1BVMCAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgIENQVTENCj4gPiAtLS0tICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgLS0tLQ0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0
-dHlfb3Blbg0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdHR5X2luaXRf
-ZGV2DQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHR0eV9sZGlzY191
-bmxvY2sNCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzY2hlZHVs
-ZSBmbHVzaF90b19sZGlzYw0KPiA+IHJlY2VpdmVfYnVmDQo+ID4gICB0dHlfcG9ydF9kZWZhdWx0
-X3JlY2VpdmVfYnVmDQo+ID4gICAgdHR5X2xkaXNjX3JlY2VpdmVfYnVmDQo+ID4gICAgIG5fdHR5
-X3JlY2VpdmVfYnVmX2NvbW1vbg0KPiA+ICAgICAgIF9fcmVjZWl2ZV9idWYNCj4gPiAgICAgICAg
-dWFydF9mbHVzaF9jaGFycw0KPiA+ICAgICAgICAgdWFydF9zdGFydA0KPiA+ICAgICAgICAgLyp0
-dHktPmRyaXZlcl9kYXRhIGlzIE5VTEwqLw0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgdHR5LT5vcHMtPm9wZW4NCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIC8qaW5pdCB0dHktPmRyaXZlcl9kYXRhKi8NCj4gPg0KPiA+IGl0IGNhbiBiZSBmaXhl
-ZCBieSBleHRlbmRpbmcgbGRpc2Mgc2VtYXBob3JlIGxvY2sgaW4gdHR5X2luaXRfZGV2IHRvDQo+
-ID4gZHJpdmVyX2RhdGEgaW5pdGlhbGl6ZWQgY29tcGxldGVseSBhZnRlciB0dHktPm9wcy0+b3Bl
-bigpLCBidXQgdGhpcw0KPiA+IHdpbGwgbGVhZCB0byBnZXQgbG9jayBvbiBvbmUgZnVuY3Rpb24g
-YW5kIHVubG9jayBpbiBzb21lIG90aGVyDQo+ID4gZnVuY3Rpb24sIGFuZCBoYXJkIHRvIG1haW50
-YWluLCBzbyBmaXggdGhpcyByYWNlIG9ubHkgYnkgY2hlY2tpbmcNCj4gPiB0dHktPmRyaXZlcl9k
-YXRhIHdoZW4gcmVjZWl2aW5nLCBhbmQgcmV0dXJuIGlmIHR0eS0+ZHJpdmVyX2RhdGENCj4gPiBp
-cyBOVUxMLCBhbmQgbl90dHlfcmVjZWl2ZV9idWZfY29tbW9uIG1heWJlIGNhbGxzIHVhcnRfdW50
-aHJvdHRsZSwgc28NCj4gPiBhZGQgdGhlIHNhbWUgY2hlY2sNCj4gPg0KPiA+IFNpZ25lZC1vZmYt
-Ynk6IFdhbmcgTGkgPHdhbmdsaTM5QGJhaWR1LmNvbT4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBaaGFu
-ZyBZdSA8emhhbmd5dTMxQGJhaWR1LmNvbT4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBMaSBSb25nUWlu
-ZyA8bGlyb25ncWluZ0BiYWlkdS5jb20+DQo+ID4gLS0tDQo+ID4gVjU6IG1vdmUgY2hlY2sgaW50
-byB1YXJ0X3N0YXJ0IGZyb20gbl90dHlfcmVjZWl2ZV9idWZfY29tbW9uDQo+ID4gVjQ6IGFkZCB2
-ZXJzaW9uIGluZm9ybWF0aW9uDQo+ID4gVjM6IG5vdCB1c2VkIGxkaXNjIHNlbWFwaG9yZSBsb2Nr
-LCBvbmx5IGNoZWNraW5nIHR0eS0+ZHJpdmVyX2RhdGEgd2l0aA0KPiA+IE5VTEwNCj4gPiBWMjog
-Zml4IGJ1aWxkaW5nIGVycm9yIGJ5IEVYUE9SVF9TWU1CT0wgdHR5X2xkaXNjX3VubG9jaw0KPiA+
-IFYxOiBleHRlbmQgbGRpc2MgbG9jayB0byBwcm90ZWN0IHRoYXQgdHR5LT5kcml2ZXJfZGF0YSBp
-cyBpbml0ZWQNCj4gPg0KPiA+ICBkcml2ZXJzL3R0eS9zZXJpYWwvc2VyaWFsX2NvcmUuYyB8IDYg
-KysrKysrDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCA2IGluc2VydGlvbnMoKykNCj4gPg0KPiA+IGRp
-ZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvc2VyaWFsX2NvcmUuYw0KPiA+IGIvZHJpdmVy
-cy90dHkvc2VyaWFsL3NlcmlhbF9jb3JlLmMNCj4gPiBpbmRleCA1YzAxYmI2ZDFjMjQuLjU1NmY1
-MGFhMWI1OCAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvc2VyaWFsX2NvcmUu
-Yw0KPiA+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9zZXJpYWxfY29yZS5jDQo+ID4gQEAgLTEz
-MCw2ICsxMzAsOSBAQCBzdGF0aWMgdm9pZCB1YXJ0X3N0YXJ0KHN0cnVjdCB0dHlfc3RydWN0ICp0
-dHkpDQo+ID4gIAlzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0Ow0KPiA+ICAJdW5zaWduZWQgbG9uZyBm
-bGFnczsNCj4gPg0KPiA+ICsJaWYgKCFzdGF0ZSkNCj4gPiArCQlyZXR1cm47DQo+ID4gKw0KPiA+
-ICAJcG9ydCA9IHVhcnRfcG9ydF9sb2NrKHN0YXRlLCBmbGFncyk7DQo+ID4gIAlfX3VhcnRfc3Rh
-cnQodHR5KTsNCj4gPiAgCXVhcnRfcG9ydF91bmxvY2socG9ydCwgZmxhZ3MpOw0KPiA+IEBAIC03
-MjcsNiArNzMwLDkgQEAgc3RhdGljIHZvaWQgdWFydF91bnRocm90dGxlKHN0cnVjdCB0dHlfc3Ry
-dWN0ICp0dHkpDQo+ID4gIAl1cHN0YXRfdCBtYXNrID0gVVBTVEFUX1NZTkNfRklGTzsNCj4gPiAg
-CXN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQ7DQo+ID4NCj4gPiArCWlmICghc3RhdGUpDQo+ID4gKwkJ
-cmV0dXJuOw0KPiA+ICsNCj4gPiAgCXBvcnQgPSB1YXJ0X3BvcnRfcmVmKHN0YXRlKTsNCj4gPiAg
-CWlmICghcG9ydCkNCj4gPiAgCQlyZXR1cm47DQo+ID4gLS0NCj4gPiAyLjE2LjINCj4gDQo+IA0K
-PiBIbSwgSSB3cm90ZSB0aGlzIHBhdGNoLCBub3QgeW91LCByaWdodD8gIFNvIHNob3VsZG4ndCBJ
-IGdldCB0aGUNCj4gY3JlZGl0L2JsYW1lIGZvciBpdD8gIDopDQo+IA0KDQpXZWxjb21lIHlvdSB0
-byBhZGQgeW91ciBjcmVkaXQvYmxhbWUvc2lnbmF0dXJlDQphbmQgSSBhbSBub3QgY2xlYXIgdGhl
-IHJ1bGUsIGFuZCBiZSBhZnJhaWQgdG8gYmVjb21lIGZha2UNCg0KPiBBbHNvLCB0aGlzIGlzIGEg
-YnVnIGluIHRoZSBzZXJpYWwgY29kZSwgbm90IG5lY2Vzc2FyaWx5IHRoZSB0dHkgbGF5ZXIsDQo+
-IHNvIHRoZSBzdWJqZWN0IHNob3VsZCBjaGFuZ2UuLi4NCj4gDQo+IEFuZCB5b3UgZGlkIHRlc3Qg
-dGhpcywgcmlnaHQ/DQoNCkkgYWRkIHNvbWUgZGVsYXkgaW4gdHR5X2luaXRfZGV2IHRvIHNpbXVs
-YXRlIHRoaXMgaXNzdWUuICBpdCBjYW4gZml4IHRoaXMgbXkgaXNzdWUuDQoNClRoYW5rcw0KDQot
-Um9uZ1FpbmcNCg0KPiANCj4gdGhhbmtzLA0KPiANCj4gZ3JlZyBrLWgNCg==
+Hi Johan,
+
+>>> On Fri, Jan 25, 2019 at 04:29:05PM -0700, Shuah Khan wrote:
+>>>> tty_set_termios() has the following WARMN_ON which can be triggered with a
+>>>> syscall to invoke TIOCGETD __NR_ioctl.
+> 
+> You meant TIOCSETD here, and in fact its the call which sets the uart
+> protocol that triggers the warning.
+> 
+>>>> WARN_ON(tty->driver->type == TTY_DRIVER_TYPE_PTY &&
+>>>>                 tty->driver->subtype == PTY_TYPE_MASTER);
+>>>> Reference: https://syzkaller.appspot.com/bug?id=2410d22f1d8e5984217329dd0884b01d99e3e48d
+>>>> 
+>>>> A simple change would have been to print error message instead of WARN_ON.
+>>>> However, the callers assume that tty_set_termios() always returns 0 and
+>>>> don't check return value. The complete solution is fixing all the callers
+>>>> to check error and bail out to fix the WARN_ON.
+>>>> 
+>>>> This fix changes tty_set_termios() to return error and all the callers
+>>>> to check error and bail out. The reproducer is used to reproduce the
+>>>> problem and verify the fix.
+>>> 
+>>>> --- a/drivers/bluetooth/hci_ldisc.c
+>>>> +++ b/drivers/bluetooth/hci_ldisc.c
+>>>> @@ -321,6 +321,8 @@ void hci_uart_set_flow_control(struct hci_uart *hu, bool enable)
+>>>>  		status = tty_set_termios(tty, &ktermios);
+>>>>  		BT_DBG("Disabling hardware flow control: %s",
+>>>>  		       status ? "failed" : "success");
+>>>> +		if (status)
+>>>> +			return;
+>>> 
+>>> Can that ldisc end up set on pty master?  And does it make any sense there?
+>> 
+>> The initial objective of the patch is to prevent the WARN_ON by making
+>> the change to return error instead of WARN_ON. However, without changes
+>> to places that don't check the return and keep making progress, there
+>> will be secondary problems.
+>> 
+>> Without this change to return here, instead of WARN_ON, it will fail
+>> with the following NULL pointer dereference at the next thing 
+>> hci_uart_set_flow_control() attempts.
+>> 
+>> status = tty->driver->ops->tiocmget(tty);
+>> 
+>> kernel: [10140.649783] BUG: unable to handle kernel NULL pointer 
+> 
+> That's a separate issue, which is being fixed:
+> 
+> 	https://lkml.kernel.org/r/20190130095938.GP3691@localhost
+> 
+>>> IOW, I don't believe that this patch makes any sense.  If anything,
+>>> we need to prevent unconditional tty_set_termios() on the path
+>>> that *does* lead to calling it for pty.
+>> 
+>> I don't think preventing unconditional tty_set_termios() is enough to
+>> prevent secondary problems such as the one above.
+>> 
+>> For example, the following call chain leads to the WARN_ON that was
+>> reported. Even if void hci_uart_set_baudrate() prevents the very first
+>> tty_set_termios() call, its caller hci_uart_setup() continues with
+>> more tty setup. It goes ahead to call driver setup callback. The
+>> driver callback goes on to do more setup calling tty_set_termios().
+>> 
+>> WARN_ON call path:
+>>  hci_uart_set_baudrate+0x1cc/0x250 drivers/bluetooth/hci_ldisc.c:378
+>>  hci_uart_setup+0xa2/0x490 drivers/bluetooth/hci_ldisc.c:401
+>>  hci_dev_do_open+0x6b1/0x1920 net/bluetooth/hci_core.c:1423
+>> 
+>> Once this WARN_ON is changed to return error, the following
+>> happens, when hci_uart_setup() does driver setup callback.
+>> 
+>> kernel: [10140.649836]  mrvl_setup+0x17/0x80 [hci_uart]
+>> kernel: [10140.649840]  hci_uart_setup+0x56/0x160 [hci_uart]
+>> kernel: [10140.649850]  hci_dev_do_open+0xe6/0x630 [bluetooth]
+>> kernel: [10140.649860]  hci_power_on+0x52/0x220 [bluetooth]
+>> 
+>> I think continuing to catch the invalid condition in tty_set_termios()
+>> and preventing progress by checking return value is a straight forward
+>> change to avoid secondary problems, and it might be difficult to catch
+>> all the cases where it could fail.
+> 
+> I agree with Al that this change doesn't make much sense. The WARN_ON
+> is there to catch any bugs leading to the termios being changed for a
+> master side pty. Those should bugs should be fixed, and not worked
+> around in order to silence a WARN_ON.
+> 
+> The problem started with 7721383f4199 ("Bluetooth: hci_uart: Support
+> operational speed during setup") which introduced a new way for how
+> tty_set_termios() could end up being called for a master pty.
+> 
+> As Al hinted at, setting these ldiscs for a master pty really makes no
+> sense and perhaps that is what we should prevent unless simply making
+> sure they do not call tty_set_termios() is sufficient for the time
+> being.
+> 
+> Finally, note that serdev never operates on a pty, and that this is only
+> an issue for (the three) line disciplines.
+
+I think for PTYs we should just fail setting the HCI line discipline. Fail early and just move on with life.
+
+Regards
+
+Marcel
