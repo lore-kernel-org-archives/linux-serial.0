@@ -1,47 +1,65 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH] tty: Fix WARNING in tty_set_termios
-Date: Thu, 31 Jan 2019 16:33:06 +0100
-Message-ID: <20190131153306.GT3691@localhost>
-References: <20190125232905.21727-1-shuah@kernel.org>
- <20190126041416.GF2217@ZenIV.linux.org.uk>
- <fe4018a7-19e4-cdd1-3095-bbe88a82788e@kernel.org>
- <20190130103227.GR3691@localhost>
- <D0EE5C33-2930-4286-998C-822DD7898B76@holtmann.org>
+From: Nathan Chancellor <natechancellor@gmail.com>
+Subject: [PATCH] serial: mps2-uart: Add parentheses around conditional in
+ mps2_uart_shutdown
+Date: Thu, 31 Jan 2019 11:06:28 -0700
+Message-ID: <20190131180627.19944-1-natechancellor@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <D0EE5C33-2930-4286-998C-822DD7898B76@holtmann.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Marcel Holtmann <marcel@holtmann.org>
-Cc: Johan Hovold <johan@kernel.org>, shuah <shuah@kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, "open list:NFC SUBSYSTEM" <linux-wireless@vger.kernel.org>, chris@the-brannons.com, devel@driverdev.osuosl.org, Rob Herring <robh@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, santhameena13@gmail.com, kirk@reisers.ca, Johan Hedberg <johan.hedberg@gmail.com>, Arnd Bergmann <arnd@arndb.de>, samuel.thibault@ens-lyon.org, m.maya.nakamura@gmail.com, zhongjiang@huawei.com, Greg KH <gregkh@linuxfoundation.org>, speakup@linux-speakup.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Bluez mailing list <linux-bluetooth@vger.kernel.org>, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Vladimir Murzin <vladimir.murzin@arm.com>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Nick Desaulniers <ndesaulniers@google.com>, Jiri Slaby <jslaby@suse.com>, Liviu Dudau <liviu.dudau@arm.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>, Nathan Chancellor <natechancellor@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jan 31, 2019 at 04:18:33PM +0100, Marcel Holtmann wrote:
+Clang warns:
 
-> > I agree with Al that this change doesn't make much sense. The WARN_ON
-> > is there to catch any bugs leading to the termios being changed for a
-> > master side pty. Those should bugs should be fixed, and not worked
-> > around in order to silence a WARN_ON.
-> > 
-> > The problem started with 7721383f4199 ("Bluetooth: hci_uart: Support
-> > operational speed during setup") which introduced a new way for how
-> > tty_set_termios() could end up being called for a master pty.
-> > 
-> > As Al hinted at, setting these ldiscs for a master pty really makes no
-> > sense and perhaps that is what we should prevent unless simply making
-> > sure they do not call tty_set_termios() is sufficient for the time
-> > being.
-> > 
-> > Finally, note that serdev never operates on a pty, and that this is only
-> > an issue for (the three) line disciplines.
-> 
-> I think for PTYs we should just fail setting the HCI line discipline.
-> Fail early and just move on with life.
+drivers/tty/serial/mps2-uart.c:351:6: warning: logical not is only
+applied to the left hand side of this bitwise operator
+[-Wlogical-not-parentheses]
+        if (!mps_port->flags & UART_PORT_COMBINED_IRQ) {
+            ^                ~
+drivers/tty/serial/mps2-uart.c:351:6: note: add parentheses after the
+'!' to evaluate the bitwise operator first
+        if (!mps_port->flags & UART_PORT_COMBINED_IRQ) {
+            ^
+             (                                       )
+drivers/tty/serial/mps2-uart.c:351:6: note: add parentheses around left
+hand side expression to silence this warning
+        if (!mps_port->flags & UART_PORT_COMBINED_IRQ) {
+            ^
+            (               )
+1 warning generated.
 
-Sounds good to me. At least for the pty master. There may be some people
-trying to use a bluetooth device connected to a remote serial port (I've
-seen descriptions of such setups at least), and maybe we need not prevent
-that.
+As it was intended for this check to be the inverse of the one at the
+bottom of mps2_init_port, add parentheses around the whole conditional.
 
-Johan
+Fixes: 775ea4ea2fd9 ("serial: mps2-uart: support combined irq")
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+---
+ drivers/tty/serial/mps2-uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/mps2-uart.c b/drivers/tty/serial/mps2-uart.c
+index 4404eb7d118f..587b42f754cb 100644
+--- a/drivers/tty/serial/mps2-uart.c
++++ b/drivers/tty/serial/mps2-uart.c
+@@ -348,7 +348,7 @@ static void mps2_uart_shutdown(struct uart_port *port)
+ 
+ 	mps2_uart_write8(port, control, UARTn_CTRL);
+ 
+-	if (!mps_port->flags & UART_PORT_COMBINED_IRQ) {
++	if (!(mps_port->flags & UART_PORT_COMBINED_IRQ)) {
+ 		free_irq(mps_port->rx_irq, mps_port);
+ 		free_irq(mps_port->tx_irq, mps_port);
+ 	}
+-- 
+2.20.1
