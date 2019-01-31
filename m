@@ -1,148 +1,182 @@
-From: "Li,Rongqing" <lirongqing@baidu.com>
-Subject: =?utf-8?B?562U5aSNOiDnrZTlpI06IOetlOWkjTogW1BBVENIXVt2NF0gdHR5OiBmaXgg?=
- =?utf-8?B?cmFjZSBiZXR3ZWVuIGZsdXNoX3RvX2xkaXNjIGFuZCB0dHlfb3Blbg==?=
-Date: Thu, 31 Jan 2019 07:40:48 +0000
-Message-ID: <c8a2c4dc33834ee7bb0f5a3f606c4546@baidu.com>
-References: <1547803637-29135-1-git-send-email-lirongqing@baidu.com>
- <20190130101914.GA30587@kroah.com>
- <f13cb07ed77d428b8b43459ff71adcae@baidu.com>
- <20190130131641.GA10795@kroah.com>
- <b1388c835686492fbbfa91e9711470d4@baidu.com>
- <20190131065215.GB30992@kroah.com>
+From: Zhiyong Tao <zhiyong.tao@mediatek.com>
+Subject: Re: [PATCH v6 5/6] dt-bindings: pinctrl: mt8183: add binding
+ document
+Date: Thu, 31 Jan 2019 16:30:22 +0800
+Message-ID: <1548923422.4739.10.camel@mhfsdcap03>
+References: <1548317240-44682-1-git-send-email-erin.lo@mediatek.com>
+         <1548317240-44682-6-git-send-email-erin.lo@mediatek.com>
+         <20190130161714.GA24352@bogus>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190131065215.GB30992@kroah.com>
-Content-Language: zh-CN
+In-Reply-To: <20190130161714.GA24352@bogus>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: "jslaby@suse.com" <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "gkohli@codeaurora.org" <gkohli@codeaurora.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Rob Herring <robh@kernel.org>
+Cc: Erin Lo <erin.lo@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, devicetree@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, yingjoe.chen@mediatek.com, mars.cheng@mediatek.com, eddie.huang@mediatek.com, linux-clk@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-DQoNCj4gLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0KPiDlj5Hku7bkuro6IEdyZWcgS0ggW21haWx0
-bzpncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZ10NCj4g5Y+R6YCB5pe26Ze0OiAyMDE55bm0Meac
-iDMx5pelIDE0OjUyDQo+IOaUtuS7tuS6ujogTGksUm9uZ3FpbmcgPGxpcm9uZ3FpbmdAYmFpZHUu
-Y29tPg0KPiDmioTpgIE6IGpzbGFieUBzdXNlLmNvbTsgbGludXgta2VybmVsQHZnZXIua2VybmVs
-Lm9yZzsgZ2tvaGxpQGNvZGVhdXJvcmEub3JnOw0KPiBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwu
-b3JnDQo+IOS4u+mimDogUmU6IOetlOWkjTog562U5aSNOiBbUEFUQ0hdW3Y0XSB0dHk6IGZpeCBy
-YWNlIGJldHdlZW4gZmx1c2hfdG9fbGRpc2MgYW5kDQo+IHR0eV9vcGVuDQo+IA0KPiBPbiBUaHUs
-IEphbiAzMSwgMjAxOSBhdCAwMjoxNTozNUFNICswMDAwLCBMaSxSb25ncWluZyB3cm90ZToNCj4g
-Pg0KPiA+DQo+ID4gPiAtLS0tLemCruS7tuWOn+S7ti0tLS0tDQo+ID4gPiDlj5Hku7bkuro6IEdy
-ZWcgS0ggW21haWx0bzpncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZ10NCj4gPiA+IOWPkemAgeaX
-tumXtDogMjAxOeW5tDHmnIgzMOaXpSAyMToxNw0KPiA+ID4g5pS25Lu25Lq6OiBMaSxSb25ncWlu
-ZyA8bGlyb25ncWluZ0BiYWlkdS5jb20+DQo+ID4gPiDmioTpgIE6IGpzbGFieUBzdXNlLmNvbTsg
-bGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsNCj4gPiA+IGdrb2hsaUBjb2RlYXVyb3JhLm9y
-ZzsgbGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZw0KPiA+ID4g5Li76aKYOiBSZTog562U5aSN
-OiBbUEFUQ0hdW3Y0XSB0dHk6IGZpeCByYWNlIGJldHdlZW4gZmx1c2hfdG9fbGRpc2MgYW5kDQo+
-ID4gPiB0dHlfb3Blbg0KPiA+ID4NCj4gPiA+IE9uIFdlZCwgSmFuIDMwLCAyMDE5IGF0IDEyOjQ4
-OjQyUE0gKzAwMDAsIExpLFJvbmdxaW5nIHdyb3RlOg0KPiA+ID4gPg0KPiA+ID4gPg0KPiA+ID4g
-PiA+IC0tLS0t6YKu5Lu25Y6f5Lu2LS0tLS0NCj4gPiA+ID4gPiDlj5Hku7bkuro6IGxpbnV4LWtl
-cm5lbC1vd25lckB2Z2VyLmtlcm5lbC5vcmcNCj4gPiA+ID4gPiBbbWFpbHRvOmxpbnV4LWtlcm5l
-bC1vd25lckB2Z2VyLmtlcm5lbC5vcmddIOS7o+ihqCBHcmVnIEtIDQo+ID4gPiA+ID4g5Y+R6YCB
-5pe26Ze0OiAyMDE55bm0MeaciDMw5pelIDE4OjE5DQo+ID4gPiA+ID4g5pS25Lu25Lq6OiBMaSxS
-b25ncWluZyA8bGlyb25ncWluZ0BiYWlkdS5jb20+DQo+ID4gPiA+ID4g5oqE6YCBOiBqc2xhYnlA
-c3VzZS5jb207IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7DQo+ID4gPiA+ID4gZ2tvaGxp
-QGNvZGVhdXJvcmEub3JnDQo+ID4gPiA+ID4g5Li76aKYOiBSZTogW1BBVENIXVt2NF0gdHR5OiBm
-aXggcmFjZSBiZXR3ZWVuIGZsdXNoX3RvX2xkaXNjIGFuZA0KPiA+ID4gPiA+IHR0eV9vcGVuDQo+
-ID4gPiA+ID4NCj4gPiA+ID4gPiBPbiBGcmksIEphbiAxOCwgMjAxOSBhdCAwNToyNzoxN1BNICsw
-ODAwLCBMaSBSb25nUWluZyB3cm90ZToNCj4gPiA+ID4gPiA+IFRoZXJlIHN0aWxsIGlzIGEgcmFj
-ZSB3aW5kb3cgYWZ0ZXIgdGhlIGNvbW1pdCBiMDI3ZTIyOThiZDU4OA0KPiA+ID4gPiA+ID4gKCJ0
-dHk6IGZpeCBkYXRhIHJhY2UgYmV0d2VlbiB0dHlfaW5pdF9kZXYgYW5kIGZsdXNoIG9mIGJ1ZiIp
-LA0KPiA+ID4gPiA+ID4gYW5kIHdlIGVuY291bnRlcmVkIHRoaXMgY3Jhc2ggaXNzdWUgaWYgcmVj
-ZWl2ZV9idWYgY2FsbCBjb21lcw0KPiA+ID4gPiA+ID4gYmVmb3JlIHR0eSBpbml0aWFsaXphdGlv
-biBjb21wbGV0ZXMgaW4gbl90dHlfb3BlbiBhbmQNCj4gPiA+ID4gPiA+IHR0eS0+ZHJpdmVyX2Rh
-dGEgbWF5IGJlIE5VTEwuDQo+ID4gPiA+ID4gPg0KPiA+ID4gPiA+ID4gQ1BVMCAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIENQVTENCj4gPiA+ID4gPiA+IC0tLS0gICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAtLS0tDQo+ID4gPiA+ID4gPiAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICBuX3R0eV9vcGVuDQo+ID4gPiA+ID4gPiAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIHR0eV9pbml0X2Rldg0KPiA+ID4gPiA+ID4gICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHR0eV9sZGlzY191bmxvY2sNCj4gPiA+ID4gPiA+
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNjaGVkdWxlDQo+IGZsdXNo
-X3RvX2xkaXNjDQo+ID4gPiA+ID4gPiByZWNlaXZlX2J1Zg0KPiA+ID4gPiA+ID4gICB0dHlfcG9y
-dF9kZWZhdWx0X3JlY2VpdmVfYnVmDQo+ID4gPiA+ID4gPiAgICB0dHlfbGRpc2NfcmVjZWl2ZV9i
-dWYNCj4gPiA+ID4gPiA+ICAgICBuX3R0eV9yZWNlaXZlX2J1Zl9jb21tb24NCj4gPiA+ID4gPiA+
-ICAgICAgIF9fcmVjZWl2ZV9idWYNCj4gPiA+ID4gPiA+ICAgICAgICB1YXJ0X2ZsdXNoX2NoYXJz
-DQo+ID4gPiA+ID4gPiAgICAgICAgIHVhcnRfc3RhcnQNCj4gPiA+ID4gPiA+ICAgICAgICAgLyp0
-dHktPmRyaXZlcl9kYXRhIGlzIE5VTEwqLw0KPiA+ID4gPiA+ID4gICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICB0dHktPm9wcy0+b3Blbg0KPiA+ID4gPiA+ID4gICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAvKmluaXQgdHR5LT5kcml2ZXJfZGF0YSovDQo+ID4gPiA+
-ID4gPg0KPiA+ID4gPiA+ID4gaXQgY2FuIGJlIGZpeGVkIGJ5IGV4dGVuZGluZyBsZGlzYyBzZW1h
-cGhvcmUgbG9jayBpbg0KPiA+ID4gPiA+ID4gdHR5X2luaXRfZGV2IHRvIGRyaXZlcl9kYXRhIGlu
-aXRpYWxpemVkIGNvbXBsZXRlbHkgYWZ0ZXINCj4gPiA+ID4gPiA+IHR0eS0+b3BzLT5vcGVuKCks
-IGJ1dCB0aGlzIHdpbGwgbGVhZCB0byBwdXQgbG9jayBvbiBvbmUNCj4gPiA+ID4gPiA+IGZ1bmN0
-aW9uIGFuZCB1bmxvY2sgaW4gc29tZSBvdGhlciBmdW5jdGlvbiwgYW5kIGhhcmQgdG8NCj4gPiA+
-ID4gPiA+IG1haW50YWluLCBzbyBmaXggdGhpcyByYWNlIG9ubHkgYnkgY2hlY2tpbmcNCj4gPiA+
-ID4gPiA+IHR0eS0+ZHJpdmVyX2RhdGEgd2hlbiByZWNlaXZpbmcsIGFuZCByZXR1cm4gaWYNCj4g
-PiA+ID4gPiA+IHR0eS0+dHR5LT5kcml2ZXJfZGF0YQ0KPiA+ID4gPiA+ID4gaXMgTlVMTA0KPiA+
-ID4gPiA+ID4NCj4gPiA+ID4gPiA+IFNpZ25lZC1vZmYtYnk6IFdhbmcgTGkgPHdhbmdsaTM5QGJh
-aWR1LmNvbT4NCj4gPiA+ID4gPiA+IFNpZ25lZC1vZmYtYnk6IFpoYW5nIFl1IDx6aGFuZ3l1MzFA
-YmFpZHUuY29tPg0KPiA+ID4gPiA+ID4gU2lnbmVkLW9mZi1ieTogTGkgUm9uZ1FpbmcgPGxpcm9u
-Z3FpbmdAYmFpZHUuY29tPg0KPiA+ID4gPiA+ID4gLS0tDQo+ID4gPiA+ID4gPiBWNDogYWRkIHZl
-cnNpb24gaW5mb3JtYXRpb24NCj4gPiA+ID4gPiA+IFYzOiBub3QgdXNlZCBsZGlzYyBzZW1hcGhv
-cmUgbG9jaywgb25seSBjaGVja2luZw0KPiA+ID4gPiA+ID4gdHR5LT5kcml2ZXJfZGF0YSB3aXRo
-IE5VTEwNCj4gPiA+ID4gPiA+IFYyOiBmaXggYnVpbGRpbmcgZXJyb3IgYnkgRVhQT1JUX1NZTUJP
-TCB0dHlfbGRpc2NfdW5sb2NrDQo+ID4gPiA+ID4gPiBWMTogZXh0ZW5kIGxkaXNjIGxvY2sgdG8g
-cHJvdGVjdCB0aGF0IHR0eS0+ZHJpdmVyX2RhdGEgaXMNCj4gPiA+ID4gPiA+IGluaXRlZA0KPiA+
-ID4gPiA+ID4NCj4gPiA+ID4gPiA+IGRyaXZlcnMvdHR5L3R0eV9wb3J0LmMgfCAzICsrKw0KPiA+
-ID4gPiA+ID4gIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKykNCj4gPiA+ID4gPiA+DQo+
-ID4gPiA+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvdHR5X3BvcnQuYyBiL2RyaXZlcnMv
-dHR5L3R0eV9wb3J0LmMNCj4gPiA+ID4gPiA+IGluZGV4DQo+ID4gPiA+ID4gPiAwNDRjM2NiZGNm
-YTQuLjg2ZDBiZWMzODMyMiAxMDA2NDQNCj4gPiA+ID4gPiA+IC0tLSBhL2RyaXZlcnMvdHR5L3R0
-eV9wb3J0LmMNCj4gPiA+ID4gPiA+ICsrKyBiL2RyaXZlcnMvdHR5L3R0eV9wb3J0LmMNCj4gPiA+
-ID4gPiA+IEBAIC0zMSw2ICszMSw5IEBAIHN0YXRpYyBpbnQNCj4gPiA+ID4gPiA+IHR0eV9wb3J0
-X2RlZmF1bHRfcmVjZWl2ZV9idWYoc3RydWN0DQo+ID4gPiA+ID4gPiB0dHlfcG9ydA0KPiA+ID4g
-PiA+ICpwb3J0LA0KPiA+ID4gPiA+ID4gIAlpZiAoIXR0eSkNCj4gPiA+ID4gPiA+ICAJCXJldHVy
-biAwOw0KPiA+ID4gPiA+ID4NCj4gPiA+ID4gPiA+ICsJaWYgKCF0dHktPmRyaXZlcl9kYXRhKQ0K
-PiA+ID4gPiA+ID4gKwkJcmV0dXJuIDA7DQo+ID4gPiA+ID4gPiArDQo+ID4gPiA+ID4NCj4gPiA+
-ID4gPiBIb3cgaXMgdGhpcyB3b3JraW5nPyAgV2hhdCBpcyBzZXR0aW5nIGRyaXZlcl9kYXRhIHRv
-IE5VTEwgdG8NCj4gPiA+ID4gPiAic3RvcCIgdGhpcw0KPiA+ID4gcmFjZT8NCj4gPiA+ID4gPg0K
-PiA+ID4gPg0KPiA+ID4gPg0KPiA+ID4gPiBpZiB0dHktPmRyaXZlcl9kYXRhIGlzIE5VTEwgYW5k
-IHJldHVybiwNCj4gPiA+ID4gdHR5X3BvcnRfZGVmYXVsdF9yZWNlaXZlX2J1ZiB3aWxsIG5vdCBz
-dGVwIHRvIHVhcnRfc3RhcnQgd2hpY2gNCj4gPiA+ID4gYWNjZXNzIHR0eS0+ZHJpdmVyX2RhdGEg
-YW5kIHRyaWdnZXIgcGFuaWMgYmVmb3JlIHR0eV9vcGVuLCBzbyBpdA0KPiA+ID4gPiBjYW4gZml4
-IHRoZSBzeXN0ZW0gcGFuaWMNCj4gPiA+ID4NCj4gPiA+ID4gPiBUaGVyZSdzIG5vIHJlcXVpcmVt
-ZW50IHRoYXQgYSB0dHkgZHJpdmVyIHNldCB0aGlzIGZpZWxkIHRvIE5VTEwNCj4gPiA+ID4gPiB3
-aGVuIGl0IGlzDQo+ID4gPiAiZG9uZSINCj4gPiA+ID4gPiB3aXRoIHRoZSB0dHkgZGV2aWNlLCBz
-byBJIHRoaW5rIHlvdSBhcmUganVzdCBnZXR0aW5nIGx1Y2t5IGluDQo+ID4gPiA+ID4gdGhhdCB5
-b3VyIHNwZWNpZmljIGRyaXZlciBoYXBwZW5zIHRvIGJlIGRvaW5nIHRoaXMuDQo+ID4gPiA+ID4N
-Cj4gPiA+ID4NCj4gPiA+ID4gd2hlbiB0dHlfb3BlbiBpcyBydW5uaW5nLCB0dHkgaXMgYWxsb2Nh
-dGVkIGJ5IGt6YWxsb2MgaW4NCj4gPiA+ID4gdHR5X2luaXRfZGV2IHdoaWNoIGNhbGxlZCBieSB0
-dHlfb3Blbl9ieV9kcml2ZXIsIHR0eSBpcyBpbml0ZWQgdG8NCj4gPiA+ID4gMA0KPiA+ID4gPg0K
-PiA+ID4gPiA+IFdoYXQgZHJpdmVyIGFyZSB5b3UgdGVzdGluZyB0aGlzIGFnYWluc3Q/DQo+ID4g
-PiA+ID4NCj4gPiA+ID4NCj4gPiA+ID4gODI1MA0KPiA+ID4NCj4gPiA+IE9rLCBhcyB0aGlzIGlz
-IHNwZWNpZmljIHRvIHRoZSB1YXJ0IGNvcmUsIGhvdyBhYm91dCB0aGlzIHBhdGNoIGluc3RlYWQ6
-DQo+ID4gPg0KPiA+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9zZXJpYWxfY29y
-ZS5jDQo+ID4gPiBiL2RyaXZlcnMvdHR5L3NlcmlhbC9zZXJpYWxfY29yZS5jDQo+ID4gPiBpbmRl
-eCA1YzAxYmI2ZDFjMjQuLmI1NmE2MjUwZGYzZiAxMDA2NDQNCj4gPiA+IC0tLSBhL2RyaXZlcnMv
-dHR5L3NlcmlhbC9zZXJpYWxfY29yZS5jDQo+ID4gPiArKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwv
-c2VyaWFsX2NvcmUuYw0KPiA+ID4gQEAgLTEzMCw2ICsxMzAsOSBAQCBzdGF0aWMgdm9pZCB1YXJ0
-X3N0YXJ0KHN0cnVjdCB0dHlfc3RydWN0ICp0dHkpDQo+ID4gPiAgCXN0cnVjdCB1YXJ0X3BvcnQg
-KnBvcnQ7DQo+ID4gPiAgCXVuc2lnbmVkIGxvbmcgZmxhZ3M7DQo+ID4gPg0KPiA+ID4gKwlpZiAo
-IXN0YXRlKQ0KPiA+ID4gKwkJcmV0dXJuOw0KPiA+ID4gKw0KPiA+ID4gIAlwb3J0ID0gdWFydF9w
-b3J0X2xvY2soc3RhdGUsIGZsYWdzKTsNCj4gPiA+ICAJX191YXJ0X3N0YXJ0KHR0eSk7DQo+ID4g
-PiAgCXVhcnRfcG9ydF91bmxvY2socG9ydCwgZmxhZ3MpOw0KPiA+DQo+ID4NCj4gPiBJZiBtb3Zl
-IHRoZSBjaGVjayBpbnRvIHVhcnRfc3RhcnQsIGkgYW0gYWZyYWlkIHRoYXQgaXQgbWF5YmUgbm90
-IGZ1bGx5DQo+ID4gZml4IHRoaXMgaXNzdWUsIFNpbmNlIG5fdHR5X3JlY2VpdmVfYnVmX2NvbW1v
-biBtYXliZSBjYWxsDQo+ID4gbl90dHlfY2hlY2tfdGhyb3R0bGUvIHR0eV91bnRocm90dGxlX3Nh
-ZmUgd2hpY2ggbWF5YmUgdXNlIHRoZQ0KPiA+IHR0eS0+ZHJpdmVyX2RhdGENCj4gPg0KPiA+IGlm
-IHR0eSBpcyBub3QgZnVsbHkgb3BlbmVkLCBJIHRoaW5rIG5vIGdhaW4gdG8gc3RlcCBpbnRvIG1v
-cmUgZnVuY3Rpb24NCj4gDQo+IEJ1dCBhcyBJIHNhaWQsIHRoZSB0dHkgY29yZSBoYXMgbm8ga25v
-d2xlZGdlIG9mIHRoZSAiZHJpdmVyX2RhdGEiLCBmaWVsZC4gIEl0DQo+IGRvZXMgbm90IGtub3cg
-aWYgYSBkcml2ZXIgcmVhbGx5IGlzIGV2ZW4gdXNpbmcgdGhhdCBmaWVsZCwgc28gaXQgbWVhbnMg
-bm90aGluZyB0bw0KPiB0aGUgdHR5IGNvcmUsIHNvIGl0IGNhbiBub3QgY2hlY2sgaXQuICBZb3Vy
-IHNwZWNpZmljIHR0eSBkcml2ZXIgZG9lcyBoYXBwZW4gdG8gdXNlDQo+IGl0LCBzbyBpdCBjYW4g
-Y2hlY2sgaXQuDQo+IA0KPiBJZiB5b3UgYWxzbyBuZWVkIHRvIGNoZWNrIHRoaXMgaW4gdW50aHJv
-dHRsZSwgaG93IGFib3V0IHRoaXMgcGF0Y2ggdG9vPw0KPiBEb2VzIHRoZSBjb21iaW5hdGlvbiBv
-ZiB0aGVzZSB0d28gcGF0Y2hlcyBzb2x2ZSB0aGUgcHJvYmxlbSBmb3IgeW91cg0KPiBzeXN0ZW1z
-Pw0KPiANCj4gdGhhbmtzLA0KPiANCj4gZ3JlZyBrLWgNCj4gDQoNClRoYW5rcyBmb3IgeW91IGV4
-cGxhbmF0aW9uLCBJIHNlZSBub3cNCllvdXIgc3VnZ2VzdGlvbiBzaG91bGQgd29yaywgSSB3aWxs
-IHNlbmQgVjUgYmFzZWQgb24geW91ciBzdWdnZXN0aW9uDQoNCi1Sb25nUWluZw0KDQo+IA0KPiBk
-aWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL3NlcmlhbF9jb3JlLmMgYi9kcml2ZXJzL3R0
-eS9zZXJpYWwvc2VyaWFsX2NvcmUuYw0KPiBpbmRleCA1YzAxYmI2ZDFjMjQuLmUzM2Q0YzE4MTEy
-MyAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL3NlcmlhbF9jb3JlLmMNCj4gKysr
-IGIvZHJpdmVycy90dHkvc2VyaWFsL3NlcmlhbF9jb3JlLmMNCj4gQEAgLTcyNyw2ICs3MjcsOSBA
-QCBzdGF0aWMgdm9pZCB1YXJ0X3VudGhyb3R0bGUoc3RydWN0IHR0eV9zdHJ1Y3QgKnR0eSkNCj4g
-IAl1cHN0YXRfdCBtYXNrID0gVVBTVEFUX1NZTkNfRklGTzsNCj4gIAlzdHJ1Y3QgdWFydF9wb3J0
-ICpwb3J0Ow0KPiANCj4gKwlpZiAoIXN0YXRlKQ0KPiArCQlyZXR1cm47DQo+ICsNCj4gIAlwb3J0
-ID0gdWFydF9wb3J0X3JlZihzdGF0ZSk7DQo+ICAJaWYgKCFwb3J0KQ0KPiAgCQlyZXR1cm47DQo=
+On Wed, 2019-01-30 at 10:17 -0600, Rob Herring wrote:
+> On Thu, Jan 24, 2019 at 04:07:19PM +0800, Erin Lo wrote:
+> > From: Zhiyong Tao <zhiyong.tao@mediatek.com>
+> > 
+> > The commit adds mt8183 compatible node in binding document.
+> > 
+> > Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
+> > Signed-off-by: Erin Lo <erin.lo@mediatek.com>
+> > ---
+> >  .../devicetree/bindings/pinctrl/pinctrl-mt8183.txt | 115 +++++++++++++++++++++
+> >  1 file changed, 115 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
+> > 
+> > diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
+> > new file mode 100644
+> > index 0000000..364e673
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
+> > @@ -0,0 +1,115 @@
+> > +* Mediatek MT8183 Pin Controller
+> > +
+> > +The Mediatek's Pin controller is used to control SoC pins.
+> > +
+> > +Required properties:
+> > +- compatible: value should be one of the following.
+> > +	"mediatek,mt8183-pinctrl", compatible with mt8183 pinctrl.
+> > +- gpio-controller : Marks the device node as a gpio controller.
+> > +- #gpio-cells: number of cells in GPIO specifier. Since the generic GPIO
+> > +  binding is used, the amount of cells must be specified as 2. See the below
+> > +  mentioned gpio binding representation for description of particular cells.
+> > +- gpio-ranges : gpio valid number range.
+> > +- reg: physicall address base for gpio base registers. There are nine
+> > +  physicall address base in mt8183. They are 0x10005000, 0x11F20000,
+> 
+> Still have a typo in 'physicall'
+
+==>sorry, we will change it in next version.
+> 
+> > +  0x11E80000, 0x11E70000, 0x11E90000, 0x11D30000, 0x11D20000, 0x11C50000,
+> > +  0x11F30000.
+> 
+> You don't need to list the address values. Only how many and what each 
+> one is.
+==>ok, because every base address don't have the detailed name. We will
+remove the address values list and change it like this:
+- reg: physical address base for gpio base registers. There are nine
+  physical address base in mt8183.
+> 
+> > +
+> > +	Eg: <&pio 6 0>
+> > +	<[phandle of the gpio controller node]
+> > +	[line number within the gpio controller]
+> > +	[flags]>
+> > +
+> > +	Values for gpio specifier:
+> > +	- Line number: is a value between 0 to 202.
+> > +	- Flags:  bit field of flags, as defined in <dt-bindings/gpio/gpio.h>.
+> > +            Only the following flags are supported:
+> > +            0 - GPIO_ACTIVE_HIGH
+> > +            1 - GPIO_ACTIVE_LOW
+> > +
+> > +Optional properties:
+> > +- reg-names: gpio base register names. There are nine gpio base register
+> > +  names in mt8183. They are "iocfg0", "iocfg1", "iocfg2", "iocfg3", "iocfg4",
+> > +  "iocfg5", "iocfg6", "iocfg7", "iocfg8".
+> 
+> As I said before, these names aren't useful. There's already 
+> inheritently an index with 'reg'.
+> 
+> Unless some are optional and can be sparsely populated.
+
+==> Do you mean that we can remove Optional properties the reg-names
+description?
+> 
+> > +- interrupt-controller: Marks the device node as an interrupt controller
+> > +- #interrupt-cells: Should be two.
+> > +- interrupts : The interrupt outputs from the controller.
+> > +
+> > +Please refer to pinctrl-bindings.txt in this directory for details of the
+> > +common pinctrl bindings used by client devices.
+> > +
+> > +Subnode format
+> > +A pinctrl node should contain at least one subnodes representing the
+> > +pinctrl groups available on the machine. Each subnode will list the
+> > +pins it needs, and how they should be configured, with regard to muxer
+> > +configuration, pullups, drive strength, input enable/disable and input schmitt.
+> > +
+> > +    node {
+> > +	pinmux = <PIN_NUMBER_PINMUX>;
+> > +	GENERIC_PINCONFIG;
+> > +    };
+> > +
+> > +Required properties:
+> > +- pinmux: integer array, represents gpio pin number and mux setting.
+> > +    Supported pin number and mux varies for different SoCs, and are defined
+> > +    as macros in boot/dts/<soc>-pinfunc.h directly.
+> > +
+> > +Optional properties:
+> > +- GENERIC_PINCONFIG: is the generic pinconfig options to use, bias-disable,
+> > +    bias-pull-down, bias-pull-up, input-enable, input-disable, output-low, output-high,
+> > +    input-schmitt-enable, input-schmitt-disable and drive-strength are valid.
+> > +
+> > +    Some special pins have extra pull up strength, there are R0 and R1 pull-up
+> > +    resistors available, but for user, it's only need to set R1R0 as 00, 01, 10 or 11.
+> > +    So when config mediatek,pull-up-adv or mediatek,pull-down-adv,
+> > +    it support arguments for those special pins.
+> > +
+> > +    When config drive-strength, it can support some arguments, such as
+> > +    MTK_DRIVE_4mA, MTK_DRIVE_6mA, etc. See dt-bindings/pinctrl/mt65xx.h.
+> > +
+> > +Examples:
+> > +
+> > +#include "mt8183-pinfunc.h"
+> > +
+> > +...
+> > +{
+> > +	pio: pinctrl@10005000 {
+> > +		compatible = "mediatek,mt8183-pinctrl";
+> > +		reg = <0 0x10005000 0 0x1000>,
+> > +		      <0 0x11F20000 0 0x1000>,
+> > +		      <0 0x11E80000 0 0x1000>,
+> > +		      <0 0x11E70000 0 0x1000>,
+> > +		      <0 0x11E90000 0 0x1000>,
+> > +		      <0 0x11D30000 0 0x1000>,
+> > +		      <0 0x11D20000 0 0x1000>,
+> > +		      <0 0x11C50000 0 0x1000>,
+> > +		      <0 0x11F30000 0 0x1000>;
+> 
+> Use lowercase hex.
+
+==> we will change it in the next version.
+> 
+> > +		reg-names = "iocfg0", "iocfg1", "iocfg2",
+> > +			    "iocfg3", "iocfg4", "iocfg5",
+> > +			    "iocfg6", "iocfg7", "iocfg8";
+> > +		gpio-controller;
+> > +		#gpio-cells = <2>;
+> > +		gpio-ranges = <&pio 0 0 192>;
+> > +		interrupt-controller;
+> > +		interrupts = <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>;
+> > +		interrupt-parent = <&gic>;
+> > +		#interrupt-cells = <2>;
+> > +
+> > +		i2c0_pins_a: i2c0 {
+> > +			pins1 {
+> > +				pinmux = <PINMUX_GPIO48__FUNC_SCL5>,
+> > +					 <PINMUX_GPIO49__FUNC_SDA5>;
+> > +				mediatek,pull-up-adv = <11>;
+> > +			};
+> > +		};
+> > +
+> > +		i2c1_pins_a: i2c1 {
+> > +			pins {
+> > +				pinmux = <PINMUX_GPIO50__FUNC_SCL3>,
+> > +					 <PINMUX_GPIO51__FUNC_SDA3>;
+> > +				mediatek,pull-down-adv = <10>;
+> > +			};
+> > +		};
+> > +		...
+> > +	};
+> > +};
+> > -- 
+> > 1.9.1
+> > 
