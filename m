@@ -1,74 +1,87 @@
-From: Vinod Koul <vkoul@kernel.org>
-Subject: Re: [PATCH v10 1/3] dmaengine: 8250_mtk_dma: add MediaTek uart DMA
- support
-Date: Mon, 4 Feb 2019 12:51:54 +0530
-Message-ID: <20190204072154.GJ4296@vkoul-mobl>
-References: <1547781016-890-1-git-send-email-long.cheng@mediatek.com>
- <1547781016-890-2-git-send-email-long.cheng@mediatek.com>
+From: Julien Masson <jmasson@baylibre.com>
+Subject: [PATCH 1/2] tty: serial: meson_uart: Add support for kernel debugger
+Date: Fri, 1 Feb 2019 08:36:59 +0100
+Message-ID: <864l9i1b0t.fsf@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1547781016-890-2-git-send-email-long.cheng@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Long Cheng <long.cheng@mediatek.com>
-Cc: Randy Dunlap <rdunlap@infradead.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Sean Wang <sean.wang@kernel.org>, Nicolas Boichat <drinkcat@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>, Zhenbao Liu <zhenbao.liu@mediatek.com>
+To: Kevin Hilman <khilman@baylibre.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 18-01-19, 11:10, Long Cheng wrote:
-> +static enum dma_status mtk_uart_apdma_tx_status(struct dma_chan *chan,
-> +					 dma_cookie_t cookie,
-> +					 struct dma_tx_state *txstate)
-> +{
-> +	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
-> +	enum dma_status ret;
-> +	unsigned long flags;
-> +
-> +	if (!txstate)
-> +		return DMA_ERROR;
+The kgdb invokes the poll_put_char and poll_get_char when communicating
+with the host. This patch implement the serial polling hooks for the
+meson_uart to be used for KGDB debugging over serial line.
 
-Why, it is not a mandatory arg!
+Signed-off-by: Julien Masson <jmasson@baylibre.com>
+---
+ drivers/tty/serial/meson_uart.c | 46 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
 
-> +	ret = dma_cookie_status(chan, cookie, txstate);
-> +	spin_lock_irqsave(&c->vc.lock, flags);
-> +	if (ret == DMA_IN_PROGRESS) {
-> +		c->rx_status = mtk_uart_apdma_read(c, VFF_RPT) & VFF_RING_SIZE;
-> +		dma_set_residue(txstate, c->rx_status);
-> +	} else if (ret == DMA_COMPLETE && c->dir == DMA_DEV_TO_MEM) {
-> +		dma_set_residue(txstate, c->rx_status);
-
-what is the point is setting residue to comleted txn, it is zero!
-
-> +	} else {
-> +		dma_set_residue(txstate, 0);
-
-naah that doesnt sound correct!
-
-> +static void mtk_uart_apdma_config_write(struct dma_chan *chan,
-> +			       struct dma_slave_config *cfg,
-> +			       enum dma_transfer_direction dir)
-> +{
-> +	struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
-> +	struct mtk_uart_apdmadev *mtkd =
-> +				to_mtk_uart_apdma_dev(c->vc.chan.device);
-> +	unsigned int tmp;
-> +
-> +	if (mtk_uart_apdma_read(c, VFF_EN) == VFF_EN_B)
-> +		return;
-> +
-> +	c->dir = dir;
-> +
-> +	if (dir == DMA_DEV_TO_MEM) {
-> +		tmp = cfg->src_addr_width * 1024;
-
-why multiply by 1024?
-
-> +static int mtk_uart_apdma_device_pause(struct dma_chan *chan)
-> +{
-> +	/* just for check caps pass */
-> +	return 0;
-> +}
-
-please remove, this is not a mandatory fn
+diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+index 8a84259..49b20da 100644
+--- a/drivers/tty/serial/meson_uart.c
++++ b/drivers/tty/serial/meson_uart.c
+@@ -426,6 +426,48 @@ static void meson_uart_config_port(struct uart_port *port, int flags)
+ 	}
+ }
+ 
++#ifdef CONFIG_CONSOLE_POLL
++/*
++ * Console polling routines for writing and reading from the uart while
++ * in an interrupt or debug context (i.e. kgdb).
++ */
++
++static int meson_uart_poll_get_char(struct uart_port *port)
++{
++	u32 c;
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	if (readl(port->membase + AML_UART_STATUS) & AML_UART_RX_EMPTY)
++		c = NO_POLL_CHAR;
++	else
++		c = readl(port->membase + AML_UART_RFIFO);
++
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	return c;
++}
++
++static void meson_uart_poll_put_char(struct uart_port *port, unsigned char c)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	while (!(readl(port->membase + AML_UART_STATUS) & AML_UART_TX_EMPTY))
++		cpu_relax();
++
++	writel(c, port->membase + AML_UART_WFIFO);
++
++	while (!(readl(port->membase + AML_UART_STATUS) & AML_UART_TX_EMPTY))
++		cpu_relax();
++
++	spin_unlock_irqrestore(&port->lock, flags);
++}
++
++#endif /* CONFIG_CONSOLE_POLL */
++
+ static const struct uart_ops meson_uart_ops = {
+ 	.set_mctrl      = meson_uart_set_mctrl,
+ 	.get_mctrl      = meson_uart_get_mctrl,
+@@ -441,6 +483,10 @@ static const struct uart_ops meson_uart_ops = {
+ 	.request_port	= meson_uart_request_port,
+ 	.release_port	= meson_uart_release_port,
+ 	.verify_port	= meson_uart_verify_port,
++#ifdef CONFIG_CONSOLE_POLL
++	.poll_get_char	= meson_uart_poll_get_char,
++	.poll_put_char	= meson_uart_poll_put_char,
++#endif
+ };
+ 
+ #ifdef CONFIG_SERIAL_MESON_CONSOLE
 -- 
-~Vinod
+2.7.4
