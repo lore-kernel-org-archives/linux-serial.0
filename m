@@ -1,115 +1,101 @@
-From: Erin Lo <erin.lo@mediatek.com>
-Subject: Re: [PATCH v6 6/6] arm64: dts: Add Mediatek SoC MT8183 and
- evaluation board dts and Makefile
-Date: Fri, 1 Feb 2019 13:11:06 +0800
-Message-ID: <1548997866.26127.4.camel@mtksdaap41>
-References: <1548317240-44682-1-git-send-email-erin.lo@mediatek.com>
-         <1548317240-44682-7-git-send-email-erin.lo@mediatek.com>
-         <20190130162204.GA1521@bogus> <1548902050.23230.4.camel@mtksdaap41>
-         <CAL_JsqL1vQCgbb2yLL2E4KTDZve1vus5bDX75HGiOu14X26q7w@mail.gmail.com>
-         <1548992018.11367.8.camel@mtksdaap41>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+From: Julien Masson <jmasson@baylibre.com>
+Subject: [PATCH] tty: serial: meson_uart: Add support for kernel debugger
+Date: Fri,  1 Feb 2019 10:59:22 +0100
+Message-ID: <1549015162-17418-1-git-send-email-jmasson@baylibre.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1548992018.11367.8.camel@mtksdaap41>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, Ben Ho <Ben.Ho@mediatek.com>, Mars Cheng <mars.cheng@mediatek.com>, Mengqi Zhang <Mengqi.Zhang@mediatek.com>, linux-clk <linux-clk@vger.kernel.org>, Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>, Weiyi Lu <weiyi.lu@mediatek.com>, Marc Zyngier <marc.zyngier@arm.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Yingjoe Chen <yingjoe.chen@mediatek.com>, devicetree@vger.kernel.org, Jason Cooper <jason@lakedaemon.net>, Seiya Wang <seiya.wang@mediatek.com>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>, Matthias Brugger <matthias.bgg@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Eddie Huang <eddie.huang@mediatek.com>, moderated list:ARM/FREESCALE IMX / MXC ARM ARC
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Kevin Hilman <khilman@baylibre.com>
+Cc: Julien Masson <jmasson@baylibre.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Add back more people since mail server issue
+The kgdb invokes the poll_put_char and poll_get_char when communicating
+with the host. This patch implement the serial polling hooks for the
+meson_uart to be used for KGDB debugging over serial line.
 
-On Fri, 2019-02-01 at 11:33 +0800, Erin Lo wrote:
-> On Thu, 2019-01-31 at 15:10 -0600, Rob Herring wrote:
-> > On Wed, Jan 30, 2019 at 8:34 PM Erin Lo <erin.lo@mediatek.com> wrote:
-> > >
-> > > On Wed, 2019-01-30 at 10:22 -0600, Rob Herring wrote:
-> > > > On Thu, Jan 24, 2019 at 04:07:20PM +0800, Erin Lo wrote:
-> > > > > From: Ben Ho <Ben.Ho@mediatek.com>
-> > > > >
-> > > > > Add basic chip support for Mediatek 8183, include
-> > > > > pinctrl file, uart node with correct uart clocks, pwrap device
-> > > > >
-> > > > > Add clock controller nodes, include topckgen, infracfg,
-> > > > > apmixedsys and subsystem.
-> > > > >
-> > > > > Signed-off-by: Ben Ho <Ben.Ho@mediatek.com>
-> > > > > Signed-off-by: Erin Lo <erin.lo@mediatek.com>
-> > > > > Signed-off-by: Seiya Wang <seiya.wang@mediatek.com>
-> > > > > Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
-> > > > > Signed-off-by: Weiyi Lu <weiyi.lu@mediatek.com>
-> > > > > Signed-off-by: Mengqi Zhang <Mengqi.Zhang@mediatek.com>
-> > > > > Signed-off-by: Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>
-> > > > > Signed-off-by: Eddie Huang <eddie.huang@mediatek.com>
-> > > > > ---
-> > > >
-> > > >
-> > > > > +   sysirq: intpol-controller@c530a80 {
-> > > >
-> > > > interrupt-controller@...
-> > >
-> > > I will modify it in next version.
-> > > >
-> > > >
-> > > > Place all the MMIO peripherals under one or more simple-bus nodes.
-> > > >
-> > > > Rob
-> > > >
-> > >
-> > > Do you mean need to add simple-bus like this?
-> > 
-> > Yes.
-> 
-> We remove soc because Matthias suggested it in former MTK SoC maybe in
-> 2015 year.
-> 
-> We will add it back by your comment.
-> 
-> Thank you. 
-> 
-> Best Regards,
-> Erin
+Signed-off-by: Julien Masson <jmasson@baylibre.com>
+---
+It has been tested on "Le Potato" board:
+https://libre.computer/products/boards/aml-s905x-cc/
 
-Hi, Matthias,
-Do you have any comment here?
-Thanks
+Kernel command line arguments:
+kgdboc=ttyAML0,115200 kgdbretry=4 nokaslr kgdbcon
 
-Best Regards,
-Erin
-> > 
-> > >
-> > > +   soc: soc {
-> > > +                #address-cells = <0x1>;
-> > > +                #size-cells = <0x1>;
-> > > +                ranges = <0 0 0 0xffffffff>;
-> > > +                compatible = "simple-bus";
-> > >
-> > >                 soc_data: soc_data@08000000 {
-> > >                         compatible = "mediatek,mt8183-efuse",
-> > >                                      "mediatek,efuse";
-> > >                         reg = <0 0x08000000 0 0x0010>;
-> > >                         #address-cells = <1>;
-> > >                         #size-cells = <1>;
-> > >                         status = "disabled";
-> > >                 };
-> > >
-> > >                 gic: interrupt-controller@0c000000 {
-> > >                         compatible = "arm,gic-v3";
-> > >                         #interrupt-cells = <4>;
-> > >
-> > > Best Regards,
-> > > Erin
-> > >
-> > > > _______________________________________________
-> > > > Linux-mediatek mailing list
-> > > > Linux-mediatek@lists.infradead.org
-> > > > http://lists.infradead.org/mailman/listinfo/linux-mediatek
-> > >
-> > >
-> > >
-> > > _______________________________________________
-> > > linux-arm-kernel mailing list
-> > > linux-arm-kernel@lists.infradead.org
-> > > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
+Kernel modules:
+CONFIG_DEBUG_INFO=y
+CONFIG_DEBUG_KERNEL=y
+CONFIG_FRAME_POINTER=y
+CONFIG_KGDB=y
+CONFIG_KGDB_SERIAL_CONSOLE=y
+
+Warning: for single step instruction I had to apply this patch:
+https://lore.kernel.org/patchwork/patch/562423/
+
+ drivers/tty/serial/meson_uart.c | 46 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
+
+diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+index 8a84259..49b20da 100644
+--- a/drivers/tty/serial/meson_uart.c
++++ b/drivers/tty/serial/meson_uart.c
+@@ -426,6 +426,48 @@ static void meson_uart_config_port(struct uart_port *port, int flags)
+ 	}
+ }
+ 
++#ifdef CONFIG_CONSOLE_POLL
++/*
++ * Console polling routines for writing and reading from the uart while
++ * in an interrupt or debug context (i.e. kgdb).
++ */
++
++static int meson_uart_poll_get_char(struct uart_port *port)
++{
++	u32 c;
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	if (readl(port->membase + AML_UART_STATUS) & AML_UART_RX_EMPTY)
++		c = NO_POLL_CHAR;
++	else
++		c = readl(port->membase + AML_UART_RFIFO);
++
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	return c;
++}
++
++static void meson_uart_poll_put_char(struct uart_port *port, unsigned char c)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	while (!(readl(port->membase + AML_UART_STATUS) & AML_UART_TX_EMPTY))
++		cpu_relax();
++
++	writel(c, port->membase + AML_UART_WFIFO);
++
++	while (!(readl(port->membase + AML_UART_STATUS) & AML_UART_TX_EMPTY))
++		cpu_relax();
++
++	spin_unlock_irqrestore(&port->lock, flags);
++}
++
++#endif /* CONFIG_CONSOLE_POLL */
++
+ static const struct uart_ops meson_uart_ops = {
+ 	.set_mctrl      = meson_uart_set_mctrl,
+ 	.get_mctrl      = meson_uart_get_mctrl,
+@@ -441,6 +483,10 @@ static const struct uart_ops meson_uart_ops = {
+ 	.request_port	= meson_uart_request_port,
+ 	.release_port	= meson_uart_release_port,
+ 	.verify_port	= meson_uart_verify_port,
++#ifdef CONFIG_CONSOLE_POLL
++	.poll_get_char	= meson_uart_poll_get_char,
++	.poll_put_char	= meson_uart_poll_put_char,
++#endif
+ };
+ 
+ #ifdef CONFIG_SERIAL_MESON_CONSOLE
+-- 
+2.7.4
