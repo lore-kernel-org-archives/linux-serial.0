@@ -1,87 +1,136 @@
-From: Corentin Labbe <clabbe.montjoie@gmail.com>
-Subject: Re: [PATCH] tty: serial: meson_uart: Add support for kernel debugger
-Date: Fri, 1 Feb 2019 11:10:56 +0100
-Message-ID: <20190201101056.GA10039@Red>
-References: <1549015162-17418-1-git-send-email-jmasson@baylibre.com>
+From: Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 3.16 165/305] arch/alpha, termios: implement BOTHER,
+ IBSHIFT and termios2
+Date: Sun, 03 Feb 2019 14:45:08 +0100
+Message-ID: <lsq.1549201508.777894721@decadent.org.uk>
+References: <lsq.1549201507.384106140@decadent.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1549015162-17418-1-git-send-email-jmasson@baylibre.com>
+In-Reply-To: <lsq.1549201507.384106140@decadent.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Julien Masson <jmasson@baylibre.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Kevin Hilman <khilman@baylibre.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: akpm@linux-foundation.org, Denis Kirjanov <kda@linux-powerpc.org>, "H. Peter Anvin (Intel)" <hpa@zytor.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Johan Hovold <johan@kernel.org>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Eugene Syromiatnikov <esyr@redhat.com>, linux-serial@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>, Richard Henderson <rth@twiddle.net>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Jiri Slaby <jslaby@suse.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Feb 01, 2019 at 10:59:22AM +0100, Julien Masson wrote:
-> The kgdb invokes the poll_put_char and poll_get_char when communicating
-> with the host. This patch implement the serial polling hooks for the
-> meson_uart to be used for KGDB debugging over serial line.
-> 
-> Signed-off-by: Julien Masson <jmasson@baylibre.com>
-> ---
-> It has been tested on "Le Potato" board:
-> https://libre.computer/products/boards/aml-s905x-cc/
-> 
-> Kernel command line arguments:
-> kgdboc=ttyAML0,115200 kgdbretry=4 nokaslr kgdbcon
-> 
-> Kernel modules:
-> CONFIG_DEBUG_INFO=y
-> CONFIG_DEBUG_KERNEL=y
-> CONFIG_FRAME_POINTER=y
-> CONFIG_KGDB=y
-> CONFIG_KGDB_SERIAL_CONSOLE=y
-> 
-> Warning: for single step instruction I had to apply this patch:
-> https://lore.kernel.org/patchwork/patch/562423/
-> 
->  drivers/tty/serial/meson_uart.c | 46 +++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 46 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-> index 8a84259..49b20da 100644
-> --- a/drivers/tty/serial/meson_uart.c
-> +++ b/drivers/tty/serial/meson_uart.c
-> @@ -426,6 +426,48 @@ static void meson_uart_config_port(struct uart_port *port, int flags)
->  	}
->  }
->  
-> +#ifdef CONFIG_CONSOLE_POLL
-> +/*
-> + * Console polling routines for writing and reading from the uart while
-> + * in an interrupt or debug context (i.e. kgdb).
-> + */
-> +
-> +static int meson_uart_poll_get_char(struct uart_port *port)
-> +{
-> +	u32 c;
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&port->lock, flags);
-> +
-> +	if (readl(port->membase + AML_UART_STATUS) & AML_UART_RX_EMPTY)
-> +		c = NO_POLL_CHAR;
-> +	else
-> +		c = readl(port->membase + AML_UART_RFIFO);
-> +
-> +	spin_unlock_irqrestore(&port->lock, flags);
-> +
-> +	return c;
-> +}
-> +
-> +static void meson_uart_poll_put_char(struct uart_port *port, unsigned char c)
-> +{
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&port->lock, flags);
-> +
-> +	while (!(readl(port->membase + AML_UART_STATUS) & AML_UART_TX_EMPTY))
-> +		cpu_relax();
+3.16.63-rc1 review patch.  If anyone has any objections, please let me know.
 
-Hello
+------------------
 
-Perhaps you could use read_poll_timeout() ?
-This will also permit to handle the timeout case.
+From: "H. Peter Anvin (Intel)" <hpa@zytor.com>
 
-Regards
+commit d0ffb805b729322626639336986bc83fc2e60871 upstream.
+
+Alpha has had c_ispeed and c_ospeed, but still set speeds in c_cflags
+using arbitrary flags. Because BOTHER is not defined, the general
+Linux code doesn't allow setting arbitrary baud rates, and because
+CBAUDEX == 0, we can have an array overrun of the baud_rate[] table in
+drivers/tty/tty_baudrate.c if (c_cflags & CBAUD) == 037.
+
+Resolve both problems by #defining BOTHER to 037 on Alpha.
+
+However, userspace still needs to know if setting BOTHER is actually
+safe given legacy kernels (does anyone actually care about that on
+Alpha anymore?), so enable the TCGETS2/TCSETS*2 ioctls on Alpha, even
+though they use the same structure. Define struct termios2 just for
+compatibility; it is the exact same structure as struct termios. In a
+future patchset, this will be cleaned up so the uapi headers are
+usable from libc.
+
+Signed-off-by: H. Peter Anvin (Intel) <hpa@zytor.com>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Kate Stewart <kstewart@linuxfoundation.org>
+Cc: Philippe Ombredanne <pombredanne@nexb.com>
+Cc: Eugene Syromiatnikov <esyr@redhat.com>
+Cc: <linux-alpha@vger.kernel.org>
+Cc: <linux-serial@vger.kernel.org>
+Cc: Johan Hovold <johan@kernel.org>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+---
+ arch/alpha/include/asm/termios.h       |  8 +++++++-
+ arch/alpha/include/uapi/asm/ioctls.h   |  5 +++++
+ arch/alpha/include/uapi/asm/termbits.h | 17 +++++++++++++++++
+ 3 files changed, 29 insertions(+), 1 deletion(-)
+
+--- a/arch/alpha/include/asm/termios.h
++++ b/arch/alpha/include/asm/termios.h
+@@ -72,9 +72,15 @@
+ })
+ 
+ #define user_termios_to_kernel_termios(k, u) \
+-	copy_from_user(k, u, sizeof(struct termios))
++	copy_from_user(k, u, sizeof(struct termios2))
+ 
+ #define kernel_termios_to_user_termios(u, k) \
++	copy_to_user(u, k, sizeof(struct termios2))
++
++#define user_termios_to_kernel_termios_1(k, u) \
++	copy_from_user(k, u, sizeof(struct termios))
++
++#define kernel_termios_to_user_termios_1(u, k) \
+ 	copy_to_user(u, k, sizeof(struct termios))
+ 
+ #endif	/* _ALPHA_TERMIOS_H */
+--- a/arch/alpha/include/uapi/asm/ioctls.h
++++ b/arch/alpha/include/uapi/asm/ioctls.h
+@@ -31,6 +31,11 @@
+ #define TCXONC		_IO('t', 30)
+ #define TCFLSH		_IO('t', 31)
+ 
++#define TCGETS2		_IOR('T', 42, struct termios2)
++#define TCSETS2		_IOW('T', 43, struct termios2)
++#define TCSETSW2	_IOW('T', 44, struct termios2)
++#define TCSETSF2	_IOW('T', 45, struct termios2)
++
+ #define TIOCSWINSZ	_IOW('t', 103, struct winsize)
+ #define TIOCGWINSZ	_IOR('t', 104, struct winsize)
+ #define	TIOCSTART	_IO('t', 110)		/* start output, like ^Q */
+--- a/arch/alpha/include/uapi/asm/termbits.h
++++ b/arch/alpha/include/uapi/asm/termbits.h
+@@ -25,6 +25,19 @@ struct termios {
+ 	speed_t c_ospeed;		/* output speed */
+ };
+ 
++/* Alpha has identical termios and termios2 */
++
++struct termios2 {
++	tcflag_t c_iflag;		/* input mode flags */
++	tcflag_t c_oflag;		/* output mode flags */
++	tcflag_t c_cflag;		/* control mode flags */
++	tcflag_t c_lflag;		/* local mode flags */
++	cc_t c_cc[NCCS];		/* control characters */
++	cc_t c_line;			/* line discipline (== c_cc[19]) */
++	speed_t c_ispeed;		/* input speed */
++	speed_t c_ospeed;		/* output speed */
++};
++
+ /* Alpha has matching termios and ktermios */
+ 
+ struct ktermios {
+@@ -147,6 +160,7 @@ struct ktermios {
+ #define B3000000  00034
+ #define B3500000  00035
+ #define B4000000  00036
++#define BOTHER    00037
+ 
+ #define CSIZE	00001400
+ #define   CS5	00000000
+@@ -164,6 +178,9 @@ struct ktermios {
+ #define CMSPAR	  010000000000		/* mark or space (stick) parity */
+ #define CRTSCTS	  020000000000		/* flow control */
+ 
++#define CIBAUD	07600000
++#define IBSHIFT	16
++
+ /* c_lflag bits */
+ #define ISIG	0x00000080
+ #define ICANON	0x00000100
