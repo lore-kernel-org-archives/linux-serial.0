@@ -1,38 +1,60 @@
-From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: Re: [RFC/PATCH 0/5] DVFS in the OPP core
-Date: Fri, 8 Feb 2019 12:47:26 +0530
-Message-ID: <20190208071726.urevxs5a3vaf7gwh@vireshk-i7>
-References: <20190129015547.213276-1-swboyd@chromium.org>
- <20190131092349.fksfqemm23qddkhw@vireshk-i7>
- <154952629766.115909.11259861549408107064@swboyd.mtv.corp.google.com>
- <CAPDyKFrrncpfEfbZJ1LHvqDbkc29CaJxZnXwh4Mz7PT6Efbctg@mail.gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial fixes for 5.0-rc6
+Date: Fri, 8 Feb 2019 09:38:08 +0100
+Message-ID: <20190208083808.GA26882@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAPDyKFrrncpfEfbZJ1LHvqDbkc29CaJxZnXwh4Mz7PT6Efbctg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ulf Hansson <ulf.hansson@linaro.org>
-Cc: Stephen Boyd <swboyd@chromium.org>, Graham Roff <grahamr@codeaurora.org>, Mike Turquette <mturquette@baylibre.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Linux PM <linux-pm@vger.kernel.org>, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, Rajendra Nayak <rnayak@codeaurora.org>, Doug Anderson <dianders@chromium.org>, Vincent Guittot <vincent.guittot@linaro.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 07-02-19, 14:37, Ulf Hansson wrote:
-> I think we also need to consider cross SoC drivers. One SoC may have
-> both clocks and OPPs to manage, while another may have only clocks.
+The following changes since commit f17b5f06cb92ef2250513a1e154c47b78df07d40:
 
-We already have that case with CPUs as well and dev_pm_opp_set_rate()
-takes care of it.
+  Linux 5.0-rc4 (2019-01-27 15:18:05 -0800)
 
-> Even it this may be fairly uncommon, we should consider it, before we
-> decide to fold in additional clock management, like
-> clk_prepare|unprepare() for example, behind the dev_pm_opp_set_rate()
-> API.
-> 
-> The point is, the driver may need to call clk_prepare|enable()
-> anyways, unless we make that conditional depending on a DT compatible
-> string, for example. Of course, because the clock prepare/enable is
-> reference counted, there may not be a problem in practice to have both
-> the OPP and driver to deal with it.
+are available in the Git repository at:
 
--- 
-viresh
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.0-rc6
+
+for you to fetch changes up to fedb5760648a291e949f2380d383b5b2d2749b5e:
+
+  serial: fix race between flush_to_ldisc and tty_open (2019-01-31 19:43:04 +0100)
+
+----------------------------------------------------------------
+TTY/Serial fixes for 5.0-rc6
+
+Here are some small tty and serial fixes for 5.0-rc6.
+
+Nothing huge, just a few small fixes for reported issues.  The speakup
+fix is in here as it is a tty operation issue.
+
+All of these have been in linux-next for a while with no reported
+problems.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Andy Shevchenko (1):
+      serial: 8250_pci: Make PCI class test non fatal
+
+Chris Brandt (1):
+      serial: sh-sci: Do not free irqs that have already been freed
+
+Greg Kroah-Hartman (1):
+      serial: fix race between flush_to_ldisc and tty_open
+
+Gustavo A. R. Silva (1):
+      tty: serial: 8250_mtk: Fix potential NULL pointer dereference
+
+Johan Hovold (1):
+      staging: speakup: fix tty-operation NULL derefs
+
+ drivers/staging/speakup/spk_ttyio.c | 6 ++++--
+ drivers/tty/serial/8250/8250_mtk.c  | 3 +++
+ drivers/tty/serial/8250/8250_pci.c  | 9 +++++----
+ drivers/tty/serial/serial_core.c    | 6 ++++++
+ drivers/tty/serial/sh-sci.c         | 9 ++++++++-
+ 5 files changed, 26 insertions(+), 7 deletions(-)
