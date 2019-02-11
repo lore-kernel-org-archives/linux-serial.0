@@ -1,19 +1,18 @@
-From: Erin Lo <erin.lo@mediatek.com>
-Subject: Re: [PATCH v6 6/6] arm64: dts: Add Mediatek SoC MT8183 and
- evaluation board dts and Makefile
-Date: Sat, 9 Feb 2019 15:37:30 +0800
-Message-ID: <1549697850.26316.5.camel@mtksdaap41>
+From: Seiya Wang <seiya.wang@mediatek.com>
+Subject: Re: [PATCH v6 1/6] irqchip/mtk-sysirq: support 4 interrupt
+ parameters for sysirq
+Date: Mon, 11 Feb 2019 14:35:29 +0800
+Message-ID: <1549866929.22817.20.camel@mtksdccf07>
 References: <1548317240-44682-1-git-send-email-erin.lo@mediatek.com>
- <1548317240-44682-7-git-send-email-erin.lo@mediatek.com>
- <20190130162204.GA1521@bogus> <1548902050.23230.4.camel@mtksdaap41>
- <CAL_JsqL1vQCgbb2yLL2E4KTDZve1vus5bDX75HGiOu14X26q7w@mail.gmail.com>
- <1548992018.11367.8.camel@mtksdaap41> <1548997866.26127.4.camel@mtksdaap41>
- <c872f03c-714a-d99f-d555-e897f80d67be@gmail.com>
+ <1548317240-44682-2-git-send-email-erin.lo@mediatek.com>
+ <898ca3d9-002b-e28e-fc97-86bc2538e9de@gmail.com>
+ <626b5b46-aac7-1532-386e-2fed85bf4ad9@arm.com>
+ <c0187acf-bd8c-2d41-d84d-d35fc63b2beb@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <c872f03c-714a-d99f-d555-e897f80d67be@gmail.com>
+In-Reply-To: <c0187acf-bd8c-2d41-d84d-d35fc63b2beb@arm.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -23,130 +22,57 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Ben Ho <Ben.Ho@mediatek.com>, Mars Cheng <mars.cheng@mediatek.com>, Mengqi Zhang <Mengqi.Zhang@mediatek.com>, linux-clk <linux-clk@vger.kernel.org>, Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>, Rob Herring <robh@kernel.org>, Weiyi Lu <weiyi.lu@mediatek.com>, Marc Zyngier <marc.zyngier@arm.com>, "open
- list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Yingjoe Chen <yingjoe.chen@mediatek.com>, devicetree@vger.kernel.org, Jason Cooper <jason@lakedaemon.net>, Seiya Wang <seiya.wang@mediatek.com>, "moderated
- list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>, Thomas Gleixner <tglx@linutronix.de>, Eddie Huang <eddie.huang@mediatek.com>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, srv_heupstream <srv_heupstream@mediatek.com>, Greg Kroah-Hartman <gregkh@linuxfound>
+To: Marc Zyngier <marc.zyngier@arm.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Jason Cooper <jason@lakedaemon.net>, srv_heupstream <srv_heupstream@mediatek.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Erin Lo <erin.lo@mediatek.com>, Stephen Boyd <sboyd@codeaurora.org>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org, mars.cheng@mediatek.com, Matthias Brugger <matthias.bgg@gmail.com>, yingjoe.chen@mediatek.com, Thomas Gleixner <tglx@linutronix.de>, eddie.huang@mediatek.com, linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 2019-02-07 at 16:08 +0100, Matthias Brugger wrote:
-> 
-> On 01/02/2019 06:11, Erin Lo wrote:
-> > Add back more people since mail server issue
-> > 
-> > On Fri, 2019-02-01 at 11:33 +0800, Erin Lo wrote:
-> >> On Thu, 2019-01-31 at 15:10 -0600, Rob Herring wrote:
-> >>> On Wed, Jan 30, 2019 at 8:34 PM Erin Lo <erin.lo@mediatek.com> wrote:
-> >>>>
-> >>>> On Wed, 2019-01-30 at 10:22 -0600, Rob Herring wrote:
-> >>>>> On Thu, Jan 24, 2019 at 04:07:20PM +0800, Erin Lo wrote:
-> >>>>>> From: Ben Ho <Ben.Ho@mediatek.com>
-> >>>>>>
-> >>>>>> Add basic chip support for Mediatek 8183, include
-> >>>>>> pinctrl file, uart node with correct uart clocks, pwrap device
-> >>>>>>
-> >>>>>> Add clock controller nodes, include topckgen, infracfg,
-> >>>>>> apmixedsys and subsystem.
-> >>>>>>
-> >>>>>> Signed-off-by: Ben Ho <Ben.Ho@mediatek.com>
-> >>>>>> Signed-off-by: Erin Lo <erin.lo@mediatek.com>
-> >>>>>> Signed-off-by: Seiya Wang <seiya.wang@mediatek.com>
-> >>>>>> Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
-> >>>>>> Signed-off-by: Weiyi Lu <weiyi.lu@mediatek.com>
-> >>>>>> Signed-off-by: Mengqi Zhang <Mengqi.Zhang@mediatek.com>
-> >>>>>> Signed-off-by: Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>
-> >>>>>> Signed-off-by: Eddie Huang <eddie.huang@mediatek.com>
-> >>>>>> ---
-> >>>>>
-> >>>>>
-> >>>>>> +   sysirq: intpol-controller@c530a80 {
-> >>>>>
-> >>>>> interrupt-controller@...
-> >>>>
-> >>>> I will modify it in next version.
-> >>>>>
-> >>>>>
-> >>>>> Place all the MMIO peripherals under one or more simple-bus nodes.
-> >>>>>
-> >>>>> Rob
-> >>>>>
-> >>>>
-> >>>> Do you mean need to add simple-bus like this?
+On Thu, 2019-02-07 at 15:52 +0000, Marc Zyngier wrote:
+> On 07/02/2019 15:47, Marc Zyngier wrote:
+> > On 07/02/2019 15:20, Matthias Brugger wrote:
+> >>
+> >>
+> >> On 24/01/2019 09:07, Erin Lo wrote:
+> >>> From: Seiya Wang <seiya.wang@mediatek.com>
 > >>>
-> >>> Yes.
-> >>
-> >> We remove soc because Matthias suggested it in former MTK SoC maybe in
-> >> 2015 year.
-> >>
-> >> We will add it back by your comment.
-> >>
-> >> Thank you. 
-> >>
-> >> Best Regards,
-> >> Erin
-> > 
-> > Hi, Matthias,
-> > Do you have any comment here?
-> 
-> Although I wasn't able to find it in the documentation my understanding is, that
-> all devices on-chip should be under soc "bus".
-> 
-> I'm sorry if I created confusion with comments in the past.
-> 
-> Regards,
-> Matthias
-> 
-
-OK! we will add soc "bus" back in next version.
-Thank you for your comment.
-
-Best Regards,
-Erin
-
-> > Thanks
-> > 
-> > Best Regards,
-> > Erin
+> >>> To support partitioned PPIs, 4 interrupt parameters should be valid
+> >>> for sysirq.
 > >>>
-> >>>>
-> >>>> +   soc: soc {
-> >>>> +                #address-cells = <0x1>;
-> >>>> +                #size-cells = <0x1>;
-> >>>> +                ranges = <0 0 0 0xffffffff>;
-> >>>> +                compatible = "simple-bus";
-> >>>>
-> >>>>                 soc_data: soc_data@08000000 {
-> >>>>                         compatible = "mediatek,mt8183-efuse",
-> >>>>                                      "mediatek,efuse";
-> >>>>                         reg = <0 0x08000000 0 0x0010>;
-> >>>>                         #address-cells = <1>;
-> >>>>                         #size-cells = <1>;
-> >>>>                         status = "disabled";
-> >>>>                 };
-> >>>>
-> >>>>                 gic: interrupt-controller@0c000000 {
-> >>>>                         compatible = "arm,gic-v3";
-> >>>>                         #interrupt-cells = <4>;
-> >>>>
-> >>>> Best Regards,
-> >>>> Erin
-> >>>>
-> >>>>> _______________________________________________
-> >>>>> Linux-mediatek mailing list
-> >>>>> Linux-mediatek@lists.infradead.org
-> >>>>> http://lists.infradead.org/mailman/listinfo/linux-mediatek
-> >>>>
-> >>>>
-> >>>>
-> >>>> _______________________________________________
-> >>>> linux-arm-kernel mailing list
-> >>>> linux-arm-kernel@lists.infradead.org
-> >>>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> >>> Signed-off-by: Seiya Wang <seiya.wang@mediatek.com>
+> >>> Signed-off-by: Erin Lo <erin.lo@mediatek.com>
+> >>> ---
+> >>>  drivers/irqchip/irq-mtk-sysirq.c | 4 ++--
+> >>>  1 file changed, 2 insertions(+), 2 deletions(-)
+> >>>
+> >>> diff --git a/drivers/irqchip/irq-mtk-sysirq.c b/drivers/irqchip/irq-mtk-sysirq.c
+> >>> index 90aaf19..282736a 100644
+> >>> --- a/drivers/irqchip/irq-mtk-sysirq.c
+> >>> +++ b/drivers/irqchip/irq-mtk-sysirq.c
+> >>> @@ -81,7 +81,7 @@ static int mtk_sysirq_domain_translate(struct irq_domain *d,
+> >>>  				       unsigned int *type)
+> >>>  {
+> >>>  	if (is_of_node(fwspec->fwnode)) {
+> >>> -		if (fwspec->param_count != 3)
+> >>> +		if (fwspec->param_count != 3 && fwspec->param_count != 4)
 > >>
+> >> Where is this 4th parameter used?
 > > 
-> > 
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/interrupt-controller/arm,gic-v3.txt#n14
+> Sorry, I fired Send way too early.
 > 
-> _______________________________________________
-> Linux-mediatek mailing list
-> Linux-mediatek@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-mediatek
+> What I wanted to add is that it is not clear to me why this change would
+> be required here, as this driver only supports SPIs. It could be fixed
+> by just relaxing the binding itself.
+> 
+> Thanks,
+> 
+> 	M.
+
+Do you mean that we should change #interrupt-cells back to 3 for sysirq
+and remove the 4th parameters of every spi interrupts in mt8183.dtsi
+(i.e. 3 parameters for spi, 4 for ppi) such that we can discard this
+patch?
+
+If yes, we may need some time to verify the change before resending the
+patch.
+
+Thanks.
