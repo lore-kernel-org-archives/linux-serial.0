@@ -1,7 +1,7 @@
 From: John Ogness <john.ogness@linutronix.de>
-Subject: [RFC PATCH v1 07/25] printk-rb: add functionality required by printk
-Date: Tue, 12 Feb 2019 15:29:45 +0100
-Message-ID: <20190212143003.48446-8-john.ogness@linutronix.de>
+Subject: [RFC PATCH v1 14/25] printk: do boot_delay_msec inside printk_delay
+Date: Tue, 12 Feb 2019 15:29:52 +0100
+Message-ID: <20190212143003.48446-15-john.ogness@linutronix.de>
 References: <20190212143003.48446-1-john.ogness@linutronix.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190212143003.48446-1-john.ogness@linutronix.de>
@@ -10,163 +10,73 @@ To: linux-kernel@vger.kernel.org
 Cc: Peter Zijlstra <peterz@infradead.org>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-The printk subsystem needs to be able to query the size of the ring
-buffer, seek to specific entries within the ring buffer, and track
-if records could not be stored in the ring buffer.
+Both functions needed to be called one after the other, so just
+integrate boot_delay_msec into printk_delay for simplification.
 
 Signed-off-by: John Ogness <john.ogness@linutronix.de>
 ---
- include/linux/printk_ringbuffer.h |  5 +++
- lib/printk_ringbuffer.c           | 95 +++++++++++++++++++++++++++++++++++++++
- 2 files changed, 100 insertions(+)
+ kernel/printk/printk.c | 35 +++++++++++++++++------------------
+ 1 file changed, 17 insertions(+), 18 deletions(-)
 
-diff --git a/include/linux/printk_ringbuffer.h b/include/linux/printk_ringbuffer.h
-index 106f20ef8b4d..ec3d7ceec378 100644
---- a/include/linux/printk_ringbuffer.h
-+++ b/include/linux/printk_ringbuffer.h
-@@ -17,6 +17,7 @@ struct printk_ringbuffer {
- 	unsigned int size_bits;
- 
- 	u64 seq;
-+	atomic_long_t lost;
- 
- 	atomic_long_t tail;
- 	atomic_long_t head;
-@@ -78,6 +79,7 @@ static struct printk_ringbuffer name = {				\
- 	.buffer = &_##name##_buffer[0],					\
- 	.size_bits = szbits,						\
- 	.seq = 0,							\
-+	.lost = ATOMIC_LONG_INIT(0),					\
- 	.tail = ATOMIC_LONG_INIT(-111 * sizeof(long)),			\
- 	.head = ATOMIC_LONG_INIT(-111 * sizeof(long)),			\
- 	.reserve = ATOMIC_LONG_INIT(-111 * sizeof(long)),		\
-@@ -100,9 +102,12 @@ void prb_iter_copy(struct prb_iterator *dest, struct prb_iterator *src);
- int prb_iter_next(struct prb_iterator *iter, char *buf, int size, u64 *seq);
- int prb_iter_wait_next(struct prb_iterator *iter, char *buf, int size,
- 		       u64 *seq);
-+int prb_iter_seek(struct prb_iterator *iter, u64 seq);
- int prb_iter_data(struct prb_iterator *iter, char *buf, int size, u64 *seq);
- 
- /* utility functions */
-+int prb_buffer_size(struct printk_ringbuffer *rb);
-+void prb_inc_lost(struct printk_ringbuffer *rb);
- void prb_lock(struct prb_cpulock *cpu_lock, unsigned int *cpu_store);
- void prb_unlock(struct prb_cpulock *cpu_lock, unsigned int cpu_store);
- 
-diff --git a/lib/printk_ringbuffer.c b/lib/printk_ringbuffer.c
-index c2ddf4cb9f92..ce33b5add5a1 100644
---- a/lib/printk_ringbuffer.c
-+++ b/lib/printk_ringbuffer.c
-@@ -175,11 +175,16 @@ void prb_commit(struct prb_handle *h)
- 				head = PRB_WRAP_LPOS(rb, head, 1);
- 				continue;
- 			}
-+			while (atomic_long_read(&rb->lost)) {
-+				atomic_long_dec(&rb->lost);
-+				rb->seq++;
-+			}
- 			e->seq = ++rb->seq;
- 			head += e->size;
- 			changed = true;
- 		}
- 		atomic_long_set_release(&rb->head, res);
-+
- 		atomic_dec(&rb->ctx);
- 
- 		if (atomic_long_read(&rb->reserve) == res)
-@@ -486,3 +491,93 @@ int prb_iter_wait_next(struct prb_iterator *iter, char *buf, int size, u64 *seq)
- 
- 	return ret;
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index ebd9aac06323..897219f34cab 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -1453,6 +1453,21 @@ SYSCALL_DEFINE3(syslog, int, type, char __user *, buf, int, len)
+ 	return do_syslog(type, buf, len, SYSLOG_FROM_READER);
  }
+ 
++int printk_delay_msec __read_mostly;
 +
-+/*
-+ * prb_iter_seek: Seek forward to a specific record.
-+ * @iter: Iterator to advance.
-+ * @seq: Record number to advance to.
-+ *
-+ * Advance @iter such that a following call to prb_iter_data() will provide
-+ * the contents of the specified record. If a record is specified that does
-+ * not yet exist, advance @iter to the end of the record list.
-+ *
-+ * Note that iterators cannot be rewound. So if a record is requested that
-+ * exists but is previous to @iter in position, @iter is considered invalid.
-+ *
-+ * It is safe to call this function from any context and state.
-+ *
-+ * Returns 1 on succces, 0 if specified record does not yet exist (@iter is
-+ * now at the end of the list), or -EINVAL if @iter is now invalid.
-+ */
-+int prb_iter_seek(struct prb_iterator *iter, u64 seq)
++static inline void printk_delay(int level)
 +{
-+	u64 cur_seq;
-+	int ret;
++	boot_delay_msec(level);
++	if (unlikely(printk_delay_msec)) {
++		int m = printk_delay_msec;
 +
-+	/* first check if the iterator is already at the wanted seq */
-+	if (seq == 0) {
-+		if (iter->lpos == PRB_INIT)
-+			return 1;
-+		else
-+			return -EINVAL;
-+	}
-+	if (iter->lpos != PRB_INIT) {
-+		if (prb_iter_data(iter, NULL, 0, &cur_seq) >= 0) {
-+			if (cur_seq == seq)
-+				return 1;
-+			if (cur_seq > seq)
-+				return -EINVAL;
++		while (m--) {
++			mdelay(1);
++			touch_nmi_watchdog();
 +		}
 +	}
-+
-+	/* iterate to find the wanted seq */
-+	for (;;) {
-+		ret = prb_iter_next(iter, NULL, 0, &cur_seq);
-+		if (ret <= 0)
-+			break;
-+
-+		if (cur_seq == seq)
-+			break;
-+
-+		if (cur_seq > seq) {
-+			ret = -EINVAL;
-+			break;
-+		}
-+	}
-+
-+	return ret;
 +}
 +
-+/*
-+ * prb_buffer_size: Get the size of the ring buffer.
-+ * @rb: The ring buffer to get the size of.
-+ *
-+ * Return the number of bytes used for the ring buffer entry storage area.
-+ * Note that this area stores both entry header and entry data. Therefore
-+ * this represents an upper bound to the amount of data that can be stored
-+ * in the ring buffer.
-+ *
-+ * It is safe to call this function from any context and state.
-+ *
-+ * Returns the size in bytes of the entry storage area.
-+ */
-+int prb_buffer_size(struct printk_ringbuffer *rb)
-+{
-+	return PRB_SIZE(rb);
-+}
-+
-+/*
-+ * prb_inc_lost: Increment the seq counter to signal a lost record.
-+ * @rb: The ring buffer to increment the seq of.
-+ *
-+ * Increment the seq counter so that a seq number is intentially missing
-+ * for the readers. This allows readers to identify that a record is
-+ * missing. A writer will typically use this function if prb_reserve()
-+ * fails.
-+ *
-+ * It is safe to call this function from any context and state.
-+ */
-+void prb_inc_lost(struct printk_ringbuffer *rb)
-+{
-+	atomic_long_inc(&rb->lost);
-+}
+ static void print_console_dropped(struct console *con, u64 count)
+ {
+ 	char text[64];
+@@ -1534,20 +1549,6 @@ static void call_console_drivers(u64 seq, const char *ext_text, size_t ext_len,
+ 	}
+ }
+ 
+-int printk_delay_msec __read_mostly;
+-
+-static inline void printk_delay(void)
+-{
+-	if (unlikely(printk_delay_msec)) {
+-		int m = printk_delay_msec;
+-
+-		while (m--) {
+-			mdelay(1);
+-			touch_nmi_watchdog();
+-		}
+-	}
+-}
+-
+ /* FIXME: no support for LOG_CONT */
+ #if 0
+ /*
+@@ -2506,10 +2507,8 @@ static int printk_kthread_func(void *data)
+ 		console_lock();
+ 		call_console_drivers(master_seq, ext_text,
+ 				     ext_len, text, len);
+-		if (len > 0 || ext_len > 0) {
+-			boot_delay_msec(msg->level);
+-			printk_delay();
+-		}
++		if (len > 0 || ext_len > 0)
++			printk_delay(msg->level);
+ 		console_unlock();
+ 	}
+ 
 -- 
 2.11.0
