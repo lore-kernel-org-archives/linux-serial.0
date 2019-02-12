@@ -1,31 +1,68 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: RFC: drop ISA support in the synlink tty driver?
-Date: Tue, 12 Feb 2019 09:40:55 +0100
-Message-ID: <14b637cf-44e5-9887-93ca-277976191fd9@suse.cz>
-References: <20190211132534.29407-1-hch@lst.de>
- <20190212075151.GA7588@kroah.com>
- <7585c8b6-6dc4-2556-d14f-2fd60dc7df90@suse.cz>
- <20190212082517.GA27889@kroah.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
-Content-Transfer-Encoding: 7bit
+From: John Ogness <john.ogness@linutronix.de>
+Subject: [RFC PATCH v1 03/25] printk-rb: define ring buffer struct and initializer
+Date: Tue, 12 Feb 2019 15:29:41 +0100
+Message-ID: <20190212143003.48446-4-john.ogness@linutronix.de>
+References: <20190212143003.48446-1-john.ogness@linutronix.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190212082517.GA27889@kroah.com>
-Content-Language: en-GB
+In-Reply-To: <20190212143003.48446-1-john.ogness@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Peter Zijlstra <peterz@infradead.org>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 12. 02. 19, 9:25, Greg Kroah-Hartman wrote:
-> It's just a #define, in a uapi file, so we should probably leave it as
-> userspace programs _might_ depend on it.  I have no idea why, but oh
-> well...
+See Documentation/printk-ringbuffer.txt for details about the
+initializer arguments.
 
-Uh, I didn't even think this could be in a uapi header. Ok, it makes
-sense then.
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+---
+ include/linux/printk_ringbuffer.h | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-thanks,
+diff --git a/include/linux/printk_ringbuffer.h b/include/linux/printk_ringbuffer.h
+index 75f5708ea902..0e6e8dd0d01e 100644
+--- a/include/linux/printk_ringbuffer.h
++++ b/include/linux/printk_ringbuffer.h
+@@ -10,6 +10,20 @@ struct prb_cpulock {
+ 	unsigned long __percpu *irqflags;
+ };
+ 
++struct printk_ringbuffer {
++	void *buffer;
++	unsigned int size_bits;
++
++	u64 seq;
++
++	atomic_long_t tail;
++	atomic_long_t head;
++	atomic_long_t reserve;
++
++	struct prb_cpulock *cpulock;
++	atomic_t ctx;
++};
++
+ #define DECLARE_STATIC_PRINTKRB_CPULOCK(name)				\
+ static DEFINE_PER_CPU(unsigned long, _##name##_percpu_irqflags);	\
+ static struct prb_cpulock name = {					\
+@@ -17,6 +31,20 @@ static struct prb_cpulock name = {					\
+ 	.irqflags = &_##name##_percpu_irqflags,				\
+ }
+ 
++#define DECLARE_STATIC_PRINTKRB(name, szbits, cpulockptr)		\
++static char _##name##_buffer[1 << (szbits)]				\
++	__aligned(__alignof__(long));					\
++static struct printk_ringbuffer name = {				\
++	.buffer = &_##name##_buffer[0],					\
++	.size_bits = szbits,						\
++	.seq = 0,							\
++	.tail = ATOMIC_LONG_INIT(-111 * sizeof(long)),			\
++	.head = ATOMIC_LONG_INIT(-111 * sizeof(long)),			\
++	.reserve = ATOMIC_LONG_INIT(-111 * sizeof(long)),		\
++	.cpulock = cpulockptr,						\
++	.ctx = ATOMIC_INIT(0),						\
++}
++
+ /* utility functions */
+ void prb_lock(struct prb_cpulock *cpu_lock, unsigned int *cpu_store);
+ void prb_unlock(struct prb_cpulock *cpu_lock, unsigned int cpu_store);
 -- 
-js
-suse labs
+2.11.0
