@@ -1,114 +1,83 @@
-From: Stuart Menefy <stuart.menefy@mathembedded.com>
-Subject: [PATCH] tty: serial: samsung: Enable baud clock during initialisation
-Date: Tue, 12 Feb 2019 21:40:22 +0000
-Message-ID: <20190212214022.9446-1-stuart.menefy@mathembedded.com>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: Re: [RFC PATCH v1 00/25] printk: new implementation
+Date: Wed, 13 Feb 2019 10:31:01 +0900
+Message-ID: <20190213013101.GA8097@jagdpanzerIV>
+References: <20190212143003.48446-1-john.ogness@linutronix.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190212143003.48446-1-john.ogness@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>, Krzysztof Kozlowski <krzk@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org
+To: John Ogness <john.ogness@linutronix.de>
+Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-The Exynos 5260, like the 5433, appears to require baud clock as
-well as pclk to be running before accessing any of the registers,
-otherwise an external abort is raised.
+On (02/12/19 15:29), John Ogness wrote:
+>
+> 1. The printk buffer is protected by a global raw spinlock for readers
+>    and writers. This restricts the contexts that are allowed to
+>   access the buffer.
 
-The serial driver already enables baud clock when required, but only
-if it knows which clock is baud clock. On older SoCs baud clock may be
-selected from a number of possible clocks so to support this the driver
-only selects which clock to use for baud clock when a port is opened,
-at which point the desired baud rate is known and the best clock can be
-selected.
+[..]
 
-The result is that there are a number of circumstances in which
-registers are accessed without first explicitly enabling baud clock:
- - while the driver is being initialised
- - the initial parts of opening a port for the first time
- - when resuming if the port hasn't been already opened
+> 2. Because of #1, NMI and recursive contexts are handled by deferring
+>    logging/printing to a spinlock-safe context. This means that
+>    messages will not be visible if (for example) the kernel dies in
+>    NMI context and the irq_work mechanism does not survive.
 
-The 5433 overcomes this currently by marking the baud clock as
-CLK_IGNORE_UNUSED, so the clock is always enabled, however
-for the 5260 I've been trying to avoid this.
+panic() calls printk_safe_flush_on_panic(), which iterates all per-CPU
+buffers and moves data to the main logbuf; so then we can flush pending
+logbuf message
 
-This change adds code to pick the first available clock to use
-as baud clock and enables it while initialising the driver.
+	panic()
+	  printk_safe_flush_on_panic();
+	  console_flush_on_panic();
 
-This code wouldn't be sufficient on a SoC which supports
-multiple possible baud clock sources _and_ requires the
-correct baud clock to be enabled before accessing any of the
-serial port registers (in particular the register which selects
-which clock to use as the baud clock).  As far as I know
-such hardware doesn't exist.
+We don't really use irq_work mechanism for that.
 
-Signed-off-by: Stuart Menefy <stuart.menefy@mathembedded.com>
----
- drivers/tty/serial/samsung.c | 42 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+> 3. Because of #1, when *not* using features such as PREEMPT_RT, large
+>    latencies exist when printing to slow consoles.
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 9fc3559f80d9..83fd51607741 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1694,6 +1694,42 @@ s3c24xx_serial_cpufreq_deregister(struct s3c24xx_uart_port *port)
- }
- #endif
- 
-+static int s3c24xx_serial_enable_baudclk(struct s3c24xx_uart_port *ourport)
-+{
-+	struct device *dev = ourport->port.dev;
-+	struct s3c24xx_uart_info *info = ourport->info;
-+	char clk_name[MAX_CLK_NAME_LENGTH];
-+	unsigned int clk_sel;
-+	struct clk *clk;
-+	int clk_num;
-+	int ret;
-+
-+	clk_sel = ourport->cfg->clk_sel ? : info->def_clk_sel;
-+	for (clk_num = 0; clk_num < info->num_clks; clk_num++) {
-+		if (!(clk_sel & (1 << clk_num)))
-+			continue;
-+
-+		sprintf(clk_name, "clk_uart_baud%d", clk_num);
-+		clk = clk_get(dev, clk_name);
-+		if (IS_ERR(clk))
-+			continue;
-+
-+		ret = clk_prepare_enable(clk);
-+		if (ret) {
-+			clk_put(clk);
-+			continue;
-+		}
-+
-+		ourport->baudclk = clk;
-+		ourport->baudclk_rate = clk_get_rate(clk);
-+		s3c24xx_serial_setsource(&ourport->port, clk_num);
-+
-+		return 0;
-+	}
-+
-+	return -EINVAL;
-+}
-+
- /* s3c24xx_serial_init_port
-  *
-  * initialise a single serial port from the platform device given
-@@ -1788,6 +1824,10 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
- 		goto err;
- 	}
- 
-+	ret = s3c24xx_serial_enable_baudclk(ourport);
-+	if (ret)
-+		pr_warn("uart: failed to enable baudclk\n");
-+
- 	/* Keep all interrupts masked and cleared */
- 	if (s3c24xx_serial_has_interrupt_mask(port)) {
- 		wr_regl(port, S3C64XX_UINTM, 0xf);
-@@ -1901,6 +1941,8 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
- 	 * and keeps the clock enabled in this case.
- 	 */
- 	clk_disable_unprepare(ourport->clk);
-+	if (!IS_ERR(ourport->baudclk))
-+		clk_disable_unprepare(ourport->baudclk);
- 
- 	ret = s3c24xx_serial_cpufreq_register(ourport);
- 	if (ret < 0)
--- 
-2.13.6
+Because of #1? I'm not familiar with PREEMPT_RT; but logbuf spinlock
+should be unlocked while we print messages to slow consoles
+(call_consoles_drivers() is protected by console_sem, not logbuf
+lock).
+
+So it's
+
+	spin_lock_irqsave(logbuf);
+	vsprintf();
+	memcpy();
+	spin_unlock_irqrestore(logbuf);
+
+	console_trylock();
+	for (;;)
+	    call_console_drivers();
+	    				// console_owner handover
+	console_unlock();
+
+Do you see large latencies because of logbuf spinlock?
+
+> 5. Printing to consoles is the responsibility of the printk caller
+>    and that caller may be required to print many messages that other
+>    printk callers inserted. Because of this there can be enormous
+>    variance in the runtime of a printk call.
+
+That's complicated. Steven's console_owner handover patch makes
+printk() more fair. We can have "winner takes it all" scenarios,
+but significantly less often, IMO. Do you have any data that
+suggest otherwise?
+
+> 7. Loglevel INFO is handled the same as ERR. There seems to be an
+>    endless effort to get printk to show _all_ messages as quickly as
+>    possible in case of a panic (i.e. printing from any context), but
+>    at the same time try not to have printk be too intrusive for the
+>    callers. These are conflicting requirements that lead to a printk
+>    implementation that does a sub-optimal job of satisfying both
+>    sides.
+
+Per my experience, fully preemptible "print it sometime maybe"
+printk() does not work equally well for everyone.
+
+	-ss
