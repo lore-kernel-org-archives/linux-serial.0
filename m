@@ -1,42 +1,178 @@
 From: John Ogness <john.ogness@linutronix.de>
-Subject: Re: [RFC PATCH v1 07/25] printk-rb: add functionality required by printk
-Date: Wed, 13 Feb 2019 10:20:07 +0100
-Message-ID: <87k1i411vc.fsf@linutronix.de>
+Subject: Re: [RFC PATCH v1 00/25] printk: new implementation
+Date: Wed, 13 Feb 2019 14:43:48 +0100
+Message-ID: <87d0nv248b.fsf@linutronix.de>
 References: <20190212143003.48446-1-john.ogness@linutronix.de>
-        <20190212143003.48446-8-john.ogness@linutronix.de>
-        <CAHk-=whToBNHN_X_BQkO4zSyhSBaGqTH8XEtxg2_AxoBdDnEdg@mail.gmail.com>
+        <20190213013101.GA8097@jagdpanzerIV>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHk-=whToBNHN_X_BQkO4zSyhSBaGqTH8XEtxg2_AxoBdDnEdg@mail.gmail.com>
-        (Linus Torvalds's message of "Tue, 12 Feb 2019 09:15:36 -0800")
+In-Reply-To: <20190213013101.GA8097@jagdpanzerIV> (Sergey Senozhatsky's
+        message of "Wed, 13 Feb 2019 10:31:01 +0900")
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Linux List Kernel Mailing <linux-kernel@vger.kernel.org>, Peter Zijlstra <peterz@infradead.org>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 2019-02-12, Linus Torvalds <torvalds@linux-foundation.org> wrote:
-> On Tue, Feb 12, 2019 at 6:30 AM John Ogness <john.ogness@linutronix.de> wrote:
+Hi Sergey,
+
+I am glad to see that you are getting involved here. Your previous
+talks, work, and discussions were a large part of my research when
+preparing for this work.
+
+My response to your comments inline...
+
+On 2019-02-13, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com> wrote:
+> On (02/12/19 15:29), John Ogness wrote:
 >>
->> +                       while (atomic_long_read(&rb->lost)) {
->> +                               atomic_long_dec(&rb->lost);
->> +                               rb->seq++;
->> +                       }
+>> 1. The printk buffer is protected by a global raw spinlock for readers
+>>    and writers. This restricts the contexts that are allowed to
+>>   access the buffer.
 >
-> This looks like crazy garbage. It's neither atomic nor sane.
-
-It works because because only 1 context on a single CPU can hit that
-loop. But yes, it is crazy.
-
-> Why isn't it something like
+> [..]
 >
->     if (atomic_long_read(&rb->lost)) {
->         long lost = atomic_xchg(&rb->lost, 0);
->         rb->seq += lost;
->     }
+>> 2. Because of #1, NMI and recursive contexts are handled by deferring
+>>    logging/printing to a spinlock-safe context. This means that
+>>    messages will not be visible if (for example) the kernel dies in
+>>    NMI context and the irq_work mechanism does not survive.
 >
-> instead?
+> panic() calls printk_safe_flush_on_panic(), which iterates all per-CPU
+> buffers and moves data to the main logbuf; so then we can flush pending
+> logbuf message
+>
+> 	panic()
+> 	  printk_safe_flush_on_panic();
+> 	  console_flush_on_panic();
 
-Yes, it should be like you suggest. Thanks.
+If we are talking about an SMP system where logbuf_lock is locked, the
+call chain is actually:
+
+    panic()
+      crash_smp_send_stop()
+        ... wait for "num_online_cpus() == 1" ...
+      printk_safe_flush_on_panic();
+      console_flush_on_panic();
+
+Is it guaranteed that the kernel will successfully stop the other CPUs
+so that it can print to the console?
+
+And then there is console_flush_on_panic(), which will ignore locks and
+write to the consoles, expecting them to check "oops_in_progress" and
+ignore their own internal locks.
+
+Is it guaranteed that locks can just be ignored and backtraces will be
+seen and legible to the user?
+
+With the proposed emergency messages, panic() can write immediately to
+the guaranteed NMI-safe write_atomic console without having to first do
+anything with other CPUs (IPIs, NMIs, waiting, whatever) and without
+ignoring locks.
+
+> We don't really use irq_work mechanism for that.
+
+Sorry. I didn't mean to imply that panic() uses irq_work. For non-panic
+NMI situations irq_work is required (for example, WARN_ON). As an
+example, if a WARN_ON occurred but the hardware locked up before the
+irq_work engaged, the message is not seen.
+
+Obviously I am talking about rare situations. But these situations do
+occur and it is quite misfortunate (and frustrating!) when the kernel
+has the important messages ready, but could not get them out.
+
+>> 3. Because of #1, when *not* using features such as PREEMPT_RT, large
+>>    latencies exist when printing to slow consoles.
+>
+> Because of #1? I'm not familiar with PREEMPT_RT; but logbuf spinlock
+> should be unlocked while we print messages to slow consoles
+> (call_consoles_drivers() is protected by console_sem, not logbuf
+> lock).
+>
+> So it's
+>
+> 	spin_lock_irqsave(logbuf);
+> 	vsprintf();
+> 	memcpy();
+> 	spin_unlock_irqrestore(logbuf);
+>
+> 	console_trylock();
+> 	for (;;)
+> 	    call_console_drivers();
+> 	    				// console_owner handover
+> 	console_unlock();
+>
+> Do you see large latencies because of logbuf spinlock?
+
+Sorry. As you point out, this issue is not because of #1. It is because
+of the call sequence:
+
+    vprintk_emit()
+      preempt_disable()
+      console_unlock()
+        call_console_drivers()
+      preempt_enable()
+
+For slow consoles, this can cause large latencies for some misfortunate
+tasks.
+
+>> 5. Printing to consoles is the responsibility of the printk caller
+>>    and that caller may be required to print many messages that other
+>>    printk callers inserted. Because of this there can be enormous
+>>    variance in the runtime of a printk call.
+>
+> That's complicated. Steven's console_owner handover patch makes
+> printk() more fair. We can have "winner takes it all" scenarios,
+> but significantly less often, IMO. Do you have any data that
+> suggest otherwise?
+
+Steven's console_owner handover was a definite improvement. But as you
+said, we can have "winner takes it all" scenarios (or rather "the last
+one to leave the bar pays the bill"). This still should not be
+acceptable. Let's let some some other _preemptible_ task pay the bill.
+
+I am proposing to change printk so that a single pr_info() call can be
+made without the fear that it might have to print thousands of messages
+to multiple consoles, all with preemption disabled.
+
+>> 7. Loglevel INFO is handled the same as ERR. There seems to be an
+>>    endless effort to get printk to show _all_ messages as quickly as
+>>    possible in case of a panic (i.e. printing from any context), but
+>>    at the same time try not to have printk be too intrusive for the
+>>    callers. These are conflicting requirements that lead to a printk
+>>    implementation that does a sub-optimal job of satisfying both
+>>    sides.
+>
+> Per my experience, fully preemptible "print it sometime maybe"
+> printk() does not work equally well for everyone.
+
+(I'm also including your previous relevant comment[0].)
+
+> One thing that I have learned is that preemptible printk does not work
+> as expected; it wants to be 'atomic' and just stay busy as long as it
+> can.
+> We tried preemptible printk at Samsung and the result was just bad:
+>    preempted printk kthread + slow serial console = lots of lost
+> messages
+
+As long as all critical messages are print directly and immediately to
+an emergency console, why is it is problem if the informational messages
+to consoles are sometimes delayed or lost? And if those informational
+messages _are_ so important, there are things the user can do. For
+example, create a realtime userspace task to read /dev/kmsg.
+
+> We also had preemptile printk in the upstream kernel and reverted the
+> patch (see fd5f7cde1b85d4c8e09); same reasons - we had reports that
+> preemptible printk could "stall" for minutes.
+
+But in this case the preemptible task was used for printing critical
+tasks as well. Then the stall really is a problem. I am proposing to
+rely on emergency consoles for critical messages. By changing printk to
+support 2 different channels (emergency and non-emergency), we can focus
+on making each of those channels optimal.
+
+This is exactly what point #7 is talking about: How we currently have
+only 1 channel to try and satisfy all needs (whether critical or console
+noise).
 
 John Ogness
+
+[0] http://lkml.kernel.org/r/20190212154736.GA3160@tigerII.localdomain
