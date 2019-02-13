@@ -1,7 +1,7 @@
 From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
 Subject: Re: [RFC PATCH v1 00/25] printk: new implementation
-Date: Wed, 13 Feb 2019 10:31:01 +0900
-Message-ID: <20190213013101.GA8097@jagdpanzerIV>
+Date: Wed, 13 Feb 2019 10:41:41 +0900
+Message-ID: <20190213014141.GB8097@jagdpanzerIV>
 References: <20190212143003.48446-1-john.ogness@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -14,70 +14,28 @@ Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Petr Ml
 List-Id: linux-serial@vger.kernel.org
 
 On (02/12/19 15:29), John Ogness wrote:
->
-> 1. The printk buffer is protected by a global raw spinlock for readers
->    and writers. This restricts the contexts that are allowed to
->   access the buffer.
+> - console_flush_on_panic() currently is a NOP. It is pretty clear how
+>   this could be implemented if atomic_write was available. But if no
+>   such console is registered, it is not clear what should be done. Is
+>   this function really even needed?
 
-[..]
+If you now rely on a fully preemptible printk kthread to flush
+pending logbuf messages, then console_flush_on_panic() is your
+only chance to see those pending logbuf messages on the serial
+console when the system dies.
 
-> 2. Because of #1, NMI and recursive contexts are handled by deferring
->    logging/printing to a spinlock-safe context. This means that
->    messages will not be visible if (for example) the kernel dies in
->    NMI context and the irq_work mechanism does not survive.
-
-panic() calls printk_safe_flush_on_panic(), which iterates all per-CPU
-buffers and moves data to the main logbuf; so then we can flush pending
-logbuf message
+Non-atomic consoles should become atomic once you call bust_spinlocks(1),
+this is what we currently have:
 
 	panic()
-	  printk_safe_flush_on_panic();
-	  console_flush_on_panic();
-
-We don't really use irq_work mechanism for that.
-
-> 3. Because of #1, when *not* using features such as PREEMPT_RT, large
->    latencies exist when printing to slow consoles.
-
-Because of #1? I'm not familiar with PREEMPT_RT; but logbuf spinlock
-should be unlocked while we print messages to slow consoles
-(call_consoles_drivers() is protected by console_sem, not logbuf
-lock).
-
-So it's
-
-	spin_lock_irqsave(logbuf);
-	vsprintf();
-	memcpy();
-	spin_unlock_irqrestore(logbuf);
-
-	console_trylock();
-	for (;;)
-	    call_console_drivers();
-	    				// console_owner handover
-	console_unlock();
-
-Do you see large latencies because of logbuf spinlock?
-
-> 5. Printing to consoles is the responsibility of the printk caller
->    and that caller may be required to print many messages that other
->    printk callers inserted. Because of this there can be enormous
->    variance in the runtime of a printk call.
-
-That's complicated. Steven's console_owner handover patch makes
-printk() more fair. We can have "winner takes it all" scenarios,
-but significantly less often, IMO. Do you have any data that
-suggest otherwise?
-
-> 7. Loglevel INFO is handled the same as ERR. There seems to be an
->    endless effort to get printk to show _all_ messages as quickly as
->    possible in case of a panic (i.e. printing from any context), but
->    at the same time try not to have printk be too intrusive for the
->    callers. These are conflicting requirements that lead to a printk
->    implementation that does a sub-optimal job of satisfying both
->    sides.
-
-Per my experience, fully preemptible "print it sometime maybe"
-printk() does not work equally well for everyone.
+	bust_spinlocks(1)                       // sets oops_in_progress
+	console_flush_on_panic()
+	 call_console_drivers()
+	  -> serial_driver_write()
+	      if (oops_in_progress)
+	        locked = spin_trylock_irqsave(&port->lock);
+	      uart_console_write();
+	      if (locked)
+	        spin_unlock_irqrestore(&port->lock);
 
 	-ss
