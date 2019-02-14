@@ -1,71 +1,71 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [PATCH] serial: uartps: Fix stuck ISR if RX disabled with
+From: Shubhrajyoti Datta <shubhraj@xilinx.com>
+Subject: RE: [PATCH] serial: uartps: Fix stuck ISR if RX disabled with
  non-empty FIFO
-Date: Thu, 14 Feb 2019 07:35:46 +0100
-Message-ID: <d58d8b99-71ee-d9d4-7217-767cc09989ac@xilinx.com>
+Date: Thu, 14 Feb 2019 06:46:32 +0000
+Message-ID: <BL0PR02MB491508D8FDFECD3211BF1943AA670@BL0PR02MB4915.namprd02.prod.outlook.com>
 References: <20190206140813.15349-1-anssi.hannula@bitwise.fi>
+ <d58d8b99-71ee-d9d4-7217-767cc09989ac@xilinx.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
 Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20190206140813.15349-1-anssi.hannula@bitwise.fi>
+In-Reply-To: <d58d8b99-71ee-d9d4-7217-767cc09989ac@xilinx.com>
 Content-Language: en-US
 Sender: stable-owner@vger.kernel.org
-To: Anssi Hannula <anssi.hannula@bitwise.fi>, Michal Simek <michal.simek@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, stable@vger.kernel.org, Shubhrajyoti Datta <shubhraj@xilinx.com>
+To: Michal Simek <michals@xilinx.com>, Anssi Hannula <anssi.hannula@bitwise.fi>Michal Simek <michals@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>, Shubhrajyoti Datta <shubhrajyoti.datta@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-+ Shubhrajyoti
-
-On 06. 02. 19 15:08, Anssi Hannula wrote:
-> If RX is disabled while there are still unprocessed bytes in RX FIFO,
-> cdns_uart_handle_rx() called from interrupt handler will get stuck in
-> the receive loop as read bytes will not get removed from the RX FIFO
-> and CDNS_UART_SR_RXEMPTY bit will never get set.
-> 
-> Avoid the stuck handler by checking first if RX is disabled. port->lock
-> protects against race with RX-disabling functions.
-> 
-> This HW behavior was mentioned by Nathan Rossi in 43e98facc4a3 ("tty:
-> xuartps: Fix RX hang, and TX corruption in termios call") which fixed a
-> similar issue in cdns_uart_set_termios().
-> The behavior can also be easily verified by e.g. setting
-> CDNS_UART_CR_RX_DIS at the beginning of cdns_uart_handle_rx() - the
-> following loop will then get stuck.
-> 
-> Resetting the FIFO using RXRST would not set RXEMPTY either so simply
-> issuing a reset after RX-disable would not work.
-> 
-> I observe this frequently on a ZynqMP board during heavy RX load at 1M
-> baudrate when the reader process exits and thus RX gets disabled.
-> 
-> Fixes: 61ec9016988f ("tty/serial: add support for Xilinx PS UART")
-> Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
-> Cc: stable@vger.kernel.org
-> ---
->  drivers/tty/serial/xilinx_uartps.c | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-> index 094f2958cb2b..f0c4f59d9314 100644
-> --- a/drivers/tty/serial/xilinx_uartps.c
-> +++ b/drivers/tty/serial/xilinx_uartps.c
-> @@ -219,6 +219,13 @@ static void cdns_uart_handle_rx(void *dev_id, unsigned int isrstatus)
->  
->  	is_rxbs_support = cdns_uart->quirks & CDNS_UART_RXBS_SUPPORT;
->  
-> +	/*
-> +	 * RXEMPTY will never be set if RX is disabled as read bytes
-> +	 * will not be removed from the FIFO
-> +	 */
-> +	if (readl(port->membase + CDNS_UART_CR) & CDNS_UART_CR_RX_DIS)
-> +		return;
-> +
->  	while ((readl(port->membase + CDNS_UART_SR) &
->  		CDNS_UART_SR_RXEMPTY) != CDNS_UART_SR_RXEMPTY) {
->  		if (is_rxbs_support)
-> 
-
-
-Please review.
-M
+SGkgIEFuc3NpLA0KDQpUaGFua3MgZm9yIHRoZSBwYXRjaC4NCg0KTWlub3Igbml0IGJlbG93Lg0K
+VGhlIGNhbGwgdG8gdGhlIGNkbnNfdWFydF9oYW5kbGVfcnggY291bGQgYmUgcHJldmVudGVkIGlu
+ICBjZG5zX3VhcnRfaXNyIA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206
+IE1pY2hhbCBTaW1layBbbWFpbHRvOm1pY2hhbC5zaW1la0B4aWxpbnguY29tXQ0KPiBTZW50OiBU
+aHVyc2RheSwgRmVicnVhcnkgMTQsIDIwMTkgMTI6MDYgUE0NCj4gVG86IEFuc3NpIEhhbm51bGEg
+PGFuc3NpLmhhbm51bGFAYml0d2lzZS5maT47IE1pY2hhbCBTaW1law0KPiA8bWljaGFsc0B4aWxp
+bnguY29tPjsgR3JlZyBLcm9haC1IYXJ0bWFuIDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZz4N
+Cj4gQ2M6IEppcmkgU2xhYnkgPGpzbGFieUBzdXNlLmNvbT47IGxpbnV4LXNlcmlhbEB2Z2VyLmtl
+cm5lbC5vcmc7IGxpbnV4LWFybS0NCj4ga2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmc7IHN0YWJs
+ZUB2Z2VyLmtlcm5lbC5vcmc7IFNodWJocmFqeW90aSBEYXR0YQ0KPiA8c2h1YmhyYWpAeGlsaW54
+LmNvbT4NCj4gU3ViamVjdDogUmU6IFtQQVRDSF0gc2VyaWFsOiB1YXJ0cHM6IEZpeCBzdHVjayBJ
+U1IgaWYgUlggZGlzYWJsZWQgd2l0aCBub24tDQo+IGVtcHR5IEZJRk8NCj4gDQo+ICsgU2h1Ymhy
+YWp5b3RpDQo+IA0KPiBPbiAwNi4gMDIuIDE5IDE1OjA4LCBBbnNzaSBIYW5udWxhIHdyb3RlOg0K
+PiA+IElmIFJYIGlzIGRpc2FibGVkIHdoaWxlIHRoZXJlIGFyZSBzdGlsbCB1bnByb2Nlc3NlZCBi
+eXRlcyBpbiBSWCBGSUZPLA0KPiA+IGNkbnNfdWFydF9oYW5kbGVfcngoKSBjYWxsZWQgZnJvbSBp
+bnRlcnJ1cHQgaGFuZGxlciB3aWxsIGdldCBzdHVjayBpbg0KPiA+IHRoZSByZWNlaXZlIGxvb3Ag
+YXMgcmVhZCBieXRlcyB3aWxsIG5vdCBnZXQgcmVtb3ZlZCBmcm9tIHRoZSBSWCBGSUZPDQo+ID4g
+YW5kIENETlNfVUFSVF9TUl9SWEVNUFRZIGJpdCB3aWxsIG5ldmVyIGdldCBzZXQuDQo+ID4NCj4g
+PiBBdm9pZCB0aGUgc3R1Y2sgaGFuZGxlciBieSBjaGVja2luZyBmaXJzdCBpZiBSWCBpcyBkaXNh
+YmxlZC4NCj4gPiBwb3J0LT5sb2NrIHByb3RlY3RzIGFnYWluc3QgcmFjZSB3aXRoIFJYLWRpc2Fi
+bGluZyBmdW5jdGlvbnMuDQo+ID4NCj4gPiBUaGlzIEhXIGJlaGF2aW9yIHdhcyBtZW50aW9uZWQg
+YnkgTmF0aGFuIFJvc3NpIGluIDQzZTk4ZmFjYzRhMyAoInR0eToNCj4gPiB4dWFydHBzOiBGaXgg
+UlggaGFuZywgYW5kIFRYIGNvcnJ1cHRpb24gaW4gdGVybWlvcyBjYWxsIikgd2hpY2ggZml4ZWQN
+Cj4gPiBhIHNpbWlsYXIgaXNzdWUgaW4gY2Ruc191YXJ0X3NldF90ZXJtaW9zKCkuDQo+ID4gVGhl
+IGJlaGF2aW9yIGNhbiBhbHNvIGJlIGVhc2lseSB2ZXJpZmllZCBieSBlLmcuIHNldHRpbmcNCj4g
+PiBDRE5TX1VBUlRfQ1JfUlhfRElTIGF0IHRoZSBiZWdpbm5pbmcgb2YgY2Ruc191YXJ0X2hhbmRs
+ZV9yeCgpIC0gdGhlDQo+ID4gZm9sbG93aW5nIGxvb3Agd2lsbCB0aGVuIGdldCBzdHVjay4NCj4g
+Pg0KPiA+IFJlc2V0dGluZyB0aGUgRklGTyB1c2luZyBSWFJTVCB3b3VsZCBub3Qgc2V0IFJYRU1Q
+VFkgZWl0aGVyIHNvIHNpbXBseQ0KPiA+IGlzc3VpbmcgYSByZXNldCBhZnRlciBSWC1kaXNhYmxl
+IHdvdWxkIG5vdCB3b3JrLg0KPiA+DQo+ID4gSSBvYnNlcnZlIHRoaXMgZnJlcXVlbnRseSBvbiBh
+IFp5bnFNUCBib2FyZCBkdXJpbmcgaGVhdnkgUlggbG9hZCBhdCAxTQ0KPiA+IGJhdWRyYXRlIHdo
+ZW4gdGhlIHJlYWRlciBwcm9jZXNzIGV4aXRzIGFuZCB0aHVzIFJYIGdldHMgZGlzYWJsZWQuDQo+
+ID4NClJldmlld2VkLWJ5OiBTaHViaHJhanlvdGkgRGF0dGEgPHNodWJocmFqeW9yaS5kYXR0YUB4
+aWxpbnguY29tPg0KPiA+IEZpeGVzOiA2MWVjOTAxNjk4OGYgKCJ0dHkvc2VyaWFsOiBhZGQgc3Vw
+cG9ydCBmb3IgWGlsaW54IFBTIFVBUlQiKQ0KPiA+IFNpZ25lZC1vZmYtYnk6IEFuc3NpIEhhbm51
+bGEgPGFuc3NpLmhhbm51bGFAYml0d2lzZS5maT4NCj4gPiBDYzogc3RhYmxlQHZnZXIua2VybmVs
+Lm9yZw0KPiA+IC0tLQ0KPiA+ICBkcml2ZXJzL3R0eS9zZXJpYWwveGlsaW54X3VhcnRwcy5jIHwg
+NyArKysrKysrDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCA3IGluc2VydGlvbnMoKykNCj4gPg0KPiA+
+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwveGlsaW54X3VhcnRwcy5jDQo+ID4gYi9k
+cml2ZXJzL3R0eS9zZXJpYWwveGlsaW54X3VhcnRwcy5jDQo+ID4gaW5kZXggMDk0ZjI5NThjYjJi
+Li5mMGM0ZjU5ZDkzMTQgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL3hpbGlu
+eF91YXJ0cHMuYw0KPiA+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC94aWxpbnhfdWFydHBzLmMN
+Cj4gPiBAQCAtMjE5LDYgKzIxOSwxMyBAQCBzdGF0aWMgdm9pZCBjZG5zX3VhcnRfaGFuZGxlX3J4
+KHZvaWQgKmRldl9pZCwNCj4gPiB1bnNpZ25lZCBpbnQgaXNyc3RhdHVzKQ0KPiA+DQo+ID4gIAlp
+c19yeGJzX3N1cHBvcnQgPSBjZG5zX3VhcnQtPnF1aXJrcyAmIENETlNfVUFSVF9SWEJTX1NVUFBP
+UlQ7DQo+ID4NCj4gPiArCS8qDQo+ID4gKwkgKiBSWEVNUFRZIHdpbGwgbmV2ZXIgYmUgc2V0IGlm
+IFJYIGlzIGRpc2FibGVkIGFzIHJlYWQgYnl0ZXMNCj4gPiArCSAqIHdpbGwgbm90IGJlIHJlbW92
+ZWQgZnJvbSB0aGUgRklGTw0KPiA+ICsJICovDQo+ID4gKwlpZiAocmVhZGwocG9ydC0+bWVtYmFz
+ZSArIENETlNfVUFSVF9DUikgJg0KPiBDRE5TX1VBUlRfQ1JfUlhfRElTKQ0KPiA+ICsJCXJldHVy
+bjsNCj4gPiArDQo+ID4gIAl3aGlsZSAoKHJlYWRsKHBvcnQtPm1lbWJhc2UgKyBDRE5TX1VBUlRf
+U1IpICYNCj4gPiAgCQlDRE5TX1VBUlRfU1JfUlhFTVBUWSkgIT0gQ0ROU19VQVJUX1NSX1JYRU1Q
+VFkpIHsNCj4gPiAgCQlpZiAoaXNfcnhic19zdXBwb3J0KQ0KPiA+DQo+IA0KPiANCj4gUGxlYXNl
+IHJldmlldy4NCj4gTQ0K
