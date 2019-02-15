@@ -1,12 +1,12 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.4 12/20] serial: fsl_lpuart: fix maximum acceptable baud rate with over-sampling
-Date: Thu, 14 Feb 2019 21:15:03 -0500
-Message-ID: <20190215021511.179333-12-sashal@kernel.org>
-References: <20190215021511.179333-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 3.18 09/16] serial: fsl_lpuart: fix maximum acceptable baud rate with over-sampling
+Date: Thu, 14 Feb 2019 21:15:39 -0500
+Message-ID: <20190215021546.179605-9-sashal@kernel.org>
+References: <20190215021546.179605-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190215021511.179333-1-sashal@kernel.org>
+In-Reply-To: <20190215021546.179605-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Tomonori Sakita <tomonori.sakita@sord.co.jp>, Atsushi Nemoto <atsushi.nemoto@sord.co.jp>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
@@ -27,10 +27,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 01e2274b23f2..ceb0829384df 100644
+index 92b7a5bf7c4d..8c4f561a09c0 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1405,7 +1405,7 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
+@@ -1422,7 +1422,7 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
  	}
  
  	/* ask the core to calculate the divisor */
