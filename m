@@ -1,55 +1,43 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.20 44/77] tty: serial: qcom_geni_serial: Allow mctrl when flow control is disabled
-Date: Thu, 14 Feb 2019 21:08:22 -0500
-Message-ID: <20190215020855.176727-44-sashal@kernel.org>
-References: <20190215020855.176727-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 15/27] serial: fsl_lpuart: fix maximum acceptable baud rate with over-sampling
+Date: Thu, 14 Feb 2019 21:14:12 -0500
+Message-ID: <20190215021424.178979-15-sashal@kernel.org>
+References: <20190215021424.178979-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190215020855.176727-1-sashal@kernel.org>
+In-Reply-To: <20190215021424.178979-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Matthias Kaehlcke <mka@chromium.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Cc: Tomonori Sakita <tomonori.sakita@sord.co.jp>, Atsushi Nemoto <atsushi.nemoto@sord.co.jp>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Matthias Kaehlcke <mka@chromium.org>
+From: Tomonori Sakita <tomonori.sakita@sord.co.jp>
 
-[ Upstream commit e8a6ca808c5ed1e2b43ab25f1f2cbd43a7574f73 ]
+[ Upstream commit 815d835b7ba46685c316b000013367dacb2b461b ]
 
-The geni set/get_mctrl() functions currently do nothing unless
-hardware flow control is enabled. Remove this arbitrary limitation.
+Using over-sampling ratio, lpuart can accept baud rate upto uartclk / 4.
 
-Suggested-by: Johan Hovold <johan@kernel.org>
-Fixes: 8a8a66a1a18a ("tty: serial: qcom_geni_serial: Add support for flow control")
-Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-Reviewed-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Tomonori Sakita <tomonori.sakita@sord.co.jp>
+Signed-off-by: Atsushi Nemoto <atsushi.nemoto@sord.co.jp>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/qcom_geni_serial.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index d3b5261ee80a..76e0ad7251e1 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -221,7 +221,7 @@ static unsigned int qcom_geni_serial_get_mctrl(struct uart_port *uport)
- 	unsigned int mctrl = TIOCM_DSR | TIOCM_CAR;
- 	u32 geni_ios;
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index e2ec04904f54..0cf4fe6cb4d1 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -1490,7 +1490,7 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	}
  
--	if (uart_console(uport) || !uart_cts_enabled(uport)) {
-+	if (uart_console(uport)) {
- 		mctrl |= TIOCM_CTS;
- 	} else {
- 		geni_ios = readl_relaxed(uport->membase + SE_GENI_IOS);
-@@ -237,7 +237,7 @@ static void qcom_geni_serial_set_mctrl(struct uart_port *uport,
- {
- 	u32 uart_manual_rfr = 0;
+ 	/* ask the core to calculate the divisor */
+-	baud = uart_get_baud_rate(port, termios, old, 50, port->uartclk / 16);
++	baud = uart_get_baud_rate(port, termios, old, 50, port->uartclk / 4);
  
--	if (uart_console(uport) || !uart_cts_enabled(uport))
-+	if (uart_console(uport))
- 		return;
+ 	spin_lock_irqsave(&sport->port.lock, flags);
  
- 	if (!(mctrl & TIOCM_RTS))
 -- 
 2.19.1
