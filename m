@@ -1,187 +1,74 @@
-From: Zhiyong Tao <zhiyong.tao@mediatek.com>
-Subject: Re: [PATCH v7 3/6] dt-bindings: pinctrl: mt8183: add binding
- document
-Date: Mon, 18 Feb 2019 17:44:49 +0800
-Message-ID: <1550483089.4739.28.camel@mhfsdcap03>
-References: <1550210558-30516-1-git-send-email-erin.lo@mediatek.com>
-         <1550210558-30516-4-git-send-email-erin.lo@mediatek.com>
-         <2b221339-3933-2a25-ab60-d4d772d2873a@gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v2 00/15] Add basic support for Socionext Milbeaut M10V SoC
+Date: Mon, 18 Feb 2019 13:20:42 +0100
+Message-ID: <CAK8P3a3_j2W+KXSynW_SkVZk_+PJ-DqyxjLkgJL-OichS0fwWw@mail.gmail.com>
+References: <1549628687-29628-1-git-send-email-sugaya.taichi@socionext.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <2b221339-3933-2a25-ab60-d4d772d2873a@gmail.com>
+In-Reply-To: <1549628687-29628-1-git-send-email-sugaya.taichi@socionext.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, devicetree@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, yingjoe.chen@mediatek.com, mars.cheng@mediatek.com, eddie.huang@mediatek.com, linux-clk@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Erin Lo <erin.lo@mediatek.com>
+To: Sugaya Taichi <sugaya.taichi@socionext.com>
+Cc: DTML <devicetree@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, linux-clk <linux-clk@vger.kernel.org>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, linux-serial@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>, Takao Orito <orito.takao@socionext.com>, Kazuhiro Kasai <kasai.kazuhiro@socionext.com>, Shinji
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 2019-02-15 at 10:35 +0100, Matthias Brugger wrote:
-> 
-> On 15/02/2019 07:02, Erin Lo wrote:
-> > From: Zhiyong Tao <zhiyong.tao@mediatek.com>
-> > 
-> > The commit adds mt8183 compatible node in binding document.
-> > 
-> > Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
-> > Signed-off-by: Erin Lo <erin.lo@mediatek.com>
-> > ---
-> >  .../devicetree/bindings/pinctrl/pinctrl-mt8183.txt | 115 +++++++++++++++++++++
-> >  1 file changed, 115 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
-> > 
-> > diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
-> > new file mode 100644
-> > index 0000000..364e673
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
-> > @@ -0,0 +1,115 @@
-> > +* Mediatek MT8183 Pin Controller
-> > +
-> > +The Mediatek's Pin controller is used to control SoC pins.
-> > +
-> > +Required properties:
-> > +- compatible: value should be one of the following.
-> > +	"mediatek,mt8183-pinctrl", compatible with mt8183 pinctrl.
-> > +- gpio-controller : Marks the device node as a gpio controller.
-> > +- #gpio-cells: number of cells in GPIO specifier. Since the generic GPIO
-> > +  binding is used, the amount of cells must be specified as 2. See the below
-> > +  mentioned gpio binding representation for description of particular cells.
-> > +- gpio-ranges : gpio valid number range.
-> > +- reg: physicall address base for gpio base registers. There are nine
-> 
-> s/physicall/physical
+On Fri, Feb 8, 2019 at 1:24 PM Sugaya Taichi
+<sugaya.taichi@socionext.com> wrote:
+>
+> Hi,
+>
+> Here is the series of patches the initial support for SC2000(M10V) of
+> Milbeaut SoCs. "M10V" is the internal name of SC2000, so commonly used in
+> source code.
+>
+> SC2000 is a SoC of the Milbeaut series. equipped with a DSP optimized for
+> computer vision. It also features advanced functionalities such as 360-degree,
+> real-time spherical stitching with multi cameras, image stabilization for
+> without mechanical gimbals, and rolling shutter correction. More detail is
+> below:
+> https://www.socionext.com/en/products/assp/milbeaut/SC2000.html
+>
+> Specifications for developers are below:
+>  - Quad-core 32bit Cortex-A7 on ARMv7-A architecture
+>  - NEON support
+>  - DSP
+>  - GPU
+>  - MAX 3GB DDR3
+>  - Cortex-M0 for power control
+>  - NAND Flash Interface
+>  - SD UHS-I
+>  - SD UHS-II
+>  - SDIO
+>  - USB2.0 HOST / Device
+>  - USB3.0 HOST / Device
+>  - PCI express Gen2
+>  - Ethernet Engine
+>  - I2C
+>  - UART
+>  - SPI
+>  - PWM
+>
+> Support is quite minimal for now, since it only includes timer, clock,
+> pictrl and serial controller drivers, so we can only boot to userspace
+> through initramfs. Support for the other peripherals  will come eventually.
 
-==>we will modify it.
-> 
-> > +  physicall address base in mt8183. They are 0x10005000, 0x11F20000,
-> > +  0x11E80000, 0x11E70000, 0x11E90000, 0x11D30000, 0x11D20000, 0x11C50000,
-> > +  0x11F30000.
-> > +
-> > +	Eg: <&pio 6 0>
-> > +	<[phandle of the gpio controller node]
-> > +	[line number within the gpio controller]
-> > +	[flags]>
-> > +
-> > +	Values for gpio specifier:
-> > +	- Line number: is a value between 0 to 202.
-> > +	- Flags:  bit field of flags, as defined in <dt-bindings/gpio/gpio.h>.
-> > +            Only the following flags are supported:
-> > +            0 - GPIO_ACTIVE_HIGH
-> > +            1 - GPIO_ACTIVE_LOW
-> > +
-> > +Optional properties:
-> > +- reg-names: gpio base register names. There are nine gpio base register
-> > +  names in mt8183. They are "iocfg0", "iocfg1", "iocfg2", "iocfg3", "iocfg4",
-> > +  "iocfg5", "iocfg6", "iocfg7", "iocfg8".
-> > +- interrupt-controller: Marks the device node as an interrupt controller
-> > +- #interrupt-cells: Should be two.
-> > +- interrupts : The interrupt outputs from the controller.
-> 
-> we are missing interrupt-parent here.
+I've looked over the platform once more. Overall, it looks very good, and
+I'd still like to merge this for linux-5.1, but we are running out of time
+there. If you send the patches to soc@kernel.org quickly, we can try to
+still merge them in, but if anything goes wrong, it will have to wait until
+we start merging patches for 5.2, directly after 5.1 is out.
 
-==> we will add it in next version. we will add like this:
-- interrupts-parents : The interrupt connector. In mt8183, it is sysirq.
+I did not look at the device driver patches (clk, clocksource, pinctrl, serial)
+in much detail. If you have an Ack from the maintainers, feel free to
+include them in the series, otherwise let's merge the rest now and then
+you can send the updated patches for inclusion through the subsystem
+trees in 5.2.
 
-> 
-> > +
-> > +Please refer to pinctrl-bindings.txt in this directory for details of the
-> > +common pinctrl bindings used by client devices.
-> > +
-> > +Subnode format
-> > +A pinctrl node should contain at least one subnodes representing the
-> > +pinctrl groups available on the machine. Each subnode will list the
-> > +pins it needs, and how they should be configured, with regard to muxer
-> > +configuration, pullups, drive strength, input enable/disable and input schmitt.
-> > +
-> > +    node {
-> > +	pinmux = <PIN_NUMBER_PINMUX>;
-> > +	GENERIC_PINCONFIG;
-> > +    };
-> > +
-> > +Required properties:
-> > +- pinmux: integer array, represents gpio pin number and mux setting.
-> > +    Supported pin number and mux varies for different SoCs, and are defined
-> > +    as macros in boot/dts/<soc>-pinfunc.h directly.
-> > +
-> > +Optional properties:
-> > +- GENERIC_PINCONFIG: is the generic pinconfig options to use, bias-disable,
-> > +    bias-pull-down, bias-pull-up, input-enable, input-disable, output-low, output-high,
-> > +    input-schmitt-enable, input-schmitt-disable and drive-strength are valid.
-> > +
-> > +    Some special pins have extra pull up strength, there are R0 and R1 pull-up
-> > +    resistors available, but for user, it's only need to set R1R0 as 00, 01, 10 or 11.
-> > +    So when config mediatek,pull-up-adv or mediatek,pull-down-adv,
-> > +    it support arguments for those special pins.
-> 
-> I wonder if we should mention which this special pins are. A look at the driver
-> told me that it is not possible to know that by reading the source code neither.
-> Linus, what do you think?
-> 
-> What about mediatek,tdsel and mediatek,rdsel? They are not supported?
-> 
-> Wouldn't it make sense to have one binding description for paris and then just
-> create SoC specifics bindings?
-==> It can support mediatek,tdsel and mediatek,rdsel in mt8183 design.
-I will try to create one new binding description and separate it from
-soc specifics bindings.
+I have sent a few comments. The only one that is really important
+here is the missing platform check in the suspend options. Please
+try to address most of the other commentsm, either by changing the
+code, or by explaining why your version is correct.
 
-> 
-> > +
-> > +    When config drive-strength, it can support some arguments, such as
-> > +    MTK_DRIVE_4mA, MTK_DRIVE_6mA, etc. See dt-bindings/pinctrl/mt65xx.h.
-> 
-> It can support all drive strength defined in that header file, 2, 4, 6, 8, 10,
-> 12, 14, 16, 20, 24, 28 and 32 mA?
 
-==>It can only support drive strength 2,4,6,8,10,12,14,16mA in mt8183. 
 
-> 
-> > +
-> > +Examples:
-> > +
-> > +#include "mt8183-pinfunc.h"
-> > +
-> > +...
-> > +{
-> > +	pio: pinctrl@10005000 {
-> > +		compatible = "mediatek,mt8183-pinctrl";
-> > +		reg = <0 0x10005000 0 0x1000>,
-> > +		      <0 0x11F20000 0 0x1000>,
-> > +		      <0 0x11E80000 0 0x1000>,
-> > +		      <0 0x11E70000 0 0x1000>,
-> > +		      <0 0x11E90000 0 0x1000>,
-> > +		      <0 0x11D30000 0 0x1000>,
-> > +		      <0 0x11D20000 0 0x1000>,
-> > +		      <0 0x11C50000 0 0x1000>,
-> > +		      <0 0x11F30000 0 0x1000>;
-> > +		reg-names = "iocfg0", "iocfg1", "iocfg2",
-> > +			    "iocfg3", "iocfg4", "iocfg5",
-> > +			    "iocfg6", "iocfg7", "iocfg8";
-> > +		gpio-controller;
-> > +		#gpio-cells = <2>;
-> > +		gpio-ranges = <&pio 0 0 192>;
-> > +		interrupt-controller;
-> > +		interrupts = <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>;
-> > +		interrupt-parent = <&gic>;
-> > +		#interrupt-cells = <2>;
-> > +
-> > +		i2c0_pins_a: i2c0 {
-> > +			pins1 {
-> > +				pinmux = <PINMUX_GPIO48__FUNC_SCL5>,
-> > +					 <PINMUX_GPIO49__FUNC_SDA5>;
-> > +				mediatek,pull-up-adv = <11>;
-> > +			};
-> > +		};
-> > +
-> > +		i2c1_pins_a: i2c1 {
-> > +			pins {
-> > +				pinmux = <PINMUX_GPIO50__FUNC_SCL3>,
-> > +					 <PINMUX_GPIO51__FUNC_SDA3>;
-> > +				mediatek,pull-down-adv = <10>;
-> > +			};
-> > +		};
-> > +		...
-> > +	};
-> > +};
-> > 
+     Arnd
