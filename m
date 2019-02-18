@@ -1,161 +1,85 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [RFC PATCH v1 06/25] printk-rb: add blocking reader support
-Date: Mon, 18 Feb 2019 15:05:38 +0100
-Message-ID: <20190218140538.5sug36qiji2rurxx@pathway.suse.cz>
-References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190212143003.48446-7-john.ogness@linutronix.de>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v7 3/6] dt-bindings: pinctrl: mt8183: add binding document
+Date: Mon, 18 Feb 2019 09:48:23 -0600
+Message-ID: <20190218154823.GA2714@bogus>
+References: <1550210558-30516-1-git-send-email-erin.lo@mediatek.com>
+ <1550210558-30516-4-git-send-email-erin.lo@mediatek.com>
+ <2b221339-3933-2a25-ab60-d4d772d2873a@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190212143003.48446-7-john.ogness@linutronix.de>
+In-Reply-To: <2b221339-3933-2a25-ab60-d4d772d2873a@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: John Ogness <john.ogness@linutronix.de>
-Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Erin Lo <erin.lo@mediatek.com>, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, devicetree@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, yingjoe.chen@mediatek.com, mars.cheng@mediatek.com, eddie.huang@mediatek.com, linux-clk@vger.kernel.org, Zhiyong Tao <zhiyong.tao@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue 2019-02-12 15:29:44, John Ogness wrote:
-> Add a blocking read function for readers. An irq_work function is
-> used to signal the wait queue so that write notification can
-> be triggered from any context.
-
-I would be more precise what exacly is problematic in which context.
-Something like:
-
-An irq_work function is used because wake_up() cannot be called safely
-from NMI and scheduler context.
-
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
-> ---
->  include/linux/printk_ringbuffer.h | 20 ++++++++++++++++
->  lib/printk_ringbuffer.c           | 49 +++++++++++++++++++++++++++++++++++++++
->  2 files changed, 69 insertions(+)
+On Fri, Feb 15, 2019 at 10:35:39AM +0100, Matthias Brugger wrote:
 > 
-> diff --git a/include/linux/printk_ringbuffer.h b/include/linux/printk_ringbuffer.h
-> index 5fdaf632c111..106f20ef8b4d 100644
-> --- a/include/linux/printk_ringbuffer.h
-> +++ b/include/linux/printk_ringbuffer.h
-> @@ -2,8 +2,10 @@
->  #ifndef _LINUX_PRINTK_RINGBUFFER_H
->  #define _LINUX_PRINTK_RINGBUFFER_H
->  
-> +#include <linux/irq_work.h>
->  #include <linux/atomic.h>
->  #include <linux/percpu.h>
-> +#include <linux/wait.h>
->  
->  struct prb_cpulock {
->  	atomic_t owner;
-> @@ -22,6 +24,10 @@ struct printk_ringbuffer {
->  
->  	struct prb_cpulock *cpulock;
->  	atomic_t ctx;
-> +
-> +	struct wait_queue_head *wq;
-> +	atomic_long_t wq_counter;
-> +	struct irq_work *wq_work;
->  };
->  
->  struct prb_entry {
-> @@ -59,6 +65,15 @@ struct prb_iterator {
->  #define DECLARE_STATIC_PRINTKRB(name, szbits, cpulockptr)		\
->  static char _##name##_buffer[1 << (szbits)]				\
->  	__aligned(__alignof__(long));					\
-> +static DECLARE_WAIT_QUEUE_HEAD(_##name##_wait);				\
-> +static void _##name##_wake_work_func(struct irq_work *irq_work)		\
-> +{									\
-> +	wake_up_interruptible_all(&_##name##_wait);			\
-> +}									\
-
-All ring buffers might share the same generic function, something like:
-
-void prb_wake_readers_work_func(struct irq_work *irq_work)
-{
-	struct printk_ringbuffer *rb;
-
-	rb = container_of(irq_work, struct printk_ring_buffer, wq_work);
-	wake_up_interruptible_all(rb->wq);			\
-}
-
-
-> +static struct irq_work _##name##_wake_work = {				\
-> +	.func = _##name##_wake_work_func,				\
-> +	.flags = IRQ_WORK_LAZY,						\
-> +};									\
->  static struct printk_ringbuffer name = {				\
->  	.buffer = &_##name##_buffer[0],					\
->  	.size_bits = szbits,						\
-> diff --git a/lib/printk_ringbuffer.c b/lib/printk_ringbuffer.c
-> index 1d1e886a0966..c2ddf4cb9f92 100644
-> --- a/lib/printk_ringbuffer.c
-> +++ b/lib/printk_ringbuffer.c
-> @@ -185,6 +188,12 @@ void prb_commit(struct prb_handle *h)
->  	}
->  
->  	prb_unlock(rb->cpulock, h->cpu);
-> +
-> +	if (changed) {
-> +		atomic_long_inc(&rb->wq_counter);
-> +		if (wq_has_sleeper(rb->wq))
-> +			irq_work_queue(rb->wq_work);
-> +	}
->  }
->  
->  /*
-> @@ -437,3 +446,43 @@ int prb_iter_next(struct prb_iterator *iter, char *buf, int size, u64 *seq)
->  
->  	return 1;
->  }
-> +
-> +/*
-> + * prb_iter_wait_next: Advance to the next record, blocking if none available.
-> + * @iter: Iterator tracking the current position.
-> + * @buf: A buffer to store the data of the next record. May be NULL.
-> + * @size: The size of @buf. (Ignored if @buf is NULL.)
-> + * @seq: The sequence number of the next record. May be NULL.
-> + *
-> + * If a next record is already available, this function works like
-> + * prb_iter_next(). Otherwise block interruptible until a next record is
-> + * available.
-> + *
-> + * When a next record is available, @iter is advanced and (if specified)
-> + * the data and/or sequence number of that record are provided.
-> + *
-> + * This function might sleep.
-> + *
-> + * Returns 1 if @iter was advanced, -EINVAL if @iter is now invalid, or
-> + * -ERESTARTSYS if interrupted by a signal.
-> + */
-> +int prb_iter_wait_next(struct prb_iterator *iter, char *buf, int size, u64 *seq)
-> +{
-> +	unsigned long last_seen;
-> +	int ret;
-> +
-> +	for (;;) {
-> +		last_seen = atomic_long_read(&iter->rb->wq_counter);
-> +
-> +		ret = prb_iter_next(iter, buf, size, seq);
-> +		if (ret != 0)
-> +			break;
-> +
-> +		ret = wait_event_interruptible(*iter->rb->wq,
-> +			last_seen != atomic_long_read(&iter->rb->wq_counter));
-
-Do we really need yet another counter here?
-
-I think that rb->seq might do the same job. Or if there is problem
-with atomicity then rb->head might work as well. Or do I miss
-anything?
-
-Best Regards,
-Petr
-
-> +		if (ret < 0)
-> +			break;
-> +	}
-> +
-> +	return ret;
-> +}
-> -- 
-> 2.11.0
 > 
+> On 15/02/2019 07:02, Erin Lo wrote:
+> > From: Zhiyong Tao <zhiyong.tao@mediatek.com>
+> > 
+> > The commit adds mt8183 compatible node in binding document.
+> > 
+> > Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
+> > Signed-off-by: Erin Lo <erin.lo@mediatek.com>
+> > ---
+> >  .../devicetree/bindings/pinctrl/pinctrl-mt8183.txt | 115 +++++++++++++++++++++
+> >  1 file changed, 115 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
+> > 
+> > diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
+> > new file mode 100644
+> > index 0000000..364e673
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
+> > @@ -0,0 +1,115 @@
+> > +* Mediatek MT8183 Pin Controller
+> > +
+> > +The Mediatek's Pin controller is used to control SoC pins.
+> > +
+> > +Required properties:
+> > +- compatible: value should be one of the following.
+> > +	"mediatek,mt8183-pinctrl", compatible with mt8183 pinctrl.
+> > +- gpio-controller : Marks the device node as a gpio controller.
+> > +- #gpio-cells: number of cells in GPIO specifier. Since the generic GPIO
+> > +  binding is used, the amount of cells must be specified as 2. See the below
+> > +  mentioned gpio binding representation for description of particular cells.
+> > +- gpio-ranges : gpio valid number range.
+> > +- reg: physicall address base for gpio base registers. There are nine
+> 
+> s/physicall/physical
+> 
+> > +  physicall address base in mt8183. They are 0x10005000, 0x11F20000,
+> > +  0x11E80000, 0x11E70000, 0x11E90000, 0x11D30000, 0x11D20000, 0x11C50000,
+> > +  0x11F30000.
+> > +
+> > +	Eg: <&pio 6 0>
+> > +	<[phandle of the gpio controller node]
+> > +	[line number within the gpio controller]
+> > +	[flags]>
+> > +
+> > +	Values for gpio specifier:
+> > +	- Line number: is a value between 0 to 202.
+> > +	- Flags:  bit field of flags, as defined in <dt-bindings/gpio/gpio.h>.
+> > +            Only the following flags are supported:
+> > +            0 - GPIO_ACTIVE_HIGH
+> > +            1 - GPIO_ACTIVE_LOW
+> > +
+> > +Optional properties:
+> > +- reg-names: gpio base register names. There are nine gpio base register
+> > +  names in mt8183. They are "iocfg0", "iocfg1", "iocfg2", "iocfg3", "iocfg4",
+> > +  "iocfg5", "iocfg6", "iocfg7", "iocfg8".
+> > +- interrupt-controller: Marks the device node as an interrupt controller
+> > +- #interrupt-cells: Should be two.
+> > +- interrupts : The interrupt outputs from the controller.
+> 
+> we are missing interrupt-parent here.
+
+No, because interrupt-parent is implied and may be in a parent node.
+
+What's missing is how many interrupts and what are they? 
+
+Rob
