@@ -1,85 +1,155 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v7 3/6] dt-bindings: pinctrl: mt8183: add binding document
-Date: Mon, 18 Feb 2019 09:48:23 -0600
-Message-ID: <20190218154823.GA2714@bogus>
-References: <1550210558-30516-1-git-send-email-erin.lo@mediatek.com>
- <1550210558-30516-4-git-send-email-erin.lo@mediatek.com>
- <2b221339-3933-2a25-ab60-d4d772d2873a@gmail.com>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [RFC PATCH v1 07/25] printk-rb: add functionality required by
+ printk
+Date: Mon, 18 Feb 2019 16:59:21 +0100
+Message-ID: <20190218155921.rxksi2hyasxnmu7a@pathway.suse.cz>
+References: <20190212143003.48446-1-john.ogness@linutronix.de>
+ <20190212143003.48446-8-john.ogness@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <2b221339-3933-2a25-ab60-d4d772d2873a@gmail.com>
+In-Reply-To: <20190212143003.48446-8-john.ogness@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Erin Lo <erin.lo@mediatek.com>, Linus Walleij <linus.walleij@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, devicetree@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, yingjoe.chen@mediatek.com, mars.cheng@mediatek.com, eddie.huang@mediatek.com, linux-clk@vger.kernel.org, Zhiyong Tao <zhiyong.tao@mediatek.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Feb 15, 2019 at 10:35:39AM +0100, Matthias Brugger wrote:
+On Tue 2019-02-12 15:29:45, John Ogness wrote:
+> The printk subsystem needs to be able to query the size of the ring
+> buffer, seek to specific entries within the ring buffer, and track
+> if records could not be stored in the ring buffer.
 > 
-> 
-> On 15/02/2019 07:02, Erin Lo wrote:
-> > From: Zhiyong Tao <zhiyong.tao@mediatek.com>
-> > 
-> > The commit adds mt8183 compatible node in binding document.
-> > 
-> > Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
-> > Signed-off-by: Erin Lo <erin.lo@mediatek.com>
-> > ---
-> >  .../devicetree/bindings/pinctrl/pinctrl-mt8183.txt | 115 +++++++++++++++++++++
-> >  1 file changed, 115 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
-> > 
-> > diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
-> > new file mode 100644
-> > index 0000000..364e673
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8183.txt
-> > @@ -0,0 +1,115 @@
-> > +* Mediatek MT8183 Pin Controller
-> > +
-> > +The Mediatek's Pin controller is used to control SoC pins.
-> > +
-> > +Required properties:
-> > +- compatible: value should be one of the following.
-> > +	"mediatek,mt8183-pinctrl", compatible with mt8183 pinctrl.
-> > +- gpio-controller : Marks the device node as a gpio controller.
-> > +- #gpio-cells: number of cells in GPIO specifier. Since the generic GPIO
-> > +  binding is used, the amount of cells must be specified as 2. See the below
-> > +  mentioned gpio binding representation for description of particular cells.
-> > +- gpio-ranges : gpio valid number range.
-> > +- reg: physicall address base for gpio base registers. There are nine
-> 
-> s/physicall/physical
-> 
-> > +  physicall address base in mt8183. They are 0x10005000, 0x11F20000,
-> > +  0x11E80000, 0x11E70000, 0x11E90000, 0x11D30000, 0x11D20000, 0x11C50000,
-> > +  0x11F30000.
-> > +
-> > +	Eg: <&pio 6 0>
-> > +	<[phandle of the gpio controller node]
-> > +	[line number within the gpio controller]
-> > +	[flags]>
-> > +
-> > +	Values for gpio specifier:
-> > +	- Line number: is a value between 0 to 202.
-> > +	- Flags:  bit field of flags, as defined in <dt-bindings/gpio/gpio.h>.
-> > +            Only the following flags are supported:
-> > +            0 - GPIO_ACTIVE_HIGH
-> > +            1 - GPIO_ACTIVE_LOW
-> > +
-> > +Optional properties:
-> > +- reg-names: gpio base register names. There are nine gpio base register
-> > +  names in mt8183. They are "iocfg0", "iocfg1", "iocfg2", "iocfg3", "iocfg4",
-> > +  "iocfg5", "iocfg6", "iocfg7", "iocfg8".
-> > +- interrupt-controller: Marks the device node as an interrupt controller
-> > +- #interrupt-cells: Should be two.
-> > +- interrupts : The interrupt outputs from the controller.
-> 
-> we are missing interrupt-parent here.
+> diff --git a/lib/printk_ringbuffer.c b/lib/printk_ringbuffer.c
+> index c2ddf4cb9f92..ce33b5add5a1 100644
+> --- a/lib/printk_ringbuffer.c
+> +++ b/lib/printk_ringbuffer.c
+> @@ -175,11 +175,16 @@ void prb_commit(struct prb_handle *h)
+>  				head = PRB_WRAP_LPOS(rb, head, 1);
+>  				continue;
+>  			}
+> +			while (atomic_long_read(&rb->lost)) {
+> +				atomic_long_dec(&rb->lost);
+> +				rb->seq++;
 
-No, because interrupt-parent is implied and may be in a parent node.
+The lost-messages handling should be in a separate patch.
+At least I do not see any close relation with prb_iter_seek().
 
-What's missing is how many interrupts and what are they? 
+I would personally move prb_iter_seek() to the 5th patch that
+implements the other get/iterator functions.
 
-Rob
+On the contrary, the patch adding support for lost messages
+should implement a way how to inform the user about lost messages.
+E.g. to add a warning when some space becomes available again.
+
+> +			}
+>  			e->seq = ++rb->seq;
+>  			head += e->size;
+>  			changed = true;
+>  		}
+>  		atomic_long_set_release(&rb->head, res);
+> +
+>  		atomic_dec(&rb->ctx);
+>  
+>  		if (atomic_long_read(&rb->reserve) == res)
+> @@ -486,3 +491,93 @@ int prb_iter_wait_next(struct prb_iterator *iter, char *buf, int size, u64 *seq)
+>  
+>  	return ret;
+>  }
+> +
+> +/*
+> + * prb_iter_seek: Seek forward to a specific record.
+> + * @iter: Iterator to advance.
+> + * @seq: Record number to advance to.
+> + *
+> + * Advance @iter such that a following call to prb_iter_data() will provide
+> + * the contents of the specified record. If a record is specified that does
+> + * not yet exist, advance @iter to the end of the record list.
+> + *
+> + * Note that iterators cannot be rewound. So if a record is requested that
+> + * exists but is previous to @iter in position, @iter is considered invalid.
+> + *
+> + * It is safe to call this function from any context and state.
+> + *
+> + * Returns 1 on succces, 0 if specified record does not yet exist (@iter is
+> + * now at the end of the list), or -EINVAL if @iter is now invalid.
+> + */
+
+Do we really need to distinguish when the iterator is invalid and when
+we are at the end of the buffer?
+
+It seems that the reaction in both situation always is to call
+prb_iter_init(&iter, &printk_rb, &some_seq). I am still a bit
+confused what your prb_iter_init() does. Therefore I am not
+sure what it is supposed to do.
+
+Anyway, it seems to be typically used when you need to start
+from tail. I would personally do something like (based on my code
+in reply to 5th patch:
+
+int prb_iter_seek_to_seq(struct prb_iterator *iter, u64 seq)
+{
+	int ret;
+
+	ret = prb_iter_tail_entry(iter);
+
+	while (!ret && iter->entry->seq != seq)
+		ret = prb_iter_next_valid_entry(iter);
+
+	return ret;
+}
+
+When I see it, I would make the functionality more obvious
+by renaming:
+
+    prb_iter_tail_entry() -> prb_iter_set_tail_entry()
+
+
+> +int prb_iter_seek(struct prb_iterator *iter, u64 seq)
+> +{
+> +	u64 cur_seq;
+> +	int ret;
+> +
+> +	/* first check if the iterator is already at the wanted seq */
+> +	if (seq == 0) {
+> +		if (iter->lpos == PRB_INIT)
+> +			return 1;
+> +		else
+> +			return -EINVAL;
+> +	}
+> +	if (iter->lpos != PRB_INIT) {
+> +		if (prb_iter_data(iter, NULL, 0, &cur_seq) >= 0) {
+> +			if (cur_seq == seq)
+> +				return 1;
+> +			if (cur_seq > seq)
+> +				return -EINVAL;
+> +		}
+> +	}
+> +
+> +	/* iterate to find the wanted seq */
+> +	for (;;) {
+> +		ret = prb_iter_next(iter, NULL, 0, &cur_seq);
+> +		if (ret <= 0)
+> +			break;
+> +
+> +		if (cur_seq == seq)
+> +			break;
+> +
+> +		if (cur_seq > seq) {
+> +			ret = -EINVAL;
+> +			break;
+> +		}
+
+This is a good example why prb_iter_data() and prb_iter_next() is
+a weird interface. You need to read the documentation very carefully
+to understand the difference (functionality, error codes). At least
+for me, it is far from obvious why they are used this way and
+if it is correct.
+
+Best Regards,
+Petr
+
+> +	}
+> +
+> +	return ret;
+> +}
