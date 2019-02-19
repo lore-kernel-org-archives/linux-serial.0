@@ -1,25 +1,81 @@
-From: Nicolas Boichat <drinkcat@chromium.org>
-Subject: Re: [PATCH v7 5/6] arm64: dts: mt8183: add pintcrl file
-Date: Tue, 19 Feb 2019 15:45:10 +0800
-Message-ID: <CANMq1KDzYSJSKXZJd=xuwP+uFrDY-jGO1Yt2koH7uD5hpJmjJw@mail.gmail.com>
-References: <1550210558-30516-1-git-send-email-erin.lo@mediatek.com> <1550210558-30516-6-git-send-email-erin.lo@mediatek.com>
+From: "Sugaya, Taichi" <sugaya.taichi@socionext.com>
+Subject: Re: [PATCH v2 09/15] dt-bindings: serial: Add Milbeaut serial driver
+ description
+Date: Tue, 19 Feb 2019 17:11:29 +0900
+Message-ID: <04726ec4-4ee5-3aa8-8b46-2e1293f773f5@socionext.com>
+References: <1549628849-31726-1-git-send-email-sugaya.taichi@socionext.com>
+ <20190218195713.GA18625@bogus>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1550210558-30516-6-git-send-email-erin.lo@mediatek.com>
+In-Reply-To: <20190218195713.GA18625@bogus>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Erin Lo <erin.lo@mediatek.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, devicetree@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, lkml <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Yingjoe Chen <yingjoe.chen@mediatek.com>, Cheng Mars <mars.cheng@mediatek.com>, Eddie Huang <eddie.huang@mediatek>
+To: Rob Herring <robh@kernel.org>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Takao Orito <orito.takao@socionext.com>, Kazuhiro Kasai <kasai.kazuhiro@socionext.com>, Shinji Kanematsu <kanematsu.shinji@socionext.com>, Jassi Brar <jaswinder.singh@linaro.org>, Masami Hiramatsu <masami.hiramatsu@linaro.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Feb 15, 2019 at 2:07 PM Erin Lo <erin.lo@mediatek.com> wrote:
-> Subject: [PATCH v7 5/6] arm64: dts: mt8183: add pintcrl file
+Hi,
 
-minor spelling mistake in the commit title: pinctrl
+On 2019/02/19 4:57, Rob Herring wrote:
+> On Fri, Feb 08, 2019 at 09:27:29PM +0900, Sugaya Taichi wrote:
+>> Add DT bindings document for Milbeaut serial driver.
+>>
+>> Signed-off-by: Sugaya Taichi <sugaya.taichi@socionext.com>
+>> ---
+>>   .../devicetree/bindings/serial/milbeaut-uart.txt    | 21 +++++++++++++++++++++
+>>   1 file changed, 21 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/serial/milbeaut-uart.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/serial/milbeaut-uart.txt b/Documentation/devicetree/bindings/serial/milbeaut-uart.txt
+>> new file mode 100644
+>> index 0000000..8f61c38
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/serial/milbeaut-uart.txt
+>> @@ -0,0 +1,21 @@
+>> +Socionext Milbeaut UART controller
+>> +
+>> +Required properties:
+>> +- compatible: should be "socionext,milbeaut-usio-uart".
+>> +- reg: offset and length of the register set for the device.
+>> +- interrupts: two interrupts specifier.
+>> +- clocks: phandle to the input clock.
+>> +- interrupt-names: should be "rx", "tx".
+> 
+> Put this next to 'interrupts'
+> 
 
->
-> This patch adds pinctrl file for mt8183.
->
-> Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
-> Signed-off-by: Erin Lo <erin.lo@mediatek.com>
-> ---
+OK, change the order.
+
+>> +
+>> +Optional properties:
+>> +- uart-flow-enable: flow control enable.
+> 
+> We already have a standard property for this: auto-flow-control
+> 
+
+Okay, I change the property name to "auto-flow-control"
+
+>> +
+>> +Example:
+>> +	usio1: usio_uart@1e700010 {
+> 
+> serial@...
+> 
+
+I got it.
+
+Thanks,
+Sugaya Taichi
+
+>> +		compatible = "socionext,milbeaut-usio-uart";
+>> +		reg = <0x1e700010 0x10>;
+>> +		interrupts = <0 141 0x4>, <0 149 0x4>;
+>> +		interrupt-names = "rx", "tx";
+>> +		clocks = <&clk 2>;
+>> +		uart-flow-enable;
+>> +	};
+>> -- 
+>> 1.9.1
+>>
