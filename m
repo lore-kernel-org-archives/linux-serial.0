@@ -1,156 +1,182 @@
 From: John Ogness <john.ogness@linutronix.de>
-Subject: Re: [RFC PATCH v1 06/25] printk-rb: add blocking reader support
-Date: Tue, 19 Feb 2019 22:47:45 +0100
-Message-ID: <87k1hvv4am.fsf@linutronix.de>
+Subject: Re: [RFC PATCH v1 07/25] printk-rb: add functionality required by printk
+Date: Tue, 19 Feb 2019 23:08:20 +0100
+Message-ID: <87ftsjv3cb.fsf@linutronix.de>
 References: <20190212143003.48446-1-john.ogness@linutronix.de>
-        <20190212143003.48446-7-john.ogness@linutronix.de>
-        <20190218140538.5sug36qiji2rurxx@pathway.suse.cz>
+        <20190212143003.48446-8-john.ogness@linutronix.de>
+        <20190218155921.rxksi2hyasxnmu7a@pathway.suse.cz>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190218140538.5sug36qiji2rurxx@pathway.suse.cz> (Petr Mladek's
-        message of "Mon, 18 Feb 2019 15:05:38 +0100")
+In-Reply-To: <20190218155921.rxksi2hyasxnmu7a@pathway.suse.cz> (Petr Mladek's
+        message of "Mon, 18 Feb 2019 16:59:21 +0100")
 Sender: linux-kernel-owner@vger.kernel.org
 To: Petr Mladek <pmladek@suse.com>
 Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
 On 2019-02-18, Petr Mladek <pmladek@suse.com> wrote:
->> Add a blocking read function for readers. An irq_work function is
->> used to signal the wait queue so that write notification can
->> be triggered from any context.
->
-> I would be more precise what exacly is problematic in which context.
-> Something like:
->
-> An irq_work function is used because wake_up() cannot be called safely
-> from NMI and scheduler context.
-
-OK.
-
->> Signed-off-by: John Ogness <john.ogness@linutronix.de>
->> ---
->>  include/linux/printk_ringbuffer.h | 20 ++++++++++++++++
->>  lib/printk_ringbuffer.c           | 49 +++++++++++++++++++++++++++++++++++++++
->>  2 files changed, 69 insertions(+)
+>> The printk subsystem needs to be able to query the size of the ring
+>> buffer, seek to specific entries within the ring buffer, and track
+>> if records could not be stored in the ring buffer.
 >> 
->> diff --git a/include/linux/printk_ringbuffer.h b/include/linux/printk_ringbuffer.h
->> index 5fdaf632c111..106f20ef8b4d 100644
->> --- a/include/linux/printk_ringbuffer.h
->> +++ b/include/linux/printk_ringbuffer.h
->> @@ -2,8 +2,10 @@
->>  #ifndef _LINUX_PRINTK_RINGBUFFER_H
->>  #define _LINUX_PRINTK_RINGBUFFER_H
->>  
->> +#include <linux/irq_work.h>
->>  #include <linux/atomic.h>
->>  #include <linux/percpu.h>
->> +#include <linux/wait.h>
->>  
->>  struct prb_cpulock {
->>  	atomic_t owner;
->> @@ -22,6 +24,10 @@ struct printk_ringbuffer {
->>  
->>  	struct prb_cpulock *cpulock;
->>  	atomic_t ctx;
->> +
->> +	struct wait_queue_head *wq;
->> +	atomic_long_t wq_counter;
->> +	struct irq_work *wq_work;
->>  };
->>  
->>  struct prb_entry {
->> @@ -59,6 +65,15 @@ struct prb_iterator {
->>  #define DECLARE_STATIC_PRINTKRB(name, szbits, cpulockptr)		\
->>  static char _##name##_buffer[1 << (szbits)]				\
->>  	__aligned(__alignof__(long));					\
->> +static DECLARE_WAIT_QUEUE_HEAD(_##name##_wait);				\
->> +static void _##name##_wake_work_func(struct irq_work *irq_work)		\
->> +{									\
->> +	wake_up_interruptible_all(&_##name##_wait);			\
->> +}									\
+>> diff --git a/lib/printk_ringbuffer.c b/lib/printk_ringbuffer.c
+>> index c2ddf4cb9f92..ce33b5add5a1 100644
+>> --- a/lib/printk_ringbuffer.c
+>> +++ b/lib/printk_ringbuffer.c
+>> @@ -175,11 +175,16 @@ void prb_commit(struct prb_handle *h)
+>>  				head = PRB_WRAP_LPOS(rb, head, 1);
+>>  				continue;
+>>  			}
+>> +			while (atomic_long_read(&rb->lost)) {
+>> +				atomic_long_dec(&rb->lost);
+>> +				rb->seq++;
 >
-> All ring buffers might share the same generic function, something like:
->
-> void prb_wake_readers_work_func(struct irq_work *irq_work)
-> {
-> 	struct printk_ringbuffer *rb;
->
-> 	rb = container_of(irq_work, struct printk_ring_buffer, wq_work);
-> 	wake_up_interruptible_all(rb->wq);			\
-> }
+> The lost-messages handling should be in a separate patch.
+> At least I do not see any close relation with prb_iter_seek().
 
 Agreed.
 
->> +static struct irq_work _##name##_wake_work = {				\
->> +	.func = _##name##_wake_work_func,				\
->> +	.flags = IRQ_WORK_LAZY,						\
->> +};									\
->>  static struct printk_ringbuffer name = {				\
->>  	.buffer = &_##name##_buffer[0],					\
->>  	.size_bits = szbits,						\
->> diff --git a/lib/printk_ringbuffer.c b/lib/printk_ringbuffer.c
->> index 1d1e886a0966..c2ddf4cb9f92 100644
->> --- a/lib/printk_ringbuffer.c
->> +++ b/lib/printk_ringbuffer.c
->> @@ -185,6 +188,12 @@ void prb_commit(struct prb_handle *h)
->>  	}
->>  
->>  	prb_unlock(rb->cpulock, h->cpu);
+> I would personally move prb_iter_seek() to the 5th patch that
+> implements the other get/iterator functions.
+
+Agreed.
+
+> On the contrary, the patch adding support for lost messages
+> should implement a way how to inform the user about lost messages.
+> E.g. to add a warning when some space becomes available again.
+
+The readers will see that messages were lost. I think that is enough. I
+don't know how useful it would be to notify writers that space is
+available. The writers are holding the prb_cpulock, so they definitely
+shouldn't be waiting around for anything.
+
+This situation should be quite rare because it means the _entire_ ring
+buffer was filled up by an NMI context that interrupted a context that
+was in the reserve/commit window. NMI contexts probably should not be
+doing _so_ much printk'ing within a single NMI.
+
+>> +			}
+>>  			e->seq = ++rb->seq;
+>>  			head += e->size;
+>>  			changed = true;
+>>  		}
+>>  		atomic_long_set_release(&rb->head, res);
 >> +
->> +	if (changed) {
->> +		atomic_long_inc(&rb->wq_counter);
->> +		if (wq_has_sleeper(rb->wq))
->> +			irq_work_queue(rb->wq_work);
->> +	}
->>  }
+>>  		atomic_dec(&rb->ctx);
 >>  
->>  /*
->> @@ -437,3 +446,43 @@ int prb_iter_next(struct prb_iterator *iter, char *buf, int size, u64 *seq)
+>>  		if (atomic_long_read(&rb->reserve) == res)
+>> @@ -486,3 +491,93 @@ int prb_iter_wait_next(struct prb_iterator *iter, char *buf, int size, u64 *seq)
 >>  
->>  	return 1;
+>>  	return ret;
 >>  }
 >> +
 >> +/*
->> + * prb_iter_wait_next: Advance to the next record, blocking if none available.
->> + * @iter: Iterator tracking the current position.
->> + * @buf: A buffer to store the data of the next record. May be NULL.
->> + * @size: The size of @buf. (Ignored if @buf is NULL.)
->> + * @seq: The sequence number of the next record. May be NULL.
+>> + * prb_iter_seek: Seek forward to a specific record.
+>> + * @iter: Iterator to advance.
+>> + * @seq: Record number to advance to.
 >> + *
->> + * If a next record is already available, this function works like
->> + * prb_iter_next(). Otherwise block interruptible until a next record is
->> + * available.
+>> + * Advance @iter such that a following call to prb_iter_data() will provide
+>> + * the contents of the specified record. If a record is specified that does
+>> + * not yet exist, advance @iter to the end of the record list.
 >> + *
->> + * When a next record is available, @iter is advanced and (if specified)
->> + * the data and/or sequence number of that record are provided.
+>> + * Note that iterators cannot be rewound. So if a record is requested that
+>> + * exists but is previous to @iter in position, @iter is considered invalid.
 >> + *
->> + * This function might sleep.
+>> + * It is safe to call this function from any context and state.
 >> + *
->> + * Returns 1 if @iter was advanced, -EINVAL if @iter is now invalid, or
->> + * -ERESTARTSYS if interrupted by a signal.
+>> + * Returns 1 on succces, 0 if specified record does not yet exist (@iter is
+>> + * now at the end of the list), or -EINVAL if @iter is now invalid.
 >> + */
->> +int prb_iter_wait_next(struct prb_iterator *iter, char *buf, int size, u64 *seq)
+>
+> Do we really need to distinguish when the iterator is invalid and when
+> we are at the end of the buffer?
+
+Sure! There is big difference between "stop iterating because we hit the
+newest entry" and "reset the iterator to the oldest entry because we
+were overtaken by a writer".
+
+> It seems that the reaction in both situation always is to call
+> prb_iter_init(&iter, &printk_rb, &some_seq).
+
+prb_iter_init() is only called to reset the iterator to the oldest
+entry. That's all it is really doing. The fact that it can optionally
+return a sequence number is just a convenience side-effect implemented
+for some printk demands.
+
+> I am still a bit
+> confused what your prb_iter_init() does. Therefore I am not
+> sure what it is supposed to do.
+>
+> Anyway, it seems to be typically used when you need to start
+> from tail. I would personally do something like (based on my code
+> in reply to 5th patch:
+>
+> int prb_iter_seek_to_seq(struct prb_iterator *iter, u64 seq)
+> {
+> 	int ret;
+>
+> 	ret = prb_iter_tail_entry(iter);
+>
+> 	while (!ret && iter->entry->seq != seq)
+> 		ret = prb_iter_next_valid_entry(iter);
+>
+> 	return ret;
+> }
+
+Yes. Moving the loops inside prb_iter_tail_entry() and
+prb_iter_next_valid_entry() definitely simplify the code.
+
+> When I see it, I would make the functionality more obvious
+> by renaming:
+>
+>     prb_iter_tail_entry() -> prb_iter_set_tail_entry()
+
+I would say: prb_iter_set_oldest_entry()
+
+>> +int prb_iter_seek(struct prb_iterator *iter, u64 seq)
 >> +{
->> +	unsigned long last_seen;
+>> +	u64 cur_seq;
 >> +	int ret;
 >> +
->> +	for (;;) {
->> +		last_seen = atomic_long_read(&iter->rb->wq_counter);
+>> +	/* first check if the iterator is already at the wanted seq */
+>> +	if (seq == 0) {
+>> +		if (iter->lpos == PRB_INIT)
+>> +			return 1;
+>> +		else
+>> +			return -EINVAL;
+>> +	}
+>> +	if (iter->lpos != PRB_INIT) {
+>> +		if (prb_iter_data(iter, NULL, 0, &cur_seq) >= 0) {
+>> +			if (cur_seq == seq)
+>> +				return 1;
+>> +			if (cur_seq > seq)
+>> +				return -EINVAL;
+>> +		}
+>> +	}
 >> +
->> +		ret = prb_iter_next(iter, buf, size, seq);
->> +		if (ret != 0)
+>> +	/* iterate to find the wanted seq */
+>> +	for (;;) {
+>> +		ret = prb_iter_next(iter, NULL, 0, &cur_seq);
+>> +		if (ret <= 0)
 >> +			break;
 >> +
->> +		ret = wait_event_interruptible(*iter->rb->wq,
->> +			last_seen != atomic_long_read(&iter->rb->wq_counter));
+>> +		if (cur_seq == seq)
+>> +			break;
+>> +
+>> +		if (cur_seq > seq) {
+>> +			ret = -EINVAL;
+>> +			break;
+>> +		}
 >
-> Do we really need yet another counter here?
->
-> I think that rb->seq might do the same job. Or if there is problem
-> with atomicity then rb->head might work as well. Or do I miss
-> anything?
+> This is a good example why prb_iter_data() and prb_iter_next() is
+> a weird interface. You need to read the documentation very carefully
+> to understand the difference (functionality, error codes). At least
+> for me, it is far from obvious why they are used this way and
+> if it is correct.
 
-You are correct. rb->head would be appropriate.
+Agreed. I prefer your suggested API. They significantly simplify the
+reader code, which as you'll see in later printk.c patches, is
+everywhere.
 
 John Ogness
