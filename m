@@ -1,592 +1,98 @@
-From: Baolin Wang <baolin.wang@linaro.org>
-Subject: [PATCH 5/5] serial: sprd: Add DMA mode support
-Date: Tue, 19 Feb 2019 15:31:15 +0800
-Message-ID: <2783068b08d1f278463d115ae33ce58430b941ba.1550560916.git.baolin.wang@linaro.org>
-References: <cover.1550560916.git.baolin.wang@linaro.org>
+From: "Sugaya, Taichi" <sugaya.taichi@socionext.com>
+Subject: Re: [PATCH v2 00/15] Add basic support for Socionext Milbeaut M10V
+ SoC
+Date: Tue, 19 Feb 2019 16:38:15 +0900
+Message-ID: <26959ef6-bca0-fe51-fc24-9969913e9af4@socionext.com>
+References: <1549628687-29628-1-git-send-email-sugaya.taichi@socionext.com>
+ <CAK8P3a3_j2W+KXSynW_SkVZk_+PJ-DqyxjLkgJL-OichS0fwWw@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1550560916.git.baolin.wang@linaro.org>
-In-Reply-To: <cover.1550560916.git.baolin.wang@linaro.org>
-References: <cover.1550560916.git.baolin.wang@linaro.org>
+In-Reply-To: <CAK8P3a3_j2W+KXSynW_SkVZk_+PJ-DqyxjLkgJL-OichS0fwWw@mail.gmail.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, robh+dt@kernel.org, mark.rutland@arm.com, orsonzhai@gmail.com, zhang.lyra@gmail.com
-Cc: baolin.wang@linaro.org, broonie@kernel.org, lanqing.liu@unisoc.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: DTML <devicetree@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, linux-clk <linux-clk@vger.kernel.org>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, linux-serial@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Russell King <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.com>, Takao Orito <orito.takao@socionext.com>, Kazuhiro Kasai <kasai.kazuhiro@socionext.com>, Shinji
 List-Id: linux-serial@vger.kernel.org
 
-From: Lanqing Liu <lanqing.liu@unisoc.com>
+Hi,
 
-Add DMA mode support for the Spreadtrum serial controller.
+Thank you for your comments.
 
-Signed-off-by: Lanqing Liu <lanqing.liu@unisoc.com>
-Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
----
- drivers/tty/serial/sprd_serial.c |  440 ++++++++++++++++++++++++++++++++++++--
- 1 file changed, 426 insertions(+), 14 deletions(-)
+On 2019/02/18 21:20, Arnd Bergmann wrote:
+> On Fri, Feb 8, 2019 at 1:24 PM Sugaya Taichi
+> <sugaya.taichi@socionext.com> wrote:
+>>
+>> Hi,
+>>
+>> Here is the series of patches the initial support for SC2000(M10V) of
+>> Milbeaut SoCs. "M10V" is the internal name of SC2000, so commonly used in
+>> source code.
+>>
+>> SC2000 is a SoC of the Milbeaut series. equipped with a DSP optimized for
+>> computer vision. It also features advanced functionalities such as 360-degree,
+>> real-time spherical stitching with multi cameras, image stabilization for
+>> without mechanical gimbals, and rolling shutter correction. More detail is
+>> below:
+>> https://www.socionext.com/en/products/assp/milbeaut/SC2000.html
+>>
+>> Specifications for developers are below:
+>>   - Quad-core 32bit Cortex-A7 on ARMv7-A architecture
+>>   - NEON support
+>>   - DSP
+>>   - GPU
+>>   - MAX 3GB DDR3
+>>   - Cortex-M0 for power control
+>>   - NAND Flash Interface
+>>   - SD UHS-I
+>>   - SD UHS-II
+>>   - SDIO
+>>   - USB2.0 HOST / Device
+>>   - USB3.0 HOST / Device
+>>   - PCI express Gen2
+>>   - Ethernet Engine
+>>   - I2C
+>>   - UART
+>>   - SPI
+>>   - PWM
+>>
+>> Support is quite minimal for now, since it only includes timer, clock,
+>> pictrl and serial controller drivers, so we can only boot to userspace
+>> through initramfs. Support for the other peripherals  will come eventually.
+> 
+> I've looked over the platform once more. Overall, it looks very good, and
+> I'd still like to merge this for linux-5.1, but we are running out of time
+> there. If you send the patches to soc@kernel.org quickly, we can try to
+> still merge them in, but if anything goes wrong, it will have to wait until
+> we start merging patches for 5.2, directly after 5.1 is out.
+> 
 
-diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-index 8f45b66..6aebd77 100644
---- a/drivers/tty/serial/sprd_serial.c
-+++ b/drivers/tty/serial/sprd_serial.c
-@@ -10,6 +10,9 @@
- #include <linux/clk.h>
- #include <linux/console.h>
- #include <linux/delay.h>
-+#include <linux/dmaengine.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/dma/sprd-dma.h>
- #include <linux/io.h>
- #include <linux/ioport.h>
- #include <linux/kernel.h>
-@@ -75,6 +78,7 @@
- 
- /* control register 1 */
- #define SPRD_CTL1		0x001C
-+#define SPRD_DMA_EN		BIT(15)
- #define RX_HW_FLOW_CTL_THLD	BIT(6)
- #define RX_HW_FLOW_CTL_EN	BIT(7)
- #define TX_HW_FLOW_CTL_EN	BIT(8)
-@@ -86,6 +90,7 @@
- #define THLD_TX_EMPTY		0x40
- #define THLD_TX_EMPTY_SHIFT	8
- #define THLD_RX_FULL		0x40
-+#define THLD_RX_FULL_MASK	GENMASK(6, 0)
- 
- /* config baud rate register */
- #define SPRD_CLKD0		0x0024
-@@ -102,15 +107,36 @@
- #define SPRD_IMSR_TIMEOUT	BIT(13)
- #define SPRD_DEFAULT_SOURCE_CLK	26000000
- 
-+#define SPRD_RX_DMA_STEP	1
-+#define SPRD_RX_FIFO_FULL	1
-+#define SPRD_TX_FIFO_FULL	0x20
-+#define SPRD_UART_RX_SIZE	(UART_XMIT_SIZE / 4)
-+
-+struct sprd_uart_dma {
-+	struct dma_chan *chn;
-+	unsigned char *virt;
-+	dma_addr_t phys_addr;
-+	dma_cookie_t cookie;
-+	u32 trans_len;
-+	bool enable;
-+};
-+
- struct sprd_uart_port {
- 	struct uart_port port;
- 	char name[16];
- 	struct clk *clk;
-+	struct sprd_uart_dma tx_dma;
-+	struct sprd_uart_dma rx_dma;
-+	dma_addr_t pos;
-+	unsigned char *rx_buf_tail;
- };
- 
- static struct sprd_uart_port *sprd_port[UART_NR_MAX];
- static int sprd_ports_num;
- 
-+static int sprd_start_dma_rx(struct uart_port *port);
-+static int sprd_tx_dma_config(struct uart_port *port);
-+
- static inline unsigned int serial_in(struct uart_port *port,
- 				     unsigned int offset)
- {
-@@ -141,45 +167,389 @@ static void sprd_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 	/* nothing to do */
- }
- 
--static void sprd_stop_tx(struct uart_port *port)
-+static void sprd_stop_rx(struct uart_port *port)
- {
-+	struct sprd_uart_port *sp =
-+		container_of(port, struct sprd_uart_port, port);
- 	unsigned int ien, iclr;
- 
-+	if (sp->rx_dma.enable)
-+		dmaengine_terminate_all(sp->rx_dma.chn);
-+
- 	iclr = serial_in(port, SPRD_ICLR);
- 	ien = serial_in(port, SPRD_IEN);
- 
--	iclr |= SPRD_IEN_TX_EMPTY;
--	ien &= ~SPRD_IEN_TX_EMPTY;
-+	ien &= ~(SPRD_IEN_RX_FULL | SPRD_IEN_BREAK_DETECT);
-+	iclr |= SPRD_IEN_RX_FULL | SPRD_IEN_BREAK_DETECT;
- 
--	serial_out(port, SPRD_ICLR, iclr);
- 	serial_out(port, SPRD_IEN, ien);
-+	serial_out(port, SPRD_ICLR, iclr);
- }
- 
--static void sprd_start_tx(struct uart_port *port)
-+static void sprd_uart_dma_enable(struct uart_port *port, bool enable)
- {
--	unsigned int ien;
-+	u32 val = serial_in(port, SPRD_CTL1);
- 
--	ien = serial_in(port, SPRD_IEN);
--	if (!(ien & SPRD_IEN_TX_EMPTY)) {
--		ien |= SPRD_IEN_TX_EMPTY;
--		serial_out(port, SPRD_IEN, ien);
-+	if (enable)
-+		val |= SPRD_DMA_EN;
-+	else
-+		val &= ~SPRD_DMA_EN;
-+
-+	serial_out(port, SPRD_CTL1, val);
-+}
-+
-+static void sprd_stop_tx_dma(struct uart_port *port)
-+{
-+	struct sprd_uart_port *sp =
-+		container_of(port, struct sprd_uart_port, port);
-+	struct circ_buf *xmit = &port->state->xmit;
-+	struct dma_tx_state state;
-+	u32 trans_len;
-+
-+	dmaengine_pause(sp->tx_dma.chn);
-+
-+	dmaengine_tx_status(sp->tx_dma.chn, sp->tx_dma.cookie, &state);
-+	if (state.residue) {
-+		trans_len = state.residue - sp->tx_dma.phys_addr;
-+		xmit->tail = (xmit->tail + trans_len) & (UART_XMIT_SIZE - 1);
-+		port->icount.tx += trans_len;
-+		dma_unmap_single(port->dev, sp->tx_dma.phys_addr,
-+				 sp->tx_dma.trans_len, DMA_TO_DEVICE);
- 	}
-+
-+	dmaengine_terminate_all(sp->tx_dma.chn);
-+	sp->tx_dma.trans_len = 0;
- }
- 
--static void sprd_stop_rx(struct uart_port *port)
-+static int sprd_tx_buf_remap(struct uart_port *port)
-+{
-+	struct sprd_uart_port *sp =
-+		container_of(port, struct sprd_uart_port, port);
-+	struct circ_buf *xmit = &port->state->xmit;
-+
-+	sp->tx_dma.trans_len =
-+		CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
-+
-+	sp->tx_dma.phys_addr = dma_map_single(port->dev,
-+					      (void *)&(xmit->buf[xmit->tail]),
-+					      sp->tx_dma.trans_len,
-+					      DMA_TO_DEVICE);
-+	return dma_mapping_error(port->dev, sp->tx_dma.phys_addr);
-+}
-+
-+static void sprd_complete_tx_dma(void *data)
-+{
-+	struct uart_port *port = (struct uart_port *)data;
-+	struct sprd_uart_port *sp =
-+		container_of(port, struct sprd_uart_port, port);
-+	struct circ_buf *xmit = &port->state->xmit;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	dma_unmap_single(port->dev, sp->tx_dma.phys_addr,
-+			 sp->tx_dma.trans_len, DMA_TO_DEVICE);
-+
-+	xmit->tail = (xmit->tail + sp->tx_dma.trans_len) & (UART_XMIT_SIZE - 1);
-+	port->icount.tx += sp->tx_dma.trans_len;
-+
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-+		uart_write_wakeup(port);
-+
-+	if (uart_circ_empty(xmit) || sprd_tx_buf_remap(port) ||
-+	    sprd_tx_dma_config(port))
-+		sp->tx_dma.trans_len = 0;
-+
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+static int sprd_uart_dma_submit(struct uart_port *port,
-+				struct sprd_uart_dma *ud, u32 trans_len,
-+				enum dma_transfer_direction direction,
-+				dma_async_tx_callback callback)
- {
-+	struct dma_async_tx_descriptor *dma_des;
-+	unsigned long flags;
-+
-+	flags = SPRD_DMA_FLAGS(SPRD_DMA_CHN_MODE_NONE,
-+			       SPRD_DMA_NO_TRG,
-+			       SPRD_DMA_FRAG_REQ,
-+			       SPRD_DMA_TRANS_INT);
-+
-+	dma_des = dmaengine_prep_slave_single(ud->chn, ud->phys_addr, trans_len,
-+					      direction, flags);
-+	if (!dma_des)
-+		return -ENODEV;
-+
-+	dma_des->callback = callback;
-+	dma_des->callback_param = port;
-+
-+	ud->cookie = dmaengine_submit(dma_des);
-+	if (dma_submit_error(ud->cookie))
-+		return dma_submit_error(ud->cookie);
-+
-+	dma_async_issue_pending(ud->chn);
-+
-+	return 0;
-+}
-+
-+static int sprd_tx_dma_config(struct uart_port *port)
-+{
-+	struct sprd_uart_port *sp =
-+		container_of(port, struct sprd_uart_port, port);
-+	u32 burst = sp->tx_dma.trans_len > SPRD_TX_FIFO_FULL ?
-+		SPRD_TX_FIFO_FULL : sp->tx_dma.trans_len;
-+	int ret;
-+	struct dma_slave_config cfg = {
-+		.dst_addr = port->mapbase + SPRD_TXD,
-+		.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE,
-+		.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE,
-+		.src_maxburst = burst,
-+	};
-+
-+	ret = dmaengine_slave_config(sp->tx_dma.chn, &cfg);
-+	if (ret < 0)
-+		return ret;
-+
-+	return sprd_uart_dma_submit(port, &sp->tx_dma, sp->tx_dma.trans_len,
-+				    DMA_MEM_TO_DEV, sprd_complete_tx_dma);
-+}
-+
-+static void sprd_start_tx_dma(struct uart_port *port)
-+{
-+	struct sprd_uart_port *sp =
-+		container_of(port, struct sprd_uart_port, port);
-+	struct circ_buf *xmit = &port->state->xmit;
-+
-+	if (port->x_char) {
-+		serial_out(port, SPRD_TXD, port->x_char);
-+		port->icount.tx++;
-+		port->x_char = 0;
-+		return;
-+	}
-+
-+	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
-+		sprd_stop_tx_dma(port);
-+		return;
-+	}
-+
-+	if (sp->tx_dma.trans_len)
-+		return;
-+
-+	if (sprd_tx_buf_remap(port) || sprd_tx_dma_config(port))
-+		sp->tx_dma.trans_len = 0;
-+}
-+
-+static void sprd_rx_full_thld(struct uart_port *port, u32 thld)
-+{
-+	u32 val = serial_in(port, SPRD_CTL2);
-+
-+	val &= ~THLD_RX_FULL_MASK;
-+	val |= thld & THLD_RX_FULL_MASK;
-+	serial_out(port, SPRD_CTL2, val);
-+}
-+
-+static int sprd_rx_alloc_buf(struct sprd_uart_port *sp)
-+{
-+	sp->rx_dma.virt = dma_alloc_coherent(sp->port.dev, SPRD_UART_RX_SIZE,
-+					     &sp->rx_dma.phys_addr, GFP_KERNEL);
-+	if (!sp->rx_dma.virt)
-+		return -ENOMEM;
-+
-+	return 0;
-+}
-+
-+static void sprd_rx_free_buf(struct sprd_uart_port *sp)
-+{
-+	if (sp->rx_dma.virt)
-+		dma_free_coherent(sp->port.dev, SPRD_UART_RX_SIZE,
-+				  sp->rx_dma.virt, sp->rx_dma.phys_addr);
-+
-+}
-+
-+static int sprd_rx_dma_config(struct uart_port *port, u32 burst)
-+{
-+	struct sprd_uart_port *sp =
-+		container_of(port, struct sprd_uart_port, port);
-+	struct dma_slave_config cfg = {
-+		.src_addr = port->mapbase + SPRD_RXD,
-+		.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE,
-+		.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE,
-+		.src_maxburst = burst,
-+	};
-+
-+	return dmaengine_slave_config(sp->rx_dma.chn, &cfg);
-+}
-+
-+static void sprd_uart_dma_rx(struct uart_port *port)
-+{
-+	struct sprd_uart_port *sp =
-+		container_of(port, struct sprd_uart_port, port);
-+	struct tty_port *tty = &port->state->port;
-+
-+	port->icount.rx += sp->rx_dma.trans_len;
-+	tty_insert_flip_string(tty, sp->rx_buf_tail, sp->rx_dma.trans_len);
-+	tty_flip_buffer_push(tty);
-+}
-+
-+static void sprd_uart_dma_irq(struct uart_port *port)
-+{
-+	struct sprd_uart_port *sp =
-+		container_of(port, struct sprd_uart_port, port);
-+	struct dma_tx_state state;
-+	enum dma_status status;
-+
-+	status = dmaengine_tx_status(sp->rx_dma.chn,
-+				     sp->rx_dma.cookie, &state);
-+	if (status == DMA_ERROR)
-+		sprd_stop_rx(port);
-+
-+	if (!state.residue && sp->pos == sp->rx_dma.phys_addr)
-+		return;
-+
-+	if (!state.residue) {
-+		sp->rx_dma.trans_len = SPRD_UART_RX_SIZE +
-+			sp->rx_dma.phys_addr - sp->pos;
-+		sp->pos = sp->rx_dma.phys_addr;
-+	} else {
-+		sp->rx_dma.trans_len = state.residue - sp->pos;
-+		sp->pos = state.residue;
-+	}
-+
-+	sprd_uart_dma_rx(port);
-+	sp->rx_buf_tail += sp->rx_dma.trans_len;
-+}
-+
-+static void sprd_complete_rx_dma(void *data)
-+{
-+	struct uart_port *port = (struct uart_port *)data;
-+	struct sprd_uart_port *sp =
-+		container_of(port, struct sprd_uart_port, port);
-+	struct dma_tx_state state;
-+	enum dma_status status;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+
-+	status = dmaengine_tx_status(sp->rx_dma.chn,
-+				     sp->rx_dma.cookie, &state);
-+	if (status != DMA_COMPLETE) {
-+		sprd_stop_rx(port);
-+		spin_unlock_irqrestore(&port->lock, flags);
-+		return;
-+	}
-+
-+	if (sp->pos != sp->rx_dma.phys_addr) {
-+		sp->rx_dma.trans_len =  SPRD_UART_RX_SIZE +
-+			sp->rx_dma.phys_addr - sp->pos;
-+		sprd_uart_dma_rx(port);
-+		sp->rx_buf_tail += sp->rx_dma.trans_len;
-+	}
-+
-+	if (sprd_start_dma_rx(port))
-+		sprd_stop_rx(port);
-+
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+static int sprd_start_dma_rx(struct uart_port *port)
-+{
-+	struct sprd_uart_port *sp =
-+		container_of(port, struct sprd_uart_port, port);
-+	int ret;
-+
-+	if (!sp->rx_dma.enable)
-+		return 0;
-+
-+	sp->pos = sp->rx_dma.phys_addr;
-+	sp->rx_buf_tail = sp->rx_dma.virt;
-+	sprd_rx_full_thld(port, SPRD_RX_FIFO_FULL);
-+	ret = sprd_rx_dma_config(port, SPRD_RX_DMA_STEP);
-+	if (ret)
-+		return ret;
-+
-+	return sprd_uart_dma_submit(port, &sp->rx_dma, SPRD_UART_RX_SIZE,
-+				    DMA_DEV_TO_MEM, sprd_complete_rx_dma);
-+}
-+
-+static void sprd_release_dma(struct uart_port *port)
-+{
-+	struct sprd_uart_port *sp =
-+		container_of(port, struct sprd_uart_port, port);
-+
-+	sprd_uart_dma_enable(port, false);
-+
-+	if (sp->rx_dma.enable)
-+		dma_release_channel(sp->rx_dma.chn);
-+
-+	if (sp->tx_dma.enable)
-+		dma_release_channel(sp->tx_dma.chn);
-+
-+	sp->tx_dma.enable = false;
-+	sp->rx_dma.enable = false;
-+}
-+
-+static void sprd_request_dma(struct uart_port *port)
-+{
-+	struct sprd_uart_port *sp =
-+		container_of(port, struct sprd_uart_port, port);
-+
-+	sp->tx_dma.enable = true;
-+	sp->rx_dma.enable = true;
-+
-+	sp->tx_dma.chn = dma_request_chan(port->dev, "tx");
-+	if (IS_ERR(sp->tx_dma.chn)) {
-+		dev_err(port->dev, "request TX DMA channel failed, ret = %ld\n",
-+			PTR_ERR(sp->tx_dma.chn));
-+		sp->tx_dma.enable = false;
-+	}
-+
-+	sp->rx_dma.chn = dma_request_chan(port->dev, "rx");
-+	if (IS_ERR(sp->rx_dma.chn)) {
-+		dev_err(port->dev, "request RX DMA channel failed, ret = %ld\n",
-+			PTR_ERR(sp->tx_dma.chn));
-+		sp->rx_dma.enable = false;
-+	}
-+}
-+
-+static void sprd_stop_tx(struct uart_port *port)
-+{
-+	struct sprd_uart_port *sp = container_of(port, struct sprd_uart_port,
-+						 port);
- 	unsigned int ien, iclr;
- 
-+	if (sp->tx_dma.enable) {
-+		sprd_stop_tx_dma(port);
-+		return;
-+	}
-+
- 	iclr = serial_in(port, SPRD_ICLR);
- 	ien = serial_in(port, SPRD_IEN);
- 
--	ien &= ~(SPRD_IEN_RX_FULL | SPRD_IEN_BREAK_DETECT);
--	iclr |= SPRD_IEN_RX_FULL | SPRD_IEN_BREAK_DETECT;
-+	iclr |= SPRD_IEN_TX_EMPTY;
-+	ien &= ~SPRD_IEN_TX_EMPTY;
- 
- 	serial_out(port, SPRD_IEN, ien);
- 	serial_out(port, SPRD_ICLR, iclr);
- }
- 
-+static void sprd_start_tx(struct uart_port *port)
-+{
-+	struct sprd_uart_port *sp = container_of(port, struct sprd_uart_port,
-+						 port);
-+	unsigned int ien;
-+
-+	if (sp->tx_dma.enable) {
-+		sprd_start_tx_dma(port);
-+		return;
-+	}
-+
-+	ien = serial_in(port, SPRD_IEN);
-+	if (!(ien & SPRD_IEN_TX_EMPTY)) {
-+		ien |= SPRD_IEN_TX_EMPTY;
-+		serial_out(port, SPRD_IEN, ien);
-+	}
-+}
-+
- /* The Sprd serial does not support this function. */
- static void sprd_break_ctl(struct uart_port *port, int break_state)
- {
-@@ -220,9 +590,16 @@ static int handle_lsr_errors(struct uart_port *port,
- 
- static inline void sprd_rx(struct uart_port *port)
- {
-+	struct sprd_uart_port *sp = container_of(port, struct sprd_uart_port,
-+						 port);
- 	struct tty_port *tty = &port->state->port;
- 	unsigned int ch, flag, lsr, max_count = SPRD_TIMEOUT;
- 
-+	if (sp->rx_dma.enable) {
-+		sprd_uart_dma_irq(port);
-+		return;
-+	}
-+
- 	while ((serial_in(port, SPRD_STS1) & SPRD_RX_FIFO_CNT_MASK) &&
- 	       max_count--) {
- 		lsr = serial_in(port, SPRD_LSR);
-@@ -306,6 +683,25 @@ static irqreturn_t sprd_handle_irq(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
-+static void sprd_uart_dma_startup(struct uart_port *port,
-+				  struct sprd_uart_port *sp)
-+{
-+	int ret;
-+
-+	sprd_request_dma(port);
-+	if (!(sp->rx_dma.enable || sp->tx_dma.enable))
-+		return;
-+
-+	ret = sprd_start_dma_rx(port);
-+	if (ret) {
-+		sp->rx_dma.enable = false;
-+		dma_release_channel(sp->rx_dma.chn);
-+		dev_warn(port->dev, "fail to start RX dma mode\n");
-+	}
-+
-+	sprd_uart_dma_enable(port, true);
-+}
-+
- static int sprd_startup(struct uart_port *port)
- {
- 	int ret = 0;
-@@ -334,6 +730,9 @@ static int sprd_startup(struct uart_port *port)
- 	/* allocate irq */
- 	sp = container_of(port, struct sprd_uart_port, port);
- 	snprintf(sp->name, sizeof(sp->name), "sprd_serial%d", port->line);
-+
-+	sprd_uart_dma_startup(port, sp);
-+
- 	ret = devm_request_irq(port->dev, port->irq, sprd_handle_irq,
- 			       IRQF_SHARED, sp->name, port);
- 	if (ret) {
-@@ -348,7 +747,9 @@ static int sprd_startup(struct uart_port *port)
- 	/* enable interrupt */
- 	spin_lock_irqsave(&port->lock, flags);
- 	ien = serial_in(port, SPRD_IEN);
--	ien |= SPRD_IEN_RX_FULL | SPRD_IEN_BREAK_DETECT | SPRD_IEN_TIMEOUT;
-+	ien |= SPRD_IEN_BREAK_DETECT | SPRD_IEN_TIMEOUT;
-+	if (!sp->rx_dma.enable)
-+		ien |= SPRD_IEN_RX_FULL;
- 	serial_out(port, SPRD_IEN, ien);
- 	spin_unlock_irqrestore(&port->lock, flags);
- 
-@@ -357,6 +758,7 @@ static int sprd_startup(struct uart_port *port)
- 
- static void sprd_shutdown(struct uart_port *port)
- {
-+	sprd_release_dma(port);
- 	serial_out(port, SPRD_IEN, 0);
- 	serial_out(port, SPRD_ICLR, ~0);
- 	devm_free_irq(port->dev, port->irq, port);
-@@ -687,6 +1089,8 @@ static int sprd_remove(struct platform_device *dev)
- 	if (!sprd_ports_num)
- 		uart_unregister_driver(&sprd_uart_driver);
- 
-+	sprd_rx_free_buf(sup);
-+
- 	return 0;
- }
- 
-@@ -775,6 +1179,14 @@ static int sprd_probe(struct platform_device *pdev)
- 	}
- 	up->irq = irq;
- 
-+	/*
-+	 * Allocate one dma buffer to prepare for receive transfer, in case
-+	 * memory allocation failure at runtime.
-+	 */
-+	ret = sprd_rx_alloc_buf(sprd_port[index]);
-+	if (ret)
-+		return ret;
-+
- 	if (!sprd_ports_num) {
- 		ret = uart_register_driver(&sprd_uart_driver);
- 		if (ret < 0) {
--- 
-1.7.9.5
+I see.
+I do my best to make it.
+
+> I did not look at the device driver patches (clk, clocksource, pinctrl, serial)
+> in much detail. If you have an Ack from the maintainers, feel free to
+> include them in the series, otherwise let's merge the rest now and then
+> you can send the updated patches for inclusion through the subsystem
+> trees in 5.2.
+> 
+
+OK, I'll add the patches with "Acked" or "Reviewed" tag.
+
+> I have sent a few comments. The only one that is really important
+> here is the missing platform check in the suspend options. Please
+> try to address most of the other commentsm, either by changing the
+> code, or by explaining why your version is correct.
+> 
+
+Okay, try to address them.
+I send the next version as soon as possible.
+
+Thanks.
+Sugaya Taichi
+
+> 
+> 
+>       Arnd
+> 
