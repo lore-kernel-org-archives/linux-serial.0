@@ -1,39 +1,51 @@
-From: Vinod Koul <vkoul@kernel.org>
-Subject: Re: [PATCH v10 1/3] dmaengine: 8250_mtk_dma: add MediaTek uart DMA
- support
-Date: Tue, 19 Feb 2019 17:44:20 +0530
-Message-ID: <20190219121420.GZ21884@vkoul-mobl>
-References: <1547781016-890-1-git-send-email-long.cheng@mediatek.com>
- <1547781016-890-2-git-send-email-long.cheng@mediatek.com>
- <20190204072154.GJ4296@vkoul-mobl>
- <1550112296.7678.5.camel@mhfsdcap03>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] tty: not call tty close in fallback
+Date: Tue, 19 Feb 2019 13:41:15 +0100
+Message-ID: <20190219124115.GB4867@kroah.com>
+References: <5c3c3289.1c69fb81.c1953.0900SMTPIN_ADDED_BROKEN@mx.google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1550112296.7678.5.camel@mhfsdcap03>
+In-Reply-To: <5c3c3289.1c69fb81.c1953.0900SMTPIN_ADDED_BROKEN@mx.google.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Long Cheng <long.cheng@mediatek.com>
-Cc: Randy Dunlap <rdunlap@infradead.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Sean Wang <sean.wang@kernel.org>, Nicolas Boichat <drinkcat@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>, Zhenbao Liu <zhenbao.liu@mediatek.com>
+To: yes@kroah.com
+Cc: robh@kernel.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 14-02-19, 10:44, Long Cheng wrote:
-> On Mon, 2019-02-04 at 12:51 +0530, Vinod Koul wrote:
-
-> > > +static int mtk_uart_apdma_device_pause(struct dma_chan *chan)
-> > > +{
-> > > +	/* just for check caps pass */
-> > > +	return 0;
-> > > +}
-> > 
-> > please remove, this is not a mandatory fn
+On Mon, Jan 14, 2019 at 02:56:01PM +0800, yes wrote:
+> From: Li RongQing <lirongqing@baidu.com>
 > 
-> Can't remove it. Before the mail, i had explained it. in 8250 uart
-> framework, will check the function..
+> when fail to open tty, tty is not in open status and not need
+> to call close
+> 
+> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+> ---
+>  drivers/tty/serdev/serdev-ttyport.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+> index fa1672993b4c..bcc1e27d00de 100644
+> --- a/drivers/tty/serdev/serdev-ttyport.c
+> +++ b/drivers/tty/serdev/serdev-ttyport.c
+> @@ -121,7 +121,7 @@ static int ttyport_open(struct serdev_controller *ctrl)
+>  
+>  	ret = tty->ops->open(serport->tty, NULL);
+>  	if (ret)
+> -		goto err_close;
+> +		goto err_unlock;
+>  
+>  	tty_unlock(serport->tty);
+>  
+> @@ -142,8 +142,6 @@ static int ttyport_open(struct serdev_controller *ctrl)
+>  
+>  	return 0;
+>  
+> -err_close:
+> -	tty->ops->close(tty, NULL);
 
-I think you should fix the 8250 uart to handle driver not having a
-pause. Keeping a dummy pause is just wrong and sets wrong expectations
-for uart..
+No, close is always called after open, even if open fails.
 
--- 
-~Vinod
+thanks,
+
+greg k-h
