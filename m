@@ -1,7 +1,7 @@
 From: Baolin Wang <baolin.wang@linaro.org>
-Subject: [PATCH 1/5] serial: sprd: Modify the baud rate calculation formula
-Date: Tue, 19 Feb 2019 15:31:11 +0800
-Message-ID: <a816deaf850b3620457ab3d071345ec572c63477.1550560916.git.baolin.wang@linaro.org>
+Subject: [PATCH 2/5] dt-bindings: serial: sprd: Add clocks and clocks-names properties
+Date: Tue, 19 Feb 2019 15:31:12 +0800
+Message-ID: <c2b4db380c044bebe9fdf546b8a9f3aa351c6867.1550560916.git.baolin.wang@linaro.org>
 References: <cover.1550560916.git.baolin.wang@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1550560916.git.baolin.wang@linaro.org>
@@ -14,33 +14,41 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Lanqing Liu <lanqing.liu@unisoc.com>
 
-When the source clock is not divisible by the expected baud rate and
-the remainder is not less than half of the expected baud rate, the old
-formular will round up the frequency division coefficient. This will
-make the actual baud rate less than the expected value and can not meet
-the external transmission requirements.
-
-Thus this patch modifies the baud rate calculation formula to support
-the serial controller output the maximum baud rate.
+This patch adds clocks and clocks-names properties, which are used to do
+power management for our UART driver.
 
 Signed-off-by: Lanqing Liu <lanqing.liu@unisoc.com>
 Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
 ---
- drivers/tty/serial/sprd_serial.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../devicetree/bindings/serial/sprd-uart.txt       |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-index 4287ca3..1891a45 100644
---- a/drivers/tty/serial/sprd_serial.c
-+++ b/drivers/tty/serial/sprd_serial.c
-@@ -371,7 +371,7 @@ static void sprd_set_termios(struct uart_port *port,
- 	/* ask the core to calculate the divisor for us */
- 	baud = uart_get_baud_rate(port, termios, old, 0, SPRD_BAUD_IO_LIMIT);
+diff --git a/Documentation/devicetree/bindings/serial/sprd-uart.txt b/Documentation/devicetree/bindings/serial/sprd-uart.txt
+index cab40f0..6eb5863 100644
+--- a/Documentation/devicetree/bindings/serial/sprd-uart.txt
++++ b/Documentation/devicetree/bindings/serial/sprd-uart.txt
+@@ -7,7 +7,13 @@ Required properties:
  
--	quot = (unsigned int)((port->uartclk + baud / 2) / baud);
-+	quot = port->uartclk / baud;
+ - reg: offset and length of the register set for the device
+ - interrupts: exactly one interrupt specifier
+-- clocks: phandles to input clocks.
++- clock-names: Should contain following entries:
++  "enable" for UART module enable clock,
++  "uart" for UART clock,
++  "source" for UART source (parent) clock.
++- clocks: Should contain a clock specifier for each entry in clock-names.
++  UART clock and source clock are optional properties, but enable clock
++  is required.
  
- 	/* set data length */
- 	switch (termios->c_cflag & CSIZE) {
+ Example:
+ 	uart0: serial@0 {
+@@ -15,5 +21,6 @@ Example:
+ 			     "sprd,sc9836-uart";
+ 		reg = <0x0 0x100>;
+ 		interrupts = <GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>;
+-		clocks = <&ext_26m>;
++		clock-names = "enable", "uart", "source";
++		clocks = <&clk_ap_apb_gates 9>, <&clk_uart0>, <&ext_26m>;
+ 	};
 -- 
 1.7.9.5
