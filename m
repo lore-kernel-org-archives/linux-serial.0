@@ -1,7 +1,7 @@
 From: Baolin Wang <baolin.wang@linaro.org>
-Subject: [PATCH 3/5] serial: sprd: Add power management for the Spreadtrum serial controller
-Date: Tue, 19 Feb 2019 15:31:13 +0800
-Message-ID: <cb94ee643102cc2fd35af5ee517e46a20d5c00d9.1550560916.git.baolin.wang@linaro.org>
+Subject: [PATCH 4/5] dt-bindings: serial: sprd: Add dma properties to support DMA mode
+Date: Tue, 19 Feb 2019 15:31:14 +0800
+Message-ID: <8f0a032f9bcce28bb0d147f9646950f64fc22a74.1550560916.git.baolin.wang@linaro.org>
 References: <cover.1550560916.git.baolin.wang@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1550560916.git.baolin.wang@linaro.org>
@@ -14,121 +14,36 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Lanqing Liu <lanqing.liu@unisoc.com>
 
-This patch adds power management for the Spreadtrum serial controller.
+This patch adds dmas and dma-names properties for the UART DMA mode.
 
 Signed-off-by: Lanqing Liu <lanqing.liu@unisoc.com>
 Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
 ---
- drivers/tty/serial/sprd_serial.c |   61 +++++++++++++++++++++++++++++++++++---
- 1 file changed, 57 insertions(+), 4 deletions(-)
+ .../devicetree/bindings/serial/sprd-uart.txt       |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-index 1891a45..8f45b66 100644
---- a/drivers/tty/serial/sprd_serial.c
-+++ b/drivers/tty/serial/sprd_serial.c
-@@ -100,10 +100,12 @@
- #define SPRD_IMSR_TX_FIFO_EMPTY	BIT(1)
- #define SPRD_IMSR_BREAK_DETECT	BIT(7)
- #define SPRD_IMSR_TIMEOUT	BIT(13)
-+#define SPRD_DEFAULT_SOURCE_CLK	26000000
+diff --git a/Documentation/devicetree/bindings/serial/sprd-uart.txt b/Documentation/devicetree/bindings/serial/sprd-uart.txt
+index 6eb5863..9ac28f6 100644
+--- a/Documentation/devicetree/bindings/serial/sprd-uart.txt
++++ b/Documentation/devicetree/bindings/serial/sprd-uart.txt
+@@ -15,12 +15,18 @@ Required properties:
+   UART clock and source clock are optional properties, but enable clock
+   is required.
  
- struct sprd_uart_port {
- 	struct uart_port port;
- 	char name[16];
-+	struct clk *clk;
- };
- 
- static struct sprd_uart_port *sprd_port[UART_NR_MAX];
-@@ -491,6 +493,22 @@ static int sprd_verify_port(struct uart_port *port, struct serial_struct *ser)
- 	return 0;
- }
- 
-+static void sprd_pm(struct uart_port *port, unsigned int state,
-+		unsigned int oldstate)
-+{
-+	struct sprd_uart_port *sup =
-+		container_of(port, struct sprd_uart_port, port);
++Optional properties:
++- dma-names: Should contain "tx" for transmit and "rx" for receive channels.
++- dmas: A list of dma specifiers, one for each entry in dma-names.
 +
-+	switch (state) {
-+	case UART_PM_STATE_ON:
-+		clk_prepare_enable(sup->clk);
-+		break;
-+	case UART_PM_STATE_OFF:
-+		clk_disable_unprepare(sup->clk);
-+		break;
-+	}
-+}
-+
- static const struct uart_ops serial_sprd_ops = {
- 	.tx_empty = sprd_tx_empty,
- 	.get_mctrl = sprd_get_mctrl,
-@@ -507,6 +525,7 @@ static int sprd_verify_port(struct uart_port *port, struct serial_struct *ser)
- 	.request_port = sprd_request_port,
- 	.config_port = sprd_config_port,
- 	.verify_port = sprd_verify_port,
-+	.pm = sprd_pm,
- };
- 
- #ifdef CONFIG_SERIAL_SPRD_CONSOLE
-@@ -671,11 +690,45 @@ static int sprd_remove(struct platform_device *dev)
- 	return 0;
- }
- 
-+static int sprd_clk_init(struct uart_port *uport)
-+{
-+	struct clk *clk_uart, *clk_parent;
-+	struct sprd_uart_port *u = sprd_port[uport->line];
-+
-+	clk_uart = devm_clk_get(uport->dev, "uart");
-+	if (IS_ERR(clk_uart)) {
-+		dev_warn(uport->dev, "uart%d can't get uart clock\n",
-+			 uport->line);
-+		clk_uart = NULL;
-+	}
-+
-+	clk_parent = devm_clk_get(uport->dev, "source");
-+	if (IS_ERR(clk_parent)) {
-+		dev_warn(uport->dev, "uart%d can't get source clock\n",
-+			 uport->line);
-+		clk_parent = NULL;
-+	}
-+
-+	if (!clk_uart || clk_set_parent(clk_uart, clk_parent))
-+		uport->uartclk = SPRD_DEFAULT_SOURCE_CLK;
-+	else
-+		uport->uartclk = clk_get_rate(clk_uart);
-+
-+	u->clk = devm_clk_get(uport->dev, "enable");
-+	if (IS_ERR(u->clk)) {
-+		if (PTR_ERR(u->clk) != -EPROBE_DEFER)
-+			dev_err(uport->dev, "uart%d can't get enable clock\n",
-+				uport->line);
-+		return PTR_ERR(u->clk);
-+	}
-+
-+	return 0;
-+}
-+
- static int sprd_probe(struct platform_device *pdev)
- {
- 	struct resource *res;
- 	struct uart_port *up;
--	struct clk *clk;
- 	int irq;
- 	int index;
- 	int ret;
-@@ -704,9 +757,9 @@ static int sprd_probe(struct platform_device *pdev)
- 	up->ops = &serial_sprd_ops;
- 	up->flags = UPF_BOOT_AUTOCONF;
- 
--	clk = devm_clk_get(&pdev->dev, NULL);
--	if (!IS_ERR_OR_NULL(clk))
--		up->uartclk = clk_get_rate(clk);
-+	ret = sprd_clk_init(up);
-+	if (ret)
-+		return ret;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	up->membase = devm_ioremap_resource(&pdev->dev, res);
+ Example:
+ 	uart0: serial@0 {
+ 		compatible = "sprd,sc9860-uart",
+ 			     "sprd,sc9836-uart";
+ 		reg = <0x0 0x100>;
+ 		interrupts = <GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>;
++		dma-names = "rx", "tx";
++		dmas = <&ap_dma 19 19>, <&ap_dma 20 20>;
+ 		clock-names = "enable", "uart", "source";
+ 		clocks = <&clk_ap_apb_gates 9>, <&clk_uart0>, <&ext_26m>;
+ 	};
 -- 
 1.7.9.5
