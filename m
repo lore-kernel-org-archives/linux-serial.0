@@ -1,88 +1,112 @@
 From: Martin Kepplinger <martin.kepplinger@ginzinger.com>
-Subject: [PATCH 3/9] serial: core: add rs485-rts-delay-us devicetree property
- for RS485
-Date: Wed, 20 Feb 2019 16:27:25 +0100
-Message-ID: <20190220152731.4051-3-martin.kepplinger@ginzinger.com>
+Subject: [PATCH 4/9] serial: 8250: add support for rs485 RTS delays in microseconds
+Date: Wed, 20 Feb 2019 16:27:26 +0100
+Message-ID: <20190220152731.4051-4-martin.kepplinger@ginzinger.com>
 References: <20190220152731.4051-1-martin.kepplinger@ginzinger.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============8970830739600415979=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg="sha-256"; boundary="----8A7DD9D1880E800A8812A739F6C552DE"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190220152731.4051-1-martin.kepplinger@ginzinger.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, jslaby@suse.com, corbet@lwn.net, richard.genoud@gmail.com, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, ludovic.desroches@microchip.com, mcoquelin.stm32@gmail.com, alexandre.torgue@st.com, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 This is an S/MIME signed message
 
---===============8970830739600415979==
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg="sha-256"; boundary="----E35D93C895C368AD85F58EFB1552F8C4"
-
-This is an S/MIME signed message
-
-------E35D93C895C368AD85F58EFB1552F8C4
+------8A7DD9D1880E800A8812A739F6C552DE
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 
-struct serial_rs485 now optionally holds the rts delay values in
-microseconds. Users can set these delays in their devicetree descriptions,
-so this adds the microseconds-option with the "rs485-rts-delay-us" boolean
-property.
+Read struct serial_rs485's flag SER_RS485_DELAY_IN_USEC and apply the delay
+accordingly.
 
 Signed-off-by: Martin Kepplinger <martin.kepplinger@ginzinger.com>
 ---
- Documentation/devicetree/bindings/serial/rs485.txt |  1 +
- drivers/tty/serial/serial_core.c                   | 11 +++++++++++
- 2 files changed, 12 insertions(+)
+ drivers/tty/serial/8250/8250_omap.c | 13 +++++++++++--
+ drivers/tty/serial/8250/8250_port.c | 25 +++++++++++++++++++++----
+ 2 files changed, 32 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/rs485.txt b/Documentation/devicetree/bindings/serial/rs485.txt
-index b92592dff6dd..77396c62b383 100644
---- a/Documentation/devicetree/bindings/serial/rs485.txt
-+++ b/Documentation/devicetree/bindings/serial/rs485.txt
-@@ -12,6 +12,7 @@ Optional properties:
-   * b is the delay between end of data sent and rts signal in milliseconds
-       it corresponds to the delay after sending data and actual release of the line.
-   If this property is not specified, <0 0> is assumed.
-+- rs485-rts-delay-us: the same as rs485-rts-delay, but in microseconds.
- - rs485-rts-active-low: drive RTS low when sending (default is high).
- - linux,rs485-enabled-at-boot-time: empty property telling to enable the rs485
-   feature at boot time. It can be disabled later with proper ioctl.
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 556f50aa1b58..4fb265b2c0fe 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -3097,6 +3097,17 @@ void uart_get_rs485_mode(struct device *dev, struct serial_rs485 *rs485conf)
- 		rs485conf->delay_rts_after_send = 0;
- 	}
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 0a8316632d75..cbce43ac60b1 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -720,8 +720,17 @@ static int omap_8250_rs485_config(struct uart_port *port,
+ 	struct uart_8250_port *up = up_to_u8250p(port);
  
-+	ret = device_property_read_u32_array(dev, "rs485-rts-delay-us",
-+					     rs485_delay, 2);
-+	if (!ret) {
-+		rs485conf->delay_rts_before_send = rs485_delay[0];
-+		rs485conf->delay_rts_after_send = rs485_delay[1];
-+		rs485conf->flags |= SER_RS485_DELAY_IN_USEC;
+ 	/* Clamp the delays to [0, 100ms] */
+-	rs485->delay_rts_before_send = min(rs485->delay_rts_before_send, 100U);
+-	rs485->delay_rts_after_send  = min(rs485->delay_rts_after_send, 100U);
++	if (rs485->flags & SER_RS485_DELAY_IN_USEC) {
++		rs485->delay_rts_before_send = min(rs485->delay_rts_before_send,
++						   100000U);
++		rs485->delay_rts_after_send  = min(rs485->delay_rts_after_send,
++						   100000U);
 +	} else {
-+		rs485conf->delay_rts_before_send = 0;
-+		rs485conf->delay_rts_after_send = 0;
++		rs485->delay_rts_before_send = min(rs485->delay_rts_before_send,
++						   100U);
++		rs485->delay_rts_after_send  = min(rs485->delay_rts_after_send,
++						   100U);
 +	}
+ 
+ 	port->rs485 = *rs485;
+ 
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index d2f3310abe54..0cee4aa8323d 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1483,6 +1483,15 @@ static void start_hrtimer_ms(struct hrtimer *hrt, unsigned long msec)
+ 	hrtimer_start(hrt, t, HRTIMER_MODE_REL);
+ }
+ 
++static void start_hrtimer_us(struct hrtimer *hrt, unsigned long usec)
++{
++	long sec = usec / 1000000;
++	long nsec = (usec % 1000000) * 1000000000;
++	ktime_t t = ktime_set(sec, nsec);
 +
- 	/*
- 	 * Clear full-duplex and enabled flags, set RTS polarity to active high
- 	 * to get to a defined state with the following properties:
++	hrtimer_start(hrt, t, HRTIMER_MODE_REL);
++}
++
+ static void __stop_tx_rs485(struct uart_8250_port *p)
+ {
+ 	struct uart_8250_em485 *em485 = p->em485;
+@@ -1493,8 +1502,12 @@ static void __stop_tx_rs485(struct uart_8250_port *p)
+ 	 */
+ 	if (p->port.rs485.delay_rts_after_send > 0) {
+ 		em485->active_timer = &em485->stop_tx_timer;
+-		start_hrtimer_ms(&em485->stop_tx_timer,
+-				   p->port.rs485.delay_rts_after_send);
++		if (p->port.rs485.flags & SER_RS485_DELAY_IN_USEC)
++			start_hrtimer_us(&em485->stop_tx_timer,
++					 p->port.rs485.delay_rts_after_send);
++		else
++			start_hrtimer_ms(&em485->stop_tx_timer,
++					 p->port.rs485.delay_rts_after_send);
+ 	} else {
+ 		__do_stop_tx_rs485(p);
+ 	}
+@@ -1600,8 +1613,12 @@ static inline void start_tx_rs485(struct uart_port *port)
+ 
+ 		if (up->port.rs485.delay_rts_before_send > 0) {
+ 			em485->active_timer = &em485->start_tx_timer;
+-			start_hrtimer_ms(&em485->start_tx_timer,
+-					 up->port.rs485.delay_rts_before_send);
++			if (up->port.rs485.flags & SER_RS485_DELAY_IN_USEC)
++				start_hrtimer_us(&em485->start_tx_timer,
++					up->port.rs485.delay_rts_before_send);
++			else
++				start_hrtimer_ms(&em485->start_tx_timer,
++					up->port.rs485.delay_rts_before_send);
+ 			return;
+ 		}
+ 	}
 -- 
 2.20.1
 
 
-------E35D93C895C368AD85F58EFB1552F8C4
+------8A7DD9D1880E800A8812A739F6C552DE
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -152,31 +176,16 @@ MAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UE
 BxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMT
 NENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
 aWwgQ0ECEE1CsTMbOtnoVViHUQRgfj4wDQYJYIZIAWUDBAIBBQCggeQwGAYJKoZI
-hvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTkwMjIwMTUyODA3
-WjAvBgkqhkiG9w0BCQQxIgQg73sx3CPGt/3zjQFocscZyEWWejqNO7+fPyc5q/rv
-3BEweQYJKoZIhvcNAQkPMWwwajALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
+hvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTkwMjIwMTUyODA4
+WjAvBgkqhkiG9w0BCQQxIgQg6qKJB1LBYz5Di2PAhyjctmBfmz2D7BZ16Nsa//m7
+egEweQYJKoZIhvcNAQkPMWwwajALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
 CWCGSAFlAwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcN
 AwICAUAwBwYFKw4DAgcwDQYIKoZIhvcNAwICASgwDQYJKoZIhvcNAQEBBQAEggEA
-XhwbsoUsNpSkpNI1a9ELOBvxuK27U2dcG2JZfwtzpzz/tZPiUIacp3YcV0MET+wh
-1e51sTM9n79f+mjthjFMJ7h2xKTdc815V4LRAYf9dGT+GevAxGtDTSiK5Nk6Jud1
-jpR0dKJ+jB/Yi3fyzSltTBTBoZbWXPnJsDfR9mmwlHRT5FfI9iUuXpE0hXtWfMg6
-LSpwTfWZk2cyFEjQPs10YdGxHa6QAkc++OqQGCXMxNOi3aY90OyPrDfmARn87dyk
-AvNjIwSd1foYn+eerStmX+pR75qk4gpGSypxmS0Ewdl/YEL3kkJ6pw2XKmh4cg1X
-+/S3laSMQuoHWGRxfj6/cQ==
+D6cuAOr5I5JrqcDjdYyTLlmSyD8IlMjHpMA+pkNsYPSPWpFGlDbGm18/gl41zrvd
+cS0co7Rx/YBPt1HMmPx7ZzknOuK4C4CPGCYheNqaWbr96EWaGqf7w504JjodbPOd
+c7gitavEqp2qYHgF/h8AFAqNK9wjpuUwn/BepAZN9IVZRJXvg/lzl17s7ANSb7ea
+c38Wyg20gVj2fKJUQqj7JQGDBdny/z3VqoQhizfHEFE44LFhZZUevhNzUe1aRIr9
+zH0NvFNWZOTBUpZ2MsXnj20QPJSYVsDjMGqGAZQgyjjh4AcTt5x77x1aVX4mN9/r
+a7mMQMAM8eEe8aYvJOZbTA==
 
-------E35D93C895C368AD85F58EFB1552F8C4--
-
-
-
---===============8970830739600415979==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============8970830739600415979==--
+------8A7DD9D1880E800A8812A739F6C552DE--
