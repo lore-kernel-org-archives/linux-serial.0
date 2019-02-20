@@ -1,182 +1,122 @@
-From: John Ogness <john.ogness@linutronix.de>
-Subject: Re: [RFC PATCH v1 07/25] printk-rb: add functionality required by printk
-Date: Tue, 19 Feb 2019 23:08:20 +0100
-Message-ID: <87ftsjv3cb.fsf@linutronix.de>
-References: <20190212143003.48446-1-john.ogness@linutronix.de>
-        <20190212143003.48446-8-john.ogness@linutronix.de>
-        <20190218155921.rxksi2hyasxnmu7a@pathway.suse.cz>
+From: Sugaya Taichi <sugaya.taichi@socionext.com>
+Subject: [PATCH v3 0/9] Add basic support for Socionext Milbeaut M10V SoC
+Date: Wed, 20 Feb 2019 16:42:58 +0900
+Message-ID: <1550648578-9928-1-git-send-email-sugaya.taichi@socionext.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190218155921.rxksi2hyasxnmu7a@pathway.suse.cz> (Petr Mladek's
-        message of "Mon, 18 Feb 2019 16:59:21 +0100")
-Sender: linux-kernel-owner@vger.kernel.org
-To: Petr Mladek <pmladek@suse.com>
-Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, soc@kernel.org
+Cc: Mark Rutland <mark.rutland@arm.com>, Shinji Kanematsu <kanematsu.shinji@socionext.com>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Jassi Brar <jaswinder.singh@linaro.org>, Sugaya Taichi <sugaya.taichi@socionext.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Russell King <linux@armlinux.org.uk>, Masahiro Yamada <yamada.masahiro@socionext.com>, Rob Herring <robh+dt@kernel.org>, Takao Orito <orito.takao@socionext.com>, Thomas Gleixner <tglx@linutronix.de>, Kazuhiro Kasai <kasai.kazuhiro@socionext.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 2019-02-18, Petr Mladek <pmladek@suse.com> wrote:
->> The printk subsystem needs to be able to query the size of the ring
->> buffer, seek to specific entries within the ring buffer, and track
->> if records could not be stored in the ring buffer.
->> 
->> diff --git a/lib/printk_ringbuffer.c b/lib/printk_ringbuffer.c
->> index c2ddf4cb9f92..ce33b5add5a1 100644
->> --- a/lib/printk_ringbuffer.c
->> +++ b/lib/printk_ringbuffer.c
->> @@ -175,11 +175,16 @@ void prb_commit(struct prb_handle *h)
->>  				head = PRB_WRAP_LPOS(rb, head, 1);
->>  				continue;
->>  			}
->> +			while (atomic_long_read(&rb->lost)) {
->> +				atomic_long_dec(&rb->lost);
->> +				rb->seq++;
->
-> The lost-messages handling should be in a separate patch.
-> At least I do not see any close relation with prb_iter_seek().
+Hi,
 
-Agreed.
+Here is the series of patches the initial support for SC2000(M10V) of
+Milbeaut SoCs. "M10V" is the internal name of SC2000, so commonly used in
+source code.
 
-> I would personally move prb_iter_seek() to the 5th patch that
-> implements the other get/iterator functions.
+SC2000 is a SoC of the Milbeaut series. equipped with a DSP optimized for
+computer vision. It also features advanced functionalities such as 360-degree,
+real-time spherical stitching with multi cameras, image stabilization for
+without mechanical gimbals, and rolling shutter correction. More detail is
+below:
+https://www.socionext.com/en/products/assp/milbeaut/SC2000.html
 
-Agreed.
+Specifications for developers are below:
+ - Quad-core 32bit Cortex-A7 on ARMv7-A architecture
+ - NEON support
+ - DSP
+ - GPU
+ - MAX 3GB DDR3
+ - Cortex-M0 for power control
+ - NAND Flash Interface
+ - SD UHS-I
+ - SD UHS-II
+ - SDIO
+ - USB2.0 HOST / Device
+ - USB3.0 HOST / Device
+ - PCI express Gen2
+ - Ethernet Engine
+ - I2C
+ - UART
+ - SPI
+ - PWM
 
-> On the contrary, the patch adding support for lost messages
-> should implement a way how to inform the user about lost messages.
-> E.g. to add a warning when some space becomes available again.
+Support is quite minimal for now, since it only includes timer, clock,
+pictrl and serial controller drivers, so we can only boot to userspace
+through initramfs. Support for the other peripherals  will come eventually.
 
-The readers will see that messages were lost. I think that is enough. I
-don't know how useful it would be to notify writers that space is
-available. The writers are holding the prb_cpulock, so they definitely
-shouldn't be waiting around for anything.
+Changes since v2:
+* Drop clk, pinctrl, and serial driver.
+* Drop unneeded options from defconfig.
+* Convert milbeaut soc binding to yaml.
+* Fix serial driver binding.
+* Change serial id of aliases in DT.
+* Add platform checking when entering suspend/resume.
+* Drop pr_err()s.
 
-This situation should be quite rare because it means the _entire_ ring
-buffer was filled up by an NMI context that interrupted a context that
-was in the reserve/commit window. NMI contexts probably should not be
-doing _so_ much printk'ing within a single NMI.
+Changes since v1:
+* Change file names.
+* Change #define names.
+* Refine cpu-enable-method and bindigs.
+* Add documentation for Milbeaut SoCs.
+* Add more infomation for timer driver.
+* Add sched_clock to timer driver.
+* Refine whole of clk driver.
+* Add earlycon instead of earlyprintk.
+* Refine Device Tree.
 
->> +			}
->>  			e->seq = ++rb->seq;
->>  			head += e->size;
->>  			changed = true;
->>  		}
->>  		atomic_long_set_release(&rb->head, res);
->> +
->>  		atomic_dec(&rb->ctx);
->>  
->>  		if (atomic_long_read(&rb->reserve) == res)
->> @@ -486,3 +491,93 @@ int prb_iter_wait_next(struct prb_iterator *iter, char *buf, int size, u64 *seq)
->>  
->>  	return ret;
->>  }
->> +
->> +/*
->> + * prb_iter_seek: Seek forward to a specific record.
->> + * @iter: Iterator to advance.
->> + * @seq: Record number to advance to.
->> + *
->> + * Advance @iter such that a following call to prb_iter_data() will provide
->> + * the contents of the specified record. If a record is specified that does
->> + * not yet exist, advance @iter to the end of the record list.
->> + *
->> + * Note that iterators cannot be rewound. So if a record is requested that
->> + * exists but is previous to @iter in position, @iter is considered invalid.
->> + *
->> + * It is safe to call this function from any context and state.
->> + *
->> + * Returns 1 on succces, 0 if specified record does not yet exist (@iter is
->> + * now at the end of the list), or -EINVAL if @iter is now invalid.
->> + */
->
-> Do we really need to distinguish when the iterator is invalid and when
-> we are at the end of the buffer?
+Sugaya Taichi (9):
+  dt-bindings: sram: milbeaut: Add binding for Milbeaut smp-sram
+  dt-bindings: arm: Add SMP enable-method for Milbeaut
+  dt-bindings: Add documentation for Milbeaut SoCs
+  ARM: milbeaut: Add basic support for Milbeaut m10v SoC
+  dt-bindings: timer: Add Milbeaut M10V timer description
+  clocksource/drivers/timer-milbeaut: Introduce timer for Milbeaut SoCs
+  dt-bindings: serial: Add Milbeaut serial driver description
+  ARM: dts: milbeaut: Add device tree set for the Milbeaut M10V board
+  ARM: configs: Add Milbeaut M10V defconfig
 
-Sure! There is big difference between "stop iterating because we hit the
-newest entry" and "reset the iterator to the oldest entry because we
-were overtaken by a writer".
+ Documentation/devicetree/bindings/arm/cpus.yaml    |   1 +
+ .../bindings/arm/socionext/milbeaut.yaml           |  22 +++
+ .../devicetree/bindings/serial/milbeaut-uart.txt   |  21 +++
+ .../devicetree/bindings/sram/milbeaut-smp-sram.txt |  24 +++
+ .../bindings/timer/socionext,milbeaut-timer.txt    |  17 ++
+ arch/arm/Kconfig                                   |   2 +
+ arch/arm/Makefile                                  |   1 +
+ arch/arm/boot/dts/Makefile                         |   1 +
+ arch/arm/boot/dts/milbeaut-m10v-evb.dts            |  32 ++++
+ arch/arm/boot/dts/milbeaut-m10v.dtsi               |  95 +++++++++++
+ arch/arm/configs/milbeaut_m10v_defconfig           | 175 +++++++++++++++++++++
+ arch/arm/configs/multi_v7_defconfig                |   2 +
+ arch/arm/mach-milbeaut/Kconfig                     |  20 +++
+ arch/arm/mach-milbeaut/Makefile                    |   1 +
+ arch/arm/mach-milbeaut/platsmp.c                   | 143 +++++++++++++++++
+ drivers/clocksource/Kconfig                        |   9 ++
+ drivers/clocksource/Makefile                       |   1 +
+ drivers/clocksource/timer-milbeaut.c               | 161 +++++++++++++++++++
+ 18 files changed, 728 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/socionext/milbeaut.yaml
+ create mode 100644 Documentation/devicetree/bindings/serial/milbeaut-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/sram/milbeaut-smp-sram.txt
+ create mode 100644 Documentation/devicetree/bindings/timer/socionext,milbeaut-timer.txt
+ create mode 100644 arch/arm/boot/dts/milbeaut-m10v-evb.dts
+ create mode 100644 arch/arm/boot/dts/milbeaut-m10v.dtsi
+ create mode 100644 arch/arm/configs/milbeaut_m10v_defconfig
+ create mode 100644 arch/arm/mach-milbeaut/Kconfig
+ create mode 100644 arch/arm/mach-milbeaut/Makefile
+ create mode 100644 arch/arm/mach-milbeaut/platsmp.c
+ create mode 100644 drivers/clocksource/timer-milbeaut.c
 
-> It seems that the reaction in both situation always is to call
-> prb_iter_init(&iter, &printk_rb, &some_seq).
-
-prb_iter_init() is only called to reset the iterator to the oldest
-entry. That's all it is really doing. The fact that it can optionally
-return a sequence number is just a convenience side-effect implemented
-for some printk demands.
-
-> I am still a bit
-> confused what your prb_iter_init() does. Therefore I am not
-> sure what it is supposed to do.
->
-> Anyway, it seems to be typically used when you need to start
-> from tail. I would personally do something like (based on my code
-> in reply to 5th patch:
->
-> int prb_iter_seek_to_seq(struct prb_iterator *iter, u64 seq)
-> {
-> 	int ret;
->
-> 	ret = prb_iter_tail_entry(iter);
->
-> 	while (!ret && iter->entry->seq != seq)
-> 		ret = prb_iter_next_valid_entry(iter);
->
-> 	return ret;
-> }
-
-Yes. Moving the loops inside prb_iter_tail_entry() and
-prb_iter_next_valid_entry() definitely simplify the code.
-
-> When I see it, I would make the functionality more obvious
-> by renaming:
->
->     prb_iter_tail_entry() -> prb_iter_set_tail_entry()
-
-I would say: prb_iter_set_oldest_entry()
-
->> +int prb_iter_seek(struct prb_iterator *iter, u64 seq)
->> +{
->> +	u64 cur_seq;
->> +	int ret;
->> +
->> +	/* first check if the iterator is already at the wanted seq */
->> +	if (seq == 0) {
->> +		if (iter->lpos == PRB_INIT)
->> +			return 1;
->> +		else
->> +			return -EINVAL;
->> +	}
->> +	if (iter->lpos != PRB_INIT) {
->> +		if (prb_iter_data(iter, NULL, 0, &cur_seq) >= 0) {
->> +			if (cur_seq == seq)
->> +				return 1;
->> +			if (cur_seq > seq)
->> +				return -EINVAL;
->> +		}
->> +	}
->> +
->> +	/* iterate to find the wanted seq */
->> +	for (;;) {
->> +		ret = prb_iter_next(iter, NULL, 0, &cur_seq);
->> +		if (ret <= 0)
->> +			break;
->> +
->> +		if (cur_seq == seq)
->> +			break;
->> +
->> +		if (cur_seq > seq) {
->> +			ret = -EINVAL;
->> +			break;
->> +		}
->
-> This is a good example why prb_iter_data() and prb_iter_next() is
-> a weird interface. You need to read the documentation very carefully
-> to understand the difference (functionality, error codes). At least
-> for me, it is far from obvious why they are used this way and
-> if it is correct.
-
-Agreed. I prefer your suggested API. They significantly simplify the
-reader code, which as you'll see in later printk.c patches, is
-everywhere.
-
-John Ogness
+-- 
+1.9.1
