@@ -1,130 +1,140 @@
-From: Martin Kepplinger <martin.kepplinger@ginzinger.com>
-Subject: [PATCH 7/9] serial: atmel_serial: set SER_RS485_DELAY_IN_USEC accordingly
-Date: Wed, 20 Feb 2019 16:31:17 +0100
-Message-ID: <20190220153119.4423-2-martin.kepplinger@ginzinger.com>
-References: <20190220153119.4423-1-martin.kepplinger@ginzinger.com>
+From: John Ogness <john.ogness@linutronix.de>
+Subject: Re: [RFC PATCH v1 10/25] printk: redirect emit/store to new ringbuffer
+Date: Wed, 20 Feb 2019 22:25:00 +0100
+Message-ID: <8736oijgpf.fsf@linutronix.de>
+References: <20190212143003.48446-1-john.ogness@linutronix.de>
+        <20190212143003.48446-11-john.ogness@linutronix.de>
+        <20190220090112.xbnauwt2w7gwtebo@pathway.suse.cz>
 Mime-Version: 1.0
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg="sha-256"; boundary="----852A759A26D10A8F35C9C8F51E08789A"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190220153119.4423-1-martin.kepplinger@ginzinger.com>
+In-Reply-To: <20190220090112.xbnauwt2w7gwtebo@pathway.suse.cz> (Petr Mladek's
+        message of "Wed, 20 Feb 2019 10:01:12 +0100")
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, jslaby@suse.com, corbet@lwn.net, richard.genoud@gmail.com, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, ludovic.desroches@microchip.com, mcoquelin.stm32@gmail.com, alexandre.torgue@st.com, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-stm32@st-md-mailman.stormreply.com
-Cc: linux-kernel@vger.kernel.org
+To: Petr Mladek <pmladek@suse.com>
+Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-This is an S/MIME signed message
+On 2019-02-20, Petr Mladek <pmladek@suse.com> wrote:
+>> vprintk_emit and vprintk_store are the main functions that all printk
+>> variants eventually go through. Change these to store the message in
+>> the new printk ring buffer that the printk kthread is reading.
+>
+> We need to switch the two buffers in a single commit
+> without disabling important functionality.
+>
+> By other words, we need to change vprintk_emit(), vprintk_store(),
+> console_unlock(), syslog(), devkmsg(), and syslog in one patch.
 
-------852A759A26D10A8F35C9C8F51E08789A
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Agreed. But for the review process I expect it makes things much easier
+to change them one at a time. Patch-squashing is not a problem once all
+the individuals have been ack'd.
 
-Unset the SER_RS485_DELAY_IN_USEC flag during rs485 config for
-userspace to get the correct setting.
+>> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+>> index 5a5a685bb128..b6a6f1002741 100644
+>> --- a/kernel/printk/printk.c
+>> +++ b/kernel/printk/printk.c
+>> @@ -584,54 +500,36 @@ static int log_store(int facility, int level,
+>>  		     const char *text, u16 text_len)
+>
+>>  	memcpy(log_dict(msg), dict, dict_len);
+>>  	msg->dict_len = dict_len;
+>>  	msg->facility = facility;
+>>  	msg->level = level & 7;
+>>  	msg->flags = flags & 0x1f;
+>
+> The existing struct printk_log is stored into the data field
+> of struct prb_entry. It is because printk_ring_buffer is supposed
+> to be a generic ring buffer.
 
-Signed-off-by: Martin Kepplinger <martin.kepplinger@ginzinger.com>
----
- drivers/tty/serial/atmel_serial.c | 3 +++
- 1 file changed, 3 insertions(+)
+Yes.
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 05147fe24343..36ab1c131d36 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -346,6 +346,9 @@ static int atmel_config_rs485(struct uart_port *port,
- 
- 	port->rs485 = *rs485conf;
- 
-+	/* delays are in milliseconds */
-+	rs485conf->flags &= ~SER_RS485_DELAY_IN_USEC;
-+
- 	if (rs485conf->flags & SER_RS485_ENABLED) {
- 		dev_dbg(port->dev, "Setting UART to RS485\n");
- 		atmel_port->tx_done_mask = ATMEL_US_TXEMPTY;
--- 
-2.20.1
+> It makes the code more complicated. Also it needs more space for
+> the size and seq items from struct prb_entry.
+>
+> printk() is already very complicated code. We should not make
+> it unnecessarily worse.
 
+In my opinion it makes things considerably easier. My experience with
+printk-code is that it is so complicated because it is mixing
+printk-features with ring buffer handling code. By providing a strict
+API (and hiding the details) of the ring buffer, the implementation of
+the printk-features became pretty straight forward.
 
-------852A759A26D10A8F35C9C8F51E08789A
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
+Now I will admit that the ring buffer API I proposed is not easy to
+digest. Mostly because I leave a lot of work up to the readers and have
+lots of arguments. Your proposed changes of passing a struct and moving
+loops under the ring buffer API should provide some major
+simplification.
 
-MIIOHAYJKoZIhvcNAQcCoIIODTCCDgkCAQExDzANBglghkgBZQMEAgEFADALBgkq
-hkiG9w0BBwGgggshMIIF5jCCA86gAwIBAgIQapvhODv/K2ufAdXZuKdSVjANBgkq
-hkiG9w0BAQwFADCBhTELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFu
-Y2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExp
-bWl0ZWQxKzApBgNVBAMTIkNPTU9ETyBSU0EgQ2VydGlmaWNhdGlvbiBBdXRob3Jp
-dHkwHhcNMTMwMTEwMDAwMDAwWhcNMjgwMTA5MjM1OTU5WjCBlzELMAkGA1UEBhMC
-R0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9y
-ZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBS
-U0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwggEi
-MA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC+s55XrCh2dUAWxzgDmNPGGHYh
-UPMleQtMtaDRfTpYPpynMS6n9jR22YRq2tA9NEjk6vW7rN/5sYFLIP1of3l0NKZ6
-fLWfF2VgJ5cijKYy/qlAckY1wgOkUMgzKlWlVJGyK+UlNEQ1/5ErCsHq9x9aU/x1
-KwTdF/LCrT03Rl/FwFrf1XTCwa2QZYL55AqLPikFlgqOtzk06kb2qvGlnHJvijjI
-03BOrNpo+kZGpcHsgyO1/u1OZTaOo8wvEU17VVeP1cHWse9tGKTDyUGg2hJZjrqc
-k39UIm/nKbpDSZ0JsMoIw/JtOOg0JC56VzQgBo7ictReTQE5LFLG3yQK+xS1AgMB
-AAGjggE8MIIBODAfBgNVHSMEGDAWgBS7r34CPfqm8TyEjq3uOJjs2TIy1DAdBgNV
-HQ4EFgQUgq9sjPjF/pZhfOgfPStxSF7Ei8AwDgYDVR0PAQH/BAQDAgGGMBIGA1Ud
-EwEB/wQIMAYBAf8CAQAwEQYDVR0gBAowCDAGBgRVHSAAMEwGA1UdHwRFMEMwQaA/
-oD2GO2h0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0NPTU9ET1JTQUNlcnRpZmljYXRp
-b25BdXRob3JpdHkuY3JsMHEGCCsGAQUFBwEBBGUwYzA7BggrBgEFBQcwAoYvaHR0
-cDovL2NydC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQWRkVHJ1c3RDQS5jcnQwJAYI
-KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTANBgkqhkiG9w0BAQwF
-AAOCAgEAeFyygSg0TzzuX1bOn5dW7I+iaxf28/ZJCAbU2C81zd9A/tNx4+jsQgwR
-GiHjZrAYayZrrm78hOx7aEpkfNPQIHGG6Fvq3EzWf/Lvx7/hk6zSPwIal9v5IkDc
-ZoFD7f3iT7PdkHJY9B51csvU50rxpEg1OyOT8fk2zvvPBuM4qQNqbGWlnhMpIMwp
-WZT89RY0wpJO+2V6eXEGGHsROs3njeP9DqqqAJaBa4wBeKOdGCWn1/Jp2oY6dyNm
-NppI4ZNMUH4Tam85S1j6E95u4+1Nuru84OrMIzqvISE2HN/56ebTOWlcrurffade
-2022O/tUU1gb4jfWCcyvB8czm12FgX/y/lRjmDbEA08QJNB2729Y+io1IYO3ztve
-BdvUCIYZojTq/OCR6MvnzS6X72HP0PRLRTiOSEmIDsS5N5w/8IW1Hva5hEFy6fDA
-fd9yI+O+IMMAj1KcL/Zo9jzJ16HO5m60ttl1Enk8MQkz/W3JlHaeI5iKFn4UJu1/
-cP2YHXYPiWf2JyBzsLBrGk1II+3yL8aorYew6CQvdVifC3HtwlSam9V1niiCfOBe
-2C12TdKGu05LWIA3ZkFcWJGaNXOZ6Ggyh/TqvXG5v7zmEVDNXFnHn9tFpMpOUvxh
-csjycBtH0dZ0WrNw6gH+HF8TIhCnH3+zzWuDN0Rk6h9KVkfKehIwggUzMIIEG6AD
-AgECAhBNQrEzGzrZ6FVYh1EEYH4+MA0GCSqGSIb3DQEBCwUAMIGXMQswCQYDVQQG
-EwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxm
-b3JkMRowGAYDVQQKExFDT01PRE8gQ0EgTGltaXRlZDE9MDsGA1UEAxM0Q09NT0RP
-IFJTQSBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQTAe
-Fw0xODA3MTgwMDAwMDBaFw0yMTA3MTcyMzU5NTlaMDAxLjAsBgkqhkiG9w0BCQEW
-H21hcnRpbi5rZXBwbGluZ2VyQGdpbnppbmdlci5jb20wggEiMA0GCSqGSIb3DQEB
-AQUAA4IBDwAwggEKAoIBAQDsMC77L0D+2D8I8X5ubnBhADLgU+HtlwMTFt/WJIhc
-kgbvnawYXWrCIpk8F6BJ0R/iFCykPdG7741EmlcHRKOJfhVxjXhwnoGFqnYmurCt
-fvZLR3+mT3FWnVv2RAdrXscXH3BpijqqWabdtTbiTvmcl86Zc6mNlVhYZSbDul/E
-voIGZotGcGIWrgZxN+8MQJQHKb0KHyWlPVPkrjvEfOJHKKLFsBNSnNMR95Ijg3Sp
-h8/8RG490/zRHflGzUlxDSlLyY9YJGzSdDzcFKoYcc4oaaUY5N3uhRna43TLUIQh
-6ybt3DKVz1Pw/ikwYJrOsulJrVr3D8KVHdGxq7HYl7jnAgMBAAGjggHfMIIB2zAf
-BgNVHSMEGDAWgBSCr2yM+MX+lmF86B89K3FIXsSLwDAdBgNVHQ4EFgQU/GtSUbHg
-14sPDlmo27eQYwtjaS0wDgYDVR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYD
-VR0lBBYwFAYIKwYBBQUHAwQGCCsGAQUFBwMCMEYGA1UdIAQ/MD0wOwYMKwYBBAGy
-MQECAQMFMCswKQYIKwYBBQUHAgEWHWh0dHBzOi8vc2VjdXJlLmNvbW9kby5uZXQv
-Q1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0NP
-TU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcmww
-gYsGCCsGAQUFBwEBBH8wfTBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5jb21vZG9j
-YS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
-bENBLmNydDAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuY29tb2RvY2EuY29tMCoG
-A1UdEQQjMCGBH21hcnRpbi5rZXBwbGluZ2VyQGdpbnppbmdlci5jb20wDQYJKoZI
-hvcNAQELBQADggEBAGEuG01K1tt5i3gUdQkYem/KpbJUYBZd43QwmoTa0TGXUiYq
-b+g/TeGG9QQ1yq+73xOr8fu6oT2608C7EiJc6JmjTs485/OZmTqgYkrLfs71F1kB
-3Z59WPf5aoR/pnn5vdfkkoO29V1cKPJR4z+iOG2hOlcK/dXrX8i6mnL5DGIe8l5n
-udUPvIbUhbMavrDd6kwhs0oCjylwdKGlFkCpKMn3HPflfDeHuV9Z8Nrpeq/7+Pm0
-I/fLPkaYlULASJoJCucMYcedY9rmuro9JhV+NuVXaqLIrQPc1vyKFeRuLHh84M6c
-1h1DArdGTykXZUwjXnnHtuOtzjIAzkx2Ns43vEsxggK/MIICuwIBATCBrDCBlzEL
-MAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UE
-BxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMT
-NENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
-aWwgQ0ECEE1CsTMbOtnoVViHUQRgfj4wDQYJYIZIAWUDBAIBBQCggeQwGAYJKoZI
-hvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTkwMjIwMTUzMTM3
-WjAvBgkqhkiG9w0BCQQxIgQgafwTjV6qN7n2CtHfhs0ArLx6WSNjn7Gz/u4VgaP6
-35cweQYJKoZIhvcNAQkPMWwwajALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
-CWCGSAFlAwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcN
-AwICAUAwBwYFKw4DAgcwDQYIKoZIhvcNAwICASgwDQYJKoZIhvcNAQEBBQAEggEA
-nV0oEReFQJfjM4n8hHT7zhxaozK7mmiq59MENzgXJ+05hwfm7eN4d2p8BP2am8gR
-fwutlf6qvnoNSqOpRdgzUy8xK/DQyZOmHq6UWPhYAlnPxS8Bm9K+Be2kc3l1KeqG
-xHgTI7qzHH7TKIEwioFuSIIyFrKCtR98gdJGayuBQqeErjy7hbFGDVtv8qwTqBrz
-KLomkWWAwK/AIzJEakcJ1OaaSbErxg792OYJmrGITgGkhmurnmmj1yNLheccNbaC
-L74xhU0VRj/v3c5AI85NOyFpGlnL/53XV+pOjQ6PWqYGULrAc4qac8OWX0lBWIAj
-RuzkhMr22ydYS4bJBqstpA==
+> Please, are there any candidates or plans to reuse the new ring
+> buffer implementation?
 
-------852A759A26D10A8F35C9C8F51E08789A--
+As you pointed out below, this patch already uses the ring buffer
+implementation for a totally different purpose: NMI safe dynamic memory
+allocation.
+
+> For example, would it be usable for ftrace? Steven?
+>
+> If not, I would prefer to make it printk-specific
+> and hopefully simplify the code a bit.
+>
+>
+>> -	if (ts_nsec > 0)
+>> -		msg->ts_nsec = ts_nsec;
+>> -	else
+>> -		msg->ts_nsec = local_clock();
+>> -	memset(log_dict(msg) + dict_len, 0, pad_len);
+>> +	msg->ts_nsec = ts_nsec;
+>>  	msg->len = size;
+>>  
+>>  	/* insert message */
+>> -	log_next_idx += msg->len;
+>> -	log_next_seq++;
+>> +	prb_commit(&h);
+>>  
+>>  	return msg->text_len;
+>>  }
+>
+> [...]
+>
+>>  int vprintk_store(int facility, int level,
+>>  		  const char *dict, size_t dictlen,
+>>  		  const char *fmt, va_list args)
+>>  {
+>> -	static char textbuf[LOG_LINE_MAX];
+>> -	char *text = textbuf;
+>> -	size_t text_len;
+>> +	return vprintk_emit(facility, level, dict, dictlen, fmt, args);
+>> +}
+>> +
+>> +/* ring buffer used as memory allocator for temporary sprint buffers */
+>> +DECLARE_STATIC_PRINTKRB(sprint_rb,
+>> +			ilog2(PRINTK_RECORD_MAX + sizeof(struct prb_entry) +
+>> +			      sizeof(long)) + 2, &printk_cpulock);
+>> +
+>> +asmlinkage int vprintk_emit(int facility, int level,
+>> +			    const char *dict, size_t dictlen,
+>> +			    const char *fmt, va_list args)
+>
+> [...]
+>
+>> +	rbuf = prb_reserve(&h, &sprint_rb, PRINTK_SPRINT_MAX);
+>
+> The second ring buffer for temporary buffers is really interesting
+> idea.
+>
+> Well, it brings some questions. For example, how many users might
+> need a reservation in parallel. Or if the nested use might cause
+> some problems when we decide to use printk-specific ring buffer
+> implementation. I still have to think about it.
+
+Keep in mind that it is only used by the writers, which have the
+prb_cpulock. Typically there would only be 2 max users: a non-NMI writer
+that was interrupted during the reserve/commit window and the
+interrupting NMI that does printk. The only exception would be if the
+printk-code code itself triggers a BUG_ON or WARN_ON within the
+reserve/commit window. Then you will have an additional user per
+recursion level.
+
+John Ogness
