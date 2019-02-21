@@ -1,10 +1,10 @@
 From: Martin Kepplinger <martin.kepplinger@ginzinger.com>
-Subject: [PATCH v2 7/9] serial: atmel_serial: set SER_RS485_DELAY_IN_USEC accordingly
-Date: Thu, 21 Feb 2019 18:17:56 +0100
-Message-ID: <20190221171758.10322-7-martin.kepplinger@ginzinger.com>
+Subject: [PATCH v2 9/9] serial: st32-usart: set SER_RS485_DELAY_IN_USEC accordingly
+Date: Thu, 21 Feb 2019 18:17:58 +0100
+Message-ID: <20190221171758.10322-9-martin.kepplinger@ginzinger.com>
 References: <20190221171758.10322-1-martin.kepplinger@ginzinger.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg="sha-256"; boundary="----B18B02D35BCB84620873F37EA9EE2367"
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg="sha-256"; boundary="----F7AE14D43A445C3EC7AE780450C1E7D2"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190221171758.10322-1-martin.kepplinger@ginzinger.com>
 Sender: linux-kernel-owner@vger.kernel.org
@@ -14,38 +14,35 @@ List-Id: linux-serial@vger.kernel.org
 
 This is an S/MIME signed message
 
-------B18B02D35BCB84620873F37EA9EE2367
+------F7AE14D43A445C3EC7AE780450C1E7D2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 
-Unset the SER_RS485_DELAY_IN_USEC flag during rs485 config for
-userspace to get the correct setting.
+Unset SER_RS485_DELAY_IN_USEC for userspace to get correct settings.
 
 Signed-off-by: Martin Kepplinger <martin.kepplinger@ginzinger.com>
 ---
- drivers/tty/serial/atmel_serial.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/serial/stm32-usart.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 05147fe24343..36ab1c131d36 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -346,6 +346,9 @@ static int atmel_config_rs485(struct uart_port *port,
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index e8d7a7bb4339..4daf5fc71644 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -112,6 +112,7 @@ static int stm32_config_rs485(struct uart_port *port,
  
  	port->rs485 = *rs485conf;
  
-+	/* delays are in milliseconds */
 +	rs485conf->flags &= ~SER_RS485_DELAY_IN_USEC;
-+
+ 	rs485conf->flags |= SER_RS485_RX_DURING_TX;
+ 
  	if (rs485conf->flags & SER_RS485_ENABLED) {
- 		dev_dbg(port->dev, "Setting UART to RS485\n");
- 		atmel_port->tx_done_mask = ATMEL_US_TXEMPTY;
 -- 
 2.20.1
 
 
-------B18B02D35BCB84620873F37EA9EE2367
+------F7AE14D43A445C3EC7AE780450C1E7D2
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -115,16 +112,16 @@ MAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UE
 BxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMT
 NENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
 aWwgQ0ECEE1CsTMbOtnoVViHUQRgfj4wDQYJYIZIAWUDBAIBBQCggeQwGAYJKoZI
-hvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTkwMjIxMTcxODQ0
-WjAvBgkqhkiG9w0BCQQxIgQgafwTjV6qN7n2CtHfhs0ArLx6WSNjn7Gz/u4VgaP6
-35cweQYJKoZIhvcNAQkPMWwwajALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
+hvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTkwMjIxMTcxODQ4
+WjAvBgkqhkiG9w0BCQQxIgQgggA5I3grN5NFmfc0thFV1EijyCH+lRivMIuzsEI0
+s6wweQYJKoZIhvcNAQkPMWwwajALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
 CWCGSAFlAwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcN
 AwICAUAwBwYFKw4DAgcwDQYIKoZIhvcNAwICASgwDQYJKoZIhvcNAQEBBQAEggEA
-mn6RO3LNKdbiaum9ln0SR/dViWfCFOAmRXCq7ibGYLn/aDAoJQQoQyqVn8nG3TR5
-AhLwPBlZNuwH7zpocmgLBS218bB6RNBrMQ3B4+FrjSptg4AU88cL27F8QdMvt4St
-q1O/a46pS9QjU12VkVyS7MkMS3VZRcRucVxasN5N/3I3x3MUiOmY0Xt3yTksVcAs
-fVIgwXOxBwKGt81MnpQGyk5WdefDcQFN/+KWNJw0RrpPklE+YwyAsAhXcK18Zr4v
-hkNW96b5n+egzVk2ckm3WeEnEAkRO2byYBFNuAF050ovralYvV0dOalDMdCmoqn5
-skyxffdvj9j79I/SD4jVfw==
+OJWi5OCTHmWdVgBB4QDN628up/noAaGdBnkaXdT7ZCAPh0qxKhQFwO1NT7vYcoxY
+SoQ8LUVh630mxPeKXebm7dr+3XBs1S1yMPWJiSLhhT1dW7I1bKAIAyQNe2HJwdOV
+o/9nFbs0KctjTsdIPteFwxT16FTDrKy3y3Aae8/bwuilwMKgxC2Mc4RfObgkb7CE
+0IUWoguwA4ahkNJUmyHA5z3GTLnJPlS+4904w3QFdqKVGhM964TKgjXgLtYZiASc
+MnivSS/G63HiTVQecsVaviv9qzUopEJCNgd8VIM2/dr7IXQECGYLd2WFiWGGv8m4
+K2Uq/kQIT2tEr36HveaeOw==
 
-------B18B02D35BCB84620873F37EA9EE2367--
+------F7AE14D43A445C3EC7AE780450C1E7D2--
