@@ -1,324 +1,176 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [RFC PATCH v1 05/25] printk-rb: add basic non-blocking reading
- interface
-Date: Thu, 21 Feb 2019 17:22:48 +0100
-Message-ID: <20190221162248.6zgrbjdh67srnlhd@pathway.suse.cz>
-References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190212143003.48446-6-john.ogness@linutronix.de>
- <20190218125407.ljvkuplvaa3zyj6n@pathway.suse.cz>
- <87o977v4go.fsf@linutronix.de>
+From: Martin Kepplinger <martin.kepplinger@ginzinger.com>
+Subject: [PATCH v2 1/9] serial: uapi: add SER_RS485_DELAY_IN_USEC flag to struct serial_rs485
+Date: Thu, 21 Feb 2019 18:17:50 +0100
+Message-ID: <20190221171758.10322-1-martin.kepplinger@ginzinger.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg="sha-256"; boundary="----9F773A4BFF92DF307DDF747586A784E5"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <87o977v4go.fsf@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: John Ogness <john.ogness@linutronix.de>
-Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, jslaby@suse.com, corbet@lwn.net, richard.genoud@gmail.com, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, ludovic.desroches@microchip.com, mcoquelin.stm32@gmail.com, alexandre.torgue@st.com, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-kernel@vger.kernel.org, Martin Kepplinger <martin.kepplinger@ginzinger.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue 2019-02-19 22:44:07, John Ogness wrote:
-> Hi Petr,
-> 
-> Below I make several comments, responding to your questions. But I like
-> the new API I believe you are trying to propose. So really only my final
-> comments are of particular importance. There I show you what I think
-> reader code would look like using your proposed API.
-> 
-> On 2019-02-18, Petr Mladek <pmladek@suse.com> wrote:
-> >> + * prb_iter_init: Initialize an iterator for a ring buffer.
-> >> + * @iter: The iterator to initialize.
-> >> + * @rb: A ring buffer to that @iter should iterate.
-> >> + * @seq: The sequence number of the position preceding the first record.
-> >> + *       May be NULL.
-> >> + *
-> >> + * Initialize an iterator to be used with a specified ring buffer. If @seq
-> >> + * is non-NULL, it will be set such that prb_iter_next() will provide a
-> >> + * sequence value of "@seq + 1" if no records were missed.
-> >> + *
-> >> + * It is safe to call this function from any context and state.
-> >> + */
-> >> +void prb_iter_init(struct prb_iterator *iter, struct printk_ringbuffer *rb,
-> >> +		   u64 *seq)
-> >> +{
-> >> +	memset(iter, 0, sizeof(*iter));
-> >> +	iter->rb = rb;
-> >> +	iter->lpos = PRB_INIT;
-> >> +
-> >> +	if (!seq)
-> >> +		return;
-> >> +
-> >> +	for (;;) {
-> >> +		struct prb_iterator tmp_iter;
-> >> +		int ret;
-> >> +
-> >> +		prb_iter_copy(&tmp_iter, iter);
-> >
-> > It looks strange to copy something that has been hardly initialized.
-> > I hope that we could do this without a copy, see below.
-> >
-> >> +
-> >> +		ret = prb_iter_next(&tmp_iter, NULL, 0, seq);
-> >
-> > prb_iter_next() and prb_iter_data() are too complex spaghetti
-> > code. They do basically the same but they do not share
-> > any helper function. The error handling is different
-> > which is really confusing. See below.
-> 
-> I don't follow why you think they do basically the same
-> thing. prb_iter_next() moves forward to the next entry, then calls
-> prb_iter_data() to retrieve the data. prb_iter_data() _is_ the helper
-> function.
+This is an S/MIME signed message
 
-Ah, I missed the prb_iter_data() call in prb_iter_next(). I have to
-admit that I did not have a courage to check them carefully. Both
-functions looked like a compact maze of to_entry(), is_valid,
-smp_rmb() calls ;-)
+------9F773A4BFF92DF307DDF747586A784E5
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-I got only the basic idea and started thinking about how
-to achieve the same an easier to understand way.
+This extends the user interface for rs485 communication:
 
-> > Well, I think that we need to start with a more low-level functions.
-> > IMHO. we need something to read one entry a safe way. Then it will
-> > be much easier to live with races in the rest of the code:
-> >
-> > /*
-> >  * Return valid entry on the given lpos. Data are read
-> >  * only when the buffer is is not zero.
-> >  */
-> > int prb_get_entry(struct struct printk_ringbuffer *rb,
-> > 		    unsigned long lpos,
-> > 		    struct prb_entry *entry,
-> > 		    unsigned int data_buf_size)
-> > {
-> > 	/*
-> > 	 * Pointer to the ring buffer. The data might get lost
-> > 	 * at any time.
-> > 	 */
-> > 	struct prb_entry *weak_entry;
-> >
-> > 	if (!is_valid(lpos))
-> > 		return -EINVAL;
-> >
-> > 	/* Make sure that data are valid for the given valid lpos. */
-> > 	smp_rmb();
-> >
-> > 	weak_entry = to_entry(lpos);
-> > 	entry->seq = weak_entry->seq;
-> >
-> > 	if (data_buf_size) {
-> > 		unsigned int size;
-> >
-> > 		size = min(data_buf_size, weak_entry->size);
-> 
-> weak_entry->size is untrusted data here. The following memcpy could grab
-> data beyond the data array. (But we can ignore these details for now. I
-> realize you are trying to refactor, not focus on these details.)
+We add a new flag, SER_RS485_DELAY_IN_USEC, to struct serial_rs485 that
+indicates that delay_rts_before_send and delay_rts_after_send values are
+interpreted in microsecond units.
 
-Great catch! Yes, we would need to check the overflow here.
+Up until now, the code comment defined these values to hold the delays in
+millisecond units. Especially with fast data rates (1Mbaut or more) that
+are not too uncommon for RS485, 1ms become quite long. Users need to be
+able to set shorter delays than 1 ms in order not to slow down the channel
+unnecessarily.
 
-> > 		memcpy(entry->data, weak_entry->data, size);
-> > 		entry->size = size;
-> > 	} else {
-> > 		entry->size = weak_data->size;
-> > 	}
-> >
-> > 	/* Make sure that the copy is done before we check validity. */
-> > 	smp_mb();
-> >
-> > 	return is_valid(lpos);
-> > }
-> >
-> > Then I would do the support for iterating the following way.
-> > First, I would extend the structure:
-> >
-> > struct prb_iterator {
-> > 	struct printk_ringbuffer *rb;
-> > 	struct prb_entry *entry;
-> > 	unsigned int data_buffer_size;
-> > 	unsigned long lpos;
-> > };
-> >
-> > And do something like:
-> >
-> > void prg_iter_init(struct struct printk_ringbuffer *rb,
-> > 		       struct prb_entry *entry,
-> > 		       unsigned int data_buffer_size,
-> > 		       struct prb_iterator *iter)
-> > {
-> > 	iter->rb = rb;
-> > 	iter->entry = entry;
-> > 	iter->data_buffer_size = data_buffer_size;
-> > 	lpos = 0UL;
-> > }
-> >
-> > Then we could do iterator support the following way:
-> >
-> > /* Start iteration with reading the tail entry. */
-> > int prb_iter_tail_entry(struct prb_iterator *iter);
-> 
-> A name like prb_iter_oldest_entry() might simplify things. I really
-> don't want the caller to be concerned with heads and tails and which is
-> which. That's an implementation detail of the ringbuffer.
+So when delays are needed, but not as long as 1ms, this enables faster
+communication channels without changing the baudrate.
 
-Makes sense.
+Signed-off-by: Martin Kepplinger <martin.kepplinger@ginzinger.com>
+---
 
-> > {
-> > 	unsigned long tail;
-> > 	int ret;
-> >
-> > 	for (;;) {
-> > 		tail = atomic_long_read(&rb->tail);
-> >
-> > 		/* Ring buffer is empty? */
-> 
-> The ring buffer is only empty at the beginning (when tail == head). Readers
-> are non-consuming, so it is never empty again once an entry is committed.
-
->  		if (unlikely(atomic_long_read(head) == atomic_long_read(tail)))
->  			return -EINVAL;
-
-Yes, this is a check for empty buffer. And yes, it can be done
-outside the cycle.
-
-> The check for valid is to make sure the tail we just read hasn't already
-> been overtaken by writers. I suppose this could be put into a nested
-> loop so that we continue trying again until we get a valid tail.
->
-> > 		if (unlikely(!is_valid(tail)))
-> > 			return -EINVAL;
-
-Heh, I wanted to add check for the empty buffer (the comment was correct).
-But I added is_valid() check instead.
-
-We could remove it. It is hidden in prb_get_entry(). The for-cycle
-will get repeated when it fails.
-
-> >
-> > 		ret = prb_get_entry(iter->rb, tail,
-> > 				    iter->entry, iter->data_buf_size);
-> > 		if (!ret) {
-> > 			iter->lpos = tail;
-> > 			break;
-> > 		}
-> > 	}
-> >
-> > 	return 0;
-> > }
-> >
-> > unsigned long next_lpos(unsineg long lpos, struct prb_entry *entry)
-> > {
-> > 	return lpos + sizeof(struct entry) + entry->size;
-> 
-> entry->size already includes sizeof(struct prb_entry) plus alignment
-> padding. (Again, not important right now.)
-
-I see. I have missed it.
-
-> > }
-> >
-> > /* Try to get next entry using a valid iterator */
-> > int prb_iter_next_entry(struct prb_iterator *iter)
-> > {
-> > 	iter->lpos = next_lpos(iter->lpos, iter->etnry);
-> >
-> > 	return prb_get_entry(rb, lpos, entry, data_buf_size;
-> > }
-> >
-> > /* Try to get the next entry. Allow to skip lost messages. */
-> > int prb_iter_next_valid_entry(struct prb_iterator *iter)
-> > {
-> > 	int ret;
-> >
-> > 	ret = prb_iter_next_entry(iter);
-> > 	if (!ret)
-> > 		return 0;
-> >
-> > 	/* Next entry has been lost. Skip to the current tail. */
-> > 	return prb_iter_tail_entry(rb, *lpos, entry, data_buf_size);
-> 
-> You return values are geting mixed up here and you are not
-> distinguishing between overtaken by writers and hit the end of the
-> ringbuffer, but I think what you are trying to write is that
-> prb_iter_next_valid_entry() should either return 0 for success or !0 if
-> the end of the ringbuffer was hit.
-
-The -1,0,1 return values were hard to follow. It might get improved
-by using -EINVAL,0,-EAGAIN or so. But I hope that the two return
-values are even better and will be enough.
-
-First, I proposed two functions to distinguish the two situations:
-
-	prb_iter_next_entry() - fails when the next entry gets
-				overtaken or at the end of the buffer
-	prb_iter_next_valid_entry() - fails only at the end of the buffer
-
-Second, the lost messages might get counted by comparing seq numbers.
-You actually used this in the sample code below.
+revision history
+----------------
+v2: re-send as a proper series after fixing my mailserver
+v1: initial implementation idea
 
 
-> > }
-> >
-> >> +static bool is_valid(struct printk_ringbuffer *rb, unsigned long lpos)
-> >> +{
-> >> +	unsigned long head, tail;
-> >> +
-> >> +	tail = atomic_long_read(&rb->tail);
-> >> +	head = atomic_long_read(&rb->head);
-> >> +	head -= tail;
-> >> +	lpos -= tail;
-> >> +
-> >> +	if (lpos >= head)
-> >> +		return false;
-> >> +	return true;
-> >> +}
-> 
-> I am trying to understand what you want the reader code should look
-> like. Keep in mind that readers can be overtaken at any moment. They
-> also need to track entries they have missed. If I understand your idea,
-> it is something like this (trying to keep it as simple as possible):
-> 
-> void print_all_entries(...)
-> {
->     char buf[sizeof(struct prb_entry) + DATASIZE + sizeof(long)];
->     struct prb_entry *entry = (struct prb_entry *)&buf[0];
->     struct prb_iterator iter;
->     u64 last_seq;
-> 
->     prb_iter_init(rb, entry, DATASIZE, &iter);
->     if (prb_iter_oldest_entry(&iter) != 0)
->         return; /* ringbuffer empty */
-> 
->     for (;;) {
->         do_print_entry(entry);
->         last_seq = entry->seq;
->         if (prb_iter_next_valid_entry(&iter) != 0)
->             break; /* ringbuffer empty */
->         if (entry->seq - last_seq != 1)
->             print("lost %d\n", ((entry->seq - last_seq) + 1));
->     }
-> }
+So have this totally quirky patch that uses udelay() in our tree
+for a looong time now because of the above reasons - and because we are lazy.
+This is an attempt to get rid of said patch on our side and fix this properly.
 
-Yes, this was my idea.
+What do you thing about adding a flag in general?
 
-I wonder if we might allow to omit prb_iter_oldest_entry() call.
-In fact, prb_iter_next_valid_entry() restarts from the oldest
-entry when the expected one gets lost. But it might cause more
-harm than good. I need to see it in the various existing use cases.
+The following patches should integrate this idea in devicetree and drivers.
+These changes are NOT tested on hardware but should behave predictably
+enough. I use the delays in a driver that doesn't implement them yet at
+all. I'll do that after this (or something similar) is merged - it's a 2-liner
+then.
 
-Anyway, the data_buf_size parameter is supposed to allow reading only
-the metadata. This is useful in situations where you just need
-to find which entries would fit into the given buffer. For example,
-the first loop in syslog_print_all().
+Also, a patch to the rs485conf tool, that is sometimes used instead of
+ioctl() directly, will be prepared as well.
 
-> I like the idea of the caller passing in a prb_entry struct. That really
-> helps to reduce the parameters. And having the functions
-> prb_iter_oldest_entry() and prb_iter_next_valid_entry() internally loop
-> until they get a valid result also helps so that the reader doesn't have
-> to do that. And if the reader doesn't have to track lost entries (for
-> example, /dev/kmsg), then it becomes even less code.
+thanks
 
-I am glad to read this.
+                                 martin
 
-Best Regards,
-Petr
+
+
+ include/uapi/linux/serial.h | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
+index 93eb3c496ff1..c16c950ebca2 100644
+--- a/include/uapi/linux/serial.h
++++ b/include/uapi/linux/serial.h
+@@ -126,8 +126,15 @@ struct serial_rs485 {
+ #define SER_RS485_TERMINATE_BUS		(1 << 5)	/* Enable bus
+ 							   termination
+ 							   (if supported) */
+-	__u32	delay_rts_before_send;	/* Delay before send (milliseconds) */
+-	__u32	delay_rts_after_send;	/* Delay after send (milliseconds) */
++#define SER_RS485_DELAY_IN_USEC		(1 << 6)	/* delay_rts_*_send
++							   values are given in
++							   microseconds */
++	__u32	delay_rts_before_send;	/* Delay before send (milliseconds
++					   by default. microseconds if flag
++					   is set) */
++	__u32	delay_rts_after_send;	/* Delay after send (milliseconds
++					   by default. microseconds if flag
++					   is set) */
+ 	__u32	padding[5];		/* Memory is cheap, new structs
+ 					   are a royal PITA .. */
+ };
+-- 
+2.20.1
+
+
+------9F773A4BFF92DF307DDF747586A784E5
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+
+MIIOHAYJKoZIhvcNAQcCoIIODTCCDgkCAQExDzANBglghkgBZQMEAgEFADALBgkq
+hkiG9w0BBwGgggshMIIF5jCCA86gAwIBAgIQapvhODv/K2ufAdXZuKdSVjANBgkq
+hkiG9w0BAQwFADCBhTELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFu
+Y2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExp
+bWl0ZWQxKzApBgNVBAMTIkNPTU9ETyBSU0EgQ2VydGlmaWNhdGlvbiBBdXRob3Jp
+dHkwHhcNMTMwMTEwMDAwMDAwWhcNMjgwMTA5MjM1OTU5WjCBlzELMAkGA1UEBhMC
+R0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9y
+ZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBS
+U0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwggEi
+MA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC+s55XrCh2dUAWxzgDmNPGGHYh
+UPMleQtMtaDRfTpYPpynMS6n9jR22YRq2tA9NEjk6vW7rN/5sYFLIP1of3l0NKZ6
+fLWfF2VgJ5cijKYy/qlAckY1wgOkUMgzKlWlVJGyK+UlNEQ1/5ErCsHq9x9aU/x1
+KwTdF/LCrT03Rl/FwFrf1XTCwa2QZYL55AqLPikFlgqOtzk06kb2qvGlnHJvijjI
+03BOrNpo+kZGpcHsgyO1/u1OZTaOo8wvEU17VVeP1cHWse9tGKTDyUGg2hJZjrqc
+k39UIm/nKbpDSZ0JsMoIw/JtOOg0JC56VzQgBo7ictReTQE5LFLG3yQK+xS1AgMB
+AAGjggE8MIIBODAfBgNVHSMEGDAWgBS7r34CPfqm8TyEjq3uOJjs2TIy1DAdBgNV
+HQ4EFgQUgq9sjPjF/pZhfOgfPStxSF7Ei8AwDgYDVR0PAQH/BAQDAgGGMBIGA1Ud
+EwEB/wQIMAYBAf8CAQAwEQYDVR0gBAowCDAGBgRVHSAAMEwGA1UdHwRFMEMwQaA/
+oD2GO2h0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0NPTU9ET1JTQUNlcnRpZmljYXRp
+b25BdXRob3JpdHkuY3JsMHEGCCsGAQUFBwEBBGUwYzA7BggrBgEFBQcwAoYvaHR0
+cDovL2NydC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQWRkVHJ1c3RDQS5jcnQwJAYI
+KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTANBgkqhkiG9w0BAQwF
+AAOCAgEAeFyygSg0TzzuX1bOn5dW7I+iaxf28/ZJCAbU2C81zd9A/tNx4+jsQgwR
+GiHjZrAYayZrrm78hOx7aEpkfNPQIHGG6Fvq3EzWf/Lvx7/hk6zSPwIal9v5IkDc
+ZoFD7f3iT7PdkHJY9B51csvU50rxpEg1OyOT8fk2zvvPBuM4qQNqbGWlnhMpIMwp
+WZT89RY0wpJO+2V6eXEGGHsROs3njeP9DqqqAJaBa4wBeKOdGCWn1/Jp2oY6dyNm
+NppI4ZNMUH4Tam85S1j6E95u4+1Nuru84OrMIzqvISE2HN/56ebTOWlcrurffade
+2022O/tUU1gb4jfWCcyvB8czm12FgX/y/lRjmDbEA08QJNB2729Y+io1IYO3ztve
+BdvUCIYZojTq/OCR6MvnzS6X72HP0PRLRTiOSEmIDsS5N5w/8IW1Hva5hEFy6fDA
+fd9yI+O+IMMAj1KcL/Zo9jzJ16HO5m60ttl1Enk8MQkz/W3JlHaeI5iKFn4UJu1/
+cP2YHXYPiWf2JyBzsLBrGk1II+3yL8aorYew6CQvdVifC3HtwlSam9V1niiCfOBe
+2C12TdKGu05LWIA3ZkFcWJGaNXOZ6Ggyh/TqvXG5v7zmEVDNXFnHn9tFpMpOUvxh
+csjycBtH0dZ0WrNw6gH+HF8TIhCnH3+zzWuDN0Rk6h9KVkfKehIwggUzMIIEG6AD
+AgECAhBNQrEzGzrZ6FVYh1EEYH4+MA0GCSqGSIb3DQEBCwUAMIGXMQswCQYDVQQG
+EwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxm
+b3JkMRowGAYDVQQKExFDT01PRE8gQ0EgTGltaXRlZDE9MDsGA1UEAxM0Q09NT0RP
+IFJTQSBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQTAe
+Fw0xODA3MTgwMDAwMDBaFw0yMTA3MTcyMzU5NTlaMDAxLjAsBgkqhkiG9w0BCQEW
+H21hcnRpbi5rZXBwbGluZ2VyQGdpbnppbmdlci5jb20wggEiMA0GCSqGSIb3DQEB
+AQUAA4IBDwAwggEKAoIBAQDsMC77L0D+2D8I8X5ubnBhADLgU+HtlwMTFt/WJIhc
+kgbvnawYXWrCIpk8F6BJ0R/iFCykPdG7741EmlcHRKOJfhVxjXhwnoGFqnYmurCt
+fvZLR3+mT3FWnVv2RAdrXscXH3BpijqqWabdtTbiTvmcl86Zc6mNlVhYZSbDul/E
+voIGZotGcGIWrgZxN+8MQJQHKb0KHyWlPVPkrjvEfOJHKKLFsBNSnNMR95Ijg3Sp
+h8/8RG490/zRHflGzUlxDSlLyY9YJGzSdDzcFKoYcc4oaaUY5N3uhRna43TLUIQh
+6ybt3DKVz1Pw/ikwYJrOsulJrVr3D8KVHdGxq7HYl7jnAgMBAAGjggHfMIIB2zAf
+BgNVHSMEGDAWgBSCr2yM+MX+lmF86B89K3FIXsSLwDAdBgNVHQ4EFgQU/GtSUbHg
+14sPDlmo27eQYwtjaS0wDgYDVR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYD
+VR0lBBYwFAYIKwYBBQUHAwQGCCsGAQUFBwMCMEYGA1UdIAQ/MD0wOwYMKwYBBAGy
+MQECAQMFMCswKQYIKwYBBQUHAgEWHWh0dHBzOi8vc2VjdXJlLmNvbW9kby5uZXQv
+Q1BTMFoGA1UdHwRTMFEwT6BNoEuGSWh0dHA6Ly9jcmwuY29tb2RvY2EuY29tL0NP
+TU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcmww
+gYsGCCsGAQUFBwEBBH8wfTBVBggrBgEFBQcwAoZJaHR0cDovL2NydC5jb21vZG9j
+YS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
+bENBLmNydDAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuY29tb2RvY2EuY29tMCoG
+A1UdEQQjMCGBH21hcnRpbi5rZXBwbGluZ2VyQGdpbnppbmdlci5jb20wDQYJKoZI
+hvcNAQELBQADggEBAGEuG01K1tt5i3gUdQkYem/KpbJUYBZd43QwmoTa0TGXUiYq
+b+g/TeGG9QQ1yq+73xOr8fu6oT2608C7EiJc6JmjTs485/OZmTqgYkrLfs71F1kB
+3Z59WPf5aoR/pnn5vdfkkoO29V1cKPJR4z+iOG2hOlcK/dXrX8i6mnL5DGIe8l5n
+udUPvIbUhbMavrDd6kwhs0oCjylwdKGlFkCpKMn3HPflfDeHuV9Z8Nrpeq/7+Pm0
+I/fLPkaYlULASJoJCucMYcedY9rmuro9JhV+NuVXaqLIrQPc1vyKFeRuLHh84M6c
+1h1DArdGTykXZUwjXnnHtuOtzjIAzkx2Ns43vEsxggK/MIICuwIBATCBrDCBlzEL
+MAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UE
+BxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMT
+NENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
+aWwgQ0ECEE1CsTMbOtnoVViHUQRgfj4wDQYJYIZIAWUDBAIBBQCggeQwGAYJKoZI
+hvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTkwMjIxMTcxODIz
+WjAvBgkqhkiG9w0BCQQxIgQgkvqZH2++nABX0zwIMEmp0I1IF5ZP0+ypYBbj0RIH
+W/cweQYJKoZIhvcNAQkPMWwwajALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
+CWCGSAFlAwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcN
+AwICAUAwBwYFKw4DAgcwDQYIKoZIhvcNAwICASgwDQYJKoZIhvcNAQEBBQAEggEA
+vrNXp7GiVyUd1mKwKaRy6Aq0wgD6NRk1SARl4GpjBFhaxDZ0gl6Ggo1UwUB/L/oH
+UMw1JuwWyE63hY/JIHPLwyjfNbKuhp1i6clbK4/4hkNNSsMLC+XXn59Bq/LFgf0P
+GIR1lMTy/GKoh0r1zUJXROszXfWCveHoI5f1yjp2ka1EGPsZBZozuUVs3bYIZW5p
+LWPncdTLjTGl/sxm5JrGQ2ZEZNtIs3oyyOkXGaNmyjDjiR4OGnOPTlgsyfV8uUM+
+9kILWOwR0C9wH6WvJi2Mo/ecdDZjmyqcGo0gKG2xzcL1mbsUYwPRK9xiOtoYqRfS
+FRLL5s6gE+iN3g5+akGO1w==
+
+------9F773A4BFF92DF307DDF747586A784E5--
