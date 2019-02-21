@@ -1,10 +1,10 @@
 From: Martin Kepplinger <martin.kepplinger@ginzinger.com>
-Subject: [PATCH v2 5/9] serial: omap-serial: add support for rs485 RTS delays in microseconds
-Date: Thu, 21 Feb 2019 18:17:54 +0100
-Message-ID: <20190221171758.10322-5-martin.kepplinger@ginzinger.com>
+Subject: [PATCH v2 8/9] serial: fsl_lpuart: set SER_RS485_DELAY_IN_USEC accordingly
+Date: Thu, 21 Feb 2019 18:17:57 +0100
+Message-ID: <20190221171758.10322-8-martin.kepplinger@ginzinger.com>
 References: <20190221171758.10322-1-martin.kepplinger@ginzinger.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg="sha-256"; boundary="----A567E7A967520A5D3EC5E6FD4D98F407"
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg="sha-256"; boundary="----94DBE8ED3B0B2EE76D41F8025E0C1BE7"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190221171758.10322-1-martin.kepplinger@ginzinger.com>
 Sender: linux-kernel-owner@vger.kernel.org
@@ -14,74 +14,35 @@ List-Id: linux-serial@vger.kernel.org
 
 This is an S/MIME signed message
 
-------A567E7A967520A5D3EC5E6FD4D98F407
+------94DBE8ED3B0B2EE76D41F8025E0C1BE7
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 
-Read struct serial_rs485's flag SER_RS485_DELAY_IN_USEC and apply the delay
-accordingly.
+Clear SER_RS485_DELAY_IN_USEC for userspace to get correct settings.
 
 Signed-off-by: Martin Kepplinger <martin.kepplinger@ginzinger.com>
 ---
- drivers/tty/serial/omap-serial.c | 25 +++++++++++++++++++++----
- 1 file changed, 21 insertions(+), 4 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 6420ae581a80..adcd75ce5112 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -310,7 +310,11 @@ static void serial_omap_stop_tx(struct uart_port *port)
- 			res = (port->rs485.flags & SER_RS485_RTS_AFTER_SEND) ?
- 				1 : 0;
- 			if (gpio_get_value(up->rts_gpio) != res) {
--				if (port->rs485.delay_rts_after_send > 0)
-+				if (port->rs485.delay_rts_after_send > 0 &&
-+				    port->rs485.flags & SER_RS485_DELAY_IN_USEC)
-+					udelay(
-+					port->rs485.delay_rts_after_send);
-+				else if (port->rs485.delay_rts_after_send > 0)
- 					mdelay(
- 					port->rs485.delay_rts_after_send);
- 				gpio_set_value(up->rts_gpio, res);
-@@ -420,7 +424,11 @@ static void serial_omap_start_tx(struct uart_port *port)
- 		res = (port->rs485.flags & SER_RS485_RTS_ON_SEND) ? 1 : 0;
- 		if (gpio_get_value(up->rts_gpio) != res) {
- 			gpio_set_value(up->rts_gpio, res);
--			if (port->rs485.delay_rts_before_send > 0)
-+			if (port->rs485.delay_rts_before_send > 0 &&
-+			    port->rs485.flags & SER_RS485_DELAY_IN_USEC)
-+				udelay(port->rs485.delay_rts_before_send);
-+			else if (port->rs485.delay_rts_before_send > 0 &&
-+				 !(port->rs485.flags & SER_RS485_DELAY_IN_USEC)
- 				mdelay(port->rs485.delay_rts_before_send);
- 		}
- 	}
-@@ -1407,8 +1415,17 @@ serial_omap_config_rs485(struct uart_port *port, struct serial_rs485 *rs485)
- 	serial_out(up, UART_IER, 0);
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index ea1c85e3b432..a63aa22e3a25 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -1124,6 +1124,7 @@ static int lpuart_config_rs485(struct uart_port *port,
+ 	rs485->delay_rts_before_send = 0;
+ 	rs485->delay_rts_after_send = 0;
+ 	rs485->flags &= ~SER_RS485_RX_DURING_TX;
++	rs485->flags &= ~SER_RS485_DELAY_IN_USEC;
  
- 	/* Clamp the delays to [0, 100ms] */
--	rs485->delay_rts_before_send = min(rs485->delay_rts_before_send, 100U);
--	rs485->delay_rts_after_send  = min(rs485->delay_rts_after_send, 100U);
-+	if (port->rs485.flags & SER_RS485_DELAY_IN_USEC) {
-+		rs485->delay_rts_before_send = min(rs485->delay_rts_before_send,
-+						   100000U);
-+		rs485->delay_rts_after_send  = min(rs485->delay_rts_after_send,
-+						   100000U);
-+	} else {
-+		rs485->delay_rts_before_send = min(rs485->delay_rts_before_send,
-+						   100);
-+		rs485->delay_rts_after_send  = min(rs485->delay_rts_after_send,
-+						   100U);
-+	}
- 
- 	/* store new config */
- 	port->rs485 = *rs485;
+ 	if (rs485->flags & SER_RS485_ENABLED) {
+ 		/* Enable auto RS-485 RTS mode */
 -- 
 2.20.1
 
 
-------A567E7A967520A5D3EC5E6FD4D98F407
+------94DBE8ED3B0B2EE76D41F8025E0C1BE7
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -151,16 +112,16 @@ MAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UE
 BxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMT
 NENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
 aWwgQ0ECEE1CsTMbOtnoVViHUQRgfj4wDQYJYIZIAWUDBAIBBQCggeQwGAYJKoZI
-hvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTkwMjIxMTcxODM4
-WjAvBgkqhkiG9w0BCQQxIgQg570FavXu3hMCYzYb4yIQ9IrAWVYZ0NU24SrhpZ2H
-GLoweQYJKoZIhvcNAQkPMWwwajALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
+hvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTkwMjIxMTcxODQz
+WjAvBgkqhkiG9w0BCQQxIgQgVnYMnAmI+qYffTZiuOPxMRHee8z+x5xBcTdAFzR7
+umAweQYJKoZIhvcNAQkPMWwwajALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
 CWCGSAFlAwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcN
 AwICAUAwBwYFKw4DAgcwDQYIKoZIhvcNAwICASgwDQYJKoZIhvcNAQEBBQAEggEA
-jVY15isrgeIpokm4oLX8J/E4SWT6zVoosu4Xr99FwnvGbfrR1nltyMFNJ/iPh5xr
-ZxmU7soBiVl6huqBEdTw9ZAYM+ALOhmzmZ6iPeXefb53jYI9zV4fG5dIIRHimMiI
-YZoNyLV8Gy1bQfjRZEOQhMZHyzL0yB59IHMVCIFG58OrkaK+f5MCqeb+Bd1DNtzJ
-vlP+bnh9El/5eyb5hTzM34QN73Fbg6NyB/PC83MFnOxbq9WVHlOQF4Kp6rejm6ur
-GNCYM7ZtSpdtMW0aBMCg/517Hmp/n0v8G4inU/pOZ1+BILMW+xD9rV1IlGDQBB1Z
-8JXEakQGMFXwq6t3wUkGxQ==
+kyoTvooPg4z1gYzOGs8UIh8fW1dCome6/MVHoX1wfjpYboJL0suhI0MiSTH2cNHG
+E7iF3ZqQjB0RhKlkPaZ0bLAt4J+HMnNxZFYr2TGWQVKMdaPdhnxsYyHBCX/mdqp5
+oIgR44opGLMIbI/m3gf+6o27tYT856iIRWLyKS2RXlOOkgyt+nu7CweZIMSd/2zB
+8HiucKScvj1q3O0TSSjNFA4GXrPgEA5XsrPvlNKW3lWTw46KtRcv9tCPEdL+jtWZ
+prUkzkVkEIq/dnu9i1IPfbCet6kYwbu4u6hDslau6URdxvNY133/qzepPaTo0xyw
+ofRke/5qbRMV0j8EvjYpVQ==
 
-------A567E7A967520A5D3EC5E6FD4D98F407--
+------94DBE8ED3B0B2EE76D41F8025E0C1BE7--
