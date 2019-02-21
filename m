@@ -1,10 +1,10 @@
 From: Martin Kepplinger <martin.kepplinger@ginzinger.com>
-Subject: [PATCH v2 8/9] serial: fsl_lpuart: set SER_RS485_DELAY_IN_USEC accordingly
-Date: Thu, 21 Feb 2019 18:17:57 +0100
-Message-ID: <20190221171758.10322-8-martin.kepplinger@ginzinger.com>
+Subject: [PATCH v2 6/9] serial: sc16is7xx: add support for rs485 RTS delays in microseconds
+Date: Thu, 21 Feb 2019 18:17:55 +0100
+Message-ID: <20190221171758.10322-6-martin.kepplinger@ginzinger.com>
 References: <20190221171758.10322-1-martin.kepplinger@ginzinger.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg="sha-256"; boundary="----94DBE8ED3B0B2EE76D41F8025E0C1BE7"
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg="sha-256"; boundary="----7339303E4AB4833196C2749502A54056"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190221171758.10322-1-martin.kepplinger@ginzinger.com>
 Sender: linux-kernel-owner@vger.kernel.org
@@ -14,35 +14,43 @@ List-Id: linux-serial@vger.kernel.org
 
 This is an S/MIME signed message
 
-------94DBE8ED3B0B2EE76D41F8025E0C1BE7
+------7339303E4AB4833196C2749502A54056
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 
-Clear SER_RS485_DELAY_IN_USEC for userspace to get correct settings.
+Read struct serial_rs485's flag SER_RS485_DELAY_IN_USEC and apply the delay
+accordingly.
 
 Signed-off-by: Martin Kepplinger <martin.kepplinger@ginzinger.com>
 ---
- drivers/tty/serial/fsl_lpuart.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/sc16is7xx.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index ea1c85e3b432..a63aa22e3a25 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1124,6 +1124,7 @@ static int lpuart_config_rs485(struct uart_port *port,
- 	rs485->delay_rts_before_send = 0;
- 	rs485->delay_rts_after_send = 0;
- 	rs485->flags &= ~SER_RS485_RX_DURING_TX;
-+	rs485->flags &= ~SER_RS485_DELAY_IN_USEC;
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 635178cf3eed..b0e00b9fb177 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -743,7 +743,13 @@ static void sc16is7xx_tx_proc(struct kthread_work *ws)
+ 	struct uart_port *port = &(to_sc16is7xx_one(ws, tx_work)->port);
  
- 	if (rs485->flags & SER_RS485_ENABLED) {
- 		/* Enable auto RS-485 RTS mode */
+ 	if ((port->rs485.flags & SER_RS485_ENABLED) &&
+-	    (port->rs485.delay_rts_before_send > 0))
++	    (port->rs485.delay_rts_before_send > 0) &&
++	    (port->rs485.flags & SER_RS485_DELAY_IN_USEC))
++		usleep_range(port->rs485.delay_rts_before_send,
++			     port->rs485.delay_rts_before_send);
++	else if ((port->rs485.flags & SER_RS485_ENABLED) &&
++		 (port->rs485.delay_rts_before_send > 0) &&
++		 !(port->rs485.flags & SER_RS485_DELAY_IN_USEC))
+ 		msleep(port->rs485.delay_rts_before_send);
+ 
+ 	sc16is7xx_handle_tx(port);
 -- 
 2.20.1
 
 
-------94DBE8ED3B0B2EE76D41F8025E0C1BE7
+------7339303E4AB4833196C2749502A54056
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -112,16 +120,16 @@ MAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UE
 BxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMT
 NENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
 aWwgQ0ECEE1CsTMbOtnoVViHUQRgfj4wDQYJYIZIAWUDBAIBBQCggeQwGAYJKoZI
-hvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTkwMjIxMTcxODQz
-WjAvBgkqhkiG9w0BCQQxIgQgVnYMnAmI+qYffTZiuOPxMRHee8z+x5xBcTdAFzR7
-umAweQYJKoZIhvcNAQkPMWwwajALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
+hvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTkwMjIxMTcxODM2
+WjAvBgkqhkiG9w0BCQQxIgQgBWf2Xe9b5Znb5LtrvM8d7RGP76c/hxpA4rJcLKWa
+M/EweQYJKoZIhvcNAQkPMWwwajALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
 CWCGSAFlAwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcN
 AwICAUAwBwYFKw4DAgcwDQYIKoZIhvcNAwICASgwDQYJKoZIhvcNAQEBBQAEggEA
-kyoTvooPg4z1gYzOGs8UIh8fW1dCome6/MVHoX1wfjpYboJL0suhI0MiSTH2cNHG
-E7iF3ZqQjB0RhKlkPaZ0bLAt4J+HMnNxZFYr2TGWQVKMdaPdhnxsYyHBCX/mdqp5
-oIgR44opGLMIbI/m3gf+6o27tYT856iIRWLyKS2RXlOOkgyt+nu7CweZIMSd/2zB
-8HiucKScvj1q3O0TSSjNFA4GXrPgEA5XsrPvlNKW3lWTw46KtRcv9tCPEdL+jtWZ
-prUkzkVkEIq/dnu9i1IPfbCet6kYwbu4u6hDslau6URdxvNY133/qzepPaTo0xyw
-ofRke/5qbRMV0j8EvjYpVQ==
+o3gNZJ9M53EdcqIfXBoTWcx6CBfsHT6IioHUNGppZUFvDZbN7IhnVqiJH5GBG0ch
+cvfpol7Xr1eiuX8F/mZRsTEgjz5sgz/4nDrJxIKTBEIUMYxrcYd0G5LQBNl/P93x
+OgA6usliM88+j5Uze4RdD+5z/L7o1Lf8RXFtUuflUq5ixul6DLj3tLXK0iQTPlcl
+O5/KzzMjuQZdSiKEZzcXNiGaYNS3H6BTxlYLu4cUvHZRGr3wOF5j0hXGs/lAb0nQ
+mQdhDJcT8oNOZuyifqZk8RY1pqBEYdZAYqv7q5dsRvVD5MkBy5SH0Q+SvUceX9dy
++fozUEoYn/TrH9OSaoMX3A==
 
-------94DBE8ED3B0B2EE76D41F8025E0C1BE7--
+------7339303E4AB4833196C2749502A54056--
