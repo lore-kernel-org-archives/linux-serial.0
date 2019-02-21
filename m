@@ -1,140 +1,57 @@
-From: John Ogness <john.ogness@linutronix.de>
-Subject: Re: [RFC PATCH v1 10/25] printk: redirect emit/store to new ringbuffer
-Date: Wed, 20 Feb 2019 22:25:00 +0100
-Message-ID: <8736oijgpf.fsf@linutronix.de>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [RFC PATCH v1 04/25] printk-rb: add writer interface
+Date: Thu, 21 Feb 2019 14:51:40 +0100
+Message-ID: <20190221135140.enamunz6p54dt443@pathway.suse.cz>
 References: <20190212143003.48446-1-john.ogness@linutronix.de>
-        <20190212143003.48446-11-john.ogness@linutronix.de>
-        <20190220090112.xbnauwt2w7gwtebo@pathway.suse.cz>
+ <20190212143003.48446-5-john.ogness@linutronix.de>
+ <20190214151650.5y337yy2jnnztsc6@pathway.suse.cz>
+ <87ef8aosby.fsf@linutronix.de>
+ <20190215134711.pimxhuwipkzlgq23@pathway.suse.cz>
+ <87d0nr5heh.fsf@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190220090112.xbnauwt2w7gwtebo@pathway.suse.cz> (Petr Mladek's
-        message of "Wed, 20 Feb 2019 10:01:12 +0100")
+Content-Disposition: inline
+In-Reply-To: <87d0nr5heh.fsf@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
 Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 2019-02-20, Petr Mladek <pmladek@suse.com> wrote:
->> vprintk_emit and vprintk_store are the main functions that all printk
->> variants eventually go through. Change these to store the message in
->> the new printk ring buffer that the printk kthread is reading.
->
-> We need to switch the two buffers in a single commit
-> without disabling important functionality.
->
-> By other words, we need to change vprintk_emit(), vprintk_store(),
-> console_unlock(), syslog(), devkmsg(), and syslog in one patch.
+On Sun 2019-02-17 02:32:22, John Ogness wrote:
+> Hi Petr,
+> 
+> I've made changes to the patch that hopefully align with what you are
+> looking for. I would appreciate it if you could go over it and see if
+> the changes are in the right direction. And if so, you should decide
+> whether I should make these kinds of changes for the whole series and
+> submit a v2 before you continue with the review.
+> 
+> The list of changes:
+> 
+> - Added comments everywhere I think they could be useful. Is it too
+>   much?
 
-Agreed. But for the review process I expect it makes things much easier
-to change them one at a time. Patch-squashing is not a problem once all
-the individuals have been ack'd.
+Some comments probably can get shortened. But I personally find
+them really helpful.
 
->> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
->> index 5a5a685bb128..b6a6f1002741 100644
->> --- a/kernel/printk/printk.c
->> +++ b/kernel/printk/printk.c
->> @@ -584,54 +500,36 @@ static int log_store(int facility, int level,
->>  		     const char *text, u16 text_len)
->
->>  	memcpy(log_dict(msg), dict, dict_len);
->>  	msg->dict_len = dict_len;
->>  	msg->facility = facility;
->>  	msg->level = level & 7;
->>  	msg->flags = flags & 0x1f;
->
-> The existing struct printk_log is stored into the data field
-> of struct prb_entry. It is because printk_ring_buffer is supposed
-> to be a generic ring buffer.
+I am not going to do a detailed review of this variant at the moment.
+I would like to finish the review of the entire patchset first.
 
-Yes.
+> - I tried moving calc_next() into prb_reserve(), but it was pure
+>   insanity. I played with refactoring for a while until I found
+>   something that I think looks nice. I moved the implementation of
+>   calc_next() along with its containing loop into a new function
+>   find_res_ptrs(). This function does what calc_next() and push_tail()
+>   did. With this solution, I think prb_reserve() looks pretty
+>   clean. However, the optimization of communicating about the wrap is
+>   gone. So even though find_res_ptrs() knew if a wrap occurred,
+>   prb_reserve() figures it out again for itself. If we want the
+>   optimization, I still think the best approach is the -1,0,1 return
+>   value of find_res_ptrs().
 
-> It makes the code more complicated. Also it needs more space for
-> the size and seq items from struct prb_entry.
->
-> printk() is already very complicated code. We should not make
-> it unnecessarily worse.
+I still have to go more deeply into it. Anyway, the new code looks
+much better than the previous one.
 
-In my opinion it makes things considerably easier. My experience with
-printk-code is that it is so complicated because it is mixing
-printk-features with ring buffer handling code. By providing a strict
-API (and hiding the details) of the ring buffer, the implementation of
-the printk-features became pretty straight forward.
-
-Now I will admit that the ring buffer API I proposed is not easy to
-digest. Mostly because I leave a lot of work up to the readers and have
-lots of arguments. Your proposed changes of passing a struct and moving
-loops under the ring buffer API should provide some major
-simplification.
-
-> Please, are there any candidates or plans to reuse the new ring
-> buffer implementation?
-
-As you pointed out below, this patch already uses the ring buffer
-implementation for a totally different purpose: NMI safe dynamic memory
-allocation.
-
-> For example, would it be usable for ftrace? Steven?
->
-> If not, I would prefer to make it printk-specific
-> and hopefully simplify the code a bit.
->
->
->> -	if (ts_nsec > 0)
->> -		msg->ts_nsec = ts_nsec;
->> -	else
->> -		msg->ts_nsec = local_clock();
->> -	memset(log_dict(msg) + dict_len, 0, pad_len);
->> +	msg->ts_nsec = ts_nsec;
->>  	msg->len = size;
->>  
->>  	/* insert message */
->> -	log_next_idx += msg->len;
->> -	log_next_seq++;
->> +	prb_commit(&h);
->>  
->>  	return msg->text_len;
->>  }
->
-> [...]
->
->>  int vprintk_store(int facility, int level,
->>  		  const char *dict, size_t dictlen,
->>  		  const char *fmt, va_list args)
->>  {
->> -	static char textbuf[LOG_LINE_MAX];
->> -	char *text = textbuf;
->> -	size_t text_len;
->> +	return vprintk_emit(facility, level, dict, dictlen, fmt, args);
->> +}
->> +
->> +/* ring buffer used as memory allocator for temporary sprint buffers */
->> +DECLARE_STATIC_PRINTKRB(sprint_rb,
->> +			ilog2(PRINTK_RECORD_MAX + sizeof(struct prb_entry) +
->> +			      sizeof(long)) + 2, &printk_cpulock);
->> +
->> +asmlinkage int vprintk_emit(int facility, int level,
->> +			    const char *dict, size_t dictlen,
->> +			    const char *fmt, va_list args)
->
-> [...]
->
->> +	rbuf = prb_reserve(&h, &sprint_rb, PRINTK_SPRINT_MAX);
->
-> The second ring buffer for temporary buffers is really interesting
-> idea.
->
-> Well, it brings some questions. For example, how many users might
-> need a reservation in parallel. Or if the nested use might cause
-> some problems when we decide to use printk-specific ring buffer
-> implementation. I still have to think about it.
-
-Keep in mind that it is only used by the writers, which have the
-prb_cpulock. Typically there would only be 2 max users: a non-NMI writer
-that was interrupted during the reserve/commit window and the
-interrupting NMI that does printk. The only exception would be if the
-printk-code code itself triggers a BUG_ON or WARN_ON within the
-reserve/commit window. Then you will have an additional user per
-recursion level.
-
-John Ogness
+Best Regards,
+Petr
