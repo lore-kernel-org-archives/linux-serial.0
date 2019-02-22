@@ -1,83 +1,104 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [RFC PATCH v1 10/25] printk: redirect emit/store to new
- ringbuffer
-Date: Fri, 22 Feb 2019 16:25:41 +0100
-Message-ID: <20190222152541.33xp2btltwcecxz7@pathway.suse.cz>
-References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190212143003.48446-11-john.ogness@linutronix.de>
- <20190220090112.xbnauwt2w7gwtebo@pathway.suse.cz>
- <8736oijgpf.fsf@linutronix.de>
- <20190222144302.44zl37p75qgaixf3@pathway.suse.cz>
- <87va1byia5.fsf@linutronix.de>
+From: Christina Quast <cquast@hanoverdisplays.com>
+Subject: [PATCH] tty/serial/imx.c: Rename URTX0 to UTXD0
+Date: Fri, 22 Feb 2019 16:31:27 +0000
+Message-ID: <20190222163127.10172-1-cquast@hanoverdisplays.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <87va1byia5.fsf@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: John Ogness <john.ogness@linutronix.de>
-Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: linux-serial@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-kernel@vger.kernel.org, cquast@hanoverdisplays.com
 List-Id: linux-serial@vger.kernel.org
 
-On Fri 2019-02-22 16:06:26, John Ogness wrote:
-> On 2019-02-22, Petr Mladek <pmladek@suse.com> wrote:
-> >>>> +	rbuf = prb_reserve(&h, &sprint_rb, PRINTK_SPRINT_MAX);
-> >>>
-> >>> The second ring buffer for temporary buffers is really interesting
-> >>> idea.
-> >>>
-> >>> Well, it brings some questions. For example, how many users might
-> >>> need a reservation in parallel. Or if the nested use might cause
-> >>> some problems when we decide to use printk-specific ring buffer
-> >>> implementation. I still have to think about it.
-> >> 
-> >> Keep in mind that it is only used by the writers, which have the
-> >> prb_cpulock. Typically there would only be 2 max users: a non-NMI
-> >> writer that was interrupted during the reserve/commit window and the
-> >> interrupting NMI that does printk. The only exception would be if the
-> >> printk-code code itself triggers a BUG_ON or WARN_ON within the
-> >> reserve/commit window. Then you will have an additional user per
-> >> recursion level.
-> >
-> > I am not sure it is worth to call the ring buffer machinery just
-> > to handle 2-3 buffers.
-> 
-> It may be slightly overkill, but:
-> 
-> 1. We have the prb_cpulock at this point anyway, so it will be
->    fast. (Both ring buffers share the same prb_cpulock.)
+Rename to be coherent with the datasheet.
 
-I am still not persuaded that we really need the lock. The
-implementation looks almost ready for a fully lockless
-writers. But I might be wrong.
+Signed-off-by: Christina Quast <cquast@hanoverdisplays.com>
+---
+ drivers/tty/serial/imx.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-The lock might be fine when it makes the code easier and does
-not bring any deadlocks.
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index dff75dc94731..a405e0d21ec9 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -40,7 +40,7 @@
+ 
+ /* Register definitions */
+ #define URXD0 0x0  /* Receiver Register */
+-#define URTX0 0x40 /* Transmitter Register */
++#define UTXD0 0x40 /* Transmitter Register */
+ #define UCR1  0x80 /* Control Register 1 */
+ #define UCR2  0x84 /* Control Register 2 */
+ #define UCR3  0x88 /* Control Register 3 */
+@@ -502,7 +502,7 @@ static inline void imx_uart_transmit_buffer(struct imx_port *sport)
+ 
+ 	if (sport->port.x_char) {
+ 		/* Send next char */
+-		imx_uart_writel(sport, sport->port.x_char, URTX0);
++		imx_uart_writel(sport, sport->port.x_char, UTXD0);
+ 		sport->port.icount.tx++;
+ 		sport->port.x_char = 0;
+ 		return;
+@@ -536,7 +536,7 @@ static inline void imx_uart_transmit_buffer(struct imx_port *sport)
+ 	       !(imx_uart_readl(sport, imx_uart_uts_reg(sport)) & UTS_TXFULL)) {
+ 		/* send xmit->buf[xmit->tail]
+ 		 * out the port here */
+-		imx_uart_writel(sport, xmit->buf[xmit->tail], URTX0);
++		imx_uart_writel(sport, xmit->buf[xmit->tail], UTXD0);
+ 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+ 		sport->port.icount.tx++;
+ 	}
+@@ -1257,7 +1257,7 @@ static int imx_uart_dma_init(struct imx_port *sport)
+ 	}
+ 
+ 	slave_config.direction = DMA_MEM_TO_DEV;
+-	slave_config.dst_addr = sport->port.mapbase + URTX0;
++	slave_config.dst_addr = sport->port.mapbase + UTXD0;
+ 	slave_config.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+ 	slave_config.dst_maxburst = TXTL_DMA;
+ 	ret = dmaengine_slave_config(sport->dma_chan_tx, &slave_config);
+@@ -1812,7 +1812,7 @@ static void imx_uart_poll_put_char(struct uart_port *port, unsigned char c)
+ 	} while (~status & USR1_TRDY);
+ 
+ 	/* write */
+-	imx_uart_writel(sport, c, URTX0);
++	imx_uart_writel(sport, c, UTXD0);
+ 
+ 	/* flush */
+ 	do {
+@@ -1894,7 +1894,7 @@ static void imx_uart_console_putchar(struct uart_port *port, int ch)
+ 	while (imx_uart_readl(sport, imx_uart_uts_reg(sport)) & UTS_TXFULL)
+ 		barrier();
+ 
+-	imx_uart_writel(sport, ch, URTX0);
++	imx_uart_writel(sport, ch, UTXD0);
+ }
+ 
+ /*
+@@ -2091,7 +2091,7 @@ static void imx_uart_console_early_putchar(struct uart_port *port, int ch)
+ 	while (imx_uart_readl(sport, IMX21_UTS) & UTS_TXFULL)
+ 		cpu_relax();
+ 
+-	imx_uart_writel(sport, ch, URTX0);
++	imx_uart_writel(sport, ch, UTXD0);
+ }
+ 
+ static void imx_uart_console_early_write(struct console *con, const char *s,
+-- 
+2.20.1
 
 
-> 2. Getting a safe buffer is just 1 line of code: prb_reserve()
-
-The problem is how complicated code is hidden behind
-this 1 line of code.
 
 
-> 3. Why should we waste _any_ lines of code implementing the handling of
->    these special 3-4 buffers?
+ 
+Please consider the environment before printing this email
+ 
 
-It might be worth if it makes the code more strighforward
-and less prone to bugs.
-
-
-> > Well, it might be just my mental block. We need to be really careful
-> > to avoid infinite recursion when storing messages into the log
-> > buffer.
-> 
-> The recursion works well. I inserted a triggerable BUG_ON() in
-> vprintk_emit() _within_ the reserve/commit window and I see a clean
-> backtrace on the emergency console.
-
-Have you tested all possible error situations that might happen?
-Testing helps a lot. But the real life often brings surprises.
-
-Best Regards,
-Petr
+ 
+ 
+ 
+The information transmitted is intended only for the person or entity to which it is addressed and may contain confidential and/or privileged material. Any review, retransmission, dissemination or other use of, or taking of any action in reliance upon, this information by persons or entities other than the intended recipient is prohibited.
+If you received this in error, please contact the sender or postmaster (postmaster@hanoverdisplays.com) and delete the material from any computer.
+Although we routinely screen for viruses, addressees should check this e-mail and any attachment for viruses. We make no warranty as to absence of viruses in this e-mail or any attachments.
+Our Company's email policy is to permit incidental personal use. If this email is of a personal nature, it must not be relied upon as expressing the views or opinions of the company.
