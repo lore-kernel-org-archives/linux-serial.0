@@ -1,95 +1,92 @@
 From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [RFC PATCH v1 07/25] printk-rb: add functionality required by
- printk
-Date: Fri, 22 Feb 2019 10:58:29 +0100
-Message-ID: <20190222095829.vaxwqgfpzfvr3gm2@pathway.suse.cz>
+Subject: Re: [RFC PATCH v1 11/25] printk_safe: remove printk safe code
+Date: Fri, 22 Feb 2019 11:37:32 +0100
+Message-ID: <20190222103732.zkcvjijtdcfu4vbt@pathway.suse.cz>
 References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190212143003.48446-8-john.ogness@linutronix.de>
- <20190218155921.rxksi2hyasxnmu7a@pathway.suse.cz>
- <87ftsjv3cb.fsf@linutronix.de>
+ <20190212143003.48446-12-john.ogness@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <87ftsjv3cb.fsf@linutronix.de>
+In-Reply-To: <20190212143003.48446-12-john.ogness@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: John Ogness <john.ogness@linutronix.de>
 Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue 2019-02-19 23:08:20, John Ogness wrote:
-> On 2019-02-18, Petr Mladek <pmladek@suse.com> wrote:
-> >> The printk subsystem needs to be able to query the size of the ring
-> >> buffer, seek to specific entries within the ring buffer, and track
-> >> if records could not be stored in the ring buffer.
-> >> 
-> >> diff --git a/lib/printk_ringbuffer.c b/lib/printk_ringbuffer.c
-> >> index c2ddf4cb9f92..ce33b5add5a1 100644
-> >> --- a/lib/printk_ringbuffer.c
-> >> +++ b/lib/printk_ringbuffer.c
-> >> @@ -175,11 +175,16 @@ void prb_commit(struct prb_handle *h)
-> >>  				head = PRB_WRAP_LPOS(rb, head, 1);
-> >>  				continue;
-> >>  			}
-> >> +			while (atomic_long_read(&rb->lost)) {
-> >> +				atomic_long_dec(&rb->lost);
-> >> +				rb->seq++;
+On Tue 2019-02-12 15:29:49, John Ogness wrote:
+> vprintk variants are now NMI-safe so there is no longer a need for
+> the "safe" calls.
 > 
-> > On the contrary, the patch adding support for lost messages
-> > should implement a way how to inform the user about lost messages.
-> > E.g. to add a warning when some space becomes available again.
+> NOTE: This also removes printk flushing functionality.
 > 
-> The readers will see that messages were lost. I think that is enough. I
-> don't know how useful it would be to notify writers that space is
-> available. The writers are holding the prb_cpulock, so they definitely
-> shouldn't be waiting around for anything.
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> ---
+>  include/linux/hardirq.h     |   2 -
+>  include/linux/printk.h      |  27 ---
+>  init/main.c                 |   1 -
+>  kernel/kexec_core.c         |   1 -
+>  kernel/panic.c              |   3 -
+>  kernel/printk/Makefile      |   1 -
+>  kernel/printk/internal.h    |  30 +---
+>  kernel/printk/printk.c      |  13 +-
+>  kernel/printk/printk_safe.c | 427 --------------------------------------------
+>  kernel/trace/trace.c        |   2 -
+>  lib/nmi_backtrace.c         |   6 -
+>  11 files changed, 7 insertions(+), 506 deletions(-)
+>  delete mode 100644 kernel/printk/printk_safe.c
 
-I see your intention. Well, it forces all readers to implement the
-check and write a message. It might be fine if the code can be shared.
-
-My original idea was the following. If any next writer succeeds
-to reserve space for its own message. It would try to reserve
-space also for the warning. If it succeeds, it would just
-write the warning there (like a nested context or so). Then
-all readers would get the warning for free.
-
-But you inspired me to antoher idea. We could hadle this in
-the krb_iter_get_next_entry() calls. They could fill
-the given buffer with the warning message when they
-detect missed messages. The real message might get
-added into the same buffer. Or we might add a flag
-into struct prb_iter so that the reader would need
-to call krb_iter_get_next_entry() to get the real
-message on the current lpos.
-
-Both solutions allow to get the warnings trasparently.
-There will be no duplicated extra code. Also all readers
-would handle it consistently.
-
-But there is a difference:
-
-If we store the warning into the ring buffer directly
-then we do not need to store the seq number. I mean
-that we would not need to bump seq when reservation failed.
-The amount of lost messages is handled by another
-counter anyway.
-
-On the other hand, using the fake messages would allow
-to handle transparently even the messages lost by readers.
-I mean that krb_iter_get_next_valid_entry() might fill
-the given buffer with a warning when the next message
-was overwriten and it had to reset lpos to tail.
-
-I am not sure what is better out of my head. I would need
-to play with the code.
+>From my POV, this is the primary selling argument for the new
+ring buffer.
 
 
-> This situation should be quite rare because it means the _entire_ ring
-> buffer was filled up by an NMI context that interrupted a context that
-> was in the reserve/commit window. NMI contexts probably should not be
-> doing _so_ much printk'ing within a single NMI.
+> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> index b6a6f1002741..073ff9fd6872 100644
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -1752,6 +1745,11 @@ asmlinkage int vprintk_emit(int facility, int level,
+>  }
+>  EXPORT_SYMBOL(vprintk_emit);
+>  
+> +__printf(1, 0) int vprintk_func(const char *fmt, va_list args)
+> +{
+> +	return vprintk_emit(0, LOGLEVEL_DEFAULT, NULL, 0, fmt, args);
+> +}
 
-Sure.
+All vprintk_func() calls should get replaced with vprintk_default().
+It includes a crazy hack to reuse some kernel code (that calls
+printk() in kdb code.
+
+
+>  asmlinkage int vprintk(const char *fmt, va_list args)
+>  {
+>  	return vprintk_func(fmt, args);
+> diff --git a/lib/nmi_backtrace.c b/lib/nmi_backtrace.c
+> index 15ca78e1c7d4..77bf84987cda 100644
+> --- a/lib/nmi_backtrace.c
+> +++ b/lib/nmi_backtrace.c
+> @@ -75,12 +75,6 @@ void nmi_trigger_cpumask_backtrace(const cpumask_t *mask,
+>  		touch_softlockup_watchdog();
+>  	}
+>  
+> -	/*
+> -	 * Force flush any remote buffers that might be stuck in IRQ context
+> -	 * and therefore could not run their irq_work.
+> -	 */
+> -	printk_safe_flush();
+> -
+>  	clear_bit_unlock(0, &backtrace_flag);
+>  	put_cpu();
+>  }
+
+This reminds me that we need to add back the locking that was
+removed in the commit 03fc7f9c99c1e7ae2925d45 ("printk/nmi:
+Prevent deadlock when accessing the main log buffer in NMI").
+
+Otherwise, backtraces from different CPUs would get mixed.
+
+We need to add this before redirecting printk() to
+the new ring buffer.
 
 Best Regards,
 Petr
