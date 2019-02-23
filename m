@@ -1,46 +1,74 @@
 From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 3/9] serial: core: add rs485-rts-delay-us devicetree
- property for RS485
-Date: Fri, 22 Feb 2019 17:44:29 -0600
-Message-ID: <20190222234429.GA19985@bogus>
-References: <20190221171758.10322-1-martin.kepplinger@ginzinger.com>
- <20190221171758.10322-3-martin.kepplinger@ginzinger.com>
+Subject: Re: [PATCH 1/6] dt-bindings: soc: qcom: Add interconnect binding for
+ GENI QUP
+Date: Fri, 22 Feb 2019 18:26:55 -0600
+Message-ID: <20190223002655.GA6631@bogus>
+References: <1548138816-1149-1-git-send-email-alokc@codeaurora.org>
+ <1548138816-1149-2-git-send-email-alokc@codeaurora.org>
+ <20190123170758.GB512@tuxbook-pro>
+ <5ca1ce61-c458-5550-f89d-ab361f1ec456@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190221171758.10322-3-martin.kepplinger@ginzinger.com>
+In-Reply-To: <5ca1ce61-c458-5550-f89d-ab361f1ec456@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Martin Kepplinger <martin.kepplinger@ginzinger.com>
-Cc: gregkh@linuxfoundation.org, mark.rutland@arm.com, jslaby@suse.com, corbet@lwn.net, richard.genoud@gmail.com, nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, ludovic.desroches@microchip.com, mcoquelin.stm32@gmail.com, alexandre.torgue@st.com, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-stm32@st-md-mailman.stormreply.com, linux-kernel@vger.kernel.org
+To: Georgi Djakov <georgi.djakov@linaro.org>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>, Alok Chauhan <alokc@codeaurora.org>, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Mark Rutland <mark.rutland@arm.com>, dianders@chromium.org, swboyd@chromium.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Feb 21, 2019 at 06:17:52PM +0100, Martin Kepplinger wrote:
-> struct serial_rs485 now optionally holds the rts delay values in
-> microseconds. Users can set these delays in their devicetree descriptions,
-> so this adds the microseconds-option with the "rs485-rts-delay-us" boolean
-> property.
-
-If it has a value, it's not boolean.
-
-Should the old prop be deprecated?
-
+On Wed, Jan 23, 2019 at 08:41:20PM +0200, Georgi Djakov wrote:
+> Hi,
 > 
-> Signed-off-by: Martin Kepplinger <martin.kepplinger@ginzinger.com>
-> ---
->  Documentation/devicetree/bindings/serial/rs485.txt |  1 +
->  drivers/tty/serial/serial_core.c                   | 11 +++++++++++
->  2 files changed, 12 insertions(+)
+> On 1/23/19 19:07, Bjorn Andersson wrote:
+> > On Mon 21 Jan 22:33 PST 2019, Alok Chauhan wrote:
+> > 
+> >> Add documentation for the interconnect and interconnect-names bindings
+> >> for the GENI QUP as detailed by bindings/interconnect/interconnect.txt.
+> >>
+> >> Signed-off-by: Alok Chauhan <alokc@codeaurora.org>
+> >> ---
+> >>  Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt | 10 ++++++++++
+> >>  1 file changed, 10 insertions(+)
+> >>
+> >> diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
+> >> index dab7ca9..44d7e02 100644
+> >> --- a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
+> >> +++ b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
+> >> @@ -17,6 +17,12 @@ Required properties if child node exists:
+> >>  - #address-cells: 	Must be <1> for Serial Engine Address
+> >>  - #size-cells: 		Must be <1> for Serial Engine Address Size
+> >>  - ranges: 		Must be present
+> >> +- interconnects:	phandle to a interconnect provider. Please refer
+> >> +			../interconnect/interconnect.txt for details.
+> >> +			Must be 2 paths corresponding to 2 AXI ports.
+> >> +- interconnect-names:	Port names to differentiate between the
+> > 
+> > s/Port names/Path names/
+> > 
+> >> +			2 interconnect paths defined with interconnect
+> >> +			specifier.
+> > 
+> > These two names are significant in that they must match what the driver
+> > expects, hence you must actually specify them here.
+> > 
+> > And as the scope of these strings are local to the QUP node you can omit
+> > "qup" from them, so make them "memory" and "config" (or perhaps iface,
+> > to match the clock naming?).
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/rs485.txt b/Documentation/devicetree/bindings/serial/rs485.txt
-> index b92592dff6dd..77396c62b383 100644
-> --- a/Documentation/devicetree/bindings/serial/rs485.txt
-> +++ b/Documentation/devicetree/bindings/serial/rs485.txt
-> @@ -12,6 +12,7 @@ Optional properties:
->    * b is the delay between end of data sent and rts signal in milliseconds
->        it corresponds to the delay after sending data and actual release of the line.
->    If this property is not specified, <0 0> is assumed.
-> +- rs485-rts-delay-us: the same as rs485-rts-delay, but in microseconds.
->  - rs485-rts-active-low: drive RTS low when sending (default is high).
->  - linux,rs485-enabled-at-boot-time: empty property telling to enable the rs485
->    feature at boot time. It can be disabled later with proper ioctl.
+> Actually there was a discussion in the past where we decided include
+> both the src and dst endpoint names in this property so that there is
+> some symmetry with the "interconnects" property. It would be nice to be
+> consistent across different drivers at least for now.
+> If we want to denote the master and slave ports here, my two cents would
+> be for "qup-mem" and "cpu-qup" or something similar?
+
+Well, there's a proposal from Maxime to add 'dma-memory' or something. 
+You all need to sort this out.
+
+I assume config or cpu-qup is for register access? Why is this needed? 
+That should get described thru the DT tree. The interconnect stuff was 
+supposed to be for the non-cpu centric view (i.e. DMA masters). Maybe 
+it's fine, but that's not my initial reaction.
+
+Rob
