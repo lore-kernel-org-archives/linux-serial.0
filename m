@@ -1,48 +1,45 @@
 From: Lubomir Rintel <lkundrak@v3.sk>
-Subject: [PATCH] serial: 8250_pxa: honor the port number from devicetree
-Date: Sun, 24 Feb 2019 12:58:02 +0100
-Message-ID: <20190224115802.13436-1-lkundrak@v3.sk>
+Subject: [PATCH] serial: 8250_of: assume reg-shift of 2 for mrvl,mmp-uart
+Date: Sun, 24 Feb 2019 13:00:53 +0100
+Message-ID: <20190224120053.13682-1-lkundrak@v3.sk>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Lubomir Rintel <lkundrak@v3.sk>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Lubomir Rintel <lkundrak@v3.sk>, stable@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Like the other OF-enabled drivers, use the port number from the firmware =
-if
-the devicetree specifies an alias:
+There are two other drivers that bind to mrvl,mmp-uart and both of them
+assume register shift of 2 bits. There are device trees that lack the
+property and rely on that assumption.
 
-  aliases {
-      ...
-      serial2 =3D &uart2; /* Should be ttyS2 */
-  }
-
-This is how the deprecated pxa.c driver behaved, switching to 8250_pxa
-messes up the numbering.
+If this driver wins the race to bind to those devices, it should behave
+the same as the older deprecated driver.
 
 Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
+Cc: stable@vger.kernel.org
 ---
- drivers/tty/serial/8250/8250_pxa.c | 4 ++++
+ drivers/tty/serial/8250/8250_of.c | 4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_pxa.c b/drivers/tty/serial/8250=
-/8250_pxa.c
-index b9bcbe20a2be..c47188860e32 100644
---- a/drivers/tty/serial/8250/8250_pxa.c
-+++ b/drivers/tty/serial/8250/8250_pxa.c
-@@ -113,6 +113,10 @@ static int serial_pxa_probe(struct platform_device *=
-pdev)
- 	if (ret)
- 		return ret;
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/=
+8250_of.c
+index a1a85805d010..2488de1c4bc4 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -130,6 +130,10 @@ static int of_platform_serial_setup(struct platform_=
+device *ofdev,
+ 		port->flags |=3D UPF_IOREMAP;
+ 	}
 =20
-+	ret =3D of_alias_get_id(pdev->dev.of_node, "serial");
-+	if (ret >=3D 0)
-+		uart.port.line =3D ret;
++	/* Compatibility with the deprecated pxa driver and 8250_pxa drivers. *=
+/
++	if (of_device_is_compatible(np, "mrvl,mmp-uart"))
++		port->regshift =3D 2;
 +
- 	uart.port.type =3D PORT_XSCALE;
- 	uart.port.iotype =3D UPIO_MEM32;
- 	uart.port.mapbase =3D mmres->start;
+ 	/* Check for registers offset within the devices address range */
+ 	if (of_property_read_u32(np, "reg-shift", &prop) =3D=3D 0)
+ 		port->regshift =3D prop;
 --=20
 2.20.1
