@@ -1,74 +1,48 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 1/6] dt-bindings: soc: qcom: Add interconnect binding for
- GENI QUP
-Date: Fri, 22 Feb 2019 18:26:55 -0600
-Message-ID: <20190223002655.GA6631@bogus>
-References: <1548138816-1149-1-git-send-email-alokc@codeaurora.org>
- <1548138816-1149-2-git-send-email-alokc@codeaurora.org>
- <20190123170758.GB512@tuxbook-pro>
- <5ca1ce61-c458-5550-f89d-ab361f1ec456@linaro.org>
+From: Lubomir Rintel <lkundrak@v3.sk>
+Subject: [PATCH] serial: 8250_pxa: honor the port number from devicetree
+Date: Sun, 24 Feb 2019 12:58:02 +0100
+Message-ID: <20190224115802.13436-1-lkundrak@v3.sk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5ca1ce61-c458-5550-f89d-ab361f1ec456@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Georgi Djakov <georgi.djakov@linaro.org>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>, Alok Chauhan <alokc@codeaurora.org>, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Mark Rutland <mark.rutland@arm.com>, dianders@chromium.org, swboyd@chromium.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Lubomir Rintel <lkundrak@v3.sk>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jan 23, 2019 at 08:41:20PM +0200, Georgi Djakov wrote:
-> Hi,
-> 
-> On 1/23/19 19:07, Bjorn Andersson wrote:
-> > On Mon 21 Jan 22:33 PST 2019, Alok Chauhan wrote:
-> > 
-> >> Add documentation for the interconnect and interconnect-names bindings
-> >> for the GENI QUP as detailed by bindings/interconnect/interconnect.txt.
-> >>
-> >> Signed-off-by: Alok Chauhan <alokc@codeaurora.org>
-> >> ---
-> >>  Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt | 10 ++++++++++
-> >>  1 file changed, 10 insertions(+)
-> >>
-> >> diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
-> >> index dab7ca9..44d7e02 100644
-> >> --- a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
-> >> +++ b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.txt
-> >> @@ -17,6 +17,12 @@ Required properties if child node exists:
-> >>  - #address-cells: 	Must be <1> for Serial Engine Address
-> >>  - #size-cells: 		Must be <1> for Serial Engine Address Size
-> >>  - ranges: 		Must be present
-> >> +- interconnects:	phandle to a interconnect provider. Please refer
-> >> +			../interconnect/interconnect.txt for details.
-> >> +			Must be 2 paths corresponding to 2 AXI ports.
-> >> +- interconnect-names:	Port names to differentiate between the
-> > 
-> > s/Port names/Path names/
-> > 
-> >> +			2 interconnect paths defined with interconnect
-> >> +			specifier.
-> > 
-> > These two names are significant in that they must match what the driver
-> > expects, hence you must actually specify them here.
-> > 
-> > And as the scope of these strings are local to the QUP node you can omit
-> > "qup" from them, so make them "memory" and "config" (or perhaps iface,
-> > to match the clock naming?).
-> 
-> Actually there was a discussion in the past where we decided include
-> both the src and dst endpoint names in this property so that there is
-> some symmetry with the "interconnects" property. It would be nice to be
-> consistent across different drivers at least for now.
-> If we want to denote the master and slave ports here, my two cents would
-> be for "qup-mem" and "cpu-qup" or something similar?
+Like the other OF-enabled drivers, use the port number from the firmware =
+if
+the devicetree specifies an alias:
 
-Well, there's a proposal from Maxime to add 'dma-memory' or something. 
-You all need to sort this out.
+  aliases {
+      ...
+      serial2 =3D &uart2; /* Should be ttyS2 */
+  }
 
-I assume config or cpu-qup is for register access? Why is this needed? 
-That should get described thru the DT tree. The interconnect stuff was 
-supposed to be for the non-cpu centric view (i.e. DMA masters). Maybe 
-it's fine, but that's not my initial reaction.
+This is how the deprecated pxa.c driver behaved, switching to 8250_pxa
+messes up the numbering.
 
-Rob
+Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
+---
+ drivers/tty/serial/8250/8250_pxa.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/tty/serial/8250/8250_pxa.c b/drivers/tty/serial/8250=
+/8250_pxa.c
+index b9bcbe20a2be..c47188860e32 100644
+--- a/drivers/tty/serial/8250/8250_pxa.c
++++ b/drivers/tty/serial/8250/8250_pxa.c
+@@ -113,6 +113,10 @@ static int serial_pxa_probe(struct platform_device *=
+pdev)
+ 	if (ret)
+ 		return ret;
+=20
++	ret =3D of_alias_get_id(pdev->dev.of_node, "serial");
++	if (ret >=3D 0)
++		uart.port.line =3D ret;
++
+ 	uart.port.type =3D PORT_XSCALE;
+ 	uart.port.iotype =3D UPIO_MEM32;
+ 	uart.port.mapbase =3D mmres->start;
+--=20
+2.20.1
