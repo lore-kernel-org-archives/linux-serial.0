@@ -1,45 +1,45 @@
-From: Lubomir Rintel <lkundrak@v3.sk>
-Subject: [PATCH] serial: 8250_of: assume reg-shift of 2 for mrvl,mmp-uart
-Date: Sun, 24 Feb 2019 13:00:53 +0100
-Message-ID: <20190224120053.13682-1-lkundrak@v3.sk>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [RFC PATCH v1 10/25] printk: redirect emit/store to new
+ ringbuffer
+Date: Mon, 25 Feb 2019 13:11:07 +0100
+Message-ID: <20190225121106.oig7s6odqikcn4xw@pathway.suse.cz>
+References: <20190212143003.48446-1-john.ogness@linutronix.de>
+ <20190212143003.48446-11-john.ogness@linutronix.de>
+ <20190220090112.xbnauwt2w7gwtebo@pathway.suse.cz>
+ <8736oijgpf.fsf@linutronix.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Lubomir Rintel <lkundrak@v3.sk>, stable@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <8736oijgpf.fsf@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: John Ogness <john.ogness@linutronix.de>
+Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-There are two other drivers that bind to mrvl,mmp-uart and both of them
-assume register shift of 2 bits. There are device trees that lack the
-property and rely on that assumption.
+On Wed 2019-02-20 22:25:00, John Ogness wrote:
+> On 2019-02-20, Petr Mladek <pmladek@suse.com> wrote:
+> >> vprintk_emit and vprintk_store are the main functions that all printk
+> >> variants eventually go through. Change these to store the message in
+> >> the new printk ring buffer that the printk kthread is reading.
+> >
+> > Please, are there any candidates or plans to reuse the new ring
+> > buffer implementation?
+> 
+> As you pointed out below, this patch already uses the ring buffer
+> implementation for a totally different purpose: NMI safe dynamic memory
+> allocation.
 
-If this driver wins the race to bind to those devices, it should behave
-the same as the older deprecated driver.
+I have found an alternative solution. We could calculate the length
+of the formatted string without any buffer:
 
-Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
-Cc: stable@vger.kernel.org
----
- drivers/tty/serial/8250/8250_of.c | 4 ++++
- 1 file changed, 4 insertions(+)
+	va_list args_copy;
 
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/=
-8250_of.c
-index a1a85805d010..2488de1c4bc4 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -130,6 +130,10 @@ static int of_platform_serial_setup(struct platform_=
-device *ofdev,
- 		port->flags |=3D UPF_IOREMAP;
- 	}
-=20
-+	/* Compatibility with the deprecated pxa driver and 8250_pxa drivers. *=
-/
-+	if (of_device_is_compatible(np, "mrvl,mmp-uart"))
-+		port->regshift =3D 2;
-+
- 	/* Check for registers offset within the devices address range */
- 	if (of_property_read_u32(np, "reg-shift", &prop) =3D=3D 0)
- 		port->regshift =3D prop;
---=20
-2.20.1
+	va_copy(args_copy, args);
+	len = vscprintf(NULL, fmt, args_copy);
+	va_end(args_copy);
+
+This vsprintf() mode was implemented for exactly this purpose.
+
+Best Regards,
+Petr
