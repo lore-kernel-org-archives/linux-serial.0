@@ -1,72 +1,88 @@
 From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [RFC PATCH v1 10/25] printk: redirect emit/store to new
- ringbuffer
-Date: Tue, 26 Feb 2019 10:45:37 +0100
-Message-ID: <20190226094537.46xfhv5rr5m4c33s@pathway.suse.cz>
+Subject: Re: [RFC PATCH v1 13/25] printk: track seq per console
+Date: Tue, 26 Feb 2019 14:11:08 +0100
+Message-ID: <20190226131108.rr5komehfqitg6di@pathway.suse.cz>
 References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190212143003.48446-11-john.ogness@linutronix.de>
- <20190220090112.xbnauwt2w7gwtebo@pathway.suse.cz>
- <8736oijgpf.fsf@linutronix.de>
- <20190225121106.oig7s6odqikcn4xw@pathway.suse.cz>
- <875zt7bz1t.fsf@linutronix.de>
+ <20190212143003.48446-14-john.ogness@linutronix.de>
+ <20190225145954.62zl3tndmo2t372h@pathway.suse.cz>
+ <87lg230whd.fsf@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <875zt7bz1t.fsf@linutronix.de>
+In-Reply-To: <87lg230whd.fsf@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: John Ogness <john.ogness@linutronix.de>
 Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon 2019-02-25 17:41:50, John Ogness wrote:
+On Tue 2019-02-26 09:45:02, John Ogness wrote:
 > On 2019-02-25, Petr Mladek <pmladek@suse.com> wrote:
-> >> >> vprintk_emit and vprintk_store are the main functions that all printk
-> >> >> variants eventually go through. Change these to store the message in
-> >> >> the new printk ring buffer that the printk kthread is reading.
-> >> >
-> >> > Please, are there any candidates or plans to reuse the new ring
-> >> > buffer implementation?
-> >> 
-> >> As you pointed out below, this patch already uses the ring buffer
-> >> implementation for a totally different purpose: NMI safe dynamic memory
-> >> allocation.
+> >> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> >> index ece54c24ea0d..ebd9aac06323 100644
+> >> --- a/kernel/printk/printk.c
+> >> +++ b/kernel/printk/printk.c
+> >> @@ -1504,6 +1514,19 @@ static void call_console_drivers(const char *ext_text, size_t ext_len,
+> >>  		if (!cpu_online(raw_smp_processor_id()) &&
+> >>  		    !(con->flags & CON_ANYTIME))
+> >>  			continue;
+> >> +		if (con->printk_seq >= seq)
+> >> +			continue;
+> >> +
+> >> +		con->printk_seq++;
+> >> +		if (con->printk_seq < seq) {
+> >> +			print_console_dropped(con, seq - con->printk_seq);
+> >> +			con->printk_seq = seq;
 > >
-> > I have found an alternative solution. We could calculate the length
-> > of the formatted string without any buffer:
-> >
-> > 	va_list args_copy;
-> >
-> > 	va_copy(args_copy, args);
-> > 	len = vscprintf(NULL, fmt, args_copy);
-> > 	va_end(args_copy);
-> >
-> > This vsprintf() mode was implemented for exactly this purpose.
+> > It would be great to print this message only when the real one
+> > is not superseded.
 > 
-> For vprintk_emit() that would work. As you will see in later (patch 23),
-> the sprint_rb ringbuffer is used for dynamic memory allocation for
-> kmsg_dump functions as well.
+> You mean if there was some function to check if "seq" is the newest
+> entry. And only in that situation would any dropped information be
+> presented?
 
-It looks dangerous to share a limited buffer between core kernel
-functionality and user-space triggered one. I mean that an unlimited
-number of devkmsg operations must not cause loosing printk() messages.
+Not newest but not suppressed.
 
-> The current printk implementation allows readers to read directly from
-> the ringbuffer. The proposed ringbuffer requires the reader (printk) to
-> have its own buffers.
-> 
-> We may be able to find an alternate solution here as well if that is
-> desired.
+Example: Only every 10th message is important enough to reach
+        console (see suppress_message_printing).
 
-I hope that we will be able to find one. The previous implementation
-needed some buffers as well. We should be able to use the same
-approach.
+Instead of seeing:
 
-I guess that one problem is that the new ringbuffer API is not
-able to copy just the text directly into the user-provided buffer.
-It might get solved by extending the API.
+message 10
+message 20
+7 messages dropped
+20 another messages dropped because of printing the warning
+20 another messages dropped because of printing the warning
+20 another messages dropped because of printing the warning
+message 100
 
-Anyway, I still have to look at the remaining patches.
+see something like:
+
+message 10
+message 20
+13 messages dropped
+message 40
+13 messages dropped
+message 60
+13 messages dropped
+message 80
+message 90
+message100
+
+The original code would print only warnings because the important
+lines are lost when printing the warnings.
+
+A better code would show more messages because the warning
+is printed when a visible message is already buffered.
+
+You might wonder why there are only 13 messages dropped in
+the new state. It is because the other 6 messages are
+quickly read and suspended (filtered out). They are
+skipped by intention.
+
+I hope that it will be more clear with the patch that I have
+just sent, see
+https://lkml.kernel.org/r/20190226124945.7078-1-pmladek@suse.com
 
 Best Regards,
 Petr
