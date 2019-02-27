@@ -1,60 +1,61 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [RFC PATCH v1 20/25] serial: 8250: implement write_atomic
-Date: Wed, 27 Feb 2019 10:46:55 +0100
-Message-ID: <20190227094655.ecdwhsc2bf5spkqx@pathway.suse.cz>
+From: John Ogness <john.ogness@linutronix.de>
+Subject: Re: [RFC PATCH v1 15/25] printk: print history for new consoles
+Date: Wed, 27 Feb 2019 11:02:53 +0100
+Message-ID: <874l8pft0y.fsf@linutronix.de>
 References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190212143003.48446-21-john.ogness@linutronix.de>
+        <20190212143003.48446-16-john.ogness@linutronix.de>
+        <20190226145837.wl54fr7rn2ii5oxc@pathway.suse.cz>
+        <87o96yziau.fsf@linutronix.de>
+        <20190227090249.fzigc7r237emlg6k@pathway.suse.cz>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190212143003.48446-21-john.ogness@linutronix.de>
+In-Reply-To: <20190227090249.fzigc7r237emlg6k@pathway.suse.cz> (Petr Mladek's
+        message of "Wed, 27 Feb 2019 10:02:49 +0100")
 Sender: linux-kernel-owner@vger.kernel.org
-To: John Ogness <john.ogness@linutronix.de>
+To: Petr Mladek <pmladek@suse.com>
 Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue 2019-02-12 15:29:58, John Ogness wrote:
-> Implement a non-sleeping NMI-safe write_atomic console function in
-> order to support emergency printk messages.
+On 2019-02-27, Petr Mladek <pmladek@suse.com> wrote:
+> I mean that your patch does the reply on a very hidden location.
 
-It uses console_atomic_lock() added in 18th patch. That one uses
-prb_lock() added by 2nd patch.
+Right. I understand that and I agree.
 
-Now, prb_lock() allows recursion on the same CPU. But it still needs
-to wait until it is released on another CPU.
+> Regarding the per-console kthread. It would make sense if
+> we stop handling all consoles synchronously. For example,
+> when we push messages to fast consoles immediately and
+> offload the work for slow consoles.
 
-It means that it is not completely save when NMIs happen on more CPUs in
-parallel, for example, when calling nmi_trigger_cpumask_backtrace().
+My per-console kthread suggestion relating to fast consoles is so that
+some consoles (such as netconsole, which is quite fast) could drop less
+messages than a slow console (such as uart).
 
-OK, it would be safe when prb_lock() is the only lock taken
-in the NMI handler. But printk() should not make such limitation
-to the rest of the system. Not to say, that we would most
-likely need to add a lock back into nmi_cpu_backtrace()
-to keep the output sane.
+> Anyway, we first need to make the offload reliable enough.
+> It is not acceptable to always offload all messages.
+> We have been there last few years. We must keep a high
+> chance to see the messages. Any warning might be important
+> when it causes the system to die. Nobody knows what message
+> is such an important.
 
+You seem to be missing the point of the series. It _is_ acceptable to
+offload all messages because they are being offloaded to non-emergency
+consoles. If messages are lost, it sucks (and the appropriate "dropped"
+messages are sent), but it isn't critical. Once we can agree to this
+point, printk becomes so much easier to work with.
 
-Peter Zijlstra several times talked about fully lockless
-consoles. He is using the early console for debugging, see
-the patchset
-https://lkml.kernel.org/r/20170928121823.430053219@infradead.org
+Emergency consoles exist for handling important messages. They will not
+drop messages. They are synchronous and immediate.
 
-I am not sure if it is always possible. I personally see
-the following way:
+>> It is not necessary. It is desired. Why should _any_ task be punished
+>> with console writing? That is what the printk kthread is for.
+>
+> I do not know about any acceptable solution without punishing
+> the tasks. But we might find a better compromise between the
+> punishment and reliability.
 
-   1. Make the printk ring buffer fully lockless. Then we reduce
-      the problem only to console locking. And we could
-      have a per-console-driver lock (no the big lock like
-      prb_lock()).
+I do not want printk to compromise. That compromise is part of the
+problem. Let's partition printk to important and non-important so that
+we can optimize both. _That_ is the heart of this series.
 
-   2. I am afraid that we need to add some locking between CPUs
-      to avoid mixing characters from directly printed messages.
-      This would be safe everywhere expect in NMI. Then we could
-      either risk ignoring the lock in NMI (there should be few
-      messages anyway, the backtraces would get synchronized
-      another way). Or we might need a compromise between
-      handling console using the current owner and offload.
-
-
-Best Regards,
-Petr
+John Ogness
