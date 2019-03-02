@@ -1,61 +1,74 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v4 00/10] Add basic support for Socionext Milbeaut M10V SoC
-Date: Fri, 1 Mar 2019 15:34:34 +0100
-Message-ID: <CAK8P3a2oLYWR7uXcg-aL5MR0U24yk0ftoBahVuVCoq5Z3NyoAA@mail.gmail.com>
-References: <1551243056-10521-1-git-send-email-sugaya.taichi@socionext.com>
+From: Calvin Owens <calvinowens@fb.com>
+Subject: [PATCH 4/4] printk: Add a device attribute for the per-console loglevel
+Date: Fri, 1 Mar 2019 16:48:20 -0800
+Message-ID: <4f71564063a07837e3c4df41326bad25e7dc4db4.1551486733.git.calvinowens@fb.com>
+References: <cover.1551486732.git.calvinowens@fb.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1551243056-10521-1-git-send-email-sugaya.taichi@socionext.com>
+In-Reply-To: <cover.1551486732.git.calvinowens@fb.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sugaya Taichi <sugaya.taichi@socionext.com>
-Cc: DTML <devicetree@vger.kernel.org>, linux-serial@vger.kernel.org, Linux ARM <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, soc@kernel.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Russell King <linux@armlinux.org.uk>, Masahiro Yamada <yamada.masahiro@socionext.com>, Takao Orito <orito.takao@socionext.com>, Kazuhiro Kasai <kasai.kazuhiro@socionext.com>, Shinji Kanematsu <kanematsu.shinji@socionext.com>, Jassi Brar <jaswinder.singh@linaro.org>, Masami Hiramatsu <masami.hiramatsu@linaro.org>
+To: Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Calvin Owens <calvinowens@fb.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Feb 27, 2019 at 5:51 AM Sugaya Taichi
-<sugaya.taichi@socionext.com> wrote:
->
-> Hi,
->
-> Here is the series of patches the initial support for SC2000(M10V) of
-> Milbeaut SoCs. "M10V" is the internal name of SC2000, so commonly used in
-> source code.
->
-> SC2000 is a SoC of the Milbeaut series. equipped with a DSP optimized for
-> computer vision. It also features advanced functionalities such as 360-degree,
-> real-time spherical stitching with multi cameras, image stabilization for
-> without mechanical gimbals, and rolling shutter correction. More detail is
-> below:
-> https://www.socionext.com/en/products/assp/milbeaut/SC2000.html
->
-> Specifications for developers are below:
->  - Quad-core 32bit Cortex-A7 on ARMv7-A architecture
->  - NEON support
->  - DSP
->  - GPU
->  - MAX 3GB DDR3
->  - Cortex-M0 for power control
->  - NAND Flash Interface
->  - SD UHS-I
->  - SD UHS-II
->  - SDIO
->  - USB2.0 HOST / Device
->  - USB3.0 HOST / Device
->  - PCI express Gen2
->  - Ethernet Engine
->  - I2C
->  - UART
->  - SPI
->  - PWM
->
-> Support is quite minimal for now, since it only includes timer, clock,
-> pictrl and serial controller drivers, so we can only boot to userspace
-> through initramfs. Support for the other peripherals  will come eventually.
+Signed-off-by: Calvin Owens <calvinowens@fb.com>
+---
+ kernel/printk/printk.c | 40 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
-I've merged these all into the arm/newsoc branch now, with the
-exception of the patch that Greg has already taken.
-
-I'll do a little more build testing before that branch will be sent,
-but I expect it will be fine.
-
-     Arnd
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 67e1e993ab80..e7e602fa2d0b 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2560,8 +2560,48 @@ static int __init keep_bootcon_setup(char *str)
+ 
+ early_param("keep_bootcon", keep_bootcon_setup);
+ 
++static ssize_t loglevel_show(struct device *dev, struct device_attribute *attr,
++			     char *buf)
++{
++	struct console *con = container_of(dev, struct console, dev);
++	return sprintf(buf, "%d\n", con->level);
++}
++
++static ssize_t loglevel_store(struct device *dev, struct device_attribute *attr,
++			      const char *buf, size_t count)
++{
++	struct console *con = container_of(dev, struct console, dev);
++	ssize_t ret;
++	int tmp;
++
++	ret = kstrtoint(buf, 10, &tmp);
++	if (ret < 0)
++		return ret;
++
++	if (tmp < LOGLEVEL_EMERG)
++		return -ERANGE;
++
++	/*
++	 * Mimic the behavior of /dev/kmsg with respect to minimum_loglevel.
++	 */
++	if (tmp < minimum_console_loglevel)
++		tmp = minimum_console_loglevel;
++
++	con->level = tmp;
++	return ret;
++}
++
++static DEVICE_ATTR_RW(loglevel);
++
++static struct attribute *console_sysfs_attrs[] = {
++	&dev_attr_loglevel.attr,
++	NULL,
++};
++ATTRIBUTE_GROUPS(console_sysfs);
++
+ static struct bus_type console_subsys = {
+ 	.name = "console",
++	.dev_groups = console_sysfs_groups,
+ };
+ 
+ static void console_release(struct device *dev)
+-- 
+2.17.1
