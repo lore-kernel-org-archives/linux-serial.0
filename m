@@ -1,40 +1,46 @@
-From: Calvin Owens <calvinowens@fb.com>
-Subject: Re: [PATCH 4/4] printk: Add a device attribute for the per-console
- loglevel
-Date: Mon, 4 Mar 2019 19:10:14 +0000
-Message-ID: <20190304191006.GA51516@calvinowens-mba.dhcp.thefacebook.com>
-References: <cover.1551486732.git.calvinowens@fb.com>
- <4f71564063a07837e3c4df41326bad25e7dc4db4.1551486733.git.calvinowens@fb.com>
- <20190304080630.GA4495@jagdpanzerIV>
+From: Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Re: tty: uart: custom speed
+Date: Mon, 4 Mar 2019 18:47:42 -0000 (UTC)
+Message-ID: <q5jrsd$4dg0$1@blaine.gmane.org>
+References: <CAPY=qRSrw7JxAbORoUHckxcMRjk16zYP7nc2zakGd411JMjGjA@mail.gmail.com>
+ <20190304132302.GA9869@kroah.com>
+ <CAPY=qRS1R9GV+=k8e93BSaEJzTkpSaeQnF4sKQF2QW+CpUSWPg@mail.gmail.com>
+ <20190304145747.GB27898@kroah.com>
+ <CAPY=qRTEh5yksQH9o2bBSRWA8J1xSdjLd4dknXt7S9QFrKsfSQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190304080630.GA4495@jagdpanzerIV>
-Content-Language: en-US
-Content-ID: <148B6FF61B277146B637BE3CEC776F31@namprd15.prod.outlook.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Return-path: <kernelnewbies-bounces@kernelnewbies.org>
+List-Unsubscribe: <https://lists.kernelnewbies.org/mailman/options/kernelnewbies>,
+ <mailto:kernelnewbies-request@kernelnewbies.org?subject=unsubscribe>
+List-Archive: <http://lists.kernelnewbies.org/pipermail/kernelnewbies/>
+List-Post: <mailto:kernelnewbies@kernelnewbies.org>
+List-Help: <mailto:kernelnewbies-request@kernelnewbies.org?subject=help>
+List-Subscribe: <https://lists.kernelnewbies.org/mailman/listinfo/kernelnewbies>,
+ <mailto:kernelnewbies-request@kernelnewbies.org?subject=subscribe>
+Errors-To: kernelnewbies-bounces@kernelnewbies.org
+To: kernelnewbies@kernelnewbies.org
+Cc: linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-T24gTW9uZGF5IDAzLzA0IGF0IDE3OjA2ICswOTAwLCBTZXJnZXkgU2Vub3poYXRza3kgd3JvdGU6
-DQo+IE9uICgwMy8wMS8xOSAxNjo0OCksIENhbHZpbiBPd2VucyB3cm90ZToNCj4gPiArc3RhdGlj
-IHN0cnVjdCBhdHRyaWJ1dGUgKmNvbnNvbGVfc3lzZnNfYXR0cnNbXSA9IHsNCj4gPiArCSZkZXZf
-YXR0cl9sb2dsZXZlbC5hdHRyLA0KPiA+ICsJTlVMTCwNCj4gPiArfTsNCj4gPiArQVRUUklCVVRF
-X0dST1VQUyhjb25zb2xlX3N5c2ZzKTsNCj4gPiArDQo+ID4gIHN0YXRpYyBzdHJ1Y3QgYnVzX3R5
-cGUgY29uc29sZV9zdWJzeXMgPSB7DQo+ID4gIAkubmFtZSA9ICJjb25zb2xlIiwNCj4gPiArCS5k
-ZXZfZ3JvdXBzID0gY29uc29sZV9zeXNmc19ncm91cHMsDQo+ID4gIH07DQo+IA0KPiBEbyB3ZSBy
-ZWFsbHkgbmVlZCB0byBjaGFuZ2UgdGhpcyBkeW5hbWljYWxseT8gQ29uc29sZSBvcHRpb25zIGFy
-ZQ0KPiB0cmFkaXRpb25hbGx5IHN0YXRpYyAoYm9vdCBwYXJhbSBvciBEVCkuIENhbiB3ZSBhbHNv
-IGJlIGhhcHB5IHdpdGgNCj4gdGhlIHN0YXRpYyBwZXItY29uc29sZSBsb2dsZXZlbD8NCg0KSXQg
-cmVhbGx5IGRvZXMgbmVlZCB0byBiZSBydW50aW1lIGNvbmZpZ3VyYWJsZTogdGhlcmUgYXJlIGEg
-bG90IG9mIHVzZWNhc2VzDQp0aGF0IGVuYWJsZXMsIGxpa2UgdHVybmluZyB0aGUgZmFzdCBjb25z
-b2xlIHVwIHRvIEtFUk5fREVCVUcgb24gYSBwaWxlIG9mDQptYWNoaW5lcyB5b3Ugd2FudCB0byB0
-YWtlIGEgY2xvc2VyIGxvb2sgYXQuIFRoZSAna2VybmVsLnByaW50aycgZ2xvYmFsDQpsb2dsZXZl
-bCBpcyBhbHNvIGFscmVhZHkgY2hhbmdhYmxlIGF0IHJ1bnRpbWUsIGFuZCBzaW5jZSB0aGF0IHNl
-dHRpbmcNCmludGVyYWN0cyB3aXRoIHRoaXMgb25lIGl0IHdvdWxkIGJlIHN0cmFuZ2UgaWYgb25s
-eSB0aGUgZm9ybWVyIHdlcmUgYWJsZQ0KdG8gYmUgY2hhbmdlZC4NCg0KSSBhbHNvIHdhbnQgdG8g
-YWRkIG1vcmUgYXR0cmlidXRlIGtub2JzIHJlbGF0ZWQgdG8gZXh0ZW5kZWQgY29uc29sZXMsDQpz
-byB0aGUgcGx1bWJpbmcgdG8gZ2V0IHRoaW5ncyBleHBvc2VkIGluIHN5c2ZzIGlzIHdvcnRoIGl0
-IGZvciBtZS4NCg0KVGhhbmtzLA0KQ2FsdmluDQo=
+T24gMjAxOS0wMy0wNCwgU3ViaGFzaGluaSBSYW8gQmVlcmlzZXR0eSA8c3ViaGFzaGJlZXJpc2V0
+dHlAZ21haWwuY29tPiB3cm90ZToKPiBPbiBNb24sIE1hciA0LCAyMDE5IGF0IDg6MjcgUE0gR3Jl
+ZyBLSCA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+IHdyb3RlOgo+Cj4+IEhhdmUgeW91IHJl
+YWQgdGhlIGRvY3VtZW50YXRpb24gb24gaG93IHRvIHNldCBjdXN0b20gYmF1ZCByYXRlcz8gIEkK
+Pj4gY2FuJ3QgZmluZCB0aGUgbGluayB0byBpdCBhdCB0aGUgbW9tZW50LCBidXQgaXQgaXMgdmVy
+eSBwb3NzaWJsZSB0byBkbwo+PiB0aGF0IHRvZGF5LCBubyBzcGVjaWFsIGlvY3RscyBhcmUgbmVl
+ZGVkIGF0IGFsbC4gIEkgdGhpbmsgc29tZW9uZSB3YXMKPj4gZmluYWxseSB3b3JraW5nIG9uIGdl
+dHRpbmcgZ2xpYmMgdG8gc3VwcG9ydCBpdCBkaXJlY3RseSwgYnV0IEkgZG8gbm90Cj4+IGtub3cg
+aWYgdGhvc2UgcGF0Y2hlcyBldmVyIGdvdCBtZXJnZWQsIHNvIHlvdSB3b3VsZCBqdXN0IGhhdmUg
+dG8gIm9wZW4KPj4gY29kZSIgaXQgaW4gdXNlcnNwYWNlIGlmIHlvdSB3YW50IHRvIGRvIHRoaXMu
+Cj4KPiBJIGNvdWxkIG5vdCBmaW5kIGNsZWFyIGRvY3VtZW50YXRpb24gb24gdGhpcywgSeKAmW0g
+dmVyeSBtdWNoIHRoYW5rZnVsCj4gaWYgc29tZW9uZSBwb2ludCBtZSBvbiB0aGlzLiBJIHRob3Vn
+aHQgb2YgZXhwbG9yaW5nIFRJT0NHU0VSSUFMIGFuZAo+IFRJT0NTU0VSSUFMIElvY3Rs4oCZcyB0
+byBzZXQgY3VzdG9tIGJhdWQgcmF0ZXMuIE5vdyBpdCBsb29rcyBsaWtlIEkKPiBzaG91bGQgcmVh
+ZCB0aGUga2VybmVsIGNvZGUgdG8gdW5kZXJzdGFuZCBob3cgdG8gYWNoaWV2ZSB0aGlzIHdpdGhv
+dXQKPiBzcGVjaWFsIGlvY3Rscy4KCllvdSB1c2UgdGhlIHRlcm1pb3MyIHN0cnVjdHVyZSBhbmQg
+VENHRVRTMi9UQ1NFVFMgaW9jdGwgY2FsbHM6CgogICAgaHR0cDovL3d3dy5wYW5peC5jb20vfmdy
+YW50ZS9hcmJpdHJhcnktYmF1ZC5jCgotLSAKR3JhbnQKCgoKCgoKCgpfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpLZXJuZWxuZXdiaWVzIG1haWxpbmcgbGlz
+dApLZXJuZWxuZXdiaWVzQGtlcm5lbG5ld2JpZXMub3JnCmh0dHBzOi8vbGlzdHMua2VybmVsbmV3
+Ymllcy5vcmcvbWFpbG1hbi9saXN0aW5mby9rZXJuZWxuZXdiaWVzCg==
