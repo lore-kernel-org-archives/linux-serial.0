@@ -1,60 +1,32 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: [PATCH 4/4] printk: Add a device attribute for the per-console
- loglevel
-Date: Mon, 4 Mar 2019 17:06:30 +0900
-Message-ID: <20190304080630.GA4495@jagdpanzerIV>
-References: <cover.1551486732.git.calvinowens@fb.com>
- <4f71564063a07837e3c4df41326bad25e7dc4db4.1551486733.git.calvinowens@fb.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Baolin Wang <baolin.wang@linaro.org>
+Subject: [PATCH v2 0/4] Add new features for the Spreadtrum serial controller
+Date: Mon,  4 Mar 2019 16:58:20 +0800
+Message-ID: <cover.1551689518.git.baolin.wang@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <4f71564063a07837e3c4df41326bad25e7dc4db4.1551486733.git.calvinowens@fb.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Calvin Owens <calvinowens@fb.com>
-Cc: Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com, robh+dt@kernel.org, mark.rutland@arm.com, orsonzhai@gmail.com, zhang.lyra@gmail.com
+Cc: baolin.wang@linaro.org, broonie@kernel.org, lanqing.liu@unisoc.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On (03/01/19 16:48), Calvin Owens wrote:
-> +static ssize_t loglevel_store(struct device *dev, struct device_attribute *attr,
-> +			      const char *buf, size_t count)
-> +{
-> +	struct console *con = container_of(dev, struct console, dev);
-> +	ssize_t ret;
-> +	int tmp;
-> +
-> +	ret = kstrtoint(buf, 10, &tmp);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if (tmp < LOGLEVEL_EMERG)
-> +		return -ERANGE;
-> +
-> +	/*
-> +	 * Mimic the behavior of /dev/kmsg with respect to minimum_loglevel.
-> +	 */
-> +	if (tmp < minimum_console_loglevel)
-> +		tmp = minimum_console_loglevel;
-> +
-> +	con->level = tmp;
-> +	return ret;
-> +}
-> +
-> +static DEVICE_ATTR_RW(loglevel);
-> +
-> +static struct attribute *console_sysfs_attrs[] = {
-> +	&dev_attr_loglevel.attr,
-> +	NULL,
-> +};
-> +ATTRIBUTE_GROUPS(console_sysfs);
-> +
->  static struct bus_type console_subsys = {
->  	.name = "console",
-> +	.dev_groups = console_sysfs_groups,
->  };
+This patch set fixes the baud rate calculation formula issue, as well as
+adding power management support and DMA mode support for the Spreadtrum
+serial controller.
 
-Do we really need to change this dynamically? Console options are
-traditionally static (boot param or DT). Can we also be happy with
-the static per-console loglevel?
+Changes from v1:
+ - The patch 1 of V1 was applied, so remove the baud rate fix from this patch set.
+ - Add reviewed tag from Rob for patch 1.
+ - Fix the incorrect names' order in patch 3.
 
-	-ss
+Lanqing Liu (4):
+  dt-bindings: serial: sprd: Add clocks and clocks-names properties
+  serial: sprd: Add power management for the Spreadtrum serial
+    controller
+  dt-bindings: serial: sprd: Add dma properties to support DMA mode
+  serial: sprd: Add DMA mode support
+
+ .../devicetree/bindings/serial/sprd-uart.txt       |   17 +-
+ drivers/tty/serial/sprd_serial.c                   |  501 +++++++++++++++++++-
+ 2 files changed, 498 insertions(+), 20 deletions(-)
+
+-- 
+1.7.9.5
