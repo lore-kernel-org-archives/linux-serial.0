@@ -1,56 +1,60 @@
 From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: [RFC PATCH v1 08/25] printk: add ring buffer and kthread
-Date: Mon, 4 Mar 2019 16:38:56 +0900
-Message-ID: <20190304073856.GA552@jagdpanzerIV>
-References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190212143003.48446-9-john.ogness@linutronix.de>
+Subject: Re: [PATCH 4/4] printk: Add a device attribute for the per-console
+ loglevel
+Date: Mon, 4 Mar 2019 17:06:30 +0900
+Message-ID: <20190304080630.GA4495@jagdpanzerIV>
+References: <cover.1551486732.git.calvinowens@fb.com>
+ <4f71564063a07837e3c4df41326bad25e7dc4db4.1551486733.git.calvinowens@fb.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190212143003.48446-9-john.ogness@linutronix.de>
+In-Reply-To: <4f71564063a07837e3c4df41326bad25e7dc4db4.1551486733.git.calvinowens@fb.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: John Ogness <john.ogness@linutronix.de>
-Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: Calvin Owens <calvinowens@fb.com>
+Cc: Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On (02/12/19 15:29), John Ogness wrote:
-[..]
-> +	/* the printk kthread never exits */
-> +	for (;;) {
-> +		ret = prb_iter_wait_next(&iter, buf,
-> +					 PRINTK_RECORD_MAX, &master_seq);
-> +		if (ret == -ERESTARTSYS) {
-> +			continue;
-> +		} else if (ret < 0) {
-> +			/* iterator invalid, start over */
-> +			prb_iter_init(&iter, &printk_rb, NULL);
-> +			continue;
-> +		}
+On (03/01/19 16:48), Calvin Owens wrote:
+> +static ssize_t loglevel_store(struct device *dev, struct device_attribute *attr,
+> +			      const char *buf, size_t count)
+> +{
+> +	struct console *con = container_of(dev, struct console, dev);
+> +	ssize_t ret;
+> +	int tmp;
 > +
-> +		msg = (struct printk_log *)buf;
-> +		format_text(msg, master_seq, ext_text, &ext_len, text,
-> +			    &len, printk_time);
+> +	ret = kstrtoint(buf, 10, &tmp);
+> +	if (ret < 0)
+> +		return ret;
 > +
-> +		console_lock();
-> +		if (len > 0 || ext_len > 0) {
-> +			call_console_drivers(ext_text, ext_len, text, len);
-> +			boot_delay_msec(msg->level);
-> +			printk_delay();
-> +		}
-> +		console_unlock();
-> +	}
+> +	if (tmp < LOGLEVEL_EMERG)
+> +		return -ERANGE;
+> +
+> +	/*
+> +	 * Mimic the behavior of /dev/kmsg with respect to minimum_loglevel.
+> +	 */
+> +	if (tmp < minimum_console_loglevel)
+> +		tmp = minimum_console_loglevel;
+> +
+> +	con->level = tmp;
+> +	return ret;
+> +}
+> +
+> +static DEVICE_ATTR_RW(loglevel);
+> +
+> +static struct attribute *console_sysfs_attrs[] = {
+> +	&dev_attr_loglevel.attr,
+> +	NULL,
+> +};
+> +ATTRIBUTE_GROUPS(console_sysfs);
+> +
+>  static struct bus_type console_subsys = {
+>  	.name = "console",
+> +	.dev_groups = console_sysfs_groups,
+>  };
 
-This, theoretically, creates a whole new world of possibilities for
-console drivers. Now they can do GFP_KERNEL allocations and stall
-printk_kthread during OOM; or they can explicitly reschedule from
-->write() callback (via console_conditional_schedule()) because
-console_lock() sets console_may_schedule.
-
-It's one thing to do cond_resched() (or to let preemption to take over)
-after call_console_drivers() (when we are done printing a message to all
-console drivers) and another thing to let preemption to take over while
-we are printing a messages to the consoles. It probably would make sense
-to disable preemption around call_console_drivers().
+Do we really need to change this dynamically? Console options are
+traditionally static (boot param or DT). Can we also be happy with
+the static per-console loglevel?
 
 	-ss
