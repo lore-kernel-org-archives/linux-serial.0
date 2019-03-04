@@ -1,33 +1,61 @@
-From: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-Subject: Re: [RFC PATCH v1 08/25] printk: add ring buffer and kthread
-Date: Mon, 4 Mar 2019 20:07:03 +0900
-Message-ID: <20190304110703.GA960@tigerII.localdomain>
-References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190212143003.48446-9-john.ogness@linutronix.de>
- <20190304073856.GA552@jagdpanzerIV>
- <20190304100044.GC21004@jagdpanzerIV>
+From: Subhashini Rao Beerisetty <subhashbeerisetty@gmail.com>
+Subject: Re: tty: uart: custom speed
+Date: Mon, 4 Mar 2019 20:19:44 +0530
+Message-ID: <CAPY=qRS1R9GV+=k8e93BSaEJzTkpSaeQnF4sKQF2QW+CpUSWPg@mail.gmail.com>
+References: <CAPY=qRSrw7JxAbORoUHckxcMRjk16zYP7nc2zakGd411JMjGjA@mail.gmail.com>
+ <20190304132302.GA9869@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190304100044.GC21004@jagdpanzerIV>
-Sender: linux-kernel-owner@vger.kernel.org
-To: John Ogness <john.ogness@linutronix.de>
-Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <kernelnewbies-bounces@kernelnewbies.org>
+In-Reply-To: <20190304132302.GA9869@kroah.com>
+List-Unsubscribe: <https://lists.kernelnewbies.org/mailman/options/kernelnewbies>,
+ <mailto:kernelnewbies-request@kernelnewbies.org?subject=unsubscribe>
+List-Archive: <http://lists.kernelnewbies.org/pipermail/kernelnewbies/>
+List-Post: <mailto:kernelnewbies@kernelnewbies.org>
+List-Help: <mailto:kernelnewbies-request@kernelnewbies.org?subject=help>
+List-Subscribe: <https://lists.kernelnewbies.org/mailman/listinfo/kernelnewbies>,
+ <mailto:kernelnewbies-request@kernelnewbies.org?subject=subscribe>
+Errors-To: kernelnewbies-bounces@kernelnewbies.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, kernelnewbies <kernelnewbies@kernelnewbies.org>
 List-Id: linux-serial@vger.kernel.org
 
-On (03/04/19 19:00), Sergey Senozhatsky wrote:
-> 
-> But in general, channels which depend on preemptible printk will become
-> totally useless in some cases.
-> 
-
-Which brings me to a question - what are those messages/channels?
-Not important enough to be printed on consoles immediately, yet important
-enough to pass the suppress_message_printing() check. We may wave those
-semi-important messages good bye, I'm afraid, preemptible printk will
-take care of it.
-
-So... do we have a case here? Do we really need printk-kthread?
-
-	-ss
+T24gTW9uLCBNYXIgNCwgMjAxOSBhdCA2OjUzIFBNIEdyZWcgS0ggPGdyZWdraEBsaW51eGZvdW5k
+YXRpb24ub3JnPiB3cm90ZToKPgo+IE9uIE1vbiwgTWFyIDA0LCAyMDE5IGF0IDA1OjQ2OjU0UE0g
+KzA1MzAsIFN1Ymhhc2hpbmkgUmFvIEJlZXJpc2V0dHkgd3JvdGU6Cj4gPiAgIEhpIEFsbCwKPiA+
+Cj4gPgo+ID4gSeKAmXZlIGFuIFVBUlQgcG9ydHMgb24gWGlsaW54IEZQR0EgYm9hcmQgYW5kIGl0
+IGdldHMgY29ubmVjdGVkIHRvIFBDCj4gPiB2aWEgUENJZSBidXMuIEkgY291bGQgbm90IGZpbmQg
+YW55IGtlcm5lbCBzZXJpYWwgZHJpdmVyIHdoaWNoIHN1cHBvcnRzCj4gPiBvdXIgaGFyZHdhcmUg
+c28gSSBwbGFuIHRvIGRldmVsb3AgYSBuZXcgZHJpdmVyLiBJIHNlZSB0d28gYXBwcm9hY2hlcwo+
+ID4gdG8gZGV2ZWxvcCBhbiBVQVJUIGRyaXZlciBpLmUuIGVpdGhlciBieSB1c2luZyB0dHlfcmVn
+aXN0ZXJfZHJpdmVyKCkKPiA+IG9yIGFuIHVhcnRfcmVnaXN0ZXJfZHJpdmVyKCkuCj4gPgo+ID4K
+PiA+IFJlZ2FyZGluZyBteSBVQVJUIG1vZHVsZSwgaXQgaGFzIGEgY291bnRlciBvZiAxNiBiaXRz
+IGFuZCBydW5zIG9uIGEKPiA+IDMyTWh6IGNsb2NrLiBJdCBzdXBwb3J0cyBhbGwgdGhlIHN0YW5k
+YXJkICYgbm9uLXN0YW5kYXJkIGJhdWTigJlzIHVwIHRvCj4gPiA0TWJwcy4KPgo+IFdoYXQgdHlw
+ZSBvZiBVQVJUIGlzIGl0PyAgT2RkcyBhcmUgaXQgaXMgYmFzZWQgb24gYW4gZXhpc3RpbmcgZGVz
+aWduLCBubwo+IG9uZSBjcmVhdGVzIGEgYnJhbmQtbmV3IFVBUlQgYW55bW9yZS4gIEhvcGVmdWxs
+eS4gIElmIG5vdCwgd2hhdCBhCj4gd2FzdGUuLi4KCkZvciBVQVJUIHR5cGUsIEkgc2VlIHRoZSBw
+ZXJtaXR0ZWQgdHlwZXMgYXJlIG5vbmUsIDgyNTAsIDE2NDUwLCAxNjU1MCwKMTY1NTBBLCAxNjY1
+MCwgMTY2NTBWMiwgMTY2NTQsIDE2NzUwLCAxNjg1MCwgMTY5NTAsIGFuZCAxNjk1NCBldGMuCkxv
+b2tpbmcgaW50byB0aGUgZGF0YSBzaGVldCBJIGhhdmVu4oCZdCBmb3VuZCBhbnkgcmVnaXN0ZXIg
+b3IgcGFyYW1ldGVyCmRlZmluaW5nIGFueSBvZiB0aG9zZSBVQVJUIHR5cGVzLiAgSXMg4oCYVUFS
+VCB0eXBl4oCZIGlzIGRldGVybWluZWQgZnJvbSBhCnJlZ2lzdGVyIHNldHRpbmdzIHBvaW50IG9m
+IHZpZXcgb3IgYSBwaW5vdXQgcG9pbnQgb2Ygdmlldz8KCj4KPiA+IElmIEkgdXNlZCBzdHJ1Y3Qg
+dHR5X29wZXJhdGlvbnMsIEkgbm90aWNlZCB0aGF0IGJhdWQgcmF0ZSBjaGFuZ2luZyBpcwo+ID4g
+ZG9uZSB2aWEg4oCcLnNldF90ZXJtaW9z4oCdIEFQSSwgYnV0IHRoaXMgbWV0aG9kIG9ubHkgc3Vw
+cG9ydHMgc3RhbmRhcmQKPiA+IGJhdWQgcmF0ZXMuIEnigJlkIGxpa2UgdG8ga25vdyB3aHkgdGhp
+cyBBUEkgZG9lcyBub3Qgc3VwcG9ydAo+ID4gbm9uLXN0YW5kYXJkIGJhdWQgcmF0ZXM/Cj4KPiBX
+aHkgZG8geW91IHRoaW5rIGl0IGRvZXMgbm90PwpGcm9tIGRhdGEgc2hlZXQgcG9pbnQgb2Ygdmll
+dyBJJ20gY2xlYXIgb24gaG93IHRvIHNldCB0aGUgbm9uLXN0YW5kYXJkCmJhdWQgcmF0ZSwgZXZl
+biBJIGV4cG9zZWQgYSBjdXN0b20gSW9jdGwgZm9yIHRoaXMuIEJ1dCBoZXJlIEnigJltIHRyeWlu
+Zwp0byB1bmRlcnN0YW5kIGhvdyBpdCBpcyBhY2hpZXZlZCBieSB1c2luZyBhdmFpbGFibGUgVUFS
+VCBrZXJuZWwKZnJhbWV3b3JrLgpGb3Igbm9uLXN0YW5kYXJkIGJhdWQgcmF0ZSByZXF1ZXN0cywg
+b2JzZXJ2ZWQgdGhhdAp0dHktPnRlcm1pb3MuY19pc3BlZWQgJiB0dHktPnRlcm1pb3MuY19vc3Bl
+ZWQgc2V0IHRvIDM4NDAwLiBJIGRpZCBub3QKdW5kZXJzdG9vZCB3aHkgaXQgY2hhbmdlcz8KCj4K
+PiBBbnl3YXksIHVzZSB0aGUgdWFydCBpbnRlcmZhY2UgYXMgb2RkcyBhcmUgeW91ciB1YXJ0IGlz
+IGFscmVhZHkKPiBzdXBwb3J0ZWQuICBHZXQgdGhlIGRhdGEgc2hlZXQgYW5kIHN0YXJ0IHJlYWRp
+bmcgOikKPgo+IGdvb2QgbHVjaywKPgo+IGdyZWcgay1oCgpfX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXwpLZXJuZWxuZXdiaWVzIG1haWxpbmcgbGlzdApLZXJu
+ZWxuZXdiaWVzQGtlcm5lbG5ld2JpZXMub3JnCmh0dHBzOi8vbGlzdHMua2VybmVsbmV3Ymllcy5v
+cmcvbWFpbG1hbi9saXN0aW5mby9rZXJuZWxuZXdiaWVzCg==
