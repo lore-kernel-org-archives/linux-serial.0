@@ -1,121 +1,204 @@
-From: John Ogness <john.ogness@linutronix.de>
-Subject: Re: [RFC PATCH v1 08/25] printk: add ring buffer and kthread
-Date: Tue, 05 Mar 2019 22:00:58 +0100
-Message-ID: <87o96p9gtx.fsf@linutronix.de>
-References: <20190212143003.48446-1-john.ogness@linutronix.de>
-        <20190212143003.48446-9-john.ogness@linutronix.de>
-        <20190304073856.GA552@jagdpanzerIV>
-        <20190304100044.GC21004@jagdpanzerIV>
-        <20190304110703.GA960@tigerII.localdomain>
+From: Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v2] tty/serial: Add a serial port simulator
+Date: Tue, 5 Mar 2019 15:29:51 -0800
+Message-ID: <eea0ad95-8344-371a-1dd0-58c8366a355b@infradead.org>
+References: <20190305171231.22133-1-minyard@acm.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190304110703.GA960@tigerII.localdomain> (Sergey Senozhatsky's
-        message of "Mon, 4 Mar 2019 20:07:03 +0900")
+In-Reply-To: <20190305171231.22133-1-minyard@acm.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+To: minyard@acm.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Corey Minyard <cminyard@mvista.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Sergey,
+Hi Corey,
 
-Thanks for your feedback.
+Just some doc comments.
 
-I am responding to this comment ahead of your previous comments because
-it really cuts at the heart of the proposed design. After addressing
-this point it will make it easier for me to respond to your other
-comments.
+On 3/5/19 9:12 AM, minyard@acm.org wrote:
+> diff --git a/Documentation/serial/serialsim.rst b/Documentation/serial/serialsim.rst
+> new file mode 100644
+> index 000000000000..655e10b4908e
+> --- /dev/null
+> +++ b/Documentation/serial/serialsim.rst
+> @@ -0,0 +1,149 @@
+> +.. SPDX-License-Identifier: GPL-2.0+
+> +=====================================
+> +serialsim - A kernel serial simualtor
+                               xxxxxxxxx
+                        serial device simulator
 
-NOTE: This is a lengthy response.
+> +=====================================
+> +
+> +:Author: Corey Minyard <minyard@mvista.com> / <minyard@acm.org>
+> +
+> +The serialsim device is a serial simulator with echo and pipe devices.
+> +It is quite useful for testing programs that use serial ports.
+> +
+> +This attempts to emulate a basic serial device.  It uses the baud rate
+> +and sends the bytes through the loopback or pipe at approximately the
+> +speed it would on a normal serial device.
+> +
+> +There is a python interface to the special ioctls for controlling the
+> +remote end of the termios in addition to the standard ioctl interface
+> +documented below.  See https://github.com/cminyard/serialsim
+> +
+> +=====
+> +Using
+> +=====
+> +
+> +The serialsim.ko module creates two types of devices.  Echo devices
+> +simply echo back the data to the same device.  These devices will
+> +appear as /dev/ttyEcho<n>.
+> +
+> +Pipe devices will transfer the data between two devices.  The
+> +devices will appear as /dev/ttyPipeA<n> and /dev/ttyPipeB<n>.  And
 
-On 2019-03-04, Sergey Senozhatsky <sergey.senozhatsky@gmail.com> wrote:
->> But in general, channels which depend on preemptible printk will
->> become totally useless in some cases.
->
-> Which brings me to a question - what are those messages/channels? Not
-> important enough to be printed on consoles immediately, yet important
-> enough to pass the suppress_message_printing() check.
+                                                                  Any
 
-I would like to clarify that message supression (i.e. console loglevel)
-is a method of reducing what is printed. It does nothing to address the
-issues related to console printing. My proposal focusses on addressing
-the issues related to console printing.
+> +data written to PipeA reads from PipeB, and vice-versa.
+> +
+> +You may create an arbitrary number of devices by setting the
+> +nr_echo ports and nr_pipe_ports module parameters.  The default is
 
-Console printing is a convenient feature to allow a kernel to
-communicate information to a user without any reliance on
-userspace. IMHO there are 2 categories of messages that the kernel will
-communicate. The first is informational (usb events, wireless and
-ethernet connectivity, filesystem events, etc.). Since this category of
-messages occurs during normal runtime, we should expect that it does not
-cause adverse effects to the rest of the system (such as latencies and
-non-deterministic behavior).
+   nr_echo_ports
 
-The second category is for emergency situations, where the kernel needs
-to report something unusual (panic, BUG, WARN, etc.). In some of these
-situations, it may be the last thing the kernel ever does. We should
-expect this category to focus on getting the message out as reliably as
-possible. Even if it means disturbing the system with large latencies.
+> +four for both.
 
-_Both_ categories are important for the user, but their requirements are
-different:
+or for each.
 
-   informational: non-disturbing
-   emergency:     reliable
+> +
+> +This driver supports modifying the modem control lines and
+> +injecting various serial errors.  It also supports a simulated null
+> +modem between the two pipes, or in a loopback on the echo device.
+> +
+> +By default a pipe or echo comes up in null modem configuration,
+> +meaning that the DTR line is hooked to the DSR and CD lines on the
+> +other side and the RTS line on one side is hooked to the CTS line
+> +on the other side.
+> +
+> +The RTS and CTS lines don't currently do anything for flow control.
+> +
+> +You can modify null modem and control the lines individually
+> +through an interface in /sys/class/tty/ttyECHO<n>/ctrl,
+> +/sys/class/tty/ttyPipeA<n>/ctrl, and
+> +/sys/class/tty/ttyPipeB<n>/ctrl.  The following may be written to
+> +those files:
+> +
+> +[+-]nullmodem
+> +    enable/disable null modem
+> +
+> +[+-]cd
+> +    enable/disable Carrier Detect (no effect if +nullmodem)
+> +
+> +[+-]dsr
+> +    enable/disable Data Set Ready (no effect if +nullmodem)
+> +
+> +[+-]cts
+> +    enable/disable Clear To Send (no effect if +nullmodem)
+> +
+> +[+-]ring
+> +    enable/disable Ring
+> +
+> +frame
+> +    inject a frame error on the next byte
+> +
+> +parity
+> +    inject a parity error on the next byte
+> +
+> +overrun
+> +    inject an overrun error on the next byte
+> +
+> +The contents of the above files has the following format:
 
-But what if a console doesn't support the write_atomic() that the
-emergency category requires? Then implement it. We currently have about
-80 console drivers.
+                                   have
 
-But what if can't be implemented? vt console, for example? Yes, the vt
-console would be tricky. It doesn't even support the current
-bust_spinlocks/oops_in_progress. But since the emergency category has a
-clear requirement (reliability), it means that a vt write_atomic() does
-not need to be concerned with system disturbance. That could help to
-find an implementation that will work, even for vt.
+> +
+> +tty[Echo|PipeA|PipeB]<n>
+> +    <mctrl values>
+> +
+> +where <mctrl values> is the modem control values above (not frame,
+> +parity, or overrun) with the following added:
+> +
+> +[+-]dtr
+> +    value of the Data Terminal Ready
+> +
+> +[+-]rts
+> +    value of the Request To Send
+> +
+> +The above values are not settable through this interface, they are
+> +set through the serial port interface itself.
+> +
+> +So, for instance, ttyEcho0 comes up in the following state::
+> +
+> +   # cat /sys/class/tty/ttyEcho0/ctrl
+> +   ttyEcho0: +nullmodem -cd -dsr -cts -ring -dtr -rts
+> +
+> +If something connects, it will become::
+> +
+> +   ttyEcho0: +nullmodem +cd +dsr +cts -ring +dtr +rts
+> +
+> +To enable ring::
+> +
+> +   # echo "+ring" >/sys/class/tty/ttyEcho0/ctrl
+> +   # cat /sys/class/tty/ttyEcho0/ctrl
+> +   ttyEcho0: +nullmodem +cd +dsr +cts +ring +dtr +rts
+> +
+> +Now disable NULL modem and the CD line::
+> +
+> +   # echo "-nullmodem -cd" >/sys/class/tty/ttyEcho0/ctrl
+> +   # cat /sys/class/tty/ttyEcho0/ctrl
+> +   ttyEcho0: -nullmodem -cd -dsr -cts +ring -dtr -rts
+> +
+> +Note that these settings are for the side you are modifying.  So if
+> +you set nullmodem on ttyPipeA0, that controls whether the DTR/RTS
+> +lines from ttyPipeB0 affect ttyPipeA0.  It doesn't affect ttyPipeB's
+> +modem control lines.
+> +
+> +The PIPEA and PIPEB devices also have the ability to set these
+> +values for the other end via an ioctl.  The following ioctls are
+> +available:
+> +
+> +TIOCSERSNULLMODEM
+> +    Set the null modem value, the arg is a boolean.
+> +
+> +TIOCSERSREMMCTRL
+> +    Set the modem control lines, bits 16-31 of the arg is
 
-> We may wave those semi-important messages good bye, I'm afraid,
-> preemptible printk will take care of it.
+                                                          are
 
-You are talking about a system that is overloaded with messages to print
-to the console. The current printk implementation will do a better job
-of getting the informational messages out, but at an enormous cost to
-all the tasks on the system (including the realtime tasks). I am
-proposing a printk implementation where the tasks are not affected by
-console printing floods. When the CPU is allowed to dedicate itself to
-tasks, this obviously reduces the CPU available for console printing,
-and thus more messages will be lost. It is a choice to clarify printk's
-role (non-disturbance) and at the same time guarantee more determinism
-for the kernel and its tasks.
+> +    a 16-bit mask telling which values to set, bits 0-15 are the
+> +    actual values.  Settable values are TIOCM_CAR, TIOCM_CTS,
+> +    TIOCM_DSR, and TIOC_RNG.  If NULLMODEM is set to true, then only
+> +    TIOC_RNG is settable.  The DTR and RTS lines are not here, you can
+> +    set them through the normal interface.
+> +
+> +TIOCSERSREMERR
+> +    Send an error or errors on the next sent byte.  arg is
+> +    a bitwise OR of (1 << TTY_xxx).  Allowed errors are TTY_BREAK,
 
-As I've said, the messages of the informational category are also
-important. There are things that can be done to help get these messages
-out. For example:
+is this better: (or I don't understand?)
+       a bitwise OR of (1 << TTY_xxx) and one (or more of) the
+       allowed error flags TTY_BREAK, TTY_FRAME, TTY_PARITY, and TTY_OVERRUN.
 
-- Creating printk-kthreads per console (and thus per-console locks) so
-  that printk-buffer readers are not slowing each other down.
+> +    TTY_FRAME, TTY_PARITY, and TTY_OVERRUN.
+> +
+> +TIOCSERGREMTERMIOS
+> +    Return the termios structure for the other side of the pipe.
+> +    arg is a pointer to a standard termios struct.
+> +
+> +TIOCSERGREMRS485
+> +    Return the remote RS485 settings, arg is a pointer to a struct
+> +    serial_rs485.
+> +
+> +Note that unlike the sysfs interface, these ioctls affect the other
+> +end.  So setting nullmodem on the ttyPipeB0 interface sets whether
+> +the DTR/RTS lines on ttyPipeB0 affect ttyPipeA0.
 
-- Having printk-threads use priority-buckets based on loglevels so that
-  (like the rt scheduler) more important messages are printed first.
 
-- Assigning the printk-kthread of more important consoles an appropriate
-  realtime priority.
-
-> So... do we have a case here? Do we really need printk-kthread?
-
-Obviously I answer yes to that.
-
-I want messages of the information category to cause no disturbance to
-the system. Give the kernel the freedom to communicate to users without
-destroying its own performance. This can only be achieved if the
-messages are printed from a _fully_ preemptible context.
-
-And I want messages of the emergency category to be as reliable as
-possible, regardless of the costs to the system. Give the kernel a clear
-mechanism to _reliably_ communicate critical information. Such messages
-should never appear on a correctly functioning system.
-
-And again, both of the above have nothing to do with message
-suppression. Here I am addressing the console printing issues:
-reliability and disturbance.
-
-John Ogness
+cheers.
+-- 
+~Randy
