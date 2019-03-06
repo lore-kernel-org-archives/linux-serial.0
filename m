@@ -1,92 +1,102 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [PATCH v2] tty: xilinx_uartps: Correct return value in probe
-Date: Wed, 6 Mar 2019 13:34:46 +0100
-Message-ID: <0755f963-5f02-d5c7-57e8-d19e3dd2be7f@xilinx.com>
-References: <1543927882-15091-1-git-send-email-rajan.vaja@xilinx.com>
- <1551433028-25207-1-git-send-email-rajan.vaja@xilinx.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
+Subject: Serial console is causing system lock-up
+Date: Wed, 6 Mar 2019 09:27:13 -0500 (EST)
+Message-ID: <alpine.LRH.2.02.1903060917280.5335@file01.intranet.prod.int.rdu2.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1551433028-25207-1-git-send-email-rajan.vaja@xilinx.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rajan Vaja <rajan.vaja@xilinx.com>, gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: linux-kernel@vger.kernel.org, JOLLYS@xilinx.com, anirudh@xilinx.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <dm-devel-bounces@redhat.com>
+List-Unsubscribe: <https://www.redhat.com/mailman/options/dm-devel>,
+	<mailto:dm-devel-request@redhat.com?subject=unsubscribe>
+List-Archive: <https://www.redhat.com/archives/dm-devel>
+List-Post: <mailto:dm-devel@redhat.com>
+List-Help: <mailto:dm-devel-request@redhat.com?subject=help>
+List-Subscribe: <https://www.redhat.com/mailman/listinfo/dm-devel>,
+	<mailto:dm-devel-request@redhat.com?subject=subscribe>
+Sender: dm-devel-bounces@redhat.com
+Errors-To: dm-devel-bounces@redhat.com
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, linux-serial@vger.kernel.org
+Cc: dm-devel@redhat.com, Nigel Croxon <ncroxon@redhat.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 01. 03. 19 10:37, Rajan Vaja wrote:
-> Existing driver checks for alternate clock if devm_clk_get() fails
-> and returns error code for last clock failure. If xilinx_uartps is
-> called before clock driver, devm_clk_get() returns -EPROBE_DEFER.
-> In this case, probe should not check for alternate clock as main
-> clock is already present in DTS and return -EPROBE_DEFER only.
-> 
-> This patch fixes it by not checking for alternate clock when main
-> clock get returns -EPROBE_DEFER.
-> 
-> Signed-off-by: Rajan Vaja <rajan.vaja@xilinx.com>
-> ---
-> Changes in v2:
->   * Handle dynamic port allocation error cases
-> ---
->  drivers/tty/serial/xilinx_uartps.c | 32 +++++++++++++++++++-------------
->  1 file changed, 19 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-> index 094f295..f7ae73e 100644
-> --- a/drivers/tty/serial/xilinx_uartps.c
-> +++ b/drivers/tty/serial/xilinx_uartps.c
-> @@ -1547,27 +1547,33 @@ static int cdns_uart_probe(struct platform_device *pdev)
->  	}
->  
->  	cdns_uart_data->pclk = devm_clk_get(&pdev->dev, "pclk");
-> +	if (PTR_ERR(cdns_uart_data->pclk) == -EPROBE_DEFER) {
-> +		rc = PTR_ERR(cdns_uart_data->pclk);
-> +		goto err_out_unregister_driver;
-> +	}
-> +
->  	if (IS_ERR(cdns_uart_data->pclk)) {
->  		cdns_uart_data->pclk = devm_clk_get(&pdev->dev, "aper_clk");
-> -		if (!IS_ERR(cdns_uart_data->pclk))
-> -			dev_err(&pdev->dev, "clock name 'aper_clk' is deprecated.\n");
-> +		if (IS_ERR(cdns_uart_data->pclk)) {
-> +			rc = PTR_ERR(cdns_uart_data->pclk);
-> +			goto err_out_unregister_driver;
-> +		}
-> +		dev_err(&pdev->dev, "clock name 'aper_clk' is deprecated.\n");
->  	}
-> -	if (IS_ERR(cdns_uart_data->pclk)) {
-> -		dev_err(&pdev->dev, "pclk clock not found.\n");
-> -		rc = PTR_ERR(cdns_uart_data->pclk);
-> +
-> +	cdns_uart_data->uartclk = devm_clk_get(&pdev->dev, "uart_clk");
-> +	if (PTR_ERR(cdns_uart_data->uartclk) == -EPROBE_DEFER) {
-> +		rc = PTR_ERR(cdns_uart_data->uartclk);
->  		goto err_out_unregister_driver;
->  	}
->  
-> -	cdns_uart_data->uartclk = devm_clk_get(&pdev->dev, "uart_clk");
->  	if (IS_ERR(cdns_uart_data->uartclk)) {
->  		cdns_uart_data->uartclk = devm_clk_get(&pdev->dev, "ref_clk");
-> -		if (!IS_ERR(cdns_uart_data->uartclk))
-> -			dev_err(&pdev->dev, "clock name 'ref_clk' is deprecated.\n");
-> -	}
-> -	if (IS_ERR(cdns_uart_data->uartclk)) {
-> -		dev_err(&pdev->dev, "uart_clk clock not found.\n");
-> -		rc = PTR_ERR(cdns_uart_data->uartclk);
-> -		goto err_out_unregister_driver;
-> +		if (IS_ERR(cdns_uart_data->uartclk)) {
-> +			rc = PTR_ERR(cdns_uart_data->uartclk);
-> +			goto err_out_unregister_driver;
-> +		}
-> +		dev_err(&pdev->dev, "clock name 'ref_clk' is deprecated.\n");
->  	}
->  
->  	rc = clk_prepare_enable(cdns_uart_data->pclk);
-> 
+Hi
 
-Reviewed-by: Michal Simek <michal.simek@xilinx.com>
+I was debugging some kernel lockup with storage drivers and it turned out 
+that the lockup is caused by the serial console subsystem. If we use 
+serial console and if we write to it excessively, the kernel sometimes 
+lockup, sometimes reports rcu stalls and NMI backtraces. Sometimes it will 
+just print the console messages without donig anything else.
 
-Thanks,
-Michal
+This program tests the issue - on framebuffer console, the system is 
+sluggish, but it is possible to unload the module with rmmod. On serial 
+console, it locks up to the point that unloading the module is not 
+possible.
+
+Mikulas
+
+
+
+------------
+
+#include <linux/module.h>
+#include <linux/init.h>
+#include <linux/delay.h>
+#include <linux/slab.h>
+#include <linux/kthread.h>
+
+int n_threads = 0;
+int sleep_ms = 0;
+
+module_param_named(n_threads, n_threads, int, S_IRUGO);
+MODULE_PARM_DESC(n_threads, "The number of kernel threads");
+
+module_param_named(sleep_ms, sleep_ms, int, S_IRUGO);
+MODULE_PARM_DESC(sleep_ms, "Sleep time in milliseconds");
+
+struct task_struct **tasks;
+
+static int console_dumper(void *data)
+{
+	int t = (int)(long)data;
+	while (!kthread_should_stop()) {
+		printk("line from thread %d ---------------------------------------------------------------------------------------------------------------------------------------\n", t);
+		if (sleep_ms > 0)
+			msleep(sleep_ms);
+		cond_resched();
+	}
+	return 0;
+}
+
+static int __init dump_init(void)
+{
+	int i;
+	if (n_threads <= 0)
+		n_threads = num_online_cpus();
+	tasks = kmalloc(n_threads * sizeof(struct task_struct *), GFP_KERNEL);
+	if (!tasks)
+		return -ENOMEM;
+	for (i = 0; i < n_threads; i++) {
+		tasks[i] = kthread_create(console_dumper, (void *)(long)i, "console_dumper");
+		if (!tasks[i]) {
+			while (i--)
+				kthread_stop(tasks[i]);
+			kfree(tasks);
+			return -ENOMEM;
+		}
+		wake_up_process(tasks[i]);
+	}
+	return 0;
+}
+
+static void __exit dump_exit(void)
+{
+	int i;
+	for (i = 0; i < n_threads; i++) {
+		kthread_stop(tasks[i]);
+	}
+	kfree(tasks);
+}
+
+module_init(dump_init)
+module_exit(dump_exit)
+MODULE_LICENSE("GPL");
