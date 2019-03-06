@@ -1,102 +1,93 @@
-From: Mikulas Patocka <mpatocka@redhat.com>
-Subject: Serial console is causing system lock-up
-Date: Wed, 6 Mar 2019 09:27:13 -0500 (EST)
-Message-ID: <alpine.LRH.2.02.1903060917280.5335@file01.intranet.prod.int.rdu2.redhat.com>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [RFC PATCH v1 08/25] printk: add ring buffer and kthread
+Date: Wed, 6 Mar 2019 16:57:01 +0100
+Message-ID: <20190306155701.wc22i2no5swdcids@pathway.suse.cz>
+References: <20190212143003.48446-1-john.ogness@linutronix.de>
+ <20190212143003.48446-9-john.ogness@linutronix.de>
+ <20190304073856.GA552@jagdpanzerIV>
+ <20190304100044.GC21004@jagdpanzerIV>
+ <20190304110703.GA960@tigerII.localdomain>
+ <87o96p9gtx.fsf@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <dm-devel-bounces@redhat.com>
-List-Unsubscribe: <https://www.redhat.com/mailman/options/dm-devel>,
-	<mailto:dm-devel-request@redhat.com?subject=unsubscribe>
-List-Archive: <https://www.redhat.com/archives/dm-devel>
-List-Post: <mailto:dm-devel@redhat.com>
-List-Help: <mailto:dm-devel-request@redhat.com?subject=help>
-List-Subscribe: <https://www.redhat.com/mailman/listinfo/dm-devel>,
-	<mailto:dm-devel-request@redhat.com?subject=subscribe>
-Sender: dm-devel-bounces@redhat.com
-Errors-To: dm-devel-bounces@redhat.com
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, linux-serial@vger.kernel.org
-Cc: dm-devel@redhat.com, Nigel Croxon <ncroxon@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <87o96p9gtx.fsf@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi
+On Tue 2019-03-05 22:00:58, John Ogness wrote:
+> Hi Sergey,
+> 
+> Thanks for your feedback.
+> 
+> I am responding to this comment ahead of your previous comments because
+> it really cuts at the heart of the proposed design. After addressing
+> this point it will make it easier for me to respond to your other
+> comments.
+> 
+> NOTE: This is a lengthy response.
+> 
+> On 2019-03-04, Sergey Senozhatsky <sergey.senozhatsky@gmail.com> wrote:
+> >> But in general, channels which depend on preemptible printk will
+> >> become totally useless in some cases.
+> >
+> > Which brings me to a question - what are those messages/channels? Not
+> > important enough to be printed on consoles immediately, yet important
+> > enough to pass the suppress_message_printing() check.
+> 
+> I would like to clarify that message supression (i.e. console loglevel)
+> is a method of reducing what is printed. It does nothing to address the
+> issues related to console printing. My proposal focusses on addressing
+> the issues related to console printing.
+> 
+> Console printing is a convenient feature to allow a kernel to
+> communicate information to a user without any reliance on
+> userspace. IMHO there are 2 categories of messages that the kernel will
+> communicate. The first is informational (usb events, wireless and
+> ethernet connectivity, filesystem events, etc.). Since this category of
+> messages occurs during normal runtime, we should expect that it does not
+> cause adverse effects to the rest of the system (such as latencies and
+> non-deterministic behavior).
+>
+> The second category is for emergency situations, where the kernel needs
+> to report something unusual (panic, BUG, WARN, etc.). In some of these
+> situations, it may be the last thing the kernel ever does. We should
+> expect this category to focus on getting the message out as reliably as
+> possible. Even if it means disturbing the system with large latencies.
+> 
+> _Both_ categories are important for the user, but their requirements are
+> different:
+> 
+>    informational: non-disturbing
+>    emergency:     reliable
 
-I was debugging some kernel lockup with storage drivers and it turned out 
-that the lockup is caused by the serial console subsystem. If we use 
-serial console and if we write to it excessively, the kernel sometimes 
-lockup, sometimes reports rcu stalls and NMI backtraces. Sometimes it will 
-just print the console messages without donig anything else.
+Isn't this already handled by the console_level?
 
-This program tests the issue - on framebuffer console, the system is 
-sluggish, but it is possible to unload the module with rmmod. On serial 
-console, it locks up to the point that unloading the module is not 
-possible.
+The informational messages can be reliably read via syslog, /dev/kmsg.
+They are related to the normal works when the system works well.
 
-Mikulas
+The emergency messages (errors, warnings) are printed in emergency
+situations. They are printed as reliably as possible to the console
+because the userspace might not be reliable enough.
 
 
+That said, the "atomic" consoles brings new possibilities
+and might be very useful in some scenarios. Also a more grained
+prioritization might be helpful.
 
-------------
+But each solution might just bring new problems. For example,
+the atomic consoles are still serialized between CPUs. It might
+slow down the entire system and not only on task. If it gets
+blocked for some reasons (nobody is perfect) it would block
+all the other serialized CPUs as well.
 
-#include <linux/module.h>
-#include <linux/init.h>
-#include <linux/delay.h>
-#include <linux/slab.h>
-#include <linux/kthread.h>
+In each case, we really need to be careful about the complexity.
+printk() is already complex enough. It might be acceptable if
+it makes the design cleaner and less tangled. printk() would
+deserve a redesign.
 
-int n_threads = 0;
-int sleep_ms = 0;
-
-module_param_named(n_threads, n_threads, int, S_IRUGO);
-MODULE_PARM_DESC(n_threads, "The number of kernel threads");
-
-module_param_named(sleep_ms, sleep_ms, int, S_IRUGO);
-MODULE_PARM_DESC(sleep_ms, "Sleep time in milliseconds");
-
-struct task_struct **tasks;
-
-static int console_dumper(void *data)
-{
-	int t = (int)(long)data;
-	while (!kthread_should_stop()) {
-		printk("line from thread %d ---------------------------------------------------------------------------------------------------------------------------------------\n", t);
-		if (sleep_ms > 0)
-			msleep(sleep_ms);
-		cond_resched();
-	}
-	return 0;
-}
-
-static int __init dump_init(void)
-{
-	int i;
-	if (n_threads <= 0)
-		n_threads = num_online_cpus();
-	tasks = kmalloc(n_threads * sizeof(struct task_struct *), GFP_KERNEL);
-	if (!tasks)
-		return -ENOMEM;
-	for (i = 0; i < n_threads; i++) {
-		tasks[i] = kthread_create(console_dumper, (void *)(long)i, "console_dumper");
-		if (!tasks[i]) {
-			while (i--)
-				kthread_stop(tasks[i]);
-			kfree(tasks);
-			return -ENOMEM;
-		}
-		wake_up_process(tasks[i]);
-	}
-	return 0;
-}
-
-static void __exit dump_exit(void)
-{
-	int i;
-	for (i = 0; i < n_threads; i++) {
-		kthread_stop(tasks[i]);
-	}
-	kfree(tasks);
-}
-
-module_init(dump_init)
-module_exit(dump_exit)
-MODULE_LICENSE("GPL");
+Best Regards,
+Petr
