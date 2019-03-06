@@ -1,100 +1,64 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: [RFC PATCH v1 19/25] printk: introduce emergency messages
-Date: Thu, 7 Mar 2019 16:30:29 +0900
-Message-ID: <20190307073029.GA489@jagdpanzerIV>
-References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190212143003.48446-20-john.ogness@linutronix.de>
+From: John Ogness <john.ogness@linutronix.de>
+Subject: Re: Serial console is causing system lock-up
+Date: Wed, 06 Mar 2019 23:43:45 +0100
+Message-ID: <87ftrzbp3y.fsf@linutronix.de>
+References: <alpine.LRH.2.02.1903060917280.5335@file01.intranet.prod.int.rdu2.redhat.com>
+	<20190306152218.eocv4zulf7tv2mkc@pathway.suse.cz>
+	<alpine.LRH.2.02.1903061031420.16905@file01.intranet.prod.int.rdu2.redhat.com>
+	<20190306163003.GA31858@mit.edu>
+	<alpine.LRH.2.02.1903061157530.3129@file01.intranet.prod.int.rdu2.redhat.com>
+	<20190306171943.12345598@oasis.local.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190212143003.48446-20-john.ogness@linutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: John Ogness <john.ogness@linutronix.de>
-Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <dm-devel-bounces@redhat.com>
+In-Reply-To: <20190306171943.12345598@oasis.local.home> (Steven Rostedt's
+	message of "Wed, 6 Mar 2019 17:19:43 -0500")
+List-Unsubscribe: <https://www.redhat.com/mailman/options/dm-devel>,
+	<mailto:dm-devel-request@redhat.com?subject=unsubscribe>
+List-Archive: <https://www.redhat.com/archives/dm-devel>
+List-Post: <mailto:dm-devel@redhat.com>
+List-Help: <mailto:dm-devel-request@redhat.com?subject=help>
+List-Subscribe: <https://www.redhat.com/mailman/listinfo/dm-devel>,
+	<mailto:dm-devel-request@redhat.com?subject=subscribe>
+Sender: dm-devel-bounces@redhat.com
+Errors-To: dm-devel-bounces@redhat.com
+To: Steven Rostedt <rostedt@goodmis.org>
+Cc: Petr Mladek <pmladek@suse.com>, Nigel Croxon <ncroxon@redhat.com>, "Theodore Y. Ts'o" <tytso@mit.edu>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, dm-devel@redhat.com, Mikulas Patocka <mpatocka@redhat.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On (02/12/19 15:29), John Ogness wrote:
-[..]
-> +static bool console_can_emergency(int level)
-> +{
-> +	struct console *con;
-> +
-> +	for_each_console(con) {
-> +		if (!(con->flags & CON_ENABLED))
-> +			continue;
-> +		if (con->write_atomic && level < emergency_console_loglevel)
-> +			return true;
-> +		if (con->write && (con->flags & CON_BOOT))
-> +			return true;
-> +	}
-> +	return false;
-> +}
-> +
-> +static void call_emergency_console_drivers(int level, const char *text,
-> +					   size_t text_len)
-> +{
-> +	struct console *con;
-> +
-> +	for_each_console(con) {
-> +		if (!(con->flags & CON_ENABLED))
-> +			continue;
-> +		if (con->write_atomic && level < emergency_console_loglevel) {
-> +			con->write_atomic(con, text, text_len);
-> +			continue;
-> +		}
-> +		if (con->write && (con->flags & CON_BOOT)) {
-> +			con->write(con, text, text_len);
-> +			continue;
-> +		}
-> +	}
-> +}
-> +
-> +static void printk_emergency(char *buffer, int level, u64 ts_nsec, u16 cpu,
-> +			     char *text, u16 text_len)
-> +{
-> +	struct printk_log msg;
-> +	size_t prefix_len;
-> +
-> +	if (!console_can_emergency(level))
-> +		return;
-> +
-> +	msg.level = level;
-> +	msg.ts_nsec = ts_nsec;
-> +	msg.cpu = cpu;
-> +	msg.facility = 0;
-> +
-> +	/* "text" must have PREFIX_MAX preceding bytes available */
-> +
-> +	prefix_len = print_prefix(&msg,
-> +				  console_msg_format & MSG_FORMAT_SYSLOG,
-> +				  printk_time, buffer);
-> +	/* move the prefix forward to the beginning of the message text */
-> +	text -= prefix_len;
-> +	memmove(text, buffer, prefix_len);
-> +	text_len += prefix_len;
-> +
-> +	text[text_len++] = '\n';
-> +
-> +	call_emergency_console_drivers(level, text, text_len);
+On 2019-03-06, Steven Rostedt <rostedt@goodmis.org> wrote:
+>> This bug only happens if we select large logbuffer (millions of
+>> characters). With smaller log buffer, there are messages "** X printk
+>> messages dropped", but there's no lockup.
+>> 
+>> The kernel apparently puts 2 million characters into a console log
+>> buffer, then takes some lock and than tries to write all of them to a
+>> slow serial line.
+>>
+>> [...]
+>>
+>> The MD-RAID is supposed to recalculate data for the corrupted device
+>> and bring it back to life. However, scrubbing the MD-RAID device
+>> resulted in a lot of reads from the device with bad checksums, these
+>> were reported to the log and killed the machine.
+>> 
+>> I made a patch to dm-integrity to rate-limit the error messages. But
+>> anyway - killing the machine in case of too many log messages seems
+>> bad.  If the log messages are produced faster than the kernel can
+>> write them, the kernel should discard some of them, not kill itself.
+>
+> Sounds like another aurgment for the new printk design.
 
-So this iterates the console list and calls consoles' callbacks, but what
-prevents console driver to be rmmod-ed under us?
+Assuming the bad checksum messages are considered an emergency (for
+example, at least loglevel KERN_WARN), then the new printk design would
+print those messages synchronously to the slow serial line in the
+context of the driver as the driver is producing them.
 
-	CPU0						CPU1
+There wouldn't be a lock-up, but it would definitely slow down the
+driver. The situation of "messages being produced faster than the kernel
+can write them" would never exist because the printk() call will only
+return after the writing is completed. I am curious if that would be
+acceptable here?
 
-	printk_emergency()				rmmod netcon
-	 call_emergency_console_drivers()		
-	  con_foo->flags & CON_ENABLED == 1
-							unregister_console(con_foo)
-							con_foo->flags &= ~CON_ENABLED
-							__exit // con_foo gone ?
-	  con_foo->write()
-
-We use console_lock()/console_trylock() in order to protect the list and
-console drivers; but this brings scheduler to the picture, with all its
-locks.
-
-Or am I missing something?
-
-	-ss
+John Ogness
