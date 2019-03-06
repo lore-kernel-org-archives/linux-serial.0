@@ -1,93 +1,66 @@
 From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [RFC PATCH v1 08/25] printk: add ring buffer and kthread
-Date: Wed, 6 Mar 2019 16:57:01 +0100
-Message-ID: <20190306155701.wc22i2no5swdcids@pathway.suse.cz>
-References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190212143003.48446-9-john.ogness@linutronix.de>
- <20190304073856.GA552@jagdpanzerIV>
- <20190304100044.GC21004@jagdpanzerIV>
- <20190304110703.GA960@tigerII.localdomain>
- <87o96p9gtx.fsf@linutronix.de>
+Subject: Re: Serial console is causing system lock-up
+Date: Wed, 6 Mar 2019 16:22:18 +0100
+Message-ID: <20190306152218.eocv4zulf7tv2mkc@pathway.suse.cz>
+References: <alpine.LRH.2.02.1903060917280.5335@file01.intranet.prod.int.rdu2.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <dm-devel-bounces@redhat.com>
 Content-Disposition: inline
-In-Reply-To: <87o96p9gtx.fsf@linutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+In-Reply-To: <alpine.LRH.2.02.1903060917280.5335@file01.intranet.prod.int.rdu2.redhat.com>
+List-Unsubscribe: <https://www.redhat.com/mailman/options/dm-devel>,
+	<mailto:dm-devel-request@redhat.com?subject=unsubscribe>
+List-Archive: <https://www.redhat.com/archives/dm-devel>
+List-Post: <mailto:dm-devel@redhat.com>
+List-Help: <mailto:dm-devel-request@redhat.com?subject=help>
+List-Subscribe: <https://www.redhat.com/mailman/listinfo/dm-devel>,
+	<mailto:dm-devel-request@redhat.com?subject=subscribe>
+Sender: dm-devel-bounces@redhat.com
+Errors-To: dm-devel-bounces@redhat.com
+To: Mikulas Patocka <mpatocka@redhat.com>
+Cc: Nigel Croxon <ncroxon@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Steven Rostedt <rostedt@goodmis.org>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, dm-devel@redhat.com, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue 2019-03-05 22:00:58, John Ogness wrote:
-> Hi Sergey,
+On Wed 2019-03-06 09:27:13, Mikulas Patocka wrote:
+> Hi
 > 
-> Thanks for your feedback.
-> 
-> I am responding to this comment ahead of your previous comments because
-> it really cuts at the heart of the proposed design. After addressing
-> this point it will make it easier for me to respond to your other
-> comments.
-> 
-> NOTE: This is a lengthy response.
-> 
-> On 2019-03-04, Sergey Senozhatsky <sergey.senozhatsky@gmail.com> wrote:
-> >> But in general, channels which depend on preemptible printk will
-> >> become totally useless in some cases.
-> >
-> > Which brings me to a question - what are those messages/channels? Not
-> > important enough to be printed on consoles immediately, yet important
-> > enough to pass the suppress_message_printing() check.
-> 
-> I would like to clarify that message supression (i.e. console loglevel)
-> is a method of reducing what is printed. It does nothing to address the
-> issues related to console printing. My proposal focusses on addressing
-> the issues related to console printing.
-> 
-> Console printing is a convenient feature to allow a kernel to
-> communicate information to a user without any reliance on
-> userspace. IMHO there are 2 categories of messages that the kernel will
-> communicate. The first is informational (usb events, wireless and
-> ethernet connectivity, filesystem events, etc.). Since this category of
-> messages occurs during normal runtime, we should expect that it does not
-> cause adverse effects to the rest of the system (such as latencies and
-> non-deterministic behavior).
->
-> The second category is for emergency situations, where the kernel needs
-> to report something unusual (panic, BUG, WARN, etc.). In some of these
-> situations, it may be the last thing the kernel ever does. We should
-> expect this category to focus on getting the message out as reliably as
-> possible. Even if it means disturbing the system with large latencies.
-> 
-> _Both_ categories are important for the user, but their requirements are
-> different:
-> 
->    informational: non-disturbing
->    emergency:     reliable
+> I was debugging some kernel lockup with storage drivers and it turned out 
+> that the lockup is caused by the serial console subsystem. If we use 
+> serial console and if we write to it excessively, the kernel sometimes 
+> lockup, sometimes reports rcu stalls and NMI backtraces. Sometimes it will 
+> just print the console messages without donig anything else.
 
-Isn't this already handled by the console_level?
+This is a very old problem that we have been trying to solve for
+years. There are two conflicting requirements on printk():
+be fast and reliable.
 
-The informational messages can be reliably read via syslog, /dev/kmsg.
-They are related to the normal works when the system works well.
+The historical solution is that printk() callers store the messages
+into the log buffer and then just _try_ to take the console lock.
+The winner who succeeds is responsible for flushing all
+pending messages to the console. As a result a random victim
+might get blocked by the console handling for a long time.
 
-The emergency messages (errors, warnings) are printed in emergency
-situations. They are printed as reliably as possible to the console
-because the userspace might not be reliable enough.
+An obvious solution is offloading the console handling. But
+it is against the reliability. There are no guarantees that
+the offload mechanism (kthread, irq) would happen when the
+system is on their knees.
+
+Anyway, which kernel version are you using, please?
+
+I wonder if you already have the dbdda842fe96f8932 ("printk: Add
+console owner and waiter logic to load balance console writes").
+It improves the situation a lot. There was a hope that it would
+be enough in the real life.
 
 
-That said, the "atomic" consoles brings new possibilities
-and might be very useful in some scenarios. Also a more grained
-prioritization might be helpful.
+> This program tests the issue - on framebuffer console, the system is 
+> sluggish, but it is possible to unload the module with rmmod. On serial 
+> console, it locks up to the point that unloading the module is not 
+> possible.
 
-But each solution might just bring new problems. For example,
-the atomic consoles are still serialized between CPUs. It might
-slow down the entire system and not only on task. If it gets
-blocked for some reasons (nobody is perfect) it would block
-all the other serialized CPUs as well.
+Is there any chance to send us logs from the original (real life)
+problem, please?
 
-In each case, we really need to be careful about the complexity.
-printk() is already complex enough. It might be acceptable if
-it makes the design cleaner and less tangled. printk() would
-deserve a redesign.
-
-Best Regards,
+Best regards,
 Petr
