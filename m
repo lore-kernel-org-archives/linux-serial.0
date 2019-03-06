@@ -1,68 +1,65 @@
-From: Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: Serial console is causing system lock-up
-Date: Wed, 6 Mar 2019 17:19:43 -0500
-Message-ID: <20190306171943.12345598@oasis.local.home>
-References: <alpine.LRH.2.02.1903060917280.5335@file01.intranet.prod.int.rdu2.redhat.com>
-	<20190306152218.eocv4zulf7tv2mkc@pathway.suse.cz>
-	<alpine.LRH.2.02.1903061031420.16905@file01.intranet.prod.int.rdu2.redhat.com>
-	<20190306163003.GA31858@mit.edu>
-	<alpine.LRH.2.02.1903061157530.3129@file01.intranet.prod.int.rdu2.redhat.com>
+From: John Ogness <john.ogness@linutronix.de>
+Subject: Re: [RFC PATCH v1 08/25] printk: add ring buffer and kthread
+Date: Wed, 06 Mar 2019 23:22:57 +0100
+Message-ID: <87k1hbbq2m.fsf@linutronix.de>
+References: <20190212143003.48446-1-john.ogness@linutronix.de>
+        <20190212143003.48446-9-john.ogness@linutronix.de>
+        <20190304073856.GA552@jagdpanzerIV>
+        <20190304100044.GC21004@jagdpanzerIV>
+        <20190304110703.GA960@tigerII.localdomain>
+        <87o96p9gtx.fsf@linutronix.de>
+        <20190306155701.wc22i2no5swdcids@pathway.suse.cz>
+        <87r2bjbt47.fsf@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <dm-devel-bounces@redhat.com>
-In-Reply-To: <alpine.LRH.2.02.1903061157530.3129@file01.intranet.prod.int.rdu2.redhat.com>
-List-Unsubscribe: <https://www.redhat.com/mailman/options/dm-devel>,
-	<mailto:dm-devel-request@redhat.com?subject=unsubscribe>
-List-Archive: <https://www.redhat.com/archives/dm-devel>
-List-Post: <mailto:dm-devel@redhat.com>
-List-Help: <mailto:dm-devel-request@redhat.com?subject=help>
-List-Subscribe: <https://www.redhat.com/mailman/listinfo/dm-devel>,
-	<mailto:dm-devel-request@redhat.com?subject=subscribe>
-Sender: dm-devel-bounces@redhat.com
-Errors-To: dm-devel-bounces@redhat.com
-To: Mikulas Patocka <mpatocka@redhat.com>
-Cc: Petr Mladek <pmladek@suse.com>, Nigel Croxon <ncroxon@redhat.com>, "Theodore Y. Ts'o" <tytso@mit.edu>, John Ogness <john.ogness@linutronix.de>, Kroah-Hartman <gregkh@linuxfoundation.org>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, dm-devel@redhat.com, Greg, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <87r2bjbt47.fsf@linutronix.de> (John Ogness's message of "Wed, 06
+        Mar 2019 22:17:12 +0100")
+Sender: linux-kernel-owner@vger.kernel.org
+To: Petr Mladek <pmladek@suse.com>
+Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 6 Mar 2019 12:11:10 -0500 (EST)
-Mikulas Patocka <mpatocka@redhat.com> wrote:
+On 2019-03-06, Petr Mladek <pmladek@suse.com> wrote:
+>> _Both_ categories are important for the user, but their requirements
+>> are different:
+>> 
+>>    informational: non-disturbing
+>>    emergency:     reliable
+>
+> Isn't this already handled by the console_level?
+>
+> The informational messages can be reliably read via syslog, /dev/kmsg.
+> They are related to the normal works when the system works well.
+>
+> The emergency messages (errors, warnings) are printed in emergency
+> situations. They are printed as reliably as possible to the console
+> because the userspace might not be reliable enough.
 
-> On Wed, 6 Mar 2019, Theodore Y. Ts'o wrote:
-> 
-> > On Wed, Mar 06, 2019 at 11:07:55AM -0500, Mikulas Patocka wrote:  
-> > > This bug only happens if we select large logbuffer (millions of 
-> > > characters). With smaller log buffer, there are messages "** X printk 
-> > > messages dropped", but there's no lockup.
-> > > 
-> > > The kernel apparently puts 2 million characters into a console log buffer, 
-> > > then takes some lock and than tries to write all of them to a slow serial 
-> > > line.  
-> > 
-> > What are the messages; from what kernel subsystem?  Why are you seeing
-> > so many log messages?
-> > 
-> > 					- Ted  
-> 
-> The dm-integity subsystem (drivers/md/dm-integrity.c) can be attached to a 
-> block device to provide checksum protection. It will return -EILSEQ and 
-> print a message to a log for every corrupted block.
-> 
-> Nigel Croxon was testing MD-RAID recovery capabilities in such a way that 
-> he activated RAID-5 array with one leg replaced by a dm-integrity block 
-> device that had all checksums invalid.
-> 
-> The MD-RAID is supposed to recalculate data for the corrupted device and 
-> bring it back to life. However, scrubbing the MD-RAID device resulted in a 
-> lot of reads from the device with bad checksums, these were reported to 
-> the log and killed the machine.
-> 
-> 
-> I made a patch to dm-integrity to rate-limit the error messages. But 
-> anyway - killing the machine in case of too many log messages seems bad. 
-> If the log messages are produced faster than the kernel can write them, 
-> the kernel should discard some of them, not kill itself.
+I've never viewed console_level this way. _If_ console_level really is
+supposed to define the emergency/informational boundary, all
+informational messages are supposed to be handled by userspace, and
+console printing's main objective is reliability... then I would change
+my proposal such that:
 
-Sounds like another aurgment for the new printk design.
+- if a console supports write_atomic(), _all_ console printing for that
+  console would use write_atomic()
 
--- Steve
+- only consoles without write_atomic() will be printing via the
+  printk-kthread(s)
+
+IMO, for consoles with write_atomic(), this would increase reliability
+over the current mainline implementation. It would also simplify
+write_atomic() implementations because they would no longer need to
+synchronize against write().
+
+For those consoles that cannot implement write_atomic() (vt and
+netconsole come to mind), or as a transition period until remaining
+console drivers have implemented write_atomic(), these would use the
+"fallback" of printing fully preemptively in their own kthread using
+write().
+
+Does this better align with the concept of the console_loglevel and the
+purpose of console printing?
+
+John Ogness
