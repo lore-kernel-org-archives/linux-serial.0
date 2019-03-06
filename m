@@ -1,248 +1,253 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v2] tty/serial: Add a serial port simulator
-Date: Tue, 5 Mar 2019 18:04:33 -0800
-Message-ID: <041e137e-0b9d-04f9-255d-b1f402b23c17@infradead.org>
-References: <20190305171231.22133-1-minyard@acm.org>
- <eea0ad95-8344-371a-1dd0-58c8366a355b@infradead.org>
- <20190306015149.GD4290@minyard.net>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial patches for 5.1-rc1
+Date: Wed, 6 Mar 2019 11:34:47 +0100
+Message-ID: <20190306103447.GA10773@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190306015149.GD4290@minyard.net>
-Content-Language: en-US
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: cminyard@mvista.com
-Cc: minyard@acm.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 3/5/19 5:51 PM, Corey Minyard wrote:
-> On Tue, Mar 05, 2019 at 03:29:51PM -0800, Randy Dunlap wrote:
->> Hi Corey,
->>
->> Just some doc comments.
-> 
-> Thanks a bunch.  A few comments inline on things I didn't do quite
-> like you suggested..
-> 
->>
->> On 3/5/19 9:12 AM, minyard@acm.org wrote:
->>> diff --git a/Documentation/serial/serialsim.rst b/Documentation/serial/serialsim.rst
->>> new file mode 100644
->>> index 000000000000..655e10b4908e
->>> --- /dev/null
->>> +++ b/Documentation/serial/serialsim.rst
->>> @@ -0,0 +1,149 @@
->>> +.. SPDX-License-Identifier: GPL-2.0+
->>> +=====================================
->>> +serialsim - A kernel serial simualtor
->>                                xxxxxxxxx
->>                         serial device simulator
->>
->>> +=====================================
->>> +
->>> +:Author: Corey Minyard <minyard@mvista.com> / <minyard@acm.org>
->>> +
->>> +The serialsim device is a serial simulator with echo and pipe devices.
->>> +It is quite useful for testing programs that use serial ports.
->>> +
->>> +This attempts to emulate a basic serial device.  It uses the baud rate
->>> +and sends the bytes through the loopback or pipe at approximately the
->>> +speed it would on a normal serial device.
->>> +
->>> +There is a python interface to the special ioctls for controlling the
->>> +remote end of the termios in addition to the standard ioctl interface
->>> +documented below.  See https://github.com/cminyard/serialsim
->>> +
->>> +=====
->>> +Using
->>> +=====
->>> +
->>> +The serialsim.ko module creates two types of devices.  Echo devices
->>> +simply echo back the data to the same device.  These devices will
->>> +appear as /dev/ttyEcho<n>.
->>> +
->>> +Pipe devices will transfer the data between two devices.  The
->>> +devices will appear as /dev/ttyPipeA<n> and /dev/ttyPipeB<n>.  And
->>
->>                                                                   Any
->>
->>> +data written to PipeA reads from PipeB, and vice-versa.
->>> +
->>> +You may create an arbitrary number of devices by setting the
->>> +nr_echo ports and nr_pipe_ports module parameters.  The default is
->>
->>    nr_echo_ports
->>
->>> +four for both.
->>
->> or for each.
->>
->>> +
->>> +This driver supports modifying the modem control lines and
->>> +injecting various serial errors.  It also supports a simulated null
->>> +modem between the two pipes, or in a loopback on the echo device.
->>> +
->>> +By default a pipe or echo comes up in null modem configuration,
->>> +meaning that the DTR line is hooked to the DSR and CD lines on the
->>> +other side and the RTS line on one side is hooked to the CTS line
->>> +on the other side.
->>> +
->>> +The RTS and CTS lines don't currently do anything for flow control.
->>> +
->>> +You can modify null modem and control the lines individually
->>> +through an interface in /sys/class/tty/ttyECHO<n>/ctrl,
->>> +/sys/class/tty/ttyPipeA<n>/ctrl, and
->>> +/sys/class/tty/ttyPipeB<n>/ctrl.  The following may be written to
->>> +those files:
->>> +
->>> +[+-]nullmodem
->>> +    enable/disable null modem
->>> +
->>> +[+-]cd
->>> +    enable/disable Carrier Detect (no effect if +nullmodem)
->>> +
->>> +[+-]dsr
->>> +    enable/disable Data Set Ready (no effect if +nullmodem)
->>> +
->>> +[+-]cts
->>> +    enable/disable Clear To Send (no effect if +nullmodem)
->>> +
->>> +[+-]ring
->>> +    enable/disable Ring
->>> +
->>> +frame
->>> +    inject a frame error on the next byte
->>> +
->>> +parity
->>> +    inject a parity error on the next byte
->>> +
->>> +overrun
->>> +    inject an overrun error on the next byte
->>> +
->>> +The contents of the above files has the following format:
->>
->>                                    have
-> 
-> This intrigued me a bit.  I assumed, even though "contents" can
-> be plural, it is used in a singular fashion here because it is one
-> "thing".  So I did some research.  I couldn't really find
-> anything definitive, and there seems to be a lot of debate on
-> this.  But if you look at:
-> https://dictionary.cambridge.org/grammar/british-grammar/content-or-contents
-> you will see, when they use "contents", they use a singular verb
-> with it:
->    The contents of a book is the list of chapters or articles...
-> So if it's good enough for Cambridge, it's good enough for me :).
-> Though I'm certainly no grammar expert.
+The following changes since commit d13937116f1e82bf508a6325111b322c30c85eb9:
 
-OK :)
+  Linux 5.0-rc6 (2019-02-10 14:42:20 -0800)
 
->>
->>> +
->>> +tty[Echo|PipeA|PipeB]<n>
->>> +    <mctrl values>
->>> +
->>> +where <mctrl values> is the modem control values above (not frame,
->>> +parity, or overrun) with the following added:
->>> +
->>> +[+-]dtr
->>> +    value of the Data Terminal Ready
->>> +
->>> +[+-]rts
->>> +    value of the Request To Send
->>> +
->>> +The above values are not settable through this interface, they are
->>> +set through the serial port interface itself.
->>> +
->>> +So, for instance, ttyEcho0 comes up in the following state::
->>> +
->>> +   # cat /sys/class/tty/ttyEcho0/ctrl
->>> +   ttyEcho0: +nullmodem -cd -dsr -cts -ring -dtr -rts
->>> +
->>> +If something connects, it will become::
->>> +
->>> +   ttyEcho0: +nullmodem +cd +dsr +cts -ring +dtr +rts
->>> +
->>> +To enable ring::
->>> +
->>> +   # echo "+ring" >/sys/class/tty/ttyEcho0/ctrl
->>> +   # cat /sys/class/tty/ttyEcho0/ctrl
->>> +   ttyEcho0: +nullmodem +cd +dsr +cts +ring +dtr +rts
->>> +
->>> +Now disable NULL modem and the CD line::
->>> +
->>> +   # echo "-nullmodem -cd" >/sys/class/tty/ttyEcho0/ctrl
->>> +   # cat /sys/class/tty/ttyEcho0/ctrl
->>> +   ttyEcho0: -nullmodem -cd -dsr -cts +ring -dtr -rts
->>> +
->>> +Note that these settings are for the side you are modifying.  So if
->>> +you set nullmodem on ttyPipeA0, that controls whether the DTR/RTS
->>> +lines from ttyPipeB0 affect ttyPipeA0.  It doesn't affect ttyPipeB's
->>> +modem control lines.
->>> +
->>> +The PIPEA and PIPEB devices also have the ability to set these
->>> +values for the other end via an ioctl.  The following ioctls are
->>> +available:
->>> +
->>> +TIOCSERSNULLMODEM
->>> +    Set the null modem value, the arg is a boolean.
->>> +
->>> +TIOCSERSREMMCTRL
->>> +    Set the modem control lines, bits 16-31 of the arg is
->>
->>                                                           are
-> 
-> Same comment as above.  IMHO, it's one set of bits.
-> 
->>
->>> +    a 16-bit mask telling which values to set, bits 0-15 are the
->>> +    actual values.  Settable values are TIOCM_CAR, TIOCM_CTS,
->>> +    TIOCM_DSR, and TIOC_RNG.  If NULLMODEM is set to true, then only
->>> +    TIOC_RNG is settable.  The DTR and RTS lines are not here, you can
->>> +    set them through the normal interface.
->>> +
->>> +TIOCSERSREMERR
->>> +    Send an error or errors on the next sent byte.  arg is
->>> +    a bitwise OR of (1 << TTY_xxx).  Allowed errors are TTY_BREAK,
->>
->> is this better: (or I don't understand?)
->>        a bitwise OR of (1 << TTY_xxx) and one (or more of) the
->>        allowed error flags TTY_BREAK, TTY_FRAME, TTY_PARITY, and TTY_OVERRUN.
-> 
-> Well, not really.  But what I wrote isn't great, so, how about:
-> 
->     Send an error or errors on the next sent byte.  arg is a bitwise
->     OR of (1 << TTY_BREAK), (1 << TTY_FRAME), (1 << TTY_PARITY), and
->     (1 << TTY_OVERRUN).  If none of those are set, then no error
->     is sent.
+are available in the Git repository at:
 
-I see.  Thanks.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.1-rc1
 
-> Thanks,
-> 
-> -corey
-> 
->>
->>> +    TTY_FRAME, TTY_PARITY, and TTY_OVERRUN.
->>> +
->>> +TIOCSERGREMTERMIOS
->>> +    Return the termios structure for the other side of the pipe.
->>> +    arg is a pointer to a standard termios struct.
->>> +
->>> +TIOCSERGREMRS485
->>> +    Return the remote RS485 settings, arg is a pointer to a struct
->>> +    serial_rs485.
->>> +
->>> +Note that unlike the sysfs interface, these ioctls affect the other
->>> +end.  So setting nullmodem on the ttyPipeB0 interface sets whether
->>> +the DTR/RTS lines on ttyPipeB0 affect ttyPipeA0.
->>
->>
->> cheers.
->> -- 
->> ~Randy
+for you to fetch changes up to f694936c3b5a4c140ded5b673555d95aedc866b9:
 
+  tty: xilinx_uartps: Correct return value in probe (2019-03-01 18:07:34 +0100)
 
--- 
-~Randy
+----------------------------------------------------------------
+TTY/Serial patches for 5.1-rc1
+
+Here is the "big" patchset for the tty/serial driver layer for 5.1-rc1.
+
+It's really not all that big, nothing major here.
+
+There are a lot of tiny driver fixes and updates, combined with other
+cleanups for different serial drivers and the vt layer.  Full details
+are in the shortlog.
+
+All of these have been in linux-next with no reported issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Alexander Shiyan (2):
+      serial: clps711x: Remove board support
+      serial: max310x: Correction of the initial setting of the MODE1 bits for various supported ICs.
+
+Alexandre Belloni (1):
+      tty: serial: lpc32xx_hs: fix missing console boot messages
+
+Andreas Schwab (1):
+      tty/serial: use uart_console_write in the RISC-V SBL early console
+
+Anssi Hannula (1):
+      serial: uartps: Fix stuck ISR if RX disabled with non-empty FIFO
+
+Atsushi Nemoto (3):
+      serial: fsl_lpuart: specify transmit FIFO size for 32-bit variant
+      serial: fsl_lpuart: consider TX FIFO too in lpuart32_tx_empty
+      serial: fsl_lpuart: DMA support for 32-bit variant
+
+Chengguang Xu (1):
+      tty: serial: remove redundant likely annotation
+
+Christoph Hellwig (1):
+      tty/synclink: remove ISA support
+
+Geert Uytterhoeven (4):
+      serial: sh-sci: Extract sci_dma_rx_chan_invalidate()
+      serial: sh-sci: Extract sci_dma_rx_reenable_irq()
+      serial: sh-sci: Fix fallback to PIO in sci_dma_rx_complete()
+      serial: sh-sci: Make RX/TX DMA function names consistent
+
+Greg Kroah-Hartman (4):
+      Merge 5.0-rc2 into tty-next
+      Merge 5.0-rc4 into tty-next
+      tty: ldisc: add sysctl to prevent autoloading of ldiscs
+      Merge 5.0-rc6 into tty-next
+
+Gustavo A. R. Silva (5):
+      sc16is7xx: Use struct_size() in devm_kzalloc()
+      serial: max310x: Use struct_size() in devm_kzalloc()
+      tty/n_hdlc: mark expected switch fall-through
+      tty: n_gsm: Mark expected switch fall-throughs
+      tty: hvc_xen: Mark expected switch fall-through
+
+Heikki Krogerus (1):
+      serial: 8250_pci: Replace custom code with pci_match_id()
+
+Hugo Lefeuvre (1):
+      tty/nozomi: use pci_iomap instead of ioremap_nocache
+
+Jay Dolan (2):
+      serial: 8250_pci: Fix number of ports for ACCES serial cards
+      serial: 8250_pci: Have ACCES cards that use the four port Pericom PI7C9X7954 chip use the pci_pericom_setup()
+
+Jeffrey Hugo (1):
+      tty: serial: msm_serial: Remove __init from msm_console_setup()
+
+Johan Hovold (1):
+      serdev: ttyport: call tiocmget and tiocmset ops directly
+
+Kangjie Lu (1):
+      serial: max310x: pass return value of spi_register_driver
+
+Lanqing Liu (1):
+      serial: sprd: Modify the baud rate calculation formula
+
+Linus Walleij (1):
+      serial: 8250: Add OF support for Xscale variant
+
+Loys Ollivier (1):
+      tty: serial: meson: if no alias specified use an available id
+
+Lubomir Rintel (2):
+      serial: 8250_pxa: honor the port number from devicetree
+      serial: 8250_of: assume reg-shift of 2 for mrvl,mmp-uart
+
+Manfred Schlaegl (1):
+      tty: increase the default flip buffer limit to 2*640K
+
+Martin Hostettler (4):
+      vt: refactor vc_ques to allow of other private sequences.
+      vt: Implement parsing for >, =, < private sequences.
+      vt: ignore csi sequences with intermediate characters.
+      vt: ignore sequences that contain ':' in parameters.
+
+Mathieu Malaterre (1):
+      vt: annotate implicit fall throughs
+
+Mikko Perttunen (1):
+      dt-bindings: serial: Add bindings for nvidia,tegra194-tcu
+
+Nathan Chancellor (1):
+      serial: mps2-uart: Add parentheses around conditional in mps2_uart_shutdown
+
+Nicolas Pitre (5):
+      vcsa: clamp header values when they don't fit
+      vcs: poll(): cope with a deallocated vt
+      vcs: fasync(): make it consistent with poll()
+      vcs: restore and document initial POLLPRI event
+      vt: perform safe console erase in the right order
+
+Petr Mladek (2):
+      sysrq: Restore original console_loglevel when sysrq disabled
+      sysrq: Remove duplicated sysrq message
+
+Rajan Vaja (1):
+      tty: xilinx_uartps: Correct return value in probe
+
+Rob Herring (3):
+      dt-bindings: serial: Convert snps,dw-apb-uart to json-schema
+      dt-bindings: serial: Move renesas,rzn1-uart into the snps-dw-apb-uart binding
+      dt-bindings: serial: Convert arm,pl011 to json-schema
+
+Ryan Case (4):
+      tty: serial: qcom_geni_serial: Remove use of *_relaxed() and mb()
+      tty: serial: qcom_geni_serial: Remove set_rfr_wm() and related variables
+      tty: serial: qcom_geni_serial: Remove xfer_mode variable
+      tty: serial: qcom_geni_serial: Use u32 for register variables
+
+Stuart Menefy (1):
+      tty: serial: samsung: Enable baud clock during initialisation
+
+Sugaya Taichi (1):
+      dt-bindings: serial: Add Milbeaut serial driver description
+
+Thierry Reding (1):
+      serial: Add Tegra Combined UART driver
+
+Tony Lindgren (2):
+      tty: n_gsm: Add copy_config() and gsm_config() to prepare for serdev
+      n_gsm: Constify u8 and unsigned char usage
+
+Ulrich Hecht (1):
+      dt-bindings: serial: sh-sci: Document r8a7778/9 HSCIF bindings
+
+Valentin Vidic (1):
+      n_tty: update comment for WAKEUP_CHARS define
+
+Vignesh R (3):
+      serial: 8250_omap: Drop check for of_node
+      dt-bindings: serial: omap_serial: add clocks entry
+      serial: 8250_omap: Use clk_get_rate() to obtain fclk frequency
+
+Vladimir Murzin (2):
+      serial: mps2-uart: move to dynamic port allocation
+      serial: mps2-uart: support combined irq
+
+YueHaibing (1):
+      tty: ipwireless: Fix potential NULL pointer dereference
+
+Zhou Yanjie (2):
+      Serial: Ingenic: Add support for the X1000.
+      Dt-bindings: Serial: Add X1000 serial bindings.
+
+ Documentation/devicetree/bindings/serial/8250.txt  |   1 +
+ .../devicetree/bindings/serial/ingenic,uart.txt    |   3 +-
+ .../devicetree/bindings/serial/milbeaut-uart.txt   |  21 ++
+ .../bindings/serial/nvidia,tegra194-tcu.txt        |  35 +++
+ .../devicetree/bindings/serial/omap_serial.txt     |   2 +
+ Documentation/devicetree/bindings/serial/pl011.txt |  51 ----
+ .../devicetree/bindings/serial/pl011.yaml          | 126 +++++++++
+ .../bindings/serial/renesas,rzn1-uart.txt          |  10 -
+ .../bindings/serial/renesas,sci-serial.txt         |   2 +
+ .../bindings/serial/snps-dw-apb-uart.txt           |  76 ------
+ .../bindings/serial/snps-dw-apb-uart.yaml          | 140 ++++++++++
+ drivers/tty/Kconfig                                |  24 ++
+ drivers/tty/hvc/hvc_xen.c                          |   2 +-
+ drivers/tty/ipwireless/hardware.c                  |   2 +
+ drivers/tty/n_gsm.c                                | 246 ++++++++---------
+ drivers/tty/n_hdlc.c                               |   2 +-
+ drivers/tty/n_tty.c                                |   6 +-
+ drivers/tty/nozomi.c                               |  10 +-
+ drivers/tty/serdev/serdev-ttyport.c                |   4 +-
+ drivers/tty/serial/8250/8250_ingenic.c             |  13 +-
+ drivers/tty/serial/8250/8250_of.c                  |   5 +
+ drivers/tty/serial/8250/8250_omap.c                |  75 +++---
+ drivers/tty/serial/8250/8250_pci.c                 | 170 +++++++++---
+ drivers/tty/serial/8250/8250_pxa.c                 |   4 +
+ drivers/tty/serial/Kconfig                         |  22 ++
+ drivers/tty/serial/Makefile                        |   1 +
+ drivers/tty/serial/clps711x.c                      |  23 +-
+ drivers/tty/serial/fsl_lpuart.c                    | 208 +++++++++++---
+ drivers/tty/serial/lpc32xx_hs.c                    |   4 +
+ drivers/tty/serial/max310x.c                       |  21 +-
+ drivers/tty/serial/meson_uart.c                    |  13 +-
+ drivers/tty/serial/mps2-uart.c                     | 138 +++++++---
+ drivers/tty/serial/msm_serial.c                    |   2 +-
+ drivers/tty/serial/qcom_geni_serial.c              | 279 ++++++++-----------
+ drivers/tty/serial/samsung.c                       |  42 +++
+ drivers/tty/serial/sc16is7xx.c                     |   4 +-
+ drivers/tty/serial/serial_core.c                   |   2 +-
+ drivers/tty/serial/sh-sci.c                        |  71 +++--
+ drivers/tty/serial/sprd_serial.c                   |   2 +-
+ drivers/tty/serial/tegra-tcu.c                     | 298 +++++++++++++++++++++
+ drivers/tty/serial/xilinx_uartps.c                 |  40 ++-
+ drivers/tty/synclink.c                             |  54 ----
+ drivers/tty/sysrq.c                                |   8 +-
+ drivers/tty/tty_buffer.c                           |   2 +-
+ drivers/tty/tty_io.c                               |   3 +
+ drivers/tty/tty_ldisc.c                            |  47 ++++
+ drivers/tty/vt/vc_screen.c                         |  48 +++-
+ drivers/tty/vt/vt.c                                |  77 ++++--
+ include/linux/console_struct.h                     |   2 +-
+ include/uapi/linux/serial_core.h                   |   3 +
+ 50 files changed, 1672 insertions(+), 772 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/milbeaut-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.txt
+ delete mode 100644 Documentation/devicetree/bindings/serial/pl011.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/pl011.yaml
+ delete mode 100644 Documentation/devicetree/bindings/serial/renesas,rzn1-uart.txt
+ delete mode 100644 Documentation/devicetree/bindings/serial/snps-dw-apb-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+ create mode 100644 drivers/tty/serial/tegra-tcu.c
