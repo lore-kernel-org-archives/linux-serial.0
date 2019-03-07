@@ -1,59 +1,67 @@
-From: =?iso-8859-1?Q?Jan_Kundr=E1t?= <jan.kundrat@cesnet.cz>
-Subject: Re: [PATCH] serial: max310x: Use =?iso-8859-1?Q?struct=5Fsize()_in_devm=5Fkzalloc()?=
-Date: Thu, 07 Mar 2019 12:03:15 +0100
-Message-ID: <99ee4232-3d1c-470a-b406-16af30ca6990@cesnet.cz>
-References: <20190104213913.GA21248@embeddedor>
+From: John Ogness <john.ogness@linutronix.de>
+Subject: Re: [RFC PATCH v1 08/25] printk: add ring buffer and kthread
+Date: Thu, 07 Mar 2019 13:06:34 +0100
+Message-ID: <87va0uopmd.fsf@linutronix.de>
+References: <20190212143003.48446-1-john.ogness@linutronix.de>
+        <20190212143003.48446-9-john.ogness@linutronix.de>
+        <20190304073856.GA552@jagdpanzerIV>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190104213913.GA21248@embeddedor>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On p=C3=A1tek 4. ledna 2019 22:39:13 CET, Gustavo A. R. Silva wrote:
-> One of the more common cases of allocation size calculations is finding
-> the size of a structure that has a zero-sized array at the end, along
-> with memory for some number of elements for that array. For example:
+On 2019-03-04, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com> wrote:
+>> +	/* the printk kthread never exits */
+>> +	for (;;) {
+>> +		ret = prb_iter_wait_next(&iter, buf,
+>> +					 PRINTK_RECORD_MAX, &master_seq);
+>> +		if (ret == -ERESTARTSYS) {
+>> +			continue;
+>> +		} else if (ret < 0) {
+>> +			/* iterator invalid, start over */
+>> +			prb_iter_init(&iter, &printk_rb, NULL);
+>> +			continue;
+>> +		}
+>> +
+>> +		msg = (struct printk_log *)buf;
+>> +		format_text(msg, master_seq, ext_text, &ext_len, text,
+>> +			    &len, printk_time);
+>> +
+>> +		console_lock();
+>> +		if (len > 0 || ext_len > 0) {
+>> +			call_console_drivers(ext_text, ext_len, text, len);
+>> +			boot_delay_msec(msg->level);
+>> +			printk_delay();
+>> +		}
+>> +		console_unlock();
+>> +	}
 >
-> struct foo {
->     int stuff;
->     void *entry[];
-> };
->
-> instance =3D devm_kzalloc(dev, sizeof(struct foo) + sizeof(void=20
-> *) * count, GFP_KERNEL);
->
-> Instead of leaving these open-coded and prone to type mistakes, we can
-> now use the new struct_size() helper:
->
-> instance =3D devm_kzalloc(dev, struct_size(instance, entry,=20
-> count), GFP_KERNEL);
->
-> This code was detected with the help of Coccinelle.
->
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-> ---
->  drivers/tty/serial/max310x.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-> index 4f479841769a..1d700a8ab517 100644
-> --- a/drivers/tty/serial/max310x.c
-> +++ b/drivers/tty/serial/max310x.c
-> @@ -1197,8 +1197,7 @@ static int max310x_probe(struct device=20
-> *dev, struct max310x_devtype *devtype,
->  =09=09return PTR_ERR(regmap);
-> =20
->  =09/* Alloc port structure */
-> -=09s =3D devm_kzalloc(dev, sizeof(*s) +
-> -=09=09=09 sizeof(struct max310x_one) * devtype->nr, GFP_KERNEL);
-> +=09s =3D devm_kzalloc(dev, struct_size(s, p, devtype->nr), GFP_KERNEL);
->  =09if (!s) {
->  =09=09dev_err(dev, "Error allocating port structure\n");
->  =09=09return -ENOMEM;
+> This, theoretically, creates a whole new world of possibilities for
+> console drivers. Now they can do GFP_KERNEL allocations and stall
+> printk_kthread during OOM; or they can explicitly reschedule from
+> ->write() callback (via console_conditional_schedule()) because
+> console_lock() sets console_may_schedule.
 
-Reviewed-by: Jan Kundr=C3=A1t <jan.kundrat@cesnet.cz>
-Tested-by: Jan Kundr=C3=A1t <jan.kundrat@cesnet.cz>
+This was the intention. Although, as I mentioned in a previous
+response[0], perhaps we should not loosen the requirements on write().
+
+> It's one thing to do cond_resched() (or to let preemption to take
+> over) after call_console_drivers() (when we are done printing a
+> message to all console drivers) and another thing to let preemption to
+> take over while we are printing a messages to the consoles. It
+> probably would make sense to disable preemption around
+> call_console_drivers().
+
+I could see disabling preemption and interrupts for emergency messages
+in the printk-kthread in order to synchronize against an irq_work
+secondary printer as suggested in my response[0]. But I don't see an
+advantage to disabling preemption in general for
+call_console_drivers(). It is exactly that disable_preempt() that is so
+harmful for realtime tasks.
+
+John Ogness
+
+[0] https://lkml.kernel.org/r/87lg1rggcz.fsf@linutronix.de
