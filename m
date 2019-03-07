@@ -1,59 +1,60 @@
-From: John Ogness <john.ogness@linutronix.de>
-Subject: Re: [RFC PATCH v1 00/25] printk: new implementation
-Date: Thu, 07 Mar 2019 10:53:48 +0100
-Message-ID: <87lg1rggcz.fsf@linutronix.de>
-References: <20190212143003.48446-1-john.ogness@linutronix.de>
-        <20190213025520.GA5803@jagdpanzerIV> <874l9721hf.fsf@linutronix.de>
-        <20190304052335.GA6648@jagdpanzerIV>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: Re: Serial console is causing system lock-up
+Date: Thu, 7 Mar 2019 18:17:48 +0900
+Message-ID: <20190307091748.GA6307@jagdpanzerIV>
+References: <20190306152218.eocv4zulf7tv2mkc@pathway.suse.cz>
+	<alpine.LRH.2.02.1903061031420.16905@file01.intranet.prod.int.rdu2.redhat.com>
+	<20190306163003.GA31858@mit.edu>
+	<alpine.LRH.2.02.1903061157530.3129@file01.intranet.prod.int.rdu2.redhat.com>
+	<20190306171943.12345598@oasis.local.home>
+	<87ftrzbp3y.fsf@linutronix.de> <20190307022254.GB4893@jagdpanzerIV>
+	<87tvgfhzd6.fsf@linutronix.de> <20190307082509.GA1925@jagdpanzerIV>
+	<87pnr3hyle.fsf@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190304052335.GA6648@jagdpanzerIV> (Sergey Senozhatsky's
-        message of "Mon, 4 Mar 2019 14:23:35 +0900")
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <dm-devel-bounces@redhat.com>
+Content-Disposition: inline
+In-Reply-To: <87pnr3hyle.fsf@linutronix.de>
+List-Unsubscribe: <https://www.redhat.com/mailman/options/dm-devel>,
+	<mailto:dm-devel-request@redhat.com?subject=unsubscribe>
+List-Archive: <https://www.redhat.com/archives/dm-devel>
+List-Post: <mailto:dm-devel@redhat.com>
+List-Help: <mailto:dm-devel-request@redhat.com?subject=help>
+List-Subscribe: <https://www.redhat.com/mailman/listinfo/dm-devel>,
+	<mailto:dm-devel-request@redhat.com?subject=subscribe>
+Sender: dm-devel-bounces@redhat.com
+Errors-To: dm-devel-bounces@redhat.com
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Petr Mladek <pmladek@suse.com>, Nigel Croxon <ncroxon@redhat.com>, "Theodore Y. Ts'o" <tytso@mit.edu>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Steven Rostedt <rostedt@goodmis.org>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, dm-devel@redhat.com, Mikulas Patocka <mpatocka@redhat.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 2019-03-04, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com> wrote:
->>>> - A dedicated kernel thread is created for printing to all consoles
->>>>   in a fully preemptible context.
->>>
->>> How do you handle sysrq-<foo> printouts on systems which can't
->>> schedule printk-kthread?
->> 
->> If those sysrq printouts are at the emergency loglevel (which most
->> are), then they are printed immediately to the emergency
->> consoles. This has already proved useful for our own kernel debugging
->> work. For example, currently sysrq-z for very large traces result in
->> messages being dropped because of printk buffer overflows. But with
->> the emergency console we always see the full trace buffer.
->
-> Are we sure that all systems will always have ->atomic console(-s)
-> enabled? Is it possible to convert all console drivers to ->atomic?
-> fbcon, for instance (with scrolling and font scaling, etc)?
+On (03/07/19 09:34), John Ogness wrote:
+> >> When the console is constantly printing messages, I wouldn't say that
+> >> looks like a lock-up scenario. It looks like the system is busy
+> >> printing critical information to the console (which it is).
+> >
+> > What if we have N tasks/CPUs calling printk() simultaneously?
+> 
+> Then they take turns printing their messages to the console, spinning
+> until they get their turn. This still is not and does not look like a
+> lock-up. But I think you already know this, so I don't understand the
+> reasoning behind asking the question. Maybe you could clarify what you
+> are getting at.
 
-No, I am not sure if we can convert all console drivers to atomic
-consoles. But I think if we don't have to fear disturbing the system,
-the possibilities for such an implementation are greater.
+Sorry John, the reasoning is that I'm trying to understand
+why this does not look like soft or hard lock-up or RCU stall
+scenario.
 
-> If there are setups which can be fully !atomic (in terms of console
-> output) then we, essentially, have a fully preemptible kthread printk
-> implementation.
+The CPU which spins on prb_lock() can have preemption disabled and,
+additionally, can have local IRQs disabled, or be under RCU read
+side lock. If consoles are busy, then there are CPUs which printk()
+data and keep prb_lock contended; prb_lock() does not seem to be
+fair. What am I missing? You probably talk about the case when all
+printing CPUs are in preemptible contexts (assumingly this is what
+is happening in dm-integrity case) so they can spin on prb_lock(),
+that's OK. The case I'm talking about is - what if we have the same
+situation, but then one of the CPUs printk()-s from !preemptible.
+Does this make sense?
 
-Correct. I've mentioned in another response[0] some ideas about what
-could be done to aid this.
-
-I understand that fully preemptible kthread printing is unacceptable for
-you. Since all current console drivers are already irq safe, I'm
-wondering if using irq_work to handle the emergency printing for console
-drivers without write_atomic() would help. (If the printk caller is in a
-context that write() supports, then write() could be called directly.)
-This would also demand that the irq-safe requirements for write() are
-not relaxed. The printk-kthread might still be faster than irq_work, but
-it might increase reliability if an irq_work is triggered as an extra
-precaution.
-
-John Ogness
-
-[0] https://lkml.kernel.org/r/87o96p9gtx.fsf@linutronix.de
+	-ss
