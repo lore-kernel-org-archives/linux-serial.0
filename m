@@ -1,65 +1,24 @@
-From: John Ogness <john.ogness@linutronix.de>
-Subject: Re: [RFC PATCH v1 08/25] printk: add ring buffer and kthread
-Date: Wed, 06 Mar 2019 23:22:57 +0100
-Message-ID: <87k1hbbq2m.fsf@linutronix.de>
-References: <20190212143003.48446-1-john.ogness@linutronix.de>
-        <20190212143003.48446-9-john.ogness@linutronix.de>
-        <20190304073856.GA552@jagdpanzerIV>
-        <20190304100044.GC21004@jagdpanzerIV>
-        <20190304110703.GA960@tigerII.localdomain>
-        <87o96p9gtx.fsf@linutronix.de>
-        <20190306155701.wc22i2no5swdcids@pathway.suse.cz>
-        <87r2bjbt47.fsf@linutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: pr-tracker-bot@kernel.org
+Subject: Re: [GIT PULL] TTY/Serial patches for 5.1-rc1
+Date: Thu, 07 Mar 2019 01:20:17 +0000
+Message-ID: <155192161799.31671.6067363492654032131.pr-tracker-bot@kernel.org>
+References: <20190306103447.GA10773@kroah.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <87r2bjbt47.fsf@linutronix.de> (John Ogness's message of "Wed, 06
-        Mar 2019 22:17:12 +0100")
+In-Reply-To: <20190306103447.GA10773@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 2019-03-06, Petr Mladek <pmladek@suse.com> wrote:
->> _Both_ categories are important for the user, but their requirements
->> are different:
->> 
->>    informational: non-disturbing
->>    emergency:     reliable
->
-> Isn't this already handled by the console_level?
->
-> The informational messages can be reliably read via syslog, /dev/kmsg.
-> They are related to the normal works when the system works well.
->
-> The emergency messages (errors, warnings) are printed in emergency
-> situations. They are printed as reliably as possible to the console
-> because the userspace might not be reliable enough.
+The pull request you sent on Wed, 6 Mar 2019 11:34:47 +0100:
 
-I've never viewed console_level this way. _If_ console_level really is
-supposed to define the emergency/informational boundary, all
-informational messages are supposed to be handled by userspace, and
-console printing's main objective is reliability... then I would change
-my proposal such that:
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.1-rc1
 
-- if a console supports write_atomic(), _all_ console printing for that
-  console would use write_atomic()
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/67e79a6dc2664a3ef85113440e60f7aaca3c7815
 
-- only consoles without write_atomic() will be printing via the
-  printk-kthread(s)
+Thank you!
 
-IMO, for consoles with write_atomic(), this would increase reliability
-over the current mainline implementation. It would also simplify
-write_atomic() implementations because they would no longer need to
-synchronize against write().
-
-For those consoles that cannot implement write_atomic() (vt and
-netconsole come to mind), or as a transition period until remaining
-console drivers have implemented write_atomic(), these would use the
-"fallback" of printing fully preemptively in their own kthread using
-write().
-
-Does this better align with the concept of the console_loglevel and the
-purpose of console printing?
-
-John Ogness
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.wiki.kernel.org/userdoc/prtracker
