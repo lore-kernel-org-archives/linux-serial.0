@@ -1,60 +1,59 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: Serial console is causing system lock-up
-Date: Thu, 7 Mar 2019 18:17:48 +0900
-Message-ID: <20190307091748.GA6307@jagdpanzerIV>
-References: <20190306152218.eocv4zulf7tv2mkc@pathway.suse.cz>
-	<alpine.LRH.2.02.1903061031420.16905@file01.intranet.prod.int.rdu2.redhat.com>
-	<20190306163003.GA31858@mit.edu>
-	<alpine.LRH.2.02.1903061157530.3129@file01.intranet.prod.int.rdu2.redhat.com>
-	<20190306171943.12345598@oasis.local.home>
-	<87ftrzbp3y.fsf@linutronix.de> <20190307022254.GB4893@jagdpanzerIV>
-	<87tvgfhzd6.fsf@linutronix.de> <20190307082509.GA1925@jagdpanzerIV>
-	<87pnr3hyle.fsf@linutronix.de>
+From: =?iso-8859-1?Q?Jan_Kundr=E1t?= <jan.kundrat@cesnet.cz>
+Subject: Re: [PATCH] serial: max310x: Use =?iso-8859-1?Q?struct=5Fsize()_in_devm=5Fkzalloc()?=
+Date: Thu, 07 Mar 2019 12:03:15 +0100
+Message-ID: <99ee4232-3d1c-470a-b406-16af30ca6990@cesnet.cz>
+References: <20190104213913.GA21248@embeddedor>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <dm-devel-bounces@redhat.com>
-Content-Disposition: inline
-In-Reply-To: <87pnr3hyle.fsf@linutronix.de>
-List-Unsubscribe: <https://www.redhat.com/mailman/options/dm-devel>,
-	<mailto:dm-devel-request@redhat.com?subject=unsubscribe>
-List-Archive: <https://www.redhat.com/archives/dm-devel>
-List-Post: <mailto:dm-devel@redhat.com>
-List-Help: <mailto:dm-devel-request@redhat.com?subject=help>
-List-Subscribe: <https://www.redhat.com/mailman/listinfo/dm-devel>,
-	<mailto:dm-devel-request@redhat.com?subject=subscribe>
-Sender: dm-devel-bounces@redhat.com
-Errors-To: dm-devel-bounces@redhat.com
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Petr Mladek <pmladek@suse.com>, Nigel Croxon <ncroxon@redhat.com>, "Theodore Y. Ts'o" <tytso@mit.edu>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Steven Rostedt <rostedt@goodmis.org>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, dm-devel@redhat.com, Mikulas Patocka <mpatocka@redhat.com>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190104213913.GA21248@embeddedor>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On (03/07/19 09:34), John Ogness wrote:
-> >> When the console is constantly printing messages, I wouldn't say that
-> >> looks like a lock-up scenario. It looks like the system is busy
-> >> printing critical information to the console (which it is).
-> >
-> > What if we have N tasks/CPUs calling printk() simultaneously?
-> 
-> Then they take turns printing their messages to the console, spinning
-> until they get their turn. This still is not and does not look like a
-> lock-up. But I think you already know this, so I don't understand the
-> reasoning behind asking the question. Maybe you could clarify what you
-> are getting at.
+On p=C3=A1tek 4. ledna 2019 22:39:13 CET, Gustavo A. R. Silva wrote:
+> One of the more common cases of allocation size calculations is finding
+> the size of a structure that has a zero-sized array at the end, along
+> with memory for some number of elements for that array. For example:
+>
+> struct foo {
+>     int stuff;
+>     void *entry[];
+> };
+>
+> instance =3D devm_kzalloc(dev, sizeof(struct foo) + sizeof(void=20
+> *) * count, GFP_KERNEL);
+>
+> Instead of leaving these open-coded and prone to type mistakes, we can
+> now use the new struct_size() helper:
+>
+> instance =3D devm_kzalloc(dev, struct_size(instance, entry,=20
+> count), GFP_KERNEL);
+>
+> This code was detected with the help of Coccinelle.
+>
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> ---
+>  drivers/tty/serial/max310x.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+>
+> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+> index 4f479841769a..1d700a8ab517 100644
+> --- a/drivers/tty/serial/max310x.c
+> +++ b/drivers/tty/serial/max310x.c
+> @@ -1197,8 +1197,7 @@ static int max310x_probe(struct device=20
+> *dev, struct max310x_devtype *devtype,
+>  =09=09return PTR_ERR(regmap);
+> =20
+>  =09/* Alloc port structure */
+> -=09s =3D devm_kzalloc(dev, sizeof(*s) +
+> -=09=09=09 sizeof(struct max310x_one) * devtype->nr, GFP_KERNEL);
+> +=09s =3D devm_kzalloc(dev, struct_size(s, p, devtype->nr), GFP_KERNEL);
+>  =09if (!s) {
+>  =09=09dev_err(dev, "Error allocating port structure\n");
+>  =09=09return -ENOMEM;
 
-Sorry John, the reasoning is that I'm trying to understand
-why this does not look like soft or hard lock-up or RCU stall
-scenario.
-
-The CPU which spins on prb_lock() can have preemption disabled and,
-additionally, can have local IRQs disabled, or be under RCU read
-side lock. If consoles are busy, then there are CPUs which printk()
-data and keep prb_lock contended; prb_lock() does not seem to be
-fair. What am I missing? You probably talk about the case when all
-printing CPUs are in preemptible contexts (assumingly this is what
-is happening in dm-integrity case) so they can spin on prb_lock(),
-that's OK. The case I'm talking about is - what if we have the same
-situation, but then one of the CPUs printk()-s from !preemptible.
-Does this make sense?
-
-	-ss
+Reviewed-by: Jan Kundr=C3=A1t <jan.kundrat@cesnet.cz>
+Tested-by: Jan Kundr=C3=A1t <jan.kundrat@cesnet.cz>
