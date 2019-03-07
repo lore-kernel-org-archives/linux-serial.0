@@ -1,178 +1,122 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [RFC PATCH v1 08/25] printk: add ring buffer and kthread
-Date: Thu, 7 Mar 2019 13:50:33 +0100
-Message-ID: <20190307125033.wwkxymneiga7itsn@pathway.suse.cz>
-References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190212143003.48446-9-john.ogness@linutronix.de>
- <20190304073856.GA552@jagdpanzerIV>
- <20190304100044.GC21004@jagdpanzerIV>
- <20190304110703.GA960@tigerII.localdomain>
- <87o96p9gtx.fsf@linutronix.de>
- <20190306155701.wc22i2no5swdcids@pathway.suse.cz>
- <87r2bjbt47.fsf@linutronix.de>
+From: Mikulas Patocka <mpatocka@redhat.com>
+Subject: Re: Serial console is causing system lock-up
+Date: Thu, 7 Mar 2019 07:54:44 -0500 (EST)
+Message-ID: <alpine.LRH.2.02.1903070744580.20758@file01.intranet.prod.int.rdu2.redhat.com>
+References: <20190306163003.GA31858@mit.edu>
+	<alpine.LRH.2.02.1903061157530.3129@file01.intranet.prod.int.rdu2.redhat.com>
+	<20190306171943.12345598@oasis.local.home>
+	<87ftrzbp3y.fsf@linutronix.de> <20190307022254.GB4893@jagdpanzerIV>
+	<87tvgfhzd6.fsf@linutronix.de>
+	<20190307082509.GA1925@jagdpanzerIV> <87pnr3hyle.fsf@linutronix.de>
+	<20190307091748.GA6307@jagdpanzerIV> <87o96nezr2.fsf@linutronix.de>
+	<20190307122642.GA10415@tigerII.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <87r2bjbt47.fsf@linutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <dm-devel-bounces@redhat.com>
+In-Reply-To: <20190307122642.GA10415@tigerII.localdomain>
+List-Unsubscribe: <https://www.redhat.com/mailman/options/dm-devel>,
+	<mailto:dm-devel-request@redhat.com?subject=unsubscribe>
+List-Archive: <https://www.redhat.com/archives/dm-devel>
+List-Post: <mailto:dm-devel@redhat.com>
+List-Help: <mailto:dm-devel-request@redhat.com?subject=help>
+List-Subscribe: <https://www.redhat.com/mailman/listinfo/dm-devel>,
+	<mailto:dm-devel-request@redhat.com?subject=subscribe>
+Sender: dm-devel-bounces@redhat.com
+Errors-To: dm-devel-bounces@redhat.com
+To: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Cc: Petr Mladek <pmladek@suse.com>, Nigel Croxon <ncroxon@redhat.com>, "Theodore Y. Ts'o" <tytso@mit.edu>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, John Ogness <john.ogness@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Steven Rostedt <rostedt@goodmis.org>, dm-devel@redhat.com, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed 2019-03-06 22:17:12, John Ogness wrote:
-> On 2019-03-06, Petr Mladek <pmladek@suse.com> wrote:
-> >> I would like to clarify that message supression (i.e. console loglevel)
-> >> is a method of reducing what is printed. It does nothing to address the
-> >> issues related to console printing. My proposal focusses on addressing
-> >> the issues related to console printing.
-> >> 
-> >> Console printing is a convenient feature to allow a kernel to
-> >> communicate information to a user without any reliance on
-> >> userspace. IMHO there are 2 categories of messages that the kernel will
-> >> communicate. The first is informational (usb events, wireless and
-> >> ethernet connectivity, filesystem events, etc.). Since this category of
-> >> messages occurs during normal runtime, we should expect that it does not
-> >> cause adverse effects to the rest of the system (such as latencies and
-> >> non-deterministic behavior).
-> >>
-> >> The second category is for emergency situations, where the kernel needs
-> >> to report something unusual (panic, BUG, WARN, etc.). In some of these
-> >> situations, it may be the last thing the kernel ever does. We should
-> >> expect this category to focus on getting the message out as reliably as
-> >> possible. Even if it means disturbing the system with large latencies.
-> >> 
-> >> _Both_ categories are important for the user, but their requirements are
-> >> different:
-> >> 
-> >>    informational: non-disturbing
-> >>    emergency:     reliable
-> >
-> > Isn't this already handled by the console_level?
+
+
+On Thu, 7 Mar 2019, Sergey Senozhatsky wrote:
+
+> On (03/07/19 11:37), John Ogness wrote:
+> > > Sorry John, the reasoning is that I'm trying to understand
+> > > why this does not look like soft or hard lock-up or RCU stall
+> > > scenario.
+> > 
+> > The reason is that you are seeing data being printed on the console. The
+> > watchdogs (soft, hard, rcu, nmi) are all touched with each emergency
+> > message.
 > 
-> You mean that the current console level is being used to set the
-> boundary between emergency and informational messages? Definitely no!
-> Take any Linux distribution and look at their default console_level
-> setting. Even the kernel code defaults to a value of 7!
-
-CONSOLE_LOGLEVEL_DEFAULT is one thing. The real life is another thing.
-I could hardly imagine any distribution that would scary users by all
-kernel messages.
-
-For example, SUSE distro boots with "quiet" kernel parameter.
-It seems that RedHat does the same as suggested by
-https://lkml.kernel.org/r/20180619115726.3098-1-hdegoede@redhat.com
-It means that the level '4' is typically used and even lower number
-is wanted.
-
-Well, SUSE (or systemd folks?) go even further. rsyslog sets
-the console_loglevel to "1".
-
-
-BTW: The default has been set to "7" in kernel-1.3.71 (1996-01-01).
-There is no explanation for this. Well, it looks like a pre-SMP
-era. printk() was not serialized with any lock. Also messages
-to tty were written separately by tty_write_message(). I guess
-the the default was primary for serial console and developers.
-
-
-> My proposal is making this distinction clearer: a significant increase
-> in reliability for emergency messages.
-
-This is true if we fulfil several conditions. I am not sure that
-the following list is complete but:
-
-   + The commonly used consoles must provide the atomic write.
-     Otherwise, it would have only few users.
-
-   + The printk code and console atomic write must be really
-     safe and maintainable.
-
-   + The serialization of atomic consoles must not cause more
-     problems than the current approach (always slow pr_err() vs.
-     random printk() slow, unfair locking) [*]
-
-   + The mixed order of directly printed and postponed messages
-     must not cause too much confusion. We might need some
-     userpace tools to sort them.
-
-
-[*] I agree that the direct console handling has several advantages:
-
-     + Avoid all the problems with console_lock.
-
-     + It is more predictable (no random victims spending
-       time with handling all messages).
-
-     + It is a natural throttling of heavy printk() users.
-       Less amount of lost messages (important ones never).
-       Might reduce (remove) the problem with softlockups.
-
-
-I am just not able to predict eventual problems. There was a reason
-for the current state. People did not want always slow printk().
-
-
-> Why is that a problem? The focus is reliabilty. We are talking about
-> emergency messages here. Messages that should never occur for a
-> correctly functioning system. It does not matter if the entire system
-> slows down because of it.
-
-This sounds too idealistic:
-
-  + It expects that everyone is using the log levels consistently and
-    with care. But many people believe that their messages are
-    the most important ones.
-
-  + Also it expects that all users use similar console_logleves
-    in all situations. But it depends on the usecase. Sometimes
-    warning and error messages do not make much sense without
-    the context, e.g. info or even debug messages.
-
-
-> > If it gets blocked for some reasons (nobody is perfect) it would
-> > block all the other serialized CPUs as well.
+> Correct. Please see below.
 > 
-> Yes, blocking in an atomic context would be bad for any code.
+> > > The CPU which spins on prb_lock() can have preemption disabled and,
+> > > additionally, can have local IRQs disabled, or be under RCU read
+> > > side lock. If consoles are busy, then there are CPUs which printk()
+> > > data and keep prb_lock contended; prb_lock() does not seem to be
+> > > fair. What am I missing?
+> > 
+> > You are correct. Making prb_lock fair might be something we want to look
+> > into. Perhaps also based on the loglevel of what needs to be
+> > printed. (For example, KERN_ALERT always wins over KERN_CRIT.)
 > 
-> > In each case, we really need to be careful about the complexity.
-> > printk() is already complex enough. It might be acceptable if
-> > it makes the design cleaner and less tangled. printk() would
-> > deserve a redesign.
+> Good.
 > 
-> It is my belief that I am significantly simplifying printk because there
-> are no more exotic contexts and situations. Emergency messages are
-> atomic and immediate. Context does not matter. Informational messages
-> are printed fully preemptible, so console drivers are free to do
-> whatever magic they want to do. Do you see that as more complex than the
-> current implementation of safe buffers, defers, hand-offs, exclusive
-> consoles, and cond_rescheds?
+> I'm not insisting, but I have a feeling that touching watchdogs after
+> call_console_drivers() might be too late, sometimes. When we spin in
 
-This expects that we would be able to always offload all
-non-emergency messages. I am not convinced that it is acceptable.
-And I wrote this several times.
+There are still NMI stacktraces - see here 
+http://people.redhat.com/~mpatocka/testcases/console-lockup/
 
-Also, please, keep the log buffer and console handling separate.
-The new "lockless" log buffer solves problems that are currently
-being solved by printk_safe code. While the atomic consoles
-and kthread tries to solve problems with unpredictable
-printk() cost (softlockups) and make the emergency messages
-more reliable (lost messages).
+> prb_lock() we wait for all CPUs which are before/ahead of us to
+> finish their call_console_drivers(), one by one. So if CPUZ is very
+> unlucky and is in atomic context, then prb_lock() for that CPUZ can
+> last for  N * call_console_drivers().  And depending on N (which also
+> includes unfairness) and call_console_drivers() timings NMI watchdog
+> may pay CPUZ a visit before it gets its chance to touch watchdogs.
+> 
+> *May be* sometimes we might want to touch watchdogs in prb_lock().
+> 
+> So, given the design of new printk(), I can't help thinking about the
+> fact that current
+> 	"the winner takes it all"
+> may become
+> 	"the winner waits for all".
+> 
+> Mikulas mentioned that he observes "** X messages dropped" warnings.
+> And this suggests that, _most likely_, we had significantly more that
+> 2 CPUs calling printk() concurrently.
 
-The complexity depends on how the final code would look like.
-It might be win if it is more straightforward and organized.
-But there are some alarming things:
+When I observe these messages (usually with small log buffer size), it 
+doesn't lockup.
 
-   + lockless code is always tricky
+The lockups happen because the messages are stuffed into a 2MiB buffer and 
+then printed over 115200 baud serial line.
 
-   + another console_loglevel setting is added
+You can see this: 
+http://people.redhat.com/~mpatocka/testcases/console-lockup/5.0-total-lockup.txt
 
-   + one more way to push messages to the console
+Here it attempted to write 1355277 bytes over the slow serial line - it 
+takes a few minutes.
 
-   + messages are slit into 3 groups:
-       + one group was subset of the other in the past
-       + newly, two groups need to get joined and sorted
-	 to get the original one
+> - A single source - single CPU calling printk() - would not lose messages,
+>   because it would print its own message before it printk() another one (we
+>   still could have another CPU rescheduling under console_sem, but I don't
+>   think this is the case).
+> 
+> - Two CPUs would also probably not lose messages, Steven's console_owner
+>   would throttle them down.
+> 
+> So I think what we have was a spike of WARN/ERR printk-s comming from
+> N CPUs concurrently.
 
-Best Regards,
-Petr
+Losing messages is in my opinion reasonable (if they are produced faster 
+than they could be printed). Another possibility is to always write the 
+message synchronously and exit printk only after it is written.
+
+> And this brings us to another pessimistic scenario: a very unlucky
+> CPUZ has to spin in prb_lock() waiting for other CPUs to print out
+> the very same 2 million chars. Which in terms of printk() latency
+> looks to me just like current printk.
+> 
+> John, sorry to ask this, does new printk() design always provide
+> latency guarantees good enough for PREEMPT_RT?
+> 
+> I'm surely missing something. Where am I wrong?
+> 
+> 	-ss
+
+Mikulas
