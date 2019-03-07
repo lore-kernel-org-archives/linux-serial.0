@@ -1,24 +1,68 @@
-From: pr-tracker-bot@kernel.org
-Subject: Re: [GIT PULL] TTY/Serial patches for 5.1-rc1
-Date: Thu, 07 Mar 2019 01:20:17 +0000
-Message-ID: <155192161799.31671.6067363492654032131.pr-tracker-bot@kernel.org>
-References: <20190306103447.GA10773@kroah.com>
+From: Long Cheng <long.cheng@mediatek.com>
+Subject: [PATCH v11 0/4] add uart DMA function
+Date: Thu, 7 Mar 2019 09:45:31 +0800
+Message-ID: <1551923135-32479-1-git-send-email-long.cheng@mediatek.com>
+Mime-Version: 1.0
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190306103447.GA10773@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Vinod Koul <vkoul@kernel.org>, Randy Dunlap <rdunlap@infradead.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Sean Wang <sean.wang@kernel.org>, Nicolas Boichat <drinkcat@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>, Zhenbao Liu <zhenbao.liu@mediatek.com>, Long Cheng <long.cheng@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-The pull request you sent on Wed, 6 Mar 2019 11:34:47 +0100:
+In Mediatek SOCs, the uart can support DMA function.
+Base on DMA engine formwork, we add the DMA code to support uart. And put the code under drivers/dma/mediatek.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.1-rc1
+This series contains document bindings, Kconfig to control the function enable or not,
+device tree including interrupt and dma device node, the code of UART DMA
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/67e79a6dc2664a3ef85113440e60f7aaca3c7815
+Changes compared to v10
+-modify DMA tx status function
+-modify 8250_mtk for DMA rx
+-add notes to binding Document.
+Changes compared to v9
+-rename dt-bindings file
+-remove direction from device_config
+-simplified code
+Changes compared to v8
+-revise missing items
+Changes compared to v7:
+-modify apdma uart tx
+Changes compared to v6:
+-Correct spelling
+Changes compared to v5:
+-move 'requst irqs' to alloc channel
+-remove tasklet.
+Changes compared to v4:
+-modify Kconfig depends on.
+Changes compared to v3:
+-fix CONFIG_PM, will cause build fail
+Changes compared to v2:
+-remove unimportant parameters
+-instead of cookie, use APIs of virtual channel.
+-use of_dma_xlate_by_chan_id.
+Changes compared to v1:
+-mian revised file, 8250_mtk_dma.c
+--parameters renamed for standard
+--remove atomic operation
 
-Thank you!
+Long Cheng (4):
+  dmaengine: 8250_mtk_dma: add MediaTek uart DMA support
+  arm: dts: mt2712: add uart APDMA to device tree
+  dt-bindings: dma: uart: rename binding
+  serial: 8250-mtk: modify uart DMA rx
+
+ .../devicetree/bindings/dma/8250_mtk_dma.txt       |   33 -
+ .../devicetree/bindings/dma/mtk-uart-apdma.txt     |   55 ++
+ arch/arm64/boot/dts/mediatek/mt2712e.dtsi          |   51 ++
+ drivers/dma/mediatek/Kconfig                       |   11 +
+ drivers/dma/mediatek/Makefile                      |    1 +
+ drivers/dma/mediatek/mtk-uart-apdma.c              |  660 ++++++++++++++++++++
+ drivers/tty/serial/8250/8250_mtk.c                 |   53 +-
+ 7 files changed, 801 insertions(+), 63 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/dma/8250_mtk_dma.txt
+ create mode 100644 Documentation/devicetree/bindings/dma/mtk-uart-apdma.txt
+ create mode 100644 drivers/dma/mediatek/mtk-uart-apdma.c
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+1.7.9.5
