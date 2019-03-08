@@ -1,67 +1,23 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: [RFC PATCH v1 08/25] printk: add ring buffer and kthread
-Date: Fri, 8 Mar 2019 10:31:34 +0900
-Message-ID: <20190308013134.GB4063@jagdpanzerIV>
-References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190212143003.48446-9-john.ogness@linutronix.de>
- <20190304073856.GA552@jagdpanzerIV>
- <87va0uopmd.fsf@linutronix.de>
+From: John Ogness <john.ogness@linutronix.de>
+Subject: Re: [PATCH 3/4] printk: Add consoles to a virtual "console" bus
+Date: Fri, 08 Mar 2019 03:56:19 +0100
+Message-ID: <87ef7ioyzw.fsf@linutronix.de>
+References: <cover.1551486732.git.calvinowens@fb.com>
+        <087b13f7812b32cc7c3f9efea71c9bcf324dd031.1551486732.git.calvinowens@fb.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <87va0uopmd.fsf@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: Calvin Owens <calvinowens@fb.com>
+Cc: Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On (03/07/19 13:06), John Ogness wrote:
-> On 2019-03-04, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com> wrote:
-> >> +	/* the printk kthread never exits */
-> >> +	for (;;) {
-> >> +		ret = prb_iter_wait_next(&iter, buf,
-> >> +					 PRINTK_RECORD_MAX, &master_seq);
-> >> +		if (ret == -ERESTARTSYS) {
-> >> +			continue;
-> >> +		} else if (ret < 0) {
-> >> +			/* iterator invalid, start over */
-> >> +			prb_iter_init(&iter, &printk_rb, NULL);
-> >> +			continue;
-> >> +		}
-> >> +
-> >> +		msg = (struct printk_log *)buf;
-> >> +		format_text(msg, master_seq, ext_text, &ext_len, text,
-> >> +			    &len, printk_time);
-> >> +
-> >> +		console_lock();
-> >> +		if (len > 0 || ext_len > 0) {
-> >> +			call_console_drivers(ext_text, ext_len, text, len);
-> >> +			boot_delay_msec(msg->level);
-> >> +			printk_delay();
-> >> +		}
-> >> +		console_unlock();
-> >> +	}
-> >
-> > This, theoretically, creates a whole new world of possibilities for
-> > console drivers. Now they can do GFP_KERNEL allocations and stall
-> > printk_kthread during OOM; or they can explicitly reschedule from
-> > ->write() callback (via console_conditional_schedule()) because
-> > console_lock() sets console_may_schedule.
-> 
-> This was the intention.
+On 2019-03-02, Calvin Owens <calvinowens@fb.com> wrote:
+> This patch embeds a device struct in the console struct, and registers
+> them on a "console" bus so we can expose attributes in sysfs.
 
-This can stall the entire printing pipeline
+I expect that "class" would be more appropriate than "bus". These
+devices really are grouped together based on their function and not the
+medium by which they are accessed.
 
-OOM -> printk_kthread() -> console_lock() -> con_foo() -> kmalloc(GFP_KERNEL) -> OOM
-
-> Although, as I mentioned in a previous response[0], perhaps we should
-> not loosen the requirements on write().
-
-Right. Console drivers better stay restricted; very restricted.
-
-> It is exactly that disable_preempt() that is so harmful for realtime tasks.
-
-I'll reply in another email (later today, or tomorrow).
-
-	-ss
+John Ogness
