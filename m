@@ -1,103 +1,106 @@
 From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH 1/4] printk: Introduce per-console loglevel setting
-Date: Fri, 8 Mar 2019 16:09:14 +0100
-Message-ID: <20190308150914.ifqp36en3pyd4ljy@pathway.suse.cz>
+Subject: Re: [PATCH 2/4] printk: Add ability to set loglevel via "console="
+ cmdline
+Date: Fri, 8 Mar 2019 16:44:31 +0100
+Message-ID: <20190308154431.vutfqckuv3t57znd@pathway.suse.cz>
 References: <cover.1551486732.git.calvinowens@fb.com>
- <06cd267ef5439a9391368423b608959f5f1b1a63.1551486732.git.calvinowens@fb.com>
+ <e1311e98d6803f678cdcaa2be1cfb58d667fe3fd.1551486732.git.calvinowens@fb.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <06cd267ef5439a9391368423b608959f5f1b1a63.1551486732.git.calvinowens@fb.com>
+In-Reply-To: <e1311e98d6803f678cdcaa2be1cfb58d667fe3fd.1551486732.git.calvinowens@fb.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Calvin Owens <calvinowens@fb.com>
 Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri 2019-03-01 16:48:17, Calvin Owens wrote:
-> Not all consoles are created equal: depending on the actual hardware,
-> the latency of a printk() call can vary dramatically. The worst examples
-> are serial consoles, where it can spin for tens of milliseconds banging
-> the UART to emit a message, which can cause application-level problems
-> when the kernel spews onto the console.
+On Fri 2019-03-01 16:48:18, Calvin Owens wrote:
+> This extends the "console=" interface to allow setting the per-console
+> loglevel by adding "/N" to the string, where N is the desired loglevel
+> expressed as a base 10 integer. Invalid values are silently ignored.
 > 
-> At Facebook we use netconsole to monitor our fleet, but we still have
-> serial consoles attached on each host for live debugging, and the latter
-> has caused problems. An obvious solution is to disable the kernel
-> console output to ttyS0, but this makes live debugging frustrating,
-> since crashes become silent and opaque to the ttyS0 user. Enabling it on
-> the fly when needed isn't feasible, since boxes you need to debug via
-> serial are likely to be borked in ways that make this impossible.
+> Signed-off-by: Calvin Owens <calvinowens@fb.com>
+> ---
+>  .../admin-guide/kernel-parameters.txt         |  6 ++--
+>  kernel/printk/console_cmdline.h               |  1 +
+>  kernel/printk/printk.c                        | 30 +++++++++++++++----
+>  3 files changed, 28 insertions(+), 9 deletions(-)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index 858b6c0b9a15..afada61dcbce 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -612,10 +612,10 @@
+>  		ttyS<n>[,options]
+>  		ttyUSB0[,options]
+>  			Use the specified serial port.  The options are of
+> -			the form "bbbbpnf", where "bbbb" is the baud rate,
+> +			the form "bbbbpnf/l", where "bbbb" is the baud rate,
+>  			"p" is parity ("n", "o", or "e"), "n" is number of
+> -			bits, and "f" is flow control ("r" for RTS or
+> -			omit it).  Default is "9600n8".
+> +			bits, "f" is flow control ("r" for RTS or omit it),
+> +			and "l" is the loglevel on [0,7]. Default is "9600n8".
 
-I guess that many other people have similar problem.
+We should a more detailed explanation about the loglevel semantic. It
+is either minimal loglevel. Or that it overrides the global
+console_loglevel if you accept my proposal.
 
+>  
+>  			See Documentation/admin-guide/serial-console.rst for more
+>  			information.  See
+> diff --git a/kernel/printk/console_cmdline.h b/kernel/printk/console_cmdline.h
+> index 11f19c466af5..fbf9b539366e 100644
+> --- a/kernel/printk/console_cmdline.h
+> +++ b/kernel/printk/console_cmdline.h
+> @@ -6,6 +6,7 @@ struct console_cmdline
+>  {
+>  	char	name[16];			/* Name of the driver	    */
+>  	int	index;				/* Minor dev. to use	    */
+> +	int	loglevel;			/* Loglevel to use */
 
+The comment will be true only with the new proposal.
+
+>  	char	*options;			/* Options for the driver   */
+>  #ifdef CONFIG_A11Y_BRAILLE_CONSOLE
+>  	char	*brl_options;			/* Options for braille driver */
 > diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index d3d170374ceb..6ead14f8c2bc 100644
+> index 6ead14f8c2bc..2e0eb89f046c 100644
 > --- a/kernel/printk/printk.c
 > +++ b/kernel/printk/printk.c
-> @@ -1164,9 +1164,14 @@ module_param(ignore_loglevel, bool, S_IRUGO | S_IWUSR);
->  MODULE_PARM_DESC(ignore_loglevel,
->  		 "ignore loglevel setting (prints all kernel messages to the console)");
->  
-> -static bool suppress_message_printing(int level)
-> +static int effective_loglevel(struct console *con)
+> @@ -2104,8 +2105,8 @@ __setup("console_msg_format=", console_msg_format_setup);
+>  static int __init console_setup(char *str)
 >  {
-> -	return (level >= console_loglevel && !ignore_loglevel);
-> +	return max(console_loglevel, con ? con->level : LOGLEVEL_EMERG);
-> +}
+>  	char buf[sizeof(console_cmdline[0].name) + 4]; /* 4 for "ttyS" */
+> -	char *s, *options, *brl_options = NULL;
+> -	int idx;
+> +	char *s, *options, *llevel, *brl_options = NULL;
+> +	int idx, loglevel = LOGLEVEL_EMERG;
+>  
+>  	if (_braille_console_setup(&str, &brl_options))
+>  		return 1;
+> @@ -2123,6 +2124,14 @@ static int __init console_setup(char *str)
+>  	options = strchr(str, ',');
+>  	if (options)
+>  		*(options++) = 0;
 > +
-> +static bool suppress_message_printing(int level, struct console *con)
-> +{
-> +	return (level >= effective_loglevel(con) && !ignore_loglevel);
+> +	llevel = strchr(str, '/');
 
-Hmm, the semantic is cleaner when the per-console level defines
-the minimal loglevel. But it is still complicated. Also it is
-very confusing that the per-console value is called "level"
-or "loglevel" but it is actually minimal loglevel.
+This should be:
 
-It might be even more straightforward when the per-console value
-defines the effective console level. I mean the following semantic:
+      if (options)
+		llevel = strchr(options, '/');
 
-   + "console_loglevel" would define the default loglevel used
-     by consoles at runtime.
-
-   + the per-console loglevel could override the default
-     console_loglevel.
-
-   + We would need a custom handler for the sysctl "console_loglevel".
-     It would write the given value to the global console_loglevel
-     variable and for all already registered consoles (con->loglevel).
-
-     The value will be used also for all newly registered consoles
-     when they do not have any custom one.
-
-
-   + The handler for "loglevel" early param should behave the same
-     as the sysctl handler.
-
-
-IMHO, there is no perfect solution. The advantage of the above
-proposal is that you "see" and "use" exactly what you "set".
-
-
->  }
->  
->  #ifdef CONFIG_BOOT_PRINTK_DELAY
-> @@ -1198,7 +1203,7 @@ static void boot_delay_msec(int level)
->  	unsigned long timeout;
->  
->  	if ((boot_delay == 0 || system_state >= SYSTEM_RUNNING)
-> -		|| suppress_message_printing(level)) {
-> +		|| suppress_message_printing(level, NULL)) {
-
-We should delay the message only when it will really reach the
-console. The same check might be used also for formatting
-the text as pointed out by Sergey in the other mail.
-
-If the above proposal was accepted, we would have custom
-handlers for sysctl. Then we could easily maintain a global
-variable with maximal effective console loglevel.
+> +	if (llevel) {
+> +		*(llevel++) = 0;
+> +		if (kstrtoint(llevel, 10, &loglevel))
+> +			loglevel = LOGLEVEL_EMERG;
+> +	}
+> +
+>  #ifdef __sparc__
+>  	if (!strcmp(str, "ttya"))
+>  		strcpy(buf, "ttyS0");
 
 Best Regards,
 Petr
