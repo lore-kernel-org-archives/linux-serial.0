@@ -1,59 +1,67 @@
-From: Nick Desaulniers <ndesaulniers@google.com>
-Subject: Re: [PATCH] tty: serial: qcom_geni_serial: Initialize baud in qcom_geni_console_setup
-Date: Fri, 8 Mar 2019 10:40:03 -0800
-Message-ID: <CAKwvOdk=A6QOHbqr78sr1jt=wfy08yqRf5HxE_qVOQVOZhNsvg@mail.gmail.com>
-References: <20190308084022.GA31474@kroah.com> <20190308183743.11145-1-natechancellor@gmail.com>
+From: Vladimir Zapolskiy <vz@mleia.com>
+Subject: Re: [PATCH serial] sc16is7xx: missing unregister/delete driver on
+ error in sc16is7xx_init()
+Date: Fri, 8 Mar 2019 22:26:44 +0200
+Message-ID: <d2888b44-2475-ebe1-bbc7-844147e9d11a@mleia.com>
+References: <20190308140933.55262-1-maowenan@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190308183743.11145-1-natechancellor@gmail.com>
+In-Reply-To: <20190308140933.55262-1-maowenan@huawei.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nathan Chancellor <natechancellor@gmail.com>
-Cc: Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, clang-built-linux@googlegroups.com
+To: Mao Wenan <maowenan@huawei.com>, gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Mar 8, 2019 at 10:38 AM Nathan Chancellor
-<natechancellor@gmail.com> wrote:
->
-> When building with -Wsometimes-uninitialized, Clang warns:
->
-> drivers/tty/serial/qcom_geni_serial.c:1079:6: warning: variable 'baud'
-> is used uninitialized whenever 'if' condition is false
-> [-Wsometimes-uninitialized]
->
-> It's not wrong; when options is NULL, baud has no default value. Use
-> 9600 as that is a sane default.
->
-> Link: https://github.com/ClangBuiltLinux/linux/issues/395
-> Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-
-Great find. Thanks for the fix, and thanks Greg for the advice and
-additional analysis here.
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-
+On 03/08/2019 04:09 PM, Mao Wenan wrote:
+> Add the missing uart_unregister_driver() and i2c_del_driver() before return
+> from sc16is7xx_init() in the error handling case.
+> 
+> Signed-off-by: Mao Wenan <maowenan@huawei.com>
 > ---
->  drivers/tty/serial/qcom_geni_serial.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 3bcec1c20219..35e5f9c5d5be 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -1050,7 +1050,7 @@ static int __init qcom_geni_console_setup(struct console *co, char *options)
->  {
->         struct uart_port *uport;
->         struct qcom_geni_serial_port *port;
-> -       int baud;
-> +       int baud = 9600;
->         int bits = 8;
->         int parity = 'n';
->         int flow = 'n';
-> --
-> 2.21.0
->
+>  drivers/tty/serial/sc16is7xx.c | 12 ++++++++++--
+>  1 file changed, 10 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> index 268098681856..114e94f476c6 100644
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+> @@ -1509,7 +1509,7 @@ static int __init sc16is7xx_init(void)
+>  	ret = i2c_add_driver(&sc16is7xx_i2c_uart_driver);
+>  	if (ret < 0) {
+>  		pr_err("failed to init sc16is7xx i2c --> %d\n", ret);
+> -		return ret;
+> +		goto err_i2c;
+>  	}
+>  #endif
+>  
+> @@ -1517,10 +1517,18 @@ static int __init sc16is7xx_init(void)
+>  	ret = spi_register_driver(&sc16is7xx_spi_uart_driver);
+>  	if (ret < 0) {
+>  		pr_err("failed to init sc16is7xx spi --> %d\n", ret);
+> -		return ret;
+> +		goto err_spi;
+>  	}
+>  #endif
+>  	return ret;
+> +
+> +err_spi:
+> +#ifdef CONFIG_SERIAL_SC16IS7XX_I2C
+> +	i2c_del_driver(&sc16is7xx_i2c_uart_driver);
+> +#endif
+> +err_i2c:
+> +	uart_unregister_driver(&sc16is7xx_uart);
+> +	return ret;
+>  }
+>  module_init(sc16is7xx_init);
+>  
+> 
 
+Nice catch, thank you!
 
--- 
-Thanks,
-~Nick Desaulniers
+Reviewed-by: Vladimir Zapolskiy <vz@mleia.com>
+
+--
+Best wishes,
+Vladimir
