@@ -1,7 +1,7 @@
 From: Mao Wenan <maowenan@huawei.com>
 Subject: [PATCH serial] sc16is7xx: missing unregister/delete driver on error in sc16is7xx_init()
-Date: Fri, 8 Mar 2019 22:08:31 +0800
-Message-ID: <20190308140831.52463-1-maowenan@huawei.com>
+Date: Fri, 8 Mar 2019 22:09:33 +0800
+Message-ID: <20190308140933.55262-1-maowenan@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7BIT
