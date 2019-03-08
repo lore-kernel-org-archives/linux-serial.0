@@ -1,47 +1,45 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 3/4] printk: Add consoles to a virtual "console" bus
-Date: Fri, 8 Mar 2019 17:34:11 +0100
-Message-ID: <20190308163411.GA12898@kroah.com>
-References: <cover.1551486732.git.calvinowens@fb.com>
- <087b13f7812b32cc7c3f9efea71c9bcf324dd031.1551486732.git.calvinowens@fb.com>
- <87ef7ioyzw.fsf@linutronix.de>
- <20190308155814.rzsjrzgwfcm4p5sk@pathway.suse.cz>
+From: Nathan Chancellor <natechancellor@gmail.com>
+Subject: [PATCH] tty: serial: qcom_geni_serial: Initialize baud in qcom_geni_console_setup
+Date: Fri,  8 Mar 2019 11:37:44 -0700
+Message-ID: <20190308183743.11145-1-natechancellor@gmail.com>
+References: <20190308084022.GA31474@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190308155814.rzsjrzgwfcm4p5sk@pathway.suse.cz>
+In-Reply-To: <20190308084022.GA31474@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Petr Mladek <pmladek@suse.com>
-Cc: Calvin Owens <calvinowens@fb.com>, John Ogness <john.ogness@linutronix.de>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Nick Desaulniers <ndesaulniers@google.com>, clang-built-linux@googlegroups.com, Nathan Chancellor <natechancellor@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Mar 08, 2019 at 04:58:14PM +0100, Petr Mladek wrote:
-> On Fri 2019-03-08 03:56:19, John Ogness wrote:
-> > On 2019-03-02, Calvin Owens <calvinowens@fb.com> wrote:
-> > > This patch embeds a device struct in the console struct, and registers
-> > > them on a "console" bus so we can expose attributes in sysfs.
-> > 
-> > I expect that "class" would be more appropriate than "bus". These
-> > devices really are grouped together based on their function and not the
-> > medium by which they are accessed.
-> 
-> Good point. "class" looks better to me as well.
-> 
-> Greg, any opinion, where to put the entries for struct console ?
+When building with -Wsometimes-uninitialized, Clang warns:
 
-Hang them off of the device that the console belongs to?
+drivers/tty/serial/qcom_geni_serial.c:1079:6: warning: variable 'baud'
+is used uninitialized whenever 'if' condition is false
+[-Wsometimes-uninitialized]
 
-Classes and busses are almost identical except:
-	- busses is the binding of a driver to a device (usb, pci, etc.)
-	- classes are usually userspace interactions to a device (input,
-	  tty, etc.)
+It's not wrong; when options is NULL, baud has no default value. Use
+9600 as that is a sane default.
 
-So this sounds like a class to me.
+Link: https://github.com/ClangBuiltLinux/linux/issues/395
+Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-If you want me to review this, I'll be glad to so do once 5.1-rc1 is
-out...
-
-thanks,
-
-greg k-h
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 3bcec1c20219..35e5f9c5d5be 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1050,7 +1050,7 @@ static int __init qcom_geni_console_setup(struct console *co, char *options)
+ {
+ 	struct uart_port *uport;
+ 	struct qcom_geni_serial_port *port;
+-	int baud;
++	int baud = 9600;
+ 	int bits = 8;
+ 	int parity = 'n';
+ 	int flow = 'n';
+-- 
+2.21.0
