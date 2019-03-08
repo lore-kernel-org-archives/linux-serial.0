@@ -1,56 +1,103 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: Serial console is causing system lock-up
-Date: Fri, 8 Mar 2019 10:22:42 +0900
-Message-ID: <20190308012242.GA4063@jagdpanzerIV>
-References: <alpine.LRH.2.02.1903060917280.5335@file01.intranet.prod.int.rdu2.redhat.com>
-	<20190306152218.eocv4zulf7tv2mkc@pathway.suse.cz>
-	<alpine.LRH.2.02.1903061031420.16905@file01.intranet.prod.int.rdu2.redhat.com>
-	<20190306163003.GA31858@mit.edu>
-	<alpine.LRH.2.02.1903061157530.3129@file01.intranet.prod.int.rdu2.redhat.com>
-	<20190306171943.12345598@oasis.local.home>
-	<87ftrzbp3y.fsf@linutronix.de>
-	<23681.9703.524330.948156@quad.stoffel.home>
-	<alpine.LRH.2.02.1903070918110.6122@file01.intranet.prod.int.rdu2.redhat.com>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH 1/4] printk: Introduce per-console loglevel setting
+Date: Fri, 8 Mar 2019 16:09:14 +0100
+Message-ID: <20190308150914.ifqp36en3pyd4ljy@pathway.suse.cz>
+References: <cover.1551486732.git.calvinowens@fb.com>
+ <06cd267ef5439a9391368423b608959f5f1b1a63.1551486732.git.calvinowens@fb.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <dm-devel-bounces@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <alpine.LRH.2.02.1903070918110.6122@file01.intranet.prod.int.rdu2.redhat.com>
-List-Unsubscribe: <https://www.redhat.com/mailman/options/dm-devel>,
-	<mailto:dm-devel-request@redhat.com?subject=unsubscribe>
-List-Archive: <https://www.redhat.com/archives/dm-devel>
-List-Post: <mailto:dm-devel@redhat.com>
-List-Help: <mailto:dm-devel-request@redhat.com?subject=help>
-List-Subscribe: <https://www.redhat.com/mailman/listinfo/dm-devel>,
-	<mailto:dm-devel-request@redhat.com?subject=subscribe>
-Sender: dm-devel-bounces@redhat.com
-Errors-To: dm-devel-bounces@redhat.com
-To: Mikulas Patocka <mpatocka@redhat.com>
-Cc: Petr Mladek <pmladek@suse.com>, Nigel Croxon <ncroxon@redhat.com>, "Theodore Y. Ts'o" <tytso@mit.edu>, John Ogness <john.ogness@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, John Stoffel <john@stoffel.org>, Steven Rostedt <rostedt@goodmis.org>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, dm-devel@redhat.com, linux-serial@vger.kernel.org
+In-Reply-To: <06cd267ef5439a9391368423b608959f5f1b1a63.1551486732.git.calvinowens@fb.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Calvin Owens <calvinowens@fb.com>
+Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On (03/07/19 09:26), Mikulas Patocka wrote:
-> On Thu, 7 Mar 2019, John Stoffel wrote:
+On Fri 2019-03-01 16:48:17, Calvin Owens wrote:
+> Not all consoles are created equal: depending on the actual hardware,
+> the latency of a printk() call can vary dramatically. The worst examples
+> are serial consoles, where it can spin for tens of milliseconds banging
+> the UART to emit a message, which can cause application-level problems
+> when the kernel spews onto the console.
 > 
-> > The real problem is the disconnect between serial console speed and
-> > capacity in bits/sec and that of the regular console.  Serial, esp at
-> > 9600 baud is just a slow and limited resource which needs to be
-> > handled differently than a graphical console.
-> >
-> > I'm also big on ratelimiting messages, even critical warning
-> > messages.  Too much redundant info doesn't help anyone.  And what a
-> > subsystem thinks is critical, may not be critical to the system as a
-> > whole.
-> 
-> Perhaps a proper solution would be to drop excessive messages to serial 
-> console unless Oops or BUG has happened?
+> At Facebook we use netconsole to monitor our fleet, but we still have
+> serial consoles attached on each host for live debugging, and the latter
+> has caused problems. An obvious solution is to disable the kernel
+> console output to ttyS0, but this makes live debugging frustrating,
+> since crashes become silent and opaque to the ttyS0 user. Enabling it on
+> the fly when needed isn't feasible, since boxes you need to debug via
+> serial are likely to be borked in ways that make this impossible.
 
-Technically, we can have a per-console loglevel configuration. We have
-several use cases for this already. Slower consoles will filter out more
-messages and print only ERR/CRIT/ALERT/EMERG.
+I guess that many other people have similar problem.
 
-dm-integrity uses WARN level, which is below ERR; so it seems that
-per-console loglevel can do the trick.
 
-	-ss
+> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> index d3d170374ceb..6ead14f8c2bc 100644
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -1164,9 +1164,14 @@ module_param(ignore_loglevel, bool, S_IRUGO | S_IWUSR);
+>  MODULE_PARM_DESC(ignore_loglevel,
+>  		 "ignore loglevel setting (prints all kernel messages to the console)");
+>  
+> -static bool suppress_message_printing(int level)
+> +static int effective_loglevel(struct console *con)
+>  {
+> -	return (level >= console_loglevel && !ignore_loglevel);
+> +	return max(console_loglevel, con ? con->level : LOGLEVEL_EMERG);
+> +}
+> +
+> +static bool suppress_message_printing(int level, struct console *con)
+> +{
+> +	return (level >= effective_loglevel(con) && !ignore_loglevel);
+
+Hmm, the semantic is cleaner when the per-console level defines
+the minimal loglevel. But it is still complicated. Also it is
+very confusing that the per-console value is called "level"
+or "loglevel" but it is actually minimal loglevel.
+
+It might be even more straightforward when the per-console value
+defines the effective console level. I mean the following semantic:
+
+   + "console_loglevel" would define the default loglevel used
+     by consoles at runtime.
+
+   + the per-console loglevel could override the default
+     console_loglevel.
+
+   + We would need a custom handler for the sysctl "console_loglevel".
+     It would write the given value to the global console_loglevel
+     variable and for all already registered consoles (con->loglevel).
+
+     The value will be used also for all newly registered consoles
+     when they do not have any custom one.
+
+
+   + The handler for "loglevel" early param should behave the same
+     as the sysctl handler.
+
+
+IMHO, there is no perfect solution. The advantage of the above
+proposal is that you "see" and "use" exactly what you "set".
+
+
+>  }
+>  
+>  #ifdef CONFIG_BOOT_PRINTK_DELAY
+> @@ -1198,7 +1203,7 @@ static void boot_delay_msec(int level)
+>  	unsigned long timeout;
+>  
+>  	if ((boot_delay == 0 || system_state >= SYSTEM_RUNNING)
+> -		|| suppress_message_printing(level)) {
+> +		|| suppress_message_printing(level, NULL)) {
+
+We should delay the message only when it will really reach the
+console. The same check might be used also for formatting
+the text as pointed out by Sergey in the other mail.
+
+If the above proposal was accepted, we would have custom
+handlers for sysctl. Then we could easily maintain a global
+variable with maximal effective console loglevel.
+
+Best Regards,
+Petr
