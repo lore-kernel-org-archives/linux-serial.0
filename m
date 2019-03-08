@@ -1,54 +1,52 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: -Wsometimes-uninitialized Clang warning in
- drivers/tty/serial/qcom_geni_serial.c
-Date: Fri, 8 Mar 2019 09:40:22 +0100
-Message-ID: <20190308084022.GA31474@kroah.com>
-References: <20190308004526.GA11580@archlinux-ryzen>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [RFC PATCH v1 00/25] printk: new implementation
+Date: Fri, 8 Mar 2019 11:00:16 +0100
+Message-ID: <20190308100016.d2v6avtotjo3eyxo@pathway.suse.cz>
+References: <20190212143003.48446-1-john.ogness@linutronix.de>
+ <20190213025520.GA5803@jagdpanzerIV>
+ <874l9721hf.fsf@linutronix.de>
+ <20190304052335.GA6648@jagdpanzerIV>
+ <87lg1rggcz.fsf@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190308004526.GA11580@archlinux-ryzen>
+In-Reply-To: <87lg1rggcz.fsf@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nathan Chancellor <natechancellor@gmail.com>
-Cc: Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Karthikeyan Ramasubramanian <kramasub@codeaurora.org>, Douglas Anderson <dianders@chromium.org>, Ryan Case <ryandcase@chromium.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Nick Desaulniers <ndesaulniers@google.com>, clang-built-linux@googlegroups.com
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Mar 07, 2019 at 05:45:26PM -0700, Nathan Chancellor wrote:
-> Hi all,
+On Thu 2019-03-07 10:53:48, John Ogness wrote:
+> On 2019-03-04, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com> wrote:
+> > If there are setups which can be fully !atomic (in terms of console
+> > output) then we, essentially, have a fully preemptible kthread printk
+> > implementation.
 > 
-> We are trying to get Clang's -Wsometimes-uninitialized turned on for the
-> kernel as it can catch some bugs that GCC can't. This warning came up:
+> Correct. I've mentioned in another response[0] some ideas about what
+> could be done to aid this.
 > 
-> drivers/tty/serial/qcom_geni_serial.c:1079:6: warning: variable 'baud' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
->         if (options)
->             ^~~~~~~
-> drivers/tty/serial/qcom_geni_serial.c:1082:37: note: uninitialized use occurs here
->         return uart_set_options(uport, co, baud, parity, bits, flow);
->                                            ^~~~
-> drivers/tty/serial/qcom_geni_serial.c:1079:2: note: remove the 'if' if its condition is always true
->         if (options)
->         ^~~~~~~~~~~~
-> drivers/tty/serial/qcom_geni_serial.c:1053:10: note: initialize the variable 'baud' to silence this warning
->         int baud;
->                 ^
->                  = 0
-> 1 warning generated.
-> 
-> While this is probably not an issue in practice (I assume baud is always
-> supplied as an option), we should clean up this warning. I would fix it
-> myself but I have no idea what baud's initial value should be as it
-> seems it is dependent on the driver. Your input would be much
-> appreciated.
+> I understand that fully preemptible kthread printing is unacceptable for
+> you. Since all current console drivers are already irq safe, I'm
+> wondering if using irq_work to handle the emergency printing for console
+> drivers without write_atomic() would help. (If the printk caller is in a
+> context that write() supports, then write() could be called directly.)
+> This would also demand that the irq-safe requirements for write() are
+> not relaxed. The printk-kthread might still be faster than irq_work, but
+> it might increase reliability if an irq_work is triggered as an extra
+> precaution.
 
-this function can be called with the option variable set to NULL, so
-there could not be a default baud rate set, nice catch.
+It is getting more and more complicated. The messages would be pushed
+directly, from irq, and kthread. It would depend how the code would
+look like but I am not much optimistic.
 
-As for the default, let's just be sane and set it to 9600 as that's a
-normal default baudrate.
+Note that you could not pass any data to the irq_work handler.
+It would need to iterate over the logbuffer and take care of
+all non-handled emergency messages.
 
-Do you want to make up a patch for this, or do you need me to?
+Anyway, we could solve this later. We need to keep the current
+console_unlock() handling as a fallback until enough consoles
+support the direct mode anyway.
 
-thanks,
-
-greg k-h
+Best Regards,
+Petr
