@@ -1,72 +1,105 @@
 From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [RFC PATCH v1 20/25] serial: 8250: implement write_atomic
-Date: Fri, 8 Mar 2019 11:28:19 +0100
-Message-ID: <20190308102819.lirle4vlf7mdcetp@pathway.suse.cz>
+Subject: Re: [RFC PATCH v1 19/25] printk: introduce emergency messages
+Date: Fri, 8 Mar 2019 11:31:27 +0100
+Message-ID: <20190308103127.txsgv3d6lqlf6pad@pathway.suse.cz>
 References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190212143003.48446-21-john.ogness@linutronix.de>
- <20190227094655.ecdwhsc2bf5spkqx@pathway.suse.cz>
- <87zhqhed3u.fsf@linutronix.de>
- <20190227135504.gqtcsdwpy4rd7xvs@pathway.suse.cz>
- <87a7i6ovt3.fsf@linutronix.de>
+ <20190212143003.48446-20-john.ogness@linutronix.de>
+ <20190307073029.GA489@jagdpanzerIV>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <87a7i6ovt3.fsf@linutronix.de>
+In-Reply-To: <20190307073029.GA489@jagdpanzerIV>
 Sender: linux-kernel-owner@vger.kernel.org
-To: John Ogness <john.ogness@linutronix.de>
-Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: John Ogness <john.ogness@linutronix.de>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri 2019-03-08 05:05:12, John Ogness wrote:
-> On 2019-02-27, Petr Mladek <pmladek@suse.com> wrote:
-> >>>> Implement a non-sleeping NMI-safe write_atomic console function in
-> >>>> order to support emergency printk messages.
-> >>>
-> >>> OK, it would be safe when prb_lock() is the only lock taken
-> >>> in the NMI handler.
-> >> 
-> >> Which is the case. As I wrote to you already [0], NMI contexts are
-> >> _never_ allowed to do things that rely on waiting forever for other
-> >> CPUs.
-> >
-> > Who says _never_? I agree that it is not reasonable. But the
-> > history shows that it happens.
+On Thu 2019-03-07 16:30:29, Sergey Senozhatsky wrote:
+> On (02/12/19 15:29), John Ogness wrote:
+> [..]
+> > +static bool console_can_emergency(int level)
+> > +{
+> > +	struct console *con;
+> > +
+> > +	for_each_console(con) {
+> > +		if (!(con->flags & CON_ENABLED))
+> > +			continue;
+> > +		if (con->write_atomic && level < emergency_console_loglevel)
+> > +			return true;
+> > +		if (con->write && (con->flags & CON_BOOT))
+> > +			return true;
+> > +	}
+> > +	return false;
+> > +}
+> > +
+> > +static void call_emergency_console_drivers(int level, const char *text,
+> > +					   size_t text_len)
+> > +{
+> > +	struct console *con;
+> > +
+> > +	for_each_console(con) {
+> > +		if (!(con->flags & CON_ENABLED))
+> > +			continue;
+> > +		if (con->write_atomic && level < emergency_console_loglevel) {
+> > +			con->write_atomic(con, text, text_len);
+> > +			continue;
+> > +		}
+> > +		if (con->write && (con->flags & CON_BOOT)) {
+> > +			con->write(con, text, text_len);
+> > +			continue;
+> > +		}
+> > +	}
+> > +}
+> > +
+> > +static void printk_emergency(char *buffer, int level, u64 ts_nsec, u16 cpu,
+> > +			     char *text, u16 text_len)
+> > +{
+> > +	struct printk_log msg;
+> > +	size_t prefix_len;
+> > +
+> > +	if (!console_can_emergency(level))
+> > +		return;
+> > +
+> > +	msg.level = level;
+> > +	msg.ts_nsec = ts_nsec;
+> > +	msg.cpu = cpu;
+> > +	msg.facility = 0;
+> > +
+> > +	/* "text" must have PREFIX_MAX preceding bytes available */
+> > +
+> > +	prefix_len = print_prefix(&msg,
+> > +				  console_msg_format & MSG_FORMAT_SYSLOG,
+> > +				  printk_time, buffer);
+> > +	/* move the prefix forward to the beginning of the message text */
+> > +	text -= prefix_len;
+> > +	memmove(text, buffer, prefix_len);
+> > +	text_len += prefix_len;
+> > +
+> > +	text[text_len++] = '\n';
+> > +
+> > +	call_emergency_console_drivers(level, text, text_len);
 > 
-> Right, which is why it would need to become policy.
+> So this iterates the console list and calls consoles' callbacks, but what
+> prevents console driver to be rmmod-ed under us?
 > 
-> The emergency messages (aka write_atomic) introduce a new requirement to
-> the kernel because this callback must be callable from any context. The
-> console drivers must have some way of synchronizing. The CPU-reentrant
-> spin lock is the only solution I am aware of.
+> 	CPU0						CPU1
+> 
+> 	printk_emergency()				rmmod netcon
+> 	 call_emergency_console_drivers()		
+> 	  con_foo->flags & CON_ENABLED == 1
+> 							unregister_console(con_foo)
+> 							con_foo->flags &= ~CON_ENABLED
+> 							__exit // con_foo gone ?
+> 	  con_foo->write()
+> 
+> We use console_lock()/console_trylock() in order to protect the list and
+> console drivers; but this brings scheduler to the picture, with all its
+> locks.
 
-I am not in position to decide if this requirement is acceptable
-or not. We would need an opinion from Linus at minimum.
+Great catch!
 
-But it is not acceptable from my point of view. Note that
-many spinlocks might be safely used in NMI in principle.
+I think that it is doable to guard the list using RCU.
 
-You want to introduce a single spinlock just because
-printk() could be called anywhere. Most other subsystems
-do not have this problem because they a more self-contained.
-
-> If the ringbuffer was fully lockless
-
-Exactly, I think that a solution would be fully lockless logbuffer.
-
-
-> we should be able to have per-console CPU-reentrant spin locks
-> as long as the ordering is preserved, which I expect shouldn't
-> be a problem. If any NMI context needed a spin lock for its own
-> purposes, it would need to use the CPU-reentrant spin lock of
-> the first console so as to preserve the ordering in case of a panic.
-
-IMHO, this is not acceptable. It would be nice to have direct output
-from NMI but the cost looks to high here.
-
-A solution would be to defer the console to irq_work or so.
-We might also consider using trylock in NMI and have
-the irq_work just as a fallback.
-
-Best Regars,
+Best Regards,
 Petr
