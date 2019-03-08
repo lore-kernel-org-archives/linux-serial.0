@@ -1,106 +1,29 @@
 From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH 2/4] printk: Add ability to set loglevel via "console="
- cmdline
-Date: Fri, 8 Mar 2019 16:44:31 +0100
-Message-ID: <20190308154431.vutfqckuv3t57znd@pathway.suse.cz>
+Subject: Re: [PATCH 3/4] printk: Add consoles to a virtual "console" bus
+Date: Fri, 8 Mar 2019 16:53:52 +0100
+Message-ID: <20190308155352.g43mt44adau6cgh6@pathway.suse.cz>
 References: <cover.1551486732.git.calvinowens@fb.com>
- <e1311e98d6803f678cdcaa2be1cfb58d667fe3fd.1551486732.git.calvinowens@fb.com>
+ <087b13f7812b32cc7c3f9efea71c9bcf324dd031.1551486732.git.calvinowens@fb.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <e1311e98d6803f678cdcaa2be1cfb58d667fe3fd.1551486732.git.calvinowens@fb.com>
+In-Reply-To: <087b13f7812b32cc7c3f9efea71c9bcf324dd031.1551486732.git.calvinowens@fb.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Calvin Owens <calvinowens@fb.com>
 Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri 2019-03-01 16:48:18, Calvin Owens wrote:
-> This extends the "console=" interface to allow setting the per-console
-> loglevel by adding "/N" to the string, where N is the desired loglevel
-> expressed as a base 10 integer. Invalid values are silently ignored.
+On Fri 2019-03-01 16:48:19, Calvin Owens wrote:
+> This patch embeds a device struct in the console struct, and registers
+> them on a "console" bus so we can expose attributes in sysfs.
 > 
-> Signed-off-by: Calvin Owens <calvinowens@fb.com>
-> ---
->  .../admin-guide/kernel-parameters.txt         |  6 ++--
->  kernel/printk/console_cmdline.h               |  1 +
->  kernel/printk/printk.c                        | 30 +++++++++++++++----
->  3 files changed, 28 insertions(+), 9 deletions(-)
-> 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index 858b6c0b9a15..afada61dcbce 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -612,10 +612,10 @@
->  		ttyS<n>[,options]
->  		ttyUSB0[,options]
->  			Use the specified serial port.  The options are of
-> -			the form "bbbbpnf", where "bbbb" is the baud rate,
-> +			the form "bbbbpnf/l", where "bbbb" is the baud rate,
->  			"p" is parity ("n", "o", or "e"), "n" is number of
-> -			bits, and "f" is flow control ("r" for RTS or
-> -			omit it).  Default is "9600n8".
-> +			bits, "f" is flow control ("r" for RTS or omit it),
-> +			and "l" is the loglevel on [0,7]. Default is "9600n8".
+> Early console structures must still be static, since they're required
+> before we're able to allocate memory. The least ugly way I can come up
+> with to handle this is an "is_static" flag in the structure which makes
+> the gets and puts NOPs, and is checked in ->release() to catch mistakes.
 
-We should a more detailed explanation about the loglevel semantic. It
-is either minimal loglevel. Or that it overrides the global
-console_loglevel if you accept my proposal.
-
->  
->  			See Documentation/admin-guide/serial-console.rst for more
->  			information.  See
-> diff --git a/kernel/printk/console_cmdline.h b/kernel/printk/console_cmdline.h
-> index 11f19c466af5..fbf9b539366e 100644
-> --- a/kernel/printk/console_cmdline.h
-> +++ b/kernel/printk/console_cmdline.h
-> @@ -6,6 +6,7 @@ struct console_cmdline
->  {
->  	char	name[16];			/* Name of the driver	    */
->  	int	index;				/* Minor dev. to use	    */
-> +	int	loglevel;			/* Loglevel to use */
-
-The comment will be true only with the new proposal.
-
->  	char	*options;			/* Options for the driver   */
->  #ifdef CONFIG_A11Y_BRAILLE_CONSOLE
->  	char	*brl_options;			/* Options for braille driver */
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index 6ead14f8c2bc..2e0eb89f046c 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -2104,8 +2105,8 @@ __setup("console_msg_format=", console_msg_format_setup);
->  static int __init console_setup(char *str)
->  {
->  	char buf[sizeof(console_cmdline[0].name) + 4]; /* 4 for "ttyS" */
-> -	char *s, *options, *brl_options = NULL;
-> -	int idx;
-> +	char *s, *options, *llevel, *brl_options = NULL;
-> +	int idx, loglevel = LOGLEVEL_EMERG;
->  
->  	if (_braille_console_setup(&str, &brl_options))
->  		return 1;
-> @@ -2123,6 +2124,14 @@ static int __init console_setup(char *str)
->  	options = strchr(str, ',');
->  	if (options)
->  		*(options++) = 0;
-> +
-> +	llevel = strchr(str, '/');
-
-This should be:
-
-      if (options)
-		llevel = strchr(options, '/');
-
-> +	if (llevel) {
-> +		*(llevel++) = 0;
-> +		if (kstrtoint(llevel, 10, &loglevel))
-> +			loglevel = LOGLEVEL_EMERG;
-> +	}
-> +
->  #ifdef __sparc__
->  	if (!strcmp(str, "ttya"))
->  		strcpy(buf, "ttyS0");
+I wonder if it might get detected by is_kernel_inittext().
 
 Best Regards,
 Petr
