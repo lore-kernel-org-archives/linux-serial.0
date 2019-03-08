@@ -1,48 +1,72 @@
 From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [RFC PATCH v1 08/25] printk: add ring buffer and kthread
-Date: Fri, 8 Mar 2019 11:04:49 +0100
-Message-ID: <20190308100449.dccctqo6i4xa6bhq@pathway.suse.cz>
+Subject: Re: [RFC PATCH v1 20/25] serial: 8250: implement write_atomic
+Date: Fri, 8 Mar 2019 11:28:19 +0100
+Message-ID: <20190308102819.lirle4vlf7mdcetp@pathway.suse.cz>
 References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190212143003.48446-9-john.ogness@linutronix.de>
- <20190304073856.GA552@jagdpanzerIV>
- <87va0uopmd.fsf@linutronix.de>
- <20190308013134.GB4063@jagdpanzerIV>
+ <20190212143003.48446-21-john.ogness@linutronix.de>
+ <20190227094655.ecdwhsc2bf5spkqx@pathway.suse.cz>
+ <87zhqhed3u.fsf@linutronix.de>
+ <20190227135504.gqtcsdwpy4rd7xvs@pathway.suse.cz>
+ <87a7i6ovt3.fsf@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190308013134.GB4063@jagdpanzerIV>
+In-Reply-To: <87a7i6ovt3.fsf@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: John Ogness <john.ogness@linutronix.de>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri 2019-03-08 10:31:34, Sergey Senozhatsky wrote:
-> On (03/07/19 13:06), John Ogness wrote:
-> > On 2019-03-04, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com> wrote:
-> > > This, theoretically, creates a whole new world of possibilities for
-> > > console drivers. Now they can do GFP_KERNEL allocations and stall
-> > > printk_kthread during OOM; or they can explicitly reschedule from
-> > > ->write() callback (via console_conditional_schedule()) because
-> > > console_lock() sets console_may_schedule.
-> > 
-> This can stall the entire printing pipeline
+On Fri 2019-03-08 05:05:12, John Ogness wrote:
+> On 2019-02-27, Petr Mladek <pmladek@suse.com> wrote:
+> >>>> Implement a non-sleeping NMI-safe write_atomic console function in
+> >>>> order to support emergency printk messages.
+> >>>
+> >>> OK, it would be safe when prb_lock() is the only lock taken
+> >>> in the NMI handler.
+> >> 
+> >> Which is the case. As I wrote to you already [0], NMI contexts are
+> >> _never_ allowed to do things that rely on waiting forever for other
+> >> CPUs.
+> >
+> > Who says _never_? I agree that it is not reasonable. But the
+> > history shows that it happens.
 > 
-> OOM -> printk_kthread() -> console_lock() -> con_foo() -> kmalloc(GFP_KERNEL) -> OOM
+> Right, which is why it would need to become policy.
 > 
-> > Although, as I mentioned in a previous response[0], perhaps we should
-> > not loosen the requirements on write().
-> 
-> Right. Console drivers better stay restricted; very restricted.
+> The emergency messages (aka write_atomic) introduce a new requirement to
+> the kernel because this callback must be callable from any context. The
+> console drivers must have some way of synchronizing. The CPU-reentrant
+> spin lock is the only solution I am aware of.
 
-I agree here.
+I am not in position to decide if this requirement is acceptable
+or not. We would need an opinion from Linus at minimum.
 
-> > It is exactly that disable_preempt() that is so harmful for realtime tasks.
+But it is not acceptable from my point of view. Note that
+many spinlocks might be safely used in NMI in principle.
 
-> I'll reply in another email (later today, or tomorrow).
+You want to introduce a single spinlock just because
+printk() could be called anywhere. Most other subsystems
+do not have this problem because they a more self-contained.
 
-I see. But I have troubles to imagine a preemtible direct console
-output. The result would be mixed messages on a single line.
+> If the ringbuffer was fully lockless
 
-Best Regards,
+Exactly, I think that a solution would be fully lockless logbuffer.
+
+
+> we should be able to have per-console CPU-reentrant spin locks
+> as long as the ordering is preserved, which I expect shouldn't
+> be a problem. If any NMI context needed a spin lock for its own
+> purposes, it would need to use the CPU-reentrant spin lock of
+> the first console so as to preserve the ordering in case of a panic.
+
+IMHO, this is not acceptable. It would be nice to have direct output
+from NMI but the cost looks to high here.
+
+A solution would be to defer the console to irq_work or so.
+We might also consider using trylock in NMI and have
+the irq_work just as a fallback.
+
+Best Regars,
 Petr
