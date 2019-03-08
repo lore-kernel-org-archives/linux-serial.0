@@ -1,105 +1,49 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [RFC PATCH v1 19/25] printk: introduce emergency messages
-Date: Fri, 8 Mar 2019 11:31:27 +0100
-Message-ID: <20190308103127.txsgv3d6lqlf6pad@pathway.suse.cz>
-References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190212143003.48446-20-john.ogness@linutronix.de>
- <20190307073029.GA489@jagdpanzerIV>
+From: =?utf-8?B?546LIOaWh+a2mw==?= <wwthappy@hotmail.com>
+Subject: [PATCH] Disable kgdboc failed by echo space to
+ /sys/module/kgdboc/parameters/kgdboc
+Date: Fri, 8 Mar 2019 01:54:02 +0000
+Message-ID: <HK0PR03MB2817154ABAB39937BFF0AB9BCB4D0@HK0PR03MB2817.apcprd03.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190307073029.GA489@jagdpanzerIV>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: John Ogness <john.ogness@linutronix.de>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <kgdb-bugreport-bounces@lists.sourceforge.net>
+Content-Language: en-US
+Content-ID: <3DD42FDDDE4744428B9BD5503B42CB61@apcprd03.prod.outlook.com>
+List-Unsubscribe: <https://lists.sourceforge.net/lists/options/kgdb-bugreport>,
+ <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=unsubscribe>
+List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=kgdb-bugreport>
+List-Post: <mailto:kgdb-bugreport@lists.sourceforge.net>
+List-Help: <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=help>
+List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/kgdb-bugreport>,
+ <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=subscribe>
+Errors-To: kgdb-bugreport-bounces@lists.sourceforge.net
+To: "jason.wessel@windriver.com" <jason.wessel@windriver.com>, "daniel.thompson@linaro.org" <daniel.thompson@linaro.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>
+Cc: "kgdb-bugreport@lists.sourceforge.net" <kgdb-bugreport@lists.sourceforge.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu 2019-03-07 16:30:29, Sergey Senozhatsky wrote:
-> On (02/12/19 15:29), John Ogness wrote:
-> [..]
-> > +static bool console_can_emergency(int level)
-> > +{
-> > +	struct console *con;
-> > +
-> > +	for_each_console(con) {
-> > +		if (!(con->flags & CON_ENABLED))
-> > +			continue;
-> > +		if (con->write_atomic && level < emergency_console_loglevel)
-> > +			return true;
-> > +		if (con->write && (con->flags & CON_BOOT))
-> > +			return true;
-> > +	}
-> > +	return false;
-> > +}
-> > +
-> > +static void call_emergency_console_drivers(int level, const char *text,
-> > +					   size_t text_len)
-> > +{
-> > +	struct console *con;
-> > +
-> > +	for_each_console(con) {
-> > +		if (!(con->flags & CON_ENABLED))
-> > +			continue;
-> > +		if (con->write_atomic && level < emergency_console_loglevel) {
-> > +			con->write_atomic(con, text, text_len);
-> > +			continue;
-> > +		}
-> > +		if (con->write && (con->flags & CON_BOOT)) {
-> > +			con->write(con, text, text_len);
-> > +			continue;
-> > +		}
-> > +	}
-> > +}
-> > +
-> > +static void printk_emergency(char *buffer, int level, u64 ts_nsec, u16 cpu,
-> > +			     char *text, u16 text_len)
-> > +{
-> > +	struct printk_log msg;
-> > +	size_t prefix_len;
-> > +
-> > +	if (!console_can_emergency(level))
-> > +		return;
-> > +
-> > +	msg.level = level;
-> > +	msg.ts_nsec = ts_nsec;
-> > +	msg.cpu = cpu;
-> > +	msg.facility = 0;
-> > +
-> > +	/* "text" must have PREFIX_MAX preceding bytes available */
-> > +
-> > +	prefix_len = print_prefix(&msg,
-> > +				  console_msg_format & MSG_FORMAT_SYSLOG,
-> > +				  printk_time, buffer);
-> > +	/* move the prefix forward to the beginning of the message text */
-> > +	text -= prefix_len;
-> > +	memmove(text, buffer, prefix_len);
-> > +	text_len += prefix_len;
-> > +
-> > +	text[text_len++] = '\n';
-> > +
-> > +	call_emergency_console_drivers(level, text, text_len);
-> 
-> So this iterates the console list and calls consoles' callbacks, but what
-> prevents console driver to be rmmod-ed under us?
-> 
-> 	CPU0						CPU1
-> 
-> 	printk_emergency()				rmmod netcon
-> 	 call_emergency_console_drivers()		
-> 	  con_foo->flags & CON_ENABLED == 1
-> 							unregister_console(con_foo)
-> 							con_foo->flags &= ~CON_ENABLED
-> 							__exit // con_foo gone ?
-> 	  con_foo->write()
-> 
-> We use console_lock()/console_trylock() in order to protect the list and
-> console drivers; but this brings scheduler to the picture, with all its
-> locks.
-
-Great catch!
-
-I think that it is doable to guard the list using RCU.
-
-Best Regards,
-Petr
+RnJvbSA2NmQzOWMwZGUwYWJkNDVkZGNhN2FhOGZjMDg2MzJiMDFkNjY5ZDdiIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQ0KRnJvbTogV2VudGFvIFdhbmcgPOKAnHdpdGFsbHdhbmdAZ21haWwuY29t
+4oCdPg0KRGF0ZTogTW9uLCA0IE1hciAyMDE5IDIxOjU4OjMzICswODAwDQpTdWJqZWN0OiBbUEFU
+Q0hdIERpc2FibGUga2dkYm9jIGZhaWxlZCBieSBlY2hvIHNwYWNlIHRvDQogL3N5cy9tb2R1bGUv
+a2dkYm9jL3BhcmFtZXRlcnMva2dkYm9jDQpNSU1FLVZlcnNpb246IDEuMA0KQ29udGVudC1UeXBl
+OiB0ZXh0L3BsYWluOyBjaGFyc2V0PVVURi04DQpDb250ZW50LVRyYW5zZmVyLUVuY29kaW5nOiA4
+Yml0DQoNCkVjaG8gIiIgdG8gL3N5cy9tb2R1bGUva2dkYm9jL3BhcmFtZXRlcnMva2dkYm9jIHdp
+bGwgZmFpbCB3aXRoIHdyaXRlDQplcnJvcjogTm8gc3VjaCBkZXZpY2UNClRoaXMgaXMgY2F1c2Vk
+IGJ5IGZ1bmN0aW9uICJjb25maWd1cmVfa2dkYm9jIiB3aG8gaW5pdCBlcnIgdG8gRU5PREVWIHdo
+ZW4NCnRoZSBjb25maWcgaXMgZW1wdHkgKGxlZ2FsIGlucHV0KSB0aGUgY29kZSBnbyBvdXQgd2l0
+aCBFTk9ERVYgcmV0dXJuZWQuDQoNCkZpeGVzOiAyZGQ0NTMxNjg2NDNkICgia2dkYm9jOiBGaXgg
+cmVzdHJpY3QgZXJyb3IiKQ0KDQpTaWduZWQtb2ZmLWJ5OiBXZW50YW8gV2FuZyA84oCcd2l0YWxs
+d2FuZ0BnbWFpbC5jb23igJ0+DQotLS0NCiBkcml2ZXJzL3R0eS9zZXJpYWwva2dkYm9jLmMgfCA0
+ICsrKy0NCiAxIGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pDQoN
+CmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwva2dkYm9jLmMgYi9kcml2ZXJzL3R0eS9z
+ZXJpYWwva2dkYm9jLmMNCmluZGV4IDZmYjMxMmUuLmJmZTVlOWUgMTAwNjQ0DQotLS0gYS9kcml2
+ZXJzL3R0eS9zZXJpYWwva2dkYm9jLmMNCisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9rZ2Rib2Mu
+Yw0KQEAgLTE0OCw4ICsxNDgsMTAgQEAgc3RhdGljIGludCBjb25maWd1cmVfa2dkYm9jKHZvaWQp
+DQogCWNoYXIgKmNwdHIgPSBjb25maWc7DQogCXN0cnVjdCBjb25zb2xlICpjb25zOw0KIA0KLQlp
+ZiAoIXN0cmxlbihjb25maWcpIHx8IGlzc3BhY2UoY29uZmlnWzBdKSkNCisJaWYgKCFzdHJsZW4o
+Y29uZmlnKSB8fCBpc3NwYWNlKGNvbmZpZ1swXSkpIHsNCisJCWVyciA9IDA7DQogCQlnb3RvIG5v
+Y29uZmlnOw0KKwl9DQogDQogCWtnZGJvY19pb19vcHMuaXNfY29uc29sZSA9IDA7DQogCWtnZGJf
+dHR5X2RyaXZlciA9IE5VTEw7DQotLSANCjIuNy40DQoNCgpfX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXwpLZ2RiLWJ1Z3JlcG9ydCBtYWlsaW5nIGxpc3QKS2dk
+Yi1idWdyZXBvcnRAbGlzdHMuc291cmNlZm9yZ2UubmV0Cmh0dHBzOi8vbGlzdHMuc291cmNlZm9y
+Z2UubmV0L2xpc3RzL2xpc3RpbmZvL2tnZGItYnVncmVwb3J0Cg==
