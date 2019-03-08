@@ -1,22 +1,38 @@
-From: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
-Subject: Re: [RFC PATCH v1 25/25] printk: remove unused code
-Date: Fri, 8 Mar 2019 15:02:30 +0100
-Message-ID: <20190308140229.xje5ay7w2qtlada5@flow>
-References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190212143003.48446-26-john.ogness@linutronix.de>
+From: Mao Wenan <maowenan@huawei.com>
+Subject: [PATCH] serial: sh-sci: Missing uart_unregister_driver() on error in sci_probe_single()
+Date: Fri, 8 Mar 2019 22:23:10 +0800
+Message-ID: <20190308142310.112914-1-maowenan@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190212143003.48446-26-john.ogness@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: John Ogness <john.ogness@linutronix.de>
-Cc: linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 2019-02-12 15:30:03 [+0100], John Ogness wrote:
+Add the missing uart_unregister_driver() before return
+from sci_probe_single() in the error handling case.
 
-you removed the whole `irq_work' thing. You can also remove the include
-for linux/irq_work.h.
+Signed-off-by: Mao Wenan <maowenan@huawei.com>
+---
+ drivers/tty/serial/sh-sci.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Sebastian
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 64bbeb7d7e0c..dde4eac9d222 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -3254,8 +3254,10 @@ static int sci_probe_single(struct platform_device *dev,
+ 	mutex_unlock(&sci_uart_registration_lock);
+ 
+ 	ret = sci_init_single(dev, sciport, index, p, false);
+-	if (ret)
++	if (ret) {
++		uart_unregister_driver(&sci_uart_driver);
+ 		return ret;
++	}
+ 
+ 	sciport->gpios = mctrl_gpio_init(&sciport->port, 0);
+ 	if (IS_ERR(sciport->gpios) && PTR_ERR(sciport->gpios) != -ENOSYS)
+-- 
+2.20.1
