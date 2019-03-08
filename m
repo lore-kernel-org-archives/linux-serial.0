@@ -1,49 +1,55 @@
-From: =?utf-8?B?546LIOaWh+a2mw==?= <wwthappy@hotmail.com>
-Subject: [PATCH] Disable kgdboc failed by echo space to
- /sys/module/kgdboc/parameters/kgdboc
-Date: Fri, 8 Mar 2019 01:54:02 +0000
-Message-ID: <HK0PR03MB2817154ABAB39937BFF0AB9BCB4D0@HK0PR03MB2817.apcprd03.prod.outlook.com>
+From: Mao Wenan <maowenan@huawei.com>
+Subject: [PATCH serial] sc16is7xx: missing unregister/delete driver on error in sc16is7xx_init()
+Date: Fri, 8 Mar 2019 22:08:31 +0800
+Message-ID: <20190308140831.52463-1-maowenan@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <kgdb-bugreport-bounces@lists.sourceforge.net>
-Content-Language: en-US
-Content-ID: <3DD42FDDDE4744428B9BD5503B42CB61@apcprd03.prod.outlook.com>
-List-Unsubscribe: <https://lists.sourceforge.net/lists/options/kgdb-bugreport>,
- <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=unsubscribe>
-List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=kgdb-bugreport>
-List-Post: <mailto:kgdb-bugreport@lists.sourceforge.net>
-List-Help: <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=help>
-List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/kgdb-bugreport>,
- <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=subscribe>
-Errors-To: kgdb-bugreport-bounces@lists.sourceforge.net
-To: "jason.wessel@windriver.com" <jason.wessel@windriver.com>, "daniel.thompson@linaro.org" <daniel.thompson@linaro.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>
-Cc: "kgdb-bugreport@lists.sourceforge.net" <kgdb-bugreport@lists.sourceforge.net>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-RnJvbSA2NmQzOWMwZGUwYWJkNDVkZGNhN2FhOGZjMDg2MzJiMDFkNjY5ZDdiIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQ0KRnJvbTogV2VudGFvIFdhbmcgPOKAnHdpdGFsbHdhbmdAZ21haWwuY29t
-4oCdPg0KRGF0ZTogTW9uLCA0IE1hciAyMDE5IDIxOjU4OjMzICswODAwDQpTdWJqZWN0OiBbUEFU
-Q0hdIERpc2FibGUga2dkYm9jIGZhaWxlZCBieSBlY2hvIHNwYWNlIHRvDQogL3N5cy9tb2R1bGUv
-a2dkYm9jL3BhcmFtZXRlcnMva2dkYm9jDQpNSU1FLVZlcnNpb246IDEuMA0KQ29udGVudC1UeXBl
-OiB0ZXh0L3BsYWluOyBjaGFyc2V0PVVURi04DQpDb250ZW50LVRyYW5zZmVyLUVuY29kaW5nOiA4
-Yml0DQoNCkVjaG8gIiIgdG8gL3N5cy9tb2R1bGUva2dkYm9jL3BhcmFtZXRlcnMva2dkYm9jIHdp
-bGwgZmFpbCB3aXRoIHdyaXRlDQplcnJvcjogTm8gc3VjaCBkZXZpY2UNClRoaXMgaXMgY2F1c2Vk
-IGJ5IGZ1bmN0aW9uICJjb25maWd1cmVfa2dkYm9jIiB3aG8gaW5pdCBlcnIgdG8gRU5PREVWIHdo
-ZW4NCnRoZSBjb25maWcgaXMgZW1wdHkgKGxlZ2FsIGlucHV0KSB0aGUgY29kZSBnbyBvdXQgd2l0
-aCBFTk9ERVYgcmV0dXJuZWQuDQoNCkZpeGVzOiAyZGQ0NTMxNjg2NDNkICgia2dkYm9jOiBGaXgg
-cmVzdHJpY3QgZXJyb3IiKQ0KDQpTaWduZWQtb2ZmLWJ5OiBXZW50YW8gV2FuZyA84oCcd2l0YWxs
-d2FuZ0BnbWFpbC5jb23igJ0+DQotLS0NCiBkcml2ZXJzL3R0eS9zZXJpYWwva2dkYm9jLmMgfCA0
-ICsrKy0NCiAxIGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pDQoN
-CmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwva2dkYm9jLmMgYi9kcml2ZXJzL3R0eS9z
-ZXJpYWwva2dkYm9jLmMNCmluZGV4IDZmYjMxMmUuLmJmZTVlOWUgMTAwNjQ0DQotLS0gYS9kcml2
-ZXJzL3R0eS9zZXJpYWwva2dkYm9jLmMNCisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9rZ2Rib2Mu
-Yw0KQEAgLTE0OCw4ICsxNDgsMTAgQEAgc3RhdGljIGludCBjb25maWd1cmVfa2dkYm9jKHZvaWQp
-DQogCWNoYXIgKmNwdHIgPSBjb25maWc7DQogCXN0cnVjdCBjb25zb2xlICpjb25zOw0KIA0KLQlp
-ZiAoIXN0cmxlbihjb25maWcpIHx8IGlzc3BhY2UoY29uZmlnWzBdKSkNCisJaWYgKCFzdHJsZW4o
-Y29uZmlnKSB8fCBpc3NwYWNlKGNvbmZpZ1swXSkpIHsNCisJCWVyciA9IDA7DQogCQlnb3RvIG5v
-Y29uZmlnOw0KKwl9DQogDQogCWtnZGJvY19pb19vcHMuaXNfY29uc29sZSA9IDA7DQogCWtnZGJf
-dHR5X2RyaXZlciA9IE5VTEw7DQotLSANCjIuNy40DQoNCgpfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fXwpLZ2RiLWJ1Z3JlcG9ydCBtYWlsaW5nIGxpc3QKS2dk
-Yi1idWdyZXBvcnRAbGlzdHMuc291cmNlZm9yZ2UubmV0Cmh0dHBzOi8vbGlzdHMuc291cmNlZm9y
-Z2UubmV0L2xpc3RzL2xpc3RpbmZvL2tnZGItYnVncmVwb3J0Cg==
+Add the missing uart_unregister_driver() and i2c_del_driver() before return
+from sc16is7xx_init() in the error handling case.
+
+Signed-off-by: Mao Wenan <maowenan@huawei.com>
+---
+ drivers/tty/serial/sc16is7xx.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 268098681856..114e94f476c6 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1509,7 +1509,7 @@ static int __init sc16is7xx_init(void)
+ 	ret = i2c_add_driver(&sc16is7xx_i2c_uart_driver);
+ 	if (ret < 0) {
+ 		pr_err("failed to init sc16is7xx i2c --> %d\n", ret);
+-		return ret;
++		goto err_i2c;
+ 	}
+ #endif
+ 
+@@ -1517,10 +1517,18 @@ static int __init sc16is7xx_init(void)
+ 	ret = spi_register_driver(&sc16is7xx_spi_uart_driver);
+ 	if (ret < 0) {
+ 		pr_err("failed to init sc16is7xx spi --> %d\n", ret);
+-		return ret;
++		goto err_spi;
+ 	}
+ #endif
+ 	return ret;
++
++err_spi:
++#ifdef CONFIG_SERIAL_SC16IS7XX_I2C
++	i2c_del_driver(&sc16is7xx_i2c_uart_driver);
++#endif
++err_i2c:
++	uart_unregister_driver(&sc16is7xx_uart);
++	return ret;
+ }
+ module_init(sc16is7xx_init);
+ 
+-- 
+2.20.1
