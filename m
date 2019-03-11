@@ -1,49 +1,93 @@
 From: Dan Carpenter <dan.carpenter@oracle.com>
-Subject: Re: [PATCH] serial: sh-sci: Missing uart_unregister_driver() on
- error in sci_probe_single()
-Date: Mon, 11 Mar 2019 10:22:01 +0300
-Message-ID: <20190311072201.GA2434@kadam>
-References: <20190308142310.112914-1-maowenan@huawei.com>
+Subject: Re: [PATCH serial v2] sc16is7xx: missing unregister/delete driver on
+ error in sc16is7xx_init()
+Date: Mon, 11 Mar 2019 10:46:05 +0300
+Message-ID: <20190311074605.GB2434@kadam>
+References: <20190309025037.116449-1-maowenan@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190308142310.112914-1-maowenan@huawei.com>
+In-Reply-To: <20190309025037.116449-1-maowenan@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Mao Wenan <maowenan@huawei.com>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, vz@mleia.com
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Mar 08, 2019 at 10:23:10PM +0800, Mao Wenan wrote:
-> Add the missing uart_unregister_driver() before return
-> from sci_probe_single() in the error handling case.
+On Sat, Mar 09, 2019 at 10:50:37AM +0800, Mao Wenan wrote:
+> Add the missing uart_unregister_driver() and i2c_del_driver() before return
+> from sc16is7xx_init() in the error handling case.
 > 
+> Reviewed-by: Vladimir Zapolskiy <vz@mleia.com>
 > Signed-off-by: Mao Wenan <maowenan@huawei.com>
 > ---
->  drivers/tty/serial/sh-sci.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+>  v1->v2: fix compile warning if CONFIG_SERIAL_SC16IS7XX_SPI is not exist.
+>  drivers/tty/serial/sc16is7xx.c | 14 ++++++++++++--
+>  1 file changed, 12 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index 64bbeb7d7e0c..dde4eac9d222 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -3254,8 +3254,10 @@ static int sci_probe_single(struct platform_device *dev,
->  	mutex_unlock(&sci_uart_registration_lock);
+> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> index 268098681856..b9e5941ce767 100644
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+> @@ -1509,7 +1509,7 @@ static int __init sc16is7xx_init(void)
+>  	ret = i2c_add_driver(&sc16is7xx_i2c_uart_driver);
+>  	if (ret < 0) {
+>  		pr_err("failed to init sc16is7xx i2c --> %d\n", ret);
+> -		return ret;
+> +		goto err_i2c;
+>  	}
+>  #endif
 >  
->  	ret = sci_init_single(dev, sciport, index, p, false);
-> -	if (ret)
-> +	if (ret) {
-> +		uart_unregister_driver(&sci_uart_driver);
->  		return ret;
+> @@ -1517,10 +1517,20 @@ static int __init sc16is7xx_init(void)
+>  	ret = spi_register_driver(&sc16is7xx_spi_uart_driver);
+>  	if (ret < 0) {
+>  		pr_err("failed to init sc16is7xx spi --> %d\n", ret);
+> -		return ret;
+> +		goto err_spi;
+>  	}
+>  #endif
+>  	return ret;
+> +
+> +#ifdef CONFIG_SERIAL_SC16IS7XX_SPI
+> +err_spi:
+> +#endif
+> +#ifdef CONFIG_SERIAL_SC16IS7XX_I2C
+> +	i2c_del_driver(&sc16is7xx_i2c_uart_driver);
+> +err_i2c:
+> +#endif
+> +	uart_unregister_driver(&sc16is7xx_uart);
+> +	return ret;
 
-Why only this error path and not the next one?
+This is quite ulgy.  Why not create two functions:
 
-> +	}
->  
->  	sciport->gpios = mctrl_gpio_init(&sciport->port, 0);
->  	if (IS_ERR(sciport->gpios) && PTR_ERR(sciport->gpios) != -ENOSYS)
-            ^^^^^^^^^^^^^^^^^^^^^
-This one.
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 635178cf3eed..9986cb2479ad 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1491,6 +1491,21 @@ static struct i2c_driver sc16is7xx_i2c_uart_driver = {
+ 	.id_table	= sc16is7xx_i2c_id_table,
+ };
+ 
++static int __init register_sc16is7xx_i2c(void)
++{
++	return i2c_add_driver(&sc16is7xx_i2c_uart_driver);
++}
++
++static void __exit del_sc16is7xx_i2c(void)
++{
++	i2c_del_driver(&sc16is7xx_i2c_uart_driver);
++}
++
++#else
++
++static int __init register_sc16is7xx_i2c(void) { return 0; }
++static void __exit del_sc16is7xx_i2c(void) {}
++
+ #endif
+ 
+ static int __init sc16is7xx_init(void)
+
+Then you can remove all the ifdefs.
 
 regards,
 dan carpenter
