@@ -1,426 +1,103 @@
-From: Erin Lo <erin.lo@mediatek.com>
-Subject: [PATCH v8 2/2] arm64: dts: Add Mediatek SoC MT8183 and evaluation board dts and Makefile
-Date: Mon, 11 Mar 2019 16:54:32 +0800
-Message-ID: <1552294472-32929-3-git-send-email-erin.lo@mediatek.com>
-References: <1552294472-32929-1-git-send-email-erin.lo@mediatek.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Subject: Re: [PATCH serial v2] sc16is7xx: missing unregister/delete driver on
+ error in sc16is7xx_init()
+Date: Mon, 11 Mar 2019 12:24:57 +0300
+Message-ID: <20190311092456.GC2412@kadam>
+References: <20190309025037.116449-1-maowenan@huawei.com>
+ <20190311074605.GB2434@kadam>
+ <9f611db1-11e3-9e9b-e7f3-d3dcc83b57f7@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1552294472-32929-1-git-send-email-erin.lo@mediatek.com>
+Content-Disposition: inline
+In-Reply-To: <9f611db1-11e3-9e9b-e7f3-d3dcc83b57f7@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>
-Cc: devicetree@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, yingjoe.chen@mediatek.com, erin.lo@mediatek.com, mars.cheng@mediatek.com, eddie.huang@mediatek.com, linux-clk@vger.kernel.org, zhiyong.tao@mediatek.com, Mengqi.Zhang@mediatek.com, Ben Ho <Ben.Ho@mediatek.com>, Seiya Wang <seiya.wang@mediatek.com>, Weiyi Lu <weiyi.lu@mediatek.com>, Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>
+To: maowenan <maowenan@huawei.com>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, vz@mleia.com
 List-Id: linux-serial@vger.kernel.org
 
-From: Ben Ho <Ben.Ho@mediatek.com>
+On Mon, Mar 11, 2019 at 05:12:03PM +0800, maowenan wrote:
+> 
+> 
+> On 2019/3/11 15:46, Dan Carpenter wrote:
+> > On Sat, Mar 09, 2019 at 10:50:37AM +0800, Mao Wenan wrote:
+> >> Add the missing uart_unregister_driver() and i2c_del_driver() before return
+> >> from sc16is7xx_init() in the error handling case.
+> >>
+> >> Reviewed-by: Vladimir Zapolskiy <vz@mleia.com>
+> >> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+> >> ---
+> >>  v1->v2: fix compile warning if CONFIG_SERIAL_SC16IS7XX_SPI is not exist.
+> >>  drivers/tty/serial/sc16is7xx.c | 14 ++++++++++++--
+> >>  1 file changed, 12 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> >> index 268098681856..b9e5941ce767 100644
+> >> --- a/drivers/tty/serial/sc16is7xx.c
+> >> +++ b/drivers/tty/serial/sc16is7xx.c
+> >> @@ -1509,7 +1509,7 @@ static int __init sc16is7xx_init(void)
+> >>  	ret = i2c_add_driver(&sc16is7xx_i2c_uart_driver);
+> >>  	if (ret < 0) {
+> >>  		pr_err("failed to init sc16is7xx i2c --> %d\n", ret);
+> >> -		return ret;
+> >> +		goto err_i2c;
+> >>  	}
+> >>  #endif
+> >>  
+> >> @@ -1517,10 +1517,20 @@ static int __init sc16is7xx_init(void)
+> >>  	ret = spi_register_driver(&sc16is7xx_spi_uart_driver);
+> >>  	if (ret < 0) {
+> >>  		pr_err("failed to init sc16is7xx spi --> %d\n", ret);
+> >> -		return ret;
+> >> +		goto err_spi;
+> >>  	}
+> >>  #endif
+> >>  	return ret;
+> >> +
+> >> +#ifdef CONFIG_SERIAL_SC16IS7XX_SPI
+> >> +err_spi:
+> >> +#endif
+> >> +#ifdef CONFIG_SERIAL_SC16IS7XX_I2C
+> >> +	i2c_del_driver(&sc16is7xx_i2c_uart_driver);
+> >> +err_i2c:
+> >> +#endif
+> >> +	uart_unregister_driver(&sc16is7xx_uart);
+> >> +	return ret;
+> > 
+> > This is quite ulgy.  Why not create two functions:
+> > 
+> > diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> > index 635178cf3eed..9986cb2479ad 100644
+> > --- a/drivers/tty/serial/sc16is7xx.c
+> > +++ b/drivers/tty/serial/sc16is7xx.c
+> > @@ -1491,6 +1491,21 @@ static struct i2c_driver sc16is7xx_i2c_uart_driver = {
+> >  	.id_table	= sc16is7xx_i2c_id_table,
+> >  };
+> >  
+> > +static int __init register_sc16is7xx_i2c(void)
+> > +{
+> > +	return i2c_add_driver(&sc16is7xx_i2c_uart_driver);
+> > +}
+> > +
+> > +static void __exit del_sc16is7xx_i2c(void)
+> > +{
+> > +	i2c_del_driver(&sc16is7xx_i2c_uart_driver);
+> > +}
+> > +
+> > +#else
+> > +
+> > +static int __init register_sc16is7xx_i2c(void) { return 0; }
+> > +static void __exit del_sc16is7xx_i2c(void) {}
+> > +
+> >  #endif
+> >  
+> >  static int __init sc16is7xx_init(void)
+> > 
+> > Then you can remove all the ifdefs.
+> ok， thank you, I will send v3. Do you mind Reviewed-by ?
 
-Add basic chip support for Mediatek 8183, include
-uart node with correct uart clocks, pwrap device
+I'll add after I review the patch.  :)
 
-Add clock controller nodes, include topckgen, infracfg,
-apmixedsys and subsystem.
-
-Signed-off-by: Ben Ho <Ben.Ho@mediatek.com>
-Signed-off-by: Erin Lo <erin.lo@mediatek.com>
-Signed-off-by: Seiya Wang <seiya.wang@mediatek.com>
-Signed-off-by: Weiyi Lu <weiyi.lu@mediatek.com>
-Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
-Signed-off-by: Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>
-Signed-off-by: Eddie Huang <eddie.huang@mediatek.com>
----
- arch/arm64/boot/dts/mediatek/Makefile       |   1 +
- arch/arm64/boot/dts/mediatek/mt8183-evb.dts |  31 +++
- arch/arm64/boot/dts/mediatek/mt8183.dtsi    | 335 ++++++++++++++++++++++++++++
- 3 files changed, 367 insertions(+)
- create mode 100644 arch/arm64/boot/dts/mediatek/mt8183-evb.dts
- create mode 100644 arch/arm64/boot/dts/mediatek/mt8183.dtsi
-
-diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
-index e8f952f..458bbc4 100644
---- a/arch/arm64/boot/dts/mediatek/Makefile
-+++ b/arch/arm64/boot/dts/mediatek/Makefile
-@@ -7,3 +7,4 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt6797-x20-dev.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt7622-rfb1.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt7622-bananapi-bpi-r64.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt8173-evb.dtb
-+dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-evb.dtb
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-new file mode 100644
-index 0000000..9b52559
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-@@ -0,0 +1,31 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Copyright (c) 2018 MediaTek Inc.
-+ * Author: Ben Ho <ben.ho@mediatek.com>
-+ *	   Erin Lo <erin.lo@mediatek.com>
-+ */
-+
-+/dts-v1/;
-+#include "mt8183.dtsi"
-+
-+/ {
-+	model = "MediaTek MT8183 evaluation board";
-+	compatible = "mediatek,mt8183-evb", "mediatek,mt8183";
-+
-+	aliases {
-+		serial0 = &uart0;
-+	};
-+
-+	memory@40000000 {
-+		device_type = "memory";
-+		reg = <0 0x40000000 0 0x80000000>;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial0:921600n8";
-+	};
-+};
-+
-+&uart0 {
-+	status = "okay";
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-new file mode 100644
-index 0000000..64f8bd6
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-@@ -0,0 +1,335 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Copyright (c) 2018 MediaTek Inc.
-+ * Author: Ben Ho <ben.ho@mediatek.com>
-+ *	   Erin Lo <erin.lo@mediatek.com>
-+ */
-+
-+#include <dt-bindings/clock/mt8183-clk.h>
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/interrupt-controller/irq.h>
-+
-+/ {
-+	compatible = "mediatek,mt8183";
-+	interrupt-parent = <&sysirq>;
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu-map {
-+			cluster0 {
-+				core0 {
-+					cpu = <&cpu0>;
-+				};
-+				core1 {
-+					cpu = <&cpu1>;
-+				};
-+				core2 {
-+					cpu = <&cpu2>;
-+				};
-+				core3 {
-+					cpu = <&cpu3>;
-+				};
-+			};
-+
-+			cluster1 {
-+				core0 {
-+					cpu = <&cpu4>;
-+				};
-+				core1 {
-+					cpu = <&cpu5>;
-+				};
-+				core2 {
-+					cpu = <&cpu6>;
-+				};
-+				core3 {
-+					cpu = <&cpu7>;
-+				};
-+			};
-+		};
-+
-+		cpu0: cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <0x000>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu1: cpu@1 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <0x001>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu2: cpu@2 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <0x002>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu3: cpu@3 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <0x003>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu4: cpu@100 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a73";
-+			reg = <0x100>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu5: cpu@101 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a73";
-+			reg = <0x101>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu6: cpu@102 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a73";
-+			reg = <0x102>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu7: cpu@103 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a73";
-+			reg = <0x103>;
-+			enable-method = "psci";
-+		};
-+	};
-+
-+	pmu-a53 {
-+		compatible = "arm,cortex-a53-pmu";
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_LOW &ppi_cluster0>;
-+	};
-+
-+	pmu-a73 {
-+		compatible = "arm,cortex-a73-pmu";
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_LOW &ppi_cluster1>;
-+	};
-+
-+	psci {
-+		compatible      = "arm,psci-1.0";
-+		method          = "smc";
-+	};
-+
-+	clk26m: oscillator {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <26000000>;
-+		clock-output-names = "clk26m";
-+	};
-+
-+	timer {
-+		compatible = "arm,armv8-timer";
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_LOW 0>,
-+			     <GIC_PPI 14 IRQ_TYPE_LEVEL_LOW 0>,
-+			     <GIC_PPI 11 IRQ_TYPE_LEVEL_LOW 0>,
-+			     <GIC_PPI 10 IRQ_TYPE_LEVEL_LOW 0>;
-+	};
-+
-+	soc {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		compatible = "simple-bus";
-+		ranges;
-+
-+		gic: interrupt-controller@c000000 {
-+			compatible = "arm,gic-v3";
-+			#interrupt-cells = <4>;
-+			interrupt-parent = <&gic>;
-+			interrupt-controller;
-+			reg = <0 0x0c000000 0 0x40000>,  /* GICD */
-+			      <0 0x0c100000 0 0x200000>, /* GICR */
-+			      <0 0x0c400000 0 0x2000>,   /* GICC */
-+			      <0 0x0c410000 0 0x1000>,   /* GICH */
-+			      <0 0x0c420000 0 0x2000>;   /* GICV */
-+
-+			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH 0>;
-+			ppi-partitions {
-+				ppi_cluster0: interrupt-partition-0 {
-+					affinity = <&cpu0 &cpu1 &cpu2 &cpu3>;
-+				};
-+				ppi_cluster1: interrupt-partition-1 {
-+					affinity = <&cpu4 &cpu5 &cpu6 &cpu7>;
-+				};
-+			};
-+		};
-+
-+		mcucfg: syscon@c530000 {
-+			compatible = "mediatek,mt8183-mcucfg", "syscon";
-+			reg = <0 0x0c530000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		sysirq: interrupt-controller@c530a80 {
-+			compatible = "mediatek,mt8183-sysirq",
-+				     "mediatek,mt6577-sysirq";
-+			interrupt-controller;
-+			#interrupt-cells = <3>;
-+			interrupt-parent = <&gic>;
-+			reg = <0 0x0c530a80 0 0x50>;
-+		};
-+
-+		topckgen: syscon@10000000 {
-+			compatible = "mediatek,mt8183-topckgen", "syscon";
-+			reg = <0 0x10000000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		infracfg: syscon@10001000 {
-+			compatible = "mediatek,mt8183-infracfg", "syscon";
-+			reg = <0 0x10001000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		pio: pinctrl@10005000 {
-+			compatible = "mediatek,mt8183-pinctrl";
-+			reg = <0 0x10005000 0 0x1000>,
-+			      <0 0x11f20000 0 0x1000>,
-+			      <0 0x11e80000 0 0x1000>,
-+			      <0 0x11e70000 0 0x1000>,
-+			      <0 0x11e90000 0 0x1000>,
-+			      <0 0x11d30000 0 0x1000>,
-+			      <0 0x11d20000 0 0x1000>,
-+			      <0 0x11c50000 0 0x1000>,
-+			      <0 0x11f30000 0 0x1000>,
-+			      <0 0x1000b000 0 0x1000>;
-+			reg-names = "iocfg0", "iocfg1", "iocfg2",
-+				    "iocfg3", "iocfg4", "iocfg5",
-+				    "iocfg6", "iocfg7", "iocfg8",
-+				    "eint";
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+			gpio-ranges = <&pio 0 0 192>;
-+			interrupt-controller;
-+			interrupts = <GIC_SPI 177 IRQ_TYPE_LEVEL_HIGH>;
-+			#interrupt-cells = <3>;
-+		};
-+
-+		apmixedsys: syscon@1000c000 {
-+			compatible = "mediatek,mt8183-apmixedsys", "syscon";
-+			reg = <0 0x1000c000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		pwrap: pwrap@1000d000 {
-+			compatible = "mediatek,mt8183-pwrap";
-+			reg = <0 0x1000d000 0 0x1000>;
-+			reg-names = "pwrap";
-+			interrupts = <GIC_SPI 209 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&topckgen CLK_TOP_MUX_PMICSPI>,
-+				 <&infracfg CLK_INFRA_PMIC_AP>;
-+			clock-names = "spi", "wrap";
-+		};
-+
-+		uart0: serial@11002000 {
-+			compatible = "mediatek,mt8183-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11002000 0 0x1000>;
-+			interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&clk26m>, <&infracfg CLK_INFRA_UART0>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
-+		uart1: serial@11003000 {
-+			compatible = "mediatek,mt8183-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11003000 0 0x1000>;
-+			interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&clk26m>, <&infracfg CLK_INFRA_UART1>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
-+		uart2: serial@11004000 {
-+			compatible = "mediatek,mt8183-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11004000 0 0x1000>;
-+			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&clk26m>, <&infracfg CLK_INFRA_UART2>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
-+		audiosys: syscon@11220000 {
-+			compatible = "mediatek,mt8183-audiosys", "syscon";
-+			reg = <0 0x11220000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		mfgcfg: syscon@13000000 {
-+			compatible = "mediatek,mt8183-mfgcfg", "syscon";
-+			reg = <0 0x13000000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		mmsys: syscon@14000000 {
-+			compatible = "mediatek,mt8183-mmsys", "syscon";
-+			reg = <0 0x14000000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		imgsys: syscon@15020000 {
-+			compatible = "mediatek,mt8183-imgsys", "syscon";
-+			reg = <0 0x15020000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		vdecsys: syscon@16000000 {
-+			compatible = "mediatek,mt8183-vdecsys", "syscon";
-+			reg = <0 0x16000000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		vencsys: syscon@17000000 {
-+			compatible = "mediatek,mt8183-vencsys", "syscon";
-+			reg = <0 0x17000000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		ipu_conn: syscon@19000000 {
-+			compatible = "mediatek,mt8183-ipu_conn", "syscon";
-+			reg = <0 0x19000000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		ipu_adl: syscon@19010000 {
-+			compatible = "mediatek,mt8183-ipu_adl", "syscon";
-+			reg = <0 0x19010000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		ipu_core0: syscon@19180000 {
-+			compatible = "mediatek,mt8183-ipu_core0", "syscon";
-+			reg = <0 0x19180000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		ipu_core1: syscon@19280000 {
-+			compatible = "mediatek,mt8183-ipu_core1", "syscon";
-+			reg = <0 0x19280000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		camsys: syscon@1a000000 {
-+			compatible = "mediatek,mt8183-camsys", "syscon";
-+			reg = <0 0x1a000000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+	};
-+};
--- 
-1.9.1
+regards,
+dan carpenter
