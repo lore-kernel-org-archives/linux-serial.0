@@ -1,110 +1,29 @@
-From: John Ogness <john.ogness@linutronix.de>
-Subject: Re: [RFC PATCH v1 19/25] printk: introduce emergency messages
-Date: Mon, 11 Mar 2019 13:04:28 +0100
-Message-ID: <87k1h5zkfn.fsf@linutronix.de>
-References: <20190212143003.48446-1-john.ogness@linutronix.de>
-        <20190212143003.48446-20-john.ogness@linutronix.de>
-        <20190307073029.GA489@jagdpanzerIV>
-        <20190308103127.txsgv3d6lqlf6pad@pathway.suse.cz>
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Subject: Re: [PATCH serial v3] sc16is7xx: missing unregister/delete driver on
+ error in sc16is7xx_init()
+Date: Mon, 11 Mar 2019 15:19:18 +0300
+Message-ID: <20190311121918.GD2412@kadam>
+References: <20190311093959.86344-1-maowenan@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190308103127.txsgv3d6lqlf6pad@pathway.suse.cz> (Petr Mladek's
-        message of "Fri, 8 Mar 2019 11:31:27 +0100")
+Content-Disposition: inline
+In-Reply-To: <20190311093959.86344-1-maowenan@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: Mao Wenan <maowenan@huawei.com>
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, vz@mleia.com
 List-Id: linux-serial@vger.kernel.org
 
-On 2019-03-08, Petr Mladek <pmladek@suse.com> wrote:
->>> +static bool console_can_emergency(int level)
->>> +{
->>> +	struct console *con;
->>> +
->>> +	for_each_console(con) {
->>> +		if (!(con->flags & CON_ENABLED))
->>> +			continue;
->>> +		if (con->write_atomic && level < emergency_console_loglevel)
->>> +			return true;
->>> +		if (con->write && (con->flags & CON_BOOT))
->>> +			return true;
->>> +	}
->>> +	return false;
->>> +}
->>> +
->>> +static void call_emergency_console_drivers(int level, const char *text,
->>> +					   size_t text_len)
->>> +{
->>> +	struct console *con;
->>> +
->>> +	for_each_console(con) {
->>> +		if (!(con->flags & CON_ENABLED))
->>> +			continue;
->>> +		if (con->write_atomic && level < emergency_console_loglevel) {
->>> +			con->write_atomic(con, text, text_len);
->>> +			continue;
->>> +		}
->>> +		if (con->write && (con->flags & CON_BOOT)) {
->>> +			con->write(con, text, text_len);
->>> +			continue;
->>> +		}
->>> +	}
->>> +}
->>> +
->>> +static void printk_emergency(char *buffer, int level, u64 ts_nsec, u16 cpu,
->>> +			     char *text, u16 text_len)
->>> +{
->>> +	struct printk_log msg;
->>> +	size_t prefix_len;
->>> +
->>> +	if (!console_can_emergency(level))
->>> +		return;
->>> +
->>> +	msg.level = level;
->>> +	msg.ts_nsec = ts_nsec;
->>> +	msg.cpu = cpu;
->>> +	msg.facility = 0;
->>> +
->>> +	/* "text" must have PREFIX_MAX preceding bytes available */
->>> +
->>> +	prefix_len = print_prefix(&msg,
->>> +				  console_msg_format & MSG_FORMAT_SYSLOG,
->>> +				  printk_time, buffer);
->>> +	/* move the prefix forward to the beginning of the message text */
->>> +	text -= prefix_len;
->>> +	memmove(text, buffer, prefix_len);
->>> +	text_len += prefix_len;
->>> +
->>> +	text[text_len++] = '\n';
->>> +
->>> +	call_emergency_console_drivers(level, text, text_len);
->> 
->> So this iterates the console list and calls consoles' callbacks, but
->> what prevents console driver to be rmmod-ed under us?
->> 
->> CPU0                                  CPU1
->> 
->> printk_emergency()                    rmmod netcon
->>  call_emergency_console_drivers()
->>   con_foo->flags & CON_ENABLED == 1
->>                                       unregister_console(con_foo)
->>                                       con_foo->flags &= ~CON_ENABLED
->>                                       __exit // con_foo gone ?
->>   con_foo->write()
->> 
->> We use console_lock()/console_trylock() in order to protect the list
->> and console drivers; but this brings scheduler to the picture, with
->> all its locks.
->
-> Great catch!
+On Mon, Mar 11, 2019 at 05:39:59PM +0800, Mao Wenan wrote:
+> Add the missing uart_unregister_driver() and i2c_del_driver() before
+> return from sc16is7xx_init() in the error handling case.
+> 
+> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+> Reviewed-by: Vladimir Zapolskiy <vz@mleia.com>
 
-Yes, thanks!
+This looks nice.  Thanks!
 
-> I think that it is doable to guard the list using RCU.
+Reviewed-by: Dan Carpeter <dan.carpenter@oracle.com>
 
-I think it would be enough to take the prb_cpulock when modifying the
-console linked list. That will keep printk_emergency() out until the
-list has been updated. (registering/unregistering consoles is not
-something that happens often.)
-
-John Ogness
+regards,
+dan carpenter
