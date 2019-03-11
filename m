@@ -1,7 +1,7 @@
-From: Nicolas Boichat <drinkcat@chromium.org>
+From: Sean Wang <sean.wang@kernel.org>
 Subject: Re: [PATCH v11 1/4] dmaengine: 8250_mtk_dma: add MediaTek uart DMA support
-Date: Sun, 10 Mar 2019 19:15:39 +0800
-Message-ID: <CANMq1KBvr9cTBdjX9UD83QuHYb7c9Le6299w8yTBw+-b9pz6ew@mail.gmail.com>
+Date: Sun, 10 Mar 2019 17:31:26 -0700
+Message-ID: <CAGp9Lzos-6mLxDAgVJ783Z=SZTnxnKH+UDOLzEDvK4tng8P8dw@mail.gmail.com>
 References: <1551923135-32479-1-git-send-email-long.cheng@mediatek.com> <1551923135-32479-2-git-send-email-long.cheng@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
@@ -9,10 +9,17 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1551923135-32479-2-git-send-email-long.cheng@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Long Cheng <long.cheng@mediatek.com>
-Cc: Vinod Koul <vkoul@kernel.org>, Randy Dunlap <rdunlap@infradead.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Sean Wang <sean.wang@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>, lkml <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, Yingjoe Chen <yingjoe.chen@medi>
+Cc: Vinod Koul <vkoul@kernel.org>, Randy Dunlap <rdunlap@infradead.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Nicolas Boichat <drinkcat@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>, Zhenbao Liu <zhenbao.liu@mediatek.c>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Mar 7, 2019 at 9:45 AM Long Cheng <long.cheng@mediatek.com> wrote:
+Hi, Long
+
+List some comments as the below and this week I will find a board to
+test and then improve the driver.
+
+         Sean
+
+On Wed, Mar 6, 2019 at 5:45 PM Long Cheng <long.cheng@mediatek.com> wrote:
 >
 > In DMA engine framework, add 8250 uart dma to support MediaTek uart.
 > If MediaTek uart enabled(SERIAL_8250_MT6577), and want to improve
@@ -109,10 +116,6 @@ On Thu, Mar 7, 2019 at 9:45 AM Long Cheng <long.cheng@mediatek.com> wrote:
 > +#define VFF_RX_THRE(n)         ((n) * 3 / 4)
 > +
 > +#define VFF_RING_SIZE  0xffffU
-
-Drop the U, it's not very useful (there are a a few more below, grep
-for [0-9a-f]U).
-
 > +/* invert this bit when wrap ring head again */
 > +#define VFF_RING_WRAP  0x10000U
 > +
@@ -211,6 +214,10 @@ for [0-9a-f]U).
 > +       /* Wait 1sec for flush, can't sleep */
 > +       ret = readx_poll_timeout(readl, c->base + VFF_FLUSH, tmp,
 > +                       tmp != VFF_FLUSH_B, 0, 1000000);
+
+It is really not a good idea that polling up to 1 second in an
+interrupt context.
+
 > +       if (ret)
 > +               dev_warn(c->vc.chan.device->dev, "tx: fail, debug=0x%x\n",
 > +                       mtk_uart_apdma_read(c, VFF_DEBUG_STATUS));
@@ -221,6 +228,10 @@ for [0-9a-f]U).
 > +
 > +       d_wpt = wpt + send;
 > +       if ((d_wpt & VFF_RING_SIZE) >= len) {
+
+I am confused what size of VFF is.  Either VFF_RING_SIZE or
+c->cfg.dst_port_window_size?
+
 > +               d_wpt = d_wpt - len;
 > +               d_wpt = d_wpt ^ VFF_RING_WRAP;
 > +       }
@@ -229,6 +240,9 @@ for [0-9a-f]U).
 > +       c->desc->avail_len -= send;
 > +
 > +       mtk_uart_apdma_write(c, VFF_INT_EN, VFF_TX_INT_EN_B);
+
+Why should we need to program interrupt enabled bit again?
+
 > +       if (mtk_uart_apdma_read(c, VFF_FLUSH) == 0U)
 > +               mtk_uart_apdma_write(c, VFF_FLUSH, VFF_FLUSH_B);
 > +}
@@ -242,17 +256,29 @@ for [0-9a-f]U).
 > +       if ((mtk_uart_apdma_read(c, VFF_VALID_SIZE) == 0U) ||
 > +               !d || !vchan_next_desc(&c->vc))
 > +               return;
+
+If the current descriptor is not available, the hardware should be
+idle or stopped. so I think the condition can be removed or there is
+somewhere your handle descriptors incorrectly.
+
 > +
 > +       len = c->cfg.src_port_window_size;
 > +       rg = mtk_uart_apdma_read(c, VFF_RPT);
 > +       wg = mtk_uart_apdma_read(c, VFF_WPT);
 > +       cnt = (wg & VFF_RING_SIZE) - (rg & VFF_RING_SIZE);
+
+Is it possible that rg and wg would be greater than VFF_RING_SIZE?
+
 > +       /*
 > +        * The buffer is ring buffer. If wrap bit different,
 > +        * represents the start of the next cycle for WPT
 > +        */
 > +       if ((rg ^ wg) & VFF_RING_WRAP)
 > +               cnt += len;
+
+Again, I am confused what size of VFF is.  Either VFF_RING_SIZE or
+c->cfg.dst_port_window_size?
+
 > +
 > +       c->rx_status = d->avail_len - cnt;
 > +       mtk_uart_apdma_write(c, VFF_RPT, wg);
@@ -297,6 +323,15 @@ for [0-9a-f]U).
 > +       int ret;
 > +
 > +       pm_runtime_get_sync(mtkd->ddev.dev);
+
+Add an error handling, something like
+
+err = pm_runtime_get_sync(mtkd->ddev.dev);
+if (err < 0) {
+pm_runtime_put_noidle(dev);
+...
+}
+
 > +
 > +       mtk_uart_apdma_write(c, VFF_ADDR, 0);
 > +       mtk_uart_apdma_write(c, VFF_THRE, 0);
@@ -311,6 +346,10 @@ for [0-9a-f]U).
 > +
 > +       if (!c->requested) {
 > +               c->requested = true;
+
+The variable c->requested can be saved since the same channel
+shouldn't be requested more one time
+
 > +               ret = request_irq(mtkd->dma_irq[chan->chan_id],
 > +                                 mtk_uart_apdma_irq_handler, IRQF_TRIGGER_NONE,
 > +                                 KBUILD_MODNAME, chan);
@@ -332,6 +371,9 @@ for [0-9a-f]U).
 > +       struct mtk_chan *c = to_mtk_uart_apdma_chan(chan);
 > +
 > +       if (c->requested) {
+
+ditto as the above
+
 > +               c->requested = false;
 > +               free_irq(mtkd->dma_irq[chan->chan_id], chan);
 > +       }
@@ -354,6 +396,11 @@ for [0-9a-f]U).
 > +
 > +       dma_set_residue(txstate, c->rx_status);
 > +
+
+The handling is not enough. You should get the descriptor
+corresponding to the cookie and then calculate and return the
+->tx_status by the descriptor
+
 > +       return ret;
 > +}
 > +
@@ -370,11 +417,22 @@ for [0-9a-f]U).
 > +               return;
 > +
 > +       c->dir = dir;
+
+The direction is fixed by the device, I don't think it is required to
+keep it in a software state.
+
 > +
 > +       if (dir == DMA_DEV_TO_MEM) {
 > +               tmp = cfg->src_port_window_size;
 > +
 > +               mtk_uart_apdma_write(c, VFF_ADDR, cfg->src_addr);
+
+That is wrong. ->src_addr is the physical address where DMA slave data
+should be read (RX),  not the memory address.
+
+You should program the register VFF_ADDR and VFF_LEN by sg address and
+length from device_prep_slave_sg.
+
 > +               mtk_uart_apdma_write(c, VFF_LEN, tmp);
 > +               mtk_uart_apdma_write(c, VFF_THRE, VFF_RX_THRE(tmp));
 > +               mtk_uart_apdma_write(c, VFF_INT_EN,
@@ -385,6 +443,11 @@ for [0-9a-f]U).
 > +               tmp = cfg->dst_port_window_size;
 > +
 > +               mtk_uart_apdma_write(c, VFF_ADDR, cfg->dst_addr);
+
+That is also wrong. st_addr: this is the physical address where DMA
+slave data should be written (TX), not the memory address similar to
+the above explanation.
+
 > +               mtk_uart_apdma_write(c, VFF_LEN, tmp);
 > +               mtk_uart_apdma_write(c, VFF_THRE, VFF_TX_THRE(tmp));
 > +               mtk_uart_apdma_write(c, VFF_WPT, 0);
@@ -472,6 +535,9 @@ for [0-9a-f]U).
 > +       /* Wait 1sec for flush, can't sleep */
 > +       ret = readx_poll_timeout(readl, c->base + VFF_FLUSH, tmp,
 > +                       tmp != VFF_FLUSH_B, 0, 1000000);
+
+It is extremely bad pending so long is in the spin_lock_irqsave
+
 > +       if (ret)
 > +               dev_err(c->vc.chan.device->dev, "flush: fail, debug=0x%x\n",
 > +                       mtk_uart_apdma_read(c, VFF_DEBUG_STATUS));
@@ -501,11 +567,12 @@ for [0-9a-f]U).
 > +       /* just for check caps pass */
 > +       dev_err(chan->device->dev, "Pause can't support\n");
 > +
+
+If the device can't support hardware pause, we can do it as a software
+pause in an implementation based on vdesc.
+
 > +       return 0;
 > +}
-
-I think we've said repeatedly that leaving this stub function is incorrect.
-
 > +
 > +static void mtk_uart_apdma_free(struct mtk_uart_apdmadev *mtkd)
 > +{
@@ -648,6 +715,10 @@ I think we've said repeatedly that leaving this stub function is incorrect.
 > +
 > +       pm_runtime_disable(&pdev->dev);
 > +       pm_runtime_put_noidle(&pdev->dev);
+
+That pm_runtime_put_noidle should be removed or it causes an
+inconsistency with the probe handler.
+
 > +
 > +       dma_async_device_unregister(&mtkd->ddev);
 > +       mtk_uart_apdma_free(mtkd);
@@ -709,6 +780,12 @@ I think we've said repeatedly that leaving this stub function is incorrect.
 > +       SET_RUNTIME_PM_OPS(mtk_uart_apdma_runtime_suspend,
 > +                          mtk_uart_apdma_runtime_resume, NULL)
 > +};
+
+It probably causes a build error when CONFIG_PM is not enabled.
+and use a UNIVERSAL_DEV_PM_OPS because the runtime suspend/resume and
+system suspend/resume for the dma are
+almost the same.
+
 > +
 > +static struct platform_driver mtk_uart_apdma_driver = {
 > +       .probe  = mtk_uart_apdma_probe,
