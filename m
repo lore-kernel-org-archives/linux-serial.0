@@ -1,79 +1,110 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: [RFC PATCH v1 00/25] printk: new implementation
-Date: Mon, 11 Mar 2019 19:54:11 +0900
-Message-ID: <20190311105411.GA368@jagdpanzerIV>
+From: John Ogness <john.ogness@linutronix.de>
+Subject: Re: [RFC PATCH v1 19/25] printk: introduce emergency messages
+Date: Mon, 11 Mar 2019 13:04:28 +0100
+Message-ID: <87k1h5zkfn.fsf@linutronix.de>
 References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190213025520.GA5803@jagdpanzerIV>
- <874l9721hf.fsf@linutronix.de>
- <20190304052335.GA6648@jagdpanzerIV>
- <87lg1rggcz.fsf@linutronix.de>
+        <20190212143003.48446-20-john.ogness@linutronix.de>
+        <20190307073029.GA489@jagdpanzerIV>
+        <20190308103127.txsgv3d6lqlf6pad@pathway.suse.cz>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <87lg1rggcz.fsf@linutronix.de>
+In-Reply-To: <20190308103127.txsgv3d6lqlf6pad@pathway.suse.cz> (Petr Mladek's
+        message of "Fri, 8 Mar 2019 11:31:27 +0100")
 Sender: linux-kernel-owner@vger.kernel.org
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: Petr Mladek <pmladek@suse.com>
+Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On (03/07/19 10:53), John Ogness wrote:
-[..]
-> 
-> No, I am not sure if we can convert all console drivers to atomic
-> consoles. But I think if we don't have to fear disturbing the system,
-> the possibilities for such an implementation are greater.
+On 2019-03-08, Petr Mladek <pmladek@suse.com> wrote:
+>>> +static bool console_can_emergency(int level)
+>>> +{
+>>> +	struct console *con;
+>>> +
+>>> +	for_each_console(con) {
+>>> +		if (!(con->flags & CON_ENABLED))
+>>> +			continue;
+>>> +		if (con->write_atomic && level < emergency_console_loglevel)
+>>> +			return true;
+>>> +		if (con->write && (con->flags & CON_BOOT))
+>>> +			return true;
+>>> +	}
+>>> +	return false;
+>>> +}
+>>> +
+>>> +static void call_emergency_console_drivers(int level, const char *text,
+>>> +					   size_t text_len)
+>>> +{
+>>> +	struct console *con;
+>>> +
+>>> +	for_each_console(con) {
+>>> +		if (!(con->flags & CON_ENABLED))
+>>> +			continue;
+>>> +		if (con->write_atomic && level < emergency_console_loglevel) {
+>>> +			con->write_atomic(con, text, text_len);
+>>> +			continue;
+>>> +		}
+>>> +		if (con->write && (con->flags & CON_BOOT)) {
+>>> +			con->write(con, text, text_len);
+>>> +			continue;
+>>> +		}
+>>> +	}
+>>> +}
+>>> +
+>>> +static void printk_emergency(char *buffer, int level, u64 ts_nsec, u16 cpu,
+>>> +			     char *text, u16 text_len)
+>>> +{
+>>> +	struct printk_log msg;
+>>> +	size_t prefix_len;
+>>> +
+>>> +	if (!console_can_emergency(level))
+>>> +		return;
+>>> +
+>>> +	msg.level = level;
+>>> +	msg.ts_nsec = ts_nsec;
+>>> +	msg.cpu = cpu;
+>>> +	msg.facility = 0;
+>>> +
+>>> +	/* "text" must have PREFIX_MAX preceding bytes available */
+>>> +
+>>> +	prefix_len = print_prefix(&msg,
+>>> +				  console_msg_format & MSG_FORMAT_SYSLOG,
+>>> +				  printk_time, buffer);
+>>> +	/* move the prefix forward to the beginning of the message text */
+>>> +	text -= prefix_len;
+>>> +	memmove(text, buffer, prefix_len);
+>>> +	text_len += prefix_len;
+>>> +
+>>> +	text[text_len++] = '\n';
+>>> +
+>>> +	call_emergency_console_drivers(level, text, text_len);
+>> 
+>> So this iterates the console list and calls consoles' callbacks, but
+>> what prevents console driver to be rmmod-ed under us?
+>> 
+>> CPU0                                  CPU1
+>> 
+>> printk_emergency()                    rmmod netcon
+>>  call_emergency_console_drivers()
+>>   con_foo->flags & CON_ENABLED == 1
+>>                                       unregister_console(con_foo)
+>>                                       con_foo->flags &= ~CON_ENABLED
+>>                                       __exit // con_foo gone ?
+>>   con_foo->write()
+>> 
+>> We use console_lock()/console_trylock() in order to protect the list
+>> and console drivers; but this brings scheduler to the picture, with
+>> all its locks.
+>
+> Great catch!
 
-> > If there are setups which can be fully !atomic (in terms of console
-> > output) then we, essentially, have a fully preemptible kthread printk
-> > implementation.
-> 
-> Correct. I've mentioned in another response[0] some ideas about what
-> could be done to aid this.
-> 
-> I understand that fully preemptible kthread printing is unacceptable for
-> you.
+Yes, thanks!
 
-Well, it's not like it's unacceptable for me. It's just we've been
-there, we had preemptible printk(); and people were not happy with
-it. Just to demonstrate that I'm not making this up:
+> I think that it is doable to guard the list using RCU.
 
-> > From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>:
-> > [..]
-> >
-> > Using a reproducer [..] you will find that calling cond_resched()
-> > (from console_unlock() from printk()) can cause a delay of nearly
-> > one minute, and it can cause a delay of nearly 5 minutes to complete
-> > one out_of_memory() call.
+I think it would be enough to take the prb_cpulock when modifying the
+console linked list. That will keep printk_emergency() out until the
+list has been updated. (registering/unregistering consoles is not
+something that happens often.)
 
-preemptible printk() and printk() do opposite things.
-
-I can't really say that I care for fbcon; but fully preemptible
-netcon is going to hurt.
-
-> Since all current console drivers are already irq safe, I'm
-> wondering if using irq_work to handle the emergency printing for console
-> drivers without write_atomic() would help. (If the printk caller is in a
-> context that write() supports, then write() could be called directly.)
-> This would also demand that the irq-safe requirements for write() are
-> not relaxed. The printk-kthread might still be faster than irq_work, but
-> it might increase reliability if an irq_work is triggered as an extra
-> precaution.
-
-Hmm. OK. So one of the things with printk is that it's fully sequential.
-We call console drivers one by one. Slow consoles can affect what appears
-on the fast consoles; fast console have no impact on slow ones.
-
-	call_console_drivers()
-		for_each_console(c)
-			c->write(c, text, text_len);
-
-So a list of (slow_serial serial netcon) console drivers is a camel train;
-fast netcon is not fast anymore, and slow consoles sometimes are the reason
-we have dropped messages. And if we drop messages we drop them for all
-consoles, including fast netcon. Turning that sequential pipline into a
-bunch of per-console kthreads/irq and letting fast consoles to be fast is
-not a completely bad thing. Let's think more about this, I'd like to read
-more opinions.
-
-	-ss
+John Ogness
