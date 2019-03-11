@@ -1,103 +1,117 @@
-From: Dan Carpenter <dan.carpenter@oracle.com>
-Subject: Re: [PATCH serial v2] sc16is7xx: missing unregister/delete driver on
- error in sc16is7xx_init()
-Date: Mon, 11 Mar 2019 12:24:57 +0300
-Message-ID: <20190311092456.GC2412@kadam>
-References: <20190309025037.116449-1-maowenan@huawei.com>
- <20190311074605.GB2434@kadam>
- <9f611db1-11e3-9e9b-e7f3-d3dcc83b57f7@huawei.com>
+From: Mao Wenan <maowenan@huawei.com>
+Subject: [PATCH serial v3] sc16is7xx: missing unregister/delete driver on error in sc16is7xx_init()
+Date: Mon, 11 Mar 2019 17:39:59 +0800
+Message-ID: <20190311093959.86344-1-maowenan@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <9f611db1-11e3-9e9b-e7f3-d3dcc83b57f7@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: maowenan <maowenan@huawei.com>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, vz@mleia.com
+To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, vz@mleia.com, dan.carpenter@oracle.com
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Mar 11, 2019 at 05:12:03PM +0800, maowenan wrote:
-> 
-> 
-> On 2019/3/11 15:46, Dan Carpenter wrote:
-> > On Sat, Mar 09, 2019 at 10:50:37AM +0800, Mao Wenan wrote:
-> >> Add the missing uart_unregister_driver() and i2c_del_driver() before return
-> >> from sc16is7xx_init() in the error handling case.
-> >>
-> >> Reviewed-by: Vladimir Zapolskiy <vz@mleia.com>
-> >> Signed-off-by: Mao Wenan <maowenan@huawei.com>
-> >> ---
-> >>  v1->v2: fix compile warning if CONFIG_SERIAL_SC16IS7XX_SPI is not exist.
-> >>  drivers/tty/serial/sc16is7xx.c | 14 ++++++++++++--
-> >>  1 file changed, 12 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> >> index 268098681856..b9e5941ce767 100644
-> >> --- a/drivers/tty/serial/sc16is7xx.c
-> >> +++ b/drivers/tty/serial/sc16is7xx.c
-> >> @@ -1509,7 +1509,7 @@ static int __init sc16is7xx_init(void)
-> >>  	ret = i2c_add_driver(&sc16is7xx_i2c_uart_driver);
-> >>  	if (ret < 0) {
-> >>  		pr_err("failed to init sc16is7xx i2c --> %d\n", ret);
-> >> -		return ret;
-> >> +		goto err_i2c;
-> >>  	}
-> >>  #endif
-> >>  
-> >> @@ -1517,10 +1517,20 @@ static int __init sc16is7xx_init(void)
-> >>  	ret = spi_register_driver(&sc16is7xx_spi_uart_driver);
-> >>  	if (ret < 0) {
-> >>  		pr_err("failed to init sc16is7xx spi --> %d\n", ret);
-> >> -		return ret;
-> >> +		goto err_spi;
-> >>  	}
-> >>  #endif
-> >>  	return ret;
-> >> +
-> >> +#ifdef CONFIG_SERIAL_SC16IS7XX_SPI
-> >> +err_spi:
-> >> +#endif
-> >> +#ifdef CONFIG_SERIAL_SC16IS7XX_I2C
-> >> +	i2c_del_driver(&sc16is7xx_i2c_uart_driver);
-> >> +err_i2c:
-> >> +#endif
-> >> +	uart_unregister_driver(&sc16is7xx_uart);
-> >> +	return ret;
-> > 
-> > This is quite ulgy.  Why not create two functions:
-> > 
-> > diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> > index 635178cf3eed..9986cb2479ad 100644
-> > --- a/drivers/tty/serial/sc16is7xx.c
-> > +++ b/drivers/tty/serial/sc16is7xx.c
-> > @@ -1491,6 +1491,21 @@ static struct i2c_driver sc16is7xx_i2c_uart_driver = {
-> >  	.id_table	= sc16is7xx_i2c_id_table,
-> >  };
-> >  
-> > +static int __init register_sc16is7xx_i2c(void)
-> > +{
-> > +	return i2c_add_driver(&sc16is7xx_i2c_uart_driver);
-> > +}
-> > +
-> > +static void __exit del_sc16is7xx_i2c(void)
-> > +{
-> > +	i2c_del_driver(&sc16is7xx_i2c_uart_driver);
-> > +}
-> > +
-> > +#else
-> > +
-> > +static int __init register_sc16is7xx_i2c(void) { return 0; }
-> > +static void __exit del_sc16is7xx_i2c(void) {}
-> > +
-> >  #endif
-> >  
-> >  static int __init sc16is7xx_init(void)
-> > 
-> > Then you can remove all the ifdefs.
-> ok， thank you, I will send v3. Do you mind Reviewed-by ?
+Add the missing uart_unregister_driver() and i2c_del_driver() before
+return from sc16is7xx_init() in the error handling case.
 
-I'll add after I review the patch.  :)
+Signed-off-by: Mao Wenan <maowenan@huawei.com>
+Reviewed-by: Vladimir Zapolskiy <vz@mleia.com>
+---
+ v1->v2: fix compile warning if CONFIG_SERIAL_SC16IS7XX_SPI is not exist.
+ v2->v3: create functions for i2c and spi to do error handling as dan carpenter
+ suggestion.
+ drivers/tty/serial/sc16is7xx.c | 53 ++++++++++++++++++++++++----------
+ 1 file changed, 38 insertions(+), 15 deletions(-)
 
-regards,
-dan carpenter
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 268098681856..8be3adaf4782 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1436,6 +1436,19 @@ static struct spi_driver sc16is7xx_spi_uart_driver = {
+ };
+ 
+ MODULE_ALIAS("spi:sc16is7xx");
++
++static int __init register_sc16is7xx_spi(void)
++{
++	return spi_register_driver(&sc16is7xx_spi_uart_driver);
++}
++
++static void __exit unregister_sc16is7xx_spi(void)
++{
++	spi_unregister_driver(&sc16is7xx_spi_uart_driver);
++}
++#else
++static int __init register_sc16is7xx_spi(void) { return 0; }
++static void __exit unregister_sc16is7xx_spi(void) {}
+ #endif
+ 
+ #ifdef CONFIG_SERIAL_SC16IS7XX_I2C
+@@ -1493,6 +1506,18 @@ static struct i2c_driver sc16is7xx_i2c_uart_driver = {
+ 	.id_table	= sc16is7xx_i2c_id_table,
+ };
+ 
++static int __init register_sc16is7xx_i2c(void)
++{
++	return i2c_add_driver(&sc16is7xx_i2c_uart_driver);
++}
++
++static void __exit del_sc16is7xx_i2c(void)
++{
++	i2c_del_driver(&sc16is7xx_i2c_uart_driver);
++}
++#else
++static int __init register_sc16is7xx_i2c(void) { return 0; }
++static void __exit del_sc16is7xx_i2c(void) {}
+ #endif
+ 
+ static int __init sc16is7xx_init(void)
+@@ -1505,34 +1530,32 @@ static int __init sc16is7xx_init(void)
+ 		return ret;
+ 	}
+ 
+-#ifdef CONFIG_SERIAL_SC16IS7XX_I2C
+-	ret = i2c_add_driver(&sc16is7xx_i2c_uart_driver);
++	ret = register_sc16is7xx_i2c();
+ 	if (ret < 0) {
+ 		pr_err("failed to init sc16is7xx i2c --> %d\n", ret);
+-		return ret;
++		goto err_i2c;
+ 	}
+-#endif
+ 
+-#ifdef CONFIG_SERIAL_SC16IS7XX_SPI
+-	ret = spi_register_driver(&sc16is7xx_spi_uart_driver);
++	ret = register_sc16is7xx_spi();
+ 	if (ret < 0) {
+ 		pr_err("failed to init sc16is7xx spi --> %d\n", ret);
+-		return ret;
++		goto err_spi;
+ 	}
+-#endif
++
++	return ret;
++
++err_spi:
++	del_sc16is7xx_i2c();
++err_i2c:
++	uart_unregister_driver(&sc16is7xx_uart);
+ 	return ret;
+ }
+ module_init(sc16is7xx_init);
+ 
+ static void __exit sc16is7xx_exit(void)
+ {
+-#ifdef CONFIG_SERIAL_SC16IS7XX_I2C
+-	i2c_del_driver(&sc16is7xx_i2c_uart_driver);
+-#endif
+-
+-#ifdef CONFIG_SERIAL_SC16IS7XX_SPI
+-	spi_unregister_driver(&sc16is7xx_spi_uart_driver);
+-#endif
++	del_sc16is7xx_i2c();
++	unregister_sc16is7xx_spi();
+ 	uart_unregister_driver(&sc16is7xx_uart);
+ }
+ module_exit(sc16is7xx_exit);
+-- 
+2.20.1
