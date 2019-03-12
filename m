@@ -1,28 +1,29 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 1/8] drivers: tty: serial: 8250_bcm2835aux: use
- devm_platform_ioremap_resource()
-Date: Tue, 12 Mar 2019 09:33:56 -0700
-Message-ID: <20190312163356.GB13549@kroah.com>
-References: <1552402660-31730-1-git-send-email-info@metux.net>
- <1552402660-31730-2-git-send-email-info@metux.net>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 3/4] dt-bindings: serial: sprd: Add dma properties to
+ support DMA mode
+Date: Tue, 12 Mar 2019 13:22:02 -0500
+Message-ID: <20190312182202.GA10396@bogus>
+References: <cover.1551689518.git.baolin.wang@linaro.org>
+ <5ef1bbcf1d78829f28377a599d81d0adc7d61ef1.1551689518.git.baolin.wang@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1552402660-31730-2-git-send-email-info@metux.net>
+In-Reply-To: <5ef1bbcf1d78829f28377a599d81d0adc7d61ef1.1551689518.git.baolin.wang@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, robh+dt@kernel.org, mark.rutland@arm.com, orsonzhai@gmail.com, zhang.lyra@gmail.com, baolin.wang@linaro.org, broonie@kernel.org, lanqing.liu@unisoc.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Mar 12, 2019 at 03:57:33PM +0100, Enrico Weigelt, metux IT consult wrote:
+On Mon,  4 Mar 2019 16:58:23 +0800, Baolin Wang wrote:
+> From: Lanqing Liu <lanqing.liu@unisoc.com>
+> 
+> This patch adds dmas and dma-names properties for the UART DMA mode.
+> 
+> Signed-off-by: Lanqing Liu <lanqing.liu@unisoc.com>
+> Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
 > ---
->  drivers/tty/serial/8250/8250_bcm2835aux.c | 12 ++++--------
->  1 file changed, 4 insertions(+), 8 deletions(-)
+>  .../devicetree/bindings/serial/sprd-uart.txt       |    6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
 
-No changelog or signed-off-by, sorry, please fix up the series and
-resend.
-
-thanks,
-
-greg k-h
+Reviewed-by: Rob Herring <robh@kernel.org>
