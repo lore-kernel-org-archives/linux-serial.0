@@ -1,113 +1,87 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [RFC PATCH v1 08/25] printk: add ring buffer and kthread
-Date: Tue, 12 Mar 2019 11:30:17 +0100
-Message-ID: <20190312103017.rvdtoc3j34eayleb@pathway.suse.cz>
-References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190212143003.48446-9-john.ogness@linutronix.de>
- <20190304073856.GA552@jagdpanzerIV>
- <20190304100044.GC21004@jagdpanzerIV>
- <20190304110703.GA960@tigerII.localdomain>
- <87o96p9gtx.fsf@linutronix.de>
- <20190307051530.GC4893@jagdpanzerIV>
- <87va0pznsq.fsf@linutronix.de>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: Re: Serial console is causing system lock-up
+Date: Tue, 12 Mar 2019 11:32:31 +0900
+Message-ID: <20190312023231.GA4146@jagdpanzerIV>
+References: <20190306171943.12345598@oasis.local.home>
+	<87ftrzbp3y.fsf@linutronix.de> <20190307022254.GB4893@jagdpanzerIV>
+	<87tvgfhzd6.fsf@linutronix.de> <20190307082509.GA1925@jagdpanzerIV>
+	<87pnr3hyle.fsf@linutronix.de> <20190307091748.GA6307@jagdpanzerIV>
+	<87o96nezr2.fsf@linutronix.de>
+	<20190307122642.GA10415@tigerII.localdomain>
+	<87r2biojcx.fsf@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <dm-devel-bounces@redhat.com>
 Content-Disposition: inline
-In-Reply-To: <87va0pznsq.fsf@linutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
+In-Reply-To: <87r2biojcx.fsf@linutronix.de>
+List-Unsubscribe: <https://www.redhat.com/mailman/options/dm-devel>,
+	<mailto:dm-devel-request@redhat.com?subject=unsubscribe>
+List-Archive: <https://www.redhat.com/archives/dm-devel>
+List-Post: <mailto:dm-devel@redhat.com>
+List-Help: <mailto:dm-devel-request@redhat.com?subject=help>
+List-Subscribe: <https://www.redhat.com/mailman/listinfo/dm-devel>,
+	<mailto:dm-devel-request@redhat.com?subject=subscribe>
+Sender: dm-devel-bounces@redhat.com
+Errors-To: dm-devel-bounces@redhat.com
 To: John Ogness <john.ogness@linutronix.de>
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org
+Cc: Petr Mladek <pmladek@suse.com>, Nigel Croxon <ncroxon@redhat.com>, "Theodore Y. Ts'o" <tytso@mit.edu>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Steven Rostedt <rostedt@goodmis.org>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, dm-devel@redhat.com, Mikulas Patocka <mpatocka@redhat.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon 2019-03-11 11:51:49, John Ogness wrote:
-> On 2019-03-07, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com> wrote:
-> > I don't really understand the role of loglevel anymore.
+On (03/07/19 15:21), John Ogness wrote:
+> > John, sorry to ask this, does new printk() design always provide
+> > latency guarantees good enough for PREEMPT_RT?
 > 
-> "what the kernel considers" is a configuration option of the
-> administrator. The administrator can increase the verbocity of the
-> console (loglevel) without having negative effects on the system
-> itself.
+> Yes, because it is assumed that emergency messages will never occur for
+> a correctly running system.
+>
+[..]
+> Obviously as soon as any emergency message appears, an _unacceptable_
+> latency occurs. But that is considered OK because the system is no
+> longer running correctly and it is worth the price to pay to get those
+> messages with such high reliability.
 
-Where do you get the confidence that atomic console will not
-slow down the system? Have you tried it on real life workload
-when debugging a real life bug?
+OK, so what *I'm learning* from this bug report:
 
-Some benchmarks might help. Well, it would be needed to
-trigger some messages from them and see how the different
-approaches affect the overall system performance.
+10) WARN/ERR messages do not necessarily tell us that the stability of the
+    system was jeopardized. The system can "run correctly" and be
+    "perfectly healthy".
 
+20) We can have N CPUs reporting issues simultaneously. Even in production.
+    Such patterns exist in the kernel.
 
-> Also, if the system were to suddenly crash, those crash messages
-> shouldn't be in jeopardy just because the verbocity of the console was
-> turned up.
+30) The "reporting part" - printk()->call_console_drivers() - can be the
+    slowest one.
 
-This expects that the error messages will be enough to discover
-and fix the problem.
+  In this particular case, given that Mikulas saw dropped messages,
+  checksum calculation was significantly faster than call_console_drivers().
+  Now, suppose we have new printk, and suppose we have CPUs A B C D, each of
+  them reports a checksum error:
 
+  A prb_lock owner    B prb_lock    C prb_lock    D prb_lock
 
-> You (and Petr) talk about that _all_ console printing is for
-> emergencies. That if an administrator sets the loglevel to 7 it is
-> because the pr_info messages are just as important as the pr_emerg.
+  A calls call_console_drivers, unlocks prb_lock
+  B grabs prb_lock
+  B calls call_console_drivers
+  A calculates new checksum mismatch
+  A calls printk and spins on prb_lock, behind D
 
-It might be true when the messages with higher level (more critical)
-are not enough to understand the situation.
+  So now we have:
 
+  B prb_lock owner    C prb_lock    D prb_lock    A prb_lock
 
-> And if that is indeed the intention of console printing and loglevel, then
-> why is asynchronous printk calls for console messages even allowed
-> today? IMO that isn't taking the importance of the message very
-> seriously.
+  And so on
 
-Because it was working pretty well in the past. The amount of messages
-is still growing (code complexity, more CPUs, more devices, ...).
-Our customers have started reporting softlockups "only" 7 years ago
-or so.
+  B C D A  ->  C D A B  ->  D A B C  ->  A B C D  ->  ...
 
-We currently have two level handling of messages:
+  After M rounds of error reporting (M > N), each CPU, had have to busy
+  wait M times (N - 1). Sounds quadratic.
 
-   + all messages can be seen from userspace
-   + messages below console_loglevel can be seen
-     on the console
+40) goto 10
 
-You are introducing one more level of handling:
+So I have some doubts regarding some of assumptions behind new printk
+design. And the problem is not in prb_lock() unfairness. Current printk
+design does look to me SMP-friendly; yes, it has unbound printing loop;
+that can be addressed. But it doesn't turn SMP system into UP.
 
-   + critical messages are printed on the console directly
-     even before the queued less critical ones
-
-
-The third level would be acceptable when:
-
-   + atomic consoles are reliable enough
-   + the code complexity is worth the gain
-
-
-IMHO, we mix too many things here:
-
-   + log buffer implementation
-   + console offload
-   + direct console handling using atomic consoles
-
-I see the potential in all areas:
-
-   + lock less ring buffer helps to avoid deadlocks,
-     and extra log buffers
-
-   + console offload prevents too long stalls (softlockups)
-
-   + direct console handling might help to avoid deadlocks
-     and might make the output more reliable.
-
-
-I think that we are on the same page here.
-
-But we must use an incremental approach. It is not acceptable
-to replace everything by a single patch. And it is not acceptable
-to break important functionality and implement alternative
-solution several patches later.
-
-Also no solution is as ideal as it is sometimes presented
-in this thread.
-
-Best Regards,
-Petr
+	-ss
