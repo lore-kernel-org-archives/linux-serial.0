@@ -1,29 +1,45 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 3/4] dt-bindings: serial: sprd: Add dma properties to
- support DMA mode
-Date: Tue, 12 Mar 2019 13:22:02 -0500
-Message-ID: <20190312182202.GA10396@bogus>
-References: <cover.1551689518.git.baolin.wang@linaro.org>
- <5ef1bbcf1d78829f28377a599d81d0adc7d61ef1.1551689518.git.baolin.wang@linaro.org>
+From: Calvin Owens <calvinowens@fb.com>
+Subject: Re: [PATCH 3/4] printk: Add consoles to a virtual "console" bus
+Date: Tue, 12 Mar 2019 20:44:05 +0000
+Message-ID: <20190312204345.GA5982@Haydn>
+References: <cover.1551486732.git.calvinowens@fb.com>
+ <087b13f7812b32cc7c3f9efea71c9bcf324dd031.1551486732.git.calvinowens@fb.com>
+ <87ef7ioyzw.fsf@linutronix.de>
+ <20190308155814.rzsjrzgwfcm4p5sk@pathway.suse.cz>
+ <20190308163411.GA12898@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5ef1bbcf1d78829f28377a599d81d0adc7d61ef1.1551689518.git.baolin.wang@linaro.org>
+In-Reply-To: <20190308163411.GA12898@kroah.com>
+Content-Language: en-US
+Content-ID: <04746976BD8C6B4F8702897A1865A9DB@namprd15.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, robh+dt@kernel.org, mark.rutland@arm.com, orsonzhai@gmail.com, zhang.lyra@gmail.com, baolin.wang@linaro.org, broonie@kernel.org, lanqing.liu@unisoc.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Petr Mladek <pmladek@suse.com>, John Ogness <john.ogness@linutronix.de>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Jonathan Corbet <corbet@lwn.net>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon,  4 Mar 2019 16:58:23 +0800, Baolin Wang wrote:
-> From: Lanqing Liu <lanqing.liu@unisoc.com>
-> 
-> This patch adds dmas and dma-names properties for the UART DMA mode.
-> 
-> Signed-off-by: Lanqing Liu <lanqing.liu@unisoc.com>
-> Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
-> ---
->  .../devicetree/bindings/serial/sprd-uart.txt       |    6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-
-Reviewed-by: Rob Herring <robh@kernel.org>
+T24gRnJpZGF5IDAzLzA4IGF0IDE3OjM0ICswMTAwLCBHcmVnIEtyb2FoLUhhcnRtYW4gd3JvdGU6
+DQo+IE9uIEZyaSwgTWFyIDA4LCAyMDE5IGF0IDA0OjU4OjE0UE0gKzAxMDAsIFBldHIgTWxhZGVr
+IHdyb3RlOg0KPiA+IE9uIEZyaSAyMDE5LTAzLTA4IDAzOjU2OjE5LCBKb2huIE9nbmVzcyB3cm90
+ZToNCj4gPiA+IE9uIDIwMTktMDMtMDIsIENhbHZpbiBPd2VucyA8Y2Fsdmlub3dlbnNAZmIuY29t
+PiB3cm90ZToNCj4gPiA+ID4gVGhpcyBwYXRjaCBlbWJlZHMgYSBkZXZpY2Ugc3RydWN0IGluIHRo
+ZSBjb25zb2xlIHN0cnVjdCwgYW5kIHJlZ2lzdGVycw0KPiA+ID4gPiB0aGVtIG9uIGEgImNvbnNv
+bGUiIGJ1cyBzbyB3ZSBjYW4gZXhwb3NlIGF0dHJpYnV0ZXMgaW4gc3lzZnMuDQo+ID4gPiANCj4g
+PiA+IEkgZXhwZWN0IHRoYXQgImNsYXNzIiB3b3VsZCBiZSBtb3JlIGFwcHJvcHJpYXRlIHRoYW4g
+ImJ1cyIuIFRoZXNlDQo+ID4gPiBkZXZpY2VzIHJlYWxseSBhcmUgZ3JvdXBlZCB0b2dldGhlciBi
+YXNlZCBvbiB0aGVpciBmdW5jdGlvbiBhbmQgbm90IHRoZQ0KPiA+ID4gbWVkaXVtIGJ5IHdoaWNo
+IHRoZXkgYXJlIGFjY2Vzc2VkLg0KPiA+IA0KPiA+IEdvb2QgcG9pbnQuICJjbGFzcyIgbG9va3Mg
+YmV0dGVyIHRvIG1lIGFzIHdlbGwuDQo+ID4gDQo+ID4gR3JlZywgYW55IG9waW5pb24sIHdoZXJl
+IHRvIHB1dCB0aGUgZW50cmllcyBmb3Igc3RydWN0IGNvbnNvbGUgPw0KPiANCj4gSGFuZyB0aGVt
+IG9mZiBvZiB0aGUgZGV2aWNlIHRoYXQgdGhlIGNvbnNvbGUgYmVsb25ncyB0bz8NCj4gDQo+IENs
+YXNzZXMgYW5kIGJ1c3NlcyBhcmUgYWxtb3N0IGlkZW50aWNhbCBleGNlcHQ6DQo+IAktIGJ1c3Nl
+cyBpcyB0aGUgYmluZGluZyBvZiBhIGRyaXZlciB0byBhIGRldmljZSAodXNiLCBwY2ksIGV0Yy4p
+DQo+IAktIGNsYXNzZXMgYXJlIHVzdWFsbHkgdXNlcnNwYWNlIGludGVyYWN0aW9ucyB0byBhIGRl
+dmljZSAoaW5wdXQsDQo+IAkgIHR0eSwgZXRjLikNCj4gDQo+IFNvIHRoaXMgc291bmRzIGxpa2Ug
+YSBjbGFzcyB0byBtZS4NCg0KU291bmRzIGdvb2QsIHdpbGwgbWFrZSBpdCBhIGNsYXNzLg0KIA0K
+PiBJZiB5b3Ugd2FudCBtZSB0byByZXZpZXcgdGhpcywgSSdsbCBiZSBnbGFkIHRvIHNvIGRvIG9u
+Y2UgNS4xLXJjMSBpcw0KPiBvdXQuLi4NCg0KWWVhaCwgSSByZWFsaXplZCBhZnRlciBzZW5kaW5n
+IHRoaXMgdGhlIHRpbWluZyB3YXMgcHJldHR5IHRlcnJpYmxlLCBJJ2xsDQp3YWl0IGZvciA1LjEt
+cmMxIGJlZm9yZSByZWJhc2luZy9yZXNlbmRpbmcuDQoNClRoYW5rcywNCkNhbHZpbg0KIA0KPiB0
+aGFua3MsDQo+IA0KPiBncmVnIGstaA0K
