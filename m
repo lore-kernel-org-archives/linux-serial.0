@@ -1,440 +1,60 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v8 2/2] arm64: dts: Add Mediatek SoC MT8183 and evaluation
- board dts and Makefile
-Date: Tue, 12 Mar 2019 13:22:06 +0100
-Message-ID: <d81e9ae0-f571-a890-75e7-be8242ad3879@gmail.com>
-References: <1552294472-32929-1-git-send-email-erin.lo@mediatek.com>
- <1552294472-32929-3-git-send-email-erin.lo@mediatek.com>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [RFC PATCH v1 00/25] printk: new implementation
+Date: Tue, 12 Mar 2019 13:38:57 +0100
+Message-ID: <20190312123857.juatd6fwtfmqajze@pathway.suse.cz>
+References: <20190212143003.48446-1-john.ogness@linutronix.de>
+ <20190213025520.GA5803@jagdpanzerIV>
+ <874l9721hf.fsf@linutronix.de>
+ <20190304052335.GA6648@jagdpanzerIV>
+ <87lg1rggcz.fsf@linutronix.de>
+ <20190311105411.GA368@jagdpanzerIV>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1552294472-32929-3-git-send-email-erin.lo@mediatek.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20190311105411.GA368@jagdpanzerIV>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Erin Lo <erin.lo@mediatek.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>
-Cc: devicetree@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, yingjoe.chen@mediatek.com, mars.cheng@mediatek.com, eddie.huang@mediatek.com, linux-clk@vger.kernel.org, zhiyong.tao@mediatek.com, Mengqi.Zhang@mediatek.com, Ben Ho <Ben.Ho@mediatek.com>, Seiya Wang <seiya.wang@mediatek.com>, Weiyi Lu <weiyi.lu@mediatek.com>, Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: John Ogness <john.ogness@linutronix.de>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-
-
-On 11/03/2019 09:54, Erin Lo wrote:
-> From: Ben Ho <Ben.Ho@mediatek.com>
+On Mon 2019-03-11 19:54:11, Sergey Senozhatsky wrote:
+> On (03/07/19 10:53), John Ogness wrote:
+> > Since all current console drivers are already irq safe, I'm
+> > wondering if using irq_work to handle the emergency printing for console
+> > drivers without write_atomic() would help. (If the printk caller is in a
+> > context that write() supports, then write() could be called directly.)
+> > This would also demand that the irq-safe requirements for write() are
+> > not relaxed. The printk-kthread might still be faster than irq_work, but
+> > it might increase reliability if an irq_work is triggered as an extra
+> > precaution.
 > 
-> Add basic chip support for Mediatek 8183, include
-> uart node with correct uart clocks, pwrap device
+> Hmm. OK. So one of the things with printk is that it's fully sequential.
+> We call console drivers one by one. Slow consoles can affect what appears
+> on the fast consoles; fast console have no impact on slow ones.
 > 
-> Add clock controller nodes, include topckgen, infracfg,
-> apmixedsys and subsystem.
+> 	call_console_drivers()
+> 		for_each_console(c)
+> 			c->write(c, text, text_len);
 > 
-> Signed-off-by: Ben Ho <Ben.Ho@mediatek.com>
-> Signed-off-by: Erin Lo <erin.lo@mediatek.com>
-> Signed-off-by: Seiya Wang <seiya.wang@mediatek.com>
-> Signed-off-by: Weiyi Lu <weiyi.lu@mediatek.com>
-> Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
-> Signed-off-by: Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>
-> Signed-off-by: Eddie Huang <eddie.huang@mediatek.com>
-> ---
->  arch/arm64/boot/dts/mediatek/Makefile       |   1 +
->  arch/arm64/boot/dts/mediatek/mt8183-evb.dts |  31 +++
->  arch/arm64/boot/dts/mediatek/mt8183.dtsi    | 335 ++++++++++++++++++++++++++++
->  3 files changed, 367 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/mediatek/mt8183-evb.dts
->  create mode 100644 arch/arm64/boot/dts/mediatek/mt8183.dtsi
-> 
-> diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
-> index e8f952f..458bbc4 100644
-> --- a/arch/arm64/boot/dts/mediatek/Makefile
-> +++ b/arch/arm64/boot/dts/mediatek/Makefile
-> @@ -7,3 +7,4 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt6797-x20-dev.dtb
->  dtb-$(CONFIG_ARCH_MEDIATEK) += mt7622-rfb1.dtb
->  dtb-$(CONFIG_ARCH_MEDIATEK) += mt7622-bananapi-bpi-r64.dtb
->  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8173-evb.dtb
-> +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-evb.dtb
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-> new file mode 100644
-> index 0000000..9b52559
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-> @@ -0,0 +1,31 @@
-> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> +/*
-> + * Copyright (c) 2018 MediaTek Inc.
-> + * Author: Ben Ho <ben.ho@mediatek.com>
-> + *	   Erin Lo <erin.lo@mediatek.com>
-> + */
-> +
-> +/dts-v1/;
-> +#include "mt8183.dtsi"
-> +
-> +/ {
-> +	model = "MediaTek MT8183 evaluation board";
-> +	compatible = "mediatek,mt8183-evb", "mediatek,mt8183";
-> +
-> +	aliases {
-> +		serial0 = &uart0;
-> +	};
-> +
-> +	memory@40000000 {
-> +		device_type = "memory";
-> +		reg = <0 0x40000000 0 0x80000000>;
-> +	};
-> +
-> +	chosen {
-> +		stdout-path = "serial0:921600n8";
-> +	};
-> +};
-> +
-> +&uart0 {
-> +	status = "okay";
-> +};
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-> new file mode 100644
-> index 0000000..64f8bd6
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-> @@ -0,0 +1,335 @@
-> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> +/*
-> + * Copyright (c) 2018 MediaTek Inc.
-> + * Author: Ben Ho <ben.ho@mediatek.com>
-> + *	   Erin Lo <erin.lo@mediatek.com>
-> + */
-> +
-> +#include <dt-bindings/clock/mt8183-clk.h>
-> +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> +#include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +/ {
-> +	compatible = "mediatek,mt8183";
-> +	interrupt-parent = <&sysirq>;
-> +	#address-cells = <2>;
-> +	#size-cells = <2>;
-> +
-> +	cpus {
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		cpu-map {
-> +			cluster0 {
-> +				core0 {
-> +					cpu = <&cpu0>;
-> +				};
-> +				core1 {
-> +					cpu = <&cpu1>;
-> +				};
-> +				core2 {
-> +					cpu = <&cpu2>;
-> +				};
-> +				core3 {
-> +					cpu = <&cpu3>;
-> +				};
-> +			};
-> +
-> +			cluster1 {
-> +				core0 {
-> +					cpu = <&cpu4>;
-> +				};
-> +				core1 {
-> +					cpu = <&cpu5>;
-> +				};
-> +				core2 {
-> +					cpu = <&cpu6>;
-> +				};
-> +				core3 {
-> +					cpu = <&cpu7>;
-> +				};
-> +			};
-> +		};
-> +
-> +		cpu0: cpu@0 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a53";
-> +			reg = <0x000>;
-> +			enable-method = "psci";
-> +		};
-> +
-> +		cpu1: cpu@1 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a53";
-> +			reg = <0x001>;
-> +			enable-method = "psci";
-> +		};
-> +
-> +		cpu2: cpu@2 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a53";
-> +			reg = <0x002>;
-> +			enable-method = "psci";
-> +		};
-> +
-> +		cpu3: cpu@3 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a53";
-> +			reg = <0x003>;
-> +			enable-method = "psci";
-> +		};
-> +
-> +		cpu4: cpu@100 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a73";
-> +			reg = <0x100>;
-> +			enable-method = "psci";
-> +		};
-> +
-> +		cpu5: cpu@101 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a73";
-> +			reg = <0x101>;
-> +			enable-method = "psci";
-> +		};
-> +
-> +		cpu6: cpu@102 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a73";
-> +			reg = <0x102>;
-> +			enable-method = "psci";
-> +		};
-> +
-> +		cpu7: cpu@103 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a73";
-> +			reg = <0x103>;
-> +			enable-method = "psci";
-> +		};
-> +	};
-> +
-> +	pmu-a53 {
-> +		compatible = "arm,cortex-a53-pmu";
-> +		interrupt-parent = <&gic>;
-> +		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_LOW &ppi_cluster0>;
-> +	};
-> +
-> +	pmu-a73 {
-> +		compatible = "arm,cortex-a73-pmu";
-> +		interrupt-parent = <&gic>;
-> +		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_LOW &ppi_cluster1>;
-> +	};
-> +
-> +	psci {
-> +		compatible      = "arm,psci-1.0";
-> +		method          = "smc";
-> +	};
-> +
-> +	clk26m: oscillator {
-> +		compatible = "fixed-clock";
-> +		#clock-cells = <0>;
-> +		clock-frequency = <26000000>;
-> +		clock-output-names = "clk26m";
-> +	};
-> +
-> +	timer {
-> +		compatible = "arm,armv8-timer";
-> +		interrupt-parent = <&gic>;
-> +		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_LOW 0>,
-> +			     <GIC_PPI 14 IRQ_TYPE_LEVEL_LOW 0>,
-> +			     <GIC_PPI 11 IRQ_TYPE_LEVEL_LOW 0>,
-> +			     <GIC_PPI 10 IRQ_TYPE_LEVEL_LOW 0>;
-> +	};
-> +
-> +	soc {
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		compatible = "simple-bus";
-> +		ranges;
-> +
-> +		gic: interrupt-controller@c000000 {
-> +			compatible = "arm,gic-v3";
-> +			#interrupt-cells = <4>;
-> +			interrupt-parent = <&gic>;
-> +			interrupt-controller;
-> +			reg = <0 0x0c000000 0 0x40000>,  /* GICD */
-> +			      <0 0x0c100000 0 0x200000>, /* GICR */
-> +			      <0 0x0c400000 0 0x2000>,   /* GICC */
-> +			      <0 0x0c410000 0 0x1000>,   /* GICH */
-> +			      <0 0x0c420000 0 0x2000>;   /* GICV */
-> +
-> +			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			ppi-partitions {
-> +				ppi_cluster0: interrupt-partition-0 {
-> +					affinity = <&cpu0 &cpu1 &cpu2 &cpu3>;
-> +				};
-> +				ppi_cluster1: interrupt-partition-1 {
-> +					affinity = <&cpu4 &cpu5 &cpu6 &cpu7>;
-> +				};
-> +			};
-> +		};
-> +
-> +		mcucfg: syscon@c530000 {
-> +			compatible = "mediatek,mt8183-mcucfg", "syscon";
+> So a list of (slow_serial serial netcon) console drivers is a camel train;
+> fast netcon is not fast anymore, and slow consoles sometimes are the reason
+> we have dropped messages. And if we drop messages we drop them for all
+> consoles, including fast netcon. Turning that sequential pipline into a
+> bunch of per-console kthreads/irq and letting fast consoles to be fast is
+> not a completely bad thing. Let's think more about this, I'd like to read
+> more opinions.
 
-Binding is not documented. I found some other bindings not documented as well.
-Please update the binding documentation to add this compatible, otherwise I
-won't be able to take this patch.
+Per-console kthread sounds interesting but there is the problem with
+reliability. I mean that kthread need not get scheduled.
 
-Regards,
-Matthias
+Some of these problems might get solved by the per-console loglevel
+patchset.
 
-> +			reg = <0 0x0c530000 0 0x1000>;
-> +			#clock-cells = <1>;
-> +		};
-> +
-> +		sysirq: interrupt-controller@c530a80 {
-> +			compatible = "mediatek,mt8183-sysirq",
-> +				     "mediatek,mt6577-sysirq";
-> +			interrupt-controller;
-> +			#interrupt-cells = <3>;
-> +			interrupt-parent = <&gic>;
-> +			reg = <0 0x0c530a80 0 0x50>;
-> +		};
-> +
-> +		topckgen: syscon@10000000 {
-> +			compatible = "mediatek,mt8183-topckgen", "syscon";
-> +			reg = <0 0x10000000 0 0x1000>;
-> +			#clock-cells = <1>;
-> +		};
-> +
-> +		infracfg: syscon@10001000 {
-> +			compatible = "mediatek,mt8183-infracfg", "syscon";
-> +			reg = <0 0x10001000 0 0x1000>;
-> +			#clock-cells = <1>;
-> +		};
-> +
-> +		pio: pinctrl@10005000 {
-> +			compatible = "mediatek,mt8183-pinctrl";
-> +			reg = <0 0x10005000 0 0x1000>,
-> +			      <0 0x11f20000 0 0x1000>,
-> +			      <0 0x11e80000 0 0x1000>,
-> +			      <0 0x11e70000 0 0x1000>,
-> +			      <0 0x11e90000 0 0x1000>,
-> +			      <0 0x11d30000 0 0x1000>,
-> +			      <0 0x11d20000 0 0x1000>,
-> +			      <0 0x11c50000 0 0x1000>,
-> +			      <0 0x11f30000 0 0x1000>,
-> +			      <0 0x1000b000 0 0x1000>;
-> +			reg-names = "iocfg0", "iocfg1", "iocfg2",
-> +				    "iocfg3", "iocfg4", "iocfg5",
-> +				    "iocfg6", "iocfg7", "iocfg8",
-> +				    "eint";
-> +			gpio-controller;
-> +			#gpio-cells = <2>;
-> +			gpio-ranges = <&pio 0 0 192>;
-> +			interrupt-controller;
-> +			interrupts = <GIC_SPI 177 IRQ_TYPE_LEVEL_HIGH>;
-> +			#interrupt-cells = <3>;
-> +		};
-> +
-> +		apmixedsys: syscon@1000c000 {
-> +			compatible = "mediatek,mt8183-apmixedsys", "syscon";
-> +			reg = <0 0x1000c000 0 0x1000>;
-> +			#clock-cells = <1>;
-> +		};
-> +
-> +		pwrap: pwrap@1000d000 {
-> +			compatible = "mediatek,mt8183-pwrap";
-> +			reg = <0 0x1000d000 0 0x1000>;
-> +			reg-names = "pwrap";
-> +			interrupts = <GIC_SPI 209 IRQ_TYPE_LEVEL_HIGH>;
-> +			clocks = <&topckgen CLK_TOP_MUX_PMICSPI>,
-> +				 <&infracfg CLK_INFRA_PMIC_AP>;
-> +			clock-names = "spi", "wrap";
-> +		};
-> +
-> +		uart0: serial@11002000 {
-> +			compatible = "mediatek,mt8183-uart",
-> +				     "mediatek,mt6577-uart";
-> +			reg = <0 0x11002000 0 0x1000>;
-> +			interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_LOW>;
-> +			clocks = <&clk26m>, <&infracfg CLK_INFRA_UART0>;
-> +			clock-names = "baud", "bus";
-> +			status = "disabled";
-> +		};
-> +
-> +		uart1: serial@11003000 {
-> +			compatible = "mediatek,mt8183-uart",
-> +				     "mediatek,mt6577-uart";
-> +			reg = <0 0x11003000 0 0x1000>;
-> +			interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_LOW>;
-> +			clocks = <&clk26m>, <&infracfg CLK_INFRA_UART1>;
-> +			clock-names = "baud", "bus";
-> +			status = "disabled";
-> +		};
-> +
-> +		uart2: serial@11004000 {
-> +			compatible = "mediatek,mt8183-uart",
-> +				     "mediatek,mt6577-uart";
-> +			reg = <0 0x11004000 0 0x1000>;
-> +			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_LOW>;
-> +			clocks = <&clk26m>, <&infracfg CLK_INFRA_UART2>;
-> +			clock-names = "baud", "bus";
-> +			status = "disabled";
-> +		};
-> +
-> +		audiosys: syscon@11220000 {
-> +			compatible = "mediatek,mt8183-audiosys", "syscon";
-> +			reg = <0 0x11220000 0 0x1000>;
-> +			#clock-cells = <1>;
-> +		};
-> +
-> +		mfgcfg: syscon@13000000 {
-> +			compatible = "mediatek,mt8183-mfgcfg", "syscon";
-> +			reg = <0 0x13000000 0 0x1000>;
-> +			#clock-cells = <1>;
-> +		};
-> +
-> +		mmsys: syscon@14000000 {
-> +			compatible = "mediatek,mt8183-mmsys", "syscon";
-> +			reg = <0 0x14000000 0 0x1000>;
-> +			#clock-cells = <1>;
-> +		};
-> +
-> +		imgsys: syscon@15020000 {
-> +			compatible = "mediatek,mt8183-imgsys", "syscon";
-> +			reg = <0 0x15020000 0 0x1000>;
-> +			#clock-cells = <1>;
-> +		};
-> +
-> +		vdecsys: syscon@16000000 {
-> +			compatible = "mediatek,mt8183-vdecsys", "syscon";
-> +			reg = <0 0x16000000 0 0x1000>;
-> +			#clock-cells = <1>;
-> +		};
-> +
-> +		vencsys: syscon@17000000 {
-> +			compatible = "mediatek,mt8183-vencsys", "syscon";
-> +			reg = <0 0x17000000 0 0x1000>;
-> +			#clock-cells = <1>;
-> +		};
-> +
-> +		ipu_conn: syscon@19000000 {
-> +			compatible = "mediatek,mt8183-ipu_conn", "syscon";
-> +			reg = <0 0x19000000 0 0x1000>;
-> +			#clock-cells = <1>;
-> +		};
-> +
-> +		ipu_adl: syscon@19010000 {
-> +			compatible = "mediatek,mt8183-ipu_adl", "syscon";
-> +			reg = <0 0x19010000 0 0x1000>;
-> +			#clock-cells = <1>;
-> +		};
-> +
-> +		ipu_core0: syscon@19180000 {
-> +			compatible = "mediatek,mt8183-ipu_core0", "syscon";
-> +			reg = <0 0x19180000 0 0x1000>;
-> +			#clock-cells = <1>;
-> +		};
-> +
-> +		ipu_core1: syscon@19280000 {
-> +			compatible = "mediatek,mt8183-ipu_core1", "syscon";
-> +			reg = <0 0x19280000 0 0x1000>;
-> +			#clock-cells = <1>;
-> +		};
-> +
-> +		camsys: syscon@1a000000 {
-> +			compatible = "mediatek,mt8183-camsys", "syscon";
-> +			reg = <0 0x1a000000 0 0x1000>;
-> +			#clock-cells = <1>;
-> +		};
-> +	};
-> +};
-> 
+Sigh, any feature might be useful in some situation. But we always
+have to consider the cost and the gain. I wonder how common is
+to actively use two consoles at the same time and what would
+be the motivation.
+
+Best Regards,
+Petr
