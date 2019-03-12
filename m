@@ -1,60 +1,50 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [RFC PATCH v1 00/25] printk: new implementation
-Date: Tue, 12 Mar 2019 13:38:57 +0100
-Message-ID: <20190312123857.juatd6fwtfmqajze@pathway.suse.cz>
-References: <20190212143003.48446-1-john.ogness@linutronix.de>
- <20190213025520.GA5803@jagdpanzerIV>
- <874l9721hf.fsf@linutronix.de>
- <20190304052335.GA6648@jagdpanzerIV>
- <87lg1rggcz.fsf@linutronix.de>
- <20190311105411.GA368@jagdpanzerIV>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH v8 1/2] dt-bindings: serial: Add compatible for Mediatek
+ MT8183
+Date: Tue, 12 Mar 2019 15:41:57 +0100
+Message-ID: <d824b15d-49b4-ef6c-779a-0c21c8c05d62@gmail.com>
+References: <1552294472-32929-1-git-send-email-erin.lo@mediatek.com>
+ <1552294472-32929-2-git-send-email-erin.lo@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190311105411.GA368@jagdpanzerIV>
+In-Reply-To: <1552294472-32929-2-git-send-email-erin.lo@mediatek.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: John Ogness <john.ogness@linutronix.de>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+To: Erin Lo <erin.lo@mediatek.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>
+Cc: devicetree@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, yingjoe.chen@mediatek.com, mars.cheng@mediatek.com, eddie.huang@mediatek.com, linux-clk@vger.kernel.org, zhiyong.tao@mediatek.com, Mengqi.Zhang@mediatek.com
 List-Id: linux-serial@vger.kernel.org
 
-On Mon 2019-03-11 19:54:11, Sergey Senozhatsky wrote:
-> On (03/07/19 10:53), John Ogness wrote:
-> > Since all current console drivers are already irq safe, I'm
-> > wondering if using irq_work to handle the emergency printing for console
-> > drivers without write_atomic() would help. (If the printk caller is in a
-> > context that write() supports, then write() could be called directly.)
-> > This would also demand that the irq-safe requirements for write() are
-> > not relaxed. The printk-kthread might still be faster than irq_work, but
-> > it might increase reliability if an irq_work is triggered as an extra
-> > precaution.
+
+
+On 11/03/2019 09:54, Erin Lo wrote:
+> This adds dt-binding documentation of uart for Mediatek MT8183 SoC
+> Platform.
 > 
-> Hmm. OK. So one of the things with printk is that it's fully sequential.
-> We call console drivers one by one. Slow consoles can affect what appears
-> on the fast consoles; fast console have no impact on slow ones.
+> Signed-off-by: Erin Lo <erin.lo@mediatek.com>
+> Acked-by: Rob Herring <robh@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/serial/mtk-uart.txt | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> 	call_console_drivers()
-> 		for_each_console(c)
-> 			c->write(c, text, text_len);
+> diff --git a/Documentation/devicetree/bindings/serial/mtk-uart.txt b/Documentation/devicetree/bindings/serial/mtk-uart.txt
+> index 742cb47..bcfb131 100644
+> --- a/Documentation/devicetree/bindings/serial/mtk-uart.txt
+> +++ b/Documentation/devicetree/bindings/serial/mtk-uart.txt
+> @@ -16,6 +16,7 @@ Required properties:
+>    * "mediatek,mt8127-uart" for MT8127 compatible UARTS
+>    * "mediatek,mt8135-uart" for MT8135 compatible UARTS
+>    * "mediatek,mt8173-uart" for MT8173 compatible UARTS
+> +  * "mediatek,mt8183-uart", "mediatek,mt6577-uart" for MT8183 compatible UARTS
+>    * "mediatek,mt6577-uart" for MT6577 and all of the above
+>  
+>  - reg: The base address of the UART register bank.
 > 
-> So a list of (slow_serial serial netcon) console drivers is a camel train;
-> fast netcon is not fast anymore, and slow consoles sometimes are the reason
-> we have dropped messages. And if we drop messages we drop them for all
-> consoles, including fast netcon. Turning that sequential pipline into a
-> bunch of per-console kthreads/irq and letting fast consoles to be fast is
-> not a completely bad thing. Let's think more about this, I'd like to read
-> more opinions.
 
-Per-console kthread sounds interesting but there is the problem with
-reliability. I mean that kthread need not get scheduled.
+Acked-by: Matthias Brugger <matthias.bgg@gmail.com>
 
-Some of these problems might get solved by the per-console loglevel
-patchset.
+Greg will you take this through your branch or do you prefer me to queue it?
 
-Sigh, any feature might be useful in some situation. But we always
-have to consider the cost and the gain. I wonder how common is
-to actively use two consoles at the same time and what would
-be the motivation.
-
-Best Regards,
-Petr
+Regards,
+Matthias
