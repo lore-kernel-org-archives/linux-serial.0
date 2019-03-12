@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 7/8] drivers: tty: serial: use memres
-Date: Tue, 12 Mar 2019 15:57:39 +0100
-Message-ID: <1552402660-31730-8-git-send-email-info@metux.net>
+Subject: [PATCH 8/8] drivers: tty: serial: xilinx_uartps: use helpers
+Date: Tue, 12 Mar 2019 15:57:40 +0100
+Message-ID: <1552402660-31730-9-git-send-email-info@metux.net>
 References: <1552402660-31730-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1552402660-31730-1-git-send-email-info@metux.net>
@@ -10,61 +10,58 @@ To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, l
 List-Id: linux-serial@vger.kernel.org
 
 ---
- drivers/tty/serial/zs.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ drivers/tty/serial/xilinx_uartps.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/zs.c b/drivers/tty/serial/zs.c
-index b03d3e4..2fd4821 100644
---- a/drivers/tty/serial/zs.c
-+++ b/drivers/tty/serial/zs.c
-@@ -986,14 +986,13 @@ static void zs_release_port(struct uart_port *uport)
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 74089f5..92aff38 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -953,15 +953,14 @@ static int cdns_uart_verify_port(struct uart_port *port,
+  */
+ static int cdns_uart_request_port(struct uart_port *port)
  {
- 	iounmap(uport->membase);
- 	uport->membase = 0;
--	release_mem_region(uport->mapbase, ZS_CHAN_IO_SIZE);
-+	uart_memres_release(uport);
- }
- 
- static int zs_map_port(struct uart_port *uport)
- {
- 	if (!uport->membase)
--		uport->membase = ioremap_nocache(uport->mapbase,
--						 ZS_CHAN_IO_SIZE);
-+		uport->membase = uart_memres_ioremap_nocache(uport);
- 	if (!uport->membase) {
- 		printk(KERN_ERR "zs: Cannot map MMIO\n");
+-	if (!request_mem_region(port->mapbase, CDNS_UART_REGISTER_SPACE,
+-					 CDNS_UART_NAME)) {
++	if (!uart_memres_request(port, CDNS_UART_NAME)) {
  		return -ENOMEM;
-@@ -1005,13 +1004,13 @@ static int zs_request_port(struct uart_port *uport)
- {
- 	int ret;
- 
--	if (!request_mem_region(uport->mapbase, ZS_CHAN_IO_SIZE, "scc")) {
-+	if (!uart_memres_request(uport, "scc")) {
- 		printk(KERN_ERR "zs: Unable to reserve MMIO resource\n");
- 		return -EBUSY;
  	}
- 	ret = zs_map_port(uport);
- 	if (ret) {
--		release_mem_region(uport->mapbase, ZS_CHAN_IO_SIZE);
-+		uart_release_memres(uport);
- 		return ret;
+ 
+-	port->membase = ioremap(port->mapbase, CDNS_UART_REGISTER_SPACE);
++	port->membase = uart_memres_ioremap(port);
+ 	if (!port->membase) {
+ 		dev_err(port->dev, "Unable to map registers\n");
+-		release_mem_region(port->mapbase, CDNS_UART_REGISTER_SPACE);
++		uart_memres_release(port);
+ 		return -ENOMEM;
  	}
  	return 0;
-@@ -1113,9 +1112,12 @@ static int __init zs_probe_sccs(void)
- 			uport->flags	= UPF_BOOT_AUTOCONF;
- 			uport->ops	= &zs_ops;
- 			uport->line	= chip * ZS_NUM_CHAN + side;
--			uport->mapbase	= dec_kn_slot_base +
--					  zs_parms.scc[chip] +
--					  (side ^ ZS_CHAN_B) * ZS_CHAN_IO_SIZE;
-+			uart_memres_set(
-+				DEFINE_RES_MEM(
-+					dec_kn_slot_base +
-+					zs_parms.scc[chip] +
-+					(side ^ ZS_CHAN_B) * ZS_CHAN_IO_SIZE,
-+					ZS_CHAN_IO_SIZE));
- 
- 			for (i = 0; i < ZS_NUM_REGS; i++)
- 				zport->regs[i] = zs_init_regs[i];
+@@ -976,7 +975,7 @@ static int cdns_uart_request_port(struct uart_port *port)
+  */
+ static void cdns_uart_release_port(struct uart_port *port)
+ {
+-	release_mem_region(port->mapbase, CDNS_UART_REGISTER_SPACE);
++	uart_memres_release(port);
+ 	iounmap(port->membase);
+ 	port->membase = NULL;
+ }
+@@ -1626,7 +1625,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 	 * This function also registers this device with the tty layer
+ 	 * and triggers invocation of the config_port() entry point.
+ 	 */
+-	port->mapbase = res->start;
++	uart_memres_set(*res);
+ 	port->irq = irq;
+ 	port->dev = &pdev->dev;
+ 	port->uartclk = clk_get_rate(cdns_uart_data->uartclk);
+@@ -1707,7 +1706,7 @@ static int cdns_uart_remove(struct platform_device *pdev)
+ 			&cdns_uart_data->clk_rate_change_nb);
+ #endif
+ 	rc = uart_remove_one_port(cdns_uart_data->cdns_uart_driver, port);
+-	port->mapbase = 0;
++	uart_memres_clear(port);
+ 	mutex_lock(&bitmap_lock);
+ 	if (cdns_uart_data->id < MAX_UART_INSTANCES)
+ 		clear_bit(cdns_uart_data->id, bitmap);
 -- 
 1.9.1
