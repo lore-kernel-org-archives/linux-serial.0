@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 5/8] drivers: tty: serial: introduce struct resource
-Date: Tue, 12 Mar 2019 15:57:37 +0100
-Message-ID: <1552402660-31730-6-git-send-email-info@metux.net>
+Subject: [PATCH 1/8] drivers: tty: serial: 8250_bcm2835aux: use devm_platform_ioremap_resource()
+Date: Tue, 12 Mar 2019 15:57:33 +0100
+Message-ID: <1552402660-31730-2-git-send-email-info@metux.net>
 References: <1552402660-31730-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1552402660-31730-1-git-send-email-info@metux.net>
@@ -9,91 +9,41 @@ Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The standard data structure for holding io resources in the
-kernel is struct resource. Serial drivers yet don't really
-use it (except when retrieving from oftree).
-
-This patch introduces a new field in struct uart_port for that,
-plus several helpers. Yet it's up to the individual drivers for
-using it - serial_core doesn't care yet. Therefore, the old fields
-mapbase and mapsize need to be filled properly by the drivers.
 ---
- include/linux/serial_core.h | 49 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
+ drivers/tty/serial/8250/8250_bcm2835aux.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 5fe2b03..9b07a40 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -24,6 +24,7 @@
- #include <linux/compiler.h>
- #include <linux/console.h>
- #include <linux/interrupt.h>
-+#include <linux/ioport.h>
- #include <linux/circ_buf.h>
- #include <linux/spinlock.h>
- #include <linux/sched.h>
-@@ -256,6 +257,7 @@ struct uart_port {
- 	unsigned int		minor;
- 	resource_size_t		mapbase;		/* for ioremap */
- 	resource_size_t		mapsize;
-+	struct resource		memres;
- 	struct device		*dev;			/* parent device */
- 	unsigned char		hub6;			/* this should be in the 8250 driver */
- 	unsigned char		suspended;
-@@ -427,6 +429,53 @@ void uart_console_write(struct uart_port *port, const char *s,
- int uart_match_port(struct uart_port *port1, struct uart_port *port2);
+diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
+index bd53661..0738d14 100644
+--- a/drivers/tty/serial/8250/8250_bcm2835aux.c
++++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
+@@ -25,7 +25,6 @@ struct bcm2835aux_data {
+ static int bcm2835aux_serial_probe(struct platform_device *pdev)
+ {
+ 	struct bcm2835aux_data *data;
+-	struct resource *res;
+ 	int ret;
  
- /*
-+ * Port resource management
-+ */
-+static inline void uart_memres_set(struct uart_port *port,
-+				     struct resource res)
-+{
-+	port->memres = res;
-+	port->mapbase = res.start;
-+}
-+
-+static inline void uart_memres_clear(struct uart_port *port)
-+{
-+	port->memres = DEFINE_RES_MEM(0, 0);
-+}
-+
-+static inline int uart_memres_valid(struct uart_port *port)
-+{
-+	return (port->memres.start != 0);
-+}
-+
-+static inline struct resource *uart_memres_request(struct uart_port *port,
-+				     const char *name)
-+{
-+	return request_mem_region(
-+		port->memres.start,
-+		resource_size(&port->memres),
-+		name);
-+}
-+
-+static inline void uart_memres_release(struct uart_port *port)
-+{
-+	return release_mem_region(port->memres.start,
-+				  resource_size(&port->memres));
-+}
-+
-+static inline void __iomem *uart_memres_ioremap_nocache(struct uart_port *port)
-+{
-+	return ioremap_nocache(port->memres.start,
-+			       resource_size(&port->memres.start));
-+}
-+
-+static inline void __iomem *uart_memres_ioremap(struct uart_port *port)
-+{
-+	return ioremap(port->memres.start,
-+		       resource_size(&port->memres.start));
-+}
-+
-+/*
-  * Power Management
-  */
- int uart_suspend_port(struct uart_driver *reg, struct uart_port *port);
+ 	/* allocate the custom structure */
+@@ -63,15 +62,12 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
+ 	data->uart.port.irq = ret;
+ 
+ 	/* map the main registers */
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!res) {
+-		dev_err(&pdev->dev, "memory resource not found");
+-		return -EINVAL;
+-	}
+-	data->uart.port.membase = devm_ioremap_resource(&pdev->dev, res);
++	data->uart.port.membase = devm_platform_ioremap_resource(pdev, 0);
+ 	ret = PTR_ERR_OR_ZERO(data->uart.port.membase);
+-	if (ret)
++	if (ret) {
++		dev_err(&pdev->dev, "could not map memory resource");
+ 		return ret;
++	}
+ 
+ 	/* Check for a fixed line number */
+ 	ret = of_alias_get_id(pdev->dev.of_node, "serial");
 -- 
 1.9.1
