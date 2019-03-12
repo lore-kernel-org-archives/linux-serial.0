@@ -1,58 +1,113 @@
-From: Mikulas Patocka <mpatocka@redhat.com>
-Subject: Re: Serial console is causing system lock-up
-Date: Tue, 12 Mar 2019 06:05:52 -0400 (EDT)
-Message-ID: <alpine.LRH.2.02.1903120557560.12085@file01.intranet.prod.int.rdu2.redhat.com>
-References: <20190306171943.12345598@oasis.local.home>
-	<87ftrzbp3y.fsf@linutronix.de> <20190307022254.GB4893@jagdpanzerIV>
-	<87tvgfhzd6.fsf@linutronix.de> <20190307082509.GA1925@jagdpanzerIV>
-	<87pnr3hyle.fsf@linutronix.de> <20190307091748.GA6307@jagdpanzerIV>
-	<87o96nezr2.fsf@linutronix.de>
-	<20190307122642.GA10415@tigerII.localdomain>
-	<87r2biojcx.fsf@linutronix.de> <20190312023231.GA4146@jagdpanzerIV>
-	<87a7i05wwi.fsf@linutronix.de>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [RFC PATCH v1 08/25] printk: add ring buffer and kthread
+Date: Tue, 12 Mar 2019 11:30:17 +0100
+Message-ID: <20190312103017.rvdtoc3j34eayleb@pathway.suse.cz>
+References: <20190212143003.48446-1-john.ogness@linutronix.de>
+ <20190212143003.48446-9-john.ogness@linutronix.de>
+ <20190304073856.GA552@jagdpanzerIV>
+ <20190304100044.GC21004@jagdpanzerIV>
+ <20190304110703.GA960@tigerII.localdomain>
+ <87o96p9gtx.fsf@linutronix.de>
+ <20190307051530.GC4893@jagdpanzerIV>
+ <87va0pznsq.fsf@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <dm-devel-bounces@redhat.com>
-In-Reply-To: <87a7i05wwi.fsf@linutronix.de>
-List-Unsubscribe: <https://www.redhat.com/mailman/options/dm-devel>,
-	<mailto:dm-devel-request@redhat.com?subject=unsubscribe>
-List-Archive: <https://www.redhat.com/archives/dm-devel>
-List-Post: <mailto:dm-devel@redhat.com>
-List-Help: <mailto:dm-devel-request@redhat.com?subject=help>
-List-Subscribe: <https://www.redhat.com/mailman/listinfo/dm-devel>,
-	<mailto:dm-devel-request@redhat.com?subject=subscribe>
-Sender: dm-devel-bounces@redhat.com
-Errors-To: dm-devel-bounces@redhat.com
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <87va0pznsq.fsf@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
 To: John Ogness <john.ogness@linutronix.de>
-Cc: Petr Mladek <pmladek@suse.com>, Nigel Croxon <ncroxon@redhat.com>, "Theodore Y. Ts'o" <tytso@mit.edu>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Steven Rostedt <rostedt@goodmis.org>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, dm-devel@redhat.com, linux-serial@vger.kernel.org
+Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-
-
-On Tue, 12 Mar 2019, John Ogness wrote:
-
-> > But it doesn't turn SMP system into UP.
+On Mon 2019-03-11 11:51:49, John Ogness wrote:
+> On 2019-03-07, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com> wrote:
+> > I don't really understand the role of loglevel anymore.
 > 
-> In this example it turned it into a brick.
-> 
-> The problems I see are:
-> 
-> 1. The current loglevels used in the kernel are not sufficient to
->    distinguish between emergency and informational messages. Addressing
->    this issue may require things like using a new printk flag and
->    manually marking the printks that we(?) decide are critical. I was
+> "what the kernel considers" is a configuration option of the
+> administrator. The administrator can increase the verbocity of the
+> console (loglevel) without having negative effects on the system
+> itself.
 
-It depends on what the user considers important. The kernel doesn't know 
-what's critical and can't know it.
+Where do you get the confidence that atomic console will not
+slow down the system? Have you tried it on real life workload
+when debugging a real life bug?
 
-For example, if the user plugs an USB stick and the USB stick reports an 
-I/O error, it is not critical condition.
+Some benchmarks might help. Well, it would be needed to
+trigger some messages from them and see how the different
+approaches affect the overall system performance.
 
-If the user runs the whole system from the USB stick and the USB stick 
-reports an I/O error, it is critical condition.
 
-The filesystems and the block device drivers can't know if the data stored 
-on them are important.
+> Also, if the system were to suddenly crash, those crash messages
+> shouldn't be in jeopardy just because the verbocity of the console was
+> turned up.
 
-Mikulas
+This expects that the error messages will be enough to discover
+and fix the problem.
+
+
+> You (and Petr) talk about that _all_ console printing is for
+> emergencies. That if an administrator sets the loglevel to 7 it is
+> because the pr_info messages are just as important as the pr_emerg.
+
+It might be true when the messages with higher level (more critical)
+are not enough to understand the situation.
+
+
+> And if that is indeed the intention of console printing and loglevel, then
+> why is asynchronous printk calls for console messages even allowed
+> today? IMO that isn't taking the importance of the message very
+> seriously.
+
+Because it was working pretty well in the past. The amount of messages
+is still growing (code complexity, more CPUs, more devices, ...).
+Our customers have started reporting softlockups "only" 7 years ago
+or so.
+
+We currently have two level handling of messages:
+
+   + all messages can be seen from userspace
+   + messages below console_loglevel can be seen
+     on the console
+
+You are introducing one more level of handling:
+
+   + critical messages are printed on the console directly
+     even before the queued less critical ones
+
+
+The third level would be acceptable when:
+
+   + atomic consoles are reliable enough
+   + the code complexity is worth the gain
+
+
+IMHO, we mix too many things here:
+
+   + log buffer implementation
+   + console offload
+   + direct console handling using atomic consoles
+
+I see the potential in all areas:
+
+   + lock less ring buffer helps to avoid deadlocks,
+     and extra log buffers
+
+   + console offload prevents too long stalls (softlockups)
+
+   + direct console handling might help to avoid deadlocks
+     and might make the output more reliable.
+
+
+I think that we are on the same page here.
+
+But we must use an incremental approach. It is not acceptable
+to replace everything by a single patch. And it is not acceptable
+to break important functionality and implement alternative
+solution several patches later.
+
+Also no solution is as ideal as it is sometimes presented
+in this thread.
+
+Best Regards,
+Petr
