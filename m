@@ -1,38 +1,44 @@
 From: Calvin Owens <calvinowens@fb.com>
-Subject: Re: [PATCH 3/4] printk: Add consoles to a virtual "console" bus
-Date: Tue, 12 Mar 2019 20:52:57 +0000
-Message-ID: <20190312205254.GB5982@Haydn>
+Subject: Re: [PATCH 1/4] printk: Introduce per-console loglevel setting
+Date: Tue, 12 Mar 2019 21:00:07 +0000
+Message-ID: <20190312210004.GC5982@Haydn>
 References: <cover.1551486732.git.calvinowens@fb.com>
- <087b13f7812b32cc7c3f9efea71c9bcf324dd031.1551486732.git.calvinowens@fb.com>
- <20190308155352.g43mt44adau6cgh6@pathway.suse.cz>
+ <06cd267ef5439a9391368423b608959f5f1b1a63.1551486732.git.calvinowens@fb.com>
+ <20190308031032.GA30056@jagdpanzerIV>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190308155352.g43mt44adau6cgh6@pathway.suse.cz>
+In-Reply-To: <20190308031032.GA30056@jagdpanzerIV>
 Content-Language: en-US
-Content-ID: <B9E6201EFF4A674588ABF7931C62674B@namprd15.prod.outlook.com>
+Content-ID: <082ACFE34DBB2146802CB7B5573FC382@namprd15.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-T24gRnJpZGF5IDAzLzA4IGF0IDE2OjUzICswMTAwLCBQZXRyIE1sYWRlayB3cm90ZToNCj4gT24g
-RnJpIDIwMTktMDMtMDEgMTY6NDg6MTksIENhbHZpbiBPd2VucyB3cm90ZToNCj4gPiBUaGlzIHBh
-dGNoIGVtYmVkcyBhIGRldmljZSBzdHJ1Y3QgaW4gdGhlIGNvbnNvbGUgc3RydWN0LCBhbmQgcmVn
-aXN0ZXJzDQo+ID4gdGhlbSBvbiBhICJjb25zb2xlIiBidXMgc28gd2UgY2FuIGV4cG9zZSBhdHRy
-aWJ1dGVzIGluIHN5c2ZzLg0KPiA+IA0KPiA+IEVhcmx5IGNvbnNvbGUgc3RydWN0dXJlcyBtdXN0
-IHN0aWxsIGJlIHN0YXRpYywgc2luY2UgdGhleSdyZSByZXF1aXJlZA0KPiA+IGJlZm9yZSB3ZSdy
-ZSBhYmxlIHRvIGFsbG9jYXRlIG1lbW9yeS4gVGhlIGxlYXN0IHVnbHkgd2F5IEkgY2FuIGNvbWUg
-dXANCj4gPiB3aXRoIHRvIGhhbmRsZSB0aGlzIGlzIGFuICJpc19zdGF0aWMiIGZsYWcgaW4gdGhl
-IHN0cnVjdHVyZSB3aGljaCBtYWtlcw0KPiA+IHRoZSBnZXRzIGFuZCBwdXRzIE5PUHMsIGFuZCBp
-cyBjaGVja2VkIGluIC0+cmVsZWFzZSgpIHRvIGNhdGNoIG1pc3Rha2VzLg0KPiANCj4gSSB3b25k
-ZXIgaWYgaXQgbWlnaHQgZ2V0IGRldGVjdGVkIGJ5IGlzX2tlcm5lbF9pbml0dGV4dCgpLg0KDQpJ
-IGRvbid0IHRoaW5rIGluaXR0ZXh0KCkgaW4gcGFydGljdWxhciB3b3VsZCB3b3JrLCBzaW5jZSB0
-aGVzZSBhY3R1YWxseSBuZWVkDQp0byBleGlzdCBmb3JldmVyIGlmIHlvdSBwYXNzICJlYXJseXBy
-aW50az1bLi4uXSxrZWVwIiBzbyB0aGV5IGFyZW4ndCBfX2luaXQuDQoNCkJ1dCBJIGJldCB5b3Un
-cmUgcmlnaHQgdGhhdCB3ZSBjb3VsZCBjYXRjaCB0aGUgc3RhdGljIGNhc2Ugd2l0aG91dCBuZWVk
-aW5nDQp0aGUgZXhwbGljaXQgZmxhZywgc29tZXRoaW5nIGxpa2UgaXNfbW9kdWxlX2FkZHJlc3Mo
-KSAoYnV0IGl0IHdvdWxkIGFsc28gbmVlZA0KdG8gd29yayBmb3IgdGhlIGJ1aWx0LWluIGNhc2Up
-LiBJJ2xsIHNlZSBpZiBJIGNhbiBnZXQgdGhpcyB0byB3b3JrLg0KDQpUaGFua3MsDQpDYWx2aW4N
-CiANCj4gQmVzdCBSZWdhcmRzLA0KPiBQZXRyDQo=
+T24gRnJpZGF5IDAzLzA4IGF0IDEyOjEwICswOTAwLCBTZXJnZXkgU2Vub3poYXRza3kgd3JvdGU6
+DQo+IE9uICgwMy8wMS8xOSAxNjo0OCksIENhbHZpbiBPd2VucyB3cm90ZToNCj4gWy4uXQ0KPiA+
+ICAJCW1zZyA9IGxvZ19mcm9tX2lkeChjb25zb2xlX2lkeCk7DQo+ID4gLQkJaWYgKHN1cHByZXNz
+X21lc3NhZ2VfcHJpbnRpbmcobXNnLT5sZXZlbCkpIHsNCj4gPiAtCQkJLyoNCj4gPiAtCQkJICog
+U2tpcCByZWNvcmQgd2UgaGF2ZSBidWZmZXJlZCBhbmQgYWxyZWFkeSBwcmludGVkDQo+ID4gLQkJ
+CSAqIGRpcmVjdGx5IHRvIHRoZSBjb25zb2xlIHdoZW4gd2UgcmVjZWl2ZWQgaXQsIGFuZA0KPiA+
+IC0JCQkgKiByZWNvcmQgdGhhdCBoYXMgbGV2ZWwgYWJvdmUgdGhlIGNvbnNvbGUgbG9nbGV2ZWwu
+DQo+ID4gLQkJCSAqLw0KPiA+IC0JCQljb25zb2xlX2lkeCA9IGxvZ19uZXh0KGNvbnNvbGVfaWR4
+KTsNCj4gPiAtCQkJY29uc29sZV9zZXErKzsNCj4gPiAtCQkJZ290byBza2lwOw0KPiA+IC0JCX0N
+Cj4gPiAgDQo+ID4gIAkJLyogT3V0cHV0IHRvIGFsbCBjb25zb2xlcyBvbmNlIG9sZCBtZXNzYWdl
+cyByZXBsYXllZC4gKi8NCj4gPiAgCQlpZiAodW5saWtlbHkoZXhjbHVzaXZlX2NvbnNvbGUgJiYN
+Cj4gPiBAQCAtMjQwNSw3ICsyNDAyLDcgQEAgdm9pZCBjb25zb2xlX3VubG9jayh2b2lkKQ0KPiA+
+ICAJCWNvbnNvbGVfbG9ja19zcGlubmluZ19lbmFibGUoKTsNCj4gPiAgDQo+ID4gIAkJc3RvcF9j
+cml0aWNhbF90aW1pbmdzKCk7CS8qIGRvbid0IHRyYWNlIHByaW50IGxhdGVuY3kgKi8NCj4gPiAt
+CQljYWxsX2NvbnNvbGVfZHJpdmVycyhleHRfdGV4dCwgZXh0X2xlbiwgdGV4dCwgbGVuKTsNCj4g
+PiArCQljYWxsX2NvbnNvbGVfZHJpdmVycyhleHRfdGV4dCwgZXh0X2xlbiwgdGV4dCwgbGVuLCBt
+c2ctPmxldmVsKTsNCj4gPiAgCQlzdGFydF9jcml0aWNhbF90aW1pbmdzKCk7DQo+IA0KPiBTbyBp
+dCBzZWVtcyB0aGF0IG5vdyB3ZSBhbHdheXMgZm9ybWF0IHRoZSB0ZXh0IGFuZCBleHQgbWVzc2Fn
+ZSAoaWYNCj4gbmVlZGVkKSBhbmQgb25seSB0aGVuIGNoZWNrIGlmIHRoZXJlIGlzIGF0IGxlYXN0
+IG9uZSBjb25zb2xlIHdlIGNhbg0KPiBwcmludCB0aGF0IG1lc3NhZ2Ugb24uDQo+IA0KPiBDYW4g
+d2UgaXRlcmF0ZSB0aGUgY29uc29sZXMgZmlyc3QgYW5kIGNoZWNrIGlmIG1zZyBpcyB3b3J0aA0K
+PiB0aGUgZWZmb3J0IChwZXIgY29uc29sZSBzdXBwcmVzc19tZXNzYWdlX3ByaW50aW5nKCkpIGFu
+ZCBvbmx5DQo+IGlmIGl0IGlzIGRvIGFsbCB0aGUgZm9ybWF0dGluZyBhbmQgY2FsbCBjb25zb2xl
+IGRyaXZlcnM/DQoNCk1ha2VzIHNlbnNlLCB3aWxsIGRvLg0KDQpUaGFua3MsDQpDYWx2aW4NCiAN
+Cj4gCS1zcw0K
