@@ -1,49 +1,52 @@
-From: Greg KH <gregkh@linuxfoundation.org>
+From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
 Subject: Re: [PATCH 1/8] drivers: tty: serial: 8250_bcm2835aux: use
  devm_platform_ioremap_resource()
-Date: Wed, 13 Mar 2019 07:36:54 -0700
-Message-ID: <20190313143654.GA7489@kroah.com>
+Date: Wed, 13 Mar 2019 18:13:40 +0100
+Message-ID: <0458c818-085f-53f3-4078-557fa752854b@metux.net>
 References: <1552402660-31730-1-git-send-email-info@metux.net>
  <1552402660-31730-2-git-send-email-info@metux.net>
  <20190312163356.GB13549@kroah.com>
  <947da751-bbce-4364-a1bf-5487908e59a5@metux.net>
+ <20190313143654.GA7489@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <947da751-bbce-4364-a1bf-5487908e59a5@metux.net>
+In-Reply-To: <20190313143654.GA7489@kroah.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+To: Greg KH <gregkh@linuxfoundation.org>
 Cc: "Enrico Weigelt, metux IT consult" <info@metux.net>, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Mar 13, 2019 at 07:59:53AM +0100, Enrico Weigelt, metux IT consult wrote:
-> On 12.03.19 17:33, Greg KH wrote:
-> > On Tue, Mar 12, 2019 at 03:57:33PM +0100, Enrico Weigelt, metux IT consult wrote:
-> >> ---
-> >>  drivers/tty/serial/8250/8250_bcm2835aux.c | 12 ++++--------
-> >>  1 file changed, 4 insertions(+), 8 deletions(-)
-> > 
-> > No changelog or signed-off-by, sorry, please fix up the series and
-> > resend.
-> 
-> Maybe the threading got messed up somehow (at least my tbird doesn't
-> show it correctly), so you've probably didn't see my intro letter: there
-> I wrote that this is yet WIP, not meant for actual submission, instead
-> just to ask you folks whether my approach in general would be work.
-> 
+On 13.03.19 15:36, Greg KH wrote:
 
-Threading worked just fine, but you still shouldn't send out patches
-like this without any independant information in the patch itself saying
-what it does and what it is for.  That's just bad engineering :)
+> Also, usually RFC like patches and series are ignored, I know I almost
+> always ignore them because if the author doesn't think they are ready to
+> be reviewed, why would I spend time on them compared to other patches
+> that their authors think are ready for review.
 
-Also, usually RFC like patches and series are ignored, I know I almost
-always ignore them because if the author doesn't think they are ready to
-be reviewed, why would I spend time on them compared to other patches
-that their authors think are ready for review.
+Okay, but then, how is the best way to ask for help ?
 
-Remember, patch review is the most limited resource we have.
+In my case here, there're several things still unclear to me, eg:
 
-thanks,
+* struct uart_port -> mapbase:
 
-greg k-h
+=> seems to be used by most drivers, but some also clear it later, eg.
+   uartlite does so when uart_add_one_port() call failed. is that
+   really necessary ?
+
+* struct uart_port -> mapsize:
+
+=> seems to be used only rarely. most drivers use either fixed params
+   on the memory mapping functions, or take it from some function.
+   wouldn't it be better if all would fill out that field and later
+   use it consistently ?
+
+
+--mtx
+
+-- 
+Enrico Weigelt, metux IT consult
+Free software and Linux embedded engineering
+info@metux.net -- +49-151-27565287
