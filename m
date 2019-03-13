@@ -1,109 +1,57 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH 3/4] printk: Add consoles to a virtual "console" bus
-Date: Wed, 13 Mar 2019 11:08:27 +0100
-Message-ID: <20190313100827.oqwoabkgsxfi4zde@pathway.suse.cz>
-References: <cover.1551486732.git.calvinowens@fb.com>
- <087b13f7812b32cc7c3f9efea71c9bcf324dd031.1551486732.git.calvinowens@fb.com>
- <20190311133341.vqcagdo4e4vy6dfu@pathway.suse.cz>
- <20190312215209.GD5982@Haydn>
+From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Subject: Re: [PATCH 1/8] drivers: tty: serial: 8250_bcm2835aux: use devm_platform_ioremap_resource()
+Date: Wed, 13 Mar 2019 12:28:35 +0100
+Message-ID: <CANiq72=SBFzRVhpkH8V+=5E-adzJ4v6UGAPKfr18wnCB0rcoQA@mail.gmail.com>
+References: <1552402660-31730-1-git-send-email-info@metux.net>
+ <1552402660-31730-2-git-send-email-info@metux.net> <20190312163356.GB13549@kroah.com>
+ <947da751-bbce-4364-a1bf-5487908e59a5@metux.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190312215209.GD5982@Haydn>
+In-Reply-To: <947da751-bbce-4364-a1bf-5487908e59a5@metux.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Calvin Owens <calvinowens@fb.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+Cc: Greg KH <gregkh@linuxfoundation.org>, "Enrico Weigelt, metux IT consult" <info@metux.net>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue 2019-03-12 21:52:13, Calvin Owens wrote:
-> On Monday 03/11 at 14:33 +0100, Petr Mladek wrote:
-> > On Fri 2019-03-01 16:48:19, Calvin Owens wrote:
-> > > This patch embeds a device struct in the console struct, and registers
-> > > them on a "console" bus so we can expose attributes in sysfs.
-> > > 
-> > > Currently, most drivers declare static console structs, and that is
-> > > incompatible with the dev refcount model. So we end up needing to patch
-> > > all of the console drivers to:
-> > > 
-> > > 	1. Dynamically allocate the console struct using a new helper
-> > > 	2. Handle the allocation in (1) possibly failing
-> > > 	3. Dispose of (1) with put_device()
-> > > 
-> > > Early console structures must still be static, since they're required
-> > > before we're able to allocate memory. The least ugly way I can come up
-> > > with to handle this is an "is_static" flag in the structure which makes
-> > > the gets and puts NOPs, and is checked in ->release() to catch mistakes.
-> > >
-> > > diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> > > index 2e0eb89f046c..67e1e993ab80 100644
-> > > --- a/kernel/printk/printk.c
-> > > +++ b/kernel/printk/printk.c
-> > > @@ -2706,6 +2770,8 @@ void register_console(struct console *newcon)
-> > >  		console_drivers->next = newcon;
-> > >  	}
-> > >  
-> > > +	get_console(newcon);
-> > > +
-> > >  	if (newcon->flags & CON_EXTENDED)
-> > >  		nr_ext_console_drivers++;
-> > >  
-> > > @@ -2730,6 +2796,7 @@ void register_console(struct console *newcon)
-> > >  		exclusive_console_stop_seq = console_seq;
-> > >  		logbuf_unlock_irqrestore(flags);
-> > >  	}
-> > > +	console_register_device(newcon);
-> > 
-> > This calls console_init_device() for the statically defined
-> > early consoles. I guess that it would invalidate the above
-> > get_console().
-> 
-> The get_console() macro checks for ->is_static and is a NOP if it's
-> set, which is definitely confusing. 
->  
-> > Also it is not symmetric with unregister_console(). We add it
-> > to the console_subsys here and did not remove it when
-> > the console is unregistered.
-> 
-> We do a put() in the unregister path, somebody could hold a reference
-> through sysfs so we can't just remove it. Or am I misunderstanding?
+On Wed, Mar 13, 2019 at 8:03 AM Enrico Weigelt, metux IT consult
+<lkml@metux.net> wrote:
+>
+> On 12.03.19 17:33, Greg KH wrote:
+> > On Tue, Mar 12, 2019 at 03:57:33PM +0100, Enrico Weigelt, metux IT consult wrote:
+> >> ---
+> >>  drivers/tty/serial/8250/8250_bcm2835aux.c | 12 ++++--------
+> >>  1 file changed, 4 insertions(+), 8 deletions(-)
+> >
+> > No changelog or signed-off-by, sorry, please fix up the series and
+> > resend.
+>
+> Maybe the threading got messed up somehow (at least my tbird doesn't
+> show it correctly), so you've probably didn't see my intro letter: there
 
-To be honest, I am not sure what the effect of get_device() and
-put_device() is. But they are called also in device_add().
-This suggests that the sysfs interface and struct device
-stay even when we call device_put() in unregister_console().
+The intro letter seems to be an independent message with a different
+subject line -- not sure what threading you expected (?).
 
-This is an asymmetry. The sysfs interface is created only
-for successfully registered console but it stays even
-after unregistration (if it works as I expect).
+> I wrote that this is yet WIP, not meant for actual submission, instead
+> just to ask you folks whether my approach in general would be work.
 
-Another problem is that register_console()/unregister_console()
-might get called repeatedly for the same console. But device_add()
-should get called only once.
+That will indeed cause confusion. If you are requesting comments only,
+please do so placing [RFC] or similar in the subject of each patch
+(you did in the letter, but that had a different title, and it is
+not how cover letters are usually sent, they are normally patch 0).
 
-I think that we could do better, see below.
+Another option is sending a message with the repo URL where
+development is happening, so interested parties can take a look.
 
+However:
 
-> > IMHO, this might be done already in allocate_console().
-> > And eventually in printk_late_init() for consoles that
-> > are allocated earlier.
-> > 
-> > I am not familiar with the device-related sysfs API.
-> > But I see that device_initialize() and device_add()
-> > can be done by device_register(). The separate
-> > calls are needed only when a special reference
-> > handling is needed. Are we special?
-> 
-> We're special: the console initcalls run before the device core is
-> initialized, initialize() lets us use the refcount.
+> Of course, when the stuff becomes ready for submission, all these
+> things will be cleaned up.
 
-But console_init_device() is called later from printk_late_init()
-for the statically defined structures (early consoles). This
-would reset the refcount for these consoles.
+Even if you are sending some draft patches, it is still a bad idea to
+send them incomplete. Basically you are making it harder for early
+reviewers simply by not having written an explanation or at least a
+reference to the explanation.
 
-I think that we should delay calling console_init_device() for
-all consoles until printk_late_done is set. Then it should
-be safe to call device_register() there.
-
-Best Regards,
-Petr
+Cheers,
+Miguel
