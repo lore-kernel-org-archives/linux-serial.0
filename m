@@ -1,49 +1,62 @@
-From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
-Subject: Re: [PATCH 1/8] drivers: tty: serial: 8250_bcm2835aux: use
- devm_platform_ioremap_resource()
-Date: Wed, 13 Mar 2019 07:59:53 +0100
-Message-ID: <947da751-bbce-4364-a1bf-5487908e59a5@metux.net>
-References: <1552402660-31730-1-git-send-email-info@metux.net>
- <1552402660-31730-2-git-send-email-info@metux.net>
- <20190312163356.GB13549@kroah.com>
+From: John Ogness <john.ogness@linutronix.de>
+Subject: Re: [RFC PATCH v1 00/25] printk: new implementation
+Date: Wed, 13 Mar 2019 09:19:32 +0100
+Message-ID: <87d0mv9off.fsf@linutronix.de>
+References: <20190212143003.48446-1-john.ogness@linutronix.de>
+        <20190213025520.GA5803@jagdpanzerIV> <874l9721hf.fsf@linutronix.de>
+        <20190304052335.GA6648@jagdpanzerIV> <87lg1rggcz.fsf@linutronix.de>
+        <20190311105411.GA368@jagdpanzerIV>
+        <20190312123857.juatd6fwtfmqajze@pathway.suse.cz>
+        <874l8815uc.fsf@linutronix.de> <20190313021534.GB783@jagdpanzerIV>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190312163356.GB13549@kroah.com>
-Content-Language: en-US
+In-Reply-To: <20190313021534.GB783@jagdpanzerIV> (Sergey Senozhatsky's message
+        of "Wed, 13 Mar 2019 11:15:34 +0900")
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>, "Enrico Weigelt, metux IT consult" <info@metux.net>
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Sebastian Siewior <bigeasy@linutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-On 12.03.19 17:33, Greg KH wrote:
-> On Tue, Mar 12, 2019 at 03:57:33PM +0100, Enrico Weigelt, metux IT consult wrote:
->> ---
->>  drivers/tty/serial/8250/8250_bcm2835aux.c | 12 ++++--------
->>  1 file changed, 4 insertions(+), 8 deletions(-)
-> 
-> No changelog or signed-off-by, sorry, please fix up the series and
-> resend.
+On 2019-03-13, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com> wrote:
+>>> I suggest the following way forward (separate patchsets):
+>>>
+>>>     1. Replace log buffer (least controversial thing)
+>> 
+>> Yes. I will post a series that only implements the ringbuffer using
+>> your simplified API. That will be enough to remove printk_safe and
+>> actually does most of the work of updating devkmsg, kmsg_dump, and
+>> syslog.
+>
+> This may _not_ be enough to remove printk_safe. One of the reasons
+> printk_safe "condom" came into existence was console_sem (which
+> is a bit too important to ignore it):
+>
+> 	printk()
+> 	 console_trylock()
+> 	  console_unlock()
+> 	   up()
+> 	    raw_spin_lock_irqsave(&sem->lock, flags)
+> 	     __up()
+> 	      wake_up_process()
+> 	       WARN/etc
+> 	        printk()
+> 		 console_trylock()
+> 		  down_trylock()
+> 		   raw_spin_lock_irqsave(&sem->lock, flags)  << deadlock
+>
+> Back then we were looking at
+>
+> 	printk->console_sem->lock->printk->console_sem->lock
+>
+> deadlock report from LG, if I'm not mistaken.
 
-Maybe the threading got messed up somehow (at least my tbird doesn't
-show it correctly), so you've probably didn't see my intro letter: there
-I wrote that this is yet WIP, not meant for actual submission, instead
-just to ask you folks whether my approach in general would be work.
+The main drawback of printk_safe is the safe buffers, which, aside from
+bogus timestamping, may never make it back to the printk log buffer.
 
-Sorry for the confusion.
+With the new ring buffer the safe buffers are not needed, even in the
+recursive situation. As you are pointing out, the notification/wake
+component of printk_safe will still be needed. I will leave that (small)
+part in printk_safe.c.
 
-Of course, when the stuff becomes ready for submission, all these
-things will be cleaned up.
-
-
-OTOH, if you think some of the patches indeed were ready, but yet need
-some cleanups (like mentioned missing description), just let me know.
-
-
---mtx
-
--- 
-Enrico Weigelt, metux IT consult
-Free software and Linux embedded engineering
-info@metux.net -- +49-151-27565287
+John Ogness
