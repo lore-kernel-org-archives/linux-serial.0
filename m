@@ -1,52 +1,64 @@
-From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
-Subject: Re: [PATCH 1/8] drivers: tty: serial: 8250_bcm2835aux: use
- devm_platform_ioremap_resource()
-Date: Wed, 13 Mar 2019 18:13:40 +0100
-Message-ID: <0458c818-085f-53f3-4078-557fa752854b@metux.net>
-References: <1552402660-31730-1-git-send-email-info@metux.net>
- <1552402660-31730-2-git-send-email-info@metux.net>
- <20190312163356.GB13549@kroah.com>
- <947da751-bbce-4364-a1bf-5487908e59a5@metux.net>
- <20190313143654.GA7489@kroah.com>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: Re: Serial console is causing system lock-up
+Date: Wed, 13 Mar 2019 11:38:36 +0900
+Message-ID: <20190313023836.GC783@jagdpanzerIV>
+References: <87tvgfhzd6.fsf@linutronix.de> <20190307082509.GA1925@jagdpanzerIV>
+	<87pnr3hyle.fsf@linutronix.de> <20190307091748.GA6307@jagdpanzerIV>
+	<87o96nezr2.fsf@linutronix.de>
+	<20190307122642.GA10415@tigerII.localdomain>
+	<87r2biojcx.fsf@linutronix.de> <20190312023231.GA4146@jagdpanzerIV>
+	<87a7i05wwi.fsf@linutronix.de>
+	<20190312120824.4eaa4eyjcxvuzm23@pathway.suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190313143654.GA7489@kroah.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: "Enrico Weigelt, metux IT consult" <info@metux.net>, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <dm-devel-bounces@redhat.com>
+Content-Disposition: inline
+In-Reply-To: <20190312120824.4eaa4eyjcxvuzm23@pathway.suse.cz>
+List-Unsubscribe: <https://www.redhat.com/mailman/options/dm-devel>,
+	<mailto:dm-devel-request@redhat.com?subject=unsubscribe>
+List-Archive: <https://www.redhat.com/archives/dm-devel>
+List-Post: <mailto:dm-devel@redhat.com>
+List-Help: <mailto:dm-devel-request@redhat.com?subject=help>
+List-Subscribe: <https://www.redhat.com/mailman/listinfo/dm-devel>,
+	<mailto:dm-devel-request@redhat.com?subject=subscribe>
+Sender: dm-devel-bounces@redhat.com
+Errors-To: dm-devel-bounces@redhat.com
+To: Petr Mladek <pmladek@suse.com>
+Cc: Nigel Croxon <ncroxon@redhat.com>, "Theodore Y. Ts'o" <tytso@mit.edu>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, John Ogness <john.ogness@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Steven Rostedt <rostedt@goodmis.org>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, dm-devel@redhat.com, Mikulas Patocka <mpatocka@redhat.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 13.03.19 15:36, Greg KH wrote:
+On (03/12/19 13:08), Petr Mladek wrote:
+> > 2. You seem unwilling to acknowledge the difference between emergency
+> >    and informational messages. A message is either critical or it is
+> >    not. If it is, it should be handled as such, regardless of
+> >    interference, regardless if it means turning an SMP machine into a UP
+> >    machine. If it is not critical, it should be sent along a
+> >    non-interfering path so the the system is _not_ affected.
+> 
+> This means that any critical message is always more important than any
+> workload. It opens doors for iteresting DOS attacks.
 
-> Also, usually RFC like patches and series are ignored, I know I almost
-> always ignore them because if the author doesn't think they are ready to
-> be reviewed, why would I spend time on them compared to other patches
-> that their authors think are ready for review.
+Agreed.
 
-Okay, but then, how is the best way to ask for help ?
+So what I thought about "mutual exclusive error reporting with
+quadratic latencies" was that if any workload involves error
+reporting then it might be a good idea to _not_ parallelize such
+workload anymore.
 
-In my case here, there're several things still unclear to me, eg:
+> > The current printk implementation is handling all console printing as
+> > best effort. Trying hard enough to dramatically affect the system, but
+> > not trying hard enough to guarantee success.
+>
+> I agree that direct output is more reliable. It might be very useful
+> for debugging some types of problems. The question is
+> if it is worth the cost (code complexity, serializing CPUs
+> == slowing down the entire system).
 
-* struct uart_port -> mapbase:
+Agreed.
 
-=> seems to be used by most drivers, but some also clear it later, eg.
-   uartlite does so when uart_add_one_port() call failed. is that
-   really necessary ?
+I'm very skeptical about "serializing CPUs" part. It looks like one
+"print or die trying" is replaced with another "print or die trying".
+What happened to  log_store() + flush_on_panic()?
 
-* struct uart_port -> mapsize:
-
-=> seems to be used only rarely. most drivers use either fixed params
-   on the memory mapping functions, or take it from some function.
-   wouldn't it be better if all would fill out that field and later
-   use it consistently ?
-
-
---mtx
-
--- 
-Enrico Weigelt, metux IT consult
-Free software and Linux embedded engineering
-info@metux.net -- +49-151-27565287
+	-ss
