@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH v2 21/45] drivers: tty: serial: altera_jtaguart: use devm_* functions
-Date: Thu, 14 Mar 2019 23:33:51 +0100
-Message-ID: <1552602855-26086-22-git-send-email-info@metux.net>
+Subject: [PATCH v2 24/45] drivers: tty: serial: mxs-auart: use devm_* functions
+Date: Thu, 14 Mar 2019 23:33:54 +0100
+Message-ID: <1552602855-26086-25-git-send-email-info@metux.net>
 References: <1552602855-26086-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1552602855-26086-1-git-send-email-info@metux.net>
@@ -14,32 +14,21 @@ Use the safer devm versions of memory mapping functions.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- drivers/tty/serial/altera_jtaguart.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/tty/serial/mxs-auart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
-index c90e503..13cab5d 100644
---- a/drivers/tty/serial/altera_jtaguart.c
-+++ b/drivers/tty/serial/altera_jtaguart.c
-@@ -448,7 +448,9 @@ static int altera_jtaguart_probe(struct platform_device *pdev)
- 	else
- 		return -ENODEV;
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index 27235a5..0a43c69 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -1685,7 +1685,7 @@ static int mxs_auart_probe(struct platform_device *pdev)
+ 	}
  
--	port->membase = ioremap(port->mapbase, ALTERA_JTAGUART_SIZE);
-+	port->membase = devm_ioremap(port->dev,
-+				     port->mapbase,
-+				     ALTERA_JTAGUART_SIZE);
- 	if (!port->membase)
- 		return -ENOMEM;
- 
-@@ -474,7 +476,7 @@ static int altera_jtaguart_remove(struct platform_device *pdev)
- 
- 	port = &altera_jtaguart_ports[i].port;
- 	uart_remove_one_port(&altera_jtaguart_driver, port);
--	iounmap(port->membase);
-+	devm_iounmap(port->dev, port->membase);
- 
- 	return 0;
- }
+ 	s->port.mapbase = r->start;
+-	s->port.membase = ioremap(r->start, resource_size(r));
++	s->port.membase = devm_ioremap_resource(s->port.dev, r);
+ 	s->port.ops = &mxs_auart_ops;
+ 	s->port.iotype = UPIO_MEM;
+ 	s->port.fifosize = MXS_AUART_FIFO_SIZE;
 -- 
 1.9.1
