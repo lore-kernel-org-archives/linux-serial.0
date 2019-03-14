@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH v2 13/45] drivers: tty: serial: 21285: use devm_* functions
-Date: Thu, 14 Mar 2019 23:33:43 +0100
-Message-ID: <1552602855-26086-14-git-send-email-info@metux.net>
+Subject: [PATCH v2 10/45] drivers: tty: serial: zs: use devm_* functions
+Date: Thu, 14 Mar 2019 23:33:40 +0100
+Message-ID: <1552602855-26086-11-git-send-email-info@metux.net>
 References: <1552602855-26086-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1552602855-26086-1-git-send-email-info@metux.net>
@@ -14,28 +14,53 @@ Use the safer devm versions of memory mapping functions.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- drivers/tty/serial/21285.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/tty/serial/zs.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/21285.c b/drivers/tty/serial/21285.c
-index 32b3acf..4ce2de2 100644
---- a/drivers/tty/serial/21285.c
-+++ b/drivers/tty/serial/21285.c
-@@ -305,12 +305,13 @@ static const char *serial21285_type(struct uart_port *port)
+diff --git a/drivers/tty/serial/zs.c b/drivers/tty/serial/zs.c
+index b03d3e4..0b1ec2f 100644
+--- a/drivers/tty/serial/zs.c
++++ b/drivers/tty/serial/zs.c
+@@ -984,16 +984,17 @@ static const char *zs_type(struct uart_port *uport)
  
- static void serial21285_release_port(struct uart_port *port)
+ static void zs_release_port(struct uart_port *uport)
  {
--	release_mem_region(port->mapbase, 32);
-+	devm_release_mem_region(port->dev, port->mapbase, 32);
+-	iounmap(uport->membase);
++	devm_iounmap(uport->dev, uport->membase);
+ 	uport->membase = 0;
+-	release_mem_region(uport->mapbase, ZS_CHAN_IO_SIZE);
++	devm_release_mem_region(uport->dev, uport->mapbase, ZS_CHAN_IO_SIZE);
  }
  
- static int serial21285_request_port(struct uart_port *port)
+ static int zs_map_port(struct uart_port *uport)
  {
--	return request_mem_region(port->mapbase, 32, serial21285_name)
-+	return devm_request_mem_region(port->dev, port->mapbase,
-+				       32, serial21285_name)
- 			 != NULL ? 0 : -EBUSY;
- }
+ 	if (!uport->membase)
+-		uport->membase = ioremap_nocache(uport->mapbase,
+-						 ZS_CHAN_IO_SIZE);
++		uport->membase = devm_ioremap_nocache(uport->dev,
++						      uport->mapbase,
++						      ZS_CHAN_IO_SIZE);
+ 	if (!uport->membase) {
+ 		printk(KERN_ERR "zs: Cannot map MMIO\n");
+ 		return -ENOMEM;
+@@ -1005,13 +1006,16 @@ static int zs_request_port(struct uart_port *uport)
+ {
+ 	int ret;
  
+-	if (!request_mem_region(uport->mapbase, ZS_CHAN_IO_SIZE, "scc")) {
++	if (!devm_request_mem_region(uport->mapbase,
++				     ZS_CHAN_IO_SIZE, "scc")) {
+ 		printk(KERN_ERR "zs: Unable to reserve MMIO resource\n");
+ 		return -EBUSY;
+ 	}
+ 	ret = zs_map_port(uport);
+ 	if (ret) {
+-		release_mem_region(uport->mapbase, ZS_CHAN_IO_SIZE);
++		devm_release_mem_region(uport-dev,
++					uport->mapbase,
++					ZS_CHAN_IO_SIZE);
+ 		return ret;
+ 	}
+ 	return 0;
 -- 
 1.9.1
