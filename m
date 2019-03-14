@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH v2 25/45] drivers: tty: serial: pxa: use devm_* functions
-Date: Thu, 14 Mar 2019 23:33:55 +0100
-Message-ID: <1552602855-26086-26-git-send-email-info@metux.net>
+Subject: [PATCH v2 45/45] drivers: tty: serial: mux: use devm_* functions
+Date: Thu, 14 Mar 2019 23:34:15 +0100
+Message-ID: <1552602855-26086-46-git-send-email-info@metux.net>
 References: <1552602855-26086-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1552602855-26086-1-git-send-email-info@metux.net>
@@ -14,21 +14,50 @@ Use the safer devm versions of memory mapping functions.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- drivers/tty/serial/pxa.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/mux.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
-index 4932b67..9512a9f 100644
---- a/drivers/tty/serial/pxa.c
-+++ b/drivers/tty/serial/pxa.c
-@@ -892,7 +892,7 @@ static int serial_pxa_probe(struct platform_device *dev)
- 	}
- 	snprintf(sport->name, PXA_NAME_LEN - 1, "UART%d", sport->port.line + 1);
+diff --git a/drivers/tty/serial/mux.c b/drivers/tty/serial/mux.c
+index 00ce31e..cd08f0f 100644
+--- a/drivers/tty/serial/mux.c
++++ b/drivers/tty/serial/mux.c
+@@ -456,8 +456,9 @@ static int __init mux_probe(struct parisc_device *dev)
+ 	printk(KERN_INFO "Serial mux driver (%d ports) Revision: 0.6\n", port_count);
  
--	sport->port.membase = ioremap(mmres->start, resource_size(mmres));
-+	sport->port.membase = devm_ioremap_resource(sport->port.dev, mmres);
- 	if (!sport->port.membase) {
- 		ret = -ENOMEM;
- 		goto err_clk;
+ 	dev_set_drvdata(&dev->dev, (void *)(long)port_count);
+-	request_mem_region(dev->hpa.start + MUX_OFFSET,
+-                           port_count * MUX_LINE_OFFSET, "Mux");
++	devm_request_mem_region(&dev->dev,
++				dev->hpa.start + MUX_OFFSET,
++				port_count * MUX_LINE_OFFSET, "Mux");
+ 
+ 	if(!port_cnt) {
+ 		mux_driver.cons = MUX_CONSOLE;
+@@ -474,7 +475,9 @@ static int __init mux_probe(struct parisc_device *dev)
+ 		port->iobase	= 0;
+ 		port->mapbase	= dev->hpa.start + MUX_OFFSET +
+ 						(i * MUX_LINE_OFFSET);
+-		port->membase	= ioremap_nocache(port->mapbase, MUX_LINE_OFFSET);
++		port->membase	= devm_ioremap_nocache(port->dev,
++						       port->mapbase,
++						       MUX_LINE_OFFSET);
+ 		port->iotype	= UPIO_MEM;
+ 		port->type	= PORT_MUX;
+ 		port->irq	= 0;
+@@ -517,10 +520,12 @@ static int __exit mux_remove(struct parisc_device *dev)
+ 
+ 		uart_remove_one_port(&mux_driver, port);
+ 		if(port->membase)
+-			iounmap(port->membase);
++			devm_iounmap(port->dev, port->membase);
+ 	}
+ 
+-	release_mem_region(dev->hpa.start + MUX_OFFSET, port_count * MUX_LINE_OFFSET);
++	devm_release_mem_region(&dev->dev,
++				dev->hpa.start + MUX_OFFSET,
++				port_count * MUX_LINE_OFFSET);
+ 	return 0;
+ }
+ 
 -- 
 1.9.1
