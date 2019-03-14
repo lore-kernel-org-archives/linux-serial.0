@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH v2 17/45] drivers: tty: serial: timuart: use devm_* functions
-Date: Thu, 14 Mar 2019 23:33:47 +0100
-Message-ID: <1552602855-26086-18-git-send-email-info@metux.net>
+Subject: [PATCH v2 08/45] drivers: tty: serial: 8250_lpc18xx: use devm_ioremap_resource()
+Date: Thu, 14 Mar 2019 23:33:38 +0100
+Message-ID: <1552602855-26086-9-git-send-email-info@metux.net>
 References: <1552602855-26086-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1552602855-26086-1-git-send-email-info@metux.net>
@@ -10,51 +10,27 @@ To: linux-kernel@vger.kernel.org
 Cc: gregkh@linuxfoundation.org, eric@anholt.net, stefan.wahren@i2se.com, f.fainelli@gmail.com, rjui@broadcom.com, sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com, andriy.shevchenko@linux.intel.com, vz@mleia.com, matthias.bgg@gmail.com, yamada.masahiro@socionext.com, tklauser@distanz.ch, richard.genoud@gmail.com, macro@linux-mips.org, u.kleine-koenig@pengutronix.de, kernel@pengutronix.de, slemieux.tyco@gmail.com, andy.gross@linaro.org, david.brown@linaro.org, shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com, baohua@kernel.org, jacmet@sunsite.dk, linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 List-Id: linux-serial@vger.kernel.org
 
-Use the safer devm versions of memory mapping functions.
+Instead of fetching out data from a struct resource for passing
+it to devm_ioremap(), directly use devm_ioremap_resource()
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- drivers/tty/serial/timbuart.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/tty/serial/8250/8250_lpc18xx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/timbuart.c b/drivers/tty/serial/timbuart.c
-index 19d38b5..292354b 100644
---- a/drivers/tty/serial/timbuart.c
-+++ b/drivers/tty/serial/timbuart.c
-@@ -319,11 +319,11 @@ static void timbuart_release_port(struct uart_port *port)
- 		resource_size(platform_get_resource(pdev, IORESOURCE_MEM, 0));
+diff --git a/drivers/tty/serial/8250/8250_lpc18xx.c b/drivers/tty/serial/8250/8250_lpc18xx.c
+index eddf119..f36902b 100644
+--- a/drivers/tty/serial/8250/8250_lpc18xx.c
++++ b/drivers/tty/serial/8250/8250_lpc18xx.c
+@@ -119,8 +119,7 @@ static int lpc18xx_serial_probe(struct platform_device *pdev)
  
- 	if (port->flags & UPF_IOREMAP) {
--		iounmap(port->membase);
-+		devm_iounmap(port->dev, port->membase);
- 		port->membase = NULL;
- 	}
+ 	memset(&uart, 0, sizeof(uart));
  
--	release_mem_region(port->mapbase, size);
-+	devm_release_mem_region(port->dev, port->mapbase, size);
- }
+-	uart.port.membase = devm_ioremap(&pdev->dev, res->start,
+-					 resource_size(res));
++	uart.port.membase = devm_ioremap_resource(&pdev->dev, res);
+ 	if (!uart.port.membase)
+ 		return -ENOMEM;
  
- static int timbuart_request_port(struct uart_port *port)
-@@ -332,13 +332,18 @@ static int timbuart_request_port(struct uart_port *port)
- 	int size =
- 		resource_size(platform_get_resource(pdev, IORESOURCE_MEM, 0));
- 
--	if (!request_mem_region(port->mapbase, size, "timb-uart"))
-+	if (!devm_request_mem_region(port->dev,
-+				     port->mapbase,
-+				     size,
-+				     "timb-uart"))
- 		return -EBUSY;
- 
- 	if (port->flags & UPF_IOREMAP) {
- 		port->membase = ioremap(port->mapbase, size);
- 		if (port->membase == NULL) {
--			release_mem_region(port->mapbase, size);
-+			devm-release_mem_region(port->dev,
-+						port->mapbase,
-+						size);
- 			return -ENOMEM;
- 		}
- 	}
 -- 
 1.9.1
