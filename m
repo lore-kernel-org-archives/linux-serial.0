@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH v2 44/45] drivers: tty: serial: pnx8xxx_uart: use devm_* functions
-Date: Thu, 14 Mar 2019 23:34:14 +0100
-Message-ID: <1552602855-26086-45-git-send-email-info@metux.net>
+Subject: [PATCH v2 25/45] drivers: tty: serial: pxa: use devm_* functions
+Date: Thu, 14 Mar 2019 23:33:55 +0100
+Message-ID: <1552602855-26086-26-git-send-email-info@metux.net>
 References: <1552602855-26086-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1552602855-26086-1-git-send-email-info@metux.net>
@@ -14,35 +14,21 @@ Use the safer devm versions of memory mapping functions.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- drivers/tty/serial/pnx8xxx_uart.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+ drivers/tty/serial/pxa.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/pnx8xxx_uart.c b/drivers/tty/serial/pnx8xxx_uart.c
-index 223a949..3951226 100644
---- a/drivers/tty/serial/pnx8xxx_uart.c
-+++ b/drivers/tty/serial/pnx8xxx_uart.c
-@@ -568,10 +568,7 @@ static const char *pnx8xxx_type(struct uart_port *port)
-  */
- static void pnx8xxx_release_port(struct uart_port *port)
- {
--	struct pnx8xxx_port *sport =
--		container_of(port, struct pnx8xxx_port, port);
--
--	release_mem_region(sport->port.mapbase, UART_PORT_SIZE);
-+	devm_release_mem_region(port->dev, port->mapbase, UART_PORT_SIZE);
- }
+diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
+index 4932b67..9512a9f 100644
+--- a/drivers/tty/serial/pxa.c
++++ b/drivers/tty/serial/pxa.c
+@@ -892,7 +892,7 @@ static int serial_pxa_probe(struct platform_device *dev)
+ 	}
+ 	snprintf(sport->name, PXA_NAME_LEN - 1, "UART%d", sport->port.line + 1);
  
- /*
-@@ -579,9 +576,7 @@ static void pnx8xxx_release_port(struct uart_port *port)
-  */
- static int pnx8xxx_request_port(struct uart_port *port)
- {
--	struct pnx8xxx_port *sport =
--		container_of(port, struct pnx8xxx_port, port);
--	return request_mem_region(sport->port.mapbase, UART_PORT_SIZE,
-+	return devm_request_mem_region(port->dev, port->mapbase, UART_PORT_SIZE,
- 			"pnx8xxx-uart") != NULL ? 0 : -EBUSY;
- }
- 
+-	sport->port.membase = ioremap(mmres->start, resource_size(mmres));
++	sport->port.membase = devm_ioremap_resource(sport->port.dev, mmres);
+ 	if (!sport->port.membase) {
+ 		ret = -ENOMEM;
+ 		goto err_clk;
 -- 
 1.9.1
