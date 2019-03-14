@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH v2 43/45] drivers: tty: serial: pmac_zilog: use devm_* functions
-Date: Thu, 14 Mar 2019 23:34:13 +0100
-Message-ID: <1552602855-26086-44-git-send-email-info@metux.net>
+Subject: [PATCH v2 44/45] drivers: tty: serial: pnx8xxx_uart: use devm_* functions
+Date: Thu, 14 Mar 2019 23:34:14 +0100
+Message-ID: <1552602855-26086-45-git-send-email-info@metux.net>
 References: <1552602855-26086-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1552602855-26086-1-git-send-email-info@metux.net>
@@ -14,54 +14,35 @@ Use the safer devm versions of memory mapping functions.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- drivers/tty/serial/pmac_zilog.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ drivers/tty/serial/pnx8xxx_uart.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
-index bcb5bf7..bce19b0 100644
---- a/drivers/tty/serial/pmac_zilog.c
-+++ b/drivers/tty/serial/pmac_zilog.c
-@@ -1411,7 +1411,7 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
- 	if (of_address_to_resource(np, 0, &r_ports))
- 		return -ENODEV;
- 	uap->port.mapbase = r_ports.start;
--	uap->port.membase = ioremap(uap->port.mapbase, 0x1000);
-+	uap->port.membase = devm_ioremap(uap->port->dev, uap->port.mapbase, 0x1000);
+diff --git a/drivers/tty/serial/pnx8xxx_uart.c b/drivers/tty/serial/pnx8xxx_uart.c
+index 223a949..3951226 100644
+--- a/drivers/tty/serial/pnx8xxx_uart.c
++++ b/drivers/tty/serial/pnx8xxx_uart.c
+@@ -568,10 +568,7 @@ static const char *pnx8xxx_type(struct uart_port *port)
+  */
+ static void pnx8xxx_release_port(struct uart_port *port)
+ {
+-	struct pnx8xxx_port *sport =
+-		container_of(port, struct pnx8xxx_port, port);
+-
+-	release_mem_region(sport->port.mapbase, UART_PORT_SIZE);
++	devm_release_mem_region(port->dev, port->mapbase, UART_PORT_SIZE);
+ }
  
- 	uap->control_reg = uap->port.membase;
- 	uap->data_reg = uap->control_reg + 0x10;
-@@ -1428,14 +1428,16 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
- 	memset(&r_rxdma, 0, sizeof(struct resource));
- #endif	
- 	if (ZS_HAS_DMA(uap)) {
--		uap->tx_dma_regs = ioremap(r_txdma.start, 0x100);
-+		uap->tx_dma_regs = devm_ioremap(uap->port.dev,
-+					        r_txdma.start, 0x100);
- 		if (uap->tx_dma_regs == NULL) {	
- 			uap->flags &= ~PMACZILOG_FLAG_HAS_DMA;
- 			goto no_dma;
- 		}
--		uap->rx_dma_regs = ioremap(r_rxdma.start, 0x100);
-+		uap->rx_dma_regs = devm_ioremap(uap->port.dev,
-+					        r_rxdma.start, 0x100);
- 		if (uap->rx_dma_regs == NULL) {	
--			iounmap(uap->tx_dma_regs);
-+			devm_iounmap(uap->port.dev, uap->tx_dma_regs);
- 			uap->tx_dma_regs = NULL;
- 			uap->flags &= ~PMACZILOG_FLAG_HAS_DMA;
- 			goto no_dma;
-@@ -1530,9 +1532,9 @@ static void pmz_dispose_port(struct uart_pmac_port *uap)
- 	struct device_node *np;
+ /*
+@@ -579,9 +576,7 @@ static void pnx8xxx_release_port(struct uart_port *port)
+  */
+ static int pnx8xxx_request_port(struct uart_port *port)
+ {
+-	struct pnx8xxx_port *sport =
+-		container_of(port, struct pnx8xxx_port, port);
+-	return request_mem_region(sport->port.mapbase, UART_PORT_SIZE,
++	return devm_request_mem_region(port->dev, port->mapbase, UART_PORT_SIZE,
+ 			"pnx8xxx-uart") != NULL ? 0 : -EBUSY;
+ }
  
- 	np = uap->node;
--	iounmap(uap->rx_dma_regs);
--	iounmap(uap->tx_dma_regs);
--	iounmap(uap->control_reg);
-+	devm_iounmap(uap->port.dev, uap->rx_dma_regs);
-+	devm_iounmap(uap->port.dev, uap->tx_dma_regs);
-+	devm_iounmap(uap->port.dev, uap->control_reg);
- 	uap->node = NULL;
- 	of_node_put(np);
- 	memset(uap, 0, sizeof(struct uart_pmac_port));
 -- 
 1.9.1
