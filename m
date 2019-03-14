@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH v2 18/45] drivers: tty: serial: sirfsoc_uart: use devm_* functions
-Date: Thu, 14 Mar 2019 23:33:48 +0100
-Message-ID: <1552602855-26086-19-git-send-email-info@metux.net>
+Subject: [PATCH v2 21/45] drivers: tty: serial: altera_jtaguart: use devm_* functions
+Date: Thu, 14 Mar 2019 23:33:51 +0100
+Message-ID: <1552602855-26086-22-git-send-email-info@metux.net>
 References: <1552602855-26086-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1552602855-26086-1-git-send-email-info@metux.net>
@@ -14,29 +14,32 @@ Use the safer devm versions of memory mapping functions.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- drivers/tty/serial/sirfsoc_uart.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/altera_jtaguart.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/sirfsoc_uart.c b/drivers/tty/serial/sirfsoc_uart.c
-index db2e08d..64ea1e7 100644
---- a/drivers/tty/serial/sirfsoc_uart.c
-+++ b/drivers/tty/serial/sirfsoc_uart.c
-@@ -1042,14 +1042,14 @@ static int sirfsoc_uart_request_port(struct uart_port *port)
- 	struct sirfsoc_uart_port *sirfport = to_sirfport(port);
- 	struct sirfsoc_uart_param *uart_param = &sirfport->uart_reg->uart_param;
- 	void *ret;
--	ret = request_mem_region(port->mapbase,
-+	ret = devm_request_mem_region(port->dev, port->mapbase,
- 		SIRFUART_MAP_SIZE, uart_param->port_name);
- 	return ret ? 0 : -EBUSY;
- }
+diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
+index c90e503..13cab5d 100644
+--- a/drivers/tty/serial/altera_jtaguart.c
++++ b/drivers/tty/serial/altera_jtaguart.c
+@@ -448,7 +448,9 @@ static int altera_jtaguart_probe(struct platform_device *pdev)
+ 	else
+ 		return -ENODEV;
  
- static void sirfsoc_uart_release_port(struct uart_port *port)
- {
--	release_mem_region(port->mapbase, SIRFUART_MAP_SIZE);
-+	devm_release_mem_region(port->dev, port->mapbase, SIRFUART_MAP_SIZE);
- }
+-	port->membase = ioremap(port->mapbase, ALTERA_JTAGUART_SIZE);
++	port->membase = devm_ioremap(port->dev,
++				     port->mapbase,
++				     ALTERA_JTAGUART_SIZE);
+ 	if (!port->membase)
+ 		return -ENOMEM;
  
- static void sirfsoc_uart_config_port(struct uart_port *port, int flags)
+@@ -474,7 +476,7 @@ static int altera_jtaguart_remove(struct platform_device *pdev)
+ 
+ 	port = &altera_jtaguart_ports[i].port;
+ 	uart_remove_one_port(&altera_jtaguart_driver, port);
+-	iounmap(port->membase);
++	devm_iounmap(port->dev, port->membase);
+ 
+ 	return 0;
+ }
 -- 
 1.9.1
