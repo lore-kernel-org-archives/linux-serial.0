@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH v2 31/45] drivers: tty: serial: amba-pl011: use devm_* functions
-Date: Thu, 14 Mar 2019 23:34:01 +0100
-Message-ID: <1552602855-26086-32-git-send-email-info@metux.net>
+Subject: [PATCH v2 27/45] drivers: tty: serial: dz: use devm_* functions
+Date: Thu, 14 Mar 2019 23:33:57 +0100
+Message-ID: <1552602855-26086-28-git-send-email-info@metux.net>
 References: <1552602855-26086-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1552602855-26086-1-git-send-email-info@metux.net>
@@ -14,33 +14,63 @@ Use the safer devm versions of memory mapping functions.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- drivers/tty/serial/amba-pl011.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/tty/serial/dz.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 89ade21..2a968b2 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2098,7 +2098,7 @@ static const char *pl011_type(struct uart_port *port)
-  */
- static void pl011_release_port(struct uart_port *port)
- {
--	release_mem_region(port->mapbase, SZ_4K);
-+	devm_release_mem_region(port->dev, port->mapbase, SZ_4K);
+diff --git a/drivers/tty/serial/dz.c b/drivers/tty/serial/dz.c
+index 96e35af..10a75e3 100644
+--- a/drivers/tty/serial/dz.c
++++ b/drivers/tty/serial/dz.c
+@@ -666,19 +666,22 @@ static void dz_release_port(struct uart_port *uport)
+ 	struct dz_mux *mux = to_dport(uport)->mux;
+ 	int map_guard;
+ 
+-	iounmap(uport->membase);
++	devm_iounmap(uport->dev, uport->membase);
+ 	uport->membase = NULL;
+ 
+ 	map_guard = atomic_add_return(-1, &mux->map_guard);
+ 	if (!map_guard)
+-		release_mem_region(uport->mapbase, dec_kn_slot_size);
++		devm_release_mem_region(uport->dev,
++					uport->mapbase,
++					dec_kn_slot_size);
  }
  
- /*
-@@ -2106,7 +2106,10 @@ static void pl011_release_port(struct uart_port *port)
-  */
- static int pl011_request_port(struct uart_port *port)
+ static int dz_map_port(struct uart_port *uport)
  {
--	return request_mem_region(port->mapbase, SZ_4K, "uart-pl011")
-+	return devm_request_mem_region(port->dev,
-+				       port->mapbase,
-+				       SZ_4K,
-+				       "uart-pl011")
- 			!= NULL ? 0 : -EBUSY;
- }
+ 	if (!uport->membase)
+-		uport->membase = ioremap_nocache(uport->mapbase,
+-						 dec_kn_slot_size);
++		uport->membase = devm_ioremap_nocache(uport->dev,
++						      uport->mapbase,
++						      dec_kn_slot_size);
+ 	if (!uport->membase) {
+ 		dev_err(uport->dev, "Cannot map MMIO\n");
+ 		return -ENOMEM;
+@@ -694,8 +697,10 @@ static int dz_request_port(struct uart_port *uport)
  
+ 	map_guard = atomic_add_return(1, &mux->map_guard);
+ 	if (map_guard == 1) {
+-		if (!request_mem_region(uport->mapbase, dec_kn_slot_size,
+-					"dz")) {
++		if (!devm_request_mem_region(uport->dev,
++					     uport->mapbase,
++					     dec_kn_slot_size,
++					     "dz")) {
+ 			atomic_add(-1, &mux->map_guard);
+ 			dev_err(uport->dev,
+ 				"Unable to reserve MMIO resource\n");
+@@ -706,7 +711,9 @@ static int dz_request_port(struct uart_port *uport)
+ 	if (ret) {
+ 		map_guard = atomic_add_return(-1, &mux->map_guard);
+ 		if (!map_guard)
+-			release_mem_region(uport->mapbase, dec_kn_slot_size);
++			devm_release_mem_region(uport->dev,
++						uport->mapbase,
++						dec_kn_slot_size);
+ 		return ret;
+ 	}
+ 	return 0;
 -- 
 1.9.1
