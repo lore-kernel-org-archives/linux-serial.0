@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH v2 30/45] drivers: tty: serial: serial_ks8695: use devm_* functions
-Date: Thu, 14 Mar 2019 23:34:00 +0100
-Message-ID: <1552602855-26086-31-git-send-email-info@metux.net>
+Subject: [PATCH v2 40/45] drivers: tty: serial: mpc52xx_uart: use devm_* functions
+Date: Thu, 14 Mar 2019 23:34:10 +0100
+Message-ID: <1552602855-26086-41-git-send-email-info@metux.net>
 References: <1552602855-26086-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1552602855-26086-1-git-send-email-info@metux.net>
@@ -11,33 +11,74 @@ Cc: gregkh@linuxfoundation.org, eric@anholt.net, stefan.wahren@i2se.com, f.faine
 List-Id: linux-serial@vger.kernel.org
 
 Use the safer devm versions of memory mapping functions.
----
- drivers/tty/serial/serial_ks8695.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_ks8695.c b/drivers/tty/serial/serial_ks8695.c
-index b461d79..f901eea 100644
---- a/drivers/tty/serial/serial_ks8695.c
-+++ b/drivers/tty/serial/serial_ks8695.c
-@@ -482,7 +482,7 @@ static const char *ks8695uart_type(struct uart_port *port)
-  */
- static void ks8695uart_release_port(struct uart_port *port)
- {
--	release_mem_region(port->mapbase, UART_PORT_SIZE);
-+	devm_release_mem_region(port->dev, port->mapbase, UART_PORT_SIZE);
+Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
+---
+ drivers/tty/serial/mpc52xx_uart.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
+index 3a75ee0..3e74e44 100644
+--- a/drivers/tty/serial/mpc52xx_uart.c
++++ b/drivers/tty/serial/mpc52xx_uart.c
+@@ -1276,11 +1276,13 @@ static u8 mpc5125_psc_get_mr1(struct uart_port *port)
+ 
+ 	/* remapped by us ? */
+ 	if (port->flags & UPF_IOREMAP) {
+-		iounmap(port->membase);
++		devm_iounmap(port->dev, port->membase);
+ 		port->membase = NULL;
+ 	}
+ 
+-	release_mem_region(port->mapbase, sizeof(struct mpc52xx_psc));
++	devm_release_mem_region(port->dev,
++				port->mapbase,
++				sizeof(struct mpc52xx_psc));
  }
  
- /*
-@@ -490,7 +490,9 @@ static void ks8695uart_release_port(struct uart_port *port)
-  */
- static int ks8695uart_request_port(struct uart_port *port)
- {
--	return request_mem_region(port->mapbase, UART_PORT_SIZE,
-+	return devm_request_mem_region(port->dev,
-+				       port->mapbase,
-+				       UART_PORT_SIZE,
- 			"serial_ks8695") != NULL ? 0 : -EBUSY;
- }
+ static int
+@@ -1289,13 +1291,14 @@ static u8 mpc5125_psc_get_mr1(struct uart_port *port)
+ 	int err;
  
+ 	if (port->flags & UPF_IOREMAP) /* Need to remap ? */
+-		port->membase = ioremap(port->mapbase,
++		port->membase = devm_ioremap(port->dev, port->mapbase,
+ 					sizeof(struct mpc52xx_psc));
+ 
+ 	if (!port->membase)
+ 		return -EINVAL;
+ 
+-	err = request_mem_region(port->mapbase, sizeof(struct mpc52xx_psc),
++	err = devm_request_mem_region(port->mapbase,
++			sizeof(struct mpc52xx_psc),
+ 			"mpc52xx_psc_uart") != NULL ? 0 : -EBUSY;
+ 
+ 	if (err)
+@@ -1310,10 +1313,12 @@ static u8 mpc5125_psc_get_mr1(struct uart_port *port)
+ 	return 0;
+ 
+ out_mapregion:
+-	release_mem_region(port->mapbase, sizeof(struct mpc52xx_psc));
++	devm_release_mem_region(port->dev,
++				port->mapbase,
++				sizeof(struct mpc52xx_psc));
+ out_membase:
+ 	if (port->flags & UPF_IOREMAP) {
+-		iounmap(port->membase);
++		devm_iounmap(port->dev, port->membase);
+ 		port->membase = NULL;
+ 	}
+ 	return err;
+@@ -1653,7 +1658,9 @@ static u8 mpc5125_psc_get_mr1(struct uart_port *port)
+ 	port->uartclk = uartclk;
+ 	port->ops	= &mpc52xx_uart_ops;
+ 	port->mapbase = res.start;
+-	port->membase = ioremap(res.start, sizeof(struct mpc52xx_psc));
++	port->membase = devm_ioremap(port->dev,
++				     res.start,
++				     sizeof(struct mpc52xx_psc));
+ 	port->irq = irq_of_parse_and_map(np, 0);
+ 
+ 	if (port->membase == NULL)
 -- 
 1.9.1
