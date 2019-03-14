@@ -1,36 +1,70 @@
-From: Kangjie Lu <kjlu@umn.edu>
-Subject: [PATCH] tty: mxs-auart: fix a NULL pointer dereference
-Date: Thu, 14 Mar 2019 02:21:51 -0500
-Message-ID: <20190314072151.19753-1-kjlu@umn.edu>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: kjlu@umn.edu
-Cc: pakki001@umn.edu, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH] tty: atmel_serial: fix a NULL pointer dereference
+Date: Thu, 14 Mar 2019 09:25:38 +0100
+Message-ID: <4369f8eb-e8d2-1f78-6fd5-f878ffbdee90@sorico.fr>
+References: <20190314071759.18845-1-kjlu@umn.edu>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190314071759.18845-1-kjlu@umn.edu>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Kangjie Lu <kjlu@umn.edu>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, pakki001@umn.edu, linux-kernel@vger.kernel.org, Ludovic Desroches <ludovic.desroches@microchip.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-In case ioremap fails, the fix returns -ENOMEM to avoid NULL
-pointer dereferences.
-Multiple places use port.membase.
-
-Signed-off-by: Kangjie Lu <kjlu@umn.edu>
----
- drivers/tty/serial/mxs-auart.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
-index 27235a526cce..4c188f4079b3 100644
---- a/drivers/tty/serial/mxs-auart.c
-+++ b/drivers/tty/serial/mxs-auart.c
-@@ -1686,6 +1686,10 @@ static int mxs_auart_probe(struct platform_device *pdev)
- 
- 	s->port.mapbase = r->start;
- 	s->port.membase = ioremap(r->start, resource_size(r));
-+	if (!s->port.membase) {
-+		ret = -ENOMEM;
-+		goto out_disable_clks;
-+	}
- 	s->port.ops = &mxs_auart_ops;
- 	s->port.iotype = UPIO_MEM;
- 	s->port.fifosize = MXS_AUART_FIFO_SIZE;
--- 
-2.17.1
+SGksCgpHb29kIGNhdGNoICEKTGUgMTQvMDMvMjAxOSDDoCAwODoxNywgS2FuZ2ppZSBMdSBhIMOp
+Y3JpdMKgOgo+IEluIGNhc2UgZG1hZW5naW5lX3ByZXBfZG1hX2N5Y2xpYyBmYWlscywgdGhlIGZp
+eCByZXR1cm4gYSBwcm9wZXIKPiBlcnJvciBjb2RlIHRvIGF2b2lkIE5VTEwgcG9pbnRlciBkZXJl
+ZmVyZW5jZS4KPiAKeW91IGNvdWxkIGFkZDoKRml4ZXM6IDM0ZGY0MmY1OWE2MCAoInNlcmlhbDog
+YXQ5MTogYWRkIHJ4IGRtYSBzdXBwb3J0IikKU28gdGhhdCAtc3RhYmxlIGJyYW5jaGVzIGdldCB0
+aGlzLgoKPiBTaWduZWQtb2ZmLWJ5OiBLYW5namllIEx1IDxramx1QHVtbi5lZHU+Cj4gLS0tCj4g
+IGRyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYyB8IDEyICsrKysrKysrKystLQo+ICAx
+IGZpbGUgY2hhbmdlZCwgMTAgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKPiAKPiBkaWZm
+IC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5jIGIvZHJpdmVycy90dHkv
+c2VyaWFsL2F0bWVsX3NlcmlhbC5jCj4gaW5kZXggMDUxNDdmZTI0MzQzLi5jZjU2MGQwNTAwOGMg
+MTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5jCj4gKysrIGIv
+ZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5jCj4gQEAgLTEyMzcsOCArMTIzNywxMCBA
+QCBzdGF0aWMgaW50IGF0bWVsX3ByZXBhcmVfcnhfZG1hKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQp
+Cj4gIAlkbWFfY2FwX3NldChETUFfQ1lDTElDLCBtYXNrKTsKPiAgCj4gIAlhdG1lbF9wb3J0LT5j
+aGFuX3J4ID0gZG1hX3JlcXVlc3Rfc2xhdmVfY2hhbm5lbChtZmRfZGV2LCAicngiKTsKPiAtCWlm
+IChhdG1lbF9wb3J0LT5jaGFuX3J4ID09IE5VTEwpCj4gKwlpZiAoYXRtZWxfcG9ydC0+Y2hhbl9y
+eCA9PSBOVUxMKSB7Cj4gKwkJcmV0ID0gLUVJTlZBTDsKPiAgCQlnb3RvIGNoYW5fZXJyOwo+ICsJ
+fQo+ICAJZGV2X2luZm8ocG9ydC0+ZGV2LCAidXNpbmcgJXMgZm9yIHJ4IERNQSB0cmFuc2ZlcnNc
+biIsCj4gIAkJZG1hX2NoYW5fbmFtZShhdG1lbF9wb3J0LT5jaGFuX3J4KSk7Cj4gIAo+IEBAIC0x
+MjU3LDYgKzEyNTksNyBAQCBzdGF0aWMgaW50IGF0bWVsX3ByZXBhcmVfcnhfZG1hKHN0cnVjdCB1
+YXJ0X3BvcnQgKnBvcnQpCj4gIAo+ICAJaWYgKCFuZW50KSB7Cj4gIAkJZGV2X2RiZyhwb3J0LT5k
+ZXYsICJuZWVkIHRvIHJlbGVhc2UgcmVzb3VyY2Ugb2YgZG1hXG4iKTsKPiArCQlyZXQgPSAtRUlO
+VkFMOwo+ICAJCWdvdG8gY2hhbl9lcnI7Cj4gIAl9IGVsc2Ugewo+ICAJCWRldl9kYmcocG9ydC0+
+ZGV2LCAiJXM6IG1hcHBlZCAlZEAlcCB0byAlcGFkXG4iLCBfX2Z1bmNfXywKPiBAQCAtMTI4OCw2
+ICsxMjkxLDExIEBAIHN0YXRpYyBpbnQgYXRtZWxfcHJlcGFyZV9yeF9kbWEoc3RydWN0IHVhcnRf
+cG9ydCAqcG9ydCkKPiAgCQkJCQkgc2dfZG1hX2xlbigmYXRtZWxfcG9ydC0+c2dfcngpLzIsCj4g
+IAkJCQkJIERNQV9ERVZfVE9fTUVNLAo+ICAJCQkJCSBETUFfUFJFUF9JTlRFUlJVUFQpOwo+ICsJ
+aWYgKCFkZXNjKSB7Cj4gKwkJZGV2X2Vycihwb3J0LT5kZXYsICJQcmVwYXJpbmcgRE1BIGN5Y2xp
+YyBmYWlsZWRcbiIpOwo+ICsJCXJldCA9IC1FTk9NRU07CklNSE8sIHdlIGRvbid0IHJlYWxseSBr
+bm93IHdoeSBkbWFlbmdpbmVfcHJlcF9kbWFfY3ljbGljKCkgZmFpbGVkLCBpdApjb3VsZCBiZSBi
+ZWNhdXNlIGl0J3MgYWxyZWFkeSBpbiB1c2UsIG9yIGJhZCB2YWx1ZSwgb3IuLi4KKGFuZCBhbnl3
+YXksIHdlIGp1c3QgY2hlY2sgaWYgdGhlIHJldHVybiB2YWx1ZSBpcyA8IDAgaW4gYXRtZWwgX3N0
+YXJ0dXAuKQpJcyB0aGVyZSBhIHNwZWNpZmljIHJlYXNvbiB5b3UgY2hvb3NlIC1FTk9NRU0gPwpJ
+ZiBub3QsIG1heWJlIGtlZXBpbmcgdGhpcyBwYXRjaCBzbWFsbGVyIHdpdGggYSBzaW1wbGUgZGV2
+X2VycigpK2dvdG8KaGVyZSB3b3VsZCBiZSBhIGJldHRlciBjaG9pY2UuCgo+ICsJCWdvdG8gY2hh
+bl9lcnI7Cj4gKwl9Cj4gIAlkZXNjLT5jYWxsYmFjayA9IGF0bWVsX2NvbXBsZXRlX3J4X2RtYTsK
+PiAgCWRlc2MtPmNhbGxiYWNrX3BhcmFtID0gcG9ydDsKPiAgCWF0bWVsX3BvcnQtPmRlc2Nfcngg
+PSBkZXNjOwo+IEBAIC0xMzAwLDcgKzEzMDgsNyBAQCBzdGF0aWMgaW50IGF0bWVsX3ByZXBhcmVf
+cnhfZG1hKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpCj4gIAlhdG1lbF9wb3J0LT51c2VfZG1hX3J4
+ID0gMDsKPiAgCWlmIChhdG1lbF9wb3J0LT5jaGFuX3J4KQo+ICAJCWF0bWVsX3JlbGVhc2Vfcnhf
+ZG1hKHBvcnQpOwo+IC0JcmV0dXJuIC1FSU5WQUw7Cj4gKwlyZXR1cm4gcmV0Owo+ICB9Cj4gIAo+
+ICBzdGF0aWMgdm9pZCBhdG1lbF91YXJ0X3RpbWVyX2NhbGxiYWNrKHN0cnVjdCB0aW1lcl9saXN0
+ICp0KQo+IAoKVGhhbmtzICEKClJpY2hhcmQuCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1h
+cm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcv
+bWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
