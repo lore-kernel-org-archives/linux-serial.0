@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH v2 16/45] drivers: tty: serial: uartlite: use devm_* functions
-Date: Thu, 14 Mar 2019 23:33:46 +0100
-Message-ID: <1552602855-26086-17-git-send-email-info@metux.net>
+Subject: [PATCH v2 14/45] drivers: tty: serial: vr41xx_siu: use devm_* functions
+Date: Thu, 14 Mar 2019 23:33:44 +0100
+Message-ID: <1552602855-26086-15-git-send-email-info@metux.net>
 References: <1552602855-26086-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1552602855-26086-1-git-send-email-info@metux.net>
@@ -14,47 +14,45 @@ Use the safer devm versions of memory mapping functions.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- drivers/tty/serial/uartlite.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/tty/serial/vr41xx_siu.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index aa461b8..f068d00 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -342,8 +342,8 @@ static const char *ulite_type(struct uart_port *port)
+diff --git a/drivers/tty/serial/vr41xx_siu.c b/drivers/tty/serial/vr41xx_siu.c
+index 6d106e3..3f69603 100644
+--- a/drivers/tty/serial/vr41xx_siu.c
++++ b/drivers/tty/serial/vr41xx_siu.c
+@@ -617,12 +617,12 @@ static void siu_release_port(struct uart_port *port)
+ 	unsigned long size;
  
- static void ulite_release_port(struct uart_port *port)
- {
--	release_mem_region(port->mapbase, ULITE_REGION);
--	iounmap(port->membase);
-+	devm_release_mem_region(port->dev, port->mapbase, ULITE_REGION);
-+	devm_iounmap(port->dev, port->membase);
- 	port->membase = NULL;
+ 	if (port->flags	& UPF_IOREMAP) {
+-		iounmap(port->membase);
++		devm_iounmap(port->dev, port->membase);
+ 		port->membase = NULL;
+ 	}
+ 
+ 	size = siu_port_size(port);
+-	release_mem_region(port->mapbase, size);
++	devm_release_mem_region(port->dev, port->mapbase, size);
  }
  
-@@ -355,15 +355,20 @@ static int ulite_request_port(struct uart_port *port)
- 	dev_dbg(port->dev, "ulite console: port=%p; port->mapbase=%llx\n",
- 		 port, (unsigned long long) port->mapbase);
+ static int siu_request_port(struct uart_port *port)
+@@ -631,12 +631,15 @@ static int siu_request_port(struct uart_port *port)
+ 	struct resource *res;
  
--	if (!request_mem_region(port->mapbase, ULITE_REGION, "uartlite")) {
-+	if (!devm_request_mem_region(port->dev,
-+				     port->mapbase,
-+				     ULITE_REGION,
-+				     "uartlite")) {
- 		dev_err(port->dev, "Memory region busy\n");
+ 	size = siu_port_size(port);
+-	res = request_mem_region(port->mapbase, size, siu_type_name(port));
++	res = devm_request_mem_region(port->dev,
++				      port->mapbase,
++				      size,
++				      siu_type_name(port));
+ 	if (res == NULL)
  		return -EBUSY;
- 	}
  
--	port->membase = ioremap(port->mapbase, ULITE_REGION);
-+	port->membase = devm_ioremap(port->dev, port->mapbase, ULITE_REGION);
- 	if (!port->membase) {
- 		dev_err(port->dev, "Unable to map registers\n");
--		release_mem_region(port->mapbase, ULITE_REGION);
-+		devm_release_mem_region(port->dev,
-+					port->mapbase,
-+					ULITE_REGION);
- 		return -EBUSY;
- 	}
- 
+ 	if (port->flags & UPF_IOREMAP) {
+-		port->membase = ioremap(port->mapbase, size);
++		port->membase = devm_ioremap(port->dev, port->mapbase, size);
+ 		if (port->membase == NULL) {
+ 			release_resource(res);
+ 			return -ENOMEM;
 -- 
 1.9.1
