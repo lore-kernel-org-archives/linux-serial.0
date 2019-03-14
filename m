@@ -1,68 +1,36 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: Serial console is causing system lock-up
-Date: Thu, 14 Mar 2019 19:30:45 +0900
-Message-ID: <20190314103045.GA24210@jagdpanzerIV>
-References: <87pnr3hyle.fsf@linutronix.de> <20190307091748.GA6307@jagdpanzerIV>
-	<87o96nezr2.fsf@linutronix.de>
-	<20190307122642.GA10415@tigerII.localdomain>
-	<87r2biojcx.fsf@linutronix.de> <20190312023231.GA4146@jagdpanzerIV>
-	<87a7i05wwi.fsf@linutronix.de>
-	<20190312120824.4eaa4eyjcxvuzm23@pathway.suse.cz>
-	<20190313023836.GC783@jagdpanzerIV> <878sxj9nbb.fsf@linutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <dm-devel-bounces@redhat.com>
-Content-Disposition: inline
-In-Reply-To: <878sxj9nbb.fsf@linutronix.de>
-List-Unsubscribe: <https://www.redhat.com/mailman/options/dm-devel>,
-	<mailto:dm-devel-request@redhat.com?subject=unsubscribe>
-List-Archive: <https://www.redhat.com/archives/dm-devel>
-List-Post: <mailto:dm-devel@redhat.com>
-List-Help: <mailto:dm-devel-request@redhat.com?subject=help>
-List-Subscribe: <https://www.redhat.com/mailman/listinfo/dm-devel>,
-	<mailto:dm-devel-request@redhat.com?subject=subscribe>
-Sender: dm-devel-bounces@redhat.com
-Errors-To: dm-devel-bounces@redhat.com
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Petr Mladek <pmladek@suse.com>, Nigel Croxon <ncroxon@redhat.com>, "Theodore Y. Ts'o" <tytso@mit.edu>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Steven Rostedt <rostedt@goodmis.org>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, dm-devel@redhat.com, Mikulas Patocka <mpatocka@redhat.com>, linux-serial@vger.kernel.org
+From: "Enrico Weigelt, metux IT consult" <info@metux.net>
+Subject: [PATCH v2 04/45] drivers: tty: serial: amba-pl010: use devm_ioremap_resource()
+Date: Thu, 14 Mar 2019 23:33:34 +0100
+Message-ID: <1552602855-26086-5-git-send-email-info@metux.net>
+References: <1552602855-26086-1-git-send-email-info@metux.net>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1552602855-26086-1-git-send-email-info@metux.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, eric@anholt.net, stefan.wahren@i2se.com, f.fainelli@gmail.com, rjui@broadcom.com, sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com, andriy.shevchenko@linux.intel.com, vz@mleia.com, matthias.bgg@gmail.com, yamada.masahiro@socionext.com, tklauser@distanz.ch, richard.genoud@gmail.com, macro@linux-mips.org, u.kleine-koenig@pengutronix.de, kernel@pengutronix.de, slemieux.tyco@gmail.com, andy.gross@linaro.org, david.brown@linaro.org, shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com, baohua@kernel.org, jacmet@sunsite.dk, linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 List-Id: linux-serial@vger.kernel.org
 
-On (03/13/19 09:43), John Ogness wrote:
-> I don't understand how you can think "print or die trying" is replaced
-> with another "print or die trying".
+Instead of fetching out data from a struct resource for passing
+it to devm_ioremap(), directly use devm_ioremap_resource()
 
-Sorry, let me explain. In some contexts CPUs which are spinning on
-prb_lock don't do anything else. A careful placement of
+Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
+---
+ drivers/tty/serial/amba-pl010.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-        touch_softlockup_watchdog_sync();
-        clocksource_touch_watchdog();
-        rcu_cpu_stall_reset();
-        touch_nmi_watchdog();
-
-keeps the watchdogs away, yes, but that doesn't mean that we are not
-sitting on a time bomb. Think of RCU, for instance. We keep rcu_cpu_stall
-silent and things can look OK, but that doesn't mean that RCU is OK in
-reality; spinning CPUs may hold off grace periods. So now a relatively
-simple issue - raid checksum mismatch in this particular case - has
-potential to become OOM. Quadratic CPU serialisation doesn't scale.
-Throw enough reporting CPUs on it and we may get very close to some
-big problems. Does this make sense?
-
-This bug report demonstrates that we can have N CPUs reporting warns
-simultaneously. And I think that people would want to have pr_warns
-and WARN_ONs to be printed as emergency level messages (it sort of
-sounds reasonable. I understand that you have different opinion on this).
-
-And what I'm thinking is that *probably* we can have a bit less radical
-approach - the system is not always doomed when it WARNs us - and a bit
-more "best effort" one. *May be* we don't need to apply full serialisation
-all the time. *May be* full serialisation can be applied only when we see
-that we are about to run out of free space in logbuf. Or may be can
-start dynamically resize the logbuf. And so on.
-
-> By the way, Sergey, I appreciate your skepticism.
-
-Sorry, John. I know I'm a PITA.
-
-	-ss
+diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
+index 2c37d11..109b8df 100644
+--- a/drivers/tty/serial/amba-pl010.c
++++ b/drivers/tty/serial/amba-pl010.c
+@@ -713,8 +713,7 @@ static int pl010_probe(struct amba_device *dev, const struct amba_id *id)
+ 	if (!uap)
+ 		return -ENOMEM;
+ 
+-	base = devm_ioremap(&dev->dev, dev->res.start,
+-			    resource_size(&dev->res));
++	base = devm_ioremap_resource(&dev->dev, &dev->res);
+ 	if (!base)
+ 		return -ENOMEM;
+ 
+-- 
+1.9.1
