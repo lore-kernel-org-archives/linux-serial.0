@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH v2 08/45] drivers: tty: serial: 8250_lpc18xx: use devm_ioremap_resource()
-Date: Thu, 14 Mar 2019 23:33:38 +0100
-Message-ID: <1552602855-26086-9-git-send-email-info@metux.net>
+Subject: [PATCH v2 07/45] drivers: tty: serial: 8250_uniphier: use devm_ioremap_resource()
+Date: Thu, 14 Mar 2019 23:33:37 +0100
+Message-ID: <1552602855-26086-8-git-send-email-info@metux.net>
 References: <1552602855-26086-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1552602855-26086-1-git-send-email-info@metux.net>
@@ -15,21 +15,20 @@ it to devm_ioremap(), directly use devm_ioremap_resource()
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- drivers/tty/serial/8250/8250_lpc18xx.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_uniphier.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_lpc18xx.c b/drivers/tty/serial/8250/8250_lpc18xx.c
-index eddf119..f36902b 100644
---- a/drivers/tty/serial/8250/8250_lpc18xx.c
-+++ b/drivers/tty/serial/8250/8250_lpc18xx.c
-@@ -119,8 +119,7 @@ static int lpc18xx_serial_probe(struct platform_device *pdev)
+diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
+index 164ba13..9c1244e 100644
+--- a/drivers/tty/serial/8250/8250_uniphier.c
++++ b/drivers/tty/serial/8250/8250_uniphier.c
+@@ -171,7 +171,7 @@ static int uniphier_uart_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
  
- 	memset(&uart, 0, sizeof(uart));
- 
--	uart.port.membase = devm_ioremap(&pdev->dev, res->start,
--					 resource_size(res));
-+	uart.port.membase = devm_ioremap_resource(&pdev->dev, res);
- 	if (!uart.port.membase)
+-	membase = devm_ioremap(dev, regs->start, resource_size(regs));
++	membase = devm_ioremap_resource(dev, regs);
+ 	if (!membase)
  		return -ENOMEM;
  
 -- 
