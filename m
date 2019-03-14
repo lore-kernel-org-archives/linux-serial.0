@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH v2 41/45] drivers: tty: serial: timuart: use devm_* functions
-Date: Thu, 14 Mar 2019 23:34:11 +0100
-Message-ID: <1552602855-26086-42-git-send-email-info@metux.net>
+Subject: [PATCH v2 31/45] drivers: tty: serial: amba-pl011: use devm_* functions
+Date: Thu, 14 Mar 2019 23:34:01 +0100
+Message-ID: <1552602855-26086-32-git-send-email-info@metux.net>
 References: <1552602855-26086-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1552602855-26086-1-git-send-email-info@metux.net>
@@ -14,30 +14,33 @@ Use the safer devm versions of memory mapping functions.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- drivers/tty/serial/men_z135_uart.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/amba-pl011.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/men_z135_uart.c b/drivers/tty/serial/men_z135_uart.c
-index ef89534..349f70e 100644
---- a/drivers/tty/serial/men_z135_uart.c
-+++ b/drivers/tty/serial/men_z135_uart.c
-@@ -732,7 +732,7 @@ static void men_z135_release_port(struct uart_port *port)
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 89ade21..2a968b2 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2098,7 +2098,7 @@ static const char *pl011_type(struct uart_port *port)
+  */
+ static void pl011_release_port(struct uart_port *port)
  {
- 	struct men_z135_port *uart = to_men_z135(port);
+-	release_mem_region(port->mapbase, SZ_4K);
++	devm_release_mem_region(port->dev, port->mapbase, SZ_4K);
+ }
  
--	iounmap(port->membase);
-+	devm_iounmap(port->dev, port->membase);
- 	port->membase = NULL;
+ /*
+@@ -2106,7 +2106,10 @@ static void pl011_release_port(struct uart_port *port)
+  */
+ static int pl011_request_port(struct uart_port *port)
+ {
+-	return request_mem_region(port->mapbase, SZ_4K, "uart-pl011")
++	return devm_request_mem_region(port->dev,
++				       port->mapbase,
++				       SZ_4K,
++				       "uart-pl011")
+ 			!= NULL ? 0 : -EBUSY;
+ }
  
- 	mcb_release_mem(uart->mem);
-@@ -751,7 +751,7 @@ static int men_z135_request_port(struct uart_port *port)
- 	port->mapbase = mem->start;
- 	uart->mem = mem;
- 
--	port->membase = ioremap(mem->start, resource_size(mem));
-+	port->membase = devm_ioremap_resource(port->dev, mem);
- 	if (port->membase == NULL) {
- 		mcb_release_mem(mem);
- 		return -ENOMEM;
 -- 
 1.9.1
