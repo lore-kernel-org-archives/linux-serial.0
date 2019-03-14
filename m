@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH v2 40/45] drivers: tty: serial: mpc52xx_uart: use devm_* functions
-Date: Thu, 14 Mar 2019 23:34:10 +0100
-Message-ID: <1552602855-26086-41-git-send-email-info@metux.net>
+Subject: [PATCH v2 39/45] drivers: tty: serial: efm32-uart: use devm_* functions
+Date: Thu, 14 Mar 2019 23:34:09 +0100
+Message-ID: <1552602855-26086-40-git-send-email-info@metux.net>
 References: <1552602855-26086-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1552602855-26086-1-git-send-email-info@metux.net>
@@ -14,71 +14,39 @@ Use the safer devm versions of memory mapping functions.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- drivers/tty/serial/mpc52xx_uart.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+ drivers/tty/serial/efm32-uart.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
-index 3a75ee0..3e74e44 100644
---- a/drivers/tty/serial/mpc52xx_uart.c
-+++ b/drivers/tty/serial/mpc52xx_uart.c
-@@ -1276,11 +1276,13 @@ static u8 mpc5125_psc_get_mr1(struct uart_port *port)
+diff --git a/drivers/tty/serial/efm32-uart.c b/drivers/tty/serial/efm32-uart.c
+index d6b5e54..a79cadc 100644
+--- a/drivers/tty/serial/efm32-uart.c
++++ b/drivers/tty/serial/efm32-uart.c
+@@ -437,7 +437,7 @@ static void efm32_uart_release_port(struct uart_port *port)
  
- 	/* remapped by us ? */
- 	if (port->flags & UPF_IOREMAP) {
--		iounmap(port->membase);
-+		devm_iounmap(port->dev, port->membase);
- 		port->membase = NULL;
- 	}
- 
--	release_mem_region(port->mapbase, sizeof(struct mpc52xx_psc));
-+	devm_release_mem_region(port->dev,
-+				port->mapbase,
-+				sizeof(struct mpc52xx_psc));
+ 	clk_unprepare(efm_port->clk);
+ 	clk_put(efm_port->clk);
+-	iounmap(port->membase);
++	devm_iounmap(port->dev, port->membase);
  }
  
- static int
-@@ -1289,13 +1291,14 @@ static u8 mpc5125_psc_get_mr1(struct uart_port *port)
- 	int err;
+ static int efm32_uart_request_port(struct uart_port *port)
+@@ -445,7 +445,7 @@ static int efm32_uart_request_port(struct uart_port *port)
+ 	struct efm32_uart_port *efm_port = to_efm_port(port);
+ 	int ret;
  
- 	if (port->flags & UPF_IOREMAP) /* Need to remap ? */
--		port->membase = ioremap(port->mapbase,
-+		port->membase = devm_ioremap(port->dev, port->mapbase,
- 					sizeof(struct mpc52xx_psc));
+-	port->membase = ioremap(port->mapbase, 60);
++	port->membase = devm_ioremap(port->dev, port->mapbase, 60);
+ 	if (!efm_port->port.membase) {
+ 		ret = -ENOMEM;
+ 		efm_debug(efm_port, "failed to remap\n");
+@@ -464,7 +464,7 @@ static int efm32_uart_request_port(struct uart_port *port)
+ 		clk_put(efm_port->clk);
+ err_clk_get:
  
- 	if (!port->membase)
- 		return -EINVAL;
- 
--	err = request_mem_region(port->mapbase, sizeof(struct mpc52xx_psc),
-+	err = devm_request_mem_region(port->mapbase,
-+			sizeof(struct mpc52xx_psc),
- 			"mpc52xx_psc_uart") != NULL ? 0 : -EBUSY;
- 
- 	if (err)
-@@ -1310,10 +1313,12 @@ static u8 mpc5125_psc_get_mr1(struct uart_port *port)
- 	return 0;
- 
- out_mapregion:
--	release_mem_region(port->mapbase, sizeof(struct mpc52xx_psc));
-+	devm_release_mem_region(port->dev,
-+				port->mapbase,
-+				sizeof(struct mpc52xx_psc));
- out_membase:
- 	if (port->flags & UPF_IOREMAP) {
 -		iounmap(port->membase);
 +		devm_iounmap(port->dev, port->membase);
- 		port->membase = NULL;
+ err_ioremap:
+ 		return ret;
  	}
- 	return err;
-@@ -1653,7 +1658,9 @@ static u8 mpc5125_psc_get_mr1(struct uart_port *port)
- 	port->uartclk = uartclk;
- 	port->ops	= &mpc52xx_uart_ops;
- 	port->mapbase = res.start;
--	port->membase = ioremap(res.start, sizeof(struct mpc52xx_psc));
-+	port->membase = devm_ioremap(port->dev,
-+				     res.start,
-+				     sizeof(struct mpc52xx_psc));
- 	port->irq = irq_of_parse_and_map(np, 0);
- 
- 	if (port->membase == NULL)
 -- 
 1.9.1
