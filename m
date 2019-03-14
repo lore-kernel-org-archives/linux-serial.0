@@ -1,70 +1,100 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: Re: [PATCH] tty: atmel_serial: fix a NULL pointer dereference
-Date: Thu, 14 Mar 2019 09:25:38 +0100
-Message-ID: <4369f8eb-e8d2-1f78-6fd5-f878ffbdee90@sorico.fr>
-References: <20190314071759.18845-1-kjlu@umn.edu>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [RFC PATCH v1 00/25] printk: new implementation
+Date: Thu, 14 Mar 2019 10:14:34 +0100
+Message-ID: <20190314091434.ci26htgagjx6mk4k@pathway.suse.cz>
+References: <20190212143003.48446-1-john.ogness@linutronix.de>
+ <20190213025520.GA5803@jagdpanzerIV>
+ <874l9721hf.fsf@linutronix.de>
+ <20190304052335.GA6648@jagdpanzerIV>
+ <87lg1rggcz.fsf@linutronix.de>
+ <20190311105411.GA368@jagdpanzerIV>
+ <20190312123857.juatd6fwtfmqajze@pathway.suse.cz>
+ <874l8815uc.fsf@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190314071759.18845-1-kjlu@umn.edu>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Kangjie Lu <kjlu@umn.edu>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, pakki001@umn.edu, linux-kernel@vger.kernel.org, Ludovic Desroches <ludovic.desroches@microchip.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <874l8815uc.fsf@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>, Daniel Wang <wonderfly@google.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.com>, Peter Feiner <pfeiner@google.com>, linux-serial@vger.kernel.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Sebastian Siewior <bigeasy@linutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-SGksCgpHb29kIGNhdGNoICEKTGUgMTQvMDMvMjAxOSDDoCAwODoxNywgS2FuZ2ppZSBMdSBhIMOp
-Y3JpdMKgOgo+IEluIGNhc2UgZG1hZW5naW5lX3ByZXBfZG1hX2N5Y2xpYyBmYWlscywgdGhlIGZp
-eCByZXR1cm4gYSBwcm9wZXIKPiBlcnJvciBjb2RlIHRvIGF2b2lkIE5VTEwgcG9pbnRlciBkZXJl
-ZmVyZW5jZS4KPiAKeW91IGNvdWxkIGFkZDoKRml4ZXM6IDM0ZGY0MmY1OWE2MCAoInNlcmlhbDog
-YXQ5MTogYWRkIHJ4IGRtYSBzdXBwb3J0IikKU28gdGhhdCAtc3RhYmxlIGJyYW5jaGVzIGdldCB0
-aGlzLgoKPiBTaWduZWQtb2ZmLWJ5OiBLYW5namllIEx1IDxramx1QHVtbi5lZHU+Cj4gLS0tCj4g
-IGRyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYyB8IDEyICsrKysrKysrKystLQo+ICAx
-IGZpbGUgY2hhbmdlZCwgMTAgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKPiAKPiBkaWZm
-IC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5jIGIvZHJpdmVycy90dHkv
-c2VyaWFsL2F0bWVsX3NlcmlhbC5jCj4gaW5kZXggMDUxNDdmZTI0MzQzLi5jZjU2MGQwNTAwOGMg
-MTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5jCj4gKysrIGIv
-ZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5jCj4gQEAgLTEyMzcsOCArMTIzNywxMCBA
-QCBzdGF0aWMgaW50IGF0bWVsX3ByZXBhcmVfcnhfZG1hKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQp
-Cj4gIAlkbWFfY2FwX3NldChETUFfQ1lDTElDLCBtYXNrKTsKPiAgCj4gIAlhdG1lbF9wb3J0LT5j
-aGFuX3J4ID0gZG1hX3JlcXVlc3Rfc2xhdmVfY2hhbm5lbChtZmRfZGV2LCAicngiKTsKPiAtCWlm
-IChhdG1lbF9wb3J0LT5jaGFuX3J4ID09IE5VTEwpCj4gKwlpZiAoYXRtZWxfcG9ydC0+Y2hhbl9y
-eCA9PSBOVUxMKSB7Cj4gKwkJcmV0ID0gLUVJTlZBTDsKPiAgCQlnb3RvIGNoYW5fZXJyOwo+ICsJ
-fQo+ICAJZGV2X2luZm8ocG9ydC0+ZGV2LCAidXNpbmcgJXMgZm9yIHJ4IERNQSB0cmFuc2ZlcnNc
-biIsCj4gIAkJZG1hX2NoYW5fbmFtZShhdG1lbF9wb3J0LT5jaGFuX3J4KSk7Cj4gIAo+IEBAIC0x
-MjU3LDYgKzEyNTksNyBAQCBzdGF0aWMgaW50IGF0bWVsX3ByZXBhcmVfcnhfZG1hKHN0cnVjdCB1
-YXJ0X3BvcnQgKnBvcnQpCj4gIAo+ICAJaWYgKCFuZW50KSB7Cj4gIAkJZGV2X2RiZyhwb3J0LT5k
-ZXYsICJuZWVkIHRvIHJlbGVhc2UgcmVzb3VyY2Ugb2YgZG1hXG4iKTsKPiArCQlyZXQgPSAtRUlO
-VkFMOwo+ICAJCWdvdG8gY2hhbl9lcnI7Cj4gIAl9IGVsc2Ugewo+ICAJCWRldl9kYmcocG9ydC0+
-ZGV2LCAiJXM6IG1hcHBlZCAlZEAlcCB0byAlcGFkXG4iLCBfX2Z1bmNfXywKPiBAQCAtMTI4OCw2
-ICsxMjkxLDExIEBAIHN0YXRpYyBpbnQgYXRtZWxfcHJlcGFyZV9yeF9kbWEoc3RydWN0IHVhcnRf
-cG9ydCAqcG9ydCkKPiAgCQkJCQkgc2dfZG1hX2xlbigmYXRtZWxfcG9ydC0+c2dfcngpLzIsCj4g
-IAkJCQkJIERNQV9ERVZfVE9fTUVNLAo+ICAJCQkJCSBETUFfUFJFUF9JTlRFUlJVUFQpOwo+ICsJ
-aWYgKCFkZXNjKSB7Cj4gKwkJZGV2X2Vycihwb3J0LT5kZXYsICJQcmVwYXJpbmcgRE1BIGN5Y2xp
-YyBmYWlsZWRcbiIpOwo+ICsJCXJldCA9IC1FTk9NRU07CklNSE8sIHdlIGRvbid0IHJlYWxseSBr
-bm93IHdoeSBkbWFlbmdpbmVfcHJlcF9kbWFfY3ljbGljKCkgZmFpbGVkLCBpdApjb3VsZCBiZSBi
-ZWNhdXNlIGl0J3MgYWxyZWFkeSBpbiB1c2UsIG9yIGJhZCB2YWx1ZSwgb3IuLi4KKGFuZCBhbnl3
-YXksIHdlIGp1c3QgY2hlY2sgaWYgdGhlIHJldHVybiB2YWx1ZSBpcyA8IDAgaW4gYXRtZWwgX3N0
-YXJ0dXAuKQpJcyB0aGVyZSBhIHNwZWNpZmljIHJlYXNvbiB5b3UgY2hvb3NlIC1FTk9NRU0gPwpJ
-ZiBub3QsIG1heWJlIGtlZXBpbmcgdGhpcyBwYXRjaCBzbWFsbGVyIHdpdGggYSBzaW1wbGUgZGV2
-X2VycigpK2dvdG8KaGVyZSB3b3VsZCBiZSBhIGJldHRlciBjaG9pY2UuCgo+ICsJCWdvdG8gY2hh
-bl9lcnI7Cj4gKwl9Cj4gIAlkZXNjLT5jYWxsYmFjayA9IGF0bWVsX2NvbXBsZXRlX3J4X2RtYTsK
-PiAgCWRlc2MtPmNhbGxiYWNrX3BhcmFtID0gcG9ydDsKPiAgCWF0bWVsX3BvcnQtPmRlc2Nfcngg
-PSBkZXNjOwo+IEBAIC0xMzAwLDcgKzEzMDgsNyBAQCBzdGF0aWMgaW50IGF0bWVsX3ByZXBhcmVf
-cnhfZG1hKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpCj4gIAlhdG1lbF9wb3J0LT51c2VfZG1hX3J4
-ID0gMDsKPiAgCWlmIChhdG1lbF9wb3J0LT5jaGFuX3J4KQo+ICAJCWF0bWVsX3JlbGVhc2Vfcnhf
-ZG1hKHBvcnQpOwo+IC0JcmV0dXJuIC1FSU5WQUw7Cj4gKwlyZXR1cm4gcmV0Owo+ICB9Cj4gIAo+
-ICBzdGF0aWMgdm9pZCBhdG1lbF91YXJ0X3RpbWVyX2NhbGxiYWNrKHN0cnVjdCB0aW1lcl9saXN0
-ICp0KQo+IAoKVGhhbmtzICEKClJpY2hhcmQuCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1h
-cm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcv
-bWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
+On Tue 2019-03-12 16:15:55, John Ogness wrote:
+> On 2019-03-12, Petr Mladek <pmladek@suse.com> wrote:
+> > On Tue 2019-03-12 09:17:49, John Ogness wrote:
+> >> The current printk implementation is handling all console printing as
+> >> best effort. Trying hard enough to dramatically affect the system, but
+> >> not trying hard enough to guarantee success.
+> >
+> > I agree that direct output is more reliable. It might be very useful
+> > for debugging some types of problems. The question is if it is worth
+> > the cost (code complexity, serializing CPUs == slowing down the
+> > entire system).
+> >
+> > But it is is possible that a reasonable offloading (in the direction
+> > of last Sergey's approach) might be a better deal.
+> >
+> >
+> > I suggest the following way forward (separate patchsets):
+> >
+> >     1. Replace log buffer (least controversial thing)
+> 
+> Yes. I will post a series that only implements the ringbuffer using your
+> simplified API. That will be enough to remove printk_safe and actually
+> does most of the work of updating devkmsg, kmsg_dump, and syslog.
+
+Great. I just wonder if it is going to be fully lockless or
+still using the prb_lock. I could understand the a fully lockless
+solution will be much more complicated. But I think that it would
+make a lot of things easier in the long run. Especially it might
+help to avoid the big-kernel-lock-like approach.
+
+
+> >     2. Reliable offload to kthread (would be useful anyway)
+> 
+> Yes. I would like to implement per-console kthreads for this series. I
+> think the advantages are obvious. For PREEMPT_RT the offloading will
+> need to be always active. (PREEMPT_RT cannot call the console->write()
+> from atomic contexts.) But I think this would be acceptable at first. It
+> would certainly be better than what PREEMPT_RT is doing now.
+
+I would personally start with one kthread. I am afraid that
+the discussion about it will be complicated enough. We could
+always make it more complicated later.
+
+I understand the immediate offloading might be necessary for
+PREEMPT_RT. But a more conservative approach is needed for
+non-rt kernels.
+
+Well, if there won't be a big difference in the complexity
+between one and more threads then we could mix it. But
+I personally see this a two steps that are better be done
+separately.
+
+
+> >     3. Atomic consoles (a lot of tricky code, might not be
+> > 		worth the effort)
+> 
+> I think this will be necessary. PREEMPT_RT cannot support reliable
+> emergency console messages without it. And for kernel developers this is
+> also very helpful. People like PeterZ are using their own patches
+> because the mainline kernel is not providing this functionality.
+> 
+> The decision about _when_ to use it is still in the air. But I guess
+> we'll worry about that when we get that far. There's enough to do until
+> then.
+
+I am sure that there are situations where the direct output
+to atomic consoles would help with debugging. PeteZ and Steven
+are using their own patches for a reason.
+
+Let's see how the code is complicated and how many consoles
+might get supported a reasonable way.
+
+
+Anyway, it will be a long run. I am personally curious where
+this will end :-)
+
+Best Regards,
+Petr
