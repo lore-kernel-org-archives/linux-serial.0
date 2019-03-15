@@ -1,115 +1,78 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: tty: uartlite: GP fault when calling tty_unregister_driver()
-Date: Thu, 14 Mar 2019 21:49:17 -0700
-Message-ID: <5d91feb0-60dd-cab0-439c-424568f92d09@infradead.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
+From: Kangjie Lu <kjlu@umn.edu>
+Subject: [PATCH] tty: 8250: fix a missing check for pci_ioremap_bar
+Date: Thu, 14 Mar 2019 23:56:16 -0500
+Message-ID: <20190315045617.7616-1-kjlu@umn.edu>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: LKML <linux-kernel@vger.kernel.org>
-Cc: Peter Korsgaard <jacmet@sunsite.dk>, linux-serial@vger.kernel.org
+To: kjlu@umn.edu
+Cc: pakki001@umn.edu, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-VGhpcyBpcyBvbiB2NS4wLTExMDUzLWdlYmM1NTFmMmI4Zjkgb24geDg2XzY0LiAoTWFyY2gg
-MTIsIDIwMTkpDQpKdXN0IGxvYWQgdWFydGxpdGUgbW9kdWxlIGFuZCB0aGVuIHVubG9hZCBp
-dC4NCg0KDQpbICAgNzUuMzM0MzczXSBjYWxsaW5nICB1bGl0ZV9pbml0KzB4MC8weDEwMDAg
-W3VhcnRsaXRlXSBAIDE2NTUNClsgICA3NS4zMzQ2MzRdIGluaXRjYWxsIHVsaXRlX2luaXQr
-MHgwLzB4MTAwMCBbdWFydGxpdGVdIHJldHVybmVkIDAgYWZ0ZXIgMjIzIHVzZWNzDQpbICAg
-ODAuMTQ1NTQ0XSBrYXNhbjogQ09ORklHX0tBU0FOX0lOTElORSBlbmFibGVkDQpbICAgODAu
-MTQ1NTc4XSBrYXNhbjogR1BGIGNvdWxkIGJlIGNhdXNlZCBieSBOVUxMLXB0ciBkZXJlZiBv
-ciB1c2VyIG1lbW9yeSBhY2Nlc3MNClsgICA4MC4xNDU2MTRdIGdlbmVyYWwgcHJvdGVjdGlv
-biBmYXVsdDogMDAwMCBbIzFdIFBSRUVNUFQgU01QIEtBU0FOIFBUSQ0KWyAgIDgwLjE0NTYz
-NF0gQ1BVOiAzIFBJRDogMTY1OCBDb21tOiBybW1vZCBOb3QgdGFpbnRlZCA1LjAuMG1vZCAj
-MQ0KWyAgIDgwLjE0NTY1MV0gSGFyZHdhcmUgbmFtZTogVE9TSElCQSBQT1JURUdFIFI4MzUv
-UG9ydGFibGUgUEMsIEJJT1MgVmVyc2lvbiA0LjEwICAgMDEvMDgvMjAxMw0KWyAgIDgwLjE0
-NTY3N10gUklQOiAwMDEwOnR0eV91bnJlZ2lzdGVyX2RyaXZlcisweDI1LzB4MWQwDQpbICAg
-ODAuMTQ1Njk0XSBDb2RlOiAwMCAwMCAwMCAwMCA5MCA1NSA0OCBiOCAwMCAwMCAwMCAwMCAw
-MCBmYyBmZiBkZiA0OCA4OSBlNSA0MSA1NSA0MSA1NCA1MyA0OCA4OSBmYiA0OCA4MyBjNyAz
-NCA0OCA4OSBmYSA0OCBjMSBlYSAwMyA0OCA4MyBlYyAwOCA8MGY+IGI2IDE0IDAyIDQ4IDg5
-IGY4IDgzIGUwIDA3IDgzIGMwIDAzIDM4IGQwIDdjIDA4IDg0IGQyIDBmIDg1IDVlDQpbICAg
-ODAuMTQ1NzI4XSBSU1A6IDAwMTg6ZmZmZjg4ODBhNDFmZmRhMCBFRkxBR1M6IDAwMDEwMjg2
-DQpbICAgODAuMTQ1NzQ0XSBSQVg6IGRmZmZmYzAwMDAwMDAwMDAgUkJYOiAwMDAwMDAwMDAw
-MDAwMDAwIFJDWDogMWZmZmZmZmZmODNhOWE3Yg0KWyAgIDgwLjE0NTc2MV0gUkRYOiAwMDAw
-MDAwMDAwMDAwMDA2IFJTSTogMDAwMDAwMDAwMDAwMDAwNCBSREk6IDAwMDAwMDAwMDAwMDAw
-MzQNClsgICA4MC4xNDU3NzhdIFJCUDogZmZmZjg4ODBhNDFmZmRjMCBSMDg6IGZmZmZlZDEw
-MTQ4M2ZmOWYgUjA5OiBmZmZmZWQxMDE0ODNmZjlmDQpbICAgODAuMTQ1Nzk2XSBSMTA6IDAw
-MDAwMDAwMDAwMDAwMDEgUjExOiBmZmZmZWQxMDE0ODNmZjlmIFIxMjogZmZmZmZmZmZjMWQ0
-ZTA0MA0KWyAgIDgwLjE0NTgxNF0gUjEzOiBmZmZmODg4MGE0MWZmZWYwIFIxNDogMDAwMDAw
-MDAwMDAwMDgwMCBSMTU6IGZmZmZmZmZmYzFkNGQzYTANClsgICA4MC4xNDU4MzJdIEZTOiAg
-MDAwMDdmZTZkNjAyOWI4MCgwMDAwKSBHUzpmZmZmODg4MTFmNDAwMDAwKDAwMDApIGtubEdT
-OjAwMDAwMDAwMDAwMDAwMDANClsgICA4MC4xNDU4NTFdIENTOiAgMDAxMCBEUzogMDAwMCBF
-UzogMDAwMCBDUjA6IDAwMDAwMDAwODAwNTAwMzMNClsgICA4MC4xNDU4NjddIENSMjogMDAw
-MDU1ZTkxMTI3OTBiOCBDUjM6IDAwMDAwMDAwYTM3NDIwMDYgQ1I0OiAwMDAwMDAwMDAwMDYw
-NmUwDQpbICAgODAuMTQ1ODg0XSBDYWxsIFRyYWNlOg0KWyAgIDgwLjE0NTkwM10gIHVhcnRf
-dW5yZWdpc3Rlcl9kcml2ZXIrMHg0My8weDFiMA0KWyAgIDgwLjE0NTkyNF0gIHVsaXRlX2V4
-aXQrMHgxYy8weDI1IFt1YXJ0bGl0ZV0NClsgICA4MC4xNDU5NDFdICBfX3g2NF9zeXNfZGVs
-ZXRlX21vZHVsZSsweDMyOS8weDQ5MA0KWyAgIDgwLjE0NTk1OF0gID8gX19pYTMyX3N5c19k
-ZWxldGVfbW9kdWxlKzB4NDkwLzB4NDkwDQpbICAgODAuMTQ1OTc2XSAgPyBibGtjZ19leGl0
-X3F1ZXVlKzB4MjAvMHgyMA0KWyAgIDgwLjE0NTk5MV0gID8gX3Jhd19zcGluX3VubG9ja19p
-cnErMHgyMi8weDQwDQpbICAgODAuMTQ2MDE0XSAgZG9fc3lzY2FsbF82NCsweGFhLzB4MzEw
-DQpbICAgODAuMTQ2MDI4XSAgPyBwcmVwYXJlX2V4aXRfdG9fdXNlcm1vZGUrMHg4Yi8weDE1
-MA0KWyAgIDgwLjE0NjA0Nl0gIGVudHJ5X1NZU0NBTExfNjRfYWZ0ZXJfaHdmcmFtZSsweDQ0
-LzB4YTkNClsgICA4MC4xNDYwNjJdIFJJUDogMDAzMzoweDdmZTZkNTcxN2Y3Nw0KWyAgIDgw
-LjE0NjA3NV0gQ29kZTogNzMgMDEgYzMgNDggOGIgMGQgMjEgYWYgMmIgMDAgZjcgZDggNjQg
-ODkgMDEgNDggODMgYzggZmYgYzMgNjYgMmUgMGYgMWYgODQgMDAgMDAgMDAgMDAgMDAgMGYg
-MWYgNDQgMDAgMDAgYjggYjAgMDAgMDAgMDAgMGYgMDUgPDQ4PiAzZCAwMSBmMCBmZiBmZiA3
-MyAwMSBjMyA0OCA4YiAwZCBmMSBhZSAyYiAwMCBmNyBkOCA2NCA4OSAwMSA0OA0KWyAgIDgw
-LjE0NjExMV0gUlNQOiAwMDJiOjAwMDA3ZmZmZGNjMTAxYjggRUZMQUdTOiAwMDAwMDIwNiBP
-UklHX1JBWDogMDAwMDAwMDAwMDAwMDBiMA0KWyAgIDgwLjE0NjEzMF0gUkFYOiBmZmZmZmZm
-ZmZmZmZmZmRhIFJCWDogMDAwMDdmZmZkY2MxMDIxOCBSQ1g6IDAwMDA3ZmU2ZDU3MTdmNzcN
-ClsgICA4MC4xNDYxNDddIFJEWDogMDAwMDAwMDAwMDAwMDAwYSBSU0k6IDAwMDAwMDAwMDAw
-MDA4MDAgUkRJOiAwMDAwNTVlOTExMjZlN2Q4DQpbICAgODAuMTQ2MTY0XSBSQlA6IDAwMDA1
-NWU5MTEyNmU3NzAgUjA4OiAwMDAwN2ZmZmRjYzBmMTMxIFIwOTogMDAwMDAwMDAwMDAwMDAw
-MA0KWyAgIDgwLjE0NjE4MV0gUjEwOiAwMDAwN2ZlNmQ1Nzg3MWMwIFIxMTogMDAwMDAwMDAw
-MDAwMDIwNiBSMTI6IDAwMDA3ZmZmZGNjMTAzZTANClsgICA4MC4xNDYxOTldIFIxMzogMDAw
-MDdmZmZkY2MxMjc1YiBSMTQ6IDAwMDA1NWU5MTEyNmUyNjAgUjE1OiAwMDAwNTVlOTExMjZl
-NzcwDQpbICAgODAuMTQ2MjMwXSBNb2R1bGVzIGxpbmtlZCBpbjogdWFydGxpdGUoLSkgY3Ry
-IGNjbSBhZl9wYWNrZXQgeHRfdGNwdWRwIGlwNnRfcnBmaWx0ZXIgaXA2dF9SRUpFQ1QgbmZf
-cmVqZWN0X2lwdjYgaXB0X1JFSkVDVCBuZl9yZWplY3RfaXB2NCB4dF9jb25udHJhY2sgaXBf
-c2V0IG5mbmV0bGluayBlYnRhYmxlX25hdCBlYnRhYmxlX2Jyb3V0ZSBicmlkZ2Ugc3RwIGxs
-YyBpcDZ0YWJsZV9uYXQgaXA2dGFibGVfbWFuZ2xlIGlwNnRhYmxlX3JhdyBpcDZ0YWJsZV9z
-ZWN1cml0eSBpcHRhYmxlX25hdCBuZl9uYXQgbmZfY29ubnRyYWNrIG5mX2RlZnJhZ19pcHY2
-IG5mX2RlZnJhZ19pcHY0IGlwdGFibGVfbWFuZ2xlIGlwdGFibGVfcmF3IGlwdGFibGVfc2Vj
-dXJpdHkgZWJ0YWJsZV9maWx0ZXIgZWJ0YWJsZXMgaXA2dGFibGVfZmlsdGVyIGlwNl90YWJs
-ZXMgaXB0YWJsZV9maWx0ZXIgaXBfdGFibGVzIHhfdGFibGVzIGJwZmlsdGVyIGJ0cmZzIGNv
-cmV0ZW1wIGh3bW9uIG1zciB4b3IgenN0ZF9jb21wcmVzcyBpbnRlbF9yYXBsIHJhaWQ2X3Bx
-IHg4Nl9wa2dfdGVtcF90aGVybWFsIGhpZF9nZW5lcmljIGludGVsX3Bvd2VyY2xhbXAgbGli
-Y3JjMzJjIHV2Y3ZpZGVvIGt2bV9pbnRlbCB6c3RkX2RlY29tcHJlc3MgdXNibW91c2UgaVRD
-T193ZHQgdXNia2JkIGt2bSBpVENPX3ZlbmRvcl9zdXBwb3J0IHVzYmhpZCB2aWRlb2J1ZjJf
-dm1hbGxvYyB2aWRlb2J1ZjJfbWVtb3BzIGhpZCB2aWRlb2J1ZjJfdjRsMiBtZWlfaGRjcCB2
-aWRlb2J1ZjJfY29tbW9uIHZpZGVvZGV2IGFyYzQgaXdsZHZtIGlycWJ5cGFzcyBtZWRpYSBz
-bmRfaGRhX2NvZGVjX2hkbWkgbWFjODAyMTEgY3JjdDEwZGlmX3BjbG11bCBjcmMzMl9wY2xt
-dWwgY3JjMzJjX2ludGVsIGdoYXNoX2NsbXVsbmlfaW50ZWwgc25kX2hkYV9jb2RlY19yZWFs
-dGVrIHNuZF9oZGFfY29kZWNfZ2VuZXJpYyBsZWR0cmlnX2F1ZGlvIHNuZF9oZGFfaW50ZWwg
-aXdsd2lmaSBzbmRfaGRhX2NvZGVjIGFlc25pX2ludGVsDQpbICAgODAuMTQ2MzE5XSAgc25k
-X2hkYV9jb3JlIGFlc194ODZfNjQgY3J5cHRvX3NpbWQgc25kX2h3ZGVwIGNyeXB0ZCBzbmRf
-cGNtIGdsdWVfaGVscGVyIHNkaGNpX3BjaSBjcWhjaSBjZmc4MDIxMSBzbmRfdGltZXIgaW50
-ZWxfY3N0YXRlIGludGVsX3VuY29yZSB1aW9fcGRydl9nZW5pcnEgc2RoY2kgdWlvIHRvc2hp
-YmFfYWNwaSBzcGFyc2Vfa2V5bWFwIHNyX21vZCB3bWkgY2Ryb20gbW1jX2NvcmUgc25kIGpv
-eWRldiBwY3Nwa3IgaW5wdXRfbGVkcyBzb3VuZGNvcmUgcmZraWxsIG1vdXNlZGV2IGUxMDAw
-ZSBsZWRfY2xhc3MgaW50ZWxfcmFwbF9wZXJmIHNlcmlvX3JhdyBpbmR1c3RyaWFsaW8gcnRj
-X2Ntb3MgZXZkZXYgbWVpX21lIG1hY19oaWQgcGNjX2NwdWZyZXEgdGhlcm1hbCBscGNfaWNo
-IHRvc2hpYmFfaGFwcyBtZWkgYmF0dGVyeSBhYyBzZyBkbV9tdWx0aXBhdGggZG1fbW9kIHNj
-c2lfZGhfcmRhYyBzY3NpX2RoX2VtYyBzY3NpX2RoX2FsdWEgYXV0b2ZzNA0KWyAgIDgwLjE0
-NjYxN10gLS0tWyBlbmQgdHJhY2UgZTdmOWYxZDcwZWEyY2ViOSBdLS0tDQpbICAgODAuMTQ2
-NjM2XSBSSVA6IDAwMTA6dHR5X3VucmVnaXN0ZXJfZHJpdmVyKzB4MjUvMHgxZDANClsgICA4
-MC4xNDY2NTddIENvZGU6IDAwIDAwIDAwIDAwIDkwIDU1IDQ4IGI4IDAwIDAwIDAwIDAwIDAw
-IGZjIGZmIGRmIDQ4IDg5IGU1IDQxIDU1IDQxIDU0IDUzIDQ4IDg5IGZiIDQ4IDgzIGM3IDM0
-IDQ4IDg5IGZhIDQ4IGMxIGVhIDAzIDQ4IDgzIGVjIDA4IDwwZj4gYjYgMTQgMDIgNDggODkg
-ZjggODMgZTAgMDcgODMgYzAgMDMgMzggZDAgN2MgMDggODQgZDIgMGYgODUgNWUNClsgICA4
-MC4xNDY3MDJdIFJTUDogMDAxODpmZmZmODg4MGE0MWZmZGEwIEVGTEFHUzogMDAwMTAyODYN
-ClsgICA4MC4xNDY3MzBdIFJBWDogZGZmZmZjMDAwMDAwMDAwMCBSQlg6IDAwMDAwMDAwMDAw
-MDAwMDAgUkNYOiAxZmZmZmZmZmY4M2E5YTdiDQpbICAgODAuMTQ2NzUwXSBSRFg6IDAwMDAw
-MDAwMDAwMDAwMDYgUlNJOiAwMDAwMDAwMDAwMDAwMDA0IFJESTogMDAwMDAwMDAwMDAwMDAz
-NA0KWyAgIDgwLjE0Njc3MF0gUkJQOiBmZmZmODg4MGE0MWZmZGMwIFIwODogZmZmZmVkMTAx
-NDgzZmY5ZiBSMDk6IGZmZmZlZDEwMTQ4M2ZmOWYNClsgICA4MC4xNDY3OTBdIFIxMDogMDAw
-MDAwMDAwMDAwMDAwMSBSMTE6IGZmZmZlZDEwMTQ4M2ZmOWYgUjEyOiBmZmZmZmZmZmMxZDRl
-MDQwDQpbICAgODAuMTQ2ODA5XSBSMTM6IGZmZmY4ODgwYTQxZmZlZjAgUjE0OiAwMDAwMDAw
-MDAwMDAwODAwIFIxNTogZmZmZmZmZmZjMWQ0ZDNhMA0KWyAgIDgwLjE0NjgzMF0gRlM6ICAw
-MDAwN2ZlNmQ2MDI5YjgwKDAwMDApIEdTOmZmZmY4ODgxMWY0MDAwMDAoMDAwMCkga25sR1M6
-MDAwMDAwMDAwMDAwMDAwMA0KWyAgIDgwLjE0Njg1MF0gQ1M6ICAwMDEwIERTOiAwMDAwIEVT
-OiAwMDAwIENSMDogMDAwMDAwMDA4MDA1MDAzMw0KWyAgIDgwLjE0Njg3Ml0gQ1IyOiAwMDAw
-NTVlOTExMjc5MGI4IENSMzogMDAwMDAwMDBhMzc0MjAwNiBDUjQ6IDAwMDAwMDAwMDAwNjA2
-ZTANCg0KDQoNCi0tIA0KflJhbmR5DQo=
+pci_ioremap_bar could fail. The fix captures the failure and
+pass an error code upstream. This can avoid potential NULL
+pointer dereferences in the future.
+
+Signed-off-by: Kangjie Lu <kjlu@umn.edu>
+---
+ drivers/tty/serial/8250/8250_lpss.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index 98dbc796353f..e95332d8b35e 100644
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -162,7 +162,7 @@ static const struct dw_dma_platform_data qrk_serial_dma_pdata = {
+ 	.multi_block = {0},
+ };
+ 
+-static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
++static int qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
+ {
+ 	struct uart_8250_dma *dma = &lpss->dma;
+ 	struct dw_dma_chip *chip = &lpss->dma_chip;
+@@ -173,12 +173,14 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
+ 	chip->dev = &pdev->dev;
+ 	chip->irq = pci_irq_vector(pdev, 0);
+ 	chip->regs = pci_ioremap_bar(pdev, 1);
++	if (!chip->regs)
++		return -EIO;
+ 	chip->pdata = &qrk_serial_dma_pdata;
+ 
+ 	/* Falling back to PIO mode if DMA probing fails */
+ 	ret = dw_dma_probe(chip);
+ 	if (ret)
+-		return;
++		return ret;
+ 
+ 	pci_try_set_mwi(pdev);
+ 
+@@ -192,6 +194,8 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
+ 	param->hs_polarity = true;
+ 
+ 	lpss->dma_maxburst = 8;
++
++	return 0;
+ }
+ 
+ static void qrk_serial_exit_dma(struct lpss8250 *lpss)
+@@ -203,7 +207,7 @@ static void qrk_serial_exit_dma(struct lpss8250 *lpss)
+ 	dw_dma_remove(&lpss->dma_chip);
+ }
+ #else	/* CONFIG_SERIAL_8250_DMA */
+-static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port) {}
++static int qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port) {}
+ static void qrk_serial_exit_dma(struct lpss8250 *lpss) {}
+ #endif	/* !CONFIG_SERIAL_8250_DMA */
+ 
+@@ -220,8 +224,7 @@ static int qrk_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 
+ 	port->irq = pci_irq_vector(pdev, 0);
+ 
+-	qrk_serial_setup_dma(lpss, port);
+-	return 0;
++	return qrk_serial_setup_dma(lpss, port);
+ }
+ 
+ static void qrk_serial_exit(struct lpss8250 *lpss)
+-- 
+2.17.1
