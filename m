@@ -1,91 +1,55 @@
-From: Razvan Stefanescu <razvan.stefanescu@microchip.com>
-Subject: [PATCH 1/2] tty/serial: atmel: Add is_half_duplex helper
-Date: Fri, 15 Mar 2019 11:23:33 +0200
-Message-ID: <20190315092334.13246-2-razvan.stefanescu@microchip.com>
-References: <20190315092334.13246-1-razvan.stefanescu@microchip.com>
+From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+Subject: Re: [PATCH v2 02/45] drivers: tty: serial: 8250_dw: use
+ devm_ioremap_resource()
+Date: Fri, 15 Mar 2019 10:37:09 +0100
+Message-ID: <d4e60f4b-6a3f-8af1-0ddb-e7a69e0c15d4@metux.net>
+References: <1552602855-26086-1-git-send-email-info@metux.net>
+ <1552602855-26086-3-git-send-email-info@metux.net>
+ <CAHp75VegzKNhH1Uza9gwQMOAEOdh57WTzsHUx7vPdVs7XvJROQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190315092334.13246-1-razvan.stefanescu@microchip.com>
+In-Reply-To: <CAHp75VegzKNhH1Uza9gwQMOAEOdh57WTzsHUx7vPdVs7XvJROQ@mail.gmail.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Andy Shevchenko <andy.shevchenko@gmail.com>, "Enrico Weigelt, metux IT consult" <info@metux.net>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Eric Anholt <eric@anholt.net>, Stefan Wahren <stefan.wahren@i2se.com>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Vladimir Zapolskiy <vz@mleia.com>, Matthias Brugger <matthias.bgg@gmail.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Tobias Klauser <tklauser@distanz.ch>, Richard Genoud <richard.genoud@gmail.com>, macro@linux-mips.org, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Sascha Hauer <kernel@pengutronix.de>, slemieux.tyco@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
-Use a helper function to check that a port needs to use half duplex
-communication, replacing several occurrences of multi-line bit checking.
+On 15.03.19 10:04, Andy Shevchenko wrote:
+> On Fri, Mar 15, 2019 at 12:41 AM Enrico Weigelt, metux IT consult
+> <info@metux.net> wrote:
+>>
+>> Instead of fetching out data from a struct resource for passing
+>> it to devm_ioremap(), directly use devm_ioremap_resource()
+> 
+> I don't see any advantage of this change.
+> See also below.
 
-Signed-off-by: Razvan Stefanescu <razvan.stefanescu@microchip.com>
----
- drivers/tty/serial/atmel_serial.c | 27 ++++++++++++++-------------
- 1 file changed, 14 insertions(+), 13 deletions(-)
+I see that the whole story wasn't clear. Please see my reply to Greg,
+hope that clears it up a little bit.
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 05147fe24343..a6577b1c4461 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -231,6 +231,13 @@ static inline void atmel_uart_write_char(struct uart_port *port, u8 value)
- 	__raw_writeb(value, port->membase + ATMEL_US_THR);
- }
- 
-+static inline int atmel_uart_is_half_duplex(struct uart_port *port)
-+{
-+	return ((port->rs485.flags & SER_RS485_ENABLED) &&
-+		!(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
-+		(port->iso7816.flags & SER_ISO7816_ENABLED);
-+}
-+
- #ifdef CONFIG_SERIAL_ATMEL_PDC
- static bool atmel_use_pdc_rx(struct uart_port *port)
- {
-@@ -608,10 +615,10 @@ static void atmel_stop_tx(struct uart_port *port)
- 	/* Disable interrupts */
- 	atmel_uart_writel(port, ATMEL_US_IDR, atmel_port->tx_done_mask);
- 
--	if (((port->rs485.flags & SER_RS485_ENABLED) &&
--	     !(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
--	    port->iso7816.flags & SER_ISO7816_ENABLED)
--		atmel_start_rx(port);
-+	if (atmel_uart_is_half_duplex(port))
-+		if (!atomic_read(&atmel_port->tasklet_shutdown))
-+			atmel_start_rx(port);
-+
- }
- 
- /*
-@@ -628,9 +635,7 @@ static void atmel_start_tx(struct uart_port *port)
- 		return;
- 
- 	if (atmel_use_pdc_tx(port) || atmel_use_dma_tx(port))
--		if (((port->rs485.flags & SER_RS485_ENABLED) &&
--		     !(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
--		    port->iso7816.flags & SER_ISO7816_ENABLED)
-+		if (atmel_uart_is_half_duplex(port))
- 			atmel_stop_rx(port);
- 
- 	if (atmel_use_pdc_tx(port))
-@@ -928,9 +933,7 @@ static void atmel_complete_tx_dma(void *arg)
- 	 */
- 	if (!uart_circ_empty(xmit))
- 		atmel_tasklet_schedule(atmel_port, &atmel_port->tasklet_tx);
--	else if (((port->rs485.flags & SER_RS485_ENABLED) &&
--		  !(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
--		 port->iso7816.flags & SER_ISO7816_ENABLED) {
-+	else if (atmel_uart_is_half_duplex(port)) {
- 		/* DMA done, stop TX, start RX for RS485 */
- 		atmel_start_rx(port);
- 	}
-@@ -1508,9 +1511,7 @@ static void atmel_tx_pdc(struct uart_port *port)
- 		atmel_uart_writel(port, ATMEL_US_IER,
- 				  atmel_port->tx_done_mask);
- 	} else {
--		if (((port->rs485.flags & SER_RS485_ENABLED) &&
--		     !(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
--		    port->iso7816.flags & SER_ISO7816_ENABLED) {
-+		if (atmel_uart_is_half_duplex(port)) {
- 			/* DMA done, stop TX, start RX for RS485 */
- 			atmel_start_rx(port);
- 		}
+>> --- a/drivers/tty/serial/8250/8250_dw.c
+>> +++ b/drivers/tty/serial/8250/8250_dw.c
+>> @@ -526,7 +526,7 @@ static int dw8250_probe(struct platform_device *pdev)
+>>         p->set_ldisc    = dw8250_set_ldisc;
+>>         p->set_termios  = dw8250_set_termios;
+>>
+>> -       p->membase = devm_ioremap(dev, regs->start, resource_size(regs));
+>> +       p->membase = devm_ioremap_resource(dev, regs);
+>>         if (!p->membase)
+> 
+> And how did you test this? devm_ioremap_resource() returns error
+> pointer in case of error.
+
+hmm, devm_ioremap_resource() does so, but devm_ioremap() does not ?
+I really didn't expect that. Thanks for pointing that out.
+
+
+--mtx
+
 -- 
-2.19.1
+Enrico Weigelt, metux IT consult
+Free software and Linux embedded engineering
+info@metux.net -- +49-151-27565287
