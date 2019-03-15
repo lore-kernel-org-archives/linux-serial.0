@@ -1,55 +1,41 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: Re: [PATCH v2] tty: atmel_serial: fix a NULL pointer dereference
-Date: Fri, 15 Mar 2019 09:22:11 +0100
-Message-ID: <d8978a94-23fc-3610-e3da-5e1da2d86914@sorico.fr>
-References: <CAMuHMdX=XwxVFb1eLupmyHBOMBGzB+=RXxcUCH9D-J1+YKiq5w@mail.gmail.com>
- <20190315072709.22811-1-kjlu@umn.edu>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v2 02/45] drivers: tty: serial: 8250_dw: use devm_ioremap_resource()
+Date: Fri, 15 Mar 2019 11:04:12 +0200
+Message-ID: <CAHp75VegzKNhH1Uza9gwQMOAEOdh57WTzsHUx7vPdVs7XvJROQ@mail.gmail.com>
+References: <1552602855-26086-1-git-send-email-info@metux.net> <1552602855-26086-3-git-send-email-info@metux.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190315072709.22811-1-kjlu@umn.edu>
-Content-Language: fr
+In-Reply-To: <1552602855-26086-3-git-send-email-info@metux.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Kangjie Lu <kjlu@umn.edu>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: "Enrico Weigelt, metux IT consult" <info@metux.net>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Eric Anholt <eric@anholt.net>, Stefan Wahren <stefan.wahren@i2se.com>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Vladimir Zapolskiy <vz@mleia.com>, Matthias Brugger <matthias.bgg@gmail.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Tobias Klauser <tklauser@distanz.ch>, Richard Genoud <richard.genoud@gmail.com>, macro@linux-mips.org, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Sascha Hauer <kernel@pengutronix.de>, slemieux.tyco@g
 List-Id: linux-serial@vger.kernel.org
 
-Le 15/03/2019 à 08:27, Kangjie Lu a écrit :
-> Fixes: 34df42f59a60 ("serial: at91: add rx dma support")
-The Fixes: tag should be just bellow the Signenf-off-by: tag
-> 
-> In case dmaengine_prep_dma_cyclic fails, the fix returns a proper
-> error code to avoid NULL pointer dereference.
-> 
-> Signed-off-by: Kangjie Lu <kjlu@umn.edu>
-^^^
-here
-> 
-> ---
-> V2: simplified the patch as suggested by
-> Richard Genoud <richard.genoud@gmail.com>
-> ---
->  drivers/tty/serial/atmel_serial.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 05147fe24343..41b728d223d1 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -1288,6 +1288,10 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
->  					 sg_dma_len(&atmel_port->sg_rx)/2,
->  					 DMA_DEV_TO_MEM,
->  					 DMA_PREP_INTERRUPT);
-> +	if (!desc) {
-> +		dev_err(port->dev, "Preparing DMA cyclic failed\n");
-> +		goto chan_err;
-> +	}
->  	desc->callback = atmel_complete_rx_dma;
->  	desc->callback_param = port;
->  	atmel_port->desc_rx = desc;
-> 
+On Fri, Mar 15, 2019 at 12:41 AM Enrico Weigelt, metux IT consult
+<info@metux.net> wrote:
+>
+> Instead of fetching out data from a struct resource for passing
+> it to devm_ioremap(), directly use devm_ioremap_resource()
 
-Thanks !
+I don't see any advantage of this change.
+See also below.
 
-Richard.
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -526,7 +526,7 @@ static int dw8250_probe(struct platform_device *pdev)
+>         p->set_ldisc    = dw8250_set_ldisc;
+>         p->set_termios  = dw8250_set_termios;
+>
+> -       p->membase = devm_ioremap(dev, regs->start, resource_size(regs));
+> +       p->membase = devm_ioremap_resource(dev, regs);
+>         if (!p->membase)
+
+And how did you test this? devm_ioremap_resource() returns error
+pointer in case of error.
+
+>                 return -ENOMEM;
+
+-- 
+With Best Regards,
+Andy Shevchenko
