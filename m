@@ -1,86 +1,72 @@
-From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
-Subject: Re: [PATCH v2 10/45] drivers: tty: serial: zs: use devm_* functions
-Date: Fri, 15 Mar 2019 10:06:16 +0100
-Message-ID: <3734d588-6b9c-29e2-45b6-82e778f47602@metux.net>
-References: <1552602855-26086-1-git-send-email-info@metux.net>
- <1552602855-26086-11-git-send-email-info@metux.net>
- <20190314225204.GB1795@kroah.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v2 45/45] drivers: tty: serial: mux: use devm_* functions
+Date: Fri, 15 Mar 2019 11:08:01 +0200
+Message-ID: <CAHp75Vf1F_WQxNRiya=aTqFTEGWDVrD9JTr1VB4pOW0RayDmoA@mail.gmail.com>
+References: <1552602855-26086-1-git-send-email-info@metux.net> <1552602855-26086-46-git-send-email-info@metux.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190314225204.GB1795@kroah.com>
-Content-Language: en-US
+In-Reply-To: <1552602855-26086-46-git-send-email-info@metux.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>, "Enrico Weigelt, metux IT consult" <info@metux.net>
-Cc: linux-kernel@vger.kernel.org, eric@anholt.net, stefan.wahren@i2se.com, f.fainelli@gmail.com, rjui@broadcom.com, sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com, andriy.shevchenko@linux.intel.com, vz@mleia.com, matthias.bgg@gmail.com, yamada.masahiro@socionext.com, tklauser@distanz.ch, richard.genoud@gmail.com, macro@linux-mips.org, u.kleine-koenig@pengutronix.de, kernel@pengutronix.de, slemieux.tyco@gmail.com, andy.gross@linaro.org, david.brown@linaro.org, shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com, baohua@kernel.org, jacmet@sunsite.dk, linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+To: "Enrico Weigelt, metux IT consult" <info@metux.net>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Eric Anholt <eric@anholt.net>, Stefan Wahren <stefan.wahren@i2se.com>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Vladimir Zapolskiy <vz@mleia.com>, Matthias Brugger <matthias.bgg@gmail.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Tobias Klauser <tklauser@distanz.ch>, Richard Genoud <richard.genoud@gmail.com>, macro@linux-mips.org, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Sascha Hauer <kernel@pengutronix.de>, slemieux.tyco@g
 List-Id: linux-serial@vger.kernel.org
 
-On 14.03.19 23:52, Greg KH wrote:
-> On Thu, Mar 14, 2019 at 11:33:40PM +0100, Enrico Weigelt, metux IT consult wrote:
->> Use the safer devm versions of memory mapping functions.
-> 
-> What is "safer" about them?
+On Fri, Mar 15, 2019 at 12:37 AM Enrico Weigelt, metux IT consult
+<info@metux.net> wrote:
+>
+> Use the safer devm versions of memory mapping functions.
 
-Garbage collection :)
+If you are going to use devm_*_free(), what's the point to have this
+change from the beginning?
 
-Several drivers didn't seem to clean up properly (maybe these're just
-used compiled-in, so nobody noticed yet).
+P.S. Disregard that this is untested series...
 
-In general, I think devm_* should be the standard case, unless there's
-a really good reason to do otherwise.
+> --- a/drivers/tty/serial/mux.c
+> +++ b/drivers/tty/serial/mux.c
+> @@ -456,8 +456,9 @@ static int __init mux_probe(struct parisc_device *dev)
+>         printk(KERN_INFO "Serial mux driver (%d ports) Revision: 0.6\n", port_count);
+>
+>         dev_set_drvdata(&dev->dev, (void *)(long)port_count);
+> -       request_mem_region(dev->hpa.start + MUX_OFFSET,
+> -                           port_count * MUX_LINE_OFFSET, "Mux");
 
-<snip>
+> +       devm_request_mem_region(&dev->dev,
+> +                               dev->hpa.start + MUX_OFFSET,
+> +                               port_count * MUX_LINE_OFFSET, "Mux");
 
-> Isn't the whole goal of the devm* functions such that you are not
-> required to call "release" on them?
+...and on top of this where is error checking?
 
-Looks that one slipped through, when I was doing that big bulk change
-in the middle of the night and not enough coffe ;-)
+>
+>         if(!port_cnt) {
+>                 mux_driver.cons = MUX_CONSOLE;
+> @@ -474,7 +475,9 @@ static int __init mux_probe(struct parisc_device *dev)
+>                 port->iobase    = 0;
+>                 port->mapbase   = dev->hpa.start + MUX_OFFSET +
+>                                                 (i * MUX_LINE_OFFSET);
+> -               port->membase   = ioremap_nocache(port->mapbase, MUX_LINE_OFFSET);
+> +               port->membase   = devm_ioremap_nocache(port->dev,
+> +                                                      port->mapbase,
+> +                                                      MUX_LINE_OFFSET);
+>                 port->iotype    = UPIO_MEM;
+>                 port->type      = PORT_MUX;
+>                 port->irq       = 0;
+> @@ -517,10 +520,12 @@ static int __exit mux_remove(struct parisc_device *dev)
+>
+>                 uart_remove_one_port(&mux_driver, port);
+>                 if(port->membase)
+> -                       iounmap(port->membase);
+> +                       devm_iounmap(port->dev, port->membase);
+>         }
+>
+> -       release_mem_region(dev->hpa.start + MUX_OFFSET, port_count * MUX_LINE_OFFSET);
+> +       devm_release_mem_region(&dev->dev,
+> +                               dev->hpa.start + MUX_OFFSET,
+> +                               port_count * MUX_LINE_OFFSET);
+>         return 0;
+>  }
 
-One problem here is that many drivers do this stuff in request/release
-port, instead of probe/remove. I'm not sure yet, whether we should
-rewrite that. There're also cases which do request/release, but no
-ioremap (doing hardcoded register accesses), others do ioremap w/o
-request/release.
-
-IMHO, we should have a closer look at those and check whether that's
-really okay (just adding request/release blindly could cause trouble)
-
-> And also, why make the change, you aren't changing any functionality for
-> these old drivers at all from what I can tell (for the devm calls).
-> What am I missing here?
-
-Okay, there's a bigger story behind, you can't know yet. Finally, I'd
-like to move everything to using struct resource and corresponding
-helpers consistently, so most of the drivers would be pretty simple
-at that point. (there're of course special cases, like devices w/
-multiple register spaces, etc)
-
-Here's my wip branch:
-
-https://github.com/metux/linux/commits/wip/serial-res
-
-In this consolidation process, I'm trying to move everything to
-devm_*, to have it more generic (for now, I still need two versions
-of the request/release/ioremap/iounmap helpers - one w/ and one
-w/o devm).
-
-My idea was moving to devm first, so it can be reviewed/tested
-independently, before moving forward. Smaller, easily digestable
-pieces should minimize the risk of breaking anything. But if you
-prefer having this things squashed together, just let me know.
-
-In the queue are also other minor cleanups like using dev_err()
-instead of printk(), etc. Should I send these separately ?
-
-By the way: do you have some public branch where you're collecting
-accepted patches, which I could base mine on ? (tty.git/tty-next ?)
-
-
---mtx
 
 -- 
-Enrico Weigelt, metux IT consult
-Free software and Linux embedded engineering
-info@metux.net -- +49-151-27565287
+With Best Regards,
+Andy Shevchenko
