@@ -1,74 +1,80 @@
-From: Greg KH <gregkh@linuxfoundation.org>
+From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
 Subject: Re: [PATCH v2 10/45] drivers: tty: serial: zs: use devm_* functions
-Date: Fri, 15 Mar 2019 20:26:30 -0700
-Message-ID: <20190316032630.GB2499@kroah.com>
+Date: Sat, 16 Mar 2019 10:17:11 +0100
+Message-ID: <fd8d6a9b-3e85-9904-2195-1f1bbc42bd2d@metux.net>
 References: <1552602855-26086-1-git-send-email-info@metux.net>
  <1552602855-26086-11-git-send-email-info@metux.net>
  <20190314225204.GB1795@kroah.com>
  <3734d588-6b9c-29e2-45b6-82e778f47602@metux.net>
  <20190315142628.GA30650@kroah.com>
  <d81364fc-c5da-c1b2-f38a-3a23c701c50d@metux.net>
+ <20190316032630.GB2499@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <d81364fc-c5da-c1b2-f38a-3a23c701c50d@metux.net>
+In-Reply-To: <20190316032630.GB2499@kroah.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+To: Greg KH <gregkh@linuxfoundation.org>
 Cc: "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org, eric@anholt.net, stefan.wahren@i2se.com, f.fainelli@gmail.com, rjui@broadcom.com, sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com, andriy.shevchenko@linux.intel.com, vz@mleia.com, matthias.bgg@gmail.com, yamada.masahiro@socionext.com, tklauser@distanz.ch, richard.genoud@gmail.com, macro@linux-mips.org, u.kleine-koenig@pengutronix.de, kernel@pengutronix.de, slemieux.tyco@gmail.com, andy.gross@linaro.org, david.brown@linaro.org, shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com, baohua@kernel.org, jacmet@sunsite.dk, linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Mar 15, 2019 at 08:12:47PM +0100, Enrico Weigelt, metux IT consult wrote:
-> On 15.03.19 15:26, Greg KH wrote:
-> > Yes, there are lots of drivers for devices that are never unloaded or
-> > removed from the system.  The fact that no one has reported any problems
-> > with them means that they are never used in situations like this.
+On 16.03.19 04:26, Greg KH wrote:
+
+> No, it's just that those systems do not allow those devices to be
+> removed because they are probably not on a removable bus.
+
+Ok, devices (hw) might not be removable - that also the case for uarts
+builtin some SoCs, or the good old PC w/ 8250. But does that also mean
+that the driver should not be removable ?
+
+IMHO, even if that's the case, it's still inconsistent. The driver then
+shouldn't support a remove at all (or even builtin only), not just
+incomplete remove.
+
+>> Okay, I was on a wrong track here - I had the silly idea that it would
+>> make things easier if we'd do it the same way everywhere.
 > 
-> So, never touch a running system ?
+> "Consistent" is good, and valid, but touching old drivers that have few
+> users is always risky, and you need a solid reason to do so.
 
-No, it's just that those systems do not allow those devices to be
-removed because they are probably not on a removable bus.
+Understood.
 
-> > No, you need to have a good reason why it needs to be changed, when you
-> > can not verify that this actually resolves a problem.  As this patch
-> > shows, you just replaced one api call with another, so nothing changed
-> > at all, except you actually took up more memory and logic to do the same
-> > thing :(
+By the way: do we have some people who have those old hw and could test?
+Should we (try to) create some ? Perhaps some "tester" entry in
+MAINTAINERS file ? (I could ask around several people who might have
+lots of old / rare hardware.)
+
+>> Understood. Assuming I've found some of these cases, shall I use devm
+>> oder just add the missing release ?
 > 
-> Okay, I was on a wrong track here - I had the silly idea that it would
-> make things easier if we'd do it the same way everywhere.
+> If it actually makes the code "simpler" or "more obvious", sure, that's
+> fine.  But churn for churns sake is not ok.
 
-"Consistent" is good, and valid, but touching old drivers that have few
-users is always risky, and you need a solid reason to do so.
+Ok.
 
-> >> IMHO, we should have a closer look at those and check whether that's
-> >> really okay (just adding request/release blindly could cause trouble)
-> > 
-> > I agree, please feel free to audit these to verify they are all correct.
-> > But that's not what you did here, so that's not a valid justification
-> > for these patches to be accepted.
-> 
-> Understood. Assuming I've found some of these cases, shall I use devm
-> oder just add the missing release ?
+> I put the review of new patch submissions on hold, yes.  Almost all
+> maintainers do that as we can not add new patches to our trees at that
+> point in time.
 
-If it actually makes the code "simpler" or "more obvious", sure, that's
-fine.  But churn for churns sake is not ok.
+hmm, looks like a pipeline stall ;-)
+why not collecting in a separate branch, which later gets rebased to
+mainline when rc is out ?
 
-> >> By the way: do you have some public branch where you're collecting
-> >> accepted patches, which I could base mine on ? (tty.git/tty-next ?)
-> > 
-> > Yes, that is the tree and branch, but remember that none of my trees can
-> > open up until after -rc1 is out.
-> 
-> So, within a merge window, you put everything else on hold ?
+> And I do have other things I do during that period so it's not like I'm
+> just sitting around doing nothing :)
 
-I put the review of new patch submissions on hold, yes.  Almost all
-maintainers do that as we can not add new patches to our trees at that
-point in time.
+So it's also a fixed schedule for your other work. Understood.
 
-And I do have other things I do during that period so it's not like I'm
-just sitting around doing nothing :)
+It seems that this workflow can confuse people. Few days ago, somebody
+became nervous about missing reactions on patches. Your autoresponder
+worked for me, but maybe not for everybody.
 
-thanks,
 
-greg k-h
+--mtx
+
+-- 
+Enrico Weigelt, metux IT consult
+Free software and Linux embedded engineering
+info@metux.net -- +49-151-27565287
