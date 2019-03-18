@@ -1,53 +1,65 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: Re: [PATCH] tty: atmel_serial: fix a NULL pointer dereference
-Date: Mon, 18 Mar 2019 08:28:26 +0100
-Message-ID: <cb9a62d2-1d91-a9d6-22ed-1e19ca1d96c7@sorico.fr>
-References: <d8978a94-23fc-3610-e3da-5e1da2d86914@sorico.fr>
- <20190315171606.6282-1-kjlu@umn.edu>
+From: Masahiro Yamada <yamada.masahiro@socionext.com>
+Subject: Re: [PATCH v2 07/45] drivers: tty: serial: 8250_uniphier: use devm_ioremap_resource()
+Date: Mon, 18 Mar 2019 16:44:25 +0900
+Message-ID: <CAK7LNAT6p41J+voYdrOtPkiq92sRDNv6nbrBdVKsWZYGENxsWw@mail.gmail.com>
+References: <1552602855-26086-1-git-send-email-info@metux.net> <1552602855-26086-8-git-send-email-info@metux.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190315171606.6282-1-kjlu@umn.edu>
-Content-Language: fr
+In-Reply-To: <1552602855-26086-8-git-send-email-info@metux.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Kangjie Lu <kjlu@umn.edu>
-Cc: pakki001@umn.edu, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: "Enrico Weigelt, metux IT consult" <info@metux.net>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Eric Anholt <eric@anholt.net>, Stefan Wahren <stefan.wahren@i2se.com>, Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Vladimir Zapolskiy <vz@mleia.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tobias Klauser <tklauser@distanz.ch>, Richard Genoud <richard.genoud@gmail.com>, "Maciej W. Rozycki" <macro@linux-mips.org>, =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Sascha Hauer <kernel@pengutronix.de>, Sylvain Lemieux <slemieux.ty>
 List-Id: linux-serial@vger.kernel.org
 
-Le 15/03/2019 à 18:16, Kangjie Lu a écrit :
-> In case dmaengine_prep_dma_cyclic fails, the fix returns a proper
-> error code to avoid NULL pointer dereference.
-> 
-> Signed-off-by: Kangjie Lu <kjlu@umn.edu>
-> Fixes: 34df42f59a60 ("serial: at91: add rx dma support")
-Acked-by: Richard Genoud <richard.genoud@gmail.com>
-
-> 
+On Fri, Mar 15, 2019 at 7:35 AM Enrico Weigelt, metux IT consult
+<info@metux.net> wrote:
+>
+> Instead of fetching out data from a struct resource for passing
+> it to devm_ioremap(), directly use devm_ioremap_resource()
+>
+> Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 > ---
-> V2: simplified the patch as suggested by
-> Richard Genoud <richard.genoud@gmail.com>
-> ---
->  drivers/tty/serial/atmel_serial.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 05147fe24343..41b728d223d1 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -1288,6 +1288,10 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
->  					 sg_dma_len(&atmel_port->sg_rx)/2,
->  					 DMA_DEV_TO_MEM,
->  					 DMA_PREP_INTERRUPT);
-> +	if (!desc) {
-> +		dev_err(port->dev, "Preparing DMA cyclic failed\n");
-> +		goto chan_err;
-> +	}
->  	desc->callback = atmel_complete_rx_dma;
->  	desc->callback_param = port;
->  	atmel_port->desc_rx = desc;
-> 
 
-Thanks !
 
-Richard
+NACK.
+
+
+This patch would break my driver.
+
+Probably, all the 8250* drivers would be broken in the same way.
+
+
+For 8250 drivers, request_mem_region() is called
+from 8250_port.c
+
+
+Let's not touch around the code you do not
+understand how it works.
+
+
+Thanks.
+
+Masahiro Yamada
+
+
+
+>  drivers/tty/serial/8250/8250_uniphier.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
+> index 164ba13..9c1244e 100644
+> --- a/drivers/tty/serial/8250/8250_uniphier.c
+> +++ b/drivers/tty/serial/8250/8250_uniphier.c
+> @@ -171,7 +171,7 @@ static int uniphier_uart_probe(struct platform_device *pdev)
+>                 return -EINVAL;
+>         }
+>
+> -       membase = devm_ioremap(dev, regs->start, resource_size(regs));
+> +       membase = devm_ioremap_resource(dev, regs);
+>         if (!membase)
+>                 return -ENOMEM;
+>
+> --
+> 1.9.1
+>
