@@ -1,50 +1,99 @@
-From: Nguyen An Hoan <na-hoan@jinso.co.jp>
-Subject: [PATCH] serial: sh-sci: Fix setting SCSCR_TIE while transferring data
-Date: Mon, 18 Mar 2019 18:26:32 +0900
-Message-ID: <1552901192-29748-1-git-send-email-na-hoan@jinso.co.jp>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH 1/2] tty/serial: atmel: Add is_half_duplex helper
+Date: Mon, 18 Mar 2019 14:41:35 +0100
+Message-ID: <c8ee3b11-e674-4992-c24f-b0434887a21e@sorico.fr>
+References: <20190315092334.13246-1-razvan.stefanescu@microchip.com>
+ <20190315092334.13246-2-razvan.stefanescu@microchip.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190315092334.13246-2-razvan.stefanescu@microchip.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-renesas-soc@vger.kernel.org, geert+renesas@glider.be
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, ulrich.hecht+renesas@gmail.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kuninori.morimoto.gx@renesas.com, magnus.damm@gmail.com, yoshihiro.shimoda.uh@renesas.com, h-inayoshi@jinso.co.jp, nv-dung@jinso.co.jp, na-hoan@jinso.co.jp, cv-dong@jinso.co.jp
+To: Razvan Stefanescu <razvan.stefanescu@microchip.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Gil Weber <webergil@gmail.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Hoan Nguyen An <na-hoan@jinso.co.jp>
+[ adding Gil Weber in Cc: ]
 
-We disable transmission interrupt (clear SCSCR_TIE) after all data has been transmitted
-(if uart_circ_empty(xmit)). While transmitting, if the data is still in the tty buffer,
-re-enable the SCSCR_TIE bit, which was done at sci_start_tx().
-This is unnecessary processing, wasting CPU operation if the data transmission length is large.
-And further, transmit end, FIFO empty bits disabling have also been performed in the step above.
+Le 15/03/2019 à 10:23, Razvan Stefanescu a écrit :
+> Use a helper function to check that a port needs to use half duplex
+> communication, replacing several occurrences of multi-line bit checking.
+> 
+> Signed-off-by: Razvan Stefanescu <razvan.stefanescu@microchip.com>
+> ---
+>  drivers/tty/serial/atmel_serial.c | 27 ++++++++++++++-------------
+>  1 file changed, 14 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index 05147fe24343..a6577b1c4461 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -231,6 +231,13 @@ static inline void atmel_uart_write_char(struct uart_port *port, u8 value)
+>  	__raw_writeb(value, port->membase + ATMEL_US_THR);
+>  }
+>  
+> +static inline int atmel_uart_is_half_duplex(struct uart_port *port)
+> +{
+> +	return ((port->rs485.flags & SER_RS485_ENABLED) &&
+> +		!(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
+> +		(port->iso7816.flags & SER_ISO7816_ENABLED);
+> +}
+> +
+>  #ifdef CONFIG_SERIAL_ATMEL_PDC
+>  static bool atmel_use_pdc_rx(struct uart_port *port)
+>  {
+> @@ -608,10 +615,10 @@ static void atmel_stop_tx(struct uart_port *port)
+>  	/* Disable interrupts */
+>  	atmel_uart_writel(port, ATMEL_US_IDR, atmel_port->tx_done_mask);
+>  
+> -	if (((port->rs485.flags & SER_RS485_ENABLED) &&
+> -	     !(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
+> -	    port->iso7816.flags & SER_ISO7816_ENABLED)
+> -		atmel_start_rx(port);
+> +	if (atmel_uart_is_half_duplex(port))
+> +		if (!atomic_read(&atmel_port->tasklet_shutdown))
+This check wasn't there before.
+If it's really needed, please insert it in another patch and explain why
+it's needed.
 
-Signed-off-by: Hoan Nguyen An <na-hoan@jinso.co.jp>
----
- drivers/tty/serial/sh-sci.c | 12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
-
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 64bbeb7..93bd90f 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -838,19 +838,9 @@ static void sci_transmit_chars(struct uart_port *port)
- 
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(port);
--	if (uart_circ_empty(xmit)) {
-+	if (uart_circ_empty(xmit))
- 		sci_stop_tx(port);
--	} else {
--		ctrl = serial_port_in(port, SCSCR);
--
--		if (port->type != PORT_SCI) {
--			serial_port_in(port, SCxSR); /* Dummy read */
--			sci_clear_SCxSR(port, SCxSR_TDxE_CLEAR(port));
--		}
- 
--		ctrl |= SCSCR_TIE;
--		serial_port_out(port, SCSCR, ctrl);
--	}
- }
- 
- /* On SH3, SCIF may read end-of-break as a space->mark char */
--- 
-2.7.4
+> +			atmel_start_rx(port);
+> +
+>  }
+>  
+>  /*
+> @@ -628,9 +635,7 @@ static void atmel_start_tx(struct uart_port *port)
+>  		return;
+>  
+>  	if (atmel_use_pdc_tx(port) || atmel_use_dma_tx(port))
+> -		if (((port->rs485.flags & SER_RS485_ENABLED) &&
+> -		     !(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
+> -		    port->iso7816.flags & SER_ISO7816_ENABLED)
+> +		if (atmel_uart_is_half_duplex(port))
+>  			atmel_stop_rx(port);
+>  
+>  	if (atmel_use_pdc_tx(port))
+> @@ -928,9 +933,7 @@ static void atmel_complete_tx_dma(void *arg)
+>  	 */
+>  	if (!uart_circ_empty(xmit))
+>  		atmel_tasklet_schedule(atmel_port, &atmel_port->tasklet_tx);
+> -	else if (((port->rs485.flags & SER_RS485_ENABLED) &&
+> -		  !(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
+> -		 port->iso7816.flags & SER_ISO7816_ENABLED) {
+> +	else if (atmel_uart_is_half_duplex(port)) {
+>  		/* DMA done, stop TX, start RX for RS485 */
+>  		atmel_start_rx(port);
+>  	}
+> @@ -1508,9 +1511,7 @@ static void atmel_tx_pdc(struct uart_port *port)
+>  		atmel_uart_writel(port, ATMEL_US_IER,
+>  				  atmel_port->tx_done_mask);
+>  	} else {
+> -		if (((port->rs485.flags & SER_RS485_ENABLED) &&
+> -		     !(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
+> -		    port->iso7816.flags & SER_ISO7816_ENABLED) {
+> +		if (atmel_uart_is_half_duplex(port)) {
+>  			/* DMA done, stop TX, start RX for RS485 */
+>  			atmel_start_rx(port);
+>  		}
+> 
