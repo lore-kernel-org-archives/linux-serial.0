@@ -1,33 +1,131 @@
-From: <Razvan.Stefanescu@microchip.com>
-Subject: Re: [PATCH 2/2] tty/serial: atmel: RS485 HD w/DMA: enable RX after TX
- is stopped
-Date: Mon, 18 Mar 2019 14:57:45 +0000
-Message-ID: <bec23b27-875a-e78f-48db-2da493360338@microchip.com>
-References: <20190315092334.13246-1-razvan.stefanescu@microchip.com>
- <20190315092334.13246-3-razvan.stefanescu@microchip.com>
- <cb09f654-1c42-4f0c-25d3-5cb1708d6080@sorico.fr>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1] dmaengine: idma64: Use actual device for DMA transfers
+Date: Mon, 18 Mar 2019 18:39:30 +0300
+Message-ID: <20190318153930.25641-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cb09f654-1c42-4f0c-25d3-5cb1708d6080@sorico.fr>
-Content-Language: en-US
-Content-ID: <08EAC9708B34CC49B3AE015CA1DBAF32@namprd11.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: richard.genoud@gmail.com, gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: webergil@gmail.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Vinod Koul <vkoul@kernel.org>, dmaengine@vger.kernel.org, Daniel Mack <daniel@zonque.org>, Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>, linux-arm-kernel@lists.infradead.org, Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-DQpPbiAxOC8wMy8yMDE5IDE2OjMwLCBSaWNoYXJkIEdlbm91ZCB3cm90ZToNCj4+ICsJCS8qIFN0
-YXJ0IFJYIGlmIGZsYWcgd2FzIHNldCBhbmQgRklGTyBpcyBlbXB0eSAqLw0KPj4gKwkJaWYgKGF0
-bWVsX3BvcnQtPmhkX3N0YXJ0X3J4KSB7DQo+PiArCQkJaWYgKGF0bWVsX3VhcnRfcmVhZGwocG9y
-dCwgQVRNRUxfVVNfQ1NSKQ0KPj4gKwkJCQkJJiBBVE1FTF9VU19UWEVNUFRZKSB7DQo+PiArCQkJ
-CWF0bWVsX3BvcnQtPmhkX3N0YXJ0X3J4ID0gZmFsc2U7DQo+PiArCQkJCWF0bWVsX3N0YXJ0X3J4
-KHBvcnQpOw0KPj4gKwkJCX0gZWxzZSB7DQo+PiArCQkJCWRldl93YXJuKHBvcnQtPmRldiwgIlNo
-b3VsZCBzdGFydCBSWCwgYnV0IFRYIGZpZm8gaXMgbm90IGVtcHR5XG4iKTsNCj4gV2hhdCB3aWxs
-IGhhcHBlbiBpbiB0aGlzIGNhc2UgPw0KPiANCg0KUlggd2lsbCBub3QgYmUgc3RhcnRlZC4gSSBo
-YXZlbid0IGJlZW4gYWJsZSB0byB0cmlnZ2VyIHRoaXMgZXJyb3IgY2FzZS4gDQpXb3VsZCBpdCBi
-ZSBiZXR0ZXIgdG8gc3RhcnQgUlggYW55d2F5IGFuZCBqdXN0IGRpc3BsYXkgdGhlIGVycm9yIG1l
-c3NhZ2UgDQppZiBUWCBmaWZvIGlzIG5vdCBlbXB0eT8gQnV0IHRoaXMgd2F5IGl0IHdpbGwgYmUg
-bGlrZSBiZWZvcmUgdGhpcyBmaXgsIA0KaW4gY2FzZSBvZiBhbiBlcnJvci4NCg0KVGhhbmsgeW91
-LA0KUmF6dmFuDQo=
+Intel IOMMU, when enabled, tries to find the domain of the device,
+assuming it's a PCI one, during DMA operations, such as mapping or
+unmapping. Since we are splitting the actual PCI device to couple of
+children via MFD framework (see drivers/mfd/intel-lpss.c for details),
+the DMA device appears to be a platform one, and thus not an actual one
+that performs DMA. In a such situation IOMMU can't find or allocate
+a proper domain for its operations. As a result, all DMA operations are
+failed.
+
+In order to fix this, supply parent of the platform device
+to the DMA engine framework and fix filter functions accordingly.
+
+We may rely on the fact that parent is a real PCI device, because no
+other configuration is present in the wild.
+
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/dma/idma64.c              | 6 ++++--
+ drivers/dma/idma64.h              | 2 ++
+ drivers/spi/spi-pxa2xx.c          | 7 +------
+ drivers/tty/serial/8250/8250_dw.c | 4 ++--
+ 4 files changed, 9 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/dma/idma64.c b/drivers/dma/idma64.c
+index 0baf9797cc09..83796a33dc16 100644
+--- a/drivers/dma/idma64.c
++++ b/drivers/dma/idma64.c
+@@ -592,7 +592,7 @@ static int idma64_probe(struct idma64_chip *chip)
+ 	idma64->dma.directions = BIT(DMA_DEV_TO_MEM) | BIT(DMA_MEM_TO_DEV);
+ 	idma64->dma.residue_granularity = DMA_RESIDUE_GRANULARITY_BURST;
+ 
+-	idma64->dma.dev = chip->dev;
++	idma64->dma.dev = chip->sysdev;
+ 
+ 	dma_set_max_seg_size(idma64->dma.dev, IDMA64C_CTLH_BLOCK_TS_MASK);
+ 
+@@ -632,6 +632,7 @@ static int idma64_platform_probe(struct platform_device *pdev)
+ {
+ 	struct idma64_chip *chip;
+ 	struct device *dev = &pdev->dev;
++	struct device *sysdev = dev->parent;
+ 	struct resource *mem;
+ 	int ret;
+ 
+@@ -648,11 +649,12 @@ static int idma64_platform_probe(struct platform_device *pdev)
+ 	if (IS_ERR(chip->regs))
+ 		return PTR_ERR(chip->regs);
+ 
+-	ret = dma_coerce_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
++	ret = dma_coerce_mask_and_coherent(sysdev, DMA_BIT_MASK(64));
+ 	if (ret)
+ 		return ret;
+ 
+ 	chip->dev = dev;
++	chip->sysdev = sysdev;
+ 
+ 	ret = idma64_probe(chip);
+ 	if (ret)
+diff --git a/drivers/dma/idma64.h b/drivers/dma/idma64.h
+index 6b816878e5e7..baa32e1425de 100644
+--- a/drivers/dma/idma64.h
++++ b/drivers/dma/idma64.h
+@@ -216,12 +216,14 @@ static inline void idma64_writel(struct idma64 *idma64, int offset, u32 value)
+ /**
+  * struct idma64_chip - representation of iDMA 64-bit controller hardware
+  * @dev:		struct device of the DMA controller
++ * @sysdev:		struct device of the physical device that does DMA
+  * @irq:		irq line
+  * @regs:		memory mapped I/O space
+  * @idma64:		struct idma64 that is filed by idma64_probe()
+  */
+ struct idma64_chip {
+ 	struct device	*dev;
++	struct device	*sysdev;
+ 	int		irq;
+ 	void __iomem	*regs;
+ 	struct idma64	*idma64;
+diff --git a/drivers/spi/spi-pxa2xx.c b/drivers/spi/spi-pxa2xx.c
+index b6ddba833d02..5ea70f7d12e7 100644
+--- a/drivers/spi/spi-pxa2xx.c
++++ b/drivers/spi/spi-pxa2xx.c
+@@ -1487,12 +1487,7 @@ static int pxa2xx_spi_get_port_id(struct acpi_device *adev)
+ 
+ static bool pxa2xx_spi_idma_filter(struct dma_chan *chan, void *param)
+ {
+-	struct device *dev = param;
+-
+-	if (dev != chan->device->dev->parent)
+-		return false;
+-
+-	return true;
++	return param == chan->device->dev;
+ }
+ 
+ #endif /* CONFIG_PCI */
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index d31b975dd3fd..284e8d052fc3 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -365,7 +365,7 @@ static bool dw8250_fallback_dma_filter(struct dma_chan *chan, void *param)
+ 
+ static bool dw8250_idma_filter(struct dma_chan *chan, void *param)
+ {
+-	return param == chan->device->dev->parent;
++	return param == chan->device->dev;
+ }
+ 
+ /*
+@@ -434,7 +434,7 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
+ 		data->uart_16550_compatible = true;
+ 	}
+ 
+-	/* Platforms with iDMA */
++	/* Platforms with iDMA 64-bit */
+ 	if (platform_get_resource_byname(to_platform_device(p->dev),
+ 					 IORESOURCE_MEM, "lpss_priv")) {
+ 		data->dma.rx_param = p->dev->parent;
+-- 
+2.20.1
