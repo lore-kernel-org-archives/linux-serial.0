@@ -1,99 +1,80 @@
-From: Richard Genoud <richard.genoud@gmail.com>
+From: <Razvan.Stefanescu@microchip.com>
 Subject: Re: [PATCH 1/2] tty/serial: atmel: Add is_half_duplex helper
-Date: Mon, 18 Mar 2019 14:41:35 +0100
-Message-ID: <c8ee3b11-e674-4992-c24f-b0434887a21e@sorico.fr>
+Date: Mon, 18 Mar 2019 14:17:34 +0000
+Message-ID: <13afa294-e279-9ba3-352d-184730f483d4@microchip.com>
 References: <20190315092334.13246-1-razvan.stefanescu@microchip.com>
  <20190315092334.13246-2-razvan.stefanescu@microchip.com>
+ <c8ee3b11-e674-4992-c24f-b0434887a21e@sorico.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190315092334.13246-2-razvan.stefanescu@microchip.com>
+In-Reply-To: <c8ee3b11-e674-4992-c24f-b0434887a21e@sorico.fr>
 Content-Language: en-US
+Content-ID: <5061AD63DD25484193C1D93989EE27E9@namprd11.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Razvan Stefanescu <razvan.stefanescu@microchip.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Gil Weber <webergil@gmail.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: richard.genoud@gmail.com, gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: webergil@gmail.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-[ adding Gil Weber in Cc: ]
-
-Le 15/03/2019 à 10:23, Razvan Stefanescu a écrit :
-> Use a helper function to check that a port needs to use half duplex
-> communication, replacing several occurrences of multi-line bit checking.
-> 
-> Signed-off-by: Razvan Stefanescu <razvan.stefanescu@microchip.com>
-> ---
->  drivers/tty/serial/atmel_serial.c | 27 ++++++++++++++-------------
->  1 file changed, 14 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 05147fe24343..a6577b1c4461 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -231,6 +231,13 @@ static inline void atmel_uart_write_char(struct uart_port *port, u8 value)
->  	__raw_writeb(value, port->membase + ATMEL_US_THR);
->  }
->  
-> +static inline int atmel_uart_is_half_duplex(struct uart_port *port)
-> +{
-> +	return ((port->rs485.flags & SER_RS485_ENABLED) &&
-> +		!(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
-> +		(port->iso7816.flags & SER_ISO7816_ENABLED);
-> +}
-> +
->  #ifdef CONFIG_SERIAL_ATMEL_PDC
->  static bool atmel_use_pdc_rx(struct uart_port *port)
->  {
-> @@ -608,10 +615,10 @@ static void atmel_stop_tx(struct uart_port *port)
->  	/* Disable interrupts */
->  	atmel_uart_writel(port, ATMEL_US_IDR, atmel_port->tx_done_mask);
->  
-> -	if (((port->rs485.flags & SER_RS485_ENABLED) &&
-> -	     !(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
-> -	    port->iso7816.flags & SER_ISO7816_ENABLED)
-> -		atmel_start_rx(port);
-> +	if (atmel_uart_is_half_duplex(port))
-> +		if (!atomic_read(&atmel_port->tasklet_shutdown))
-This check wasn't there before.
-If it's really needed, please insert it in another patch and explain why
-it's needed.
-
-> +			atmel_start_rx(port);
-> +
->  }
->  
->  /*
-> @@ -628,9 +635,7 @@ static void atmel_start_tx(struct uart_port *port)
->  		return;
->  
->  	if (atmel_use_pdc_tx(port) || atmel_use_dma_tx(port))
-> -		if (((port->rs485.flags & SER_RS485_ENABLED) &&
-> -		     !(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
-> -		    port->iso7816.flags & SER_ISO7816_ENABLED)
-> +		if (atmel_uart_is_half_duplex(port))
->  			atmel_stop_rx(port);
->  
->  	if (atmel_use_pdc_tx(port))
-> @@ -928,9 +933,7 @@ static void atmel_complete_tx_dma(void *arg)
->  	 */
->  	if (!uart_circ_empty(xmit))
->  		atmel_tasklet_schedule(atmel_port, &atmel_port->tasklet_tx);
-> -	else if (((port->rs485.flags & SER_RS485_ENABLED) &&
-> -		  !(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
-> -		 port->iso7816.flags & SER_ISO7816_ENABLED) {
-> +	else if (atmel_uart_is_half_duplex(port)) {
->  		/* DMA done, stop TX, start RX for RS485 */
->  		atmel_start_rx(port);
->  	}
-> @@ -1508,9 +1511,7 @@ static void atmel_tx_pdc(struct uart_port *port)
->  		atmel_uart_writel(port, ATMEL_US_IER,
->  				  atmel_port->tx_done_mask);
->  	} else {
-> -		if (((port->rs485.flags & SER_RS485_ENABLED) &&
-> -		     !(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
-> -		    port->iso7816.flags & SER_ISO7816_ENABLED) {
-> +		if (atmel_uart_is_half_duplex(port)) {
->  			/* DMA done, stop TX, start RX for RS485 */
->  			atmel_start_rx(port);
->  		}
-> 
+DQoNCk9uIDE4LzAzLzIwMTkgMTU6NDEsIFJpY2hhcmQgR2Vub3VkIHdyb3RlOg0KPiBbIGFkZGlu
+ZyBHaWwgV2ViZXIgaW4gQ2M6IF0NCj4gDQo+IExlIDE1LzAzLzIwMTkgw6AgMTA6MjMsIFJhenZh
+biBTdGVmYW5lc2N1IGEgw6ljcml0wqA6DQo+PiBVc2UgYSBoZWxwZXIgZnVuY3Rpb24gdG8gY2hl
+Y2sgdGhhdCBhIHBvcnQgbmVlZHMgdG8gdXNlIGhhbGYgZHVwbGV4DQo+PiBjb21tdW5pY2F0aW9u
+LCByZXBsYWNpbmcgc2V2ZXJhbCBvY2N1cnJlbmNlcyBvZiBtdWx0aS1saW5lIGJpdCBjaGVja2lu
+Zy4NCj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBSYXp2YW4gU3RlZmFuZXNjdSA8cmF6dmFuLnN0ZWZh
+bmVzY3VAbWljcm9jaGlwLmNvbT4NCj4+IC0tLQ0KPj4gICBkcml2ZXJzL3R0eS9zZXJpYWwvYXRt
+ZWxfc2VyaWFsLmMgfCAyNyArKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0NCj4+ICAgMSBmaWxl
+IGNoYW5nZWQsIDE0IGluc2VydGlvbnMoKyksIDEzIGRlbGV0aW9ucygtKQ0KPj4NCj4+IGRpZmYg
+LS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMgYi9kcml2ZXJzL3R0eS9z
+ZXJpYWwvYXRtZWxfc2VyaWFsLmMNCj4+IGluZGV4IDA1MTQ3ZmUyNDM0My4uYTY1NzdiMWM0NDYx
+IDEwMDY0NA0KPj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5jDQo+PiAr
+KysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMNCj4+IEBAIC0yMzEsNiArMjMx
+LDEzIEBAIHN0YXRpYyBpbmxpbmUgdm9pZCBhdG1lbF91YXJ0X3dyaXRlX2NoYXIoc3RydWN0IHVh
+cnRfcG9ydCAqcG9ydCwgdTggdmFsdWUpDQo+PiAgIAlfX3Jhd193cml0ZWIodmFsdWUsIHBvcnQt
+Pm1lbWJhc2UgKyBBVE1FTF9VU19USFIpOw0KPj4gICB9DQo+PiAgIA0KPj4gK3N0YXRpYyBpbmxp
+bmUgaW50IGF0bWVsX3VhcnRfaXNfaGFsZl9kdXBsZXgoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkN
+Cj4+ICt7DQo+PiArCXJldHVybiAoKHBvcnQtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJM
+RUQpICYmDQo+PiArCQkhKHBvcnQtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X1JYX0RVUklOR19U
+WCkpIHx8DQo+PiArCQkocG9ydC0+aXNvNzgxNi5mbGFncyAmIFNFUl9JU083ODE2X0VOQUJMRUQp
+Ow0KPj4gK30NCj4+ICsNCj4+ICAgI2lmZGVmIENPTkZJR19TRVJJQUxfQVRNRUxfUERDDQo+PiAg
+IHN0YXRpYyBib29sIGF0bWVsX3VzZV9wZGNfcngoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkNCj4+
+ICAgew0KPj4gQEAgLTYwOCwxMCArNjE1LDEwIEBAIHN0YXRpYyB2b2lkIGF0bWVsX3N0b3BfdHgo
+c3RydWN0IHVhcnRfcG9ydCAqcG9ydCkNCj4+ICAgCS8qIERpc2FibGUgaW50ZXJydXB0cyAqLw0K
+Pj4gICAJYXRtZWxfdWFydF93cml0ZWwocG9ydCwgQVRNRUxfVVNfSURSLCBhdG1lbF9wb3J0LT50
+eF9kb25lX21hc2spOw0KPj4gICANCj4+IC0JaWYgKCgocG9ydC0+cnM0ODUuZmxhZ3MgJiBTRVJf
+UlM0ODVfRU5BQkxFRCkgJiYNCj4+IC0JICAgICAhKHBvcnQtPnJzNDg1LmZsYWdzICYgU0VSX1JT
+NDg1X1JYX0RVUklOR19UWCkpIHx8DQo+PiAtCSAgICBwb3J0LT5pc283ODE2LmZsYWdzICYgU0VS
+X0lTTzc4MTZfRU5BQkxFRCkNCj4+IC0JCWF0bWVsX3N0YXJ0X3J4KHBvcnQpOw0KPj4gKwlpZiAo
+YXRtZWxfdWFydF9pc19oYWxmX2R1cGxleChwb3J0KSkNCj4+ICsJCWlmICghYXRvbWljX3JlYWQo
+JmF0bWVsX3BvcnQtPnRhc2tsZXRfc2h1dGRvd24pKQ0KPiBUaGlzIGNoZWNrIHdhc24ndCB0aGVy
+ZSBiZWZvcmUuDQo+IElmIGl0J3MgcmVhbGx5IG5lZWRlZCwgcGxlYXNlIGluc2VydCBpdCBpbiBh
+bm90aGVyIHBhdGNoIGFuZCBleHBsYWluIHdoeQ0KPiBpdCdzIG5lZWRlZC4NCj4gDQpUaGFuayB5
+b3UgZm9yIHRoZSBmZWVkYmFjay4gSXQgaXMgbm90IG5lZWRlZCwgd2lsbCBiZSByZW1vdmVkIGlu
+IHYyLg0KDQpCZXN0IHJlZ2FyZHMsDQpSYXp2YW4NCg0KPj4gKwkJCWF0bWVsX3N0YXJ0X3J4KHBv
+cnQpOw0KPj4gKw0KPj4gICB9DQo+PiAgIA0KPj4gICAvKg0KPj4gQEAgLTYyOCw5ICs2MzUsNyBA
+QCBzdGF0aWMgdm9pZCBhdG1lbF9zdGFydF90eChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQ0KPj4g
+ICAJCXJldHVybjsNCj4+ICAgDQo+PiAgIAlpZiAoYXRtZWxfdXNlX3BkY190eChwb3J0KSB8fCBh
+dG1lbF91c2VfZG1hX3R4KHBvcnQpKQ0KPj4gLQkJaWYgKCgocG9ydC0+cnM0ODUuZmxhZ3MgJiBT
+RVJfUlM0ODVfRU5BQkxFRCkgJiYNCj4+IC0JCSAgICAgIShwb3J0LT5yczQ4NS5mbGFncyAmIFNF
+Ul9SUzQ4NV9SWF9EVVJJTkdfVFgpKSB8fA0KPj4gLQkJICAgIHBvcnQtPmlzbzc4MTYuZmxhZ3Mg
+JiBTRVJfSVNPNzgxNl9FTkFCTEVEKQ0KPj4gKwkJaWYgKGF0bWVsX3VhcnRfaXNfaGFsZl9kdXBs
+ZXgocG9ydCkpDQo+PiAgIAkJCWF0bWVsX3N0b3BfcngocG9ydCk7DQo+PiAgIA0KPj4gICAJaWYg
+KGF0bWVsX3VzZV9wZGNfdHgocG9ydCkpDQo+PiBAQCAtOTI4LDkgKzkzMyw3IEBAIHN0YXRpYyB2
+b2lkIGF0bWVsX2NvbXBsZXRlX3R4X2RtYSh2b2lkICphcmcpDQo+PiAgIAkgKi8NCj4+ICAgCWlm
+ICghdWFydF9jaXJjX2VtcHR5KHhtaXQpKQ0KPj4gICAJCWF0bWVsX3Rhc2tsZXRfc2NoZWR1bGUo
+YXRtZWxfcG9ydCwgJmF0bWVsX3BvcnQtPnRhc2tsZXRfdHgpOw0KPj4gLQllbHNlIGlmICgoKHBv
+cnQtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJMRUQpICYmDQo+PiAtCQkgICEocG9ydC0+
+cnM0ODUuZmxhZ3MgJiBTRVJfUlM0ODVfUlhfRFVSSU5HX1RYKSkgfHwNCj4+IC0JCSBwb3J0LT5p
+c283ODE2LmZsYWdzICYgU0VSX0lTTzc4MTZfRU5BQkxFRCkgew0KPj4gKwllbHNlIGlmIChhdG1l
+bF91YXJ0X2lzX2hhbGZfZHVwbGV4KHBvcnQpKSB7DQo+PiAgIAkJLyogRE1BIGRvbmUsIHN0b3Ag
+VFgsIHN0YXJ0IFJYIGZvciBSUzQ4NSAqLw0KPj4gICAJCWF0bWVsX3N0YXJ0X3J4KHBvcnQpOw0K
+Pj4gICAJfQ0KPj4gQEAgLTE1MDgsOSArMTUxMSw3IEBAIHN0YXRpYyB2b2lkIGF0bWVsX3R4X3Bk
+YyhzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQ0KPj4gICAJCWF0bWVsX3VhcnRfd3JpdGVsKHBvcnQs
+IEFUTUVMX1VTX0lFUiwNCj4+ICAgCQkJCSAgYXRtZWxfcG9ydC0+dHhfZG9uZV9tYXNrKTsNCj4+
+ICAgCX0gZWxzZSB7DQo+PiAtCQlpZiAoKChwb3J0LT5yczQ4NS5mbGFncyAmIFNFUl9SUzQ4NV9F
+TkFCTEVEKSAmJg0KPj4gLQkJICAgICAhKHBvcnQtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X1JY
+X0RVUklOR19UWCkpIHx8DQo+PiAtCQkgICAgcG9ydC0+aXNvNzgxNi5mbGFncyAmIFNFUl9JU083
+ODE2X0VOQUJMRUQpIHsNCj4+ICsJCWlmIChhdG1lbF91YXJ0X2lzX2hhbGZfZHVwbGV4KHBvcnQp
+KSB7DQo+PiAgIAkJCS8qIERNQSBkb25lLCBzdG9wIFRYLCBzdGFydCBSWCBmb3IgUlM0ODUgKi8N
+Cj4+ICAgCQkJYXRtZWxfc3RhcnRfcngocG9ydCk7DQo+PiAgIAkJfQ0KPj4NCj4gDQo=
