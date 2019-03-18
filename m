@@ -1,401 +1,50 @@
-From: Erin Lo <erin.lo@mediatek.com>
-Subject: [PATCH v9] arm64: dts: Add Mediatek SoC MT8183 and evaluation board dts and Makefile
-Date: Mon, 18 Mar 2019 16:42:32 +0800
-Message-ID: <1552898552-13045-2-git-send-email-erin.lo@mediatek.com>
-References: <1552898552-13045-1-git-send-email-erin.lo@mediatek.com>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: Nguyen An Hoan <na-hoan@jinso.co.jp>
+Subject: [PATCH] serial: sh-sci: Fix setting SCSCR_TIE while transferring data
+Date: Mon, 18 Mar 2019 18:26:32 +0900
+Message-ID: <1552901192-29748-1-git-send-email-na-hoan@jinso.co.jp>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1552898552-13045-1-git-send-email-erin.lo@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
-Cc: devicetree@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, erin.lo@mediatek.com, mars.cheng@mediatek.com, eddie.huang@mediatek.com, Ben Ho <Ben.Ho@mediatek.com>, Seiya Wang <seiya.wang@mediatek.com>, Weiyi Lu <weiyi.lu@mediatek.com>, Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>
+To: linux-renesas-soc@vger.kernel.org, geert+renesas@glider.be
+Cc: gregkh@linuxfoundation.org, jslaby@suse.com, ulrich.hecht+renesas@gmail.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, kuninori.morimoto.gx@renesas.com, magnus.damm@gmail.com, yoshihiro.shimoda.uh@renesas.com, h-inayoshi@jinso.co.jp, nv-dung@jinso.co.jp, na-hoan@jinso.co.jp, cv-dong@jinso.co.jp
 List-Id: linux-serial@vger.kernel.org
 
-From: Ben Ho <Ben.Ho@mediatek.com>
+From: Hoan Nguyen An <na-hoan@jinso.co.jp>
 
-Add basic chip support for Mediatek 8183, include
-uart node with correct uart clocks, pwrap device
+We disable transmission interrupt (clear SCSCR_TIE) after all data has been transmitted
+(if uart_circ_empty(xmit)). While transmitting, if the data is still in the tty buffer,
+re-enable the SCSCR_TIE bit, which was done at sci_start_tx().
+This is unnecessary processing, wasting CPU operation if the data transmission length is large.
+And further, transmit end, FIFO empty bits disabling have also been performed in the step above.
 
-Add clock controller nodes, include topckgen, infracfg,
-apmixedsys and subsystem.
-
-Signed-off-by: Ben Ho <Ben.Ho@mediatek.com>
-Signed-off-by: Erin Lo <erin.lo@mediatek.com>
-Signed-off-by: Seiya Wang <seiya.wang@mediatek.com>
-Signed-off-by: Weiyi Lu <weiyi.lu@mediatek.com>
-Signed-off-by: Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>
-Signed-off-by: Eddie Huang <eddie.huang@mediatek.com>
+Signed-off-by: Hoan Nguyen An <na-hoan@jinso.co.jp>
 ---
- arch/arm64/boot/dts/mediatek/Makefile       |   1 +
- arch/arm64/boot/dts/mediatek/mt8183-evb.dts |  31 +++
- arch/arm64/boot/dts/mediatek/mt8183.dtsi    | 311 ++++++++++++++++++++++++++++
- 3 files changed, 343 insertions(+)
- create mode 100644 arch/arm64/boot/dts/mediatek/mt8183-evb.dts
- create mode 100644 arch/arm64/boot/dts/mediatek/mt8183.dtsi
+ drivers/tty/serial/sh-sci.c | 12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
-index e8f952f..458bbc4 100644
---- a/arch/arm64/boot/dts/mediatek/Makefile
-+++ b/arch/arm64/boot/dts/mediatek/Makefile
-@@ -7,3 +7,4 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt6797-x20-dev.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt7622-rfb1.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt7622-bananapi-bpi-r64.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt8173-evb.dtb
-+dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-evb.dtb
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-new file mode 100644
-index 0000000..9b52559
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-@@ -0,0 +1,31 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Copyright (c) 2018 MediaTek Inc.
-+ * Author: Ben Ho <ben.ho@mediatek.com>
-+ *	   Erin Lo <erin.lo@mediatek.com>
-+ */
-+
-+/dts-v1/;
-+#include "mt8183.dtsi"
-+
-+/ {
-+	model = "MediaTek MT8183 evaluation board";
-+	compatible = "mediatek,mt8183-evb", "mediatek,mt8183";
-+
-+	aliases {
-+		serial0 = &uart0;
-+	};
-+
-+	memory@40000000 {
-+		device_type = "memory";
-+		reg = <0 0x40000000 0 0x80000000>;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial0:921600n8";
-+	};
-+};
-+
-+&uart0 {
-+	status = "okay";
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-new file mode 100644
-index 0000000..08274bf
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-@@ -0,0 +1,311 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Copyright (c) 2018 MediaTek Inc.
-+ * Author: Ben Ho <ben.ho@mediatek.com>
-+ *	   Erin Lo <erin.lo@mediatek.com>
-+ */
-+
-+#include <dt-bindings/clock/mt8183-clk.h>
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/interrupt-controller/irq.h>
-+
-+/ {
-+	compatible = "mediatek,mt8183";
-+	interrupt-parent = <&sysirq>;
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu-map {
-+			cluster0 {
-+				core0 {
-+					cpu = <&cpu0>;
-+				};
-+				core1 {
-+					cpu = <&cpu1>;
-+				};
-+				core2 {
-+					cpu = <&cpu2>;
-+				};
-+				core3 {
-+					cpu = <&cpu3>;
-+				};
-+			};
-+
-+			cluster1 {
-+				core0 {
-+					cpu = <&cpu4>;
-+				};
-+				core1 {
-+					cpu = <&cpu5>;
-+				};
-+				core2 {
-+					cpu = <&cpu6>;
-+				};
-+				core3 {
-+					cpu = <&cpu7>;
-+				};
-+			};
-+		};
-+
-+		cpu0: cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <0x000>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu1: cpu@1 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <0x001>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu2: cpu@2 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <0x002>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu3: cpu@3 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a53";
-+			reg = <0x003>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu4: cpu@100 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a73";
-+			reg = <0x100>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu5: cpu@101 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a73";
-+			reg = <0x101>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu6: cpu@102 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a73";
-+			reg = <0x102>;
-+			enable-method = "psci";
-+		};
-+
-+		cpu7: cpu@103 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a73";
-+			reg = <0x103>;
-+			enable-method = "psci";
-+		};
-+	};
-+
-+	pmu-a53 {
-+		compatible = "arm,cortex-a53-pmu";
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_LOW &ppi_cluster0>;
-+	};
-+
-+	pmu-a73 {
-+		compatible = "arm,cortex-a73-pmu";
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_LOW &ppi_cluster1>;
-+	};
-+
-+	psci {
-+		compatible      = "arm,psci-1.0";
-+		method          = "smc";
-+	};
-+
-+	clk26m: oscillator {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <26000000>;
-+		clock-output-names = "clk26m";
-+	};
-+
-+	timer {
-+		compatible = "arm,armv8-timer";
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_LOW 0>,
-+			     <GIC_PPI 14 IRQ_TYPE_LEVEL_LOW 0>,
-+			     <GIC_PPI 11 IRQ_TYPE_LEVEL_LOW 0>,
-+			     <GIC_PPI 10 IRQ_TYPE_LEVEL_LOW 0>;
-+	};
-+
-+	soc {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		compatible = "simple-bus";
-+		ranges;
-+
-+		gic: interrupt-controller@c000000 {
-+			compatible = "arm,gic-v3";
-+			#interrupt-cells = <4>;
-+			interrupt-parent = <&gic>;
-+			interrupt-controller;
-+			reg = <0 0x0c000000 0 0x40000>,  /* GICD */
-+			      <0 0x0c100000 0 0x200000>, /* GICR */
-+			      <0 0x0c400000 0 0x2000>,   /* GICC */
-+			      <0 0x0c410000 0 0x1000>,   /* GICH */
-+			      <0 0x0c420000 0 0x2000>;   /* GICV */
-+
-+			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH 0>;
-+			ppi-partitions {
-+				ppi_cluster0: interrupt-partition-0 {
-+					affinity = <&cpu0 &cpu1 &cpu2 &cpu3>;
-+				};
-+				ppi_cluster1: interrupt-partition-1 {
-+					affinity = <&cpu4 &cpu5 &cpu6 &cpu7>;
-+				};
-+			};
-+		};
-+
-+		mcucfg: syscon@c530000 {
-+			compatible = "mediatek,mt8183-mcucfg", "syscon";
-+			reg = <0 0x0c530000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		sysirq: interrupt-controller@c530a80 {
-+			compatible = "mediatek,mt8183-sysirq",
-+				     "mediatek,mt6577-sysirq";
-+			interrupt-controller;
-+			#interrupt-cells = <3>;
-+			interrupt-parent = <&gic>;
-+			reg = <0 0x0c530a80 0 0x50>;
-+		};
-+
-+		topckgen: syscon@10000000 {
-+			compatible = "mediatek,mt8183-topckgen", "syscon";
-+			reg = <0 0x10000000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		infracfg: syscon@10001000 {
-+			compatible = "mediatek,mt8183-infracfg", "syscon";
-+			reg = <0 0x10001000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		apmixedsys: syscon@1000c000 {
-+			compatible = "mediatek,mt8183-apmixedsys", "syscon";
-+			reg = <0 0x1000c000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		pwrap: pwrap@1000d000 {
-+			compatible = "mediatek,mt8183-pwrap";
-+			reg = <0 0x1000d000 0 0x1000>;
-+			reg-names = "pwrap";
-+			interrupts = <GIC_SPI 209 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&topckgen CLK_TOP_MUX_PMICSPI>,
-+				 <&infracfg CLK_INFRA_PMIC_AP>;
-+			clock-names = "spi", "wrap";
-+		};
-+
-+		uart0: serial@11002000 {
-+			compatible = "mediatek,mt8183-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11002000 0 0x1000>;
-+			interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&clk26m>, <&infracfg CLK_INFRA_UART0>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
-+		uart1: serial@11003000 {
-+			compatible = "mediatek,mt8183-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11003000 0 0x1000>;
-+			interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&clk26m>, <&infracfg CLK_INFRA_UART1>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
-+		uart2: serial@11004000 {
-+			compatible = "mediatek,mt8183-uart",
-+				     "mediatek,mt6577-uart";
-+			reg = <0 0x11004000 0 0x1000>;
-+			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&clk26m>, <&infracfg CLK_INFRA_UART2>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
-+		audiosys: syscon@11220000 {
-+			compatible = "mediatek,mt8183-audiosys", "syscon";
-+			reg = <0 0x11220000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		mfgcfg: syscon@13000000 {
-+			compatible = "mediatek,mt8183-mfgcfg", "syscon";
-+			reg = <0 0x13000000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		mmsys: syscon@14000000 {
-+			compatible = "mediatek,mt8183-mmsys", "syscon";
-+			reg = <0 0x14000000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		imgsys: syscon@15020000 {
-+			compatible = "mediatek,mt8183-imgsys", "syscon";
-+			reg = <0 0x15020000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		vdecsys: syscon@16000000 {
-+			compatible = "mediatek,mt8183-vdecsys", "syscon";
-+			reg = <0 0x16000000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		vencsys: syscon@17000000 {
-+			compatible = "mediatek,mt8183-vencsys", "syscon";
-+			reg = <0 0x17000000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		ipu_conn: syscon@19000000 {
-+			compatible = "mediatek,mt8183-ipu_conn", "syscon";
-+			reg = <0 0x19000000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		ipu_adl: syscon@19010000 {
-+			compatible = "mediatek,mt8183-ipu_adl", "syscon";
-+			reg = <0 0x19010000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		ipu_core0: syscon@19180000 {
-+			compatible = "mediatek,mt8183-ipu_core0", "syscon";
-+			reg = <0 0x19180000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		ipu_core1: syscon@19280000 {
-+			compatible = "mediatek,mt8183-ipu_core1", "syscon";
-+			reg = <0 0x19280000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+
-+		camsys: syscon@1a000000 {
-+			compatible = "mediatek,mt8183-camsys", "syscon";
-+			reg = <0 0x1a000000 0 0x1000>;
-+			#clock-cells = <1>;
-+		};
-+	};
-+};
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 64bbeb7..93bd90f 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -838,19 +838,9 @@ static void sci_transmit_chars(struct uart_port *port)
+ 
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(port);
+-	if (uart_circ_empty(xmit)) {
++	if (uart_circ_empty(xmit))
+ 		sci_stop_tx(port);
+-	} else {
+-		ctrl = serial_port_in(port, SCSCR);
+-
+-		if (port->type != PORT_SCI) {
+-			serial_port_in(port, SCxSR); /* Dummy read */
+-			sci_clear_SCxSR(port, SCxSR_TDxE_CLEAR(port));
+-		}
+ 
+-		ctrl |= SCSCR_TIE;
+-		serial_port_out(port, SCSCR, ctrl);
+-	}
+ }
+ 
+ /* On SH3, SCIF may read end-of-break as a space->mark char */
 -- 
-1.9.1
+2.7.4
