@@ -1,80 +1,101 @@
-From: <Razvan.Stefanescu@microchip.com>
-Subject: Re: [PATCH 1/2] tty/serial: atmel: Add is_half_duplex helper
-Date: Mon, 18 Mar 2019 14:17:34 +0000
-Message-ID: <13afa294-e279-9ba3-352d-184730f483d4@microchip.com>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH 2/2] tty/serial: atmel: RS485 HD w/DMA: enable RX after TX
+ is stopped
+Date: Mon, 18 Mar 2019 15:30:45 +0100
+Message-ID: <cb09f654-1c42-4f0c-25d3-5cb1708d6080@sorico.fr>
 References: <20190315092334.13246-1-razvan.stefanescu@microchip.com>
- <20190315092334.13246-2-razvan.stefanescu@microchip.com>
- <c8ee3b11-e674-4992-c24f-b0434887a21e@sorico.fr>
+ <20190315092334.13246-3-razvan.stefanescu@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <c8ee3b11-e674-4992-c24f-b0434887a21e@sorico.fr>
+In-Reply-To: <20190315092334.13246-3-razvan.stefanescu@microchip.com>
 Content-Language: en-US
-Content-ID: <5061AD63DD25484193C1D93989EE27E9@namprd11.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: richard.genoud@gmail.com, gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: webergil@gmail.com, Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com, Ludovic.Desroches@microchip.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Razvan Stefanescu <razvan.stefanescu@microchip.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Gil Weber <webergil@gmail.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-DQoNCk9uIDE4LzAzLzIwMTkgMTU6NDEsIFJpY2hhcmQgR2Vub3VkIHdyb3RlOg0KPiBbIGFkZGlu
-ZyBHaWwgV2ViZXIgaW4gQ2M6IF0NCj4gDQo+IExlIDE1LzAzLzIwMTkgw6AgMTA6MjMsIFJhenZh
-biBTdGVmYW5lc2N1IGEgw6ljcml0wqA6DQo+PiBVc2UgYSBoZWxwZXIgZnVuY3Rpb24gdG8gY2hl
-Y2sgdGhhdCBhIHBvcnQgbmVlZHMgdG8gdXNlIGhhbGYgZHVwbGV4DQo+PiBjb21tdW5pY2F0aW9u
-LCByZXBsYWNpbmcgc2V2ZXJhbCBvY2N1cnJlbmNlcyBvZiBtdWx0aS1saW5lIGJpdCBjaGVja2lu
-Zy4NCj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBSYXp2YW4gU3RlZmFuZXNjdSA8cmF6dmFuLnN0ZWZh
-bmVzY3VAbWljcm9jaGlwLmNvbT4NCj4+IC0tLQ0KPj4gICBkcml2ZXJzL3R0eS9zZXJpYWwvYXRt
-ZWxfc2VyaWFsLmMgfCAyNyArKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0NCj4+ICAgMSBmaWxl
-IGNoYW5nZWQsIDE0IGluc2VydGlvbnMoKyksIDEzIGRlbGV0aW9ucygtKQ0KPj4NCj4+IGRpZmYg
-LS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMgYi9kcml2ZXJzL3R0eS9z
-ZXJpYWwvYXRtZWxfc2VyaWFsLmMNCj4+IGluZGV4IDA1MTQ3ZmUyNDM0My4uYTY1NzdiMWM0NDYx
-IDEwMDY0NA0KPj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5jDQo+PiAr
-KysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMNCj4+IEBAIC0yMzEsNiArMjMx
-LDEzIEBAIHN0YXRpYyBpbmxpbmUgdm9pZCBhdG1lbF91YXJ0X3dyaXRlX2NoYXIoc3RydWN0IHVh
-cnRfcG9ydCAqcG9ydCwgdTggdmFsdWUpDQo+PiAgIAlfX3Jhd193cml0ZWIodmFsdWUsIHBvcnQt
-Pm1lbWJhc2UgKyBBVE1FTF9VU19USFIpOw0KPj4gICB9DQo+PiAgIA0KPj4gK3N0YXRpYyBpbmxp
-bmUgaW50IGF0bWVsX3VhcnRfaXNfaGFsZl9kdXBsZXgoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkN
-Cj4+ICt7DQo+PiArCXJldHVybiAoKHBvcnQtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJM
-RUQpICYmDQo+PiArCQkhKHBvcnQtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X1JYX0RVUklOR19U
-WCkpIHx8DQo+PiArCQkocG9ydC0+aXNvNzgxNi5mbGFncyAmIFNFUl9JU083ODE2X0VOQUJMRUQp
-Ow0KPj4gK30NCj4+ICsNCj4+ICAgI2lmZGVmIENPTkZJR19TRVJJQUxfQVRNRUxfUERDDQo+PiAg
-IHN0YXRpYyBib29sIGF0bWVsX3VzZV9wZGNfcngoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkNCj4+
-ICAgew0KPj4gQEAgLTYwOCwxMCArNjE1LDEwIEBAIHN0YXRpYyB2b2lkIGF0bWVsX3N0b3BfdHgo
-c3RydWN0IHVhcnRfcG9ydCAqcG9ydCkNCj4+ICAgCS8qIERpc2FibGUgaW50ZXJydXB0cyAqLw0K
-Pj4gICAJYXRtZWxfdWFydF93cml0ZWwocG9ydCwgQVRNRUxfVVNfSURSLCBhdG1lbF9wb3J0LT50
-eF9kb25lX21hc2spOw0KPj4gICANCj4+IC0JaWYgKCgocG9ydC0+cnM0ODUuZmxhZ3MgJiBTRVJf
-UlM0ODVfRU5BQkxFRCkgJiYNCj4+IC0JICAgICAhKHBvcnQtPnJzNDg1LmZsYWdzICYgU0VSX1JT
-NDg1X1JYX0RVUklOR19UWCkpIHx8DQo+PiAtCSAgICBwb3J0LT5pc283ODE2LmZsYWdzICYgU0VS
-X0lTTzc4MTZfRU5BQkxFRCkNCj4+IC0JCWF0bWVsX3N0YXJ0X3J4KHBvcnQpOw0KPj4gKwlpZiAo
-YXRtZWxfdWFydF9pc19oYWxmX2R1cGxleChwb3J0KSkNCj4+ICsJCWlmICghYXRvbWljX3JlYWQo
-JmF0bWVsX3BvcnQtPnRhc2tsZXRfc2h1dGRvd24pKQ0KPiBUaGlzIGNoZWNrIHdhc24ndCB0aGVy
-ZSBiZWZvcmUuDQo+IElmIGl0J3MgcmVhbGx5IG5lZWRlZCwgcGxlYXNlIGluc2VydCBpdCBpbiBh
-bm90aGVyIHBhdGNoIGFuZCBleHBsYWluIHdoeQ0KPiBpdCdzIG5lZWRlZC4NCj4gDQpUaGFuayB5
-b3UgZm9yIHRoZSBmZWVkYmFjay4gSXQgaXMgbm90IG5lZWRlZCwgd2lsbCBiZSByZW1vdmVkIGlu
-IHYyLg0KDQpCZXN0IHJlZ2FyZHMsDQpSYXp2YW4NCg0KPj4gKwkJCWF0bWVsX3N0YXJ0X3J4KHBv
-cnQpOw0KPj4gKw0KPj4gICB9DQo+PiAgIA0KPj4gICAvKg0KPj4gQEAgLTYyOCw5ICs2MzUsNyBA
-QCBzdGF0aWMgdm9pZCBhdG1lbF9zdGFydF90eChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQ0KPj4g
-ICAJCXJldHVybjsNCj4+ICAgDQo+PiAgIAlpZiAoYXRtZWxfdXNlX3BkY190eChwb3J0KSB8fCBh
-dG1lbF91c2VfZG1hX3R4KHBvcnQpKQ0KPj4gLQkJaWYgKCgocG9ydC0+cnM0ODUuZmxhZ3MgJiBT
-RVJfUlM0ODVfRU5BQkxFRCkgJiYNCj4+IC0JCSAgICAgIShwb3J0LT5yczQ4NS5mbGFncyAmIFNF
-Ul9SUzQ4NV9SWF9EVVJJTkdfVFgpKSB8fA0KPj4gLQkJICAgIHBvcnQtPmlzbzc4MTYuZmxhZ3Mg
-JiBTRVJfSVNPNzgxNl9FTkFCTEVEKQ0KPj4gKwkJaWYgKGF0bWVsX3VhcnRfaXNfaGFsZl9kdXBs
-ZXgocG9ydCkpDQo+PiAgIAkJCWF0bWVsX3N0b3BfcngocG9ydCk7DQo+PiAgIA0KPj4gICAJaWYg
-KGF0bWVsX3VzZV9wZGNfdHgocG9ydCkpDQo+PiBAQCAtOTI4LDkgKzkzMyw3IEBAIHN0YXRpYyB2
-b2lkIGF0bWVsX2NvbXBsZXRlX3R4X2RtYSh2b2lkICphcmcpDQo+PiAgIAkgKi8NCj4+ICAgCWlm
-ICghdWFydF9jaXJjX2VtcHR5KHhtaXQpKQ0KPj4gICAJCWF0bWVsX3Rhc2tsZXRfc2NoZWR1bGUo
-YXRtZWxfcG9ydCwgJmF0bWVsX3BvcnQtPnRhc2tsZXRfdHgpOw0KPj4gLQllbHNlIGlmICgoKHBv
-cnQtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJMRUQpICYmDQo+PiAtCQkgICEocG9ydC0+
-cnM0ODUuZmxhZ3MgJiBTRVJfUlM0ODVfUlhfRFVSSU5HX1RYKSkgfHwNCj4+IC0JCSBwb3J0LT5p
-c283ODE2LmZsYWdzICYgU0VSX0lTTzc4MTZfRU5BQkxFRCkgew0KPj4gKwllbHNlIGlmIChhdG1l
-bF91YXJ0X2lzX2hhbGZfZHVwbGV4KHBvcnQpKSB7DQo+PiAgIAkJLyogRE1BIGRvbmUsIHN0b3Ag
-VFgsIHN0YXJ0IFJYIGZvciBSUzQ4NSAqLw0KPj4gICAJCWF0bWVsX3N0YXJ0X3J4KHBvcnQpOw0K
-Pj4gICAJfQ0KPj4gQEAgLTE1MDgsOSArMTUxMSw3IEBAIHN0YXRpYyB2b2lkIGF0bWVsX3R4X3Bk
-YyhzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQ0KPj4gICAJCWF0bWVsX3VhcnRfd3JpdGVsKHBvcnQs
-IEFUTUVMX1VTX0lFUiwNCj4+ICAgCQkJCSAgYXRtZWxfcG9ydC0+dHhfZG9uZV9tYXNrKTsNCj4+
-ICAgCX0gZWxzZSB7DQo+PiAtCQlpZiAoKChwb3J0LT5yczQ4NS5mbGFncyAmIFNFUl9SUzQ4NV9F
-TkFCTEVEKSAmJg0KPj4gLQkJICAgICAhKHBvcnQtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X1JY
-X0RVUklOR19UWCkpIHx8DQo+PiAtCQkgICAgcG9ydC0+aXNvNzgxNi5mbGFncyAmIFNFUl9JU083
-ODE2X0VOQUJMRUQpIHsNCj4+ICsJCWlmIChhdG1lbF91YXJ0X2lzX2hhbGZfZHVwbGV4KHBvcnQp
-KSB7DQo+PiAgIAkJCS8qIERNQSBkb25lLCBzdG9wIFRYLCBzdGFydCBSWCBmb3IgUlM0ODUgKi8N
-Cj4+ICAgCQkJYXRtZWxfc3RhcnRfcngocG9ydCk7DQo+PiAgIAkJfQ0KPj4NCj4gDQo=
+[ adding Gil Weber in Cc: ]
+Le 15/03/2019 à 10:23, Razvan Stefanescu a écrit :
+> In half-duplex operation, RX should be started after TX completes.
+> 
+> If DMA is used, there is a case when the DMA transfer completes but the
+> TX FIFO is not emptied, so the RX cannot be restarted just yet.
+> 
+> Use a boolean variable to store this state and rearm TX interrupt mask
+> to be signaled again that the transfer finished. In interrupt transmit
+> handler this variable is used to start RX.
+
+I was sure I've already seen something like that.
+Gil, could you give it a test ?
+
+you can add :
+Cc: stable@vger.kernel.org
+Fixes: b389f173aaa1 ("tty/serial: atmel: RS485 half duplex w/DMA: enable RX after TX is done")
+
+Since patch 1/2 is needed for this one, I think you should add also
+Cc:stable / Fixes: to the previous patch.
+
+> Signed-off-by: Razvan Stefanescu <razvan.stefanescu@microchip.com>
+> ---
+>  drivers/tty/serial/atmel_serial.c | 25 ++++++++++++++++++++++---
+>  1 file changed, 22 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index a6577b1c4461..b0141dcbbb61 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -166,6 +166,8 @@ struct atmel_uart_port {
+>  	unsigned int		pending_status;
+>  	spinlock_t		lock_suspended;
+>  
+> +	bool			hd_start_rx;	/* can start RX during half-duplex operation */
+> +
+>  	/* ISO7816 */
+>  	unsigned int		fidi_min;
+>  	unsigned int		fidi_max;
+> @@ -934,8 +936,13 @@ static void atmel_complete_tx_dma(void *arg)
+>  	if (!uart_circ_empty(xmit))
+>  		atmel_tasklet_schedule(atmel_port, &atmel_port->tasklet_tx);
+>  	else if (atmel_uart_is_half_duplex(port)) {
+> -		/* DMA done, stop TX, start RX for RS485 */
+> -		atmel_start_rx(port);
+> +		/*
+> +		 * DMA done, re-enable TXEMPTY and signal that we can stop
+> +		 * TX and start RX for RS485
+> +		 */
+> +		atmel_port->hd_start_rx = true;
+> +		atmel_uart_writel(port, ATMEL_US_IER,
+> +				  atmel_port->tx_done_mask);
+>  	}
+>  
+>  	spin_unlock_irqrestore(&port->lock, flags);
+> @@ -1379,9 +1386,21 @@ atmel_handle_transmit(struct uart_port *port, unsigned int pending)
+>  	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+>  
+>  	if (pending & atmel_port->tx_done_mask) {
+> -		/* Either PDC or interrupt transmission */
+>  		atmel_uart_writel(port, ATMEL_US_IDR,
+>  				  atmel_port->tx_done_mask);
+> +
+> +		/* Start RX if flag was set and FIFO is empty */
+> +		if (atmel_port->hd_start_rx) {
+> +			if (atmel_uart_readl(port, ATMEL_US_CSR)
+> +					& ATMEL_US_TXEMPTY) {
+> +				atmel_port->hd_start_rx = false;
+> +				atmel_start_rx(port);
+> +			} else {
+> +				dev_warn(port->dev, "Should start RX, but TX fifo is not empty\n");
+What will happen in this case ?
+
+> +			}
+> +			return;
+> +		}
+> +
+>  		atmel_tasklet_schedule(atmel_port, &atmel_port->tasklet_tx);
+>  	}
+>  }
+> 
+
+Thanks !
