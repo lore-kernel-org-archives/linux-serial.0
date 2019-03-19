@@ -1,90 +1,46 @@
-From: Razvan Stefanescu <razvan.stefanescu@microchip.com>
-Subject: [PATCH v2 2/2] tty/serial: atmel: RS485 HD w/DMA: enable RX after TX is stopped
-Date: Tue, 19 Mar 2019 15:20:35 +0200
-Message-ID: <20190319132035.18481-3-razvan.stefanescu@microchip.com>
-References: <20190319132035.18481-1-razvan.stefanescu@microchip.com>
+From: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] Disable kgdboc failed by echo space to
+ /sys/module/kgdboc/parameters/kgdboc
+Date: Tue, 19 Mar 2019 15:23:06 +0100
+Message-ID: <20190319142306.GA13458@kroah.com>
+References: <HK0PR03MB2817154ABAB39937BFF0AB9BCB4D0@HK0PR03MB2817.apcprd03.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190319132035.18481-1-razvan.stefanescu@microchip.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Gil Weber <webergil@gmail.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <kgdb-bugreport-bounces@lists.sourceforge.net>
+Content-Disposition: inline
+In-Reply-To: <HK0PR03MB2817154ABAB39937BFF0AB9BCB4D0@HK0PR03MB2817.apcprd03.prod.outlook.com>
+List-Unsubscribe: <https://lists.sourceforge.net/lists/options/kgdb-bugreport>,
+ <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=unsubscribe>
+List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=kgdb-bugreport>
+List-Post: <mailto:kgdb-bugreport@lists.sourceforge.net>
+List-Help: <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=help>
+List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/kgdb-bugreport>,
+ <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=subscribe>
+Errors-To: kgdb-bugreport-bounces@lists.sourceforge.net
+To: =?utf-8?B?546LIOaWh+a2mw==?= <wwthappy@hotmail.com>
+Cc: "kgdb-bugreport@lists.sourceforge.net" <kgdb-bugreport@lists.sourceforge.net>, "daniel.thompson@linaro.org" <daniel.thompson@linaro.org>, "jslaby@suse.com" <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jason.wessel@windriver.com" <jason.wessel@windriver.com>
 List-Id: linux-serial@vger.kernel.org
 
-In half-duplex operation, RX should be started after TX completes.
-
-If DMA is used, there is a case when the DMA transfer completes but the
-TX FIFO is not emptied, so the RX cannot be restarted just yet.
-
-Use a boolean variable to store this state and rearm TX interrupt mask
-to be signaled again that the transfer finished. In interrupt transmit
-handler this variable is used to start RX. A warning message is generated
-if RX is activated before TX fifo is cleared.
-
-Fixes: b389f173aaa1 ("tty/serial: atmel: RS485 half duplex w/DMA: enable
-RX after TX is done")
-Signed-off-by: Razvan Stefanescu <razvan.stefanescu@microchip.com>
----
-Changelog:
-v2:
-  - start RX and display warning in case of error
-  - add fix info
-
- drivers/tty/serial/atmel_serial.c | 25 ++++++++++++++++++++++---
- 1 file changed, 22 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index b4b89a16a41b..5b2f859c327c 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -166,6 +166,8 @@ struct atmel_uart_port {
- 	unsigned int		pending_status;
- 	spinlock_t		lock_suspended;
- 
-+	bool			hd_start_rx;	/* can start RX during half-duplex operation */
-+
- 	/* ISO7816 */
- 	unsigned int		fidi_min;
- 	unsigned int		fidi_max;
-@@ -933,8 +935,13 @@ static void atmel_complete_tx_dma(void *arg)
- 	if (!uart_circ_empty(xmit))
- 		atmel_tasklet_schedule(atmel_port, &atmel_port->tasklet_tx);
- 	else if (atmel_uart_is_half_duplex(port)) {
--		/* DMA done, stop TX, start RX for RS485 */
--		atmel_start_rx(port);
-+		/*
-+		 * DMA done, re-enable TXEMPTY and signal that we can stop
-+		 * TX and start RX for RS485
-+		 */
-+		atmel_port->hd_start_rx = true;
-+		atmel_uart_writel(port, ATMEL_US_IER,
-+				  atmel_port->tx_done_mask);
- 	}
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
-@@ -1378,9 +1385,20 @@ atmel_handle_transmit(struct uart_port *port, unsigned int pending)
- 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
- 
- 	if (pending & atmel_port->tx_done_mask) {
--		/* Either PDC or interrupt transmission */
- 		atmel_uart_writel(port, ATMEL_US_IDR,
- 				  atmel_port->tx_done_mask);
-+
-+		/* Start RX if flag was set and FIFO is empty */
-+		if (atmel_port->hd_start_rx) {
-+			if (!(atmel_uart_readl(port, ATMEL_US_CSR)
-+					& ATMEL_US_TXEMPTY))
-+				dev_warn(port->dev, "Should start RX, but TX fifo is not empty\n");
-+
-+			atmel_port->hd_start_rx = false;
-+			atmel_start_rx(port);
-+			return;
-+		}
-+
- 		atmel_tasklet_schedule(atmel_port, &atmel_port->tasklet_tx);
- 	}
- }
--- 
-2.19.1
+T24gRnJpLCBNYXIgMDgsIDIwMTkgYXQgMDE6NTQ6MDJBTSArMDAwMCwg546LIOaWh+a2myB3cm90
+ZToKPiBGcm9tIDY2ZDM5YzBkZTBhYmQ0NWRkY2E3YWE4ZmMwODYzMmIwMWQ2NjlkN2IgTW9uIFNl
+cCAxNyAwMDowMDowMCAyMDAxCj4gRnJvbTogV2VudGFvIFdhbmcgPOKAnHdpdGFsbHdhbmdAZ21h
+aWwuY29t4oCdPgo+IERhdGU6IE1vbiwgNCBNYXIgMjAxOSAyMTo1ODozMyArMDgwMAo+IFN1Ympl
+Y3Q6IFtQQVRDSF0gRGlzYWJsZSBrZ2Rib2MgZmFpbGVkIGJ5IGVjaG8gc3BhY2UgdG8KPiAgL3N5
+cy9tb2R1bGUva2dkYm9jL3BhcmFtZXRlcnMva2dkYm9jCj4gTUlNRS1WZXJzaW9uOiAxLjAKPiBD
+b250ZW50LVR5cGU6IHRleHQvcGxhaW47IGNoYXJzZXQ9VVRGLTgKPiBDb250ZW50LVRyYW5zZmVy
+LUVuY29kaW5nOiA4Yml0CgpXaHkgaXMgdGhpcyBhbGwgaW4geW91ciBwYXRjaCBpdHNlbGY/ICBJ
+dCdzIGFsc28gbGluZS13cmFwcGVkIDooCgpQbGVhc2UganVzdCBzZW5kIHRoZSBwYXRjaCBpbiBh
+ICJjbGVhbiIgZm9ybWF0LCBvciB1c2UgZ2l0IHNlbmQtZW1haWwgdG8Kc2VuZCBpdCBvdXQuCgo+
+IAo+IEVjaG8gIiIgdG8gL3N5cy9tb2R1bGUva2dkYm9jL3BhcmFtZXRlcnMva2dkYm9jIHdpbGwg
+ZmFpbCB3aXRoIHdyaXRlCj4gZXJyb3I6IE5vIHN1Y2ggZGV2aWNlCj4gVGhpcyBpcyBjYXVzZWQg
+YnkgZnVuY3Rpb24gImNvbmZpZ3VyZV9rZ2Rib2MiIHdobyBpbml0IGVyciB0byBFTk9ERVYgd2hl
+bgo+IHRoZSBjb25maWcgaXMgZW1wdHkgKGxlZ2FsIGlucHV0KSB0aGUgY29kZSBnbyBvdXQgd2l0
+aCBFTk9ERVYgcmV0dXJuZWQuCj4gCj4gRml4ZXM6IDJkZDQ1MzE2ODY0M2QgKCJrZ2Rib2M6IEZp
+eCByZXN0cmljdCBlcnJvciIpCj4gCj4gU2lnbmVkLW9mZi1ieTogV2VudGFvIFdhbmcgPOKAnHdp
+dGFsbHdhbmdAZ21haWwuY29t4oCdPgoKTm8gbmVlZCBmb3IgIiIgZm9yIHlvdXIgZW1haWwgYWRk
+cmVzcy4KCkNhbiB5b3UgcGxlYXNlIGZpeCB0aGlzIHVwIGFuZCByZXNlbmQgc28gSSBjYW4gYXBw
+bHkgdGhlIHBhdGNoPwoKdGhhbmtzLAoKZ3JlZyBrLWgKCgpfX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXwpLZ2RiLWJ1Z3JlcG9ydCBtYWlsaW5nIGxpc3QKS2dk
+Yi1idWdyZXBvcnRAbGlzdHMuc291cmNlZm9yZ2UubmV0Cmh0dHBzOi8vbGlzdHMuc291cmNlZm9y
+Z2UubmV0L2xpc3RzL2xpc3RpbmZvL2tnZGItYnVncmVwb3J0Cg==
