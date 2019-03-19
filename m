@@ -1,7 +1,7 @@
 From: Razvan Stefanescu <razvan.stefanescu@microchip.com>
-Subject: [PATCH v2 1/2] tty/serial: atmel: Add is_half_duplex helper
-Date: Tue, 19 Mar 2019 15:20:34 +0200
-Message-ID: <20190319132035.18481-2-razvan.stefanescu@microchip.com>
+Subject: [PATCH v2 2/2] tty/serial: atmel: RS485 HD w/DMA: enable RX after TX is stopped
+Date: Tue, 19 Mar 2019 15:20:35 +0200
+Message-ID: <20190319132035.18481-3-razvan.stefanescu@microchip.com>
 References: <20190319132035.18481-1-razvan.stefanescu@microchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -13,84 +13,78 @@ To: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxf
 Cc: Gil Weber <webergil@gmail.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Use a helper function to check that a port needs to use half duplex
-communication, replacing several occurrences of multi-line bit checking.
+In half-duplex operation, RX should be started after TX completes.
+
+If DMA is used, there is a case when the DMA transfer completes but the
+TX FIFO is not emptied, so the RX cannot be restarted just yet.
+
+Use a boolean variable to store this state and rearm TX interrupt mask
+to be signaled again that the transfer finished. In interrupt transmit
+handler this variable is used to start RX. A warning message is generated
+if RX is activated before TX fifo is cleared.
 
 Fixes: b389f173aaa1 ("tty/serial: atmel: RS485 half duplex w/DMA: enable
 RX after TX is done")
 Signed-off-by: Razvan Stefanescu <razvan.stefanescu@microchip.com>
 ---
 Changelog:
-v2: 
-  - remove extra check
+v2:
+  - start RX and display warning in case of error
   - add fix info
 
- drivers/tty/serial/atmel_serial.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/tty/serial/atmel_serial.c | 25 ++++++++++++++++++++++---
+ 1 file changed, 22 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 05147fe24343..b4b89a16a41b 100644
+index b4b89a16a41b..5b2f859c327c 100644
 --- a/drivers/tty/serial/atmel_serial.c
 +++ b/drivers/tty/serial/atmel_serial.c
-@@ -231,6 +231,13 @@ static inline void atmel_uart_write_char(struct uart_port *port, u8 value)
- 	__raw_writeb(value, port->membase + ATMEL_US_THR);
- }
+@@ -166,6 +166,8 @@ struct atmel_uart_port {
+ 	unsigned int		pending_status;
+ 	spinlock_t		lock_suspended;
  
-+static inline int atmel_uart_is_half_duplex(struct uart_port *port)
-+{
-+	return ((port->rs485.flags & SER_RS485_ENABLED) &&
-+		!(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
-+		(port->iso7816.flags & SER_ISO7816_ENABLED);
-+}
++	bool			hd_start_rx;	/* can start RX during half-duplex operation */
 +
- #ifdef CONFIG_SERIAL_ATMEL_PDC
- static bool atmel_use_pdc_rx(struct uart_port *port)
- {
-@@ -608,10 +615,9 @@ static void atmel_stop_tx(struct uart_port *port)
- 	/* Disable interrupts */
- 	atmel_uart_writel(port, ATMEL_US_IDR, atmel_port->tx_done_mask);
- 
--	if (((port->rs485.flags & SER_RS485_ENABLED) &&
--	     !(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
--	    port->iso7816.flags & SER_ISO7816_ENABLED)
-+	if (atmel_uart_is_half_duplex(port))
- 		atmel_start_rx(port);
-+
- }
- 
- /*
-@@ -628,9 +634,7 @@ static void atmel_start_tx(struct uart_port *port)
- 		return;
- 
- 	if (atmel_use_pdc_tx(port) || atmel_use_dma_tx(port))
--		if (((port->rs485.flags & SER_RS485_ENABLED) &&
--		     !(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
--		    port->iso7816.flags & SER_ISO7816_ENABLED)
-+		if (atmel_uart_is_half_duplex(port))
- 			atmel_stop_rx(port);
- 
- 	if (atmel_use_pdc_tx(port))
-@@ -928,9 +932,7 @@ static void atmel_complete_tx_dma(void *arg)
- 	 */
+ 	/* ISO7816 */
+ 	unsigned int		fidi_min;
+ 	unsigned int		fidi_max;
+@@ -933,8 +935,13 @@ static void atmel_complete_tx_dma(void *arg)
  	if (!uart_circ_empty(xmit))
  		atmel_tasklet_schedule(atmel_port, &atmel_port->tasklet_tx);
--	else if (((port->rs485.flags & SER_RS485_ENABLED) &&
--		  !(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
--		 port->iso7816.flags & SER_ISO7816_ENABLED) {
-+	else if (atmel_uart_is_half_duplex(port)) {
- 		/* DMA done, stop TX, start RX for RS485 */
- 		atmel_start_rx(port);
+ 	else if (atmel_uart_is_half_duplex(port)) {
+-		/* DMA done, stop TX, start RX for RS485 */
+-		atmel_start_rx(port);
++		/*
++		 * DMA done, re-enable TXEMPTY and signal that we can stop
++		 * TX and start RX for RS485
++		 */
++		atmel_port->hd_start_rx = true;
++		atmel_uart_writel(port, ATMEL_US_IER,
++				  atmel_port->tx_done_mask);
  	}
-@@ -1508,9 +1510,7 @@ static void atmel_tx_pdc(struct uart_port *port)
- 		atmel_uart_writel(port, ATMEL_US_IER,
+ 
+ 	spin_unlock_irqrestore(&port->lock, flags);
+@@ -1378,9 +1385,20 @@ atmel_handle_transmit(struct uart_port *port, unsigned int pending)
+ 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
+ 
+ 	if (pending & atmel_port->tx_done_mask) {
+-		/* Either PDC or interrupt transmission */
+ 		atmel_uart_writel(port, ATMEL_US_IDR,
  				  atmel_port->tx_done_mask);
- 	} else {
--		if (((port->rs485.flags & SER_RS485_ENABLED) &&
--		     !(port->rs485.flags & SER_RS485_RX_DURING_TX)) ||
--		    port->iso7816.flags & SER_ISO7816_ENABLED) {
-+		if (atmel_uart_is_half_duplex(port)) {
- 			/* DMA done, stop TX, start RX for RS485 */
- 			atmel_start_rx(port);
- 		}
++
++		/* Start RX if flag was set and FIFO is empty */
++		if (atmel_port->hd_start_rx) {
++			if (!(atmel_uart_readl(port, ATMEL_US_CSR)
++					& ATMEL_US_TXEMPTY))
++				dev_warn(port->dev, "Should start RX, but TX fifo is not empty\n");
++
++			atmel_port->hd_start_rx = false;
++			atmel_start_rx(port);
++			return;
++		}
++
+ 		atmel_tasklet_schedule(atmel_port, &atmel_port->tasklet_tx);
+ 	}
+ }
 -- 
 2.19.1
