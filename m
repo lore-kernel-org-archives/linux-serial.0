@@ -1,36 +1,42 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v1] dmaengine: idma64: Use actual device for DMA transfers
-Date: Tue, 19 Mar 2019 15:25:03 +0100
-Message-ID: <20190319142503.GA13758@kroah.com>
-References: <20190318153930.25641-1-andriy.shevchenko@linux.intel.com>
+From: Yue Haibing <yuehaibing@huawei.com>
+Subject: [PATCH -next] serial: 8250_fintek: Make fintek_8250_set_termios static
+Date: Tue, 19 Mar 2019 23:16:46 +0800
+Message-ID: <20190319151646.17988-1-yuehaibing@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190318153930.25641-1-andriy.shevchenko@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Vinod Koul <vkoul@kernel.org>, dmaengine@vger.kernel.org, Daniel Mack <daniel@zonque.org>, Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>, linux-arm-kernel@lists.infradead.org, Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, YueHaibing <yuehaibing@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Mar 18, 2019 at 06:39:30PM +0300, Andy Shevchenko wrote:
-> Intel IOMMU, when enabled, tries to find the domain of the device,
-> assuming it's a PCI one, during DMA operations, such as mapping or
-> unmapping. Since we are splitting the actual PCI device to couple of
-> children via MFD framework (see drivers/mfd/intel-lpss.c for details),
-> the DMA device appears to be a platform one, and thus not an actual one
-> that performs DMA. In a such situation IOMMU can't find or allocate
-> a proper domain for its operations. As a result, all DMA operations are
-> failed.
-> 
-> In order to fix this, supply parent of the platform device
-> to the DMA engine framework and fix filter functions accordingly.
-> 
-> We may rely on the fact that parent is a real PCI device, because no
-> other configuration is present in the wild.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: YueHaibing <yuehaibing@huawei.com>
 
-For the tty/serial/ portion:
+Fix sparse warning:
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+drivers/tty/serial/8250/8250_fintek.c:306:6: warning:
+ symbol 'fintek_8250_set_termios' was not declared. Should it be static?
+
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/tty/serial/8250/8250_fintek.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+index 79a4958..31c91c2 100644
+--- a/drivers/tty/serial/8250/8250_fintek.c
++++ b/drivers/tty/serial/8250/8250_fintek.c
+@@ -303,8 +303,9 @@ static void fintek_8250_goto_highspeed(struct uart_8250_port *uart,
+ 	}
+ }
+ 
+-void fintek_8250_set_termios(struct uart_port *port, struct ktermios *termios,
+-			struct ktermios *old)
++static void fintek_8250_set_termios(struct uart_port *port,
++				    struct ktermios *termios,
++				    struct ktermios *old)
+ {
+ 	struct fintek_8250 *pdata = port->private_data;
+ 	unsigned int baud = tty_termios_baud_rate(termios);
+-- 
+2.7.4
