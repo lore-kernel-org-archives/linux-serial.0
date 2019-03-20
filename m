@@ -1,47 +1,49 @@
-From: =?utf-8?B?546LIOaWh+a2mw==?= <wwthappy@hotmail.com>
-Subject: [PATCH] Disable kgdboc failed by echo space to
- /sys/module/kgdboc/parameters/kgdboc
-Date: Wed, 20 Mar 2019 15:30:39 +0000
-Message-ID: <KU1PR03MB2824C0511DA1CD5025CC47DECB410@KU1PR03MB2824.apcprd03.prod.outlook.com>
-References: <HK0PR03MB2817154ABAB39937BFF0AB9BCB4D0@HK0PR03MB2817.apcprd03.prod.outlook.com>
- <20190319142306.GA13458@kroah.com>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH 1/4] printk: Introduce per-console loglevel setting
+Date: Wed, 20 Mar 2019 16:37:29 +0100
+Message-ID: <20190320153729.6cl77kdck22vc4rv@pathway.suse.cz>
+References: <20190308150914.ifqp36en3pyd4ljy@pathway.suse.cz>
+ <c7a9c83c-524d-c0da-a355-6cd4b7ec690c@I-love.SAKURA.ne.jp>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <kgdb-bugreport-bounces@lists.sourceforge.net>
-In-Reply-To: <20190319142306.GA13458@kroah.com>
-Content-Language: en-US
-Content-ID: <CD9028FF3E7BA34AAED70299768A6BB8@apcprd03.prod.outlook.com>
-List-Unsubscribe: <https://lists.sourceforge.net/lists/options/kgdb-bugreport>,
- <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=unsubscribe>
-List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=kgdb-bugreport>
-List-Post: <mailto:kgdb-bugreport@lists.sourceforge.net>
-List-Help: <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=help>
-List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/kgdb-bugreport>,
- <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=subscribe>
-Errors-To: kgdb-bugreport-bounces@lists.sourceforge.net
-To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: "kgdb-bugreport@lists.sourceforge.net" <kgdb-bugreport@lists.sourceforge.net>, "daniel.thompson@linaro.org" <daniel.thompson@linaro.org>, "jslaby@suse.com" <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jason.wessel@windriver.com" <jason.wessel@windriver.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <c7a9c83c-524d-c0da-a355-6cd4b7ec690c@I-love.SAKURA.ne.jp>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc: Calvin Owens <calvinowens@fb.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-RnJvbTogV2VudGFvIFdhbmcgPHdpdGFsbHdhbmdAZ21haWwuY29tPg0KDQpFY2hvICIiIHRvIC9z
-eXMvbW9kdWxlL2tnZGJvYy9wYXJhbWV0ZXJzL2tnZGJvYyB3aWxsIGZhaWwgd2l0aCAiTm8gc3Vj
-aCBkZXZpY2XigJ0gZXJyb3IuDQoNClRoaXMgaXMgY2F1c2VkIGJ5IGZ1bmN0aW9uICJjb25maWd1
-cmVfa2dkYm9jIiB3aG8gaW5pdCBlcnIgdG8gRU5PREVWIHdoZW4gdGhlIGNvbmZpZw0KaXMgZW1w
-dHkgKGxlZ2FsIGlucHV0KSB0aGUgY29kZSBnbyBvdXQgd2l0aCBFTk9ERVYgcmV0dXJuZWQuDQoN
-CkZpeGVzOiAyZGQ0NTMxNjg2NDNkICgia2dkYm9jOiBGaXggcmVzdHJpY3QgZXJyb3IiKQ0KDQpT
-aWduZWQtb2ZmLWJ5OiBXZW50YW8gV2FuZyA8d2l0YWxsd2FuZ0BnbWFpbC5jb20+DQotLS0NCiBk
-cml2ZXJzL3R0eS9zZXJpYWwva2dkYm9jLmMgfCA0ICsrKy0NCiAxIGZpbGUgY2hhbmdlZCwgMyBp
-bnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pDQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9z
-ZXJpYWwva2dkYm9jLmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwva2dkYm9jLmMNCmluZGV4IDZmYjMx
-MmUuLmJmZTVlOWUgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwva2dkYm9jLmMNCisr
-KyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9rZ2Rib2MuYw0KQEAgLTE0OCw4ICsxNDgsMTAgQEAgc3Rh
-dGljIGludCBjb25maWd1cmVfa2dkYm9jKHZvaWQpDQogCWNoYXIgKmNwdHIgPSBjb25maWc7DQog
-CXN0cnVjdCBjb25zb2xlICpjb25zOw0KIA0KLQlpZiAoIXN0cmxlbihjb25maWcpIHx8IGlzc3Bh
-Y2UoY29uZmlnWzBdKSkNCisJaWYgKCFzdHJsZW4oY29uZmlnKSB8fCBpc3NwYWNlKGNvbmZpZ1sw
-XSkpIHsNCisJCWVyciA9IDA7DQogCQlnb3RvIG5vY29uZmlnOw0KKwl9DQogDQogCWtnZGJvY19p
-b19vcHMuaXNfY29uc29sZSA9IDA7DQogCWtnZGJfdHR5X2RyaXZlciA9IE5VTEw7DQotLSANCjIu
-Ny40DQoNCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpL
-Z2RiLWJ1Z3JlcG9ydCBtYWlsaW5nIGxpc3QKS2dkYi1idWdyZXBvcnRAbGlzdHMuc291cmNlZm9y
-Z2UubmV0Cmh0dHBzOi8vbGlzdHMuc291cmNlZm9yZ2UubmV0L2xpc3RzL2xpc3RpbmZvL2tnZGIt
-YnVncmVwb3J0Cg==
+On Thu 2019-03-14 23:12:49, Tetsuo Handa wrote:
+> Petr Mladek wrote:
+> > It might be even more straightforward when the per-console value
+> > defines the effective console level. I mean the following semantic:
+> > 
+> >    + "console_loglevel" would define the default loglevel used
+> >      by consoles at runtime.
+> > 
+> >    + the per-console loglevel could override the default
+> >      console_loglevel.
+> > 
+> >    + We would need a custom handler for the sysctl "console_loglevel".
+> >      It would write the given value to the global console_loglevel
+> >      variable and for all already registered consoles (con->loglevel).
+> 
+> But some functions change console_loglevel without sysctl (e.g.
+> console_verbose() when reporting hung tasks and panic()). Should
+> con->loglevel be changed (which might result in too much messages to
+> slow consoles) when console_loglevel changes?
+
+It is about the semantic. We either want to set a hard limit
+for each console or we want to set per-console loglevel that
+will get used in normal situations.
+
+I prefer the 2nd semantic. IMHO, console_verbose() should be
+used only in situations when people really want to see all
+lines, for example, panic, sysrq output when the machine
+looks deadlocked, ignore_loglevel is set. I believe that they
+want to see them even on the slow consoles that are
+there exactly for debugging these critical situations.
+
+Best Regards,
+Petr
