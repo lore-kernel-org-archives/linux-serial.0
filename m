@@ -1,49 +1,34 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH 1/4] printk: Introduce per-console loglevel setting
-Date: Wed, 20 Mar 2019 16:37:29 +0100
-Message-ID: <20190320153729.6cl77kdck22vc4rv@pathway.suse.cz>
-References: <20190308150914.ifqp36en3pyd4ljy@pathway.suse.cz>
- <c7a9c83c-524d-c0da-a355-6cd4b7ec690c@I-love.SAKURA.ne.jp>
+From: hariprasadk <hari121920@gmail.com>
+Subject: [PATCH] tty: serial_core: Spelling correction
+Date: Thu, 21 Mar 2019 09:29:01 +0530
+Message-ID: <20190321035901.GA12851@hari-Inspiron-1545>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <c7a9c83c-524d-c0da-a355-6cd4b7ec690c@I-love.SAKURA.ne.jp>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc: Calvin Owens <calvinowens@fb.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu 2019-03-14 23:12:49, Tetsuo Handa wrote:
-> Petr Mladek wrote:
-> > It might be even more straightforward when the per-console value
-> > defines the effective console level. I mean the following semantic:
-> > 
-> >    + "console_loglevel" would define the default loglevel used
-> >      by consoles at runtime.
-> > 
-> >    + the per-console loglevel could override the default
-> >      console_loglevel.
-> > 
-> >    + We would need a custom handler for the sysctl "console_loglevel".
-> >      It would write the given value to the global console_loglevel
-> >      variable and for all already registered consoles (con->loglevel).
-> 
-> But some functions change console_loglevel without sysctl (e.g.
-> console_verbose() when reporting hung tasks and panic()). Should
-> con->loglevel be changed (which might result in too much messages to
-> slow consoles) when console_loglevel changes?
+fix warning reported by checkpatch tool
 
-It is about the semantic. We either want to set a hard limit
-for each console or we want to set per-console loglevel that
-will get used in normal situations.
+Signed-off-by: hariprasadk <hari1219@gmail.com>
+---
+ drivers/tty/serial/serial_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I prefer the 2nd semantic. IMHO, console_verbose() should be
-used only in situations when people really want to see all
-lines, for example, panic, sysrq output when the machine
-looks deadlocked, ignore_loglevel is set. I believe that they
-want to see them even on the slow consoles that are
-there exactly for debugging these critical situations.
-
-Best Regards,
-Petr
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 351843f..69f4871 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1514,7 +1514,7 @@ static void uart_set_termios(struct tty_struct *tty,
+ 	}
+ 
+ 	uart_change_speed(tty, state, old_termios);
+-	/* reload cflag from termios; port driver may have overriden flags */
++	/* reload cflag from termios; port driver may have overridden flags */
+ 	cflag = tty->termios.c_cflag;
+ 
+ 	/* Handle transition to B0 status */
+-- 
+2.7.4
