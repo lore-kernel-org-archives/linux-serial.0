@@ -1,58 +1,52 @@
-From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: Re: [PATCH] tty: serial_core: Spelling correction
-Date: Thu, 21 Mar 2019 22:28:59 -0500
-Message-ID: <918f4d7f-e066-b926-b73b-331843a3a388@embeddedor.com>
-References: <20190322030159.GA6551@hari-Inspiron-1545>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] tty: serial: qcom_geni_serial: Initialize baud in qcom_geni_console_setup
+Date: Fri, 22 Mar 2019 15:20:28 +0100
+Message-ID: <CAK8P3a38rvqVhgVGx36Rii0BaBskAnxsfHYye=8pi9n_hKNrbg@mail.gmail.com>
+References: <20190308084022.GA31474@kroah.com> <20190308183743.11145-1-natechancellor@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190322030159.GA6551@hari-Inspiron-1545>
-Content-Language: en-US
+In-Reply-To: <20190308183743.11145-1-natechancellor@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Hariprasad Kelam <hariprasad.kelam@gmail.com>, gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Nathan Chancellor <natechancellor@gmail.com>
+Cc: Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, clang-built-linux@googlegroups.com
 List-Id: linux-serial@vger.kernel.org
 
-
-
-On 3/21/19 10:01 PM, Hariprasad Kelam wrote:
-> fix spelling mistake "overriden" -> "overridden"
-> This fix resolves warning reported by checkpatch tool
-> 
-
-Whenever you receive feedback on a patch, you need to version
-the patches that you re-send. Also, you should mention what has
-changed, so people know what to review.
-
-I encourage you take a look at this:
-
-https://kernelnewbies.org/Outreachyfirstpatch
-
-Thanks
---
-Gustavo
-
-"If you receive feedback on a patch, and were asked to update the patch,
-you need to version the patches that you re-send. A new version number
-lets reviewers know you made changes to the patch, and they should review
-it again."
-
-> Signed-off-by: Hariprasad Kelam <hariprasad.kelam@gmail.com>
+On Fri, Mar 8, 2019 at 7:38 PM Nathan Chancellor
+<natechancellor@gmail.com> wrote:
+>
+> When building with -Wsometimes-uninitialized, Clang warns:
+>
+> drivers/tty/serial/qcom_geni_serial.c:1079:6: warning: variable 'baud'
+> is used uninitialized whenever 'if' condition is false
+> [-Wsometimes-uninitialized]
+>
+> It's not wrong; when options is NULL, baud has no default value. Use
+> 9600 as that is a sane default.
+>
+> Link: https://github.com/ClangBuiltLinux/linux/issues/395
+> Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
 > ---
->  drivers/tty/serial/serial_core.c | 2 +-
+>  drivers/tty/serial/qcom_geni_serial.c | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 351843f..69f4871 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1514,7 +1514,7 @@ static void uart_set_termios(struct tty_struct *tty,
->  	}
->  
->  	uart_change_speed(tty, state, old_termios);
-> -	/* reload cflag from termios; port driver may have overriden flags */
-> +	/* reload cflag from termios; port driver may have overridden flags */
->  	cflag = tty->termios.c_cflag;
->  
->  	/* Handle transition to B0 status */
-> 
+>
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 3bcec1c20219..35e5f9c5d5be 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -1050,7 +1050,7 @@ static int __init qcom_geni_console_setup(struct console *co, char *options)
+>  {
+>         struct uart_port *uport;
+>         struct qcom_geni_serial_port *port;
+> -       int baud;
+> +       int baud = 9600;
+>         int bits = 8;
+>         int parity = 'n';
+>         int flow = 'n';
+
+I made a similar patch here, but after looking at the driver concluded
+that the bitrate had to be 115200, since that is used as the default
+value otherwise.
+
+        Arnd
