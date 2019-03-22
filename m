@@ -1,57 +1,60 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [BACKPORT 4.4.y 23/25] serial: sprd: clear timeout interrupt only rather than all interrupts
-Date: Fri, 22 Mar 2019 16:44:14 +0100
-Message-ID: <20190322154425.3852517-24-arnd@arndb.de>
-References: <20190322154425.3852517-1-arnd@arndb.de>
+From: Nick Desaulniers <ndesaulniers@google.com>
+Subject: Re: [PATCH] tty: serial: qcom_geni_serial: Initialize baud in qcom_geni_console_setup
+Date: Fri, 22 Mar 2019 11:04:52 -0700
+Message-ID: <CAKwvOdnDHr8VVd3qxxXE18_KOhSb1M7D0GQ77Y0xiqJyBtXRPA@mail.gmail.com>
+References: <20190308084022.GA31474@kroah.com> <20190308183743.11145-1-natechancellor@gmail.com>
+ <CAK8P3a38rvqVhgVGx36Rii0BaBskAnxsfHYye=8pi9n_hKNrbg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20190322154425.3852517-1-arnd@arndb.de>
-Sender: stable-owner@vger.kernel.org
-To: stable@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Orson Zhai <orsonzhai@gmail.com>, Baolin Wang <baolin.wang@linaro.org>, Chunyan Zhang <zhang.lyra@gmail.com>
-Cc: Lanqing Liu <lanqing.liu@spreadtrum.com>, Chunyan Zhang <chunyan.zhang@spreadtrum.com>, Arnd Bergmann <arnd@arndb.de>, Lanqing Liu <lanqing.liu@unisoc.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAK8P3a38rvqVhgVGx36Rii0BaBskAnxsfHYye=8pi9n_hKNrbg@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Nathan Chancellor <natechancellor@gmail.com>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, clang-built-linux@googlegroups.com
 List-Id: linux-serial@vger.kernel.org
 
-From: Lanqing Liu <lanqing.liu@spreadtrum.com>
+On Fri, Mar 22, 2019 at 7:20 AM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> On Fri, Mar 8, 2019 at 7:38 PM Nathan Chancellor
+> <natechancellor@gmail.com> wrote:
+> >
+> > When building with -Wsometimes-uninitialized, Clang warns:
+> >
+> > drivers/tty/serial/qcom_geni_serial.c:1079:6: warning: variable 'baud'
+> > is used uninitialized whenever 'if' condition is false
+> > [-Wsometimes-uninitialized]
+> >
+> > It's not wrong; when options is NULL, baud has no default value. Use
+> > 9600 as that is a sane default.
+> >
+> > Link: https://github.com/ClangBuiltLinux/linux/issues/395
+> > Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+> > ---
+> >  drivers/tty/serial/qcom_geni_serial.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> > index 3bcec1c20219..35e5f9c5d5be 100644
+> > --- a/drivers/tty/serial/qcom_geni_serial.c
+> > +++ b/drivers/tty/serial/qcom_geni_serial.c
+> > @@ -1050,7 +1050,7 @@ static int __init qcom_geni_console_setup(struct console *co, char *options)
+> >  {
+> >         struct uart_port *uport;
+> >         struct qcom_geni_serial_port *port;
+> > -       int baud;
+> > +       int baud = 9600;
+> >         int bits = 8;
+> >         int parity = 'n';
+> >         int flow = 'n';
+>
+> I made a similar patch here, but after looking at the driver concluded
+> that the bitrate had to be 115200, since that is used as the default
+> value otherwise.
 
-On Spreadtrum's serial device, nearly all of interrupts would be cleared
-by hardware except timeout interrupt.  This patch removed the operation
-of clearing all interrupt in irq handler, instead added an if statement
-to check if the timeout interrupt is supposed to be cleared.
+Good point, we use this driver for Pixel, and I usually connect with a
+baud rate of 115200.
 
-Wrongly clearing timeout interrupt would lead to uart data stay in rx
-fifo, that means the driver cannot read them out anymore.
-
-Signed-off-by: Lanqing Liu <lanqing.liu@spreadtrum.com>
-Signed-off-by: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-(cherry picked from commit 4350782570b919f254c1e083261a21c19fcaee90)
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/tty/serial/sprd_serial.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-index 176f0a2bf9d9..c894eca57e73 100644
---- a/drivers/tty/serial/sprd_serial.c
-+++ b/drivers/tty/serial/sprd_serial.c
-@@ -63,6 +63,7 @@
- 
- /* interrupt clear register */
- #define SPRD_ICLR		0x0014
-+#define SPRD_ICLR_TIMEOUT	BIT(13)
- 
- /* line control register */
- #define SPRD_LCR		0x0018
-@@ -298,7 +299,8 @@ static irqreturn_t sprd_handle_irq(int irq, void *dev_id)
- 		return IRQ_NONE;
- 	}
- 
--	serial_out(port, SPRD_ICLR, ~0);
-+	if (ims & SPRD_IMSR_TIMEOUT)
-+		serial_out(port, SPRD_ICLR, SPRD_ICLR_TIMEOUT);
- 
- 	if (ims & (SPRD_IMSR_RX_FIFO_FULL |
- 		SPRD_IMSR_BREAK_DETECT | SPRD_IMSR_TIMEOUT))
 -- 
-2.20.0
+Thanks,
+~Nick Desaulniers
