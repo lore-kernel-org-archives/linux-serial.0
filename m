@@ -1,60 +1,116 @@
-From: Nick Desaulniers <ndesaulniers@google.com>
-Subject: Re: [PATCH] tty: serial: qcom_geni_serial: Initialize baud in qcom_geni_console_setup
-Date: Fri, 22 Mar 2019 11:04:52 -0700
-Message-ID: <CAKwvOdnDHr8VVd3qxxXE18_KOhSb1M7D0GQ77Y0xiqJyBtXRPA@mail.gmail.com>
-References: <20190308084022.GA31474@kroah.com> <20190308183743.11145-1-natechancellor@gmail.com>
- <CAK8P3a38rvqVhgVGx36Rii0BaBskAnxsfHYye=8pi9n_hKNrbg@mail.gmail.com>
+From: Fabien Parent <fparent@baylibre.com>
+Subject: [PATCH 00/24] arm64: mediatek: add support for Pumpkin MT8516 board
+Date: Sat, 23 Mar 2019 22:15:48 +0100
+Message-ID: <20190323211612.860-1-fparent@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAK8P3a38rvqVhgVGx36Rii0BaBskAnxsfHYye=8pi9n_hKNrbg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Nathan Chancellor <natechancellor@gmail.com>, Andy Gross <andy.gross@linaro.org>, David Brown <david.brown@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, clang-built-linux@googlegroups.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: matthias.bgg@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com
+Cc: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, ryder.lee@mediatek.com, linux-watchdog@vger.kernel.org, jjian.zhou@mediatek.com, wenzhen.yu@mediatek.com, stephane.leprovost@mediatek.com, sean.wang@kernel.org, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, yong.mao@mediatek.com, linux-spi@vger.kernel.org, linux-gpio@vger.kernel.org, linux-mediatek@lists.infradead.org, hsin-hsiung.wang@mediatek.com, linux-serial@vger.kernel.org, Fabien Parent <fparent@baylibre.com>, linux-clk@vger.kernel.org, chaotian.jing@mediatek.com, linux-i2c@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Mar 22, 2019 at 7:20 AM Arnd Bergmann <arnd@arndb.de> wrote:
->
-> On Fri, Mar 8, 2019 at 7:38 PM Nathan Chancellor
-> <natechancellor@gmail.com> wrote:
-> >
-> > When building with -Wsometimes-uninitialized, Clang warns:
-> >
-> > drivers/tty/serial/qcom_geni_serial.c:1079:6: warning: variable 'baud'
-> > is used uninitialized whenever 'if' condition is false
-> > [-Wsometimes-uninitialized]
-> >
-> > It's not wrong; when options is NULL, baud has no default value. Use
-> > 9600 as that is a sane default.
-> >
-> > Link: https://github.com/ClangBuiltLinux/linux/issues/395
-> > Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-> > ---
-> >  drivers/tty/serial/qcom_geni_serial.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> > index 3bcec1c20219..35e5f9c5d5be 100644
-> > --- a/drivers/tty/serial/qcom_geni_serial.c
-> > +++ b/drivers/tty/serial/qcom_geni_serial.c
-> > @@ -1050,7 +1050,7 @@ static int __init qcom_geni_console_setup(struct console *co, char *options)
-> >  {
-> >         struct uart_port *uport;
-> >         struct qcom_geni_serial_port *port;
-> > -       int baud;
-> > +       int baud = 9600;
-> >         int bits = 8;
-> >         int parity = 'n';
-> >         int flow = 'n';
->
-> I made a similar patch here, but after looking at the driver concluded
-> that the bitrate had to be 115200, since that is used as the default
-> value otherwise.
+The pumpkin board is designed by Gossamer Engineering and is
+using a MediaTek SoC. The board currently comes in two available
+version: MT8516 SoC and MT8167 SoC.
 
-Good point, we use this driver for Pixel, and I usually connect with a
-baud rate of 115200.
+The board provides the following IOs: eMMC, NAND, SD card, USB 2 type-A,
+Ethernet, Wi-Fi, Bluetooth, Audio (jack out, 2 PDM port, 1 analog in),
+serial over USB, and an expansion header.
+
+This patch series adds the basic board support to be able to boot
+on the eMMC of the MT8516 based Pumpkin board.
+
+The board is using a MT6392 PMIC.
+
+Fabien Parent (24):
+  dt-bindings: regulator: add support for MT6392
+  regulator: mt6392: Add support for MT6392 regulator
+  dt-bindings: pwrap: mediatek: add pwrap support for MT8516
+  soc: mediatek: pwrap: add missing check on rstc
+  soc: mediatek: pwrap: add support for MT8516 pwrap
+  mfd: mt6397: Add support for MT6397 pmic
+  arm64: dts: mt6392: Add PMIC mt6392 dtsi
+  dt-bindings: mmc: mtk-sd: add mtk-sd support for MT8516
+  mmc: mtk-sd: check for valid optional memory resource
+  mmc: mtk-sd: add support for MT8516
+  dt-bindings: mediatek: topckgen: add support for MT8516
+  dt-bindings: mediatek: infracfg: add support for MT8516
+  dt-bindings: mediatek: apmixedsys: add support for MT8516
+  clk: mediatek: add clock driver for MT8516
+  dt-bindings: pinctrl: pinctrl-mt65xx: add support for MT8516
+  pinctrl: mediatek: Add MT8516 Pinctrl driver
+  dt-bindings: wdog: mtk-wdt: add support for MT851
+  dt-bindings: timer: mtk-timer: add support for MT8516
+  dt-bindings: spi: spi-mt65xx: add support for MT8516
+  dt-bindings: serial: mtk-uart: add support for MT8516
+  dt-bindings: irq: mtk,sysirq: add support for MT8516
+  dt-bindings: i2c: i2c-mtk: add support for MT8516
+  arm64: dts: mediatek: add dtsi for MT8516
+  arm64: dts: mediatek: add pumpkin board dts
+
+ .../arm/mediatek/mediatek,apmixedsys.txt      |    1 +
+ .../arm/mediatek/mediatek,infracfg.txt        |    1 +
+ .../arm/mediatek/mediatek,topckgen.txt        |    1 +
+ .../devicetree/bindings/i2c/i2c-mtk.txt       |    1 +
+ .../interrupt-controller/mediatek,sysirq.txt  |    3 +-
+ .../devicetree/bindings/mmc/mtk-sd.txt        |    1 +
+ .../bindings/pinctrl/pinctrl-mt65xx.txt       |    1 +
+ .../bindings/regulator/mt6392-regulator.txt   |  220 +++
+ .../devicetree/bindings/serial/mtk-uart.txt   |    1 +
+ .../bindings/soc/mediatek/pwrap.txt           |    1 +
+ .../devicetree/bindings/spi/spi-mt65xx.txt    |    1 +
+ .../bindings/timer/mediatek,mtk-timer.txt     |    1 +
+ .../devicetree/bindings/watchdog/mtk-wdt.txt  |    1 +
+ arch/arm64/boot/dts/mediatek/Makefile         |    1 +
+ arch/arm64/boot/dts/mediatek/mt6392.dtsi      |  208 +++
+ arch/arm64/boot/dts/mediatek/mt8516-pinfunc.h |  663 +++++++++
+ .../boot/dts/mediatek/mt8516-pumpkin.dts      |   19 +
+ arch/arm64/boot/dts/mediatek/mt8516.dtsi      |  409 ++++++
+ .../boot/dts/mediatek/pumpkin-common.dtsi     |  210 +++
+ .../dts/mediatek/pumpkin-emmc-common.dtsi     |   75 ++
+ drivers/clk/mediatek/Kconfig                  |    9 +
+ drivers/clk/mediatek/Makefile                 |    1 +
+ drivers/clk/mediatek/clk-mt8516.c             |  815 ++++++++++++
+ drivers/mfd/mt6397-core.c                     |   96 ++
+ drivers/mmc/host/mtk-sd.c                     |   19 +-
+ drivers/pinctrl/mediatek/Kconfig              |    7 +
+ drivers/pinctrl/mediatek/Makefile             |    1 +
+ drivers/pinctrl/mediatek/pinctrl-mt8516.c     |  384 ++++++
+ drivers/pinctrl/mediatek/pinctrl-mtk-mt8516.h | 1182 +++++++++++++++++
+ drivers/regulator/Kconfig                     |    9 +
+ drivers/regulator/Makefile                    |    1 +
+ drivers/regulator/mt6392-regulator.c          |  490 +++++++
+ drivers/soc/mediatek/mtk-pmic-wrap.c          |  109 +-
+ include/dt-bindings/clock/mt8516-clk.h        |  211 +++
+ include/linux/mfd/mt6392/core.h               |   42 +
+ include/linux/mfd/mt6392/registers.h          |  487 +++++++
+ include/linux/regulator/mt6392-regulator.h    |   40 +
+ 37 files changed, 5717 insertions(+), 5 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/regulator/mt6392-regulator.txt
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt6392.dtsi
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8516-pinfunc.h
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8516-pumpkin.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8516.dtsi
+ create mode 100644 arch/arm64/boot/dts/mediatek/pumpkin-common.dtsi
+ create mode 100644 arch/arm64/boot/dts/mediatek/pumpkin-emmc-common.dtsi
+ create mode 100644 drivers/clk/mediatek/clk-mt8516.c
+ create mode 100644 drivers/pinctrl/mediatek/pinctrl-mt8516.c
+ create mode 100644 drivers/pinctrl/mediatek/pinctrl-mtk-mt8516.h
+ create mode 100644 drivers/regulator/mt6392-regulator.c
+ create mode 100644 include/dt-bindings/clock/mt8516-clk.h
+ create mode 100644 include/linux/mfd/mt6392/core.h
+ create mode 100644 include/linux/mfd/mt6392/registers.h
+ create mode 100644 include/linux/regulator/mt6392-regulator.h
 
 -- 
-Thanks,
-~Nick Desaulniers
+2.20.1
