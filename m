@@ -1,61 +1,85 @@
-From: Fabien Parent <fparent-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH 10/24] mmc: mtk-sd: add support for MT8516
-Date: Sat, 23 Mar 2019 22:15:58 +0100
-Message-ID: <20190323211612.860-11-fparent@baylibre.com>
-References: <20190323211612.860-1-fparent@baylibre.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20190323211612.860-1-fparent-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
-List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ryder.lee-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jjian.zhou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, wenzhen.yu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, stephane.leprovost-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, sean.wang-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yong.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, hsin-hsiung.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Fabien Parent <fparent-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, chaotian.jing-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Aditya Pakki <pakki001@umn.edu>
+Subject: [PATCH v2] tty: 8250: fix a missing check for pci_ioremap_bar
+Date: Sat, 23 Mar 2019 17:53:12 -0500
+Message-ID: <20190323225313.12325-1-pakki001@umn.edu>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: pakki001@umn.edu
+Cc: kjlu@umn.edu, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Vinod Koul <vkoul@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Add the MSDC configuration for the MT8516 SoC.
+pci_ioremap_bar could fail. The fix captures the failure and
+pass an error code upstream. This can avoid potential NULL
+pointer dereferences in the future.
 
-Signed-off-by: Fabien Parent <fparent-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
+Signed-off-by: Aditya Pakki <pakki001@umn.edu>
+
 ---
- drivers/mmc/host/mtk-sd.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+v1: Missed return by default in CONFIG_SERIAL_8250_DMA, suggested by
+Jiri Slaby
+---
+ drivers/tty/serial/8250/8250_lpss.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
-index 573aa127d00b..51139275b1b2 100644
---- a/drivers/mmc/host/mtk-sd.c
-+++ b/drivers/mmc/host/mtk-sd.c
-@@ -507,6 +507,16 @@ static const struct mtk_mmc_compatible mt7622_compat = {
- 	.support_64g = false,
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index 53ca9ba6ab4b..1dc67897dcf8 100644
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -161,7 +161,7 @@ static const struct dw_dma_platform_data qrk_serial_dma_pdata = {
+ 	.multi_block = {0},
  };
  
-+static const struct mtk_mmc_compatible mt8516_compat = {
-+	.clk_div_bits = 12,
-+	.hs400_tune = false,
-+	.pad_tune_reg = MSDC_PAD_TUNE0,
-+	.async_fifo = true,
-+	.data_tune = true,
-+	.busy_check = true,
-+	.stop_clk_fix = true,
-+};
+-static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
++static int qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
+ {
+ 	struct uart_8250_dma *dma = &lpss->dma;
+ 	struct dw_dma_chip *chip = &lpss->dma_chip;
+@@ -172,12 +172,14 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
+ 	chip->dev = &pdev->dev;
+ 	chip->irq = pci_irq_vector(pdev, 0);
+ 	chip->regs = pci_ioremap_bar(pdev, 1);
++	if (!chip->regs)
++		return -EIO;
+ 	chip->pdata = &qrk_serial_dma_pdata;
+ 
+ 	/* Falling back to PIO mode if DMA probing fails */
+ 	ret = dw_dma_probe(chip);
+ 	if (ret)
+-		return;
++		return ret;
+ 
+ 	pci_try_set_mwi(pdev);
+ 
+@@ -191,6 +193,7 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
+ 	param->hs_polarity = true;
+ 
+ 	lpss->dma_maxburst = 8;
++	return 0;
+ }
+ 
+ static void qrk_serial_exit_dma(struct lpss8250 *lpss)
+@@ -202,7 +205,11 @@ static void qrk_serial_exit_dma(struct lpss8250 *lpss)
+ 	dw_dma_remove(&lpss->dma_chip);
+ }
+ #else	/* CONFIG_SERIAL_8250_DMA */
+-static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port) {}
++static int qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
++{
++	return 0;
++}
 +
- static const struct of_device_id msdc_of_ids[] = {
- 	{ .compatible = "mediatek,mt8135-mmc", .data = &mt8135_compat},
- 	{ .compatible = "mediatek,mt8173-mmc", .data = &mt8173_compat},
-@@ -514,6 +524,7 @@ static const struct of_device_id msdc_of_ids[] = {
- 	{ .compatible = "mediatek,mt2701-mmc", .data = &mt2701_compat},
- 	{ .compatible = "mediatek,mt2712-mmc", .data = &mt2712_compat},
- 	{ .compatible = "mediatek,mt7622-mmc", .data = &mt7622_compat},
-+	{ .compatible = "mediatek,mt8516-mmc", .data = &mt8516_compat},
- 	{}
- };
- MODULE_DEVICE_TABLE(of, msdc_of_ids);
+ static void qrk_serial_exit_dma(struct lpss8250 *lpss) {}
+ #endif	/* !CONFIG_SERIAL_8250_DMA */
+ 
+@@ -219,8 +226,7 @@ static int qrk_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 
+ 	port->irq = pci_irq_vector(pdev, 0);
+ 
+-	qrk_serial_setup_dma(lpss, port);
+-	return 0;
++	return qrk_serial_setup_dma(lpss, port);
+ }
+ 
+ static void qrk_serial_exit(struct lpss8250 *lpss)
 -- 
-2.20.1
+2.17.1
