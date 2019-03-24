@@ -1,53 +1,51 @@
-From: Fabien Parent <fparent@baylibre.com>
-Subject: Re: [PATCH 09/24] mmc: mtk-sd: check for valid optional memory resource
-Date: Sun, 24 Mar 2019 16:18:45 +0100
-Message-ID: <CAOwMV_zkHMZv8y_8C9kRCUsPtSbm+vPkJUNzU-_LK5=OhTkiPw@mail.gmail.com>
-References: <20190323211612.860-1-fparent@baylibre.com> <20190323211612.860-10-fparent@baylibre.com>
- <1553398466.26628.0.camel@mtksdaap41>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+From: Aditya Pakki <pakki001@umn.edu>
+Subject: [PATCH v3] tty: 8250: fix a missing check for pci_ioremap_bar
+Date: Sun, 24 Mar 2019 11:09:00 -0500
+Message-ID: <20190324160901.23001-1-pakki001@umn.edu>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1553398466.26628.0.camel@mtksdaap41>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yingjoe Chen <yingjoe.chen@mediatek.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, robh+dt@kernel.org, mark.rutland@arm.com, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, ryder.lee@mediatek.com, linux-watchdog@vger.kernel.org, jjian.zhou@mediatek.com, wenzhen.yu@mediatek.com, Stephane Le Provost <stephane.leprovost@mediatek.com>, sean.wang@kernel.org, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, yong.mao@mediatek.com, linux-spi@vger.kernel.org, linux-gpio@vger.kernel.org, linux-mediatek@lists.infradead.org, hsin-hsiung.wang@mediatek.com, linux-serial@vger.kernel.org, linux-clk@vger.kernel.org, Chaotian Jing <chaotian.jing@mediatek.com>, linux-i2c@vger.kernel.org
+To: pakki001@umn.edu
+Cc: kjlu@umn.edu, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Vinod Koul <vkoul@kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Mar 24, 2019 at 4:34 AM Yingjoe Chen <yingjoe.chen@mediatek.com> wrote:
->
-> On Sat, 2019-03-23 at 22:15 +0100, Fabien Parent wrote:
-> > 'top_base' memory region is optional. Check that the resource is valid
-> > before using it. This avoid getting a "invalid resource" error message
-> > printed by the kernel.
-> >
-> > Signed-off-by: Fabien Parent <fparent@baylibre.com>
-> > ---
-> >  drivers/mmc/host/mtk-sd.c | 8 +++++---
-> >  1 file changed, 5 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
-> > index 833ef0590af8..573aa127d00b 100644
-> > --- a/drivers/mmc/host/mtk-sd.c
-> > +++ b/drivers/mmc/host/mtk-sd.c
-> > @@ -2123,9 +2123,11 @@ static int msdc_drv_probe(struct platform_device *pdev)
-> >       }
-> >
-> >       res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-> > -     host->top_base = devm_ioremap_resource(&pdev->dev, res);
-> > -     if (IS_ERR(host->top_base))
-> > -             host->top_base = NULL;
-> > +     if (ret) {
->
-> This should be res?
+pci_ioremap_bar could fail. The patch returns in case of failure to
+acquire IOMEM. It also releases the acquired resource in the exit path.
 
-Indeed. Thanks, I will fix it in v2.
+Signed-off-by: Aditya Pakki <pakki001@umn.edu>
 
-> > +             host->top_base = devm_ioremap_resource(&pdev->dev, res);
-> > +             if (IS_ERR(host->top_base))
-> > +                     host->top_base = NULL;
-> > +     }
-> >
-> >       ret = mmc_regulator_get_supply(mmc);
-> >       if (ret)
->
->
+---
+v2: Failed to release resource in exit path and incorrect code in non
+DMA case, suggested by Andy Shevchenko
+v1: Missed return by default in CONFIG_SERIAL_8250_DMA, suggested by
+Jiri Slaby
+---
+ drivers/tty/serial/8250/8250_lpss.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index 53ca9ba6ab4b..7889b2552013 100644
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -170,9 +170,11 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
+ 	int ret;
+ 
+ 	chip->dev = &pdev->dev;
++	chip->pdata = &qrk_serial_dma_pdata;
+ 	chip->irq = pci_irq_vector(pdev, 0);
+ 	chip->regs = pci_ioremap_bar(pdev, 1);
+-	chip->pdata = &qrk_serial_dma_pdata;
++	if (!chip->regs)
++		return;
+ 
+ 	/* Falling back to PIO mode if DMA probing fails */
+ 	ret = dw_dma_probe(chip);
+@@ -199,6 +201,7 @@ static void qrk_serial_exit_dma(struct lpss8250 *lpss)
+ 
+ 	if (!param->dma_dev)
+ 		return;
++	pci_iounmap(param->dma_dev, &lpss->dma_chip->regs);
+ 	dw_dma_remove(&lpss->dma_chip);
+ }
+ #else	/* CONFIG_SERIAL_8250_DMA */
+-- 
+2.17.1
