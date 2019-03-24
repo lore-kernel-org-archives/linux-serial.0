@@ -1,53 +1,41 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v2] tty: 8250: fix a missing check for pci_ioremap_bar
-Date: Sun, 24 Mar 2019 14:31:11 +0200
-Message-ID: <CAHp75VeyL-G9i=ABg8r6R7+oBBYRDM82L2-jFEm1uK0-136aMw@mail.gmail.com>
-References: <20190323225313.12325-1-pakki001@umn.edu> <CAHp75VdeB=jPaqY_VNDA7YeCiEdyVFJAmOmC4sDvZLBv-7KQ0w@mail.gmail.com>
- <CAHp75VfbPue803w06GdJwU_JYcFKEcShLpyGRMhOg9xi4ZwpAA@mail.gmail.com>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH 17/24] dt-bindings: wdog: mtk-wdt: add support for MT851
+Date: Sun, 24 Mar 2019 08:13:45 -0700
+Message-ID: <741058cb-ef57-bda4-9d36-d7295fab9230@roeck-us.net>
+References: <20190323211612.860-1-fparent@baylibre.com>
+ <20190323211612.860-18-fparent@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75VfbPue803w06GdJwU_JYcFKEcShLpyGRMhOg9xi4ZwpAA@mail.gmail.com>
+In-Reply-To: <20190323211612.860-18-fparent@baylibre.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Aditya Pakki <pakki001@umn.edu>
-Cc: Kangjie Lu <kjlu@umn.edu>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Vinod Koul <vkoul@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Fabien Parent <fparent@baylibre.com>, matthias.bgg@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com
+Cc: sean.wang@kernel.org, ryder.lee@mediatek.com, hsin-hsiung.wang@mediatek.com, wenzhen.yu@mediatek.com, chaotian.jing@mediatek.com, yong.mao@mediatek.com, jjian.zhou@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-clk@vger.kernel.org, stephane.leprovost@mediatek.com
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Mar 24, 2019 at 2:26 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Sun, Mar 24, 2019 at 2:05 PM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> > On Sun, Mar 24, 2019 at 12:55 AM Aditya Pakki <pakki001@umn.edu> wrote:
-> > >
-> > > pci_ioremap_bar could fail. The fix captures the failure and
-> > > pass an error code upstream. This can avoid potential NULL
-> > > pointer dereferences in the future.
-> > >
-> >
-> > NAK.
-> > This will break non-DMA case.
->
-> > > @@ -172,12 +172,14 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
->
-> Just to clarify, what you need is simple
->
+On 3/23/19 2:16 PM, Fabien Parent wrote:
+> Add binding documentation of mtk-wdt for MT8516 SoC.
+> 
+> Signed-off-by: Fabien Parent <fparent@baylibre.com>
 
-> void __iomem *regs;
+Acked-by: Guenter Roeck <linux@roeck-us.net>
 
-Sorry for leftover.
-
-> chip->pdata = ... //move it here for better looking code
-> chip->irq = ...
-
-> chip->regs = pci_ioremap_bar(...);
-
-And looking into the code it needs pci_iounmap() on exit one.
-
-> if (!chip->regs)
->   return;
->
-> and thank you for pointing to this.
-
--- 
-With Best Regards,
-Andy Shevchenko
+> ---
+>   Documentation/devicetree/bindings/watchdog/mtk-wdt.txt | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt b/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
+> index 8682d6a93e5b..fd380eb28df5 100644
+> --- a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
+> +++ b/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
+> @@ -9,6 +9,7 @@ Required properties:
+>   	"mediatek,mt7622-wdt", "mediatek,mt6589-wdt": for MT7622
+>   	"mediatek,mt7623-wdt", "mediatek,mt6589-wdt": for MT7623
+>   	"mediatek,mt7629-wdt", "mediatek,mt6589-wdt": for MT7629
+> +	"mediatek,mt8516-wdt", "mediatek,mt6589-wdt": for MT8516
+>   
+>   - reg : Specifies base physical address and size of the registers.
+>   
+> 
