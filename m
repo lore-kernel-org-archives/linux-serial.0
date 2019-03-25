@@ -1,49 +1,65 @@
-From: Matthew Garrett <matthewgarrett@google.com>
-Subject: [PATCH 18/27] Lock down TIOCSSERIAL
-Date: Mon, 25 Mar 2019 15:09:45 -0700
-Message-ID: <20190325220954.29054-19-matthewgarrett@google.com>
-References: <20190325220954.29054-1-matthewgarrett@google.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+From: Aditya Pakki <pakki001@umn.edu>
+Subject: [PATCH v6] tty: 8250: fix a missing check for pci_ioremap_bar
+Date: Mon, 25 Mar 2019 17:21:46 -0500
+Message-ID: <20190325222147.13342-1-pakki001@umn.edu>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190325220954.29054-1-matthewgarrett@google.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: jmorris@namei.org
-Cc: linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org, dhowells@redhat.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Matthew Garrett <matthewgarrett@google.com>
+To: pakki001@umn.edu
+Cc: kjlu@umn.edu, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Vinod Koul <vkoul@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+pci_ioremap_bar could fail. The patch returns in case of failure to
+acquire IOMEM. It also releases the acquired resource in the exit path.
 
-Lock down TIOCSSERIAL as that can be used to change the ioport and irq
-settings on a serial port.  This only appears to be an issue for the serial
-drivers that use the core serial code.  All other drivers seem to either
-ignore attempts to change port/irq or give an error.
+Signed-off-by: Aditya Pakki <pakki001@umn.edu>
 
-Reported-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org
-Signed-off-by: Matthew Garrett <matthewgarrett@google.com>
 ---
- drivers/tty/serial/serial_core.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+v5: change pci_iounmap to iounmap to pass kbuild errors in other arch
+v4: Missed resource release in dma_probe failure.
+v3: Change the order of pci_iounmap and dw_dma_remove
+v2: Failed to release resource in exit path and incorrect code in non
+DMA case, suggested by Andy Shevchenko
+v1: Missed return by default in CONFIG_SERIAL_8250_DMA, suggested by
+Jiri Slaby
+---
+ drivers/tty/serial/8250/8250_lpss.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index d4cca5bdaf1c..04534877b575 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -842,6 +842,12 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
- 	new_flags = (__force upf_t)new_info->flags;
- 	old_custom_divisor = uport->custom_divisor;
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index 53ca9ba6ab4b..c7c7bf5d7e5e 100644
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -170,14 +170,18 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
+ 	int ret;
  
-+	if ((change_port || change_irq) &&
-+	    kernel_is_locked_down("Using TIOCSSERIAL to change device addresses, irqs and dma channels")) {
-+		retval = -EPERM;
-+		goto exit;
+ 	chip->dev = &pdev->dev;
++	chip->pdata = &qrk_serial_dma_pdata;
+ 	chip->irq = pci_irq_vector(pdev, 0);
+ 	chip->regs = pci_ioremap_bar(pdev, 1);
+-	chip->pdata = &qrk_serial_dma_pdata;
++	if (!chip->regs)
++		return;
+ 
+ 	/* Falling back to PIO mode if DMA probing fails */
+ 	ret = dw_dma_probe(chip);
+-	if (ret)
++	if (ret) {
++		iounmap(chip->regs);
+ 		return;
 +	}
+ 
+ 	pci_try_set_mwi(pdev);
+ 
+@@ -199,7 +203,10 @@ static void qrk_serial_exit_dma(struct lpss8250 *lpss)
+ 
+ 	if (!param->dma_dev)
+ 		return;
 +
- 	if (!capable(CAP_SYS_ADMIN)) {
- 		retval = -EPERM;
- 		if (change_irq || change_port ||
+ 	dw_dma_remove(&lpss->dma_chip);
++
++	iounmap(&lpss->dma_chip->regs);
+ }
+ #else	/* CONFIG_SERIAL_8250_DMA */
+ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port) {}
 -- 
-2.21.0.392.gf8f6787159e-goog
+2.17.1
