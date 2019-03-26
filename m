@@ -1,32 +1,28 @@
-From: Baolin Wang <baolin.wang@linaro.org>
-Subject: Re: [PATCH v2 0/4] Add new features for the Spreadtrum serial controller
-Date: Tue, 26 Mar 2019 18:41:31 +0800
-Message-ID: <CAMz4kuJitF7Q76T0Hoj1-UTAjQnepEs9aQHhy=r_Acdq+RiwGw@mail.gmail.com>
-References: <cover.1551689518.git.baolin.wang@linaro.org>
+From: Subhashini Rao Beerisetty <subhashbeerisetty@gmail.com>
+Subject: tty: uart: loopback test
+Date: Tue, 26 Mar 2019 17:22:56 +0530
+Message-ID: <CAPY=qRThdF_oqVf+rSUEfWPi=uhRQmjHYHB0dyG=mKGK2EY4Lg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1551689518.git.baolin.wang@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Orson Zhai <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>
-Cc: Mark Brown <broonie@kernel.org>, lanqing.liu@unisoc.com, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, DTML <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <kernelnewbies-bounces@kernelnewbies.org>
+List-Unsubscribe: <https://lists.kernelnewbies.org/mailman/options/kernelnewbies>,
+ <mailto:kernelnewbies-request@kernelnewbies.org?subject=unsubscribe>
+List-Archive: <http://lists.kernelnewbies.org/pipermail/kernelnewbies/>
+List-Post: <mailto:kernelnewbies@kernelnewbies.org>
+List-Help: <mailto:kernelnewbies-request@kernelnewbies.org?subject=help>
+List-Subscribe: <https://lists.kernelnewbies.org/mailman/listinfo/kernelnewbies>,
+ <mailto:kernelnewbies-request@kernelnewbies.org?subject=subscribe>
+Errors-To: kernelnewbies-bounces@kernelnewbies.org
+To: kernelnewbies <kernelnewbies@kernelnewbies.org>
+Cc: linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Greg,
-
-On Mon, 4 Mar 2019 at 16:59, Baolin Wang <baolin.wang@linaro.org> wrote:
->
-> This patch set fixes the baud rate calculation formula issue, as well as
-> adding power management support and DMA mode support for the Spreadtrum
-> serial controller.
->
-> Changes from v1:
->  - The patch 1 of V1 was applied, so remove the baud rate fix from this patch set.
->  - Add reviewed tag from Rob for patch 1.
->  - Fix the incorrect names' order in patch 3.
-
-Could you apply this patch set if no objection from you? Thanks.
-
--- 
-Baolin Wang
-Best Regards
+ICBIaSBBbGwsCgoKSeKAmW0gbG9va2luZyBmb3IgYW4gdXNlcnNwYWNlIOKAmEPigJkgdGVzdCBj
+b2RlIHRvIHRyYW5zZmVyIGEgZmlsZSBvbiBVQVJUClR4IGxpbmUgYW5kIHJlY2VpdmUgdGhlIGZp
+bGUgb24gVUFSVCBSeCBsaW5lIHRvIHRlc3QgbG9vcGJhY2sKc3VwcG9ydGVkIHNlcmlhbCBwb3J0
+LgoKQ2FuIGFueWJvZHkgZ2l2ZSBleGFtcGxlIG9mIHN1Y2ggYXBwbGljYXRpb24/CgoKVGhhbmtz
+CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpLZXJuZWxu
+ZXdiaWVzIG1haWxpbmcgbGlzdApLZXJuZWxuZXdiaWVzQGtlcm5lbG5ld2JpZXMub3JnCmh0dHBz
+Oi8vbGlzdHMua2VybmVsbmV3Ymllcy5vcmcvbWFpbG1hbi9saXN0aW5mby9rZXJuZWxuZXdiaWVz
+Cg==
