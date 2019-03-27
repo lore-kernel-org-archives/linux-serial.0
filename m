@@ -1,40 +1,340 @@
-From: Baolin Wang <baolin.wang@linaro.org>
-Subject: Re: [PATCH v2 0/4] Add new features for the Spreadtrum serial controller
-Date: Wed, 27 Mar 2019 09:59:56 +0800
-Message-ID: <CAMz4ku+00Bt0viM0JfKdy0n51EF9Hc37auKa6GPCHp8o=J6L8g@mail.gmail.com>
-References: <cover.1551689518.git.baolin.wang@linaro.org> <CAMz4kuJitF7Q76T0Hoj1-UTAjQnepEs9aQHhy=r_Acdq+RiwGw@mail.gmail.com>
- <20190327005944.GA20301@kroah.com>
+From: hariprasad kelam <hariprasad.kelam@gmail.com>
+Subject: Re: tty: uart: loopback test
+Date: Wed, 27 Mar 2019 07:45:14 +0530
+Message-ID: <CACFYQXNnfokwyGOJiPV+Q=T0NEJRLc1FC_EqFM6JaiCN-A-pQQ@mail.gmail.com>
+References: <CAPY=qRThdF_oqVf+rSUEfWPi=uhRQmjHYHB0dyG=mKGK2EY4Lg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190327005944.GA20301@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: jslaby@suse.com, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Orson Zhai <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>, Mark Brown <broonie@kernel.org>, lanqing.liu@unisoc.com, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, DTML <devicetree@vger.kernel.org>
+Content-Type: multipart/mixed; boundary="===============6802258632175957239=="
+Return-path: <kernelnewbies-bounces@kernelnewbies.org>
+In-Reply-To: <CAPY=qRThdF_oqVf+rSUEfWPi=uhRQmjHYHB0dyG=mKGK2EY4Lg@mail.gmail.com>
+List-Unsubscribe: <https://lists.kernelnewbies.org/mailman/options/kernelnewbies>,
+ <mailto:kernelnewbies-request@kernelnewbies.org?subject=unsubscribe>
+List-Archive: <http://lists.kernelnewbies.org/pipermail/kernelnewbies/>
+List-Post: <mailto:kernelnewbies@kernelnewbies.org>
+List-Help: <mailto:kernelnewbies-request@kernelnewbies.org?subject=help>
+List-Subscribe: <https://lists.kernelnewbies.org/mailman/listinfo/kernelnewbies>,
+ <mailto:kernelnewbies-request@kernelnewbies.org?subject=subscribe>
+Errors-To: kernelnewbies-bounces@kernelnewbies.org
+To: Subhashini Rao Beerisetty <subhashbeerisetty@gmail.com>
+Cc: linux-serial@vger.kernel.org, kernelnewbies <kernelnewbies@kernelnewbies.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 27 Mar 2019 at 08:59, Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Tue, Mar 26, 2019 at 06:41:31PM +0800, Baolin Wang wrote:
-> > Hi Greg,
-> >
-> > On Mon, 4 Mar 2019 at 16:59, Baolin Wang <baolin.wang@linaro.org> wrote:
-> > >
-> > > This patch set fixes the baud rate calculation formula issue, as well as
-> > > adding power management support and DMA mode support for the Spreadtrum
-> > > serial controller.
-> > >
-> > > Changes from v1:
-> > >  - The patch 1 of V1 was applied, so remove the baud rate fix from this patch set.
-> > >  - Add reviewed tag from Rob for patch 1.
-> > >  - Fix the incorrect names' order in patch 3.
-> >
-> > Could you apply this patch set if no objection from you? Thanks.
->
-> It's in my to-review queue, sorry, will get to it soon...
+--===============6802258632175957239==
+Content-Type: multipart/related; boundary="000000000000c488eb05850a02af"
 
-Thanks :)
+--000000000000c488eb05850a02af
+Content-Type: multipart/alternative; boundary="000000000000c488e805850a02ae"
 
---
-Baolin Wang
-Best Regards
+--000000000000c488e805850a02ae
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hi Subhashini,
+
+
+
+
+On Tue, 26 Mar 2019 at 17:23, Subhashini Rao Beerisetty <
+subhashbeerisetty@gmail.com> wrote:
+
+>   Hi All,
+>
+>
+> I=E2=80=99m looking for an userspace =E2=80=98C=E2=80=99 test code to tra=
+nsfer a file on UART
+> Tx line and receive the file on UART Rx line to test loopback
+> supported serial port.
+>
+
+Before sending file on UART . I would suggest you to test sending simple
+buffer and ensure you receive it correctly.
+
+
+>
+> Can anybody give example of such application?
+>
+I am assuming  you have correct hardware ,ensure RS-232 RX-TX lines are
+short.If you are not sure follow below link
+[image: image.png]
+
+Coming to application which tests loop back,there are plenty tools like
+1.minicom
+2.cutecom etc.
+
+if you want to specific application try below
+https://elinux.org/images/b/b7/Uart-loopback.c
+https://medium.com/@amitasinghchauhan/serial-port-debugging-101-loopback-te=
+st-4a7e40da9055
+
+
+>
+>
+> Thanks
+>
+> _______________________________________________
+> Kernelnewbies mailing list
+> Kernelnewbies@kernelnewbies.org
+> https://lists.kernelnewbies.org/mailman/listinfo/kernelnewbies
+>
+
+--000000000000c488e805850a02ae
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr">Hi Subh=
+ashini,<div><br></div><div><br></div><div><br></div></div><br><div class=3D=
+"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Tue, 26 Mar 2019 at =
+17:23, Subhashini Rao Beerisetty &lt;<a href=3D"mailto:subhashbeerisetty@gm=
+ail.com">subhashbeerisetty@gmail.com</a>&gt; wrote:<br></div><blockquote cl=
+ass=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid=
+ rgb(204,204,204);padding-left:1ex">=C2=A0 Hi All,<br>
+<br>
+<br>
+I=E2=80=99m looking for an userspace =E2=80=98C=E2=80=99 test code to trans=
+fer a file on UART<br>
+Tx line and receive the file on UART Rx line to test loopback<br>
+supported serial port.<br></blockquote><div><br></div><div>Before sending f=
+ile on UART . I would suggest you to test sending simple buffer and ensure =
+you receive it correctly.</div><div>=C2=A0</div><blockquote class=3D"gmail_=
+quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,=
+204);padding-left:1ex">
+<br>
+Can anybody give example of such application?<br></blockquote><div>I am ass=
+uming =C2=A0you have correct hardware ,ensure RS-232 RX-TX lines are short.=
+If you are not sure follow below link</div><div><img src=3D"cid:ii_jtqkrqwr=
+0" alt=3D"image.png" width=3D"217" height=3D"206"><br></div><div><br></div>=
+<div>Coming to application which tests loop back,there are plenty tools lik=
+e</div><div>1.minicom</div><div>2.cutecom etc.</div><div><br></div><div>if =
+you want to specific application try below=C2=A0</div><div><a href=3D"https=
+://elinux.org/images/b/b7/Uart-loopback.c">https://elinux.org/images/b/b7/U=
+art-loopback.c</a><br></div><div><a href=3D"https://medium.com/@amitasinghc=
+hauhan/serial-port-debugging-101-loopback-test-4a7e40da9055">https://medium=
+.com/@amitasinghchauhan/serial-port-debugging-101-loopback-test-4a7e40da905=
+5</a><br></div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"=
+margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-lef=
+t:1ex">
+<br>
+<br>
+Thanks<br>
+<br>
+_______________________________________________<br>
+Kernelnewbies mailing list<br>
+<a href=3D"mailto:Kernelnewbies@kernelnewbies.org" target=3D"_blank">Kernel=
+newbies@kernelnewbies.org</a><br>
+<a href=3D"https://lists.kernelnewbies.org/mailman/listinfo/kernelnewbies" =
+rel=3D"noreferrer" target=3D"_blank">https://lists.kernelnewbies.org/mailma=
+n/listinfo/kernelnewbies</a><br>
+</blockquote></div></div></div></div>
+
+--000000000000c488e805850a02ae--
+
+--000000000000c488eb05850a02af
+Content-Type: image/png; name="image.png"
+Content-Disposition: inline; filename="image.png"
+Content-Transfer-Encoding: base64
+Content-ID: <ii_jtqkrqwr0>
+X-Attachment-Id: ii_jtqkrqwr0
+
+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
+YII=
+--000000000000c488eb05850a02af--
+
+
+--===============6802258632175957239==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+Kernelnewbies mailing list
+Kernelnewbies@kernelnewbies.org
+https://lists.kernelnewbies.org/mailman/listinfo/kernelnewbies
+
+--===============6802258632175957239==--
