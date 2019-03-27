@@ -1,53 +1,33 @@
-From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 057/192] serial: 8250_pxa: honor the port number from devicetree
-Date: Wed, 27 Mar 2019 14:08:09 -0400
-Message-ID: <20190327181025.13507-57-sashal@kernel.org>
-References: <20190327181025.13507-1-sashal@kernel.org>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] tty: serial_core: Spelling correction
+Date: Thu, 28 Mar 2019 00:13:19 +0900
+Message-ID: <20190327151319.GA17698@kroah.com>
+References: <20190322030159.GA6551@hari-Inspiron-1545>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190327181025.13507-1-sashal@kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190322030159.GA6551@hari-Inspiron-1545>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Lubomir Rintel <lkundrak@v3.sk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+To: Hariprasad Kelam <hariprasad.kelam@gmail.com>
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Lubomir Rintel <lkundrak@v3.sk>
+On Fri, Mar 22, 2019 at 08:31:59AM +0530, Hariprasad Kelam wrote:
+> fix spelling mistake "overriden" -> "overridden"
+> This fix resolves warning reported by checkpatch tool
+> 
+> Signed-off-by: Hariprasad Kelam <hariprasad.kelam@gmail.com>
+> ---
+>  drivers/tty/serial/serial_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-[ Upstream commit fe9ed6d2483fda55465f32924fb15bce0fac3fac ]
+You sent 3 patches with the same subject, and so I have no idea which
+one is the "latest" one.
 
-Like the other OF-enabled drivers, use the port number from the firmware if
-the devicetree specifies an alias:
+Please fix up and resend with the proper version information as the
+documentation asks you to.
 
-  aliases {
-      ...
-      serial2 = &uart2; /* Should be ttyS2 */
-  }
+thanks,
 
-This is how the deprecated pxa.c driver behaved, switching to 8250_pxa
-messes up the numbering.
-
-Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/8250/8250_pxa.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_pxa.c b/drivers/tty/serial/8250/8250_pxa.c
-index b9bcbe20a2be..c47188860e32 100644
---- a/drivers/tty/serial/8250/8250_pxa.c
-+++ b/drivers/tty/serial/8250/8250_pxa.c
-@@ -113,6 +113,10 @@ static int serial_pxa_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
-+	ret = of_alias_get_id(pdev->dev.of_node, "serial");
-+	if (ret >= 0)
-+		uart.port.line = ret;
-+
- 	uart.port.type = PORT_XSCALE;
- 	uart.port.iotype = UPIO_MEM32;
- 	uart.port.mapbase = mmres->start;
--- 
-2.19.1
+greg k-h
