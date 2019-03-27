@@ -1,12 +1,12 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.0 082/262] serial: 8250_pxa: honor the port number from devicetree
-Date: Wed, 27 Mar 2019 13:58:57 -0400
-Message-ID: <20190327180158.10245-82-sashal@kernel.org>
-References: <20190327180158.10245-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 057/192] serial: 8250_pxa: honor the port number from devicetree
+Date: Wed, 27 Mar 2019 14:08:09 -0400
+Message-ID: <20190327181025.13507-57-sashal@kernel.org>
+References: <20190327181025.13507-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190327180158.10245-1-sashal@kernel.org>
+In-Reply-To: <20190327181025.13507-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Lubomir Rintel <lkundrak@v3.sk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
