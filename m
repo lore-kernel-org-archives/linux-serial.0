@@ -1,65 +1,53 @@
-From: "Sugaya, Taichi" <sugaya.taichi@socionext.com>
-Subject: Re: [PATCH] serial: Add Milbeaut serial control
-Date: Wed, 27 Mar 2019 18:39:13 +0900
-Message-ID: <875480bf-42d1-1c88-1dc7-4895e15cb87f@socionext.com>
-References: <1553591536-3760-1-git-send-email-sugaya.taichi@socionext.com>
- <CAK8P3a0Sx5vxbserW27KMPYnpLabPkGJZ_2iuW9y082oHiO+aQ@mail.gmail.com>
+From: Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.0 082/262] serial: 8250_pxa: honor the port number from devicetree
+Date: Wed, 27 Mar 2019 13:58:57 -0400
+Message-ID: <20190327180158.10245-82-sashal@kernel.org>
+References: <20190327180158.10245-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAK8P3a0Sx5vxbserW27KMPYnpLabPkGJZ_2iuW9y082oHiO+aQ@mail.gmail.com>
-Content-Language: en-US
+In-Reply-To: <20190327180158.10245-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Takao Orito <orito.takao@socionext.com>, Kazuhiro Kasai <kasai.kazuhiro@socionext.com>, Shinji Kanematsu <kanematsu.shinji@socionext.com>, Jassi Brar <jaswinder.singh@linaro.org>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: Lubomir Rintel <lkundrak@v3.sk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi
+From: Lubomir Rintel <lkundrak@v3.sk>
 
-Thank you for your comments.
+[ Upstream commit fe9ed6d2483fda55465f32924fb15bce0fac3fac ]
 
-On 2019/03/26 18:57, Arnd Bergmann wrote:
-> On Tue, Mar 26, 2019 at 10:13 AM Sugaya Taichi
-> <sugaya.taichi@socionext.com> wrote:
-> 
->>
->> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
->> index 72966bc..961519b 100644
->> --- a/drivers/tty/serial/Kconfig
->> +++ b/drivers/tty/serial/Kconfig
->> @@ -1582,6 +1582,32 @@ config SERIAL_RDA_CONSOLE
->>            Say 'Y' here if you wish to use the RDA8810PL UART as the system
->>            console. Only earlycon is implemented currently.
->>
->> +config SERIAL_MILBEAUT_USIO
->> +       tristate "Milbeaut USIO/UART serial port support"
->> +       depends on ARCH_MILBEAUT
->> +       default y
->> +       select SERIAL_CORE
->> +       help
->> +         This selects the USIO/UART IP found in Socionext Milbeaut SoCs.
-> 
-> In general, it would be good to make it possible to build this on
-> other architectures for better compile test coverage, e.g. like
-> 
-> config SERIAL_MILBEAUT_USIO
->       tristate "Milbeaut USIO/UART serial port support"
->       depends on ARCH_MILBEAUT || COMPILE_TEST
->       default ARCH_MILBEAUT
-> 
-All right.
-I agree with the style.
+Like the other OF-enabled drivers, use the port number from the firmware if
+the devicetree specifies an alias:
 
-> You might need additional dependencies like 'depends on OF'
-> to make this work reliably.
-> 
-I got it.
-I think the way is inserting "depends on OF" as a new line.
+  aliases {
+      ...
+      serial2 = &uart2; /* Should be ttyS2 */
+  }
 
-Thanks,
-Sugaya Taichi
+This is how the deprecated pxa.c driver behaved, switching to 8250_pxa
+messes up the numbering.
 
+Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/8250/8250_pxa.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
->          Arnd
-> 
+diff --git a/drivers/tty/serial/8250/8250_pxa.c b/drivers/tty/serial/8250/8250_pxa.c
+index b9bcbe20a2be..c47188860e32 100644
+--- a/drivers/tty/serial/8250/8250_pxa.c
++++ b/drivers/tty/serial/8250/8250_pxa.c
+@@ -113,6 +113,10 @@ static int serial_pxa_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
++	ret = of_alias_get_id(pdev->dev.of_node, "serial");
++	if (ret >= 0)
++		uart.port.line = ret;
++
+ 	uart.port.type = PORT_XSCALE;
+ 	uart.port.iotype = UPIO_MEM32;
+ 	uart.port.mapbase = mmres->start;
+-- 
+2.19.1
