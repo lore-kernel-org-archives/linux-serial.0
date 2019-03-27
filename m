@@ -1,49 +1,36 @@
-From: Matthew Garrett <matthewgarrett@google.com>
-Subject: [PATCH V31 17/25] Lock down TIOCSSERIAL
-Date: Tue, 26 Mar 2019 11:27:33 -0700
-Message-ID: <20190326182742.16950-18-matthewgarrett@google.com>
-References: <20190326182742.16950-1-matthewgarrett@google.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2 0/4] Add new features for the Spreadtrum serial
+ controller
+Date: Wed, 27 Mar 2019 09:59:44 +0900
+Message-ID: <20190327005944.GA20301@kroah.com>
+References: <cover.1551689518.git.baolin.wang@linaro.org>
+ <CAMz4kuJitF7Q76T0Hoj1-UTAjQnepEs9aQHhy=r_Acdq+RiwGw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190326182742.16950-1-matthewgarrett@google.com>
+Content-Disposition: inline
+In-Reply-To: <CAMz4kuJitF7Q76T0Hoj1-UTAjQnepEs9aQHhy=r_Acdq+RiwGw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: jmorris@namei.org
-Cc: linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org, dhowells@redhat.com, linux-api@vger.kernel.org, luto@kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthew Garrett <mjg59@google.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+To: Baolin Wang <baolin.wang@linaro.org>
+Cc: jslaby@suse.com, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Orson Zhai <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>, Mark Brown <broonie@kernel.org>, lanqing.liu@unisoc.com, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, DTML <devicetree@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+On Tue, Mar 26, 2019 at 06:41:31PM +0800, Baolin Wang wrote:
+> Hi Greg,
+> 
+> On Mon, 4 Mar 2019 at 16:59, Baolin Wang <baolin.wang@linaro.org> wrote:
+> >
+> > This patch set fixes the baud rate calculation formula issue, as well as
+> > adding power management support and DMA mode support for the Spreadtrum
+> > serial controller.
+> >
+> > Changes from v1:
+> >  - The patch 1 of V1 was applied, so remove the baud rate fix from this patch set.
+> >  - Add reviewed tag from Rob for patch 1.
+> >  - Fix the incorrect names' order in patch 3.
+> 
+> Could you apply this patch set if no objection from you? Thanks.
 
-Lock down TIOCSSERIAL as that can be used to change the ioport and irq
-settings on a serial port.  This only appears to be an issue for the serial
-drivers that use the core serial code.  All other drivers seem to either
-ignore attempts to change port/irq or give an error.
+It's in my to-review queue, sorry, will get to it soon...
 
-Reported-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Signed-off-by: Matthew Garrett <mjg59@google.com>
-cc: Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org
----
- drivers/tty/serial/serial_core.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index d4cca5bdaf1c..65b67f0d4386 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -842,6 +842,12 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
- 	new_flags = (__force upf_t)new_info->flags;
- 	old_custom_divisor = uport->custom_divisor;
- 
-+	if ((change_port || change_irq) &&
-+	    kernel_is_locked_down("Using TIOCSSERIAL to change device addresses, irqs and dma channels", LOCKDOWN_INTEGRITY)) {
-+		retval = -EPERM;
-+		goto exit;
-+	}
-+
- 	if (!capable(CAP_SYS_ADMIN)) {
- 		retval = -EPERM;
- 		if (change_irq || change_port ||
--- 
-2.21.0.392.gf8f6787159e-goog
+greg k-h
