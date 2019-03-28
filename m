@@ -1,45 +1,24 @@
-From: Mukesh Ojha <mojha@codeaurora.org>
-Subject: Re: [PATCH v2] tty:serial_core: Spelling mistake
-Date: Thu, 28 Mar 2019 12:00:53 +0530
-Message-ID: <1112ab41-9b2e-453b-aefe-d3282492beeb@codeaurora.org>
-References: <20190328031733.GA13375@hari-Inspiron-1545>
+From: Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH 03/24] dt-bindings: pwrap: mediatek: add pwrap support for MT8516
+Date: Thu, 28 Mar 2019 14:09:03 -0500
+Message-ID: <CAL_JsqKr=SNqcFGQ53L6HVV1ec+aP_n_SZwtkTa3O8HqHhW51w@mail.gmail.com>
+References: <20190323211612.860-1-fparent@baylibre.com> <20190323211612.860-4-fparent@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190328031733.GA13375@hari-Inspiron-1545>
-Content-Language: en-US
+In-Reply-To: <20190323211612.860-4-fparent@baylibre.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Hariprasad Kelam <hariprasad.kelam@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+To: Fabien Parent <fparent@baylibre.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Sean Wang <sean.wang@kernel.org>, Ryder Lee <ryder.lee@mediatek.com>, Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>, Wenzhen Yu <wenzhen.yu@mediatek.com>, Chaotian Jing <chaotian.jing@mediatek.com>, Yong Mao <yong.mao@mediatek.com>, jjian.zhou@mediatek.com, devicetree@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux I2C <linux-i2c@vger.kernel.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>, linux-mmc <linux-mmc@vger.kernel.org>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, open list:SE
 List-Id: linux-serial@vger.kernel.org
 
-
-On 3/28/2019 8:47 AM, Hariprasad Kelam wrote:
-> fix spelling mistake "overriden" -> "overridden"
+On Sat, Mar 23, 2019 at 4:16 PM Fabien Parent <fparent@baylibre.com> wrote:
 >
-> This fix resolves warning reported by checkpatch tool.
+> Add binding documentation of pwrap for MT8516 SoCs.
 >
-> Signed-off-by: Hariprasad Kelam <hariprasad.kelam@gmail.com>
-Reviewed-by: Mukesh Ojha <mojha@codeaurora.org>
-
--Mukesh
+> Signed-off-by: Fabien Parent <fparent@baylibre.com>
 > ---
-> Changes in V2:
->                -Make commit message more clear
-> ---
->   drivers/tty/serial/serial_core.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 351843f..69f4871 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1514,7 +1514,7 @@ static void uart_set_termios(struct tty_struct *tty,
-> 	}
->
-> 	uart_change_speed(tty, state, old_termios);
-> -	/* reload cflag from termios; port driver may have overriden flags */
-> +	/* reload cflag from termios; port driver may have overridden flags */
-> 	cflag = tty->termios.c_cflag;
->
-> 	/* Handle transition to B0 status */
+>  Documentation/devicetree/bindings/soc/mediatek/pwrap.txt | 1 +
+>  1 file changed, 1 insertion(+)
+
+Acked-by: Rob Herring <robh@kernel.org>
