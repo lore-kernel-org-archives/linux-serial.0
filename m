@@ -1,53 +1,39 @@
-From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 040/123] serial: 8250_pxa: honor the port number from devicetree
-Date: Wed, 27 Mar 2019 14:15:04 -0400
-Message-ID: <20190327181628.15899-40-sashal@kernel.org>
-References: <20190327181628.15899-1-sashal@kernel.org>
+From: Hariprasad Kelam <hariprasad.kelam@gmail.com>
+Subject: [PATCH v2] tty:serial_core: Spelling mistake
+Date: Thu, 28 Mar 2019 08:47:33 +0530
+Message-ID: <20190328031733.GA13375@hari-Inspiron-1545>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190327181628.15899-1-sashal@kernel.org>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Lubomir Rintel <lkundrak@v3.sk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Lubomir Rintel <lkundrak@v3.sk>
+fix spelling mistake "overriden" -> "overridden"
 
-[ Upstream commit fe9ed6d2483fda55465f32924fb15bce0fac3fac ]
+This fix resolves warning reported by checkpatch tool.
 
-Like the other OF-enabled drivers, use the port number from the firmware if
-the devicetree specifies an alias:
-
-  aliases {
-      ...
-      serial2 = &uart2; /* Should be ttyS2 */
-  }
-
-This is how the deprecated pxa.c driver behaved, switching to 8250_pxa
-messes up the numbering.
-
-Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Hariprasad Kelam <hariprasad.kelam@gmail.com>
 ---
- drivers/tty/serial/8250/8250_pxa.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Changes in V2:
+              -Make commit message more clear
+---
+ drivers/tty/serial/serial_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_pxa.c b/drivers/tty/serial/8250/8250_pxa.c
-index 4d68731af534..de1372ba24b1 100644
---- a/drivers/tty/serial/8250/8250_pxa.c
-+++ b/drivers/tty/serial/8250/8250_pxa.c
-@@ -118,6 +118,10 @@ static int serial_pxa_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
-+	ret = of_alias_get_id(pdev->dev.of_node, "serial");
-+	if (ret >= 0)
-+		uart.port.line = ret;
-+
- 	uart.port.type = PORT_XSCALE;
- 	uart.port.iotype = UPIO_MEM32;
- 	uart.port.mapbase = mmres->start;
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 351843f..69f4871 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1514,7 +1514,7 @@ static void uart_set_termios(struct tty_struct *tty,
+	}
+
+	uart_change_speed(tty, state, old_termios);
+-	/* reload cflag from termios; port driver may have overriden flags */
++	/* reload cflag from termios; port driver may have overridden flags */
+	cflag = tty->termios.c_cflag;
+
+	/* Handle transition to B0 status */
 -- 
-2.19.1
+2.7.4
