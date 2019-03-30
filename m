@@ -1,13 +1,13 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 07/37] serial: uartps: console_setup() can't be placed to init section
-Date: Fri, 29 Mar 2019 21:29:50 -0400
-Message-ID: <20190330013020.379-7-sashal@kernel.org>
-References: <20190330013020.379-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 06/21] serial: uartps: console_setup() can't be placed to init section
+Date: Fri, 29 Mar 2019 21:30:57 -0400
+Message-ID: <20190330013112.784-6-sashal@kernel.org>
+References: <20190330013112.784-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190330013020.379-1-sashal@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20190330013112.784-1-sashal@kernel.org>
+Sender: stable-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Michal Simek <michal.simek@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -30,10 +30,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index f438a2158006..b0da63737aa1 100644
+index ffb474c49f0f..eb61a07fcbbc 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1270,7 +1270,7 @@ static void cdns_uart_console_write(struct console *co, const char *s,
+@@ -1261,7 +1261,7 @@ static void cdns_uart_console_write(struct console *co, const char *s,
   *
   * Return: 0 on success, negative errno otherwise.
   */
