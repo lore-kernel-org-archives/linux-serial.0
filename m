@@ -1,127 +1,103 @@
-From: Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 3.16 14/99] panic: avoid deadlocks in re-entrant console
- drivers
-Date: Tue, 02 Apr 2019 14:38:27 +0100
-Message-ID: <lsq.1554212307.529644269@decadent.org.uk>
-References: <lsq.1554212307.17110877@decadent.org.uk>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH 2/2] tty: fix up a few remaining files without SPDX identifiers
+Date: Tue,  2 Apr 2019 16:07:08 +0200
+Message-ID: <20190402140708.519-2-gregkh@linuxfoundation.org>
+References: <20190402140708.519-1-gregkh@linuxfoundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <lsq.1554212307.17110877@decadent.org.uk>
+In-Reply-To: <20190402140708.519-1-gregkh@linuxfoundation.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: akpm@linux-foundation.org, Denis Kirjanov <kda@linux-powerpc.org>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Wang <wonderfly@google.com>, Jiri Slaby <jslaby@suse.com>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Peter Feiner <pfeiner@google.com>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, linux-serial@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "David S. Miller" <davem@davemloft.net>
 List-Id: linux-serial@vger.kernel.org
 
-3.16.65-rc1 review patch.  If anyone has any objections, please let me know.
+There were a few straggling files under drivers/tty/ that did not have
+any SPDX identifier either because they entered the tree recently, or
+they somehow missed the mass-tagging of commit b24413180f56 ("License
+cleanup: add SPDX GPL-2.0 license identifier to files with no license")
 
-------------------
+This commit follows the same rule as b24413180f56 ("License cleanup: add
+SPDX GPL-2.0 license identifier to files with no license") where files
+without any specified license in them fall under GPL-2.0 as the correct
+license for the individual file.  Add that identifier to these remaining
+files so that we don't have to guess at the license of them in the
+future.
 
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-
-commit c7c3f05e341a9a2bd1a92993d4f996cfd6e7348e upstream.
-
-=46romprintk()/serial console point of view panic() is special, because
-it may force CPU to re-enter printk() or/and serial console driver.
-Therefore, some of serial consoles drivers are re-entrant. E.g. 8250:
-
-serial8250_console_write()
-{
-	if (port->sysrq)
-		locked = 0;
-	else if (oops_in_progress)
-		locked = spin_trylock_irqsave(&port->lock, flags);
-	else
-		spin_lock_irqsave(&port->lock, flags);
-	...
-}
-
-panic() does set oops_in_progress via bust_spinlocks(1), so in theory
-we should be able to re-enter serial console driver from panic():
-
-	CPU0
-	<NMI>
-	uart_console_write()
-	serial8250_console_write()		// if (oops_in_progress)
-						//    spin_trylock_irqsave()
-	call_console_drivers()
-	console_unlock()
-	console_flush_on_panic()
-	bust_spinlocks(1)			// oops_in_progress++
-	panic()
-	<NMI/>
-	spin_lock_irqsave(&port->lock, flags)   // spin_lock_irqsave()
-	serial8250_console_write()
-	call_console_drivers()
-	console_unlock()
-	printk()
-	...
-
-However, this does not happen and we deadlock in serial console on
-port->lock spinlock. And the problem is that console_flush_on_panic()
-called after bust_spinlocks(0):
-
-void panic(const char *fmt, ...)
-{
-	bust_spinlocks(1);
-	...
-	bust_spinlocks(0);
-	console_flush_on_panic();
-	...
-}
-
-bust_spinlocks(0) decrements oops_in_progress, so oops_in_progress
-can go back to zero. Thus even re-entrant console drivers will simply
-spin on port->lock spinlock. Given that port->lock may already be
-locked either by a stopped CPU, or by the very same CPU we execute
-panic() on (for instance, NMI panic() on printing CPU) the system
-deadlocks and does not reboot.
-
-Fix this by removing bust_spinlocks(0), so oops_in_progress is always
-set in panic() now and, thus, re-entrant console drivers will trylock
-the port->lock instead of spinning on it forever, when we call them
-from console_flush_on_panic().
-
-Link: http://lkml.kernel.org/r/20181025101036.6823-1-sergey.senozhatsky@gmail.com
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Daniel Wang <wonderfly@google.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
 Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Peter Feiner <pfeiner@google.com>
-Cc: linux-serial@vger.kernel.org
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Signed-off-by: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Cc: "David S. Miller" <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/panic.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_men_mcb.c | 1 +
+ drivers/tty/serial/sn_console.c        | 1 +
+ drivers/tty/vcc.c                      | 1 +
+ drivers/tty/vt/.gitignore              | 1 +
+ drivers/tty/vt/cp437.uni               | 1 +
+ drivers/tty/vt/defkeymap.c_shipped     | 1 +
+ drivers/tty/vt/defkeymap.map           | 1 +
+ 7 files changed, 7 insertions(+)
 
---- a/kernel/panic.c
-+++ b/kernel/panic.c
-@@ -13,6 +13,7 @@
- #include <linux/kmsg_dump.h>
- #include <linux/kallsyms.h>
- #include <linux/notifier.h>
-+#include <linux/vt_kern.h>
+diff --git a/drivers/tty/serial/8250/8250_men_mcb.c b/drivers/tty/serial/8250/8250_men_mcb.c
+index 127017cc41d9..02c5aff58a74 100644
+--- a/drivers/tty/serial/8250/8250_men_mcb.c
++++ b/drivers/tty/serial/8250/8250_men_mcb.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ #include <linux/device.h>
+ #include <linux/kernel.h>
  #include <linux/module.h>
- #include <linux/random.h>
- #include <linux/ftrace.h>
-@@ -178,7 +179,10 @@ void panic(const char *fmt, ...)
- 	 */
- 	crash_kexec(NULL);
+diff --git a/drivers/tty/serial/sn_console.c b/drivers/tty/serial/sn_console.c
+index fe9170731c16..283493358a62 100644
+--- a/drivers/tty/serial/sn_console.c
++++ b/drivers/tty/serial/sn_console.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ /*
+  * C-Brick Serial Port (and console) driver for SGI Altix machines.
+  *
+diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
+index 58b454c34560..d2a1e1228c82 100644
+--- a/drivers/tty/vcc.c
++++ b/drivers/tty/vcc.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ /* vcc.c: sun4v virtual channel concentrator
+  *
+  * Copyright (C) 2017 Oracle. All rights reserved.
+diff --git a/drivers/tty/vt/.gitignore b/drivers/tty/vt/.gitignore
+index 83683a2d8e6a..9b38b85f9d9a 100644
+--- a/drivers/tty/vt/.gitignore
++++ b/drivers/tty/vt/.gitignore
+@@ -1,2 +1,3 @@
++# SPDX-License-Identifier: GPL-2.0
+ consolemap_deftbl.c
+ defkeymap.c
+diff --git a/drivers/tty/vt/cp437.uni b/drivers/tty/vt/cp437.uni
+index bc6163484f62..a1991904c559 100644
+--- a/drivers/tty/vt/cp437.uni
++++ b/drivers/tty/vt/cp437.uni
+@@ -1,3 +1,4 @@
++# SPDX-License-Identifier: GPL-2.0
+ #
+ # Unicode table for IBM Codepage 437.  Note that there are many more
+ # substitutions that could be conceived (for example, thick-line
+diff --git a/drivers/tty/vt/defkeymap.c_shipped b/drivers/tty/vt/defkeymap.c_shipped
+index d2208dfe3f67..c7095fb7d2d1 100644
+--- a/drivers/tty/vt/defkeymap.c_shipped
++++ b/drivers/tty/vt/defkeymap.c_shipped
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ /* Do not edit this file! It was automatically generated by   */
+ /*    loadkeys --mktable defkeymap.map > defkeymap.c          */
  
--	bust_spinlocks(0);
-+#ifdef CONFIG_VT
-+	unblank_screen();
-+#endif
-+	console_unblank();
- 
- 	/*
- 	 * We may have ended up stopping the CPU holding the lock (in
+diff --git a/drivers/tty/vt/defkeymap.map b/drivers/tty/vt/defkeymap.map
+index 50b30cace261..37f1ac6ddfb9 100644
+--- a/drivers/tty/vt/defkeymap.map
++++ b/drivers/tty/vt/defkeymap.map
+@@ -1,3 +1,4 @@
++# SPDX-License-Identifier: GPL-2.0
+ # Default kernel keymap. This uses 7 modifier combinations.
+ keymaps 0-2,4-5,8,12
+ # Change the above line into
+-- 
+2.21.0
