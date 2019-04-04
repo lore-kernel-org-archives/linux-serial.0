@@ -1,33 +1,49 @@
-From: David Sterba <dsterba@suse.cz>
-Subject: Re: [PATCH 1/2] tty: add SPDX identifiers to Kconfig and Makefiles
-Date: Tue, 2 Apr 2019 16:20:16 +0200
-Message-ID: <20190402142016.GB29086@suse.cz>
-References: <20190402140708.519-1-gregkh@linuxfoundation.org>
-Reply-To: dsterba@suse.cz
+From: Matthew Garrett <matthewgarrett@google.com>
+Subject: [PATCH V32 17/27] Lock down TIOCSSERIAL
+Date: Wed,  3 Apr 2019 17:32:39 -0700
+Message-ID: <20190404003249.14356-18-matthewgarrett@google.com>
+References: <20190404003249.14356-1-matthewgarrett@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190402140708.519-1-gregkh@linuxfoundation.org>
+In-Reply-To: <20190404003249.14356-1-matthewgarrett@google.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, Jiri Kosina <jikos@kernel.org>, Rob Herring <robh@kernel.org>, Jiri Slaby <JSlaby@suse.com>, linux-kernel@vger.kernel.org
+To: jmorris@namei.org
+Cc: linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org, dhowells@redhat.com, linux-api@vger.kernel.org, luto@kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthew Garrett <mjg59@google.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Apr 02, 2019 at 04:07:07PM +0200, Greg Kroah-Hartman wrote:
-> There were a few Kconfig and Makefiles under drivers/tty/ that were
-> missing a SPDX identifier.  Fix that up so that automated tools can
-> properly classify all kernel source files.
-> 
-> Cc: Jiri Slaby <jslaby@suse.com>
-> Cc: Jiri Kosina <jikos@kernel.org>
-> Cc: David Sterba <dsterba@suse.com>
-> Cc: Rob Herring <robh@kernel.org>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
+From: David Howells <dhowells@redhat.com>
 
-For
+Lock down TIOCSSERIAL as that can be used to change the ioport and irq
+settings on a serial port.  This only appears to be an issue for the serial
+drivers that use the core serial code.  All other drivers seem to either
+ignore attempts to change port/irq or give an error.
 
->  drivers/tty/ipwireless/Makefile      | 1 +
+Reported-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Matthew Garrett <mjg59@google.com>
+cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/serial_core.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Acked-by: David Sterba <dsterba@suse.com>
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index d4cca5bdaf1c..65b67f0d4386 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -842,6 +842,12 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
+ 	new_flags = (__force upf_t)new_info->flags;
+ 	old_custom_divisor = uport->custom_divisor;
+ 
++	if ((change_port || change_irq) &&
++	    kernel_is_locked_down("Using TIOCSSERIAL to change device addresses, irqs and dma channels", LOCKDOWN_INTEGRITY)) {
++		retval = -EPERM;
++		goto exit;
++	}
++
+ 	if (!capable(CAP_SYS_ADMIN)) {
+ 		retval = -EPERM;
+ 		if (change_irq || change_port ||
+-- 
+2.21.0.392.gf8f6787159e-goog
