@@ -1,62 +1,87 @@
-From: Eugeniu Rosca <erosca@de.adit-jv.com>
-Subject: Re: [PATCH] serial: sh-sci: Fix HSCIF RX sampling point calculation
-Date: Thu, 4 Apr 2019 11:45:31 +0200
-Message-ID: <20190404094531.GA31244@vmlxhi-102.adit-jv.com>
-References: <20190401112510.23145-1-geert+renesas@glider.be>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 2/2] tty: fix up a few remaining files without SPDX
+ identifiers
+Date: Thu, 4 Apr 2019 12:24:05 +0200
+Message-ID: <20190404102405.GA15592@kroah.com>
+References: <20190402140708.519-1-gregkh@linuxfoundation.org>
+ <20190402140708.519-2-gregkh@linuxfoundation.org>
+ <988b3a14-f5f6-44cb-3bda-eb7489bd2431@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190401112510.23145-1-geert+renesas@glider.be>
+In-Reply-To: <988b3a14-f5f6-44cb-3bda-eb7489bd2431@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Ulrich Hecht <uli+renesas@fpond.eu>, Dirk Behme <dirk.behme@de.bosch.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Simon Herkenhoff <sherkenhoff@jp.adit-jv.com>, Eugeniu Rosca <erosca@de.adit-jv.com>
+To: Mukesh Ojha <mojha@codeaurora.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, "David S. Miller" <davem@davemloft.net>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Geert,
-
-On Mon, Apr 01, 2019 at 01:25:10PM +0200, Geert Uytterhoeven wrote:
-> There are several issues with the formula used for calculating the
-> deviation from the intended rate:
->   1. While min_err and last_stop are signed, srr and baud are unsigned.
->      Hence the signed values are promoted to unsigned, which will lead
->      to a bogus value of deviation if min_err is negative,
->   2. Srr is the register field value, which is one less than the actual
->      sampling rate factor,
->   3. The divisions do not use rounding.
+On Thu, Apr 04, 2019 at 02:16:06PM +0530, Mukesh Ojha wrote:
 > 
-> Fix this by casting unsigned variables to int, adding one to srr, and
-> using a single DIV_ROUND_CLOSEST().
+> On 4/2/2019 7:37 PM, Greg Kroah-Hartman wrote:
+> > There were a few straggling files under drivers/tty/ that did not have
+> > any SPDX identifier either because they entered the tree recently, or
+> > they somehow missed the mass-tagging of commit b24413180f56 ("License
+> > cleanup: add SPDX GPL-2.0 license identifier to files with no license")
+> > 
+> > This commit follows the same rule as b24413180f56 ("License cleanup: add
+> > SPDX GPL-2.0 license identifier to files with no license") where files
+> > without any specified license in them fall under GPL-2.0 as the correct
+> > license for the individual file.  Add that identifier to these remaining
+> > files so that we don't have to guess at the license of them in the
+> > future.
+> > 
+> > Cc: Jiri Slaby <jslaby@suse.com>
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > ---
+> >   drivers/tty/serial/8250/8250_men_mcb.c | 1 +
+> >   drivers/tty/serial/sn_console.c        | 1 +
+> >   drivers/tty/vcc.c                      | 1 +
+> >   drivers/tty/vt/.gitignore              | 1 +
+> >   drivers/tty/vt/cp437.uni               | 1 +
+> >   drivers/tty/vt/defkeymap.c_shipped     | 1 +
+> >   drivers/tty/vt/defkeymap.map           | 1 +
+> >   7 files changed, 7 insertions(+)
+> > 
+> > diff --git a/drivers/tty/serial/8250/8250_men_mcb.c b/drivers/tty/serial/8250/8250_men_mcb.c
+> > index 127017cc41d9..02c5aff58a74 100644
+> > --- a/drivers/tty/serial/8250/8250_men_mcb.c
+> > +++ b/drivers/tty/serial/8250/8250_men_mcb.c
+> > @@ -1,3 +1,4 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> >   #include <linux/device.h>
+> >   #include <linux/kernel.h>
+> >   #include <linux/module.h>
+> > diff --git a/drivers/tty/serial/sn_console.c b/drivers/tty/serial/sn_console.c
+> > index fe9170731c16..283493358a62 100644
+> > --- a/drivers/tty/serial/sn_console.c
+> > +++ b/drivers/tty/serial/sn_console.c
+> > @@ -1,3 +1,4 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> >   /*
+> >    * C-Brick Serial Port (and console) driver for SGI Altix machines.
+> >    *
+> > diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
+> > index 58b454c34560..d2a1e1228c82 100644
+> > --- a/drivers/tty/vcc.c
+> > +++ b/drivers/tty/vcc.c
+> > @@ -1,3 +1,4 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> >   /* vcc.c: sun4v virtual channel concentrator
+> >    *
+> >    * Copyright (C) 2017 Oracle. All rights reserved.
+> > diff --git a/drivers/tty/vt/.gitignore b/drivers/tty/vt/.gitignore
+> > index 83683a2d8e6a..9b38b85f9d9a 100644
+> > --- a/drivers/tty/vt/.gitignore
+> > +++ b/drivers/tty/vt/.gitignore
 > 
-> Fixes: 63ba1e00f178a448 ("serial: sh-sci: Support for HSCIF RX sampling point adjustment")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
-> Anyone with a good test setup for verifying this feature actually works
-> as advertised?
-> ---
->  drivers/tty/serial/sh-sci.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index 2bdaeba5d527a6ce..8dea59edde34c224 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -2522,7 +2522,9 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
->  			 * center of the last stop bit in sampling clocks.
->  			 */
->  			int last_stop = bits * 2 - 1;
-> -			int deviation = min_err * srr * last_stop / 2 / baud;
-> +			int deviation = DIV_ROUND_CLOSEST(min_err * last_stop *
-> +							  (int)(srr + 1),
-> +							  2 * (int)baud);
->  
->  			if (abs(deviation) >= 2) {
->  				/* At least two sampling clocks off at the
+> .gitignore ?
 
-Just wanted to say thank you for your tremendous commitment and
-continuity in supporting the R-Car platform (and beyond that), which
-allowed us to gracefully overcome the problems encountered in the
-project in the best possible time, specifically thanks to this patch.
+Yes, all files need them :)
 
-Best regards,
-Eugeniu.
+> Reviewed-by: Mukesh Ojha <mojha@codeaurora.org>
+
+Thanks for the review.
+
+greg k-h
