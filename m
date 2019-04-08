@@ -1,87 +1,49 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 2/2] tty: fix up a few remaining files without SPDX
- identifiers
-Date: Thu, 4 Apr 2019 12:24:05 +0200
-Message-ID: <20190404102405.GA15592@kroah.com>
-References: <20190402140708.519-1-gregkh@linuxfoundation.org>
- <20190402140708.519-2-gregkh@linuxfoundation.org>
- <988b3a14-f5f6-44cb-3bda-eb7489bd2431@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Subject: [PATCH 2/6] MIPS: SGI-IP27: remove setup of RTC platform device
+Date: Mon,  8 Apr 2019 16:20:54 +0200
+Message-ID: <20190408142100.27618-3-tbogendoerfer@suse.de>
+References: <20190408142100.27618-1-tbogendoerfer@suse.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <988b3a14-f5f6-44cb-3bda-eb7489bd2431@codeaurora.org>
+In-Reply-To: <20190408142100.27618-1-tbogendoerfer@suse.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Mukesh Ojha <mojha@codeaurora.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, "David S. Miller" <davem@davemloft.net>
+To: Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, linux-input@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Apr 04, 2019 at 02:16:06PM +0530, Mukesh Ojha wrote:
-> 
-> On 4/2/2019 7:37 PM, Greg Kroah-Hartman wrote:
-> > There were a few straggling files under drivers/tty/ that did not have
-> > any SPDX identifier either because they entered the tree recently, or
-> > they somehow missed the mass-tagging of commit b24413180f56 ("License
-> > cleanup: add SPDX GPL-2.0 license identifier to files with no license")
-> > 
-> > This commit follows the same rule as b24413180f56 ("License cleanup: add
-> > SPDX GPL-2.0 license identifier to files with no license") where files
-> > without any specified license in them fall under GPL-2.0 as the correct
-> > license for the individual file.  Add that identifier to these remaining
-> > files so that we don't have to guess at the license of them in the
-> > future.
-> > 
-> > Cc: Jiri Slaby <jslaby@suse.com>
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > ---
-> >   drivers/tty/serial/8250/8250_men_mcb.c | 1 +
-> >   drivers/tty/serial/sn_console.c        | 1 +
-> >   drivers/tty/vcc.c                      | 1 +
-> >   drivers/tty/vt/.gitignore              | 1 +
-> >   drivers/tty/vt/cp437.uni               | 1 +
-> >   drivers/tty/vt/defkeymap.c_shipped     | 1 +
-> >   drivers/tty/vt/defkeymap.map           | 1 +
-> >   7 files changed, 7 insertions(+)
-> > 
-> > diff --git a/drivers/tty/serial/8250/8250_men_mcb.c b/drivers/tty/serial/8250/8250_men_mcb.c
-> > index 127017cc41d9..02c5aff58a74 100644
-> > --- a/drivers/tty/serial/8250/8250_men_mcb.c
-> > +++ b/drivers/tty/serial/8250/8250_men_mcb.c
-> > @@ -1,3 +1,4 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> >   #include <linux/device.h>
-> >   #include <linux/kernel.h>
-> >   #include <linux/module.h>
-> > diff --git a/drivers/tty/serial/sn_console.c b/drivers/tty/serial/sn_console.c
-> > index fe9170731c16..283493358a62 100644
-> > --- a/drivers/tty/serial/sn_console.c
-> > +++ b/drivers/tty/serial/sn_console.c
-> > @@ -1,3 +1,4 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> >   /*
-> >    * C-Brick Serial Port (and console) driver for SGI Altix machines.
-> >    *
-> > diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
-> > index 58b454c34560..d2a1e1228c82 100644
-> > --- a/drivers/tty/vcc.c
-> > +++ b/drivers/tty/vcc.c
-> > @@ -1,3 +1,4 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> >   /* vcc.c: sun4v virtual channel concentrator
-> >    *
-> >    * Copyright (C) 2017 Oracle. All rights reserved.
-> > diff --git a/drivers/tty/vt/.gitignore b/drivers/tty/vt/.gitignore
-> > index 83683a2d8e6a..9b38b85f9d9a 100644
-> > --- a/drivers/tty/vt/.gitignore
-> > +++ b/drivers/tty/vt/.gitignore
-> 
-> .gitignore ?
+RTC platform device will be setup by new IOC3 MFD driver, therefore
+remove it from IP27 platform code.
 
-Yes, all files need them :)
+Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+---
+ arch/mips/sgi-ip27/ip27-timer.c | 20 --------------------
+ 1 file changed, 20 deletions(-)
 
-> Reviewed-by: Mukesh Ojha <mojha@codeaurora.org>
-
-Thanks for the review.
-
-greg k-h
+diff --git a/arch/mips/sgi-ip27/ip27-timer.c b/arch/mips/sgi-ip27/ip27-timer.c
+index 9b4b9ac621a3..5631e93ea350 100644
+--- a/arch/mips/sgi-ip27/ip27-timer.c
++++ b/arch/mips/sgi-ip27/ip27-timer.c
+@@ -188,23 +188,3 @@ void hub_rtc_init(cnodeid_t cnode)
+ 		LOCAL_HUB_S(PI_RT_PEND_B, 0);
+ 	}
+ }
+-
+-static int __init sgi_ip27_rtc_devinit(void)
+-{
+-	struct resource res;
+-
+-	memset(&res, 0, sizeof(res));
+-	res.start = XPHYSADDR(KL_CONFIG_CH_CONS_INFO(master_nasid)->memory_base +
+-			      IOC3_BYTEBUS_DEV0);
+-	res.end = res.start + 32767;
+-	res.flags = IORESOURCE_MEM;
+-
+-	return IS_ERR(platform_device_register_simple("rtc-m48t35", -1,
+-						      &res, 1));
+-}
+-
+-/*
+- * kludge make this a device_initcall after ioc3 resource conflicts
+- * are resolved
+- */
+-late_initcall(sgi_ip27_rtc_devinit);
+-- 
+2.13.7
