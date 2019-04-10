@@ -1,51 +1,57 @@
-From: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Subject: [PATCH v2 1/4] MIPS: SGI-IP27: remove ioc3 ethernet init
-Date: Tue,  9 Apr 2019 17:46:05 +0200
-Message-ID: <20190409154610.6735-2-tbogendoerfer@suse.de>
-References: <20190409154610.6735-1-tbogendoerfer@suse.de>
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re: [RFC v2 09/11] drm/msm/dpu: Use OPP API to set clk/perf state
+Date: Wed, 10 Apr 2019 09:19:28 +0530
+Message-ID: <20190410034928.wkfnebwmcdonhto6@vireshk-i7>
+References: <20190320094918.20234-1-rnayak@codeaurora.org>
+ <20190320094918.20234-10-rnayak@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190409154610.6735-1-tbogendoerfer@suse.de>
+Content-Disposition: inline
+In-Reply-To: <20190320094918.20234-10-rnayak@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, linux-input@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+To: Rajendra Nayak <rnayak@codeaurora.org>
+Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-scsi@vger.kernel.org, swboyd@chromium.org, ulf.hansson@linaro.org, dianders@chromium.org, rafael@kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Removed not needed disabling of ethernet interrupts in IP27 platform code.
+On 20-03-19, 15:19, Rajendra Nayak wrote:
+> On some qualcomm platforms DPU needs to express a perforamnce state
+> requirement on a power domain depennding on the clock rates.
+> Use OPP table from DT to register with OPP framework and use
+> dev_pm_opp_set_rate() to set the clk/perf state.
+> 
+> Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
+> ---
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_core_perf.c | 7 ++++++-
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c       | 9 +++++++++
+>  2 files changed, 15 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_core_perf.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_core_perf.c
+> index 9f20f397f77d..db21a86b242b 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_core_perf.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_core_perf.c
+> @@ -15,6 +15,7 @@
+>  #include <linux/debugfs.h>
+>  #include <linux/errno.h>
+>  #include <linux/mutex.h>
+> +#include <linux/pm_opp.h>
+>  #include <linux/sort.h>
+>  #include <linux/clk.h>
+>  #include <linux/bitmap.h>
+> @@ -298,7 +299,11 @@ static int _dpu_core_perf_set_core_clk_rate(struct dpu_kms *kms, u64 rate)
+>  		rate = core_clk->max_rate;
+>  
+>  	core_clk->rate = rate;
+> -	return msm_dss_clk_set_rate(core_clk, 1);
+> +
+> +	if (dev_pm_opp_get_opp_table(&kms->pdev->dev))
 
-Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
----
- arch/mips/sgi-ip27/ip27-init.c | 13 -------------
- 1 file changed, 13 deletions(-)
+This takes a reference of the OPP table, you need to call put thing as well to
+balance it off.
 
-diff --git a/arch/mips/sgi-ip27/ip27-init.c b/arch/mips/sgi-ip27/ip27-init.c
-index 066b33f50bcc..59d5375c9021 100644
---- a/arch/mips/sgi-ip27/ip27-init.c
-+++ b/arch/mips/sgi-ip27/ip27-init.c
-@@ -130,17 +130,6 @@ cnodeid_t get_compact_nodeid(void)
- 	return NASID_TO_COMPACT_NODEID(get_nasid());
- }
- 
--static inline void ioc3_eth_init(void)
--{
--	struct ioc3 *ioc3;
--	nasid_t nid;
--
--	nid = get_nasid();
--	ioc3 = (struct ioc3 *) KL_CONFIG_CH_CONS_INFO(nid)->memory_base;
--
--	ioc3->eier = 0;
--}
--
- extern void ip27_reboot_setup(void);
- 
- void __init plat_mem_setup(void)
-@@ -182,8 +171,6 @@ void __init plat_mem_setup(void)
- 		panic("Kernel compiled for N mode.");
- #endif
- 
--	ioc3_eth_init();
--
- 	ioport_resource.start = 0;
- 	ioport_resource.end = ~0UL;
- 	set_io_port_base(IO_BASE);
+> +		return dev_pm_opp_set_rate(&kms->pdev->dev, core_clk->rate);
+> +	else
+> +		return msm_dss_clk_set_rate(core_clk, 1);
+>  }
 -- 
-2.13.7
+viresh
