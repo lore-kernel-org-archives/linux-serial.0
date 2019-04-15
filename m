@@ -1,1180 +1,714 @@
-From: Paul Walmsley <paul.walmsley@sifive.com>
-Subject: [PATCH v5 2/2] tty: serial: add driver for the SiFive UART
-Date: Fri, 12 Apr 2019 19:01:13 -0700
-Message-ID: <20190413020111.23400-3-paul.walmsley@sifive.com>
-References: <20190413020111.23400-1-paul.walmsley@sifive.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Sugaya Taichi <sugaya.taichi@socionext.com>
+Subject: [PATCH v2] serial: Add Milbeaut serial control
+Date: Mon, 15 Apr 2019 20:31:40 +0900
+Message-ID: <1555327900-31905-1-git-send-email-sugaya.taichi@socionext.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190413020111.23400-1-paul.walmsley@sifive.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org, gregkh@linuxfoundation.org
-Cc: Paul Walmsley <paul.walmsley@sifive.com>, Paul Walmsley <paul@pwsan.com>, Jiri Slaby <jslaby@suse.com>, Palmer Dabbelt <palmer@sifive.com>, Wesley Terpstra <wesley@sifive.com>, Julia Lawall <julia.lawall@lip6.fr>, Emil Renner Berthing <kernel@esmil.dk>, Andreas Schwab <schwab@suse.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Takao Orito <orito.takao@socionext.com>, Kazuhiro Kasai <kasai.kazuhiro@socionext.com>, Shinji Kanematsu <kanematsu.shinji@socionext.com>, Jassi Brar <jaswinder.singh@linaro.org>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Sugaya Taichi <sugaya.taichi@socionext.com>
 List-Id: linux-serial@vger.kernel.org
 
-Add a serial driver for the SiFive UART, found on SiFive FU540 devices
-(among others).
+Add Milbeaut serial control including earlycon and console.
 
-The underlying serial IP block is relatively basic, and currently does
-not support serial break detection.  Further information on the IP
-block can be found in the documentation and Chisel sources:
-
-    https://static.dev.sifive.com/FU540-C000-v1.0.pdf
-
-    https://github.com/sifive/sifive-blocks/tree/master/src/main/scala/devices/uart
-
-This driver was written in collaboration with Wesley Terpstra
-<wesley@sifive.com>.
-
-Tested on a SiFive HiFive Unleashed A00 board, using BBL and the open-
-source FSBL (using a DT file based on what's targeted for mainline).
-
-This revision incorporates changes based on comments by Julia Lawall
-<julia.lawall@lip6.fr>, Emil Renner Berthing <kernel@esmil.dk>, and
-Andreas Schwab <schwab@suse.de>.  Thanks also to Andreas for testing
-the driver with his userspace and reporting a bug with the
-set_termios implementation.
-
-Signed-off-by: Paul Walmsley <paul.walmsley@sifive.com>
-Signed-off-by: Paul Walmsley <paul@pwsan.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Palmer Dabbelt <palmer@sifive.com>
-Cc: Wesley Terpstra <wesley@sifive.com>
-Cc: linux-serial@vger.kernel.org
-Cc: linux-riscv@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
-Cc: Julia Lawall <julia.lawall@lip6.fr>
-Cc: Emil Renner Berthing <kernel@esmil.dk>
-Cc: Andreas Schwab <schwab@suse.de>
+Signed-off-by: Sugaya Taichi <sugaya.taichi@socionext.com>
 ---
- drivers/tty/serial/Kconfig       |   24 +
- drivers/tty/serial/Makefile      |    1 +
- drivers/tty/serial/sifive.c      | 1056 ++++++++++++++++++++++++++++++
- include/uapi/linux/serial_core.h |    3 +
- 4 files changed, 1084 insertions(+)
- create mode 100644 drivers/tty/serial/sifive.c
+Changes from v1:
+ - Add "COMPILE_TEST" dependency for coverage test.
+
+ drivers/tty/serial/Kconfig         |  26 ++
+ drivers/tty/serial/Makefile        |   1 +
+ drivers/tty/serial/milbeaut_usio.c | 621 +++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/serial_core.h   |   3 +
+ 4 files changed, 651 insertions(+)
+ create mode 100644 drivers/tty/serial/milbeaut_usio.c
 
 diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 72966bc0ac76..561e053b690a 100644
+index 72966bc..d1971a8 100644
 --- a/drivers/tty/serial/Kconfig
 +++ b/drivers/tty/serial/Kconfig
-@@ -1095,6 +1095,30 @@ config SERIAL_OMAP_CONSOLE
- 	  your boot loader about how to pass options to the kernel at
- 	  boot time.)
+@@ -1582,6 +1582,32 @@ config SERIAL_RDA_CONSOLE
+ 	  Say 'Y' here if you wish to use the RDA8810PL UART as the system
+ 	  console. Only earlycon is implemented currently.
  
-+config SERIAL_SIFIVE
-+	tristate "SiFive UART support"
-+	depends on OF
++config SERIAL_MILBEAUT_USIO
++	tristate "Milbeaut USIO/UART serial port support"
++	depends on ARCH_MILBEAUT || (COMPILE_TEST && OF)
++	default ARCH_MILBEAUT
 +	select SERIAL_CORE
 +	help
-+	  Select this option if you are building a kernel for a device that
-+	  contains a SiFive UART IP block.  This type of UART is present on
-+	  SiFive FU540 SoCs, among others.
++	  This selects the USIO/UART IP found in Socionext Milbeaut SoCs.
 +
-+config SERIAL_SIFIVE_CONSOLE
-+	bool "Console on SiFive UART"
-+	depends on SERIAL_SIFIVE=y
++config SERIAL_MILBEAUT_USIO_PORTS
++	int "Maximum number of CSIO/UART ports (1-8)"
++	range 1 8
++	depends on SERIAL_MILBEAUT_USIO
++	default "4"
++
++config SERIAL_MILBEAUT_USIO_CONSOLE
++	bool "Support for console on MILBEAUT USIO/UART serial port"
++	depends on SERIAL_MILBEAUT_USIO=y
++	default y
 +	select SERIAL_CORE_CONSOLE
++	select SERIAL_EARLYCON
 +	help
-+	  Select this option if you would like to use a SiFive UART as the
-+	  system console.
++	  Say 'Y' here if you wish to use a USIO/UART of Socionext Milbeaut
++	  SoCs as the system console (the system console is the device which
++	  receives all kernel messages and warnings and which allows logins in
++	  single user mode).
 +
-+	  Even if you say Y here, the currently visible virtual console
-+	  (/dev/tty0) will still be used as the system console by default, but
-+	  you can alter that using a kernel command line option such as
-+	  "console=ttySIFx". (Try "man bootparam" or see the documentation of
-+	  your boot loader about how to pass options to the kernel at
-+	  boot time.)
-+
- config SERIAL_LANTIQ
- 	bool "Lantiq serial driver"
- 	depends on LANTIQ
+ endmenu
+ 
+ config SERIAL_MCTRL_GPIO
 diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index 40b702aaa85e..2aff1d07d08b 100644
+index 40b702a..43ca2d0 100644
 --- a/drivers/tty/serial/Makefile
 +++ b/drivers/tty/serial/Makefile
 @@ -92,6 +92,7 @@ obj-$(CONFIG_SERIAL_PIC32)	+= pic32_uart.o
  obj-$(CONFIG_SERIAL_MPS2_UART)	+= mps2-uart.o
  obj-$(CONFIG_SERIAL_OWL)	+= owl-uart.o
  obj-$(CONFIG_SERIAL_RDA)	+= rda-uart.o
-+obj-$(CONFIG_SERIAL_SIFIVE)	+= sifive.o
++obj-$(CONFIG_SERIAL_MILBEAUT_USIO) += milbeaut_usio.o
  
  # GPIOLIB helpers for modem control lines
  obj-$(CONFIG_SERIAL_MCTRL_GPIO)	+= serial_mctrl_gpio.o
-diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
+diff --git a/drivers/tty/serial/milbeaut_usio.c b/drivers/tty/serial/milbeaut_usio.c
 new file mode 100644
-index 000000000000..be4687814353
+index 0000000..d303b7d
 --- /dev/null
-+++ b/drivers/tty/serial/sifive.c
-@@ -0,0 +1,1056 @@
-+// SPDX-License-Identifier: GPL-2.0+
++++ b/drivers/tty/serial/milbeaut_usio.c
+@@ -0,0 +1,621 @@
++// SPDX-License-Identifier: GPL-2.0
 +/*
-+ * SiFive UART driver
-+ * Copyright (C) 2018 Paul Walmsley <paul@pwsan.com>
-+ * Copyright (C) 2018-2019 SiFive
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * Based partially on:
-+ * - drivers/tty/serial/pxa.c
-+ * - drivers/tty/serial/amba-pl011.c
-+ * - drivers/tty/serial/uartlite.c
-+ * - drivers/tty/serial/omap-serial.c
-+ * - drivers/pwm/pwm-sifive.c
-+ *
-+ * See the following sources for further documentation:
-+ * - Chapter 19 "Universal Asynchronous Receiver/Transmitter (UART)" of
-+ *   SiFive FE310-G000 v2p3
-+ * - The tree/master/src/main/scala/devices/uart directory of
-+ *   https://github.com/sifive/sifive-blocks/
-+ *
-+ * The SiFive UART design is not 8250-compatible.  The following common
-+ * features are not supported:
-+ * - Word lengths other than 8 bits
-+ * - Break handling
-+ * - Parity
-+ * - Flow control
-+ * - Modem signals (DSR, RI, etc.)
-+ * On the other hand, the design is free from the baggage of the 8250
-+ * programming model.
++ * Copyright (C) 2018 Socionext Inc.
 + */
++
++#if defined(CONFIG_SERIAL_MILBEAUT_USIO_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
++#define SUPPORT_SYSRQ
++#endif
 +
 +#include <linux/clk.h>
 +#include <linux/console.h>
-+#include <linux/delay.h>
-+#include <linux/init.h>
-+#include <linux/io.h>
-+#include <linux/irq.h>
 +#include <linux/module.h>
-+#include <linux/of.h>
 +#include <linux/of_irq.h>
 +#include <linux/platform_device.h>
 +#include <linux/serial_core.h>
-+#include <linux/serial_reg.h>
-+#include <linux/slab.h>
 +#include <linux/tty.h>
 +#include <linux/tty_flip.h>
 +
-+/*
-+ * Register offsets
-+ */
++#define USIO_NAME		"mlb-usio-uart"
++#define USIO_UART_DEV_NAME	"ttyUSI"
 +
-+/* TXDATA */
-+#define SIFIVE_SERIAL_TXDATA_OFFS		0x0
-+#define SIFIVE_SERIAL_TXDATA_FULL_SHIFT		31
-+#define SIFIVE_SERIAL_TXDATA_FULL_MASK		(1 << SIFIVE_SERIAL_TXDATA_FULL_SHIFT)
-+#define SIFIVE_SERIAL_TXDATA_DATA_SHIFT		0
-+#define SIFIVE_SERIAL_TXDATA_DATA_MASK		(0xff << SIFIVE_SERIAL_TXDATA_DATA_SHIFT)
++static struct uart_port mlb_usio_ports[CONFIG_SERIAL_MILBEAUT_USIO_PORTS];
 +
-+/* RXDATA */
-+#define SIFIVE_SERIAL_RXDATA_OFFS		0x4
-+#define SIFIVE_SERIAL_RXDATA_EMPTY_SHIFT	31
-+#define SIFIVE_SERIAL_RXDATA_EMPTY_MASK		(1 << SIFIVE_SERIAL_RXDATA_EMPTY_SHIFT)
-+#define SIFIVE_SERIAL_RXDATA_DATA_SHIFT		0
-+#define SIFIVE_SERIAL_RXDATA_DATA_MASK		(0xff << SIFIVE_SERIAL_RXDATA_DATA_SHIFT)
++#define RX	0
++#define TX	1
++static int mlb_usio_irq[CONFIG_SERIAL_MILBEAUT_USIO_PORTS][2];
 +
-+/* TXCTRL */
-+#define SIFIVE_SERIAL_TXCTRL_OFFS		0x8
-+#define SIFIVE_SERIAL_TXCTRL_TXCNT_SHIFT	16
-+#define SIFIVE_SERIAL_TXCTRL_TXCNT_MASK		(0x7 << SIFIVE_SERIAL_TXCTRL_TXCNT_SHIFT)
-+#define SIFIVE_SERIAL_TXCTRL_NSTOP_SHIFT	1
-+#define SIFIVE_SERIAL_TXCTRL_NSTOP_MASK		(1 << SIFIVE_SERIAL_TXCTRL_NSTOP_SHIFT)
-+#define SIFIVE_SERIAL_TXCTRL_TXEN_SHIFT		0
-+#define SIFIVE_SERIAL_TXCTRL_TXEN_MASK		(1 << SIFIVE_SERIAL_TXCTRL_TXEN_SHIFT)
++#define MLB_USIO_REG_SMR		0
++#define MLB_USIO_REG_SCR		1
++#define MLB_USIO_REG_ESCR		2
++#define MLB_USIO_REG_SSR		3
++#define MLB_USIO_REG_DR			4
++#define MLB_USIO_REG_BGR		6
++#define MLB_USIO_REG_FCR		12
++#define MLB_USIO_REG_FBYTE		14
 +
-+/* RXCTRL */
-+#define SIFIVE_SERIAL_RXCTRL_OFFS		0xC
-+#define SIFIVE_SERIAL_RXCTRL_RXCNT_SHIFT	16
-+#define SIFIVE_SERIAL_RXCTRL_RXCNT_MASK		(0x7 << SIFIVE_SERIAL_TXCTRL_TXCNT_SHIFT)
-+#define SIFIVE_SERIAL_RXCTRL_RXEN_SHIFT		0
-+#define SIFIVE_SERIAL_RXCTRL_RXEN_MASK		(1 << SIFIVE_SERIAL_RXCTRL_RXEN_SHIFT)
++#define MLB_USIO_SMR_SOE		BIT(0)
++#define MLB_USIO_SMR_SBL		BIT(3)
++#define MLB_USIO_SCR_TXE		BIT(0)
++#define MLB_USIO_SCR_RXE		BIT(1)
++#define MLB_USIO_SCR_TBIE		BIT(2)
++#define MLB_USIO_SCR_TIE		BIT(3)
++#define MLB_USIO_SCR_RIE		BIT(4)
++#define MLB_USIO_SCR_UPCL		BIT(7)
++#define MLB_USIO_ESCR_L_8BIT		0
++#define MLB_USIO_ESCR_L_5BIT		1
++#define MLB_USIO_ESCR_L_6BIT		2
++#define MLB_USIO_ESCR_L_7BIT		3
++#define MLB_USIO_ESCR_P			BIT(3)
++#define MLB_USIO_ESCR_PEN		BIT(4)
++#define MLB_USIO_ESCR_FLWEN		BIT(7)
++#define MLB_USIO_SSR_TBI		BIT(0)
++#define MLB_USIO_SSR_TDRE		BIT(1)
++#define MLB_USIO_SSR_RDRF		BIT(2)
++#define MLB_USIO_SSR_ORE		BIT(3)
++#define MLB_USIO_SSR_FRE		BIT(4)
++#define MLB_USIO_SSR_PE			BIT(5)
++#define MLB_USIO_SSR_REC		BIT(7)
++#define MLB_USIO_SSR_BRK		BIT(8)
++#define MLB_USIO_FCR_FE1		BIT(0)
++#define MLB_USIO_FCR_FE2		BIT(1)
++#define MLB_USIO_FCR_FCL1		BIT(2)
++#define MLB_USIO_FCR_FCL2		BIT(3)
++#define MLB_USIO_FCR_FSET		BIT(4)
++#define MLB_USIO_FCR_FTIE		BIT(9)
++#define MLB_USIO_FCR_FDRQ		BIT(10)
++#define MLB_USIO_FCR_FRIIE		BIT(11)
 +
-+/* IE */
-+#define SIFIVE_SERIAL_IE_OFFS			0x10
-+#define SIFIVE_SERIAL_IE_RXWM_SHIFT		1
-+#define SIFIVE_SERIAL_IE_RXWM_MASK		(1 << SIFIVE_SERIAL_IE_RXWM_SHIFT)
-+#define SIFIVE_SERIAL_IE_TXWM_SHIFT		0
-+#define SIFIVE_SERIAL_IE_TXWM_MASK		(1 << SIFIVE_SERIAL_IE_TXWM_SHIFT)
-+
-+/* IP */
-+#define SIFIVE_SERIAL_IP_OFFS			0x14
-+#define SIFIVE_SERIAL_IP_RXWM_SHIFT		1
-+#define SIFIVE_SERIAL_IP_RXWM_MASK		(1 << SIFIVE_SERIAL_IP_RXWM_SHIFT)
-+#define SIFIVE_SERIAL_IP_TXWM_SHIFT		0
-+#define SIFIVE_SERIAL_IP_TXWM_MASK		(1 << SIFIVE_SERIAL_IP_TXWM_SHIFT)
-+
-+/* DIV */
-+#define SIFIVE_SERIAL_DIV_OFFS			0x18
-+#define SIFIVE_SERIAL_DIV_DIV_SHIFT		0
-+#define SIFIVE_SERIAL_DIV_DIV_MASK		(0xffff << SIFIVE_SERIAL_IP_DIV_SHIFT)
-+
-+/*
-+ * Config macros
-+ */
-+
-+/*
-+ * SIFIVE_SERIAL_MAX_PORTS: maximum number of UARTs on a device that can
-+ *                          host a serial console
-+ */
-+#define SIFIVE_SERIAL_MAX_PORTS			8
-+
-+/*
-+ * SIFIVE_DEFAULT_BAUD_RATE: default baud rate that the driver should
-+ *                           configure itself to use
-+ */
-+#define SIFIVE_DEFAULT_BAUD_RATE		115200
-+
-+/* SIFIVE_SERIAL_NAME: our driver's name that we pass to the operating system */
-+#define SIFIVE_SERIAL_NAME			"sifive-serial"
-+
-+/* SIFIVE_TTY_PREFIX: tty name prefix for SiFive serial ports */
-+#define SIFIVE_TTY_PREFIX			"ttySIF"
-+
-+/* SIFIVE_TX_FIFO_DEPTH: depth of the TX FIFO (in bytes) */
-+#define SIFIVE_TX_FIFO_DEPTH			8
-+
-+/* SIFIVE_RX_FIFO_DEPTH: depth of the TX FIFO (in bytes) */
-+#define SIFIVE_RX_FIFO_DEPTH			8
-+
-+#if (SIFIVE_TX_FIFO_DEPTH != SIFIVE_RX_FIFO_DEPTH)
-+#error Driver does not support configurations with different TX, RX FIFO sizes
-+#endif
-+
-+/*
-+ *
-+ */
-+
-+/**
-+ * sifive_serial_port - driver-specific data extension to struct uart_port
-+ * @port: struct uart_port embedded in this struct
-+ * @dev: struct device *
-+ * @ier: shadowed copy of the interrupt enable register
-+ * @clkin_rate: input clock to the UART IP block.
-+ * @baud_rate: UART serial line rate (e.g., 115200 baud)
-+ * @clk_notifier: clock rate change notifier for upstream clock changes
-+ *
-+ * Configuration data specific to this SiFive UART.
-+ */
-+struct sifive_serial_port {
-+	struct uart_port	port;
-+	struct device		*dev;
-+	unsigned char		ier;
-+	unsigned long		clkin_rate;
-+	unsigned long		baud_rate;
-+	struct clk		*clk;
-+	struct notifier_block	clk_notifier;
-+};
-+
-+/*
-+ * Structure container-of macros
-+ */
-+
-+#define port_to_sifive_serial_port(p) (container_of((p), \
-+						    struct sifive_serial_port, \
-+						    port))
-+
-+#define notifier_to_sifive_serial_port(nb) (container_of((nb), \
-+							 struct sifive_serial_port, \
-+							 clk_notifier))
-+
-+/*
-+ * Forward declarations
-+ */
-+static void sifive_serial_stop_tx(struct uart_port *port);
-+
-+/*
-+ * Internal functions
-+ */
-+
-+/**
-+ * __ssp_early_writel() - write to a SiFive serial port register (early)
-+ * @port: pointer to a struct uart_port record
-+ * @offs: register address offset from the IP block base address
-+ * @v: value to write to the register
-+ *
-+ * Given a pointer @port to a struct uart_port record, write the value
-+ * @v to the IP block register address offset @offs.  This function is
-+ * intended for early console use.
-+ *
-+ * Context: Intended to be used only by the earlyconsole code.
-+ */
-+static void __ssp_early_writel(u32 v, u16 offs, struct uart_port *port)
++static void mlb_usio_stop_tx(struct uart_port *port)
 +{
-+	writel_relaxed(v, port->membase + offs);
++	writew(readw(port->membase + MLB_USIO_REG_FCR) & ~MLB_USIO_FCR_FTIE,
++	       port->membase + MLB_USIO_REG_FCR);
++	writeb(readb(port->membase + MLB_USIO_REG_SCR) & ~MLB_USIO_SCR_TBIE,
++	       port->membase + MLB_USIO_REG_SCR);
 +}
 +
-+/**
-+ * __ssp_early_readl() - read from a SiFive serial port register (early)
-+ * @port: pointer to a struct uart_port record
-+ * @offs: register address offset from the IP block base address
-+ *
-+ * Given a pointer @port to a struct uart_port record, read the
-+ * contents of the IP block register located at offset @offs from the
-+ * IP block base and return it.  This function is intended for early
-+ * console use.
-+ *
-+ * Context: Intended to be called only by the earlyconsole code or by
-+ *          __ssp_readl() or __ssp_writel() (in this driver)
-+ *
-+ * Returns: the register value read from the UART.
-+ */
-+static u32 __ssp_early_readl(struct uart_port *port, u16 offs)
++static void mlb_usio_tx_chars(struct uart_port *port)
 +{
-+	return readl_relaxed(port->membase + offs);
-+}
-+
-+/**
-+ * __ssp_writel() - write to a SiFive serial port register
-+ * @v: value to write to the register
-+ * @offs: register address offset from the IP block base address
-+ * @ssp: pointer to a struct sifive_serial_port record
-+ *
-+ * Write the value @v to the IP block register located at offset @offs from the
-+ * IP block base, given a pointer @ssp to a struct sifive_serial_port record.
-+ *
-+ * Context: Any context.
-+ */
-+static void __ssp_writel(u32 v, u16 offs, struct sifive_serial_port *ssp)
-+{
-+	__ssp_early_writel(v, offs, &ssp->port);
-+}
-+
-+/**
-+ * __ssp_readl() - read from a SiFive serial port register
-+ * @ssp: pointer to a struct sifive_serial_port record
-+ * @offs: register address offset from the IP block base address
-+ *
-+ * Read the contents of the IP block register located at offset @offs from the
-+ * IP block base, given a pointer @ssp to a struct sifive_serial_port record.
-+ *
-+ * Context: Any context.
-+ *
-+ * Returns: the value of the UART register
-+ */
-+static u32 __ssp_readl(struct sifive_serial_port *ssp, u16 offs)
-+{
-+	return __ssp_early_readl(&ssp->port, offs);
-+}
-+
-+/**
-+ * sifive_serial_is_txfifo_full() - is the TXFIFO full?
-+ * @ssp: pointer to a struct sifive_serial_port
-+ *
-+ * Read the transmit FIFO "full" bit, returning a non-zero value if the
-+ * TX FIFO is full, or zero if space remains.  Intended to be used to prevent
-+ * writes to the TX FIFO when it's full.
-+ *
-+ * Returns: SIFIVE_SERIAL_TXDATA_FULL_MASK (non-zero) if the transmit FIFO
-+ * is full, or 0 if space remains.
-+ */
-+static int sifive_serial_is_txfifo_full(struct sifive_serial_port *ssp)
-+{
-+	return __ssp_readl(ssp, SIFIVE_SERIAL_TXDATA_OFFS) &
-+		SIFIVE_SERIAL_TXDATA_FULL_MASK;
-+}
-+
-+/**
-+ * __ssp_transmit_char() - enqueue a byte to transmit onto the TX FIFO
-+ * @ssp: pointer to a struct sifive_serial_port
-+ * @ch: character to transmit
-+ *
-+ * Enqueue a byte @ch onto the transmit FIFO, given a pointer @ssp to the
-+ * struct sifive_serial_port * to transmit on.  Caller should first check to
-+ * ensure that the TXFIFO has space; see sifive_serial_is_txfifo_full().
-+ *
-+ * Context: Any context.
-+ */
-+static void __ssp_transmit_char(struct sifive_serial_port *ssp, int ch)
-+{
-+	__ssp_writel(ch, SIFIVE_SERIAL_TXDATA_OFFS, ssp);
-+}
-+
-+/**
-+ * __ssp_transmit_chars() - enqueue multiple bytes onto the TX FIFO
-+ * @ssp: pointer to a struct sifive_serial_port
-+ *
-+ * Transfer up to a TX FIFO size's worth of characters from the Linux serial
-+ * transmit buffer to the SiFive UART TX FIFO.
-+ *
-+ * Context: Any context.  Expects @ssp->port.lock to be held by caller.
-+ */
-+static void __ssp_transmit_chars(struct sifive_serial_port *ssp)
-+{
-+	struct circ_buf *xmit = &ssp->port.state->xmit;
++	struct circ_buf *xmit = &port->state->xmit;
 +	int count;
 +
-+	if (ssp->port.x_char) {
-+		__ssp_transmit_char(ssp, ssp->port.x_char);
-+		ssp->port.icount.tx++;
-+		ssp->port.x_char = 0;
++	writew(readw(port->membase + MLB_USIO_REG_FCR) & ~MLB_USIO_FCR_FTIE,
++	       port->membase + MLB_USIO_REG_FCR);
++	writeb(readb(port->membase + MLB_USIO_REG_SCR) &
++	       ~(MLB_USIO_SCR_TIE | MLB_USIO_SCR_TBIE),
++	       port->membase + MLB_USIO_REG_SCR);
++
++	if (port->x_char) {
++		writew(port->x_char, port->membase + MLB_USIO_REG_DR);
++		port->icount.tx++;
++		port->x_char = 0;
 +		return;
 +	}
-+	if (uart_circ_empty(xmit) || uart_tx_stopped(&ssp->port)) {
-+		sifive_serial_stop_tx(&ssp->port);
++	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
++		mlb_usio_stop_tx(port);
 +		return;
 +	}
-+	count = SIFIVE_TX_FIFO_DEPTH;
++
++	count = port->fifosize -
++		(readw(port->membase + MLB_USIO_REG_FBYTE) & 0xff);
++
 +	do {
-+		__ssp_transmit_char(ssp, xmit->buf[xmit->tail]);
++		writew(xmit->buf[xmit->tail], port->membase + MLB_USIO_REG_DR);
++
 +		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-+		ssp->port.icount.tx++;
++		port->icount.tx++;
 +		if (uart_circ_empty(xmit))
 +			break;
++
 +	} while (--count > 0);
 +
++	writew(readw(port->membase + MLB_USIO_REG_FCR) & ~MLB_USIO_FCR_FDRQ,
++	       port->membase + MLB_USIO_REG_FCR);
++
++	writeb(readb(port->membase + MLB_USIO_REG_SCR) | MLB_USIO_SCR_TBIE,
++	       port->membase + MLB_USIO_REG_SCR);
++
 +	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-+		uart_write_wakeup(&ssp->port);
++		uart_write_wakeup(port);
 +
 +	if (uart_circ_empty(xmit))
-+		sifive_serial_stop_tx(&ssp->port);
++		mlb_usio_stop_tx(port);
 +}
 +
-+/**
-+ * __ssp_enable_txwm() - enable transmit watermark interrupts
-+ * @ssp: pointer to a struct sifive_serial_port
-+ *
-+ * Enable interrupt generation when the transmit FIFO watermark is reached
-+ * on the SiFive UART referred to by @ssp.
-+ */
-+static void __ssp_enable_txwm(struct sifive_serial_port *ssp)
++static void mlb_usio_start_tx(struct uart_port *port)
 +{
-+	if (ssp->ier & SIFIVE_SERIAL_IE_TXWM_MASK)
++	u16 fcr = readw(port->membase + MLB_USIO_REG_FCR);
++
++	writew(fcr | MLB_USIO_FCR_FTIE, port->membase + MLB_USIO_REG_FCR);
++	if (!(fcr & MLB_USIO_FCR_FDRQ))
 +		return;
 +
-+	ssp->ier |= SIFIVE_SERIAL_IE_TXWM_MASK;
-+	__ssp_writel(ssp->ier, SIFIVE_SERIAL_IE_OFFS, ssp);
++	writeb(readb(port->membase + MLB_USIO_REG_SCR) | MLB_USIO_SCR_TBIE,
++	       port->membase + MLB_USIO_REG_SCR);
++
++	if (readb(port->membase + MLB_USIO_REG_SSR) & MLB_USIO_SSR_TBI)
++		mlb_usio_tx_chars(port);
 +}
 +
-+/**
-+ * __ssp_enable_rxwm() - enable receive watermark interrupts
-+ * @ssp: pointer to a struct sifive_serial_port
-+ *
-+ * Enable interrupt generation when the receive FIFO watermark is reached
-+ * on the SiFive UART referred to by @ssp.
-+ */
-+static void __ssp_enable_rxwm(struct sifive_serial_port *ssp)
++static void mlb_usio_stop_rx(struct uart_port *port)
 +{
-+	if (ssp->ier & SIFIVE_SERIAL_IE_RXWM_MASK)
-+		return;
-+
-+	ssp->ier |= SIFIVE_SERIAL_IE_RXWM_MASK;
-+	__ssp_writel(ssp->ier, SIFIVE_SERIAL_IE_OFFS, ssp);
++	writeb(readb(port->membase + MLB_USIO_REG_SCR) & ~MLB_USIO_SCR_RIE,
++	       port->membase + MLB_USIO_REG_SCR);
 +}
 +
-+/**
-+ * __ssp_disable_txwm() - disable transmit watermark interrupts
-+ * @ssp: pointer to a struct sifive_serial_port
-+ *
-+ * Disable interrupt generation when the transmit FIFO watermark is reached
-+ * on the UART referred to by @ssp.
-+ */
-+static void __ssp_disable_txwm(struct sifive_serial_port *ssp)
++static void mlb_usio_enable_ms(struct uart_port *port)
 +{
-+	if (!(ssp->ier & SIFIVE_SERIAL_IE_TXWM_MASK))
-+		return;
-+
-+	ssp->ier &= ~SIFIVE_SERIAL_IE_TXWM_MASK;
-+	__ssp_writel(ssp->ier, SIFIVE_SERIAL_IE_OFFS, ssp);
++	writeb(readb(port->membase + MLB_USIO_REG_SCR) |
++	       MLB_USIO_SCR_RIE | MLB_USIO_SCR_RXE,
++	       port->membase + MLB_USIO_REG_SCR);
 +}
 +
-+/**
-+ * __ssp_disable_rxwm() - disable receive watermark interrupts
-+ * @ssp: pointer to a struct sifive_serial_port
-+ *
-+ * Disable interrupt generation when the receive FIFO watermark is reached
-+ * on the UART referred to by @ssp.
-+ */
-+static void __ssp_disable_rxwm(struct sifive_serial_port *ssp)
++static void mlb_usio_rx_chars(struct uart_port *port)
 +{
-+	if (!(ssp->ier & SIFIVE_SERIAL_IE_RXWM_MASK))
-+		return;
++	struct tty_port *ttyport = &port->state->port;
++	unsigned long flag = 0;
++	char ch = 0;
++	u8 status;
++	int max_count = 2;
 +
-+	ssp->ier &= ~SIFIVE_SERIAL_IE_RXWM_MASK;
-+	__ssp_writel(ssp->ier, SIFIVE_SERIAL_IE_OFFS, ssp);
-+}
++	while (max_count--) {
++		status = readb(port->membase + MLB_USIO_REG_SSR);
 +
-+/**
-+ * __ssp_receive_char() - receive a byte from the UART
-+ * @ssp: pointer to a struct sifive_serial_port
-+ * @is_empty: char pointer to return whether the RX FIFO is empty
-+ *
-+ * Try to read a byte from the SiFive UART RX FIFO, referenced by
-+ * @ssp, and to return it.  Also returns the RX FIFO empty bit in
-+ * the char pointed to by @ch.  The caller must pass the byte back to the
-+ * Linux serial layer if needed.
-+ *
-+ * Returns: the byte read from the UART RX FIFO.
-+ */
-+static char __ssp_receive_char(struct sifive_serial_port *ssp, char *is_empty)
-+{
-+	u32 v;
-+	u8 ch;
-+
-+	v = __ssp_readl(ssp, SIFIVE_SERIAL_RXDATA_OFFS);
-+
-+	if (!is_empty)
-+		WARN_ON(1);
-+	else
-+		*is_empty = (v & SIFIVE_SERIAL_RXDATA_EMPTY_MASK) >>
-+			SIFIVE_SERIAL_RXDATA_EMPTY_SHIFT;
-+
-+	ch = (v & SIFIVE_SERIAL_RXDATA_DATA_MASK) >>
-+		SIFIVE_SERIAL_RXDATA_DATA_SHIFT;
-+
-+	return ch;
-+}
-+
-+/**
-+ * __ssp_receive_chars() - receive multiple bytes from the UART
-+ * @ssp: pointer to a struct sifive_serial_port
-+ *
-+ * Receive up to an RX FIFO's worth of bytes from the SiFive UART referred
-+ * to by @ssp and pass them up to the Linux serial layer.
-+ *
-+ * Context: Expects ssp->port.lock to be held by caller.
-+ */
-+static void __ssp_receive_chars(struct sifive_serial_port *ssp)
-+{
-+	unsigned char ch;
-+	char is_empty;
-+	int c;
-+
-+	for (c = SIFIVE_RX_FIFO_DEPTH; c > 0; --c) {
-+		ch = __ssp_receive_char(ssp, &is_empty);
-+		if (is_empty)
++		if (!(status & MLB_USIO_SSR_RDRF))
 +			break;
 +
-+		ssp->port.icount.rx++;
-+		uart_insert_char(&ssp->port, 0, 0, ch, TTY_NORMAL);
++		if (!(status & (MLB_USIO_SSR_ORE | MLB_USIO_SSR_FRE |
++				MLB_USIO_SSR_PE))) {
++			ch = readw(port->membase + MLB_USIO_REG_DR);
++			flag = TTY_NORMAL;
++			port->icount.rx++;
++			if (uart_handle_sysrq_char(port, ch))
++				continue;
++			uart_insert_char(port, status, MLB_USIO_SSR_ORE,
++					 ch, flag);
++			continue;
++		}
++		if (status & MLB_USIO_SSR_PE)
++			port->icount.parity++;
++		if (status & MLB_USIO_SSR_ORE)
++			port->icount.overrun++;
++		status &= port->read_status_mask;
++		if (status & MLB_USIO_SSR_BRK) {
++			flag = TTY_BREAK;
++			ch = 0;
++		} else
++			if (status & MLB_USIO_SSR_PE) {
++				flag = TTY_PARITY;
++				ch = 0;
++			} else
++				if (status & MLB_USIO_SSR_FRE) {
++					flag = TTY_FRAME;
++					ch = 0;
++				}
++		if (flag)
++			uart_insert_char(port, status, MLB_USIO_SSR_ORE,
++					 ch, flag);
++
++		writeb(readb(port->membase + MLB_USIO_REG_SSR) |
++				MLB_USIO_SSR_REC,
++				port->membase + MLB_USIO_REG_SSR);
++
++		max_count = readw(port->membase + MLB_USIO_REG_FBYTE) >> 8;
++		writew(readw(port->membase + MLB_USIO_REG_FCR) |
++		       MLB_USIO_FCR_FE2 | MLB_USIO_FCR_FRIIE,
++		port->membase + MLB_USIO_REG_FCR);
 +	}
 +
-+	spin_unlock(&ssp->port.lock);
-+	tty_flip_buffer_push(&ssp->port.state->port);
-+	spin_lock(&ssp->port.lock);
++	tty_flip_buffer_push(ttyport);
 +}
 +
-+/**
-+ * __ssp_update_div() - calculate the divisor setting by the line rate
-+ * @ssp: pointer to a struct sifive_serial_port
-+ *
-+ * Calculate the appropriate value of the clock divisor for the UART
-+ * and target line rate referred to by @ssp and write it into the
-+ * hardware.
-+ */
-+static void __ssp_update_div(struct sifive_serial_port *ssp)
++static irqreturn_t mlb_usio_rx_irq(int irq, void *dev_id)
 +{
-+	u16 div;
++	struct uart_port *port = dev_id;
 +
-+	div = DIV_ROUND_UP(ssp->clkin_rate, ssp->baud_rate) - 1;
-+
-+	__ssp_writel(div, SIFIVE_SERIAL_DIV_OFFS, ssp);
-+}
-+
-+/**
-+ * __ssp_update_baud_rate() - set the UART "baud rate"
-+ * @ssp: pointer to a struct sifive_serial_port
-+ * @rate: new target bit rate
-+ *
-+ * Calculate the UART divisor value for the target bit rate @rate for the
-+ * SiFive UART described by @ssp and program it into the UART.  There may
-+ * be some error between the target bit rate and the actual bit rate implemented
-+ * by the UART due to clock ratio granularity.
-+ */
-+static void __ssp_update_baud_rate(struct sifive_serial_port *ssp,
-+				   unsigned int rate)
-+{
-+	if (ssp->baud_rate == rate)
-+		return;
-+
-+	ssp->baud_rate = rate;
-+	__ssp_update_div(ssp);
-+}
-+
-+/**
-+ * __ssp_set_stop_bits() - set the number of stop bits
-+ * @ssp: pointer to a struct sifive_serial_port
-+ * @nstop: 1 or 2 (stop bits)
-+ *
-+ * Program the SiFive UART referred to by @ssp to use @nstop stop bits.
-+ */
-+static void __ssp_set_stop_bits(struct sifive_serial_port *ssp, char nstop)
-+{
-+	u32 v;
-+
-+	if (nstop < 1 || nstop > 2) {
-+		WARN_ON(1);
-+		return;
-+	}
-+
-+	v = __ssp_readl(ssp, SIFIVE_SERIAL_TXCTRL_OFFS);
-+	v &= ~SIFIVE_SERIAL_TXCTRL_NSTOP_MASK;
-+	v |= (nstop - 1) << SIFIVE_SERIAL_TXCTRL_NSTOP_SHIFT;
-+	__ssp_writel(v, SIFIVE_SERIAL_TXCTRL_OFFS, ssp);
-+}
-+
-+/**
-+ * __ssp_wait_for_xmitr() - wait for an empty slot on the TX FIFO
-+ * @ssp: pointer to a struct sifive_serial_port
-+ *
-+ * Delay while the UART TX FIFO referred to by @ssp is marked as full.
-+ *
-+ * Context: Any context.
-+ */
-+static void __maybe_unused __ssp_wait_for_xmitr(struct sifive_serial_port *ssp)
-+{
-+	while (sifive_serial_is_txfifo_full(ssp))
-+		udelay(1); /* XXX Could probably be more intelligent here */
-+}
-+
-+/*
-+ * Linux serial API functions
-+ */
-+
-+static void sifive_serial_stop_tx(struct uart_port *port)
-+{
-+	struct sifive_serial_port *ssp = port_to_sifive_serial_port(port);
-+
-+	__ssp_disable_txwm(ssp);
-+}
-+
-+static void sifive_serial_stop_rx(struct uart_port *port)
-+{
-+	struct sifive_serial_port *ssp = port_to_sifive_serial_port(port);
-+
-+	__ssp_disable_rxwm(ssp);
-+}
-+
-+static void sifive_serial_start_tx(struct uart_port *port)
-+{
-+	struct sifive_serial_port *ssp = port_to_sifive_serial_port(port);
-+
-+	__ssp_enable_txwm(ssp);
-+}
-+
-+static irqreturn_t sifive_serial_irq(int irq, void *dev_id)
-+{
-+	struct sifive_serial_port *ssp = dev_id;
-+	u32 ip;
-+
-+	spin_lock(&ssp->port.lock);
-+
-+	ip = __ssp_readl(ssp, SIFIVE_SERIAL_IP_OFFS);
-+	if (!ip) {
-+		spin_unlock(&ssp->port.lock);
-+		return IRQ_NONE;
-+	}
-+
-+	if (ip & SIFIVE_SERIAL_IP_RXWM_MASK)
-+		__ssp_receive_chars(ssp);
-+	if (ip & SIFIVE_SERIAL_IP_TXWM_MASK)
-+		__ssp_transmit_chars(ssp);
-+
-+	spin_unlock(&ssp->port.lock);
++	spin_lock(&port->lock);
++	mlb_usio_rx_chars(port);
++	spin_unlock(&port->lock);
 +
 +	return IRQ_HANDLED;
 +}
 +
-+static unsigned int sifive_serial_tx_empty(struct uart_port *port)
++static irqreturn_t mlb_usio_tx_irq(int irq, void *dev_id)
 +{
-+	return TIOCSER_TEMT;
++	struct uart_port *port = dev_id;
++
++	spin_lock(&port->lock);
++	if (readb(port->membase + MLB_USIO_REG_SSR) & MLB_USIO_SSR_TBI)
++		mlb_usio_tx_chars(port);
++	spin_unlock(&port->lock);
++
++	return IRQ_HANDLED;
 +}
 +
-+static unsigned int sifive_serial_get_mctrl(struct uart_port *port)
++static unsigned int mlb_usio_tx_empty(struct uart_port *port)
 +{
-+	return TIOCM_CAR | TIOCM_CTS | TIOCM_DSR;
++	return (readb(port->membase + MLB_USIO_REG_SSR) & MLB_USIO_SSR_TBI) ?
++		TIOCSER_TEMT : 0;
 +}
 +
-+static void sifive_serial_set_mctrl(struct uart_port *port, unsigned int mctrl)
++static void mlb_usio_set_mctrl(struct uart_port *port, unsigned int mctrl)
 +{
-+	/* IP block does not support these signals */
 +}
 +
-+static void sifive_serial_break_ctl(struct uart_port *port, int break_state)
++static unsigned int mlb_usio_get_mctrl(struct uart_port *port)
 +{
-+	/* IP block does not support sending a break */
++	return TIOCM_CAR | TIOCM_DSR | TIOCM_CTS;
++
 +}
 +
-+static int sifive_serial_startup(struct uart_port *port)
++static void mlb_usio_break_ctl(struct uart_port *port, int break_state)
 +{
-+	struct sifive_serial_port *ssp = port_to_sifive_serial_port(port);
-+
-+	__ssp_enable_rxwm(ssp);
-+
-+	return 0;
 +}
 +
-+static void sifive_serial_shutdown(struct uart_port *port)
++static int mlb_usio_startup(struct uart_port *port)
 +{
-+	struct sifive_serial_port *ssp = port_to_sifive_serial_port(port);
++	const char *portname = to_platform_device(port->dev)->name;
++	unsigned long flags;
++	int ret, index = port->line;
++	unsigned char  escr;
 +
-+	__ssp_disable_rxwm(ssp);
-+	__ssp_disable_txwm(ssp);
-+}
-+
-+/**
-+ * sifive_serial_clk_notifier() - clock post-rate-change notifier
-+ * @nb: pointer to the struct notifier_block, from the notifier code
-+ * @event: event mask from the notifier code
-+ * @data: pointer to the struct clk_notifier_data from the notifier code
-+ *
-+ * On the V0 SoC, the UART IP block is derived from the CPU clock source
-+ * after a synchronous divide-by-two divider, so any CPU clock rate change
-+ * requires the UART baud rate to be updated.  This presumably could corrupt any
-+ * serial word currently being transmitted or received.  It would probably
-+ * be better to stop receives and transmits, then complete the baud rate
-+ * change, then re-enable them.
-+ */
-+static int sifive_serial_clk_notifier(struct notifier_block *nb,
-+				      unsigned long event, void *data)
-+{
-+	struct clk_notifier_data *cnd = data;
-+	struct sifive_serial_port *ssp = notifier_to_sifive_serial_port(nb);
-+
-+	if (event == POST_RATE_CHANGE && ssp->clkin_rate != cnd->new_rate) {
-+		ssp->clkin_rate = cnd->new_rate;
-+		__ssp_update_div(ssp);
++	ret = request_irq(mlb_usio_irq[index][RX], mlb_usio_rx_irq,
++				0, portname, port);
++	if (ret)
++		return ret;
++	ret = request_irq(mlb_usio_irq[index][TX], mlb_usio_tx_irq,
++				0, portname, port);
++	if (ret) {
++		free_irq(mlb_usio_irq[index][RX], port);
++		return ret;
 +	}
 +
-+	return NOTIFY_OK;
-+}
++	escr = readb(port->membase + MLB_USIO_REG_ESCR);
++	if (of_property_read_bool(port->dev->of_node, "auto-flow-control"))
++		escr |= MLB_USIO_ESCR_FLWEN;
++	spin_lock_irqsave(&port->lock, flags);
++	writeb(0, port->membase + MLB_USIO_REG_SCR);
++	writeb(escr, port->membase + MLB_USIO_REG_ESCR);
++	writeb(MLB_USIO_SCR_UPCL, port->membase + MLB_USIO_REG_SCR);
++	writeb(MLB_USIO_SSR_REC, port->membase + MLB_USIO_REG_SSR);
++	writew(0, port->membase + MLB_USIO_REG_FCR);
++	writew(MLB_USIO_FCR_FCL1 | MLB_USIO_FCR_FCL2,
++	       port->membase + MLB_USIO_REG_FCR);
++	writew(MLB_USIO_FCR_FE1 | MLB_USIO_FCR_FE2 | MLB_USIO_FCR_FRIIE,
++	       port->membase + MLB_USIO_REG_FCR);
++	writew(0, port->membase + MLB_USIO_REG_FBYTE);
++	writew(BIT(12), port->membase + MLB_USIO_REG_FBYTE);
 +
-+static void sifive_serial_set_termios(struct uart_port *port,
-+				      struct ktermios *termios,
-+				      struct ktermios *old)
-+{
-+	struct sifive_serial_port *ssp = port_to_sifive_serial_port(port);
-+	unsigned long flags;
-+	u32 v, old_v;
-+	int rate;
-+	char nstop;
++	writeb(MLB_USIO_SCR_TXE  | MLB_USIO_SCR_RIE | MLB_USIO_SCR_TBIE |
++	       MLB_USIO_SCR_RXE, port->membase + MLB_USIO_REG_SCR);
++	spin_unlock_irqrestore(&port->lock, flags);
 +
-+	if ((termios->c_cflag & CSIZE) != CS8)
-+		dev_err_once(ssp->port.dev, "only 8-bit words supported\n");
-+	if (termios->c_iflag & (INPCK | PARMRK))
-+		dev_err_once(ssp->port.dev, "parity checking not supported\n");
-+	if (termios->c_iflag & BRKINT)
-+		dev_err_once(ssp->port.dev, "BREAK detection not supported\n");
-+
-+	/* Set number of stop bits */
-+	nstop = (termios->c_cflag & CSTOPB) ? 2 : 1;
-+	__ssp_set_stop_bits(ssp, nstop);
-+
-+	/* Set line rate */
-+	rate = uart_get_baud_rate(port, termios, old, 0, ssp->clkin_rate / 16);
-+	__ssp_update_baud_rate(ssp, rate);
-+
-+	spin_lock_irqsave(&ssp->port.lock, flags);
-+
-+	/* Update the per-port timeout */
-+	uart_update_timeout(port, termios->c_cflag, rate);
-+
-+	ssp->port.read_status_mask = 0;
-+
-+	/* Ignore all characters if CREAD is not set */
-+	v = __ssp_readl(ssp, SIFIVE_SERIAL_RXCTRL_OFFS);
-+	old_v = v;
-+	if ((termios->c_cflag & CREAD) == 0)
-+		v &= SIFIVE_SERIAL_RXCTRL_RXEN_MASK;
-+	else
-+		v |= SIFIVE_SERIAL_RXCTRL_RXEN_MASK;
-+	if (v != old_v)
-+		__ssp_writel(v, SIFIVE_SERIAL_RXCTRL_OFFS, ssp);
-+
-+	spin_unlock_irqrestore(&ssp->port.lock, flags);
-+}
-+
-+static void sifive_serial_release_port(struct uart_port *port)
-+{
-+}
-+
-+static int sifive_serial_request_port(struct uart_port *port)
-+{
 +	return 0;
 +}
 +
-+static void sifive_serial_config_port(struct uart_port *port, int flags)
++static void mlb_usio_shutdown(struct uart_port *port)
 +{
-+	struct sifive_serial_port *ssp = port_to_sifive_serial_port(port);
++	int index = port->line;
 +
-+	ssp->port.type = PORT_SIFIVE_V0;
++	free_irq(mlb_usio_irq[index][RX], port);
++	free_irq(mlb_usio_irq[index][TX], port);
 +}
 +
-+static int sifive_serial_verify_port(struct uart_port *port,
-+				     struct serial_struct *ser)
++static void mlb_usio_set_termios(struct uart_port *port,
++			struct ktermios *termios, struct ktermios *old)
 +{
-+	return -EINVAL;
++	unsigned int escr, smr = MLB_USIO_SMR_SOE;
++	unsigned long flags, baud, quot;
++
++	switch (termios->c_cflag & CSIZE) {
++	case CS5:
++		escr = MLB_USIO_ESCR_L_5BIT;
++		break;
++	case CS6:
++		escr = MLB_USIO_ESCR_L_6BIT;
++		break;
++	case CS7:
++		escr = MLB_USIO_ESCR_L_7BIT;
++		break;
++	case CS8:
++	default:
++		escr = MLB_USIO_ESCR_L_8BIT;
++		break;
++	}
++
++	if (termios->c_cflag & CSTOPB)
++		smr |= MLB_USIO_SMR_SBL;
++
++	if (termios->c_cflag & PARENB) {
++		escr |= MLB_USIO_ESCR_PEN;
++		if (termios->c_cflag & PARODD)
++			escr |= MLB_USIO_ESCR_P;
++	}
++	/* Set hard flow control */
++	if (of_property_read_bool(port->dev->of_node, "auto-flow-control") ||
++			(termios->c_cflag & CRTSCTS))
++		escr |= MLB_USIO_ESCR_FLWEN;
++
++	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk);
++	if (baud > 1)
++		quot = port->uartclk / baud - 1;
++	else
++		quot = 0;
++
++	spin_lock_irqsave(&port->lock, flags);
++	uart_update_timeout(port, termios->c_cflag, baud);
++	port->read_status_mask = MLB_USIO_SSR_ORE | MLB_USIO_SSR_RDRF |
++				 MLB_USIO_SSR_TDRE;
++	if (termios->c_iflag & INPCK)
++		port->read_status_mask |= MLB_USIO_SSR_FRE | MLB_USIO_SSR_PE;
++
++	port->ignore_status_mask = 0;
++	if (termios->c_iflag & IGNPAR)
++		port->ignore_status_mask |= MLB_USIO_SSR_FRE | MLB_USIO_SSR_PE;
++	if ((termios->c_iflag & IGNBRK) && (termios->c_iflag & IGNPAR))
++		port->ignore_status_mask |= MLB_USIO_SSR_ORE;
++	if ((termios->c_cflag & CREAD) == 0)
++		port->ignore_status_mask |= MLB_USIO_SSR_RDRF;
++
++	writeb(0, port->membase + MLB_USIO_REG_SCR);
++	writeb(MLB_USIO_SCR_UPCL, port->membase + MLB_USIO_REG_SCR);
++	writeb(MLB_USIO_SSR_REC, port->membase + MLB_USIO_REG_SSR);
++	writew(0, port->membase + MLB_USIO_REG_FCR);
++	writeb(smr, port->membase + MLB_USIO_REG_SMR);
++	writeb(escr, port->membase + MLB_USIO_REG_ESCR);
++	writew(quot, port->membase + MLB_USIO_REG_BGR);
++	writew(0, port->membase + MLB_USIO_REG_FCR);
++	writew(MLB_USIO_FCR_FCL1 | MLB_USIO_FCR_FCL2 | MLB_USIO_FCR_FE1 |
++	       MLB_USIO_FCR_FE2 | MLB_USIO_FCR_FRIIE,
++	       port->membase + MLB_USIO_REG_FCR);
++	writew(0, port->membase + MLB_USIO_REG_FBYTE);
++	writew(BIT(12), port->membase + MLB_USIO_REG_FBYTE);
++	writeb(MLB_USIO_SCR_RIE | MLB_USIO_SCR_RXE | MLB_USIO_SCR_TBIE |
++	       MLB_USIO_SCR_TXE, port->membase + MLB_USIO_REG_SCR);
++	spin_unlock_irqrestore(&port->lock, flags);
 +}
 +
-+static const char *sifive_serial_type(struct uart_port *port)
++static const char *mlb_usio_type(struct uart_port *port)
 +{
-+	return port->type == PORT_SIFIVE_V0 ? "SiFive UART v0" : NULL;
++	return ((port->type == PORT_MLB_USIO) ? USIO_NAME : NULL);
 +}
 +
-+/*
-+ * Early console support
-+ */
-+
-+#ifdef CONFIG_SERIAL_EARLYCON
-+static void early_sifive_serial_putc(struct uart_port *port, int c)
++static void mlb_usio_config_port(struct uart_port *port, int flags)
 +{
-+	while (__ssp_early_readl(port, SIFIVE_SERIAL_TXDATA_OFFS) &
-+	       SIFIVE_SERIAL_TXDATA_FULL_MASK)
++	if (flags & UART_CONFIG_TYPE)
++		port->type = PORT_MLB_USIO;
++}
++
++static const struct uart_ops mlb_usio_ops = {
++	.tx_empty	= mlb_usio_tx_empty,
++	.set_mctrl	= mlb_usio_set_mctrl,
++	.get_mctrl	= mlb_usio_get_mctrl,
++	.stop_tx	= mlb_usio_stop_tx,
++	.start_tx	= mlb_usio_start_tx,
++	.stop_rx	= mlb_usio_stop_rx,
++	.enable_ms	= mlb_usio_enable_ms,
++	.break_ctl	= mlb_usio_break_ctl,
++	.startup	= mlb_usio_startup,
++	.shutdown	= mlb_usio_shutdown,
++	.set_termios	= mlb_usio_set_termios,
++	.type		= mlb_usio_type,
++	.config_port	= mlb_usio_config_port,
++};
++
++#ifdef CONFIG_SERIAL_MILBEAUT_USIO_CONSOLE
++
++static void mlb_usio_console_putchar(struct uart_port *port, int c)
++{
++	while (!(readb(port->membase + MLB_USIO_REG_SSR) & MLB_USIO_SSR_TDRE))
 +		cpu_relax();
 +
-+	__ssp_early_writel(c, SIFIVE_SERIAL_TXDATA_OFFS, port);
++	writew(c, port->membase + MLB_USIO_REG_DR);
 +}
 +
-+static void early_sifive_serial_write(struct console *con, const char *s,
-+				      unsigned int n)
++static void mlb_usio_console_write(struct console *co, const char *s,
++			       unsigned int count)
 +{
-+	struct earlycon_device *dev = con->data;
-+	struct uart_port *port = &dev->port;
++	struct uart_port *port = &mlb_usio_ports[co->index];
 +
-+	uart_console_write(port, s, n, early_sifive_serial_putc);
++	uart_console_write(port, s, count, mlb_usio_console_putchar);
 +}
 +
-+static int __init early_sifive_serial_setup(struct earlycon_device *dev,
-+					    const char *options)
++static int __init mlb_usio_console_setup(struct console *co, char *options)
 +{
-+	struct uart_port *port = &dev->port;
++	struct uart_port *port;
++	int baud = 115200;
++	int parity = 'n';
++	int flow = 'n';
++	int bits = 8;
 +
++	if (co->index >= CONFIG_SERIAL_MILBEAUT_USIO_PORTS)
++		return -ENODEV;
++
++	port = &mlb_usio_ports[co->index];
 +	if (!port->membase)
 +		return -ENODEV;
 +
-+	dev->con->write = early_sifive_serial_write;
-+
-+	return 0;
-+}
-+
-+OF_EARLYCON_DECLARE(sifive, "sifive,uart0", early_sifive_serial_setup);
-+OF_EARLYCON_DECLARE(sifive, "sifive,fu540-c000-uart0",
-+		    early_sifive_serial_setup);
-+#endif /* CONFIG_SERIAL_EARLYCON */
-+
-+/*
-+ * Linux console interface
-+ */
-+
-+#ifdef CONFIG_SERIAL_SIFIVE_CONSOLE
-+
-+static struct sifive_serial_port *sifive_serial_console_ports[SIFIVE_SERIAL_MAX_PORTS];
-+
-+static void sifive_serial_console_putchar(struct uart_port *port, int ch)
-+{
-+	struct sifive_serial_port *ssp = port_to_sifive_serial_port(port);
-+
-+	__ssp_wait_for_xmitr(ssp);
-+	__ssp_transmit_char(ssp, ch);
-+}
-+
-+static void sifive_serial_console_write(struct console *co, const char *s,
-+					unsigned int count)
-+{
-+	struct sifive_serial_port *ssp = sifive_serial_console_ports[co->index];
-+	unsigned long flags;
-+	unsigned int ier;
-+	int locked = 1;
-+
-+	if (!ssp)
-+		return;
-+
-+	local_irq_save(flags);
-+	if (ssp->port.sysrq)
-+		locked = 0;
-+	else if (oops_in_progress)
-+		locked = spin_trylock(&ssp->port.lock);
-+	else
-+		spin_lock(&ssp->port.lock);
-+
-+	ier = __ssp_readl(ssp, SIFIVE_SERIAL_IE_OFFS);
-+	__ssp_writel(0, SIFIVE_SERIAL_IE_OFFS, ssp);
-+
-+	uart_console_write(&ssp->port, s, count, sifive_serial_console_putchar);
-+
-+	__ssp_writel(ier, SIFIVE_SERIAL_IE_OFFS, ssp);
-+
-+	if (locked)
-+		spin_unlock(&ssp->port.lock);
-+	local_irq_restore(flags);
-+}
-+
-+static int __init sifive_serial_console_setup(struct console *co, char *options)
-+{
-+	struct sifive_serial_port *ssp;
-+	int baud = SIFIVE_DEFAULT_BAUD_RATE;
-+	int bits = 8;
-+	int parity = 'n';
-+	int flow = 'n';
-+
-+	if (co->index < 0 || co->index >= SIFIVE_SERIAL_MAX_PORTS)
-+		return -ENODEV;
-+
-+	ssp = sifive_serial_console_ports[co->index];
-+	if (!ssp)
-+		return -ENODEV;
 +
 +	if (options)
 +		uart_parse_options(options, &baud, &parity, &bits, &flow);
 +
-+	return uart_set_options(&ssp->port, co, baud, parity, bits, flow);
++	if (of_property_read_bool(port->dev->of_node, "auto-flow-control"))
++		flow = 'r';
++
++	return uart_set_options(port, co, baud, parity, bits, flow);
 +}
 +
-+static struct uart_driver sifive_serial_uart_driver;
 +
-+static struct console sifive_serial_console = {
-+	.name		= SIFIVE_TTY_PREFIX,
-+	.write		= sifive_serial_console_write,
-+	.device		= uart_console_device,
-+	.setup		= sifive_serial_console_setup,
-+	.flags		= CON_PRINTBUFFER,
-+	.index		= -1,
-+	.data		= &sifive_serial_uart_driver,
++static struct uart_driver mlb_usio_uart_driver;
++static struct console mlb_usio_console = {
++	.name   = USIO_UART_DEV_NAME,
++	.write  = mlb_usio_console_write,
++	.device = uart_console_device,
++	.setup  = mlb_usio_console_setup,
++	.flags  = CON_PRINTBUFFER,
++	.index  = -1,
++	.data   = &mlb_usio_uart_driver,
 +};
 +
-+static int __init sifive_console_init(void)
++static int __init mlb_usio_console_init(void)
 +{
-+	register_console(&sifive_serial_console);
++	register_console(&mlb_usio_console);
++	return 0;
++}
++console_initcall(mlb_usio_console_init);
++
++
++static void mlb_usio_early_console_write(struct console *co, const char *s,
++					u_int count)
++{
++	struct earlycon_device *dev = co->data;
++
++	uart_console_write(&dev->port, s, count, mlb_usio_console_putchar);
++}
++
++static int __init mlb_usio_early_console_setup(struct earlycon_device *device,
++						const char *opt)
++{
++	if (!device->port.membase)
++		return -ENODEV;
++	device->con->write = mlb_usio_early_console_write;
 +	return 0;
 +}
 +
-+console_initcall(sifive_console_init);
++OF_EARLYCON_DECLARE(mlb_usio, "socionext,milbeaut-usio-uart",
++			mlb_usio_early_console_setup);
 +
-+static void __ssp_add_console_port(struct sifive_serial_port *ssp)
-+{
-+	sifive_serial_console_ports[ssp->port.line] = ssp;
-+}
-+
-+static void __ssp_remove_console_port(struct sifive_serial_port *ssp)
-+{
-+	sifive_serial_console_ports[ssp->port.line] = 0;
-+}
-+
-+#define SIFIVE_SERIAL_CONSOLE	(&sifive_serial_console)
-+
++#define USIO_CONSOLE	(&mlb_usio_console)
 +#else
-+
-+#define SIFIVE_SERIAL_CONSOLE	NULL
-+
-+static void __ssp_add_console_port(struct sifive_serial_port *ssp)
-+{}
-+static void __ssp_remove_console_port(struct sifive_serial_port *ssp)
-+{}
-+
++#define USIO_CONSOLE	NULL
 +#endif
 +
-+static const struct uart_ops sifive_serial_uops = {
-+	.tx_empty	= sifive_serial_tx_empty,
-+	.set_mctrl	= sifive_serial_set_mctrl,
-+	.get_mctrl	= sifive_serial_get_mctrl,
-+	.stop_tx	= sifive_serial_stop_tx,
-+	.start_tx	= sifive_serial_start_tx,
-+	.stop_rx	= sifive_serial_stop_rx,
-+	.break_ctl	= sifive_serial_break_ctl,
-+	.startup	= sifive_serial_startup,
-+	.shutdown	= sifive_serial_shutdown,
-+	.set_termios	= sifive_serial_set_termios,
-+	.type		= sifive_serial_type,
-+	.release_port	= sifive_serial_release_port,
-+	.request_port	= sifive_serial_request_port,
-+	.config_port	= sifive_serial_config_port,
-+	.verify_port	= sifive_serial_verify_port,
-+};
-+
-+static struct uart_driver sifive_serial_uart_driver = {
++static struct  uart_driver mlb_usio_uart_driver = {
 +	.owner		= THIS_MODULE,
-+	.driver_name	= SIFIVE_SERIAL_NAME,
-+	.dev_name	= SIFIVE_TTY_PREFIX,
-+	.nr		= SIFIVE_SERIAL_MAX_PORTS,
-+	.cons		= SIFIVE_SERIAL_CONSOLE,
++	.driver_name	= USIO_NAME,
++	.dev_name	= USIO_UART_DEV_NAME,
++	.cons           = USIO_CONSOLE,
++	.nr		= CONFIG_SERIAL_MILBEAUT_USIO_PORTS,
 +};
 +
-+static int sifive_serial_probe(struct platform_device *pdev)
++static int mlb_usio_probe(struct platform_device *pdev)
 +{
-+	struct sifive_serial_port *ssp;
-+	struct resource *mem;
-+	struct clk *clk;
-+	void __iomem *base;
-+	int irq, id, r;
++	struct clk *clk = devm_clk_get(&pdev->dev, 0);
++	struct uart_port *port;
++	struct resource *res;
++	int index = 0;
++	int ret;
 +
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0) {
-+		dev_err(&pdev->dev, "could not acquire interrupt\n");
-+		return -EPROBE_DEFER;
-+	}
-+
-+	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	base = devm_ioremap_resource(&pdev->dev, mem);
-+	if (IS_ERR(base)) {
-+		dev_err(&pdev->dev, "could not acquire device memory\n");
-+		return PTR_ERR(base);
-+	}
-+
-+	clk = devm_clk_get(&pdev->dev, NULL);
 +	if (IS_ERR(clk)) {
-+		dev_err(&pdev->dev, "unable to find controller clock\n");
++		dev_err(&pdev->dev, "Missing clock\n");
 +		return PTR_ERR(clk);
 +	}
-+
-+	id = of_alias_get_id(pdev->dev.of_node, "serial");
-+	if (id < 0) {
-+		dev_err(&pdev->dev, "missing aliases entry\n");
-+		return id;
++	ret = clk_prepare_enable(clk);
++	if (ret) {
++		dev_err(&pdev->dev, "Clock enable failed: %d\n", ret);
++		return ret;
 +	}
++	of_property_read_u32(pdev->dev.of_node, "index", &index);
++	port = &mlb_usio_ports[index];
 +
-+#ifdef CONFIG_SERIAL_SIFIVE_CONSOLE
-+	if (id > SIFIVE_SERIAL_MAX_PORTS) {
-+		dev_err(&pdev->dev, "too many UARTs (%d)\n", id);
-+		return -EINVAL;
++	port->private_data = (void *)clk;
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (res == NULL) {
++		dev_err(&pdev->dev, "Missing regs\n");
++		ret = -ENODEV;
++		goto failed;
 +	}
-+#endif
++	port->mapbase = res->start;
++	port->membase = ioremap(res->start, (res->end - res->start + 1));
++	port->membase = devm_ioremap(&pdev->dev, res->start,
++				resource_size(res));
 +
-+	ssp = devm_kzalloc(&pdev->dev, sizeof(*ssp), GFP_KERNEL);
-+	if (!ssp)
-+		return -ENOMEM;
++	ret = platform_get_irq_byname(pdev, "rx");
++	mlb_usio_irq[index][RX] = ret;
 +
-+	ssp->port.dev = &pdev->dev;
-+	ssp->port.type = PORT_SIFIVE_V0;
-+	ssp->port.iotype = UPIO_MEM;
-+	ssp->port.irq = irq;
-+	ssp->port.fifosize = SIFIVE_TX_FIFO_DEPTH;
-+	ssp->port.ops = &sifive_serial_uops;
-+	ssp->port.line = id;
-+	ssp->port.mapbase = mem->start;
-+	ssp->port.membase = base;
-+	ssp->dev = &pdev->dev;
-+	ssp->clk = clk;
-+	ssp->clk_notifier.notifier_call = sifive_serial_clk_notifier;
++	ret = platform_get_irq_byname(pdev, "tx");
++	mlb_usio_irq[index][TX] = ret;
 +
-+	r = clk_notifier_register(ssp->clk, &ssp->clk_notifier);
-+	if (r) {
-+		dev_err(&pdev->dev, "could not register clock notifier: %d\n",
-+			r);
-+		goto probe_out1;
++	port->irq = mlb_usio_irq[index][RX];
++	port->uartclk = clk_get_rate(clk);
++	port->fifosize = 128;
++	port->iotype = UPIO_MEM32;
++	port->flags = UPF_BOOT_AUTOCONF | UPF_SPD_VHI;
++	port->line = index;
++	port->ops = &mlb_usio_ops;
++	port->dev = &pdev->dev;
++
++	ret = uart_add_one_port(&mlb_usio_uart_driver, port);
++	if (ret) {
++		dev_err(&pdev->dev, "Adding port failed: %d\n", ret);
++		goto failed1;
 +	}
-+
-+	/* Set up clock divider */
-+	ssp->clkin_rate = clk_get_rate(ssp->clk);
-+	ssp->baud_rate = SIFIVE_DEFAULT_BAUD_RATE;
-+	__ssp_update_div(ssp);
-+
-+	platform_set_drvdata(pdev, ssp);
-+
-+	/* Enable transmits and set the watermark level to 1 */
-+	__ssp_writel((1 << SIFIVE_SERIAL_TXCTRL_TXCNT_SHIFT) |
-+		     SIFIVE_SERIAL_TXCTRL_TXEN_MASK,
-+		     SIFIVE_SERIAL_TXCTRL_OFFS, ssp);
-+
-+	/* Enable receives and set the watermark level to 0 */
-+	__ssp_writel((0 << SIFIVE_SERIAL_RXCTRL_RXCNT_SHIFT) |
-+		     SIFIVE_SERIAL_RXCTRL_RXEN_MASK,
-+		     SIFIVE_SERIAL_RXCTRL_OFFS, ssp);
-+
-+	r = request_irq(ssp->port.irq, sifive_serial_irq, ssp->port.irqflags,
-+			dev_name(&pdev->dev), ssp);
-+	if (r) {
-+		dev_err(&pdev->dev, "could not attach interrupt: %d\n", r);
-+		goto probe_out2;
-+	}
-+
-+	__ssp_add_console_port(ssp);
-+
-+	r = uart_add_one_port(&sifive_serial_uart_driver, &ssp->port);
-+	if (r != 0) {
-+		dev_err(&pdev->dev, "could not add uart: %d\n", r);
-+		goto probe_out3;
-+	}
-+
 +	return 0;
 +
-+probe_out3:
-+	__ssp_remove_console_port(ssp);
-+	free_irq(ssp->port.irq, ssp);
-+probe_out2:
-+	clk_notifier_unregister(ssp->clk, &ssp->clk_notifier);
-+probe_out1:
-+	return r;
++failed1:
++	iounmap(port->membase);
++
++failed:
++	clk_disable_unprepare(clk);
++	clk_put(clk);
++
++	return ret;
 +}
 +
-+static int sifive_serial_remove(struct platform_device *dev)
++static int mlb_usio_remove(struct platform_device *pdev)
 +{
-+	struct sifive_serial_port *ssp = platform_get_drvdata(dev);
++	struct uart_port *port = &mlb_usio_ports[pdev->id];
++	struct clk *clk = port->private_data;
 +
-+	__ssp_remove_console_port(ssp);
-+	uart_remove_one_port(&sifive_serial_uart_driver, &ssp->port);
-+	free_irq(ssp->port.irq, ssp);
-+	clk_notifier_unregister(ssp->clk, &ssp->clk_notifier);
++	uart_remove_one_port(&mlb_usio_uart_driver, port);
++	clk_disable_unprepare(clk);
++	clk_put(clk);
 +
 +	return 0;
 +}
 +
-+static const struct of_device_id sifive_serial_of_match[] = {
-+	{ .compatible = "sifive,fu540-c000-uart0" },
-+	{ .compatible = "sifive,uart0" },
-+	{},
++static const struct of_device_id mlb_usio_dt_ids[] = {
++	{ .compatible = "socionext,milbeaut-usio-uart" },
++	{ /* sentinel */ }
 +};
-+MODULE_DEVICE_TABLE(of, sifive_serial_of_match);
++MODULE_DEVICE_TABLE(of, mlb_usio_dt_ids);
 +
-+static struct platform_driver sifive_serial_platform_driver = {
-+	.probe		= sifive_serial_probe,
-+	.remove		= sifive_serial_remove,
-+	.driver		= {
-+		.name	= SIFIVE_SERIAL_NAME,
-+		.of_match_table = of_match_ptr(sifive_serial_of_match),
++static struct platform_driver mlb_usio_driver = {
++	.probe          = mlb_usio_probe,
++	.remove         = mlb_usio_remove,
++	.driver         = {
++		.name   = USIO_NAME,
++		.of_match_table = mlb_usio_dt_ids,
 +	},
 +};
 +
-+static int __init sifive_serial_init(void)
++static int __init mlb_usio_init(void)
 +{
-+	int r;
++	int ret = uart_register_driver(&mlb_usio_uart_driver);
 +
-+	r = uart_register_driver(&sifive_serial_uart_driver);
-+	if (r)
-+		goto init_out1;
-+
-+	r = platform_driver_register(&sifive_serial_platform_driver);
-+	if (r)
-+		goto init_out2;
++	if (ret) {
++		pr_err("%s: uart registration failed: %d\n", __func__, ret);
++		return ret;
++	}
++	ret = platform_driver_register(&mlb_usio_driver);
++	if (ret) {
++		uart_unregister_driver(&mlb_usio_uart_driver);
++		pr_err("%s: drv registration failed: %d\n", __func__, ret);
++		return ret;
++	}
 +
 +	return 0;
-+
-+init_out2:
-+	uart_unregister_driver(&sifive_serial_uart_driver);
-+init_out1:
-+	return r;
 +}
 +
-+static void __exit sifive_serial_exit(void)
++static void __exit mlb_usio_exit(void)
 +{
-+	platform_driver_unregister(&sifive_serial_platform_driver);
-+	uart_unregister_driver(&sifive_serial_uart_driver);
++	platform_driver_unregister(&mlb_usio_driver);
++	uart_unregister_driver(&mlb_usio_uart_driver);
 +}
 +
-+module_init(sifive_serial_init);
-+module_exit(sifive_serial_exit);
++module_init(mlb_usio_init);
++module_exit(mlb_usio_exit);
 +
-+MODULE_DESCRIPTION("SiFive UART serial driver");
++MODULE_AUTHOR("SOCIONEXT");
++MODULE_DESCRIPTION("MILBEAUT_USIO/UART Driver");
 +MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Paul Walmsley <paul@pwsan.com>");
 diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-index 6009ee2c2e99..2191fa691770 100644
+index 6009ee2..a51c747 100644
 --- a/include/uapi/linux/serial_core.h
 +++ b/include/uapi/linux/serial_core.h
 @@ -287,4 +287,7 @@
  /* RDA UART */
  #define PORT_RDA	118
  
-+/* SiFive UART */
-+#define PORT_SIFIVE_V0	119
++/* Socionext Milbeaut UART */
++#define PORT_MLB_USIO	119
 +
  #endif /* _UAPILINUX_SERIAL_CORE_H */
 -- 
-2.20.1
+1.9.1
