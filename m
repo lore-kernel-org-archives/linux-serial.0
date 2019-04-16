@@ -1,59 +1,77 @@
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: Re: [PATCH 18/24] dt-bindings: timer: mtk-timer: add support for
- MT8516
-Date: Tue, 16 Apr 2019 10:09:47 +0200
-Message-ID: <e4895191-c267-7b0b-6203-8e4ff44927e0@linaro.org>
-References: <20190323211612.860-1-fparent@baylibre.com>
- <20190323211612.860-19-fparent@baylibre.com>
- <182f1ae5-9f4f-8ef4-695f-353bbd1966c6@gmail.com>
+From: Erin Lo <erin.lo@mediatek.com>
+Subject: [PATCH v10] Add basic and clock support for Mediatek MT8183 SoC
+Date: Tue, 16 Apr 2019 16:12:10 +0800
+Message-ID: <1555402331-5343-1-git-send-email-erin.lo@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <182f1ae5-9f4f-8ef4-695f-353bbd1966c6@gmail.com>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>, Fabien Parent <fparent@baylibre.com>, robh+dt@kernel.org, mark.rutland@arm.com
-Cc: sean.wang@kernel.org, ryder.lee@mediatek.com, hsin-hsiung.wang@mediatek.com, wenzhen.yu@mediatek.com, chaotian.jing@mediatek.com, yong.mao@mediatek.com, jjian.zhou@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-clk@vger.kernel.org, stephane.leprovost@mediatek.com
+To: Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+Cc: devicetree@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, erin.lo@mediatek.com, mars.cheng@mediatek.com, eddie.huang@mediatek.com
 List-Id: linux-serial@vger.kernel.org
 
-On 16/04/2019 09:54, Matthias Brugger wrote:
-> 
-> 
-> On 23/03/2019 22:16, Fabien Parent wrote:
->> Add binding documentation of mtk-timer for MT8516 SoC.
->>
->> Signed-off-by: Fabien Parent <fparent@baylibre.com>
->> ---
->>  Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt | 1 +
->>  1 file changed, 1 insertion(+)
-> 
-> applied to v5.1-next/dts64
-> 
-> Daniel let me know if you want to take it through your tree and I drop the patch.
+MT8183 is a SoC based on 64bit ARMv8 architecture.
+It contains 4 CA53 and 4 CA73 cores.
+MT8183 share many HW IP with MT65xx series.
+This patchset was tested on MT8183 evaluation board and use correct clock to shell.
 
-It is ok.
+Based on v5.1-rc1 and
+http://lists.infradead.org/pipermail/linux-mediatek/2019-March/017963.html
 
-Acked-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Change in v10:
+Add the L2 cache node to prevent warning on unable to detect cache
+hierarchy.
 
->> diff --git a/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt b/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
->> index ff7c567a7972..74c3eadad844 100644
->> --- a/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
->> +++ b/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
->> @@ -17,6 +17,7 @@ Required properties:
->>  	* "mediatek,mt8127-timer" for MT8127 compatible timers (GPT)
->>  	* "mediatek,mt8135-timer" for MT8135 compatible timers (GPT)
->>  	* "mediatek,mt8173-timer" for MT8173 compatible timers (GPT)
->> +	* "mediatek,mt8516-timer" for MT8516 compatible timers (GPT)
->>  	* "mediatek,mt6577-timer" for MT6577 and all above compatible timers (GPT)
->>  
->>  	For those SoCs that use SYST
->>
+Change in v9:
+Remove pio node since binding is not documented yet
 
+Change in v8:
+1. Fix interrupt-parent of pio node
+2. Remove pinfunc.h and spi node patches
 
--- 
- <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+Change in v7:
+1. Place all the MMIO peripherals under one or more simple-bus nodes
+2. Make the pinfunc.h and spi node into seperate patch
+3. Modify SPIs pamerater from 4 back to 3
+   and remove patch "support 4 interrupt parameters for sysirq"
+4. Rename intpol-controller to interrupt-controller
+5. Rename pinctrl@1000b000 to pinctrl@10005000
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+Change in v6:
+1. Remove power and iommu nodes
+2. Fix dtb build warning
+3. Fix pinctrl binding doc
+4. Fix '_' in node names
+
+Change in v5:
+1. Collect all device tree nodes to the last patch
+2. Add PMU
+3. Add Signed-off-by
+4. Remove clock driver code and binding doc
+5. Add pinctrl, iommu, spi, and pwrap nodes
+
+Change in v4:
+1. Correct syntax error in dtsi
+2. Add MT8183 clock support
+
+Change in v3:
+1. Fill out GICC, GICH, GICV regions
+2. Update Copyright to 2018
+
+Change in v2:
+1. Split dt-bindings into different patches
+2. Correct bindings for supported SoCs (mtk-uart.txt)
+
+Ben Ho (1):
+  arm64: dts: Add Mediatek SoC MT8183 and evaluation board dts and
+    Makefile
+
+ arch/arm64/boot/dts/mediatek/Makefile       |   1 +
+ arch/arm64/boot/dts/mediatek/mt8183-evb.dts |  31 +++
+ arch/arm64/boot/dts/mediatek/mt8183.dtsi    | 329 ++++++++++++++++++++++++++++
+ 3 files changed, 361 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8183-evb.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8183.dtsi
+
+--
+1.9.1
