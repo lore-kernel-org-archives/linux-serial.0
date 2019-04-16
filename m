@@ -1,34 +1,55 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: sc16is7xx: fix unused label warning
-Date: Tue, 16 Apr 2019 15:11:01 +0200
-Message-ID: <20190416131101.GD7406@kroah.com>
-References: <20190416123321.3577638-1-arnd@arndb.de>
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH 19/24] dt-bindings: spi: spi-mt65xx: add support for
+ MT8516
+Date: Tue, 16 Apr 2019 15:28:14 +0100
+Message-ID: <20190416142814.GB4834@sirena.org.uk>
+References: <20190323211612.860-1-fparent@baylibre.com>
+ <20190323211612.860-20-fparent@baylibre.com>
+ <5bc3fbfa-6d7e-08d3-116c-a8f78bc680cd@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="0eh6TmSyL6TZE2Uz"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190416123321.3577638-1-arnd@arndb.de>
+In-Reply-To: <5bc3fbfa-6d7e-08d3-116c-a8f78bc680cd@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Jiri Slaby <jslaby@suse.com>, Phil Elwell <phil@raspberrypi.org>, "Gustavo A. R. Silva" <gustavo@embeddedor.com>, Stefan Potyra <Stefan.Potyra@elektrobit.com>, Mao Wenan <maowenan@huawei.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Fabien Parent <fparent@baylibre.com>, robh+dt@kernel.org, mark.rutland@arm.com, sean.wang@kernel.org, ryder.lee@mediatek.com, hsin-hsiung.wang@mediatek.com, wenzhen.yu@mediatek.com, chaotian.jing@mediatek.com, yong.mao@mediatek.com, jjian.zhou@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-clk@vger.kernel.org, stephane.leprovost@mediatek.com
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Apr 16, 2019 at 02:33:14PM +0200, Arnd Bergmann wrote:
-> A bugfix introduced a harmless warning:
-> 
-> drivers/tty/serial/sc16is7xx.c:1523:1: error: unused label 'err_spi' [-Werror,-Wunused-label]
-> 
-> Move each label inside the correct #ifdef.
-> 
-> Fixes: ac0cdb3d9901 ("sc16is7xx: missing unregister/delete driver on error in sc16is7xx_init()")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  drivers/tty/serial/sc16is7xx.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
 
-Someone sent this same patch a week earlier.  I'll merge yours into
-it...
+--0eh6TmSyL6TZE2Uz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-thanks,
+On Tue, Apr 16, 2019 at 09:55:41AM +0200, Matthias Brugger wrote:
+> On 23/03/2019 22:16, Fabien Parent wrote:
+> > Add binding documentation of spi-mt65xx for MT8516 SoC.
 
-greg k-h
+> > Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> > ---
+> >  Documentation/devicetree/bindings/spi/spi-mt65xx.txt | 1 +
+> >  1 file changed, 1 insertion(+)
+
+> applied to v5.1-next/dts64
+
+> Mark let me know if you want to take it through your tree and I drop the patch.
+
+Yes, DT bindings generally get reviewed in the subsystem :(
+
+--0eh6TmSyL6TZE2Uz
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAly15n0ACgkQJNaLcl1U
+h9DZ1gf9H2Yrq00KAenFGyeh+9in9sO60dj3xTkLjw+cqBEC68iT6kOwJF1bGe49
+cTerjLC7g1Z4O7Fas/ExIVqn6vQ2DYvGTRDEQ/3OyrGJa0mL8WZe5ZxSPBrIqFGN
+DM83Tt+WHi26ZhKZ7F3eLtoN8TZcs7mNt9OAi2YF4OnoOS51JSyrOKA1sQn00xGf
+uQi9IfnJkLOxel+qQhsefoWYKwNZFcIz2qV4K1eKjcnvZKVW+3OeZ2QJok7qWFNf
+g/JHvvdaPgHk0ObyQXGNH83a2urwHLFrWNFWZIIHlR1HfpsOUXcTy4luxYlikFxg
+1F4MbBZ6WhZuYSlOJ2pQaNJHhEamgQ==
+=t4yQ
+-----END PGP SIGNATURE-----
+
+--0eh6TmSyL6TZE2Uz--
