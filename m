@@ -1,52 +1,45 @@
-From: Wolfram Sang <wsa@the-dreams.de>
-Subject: Re: [PATCH 22/24] dt-bindings: i2c: i2c-mtk: add support for MT8516
-Date: Tue, 16 Apr 2019 13:05:34 +0200
-Message-ID: <20190416110534.ndcnjjy3dzdb6xbv@ninjato>
-References: <20190323211612.860-1-fparent@baylibre.com>
- <20190323211612.860-23-fparent@baylibre.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH] serial: sc16is7xx: fix unused label warning
+Date: Tue, 16 Apr 2019 14:33:14 +0200
+Message-ID: <20190416123321.3577638-1-arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="vcxgegcyuczhk53y"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190323211612.860-23-fparent@baylibre.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Fabien Parent <fparent@baylibre.com>
-Cc: matthias.bgg@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, sean.wang@kernel.org, ryder.lee@mediatek.com, hsin-hsiung.wang@mediatek.com, wenzhen.yu@mediatek.com, chaotian.jing@mediatek.com, yong.mao@mediatek.com, jjian.zhou@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-clk@vger.kernel.org, stephane.leprovost@mediatek.com
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Phil Elwell <phil@raspberrypi.org>, "Gustavo A. R. Silva" <gustavo@embeddedor.com>, Stefan Potyra <Stefan.Potyra@elektrobit.com>, Mao Wenan <maowenan@huawei.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+A bugfix introduced a harmless warning:
 
---vcxgegcyuczhk53y
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+drivers/tty/serial/sc16is7xx.c:1523:1: error: unused label 'err_spi' [-Werror,-Wunused-label]
 
-On Sat, Mar 23, 2019 at 10:16:10PM +0100, Fabien Parent wrote:
-> Add binding documentation of i2c-mtk for MT8516 SoC.
->=20
-> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+Move each label inside the correct #ifdef.
 
-Applied to for-next, thanks!
+Fixes: ac0cdb3d9901 ("sc16is7xx: missing unregister/delete driver on error in sc16is7xx_init()")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/tty/serial/sc16is7xx.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-
---vcxgegcyuczhk53y
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAly1tv4ACgkQFA3kzBSg
-Kba07w/+KTVnldbBtdAYM6iGz11cWe28Ofxfurg1FNf4t6S9ar2RYhtGMYaJpNwQ
-YYKURH2tM7i8cAB2sVG+h6TbSPr+WeXmeqXFtgdste+rlcHcU7W8xJG0DUgvjVUa
-uC5cJlB9nFzpwX4AVsyhlZHmlT6lwccvtbVE0ZhO9HF3QAAGyzCLTrcwz9upiw06
-uXASUNd8vbNt+Wxh1I5d+bhlmFHtn88+cOm5G2u7wibcOhStgJnqo/VXs11ha48E
-TQdT+WiMSE1JBMq5szsrjaCA094yEh2muSKBTyKi7uOdxAdN3qv8HJHReM9q5HH8
-coLVq8RYb6I7BgbDnuYMTCO2K/GqVstsIp8F/3Mq6ea6uh/5mFME/p5EGHeKBKDM
-sGYj2wehgWE/qsVs3NUJiy/Z7lDpuzkgRo0ULpSx64evmwQWmtHeOuGuTny51G44
-S/0B1boZJerOLpoJTKctG8Eq6lRkUWvRQzX9fZZmhtiyeEGbXE7sRTLeiLTaDvuc
-ma8cDNp7VKfDob4SJeRszjMmgyjOIRtGOutjeS8MipNlKrO8b4AkiiKXoZDWmTt1
-q3tDg1hBsfV5T/Pawr4QJHOEXoZ/sh5AT7fh4HdE0aqYTqNZ5jt11dVVktO56U4X
-VG54fSn9KZ1GIiAFAyhSG9hac8ldBwxR9tdn2DSHmx0Qh6HYg28=
-=TvId
------END PGP SIGNATURE-----
-
---vcxgegcyuczhk53y--
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 09a183dfc526..a31db15cd7c0 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1520,11 +1520,13 @@ static int __init sc16is7xx_init(void)
+ #endif
+ 	return ret;
+ 
++#ifdef CONFIG_SERIAL_SC16IS7XX_SPI
+ err_spi:
++#endif
+ #ifdef CONFIG_SERIAL_SC16IS7XX_I2C
+ 	i2c_del_driver(&sc16is7xx_i2c_uart_driver);
+-#endif
+ err_i2c:
++#endif
+ 	uart_unregister_driver(&sc16is7xx_uart);
+ 	return ret;
+ }
+-- 
+2.20.0
