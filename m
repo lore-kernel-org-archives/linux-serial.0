@@ -1,79 +1,52 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v9] arm64: dts: Add Mediatek SoC MT8183 and evaluation
- board dts and Makefile
-Date: Tue, 16 Apr 2019 12:35:34 +0200
-Message-ID: <f18dbb3a-c141-ebb8-87f3-a6c437800136@gmail.com>
-References: <1552898552-13045-2-git-send-email-erin.lo@mediatek.com>
- <201903190247.QZDwfpLQ%lkp@intel.com>
- <135d7e3a-d5a3-0f13-05c9-4a8ec0524256@gmail.com>
- <1555406836.27018.10.camel@mtksdaap41>
+From: Wolfram Sang <wsa@the-dreams.de>
+Subject: Re: [PATCH 22/24] dt-bindings: i2c: i2c-mtk: add support for MT8516
+Date: Tue, 16 Apr 2019 13:05:34 +0200
+Message-ID: <20190416110534.ndcnjjy3dzdb6xbv@ninjato>
+References: <20190323211612.860-1-fparent@baylibre.com>
+ <20190323211612.860-23-fparent@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="vcxgegcyuczhk53y"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1555406836.27018.10.camel@mtksdaap41>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20190323211612.860-23-fparent@baylibre.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Erin Lo <erin.lo@mediatek.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, mars.cheng@mediatek.com, eddie.huang@mediatek.com, Ben Ho <Ben.Ho@mediatek.com>, Seiya Wang <seiya.wang@mediatek.com>, Weiyi Lu <weiyi.lu@mediatek.com>, Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>, Stephen Boyd <sboyd@codeaurora.org>
+To: Fabien Parent <fparent@baylibre.com>
+Cc: matthias.bgg@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, sean.wang@kernel.org, ryder.lee@mediatek.com, hsin-hsiung.wang@mediatek.com, wenzhen.yu@mediatek.com, chaotian.jing@mediatek.com, yong.mao@mediatek.com, jjian.zhou@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org, linux-clk@vger.kernel.org, stephane.leprovost@mediatek.com
 List-Id: linux-serial@vger.kernel.org
 
 
+--vcxgegcyuczhk53y
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 16/04/2019 11:27, Erin Lo wrote:
-> On Tue, 2019-04-16 at 10:29 +0200, Matthias Brugger wrote:
->>
->> On 18/03/2019 19:42, kbuild test robot wrote:
->>> Hi Erin,
->>>
->>> Thank you for the patch! Yet something to improve:
->>>
->>> [auto build test ERROR on robh/for-next]
->>> [also build test ERROR on v5.1-rc1 next-20190318]
->>> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
->>>
->>> url:    https://github.com/0day-ci/linux/commits/Erin-Lo/arm64-dts-Add-Mediatek-SoC-MT8183-and-evaluation-board-dts-and-Makefile/20190318-170422
->>> base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
->>> config: arm64-allyesconfig (attached as .config)
->>> compiler: aarch64-linux-gnu-gcc (Debian 7.2.0-11) 7.2.0
->>> reproduce:
->>>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->>>         chmod +x ~/bin/make.cross
->>>         # save the attached .config to linux build tree
->>>         GCC_VERSION=7.2.0 make.cross ARCH=arm64 
->>>
->>> All errors (new ones prefixed by >>):
->>>
->>>    In file included from arch/arm64/boot/dts/mediatek/mt8183-evb.dts:9:0:
->>>>> arch/arm64/boot/dts/mediatek/mt8183.dtsi:8:10: fatal error: dt-bindings/clock/mt8183-clk.h: No such file or directory
->>>     #include <dt-bindings/clock/mt8183-clk.h>
->>>              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->>>    compilation terminated.
->>>
->>> vim +8 arch/arm64/boot/dts/mediatek/mt8183.dtsi
->>>
->>>    > 8	#include <dt-bindings/clock/mt8183-clk.h>
->>>      9	#include <dt-bindings/interrupt-controller/arm-gic.h>
->>>     10	#include <dt-bindings/interrupt-controller/irq.h>
->>>     11	
->>>
->>
->> Stephen queued the corresponding patch for v5.2.
->> I propose we wait for v5.2-rc1 and then apply the basic support and the others
->> based on this one.
->>
->> Erin: There are may mt8183 dts patches floating around that depend on this or
->> more patches. Can you coordinate with your colleagues to resend them as a
->> series? Then it will be easier for me to take them for v5.3, as some have
->> dependencies on other series etc.
->>
->> Thanks a lot.
->> Matthias
-> 
-> OK, I will coordinate with my colleagues to resend mt8183 dts patches as
-> a series base on v5.2-rc1 when v5.2-rc1 release.
-> Since we want to send this series more confident so they still send
-> separate patch in v5.1 just for review in advance. Is that ok for you?
-> 
+On Sat, Mar 23, 2019 at 10:16:10PM +0100, Fabien Parent wrote:
+> Add binding documentation of i2c-mtk for MT8516 SoC.
+>=20
+> Signed-off-by: Fabien Parent <fparent@baylibre.com>
 
-Sure no problem. Thanks for helping!
+Applied to for-next, thanks!
+
+
+--vcxgegcyuczhk53y
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAly1tv4ACgkQFA3kzBSg
+Kba07w/+KTVnldbBtdAYM6iGz11cWe28Ofxfurg1FNf4t6S9ar2RYhtGMYaJpNwQ
+YYKURH2tM7i8cAB2sVG+h6TbSPr+WeXmeqXFtgdste+rlcHcU7W8xJG0DUgvjVUa
+uC5cJlB9nFzpwX4AVsyhlZHmlT6lwccvtbVE0ZhO9HF3QAAGyzCLTrcwz9upiw06
+uXASUNd8vbNt+Wxh1I5d+bhlmFHtn88+cOm5G2u7wibcOhStgJnqo/VXs11ha48E
+TQdT+WiMSE1JBMq5szsrjaCA094yEh2muSKBTyKi7uOdxAdN3qv8HJHReM9q5HH8
+coLVq8RYb6I7BgbDnuYMTCO2K/GqVstsIp8F/3Mq6ea6uh/5mFME/p5EGHeKBKDM
+sGYj2wehgWE/qsVs3NUJiy/Z7lDpuzkgRo0ULpSx64evmwQWmtHeOuGuTny51G44
+S/0B1boZJerOLpoJTKctG8Eq6lRkUWvRQzX9fZZmhtiyeEGbXE7sRTLeiLTaDvuc
+ma8cDNp7VKfDob4SJeRszjMmgyjOIRtGOutjeS8MipNlKrO8b4AkiiKXoZDWmTt1
+q3tDg1hBsfV5T/Pawr4QJHOEXoZ/sh5AT7fh4HdE0aqYTqNZ5jt11dVVktO56U4X
+VG54fSn9KZ1GIiAFAyhSG9hac8ldBwxR9tdn2DSHmx0Qh6HYg28=
+=TvId
+-----END PGP SIGNATURE-----
+
+--vcxgegcyuczhk53y--
