@@ -1,66 +1,66 @@
 From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v9] arm64: dts: Add Mediatek SoC MT8183 and evaluation
- board dts and Makefile
-Date: Tue, 16 Apr 2019 10:29:42 +0200
-Message-ID: <135d7e3a-d5a3-0f13-05c9-4a8ec0524256@gmail.com>
-References: <1552898552-13045-2-git-send-email-erin.lo@mediatek.com>
- <201903190247.QZDwfpLQ%lkp@intel.com>
+Subject: Re: [PATCH 19/24] dt-bindings: spi: spi-mt65xx: add support for
+ MT8516
+Date: Tue, 16 Apr 2019 10:52:55 +0200
+Message-ID: <7472f850-b8da-368b-7879-fe9d29ec5724@gmail.com>
+References: <20190323211612.860-1-fparent@baylibre.com>
+ <20190323211612.860-20-fparent@baylibre.com>
+ <5bc3fbfa-6d7e-08d3-116c-a8f78bc680cd@gmail.com>
+ <1555403151.7441.4.camel@mhfsdcap03>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <201903190247.QZDwfpLQ%lkp@intel.com>
+In-Reply-To: <1555403151.7441.4.camel@mhfsdcap03>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Erin Lo <erin.lo@mediatek.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, mars.cheng@mediatek.com, eddie.huang@mediatek.com, Ben Ho <Ben.Ho@mediatek.com>, Seiya Wang <seiya.wang@mediatek.com>, Weiyi Lu <weiyi.lu@mediatek.com>, Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>, Stephen Boyd <sboyd@codeaurora.org>
+To: lei liu <leilk.liu@mediatek.com>
+Cc: Fabien Parent <fparent@baylibre.com>, robh+dt@kernel.org, mark.rutland@arm.com, Mark Brown <broonie@kernel.org>, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, ryder.lee@mediatek.com, linux-watchdog@vger.kernel.org, jjian.zhou@mediatek.com, wenzhen.yu@mediatek.com, stephane.leprovost@mediatek.com, sean.wang@kernel.org, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, yong.mao@mediatek.com, linux-spi@vger.kernel.org, linux-gpio@vger.kernel.org, linux-mediatek@lists.infradead.org, hsin-hsiung.wang@mediatek.com, linux-serial@vger.kernel.org, linux-clk@vger.kernel.org, chaotian.jing@mediatek.com, linux-i2c@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 
 
-On 18/03/2019 19:42, kbuild test robot wrote:
-> Hi Erin,
-> 
-> Thank you for the patch! Yet something to improve:
-> 
-> [auto build test ERROR on robh/for-next]
-> [also build test ERROR on v5.1-rc1 next-20190318]
-> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Erin-Lo/arm64-dts-Add-Mediatek-SoC-MT8183-and-evaluation-board-dts-and-Makefile/20190318-170422
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-> config: arm64-allyesconfig (attached as .config)
-> compiler: aarch64-linux-gnu-gcc (Debian 7.2.0-11) 7.2.0
-> reproduce:
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # save the attached .config to linux build tree
->         GCC_VERSION=7.2.0 make.cross ARCH=arm64 
-> 
-> All errors (new ones prefixed by >>):
-> 
->    In file included from arch/arm64/boot/dts/mediatek/mt8183-evb.dts:9:0:
->>> arch/arm64/boot/dts/mediatek/mt8183.dtsi:8:10: fatal error: dt-bindings/clock/mt8183-clk.h: No such file or directory
->     #include <dt-bindings/clock/mt8183-clk.h>
->              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->    compilation terminated.
-> 
-> vim +8 arch/arm64/boot/dts/mediatek/mt8183.dtsi
-> 
->    > 8	#include <dt-bindings/clock/mt8183-clk.h>
->      9	#include <dt-bindings/interrupt-controller/arm-gic.h>
->     10	#include <dt-bindings/interrupt-controller/irq.h>
->     11	
+On 16/04/2019 10:25, lei liu wrote:
+> On Tue, 2019-04-16 at 09:55 +0200, Matthias Brugger wrote:
+>>
+>> On 23/03/2019 22:16, Fabien Parent wrote:
+>>> Add binding documentation of spi-mt65xx for MT8516 SoC.
+>>>
+>>> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+>>> ---
+>>>  Documentation/devicetree/bindings/spi/spi-mt65xx.txt | 1 +
+>>>  1 file changed, 1 insertion(+)
+>>>
+>>
+>>
+>> applied to v5.1-next/dts64
+>>
+>> Mark let me know if you want to take it through your tree and I drop the patch.
+>>
+>>> diff --git a/Documentation/devicetree/bindings/spi/spi-mt65xx.txt b/Documentation/devicetree/bindings/spi/spi-mt65xx.txt
+>>> index 69c356767cf8..69ac5976b952 100644
+>>> --- a/Documentation/devicetree/bindings/spi/spi-mt65xx.txt
+>>> +++ b/Documentation/devicetree/bindings/spi/spi-mt65xx.txt
+>>> @@ -10,6 +10,7 @@ Required properties:
+>>>      - mediatek,mt8135-spi: for mt8135 platforms
+>>>      - mediatek,mt8173-spi: for mt8173 platforms
+>>>      - mediatek,mt8183-spi: for mt8183 platforms
+>>> +    - "mediatek,mt8516-spi", "mediatek,mt2701-spi": for mt8516 platforms
+> Hi Fabien,
+> mt8516 SPI design comes from mt2712 and it's different from mt2701. Here
+> it should compatible with mt2712.
 > 
 
-Stephen queued the corresponding patch for v5.2.
-I propose we wait for v5.2-rc1 and then apply the basic support and the others
-based on this one.
+Ok, please resend. I dropped the patch for now.
 
-Erin: There are may mt8183 dts patches floating around that depend on this or
-more patches. Can you coordinate with your colleagues to resend them as a
-series? Then it will be easier for me to take them for v5.3, as some have
-dependencies on other series etc.
-
-Thanks a lot.
-Matthias
+>>>  
+>>>  - #address-cells: should be 1.
+>>>  
+>>>
+>>
+>> _______________________________________________
+>> Linux-mediatek mailing list
+>> Linux-mediatek@lists.infradead.org
+>> http://lists.infradead.org/mailman/listinfo/linux-mediatek
+> 
+> 
