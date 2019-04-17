@@ -1,142 +1,78 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH] TTY: serial_core, add ->install
-Date: Wed, 17 Apr 2019 10:58:53 +0200
-Message-ID: <20190417085853.21708-1-jslaby@suse.cz>
+From: "Li,Rongqing" <lirongqing@baidu.com>
+Subject: =?gb2312?B?tPC4tDogW1BBVENIXSBUVFk6IHNlcmlhbF9jb3JlLCBhZGQgLT5pbnN0YWxs?=
+Date: Wed, 17 Apr 2019 12:06:18 +0000
+Message-ID: <9a7d8f6a38d54e70b379dfa615c7edee@baidu.com>
+References: <20190417085853.21708-1-jslaby@suse.cz>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20190417085853.21708-1-jslaby@suse.cz>
+Content-Language: zh-CN
 Sender: stable-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Li RongQing <lirongqing@baidu.com>, Wang Li <wangli39@baidu.com>, Zhang Yu <zhangyu31@baidu.com>, stable <stable@vger.kernel.org>
+To: Jiri Slaby <jslaby@suse.cz>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Wang,Li(ACG Cloud)" <wangli39@baidu.com>, "Zhang,Yu(ACG Cloud)" <zhangyu31@baidu.com>, stable <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-We need to compute the uart state only on the first open. This is
-usually what is done in the ->install hook. serial_core used to do this
-in ->open on every open. So move it to ->install.
-
-As a side effect, it ensures the state is set properly in the window
-after tty_init_dev is called, but before uart_open. This fixes a bunch
-of races between tty_open and flush_to_ldisc we were dealing with
-recently.
-
-One of such bugs was attempted to fix in commit fedb5760648a (serial:
-fix race between flush_to_ldisc and tty_open), but it only took care of
-a couple of functions (uart_start and uart_unthrottle).  I was able to
-reproduce the crash on a SLE system, but in uart_write_room which is
-also called from flush_to_ldisc via process_echoes. I was *unable* to
-reproduce the bug locally. It is due to having this patch in my queue
-since 2012!
-
- general protection fault: 0000 [#1] SMP KASAN PTI
- CPU: 1 PID: 5 Comm: kworker/u4:0 Tainted: G             L 4.12.14-396-default #1 SLE15-SP1 (unreleased)
- Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.0-0-ga698c89-prebuilt.qemu.org 04/01/2014
- Workqueue: events_unbound flush_to_ldisc
- task: ffff8800427d8040 task.stack: ffff8800427f0000
- RIP: 0010:uart_write_room+0xc4/0x590
- RSP: 0018:ffff8800427f7088 EFLAGS: 00010202
- RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
- RDX: 000000000000002f RSI: 00000000000000ee RDI: ffff88003888bd90
- RBP: ffffffffb9545850 R08: 0000000000000001 R09: 0000000000000400
- R10: ffff8800427d825c R11: 000000000000006e R12: 1ffff100084fee12
- R13: ffffc900004c5000 R14: ffff88003888bb28 R15: 0000000000000178
- FS:  0000000000000000(0000) GS:ffff880043300000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 0000561da0794148 CR3: 000000000ebf4000 CR4: 00000000000006e0
- Call Trace:
-  tty_write_room+0x6d/0xc0
-  __process_echoes+0x55/0x870
-  n_tty_receive_buf_common+0x105e/0x26d0
-  tty_ldisc_receive_buf+0xb7/0x1c0
-  tty_port_default_receive_buf+0x107/0x180
-  flush_to_ldisc+0x35d/0x5c0
-...
-
-0 in rbx means tty->driver_data is NULL in uart_write_room. 0x178 is
-tried to be dereferenced (0x178 >> 3 is 0x2f in rdx) at
-uart_write_room+0xc4. 0x178 is exactly (struct uart_state *)NULL->refcount
-used in uart_port_lock from uart_write_room.
-
-So revert the upstream commit here as my local patch should fix the
-whole family.
-
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Cc: Li RongQing <lirongqing@baidu.com>
-Cc: Wang Li <wangli39@baidu.com>
-Cc: Zhang Yu <zhangyu31@baidu.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: stable <stable@vger.kernel.org>
----
-
-============================= NOTE =============================
-
-Could you test your use-case at Baidu, guys, please?
-
-
- drivers/tty/serial/serial_core.c | 24 +++++++++++++-----------
- 1 file changed, 13 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 7c787e517fa5..33319544d9d2 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -130,9 +130,6 @@ static void uart_start(struct tty_struct *tty)
- 	struct uart_port *port;
- 	unsigned long flags;
- 
--	if (!state)
--		return;
--
- 	port = uart_port_lock(state, flags);
- 	__uart_start(tty);
- 	uart_port_unlock(port, flags);
-@@ -730,9 +727,6 @@ static void uart_unthrottle(struct tty_struct *tty)
- 	upstat_t mask = UPSTAT_SYNC_FIFO;
- 	struct uart_port *port;
- 
--	if (!state)
--		return;
--
- 	port = uart_port_ref(state);
- 	if (!port)
- 		return;
-@@ -1732,6 +1726,16 @@ static void uart_dtr_rts(struct tty_port *port, int raise)
- 	uart_port_deref(uport);
- }
- 
-+static int uart_install(struct tty_driver *driver, struct tty_struct *tty)
-+{
-+	struct uart_driver *drv = driver->driver_state;
-+	struct uart_state *state = drv->state + tty->index;
-+
-+	tty->driver_data = state;
-+
-+	return tty_standard_install(driver, tty);
-+}
-+
- /*
-  * Calls to uart_open are serialised by the tty_lock in
-  *   drivers/tty/tty_io.c:tty_open()
-@@ -1744,11 +1748,8 @@ static void uart_dtr_rts(struct tty_port *port, int raise)
-  */
- static int uart_open(struct tty_struct *tty, struct file *filp)
- {
--	struct uart_driver *drv = tty->driver->driver_state;
--	int retval, line = tty->index;
--	struct uart_state *state = drv->state + line;
--
--	tty->driver_data = state;
-+	struct uart_state *state = tty->driver_data;
-+	int retval;
- 
- 	retval = tty_port_open(&state->port, tty, filp);
- 	if (retval > 0)
-@@ -2433,6 +2434,7 @@ static void uart_poll_put_char(struct tty_driver *driver, int line, char ch)
- #endif
- 
- static const struct tty_operations uart_ops = {
-+	.install	= uart_install,
- 	.open		= uart_open,
- 	.close		= uart_close,
- 	.write		= uart_write,
--- 
-2.21.0
+DQoNCj4gLS0tLS3Tyrz+1K28/i0tLS0tDQo+ILeivP7IyzogbGludXgta2VybmVsLW93bmVyQHZn
+ZXIua2VybmVsLm9yZw0KPiBbbWFpbHRvOmxpbnV4LWtlcm5lbC1vd25lckB2Z2VyLmtlcm5lbC5v
+cmddILT6se0gSmlyaSBTbGFieQ0KPiC3osvNyrG85DogMjAxOcTqNNTCMTfI1SAxNjo1OQ0KPiDK
+1bz+yMs6IGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnDQo+ILOty806IGxpbnV4LXNlcmlhbEB2
+Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IEppcmkgU2xhYnkN
+Cj4gPGpzbGFieUBzdXNlLmN6PjsgTGksUm9uZ3FpbmcgPGxpcm9uZ3FpbmdAYmFpZHUuY29tPjsg
+V2FuZyxMaShBQ0cgQ2xvdWQpDQo+IDx3YW5nbGkzOUBiYWlkdS5jb20+OyBaaGFuZyxZdShBQ0cg
+Q2xvdWQpIDx6aGFuZ3l1MzFAYmFpZHUuY29tPjsNCj4gc3RhYmxlIDxzdGFibGVAdmdlci5rZXJu
+ZWwub3JnPg0KPiDW98ziOiBbUEFUQ0hdIFRUWTogc2VyaWFsX2NvcmUsIGFkZCAtPmluc3RhbGwN
+Cj4gDQo+IFdlIG5lZWQgdG8gY29tcHV0ZSB0aGUgdWFydCBzdGF0ZSBvbmx5IG9uIHRoZSBmaXJz
+dCBvcGVuLiBUaGlzIGlzIHVzdWFsbHkgd2hhdCBpcw0KPiBkb25lIGluIHRoZSAtPmluc3RhbGwg
+aG9vay4gc2VyaWFsX2NvcmUgdXNlZCB0byBkbyB0aGlzIGluIC0+b3BlbiBvbiBldmVyeSBvcGVu
+Lg0KPiBTbyBtb3ZlIGl0IHRvIC0+aW5zdGFsbC4NCj4gDQo+IEFzIGEgc2lkZSBlZmZlY3QsIGl0
+IGVuc3VyZXMgdGhlIHN0YXRlIGlzIHNldCBwcm9wZXJseSBpbiB0aGUgd2luZG93IGFmdGVyDQo+
+IHR0eV9pbml0X2RldiBpcyBjYWxsZWQsIGJ1dCBiZWZvcmUgdWFydF9vcGVuLiBUaGlzIGZpeGVz
+IGEgYnVuY2ggb2YgcmFjZXMNCj4gYmV0d2VlbiB0dHlfb3BlbiBhbmQgZmx1c2hfdG9fbGRpc2Mg
+d2Ugd2VyZSBkZWFsaW5nIHdpdGggcmVjZW50bHkuDQo+IA0KPiBPbmUgb2Ygc3VjaCBidWdzIHdh
+cyBhdHRlbXB0ZWQgdG8gZml4IGluIGNvbW1pdCBmZWRiNTc2MDY0OGEgKHNlcmlhbDoNCj4gZml4
+IHJhY2UgYmV0d2VlbiBmbHVzaF90b19sZGlzYyBhbmQgdHR5X29wZW4pLCBidXQgaXQgb25seSB0
+b29rIGNhcmUgb2YgYSBjb3VwbGUNCj4gb2YgZnVuY3Rpb25zICh1YXJ0X3N0YXJ0IGFuZCB1YXJ0
+X3VudGhyb3R0bGUpLiAgSSB3YXMgYWJsZSB0byByZXByb2R1Y2UgdGhlDQo+IGNyYXNoIG9uIGEg
+U0xFIHN5c3RlbSwgYnV0IGluIHVhcnRfd3JpdGVfcm9vbSB3aGljaCBpcyBhbHNvIGNhbGxlZCBm
+cm9tDQo+IGZsdXNoX3RvX2xkaXNjIHZpYSBwcm9jZXNzX2VjaG9lcy4gSSB3YXMgKnVuYWJsZSog
+dG8gcmVwcm9kdWNlIHRoZSBidWcgbG9jYWxseS4NCj4gSXQgaXMgZHVlIHRvIGhhdmluZyB0aGlz
+IHBhdGNoIGluIG15IHF1ZXVlIHNpbmNlIDIwMTIhDQo+IA0KPiAgZ2VuZXJhbCBwcm90ZWN0aW9u
+IGZhdWx0OiAwMDAwIFsjMV0gU01QIEtBU0FOIFBUSQ0KPiAgQ1BVOiAxIFBJRDogNSBDb21tOiBr
+d29ya2VyL3U0OjAgVGFpbnRlZDogRyAgICAgICAgICAgICBMDQo+IDQuMTIuMTQtMzk2LWRlZmF1
+bHQgIzEgU0xFMTUtU1AxICh1bnJlbGVhc2VkKQ0KPiAgSGFyZHdhcmUgbmFtZTogUUVNVSBTdGFu
+ZGFyZCBQQyAoaTQ0MEZYICsgUElJWCwgMTk5NiksIEJJT1MNCj4gcmVsLTEuMTIuMC0wLWdhNjk4
+Yzg5LXByZWJ1aWx0LnFlbXUub3JnIDA0LzAxLzIwMTQNCj4gIFdvcmtxdWV1ZTogZXZlbnRzX3Vu
+Ym91bmQgZmx1c2hfdG9fbGRpc2MNCj4gIHRhc2s6IGZmZmY4ODAwNDI3ZDgwNDAgdGFzay5zdGFj
+azogZmZmZjg4MDA0MjdmMDAwMA0KPiAgUklQOiAwMDEwOnVhcnRfd3JpdGVfcm9vbSsweGM0LzB4
+NTkwDQo+ICBSU1A6IDAwMTg6ZmZmZjg4MDA0MjdmNzA4OCBFRkxBR1M6IDAwMDEwMjAyDQo+ICBS
+QVg6IGRmZmZmYzAwMDAwMDAwMDAgUkJYOiAwMDAwMDAwMDAwMDAwMDAwIFJDWDogMDAwMDAwMDAw
+MDAwMDAwMA0KPiAgUkRYOiAwMDAwMDAwMDAwMDAwMDJmIFJTSTogMDAwMDAwMDAwMDAwMDBlZSBS
+REk6IGZmZmY4ODAwMzg4OGJkOTANCj4gIFJCUDogZmZmZmZmZmZiOTU0NTg1MCBSMDg6IDAwMDAw
+MDAwMDAwMDAwMDEgUjA5OiAwMDAwMDAwMDAwMDAwNDAwDQo+ICBSMTA6IGZmZmY4ODAwNDI3ZDgy
+NWMgUjExOiAwMDAwMDAwMDAwMDAwMDZlIFIxMjogMWZmZmYxMDAwODRmZWUxMg0KPiAgUjEzOiBm
+ZmZmYzkwMDAwNGM1MDAwIFIxNDogZmZmZjg4MDAzODg4YmIyOCBSMTU6IDAwMDAwMDAwMDAwMDAx
+NzgNCj4gIEZTOiAgMDAwMDAwMDAwMDAwMDAwMCgwMDAwKSBHUzpmZmZmODgwMDQzMzAwMDAwKDAw
+MDApDQo+IGtubEdTOjAwMDAwMDAwMDAwMDAwMDANCj4gIENTOiAgMDAxMCBEUzogMDAwMCBFUzog
+MDAwMCBDUjA6IDAwMDAwMDAwODAwNTAwMzMNCj4gIENSMjogMDAwMDU2MWRhMDc5NDE0OCBDUjM6
+IDAwMDAwMDAwMGViZjQwMDAgQ1I0OiAwMDAwMDAwMDAwMDAwNmUwDQo+IENhbGwgVHJhY2U6DQo+
+ICAgdHR5X3dyaXRlX3Jvb20rMHg2ZC8weGMwDQo+ICAgX19wcm9jZXNzX2VjaG9lcysweDU1LzB4
+ODcwDQo+ICAgbl90dHlfcmVjZWl2ZV9idWZfY29tbW9uKzB4MTA1ZS8weDI2ZDANCj4gICB0dHlf
+bGRpc2NfcmVjZWl2ZV9idWYrMHhiNy8weDFjMA0KPiAgIHR0eV9wb3J0X2RlZmF1bHRfcmVjZWl2
+ZV9idWYrMHgxMDcvMHgxODANCj4gICBmbHVzaF90b19sZGlzYysweDM1ZC8weDVjMA0KPiAuLi4N
+Cj4gDQo+IDAgaW4gcmJ4IG1lYW5zIHR0eS0+ZHJpdmVyX2RhdGEgaXMgTlVMTCBpbiB1YXJ0X3dy
+aXRlX3Jvb20uIDB4MTc4IGlzIHRyaWVkIHRvDQo+IGJlIGRlcmVmZXJlbmNlZCAoMHgxNzggPj4g
+MyBpcyAweDJmIGluIHJkeCkgYXQgdWFydF93cml0ZV9yb29tKzB4YzQuIDB4MTc4IGlzDQo+IGV4
+YWN0bHkgKHN0cnVjdCB1YXJ0X3N0YXRlICopTlVMTC0+cmVmY291bnQgdXNlZCBpbiB1YXJ0X3Bv
+cnRfbG9jayBmcm9tDQo+IHVhcnRfd3JpdGVfcm9vbS4NCj4gDQo+IFNvIHJldmVydCB0aGUgdXBz
+dHJlYW0gY29tbWl0IGhlcmUgYXMgbXkgbG9jYWwgcGF0Y2ggc2hvdWxkIGZpeCB0aGUgd2hvbGUN
+Cj4gZmFtaWx5Lg0KPiANCj4gU2lnbmVkLW9mZi1ieTogSmlyaSBTbGFieSA8anNsYWJ5QHN1c2Uu
+Y3o+DQo+IENjOiBMaSBSb25nUWluZyA8bGlyb25ncWluZ0BiYWlkdS5jb20+DQo+IENjOiBXYW5n
+IExpIDx3YW5nbGkzOUBiYWlkdS5jb20+DQo+IENjOiBaaGFuZyBZdSA8emhhbmd5dTMxQGJhaWR1
+LmNvbT4NCj4gQ2M6IEdyZWcgS3JvYWgtSGFydG1hbiA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5v
+cmc+DQo+IENjOiBzdGFibGUgPHN0YWJsZUB2Z2VyLmtlcm5lbC5vcmc+DQo+IC0tLQ0KPiANCj4g
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0gTk9URSA9PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PQ0KPiANCj4gQ291bGQgeW91IHRlc3QgeW91ciB1c2UtY2FzZSBhdCBCYWlkdSwgZ3V5
+cywgcGxlYXNlPw0KPiANCg0KU29ycnksIHdlIGhhdmUgbm90IHRoZSBlbnZpcm9ubWVudCB0byB0
+ZXN0IGl0LCBpdCBoYXBwZW5zIHdoZW4gd2UgdXBncmFkZXMgQk1DDQoNCi1Sb25nUWluZw0KDQo=
