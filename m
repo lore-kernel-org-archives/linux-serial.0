@@ -1,69 +1,54 @@
-From: lei liu <leilk.liu@mediatek.com>
-Subject: Re: [PATCH 19/24] dt-bindings: spi: spi-mt65xx: add support for
- MT8516
-Date: Thu, 18 Apr 2019 16:18:07 +0800
-Message-ID: <1555575487.7441.6.camel@mhfsdcap03>
-References: <20190323211612.860-1-fparent@baylibre.com>
-         <20190323211612.860-20-fparent@baylibre.com>
-         <5bc3fbfa-6d7e-08d3-116c-a8f78bc680cd@gmail.com>
-         <1555403151.7441.4.camel@mhfsdcap03>
-         <CAOwMV_yKAm1zar6buhe25O56AkAX8e0nXnm4GmqhvHC-yagKfQ@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] serial: 8250_exar: Adjust IOT2000 matching
+Date: Thu, 18 Apr 2019 11:15:04 +0200
+Message-ID: <ac8f8999-44b9-e364-4582-3b0ee735f6a8@siemens.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAOwMV_yKAm1zar6buhe25O56AkAX8e0nXnm4GmqhvHC-yagKfQ@mail.gmail.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Fabien Parent <fparent@baylibre.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Mark Brown <broonie@kernel.org>, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, ryder.lee@mediatek.com, linux-watchdog@vger.kernel.org, jjian.zhou@mediatek.com, wenzhen.yu@mediatek.com, Stephane Le Provost <stephane.leprovost@mediatek.com>, sean.wang@kernel.org, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, yong.mao@mediatek.com, linux-spi@vger.kernel.org, linux-gpio@vger.kernel.org, linux-mediatek@lists.infradead.org, hsin-hsiung.wang@mediatek.com, linux-serial@vger.kernel.org, linux-clk@vger.kernel.org, Chaotian Jing <chaotian.jing@mediatek.com>, linux-i2c@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>, Andy Shevchenko <andy.shevchenko@gmail.com>, Su Bao Cheng <baocheng.su@siemens.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 2019-04-18 at 10:05 +0200, Fabien Parent wrote:
-> On Tue, Apr 16, 2019 at 10:25 AM lei liu <leilk.liu@mediatek.com> wrote:
-> >
-> > On Tue, 2019-04-16 at 09:55 +0200, Matthias Brugger wrote:
-> > >
-> > > On 23/03/2019 22:16, Fabien Parent wrote:
-> > > > Add binding documentation of spi-mt65xx for MT8516 SoC.
-> > > >
-> > > > Signed-off-by: Fabien Parent <fparent@baylibre.com>
-> > > > ---
-> > > >  Documentation/devicetree/bindings/spi/spi-mt65xx.txt | 1 +
-> > > >  1 file changed, 1 insertion(+)
-> > > >
-> > >
-> > >
-> > > applied to v5.1-next/dts64
-> > >
-> > > Mark let me know if you want to take it through your tree and I drop the patch.
-> > >
-> > > > diff --git a/Documentation/devicetree/bindings/spi/spi-mt65xx.txt b/Documentation/devicetree/bindings/spi/spi-mt65xx.txt
-> > > > index 69c356767cf8..69ac5976b952 100644
-> > > > --- a/Documentation/devicetree/bindings/spi/spi-mt65xx.txt
-> > > > +++ b/Documentation/devicetree/bindings/spi/spi-mt65xx.txt
-> > > > @@ -10,6 +10,7 @@ Required properties:
-> > > >      - mediatek,mt8135-spi: for mt8135 platforms
-> > > >      - mediatek,mt8173-spi: for mt8173 platforms
-> > > >      - mediatek,mt8183-spi: for mt8183 platforms
-> > > > +    - "mediatek,mt8516-spi", "mediatek,mt2701-spi": for mt8516 platforms
-> > Hi Fabien,
-> > mt8516 SPI design comes from mt2712 and it's different from mt2701. Here
-> > it should compatible with mt2712.
-> 
-> Ok, thanks. I will retry with the mt2712 compatible.
-> 
+From: Su Bao Cheng <baocheng.su@siemens.com>
 
-Hi, I already send mt8516 spi patch and it's applied by Mark. Please
-don't do it again. Thanks.
+Since there are more IOT2040 variants with identical hardware but
+different asset tags, the asset tag matching should be adjusted to
+support them.
 
-> > > >
-> > > >  - #address-cells: should be 1.
-> > > >
-> > > >
-> > >
-> > > _______________________________________________
-> > > Linux-mediatek mailing list
-> > > Linux-mediatek@lists.infradead.org
-> > > http://lists.infradead.org/mailman/listinfo/linux-mediatek
-> >
-> >
+As only the IOT2040 variants have the Exar chip on board, matching on
+their board name is enough. In the future there will be no other devices
+with the "SIMATIC IOT2000" DMI board name but different hardware.
+
+Signed-off-by: Su Bao Cheng <baocheng.su@siemens.com>
+Reviewed-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ drivers/tty/serial/8250/8250_exar.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+index 0089aa305ef9..edd6dfe055bf 100644
+--- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -361,12 +361,15 @@ static const struct exar8250_platform iot2040_platform = {
+ 	.register_gpio = iot2040_register_gpio,
+ };
+ 
++/*
++ * For SIMATIC IOT2000, only IOT2040 and its variants have the Exar device,
++ * IOT2020 doesn't have. Therefore it is sufficient to match on the common
++ * board name after the device was found.
++ */
+ static const struct dmi_system_id exar_platforms[] = {
+ 	{
+ 		.matches = {
+ 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "SIMATIC IOT2000"),
+-			DMI_EXACT_MATCH(DMI_BOARD_ASSET_TAG,
+-					"6ES7647-0AA00-1YA2"),
+ 		},
+ 		.driver_data = (void *)&iot2040_platform,
+ 	},
+-- 
+2.16.4
