@@ -1,44 +1,59 @@
-From: "Sugaya, Taichi" <sugaya.taichi@socionext.com>
-Subject: Re: [PATCH] serial: Fix using plain integer instead of Null pointer
-Date: Thu, 18 Apr 2019 16:10:59 +0900
-Message-ID: <85e1a238-aa87-ad56-3703-9556f0aa3613@socionext.com>
-References: <1555568485-6421-1-git-send-email-sugaya.taichi@socionext.com>
- <20190418064045.GA12503@kroah.com>
+From: Fabien Parent <fparent@baylibre.com>
+Subject: Re: [PATCH 19/24] dt-bindings: spi: spi-mt65xx: add support for MT8516
+Date: Thu, 18 Apr 2019 10:05:13 +0200
+Message-ID: <CAOwMV_yKAm1zar6buhe25O56AkAX8e0nXnm4GmqhvHC-yagKfQ@mail.gmail.com>
+References: <20190323211612.860-1-fparent@baylibre.com> <20190323211612.860-20-fparent@baylibre.com>
+ <5bc3fbfa-6d7e-08d3-116c-a8f78bc680cd@gmail.com> <1555403151.7441.4.camel@mhfsdcap03>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190418064045.GA12503@kroah.com>
-Content-Language: en-US
+In-Reply-To: <1555403151.7441.4.camel@mhfsdcap03>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Arnd Bergmann <arnd@arndb.de>, Takao Orito <orito.takao@socionext.com>, Kazuhiro Kasai <kasai.kazuhiro@socionext.com>, Shinji Kanematsu <kanematsu.shinji@socionext.com>, Jassi Brar <jaswinder.singh@linaro.org>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: lei liu <leilk.liu@mediatek.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Mark Brown <broonie@kernel.org>, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, ryder.lee@mediatek.com, linux-watchdog@vger.kernel.org, jjian.zhou@mediatek.com, wenzhen.yu@mediatek.com, Stephane Le Provost <stephane.leprovost@mediatek.com>, sean.wang@kernel.org, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, yong.mao@mediatek.com, linux-spi@vger.kernel.org, linux-gpio@vger.kernel.org, linux-mediatek@lists.infradead.org, hsin-hsiung.wang@mediatek.com, linux-serial@vger.kernel.org, linux-clk@vger.kernel.org, Chaotian Jing <chaotian.jing@mediatek.com>, linux-i2c@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+On Tue, Apr 16, 2019 at 10:25 AM lei liu <leilk.liu@mediatek.com> wrote:
+>
+> On Tue, 2019-04-16 at 09:55 +0200, Matthias Brugger wrote:
+> >
+> > On 23/03/2019 22:16, Fabien Parent wrote:
+> > > Add binding documentation of spi-mt65xx for MT8516 SoC.
+> > >
+> > > Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> > > ---
+> > >  Documentation/devicetree/bindings/spi/spi-mt65xx.txt | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > >
+> >
+> >
+> > applied to v5.1-next/dts64
+> >
+> > Mark let me know if you want to take it through your tree and I drop the patch.
+> >
+> > > diff --git a/Documentation/devicetree/bindings/spi/spi-mt65xx.txt b/Documentation/devicetree/bindings/spi/spi-mt65xx.txt
+> > > index 69c356767cf8..69ac5976b952 100644
+> > > --- a/Documentation/devicetree/bindings/spi/spi-mt65xx.txt
+> > > +++ b/Documentation/devicetree/bindings/spi/spi-mt65xx.txt
+> > > @@ -10,6 +10,7 @@ Required properties:
+> > >      - mediatek,mt8135-spi: for mt8135 platforms
+> > >      - mediatek,mt8173-spi: for mt8173 platforms
+> > >      - mediatek,mt8183-spi: for mt8183 platforms
+> > > +    - "mediatek,mt8516-spi", "mediatek,mt2701-spi": for mt8516 platforms
+> Hi Fabien,
+> mt8516 SPI design comes from mt2712 and it's different from mt2701. Here
+> it should compatible with mt2712.
 
-On 2019/04/18 15:40, Greg Kroah-Hartman wrote:
-> On Thu, Apr 18, 2019 at 03:21:25PM +0900, Sugaya Taichi wrote:
->> Fix build warning that using plain integer as Null pointer.
->> This is reported by kbuild test robot.
->>
->> Fixes: ba44dc043004 ("serial: Add Milbeaut serial control")
->> Signed-off-by: Sugaya Taichi <sugaya.taichi@socionext.com>
->> ---
->>   drivers/tty/serial/milbeaut_usio.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> Using a "Reported-by:" tag is usually a good idea.  I'll add it when I
-> apply the patch, but for next time can you please add it?
-> 
+Ok, thanks. I will retry with the mt2712 compatible.
 
-Yes, of course!
-I will add the tag in the next chance.
-
-Thanks a lot!
-Sugaya Taichi
-
-> thanks,
-> 
-> greg k-h
-> 
+> > >
+> > >  - #address-cells: should be 1.
+> > >
+> > >
+> >
+> > _______________________________________________
+> > Linux-mediatek mailing list
+> > Linux-mediatek@lists.infradead.org
+> > http://lists.infradead.org/mailman/listinfo/linux-mediatek
+>
+>
