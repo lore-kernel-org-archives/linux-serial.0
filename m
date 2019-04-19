@@ -1,113 +1,59 @@
-From: Atish Patra <atish.patra@wdc.com>
-Subject: Re: [PATCH v5 0/2] tty: serial: add DT bindings and serial driver for
- the SiFive FU540 UART
-Date: Thu, 18 Apr 2019 18:04:34 -0700
-Message-ID: <883f3d5f-9b04-1435-30d3-2b48ab7eb76d@wdc.com>
-References: <20190413020111.23400-1-paul.walmsley@sifive.com>
- <7hmukmew5j.fsf@baylibre.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial fixes for 5.1-rc6
+Date: Fri, 19 Apr 2019 21:17:03 +0200
+Message-ID: <20190419191703.GA4077@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
-In-Reply-To: <7hmukmew5j.fsf@baylibre.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
-To: Kevin Hilman <khilman@baylibre.com>, Paul Walmsley <paul.walmsley@sifive.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 4/18/19 4:22 PM, Kevin Hilman wrote:
-> Hi Paul,
-> 
-> Paul Walmsley <paul.walmsley@sifive.com> writes:
-> 
->> This series adds a serial driver, with console support, for the
->> UART IP block present on the SiFive FU540 SoC.  The programming
->> model is straightforward, but unique.
->>
->> Boot-tested on a SiFive FU540 HiFive-U board, using BBL and the
->> open-source FSBL (with appropriate patches to the DT data).
->>
->> This fifth version fixes a bug in the set_termios handler,
->> found by Andreas Schwab <schwab@suse.de>.
->>
->> The patches in this series can also be found, with the PRCI patches,
->> DT patches, and DT prerequisite patch, at:
->>
->> https://github.com/sifive/riscv-linux/tree/dev/paulw/serial-v5.1-rc4
-> 
-> I tried this branch, and it doesn't boot on my unleashed board.
-> 
-> Here's the boot log when I pass the DT built from your branch via
-> u-boot: https://termbin.com/rfp3.
-> 
+The following changes since commit 79a3aaa7b82e3106be97842dedfd8429248896e6:
 
-Unfortunately, that won't work. The current DT modifications by OpenSBI.
+  Linux 5.1-rc3 (2019-03-31 14:39:29 -0700)
 
-1. Change hart status to "masked" from "okay".
-2. M-mode interrupt masking in PLIC node.
-3. Add a chosen node for serial access in U-Boot.
+are available in the Git repository at:
 
-You can ignore 3 for your use case. However, if you pass a dtb built 
-from source code, that will have hart0 enabled and M-mode interrupts 
-enabled in DT.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.1-rc6
 
-Not sure if we should do these DT modifications in U-Boot as well.
+for you to fetch changes up to c53051128bb0e8754e13345d782ca69e5e1ce36d:
 
-I also noticed that your kernel is booting only 1 hart.
-Just FYI: RISC-V SMP for U-Boot patches are merged in master. So you 
-should be able to boot all cpus. You can ingore FU540_ENABLED_HART_MASK 
-in OpenSBI build as well.
+  sc16is7xx: put err_spi and err_i2c into correct #ifdef (2019-04-19 14:09:23 +0200)
 
-Regards,
-Atish
-> I also tried the same thing, but using the DT that's hard-coded into
-> SBI/u-boot.  That doesn't boot fully either[1], but one thing I noted is
-> that with the DT from the kernel tree, the printk timestamps aren't
-> moving.  Maybe I'm still missing some kconfig options to enable the
-> right clock and/or IRQ controllers? I'm using this fragment[2] on top of
-> the default defconfig (arch/riscv/configs/defconfig).
-> 
-> Could you share the defconfig you're using when testing your branch?
-> 
-> Also for reference, I'm able to successfully build/boot the
-> 5.1-rc1-unleashed branch from Atish's tree[3] using that kconfig
-> fragment[2] (and the hard-coded DT from u-boot/SBI).  Full log here[4].
-> 
-> Thanks,
-> 
-> Kevin
-> 
-> [1] https://termbin.com/wuc9
-> [2]
-> CONFIG_CLK_SIFIVE=y
-> CONFIG_CLK_SIFIVE_FU540_PRCI=y
-> 
-> CONFIG_SERIAL_SIFIVE=y
-> CONFIG_SERIAL_SIFIVE_CONSOLE=y
-> 
-> CONFIG_SIFIVE_PLIC=y
-> CONFIG_SPI=y
-> CONFIG_SPI_SIFIVE=y
-> CONFIG_GPIOLIB=y
-> CONFIG_GPIO_SIFIVE=y
-> CONFIG_PWM_SIFIVE=y
-> 
-> CONFIG_CLK_U54_PRCI=y
-> CONFIG_CLK_GEMGXL_MGMT=y
-> 
-> [3] https://github.com/atishp04/linux/tree/5.1-rc1-unleashed
-> [4] https://termbin.com/12bg
-> 
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
-> 
+----------------------------------------------------------------
+TTY/Serial fixes for 5.1-rc6
+
+Here are 5 small fixes for some tty/serial/vt issues that have been
+reported.
+
+The vt one has been around for a while, it is good to finally get that
+resolved.  The others fix a build warning that showed up in 5.1-rc1, and
+resolve a problem in the sh-sci driver.
+
+Note, the second patch for build warning fix for the sc16is7xx driver
+was just applied to the tree, as it resolves a problem with the previous
+patch to try to solve the issue.  It has not shown up in linux-next yet,
+unlike all of the other patches, but it has passed 0-day testing and
+everyone seems to agree that it is correct.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Geert Uytterhoeven (2):
+      serial: sh-sci: Fix HSCIF RX sampling point calculation
+      serial: sh-sci: Fix HSCIF RX sampling point adjustment
+
+Guoqing Jiang (2):
+      sc16is7xx: move label 'err_spi' to correct section
+      sc16is7xx: put err_spi and err_i2c into correct #ifdef
+
+Mikulas Patocka (1):
+      vt: fix cursor when clearing the screen
+
+ drivers/tty/serial/sc16is7xx.c | 4 +++-
+ drivers/tty/serial/sh-sci.c    | 6 ++++--
+ drivers/tty/vt/vt.c            | 3 ++-
+ 3 files changed, 9 insertions(+), 4 deletions(-)
