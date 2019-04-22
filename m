@@ -1,14 +1,14 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 08/43] serial: ar933x_uart: Fix build failure with disabled console
-Date: Mon, 22 Apr 2019 15:46:52 -0400
-Message-ID: <20190422194727.12495-8-sashal@kernel.org>
-References: <20190422194727.12495-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 17/68] serial: ar933x_uart: Fix build failure with disabled console
+Date: Mon, 22 Apr 2019 15:44:25 -0400
+Message-ID: <20190422194516.11634-17-sashal@kernel.org>
+References: <20190422194516.11634-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20190422194727.12495-1-sashal@kernel.org>
-Sender: stable-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190422194516.11634-1-sashal@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andrey Batyiev <batyiev@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
@@ -44,10 +44,10 @@ Signed-off-by: Sasha Levin (Microsoft) <sashal@kernel.org>
  1 file changed, 8 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/tty/serial/ar933x_uart.c b/drivers/tty/serial/ar933x_uart.c
-index decc7f3c1ab2..ed545a61413c 100644
+index db5df3d54818..3bdd56a1021b 100644
 --- a/drivers/tty/serial/ar933x_uart.c
 +++ b/drivers/tty/serial/ar933x_uart.c
-@@ -52,11 +52,6 @@ struct ar933x_uart_port {
+@@ -49,11 +49,6 @@ struct ar933x_uart_port {
  	struct clk		*clk;
  };
  
@@ -59,7 +59,7 @@ index decc7f3c1ab2..ed545a61413c 100644
  static inline unsigned int ar933x_uart_read(struct ar933x_uart_port *up,
  					    int offset)
  {
-@@ -511,6 +506,7 @@ static const struct uart_ops ar933x_uart_ops = {
+@@ -508,6 +503,7 @@ static const struct uart_ops ar933x_uart_ops = {
  	.verify_port	= ar933x_uart_verify_port,
  };
  
@@ -67,7 +67,7 @@ index decc7f3c1ab2..ed545a61413c 100644
  static struct ar933x_uart_port *
  ar933x_console_ports[CONFIG_SERIAL_AR933X_NR_UARTS];
  
-@@ -607,14 +603,7 @@ static struct console ar933x_uart_console = {
+@@ -604,14 +600,7 @@ static struct console ar933x_uart_console = {
  	.index		= -1,
  	.data		= &ar933x_uart_driver,
  };
@@ -83,7 +83,7 @@ index decc7f3c1ab2..ed545a61413c 100644
  
  static struct uart_driver ar933x_uart_driver = {
  	.owner		= THIS_MODULE,
-@@ -703,7 +692,9 @@ static int ar933x_uart_probe(struct platform_device *pdev)
+@@ -700,7 +689,9 @@ static int ar933x_uart_probe(struct platform_device *pdev)
  	baud = ar933x_uart_get_baud(port->uartclk, 0, AR933X_UART_MAX_STEP);
  	up->max_baud = min_t(unsigned int, baud, AR933X_UART_MAX_BAUD);
  
@@ -94,7 +94,7 @@ index decc7f3c1ab2..ed545a61413c 100644
  
  	ret = uart_add_one_port(&ar933x_uart_driver, &up->port);
  	if (ret)
-@@ -752,8 +743,9 @@ static int __init ar933x_uart_init(void)
+@@ -749,8 +740,9 @@ static int __init ar933x_uart_init(void)
  {
  	int ret;
  
