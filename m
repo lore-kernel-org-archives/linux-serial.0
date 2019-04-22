@@ -1,12 +1,12 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.0 23/98] sc16is7xx: missing unregister/delete driver on error in sc16is7xx_init()
-Date: Mon, 22 Apr 2019 15:40:50 -0400
-Message-ID: <20190422194205.10404-23-sashal@kernel.org>
-References: <20190422194205.10404-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 07/43] sc16is7xx: missing unregister/delete driver on error in sc16is7xx_init()
+Date: Mon, 22 Apr 2019 15:46:51 -0400
+Message-ID: <20190422194727.12495-7-sashal@kernel.org>
+References: <20190422194727.12495-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190422194205.10404-1-sashal@kernel.org>
+In-Reply-To: <20190422194727.12495-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Mao Wenan <maowenan@huawei.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
@@ -28,10 +28,10 @@ Signed-off-by: Sasha Levin (Microsoft) <sashal@kernel.org>
  1 file changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 268098681856..114e94f476c6 100644
+index a79f18edf2bd..e48523da47ac 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1509,7 +1509,7 @@ static int __init sc16is7xx_init(void)
+@@ -1483,7 +1483,7 @@ static int __init sc16is7xx_init(void)
  	ret = i2c_add_driver(&sc16is7xx_i2c_uart_driver);
  	if (ret < 0) {
  		pr_err("failed to init sc16is7xx i2c --> %d\n", ret);
@@ -40,7 +40,7 @@ index 268098681856..114e94f476c6 100644
  	}
  #endif
  
-@@ -1517,10 +1517,18 @@ static int __init sc16is7xx_init(void)
+@@ -1491,10 +1491,18 @@ static int __init sc16is7xx_init(void)
  	ret = spi_register_driver(&sc16is7xx_spi_uart_driver);
  	if (ret < 0) {
  		pr_err("failed to init sc16is7xx spi --> %d\n", ret);
