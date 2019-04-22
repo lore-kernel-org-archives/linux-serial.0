@@ -1,64 +1,110 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 07/43] sc16is7xx: missing unregister/delete driver on error in sc16is7xx_init()
-Date: Mon, 22 Apr 2019 15:46:51 -0400
-Message-ID: <20190422194727.12495-7-sashal@kernel.org>
-References: <20190422194727.12495-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 07/29] serial: ar933x_uart: Fix build failure with disabled console
+Date: Mon, 22 Apr 2019 15:48:26 -0400
+Message-ID: <20190422194848.13049-7-sashal@kernel.org>
+References: <20190422194848.13049-1-sashal@kernel.org>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190422194727.12495-1-sashal@kernel.org>
+In-Reply-To: <20190422194848.13049-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Mao Wenan <maowenan@huawei.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Cc: =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andrey Batyiev <batyiev@gmail.com>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Mao Wenan <maowenan@huawei.com>
+From: Petr Štetiar <ynezz@true.cz>
 
-[ Upstream commit ac0cdb3d990108df795b676cd0d0e65ac34b2273 ]
+[ Upstream commit 72ff51d8dd262d1fef25baedc2ac35116435be47 ]
 
-Add the missing uart_unregister_driver() and i2c_del_driver() before return
-from sc16is7xx_init() in the error handling case.
+Andrey has reported on OpenWrt's bug tracking system[1], that he
+currently can't use ar93xx_uart as pure serial UART without console
+(CONFIG_SERIAL_8250_CONSOLE and CONFIG_SERIAL_AR933X_CONSOLE undefined),
+because compilation ends with following error:
 
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
-Reviewed-by: Vladimir Zapolskiy <vz@mleia.com>
+ ar933x_uart.c: In function 'ar933x_uart_console_write':
+ ar933x_uart.c:550:14: error: 'struct uart_port' has no
+                               member named 'sysrq'
+
+So this patch moves all the code related to console handling behind
+series of CONFIG_SERIAL_AR933X_CONSOLE ifdefs.
+
+1. https://bugs.openwrt.org/index.php?do=details&task_id=2152
+
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Andrey Batyiev <batyiev@gmail.com>
+Reported-by: Andrey Batyiev <batyiev@gmail.com>
+Tested-by: Andrey Batyiev <batyiev@gmail.com>
+Signed-off-by: Petr Štetiar <ynezz@true.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin (Microsoft) <sashal@kernel.org>
 ---
- drivers/tty/serial/sc16is7xx.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/tty/serial/ar933x_uart.c | 24 ++++++++----------------
+ 1 file changed, 8 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index a79f18edf2bd..e48523da47ac 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1483,7 +1483,7 @@ static int __init sc16is7xx_init(void)
- 	ret = i2c_add_driver(&sc16is7xx_i2c_uart_driver);
- 	if (ret < 0) {
- 		pr_err("failed to init sc16is7xx i2c --> %d\n", ret);
--		return ret;
-+		goto err_i2c;
- 	}
- #endif
+diff --git a/drivers/tty/serial/ar933x_uart.c b/drivers/tty/serial/ar933x_uart.c
+index 73137f4aac20..d4462512605b 100644
+--- a/drivers/tty/serial/ar933x_uart.c
++++ b/drivers/tty/serial/ar933x_uart.c
+@@ -52,11 +52,6 @@ struct ar933x_uart_port {
+ 	struct clk		*clk;
+ };
  
-@@ -1491,10 +1491,18 @@ static int __init sc16is7xx_init(void)
- 	ret = spi_register_driver(&sc16is7xx_spi_uart_driver);
- 	if (ret < 0) {
- 		pr_err("failed to init sc16is7xx spi --> %d\n", ret);
--		return ret;
-+		goto err_spi;
- 	}
- #endif
- 	return ret;
-+
-+err_spi:
-+#ifdef CONFIG_SERIAL_SC16IS7XX_I2C
-+	i2c_del_driver(&sc16is7xx_i2c_uart_driver);
+-static inline bool ar933x_uart_console_enabled(void)
+-{
+-	return IS_ENABLED(CONFIG_SERIAL_AR933X_CONSOLE);
+-}
+-
+ static inline unsigned int ar933x_uart_read(struct ar933x_uart_port *up,
+ 					    int offset)
+ {
+@@ -511,6 +506,7 @@ static struct uart_ops ar933x_uart_ops = {
+ 	.verify_port	= ar933x_uart_verify_port,
+ };
+ 
++#ifdef CONFIG_SERIAL_AR933X_CONSOLE
+ static struct ar933x_uart_port *
+ ar933x_console_ports[CONFIG_SERIAL_AR933X_NR_UARTS];
+ 
+@@ -607,14 +603,7 @@ static struct console ar933x_uart_console = {
+ 	.index		= -1,
+ 	.data		= &ar933x_uart_driver,
+ };
+-
+-static void ar933x_uart_add_console_port(struct ar933x_uart_port *up)
+-{
+-	if (!ar933x_uart_console_enabled())
+-		return;
+-
+-	ar933x_console_ports[up->port.line] = up;
+-}
++#endif /* CONFIG_SERIAL_AR933X_CONSOLE */
+ 
+ static struct uart_driver ar933x_uart_driver = {
+ 	.owner		= THIS_MODULE,
+@@ -703,7 +692,9 @@ static int ar933x_uart_probe(struct platform_device *pdev)
+ 	baud = ar933x_uart_get_baud(port->uartclk, 0, AR933X_UART_MAX_STEP);
+ 	up->max_baud = min_t(unsigned int, baud, AR933X_UART_MAX_BAUD);
+ 
+-	ar933x_uart_add_console_port(up);
++#ifdef CONFIG_SERIAL_AR933X_CONSOLE
++	ar933x_console_ports[up->port.line] = up;
 +#endif
-+err_i2c:
-+	uart_unregister_driver(&sc16is7xx_uart);
-+	return ret;
- }
- module_init(sc16is7xx_init);
  
+ 	ret = uart_add_one_port(&ar933x_uart_driver, &up->port);
+ 	if (ret)
+@@ -752,8 +743,9 @@ static int __init ar933x_uart_init(void)
+ {
+ 	int ret;
+ 
+-	if (ar933x_uart_console_enabled())
+-		ar933x_uart_driver.cons = &ar933x_uart_console;
++#ifdef CONFIG_SERIAL_AR933X_CONSOLE
++	ar933x_uart_driver.cons = &ar933x_uart_console;
++#endif
+ 
+ 	ret = uart_register_driver(&ar933x_uart_driver);
+ 	if (ret)
 -- 
 2.19.1
