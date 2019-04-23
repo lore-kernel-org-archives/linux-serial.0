@@ -1,64 +1,127 @@
-From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 16/68] sc16is7xx: missing unregister/delete driver on error in sc16is7xx_init()
-Date: Mon, 22 Apr 2019 15:44:24 -0400
-Message-ID: <20190422194516.11634-16-sashal@kernel.org>
-References: <20190422194516.11634-1-sashal@kernel.org>
+From: Paul Walmsley <paul.walmsley@sifive.com>
+Subject: Testing the recent RISC-V DT patchsets
+Date: Mon, 22 Apr 2019 17:17:43 -0700 (PDT)
+Message-ID: <alpine.DEB.2.21.9999.1904221705170.18377@viisi.sifive.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20190422194516.11634-1-sashal@kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Mao Wenan <maowenan@huawei.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: khilman@baylibre.com
 List-Id: linux-serial@vger.kernel.org
 
-From: Mao Wenan <maowenan@huawei.com>
 
-[ Upstream commit ac0cdb3d990108df795b676cd0d0e65ac34b2273 ]
+I've heard from two separate people who have had trouble getting started 
+with BBL & open-source FSBL test flows with arbitrary DT files on the 
+Freedom Unleashed board.  The following instructions should help get 
+people started.
 
-Add the missing uart_unregister_driver() and i2c_del_driver() before return
-from sc16is7xx_init() in the error handling case.
+The core issue, aside from general unfamiliarity, is that multiple parts 
+of the pre-kernel software stack try to parse and/or modify the kernel DT.
+We wish to avoid this as much as possible.
 
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
-Reviewed-by: Vladimir Zapolskiy <vz@mleia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin (Microsoft) <sashal@kernel.org>
----
- drivers/tty/serial/sc16is7xx.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+Testing with U-boot and OpenSBI is currently left as an exercise for the 
+reader, for a similar reason and because those ports are still quite new.
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 47b41159a8bc..55b178c1bd65 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1481,7 +1481,7 @@ static int __init sc16is7xx_init(void)
- 	ret = i2c_add_driver(&sc16is7xx_i2c_uart_driver);
- 	if (ret < 0) {
- 		pr_err("failed to init sc16is7xx i2c --> %d\n", ret);
--		return ret;
-+		goto err_i2c;
- 	}
- #endif
- 
-@@ -1489,10 +1489,18 @@ static int __init sc16is7xx_init(void)
- 	ret = spi_register_driver(&sc16is7xx_spi_uart_driver);
- 	if (ret < 0) {
- 		pr_err("failed to init sc16is7xx spi --> %d\n", ret);
--		return ret;
-+		goto err_spi;
- 	}
- #endif
- 	return ret;
-+
-+err_spi:
-+#ifdef CONFIG_SERIAL_SC16IS7XX_I2C
-+	i2c_del_driver(&sc16is7xx_i2c_uart_driver);
-+#endif
-+err_i2c:
-+	uart_unregister_driver(&sc16is7xx_uart);
-+	return ret;
- }
- module_init(sc16is7xx_init);
- 
--- 
-2.19.1
+The following instructions are provided with no warranty whatsoever, and 
+assume knowledge of the shell and Linux.  If implemented carelessly, may 
+trash your filesystems or do other horrible things.
+
+
+- Paul
+
+
+These instructions assume that bare metal and Linux RV64 cross-toolchains 
+are installed.  If not, consider using crosstool-ng with the 
+"riscv64-unknown-elf" and "riscv64-unknown-linux-gnu" experimental sample 
+configurations.  You will need both.
+
+1. Put the location of the temporary build tree into the BASE
+   environment variable, and set up some initial directories:
+   export BASE=~/riscv-test; mkdir -p ${BASE}/work
+
+2. Partition a microSD card with (at least) two GPT partitions.
+   Here is a sample sfdisk dump:
+
+label: gpt
+label-id: 074689DB-0440-411C-91DB-440DFE5BA0B6
+device: /dev/sda
+unit: sectors
+first-lba: 34
+last-lba: 62333918
+
+/dev/sda1 : start=        2048, size=        2048, type=5B193300-FC78-40CD-8002-E86C45580B47, uuid=DEAD9378-45FF-44FB-B2E3-F3FEA45ADC9E, name="fsbl"
+/dev/sda2 : start=        4096, size=       65536, type=2E54B353-1271-4842-806F-E436D6AF6985, uuid=1B48DE68-8004-444D-BA47-AAA8DBEBFA60, name="bbl"
+/dev/sda3 : start=       69632, size=    62264287, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, uuid=D672F1FC-3E45-4CC1-835A-E6384A26C395, name="rootfs"
+
+
+3. Download the open-source FSBL:
+   cd ${BASE}
+   git clone https://github.com/sifive/freedom-u540-c000-bootloader
+
+4. Build the open-source FSBL:
+   cd freedom-u540-c000-bootloader
+   CROSSCOMPILE=/opt/rv64gc-mmu-elf/bin/riscv64-unknown-elf- make
+
+5. Write the open-source FSBL to the first partition of the SD card with
+   something like:
+   sudo dd if=fsbl.bin of=/dev/SD-CARD-DEVICE1 conv=nocreat
+
+6. Copy an initramfs sysroot into ${BASE}/work/buildroot_initramfs_sysroot.
+   A reasonable one to start with is the sysroot built by
+   freedom-u-sdk, in work/buildroot_initramfs_sysroot.
+
+7. Set the CROSS_COMPILE environment variable to point to your
+   cross-compiler, in the Linux kernel form:
+   export CROSS_COMPILE=/opt/rv64gc-mmu-linux-8.2.0/bin/riscv64-unknown-linux-gnu-
+
+8. Put something like this into a script and run it:
+
+if [ ! -d ${BASE} ]; then
+    echo Base build directory must be set in the BASE environment variable
+fi
+if [ ! -x ${CROSS_COMPILE}gcc ]; then
+    echo Path to cross-compiler must be set in the CROSS_COMPILE 
+environment variable
+fi
+
+export ARCH=riscv
+export OBJCOPY=${CROSS_COMPILE}objcopy
+export CC=${CROSS_COMPILE}gcc
+
+CORES=$(getconf _NPROCESSORS_ONLN)
+
+#
+#
+
+cd ${BASE}
+git clone -b dev/paulw/reduce-dt-load-v1 
+https://github.com/sifive/riscv-pk
+git clone -b dev/paulw/dts-v5.1-rc6-experimental 
+https://github.com/sifive/riscv-linux
+
+cd riscv-linux
+make -j${CORES} defconfig dtbs vmlinux
+
+${CROSS_COMPILE}strip -o ${BASE}/work/vmlinux-stripped 
+${BASE}/riscv-linux/vmlinux
+
+rm -rf ${BASE}/work/riscv-pk
+mkdir -p ${BASE}/work/riscv-pk
+cd ${BASE}/work/riscv-pk
+ln -sf 
+${BASE}/riscv-linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00-fu540.dtb 
+${BASE}/riscv-pk/linux.dtb
+${BASE}/riscv-pk/configure \
+	--host=riscv64-unknown-linux-gnu \
+	--enable-print-device-tree --with-payload=../vmlinux-stripped
+CFLAGS="-mabi=lp64d -march=rv64imafdc" make
+
+$OBJCOPY -S -O binary --change-addresses -0x80000000 bbl ../bbl.bin
+
+
+9.  Write ${BASE}/work/bbl.bin to the second partition of your microSD 
+    card with something like:
+    sudo dd if=${BASE}/work/bbl.bin of=/dev/SD-CARD-DEVICE2 bs=64k conv=nocreat
+
+10. Boot the microSD card on your Unleashed board.
