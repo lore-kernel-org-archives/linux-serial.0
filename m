@@ -1,51 +1,50 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH 15/24] dt-bindings: pinctrl: pinctrl-mt65xx: add support
- for MT8516
-Date: Tue, 23 Apr 2019 16:24:44 +0200
-Message-ID: <470d475e-b694-ab6a-5ff7-b5635af629bb@gmail.com>
-References: <20190323211612.860-1-fparent@baylibre.com>
- <20190323211612.860-16-fparent@baylibre.com>
- <CACRpkdZZ6-+MVdK4bOP4SHxQ8uQ8zENcir7DSteHy4g+B5uySQ@mail.gmail.com>
- <b1e4eb6c-0d53-0307-99e4-9fef9e2b33d8@gmail.com>
- <CACRpkdZ8gq+hGRT6EAyP2w9K0jz5RAzWeZ6_UrW+v-BOjd-wbg@mail.gmail.com>
+From: Paul Walmsley <paul.walmsley@sifive.com>
+Subject: Re: [PATCH v5 0/2] tty: serial: add DT bindings and serial driver
+ for the SiFive FU540 UART
+Date: Wed, 24 Apr 2019 11:58:26 -0700 (PDT)
+Message-ID: <alpine.DEB.2.21.9999.1904241157300.10713@viisi.sifive.com>
+References: <20190413020111.23400-1-paul.walmsley@sifive.com> <7hmukmew5j.fsf@baylibre.com> <883f3d5f-9b04-1435-30d3-2b48ab7eb76d@wdc.com> <7h5zr9dcsi.fsf@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CACRpkdZ8gq+hGRT6EAyP2w9K0jz5RAzWeZ6_UrW+v-BOjd-wbg@mail.gmail.com>
-Content-Language: en-US
+In-Reply-To: <7h5zr9dcsi.fsf@baylibre.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Fabien Parent <fparent@baylibre.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Sean Wang <sean.wang@kernel.org>, Ryder Lee <ryder.lee@mediatek.com>, hsin-hsiung.wang@mediatek.com, wenzhen.yu@mediatek.com, Chaotian Jing <chaotian.jing@mediatek.com>, Yong Mao <yong.mao@mediatek.com>, jjian.zhou@mediatek.com, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-i2c@vger.kernel.org, Linux ARM <linux-arm-kernel@lists.infradead.org>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>, linux-mmc <linux-mmc@vger.kernel.org>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, linux-serial@
+To: Kevin Hilman <khilman@baylibre.com>
+Cc: Atish Patra <atish.patra@wdc.com>, Paul Walmsley <paul.walmsley@sifive.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
+Hi Kevin,
+
+On Fri, 19 Apr 2019, Kevin Hilman wrote:
+> Atish Patra <atish.patra@wdc.com> writes:
+> > On 4/18/19 4:22 PM, Kevin Hilman wrote:
+> >> Paul Walmsley <paul.walmsley@sifive.com> writes:
+> >> 
+> >>> This series adds a serial driver, with console support, for the
+> >>> UART IP block present on the SiFive FU540 SoC.  The programming
+> >>> model is straightforward, but unique.
+> >>>
+> >>> Boot-tested on a SiFive FU540 HiFive-U board, using BBL and the
+> >>> open-source FSBL (with appropriate patches to the DT data).
+> >>>
+> >>> This fifth version fixes a bug in the set_termios handler,
+> >>> found by Andreas Schwab <schwab@suse.de>.
+> >>>
+> >>> The patches in this series can also be found, with the PRCI patches,
+> >>> DT patches, and DT prerequisite patch, at:
+> >>>
+> >>> https://github.com/sifive/riscv-linux/tree/dev/paulw/serial-v5.1-rc4
+
+...
+
+> I've just updated to u-boot master branch with SMP enabled, and build a
+> new openSBI (also from master branch) with u-boot payload. Using your
+> v5.1-rc4_unleashed branch, I see 4 CPUs booting:
+> https://termbin.com/kg13
+
+Now that the serial driver is working for you, care to send a Tested-by: ?
 
 
-On 23/04/2019 13:01, Linus Walleij wrote:
-> On Tue, Apr 16, 2019 at 11:12 AM Matthias Brugger
-> <matthias.bgg@gmail.com> wrote:
-> 
->> Hi Linus,
->>
->> On 08/04/2019 22:44, Linus Walleij wrote:
->>> On Sat, Mar 23, 2019 at 10:17 PM Fabien Parent <fparent@baylibre.com> wrote:
->>>
->>>> Add binding documentation of pinctrl-mt65xx for MT8516 SoC.
->>>>
->>>> Signed-off-by: Fabien Parent <fparent@baylibre.com>
->>>
->>> Patch applied with Rob's ACK.
->>>
->>
->> I don't see this in your for-next branch. Did the patch got lost?
-> 
-> I usually push the devel branch to be tested by the build robots
-> and then mix down the for-next branch.
-> 
-> Recent week(s) the build robot was not responding so it got delayed.
-> 
+thanks,
 
-I don't see it in the devel branch [1]. Can you please double check?
-
-[1]
-https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git/log/?h=devel
+- Paul
