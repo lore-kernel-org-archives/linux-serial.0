@@ -1,177 +1,103 @@
-From: Long Cheng <long.cheng@mediatek.com>
-Subject: Re: [PATCH 1/2] serial: 8250-mtk: add follow control
-Date: Fri, 26 Apr 2019 13:22:04 +0800
-Message-ID: <1556256124.14150.22.camel@mhfsdcap03>
-References: <1556181691-10293-1-git-send-email-long.cheng@mediatek.com>
-         <1556181691-10293-2-git-send-email-long.cheng@mediatek.com>
-         <a43c54c4-e0bc-f9c7-9228-58938058c3b7@gmail.com>
+From: Esben Haabendal <esben@geanix.com>
+Subject: [PATCH 1/2] serial: 8250: Allow port registration without UPF_BOOT_AUTOCONF
+Date: Fri, 26 Apr 2019 10:36:56 +0200
+Message-ID: <20190426083657.5544-1-esben@geanix.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <a43c54c4-e0bc-f9c7-9228-58938058c3b7@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "Gustavo A. R. Silva" <gustavo@embeddedor.com>, Peter Shih <pihsun@chromium.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>, Zhenbao Liu <zhenbao.liu@mediatek.com>, Changqi Hu <changqi.hu@mediatek.com>
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, He Zhe <zhe.he@windriver.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 2019-04-25 at 12:40 +0200, Matthias Brugger wrote:
-> 
-> On 25/04/2019 10:41, Long Cheng wrote:
-> > Add SW and HW follow control function.
-> 
-> Can you please explain a bit more what you are doing in this patch.
-> You change the setting of the registers for different baud rates. Please
-> elaborate what is happening there.
-> 
-Clock source is different. Sometimes, baudrate is greater than or equal
-to 115200, we use highspeed of 3 algorithm and fractional divider to
-ensure more accurate baudrate.
+With serial8250_register_8250_port() forcing UPF_BOOT_AUTOCONF bit on, it
+is not possible to register a port without having
+serial8250_request_std_resource() called.
 
-Next release version, I will update this to commit message
+For adding a 8250 port to an MFD device, this is problematic, as the
+request_mem_region() call will fail, as the MFD device (and rightly  so)
+has requested the region.  For this case, the 8250 port should accept
+having passed mapbase and membase, and just use that.
 
-> > 
-> > Signed-off-by: Long Cheng <long.cheng@mediatek.com>
-> > ---
-> >  drivers/tty/serial/8250/8250_mtk.c |   60 ++++++++++++++++++++++--------------
-> >  1 file changed, 37 insertions(+), 23 deletions(-)
-> > 
-> > diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-> > index c1fdbc0..959fd85 100644
-> > --- a/drivers/tty/serial/8250/8250_mtk.c
-> > +++ b/drivers/tty/serial/8250/8250_mtk.c
-> > @@ -21,12 +21,14 @@
-> >  
-> >  #include "8250.h"
-> >  
-> > -#define UART_MTK_HIGHS		0x09	/* Highspeed register */
-> > -#define UART_MTK_SAMPLE_COUNT	0x0a	/* Sample count register */
-> > -#define UART_MTK_SAMPLE_POINT	0x0b	/* Sample point register */
-> > +#define MTK_UART_HIGHS		0x09	/* Highspeed register */
-> > +#define MTK_UART_SAMPLE_COUNT	0x0a	/* Sample count register */
-> > +#define MTK_UART_SAMPLE_POINT	0x0b	/* Sample point register */
-> 
-> Rename looks good to me. But I'd prefer to have it in a separate patch.
-> 
-OK.
+Signed-off-by: Esben Haabendal <esben@geanix.com>
+---
+ drivers/tty/serial/8250/8250_core.c | 36 +++++++++++++++++++++---------------
+ include/linux/serial_8250.h         |  2 ++
+ 2 files changed, 23 insertions(+), 15 deletions(-)
 
-> >  #define MTK_UART_RATE_FIX	0x0d	/* UART Rate Fix Register */
-> > -
-> >  #define MTK_UART_DMA_EN		0x13	/* DMA Enable register */
-> > +#define MTK_UART_RXTRI_AD	0x14	/* RX Trigger address */
-> > +#define MTK_UART_FRACDIV_L	0x15	/* Fractional divider LSB address */
-> > +#define MTK_UART_FRACDIV_M	0x16	/* Fractional divider MSB address */
-> >  #define MTK_UART_DMA_EN_TX	0x2
-> >  #define MTK_UART_DMA_EN_RX	0x5
-> >  
-> > @@ -46,6 +48,7 @@ enum dma_rx_status {
-> >  struct mtk8250_data {
-> >  	int			line;
-> >  	unsigned int		rx_pos;
-> > +	unsigned int		clk_count;
-> 
-> What is that for, not used in this patch.
-> 
-It's for other patch. Sorry, I will remove it.
-
-> >  	struct clk		*uart_clk;
-> >  	struct clk		*bus_clk;
-> >  	struct uart_8250_dma	*dma;
-> > @@ -196,9 +199,15 @@ static void mtk8250_shutdown(struct uart_port *port)
-> >  mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
-> >  			struct ktermios *old)
-> >  {
-> > +	unsigned short fraction_L_mapping[] = {
-> > +		0, 1, 0x5, 0x15, 0x55, 0x57, 0x57, 0x77, 0x7F, 0xFF, 0xFF
-> > +	};
-> > +	unsigned short fraction_M_mapping[] = {
-> > +		0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 3
-> > +	};
-> >  	struct uart_8250_port *up = up_to_u8250p(port);
-> > +	unsigned int baud, quot, fraction;
-> >  	unsigned long flags;
-> > -	unsigned int baud, quot;
-> >  
-> >  #ifdef CONFIG_SERIAL_8250_DMA
-> >  	if (up->dma) {
-> > @@ -214,7 +223,7 @@ static void mtk8250_shutdown(struct uart_port *port)
-> >  	serial8250_do_set_termios(port, termios, old);
-> >  
-> >  	/*
-> > -	 * Mediatek UARTs use an extra highspeed register (UART_MTK_HIGHS)
-> > +	 * Mediatek UARTs use an extra highspeed register (MTK_UART_HIGHS)
-> >  	 *
-> >  	 * We need to recalcualte the quot register, as the claculation depends
-> >  	 * on the vaule in the highspeed register.
-> > @@ -230,18 +239,11 @@ static void mtk8250_shutdown(struct uart_port *port)
-> >  				  port->uartclk / 16 / UART_DIV_MAX,
-> >  				  port->uartclk);
-> >  
-> > -	if (baud <= 115200) {
-> > -		serial_port_out(port, UART_MTK_HIGHS, 0x0);
-> > +	if (baud < 115200) {
-> > +		serial_port_out(port, MTK_UART_HIGHS, 0x0);
-> >  		quot = uart_get_divisor(port, baud);
-> > -	} else if (baud <= 576000) {
-> > -		serial_port_out(port, UART_MTK_HIGHS, 0x2);
-> > -
-> > -		/* Set to next lower baudrate supported */
-> > -		if ((baud == 500000) || (baud == 576000))
-> > -			baud = 460800;
-> > -		quot = DIV_ROUND_UP(port->uartclk, 4 * baud);
-> 
-> So we allow now also these baud rates? Then you have to update the comment as well.
-> 
-Yes.
-
-When clock source is different, data sometimes is error by the previous
-algorithm. It's not good. So we update new method to fix the issue.
-
-
-> Regards,
-> Matthias
-> 
-> >  	} else {
-> > -		serial_port_out(port, UART_MTK_HIGHS, 0x3);
-> > +		serial_port_out(port, MTK_UART_HIGHS, 0x3);
-> >  		quot = DIV_ROUND_UP(port->uartclk, 256 * baud);
-> >  	}
-> >  
-> > @@ -258,17 +260,29 @@ static void mtk8250_shutdown(struct uart_port *port)
-> >  	/* reset DLAB */
-> >  	serial_port_out(port, UART_LCR, up->lcr);
-> >  
-> > -	if (baud > 460800) {
-> > +	if (baud >= 115200) {
-> >  		unsigned int tmp;
-> >  
-> > -		tmp = DIV_ROUND_CLOSEST(port->uartclk, quot * baud);
-> > -		serial_port_out(port, UART_MTK_SAMPLE_COUNT, tmp - 1);
-> > -		serial_port_out(port, UART_MTK_SAMPLE_POINT,
-> > -					(tmp - 2) >> 1);
-> > +		tmp = (port->uartclk / (baud *  quot)) - 1;
-> > +		serial_port_out(port, MTK_UART_SAMPLE_COUNT, tmp);
-> > +		serial_port_out(port, MTK_UART_SAMPLE_POINT,
-> > +					(tmp >> 1) - 1);
-> > +
-> > +		/*count fraction to set fractoin register */
-> > +		fraction = ((port->uartclk  * 100) / baud / quot) % 100;
-> > +		fraction = DIV_ROUND_CLOSEST(fraction, 10);
-> > +		serial_port_out(port, MTK_UART_FRACDIV_L,
-> > +						fraction_L_mapping[fraction]);
-> > +		serial_port_out(port, MTK_UART_FRACDIV_M,
-> > +						fraction_M_mapping[fraction]);
-> >  	} else {
-> > -		serial_port_out(port, UART_MTK_SAMPLE_COUNT, 0x00);
-> > -		serial_port_out(port, UART_MTK_SAMPLE_POINT, 0xff);
-> > +		serial_port_out(port, MTK_UART_SAMPLE_COUNT, 0x00);
-> > +		serial_port_out(port, MTK_UART_SAMPLE_POINT, 0xff);
-> > +		serial_port_out(port, MTK_UART_FRACDIV_L, 0x00);
-> > +		serial_port_out(port, MTK_UART_FRACDIV_M, 0x00);
-> >  	}
-> > +	if (uart_console(port))
-> > +		up->port.cons->cflag = termios->c_cflag;
-> >  
-> >  	spin_unlock_irqrestore(&port->lock, flags);
-> >  	/* Don't rewrite B0 */
-> > 
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index e441221..ddbb0a0 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -957,20 +957,8 @@ static void serial_8250_overrun_backoff_work(struct work_struct *work)
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ }
+ 
+-/**
+- *	serial8250_register_8250_port - register a serial port
+- *	@up: serial port template
+- *
+- *	Configure the serial port specified by the request. If the
+- *	port exists and is in use, it is hung up and unregistered
+- *	first.
+- *
+- *	The port is then probed and if necessary the IRQ is autodetected
+- *	If this fails an error is returned.
+- *
+- *	On success the port is ready to use and the line number is returned.
+- */
+-int serial8250_register_8250_port(struct uart_8250_port *up)
++int __serial8250_register_8250_port(struct uart_8250_port *up,
++				    unsigned int extra_flags)
+ {
+ 	struct uart_8250_port *uart;
+ 	int ret = -ENOSPC;
+@@ -993,7 +981,7 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+ 		uart->port.fifosize     = up->port.fifosize;
+ 		uart->port.regshift     = up->port.regshift;
+ 		uart->port.iotype       = up->port.iotype;
+-		uart->port.flags        = up->port.flags | UPF_BOOT_AUTOCONF;
++		uart->port.flags        = up->port.flags | extra_flags;
+ 		uart->bugs		= up->bugs;
+ 		uart->port.mapbase      = up->port.mapbase;
+ 		uart->port.mapsize      = up->port.mapsize;
+@@ -1086,6 +1074,24 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+ 
+ 	return ret;
+ }
++
++/**
++ *	serial8250_register_8250_port - register a serial port
++ *	@up: serial port template
++ *
++ *	Configure the serial port specified by the request. If the
++ *	port exists and is in use, it is hung up and unregistered
++ *	first.
++ *
++ *	The port is then probed and if necessary the IRQ is autodetected
++ *	If this fails an error is returned.
++ *
++ *	On success the port is ready to use and the line number is returned.
++ */
++int serial8250_register_8250_port(struct uart_8250_port *up)
++{
++	return __serial8250_register_8250_port(up, UPF_BOOT_AUTOCONF);
++}
+ EXPORT_SYMBOL(serial8250_register_8250_port);
+ 
+ /**
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index 5a655ba..9d1fe2e 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -145,6 +145,8 @@ static inline struct uart_8250_port *up_to_u8250p(struct uart_port *up)
+ 	return container_of(up, struct uart_8250_port, port);
+ }
+ 
++extern int __serial8250_register_8250_port(struct uart_8250_port *,
++					   unsigned int);
+ int serial8250_register_8250_port(struct uart_8250_port *);
+ void serial8250_unregister_port(int line);
+ void serial8250_suspend_port(int line);
+-- 
+2.4.11
