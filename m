@@ -1,62 +1,59 @@
-From: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH v3] serial: Add Milbeaut serial control
-Date: Fri, 26 Apr 2019 19:15:15 +0100
-Message-ID: <20190426191515.757e6015@alans-desktop>
-References: <1555555916-22251-1-git-send-email-sugaya.taichi@socionext.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 1/2] serial: 8250: Allow port registration without
+ UPF_BOOT_AUTOCONF
+Date: Sat, 27 Apr 2019 00:51:03 +0300
+Message-ID: <20190426215103.GD9224@smile.fi.intel.com>
+References: <20190426084038.6377-1-esben@geanix.com>
+ <20190426084038.6377-2-esben@geanix.com>
+ <20190426143946.GX9224@smile.fi.intel.com>
+ <871s1og11u.fsf@haabendal.dk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1555555916-22251-1-git-send-email-sugaya.taichi@socionext.com>
+Content-Disposition: inline
+In-Reply-To: <871s1og11u.fsf@haabendal.dk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sugaya Taichi <sugaya.taichi@socionext.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Arnd Bergmann <arnd@arndb.de>, Takao Orito <orito.takao@socionext.com>, Kazuhiro Kasai <kasai.kazuhiro@socionext.com>, Shinji Kanematsu <kanematsu.shinji@socionext.com>, Jassi Brar <jaswinder.singh@linaro.org>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Esben Haabendal <esben@haabendal.dk>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, He Zhe <zhe.he@windriver.com>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-O
-> +static void mlb_usio_set_termios(struct uart_port *port,
-> +			struct ktermios *termios, struct ktermios *old)
-> +{
-> +	unsigned int escr, smr = MLB_USIO_SMR_SOE;
-> +	unsigned long flags, baud, quot;
-> +
-> +	switch (termios->c_cflag & CSIZE) {
-> +	case CS5:
-> +		escr = MLB_USIO_ESCR_L_5BIT;
-> +		break;
-> +	case CS6:
-> +		escr = MLB_USIO_ESCR_L_6BIT;
-> +		break;
-> +	case CS7:
-> +		escr = MLB_USIO_ESCR_L_7BIT;
-> +		break;
-> +	case CS8:
-> +	default:
-> +		escr = MLB_USIO_ESCR_L_8BIT;
-> +		break;
-> +	}
-> +
-> +	if (termios->c_cflag & CSTOPB)
-> +		smr |= MLB_USIO_SMR_SBL;
-> +
-> +	if (termios->c_cflag & PARENB) {
-> +		escr |= MLB_USIO_ESCR_PEN;
-> +		if (termios->c_cflag & PARODD)
-> +			escr |= MLB_USIO_ESCR_P;
-> +	}
+On Fri, Apr 26, 2019 at 06:54:05PM +0200, Esben Haabendal wrote:
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
+> > On Fri, Apr 26, 2019 at 10:40:37AM +0200, Esben Haabendal wrote:
+> >> With serial8250_register_8250_port() forcing UPF_BOOT_AUTOCONF bit on, it
+> >> is not possible to register a port without having
+> >> serial8250_request_std_resource() called.
+> >> 
+> >> For adding a 8250 port to an MFD device, this is problematic, as the
+> >> request_mem_region() call will fail, as the MFD device (and rightly  so)
+> >> has requested the region.  For this case, the 8250 port should accept
+> >> having passed mapbase and membase, and just use that.
+> >
+> > You need to simple set port type and use UPF_FIXED_TYPE.
+> > No need for this patch.
+> 
+> The reason for this patch is to be able to do exactly that (set port
+> type and UPF_FIXED_TYPE) without having UPF_BOOT_AUTOCONF added.
+> 
+> In the current serial8250_register_8250_port() there is:
+> 
+>     uart->port.flags        = up->port.flags | UPF_BOOT_AUTOCONF;
+> 
+> So, even though I set UPF_FIXED_TYPE, I get
+> UPF_FIXED_TYPE|UPF_BOOT_AUTOCONF. 
 
-If you don't suport CMSPAR then clear that bit in termios as well
+Yes.
 
-> +	/* Set hard flow control */
-> +	if (of_property_read_bool(port->dev->of_node, "auto-flow-control") ||
-> +			(termios->c_cflag & CRTSCTS))
-> +		escr |= MLB_USIO_ESCR_FLWEN;
+> So I need this patch.
 
-That's just broken. The termios bits are the definitive things for the
-port, and in addition even if they are forced you need to correct the
-termios data.
+Why? I don't see any problems to have these flags set. Moreover, some drivers
+are used as MFD counterparts with exactly same bits set.
 
-You might want to control flow control *at boot* with an OF property but
-doing it post boot is just busted.
+> I think it is unfortunate that UPF_BOOT_AUTOCONF is or'ed to flags like
+> that, but changing that will surely break stuff.
 
-Alan
+True.
+
+-- 
+With Best Regards,
+Andy Shevchenko
