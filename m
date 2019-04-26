@@ -1,34 +1,62 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 0/2] serial: 8250: Add support for 8250/16550 as MFD function
-Date: Fri, 26 Apr 2019 20:21:16 +0300
-Message-ID: <CAHp75VfAZnDLy4QdkbkPd5hkxMfTEjk2tWnL6TF6OPSWPZOj-A@mail.gmail.com>
-References: <20190426084038.6377-1-esben@geanix.com> <20190426143521.GW9224@smile.fi.intel.com>
- <87wojgemci.fsf@haabendal.dk>
+From: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH v3] serial: Add Milbeaut serial control
+Date: Fri, 26 Apr 2019 19:15:15 +0100
+Message-ID: <20190426191515.757e6015@alans-desktop>
+References: <1555555916-22251-1-git-send-email-sugaya.taichi@socionext.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <87wojgemci.fsf@haabendal.dk>
+In-Reply-To: <1555555916-22251-1-git-send-email-sugaya.taichi@socionext.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Esben Haabendal <esben@haabendal.dk>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, Florian Fainelli <f.fainelli@gmail.com>, He Zhe <zhe.he@windriver.com>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Lokesh Vutla <lokeshvutla@ti.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Tony Lindgren <tony@atomide.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Sugaya Taichi <sugaya.taichi@socionext.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Arnd Bergmann <arnd@arndb.de>, Takao Orito <orito.takao@socionext.com>, Kazuhiro Kasai <kasai.kazuhiro@socionext.com>, Shinji Kanematsu <kanematsu.shinji@socionext.com>, Jassi Brar <jaswinder.singh@linaro.org>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Apr 26, 2019 at 8:16 PM Esben Haabendal <esben@haabendal.dk> wrote:
->
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
->
-> > On Fri, Apr 26, 2019 at 10:40:36AM +0200, Esben Haabendal wrote:
-> >> This series adds a driver for adding 8250/16550 UART ports as functions to
-> >> MFD devices.
-> >>
-> >
-> > The patch 2/2 disappeared.
->
-> Yes, seems like that.  I have resent it by itself.  Or do I have to
-> resend the series as a whole?
+O
+> +static void mlb_usio_set_termios(struct uart_port *port,
+> +			struct ktermios *termios, struct ktermios *old)
+> +{
+> +	unsigned int escr, smr = MLB_USIO_SMR_SOE;
+> +	unsigned long flags, baud, quot;
+> +
+> +	switch (termios->c_cflag & CSIZE) {
+> +	case CS5:
+> +		escr = MLB_USIO_ESCR_L_5BIT;
+> +		break;
+> +	case CS6:
+> +		escr = MLB_USIO_ESCR_L_6BIT;
+> +		break;
+> +	case CS7:
+> +		escr = MLB_USIO_ESCR_L_7BIT;
+> +		break;
+> +	case CS8:
+> +	default:
+> +		escr = MLB_USIO_ESCR_L_8BIT;
+> +		break;
+> +	}
+> +
+> +	if (termios->c_cflag & CSTOPB)
+> +		smr |= MLB_USIO_SMR_SBL;
+> +
+> +	if (termios->c_cflag & PARENB) {
+> +		escr |= MLB_USIO_ESCR_PEN;
+> +		if (termios->c_cflag & PARODD)
+> +			escr |= MLB_USIO_ESCR_P;
+> +	}
 
-Series, but first check up on existing comments and try to address them first.
+If you don't suport CMSPAR then clear that bit in termios as well
 
--- 
-With Best Regards,
-Andy Shevchenko
+> +	/* Set hard flow control */
+> +	if (of_property_read_bool(port->dev->of_node, "auto-flow-control") ||
+> +			(termios->c_cflag & CRTSCTS))
+> +		escr |= MLB_USIO_ESCR_FLWEN;
+
+That's just broken. The termios bits are the definitive things for the
+port, and in addition even if they are forced you need to correct the
+termios data.
+
+You might want to control flow control *at boot* with an OF property but
+doing it post boot is just busted.
+
+Alan
