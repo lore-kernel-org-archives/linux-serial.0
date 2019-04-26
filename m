@@ -1,13 +1,15 @@
 From: Esben Haabendal <esben@geanix.com>
 Subject: [PATCH 1/2] serial: 8250: Allow port registration without UPF_BOOT_AUTOCONF
-Date: Fri, 26 Apr 2019 10:36:56 +0200
-Message-ID: <20190426083657.5544-1-esben@geanix.com>
+Date: Fri, 26 Apr 2019 10:40:37 +0200
+Message-ID: <20190426084038.6377-2-esben@geanix.com>
+References: <20190426084038.6377-1-esben@geanix.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190426084038.6377-1-esben@geanix.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, He Zhe <zhe.he@windriver.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, linux-kernel@vger.kernel.org
+To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, He Zhe <zhe.he@windriver.com>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 With serial8250_register_8250_port() forcing UPF_BOOT_AUTOCONF bit on, it
