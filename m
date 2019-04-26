@@ -1,192 +1,132 @@
-From: Esben Haabendal <esben@geanix.com>
-Subject: [PATCH 2/2] serial: 8250: Add support for 8250/16550 as MFD function
-Date: Fri, 26 Apr 2019 18:55:54 +0200
-Message-ID: <20190426165559.2656-1-esben@geanix.com>
+From: Esben Haabendal <esben@haabendal.dk>
+Subject: Re: [PATCH 1/2] serial: 8250: Allow port registration without UPF_BOOT_AUTOCONF
+Date: Fri, 26 Apr 2019 18:54:05 +0200
+Message-ID: <871s1og11u.fsf@haabendal.dk>
+References: <20190426084038.6377-1-esben@geanix.com>
+        <20190426084038.6377-2-esben@geanix.com>
+        <20190426143946.GX9224@smile.fi.intel.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190426143946.GX9224@smile.fi.intel.com> (Andy Shevchenko's
+        message of "Fri, 26 Apr 2019 17:39:46 +0300")
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Tony Lindgren <tony@atomide.com>, Nishanth Menon <nm@ti.com>, Vignesh R <vigneshr@ti.com>, Lokesh Vutla <lokeshvutla@ti.com>, Florian Fainelli <f.fainelli@gmail.com>, linux-kernel@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, He Zhe <zhe.he@windriver.com>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The serial8250-mfd driver is for adding 8250/16550 UART ports as functions
-to an MFD driver.
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
 
-When calling mfd_add_device(), platform_data should be a pointer to a
-struct plat_serial8250_port, with proper settings like .flags, .type,
-.iotype, .regshift and .uartclk.  Memory (or ioport) and IRQ should be
-passed as cell resources.
+> On Fri, Apr 26, 2019 at 10:40:37AM +0200, Esben Haabendal wrote:
+>> With serial8250_register_8250_port() forcing UPF_BOOT_AUTOCONF bit on, it
+>> is not possible to register a port without having
+>> serial8250_request_std_resource() called.
+>> 
+>> For adding a 8250 port to an MFD device, this is problematic, as the
+>> request_mem_region() call will fail, as the MFD device (and rightly  so)
+>> has requested the region.  For this case, the 8250 port should accept
+>> having passed mapbase and membase, and just use that.
+>
+> You need to simple set port type and use UPF_FIXED_TYPE.
+> No need for this patch.
 
-Do not include UPF_BOOT_AUTOCONF in platform_data.flags.
+The reason for this patch is to be able to do exactly that (set port
+type and UPF_FIXED_TYPE) without having UPF_BOOT_AUTOCONF added.
 
-Signed-off-by: Esben Haabendal <esben@geanix.com>
----
- drivers/tty/serial/8250/8250_mfd.c | 119 +++++++++++++++++++++++++++++++++++++
- drivers/tty/serial/8250/Kconfig    |  12 ++++
- drivers/tty/serial/8250/Makefile   |   1 +
- 3 files changed, 132 insertions(+)
- create mode 100644 drivers/tty/serial/8250/8250_mfd.c
+In the current serial8250_register_8250_port() there is:
 
-diff --git a/drivers/tty/serial/8250/8250_mfd.c b/drivers/tty/serial/8250/8250_mfd.c
-new file mode 100644
-index 0000000..eae1566
---- /dev/null
-+++ b/drivers/tty/serial/8250/8250_mfd.c
-@@ -0,0 +1,119 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ *  Serial Port driver for 8250/16550-type MFD sub devices
-+ *
-+ *  This mimics the serial8250_probe of 8250_core.c, while allowing
-+ *  use without UPF_BOOT_AUTOCONF, which is problematic for MFD, as
-+ *  the request_mem_region() will typically fail as the region is
-+ *  already requested by the MFD device.
-+ *
-+ *  Memory and irq are passed as platform resources, which allows easy
-+ *  use together with (devm_)mfd_add_devices().
-+ *
-+ *  Other parameters are passed as struct plat_serial8250_port in
-+ *  device platform_data.
-+ */
-+
-+#include <linux/platform_device.h>
-+#include <linux/module.h>
-+#include <linux/io.h>
-+#include <linux/serial_8250.h>
-+
-+struct serial8250_mfd_data {
-+	int			line;
-+};
-+
-+static int serial8250_mfd_probe(struct platform_device *pdev)
-+{
-+	struct plat_serial8250_port *pdata = dev_get_platdata(&pdev->dev);
-+	struct serial8250_mfd_data *data;
-+	struct uart_8250_port up;
-+	struct resource *r;
-+	void __iomem *membase;
-+
-+	if (!pdata)
-+		return -ENODEV;
-+
-+	memset(&up, 0, sizeof(up));
-+
-+	switch (pdata->iotype) {
-+	case UPIO_AU:
-+	case UPIO_TSI:
-+	case UPIO_MEM32:
-+	case UPIO_MEM32BE:
-+	case UPIO_MEM16:
-+	case UPIO_MEM:
-+		r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+		if (!r)
-+			return -ENODEV;
-+		membase = devm_ioremap_nocache(&pdev->dev,
-+					       r->start, resource_size(r));
-+		if (!membase)
-+			return -ENOMEM;
-+		up.port.mapbase = r->start;
-+		up.port.membase = membase;
-+		break;
-+	case UPIO_HUB6:
-+	case UPIO_PORT:
-+		r = platform_get_resource(pdev, IORESOURCE_IO, 0);
-+		if (!r)
-+			return -ENODEV;
-+		up.port.iobase = r->start;
-+		break;
-+	}
-+
-+	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	up.port.irq = platform_get_irq(pdev, 0);
-+	if (up.port.irq < 0)
-+		up.port.irq = 0; /* no interrupt -> use polling */
-+
-+	/* Register with 8250_core.c */
-+	up.port.irqflags = pdata->irqflags;
-+	up.port.uartclk = pdata->uartclk;
-+	up.port.regshift = pdata->regshift;
-+	up.port.iotype = pdata->iotype;
-+	up.port.flags = pdata->flags;
-+	up.port.hub6 = pdata->hub6;
-+	up.port.private_data = pdata->private_data;
-+	up.port.type = pdata->type;
-+	up.port.serial_in = pdata->serial_in;
-+	up.port.serial_out = pdata->serial_out;
-+	up.port.handle_irq = pdata->handle_irq;
-+	up.port.handle_break = pdata->handle_break;
-+	up.port.set_termios = pdata->set_termios;
-+	up.port.set_ldisc = pdata->set_ldisc;
-+	up.port.get_mctrl = pdata->get_mctrl;
-+	up.port.pm = pdata->pm;
-+	up.port.dev = &pdev->dev;
-+	data->line = __serial8250_register_8250_port(&up, 0);
-+	if (data->line < 0)
-+		return data->line;
-+
-+	platform_set_drvdata(pdev, data);
-+	return 0;
-+}
-+
-+static int serial8250_mfd_remove(struct platform_device *pdev)
-+{
-+	struct serial8250_mfd_data *data = platform_get_drvdata(pdev);
-+
-+	serial8250_unregister_port(data->line);
-+	return 0;
-+}
-+
-+static struct platform_driver serial8250_mfd_driver = {
-+	.probe = serial8250_mfd_probe,
-+	.remove = serial8250_mfd_remove,
-+	.driver = {
-+		.name = "serial8250-mfd",
-+	},
-+};
-+
-+module_platform_driver(serial8250_mfd_driver);
-+
-+MODULE_AUTHOR("Esben Haabendal <esben@geanix.com>");
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("Driver for 8250/16550-type MFD sub devices");
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index 15c2c54..ef1572b 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -58,6 +58,18 @@ config SERIAL_8250_PNP
- 	  This builds standard PNP serial support. You may be able to
- 	  disable this feature if you only need legacy serial support.
- 
-+config SERIAL_8250_MFD
-+	bool "8250/16550 MFD function support"
-+	depends on SERIAL_8250 && MFD_CORE
-+	default n
-+	help
-+	  This builds support for using 8250/16550-type UARTs as MFD
-+	  functions.
-+
-+	  MFD drivers needing this should select it automatically.
-+
-+	  If unsure, say N.
-+
- config SERIAL_8250_FINTEK
- 	bool "Support for Fintek F81216A LPC to 4 UART RS485 API"
- 	depends on SERIAL_8250
-diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
-index 18751bc..da8e139 100644
---- a/drivers/tty/serial/8250/Makefile
-+++ b/drivers/tty/serial/8250/Makefile
-@@ -6,6 +6,7 @@
- obj-$(CONFIG_SERIAL_8250)		+= 8250.o 8250_base.o
- 8250-y					:= 8250_core.o
- 8250-$(CONFIG_SERIAL_8250_PNP)		+= 8250_pnp.o
-+8250-$(CONFIG_SERIAL_8250_MFD)		+= 8250_mfd.o
- 8250_base-y				:= 8250_port.o
- 8250_base-$(CONFIG_SERIAL_8250_DMA)	+= 8250_dma.o
- 8250_base-$(CONFIG_SERIAL_8250_FINTEK)	+= 8250_fintek.o
--- 
-2.4.11
+    uart->port.flags        = up->port.flags | UPF_BOOT_AUTOCONF;
+
+So, even though I set UPF_FIXED_TYPE, I get
+UPF_FIXED_TYPE|UPF_BOOT_AUTOCONF.  So I need this patch.
+
+I think it is unfortunate that UPF_BOOT_AUTOCONF is or'ed to flags like
+that, but changing that will surely break stuff.
+
+/Esben
+
+>
+>> 
+>> Signed-off-by: Esben Haabendal <esben@geanix.com>
+>> ---
+>>  drivers/tty/serial/8250/8250_core.c | 36 +++++++++++++++++++++---------------
+>>  include/linux/serial_8250.h         |  2 ++
+>>  2 files changed, 23 insertions(+), 15 deletions(-)
+>> 
+>> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+>> index e441221..ddbb0a0 100644
+>> --- a/drivers/tty/serial/8250/8250_core.c
+>> +++ b/drivers/tty/serial/8250/8250_core.c
+>> @@ -957,20 +957,8 @@ static void serial_8250_overrun_backoff_work(struct work_struct *work)
+>>  	spin_unlock_irqrestore(&port->lock, flags);
+>>  }
+>>  
+>> -/**
+>> - *	serial8250_register_8250_port - register a serial port
+>> - *	@up: serial port template
+>> - *
+>> - *	Configure the serial port specified by the request. If the
+>> - *	port exists and is in use, it is hung up and unregistered
+>> - *	first.
+>> - *
+>> - *	The port is then probed and if necessary the IRQ is autodetected
+>> - *	If this fails an error is returned.
+>> - *
+>> - *	On success the port is ready to use and the line number is returned.
+>> - */
+>> -int serial8250_register_8250_port(struct uart_8250_port *up)
+>> +int __serial8250_register_8250_port(struct uart_8250_port *up,
+>> +				    unsigned int extra_flags)
+>>  {
+>>  	struct uart_8250_port *uart;
+>>  	int ret = -ENOSPC;
+>> @@ -993,7 +981,7 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+>>  		uart->port.fifosize     = up->port.fifosize;
+>>  		uart->port.regshift     = up->port.regshift;
+>>  		uart->port.iotype       = up->port.iotype;
+>> -		uart->port.flags        = up->port.flags | UPF_BOOT_AUTOCONF;
+>> +		uart->port.flags        = up->port.flags | extra_flags;
+>>  		uart->bugs		= up->bugs;
+>>  		uart->port.mapbase      = up->port.mapbase;
+>>  		uart->port.mapsize      = up->port.mapsize;
+>> @@ -1086,6 +1074,24 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+>>  
+>>  	return ret;
+>>  }
+>> +
+>> +/**
+>> + *	serial8250_register_8250_port - register a serial port
+>> + *	@up: serial port template
+>> + *
+>> + *	Configure the serial port specified by the request. If the
+>> + *	port exists and is in use, it is hung up and unregistered
+>> + *	first.
+>> + *
+>> + *	The port is then probed and if necessary the IRQ is autodetected
+>> + *	If this fails an error is returned.
+>> + *
+>> + *	On success the port is ready to use and the line number is returned.
+>> + */
+>> +int serial8250_register_8250_port(struct uart_8250_port *up)
+>> +{
+>> +	return __serial8250_register_8250_port(up, UPF_BOOT_AUTOCONF);
+>> +}
+>>  EXPORT_SYMBOL(serial8250_register_8250_port);
+>>  
+>>  /**
+>> diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+>> index 5a655ba..9d1fe2e 100644
+>> --- a/include/linux/serial_8250.h
+>> +++ b/include/linux/serial_8250.h
+>> @@ -145,6 +145,8 @@ static inline struct uart_8250_port *up_to_u8250p(struct uart_port *up)
+>>  	return container_of(up, struct uart_8250_port, port);
+>>  }
+>>  
+>> +extern int __serial8250_register_8250_port(struct uart_8250_port *,
+>> +					   unsigned int);
+>>  int serial8250_register_8250_port(struct uart_8250_port *);
+>>  void serial8250_unregister_port(int line);
+>>  void serial8250_suspend_port(int line);
+>> -- 
+>> 2.4.11
+>> 
