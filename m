@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 19/41] drivers: tty: serial: apbuart: fix code formatting
-Date: Sat, 27 Apr 2019 14:52:00 +0200
-Message-ID: <1556369542-13247-20-git-send-email-info@metux.net>
+Subject: [PATCH 04/41] drivers: tty: serial: dz: fix use fix bare 'unsigned'
+Date: Sat, 27 Apr 2019 14:51:45 +0200
+Message-ID: <1556369542-13247-5-git-send-email-info@metux.net>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1556369542-13247-1-git-send-email-info@metux.net>
@@ -12,138 +12,39 @@ List-Id: linux-serial@vger.kernel.org
 
 Fix checkpatch warnings:
 
-    WARNING: line over 80 characters
-    #9: FILE: drivers/tty/serial/apbuart.c:9:
-    + *  Copyright (C) 2006 Daniel Hellstrom <daniel@gaisler.com>, Aeroflex Gaisler AB
+    WARNING: Prefer 'unsigned int' to bare use of 'unsigned'
+    #103: FILE: dz.c:103:
+    +static u16 dz_in(struct dz_port *dport, unsigned offset)
 
-    WARNING: line over 80 characters
-    #11: FILE: drivers/tty/serial/apbuart.c:11:
-    + *  Copyright (C) 2009 Kristoffer Glembo <kristoffer@gaisler.com>, Aeroflex Gaisler AB
-
-    WARNING: line over 80 characters
-    #16: FILE: drivers/tty/serial/apbuart.c:16:
-    +#if defined(CONFIG_SERIAL_GRLIB_GAISLER_APBUART_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
-
-    WARNING: labels should not be indented
-    #122: FILE: drivers/tty/serial/apbuart.c:122:
-    +	      ignore_char:
-
-    WARNING: Missing a blank line after declarations
-    #186: FILE: drivers/tty/serial/apbuart.c:186:
-    +	unsigned int status = UART_GET_STATUS(port);
-    +	return status & UART_STATUS_THE ? TIOCSER_TEMT : 0;
-
-    WARNING: Missing a blank line after declarations
-    #322: FILE: drivers/tty/serial/apbuart.c:322:
-    +	int ret = 0;
-    +	if (ser->type != PORT_UNKNOWN && ser->type != PORT_APBUART)
-
-    WARNING: Missing a blank line after declarations
-    #427: FILE: drivers/tty/serial/apbuart.c:427:
-    +	unsigned int status;
-    +	do {
-
-    WARNING: Missing a blank line after declarations
-    #463: FILE: drivers/tty/serial/apbuart.c:463:
-    +		unsigned int quot, status;
-    +		status = UART_GET_STATUS(port);
-
-    WARNING: line over 80 characters
-    #627: FILE: drivers/tty/serial/apbuart.c:627:
-    +		port->membase = ioremap(addr, sizeof(struct grlib_apbuart_regs_map));
-
-    WARNING: line over 80 characters
-    #634: FILE: drivers/tty/serial/apbuart.c:634:
-    +		port->fifosize = apbuart_scan_fifo_size((struct uart_port *) port, line);
+    WARNING: Prefer 'unsigned int' to bare use of 'unsigned'
+    #110: FILE: dz.c:110:
+    +static void dz_out(struct dz_port *dport, unsigned offset, u16 value)
 
 Signed-off-by: Enrico Weigelt <info@metux.net>
 ---
- drivers/tty/serial/apbuart.c | 22 +++++++++++++++-------
- 1 file changed, 15 insertions(+), 7 deletions(-)
+ drivers/tty/serial/dz.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/apbuart.c b/drivers/tty/serial/apbuart.c
-index 89e19b6..515a562 100644
---- a/drivers/tty/serial/apbuart.c
-+++ b/drivers/tty/serial/apbuart.c
-@@ -6,12 +6,15 @@
-  *
-  *  Copyright (C) 2000 Deep Blue Solutions Ltd.
-  *  Copyright (C) 2003 Konrad Eisele <eiselekd@web.de>
-- *  Copyright (C) 2006 Daniel Hellstrom <daniel@gaisler.com>, Aeroflex Gaisler AB
-+ *  Copyright (C) 2006 Daniel Hellstrom <daniel@gaisler.com>,
-+ *                     Aeroflex Gaisler AB
-  *  Copyright (C) 2008 Gilead Kutnick <kutnickg@zin-tech.com>
-- *  Copyright (C) 2009 Kristoffer Glembo <kristoffer@gaisler.com>, Aeroflex Gaisler AB
-+ *  Copyright (C) 2009 Kristoffer Glembo <kristoffer@gaisler.com>,
-+ *                     Aeroflex Gaisler AB
+diff --git a/drivers/tty/serial/dz.c b/drivers/tty/serial/dz.c
+index b3e9313..559d076 100644
+--- a/drivers/tty/serial/dz.c
++++ b/drivers/tty/serial/dz.c
+@@ -100,14 +100,14 @@ static inline struct dz_port *to_dport(struct uart_port *uport)
+  * ------------------------------------------------------------
   */
  
--#if defined(CONFIG_SERIAL_GRLIB_GAISLER_APBUART_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
-+#if defined(CONFIG_SERIAL_GRLIB_GAISLER_APBUART_CONSOLE) \
-+	&& defined(CONFIG_MAGIC_SYSRQ)
- #define SUPPORT_SYSRQ
- #endif
- 
-@@ -116,8 +119,7 @@ static void apbuart_rx_chars(struct uart_port *port)
- 
- 		uart_insert_char(port, rsr, UART_STATUS_OE, ch, flag);
- 
--
--	      ignore_char:
-+ignore_char:
- 		status = UART_GET_STATUS(port);
- 	}
- 
-@@ -181,6 +183,7 @@ static irqreturn_t apbuart_int(int irq, void *dev_id)
- static unsigned int apbuart_tx_empty(struct uart_port *port)
+-static u16 dz_in(struct dz_port *dport, unsigned offset)
++static u16 dz_in(struct dz_port *dport, unsigned int offset)
  {
- 	unsigned int status = UART_GET_STATUS(port);
-+
- 	return status & UART_STATUS_THE ? TIOCSER_TEMT : 0;
+ 	void __iomem *addr = dport->port.membase + offset;
+ 
+ 	return readw(addr);
  }
  
-@@ -317,6 +320,7 @@ static int apbuart_verify_port(struct uart_port *port,
- 			       struct serial_struct *ser)
+-static void dz_out(struct dz_port *dport, unsigned offset, u16 value)
++static void dz_out(struct dz_port *dport, unsigned int offset, u16 value)
  {
- 	int ret = 0;
-+
- 	if (ser->type != PORT_UNKNOWN && ser->type != PORT_APBUART)
- 		ret = -EINVAL;
- 	if (ser->irq < 0 || ser->irq >= NR_IRQS)
-@@ -422,6 +426,7 @@ static void apbuart_flush_fifo(struct uart_port *port)
- static void apbuart_console_putchar(struct uart_port *port, int ch)
- {
- 	unsigned int status;
-+
- 	do {
- 		status = UART_GET_STATUS(port);
- 	} while (!UART_TX_READY(status));
-@@ -458,6 +463,7 @@ static void apbuart_console_putchar(struct uart_port *port, int ch)
- 	if (UART_GET_CTRL(port) & (UART_CTRL_RE | UART_CTRL_TE)) {
+ 	void __iomem *addr = dport->port.membase + offset;
  
- 		unsigned int quot, status;
-+
- 		status = UART_GET_STATUS(port);
- 
- 		*parity = 'n';
-@@ -622,14 +628,16 @@ static int __init grlib_apbuart_configure(void)
- 		port = &grlib_apbuart_ports[line];
- 
- 		port->mapbase = addr;
--		port->membase = ioremap(addr, sizeof(struct grlib_apbuart_regs_map));
-+		port->membase = ioremap(addr,
-+			sizeof(struct grlib_apbuart_regs_map));
- 		port->irq = 0;
- 		port->iotype = UPIO_MEM;
- 		port->ops = &grlib_apbuart_ops;
- 		port->flags = UPF_BOOT_AUTOCONF;
- 		port->line = line;
- 		port->uartclk = *freq_hz;
--		port->fifosize = apbuart_scan_fifo_size((struct uart_port *) port, line);
-+		port->fifosize = apbuart_scan_fifo_size(
-+			(struct uart_port *) port, line);
- 		line++;
- 
- 		/* We support maximum UART_NR uarts ... */
 -- 
 1.9.1
