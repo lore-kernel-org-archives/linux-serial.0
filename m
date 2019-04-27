@@ -1,63 +1,82 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 21/41] drivers: tty: serial: cpm_uart: fix includes
-Date: Sat, 27 Apr 2019 14:52:02 +0200
-Message-ID: <1556369542-13247-22-git-send-email-info@metux.net>
+Subject: [PATCH 16/41] drivers: tty: serial: uartlite: fix overlong lines
+Date: Sat, 27 Apr 2019 14:51:57 +0200
+Message-ID: <1556369542-13247-17-git-send-email-info@metux.net>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 In-Reply-To: <1556369542-13247-1-git-send-email-info@metux.net>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 To: linux-kernel@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
+Cc: lorenzo.pieralisi@arm.com, linux-ia64@vger.kernel.org, linux-serial@vger.kernel.org, andrew@aj.id.au, gregkh@linuxfoundation.org, sudeep.holla@arm.com, liviu.dudau@arm.com, linux-mips@vger.kernel.org, vz@mleia.com, linux@prisktech.co.nz, sparclinux@vger.kernel.org, khilman@baylibre.com, macro@linux-mips.org, slemieux.tyco@gmail.com, matthias.bgg@gmail.com, jacmet@sunsite.dk, linux-amlogic@lists.infradead.org, andriy.shevchenko@linux.intel.com, linuxppc-dev@lists.ozlabs.org, davem@davemloft.net
 List-Id: linux-serial@vger.kernel.org
 
-Fixing checkpatch warning:
+Fix checkpatch warnings:
 
-    WARNING: Use #include <linux/io.h> instead of <asm/io.h>
-    #25: FILE: drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c:25:
-    +#include <asm/io.h>
+    WARNING: line over 80 characters
+    #283: FILE: drivers/tty/serial/uartlite.c:283:
+    +	ret = request_irq(port->irq, ulite_isr, IRQF_SHARED | IRQF_TRIGGER_RISING,
 
-    WARNING: Use #include <linux/io.h> instead of <asm/io.h>
-    +#include <asm/io.h>
+    WARNING: Missing a blank line after declarations
+    #577: FILE: drivers/tty/serial/uartlite.c:577:
+    +	struct earlycon_device *device = console->data;
+    +	uart_console_write(&device->port, s, n, early_uartlite_putc);
 
-    WARNING: Use #include <linux/delay.h> instead of <asm/delay.h>
-    +#include <asm/delay.h>
+    WARNING: line over 80 characters
+    #590: FILE: drivers/tty/serial/uartlite.c:590:
+    +OF_EARLYCON_DECLARE(uartlite_b, "xlnx,opb-uartlite-1.00.b", early_uartlite_setup);
+
+    WARNING: line over 80 characters
+    #591: FILE: drivers/tty/serial/uartlite.c:591:
+    +OF_EARLYCON_DECLARE(uartlite_a, "xlnx,xps-uartlite-1.00.a", early_uartlite_setup);
 
 Signed-off-by: Enrico Weigelt <info@metux.net>
 ---
- drivers/tty/serial/cpm_uart/cpm_uart_core.c | 4 ++--
- drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/serial/uartlite.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-index 374b8bb..c831d31 100644
---- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-+++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-@@ -33,10 +33,10 @@
- #include <linux/gpio.h>
- #include <linux/of_gpio.h>
- #include <linux/clk.h>
-+#include <linux/io.h>
-+#include <linux/delay.h>
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index 6f79353..0140cec 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -280,7 +280,8 @@ static int ulite_startup(struct uart_port *port)
+ 		return ret;
+ 	}
  
--#include <asm/io.h>
- #include <asm/irq.h>
--#include <asm/delay.h>
- #include <asm/fs_pd.h>
- #include <asm/udbg.h>
+-	ret = request_irq(port->irq, ulite_isr, IRQF_SHARED | IRQF_TRIGGER_RISING,
++	ret = request_irq(port->irq, ulite_isr,
++			  IRQF_SHARED | IRQF_TRIGGER_RISING,
+ 			  "uartlite", port);
+ 	if (ret)
+ 		return ret;
+@@ -574,6 +575,7 @@ static void early_uartlite_write(struct console *console,
+ 				 const char *s, unsigned int n)
+ {
+ 	struct earlycon_device *device = console->data;
++
+ 	uart_console_write(&device->port, s, n, early_uartlite_putc);
+ }
  
-diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-index ef1ae08..40cfcf4 100644
---- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-+++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-@@ -21,8 +21,8 @@
- #include <linux/device.h>
- #include <linux/memblock.h>
- #include <linux/dma-mapping.h>
-+#include <linux/io.h>
+@@ -587,8 +589,10 @@ static int __init early_uartlite_setup(struct earlycon_device *device,
+ 	return 0;
+ }
+ EARLYCON_DECLARE(uartlite, early_uartlite_setup);
+-OF_EARLYCON_DECLARE(uartlite_b, "xlnx,opb-uartlite-1.00.b", early_uartlite_setup);
+-OF_EARLYCON_DECLARE(uartlite_a, "xlnx,xps-uartlite-1.00.a", early_uartlite_setup);
++OF_EARLYCON_DECLARE(uartlite_b, "xlnx,opb-uartlite-1.00.b",
++		    early_uartlite_setup);
++OF_EARLYCON_DECLARE(uartlite_a, "xlnx,xps-uartlite-1.00.a",
++		    early_uartlite_setup);
  
--#include <asm/io.h>
- #include <asm/irq.h>
- #include <asm/fs_pd.h>
- #include <asm/prom.h>
+ #endif /* CONFIG_SERIAL_UARTLITE_CONSOLE */
+ 
 -- 
 1.9.1
