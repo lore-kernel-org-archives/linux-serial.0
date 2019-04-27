@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 28/41] drivers: tty: serial: sunzilog: fix includes
-Date: Sat, 27 Apr 2019 14:52:09 +0200
-Message-ID: <1556369542-13247-29-git-send-email-info@metux.net>
+Subject: [PATCH 06/41] drivers: tty: serial: sb1250-duart: use dev_err() instead of printk()
+Date: Sat, 27 Apr 2019 14:51:47 +0200
+Message-ID: <1556369542-13247-7-git-send-email-info@metux.net>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1556369542-13247-1-git-send-email-info@metux.net>
@@ -10,30 +10,43 @@ To: linux-kernel@vger.kernel.org
 Cc: gregkh@linuxfoundation.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Fix checkpatch warning:
-
-    WARNING: Use #include <linux/io.h> instead of <asm/io.h>
-    #38: FILE: drivers/tty/serial/sunzilog.c:38:
-    +#include <asm/io.h>
+Using dev_err() instead of printk() for more consistent output.
+(prints device name, etc).
 
 Signed-off-by: Enrico Weigelt <info@metux.net>
 ---
- drivers/tty/serial/sunzilog.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/sb1250-duart.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/sunzilog.c b/drivers/tty/serial/sunzilog.c
-index 17b0520..85edb0d 100644
---- a/drivers/tty/serial/sunzilog.c
-+++ b/drivers/tty/serial/sunzilog.c
-@@ -34,8 +34,8 @@
- #endif
- #include <linux/init.h>
- #include <linux/of_device.h>
-+#include <linux/io.h>
+diff --git a/drivers/tty/serial/sb1250-duart.c b/drivers/tty/serial/sb1250-duart.c
+index 329aced..655961c 100644
+--- a/drivers/tty/serial/sb1250-duart.c
++++ b/drivers/tty/serial/sb1250-duart.c
+@@ -663,7 +663,6 @@ static void sbd_release_port(struct uart_port *uport)
  
--#include <asm/io.h>
- #include <asm/irq.h>
- #include <asm/prom.h>
- #include <asm/setup.h>
+ static int sbd_map_port(struct uart_port *uport)
+ {
+-	const char *err = KERN_ERR "sbd: Cannot map MMIO\n";
+ 	struct sbd_port *sport = to_sport(uport);
+ 	struct sbd_duart *duart = sport->duart;
+ 
+@@ -671,7 +670,7 @@ static int sbd_map_port(struct uart_port *uport)
+ 		uport->membase = ioremap_nocache(uport->mapbase,
+ 						 DUART_CHANREG_SPACING);
+ 	if (!uport->membase) {
+-		printk(err);
++		dev_err(uport->dev, "Cannot map MMIO (base)\n");
+ 		return -ENOMEM;
+ 	}
+ 
+@@ -679,7 +678,7 @@ static int sbd_map_port(struct uart_port *uport)
+ 		sport->memctrl = ioremap_nocache(duart->mapctrl,
+ 						 DUART_CHANREG_SPACING);
+ 	if (!sport->memctrl) {
+-		printk(err);
++		dev_err(uport->dev, "Cannot map MMIO (ctrl)\n");
+ 		iounmap(uport->membase);
+ 		uport->membase = NULL;
+ 		return -ENOMEM;
 -- 
 1.9.1
