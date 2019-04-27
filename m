@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 01/41] drivers: tty: serial: dz: use dev_err() instead of printk()
-Date: Sat, 27 Apr 2019 14:51:42 +0200
-Message-ID: <1556369542-13247-2-git-send-email-info@metux.net>
+Subject: [PATCH 17/41] drivers: tty: serial: apbuart: fix logging calls
+Date: Sat, 27 Apr 2019 14:51:58 +0200
+Message-ID: <1556369542-13247-18-git-send-email-info@metux.net>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1556369542-13247-1-git-send-email-info@metux.net>
@@ -10,46 +10,70 @@ To: linux-kernel@vger.kernel.org
 Cc: gregkh@linuxfoundation.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Using dev_err() instead of printk() for more consistent output.
-(prints device name, etc).
+Fix checkpatch warnings:
+
+    WARNING: Prefer using '"%s...", __func__' to using 'apbuart_console_setup', this function's name, in a string
+    #491: FILE: drivers/tty/serial/apbuart.c:491:
+    +	pr_debug("apbuart_console_setup co=%p, co->index=%i, options=%s\n",
+
+    WARNING: Prefer [subsystem eg: netdev]_info([subsystem]dev, ... then dev_info(dev, ... then pr_info(...  to printk(KERN_INFO ...
+    #661: FILE: drivers/tty/serial/apbuart.c:661:
+    +	printk(KERN_INFO "Serial: GRLIB APBUART driver\n");
+
+    WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
+    #666: FILE: drivers/tty/serial/apbuart.c:666:
+    +		printk(KERN_ERR "%s: uart_register_driver failed (%i)\n",
+
+    WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
+    #673: FILE: drivers/tty/serial/apbuart.c:673:
+    +		printk(KERN_ERR
 
 Signed-off-by: Enrico Weigelt <info@metux.net>
 ---
- drivers/tty/serial/dz.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/serial/apbuart.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/tty/serial/dz.c b/drivers/tty/serial/dz.c
-index 7b57e84..96e35af 100644
---- a/drivers/tty/serial/dz.c
-+++ b/drivers/tty/serial/dz.c
-@@ -416,7 +416,7 @@ static int dz_startup(struct uart_port *uport)
- 			  IRQF_SHARED, "dz", mux);
+diff --git a/drivers/tty/serial/apbuart.c b/drivers/tty/serial/apbuart.c
+index 60cd133..d2b86f7 100644
+--- a/drivers/tty/serial/apbuart.c
++++ b/drivers/tty/serial/apbuart.c
+@@ -482,8 +482,8 @@ static int __init apbuart_console_setup(struct console *co, char *options)
+ 	int parity = 'n';
+ 	int flow = 'n';
+ 
+-	pr_debug("apbuart_console_setup co=%p, co->index=%i, options=%s\n",
+-		 co, co->index, options);
++	pr_debug("%s() co=%p, co->index=%i, options=%s\n",
++		 __func__, co, co->index, options);
+ 
+ 	/*
+ 	 * Check whether an invalid uart number has been specified, and
+@@ -650,21 +650,20 @@ static int __init grlib_apbuart_init(void)
+ 	if (ret)
+ 		return ret;
+ 
+-	printk(KERN_INFO "Serial: GRLIB APBUART driver\n");
++	pr_info("Serial: GRLIB APBUART driver\n");
+ 
+ 	ret = uart_register_driver(&grlib_apbuart_driver);
+ 
  	if (ret) {
- 		atomic_add(-1, &mux->irq_guard);
--		printk(KERN_ERR "dz: Cannot get IRQ %d!\n", dport->port.irq);
-+		dev_err(uport->dev, "Cannot get IRQ %d!\n", dport->port.irq);
+-		printk(KERN_ERR "%s: uart_register_driver failed (%i)\n",
+-		       __FILE__, ret);
++		pr_err("%s: uart_register_driver failed (%i)\n",
++		       __func__, ret);
  		return ret;
  	}
  
-@@ -680,7 +680,7 @@ static int dz_map_port(struct uart_port *uport)
- 		uport->membase = ioremap_nocache(uport->mapbase,
- 						 dec_kn_slot_size);
- 	if (!uport->membase) {
--		printk(KERN_ERR "dz: Cannot map MMIO\n");
-+		dev_err(uport->dev, "Cannot map MMIO\n");
- 		return -ENOMEM;
- 	}
- 	return 0;
-@@ -697,8 +697,8 @@ static int dz_request_port(struct uart_port *uport)
- 		if (!request_mem_region(uport->mapbase, dec_kn_slot_size,
- 					"dz")) {
- 			atomic_add(-1, &mux->map_guard);
--			printk(KERN_ERR
--			       "dz: Unable to reserve MMIO resource\n");
-+			dev_err(uport->dev,
-+				"Unable to reserve MMIO resource\n");
- 			return -EBUSY;
- 		}
+ 	ret = platform_driver_register(&grlib_apbuart_of_driver);
+ 	if (ret) {
+-		printk(KERN_ERR
+-		       "%s: platform_driver_register failed (%i)\n",
+-		       __FILE__, ret);
++		pr_err("%s: platform_driver_register failed (%i)\n",
++		       __func__, ret);
+ 		uart_unregister_driver(&grlib_apbuart_driver);
+ 		return ret;
  	}
 -- 
 1.9.1
