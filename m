@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 06/41] drivers: tty: serial: sb1250-duart: use dev_err() instead of printk()
-Date: Sat, 27 Apr 2019 14:51:47 +0200
-Message-ID: <1556369542-13247-7-git-send-email-info@metux.net>
+Subject: [PATCH 20/41] drivers: tty: serial: cpm_uart: use dev_err()/dev_warn() instead of printk()
+Date: Sat, 27 Apr 2019 14:52:01 +0200
+Message-ID: <1556369542-13247-21-git-send-email-info@metux.net>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1556369542-13247-1-git-send-email-info@metux.net>
@@ -10,43 +10,58 @@ To: linux-kernel@vger.kernel.org
 Cc: gregkh@linuxfoundation.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Using dev_err() instead of printk() for more consistent output.
+Using dev_err()/dev_warn() instead of printk() for more consistent output.
 (prints device name, etc).
 
 Signed-off-by: Enrico Weigelt <info@metux.net>
 ---
- drivers/tty/serial/sb1250-duart.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/tty/serial/cpm_uart/cpm_uart_core.c | 6 +++---
+ drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/sb1250-duart.c b/drivers/tty/serial/sb1250-duart.c
-index 329aced..655961c 100644
---- a/drivers/tty/serial/sb1250-duart.c
-+++ b/drivers/tty/serial/sb1250-duart.c
-@@ -663,7 +663,6 @@ static void sbd_release_port(struct uart_port *uport)
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+index b929c7a..374b8bb 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+@@ -265,7 +265,7 @@ static void cpm_uart_int_rx(struct uart_port *port)
+ 		 * later, which will be the next rx-interrupt or a timeout
+ 		 */
+ 		if (tty_buffer_request_room(tport, i) < i) {
+-			printk(KERN_WARNING "No room in flip buffer\n");
++			dev_warn(port->dev, "No room in flip buffer\n");
+ 			return;
+ 		}
  
- static int sbd_map_port(struct uart_port *uport)
- {
--	const char *err = KERN_ERR "sbd: Cannot map MMIO\n";
- 	struct sbd_port *sport = to_sport(uport);
- 	struct sbd_duart *duart = sport->duart;
+@@ -1155,7 +1155,7 @@ static int cpm_uart_init_port(struct device_node *np,
+ 	if (!pinfo->clk) {
+ 		data = of_get_property(np, "fsl,cpm-brg", &len);
+ 		if (!data || len != 4) {
+-			printk(KERN_ERR "CPM UART %pOFn has no/invalid "
++			dev_err(port->dev, "CPM UART %pOFn has no/invalid "
+ 			                "fsl,cpm-brg property.\n", np);
+ 			return -EINVAL;
+ 		}
+@@ -1164,7 +1164,7 @@ static int cpm_uart_init_port(struct device_node *np,
  
-@@ -671,7 +670,7 @@ static int sbd_map_port(struct uart_port *uport)
- 		uport->membase = ioremap_nocache(uport->mapbase,
- 						 DUART_CHANREG_SPACING);
- 	if (!uport->membase) {
--		printk(err);
-+		dev_err(uport->dev, "Cannot map MMIO (base)\n");
- 		return -ENOMEM;
+ 	data = of_get_property(np, "fsl,cpm-command", &len);
+ 	if (!data || len != 4) {
+-		printk(KERN_ERR "CPM UART %pOFn has no/invalid "
++		dev_err(port->dev, "CPM UART %pOFn has no/invalid "
+ 		                "fsl,cpm-command property.\n", np);
+ 		return -EINVAL;
  	}
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+index 6a1cd03..ef1ae08 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+@@ -67,7 +67,7 @@ void __iomem *cpm_uart_map_pram(struct uart_cpm_port *port,
+ 		return pram;
  
-@@ -679,7 +678,7 @@ static int sbd_map_port(struct uart_port *uport)
- 		sport->memctrl = ioremap_nocache(duart->mapctrl,
- 						 DUART_CHANREG_SPACING);
- 	if (!sport->memctrl) {
--		printk(err);
-+		dev_err(uport->dev, "Cannot map MMIO (ctrl)\n");
- 		iounmap(uport->membase);
- 		uport->membase = NULL;
- 		return -ENOMEM;
+ 	if (len != 2) {
+-		printk(KERN_WARNING "cpm_uart[%d]: device tree references "
++		dev_warn(port->dev, "cpm_uart[%d]: device tree references "
+ 			"SMC pram, using boot loader/wrapper pram mapping. "
+ 			"Please fix your device tree to reference the pram "
+ 			"base register instead.\n",
 -- 
 1.9.1
