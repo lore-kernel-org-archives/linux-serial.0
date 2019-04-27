@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 39/41] drivers: tty: serial: pmac_zilog: fill mapsize and use it
-Date: Sat, 27 Apr 2019 14:52:20 +0200
-Message-ID: <1556369542-13247-40-git-send-email-info@metux.net>
+Subject: [PATCH 38/41] drivers: tty: serial: xilinx_uartps: fill mapsize and use it
+Date: Sat, 27 Apr 2019 14:52:19 +0200
+Message-ID: <1556369542-13247-39-git-send-email-info@metux.net>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1556369542-13247-1-git-send-email-info@metux.net>
@@ -20,39 +20,48 @@ iounmap+release combinations.
 
 Signed-off-by: Enrico Weigelt <info@metux.net>
 ---
- drivers/tty/serial/pmac_zilog.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/tty/serial/xilinx_uartps.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
-index bcb5bf7..1fef014 100644
---- a/drivers/tty/serial/pmac_zilog.c
-+++ b/drivers/tty/serial/pmac_zilog.c
-@@ -88,6 +88,8 @@
- #define PMACZILOG_NAME		"ttyPZ"
- #endif
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 74089f5..cf8ca66 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -953,15 +953,15 @@ static int cdns_uart_verify_port(struct uart_port *port,
+  */
+ static int cdns_uart_request_port(struct uart_port *port)
+ {
+-	if (!request_mem_region(port->mapbase, CDNS_UART_REGISTER_SPACE,
++	if (!request_mem_region(port->mapbase, port->mapsize,
+ 					 CDNS_UART_NAME)) {
+ 		return -ENOMEM;
+ 	}
  
-+#define PMZ_MAPSIZE		0x1000
-+
- #define pmz_debug(fmt, arg...)	pr_debug("ttyPZ%d: " fmt, uap->port.line, ## arg)
- #define pmz_error(fmt, arg...)	pr_err("ttyPZ%d: " fmt, uap->port.line, ## arg)
- #define pmz_info(fmt, arg...)	pr_info("ttyPZ%d: " fmt, uap->port.line, ## arg)
-@@ -1411,7 +1413,8 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
- 	if (of_address_to_resource(np, 0, &r_ports))
- 		return -ENODEV;
- 	uap->port.mapbase = r_ports.start;
--	uap->port.membase = ioremap(uap->port.mapbase, 0x1000);
-+	uap->port.mapsize = PMZ_MAPSIZE;
-+	uap->port.membase = ioremap(uap->port.mapbase, uap->port.mapsize);
- 
- 	uap->control_reg = uap->port.membase;
- 	uap->data_reg = uap->control_reg + 0x10;
-@@ -1709,6 +1712,7 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
- 		return -ENODEV;
- 
- 	uap->port.mapbase  = r_ports->start;
-+	uap->port.mapsize  = PMZ_MAPSIZE;
- 	uap->port.membase  = (unsigned char __iomem *) r_ports->start;
- 	uap->port.iotype   = UPIO_MEM;
- 	uap->port.irq      = irq;
+-	port->membase = ioremap(port->mapbase, CDNS_UART_REGISTER_SPACE);
++	port->membase = ioremap(port->mapbase, port->mapsize);
+ 	if (!port->membase) {
+ 		dev_err(port->dev, "Unable to map registers\n");
+-		release_mem_region(port->mapbase, CDNS_UART_REGISTER_SPACE);
++		release_mem_region(port->mapbase, port->mapsize);
+ 		return -ENOMEM;
+ 	}
+ 	return 0;
+@@ -976,7 +976,7 @@ static int cdns_uart_request_port(struct uart_port *port)
+  */
+ static void cdns_uart_release_port(struct uart_port *port)
+ {
+-	release_mem_region(port->mapbase, CDNS_UART_REGISTER_SPACE);
++	release_mem_region(port->mapbase, port->mapsize);
+ 	iounmap(port->membase);
+ 	port->membase = NULL;
+ }
+@@ -1627,6 +1627,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 	 * and triggers invocation of the config_port() entry point.
+ 	 */
+ 	port->mapbase = res->start;
++	port->mapsize = CDNS_UART_REGISTER_SPACE;
+ 	port->irq = irq;
+ 	port->dev = &pdev->dev;
+ 	port->uartclk = clk_get_rate(cdns_uart_data->uartclk);
 -- 
 1.9.1
