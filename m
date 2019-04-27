@@ -1,53 +1,46 @@
-From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
-Subject: Re: [PATCH 1/2] serial: 8250: Allow port registration without
- UPF_BOOT_AUTOCONF
-Date: Sat, 27 Apr 2019 13:57:57 +0200
-Message-ID: <7a1fd6cc-050f-a077-6169-03552a89c563@metux.net>
-References: <20190426084038.6377-1-esben@geanix.com>
- <20190426084038.6377-2-esben@geanix.com>
- <20190426143946.GX9224@smile.fi.intel.com> <871s1og11u.fsf@haabendal.dk>
- <20190426215103.GD9224@smile.fi.intel.com> <87tvejakot.fsf@haabendal.dk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: "Enrico Weigelt, metux IT consult" <info@metux.net>
+Subject: [PATCH 12/41] drivers: tty: serial: uartlite: use dev_dbg() instead of pr_debug()
+Date: Sat, 27 Apr 2019 14:51:53 +0200
+Message-ID: <1556369542-13247-13-git-send-email-info@metux.net>
+References: <1556369542-13247-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <87tvejakot.fsf@haabendal.dk>
-Content-Language: en-US
+In-Reply-To: <1556369542-13247-1-git-send-email-info@metux.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Esben Haabendal <esben@haabendal.dk>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, He Zhe <zhe.he@windriver.com>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-kernel@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 27.04.19 10:58, Esben Haabendal wrote:
+Using dev_dbg() instead of pr_debg() for more consistent output.
+(prints device name, etc).
 
-Hi folks,
+Signed-off-by: Enrico Weigelt <info@metux.net>
+---
+ drivers/tty/serial/uartlite.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-> That said, the purpose of UPF_BOOT_AUTOCONF (for 8250 driver) is to> request and map the register memory.  So when that is already done by>
-the parent MFD driver, I think it is silly to workaround problems
-caused> by UPF_BOOT_AUTOCONF being force setted, when it really shouldn't.
-I tend to agree. Maybe we should give serial8250_register_8250_port()
-some flags for controlling this, or add another function for those
-cases.
-
-A minimal-invasive approach could be introducing an
-serial8250_register_8250_port_ext() with extra parameters, and let
-serial8250_register_8250_port() just call it.
-
-
-By the way: the mem-mapping code pathes in serial8250 are a bit strange
-anyways, eg. serial8250_port_size() is always called when map/unmap is
-done, and this function does special logic for certain devices.
-IMHO, it this should be called only once on device init and later just
-use the already computed value:
-
-https://github.com/metux/linux/commit/7ec63b699c910228b92cfb27eb8edfda90fdfd63
-
-(haven't sent this queue yet, but feel free to cherry-pick if you like)
-
-
---mtx
-
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index b8b912b..44d65bd 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -352,7 +352,8 @@ static int ulite_request_port(struct uart_port *port)
+ 	struct uartlite_data *pdata = port->private_data;
+ 	int ret;
+ 
+-	pr_debug("ulite console: port=%p; port->mapbase=%llx\n",
++	dev_dbg(port->dev,
++		"ulite console: port=%p; port->mapbase=%llx\n",
+ 		 port, (unsigned long long) port->mapbase);
+ 
+ 	if (!request_mem_region(port->mapbase, ULITE_REGION, "uartlite")) {
+@@ -519,7 +520,8 @@ static int ulite_console_setup(struct console *co, char *options)
+ 
+ 	/* Has the device been initialized yet? */
+ 	if (!port->mapbase) {
+-		pr_debug("console on ttyUL%i not present\n", co->index);
++		dev_dbg(port->dev, "console on ttyUL%i not present\n",
++			co->index);
+ 		return -ENODEV;
+ 	}
+ 
 -- 
-Enrico Weigelt, metux IT consult
-Free software and Linux embedded engineering
-info@metux.net -- +49-151-27565287
+1.9.1
