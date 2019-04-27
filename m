@@ -1,52 +1,61 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 10/41] drivers: tty: serial: sb1250-duart: fix missing
- parentheses
-Date: Sat, 27 Apr 2019 15:32:15 +0200
-Message-ID: <20190427133215.GD11368@kroah.com>
-References: <1556369542-13247-1-git-send-email-info@metux.net>
- <1556369542-13247-11-git-send-email-info@metux.net>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH 1/2] serial: 8250: Allow port registration without UPF_BOOT_AUTOCONF
+Date: Sat, 27 Apr 2019 19:41:10 +0300
+Message-ID: <CAHp75VfZMuQ3xagGSt6dXv1tZbSfanUdaw0SgjTqq3YET5YBKQ@mail.gmail.com>
+References: <20190426084038.6377-1-esben@geanix.com> <20190426084038.6377-2-esben@geanix.com>
+ <20190426143946.GX9224@smile.fi.intel.com> <871s1og11u.fsf@haabendal.dk>
+ <20190426215103.GD9224@smile.fi.intel.com> <87tvejakot.fsf@haabendal.dk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1556369542-13247-11-git-send-email-info@metux.net>
+In-Reply-To: <87tvejakot.fsf@haabendal.dk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Cc: linux-kernel@vger.kernel.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
+To: Esben Haabendal <esben@haabendal.dk>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, He Zhe <zhe.he@windriver.com>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Apr 27, 2019 at 02:51:51PM +0200, Enrico Weigelt, metux IT consult wrote:
-> Fix checkpatch warning:
-> 
->     ERROR: Macros with complex values should be enclosed in parentheses
->     #911: FILE: drivers/tty/serial/sb1250-duart.c:911:
->     +#define SERIAL_SB1250_DUART_CONSOLE	&sbd_console
-> 
-> Signed-off-by: Enrico Weigelt <info@metux.net>
-> ---
->  drivers/tty/serial/sb1250-duart.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/sb1250-duart.c b/drivers/tty/serial/sb1250-duart.c
-> index 1184226..ec74f09 100644
-> --- a/drivers/tty/serial/sb1250-duart.c
-> +++ b/drivers/tty/serial/sb1250-duart.c
-> @@ -908,7 +908,7 @@ static int __init sbd_serial_console_init(void)
->  
->  console_initcall(sbd_serial_console_init);
->  
-> -#define SERIAL_SB1250_DUART_CONSOLE	&sbd_console
-> +#define SERIAL_SB1250_DUART_CONSOLE	(&sbd_console)
+On Sat, Apr 27, 2019 at 12:01 PM Esben Haabendal <esben@haabendal.dk> wrote:
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
+> > On Fri, Apr 26, 2019 at 06:54:05PM +0200, Esben Haabendal wrote:
+> >> Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
+> >> The reason for this patch is to be able to do exactly that (set port
+> >> type and UPF_FIXED_TYPE) without having UPF_BOOT_AUTOCONF added.
+> >>
+> >> In the current serial8250_register_8250_port() there is:
+> >>
+> >>     uart->port.flags        = up->port.flags | UPF_BOOT_AUTOCONF;
+> >>
+> >> So, even though I set UPF_FIXED_TYPE, I get
+> >> UPF_FIXED_TYPE|UPF_BOOT_AUTOCONF.
+> >
+> > Yes.
+> >
+> >> So I need this patch.
+> >
+> > Why? I don't see any problems to have these flags set.
+>
+> The problem with having UPF_BOOT_AUTOCONF is the call to
+> serial8250_request_std_resource().  It calls request_mem_region(), which
+> fails if the MFD driver already have requested the memory region for the
+> MFD device.
 
-No, that's foolish.
+If it's MFD, why it requested the region for its child?
+Isn't it a bug in MFD driver?
 
-checkpatch is a hint, it's not always right.
+>  And I believe that is a valid thing to do.
+>
+> To workaround this, I first thought I could just avoid setting
+> port->mapbase, causing serial8250_request_std_resource() to be a no-op.
+> But this breaks with more than one UART port, as uart_match_port() will
+> match the same line for all such UART ports, causing all but the last
+> one to be removed.
+>
+> That said, the purpose of UPF_BOOT_AUTOCONF (for 8250 driver) is to
+> request and map the register memory.  So when that is already done by
+> the parent MFD driver, I think it is silly to workaround problems caused
+> by UPF_BOOT_AUTOCONF being force setted, when it really shouldn't.
 
-Also, checkpatch cleanups for really old drivers is not generally a good
-idea, especially if you do not have the hardware for them.  Please don't
-cause unneeded churn for this type of thing in this subsystem, unless
-you have the hardware.
 
-thanks,
-
-greg k-h
+--
+With Best Regards,
+Andy Shevchenko
