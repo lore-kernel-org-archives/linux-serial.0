@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 15/41] drivers: tty: serial: uartlite: fix use fix bare 'unsigned'
-Date: Sat, 27 Apr 2019 14:51:56 +0200
-Message-ID: <1556369542-13247-16-git-send-email-info@metux.net>
+Subject: [PATCH 18/41] drivers: tty: serial: apbuart: use dev_info() instead of printk()
+Date: Sat, 27 Apr 2019 14:51:59 +0200
+Message-ID: <1556369542-13247-19-git-send-email-info@metux.net>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1556369542-13247-1-git-send-email-info@metux.net>
@@ -10,42 +10,26 @@ To: linux-kernel@vger.kernel.org
 Cc: gregkh@linuxfoundation.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Fix checkpatch warnings:
-
-    WARNING: Prefer 'unsigned int' to bare use of 'unsigned'
-    #562: FILE: drivers/tty/serial/uartlite.c:562:
-    +	unsigned retries = 1000000;
-
-    WARNING: Prefer 'unsigned int' to bare use of 'unsigned'
-    #574: FILE: drivers/tty/serial/uartlite.c:574:
-    +				 const char *s, unsigned n)
+Using dev_err() instead of printk() for more consistent output.
+(prints device name, etc).
 
 Signed-off-by: Enrico Weigelt <info@metux.net>
 ---
- drivers/tty/serial/uartlite.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/apbuart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index 4c28600..6f79353 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -559,7 +559,7 @@ static void early_uartlite_putc(struct uart_port *port, int c)
- 	 * we'll never timeout on a working UART.
- 	 */
+diff --git a/drivers/tty/serial/apbuart.c b/drivers/tty/serial/apbuart.c
+index d2b86f7..89e19b6 100644
+--- a/drivers/tty/serial/apbuart.c
++++ b/drivers/tty/serial/apbuart.c
+@@ -568,7 +568,7 @@ static int apbuart_probe(struct platform_device *op)
  
--	unsigned retries = 1000000;
-+	unsigned int retries = 1000000;
- 	/* read status bit - 0x8 offset */
- 	while (--retries && (readl(port->membase + 8) & (1 << 3)))
- 		;
-@@ -571,7 +571,7 @@ static void early_uartlite_putc(struct uart_port *port, int c)
+ 	apbuart_flush_fifo((struct uart_port *) port);
+ 
+-	printk(KERN_INFO "grlib-apbuart at 0x%llx, irq %d\n",
++	dev_info(&pdev->pdev, "grlib-apbuart at 0x%llx, irq %d\n",
+ 	       (unsigned long long) port->mapbase, port->irq);
+ 	return 0;
  }
- 
- static void early_uartlite_write(struct console *console,
--				 const char *s, unsigned n)
-+				 const char *s, unsigned int n)
- {
- 	struct earlycon_device *device = console->data;
- 	uart_console_write(&device->port, s, n, early_uartlite_putc);
 -- 
 1.9.1
