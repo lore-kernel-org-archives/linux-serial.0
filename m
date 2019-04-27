@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 20/41] drivers: tty: serial: cpm_uart: use dev_err()/dev_warn() instead of printk()
-Date: Sat, 27 Apr 2019 14:52:01 +0200
-Message-ID: <1556369542-13247-21-git-send-email-info@metux.net>
+Subject: [PATCH 22/41] drivers: tty: serial: cpm_uart: fix logging calls
+Date: Sat, 27 Apr 2019 14:52:03 +0200
+Message-ID: <1556369542-13247-23-git-send-email-info@metux.net>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1556369542-13247-1-git-send-email-info@metux.net>
@@ -10,58 +10,75 @@ To: linux-kernel@vger.kernel.org
 Cc: gregkh@linuxfoundation.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Using dev_err()/dev_warn() instead of printk() for more consistent output.
-(prints device name, etc).
+Fix checkpatch warnings by using pr_err():
+
+    WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
+    #109: FILE: drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c:109:
+    +		printk(KERN_ERR
+
+    WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
+    #128: FILE: drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c:128:
+    +		printk(KERN_ERR
+
+    WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
+    +           printk(KERN_ERR
+
+    WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
+    +           printk(KERN_ERR
 
 Signed-off-by: Enrico Weigelt <info@metux.net>
 ---
- drivers/tty/serial/cpm_uart/cpm_uart_core.c | 6 +++---
- drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c | 2 +-
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c | 6 ++----
+ drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c | 6 ++----
+ 2 files changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-index b929c7a..374b8bb 100644
---- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-+++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-@@ -265,7 +265,7 @@ static void cpm_uart_int_rx(struct uart_port *port)
- 		 * later, which will be the next rx-interrupt or a timeout
- 		 */
- 		if (tty_buffer_request_room(tport, i) < i) {
--			printk(KERN_WARNING "No room in flip buffer\n");
-+			dev_warn(port->dev, "No room in flip buffer\n");
- 			return;
- 		}
- 
-@@ -1155,7 +1155,7 @@ static int cpm_uart_init_port(struct device_node *np,
- 	if (!pinfo->clk) {
- 		data = of_get_property(np, "fsl,cpm-brg", &len);
- 		if (!data || len != 4) {
--			printk(KERN_ERR "CPM UART %pOFn has no/invalid "
-+			dev_err(port->dev, "CPM UART %pOFn has no/invalid "
- 			                "fsl,cpm-brg property.\n", np);
- 			return -EINVAL;
- 		}
-@@ -1164,7 +1164,7 @@ static int cpm_uart_init_port(struct device_node *np,
- 
- 	data = of_get_property(np, "fsl,cpm-command", &len);
- 	if (!data || len != 4) {
--		printk(KERN_ERR "CPM UART %pOFn has no/invalid "
-+		dev_err(port->dev, "CPM UART %pOFn has no/invalid "
- 		                "fsl,cpm-command property.\n", np);
- 		return -EINVAL;
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c
+index 56fc527..aed61e9 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c
+@@ -71,8 +71,7 @@ int cpm_uart_allocbuf(struct uart_cpm_port *pinfo, unsigned int is_con)
+ 	dpmemsz = sizeof(cbd_t) * (pinfo->rx_nrfifos + pinfo->tx_nrfifos);
+ 	dp_offset = cpm_dpalloc(dpmemsz, 8);
+ 	if (IS_ERR_VALUE(dp_offset)) {
+-		printk(KERN_ERR
+-		       "cpm_uart_cpm1.c: could not allocate buffer descriptors\n");
++		pr_err("cpm_uart_cpm1.c: could not allocate buffer descriptors\n");
+ 		return -ENOMEM;
  	}
+ 	dp_mem = cpm_dpram_addr(dp_offset);
+@@ -90,8 +89,7 @@ int cpm_uart_allocbuf(struct uart_cpm_port *pinfo, unsigned int is_con)
+ 
+ 	if (mem_addr == NULL) {
+ 		cpm_dpfree(dp_offset);
+-		printk(KERN_ERR
+-		       "cpm_uart_cpm1.c: could not allocate coherent memory\n");
++		pr_err("cpm_uart_cpm1.c: could not allocate coherent memory\n");
+ 		return -ENOMEM;
+ 	}
+ 
 diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-index 6a1cd03..ef1ae08 100644
+index 40cfcf4..a0fccda 100644
 --- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
 +++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-@@ -67,7 +67,7 @@ void __iomem *cpm_uart_map_pram(struct uart_cpm_port *port,
- 		return pram;
+@@ -106,8 +106,7 @@ int cpm_uart_allocbuf(struct uart_cpm_port *pinfo, unsigned int is_con)
+ 	dpmemsz = sizeof(cbd_t) * (pinfo->rx_nrfifos + pinfo->tx_nrfifos);
+ 	dp_offset = cpm_dpalloc(dpmemsz, 8);
+ 	if (IS_ERR_VALUE(dp_offset)) {
+-		printk(KERN_ERR
+-		       "cpm_uart_cpm.c: could not allocate buffer descriptors\n");
++		pr_err("cpm_uart_cpm.c: could not allocate buffer descriptors\n");
+ 		return -ENOMEM;
+ 	}
  
- 	if (len != 2) {
--		printk(KERN_WARNING "cpm_uart[%d]: device tree references "
-+		dev_warn(port->dev, "cpm_uart[%d]: device tree references "
- 			"SMC pram, using boot loader/wrapper pram mapping. "
- 			"Please fix your device tree to reference the pram "
- 			"base register instead.\n",
+@@ -125,8 +124,7 @@ int cpm_uart_allocbuf(struct uart_cpm_port *pinfo, unsigned int is_con)
+ 
+ 	if (mem_addr == NULL) {
+ 		cpm_dpfree(dp_offset);
+-		printk(KERN_ERR
+-		       "cpm_uart_cpm.c: could not allocate coherent memory\n");
++		pr_err("cpm_uart_cpm.c: could not allocate coherent memory\n");
+ 		return -ENOMEM;
+ 	}
+ 
 -- 
 1.9.1
