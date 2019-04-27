@@ -1,71 +1,128 @@
 From: Long Cheng <long.cheng@mediatek.com>
-Subject: [PATCH v12 0/4] add uart DMA function
-Date: Sat, 27 Apr 2019 11:36:29 +0800
-Message-ID: <1556336193-15198-1-git-send-email-long.cheng@mediatek.com>
+Subject: [PATCH 3/4] dt-bindings: dma: uart: rename binding
+Date: Sat, 27 Apr 2019 11:36:32 +0800
+Message-ID: <1556336193-15198-4-git-send-email-long.cheng@mediatek.com>
+References: <1556336193-15198-1-git-send-email-long.cheng@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1556336193-15198-1-git-send-email-long.cheng@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Vinod Koul <vkoul@kernel.org>, Randy Dunlap <rdunlap@infradead.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Sean Wang <sean.wang@kernel.org>, Nicolas Boichat <drinkcat@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>
 Cc: Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>, Zhenbao Liu <zhenbao.liu@mediatek.com>, Long Cheng <long.cheng@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-In Mediatek SOCs, the uart can support DMA function.
-Base on DMA engine formwork, we add the DMA code to support uart. And put the code under drivers/dma/mediatek.
+The filename matches mtk-uart-apdma.c.
+So using "mtk-uart-apdma.txt" should be better.
+And add some property.
 
-This series contains document bindings, Kconfig to control the function enable or not,
-device tree including interrupt and dma device node, the code of UART DMA
-
-Changes compared to v11
--modify TX/RX
--pause function by software
-Changes compared to v10
--modify DMA tx status function
--modify 8250_mtk for DMA rx
--add notes to binding Document.
-Changes compared to v9
--rename dt-bindings file
--remove direction from device_config
--simplified code
-Changes compared to v8
--revise missing items
-Changes compared to v7:
--modify apdma uart tx
-Changes compared to v6:
--Correct spelling
-Changes compared to v5:
--move 'requst irqs' to alloc channel
--remove tasklet.
-Changes compared to v4:
--modify Kconfig depends on.
-Changes compared to v3:
--fix CONFIG_PM, will cause build fail
-Changes compared to v2:
--remove unimportant parameters
--instead of cookie, use APIs of virtual channel.
--use of_dma_xlate_by_chan_id.
-Changes compared to v1:
--mian revised file, 8250_mtk_dma.c
---parameters renamed for standard
---remove atomic operation
-
-Long Cheng (4):
-  dmaengine: mediatek: Add MediaTek UART APDMA support
-  arm: dts: mt2712: add uart APDMA to device tree
-  dt-bindings: dma: uart: rename binding
-  serial: 8250-mtk: modify uart DMA rx
-
- .../devicetree/bindings/dma/8250_mtk_dma.txt       |   33 -
- .../devicetree/bindings/dma/mtk-uart-apdma.txt     |   55 ++
- arch/arm64/boot/dts/mediatek/mt2712e.dtsi          |   51 ++
- drivers/dma/mediatek/Kconfig                       |   11 +
- drivers/dma/mediatek/Makefile                      |    1 +
- drivers/dma/mediatek/mtk-uart-apdma.c              |  666 ++++++++++++++++++++
- drivers/tty/serial/8250/8250_mtk.c                 |   53 +-
- 7 files changed, 807 insertions(+), 63 deletions(-)
+Signed-off-by: Long Cheng <long.cheng@mediatek.com>
+---
+ .../devicetree/bindings/dma/8250_mtk_dma.txt       |   33 ------------
+ .../devicetree/bindings/dma/mtk-uart-apdma.txt     |   55 ++++++++++++++++++++
+ 2 files changed, 55 insertions(+), 33 deletions(-)
  delete mode 100644 Documentation/devicetree/bindings/dma/8250_mtk_dma.txt
  create mode 100644 Documentation/devicetree/bindings/dma/mtk-uart-apdma.txt
- create mode 100644 drivers/dma/mediatek/mtk-uart-apdma.c
 
+diff --git a/Documentation/devicetree/bindings/dma/8250_mtk_dma.txt b/Documentation/devicetree/bindings/dma/8250_mtk_dma.txt
+deleted file mode 100644
+index 3fe0961..0000000
+--- a/Documentation/devicetree/bindings/dma/8250_mtk_dma.txt
++++ /dev/null
+@@ -1,33 +0,0 @@
+-* Mediatek UART APDMA Controller
+-
+-Required properties:
+-- compatible should contain:
+-  * "mediatek,mt2712-uart-dma" for MT2712 compatible APDMA
+-  * "mediatek,mt6577-uart-dma" for MT6577 and all of the above
+-
+-- reg: The base address of the APDMA register bank.
+-
+-- interrupts: A single interrupt specifier.
+-
+-- clocks : Must contain an entry for each entry in clock-names.
+-  See ../clocks/clock-bindings.txt for details.
+-- clock-names: The APDMA clock for register accesses
+-
+-Examples:
+-
+-	apdma: dma-controller@11000380 {
+-		compatible = "mediatek,mt2712-uart-dma";
+-		reg = <0 0x11000380 0 0x400>;
+-		interrupts = <GIC_SPI 63 IRQ_TYPE_LEVEL_LOW>,
+-			     <GIC_SPI 64 IRQ_TYPE_LEVEL_LOW>,
+-			     <GIC_SPI 65 IRQ_TYPE_LEVEL_LOW>,
+-			     <GIC_SPI 66 IRQ_TYPE_LEVEL_LOW>,
+-			     <GIC_SPI 67 IRQ_TYPE_LEVEL_LOW>,
+-			     <GIC_SPI 68 IRQ_TYPE_LEVEL_LOW>,
+-			     <GIC_SPI 69 IRQ_TYPE_LEVEL_LOW>,
+-			     <GIC_SPI 70 IRQ_TYPE_LEVEL_LOW>;
+-		clocks = <&pericfg CLK_PERI_AP_DMA>;
+-		clock-names = "apdma";
+-		#dma-cells = <1>;
+-	};
+-
+diff --git a/Documentation/devicetree/bindings/dma/mtk-uart-apdma.txt b/Documentation/devicetree/bindings/dma/mtk-uart-apdma.txt
+new file mode 100644
+index 0000000..e0424b3
+--- /dev/null
++++ b/Documentation/devicetree/bindings/dma/mtk-uart-apdma.txt
+@@ -0,0 +1,55 @@
++* Mediatek UART APDMA Controller
++
++Required properties:
++- compatible should contain:
++  * "mediatek,mt2712-uart-dma" for MT2712 compatible APDMA
++  * "mediatek,mt6577-uart-dma" for MT6577 and all of the above
++
++- reg: The base address of the APDMA register bank.
++
++- interrupts: A single interrupt specifier.
++ One interrupt per dma-requests, or 8 if no dma-requests property is present
++
++- dma-requests: The number of DMA channels
++
++- clocks : Must contain an entry for each entry in clock-names.
++  See ../clocks/clock-bindings.txt for details.
++- clock-names: The APDMA clock for register accesses
++
++- mediatek,dma-33bits: Present if the DMA requires support
++
++Examples:
++
++	apdma: dma-controller@11000400 {
++		compatible = "mediatek,mt2712-uart-dma";
++		reg = <0 0x11000400 0 0x80>,
++		      <0 0x11000480 0 0x80>,
++		      <0 0x11000500 0 0x80>,
++		      <0 0x11000580 0 0x80>,
++		      <0 0x11000600 0 0x80>,
++		      <0 0x11000680 0 0x80>,
++		      <0 0x11000700 0 0x80>,
++		      <0 0x11000780 0 0x80>,
++		      <0 0x11000800 0 0x80>,
++		      <0 0x11000880 0 0x80>,
++		      <0 0x11000900 0 0x80>,
++		      <0 0x11000980 0 0x80>;
++		interrupts = <GIC_SPI 103 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 104 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 105 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 106 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 107 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 108 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 109 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 110 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 111 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 112 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 113 IRQ_TYPE_LEVEL_LOW>,
++			     <GIC_SPI 114 IRQ_TYPE_LEVEL_LOW>;
++		dma-requests = <12>;
++		clocks = <&pericfg CLK_PERI_AP_DMA>;
++		clock-names = "apdma";
++		mediatek,dma-33bits;
++		#dma-cells = <1>;
++	};
++
 -- 
 1.7.9.5
