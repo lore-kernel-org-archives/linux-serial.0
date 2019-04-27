@@ -1,37 +1,35 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: serial drivers polishing
-Date: Sat, 27 Apr 2019 14:51:41 +0200
-Message-ID: <1556369542-13247-1-git-send-email-info@metux.net>
+Subject: [PATCH 30/41] drivers: tty: serial: ioc4_serial: use dev_warn() instead of printk()
+Date: Sat, 27 Apr 2019 14:52:11 +0200
+Message-ID: <1556369542-13247-31-git-send-email-info@metux.net>
+References: <1556369542-13247-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1556369542-13247-1-git-send-email-info@metux.net>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
 Cc: gregkh@linuxfoundation.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hello folks,
+Using dev_warn() instead of printk() for more consistent output.
+(prints device name, etc).
 
+Signed-off-by: Enrico Weigelt <info@metux.net>
+---
+ drivers/tty/serial/ioc4_serial.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-here's another attempt of polishing the serial drivers:
-
-* lots of minor cleanups to make checkpatch happier
-  (eg. formatting, includes, inttypes, ...)
-
-* use appropriate logging helpers instead of printk()
-
-* consequent use of mapsize/mapbase fields:
-  the basic idea is, all drivers should fill mapbase/mapbase fields at
-  init time and later only use those fields, instead of hardcoded values
-  (later on, we can add generic helpers for the map/unmap stuff, etc)
-
-* untwisting serial8250_port_size() at all:
-  move the iomem size probing to initialization time, move out some
-  platform specific magic to corresponding platform code, etc.
-
-
-Unfortunately, I don't have the actual hardware to really test all
-the code, so please let me know if there's something broken in here.
-
-
-have fun,
-
---mtx
+diff --git a/drivers/tty/serial/ioc4_serial.c b/drivers/tty/serial/ioc4_serial.c
+index db5b979..21c1b8f 100644
+--- a/drivers/tty/serial/ioc4_serial.c
++++ b/drivers/tty/serial/ioc4_serial.c
+@@ -2752,7 +2752,7 @@ static int ioc4_serial_remove_one(struct ioc4_driver_data *idd)
+ 		the_port->dev = &pdev->dev;
+ 		spin_lock_init(&the_port->lock);
+ 		if (uart_add_one_port(u_driver, the_port) < 0) {
+-			printk(KERN_WARNING
++			dev_warn(&pdev->dev,
+ 		           "%s: unable to add port %d bus %d\n",
+ 			       __func__, the_port->line, pdev->bus->number);
+ 		} else {
+-- 
+1.9.1
