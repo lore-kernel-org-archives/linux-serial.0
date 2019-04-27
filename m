@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 14/41] drivers: tty: serial: uartlite: remove unnecessary braces
-Date: Sat, 27 Apr 2019 14:51:55 +0200
-Message-ID: <1556369542-13247-15-git-send-email-info@metux.net>
+Subject: [PATCH 05/41] drivers: tty: serial: dz: use pr_info() instead of incomplete printk()
+Date: Sat, 27 Apr 2019 14:51:46 +0200
+Message-ID: <1556369542-13247-6-git-send-email-info@metux.net>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1556369542-13247-1-git-send-email-info@metux.net>
@@ -10,35 +10,29 @@ To: linux-kernel@vger.kernel.org
 Cc: gregkh@linuxfoundation.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-checkpatch complains:
+Fix the checkpatch warning:
 
-    WARNING: braces {} are not necessary for any arm of this statement
-    #489: FILE: drivers/tty/serial/uartlite.c:489:
-    +	if (oops_in_progress) {
-    [...]
-    +	} else
-    [...]
+    WARNING: printk() should include KERN_<LEVEL> facility level
+    #934: FILE: dz.c:934:
+    +	printk("%s%s\n", dz_name, dz_version);
 
 Signed-off-by: Enrico Weigelt <info@metux.net>
 ---
- drivers/tty/serial/uartlite.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/dz.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index c322ab6..4c28600 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -486,9 +486,9 @@ static void ulite_console_write(struct console *co, const char *s,
- 	unsigned int ier;
- 	int locked = 1;
+diff --git a/drivers/tty/serial/dz.c b/drivers/tty/serial/dz.c
+index 559d076..e2670c4 100644
+--- a/drivers/tty/serial/dz.c
++++ b/drivers/tty/serial/dz.c
+@@ -931,7 +931,7 @@ static int __init dz_init(void)
+ 	if (IOASIC)
+ 		return -ENXIO;
  
--	if (oops_in_progress) {
-+	if (oops_in_progress)
- 		locked = spin_trylock_irqsave(&port->lock, flags);
--	} else
-+	else
- 		spin_lock_irqsave(&port->lock, flags);
+-	printk("%s%s\n", dz_name, dz_version);
++	pr_info("%s%s\n", dz_name, dz_version);
  
- 	/* save and disable interrupt */
+ 	dz_init_ports();
+ 
 -- 
 1.9.1
