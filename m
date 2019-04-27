@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 41/41] drivers: tty: serial: lpc32xx_hs: fill mapsize and use it
-Date: Sat, 27 Apr 2019 14:52:22 +0200
-Message-ID: <1556369542-13247-42-git-send-email-info@metux.net>
+Subject: [PATCH 39/41] drivers: tty: serial: pmac_zilog: fill mapsize and use it
+Date: Sat, 27 Apr 2019 14:52:20 +0200
+Message-ID: <1556369542-13247-40-git-send-email-info@metux.net>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1556369542-13247-1-git-send-email-info@metux.net>
@@ -20,48 +20,39 @@ iounmap+release combinations.
 
 Signed-off-by: Enrico Weigelt <info@metux.net>
 ---
- drivers/tty/serial/lpc32xx_hs.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/tty/serial/pmac_zilog.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/lpc32xx_hs.c b/drivers/tty/serial/lpc32xx_hs.c
-index f4e27d0..d1f09aa 100644
---- a/drivers/tty/serial/lpc32xx_hs.c
-+++ b/drivers/tty/serial/lpc32xx_hs.c
-@@ -579,7 +579,7 @@ static void serial_lpc32xx_release_port(struct uart_port *port)
- 			port->membase = NULL;
- 		}
+diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
+index bcb5bf7..1fef014 100644
+--- a/drivers/tty/serial/pmac_zilog.c
++++ b/drivers/tty/serial/pmac_zilog.c
+@@ -88,6 +88,8 @@
+ #define PMACZILOG_NAME		"ttyPZ"
+ #endif
  
--		release_mem_region(port->mapbase, SZ_4K);
-+		release_mem_region(port->mapbase, port->mapsize);
- 	}
- }
++#define PMZ_MAPSIZE		0x1000
++
+ #define pmz_debug(fmt, arg...)	pr_debug("ttyPZ%d: " fmt, uap->port.line, ## arg)
+ #define pmz_error(fmt, arg...)	pr_err("ttyPZ%d: " fmt, uap->port.line, ## arg)
+ #define pmz_info(fmt, arg...)	pr_info("ttyPZ%d: " fmt, uap->port.line, ## arg)
+@@ -1411,7 +1413,8 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
+ 	if (of_address_to_resource(np, 0, &r_ports))
+ 		return -ENODEV;
+ 	uap->port.mapbase = r_ports.start;
+-	uap->port.membase = ioremap(uap->port.mapbase, 0x1000);
++	uap->port.mapsize = PMZ_MAPSIZE;
++	uap->port.membase = ioremap(uap->port.mapbase, uap->port.mapsize);
  
-@@ -590,12 +590,15 @@ static int serial_lpc32xx_request_port(struct uart_port *port)
- 	if ((port->iotype == UPIO_MEM32) && (port->mapbase)) {
- 		ret = 0;
+ 	uap->control_reg = uap->port.membase;
+ 	uap->data_reg = uap->control_reg + 0x10;
+@@ -1709,6 +1712,7 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
+ 		return -ENODEV;
  
--		if (!request_mem_region(port->mapbase, SZ_4K, MODNAME))
-+		if (!request_mem_region(port->mapbase,
-+					port->mapsize, MODNAME))
- 			ret = -EBUSY;
- 		else if (port->flags & UPF_IOREMAP) {
--			port->membase = ioremap(port->mapbase, SZ_4K);
-+			port->membase = ioremap(port->mapbase,
-+						port->mapsize);
- 			if (!port->membase) {
--				release_mem_region(port->mapbase, SZ_4K);
-+				release_mem_region(port->mapbase,
-+						   port->mapsize);
- 				ret = -ENOMEM;
- 			}
- 		}
-@@ -684,6 +687,7 @@ static int serial_hs_lpc32xx_probe(struct platform_device *pdev)
- 		return -ENXIO;
- 	}
- 	p->port.mapbase = res->start;
-+	p->port.mapsize = SZ_4K;
- 	p->port.membase = NULL;
- 
- 	ret = platform_get_irq(pdev, 0);
+ 	uap->port.mapbase  = r_ports->start;
++	uap->port.mapsize  = PMZ_MAPSIZE;
+ 	uap->port.membase  = (unsigned char __iomem *) r_ports->start;
+ 	uap->port.iotype   = UPIO_MEM;
+ 	uap->port.irq      = irq;
 -- 
 1.9.1
