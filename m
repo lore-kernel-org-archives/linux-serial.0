@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 27/41] drivers: tty: serial: sunzilog: fix formatting issues
-Date: Sat, 27 Apr 2019 14:52:08 +0200
-Message-ID: <1556369542-13247-28-git-send-email-info@metux.net>
+Subject: [PATCH 23/41] drivers: tty: serial: cpm_uart: fix styling issues
+Date: Sat, 27 Apr 2019 14:52:04 +0200
+Message-ID: <1556369542-13247-24-git-send-email-info@metux.net>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1556369542-13247-1-git-send-email-info@metux.net>
@@ -10,472 +10,630 @@ To: linux-kernel@vger.kernel.org
 Cc: gregkh@linuxfoundation.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Fix checkpatch warnings:
+Fix checkpatch errors:
 
-    WARNING: Use #include <linux/io.h> instead of <asm/io.h>
-    #38: FILE: drivers/tty/serial/sunzilog.c:38:
-    +#include <asm/io.h>
-
-    WARNING: line over 80 characters
-    #109: FILE: drivers/tty/serial/sunzilog.c:109:
-    +#define ZILOG_CHANNEL_FROM_PORT(PORT)	((struct zilog_channel __iomem *)((PORT)->membase))
+    ERROR: else should follow close brace '}'
+    #121: FILE: drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c:121:
+    +	}
+    +	else
 
     WARNING: line over 80 characters
-    #116: FILE: drivers/tty/serial/sunzilog.c:116:
-    +#define ZS_WANTS_MODEM_STATUS(UP)	((UP)->flags & SUNZILOG_FLAG_MODEM_STATUS)
+    #150: FILE: drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c:150:
+    +					 pinfo->tx_fifosize), (void __force *)pinfo->mem_addr,
 
-    WARNING: line over 80 characters
-    #179: FILE: drivers/tty/serial/sunzilog.c:179:
-    +static int __load_zsregs(struct zilog_channel __iomem *channel, unsigned char *regs)
-
-    WARNING: Missing a blank line after declarations
-    #188: FILE: drivers/tty/serial/sunzilog.c:188:
-    +		unsigned char stat = read_zsreg(channel, R1);
-    +		if (stat & ALL_SNT)
-
-    ERROR: trailing whitespace
-    #231: FILE: drivers/tty/serial/sunzilog.c:231:
-    +^I$
+    WARNING: Block comments should align the * on each line
+    #66: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:66:
+    + * Check, if transmit buffers are processed
+    +*/
 
     WARNING: braces {} are not necessary for any arm of this statement
-    #276: FILE: drivers/tty/serial/sunzilog.c:276:
-    +		if (ZS_TX_ACTIVE(up)) {
+    #170: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:170:
+    +		if (IS_SMC(pinfo)) {
     [...]
     +		} else {
     [...]
 
-    ERROR: else should follow close brace '}'
-    #378: FILE: drivers/tty/serial/sunzilog.c:378:
-    +			}
-    +			else if (r1 & PAR_ERR)
+    WARNING: labels should not be indented
+    #292: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:292:
+    +		      error_return:
 
     ERROR: code indent should use tabs where possible
-    #397: FILE: drivers/tty/serial/sunzilog.c:397:
-    +^I^I    ^Itty_insert_flip_char(port, ch, flag);$
+    #299: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:299:
+    +^I^I                        BD_SC_OV | BD_SC_ID);$
 
-    WARNING: please, no space before tabs
-    #397: FILE: drivers/tty/serial/sunzilog.c:397:
-    +^I^I    ^Itty_insert_flip_char(port, ch, flag);$
-
-    WARNING: line over 80 characters
-    #440: FILE: drivers/tty/serial/sunzilog.c:440:
-    +		/* The Zilog just gives us an interrupt when DCD/CTS/etc. change.
+    WARNING: labels should not be indented
+    #319: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:319:
+    +      handle_error:
 
     WARNING: line over 80 characters
-    #441: FILE: drivers/tty/serial/sunzilog.c:441:
-    +		 * But it does not tell us which bit has changed, we have to keep
+    #423: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:423:
+    +		setbits32(&pinfo->sccp->scc_gsmrl, (SCC_GSMRL_ENR | SCC_GSMRL_ENT));
+
+    ERROR: space required before the open parenthesis '('
+    #451: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:451:
+    +		while(!cpm_uart_tx_empty(port)) {
 
     WARNING: Missing a blank line after declarations
-    #464: FILE: drivers/tty/serial/sunzilog.c:464:
-    +		unsigned char status = readb(&channel->control);
-    +		ZSDELAY();
+    #462: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:462:
+    +			smc_t __iomem *smcp = pinfo->smcp;
+    +			clrbits16(&smcp->smc_smcmr, SMCMR_REN | SMCMR_TEN);
 
     WARNING: line over 80 characters
-    #468: FILE: drivers/tty/serial/sunzilog.c:468:
-    +		 * It can occur because of how we do serial console writes.  It would
-
-    WARNING: line over 80 characters
-    #469: FILE: drivers/tty/serial/sunzilog.c:469:
-    +		 * be nice to transmit console writes just like we normally would for
-
-    WARNING: line over 80 characters
-    #470: FILE: drivers/tty/serial/sunzilog.c:470:
-    +		 * a TTY line. (ie. buffered and TX interrupt driven).  That is not
-
-    WARNING: line over 80 characters
-    #471: FILE: drivers/tty/serial/sunzilog.c:471:
-    +		 * easy because console writes cannot sleep.  One solution might be
-
-    WARNING: line over 80 characters
-    #593: FILE: drivers/tty/serial/sunzilog.c:593:
-    +static __inline__ unsigned char sunzilog_read_channel_status(struct uart_port *port)
-
-    WARNING: plain inline is preferred over __inline__
-    #593: FILE: drivers/tty/serial/sunzilog.c:593:
-    +static __inline__ unsigned char sunzilog_read_channel_status(struct uart_port *port)
-
-    ERROR: trailing whitespace
-    #664: FILE: drivers/tty/serial/sunzilog.c:664:
-    +^I/* NOTE: Not subject to 'transmitter active' rule.  */ $
-
-    ERROR: trailing whitespace
-    #752: FILE: drivers/tty/serial/sunzilog.c:752:
-    +^I^I/* NOTE: Not subject to 'transmitter active' rule.  */ $
-
-    ERROR: trailing whitespace
-    #779: FILE: drivers/tty/serial/sunzilog.c:779:
-    +^I^I/* NOTE: Not subject to 'transmitter active' rule.  */ $
-
-    WARNING: line over 80 characters
-    #999: FILE: drivers/tty/serial/sunzilog.c:999:
-    +static int sunzilog_verify_port(struct uart_port *port, struct serial_struct *ser)
+    #466: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:466:
+    +			clrbits32(&sccp->scc_gsmrl, SCC_GSMRL_ENR | SCC_GSMRL_ENT);
 
     WARNING: Missing a blank line after declarations
-    #1142: FILE: drivers/tty/serial/sunzilog.c:1142:
-    +		unsigned char val = readb(&channel->control);
-    +		if (val & Tx_BUF_EMP) {
+    #466: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:466:
+    +			scc_t __iomem *sccp = pinfo->sccp;
+    +			clrbits32(&sccp->scc_gsmrl, SCC_GSMRL_ENR | SCC_GSMRL_ENT);
 
-    WARNING: Prefer [subsystem eg: netdev]_info([subsystem]dev, ... then dev_info(dev, ... then pr_info(...  to printk(KERN_INFO ...
-    #1230: FILE: drivers/tty/serial/sunzilog.c:1230:
-    +	printk(KERN_INFO "Console: ttyS%d (SunZilog zs%d)\n",
+    ERROR: code indent should use tabs where possible
+    #484: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:484:
+    +                                 struct ktermios *termios,$
 
-    WARNING: braces {} are not necessary for single statement blocks
-    #1383: FILE: drivers/tty/serial/sunzilog.c:1383:
-    +		if (__load_zsregs(channel, up->curregs)) {
-    +			up->flags |= SUNZILOG_FLAG_ESCC;
-    +		}
+    WARNING: please, no spaces at the start of a line
+    #484: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:484:
+    +                                 struct ktermios *termios,$
 
-    WARNING: quoted string split across lines
-    #1493: FILE: drivers/tty/serial/sunzilog.c:1493:
-    +		dev_info(&op->dev, "Keyboard at MMIO 0x%llx (irq = %d) "
-    +		       "is a %s\n",
+    ERROR: code indent should use tabs where possible
+    #485: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:485:
+    +                                 struct ktermios *old)$
 
-    WARNING: quoted string split across lines
-    #1497: FILE: drivers/tty/serial/sunzilog.c:1497:
-    +		dev_info(&op->dev, "Mouse at MMIO 0x%llx (irq = %d) "
-    +		       "is a %s\n",
+    WARNING: please, no spaces at the start of a line
+    #485: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:485:
+    +                                 struct ktermios *old)$
+
+    WARNING: line over 80 characters
+    #624: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:624:
+    +		/* Output in *one* operation, so we don't interrupt RX/TX if they
+
+    WARNING: Block comments use a trailing */ on a separate line
+    #625: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:625:
+    +		 * were already enabled. */
+
+    WARNING: line over 80 characters
+    #629: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:629:
+    +		out_be16(&pinfo->sccup->scc_genscc.scc_mrblr, pinfo->rx_fifosize);
+
+    WARNING: line over 80 characters
+    #773: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:773:
+    +	mem_addr = pinfo->mem_addr + L1_CACHE_ALIGN(pinfo->rx_nrfifos * pinfo->rx_fifosize);
+
+    ERROR: code indent should use tabs where possible
+    #797: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:797:
+    +^I         (u8 __iomem *)pinfo->rx_bd_base - DPRAM_BASE);$
+
+    ERROR: code indent should use tabs where possible
+    #799: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:799:
+    +^I         (u8 __iomem *)pinfo->tx_bd_base - DPRAM_BASE);$
+
+    ERROR: code indent should use tabs where possible
+    #836: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:836:
+    +^I         SCC_GSMRL_MODE_UART | SCC_GSMRL_TDCR_16 | SCC_GSMRL_RDCR_16);$
+
+    ERROR: code indent should use tabs where possible
+    #859: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:859:
+    +^I         (u8 __iomem *)pinfo->rx_bd_base - DPRAM_BASE);$
+
+    ERROR: code indent should use tabs where possible
+    #861: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:861:
+    +^I         (u8 __iomem *)pinfo->tx_bd_base - DPRAM_BASE);$
+
+    WARNING: space prohibited between function name and open parenthesis '('
+    #866: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:866:
+    +#if defined (CONFIG_I2C_SPI_SMC1_UCODE_PATCH)
+
+    WARNING: line over 80 characters
+    #921: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:921:
+    +		clrbits32(&pinfo->sccp->scc_gsmrl, SCC_GSMRL_ENR | SCC_GSMRL_ENT);
 
     WARNING: Missing a blank line after declarations
-    #1581: FILE: drivers/tty/serial/sunzilog.c:1581:
-    +		struct uart_sunzilog_port *up = sunzilog_irq_chain;
-    +		err = request_irq(zilog_irq, sunzilog_interrupt, IRQF_SHARED,
+    #462: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:462:
+    +			smc_t __iomem *smcp = pinfo->smcp;
+    +			clrbits16(&smcp->smc_smcmr,
+
+    WARNING: Missing a blank line after declarations
+    #467: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:467:
+    +			scc_t __iomem *sccp = pinfo->sccp;
+    +			clrbits32(&sccp->scc_gsmrl,
+
+    ERROR: code indent should use tabs where possible
+    #1151: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:1151:
+    +                              struct uart_cpm_port *pinfo)$
+
+    WARNING: please, no spaces at the start of a line
+    #1151: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:1151:
+    +                              struct uart_cpm_port *pinfo)$
+
+    ERROR: "(foo*)" should be "(foo *)"
+    #1161: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:1161:
+    +		struct clk *clk = clk_get(NULL, (const char*)data);
+
+    WARNING: Missing a blank line after declarations
+    #1162: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:1162:
+    +		struct clk *clk = clk_get(NULL, (const char*)data);
+    +		if (!IS_ERR(clk))
+
+    ERROR: code indent should use tabs where possible
+    #1169: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:1169:
+    +^I^I^I                "fsl,cpm-brg property.\n", np);$
+
+    ERROR: code indent should use tabs where possible
+    #1178: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:1178:
+    +^I^I                "fsl,cpm-command property.\n", np);$
+
+    ERROR: code indent should use tabs where possible
+    #1192: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:1192:
+
+    WARNING: braces {} are not necessary for any arm of this statement
+    #1279: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:1279:
+    +	if (unlikely(nolock)) {
+    [...]
+    +	} else {
+    [...]
+
+    WARNING: braces {} are not necessary for any arm of this statement
+    #1287: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:1287:
+    +	if (unlikely(nolock)) {
+    [...]
+    +	} else {
+    [...]
 
     WARNING: line over 80 characters
-    #1590: FILE: drivers/tty/serial/sunzilog.c:1590:
-    +			/* printk (KERN_INFO "Enable IRQ for ZILOG Hardware %p\n", up); */
+    #1354: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:1354:
+    +		clrbits32(&pinfo->sccp->scc_gsmrl, SCC_GSMRL_ENR | SCC_GSMRL_ENT);
 
-    WARNING: line over 80 characters
-    #1627: FILE: drivers/tty/serial/sunzilog.c:1627:
-    +			/* printk (KERN_INFO "Disable IRQ for ZILOG Hardware %p\n", up); */
+    ERROR: Macros with complex values should be enclosed in parentheses
+    #1394: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:1394:
+    +#define CPM_UART_CONSOLE	&cpm_scc_uart_console
 
-    ERROR: trailing statements should be on next line
-    #1248: FILE: drivers/tty/serial/sunzilog.c:1248:
-    +	case B150: baud = 150; break;
+    WARNING: Missing a blank line after declarations
+    #1437: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:1437:
+    +	struct uart_cpm_port *pinfo = platform_get_drvdata(ofdev);
+    +	return uart_remove_one_port(&cpm_reg, &pinfo->port);
 
-    ERROR: trailing statements should be on next line
-    #1249: FILE: drivers/tty/serial/sunzilog.c:1249:
-    +	case B300: baud = 300; break;
+    WARNING: please, no spaces at the start of a line
+    #1464: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:1464:
+    + };$
 
-    ERROR: trailing statements should be on next line
-    #1250: FILE: drivers/tty/serial/sunzilog.c:1250:
-    +	case B600: baud = 600; break;
+    WARNING: Missing a blank line after declarations
+    #1469: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:1469:
+    +	int ret = uart_register_driver(&cpm_reg);
+    +	if (ret)
 
-    ERROR: trailing statements should be on next line
-    #1251: FILE: drivers/tty/serial/sunzilog.c:1251:
-    +	case B1200: baud = 1200; break;
+    WARNING: Missing a blank line after declarations
+    #1062: FILE: drivers/tty/serial/cpm_uart/cpm_uart_core.c:1062:
+    +	int		i;
+    +	volatile cbd_t	*bdp;
 
-    ERROR: trailing statements should be on next line
-    #1252: FILE: drivers/tty/serial/sunzilog.c:1252:
-    +	case B2400: baud = 2400; break;
+    ERROR: "foo * bar" should be "foo *bar"
+    #19: FILE: drivers/tty/serial/cpm_uart/cpm_uart_cpm1.h:19:
+    +static inline void cpm_set_scc_fcr(scc_uart_t __iomem * sup)
 
-    ERROR: trailing statements should be on next line
-    #1253: FILE: drivers/tty/serial/sunzilog.c:1253:
-    +	case B4800: baud = 4800; break;
+    ERROR: "foo * bar" should be "foo *bar"
+    #25: FILE: drivers/tty/serial/cpm_uart/cpm_uart_cpm1.h:25:
+    +static inline void cpm_set_smc_fcr(smc_uart_t __iomem * up)
 
-    ERROR: trailing statements should be on next line
-    #1254: FILE: drivers/tty/serial/sunzilog.c:1254:
-    +	default: case B9600: baud = 9600; break;
+    WARNING: Improper SPDX comment style for 'drivers/tty/serial/cpm_uart/cpm_uart.h', please use '/*' instead
+    #1: FILE: drivers/tty/serial/cpm_uart/cpm_uart.h:1:
+    +// SPDX-License-Identifier: GPL-2.0
 
-    ERROR: trailing statements should be on next line
-    #1255: FILE: drivers/tty/serial/sunzilog.c:1255:
-    +	case B19200: baud = 19200; break;
+    WARNING: Missing or malformed SPDX-License-Identifier tag in line 1
+    #1: FILE: drivers/tty/serial/cpm_uart/cpm_uart.h:1:
+    +// SPDX-License-Identifier: GPL-2.0
 
-    ERROR: trailing statements should be on next line
-    #1256: FILE: drivers/tty/serial/sunzilog.c:1256:
-    +	case B38400: baud = 38400; break;
+    WARNING: Block comments use * on subsequent lines
+    #106: FILE: drivers/tty/serial/cpm_uart/cpm_uart.h:106:
+    +/*
+    +   virtual to phys transtalion
+
+    ERROR: code indent should use tabs where possible
+    #109: FILE: drivers/tty/serial/cpm_uart/cpm_uart.h:109:
+    +                                         struct uart_cpm_port *pinfo)$
+
+    WARNING: please, no spaces at the start of a line
+    #109: FILE: drivers/tty/serial/cpm_uart/cpm_uart.h:109:
+    +                                         struct uart_cpm_port *pinfo)$
+
+    ERROR: code indent should use tabs where possible
+    #125: FILE: drivers/tty/serial/cpm_uart/cpm_uart.h:125:
+    +                                 struct uart_cpm_port *pinfo)$
+
+    WARNING: please, no spaces at the start of a line
+    #125: FILE: drivers/tty/serial/cpm_uart/cpm_uart.h:125:
+    +                                 struct uart_cpm_port *pinfo)$
 
 Signed-off-by: Enrico Weigelt <info@metux.net>
 ---
- drivers/tty/serial/sunzilog.c | 118 +++++++++++++++++++++++++++---------------
- 1 file changed, 76 insertions(+), 42 deletions(-)
+ drivers/tty/serial/cpm_uart/cpm_uart.h      | 10 +--
+ drivers/tty/serial/cpm_uart/cpm_uart_core.c | 95 ++++++++++++++++-------------
+ drivers/tty/serial/cpm_uart/cpm_uart_cpm1.h |  4 +-
+ drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c |  6 +-
+ 4 files changed, 64 insertions(+), 51 deletions(-)
 
-diff --git a/drivers/tty/serial/sunzilog.c b/drivers/tty/serial/sunzilog.c
-index 6285bba..17b0520 100644
---- a/drivers/tty/serial/sunzilog.c
-+++ b/drivers/tty/serial/sunzilog.c
-@@ -106,14 +106,17 @@ struct uart_sunzilog_port {
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart.h b/drivers/tty/serial/cpm_uart/cpm_uart.h
+index 9f175a9..e7e225f 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart.h
++++ b/drivers/tty/serial/cpm_uart/cpm_uart.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++/* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  *  Driver for CPM (SCC/SMC) serial ports
+  *
+@@ -103,10 +103,10 @@ void __iomem *cpm_uart_map_pram(struct uart_cpm_port *port,
+ void scc4_lineif(struct uart_cpm_port *pinfo);
  
- static void sunzilog_putchar(struct uart_port *port, int ch);
- 
--#define ZILOG_CHANNEL_FROM_PORT(PORT)	((struct zilog_channel __iomem *)((PORT)->membase))
--#define UART_ZILOG(PORT)		((struct uart_sunzilog_port *)(PORT))
-+#define ZILOG_CHANNEL_FROM_PORT(PORT)	\
-+	((struct zilog_channel __iomem *)((PORT)->membase))
-+#define UART_ZILOG(PORT)		\
-+	((struct uart_sunzilog_port *)(PORT))
- 
- #define ZS_IS_KEYB(UP)	((UP)->flags & SUNZILOG_FLAG_CONS_KEYB)
- #define ZS_IS_MOUSE(UP)	((UP)->flags & SUNZILOG_FLAG_CONS_MOUSE)
- #define ZS_IS_CONS(UP)	((UP)->flags & SUNZILOG_FLAG_IS_CONS)
- #define ZS_IS_KGDB(UP)	((UP)->flags & SUNZILOG_FLAG_IS_KGDB)
--#define ZS_WANTS_MODEM_STATUS(UP)	((UP)->flags & SUNZILOG_FLAG_MODEM_STATUS)
-+#define ZS_WANTS_MODEM_STATUS(UP)	\
-+	((UP)->flags & SUNZILOG_FLAG_MODEM_STATUS)
- #define ZS_IS_CHANNEL_A(UP)	((UP)->flags & SUNZILOG_FLAG_IS_CHANNEL_A)
- #define ZS_REGS_HELD(UP)	((UP)->flags & SUNZILOG_FLAG_REGS_HELD)
- #define ZS_TX_STOPPED(UP)	((UP)->flags & SUNZILOG_FLAG_TX_STOPPED)
-@@ -176,7 +179,8 @@ static void sunzilog_clear_fifo(struct zilog_channel __iomem *channel)
- /* This function must only be called when the TX is not busy.  The UART
-  * port lock must be held and local interrupts disabled.
-  */
--static int __load_zsregs(struct zilog_channel __iomem *channel, unsigned char *regs)
-+static int __load_zsregs(struct zilog_channel __iomem *channel,
-+			 unsigned char *regs)
+ /*
+-   virtual to phys transtalion
+-*/
++ * virtual to phys transtalion
++ */
+ static inline unsigned long cpu2cpm_addr(void *addr,
+-                                         struct uart_cpm_port *pinfo)
++					 struct uart_cpm_port *pinfo)
  {
- 	int i;
- 	int escc;
-@@ -185,6 +189,7 @@ static int __load_zsregs(struct zilog_channel __iomem *channel, unsigned char *r
- 	/* Let pending transmits finish.  */
- 	for (i = 0; i < 1000; i++) {
- 		unsigned char stat = read_zsreg(channel, R1);
-+
- 		if (stat & ALL_SNT)
- 			break;
- 		udelay(100);
-@@ -228,7 +233,7 @@ static int __load_zsregs(struct zilog_channel __iomem *channel, unsigned char *r
- 	/* Lower and upper byte of baud rate generator divisor.  */
- 	write_zsreg(channel, R12, regs[R12]);
- 	write_zsreg(channel, R13, regs[R13]);
--	
-+
- 	/* Now rewrite R14, with BRENAB (if set).  */
- 	write_zsreg(channel, R14, regs[R14]);
+ 	int offset;
+ 	u32 val = (u32)addr;
+@@ -122,7 +122,7 @@ static inline unsigned long cpu2cpm_addr(void *addr,
+ }
  
-@@ -273,11 +278,10 @@ static void sunzilog_maybe_update_regs(struct uart_sunzilog_port *up,
- 				       struct zilog_channel __iomem *channel)
+ static inline void *cpm2cpu_addr(unsigned long addr,
+-                                 struct uart_cpm_port *pinfo)
++				 struct uart_cpm_port *pinfo)
  {
- 	if (!ZS_REGS_HELD(up)) {
--		if (ZS_TX_ACTIVE(up)) {
-+		if (ZS_TX_ACTIVE(up))
- 			up->flags |= SUNZILOG_FLAG_REGS_HELD;
+ 	int offset;
+ 	u32 val = addr;
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+index c831d31..4d6cea9 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+@@ -63,7 +63,7 @@
+ 
+ /*
+  * Check, if transmit buffers are processed
+-*/
++ */
+ static unsigned int cpm_uart_tx_empty(struct uart_port *port)
+ {
+ 	struct uart_cpm_port *pinfo =
+@@ -167,11 +167,10 @@ static void cpm_uart_start_tx(struct uart_port *port)
+ 	}
+ 
+ 	if (cpm_uart_tx_pump(port) != 0) {
+-		if (IS_SMC(pinfo)) {
++		if (IS_SMC(pinfo))
+ 			setbits8(&smcp->smc_smcm, SMCM_TX);
 -		} else {
 +		else
- 			__load_zsregs(channel, up->curregs);
+ 			setbits16(&sccp->scc_sccm, UART_SCCM_TX);
 -		}
  	}
  }
  
-@@ -374,8 +378,7 @@ static void sunzilog_kbdms_receive_chars(struct uart_sunzilog_port *up,
- 				up->port.icount.brk++;
- 				if (uart_handle_break(&up->port))
- 					continue;
--			}
--			else if (r1 & PAR_ERR)
-+			} else if (r1 & PAR_ERR)
- 				up->port.icount.parity++;
- 			else if (r1 & CRC_ERR)
- 				up->port.icount.frame++;
-@@ -394,7 +397,7 @@ static void sunzilog_kbdms_receive_chars(struct uart_sunzilog_port *up,
+@@ -289,14 +288,14 @@ static void cpm_uart_int_rx(struct uart_port *port)
+ 				return;
+ 			}
+ #endif
+-		      error_return:
++error_return:
+ 			tty_insert_flip_char(tport, ch, flg);
  
- 		if (up->port.ignore_status_mask == 0xff ||
- 		    (r1 & up->port.ignore_status_mask) == 0) {
--		    	tty_insert_flip_char(port, ch, flag);
-+			tty_insert_flip_char(port, ch, flag);
- 		}
- 		if (r1 & Rx_OVR)
- 			tty_insert_flip_char(port, 0, TTY_OVERRUN);
-@@ -437,9 +440,9 @@ static void sunzilog_status_handle(struct uart_sunzilog_port *up,
- 		if (status & SYNC)
- 			up->port.icount.dsr++;
+ 		}		/* End while (i--) */
  
--		/* The Zilog just gives us an interrupt when DCD/CTS/etc. change.
--		 * But it does not tell us which bit has changed, we have to keep
--		 * track of this ourselves.
-+		/* The Zilog just gives us an interrupt when DCD/CTS/etc.
-+		 * change.But it does not tell us which bit has changed,
-+		 * we have to keep track of this ourselves.
- 		 */
- 		if ((status ^ up->prev_status) ^ DCD)
- 			uart_handle_dcd_change(&up->port,
-@@ -461,15 +464,17 @@ static void sunzilog_transmit_chars(struct uart_sunzilog_port *up,
+ 		/* This BD is ready to be used again. Clear status. get next */
+ 		clrbits16(&bdp->cbd_sc, BD_SC_BR | BD_SC_FR | BD_SC_PR |
+-		                        BD_SC_OV | BD_SC_ID);
++					BD_SC_OV | BD_SC_ID);
+ 		setbits16(&bdp->cbd_sc, BD_SC_EMPTY);
  
- 	if (ZS_IS_CONS(up)) {
- 		unsigned char status = readb(&channel->control);
-+
- 		ZSDELAY();
+ 		if (in_be16(&bdp->cbd_sc) & BD_SC_WRAP)
+@@ -316,7 +315,7 @@ static void cpm_uart_int_rx(struct uart_port *port)
  
- 		/* TX still busy?  Just wait for the next TX done interrupt.
- 		 *
--		 * It can occur because of how we do serial console writes.  It would
--		 * be nice to transmit console writes just like we normally would for
--		 * a TTY line. (ie. buffered and TX interrupt driven).  That is not
--		 * easy because console writes cannot sleep.  One solution might be
--		 * to poll on enough port->xmit space becoming free.  -DaveM
-+		 * It can occur because of how we do serial console writes.
-+		 * It would be nice to transmit console writes just like we
-+		 * normally would for a TTY line. (ie. buffered and TX
-+		 * interrupt driven).  That is not easy because console
-+		 * writes cannot sleep.  One solution might be to poll on
-+		 * enough port->xmit space becoming free.  -DaveM
- 		 */
- 		if (!(status & Tx_BUF_EMP))
- 			return;
-@@ -590,7 +595,8 @@ static irqreturn_t sunzilog_interrupt(int irq, void *dev_id)
- /* A convenient way to quickly get R0 status.  The caller must _not_ hold the
-  * port lock, it is acquired here.
-  */
--static __inline__ unsigned char sunzilog_read_channel_status(struct uart_port *port)
-+static inline unsigned char
-+sunzilog_read_channel_status(struct uart_port *port)
- {
- 	struct zilog_channel __iomem *channel;
- 	unsigned char status;
-@@ -661,13 +667,13 @@ static void sunzilog_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 	else
- 		clear_bits |= DTR;
+ 	/* Error processing */
  
--	/* NOTE: Not subject to 'transmitter active' rule.  */ 
-+	/* NOTE: Not subject to 'transmitter active' rule. */
- 	up->curregs[R5] |= set_bits;
- 	up->curregs[R5] &= ~clear_bits;
- 	write_zsreg(channel, R5, up->curregs[R5]);
- }
- 
--/* The port lock is held and interrupts are disabled.  */
-+/* The port lock is held and interrupts are disabled. */
- static void sunzilog_stop_tx(struct uart_port *port)
- {
- 	struct uart_sunzilog_port *up =
-@@ -749,7 +755,7 @@ static void sunzilog_enable_ms(struct uart_port *port)
- 	if (new_reg != up->curregs[R15]) {
- 		up->curregs[R15] = new_reg;
- 
--		/* NOTE: Not subject to 'transmitter active' rule.  */ 
-+		/* NOTE: Not subject to 'transmitter active' rule. */
- 		write_zsreg(channel, R15, up->curregs[R15] & ~WR7pEN);
- 	}
- }
-@@ -776,7 +782,7 @@ static void sunzilog_break_ctl(struct uart_port *port, int break_state)
- 	if (new_reg != up->curregs[R5]) {
- 		up->curregs[R5] = new_reg;
- 
--		/* NOTE: Not subject to 'transmitter active' rule.  */ 
-+		/* NOTE: Not subject to 'transmitter active' rule. */
- 		write_zsreg(channel, R5, up->curregs[R5]);
- 	}
- 
-@@ -996,7 +1002,8 @@ static void sunzilog_config_port(struct uart_port *port, int flags)
- }
- 
- /* We do not support letting the user mess with the divisor, IRQ, etc. */
--static int sunzilog_verify_port(struct uart_port *port, struct serial_struct *ser)
-+static int sunzilog_verify_port(struct uart_port *port,
-+				struct serial_struct *ser)
- {
- 	return -EINVAL;
- }
-@@ -1139,6 +1146,7 @@ static void sunzilog_putchar(struct uart_port *port, int ch)
- 	 */
- 	do {
- 		unsigned char val = readb(&channel->control);
-+
- 		if (val & Tx_BUF_EMP) {
- 			ZSDELAY();
- 			break;
-@@ -1237,15 +1245,34 @@ static int __init sunzilog_console_setup(struct console *con, char *options)
- 	 * this hackish cflag thing is OK.
- 	 */
- 	switch (con->cflag & CBAUD) {
--	case B150: baud = 150; break;
--	case B300: baud = 300; break;
--	case B600: baud = 600; break;
--	case B1200: baud = 1200; break;
--	case B2400: baud = 2400; break;
--	case B4800: baud = 4800; break;
--	default: case B9600: baud = 9600; break;
--	case B19200: baud = 19200; break;
--	case B38400: baud = 38400; break;
-+	case B150:
-+		baud = 150;
-+		break;
-+	case B300:
-+		baud = 300;
-+		break;
-+	case B600:
-+		baud = 600;
-+		break;
-+	case B1200:
-+		baud = 1200;
-+		break;
-+	case B2400:
-+		baud = 2400;
-+		break;
-+	case B4800:
-+		baud = 4800;
-+		break;
-+	default:
-+	case B9600:
-+		baud = 9600;
-+		break;
-+	case B19200:
-+		baud = 19200;
-+		break;
-+	case B38400:
-+		baud = 38400;
-+		break;
- 	}
- 
- 	brg = BPS_TO_BRG(baud, ZS_CLOCK / ZS_CLOCK_DIVISOR);
-@@ -1380,9 +1407,9 @@ static void sunzilog_init_hw(struct uart_sunzilog_port *up)
- 		up->curregs[R14] = BRSRC | BRENAB;
- 		up->curregs[R15] = FIFOEN; /* Use FIFO if on ESCC */
- 		up->curregs[R7p] = TxFIFO_LVL | RxFIFO_LVL;
--		if (__load_zsregs(channel, up->curregs)) {
-+		if (__load_zsregs(channel, up->curregs))
- 			up->flags |= SUNZILOG_FLAG_ESCC;
--		}
-+
- 		/* Only enable interrupts if an ISR handler available */
- 		if (up->flags & SUNZILOG_FLAG_ISR_HANDLER)
- 			up->curregs[R9] |= MIE;
-@@ -1489,12 +1516,12 @@ static int zs_probe(struct platform_device *op)
- 		}
- 		uart_inst++;
+-      handle_error:
++handle_error:
+ 	/* Statistics */
+ 	if (status & BD_SC_BR)
+ 		port->icount.brk++;
+@@ -420,7 +419,8 @@ static int cpm_uart_startup(struct uart_port *port)
+ 		setbits16(&pinfo->smcp->smc_smcmr, (SMCMR_REN | SMCMR_TEN));
  	} else {
--		dev_info(&op->dev, "Keyboard at MMIO 0x%llx (irq = %d) "
--		       "is a %s\n",
-+		dev_info(&op->dev,
-+		       "Keyboard at MMIO 0x%llx (irq = %d) is a %s\n",
- 		       (unsigned long long) up[0].port.mapbase,
- 		       op->archdata.irqs[0], sunzilog_type(&up[0].port));
--		dev_info(&op->dev, "Mouse at MMIO 0x%llx (irq = %d) "
--		       "is a %s\n",
-+		dev_info(&op->dev,
-+		       "Mouse at MMIO 0x%llx (irq = %d) is a %s\n",
- 		       (unsigned long long) up[1].port.mapbase,
- 		       op->archdata.irqs[0], sunzilog_type(&up[1].port));
- 		kbm_inst++;
-@@ -1578,6 +1605,7 @@ static int __init sunzilog_init(void)
+ 		setbits16(&pinfo->sccp->scc_sccm, UART_SCCM_RX);
+-		setbits32(&pinfo->sccp->scc_gsmrl, (SCC_GSMRL_ENR | SCC_GSMRL_ENT));
++		setbits32(&pinfo->sccp->scc_gsmrl,
++			  (SCC_GSMRL_ENR | SCC_GSMRL_ENT));
+ 	}
  
- 	if (zilog_irq) {
- 		struct uart_sunzilog_port *up = sunzilog_irq_chain;
+ 	return 0;
+@@ -448,7 +448,7 @@ static void cpm_uart_shutdown(struct uart_port *port)
+ 	/* If the port is not the console, disable Rx and Tx. */
+ 	if (!(pinfo->flags & FLAG_CONSOLE)) {
+ 		/* Wait for all the BDs marked sent */
+-		while(!cpm_uart_tx_empty(port)) {
++		while (!cpm_uart_tx_empty(port)) {
+ 			set_current_state(TASK_UNINTERRUPTIBLE);
+ 			schedule_timeout(2);
+ 		}
+@@ -459,12 +459,17 @@ static void cpm_uart_shutdown(struct uart_port *port)
+ 		/* Stop uarts */
+ 		if (IS_SMC(pinfo)) {
+ 			smc_t __iomem *smcp = pinfo->smcp;
+-			clrbits16(&smcp->smc_smcmr, SMCMR_REN | SMCMR_TEN);
 +
- 		err = request_irq(zilog_irq, sunzilog_interrupt, IRQF_SHARED,
- 				  "zs", sunzilog_irq_chain);
- 		if (err)
-@@ -1587,7 +1615,10 @@ static int __init sunzilog_init(void)
- 		while (up) {
- 			struct zilog_channel __iomem *channel;
++			clrbits16(&smcp->smc_smcmr,
++				  SMCMR_REN | SMCMR_TEN);
+ 			clrbits8(&smcp->smc_smcm, SMCM_RX | SMCM_TX);
+ 		} else {
+ 			scc_t __iomem *sccp = pinfo->sccp;
+-			clrbits32(&sccp->scc_gsmrl, SCC_GSMRL_ENR | SCC_GSMRL_ENT);
+-			clrbits16(&sccp->scc_sccm, UART_SCCM_TX | UART_SCCM_RX);
++
++			clrbits32(&sccp->scc_gsmrl,
++				  SCC_GSMRL_ENR | SCC_GSMRL_ENT);
++			clrbits16(&sccp->scc_sccm,
++				  UART_SCCM_TX | UART_SCCM_RX);
+ 		}
  
--			/* printk (KERN_INFO "Enable IRQ for ZILOG Hardware %p\n", up); */
-+			/* printk(KERN_INFO
-+			 *        "Enable IRQ for ZILOG Hardware %p\n",
-+			 *        up);
-+			 */
- 			channel          = ZILOG_CHANNEL_FROM_PORT(&up->port);
- 			up->flags       |= SUNZILOG_FLAG_ISR_HANDLER;
- 			up->curregs[R9] |= MIE;
-@@ -1624,7 +1655,10 @@ static void __exit sunzilog_exit(void)
- 		while (up) {
- 			struct zilog_channel __iomem *channel;
+ 		/* Shut them really down and reinit buffer descriptors */
+@@ -481,8 +486,8 @@ static void cpm_uart_shutdown(struct uart_port *port)
+ }
  
--			/* printk (KERN_INFO "Disable IRQ for ZILOG Hardware %p\n", up); */
-+			/* printk(KERN_INFO
-+			 *        "Disable IRQ for ZILOG Hardware %p\n",
-+			 *        up);
-+			 */
- 			channel          = ZILOG_CHANNEL_FROM_PORT(&up->port);
- 			up->flags       &= ~SUNZILOG_FLAG_ISR_HANDLER;
- 			up->curregs[R9] &= ~MIE;
+ static void cpm_uart_set_termios(struct uart_port *port,
+-                                 struct ktermios *termios,
+-                                 struct ktermios *old)
++				 struct ktermios *termios,
++				 struct ktermios *old)
+ {
+ 	int baud;
+ 	unsigned long flags;
+@@ -621,12 +626,14 @@ static void cpm_uart_set_termios(struct uart_port *port,
+ 		 * present.
+ 		 */
+ 		prev_mode = in_be16(&smcp->smc_smcmr) & (SMCMR_REN | SMCMR_TEN);
+-		/* Output in *one* operation, so we don't interrupt RX/TX if they
+-		 * were already enabled. */
++		/* Output in *one* operation, so we don't interrupt RX/TX if
++		 * they were already enabled.
++		 */
+ 		out_be16(&smcp->smc_smcmr, smcr_mk_clen(bits) | cval |
+ 		    SMCMR_SM_UART | prev_mode);
+ 	} else {
+-		out_be16(&pinfo->sccup->scc_genscc.scc_mrblr, pinfo->rx_fifosize);
++		out_be16(&pinfo->sccup->scc_genscc.scc_mrblr,
++			 pinfo->rx_fifosize);
+ 		out_be16(&pinfo->sccup->scc_maxidl, maxidl);
+ 		out_be16(&sccp->scc_psmr, (sbits << 12) | scval);
+ 	}
+@@ -770,7 +777,8 @@ static void cpm_uart_initbd(struct uart_cpm_port *pinfo)
+ 	 * buffers in the buffer descriptors, and the
+ 	 * virtual address for us to work with.
+ 	 */
+-	mem_addr = pinfo->mem_addr + L1_CACHE_ALIGN(pinfo->rx_nrfifos * pinfo->rx_fifosize);
++	mem_addr = pinfo->mem_addr +
++		   L1_CACHE_ALIGN(pinfo->rx_nrfifos * pinfo->rx_fifosize);
+ 	bdp = pinfo->tx_cur = pinfo->tx_bd_base;
+ 	for (i = 0; i < (pinfo->tx_nrfifos - 1); i++, bdp++) {
+ 		out_be32(&bdp->cbd_bufaddr, cpu2cpm_addr(mem_addr, pinfo));
+@@ -794,9 +802,9 @@ static void cpm_uart_init_scc(struct uart_cpm_port *pinfo)
+ 
+ 	/* Store address */
+ 	out_be16(&pinfo->sccup->scc_genscc.scc_rbase,
+-	         (u8 __iomem *)pinfo->rx_bd_base - DPRAM_BASE);
++		 (u8 __iomem *)pinfo->rx_bd_base - DPRAM_BASE);
+ 	out_be16(&pinfo->sccup->scc_genscc.scc_tbase,
+-	         (u8 __iomem *)pinfo->tx_bd_base - DPRAM_BASE);
++		 (u8 __iomem *)pinfo->tx_bd_base - DPRAM_BASE);
+ 
+ 	/* Set up the uart parameters in the
+ 	 * parameter ram.
+@@ -833,7 +841,7 @@ static void cpm_uart_init_scc(struct uart_cpm_port *pinfo)
+ 	 */
+ 	out_be32(&scp->scc_gsmrh, 0);
+ 	out_be32(&scp->scc_gsmrl,
+-	         SCC_GSMRL_MODE_UART | SCC_GSMRL_TDCR_16 | SCC_GSMRL_RDCR_16);
++		 SCC_GSMRL_MODE_UART | SCC_GSMRL_TDCR_16 | SCC_GSMRL_RDCR_16);
+ 
+ 	/* Enable rx interrupts  and clear all pending events.  */
+ 	out_be16(&scp->scc_sccm, 0);
+@@ -856,14 +864,14 @@ static void cpm_uart_init_smc(struct uart_cpm_port *pinfo)
+ 
+ 	/* Store address */
+ 	out_be16(&pinfo->smcup->smc_rbase,
+-	         (u8 __iomem *)pinfo->rx_bd_base - DPRAM_BASE);
++		 (u8 __iomem *)pinfo->rx_bd_base - DPRAM_BASE);
+ 	out_be16(&pinfo->smcup->smc_tbase,
+-	         (u8 __iomem *)pinfo->tx_bd_base - DPRAM_BASE);
++		 (u8 __iomem *)pinfo->tx_bd_base - DPRAM_BASE);
+ 
+ /*
+  *  In case SMC1 is being relocated...
+  */
+-#if defined (CONFIG_I2C_SPI_SMC1_UCODE_PATCH)
++#if defined(CONFIG_I2C_SPI_SMC1_UCODE_PATCH)
+ 	out_be16(&up->smc_rbptr, in_be16(&pinfo->smcup->smc_rbase));
+ 	out_be16(&up->smc_tbptr, in_be16(&pinfo->smcup->smc_tbase));
+ 	out_be32(&up->smc_rstate, 0);
+@@ -917,8 +925,10 @@ static int cpm_uart_request_port(struct uart_port *port)
+ 		clrbits8(&pinfo->smcp->smc_smcm, SMCM_RX | SMCM_TX);
+ 		clrbits16(&pinfo->smcp->smc_smcmr, SMCMR_REN | SMCMR_TEN);
+ 	} else {
+-		clrbits16(&pinfo->sccp->scc_sccm, UART_SCCM_TX | UART_SCCM_RX);
+-		clrbits32(&pinfo->sccp->scc_gsmrl, SCC_GSMRL_ENR | SCC_GSMRL_ENT);
++		clrbits16(&pinfo->sccp->scc_sccm,
++			  UART_SCCM_TX | UART_SCCM_RX);
++		clrbits32(&pinfo->sccp->scc_gsmrl,
++			  SCC_GSMRL_ENR | SCC_GSMRL_ENT);
+ 	}
+ 
+ 	ret = cpm_uart_allocbuf(pinfo, 0);
+@@ -1048,9 +1058,10 @@ static void cpm_uart_early_write(struct uart_cpm_port *pinfo,
+ static int poll_wait_key(char *obuf, struct uart_cpm_port *pinfo)
+ {
+ 	u_char		c, *cp;
+-	volatile cbd_t	*bdp;
+ 	int		i;
+ 
++	volatile cbd_t	*bdp;
++
+ 	/* Get the address of the host memory buffer.
+ 	 */
+ 	bdp = pinfo->rx_cur;
+@@ -1138,7 +1149,7 @@ static void cpm_put_poll_char(struct uart_port *port,
+ struct uart_cpm_port cpm_uart_ports[UART_NR];
+ 
+ static int cpm_uart_init_port(struct device_node *np,
+-                              struct uart_cpm_port *pinfo)
++			      struct uart_cpm_port *pinfo)
+ {
+ 	const u32 *data;
+ 	void __iomem *mem, *pram;
+@@ -1148,7 +1159,8 @@ static int cpm_uart_init_port(struct device_node *np,
+ 
+ 	data = of_get_property(np, "clock", NULL);
+ 	if (data) {
+-		struct clk *clk = clk_get(NULL, (const char*)data);
++		struct clk *clk = clk_get(NULL, (const char *)data);
++
+ 		if (!IS_ERR(clk))
+ 			pinfo->clk = clk;
+ 	}
+@@ -1156,7 +1168,7 @@ static int cpm_uart_init_port(struct device_node *np,
+ 		data = of_get_property(np, "fsl,cpm-brg", &len);
+ 		if (!data || len != 4) {
+ 			dev_err(port->dev, "CPM UART %pOFn has no/invalid "
+-			                "fsl,cpm-brg property.\n", np);
++					   "fsl,cpm-brg property.\n", np);
+ 			return -EINVAL;
+ 		}
+ 		pinfo->brg = *data;
+@@ -1165,7 +1177,7 @@ static int cpm_uart_init_port(struct device_node *np,
+ 	data = of_get_property(np, "fsl,cpm-command", &len);
+ 	if (!data || len != 4) {
+ 		dev_err(port->dev, "CPM UART %pOFn has no/invalid "
+-		                "fsl,cpm-command property.\n", np);
++				   "fsl,cpm-command property.\n", np);
+ 		return -EINVAL;
+ 	}
+ 	pinfo->command = *data;
+@@ -1179,7 +1191,7 @@ static int cpm_uart_init_port(struct device_node *np,
+ 		pinfo->sccp = mem;
+ 		pinfo->sccup = pram = cpm_uart_map_pram(pinfo, np);
+ 	} else if (of_device_is_compatible(np, "fsl,cpm1-smc-uart") ||
+-	           of_device_is_compatible(np, "fsl,cpm2-smc-uart")) {
++		   of_device_is_compatible(np, "fsl,cpm2-smc-uart")) {
+ 		pinfo->flags |= FLAG_SMC;
+ 		pinfo->smcp = mem;
+ 		pinfo->smcup = pram = cpm_uart_map_pram(pinfo, np);
+@@ -1266,19 +1278,17 @@ static void cpm_uart_console_write(struct console *co, const char *s,
+ 	unsigned long flags;
+ 	int nolock = oops_in_progress;
+ 
+-	if (unlikely(nolock)) {
++	if (unlikely(nolock))
+ 		local_irq_save(flags);
+-	} else {
++	else
+ 		spin_lock_irqsave(&pinfo->port.lock, flags);
+-	}
+ 
+ 	cpm_uart_early_write(pinfo, s, count, true);
+ 
+-	if (unlikely(nolock)) {
++	if (unlikely(nolock))
+ 		local_irq_restore(flags);
+-	} else {
++	else
+ 		spin_unlock_irqrestore(&pinfo->port.lock, flags);
+-	}
+ }
+ 
+ 
+@@ -1341,7 +1351,8 @@ static int __init cpm_uart_console_setup(struct console *co, char *options)
+ 		out_be16(&pinfo->sccup->scc_brkcr, 0);
+ 		cpm_line_cr_cmd(pinfo, CPM_CR_GRA_STOP_TX);
+ 		clrbits16(&pinfo->sccp->scc_sccm, UART_SCCM_TX | UART_SCCM_RX);
+-		clrbits32(&pinfo->sccp->scc_gsmrl, SCC_GSMRL_ENR | SCC_GSMRL_ENT);
++		clrbits32(&pinfo->sccp->scc_gsmrl,
++			  SCC_GSMRL_ENR | SCC_GSMRL_ENT);
+ 	}
+ 
+ 	ret = cpm_uart_allocbuf(pinfo, 1);
+@@ -1381,7 +1392,7 @@ static int __init cpm_uart_console_init(void)
+ 
+ console_initcall(cpm_uart_console_init);
+ 
+-#define CPM_UART_CONSOLE	&cpm_scc_uart_console
++#define CPM_UART_CONSOLE	(&cpm_scc_uart_console)
+ #else
+ #define CPM_UART_CONSOLE	NULL
+ #endif
+@@ -1424,6 +1435,7 @@ static int cpm_uart_probe(struct platform_device *ofdev)
+ static int cpm_uart_remove(struct platform_device *ofdev)
+ {
+ 	struct uart_cpm_port *pinfo = platform_get_drvdata(ofdev);
++
+ 	return uart_remove_one_port(&cpm_reg, &pinfo->port);
+ }
+ 
+@@ -1451,11 +1463,12 @@ static int cpm_uart_remove(struct platform_device *ofdev)
+ 	},
+ 	.probe = cpm_uart_probe,
+ 	.remove = cpm_uart_remove,
+- };
++};
+ 
+ static int __init cpm_uart_init(void)
+ {
+ 	int ret = uart_register_driver(&cpm_reg);
++
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.h b/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.h
+index 18ec084..eafff96 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.h
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.h
+@@ -16,13 +16,13 @@ static inline void cpm_set_brg(int brg, int baud)
+ 	cpm_setbrg(brg, baud);
+ }
+ 
+-static inline void cpm_set_scc_fcr(scc_uart_t __iomem * sup)
++static inline void cpm_set_scc_fcr(scc_uart_t __iomem *sup)
+ {
+ 	out_8(&sup->scc_genscc.scc_rfcr, SMC_EB);
+ 	out_8(&sup->scc_genscc.scc_tfcr, SMC_EB);
+ }
+ 
+-static inline void cpm_set_smc_fcr(smc_uart_t __iomem * up)
++static inline void cpm_set_smc_fcr(smc_uart_t __iomem *up)
+ {
+ 	out_8(&up->smc_rfcr, SMC_EB);
+ 	out_8(&up->smc_tfcr, SMC_EB);
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+index a0fccda..154ac19 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+@@ -117,8 +117,7 @@ int cpm_uart_allocbuf(struct uart_cpm_port *pinfo, unsigned int is_con)
+ 	if (is_con) {
+ 		mem_addr = kzalloc(memsz, GFP_NOWAIT);
+ 		dma_addr = virt_to_bus(mem_addr);
+-	}
+-	else
++	} else
+ 		mem_addr = dma_alloc_coherent(pinfo->port.dev, memsz, &dma_addr,
+ 					      GFP_KERNEL);
+ 
+@@ -148,7 +147,8 @@ void cpm_uart_freebuf(struct uart_cpm_port *pinfo)
+ 	dma_free_coherent(pinfo->port.dev, L1_CACHE_ALIGN(pinfo->rx_nrfifos *
+ 							  pinfo->rx_fifosize) +
+ 			  L1_CACHE_ALIGN(pinfo->tx_nrfifos *
+-					 pinfo->tx_fifosize), (void __force *)pinfo->mem_addr,
++					 pinfo->tx_fifosize),
++			  (void __force *)pinfo->mem_addr,
+ 			  pinfo->dma_addr);
+ 
+ 	cpm_dpfree(pinfo->dp_addr);
 -- 
 1.9.1
