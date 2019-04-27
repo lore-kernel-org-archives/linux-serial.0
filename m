@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 13/41] drivers: tty: serial: uartlite: fill mapsize and use it
-Date: Sat, 27 Apr 2019 14:51:54 +0200
-Message-ID: <1556369542-13247-14-git-send-email-info@metux.net>
+Subject: [PATCH 14/41] drivers: tty: serial: uartlite: remove unnecessary braces
+Date: Sat, 27 Apr 2019 14:51:55 +0200
+Message-ID: <1556369542-13247-15-git-send-email-info@metux.net>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1556369542-13247-1-git-send-email-info@metux.net>
@@ -10,58 +10,35 @@ To: linux-kernel@vger.kernel.org
 Cc: gregkh@linuxfoundation.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Fill the struct uart_port->mapsize field and use it, insteaf of
-hardcoded values in many places. This makes the code layout a bit
-more consistent and easily allows using generic helpers for the
-io memory handling.
+checkpatch complains:
 
-Candidates for such helpers could be eg. the request+ioremap and
-iounmap+release combinations.
+    WARNING: braces {} are not necessary for any arm of this statement
+    #489: FILE: drivers/tty/serial/uartlite.c:489:
+    +	if (oops_in_progress) {
+    [...]
+    +	} else
+    [...]
 
 Signed-off-by: Enrico Weigelt <info@metux.net>
 ---
- drivers/tty/serial/uartlite.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/tty/serial/uartlite.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index 44d65bd..c322ab6 100644
+index c322ab6..4c28600 100644
 --- a/drivers/tty/serial/uartlite.c
 +++ b/drivers/tty/serial/uartlite.c
-@@ -342,7 +342,7 @@ static const char *ulite_type(struct uart_port *port)
+@@ -486,9 +486,9 @@ static void ulite_console_write(struct console *co, const char *s,
+ 	unsigned int ier;
+ 	int locked = 1;
  
- static void ulite_release_port(struct uart_port *port)
- {
--	release_mem_region(port->mapbase, ULITE_REGION);
-+	release_mem_region(port->mapbase, port->mapsize);
- 	iounmap(port->membase);
- 	port->membase = NULL;
- }
-@@ -356,15 +356,15 @@ static int ulite_request_port(struct uart_port *port)
- 		"ulite console: port=%p; port->mapbase=%llx\n",
- 		 port, (unsigned long long) port->mapbase);
+-	if (oops_in_progress) {
++	if (oops_in_progress)
+ 		locked = spin_trylock_irqsave(&port->lock, flags);
+-	} else
++	else
+ 		spin_lock_irqsave(&port->lock, flags);
  
--	if (!request_mem_region(port->mapbase, ULITE_REGION, "uartlite")) {
-+	if (!request_mem_region(port->mapbase, port->mapsize, "uartlite")) {
- 		dev_err(port->dev, "Memory region busy\n");
- 		return -EBUSY;
- 	}
- 
--	port->membase = ioremap(port->mapbase, ULITE_REGION);
-+	port->membase = ioremap(port->mapbase, port->mapsize);
- 	if (!port->membase) {
- 		dev_err(port->dev, "Unable to map registers\n");
--		release_mem_region(port->mapbase, ULITE_REGION);
-+		release_mem_region(port->mapbase, port->mapsize);
- 		return -EBUSY;
- 	}
- 
-@@ -649,6 +649,7 @@ static int ulite_assign(struct device *dev, int id, u32 base, int irq,
- 	port->iotype = UPIO_MEM;
- 	port->iobase = 1; /* mark port in use */
- 	port->mapbase = base;
-+	port->mapsize = ULITE_REGION;
- 	port->membase = NULL;
- 	port->ops = &ulite_ops;
- 	port->irq = irq;
+ 	/* save and disable interrupt */
 -- 
 1.9.1
