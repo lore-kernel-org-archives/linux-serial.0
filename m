@@ -1,40 +1,30 @@
-From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 11/41] drivers: tty: serial: sb1250-duart: fix formatting error
-Date: Sat, 27 Apr 2019 14:51:52 +0200
-Message-ID: <1556369542-13247-12-git-send-email-info@metux.net>
+From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Subject: Re: [PATCH 37/41] drivers: tty: serial: 8250: simplify io resource
+ size computation
+Date: Sat, 27 Apr 2019 15:03:35 +0200
+Message-ID: <ba6dd5fa-36f1-902d-1ab4-c99e6a5ea3c2@physik.fu-berlin.de>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
+ <1556369542-13247-38-git-send-email-info@metux.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1556369542-13247-1-git-send-email-info@metux.net>
+In-Reply-To: <1556369542-13247-38-git-send-email-info@metux.net>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
+To: "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org
 Cc: gregkh@linuxfoundation.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-checkpatch complains:
+On 4/27/19 2:52 PM, Enrico Weigelt, metux IT consult wrote:
+> Simpily io resource size computation by setting mapsize field.
+    ^^^^
+Here's a typo
 
-    ERROR: space required before the open parenthesis '('
-    #659: FILE: drivers/tty/serial/sb1250-duart.c:659:
-    +	if(refcount_dec_and_test(&duart->map_guard))
+Adrian
 
-Just add this missing space to make checkpatch happy.
-
-Signed-off-by: Enrico Weigelt <info@metux.net>
----
- drivers/tty/serial/sb1250-duart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/sb1250-duart.c b/drivers/tty/serial/sb1250-duart.c
-index ec74f09..0023ed0 100644
---- a/drivers/tty/serial/sb1250-duart.c
-+++ b/drivers/tty/serial/sb1250-duart.c
-@@ -656,7 +656,7 @@ static void sbd_release_port(struct uart_port *uport)
- 	iounmap(uport->membase);
- 	uport->membase = NULL;
- 
--	if(refcount_dec_and_test(&duart->map_guard))
-+	if (refcount_dec_and_test(&duart->map_guard))
- 		release_mem_region(duart->mapctrl, DUART_CHANREG_SPACING);
- 	release_mem_region(uport->mapbase, uport->mapsize);
- }
 -- 
-1.9.1
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer - glaubitz@debian.org
+`. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
