@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 38/41] drivers: tty: serial: xilinx_uartps: fill mapsize and use it
-Date: Sat, 27 Apr 2019 14:52:19 +0200
-Message-ID: <1556369542-13247-39-git-send-email-info@metux.net>
+Subject: [PATCH 35/41] drivers: tty: serial: 8250: add mapsize to platform data
+Date: Sat, 27 Apr 2019 14:52:16 +0200
+Message-ID: <1556369542-13247-36-git-send-email-info@metux.net>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1556369542-13247-1-git-send-email-info@metux.net>
@@ -10,58 +10,51 @@ To: linux-kernel@vger.kernel.org
 Cc: gregkh@linuxfoundation.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Fill the struct uart_port->mapsize field and use it, insteaf of
-hardcoded values in many places. This makes the code layout a bit
-more consistent and easily allows using generic helpers for the
-io memory handling.
+Adding a mapsize field for the 8250 port platform data struct,
+so we can now set the resource size (eg. *1) and don't need
+funny runtime detections like serial8250_port_size() anymore.
 
-Candidates for such helpers could be eg. the request+ioremap and
-iounmap+release combinations.
+For now, serial8250_port_size() is called everytime we need
+the io resource size. That function checks which chip we
+actually have and returns the appropriate size. This approach
+is a bit clumpsy and not entirely easy to understand, and
+it's a violation of layers :p
+
+Obviously, that information cannot change after the driver init,
+so we can safely do that probing once on driver init and just
+use the stored value later.
+
+*1) arch/mips/alchemy/common/platform.c
 
 Signed-off-by: Enrico Weigelt <info@metux.net>
 ---
- drivers/tty/serial/xilinx_uartps.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/tty/serial/8250/8250_core.c | 1 +
+ include/linux/serial_8250.h         | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 74089f5..cf8ca66 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -953,15 +953,15 @@ static int cdns_uart_verify_port(struct uart_port *port,
-  */
- static int cdns_uart_request_port(struct uart_port *port)
- {
--	if (!request_mem_region(port->mapbase, CDNS_UART_REGISTER_SPACE,
-+	if (!request_mem_region(port->mapbase, port->mapsize,
- 					 CDNS_UART_NAME)) {
- 		return -ENOMEM;
- 	}
- 
--	port->membase = ioremap(port->mapbase, CDNS_UART_REGISTER_SPACE);
-+	port->membase = ioremap(port->mapbase, port->mapsize);
- 	if (!port->membase) {
- 		dev_err(port->dev, "Unable to map registers\n");
--		release_mem_region(port->mapbase, CDNS_UART_REGISTER_SPACE);
-+		release_mem_region(port->mapbase, port->mapsize);
- 		return -ENOMEM;
- 	}
- 	return 0;
-@@ -976,7 +976,7 @@ static int cdns_uart_request_port(struct uart_port *port)
-  */
- static void cdns_uart_release_port(struct uart_port *port)
- {
--	release_mem_region(port->mapbase, CDNS_UART_REGISTER_SPACE);
-+	release_mem_region(port->mapbase, port->mapsize);
- 	iounmap(port->membase);
- 	port->membase = NULL;
- }
-@@ -1627,6 +1627,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 	 * and triggers invocation of the config_port() entry point.
- 	 */
- 	port->mapbase = res->start;
-+	port->mapsize = CDNS_UART_REGISTER_SPACE;
- 	port->irq = irq;
- 	port->dev = &pdev->dev;
- 	port->uartclk = clk_get_rate(cdns_uart_data->uartclk);
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index e441221..71a398b 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -814,6 +814,7 @@ static int serial8250_probe(struct platform_device *dev)
+ 		uart.port.iotype	= p->iotype;
+ 		uart.port.flags		= p->flags;
+ 		uart.port.mapbase	= p->mapbase;
++		uart.port.mapsize	= p->mapsize;
+ 		uart.port.hub6		= p->hub6;
+ 		uart.port.private_data	= p->private_data;
+ 		uart.port.type		= p->type;
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index 5a655ba..8b8183a 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -22,6 +22,7 @@ struct plat_serial8250_port {
+ 	unsigned long	iobase;		/* io base address */
+ 	void __iomem	*membase;	/* ioremap cookie or NULL */
+ 	resource_size_t	mapbase;	/* resource base */
++	resource_size_t	mapsize;	/* resource size */
+ 	unsigned int	irq;		/* interrupt number */
+ 	unsigned long	irqflags;	/* request_irq flags */
+ 	unsigned int	uartclk;	/* UART clock rate */
 -- 
 1.9.1
