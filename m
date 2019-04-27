@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 04/41] drivers: tty: serial: dz: fix use fix bare 'unsigned'
-Date: Sat, 27 Apr 2019 14:51:45 +0200
-Message-ID: <1556369542-13247-5-git-send-email-info@metux.net>
+Subject: [PATCH 15/41] drivers: tty: serial: uartlite: fix use fix bare 'unsigned'
+Date: Sat, 27 Apr 2019 14:51:56 +0200
+Message-ID: <1556369542-13247-16-git-send-email-info@metux.net>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1556369542-13247-1-git-send-email-info@metux.net>
@@ -13,38 +13,39 @@ List-Id: linux-serial@vger.kernel.org
 Fix checkpatch warnings:
 
     WARNING: Prefer 'unsigned int' to bare use of 'unsigned'
-    #103: FILE: dz.c:103:
-    +static u16 dz_in(struct dz_port *dport, unsigned offset)
+    #562: FILE: drivers/tty/serial/uartlite.c:562:
+    +	unsigned retries = 1000000;
 
     WARNING: Prefer 'unsigned int' to bare use of 'unsigned'
-    #110: FILE: dz.c:110:
-    +static void dz_out(struct dz_port *dport, unsigned offset, u16 value)
+    #574: FILE: drivers/tty/serial/uartlite.c:574:
+    +				 const char *s, unsigned n)
 
 Signed-off-by: Enrico Weigelt <info@metux.net>
 ---
- drivers/tty/serial/dz.c | 4 ++--
+ drivers/tty/serial/uartlite.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/dz.c b/drivers/tty/serial/dz.c
-index b3e9313..559d076 100644
---- a/drivers/tty/serial/dz.c
-+++ b/drivers/tty/serial/dz.c
-@@ -100,14 +100,14 @@ static inline struct dz_port *to_dport(struct uart_port *uport)
-  * ------------------------------------------------------------
-  */
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index 4c28600..6f79353 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -559,7 +559,7 @@ static void early_uartlite_putc(struct uart_port *port, int c)
+ 	 * we'll never timeout on a working UART.
+ 	 */
  
--static u16 dz_in(struct dz_port *dport, unsigned offset)
-+static u16 dz_in(struct dz_port *dport, unsigned int offset)
- {
- 	void __iomem *addr = dport->port.membase + offset;
- 
- 	return readw(addr);
+-	unsigned retries = 1000000;
++	unsigned int retries = 1000000;
+ 	/* read status bit - 0x8 offset */
+ 	while (--retries && (readl(port->membase + 8) & (1 << 3)))
+ 		;
+@@ -571,7 +571,7 @@ static void early_uartlite_putc(struct uart_port *port, int c)
  }
  
--static void dz_out(struct dz_port *dport, unsigned offset, u16 value)
-+static void dz_out(struct dz_port *dport, unsigned int offset, u16 value)
+ static void early_uartlite_write(struct console *console,
+-				 const char *s, unsigned n)
++				 const char *s, unsigned int n)
  {
- 	void __iomem *addr = dport->port.membase + offset;
- 
+ 	struct earlycon_device *device = console->data;
+ 	uart_console_write(&device->port, s, n, early_uartlite_putc);
 -- 
 1.9.1
