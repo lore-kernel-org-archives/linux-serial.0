@@ -1,61 +1,66 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 1/2] serial: 8250: Allow port registration without UPF_BOOT_AUTOCONF
-Date: Sat, 27 Apr 2019 19:41:10 +0300
-Message-ID: <CAHp75VfZMuQ3xagGSt6dXv1tZbSfanUdaw0SgjTqq3YET5YBKQ@mail.gmail.com>
-References: <20190426084038.6377-1-esben@geanix.com> <20190426084038.6377-2-esben@geanix.com>
- <20190426143946.GX9224@smile.fi.intel.com> <871s1og11u.fsf@haabendal.dk>
- <20190426215103.GD9224@smile.fi.intel.com> <87tvejakot.fsf@haabendal.dk>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 36/41] drivers: tty: serial: 8250: store mmio resource
+ size in port struct
+Date: Sun, 28 Apr 2019 18:18:48 +0300
+Message-ID: <20190428151848.GO9224@smile.fi.intel.com>
+References: <1556369542-13247-1-git-send-email-info@metux.net>
+ <1556369542-13247-37-git-send-email-info@metux.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <87tvejakot.fsf@haabendal.dk>
+Content-Disposition: inline
+In-Reply-To: <1556369542-13247-37-git-send-email-info@metux.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Esben Haabendal <esben@haabendal.dk>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, He Zhe <zhe.he@windriver.com>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: "Enrico Weigelt, metux IT consult" <info@metux.net>
+Cc: linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, andrew@aj.id.au, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Apr 27, 2019 at 12:01 PM Esben Haabendal <esben@haabendal.dk> wrote:
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
-> > On Fri, Apr 26, 2019 at 06:54:05PM +0200, Esben Haabendal wrote:
-> >> Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
-> >> The reason for this patch is to be able to do exactly that (set port
-> >> type and UPF_FIXED_TYPE) without having UPF_BOOT_AUTOCONF added.
-> >>
-> >> In the current serial8250_register_8250_port() there is:
-> >>
-> >>     uart->port.flags        = up->port.flags | UPF_BOOT_AUTOCONF;
-> >>
-> >> So, even though I set UPF_FIXED_TYPE, I get
-> >> UPF_FIXED_TYPE|UPF_BOOT_AUTOCONF.
-> >
-> > Yes.
-> >
-> >> So I need this patch.
-> >
-> > Why? I don't see any problems to have these flags set.
->
-> The problem with having UPF_BOOT_AUTOCONF is the call to
-> serial8250_request_std_resource().  It calls request_mem_region(), which
-> fails if the MFD driver already have requested the memory region for the
-> MFD device.
+On Sat, Apr 27, 2019 at 02:52:17PM +0200, Enrico Weigelt, metux IT consult wrote:
+> The io resource size is currently recomputed when it's needed but this
+> actually needs to be done once (or drivers could specify fixed values)
 
-If it's MFD, why it requested the region for its child?
-Isn't it a bug in MFD driver?
+io -> IO
 
->  And I believe that is a valid thing to do.
->
-> To workaround this, I first thought I could just avoid setting
-> port->mapbase, causing serial8250_request_std_resource() to be a no-op.
-> But this breaks with more than one UART port, as uart_match_port() will
-> match the same line for all such UART ports, causing all but the last
-> one to be removed.
->
-> That said, the purpose of UPF_BOOT_AUTOCONF (for 8250 driver) is to
-> request and map the register memory.  So when that is already done by
-> the parent MFD driver, I think it is silly to workaround problems caused
-> by UPF_BOOT_AUTOCONF being force setted, when it really shouldn't.
+> 
+> Simplify that by doing this computation only once and storing the result
+> into the mapsize field. serial8250_register_8250_port() is now called
+> only once on driver init, the previous call sites now just fetch the
+> value from the mapsize field.
 
+Do I understand correctly that this has no side effects?
 
---
+Which hardware did you test this on?
+
+> @@ -979,6 +979,9 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+>  	if (up->port.uartclk == 0)
+>  		return -EINVAL;
+>  
+> +	/* compute the mapsize in case the driver didn't specify one */
+> +	up->mapsize = serial8250_port_size(up);
+
+I don't know all quirks in 8250 drivers by heart, though can you guarantee that
+at this point the device reports correct IO resource size? (If I'm not mistaken
+some broken hardware needs some magic to be done before card can be properly
+handled)
+
+> -	unsigned int size = serial8250_port_size(up);
+>  	struct uart_port *port = &up->port;
+
+> -	int ret = 0;
+
+This and Co is a separate change that can be done in its own patch.
+
+> +			port->membase = ioremap_nocache(port->mapbase,
+> +							port->mapsize);
+
+You may increase readability by introducing temporary variables
+
+	... mapbase = port->mapbase;
+	... mapsize = port->mapsize;
+	...
+	port->membase = ioremap_nocache(mapbase, mapsize);
+	...
+
+-- 
 With Best Regards,
 Andy Shevchenko
