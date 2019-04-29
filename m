@@ -1,14 +1,14 @@
 From: Christophe Leroy <christophe.leroy@c-s.fr>
-Subject: Re: [PATCH 23/41] drivers: tty: serial: cpm_uart: fix styling issues
-Date: Mon, 29 Apr 2019 17:56:15 +0200
-Message-ID: <df50792f-88bc-379a-d9e1-4f2dc1f4965a@c-s.fr>
+Subject: Re: [PATCH 22/41] drivers: tty: serial: cpm_uart: fix logging calls
+Date: Mon, 29 Apr 2019 17:59:04 +0200
+Message-ID: <a00ba23b-e73e-c964-a6d0-347cb605b8c8@c-s.fr>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
- <1556369542-13247-24-git-send-email-info@metux.net>
+ <1556369542-13247-23-git-send-email-info@metux.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1556369542-13247-24-git-send-email-info@metux.net>
+In-Reply-To: <1556369542-13247-23-git-send-email-info@metux.net>
 Content-Language: fr
 Sender: linux-kernel-owner@vger.kernel.org
 To: "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org
@@ -18,78 +18,85 @@ List-Id: linux-serial@vger.kernel.org
 
 
 Le 27/04/2019 à 14:52, Enrico Weigelt, metux IT consult a écrit :
-> Fix checkpatch errors:
-
-What the main purpose of this change ?
-
-If we apply this, any fix to stable will be a nightmare to backport. Is 
-it really worth it ?
-
-Anyway, a couple of comments in the patch below
-
-[...]
-
+> Fix checkpatch warnings by using pr_err():
 > 
+>      WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
+>      #109: FILE: drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c:109:
+>      +		printk(KERN_ERR
+> 
+>      WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
+>      #128: FILE: drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c:128:
+>      +		printk(KERN_ERR
+> 
+>      WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
+>      +           printk(KERN_ERR
+> 
+>      WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
+>      +           printk(KERN_ERR
 > 
 > Signed-off-by: Enrico Weigelt <info@metux.net>
-> ---
->   drivers/tty/serial/cpm_uart/cpm_uart.h      | 10 +--
->   drivers/tty/serial/cpm_uart/cpm_uart_core.c | 95 ++++++++++++++++-------------
->   drivers/tty/serial/cpm_uart/cpm_uart_cpm1.h |  4 +-
->   drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c |  6 +-
->   4 files changed, 64 insertions(+), 51 deletions(-)
 
-[...]
+Reviewed-by: Christophe Leroy <christophe.leroy@c-s.fr>
 
-> 
-> @@ -1048,9 +1058,10 @@ static void cpm_uart_early_write(struct uart_cpm_port *pinfo,
->   static int poll_wait_key(char *obuf, struct uart_cpm_port *pinfo)
->   {
->   	u_char		c, *cp;
-> -	volatile cbd_t	*bdp;
->   	int		i;
->   
-> +	volatile cbd_t	*bdp;
-> +
+But is that really worth doing those changes ?
 
-This was likely a false positive from checkpatch. The formatting was 
-good, and now it is wrong as it adds an unnecessary blank line.
-
->   	/* Get the address of the host memory buffer.
->   	 */
->   	bdp = pinfo->rx_cur;
-
-[...]
-
-> diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-> index a0fccda..154ac19 100644
-> --- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-> +++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-> @@ -117,8 +117,7 @@ int cpm_uart_allocbuf(struct uart_cpm_port *pinfo, unsigned int is_con)
->   	if (is_con) {
->   		mem_addr = kzalloc(memsz, GFP_NOWAIT);
->   		dma_addr = virt_to_bus(mem_addr);
-> -	}
-> -	else
-> +	} else
->   		mem_addr = dma_alloc_coherent(pinfo->port.dev, memsz, &dma_addr,
->   					      GFP_KERNEL);
-
-Checkpatch should have told you that in case first leg has braces, 
-second leg must have braces too even if it's a single line.
+If we want to do something useful, wouldn't it make more sense to 
+introduce the use of dev_err() in order to identify the faulting device 
+in the message ?
 
 Christophe
 
-
+> ---
+>   drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c | 6 ++----
+>   drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c | 6 ++----
+>   2 files changed, 4 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c
+> index 56fc527..aed61e9 100644
+> --- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c
+> +++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c
+> @@ -71,8 +71,7 @@ int cpm_uart_allocbuf(struct uart_cpm_port *pinfo, unsigned int is_con)
+>   	dpmemsz = sizeof(cbd_t) * (pinfo->rx_nrfifos + pinfo->tx_nrfifos);
+>   	dp_offset = cpm_dpalloc(dpmemsz, 8);
+>   	if (IS_ERR_VALUE(dp_offset)) {
+> -		printk(KERN_ERR
+> -		       "cpm_uart_cpm1.c: could not allocate buffer descriptors\n");
+> +		pr_err("cpm_uart_cpm1.c: could not allocate buffer descriptors\n");
+>   		return -ENOMEM;
+>   	}
+>   	dp_mem = cpm_dpram_addr(dp_offset);
+> @@ -90,8 +89,7 @@ int cpm_uart_allocbuf(struct uart_cpm_port *pinfo, unsigned int is_con)
 >   
-> @@ -148,7 +147,8 @@ void cpm_uart_freebuf(struct uart_cpm_port *pinfo)
->   	dma_free_coherent(pinfo->port.dev, L1_CACHE_ALIGN(pinfo->rx_nrfifos *
->   							  pinfo->rx_fifosize) +
->   			  L1_CACHE_ALIGN(pinfo->tx_nrfifos *
-> -					 pinfo->tx_fifosize), (void __force *)pinfo->mem_addr,
-> +					 pinfo->tx_fifosize),
-> +			  (void __force *)pinfo->mem_addr,
->   			  pinfo->dma_addr);
+>   	if (mem_addr == NULL) {
+>   		cpm_dpfree(dp_offset);
+> -		printk(KERN_ERR
+> -		       "cpm_uart_cpm1.c: could not allocate coherent memory\n");
+> +		pr_err("cpm_uart_cpm1.c: could not allocate coherent memory\n");
+>   		return -ENOMEM;
+>   	}
 >   
->   	cpm_dpfree(pinfo->dp_addr);
+> diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+> index 40cfcf4..a0fccda 100644
+> --- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+> +++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+> @@ -106,8 +106,7 @@ int cpm_uart_allocbuf(struct uart_cpm_port *pinfo, unsigned int is_con)
+>   	dpmemsz = sizeof(cbd_t) * (pinfo->rx_nrfifos + pinfo->tx_nrfifos);
+>   	dp_offset = cpm_dpalloc(dpmemsz, 8);
+>   	if (IS_ERR_VALUE(dp_offset)) {
+> -		printk(KERN_ERR
+> -		       "cpm_uart_cpm.c: could not allocate buffer descriptors\n");
+> +		pr_err("cpm_uart_cpm.c: could not allocate buffer descriptors\n");
+>   		return -ENOMEM;
+>   	}
+>   
+> @@ -125,8 +124,7 @@ int cpm_uart_allocbuf(struct uart_cpm_port *pinfo, unsigned int is_con)
+>   
+>   	if (mem_addr == NULL) {
+>   		cpm_dpfree(dp_offset);
+> -		printk(KERN_ERR
+> -		       "cpm_uart_cpm.c: could not allocate coherent memory\n");
+> +		pr_err("cpm_uart_cpm.c: could not allocate coherent memory\n");
+>   		return -ENOMEM;
+>   	}
+>   
 > 
