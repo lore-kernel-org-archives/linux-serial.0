@@ -1,15 +1,14 @@
 From: Christophe Leroy <christophe.leroy@c-s.fr>
-Subject: Re: [PATCH 20/41] drivers: tty: serial: cpm_uart: use
- dev_err()/dev_warn() instead of printk()
-Date: Mon, 29 Apr 2019 18:02:30 +0200
-Message-ID: <7509c580-e7c6-7d22-b6a2-8356264f408e@c-s.fr>
+Subject: Re: [PATCH 21/41] drivers: tty: serial: cpm_uart: fix includes
+Date: Mon, 29 Apr 2019 18:02:58 +0200
+Message-ID: <da473f1b-d6a5-f82a-5af3-d4dfaaabf947@c-s.fr>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
- <1556369542-13247-21-git-send-email-info@metux.net>
+ <1556369542-13247-22-git-send-email-info@metux.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1556369542-13247-21-git-send-email-info@metux.net>
+In-Reply-To: <1556369542-13247-22-git-send-email-info@metux.net>
 Content-Language: fr
 Sender: linux-kernel-owner@vger.kernel.org
 To: "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org
@@ -19,60 +18,56 @@ List-Id: linux-serial@vger.kernel.org
 
 
 Le 27/04/2019 à 14:52, Enrico Weigelt, metux IT consult a écrit :
-> Using dev_err()/dev_warn() instead of printk() for more consistent output.
-> (prints device name, etc).
+> Fixing checkpatch warning:
+> 
+>      WARNING: Use #include <linux/io.h> instead of <asm/io.h>
+>      #25: FILE: drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c:25:
+>      +#include <asm/io.h>
+> 
+>      WARNING: Use #include <linux/io.h> instead of <asm/io.h>
+>      +#include <asm/io.h>
+> 
+>      WARNING: Use #include <linux/delay.h> instead of <asm/delay.h>
+>      +#include <asm/delay.h>
 > 
 > Signed-off-by: Enrico Weigelt <info@metux.net>
 
 Reviewed-by: Christophe Leroy <christophe.leroy@c-s.fr>
 
 > ---
->   drivers/tty/serial/cpm_uart/cpm_uart_core.c | 6 +++---
+>   drivers/tty/serial/cpm_uart/cpm_uart_core.c | 4 ++--
 >   drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c | 2 +-
->   2 files changed, 4 insertions(+), 4 deletions(-)
+>   2 files changed, 3 insertions(+), 3 deletions(-)
 > 
 > diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-> index b929c7a..374b8bb 100644
+> index 374b8bb..c831d31 100644
 > --- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
 > +++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-> @@ -265,7 +265,7 @@ static void cpm_uart_int_rx(struct uart_port *port)
->   		 * later, which will be the next rx-interrupt or a timeout
->   		 */
->   		if (tty_buffer_request_room(tport, i) < i) {
-> -			printk(KERN_WARNING "No room in flip buffer\n");
-> +			dev_warn(port->dev, "No room in flip buffer\n");
->   			return;
->   		}
+> @@ -33,10 +33,10 @@
+>   #include <linux/gpio.h>
+>   #include <linux/of_gpio.h>
+>   #include <linux/clk.h>
+> +#include <linux/io.h>
+> +#include <linux/delay.h>
 >   
-> @@ -1155,7 +1155,7 @@ static int cpm_uart_init_port(struct device_node *np,
->   	if (!pinfo->clk) {
->   		data = of_get_property(np, "fsl,cpm-brg", &len);
->   		if (!data || len != 4) {
-> -			printk(KERN_ERR "CPM UART %pOFn has no/invalid "
-> +			dev_err(port->dev, "CPM UART %pOFn has no/invalid "
->   			                "fsl,cpm-brg property.\n", np);
->   			return -EINVAL;
->   		}
-> @@ -1164,7 +1164,7 @@ static int cpm_uart_init_port(struct device_node *np,
+> -#include <asm/io.h>
+>   #include <asm/irq.h>
+> -#include <asm/delay.h>
+>   #include <asm/fs_pd.h>
+>   #include <asm/udbg.h>
 >   
->   	data = of_get_property(np, "fsl,cpm-command", &len);
->   	if (!data || len != 4) {
-> -		printk(KERN_ERR "CPM UART %pOFn has no/invalid "
-> +		dev_err(port->dev, "CPM UART %pOFn has no/invalid "
->   		                "fsl,cpm-command property.\n", np);
->   		return -EINVAL;
->   	}
 > diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-> index 6a1cd03..ef1ae08 100644
+> index ef1ae08..40cfcf4 100644
 > --- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
 > +++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-> @@ -67,7 +67,7 @@ void __iomem *cpm_uart_map_pram(struct uart_cpm_port *port,
->   		return pram;
+> @@ -21,8 +21,8 @@
+>   #include <linux/device.h>
+>   #include <linux/memblock.h>
+>   #include <linux/dma-mapping.h>
+> +#include <linux/io.h>
 >   
->   	if (len != 2) {
-> -		printk(KERN_WARNING "cpm_uart[%d]: device tree references "
-> +		dev_warn(port->dev, "cpm_uart[%d]: device tree references "
->   			"SMC pram, using boot loader/wrapper pram mapping. "
->   			"Please fix your device tree to reference the pram "
->   			"base register instead.\n",
+> -#include <asm/io.h>
+>   #include <asm/irq.h>
+>   #include <asm/fs_pd.h>
+>   #include <asm/prom.h>
 > 
