@@ -1,50 +1,95 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 36/41] drivers: tty: serial: 8250: store mmio resource
- size in port struct
-Date: Mon, 29 Apr 2019 18:39:49 +0300
-Message-ID: <20190429153949.GV9224@smile.fi.intel.com>
+From: Christophe Leroy <christophe.leroy@c-s.fr>
+Subject: Re: [PATCH 23/41] drivers: tty: serial: cpm_uart: fix styling issues
+Date: Mon, 29 Apr 2019 17:56:15 +0200
+Message-ID: <df50792f-88bc-379a-d9e1-4f2dc1f4965a@c-s.fr>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
- <1556369542-13247-37-git-send-email-info@metux.net>
- <20190428151848.GO9224@smile.fi.intel.com>
- <4bab941a-c2f2-7f1c-9bc2-86c63f171c25@metux.net>
+ <1556369542-13247-24-git-send-email-info@metux.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <4bab941a-c2f2-7f1c-9bc2-86c63f171c25@metux.net>
+In-Reply-To: <1556369542-13247-24-git-send-email-info@metux.net>
+Content-Language: fr
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
-Cc: "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, andrew@aj.id.au, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
+To: "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org
+Cc: lorenzo.pieralisi@arm.com, linux-ia64@vger.kernel.org, linux-serial@vger.kernel.org, andrew@aj.id.au, gregkh@linuxfoundation.org, sudeep.holla@arm.com, liviu.dudau@arm.com, linux-mips@vger.kernel.org, vz@mleia.com, linux@prisktech.co.nz, sparclinux@vger.kernel.org, khilman@baylibre.com, macro@linux-mips.org, slemieux.tyco@gmail.com, matthias.bgg@gmail.com, jacmet@sunsite.dk, linux-amlogic@lists.infradead.org, andriy.shevchenko@linux.intel.com, linuxppc-dev@lists.ozlabs.org, davem@davemloft.net
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 04:55:05PM +0200, Enrico Weigelt, metux IT consult wrote:
-> On 28.04.19 17:18, Andy Shevchenko wrote:
-> > On Sat, Apr 27, 2019 at 02:52:17PM +0200, Enrico Weigelt, metux IT consult wrote:
 
-> >> -	int ret = 0;
-> > 
-> > This and Co is a separate change that can be done in its own patch.
+
+Le 27/04/2019 à 14:52, Enrico Weigelt, metux IT consult a écrit :
+> Fix checkpatch errors:
+
+What the main purpose of this change ?
+
+If we apply this, any fix to stable will be a nightmare to backport. Is 
+it really worth it ?
+
+Anyway, a couple of comments in the patch below
+
+[...]
+
 > 
-> I don't really understand :(
-> Do you mean the splitting off the retval part from the rest ?
-
-You do two things here: one of them is removing ret and other relative changes.
-This should be split to a separate patch.
-
-> > You may increase readability by introducing temporary variables
-> > 
-> > 	... mapbase = port->mapbase;
-> > 	... mapsize = port->mapsize;
-> > 	...
-> > 	port->membase = ioremap_nocache(mapbase, mapsize);
-> > 	...
 > 
-> Is that really necessary ? Maybe it's just my personal taste, but I
-> don't feel the more more verbose one is really easier to read.
+> Signed-off-by: Enrico Weigelt <info@metux.net>
+> ---
+>   drivers/tty/serial/cpm_uart/cpm_uart.h      | 10 +--
+>   drivers/tty/serial/cpm_uart/cpm_uart_core.c | 95 ++++++++++++++++-------------
+>   drivers/tty/serial/cpm_uart/cpm_uart_cpm1.h |  4 +-
+>   drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c |  6 +-
+>   4 files changed, 64 insertions(+), 51 deletions(-)
 
-Up to Greg. For me it's harder to read all those port-> in several parameters.
+[...]
+
+> 
+> @@ -1048,9 +1058,10 @@ static void cpm_uart_early_write(struct uart_cpm_port *pinfo,
+>   static int poll_wait_key(char *obuf, struct uart_cpm_port *pinfo)
+>   {
+>   	u_char		c, *cp;
+> -	volatile cbd_t	*bdp;
+>   	int		i;
+>   
+> +	volatile cbd_t	*bdp;
+> +
+
+This was likely a false positive from checkpatch. The formatting was 
+good, and now it is wrong as it adds an unnecessary blank line.
+
+>   	/* Get the address of the host memory buffer.
+>   	 */
+>   	bdp = pinfo->rx_cur;
+
+[...]
+
+> diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+> index a0fccda..154ac19 100644
+> --- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+> +++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+> @@ -117,8 +117,7 @@ int cpm_uart_allocbuf(struct uart_cpm_port *pinfo, unsigned int is_con)
+>   	if (is_con) {
+>   		mem_addr = kzalloc(memsz, GFP_NOWAIT);
+>   		dma_addr = virt_to_bus(mem_addr);
+> -	}
+> -	else
+> +	} else
+>   		mem_addr = dma_alloc_coherent(pinfo->port.dev, memsz, &dma_addr,
+>   					      GFP_KERNEL);
+
+Checkpatch should have told you that in case first leg has braces, 
+second leg must have braces too even if it's a single line.
+
+Christophe
 
 
--- 
-With Best Regards,
-Andy Shevchenko
+>   
+> @@ -148,7 +147,8 @@ void cpm_uart_freebuf(struct uart_cpm_port *pinfo)
+>   	dma_free_coherent(pinfo->port.dev, L1_CACHE_ALIGN(pinfo->rx_nrfifos *
+>   							  pinfo->rx_fifosize) +
+>   			  L1_CACHE_ALIGN(pinfo->tx_nrfifos *
+> -					 pinfo->tx_fifosize), (void __force *)pinfo->mem_addr,
+> +					 pinfo->tx_fifosize),
+> +			  (void __force *)pinfo->mem_addr,
+>   			  pinfo->dma_addr);
+>   
+>   	cpm_dpfree(pinfo->dp_addr);
+> 
