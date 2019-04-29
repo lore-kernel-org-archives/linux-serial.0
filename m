@@ -1,34 +1,78 @@
-From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
-Subject: Re: [PATCH 37/41] drivers: tty: serial: 8250: simplify io resource
- size computation
-Date: Mon, 29 Apr 2019 17:58:54 +0200
-Message-ID: <7cec8c1a-a0a1-e76c-5c1f-a93c591d38b1@metux.net>
+From: Christophe Leroy <christophe.leroy@c-s.fr>
+Subject: Re: [PATCH 20/41] drivers: tty: serial: cpm_uart: use
+ dev_err()/dev_warn() instead of printk()
+Date: Mon, 29 Apr 2019 18:02:30 +0200
+Message-ID: <7509c580-e7c6-7d22-b6a2-8356264f408e@c-s.fr>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
- <1556369542-13247-38-git-send-email-info@metux.net>
- <ba6dd5fa-36f1-902d-1ab4-c99e6a5ea3c2@physik.fu-berlin.de>
+ <1556369542-13247-21-git-send-email-info@metux.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <ba6dd5fa-36f1-902d-1ab4-c99e6a5ea3c2@physik.fu-berlin.de>
-Content-Language: en-US
+In-Reply-To: <1556369542-13247-21-git-send-email-info@metux.net>
+Content-Language: fr
 Sender: linux-kernel-owner@vger.kernel.org
-To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
+To: "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org
+Cc: lorenzo.pieralisi@arm.com, linux-ia64@vger.kernel.org, linux-serial@vger.kernel.org, andrew@aj.id.au, gregkh@linuxfoundation.org, sudeep.holla@arm.com, liviu.dudau@arm.com, linux-mips@vger.kernel.org, vz@mleia.com, linux@prisktech.co.nz, sparclinux@vger.kernel.org, khilman@baylibre.com, macro@linux-mips.org, slemieux.tyco@gmail.com, matthias.bgg@gmail.com, jacmet@sunsite.dk, linux-amlogic@lists.infradead.org, andriy.shevchenko@linux.intel.com, linuxppc-dev@lists.ozlabs.org, davem@davemloft.net
 List-Id: linux-serial@vger.kernel.org
 
-On 27.04.19 15:03, John Paul Adrian Glaubitz wrote:
-> On 4/27/19 2:52 PM, Enrico Weigelt, metux IT consult wrote:
->> Simpily io resource size computation by setting mapsize field.
->     ^^^^
-> Here's a typo
-
-thx. fixed.
-
---mtx
 
 
--- 
-Enrico Weigelt, metux IT consult
-Free software and Linux embedded engineering
-info@metux.net -- +49-151-27565287
+Le 27/04/2019 à 14:52, Enrico Weigelt, metux IT consult a écrit :
+> Using dev_err()/dev_warn() instead of printk() for more consistent output.
+> (prints device name, etc).
+> 
+> Signed-off-by: Enrico Weigelt <info@metux.net>
+
+Reviewed-by: Christophe Leroy <christophe.leroy@c-s.fr>
+
+> ---
+>   drivers/tty/serial/cpm_uart/cpm_uart_core.c | 6 +++---
+>   drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c | 2 +-
+>   2 files changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+> index b929c7a..374b8bb 100644
+> --- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+> +++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+> @@ -265,7 +265,7 @@ static void cpm_uart_int_rx(struct uart_port *port)
+>   		 * later, which will be the next rx-interrupt or a timeout
+>   		 */
+>   		if (tty_buffer_request_room(tport, i) < i) {
+> -			printk(KERN_WARNING "No room in flip buffer\n");
+> +			dev_warn(port->dev, "No room in flip buffer\n");
+>   			return;
+>   		}
+>   
+> @@ -1155,7 +1155,7 @@ static int cpm_uart_init_port(struct device_node *np,
+>   	if (!pinfo->clk) {
+>   		data = of_get_property(np, "fsl,cpm-brg", &len);
+>   		if (!data || len != 4) {
+> -			printk(KERN_ERR "CPM UART %pOFn has no/invalid "
+> +			dev_err(port->dev, "CPM UART %pOFn has no/invalid "
+>   			                "fsl,cpm-brg property.\n", np);
+>   			return -EINVAL;
+>   		}
+> @@ -1164,7 +1164,7 @@ static int cpm_uart_init_port(struct device_node *np,
+>   
+>   	data = of_get_property(np, "fsl,cpm-command", &len);
+>   	if (!data || len != 4) {
+> -		printk(KERN_ERR "CPM UART %pOFn has no/invalid "
+> +		dev_err(port->dev, "CPM UART %pOFn has no/invalid "
+>   		                "fsl,cpm-command property.\n", np);
+>   		return -EINVAL;
+>   	}
+> diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+> index 6a1cd03..ef1ae08 100644
+> --- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+> +++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
+> @@ -67,7 +67,7 @@ void __iomem *cpm_uart_map_pram(struct uart_cpm_port *port,
+>   		return pram;
+>   
+>   	if (len != 2) {
+> -		printk(KERN_WARNING "cpm_uart[%d]: device tree references "
+> +		dev_warn(port->dev, "cpm_uart[%d]: device tree references "
+>   			"SMC pram, using boot loader/wrapper pram mapping. "
+>   			"Please fix your device tree to reference the pram "
+>   			"base register instead.\n",
+> 
