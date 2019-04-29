@@ -1,39 +1,34 @@
-From: Hao Lee <haolee.swjtu@gmail.com>
-Subject: [PATCH v3] tty: serial: 8250: Fix type field in format string
-Date: Tue, 30 Apr 2019 00:24:02 +0800
-Message-ID: <20190429162402.GA5086@haolee.io>
+From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+Subject: Re: serial drivers polishing
+Date: Mon, 29 Apr 2019 18:50:14 +0200
+Message-ID: <5a826a97-4098-7e1e-4f07-5a1a372e66b8@metux.net>
+References: <1556369542-13247-1-git-send-email-info@metux.net>
+ <7471c418-4058-db7b-b2ed-af9a67fff201@c-s.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+In-Reply-To: <7471c418-4058-db7b-b2ed-af9a67fff201@c-s.fr>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: jslaby@suse.com, haolee.swjtu@gmail.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Christophe Leroy <christophe.leroy@c-s.fr>, "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org
+Cc: lorenzo.pieralisi@arm.com, linux-ia64@vger.kernel.org, linux-serial@vger.kernel.org, andrew@aj.id.au, gregkh@linuxfoundation.org, sudeep.holla@arm.com, liviu.dudau@arm.com, linux-mips@vger.kernel.org, vz@mleia.com, linux@prisktech.co.nz, sparclinux@vger.kernel.org, khilman@baylibre.com, macro@linux-mips.org, slemieux.tyco@gmail.com, matthias.bgg@gmail.com, jacmet@sunsite.dk, linux-amlogic@lists.infradead.org, andriy.shevchenko@linux.intel.com, linuxppc-dev@lists.ozlabs.org, davem@davemloft.net
 List-Id: linux-serial@vger.kernel.org
 
-The dev_dbg statement should print the value of uart.port.mapbase instead
-of its address. Besides that, uart.port.irq and uart.port.iotype are all
-unsigned types, so using %u is more appropriate.
+On 29.04.19 18:16, Christophe Leroy wrote:
 
-Signed-off-by: Hao Lee <haolee.swjtu@gmail.com>
----
- drivers/tty/serial/8250/8250_pnp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Hi,
 
-diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
-index 431e69a5a6a0..dfca33141fcc 100644
---- a/drivers/tty/serial/8250/8250_pnp.c
-+++ b/drivers/tty/serial/8250/8250_pnp.c
-@@ -462,8 +462,8 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
- 		return -ENODEV;
- 
- 	dev_dbg(&dev->dev,
--		 "Setup PNP port: port %lx, mem %pa, irq %d, type %d\n",
--		 uart.port.iobase, &uart.port.mapbase,
-+		 "Setup PNP port: port %#lx, mem %#llx, irq %u, type %u\n",
-+		 uart.port.iobase, (unsigned long long)uart.port.mapbase,
- 		 uart.port.irq, uart.port.iotype);
- 
- 	if (flags & CIR_PORT) {
+> Got the following build  error while compiling for my powerpc board with
+> your full series applied. No time to investigate though.
+
+thanks, fixed it. That was the unclean patch where i've forgotten to
+add 'rfc' into the title ... turned out that this one needs some
+more rework :o
+
+--mtx
+
 -- 
-2.14.5
+Enrico Weigelt, metux IT consult
+Free software and Linux embedded engineering
+info@metux.net -- +49-151-27565287
