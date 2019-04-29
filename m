@@ -1,50 +1,39 @@
-From: Esben Haabendal <esben@haabendal.dk>
-Subject: Re: [PATCH 1/2] serial: 8250: Allow port registration without UPF_BOOT_AUTOCONF
-Date: Mon, 29 Apr 2019 08:37:59 +0200
-Message-ID: <87tvehz588.fsf@haabendal.dk>
-References: <20190426084038.6377-1-esben@geanix.com>
-        <20190426084038.6377-2-esben@geanix.com>
-        <20190426143946.GX9224@smile.fi.intel.com>
-        <871s1og11u.fsf@haabendal.dk>
-        <20190426215103.GD9224@smile.fi.intel.com>
-        <87tvejakot.fsf@haabendal.dk>
-        <7a1fd6cc-050f-a077-6169-03552a89c563@metux.net>
+From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+Subject: Re: [PATCH 37/41] drivers: tty: serial: 8250: simplify io resource
+ size computation
+Date: Mon, 29 Apr 2019 08:48:53 +0200
+Message-ID: <431b36fe-3071-fcfd-b04e-b4b293e79a80@metux.net>
+References: <1556369542-13247-1-git-send-email-info@metux.net>
+ <1556369542-13247-38-git-send-email-info@metux.net>
+ <20190428152103.GP9224@smile.fi.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <7a1fd6cc-050f-a077-6169-03552a89c563@metux.net> (Enrico
-        Weigelt's message of "Sat, 27 Apr 2019 13:57:57 +0200")
+In-Reply-To: <20190428152103.GP9224@smile.fi.intel.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, He Zhe <zhe.he@windriver.com>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-kernel@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "Enrico Weigelt, metux IT consult" <info@metux.net>
+Cc: linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, andrew@aj.id.au, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-"Enrico Weigelt, metux IT consult" <lkml@metux.net> writes:
+On 28.04.19 17:21, Andy Shevchenko wrote:
 
-> On 27.04.19 10:58, Esben Haabendal wrote:
->
-> Hi folks,
->
->> That said, the purpose of UPF_BOOT_AUTOCONF (for 8250 driver) is to
->> request and map the register memory.  So when that is already done by
->> the parent MFD driver, I think it is silly to workaround problems
->> caused by UPF_BOOT_AUTOCONF being force setted, when it really
->> shouldn't.
-> I tend to agree. Maybe we should give serial8250_register_8250_port()
-> some flags for controlling this, or add another function for those
-> cases.
+> 
+>> +#define SERIAL_RT2880_IOSIZE	0x100
+> 
+> And why this is in the header file and not in corresponding C one?
 
-Changing serial8250_register_8250_port() would break existing drivers,
-as I have seen that some explicitly rely on the automtic addition of
-UPF_BOOT_AUTOCONF.
+hmm, no particular reason, maybe just an old habit to put definitions
+into .h files ;-)
 
-> A minimal-invasive approach could be introducing an
-> serial8250_register_8250_port_ext() with extra parameters, and let
-> serial8250_register_8250_port() just call it.
+I can move it to 8250_of.c if you like me to.
 
-So basically a rename of __serial8250_register_8250_port() in my patch
-to serial8250_register_8250_port_ext()?  Fine with me.  Should we give
-it an EXPORT_SYMBOL() also, as it is just as valid to use in modules as
-the current serial8250_register_8250_port()?
 
-/Esben
+
+--mtx
+
+-- 
+Enrico Weigelt, metux IT consult
+Free software and Linux embedded engineering
+info@metux.net -- +49-151-27565287
