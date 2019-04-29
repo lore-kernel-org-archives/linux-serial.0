@@ -1,102 +1,34 @@
-From: Christophe Leroy <christophe.leroy@c-s.fr>
-Subject: Re: [PATCH 22/41] drivers: tty: serial: cpm_uart: fix logging calls
-Date: Mon, 29 Apr 2019 17:59:04 +0200
-Message-ID: <a00ba23b-e73e-c964-a6d0-347cb605b8c8@c-s.fr>
+From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+Subject: Re: [PATCH 37/41] drivers: tty: serial: 8250: simplify io resource
+ size computation
+Date: Mon, 29 Apr 2019 17:58:54 +0200
+Message-ID: <7cec8c1a-a0a1-e76c-5c1f-a93c591d38b1@metux.net>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
- <1556369542-13247-23-git-send-email-info@metux.net>
+ <1556369542-13247-38-git-send-email-info@metux.net>
+ <ba6dd5fa-36f1-902d-1ab4-c99e6a5ea3c2@physik.fu-berlin.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1556369542-13247-23-git-send-email-info@metux.net>
-Content-Language: fr
+In-Reply-To: <ba6dd5fa-36f1-902d-1ab4-c99e6a5ea3c2@physik.fu-berlin.de>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org
-Cc: lorenzo.pieralisi@arm.com, linux-ia64@vger.kernel.org, linux-serial@vger.kernel.org, andrew@aj.id.au, gregkh@linuxfoundation.org, sudeep.holla@arm.com, liviu.dudau@arm.com, linux-mips@vger.kernel.org, vz@mleia.com, linux@prisktech.co.nz, sparclinux@vger.kernel.org, khilman@baylibre.com, macro@linux-mips.org, slemieux.tyco@gmail.com, matthias.bgg@gmail.com, jacmet@sunsite.dk, linux-amlogic@lists.infradead.org, andriy.shevchenko@linux.intel.com, linuxppc-dev@lists.ozlabs.org, davem@davemloft.net
+To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+On 27.04.19 15:03, John Paul Adrian Glaubitz wrote:
+> On 4/27/19 2:52 PM, Enrico Weigelt, metux IT consult wrote:
+>> Simpily io resource size computation by setting mapsize field.
+>     ^^^^
+> Here's a typo
+
+thx. fixed.
+
+--mtx
 
 
-Le 27/04/2019 à 14:52, Enrico Weigelt, metux IT consult a écrit :
-> Fix checkpatch warnings by using pr_err():
-> 
->      WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
->      #109: FILE: drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c:109:
->      +		printk(KERN_ERR
-> 
->      WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
->      #128: FILE: drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c:128:
->      +		printk(KERN_ERR
-> 
->      WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
->      +           printk(KERN_ERR
-> 
->      WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
->      +           printk(KERN_ERR
-> 
-> Signed-off-by: Enrico Weigelt <info@metux.net>
-
-Reviewed-by: Christophe Leroy <christophe.leroy@c-s.fr>
-
-But is that really worth doing those changes ?
-
-If we want to do something useful, wouldn't it make more sense to 
-introduce the use of dev_err() in order to identify the faulting device 
-in the message ?
-
-Christophe
-
-> ---
->   drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c | 6 ++----
->   drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c | 6 ++----
->   2 files changed, 4 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c
-> index 56fc527..aed61e9 100644
-> --- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c
-> +++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm1.c
-> @@ -71,8 +71,7 @@ int cpm_uart_allocbuf(struct uart_cpm_port *pinfo, unsigned int is_con)
->   	dpmemsz = sizeof(cbd_t) * (pinfo->rx_nrfifos + pinfo->tx_nrfifos);
->   	dp_offset = cpm_dpalloc(dpmemsz, 8);
->   	if (IS_ERR_VALUE(dp_offset)) {
-> -		printk(KERN_ERR
-> -		       "cpm_uart_cpm1.c: could not allocate buffer descriptors\n");
-> +		pr_err("cpm_uart_cpm1.c: could not allocate buffer descriptors\n");
->   		return -ENOMEM;
->   	}
->   	dp_mem = cpm_dpram_addr(dp_offset);
-> @@ -90,8 +89,7 @@ int cpm_uart_allocbuf(struct uart_cpm_port *pinfo, unsigned int is_con)
->   
->   	if (mem_addr == NULL) {
->   		cpm_dpfree(dp_offset);
-> -		printk(KERN_ERR
-> -		       "cpm_uart_cpm1.c: could not allocate coherent memory\n");
-> +		pr_err("cpm_uart_cpm1.c: could not allocate coherent memory\n");
->   		return -ENOMEM;
->   	}
->   
-> diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-> index 40cfcf4..a0fccda 100644
-> --- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-> +++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-> @@ -106,8 +106,7 @@ int cpm_uart_allocbuf(struct uart_cpm_port *pinfo, unsigned int is_con)
->   	dpmemsz = sizeof(cbd_t) * (pinfo->rx_nrfifos + pinfo->tx_nrfifos);
->   	dp_offset = cpm_dpalloc(dpmemsz, 8);
->   	if (IS_ERR_VALUE(dp_offset)) {
-> -		printk(KERN_ERR
-> -		       "cpm_uart_cpm.c: could not allocate buffer descriptors\n");
-> +		pr_err("cpm_uart_cpm.c: could not allocate buffer descriptors\n");
->   		return -ENOMEM;
->   	}
->   
-> @@ -125,8 +124,7 @@ int cpm_uart_allocbuf(struct uart_cpm_port *pinfo, unsigned int is_con)
->   
->   	if (mem_addr == NULL) {
->   		cpm_dpfree(dp_offset);
-> -		printk(KERN_ERR
-> -		       "cpm_uart_cpm.c: could not allocate coherent memory\n");
-> +		pr_err("cpm_uart_cpm.c: could not allocate coherent memory\n");
->   		return -ENOMEM;
->   	}
->   
-> 
+-- 
+Enrico Weigelt, metux IT consult
+Free software and Linux embedded engineering
+info@metux.net -- +49-151-27565287
