@@ -1,60 +1,39 @@
-From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
-Subject: Re: [PATCH 1/2] serial: 8250: Allow port registration without
- UPF_BOOT_AUTOCONF
-Date: Mon, 29 Apr 2019 14:56:58 +0200
-Message-ID: <a84da0ff-8f61-75a9-e91f-550fb70a3f5a@metux.net>
-References: <20190426084038.6377-1-esben@geanix.com>
- <20190426084038.6377-2-esben@geanix.com>
- <20190426143946.GX9224@smile.fi.intel.com> <871s1og11u.fsf@haabendal.dk>
- <20190426215103.GD9224@smile.fi.intel.com> <87tvejakot.fsf@haabendal.dk>
- <CAHp75VfZMuQ3xagGSt6dXv1tZbSfanUdaw0SgjTqq3YET5YBKQ@mail.gmail.com>
- <87y33tz5oz.fsf@haabendal.dk>
- <CAHp75Vc6cLnLztXtvTcWisjAqDUTEWBBgv20CA34ZQmBEAvpbA@mail.gmail.com>
- <87ef5lxiqm.fsf@haabendal.dk>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 01/41] drivers: tty: serial: dz: use dev_err() instead of
+ printk()
+Date: Mon, 29 Apr 2019 15:12:24 +0200
+Message-ID: <20190429131224.GA27385@kroah.com>
+References: <1556369542-13247-1-git-send-email-info@metux.net>
+ <1556369542-13247-2-git-send-email-info@metux.net>
+ <20190427133117.GC11368@kroah.com>
+ <bae3f23b-8823-f089-c40e-024ba225555f@metux.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <87ef5lxiqm.fsf@haabendal.dk>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <bae3f23b-8823-f089-c40e-024ba225555f@metux.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Esben Haabendal <esben@haabendal.dk>, Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, He Zhe <zhe.he@windriver.com>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+Cc: "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 29.04.19 11:29, Esben Haabendal wrote:
+On Mon, Apr 29, 2019 at 02:37:04PM +0200, Enrico Weigelt, metux IT consult wrote:
+> On 27.04.19 15:31, Greg KH wrote:
+> > On Sat, Apr 27, 2019 at 02:51:42PM +0200, Enrico Weigelt, metux IT consult wrote:
+> >> Using dev_err() instead of printk() for more consistent output.
+> >> (prints device name, etc).
+> >>
+> >> Signed-off-by: Enrico Weigelt <info@metux.net>
+> >> ---
+> >>  drivers/tty/serial/dz.c | 8 ++++----
+> > 
+> > Do you have this hardware to test any of these changes with?
+> 
+> Unfortunately not :(
 
-> So maybe we should go down that direction intead, extending 8250 driver
-> to replace mapbase with a resource struct instead?
+Then I can take the "basic" types of patches for the driver (like this
+one), but not any others, sorry.
 
-Yeah, I already was up to do that. But that would be a pretty massive
-change, as the actual use of fields like mapsize/mapbase in the drivers
-is so diverse. Some even don't use mapsize.
+thanks,
 
-That's why I started harmonizing that step by step. In little steps,
-that are easier to review (unfortunately, don't have the corresponding
-hardware to do real tests).
-
-Finally, I'd like to have all drivers just use appropriate helpers to
-declare their IO area and let the core do all the mapping stuff. Then we
-IMHO could easily switch to struct resource internally.
-
-> No, I actually try to do the right thing in relation to Linux device
-> resource model.  But 8250 is just not behaving very well in that
-> respect, not having been made really aware of the resource model.
-
-I see it the same way. The serial (especially 8250) drivers are a tricky
-thing, and I'd like to make it simpler / easier to understand.
-
-But I can understand that Greg is pretty reluctant to any changes, as
-some actual hardware seems to be hard to get. (OTOH, if it's so rare,
-could we risk some potential breaks and just wait for anybody
-complaining ?)
-
-
---mtx
-
--- 
-Enrico Weigelt, metux IT consult
-Free software and Linux embedded engineering
-info@metux.net -- +49-151-27565287
+greg k-h
