@@ -1,37 +1,25 @@
-From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
-Subject: Re: [PATCH 22/41] drivers: tty: serial: cpm_uart: fix logging calls
-Date: Mon, 29 Apr 2019 18:20:31 +0200
-Message-ID: <fc01df37-3e7e-0c71-745d-63fbd83c1079@metux.net>
-References: <1556369542-13247-1-git-send-email-info@metux.net>
- <1556369542-13247-23-git-send-email-info@metux.net>
- <a00ba23b-e73e-c964-a6d0-347cb605b8c8@c-s.fr>
+From: Hao Lee <haolee.swjtu@gmail.com>
+Subject: Re: [PATCH v2] tty: serial: 8250: Fix type field in format string
+Date: Tue, 30 Apr 2019 00:23:50 +0800
+Message-ID: <CA+PpKPmFzLcE=gBwB9q0UNF1Rt1KU7_q3p9xyL-mh9g=imm22Q@mail.gmail.com>
+References: <20190427091943.GA3810@haolee.io> <20190429143117.GA1474@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <a00ba23b-e73e-c964-a6d0-347cb605b8c8@c-s.fr>
-Content-Language: en-US
+In-Reply-To: <20190429143117.GA1474@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christophe Leroy <christophe.leroy@c-s.fr>, "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org
-Cc: lorenzo.pieralisi@arm.com, linux-ia64@vger.kernel.org, linux-serial@vger.kernel.org, andrew@aj.id.au, gregkh@linuxfoundation.org, sudeep.holla@arm.com, liviu.dudau@arm.com, linux-mips@vger.kernel.org, vz@mleia.com, linux@prisktech.co.nz, sparclinux@vger.kernel.org, khilman@baylibre.com, macro@linux-mips.org, slemieux.tyco@gmail.com, matthias.bgg@gmail.com, jacmet@sunsite.dk, linux-amlogic@lists.infradead.org, andriy.shevchenko@linux.intel.com, linuxppc-dev@lists.ozlabs.org, davem@davemloft.net
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 29.04.19 17:59, Christophe Leroy wrote:
+On Mon, 29 Apr 2019 at 22:31, Greg KH <gregkh@linuxfoundation.org> wrote:
+> This causes build warnings when applied, I'm having to drop it now.
+>
+> Please be more careful, when submitting patches, always test-build them
+> first.
 
-> If we want to do something useful, wouldn't it make more sense to
-> introduce the use of dev_err() in order to identify the faulting device
-> in the message ?
-
-Well, I could get the struct device* pointer via pinfo.port->dev,
-but I wasn't entirely sure that it's always defined before these
-functions could be called.
-
-Shall I change it to dev_*() ?
-
-
---mtx
-
--- 
-Enrico Weigelt, metux IT consult
-Free software and Linux embedded engineering
-info@metux.net -- +49-151-27565287
+I have found my mistake. Although I have built a kernel to test my
+patch, I forget to turn on the 8250 configurations which are turned
+off during another kernel test. As a result, 8250_pnp.c was not
+compiled at all, so I didn't see any warnings. Sorry for that and
+thanks for your guidance. I will submit my patch v3.
