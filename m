@@ -1,40 +1,104 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 01/41] drivers: tty: serial: dz: use dev_err() instead of
- printk()
-Date: Mon, 29 Apr 2019 16:23:21 +0200
-Message-ID: <20190429142321.GA29007@kroah.com>
-References: <1556369542-13247-1-git-send-email-info@metux.net>
- <1556369542-13247-2-git-send-email-info@metux.net>
- <20190427132959.GA11368@kroah.com>
- <e10175d0-bc3b-a4ab-cb47-0b4761bfb629@metux.net>
+From: Esben Haabendal <esben@haabendal.dk>
+Subject: Re: [PATCH 1/2] serial: 8250: Allow port registration without UPF_BOOT_AUTOCONF
+Date: Mon, 29 Apr 2019 16:25:27 +0200
+Message-ID: <87v9ywhors.fsf@haabendal.dk>
+References: <20190426084038.6377-1-esben@geanix.com>
+        <20190426084038.6377-2-esben@geanix.com>
+        <20190426143946.GX9224@smile.fi.intel.com>
+        <871s1og11u.fsf@haabendal.dk>
+        <20190426215103.GD9224@smile.fi.intel.com>
+        <87tvejakot.fsf@haabendal.dk>
+        <CAHp75VfZMuQ3xagGSt6dXv1tZbSfanUdaw0SgjTqq3YET5YBKQ@mail.gmail.com>
+        <87y33tz5oz.fsf@haabendal.dk>
+        <CAHp75Vc6cLnLztXtvTcWisjAqDUTEWBBgv20CA34ZQmBEAvpbA@mail.gmail.com>
+        <87ef5lxiqm.fsf@haabendal.dk>
+        <20190429133535.GG9224@smile.fi.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <e10175d0-bc3b-a4ab-cb47-0b4761bfb629@metux.net>
+In-Reply-To: <20190429133535.GG9224@smile.fi.intel.com> (Andy Shevchenko's
+        message of "Mon, 29 Apr 2019 16:35:35 +0300")
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
-Cc: "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, He Zhe <zhe.he@windriver.com>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Apr 29, 2019 at 04:11:15PM +0200, Enrico Weigelt, metux IT consult wrote:
-> On 27.04.19 15:29, Greg KH wrote:
-> > On Sat, Apr 27, 2019 at 02:51:42PM +0200, Enrico Weigelt, metux IT consult wrote:
-> >> Using dev_err() instead of printk() for more consistent output.
-> >> (prints device name, etc).
-> >>
-> >> Signed-off-by: Enrico Weigelt <info@metux.net>
-> > 
-> > Your "From:" line does not match the signed-off-by line, so I can't take
-> > any of these if I wanted to :(
-> 
-> Grmpf. I've manually changed it, as you isisted in having my company
-> name remove from it ....
+Andy Shevchenko <andy.shevchenko@gmail.com> writes:
 
-Yes, that's fine, but the lines have to match.  See the documentation
-for how to have a "From:" in the changelog text to override whatever
-your email client happens to pollute the email with :)
+> On Mon, Apr 29, 2019 at 11:29:05AM +0200, Esben Haabendal wrote:
+>> Andy Shevchenko <andy.shevchenko@gmail.com> writes:
+>> > On Mon, Apr 29, 2019 at 9:27 AM Esben Haabendal <esben@haabendal.dk> wrote:
+>> >> Andy Shevchenko <andy.shevchenko@gmail.com> writes:
+>> >> > On Sat, Apr 27, 2019 at 12:01 PM Esben Haabendal <esben@haabendal.dk>
+>> >> > wrote:
+>> >> >> Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
+>> >> >> > On Fri, Apr 26, 2019 at 06:54:05PM +0200, Esben Haabendal wrote:
+>> >> >> >> Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
+>
+>> So maybe we should go down that direction intead, extending 8250 driver
+>> to replace mapbase with a resource struct instead?
+>> 
+>> > Btw, we have PCI MFD driver which enumerates 8250 (more precisely
+>> > 8250_dw) w/o any issues.
+>> 
+>> I am aware of that (sm501.c).  It avoids the problem by not requesting
+>> the parent memory region (sm->io_res), and requesting all child memory
+>> regions directly in root instead of relative to the sm->io_res parent.
+>> 
+>> But as resoure management is designed for managing a parent/child
+>> resource tree, this looks much more like a workaround than the right
+>> solution.
+>> 
+>> >> It would be nice if child drivers requesting memory would pass the
+>> >> parent memory resource.  Maybe 8250 driver could be changed to accept a
+>> >> struct resource pointer instead of a simple mapbase value, allowing to
+>> >> setup the resource with parent pointing to the MFD memory resource.
+>> >
+>> > I don't see the problem in certain driver, I guess you are trying to
+>> > workaround existin Linux device resource model.
+>> 
+>> No, I actually try to do the right thing in relation to Linux device
+>> resource model.  But 8250 is just not behaving very well in that
+>> respect, not having been made really aware of the resource model.
+>
+> The point here is that. MFD driver can re-use existing platform drivers which
+> may be used standalone. They and only they are the right owners of the
+> requesting *their* resources.
+>
+> When parent request resources on the behalf of its child it simple will break
+> this flexibility.
 
-thanks,
+I hear what you say.  And I agree, parent/mfd drivers should not request
+resources on behalf of it's children.
 
-greg k-h
+But on the other side, something is broken by design in mfd, if it is
+not possible for parent/mfd driver to request the resources for itself,
+which naturally contains the resources for all it's mfd
+functions/childs.
+
+Please take a look at mfd_add_device() in drivers/mfd/mfd-core.c, and
+the use of the cell and mem_base arguments in particular.
+
+        for (r = 0; r < cell->num_resources; r++) {
+                res[r].name = cell->resources[r].name;
+                res[r].flags = cell->resources[r].flags;
+
+                /* Find out base to use */
+                if ((cell->resources[r].flags & IORESOURCE_MEM) && mem_base) {
+                        res[r].parent = mem_base;
+                        res[r].start = mem_base->start +
+                                cell->resources[r].start;
+                        res[r].end = mem_base->start +
+                                cell->resources[r].end;
+
+It really is a core part of mfd drivers that you request a memory
+resource for the mfd driver, and then have one or more child memory
+resources requsted with the parent memory resource as base.
+
+Many mfd drivers handle resources like this, like: htc/pasic3.c,
+sta2x11-mfd.c and intel-lpss.c.
+Ofcourse, the sm501.c driver does not, as it does not use the mfd API at
+all, and is thus not a good example of a mfd driver, and there is
+therefore no good examples of using 8250 with an mfd driver.
+
+/Esben
