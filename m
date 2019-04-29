@@ -1,27 +1,50 @@
-From: Peter Korsgaard <peter@korsgaard.com>
-Subject: Re: [PATCH 12/41] drivers: tty: serial: uartlite: use dev_dbg() instead of pr_debug()
-Date: Mon, 29 Apr 2019 17:26:00 +0200
-Message-ID: <875zqwrfxz.fsf@dell.be.48ers.dk>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 36/41] drivers: tty: serial: 8250: store mmio resource
+ size in port struct
+Date: Mon, 29 Apr 2019 18:39:49 +0300
+Message-ID: <20190429153949.GV9224@smile.fi.intel.com>
 References: <1556369542-13247-1-git-send-email-info@metux.net>
-        <1556369542-13247-13-git-send-email-info@metux.net>
+ <1556369542-13247-37-git-send-email-info@metux.net>
+ <20190428151848.GO9224@smile.fi.intel.com>
+ <4bab941a-c2f2-7f1c-9bc2-86c63f171c25@metux.net>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1556369542-13247-13-git-send-email-info@metux.net> (Enrico
-        Weigelt's message of "Sat, 27 Apr 2019 14:51:53 +0200")
+Content-Disposition: inline
+In-Reply-To: <4bab941a-c2f2-7f1c-9bc2-86c63f171c25@metux.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Cc: linux-kernel@vger.kernel.org, lorenzo.pieralisi@arm.com, linux-ia64@vger.kernel.org, linux-serial@vger.kernel.org, andrew@aj.id.au, gregkh@linuxfoundation.org, sudeep.holla@arm.com, liviu.dudau@arm.com, linux-mips@vger.kernel.org, vz@mleia.com, linux@prisktech.co.nz, sparclinux@vger.kernel.org, khilman@baylibre.com, macro@linux-mips.org, slemieux.tyco@gmail.com, matthias.bgg@gmail.com, jacmet@sunsite.dk, linux-amlogic@lists.infradead.org, andriy.shevchenko@linux.intel.com, linuxppc-dev@lists.ozlabs.org, davem@davemloft.net
+To: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+Cc: "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, andrew@aj.id.au, macro@linux-mips.org, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
->>>>> "Enrico" == Enrico Weigelt, metux IT consult <info@metux.net> writes:
+On Mon, Apr 29, 2019 at 04:55:05PM +0200, Enrico Weigelt, metux IT consult wrote:
+> On 28.04.19 17:18, Andy Shevchenko wrote:
+> > On Sat, Apr 27, 2019 at 02:52:17PM +0200, Enrico Weigelt, metux IT consult wrote:
 
- > Using dev_dbg() instead of pr_debg() for more consistent output.
- > (prints device name, etc).
+> >> -	int ret = 0;
+> > 
+> > This and Co is a separate change that can be done in its own patch.
+> 
+> I don't really understand :(
+> Do you mean the splitting off the retval part from the rest ?
 
- > Signed-off-by: Enrico Weigelt <info@metux.net>
+You do two things here: one of them is removing ret and other relative changes.
+This should be split to a separate patch.
 
-Acked-by: Peter Korsgaard <peter@korsgaard.com>
+> > You may increase readability by introducing temporary variables
+> > 
+> > 	... mapbase = port->mapbase;
+> > 	... mapsize = port->mapsize;
+> > 	...
+> > 	port->membase = ioremap_nocache(mapbase, mapsize);
+> > 	...
+> 
+> Is that really necessary ? Maybe it's just my personal taste, but I
+> don't feel the more more verbose one is really easier to read.
+
+Up to Greg. For me it's harder to read all those port-> in several parameters.
+
 
 -- 
-Bye, Peter Korsgaard
+With Best Regards,
+Andy Shevchenko
