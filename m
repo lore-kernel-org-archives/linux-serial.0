@@ -1,35 +1,51 @@
-From: =?utf-8?Q?Christoph_Niedermaier?= <cniedermaier@dh-electronics.com>
-Subject: cpu power up timing changes causes UART rx character loss on imx6ull
-Date: Tue, 30 Apr 2019 13:45:19 +0000
-Message-ID: <kcis.E7DDD7DFA27C49D7987A7EAB797CB891@DHPLMX01>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 22/41] drivers: tty: serial: cpm_uart: fix logging calls
+Date: Tue, 30 Apr 2019 17:10:29 +0300
+Message-ID: <20190430141029.GK9224@smile.fi.intel.com>
+References: <1556369542-13247-1-git-send-email-info@metux.net>
+ <1556369542-13247-23-git-send-email-info@metux.net>
+ <a00ba23b-e73e-c964-a6d0-347cb605b8c8@c-s.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?utf-8?Q?linux-arm-kernel=40lists=2Einfradead=2Eorg?= <linux-arm-kernel@lists.infradead.org>, =?utf-8?Q?linux-imx=40nxp=2Eco?= =?utf-8?Q?m?= <linux-imx@nxp.com>, =?utf-8?Q?linux-serial=40vger=2Ekernel?= =?utf-8?Q?=2Eorg?= <linux-serial@vger.kernel.org>
-Cc: =?utf-8?Q?Sascha_Hauer?= <s.hauer@pengutronix.de>, =?utf-8?Q?Anson_Huang?= <anson.huang@nxp.com>, =?utf-8?Q?kernel=40pengutronix=2Ede?= <kernel@pengutronix.de>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <a00ba23b-e73e-c964-a6d0-347cb605b8c8@c-s.fr>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christophe Leroy <christophe.leroy@c-s.fr>
+Cc: "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org, lorenzo.pieralisi@arm.com, linux-ia64@vger.kernel.org, linux-serial@vger.kernel.org, andrew@aj.id.au, gregkh@linuxfoundation.org, sudeep.holla@arm.com, liviu.dudau@arm.com, linux-mips@vger.kernel.org, vz@mleia.com, linux@prisktech.co.nz, sparclinux@vger.kernel.org, khilman@baylibre.com, macro@linux-mips.org, slemieux.tyco@gmail.com, matthias.bgg@gmail.com, jacmet@sunsite.dk, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, davem@davemloft.net
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
+On Mon, Apr 29, 2019 at 05:59:04PM +0200, Christophe Leroy wrote:
+> Le 27/04/2019 à 14:52, Enrico Weigelt, metux IT consult a écrit :
+> > Fix checkpatch warnings by using pr_err():
+> > 
+> >      WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
+> >      #109: FILE: drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c:109:
+> >      +		printk(KERN_ERR
+> > 
+> >      WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
+> >      #128: FILE: drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c:128:
+> >      +		printk(KERN_ERR
+> > 
+> >      WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
+> >      +           printk(KERN_ERR
+> > 
+> >      WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
+> >      +           printk(KERN_ERR
+> > 
+> > Signed-off-by: Enrico Weigelt <info@metux.net>
+> 
+> Reviewed-by: Christophe Leroy <christophe.leroy@c-s.fr>
+> 
+> But is that really worth doing those changes ?
+> 
+> If we want to do something useful, wouldn't it make more sense to introduce
+> the use of dev_err() in order to identify the faulting device in the message
+> ?
 
-I have found out that the commit 1e434b703248 ("ARM: imx: update the cpu power up timing setting on i.mx6sx") causes UART rx character loss on imx6ull.
-The commit is designed for imx6sx, but it also changes the cpu power up timing of the imx6ull, because function imx6sx_cpuidle_init() is also used for imx6ull.
++1 for switching to dev_*().
 
-After receiving of 32 characters correctly, the following characters 33-36 gets lost if there is no delay in the transmission.
-I connect the imx6ull with a native PC COM port.
-
-If I revert the commit I will receive all characters correctly.
-
-Has anyone discovered this behavior as well?
-
-Thank you,
-Christoph
+-- 
+With Best Regards,
+Andy Shevchenko
