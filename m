@@ -1,36 +1,52 @@
 From: "Maciej W. Rozycki" <macro@linux-mips.org>
-Subject: Re: [PATCH 01/41] drivers: tty: serial: dz: use dev_err() instead
- of printk()
-Date: Wed, 1 May 2019 03:20:37 +0100 (BST)
-Message-ID: <alpine.LFD.2.21.1905010255070.30973@eddie.linux-mips.org>
-References: <1556369542-13247-1-git-send-email-info@metux.net> <1556369542-13247-2-git-send-email-info@metux.net> <20190427133117.GC11368@kroah.com> <bae3f23b-8823-f089-c40e-024ba225555f@metux.net> <20190429131224.GA27385@kroah.com>
+Subject: Re: [PATCH 06/41] drivers: tty: serial: sb1250-duart: use dev_err()
+ instead of printk()
+Date: Wed, 1 May 2019 03:29:36 +0100 (BST)
+Message-ID: <alpine.LFD.2.21.1905010257020.30973@eddie.linux-mips.org>
+References: <1556369542-13247-1-git-send-email-info@metux.net> <1556369542-13247-7-git-send-email-info@metux.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190429131224.GA27385@kroah.com>
+In-Reply-To: <1556369542-13247-7-git-send-email-info@metux.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: "Enrico Weigelt, metux IT consult" <lkml@metux.net>, "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, "David S. Miller" <davem@davemloft.net>, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
+To: "Enrico Weigelt, metux IT consult" <info@metux.net>
+Cc: linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, "David S. Miller" <davem@davemloft.net>, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 29 Apr 2019, Greg KH wrote:
+On Sat, 27 Apr 2019, Enrico Weigelt, metux IT consult wrote:
 
-> > >>  drivers/tty/serial/dz.c | 8 ++++----
-> > > 
-> > > Do you have this hardware to test any of these changes with?
-> > 
-> > Unfortunately not :(
-> 
-> Then I can take the "basic" types of patches for the driver (like this
-> one), but not any others, sorry.
+> diff --git a/drivers/tty/serial/sb1250-duart.c b/drivers/tty/serial/sb1250-duart.c
+> index 329aced..655961c 100644
+> --- a/drivers/tty/serial/sb1250-duart.c
+> +++ b/drivers/tty/serial/sb1250-duart.c
+> @@ -663,7 +663,6 @@ static void sbd_release_port(struct uart_port *uport)
+>  
+>  static int sbd_map_port(struct uart_port *uport)
+>  {
+> -	const char *err = KERN_ERR "sbd: Cannot map MMIO\n";
+>  	struct sbd_port *sport = to_sport(uport);
+>  	struct sbd_duart *duart = sport->duart;
+>  
+> @@ -671,7 +670,7 @@ static int sbd_map_port(struct uart_port *uport)
+>  		uport->membase = ioremap_nocache(uport->mapbase,
+>  						 DUART_CHANREG_SPACING);
+>  	if (!uport->membase) {
+> -		printk(err);
+> +		dev_err(uport->dev, "Cannot map MMIO (base)\n");
+>  		return -ENOMEM;
+>  	}
+>  
+> @@ -679,7 +678,7 @@ static int sbd_map_port(struct uart_port *uport)
+>  		sport->memctrl = ioremap_nocache(duart->mapctrl,
+>  						 DUART_CHANREG_SPACING);
+>  	if (!sport->memctrl) {
+> -		printk(err);
+> +		dev_err(uport->dev, "Cannot map MMIO (ctrl)\n");
+>  		iounmap(uport->membase);
+>  		uport->membase = NULL;
+>  		return -ENOMEM;
 
- I can verify changes to dz.c, sb1250-duart.c and zs.c with real hardware, 
-but regrettably not right away: the hardware is in a remote location and 
-while I have it wired for remote operation unfortunately its connectivity 
-has been cut off by an unfriendly ISP.
-
- I'm not sure if all the changes make sense though: if there is a compiler 
-warning or a usability issue, then a patch is surely welcome, otherwise: 
-"If it ain't broke, don't fix it".
+ Hmm, what's the point to have separate messages, which consume extra 
+memory, for a hardly if at all possible error condition?
 
   Maciej
