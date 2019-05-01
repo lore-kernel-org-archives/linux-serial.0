@@ -1,39 +1,36 @@
-From: Vladimir Zapolskiy <vz@mleia.com>
-Subject: Re: [PATCH 41/41] drivers: tty: serial: lpc32xx_hs: fill mapsize and
- use it
-Date: Tue, 30 Apr 2019 23:52:58 +0300
-Message-ID: <3cfc4396-b152-e9a6-bf29-a4c901ac90e6@mleia.com>
-References: <1556369542-13247-1-git-send-email-info@metux.net>
- <1556369542-13247-42-git-send-email-info@metux.net>
+From: "Maciej W. Rozycki" <macro@linux-mips.org>
+Subject: Re: [PATCH 01/41] drivers: tty: serial: dz: use dev_err() instead
+ of printk()
+Date: Wed, 1 May 2019 03:20:37 +0100 (BST)
+Message-ID: <alpine.LFD.2.21.1905010255070.30973@eddie.linux-mips.org>
+References: <1556369542-13247-1-git-send-email-info@metux.net> <1556369542-13247-2-git-send-email-info@metux.net> <20190427133117.GC11368@kroah.com> <bae3f23b-8823-f089-c40e-024ba225555f@metux.net> <20190429131224.GA27385@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1556369542-13247-42-git-send-email-info@metux.net>
-Content-Language: en-US
+In-Reply-To: <20190429131224.GA27385@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, macro@linux-mips.org, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, davem@davemloft.net, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: "Enrico Weigelt, metux IT consult" <lkml@metux.net>, "Enrico Weigelt, metux IT consult" <info@metux.net>, linux-kernel@vger.kernel.org, andrew@aj.id.au, andriy.shevchenko@linux.intel.com, vz@mleia.com, slemieux.tyco@gmail.com, khilman@baylibre.com, liviu.dudau@arm.com, sudeep.holla@arm.com, lorenzo.pieralisi@arm.com, "David S. Miller" <davem@davemloft.net>, jacmet@sunsite.dk, linux@prisktech.co.nz, matthias.bgg@gmail.com, linux-mips@vger.kernel.org, linux-serial@vger.kernel.org, linux-ia64@vger.kernel.org, linux-amlogic@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Enrico,
+On Mon, 29 Apr 2019, Greg KH wrote:
 
-On 04/27/2019 03:52 PM, Enrico Weigelt, metux IT consult wrote:
-> Fill the struct uart_port->mapsize field and use it, insteaf of
-
-typo, s/insteaf/instead/
-
-> hardcoded values in many places. This makes the code layout a bit
-> more consistent and easily allows using generic helpers for the
-> io memory handling.
+> > >>  drivers/tty/serial/dz.c | 8 ++++----
+> > > 
+> > > Do you have this hardware to test any of these changes with?
+> > 
+> > Unfortunately not :(
 > 
-> Candidates for such helpers could be eg. the request+ioremap and
-> iounmap+release combinations.
-> 
-> Signed-off-by: Enrico Weigelt <info@metux.net>
+> Then I can take the "basic" types of patches for the driver (like this
+> one), but not any others, sorry.
 
-Acked-by: Vladimir Zapolskiy <vz@mleia.com>
+ I can verify changes to dz.c, sb1250-duart.c and zs.c with real hardware, 
+but regrettably not right away: the hardware is in a remote location and 
+while I have it wired for remote operation unfortunately its connectivity 
+has been cut off by an unfriendly ISP.
 
---
-Best wishes,
-Vladimir
+ I'm not sure if all the changes make sense though: if there is a compiler 
+warning or a usability issue, then a patch is surely welcome, otherwise: 
+"If it ain't broke, don't fix it".
+
+  Maciej
