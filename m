@@ -1,39 +1,29 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: cpu power up timing changes causes UART rx character loss on
- imx6ull
-Date: Thu, 2 May 2019 08:31:54 -0300
-Message-ID: <CAOMZO5DmeaxZTvOLeJrvb8_YbzTuYQVUZhLU1z2s-tm98gPf1A@mail.gmail.com>
-References: <kcis.DC82F67FDB724ECD9A98DE07DACAC907@DHPLMX01>
+From: Colin Ian King <colin.king@canonical.com>
+Subject: re: serial: Add Milbeaut serial control
+Date: Thu, 2 May 2019 12:47:39 +0100
+Message-ID: <246f81ba-0ed1-d5bc-1a48-bcf0fb2cc05e@canonical.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <kcis.DC82F67FDB724ECD9A98DE07DACAC907@DHPLMX01>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Anson Huang <anson.huang@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, "linux-imx@nxp.com" <linux-imx@nxp.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sugaya Taichi <sugaya.taichi@socionext.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Christoph,
+Hi,
 
-On Thu, May 2, 2019 at 6:40 AM Christoph Niedermaier
-<cniedermaier@dh-electronics.com> wrote:
->
-> I have tested the patch with kernel version 5.1-rc7 and I could not reproduce the loss of characters any more.
+Static analysis with Coverity has picked up an issue in commit:
 
-Excellent. I have just sent a formal patch.
+commit ba44dc04300441b47618f9933bf36e75a280e5fe
+Author: Sugaya Taichi <sugaya.taichi@socionext.com>
+Date:   Mon Apr 15 20:31:40 2019 +0900
 
-> Couldn't it perhaps be better to name the define SW2ISO_IMX6SX instead of SW2ISO_IMX6X?
+    serial: Add Milbeaut serial control
 
-Yes, I have changed it in the forma patch. Please reply with your
-Tested-by when you have a chance.
+In function mlb_usio_rx_chars() the u8 status is being bit-wise AND'd
+with MLB_USIO_SSR_BRK (which is 1UL << 8) and hence the result is always
+false, which looks incorrect to me.  Is this intentional?
 
-Thanks
+Colin
