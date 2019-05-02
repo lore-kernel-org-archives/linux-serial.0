@@ -1,33 +1,53 @@
 From: Kevin Hilman <khilman@baylibre.com>
-Subject: Re: [PATCH v5 0/2] tty: serial: add DT bindings and serial driver for the SiFive FU540 UART
-Date: Thu, 02 May 2019 11:57:18 -0700
-Message-ID: <7hsgtwlm5t.fsf@baylibre.com>
-References: <20190413020111.23400-1-paul.walmsley@sifive.com> <7hmukmew5j.fsf@baylibre.com> <883f3d5f-9b04-1435-30d3-2b48ab7eb76d@wdc.com> <7h5zr9dcsi.fsf@baylibre.com> <f2bb876c-2b44-663b-ea06-d849f721fb6c@wdc.com> <7htvetbupi.fsf@baylibre.com> <alpine.DEB.2.21.9999.1904191407310.5118@viisi.sifive.com>
+Subject: Re: [PATCH v5 2/2] tty: serial: add driver for the SiFive UART
+Date: Thu, 02 May 2019 11:58:12 -0700
+Message-ID: <7hpnp0lm4b.fsf@baylibre.com>
+References: <20190413020111.23400-1-paul.walmsley@sifive.com> <20190413020111.23400-3-paul.walmsley@sifive.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <alpine.DEB.2.21.9999.1904191407310.5118@viisi.sifive.com>
+In-Reply-To: <20190413020111.23400-3-paul.walmsley@sifive.com>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: Atish Patra <atish.patra@wdc.com>, Paul Walmsley <paul.walmsley@sifive.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org, gregkh@linuxfoundation.org
+Cc: Paul Walmsley <paul.walmsley@sifive.com>, Paul Walmsley <paul@pwsan.com>, Jiri Slaby <jslaby@suse.com>, Palmer Dabbelt <palmer@sifive.com>, Wesley Terpstra <wesley@sifive.com>, Julia Lawall <julia.lawall@lip6.fr>, Emil Renner Berthing <kernel@esmil.dk>, Andreas Schwab <schwab@suse.de>
 List-Id: linux-serial@vger.kernel.org
 
 Paul Walmsley <paul.walmsley@sifive.com> writes:
 
-> On Fri, 19 Apr 2019, Kevin Hilman wrote:
+> Add a serial driver for the SiFive UART, found on SiFive FU540 devices
+> (among others).
 >
->> Looks like Paul has so far only tested this with BBL + FSBL, so I think
->> I'll wait to hear from him how that setup might be different from using
->> OpenSBI + u-boot.
+> The underlying serial IP block is relatively basic, and currently does
+> not support serial break detection.  Further information on the IP
+> block can be found in the documentation and Chisel sources:
 >
-> I'd recommend testing the DT patches with BBL and the open-source FSBL.  
-> That's the traditional way of booting RISC-V Linux systems.
+>     https://static.dev.sifive.com/FU540-C000-v1.0.pdf
+>
+>     https://github.com/sifive/sifive-blocks/tree/master/src/main/scala/devices/uart
+>
+> This driver was written in collaboration with Wesley Terpstra
+> <wesley@sifive.com>.
+>
+> Tested on a SiFive HiFive Unleashed A00 board, using BBL and the open-
+> source FSBL (using a DT file based on what's targeted for mainline).
+>
+> This revision incorporates changes based on comments by Julia Lawall
+> <julia.lawall@lip6.fr>, Emil Renner Berthing <kernel@esmil.dk>, and
+> Andreas Schwab <schwab@suse.de>.  Thanks also to Andreas for testing
+> the driver with his userspace and reporting a bug with the
+> set_termios implementation.
+>
+> Signed-off-by: Paul Walmsley <paul.walmsley@sifive.com>
+> Signed-off-by: Paul Walmsley <paul@pwsan.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.com>
+> Cc: Palmer Dabbelt <palmer@sifive.com>
+> Cc: Wesley Terpstra <wesley@sifive.com>
+> Cc: linux-serial@vger.kernel.org
+> Cc: linux-riscv@lists.infradead.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: Julia Lawall <julia.lawall@lip6.fr>
+> Cc: Emil Renner Berthing <kernel@esmil.dk>
+> Cc: Andreas Schwab <schwab@suse.de>
 
-OK, but as you know, not the tradiaional way of booting most other linux
-systems.  ;)
-
-I'm working on getting RISC-V supported in kernelCI in a fully-automated
-way, and I don't currently have the time to add add support for BBL+FSBL
-to kernelCI automation tooling, so having u-boot support is the best way
-to get support in kernelCI, IMO.
-
-Kevin
+Tested-by: Kevin Hilman <khilman@baylibre.com>
