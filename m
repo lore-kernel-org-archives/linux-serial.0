@@ -1,79 +1,95 @@
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Subject: Re: [PATCH] PM / core: Propagate dev->power.wakeup_path when no callbacks
-Date: Wed, 01 May 2019 12:21:40 +0200
-Message-ID: <3232066.oa1jrYo8oc@kreacher>
-References: <20190410095516.6170-1-ulf.hansson@linaro.org>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH] serial: 8250: Add support for using platform_device
+ resources
+Date: Thu, 2 May 2019 13:45:56 +0300
+Message-ID: <20190502104556.GS9224@smile.fi.intel.com>
+References: <20190430140416.4707-1-esben@geanix.com>
+ <20190430153736.GL9224@smile.fi.intel.com>
+ <874l6efxta.fsf@haabendal.dk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190410095516.6170-1-ulf.hansson@linaro.org>
+Content-Disposition: inline
+In-Reply-To: <874l6efxta.fsf@haabendal.dk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ulf Hansson <ulf.hansson@linaro.org>
-Cc: linux-pm@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>, Loic Pallardy <loic.pallardy@st.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Torgue <alexandre.torgue@st.com>, Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Johan Hovold <johan@kernel.org>, linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Esben Haabendal <esben@haabendal.dk>
+Cc: linux-serial@vger.kernel.org, Enrico Weigelt <lkml@metux.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, He Zhe <zhe.he@windriver.com>, Marek Vasut <marex@denx.de>, Douglas Anderson <dianders@chromium.org>, Paul Burton <paul.burton@mips.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wednesday, April 10, 2019 11:55:16 AM CEST Ulf Hansson wrote:
-> The dev->power.direct_complete flag may become set in device_prepare() in
-> case the device don't have any PM callbacks (dev->power.no_pm_callbacks is
-> set). This leads to a broken behaviour, when there is child having wakeup
-> enabled and relies on its parent to be used in the wakeup path.
-> 
-> More precisely, when the direct complete path becomes selected for the
-> child in __device_suspend(), the propagation of the dev->power.wakeup_path
-> becomes skipped as well.
-> 
-> Let's address this problem, by checking if the device is a part the wakeup
-> path or has wakeup enabled, then prevent the direct complete path from
-> being used.
-> 
-> Reported-by: Loic Pallardy <loic.pallardy@st.com>
-> Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-> ---
-> 
-> More background:
-> 
-> This problem was reported by Loic Pallardy, offlist, while he was working
-> on enabling wakeup for a tty serial console driver.
-> 
-> When I looked more closely, I noticed that uart_suspend_port() calls
-> device_may_wakeup() for the tty child devices, and then also the used serial
-> driver check its device (parent) for device_may_wakeup(). To me this looks like
-> workarounds to fix a behaviour that really should be dealt with from the PM
-> core, no matter of whether the child have PM callbacks assigned or not.
-> 
-> In other words, it seems like the serial driver(s) should be checking the
-> wakeup_path flag for the parent, solely, instead.
-> 
-> I haven't digested further behaviours for other subsystem, but recently
-> reviewed a patch for a gpio driver [1], that seems to be suffering from the
-> similar problems.
-> 
-> Kind regards
-> Ulf Hansson
-> 
-> [1]
-> https://lkml.org/lkml/2019/4/4/1283
-> 
-> ---
->  drivers/base/power/main.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/base/power/main.c b/drivers/base/power/main.c
-> index 41eba82ee7b9..f9cfdeee8288 100644
-> --- a/drivers/base/power/main.c
-> +++ b/drivers/base/power/main.c
-> @@ -1747,6 +1747,10 @@ static int __device_suspend(struct device *dev, pm_message_t state, bool async)
->  	if (dev->power.syscore)
->  		goto Complete;
->  
-> +	/* Avoid direct_complete, to let wakeup_path being propagated. */
-> +	if (device_may_wakeup(dev) || dev->power.wakeup_path)
-> +		dev->power.direct_complete = false;
-> +
->  	if (dev->power.direct_complete) {
->  		if (pm_runtime_status_suspended(dev)) {
->  			pm_runtime_disable(dev);
-> 
+On Wed, May 01, 2019 at 09:17:37AM +0200, Esben Haabendal wrote:
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
 
-Applied, thanks!
+> > Hmm... Currently it's done inside individual port drivers, like 8250_dw.c.
+> > Each of the drivers can do it differently, for example 8250_lpss.c or
+> > 8250_pnp.c.
+> 
+> So, you would prefer to create a new "specialized" port driver that uses
+> platform resources?  I am not doing anything else different from
+> the generic port driver here in 8250_core.c.
+
+If it's required and using serial8250 directly is not enough.
+
+> >> +				if (!(port->flags & UPF_DEV_RESOURCES))
+> >> +					release_mem_region(port->mapbase, size);
+> >
+> > This is again same issue. The parent should not request resource it
+> > doesn't use.
+> 
+> Yes, this is same issue.
+> 
+> But the last part is not true.  A parent mfd driver might "use" a memory
+> resource for the sole purpose of splitting it up for it's mfd child
+> devices.  This is a core part of mfd framework, and not something I am
+> inventing with this patch.  I am just trying to make it possible to use
+> 8250 driver in that context.
+> 
+> > I think I understand what is a confusion here.
+> >
+> > For the IO resources we have two operations:
+> > - mapping / re-mapping (may be shared)
+> > - requesting (exclusive)
+> >
+> > In the parenthesis I put a level of access to it. While many device
+> > drivers can *share* same resource (mapped or unmapped), the only one
+> > can actually request it.
+> 
+> Mostly true.  But there is an important twist to the exclusive restriction.
+> 
+> The exclusive part of the request is limited to the the same root/parent
+> resource.
+> 
+> When you request a memory resource from the root resource
+> (iomem_resource), the resource returned can be used as a new parent
+> resource.  This new parent can then be used to give exclusive access to
+> slices of that resource.  When used like that, I expect that the parent
+> resource is not supposed to be used for anything else than honoring
+> resource requests.
+> 
+> And this is exactly what mfd-core uses the mem_base argument
+> in mfd_add_devices().
+> 
+> > So, the parent can take an slice resources as it would be
+> > appropriated, but not requesting them.
+> 
+> The parent is not and should not be doing that by itself.  The request
+> is done on by mfd-core when mfd_add_devices() is called.
+
+No, MFD *does not* (and actually *may not* in order to allow standalone drivers
+to be used as children w/o modifications) request resources. It just passes
+them to children as parent suggested.
+
+> > OTOH, it's possible to have a (weird) MFD case where parent *requested*
+> > resources, and *all* of its children are aware of that.
+> 
+> I am not sure what you mean with this, but mfd drivers should not pass
+> along it's intire requested memory resource(s) to child devices.  The
+> child devices will get the requested resource slices, as implemented by
+> mfd_add_devices().
+> 
+> I hope you can see that I am not violating any fundamental design
+> decissions here, but actually try adhere to them (resource management,
+> platform_device resource management, and mfd-core).
+
+-- 
+With Best Regards,
+Andy Shevchenko
