@@ -1,53 +1,42 @@
-From: Kevin Hilman <khilman@baylibre.com>
-Subject: Re: [PATCH v5 2/2] tty: serial: add driver for the SiFive UART
-Date: Thu, 02 May 2019 11:58:12 -0700
-Message-ID: <7hpnp0lm4b.fsf@baylibre.com>
-References: <20190413020111.23400-1-paul.walmsley@sifive.com> <20190413020111.23400-3-paul.walmsley@sifive.com>
+From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+Subject: Re: [PATCH] serial: 8250: Add support for using platform_device
+ resources
+Date: Thu, 2 May 2019 21:41:01 +0200
+Message-ID: <a535c7b6-54e0-ab58-7626-f7f631773c18@metux.net>
+References: <20190430140416.4707-1-esben@geanix.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190413020111.23400-3-paul.walmsley@sifive.com>
+In-Reply-To: <20190430140416.4707-1-esben@geanix.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org, gregkh@linuxfoundation.org
-Cc: Paul Walmsley <paul.walmsley@sifive.com>, Paul Walmsley <paul@pwsan.com>, Jiri Slaby <jslaby@suse.com>, Palmer Dabbelt <palmer@sifive.com>, Wesley Terpstra <wesley@sifive.com>, Julia Lawall <julia.lawall@lip6.fr>, Emil Renner Berthing <kernel@esmil.dk>, Andreas Schwab <schwab@suse.de>
+To: Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, He Zhe <zhe.he@windriver.com>, Marek Vasut <marex@denx.de>, Douglas Anderson <dianders@chromium.org>, Paul Burton <paul.burton@mips.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Paul Walmsley <paul.walmsley@sifive.com> writes:
+On 30.04.19 16:04, Esben Haabendal wrote:
+> Allow getting memory resource (mapbase or iobase) as well as irq from
+> platform_device resources.
+> 
+> The UPF_DEV_RESOURCES flag must be set for devices where platform_device
+> resources are to be used.  When not set, driver behaves as before.
+> 
+> This allows use of the serial8250 driver together with devices with
+> resources added by platform_device_add_resources(), such as mfd child
+> devices added with mfd_add_devices().
 
-> Add a serial driver for the SiFive UART, found on SiFive FU540 devices
-> (among others).
->
-> The underlying serial IP block is relatively basic, and currently does
-> not support serial break detection.  Further information on the IP
-> block can be found in the documentation and Chisel sources:
->
->     https://static.dev.sifive.com/FU540-C000-v1.0.pdf
->
->     https://github.com/sifive/sifive-blocks/tree/master/src/main/scala/devices/uart
->
-> This driver was written in collaboration with Wesley Terpstra
-> <wesley@sifive.com>.
->
-> Tested on a SiFive HiFive Unleashed A00 board, using BBL and the open-
-> source FSBL (using a DT file based on what's targeted for mainline).
->
-> This revision incorporates changes based on comments by Julia Lawall
-> <julia.lawall@lip6.fr>, Emil Renner Berthing <kernel@esmil.dk>, and
-> Andreas Schwab <schwab@suse.de>.  Thanks also to Andreas for testing
-> the driver with his userspace and reporting a bug with the
-> set_termios implementation.
->
-> Signed-off-by: Paul Walmsley <paul.walmsley@sifive.com>
-> Signed-off-by: Paul Walmsley <paul@pwsan.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.com>
-> Cc: Palmer Dabbelt <palmer@sifive.com>
-> Cc: Wesley Terpstra <wesley@sifive.com>
-> Cc: linux-serial@vger.kernel.org
-> Cc: linux-riscv@lists.infradead.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: Julia Lawall <julia.lawall@lip6.fr>
-> Cc: Emil Renner Berthing <kernel@esmil.dk>
-> Cc: Andreas Schwab <schwab@suse.de>
+I like the idea (actually, quite the direction I'd like to go), but
+unfortunately it's more compilicated than that.
 
-Tested-by: Kevin Hilman <khilman@baylibre.com>
+Some drivers don't use these fields, eg. 8250 determines the mapsize
+based on several factors, at the time of the mapping is done. That's
+one of the things my patches shall clean up.
+
+
+--mtx
+
+-- 
+Enrico Weigelt, metux IT consult
+Free software and Linux embedded engineering
+info@metux.net -- +49-151-27565287
