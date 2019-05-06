@@ -1,55 +1,49 @@
-From: Paul Walmsley <paul.walmsley@sifive.com>
-Subject: Re: [PATCH v5 0/2] tty: serial: add DT bindings and serial driver
- for the SiFive FU540 UART
-Date: Fri, 3 May 2019 12:05:09 -0700 (PDT)
-Message-ID: <alpine.DEB.2.21.9999.1905031141530.4777@viisi.sifive.com>
-References: <20190413020111.23400-1-paul.walmsley@sifive.com>
- <7hmukmew5j.fsf@baylibre.com> <883f3d5f-9b04-1435-30d3-2b48ab7eb76d@wdc.com>
- <7h5zr9dcsi.fsf@baylibre.com> <f2bb876c-2b44-663b-ea06-d849f721fb6c@wdc.com>
- <7htvetbupi.fsf@baylibre.com>
- <alpine.DEB.2.21.9999.1904191407310.5118@viisi.sifive.com>
- <7hsgtwlm5t.fsf@baylibre.com>
+From: Esben Haabendal <esben@haabendal.dk>
+Subject: Re: [PATCH] serial: 8250: Add support for using platform_device resources
+Date: Mon, 06 May 2019 17:19:27 +0200
+Message-ID: <87imunobk0.fsf@haabendal.dk>
+References: <20190430140416.4707-1-esben@geanix.com>
+        <a535c7b6-54e0-ab58-7626-f7f631773c18@metux.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
-In-Reply-To: <7hsgtwlm5t.fsf@baylibre.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
-To: Kevin Hilman <khilman@baylibre.com>
-Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Atish Patra <atish.patra@wdc.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Paul Walmsley <paul.walmsley@sifive.com>, "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <a535c7b6-54e0-ab58-7626-f7f631773c18@metux.net> (Enrico
+        Weigelt's message of "Thu, 2 May 2019 21:41:01 +0200")
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, He Zhe <zhe.he@windriver.com>, Marek Vasut <marex@denx.de>, Douglas Anderson <dianders@chromium.org>, Paul Burton <paul.burton@mips.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 2 May 2019, Kevin Hilman wrote:
+"Enrico Weigelt, metux IT consult" <lkml@metux.net> writes:
 
-> Paul Walmsley <paul.walmsley@sifive.com> writes:
-> 
-> > I'd recommend testing the DT patches with BBL and the open-source FSBL.  
-> > That's the traditional way of booting RISC-V Linux systems.
-> 
-> OK, but as you know, not the tradiaional way of booting most other linux
-> systems.  ;)
-> 
-> I'm working on getting RISC-V supported in kernelCI in a fully-automated
-> way, and I don't currently have the time to add add support for BBL+FSBL
-> to kernelCI automation tooling, so having u-boot support is the best way
-> to get support in kernelCI, IMO.
+> On 30.04.19 16:04, Esben Haabendal wrote:
+>> Allow getting memory resource (mapbase or iobase) as well as irq from
+>> platform_device resources.
+>> 
+>> The UPF_DEV_RESOURCES flag must be set for devices where platform_device
+>> resources are to be used.  When not set, driver behaves as before.
+>> 
+>> This allows use of the serial8250 driver together with devices with
+>> resources added by platform_device_add_resources(), such as mfd child
+>> devices added with mfd_add_devices().
+>
+> I like the idea (actually, quite the direction I'd like to go), but
+> unfortunately it's more compilicated than that.
+>
+> Some drivers don't use these fields, eg. 8250 determines the mapsize
+> based on several factors, at the time of the mapping is done. That's
+> one of the things my patches shall clean up.
 
-That's great.  Please keep hacking away on RISC-V support for kernelCI.  
-My point is just that the U-boot and OpenSBI software stack you're working 
-with is not going to be useful for automatic tests of some kernel patches 
-yet.  That stack is still very new, and was written around a non-upstream 
-set of DT data.  We are in the process of posting and merging patches to 
-fix that, but it's going to take a few releases of both the kernel and 
-those other boot stack components until things are sorted out in a more 
-durable way.
+Could you take a quick look at my patch again.  The patch only changes
+the probe method in the serial8250_isa_driver in 8250_core.c file.
 
+So other drivers are not affected by this change.
 
-- Paul
+And with the addition of the new UPF_DEV_RESOURCES flag, no existing
+platforms should be affected either.
+
+The patch merely makes it possible to start using plain "serial8250"
+driver (serial8250_isa_driver) with standard platform resources, fx. as
+implemented by mfd-core.
+
+/Esben
