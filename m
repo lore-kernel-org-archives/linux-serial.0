@@ -1,41 +1,210 @@
-From: Esben Haabendal <esben@haabendal.dk>
-Subject: Re: [PATCH] serial: 8250: Add support for using platform_device resources
-Date: Tue, 07 May 2019 13:35:58 +0200
-Message-ID: <87sgtqjy3l.fsf@haabendal.dk>
-References: <20190430140416.4707-1-esben@geanix.com>
-        <20190430153736.GL9224@smile.fi.intel.com>
-        <874l6efxta.fsf@haabendal.dk>
-        <20190502104556.GS9224@smile.fi.intel.com>
-        <87pnp11112.fsf@haabendal.dk> <20190507093239.GB4529@dell>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH 2/2] serial: 8250: Add support for 8250/16550 as MFD
+ function
+Date: Tue, 7 May 2019 12:49:05 +0100
+Message-ID: <20190507114905.GB29524@dell>
+References: <20190426084038.6377-1-esben@geanix.com>
+ <20190426084038.6377-3-esben@geanix.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190507093239.GB4529@dell> (Lee Jones's message of "Tue, 7 May
-        2019 10:32:39 +0100")
+Content-Disposition: inline
+In-Reply-To: <20190426084038.6377-3-esben@geanix.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-serial@vger.kernel.org, Enrico Weigelt <lkml@metux.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, He Zhe <zhe.he@windriver.com>, Marek Vasut <marex@denx.de>, Douglas Anderson <dianders@chromium.org>, Paul Burton <paul.burton@mips.com>, linux-kernel@vger.kernel.org
+To: Esben Haabendal <esben@geanix.com>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Nishanth Menon <nm@ti.com>, Vignesh R <vigneshr@ti.com>, Tony Lindgren <tony@atomide.com>, Lokesh Vutla <lokeshvutla@ti.com>, Florian Fainelli <f.fainelli@gmail.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Lee Jones <lee.jones@linaro.org> writes:
-> On Thu, 02 May 2019, Esben Haabendal wrote:
->
->> Could you help clarify whether or not this patch is trying to do
->> something odd/wrong?
->> 
->> I might be misunderstanding Andy (probably is), but the discussion
->> revolves around the changes I propose where I change the serial8250
->> driver to use platform_get_resource() in favour of
->> request_mem_region()/release_mem_region().
->
-> Since 'serial8250' is registered as a platform device, I don't see any
-> reason why it shouldn't have the capability to obtain its memory
-> regions from the platform_get_*() helpers.
+On Fri, 26 Apr 2019, Esben Haabendal wrote:
 
-Good to hear.  That is exactly what I am trying do with this patch.
+> The serial8250-mfd driver is for adding 8250/16550 UART ports as functions
+> to an MFD driver.
+> 
+> When calling mfd_add_device(), platform_data should be a pointer to a
+> struct plat_serial8250_port, with proper settings like .flags, .type,
+> .iotype, .regshift and .uartclk.  Memory (or ioport) and IRQ should be
+> passed as cell resources.
 
-@Andy: If you still don't like my approach, could you please advice an
-acceptable method for improving the serial8250 driver to allow the use
-of platform_get_*() helpers?
+What?  No, please!
 
-/Esben
+If you *must* create a whole driver just to be able to use
+platform_*() helpers (which I don't think you should), then please
+call it something else.  This doesn't have anything to do with MFD.
+
+> Do not include UPF_BOOT_AUTOCONF in platform_data.flags.
+> 
+> Signed-off-by: Esben Haabendal <esben@geanix.com>
+> ---
+>  drivers/tty/serial/8250/8250_mfd.c | 119 +++++++++++++++++++++++++++++++++++++
+>  drivers/tty/serial/8250/Kconfig    |  12 ++++
+>  drivers/tty/serial/8250/Makefile   |   1 +
+>  3 files changed, 132 insertions(+)
+>  create mode 100644 drivers/tty/serial/8250/8250_mfd.c
+> 
+> diff --git a/drivers/tty/serial/8250/8250_mfd.c b/drivers/tty/serial/8250/8250_mfd.c
+> new file mode 100644
+> index 0000000..eae1566
+> --- /dev/null
+> +++ b/drivers/tty/serial/8250/8250_mfd.c
+> @@ -0,0 +1,119 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/*
+> + *  Serial Port driver for 8250/16550-type MFD sub devices
+> + *
+> + *  This mimics the serial8250_probe of 8250_core.c, while allowing
+> + *  use without UPF_BOOT_AUTOCONF, which is problematic for MFD, as
+> + *  the request_mem_region() will typically fail as the region is
+> + *  already requested by the MFD device.
+> + *
+> + *  Memory and irq are passed as platform resources, which allows easy
+> + *  use together with (devm_)mfd_add_devices().
+> + *
+> + *  Other parameters are passed as struct plat_serial8250_port in
+> + *  device platform_data.
+> + */
+> +
+> +#include <linux/platform_device.h>
+> +#include <linux/module.h>
+> +#include <linux/io.h>
+> +#include <linux/serial_8250.h>
+> +
+> +struct serial8250_mfd_data {
+> +	int			line;
+> +};
+> +
+> +static int serial8250_mfd_probe(struct platform_device *pdev)
+> +{
+> +	struct plat_serial8250_port *pdata = dev_get_platdata(&pdev->dev);
+> +	struct serial8250_mfd_data *data;
+> +	struct uart_8250_port up;
+> +	struct resource *r;
+> +	void __iomem *membase;
+> +
+> +	if (!pdata)
+> +		return -ENODEV;
+> +
+> +	memset(&up, 0, sizeof(up));
+> +
+> +	switch (pdata->iotype) {
+> +	case UPIO_AU:
+> +	case UPIO_TSI:
+> +	case UPIO_MEM32:
+> +	case UPIO_MEM32BE:
+> +	case UPIO_MEM16:
+> +	case UPIO_MEM:
+> +		r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +		if (!r)
+> +			return -ENODEV;
+> +		membase = devm_ioremap_nocache(&pdev->dev,
+> +					       r->start, resource_size(r));
+> +		if (!membase)
+> +			return -ENOMEM;
+> +		up.port.mapbase = r->start;
+> +		up.port.membase = membase;
+> +		break;
+> +	case UPIO_HUB6:
+> +	case UPIO_PORT:
+> +		r = platform_get_resource(pdev, IORESOURCE_IO, 0);
+> +		if (!r)
+> +			return -ENODEV;
+> +		up.port.iobase = r->start;
+> +		break;
+> +	}
+> +
+> +	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
+> +	if (!data)
+> +		return -ENOMEM;
+> +
+> +	up.port.irq = platform_get_irq(pdev, 0);
+> +	if (up.port.irq < 0)
+> +		up.port.irq = 0; /* no interrupt -> use polling */
+> +
+> +	/* Register with 8250_core.c */
+> +	up.port.irqflags = pdata->irqflags;
+> +	up.port.uartclk = pdata->uartclk;
+> +	up.port.regshift = pdata->regshift;
+> +	up.port.iotype = pdata->iotype;
+> +	up.port.flags = pdata->flags;
+> +	up.port.hub6 = pdata->hub6;
+> +	up.port.private_data = pdata->private_data;
+> +	up.port.type = pdata->type;
+> +	up.port.serial_in = pdata->serial_in;
+> +	up.port.serial_out = pdata->serial_out;
+> +	up.port.handle_irq = pdata->handle_irq;
+> +	up.port.handle_break = pdata->handle_break;
+> +	up.port.set_termios = pdata->set_termios;
+> +	up.port.set_ldisc = pdata->set_ldisc;
+> +	up.port.get_mctrl = pdata->get_mctrl;
+> +	up.port.pm = pdata->pm;
+> +	up.port.dev = &pdev->dev;
+> +	data->line = __serial8250_register_8250_port(&up, 0);
+> +	if (data->line < 0)
+> +		return data->line;
+> +
+> +	platform_set_drvdata(pdev, data);
+> +	return 0;
+> +}
+> +
+> +static int serial8250_mfd_remove(struct platform_device *pdev)
+> +{
+> +	struct serial8250_mfd_data *data = platform_get_drvdata(pdev);
+> +
+> +	serial8250_unregister_port(data->line);
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver serial8250_mfd_driver = {
+> +	.probe = serial8250_mfd_probe,
+> +	.remove = serial8250_mfd_remove,
+> +	.driver = {
+> +		.name = "serial8250-mfd",
+> +	},
+> +};
+> +
+> +module_platform_driver(serial8250_mfd_driver);
+> +
+> +MODULE_AUTHOR("Esben Haabendal <esben@geanix.com>");
+> +MODULE_LICENSE("GPL");
+> +MODULE_DESCRIPTION("Driver for 8250/16550-type MFD sub devices");
+> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+> index 15c2c54..ef1572b 100644
+> --- a/drivers/tty/serial/8250/Kconfig
+> +++ b/drivers/tty/serial/8250/Kconfig
+> @@ -58,6 +58,18 @@ config SERIAL_8250_PNP
+>  	  This builds standard PNP serial support. You may be able to
+>  	  disable this feature if you only need legacy serial support.
+>  
+> +config SERIAL_8250_MFD
+> +	bool "8250/16550 MFD function support"
+> +	depends on SERIAL_8250 && MFD_CORE
+> +	default n
+> +	help
+> +	  This builds support for using 8250/16550-type UARTs as MFD
+> +	  functions.
+> +
+> +	  MFD drivers needing this should select it automatically.
+> +
+> +	  If unsure, say N.
+> +
+>  config SERIAL_8250_FINTEK
+>  	bool "Support for Fintek F81216A LPC to 4 UART RS485 API"
+>  	depends on SERIAL_8250
+> diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
+> index 18751bc..da8e139 100644
+> --- a/drivers/tty/serial/8250/Makefile
+> +++ b/drivers/tty/serial/8250/Makefile
+> @@ -6,6 +6,7 @@
+>  obj-$(CONFIG_SERIAL_8250)		+= 8250.o 8250_base.o
+>  8250-y					:= 8250_core.o
+>  8250-$(CONFIG_SERIAL_8250_PNP)		+= 8250_pnp.o
+> +8250-$(CONFIG_SERIAL_8250_MFD)		+= 8250_mfd.o
+>  8250_base-y				:= 8250_port.o
+>  8250_base-$(CONFIG_SERIAL_8250_DMA)	+= 8250_dma.o
+>  8250_base-$(CONFIG_SERIAL_8250_FINTEK)	+= 8250_fintek.o
+
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
