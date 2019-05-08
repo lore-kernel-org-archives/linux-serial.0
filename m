@@ -1,83 +1,44 @@
 From: "Sugaya, Taichi" <sugaya.taichi@socionext.com>
-Subject: Re: [PATCH v3] serial: Add Milbeaut serial control
-Date: Wed, 8 May 2019 21:22:05 +0900
-Message-ID: <93002681-37f8-cb12-725c-48c1695d29a0@socionext.com>
-References: <1555555916-22251-1-git-send-email-sugaya.taichi@socionext.com>
- <20190426191515.757e6015@alans-desktop>
+Subject: Re: serial: Add Milbeaut serial control
+Date: Wed, 8 May 2019 21:55:33 +0900
+Message-ID: <d19f16aa-1066-9a51-a743-4483a1b2ac46@socionext.com>
+References: <246f81ba-0ed1-d5bc-1a48-bcf0fb2cc05e@canonical.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190426191515.757e6015@alans-desktop>
+In-Reply-To: <246f81ba-0ed1-d5bc-1a48-bcf0fb2cc05e@canonical.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Arnd Bergmann <arnd@arndb.de>, Takao Orito <orito.takao@socionext.com>, Kazuhiro Kasai <kasai.kazuhiro@socionext.com>, Shinji Kanematsu <kanematsu.shinji@socionext.com>, Jassi Brar <jaswinder.singh@linaro.org>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Colin Ian King <colin.king@canonical.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
 Hi,
 
 Thank you for pointing out.
 
-On 2019/04/27 3:15, Alan Cox wrote:
-> O
->> +static void mlb_usio_set_termios(struct uart_port *port,
->> +			struct ktermios *termios, struct ktermios *old)
->> +{
->> +	unsigned int escr, smr = MLB_USIO_SMR_SOE;
->> +	unsigned long flags, baud, quot;
->> +
->> +	switch (termios->c_cflag & CSIZE) {
->> +	case CS5:
->> +		escr = MLB_USIO_ESCR_L_5BIT;
->> +		break;
->> +	case CS6:
->> +		escr = MLB_USIO_ESCR_L_6BIT;
->> +		break;
->> +	case CS7:
->> +		escr = MLB_USIO_ESCR_L_7BIT;
->> +		break;
->> +	case CS8:
->> +	default:
->> +		escr = MLB_USIO_ESCR_L_8BIT;
->> +		break;
->> +	}
->> +
->> +	if (termios->c_cflag & CSTOPB)
->> +		smr |= MLB_USIO_SMR_SBL;
->> +
->> +	if (termios->c_cflag & PARENB) {
->> +		escr |= MLB_USIO_ESCR_PEN;
->> +		if (termios->c_cflag & PARODD)
->> +			escr |= MLB_USIO_ESCR_P;
->> +	}
+On 2019/05/02 20:47, Colin Ian King wrote:
+> Hi,
 > 
-> If you don't suport CMSPAR then clear that bit in termios as well
+> Static analysis with Coverity has picked up an issue in commit:
 > 
+> commit ba44dc04300441b47618f9933bf36e75a280e5fe
+> Author: Sugaya Taichi <sugaya.taichi@socionext.com>
+> Date:   Mon Apr 15 20:31:40 2019 +0900
+> 
+>      serial: Add Milbeaut serial control
+> 
+> In function mlb_usio_rx_chars() the u8 status is being bit-wise AND'd
+> with MLB_USIO_SSR_BRK (which is 1UL << 8) and hence the result is always
+> false, which looks incorrect to me.  Is this intentional?
+>
 
-OK, clear the bit because of not supported.
-
->> +	/* Set hard flow control */
->> +	if (of_property_read_bool(port->dev->of_node, "auto-flow-control") ||
->> +			(termios->c_cflag & CRTSCTS))
->> +		escr |= MLB_USIO_ESCR_FLWEN;
-> 
-> That's just broken. The termios bits are the definitive things for the
-> port, and in addition even if they are forced you need to correct the
-> termios data.
-> 
-> You might want to control flow control *at boot* with an OF property but
-> doing it post boot is just busted.
-> 
-
-Ah, Yes.
-I think OF property should not be here, and it may only be used to determine
-the characteristics of the port.
-I try to make a fixes patch.
+No. It is always false so should be dropped.
+I will send a fixes patch.
 
 Thanks,
 Sugaya Taichi
 
-
-> Alan
+> Colin
 > 
