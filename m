@@ -1,73 +1,83 @@
-From: Serge Semin <fancer.lancer@gmail.com>
-Subject: [PATCH] tty: serial_core: Set port active bit in uart_port_activate
-Date: Wed,  8 May 2019 13:44:41 +0300
-Message-ID: <20190508104441.16842-1-fancer.lancer@gmail.com>
+From: "Sugaya, Taichi" <sugaya.taichi@socionext.com>
+Subject: Re: [PATCH v3] serial: Add Milbeaut serial control
+Date: Wed, 8 May 2019 21:22:05 +0900
+Message-ID: <93002681-37f8-cb12-725c-48c1695d29a0@socionext.com>
+References: <1555555916-22251-1-git-send-email-sugaya.taichi@socionext.com>
+ <20190426191515.757e6015@alans-desktop>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190426191515.757e6015@alans-desktop>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Serge Semin <Sergey.Semin@t-platforms.ru>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Arnd Bergmann <arnd@arndb.de>, Takao Orito <orito.takao@socionext.com>, Kazuhiro Kasai <kasai.kazuhiro@socionext.com>, Shinji Kanematsu <kanematsu.shinji@socionext.com>, Jassi Brar <jaswinder.singh@linaro.org>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-A bug was introduced by commit b3b576461864 ("tty: serial_core: convert
-uart_open to use tty_port_open"). It caused a constant warning printed
-into the system log regarding the tty and port counter mismatch:
+Hi,
 
-[   21.644197] ttyS ttySx: tty_port_close_start: tty->count = 1 port count = 2
+Thank you for pointing out.
 
-in case if session hangup was detected so the warning is printed starting
-from the second open-close iteration.
+On 2019/04/27 3:15, Alan Cox wrote:
+> O
+>> +static void mlb_usio_set_termios(struct uart_port *port,
+>> +			struct ktermios *termios, struct ktermios *old)
+>> +{
+>> +	unsigned int escr, smr = MLB_USIO_SMR_SOE;
+>> +	unsigned long flags, baud, quot;
+>> +
+>> +	switch (termios->c_cflag & CSIZE) {
+>> +	case CS5:
+>> +		escr = MLB_USIO_ESCR_L_5BIT;
+>> +		break;
+>> +	case CS6:
+>> +		escr = MLB_USIO_ESCR_L_6BIT;
+>> +		break;
+>> +	case CS7:
+>> +		escr = MLB_USIO_ESCR_L_7BIT;
+>> +		break;
+>> +	case CS8:
+>> +	default:
+>> +		escr = MLB_USIO_ESCR_L_8BIT;
+>> +		break;
+>> +	}
+>> +
+>> +	if (termios->c_cflag & CSTOPB)
+>> +		smr |= MLB_USIO_SMR_SBL;
+>> +
+>> +	if (termios->c_cflag & PARENB) {
+>> +		escr |= MLB_USIO_ESCR_PEN;
+>> +		if (termios->c_cflag & PARODD)
+>> +			escr |= MLB_USIO_ESCR_P;
+>> +	}
+> 
+> If you don't suport CMSPAR then clear that bit in termios as well
+> 
 
-Particularly the problem was discovered in situation when there is a
-serial tty device without hardware back-end being setup. It is considered
-by the tty-serial subsystems as a hardware problem with session hang up.
-In this case uart_startup() will return a positive value with TTY_IO_ERROR
-flag set in corresponding tty_struct instance. The same value will get
-passed to be returned from the activate() callback and then being returned
-from tty_port_open(). But since in this case tty_port_block_til_ready()
-isn't called the TTY_PORT_ACTIVE flag isn't set (while the method had been
-called before tty_port_open conversion was introduced and the rest of the
-subsystem code expected the bit being set in this case), which prevents the
-uart_hangup() method to perform any cleanups including the tty port
-counter setting to zero. So the next attempt to open/close the tty device
-will discover the counters mismatch.
+OK, clear the bit because of not supported.
 
-In order to fix the problem we need to manually set the TTY_PORT_ACTIVE
-flag in case if uart_startup() returned a positive value. In this case
-the hang up procedure will perform a full set of cleanup actions including
-the port ref-counter resetting.
+>> +	/* Set hard flow control */
+>> +	if (of_property_read_bool(port->dev->of_node, "auto-flow-control") ||
+>> +			(termios->c_cflag & CRTSCTS))
+>> +		escr |= MLB_USIO_ESCR_FLWEN;
+> 
+> That's just broken. The termios bits are the definitive things for the
+> port, and in addition even if they are forced you need to correct the
+> termios data.
+> 
+> You might want to control flow control *at boot* with an OF property but
+> doing it post boot is just busted.
+> 
 
-Fixes: b3b576461864 "tty: serial_core: convert uart_open to use tty_port_open"
-Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
----
- drivers/tty/serial/serial_core.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+Ah, Yes.
+I think OF property should not be here, and it may only be used to determine
+the characteristics of the port.
+I try to make a fixes patch.
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 351843f847c0..9113e07952d1 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1776,6 +1776,7 @@ static int uart_port_activate(struct tty_port *port, struct tty_struct *tty)
- {
- 	struct uart_state *state = container_of(port, struct uart_state, port);
- 	struct uart_port *uport;
-+	int ret;
- 
- 	uport = uart_port_check(state);
- 	if (!uport || uport->flags & UPF_DEAD)
-@@ -1786,7 +1787,11 @@ static int uart_port_activate(struct tty_port *port, struct tty_struct *tty)
- 	/*
- 	 * Start up the serial port.
- 	 */
--	return uart_startup(tty, state, 0);
-+	ret = uart_startup(tty, state, 0);
-+	if (ret > 0)
-+		tty_port_set_active(port, 1);
-+
-+	return ret;
- }
- 
- static const char *uart_type(struct uart_port *port)
--- 
-2.21.0
+Thanks,
+Sugaya Taichi
+
+
+> Alan
+> 
