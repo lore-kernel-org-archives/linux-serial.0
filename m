@@ -1,59 +1,133 @@
-From: Lanqing Liu <liuhhome@gmail.com>
-Subject: [PATCH] tty: serial_core: Fix the incorrect configuration of baud rate and data length at the console serial port resume
-Date: Thu,  9 May 2019 13:42:39 +0800
-Message-ID: <a8bd7d19de25b799098659334de7e19670a806fc.1557379676.git.liuhhome@gmail.com>
+From: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Subject: Re: [PATCH v2 2/4] mfd: ioc3: Add driver for SGI IOC3 chip
+Date: Thu, 9 May 2019 16:02:20 +0200
+Message-ID: <20190509160220.bb5382df931e5bd0972276df@suse.de>
+References: <20190409154610.6735-1-tbogendoerfer@suse.de>
+        <20190409154610.6735-3-tbogendoerfer@suse.de>
+        <20190508102313.GG3995@dell>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190508102313.GG3995@dell>
 Sender: linux-kernel-owner@vger.kernel.org
-To: baolin.wang@unisoc.com, baolin.wang@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: lanqing.liu@unisoc.com, liuhhome@gmail.com, robh@kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, chunyan.zhang@unisoc.com, orson.zhai@unisoc.com, zhang.lyra@gmail.com
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, "David S. Miller" <davem@davemloft.net>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, linux-input@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-When userspace opens a serial port for console, uart_port_startup()
-is called. This function assigns the uport->cons->cflag value to
-TTY->termios.c_cflag, then it is cleared to 0. When the user space
-closes this serial port, the TTY structure will be released, and at
-this time uport->cons->cflag has also been cleared.
+On Wed, 8 May 2019 11:23:13 +0100
+Lee Jones <lee.jones@linaro.org> wrote:
 
-On the Spreadtrum platform, in some special scenarios, like charging mode,
-userspace needs to close the console, which means the uport->cons->cflag
-has also been cleared. But printing logs is still needed in the kernel. So
-when system enters suspend and resume, the console needs to be configure
-the baud rate and data length of the serial port according to its own cflag
-when resuming the console port. At this time, the cflag is 0, which will
-cause serial port to produce configuration errors that do not meet user
-expectations.
+> On Tue, 09 Apr 2019, Thomas Bogendoerfer wrote:
+> 
+> > +static u32 crc8_addr(u64 addr)
+> > +{
+> > +	u32 crc = 0;
+> > +	int i;
+> > +
+> > +	for (i = 0; i < 64; i += 8)
+> > +		crc8_byte(&crc, addr >> i);
+> > +	return crc;
+> > +}
+> 
+> Not looked into these in any detail, but are you not able to use the
+> CRC functions already provided by the kernel?
 
-To fix this, assigning the TTY->termios.c_cflag value to uport->cons->cflag
-before the userspace closes this console serial port. It will ensure that
-the correct cflag value can be gotten when the console serial port was
-resumed.
+they are using a different polynomial, so I can't use it.
 
-Signed-off-by: Lanqing Liu <liuhhome@gmail.com>
----
- drivers/tty/serial/serial_core.c | 4 ++++
- 1 file changed, 4 insertions(+)
+> > +	}
+> > +	pr_err("ioc3: CRC error in NIC address\n");
+> > +}
+> 
+> This all looks like networking code.  If this is the case, it should
+> be moved to drivers/networking or similar.
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 351843f..f233cf8 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1539,6 +1539,7 @@ static void uart_set_termios(struct tty_struct *tty,
- static void uart_close(struct tty_struct *tty, struct file *filp)
- {
- 	struct uart_state *state = tty->driver_data;
-+	struct uart_port *uport;
- 
- 	if (!state) {
- 		struct uart_driver *drv = tty->driver->driver_state;
-@@ -1553,6 +1554,9 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 	}
- 
- 	pr_debug("uart_close(%d) called\n", tty->index);
-+	uport = uart_port_check(state);
-+	if (uport && uart_console(uport))
-+		uport->cons->cflag = tty->termios.c_cflag;
- 
- 	tty_port_close(tty->port, tty, filp);
- }
+no it's not. nic stands for number in a can produced by Dallas Semi also
+known under the name 1-Wire (https://en.wikipedia.org/wiki/1-Wire).
+SGI used them to provide partnumber, serialnumber and mac addresses.
+By placing the code to read the NiCs inside ioc3 driver there is no need
+for locking and adding library code for accessing these informations.
+
+> > +static struct resource ioc3_uarta_resources[] = {
+> > +	DEFINE_RES_MEM(offsetof(struct ioc3, sregs.uarta),
+> 
+> You are the first user of offsetof() in MFD.  Could you tell me why
+> it's required please?
+
+to get the offsets of different chip functions out of a struct.
+
+> Please drop all of these and statically create the MFD cells like
+> almost all other MFD drivers do.
+
+I started that way and it blew up the driver and create a bigger mess
+than I wanted to have. What's your concern with my approach ?
+
+I could use static mfd_cell arrays, if there would be a init/startup
+method per cell, which is called before setting up the platform device.
+That way I could do the dynamic setup for ethernet and serial devices.
+
+> > +static void ioc3_create_devices(struct ioc3_priv_data *ipd)
+> > +{
+> > +	struct mfd_cell *cell;
+> > +
+> > +	memset(ioc3_mfd_cells, 0, sizeof(ioc3_mfd_cells));
+> > +	cell = ioc3_mfd_cells;
+> > +
+> > +	if (ipd->info->funcs & IOC3_ETH) {
+> > +		memcpy(ioc3_eth_platform_data.mac_addr, ipd->nic_mac,
+> > +		       sizeof(ioc3_eth_platform_data.mac_addr));
+> 
+> Better to pull the MAC address from within the Ethernet driver.
+
+the NiC where the MAC address is provided is connected to the ioc3
+chip outside of the ethernet register set. And there is another
+NiC connected to the same 1-W bus. So moving reading of the MAC
+address to the ethernet driver duplicates code and adds complexity
+(locking). Again what's your concern here ?
+
+> > +	if (ipd->info->funcs & IOC3_SER) {
+> > +		writel(GPCR_UARTA_MODESEL | GPCR_UARTB_MODESEL,
+> > +			&ipd->regs->gpcr_s);
+> > +		writel(0, &ipd->regs->gppr[6]);
+> > +		writel(0, &ipd->regs->gppr[7]);
+> > +		udelay(100);
+> > +		writel(readl(&ipd->regs->port_a.sscr) & ~SSCR_DMA_EN,
+> > +		       &ipd->regs->port_a.sscr);
+> > +		writel(readl(&ipd->regs->port_b.sscr) & ~SSCR_DMA_EN,
+> > +		       &ipd->regs->port_b.sscr);
+> > +		udelay(1000);
+> 
+> No idea what any of this does.
+> 
+> It looks like it belongs in the serial driver (and needs comments).
+
+it configures the IOC3 chip for serial usage. This is not part of
+the serial register set, so it IMHO belongs in the MFD driver.
+
+> > +	}
+> > +#if defined(CONFIG_SGI_IP27)
+> 
+> What is this?  Can't you obtain this dynamically by probing the H/W?
+
+that's the machine type and the #ifdef CONFIG_xxx are just for saving space,
+when compiled for other machines and it's easy to remove.
+
+> > +	if (ipd->info->irq_offset) {
+> 
+> What does this really signify?
+
+IOC3 ASICs are most of the time connected to a SGI bridge chip. IOC3 can
+provide two interrupt lines, which are wired to the bridge chip. The first
+interrupt is assigned via the PCI core, but since IOC3 is not a PCI multi
+function device the second interrupt must be treated here. And the used
+interrupt line on the bridge chip differs between boards.
+
+Thank you for your review. I'll address all other comments not cited in
+my mail.
+
+Thomas.
+
 -- 
-1.9.1
+SUSE Linux GmbH
+GF: Felix Imendörffer, Mary Higgins, Sri Rasiah
+HRB 21284 (AG Nürnberg)
