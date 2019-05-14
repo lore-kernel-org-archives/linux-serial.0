@@ -1,64 +1,67 @@
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [RFC v2 08/11] arm64: dts: sdm845: Add ufs opps and power-domains
-Date: Tue, 14 May 2019 09:53:34 +0200
-Message-ID: <CAPDyKFppirfM7B9TB=jZzo67E=rdMnfVKEjdv0wn1zBAUoY_HA@mail.gmail.com>
-References: <20190320094918.20234-1-rnayak@codeaurora.org> <20190320094918.20234-9-rnayak@codeaurora.org>
+From: Esben Haabendal <esben@haabendal.dk>
+Subject: Re: [PATCH 2/2] serial: 8250: Add support for 8250/16550 as MFD function
+Date: Tue, 14 May 2019 10:00:54 +0200
+Message-ID: <87bm05mpmx.fsf@haabendal.dk>
+References: <20190426084038.6377-1-esben@geanix.com>
+        <20190426084038.6377-3-esben@geanix.com> <20190507114905.GB29524@dell>
+        <87o94ejwrx.fsf@haabendal.dk> <20190507133844.GA6194@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190320094918.20234-9-rnayak@codeaurora.org>
+In-Reply-To: <20190507133844.GA6194@dell> (Lee Jones's message of "Tue, 7 May
+        2019 14:38:44 +0100")
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rajendra Nayak <rnayak@codeaurora.org>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Linux PM <linux-pm@vger.kernel.org>, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, dri-devel <dri-devel@lists.freedesktop.org>, linux-scsi <linux-scsi@vger.kernel.org>, Stephen Boyd <swboyd@chromium.org>, Viresh Kumar <viresh.kumar@linaro.org>, Doug Anderson <dianders@chromium.org>, "Rafael J. Wysocki" <rafael@kernel.org>
+To: Lee Jones <lee.jones@linaro.org>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Nishanth Menon <nm@ti.com>, Vignesh R <vigneshr@ti.com>, Tony Lindgren <tony@atomide.com>, Lokesh Vutla <lokeshvutla@ti.com>, Florian Fainelli <f.fainelli@gmail.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 20 Mar 2019 at 10:50, Rajendra Nayak <rnayak@codeaurora.org> wrote:
->
-> Add the additional power domain and the OPP table for ufs on sdm845
-> so the driver can set the appropriate performance state of the
-> power domain while setting the clock rate.
->
-> Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
-> ---
->  arch/arm64/boot/dts/qcom/sdm845.dtsi | 20 +++++++++++++++++++-
->  1 file changed, 19 insertions(+), 1 deletion(-)
->
-> diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-> index 027ffe6e93e8..a3af4a1757b4 100644
-> --- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-> @@ -1140,6 +1140,21 @@
->                         };
->                 };
->
-> +               ufs_opp_table: ufs-opp-table {
-> +                       compatible = "operating-points-v2";
-> +
-> +                       opp-50000000 {
-> +                               opp-hz = /bits/ 64 <50000000>;
-> +                               required-opps = <&rpmhpd_opp_min_svs>;
-> +                       };
-> +
-> +                       opp-200000000 {
-> +                               opp-hz = /bits/ 64 <200000000>;
-> +                               required-opps = <&rpmhpd_opp_nom>;
-> +
-> +                       };
-> +               };
-> +
->                 ufs_mem_hc: ufshc@1d84000 {
->                         compatible = "qcom,sdm845-ufshc", "qcom,ufshc",
->                                      "jedec,ufs-2.0";
-> @@ -1148,7 +1163,7 @@
->                         phys = <&ufs_mem_phy_lanes>;
->                         phy-names = "ufsphy";
->                         lanes-per-direction = <2>;
-> -                       power-domains = <&gcc UFS_PHY_GDSC>;
-> +                       power-domains = <&gcc UFS_PHY_GDSC>, <&rpmhpd SDM845_CX>;
+Lee Jones <lee.jones@linaro.org> writes:
 
-You probably want to use "power-domain-names" as well.
+> On Tue, 07 May 2019, Esben Haabendal wrote:
+>
+>> Lee Jones <lee.jones@linaro.org> writes:
+>> 
+>> > On Fri, 26 Apr 2019, Esben Haabendal wrote:
+>> >
+>> >> The serial8250-mfd driver is for adding 8250/16550 UART ports as functions
+>> >> to an MFD driver.
+>> >> 
+>> >> When calling mfd_add_device(), platform_data should be a pointer to a
+>> >> struct plat_serial8250_port, with proper settings like .flags, .type,
+>> >> .iotype, .regshift and .uartclk.  Memory (or ioport) and IRQ should be
+>> >> passed as cell resources.
+>> >
+>> > What?  No, please!
+>> >
+>> > If you *must* create a whole driver just to be able to use
+>> > platform_*() helpers (which I don't think you should), then please
+>> > call it something else.  This doesn't have anything to do with MFD.
+>> 
+>> True.
+>> 
+>> I really don't think it is a good idea to create a whole driver just to
+>> be able to use platform_get_*() helpers.  And if I am forced to do this,
+>> because I am unable to convince Andy to improve the standard serial8250
+>> driver to support that, it should be called MFD.  The driver would be
+>
+> I assume you mean "shouldn't"?
 
-[...]
+Of-course.
 
-Kind regards
-Uffe
+>> generally usable for all usecases where platform_get_*() works.
+>> 
+>> I don't have any idea what to call such a driver.  It really would just
+>> be a fork of the current serial8250 driver, just allowing use of
+>> platform_get_*(), supporting exactly the same hardware.
+>> 
+>> I am still hoping that we can find a way to improve serial8250 to be
+>> usable in these cases.
+>
+> Me too.
+
+Unfortunately, I don't seem to be able to convince Andy to accept
+something like that.
+
+I might have to do this out-of-tree :(
+
+/Esben
