@@ -1,52 +1,86 @@
 From: Esben Haabendal <esben@haabendal.dk>
-Subject: Re: [PATCH v2 2/4] mfd: ioc3: Add driver for SGI IOC3 chip
-Date: Tue, 14 May 2019 14:39:25 +0200
-Message-ID: <87mujpky6a.fsf@haabendal.dk>
-References: <20190409154610.6735-1-tbogendoerfer@suse.de>
-        <20190409154610.6735-3-tbogendoerfer@suse.de>
-        <20190508102313.GG3995@dell>
+Subject: Re: [PATCH 2/2] serial: 8250: Add support for 8250/16550 as MFD function
+Date: Tue, 14 May 2019 14:41:35 +0200
+Message-ID: <87imudky2o.fsf@haabendal.dk>
+References: <20190426084038.6377-1-esben@geanix.com>
+        <20190426084038.6377-3-esben@geanix.com> <20190507114905.GB29524@dell>
+        <87o94ejwrx.fsf@haabendal.dk> <20190507133844.GA6194@dell>
+        <87bm05mpmx.fsf@haabendal.dk> <20190514104741.GO4319@dell>
+        <20190514122618.GA18859@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190409154610.6735-3-tbogendoerfer@suse.de> (Thomas Bogendoerfers's message of "Tue, 9 Apr 2019 17:46:06 +0200")
+In-Reply-To: <20190514122618.GA18859@kroah.com> (Greg Kroah-Hartman's message
+        of "Tue, 14 May 2019 14:26:18 +0200")
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Cc: Lee Jones <lee.jones@linaro.org>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, "David S. Miller" <davem@davemloft.net>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, linux-input@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Lee Jones <lee.jones@linaro.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Nishanth Menon <nm@ti.com>, Vignesh R <vigneshr@ti.com>, Tony Lindgren <tony@atomide.com>, Lokesh Vutla <lokeshvutla@ti.com>, Florian Fainelli <f.fainelli@gmail.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 09 Apr 2019, Thomas Bogendoerfer wrote:
-> 
-> diff --git a/drivers/net/ethernet/sgi/ioc3-eth.c b/drivers/net/ethernet/sgi/ioc3-eth.c
-> index 358e66b81926..21fe722ebcd8 100644
-> --- a/drivers/net/ethernet/sgi/ioc3-eth.c
-> +++ b/drivers/net/ethernet/sgi/ioc3-eth.c
->  
->  [ ... ]
->  
-> -	err = pci_request_regions(pdev, "ioc3");
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
 
-Why are you dropping the call to pci_request_regions()?  Shouldn't you
-do something similar in the new mfd driver?
+> On Tue, May 14, 2019 at 11:47:41AM +0100, Lee Jones wrote:
+>> On Tue, 14 May 2019, Esben Haabendal wrote:
+>> 
+>> > Lee Jones <lee.jones@linaro.org> writes:
+>> > 
+>> > > On Tue, 07 May 2019, Esben Haabendal wrote:
+>> > >
+>> > >> Lee Jones <lee.jones@linaro.org> writes:
+>> > >> 
+>> > >> > On Fri, 26 Apr 2019, Esben Haabendal wrote:
+>> > >> >
+>> > >> >> The serial8250-mfd driver is for adding 8250/16550 UART ports as functions
+>> > >> >> to an MFD driver.
+>> > >> >> 
+>> > >> >> When calling mfd_add_device(), platform_data should be a pointer to a
+>> > >> >> struct plat_serial8250_port, with proper settings like .flags, .type,
+>> > >> >> .iotype, .regshift and .uartclk.  Memory (or ioport) and IRQ should be
+>> > >> >> passed as cell resources.
+>> > >> >
+>> > >> > What?  No, please!
+>> > >> >
+>> > >> > If you *must* create a whole driver just to be able to use
+>> > >> > platform_*() helpers (which I don't think you should), then please
+>> > >> > call it something else.  This doesn't have anything to do with MFD.
+>> > >> 
+>> > >> True.
+>> > >> 
+>> > >> I really don't think it is a good idea to create a whole driver just to
+>> > >> be able to use platform_get_*() helpers.  And if I am forced to do this,
+>> > >> because I am unable to convince Andy to improve the standard serial8250
+>> > >> driver to support that, it should be called MFD.  The driver would be
+>> > >
+>> > > I assume you mean "shouldn't"?
+>> > 
+>> > Of-course.
+>> > 
+>> > >> generally usable for all usecases where platform_get_*() works.
+>> > >> 
+>> > >> I don't have any idea what to call such a driver.  It really would just
+>> > >> be a fork of the current serial8250 driver, just allowing use of
+>> > >> platform_get_*(), supporting exactly the same hardware.
+>> > >> 
+>> > >> I am still hoping that we can find a way to improve serial8250 to be
+>> > >> usable in these cases.
+>> > >
+>> > > Me too.
+>> > 
+>> > Unfortunately, I don't seem to be able to convince Andy to accept
+>> > something like that.
+>> 
+>> Andy is not he Maintainer.
+>> 
+>> What are Greg and Jiri's opinions?
+>
+> I've been ignoring all of this at the moment because of the 5.2-rc merge
+> window.  I'll look at it after -rc1 is out.
+>
+> thanks,
+> greg k-h
 
-When you are use the the BAR 0 resource as mem_base argument to
-mfd_add_devices() later on, it will be split into child resources for
-the child devices, but they will not be related to the IORESOURCE_MEM
-root tree (iomem_resource) anymore.  I don't think that is how it is
-supposed to be done, as it will allow random other drivers to request
-the exact same memory area.
+Great, thanks!
 
-How/where is the memory resources inserted in the root IORESOURCE_MEM
-resource (iomem_resource)?  Or is it allowed to use resources without
-inserting it into the root tree?
-
-> +	SET_NETDEV_DEV(dev, &pdev->dev);
-> +	ip = netdev_priv(dev);
-> +	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	ip->regs = ioremap(r->start, resource_size(r));
-> +	r = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-> +	ip->ssram = ioremap(r->start, resource_size(r));
-
-Maybe use devm_platform_ioremap_resource() instead, which handles both
-platform_get_resource() and ioremap() in one call..
+I will try ad hold back with this thread until you get back to it.
 
 /Esben
