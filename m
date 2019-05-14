@@ -1,7 +1,7 @@
 From: Serge Semin <fancer.lancer@gmail.com>
-Subject: [PATCH 2/7] tty: max310x: Introduce max310x_one port macro-wrapper
-Date: Tue, 14 May 2019 13:14:10 +0300
-Message-ID: <20190514101415.26754-3-fancer.lancer@gmail.com>
+Subject: [PATCH 4/7] tty: max310x: Fix invalid baudrate divisors calculator
+Date: Tue, 14 May 2019 13:14:12 +0300
+Message-ID: <20190514101415.26754-5-fancer.lancer@gmail.com>
 References: <20190514101415.26754-1-fancer.lancer@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,57 +12,105 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: Serge Semin <Sergey.Semin@t-platforms.ru>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-uart_port structure instance is embedded into the max310x_one
-super-structure, which is accessed by some of the uart-port callback
-methods. In order to improve the callback's code readability lets
-define the to_max310x_port() wrapper which just translates the passed
-uart_port pointer to the max310x_one one. It is also going to be
-handy in future commits.
+Current calculator doesn't do it' job quite correct. First of all the
+max310x baud-rates generator supports the divisor being less than 16.
+In this case the x2/x4 modes can be used to double or quadruple
+the reference frequency. But the current baud-rate setter function
+just filters all these modes out by the first condition and setups
+these modes only if there is a clocks-baud division remainder. The former
+doesn't seem right at all, since enabling the x2/x4 modes causes the line
+noise tolerance reduction and should be only used as a last resort to
+enable a requested too high baud-rate.
+
+Finally the fraction is supposed to be calculated from D = Fref/(c*baud)
+formulae, but not from D % 16, which causes the precision loss. So to speak
+the current baud-rate calculator code works well only if the baud perfectly
+fits to the uart reference input frequency.
+
+Lets fix the calculator by implementing the algo fully compliant with
+the fractional baud-rate generator described in the datasheet:
+D = Fref / (c*baud), where c={16,8,4} is the x1/x2/x4 rate mode
+respectively, Fref - reference input frequency. The divisor fraction is
+calculated from the same formulae, but making sure it is found with a
+resolution of 0.0625 (four bits).
 
 Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
 ---
- drivers/tty/serial/max310x.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/tty/serial/max310x.c | 51 ++++++++++++++++++++++--------------
+ 1 file changed, 31 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index 4ee805862b68..527f1476c24a 100644
+index 0e3dc89c459b..ca044f96c5cc 100644
 --- a/drivers/tty/serial/max310x.c
 +++ b/drivers/tty/serial/max310x.c
-@@ -259,6 +259,8 @@ struct max310x_one {
- 	struct work_struct	md_work;
- 	struct work_struct	rs_work;
- };
-+#define to_max310x_port(_port) \
-+	container_of(_port, struct max310x_one, port)
+@@ -501,37 +501,48 @@ static bool max310x_reg_precious(struct device *dev, unsigned int reg)
  
- struct max310x_port {
- 	struct max310x_devtype	*devtype;
-@@ -765,7 +767,7 @@ static void max310x_handle_tx(struct uart_port *port)
- 
- static void max310x_start_tx(struct uart_port *port)
+ static int max310x_set_baud(struct uart_port *port, int baud)
  {
--	struct max310x_one *one = container_of(port, struct max310x_one, port);
-+	struct max310x_one *one = to_max310x_port(port);
+-	unsigned int mode = 0, clk = port->uartclk, div = clk / baud;
++	unsigned int mode = 0, div = 0, frac = 0, c = 0, F = 0;
  
- 	schedule_work(&one->tx_work);
+-	/* Check for minimal value for divider */
+-	if (div < 16)
+-		div = 16;
+-
+-	if (clk % baud && (div / 16) < 0x8000) {
++	/*
++	 * Calculate the integer divisor first. Select a proper mode
++	 * in case if the requested baud is too high for the pre-defined
++	 * clocks frequency.
++	 */
++	div = port->uartclk / baud;
++	if (div < 8) {
++		/* Mode x4 */
++		c = 4;
++		mode = MAX310X_BRGCFG_4XMODE_BIT;
++	} else if (div < 16) {
+ 		/* Mode x2 */
++		c = 8;
+ 		mode = MAX310X_BRGCFG_2XMODE_BIT;
+-		clk = port->uartclk * 2;
+-		div = clk / baud;
+-
+-		if (clk % baud && (div / 16) < 0x8000) {
+-			/* Mode x4 */
+-			mode = MAX310X_BRGCFG_4XMODE_BIT;
+-			clk = port->uartclk * 4;
+-			div = clk / baud;
+-		}
++	} else {
++		c = 16;
+ 	}
+ 
+-	max310x_port_write(port, MAX310X_BRGDIVMSB_REG, (div / 16) >> 8);
+-	max310x_port_write(port, MAX310X_BRGDIVLSB_REG, div / 16);
+-	max310x_port_write(port, MAX310X_BRGCFG_REG, (div % 16) | mode);
++	/* Calculate the divisor in accordance with the fraction coefficient */
++	div /= c;
++	F = c*baud;
++
++	/* Calculate the baud rate fraction */
++	if (div > 0)
++		frac = (16*(port->uartclk % F)) / F;
++	else
++		div = 1;
++
++	max310x_port_write(port, MAX310X_BRGDIVMSB_REG, div >> 8);
++	max310x_port_write(port, MAX310X_BRGDIVLSB_REG, div);
++	max310x_port_write(port, MAX310X_BRGCFG_REG, frac | mode);
+ 
+-	return DIV_ROUND_CLOSEST(clk, div);
++	/* Return the actual baud rate we just programmed */
++	return (16*port->uartclk) / (c*(16*div + frac));
  }
-@@ -858,7 +860,7 @@ static void max310x_md_proc(struct work_struct *ws)
  
- static void max310x_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ static int max310x_update_best_err(unsigned long f, long *besterr)
  {
--	struct max310x_one *one = container_of(port, struct max310x_one, port);
-+	struct max310x_one *one = to_max310x_port(port);
+ 	/* Use baudrate 115200 for calculate error */
+-	long err = f % (115200 * 16);
++	long err = f % (460800 * 16);
  
- 	schedule_work(&one->md_work);
- }
-@@ -981,7 +983,7 @@ static void max310x_rs_proc(struct work_struct *ws)
- static int max310x_rs485_config(struct uart_port *port,
- 				struct serial_rs485 *rs485)
- {
--	struct max310x_one *one = container_of(port, struct max310x_one, port);
-+	struct max310x_one *one = to_max310x_port(port);
- 
- 	if ((rs485->delay_rts_before_send > 0x0f) ||
- 	    (rs485->delay_rts_after_send > 0x0f))
+ 	if ((*besterr < 0) || (*besterr > err)) {
+ 		*besterr = err;
 -- 
 2.21.0
