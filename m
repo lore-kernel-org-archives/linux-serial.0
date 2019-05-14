@@ -1,42 +1,67 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH] serial: 8250: Add support for using platform_device resources
-Date: Tue, 14 May 2019 12:37:25 +0300
-Message-ID: <CAHp75VetoajaeqUnUuj4sNjhujqDkbqvQmxE+LMtzFN4so_jwA@mail.gmail.com>
-References: <20190430140416.4707-1-esben@geanix.com> <20190430153736.GL9224@smile.fi.intel.com>
- <874l6efxta.fsf@haabendal.dk> <20190502104556.GS9224@smile.fi.intel.com>
- <87pnp11112.fsf@haabendal.dk> <20190507093239.GB4529@dell>
- <87sgtqjy3l.fsf@haabendal.dk> <20190507115325.GV9224@smile.fi.intel.com>
- <87k1f2jvyd.fsf@haabendal.dk> <20190507150847.GW9224@smile.fi.intel.com>
- <87k1etmrfk.fsf@haabendal.dk> <CAHp75VfrP6SLVzmp6LepN7dU1c7QYxfRDRtj7dCTuWzmYp2tCA@mail.gmail.com>
+From: Serge Semin <fancer.lancer@gmail.com>
+Subject: [PATCH 0/7] tty: max310x: Simplify the code and fix a few bugs
+Date: Tue, 14 May 2019 13:14:08 +0300
+Message-ID: <20190514101415.26754-1-fancer.lancer@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75VfrP6SLVzmp6LepN7dU1c7QYxfRDRtj7dCTuWzmYp2tCA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Esben Haabendal <esben@haabendal.dk>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Enrico Weigelt <lkml@metux.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, He Zhe <zhe.he@windriver.com>, Marek Vasut <marex@denx.de>, Douglas Anderson <dianders@chromium.org>, Paul Burton <paul.burton@mips.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Serge Semin <Sergey.Semin@t-platforms.ru>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 14, 2019 at 12:23 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Tue, May 14, 2019 at 10:24 AM Esben Haabendal <esben@haabendal.dk> wrote:
+I started using this driver two years ago in kernek 4.4 and then in kernel
+4.9. It didn't go well from the very beginning due to my platform
+peculiarities: DW SPI core with hardware CS and relatively slow MIPS-based
+SoC. This patchset is intended to fix some of the problems I found out
+during the max310x driver utilization with max14830 device.
 
-> > Please take a look at https://lkml.org/lkml/2019/4/9/576
-> > ("[PATCH v2 2/4] mfd: ioc3: Add driver for SGI IOC3 chip")
->
-> Thank you for this link.
-> Now, look at this comment:
->
-> + /*
-> + * Map all IOC3 registers.  These are shared between subdevices
-> + * so the main IOC3 module manages them.
-> + */
->
-> Is it your case? Can we see the code?
+First of all it was discovered, that workqueue API isn't optimally used.
+Work context isn't re-entrant by design, so the mutex used to guard the
+TX-method is redundant. schedule_work() method is also created in a way
+the work item is scheduled only if it isn't pending. Patch 1 concerns all
+these fixes. Seeing the similar container_of(uart_port) is used three
+times in the driver, the patch 2 introduces a macro to_max310x_port() to
+get a pointer to corresponding struct max310x_one. This is the code
+simplification and is going to be used in the following patches.
 
-They do not request resources by the way.
-You may do the same, I told you this several times.
+It was found out, that batch read and write methods used buffers allocated
+on the kernel stack. Since they might be utilized by SPI controllers for
+DMA it might be unsafe on some platforms. Patch 3 provides a dedicated
+kmalloced buffers for this.
+
+The baud-rate calculator function didn't work correct for all the possible
+baud-rates requested within a pre-defined input reference frequency.
+Instead an algo fully compliant with datasheet divisor formulae is
+implemented in patch 4.
+
+Patches 5 and 6 are created to fix some rs485 issues. Particularly the
+rs485 mode is configured on the port startup if it's enabled. And seeing
+the mode2 register provides a way to enable/disable the echo-suppression
+in RS485 mode, it is used to implement the SER_RS485_RX_DURING_TX flag
+support.
+
+Finally it was discovered that in case if inbound hardware FIFO
+experienced overflow, a lot of '\0' characters inserted into the
+flip-buffer as a character of the RX-FIFO overrun. It isn't quite correct
+since the overflow happened only after the last character had been
+received. Patch 7 is dedicated to push only a single RX-FIFO overrun
+character in this case.
+
+Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
+
+
+Serge Semin (7):
+  tty: max310x: Simplify tx-work item code
+  tty: max310x: Introduce max310x_one port macro-wrapper
+  tty: max310x: Don't pass stacked buffers to SPI
+  tty: max310x: Fix invalid baudrate divisors calculator
+  tty: max310x: Add rx-during-tx rs485 flag support
+  tty: max310x: Optionally enable rs485 on startup
+  tty: max310x: Split uart characters insertion loop
+
+ drivers/tty/serial/max310x.c | 157 +++++++++++++++++++++--------------
+ 1 file changed, 95 insertions(+), 62 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.21.0
