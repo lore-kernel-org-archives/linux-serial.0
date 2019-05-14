@@ -1,52 +1,61 @@
-From: "George G. Davis" <george_davis@mentor.com>
-Subject: [PATCH v2] serial: sh-sci: disable DMA for uart_console
-Date: Mon, 13 May 2019 11:47:26 -0400
-Message-ID: <1557762446-23811-1-git-send-email-george_davis@mentor.com>
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH] tty: serial: uartlite: avoid null pointer dereference during rmmod
+Date: Tue, 14 May 2019 11:32:19 +0800
+Message-ID: <20190514033219.169947-1-wangkefeng.wang@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Eugeniu Rosca <erosca@de.adit-jv.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Simon Horman <horms+renesas@verge.net.au>, Wolfram Sang <wsa+renesas@sang-engineering.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Cc: Chris Brandt <chris.brandt@renesas.com>, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>, Andy Lowe <andy_lowe@mentor.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS <devicetree@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "George G. Davis" <george_davis@mentor.com>, stable@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Kefeng Wang <wangkefeng.wang@huawei.com>, Peter Korsgaard <jacmet@sunsite.dk>, Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Hulk Robot <hulkci@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
-As noted in commit 84b40e3b57ee ("serial: 8250: omap: Disable DMA for
-console UART"), UART console lines use low-level PIO only access functions
-which will conflict with use of the line when DMA is enabled, e.g. when
-the console line is also used for systemd messages. So disable DMA
-support for UART console lines.
+After commit 415b43bdb008 "tty: serial: uartlite: Move uart register to
+probe", calling uart_unregister_driver unconditionally will trigger a
+null pointer dereference due to ulite_uart_driver may not registed.
 
-Fixes: https://patchwork.kernel.org/patch/10929511/
-Reported-by: Michael Rodin <mrodin@de.adit-jv.com>
-Tested-by: Eugeniu Rosca <erosca@de.adit-jv.com>
-Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: George G. Davis <george_davis@mentor.com>
----
-v2: Clarify comment regarding DMA support on kernel console,
-    add {Tested,Reviewed}-by:, and Cc: linux-stable lines.
----
- drivers/tty/serial/sh-sci.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+  CPU: 1 PID: 3755 Comm: syz-executor.0 Not tainted 5.1.0+ #28
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+  Call Trace:
+   __dump_stack lib/dump_stack.c:77 [inline]
+   dump_stack+0xa9/0x10e lib/dump_stack.c:113
+   __kasan_report+0x171/0x18d mm/kasan/report.c:321
+   kasan_report+0xe/0x20 mm/kasan/common.c:614
+   tty_unregister_driver+0x19/0x100 drivers/tty/tty_io.c:3383
+   uart_unregister_driver+0x30/0xc0 drivers/tty/serial/serial_core.c:2579
+   __do_sys_delete_module kernel/module.c:1027 [inline]
+   __se_sys_delete_module kernel/module.c:970 [inline]
+   __x64_sys_delete_module+0x244/0x330 kernel/module.c:970
+   do_syscall_64+0x72/0x2a0 arch/x86/entry/common.c:298
+   entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 3cd139752d3f..abc705716aa0 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -1557,6 +1557,13 @@ static void sci_request_dma(struct uart_port *port)
+Call uart_unregister_driver only if ulite_uart_driver.state not null to
+fix it.
+
+Cc: Peter Korsgaard <jacmet@sunsite.dk>
+Cc: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Fixes: 415b43bdb008 ("tty: serial: uartlite: Move uart register to probe")
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+---
+ drivers/tty/serial/uartlite.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index b8b912b5a8b9..06e79c11141d 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -897,7 +897,8 @@ static int __init ulite_init(void)
+ static void __exit ulite_exit(void)
+ {
+ 	platform_driver_unregister(&ulite_platform_driver);
+-	uart_unregister_driver(&ulite_uart_driver);
++	if (ulite_uart_driver.state)
++		uart_unregister_driver(&ulite_uart_driver);
+ }
  
- 	dev_dbg(port->dev, "%s: port %d\n", __func__, port->line);
- 
-+	/*
-+	 * DMA on console may interfere with Kernel log messages which use
-+	 * plain putchar(). So, simply don't use it with a console.
-+	 */
-+	if (uart_console(port))
-+		return;
-+
- 	if (!port->dev->of_node)
- 		return;
- 
+ module_init(ulite_init);
 -- 
-2.7.4
+2.20.1
