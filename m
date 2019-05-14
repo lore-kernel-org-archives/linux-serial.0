@@ -1,77 +1,217 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH] tty: serial: uartlite: avoid null pointer dereference
- during rmmod
-Date: Tue, 14 May 2019 09:08:31 +0200
-Message-ID: <20190514070831.GH9651@localhost>
-References: <20190514033219.169947-1-wangkefeng.wang@huawei.com>
+From: Esben Haabendal <esben@haabendal.dk>
+Subject: Re: [PATCH] serial: 8250: Add support for using platform_device resources
+Date: Tue, 14 May 2019 09:22:07 +0200
+Message-ID: <87k1etmrfk.fsf@haabendal.dk>
+References: <20190430140416.4707-1-esben@geanix.com>
+        <20190430153736.GL9224@smile.fi.intel.com>
+        <874l6efxta.fsf@haabendal.dk>
+        <20190502104556.GS9224@smile.fi.intel.com>
+        <87pnp11112.fsf@haabendal.dk> <20190507093239.GB4529@dell>
+        <87sgtqjy3l.fsf@haabendal.dk>
+        <20190507115325.GV9224@smile.fi.intel.com>
+        <87k1f2jvyd.fsf@haabendal.dk>
+        <20190507150847.GW9224@smile.fi.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190514033219.169947-1-wangkefeng.wang@huawei.com>
+In-Reply-To: <20190507150847.GW9224@smile.fi.intel.com> (Andy Shevchenko's
+        message of "Tue, 7 May 2019 18:08:47 +0300")
 Sender: linux-kernel-owner@vger.kernel.org
-To: Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peter Korsgaard <jacmet@sunsite.dk>, Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Hulk Robot <hulkci@huawei.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Lee Jones <lee.jones@linaro.org>, linux-serial@vger.kernel.org, Enrico Weigelt <lkml@metux.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, He Zhe <zhe.he@windriver.com>, Marek Vasut <marex@denx.de>, Douglas Anderson <dianders@chromium.org>, Paul Burton <paul.burton@mips.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 14, 2019 at 11:32:19AM +0800, Kefeng Wang wrote:
-> After commit 415b43bdb008 "tty: serial: uartlite: Move uart register to
-> probe", calling uart_unregister_driver unconditionally will trigger a
-> null pointer dereference due to ulite_uart_driver may not registed.
-> 
->   CPU: 1 PID: 3755 Comm: syz-executor.0 Not tainted 5.1.0+ #28
->   Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
->   Call Trace:
->    __dump_stack lib/dump_stack.c:77 [inline]
->    dump_stack+0xa9/0x10e lib/dump_stack.c:113
->    __kasan_report+0x171/0x18d mm/kasan/report.c:321
->    kasan_report+0xe/0x20 mm/kasan/common.c:614
->    tty_unregister_driver+0x19/0x100 drivers/tty/tty_io.c:3383
->    uart_unregister_driver+0x30/0xc0 drivers/tty/serial/serial_core.c:2579
->    __do_sys_delete_module kernel/module.c:1027 [inline]
->    __se_sys_delete_module kernel/module.c:970 [inline]
->    __x64_sys_delete_module+0x244/0x330 kernel/module.c:970
->    do_syscall_64+0x72/0x2a0 arch/x86/entry/common.c:298
->    entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> 
-> Call uart_unregister_driver only if ulite_uart_driver.state not null to
-> fix it.
-> 
-> Cc: Peter Korsgaard <jacmet@sunsite.dk>
-> Cc: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Fixes: 415b43bdb008 ("tty: serial: uartlite: Move uart register to probe")
-> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-> ---
->  drivers/tty/serial/uartlite.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-> index b8b912b5a8b9..06e79c11141d 100644
-> --- a/drivers/tty/serial/uartlite.c
-> +++ b/drivers/tty/serial/uartlite.c
-> @@ -897,7 +897,8 @@ static int __init ulite_init(void)
->  static void __exit ulite_exit(void)
->  {
->  	platform_driver_unregister(&ulite_platform_driver);
-> -	uart_unregister_driver(&ulite_uart_driver);
-> +	if (ulite_uart_driver.state)
-> +		uart_unregister_driver(&ulite_uart_driver);
->  }
->  
->  module_init(ulite_init);
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
 
-This looks like you're just papering over the real issue, which is the
-crazy idea of ultimately registering one driver per port:
+> On Tue, May 07, 2019 at 02:22:18PM +0200, Esben Haabendal wrote:
+>> Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
+>> > On Tue, May 07, 2019 at 01:35:58PM +0200, Esben Haabendal wrote:
+>> >> Lee Jones <lee.jones@linaro.org> writes:
+>> >> > On Thu, 02 May 2019, Esben Haabendal wrote:
+>> >> >
+>> >> >> Could you help clarify whether or not this patch is trying to do
+>> >> >> something odd/wrong?
+>> >> >> 
+>> >> >> I might be misunderstanding Andy (probably is), but the discussion
+>> >> >> revolves around the changes I propose where I change the serial8250
+>> >> >> driver to use platform_get_resource() in favour of
+>> >> >> request_mem_region()/release_mem_region().
+>> >> >
+>> >> > Since 'serial8250' is registered as a platform device, I don't see any
+>> >> > reason why it shouldn't have the capability to obtain its memory
+>> >> > regions from the platform_get_*() helpers.
+>> >> 
+>> >> Good to hear.  That is exactly what I am trying do with this patch.
+>> >> 
+>> >> @Andy: If you still don't like my approach, could you please advice an
+>> >> acceptable method for improving the serial8250 driver to allow the use
+>> >> of platform_get_*() helpers?
+>> >
+>> > I still don't get why you need this.
+>> 
+>> Because platform_get_resource() is a generally available and useful
+>> helper function for working with platform_device resources, that the
+>> current standard serial8250 driver does not support.
+>> 
+>> I am uncertain if I still haven't convinced you that current serial8250
+>> driver does not work with platform_get_resource(), or if you believe
+>> that it really should not support it.
+>
+> I believe there is no need to do this support.
+>
+> Most of the platform code that uses it is quite legacy,
 
-	https://lkml.kernel.org/r/1539685088-13465-1-git-send-email-shubhrajyoti.datta@gmail.com
+So all code that use/support platform_get_resource() is legacy code?
 
-It appears only the preparatory patches from that series were applied,
-and I think whoever is responsible should consider reverting those
-instead.
+commit 7945f929f1a77a1c8887a97ca07f87626858ff42
+Author: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Date:   Wed Feb 20 11:12:39 2019 +0000
 
-If the statically allocated port state is that big of any issue, you
-need to make serial core support dynamic allocation.
+    drivers: provide devm_platform_ioremap_resource()
+    
+    There are currently 1200+ instances of using platform_get_resource()
+    and devm_ioremap_resource() together in the kernel tree.
+    
+    This patch wraps these two calls in a single helper. Thanks to that
+    we don't have to declare a local variable for struct resource * and can
+    omit the redundant argument for resource type. We also have one
+    function call less.
+    
+    Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+    Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+    Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 
-Johan
+It does not looks quite dead to me.
+
+> and all under arch/
+> ideally should be converted to use Device Tree.
+
+When do you expect arch/x86 to be converted to device tree?
+
+>> > If it's MFD, you may use "serial8250" with a given platform data like
+>> > dozens of current users do.
+>> 
+>> There is only one in-tree mfd driver using "serial8250", the sm501.c
+>> driver.  And that driver predates the mfd framework (mfd-core.c) by a
+>> year, and does not use any of the mfd-core functionality.
+>
+> So, does it have an issue?
+
+I don't have hardware so I can test it, but I assume that it is
+working.
+
+It is ignoring framework code (mfd-core), that is implemented to await
+re-inventing the wheel for each and every mfd driver.  If that is an
+issue, then yes, sm501.c does have an issue and could be improved/fixed.
+
+>> I want to use the mfd-core provided handling of resource splitting,
+>> because it makes it easier to handle splitting of a single memory
+>> resource as defined by a PCI BAR in this case.  And the other drivers I
+>> need to use all support/use platform_get_resource(), so it would even
+>> have an impact on the integration of that if I cannot use mfd resource
+>> splitting with serial8250.
+>
+> I tired to repeat, that is OKAY! You *may* split and supply resources to the
+> drivers, nothing prevents you to do that with current code base.
+>
+> Do you see any problem with that? What is that problem?
+>
+> If you would like utilize serial8250, just provide a platform data for
+> it.
+
+I fear we are coming to an end here.
+
+I don't seem to be able to break through to you, to get you to
+understand the issue here.
+
+I want to write a simple and elegant mfd driver, using mfd-core
+framework (the mfd_add_devices() function call to be specific).  I don't
+want to reimplement similar functionality in the mfd driver.
+
+The other drivers I need all work fine with this, but serial8250 does
+not.
+
+As I understand Lee Jones, he seem to agree with me, so could you
+please, please consider that I might not be totally on crack, and might
+actually have brough forward a valid proposition.
+
+>> > Another approach is to use 8250 library, thus, creating a specific
+>> > glue driver (like all 8250_* do).
+>> 
+>> As mentioned, I think this is a bad approach, and I would prefer to
+>> improve the "serial8250" driver instead.  But if you insist, what should
+>> I call such a driver?  It needs a platform_driver name, for use when
+>> matching with platform_device devices.  And it would support exactly the
+>> same hardware as the current "serial8250" driver.
+>
+> If you need some specifics, you create a driver with whatever name
+> suits the IP in question. Nevertheless, if it's simple generic 8250, nothing
+> needs to be added, except platform data, see above.
+
+We are on repeat here.  I don't agree with you here.  I have a simple
+generic 8250 (16550A) compatible device, and cannot use it in a mfd
+driver using the standard mfd-core framework.
+
+The lacking of support for platform_get_resource() in the generic
+serial8250 driver is not a feature.  It should be supported, just as it
+is in several of the specialized 8250 drivers.
+
+>> > Yes, I understand that 8250 driver is full of quirks and not modern
+>> > approaches
+>> > to do one or another thing. Unfortunately it's not too easy to fix it
+>> > without
+>> > uglifying code and doing some kind of ping-pong thru the conversion. I don't
+>> > think it worth to do it in the current state of affairs. Though, cleaning up
+>> > the core part from the quirks and custom pieces would make this task
+>> > achievable.
+>> 
+>> I think it should be possible and worthwhile to improve serial8250
+>> driver with support for using platform_device resources
+>> (platform_get_resource() helper).
+>
+> I simple can't understand why it's needed. What problem would it solve which
+> can't be solved with existing code base?
+
+On repeat again.  I have explained it way to many times, so I guess I
+must assume by now that you do not think that being able to use
+serial8250 together with mfd-core is something that should be solved.
+
+>> If we could stop discussing if it is a proper thing to do, we could try
+>> to find a good way to do it instead.
+>
+>> > Btw, what exact IP of UART do you have implemented there?
+>> 
+>> It is an XPS 16550 UART (v3.00a).
+>> https://www.xilinx.com/support/documentation/ip_documentation/xps_uart16550.pdf
+>
+> So, briefly looking at it I didn't find any deviations from a standard 16550a.
+
+Exactly. I am pretty sure I have said this more than once in this
+thread.  This IP is perfectly standard.  It would be completely wrong to
+write a specialized 8250 driver for this.
+
+But if I fail to find a way to get something merged which allows using
+the generic serial8250 driver with platform_get_resource(), I guess I
+need to handle this out-of-tree.  And anybody else needing/wanting to do
+the same would have to do that as well.
+
+> Also there are two drivers mentioned Xilinx, though I'm pretty sure it's not
+> your case.
+>
+> Since you have more than one of them, it's even smaller to use current
+> infrastructure to enumerate them using only one serial8250 description.
+> See plenty examples in the Linux kernel, such as 8250_exar_st16c554.c.
+> That is what you may just modify for your needs and put inside your MFD.
+
+It would still mean that I would have revert to not using convenient and
+otherwise fully appropriate API calls like pci_request_regions() and
+mfd_add_devices().
+
+The mfd driver in question is for a PCI device.  Not being able to
+request the PCI regions seems silly.
+
+Not being able to register all child devices with the call introduced
+for that sole purpose also seems silly.
+
+/Esben
