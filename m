@@ -1,67 +1,80 @@
 From: Serge Semin <fancer.lancer@gmail.com>
-Subject: [PATCH 0/7] tty: max310x: Simplify the code and fix a few bugs
-Date: Tue, 14 May 2019 13:14:08 +0300
-Message-ID: <20190514101415.26754-1-fancer.lancer@gmail.com>
+Subject: [PATCH 5/7] tty: max310x: Add rx-during-tx rs485 flag support
+Date: Tue, 14 May 2019 13:14:13 +0300
+Message-ID: <20190514101415.26754-6-fancer.lancer@gmail.com>
+References: <20190514101415.26754-1-fancer.lancer@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190514101415.26754-1-fancer.lancer@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
 Cc: Serge Semin <Sergey.Semin@t-platforms.ru>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-I started using this driver two years ago in kernek 4.4 and then in kernel
-4.9. It didn't go well from the very beginning due to my platform
-peculiarities: DW SPI core with hardware CS and relatively slow MIPS-based
-SoC. This patchset is intended to fix some of the problems I found out
-during the max310x driver utilization with max14830 device.
-
-First of all it was discovered, that workqueue API isn't optimally used.
-Work context isn't re-entrant by design, so the mutex used to guard the
-TX-method is redundant. schedule_work() method is also created in a way
-the work item is scheduled only if it isn't pending. Patch 1 concerns all
-these fixes. Seeing the similar container_of(uart_port) is used three
-times in the driver, the patch 2 introduces a macro to_max310x_port() to
-get a pointer to corresponding struct max310x_one. This is the code
-simplification and is going to be used in the following patches.
-
-It was found out, that batch read and write methods used buffers allocated
-on the kernel stack. Since they might be utilized by SPI controllers for
-DMA it might be unsafe on some platforms. Patch 3 provides a dedicated
-kmalloced buffers for this.
-
-The baud-rate calculator function didn't work correct for all the possible
-baud-rates requested within a pre-defined input reference frequency.
-Instead an algo fully compliant with datasheet divisor formulae is
-implemented in patch 4.
-
-Patches 5 and 6 are created to fix some rs485 issues. Particularly the
-rs485 mode is configured on the port startup if it's enabled. And seeing
-the mode2 register provides a way to enable/disable the echo-suppression
-in RS485 mode, it is used to implement the SER_RS485_RX_DURING_TX flag
+The driver currently sets the echo suppression bit by default when rs485
+is enabled. Naturally it disables any data retrieval in rs485 mode while
+RTSn is pushed up. The receiver gate (RX_) can be enabled just by clearing
+(or not setting) the EchoSuprs bit of mode2 register. So by setting or
+clearing the bit we implement the SER_RS485_RX_DURING_TX rs485 flag
 support.
 
-Finally it was discovered that in case if inbound hardware FIFO
-experienced overflow, a lot of '\0' characters inserted into the
-flip-buffer as a character of the RX-FIFO overrun. It isn't quite correct
-since the overflow happened only after the last character had been
-received. Patch 7 is dedicated to push only a single RX-FIFO overrun
-character in this case.
-
 Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
+---
+ drivers/tty/serial/max310x.c | 29 ++++++++++++++---------------
+ 1 file changed, 14 insertions(+), 15 deletions(-)
 
-
-Serge Semin (7):
-  tty: max310x: Simplify tx-work item code
-  tty: max310x: Introduce max310x_one port macro-wrapper
-  tty: max310x: Don't pass stacked buffers to SPI
-  tty: max310x: Fix invalid baudrate divisors calculator
-  tty: max310x: Add rx-during-tx rs485 flag support
-  tty: max310x: Optionally enable rs485 on startup
-  tty: max310x: Split uart characters insertion loop
-
- drivers/tty/serial/max310x.c | 157 +++++++++++++++++++++--------------
- 1 file changed, 95 insertions(+), 62 deletions(-)
-
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index ca044f96c5cc..2255300404bd 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -975,25 +975,23 @@ static void max310x_set_termios(struct uart_port *port,
+ static void max310x_rs_proc(struct work_struct *ws)
+ {
+ 	struct max310x_one *one = container_of(ws, struct max310x_one, rs_work);
+-	unsigned int val;
++	unsigned int delay, mode1 = 0, mode2 = 0;
+ 
+-	val = (one->port.rs485.delay_rts_before_send << 4) |
++	delay = (one->port.rs485.delay_rts_before_send << 4) |
+ 		one->port.rs485.delay_rts_after_send;
+-	max310x_port_write(&one->port, MAX310X_HDPIXDELAY_REG, val);
++	max310x_port_write(&one->port, MAX310X_HDPIXDELAY_REG, delay);
+ 
+ 	if (one->port.rs485.flags & SER_RS485_ENABLED) {
+-		max310x_port_update(&one->port, MAX310X_MODE1_REG,
+-				MAX310X_MODE1_TRNSCVCTRL_BIT,
+-				MAX310X_MODE1_TRNSCVCTRL_BIT);
+-		max310x_port_update(&one->port, MAX310X_MODE2_REG,
+-				MAX310X_MODE2_ECHOSUPR_BIT,
+-				MAX310X_MODE2_ECHOSUPR_BIT);
+-	} else {
+-		max310x_port_update(&one->port, MAX310X_MODE1_REG,
+-				MAX310X_MODE1_TRNSCVCTRL_BIT, 0);
+-		max310x_port_update(&one->port, MAX310X_MODE2_REG,
+-				MAX310X_MODE2_ECHOSUPR_BIT, 0);
++		mode1 = MAX310X_MODE1_TRNSCVCTRL_BIT;
++
++		if (!(one->port.rs485.flags & SER_RS485_RX_DURING_TX))
++			mode2 = MAX310X_MODE2_ECHOSUPR_BIT;
+ 	}
++
++	max310x_port_update(&one->port, MAX310X_MODE1_REG,
++			MAX310X_MODE1_TRNSCVCTRL_BIT, mode1);
++	max310x_port_update(&one->port, MAX310X_MODE2_REG,
++			MAX310X_MODE2_ECHOSUPR_BIT, mode2);
+ }
+ 
+ static int max310x_rs485_config(struct uart_port *port,
+@@ -1005,7 +1003,8 @@ static int max310x_rs485_config(struct uart_port *port,
+ 	    (rs485->delay_rts_after_send > 0x0f))
+ 		return -ERANGE;
+ 
+-	rs485->flags &= SER_RS485_RTS_ON_SEND | SER_RS485_ENABLED;
++	rs485->flags &= SER_RS485_RTS_ON_SEND | SER_RS485_RX_DURING_TX |
++			SER_RS485_ENABLED;
+ 	memset(rs485->padding, 0, sizeof(rs485->padding));
+ 	port->rs485 = *rs485;
+ 
 -- 
 2.21.0
