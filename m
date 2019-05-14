@@ -1,145 +1,79 @@
-From: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Subject: Re: [PATCH v2 2/4] mfd: ioc3: Add driver for SGI IOC3 chip
-Date: Tue, 14 May 2019 16:29:18 +0200
-Message-ID: <20190514162918.a481ac682f36eb6f05aed984@suse.de>
-References: <20190409154610.6735-1-tbogendoerfer@suse.de>
-        <20190409154610.6735-3-tbogendoerfer@suse.de>
-        <20190508102313.GG3995@dell>
-        <20190509160220.bb5382df931e5bd0972276df@suse.de>
-        <20190510071419.GB7321@dell>
+From: "George G. Davis" <george_davis@mentor.com>
+Subject: Re: [PATCH v2] serial: sh-sci: disable DMA for uart_console
+Date: Tue, 14 May 2019 11:30:22 -0400
+Message-ID: <20190514153021.GC18528@mam-gdavis-lt>
+References: <1557762446-23811-1-git-send-email-george_davis@mentor.com>
+ <CAMuHMdVaNWa=Q-7K-+_rM-8yYWB0-+4_o4hgACK6o-4BOrY07A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8BIT
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <20190510071419.GB7321@dell>
-Sender: netdev-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, "David S. Miller" <davem@davemloft.net>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, linux-input@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdVaNWa=Q-7K-+_rM-8yYWB0-+4_o4hgACK6o-4BOrY07A@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Eugeniu Rosca <erosca@de.adit-jv.com>, Simon Horman <horms+renesas@verge.net.au>, Wolfram Sang <wsa+renesas@sang-engineering.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, Chris Brandt <chris.brandt@renesas.com>, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>, Andy Lowe <andy_lowe@mentor.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS <devicetree@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, stable <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 10 May 2019 08:14:19 +0100
-Lee Jones <lee.jones@linaro.org> wrote:
+Hello Geert,
 
-> On Thu, 09 May 2019, Thomas Bogendoerfer wrote:
-> > > > +	}
-> > > > +	pr_err("ioc3: CRC error in NIC address\n");
-> > > > +}
-> > > 
-> > > This all looks like networking code.  If this is the case, it should
-> > > be moved to drivers/networking or similar.
-> > 
-> > no it's not. nic stands for number in a can produced by Dallas Semi also
-> > known under the name 1-Wire (https://en.wikipedia.org/wiki/1-Wire).
-> > SGI used them to provide partnumber, serialnumber and mac addresses.
-> > By placing the code to read the NiCs inside ioc3 driver there is no need
-> > for locking and adding library code for accessing these informations.
+On Tue, May 14, 2019 at 10:28:34AM +0200, Geert Uytterhoeven wrote:
+> Hi George,
 > 
-> Great.  So it looks like you should be using this, no?
+> On Mon, May 13, 2019 at 5:48 PM George G. Davis <george_davis@mentor.com> wrote:
+> > As noted in commit 84b40e3b57ee ("serial: 8250: omap: Disable DMA for
+> > console UART"), UART console lines use low-level PIO only access functions
+> > which will conflict with use of the line when DMA is enabled, e.g. when
+> > the console line is also used for systemd messages. So disable DMA
+> > support for UART console lines.
+> >
+> > Fixes: https://patchwork.kernel.org/patch/10929511/
 > 
->   drivers/base/regmap/regmap-w1.c
+> I don't think this is an appropriate reference, as it points to a patch that
+> was never applied.
 
-not sure about regmap-w1, but drivers/w1 contains usefull stuff
-like w1_crc8. The only drawback I see right now is, that I need
-information about part numbers at ioc3 probe time, but for using
-w1 framework I need to create a platform device, which will give
-me this information not synchronous. I'll see how I could solve that.
+I included it as a link to an upstream problem report similar to other commits
+that I previewed. The link provides the extra context that I was perhaps to
+lazy to note in the commit header.
 
-> > > > +static struct resource ioc3_uarta_resources[] = {
-> > > > +	DEFINE_RES_MEM(offsetof(struct ioc3, sregs.uarta),
-> > > 
-> > > You are the first user of offsetof() in MFD.  Could you tell me why
-> > > it's required please?
-> > 
-> > to get the offsets of different chip functions out of a struct.
+> As the problem has basically existed forever,
+
+Agreed
+
+> IMHO no Fixes tag
+> is needed.
+
+I've dropped the Fixes line.
+
+> > Reported-by: Michael Rodin <mrodin@de.adit-jv.com>
+> > Tested-by: Eugeniu Rosca <erosca@de.adit-jv.com>
+> > Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+> > Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> > Cc: stable@vger.kernel.org
+> > Signed-off-by: George G. Davis <george_davis@mentor.com>
+> > ---
+> > v2: Clarify comment regarding DMA support on kernel console,
+> >     add {Tested,Reviewed}-by:, and Cc: linux-stable lines.
 > 
-> I can see what it does on a coding level.
+> Thanks for the update!
+
+Thanks!
+
+
+I'll submit v3 later today.
+
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 > 
-> What are you using it for in practical/real terms?
-
-ioc3 has one PCI bar, where all different functions are accessible.
-The current ioc3 register map has all these functions set up in one
-struct. The base address of these registers comes out of the PCI
-framework and to use the MFD framework I need offsets for the different
-functions. And because there was already struct ioc3 I'm using
-offsetof on this struct.
-
-> Why wouldn't any other MFD driver require this, but you do?
-
-the other PCI MFD drivers I've looked at, have a PCI BAR per function,
-which makes live easier and no need for offsetof. Other MFD drivers
-#define the offsets and don't have a big struct, which contains all
-function registers. If you really insist on using #defines I need
-to go through a few parts of the kernel where struct ioc3 is still used.
-
-> > > > +	if (ipd->info->funcs & IOC3_SER) {
-> > > > +		writel(GPCR_UARTA_MODESEL | GPCR_UARTB_MODESEL,
-> > > > +			&ipd->regs->gpcr_s);
-> > > > +		writel(0, &ipd->regs->gppr[6]);
-> > > > +		writel(0, &ipd->regs->gppr[7]);
-> > > > +		udelay(100);
-> > > > +		writel(readl(&ipd->regs->port_a.sscr) & ~SSCR_DMA_EN,
-> > > > +		       &ipd->regs->port_a.sscr);
-> > > > +		writel(readl(&ipd->regs->port_b.sscr) & ~SSCR_DMA_EN,
-> > > > +		       &ipd->regs->port_b.sscr);
-> > > > +		udelay(1000);
-> > > 
-> > > No idea what any of this does.
-> > > 
-> > > It looks like it belongs in the serial driver (and needs comments).
-> > 
-> > it configures the IOC3 chip for serial usage. This is not part of
-> > the serial register set, so it IMHO belongs in the MFD driver.
+> Gr{oetje,eeting}s,
 > 
-> So it does serial things, but doesn't belong in the serial driver?
-
-It sets up IOC3 GPIOs and IOC3 serial mode in way the 8250 driver
-can work with the connected superio.
-
-> Could you please go into a bit more detail as to why you think that?
+>                         Geert
 > 
-> Why is it better here?
-
-access to gpio and serial mode is outside of the 8250 register space.
-So either I need to export with some additional resources/new special
-platform data or just set it where it is done.
-
-> It's also totally unreadable by the way!
-
-sure, I'll add comments.
-
-> > > > +	}
-> > > > +#if defined(CONFIG_SGI_IP27)
-> > > 
-> > > What is this?  Can't you obtain this dynamically by probing the H/W?
-> > 
-> > that's the machine type and the #ifdef CONFIG_xxx are just for saving space,
-> > when compiled for other machines and it's easy to remove.
+> -- 
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 > 
-> Please find other ways to save the space.  #ifery can get very messy,
-> very quickly and is almost always avoidable.
-
-space isn't a problem at all, so removing #ifdef CONFIG is easy.
-
-> 
-> > > > +	if (ipd->info->irq_offset) {
-> > > 
-> > > What does this really signify?
-> > 
-> > IOC3 ASICs are most of the time connected to a SGI bridge chip. IOC3 can
-> > provide two interrupt lines, which are wired to the bridge chip. The first
-> > interrupt is assigned via the PCI core, but since IOC3 is not a PCI multi
-> > function device the second interrupt must be treated here. And the used
-> > interrupt line on the bridge chip differs between boards.
-> 
-> Please provide a MACRO, function or something else which results in
-> more readable code.  Whatever you choose to use, please add this text
-> above, it will be helpful for future readers.
-
-will do.
-
-Thomas.
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
 
 -- 
-SUSE Linux GmbH
-GF: Felix Imendörffer, Mary Higgins, Sri Rasiah
-HRB 21284 (AG Nürnberg)
+Regards,
+George
