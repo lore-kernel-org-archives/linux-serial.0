@@ -1,67 +1,55 @@
-From: Esben Haabendal <esben@haabendal.dk>
-Subject: Re: [PATCH 2/2] serial: 8250: Add support for 8250/16550 as MFD function
-Date: Tue, 14 May 2019 10:00:54 +0200
-Message-ID: <87bm05mpmx.fsf@haabendal.dk>
-References: <20190426084038.6377-1-esben@geanix.com>
-        <20190426084038.6377-3-esben@geanix.com> <20190507114905.GB29524@dell>
-        <87o94ejwrx.fsf@haabendal.dk> <20190507133844.GA6194@dell>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH v2] serial: sh-sci: disable DMA for uart_console
+Date: Tue, 14 May 2019 10:28:34 +0200
+Message-ID: <CAMuHMdVaNWa=Q-7K-+_rM-8yYWB0-+4_o4hgACK6o-4BOrY07A@mail.gmail.com>
+References: <1557762446-23811-1-git-send-email-george_davis@mentor.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190507133844.GA6194@dell> (Lee Jones's message of "Tue, 7 May
-        2019 14:38:44 +0100")
+In-Reply-To: <1557762446-23811-1-git-send-email-george_davis@mentor.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Nishanth Menon <nm@ti.com>, Vignesh R <vigneshr@ti.com>, Tony Lindgren <tony@atomide.com>, Lokesh Vutla <lokeshvutla@ti.com>, Florian Fainelli <f.fainelli@gmail.com>, linux-kernel@vger.kernel.org
+To: "George G. Davis" <george_davis@mentor.com>
+Cc: Eugeniu Rosca <erosca@de.adit-jv.com>, Simon Horman <horms+renesas@verge.net.au>, Wolfram Sang <wsa+renesas@sang-engineering.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, Chris Brandt <chris.brandt@renesas.com>, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>, Andy Lowe <andy_lowe@mentor.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS <devicetree@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, stable <stable@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Lee Jones <lee.jones@linaro.org> writes:
+Hi George,
 
-> On Tue, 07 May 2019, Esben Haabendal wrote:
+On Mon, May 13, 2019 at 5:48 PM George G. Davis <george_davis@mentor.com> wrote:
+> As noted in commit 84b40e3b57ee ("serial: 8250: omap: Disable DMA for
+> console UART"), UART console lines use low-level PIO only access functions
+> which will conflict with use of the line when DMA is enabled, e.g. when
+> the console line is also used for systemd messages. So disable DMA
+> support for UART console lines.
 >
->> Lee Jones <lee.jones@linaro.org> writes:
->> 
->> > On Fri, 26 Apr 2019, Esben Haabendal wrote:
->> >
->> >> The serial8250-mfd driver is for adding 8250/16550 UART ports as functions
->> >> to an MFD driver.
->> >> 
->> >> When calling mfd_add_device(), platform_data should be a pointer to a
->> >> struct plat_serial8250_port, with proper settings like .flags, .type,
->> >> .iotype, .regshift and .uartclk.  Memory (or ioport) and IRQ should be
->> >> passed as cell resources.
->> >
->> > What?  No, please!
->> >
->> > If you *must* create a whole driver just to be able to use
->> > platform_*() helpers (which I don't think you should), then please
->> > call it something else.  This doesn't have anything to do with MFD.
->> 
->> True.
->> 
->> I really don't think it is a good idea to create a whole driver just to
->> be able to use platform_get_*() helpers.  And if I am forced to do this,
->> because I am unable to convince Andy to improve the standard serial8250
->> driver to support that, it should be called MFD.  The driver would be
->
-> I assume you mean "shouldn't"?
+> Fixes: https://patchwork.kernel.org/patch/10929511/
 
-Of-course.
+I don't think this is an appropriate reference, as it points to a patch that
+was never applied.
 
->> generally usable for all usecases where platform_get_*() works.
->> 
->> I don't have any idea what to call such a driver.  It really would just
->> be a fork of the current serial8250 driver, just allowing use of
->> platform_get_*(), supporting exactly the same hardware.
->> 
->> I am still hoping that we can find a way to improve serial8250 to be
->> usable in these cases.
->
-> Me too.
+As the problem has basically existed forever, IMHO no Fixes tag
+is needed.
 
-Unfortunately, I don't seem to be able to convince Andy to accept
-something like that.
+> Reported-by: Michael Rodin <mrodin@de.adit-jv.com>
+> Tested-by: Eugeniu Rosca <erosca@de.adit-jv.com>
+> Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+> Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> Cc: stable@vger.kernel.org
+> Signed-off-by: George G. Davis <george_davis@mentor.com>
+> ---
+> v2: Clarify comment regarding DMA support on kernel console,
+>     add {Tested,Reviewed}-by:, and Cc: linux-stable lines.
 
-I might have to do this out-of-tree :(
+Thanks for the update!
 
-/Esben
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
