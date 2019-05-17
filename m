@@ -1,181 +1,67 @@
-From: Long Cheng <long.cheng@mediatek.com>
-Subject: Re: [PATCH 4/4] serial: 8250-mtk: modify uart DMA rx
-Date: Fri, 17 May 2019 15:36:42 +0800
-Message-ID: <1558078602.14150.27.camel@mhfsdcap03>
-References: <1556336193-15198-1-git-send-email-long.cheng@mediatek.com>
- <1556336193-15198-5-git-send-email-long.cheng@mediatek.com>
- <CANMq1KDTyu48joV6uMksGBMz9EmjFH9SEpGAm93YCZ40jxgBpQ@mail.gmail.com>
+From: Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH] serial-uartlite: Fix null-ptr-deref in ulite_exit
+Date: Fri, 17 May 2019 09:55:02 +0200
+Message-ID: <20190517075502.GE28564@localhost>
+References: <20190516040931.16276-1-yuehaibing@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CANMq1KDTyu48joV6uMksGBMz9EmjFH9SEpGAm93YCZ40jxgBpQ@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Nicolas Boichat <drinkcat@chromium.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Ryder Lee <ryder.lee@mediatek.com>, Zhenbao Liu <zhenbao.liu@mediatek.com>, linux-serial@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, lkml <linux-kernel@vger.kernel.org>, Sean Wang <sean.wang@kernel.org>, YT Shen <yt.shen@mediatek.com>, dmaengine@vger.kernel.org, Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>, "moderated list:ARM/Mediatek
- SoC support" <linux-mediatek@lists.infradead.org>, Sean Wang <sean.wang@mediatek.com>, Jiri Slaby <jslaby@suse.com>, Matthias Brugger <matthias.bgg@gmail.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>, Dan Williams <dan.j.williams@intel.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190516040931.16276-1-yuehaibing@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: YueHaibing <yuehaibing@huawei.com>
+Cc: jacmet@sunsite.dk, gregkh@linuxfoundation.org, jslaby@suse.com, shubhrajyoti.datta@xilinx.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2019-05-15 at 21:48 +0800, Nicolas Boichat wrote:
-> On Sat, Apr 27, 2019 at 11:36 AM Long Cheng <long.cheng@mediatek.com> wrote:
-> >
-> > Modify uart rx and complete for DMA.
+On Thu, May 16, 2019 at 12:09:31PM +0800, YueHaibing wrote:
+> If ulite_probe is not called or failed to registed
+> uart_register_driver, unload the module will call
+> uart_unregister_driver, which will tigger NULL
+> pointer dereference like this:
 > 
-> I don't know much about the DMA framework, but can you please explain
-> why you are making the changes in this CL? I see that you are dropping
-> dma_sync_single_for_device calls, for example, why?
-> 
+> BUG: KASAN: null-ptr-deref in tty_unregister_driver+0x19/0x100
+> Read of size 4 at addr 0000000000000034 by task syz-executor.0/4246
 
-the rx buffer is create by 'dma_alloc_coherent'. in the function, the
-buffer is uncache. We don't need to sync between CPU and DMA. So I
-remove it.
+> This patch fix this by moving uart_unregister_driver
+> to ulite_remove.
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Fixes: 415b43bdb008 ("tty: serial: uartlite: Move uart register to probe")
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>  drivers/tty/serial/uartlite.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+> index b8b912b..2e49fb6 100644
+> --- a/drivers/tty/serial/uartlite.c
+> +++ b/drivers/tty/serial/uartlite.c
+> @@ -867,6 +867,7 @@ static int ulite_remove(struct platform_device *pdev)
+>  	pm_runtime_disable(&pdev->dev);
+>  	pm_runtime_set_suspended(&pdev->dev);
+>  	pm_runtime_dont_use_autosuspend(&pdev->dev);
+> +	uart_unregister_driver(&ulite_uart_driver);
 
-> >
-> > Signed-off-by: Long Cheng <long.cheng@mediatek.com>
-> > ---
-> >  drivers/tty/serial/8250/8250_mtk.c |   53 ++++++++++++++++--------------------
-> >  1 file changed, 23 insertions(+), 30 deletions(-)
-> >
-> > diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-> > index c1fdbc0..04081a6 100644
-> > --- a/drivers/tty/serial/8250/8250_mtk.c
-> > +++ b/drivers/tty/serial/8250/8250_mtk.c
-> > @@ -30,7 +30,6 @@
-> >  #define MTK_UART_DMA_EN_TX     0x2
-> >  #define MTK_UART_DMA_EN_RX     0x5
-> >
-> > -#define MTK_UART_TX_SIZE       UART_XMIT_SIZE
-> >  #define MTK_UART_RX_SIZE       0x8000
-> >  #define MTK_UART_TX_TRIGGER    1
-> >  #define MTK_UART_RX_TRIGGER    MTK_UART_RX_SIZE
-> > @@ -64,28 +63,30 @@ static void mtk8250_dma_rx_complete(void *param)
-> >         struct mtk8250_data *data = up->port.private_data;
-> >         struct tty_port *tty_port = &up->port.state->port;
-> >         struct dma_tx_state state;
-> > +       int copied, cnt, tmp;
-> >         unsigned char *ptr;
-> > -       int copied;
-> >
-> > -       dma_sync_single_for_cpu(dma->rxchan->device->dev, dma->rx_addr,
-> > -                               dma->rx_size, DMA_FROM_DEVICE);
-> > +       if (data->rx_status == DMA_RX_SHUTDOWN)
-> > +               return;
-> >
-> >         dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
-> > +       cnt = dma->rx_size - state.residue;
-> > +       tmp = cnt;
-> 
-> I ponder, maybe we should rename cnt to left? (like, how many bytes
-> are left to transfer, in total) Or maybe "total"
-> Then maybe rename tmp to cnt.
-> 
-like better.
+This broken. Consider what happens if you have tho ports registered and
+you unbind the first.
 
-> >
-> > -       if (data->rx_status == DMA_RX_SHUTDOWN)
-> > -               return;
-> > +       if ((data->rx_pos + cnt) > dma->rx_size)
-> > +               tmp = dma->rx_size - data->rx_pos;
-> 
-> Maybe replace this and the line above:
-> tmp = max_t(int, cnt, dma->rx_size - data->rx_pos);
-> 
-Yes. It's better.
+Someone else sent a fix for this here
 
-> >
-> > -       if ((data->rx_pos + state.residue) <= dma->rx_size) {
-> > -               ptr = (unsigned char *)(data->rx_pos + dma->rx_buf);
-> > -               copied = tty_insert_flip_string(tty_port, ptr, state.residue);
-> > -       } else {
-> > -               ptr = (unsigned char *)(data->rx_pos + dma->rx_buf);
-> > -               copied = tty_insert_flip_string(tty_port, ptr,
-> > -                                               dma->rx_size - data->rx_pos);
-> > +       ptr = (unsigned char *)(data->rx_pos + dma->rx_buf);
-> > +       copied = tty_insert_flip_string(tty_port, ptr, tmp);
-> > +       data->rx_pos += tmp;
-> > +
-> > +       if (cnt > tmp) {
-> >                 ptr = (unsigned char *)(dma->rx_buf);
-> > -               copied += tty_insert_flip_string(tty_port, ptr,
-> > -                               data->rx_pos + state.residue - dma->rx_size);
-> > +               tmp = cnt - tmp;
-> > +               copied += tty_insert_flip_string(tty_port, ptr, tmp);
-> > +               data->rx_pos = tmp;
-> >         }
-> > +
-> >         up->port.icount.rx += copied;
-> >
-> >         tty_flip_buffer_push(tty_port);
-> > @@ -96,9 +97,7 @@ static void mtk8250_dma_rx_complete(void *param)
-> >  static void mtk8250_rx_dma(struct uart_8250_port *up)
-> >  {
-> >         struct uart_8250_dma *dma = up->dma;
-> > -       struct mtk8250_data *data = up->port.private_data;
-> >         struct dma_async_tx_descriptor  *desc;
-> > -       struct dma_tx_state      state;
-> >
-> >         desc = dmaengine_prep_slave_single(dma->rxchan, dma->rx_addr,
-> >                                            dma->rx_size, DMA_DEV_TO_MEM,
-> > @@ -113,12 +112,6 @@ static void mtk8250_rx_dma(struct uart_8250_port *up)
-> >
-> >         dma->rx_cookie = dmaengine_submit(desc);
-> >
-> > -       dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
-> > -       data->rx_pos = state.residue;
-> > -
-> > -       dma_sync_single_for_device(dma->rxchan->device->dev, dma->rx_addr,
-> > -                                  dma->rx_size, DMA_FROM_DEVICE);
-> > -
-> >         dma_async_issue_pending(dma->rxchan);
-> >  }
-> >
-> > @@ -131,13 +124,13 @@ static void mtk8250_dma_enable(struct uart_8250_port *up)
-> >         if (data->rx_status != DMA_RX_START)
-> >                 return;
-> >
-> > -       dma->rxconf.direction           = DMA_DEV_TO_MEM;
-> > -       dma->rxconf.src_addr_width      = dma->rx_size / 1024;
-> > -       dma->rxconf.src_addr            = dma->rx_addr;
-> > +       dma->rxconf.direction                           = DMA_DEV_TO_MEM;
-> > +       dma->rxconf.src_port_window_size        = dma->rx_size;
-> > +       dma->rxconf.src_addr                            = dma->rx_addr;
-> >
-> > -       dma->txconf.direction           = DMA_MEM_TO_DEV;
-> > -       dma->txconf.dst_addr_width      = MTK_UART_TX_SIZE / 1024;
-> > -       dma->txconf.dst_addr            = dma->tx_addr;
-> > +       dma->txconf.direction                           = DMA_MEM_TO_DEV;
-> > +       dma->txconf.dst_port_window_size        = UART_XMIT_SIZE;
-> > +       dma->txconf.dst_addr                            = dma->tx_addr;
-> >
-> >         serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO | UART_FCR_CLEAR_RCVR |
-> >                 UART_FCR_CLEAR_XMIT);
-> > @@ -217,7 +210,7 @@ static void mtk8250_shutdown(struct uart_port *port)
-> >          * Mediatek UARTs use an extra highspeed register (UART_MTK_HIGHS)
-> >          *
-> >          * We need to recalcualte the quot register, as the claculation depends
-> > -        * on the vaule in the highspeed register.
-> > +        * on the value in the highspeed register.
-> 
-> Since you're doing some cosmetic changes here, you might as well fix
-> recalcualte => recalculate and claculation => calculation on the line
-> above.
-> 
+	https://lkml.kernel.org/r/20190514033219.169947-1-wangkefeng.wang@huawei.com
 
-I see.
+That fix also has some issues, but is still better given the current
+state this driver is in.
 
-> But technically, this should belong in another patch...
-> 
-> >          *
-> >          * Some baudrates are not supported by the chip, so we use the next
-> >          * lower rate supported and update termios c_flag.
-> > --
-> > 1.7.9.5
-> >
+>  	return rc;
+>  }
+>  
+> @@ -897,7 +898,6 @@ static int __init ulite_init(void)
+>  static void __exit ulite_exit(void)
+>  {
+>  	platform_driver_unregister(&ulite_platform_driver);
+> -	uart_unregister_driver(&ulite_uart_driver);
+>  }
+>  
+>  module_init(ulite_init);
+
+Johan
