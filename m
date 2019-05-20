@@ -1,67 +1,54 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH] serial-uartlite: Fix null-ptr-deref in ulite_exit
-Date: Fri, 17 May 2019 09:55:02 +0200
-Message-ID: <20190517075502.GE28564@localhost>
-References: <20190516040931.16276-1-yuehaibing@huawei.com>
+From: Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
+Subject: [PATCH] tty: serial: msm_serial: Fix XON/XOFF
+Date: Mon, 20 May 2019 12:34:35 +0200
+Message-ID: <20190520103435.30850-1-jorge.ramirez-ortiz@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190516040931.16276-1-yuehaibing@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: YueHaibing <yuehaibing@huawei.com>
-Cc: jacmet@sunsite.dk, gregkh@linuxfoundation.org, jslaby@suse.com, shubhrajyoti.datta@xilinx.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: jorge.ramirez-ortiz@linaro.org, agross@kernel.org, david.brown@linaro.org, gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, keescook@chromium.org, anton@enomsg.org, ccross@android.com, tony.luck@intel.com, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, khasim.mohammed@linaro.org, agsumit@qti.qualcomm.com
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, May 16, 2019 at 12:09:31PM +0800, YueHaibing wrote:
-> If ulite_probe is not called or failed to registed
-> uart_register_driver, unload the module will call
-> uart_unregister_driver, which will tigger NULL
-> pointer dereference like this:
-> 
-> BUG: KASAN: null-ptr-deref in tty_unregister_driver+0x19/0x100
-> Read of size 4 at addr 0000000000000034 by task syz-executor.0/4246
+When the tty layer requests the uart to throttle, the current code
+executing in msm_serial will trigger "Bad mode in Error Handler" and
+generate an invalid stack frame in pstore before rebooting (that is if
+pstore is indeed configured: otherwise the user shall just notice a
+reboot with no further information dumped to the console).
 
-> This patch fix this by moving uart_unregister_driver
-> to ulite_remove.
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Fixes: 415b43bdb008 ("tty: serial: uartlite: Move uart register to probe")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->  drivers/tty/serial/uartlite.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-> index b8b912b..2e49fb6 100644
-> --- a/drivers/tty/serial/uartlite.c
-> +++ b/drivers/tty/serial/uartlite.c
-> @@ -867,6 +867,7 @@ static int ulite_remove(struct platform_device *pdev)
->  	pm_runtime_disable(&pdev->dev);
->  	pm_runtime_set_suspended(&pdev->dev);
->  	pm_runtime_dont_use_autosuspend(&pdev->dev);
-> +	uart_unregister_driver(&ulite_uart_driver);
+This patch replaces the PIO byte accessor with the word accessor
+already used in PIO mode.
 
-This broken. Consider what happens if you have tho ports registered and
-you unbind the first.
+Signed-off-by: Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
+---
+ drivers/tty/serial/msm_serial.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Someone else sent a fix for this here
-
-	https://lkml.kernel.org/r/20190514033219.169947-1-wangkefeng.wang@huawei.com
-
-That fix also has some issues, but is still better given the current
-state this driver is in.
-
->  	return rc;
->  }
->  
-> @@ -897,7 +898,6 @@ static int __init ulite_init(void)
->  static void __exit ulite_exit(void)
->  {
->  	platform_driver_unregister(&ulite_platform_driver);
-> -	uart_unregister_driver(&ulite_uart_driver);
->  }
->  
->  module_init(ulite_init);
-
-Johan
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 109096033bb1..23833ad952ba 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -860,6 +860,7 @@ static void msm_handle_tx(struct uart_port *port)
+ 	struct circ_buf *xmit = &msm_port->uart.state->xmit;
+ 	struct msm_dma *dma = &msm_port->tx_dma;
+ 	unsigned int pio_count, dma_count, dma_min;
++	char buf[4] = { 0 };
+ 	void __iomem *tf;
+ 	int err = 0;
+ 
+@@ -869,10 +870,12 @@ static void msm_handle_tx(struct uart_port *port)
+ 		else
+ 			tf = port->membase + UART_TF;
+ 
++		buf[0] = port->x_char;
++
+ 		if (msm_port->is_uartdm)
+ 			msm_reset_dm_count(port, 1);
+ 
+-		iowrite8_rep(tf, &port->x_char, 1);
++		iowrite32_rep(tf, buf, 1);
+ 		port->icount.tx++;
+ 		port->x_char = 0;
+ 		return;
+-- 
+2.21.0
