@@ -1,7 +1,7 @@
 From: Erwan Le Ray <erwan.leray@st.com>
-Subject: [PATCH 5/7] serial: stm32: Add support of TC bit status check
-Date: Tue, 21 May 2019 17:45:45 +0200
-Message-ID: <1558453547-22866-6-git-send-email-erwan.leray@st.com>
+Subject: [PATCH 4/7] serial: stm32: fix transmit_chars when tx is stopped
+Date: Tue, 21 May 2019 17:45:44 +0200
+Message-ID: <1558453547-22866-5-git-send-email-erwan.leray@st.com>
 References: <1558453547-22866-1-git-send-email-erwan.leray@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,85 +12,40 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: linux-serial@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Erwan Le Ray <erwan.leray@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>
 List-Id: linux-serial@vger.kernel.org
 
-Adds a check on the Transmission Complete bit status before closing the
-com port. Prevents the port closure before the end of the transmission.
-TC poll loop is moved from stm32_tx_dma_complete to stm32_shutdown
-routine, in order to check TC before shutdown in both dma and
-PIO tx modes.
-TC clear is added in stm32_transmit_char routine, in order to be cleared
-before transmitting in both dma and PIO tx modes.
+Disables the tx irq  when the transmission is ended and updates stop_tx
+conditions for code cleanup.
 
-Fixes: 3489187204eb ("serial: stm32: adding dma support")
+Fixes: 48a6092fb41f ("serial: stm32-usart: Add STM32 USART Driver")
 Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
 
 diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 2e7757d..d603be9 100644
+index 0a7953e..2e7757d 100644
 --- a/drivers/tty/serial/stm32-usart.c
 +++ b/drivers/tty/serial/stm32-usart.c
-@@ -290,21 +290,6 @@ static void stm32_tx_dma_complete(void *arg)
- 	struct uart_port *port = arg;
- 	struct stm32_port *stm32port = to_stm32_port(port);
- 	struct stm32_usart_offsets *ofs = &stm32port->info->ofs;
--	unsigned int isr;
--	int ret;
--
--	ret = readl_relaxed_poll_timeout_atomic(port->membase + ofs->isr,
--						isr,
--						(isr & USART_SR_TC),
--						10, 100000);
--
--	if (ret)
--		dev_err(port->dev, "terminal count not set\n");
--
--	if (ofs->icr == UNDEF_REG)
--		stm32_clr_bits(port, ofs->isr, USART_SR_TC);
--	else
--		stm32_set_bits(port, ofs->icr, USART_CR_TC);
- 
- 	stm32_clr_bits(port, ofs->cr3, USART_CR3_DMAT);
- 	stm32port->tx_dma_busy = false;
-@@ -396,7 +381,6 @@ static void stm32_transmit_chars_dma(struct uart_port *port)
- 	/* Issue pending DMA TX requests */
- 	dma_async_issue_pending(stm32port->tx_ch);
- 
--	stm32_clr_bits(port, ofs->isr, USART_SR_TC);
- 	stm32_set_bits(port, ofs->cr3, USART_CR3_DMAT);
- 
- 	xmit->tail = (xmit->tail + count) & (UART_XMIT_SIZE - 1);
-@@ -425,6 +409,11 @@ static void stm32_transmit_chars(struct uart_port *port)
+@@ -420,13 +420,8 @@ static void stm32_transmit_chars(struct uart_port *port)
  		return;
  	}
  
-+	if (ofs->icr == UNDEF_REG)
-+		stm32_clr_bits(port, ofs->isr, USART_SR_TC);
-+	else
-+		stm32_set_bits(port, ofs->icr, USART_ICR_TCCF);
-+
- 	if (stm32_port->tx_ch)
- 		stm32_transmit_chars_dma(port);
- 	else
-@@ -601,12 +590,21 @@ static void stm32_shutdown(struct uart_port *port)
- 	struct stm32_port *stm32_port = to_stm32_port(port);
- 	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
- 	struct stm32_usart_config *cfg = &stm32_port->info->cfg;
--	u32 val;
-+	u32 val, isr;
-+	int ret;
+-	if (uart_tx_stopped(port)) {
+-		stm32_stop_tx(port);
+-		return;
+-	}
+-
+-	if (uart_circ_empty(xmit)) {
+-		stm32_stop_tx(port);
++	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
++		stm32_clr_bits(port, ofs->cr1, USART_CR1_TXEIE);
+ 		return;
+ 	}
  
- 	val = USART_CR1_TXEIE | USART_CR1_RXNEIE | USART_CR1_TE | USART_CR1_RE;
- 	val |= BIT(cfg->uart_enable_bit);
- 	if (stm32_port->fifoen)
- 		val |= USART_CR1_FIFOEN;
-+
-+	ret = readl_relaxed_poll_timeout(port->membase + ofs->isr,
-+					 isr, (isr & USART_SR_TC),
-+					 10, 100000);
-+
-+	if (ret)
-+		dev_err(port->dev, "transmission complete not set\n");
-+
- 	stm32_clr_bits(port, ofs->cr1, val);
+@@ -439,7 +434,7 @@ static void stm32_transmit_chars(struct uart_port *port)
+ 		uart_write_wakeup(port);
  
- 	dev_pm_clear_wake_irq(port->dev);
+ 	if (uart_circ_empty(xmit))
+-		stm32_stop_tx(port);
++		stm32_clr_bits(port, ofs->cr1, USART_CR1_TXEIE);
+ }
+ 
+ static irqreturn_t stm32_interrupt(int irq, void *ptr)
 -- 
 1.9.1
