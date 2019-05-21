@@ -1,7 +1,7 @@
 From: Erwan Le Ray <erwan.leray@st.com>
-Subject: [PATCH 2/7] serial: stm32: fix rx error handling
-Date: Tue, 21 May 2019 17:45:42 +0200
-Message-ID: <1558453547-22866-3-git-send-email-erwan.leray@st.com>
+Subject: [PATCH 5/7] serial: stm32: Add support of TC bit status check
+Date: Tue, 21 May 2019 17:45:45 +0200
+Message-ID: <1558453547-22866-6-git-send-email-erwan.leray@st.com>
 References: <1558453547-22866-1-git-send-email-erwan.leray@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,151 +12,85 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: linux-serial@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Erwan Le Ray <erwan.leray@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>
 List-Id: linux-serial@vger.kernel.org
 
-- Fixes parity and framing error bit by clearing parity and framing error
-  flag. The current implementation doesn't clear the error bits when an
-  error is detected.
-- Fixes the incorrect name of framing error clearing flag in header file.
-- Fixes misalignement between data frame and errors status. The status
-  read for "n" frame was the status of "n+1" frame".
-- Fixes break detection was not triggered by the expected register.
+Adds a check on the Transmission Complete bit status before closing the
+com port. Prevents the port closure before the end of the transmission.
+TC poll loop is moved from stm32_tx_dma_complete to stm32_shutdown
+routine, in order to check TC before shutdown in both dma and
+PIO tx modes.
+TC clear is added in stm32_transmit_char routine, in order to be cleared
+before transmitting in both dma and PIO tx modes.
 
-Fixes: 48a6092fb41f ("serial: stm32-usart: Add STM32 USART Driver")
+Fixes: 3489187204eb ("serial: stm32: adding dma support")
 Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
 
 diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index e832185..f6b7393 100644
+index 2e7757d..d603be9 100644
 --- a/drivers/tty/serial/stm32-usart.c
 +++ b/drivers/tty/serial/stm32-usart.c
-@@ -225,35 +225,51 @@ static void stm32_receive_chars(struct uart_port *port, bool threaded)
+@@ -290,21 +290,6 @@ static void stm32_tx_dma_complete(void *arg)
+ 	struct uart_port *port = arg;
+ 	struct stm32_port *stm32port = to_stm32_port(port);
+ 	struct stm32_usart_offsets *ofs = &stm32port->info->ofs;
+-	unsigned int isr;
+-	int ret;
+-
+-	ret = readl_relaxed_poll_timeout_atomic(port->membase + ofs->isr,
+-						isr,
+-						(isr & USART_SR_TC),
+-						10, 100000);
+-
+-	if (ret)
+-		dev_err(port->dev, "terminal count not set\n");
+-
+-	if (ofs->icr == UNDEF_REG)
+-		stm32_clr_bits(port, ofs->isr, USART_SR_TC);
+-	else
+-		stm32_set_bits(port, ofs->icr, USART_CR_TC);
  
- 	while (stm32_pending_rx(port, &sr, &stm32_port->last_res, threaded)) {
- 		sr |= USART_SR_DUMMY_RX;
--		c = stm32_get_char(port, &sr, &stm32_port->last_res);
- 		flag = TTY_NORMAL;
--		port->icount.rx++;
+ 	stm32_clr_bits(port, ofs->cr3, USART_CR3_DMAT);
+ 	stm32port->tx_dma_busy = false;
+@@ -396,7 +381,6 @@ static void stm32_transmit_chars_dma(struct uart_port *port)
+ 	/* Issue pending DMA TX requests */
+ 	dma_async_issue_pending(stm32port->tx_ch);
  
-+		/*
-+		 * Status bits has to be cleared before reading the RDR:
-+		 * In FIFO mode, reading the RDR will pop the next data
-+		 * (if any) along with its status bits into the SR.
-+		 * Not doing so leads to misalignement between RDR and SR,
-+		 * and clear status bits of the next rx data.
-+		 *
-+		 * Clear errors flags for stm32f7 and stm32h7 compatible
-+		 * devices. On stm32f4 compatible devices, the error bit is
-+		 * cleared by the sequence [read SR - read DR].
-+		 */
-+		if ((sr & USART_SR_ERR_MASK) && ofs->icr != UNDEF_REG)
-+			stm32_clr_bits(port, ofs->icr, USART_ICR_ORECF |
-+				       USART_ICR_PECF | USART_ICR_FECF);
+-	stm32_clr_bits(port, ofs->isr, USART_SR_TC);
+ 	stm32_set_bits(port, ofs->cr3, USART_CR3_DMAT);
+ 
+ 	xmit->tail = (xmit->tail + count) & (UART_XMIT_SIZE - 1);
+@@ -425,6 +409,11 @@ static void stm32_transmit_chars(struct uart_port *port)
+ 		return;
+ 	}
+ 
++	if (ofs->icr == UNDEF_REG)
++		stm32_clr_bits(port, ofs->isr, USART_SR_TC);
++	else
++		stm32_set_bits(port, ofs->icr, USART_ICR_TCCF);
 +
-+		c = stm32_get_char(port, &sr, &stm32_port->last_res);
-+		port->icount.rx++;
- 		if (sr & USART_SR_ERR_MASK) {
--			if (sr & USART_SR_LBD) {
--				port->icount.brk++;
--				if (uart_handle_break(port))
--					continue;
--			} else if (sr & USART_SR_ORE) {
--				if (ofs->icr != UNDEF_REG)
--					writel_relaxed(USART_ICR_ORECF,
--						       port->membase +
--						       ofs->icr);
-+			if (sr & USART_SR_ORE) {
- 				port->icount.overrun++;
- 			} else if (sr & USART_SR_PE) {
- 				port->icount.parity++;
- 			} else if (sr & USART_SR_FE) {
--				port->icount.frame++;
-+				/* Break detection if character is null */
-+				if (!c) {
-+					port->icount.brk++;
-+					if (uart_handle_break(port))
-+						continue;
-+				} else {
-+					port->icount.frame++;
-+				}
- 			}
+ 	if (stm32_port->tx_ch)
+ 		stm32_transmit_chars_dma(port);
+ 	else
+@@ -601,12 +590,21 @@ static void stm32_shutdown(struct uart_port *port)
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+ 	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 	struct stm32_usart_config *cfg = &stm32_port->info->cfg;
+-	u32 val;
++	u32 val, isr;
++	int ret;
  
- 			sr &= port->read_status_mask;
+ 	val = USART_CR1_TXEIE | USART_CR1_RXNEIE | USART_CR1_TE | USART_CR1_RE;
+ 	val |= BIT(cfg->uart_enable_bit);
+ 	if (stm32_port->fifoen)
+ 		val |= USART_CR1_FIFOEN;
++
++	ret = readl_relaxed_poll_timeout(port->membase + ofs->isr,
++					 isr, (isr & USART_SR_TC),
++					 10, 100000);
++
++	if (ret)
++		dev_err(port->dev, "transmission complete not set\n");
++
+ 	stm32_clr_bits(port, ofs->cr1, val);
  
--			if (sr & USART_SR_LBD)
--				flag = TTY_BREAK;
--			else if (sr & USART_SR_PE)
-+			if (sr & USART_SR_PE) {
- 				flag = TTY_PARITY;
--			else if (sr & USART_SR_FE)
--				flag = TTY_FRAME;
-+			} else if (sr & USART_SR_FE) {
-+				if (!c)
-+					flag = TTY_BREAK;
-+				else
-+					flag = TTY_FRAME;
-+			}
- 		}
- 
- 		if (uart_handle_sysrq_char(port, c))
-@@ -721,14 +737,14 @@ static void stm32_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if (termios->c_iflag & INPCK)
- 		port->read_status_mask |= USART_SR_PE | USART_SR_FE;
- 	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
--		port->read_status_mask |= USART_SR_LBD;
-+		port->read_status_mask |= USART_SR_FE;
- 
- 	/* Characters to ignore */
- 	port->ignore_status_mask = 0;
- 	if (termios->c_iflag & IGNPAR)
- 		port->ignore_status_mask = USART_SR_PE | USART_SR_FE;
- 	if (termios->c_iflag & IGNBRK) {
--		port->ignore_status_mask |= USART_SR_LBD;
-+		port->ignore_status_mask |= USART_SR_FE;
- 		/*
- 		 * If we're ignoring parity and break indicators,
- 		 * ignore overruns too (for real raw support).
-diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
-index a70aa50..8d34802 100644
---- a/drivers/tty/serial/stm32-usart.h
-+++ b/drivers/tty/serial/stm32-usart.h
-@@ -108,7 +108,6 @@ struct stm32_usart_info stm32h7_info = {
- #define USART_SR_RXNE		BIT(5)
- #define USART_SR_TC		BIT(6)
- #define USART_SR_TXE		BIT(7)
--#define USART_SR_LBD		BIT(8)
- #define USART_SR_CTSIF		BIT(9)
- #define USART_SR_CTS		BIT(10)		/* F7 */
- #define USART_SR_RTOF		BIT(11)		/* F7 */
-@@ -120,8 +119,7 @@ struct stm32_usart_info stm32h7_info = {
- #define USART_SR_SBKF		BIT(18)		/* F7 */
- #define USART_SR_WUF		BIT(20)		/* H7 */
- #define USART_SR_TEACK		BIT(21)		/* F7 */
--#define USART_SR_ERR_MASK	(USART_SR_LBD | USART_SR_ORE | \
--				 USART_SR_FE | USART_SR_PE)
-+#define USART_SR_ERR_MASK	(USART_SR_ORE | USART_SR_FE | USART_SR_PE)
- /* Dummy bits */
- #define USART_SR_DUMMY_RX	BIT(16)
- 
-@@ -168,8 +166,6 @@ struct stm32_usart_info stm32h7_info = {
- /* USART_CR2 */
- #define USART_CR2_ADD_MASK	GENMASK(3, 0)	/* F4 */
- #define USART_CR2_ADDM7		BIT(4)		/* F7 */
--#define USART_CR2_LBDL		BIT(5)
--#define USART_CR2_LBDIE		BIT(6)
- #define USART_CR2_LBCL		BIT(8)
- #define USART_CR2_CPHA		BIT(9)
- #define USART_CR2_CPOL		BIT(10)
-@@ -226,12 +222,10 @@ struct stm32_usart_info stm32h7_info = {
- 
- /* USART_ICR */
- #define USART_ICR_PECF		BIT(0)		/* F7 */
--#define USART_ICR_FFECF		BIT(1)		/* F7 */
--#define USART_ICR_NCF		BIT(2)		/* F7 */
-+#define USART_ICR_FECF		BIT(1)		/* F7 */
- #define USART_ICR_ORECF		BIT(3)		/* F7 */
- #define USART_ICR_IDLECF	BIT(4)		/* F7 */
- #define USART_ICR_TCCF		BIT(6)		/* F7 */
--#define USART_ICR_LBDCF		BIT(8)		/* F7 */
- #define USART_ICR_CTSCF		BIT(9)		/* F7 */
- #define USART_ICR_RTOCF		BIT(11)		/* F7 */
- #define USART_ICR_EOBCF		BIT(12)		/* F7 */
+ 	dev_pm_clear_wake_irq(port->dev);
 -- 
 1.9.1
