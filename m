@@ -1,79 +1,40 @@
-From: Jorge Ramirez <jorge.ramirez-ortiz@linaro.org>
-Subject: Re: [PATCH v2] tty: serial: msm_serial: Fix XON/XOFF
-Date: Mon, 20 May 2019 20:57:39 +0200
-Message-ID: <ef705e54-78bb-27e2-5060-31056234dad3@linaro.org>
-References: <20190520183848.27719-1-jorge.ramirez-ortiz@linaro.org>
- <20190520185008.GX2085@tuxbook-pro>
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re: [RFC v2 00/11] DVFS in the OPP core
+Date: Tue, 21 May 2019 11:52:48 +0530
+Message-ID: <20190521062248.ogjetb2rwtqekflx@vireshk-i7>
+References: <20190320094918.20234-1-rnayak@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190520185008.GX2085@tuxbook-pro>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20190320094918.20234-1-rnayak@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: agross@kernel.org, david.brown@linaro.org, gregkh@linuxfoundation.org, sboyd@kernel.org, jslaby@suse.com, keescook@chromium.org, anton@enomsg.org, ccross@android.com, tony.luck@intel.com, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Rajendra Nayak <rnayak@codeaurora.org>
+Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-scsi@vger.kernel.org, swboyd@chromium.org, ulf.hansson@linaro.org, dianders@chromium.org, rafael@kernel.org, vincent.guittot@linaro.org
 List-Id: linux-serial@vger.kernel.org
 
-On 5/20/19 20:50, Bjorn Andersson wrote:
-> On Mon 20 May 11:38 PDT 2019, Jorge Ramirez-Ortiz wrote:
+On 20-03-19, 15:19, Rajendra Nayak wrote:
+> This is a v2 of the RFC posted earlier by Stephen Boyd [1]
 > 
->> When the tty layer requests the uart to throttle, the current code
->> executing in msm_serial will trigger "Bad mode in Error Handler" and
->> generate an invalid stack frame in pstore before rebooting (that is if
->> pstore is indeed configured: otherwise the user shall just notice a
->> reboot with no further information dumped to the console).
->>
->> This patch replaces the PIO byte accessor with the word accessor
->> already used in PIO mode.
->>
->> Fixes: 68252424a7c7 ("tty: serial: msm: Support big-endian CPUs")
->> Cc: stable@vger.kernel.org
->> Signed-off-by: Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
->> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> As part of v2 I still follow the same approach of dev_pm_opp_set_rate()
+> API using clk framework to round the frequency passed and making it
+> accept 0 as a valid frequency indicating the frequency isn't required
+> anymore. It just has a few more drivers converted to use this approach
+> like dsi/dpu and ufs.
+> ufs demonstrates the case of having to handle multiple power domains, one
+> of which is scalable.
 > 
-> You missed Stephen's
+> The patches are based on 5.1-rc1 and depend on some ufs fixes I posted
+> earlier [2] and a DT patch to include the rpmpd header [3]
 > 
-> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> [1] https://lkml.org/lkml/2019/1/28/2086
+> [2] https://lkml.org/lkml/2019/3/8/70
+> [3] https://lkml.org/lkml/2019/3/20/120
 
-argh sorry Stephen. can the maintainer add it when it gets merged or
-shall I post V3?
+Hi Rajendra,
 
-> 
-> Regards,
-> Bjorn
-> 
->> ---
->>  drivers/tty/serial/msm_serial.c | 5 ++++-
->>  1 file changed, 4 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
->> index 109096033bb1..23833ad952ba 100644
->> --- a/drivers/tty/serial/msm_serial.c
->> +++ b/drivers/tty/serial/msm_serial.c
->> @@ -860,6 +860,7 @@ static void msm_handle_tx(struct uart_port *port)
->>  	struct circ_buf *xmit = &msm_port->uart.state->xmit;
->>  	struct msm_dma *dma = &msm_port->tx_dma;
->>  	unsigned int pio_count, dma_count, dma_min;
->> +	char buf[4] = { 0 };
->>  	void __iomem *tf;
->>  	int err = 0;
->>  
->> @@ -869,10 +870,12 @@ static void msm_handle_tx(struct uart_port *port)
->>  		else
->>  			tf = port->membase + UART_TF;
->>  
->> +		buf[0] = port->x_char;
->> +
->>  		if (msm_port->is_uartdm)
->>  			msm_reset_dm_count(port, 1);
->>  
->> -		iowrite8_rep(tf, &port->x_char, 1);
->> +		iowrite32_rep(tf, buf, 1);
->>  		port->icount.tx++;
->>  		port->x_char = 0;
->>  		return;
->> -- 
->> 2.21.0
->>
-> 
+I am inclined to apply/push this series for 5.3-rc1, will it be
+possible for you to spend some time on this at priority ?
+
+-- 
+viresh
