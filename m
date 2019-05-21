@@ -1,111 +1,100 @@
-From: Erwan Le Ray <erwan.leray@st.com>
-Subject: [PATCH 7/7] serial: stm32: fix the get_irq error case
-Date: Tue, 21 May 2019 17:45:47 +0200
-Message-ID: <1558453547-22866-8-git-send-email-erwan.leray@st.com>
-References: <1558453547-22866-1-git-send-email-erwan.leray@st.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH resend] serial: 8250: Add support for using
+ platform_device resources
+Date: Tue, 21 May 2019 20:03:50 +0300
+Message-ID: <20190521170350.GL9224@smile.fi.intel.com>
+References: <20190430140416.4707-1-esben@geanix.com>
+ <20190521113426.16790-1-esben@geanix.com>
+ <20190521124202.GE9224@smile.fi.intel.com>
+ <87d0kbna0p.fsf@haabendal.dk>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1558453547-22866-1-git-send-email-erwan.leray@st.com>
+Content-Disposition: inline
+In-Reply-To: <87d0kbna0p.fsf@haabendal.dk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>
-Cc: linux-serial@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Erwan Le Ray <erwan.leray@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>, Fabien Dessenne <fabien.dessenne@st.com>
+To: Esben Haabendal <esben@haabendal.dk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Enrico Weigelt <lkml@metux.net>, Jiri Slaby <jslaby@suse.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, He Zhe <zhe.he@windriver.com>, Marek Vasut <marex@denx.de>, Douglas Anderson <dianders@chromium.org>, Paul Burton <paul.burton@mips.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Checks the returned values of platform_get_irq() for both required
-"event" and optional "wakeup" IRQs during probe. This allows the driver
-probe to be deferred if needed.
-Removes redundant checks for 'cfg.has_wakeup'.
+On Tue, May 21, 2019 at 04:43:18PM +0200, Esben Haabendal wrote:
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
+> 
+> > On Tue, May 21, 2019 at 01:34:26PM +0200, Esben Haabendal wrote:
+> >> Allow getting memory resource (mapbase or iobase) as well as irq from
+> >> platform_device resources.
+> >> 
+> >> The UPF_DEV_RESOURCES flag must be set for devices where platform_device
+> >> resources are to be used.  When not set, driver behaves as before.
+> >> 
+> >> This allows use of the serial8250 driver together with devices with
+> >> resources added by platform_device_add_resources(), such as mfd child
+> >> devices added with mfd_add_devices().
+> >> 
+> >> When UPF_DEV_RESOURCES flag is set, the following platform_data fields should
+> >> not be used: mapbase, iobase, mapsize, and irq.  They are superseded by the
+> >> resources attached to the device.
+> >> 
+> >
+> > Same comment here: Requesting resource is orthogonal to the retrieving or
+> > slicing them.
+> 
+> Yes.  But for MFD devices, I do think it makes sense for the MFD parent
+> device to request the entire memory resource, and then split it.
 
-Signed-off-by: Fabien Dessenne <fabien.dessenne@st.com>
-Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
+Nope. This is layering violation here: The user of the resources is not
+handling them in full.
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 1334e42..9c2b04e 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -852,12 +852,31 @@ static int stm32_init_port(struct stm32_port *stm32port,
- 	port->flags	= UPF_BOOT_AUTOCONF;
- 	port->ops	= &stm32_uart_ops;
- 	port->dev	= &pdev->dev;
--	port->irq	= platform_get_irq(pdev, 0);
-+
-+	ret = platform_get_irq(pdev, 0);
-+	if (ret <= 0) {
-+		if (ret != -EPROBE_DEFER)
-+			dev_err(&pdev->dev, "Can't get event IRQ: %d\n", ret);
-+		return ret ? ret : -ENODEV;
-+	}
-+	port->irq = ret;
-+
- 	port->rs485_config = stm32_config_rs485;
- 
- 	stm32_init_rs485(port, pdev);
- 
--	stm32port->wakeirq = platform_get_irq(pdev, 1);
-+	if (stm32port->info->cfg.has_wakeup) {
-+		stm32port->wakeirq = platform_get_irq(pdev, 1);
-+		if (stm32port->wakeirq <= 0 && stm32port->wakeirq != -ENXIO) {
-+			if (stm32port->wakeirq != -EPROBE_DEFER)
-+				dev_err(&pdev->dev,
-+					"Can't get event wake IRQ: %d\n",
-+					stm32port->wakeirq);
-+			return stm32port->wakeirq ? stm32port->wakeirq :
-+				-ENODEV;
-+		}
-+	}
-+
- 	stm32port->fifoen = stm32port->info->cfg.has_fifo;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-@@ -1064,7 +1083,7 @@ static int stm32_serial_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	if (stm32port->info->cfg.has_wakeup && stm32port->wakeirq >= 0) {
-+	if (stm32port->wakeirq > 0) {
- 		ret = device_init_wakeup(&pdev->dev, true);
- 		if (ret)
- 			goto err_uninit;
-@@ -1094,11 +1113,11 @@ static int stm32_serial_probe(struct platform_device *pdev)
- 	return 0;
- 
- err_wirq:
--	if (stm32port->info->cfg.has_wakeup && stm32port->wakeirq >= 0)
-+	if (stm32port->wakeirq > 0)
- 		dev_pm_clear_wake_irq(&pdev->dev);
- 
- err_nowup:
--	if (stm32port->info->cfg.has_wakeup && stm32port->wakeirq >= 0)
-+	if (stm32port->wakeirq > 0)
- 		device_init_wakeup(&pdev->dev, false);
- 
- err_uninit:
-@@ -1112,7 +1131,6 @@ static int stm32_serial_remove(struct platform_device *pdev)
- 	struct uart_port *port = platform_get_drvdata(pdev);
- 	struct stm32_port *stm32_port = to_stm32_port(port);
- 	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
--	struct stm32_usart_config *cfg = &stm32_port->info->cfg;
- 
- 	stm32_clr_bits(port, ofs->cr3, USART_CR3_DMAR);
- 
-@@ -1134,7 +1152,7 @@ static int stm32_serial_remove(struct platform_device *pdev)
- 				  TX_BUF_L, stm32_port->tx_buf,
- 				  stm32_port->tx_dma_buf);
- 
--	if (cfg->has_wakeup && stm32_port->wakeirq >= 0) {
-+	if (stm32_port->wakeirq > 0) {
- 		dev_pm_clear_wake_irq(&pdev->dev);
- 		device_init_wakeup(&pdev->dev, false);
- 	}
-@@ -1252,7 +1270,7 @@ static void stm32_serial_enable_wakeup(struct uart_port *port, bool enable)
- 	struct stm32_usart_config *cfg = &stm32_port->info->cfg;
- 	u32 val;
- 
--	if (!cfg->has_wakeup || stm32_port->wakeirq < 0)
-+	if (stm32_port->wakeirq <= 0)
- 		return;
- 
- 	if (enable) {
+> And for drivers that actually are aware of the struct resource given,
+> both approaches work.  Throwing away the resource.parent information
+> and calling out request_mem_region() manually breaks the idea of
+> managing IORESOURCE_MEM as a tree structure.
+
+How come? Can you show an example of output without and with your patches?
+
+> Are we not supposed to be using the parent/child part of struct
+> resource?
+
+It's about slicing, no-one prevents you to do that. I don't see a problem.
+Show the output!
+
+> >> -		if (!request_mem_region(port->mapbase, size, "serial")) {
+> >> +		if (!(port->flags & UPF_DEV_RESOURCES) &&
+> >> +		    !request_mem_region(port->mapbase, size, "serial")) {
+> >
+> >> -				release_mem_region(port->mapbase, size);
+> >> +				if (!(port->flags & UPF_DEV_RESOURCES))
+> >> +					release_mem_region(port->mapbase, size);
+> >
+> >> -		if (!request_region(port->iobase, size, "serial"))
+> >> +		if (!(port->flags & UPF_DEV_RESOURCES) &&
+> >> +		    !request_region(port->iobase, size, "serial"))
+> >
+> >> -		release_mem_region(port->mapbase, size);
+> >> +		if (!(port->flags & UPF_DEV_RESOURCES))
+> >> +			release_mem_region(port->mapbase, size);
+> >
+> >> -		release_region(port->iobase, size);
+> >> +		if (!(port->flags & UPF_DEV_RESOURCES))
+> >> +			release_region(port->iobase, size);
+> >
+> > All these changes are not related to what you describe in the commit message.
+> > is a workaround for the bug in the parent MFD driver of the 8250.
+> 
+> You are right, this is not adequately described in commit message.
+> But unless we are not supposed to allow parent/child memory resource
+> management, I don't think it is a workaround, but a fix.
+> 
+> But I can split it out in a separate patch.  Would be nice if I at least
+> can get the other part of the change merged.
+
+Like Lee said, and I agree, nothing prevents us to switch to
+platform_get_resource().
+
+The stumbling block here is the *requesting* in parent which I strongly
+disagree with (at least in a form of this change, I already told you, that this
+has to be "fixed" on generic level, not as a hack in one certain driver).
+
 -- 
-1.9.1
+With Best Regards,
+Andy Shevchenko
