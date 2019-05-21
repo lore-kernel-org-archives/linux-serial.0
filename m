@@ -1,76 +1,74 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH resend] serial: 8250: Add support for using
- platform_device resources
-Date: Tue, 21 May 2019 15:42:02 +0300
-Message-ID: <20190521124202.GE9224@smile.fi.intel.com>
-References: <20190430140416.4707-1-esben@geanix.com>
- <20190521113426.16790-1-esben@geanix.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 2/2] serial: 8250: Add support for 8250/16550 as MFD
+ function
+Date: Tue, 21 May 2019 14:56:51 +0200
+Message-ID: <20190521125651.GA6264@kroah.com>
+References: <87o94ejwrx.fsf@haabendal.dk>
+ <20190507133844.GA6194@dell>
+ <87bm05mpmx.fsf@haabendal.dk>
+ <20190514104741.GO4319@dell>
+ <20190514122618.GA18859@kroah.com>
+ <87imudky2o.fsf@haabendal.dk>
+ <20190521100904.GA13612@kroah.com>
+ <87pnocm59v.fsf@haabendal.dk>
+ <20190521111817.GA24911@kroah.com>
+ <87lfz0m3ge.fsf@haabendal.dk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190521113426.16790-1-esben@geanix.com>
+In-Reply-To: <87lfz0m3ge.fsf@haabendal.dk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Esben Haabendal <esben@geanix.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Enrico Weigelt <lkml@metux.net>, Jiri Slaby <jslaby@suse.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, He Zhe <zhe.he@windriver.com>, Marek Vasut <marex@denx.de>, Douglas Anderson <dianders@chromium.org>, Paul Burton <paul.burton@mips.com>, linux-kernel@vger.kernel.org
+To: Esben Haabendal <esben@haabendal.dk>
+Cc: Lee Jones <lee.jones@linaro.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Nishanth Menon <nm@ti.com>, Vignesh R <vigneshr@ti.com>, Tony Lindgren <tony@atomide.com>, Lokesh Vutla <lokeshvutla@ti.com>, Florian Fainelli <f.fainelli@gmail.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 21, 2019 at 01:34:26PM +0200, Esben Haabendal wrote:
-> Allow getting memory resource (mapbase or iobase) as well as irq from
-> platform_device resources.
+On Tue, May 21, 2019 at 01:50:25PM +0200, Esben Haabendal wrote:
+> Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
 > 
-> The UPF_DEV_RESOURCES flag must be set for devices where platform_device
-> resources are to be used.  When not set, driver behaves as before.
+> > On Tue, May 21, 2019 at 01:11:08PM +0200, Esben Haabendal wrote:
+> >> Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
+> >> 
+> >> >> I will try ad hold back with this thread until you get back to it.
+> >> >
+> >> > Ok, I have no idea what is going on here, sorry.  This is a really long
+> >> > and meandering thread, and I can't even find the original patches in my
+> >> > queue.
+> >> >
+> >> > So can you resend things and we can start over?  :)
+> >> 
+> >> Will do.
+> >> 
+> >> > But note, using a mfd for a uart seems VERY odd to me...
+> >> 
+> >> Ok.  In my case, I have a pcie card with an fpga which includes 5 uart
+> >> ports, 3 ethernet interfaces and a number of custom IP blocks.
+> >> I believe that an mfd driver for that pcie card in that case.
+> >
+> > I believe you need to fix that fpga to expose individual pci devices
+> > such that you can properly bind the individual devices to the expected
+> > drivers :)
 > 
-> This allows use of the serial8250 driver together with devices with
-> resources added by platform_device_add_resources(), such as mfd child
-> devices added with mfd_add_devices().
+> Well, that is really out-of-scope of what I am doing here.
+
+Not really, if you have control over the fpga firmware (and odds are you
+do), just fix that and instantly your device works with all kernels, no
+need to change anything.
+
+Why not do this?
+
+> > Seriously, who makes such a broken fpga device that goes against the PCI
+> > spec that way?  Well, not so much as "goes against it", as "ignores all
+> > of the proper ideas of the past 20 years for working with PCI devices".
 > 
-> When UPF_DEV_RESOURCES flag is set, the following platform_data fields should
-> not be used: mapbase, iobase, mapsize, and irq.  They are superseded by the
-> resources attached to the device.
-> 
+> Might be.  But that is the firmware I have to work with here, and I
+> still hope we can find a good solution for implementing a driver without
+> having to maintain out-of-tree patches.
 
-Same comment here: Requesting resource is orthogonal to the retrieving or
-slicing them.
+As this hardware will not work on any operating system as-is, why not
+fix the firmware to keep from having to support a one-off device that no
+one else would be crazy enough to create?  :)
 
-> +		if (p->flags & UPF_DEV_RESOURCES) {
-> +			serial8250_probe_resources(dev, i, p, &uart);
+thanks,
 
-This can be easily detected by checking for the resources directly, like
-
-	res = platform_get_resource(...);
-	if (res)
-		new_scheme();
-	else
-		old_scheme();
-
-Otherwise looks good.
-
-
-> -		if (!request_mem_region(port->mapbase, size, "serial")) {
-> +		if (!(port->flags & UPF_DEV_RESOURCES) &&
-> +		    !request_mem_region(port->mapbase, size, "serial")) {
-
-> -				release_mem_region(port->mapbase, size);
-> +				if (!(port->flags & UPF_DEV_RESOURCES))
-> +					release_mem_region(port->mapbase, size);
-
-> -		if (!request_region(port->iobase, size, "serial"))
-> +		if (!(port->flags & UPF_DEV_RESOURCES) &&
-> +		    !request_region(port->iobase, size, "serial"))
-
-> -		release_mem_region(port->mapbase, size);
-> +		if (!(port->flags & UPF_DEV_RESOURCES))
-> +			release_mem_region(port->mapbase, size);
-
-> -		release_region(port->iobase, size);
-> +		if (!(port->flags & UPF_DEV_RESOURCES))
-> +			release_region(port->iobase, size);
-
-All these changes are not related to what you describe in the commit message.
-is a workaround for the bug in the parent MFD driver of the 8250.
-
--- 
-With Best Regards,
-Andy Shevchenko
+greg k-h
