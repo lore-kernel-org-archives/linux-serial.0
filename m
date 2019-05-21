@@ -1,32 +1,141 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH resend] serial: 8250: Add support for using
- platform_device resources
-Date: Tue, 21 May 2019 15:11:31 +0200
-Message-ID: <20190521131131.GA19685@kroah.com>
-References: <20190430140416.4707-1-esben@geanix.com>
- <20190521113426.16790-1-esben@geanix.com>
+From: Vinod Koul <vkoul@kernel.org>
+Subject: Re: [PATCH 4/4] serial: 8250-mtk: modify uart DMA rx
+Date: Tue, 21 May 2019 19:27:25 +0530
+Message-ID: <20190521135725.GN15118@vkoul-mobl>
+References: <1556336193-15198-1-git-send-email-long.cheng@mediatek.com>
+ <1556336193-15198-5-git-send-email-long.cheng@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190521113426.16790-1-esben@geanix.com>
+In-Reply-To: <1556336193-15198-5-git-send-email-long.cheng@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Esben Haabendal <esben@geanix.com>
-Cc: linux-serial@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Enrico Weigelt <lkml@metux.net>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, He Zhe <zhe.he@windriver.com>, Marek Vasut <marex@denx.de>, Douglas Anderson <dianders@chromium.org>, Paul Burton <paul.burton@mips.com>, linux-kernel@vger.kernel.org
+To: Long Cheng <long.cheng@mediatek.com>
+Cc: Randy Dunlap <rdunlap@infradead.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Sean Wang <sean.wang@kernel.org>, Nicolas Boichat <drinkcat@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>, Zhenbao Liu <zhenbao.liu@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 21, 2019 at 01:34:26PM +0200, Esben Haabendal wrote:
-> Allow getting memory resource (mapbase or iobase) as well as irq from
-> platform_device resources.
+On 27-04-19, 11:36, Long Cheng wrote:
+> Modify uart rx and complete for DMA.
 > 
-> The UPF_DEV_RESOURCES flag must be set for devices where platform_device
-> resources are to be used.  When not set, driver behaves as before.
+> Signed-off-by: Long Cheng <long.cheng@mediatek.com>
+> ---
+>  drivers/tty/serial/8250/8250_mtk.c |   53 ++++++++++++++++--------------------
+>  1 file changed, 23 insertions(+), 30 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+> index c1fdbc0..04081a6 100644
+> --- a/drivers/tty/serial/8250/8250_mtk.c
+> +++ b/drivers/tty/serial/8250/8250_mtk.c
+> @@ -30,7 +30,6 @@
+>  #define MTK_UART_DMA_EN_TX	0x2
+>  #define MTK_UART_DMA_EN_RX	0x5
+>  
+> -#define MTK_UART_TX_SIZE	UART_XMIT_SIZE
+>  #define MTK_UART_RX_SIZE	0x8000
+>  #define MTK_UART_TX_TRIGGER	1
+>  #define MTK_UART_RX_TRIGGER	MTK_UART_RX_SIZE
+> @@ -64,28 +63,30 @@ static void mtk8250_dma_rx_complete(void *param)
+>  	struct mtk8250_data *data = up->port.private_data;
+>  	struct tty_port *tty_port = &up->port.state->port;
+>  	struct dma_tx_state state;
+> +	int copied, cnt, tmp;
+>  	unsigned char *ptr;
+> -	int copied;
+>  
+> -	dma_sync_single_for_cpu(dma->rxchan->device->dev, dma->rx_addr,
+> -				dma->rx_size, DMA_FROM_DEVICE);
+> +	if (data->rx_status == DMA_RX_SHUTDOWN)
+> +		return;
+>  
+>  	dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
+> +	cnt = dma->rx_size - state.residue;
+> +	tmp = cnt;
+>  
+> -	if (data->rx_status == DMA_RX_SHUTDOWN)
+> -		return;
+> +	if ((data->rx_pos + cnt) > dma->rx_size)
+> +		tmp = dma->rx_size - data->rx_pos;
+>  
+> -	if ((data->rx_pos + state.residue) <= dma->rx_size) {
+> -		ptr = (unsigned char *)(data->rx_pos + dma->rx_buf);
+> -		copied = tty_insert_flip_string(tty_port, ptr, state.residue);
+> -	} else {
+> -		ptr = (unsigned char *)(data->rx_pos + dma->rx_buf);
+> -		copied = tty_insert_flip_string(tty_port, ptr,
+> -						dma->rx_size - data->rx_pos);
+> +	ptr = (unsigned char *)(data->rx_pos + dma->rx_buf);
+> +	copied = tty_insert_flip_string(tty_port, ptr, tmp);
+> +	data->rx_pos += tmp;
+> +
+> +	if (cnt > tmp) {
+>  		ptr = (unsigned char *)(dma->rx_buf);
+> -		copied += tty_insert_flip_string(tty_port, ptr,
+> -				data->rx_pos + state.residue - dma->rx_size);
+> +		tmp = cnt - tmp;
+> +		copied += tty_insert_flip_string(tty_port, ptr, tmp);
+> +		data->rx_pos = tmp;
+>  	}
+> +
+>  	up->port.icount.rx += copied;
+>  
+>  	tty_flip_buffer_push(tty_port);
+> @@ -96,9 +97,7 @@ static void mtk8250_dma_rx_complete(void *param)
+>  static void mtk8250_rx_dma(struct uart_8250_port *up)
+>  {
+>  	struct uart_8250_dma *dma = up->dma;
+> -	struct mtk8250_data *data = up->port.private_data;
+>  	struct dma_async_tx_descriptor	*desc;
+> -	struct dma_tx_state	 state;
+>  
+>  	desc = dmaengine_prep_slave_single(dma->rxchan, dma->rx_addr,
+>  					   dma->rx_size, DMA_DEV_TO_MEM,
+> @@ -113,12 +112,6 @@ static void mtk8250_rx_dma(struct uart_8250_port *up)
+>  
+>  	dma->rx_cookie = dmaengine_submit(desc);
+>  
+> -	dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
+> -	data->rx_pos = state.residue;
+> -
+> -	dma_sync_single_for_device(dma->rxchan->device->dev, dma->rx_addr,
+> -				   dma->rx_size, DMA_FROM_DEVICE);
+> -
+>  	dma_async_issue_pending(dma->rxchan);
+>  }
+>  
+> @@ -131,13 +124,13 @@ static void mtk8250_dma_enable(struct uart_8250_port *up)
+>  	if (data->rx_status != DMA_RX_START)
+>  		return;
+>  
+> -	dma->rxconf.direction		= DMA_DEV_TO_MEM;
+> -	dma->rxconf.src_addr_width	= dma->rx_size / 1024;
+> -	dma->rxconf.src_addr		= dma->rx_addr;
+> +	dma->rxconf.direction				= DMA_DEV_TO_MEM;
 
-Nothing actually sets this flag in this patch, so I can't take this as
-you are adding new features that no one uses :(
+Direction field is deprecated, please do not use this anymore...
 
-Where is the driver that sets this?
+> +	dma->rxconf.src_port_window_size	= dma->rx_size;
+> +	dma->rxconf.src_addr				= dma->rx_addr;
+>  
+> -	dma->txconf.direction		= DMA_MEM_TO_DEV;
+> -	dma->txconf.dst_addr_width	= MTK_UART_TX_SIZE / 1024;
+> -	dma->txconf.dst_addr		= dma->tx_addr;
+> +	dma->txconf.direction				= DMA_MEM_TO_DEV;
+> +	dma->txconf.dst_port_window_size	= UART_XMIT_SIZE;
+> +	dma->txconf.dst_addr				= dma->tx_addr;
+>  
+>  	serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO | UART_FCR_CLEAR_RCVR |
+>  		UART_FCR_CLEAR_XMIT);
+> @@ -217,7 +210,7 @@ static void mtk8250_shutdown(struct uart_port *port)
+>  	 * Mediatek UARTs use an extra highspeed register (UART_MTK_HIGHS)
+>  	 *
+>  	 * We need to recalcualte the quot register, as the claculation depends
+> -	 * on the vaule in the highspeed register.
+> +	 * on the value in the highspeed register.
+>  	 *
+>  	 * Some baudrates are not supported by the chip, so we use the next
+>  	 * lower rate supported and update termios c_flag.
+> -- 
+> 1.7.9.5
 
-thanks,
-
-greg k-h
+-- 
+~Vinod
