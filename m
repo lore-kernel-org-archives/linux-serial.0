@@ -1,101 +1,64 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 2/2] serial: 8250: Add support for 8250/16550 as MFD
- function
-Date: Tue, 21 May 2019 12:09:04 +0200
-Message-ID: <20190521100904.GA13612@kroah.com>
-References: <20190426084038.6377-1-esben@geanix.com>
- <20190426084038.6377-3-esben@geanix.com>
- <20190507114905.GB29524@dell>
- <87o94ejwrx.fsf@haabendal.dk>
- <20190507133844.GA6194@dell>
- <87bm05mpmx.fsf@haabendal.dk>
- <20190514104741.GO4319@dell>
- <20190514122618.GA18859@kroah.com>
- <87imudky2o.fsf@haabendal.dk>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial-uartlite: Fix null-ptr-deref in ulite_exit
+Date: Tue, 21 May 2019 12:10:59 +0200
+Message-ID: <20190521101059.GB13612@kroah.com>
+References: <20190516040931.16276-1-yuehaibing@huawei.com>
+ <20190517075502.GE28564@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <87imudky2o.fsf@haabendal.dk>
+In-Reply-To: <20190517075502.GE28564@localhost>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Esben Haabendal <esben@haabendal.dk>
-Cc: Lee Jones <lee.jones@linaro.org>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Nishanth Menon <nm@ti.com>, Vignesh R <vigneshr@ti.com>, Tony Lindgren <tony@atomide.com>, Lokesh Vutla <lokeshvutla@ti.com>, Florian Fainelli <f.fainelli@gmail.com>, linux-kernel@vger.kernel.org
+To: Johan Hovold <johan@kernel.org>
+Cc: YueHaibing <yuehaibing@huawei.com>, jacmet@sunsite.dk, jslaby@suse.com, shubhrajyoti.datta@xilinx.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, May 14, 2019 at 02:41:35PM +0200, Esben Haabendal wrote:
-> Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
+On Fri, May 17, 2019 at 09:55:02AM +0200, Johan Hovold wrote:
+> On Thu, May 16, 2019 at 12:09:31PM +0800, YueHaibing wrote:
+> > If ulite_probe is not called or failed to registed
+> > uart_register_driver, unload the module will call
+> > uart_unregister_driver, which will tigger NULL
+> > pointer dereference like this:
+> > 
+> > BUG: KASAN: null-ptr-deref in tty_unregister_driver+0x19/0x100
+> > Read of size 4 at addr 0000000000000034 by task syz-executor.0/4246
 > 
-> > On Tue, May 14, 2019 at 11:47:41AM +0100, Lee Jones wrote:
-> >> On Tue, 14 May 2019, Esben Haabendal wrote:
-> >> 
-> >> > Lee Jones <lee.jones@linaro.org> writes:
-> >> > 
-> >> > > On Tue, 07 May 2019, Esben Haabendal wrote:
-> >> > >
-> >> > >> Lee Jones <lee.jones@linaro.org> writes:
-> >> > >> 
-> >> > >> > On Fri, 26 Apr 2019, Esben Haabendal wrote:
-> >> > >> >
-> >> > >> >> The serial8250-mfd driver is for adding 8250/16550 UART ports as functions
-> >> > >> >> to an MFD driver.
-> >> > >> >> 
-> >> > >> >> When calling mfd_add_device(), platform_data should be a pointer to a
-> >> > >> >> struct plat_serial8250_port, with proper settings like .flags, .type,
-> >> > >> >> .iotype, .regshift and .uartclk.  Memory (or ioport) and IRQ should be
-> >> > >> >> passed as cell resources.
-> >> > >> >
-> >> > >> > What?  No, please!
-> >> > >> >
-> >> > >> > If you *must* create a whole driver just to be able to use
-> >> > >> > platform_*() helpers (which I don't think you should), then please
-> >> > >> > call it something else.  This doesn't have anything to do with MFD.
-> >> > >> 
-> >> > >> True.
-> >> > >> 
-> >> > >> I really don't think it is a good idea to create a whole driver just to
-> >> > >> be able to use platform_get_*() helpers.  And if I am forced to do this,
-> >> > >> because I am unable to convince Andy to improve the standard serial8250
-> >> > >> driver to support that, it should be called MFD.  The driver would be
-> >> > >
-> >> > > I assume you mean "shouldn't"?
-> >> > 
-> >> > Of-course.
-> >> > 
-> >> > >> generally usable for all usecases where platform_get_*() works.
-> >> > >> 
-> >> > >> I don't have any idea what to call such a driver.  It really would just
-> >> > >> be a fork of the current serial8250 driver, just allowing use of
-> >> > >> platform_get_*(), supporting exactly the same hardware.
-> >> > >> 
-> >> > >> I am still hoping that we can find a way to improve serial8250 to be
-> >> > >> usable in these cases.
-> >> > >
-> >> > > Me too.
-> >> > 
-> >> > Unfortunately, I don't seem to be able to convince Andy to accept
-> >> > something like that.
-> >> 
-> >> Andy is not he Maintainer.
-> >> 
-> >> What are Greg and Jiri's opinions?
-> >
-> > I've been ignoring all of this at the moment because of the 5.2-rc merge
-> > window.  I'll look at it after -rc1 is out.
-> >
-> > thanks,
-> > greg k-h
+> > This patch fix this by moving uart_unregister_driver
+> > to ulite_remove.
+> > 
+> > Reported-by: Hulk Robot <hulkci@huawei.com>
+> > Fixes: 415b43bdb008 ("tty: serial: uartlite: Move uart register to probe")
+> > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> > ---
+> >  drivers/tty/serial/uartlite.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+> > index b8b912b..2e49fb6 100644
+> > --- a/drivers/tty/serial/uartlite.c
+> > +++ b/drivers/tty/serial/uartlite.c
+> > @@ -867,6 +867,7 @@ static int ulite_remove(struct platform_device *pdev)
+> >  	pm_runtime_disable(&pdev->dev);
+> >  	pm_runtime_set_suspended(&pdev->dev);
+> >  	pm_runtime_dont_use_autosuspend(&pdev->dev);
+> > +	uart_unregister_driver(&ulite_uart_driver);
 > 
-> Great, thanks!
+> This broken. Consider what happens if you have tho ports registered and
+> you unbind the first.
 > 
-> I will try ad hold back with this thread until you get back to it.
+> Someone else sent a fix for this here
+> 
+> 	https://lkml.kernel.org/r/20190514033219.169947-1-wangkefeng.wang@huawei.com
+> 
+> That fix also has some issues, but is still better given the current
+> state this driver is in.
 
-Ok, I have no idea what is going on here, sorry.  This is a really long
-and meandering thread, and I can't even find the original patches in my
-queue.
+I'm not taking any of these patches until people agree on what needs to
+be done here :)
 
-So can you resend things and we can start over?  :)
-
-But note, using a mfd for a uart seems VERY odd to me...
+Why is this driver so "special" it is having these types of problems?
+Why can't it do what all other drivers do in this case?
 
 thanks,
 
