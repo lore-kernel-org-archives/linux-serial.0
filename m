@@ -1,14 +1,11 @@
 From: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: [PATCH 1/2] dt-bindings: serial: add documentation for Rx in-band
- wakeup support
-Date: Tue, 21 May 2019 16:47:00 +0800
-Message-ID: <20190521084701.100179-2-tientzu@chromium.org>
-References: <20190521084701.100179-1-tientzu@chromium.org>
+Subject: [PATCH 0/2] support 8250-mtk uart in-band wake up
+Date: Tue, 21 May 2019 16:46:59 +0800
+Message-ID: <20190521084701.100179-1-tientzu@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20190521084701.100179-1-tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
  <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
@@ -22,41 +19,16 @@ To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
 Cc: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, changqi.hu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Signed-off-by: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
----
- .../devicetree/bindings/serial/mtk-uart.txt         | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+enable irq wake on an edge sensitive interrupt of Rx pin before suspend to
+support uart in-band wake up
 
-diff --git a/Documentation/devicetree/bindings/serial/mtk-uart.txt b/Documentation/devicetree/bindings/serial/mtk-uart.txt
-index c6b5262eb352..11966de2a4b3 100644
---- a/Documentation/devicetree/bindings/serial/mtk-uart.txt
-+++ b/Documentation/devicetree/bindings/serial/mtk-uart.txt
-@@ -23,7 +23,12 @@ Required properties:
- 
- - reg: The base address of the UART register bank.
- 
--- interrupts: A single interrupt specifier.
-+- interrupts or interrupts-extended:
-+  index 0: an interrupt specifier for the UART controller itself
-+  index 1: optional, an interrupt specifier with edge sensitivity on Rx pin to
-+           support Rx in-band wake up. If one would like to use this feature,
-+           one must create an addtional pinctrl to reconfigure Rx pin to normal
-+           GPIO before suspend.
- 
- - clocks : Must contain an entry for each entry in clock-names.
-   See ../clocks/clock-bindings.txt for details.
-@@ -39,7 +44,11 @@ Example:
- 	uart0: serial@11006000 {
- 		compatible = "mediatek,mt6589-uart", "mediatek,mt6577-uart";
- 		reg = <0x11006000 0x400>;
--		interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>;
-+		interrupts-extended = <&sysirq GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>,
-+				      <&gpio 121 IRQ_TYPE_EDGE_FALLING>;
- 		clocks = <&uart_clk>, <&bus_clk>;
- 		clock-names = "baud", "bus";
-+		pinctrl-names = "default", "sleep";
-+		pinctrl-0 = <&uart_pin>;
-+		pinctrl-1 = <&uart_pin_sleep>;
- 	};
+Claire Chang (2):
+  dt-bindings: serial: add documentation for Rx in-band wakeup support
+  uart: mediatek: support Rx in-band wakeup
+
+ .../devicetree/bindings/serial/mtk-uart.txt   | 13 ++++++--
+ drivers/tty/serial/8250/8250_mtk.c            | 33 +++++++++++++++++++
+ 2 files changed, 44 insertions(+), 2 deletions(-)
+
 -- 
 2.21.0.1020.gf2820cf01a-goog
