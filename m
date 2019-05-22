@@ -1,76 +1,168 @@
-From: Christophe Leroy <christophe.leroy@c-s.fr>
-Subject: [PATCH] tty: serial: cpm_uart - fix init when SMC is relocated
-Date: Wed, 22 May 2019 12:17:11 +0000 (UTC)
-Message-ID: <d99f90e2107d7bff3adc187b5ce36a79cc786bfd.1558527014.git.christophe.leroy@c-s.fr>
+From: Nishanth Menon <nm@ti.com>
+Subject: [PATCH 5/6] arm64: dts: ti: Add support for J721E Common Processor Board
+Date: Wed, 22 May 2019 11:19:20 -0500
+Message-ID: <20190522161921.20750-6-nm@ti.com>
+References: <20190522161921.20750-1-nm@ti.com>
+Mime-Version: 1.0
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190522161921.20750-1-nm@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Russell King <linux@armlinux.org.uk>, Tero Kristo <t-kristo@ti.com>, Nishanth Menon <nm@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-SMC relocation can also be activated earlier by the bootloader,
-so the driver's behaviour cannot rely on selected kernel config.
+Add Support for J721E Common Processor board support.
+The EVM architecture is as follows:
 
-When the SMC is relocated, CPM_CR_INIT_TRX cannot be used.
++------------------------------------------------------+
+|   +-------------------------------------------+      |
+|   |                                           |      |
+|   |        Add-on Card 1 Options              |      |
+|   |                                           |      |
+|   +-------------------------------------------+      |
+|                                                      |
+|                                                      |
+|                     +-------------------+            |
+|                     |                   |            |
+|                     |   SOM             |            |
+|  +--------------+   |                   |            |
+|  |              |   |                   |            |
+|  |  Add-on      |   +-------------------+            |
+|  |  Card 2      |                                    |    Power Supply
+|  |  Options     |                                    |    |
+|  |              |                                    |    |
+|  +--------------+                                    | <---
++------------------------------------------------------+
+                                Common Processor Board
 
-But the only thing CPM_CR_INIT_TRX does is to clear the
-rstate and tstate registers, so this can be done manually,
-even when SMC is not relocated.
+Common Processor board is the baseboard that has most of the actual
+connectors, power supply etc. A SOM (System on Module) is plugged on
+to the common processor board and this contains the SoC, PMIC, DDR and
+basic high speed components necessary for functionality. Add-n card
+options add further functionality (such as additional Audio, Display,
+networking options).
 
-Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
-Fixes: 9ab921201444 ("cpm_uart: fix non-console port startup bug")
+Note:
+A) The minimum configuration required to boot up the board is System On
+   Module(SOM) + Common Processor Board.
+B) Since there is just a single SOM and Common Processor Board, we are
+   maintaining common processor board as the base dts and SOM as the dtsi
+   that we include. In the future as more SOM's appear, we should move
+   common processor board as a dtsi and include configurations as dts.
+C) All daughter cards beyond the basic boards shall be maintained as
+   overlays.
+
+Signed-off-by: Nishanth Menon <nm@ti.com>
 ---
- drivers/tty/serial/cpm_uart/cpm_uart_core.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+ arch/arm64/boot/dts/ti/Makefile               |  2 +
+ .../dts/ti/k3-j721e-common-proc-board.dts     | 50 +++++++++++++++++++
+ arch/arm64/boot/dts/ti/k3-j721e-som-p0.dtsi   | 29 +++++++++++
+ 3 files changed, 81 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
+ create mode 100644 arch/arm64/boot/dts/ti/k3-j721e-som-p0.dtsi
 
-diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-index b929c7ae3a27..7bab9a3eda92 100644
---- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-+++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-@@ -407,7 +407,16 @@ static int cpm_uart_startup(struct uart_port *port)
- 			clrbits16(&pinfo->sccp->scc_sccm, UART_SCCM_RX);
- 		}
- 		cpm_uart_initbd(pinfo);
--		cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
-+		if (IS_SMC(pinfo)) {
-+			out_be32(&pinfo->smcup->smc_rstate, 0);
-+			out_be32(&pinfo->smcup->smc_tstate, 0);
-+			out_be16(&pinfo->smcup->smc_rbptr,
-+				 in_be16(&pinfo->smcup->smc_rbase));
-+			out_be16(&pinfo->smcup->smc_tbptr,
-+				 in_be16(&pinfo->smcup->smc_tbase));
-+		} else {
-+			cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
-+		}
- 	}
- 	/* Install interrupt handler. */
- 	retval = request_irq(port->irq, cpm_uart_int, 0, "cpm_uart", port);
-@@ -861,16 +870,14 @@ static void cpm_uart_init_smc(struct uart_cpm_port *pinfo)
- 	         (u8 __iomem *)pinfo->tx_bd_base - DPRAM_BASE);
+diff --git a/arch/arm64/boot/dts/ti/Makefile b/arch/arm64/boot/dts/ti/Makefile
+index 63e619d0b5b8..b397945fdf73 100644
+--- a/arch/arm64/boot/dts/ti/Makefile
++++ b/arch/arm64/boot/dts/ti/Makefile
+@@ -7,3 +7,5 @@
+ #
  
- /*
-- *  In case SMC1 is being relocated...
-+ *  In case SMC is being relocated...
-  */
--#if defined (CONFIG_I2C_SPI_SMC1_UCODE_PATCH)
- 	out_be16(&up->smc_rbptr, in_be16(&pinfo->smcup->smc_rbase));
- 	out_be16(&up->smc_tbptr, in_be16(&pinfo->smcup->smc_tbase));
- 	out_be32(&up->smc_rstate, 0);
- 	out_be32(&up->smc_tstate, 0);
- 	out_be16(&up->smc_brkcr, 1);              /* number of break chars */
- 	out_be16(&up->smc_brkec, 0);
--#endif
- 
- 	/* Set up the uart parameters in the
- 	 * parameter ram.
-@@ -884,8 +891,6 @@ static void cpm_uart_init_smc(struct uart_cpm_port *pinfo)
- 	out_be16(&up->smc_brkec, 0);
- 	out_be16(&up->smc_brkcr, 1);
- 
--	cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
--
- 	/* Set UART mode, 8 bit, no parity, one stop.
- 	 * Enable receive and transmit.
- 	 */
+ dtb-$(CONFIG_ARCH_K3_AM6_SOC) += k3-am654-base-board.dtb
++
++dtb-$(CONFIG_ARCH_K3_J721E_SOC) += k3-j721e-common-proc-board.dtb
+diff --git a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
+new file mode 100644
+index 000000000000..c680123f067c
+--- /dev/null
++++ b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
+@@ -0,0 +1,50 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
++ */
++
++/dts-v1/;
++
++#include "k3-j721e-som-p0.dtsi"
++
++/ {
++	chosen {
++		stdout-path = "serial2:115200n8";
++		bootargs = "console=ttyS2,115200n8 earlycon=ns16550a,mmio32,0x02800000";
++	};
++};
++
++&wkup_uart0 {
++	/* Wakeup UART is used by System firmware */
++	status = "disabled";
++};
++
++&main_uart3 {
++	/* UART not brought out */
++	status = "disabled";
++};
++
++&main_uart5 {
++	/* UART not brought out */
++	status = "disabled";
++};
++
++&main_uart6 {
++	/* UART not brought out */
++	status = "disabled";
++};
++
++&main_uart7 {
++	/* UART not brought out */
++	status = "disabled";
++};
++
++&main_uart8 {
++	/* UART not brought out */
++	status = "disabled";
++};
++
++&main_uart9 {
++	/* UART not brought out */
++	status = "disabled";
++};
+diff --git a/arch/arm64/boot/dts/ti/k3-j721e-som-p0.dtsi b/arch/arm64/boot/dts/ti/k3-j721e-som-p0.dtsi
+new file mode 100644
+index 000000000000..1884fc70148f
+--- /dev/null
++++ b/arch/arm64/boot/dts/ti/k3-j721e-som-p0.dtsi
+@@ -0,0 +1,29 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
++ */
++
++/dts-v1/;
++
++#include "k3-j721e.dtsi"
++
++/ {
++	memory@80000000 {
++		device_type = "memory";
++		/* 4G RAM */
++		reg = <0x00000000 0x80000000 0x00000000 0x80000000>,
++		      <0x00000008 0x80000000 0x00000000 0x80000000>;
++	};
++
++	reserved_memory: reserved-memory {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		secure_ddr: optee@9e800000 {
++			reg = <0x00 0x9e800000 0x00 0x01800000>;
++			alignment = <0x1000>;
++			no-map;
++		};
++	};
++};
 -- 
-2.13.3
+2.21.0.777.g83232e38648b
