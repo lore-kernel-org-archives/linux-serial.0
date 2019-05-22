@@ -1,178 +1,286 @@
-From: Long Cheng <long.cheng@mediatek.com>
-Subject: Re: [PATCH 4/4] serial: 8250-mtk: modify uart DMA rx
-Date: Wed, 22 May 2019 13:24:22 +0800
-Message-ID: <1558502662.14150.31.camel@mhfsdcap03>
-References: <1556336193-15198-1-git-send-email-long.cheng@mediatek.com>
-         <1556336193-15198-5-git-send-email-long.cheng@mediatek.com>
-         <CANMq1KDTyu48joV6uMksGBMz9EmjFH9SEpGAm93YCZ40jxgBpQ@mail.gmail.com>
-         <1558078602.14150.27.camel@mhfsdcap03>
+From: Stefan Roese <sr@denx.de>
+Subject: [PATCH 2/2] tty/serial/8250: use mctrl_gpio helpers
+Date: Wed, 22 May 2019 14:11:17 +0200
+Message-ID: <20190522121117.14347-2-sr@denx.de>
+References: <20190522121117.14347-1-sr@denx.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1558078602.14150.27.camel@mhfsdcap03>
+In-Reply-To: <20190522121117.14347-1-sr@denx.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Boichat <drinkcat@chromium.org>
-Cc: Vinod Koul <vkoul@kernel.org>, Randy Dunlap <rdunlap@infradead.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Sean Wang <sean.wang@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>, lkml <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, Yingjoe Chen <yin>
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Yegor Yefremov <yegorslists@googlemail.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 2019-05-17 at 15:36 +0800, Long Cheng wrote:
-> On Wed, 2019-05-15 at 21:48 +0800, Nicolas Boichat wrote:
-> > On Sat, Apr 27, 2019 at 11:36 AM Long Cheng <long.cheng@mediatek.com> wrote:
-> > >
-> > > Modify uart rx and complete for DMA.
-> > 
-> > I don't know much about the DMA framework, but can you please explain
-> > why you are making the changes in this CL? I see that you are dropping
-> > dma_sync_single_for_device calls, for example, why?
-> > 
-> 
-> the rx buffer is create by 'dma_alloc_coherent'. in the function, the
-> buffer is uncache. We don't need to sync between CPU and DMA. So I
-> remove it.
-> 
-> > >
-> > > Signed-off-by: Long Cheng <long.cheng@mediatek.com>
-> > > ---
-> > >  drivers/tty/serial/8250/8250_mtk.c |   53 ++++++++++++++++--------------------
-> > >  1 file changed, 23 insertions(+), 30 deletions(-)
-> > >
-> > > diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-> > > index c1fdbc0..04081a6 100644
-> > > --- a/drivers/tty/serial/8250/8250_mtk.c
-> > > +++ b/drivers/tty/serial/8250/8250_mtk.c
-> > > @@ -30,7 +30,6 @@
-> > >  #define MTK_UART_DMA_EN_TX     0x2
-> > >  #define MTK_UART_DMA_EN_RX     0x5
-> > >
-> > > -#define MTK_UART_TX_SIZE       UART_XMIT_SIZE
-> > >  #define MTK_UART_RX_SIZE       0x8000
-> > >  #define MTK_UART_TX_TRIGGER    1
-> > >  #define MTK_UART_RX_TRIGGER    MTK_UART_RX_SIZE
-> > > @@ -64,28 +63,30 @@ static void mtk8250_dma_rx_complete(void *param)
-> > >         struct mtk8250_data *data = up->port.private_data;
-> > >         struct tty_port *tty_port = &up->port.state->port;
-> > >         struct dma_tx_state state;
-> > > +       int copied, cnt, tmp;
-> > >         unsigned char *ptr;
-> > > -       int copied;
-> > >
-> > > -       dma_sync_single_for_cpu(dma->rxchan->device->dev, dma->rx_addr,
-> > > -                               dma->rx_size, DMA_FROM_DEVICE);
-> > > +       if (data->rx_status == DMA_RX_SHUTDOWN)
-> > > +               return;
-> > >
-> > >         dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
-> > > +       cnt = dma->rx_size - state.residue;
-> > > +       tmp = cnt;
-> > 
-> > I ponder, maybe we should rename cnt to left? (like, how many bytes
-> > are left to transfer, in total) Or maybe "total"
-> > Then maybe rename tmp to cnt.
-> > 
-> like better.
-> 
-> > >
-> > > -       if (data->rx_status == DMA_RX_SHUTDOWN)
-> > > -               return;
-> > > +       if ((data->rx_pos + cnt) > dma->rx_size)
-> > > +               tmp = dma->rx_size - data->rx_pos;
-> > 
-> > Maybe replace this and the line above:
-> > tmp = max_t(int, cnt, dma->rx_size - data->rx_pos);
-> > 
-> Yes. It's better.
-> 
+From: Yegor Yefremov <yegorslists@googlemail.com>
 
-can't replace by 'max_t'. So I will keep original code.
+This patch permits the usage for GPIOs to control
+the CTS/RTS/DTR/DSR/DCD/RI signals.
 
-> > >
-> > > -       if ((data->rx_pos + state.residue) <= dma->rx_size) {
-> > > -               ptr = (unsigned char *)(data->rx_pos + dma->rx_buf);
-> > > -               copied = tty_insert_flip_string(tty_port, ptr, state.residue);
-> > > -       } else {
-> > > -               ptr = (unsigned char *)(data->rx_pos + dma->rx_buf);
-> > > -               copied = tty_insert_flip_string(tty_port, ptr,
-> > > -                                               dma->rx_size - data->rx_pos);
-> > > +       ptr = (unsigned char *)(data->rx_pos + dma->rx_buf);
-> > > +       copied = tty_insert_flip_string(tty_port, ptr, tmp);
-> > > +       data->rx_pos += tmp;
-> > > +
-> > > +       if (cnt > tmp) {
-> > >                 ptr = (unsigned char *)(dma->rx_buf);
-> > > -               copied += tty_insert_flip_string(tty_port, ptr,
-> > > -                               data->rx_pos + state.residue - dma->rx_size);
-> > > +               tmp = cnt - tmp;
-> > > +               copied += tty_insert_flip_string(tty_port, ptr, tmp);
-> > > +               data->rx_pos = tmp;
-> > >         }
-> > > +
-> > >         up->port.icount.rx += copied;
-> > >
-> > >         tty_flip_buffer_push(tty_port);
-> > > @@ -96,9 +97,7 @@ static void mtk8250_dma_rx_complete(void *param)
-> > >  static void mtk8250_rx_dma(struct uart_8250_port *up)
-> > >  {
-> > >         struct uart_8250_dma *dma = up->dma;
-> > > -       struct mtk8250_data *data = up->port.private_data;
-> > >         struct dma_async_tx_descriptor  *desc;
-> > > -       struct dma_tx_state      state;
-> > >
-> > >         desc = dmaengine_prep_slave_single(dma->rxchan, dma->rx_addr,
-> > >                                            dma->rx_size, DMA_DEV_TO_MEM,
-> > > @@ -113,12 +112,6 @@ static void mtk8250_rx_dma(struct uart_8250_port *up)
-> > >
-> > >         dma->rx_cookie = dmaengine_submit(desc);
-> > >
-> > > -       dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
-> > > -       data->rx_pos = state.residue;
-> > > -
-> > > -       dma_sync_single_for_device(dma->rxchan->device->dev, dma->rx_addr,
-> > > -                                  dma->rx_size, DMA_FROM_DEVICE);
-> > > -
-> > >         dma_async_issue_pending(dma->rxchan);
-> > >  }
-> > >
-> > > @@ -131,13 +124,13 @@ static void mtk8250_dma_enable(struct uart_8250_port *up)
-> > >         if (data->rx_status != DMA_RX_START)
-> > >                 return;
-> > >
-> > > -       dma->rxconf.direction           = DMA_DEV_TO_MEM;
-> > > -       dma->rxconf.src_addr_width      = dma->rx_size / 1024;
-> > > -       dma->rxconf.src_addr            = dma->rx_addr;
-> > > +       dma->rxconf.direction                           = DMA_DEV_TO_MEM;
-> > > +       dma->rxconf.src_port_window_size        = dma->rx_size;
-> > > +       dma->rxconf.src_addr                            = dma->rx_addr;
-> > >
-> > > -       dma->txconf.direction           = DMA_MEM_TO_DEV;
-> > > -       dma->txconf.dst_addr_width      = MTK_UART_TX_SIZE / 1024;
-> > > -       dma->txconf.dst_addr            = dma->tx_addr;
-> > > +       dma->txconf.direction                           = DMA_MEM_TO_DEV;
-> > > +       dma->txconf.dst_port_window_size        = UART_XMIT_SIZE;
-> > > +       dma->txconf.dst_addr                            = dma->tx_addr;
-> > >
-> > >         serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO | UART_FCR_CLEAR_RCVR |
-> > >                 UART_FCR_CLEAR_XMIT);
-> > > @@ -217,7 +210,7 @@ static void mtk8250_shutdown(struct uart_port *port)
-> > >          * Mediatek UARTs use an extra highspeed register (UART_MTK_HIGHS)
-> > >          *
-> > >          * We need to recalcualte the quot register, as the claculation depends
-> > > -        * on the vaule in the highspeed register.
-> > > +        * on the value in the highspeed register.
-> > 
-> > Since you're doing some cosmetic changes here, you might as well fix
-> > recalcualte => recalculate and claculation => calculation on the line
-> > above.
-> > 
-> 
-> I see.
-> 
-> > But technically, this should belong in another patch...
-> > 
-> > >          *
-> > >          * Some baudrates are not supported by the chip, so we use the next
-> > >          * lower rate supported and update termios c_flag.
-> > > --
-> > > 1.7.9.5
-> > >
-> 
+Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Stefan Roese <sr@denx.de>
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Giulio Benetti <giulio.benetti@micronovasrl.com>
+Cc: Yegor Yefremov <yegorslists@googlemail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+Please note that this patch was already applied before [1]. And later
+reverted [2] because it introduced problems on some x86 based boards
+(ACPI GPIO related). Here a detailed description of the issue at that
+time:
+
+https://lkml.org/lkml/2016/8/9/357
+http://www.spinics.net/lists/linux-serial/msg23071.html
+
+This is a re-send of the original patch that was applied at that time.
+With patch 1/2 from this series this issue should be fixed now (please
+note that I can't test it on such an x86 platform causing these
+problems).
+
+Andy (or Mika), perhaps it would be possible for you to test this
+patch again, now with patch 1/2 of this series applied as well?
+That would be really helpful.
+
+Thanks,
+Stefan
+
+[1] 4ef03d328769 ("tty/serial/8250: use mctrl_gpio helpers")
+[2] 5db4f7f80d16 ("Revert "tty/serial/8250: use mctrl_gpio helpers"")
+
+ .../devicetree/bindings/serial/8250.txt       | 19 ++++++++++
+ drivers/tty/serial/8250/8250.h                | 35 ++++++++++++++++++-
+ drivers/tty/serial/8250/8250_core.c           |  9 +++++
+ drivers/tty/serial/8250/8250_omap.c           | 31 +++++++++-------
+ drivers/tty/serial/8250/8250_port.c           |  7 +++-
+ drivers/tty/serial/8250/Kconfig               |  1 +
+ include/linux/serial_8250.h                   |  1 +
+ 7 files changed, 88 insertions(+), 15 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/serial/8250.txt b/Documentation/devicetree/bindings/serial/8250.txt
+index 3cba12f855b7..20d351f268ef 100644
+--- a/Documentation/devicetree/bindings/serial/8250.txt
++++ b/Documentation/devicetree/bindings/serial/8250.txt
+@@ -53,6 +53,9 @@ Optional properties:
+   programmable TX FIFO thresholds.
+ - resets : phandle + reset specifier pairs
+ - overrun-throttle-ms : how long to pause uart rx when input overrun is encountered.
++- {rts,cts,dtr,dsr,rng,dcd}-gpios: specify a GPIO for RTS/CTS/DTR/DSR/RI/DCD
++  line respectively. It will use specified GPIO instead of the peripheral
++  function pin for the UART feature. If unsure, don't specify this property.
+ 
+ Note:
+ * fsl,ns16550:
+@@ -74,3 +77,19 @@ Example:
+ 		interrupts = <10>;
+ 		reg-shift = <2>;
+ 	};
++
++Example for OMAP UART using GPIO-based modem control signals:
++
++	uart4: serial@49042000 {
++		compatible = "ti,omap3-uart";
++		reg = <0x49042000 0x400>;
++		interrupts = <80>;
++		ti,hwmods = "uart4";
++		clock-frequency = <48000000>;
++		cts-gpios = <&gpio3 5 GPIO_ACTIVE_LOW>;
++		rts-gpios = <&gpio3 6 GPIO_ACTIVE_LOW>;
++		dtr-gpios = <&gpio1 12 GPIO_ACTIVE_LOW>;
++		dsr-gpios = <&gpio1 13 GPIO_ACTIVE_LOW>;
++		dcd-gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;
++		rng-gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
++	};
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index ebfb0bd5bef5..e59625bdb007 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -11,6 +11,8 @@
+ #include <linux/serial_reg.h>
+ #include <linux/dmaengine.h>
+ 
++#include "../serial_mctrl_gpio.h"
++
+ struct uart_8250_dma {
+ 	int (*tx_dma)(struct uart_8250_port *p);
+ 	int (*rx_dma)(struct uart_8250_port *p);
+@@ -141,12 +143,43 @@ void serial8250_em485_destroy(struct uart_8250_port *p);
+ 
+ static inline void serial8250_out_MCR(struct uart_8250_port *up, int value)
+ {
++	int mctrl_gpio = 0;
++
+ 	serial_out(up, UART_MCR, value);
++
++	if (value & UART_MCR_RTS)
++		mctrl_gpio |= TIOCM_RTS;
++	if (value & UART_MCR_DTR)
++		mctrl_gpio |= TIOCM_DTR;
++
++	mctrl_gpio_set(up->gpios, mctrl_gpio);
+ }
+ 
+ static inline int serial8250_in_MCR(struct uart_8250_port *up)
+ {
+-	return serial_in(up, UART_MCR);
++	int mctrl, mctrl_gpio = 0;
++
++	mctrl = serial_in(up, UART_MCR);
++
++	/* save current MCR values */
++	if (mctrl & UART_MCR_RTS)
++		mctrl_gpio |= TIOCM_RTS;
++	if (mctrl & UART_MCR_DTR)
++		mctrl_gpio |= TIOCM_DTR;
++
++	mctrl_gpio = mctrl_gpio_get_outputs(up->gpios, &mctrl_gpio);
++
++	if (mctrl_gpio & TIOCM_RTS)
++		mctrl |= UART_MCR_RTS;
++	else
++		mctrl &= ~UART_MCR_RTS;
++
++	if (mctrl_gpio & TIOCM_DTR)
++		mctrl |= UART_MCR_DTR;
++	else
++		mctrl &= ~UART_MCR_DTR;
++
++	return mctrl;
+ }
+ 
+ #if defined(__alpha__) && !defined(CONFIG_PCI)
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index e441221e04b9..ec0c5448c192 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -982,6 +982,8 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+ 
+ 	uart = serial8250_find_match_or_unused(&up->port);
+ 	if (uart && uart->port.type != PORT_8250_CIR) {
++		struct mctrl_gpios *gpios;
++
+ 		if (uart->port.dev)
+ 			uart_remove_one_port(&serial8250_reg, &uart->port);
+ 
+@@ -1016,6 +1018,13 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+ 		if (up->port.flags & UPF_FIXED_TYPE)
+ 			uart->port.type = up->port.type;
+ 
++		gpios = mctrl_gpio_init(&uart->port, 0);
++		if (IS_ERR(gpios)) {
++			if (PTR_ERR(gpios) != -ENOSYS)
++				return PTR_ERR(gpios);
++		} else
++			uart->gpios = gpios;
++
+ 		serial8250_set_defaults(uart);
+ 
+ 		/* Possibly override default I/O functions.  */
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 0a8316632d75..562ac73d9f2f 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -141,18 +141,21 @@ static void omap8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 
+ 	serial8250_do_set_mctrl(port, mctrl);
+ 
+-	/*
+-	 * Turn off autoRTS if RTS is lowered and restore autoRTS setting
+-	 * if RTS is raised
+-	 */
+-	lcr = serial_in(up, UART_LCR);
+-	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
+-	if ((mctrl & TIOCM_RTS) && (port->status & UPSTAT_AUTORTS))
+-		priv->efr |= UART_EFR_RTS;
+-	else
+-		priv->efr &= ~UART_EFR_RTS;
+-	serial_out(up, UART_EFR, priv->efr);
+-	serial_out(up, UART_LCR, lcr);
++	if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(up->gpios,
++						UART_GPIO_RTS))) {
++		/*
++		 * Turn off autoRTS if RTS is lowered and restore autoRTS
++		 * setting if RTS is raised
++		 */
++		lcr = serial_in(up, UART_LCR);
++		serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
++		if ((mctrl & TIOCM_RTS) && (port->status & UPSTAT_AUTORTS))
++			priv->efr |= UART_EFR_RTS;
++		else
++			priv->efr &= ~UART_EFR_RTS;
++		serial_out(up, UART_EFR, priv->efr);
++		serial_out(up, UART_LCR, lcr);
++	}
+ }
+ 
+ /*
+@@ -453,7 +456,9 @@ static void omap_8250_set_termios(struct uart_port *port,
+ 	priv->efr = 0;
+ 	up->port.status &= ~(UPSTAT_AUTOCTS | UPSTAT_AUTORTS | UPSTAT_AUTOXOFF);
+ 
+-	if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW) {
++	if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW
++		&& IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(up->gpios,
++							UART_GPIO_RTS))) {
+ 		/* Enable AUTOCTS (autoRTS is enabled when RTS is raised) */
+ 		up->port.status |= UPSTAT_AUTOCTS | UPSTAT_AUTORTS;
+ 		priv->efr |= UART_EFR_CTS;
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 2304a84eee3b..220a78287d88 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1662,6 +1662,8 @@ static void serial8250_disable_ms(struct uart_port *port)
+ 	if (up->bugs & UART_BUG_NOMSR)
+ 		return;
+ 
++	mctrl_gpio_disable_ms(up->gpios);
++
+ 	up->ier &= ~UART_IER_MSI;
+ 	serial_port_out(port, UART_IER, up->ier);
+ }
+@@ -1674,6 +1676,8 @@ static void serial8250_enable_ms(struct uart_port *port)
+ 	if (up->bugs & UART_BUG_NOMSR)
+ 		return;
+ 
++	mctrl_gpio_enable_ms(up->gpios);
++
+ 	up->ier |= UART_IER_MSI;
+ 
+ 	serial8250_rpm_get(up);
+@@ -1959,7 +1963,8 @@ unsigned int serial8250_do_get_mctrl(struct uart_port *port)
+ 		ret |= TIOCM_DSR;
+ 	if (status & UART_MSR_CTS)
+ 		ret |= TIOCM_CTS;
+-	return ret;
++
++	return mctrl_gpio_get(up->gpios, &ret);
+ }
+ EXPORT_SYMBOL_GPL(serial8250_do_get_mctrl);
+ 
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index 296115f6a4d8..509f6a3bb9ff 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -8,6 +8,7 @@ config SERIAL_8250
+ 	tristate "8250/16550 and compatible serial support"
+ 	depends on !S390
+ 	select SERIAL_CORE
++	select SERIAL_MCTRL_GPIO if GPIOLIB
+ 	---help---
+ 	  This selects whether you want to include the driver for the standard
+ 	  serial ports.  The standard answer is Y.  People who might say N
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index 5a655ba8d273..14cd763baf78 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -114,6 +114,7 @@ struct uart_8250_port {
+ 						 *   if no_console_suspend
+ 						 */
+ 	unsigned char		probe;
++	struct mctrl_gpios	*gpios;
+ #define UART_PROBE_RSA	(1 << 0)
+ 
+ 	/*
+-- 
+2.21.0
