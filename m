@@ -1,79 +1,121 @@
-From: Nishanth Menon <nm@ti.com>
-Subject: [PATCH 0/6] arm64: Initial support Texas Instrument's J721E Platform
-Date: Wed, 22 May 2019 11:19:15 -0500
-Message-ID: <20190522161921.20750-1-nm@ti.com>
+From: Long Cheng <long.cheng@mediatek.com>
+Subject: [PATCH 2/2] serial: 8250-mtk: modify uart DMA rx
+Date: Thu, 23 May 2019 15:35:09 +0800
+Message-ID: <1558596909-14084-3-git-send-email-long.cheng@mediatek.com>
+References: <1558596909-14084-1-git-send-email-long.cheng@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1558596909-14084-1-git-send-email-long.cheng@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Russell King <linux@armlinux.org.uk>, Tero Kristo <t-kristo@ti.com>, Nishanth Menon <nm@ti.com>
+To: Vinod Koul <vkoul@kernel.org>, Randy Dunlap <rdunlap@infradead.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Sean Wang <sean.wang@kernel.org>, Nicolas Boichat <drinkcat@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>, Zhenbao Liu <zhenbao.liu@mediatek.com>, Long Cheng <long.cheng@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+Modify uart rx and complete for DMA
 
-This series adds support for the latest new SoC, J721E, from Texas Instruments.
+Signed-off-by: Long Cheng <long.cheng@mediatek.com>
+---
+ drivers/tty/serial/8250/8250_mtk.c |   49 +++++++++++++++---------------------
+ 1 file changed, 20 insertions(+), 29 deletions(-)
 
-The series is an based off v5.2-rc1 and has the following driver
-dependencies for a successful boot:
-1.  https://lore.kernel.org/lkml/20190429131533.25122-1-afd@ti.com (for newer firmware)
-2.  https://lore.kernel.org/linux-arm-kernel/1555093342-428-1-git-send-email-t-kristo@ti.com/
-    - Clock IDs cannot be guarenteed to be sequential, has to be
-      discovered from hardware description in dts
-    - Clock IDs on this massive chip also exceeds 255, so, the support
-      for the same is expected in follow on patches.
-
-The full series is available here (including dependencies):
-https://github.com/nmenon/linux-2.6-playground/commits/upstream/v5.2-rc1/j7es-base-v1
-
-Boot Log: https://pastebin.ubuntu.com/p/j3NtfF8FQr/
-
-NOTE:
- - If Greg is ok, we can pick up the uart compatibility via the k3 tree,
-   else, I can spawn it off the series.
- - I will resubmit patch 6 (defconfig update) separately once again once
-   patches 1-5 hit the next tree or for 5.3-rc2 which ever is convenient.
-
-The J721E SoC belongs to the K3 Multicore SoC architecture platform
-for automotive applications such as infotainment, cluster, premium
-Audio, Gateway, industrial and a range of broad market applications.
-This SoC is designed around reducing the system cost by eliminating
-the need of an external system MCU and is targeted towards ASIL-B/C
-certification/requirements in addition to allowing complex software
-and system use-cases.
-
-The Linux development follows AM654 in most of the configurations, but
-adds new capabilities (details in follow on patches).
-
-See J721E Technical Reference Manual (SPRUIL1, May 2019)
-for further details: http://www.ti.com/lit/pdf/spruil1
-
-Nishanth Menon (6):
-  dt-bindings: arm: ti: Add bindings for J721E SoC
-  dt-bindings: serial: 8250_omap: Add compatible for J721E UART
-    controller
-  arm64: dts: ti: Add Support for J721E SoC
-  soc: ti: Add Support for J721E SoC config option
-  arm64: dts: ti: Add support for J721E Common Processor Board
-  arm64: defconfig: Enable TI's J721E SoC platform
-
- .../devicetree/bindings/arm/ti/k3.txt         |   3 +
- .../bindings/serial/omap_serial.txt           |   1 +
- arch/arm64/boot/dts/ti/Makefile               |   2 +
- .../dts/ti/k3-j721e-common-proc-board.dts     |  50 +++++
- arch/arm64/boot/dts/ti/k3-j721e-main.dtsi     | 202 ++++++++++++++++++
- .../boot/dts/ti/k3-j721e-mcu-wakeup.dtsi      |  72 +++++++
- arch/arm64/boot/dts/ti/k3-j721e-som-p0.dtsi   |  29 +++
- arch/arm64/boot/dts/ti/k3-j721e.dtsi          | 176 +++++++++++++++
- arch/arm64/configs/defconfig                  |   1 +
- drivers/soc/ti/Kconfig                        |   5 +
- 10 files changed, 541 insertions(+)
- create mode 100644 arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
- create mode 100644 arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
- create mode 100644 arch/arm64/boot/dts/ti/k3-j721e-mcu-wakeup.dtsi
- create mode 100644 arch/arm64/boot/dts/ti/k3-j721e-som-p0.dtsi
- create mode 100644 arch/arm64/boot/dts/ti/k3-j721e.dtsi
-
+diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+index 417c7c8..f470ded 100644
+--- a/drivers/tty/serial/8250/8250_mtk.c
++++ b/drivers/tty/serial/8250/8250_mtk.c
+@@ -47,7 +47,6 @@
+ #define MTK_UART_DMA_EN_RX	0x5
+ 
+ #define MTK_UART_ESCAPE_CHAR	0x77	/* Escape char added under sw fc */
+-#define MTK_UART_TX_SIZE	UART_XMIT_SIZE
+ #define MTK_UART_RX_SIZE	0x8000
+ #define MTK_UART_TX_TRIGGER	1
+ #define MTK_UART_RX_TRIGGER	MTK_UART_RX_SIZE
+@@ -89,28 +88,30 @@ static void mtk8250_dma_rx_complete(void *param)
+ 	struct mtk8250_data *data = up->port.private_data;
+ 	struct tty_port *tty_port = &up->port.state->port;
+ 	struct dma_tx_state state;
++	int copied, total, cnt;
+ 	unsigned char *ptr;
+-	int copied;
+ 
+-	dma_sync_single_for_cpu(dma->rxchan->device->dev, dma->rx_addr,
+-				dma->rx_size, DMA_FROM_DEVICE);
++	if (data->rx_status == DMA_RX_SHUTDOWN)
++		return;
+ 
+ 	dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
++	total = dma->rx_size - state.residue;
++	cnt = total;
+ 
+-	if (data->rx_status == DMA_RX_SHUTDOWN)
+-		return;
++	if ((data->rx_pos + cnt) > dma->rx_size)
++		cnt = dma->rx_size - data->rx_pos;
+ 
+-	if ((data->rx_pos + state.residue) <= dma->rx_size) {
+-		ptr = (unsigned char *)(data->rx_pos + dma->rx_buf);
+-		copied = tty_insert_flip_string(tty_port, ptr, state.residue);
+-	} else {
+-		ptr = (unsigned char *)(data->rx_pos + dma->rx_buf);
+-		copied = tty_insert_flip_string(tty_port, ptr,
+-						dma->rx_size - data->rx_pos);
++	ptr = (unsigned char *)(data->rx_pos + dma->rx_buf);
++	copied = tty_insert_flip_string(tty_port, ptr, cnt);
++	data->rx_pos += cnt;
++
++	if (total > cnt) {
+ 		ptr = (unsigned char *)(dma->rx_buf);
+-		copied += tty_insert_flip_string(tty_port, ptr,
+-				data->rx_pos + state.residue - dma->rx_size);
++		cnt = total - cnt;
++		copied += tty_insert_flip_string(tty_port, ptr, cnt);
++		data->rx_pos = cnt;
+ 	}
++
+ 	up->port.icount.rx += copied;
+ 
+ 	tty_flip_buffer_push(tty_port);
+@@ -121,9 +122,7 @@ static void mtk8250_dma_rx_complete(void *param)
+ static void mtk8250_rx_dma(struct uart_8250_port *up)
+ {
+ 	struct uart_8250_dma *dma = up->dma;
+-	struct mtk8250_data *data = up->port.private_data;
+ 	struct dma_async_tx_descriptor	*desc;
+-	struct dma_tx_state	 state;
+ 
+ 	desc = dmaengine_prep_slave_single(dma->rxchan, dma->rx_addr,
+ 					   dma->rx_size, DMA_DEV_TO_MEM,
+@@ -138,12 +137,6 @@ static void mtk8250_rx_dma(struct uart_8250_port *up)
+ 
+ 	dma->rx_cookie = dmaengine_submit(desc);
+ 
+-	dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
+-	data->rx_pos = state.residue;
+-
+-	dma_sync_single_for_device(dma->rxchan->device->dev, dma->rx_addr,
+-				   dma->rx_size, DMA_FROM_DEVICE);
+-
+ 	dma_async_issue_pending(dma->rxchan);
+ }
+ 
+@@ -156,13 +149,11 @@ static void mtk8250_dma_enable(struct uart_8250_port *up)
+ 	if (data->rx_status != DMA_RX_START)
+ 		return;
+ 
+-	dma->rxconf.direction		= DMA_DEV_TO_MEM;
+-	dma->rxconf.src_addr_width	= dma->rx_size / 1024;
+-	dma->rxconf.src_addr		= dma->rx_addr;
++	dma->rxconf.src_port_window_size	= dma->rx_size;
++	dma->rxconf.src_addr				= dma->rx_addr;
+ 
+-	dma->txconf.direction		= DMA_MEM_TO_DEV;
+-	dma->txconf.dst_addr_width	= MTK_UART_TX_SIZE / 1024;
+-	dma->txconf.dst_addr		= dma->tx_addr;
++	dma->txconf.dst_port_window_size	= UART_XMIT_SIZE;
++	dma->txconf.dst_addr				= dma->tx_addr;
+ 
+ 	serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO | UART_FCR_CLEAR_RCVR |
+ 		UART_FCR_CLEAR_XMIT);
 -- 
-2.21.0.777.g83232e38648b
+1.7.9.5
