@@ -1,52 +1,36 @@
-From: Rajendra Nayak <rnayak@codeaurora.org>
-Subject: Re: [RFC v2 00/11] DVFS in the OPP core
-Date: Fri, 24 May 2019 11:33:52 +0530
-Message-ID: <85dbc630-f526-c06f-8a8b-9bbc3b794693@codeaurora.org>
-References: <20190320094918.20234-1-rnayak@codeaurora.org>
- <20190521062248.ogjetb2rwtqekflx@vireshk-i7>
+From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCH 1/2] dt-bindings: serial: add documentation for Rx
+ in-band wakeup support
+Date: Fri, 24 May 2019 09:55:08 +0200
+Message-ID: <20190524075508.GA31438@kroah.com>
+References: <20190521084701.100179-1-tientzu@chromium.org>
+ <20190521084701.100179-2-tientzu@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190521062248.ogjetb2rwtqekflx@vireshk-i7>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Viresh Kumar <viresh.kumar@linaro.org>
-Cc: ulf.hansson@linaro.org, dianders@chromium.org, vincent.guittot@linaro.org, linux-scsi@vger.kernel.org, linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org, rafael@kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, swboyd@chromium.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20190521084701.100179-2-tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
+List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, changqi.hu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Ck9uIDUvMjEvMjAxOSAxMTo1MiBBTSwgVmlyZXNoIEt1bWFyIHdyb3RlOgo+IE9uIDIwLTAzLTE5
-LCAxNToxOSwgUmFqZW5kcmEgTmF5YWsgd3JvdGU6Cj4+IFRoaXMgaXMgYSB2MiBvZiB0aGUgUkZD
-IHBvc3RlZCBlYXJsaWVyIGJ5IFN0ZXBoZW4gQm95ZCBbMV0KPj4KPj4gQXMgcGFydCBvZiB2MiBJ
-IHN0aWxsIGZvbGxvdyB0aGUgc2FtZSBhcHByb2FjaCBvZiBkZXZfcG1fb3BwX3NldF9yYXRlKCkK
-Pj4gQVBJIHVzaW5nIGNsayBmcmFtZXdvcmsgdG8gcm91bmQgdGhlIGZyZXF1ZW5jeSBwYXNzZWQg
-YW5kIG1ha2luZyBpdAo+PiBhY2NlcHQgMCBhcyBhIHZhbGlkIGZyZXF1ZW5jeSBpbmRpY2F0aW5n
-IHRoZSBmcmVxdWVuY3kgaXNuJ3QgcmVxdWlyZWQKPj4gYW55bW9yZS4gSXQganVzdCBoYXMgYSBm
-ZXcgbW9yZSBkcml2ZXJzIGNvbnZlcnRlZCB0byB1c2UgdGhpcyBhcHByb2FjaAo+PiBsaWtlIGRz
-aS9kcHUgYW5kIHVmcy4KPj4gdWZzIGRlbW9uc3RyYXRlcyB0aGUgY2FzZSBvZiBoYXZpbmcgdG8g
-aGFuZGxlIG11bHRpcGxlIHBvd2VyIGRvbWFpbnMsIG9uZQo+PiBvZiB3aGljaCBpcyBzY2FsYWJs
-ZS4KPj4KPj4gVGhlIHBhdGNoZXMgYXJlIGJhc2VkIG9uIDUuMS1yYzEgYW5kIGRlcGVuZCBvbiBz
-b21lIHVmcyBmaXhlcyBJIHBvc3RlZAo+PiBlYXJsaWVyIFsyXSBhbmQgYSBEVCBwYXRjaCB0byBp
-bmNsdWRlIHRoZSBycG1wZCBoZWFkZXIgWzNdCj4+Cj4+IFsxXSBodHRwczovL2xrbWwub3JnL2xr
-bWwvMjAxOS8xLzI4LzIwODYKPj4gWzJdIGh0dHBzOi8vbGttbC5vcmcvbGttbC8yMDE5LzMvOC83
-MAo+PiBbM10gaHR0cHM6Ly9sa21sLm9yZy9sa21sLzIwMTkvMy8yMC8xMjAKPiAKPiBIaSBSYWpl
-bmRyYSwKPiAKPiBJIGFtIGluY2xpbmVkIHRvIGFwcGx5L3B1c2ggdGhpcyBzZXJpZXMgZm9yIDUu
-My1yYzEsIHdpbGwgaXQgYmUKPiBwb3NzaWJsZSBmb3IgeW91IHRvIHNwZW5kIHNvbWUgdGltZSBv
-biB0aGlzIGF0IHByaW9yaXR5ID8KCkhleSBWaXJlc2gsIEkgd2FzIG9uIHZhY2F0aW9uLCBqdXN0
-IGdvdCBiYWNrLiBJIHdpbGwgcmVmcmVzaCB0aGlzIHNlcmllcwphbmQgYWRkcmVzcyB5b3VyIHBy
-ZXZpb3VzIGZlZWRiYWNrLCBJIGhhdmVuJ3QgcmVjZWl2ZWQgbXVjaCBmZWVkYmFjayBmb3IgdGhl
-CmRyaXZlciBjaGFuZ2VzIDovIGJ1dCB3ZSBjYW4gYXRsZWFzdCByZXZpZXcgYW5kIGdldCB0aGUg
-T1BQIGxheWVyIGNoYW5nZXMKZmluYWxpemVkLiB0aGFua3MuCgotLSAKUVVBTENPTU0gSU5ESUEs
-IG9uIGJlaGFsZiBvZiBRdWFsY29tbSBJbm5vdmF0aW9uIENlbnRlciwgSW5jLiBpcyBhIG1lbWJl
-cgpvZiBDb2RlIEF1cm9yYSBGb3J1bSwgaG9zdGVkIGJ5IFRoZSBMaW51eCBGb3VuZGF0aW9uCl9f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBt
-YWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3Rz
-LmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbA==
+On Tue, May 21, 2019 at 04:47:00PM +0800, Claire Chang wrote:
+> Signed-off-by: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> ---
+
+I can not take patches without any changelog text at all.  Part of
+writing a good patch is actually describing why you are making a change.
+
+thanks,
+
+greg k-h
