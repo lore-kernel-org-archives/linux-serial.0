@@ -1,11 +1,13 @@
 From: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: [PATCH v3 0/2] support 8250-mtk uart in-band wake up
-Date: Mon, 27 May 2019 16:31:48 +0800
-Message-ID: <20190527083150.220194-1-tientzu@chromium.org>
+Subject: [PATCH v3 2/2] uart: mediatek: support Rx in-band wakeup
+Date: Mon, 27 May 2019 16:31:50 +0800
+Message-ID: <20190527083150.220194-3-tientzu@chromium.org>
+References: <20190527083150.220194-1-tientzu@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <20190527083150.220194-1-tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
  <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
@@ -19,21 +21,89 @@ To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
 Cc: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, changqi.hu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-changes in v3:
-	1. remove an extra line in patch 2/2
+In order to support Rx in-band wakeup, we need to enable irq wake on an
+edge sensitive interrupt of Rx pin before suspend and disable it when
+resuming.
 
-changes in v2:
-	1. add commit message
-	2. drop return err in the resume path
-	3. ignore disable_irq_wake()'s return value
+This interrupt is used only as wake source to resume the system when
+suspended. Note that the sent character will be lost as the controller is
+actually suspended.
 
-Claire Chang (2):
-  dt-bindings: serial: add documentation for Rx in-band wakeup support
-  uart: mediatek: support Rx in-band wakeup
+We use this to support wakeup on bluetooth. Bluetooth will repeatedly send
+0xFD to wakeup host. Once host detects Rx falling, an interrupt is
+triggered, and the system leaves sleep state. Then, the bluetooth driver
+will send 0xFC to bluetooth and bluetooth can start to send normal HCI
+packets.
 
- .../devicetree/bindings/serial/mtk-uart.txt   | 13 ++++++++--
- drivers/tty/serial/8250/8250_mtk.c            | 24 +++++++++++++++++++
- 2 files changed, 35 insertions(+), 2 deletions(-)
+Signed-off-by: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+---
+ drivers/tty/serial/8250/8250_mtk.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
+diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+index 417c7c810df9..5b94b853387d 100644
+--- a/drivers/tty/serial/8250/8250_mtk.c
++++ b/drivers/tty/serial/8250/8250_mtk.c
+@@ -10,6 +10,7 @@
+ #include <linux/module.h>
+ #include <linux/of_irq.h>
+ #include <linux/of_platform.h>
++#include <linux/pinctrl/consumer.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/serial_8250.h>
+@@ -70,6 +71,7 @@ struct mtk8250_data {
+ #ifdef CONFIG_SERIAL_8250_DMA
+ 	enum dma_rx_status	rx_status;
+ #endif
++	int			rx_wakeup_irq;
+ };
+ 
+ /* flow control mode */
+@@ -551,6 +553,8 @@ static int mtk8250_probe(struct platform_device *pdev)
+ 	pm_runtime_set_active(&pdev->dev);
+ 	pm_runtime_enable(&pdev->dev);
+ 
++	data->rx_wakeup_irq = platform_get_irq(pdev, 1);
++
+ 	return 0;
+ }
+ 
+@@ -572,15 +576,35 @@ static int mtk8250_remove(struct platform_device *pdev)
+ static int __maybe_unused mtk8250_suspend(struct device *dev)
+ {
+ 	struct mtk8250_data *data = dev_get_drvdata(dev);
++	int irq = data->rx_wakeup_irq;
++	int err;
+ 
+ 	serial8250_suspend_port(data->line);
+ 
++	pinctrl_pm_select_sleep_state(dev);
++	if (irq >= 0) {
++		err = enable_irq_wake(irq);
++		if (err) {
++			dev_err(dev,
++				"failed to enable irq wake on IRQ %d: %d\n",
++				irq, err);
++			pinctrl_pm_select_default_state(dev);
++			serial8250_resume_port(data->line);
++			return err;
++		}
++	}
++
+ 	return 0;
+ }
+ 
+ static int __maybe_unused mtk8250_resume(struct device *dev)
+ {
+ 	struct mtk8250_data *data = dev_get_drvdata(dev);
++	int irq = data->rx_wakeup_irq;
++
++	if (irq >= 0)
++		disable_irq_wake(irq);
++	pinctrl_pm_select_default_state(dev);
+ 
+ 	serial8250_resume_port(data->line);
+ 
 -- 
 2.22.0.rc1.257.g3120a18244-goog
