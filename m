@@ -1,109 +1,230 @@
-From: Erin Lo <erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v11 2/6] arm64: dts: mt8183: add capacity-dmips-mhz
-Date: Mon, 27 May 2019 17:04:43 +0800
-Message-ID: <1558947887-31084-3-git-send-email-erin.lo@mediatek.com>
+From: Erin Lo <erin.lo@mediatek.com>
+Subject: [PATCH v11 5/6] arm64: dts: mt8183: add spi node
+Date: Mon, 27 May 2019 17:04:46 +0800
+Message-ID: <1558947887-31084-6-git-send-email-erin.lo@mediatek.com>
 References: <1558947887-31084-1-git-send-email-erin.lo@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <1558947887-31084-1-git-send-email-erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
-List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, srv_heupstream <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Hsin-Yi,
- Wang" <hsinyi-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, mars.cheng-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1558947887-31084-1-git-send-email-erin.lo@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+Cc: devicetree@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, erin.lo@mediatek.com, mars.cheng@mediatek.com, eddie.huang@mediatek.com, Mengqi Zhang <Mengqi.Zhang@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: "Hsin-Yi, Wang" <hsinyi-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Add spi DTS node to the mt8183 and mt8183-evb.
 
-Pinned the frequency to the max and run dhrystone to get the value.
-little cpu: 11071 (max freq: 1989000)
-big cpu: 15293 (max freq: 1989000)
-
-11071 : 15293 ~= 741 : 1024
-
-Signed-off-by: Erin Lo <erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Signed-off-by: Hsin-Yi Wang <hsinyi-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-
+Signed-off-by: Mengqi Zhang <Mengqi.Zhang@mediatek.com>
+Signed-off-by: Erin Lo <erin.lo@mediatek.com>
 ---
- arch/arm64/boot/dts/mediatek/mt8183.dtsi | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/arm64/boot/dts/mediatek/mt8183-evb.dts | 105 ++++++++++++++++++++++++++++
+ arch/arm64/boot/dts/mediatek/mt8183.dtsi    |  78 +++++++++++++++++++++
+ 2 files changed, 183 insertions(+)
 
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
+index 49909ac..d8e555c 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
++++ b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
+@@ -30,6 +30,111 @@
+ 	status = "okay";
+ };
+ 
++&pio {
++	spi_pins_0: spi0{
++		pins_spi{
++			pinmux = <PINMUX_GPIO85__FUNC_SPI0_MI>,
++				 <PINMUX_GPIO86__FUNC_SPI0_CSB>,
++				 <PINMUX_GPIO87__FUNC_SPI0_MO>,
++				 <PINMUX_GPIO88__FUNC_SPI0_CLK>;
++			bias-disable;
++		};
++	};
++
++	spi_pins_1: spi1{
++		pins_spi{
++			pinmux = <PINMUX_GPIO161__FUNC_SPI1_A_MI>,
++				 <PINMUX_GPIO162__FUNC_SPI1_A_CSB>,
++				 <PINMUX_GPIO163__FUNC_SPI1_A_MO>,
++				 <PINMUX_GPIO164__FUNC_SPI1_A_CLK>;
++			bias-disable;
++		};
++	};
++
++	spi_pins_2: spi2{
++		pins_spi{
++			pinmux = <PINMUX_GPIO0__FUNC_SPI2_CSB>,
++				 <PINMUX_GPIO1__FUNC_SPI2_MO>,
++				 <PINMUX_GPIO2__FUNC_SPI2_CLK>,
++				 <PINMUX_GPIO94__FUNC_SPI2_MI>;
++			bias-disable;
++		};
++	};
++
++	spi_pins_3: spi3{
++		pins_spi{
++			pinmux = <PINMUX_GPIO21__FUNC_SPI3_MI>,
++				 <PINMUX_GPIO22__FUNC_SPI3_CSB>,
++				 <PINMUX_GPIO23__FUNC_SPI3_MO>,
++				 <PINMUX_GPIO24__FUNC_SPI3_CLK>;
++			bias-disable;
++		};
++	};
++
++	spi_pins_4: spi4{
++		pins_spi{
++			pinmux = <PINMUX_GPIO17__FUNC_SPI4_MI>,
++				 <PINMUX_GPIO18__FUNC_SPI4_CSB>,
++				 <PINMUX_GPIO19__FUNC_SPI4_MO>,
++				 <PINMUX_GPIO20__FUNC_SPI4_CLK>;
++			bias-disable;
++		};
++	};
++
++	spi_pins_5: spi5{
++		pins_spi{
++			pinmux = <PINMUX_GPIO13__FUNC_SPI5_MI>,
++				 <PINMUX_GPIO14__FUNC_SPI5_CSB>,
++				 <PINMUX_GPIO15__FUNC_SPI5_MO>,
++				 <PINMUX_GPIO16__FUNC_SPI5_CLK>;
++			bias-disable;
++		};
++	};
++};
++
++&spi0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi_pins_0>;
++	mediatek,pad-select = <0>;
++	status = "okay";
++};
++
++&spi1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi_pins_1>;
++	mediatek,pad-select = <0>;
++	status = "okay";
++};
++
++&spi2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi_pins_2>;
++	mediatek,pad-select = <0>;
++	status = "okay";
++};
++
++&spi3 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi_pins_3>;
++	mediatek,pad-select = <0>;
++	status = "okay";
++};
++
++&spi4 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi_pins_4>;
++	mediatek,pad-select = <0>;
++	status = "okay";
++};
++
++&spi5 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi_pins_5>;
++	mediatek,pad-select = <0>;
++	status = "okay";
++
++};
++
+ &uart0 {
+ 	status = "okay";
+ };
 diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-index 08274bf..5b34ec6 100644
+index 5672c18..2e3063f 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-@@ -56,6 +56,7 @@
- 			compatible = "arm,cortex-a53";
- 			reg = <0x000>;
- 			enable-method = "psci";
-+			capacity-dmips-mhz = <741>;
+@@ -285,6 +285,84 @@
+ 			status = "disabled";
  		};
  
- 		cpu1: cpu@1 {
-@@ -63,6 +64,7 @@
- 			compatible = "arm,cortex-a53";
- 			reg = <0x001>;
- 			enable-method = "psci";
-+			capacity-dmips-mhz = <741>;
- 		};
- 
- 		cpu2: cpu@2 {
-@@ -70,6 +72,7 @@
- 			compatible = "arm,cortex-a53";
- 			reg = <0x002>;
- 			enable-method = "psci";
-+			capacity-dmips-mhz = <741>;
- 		};
- 
- 		cpu3: cpu@3 {
-@@ -77,6 +80,7 @@
- 			compatible = "arm,cortex-a53";
- 			reg = <0x003>;
- 			enable-method = "psci";
-+			capacity-dmips-mhz = <741>;
- 		};
- 
- 		cpu4: cpu@100 {
-@@ -84,6 +88,7 @@
- 			compatible = "arm,cortex-a73";
- 			reg = <0x100>;
- 			enable-method = "psci";
-+			capacity-dmips-mhz = <1024>;
- 		};
- 
- 		cpu5: cpu@101 {
-@@ -91,6 +96,7 @@
- 			compatible = "arm,cortex-a73";
- 			reg = <0x101>;
- 			enable-method = "psci";
-+			capacity-dmips-mhz = <1024>;
- 		};
- 
- 		cpu6: cpu@102 {
-@@ -98,6 +104,7 @@
- 			compatible = "arm,cortex-a73";
- 			reg = <0x102>;
- 			enable-method = "psci";
-+			capacity-dmips-mhz = <1024>;
- 		};
- 
- 		cpu7: cpu@103 {
-@@ -105,6 +112,7 @@
- 			compatible = "arm,cortex-a73";
- 			reg = <0x103>;
- 			enable-method = "psci";
-+			capacity-dmips-mhz = <1024>;
- 		};
- 	};
- 
++		spi0: spi@1100a000 {
++			compatible = "mediatek,mt8183-spi";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			reg = <0 0x1100a000 0 0x1000>;
++			interrupts = <GIC_SPI 120 IRQ_TYPE_LEVEL_LOW>;
++			clocks = <&topckgen CLK_TOP_SYSPLL_D5_D2>,
++				 <&topckgen CLK_TOP_MUX_SPI>,
++				 <&infracfg CLK_INFRA_SPI0>;
++			clock-names = "parent-clk", "sel-clk", "spi-clk";
++			status = "disabled";
++		};
++
++		spi1: spi@11010000 {
++			compatible = "mediatek,mt8183-spi";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			reg = <0 0x11010000 0 0x1000>;
++			interrupts = <GIC_SPI 124 IRQ_TYPE_LEVEL_LOW>;
++			clocks = <&topckgen CLK_TOP_SYSPLL_D5_D2>,
++				 <&topckgen CLK_TOP_MUX_SPI>,
++				 <&infracfg CLK_INFRA_SPI1>;
++			clock-names = "parent-clk", "sel-clk", "spi-clk";
++			status = "disabled";
++		};
++
++		spi2: spi@11012000 {
++			compatible = "mediatek,mt8183-spi";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			reg = <0 0x11012000 0 0x1000>;
++			interrupts = <GIC_SPI 129 IRQ_TYPE_LEVEL_LOW>;
++			clocks = <&topckgen CLK_TOP_SYSPLL_D5_D2>,
++				 <&topckgen CLK_TOP_MUX_SPI>,
++				 <&infracfg CLK_INFRA_SPI2>;
++			clock-names = "parent-clk", "sel-clk", "spi-clk";
++			status = "disabled";
++		};
++
++		spi3: spi@11013000 {
++			compatible = "mediatek,mt8183-spi";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			reg = <0 0x11013000 0 0x1000>;
++			interrupts = <GIC_SPI 130 IRQ_TYPE_LEVEL_LOW>;
++			clocks = <&topckgen CLK_TOP_SYSPLL_D5_D2>,
++				 <&topckgen CLK_TOP_MUX_SPI>,
++				 <&infracfg CLK_INFRA_SPI3>;
++			clock-names = "parent-clk", "sel-clk", "spi-clk";
++			status = "disabled";
++		};
++
++		spi4: spi@11018000 {
++			compatible = "mediatek,mt8183-spi";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			reg = <0 0x11018000 0 0x1000>;
++			interrupts = <GIC_SPI 134 IRQ_TYPE_LEVEL_LOW>;
++			clocks = <&topckgen CLK_TOP_SYSPLL_D5_D2>,
++				 <&topckgen CLK_TOP_MUX_SPI>,
++				 <&infracfg CLK_INFRA_SPI4>;
++			clock-names = "parent-clk", "sel-clk", "spi-clk";
++			status = "disabled";
++		};
++
++		spi5: spi@11019000 {
++			compatible = "mediatek,mt8183-spi";
++			#address-cells = <1>;
++			#size-cells = <0>;
++			reg = <0 0x11019000 0 0x1000>;
++			interrupts = <GIC_SPI 135 IRQ_TYPE_LEVEL_LOW>;
++			clocks = <&topckgen CLK_TOP_SYSPLL_D5_D2>,
++				 <&topckgen CLK_TOP_MUX_SPI>,
++				 <&infracfg CLK_INFRA_SPI5>;
++			clock-names = "parent-clk", "sel-clk", "spi-clk";
++			status = "disabled";
++		};
++
+ 		audiosys: syscon@11220000 {
+ 			compatible = "mediatek,mt8183-audiosys", "syscon";
+ 			reg = <0 0x11220000 0 0x1000>;
 -- 
 1.8.1.1.dirty
