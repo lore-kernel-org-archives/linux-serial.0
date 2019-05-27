@@ -1,23 +1,36 @@
-From: Vinod Koul <vkoul@kernel.org>
-Subject: Re: [PATCH 2/2] serial: 8250-mtk: modify uart DMA rx
-Date: Mon, 27 May 2019 12:10:28 +0530
-Message-ID: <20190527064028.GF15118@vkoul-mobl>
-References: <1558596909-14084-1-git-send-email-long.cheng@mediatek.com>
- <1558596909-14084-3-git-send-email-long.cheng@mediatek.com>
+From: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: [PATCH v2 0/2] support 8250-mtk uart in-band wake up
+Date: Mon, 27 May 2019 14:55:57 +0800
+Message-ID: <20190527065559.66056-1-tientzu@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1558596909-14084-3-git-send-email-long.cheng@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Long Cheng <long.cheng@mediatek.com>
-Cc: Randy Dunlap <rdunlap@infradead.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Sean Wang <sean.wang@kernel.org>, Nicolas Boichat <drinkcat@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>, Zhenbao Liu <zhenbao.liu@mediatek.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
+List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
+Cc: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, changqi.hu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-On 23-05-19, 15:35, Long Cheng wrote:
-> Modify uart rx and complete for DMA
+changes in v2:
+	1. add commit message
+	2. drop return err in the resume path
+	3. ignore disable_irq_wake()'s return value
 
-Reviewed-by: Vinod Koul <vkoul@kernel.org>
+Claire Chang (2):
+  dt-bindings: serial: add documentation for Rx in-band wakeup support
+  uart: mediatek: support Rx in-band wakeup
+
+ .../devicetree/bindings/serial/mtk-uart.txt   | 13 ++++++++--
+ drivers/tty/serial/8250/8250_mtk.c            | 26 +++++++++++++++++++
+ 2 files changed, 37 insertions(+), 2 deletions(-)
 
 -- 
-~Vinod
+2.22.0.rc1.257.g3120a18244-goog
