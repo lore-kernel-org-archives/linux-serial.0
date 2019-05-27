@@ -1,76 +1,23 @@
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: Re: [PATCH v2 20/45] drivers: tty: serial: msm_serial: use devm_*
- functions
-Date: Sun, 26 May 2019 22:57:15 -0700
-Message-ID: <20190527055715.GW31438@minitux>
-References: <1552602855-26086-1-git-send-email-info@metux.net>
- <1552602855-26086-21-git-send-email-info@metux.net>
+From: Vinod Koul <vkoul@kernel.org>
+Subject: Re: [PATCH 2/2] serial: 8250-mtk: modify uart DMA rx
+Date: Mon, 27 May 2019 12:10:28 +0530
+Message-ID: <20190527064028.GF15118@vkoul-mobl>
+References: <1558596909-14084-1-git-send-email-long.cheng@mediatek.com>
+ <1558596909-14084-3-git-send-email-long.cheng@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1552602855-26086-21-git-send-email-info@metux.net>
+In-Reply-To: <1558596909-14084-3-git-send-email-long.cheng@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Cc: linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, eric@anholt.net, stefan.wahren@i2se.com, f.fainelli@gmail.com, rjui@broadcom.com, sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com, andriy.shevchenko@linux.intel.com, vz@mleia.com, matthias.bgg@gmail.com, yamada.masahiro@socionext.com, tklauser@distanz.ch, richard.genoud@gmail.com, macro@linux-mips.org, u.kleine-koenig@pengutronix.de, kernel@pengutronix.de, slemieux.tyco@gmail.com, andy.gross@linaro.org, david.brown@linaro.org, shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com, baohua@kernel.org, jacmet@sunsite.dk, linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+To: Long Cheng <long.cheng@mediatek.com>
+Cc: Randy Dunlap <rdunlap@infradead.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Sean Wang <sean.wang@kernel.org>, Nicolas Boichat <drinkcat@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@mediatek.com>, Zhenbao Liu <zhenbao.liu@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu 14 Mar 15:33 PDT 2019, Enrico Weigelt, metux IT consult wrote:
+On 23-05-19, 15:35, Long Cheng wrote:
+> Modify uart rx and complete for DMA
 
-> Use the safer devm versions of memory mapping functions.
-> 
-> Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
+Reviewed-by: Vinod Koul <vkoul@kernel.org>
 
-As pointed out by others, this resource does not follow the life cycle
-of the port->dev, so I don't think this improves the code.
-
-Regards,
-Bjorn
-
-> ---
->  drivers/tty/serial/msm_serial.c | 13 ++++++++-----
->  1 file changed, 8 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-> index 1090960..e8e0c87 100644
-> --- a/drivers/tty/serial/msm_serial.c
-> +++ b/drivers/tty/serial/msm_serial.c
-> @@ -1324,8 +1324,8 @@ static void msm_release_port(struct uart_port *port)
->  		return;
->  	size = resource_size(uart_resource);
->  
-> -	release_mem_region(port->mapbase, size);
-> -	iounmap(port->membase);
-> +	devm_release_mem_region(port->dev, port->mapbase, size);
-> +	devm_iounmap(port->dev, port->membase);
->  	port->membase = NULL;
->  }
->  
-> @@ -1342,10 +1342,13 @@ static int msm_request_port(struct uart_port *port)
->  
->  	size = resource_size(uart_resource);
->  
-> -	if (!request_mem_region(port->mapbase, size, "msm_serial"))
-> +	if (!devm_request_mem_region(port->dev,
-> +				     port->mapbase,
-> +				     size,
-> +				     "msm_serial"))
->  		return -EBUSY;
->  
-> -	port->membase = ioremap(port->mapbase, size);
-> +	port->membase = ioremap(port->dev, port->mapbase, size);
->  	if (!port->membase) {
->  		ret = -EBUSY;
->  		goto fail_release_port;
-> @@ -1354,7 +1357,7 @@ static int msm_request_port(struct uart_port *port)
->  	return 0;
->  
->  fail_release_port:
-> -	release_mem_region(port->mapbase, size);
-> +	devm_release_mem_region(port->dev, port->mapbase, size);
->  	return ret;
->  }
->  
-> -- 
-> 1.9.1
-> 
+-- 
+~Vinod
