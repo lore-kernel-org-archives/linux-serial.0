@@ -1,47 +1,74 @@
-From: YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH -next] serial: stm32: Make stm32_get_databits static
-Date: Tue, 28 May 2019 17:04:49 +0800
-Message-ID: <20190528090449.22868-1-yuehaibing@huawei.com>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: Re: [PATCH 1/2 v3] serial: mctrl_gpio: Check if GPIO property
+ exisits before requesting it
+Date: Tue, 28 May 2019 13:00:42 +0300
+Message-ID: <20190528100042.GT2781@lahna.fi.intel.com>
+References: <20190527111805.876-1-sr@denx.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, mcoquelin.stm32@gmail.com, alexandre.torgue@st.com
-Cc: YueHaibing <yuehaibing@huawei.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-stm32@st-md-mailman.stormreply.com
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190527111805.876-1-sr@denx.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Stefan Roese <sr@denx.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Yegor Yefremov <yegorslists@googlemail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Giulio Benetti <giulio.benetti@micronovasrl.com>
 List-Id: linux-serial@vger.kernel.org
 
-Fix sparse warning:
+On Mon, May 27, 2019 at 01:18:04PM +0200, Stefan Roese wrote:
+> This patch adds a check for the GPIOs property existence, before the
+> GPIO is requested. This fixes an issue seen when the 8250 mctrl_gpio
+> support is added (2nd patch in this patch series) on x86 platforms using
+> ACPI.
+> 
+> Here Mika's comments from 2016-08-09:
+> 
+> "
+> I noticed that with v4.8-rc1 serial console of some of our Broxton
+> systems does not work properly anymore. I'm able to see output but input
+> does not work.
+> 
+> I bisected it down to commit 4ef03d328769eddbfeca1f1c958fdb181a69c341
+> ("tty/serial/8250: use mctrl_gpio helpers").
+> 
+> The reason why it fails is that in ACPI we do not have names for GPIOs
+> (except when _DSD is used) so we use the "idx" to index into _CRS GPIO
+> resources. Now mctrl_gpio_init_noauto() goes through a list of GPIOs
+> calling devm_gpiod_get_index_optional() passing "idx" of 0 for each. The
+> UART device in Broxton has following (simplified) ACPI description:
+> 
+>     Device (URT4)
+>     {
+>         ...
+>         Name (_CRS, ResourceTemplate () {
+>             GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
+>                     "\\_SB.GPO0", 0x00, ResourceConsumer)
+>             {
+>                 0x003A
+>             }
+>             GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
+>                     "\\_SB.GPO0", 0x00, ResourceConsumer)
+>             {
+>                 0x003D
+>             }
+>         })
+> 
+> In this case it finds the first GPIO (0x003A which happens to be RX pin
+> for that UART), turns it into GPIO which then breaks input for the UART
+> device. This also breaks systems with bluetooth connected to UART (those
+> typically have some GPIOs in their _CRS).
+> 
+> Any ideas how to fix this?
+> 
+> We cannot just drop the _CRS index lookup fallback because that would
+> break many existing machines out there so maybe we can limit this to
+> only DT enabled machines. Or alternatively probe if the property first
+> exists before trying to acquire the GPIOs (using
+> device_property_present()).
+> "
+> 
+> This patch implements the fix suggested by Mika in his statement above.
+> 
+> Signed-off-by: Stefan Roese <sr@denx.de>
+> Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
 
-drivers/tty/serial/stm32-usart.c:603:14: warning:
- symbol 'stm32_get_databits' was not declared. Should it be static?
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- drivers/tty/serial/stm32-usart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 9c2b04e..4517f2b 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -600,7 +600,7 @@ static void stm32_shutdown(struct uart_port *port)
- 	free_irq(port->irq, port);
- }
- 
--unsigned int stm32_get_databits(struct ktermios *termios)
-+static unsigned int stm32_get_databits(struct ktermios *termios)
- {
- 	unsigned int bits;
- 
--- 
-2.7.4
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
