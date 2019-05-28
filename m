@@ -1,74 +1,66 @@
 From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: Re: [PATCH 1/2 v3] serial: mctrl_gpio: Check if GPIO property
- exisits before requesting it
-Date: Tue, 28 May 2019 13:00:42 +0300
-Message-ID: <20190528100042.GT2781@lahna.fi.intel.com>
+Subject: Re: [PATCH 2/2 v3] tty/serial/8250: use mctrl_gpio helpers
+Date: Tue, 28 May 2019 13:03:37 +0300
+Message-ID: <20190528100337.GU2781@lahna.fi.intel.com>
 References: <20190527111805.876-1-sr@denx.de>
+ <20190527111805.876-2-sr@denx.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190527111805.876-1-sr@denx.de>
+In-Reply-To: <20190527111805.876-2-sr@denx.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Stefan Roese <sr@denx.de>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Yegor Yefremov <yegorslists@googlemail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Giulio Benetti <giulio.benetti@micronovasrl.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Yegor Yefremov <yegorslists@googlemail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, May 27, 2019 at 01:18:04PM +0200, Stefan Roese wrote:
-> This patch adds a check for the GPIOs property existence, before the
-> GPIO is requested. This fixes an issue seen when the 8250 mctrl_gpio
-> support is added (2nd patch in this patch series) on x86 platforms using
-> ACPI.
+On Mon, May 27, 2019 at 01:18:05PM +0200, Stefan Roese wrote:
+> From: Yegor Yefremov <yegorslists@googlemail.com>
 > 
-> Here Mika's comments from 2016-08-09:
+> This patch permits the usage for GPIOs to control
+> the CTS/RTS/DTR/DSR/DCD/RI signals.
 > 
-> "
-> I noticed that with v4.8-rc1 serial console of some of our Broxton
-> systems does not work properly anymore. I'm able to see output but input
-> does not work.
+> Changed by Stefan:
+> Only call mctrl_gpio_init(), if the device has no ACPI companion device
+> to not break existing ACPI based systems. Also only use the mctrl_gpio_
+> functions when "gpios" is available.
 > 
-> I bisected it down to commit 4ef03d328769eddbfeca1f1c958fdb181a69c341
-> ("tty/serial/8250: use mctrl_gpio helpers").
-> 
-> The reason why it fails is that in ACPI we do not have names for GPIOs
-> (except when _DSD is used) so we use the "idx" to index into _CRS GPIO
-> resources. Now mctrl_gpio_init_noauto() goes through a list of GPIOs
-> calling devm_gpiod_get_index_optional() passing "idx" of 0 for each. The
-> UART device in Broxton has following (simplified) ACPI description:
-> 
->     Device (URT4)
->     {
->         ...
->         Name (_CRS, ResourceTemplate () {
->             GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
->                     "\\_SB.GPO0", 0x00, ResourceConsumer)
->             {
->                 0x003A
->             }
->             GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
->                     "\\_SB.GPO0", 0x00, ResourceConsumer)
->             {
->                 0x003D
->             }
->         })
-> 
-> In this case it finds the first GPIO (0x003A which happens to be RX pin
-> for that UART), turns it into GPIO which then breaks input for the UART
-> device. This also breaks systems with bluetooth connected to UART (those
-> typically have some GPIOs in their _CRS).
-> 
-> Any ideas how to fix this?
-> 
-> We cannot just drop the _CRS index lookup fallback because that would
-> break many existing machines out there so maybe we can limit this to
-> only DT enabled machines. Or alternatively probe if the property first
-> exists before trying to acquire the GPIOs (using
-> device_property_present()).
-> "
-> 
-> This patch implements the fix suggested by Mika in his statement above.
-> 
+> Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > Signed-off-by: Stefan Roese <sr@denx.de>
 > Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Cc: Giulio Benetti <giulio.benetti@micronovasrl.com>
+> Cc: Yegor Yefremov <yegorslists@googlemail.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+> v3:
+> - Only call mctrl_gpio_init(), if the device has no ACPI companion device
+>   to not break existing ACPI based systems, as suggested by Andy
+> 
+> v2:
+> - No change
+> 
+> Please note that this patch was already applied before [1]. And later
+> reverted [2] because it introduced problems on some x86 based boards
+> (ACPI GPIO related). Here a detailed description of the issue at that
+> time:
+> 
+> https://lkml.org/lkml/2016/8/9/357
+> http://www.spinics.net/lists/linux-serial/msg23071.html
+> 
+> This is a re-send of the original patch that was applied at that time.
+> With patch 1/2 from this series this issue should be fixed now (please
+> note that I can't test it on such an x86 platform causing these
+> problems).
+> 
+> Andy (or Mika), perhaps it would be possible for you to test this
+> patch again, now with patch 1/2 of this series applied as well?
+> That would be really helpful.
+
+Unfortunately I'm not able to test this anymore. Andy should be able to
+test this but he is on vacation this week.
+
+Regarding the ACPI changes in this patch, they look good to me so
 
 Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
