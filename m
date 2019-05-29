@@ -1,66 +1,62 @@
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: Re: [PATCH 2/2 v3] tty/serial/8250: use mctrl_gpio helpers
-Date: Tue, 28 May 2019 13:03:37 +0300
-Message-ID: <20190528100337.GU2781@lahna.fi.intel.com>
+From: Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH 1/2 v3] serial: mctrl_gpio: Check if GPIO property
+ exisits before requesting it
+Date: Wed, 29 May 2019 15:44:35 +0200
+Message-ID: <20190529134435.GR568@localhost>
 References: <20190527111805.876-1-sr@denx.de>
- <20190527111805.876-2-sr@denx.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190527111805.876-2-sr@denx.de>
+In-Reply-To: <20190527111805.876-1-sr@denx.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Stefan Roese <sr@denx.de>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Yegor Yefremov <yegorslists@googlemail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Yegor Yefremov <yegorslists@googlemail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Giulio Benetti <giulio.benetti@micronovasrl.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, May 27, 2019 at 01:18:05PM +0200, Stefan Roese wrote:
-> From: Yegor Yefremov <yegorslists@googlemail.com>
-> 
-> This patch permits the usage for GPIOs to control
-> the CTS/RTS/DTR/DSR/DCD/RI signals.
-> 
-> Changed by Stefan:
-> Only call mctrl_gpio_init(), if the device has no ACPI companion device
-> to not break existing ACPI based systems. Also only use the mctrl_gpio_
-> functions when "gpios" is available.
-> 
-> Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+On Mon, May 27, 2019 at 01:18:04PM +0200, Stefan Roese wrote:
+> This patch adds a check for the GPIOs property existence, before the
+> GPIO is requested. This fixes an issue seen when the 8250 mctrl_gpio
+> support is added (2nd patch in this patch series) on x86 platforms using
+> ACPI.
+
 > Signed-off-by: Stefan Roese <sr@denx.de>
 > Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
 > Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Cc: Giulio Benetti <giulio.benetti@micronovasrl.com>
 > Cc: Yegor Yefremov <yegorslists@googlemail.com>
 > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Giulio Benetti <giulio.benetti@micronovasrl.com>
 > ---
 > v3:
-> - Only call mctrl_gpio_init(), if the device has no ACPI companion device
->   to not break existing ACPI based systems, as suggested by Andy
-> 
-> v2:
 > - No change
 > 
-> Please note that this patch was already applied before [1]. And later
-> reverted [2] because it introduced problems on some x86 based boards
-> (ACPI GPIO related). Here a detailed description of the issue at that
-> time:
+> v2:
+> - Include the problem description and analysis from Mika into the commit
+>   text, as suggested by Greg.
 > 
-> https://lkml.org/lkml/2016/8/9/357
-> http://www.spinics.net/lists/linux-serial/msg23071.html
+>  drivers/tty/serial/serial_mctrl_gpio.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
 > 
-> This is a re-send of the original patch that was applied at that time.
-> With patch 1/2 from this series this issue should be fixed now (please
-> note that I can't test it on such an x86 platform causing these
-> problems).
-> 
-> Andy (or Mika), perhaps it would be possible for you to test this
-> patch again, now with patch 1/2 of this series applied as well?
-> That would be really helpful.
+> diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
+> index 39ed56214cd3..cac50b20a119 100644
+> --- a/drivers/tty/serial/serial_mctrl_gpio.c
+> +++ b/drivers/tty/serial/serial_mctrl_gpio.c
+> @@ -116,6 +116,13 @@ struct mctrl_gpios *mctrl_gpio_init_noauto(struct device *dev, unsigned int idx)
+>  
+>  	for (i = 0; i < UART_GPIO_MAX; i++) {
+>  		enum gpiod_flags flags;
+> +		char *gpio_str;
+> +
+> +		/* Check if GPIO property exists and continue if not */
+> +		gpio_str = kasprintf(GFP_KERNEL, "%s-gpios",
+> +				     mctrl_gpios_desc[i].name);
 
-Unfortunately I'm not able to test this anymore. Andy should be able to
-test this but he is on vacation this week.
+Where's the corresponding kfree?
 
-Regarding the ACPI changes in this patch, they look good to me so
+> +		if (!device_property_present(dev, gpio_str))
+> +			continue;
+>  
+>  		if (mctrl_gpios_desc[i].dir_out)
+>  			flags = GPIOD_OUT_LOW;
 
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Johan
