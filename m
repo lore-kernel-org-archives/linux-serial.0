@@ -1,61 +1,129 @@
-From: Stefan Roese <sr@denx.de>
-Subject: Re: [PATCH 1/2 v3] serial: mctrl_gpio: Check if GPIO property exisits
- before requesting it
-Date: Wed, 29 May 2019 15:57:31 +0200
-Message-ID: <4e45b298-78bf-c2a0-fcbe-45c10674990f@denx.de>
-References: <20190527111805.876-1-sr@denx.de> <20190529134435.GR568@localhost>
+From: Long Cheng <long.cheng@mediatek.com>
+Subject: Re: [PATCH 2/2] serial: 8250-mtk: modify uart DMA rx
+Date: Thu, 30 May 2019 17:34:16 +0800
+Message-ID: <1559208856.14150.35.camel@mhfsdcap03>
+References: <1558596909-14084-1-git-send-email-long.cheng@mediatek.com>
+         <1558596909-14084-3-git-send-email-long.cheng@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190529134435.GR568@localhost>
-Content-Language: en-US
+In-Reply-To: <1558596909-14084-3-git-send-email-long.cheng@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Johan Hovold <johan@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Yegor Yefremov <yegorslists@googlemail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Giulio Benetti <giulio.benetti@micronovasrl.com>
+Cc: Vinod Koul <vkoul@kernel.org>, Randy Dunlap <rdunlap@infradead.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Sean Wang <sean.wang@kernel.org>, Nicolas Boichat <drinkcat@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>, Dan Williams <dan.j.williams@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sean Wang <sean.wang@mediatek.com>, dmaengine@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, srv_heupstream@mediatek.com, Yingjoe Chen <yingjoe.chen@mediatek.com>, YT Shen <yt.shen@media>
 List-Id: linux-serial@vger.kernel.org
 
-On 29.05.19 15:44, Johan Hovold wrote:
-> On Mon, May 27, 2019 at 01:18:04PM +0200, Stefan Roese wrote:
->> This patch adds a check for the GPIOs property existence, before the
->> GPIO is requested. This fixes an issue seen when the 8250 mctrl_gpio
->> support is added (2nd patch in this patch series) on x86 platforms using
->> ACPI.
-> 
->> Signed-off-by: Stefan Roese <sr@denx.de>
->> Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
->> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->> Cc: Yegor Yefremov <yegorslists@googlemail.com>
->> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->> Cc: Giulio Benetti <giulio.benetti@micronovasrl.com>
->> ---
->> v3:
->> - No change
->>
->> v2:
->> - Include the problem description and analysis from Mika into the commit
->>    text, as suggested by Greg.
->>
->>   drivers/tty/serial/serial_mctrl_gpio.c | 7 +++++++
->>   1 file changed, 7 insertions(+)
->>
->> diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
->> index 39ed56214cd3..cac50b20a119 100644
->> --- a/drivers/tty/serial/serial_mctrl_gpio.c
->> +++ b/drivers/tty/serial/serial_mctrl_gpio.c
->> @@ -116,6 +116,13 @@ struct mctrl_gpios *mctrl_gpio_init_noauto(struct device *dev, unsigned int idx)
->>   
->>   	for (i = 0; i < UART_GPIO_MAX; i++) {
->>   		enum gpiod_flags flags;
->> +		char *gpio_str;
->> +
->> +		/* Check if GPIO property exists and continue if not */
->> +		gpio_str = kasprintf(GFP_KERNEL, "%s-gpios",
->> +				     mctrl_gpios_desc[i].name);
-> 
-> Where's the corresponding kfree?
+On Thu, 2019-05-23 at 15:35 +0800, Long Cheng wrote:
 
-Its missing. I'll add it in v4.
 
-Thanks,
-Stefan
+Hi Greg,
+
+Just a gentle ping!
+
+thanks.
+
+> Modify uart rx and complete for DMA
+> 
+> Signed-off-by: Long Cheng <long.cheng@mediatek.com>
+> ---
+>  drivers/tty/serial/8250/8250_mtk.c |   49 +++++++++++++++---------------------
+>  1 file changed, 20 insertions(+), 29 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+> index 417c7c8..f470ded 100644
+> --- a/drivers/tty/serial/8250/8250_mtk.c
+> +++ b/drivers/tty/serial/8250/8250_mtk.c
+> @@ -47,7 +47,6 @@
+>  #define MTK_UART_DMA_EN_RX	0x5
+>  
+>  #define MTK_UART_ESCAPE_CHAR	0x77	/* Escape char added under sw fc */
+> -#define MTK_UART_TX_SIZE	UART_XMIT_SIZE
+>  #define MTK_UART_RX_SIZE	0x8000
+>  #define MTK_UART_TX_TRIGGER	1
+>  #define MTK_UART_RX_TRIGGER	MTK_UART_RX_SIZE
+> @@ -89,28 +88,30 @@ static void mtk8250_dma_rx_complete(void *param)
+>  	struct mtk8250_data *data = up->port.private_data;
+>  	struct tty_port *tty_port = &up->port.state->port;
+>  	struct dma_tx_state state;
+> +	int copied, total, cnt;
+>  	unsigned char *ptr;
+> -	int copied;
+>  
+> -	dma_sync_single_for_cpu(dma->rxchan->device->dev, dma->rx_addr,
+> -				dma->rx_size, DMA_FROM_DEVICE);
+> +	if (data->rx_status == DMA_RX_SHUTDOWN)
+> +		return;
+>  
+>  	dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
+> +	total = dma->rx_size - state.residue;
+> +	cnt = total;
+>  
+> -	if (data->rx_status == DMA_RX_SHUTDOWN)
+> -		return;
+> +	if ((data->rx_pos + cnt) > dma->rx_size)
+> +		cnt = dma->rx_size - data->rx_pos;
+>  
+> -	if ((data->rx_pos + state.residue) <= dma->rx_size) {
+> -		ptr = (unsigned char *)(data->rx_pos + dma->rx_buf);
+> -		copied = tty_insert_flip_string(tty_port, ptr, state.residue);
+> -	} else {
+> -		ptr = (unsigned char *)(data->rx_pos + dma->rx_buf);
+> -		copied = tty_insert_flip_string(tty_port, ptr,
+> -						dma->rx_size - data->rx_pos);
+> +	ptr = (unsigned char *)(data->rx_pos + dma->rx_buf);
+> +	copied = tty_insert_flip_string(tty_port, ptr, cnt);
+> +	data->rx_pos += cnt;
+> +
+> +	if (total > cnt) {
+>  		ptr = (unsigned char *)(dma->rx_buf);
+> -		copied += tty_insert_flip_string(tty_port, ptr,
+> -				data->rx_pos + state.residue - dma->rx_size);
+> +		cnt = total - cnt;
+> +		copied += tty_insert_flip_string(tty_port, ptr, cnt);
+> +		data->rx_pos = cnt;
+>  	}
+> +
+>  	up->port.icount.rx += copied;
+>  
+>  	tty_flip_buffer_push(tty_port);
+> @@ -121,9 +122,7 @@ static void mtk8250_dma_rx_complete(void *param)
+>  static void mtk8250_rx_dma(struct uart_8250_port *up)
+>  {
+>  	struct uart_8250_dma *dma = up->dma;
+> -	struct mtk8250_data *data = up->port.private_data;
+>  	struct dma_async_tx_descriptor	*desc;
+> -	struct dma_tx_state	 state;
+>  
+>  	desc = dmaengine_prep_slave_single(dma->rxchan, dma->rx_addr,
+>  					   dma->rx_size, DMA_DEV_TO_MEM,
+> @@ -138,12 +137,6 @@ static void mtk8250_rx_dma(struct uart_8250_port *up)
+>  
+>  	dma->rx_cookie = dmaengine_submit(desc);
+>  
+> -	dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
+> -	data->rx_pos = state.residue;
+> -
+> -	dma_sync_single_for_device(dma->rxchan->device->dev, dma->rx_addr,
+> -				   dma->rx_size, DMA_FROM_DEVICE);
+> -
+>  	dma_async_issue_pending(dma->rxchan);
+>  }
+>  
+> @@ -156,13 +149,11 @@ static void mtk8250_dma_enable(struct uart_8250_port *up)
+>  	if (data->rx_status != DMA_RX_START)
+>  		return;
+>  
+> -	dma->rxconf.direction		= DMA_DEV_TO_MEM;
+> -	dma->rxconf.src_addr_width	= dma->rx_size / 1024;
+> -	dma->rxconf.src_addr		= dma->rx_addr;
+> +	dma->rxconf.src_port_window_size	= dma->rx_size;
+> +	dma->rxconf.src_addr				= dma->rx_addr;
+>  
+> -	dma->txconf.direction		= DMA_MEM_TO_DEV;
+> -	dma->txconf.dst_addr_width	= MTK_UART_TX_SIZE / 1024;
+> -	dma->txconf.dst_addr		= dma->tx_addr;
+> +	dma->txconf.dst_port_window_size	= UART_XMIT_SIZE;
+> +	dma->txconf.dst_addr				= dma->tx_addr;
+>  
+>  	serial_out(up, UART_FCR, UART_FCR_ENABLE_FIFO | UART_FCR_CLEAR_RCVR |
+>  		UART_FCR_CLEAR_XMIT);
