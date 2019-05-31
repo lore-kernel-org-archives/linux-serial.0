@@ -1,16 +1,15 @@
-From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Subject: Re: [PATCH] serial: sa1100: add note about modem control signals
-Date: Fri, 31 May 2019 16:57:00 +0100
-Message-ID: <20190531155700.crrawgf3iot2sm2t@shell.armlinux.org.uk>
-References: <20190531151032.tfrl7yqph6wsg5pl@pengutronix.de>
- <E1hWjO0-00087g-7y@rmk-PC.armlinux.org.uk>
- <20190531153135.sboekptwx4jxlpeg@pengutronix.de>
+From: Russell King <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH v2] serial: sa1100: add note about modem control signals
+Date: Fri, 31 May 2019 17:01:42 +0100
+Message-ID: <E1hWjyQ-0008Ni-8V@rmk-PC.armlinux.org.uk>
+References: <20190531155700.crrawgf3iot2sm2t@shell.armlinux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190531155700.crrawgf3iot2sm2t@shell.armlinux.org.uk>
+MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190531153135.sboekptwx4jxlpeg@pengutronix.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -21,70 +20,29 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jiri Slaby <jslaby@suse.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, May 31, 2019 at 05:31:35PM +0200, Uwe Kleine-K=F6nig wrote:
-> Hello Russell,
-> =
-
-> On Fri, May 31, 2019 at 04:24:04PM +0100, Russell King wrote:
-> > As suggested by Uwe, add a note indicating that the modem control
-> > signals do not support interrupts, which precludes the driver from
-> > using mctrl_gpio_init().
-> > =
-
-> > Suggested-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> > ---
-> > =
-
-> > Uwe, something like this?
-> > =
-
-> >  drivers/tty/serial/sa1100.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> > =
-
-> > diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
-> > index a6b4309b62fc..d7dbf0576be8 100644
-> > --- a/drivers/tty/serial/sa1100.c
-> > +++ b/drivers/tty/serial/sa1100.c
-> > @@ -949,6 +949,9 @@ static int sa1100_serial_resume(struct platform_dev=
-ice *dev)
-> >  static int sa1100_serial_add_one_port(struct sa1100_port *sport, struc=
-t platform_device *dev)
-> >  {
-> >  	sport->port.dev =3D &dev->dev;
-> > +
-> > +	// GPIO driver does not support interrupts for these modem
-> > +	// control signals, so the serial driver polls them.
-> >  	sport->gpios =3D mctrl_gpio_init_noauto(sport->port.dev, 0);
-> >  	if (IS_ERR(sport->gpios)) {
-> >  		int err =3D PTR_ERR(sport->gpios);
-> =
-
-> I would mention that because of this mctrl_gpio_init cannot be used.
-
-Ok.
-
-> (And I would have expected C-like comments).
-
-It seems that Linus has changed his opinion on C99 commenting style,
-from "it's not real C" to "I prefer it":
-
-https://lore.kernel.org/patchwork/patch/852060/
-
-Yes, this is mostly about the SPDX commenting style, but Linus seems to
-be expressing a general preference towards "//" style comments over
-"/* */" comments, especially for new comments.
-
-Specifically see replies #14 and #18, especially #18 where the
-discussion moves towards trailing-line comments for structure members.
-
--- =
-
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps =
-up
-According to speedtest.net: 11.9Mbps down 500kbps up
+QXMgc3VnZ2VzdGVkIGJ5IFV3ZSwgYWRkIGEgbm90ZSBpbmRpY2F0aW5nIHRoYXQgdGhlIG1vZGVt
+IGNvbnRyb2wKc2lnbmFscyBkbyBub3Qgc3VwcG9ydCBpbnRlcnJ1cHRzLCB3aGljaCBwcmVjbHVk
+ZXMgdGhlIGRyaXZlciBmcm9tCnVzaW5nIG1jdHJsX2dwaW9faW5pdCgpLgoKU3VnZ2VzdGVkLWJ5
+OiBVd2UgS2xlaW5lLUvDtm5pZyA8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRlPgpTaWdu
+ZWQtb2ZmLWJ5OiBSdXNzZWxsIEtpbmcgPHJtaytrZXJuZWxAYXJtbGludXgub3JnLnVrPgotLS0K
+IGRyaXZlcnMvdHR5L3NlcmlhbC9zYTExMDAuYyB8IDQgKysrKwogMSBmaWxlIGNoYW5nZWQsIDQg
+aW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9zYTExMDAuYyBi
+L2RyaXZlcnMvdHR5L3NlcmlhbC9zYTExMDAuYwppbmRleCA5N2JkZmVjY2JlYTkuLjhlNjE4MTI5
+ZTY1YyAxMDA2NDQKLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL3NhMTEwMC5jCisrKyBiL2RyaXZl
+cnMvdHR5L3NlcmlhbC9zYTExMDAuYwpAQCAtODYwLDYgKzg2MCwxMCBAQCBzdGF0aWMgaW50IHNh
+MTEwMF9zZXJpYWxfcmVzdW1lKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKmRldikKIHN0YXRpYyBp
+bnQgc2ExMTAwX3NlcmlhbF9hZGRfb25lX3BvcnQoc3RydWN0IHNhMTEwMF9wb3J0ICpzcG9ydCwg
+c3RydWN0IHBsYXRmb3JtX2RldmljZSAqZGV2KQogewogCXNwb3J0LT5wb3J0LmRldiA9ICZkZXYt
+PmRldjsKKworCS8vIG1jdHJsX2dwaW9faW5pdCgpIHJlcXVpcmVzIHRoYXQgdGhlIEdQSU8gZHJp
+dmVyIHN1cHBvcnRzIGludGVycnVwdHMsCisJLy8gYnV0IHdlIG5lZWQgdG8gc3VwcG9ydCBHUElP
+IGRyaXZlcnMgZm9yIGhhcmR3YXJlIHRoYXQgaGFzIG5vIHN1Y2gKKwkvLyBpbnRlcnJ1cHRzLiAg
+VXNlIG1jdHJsX2dwaW9faW5pdF9ub2F1dG8oKSBpbnN0ZWFkLgogCXNwb3J0LT5ncGlvcyA9IG1j
+dHJsX2dwaW9faW5pdF9ub2F1dG8oc3BvcnQtPnBvcnQuZGV2LCAwKTsKIAlpZiAoSVNfRVJSKHNw
+b3J0LT5ncGlvcykpIHsKIAkJaW50IGVyciA9IFBUUl9FUlIoc3BvcnQtPmdwaW9zKTsKLS0gCjIu
+Ny40CgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGlu
+dXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRl
+YWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgt
+YXJtLWtlcm5lbAo=
