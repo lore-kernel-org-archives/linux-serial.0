@@ -1,46 +1,64 @@
-From: Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH] tty/serial: digicolor: Fix digicolor-usart already registered warning
-Date: Fri, 31 May 2019 21:37:33 +0800
-Message-ID: <20190531133733.16243-1-wangkefeng.wang@huawei.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 1/6] serial: sa1100: add support for mctrl gpios
+Date: Fri, 31 May 2019 15:56:58 +0200
+Message-ID: <20190531135658.jo4kas3ozj7gpmmc@pengutronix.de>
+References: <20190531111257.27hor6xgb3nsdghg@shell.armlinux.org.uk>
+ <E1hWfTn-0003fP-Rl@rmk-PC.armlinux.org.uk>
+ <20190531125013.3gkexhmbqjpdvrtf@pengutronix.de>
+ <20190531132340.bco6xpyl3aatbryl@shell.armlinux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Baruch Siach <baruch@tkos.co.il>, linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Kefeng Wang <wangkefeng.wang@huawei.com>, Hulk Robot <hulkci@huawei.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20190531132340.bco6xpyl3aatbryl@shell.armlinux.org.uk>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-When modprobe/rmmod/modprobe module, if platform_driver_register() fails,
-the kernel complained,
+On Fri, May 31, 2019 at 02:23:40PM +0100, Russell King - ARM Linux admin wr=
+ote:
+> On Fri, May 31, 2019 at 02:50:13PM +0200, Uwe Kleine-K=F6nig wrote:
+> > On Fri, May 31, 2019 at 12:13:47PM +0100, Russell King wrote:
+> > > +static int sa1100_serial_add_one_port(struct sa1100_port *sport, str=
+uct platform_device *dev)
+> > > +{
+> > > +	sport->port.dev =3D &dev->dev;
+> > > +	sport->gpios =3D mctrl_gpio_init_noauto(sport->port.dev, 0);
+> > =
 
-  proc_dir_entry 'driver/digicolor-usart' already registered
-  WARNING: CPU: 1 PID: 5636 at fs/proc/generic.c:360 proc_register+0x19d/0x270
+> > the _noauto function was only introduced to ease a transition. I think
+> > the driver would benefit to use mctrl_gpio_init() instead.
+> =
 
-Fix this by adding uart_unregister_driver() when platform_driver_register() fails.
+> In what way would the driver benefit?  mctrl_gpio_init() requires that
+> there are IRQs for each input GPIO.  This is not the case with most
+> SA11x0 platforms, where the GPIO controls are implemented using simple
+> latches, hence that interface is entirely unsuitable.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- drivers/tty/serial/digicolor-usart.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Ah, but then you can only use the outputs reliably here as an edge on
+(say) CTS stays unnoticed with both mctrl_gpio_init() and
+mctrl_gpio_init_noauto().
 
-diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/digicolor-usart.c
-index f460cca139e2..13ac36e2da4f 100644
---- a/drivers/tty/serial/digicolor-usart.c
-+++ b/drivers/tty/serial/digicolor-usart.c
-@@ -541,7 +541,11 @@ static int __init digicolor_uart_init(void)
- 	if (ret)
- 		return ret;
- 
--	return platform_driver_register(&digicolor_uart_platform);
-+	ret = platform_driver_register(&digicolor_uart_platform);
-+	if (ret)
-+		uart_unregister_driver(&digicolor_uart);
-+
-+	return ret;
- }
- module_init(digicolor_uart_init);
- 
--- 
-2.20.1
+Unless I miss something (which is quite possible given that it's quite
+some time ago I looked into mctrl_gpio) with mctrl_gpio_init_noauto()
+having a CTS-gpio is just ignored unless the modem ctrl lines are
+explicitely requestet while with mctrl_gpio_init() it results in an
+error. Isn't the error the better alternative?
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
