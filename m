@@ -1,61 +1,47 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial fixes for 5.2-rc3
-Date: Thu, 30 May 2019 18:47:02 -0700
-Message-ID: <20190531014702.GA30713@kroah.com>
+From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Subject: [PATCH 0/6] Convert sa1100 serial to use mctrl gpios
+Date: Fri, 31 May 2019 12:12:57 +0100
+Message-ID: <20190531111257.27hor6xgb3nsdghg@shell.armlinux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-The following changes since commit a188339ca5a396acc588e5851ed7e19f66b0ebd9:
+This series takes the next step along the path of cleaning up and
+modernising the sa11x0 code, concentrating on the sa1100 serial
+driver.  At the end of this conversion, we are left with collie
+being the only platform that uses the old platform data get_mctrl
+and set_mctrl methods.  As the locomo code is also used with PXA,
+this is left for a future cleanup.
 
-  Linux 5.2-rc1 (2019-05-19 15:47:09 -0700)
+The first patch was previously acked quite some time ago.
 
-are available in the Git repository at:
+I'm intending to send this to arm-soc.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.2-rc3
+ arch/arm/mach-sa1100/assabet.c  |  91 +++++++++++----------------------
+ arch/arm/mach-sa1100/badge4.c   |   2 -
+ arch/arm/mach-sa1100/h3xxx.c    |  64 ++++-------------------
+ arch/arm/mach-sa1100/hackkit.c  |  48 ------------------
+ arch/arm/mach-sa1100/neponset.c | 109 +++++++++++-----------------------------
+ drivers/tty/serial/Kconfig      |   1 +
+ drivers/tty/serial/sa1100.c     |  42 ++++++++++++++--
+ 7 files changed, 106 insertions(+), 251 deletions(-)
 
-for you to fetch changes up to a1ad1cc9704f64c169261a76e1aee1cf1ae51832:
 
-  vt/fbcon: deinitialize resources in visual_init() after failed memory allocation (2019-05-24 17:08:18 +0200)
-
-----------------------------------------------------------------
-TTY/Serial driver fixes for 5.2-rc3
-
-Here are some small serial and TTY driver fixes for 5.2-rc3.
-
-Nothing major, just a number of fixes for reported issues.  The fbcon
-core fix also resolves an issue, and was acked by the relevant
-maintainer to go through this tree.
-
-All of these have been in linux-next with no reported issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-George G. Davis (1):
-      serial: sh-sci: disable DMA for uart_console
-
-Grzegorz Halat (1):
-      vt/fbcon: deinitialize resources in visual_init() after failed memory allocation
-
-Joe Burmeister (1):
-      tty: max310x: Fix external crystal register setup
-
-Jorge Ramirez-Ortiz (1):
-      tty: serial: msm_serial: Fix XON/XOFF
-
-Sascha Hauer (1):
-      serial: imx: remove log spamming error message
-
- drivers/tty/serial/imx.c         |  1 -
- drivers/tty/serial/max310x.c     |  2 +-
- drivers/tty/serial/msm_serial.c  |  5 ++++-
- drivers/tty/serial/sh-sci.c      |  7 +++++++
- drivers/tty/vt/vt.c              | 11 +++++++++--
- drivers/video/fbdev/core/fbcon.c |  2 +-
- 6 files changed, 22 insertions(+), 6 deletions(-)
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
