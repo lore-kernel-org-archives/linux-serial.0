@@ -1,58 +1,116 @@
-From: Baruch Siach <baruch@tkos.co.il>
-Subject: Re: [PATCH] tty/serial: digicolor: Fix digicolor-usart already registered warning
-Date: Sat, 01 Jun 2019 23:21:28 +0300
-Message-ID: <8736ktoy47.fsf@tarshish>
-References: <20190531133733.16243-1-wangkefeng.wang@huawei.com>
+From: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH v3 2/2] uart: mediatek: support Rx in-band wakeup
+Date: Mon, 3 Jun 2019 11:31:25 +0800
+Message-ID: <CANMq1KAym_cp8vCJ0+OtxAMJmsFp1LXM15rcZdKEM+w6f92=aA@mail.gmail.com>
+References: <20190527083150.220194-1-tientzu@chromium.org>
+ <20190527083150.220194-3-tientzu@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <20190531133733.16243-1-wangkefeng.wang@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Hulk Robot <hulkci@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <20190527083150.220194-3-tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
+List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, changqi.hu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Kefeng,
-
-On Fri, May 31 2019, Kefeng Wang wrote:
-> When modprobe/rmmod/modprobe module, if platform_driver_register() fails,
-> the kernel complained,
+On Mon, May 27, 2019 at 4:32 PM Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
 >
->   proc_dir_entry 'driver/digicolor-usart' already registered
->   WARNING: CPU: 1 PID: 5636 at fs/proc/generic.c:360 proc_register+0x19d/0x270
+> In order to support Rx in-band wakeup, we need to enable irq wake on an
+> edge sensitive interrupt of Rx pin before suspend and disable it when
+> resuming.
 >
-> Fix this by adding uart_unregister_driver() when platform_driver_register() fails.
+> This interrupt is used only as wake source to resume the system when
+> suspended. Note that the sent character will be lost as the controller is
+> actually suspended.
 >
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> We use this to support wakeup on bluetooth. Bluetooth will repeatedly send
+> 0xFD to wakeup host. Once host detects Rx falling, an interrupt is
+> triggered, and the system leaves sleep state. Then, the bluetooth driver
+> will send 0xFC to bluetooth and bluetooth can start to send normal HCI
+> packets.
+>
+> Signed-off-by: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 
-Acked-by: Baruch Siach <baruch@tkos.co.il>
-
-Thanks,
-baruch
+Reviewed-by: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 
 > ---
->  drivers/tty/serial/digicolor-usart.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
+>  drivers/tty/serial/8250/8250_mtk.c | 24 ++++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
 >
-> diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/digicolor-usart.c
-> index f460cca139e2..13ac36e2da4f 100644
-> --- a/drivers/tty/serial/digicolor-usart.c
-> +++ b/drivers/tty/serial/digicolor-usart.c
-> @@ -541,7 +541,11 @@ static int __init digicolor_uart_init(void)
->  	if (ret)
->  		return ret;
->  
-> -	return platform_driver_register(&digicolor_uart_platform);
-> +	ret = platform_driver_register(&digicolor_uart_platform);
-> +	if (ret)
-> +		uart_unregister_driver(&digicolor_uart);
+> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+> index 417c7c810df9..5b94b853387d 100644
+> --- a/drivers/tty/serial/8250/8250_mtk.c
+> +++ b/drivers/tty/serial/8250/8250_mtk.c
+> @@ -10,6 +10,7 @@
+>  #include <linux/module.h>
+>  #include <linux/of_irq.h>
+>  #include <linux/of_platform.h>
+> +#include <linux/pinctrl/consumer.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/pm_runtime.h>
+>  #include <linux/serial_8250.h>
+> @@ -70,6 +71,7 @@ struct mtk8250_data {
+>  #ifdef CONFIG_SERIAL_8250_DMA
+>         enum dma_rx_status      rx_status;
+>  #endif
+> +       int                     rx_wakeup_irq;
+>  };
+>
+>  /* flow control mode */
+> @@ -551,6 +553,8 @@ static int mtk8250_probe(struct platform_device *pdev)
+>         pm_runtime_set_active(&pdev->dev);
+>         pm_runtime_enable(&pdev->dev);
+>
+> +       data->rx_wakeup_irq = platform_get_irq(pdev, 1);
 > +
-> +	return ret;
+>         return 0;
 >  }
->  module_init(digicolor_uart_init);
-
--- 
-     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
+>
+> @@ -572,15 +576,35 @@ static int mtk8250_remove(struct platform_device *pdev)
+>  static int __maybe_unused mtk8250_suspend(struct device *dev)
+>  {
+>         struct mtk8250_data *data = dev_get_drvdata(dev);
+> +       int irq = data->rx_wakeup_irq;
+> +       int err;
+>
+>         serial8250_suspend_port(data->line);
+>
+> +       pinctrl_pm_select_sleep_state(dev);
+> +       if (irq >= 0) {
+> +               err = enable_irq_wake(irq);
+> +               if (err) {
+> +                       dev_err(dev,
+> +                               "failed to enable irq wake on IRQ %d: %d\n",
+> +                               irq, err);
+> +                       pinctrl_pm_select_default_state(dev);
+> +                       serial8250_resume_port(data->line);
+> +                       return err;
+> +               }
+> +       }
+> +
+>         return 0;
+>  }
+>
+>  static int __maybe_unused mtk8250_resume(struct device *dev)
+>  {
+>         struct mtk8250_data *data = dev_get_drvdata(dev);
+> +       int irq = data->rx_wakeup_irq;
+> +
+> +       if (irq >= 0)
+> +               disable_irq_wake(irq);
+> +       pinctrl_pm_select_default_state(dev);
+>
+>         serial8250_resume_port(data->line);
+>
+> --
+> 2.22.0.rc1.257.g3120a18244-goog
+>
