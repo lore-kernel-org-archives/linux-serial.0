@@ -1,112 +1,59 @@
-From: Stefan Roese <sr@denx.de>
-Subject: [PATCH 1/2 v4] serial: mctrl_gpio: Check if GPIO property exisits before requesting it
-Date: Mon,  3 Jun 2019 10:33:31 +0200
-Message-ID: <20190603083332.12480-1-sr@denx.de>
+From: Erwan Le Ray <erwan.leray@st.com>
+Subject: [PATCH 02/10] dt-bindings: serial: add optional pinctrl states
+Date: Tue, 4 Jun 2019 10:55:11 +0200
+Message-ID: <1559638519-6128-3-git-send-email-erwan.leray@st.com>
+References: <1559638519-6128-1-git-send-email-erwan.leray@st.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1559638519-6128-1-git-send-email-erwan.leray@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Yegor Yefremov <yegorslists@googlemail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Giulio Benetti <giulio.benetti@micronovasrl.com>, Johan Hovold <johan@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+Cc: linux-serial@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Erwan Le Ray <erwan.leray@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>, Bich Hemon <bich.hemon@st.com>
 List-Id: linux-serial@vger.kernel.org
 
-This patch adds a check for the GPIOs property existence, before the
-GPIO is requested. This fixes an issue seen when the 8250 mctrl_gpio
-support is added (2nd patch in this patch series) on x86 platforms using
-ACPI.
+From: Bich Hemon <bich.hemon@st.com>
 
-Here Mika's comments from 2016-08-09:
+Add options for pinctrl states:
+- "sleep" for low power
+- "idle" for low power and wakeup capabilities enabled
+- "no_console_suspend" for enabling console messages in low power
 
-"
-I noticed that with v4.8-rc1 serial console of some of our Broxton
-systems does not work properly anymore. I'm able to see output but input
-does not work.
+Signed-off-by: Bich Hemon <bich.hemon@st.com>
+Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
 
-I bisected it down to commit 4ef03d328769eddbfeca1f1c958fdb181a69c341
-("tty/serial/8250: use mctrl_gpio helpers").
-
-The reason why it fails is that in ACPI we do not have names for GPIOs
-(except when _DSD is used) so we use the "idx" to index into _CRS GPIO
-resources. Now mctrl_gpio_init_noauto() goes through a list of GPIOs
-calling devm_gpiod_get_index_optional() passing "idx" of 0 for each. The
-UART device in Broxton has following (simplified) ACPI description:
-
-    Device (URT4)
-    {
-        ...
-        Name (_CRS, ResourceTemplate () {
-            GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
-                    "\\_SB.GPO0", 0x00, ResourceConsumer)
-            {
-                0x003A
-            }
-            GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
-                    "\\_SB.GPO0", 0x00, ResourceConsumer)
-            {
-                0x003D
-            }
-        })
-
-In this case it finds the first GPIO (0x003A which happens to be RX pin
-for that UART), turns it into GPIO which then breaks input for the UART
-device. This also breaks systems with bluetooth connected to UART (those
-typically have some GPIOs in their _CRS).
-
-Any ideas how to fix this?
-
-We cannot just drop the _CRS index lookup fallback because that would
-break many existing machines out there so maybe we can limit this to
-only DT enabled machines. Or alternatively probe if the property first
-exists before trying to acquire the GPIOs (using
-device_property_present()).
-"
-
-This patch implements the fix suggested by Mika in his statement above.
-
-Signed-off-by: Stefan Roese <sr@denx.de>
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Yegor Yefremov <yegorslists@googlemail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Giulio Benetti <giulio.benetti@micronovasrl.com>
-Cc: Johan Hovold <johan@kernel.org>
----
-v4:
-- Add missing free() calls (Johan)
-- Added Mika's reviewed by tag
-- Added Johan to Cc
-
-v3:
-- No change
-
-v2:
-- Include the problem description and analysis from Mika into the commit
-  text, as suggested by Greg.
-
- drivers/tty/serial/serial_mctrl_gpio.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
-index 39ed56214cd3..6367f389cdfc 100644
---- a/drivers/tty/serial/serial_mctrl_gpio.c
-+++ b/drivers/tty/serial/serial_mctrl_gpio.c
-@@ -116,6 +116,16 @@ struct mctrl_gpios *mctrl_gpio_init_noauto(struct device *dev, unsigned int idx)
+diff --git a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
+index 5ec80c1..64a5ea9 100644
+--- a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
++++ b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
+@@ -13,7 +13,14 @@ Required properties:
+ - clocks: The input clock of the USART instance
  
- 	for (i = 0; i < UART_GPIO_MAX; i++) {
- 		enum gpiod_flags flags;
-+		char *gpio_str;
-+
-+		/* Check if GPIO property exists and continue if not */
-+		gpio_str = kasprintf(GFP_KERNEL, "%s-gpios",
-+				     mctrl_gpios_desc[i].name);
-+		if (!device_property_present(dev, gpio_str)) {
-+			kfree(gpio_str);
-+			continue;
-+		}
-+		kfree(gpio_str);
+ Optional properties:
+-- pinctrl: The reference on the pins configuration
++- pinctrl-names: Set to "default". An additional "sleep" state can be defined
++  to set pins in sleep state when in low power. In case the device is used as
++  a wakeup source, "idle" state is defined in order to keep RX pin active.
++  For a console device, an optional state "no_console_suspend" can be defined
++  to enable console messages during suspend. Typically, "no_console_suspend" and
++  "default" states can refer to the same pin configuration.
++- pinctrl-n: Phandle(s) pointing to pin configuration nodes.
++  For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
+ - st,hw-flow-ctrl: bool flag to enable hardware flow control.
+ - rs485-rts-delay, rs485-rx-during-tx, rs485-rts-active-low,
+   linux,rs485-enabled-at-boot-time: see rs485.txt.
+@@ -31,8 +38,11 @@ usart4: serial@40004c00 {
+ 	reg = <0x40004c00 0x400>;
+ 	interrupts = <52>;
+ 	clocks = <&clk_pclk1>;
+-	pinctrl-names = "default";
++	pinctrl-names = "default", "sleep", "idle", "no_console_suspend";
+ 	pinctrl-0 = <&pinctrl_usart4>;
++	pinctrl-1 = <&pinctrl_usart4_sleep>;
++	pinctrl-2 = <&pinctrl_usart4_idle>;
++	pinctrl-3 = <&pinctrl_usart4>;
+ };
  
- 		if (mctrl_gpios_desc[i].dir_out)
- 			flags = GPIOD_OUT_LOW;
+ usart2: serial@40004400 {
 -- 
-2.21.0
+1.9.1
