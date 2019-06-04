@@ -1,59 +1,40 @@
 From: Erwan Le Ray <erwan.leray@st.com>
-Subject: [PATCH 02/10] dt-bindings: serial: add optional pinctrl states
-Date: Tue, 4 Jun 2019 10:55:11 +0200
-Message-ID: <1559638519-6128-3-git-send-email-erwan.leray@st.com>
-References: <1559638519-6128-1-git-send-email-erwan.leray@st.com>
+Subject: [PATCH 00/10] STM32 usart power improvements
+Date: Tue, 4 Jun 2019 10:55:09 +0200
+Message-ID: <1559638519-6128-1-git-send-email-erwan.leray@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1559638519-6128-1-git-send-email-erwan.leray@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
-Cc: linux-serial@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Erwan Le Ray <erwan.leray@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>, Bich Hemon <bich.hemon@st.com>
+Cc: linux-serial@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Erwan Le Ray <erwan.leray@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Bich Hemon <bich.hemon@st.com>
+This series delivers power improvements for stm32-usart driver.
 
-Add options for pinctrl states:
-- "sleep" for low power
-- "idle" for low power and wakeup capabilities enabled
-- "no_console_suspend" for enabling console messages in low power
+Bich Hemon (4):
+  dt-bindings: serial: add optional pinctrl states
+  serial: stm32: select pinctrl state in each suspend/resume function
+  ARM: dts: stm32: Update pin states for uart4 on stm32mp157c-ed1
+  ARM: dts: stm32: Update UART4 pin states on stm32mp157a-dk1
 
-Signed-off-by: Bich Hemon <bich.hemon@st.com>
-Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
+Erwan Le Ray (6):
+  dt-bindings: serial: stm32: add wakeup option
+  serial: stm32: add pm_runtime support
+  serial: stm32: Use __maybe_unused instead of #if CONFIG_PM_SLEEP
+  serial: stm32: add support for no_console_suspend
+  ARM: dts: stm32: update uart4 pin configurations for low power
+  ARM: dts: stm32: add wakeup capability on each usart/uart on
+    stm32mp157c
 
-diff --git a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
-index 5ec80c1..64a5ea9 100644
---- a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
-+++ b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
-@@ -13,7 +13,14 @@ Required properties:
- - clocks: The input clock of the USART instance
- 
- Optional properties:
--- pinctrl: The reference on the pins configuration
-+- pinctrl-names: Set to "default". An additional "sleep" state can be defined
-+  to set pins in sleep state when in low power. In case the device is used as
-+  a wakeup source, "idle" state is defined in order to keep RX pin active.
-+  For a console device, an optional state "no_console_suspend" can be defined
-+  to enable console messages during suspend. Typically, "no_console_suspend" and
-+  "default" states can refer to the same pin configuration.
-+- pinctrl-n: Phandle(s) pointing to pin configuration nodes.
-+  For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
- - st,hw-flow-ctrl: bool flag to enable hardware flow control.
- - rs485-rts-delay, rs485-rx-during-tx, rs485-rts-active-low,
-   linux,rs485-enabled-at-boot-time: see rs485.txt.
-@@ -31,8 +38,11 @@ usart4: serial@40004c00 {
- 	reg = <0x40004c00 0x400>;
- 	interrupts = <52>;
- 	clocks = <&clk_pclk1>;
--	pinctrl-names = "default";
-+	pinctrl-names = "default", "sleep", "idle", "no_console_suspend";
- 	pinctrl-0 = <&pinctrl_usart4>;
-+	pinctrl-1 = <&pinctrl_usart4_sleep>;
-+	pinctrl-2 = <&pinctrl_usart4_idle>;
-+	pinctrl-3 = <&pinctrl_usart4>;
- };
- 
- usart2: serial@40004400 {
+ .../devicetree/bindings/serial/st,stm32-usart.txt  | 19 ++++-
+ arch/arm/boot/dts/stm32mp157-pinctrl.dtsi          | 17 +++++
+ arch/arm/boot/dts/stm32mp157a-dk1.dts              |  5 +-
+ arch/arm/boot/dts/stm32mp157c-ed1.dts              |  5 +-
+ arch/arm/boot/dts/stm32mp157c.dtsi                 | 40 ++++++++--
+ drivers/tty/serial/stm32-usart.c                   | 88 ++++++++++++++++++++--
+ drivers/tty/serial/stm32-usart.h                   |  1 +
+ 7 files changed, 155 insertions(+), 20 deletions(-)
+
 -- 
 1.9.1
