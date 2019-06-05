@@ -1,86 +1,116 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Stefan Roese <sr@denx.de>
 Subject: Re: [PATCH 2/2 v4] tty/serial/8250: use mctrl_gpio helpers
-Date: Tue, 4 Jun 2019 19:52:24 +0300
-Message-ID: <20190604165224.GP9224@smile.fi.intel.com>
+Date: Wed, 5 Jun 2019 11:35:01 +0200
+Message-ID: <115804ab-7d7c-a656-e6f4-ad61b3e02705@denx.de>
 References: <20190603083332.12480-1-sr@denx.de>
  <20190603083332.12480-2-sr@denx.de>
+ <20190604165224.GP9224@smile.fi.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190603083332.12480-2-sr@denx.de>
+In-Reply-To: <20190604165224.GP9224@smile.fi.intel.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stefan Roese <sr@denx.de>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Yegor Yefremov <yegorslists@googlemail.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Johan Hovold <johan@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jun 03, 2019 at 10:33:32AM +0200, Stefan Roese wrote:
-> From: Yegor Yefremov <yegorslists@googlemail.com>
+On 04.06.19 18:52, Andy Shevchenko wrote:
+> On Mon, Jun 03, 2019 at 10:33:32AM +0200, Stefan Roese wrote:
+>> From: Yegor Yefremov <yegorslists@googlemail.com>
+>>
+>> This patch permits the usage for GPIOs to control
+>> the CTS/RTS/DTR/DSR/DCD/RI signals.
 > 
-> This patch permits the usage for GPIOs to control
-> the CTS/RTS/DTR/DSR/DCD/RI signals.
+>> +	if (up->gpios) {
+> 
+>> +		mctrl_gpio_set(up->gpios, mctrl_gpio);
+>> +	}
+> 
+> ...
+> 
+>> +	if (up->gpios) {
+> 
+>> +		mctrl_gpio = mctrl_gpio_get_outputs(up->gpios, &mctrl_gpio);
+> 
+>> +	}
+> 
+> ...
+> 
+>> +			gpios = mctrl_gpio_init(&uart->port, 0);
+>> +			if (IS_ERR(gpios)) {
+>> +				if (PTR_ERR(gpios) != -ENOSYS)
+>> +					return PTR_ERR(gpios);
+>> +			}
+> 
+> ...
+> 
+>> +	if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(up->gpios,
+>> +						UART_GPIO_RTS))) {
+> 
+>> +	}
+> 
+> ...
+> 
+>> -	if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW) {
+>> +	if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW
+>> +		&& IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(up->gpios,
+>> +							UART_GPIO_RTS))) {
+> 
+>> }
+> 
+> ...
+> 
+>> +	if (up->gpios)
+>> +		mctrl_gpio_disable_ms(up->gpios);
+> 
+> ...
+> 
+>> +	if (up->gpios)
+>> +		mctrl_gpio_enable_ms(up->gpios);
+> 
+> ...
+> 
+>> +	if (up->gpios)
+>> +		return mctrl_gpio_get(up->gpios, &ret);
+> 
+> 
+> Can we rather make this mimic the gpiod_get_optional() API?
+> 
+> So, if we get an error, it's an error, otherwise with NULL pointer the
+> operations goes to be no-op.
+> 
+> [IS_ERR_OR_NULL() -> IS_ERR(), if (up->gpios) -> /dev/null, etc]
 
-> +	if (up->gpios) {
+So you want me to drop all "if (up->gpios)" checks? I can do this in
+some cases (e.g. serial8250_disable_ms()). But I would like to keep
+it in other cases, like serial8250_out_MCR(), where this check prevents
+some unnecessary code execution in the "non-gpios mode" (and vice-versa).
 
-> +		mctrl_gpio_set(up->gpios, mctrl_gpio);
-> +	}
+Would this be acceptable?
 
-...
+BTW: Regarding the OMAP specific code: I'm not the author of this code
+and I don't have access to such hardware to do some tests here. But
+changing IS_ERR_OR_NULL() -> IS_ERR() in this OMAP code does not
+seem correct. IIUTC, these "if" clauses are extended here by
+IS_ERR_OR_NULL(mctrl_gpio_to_gpiod()) to check if the GPIO's are not
+enabled / used. Currently this will probably break, since when called
+with "gpios == NULL", mctrl_gpio_to_gpiod() will crash [1].
 
-> +	if (up->gpios) {
+If you don't object (or have other suggestions), I'll change this to
+use "up->gpios == 0" instead. This seems to be what the original author
+wanted to achieve.
 
-> +		mctrl_gpio = mctrl_gpio_get_outputs(up->gpios, &mctrl_gpio);
+Okay?
 
-> +	}
+Thanks,
+Stefan
 
-...
+[1]
 
-> +			gpios = mctrl_gpio_init(&uart->port, 0);
-> +			if (IS_ERR(gpios)) {
-> +				if (PTR_ERR(gpios) != -ENOSYS)
-> +					return PTR_ERR(gpios);
-> +			}
-
-...
-
-> +	if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(up->gpios,
-> +						UART_GPIO_RTS))) {
-
-> +	}
-
-...
-
-> -	if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW) {
-> +	if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW
-> +		&& IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(up->gpios,
-> +							UART_GPIO_RTS))) {
-
-> }
-
-...
-
-> +	if (up->gpios)
-> +		mctrl_gpio_disable_ms(up->gpios);
-
-...
-
-> +	if (up->gpios)
-> +		mctrl_gpio_enable_ms(up->gpios);
-
-...
-
-> +	if (up->gpios)
-> +		return mctrl_gpio_get(up->gpios, &ret);
-
-
-Can we rather make this mimic the gpiod_get_optional() API?
-
-So, if we get an error, it's an error, otherwise with NULL pointer the
-operations goes to be no-op.
-
-[IS_ERR_OR_NULL() -> IS_ERR(), if (up->gpios) -> /dev/null, etc]
-
-
--- 
-With Best Regards,
-Andy Shevchenko
+struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
+				      enum mctrl_gpio_idx gidx)
+{
+	return gpios->gpio[gidx];
+}
