@@ -1,116 +1,75 @@
-From: Stefan Roese <sr@denx.de>
-Subject: Re: [PATCH 2/2 v4] tty/serial/8250: use mctrl_gpio helpers
-Date: Wed, 5 Jun 2019 11:35:01 +0200
-Message-ID: <115804ab-7d7c-a656-e6f4-ad61b3e02705@denx.de>
-References: <20190603083332.12480-1-sr@denx.de>
- <20190603083332.12480-2-sr@denx.de>
- <20190604165224.GP9224@smile.fi.intel.com>
+From: Erwan LE RAY <erwan.leray@st.com>
+Subject: Re: Fwd: [PATCH -next] serial: stm32: Make stm32_get_databits static
+Date: Wed, 5 Jun 2019 09:52:27 +0000
+Message-ID: <1eb3edf6-054d-be59-340c-312f57815912@st.com>
+References: <20190528090449.22868-1-yuehaibing@huawei.com>
+ <e7a74cb7-fd9f-89d2-8314-5e216eae2d13@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190604165224.GP9224@smile.fi.intel.com>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <e7a74cb7-fd9f-89d2-8314-5e216eae2d13@st.com>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Yegor Yefremov <yegorslists@googlemail.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Johan Hovold <johan@kernel.org>
+Content-ID: <BB60DC7AEE09EE43BA33DB5BCAA320CD@st.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: YueHaibing <yuehaibing@huawei.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>, "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>, Alexandre TORGUE <alexandre.torgue@st.com>YueHaibing <yuehaibing@huawei.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-stm32@st-md-mailman.stormreply.com" <linux-stm32@st-md-mailman.stormreply.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 04.06.19 18:52, Andy Shevchenko wrote:
-> On Mon, Jun 03, 2019 at 10:33:32AM +0200, Stefan Roese wrote:
->> From: Yegor Yefremov <yegorslists@googlemail.com>
->>
->> This patch permits the usage for GPIOs to control
->> the CTS/RTS/DTR/DSR/DCD/RI signals.
-> 
->> +	if (up->gpios) {
-> 
->> +		mctrl_gpio_set(up->gpios, mctrl_gpio);
->> +	}
-> 
-> ...
-> 
->> +	if (up->gpios) {
-> 
->> +		mctrl_gpio = mctrl_gpio_get_outputs(up->gpios, &mctrl_gpio);
-> 
->> +	}
-> 
-> ...
-> 
->> +			gpios = mctrl_gpio_init(&uart->port, 0);
->> +			if (IS_ERR(gpios)) {
->> +				if (PTR_ERR(gpios) != -ENOSYS)
->> +					return PTR_ERR(gpios);
->> +			}
-> 
-> ...
-> 
->> +	if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(up->gpios,
->> +						UART_GPIO_RTS))) {
-> 
->> +	}
-> 
-> ...
-> 
->> -	if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW) {
->> +	if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW
->> +		&& IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(up->gpios,
->> +							UART_GPIO_RTS))) {
-> 
->> }
-> 
-> ...
-> 
->> +	if (up->gpios)
->> +		mctrl_gpio_disable_ms(up->gpios);
-> 
-> ...
-> 
->> +	if (up->gpios)
->> +		mctrl_gpio_enable_ms(up->gpios);
-> 
-> ...
-> 
->> +	if (up->gpios)
->> +		return mctrl_gpio_get(up->gpios, &ret);
-> 
-> 
-> Can we rather make this mimic the gpiod_get_optional() API?
-> 
-> So, if we get an error, it's an error, otherwise with NULL pointer the
-> operations goes to be no-op.
-> 
-> [IS_ERR_OR_NULL() -> IS_ERR(), if (up->gpios) -> /dev/null, etc]
+OK for me.
 
-So you want me to drop all "if (up->gpios)" checks? I can do this in
-some cases (e.g. serial8250_disable_ms()). But I would like to keep
-it in other cases, like serial8250_out_MCR(), where this check prevents
-some unnecessary code execution in the "non-gpios mode" (and vice-versa).
+Erwan.
 
-Would this be acceptable?
 
-BTW: Regarding the OMAP specific code: I'm not the author of this code
-and I don't have access to such hardware to do some tests here. But
-changing IS_ERR_OR_NULL() -> IS_ERR() in this OMAP code does not
-seem correct. IIUTC, these "if" clauses are extended here by
-IS_ERR_OR_NULL(mctrl_gpio_to_gpiod()) to check if the GPIO's are not
-enabled / used. Currently this will probably break, since when called
-with "gpios == NULL", mctrl_gpio_to_gpiod() will crash [1].
-
-If you don't object (or have other suggestions), I'll change this to
-use "up->gpios == 0" instead. This seems to be what the original author
-wanted to achieve.
-
-Okay?
-
-Thanks,
-Stefan
-
-[1]
-
-struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
-				      enum mctrl_gpio_idx gidx)
-{
-	return gpios->gpio[gidx];
-}
+On 6/5/19 9:08 AM, Fabrice Gasnier wrote:
+> Un autre qu'on avait pas vu...
+>
+>
+> -------- Forwarded Message --------
+> Subject: [PATCH -next] serial: stm32: Make stm32_get_databits static
+> Date: Tue, 28 May 2019 17:04:49 +0800
+> From: YueHaibing <yuehaibing@huawei.com>
+> To: gregkh@linuxfoundation.org, jslaby@suse.com,
+> mcoquelin.stm32@gmail.com, alexandre.torgue@st.com
+> CC: YueHaibing <yuehaibing@huawei.com>, linux-serial@vger.kernel.org,
+> linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+> linux-stm32@st-md-mailman.stormreply.com
+>
+> Fix sparse warning:
+>
+> drivers/tty/serial/stm32-usart.c:603:14: warning:
+>   symbol 'stm32_get_databits' was not declared. Should it be static?
+>
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>   drivers/tty/serial/stm32-usart.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/stm32-usart.c
+> b/drivers/tty/serial/stm32-usart.c
+> index 9c2b04e..4517f2b 100644
+> --- a/drivers/tty/serial/stm32-usart.c
+> +++ b/drivers/tty/serial/stm32-usart.c
+> @@ -600,7 +600,7 @@ static void stm32_shutdown(struct uart_port *port)
+>   	free_irq(port->irq, port);
+>   }
+>   -unsigned int stm32_get_databits(struct ktermios *termios)
+> +static unsigned int stm32_get_databits(struct ktermios *termios)
+>   {
+>   	unsigned int bits;
+>   -- 2.7.4
+>
+>
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
