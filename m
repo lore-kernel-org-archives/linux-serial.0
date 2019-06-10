@@ -1,68 +1,41 @@
-From: "Sugaya, Taichi" <sugaya.taichi@socionext.com>
-Subject: Re: [PATCH] serial: Fix an invalid comparing statement
-Date: Mon, 10 Jun 2019 20:31:11 +0900
-Message-ID: <3757b7f8-32a2-4d79-ef03-09b3e7420c54@socionext.com>
-References: <1558933288-30023-1-git-send-email-sugaya.taichi@socionext.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 1/2] serial: xilinx_uartps: Fix warnings in the driver
+Date: Mon, 10 Jun 2019 16:44:25 +0200
+Message-ID: <20190610144425.GC31086@kroah.com>
+References: <c6753260caf8b20cc002b15fcbf22b759c91d760.1560156294.git.michal.simek@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1558933288-30023-1-git-send-email-sugaya.taichi@socionext.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <c6753260caf8b20cc002b15fcbf22b759c91d760.1560156294.git.michal.simek@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Colin Ian King <colin.king@canonical.com>
-Cc: Takao Orito <orito.takao@socionext.com>, Kazuhiro Kasai <kasai.kazuhiro@socionext.com>, Shinji Kanematsu <kanematsu.shinji@socionext.com>, Jassi Brar <jaswinder.singh@linaro.org>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Michal Simek <michal.simek@xilinx.com>
+Cc: linux-kernel@vger.kernel.org, monstr@monstr.eu, johan@kernel.org, Nava kishore Manne <nava.manne@xilinx.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi
-
-Does anyone have comments?
-
-On 2019/05/27 14:01, Sugaya Taichi wrote:
-> Drop the if-statement which refers to 8th bit field of u8 variable.
-> The bit field is no longer used.
+On Mon, Jun 10, 2019 at 10:44:55AM +0200, Michal Simek wrote:
+> From: Nava kishore Manne <nava.manne@xilinx.com>
 > 
-> Fixes: ba44dc043004 ("serial: Add Milbeaut serial control")
-> Reported-by: Colin Ian King <colin.king@canonical.com>
-> Signed-off-by: Sugaya Taichi <sugaya.taichi@socionext.com>
+> This patch fixes the below warning
+> 
+>         -->Symbolic permissions 'S_IRUGO' are not preferred.
+>            Consider using octal permissions '0444'.
+>         -->macros should not use a trailing semicolon.
+>         -->line over 80 characters.
+>         -->void function return statements are not generally useful.
+>         -->Prefer 'unsigned int' to bare use of 'unsigned'.
+> 
+> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 > ---
->   drivers/tty/serial/milbeaut_usio.c | 15 +++++----------
->   1 file changed, 5 insertions(+), 10 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/milbeaut_usio.c b/drivers/tty/serial/milbeaut_usio.c
-> index 949ab7e..d7207ab 100644
-> --- a/drivers/tty/serial/milbeaut_usio.c
-> +++ b/drivers/tty/serial/milbeaut_usio.c
-> @@ -56,7 +56,6 @@
->   #define MLB_USIO_SSR_FRE		BIT(4)
->   #define MLB_USIO_SSR_PE			BIT(5)
->   #define MLB_USIO_SSR_REC		BIT(7)
-> -#define MLB_USIO_SSR_BRK		BIT(8)
->   #define MLB_USIO_FCR_FE1		BIT(0)
->   #define MLB_USIO_FCR_FE2		BIT(1)
->   #define MLB_USIO_FCR_FCL1		BIT(2)
-> @@ -180,18 +179,14 @@ static void mlb_usio_rx_chars(struct uart_port *port)
->   		if (status & MLB_USIO_SSR_ORE)
->   			port->icount.overrun++;
->   		status &= port->read_status_mask;
-> -		if (status & MLB_USIO_SSR_BRK) {
-> -			flag = TTY_BREAK;
-> +		if (status & MLB_USIO_SSR_PE) {
-> +			flag = TTY_PARITY;
->   			ch = 0;
->   		} else
-> -			if (status & MLB_USIO_SSR_PE) {
-> -				flag = TTY_PARITY;
-> +			if (status & MLB_USIO_SSR_FRE) {
-> +				flag = TTY_FRAME;
->   				ch = 0;
-> -			} else
-> -				if (status & MLB_USIO_SSR_FRE) {
-> -					flag = TTY_FRAME;
-> -					ch = 0;
-> -				}
-> +			}
->   		if (flag)
->   			uart_insert_char(port, status, MLB_USIO_SSR_ORE,
->   					 ch, flag);
-> 
+> Happy to split it if needed.
+
+Please split.  Do not do more than one "logical thing" per patch.
+
+And the subject is not correct, there are no general "warnings", these
+are all checkpatch warnings, not a build issue.
+
+thanks,
+
+greg k-h
