@@ -1,79 +1,69 @@
 From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH 1/2] serial: xilinx_uartps: Fix warnings in the driver
-Date: Mon, 10 Jun 2019 10:44:55 +0200
-Message-ID: <c6753260caf8b20cc002b15fcbf22b759c91d760.1560156294.git.michal.simek@xilinx.com>
+Subject: [PATCH 2/2] serial: uartps: Use the same dynamin major number for all ports
+Date: Mon, 10 Jun 2019 10:44:56 +0200
+Message-ID: <381ea608440345a4424d24296666b2451b1a20ee.1560156294.git.michal.simek@xilinx.com>
+References: <c6753260caf8b20cc002b15fcbf22b759c91d760.1560156294.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <c6753260caf8b20cc002b15fcbf22b759c91d760.1560156294.git.michal.simek@xilinx.com>
+In-Reply-To: <c6753260caf8b20cc002b15fcbf22b759c91d760.1560156294.git.michal.simek@xilinx.com>
+References: <c6753260caf8b20cc002b15fcbf22b759c91d760.1560156294.git.michal.simek@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, monstr@monstr.eu, michal.simek@xilinx.com, johan@kernel.org, gregkh@linuxfoundation.org
-Cc: Nava kishore Manne <nava.manne@xilinx.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Nava kishore Manne <nava.manne@xilinx.com>
+From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 
-This patch fixes the below warning
+Let kernel to find out major number dynamically for the first device and
+then reuse it for other instances.
+This fixes the issue that each uart is registered with a
+different major number.
 
-        -->Symbolic permissions 'S_IRUGO' are not preferred.
-           Consider using octal permissions '0444'.
-        -->macros should not use a trailing semicolon.
-        -->line over 80 characters.
-        -->void function return statements are not generally useful.
-        -->Prefer 'unsigned int' to bare use of 'unsigned'.
+After the patch:
+crw-------    1 root     root      253,   0 Jun 10 08:31 /dev/ttyPS0
+crw--w----    1 root     root      253,   1 Jan  1  1970 /dev/ttyPS1
 
-Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 ---
 
-Happy to split it if needed.
----
- drivers/tty/serial/xilinx_uartps.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/tty/serial/xilinx_uartps.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 605354fd60b1..6af2886f5ba7 100644
+index 6af2886f5ba7..a0b51c60faeb 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -35,12 +35,12 @@
+@@ -29,12 +29,12 @@
+ 
+ #define CDNS_UART_TTY_NAME	"ttyPS"
+ #define CDNS_UART_NAME		"xuartps"
+-#define CDNS_UART_MAJOR		0	/* use dynamic node allocation */
+ #define CDNS_UART_FIFO_SIZE	64	/* FIFO size */
+ #define CDNS_UART_REGISTER_SPACE	0x1000
  
  /* Rx Trigger level */
  static int rx_trigger_level = 56;
--module_param(rx_trigger_level, uint, S_IRUGO);
-+module_param(rx_trigger_level, uint, 0444);
++static int uartps_major;
+ module_param(rx_trigger_level, uint, 0444);
  MODULE_PARM_DESC(rx_trigger_level, "Rx trigger level, 1-63 bytes");
  
- /* Rx Timeout */
- static int rx_timeout = 10;
--module_param(rx_timeout, uint, S_IRUGO);
-+module_param(rx_timeout, uint, 0444);
- MODULE_PARM_DESC(rx_timeout, "Rx timeout, 1-255");
+@@ -1516,7 +1516,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 	cdns_uart_uart_driver->owner = THIS_MODULE;
+ 	cdns_uart_uart_driver->driver_name = driver_name;
+ 	cdns_uart_uart_driver->dev_name	= CDNS_UART_TTY_NAME;
+-	cdns_uart_uart_driver->major = CDNS_UART_MAJOR;
++	cdns_uart_uart_driver->major = uartps_major;
+ 	cdns_uart_uart_driver->minor = cdns_uart_data->id;
+ 	cdns_uart_uart_driver->nr = 1;
  
- /* Register offsets for the UART. */
-@@ -199,7 +199,7 @@ struct cdns_platform_data {
- 	u32 quirks;
- };
- #define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, \
--		clk_rate_change_nb);
-+		clk_rate_change_nb)
+@@ -1545,6 +1545,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 		goto err_out_id;
+ 	}
  
- /**
-  * cdns_uart_handle_rx - Handle the received bytes along with Rx errors.
-@@ -312,7 +312,8 @@ static void cdns_uart_handle_tx(void *dev_id)
- 	} else {
- 		numbytes = port->fifosize;
- 		while (numbytes && !uart_circ_empty(&port->state->xmit) &&
--		       !(readl(port->membase + CDNS_UART_SR) & CDNS_UART_SR_TXFULL)) {
-+		       !(readl(port->membase + CDNS_UART_SR) &
-+						CDNS_UART_SR_TXFULL)) {
- 			/*
- 			 * Get the data from the UART circular buffer
- 			 * and write it to the cdns_uart's TX_FIFO
-@@ -1073,8 +1074,6 @@ static void cdns_uart_poll_put_char(struct uart_port *port, unsigned char c)
- 		cpu_relax();
++	uartps_major = cdns_uart_uart_driver->tty_driver->major;
+ 	cdns_uart_data->cdns_uart_driver = cdns_uart_uart_driver;
  
- 	spin_unlock_irqrestore(&port->lock, flags);
--
--	return;
- }
- #endif
- 
+ 	/*
 -- 
 2.17.1
