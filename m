@@ -1,7 +1,7 @@
 From: Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
-Subject: [PATCH] tty: serial: msm_serial: avoid system lockup condition
-Date: Mon, 10 Jun 2019 09:37:37 +0200
-Message-ID: <20190610073737.22856-1-jorge.ramirez-ortiz@linaro.org>
+Subject: [PATCH v2] tty: serial: msm_serial: avoid system lockup condition
+Date: Mon, 10 Jun 2019 09:55:54 +0200
+Message-ID: <20190610075554.24979-1-jorge.ramirez-ortiz@linaro.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -23,7 +23,7 @@ Signed-off-by: Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
  1 file changed, 4 insertions(+)
 
 diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 23833ad952ba..0d4f1fe2b3a2 100644
+index 23833ad952ba..3657a24913fc 100644
 --- a/drivers/tty/serial/msm_serial.c
 +++ b/drivers/tty/serial/msm_serial.c
 @@ -383,10 +383,14 @@ static void msm_request_rx_dma(struct msm_port *msm_port, resource_size_t base)
@@ -36,7 +36,7 @@ index 23833ad952ba..0d4f1fe2b3a2 100644
  		if (msm_read(port, UART_ISR) & UART_ISR_TX_READY)
  			break;
  		udelay(1);
-+		if (timeout--)
++		if (!timeout--)
 +			break;
  	}
  	msm_write(port, UART_CR_CMD_RESET_TX_READY, UART_CR);
