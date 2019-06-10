@@ -1,45 +1,79 @@
-From: Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
-Subject: [PATCH v2] tty: serial: msm_serial: avoid system lockup condition
-Date: Mon, 10 Jun 2019 09:55:54 +0200
-Message-ID: <20190610075554.24979-1-jorge.ramirez-ortiz@linaro.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: [PATCH 1/2] serial: xilinx_uartps: Fix warnings in the driver
+Date: Mon, 10 Jun 2019 10:44:55 +0200
+Message-ID: <c6753260caf8b20cc002b15fcbf22b759c91d760.1560156294.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: jorge.ramirez-ortiz@linaro.org, agross@kernel.org, david.brown@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, khasim.mohammed@linaro.org, bjorn.andersson@linaro.org
+To: linux-kernel@vger.kernel.org, monstr@monstr.eu, michal.simek@xilinx.com, johan@kernel.org, gregkh@linuxfoundation.org
+Cc: Nava kishore Manne <nava.manne@xilinx.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The function msm_wait_for_xmitr can be taken with interrupts
-disabled. In order to avoid a potential system lockup - demonstrated
-under stress testing conditions on SoC QCS404/5 - make sure we wait
-for a bounded amount of time.
+From: Nava kishore Manne <nava.manne@xilinx.com>
 
-Tested on SoC QCS404.
+This patch fixes the below warning
 
-Signed-off-by: Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
+        -->Symbolic permissions 'S_IRUGO' are not preferred.
+           Consider using octal permissions '0444'.
+        -->macros should not use a trailing semicolon.
+        -->line over 80 characters.
+        -->void function return statements are not generally useful.
+        -->Prefer 'unsigned int' to bare use of 'unsigned'.
+
+Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 ---
- drivers/tty/serial/msm_serial.c | 4 ++++
- 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 23833ad952ba..3657a24913fc 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -383,10 +383,14 @@ static void msm_request_rx_dma(struct msm_port *msm_port, resource_size_t base)
+Happy to split it if needed.
+---
+ drivers/tty/serial/xilinx_uartps.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 605354fd60b1..6af2886f5ba7 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -35,12 +35,12 @@
  
- static inline void msm_wait_for_xmitr(struct uart_port *port)
- {
-+	unsigned int timeout = 500000;
-+
- 	while (!(msm_read(port, UART_SR) & UART_SR_TX_EMPTY)) {
- 		if (msm_read(port, UART_ISR) & UART_ISR_TX_READY)
- 			break;
- 		udelay(1);
-+		if (!timeout--)
-+			break;
- 	}
- 	msm_write(port, UART_CR_CMD_RESET_TX_READY, UART_CR);
+ /* Rx Trigger level */
+ static int rx_trigger_level = 56;
+-module_param(rx_trigger_level, uint, S_IRUGO);
++module_param(rx_trigger_level, uint, 0444);
+ MODULE_PARM_DESC(rx_trigger_level, "Rx trigger level, 1-63 bytes");
+ 
+ /* Rx Timeout */
+ static int rx_timeout = 10;
+-module_param(rx_timeout, uint, S_IRUGO);
++module_param(rx_timeout, uint, 0444);
+ MODULE_PARM_DESC(rx_timeout, "Rx timeout, 1-255");
+ 
+ /* Register offsets for the UART. */
+@@ -199,7 +199,7 @@ struct cdns_platform_data {
+ 	u32 quirks;
+ };
+ #define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, \
+-		clk_rate_change_nb);
++		clk_rate_change_nb)
+ 
+ /**
+  * cdns_uart_handle_rx - Handle the received bytes along with Rx errors.
+@@ -312,7 +312,8 @@ static void cdns_uart_handle_tx(void *dev_id)
+ 	} else {
+ 		numbytes = port->fifosize;
+ 		while (numbytes && !uart_circ_empty(&port->state->xmit) &&
+-		       !(readl(port->membase + CDNS_UART_SR) & CDNS_UART_SR_TXFULL)) {
++		       !(readl(port->membase + CDNS_UART_SR) &
++						CDNS_UART_SR_TXFULL)) {
+ 			/*
+ 			 * Get the data from the UART circular buffer
+ 			 * and write it to the cdns_uart's TX_FIFO
+@@ -1073,8 +1074,6 @@ static void cdns_uart_poll_put_char(struct uart_port *port, unsigned char c)
+ 		cpu_relax();
+ 
+ 	spin_unlock_irqrestore(&port->lock, flags);
+-
+-	return;
  }
+ #endif
+ 
 -- 
-2.21.0
+2.17.1
