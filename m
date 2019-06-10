@@ -1,69 +1,68 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH 2/2] serial: uartps: Use the same dynamin major number for all ports
-Date: Mon, 10 Jun 2019 10:44:56 +0200
-Message-ID: <381ea608440345a4424d24296666b2451b1a20ee.1560156294.git.michal.simek@xilinx.com>
-References: <c6753260caf8b20cc002b15fcbf22b759c91d760.1560156294.git.michal.simek@xilinx.com>
+From: "Sugaya, Taichi" <sugaya.taichi@socionext.com>
+Subject: Re: [PATCH] serial: Fix an invalid comparing statement
+Date: Mon, 10 Jun 2019 20:31:11 +0900
+Message-ID: <3757b7f8-32a2-4d79-ef03-09b3e7420c54@socionext.com>
+References: <1558933288-30023-1-git-send-email-sugaya.taichi@socionext.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <c6753260caf8b20cc002b15fcbf22b759c91d760.1560156294.git.michal.simek@xilinx.com>
-In-Reply-To: <c6753260caf8b20cc002b15fcbf22b759c91d760.1560156294.git.michal.simek@xilinx.com>
-References: <c6753260caf8b20cc002b15fcbf22b759c91d760.1560156294.git.michal.simek@xilinx.com>
+In-Reply-To: <1558933288-30023-1-git-send-email-sugaya.taichi@socionext.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, monstr@monstr.eu, michal.simek@xilinx.com, johan@kernel.org, gregkh@linuxfoundation.org
-Cc: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Colin Ian King <colin.king@canonical.com>
+Cc: Takao Orito <orito.takao@socionext.com>, Kazuhiro Kasai <kasai.kazuhiro@socionext.com>, Shinji Kanematsu <kanematsu.shinji@socionext.com>, Jassi Brar <jaswinder.singh@linaro.org>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Hi
 
-Let kernel to find out major number dynamically for the first device and
-then reuse it for other instances.
-This fixes the issue that each uart is registered with a
-different major number.
+Does anyone have comments?
 
-After the patch:
-crw-------    1 root     root      253,   0 Jun 10 08:31 /dev/ttyPS0
-crw--w----    1 root     root      253,   1 Jan  1  1970 /dev/ttyPS1
-
-Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
----
-
- drivers/tty/serial/xilinx_uartps.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 6af2886f5ba7..a0b51c60faeb 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -29,12 +29,12 @@
- 
- #define CDNS_UART_TTY_NAME	"ttyPS"
- #define CDNS_UART_NAME		"xuartps"
--#define CDNS_UART_MAJOR		0	/* use dynamic node allocation */
- #define CDNS_UART_FIFO_SIZE	64	/* FIFO size */
- #define CDNS_UART_REGISTER_SPACE	0x1000
- 
- /* Rx Trigger level */
- static int rx_trigger_level = 56;
-+static int uartps_major;
- module_param(rx_trigger_level, uint, 0444);
- MODULE_PARM_DESC(rx_trigger_level, "Rx trigger level, 1-63 bytes");
- 
-@@ -1516,7 +1516,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 	cdns_uart_uart_driver->owner = THIS_MODULE;
- 	cdns_uart_uart_driver->driver_name = driver_name;
- 	cdns_uart_uart_driver->dev_name	= CDNS_UART_TTY_NAME;
--	cdns_uart_uart_driver->major = CDNS_UART_MAJOR;
-+	cdns_uart_uart_driver->major = uartps_major;
- 	cdns_uart_uart_driver->minor = cdns_uart_data->id;
- 	cdns_uart_uart_driver->nr = 1;
- 
-@@ -1545,6 +1545,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 		goto err_out_id;
- 	}
- 
-+	uartps_major = cdns_uart_uart_driver->tty_driver->major;
- 	cdns_uart_data->cdns_uart_driver = cdns_uart_uart_driver;
- 
- 	/*
--- 
-2.17.1
+On 2019/05/27 14:01, Sugaya Taichi wrote:
+> Drop the if-statement which refers to 8th bit field of u8 variable.
+> The bit field is no longer used.
+> 
+> Fixes: ba44dc043004 ("serial: Add Milbeaut serial control")
+> Reported-by: Colin Ian King <colin.king@canonical.com>
+> Signed-off-by: Sugaya Taichi <sugaya.taichi@socionext.com>
+> ---
+>   drivers/tty/serial/milbeaut_usio.c | 15 +++++----------
+>   1 file changed, 5 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/milbeaut_usio.c b/drivers/tty/serial/milbeaut_usio.c
+> index 949ab7e..d7207ab 100644
+> --- a/drivers/tty/serial/milbeaut_usio.c
+> +++ b/drivers/tty/serial/milbeaut_usio.c
+> @@ -56,7 +56,6 @@
+>   #define MLB_USIO_SSR_FRE		BIT(4)
+>   #define MLB_USIO_SSR_PE			BIT(5)
+>   #define MLB_USIO_SSR_REC		BIT(7)
+> -#define MLB_USIO_SSR_BRK		BIT(8)
+>   #define MLB_USIO_FCR_FE1		BIT(0)
+>   #define MLB_USIO_FCR_FE2		BIT(1)
+>   #define MLB_USIO_FCR_FCL1		BIT(2)
+> @@ -180,18 +179,14 @@ static void mlb_usio_rx_chars(struct uart_port *port)
+>   		if (status & MLB_USIO_SSR_ORE)
+>   			port->icount.overrun++;
+>   		status &= port->read_status_mask;
+> -		if (status & MLB_USIO_SSR_BRK) {
+> -			flag = TTY_BREAK;
+> +		if (status & MLB_USIO_SSR_PE) {
+> +			flag = TTY_PARITY;
+>   			ch = 0;
+>   		} else
+> -			if (status & MLB_USIO_SSR_PE) {
+> -				flag = TTY_PARITY;
+> +			if (status & MLB_USIO_SSR_FRE) {
+> +				flag = TTY_FRAME;
+>   				ch = 0;
+> -			} else
+> -				if (status & MLB_USIO_SSR_FRE) {
+> -					flag = TTY_FRAME;
+> -					ch = 0;
+> -				}
+> +			}
+>   		if (flag)
+>   			uart_insert_char(port, status, MLB_USIO_SSR_ORE,
+>   					 ch, flag);
+> 
