@@ -1,50 +1,51 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 1/2] serial: xilinx_uartps: Fix warnings in the driver
-Date: Mon, 10 Jun 2019 17:12:13 +0200
-Message-ID: <20190610151213.GA7305@kroah.com>
-References: <c6753260caf8b20cc002b15fcbf22b759c91d760.1560156294.git.michal.simek@xilinx.com>
- <20190610144425.GC31086@kroah.com>
- <888c7d0a-28dc-978c-662a-e96ee3863c41@xilinx.com>
+From: Alexandre Torgue <alexandre.torgue@st.com>
+Subject: Re: [PATCH 00/10] STM32 usart power improvements
+Date: Mon, 10 Jun 2019 18:00:37 +0200
+Message-ID: <e6fecf4c-cb07-4cf7-099a-201b14e90a00@st.com>
+References: <1559638519-6128-1-git-send-email-erwan.leray@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <888c7d0a-28dc-978c-662a-e96ee3863c41@xilinx.com>
+In-Reply-To: <1559638519-6128-1-git-send-email-erwan.leray@st.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Michal Simek <michal.simek@xilinx.com>
-Cc: linux-kernel@vger.kernel.org, monstr@monstr.eu, johan@kernel.org, Nava kishore Manne <nava.manne@xilinx.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Erwan Le Ray <erwan.leray@st.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+Cc: linux-serial@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Fabrice Gasnier <fabrice.gasnier@st.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jun 10, 2019 at 05:06:57PM +0200, Michal Simek wrote:
-> On 10. 06. 19 16:44, Greg KH wrote:
-> > On Mon, Jun 10, 2019 at 10:44:55AM +0200, Michal Simek wrote:
-> >> From: Nava kishore Manne <nava.manne@xilinx.com>
-> >>
-> >> This patch fixes the below warning
-> >>
-> >>         -->Symbolic permissions 'S_IRUGO' are not preferred.
-> >>            Consider using octal permissions '0444'.
-> >>         -->macros should not use a trailing semicolon.
-> >>         -->line over 80 characters.
-> >>         -->void function return statements are not generally useful.
-> >>         -->Prefer 'unsigned int' to bare use of 'unsigned'.
-> >>
-> >> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
-> >> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> >> ---
-> >>
-> >> Happy to split it if needed.
-> > 
-> > Please split.  Do not do more than one "logical thing" per patch.
-> > 
-> > And the subject is not correct, there are no general "warnings", these
-> > are all checkpatch warnings, not a build issue.
+Hi Erwan,
+
+On 6/4/19 10:55 AM, Erwan Le Ray wrote:
+> This series delivers power improvements for stm32-usart driver.
 > 
-> ok. Will do. Any issue with second patch?
+> Bich Hemon (4):
+>    dt-bindings: serial: add optional pinctrl states
+>    serial: stm32: select pinctrl state in each suspend/resume function
+>    ARM: dts: stm32: Update pin states for uart4 on stm32mp157c-ed1
+>    ARM: dts: stm32: Update UART4 pin states on stm32mp157a-dk1
+> 
+> Erwan Le Ray (6):
+>    dt-bindings: serial: stm32: add wakeup option
+>    serial: stm32: add pm_runtime support
+>    serial: stm32: Use __maybe_unused instead of #if CONFIG_PM_SLEEP
+>    serial: stm32: add support for no_console_suspend
+>    ARM: dts: stm32: update uart4 pin configurations for low power
+>    ARM: dts: stm32: add wakeup capability on each usart/uart on
+>      stm32mp157c
+> 
+>   .../devicetree/bindings/serial/st,stm32-usart.txt  | 19 ++++-
+>   arch/arm/boot/dts/stm32mp157-pinctrl.dtsi          | 17 +++++
+>   arch/arm/boot/dts/stm32mp157a-dk1.dts              |  5 +-
+>   arch/arm/boot/dts/stm32mp157c-ed1.dts              |  5 +-
+>   arch/arm/boot/dts/stm32mp157c.dtsi                 | 40 ++++++++--
+>   drivers/tty/serial/stm32-usart.c                   | 88 ++++++++++++++++++++--
+>   drivers/tty/serial/stm32-usart.h                   |  1 +
+>   7 files changed, 155 insertions(+), 20 deletions(-)
+> 
 
-It will change your user/kernel api but hey, it's your call, it looks
-like a nice fix to me :)
+I'll merge device tree part into stm32-next branch when binding part 
+will be accepted.
 
-thanks,
-
-greg k-h
+regards
+Alex
