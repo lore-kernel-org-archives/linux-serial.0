@@ -1,7 +1,7 @@
 From: Greg KH <gregkh@linuxfoundation.org>
 Subject: Re: [patch 1/5] AST2500 DMA UART driver
-Date: Mon, 10 Jun 2019 18:49:30 +0200
-Message-ID: <20190610164930.GA32085@kroah.com>
+Date: Mon, 10 Jun 2019 18:50:40 +0200
+Message-ID: <20190610165040.GB32085@kroah.com>
 References: <1559737395-28542-1-git-send-email-open.sudheer@gmail.com>
  <1559737395-28542-2-git-send-email-open.sudheer@gmail.com>
 Mime-Version: 1.0
@@ -24,16 +24,29 @@ Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, sudheer.veliseti@aspeedtec
 List-Id: linux-serial@vger.kernel.org
 
 On Wed, Jun 05, 2019 at 05:53:11PM +0530, sudheer.v wrote:
-> From: sudheer Kumar veliseti <sudheer.open@gmail.com>
-> 
-> Signed-off-by: sudheer veliseti <sudheer.open@gmail.com>
-> ---
+> +
+> +#define CONFIG_UART_DMA_DEBUG
+> +
+> +#ifdef CONFIG_UART_DMA_DEBUG
+> +#define UART_DBG(fmt, args...) pr_debug("%s() " fmt, __func__, ## args)
+> +#else
+> +#define UART_DBG(fmt, args...)
+> +#endif
+> +
+> +#define  CONFIG_UART_TX_DMA_DEBUG 1
+> +
+> +#ifdef CONFIG_UART_TX_DMA_DEBUG
+> +#define UART_TX_DBG(fmt, args...) pr_debug("%s()"fmt, __func__, ## args)
+> +#else
+> +#define UART_TX_DBG(fmt, args...)
+> +#endif
 
-I can not take a patch without any changelog text at all, especially for
-one that is 1928 lines long :(
+Why have you left debugging on here?
 
-Please provide a proper changelog and I will be glad to review it.
+Why does your tiny driver have custom debug macros?  Please always use
+the in-kernel standard ones so you can dynamically enable/disable them
+as needed without having to rebuild the code.
 
-thanks,
+I stopped reading here, sorry.
 
 greg k-h
