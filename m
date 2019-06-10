@@ -1,23 +1,39 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 04/10] serial: stm32: add pm_runtime support
-Date: Mon, 10 Jun 2019 18:48:07 +0200
-Message-ID: <20190610164807.GA25660@kroah.com>
-References: <1559638519-6128-1-git-send-email-erwan.leray@st.com>
- <1559638519-6128-5-git-send-email-erwan.leray@st.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [patch 1/5] AST2500 DMA UART driver
+Date: Mon, 10 Jun 2019 18:49:30 +0200
+Message-ID: <20190610164930.GA32085@kroah.com>
+References: <1559737395-28542-1-git-send-email-open.sudheer@gmail.com>
+ <1559737395-28542-2-git-send-email-open.sudheer@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <1559638519-6128-5-git-send-email-erwan.leray@st.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Erwan Le Ray <erwan.leray@st.com>
-Cc: Jiri Slaby <jslaby@suse.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-serial@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Fabrice Gasnier <fabrice.gasnier@st.com>, Bich Hemon <bich.hemon@st.com>
+In-Reply-To: <1559737395-28542-2-git-send-email-open.sudheer@gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: "sudheer.v" <open.sudheer@gmail.com>
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, sudheer.veliseti@aspeedtech.com, linux-aspeed@lists.ozlabs.org, andrew@aj.id.au, benh@kernel.crashing.org, shivahshankar.shankarnarayanrao@aspeedtech.com, robh+dt@kernel.org, joel@jms.id.au, linux-serial@vger.kernel.org, jslaby@suse.com, mchehab+samsung@kernel.org, linux-arm-kernel@lists.infradead.org, sudheer Kumar veliseti <sudheer.open@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jun 04, 2019 at 10:55:13AM +0200, Erwan Le Ray wrote:
-> Use pm_runtime for clock management.
+On Wed, Jun 05, 2019 at 05:53:11PM +0530, sudheer.v wrote:
+> From: sudheer Kumar veliseti <sudheer.open@gmail.com>
 > 
-> Signed-off-by: Bich Hemon <bich.hemon@st.com>
-> Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
+> Signed-off-by: sudheer veliseti <sudheer.open@gmail.com>
+> ---
 
-Does not apply to my tree :(
+I can not take a patch without any changelog text at all, especially for
+one that is 1928 lines long :(
+
+Please provide a proper changelog and I will be glad to review it.
+
+thanks,
+
+greg k-h
