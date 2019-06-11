@@ -1,118 +1,72 @@
-From: Stefan Roese <sr@denx.de>
-Subject: [PATCH 1/2 v5] serial: mctrl_gpio: Check if GPIO property exisits before requesting it
-Date: Tue, 11 Jun 2019 12:56:02 +0200
-Message-ID: <20190611105603.4435-1-sr@denx.de>
+From: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: [PATCH] dt-bindings: serial: add documentation for Rx in-band wakeup
+ support
+Date: Tue, 11 Jun 2019 20:15:10 +0800
+Message-ID: <20190611121510.260188-1-tientzu@chromium.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Yegor Yefremov <yegorslists@googlemail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Giulio Benetti <giulio.benetti@micronovasrl.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
+List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, changqi.hu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-This patch adds a check for the GPIOs property existence, before the
-GPIO is requested. This fixes an issue seen when the 8250 mctrl_gpio
-support is added (2nd patch in this patch series) on x86 platforms using
-ACPI.
+To support Rx in-band wakeup, one must create an interrupt specifier with
+edge sensitivity on Rx pin and an addtional pinctrl to reconfigure Rx pin
+to normal GPIO in sleep state. Driver will switch to sleep mode pinctrl and
+enable irq wake before suspend and restore to default settings when
+resuming.
 
-Here Mika's comments from 2016-08-09:
-
-"
-I noticed that with v4.8-rc1 serial console of some of our Broxton
-systems does not work properly anymore. I'm able to see output but input
-does not work.
-
-I bisected it down to commit 4ef03d328769eddbfeca1f1c958fdb181a69c341
-("tty/serial/8250: use mctrl_gpio helpers").
-
-The reason why it fails is that in ACPI we do not have names for GPIOs
-(except when _DSD is used) so we use the "idx" to index into _CRS GPIO
-resources. Now mctrl_gpio_init_noauto() goes through a list of GPIOs
-calling devm_gpiod_get_index_optional() passing "idx" of 0 for each. The
-UART device in Broxton has following (simplified) ACPI description:
-
-    Device (URT4)
-    {
-        ...
-        Name (_CRS, ResourceTemplate () {
-            GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
-                    "\\_SB.GPO0", 0x00, ResourceConsumer)
-            {
-                0x003A
-            }
-            GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
-                    "\\_SB.GPO0", 0x00, ResourceConsumer)
-            {
-                0x003D
-            }
-        })
-
-In this case it finds the first GPIO (0x003A which happens to be RX pin
-for that UART), turns it into GPIO which then breaks input for the UART
-device. This also breaks systems with bluetooth connected to UART (those
-typically have some GPIOs in their _CRS).
-
-Any ideas how to fix this?
-
-We cannot just drop the _CRS index lookup fallback because that would
-break many existing machines out there so maybe we can limit this to
-only DT enabled machines. Or alternatively probe if the property first
-exists before trying to acquire the GPIOs (using
-device_property_present()).
-"
-
-This patch implements the fix suggested by Mika in his statement above.
-
-Signed-off-by: Stefan Roese <sr@denx.de>
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Yegor Yefremov <yegorslists@googlemail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Giulio Benetti <giulio.benetti@micronovasrl.com>
+Signed-off-by: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 ---
-v5:
-- Simplified the code a bit (Andy)
-- Added gpio_str == NULL handling (Andy)
+Resending this patch since I forgot to cc device tree maintainers/mailing list.
+The 2/2 patch in this series[1] is already in tty-next[2].
 
-v4:
-- Add missing free() calls (Johan)
-- Added Mika's reviewed by tag
-- Added Johan to Cc
+[1] https://patchwork.kernel.org/patch/10962299/
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/log/?h=tty-testing
 
-v3:
-- No change
+ .../devicetree/bindings/serial/mtk-uart.txt         | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-v2:
-- Include the problem description and analysis from Mika into the commit
-  text, as suggested by Greg.
-
- drivers/tty/serial/serial_mctrl_gpio.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
-index 39ed56214cd3..65348887a749 100644
---- a/drivers/tty/serial/serial_mctrl_gpio.c
-+++ b/drivers/tty/serial/serial_mctrl_gpio.c
-@@ -116,6 +116,19 @@ struct mctrl_gpios *mctrl_gpio_init_noauto(struct device *dev, unsigned int idx)
+diff --git a/Documentation/devicetree/bindings/serial/mtk-uart.txt b/Documentation/devicetree/bindings/serial/mtk-uart.txt
+index bcfb13194f16..3488b6e24e0c 100644
+--- a/Documentation/devicetree/bindings/serial/mtk-uart.txt
++++ b/Documentation/devicetree/bindings/serial/mtk-uart.txt
+@@ -21,7 +21,12 @@ Required properties:
  
- 	for (i = 0; i < UART_GPIO_MAX; i++) {
- 		enum gpiod_flags flags;
-+		char *gpio_str;
-+		bool present;
-+
-+		/* Check if GPIO property exists and continue if not */
-+		gpio_str = kasprintf(GFP_KERNEL, "%s-gpios",
-+				     mctrl_gpios_desc[i].name);
-+		if (!gpio_str)
-+			continue;
-+
-+		present = device_property_present(dev, gpio_str);
-+		kfree(gpio_str);
-+		if (!present)
-+			continue;
+ - reg: The base address of the UART register bank.
  
- 		if (mctrl_gpios_desc[i].dir_out)
- 			flags = GPIOD_OUT_LOW;
+-- interrupts: A single interrupt specifier.
++- interrupts or interrupts-extended:
++  index 0: an interrupt specifier for the UART controller itself
++  index 1: optional, an interrupt specifier with edge sensitivity on Rx pin to
++           support Rx in-band wake up. If one would like to use this feature,
++           one must create an addtional pinctrl to reconfigure Rx pin to normal
++           GPIO before suspend.
+ 
+ - clocks : Must contain an entry for each entry in clock-names.
+   See ../clocks/clock-bindings.txt for details.
+@@ -37,7 +42,11 @@ Example:
+ 	uart0: serial@11006000 {
+ 		compatible = "mediatek,mt6589-uart", "mediatek,mt6577-uart";
+ 		reg = <0x11006000 0x400>;
+-		interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>;
++		interrupts-extended = <&sysirq GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>,
++				      <&gpio 121 IRQ_TYPE_EDGE_FALLING>;
+ 		clocks = <&uart_clk>, <&bus_clk>;
+ 		clock-names = "baud", "bus";
++		pinctrl-names = "default", "sleep";
++		pinctrl-0 = <&uart_pin>;
++		pinctrl-1 = <&uart_pin_sleep>;
+ 	};
 -- 
-2.22.0
+2.22.0.rc2.383.gf4fbbf30c2-goog
