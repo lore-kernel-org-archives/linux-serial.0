@@ -1,59 +1,87 @@
-From: Erwan Le Ray <erwan.leray@st.com>
-Subject: [PATCH v2 02/10] dt-bindings: serial: add optional pinctrl states
-Date: Tue, 11 Jun 2019 14:25:22 +0200
-Message-ID: <1560255930-22554-3-git-send-email-erwan.leray@st.com>
-References: <1560255930-22554-1-git-send-email-erwan.leray@st.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 2/2 v5] tty/serial/8250: use mctrl_gpio helpers
+Date: Tue, 11 Jun 2019 15:44:15 +0300
+Message-ID: <20190611124415.GT9224@smile.fi.intel.com>
+References: <20190611105603.4435-1-sr@denx.de>
+ <20190611105603.4435-2-sr@denx.de>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1560255930-22554-1-git-send-email-erwan.leray@st.com>
+Content-Disposition: inline
+In-Reply-To: <20190611105603.4435-2-sr@denx.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
-Cc: linux-serial@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Erwan Le Ray <erwan.leray@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>, Bich Hemon <bich.hemon@st.com>
+To: Stefan Roese <sr@denx.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Yegor Yefremov <yegorslists@googlemail.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Bich Hemon <bich.hemon@st.com>
+On Tue, Jun 11, 2019 at 12:56:03PM +0200, Stefan Roese wrote:
+> From: Yegor Yefremov <yegorslists@googlemail.com>
+> 
+> This patch permits the usage for GPIOs to control
+> the CTS/RTS/DTR/DSR/DCD/RI signals.
 
-Add options for pinctrl states:
-- "sleep" for low power
-- "idle" for low power and wakeup capabilities enabled
-- "no_console_suspend" for enabling console messages in low power
+>  static inline void serial8250_out_MCR(struct uart_8250_port *up, int value)
+>  {
+>  	serial_out(up, UART_MCR, value);
+> +
+> +	if (up->gpios) {
+> +		int mctrl_gpio = 0;
+> +
+> +		if (value & UART_MCR_RTS)
+> +			mctrl_gpio |= TIOCM_RTS;
+> +		if (value & UART_MCR_DTR)
+> +			mctrl_gpio |= TIOCM_DTR;
+> +
+> +		mctrl_gpio_set(up->gpios, mctrl_gpio);
+> +	}
+>  }
+>  
+>  static inline int serial8250_in_MCR(struct uart_8250_port *up)
+>  {
+> -	return serial_in(up, UART_MCR);
+> +	int mctrl;
+> +
+> +	mctrl = serial_in(up, UART_MCR);
+> +
+> +	if (up->gpios) {
+> +		int mctrl_gpio = 0;
+> +
+> +		/* save current MCR values */
+> +		if (mctrl & UART_MCR_RTS)
+> +			mctrl_gpio |= TIOCM_RTS;
+> +		if (mctrl & UART_MCR_DTR)
+> +			mctrl_gpio |= TIOCM_DTR;
+> +
+> +		mctrl_gpio = mctrl_gpio_get_outputs(up->gpios, &mctrl_gpio);
+> +		if (mctrl_gpio & TIOCM_RTS)
+> +			mctrl |= UART_MCR_RTS;
+> +		else
+> +			mctrl &= ~UART_MCR_RTS;
+> +
+> +		if (mctrl_gpio & TIOCM_DTR)
+> +			mctrl |= UART_MCR_DTR;
+> +		else
+> +			mctrl &= ~UART_MCR_DTR;
+> +	}
+> +
+> +	return mctrl;
+>  }
 
-Signed-off-by: Bich Hemon <bich.hemon@st.com>
-Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
+These are using OR logic with potentially volatile data. Shouldn't we mask
+unused bits in UART_MCR in case of up->gpios != NULL?
 
-diff --git a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
-index 5ec80c1..64a5ea9 100644
---- a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
-+++ b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
-@@ -13,7 +13,14 @@ Required properties:
- - clocks: The input clock of the USART instance
- 
- Optional properties:
--- pinctrl: The reference on the pins configuration
-+- pinctrl-names: Set to "default". An additional "sleep" state can be defined
-+  to set pins in sleep state when in low power. In case the device is used as
-+  a wakeup source, "idle" state is defined in order to keep RX pin active.
-+  For a console device, an optional state "no_console_suspend" can be defined
-+  to enable console messages during suspend. Typically, "no_console_suspend" and
-+  "default" states can refer to the same pin configuration.
-+- pinctrl-n: Phandle(s) pointing to pin configuration nodes.
-+  For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
- - st,hw-flow-ctrl: bool flag to enable hardware flow control.
- - rs485-rts-delay, rs485-rx-during-tx, rs485-rts-active-low,
-   linux,rs485-enabled-at-boot-time: see rs485.txt.
-@@ -31,8 +38,11 @@ usart4: serial@40004c00 {
- 	reg = <0x40004c00 0x400>;
- 	interrupts = <52>;
- 	clocks = <&clk_pclk1>;
--	pinctrl-names = "default";
-+	pinctrl-names = "default", "sleep", "idle", "no_console_suspend";
- 	pinctrl-0 = <&pinctrl_usart4>;
-+	pinctrl-1 = <&pinctrl_usart4_sleep>;
-+	pinctrl-2 = <&pinctrl_usart4_idle>;
-+	pinctrl-3 = <&pinctrl_usart4>;
- };
- 
- usart2: serial@40004400 {
+> +	if (up->gpios == 0)
+
+This is type inconsistency with this check as far as I understand.
+I guess you have to do either (up->gpios == NULL), or (!up->gpios).
+
+>  	ret = 0;
+
++ Blank line.
+
+> +	if (up->gpios)
+> +		return mctrl_gpio_get(up->gpios, &ret);
+
 -- 
-1.9.1
+With Best Regards,
+Andy Shevchenko
