@@ -1,90 +1,40 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 2/2 v5] tty/serial/8250: use mctrl_gpio helpers
-Date: Tue, 11 Jun 2019 17:48:28 +0300
-Message-ID: <20190611144828.GX9224@smile.fi.intel.com>
-References: <20190611105603.4435-1-sr@denx.de>
- <20190611105603.4435-2-sr@denx.de>
- <20190611124415.GT9224@smile.fi.intel.com>
- <85f0d39c-e5d8-320b-e611-d956630a629f@denx.de>
+From: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+Subject: Re: [PATCH resend] serial: 8250: Add support for using
+ platform_device resources
+Date: Tue, 11 Jun 2019 20:11:06 +0200
+Message-ID: <ef125e69-3128-255d-483e-14b50036905f@metux.net>
+References: <20190430140416.4707-1-esben@geanix.com>
+ <20190521113426.16790-1-esben@geanix.com> <20190521131131.GA19685@kroah.com>
+ <878suzn9wx.fsf@haabendal.dk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <85f0d39c-e5d8-320b-e611-d956630a629f@denx.de>
+In-Reply-To: <878suzn9wx.fsf@haabendal.dk>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stefan Roese <sr@denx.de>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Yegor Yefremov <yegorslists@googlemail.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Esben Haabendal <esben@haabendal.dk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, Jisheng Zhang <Jisheng.Zhang@synaptics.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, He Zhe <zhe.he@windriver.com>, Marek Vasut <marex@denx.de>, Douglas Anderson <dianders@chromium.org>, Paul Burton <paul.burton@mips.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jun 11, 2019 at 04:02:54PM +0200, Stefan Roese wrote:
-> On 11.06.19 14:44, Andy Shevchenko wrote:
-> > On Tue, Jun 11, 2019 at 12:56:03PM +0200, Stefan Roese wrote:
+On 21.05.19 16:45, Esben Haabendal wrote:
+> It sits here.  It is a rather big and clunky mfd driver, not ready for
+> upstreaming in its current form.  I hope to get around to clean it up.
+> But it is for a very specific hardware that is really available or
+> usable for anybody else.  Does it make sense to spend effort on
+> submitting such a driver?
 
-> > >   static inline void serial8250_out_MCR(struct uart_8250_port *up, int value)
-> > >   {
-> > >   	serial_out(up, UART_MCR, value);
-> > > +
-> > > +	if (up->gpios) {
-> > > +		int mctrl_gpio = 0;
-> > > +
-> > > +		if (value & UART_MCR_RTS)
-> > > +			mctrl_gpio |= TIOCM_RTS;
-> > > +		if (value & UART_MCR_DTR)
-> > > +			mctrl_gpio |= TIOCM_DTR;
-> > > +
-> > > +		mctrl_gpio_set(up->gpios, mctrl_gpio);
-> > > +	}
-> > >   }
+Maybe you could post your queue w/ "RFC: " prefix and add a proper
+introduction, so everybody knows that isn't meant to be upstreamed,
+but instead a basis for discussions ?
 
-> > >   static inline int serial8250_in_MCR(struct uart_8250_port *up)
-> > >   {
-> > > -	return serial_in(up, UART_MCR);
-> > > +	int mctrl;
-> > > +
-> > > +	mctrl = serial_in(up, UART_MCR);
-> > > +
-> > > +	if (up->gpios) {
-> > > +		int mctrl_gpio = 0;
-> > > +
-> > > +		/* save current MCR values */
-> > > +		if (mctrl & UART_MCR_RTS)
-> > > +			mctrl_gpio |= TIOCM_RTS;
-> > > +		if (mctrl & UART_MCR_DTR)
-> > > +			mctrl_gpio |= TIOCM_DTR;
-> > > +
-> > > +		mctrl_gpio = mctrl_gpio_get_outputs(up->gpios, &mctrl_gpio);
-> > > +		if (mctrl_gpio & TIOCM_RTS)
-> > > +			mctrl |= UART_MCR_RTS;
-> > > +		else
-> > > +			mctrl &= ~UART_MCR_RTS;
-> > > +
-> > > +		if (mctrl_gpio & TIOCM_DTR)
-> > > +			mctrl |= UART_MCR_DTR;
-> > > +		else
-> > > +			mctrl &= ~UART_MCR_DTR;
-> > > +	}
-> > > +
-> > > +	return mctrl;
-> > >   }
-> > 
-> > These are using OR logic with potentially volatile data. Shouldn't we mask
-> > unused bits in UART_MCR in case of up->gpios != NULL?
-> 
-> Sorry, I don't see, which bits you are referring to? Could you please be
-> a bit more specific with the variable / macro meant (example)?
+Personally, I'd like to have a look at it and understand, what's the
+actual problem you'd like to solve.
 
-I meant that we double write values in the out() which might have some
-consequences, though I hope nothing wrong with it happens.
 
-In the in() we read the all bits in the register.
-
-As now I look at the implementation of mctrl_gpio_get_outputs(),
-I think we rather get helpers for conversion between TIOCM and UART_MCR values,
-so, they can be used in get_mctrl() / set_mctrl() and above.
-
-The logic now is understandable to me (I was confused by the conversions here
-and there).
+--mtx
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Enrico Weigelt, metux IT consult
+Free software and Linux embedded engineering
+info@metux.net -- +49-151-27565287
