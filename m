@@ -1,7 +1,7 @@
 From: Erwan Le Ray <erwan.leray@st.com>
-Subject: [PATCH v2 06/10] serial: stm32: add support for no_console_suspend
-Date: Tue, 11 Jun 2019 14:25:26 +0200
-Message-ID: <1560255930-22554-7-git-send-email-erwan.leray@st.com>
+Subject: [PATCH v2 02/10] dt-bindings: serial: add optional pinctrl states
+Date: Tue, 11 Jun 2019 14:25:22 +0200
+Message-ID: <1560255930-22554-3-git-send-email-erwan.leray@st.com>
 References: <1560255930-22554-1-git-send-email-erwan.leray@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,98 +12,48 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: linux-serial@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Erwan Le Ray <erwan.leray@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>, Bich Hemon <bich.hemon@st.com>
 List-Id: linux-serial@vger.kernel.org
 
-In order to display console messages in low power mode, console pins
-must be kept active after suspend call.
+From: Bich Hemon <bich.hemon@st.com>
+
+Add options for pinctrl states:
+- "sleep" for low power
+- "idle" for low power and wakeup capabilities enabled
+- "no_console_suspend" for enabling console messages in low power
 
 Signed-off-by: Bich Hemon <bich.hemon@st.com>
 Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 0d43711..00e4d7a 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -24,6 +24,8 @@
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_platform.h>
-+#include <linux/pinctrl/consumer.h>
-+#include <linux/pinctrl/devinfo.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/pm_wakeirq.h>
-@@ -846,6 +848,7 @@ static int stm32_init_port(struct stm32_port *stm32port,
- {
- 	struct uart_port *port = &stm32port->port;
- 	struct resource *res;
-+	struct pinctrl *uart_pinctrl;
- 	int ret;
+diff --git a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
+index 5ec80c1..64a5ea9 100644
+--- a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
++++ b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
+@@ -13,7 +13,14 @@ Required properties:
+ - clocks: The input clock of the USART instance
  
- 	port->iotype	= UPIO_MEM;
-@@ -879,6 +882,24 @@ static int stm32_init_port(struct stm32_port *stm32port,
- 
- 	stm32port->fifoen = stm32port->info->cfg.has_fifo;
- 
-+	uart_pinctrl = devm_pinctrl_get(&pdev->dev);
-+	if (IS_ERR(uart_pinctrl)) {
-+		ret = PTR_ERR(uart_pinctrl);
-+		if (ret != -ENODEV) {
-+			dev_err(&pdev->dev, "Can't get pinctrl, error %d\n",
-+				ret);
-+			return ret;
-+		}
-+		stm32port->console_pins = ERR_PTR(-ENODEV);
-+	} else {
-+		stm32port->console_pins = pinctrl_lookup_state
-+			(uart_pinctrl, "no_console_suspend");
-+	}
-+
-+	if (IS_ERR(stm32port->console_pins) && PTR_ERR(stm32port->console_pins)
-+	    != -ENODEV)
-+		return PTR_ERR(stm32port->console_pins);
-+
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	port->membase = devm_ioremap_resource(&pdev->dev, res);
- 	if (IS_ERR(port->membase))
-@@ -1303,6 +1324,7 @@ static void __maybe_unused stm32_serial_enable_wakeup(struct uart_port *port,
- static int __maybe_unused stm32_serial_suspend(struct device *dev)
- {
- 	struct uart_port *port = dev_get_drvdata(dev);
-+	struct stm32_port *stm32_port = to_stm32_port(port);
- 
- 	uart_suspend_port(&stm32_usart_driver, port);
- 
-@@ -1311,7 +1333,19 @@ static int __maybe_unused stm32_serial_suspend(struct device *dev)
- 	else
- 		stm32_serial_enable_wakeup(port, false);
- 
--	pinctrl_pm_select_sleep_state(dev);
-+	if (uart_console(port) && !console_suspend_enabled) {
-+		if (IS_ERR(stm32_port->console_pins)) {
-+			dev_err(dev, "no_console_suspend pinctrl not found\n");
-+			return PTR_ERR(stm32_port->console_pins);
-+		}
-+
-+		pinctrl_select_state(dev->pins->p, stm32_port->console_pins);
-+	} else {
-+		if (device_may_wakeup(dev))
-+			pinctrl_pm_select_idle_state(dev);
-+		else
-+			pinctrl_pm_select_sleep_state(dev);
-+	}
- 
- 	return 0;
- }
-diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
-index 30d2433..050fe04 100644
---- a/drivers/tty/serial/stm32-usart.h
-+++ b/drivers/tty/serial/stm32-usart.h
-@@ -255,6 +255,7 @@ struct stm32_port {
- 	bool fifoen;
- 	int wakeirq;
- 	int rdr_mask;		/* receive data register mask */
-+	struct pinctrl_state *console_pins;
+ Optional properties:
+-- pinctrl: The reference on the pins configuration
++- pinctrl-names: Set to "default". An additional "sleep" state can be defined
++  to set pins in sleep state when in low power. In case the device is used as
++  a wakeup source, "idle" state is defined in order to keep RX pin active.
++  For a console device, an optional state "no_console_suspend" can be defined
++  to enable console messages during suspend. Typically, "no_console_suspend" and
++  "default" states can refer to the same pin configuration.
++- pinctrl-n: Phandle(s) pointing to pin configuration nodes.
++  For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
+ - st,hw-flow-ctrl: bool flag to enable hardware flow control.
+ - rs485-rts-delay, rs485-rx-during-tx, rs485-rts-active-low,
+   linux,rs485-enabled-at-boot-time: see rs485.txt.
+@@ -31,8 +38,11 @@ usart4: serial@40004c00 {
+ 	reg = <0x40004c00 0x400>;
+ 	interrupts = <52>;
+ 	clocks = <&clk_pclk1>;
+-	pinctrl-names = "default";
++	pinctrl-names = "default", "sleep", "idle", "no_console_suspend";
+ 	pinctrl-0 = <&pinctrl_usart4>;
++	pinctrl-1 = <&pinctrl_usart4_sleep>;
++	pinctrl-2 = <&pinctrl_usart4_idle>;
++	pinctrl-3 = <&pinctrl_usart4>;
  };
  
- static struct stm32_port stm32_ports[STM32_MAX_PORTS];
+ usart2: serial@40004400 {
 -- 
 1.9.1
