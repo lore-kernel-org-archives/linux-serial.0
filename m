@@ -1,7 +1,7 @@
 From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH v2 6/6] serial: uartps: Remove useless return from cdns_uart_poll_put_char
-Date: Wed, 12 Jun 2019 13:14:43 +0200
-Message-ID: <19a9f67770e1896dde57d94b093273b503610eef.1560338079.git.michal.simek@xilinx.com>
+Subject: [PATCH v2 5/6] serial: uartps: Do not add a trailing semicolon to macro
+Date: Wed, 12 Jun 2019 13:14:42 +0200
+Message-ID: <5d938d34c3c4710577df898dbf4b70c74d2e6730.1560338079.git.michal.simek@xilinx.com>
 References: <cover.1560338079.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1560338079.git.michal.simek@xilinx.com>
@@ -14,15 +14,12 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Nava kishore Manne <nava.manne@xilinx.com>
 
-There is no reason to call return at the end of function which should
-return void.
+This patch fixes this checkpatch warning:
+WARNING: macros should not use a trailing semicolon
++#define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, \
++		clk_rate_change_nb);
 
-The patch is also remove one checkpatch warning:
-WARNING: void function return statements are not generally useful
-+	return;
-+}
-
-Fixes: 6ee04c6c5488 ("tty: xuartps: Add polled mode support for xuartps")
+Fixes: d9bb3fb12685 ("tty: xuartps: Rebrand driver as Cadence UART")
 Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
 Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 ---
@@ -31,21 +28,25 @@ Changes in v2:
 - Split patch from v1
 - Add Fixes tag
 
- drivers/tty/serial/xilinx_uartps.c | 2 --
- 1 file changed, 2 deletions(-)
+Origin patch which introduce this semicolon was
+c4b0510cc1571ff44e1 ("tty: xuartps: Dynamically adjust to input frequency
+changes")
+---
+ drivers/tty/serial/xilinx_uartps.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index d4c1ae2ffca6..bcef254fa03c 100644
+index c3949a323815..d4c1ae2ffca6 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1074,8 +1074,6 @@ static void cdns_uart_poll_put_char(struct uart_port *port, unsigned char c)
- 		cpu_relax();
+@@ -199,7 +199,7 @@ struct cdns_platform_data {
+ 	u32 quirks;
+ };
+ #define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, \
+-		clk_rate_change_nb);
++		clk_rate_change_nb)
  
- 	spin_unlock_irqrestore(&port->lock, flags);
--
--	return;
- }
- #endif
- 
+ /**
+  * cdns_uart_handle_rx - Handle the received bytes along with Rx errors.
 -- 
 2.17.1
