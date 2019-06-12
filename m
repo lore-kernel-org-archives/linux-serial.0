@@ -1,172 +1,100 @@
-From: Stefan Roese <sr@denx.de>
-Subject: Re: [PATCH 2/2 v5] tty/serial/8250: use mctrl_gpio helpers
-Date: Wed, 12 Jun 2019 10:13:05 +0200
-Message-ID: <12e5180e-b4a0-e5fa-bcad-ddc8103d644c@denx.de>
-References: <20190611105603.4435-1-sr@denx.de>
- <20190611105603.4435-2-sr@denx.de> <20190611124415.GT9224@smile.fi.intel.com>
- <85f0d39c-e5d8-320b-e611-d956630a629f@denx.de>
- <20190611144828.GX9224@smile.fi.intel.com>
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re: [RFC v2 01/11] OPP: Don't overwrite rounded clk rate
+Date: Wed, 12 Jun 2019 13:55:06 +0530
+Message-ID: <20190612082506.m735bsk7bjijf2yg@vireshk-i7>
+References: <20190320094918.20234-1-rnayak@codeaurora.org>
+ <20190320094918.20234-2-rnayak@codeaurora.org>
+ <20190611105432.x3nzqiib35t6mvyg@vireshk-i7>
+ <c173a57d-a4de-99f7-e8d8-28a7612f4ca3@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190611144828.GX9224@smile.fi.intel.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <c173a57d-a4de-99f7-e8d8-28a7612f4ca3@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Yegor Yefremov <yegorslists@googlemail.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Rajendra Nayak <rnayak@codeaurora.org>
+Cc: swboyd@chromium.org, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-scsi@vger.kernel.org, ulf.hansson@linaro.org, dianders@chromium.org, rafael@kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 11.06.19 16:48, Andy Shevchenko wrote:
-> On Tue, Jun 11, 2019 at 04:02:54PM +0200, Stefan Roese wrote:
->> On 11.06.19 14:44, Andy Shevchenko wrote:
->>> On Tue, Jun 11, 2019 at 12:56:03PM +0200, Stefan Roese wrote:
+On 12-06-19, 13:12, Rajendra Nayak wrote:
+> so the 'fmax' tables basically say what the max frequency the device can
+> operate at for a given performance state/voltage level.
 > 
->>>>    static inline void serial8250_out_MCR(struct uart_8250_port *up, int value)
->>>>    {
->>>>    	serial_out(up, UART_MCR, value);
->>>> +
->>>> +	if (up->gpios) {
->>>> +		int mctrl_gpio = 0;
->>>> +
->>>> +		if (value & UART_MCR_RTS)
->>>> +			mctrl_gpio |= TIOCM_RTS;
->>>> +		if (value & UART_MCR_DTR)
->>>> +			mctrl_gpio |= TIOCM_DTR;
->>>> +
->>>> +		mctrl_gpio_set(up->gpios, mctrl_gpio);
->>>> +	}
->>>>    }
+> so in your example it would be for instance
 > 
->>>>    static inline int serial8250_in_MCR(struct uart_8250_port *up)
->>>>    {
->>>> -	return serial_in(up, UART_MCR);
->>>> +	int mctrl;
->>>> +
->>>> +	mctrl = serial_in(up, UART_MCR);
->>>> +
->>>> +	if (up->gpios) {
->>>> +		int mctrl_gpio = 0;
->>>> +
->>>> +		/* save current MCR values */
->>>> +		if (mctrl & UART_MCR_RTS)
->>>> +			mctrl_gpio |= TIOCM_RTS;
->>>> +		if (mctrl & UART_MCR_DTR)
->>>> +			mctrl_gpio |= TIOCM_DTR;
->>>> +
->>>> +		mctrl_gpio = mctrl_gpio_get_outputs(up->gpios, &mctrl_gpio);
->>>> +		if (mctrl_gpio & TIOCM_RTS)
->>>> +			mctrl |= UART_MCR_RTS;
->>>> +		else
->>>> +			mctrl &= ~UART_MCR_RTS;
->>>> +
->>>> +		if (mctrl_gpio & TIOCM_DTR)
->>>> +			mctrl |= UART_MCR_DTR;
->>>> +		else
->>>> +			mctrl &= ~UART_MCR_DTR;
->>>> +	}
->>>> +
->>>> +	return mctrl;
->>>>    }
->>>
->>> These are using OR logic with potentially volatile data. Shouldn't we mask
->>> unused bits in UART_MCR in case of up->gpios != NULL?
->>
->> Sorry, I don't see, which bits you are referring to? Could you please be
->> a bit more specific with the variable / macro meant (example)?
+> 500M, Perf state = 2
+> 1G, Perf state = 3
+> 1.2G, Perf state = 4
 > 
-> I meant that we double write values in the out() which might have some
-> consequences, though I hope nothing wrong with it happens.
-
-Where is the double write to a register? Sorry, I fail to spot it.
-  
-> In the in() we read the all bits in the register.
+> Now when the device wants to operate at say 800Mhz, you need to set the
+> Perf state to 3, so this patch basically avoids you having to put those additional
+> OPPs in the table which would otherwise look something like this
 > 
-> As now I look at the implementation of mctrl_gpio_get_outputs(),
-> I think we rather get helpers for conversion between TIOCM and UART_MCR values,
-> so, they can be used in get_mctrl() / set_mctrl() and above.
+> 500M, Perf state = 2
+> 800M, Perf state = 3 <-- redundant OPP
+> 1G, Perf state = 3
+> 1.2G, Perf state = 4
+> 
+> Your example had just 1 missing entry in the 'fmax' tables in reality its a lot more,
+> atleast on all qualcomm platforms.
 
-Do you something like this in mind?
+Okay, I have applied this patch (alone) to the OPP tree with minor
+modifications in commit log and diff.
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index dc9354e34b60..f44561fcb941 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1954,19 +1954,12 @@ unsigned int serial8250_do_get_mctrl(struct uart_port *port)
-         status = serial8250_modem_status(up);
-         serial8250_rpm_put(up);
-  
--       ret = 0;
--
-         if (up->gpios)
-                 return mctrl_gpio_get(up->gpios, &ret);
-  
--       if (status & UART_MSR_DCD)
--               ret |= TIOCM_CAR;
--       if (status & UART_MSR_RI)
--               ret |= TIOCM_RNG;
--       if (status & UART_MSR_DSR)
--               ret |= TIOCM_DSR;
--       if (status & UART_MSR_CTS)
--               ret |= TIOCM_CTS;
-+       ret = UART_MSR_TO_TIOCM_DCD(status) | UART_MSR_TO_TIOCM_RI(status) |
-+               UART_MSR_TO_TIOCM_DSR(status) | UART_MSR_TO_TIOCM_CTS(status);
-+
-         return ret;
-  }
-  EXPORT_SYMBOL_GPL(serial8250_do_get_mctrl);
-@@ -1983,16 +1976,9 @@ void serial8250_do_set_mctrl(struct uart_port *port, unsigned int mctrl)
-         struct uart_8250_port *up = up_to_u8250p(port);
-         unsigned char mcr = 0;
-  
--       if (mctrl & TIOCM_RTS)
--               mcr |= UART_MCR_RTS;
--       if (mctrl & TIOCM_DTR)
--               mcr |= UART_MCR_DTR;
--       if (mctrl & TIOCM_OUT1)
--               mcr |= UART_MCR_OUT1;
--       if (mctrl & TIOCM_OUT2)
--               mcr |= UART_MCR_OUT2;
--       if (mctrl & TIOCM_LOOP)
--               mcr |= UART_MCR_LOOP;
-+       mcr = TIOCM_TO_UART_MCR_RTS(mctrl) | TIOCM_TO_UART_MCR_DTR(mctrl) |
-+               TIOCM_TO_UART_MCR_OUT1(mctrl) | TIOCM_TO_UART_MCR_OUT2(mctrl) |
-+               TIOCM_TO_UART_MCR_LOOP(mctrl);
-  
-         mcr = (mcr & up->mcr_mask) | up->mcr_force | up->mcr;
-  
-diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
-index be07b5470f4b..bda905a1b765 100644
---- a/include/uapi/linux/serial_reg.h
-+++ b/include/uapi/linux/serial_reg.h
-@@ -376,5 +376,22 @@
-  #define UART_ALTR_EN_TXFIFO_LW 0x01    /* Enable the TX FIFO Low Watermark */
-  #define UART_ALTR_TX_LOW       0x41    /* Tx FIFO Low Watermark */
-  
-+#define UART_MSR_TO_TIOCM_DCD(val)     ((val & UART_MSR_DCD) ? TIOCM_CAR : 0)
-+#define UART_MSR_TO_TIOCM_RI(val)      ((val & UART_MSR_RI) ? TIOCM_RNG : 0)
-+#define UART_MSR_TO_TIOCM_DSR(val)     ((val & UART_MSR_DSR) ? TIOCM_DSR : 0)
-+#define UART_MSR_TO_TIOCM_CTS(val)     ((val & UART_MSR_CTS) ? TIOCM_CTS : 0)
-+#define UART_MSR_TO_TIOCM_RTS(val)     ((val & UART_MSR_RTS) ? TIOCM_RTS : 0)
-+#define UART_MSR_TO_TIOCM_DTR(val)     ((val & UART_MSR_DTR) ? TIOCM_DTR : 0)
-+
-+#define TIOCM_TO_UART_MCR_DCD(val)     ((val & TIOCM_DCD) ? UART_MCR_CAR : 0)
-+#define TIOCM_TO_UART_MCR_RI(val)      ((val & TIOCM_RI) ? UART_MCR_RNG : 0)
-+#define TIOCM_TO_UART_MCR_DSR(val)     ((val & TIOCM_DSR) ? UART_MCR_DSR : 0)
-+#define TIOCM_TO_UART_MCR_CTS(val)     ((val & TIOCM_CTS) ? UART_MCR_CTS : 0)
-+#define TIOCM_TO_UART_MCR_RTS(val)     ((val & TIOCM_RTS) ? UART_MCR_RTS : 0)
-+#define TIOCM_TO_UART_MCR_DTR(val)     ((val & TIOCM_DTR) ? UART_MCR_DTR : 0)
-+#define TIOCM_TO_UART_MCR_LOOP(val)    ((val & TIOCM_LOOP) ? UART_MCR_LOOP : 0)
-+#define TIOCM_TO_UART_MCR_OUT1(val)    ((val & TIOCM_OUT1) ? UART_MCR_OUT1 : 0)
-+#define TIOCM_TO_UART_MCR_OUT2(val)    ((val & TIOCM_OUT2) ? UART_MCR_OUT2 : 0)
-+
-  #endif /* _LINUX_SERIAL_REG_H */
+-- 
+viresh
 
+-------------------------8<-------------------------
 
-Plus the use of these macros in this patch of course.
+From: Stephen Boyd <swboyd@chromium.org>
+Date: Wed, 20 Mar 2019 15:19:08 +0530
+Subject: [PATCH] opp: Don't overwrite rounded clk rate
 
-If yes, then I'll add a new patch (pretty similar to the one included
-above) to this series.
+Doing this allows us to call this API with any rate requested and have
+it no need to match in the OPP table. Instead, we'll round the rate up
+to the nearest OPP, so that we can get the voltage or performance level
+required for that OPP. This supports users of the OPP core that want to
+specify the possible 'fmax' values corresponding to the voltage or
+performance levels of each OPP. And for devices that required the exact
+frequency, we can rely on the clk framework to round the rate to the
+nearest supported frequency instead of the OPP framework to do so.
 
-Thanks,
-Stefan
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
+[ Viresh: Massaged changelog and use temp_opp variable instead ]
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+---
+ drivers/opp/core.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/opp/core.c b/drivers/opp/core.c
+index 764e05a2fa66..0fbc77f05048 100644
+--- a/drivers/opp/core.c
++++ b/drivers/opp/core.c
+@@ -757,7 +757,7 @@ static int _set_required_opps(struct device *dev,
+ int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq)
+ {
+ 	struct opp_table *opp_table;
+-	unsigned long freq, old_freq;
++	unsigned long freq, old_freq, temp_freq;
+ 	struct dev_pm_opp *old_opp, *opp;
+ 	struct clk *clk;
+ 	int ret;
+@@ -796,13 +796,15 @@ int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq)
+ 		goto put_opp_table;
+ 	}
+ 
+-	old_opp = _find_freq_ceil(opp_table, &old_freq);
++	temp_freq = old_freq;
++	old_opp = _find_freq_ceil(opp_table, &temp_freq);
+ 	if (IS_ERR(old_opp)) {
+ 		dev_err(dev, "%s: failed to find current OPP for freq %lu (%ld)\n",
+ 			__func__, old_freq, PTR_ERR(old_opp));
+ 	}
+ 
+-	opp = _find_freq_ceil(opp_table, &freq);
++	temp_freq = freq;
++	opp = _find_freq_ceil(opp_table, &temp_freq);
+ 	if (IS_ERR(opp)) {
+ 		ret = PTR_ERR(opp);
+ 		dev_err(dev, "%s: failed to find OPP for freq %lu (%d)\n",
