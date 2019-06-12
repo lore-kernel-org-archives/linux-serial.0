@@ -1,120 +1,85 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 2/2 v5] tty/serial/8250: use mctrl_gpio helpers
-Date: Wed, 12 Jun 2019 12:16:21 +0300
-Message-ID: <20190612091621.GA9224@smile.fi.intel.com>
-References: <20190611105603.4435-1-sr@denx.de>
- <20190611105603.4435-2-sr@denx.de>
- <20190611124415.GT9224@smile.fi.intel.com>
- <85f0d39c-e5d8-320b-e611-d956630a629f@denx.de>
- <20190611144828.GX9224@smile.fi.intel.com>
- <12e5180e-b4a0-e5fa-bcad-ddc8103d644c@denx.de>
+From: "Sugaya, Taichi" <sugaya.taichi@socionext.com>
+Subject: Re: [PATCH] serial: Fix an invalid comparing statement
+Date: Wed, 12 Jun 2019 18:18:50 +0900
+Message-ID: <3b075194-9cea-6de9-31ed-b6dda1e87e9a@socionext.com>
+References: <1558933288-30023-1-git-send-email-sugaya.taichi@socionext.com>
+ <20190610165655.GA397@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <12e5180e-b4a0-e5fa-bcad-ddc8103d644c@denx.de>
+In-Reply-To: <20190610165655.GA397@kroah.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stefan Roese <sr@denx.de>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Yegor Yefremov <yegorslists@googlemail.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>, Takao Orito <orito.takao@socionext.com>, Kazuhiro Kasai <kasai.kazuhiro@socionext.com>, Shinji Kanematsu <kanematsu.shinji@socionext.com>, Jassi Brar <jaswinder.singh@linaro.org>, Masami Hiramatsu <masami.hiramatsu@linaro.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jun 12, 2019 at 10:13:05AM +0200, Stefan Roese wrote:
-> On 11.06.19 16:48, Andy Shevchenko wrote:
-> > On Tue, Jun 11, 2019 at 04:02:54PM +0200, Stefan Roese wrote:
-> > > On 11.06.19 14:44, Andy Shevchenko wrote:
-> > > > On Tue, Jun 11, 2019 at 12:56:03PM +0200, Stefan Roese wrote:
-> > 
-> > > > >    static inline void serial8250_out_MCR(struct uart_8250_port *up, int value)
-> > > > >    {
-> > > > >    	serial_out(up, UART_MCR, value);
-> > > > > +
-> > > > > +	if (up->gpios) {
-> > > > > +		int mctrl_gpio = 0;
-> > > > > +
-> > > > > +		if (value & UART_MCR_RTS)
-> > > > > +			mctrl_gpio |= TIOCM_RTS;
-> > > > > +		if (value & UART_MCR_DTR)
-> > > > > +			mctrl_gpio |= TIOCM_DTR;
-> > > > > +
-> > > > > +		mctrl_gpio_set(up->gpios, mctrl_gpio);
-> > > > > +	}
-> > > > >    }
-> > 
-> > > > >    static inline int serial8250_in_MCR(struct uart_8250_port *up)
-> > > > >    {
-> > > > > -	return serial_in(up, UART_MCR);
-> > > > > +	int mctrl;
-> > > > > +
-> > > > > +	mctrl = serial_in(up, UART_MCR);
-> > > > > +
-> > > > > +	if (up->gpios) {
-> > > > > +		int mctrl_gpio = 0;
-> > > > > +
-> > > > > +		/* save current MCR values */
-> > > > > +		if (mctrl & UART_MCR_RTS)
-> > > > > +			mctrl_gpio |= TIOCM_RTS;
-> > > > > +		if (mctrl & UART_MCR_DTR)
-> > > > > +			mctrl_gpio |= TIOCM_DTR;
-> > > > > +
-> > > > > +		mctrl_gpio = mctrl_gpio_get_outputs(up->gpios, &mctrl_gpio);
-> > > > > +		if (mctrl_gpio & TIOCM_RTS)
-> > > > > +			mctrl |= UART_MCR_RTS;
-> > > > > +		else
-> > > > > +			mctrl &= ~UART_MCR_RTS;
-> > > > > +
-> > > > > +		if (mctrl_gpio & TIOCM_DTR)
-> > > > > +			mctrl |= UART_MCR_DTR;
-> > > > > +		else
-> > > > > +			mctrl &= ~UART_MCR_DTR;
-> > > > > +	}
-> > > > > +
-> > > > > +	return mctrl;
-> > > > >    }
-> > > > 
-> > > > These are using OR logic with potentially volatile data. Shouldn't we mask
-> > > > unused bits in UART_MCR in case of up->gpios != NULL?
-> > > 
-> > > Sorry, I don't see, which bits you are referring to? Could you please be
-> > > a bit more specific with the variable / macro meant (example)?
-> > 
-> > I meant that we double write values in the out() which might have some
-> > consequences, though I hope nothing wrong with it happens.
+Hi,
+
+On 2019/06/11 1:56, Greg Kroah-Hartman wrote:
+> On Mon, May 27, 2019 at 02:01:27PM +0900, Sugaya Taichi wrote:
+>> Drop the if-statement which refers to 8th bit field of u8 variable.
+>> The bit field is no longer used.
+>>
+>> Fixes: ba44dc043004 ("serial: Add Milbeaut serial control")
+>> Reported-by: Colin Ian King <colin.king@canonical.com>
+>> Signed-off-by: Sugaya Taichi <sugaya.taichi@socionext.com>
+>> ---
+>>   drivers/tty/serial/milbeaut_usio.c | 15 +++++----------
+>>   1 file changed, 5 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/milbeaut_usio.c b/drivers/tty/serial/milbeaut_usio.c
+>> index 949ab7e..d7207ab 100644
+>> --- a/drivers/tty/serial/milbeaut_usio.c
+>> +++ b/drivers/tty/serial/milbeaut_usio.c
+>> @@ -56,7 +56,6 @@
+>>   #define MLB_USIO_SSR_FRE		BIT(4)
+>>   #define MLB_USIO_SSR_PE			BIT(5)
+>>   #define MLB_USIO_SSR_REC		BIT(7)
+>> -#define MLB_USIO_SSR_BRK		BIT(8)
+>>   #define MLB_USIO_FCR_FE1		BIT(0)
+>>   #define MLB_USIO_FCR_FE2		BIT(1)
+>>   #define MLB_USIO_FCR_FCL1		BIT(2)
+>> @@ -180,18 +179,14 @@ static void mlb_usio_rx_chars(struct uart_port *port)
+>>   		if (status & MLB_USIO_SSR_ORE)
+>>   			port->icount.overrun++;
+>>   		status &= port->read_status_mask;
+>> -		if (status & MLB_USIO_SSR_BRK) {
+>> -			flag = TTY_BREAK;
+>> +		if (status & MLB_USIO_SSR_PE) {
+>> +			flag = TTY_PARITY;
+>>   			ch = 0;
+>>   		} else
+>> -			if (status & MLB_USIO_SSR_PE) {
+>> -				flag = TTY_PARITY;
+>> +			if (status & MLB_USIO_SSR_FRE) {
+>> +				flag = TTY_FRAME;
+>>   				ch = 0;
+>> -			} else
+>> -				if (status & MLB_USIO_SSR_FRE) {
+>> -					flag = TTY_FRAME;
+>> -					ch = 0;
+>> -				}
+>> +			}
+>>   		if (flag)
+>>   			uart_insert_char(port, status, MLB_USIO_SSR_ORE,
+>>   					 ch, flag);
 > 
-> Where is the double write to a register? Sorry, I fail to spot it.
-
-Not to the one register. From the functional point of view the same signal is
-set up twice: once per UART register, once per GPIO pins.
-
-> > In the in() we read the all bits in the register.
-> > 
-> > As now I look at the implementation of mctrl_gpio_get_outputs(),
-> > I think we rather get helpers for conversion between TIOCM and UART_MCR values,
-> > so, they can be used in get_mctrl() / set_mctrl() and above.
+> While the code never actually supported Break, you are explicitly
+> removing that logic now.  So shouldn't you instead _fix_ break handling?
+> The code before and after your change does not work any differently, so
+> this patch isn't really needed at this point.
 > 
-> Do you something like this in mind?
 
-More likely
+According to research, MLB_USIO_SSR_BRK was a remnant of old HW.
+Since current one does not handle the Break, all logic related it should be
+removed. I try to make a new fix patch.
 
-static inline int serial8250_MCR_to_TIOCM(int mcr)
-{
-	int tiocm = 0;
+Thanks,
+Sugaya Taichi
 
-	if (mcr & ...)
-		tiocm |= ...;
-	...
-
-	return tiocm;
-}
-
-static inline int serial8250_TIOCM_to_MCR(int tiocm)
-{
-	... in a similar way ...
-}
-
-> Plus the use of these macros in this patch of course.
-
-No macros, please.
-
--- 
-With Best Regards,
-Andy Shevchenko
+> thanks,
+> 
+> greg k-h
+> 
