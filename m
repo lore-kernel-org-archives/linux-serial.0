@@ -1,80 +1,172 @@
-From: Rajendra Nayak <rnayak@codeaurora.org>
-Subject: Re: [RFC v2 01/11] OPP: Don't overwrite rounded clk rate
-Date: Wed, 12 Jun 2019 13:12:51 +0530
-Message-ID: <c173a57d-a4de-99f7-e8d8-28a7612f4ca3@codeaurora.org>
-References: <20190320094918.20234-1-rnayak@codeaurora.org>
- <20190320094918.20234-2-rnayak@codeaurora.org>
- <20190611105432.x3nzqiib35t6mvyg@vireshk-i7>
+From: Stefan Roese <sr@denx.de>
+Subject: Re: [PATCH 2/2 v5] tty/serial/8250: use mctrl_gpio helpers
+Date: Wed, 12 Jun 2019 10:13:05 +0200
+Message-ID: <12e5180e-b4a0-e5fa-bcad-ddc8103d644c@denx.de>
+References: <20190611105603.4435-1-sr@denx.de>
+ <20190611105603.4435-2-sr@denx.de> <20190611124415.GT9224@smile.fi.intel.com>
+ <85f0d39c-e5d8-320b-e611-d956630a629f@denx.de>
+ <20190611144828.GX9224@smile.fi.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190611105432.x3nzqiib35t6mvyg@vireshk-i7>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190611144828.GX9224@smile.fi.intel.com>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Viresh Kumar <viresh.kumar@linaro.org>, swboyd@chromium.org
-Cc: ulf.hansson@linaro.org, dianders@chromium.org, linux-scsi@vger.kernel.org, linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org, rafael@kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Yegor Yefremov <yegorslists@googlemail.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-Ck9uIDYvMTEvMjAxOSA0OjI0IFBNLCBWaXJlc2ggS3VtYXIgd3JvdGU6Cj4gT24gMjAtMDMtMTks
-IDE1OjE5LCBSYWplbmRyYSBOYXlhayB3cm90ZToKPj4gRnJvbTogU3RlcGhlbiBCb3lkIDxzd2Jv
-eWRAY2hyb21pdW0ub3JnPgo+Pgo+PiBEb2luZyB0aGlzIGFsbG93cyB1cyB0byBjYWxsIHRoaXMg
-QVBJIHdpdGggYW55IHJhdGUgcmVxdWVzdGVkIGFuZCBoYXZlCj4+IGl0IG5vdCBuZWVkIHRvIG1h
-dGNoIGluIHRoZSBPUFAgdGFibGUuIEluc3RlYWQsIHdlJ2xsIHJvdW5kIHRoZSByYXRlIHVwCj4+
-IHRvIHRoZSBuZWFyZXN0IE9QUCB0aGF0IHdlIHNlZSBzbyB0aGF0IHdlIGNhbiBnZXQgdGhlIHZv
-bHRhZ2Ugb3IgbGV2ZWwKPj4gdGhhdCdzIHJlcXVpcmVkIGZvciB0aGF0IE9QUC4gVGhpcyBzdXBw
-b3J0cyB1c2VycyBvZiBPUFAgdGhhdCB3YW50IHRvCj4+IHNwZWNpZnkgdGhlICdmbWF4JyB0YWJs
-ZXMgb2YgYSBkZXZpY2UgaW5zdGVhZCBvZiBldmVyeSBzaW5nbGUgZnJlcXVlbmN5Cj4+IHRoYXQg
-dGhleSBuZWVkLiBBbmQgZm9yIGRldmljZXMgdGhhdCByZXF1aXJlZCB0aGUgZXhhY3QgZnJlcXVl
-bmN5LCB3ZQo+PiBjYW4gcmVseSBvbiB0aGUgY2xrIGZyYW1ld29yayB0byByb3VuZCB0aGUgcmF0
-ZSB0byB0aGUgbmVhcmVzdCBzdXBwb3J0ZWQKPj4gZnJlcXVlbmN5IGluc3RlYWQgb2YgdGhlIE9Q
-UCBmcmFtZXdvcmsgdG8gZG8gc28uCj4+Cj4+IE5vdGUgdGhhdCB0aGlzIG1heSBhZmZlY3QgZHJp
-dmVycyB0aGF0IGRvbid0IHdhbnQgdGhlIGNsayBmcmFtZXdvcmsgdG8KPj4gZG8gcm91bmRpbmcs
-IGJ1dCBpbnN0ZWFkIHdhbnQgdGhlIE9QUCB0YWJsZSB0byBkbyB0aGUgcm91bmRpbmcgZm9yIHRo
-ZW0uCj4+IERvIHdlIGhhdmUgdGhhdCBjYXNlPyBTaG91bGQgd2UgYWRkIHNvbWUgZmxhZyB0byB0
-aGUgT1BQIHRhYmxlIHRvCj4+IGluZGljYXRlIHRoaXMgYW5kIHRoZW4gbm90IGhhdmUgdGhhdCBm
-bGFnIHNldCB3aGVuIHRoZXJlIGlzbid0IGFuIE9QUAo+PiB0YWJsZSBmb3IgdGhlIGRldmljZSBh
-bmQgYWxzbyBpbnRyb2R1Y2UgYSBwcm9wZXJ0eSBsaWtlICdvcHAtdXNlLWNsaycgdG8KPj4gdGVs
-bCB0aGUgdGFibGUgdGhhdCBpdCBzaG91bGQgdXNlIHRoZSBjbGsgQVBJcyB0byByb3VuZCByYXRl
-cyBpbnN0ZWFkIG9mCj4+IE9QUD8KPj4KPj4gU2lnbmVkLW9mZi1ieTogU3RlcGhlbiBCb3lkIDxz
-d2JveWRAY2hyb21pdW0ub3JnPgo+PiBTaWduZWQtb2ZmLWJ5OiBSYWplbmRyYSBOYXlhayA8cm5h
-eWFrQGNvZGVhdXJvcmEub3JnPgo+PiAtLS0KCltdLi4uCgo+IAo+IEkgc2VlIGEgbG9naWNhbCBw
-cm9ibGVtIHdpdGggdGhpcyBwYXRjaC4KPiAKPiBTdXBwb3NlIHRoZSBjbG9jayBkcml2ZXIgc3Vw
-cG9ydHMgZm9sbG93aW5nIGZyZXF1ZW5jaWVzOiA1MDBNLCA4MDBNLAo+IDFHLCAxLjJHIGFuZCB0
-aGUgT1BQIHRhYmxlIGNvbnRhaW5zIGZvbGxvd2luZyBsaXN0OiA1MDBNLCAxRywgMS4yRwo+IChp
-LmUuIG1pc3NpbmcgODAwTSkuCj4gCj4gTm93IDgwME0gc2hvdWxkIG5ldmVyIGdldCBwcm9ncmFt
-bWVkIGFzIGl0IGlzbid0IHBhcnQgb2YgdGhlIE9QUAo+IHRhYmxlLiBCdXQgaWYgeW91IHBhc3Mg
-NjAwTSB0byBvcHAtc2V0LXJhdGUsIHRoZW4gaXQgd2lsbCBlbmQgdXAKPiBzZWxlY3RpbmcgODAw
-TSBhcyBjbG9jayBkcml2ZXIgd2lsbCByb3VuZCB1cCB0byB0aGUgY2xvc2VzdCB2YWx1ZS4KCmNv
-cnJlY3QKCj4gCj4gRXZlbiBpZiBubyBvbmUgaXMgZG9pbmcgdGhpcyByaWdodCBub3csIGl0IGlz
-IGEgc2Vuc2libGUgdXNlY2FzZSwKPiBzcGVjaWFsbHkgZHVyaW5nIHRlc3Rpbmcgb2YgcGF0Y2hl
-cyBhbmQgSSBkb24ndCB0aGluayB3ZSBzaG91bGQgYXZvaWQKPiBpdC4KPiAKPiBXaGF0IGV4YWN0
-bHkgaXMgdGhlIHVzZSBjYXNlIGZvciB3aGljaCB3ZSBuZWVkIHRoaXMgcGF0Y2ggPyAKTGlrZSB0
-aGUgY2hhbmdlbG9nIHNheXMgJ1RoaXMgc3VwcG9ydHMgdXNlcnMgb2YgT1BQIHRoYXQgd2FudCB0
-bwpzcGVjaWZ5IHRoZSAnZm1heCcgdGFibGVzIG9mIGEgZGV2aWNlIGluc3RlYWQgb2YgZXZlcnkg
-c2luZ2xlIGZyZXF1ZW5jeQp0aGF0IHRoZXkgbmVlZCcKCnNvIHRoZSAnZm1heCcgdGFibGVzIGJh
-c2ljYWxseSBzYXkgd2hhdCB0aGUgbWF4IGZyZXF1ZW5jeSB0aGUgZGV2aWNlIGNhbgpvcGVyYXRl
-IGF0IGZvciBhIGdpdmVuIHBlcmZvcm1hbmNlIHN0YXRlL3ZvbHRhZ2UgbGV2ZWwuCgpzbyBpbiB5
-b3VyIGV4YW1wbGUgaXQgd291bGQgYmUgZm9yIGluc3RhbmNlCgo1MDBNLCBQZXJmIHN0YXRlID0g
-MgoxRywgUGVyZiBzdGF0ZSA9IDMKMS4yRywgUGVyZiBzdGF0ZSA9IDQKCk5vdyB3aGVuIHRoZSBk
-ZXZpY2Ugd2FudHMgdG8gb3BlcmF0ZSBhdCBzYXkgODAwTWh6LCB5b3UgbmVlZCB0byBzZXQgdGhl
-ClBlcmYgc3RhdGUgdG8gMywgc28gdGhpcyBwYXRjaCBiYXNpY2FsbHkgYXZvaWRzIHlvdSBoYXZp
-bmcgdG8gcHV0IHRob3NlIGFkZGl0aW9uYWwKT1BQcyBpbiB0aGUgdGFibGUgd2hpY2ggd291bGQg
-b3RoZXJ3aXNlIGxvb2sgc29tZXRoaW5nIGxpa2UgdGhpcwoKNTAwTSwgUGVyZiBzdGF0ZSA9IDIK
-ODAwTSwgUGVyZiBzdGF0ZSA9IDMgPC0tIHJlZHVuZGFudCBPUFAKMUcsIFBlcmYgc3RhdGUgPSAz
-CjEuMkcsIFBlcmYgc3RhdGUgPSA0CgpZb3VyIGV4YW1wbGUgaGFkIGp1c3QgMSBtaXNzaW5nIGVu
-dHJ5IGluIHRoZSAnZm1heCcgdGFibGVzIGluIHJlYWxpdHkgaXRzIGEgbG90IG1vcmUsCmF0bGVh
-c3Qgb24gYWxsIHF1YWxjb21tIHBsYXRmb3Jtcy4KCgotLSAKUVVBTENPTU0gSU5ESUEsIG9uIGJl
-aGFsZiBvZiBRdWFsY29tbSBJbm5vdmF0aW9uIENlbnRlciwgSW5jLiBpcyBhIG1lbWJlcgpvZiBD
-b2RlIEF1cm9yYSBGb3J1bSwgaG9zdGVkIGJ5IFRoZSBMaW51eCBGb3VuZGF0aW9uCl9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5n
-IGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVk
-ZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbA==
+On 11.06.19 16:48, Andy Shevchenko wrote:
+> On Tue, Jun 11, 2019 at 04:02:54PM +0200, Stefan Roese wrote:
+>> On 11.06.19 14:44, Andy Shevchenko wrote:
+>>> On Tue, Jun 11, 2019 at 12:56:03PM +0200, Stefan Roese wrote:
+> 
+>>>>    static inline void serial8250_out_MCR(struct uart_8250_port *up, int value)
+>>>>    {
+>>>>    	serial_out(up, UART_MCR, value);
+>>>> +
+>>>> +	if (up->gpios) {
+>>>> +		int mctrl_gpio = 0;
+>>>> +
+>>>> +		if (value & UART_MCR_RTS)
+>>>> +			mctrl_gpio |= TIOCM_RTS;
+>>>> +		if (value & UART_MCR_DTR)
+>>>> +			mctrl_gpio |= TIOCM_DTR;
+>>>> +
+>>>> +		mctrl_gpio_set(up->gpios, mctrl_gpio);
+>>>> +	}
+>>>>    }
+> 
+>>>>    static inline int serial8250_in_MCR(struct uart_8250_port *up)
+>>>>    {
+>>>> -	return serial_in(up, UART_MCR);
+>>>> +	int mctrl;
+>>>> +
+>>>> +	mctrl = serial_in(up, UART_MCR);
+>>>> +
+>>>> +	if (up->gpios) {
+>>>> +		int mctrl_gpio = 0;
+>>>> +
+>>>> +		/* save current MCR values */
+>>>> +		if (mctrl & UART_MCR_RTS)
+>>>> +			mctrl_gpio |= TIOCM_RTS;
+>>>> +		if (mctrl & UART_MCR_DTR)
+>>>> +			mctrl_gpio |= TIOCM_DTR;
+>>>> +
+>>>> +		mctrl_gpio = mctrl_gpio_get_outputs(up->gpios, &mctrl_gpio);
+>>>> +		if (mctrl_gpio & TIOCM_RTS)
+>>>> +			mctrl |= UART_MCR_RTS;
+>>>> +		else
+>>>> +			mctrl &= ~UART_MCR_RTS;
+>>>> +
+>>>> +		if (mctrl_gpio & TIOCM_DTR)
+>>>> +			mctrl |= UART_MCR_DTR;
+>>>> +		else
+>>>> +			mctrl &= ~UART_MCR_DTR;
+>>>> +	}
+>>>> +
+>>>> +	return mctrl;
+>>>>    }
+>>>
+>>> These are using OR logic with potentially volatile data. Shouldn't we mask
+>>> unused bits in UART_MCR in case of up->gpios != NULL?
+>>
+>> Sorry, I don't see, which bits you are referring to? Could you please be
+>> a bit more specific with the variable / macro meant (example)?
+> 
+> I meant that we double write values in the out() which might have some
+> consequences, though I hope nothing wrong with it happens.
+
+Where is the double write to a register? Sorry, I fail to spot it.
+  
+> In the in() we read the all bits in the register.
+> 
+> As now I look at the implementation of mctrl_gpio_get_outputs(),
+> I think we rather get helpers for conversion between TIOCM and UART_MCR values,
+> so, they can be used in get_mctrl() / set_mctrl() and above.
+
+Do you something like this in mind?
+
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index dc9354e34b60..f44561fcb941 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1954,19 +1954,12 @@ unsigned int serial8250_do_get_mctrl(struct uart_port *port)
+         status = serial8250_modem_status(up);
+         serial8250_rpm_put(up);
+  
+-       ret = 0;
+-
+         if (up->gpios)
+                 return mctrl_gpio_get(up->gpios, &ret);
+  
+-       if (status & UART_MSR_DCD)
+-               ret |= TIOCM_CAR;
+-       if (status & UART_MSR_RI)
+-               ret |= TIOCM_RNG;
+-       if (status & UART_MSR_DSR)
+-               ret |= TIOCM_DSR;
+-       if (status & UART_MSR_CTS)
+-               ret |= TIOCM_CTS;
++       ret = UART_MSR_TO_TIOCM_DCD(status) | UART_MSR_TO_TIOCM_RI(status) |
++               UART_MSR_TO_TIOCM_DSR(status) | UART_MSR_TO_TIOCM_CTS(status);
++
+         return ret;
+  }
+  EXPORT_SYMBOL_GPL(serial8250_do_get_mctrl);
+@@ -1983,16 +1976,9 @@ void serial8250_do_set_mctrl(struct uart_port *port, unsigned int mctrl)
+         struct uart_8250_port *up = up_to_u8250p(port);
+         unsigned char mcr = 0;
+  
+-       if (mctrl & TIOCM_RTS)
+-               mcr |= UART_MCR_RTS;
+-       if (mctrl & TIOCM_DTR)
+-               mcr |= UART_MCR_DTR;
+-       if (mctrl & TIOCM_OUT1)
+-               mcr |= UART_MCR_OUT1;
+-       if (mctrl & TIOCM_OUT2)
+-               mcr |= UART_MCR_OUT2;
+-       if (mctrl & TIOCM_LOOP)
+-               mcr |= UART_MCR_LOOP;
++       mcr = TIOCM_TO_UART_MCR_RTS(mctrl) | TIOCM_TO_UART_MCR_DTR(mctrl) |
++               TIOCM_TO_UART_MCR_OUT1(mctrl) | TIOCM_TO_UART_MCR_OUT2(mctrl) |
++               TIOCM_TO_UART_MCR_LOOP(mctrl);
+  
+         mcr = (mcr & up->mcr_mask) | up->mcr_force | up->mcr;
+  
+diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
+index be07b5470f4b..bda905a1b765 100644
+--- a/include/uapi/linux/serial_reg.h
++++ b/include/uapi/linux/serial_reg.h
+@@ -376,5 +376,22 @@
+  #define UART_ALTR_EN_TXFIFO_LW 0x01    /* Enable the TX FIFO Low Watermark */
+  #define UART_ALTR_TX_LOW       0x41    /* Tx FIFO Low Watermark */
+  
++#define UART_MSR_TO_TIOCM_DCD(val)     ((val & UART_MSR_DCD) ? TIOCM_CAR : 0)
++#define UART_MSR_TO_TIOCM_RI(val)      ((val & UART_MSR_RI) ? TIOCM_RNG : 0)
++#define UART_MSR_TO_TIOCM_DSR(val)     ((val & UART_MSR_DSR) ? TIOCM_DSR : 0)
++#define UART_MSR_TO_TIOCM_CTS(val)     ((val & UART_MSR_CTS) ? TIOCM_CTS : 0)
++#define UART_MSR_TO_TIOCM_RTS(val)     ((val & UART_MSR_RTS) ? TIOCM_RTS : 0)
++#define UART_MSR_TO_TIOCM_DTR(val)     ((val & UART_MSR_DTR) ? TIOCM_DTR : 0)
++
++#define TIOCM_TO_UART_MCR_DCD(val)     ((val & TIOCM_DCD) ? UART_MCR_CAR : 0)
++#define TIOCM_TO_UART_MCR_RI(val)      ((val & TIOCM_RI) ? UART_MCR_RNG : 0)
++#define TIOCM_TO_UART_MCR_DSR(val)     ((val & TIOCM_DSR) ? UART_MCR_DSR : 0)
++#define TIOCM_TO_UART_MCR_CTS(val)     ((val & TIOCM_CTS) ? UART_MCR_CTS : 0)
++#define TIOCM_TO_UART_MCR_RTS(val)     ((val & TIOCM_RTS) ? UART_MCR_RTS : 0)
++#define TIOCM_TO_UART_MCR_DTR(val)     ((val & TIOCM_DTR) ? UART_MCR_DTR : 0)
++#define TIOCM_TO_UART_MCR_LOOP(val)    ((val & TIOCM_LOOP) ? UART_MCR_LOOP : 0)
++#define TIOCM_TO_UART_MCR_OUT1(val)    ((val & TIOCM_OUT1) ? UART_MCR_OUT1 : 0)
++#define TIOCM_TO_UART_MCR_OUT2(val)    ((val & TIOCM_OUT2) ? UART_MCR_OUT2 : 0)
++
+  #endif /* _LINUX_SERIAL_REG_H */
+
+
+Plus the use of these macros in this patch of course.
+
+If yes, then I'll add a new patch (pretty similar to the one included
+above) to this series.
+
+Thanks,
+Stefan
