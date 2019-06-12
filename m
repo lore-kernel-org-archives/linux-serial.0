@@ -1,7 +1,7 @@
 From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH v2 4/6] serial: uartps: Fix long line over 80 chars
-Date: Wed, 12 Jun 2019 13:14:41 +0200
-Message-ID: <a7eb75d2900d354b3b2ba4355f4c9b9cb00f1456.1560338079.git.michal.simek@xilinx.com>
+Subject: [PATCH v2 3/6] serial: uartps: Fix multiple line dereference
+Date: Wed, 12 Jun 2019 13:14:40 +0200
+Message-ID: <3a5b27987c5b4fc5ec7dc7f58485db63057edbfe.1560338079.git.michal.simek@xilinx.com>
 References: <cover.1560338079.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1560338079.git.michal.simek@xilinx.com>
@@ -14,10 +14,10 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Nava kishore Manne <nava.manne@xilinx.com>
 
-Trivial patch which fixes one checkpatch warning:
-WARNING: line over 80 characters
-+		       !(readl(port->membase + CDNS_UART_SR)
-			& CDNS_UART_SR_TXFULL)) {
+Trivial patch which fixes this checkpatch warning:
+WARNING: Avoid multiple line dereference - prefer 'port->state->xmit.tail'
++				port->state->xmit.buf[port->state->xmit.
++				tail], port->membase + CDNS_UART_FIFO);
 
 Fixes: c8dbdc842d30 ("serial: xuartps: Rewrite the interrupt handling logic")
 Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
@@ -28,22 +28,23 @@ Changes in v2:
 - Split patch from v1
 - Add Fixes tag
 
- drivers/tty/serial/xilinx_uartps.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/serial/xilinx_uartps.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 4cd20c036750..c3949a323815 100644
+index c84db82bdaab..4cd20c036750 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -312,7 +312,8 @@ static void cdns_uart_handle_tx(void *dev_id)
- 	} else {
- 		numbytes = port->fifosize;
- 		while (numbytes && !uart_circ_empty(&port->state->xmit) &&
--		       !(readl(port->membase + CDNS_UART_SR) & CDNS_UART_SR_TXFULL)) {
-+		       !(readl(port->membase + CDNS_UART_SR) &
-+						CDNS_UART_SR_TXFULL)) {
- 			/*
- 			 * Get the data from the UART circular buffer
- 			 * and write it to the cdns_uart's TX_FIFO
+@@ -319,8 +319,8 @@ static void cdns_uart_handle_tx(void *dev_id)
+ 			 * register.
+ 			 */
+ 			writel(
+-				port->state->xmit.buf[port->state->xmit.
+-				tail], port->membase + CDNS_UART_FIFO);
++				port->state->xmit.buf[port->state->xmit.tail],
++					port->membase + CDNS_UART_FIFO);
+ 
+ 			port->icount.tx++;
+ 
 -- 
 2.17.1
