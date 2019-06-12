@@ -1,7 +1,7 @@
 From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH v2 5/6] serial: uartps: Do not add a trailing semicolon to macro
-Date: Wed, 12 Jun 2019 13:14:42 +0200
-Message-ID: <5d938d34c3c4710577df898dbf4b70c74d2e6730.1560338079.git.michal.simek@xilinx.com>
+Subject: [PATCH v2 2/6] serial: uartps: Use octal permission for module_param()
+Date: Wed, 12 Jun 2019 13:14:39 +0200
+Message-ID: <159139864be4ab81e75f20f7fdad604ce270f8cf.1560338079.git.michal.simek@xilinx.com>
 References: <cover.1560338079.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1560338079.git.michal.simek@xilinx.com>
@@ -14,39 +14,43 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Nava kishore Manne <nava.manne@xilinx.com>
 
-This patch fixes this checkpatch warning:
-WARNING: macros should not use a trailing semicolon
-+#define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, \
-+		clk_rate_change_nb);
+Octal permission is preffered compare to symbolic one.
 
-Fixes: d9bb3fb12685 ("tty: xuartps: Rebrand driver as Cadence UART")
+This patch fixes checkpatch warnings:
+Symbolic permissions 'S_IRUGO' are not preferred. Consider using octal
+permissions '0444'.
+
+Fixes: 85baf542d54e ("tty: xuartps: support 64 byte FIFO size")
 Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
 Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 ---
 
 Changes in v2:
 - Split patch from v1
+- Fixes second S_IRUGO usage
 - Add Fixes tag
 
-Origin patch which introduce this semicolon was
-c4b0510cc1571ff44e1 ("tty: xuartps: Dynamically adjust to input frequency
-changes")
----
- drivers/tty/serial/xilinx_uartps.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/xilinx_uartps.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index c3949a323815..d4c1ae2ffca6 100644
+index 9dcc4d855ddd..c84db82bdaab 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -199,7 +199,7 @@ struct cdns_platform_data {
- 	u32 quirks;
- };
- #define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, \
--		clk_rate_change_nb);
-+		clk_rate_change_nb)
+@@ -35,12 +35,12 @@
+ /* Rx Trigger level */
+ static int rx_trigger_level = 56;
+ static int uartps_major;
+-module_param(rx_trigger_level, uint, S_IRUGO);
++module_param(rx_trigger_level, uint, 0444);
+ MODULE_PARM_DESC(rx_trigger_level, "Rx trigger level, 1-63 bytes");
  
- /**
-  * cdns_uart_handle_rx - Handle the received bytes along with Rx errors.
+ /* Rx Timeout */
+ static int rx_timeout = 10;
+-module_param(rx_timeout, uint, S_IRUGO);
++module_param(rx_timeout, uint, 0444);
+ MODULE_PARM_DESC(rx_timeout, "Rx timeout, 1-255");
+ 
+ /* Register offsets for the UART. */
 -- 
 2.17.1
