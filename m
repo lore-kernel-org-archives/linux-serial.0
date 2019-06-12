@@ -1,14 +1,15 @@
 From: Joe Perches <joe@perches.com>
-Subject: Re: [PATCH v2 3/6] serial: uartps: Fix multiple line dereference
-Date: Wed, 12 Jun 2019 09:56:32 -0700
-Message-ID: <183d192c4f3d0a8032bda73953ac8d1719590570.camel@perches.com>
+Subject: Re: [PATCH v2 5/6] serial: uartps: Do not add a trailing semicolon
+ to macro
+Date: Wed, 12 Jun 2019 10:07:25 -0700
+Message-ID: <fc69912c14ead80f371e2136d43db4af1f4b72aa.camel@perches.com>
 References: <cover.1560338079.git.michal.simek@xilinx.com>
-         <3a5b27987c5b4fc5ec7dc7f58485db63057edbfe.1560338079.git.michal.simek@xilinx.com>
+         <5d938d34c3c4710577df898dbf4b70c74d2e6730.1560338079.git.michal.simek@xilinx.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <3a5b27987c5b4fc5ec7dc7f58485db63057edbfe.1560338079.git.michal.simek@xilinx.com>
+In-Reply-To: <5d938d34c3c4710577df898dbf4b70c74d2e6730.1560338079.git.michal.simek@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Michal Simek <michal.simek@xilinx.com>, johan@kernel.org, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, monstr@monstr.eu
 Cc: Nava kishore Manne <nava.manne@xilinx.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
@@ -17,124 +18,65 @@ List-Id: linux-serial@vger.kernel.org
 On Wed, 2019-06-12 at 13:14 +0200, Michal Simek wrote:
 > From: Nava kishore Manne <nava.manne@xilinx.com>
 > 
-> Trivial patch which fixes this checkpatch warning:
-> WARNING: Avoid multiple line dereference - prefer 'port->state->xmit.tail'
-> +				port->state->xmit.buf[port->state->xmit.
-> +				tail], port->membase + CDNS_UART_FIFO);
-> 
-> Fixes: c8dbdc842d30 ("serial: xuartps: Rewrite the interrupt handling logic")
-> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
-> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> ---
-> 
-> Changes in v2:
-> - Split patch from v1
-> - Add Fixes tag
-> 
->  drivers/tty/serial/xilinx_uartps.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
+> This patch fixes this checkpatch warning:
+> WARNING: macros should not use a trailing semicolon
+> +#define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, \
+> +		clk_rate_change_nb);
 > diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-> index c84db82bdaab..4cd20c036750 100644
-> --- a/drivers/tty/serial/xilinx_uartps.c
-> +++ b/drivers/tty/serial/xilinx_uartps.c
-> @@ -319,8 +319,8 @@ static void cdns_uart_handle_tx(void *dev_id)
->  			 * register.
->  			 */
->  			writel(
-> -				port->state->xmit.buf[port->state->xmit.
-> -				tail], port->membase + CDNS_UART_FIFO);
-> +				port->state->xmit.buf[port->state->xmit.tail],
-> +					port->membase + CDNS_UART_FIFO);
+[]
+> @@ -199,7 +199,7 @@ struct cdns_platform_data {
+>  	u32 quirks;
+>  };
+>  #define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, \
+> -		clk_rate_change_nb);
+> +		clk_rate_change_nb)
 >  
->  			port->icount.tx++;
+>  /**
+>   * cdns_uart_handle_rx - Handle the received bytes along with Rx errors.
 
-Another way to rewrite this is to use a temporary for
-port->state->xmit and also return early on empty to
-avoid unnecessary indentation.
+trivia:
 
-Using a temporary can also reduce object size a bit by
-removing unnecessary dereferences: (defconfig x86-64)
+Perhaps this is easier for humans to read with the macro
+on two lines like:
 
-$ size drivers/tty/serial/xilinx_uartps.o*
-   text	   data	    bss	    dec	    hex	filename
-  26578	   4632	    320	  31530	   7b2a	drivers/tty/serial/xilinx_uartps.o.new
-  26642	   4632	    320	  31594	   7b6a	drivers/tty/serial/xilinx_uartps.o.old
+#define to_cdns_uart(_nb) \
+	container_of(_nb, struct cdns_uart, clk_rate_change_nb)
 
-i.e.:
+or just ignore the 80 column limit
 
+#define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, clk_rate_change_nb)
+
+or because the macro is only used in one place,
+just get rid of it and use container_of directly.
 ---
- drivers/tty/serial/xilinx_uartps.c | 54 ++++++++++++++++++--------------------
- 1 file changed, 25 insertions(+), 29 deletions(-)
+ drivers/tty/serial/xilinx_uartps.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 605354fd60b1..09b586aeeca3 100644
+index 605354fd60b1..ca5cec2b83ce 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -305,40 +305,36 @@ static void cdns_uart_handle_rx(void *dev_id, unsigned int isrstatus)
- static void cdns_uart_handle_tx(void *dev_id)
- {
- 	struct uart_port *port = (struct uart_port *)dev_id;
-+	struct circ_buf *xmit = &port->state->xmit;
- 	unsigned int numbytes;
- 
--	if (uart_circ_empty(&port->state->xmit)) {
-+	if (uart_circ_empty(xmit)) {
- 		writel(CDNS_UART_IXR_TXEMPTY, port->membase + CDNS_UART_IDR);
--	} else {
--		numbytes = port->fifosize;
--		while (numbytes && !uart_circ_empty(&port->state->xmit) &&
--		       !(readl(port->membase + CDNS_UART_SR) & CDNS_UART_SR_TXFULL)) {
--			/*
--			 * Get the data from the UART circular buffer
--			 * and write it to the cdns_uart's TX_FIFO
--			 * register.
--			 */
--			writel(
--				port->state->xmit.buf[port->state->xmit.
--				tail], port->membase + CDNS_UART_FIFO);
--
--			port->icount.tx++;
--
--			/*
--			 * Adjust the tail of the UART buffer and wrap
--			 * the buffer if it reaches limit.
--			 */
--			port->state->xmit.tail =
--				(port->state->xmit.tail + 1) &
--					(UART_XMIT_SIZE - 1);
--
--			numbytes--;
--		}
-+		return;
-+	}
+@@ -195,11 +195,10 @@ struct cdns_uart {
+ 	u32			quirks;
+ 	bool cts_override;
+ };
 +
-+	numbytes = port->fifosize;
-+	while (numbytes && !uart_circ_empty(xmit) &&
-+	       !(readl(port->membase + CDNS_UART_SR) & CDNS_UART_SR_TXFULL)) {
-+		/*
-+		 * Get the data from the UART circular buffer and write it
-+		 * to the cdns_uart's TX_FIFO register.
-+		 */
-+		writel(xmit->buf[xmit->tail], port->membase + CDNS_UART_FIFO);
-+
-+		port->icount.tx++;
-+
-+		/*
-+		 * Adjust the tail of the UART buffer and wrap the buffer
-+		 * if it reaches limit.
-+		 */
-+		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
- 
--		if (uart_circ_chars_pending(
--				&port->state->xmit) < WAKEUP_CHARS)
--			uart_write_wakeup(port);
-+		numbytes--;
- 	}
-+
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-+		uart_write_wakeup(port);
- }
+ struct cdns_platform_data {
+ 	u32 quirks;
+ };
+-#define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, \
+-		clk_rate_change_nb);
  
  /**
+  * cdns_uart_handle_rx - Handle the received bytes along with Rx errors.
+@@ -489,8 +488,9 @@ static int cdns_uart_clk_notifier_cb(struct notifier_block *nb,
+ 	int locked = 0;
+ 	struct clk_notifier_data *ndata = data;
+ 	unsigned long flags = 0;
+-	struct cdns_uart *cdns_uart = to_cdns_uart(nb);
++	struct cdns_uart *cdns_uart;
  
++	cdns_uart = container_of(nb, struct cdns_uart, clk_rate_change_nb);
+ 	port = cdns_uart->port;
+ 	if (port->suspended)
+ 		return NOTIFY_OK;
