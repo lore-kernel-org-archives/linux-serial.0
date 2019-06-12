@@ -1,56 +1,140 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH v2 2/6] serial: uartps: Use octal permission for module_param()
-Date: Wed, 12 Jun 2019 13:14:39 +0200
-Message-ID: <159139864be4ab81e75f20f7fdad604ce270f8cf.1560338079.git.michal.simek@xilinx.com>
+From: Joe Perches <joe@perches.com>
+Subject: Re: [PATCH v2 3/6] serial: uartps: Fix multiple line dereference
+Date: Wed, 12 Jun 2019 09:56:32 -0700
+Message-ID: <183d192c4f3d0a8032bda73953ac8d1719590570.camel@perches.com>
 References: <cover.1560338079.git.michal.simek@xilinx.com>
+         <3a5b27987c5b4fc5ec7dc7f58485db63057edbfe.1560338079.git.michal.simek@xilinx.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1560338079.git.michal.simek@xilinx.com>
-In-Reply-To: <cover.1560338079.git.michal.simek@xilinx.com>
-References: <cover.1560338079.git.michal.simek@xilinx.com>
+In-Reply-To: <3a5b27987c5b4fc5ec7dc7f58485db63057edbfe.1560338079.git.michal.simek@xilinx.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: johan@kernel.org, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, monstr@monstr.eu, michal.simek@xilinx.com
+To: Michal Simek <michal.simek@xilinx.com>, johan@kernel.org, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, monstr@monstr.eu
 Cc: Nava kishore Manne <nava.manne@xilinx.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Nava kishore Manne <nava.manne@xilinx.com>
+On Wed, 2019-06-12 at 13:14 +0200, Michal Simek wrote:
+> From: Nava kishore Manne <nava.manne@xilinx.com>
+> 
+> Trivial patch which fixes this checkpatch warning:
+> WARNING: Avoid multiple line dereference - prefer 'port->state->xmit.tail'
+> +				port->state->xmit.buf[port->state->xmit.
+> +				tail], port->membase + CDNS_UART_FIFO);
+> 
+> Fixes: c8dbdc842d30 ("serial: xuartps: Rewrite the interrupt handling logic")
+> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+> ---
+> 
+> Changes in v2:
+> - Split patch from v1
+> - Add Fixes tag
+> 
+>  drivers/tty/serial/xilinx_uartps.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+> index c84db82bdaab..4cd20c036750 100644
+> --- a/drivers/tty/serial/xilinx_uartps.c
+> +++ b/drivers/tty/serial/xilinx_uartps.c
+> @@ -319,8 +319,8 @@ static void cdns_uart_handle_tx(void *dev_id)
+>  			 * register.
+>  			 */
+>  			writel(
+> -				port->state->xmit.buf[port->state->xmit.
+> -				tail], port->membase + CDNS_UART_FIFO);
+> +				port->state->xmit.buf[port->state->xmit.tail],
+> +					port->membase + CDNS_UART_FIFO);
+>  
+>  			port->icount.tx++;
 
-Octal permission is preffered compare to symbolic one.
+Another way to rewrite this is to use a temporary for
+port->state->xmit and also return early on empty to
+avoid unnecessary indentation.
 
-This patch fixes checkpatch warnings:
-Symbolic permissions 'S_IRUGO' are not preferred. Consider using octal
-permissions '0444'.
+Using a temporary can also reduce object size a bit by
+removing unnecessary dereferences: (defconfig x86-64)
 
-Fixes: 85baf542d54e ("tty: xuartps: support 64 byte FIFO size")
-Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+$ size drivers/tty/serial/xilinx_uartps.o*
+   text	   data	    bss	    dec	    hex	filename
+  26578	   4632	    320	  31530	   7b2a	drivers/tty/serial/xilinx_uartps.o.new
+  26642	   4632	    320	  31594	   7b6a	drivers/tty/serial/xilinx_uartps.o.old
+
+i.e.:
+
 ---
-
-Changes in v2:
-- Split patch from v1
-- Fixes second S_IRUGO usage
-- Add Fixes tag
-
- drivers/tty/serial/xilinx_uartps.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/xilinx_uartps.c | 54 ++++++++++++++++++--------------------
+ 1 file changed, 25 insertions(+), 29 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 9dcc4d855ddd..c84db82bdaab 100644
+index 605354fd60b1..09b586aeeca3 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -35,12 +35,12 @@
- /* Rx Trigger level */
- static int rx_trigger_level = 56;
- static int uartps_major;
--module_param(rx_trigger_level, uint, S_IRUGO);
-+module_param(rx_trigger_level, uint, 0444);
- MODULE_PARM_DESC(rx_trigger_level, "Rx trigger level, 1-63 bytes");
+@@ -305,40 +305,36 @@ static void cdns_uart_handle_rx(void *dev_id, unsigned int isrstatus)
+ static void cdns_uart_handle_tx(void *dev_id)
+ {
+ 	struct uart_port *port = (struct uart_port *)dev_id;
++	struct circ_buf *xmit = &port->state->xmit;
+ 	unsigned int numbytes;
  
- /* Rx Timeout */
- static int rx_timeout = 10;
--module_param(rx_timeout, uint, S_IRUGO);
-+module_param(rx_timeout, uint, 0444);
- MODULE_PARM_DESC(rx_timeout, "Rx timeout, 1-255");
+-	if (uart_circ_empty(&port->state->xmit)) {
++	if (uart_circ_empty(xmit)) {
+ 		writel(CDNS_UART_IXR_TXEMPTY, port->membase + CDNS_UART_IDR);
+-	} else {
+-		numbytes = port->fifosize;
+-		while (numbytes && !uart_circ_empty(&port->state->xmit) &&
+-		       !(readl(port->membase + CDNS_UART_SR) & CDNS_UART_SR_TXFULL)) {
+-			/*
+-			 * Get the data from the UART circular buffer
+-			 * and write it to the cdns_uart's TX_FIFO
+-			 * register.
+-			 */
+-			writel(
+-				port->state->xmit.buf[port->state->xmit.
+-				tail], port->membase + CDNS_UART_FIFO);
+-
+-			port->icount.tx++;
+-
+-			/*
+-			 * Adjust the tail of the UART buffer and wrap
+-			 * the buffer if it reaches limit.
+-			 */
+-			port->state->xmit.tail =
+-				(port->state->xmit.tail + 1) &
+-					(UART_XMIT_SIZE - 1);
+-
+-			numbytes--;
+-		}
++		return;
++	}
++
++	numbytes = port->fifosize;
++	while (numbytes && !uart_circ_empty(xmit) &&
++	       !(readl(port->membase + CDNS_UART_SR) & CDNS_UART_SR_TXFULL)) {
++		/*
++		 * Get the data from the UART circular buffer and write it
++		 * to the cdns_uart's TX_FIFO register.
++		 */
++		writel(xmit->buf[xmit->tail], port->membase + CDNS_UART_FIFO);
++
++		port->icount.tx++;
++
++		/*
++		 * Adjust the tail of the UART buffer and wrap the buffer
++		 * if it reaches limit.
++		 */
++		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
  
- /* Register offsets for the UART. */
--- 
-2.17.1
+-		if (uart_circ_chars_pending(
+-				&port->state->xmit) < WAKEUP_CHARS)
+-			uart_write_wakeup(port);
++		numbytes--;
+ 	}
++
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
++		uart_write_wakeup(port);
+ }
+ 
+ /**
+ 
