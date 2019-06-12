@@ -1,100 +1,120 @@
-From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: Re: [RFC v2 01/11] OPP: Don't overwrite rounded clk rate
-Date: Wed, 12 Jun 2019 13:55:06 +0530
-Message-ID: <20190612082506.m735bsk7bjijf2yg@vireshk-i7>
-References: <20190320094918.20234-1-rnayak@codeaurora.org>
- <20190320094918.20234-2-rnayak@codeaurora.org>
- <20190611105432.x3nzqiib35t6mvyg@vireshk-i7>
- <c173a57d-a4de-99f7-e8d8-28a7612f4ca3@codeaurora.org>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 2/2 v5] tty/serial/8250: use mctrl_gpio helpers
+Date: Wed, 12 Jun 2019 12:16:21 +0300
+Message-ID: <20190612091621.GA9224@smile.fi.intel.com>
+References: <20190611105603.4435-1-sr@denx.de>
+ <20190611105603.4435-2-sr@denx.de>
+ <20190611124415.GT9224@smile.fi.intel.com>
+ <85f0d39c-e5d8-320b-e611-d956630a629f@denx.de>
+ <20190611144828.GX9224@smile.fi.intel.com>
+ <12e5180e-b4a0-e5fa-bcad-ddc8103d644c@denx.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <c173a57d-a4de-99f7-e8d8-28a7612f4ca3@codeaurora.org>
+In-Reply-To: <12e5180e-b4a0-e5fa-bcad-ddc8103d644c@denx.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rajendra Nayak <rnayak@codeaurora.org>
-Cc: swboyd@chromium.org, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-scsi@vger.kernel.org, ulf.hansson@linaro.org, dianders@chromium.org, rafael@kernel.org
+To: Stefan Roese <sr@denx.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Yegor Yefremov <yegorslists@googlemail.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 12-06-19, 13:12, Rajendra Nayak wrote:
-> so the 'fmax' tables basically say what the max frequency the device can
-> operate at for a given performance state/voltage level.
+On Wed, Jun 12, 2019 at 10:13:05AM +0200, Stefan Roese wrote:
+> On 11.06.19 16:48, Andy Shevchenko wrote:
+> > On Tue, Jun 11, 2019 at 04:02:54PM +0200, Stefan Roese wrote:
+> > > On 11.06.19 14:44, Andy Shevchenko wrote:
+> > > > On Tue, Jun 11, 2019 at 12:56:03PM +0200, Stefan Roese wrote:
+> > 
+> > > > >    static inline void serial8250_out_MCR(struct uart_8250_port *up, int value)
+> > > > >    {
+> > > > >    	serial_out(up, UART_MCR, value);
+> > > > > +
+> > > > > +	if (up->gpios) {
+> > > > > +		int mctrl_gpio = 0;
+> > > > > +
+> > > > > +		if (value & UART_MCR_RTS)
+> > > > > +			mctrl_gpio |= TIOCM_RTS;
+> > > > > +		if (value & UART_MCR_DTR)
+> > > > > +			mctrl_gpio |= TIOCM_DTR;
+> > > > > +
+> > > > > +		mctrl_gpio_set(up->gpios, mctrl_gpio);
+> > > > > +	}
+> > > > >    }
+> > 
+> > > > >    static inline int serial8250_in_MCR(struct uart_8250_port *up)
+> > > > >    {
+> > > > > -	return serial_in(up, UART_MCR);
+> > > > > +	int mctrl;
+> > > > > +
+> > > > > +	mctrl = serial_in(up, UART_MCR);
+> > > > > +
+> > > > > +	if (up->gpios) {
+> > > > > +		int mctrl_gpio = 0;
+> > > > > +
+> > > > > +		/* save current MCR values */
+> > > > > +		if (mctrl & UART_MCR_RTS)
+> > > > > +			mctrl_gpio |= TIOCM_RTS;
+> > > > > +		if (mctrl & UART_MCR_DTR)
+> > > > > +			mctrl_gpio |= TIOCM_DTR;
+> > > > > +
+> > > > > +		mctrl_gpio = mctrl_gpio_get_outputs(up->gpios, &mctrl_gpio);
+> > > > > +		if (mctrl_gpio & TIOCM_RTS)
+> > > > > +			mctrl |= UART_MCR_RTS;
+> > > > > +		else
+> > > > > +			mctrl &= ~UART_MCR_RTS;
+> > > > > +
+> > > > > +		if (mctrl_gpio & TIOCM_DTR)
+> > > > > +			mctrl |= UART_MCR_DTR;
+> > > > > +		else
+> > > > > +			mctrl &= ~UART_MCR_DTR;
+> > > > > +	}
+> > > > > +
+> > > > > +	return mctrl;
+> > > > >    }
+> > > > 
+> > > > These are using OR logic with potentially volatile data. Shouldn't we mask
+> > > > unused bits in UART_MCR in case of up->gpios != NULL?
+> > > 
+> > > Sorry, I don't see, which bits you are referring to? Could you please be
+> > > a bit more specific with the variable / macro meant (example)?
+> > 
+> > I meant that we double write values in the out() which might have some
+> > consequences, though I hope nothing wrong with it happens.
 > 
-> so in your example it would be for instance
-> 
-> 500M, Perf state = 2
-> 1G, Perf state = 3
-> 1.2G, Perf state = 4
-> 
-> Now when the device wants to operate at say 800Mhz, you need to set the
-> Perf state to 3, so this patch basically avoids you having to put those additional
-> OPPs in the table which would otherwise look something like this
-> 
-> 500M, Perf state = 2
-> 800M, Perf state = 3 <-- redundant OPP
-> 1G, Perf state = 3
-> 1.2G, Perf state = 4
-> 
-> Your example had just 1 missing entry in the 'fmax' tables in reality its a lot more,
-> atleast on all qualcomm platforms.
+> Where is the double write to a register? Sorry, I fail to spot it.
 
-Okay, I have applied this patch (alone) to the OPP tree with minor
-modifications in commit log and diff.
+Not to the one register. From the functional point of view the same signal is
+set up twice: once per UART register, once per GPIO pins.
+
+> > In the in() we read the all bits in the register.
+> > 
+> > As now I look at the implementation of mctrl_gpio_get_outputs(),
+> > I think we rather get helpers for conversion between TIOCM and UART_MCR values,
+> > so, they can be used in get_mctrl() / set_mctrl() and above.
+> 
+> Do you something like this in mind?
+
+More likely
+
+static inline int serial8250_MCR_to_TIOCM(int mcr)
+{
+	int tiocm = 0;
+
+	if (mcr & ...)
+		tiocm |= ...;
+	...
+
+	return tiocm;
+}
+
+static inline int serial8250_TIOCM_to_MCR(int tiocm)
+{
+	... in a similar way ...
+}
+
+> Plus the use of these macros in this patch of course.
+
+No macros, please.
 
 -- 
-viresh
-
--------------------------8<-------------------------
-
-From: Stephen Boyd <swboyd@chromium.org>
-Date: Wed, 20 Mar 2019 15:19:08 +0530
-Subject: [PATCH] opp: Don't overwrite rounded clk rate
-
-Doing this allows us to call this API with any rate requested and have
-it no need to match in the OPP table. Instead, we'll round the rate up
-to the nearest OPP, so that we can get the voltage or performance level
-required for that OPP. This supports users of the OPP core that want to
-specify the possible 'fmax' values corresponding to the voltage or
-performance levels of each OPP. And for devices that required the exact
-frequency, we can rely on the clk framework to round the rate to the
-nearest supported frequency instead of the OPP framework to do so.
-
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
-[ Viresh: Massaged changelog and use temp_opp variable instead ]
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
----
- drivers/opp/core.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/opp/core.c b/drivers/opp/core.c
-index 764e05a2fa66..0fbc77f05048 100644
---- a/drivers/opp/core.c
-+++ b/drivers/opp/core.c
-@@ -757,7 +757,7 @@ static int _set_required_opps(struct device *dev,
- int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq)
- {
- 	struct opp_table *opp_table;
--	unsigned long freq, old_freq;
-+	unsigned long freq, old_freq, temp_freq;
- 	struct dev_pm_opp *old_opp, *opp;
- 	struct clk *clk;
- 	int ret;
-@@ -796,13 +796,15 @@ int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq)
- 		goto put_opp_table;
- 	}
- 
--	old_opp = _find_freq_ceil(opp_table, &old_freq);
-+	temp_freq = old_freq;
-+	old_opp = _find_freq_ceil(opp_table, &temp_freq);
- 	if (IS_ERR(old_opp)) {
- 		dev_err(dev, "%s: failed to find current OPP for freq %lu (%ld)\n",
- 			__func__, old_freq, PTR_ERR(old_opp));
- 	}
- 
--	opp = _find_freq_ceil(opp_table, &freq);
-+	temp_freq = freq;
-+	opp = _find_freq_ceil(opp_table, &temp_freq);
- 	if (IS_ERR(opp)) {
- 		ret = PTR_ERR(opp);
- 		dev_err(dev, "%s: failed to find OPP for freq %lu (%d)\n",
+With Best Regards,
+Andy Shevchenko
