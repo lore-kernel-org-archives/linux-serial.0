@@ -1,7 +1,8 @@
 From: Erwan Le Ray <erwan.leray@st.com>
-Subject: [PATCH v3 02/10] dt-bindings: serial: add optional pinctrl states
-Date: Thu, 13 Jun 2019 15:49:52 +0200
-Message-ID: <1560433800-12255-3-git-send-email-erwan.leray@st.com>
+Subject: [PATCH v3 05/10] serial: stm32: Use __maybe_unused instead of #if
+ CONFIG_PM_SLEEP
+Date: Thu, 13 Jun 2019 15:49:55 +0200
+Message-ID: <1560433800-12255-6-git-send-email-erwan.leray@st.com>
 References: <1560433800-12255-1-git-send-email-erwan.leray@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,51 +21,54 @@ Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre
  Torgue <alexandre.torgue@st.com>, Rob Herring <robh+dt@kernel.org>, Mark
  Rutland <mark.rutland@arm.com>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Erwan Le Ray <erwan.leray@st.com>, linux-serial@vger.kernel.org, Bich Hemon <bich.hemon@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Erwan Le Ray <erwan.leray@st.com>, linux-serial@vger.kernel.org, Fabrice Gasnier <fabrice.gasnier@st.com>, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Bich Hemon <bich.hemon@st.com>
+Use __maybe_unused for power management related functionsinstead of
 
-Add options for pinctrl states:
-- "sleep" for low power
-- "idle" for low power and wakeup capabilities enabled
-- "no_console_suspend" for enabling console messages in low power
-
-Signed-off-by: Bich Hemon <bich.hemon@st.com>
+fixes: 270e5a74fe4c ("serial: stm32: add wakeup mechanism")
 Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
 
-diff --git a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
-index 5ec80c1..64a5ea9 100644
---- a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
-+++ b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
-@@ -13,7 +13,14 @@ Required properties:
- - clocks: The input clock of the USART instance
- 
- Optional properties:
--- pinctrl: The reference on the pins configuration
-+- pinctrl-names: Set to "default". An additional "sleep" state can be defined
-+  to set pins in sleep state when in low power. In case the device is used as
-+  a wakeup source, "idle" state is defined in order to keep RX pin active.
-+  For a console device, an optional state "no_console_suspend" can be defined
-+  to enable console messages during suspend. Typically, "no_console_suspend" and
-+  "default" states can refer to the same pin configuration.
-+- pinctrl-n: Phandle(s) pointing to pin configuration nodes.
-+  For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
- - st,hw-flow-ctrl: bool flag to enable hardware flow control.
- - rs485-rts-delay, rs485-rx-during-tx, rs485-rts-active-low,
-   linux,rs485-enabled-at-boot-time: see rs485.txt.
-@@ -31,8 +38,11 @@ usart4: serial@40004c00 {
- 	reg = <0x40004c00 0x400>;
- 	interrupts = <52>;
- 	clocks = <&clk_pclk1>;
--	pinctrl-names = "default";
-+	pinctrl-names = "default", "sleep", "idle", "no_console_suspend";
- 	pinctrl-0 = <&pinctrl_usart4>;
-+	pinctrl-1 = <&pinctrl_usart4_sleep>;
-+	pinctrl-2 = <&pinctrl_usart4_idle>;
-+	pinctrl-3 = <&pinctrl_usart4>;
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index 41898c4..b0fb420 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -1276,8 +1276,8 @@ static int stm32_console_setup(struct console *co, char *options)
+ 	.cons		= STM32_SERIAL_CONSOLE,
  };
  
- usart2: serial@40004400 {
+-#ifdef CONFIG_PM_SLEEP
+-static void stm32_serial_enable_wakeup(struct uart_port *port, bool enable)
++static void __maybe_unused stm32_serial_enable_wakeup(struct uart_port *port,
++						      bool enable)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+ 	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+@@ -1301,7 +1301,7 @@ static void stm32_serial_enable_wakeup(struct uart_port *port, bool enable)
+ 	}
+ }
+ 
+-static int stm32_serial_suspend(struct device *dev)
++static int __maybe_unused stm32_serial_suspend(struct device *dev)
+ {
+ 	struct uart_port *port = dev_get_drvdata(dev);
+ 
+@@ -1317,7 +1317,7 @@ static int stm32_serial_suspend(struct device *dev)
+ 	return 0;
+ }
+ 
+-static int stm32_serial_resume(struct device *dev)
++static int __maybe_unused stm32_serial_resume(struct device *dev)
+ {
+ 	struct uart_port *port = dev_get_drvdata(dev);
+ 
+@@ -1328,7 +1328,6 @@ static int stm32_serial_resume(struct device *dev)
+ 
+ 	return uart_resume_port(&stm32_usart_driver, port);
+ }
+-#endif /* CONFIG_PM_SLEEP */
+ 
+ static int __maybe_unused stm32_serial_runtime_suspend(struct device *dev)
+ {
 -- 
 1.9.1
