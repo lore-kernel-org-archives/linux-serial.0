@@ -1,7 +1,7 @@
 From: Erwan Le Ray <erwan.leray@st.com>
-Subject: [PATCH v3 06/10] serial: stm32: add support for no_console_suspend
-Date: Thu, 13 Jun 2019 15:49:56 +0200
-Message-ID: <1560433800-12255-7-git-send-email-erwan.leray@st.com>
+Subject: [PATCH v3 04/10] serial: stm32: add pm_runtime support
+Date: Thu, 13 Jun 2019 15:49:54 +0200
+Message-ID: <1560433800-12255-5-git-send-email-erwan.leray@st.com>
 References: <1560433800-12255-1-git-send-email-erwan.leray@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,100 +23,96 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Erwan Le Ray <erwan.leray@st.com>, linux-serial@vger.kernel.org, Bich Hemon <bich.hemon@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-In order to display console messages in low power mode, console pins
-must be kept active after suspend call.
+Use pm_runtime for clock management.
 
 Signed-off-by: Bich Hemon <bich.hemon@st.com>
 Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
 
-Conflicts:
-	drivers/tty/serial/stm32-usart.c
-
 diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index b0fb420..00e4d7a 100644
+index a8f20ba..41898c4 100644
 --- a/drivers/tty/serial/stm32-usart.c
 +++ b/drivers/tty/serial/stm32-usart.c
-@@ -25,6 +25,7 @@
- #include <linux/of.h>
- #include <linux/of_platform.h>
- #include <linux/pinctrl/consumer.h>
-+#include <linux/pinctrl/devinfo.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/pm_wakeirq.h>
-@@ -847,6 +848,7 @@ static int stm32_init_port(struct stm32_port *stm32port,
- {
- 	struct uart_port *port = &stm32port->port;
- 	struct resource *res;
-+	struct pinctrl *uart_pinctrl;
- 	int ret;
+@@ -810,13 +810,13 @@ static void stm32_pm(struct uart_port *port, unsigned int state,
  
- 	port->iotype	= UPIO_MEM;
-@@ -880,6 +882,24 @@ static int stm32_init_port(struct stm32_port *stm32port,
- 
- 	stm32port->fifoen = stm32port->info->cfg.has_fifo;
- 
-+	uart_pinctrl = devm_pinctrl_get(&pdev->dev);
-+	if (IS_ERR(uart_pinctrl)) {
-+		ret = PTR_ERR(uart_pinctrl);
-+		if (ret != -ENODEV) {
-+			dev_err(&pdev->dev, "Can't get pinctrl, error %d\n",
-+				ret);
-+			return ret;
-+		}
-+		stm32port->console_pins = ERR_PTR(-ENODEV);
-+	} else {
-+		stm32port->console_pins = pinctrl_lookup_state
-+			(uart_pinctrl, "no_console_suspend");
-+	}
-+
-+	if (IS_ERR(stm32port->console_pins) && PTR_ERR(stm32port->console_pins)
-+	    != -ENODEV)
-+		return PTR_ERR(stm32port->console_pins);
-+
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	port->membase = devm_ioremap_resource(&pdev->dev, res);
- 	if (IS_ERR(port->membase))
-@@ -1304,6 +1324,7 @@ static void __maybe_unused stm32_serial_enable_wakeup(struct uart_port *port,
- static int __maybe_unused stm32_serial_suspend(struct device *dev)
- {
- 	struct uart_port *port = dev_get_drvdata(dev);
-+	struct stm32_port *stm32_port = to_stm32_port(port);
- 
- 	uart_suspend_port(&stm32_usart_driver, port);
- 
-@@ -1312,7 +1333,19 @@ static int __maybe_unused stm32_serial_suspend(struct device *dev)
- 	else
- 		stm32_serial_enable_wakeup(port, false);
- 
--	pinctrl_pm_select_sleep_state(dev);
-+	if (uart_console(port) && !console_suspend_enabled) {
-+		if (IS_ERR(stm32_port->console_pins)) {
-+			dev_err(dev, "no_console_suspend pinctrl not found\n");
-+			return PTR_ERR(stm32_port->console_pins);
-+		}
-+
-+		pinctrl_select_state(dev->pins->p, stm32_port->console_pins);
-+	} else {
-+		if (device_may_wakeup(dev))
-+			pinctrl_pm_select_idle_state(dev);
-+		else
-+			pinctrl_pm_select_sleep_state(dev);
-+	}
- 
- 	return 0;
+ 	switch (state) {
+ 	case UART_PM_STATE_ON:
+-		clk_prepare_enable(stm32port->clk);
++		pm_runtime_get_sync(port->dev);
+ 		break;
+ 	case UART_PM_STATE_OFF:
+ 		spin_lock_irqsave(&port->lock, flags);
+ 		stm32_clr_bits(port, ofs->cr1, BIT(cfg->uart_enable_bit));
+ 		spin_unlock_irqrestore(&port->lock, flags);
+-		clk_disable_unprepare(stm32port->clk);
++		pm_runtime_put_sync(port->dev);
+ 		break;
+ 	}
  }
-diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
-index 30d2433..050fe04 100644
---- a/drivers/tty/serial/stm32-usart.h
-+++ b/drivers/tty/serial/stm32-usart.h
-@@ -255,6 +255,7 @@ struct stm32_port {
- 	bool fifoen;
- 	int wakeirq;
- 	int rdr_mask;		/* receive data register mask */
-+	struct pinctrl_state *console_pins;
+@@ -1111,6 +1111,11 @@ static int stm32_serial_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, &stm32port->port);
+ 
++	pm_runtime_get_noresume(&pdev->dev);
++	pm_runtime_set_active(&pdev->dev);
++	pm_runtime_enable(&pdev->dev);
++	pm_runtime_put_sync(&pdev->dev);
++
+ 	return 0;
+ 
+ err_wirq:
+@@ -1132,6 +1137,9 @@ static int stm32_serial_remove(struct platform_device *pdev)
+ 	struct uart_port *port = platform_get_drvdata(pdev);
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+ 	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	int err;
++
++	pm_runtime_get_sync(&pdev->dev);
+ 
+ 	stm32_clr_bits(port, ofs->cr3, USART_CR3_DMAR);
+ 
+@@ -1160,7 +1168,12 @@ static int stm32_serial_remove(struct platform_device *pdev)
+ 
+ 	clk_disable_unprepare(stm32_port->clk);
+ 
+-	return uart_remove_one_port(&stm32_usart_driver, port);
++	err = uart_remove_one_port(&stm32_usart_driver, port);
++
++	pm_runtime_disable(&pdev->dev);
++	pm_runtime_put_noidle(&pdev->dev);
++
++	return err;
+ }
+ 
+ 
+@@ -1317,7 +1330,29 @@ static int stm32_serial_resume(struct device *dev)
+ }
+ #endif /* CONFIG_PM_SLEEP */
+ 
++static int __maybe_unused stm32_serial_runtime_suspend(struct device *dev)
++{
++	struct uart_port *port = dev_get_drvdata(dev);
++	struct stm32_port *stm32port = container_of(port,
++			struct stm32_port, port);
++
++	clk_disable_unprepare(stm32port->clk);
++
++	return 0;
++}
++
++static int __maybe_unused stm32_serial_runtime_resume(struct device *dev)
++{
++	struct uart_port *port = dev_get_drvdata(dev);
++	struct stm32_port *stm32port = container_of(port,
++			struct stm32_port, port);
++
++	return clk_prepare_enable(stm32port->clk);
++}
++
+ static const struct dev_pm_ops stm32_serial_pm_ops = {
++	SET_RUNTIME_PM_OPS(stm32_serial_runtime_suspend,
++			   stm32_serial_runtime_resume, NULL)
+ 	SET_SYSTEM_SLEEP_PM_OPS(stm32_serial_suspend, stm32_serial_resume)
  };
  
- static struct stm32_port stm32_ports[STM32_MAX_PORTS];
 -- 
 1.9.1
