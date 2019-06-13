@@ -1,82 +1,56 @@
-From: Joe Perches <joe@perches.com>
-Subject: Re: [PATCH v2 5/6] serial: uartps: Do not add a trailing semicolon
- to macro
-Date: Wed, 12 Jun 2019 10:07:25 -0700
-Message-ID: <fc69912c14ead80f371e2136d43db4af1f4b72aa.camel@perches.com>
-References: <cover.1560338079.git.michal.simek@xilinx.com>
-         <5d938d34c3c4710577df898dbf4b70c74d2e6730.1560338079.git.michal.simek@xilinx.com>
+From: Erwan Le Ray <erwan.leray@st.com>
+Subject: [PATCH v3 00/10] STM32 usart power improvements
+Date: Thu, 13 Jun 2019 15:49:50 +0200
+Message-ID: <1560433800-12255-1-git-send-email-erwan.leray@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5d938d34c3c4710577df898dbf4b70c74d2e6730.1560338079.git.michal.simek@xilinx.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Michal Simek <michal.simek@xilinx.com>, johan@kernel.org, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, monstr@monstr.eu
-Cc: Nava kishore Manne <nava.manne@xilinx.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre
+ Torgue <alexandre.torgue@st.com>, Rob Herring <robh+dt@kernel.org>, Mark
+ Rutland <mark.rutland@arm.com>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Erwan Le Ray <erwan.leray@st.com>, linux-serial@vger.kernel.org, Fabrice Gasnier <fabrice.gasnier@st.com>, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2019-06-12 at 13:14 +0200, Michal Simek wrote:
-> From: Nava kishore Manne <nava.manne@xilinx.com>
-> 
-> This patch fixes this checkpatch warning:
-> WARNING: macros should not use a trailing semicolon
-> +#define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, \
-> +		clk_rate_change_nb);
-> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-[]
-> @@ -199,7 +199,7 @@ struct cdns_platform_data {
->  	u32 quirks;
->  };
->  #define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, \
-> -		clk_rate_change_nb);
-> +		clk_rate_change_nb)
->  
->  /**
->   * cdns_uart_handle_rx - Handle the received bytes along with Rx errors.
+This series delivers power improvements for stm32-usart driver.
 
-trivia:
+Changes in v3:
+Move pinctrl/consumer.h include from "add support for no_console_suspend"
+patch to "select pinctrl state" patch in order to solve a compilation 
+issue.
 
-Perhaps this is easier for humans to read with the macro
-on two lines like:
+Bich Hemon (3):
+  dt-bindings: serial: add optional pinctrl states
+  ARM: dts: stm32: Update pin states for uart4 on stm32mp157c-ed1
+  ARM: dts: stm32: Update UART4 pin states on stm32mp157a-dk1
 
-#define to_cdns_uart(_nb) \
-	container_of(_nb, struct cdns_uart, clk_rate_change_nb)
+Erwan Le Ray (7):
+  dt-bindings: serial: stm32: add wakeup option
+  serial: stm32: select pinctrl state in each suspend/resume function
+  serial: stm32: add pm_runtime support
+  serial: stm32: Use __maybe_unused instead of #if CONFIG_PM_SLEEP
+  serial: stm32: add support for no_console_suspend
+  ARM: dts: stm32: update uart4 pin configurations for low power
+  ARM: dts: stm32: add wakeup capability on each usart/uart on
+    stm32mp157c
 
-or just ignore the 80 column limit
+ .../devicetree/bindings/serial/st,stm32-usart.txt  | 19 ++++-
+ arch/arm/boot/dts/stm32mp157-pinctrl.dtsi          | 17 +++++
+ arch/arm/boot/dts/stm32mp157a-dk1.dts              |  5 +-
+ arch/arm/boot/dts/stm32mp157c-ed1.dts              |  5 +-
+ arch/arm/boot/dts/stm32mp157c.dtsi                 | 40 ++++++++--
+ drivers/tty/serial/stm32-usart.c                   | 88 ++++++++++++++++++++--
+ drivers/tty/serial/stm32-usart.h                   |  1 +
+ 7 files changed, 155 insertions(+), 20 deletions(-)
 
-#define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, clk_rate_change_nb)
-
-or because the macro is only used in one place,
-just get rid of it and use container_of directly.
----
- drivers/tty/serial/xilinx_uartps.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 605354fd60b1..ca5cec2b83ce 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -195,11 +195,10 @@ struct cdns_uart {
- 	u32			quirks;
- 	bool cts_override;
- };
-+
- struct cdns_platform_data {
- 	u32 quirks;
- };
--#define to_cdns_uart(_nb) container_of(_nb, struct cdns_uart, \
--		clk_rate_change_nb);
- 
- /**
-  * cdns_uart_handle_rx - Handle the received bytes along with Rx errors.
-@@ -489,8 +488,9 @@ static int cdns_uart_clk_notifier_cb(struct notifier_block *nb,
- 	int locked = 0;
- 	struct clk_notifier_data *ndata = data;
- 	unsigned long flags = 0;
--	struct cdns_uart *cdns_uart = to_cdns_uart(nb);
-+	struct cdns_uart *cdns_uart;
- 
-+	cdns_uart = container_of(nb, struct cdns_uart, clk_rate_change_nb);
- 	port = cdns_uart->port;
- 	if (port->suspended)
- 		return NOTIFY_OK;
+-- 
+1.9.1
