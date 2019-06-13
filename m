@@ -1,149 +1,130 @@
 From: Stefan Roese <sr@denx.de>
-Subject: [PATCH 2/3 v6] serial: 8250: Add MSR/MCR TIOCM conversion wrapper functions
-Date: Thu, 13 Jun 2019 17:45:41 +0200
-Message-ID: <20190613154542.32438-2-sr@denx.de>
-References: <20190613154542.32438-1-sr@denx.de>
+Subject: Re: [PATCH 2/2 v5] tty/serial/8250: use mctrl_gpio helpers
+Date: Thu, 13 Jun 2019 07:32:39 +0200
+Message-ID: <6a4f1001-b023-c972-7b36-6d2f8f9a3fa8@denx.de>
+References: <20190611105603.4435-1-sr@denx.de>
+ <20190611105603.4435-2-sr@denx.de> <20190611124415.GT9224@smile.fi.intel.com>
+ <85f0d39c-e5d8-320b-e611-d956630a629f@denx.de>
+ <20190611144828.GX9224@smile.fi.intel.com>
+ <12e5180e-b4a0-e5fa-bcad-ddc8103d644c@denx.de>
+ <20190612091621.GA9224@smile.fi.intel.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190613154542.32438-1-sr@denx.de>
+In-Reply-To: <20190612091621.GA9224@smile.fi.intel.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Yegor Yefremov <yegorslists@googlemail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Giulio Benetti <giulio.benetti@micronovasrl.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Yegor Yefremov <yegorslists@googlemail.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: linux-serial@vger.kernel.org
 
-This patch adds wrapper functions to convert MSR <-> TIOCM and also
-MCR <-> TIOCM. These functions are used now in serial8250_do_set_mctrl()
-and serial8250_do_get_mctrl().
+On 12.06.19 11:16, Andy Shevchenko wrote:
+> On Wed, Jun 12, 2019 at 10:13:05AM +0200, Stefan Roese wrote:
+>> On 11.06.19 16:48, Andy Shevchenko wrote:
+>>> On Tue, Jun 11, 2019 at 04:02:54PM +0200, Stefan Roese wrote:
+>>>> On 11.06.19 14:44, Andy Shevchenko wrote:
+>>>>> On Tue, Jun 11, 2019 at 12:56:03PM +0200, Stefan Roese wrote:
+>>>
+>>>>>>     static inline void serial8250_out_MCR(struct uart_8250_port *up, int value)
+>>>>>>     {
+>>>>>>     	serial_out(up, UART_MCR, value);
+>>>>>> +
+>>>>>> +	if (up->gpios) {
+>>>>>> +		int mctrl_gpio = 0;
+>>>>>> +
+>>>>>> +		if (value & UART_MCR_RTS)
+>>>>>> +			mctrl_gpio |= TIOCM_RTS;
+>>>>>> +		if (value & UART_MCR_DTR)
+>>>>>> +			mctrl_gpio |= TIOCM_DTR;
+>>>>>> +
+>>>>>> +		mctrl_gpio_set(up->gpios, mctrl_gpio);
+>>>>>> +	}
+>>>>>>     }
+>>>
+>>>>>>     static inline int serial8250_in_MCR(struct uart_8250_port *up)
+>>>>>>     {
+>>>>>> -	return serial_in(up, UART_MCR);
+>>>>>> +	int mctrl;
+>>>>>> +
+>>>>>> +	mctrl = serial_in(up, UART_MCR);
+>>>>>> +
+>>>>>> +	if (up->gpios) {
+>>>>>> +		int mctrl_gpio = 0;
+>>>>>> +
+>>>>>> +		/* save current MCR values */
+>>>>>> +		if (mctrl & UART_MCR_RTS)
+>>>>>> +			mctrl_gpio |= TIOCM_RTS;
+>>>>>> +		if (mctrl & UART_MCR_DTR)
+>>>>>> +			mctrl_gpio |= TIOCM_DTR;
+>>>>>> +
+>>>>>> +		mctrl_gpio = mctrl_gpio_get_outputs(up->gpios, &mctrl_gpio);
+>>>>>> +		if (mctrl_gpio & TIOCM_RTS)
+>>>>>> +			mctrl |= UART_MCR_RTS;
+>>>>>> +		else
+>>>>>> +			mctrl &= ~UART_MCR_RTS;
+>>>>>> +
+>>>>>> +		if (mctrl_gpio & TIOCM_DTR)
+>>>>>> +			mctrl |= UART_MCR_DTR;
+>>>>>> +		else
+>>>>>> +			mctrl &= ~UART_MCR_DTR;
+>>>>>> +	}
+>>>>>> +
+>>>>>> +	return mctrl;
+>>>>>>     }
+>>>>>
+>>>>> These are using OR logic with potentially volatile data. Shouldn't we mask
+>>>>> unused bits in UART_MCR in case of up->gpios != NULL?
+>>>>
+>>>> Sorry, I don't see, which bits you are referring to? Could you please be
+>>>> a bit more specific with the variable / macro meant (example)?
+>>>
+>>> I meant that we double write values in the out() which might have some
+>>> consequences, though I hope nothing wrong with it happens.
+>>
+>> Where is the double write to a register? Sorry, I fail to spot it.
+> 
+> Not to the one register. From the functional point of view the same signal is
+> set up twice: once per UART register, once per GPIO pins.
+> 
+>>> In the in() we read the all bits in the register.
+>>>
+>>> As now I look at the implementation of mctrl_gpio_get_outputs(),
+>>> I think we rather get helpers for conversion between TIOCM and UART_MCR values,
+>>> so, they can be used in get_mctrl() / set_mctrl() and above.
+>>
+>> Do you something like this in mind?
+> 
+> More likely
+> 
+> static inline int serial8250_MCR_to_TIOCM(int mcr)
 
-Signed-off-by: Stefan Roese <sr@denx.de>
-Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Yegor Yefremov <yegorslists@googlemail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Giulio Benetti <giulio.benetti@micronovasrl.com>
----
-v6:
-- New patch
+MSR_to_TIOCM (see below) ...
 
- drivers/tty/serial/8250/8250.h      | 54 +++++++++++++++++++++++++++++
- drivers/tty/serial/8250/8250_port.c | 25 ++-----------
- 2 files changed, 57 insertions(+), 22 deletions(-)
+> {
+> 	int tiocm = 0;
+> 
+> 	if (mcr & ...)
+> 		tiocm |= ...;
+> 	...
+> 
+> 	return tiocm;
+> }
+> 
+> static inline int serial8250_TIOCM_to_MCR(int tiocm)
+> {
+> 	... in a similar way ...
+> }
 
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index ebfb0bd5bef5..793da2e510e0 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -139,6 +139,60 @@ void serial8250_rpm_put_tx(struct uart_8250_port *p);
- int serial8250_em485_init(struct uart_8250_port *p);
- void serial8250_em485_destroy(struct uart_8250_port *p);
- 
-+/* MCR <-> TIOCM conversion */
-+static inline int serial8250_TIOCM_to_MCR(int tiocm)
-+{
-+	int mcr = 0;
-+
-+	if (tiocm & TIOCM_RTS)
-+		mcr |= UART_MCR_RTS;
-+	if (tiocm & TIOCM_DTR)
-+		mcr |= UART_MCR_DTR;
-+	if (tiocm & TIOCM_OUT1)
-+		mcr |= UART_MCR_OUT1;
-+	if (tiocm & TIOCM_OUT2)
-+		mcr |= UART_MCR_OUT2;
-+	if (tiocm & TIOCM_LOOP)
-+		mcr |= UART_MCR_LOOP;
-+
-+	return mcr;
-+}
-+
-+static inline int serial8250_MCR_to_TIOCM(int mcr)
-+{
-+	int tiocm = 0;
-+
-+	if (mcr & UART_MCR_RTS)
-+		tiocm |= TIOCM_RTS;
-+	if (mcr & UART_MCR_DTR)
-+		tiocm |= TIOCM_DTR;
-+	if (mcr & UART_MCR_OUT1)
-+		tiocm |= TIOCM_OUT1;
-+	if (mcr & UART_MCR_OUT2)
-+		tiocm |= TIOCM_OUT2;
-+	if (mcr & UART_MCR_LOOP)
-+		tiocm |= TIOCM_LOOP;
-+
-+	return tiocm;
-+}
-+
-+/* MSR <-> TIOCM conversion */
-+static inline int serial8250_MSR_to_TIOCM(int msr)
-+{
-+	int tiocm = 0;
-+
-+	if (msr & UART_MSR_DCD)
-+		tiocm |= TIOCM_CAR;
-+	if (msr & UART_MSR_RI)
-+		tiocm |= TIOCM_RNG;
-+	if (msr & UART_MSR_DSR)
-+		tiocm |= TIOCM_DSR;
-+	if (msr & UART_MSR_CTS)
-+		tiocm |= TIOCM_CTS;
-+
-+	return tiocm;
-+}
-+
- static inline void serial8250_out_MCR(struct uart_8250_port *up, int value)
- {
- 	serial_out(up, UART_MCR, value);
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 2304a84eee3b..47f0a8d01a57 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1944,22 +1944,12 @@ unsigned int serial8250_do_get_mctrl(struct uart_port *port)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	unsigned int status;
--	unsigned int ret;
- 
- 	serial8250_rpm_get(up);
- 	status = serial8250_modem_status(up);
- 	serial8250_rpm_put(up);
- 
--	ret = 0;
--	if (status & UART_MSR_DCD)
--		ret |= TIOCM_CAR;
--	if (status & UART_MSR_RI)
--		ret |= TIOCM_RNG;
--	if (status & UART_MSR_DSR)
--		ret |= TIOCM_DSR;
--	if (status & UART_MSR_CTS)
--		ret |= TIOCM_CTS;
--	return ret;
-+	return serial8250_MSR_to_TIOCM(status);
- }
- EXPORT_SYMBOL_GPL(serial8250_do_get_mctrl);
- 
-@@ -1973,18 +1963,9 @@ static unsigned int serial8250_get_mctrl(struct uart_port *port)
- void serial8250_do_set_mctrl(struct uart_port *port, unsigned int mctrl)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
--	unsigned char mcr = 0;
-+	unsigned char mcr;
- 
--	if (mctrl & TIOCM_RTS)
--		mcr |= UART_MCR_RTS;
--	if (mctrl & TIOCM_DTR)
--		mcr |= UART_MCR_DTR;
--	if (mctrl & TIOCM_OUT1)
--		mcr |= UART_MCR_OUT1;
--	if (mctrl & TIOCM_OUT2)
--		mcr |= UART_MCR_OUT2;
--	if (mctrl & TIOCM_LOOP)
--		mcr |= UART_MCR_LOOP;
-+	mcr = serial8250_TIOCM_to_MCR(mctrl);
- 
- 	mcr = (mcr & up->mcr_mask) | up->mcr_force | up->mcr;
- 
--- 
-2.22.0
+While implementing such wrapper functions I noticed, that get_mctrl() /
+set_mctrl() need TIOCM->MCR and MSR->TIOCM (notice MSR vs MCR here) but
+serial8250_in_MCR() needs MCR->TIOCM. So there is not that much
+overlay here. Additionally the wrappers would need to handle all bits
+and only some of them are needed in serial8250_in/out_MCR(), so I would
+need to add masking here as well.
+
+For my taste its not really worth adding these wrappers as they won't
+make things much clearer (if at all).
+
+Thanks,
+Stefan
