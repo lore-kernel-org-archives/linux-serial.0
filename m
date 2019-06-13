@@ -1,8 +1,8 @@
 From: Erwan Le Ray <erwan.leray@st.com>
-Subject: [PATCH v3 03/10] serial: stm32: select pinctrl state in each
- suspend/resume function
-Date: Thu, 13 Jun 2019 15:49:53 +0200
-Message-ID: <1560433800-12255-4-git-send-email-erwan.leray@st.com>
+Subject: [PATCH v3 09/10] ARM: dts: stm32: Update UART4 pin states on
+ stm32mp157a-dk1
+Date: Thu, 13 Jun 2019 15:49:59 +0200
+Message-ID: <1560433800-12255-10-git-send-email-erwan.leray@st.com>
 References: <1560433800-12255-1-git-send-email-erwan.leray@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,41 +24,28 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Erwan Le Ray <erwan.leray@st.com>, linux-serial@vger.kernel.org, Bich Hemon <bich.hemon@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Select either pinctrl sleep state in suspend function or default state in
-resume function.
+From: Bich Hemon <bich.hemon@st.com>
+
+Add idle and no_console_suspend states to uart4 pin configuration.
 
 Signed-off-by: Bich Hemon <bich.hemon@st.com>
 Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 9c2b04e..a8f20ba 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -24,6 +24,7 @@
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_platform.h>
-+#include <linux/pinctrl/consumer.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/pm_wakeirq.h>
-@@ -1298,6 +1299,8 @@ static int stm32_serial_suspend(struct device *dev)
- 	else
- 		stm32_serial_enable_wakeup(port, false);
+diff --git a/arch/arm/boot/dts/stm32mp157a-dk1.dts b/arch/arm/boot/dts/stm32mp157a-dk1.dts
+index 098dbfb..b851f80 100644
+--- a/arch/arm/boot/dts/stm32mp157a-dk1.dts
++++ b/arch/arm/boot/dts/stm32mp157a-dk1.dts
+@@ -244,7 +244,10 @@
+ };
  
-+	pinctrl_pm_select_sleep_state(dev);
-+
- 	return 0;
- }
- 
-@@ -1305,6 +1308,8 @@ static int stm32_serial_resume(struct device *dev)
- {
- 	struct uart_port *port = dev_get_drvdata(dev);
- 
-+	pinctrl_pm_select_default_state(dev);
-+
- 	if (device_may_wakeup(dev))
- 		stm32_serial_enable_wakeup(port, false);
- 
+ &uart4 {
+-	pinctrl-names = "default";
++	pinctrl-names = "default", "sleep", "idle", "no_console_suspend";
+ 	pinctrl-0 = <&uart4_pins_a>;
++	pinctrl-1 = <&uart4_sleep_pins_a>;
++	pinctrl-2 = <&uart4_idle_pins_a>;
++	pinctrl-3 = <&uart4_pins_a>;
+ 	status = "okay";
+ };
 -- 
 1.9.1
