@@ -1,8 +1,8 @@
 From: Erwan Le Ray <erwan.leray@st.com>
-Subject: [PATCH v3 09/10] ARM: dts: stm32: Update UART4 pin states on
- stm32mp157a-dk1
-Date: Thu, 13 Jun 2019 15:49:59 +0200
-Message-ID: <1560433800-12255-10-git-send-email-erwan.leray@st.com>
+Subject: [PATCH v3 08/10] ARM: dts: stm32: Update pin states for uart4 on
+ stm32mp157c-ed1
+Date: Thu, 13 Jun 2019 15:49:58 +0200
+Message-ID: <1560433800-12255-9-git-send-email-erwan.leray@st.com>
 References: <1560433800-12255-1-git-send-email-erwan.leray@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -26,16 +26,16 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Bich Hemon <bich.hemon@st.com>
 
-Add idle and no_console_suspend states to uart4 pin configuration.
+Add idle and no_console_suspend states to uart4 pin configuration
 
 Signed-off-by: Bich Hemon <bich.hemon@st.com>
 Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
 
-diff --git a/arch/arm/boot/dts/stm32mp157a-dk1.dts b/arch/arm/boot/dts/stm32mp157a-dk1.dts
-index 098dbfb..b851f80 100644
---- a/arch/arm/boot/dts/stm32mp157a-dk1.dts
-+++ b/arch/arm/boot/dts/stm32mp157a-dk1.dts
-@@ -244,7 +244,10 @@
+diff --git a/arch/arm/boot/dts/stm32mp157c-ed1.dts b/arch/arm/boot/dts/stm32mp157c-ed1.dts
+index 62a8c78..34cc847 100644
+--- a/arch/arm/boot/dts/stm32mp157c-ed1.dts
++++ b/arch/arm/boot/dts/stm32mp157c-ed1.dts
+@@ -251,8 +251,11 @@
  };
  
  &uart4 {
@@ -47,5 +47,6 @@ index 098dbfb..b851f80 100644
 +	pinctrl-3 = <&uart4_pins_a>;
  	status = "okay";
  };
+ 
 -- 
 1.9.1
