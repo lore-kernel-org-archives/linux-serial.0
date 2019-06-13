@@ -1,130 +1,68 @@
-From: Stefan Roese <sr@denx.de>
-Subject: Re: [PATCH 2/2 v5] tty/serial/8250: use mctrl_gpio helpers
-Date: Thu, 13 Jun 2019 07:32:39 +0200
-Message-ID: <6a4f1001-b023-c972-7b36-6d2f8f9a3fa8@denx.de>
-References: <20190611105603.4435-1-sr@denx.de>
- <20190611105603.4435-2-sr@denx.de> <20190611124415.GT9224@smile.fi.intel.com>
- <85f0d39c-e5d8-320b-e611-d956630a629f@denx.de>
- <20190611144828.GX9224@smile.fi.intel.com>
- <12e5180e-b4a0-e5fa-bcad-ddc8103d644c@denx.de>
- <20190612091621.GA9224@smile.fi.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Subject: [PATCH v3 0/7] Use MFD framework for SGI IOC3 drivers
+Date: Thu, 13 Jun 2019 19:06:26 +0200
+Message-ID: <20190613170636.6647-1-tbogendoerfer@suse.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190612091621.GA9224@smile.fi.intel.com>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Yegor Yefremov <yegorslists@googlemail.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, linux-input@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On 12.06.19 11:16, Andy Shevchenko wrote:
-> On Wed, Jun 12, 2019 at 10:13:05AM +0200, Stefan Roese wrote:
->> On 11.06.19 16:48, Andy Shevchenko wrote:
->>> On Tue, Jun 11, 2019 at 04:02:54PM +0200, Stefan Roese wrote:
->>>> On 11.06.19 14:44, Andy Shevchenko wrote:
->>>>> On Tue, Jun 11, 2019 at 12:56:03PM +0200, Stefan Roese wrote:
->>>
->>>>>>     static inline void serial8250_out_MCR(struct uart_8250_port *up, int value)
->>>>>>     {
->>>>>>     	serial_out(up, UART_MCR, value);
->>>>>> +
->>>>>> +	if (up->gpios) {
->>>>>> +		int mctrl_gpio = 0;
->>>>>> +
->>>>>> +		if (value & UART_MCR_RTS)
->>>>>> +			mctrl_gpio |= TIOCM_RTS;
->>>>>> +		if (value & UART_MCR_DTR)
->>>>>> +			mctrl_gpio |= TIOCM_DTR;
->>>>>> +
->>>>>> +		mctrl_gpio_set(up->gpios, mctrl_gpio);
->>>>>> +	}
->>>>>>     }
->>>
->>>>>>     static inline int serial8250_in_MCR(struct uart_8250_port *up)
->>>>>>     {
->>>>>> -	return serial_in(up, UART_MCR);
->>>>>> +	int mctrl;
->>>>>> +
->>>>>> +	mctrl = serial_in(up, UART_MCR);
->>>>>> +
->>>>>> +	if (up->gpios) {
->>>>>> +		int mctrl_gpio = 0;
->>>>>> +
->>>>>> +		/* save current MCR values */
->>>>>> +		if (mctrl & UART_MCR_RTS)
->>>>>> +			mctrl_gpio |= TIOCM_RTS;
->>>>>> +		if (mctrl & UART_MCR_DTR)
->>>>>> +			mctrl_gpio |= TIOCM_DTR;
->>>>>> +
->>>>>> +		mctrl_gpio = mctrl_gpio_get_outputs(up->gpios, &mctrl_gpio);
->>>>>> +		if (mctrl_gpio & TIOCM_RTS)
->>>>>> +			mctrl |= UART_MCR_RTS;
->>>>>> +		else
->>>>>> +			mctrl &= ~UART_MCR_RTS;
->>>>>> +
->>>>>> +		if (mctrl_gpio & TIOCM_DTR)
->>>>>> +			mctrl |= UART_MCR_DTR;
->>>>>> +		else
->>>>>> +			mctrl &= ~UART_MCR_DTR;
->>>>>> +	}
->>>>>> +
->>>>>> +	return mctrl;
->>>>>>     }
->>>>>
->>>>> These are using OR logic with potentially volatile data. Shouldn't we mask
->>>>> unused bits in UART_MCR in case of up->gpios != NULL?
->>>>
->>>> Sorry, I don't see, which bits you are referring to? Could you please be
->>>> a bit more specific with the variable / macro meant (example)?
->>>
->>> I meant that we double write values in the out() which might have some
->>> consequences, though I hope nothing wrong with it happens.
->>
->> Where is the double write to a register? Sorry, I fail to spot it.
-> 
-> Not to the one register. From the functional point of view the same signal is
-> set up twice: once per UART register, once per GPIO pins.
-> 
->>> In the in() we read the all bits in the register.
->>>
->>> As now I look at the implementation of mctrl_gpio_get_outputs(),
->>> I think we rather get helpers for conversion between TIOCM and UART_MCR values,
->>> so, they can be used in get_mctrl() / set_mctrl() and above.
->>
->> Do you something like this in mind?
-> 
-> More likely
-> 
-> static inline int serial8250_MCR_to_TIOCM(int mcr)
+SGI IOC3 ASIC includes support for ethernet, PS2 keyboard/mouse,
+NIC (number in a can), GPIO and a byte  bus. By attaching a
+SuperIO chip to it, it also supports serial lines and a parallel
+port. The chip is used on a variety of SGI systems with different
+configurations. This patchset moves code out of the network driver,
+which doesn't belong there, into its new place a MFD driver and
+specific platform drivers for the different subfunctions.
 
-MSR_to_TIOCM (see below) ...
+Changes in v3:
+ - use 1-wire subsystem for handling proms
+ - pci-xtalk driver uses prom information to create PCI subsystem
+   ids for use in MFD driver
+ - changed MFD driver to only use static declared mfd_cells
+ - added IP30 system board setup to MFD driver
+ - mac address is now read from ioc3-eth driver with nvmem framework 
 
-> {
-> 	int tiocm = 0;
-> 
-> 	if (mcr & ...)
-> 		tiocm |= ...;
-> 	...
-> 
-> 	return tiocm;
-> }
-> 
-> static inline int serial8250_TIOCM_to_MCR(int tiocm)
-> {
-> 	... in a similar way ...
-> }
+Changes in v2:
+ - fixed issue in ioc3kbd.c reported by Dmitry Torokhov
+ - merged IP27 RTC removal and 8250 serial driver addition into
+   main MFD patch to keep patches bisectable
 
-While implementing such wrapper functions I noticed, that get_mctrl() /
-set_mctrl() need TIOCM->MCR and MSR->TIOCM (notice MSR vs MCR here) but
-serial8250_in_MCR() needs MCR->TIOCM. So there is not that much
-overlay here. Additionally the wrappers would need to handle all bits
-and only some of them are needed in serial8250_in/out_MCR(), so I would
-need to add masking here as well.
+Thomas Bogendoerfer (7):
+  nvmem: core: add nvmem_device_find
+  MIPS: PCI: refactor ioc3 special handling
+  MIPS: PCI: use information from 1-wire PROM for IOC3 detection
+  MIPS: SGI-IP27: remove ioc3 ethernet init
+  mfd: ioc3: Add driver for SGI IOC3 chip
+  MIPS: SGI-IP27: fix readb/writeb addressing
+  Input: add IOC3 serio driver
 
-For my taste its not really worth adding these wrappers as they won't
-make things much clearer (if at all).
+ arch/mips/include/asm/mach-ip27/mangle-port.h |    4 +-
+ arch/mips/include/asm/pci/bridge.h            |    1 +
+ arch/mips/include/asm/sn/ioc3.h               |  356 ++---
+ arch/mips/pci/pci-xtalk-bridge.c              |  296 ++--
+ arch/mips/sgi-ip27/ip27-console.c             |    5 +-
+ arch/mips/sgi-ip27/ip27-init.c                |   13 -
+ arch/mips/sgi-ip27/ip27-timer.c               |   20 -
+ arch/mips/sgi-ip27/ip27-xtalk.c               |   38 +-
+ drivers/input/serio/Kconfig                   |   10 +
+ drivers/input/serio/Makefile                  |    1 +
+ drivers/input/serio/ioc3kbd.c                 |  158 ++
+ drivers/mfd/Kconfig                           |   13 +
+ drivers/mfd/Makefile                          |    1 +
+ drivers/mfd/ioc3.c                            |  683 +++++++++
+ drivers/net/ethernet/sgi/Kconfig              |    4 +-
+ drivers/net/ethernet/sgi/ioc3-eth.c           | 1932 ++++++++++---------------
+ drivers/nvmem/core.c                          |   62 +-
+ drivers/rtc/rtc-m48t35.c                      |   11 +
+ drivers/tty/serial/8250/8250_ioc3.c           |   98 ++
+ drivers/tty/serial/8250/Kconfig               |   11 +
+ drivers/tty/serial/8250/Makefile              |    1 +
+ include/linux/nvmem-consumer.h                |    9 +
+ 22 files changed, 2152 insertions(+), 1575 deletions(-)
+ create mode 100644 drivers/input/serio/ioc3kbd.c
+ create mode 100644 drivers/mfd/ioc3.c
+ create mode 100644 drivers/tty/serial/8250/8250_ioc3.c
 
-Thanks,
-Stefan
+-- 
+2.13.7
