@@ -1,8 +1,8 @@
 From: Sergey Organov <sorganov@gmail.com>
-Subject: [PATCH RFC 3/7] serial: imx: set_termios(): clarify RTS/CTS bits
- calculation
-Date: Fri, 14 Jun 2019 15:11:30 +0300
-Message-ID: <1560514294-29111-4-git-send-email-sorganov@gmail.com>
+Subject: [PATCH RFC 4/7] serial: imx: set_termios(): do not enable autoRTS if
+ RTS is unset
+Date: Fri, 14 Jun 2019 15:11:31 +0300
+Message-ID: <1560514294-29111-5-git-send-email-sorganov@gmail.com>
 References: <20190614072801.3187-1-s.hauer@pengutronix.de>
  <1560514294-29111-1-git-send-email-sorganov@gmail.com>
 Mime-Version: 1.0
@@ -23,70 +23,27 @@ To: Sascha Hauer <s.hauer@pengutronix.de>
 Cc: Pengutronix Kernel Team <kernel@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-Avoid repeating the same code for rs485 twice.
-
-Make it obvious we clear CRTSCTS bit in termios->c_cflag whenever
-sport->have_rtscts is false.
-
-Make it obvious we clear UCR2_IRTS whenever CRTSCTS is set.
+set_termios() shouldn't set UCR2_CTSC bit if UCR2_CTS (=TIOCM_RTS) is
+cleared. Added corresponding check in imx_uart_rts_auto() to fix this.
 
 Signed-off-by: Sergey Organov <sorganov@gmail.com>
 ---
- drivers/tty/serial/imx.c | 36 +++++++++++++-----------------------
- 1 file changed, 13 insertions(+), 23 deletions(-)
+ drivers/tty/serial/imx.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 87802fd..17e2322 100644
+index 17e2322..8ee910f 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -1567,35 +1567,25 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if ((termios->c_cflag & CSIZE) == CS8)
- 		ucr2 |= UCR2_WS;
+@@ -405,7 +405,8 @@ static void imx_uart_rts_inactive(struct imx_port *sport, u32 *ucr2)
+ /* called with port.lock taken and irqs caller dependent */
+ static void imx_uart_rts_auto(struct imx_port *sport, u32 *ucr2)
+ {
+-	*ucr2 |= UCR2_CTSC;
++	if (*ucr2 & UCR2_CTS)
++		*ucr2 |= UCR2_CTSC;
+ }
  
--	if (termios->c_cflag & CRTSCTS) {
--		if (sport->have_rtscts) {
--			ucr2 &= ~UCR2_IRTS;
-+	if (!sport->have_rtscts)
-+		termios->c_cflag &= ~CRTSCTS;
- 
--			if (port->rs485.flags & SER_RS485_ENABLED) {
--				/*
--				 * RTS is mandatory for rs485 operation, so keep
--				 * it under manual control and keep transmitter
--				 * disabled.
--				 */
--				if (port->rs485.flags &
--				    SER_RS485_RTS_AFTER_SEND)
--					imx_uart_rts_active(sport, &ucr2);
--				else
--					imx_uart_rts_inactive(sport, &ucr2);
--			} else {
--				imx_uart_rts_auto(sport, &ucr2);
--			}
--		} else {
--			termios->c_cflag &= ~CRTSCTS;
--		}
--	} else if (port->rs485.flags & SER_RS485_ENABLED) {
--		/* disable transmitter */
-+	if (port->rs485.flags & SER_RS485_ENABLED) {
-+		/*
-+		 * RTS is mandatory for rs485 operation, so keep
-+		 * it under manual control and keep transmitter
-+		 * disabled.
-+		 */
- 		if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
- 			imx_uart_rts_active(sport, &ucr2);
- 		else
- 			imx_uart_rts_inactive(sport, &ucr2);
--	}
- 
-+	} else if (termios->c_cflag & CRTSCTS)
-+		imx_uart_rts_auto(sport, &ucr2);
-+
-+	if (termios->c_cflag & CRTSCTS)
-+		ucr2 &= ~UCR2_IRTS;
- 
- 	if (termios->c_cflag & CSTOPB)
- 		ucr2 |= UCR2_STPB;
+ /* called with port.lock taken and irqs off */
 -- 
 2.10.0.1.g57b01a3
