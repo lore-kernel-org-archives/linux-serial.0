@@ -1,7 +1,8 @@
 From: Sergey Organov <sorganov@gmail.com>
-Subject: [PATCH RFC 5/7] serial: imx: set_termios(): preserve RTS state
-Date: Fri, 14 Jun 2019 15:11:32 +0300
-Message-ID: <1560514294-29111-6-git-send-email-sorganov@gmail.com>
+Subject: [PATCH RFC 6/7] serial: imx: set_mctrl(): correctly restore autoRTS
+ state
+Date: Fri, 14 Jun 2019 15:11:33 +0300
+Message-ID: <1560514294-29111-7-git-send-email-sorganov@gmail.com>
 References: <20190614072801.3187-1-s.hauer@pengutronix.de>
  <1560514294-29111-1-git-send-email-sorganov@gmail.com>
 Mime-Version: 1.0
@@ -22,56 +23,40 @@ To: Sascha Hauer <s.hauer@pengutronix.de>
 Cc: Pengutronix Kernel Team <kernel@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-imx_set_termios() cleared RTS on every call, now fixed.
+imx_uart_set_mctrl() happened to set UCR2_CTSC bit whenever TIOCM_RTS
+was set, no matter if RTS/CTS handshake is enabled or not. Now fixed by
+turning handshake on only when CRTSCTS bit for the port is set.
 
 Signed-off-by: Sergey Organov <sorganov@gmail.com>
 ---
- drivers/tty/serial/imx.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/tty/serial/imx.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 8ee910f..de23068 100644
+index de23068..bdb8b6a 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -1564,6 +1564,13 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
+@@ -970,10 +970,19 @@ static void imx_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 	if (!(port->rs485.flags & SER_RS485_ENABLED)) {
+ 		u32 ucr2;
  
- 	spin_lock_irqsave(&sport->port.lock, flags);
++		/*
++		 * Turn off autoRTS (UCR2_CTSC) if RTS is lowered and restore
++		 * autoRTS setting if RTS is raised. Inverted UCR2_IRTS is set
++		 * if and only if CRTSCTS bit is set for the port, so we use it
++		 * to get the state to restore to.
++		 */
+ 		ucr2 = imx_uart_readl(sport, UCR2);
+ 		ucr2 &= ~(UCR2_CTS | UCR2_CTSC);
+-		if (mctrl & TIOCM_RTS)
+-			ucr2 |= UCR2_CTS | UCR2_CTSC;
++		if (mctrl & TIOCM_RTS) {
++			ucr2 |= UCR2_CTS;
++			if (!(ucr2 & UCR2_IRTS))
++				ucr2 |= UCR2_CTSC;
++		}
+ 		imx_uart_writel(sport, ucr2, UCR2);
+ 	}
  
-+	/*
-+	 * Read current UCR2 and save it for future use, then clear all the bits
-+	 * except those we will or may need to preserve.
-+	 */
-+	old_ucr2 = imx_uart_readl(sport, UCR2);
-+	ucr2 = old_ucr2 & (UCR2_TXEN | UCR2_RXEN | UCR2_ATEN | UCR2_CTSC);
-+
- 	ucr2 = UCR2_SRST | UCR2_IRTS;
- 	if ((termios->c_cflag & CSIZE) == CS8)
- 		ucr2 |= UCR2_WS;
-@@ -1633,7 +1640,6 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
- 	imx_uart_writel(sport,
- 			old_ucr1 & ~(UCR1_TXMPTYEN | UCR1_RRDYEN | UCR1_RTSDEN),
- 			UCR1);
--	old_ucr2 = imx_uart_readl(sport, UCR2);
- 	imx_uart_writel(sport, old_ucr2 & ~UCR2_ATEN, UCR2);
- 
- 	while (!(imx_uart_readl(sport, USR2) & USR2_TXDC))
-@@ -1641,7 +1647,6 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- 	/* then, disable everything */
- 	imx_uart_writel(sport, old_ucr2 & ~(UCR2_TXEN | UCR2_RXEN | UCR2_ATEN), UCR2);
--	old_ucr2 &= (UCR2_TXEN | UCR2_RXEN | UCR2_ATEN);
- 
- 	/* custom-baudrate handling */
- 	div = sport->port.uartclk / (baud * 16);
-@@ -1679,8 +1684,7 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- 	imx_uart_writel(sport, old_ucr1, UCR1);
- 
--	/* set the parity, stop bits and data size */
--	imx_uart_writel(sport, ucr2 | old_ucr2, UCR2);
-+	imx_uart_writel(sport, ucr2, UCR2);
- 
- 	if (UART_ENABLE_MS(&sport->port, termios->c_cflag))
- 		imx_uart_enable_ms(&sport->port);
 -- 
 2.10.0.1.g57b01a3
