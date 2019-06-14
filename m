@@ -1,66 +1,62 @@
-From: =?UTF-8?q?Myl=C3=A8ne=20Josserand?= <mylene.josserand@bootlin.com>
-Subject: [PATCH v1] tty: serial: max310x: Add optional reset gpio
-Date: Fri, 14 Jun 2019 16:11:12 +0200
-Message-ID: <20190614141112.29962-1-mylene.josserand@bootlin.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 1/6] dt-bindings: arm: ti: Add bindings for J721E SoC
+Date: Fri, 14 Jun 2019 10:45:26 -0600
+Message-ID: <20190614164526.GA14925@bogus>
+References: <20190522161921.20750-1-nm@ti.com>
+ <20190522161921.20750-2-nm@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190522161921.20750-2-nm@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, mylene.josserand@bootlin.com, thomas.petazzoni@bootlin.com
+To: Nishanth Menon <nm@ti.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Russell King <linux@armlinux.org.uk>, Tero Kristo <t-kristo@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-Add the possibility to use a gpio as reset.
+On Wed, May 22, 2019 at 11:19:16AM -0500, Nishanth Menon wrote:
+> The J721E SoC belongs to the K3 Multicore SoC architecture platform,
+> providing advanced system integration to enable lower system costs
+> of automotive applications such as infotainment, cluster, premium
+> Audio, Gateway, industrial and a range of broad market applications.
+> This SoC is designed around reducing the system cost by eliminating
+> the need of an external system MCU and is targeted towards ASIL-B/C
+> certification/requirements in addition to allowing complex software
+> and system use-cases.
+> 
+> Some highlights of this SoC are:
+> * Dual Cortex-A72s in a single cluster, three clusters of lockstep
+>   capable dual Cortex-R5F MCUs, Deep-learning Matrix Multiply Accelerator(MMA),
+>   C7x floating point Vector DSP, Two C66x floating point DSPs.
+> * 3D GPU PowerVR Rogue 8XE GE8430
+> * Vision Processing Accelerator (VPAC) with image signal processor and Depth
+>   and Motion Processing Accelerator (DMPAC)
+> * Two Gigabit Industrial Communication Subsystems (ICSSG), each with dual
+>   PRUs and dual RTUs
+> * Two CSI2.0 4L RX plus one CSI2.0 4L TX, one eDP/DP, One DSI Tx, and
+>   up to two DPI interfaces.
+> * Integrated Ethernet switch supporting up to a total of 8 external ports in
+>   addition to legacy Ethernet switch of up to 2 ports.
+> * System MMU (SMMU) Version 3.0 and advanced virtualisation
+>   capabilities.
+> * Upto 4 PCIe-GEN3 controllers, 2 USB3.0 Dual-role device subsystems,
+>   16 MCANs, 12 McASP, eMMC and SD, UFS, OSPI/HyperBus memory controller, QSPI,
+>   I3C and I2C, eCAP/eQEP, eHRPWM, MLB among other peripherals.
+> * Two hardware accelerator block containing AES/DES/SHA/MD5 called SA2UL
+>   management.
+> * Configurable L3 Cache and IO-coherent architecture with high data throughput
+>   capable distributed DMA architecture under NAVSS
+> * Centralized System Controller for Security, Power, and Resource
+>   Management (DMSC)
+> 
+> See J721E Technical Reference Manual (SPRUIL1, May 2019)
+> for further details: http://www.ti.com/lit/pdf/spruil1
+> 
+> Signed-off-by: Nishanth Menon <nm@ti.com>
+> ---
+>  Documentation/devicetree/bindings/arm/ti/k3.txt | 3 +++
+>  1 file changed, 3 insertions(+)
 
-Signed-off-by: Mylène Josserand <mylene.josserand@bootlin.com>
----
- Documentation/devicetree/bindings/serial/maxim,max310x.txt | 1 +
- drivers/tty/serial/max310x.c                               | 7 +++++++
- 2 files changed, 8 insertions(+)
+Okay for now, but please convert K3 and other TI SoCs to schema soon.
 
-diff --git a/Documentation/devicetree/bindings/serial/maxim,max310x.txt b/Documentation/devicetree/bindings/serial/maxim,max310x.txt
-index 79e10a05a96a..1d7d8a0b4260 100644
---- a/Documentation/devicetree/bindings/serial/maxim,max310x.txt
-+++ b/Documentation/devicetree/bindings/serial/maxim,max310x.txt
-@@ -15,6 +15,7 @@ Required properties:
-   "osc" if an external clock source is used.
- 
- Optional properties:
-+- reset-gpios: Gpio to use for reset.
- - gpio-controller: Marks the device node as a GPIO controller.
- - #gpio-cells: Should be two. The first cell is the GPIO number and
-   the second cell is used to specify the GPIO polarity:
-diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index e5aebbf5f302..d056fa2eed1b 100644
---- a/drivers/tty/serial/max310x.c
-+++ b/drivers/tty/serial/max310x.c
-@@ -14,6 +14,7 @@
- #include <linux/delay.h>
- #include <linux/device.h>
- #include <linux/gpio/driver.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-@@ -1413,12 +1414,18 @@ static int max310x_spi_probe(struct spi_device *spi)
- 		return ret;
- 
- 	if (spi->dev.of_node) {
-+		struct gpio_desc *reset_gpio;
- 		const struct of_device_id *of_id =
- 			of_match_device(max310x_dt_ids, &spi->dev);
- 		if (!of_id)
- 			return -ENODEV;
- 
- 		devtype = (struct max310x_devtype *)of_id->data;
-+		reset_gpio = devm_gpiod_get_optional(&spi->dev, "reset",
-+						     GPIOD_OUT_HIGH);
-+		if (IS_ERR(reset_gpio))
-+			return PTR_ERR(reset_gpio);
-+		gpiod_set_value_cansleep(reset_gpio, 0);
- 	} else {
- 		const struct spi_device_id *id_entry = spi_get_device_id(spi);
- 
--- 
-2.11.0
+Reviewed-by: Rob Herring <robh@kernel.org>
