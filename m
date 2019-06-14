@@ -1,74 +1,87 @@
-From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: Re: [RFC v2 02/11] OPP: Make dev_pm_opp_set_rate() with freq=0 as
- valid
-Date: Fri, 14 Jun 2019 12:02:10 +0530
-Message-ID: <20190614063210.lfsquoycronah3fe@vireshk-i7>
-References: <20190320094918.20234-1-rnayak@codeaurora.org>
- <20190320094918.20234-3-rnayak@codeaurora.org>
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Subject: [PATCH] serial: imx: fix RTS/CTS setting
+Date: Fri, 14 Jun 2019 09:28:01 +0200
+Message-ID: <20190614072801.3187-1-s.hauer@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190320094918.20234-3-rnayak@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rajendra Nayak <rnayak@codeaurora.org>
-Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-scsi@vger.kernel.org, swboyd@chromium.org, ulf.hansson@linaro.org, dianders@chromium.org, rafael@kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-serial@vger.kernel.org
+Cc: kernel@pengutronix.de, Sascha Hauer <s.hauer@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 20-03-19, 15:19, Rajendra Nayak wrote:
-> For devices with performance state, we use dev_pm_opp_set_rate()
-> to set the appropriate clk rate and the performance state.
-> We do need a way to *remove* the performance state vote when
-> we idle the device and turn the clocks off. Use dev_pm_opp_set_rate()
-> with freq=0 to achieve this.
-> 
-> Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
-> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-> ---
->  drivers/opp/core.c | 18 ++++++++++++------
->  1 file changed, 12 insertions(+), 6 deletions(-)
+The correct setting of the RTS pin depends on the CRTSCTS termios setting:
 
-What about this instead ?
+- When CRTSCTS is disabled then RTS shall be controlled by the TIOCM_RTS
+  flag.
+- When CRTSCTS is enabled the expected behaviour of the RTS pin is:
+  - When TIOCM_RTS is set then let the receiver control RTS.
+  - When the TIOCM_RTS flag is cleared then RTS shall be deasserted (to let
+    the upper layers throttle the transfer even when the FIFO in the UART has
+    enough space).
 
-diff --git a/drivers/opp/core.c b/drivers/opp/core.c
-index 2fe96c2363a3..9accf8bb6afc 100644
---- a/drivers/opp/core.c
-+++ b/drivers/opp/core.c
-@@ -711,7 +711,7 @@ static int _set_required_opps(struct device *dev,
+This patch fixes this behaviour. Previously the RTS pin has always been
+controlled by the receiver once the TIOCM_RTS flag was set and the CRTSCTS
+setting hasn't been taken into account.
+
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+---
+ drivers/tty/serial/imx.c | 19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 8b752e895053..0eddca6455ad 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -216,6 +216,7 @@ struct imx_port {
+ 	unsigned int		dma_is_enabled:1;
+ 	unsigned int		dma_is_rxing:1;
+ 	unsigned int		dma_is_txing:1;
++	unsigned int		crtscts:1;
+ 	struct dma_chan		*dma_chan_rx, *dma_chan_tx;
+ 	struct scatterlist	rx_sgl, tx_sgl[2];
+ 	void			*rx_buf;
+@@ -967,9 +968,18 @@ static void imx_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 		u32 ucr2;
  
-        /* Single genpd case */
-        if (!genpd_virt_devs) {
--               pstate = opp->required_opps[0]->pstate;
-+               pstate = likely(opp) ? opp->required_opps[0]->pstate : 0;
-                ret = dev_pm_genpd_set_performance_state(dev, pstate);
-                if (ret) {
-                        dev_err(dev, "Failed to set performance state of %s: %d (%d)\n",
-@@ -729,7 +729,7 @@ static int _set_required_opps(struct device *dev,
-        mutex_lock(&opp_table->genpd_virt_dev_lock);
- 
-        for (i = 0; i < opp_table->required_opp_count; i++) {
--               pstate = opp->required_opps[i]->pstate;
-+               pstate = likely(opp) ? opp->required_opps[i]->pstate : 0;
- 
-                if (!genpd_virt_devs[i])
-                        continue;
-@@ -770,14 +770,13 @@ int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq)
- 
-        if (unlikely(!target_freq)) {
-                if (opp_table->required_opp_tables) {
--                       /* drop the performance state vote */
--                       dev_pm_genpd_set_performance_state(dev, 0);
--                       return 0;
-+                       ret = _set_required_opps(dev, opp_table, NULL);
-                } else {
--                       dev_err(dev, "%s: Invalid target frequency %lu\n", __func__,
--                               target_freq);
--                       return -EINVAL;
-+                       dev_err(dev, "target frequency can't be 0\n");
-+                       ret = -EINVAL;
-                }
+ 		ucr2 = imx_uart_readl(sport, UCR2);
 +
-+               goto put_opp_table;
-        }
+ 		ucr2 &= ~(UCR2_CTS | UCR2_CTSC);
+-		if (mctrl & TIOCM_RTS)
+-			ucr2 |= UCR2_CTS | UCR2_CTSC;
++
++		if (mctrl & TIOCM_RTS) {
++			if (sport->crtscts)
++				/* let the receiver control RTS */
++				ucr2 |= UCR2_CTSC;
++			else
++				/* Force RTS active */
++				ucr2 |= UCR2_CTS;
++		}
++
+ 		imx_uart_writel(sport, ucr2, UCR2);
+ 	}
  
-        clk = opp_table->clk;
+@@ -1554,6 +1564,11 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	else
+ 		ucr2 = UCR2_SRST | UCR2_IRTS;
+ 
++	if (termios->c_cflag & CRTSCTS)
++		sport->crtscts = true;
++	else
++		sport->crtscts = false;
++
+ 	if (termios->c_cflag & CRTSCTS) {
+ 		if (sport->have_rtscts) {
+ 			ucr2 &= ~UCR2_IRTS;
+-- 
+2.20.1
