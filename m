@@ -1,60 +1,35 @@
 From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 1/6] dt-bindings: arm: ti: Add bindings for J721E SoC
-Date: Fri, 14 Jun 2019 10:45:36 -0600
-Message-ID: <20190614164536.GA18039@bogus>
+Subject: Re: [PATCH 2/6] dt-bindings: serial: 8250_omap: Add compatible for
+ J721E UART controller
+Date: Fri, 14 Jun 2019 10:45:55 -0600
+Message-ID: <20190614164555.GA18636@bogus>
 References: <20190522161921.20750-1-nm@ti.com>
- <20190522161921.20750-2-nm@ti.com>
+ <20190522161921.20750-3-nm@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190522161921.20750-2-nm@ti.com>
+In-Reply-To: <20190522161921.20750-3-nm@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Russell King <linux@armlinux.org.uk>, Tero Kristo <t-kristo@ti.com>, Nishanth Menon <nm@ti.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Russell King <linux@armlinux.org.uk>, Tero Kristo <t-kristo@ti.com>, Nishanth Menon <nm@ti.com>, Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 22 May 2019 11:19:16 -0500, Nishanth Menon wrote:
-> The J721E SoC belongs to the K3 Multicore SoC architecture platform,
-> providing advanced system integration to enable lower system costs
-> of automotive applications such as infotainment, cluster, premium
-> Audio, Gateway, industrial and a range of broad market applications.
-> This SoC is designed around reducing the system cost by eliminating
-> the need of an external system MCU and is targeted towards ASIL-B/C
-> certification/requirements in addition to allowing complex software
-> and system use-cases.
+On Wed, 22 May 2019 11:19:17 -0500, Nishanth Menon wrote:
+> J721e uses a UART controller that is compatible with AM654 UART.
+> Introduce a specific compatible to help handle the differences if
+> necessary.
 > 
-> Some highlights of this SoC are:
-> * Dual Cortex-A72s in a single cluster, three clusters of lockstep
->   capable dual Cortex-R5F MCUs, Deep-learning Matrix Multiply Accelerator(MMA),
->   C7x floating point Vector DSP, Two C66x floating point DSPs.
-> * 3D GPU PowerVR Rogue 8XE GE8430
-> * Vision Processing Accelerator (VPAC) with image signal processor and Depth
->   and Motion Processing Accelerator (DMPAC)
-> * Two Gigabit Industrial Communication Subsystems (ICSSG), each with dual
->   PRUs and dual RTUs
-> * Two CSI2.0 4L RX plus one CSI2.0 4L TX, one eDP/DP, One DSI Tx, and
->   up to two DPI interfaces.
-> * Integrated Ethernet switch supporting up to a total of 8 external ports in
->   addition to legacy Ethernet switch of up to 2 ports.
-> * System MMU (SMMU) Version 3.0 and advanced virtualisation
->   capabilities.
-> * Upto 4 PCIe-GEN3 controllers, 2 USB3.0 Dual-role device subsystems,
->   16 MCANs, 12 McASP, eMMC and SD, UFS, OSPI/HyperBus memory controller, QSPI,
->   I3C and I2C, eCAP/eQEP, eHRPWM, MLB among other peripherals.
-> * Two hardware accelerator block containing AES/DES/SHA/MD5 called SA2UL
->   management.
-> * Configurable L3 Cache and IO-coherent architecture with high data throughput
->   capable distributed DMA architecture under NAVSS
-> * Centralized System Controller for Security, Power, and Resource
->   Management (DMSC)
-> 
-> See J721E Technical Reference Manual (SPRUIL1, May 2019)
-> for further details: http://www.ti.com/lit/pdf/spruil1
-> 
+> Cc: Sekhar Nori <nsekhar@ti.com>
+> Cc: Vignesh R <vigneshr@ti.com>
 > Signed-off-by: Nishanth Menon <nm@ti.com>
 > ---
->  Documentation/devicetree/bindings/arm/ti/k3.txt | 3 +++
->  1 file changed, 3 insertions(+)
+> NOTE:
+>  - If Greg is ok, we can pick up the uart compatibility via the k3 tree,
+>    else, I can spawn it off the series into it's own patch, but it
+>    seemed better in a logical order.
+> 
+>  Documentation/devicetree/bindings/serial/omap_serial.txt | 1 +
+>  1 file changed, 1 insertion(+)
 > 
 
 Reviewed-by: Rob Herring <robh@kernel.org>
