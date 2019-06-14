@@ -1,7 +1,7 @@
 From: Rob Herring <robh@kernel.org>
 Subject: Re: [PATCH 1/6] dt-bindings: arm: ti: Add bindings for J721E SoC
-Date: Fri, 14 Jun 2019 10:45:26 -0600
-Message-ID: <20190614164526.GA14925@bogus>
+Date: Fri, 14 Jun 2019 10:45:36 -0600
+Message-ID: <20190614164536.GA18039@bogus>
 References: <20190522161921.20750-1-nm@ti.com>
  <20190522161921.20750-2-nm@ti.com>
 Mime-Version: 1.0
@@ -10,11 +10,10 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
 In-Reply-To: <20190522161921.20750-2-nm@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nishanth Menon <nm@ti.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Russell King <linux@armlinux.org.uk>, Tero Kristo <t-kristo@ti.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Russell King <linux@armlinux.org.uk>, Tero Kristo <t-kristo@ti.com>, Nishanth Menon <nm@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, May 22, 2019 at 11:19:16AM -0500, Nishanth Menon wrote:
+On Wed, 22 May 2019 11:19:16 -0500, Nishanth Menon wrote:
 > The J721E SoC belongs to the K3 Multicore SoC architecture platform,
 > providing advanced system integration to enable lower system costs
 > of automotive applications such as infotainment, cluster, premium
@@ -56,7 +55,6 @@ On Wed, May 22, 2019 at 11:19:16AM -0500, Nishanth Menon wrote:
 > ---
 >  Documentation/devicetree/bindings/arm/ti/k3.txt | 3 +++
 >  1 file changed, 3 insertions(+)
-
-Okay for now, but please convert K3 and other TI SoCs to schema soon.
+> 
 
 Reviewed-by: Rob Herring <robh@kernel.org>
