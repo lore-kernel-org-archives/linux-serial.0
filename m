@@ -1,50 +1,66 @@
-From: Sergey Organov <sorganov@gmail.com>
-Subject: Re: [PATCH RFC 5/7] serial: imx: set_termios(): preserve RTS state
-Date: Fri, 14 Jun 2019 16:28:17 +0300
-Message-ID: <87blz09tzi.fsf@osv.gnss.ru>
-References: <20190614072801.3187-1-s.hauer@pengutronix.de>
- <1560514294-29111-1-git-send-email-sorganov@gmail.com>
- <1560514294-29111-6-git-send-email-sorganov@gmail.com>
- <20190614150551.1472b154@karo-electronics.de>
+From: =?UTF-8?q?Myl=C3=A8ne=20Josserand?= <mylene.josserand@bootlin.com>
+Subject: [PATCH v1] tty: serial: max310x: Add optional reset gpio
+Date: Fri, 14 Jun 2019 16:11:12 +0200
+Message-ID: <20190614141112.29962-1-mylene.josserand@bootlin.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190614150551.1472b154@karo-electronics.de> ("Lothar
- \=\?utf-8\?Q\?Wa\=C3\=9Fmann\=22's\?\=
- message of "Fri, 14 Jun 2019 15:05:51 +0200")
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Lothar =?utf-8?Q?Wa=C3=9Fmann?= <LW@KARO-electronics.de>
-Cc: linux-serial@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, mylene.josserand@bootlin.com, thomas.petazzoni@bootlin.com
 List-Id: linux-serial@vger.kernel.org
 
-TG90aGFyIFdhw59tYW5uIDxMV0BLQVJPLWVsZWN0cm9uaWNzLmRlPiB3cml0ZXM6Cj4gSGksCj4K
-PiBPbiBGcmksIDE0IEp1biAyMDE5IDE1OjExOjMyICswMzAwIFNlcmdleSBPcmdhbm92IHdyb3Rl
-Ogo+PiBpbXhfc2V0X3Rlcm1pb3MoKSBjbGVhcmVkIFJUUyBvbiBldmVyeSBjYWxsLCBub3cgZml4
-ZWQuCj4+IAo+PiBTaWduZWQtb2ZmLWJ5OiBTZXJnZXkgT3JnYW5vdiA8c29yZ2Fub3ZAZ21haWwu
-Y29tPgo+PiAtLS0KPj4gIGRyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyB8IDEyICsrKysrKysrLS0t
-LQo+PiAgMSBmaWxlIGNoYW5nZWQsIDggaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkKPj4g
-Cj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMgYi9kcml2ZXJzL3R0eS9z
-ZXJpYWwvaW14LmMKPj4gaW5kZXggOGVlOTEwZi4uZGUyMzA2OCAxMDA2NDQKPj4gLS0tIGEvZHJp
-dmVycy90dHkvc2VyaWFsL2lteC5jCj4+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYwo+
-PiBAQCAtMTU2NCw2ICsxNTY0LDEzIEBAIGlteF91YXJ0X3NldF90ZXJtaW9zKHN0cnVjdCB1YXJ0
-X3BvcnQgKnBvcnQsIHN0cnVjdCBrdGVybWlvcyAqdGVybWlvcywKPj4gIAo+PiAgCXNwaW5fbG9j
-a19pcnFzYXZlKCZzcG9ydC0+cG9ydC5sb2NrLCBmbGFncyk7Cj4+ICAKPj4gKwkvKgo+PiArCSAq
-IFJlYWQgY3VycmVudCBVQ1IyIGFuZCBzYXZlIGl0IGZvciBmdXR1cmUgdXNlLCB0aGVuIGNsZWFy
-IGFsbCB0aGUgYml0cwo+PiArCSAqIGV4Y2VwdCB0aG9zZSB3ZSB3aWxsIG9yIG1heSBuZWVkIHRv
-IHByZXNlcnZlLgo+PiArCSAqLwo+PiArCW9sZF91Y3IyID0gaW14X3VhcnRfcmVhZGwoc3BvcnQs
-IFVDUjIpOwo+PiArCXVjcjIgPSBvbGRfdWNyMiAmIChVQ1IyX1RYRU4gfCBVQ1IyX1JYRU4gfCBV
-Q1IyX0FURU4gfCBVQ1IyX0NUU0MpOwo+PiArCj4+ICAJdWNyMiA9IFVDUjJfU1JTVCB8IFVDUjJf
-SVJUUzsKPiBzLz0vfD0vCgpOaWNlIGNhdGNoIQoKVGhhbmtzLAoKLS0gU2VyZ2V5IE9yZ2Fub3YK
-Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFy
-bS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9y
-ZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1r
-ZXJuZWwK
+Add the possibility to use a gpio as reset.
+
+Signed-off-by: Mylène Josserand <mylene.josserand@bootlin.com>
+---
+ Documentation/devicetree/bindings/serial/maxim,max310x.txt | 1 +
+ drivers/tty/serial/max310x.c                               | 7 +++++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/serial/maxim,max310x.txt b/Documentation/devicetree/bindings/serial/maxim,max310x.txt
+index 79e10a05a96a..1d7d8a0b4260 100644
+--- a/Documentation/devicetree/bindings/serial/maxim,max310x.txt
++++ b/Documentation/devicetree/bindings/serial/maxim,max310x.txt
+@@ -15,6 +15,7 @@ Required properties:
+   "osc" if an external clock source is used.
+ 
+ Optional properties:
++- reset-gpios: Gpio to use for reset.
+ - gpio-controller: Marks the device node as a GPIO controller.
+ - #gpio-cells: Should be two. The first cell is the GPIO number and
+   the second cell is used to specify the GPIO polarity:
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index e5aebbf5f302..d056fa2eed1b 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -14,6 +14,7 @@
+ #include <linux/delay.h>
+ #include <linux/device.h>
+ #include <linux/gpio/driver.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+@@ -1413,12 +1414,18 @@ static int max310x_spi_probe(struct spi_device *spi)
+ 		return ret;
+ 
+ 	if (spi->dev.of_node) {
++		struct gpio_desc *reset_gpio;
+ 		const struct of_device_id *of_id =
+ 			of_match_device(max310x_dt_ids, &spi->dev);
+ 		if (!of_id)
+ 			return -ENODEV;
+ 
+ 		devtype = (struct max310x_devtype *)of_id->data;
++		reset_gpio = devm_gpiod_get_optional(&spi->dev, "reset",
++						     GPIOD_OUT_HIGH);
++		if (IS_ERR(reset_gpio))
++			return PTR_ERR(reset_gpio);
++		gpiod_set_value_cansleep(reset_gpio, 0);
+ 	} else {
+ 		const struct spi_device_id *id_entry = spi_get_device_id(spi);
+ 
+-- 
+2.11.0
