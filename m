@@ -1,11 +1,14 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: [PATCH] serial: imx: fix RTS/CTS setting
-Date: Fri, 14 Jun 2019 09:28:01 +0200
-Message-ID: <20190614072801.3187-1-s.hauer@pengutronix.de>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] serial: imx: fix RTS/CTS setting
+Date: Fri, 14 Jun 2019 09:48:17 +0200
+Message-ID: <20190614074817.vmvhvbms32i6jfqo@pengutronix.de>
+References: <20190614072801.3187-1-s.hauer@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20190614072801.3187-1-s.hauer@pengutronix.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -15,73 +18,107 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-serial@vger.kernel.org
-Cc: kernel@pengutronix.de, Sascha Hauer <s.hauer@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, linux-arm-kernel@lists.infradead.org
+To: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Russell King <linux@arm.linux.org.uk>, linux-serial@vger.kernel.org, Sergey Organov <sorganov@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The correct setting of the RTS pin depends on the CRTSCTS termios setting:
+[expanded Cc: a bit]
 
-- When CRTSCTS is disabled then RTS shall be controlled by the TIOCM_RTS
-  flag.
-- When CRTSCTS is enabled the expected behaviour of the RTS pin is:
-  - When TIOCM_RTS is set then let the receiver control RTS.
-  - When the TIOCM_RTS flag is cleared then RTS shall be deasserted (to let
-    the upper layers throttle the transfer even when the FIFO in the UART has
-    enough space).
+Hello Sascha,
 
-This patch fixes this behaviour. Previously the RTS pin has always been
-controlled by the receiver once the TIOCM_RTS flag was set and the CRTSCTS
-setting hasn't been taken into account.
+On Fri, Jun 14, 2019 at 09:28:01AM +0200, Sascha Hauer wrote:
+> The correct setting of the RTS pin depends on the CRTSCTS termios setting:
+> =
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
----
- drivers/tty/serial/imx.c | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+> - When CRTSCTS is disabled then RTS shall be controlled by the TIOCM_RTS
+>   flag.
+> - When CRTSCTS is enabled the expected behaviour of the RTS pin is:
+>   - When TIOCM_RTS is set then let the receiver control RTS.
+>   - When the TIOCM_RTS flag is cleared then RTS shall be deasserted (to l=
+et
+>     the upper layers throttle the transfer even when the FIFO in the UART=
+ has
+>     enough space).
+> =
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 8b752e895053..0eddca6455ad 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -216,6 +216,7 @@ struct imx_port {
- 	unsigned int		dma_is_enabled:1;
- 	unsigned int		dma_is_rxing:1;
- 	unsigned int		dma_is_txing:1;
-+	unsigned int		crtscts:1;
- 	struct dma_chan		*dma_chan_rx, *dma_chan_tx;
- 	struct scatterlist	rx_sgl, tx_sgl[2];
- 	void			*rx_buf;
-@@ -967,9 +968,18 @@ static void imx_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 		u32 ucr2;
- 
- 		ucr2 = imx_uart_readl(sport, UCR2);
-+
- 		ucr2 &= ~(UCR2_CTS | UCR2_CTSC);
--		if (mctrl & TIOCM_RTS)
--			ucr2 |= UCR2_CTS | UCR2_CTSC;
-+
-+		if (mctrl & TIOCM_RTS) {
-+			if (sport->crtscts)
-+				/* let the receiver control RTS */
-+				ucr2 |= UCR2_CTSC;
-+			else
-+				/* Force RTS active */
-+				ucr2 |= UCR2_CTS;
-+		}
-+
- 		imx_uart_writel(sport, ucr2, UCR2);
- 	}
- 
-@@ -1554,6 +1564,11 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
- 	else
- 		ucr2 = UCR2_SRST | UCR2_IRTS;
- 
-+	if (termios->c_cflag & CRTSCTS)
-+		sport->crtscts = true;
-+	else
-+		sport->crtscts = false;
-+
- 	if (termios->c_cflag & CRTSCTS) {
- 		if (sport->have_rtscts) {
- 			ucr2 &= ~UCR2_IRTS;
--- 
-2.20.1
+> This patch fixes this behaviour. Previously the RTS pin has always been
+> controlled by the receiver once the TIOCM_RTS flag was set and the CRTSCTS
+> setting hasn't been taken into account.
+> =
+
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+> ---
+>  drivers/tty/serial/imx.c | 19 +++++++++++++++++--
+>  1 file changed, 17 insertions(+), 2 deletions(-)
+> =
+
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 8b752e895053..0eddca6455ad 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -216,6 +216,7 @@ struct imx_port {
+>  	unsigned int		dma_is_enabled:1;
+>  	unsigned int		dma_is_rxing:1;
+>  	unsigned int		dma_is_txing:1;
+> +	unsigned int		crtscts:1;
+>  	struct dma_chan		*dma_chan_rx, *dma_chan_tx;
+>  	struct scatterlist	rx_sgl, tx_sgl[2];
+>  	void			*rx_buf;
+> @@ -967,9 +968,18 @@ static void imx_uart_set_mctrl(struct uart_port *por=
+t, unsigned int mctrl)
+>  		u32 ucr2;
+>  =
+
+>  		ucr2 =3D imx_uart_readl(sport, UCR2);
+> +
+>  		ucr2 &=3D ~(UCR2_CTS | UCR2_CTSC);
+> -		if (mctrl & TIOCM_RTS)
+> -			ucr2 |=3D UCR2_CTS | UCR2_CTSC;
+> +
+> +		if (mctrl & TIOCM_RTS) {
+> +			if (sport->crtscts)
+> +				/* let the receiver control RTS */
+> +				ucr2 |=3D UCR2_CTSC;
+> +			else
+> +				/* Force RTS active */
+> +				ucr2 |=3D UCR2_CTS;
+> +		}
+> +
+
+Other drivers check for
+
+	port->status & UPSTAT_AUTORTS
+
+instead of CRTSCTS. I didn't manage to grasp all the details from the
+quick look I took, but maybe you should better do the same?
+
+>  		imx_uart_writel(sport, ucr2, UCR2);
+>  	}
+>  =
+
+> @@ -1554,6 +1564,11 @@ imx_uart_set_termios(struct uart_port *port, struc=
+t ktermios *termios,
+>  	else
+>  		ucr2 =3D UCR2_SRST | UCR2_IRTS;
+>  =
+
+> +	if (termios->c_cflag & CRTSCTS)
+> +		sport->crtscts =3D true;
+> +	else
+> +		sport->crtscts =3D false;
+> +
+>  	if (termios->c_cflag & CRTSCTS) {
+
+I'd put setting sport->crtscts in the following if block, maybe even in
+the if (sport->have_rtscts) part that starts below here?
+
+>  		if (sport->have_rtscts) {
+>  			ucr2 &=3D ~UCR2_IRTS;
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
