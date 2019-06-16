@@ -1,24 +1,52 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 1/1] dt-bindings: stm32: serial: Add optional reset
-Date: Fri, 14 Jun 2019 11:51:52 -0600
-Message-ID: <20190614175152.GA18378@bogus>
-References: <1558711838-21174-1-git-send-email-erwan.leray@st.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: kpark3469@gmail.com
+Subject: [PATCH] tty: serial_core: recover uport->cons->cflag on uart_close
+Date: Sun, 16 Jun 2019 18:57:14 +0400
+Message-ID: <1560697034-4807-1-git-send-email-kpark3469@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1558711838-21174-1-git-send-email-erwan.leray@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Fabrice Gasnier <fabrice.gasnier@st.com>, Erwan Le Ray <erwan.leray@st.com>
+To: gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, keun-o.park@darkmatter.ae
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 24 May 2019 17:30:38 +0200, Erwan Le Ray wrote:
-> STM32 serial can be reset via reset controller.
-> Add an optional reset property to stm32 usart bindings.
-> 
-> Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
-> 
+From: Sahara <keun-o.park@darkmatter.ae>
 
-Applied, thanks.
+Since uart_close was converted to use tty_port_close, uart_shutdown
+also moved to uart_tty_port_shutdown, which means it does not backup
+tty's termios to uart_port.console.cflag when console is closed and
+uart_console is true.
+By losing this value, serial console was not set correctly especially
+after suspend/resume when there is no consumer of console device.
+This problem resets console driver's configuration to an unwanted value
+and may give a performance regression in the system eventually.
+This patch fixes the bug introduced from v4.9 kernel.
 
-Rob
+Fixes: 761ed4a94582 ("tty: serial_core: convert uart_close to use tty_port_close")
+Reported-by: Jouni Linnamaa <Jouni.Linnamaa@darkmatter.ae>
+Signed-off-by: Sahara <keun-o.park@darkmatter.ae>
+---
+ drivers/tty/serial/serial_core.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 83f4dd0bfd74..a52afceb2f4e 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -1533,6 +1533,7 @@ static void uart_set_termios(struct tty_struct *tty,
+ static void uart_close(struct tty_struct *tty, struct file *filp)
+ {
+ 	struct uart_state *state = tty->driver_data;
++	struct uart_port *uport = uart_port_check(state);
+ 
+ 	if (!state) {
+ 		struct uart_driver *drv = tty->driver->driver_state;
+@@ -1548,6 +1549,8 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
+ 
+ 	pr_debug("uart_close(%d) called\n", tty->index);
+ 
++	if (uport && uart_console(uport))
++		uport->cons->cflag = tty->termios.c_cflag;
+ 	tty_port_close(tty->port, tty, filp);
+ }
+ 
+-- 
+2.17.1
