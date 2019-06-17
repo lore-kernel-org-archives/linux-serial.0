@@ -1,52 +1,60 @@
-From: kpark3469@gmail.com
-Subject: [PATCH] tty: serial_core: recover uport->cons->cflag on uart_close
-Date: Sun, 16 Jun 2019 18:57:14 +0400
-Message-ID: <1560697034-4807-1-git-send-email-kpark3469@gmail.com>
+From: Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re: [RFC v2 01/11] OPP: Don't overwrite rounded clk rate
+Date: Mon, 17 Jun 2019 09:20:58 +0530
+Message-ID: <20190617035058.veo7uwqjrpa6kykt@vireshk-i7>
+References: <20190320094918.20234-1-rnayak@codeaurora.org>
+ <20190320094918.20234-2-rnayak@codeaurora.org>
+ <20190611105432.x3nzqiib35t6mvyg@vireshk-i7>
+ <c173a57d-a4de-99f7-e8d8-28a7612f4ca3@codeaurora.org>
+ <20190612082506.m735bsk7bjijf2yg@vireshk-i7>
+ <20190613095419.lfjeko7nmxtix2n4@vireshk-i7>
+ <20190614052732.4w6vvwwich2h4cgu@vireshk-i7>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190614052732.4w6vvwwich2h4cgu@vireshk-i7>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, keun-o.park@darkmatter.ae
+To: swboyd@chromium.org, Rajendra Nayak <rnayak@codeaurora.org>, vincent.guittot@linaro.org, mturquette@baylibre.com
+Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-scsi@vger.kernel.org, ulf.hansson@linaro.org, dianders@chromium.org, rafael@kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Sahara <keun-o.park@darkmatter.ae>
+On 14-06-19, 10:57, Viresh Kumar wrote:
+> Hmm, so this patch won't break anything and I am inclined to apply it again :)
+> 
+> Does anyone see any other issues with it, which I might be missing ?
 
-Since uart_close was converted to use tty_port_close, uart_shutdown
-also moved to uart_tty_port_shutdown, which means it does not backup
-tty's termios to uart_port.console.cflag when console is closed and
-uart_console is true.
-By losing this value, serial console was not set correctly especially
-after suspend/resume when there is no consumer of console device.
-This problem resets console driver's configuration to an unwanted value
-and may give a performance regression in the system eventually.
-This patch fixes the bug introduced from v4.9 kernel.
+I have updated the commit log a bit more to clarify on things, please let me
+know if it looks okay.
 
-Fixes: 761ed4a94582 ("tty: serial_core: convert uart_close to use tty_port_close")
-Reported-by: Jouni Linnamaa <Jouni.Linnamaa@darkmatter.ae>
-Signed-off-by: Sahara <keun-o.park@darkmatter.ae>
----
- drivers/tty/serial/serial_core.c | 3 +++
- 1 file changed, 3 insertions(+)
+    opp: Don't overwrite rounded clk rate
+    
+    The OPP table normally contains 'fmax' values corresponding to the
+    voltage or performance levels of each OPP, but we don't necessarily want
+    all the devices to run at fmax all the time. Running at fmax makes sense
+    for devices like CPU/GPU, which have a finite amount of work to do and
+    since a specific amount of energy is consumed at an OPP, its better to
+    run at the highest possible frequency for that voltage value.
+    
+    On the other hand, we have IO devices which need to run at specific
+    frequencies only for their proper functioning, instead of maximum
+    possible frequency.
+    
+    The OPP core currently roundup to the next possible OPP for a frequency
+    and select the fmax value. To support the IO devices by the OPP core,
+    lets do the roundup to fetch the voltage or performance state values,
+    but not use the OPP frequency value. Rather use the value returned by
+    clk_round_rate().
+    
+    The current user, cpufreq, of dev_pm_opp_set_rate() already does the
+    rounding to the next OPP before calling this routine and it won't
+    have any side affects because of this change.
+    
+    Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+    Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
+    [ Viresh: Massaged changelog and use temp_opp variable instead ]
+    Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 83f4dd0bfd74..a52afceb2f4e 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1533,6 +1533,7 @@ static void uart_set_termios(struct tty_struct *tty,
- static void uart_close(struct tty_struct *tty, struct file *filp)
- {
- 	struct uart_state *state = tty->driver_data;
-+	struct uart_port *uport = uart_port_check(state);
- 
- 	if (!state) {
- 		struct uart_driver *drv = tty->driver->driver_state;
-@@ -1548,6 +1549,8 @@ static void uart_close(struct tty_struct *tty, struct file *filp)
- 
- 	pr_debug("uart_close(%d) called\n", tty->index);
- 
-+	if (uport && uart_console(uport))
-+		uport->cons->cflag = tty->termios.c_cflag;
- 	tty_port_close(tty->port, tty, filp);
- }
- 
+
 -- 
-2.17.1
+viresh
