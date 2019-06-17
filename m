@@ -1,73 +1,154 @@
-From: Yegor Yefremov <yegorslists@googlemail.com>
-Subject: Re: [PATCH 3/3 v6] tty/serial/8250: use mctrl_gpio helpers
-Date: Mon, 17 Jun 2019 14:51:15 +0200
-Message-ID: <CAGm1_ks0TWAkKGQ+k060hmwZi-i1jD2-KMqxex1QqrbujS00WQ@mail.gmail.com>
-References: <20190613154542.32438-1-sr@denx.de> <20190613154542.32438-3-sr@denx.de>
- <CAGm1_kuyt5ue_3CuvryXw8L0=z0Bti5BeQMA50yRYhFmffcJuQ@mail.gmail.com>
- <CAGm1_ksdQ5CNLGGNzHKBNKeLE3ByHvPyOkjYNoWWM+rw0q214Q@mail.gmail.com> <d62c1a2b-3e24-c109-a7fb-57190388d75f@denx.de>
+From: Stefan Roese <sr@denx.de>
+Subject: [PATCH 2/3 v7] serial: 8250: Add MSR/MCR TIOCM conversion wrapper functions
+Date: Mon, 17 Jun 2019 16:59:51 +0200
+Message-ID: <20190617145952.4848-2-sr@denx.de>
+References: <20190617145952.4848-1-sr@denx.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <d62c1a2b-3e24-c109-a7fb-57190388d75f@denx.de>
+In-Reply-To: <20190617145952.4848-1-sr@denx.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stefan Roese <sr@denx.de>
-Cc: linux-serial@vger.kernel.org, kernel list <linux-kernel@vger.kernel.org>, Mika Westerberg <mika.westerberg@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Giulio Benetti <giulio.benetti@micronovasrl.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Yegor Yefremov <yegorslists@googlemail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Giulio Benetti <giulio.benetti@micronovasrl.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jun 17, 2019 at 2:42 PM Stefan Roese <sr@denx.de> wrote:
->
-> On 17.06.19 11:51, Yegor Yefremov wrote:
->
-> <snip>
->
-> >>> @@ -1944,11 +1948,15 @@ unsigned int serial8250_do_get_mctrl(struct uart_port *port)
-> >>>   {
-> >>>          struct uart_8250_port *up = up_to_u8250p(port);
-> >>>          unsigned int status;
-> >>> +       unsigned int val = 0;
-> >>>
-> >>>          serial8250_rpm_get(up);
-> >>>          status = serial8250_modem_status(up);
-> >>>          serial8250_rpm_put(up);
-> >>>
-> >>> +       if (up->gpios)
-> >>> +               return mctrl_gpio_get(up->gpios, &val);
-> >>> +
-> >>
-> >> What happens when you have a mixed setup i.e. CTS controlled by UART
-> >> but other status pins controlled by GPIO? In this case CTS status
-> >> won't be returned. Do I see it right?
->
-> Yes, your analysis does seem to be correct. Please note that I did
-> not intentionally did change it this way. I was not thinking about
-> such a "mixed design".
->
-> > What about something like this:
-> >
-> > unsigned int serial8250_do_get_mctrl(struct uart_port *port)
-> >    {
-> >            struct uart_8250_port *up = up_to_u8250p(port);
-> >            unsigned int status;
-> >            unsigned int val;
-> >
-> >            serial8250_rpm_get(up);
-> >            status = serial8250_modem_status(up);
-> >            serial8250_rpm_put(up);
-> >
-> >            val = serial8250_MSR_to_TIOCM(status);
-> >            if (up->gpios)
-> >                    mctrl_gpio_get(up->gpios, &val);
-> >
-> >            return val;
-> >    }
->
-> Looks good to me, thanks. Do you have such a setup with some modem
-> control signal handled via GPIO and some via the UART? Could you
-> test such a change?
+This patch adds wrapper functions to convert MSR <-> TIOCM and also
+MCR <-> TIOCM. These functions are used now in serial8250_do_set_mctrl()
+and serial8250_do_get_mctrl().
 
-I already have :-)
+Signed-off-by: Stefan Roese <sr@denx.de>
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Yegor Yefremov <yegorslists@googlemail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Giulio Benetti <giulio.benetti@micronovasrl.com>
+---
+v7:
+- No change
 
-This my DTS file:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm/boot/dts/am335x-baltos-ir5221.dts#n38
+v6:
+- New patch
 
-Yegor
+ drivers/tty/serial/8250/8250.h      | 54 +++++++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_port.c | 25 ++-----------
+ 2 files changed, 57 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index ebfb0bd5bef5..793da2e510e0 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -139,6 +139,60 @@ void serial8250_rpm_put_tx(struct uart_8250_port *p);
+ int serial8250_em485_init(struct uart_8250_port *p);
+ void serial8250_em485_destroy(struct uart_8250_port *p);
+ 
++/* MCR <-> TIOCM conversion */
++static inline int serial8250_TIOCM_to_MCR(int tiocm)
++{
++	int mcr = 0;
++
++	if (tiocm & TIOCM_RTS)
++		mcr |= UART_MCR_RTS;
++	if (tiocm & TIOCM_DTR)
++		mcr |= UART_MCR_DTR;
++	if (tiocm & TIOCM_OUT1)
++		mcr |= UART_MCR_OUT1;
++	if (tiocm & TIOCM_OUT2)
++		mcr |= UART_MCR_OUT2;
++	if (tiocm & TIOCM_LOOP)
++		mcr |= UART_MCR_LOOP;
++
++	return mcr;
++}
++
++static inline int serial8250_MCR_to_TIOCM(int mcr)
++{
++	int tiocm = 0;
++
++	if (mcr & UART_MCR_RTS)
++		tiocm |= TIOCM_RTS;
++	if (mcr & UART_MCR_DTR)
++		tiocm |= TIOCM_DTR;
++	if (mcr & UART_MCR_OUT1)
++		tiocm |= TIOCM_OUT1;
++	if (mcr & UART_MCR_OUT2)
++		tiocm |= TIOCM_OUT2;
++	if (mcr & UART_MCR_LOOP)
++		tiocm |= TIOCM_LOOP;
++
++	return tiocm;
++}
++
++/* MSR <-> TIOCM conversion */
++static inline int serial8250_MSR_to_TIOCM(int msr)
++{
++	int tiocm = 0;
++
++	if (msr & UART_MSR_DCD)
++		tiocm |= TIOCM_CAR;
++	if (msr & UART_MSR_RI)
++		tiocm |= TIOCM_RNG;
++	if (msr & UART_MSR_DSR)
++		tiocm |= TIOCM_DSR;
++	if (msr & UART_MSR_CTS)
++		tiocm |= TIOCM_CTS;
++
++	return tiocm;
++}
++
+ static inline void serial8250_out_MCR(struct uart_8250_port *up, int value)
+ {
+ 	serial_out(up, UART_MCR, value);
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 2304a84eee3b..47f0a8d01a57 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1944,22 +1944,12 @@ unsigned int serial8250_do_get_mctrl(struct uart_port *port)
+ {
+ 	struct uart_8250_port *up = up_to_u8250p(port);
+ 	unsigned int status;
+-	unsigned int ret;
+ 
+ 	serial8250_rpm_get(up);
+ 	status = serial8250_modem_status(up);
+ 	serial8250_rpm_put(up);
+ 
+-	ret = 0;
+-	if (status & UART_MSR_DCD)
+-		ret |= TIOCM_CAR;
+-	if (status & UART_MSR_RI)
+-		ret |= TIOCM_RNG;
+-	if (status & UART_MSR_DSR)
+-		ret |= TIOCM_DSR;
+-	if (status & UART_MSR_CTS)
+-		ret |= TIOCM_CTS;
+-	return ret;
++	return serial8250_MSR_to_TIOCM(status);
+ }
+ EXPORT_SYMBOL_GPL(serial8250_do_get_mctrl);
+ 
+@@ -1973,18 +1963,9 @@ static unsigned int serial8250_get_mctrl(struct uart_port *port)
+ void serial8250_do_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+ 	struct uart_8250_port *up = up_to_u8250p(port);
+-	unsigned char mcr = 0;
++	unsigned char mcr;
+ 
+-	if (mctrl & TIOCM_RTS)
+-		mcr |= UART_MCR_RTS;
+-	if (mctrl & TIOCM_DTR)
+-		mcr |= UART_MCR_DTR;
+-	if (mctrl & TIOCM_OUT1)
+-		mcr |= UART_MCR_OUT1;
+-	if (mctrl & TIOCM_OUT2)
+-		mcr |= UART_MCR_OUT2;
+-	if (mctrl & TIOCM_LOOP)
+-		mcr |= UART_MCR_LOOP;
++	mcr = serial8250_TIOCM_to_MCR(mctrl);
+ 
+ 	mcr = (mcr & up->mcr_mask) | up->mcr_force | up->mcr;
+ 
+-- 
+2.22.0
