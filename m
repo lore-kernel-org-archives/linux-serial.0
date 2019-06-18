@@ -1,38 +1,34 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: sh-sci: fix uninitialized variable warning
-Date: Tue, 18 Jun 2019 09:38:53 +0200
-Message-ID: <20190618073853.GA25598@kroah.com>
-References: <20190613180824.6ajwjelzr5fmjnie@debie>
+Subject: Re: [PATCH 2/2 v5] tty/serial/8250: use mctrl_gpio helpers
+Date: Tue, 18 Jun 2019 09:49:03 +0200
+Message-ID: <20190618074903.GA5216@kroah.com>
+References: <20190611105603.4435-1-sr@denx.de>
+ <20190611105603.4435-2-sr@denx.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190613180824.6ajwjelzr5fmjnie@debie>
+In-Reply-To: <20190611105603.4435-2-sr@denx.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Charles <18oliveira.charles@gmail.com>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, rodrigosiqueiramelo@gmail.com
+To: Stefan Roese <sr@denx.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Yegor Yefremov <yegorslists@googlemail.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Giulio Benetti <giulio.benetti@micronovasrl.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jun 13, 2019 at 03:08:24PM -0300, Charles wrote:
-> Avoid following compiler warning on uninitialized variable
+On Tue, Jun 11, 2019 at 12:56:03PM +0200, Stefan Roese wrote:
+> From: Yegor Yefremov <yegorslists@googlemail.com>
 > 
-> In file included from ./include/linux/rwsem.h:16:0,
->                  from ./include/linux/notifier.h:15,
->                  from ./include/linux/clk.h:17,
->                  from drivers/tty/serial/sh-sci.c:24:
-> drivers/tty/serial/sh-sci.c: In function ‘sci_dma_rx_submit’:
-> ./include/linux/spinlock.h:288:3: warning: ‘flags’ may be used
-> uninitialized in this function [-Wmaybe-uninitialized]
->    _raw_spin_unlock_irqrestore(lock, flags); \
->    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/tty/serial/sh-sci.c:1353:16: note: ‘flags’ was declared here
->   unsigned long flags;
->                 ^~~~~
+> This patch permits the usage for GPIOs to control
+> the CTS/RTS/DTR/DSR/DCD/RI signals.
+> 
+> Changed by Stefan:
+> Only call mctrl_gpio_init(), if the device has no ACPI companion device
+> to not break existing ACPI based systems. Also only use the mctrl_gpio_
+> functions when "gpios" is available.
+> 
+> Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-What version of gcc is doing this?  It should be smarter than that,
-perhaps you should just upgrade.
-
-thanks,
+Please do not add a signed-off-by from people for an old patch that was
+reverted.  It implies that I still agree with this change :(
 
 greg k-h
