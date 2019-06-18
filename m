@@ -1,41 +1,158 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] tty: serial_core: recover uport->cons->cflag on
- uart_close
-Date: Tue, 18 Jun 2019 09:51:29 +0200
-Message-ID: <20190618075129.GA5758@kroah.com>
-References: <1560697034-4807-1-git-send-email-kpark3469@gmail.com>
+From: Stefan Roese <sr@denx.de>
+Subject: [PATCH 2/3 v8] serial: 8250: Add MSR/MCR TIOCM conversion wrapper functions
+Date: Tue, 18 Jun 2019 10:31:59 +0200
+Message-ID: <20190618083200.30234-2-sr@denx.de>
+References: <20190618083200.30234-1-sr@denx.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1560697034-4807-1-git-send-email-kpark3469@gmail.com>
+In-Reply-To: <20190618083200.30234-1-sr@denx.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: kpark3469@gmail.com
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, keun-o.park@darkmatter.ae
+To: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Yegor Yefremov <yegorslists@googlemail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Giulio Benetti <giulio.benetti@micronovasrl.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Sun, Jun 16, 2019 at 06:57:14PM +0400, kpark3469@gmail.com wrote:
-> From: Sahara <keun-o.park@darkmatter.ae>
+This patch adds wrapper functions to convert MSR <-> TIOCM and also
+MCR <-> TIOCM. These functions are used now in serial8250_do_set_mctrl()
+and serial8250_do_get_mctrl().
 
-I need a "full" name here please, something you use to sign legal
-documents.
+Signed-off-by: Stefan Roese <sr@denx.de>
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Tested-by: Yegor Yefremov <yegorslists@googlemail.com>
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Yegor Yefremov <yegorslists@googlemail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Giulio Benetti <giulio.benetti@micronovasrl.com>
+---
+v8:
+- Rebased on top of "tty-next"
 
-> Since uart_close was converted to use tty_port_close, uart_shutdown
-> also moved to uart_tty_port_shutdown, which means it does not backup
-> tty's termios to uart_port.console.cflag when console is closed and
-> uart_console is true.
-> By losing this value, serial console was not set correctly especially
-> after suspend/resume when there is no consumer of console device.
-> This problem resets console driver's configuration to an unwanted value
-> and may give a performance regression in the system eventually.
-> This patch fixes the bug introduced from v4.9 kernel.
-> 
-> Fixes: 761ed4a94582 ("tty: serial_core: convert uart_close to use tty_port_close")
-> Reported-by: Jouni Linnamaa <Jouni.Linnamaa@darkmatter.ae>
-> Signed-off-by: Sahara <keun-o.park@darkmatter.ae>
+v7:
+- No change
 
-Same here as well.
+v6:
+- New patch
 
-thanks,
+ drivers/tty/serial/8250/8250.h      | 54 +++++++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_port.c | 25 ++-----------
+ 2 files changed, 57 insertions(+), 22 deletions(-)
 
-greg k-h
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index ebfb0bd5bef5..793da2e510e0 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -139,6 +139,60 @@ void serial8250_rpm_put_tx(struct uart_8250_port *p);
+ int serial8250_em485_init(struct uart_8250_port *p);
+ void serial8250_em485_destroy(struct uart_8250_port *p);
+ 
++/* MCR <-> TIOCM conversion */
++static inline int serial8250_TIOCM_to_MCR(int tiocm)
++{
++	int mcr = 0;
++
++	if (tiocm & TIOCM_RTS)
++		mcr |= UART_MCR_RTS;
++	if (tiocm & TIOCM_DTR)
++		mcr |= UART_MCR_DTR;
++	if (tiocm & TIOCM_OUT1)
++		mcr |= UART_MCR_OUT1;
++	if (tiocm & TIOCM_OUT2)
++		mcr |= UART_MCR_OUT2;
++	if (tiocm & TIOCM_LOOP)
++		mcr |= UART_MCR_LOOP;
++
++	return mcr;
++}
++
++static inline int serial8250_MCR_to_TIOCM(int mcr)
++{
++	int tiocm = 0;
++
++	if (mcr & UART_MCR_RTS)
++		tiocm |= TIOCM_RTS;
++	if (mcr & UART_MCR_DTR)
++		tiocm |= TIOCM_DTR;
++	if (mcr & UART_MCR_OUT1)
++		tiocm |= TIOCM_OUT1;
++	if (mcr & UART_MCR_OUT2)
++		tiocm |= TIOCM_OUT2;
++	if (mcr & UART_MCR_LOOP)
++		tiocm |= TIOCM_LOOP;
++
++	return tiocm;
++}
++
++/* MSR <-> TIOCM conversion */
++static inline int serial8250_MSR_to_TIOCM(int msr)
++{
++	int tiocm = 0;
++
++	if (msr & UART_MSR_DCD)
++		tiocm |= TIOCM_CAR;
++	if (msr & UART_MSR_RI)
++		tiocm |= TIOCM_RNG;
++	if (msr & UART_MSR_DSR)
++		tiocm |= TIOCM_DSR;
++	if (msr & UART_MSR_CTS)
++		tiocm |= TIOCM_CTS;
++
++	return tiocm;
++}
++
+ static inline void serial8250_out_MCR(struct uart_8250_port *up, int value)
+ {
+ 	serial_out(up, UART_MCR, value);
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 60c9cea70128..19791d3694c6 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1945,22 +1945,12 @@ unsigned int serial8250_do_get_mctrl(struct uart_port *port)
+ {
+ 	struct uart_8250_port *up = up_to_u8250p(port);
+ 	unsigned int status;
+-	unsigned int ret;
+ 
+ 	serial8250_rpm_get(up);
+ 	status = serial8250_modem_status(up);
+ 	serial8250_rpm_put(up);
+ 
+-	ret = 0;
+-	if (status & UART_MSR_DCD)
+-		ret |= TIOCM_CAR;
+-	if (status & UART_MSR_RI)
+-		ret |= TIOCM_RNG;
+-	if (status & UART_MSR_DSR)
+-		ret |= TIOCM_DSR;
+-	if (status & UART_MSR_CTS)
+-		ret |= TIOCM_CTS;
+-	return ret;
++	return serial8250_MSR_to_TIOCM(status);
+ }
+ EXPORT_SYMBOL_GPL(serial8250_do_get_mctrl);
+ 
+@@ -1974,18 +1964,9 @@ static unsigned int serial8250_get_mctrl(struct uart_port *port)
+ void serial8250_do_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+ 	struct uart_8250_port *up = up_to_u8250p(port);
+-	unsigned char mcr = 0;
++	unsigned char mcr;
+ 
+-	if (mctrl & TIOCM_RTS)
+-		mcr |= UART_MCR_RTS;
+-	if (mctrl & TIOCM_DTR)
+-		mcr |= UART_MCR_DTR;
+-	if (mctrl & TIOCM_OUT1)
+-		mcr |= UART_MCR_OUT1;
+-	if (mctrl & TIOCM_OUT2)
+-		mcr |= UART_MCR_OUT2;
+-	if (mctrl & TIOCM_LOOP)
+-		mcr |= UART_MCR_LOOP;
++	mcr = serial8250_TIOCM_to_MCR(mctrl);
+ 
+ 	mcr = (mcr & up->mcr_mask) | up->mcr_force | up->mcr;
+ 
+-- 
+2.22.0
