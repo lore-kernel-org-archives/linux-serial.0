@@ -1,47 +1,40 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 2/3 v7] serial: 8250: Add MSR/MCR TIOCM conversion
- wrapper functions
-Date: Tue, 18 Jun 2019 09:50:46 +0200
-Message-ID: <20190618075046.GA5710@kroah.com>
-References: <20190617145952.4848-1-sr@denx.de>
- <20190617145952.4848-2-sr@denx.de>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] tty: serial_core: recover uport->cons->cflag on
+ uart_close
+Date: Tue, 18 Jun 2019 09:51:29 +0200
+Message-ID: <20190618075129.GA5758@kroah.com>
+References: <1560697034-4807-1-git-send-email-kpark3469@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190617145952.4848-2-sr@denx.de>
+In-Reply-To: <1560697034-4807-1-git-send-email-kpark3469@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stefan Roese <sr@denx.de>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Yegor Yefremov <yegorslists@googlemail.com>, Giulio Benetti <giulio.benetti@micronovasrl.com>
+To: kpark3469@gmail.com
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, keun-o.park@darkmatter.ae
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jun 17, 2019 at 04:59:51PM +0200, Stefan Roese wrote:
-> This patch adds wrapper functions to convert MSR <-> TIOCM and also
-> MCR <-> TIOCM. These functions are used now in serial8250_do_set_mctrl()
-> and serial8250_do_get_mctrl().
-> 
-> Signed-off-by: Stefan Roese <sr@denx.de>
-> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
-> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Cc: Yegor Yefremov <yegorslists@googlemail.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Giulio Benetti <giulio.benetti@micronovasrl.com>
-> ---
-> v7:
-> - No change
-> 
-> v6:
-> - New patch
-> 
->  drivers/tty/serial/8250/8250.h      | 54 +++++++++++++++++++++++++++++
->  drivers/tty/serial/8250/8250_port.c | 25 ++-----------
->  2 files changed, 57 insertions(+), 22 deletions(-)
+On Sun, Jun 16, 2019 at 06:57:14PM +0400, kpark3469@gmail.com wrote:
+> From: Sahara <keun-o.park@darkmatter.ae>
 
-This patch does not apply to my tty-next tree.  Please rebase the series
-and resend.
+I need a "full" name here please, something you use to sign legal
+documents.
+
+> Since uart_close was converted to use tty_port_close, uart_shutdown
+> also moved to uart_tty_port_shutdown, which means it does not backup
+> tty's termios to uart_port.console.cflag when console is closed and
+> uart_console is true.
+> By losing this value, serial console was not set correctly especially
+> after suspend/resume when there is no consumer of console device.
+> This problem resets console driver's configuration to an unwanted value
+> and may give a performance regression in the system eventually.
+> This patch fixes the bug introduced from v4.9 kernel.
+> 
+> Fixes: 761ed4a94582 ("tty: serial_core: convert uart_close to use tty_port_close")
+> Reported-by: Jouni Linnamaa <Jouni.Linnamaa@darkmatter.ae>
+> Signed-off-by: Sahara <keun-o.park@darkmatter.ae>
+
+Same here as well.
 
 thanks,
 
