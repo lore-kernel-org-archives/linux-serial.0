@@ -1,70 +1,142 @@
-From: Nishanth Menon <nm@ti.com>
-Subject: Re: [PATCH 1/6] dt-bindings: arm: ti: Add bindings for J721E SoC
-Date: Mon, 17 Jun 2019 10:46:14 -0500
-Message-ID: <20190617154614.wlbh6dtj54brkt67@kahuna>
-References: <20190522161921.20750-1-nm@ti.com>
- <20190522161921.20750-2-nm@ti.com>
- <20190614164526.GA14925@bogus>
+From: Yegor Yefremov <yegorslists@googlemail.com>
+Subject: Re: [PATCH 1/3 v7] serial: mctrl_gpio: Check if GPIO property exisits
+ before requesting it
+Date: Tue, 18 Jun 2019 09:28:32 +0200
+Message-ID: <CAGm1_ks=2pisMnR9gx89UyiYTAO_kAzaXOBJsuorjV+9vfu3mA@mail.gmail.com>
+References: <20190617145952.4848-1-sr@denx.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190614164526.GA14925@bogus>
+In-Reply-To: <20190617145952.4848-1-sr@denx.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Santosh Shilimkar <ssantosh@kernel.org>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Russell King <linux@armlinux.org.uk>, Tero Kristo <t-kristo@ti.com>
+To: Stefan Roese <sr@denx.de>
+Cc: linux-serial@vger.kernel.org, kernel list <linux-kernel@vger.kernel.org>, Mika Westerberg <mika.westerberg@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Giulio Benetti <giulio.benetti@micronovasrl.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 10:45-20190614, Rob Herring wrote:
-> On Wed, May 22, 2019 at 11:19:16AM -0500, Nishanth Menon wrote:
-> > The J721E SoC belongs to the K3 Multicore SoC architecture platform,
-> > providing advanced system integration to enable lower system costs
-> > of automotive applications such as infotainment, cluster, premium
-> > Audio, Gateway, industrial and a range of broad market applications.
-> > This SoC is designed around reducing the system cost by eliminating
-> > the need of an external system MCU and is targeted towards ASIL-B/C
-> > certification/requirements in addition to allowing complex software
-> > and system use-cases.
-> > 
-> > Some highlights of this SoC are:
-> > * Dual Cortex-A72s in a single cluster, three clusters of lockstep
-> >   capable dual Cortex-R5F MCUs, Deep-learning Matrix Multiply Accelerator(MMA),
-> >   C7x floating point Vector DSP, Two C66x floating point DSPs.
-> > * 3D GPU PowerVR Rogue 8XE GE8430
-> > * Vision Processing Accelerator (VPAC) with image signal processor and Depth
-> >   and Motion Processing Accelerator (DMPAC)
-> > * Two Gigabit Industrial Communication Subsystems (ICSSG), each with dual
-> >   PRUs and dual RTUs
-> > * Two CSI2.0 4L RX plus one CSI2.0 4L TX, one eDP/DP, One DSI Tx, and
-> >   up to two DPI interfaces.
-> > * Integrated Ethernet switch supporting up to a total of 8 external ports in
-> >   addition to legacy Ethernet switch of up to 2 ports.
-> > * System MMU (SMMU) Version 3.0 and advanced virtualisation
-> >   capabilities.
-> > * Upto 4 PCIe-GEN3 controllers, 2 USB3.0 Dual-role device subsystems,
-> >   16 MCANs, 12 McASP, eMMC and SD, UFS, OSPI/HyperBus memory controller, QSPI,
-> >   I3C and I2C, eCAP/eQEP, eHRPWM, MLB among other peripherals.
-> > * Two hardware accelerator block containing AES/DES/SHA/MD5 called SA2UL
-> >   management.
-> > * Configurable L3 Cache and IO-coherent architecture with high data throughput
-> >   capable distributed DMA architecture under NAVSS
-> > * Centralized System Controller for Security, Power, and Resource
-> >   Management (DMSC)
-> > 
-> > See J721E Technical Reference Manual (SPRUIL1, May 2019)
-> > for further details: http://www.ti.com/lit/pdf/spruil1
-> > 
-> > Signed-off-by: Nishanth Menon <nm@ti.com>
-> > ---
-> >  Documentation/devicetree/bindings/arm/ti/k3.txt | 3 +++
-> >  1 file changed, 3 insertions(+)
-> 
-> Okay for now, but please convert K3 and other TI SoCs to schema soon.
-> 
-> Reviewed-by: Rob Herring <robh@kernel.org>
+On Mon, Jun 17, 2019 at 5:00 PM Stefan Roese <sr@denx.de> wrote:
+>
+> This patch adds a check for the GPIOs property existence, before the
+> GPIO is requested. This fixes an issue seen when the 8250 mctrl_gpio
+> support is added (2nd patch in this patch series) on x86 platforms using
+> ACPI.
+>
+> Here Mika's comments from 2016-08-09:
+>
+> "
+> I noticed that with v4.8-rc1 serial console of some of our Broxton
+> systems does not work properly anymore. I'm able to see output but input
+> does not work.
+>
+> I bisected it down to commit 4ef03d328769eddbfeca1f1c958fdb181a69c341
+> ("tty/serial/8250: use mctrl_gpio helpers").
+>
+> The reason why it fails is that in ACPI we do not have names for GPIOs
+> (except when _DSD is used) so we use the "idx" to index into _CRS GPIO
+> resources. Now mctrl_gpio_init_noauto() goes through a list of GPIOs
+> calling devm_gpiod_get_index_optional() passing "idx" of 0 for each. The
+> UART device in Broxton has following (simplified) ACPI description:
+>
+>     Device (URT4)
+>     {
+>         ...
+>         Name (_CRS, ResourceTemplate () {
+>             GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
+>                     "\\_SB.GPO0", 0x00, ResourceConsumer)
+>             {
+>                 0x003A
+>             }
+>             GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
+>                     "\\_SB.GPO0", 0x00, ResourceConsumer)
+>             {
+>                 0x003D
+>             }
+>         })
+>
+> In this case it finds the first GPIO (0x003A which happens to be RX pin
+> for that UART), turns it into GPIO which then breaks input for the UART
+> device. This also breaks systems with bluetooth connected to UART (those
+> typically have some GPIOs in their _CRS).
+>
+> Any ideas how to fix this?
+>
+> We cannot just drop the _CRS index lookup fallback because that would
+> break many existing machines out there so maybe we can limit this to
+> only DT enabled machines. Or alternatively probe if the property first
+> exists before trying to acquire the GPIOs (using
+> device_property_present()).
+> "
+>
+> This patch implements the fix suggested by Mika in his statement above.
+>
+> Signed-off-by: Stefan Roese <sr@denx.de>
+> Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Cc: Yegor Yefremov <yegorslists@googlemail.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Giulio Benetti <giulio.benetti@micronovasrl.com>
 
+Tested-by: Yegor Yefremov <yegorslists@googlemail.com>
 
-Thanks Rob. Will do the change to rst soon (hopefully post in the 5.3 window).
--- 
-Regards,
-Nishanth Menon
+> ---
+> v7:
+> - Include <linux/property.h> to fix compile breakage on OMAP
+>
+> v6:
+> - No change
+>
+> v5:
+> - Simplified the code a bit (Andy)
+> - Added gpio_str == NULL handling (Andy)
+>
+> v4:
+> - Add missing free() calls (Johan)
+> - Added Mika's reviewed by tag
+> - Added Johan to Cc
+>
+> v3:
+> - No change
+>
+> v2:
+> - Include the problem description and analysis from Mika into the commit
+>   text, as suggested by Greg.
+>
+>  drivers/tty/serial/serial_mctrl_gpio.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+>
+> diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
+> index 39ed56214cd3..2b400189be91 100644
+> --- a/drivers/tty/serial/serial_mctrl_gpio.c
+> +++ b/drivers/tty/serial/serial_mctrl_gpio.c
+> @@ -12,6 +12,7 @@
+>  #include <linux/termios.h>
+>  #include <linux/serial_core.h>
+>  #include <linux/module.h>
+> +#include <linux/property.h>
+>
+>  #include "serial_mctrl_gpio.h"
+>
+> @@ -116,6 +117,19 @@ struct mctrl_gpios *mctrl_gpio_init_noauto(struct device *dev, unsigned int idx)
+>
+>         for (i = 0; i < UART_GPIO_MAX; i++) {
+>                 enum gpiod_flags flags;
+> +               char *gpio_str;
+> +               bool present;
+> +
+> +               /* Check if GPIO property exists and continue if not */
+> +               gpio_str = kasprintf(GFP_KERNEL, "%s-gpios",
+> +                                    mctrl_gpios_desc[i].name);
+> +               if (!gpio_str)
+> +                       continue;
+> +
+> +               present = device_property_present(dev, gpio_str);
+> +               kfree(gpio_str);
+> +               if (!present)
+> +                       continue;
+>
+>                 if (mctrl_gpios_desc[i].dir_out)
+>                         flags = GPIOD_OUT_LOW;
+> --
+> 2.22.0
+>
