@@ -1,69 +1,27 @@
-From: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: [PATCH v2] dt-bindings: serial: add documentation for Rx in-band
- wakeup support
-Date: Wed, 19 Jun 2019 16:41:10 +0800
-Message-ID: <20190619084110.136713-1-tientzu@chromium.org>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 1/3 v8] serial: mctrl_gpio: Check if GPIO property
+ exisits before requesting it
+Date: Wed, 19 Jun 2019 14:30:19 +0300
+Message-ID: <20190619113019.GE9224@smile.fi.intel.com>
+References: <20190618083200.30234-1-sr@denx.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
-List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, changqi.hu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190618083200.30234-1-sr@denx.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Stefan Roese <sr@denx.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, Yegor Yefremov <yegorslists@googlemail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Giulio Benetti <giulio.benetti@micronovasrl.com>
 List-Id: linux-serial@vger.kernel.org
 
-To support Rx in-band wakeup, one must create an interrupt specifier with
-edge sensitivity on Rx pin and an addtional pinctrl to reconfigure Rx pin
-to normal GPIO in sleep state. Driver will switch to sleep mode pinctrl and
-enable irq wake before suspend and restore to default settings when
-resuming.
+On Tue, Jun 18, 2019 at 10:31:58AM +0200, Stefan Roese wrote:
+> This patch adds a check for the GPIOs property existence, before the
+> GPIO is requested. This fixes an issue seen when the 8250 mctrl_gpio
+> support is added (2nd patch in this patch series) on x86 platforms using
+> ACPI.
 
-Signed-off-by: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
----
-changes in v2:
-just document 'interrupts' instead of 'interrupts-extended'
+Looks like you need to rebase against tty-next again.
 
- .../devicetree/bindings/serial/mtk-uart.txt         | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/serial/mtk-uart.txt b/Documentation/devicetree/bindings/serial/mtk-uart.txt
-index bcfb13194f16..36b760c25ee3 100644
---- a/Documentation/devicetree/bindings/serial/mtk-uart.txt
-+++ b/Documentation/devicetree/bindings/serial/mtk-uart.txt
-@@ -21,7 +21,12 @@ Required properties:
- 
- - reg: The base address of the UART register bank.
- 
--- interrupts: A single interrupt specifier.
-+- interrupts:
-+  index 0: an interrupt specifier for the UART controller itself
-+  index 1: optional, an interrupt specifier with edge sensitivity on Rx pin to
-+           support Rx in-band wake up. If one would like to use this feature,
-+           one must create an addtional pinctrl to reconfigure Rx pin to normal
-+           GPIO before suspend.
- 
- - clocks : Must contain an entry for each entry in clock-names.
-   See ../clocks/clock-bindings.txt for details.
-@@ -37,7 +42,11 @@ Example:
- 	uart0: serial@11006000 {
- 		compatible = "mediatek,mt6589-uart", "mediatek,mt6577-uart";
- 		reg = <0x11006000 0x400>;
--		interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>;
-+		interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_LOW>,
-+			     <GIC_SPI 52 IRQ_TYPE_EDGE_FALLING>;
- 		clocks = <&uart_clk>, <&bus_clk>;
- 		clock-names = "baud", "bus";
-+		pinctrl-names = "default", "sleep";
-+		pinctrl-0 = <&uart_pin>;
-+		pinctrl-1 = <&uart_pin_sleep>;
- 	};
 -- 
-2.22.0.410.gd8fdbe21b5-goog
+With Best Regards,
+Andy Shevchenko
