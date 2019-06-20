@@ -1,18 +1,13 @@
 From: Sergey Organov <sorganov@gmail.com>
-Subject: Re: [PATCH RFC 4/7] serial: imx: set_termios(): do not enable autoRTS
- if RTS is unset
-Date: Thu, 20 Jun 2019 16:24:27 +0300
-Message-ID: <878stwjsok.fsf@osv.gnss.ru>
+Subject: [PATCH RFC v1 0/7] serial: imx: fix RTS and RTS/CTS handling
+Date: Thu, 20 Jun 2019 17:47:46 +0300
+Message-ID: <1561042073-617-1-git-send-email-sorganov@gmail.com>
 References: <20190614072801.3187-1-s.hauer@pengutronix.de>
- <1560514294-29111-1-git-send-email-sorganov@gmail.com>
- <1560514294-29111-5-git-send-email-sorganov@gmail.com>
- <20190620093741.7wom6a475be2byob@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190620093741.7wom6a475be2byob@pengutronix.de> (Sascha Hauer's
- message of "Thu, 20 Jun 2019 11:37:41 +0200")
+In-Reply-To: <20190614072801.3187-1-s.hauer@pengutronix.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -23,83 +18,37 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: linux-arm-kernel@lists.infradead.org, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, linux-serial@vger.kernel.org
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Sasha,
-
-Sascha Hauer <s.hauer@pengutronix.de> writes:
-
-> Hi Sergey,
->
-> On Fri, Jun 14, 2019 at 03:11:31PM +0300, Sergey Organov wrote:
->> set_termios() shouldn't set UCR2_CTSC bit if UCR2_CTS (=TIOCM_RTS) is
->> cleared. Added corresponding check in imx_uart_rts_auto() to fix this.
->> 
->> Signed-off-by: Sergey Organov <sorganov@gmail.com>
->> ---
->>  drivers/tty/serial/imx.c | 3 ++-
->>  1 file changed, 2 insertions(+), 1 deletion(-)
->> 
->> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
->> index 17e2322..8ee910f 100644
->> --- a/drivers/tty/serial/imx.c
->> +++ b/drivers/tty/serial/imx.c
->> @@ -405,7 +405,8 @@ static void imx_uart_rts_inactive(struct imx_port *sport, u32 *ucr2)
->>  /* called with port.lock taken and irqs caller dependent */
->>  static void imx_uart_rts_auto(struct imx_port *sport, u32 *ucr2)
->>  {
->> -	*ucr2 |= UCR2_CTSC;
->> +	if (*ucr2 & UCR2_CTS)
->> +		*ucr2 |= UCR2_CTSC;
->>  }
->
-> *ucr2 is set like this in imx_uart_set_termios():
->
-> 	ucr2 = UCR2_SRST | UCR2_IRTS;
-> 	if ((termios->c_cflag & CSIZE) == CS8)
-> 		ucr2 |= UCR2_WS;
-> 	...
-> 	imx_uart_rts_auto(sport, &ucr2);
->
-> So the UCR2_CTS bit is never set, hence UCR2_CTSC will never be set.
-> You meant to pass in the actual register value of the UCR2 register.
->
-> This is shifted around a bit in the following patches, as an end result
-> we have:
->
-> 	old_ucr2 = imx_uart_readl(sport, UCR2);
-> 	ucr2 = old_ucr2 & (UCR2_TXEN | UCR2_RXEN | UCR2_ATEN | UCR2_CTSC);
-
-This is rather the typo problem in my patches right here: it should have
-been:
-
-> 	ucr2 = old_ucr2 & (UCR2_TXEN | UCR2_RXEN | UCR2_ATEN | UCR2_CTS);
-
-as we need to preserve RTS bit state USR2_CTS, not hardware handshake bit
-UCR2_CCTS.
-
-> 	...
-> 	if (ucr2 & UCR2_CTS)
-> 		ucr2 |= UCR2_CTSC;
->
-> Again the test can never be true, it should probably be if (old_ucr2 &
-> UCR2_CTS).
-
-No, I believe it's different mistake on my part, see above.
-
->
-> With this issue and the one Lothar has found fixed this series works for
-> me.
->
-> With these issues fixed I'd be happy to test this series and apply it in
-> favour of my patch.
-
-Thanks a lot for reviewing and volunteering to test! It's even more
-appreciated as I can't easily test either on recent kernels and/or
-without heavy patching of the kernel, and patching would diminish
-applicability of my test results to mainstream kernel.
-
-I think I'll better re-roll the series with these 2 corrections, right?
-
--- Sergey.
+VGhlIHBhdGNoZXMgYXJlIG5vdCB0ZXN0ZWQgeWV0LCBzbyB0aGUgUkZDIGluIHRoZSBoZWFkZXIu
+IEknbGwgcmUtcm9sbAp3aXRob3V0IFJGQyBvbmNlIFNhc2hhIEhhdWVyIHRlc3RzIHRoZW0uCgpT
+YXNoYSwgaW4gYWRkaXRpb24gdG8gYWxyZWFkeSBkaXNjdXNzZWQgZml4ZXMsIEkndmUgYWxzbyBy
+ZW9yZGVyZWQgMgpwYXRjaGVzIHNvIHRoYXQgdGhlIHNlcXVlbmNlIG1ha2VzIHNlbnNlLgoKQ2hh
+bmdlbG9nOgoKICB2MToKCiAgICAgICogRml4ZWQgaW4gInNlcmlhbDogaW14OiBzZXRfdGVybWlv
+cygpOiBwcmVzZXJ2ZSBSVFMgc3RhdGUiCgotKwl1Y3IyID0gVUNSMl9TUlNUIHwgVUNSMl9JUlRT
+OworKwl1Y3IyIHw9IFVDUjJfU1JTVCB8IFVDUjJfSVJUUzsKICAgICAgCiAgICAgICAgYXMgbm90
+aWNlZCBieSBMb3RoYXIgV2HDn21hbm4gPExXQEtBUk8tZWxlY3Ryb25pY3MuZGU+CgogICAgICAq
+IEZpeGVkIGluICJzZXJpYWw6IGlteDogc2V0X3Rlcm1pb3MoKTogcHJlc2VydmUgUlRTIHN0YXRl
+IgogICAgICAKLSsJdWNyMiA9IG9sZF91Y3IyICYgKFVDUjJfVFhFTiB8IFVDUjJfUlhFTiB8IFVD
+UjJfQVRFTiB8IFVDUjJfQ1RTQyk7CisrCXVjcjIgPSBvbGRfdWNyMiAmIChVQ1IyX1RYRU4gfCBV
+Q1IyX1JYRU4gfCBVQ1IyX0FURU4gfCBVQ1IyX0NUUyk7CgogICAgICAgIGFzIHRoZSBmaXggZm9y
+IHRoZSBwcm9ibGVtIGZvdW5kIGJ5IFNhc2NoYSBIYXVlcgogICAgICAgIDxzLmhhdWVyQHBlbmd1
+dHJvbml4LmRlPgoKICAgICAgKiBSZW9yZGVyZWQ6CgogICAgICAgIHNlcmlhbDogaW14OiBzZXRf
+dGVybWlvcygpOiBwcmVzZXJ2ZSBSVFMgc3RhdGUKICAgICAgICBzZXJpYWw6IGlteDogc2V0X3Rl
+cm1pb3MoKTogZG8gbm90IGVuYWJsZSBhdXRvUlRTIGlmIFJUUyBpcyB1bnNldAoKICAgICAgICBh
+cyB0aGUgbGF0dGVyIG1ha2VzIHNlbnNlIG9ubHkgcHJvdmlkZWQgdGhlIGZvcm1lciBpcyBhbHJl
+YWR5IGFwcGxpZWQuCiAgICAgIAoKU2VyZ2V5IE9yZ2Fub3YgKDcpOgogIHNlcmlhbDogaW14OiBm
+aXggbG9ja2luZyBpbiBzZXRfdGVybWlvcygpCiAgc2VyaWFsOiBpbXg6IHNldF90ZXJtaW9zKCk6
+IGZhY3Rvci1vdXQgJ3VjcjInIGluaXRpYWwgdmFsdWUKICBzZXJpYWw6IGlteDogc2V0X3Rlcm1p
+b3MoKTogY2xhcmlmeSBSVFMvQ1RTIGJpdHMgY2FsY3VsYXRpb24KICBzZXJpYWw6IGlteDogc2V0
+X3Rlcm1pb3MoKTogcHJlc2VydmUgUlRTIHN0YXRlCiAgc2VyaWFsOiBpbXg6IHNldF90ZXJtaW9z
+KCk6IGRvIG5vdCBlbmFibGUgYXV0b1JUUyBpZiBSVFMgaXMgdW5zZXQKICBzZXJpYWw6IGlteDog
+c2V0X21jdHJsKCk6IGNvcnJlY3RseSByZXN0b3JlIGF1dG9SVFMgc3RhdGUKICBzZXJpYWw6IGlt
+eDogZ2V0IHJpZCBvZiBpbXhfdWFydF9ydHNfYXV0bygpCgogZHJpdmVycy90dHkvc2VyaWFsL2lt
+eC5jIHwgOTMgKysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+CiAxIGZpbGUgY2hhbmdlZCwgNDcgaW5zZXJ0aW9ucygrKSwgNDYgZGVsZXRpb25zKC0pCgotLQoy
+LjEwLjAuMS5nNTdiMDFhMwoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBs
+aXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlz
+dGluZm8vbGludXgtYXJtLWtlcm5lbAo=
