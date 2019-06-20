@@ -1,8 +1,7 @@
 From: Sergey Organov <sorganov@gmail.com>
-Subject: [PATCH RFC v1 6/7] serial: imx: set_mctrl(): correctly restore
- autoRTS state
-Date: Thu, 20 Jun 2019 17:47:52 +0300
-Message-ID: <1561042073-617-7-git-send-email-sorganov@gmail.com>
+Subject: [PATCH RFC v1 7/7] serial: imx: get rid of imx_uart_rts_auto()
+Date: Thu, 20 Jun 2019 17:47:53 +0300
+Message-ID: <1561042073-617-8-git-send-email-sorganov@gmail.com>
 References: <20190614072801.3187-1-s.hauer@pengutronix.de>
  <1561042073-617-1-git-send-email-sorganov@gmail.com>
 Mime-Version: 1.0
@@ -23,40 +22,46 @@ To: Sascha Hauer <s.hauer@pengutronix.de>
 Cc: Pengutronix Kernel Team <kernel@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-imx_uart_set_mctrl() happened to set UCR2_CTSC bit whenever TIOCM_RTS
-was set, no matter if RTS/CTS handshake is enabled or not. Now fixed by
-turning handshake on only when CRTSCTS bit for the port is set.
+Called in only one place, for RS232, it only obscures things, as it
+doesn't go well with 2 similar named functions,
+imx_uart_rts_inactive() and imx_uart_rts_active(), that both are
+RS485-specific.
 
 Signed-off-by: Sergey Organov <sorganov@gmail.com>
 ---
- drivers/tty/serial/imx.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ drivers/tty/serial/imx.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 4867f80..171347d 100644
+index 171347d..a5e80a0 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -970,10 +970,19 @@ static void imx_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 	if (!(port->rs485.flags & SER_RS485_ENABLED)) {
- 		u32 ucr2;
+@@ -402,13 +402,6 @@ static void imx_uart_rts_inactive(struct imx_port *sport, u32 *ucr2)
+ 	mctrl_gpio_set(sport->gpios, sport->port.mctrl);
+ }
  
-+		/*
-+		 * Turn off autoRTS (UCR2_CTSC) if RTS is lowered and restore
-+		 * autoRTS setting if RTS is raised. Inverted UCR2_IRTS is set
-+		 * if and only if CRTSCTS bit is set for the port, so we use it
-+		 * to get the state to restore to.
-+		 */
- 		ucr2 = imx_uart_readl(sport, UCR2);
- 		ucr2 &= ~(UCR2_CTS | UCR2_CTSC);
--		if (mctrl & TIOCM_RTS)
--			ucr2 |= UCR2_CTS | UCR2_CTSC;
-+		if (mctrl & TIOCM_RTS) {
-+			ucr2 |= UCR2_CTS;
-+			if (!(ucr2 & UCR2_IRTS))
-+				ucr2 |= UCR2_CTSC;
-+		}
- 		imx_uart_writel(sport, ucr2, UCR2);
- 	}
+-/* called with port.lock taken and irqs caller dependent */
+-static void imx_uart_rts_auto(struct imx_port *sport, u32 *ucr2)
+-{
+-	if (*ucr2 & UCR2_CTS)
+-		*ucr2 |= UCR2_CTSC;
+-}
+-
+ /* called with port.lock taken and irqs off */
+ static void imx_uart_start_rx(struct uart_port *port)
+ {
+@@ -1598,8 +1591,10 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		else
+ 			imx_uart_rts_inactive(sport, &ucr2);
  
+-	} else if (termios->c_cflag & CRTSCTS)
+-		imx_uart_rts_auto(sport, &ucr2);
++	} else if (termios->c_cflag & CRTSCTS) {
++		if (ucr2 & UCR2_CTS)
++			ucr2 |= UCR2_CTSC;
++	}
+ 
+ 	if (termios->c_cflag & CRTSCTS)
+ 		ucr2 &= ~UCR2_IRTS;
 -- 
 2.10.0.1.g57b01a3
