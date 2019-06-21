@@ -1,7 +1,7 @@
 From: "sudheer.v" <open.sudheer@gmail.com>
-Subject: [patch 3/5] DT nodes for AST2500 DMA UART driver
-Date: Fri, 21 Jun 2019 16:47:33 +0530
-Message-ID: <1561115855-4186-4-git-send-email-open.sudheer@gmail.com>
+Subject: [patch 4/5] defconfig and MAINTAINERS updated for AST2500 DMA UART driver
+Date: Fri, 21 Jun 2019 16:47:34 +0530
+Message-ID: <1561115855-4186-5-git-send-email-open.sudheer@gmail.com>
 References: <1561115855-4186-1-git-send-email-open.sudheer@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1561115855-4186-1-git-send-email-open.sudheer@gmail.com>
@@ -12,142 +12,47 @@ List-Id: linux-serial@vger.kernel.org
 
 From: sudheer veliseti <sudheer.open@gmail.com>
 
-DT node for DMA controller(ast_uart_sdma) doesn't bind to any DMA controller driver.
-This is because Software for DMA controller is not based on DMA framework,but is dedicated
-and serves only UARTs in AST2500. ast_uart_sdma node is searched by compatible string in the 
-driver software.basic use of this node is to provide register base address of DMA controller and DMA irq number(<50>).
-IRQ of DMA controller is of crucial importance, which does RX and TX of UART data. 
-
-uart nodes dma_uart1,2...etc binds to the platform driver.
-irq numbers <9>,<32>,<33>,<34> in dma_uart nodes install ISRs which are of not much interest in uart data TX/RX .
-
-
 Signed-off-by: sudheer veliseti <sudheer.open@gmail.com>
 ---
- arch/arm/boot/dts/aspeed-ast2500-evb.dts | 21 +++++++
- arch/arm/boot/dts/aspeed-g5.dtsi         | 71 ++++++++++++++++++++++--
- 2 files changed, 88 insertions(+), 4 deletions(-)
+ MAINTAINERS                          | 13 +++++++++++++
+ arch/arm/configs/aspeed_g5_defconfig |  1 +
+ 2 files changed, 14 insertions(+)
 
-diff --git a/arch/arm/boot/dts/aspeed-ast2500-evb.dts b/arch/arm/boot/dts/aspeed-ast2500-evb.dts
-index 5dbb33c10c4f..4da09fbe94df 100644
---- a/arch/arm/boot/dts/aspeed-ast2500-evb.dts
-+++ b/arch/arm/boot/dts/aspeed-ast2500-evb.dts
-@@ -64,6 +64,27 @@
- 	status = "okay";
- };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 997e27ab492f..c9a9790b97f6 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1347,6 +1347,19 @@ F:	drivers/crypto/axis
+ F:	drivers/pinctrl/pinctrl-artpec*
+ F:	Documentation/devicetree/bindings/pinctrl/axis,artpec6-pinctrl.txt
  
-+&ast_uart_sdma {
-+	status = "okay";
-+};
++ARM/ASPEED DMA UART DRIVER
++M:	sudheer v <sudheer.open@gmail.com>
++M:	ShivahShankar <shivahshankar.shankarnarayanrao@aspeedtech.com>
++R:	Joel Stanley <joel@jms.id.au>
++R:	Andrew Jeffery <andrew@aj.id.au>
++R:	Vinod Koul <vkoul@kernel.org>
++L:	dmaengine@vger.kernel.org
++L:	openbmc@lists.ozlabs.org
++L:	linux-aspeed@lists.ozlabs.org
++S:	Maintained
++F:	drivers/tty/serial/8250/8250_aspeed_uart_dma.c
++F:	Documentation/devicetree/bindings/serial/ast-sdma-uart.txt
 +
-+&dma_uart1 {
-+	status = "okay";
-+};
-+
-+&dma_uart2 {
-+	status = "okay";
-+};
-+
-+&dma_uart3 {
-+	status = "okay";
-+};
-+
-+&dma_uart4 {
-+	status = "okay";
-+};
-+
-+
- &mac0 {
- 	status = "okay";
- 
-diff --git a/arch/arm/boot/dts/aspeed-g5.dtsi b/arch/arm/boot/dts/aspeed-g5.dtsi
-index 674746513031..fb7b3ed463de 100644
---- a/arch/arm/boot/dts/aspeed-g5.dtsi
-+++ b/arch/arm/boot/dts/aspeed-g5.dtsi
-@@ -23,10 +23,10 @@
- 		i2c11 = &i2c11;
- 		i2c12 = &i2c12;
- 		i2c13 = &i2c13;
--		serial0 = &uart1;
--		serial1 = &uart2;
--		serial2 = &uart3;
--		serial3 = &uart4;
-+		serial0 = &dma_uart1;
-+		serial1 = &dma_uart2;
-+		serial2 = &dma_uart3;
-+		serial3 = &dma_uart4;
- 		serial4 = &uart5;
- 		serial5 = &vuart;
- 		peci0 = &peci0;
-@@ -497,6 +497,69 @@
- 				status = "disabled";
- 			};
- 
-+			ast_uart_sdma: uart_sdma@1e79e000 {
-+				compatible = "aspeed,ast-uart-sdma";
-+				reg = <0x1e79e000 0x400>;
-+				interrupts = <50>;
-+				status = "disabled";
-+			};
-+
-+			dma_uart1: dma_uart1@1e783000{
-+				compatible = "aspeed,ast-sdma-uart";
-+				reg = <0x1e783000 0x1000>;
-+				reg-shift = <2>;
-+				interrupts = <9>;
-+				clocks = <&syscon ASPEED_CLK_GATE_UART1CLK>;
-+				dma-channel = <0>;
-+				no-loopback-test;
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&pinctrl_txd1_default
-+							 &pinctrl_rxd1_default>;
-+				status = "disabled";
-+			};
-+
-+			dma_uart2: dma_uart2@1e78d000{
-+				compatible = "aspeed,ast-sdma-uart";
-+				reg = <0x1e78d000 0x1000>;
-+				reg-shift = <2>;
-+				interrupts = <32>;
-+				clocks = <&syscon ASPEED_CLK_GATE_UART2CLK>;
-+				dma-channel = <1>;
-+				no-loopback-test;
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&pinctrl_txd2_default
-+							 &pinctrl_rxd2_default>;
-+				status = "disabled";
-+			};
-+
-+			dma_uart3: dma_uart3@1e78e000{
-+				compatible = "aspeed,ast-sdma-uart";
-+				reg = <0x1e78e000 0x1000>;
-+				reg-shift = <2>;
-+				interrupts = <33>;
-+				clocks = <&syscon ASPEED_CLK_GATE_UART3CLK>;
-+				dma-channel = <2>;
-+				no-loopback-test;
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&pinctrl_txd3_default
-+							 &pinctrl_rxd3_default>;
-+				status = "disabled";
-+			};
-+
-+			dma_uart4: dma_uart4@1e78f000{
-+				compatible = "aspeed,ast-sdma-uart";
-+				reg = <0x1e78f000 0x1000>;
-+				reg-shift = <2>;
-+				interrupts = <34>;
-+				clocks = <&syscon ASPEED_CLK_GATE_UART4CLK>;
-+				dma-channel = <3>;
-+				no-loopback-test;
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&pinctrl_txd4_default
-+							 &pinctrl_rxd4_default>;
-+				status = "disabled";
-+			};
-+
- 			i2c: bus@1e78a000 {
- 				compatible = "simple-bus";
- 				#address-cells = <1>;
+ ARM/ASPEED I2C DRIVER
+ M:	Brendan Higgins <brendanhiggins@google.com>
+ R:	Benjamin Herrenschmidt <benh@kernel.crashing.org>
+diff --git a/arch/arm/configs/aspeed_g5_defconfig b/arch/arm/configs/aspeed_g5_defconfig
+index 1849cbc161b4..25bf26630939 100644
+--- a/arch/arm/configs/aspeed_g5_defconfig
++++ b/arch/arm/configs/aspeed_g5_defconfig
+@@ -144,6 +144,7 @@ CONFIG_SERIAL_8250=y
+ CONFIG_SERIAL_8250_CONSOLE=y
+ CONFIG_SERIAL_8250_NR_UARTS=6
+ CONFIG_SERIAL_8250_RUNTIME_UARTS=6
++CONFIG_AST_SERIAL_DMA_UART=y
+ CONFIG_SERIAL_8250_EXTENDED=y
+ CONFIG_SERIAL_8250_ASPEED_VUART=y
+ CONFIG_SERIAL_8250_SHARE_IRQ=y
 -- 
 2.17.1
