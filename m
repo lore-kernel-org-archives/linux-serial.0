@@ -1,68 +1,38 @@
-From: "sudheer.v" <open.sudheer@gmail.com>
-Subject: [patch 5/5] Documentation: DT bindings AST2500 DMA UART driver
-Date: Fri, 21 Jun 2019 16:47:35 +0530
-Message-ID: <1561115855-4186-6-git-send-email-open.sudheer@gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [patch 0/5] *** DMA based UART driver for AST2500 ***
+Date: Fri, 21 Jun 2019 15:17:29 +0200
+Message-ID: <20190621131729.GA9997@kroah.com>
 References: <1561115855-4186-1-git-send-email-open.sudheer@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
 In-Reply-To: <1561115855-4186-1-git-send-email-open.sudheer@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, joel@jms.id.au, andrew@aj.id.au, benh@kernel.crashing.org, robh+dt@kernel.org, mark.rutland@arm.com, shivahshankar.shankarnarayanrao@aspeedtech.com, shivahshankar@gmail.com, sudheer.veliseti@aspeedtech.com
-Cc: sudheer veliseti <sudheer.open@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org
+To: "sudheer.v" <open.sudheer@gmail.com>
+Cc: jslaby@suse.com, joel@jms.id.au, andrew@aj.id.au, benh@kernel.crashing.org, robh+dt@kernel.org, mark.rutland@arm.com, shivahshankar.shankarnarayanrao@aspeedtech.com, shivahshankar@gmail.com, sudheer.veliseti@aspeedtech.com, sudheer veliseti <sudheer.open@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org
 List-Id: linux-serial@vger.kernel.org
 
-From: sudheer veliseti <sudheer.open@gmail.com>
+On Fri, Jun 21, 2019 at 04:47:30PM +0530, sudheer.v wrote:
+> From: sudheer veliseti <sudheer.open@gmail.com>
+> 
+> Hi,
+> AST2500 has dedicated Uart DMA controller which has 12 sets of
+> Tx and RX channels connected to UART controller directly.
+> Since the DMA controller have dedicated buffers and registers,
+> there would be little benifit in adding DMA framework overhead.
+> So the software for DMA controller is included within the UART driver itself.
+> 
+> Thanks and Regards
+> Sudheer.V
 
-Signed-off-by: sudheer veliseti <sudheer.open@gmail.com>
----
- .../bindings/serial/ast2500-dma-uart.txt      | 40 +++++++++++++++++++
- 1 file changed, 40 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serial/ast2500-dma-uart.txt
+Is this a v2 of this patch series?
 
-diff --git a/Documentation/devicetree/bindings/serial/ast2500-dma-uart.txt b/Documentation/devicetree/bindings/serial/ast2500-dma-uart.txt
-new file mode 100644
-index 000000000000..6f01ddecba56
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/ast2500-dma-uart.txt
-@@ -0,0 +1,40 @@
-+
-+node for DMA controller:
-+                       ast_uart_sdma: uart_sdma@1e79e000 {
-+                               compatible = "aspeed,ast-uart-sdma";
-+                               reg = <0x1e79e000 0x400>;
-+                               interrupts = <50>;
-+                               status = "disabled";
-+                       };
-+this node  doesn't binds with any driver.
-+DMA controller is handled as a separate SW layer,and is included in the same driver.
-+This DMA controller node is included in DT just for Register base and interrupt details
-+
-+
-+
-+node for DMA-UART :
-+
-+
-+Required properties:
-+
-+- compatible: "aspeed,ast-sdma-uart"
-+- reg: The base address of the UART register bank
-+- interrupts: should contain interrupt specifier.
-+- clocks: Clock driving the hardware;
-+- pinctrl-0 : list of pinconfigurations
-+- dma-channel: channel of DMA-controller which is used
-+
-+Example:
-+
-+                 dma_uart1: dma_uart1@1e783000{
-+                          compatible = "aspeed,ast-sdma-uart";
-+                          reg = <0x1e783000 0x1000>;
-+                          reg-shift = <2>;
-+                          interrupts = <9>;
-+                          clocks = <&syscon ASPEED_CLK_GATE_UART1CLK>;
-+                          dma-channel = <0>;
-+                          no-loopback-test;
-+                          pinctrl-names = "default";
-+                          pinctrl-0 = <&pinctrl_txd1_default &pinctrl_rxd1_default>;
-+                          status = "disabled";
-+                       };
--- 
-2.17.1
+You always have to version your patches and say what changed from the
+previous one, like the documentation says to do.
+
+Please fix this up and resend.
+
+thanks,
+
+greg k-h
