@@ -1,67 +1,83 @@
-From: Sergey Organov <sorganov@gmail.com>
-Subject: [PATCH RFC v1 7/7] serial: imx: get rid of imx_uart_rts_auto()
-Date: Thu, 20 Jun 2019 17:47:53 +0300
-Message-ID: <1561042073-617-8-git-send-email-sorganov@gmail.com>
-References: <20190614072801.3187-1-s.hauer@pengutronix.de>
- <1561042073-617-1-git-send-email-sorganov@gmail.com>
+From: Matthew Garrett <matthewgarrett@google.com>
+Subject: [PATCH V33 19/30] Lock down TIOCSSERIAL
+Date: Thu, 20 Jun 2019 18:19:30 -0700
+Message-ID: <20190621011941.186255-20-matthewgarrett@google.com>
+References: <20190621011941.186255-1-matthewgarrett@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1561042073-617-1-git-send-email-sorganov@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190621011941.186255-1-matthewgarrett@google.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: jmorris@namei.org
+Cc: linux-security@vger.kernel.org, linux-kernel@vger.kernel.org, linux-api@vger.kernel.org, David Howells <dhowells@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthew Garrett <mjg59@google.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Called in only one place, for RS232, it only obscures things, as it
-doesn't go well with 2 similar named functions,
-imx_uart_rts_inactive() and imx_uart_rts_active(), that both are
-RS485-specific.
+From: David Howells <dhowells@redhat.com>
 
-Signed-off-by: Sergey Organov <sorganov@gmail.com>
+Lock down TIOCSSERIAL as that can be used to change the ioport and irq
+settings on a serial port.  This only appears to be an issue for the serial
+drivers that use the core serial code.  All other drivers seem to either
+ignore attempts to change port/irq or give an error.
+
+Reported-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Matthew Garrett <mjg59@google.com>
+cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
 ---
- drivers/tty/serial/imx.c | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+ drivers/tty/serial/serial_core.c | 7 +++++++
+ include/linux/security.h         | 1 +
+ security/lockdown/lockdown.c     | 1 +
+ 3 files changed, 9 insertions(+)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 171347d..a5e80a0 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -402,13 +402,6 @@ static void imx_uart_rts_inactive(struct imx_port *sport, u32 *ucr2)
- 	mctrl_gpio_set(sport->gpios, sport->port.mctrl);
- }
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 351843f847c0..2dbef7dc23f6 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -22,6 +22,7 @@
+ #include <linux/serial_core.h>
+ #include <linux/delay.h>
+ #include <linux/mutex.h>
++#include <linux/security.h>
  
--/* called with port.lock taken and irqs caller dependent */
--static void imx_uart_rts_auto(struct imx_port *sport, u32 *ucr2)
--{
--	if (*ucr2 & UCR2_CTS)
--		*ucr2 |= UCR2_CTSC;
--}
--
- /* called with port.lock taken and irqs off */
- static void imx_uart_start_rx(struct uart_port *port)
- {
-@@ -1598,8 +1591,10 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
- 		else
- 			imx_uart_rts_inactive(sport, &ucr2);
+ #include <linux/irq.h>
+ #include <linux/uaccess.h>
+@@ -852,6 +853,12 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
+ 	new_flags = (__force upf_t)new_info->flags;
+ 	old_custom_divisor = uport->custom_divisor;
  
--	} else if (termios->c_cflag & CRTSCTS)
--		imx_uart_rts_auto(sport, &ucr2);
-+	} else if (termios->c_cflag & CRTSCTS) {
-+		if (ucr2 & UCR2_CTS)
-+			ucr2 |= UCR2_CTSC;
++	if ((change_port || change_irq) &&
++	    security_is_locked_down(LOCKDOWN_TIOCSSERIAL)) {
++		retval = -EPERM;
++		goto exit;
 +	}
- 
- 	if (termios->c_cflag & CRTSCTS)
- 		ucr2 &= ~UCR2_IRTS;
++
+ 	if (!capable(CAP_SYS_ADMIN)) {
+ 		retval = -EPERM;
+ 		if (change_irq || change_port ||
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 87c433f1e7db..cb5d74f9b9ff 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -91,6 +91,7 @@ enum lockdown_reason {
+ 	LOCKDOWN_MSR,
+ 	LOCKDOWN_ACPI_TABLES,
+ 	LOCKDOWN_PCMCIA_CIS,
++	LOCKDOWN_TIOCSSERIAL,
+ 	LOCKDOWN_INTEGRITY_MAX,
+ 	LOCKDOWN_CONFIDENTIALITY_MAX,
+ };
+diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
+index ced4ddbb36b4..c6456f300220 100644
+--- a/security/lockdown/lockdown.c
++++ b/security/lockdown/lockdown.c
+@@ -27,6 +27,7 @@ static char *lockdown_reasons[LOCKDOWN_CONFIDENTIALITY_MAX+1] = {
+ 	[LOCKDOWN_MSR] = "raw MSR access",
+ 	[LOCKDOWN_ACPI_TABLES] = "modified ACPI tables",
+ 	[LOCKDOWN_PCMCIA_CIS] = "direct PCMCIA CIS storage",
++	[LOCKDOWN_TIOCSSERIAL] = "reconfiguration of serial port IO",
+ 	[LOCKDOWN_INTEGRITY_MAX] = "integrity",
+ 	[LOCKDOWN_CONFIDENTIALITY_MAX] = "confidentiality",
+ };
 -- 
-2.10.0.1.g57b01a3
+2.22.0.410.gd8fdbe21b5-goog
