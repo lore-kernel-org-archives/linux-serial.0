@@ -1,109 +1,81 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v11 0/6] Add basic node support for Mediatek MT8183 SoC
-Date: Fri, 21 Jun 2019 17:53:25 +0200
-Message-ID: <8efbf3b7-0e11-b378-e582-769b2f869a00@gmail.com>
-References: <1558947887-31084-1-git-send-email-erin.lo@mediatek.com>
+From: Matthew Garrett <matthewgarrett@google.com>
+Subject: [PATCH V34 18/29] Lock down TIOCSSERIAL
+Date: Fri, 21 Jun 2019 17:03:47 -0700
+Message-ID: <20190622000358.19895-19-matthewgarrett@google.com>
+References: <20190622000358.19895-1-matthewgarrett@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1558947887-31084-1-git-send-email-erin.lo@mediatek.com>
-Content-Language: en-US
+In-Reply-To: <20190622000358.19895-1-matthewgarrett@google.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Erin Lo <erin.lo@mediatek.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
-Cc: devicetree@vger.kernel.org, srv_heupstream <srv_heupstream@mediatek.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, mars.cheng@mediatek.com, eddie.huang@mediatek.com
+To: jmorris@namei.org
+Cc: linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org, linux-api@vger.kernel.org, David Howells <dhowells@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthew Garrett <mjg59@google.com>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+From: David Howells <dhowells@redhat.com>
 
+Lock down TIOCSSERIAL as that can be used to change the ioport and irq
+settings on a serial port.  This only appears to be an issue for the serial
+drivers that use the core serial code.  All other drivers seem to either
+ignore attempts to change port/irq or give an error.
 
-On 27/05/2019 11:04, Erin Lo wrote:
-> MT8183 is a SoC based on 64bit ARMv8 architecture.
-> It contains 4 CA53 and 4 CA73 cores.
-> MT8183 share many HW IP with MT65xx series.
-> This patchset was tested on MT8183 evaluation board and use correct clock to shell.
-> 
-> Based on v5.2-rc1
-> 
+Reported-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Matthew Garrett <mjg59@google.com>
+cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/serial_core.c | 5 +++++
+ include/linux/security.h         | 1 +
+ security/lockdown/lockdown.c     | 1 +
+ 3 files changed, 7 insertions(+)
 
-Pushed all to v5.2-next/dts64
-
-Please send patches to update the bindings of auxadc and efuse. They use the
-fallback right now, but we should make sure to have the binding in sync.
-
-Regards,
-Matthias
-
-> Change in v11:
-> New add spi node, efuse node, pinctrl node, auxadc node, and capacity-dmips-mhz field
-> 
-> Change in v10:
-> Add the L2 cache node to prevent warning on unable to detect cache
-> hierarchy.
-> 
-> Change in v9:
-> Remove pio node since binding is not documented yet
-> 
-> Change in v8:
-> 1. Fix interrupt-parent of pio node
-> 2. Remove pinfunc.h and spi node patches
-> 
-> Change in v7:
-> 1. Place all the MMIO peripherals under one or more simple-bus nodes
-> 2. Make the pinfunc.h and spi node into seperate patch
-> 3. Modify SPIs pamerater from 4 back to 3
->    and remove patch "support 4 interrupt parameters for sysirq"
-> 4. Rename intpol-controller to interrupt-controller
-> 5. Rename pinctrl@1000b000 to pinctrl@10005000
-> 
-> Change in v6:
-> 1. Remove power and iommu nodes
-> 2. Fix dtb build warning
-> 3. Fix pinctrl binding doc
-> 4. Fix '_' in node names
-> 
-> Change in v5:
-> 1. Collect all device tree nodes to the last patch
-> 2. Add PMU
-> 3. Add Signed-off-by
-> 4. Remove clock driver code and binding doc
-> 5. Add pinctrl, iommu, spi, and pwrap nodes
-> 
-> Change in v4:
-> 1. Correct syntax error in dtsi
-> 2. Add MT8183 clock support
-> 
-> Change in v3:
-> 1. Fill out GICC, GICH, GICV regions
-> 2. Update Copyright to 2018
-> 
-> Change in v2:
-> 1. Split dt-bindings into different patches
-> 2. Correct bindings for supported SoCs (mtk-uart.txt)
-> 
-> Ben Ho (1):
->   arm64: dts: Add Mediatek SoC MT8183 and evaluation board dts and
->     Makefile
-> 
-> Erin Lo (1):
->   arm64: dts: mt8183: add spi node
-> 
-> Hsin-Yi, Wang (1):
->   arm64: dts: mt8183: add capacity-dmips-mhz
-> 
-> Michael Mei (1):
->   arm64: dts: mt8183: add efuse and Mediatek Chip id node to read
-> 
-> Zhiyong Tao (2):
->   arm64: dts: mt8183: add pinctrl device node
->   arm64: dts: mt8183: Add auxadc device node
-> 
->  arch/arm64/boot/dts/mediatek/Makefile       |   1 +
->  arch/arm64/boot/dts/mediatek/mt8183-evb.dts | 140 ++++++
->  arch/arm64/boot/dts/mediatek/mt8183.dtsi    | 447 ++++++++++++++++++++
->  3 files changed, 588 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/mediatek/mt8183-evb.dts
->  create mode 100644 arch/arm64/boot/dts/mediatek/mt8183.dtsi
-> 
-> --
-> 1.8.1.1.dirty
-> 
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 351843f847c0..a84f231a5df4 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -22,6 +22,7 @@
+ #include <linux/serial_core.h>
+ #include <linux/delay.h>
+ #include <linux/mutex.h>
++#include <linux/security.h>
+ 
+ #include <linux/irq.h>
+ #include <linux/uaccess.h>
+@@ -852,6 +853,10 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
+ 	new_flags = (__force upf_t)new_info->flags;
+ 	old_custom_divisor = uport->custom_divisor;
+ 
++	retval = security_locked_down(LOCKDOWN_TIOCSSERIAL);
++	if (retval && (change_port || change_irq))
++		goto exit;
++
+ 	if (!capable(CAP_SYS_ADMIN)) {
+ 		retval = -EPERM;
+ 		if (change_irq || change_port ||
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 03c125b277ca..61e3f4a62d16 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -91,6 +91,7 @@ enum lockdown_reason {
+ 	LOCKDOWN_MSR,
+ 	LOCKDOWN_ACPI_TABLES,
+ 	LOCKDOWN_PCMCIA_CIS,
++	LOCKDOWN_TIOCSSERIAL,
+ 	LOCKDOWN_INTEGRITY_MAX,
+ 	LOCKDOWN_CONFIDENTIALITY_MAX,
+ };
+diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
+index 7be3e8fb5847..c89046dc2155 100644
+--- a/security/lockdown/lockdown.c
++++ b/security/lockdown/lockdown.c
+@@ -27,6 +27,7 @@ static char *lockdown_reasons[LOCKDOWN_CONFIDENTIALITY_MAX+1] = {
+ 	[LOCKDOWN_MSR] = "raw MSR access",
+ 	[LOCKDOWN_ACPI_TABLES] = "modified ACPI tables",
+ 	[LOCKDOWN_PCMCIA_CIS] = "direct PCMCIA CIS storage",
++	[LOCKDOWN_TIOCSSERIAL] = "reconfiguration of serial port IO",
+ 	[LOCKDOWN_INTEGRITY_MAX] = "integrity",
+ 	[LOCKDOWN_CONFIDENTIALITY_MAX] = "confidentiality",
+ };
+-- 
+2.22.0.410.gd8fdbe21b5-goog
