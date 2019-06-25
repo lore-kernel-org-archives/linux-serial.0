@@ -1,9 +1,10 @@
 From: Arseny Maslennikov <ar@cs.msu.ru>
-Subject: [PATCH v2 5/7] tty: Add NOKERNINFO lflag to termios
-Date: Tue, 25 Jun 2019 19:11:51 +0300
-Message-ID: <20190625161153.29811-6-ar@cs.msu.ru>
+Subject: [PATCH v2 3/7] n_tty: Send SIGINFO to fg pgrp on status request character
+Date: Tue, 25 Jun 2019 19:11:49 +0300
+Message-ID: <20190625161153.29811-4-ar@cs.msu.ru>
 References: <20190625161153.29811-1-ar@cs.msu.ru>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190625161153.29811-1-ar@cs.msu.ru>
@@ -12,126 +13,88 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com
 Cc: "Vladimir D. Seleznev" <vseleznv@altlinux.org>, Rob Landley <rob@landley.net>, "Eric W. Biederman" <ebiederm@xmission.com>, Pavel Machek <pavel@ucw.cz>, Arseny Maslennikov <ar@cs.msu.ru>
 List-Id: linux-serial@vger.kernel.org
 
+No kerninfo line is printed yet.
+
+No existing implementation of this on any Unix-like system echoes
+the status character; no existing implementation discards or flushes
+pending input on VSTATUS receipt.
+
+There are existing popular TUI applications (e. g. mutt) that only
+turn off icanon and not iexten, but still do not expect any special
+treatment of the status request character — thus we require all three:
+isig, icanon and iexten to trigger this.
+
 Signed-off-by: Arseny Maslennikov <ar@cs.msu.ru>
 ---
- arch/alpha/include/uapi/asm/termbits.h   | 1 +
- arch/ia64/include/uapi/asm/termbits.h    | 1 +
- arch/mips/include/uapi/asm/termbits.h    | 1 +
- arch/parisc/include/uapi/asm/termbits.h  | 1 +
- arch/powerpc/include/uapi/asm/termbits.h | 1 +
- arch/sparc/include/uapi/asm/termbits.h   | 1 +
- arch/xtensa/include/uapi/asm/termbits.h  | 1 +
- include/linux/tty.h                      | 1 +
- include/uapi/asm-generic/termbits.h      | 1 +
- 9 files changed, 9 insertions(+)
+ drivers/tty/n_tty.c | 15 +++++++++++++--
+ include/linux/tty.h |  1 +
+ 2 files changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/arch/alpha/include/uapi/asm/termbits.h b/arch/alpha/include/uapi/asm/termbits.h
-index bb895d467033..850dd8dc4c51 100644
---- a/arch/alpha/include/uapi/asm/termbits.h
-+++ b/arch/alpha/include/uapi/asm/termbits.h
-@@ -204,6 +204,7 @@ struct ktermios {
- #define PENDIN	0x20000000
- #define IEXTEN	0x00000400
- #define EXTPROC	0x10000000
-+#define NOKERNINFO	0x40000000
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index f9c584244f72..29f33798a6cd 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -79,6 +79,10 @@
+ #define ECHO_BLOCK		256
+ #define ECHO_DISCARD_WATERMARK	N_TTY_BUF_SIZE - (ECHO_BLOCK + 32)
  
- /* Values for the ACTION argument to `tcflow'.  */
- #define	TCOOFF		0
-diff --git a/arch/ia64/include/uapi/asm/termbits.h b/arch/ia64/include/uapi/asm/termbits.h
-index 86898e4c5905..f777b99bc5ab 100644
---- a/arch/ia64/include/uapi/asm/termbits.h
-+++ b/arch/ia64/include/uapi/asm/termbits.h
-@@ -190,6 +190,7 @@ struct ktermios {
- #define PENDIN	0040000
- #define IEXTEN	0100000
- #define EXTPROC	0200000
-+#define NOKERNINFO	0400000
++#define SIG_FLUSHING_MASK ( \
++	rt_sigmask(SIGINT) | rt_sigmask(SIGQUIT) | \
++	rt_sigmask(SIGTSTP)			 )
++#define SIG_FLUSHING(sig) ((1 << sig) & SIG_FLUSHING_MASK)
  
- /* tcflow() and TCXONC use these */
- #define	TCOOFF		0
-diff --git a/arch/mips/include/uapi/asm/termbits.h b/arch/mips/include/uapi/asm/termbits.h
-index 3dd60924f0ef..2755cfd1497e 100644
---- a/arch/mips/include/uapi/asm/termbits.h
-+++ b/arch/mips/include/uapi/asm/termbits.h
-@@ -206,6 +206,7 @@ struct ktermios {
- #define TOSTOP	0100000		/* Send SIGTTOU for background output.	*/
- #define ITOSTOP TOSTOP
- #define EXTPROC 0200000		/* External processing on pty */
-+#define NOKERNINFO 0400000		/* Disable kernel output from VSTATUS. */
+ #undef N_TTY_TRACE
+ #ifdef N_TTY_TRACE
+@@ -1122,7 +1126,7 @@ static void isig(int sig, struct tty_struct *tty)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
  
- /* ioctl (fd, TIOCSERGETLSR, &result) where result may be as below */
- #define TIOCSER_TEMT	0x01	/* Transmitter physically empty */
-diff --git a/arch/parisc/include/uapi/asm/termbits.h b/arch/parisc/include/uapi/asm/termbits.h
-index ecca3b7d0c66..c7ba145adf02 100644
---- a/arch/parisc/include/uapi/asm/termbits.h
-+++ b/arch/parisc/include/uapi/asm/termbits.h
-@@ -183,6 +183,7 @@ struct ktermios {
- #define PENDIN  0040000
- #define IEXTEN  0100000
- #define EXTPROC	0200000
-+#define NOKERNINFO	0400000
+-	if (L_NOFLSH(tty)) {
++	if (L_NOFLSH(tty) || (!SIG_FLUSHING(sig))) {
+ 		/* signal only */
+ 		__isig(sig, tty);
  
- /* tcflow() and TCXONC use these */
- #define	TCOOFF		0
-diff --git a/arch/powerpc/include/uapi/asm/termbits.h b/arch/powerpc/include/uapi/asm/termbits.h
-index c85e98d75e76..79dbcc546217 100644
---- a/arch/powerpc/include/uapi/asm/termbits.h
-+++ b/arch/powerpc/include/uapi/asm/termbits.h
-@@ -192,6 +192,7 @@ struct ktermios {
- #define PENDIN	0x20000000
- #define IEXTEN	0x00000400
- #define EXTPROC	0x10000000
-+#define NOKERNINFO	0x40000000
+@@ -1244,7 +1248,8 @@ n_tty_receive_signal_char(struct tty_struct *tty, int signal, unsigned char c)
+ 	if (I_IXON(tty))
+ 		start_tty(tty);
+ 	if (L_ECHO(tty)) {
+-		echo_char(c, tty);
++		if (c != STATUS_CHAR(tty))
++			echo_char(c, tty);
+ 		commit_echoes(tty);
+ 	} else
+ 		process_echoes(tty);
+@@ -1294,6 +1299,9 @@ n_tty_receive_char_special(struct tty_struct *tty, unsigned char c)
+ 		} else if (c == SUSP_CHAR(tty)) {
+ 			n_tty_receive_signal_char(tty, SIGTSTP, c);
+ 			return 0;
++		} else if (c == STATUS_CHAR(tty)) {
++			n_tty_receive_signal_char(tty, SIGINFO, c);
++			return 0;
+ 		}
+ 	}
  
- /* Values for the ACTION argument to `tcflow'.  */
- #define	TCOOFF		0
-diff --git a/arch/sparc/include/uapi/asm/termbits.h b/arch/sparc/include/uapi/asm/termbits.h
-index a1638c9cde8b..108c039ddefb 100644
---- a/arch/sparc/include/uapi/asm/termbits.h
-+++ b/arch/sparc/include/uapi/asm/termbits.h
-@@ -225,6 +225,7 @@ struct ktermios {
- #define PENDIN	0x00004000
- #define IEXTEN	0x00008000
- #define EXTPROC	0x00010000
-+#define NOKERNINFO	0x00020000
- 
- /* modem lines */
- #define TIOCM_LE	0x001
-diff --git a/arch/xtensa/include/uapi/asm/termbits.h b/arch/xtensa/include/uapi/asm/termbits.h
-index 77969cb275b8..6155e1c81164 100644
---- a/arch/xtensa/include/uapi/asm/termbits.h
-+++ b/arch/xtensa/include/uapi/asm/termbits.h
-@@ -199,6 +199,7 @@ struct ktermios {
- #define PENDIN	0040000
- #define IEXTEN	0100000
- #define EXTPROC	0200000
-+#define NOKERNINFO	0400000
- 
- /* tcflow() and TCXONC use these */
- 
+@@ -1848,6 +1856,9 @@ static void n_tty_set_termios(struct tty_struct *tty, struct ktermios *old)
+ 			set_bit(INTR_CHAR(tty), ldata->char_map);
+ 			set_bit(QUIT_CHAR(tty), ldata->char_map);
+ 			set_bit(SUSP_CHAR(tty), ldata->char_map);
++			if (L_ICANON(tty) && L_IEXTEN(tty)) {
++				set_bit(STATUS_CHAR(tty), ldata->char_map);
++			}
+ 		}
+ 		clear_bit(__DISABLED_CHAR, ldata->char_map);
+ 		ldata->raw = 0;
 diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 38d8ffe7f0e3..07189f18f93d 100644
+index bfa4e2ee94a9..38d8ffe7f0e3 100644
 --- a/include/linux/tty.h
 +++ b/include/linux/tty.h
-@@ -186,6 +186,7 @@ struct tty_bufhead {
- #define L_PENDIN(tty)	_L_FLAG((tty), PENDIN)
- #define L_IEXTEN(tty)	_L_FLAG((tty), IEXTEN)
- #define L_EXTPROC(tty)	_L_FLAG((tty), EXTPROC)
-+#define L_NOKERNINFO(tty)	_L_FLAG((tty), NOKERNINFO)
+@@ -120,6 +120,7 @@ struct tty_bufhead {
+ #define WERASE_CHAR(tty) ((tty)->termios.c_cc[VWERASE])
+ #define LNEXT_CHAR(tty)	((tty)->termios.c_cc[VLNEXT])
+ #define EOL2_CHAR(tty) ((tty)->termios.c_cc[VEOL2])
++#define STATUS_CHAR(tty) ((tty)->termios.c_cc[VSTATUS])
  
- struct device;
- struct signal_struct;
-diff --git a/include/uapi/asm-generic/termbits.h b/include/uapi/asm-generic/termbits.h
-index 11bb142ba844..6219803d6f4d 100644
---- a/include/uapi/asm-generic/termbits.h
-+++ b/include/uapi/asm-generic/termbits.h
-@@ -181,6 +181,7 @@ struct ktermios {
- #define PENDIN	0040000
- #define IEXTEN	0100000
- #define EXTPROC	0200000
-+#define NOKERNINFO 0400000
- 
- /* tcflow() and TCXONC use these */
- #define	TCOOFF		0
+ #define _I_FLAG(tty, f)	((tty)->termios.c_iflag & (f))
+ #define _O_FLAG(tty, f)	((tty)->termios.c_oflag & (f))
 -- 
 2.20.1
