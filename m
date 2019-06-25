@@ -1,56 +1,53 @@
-From: Arseny Maslennikov <ar@cs.msu.ru>
-Subject: [PATCH v2 4/7] linux/signal.h: Ignore SIGINFO by default in new tasks
-Date: Tue, 25 Jun 2019 19:11:50 +0300
-Message-ID: <20190625161153.29811-5-ar@cs.msu.ru>
-References: <20190625161153.29811-1-ar@cs.msu.ru>
+From: Mark Greer <mgreer@animalcreek.com>
+Subject: Re: DMA coherency in drivers/tty/serial/mpsc.c
+Date: Tue, 25 Jun 2019 09:37:22 -0700
+Message-ID: <20190625163722.GA18626@animalcreek.com>
+References: <20190625122641.GA4421@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190625161153.29811-1-ar@cs.msu.ru>
+Content-Disposition: inline
+In-Reply-To: <20190625122641.GA4421@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: "Vladimir D. Seleznev" <vseleznv@altlinux.org>, Rob Landley <rob@landley.net>, "Eric W. Biederman" <ebiederm@xmission.com>, Pavel Machek <pavel@ucw.cz>, Arseny Maslennikov <ar@cs.msu.ru>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Mark Greer <mgreer@animalcreek.com>, Paul Gortmaker <paul.gortmaker@windriver.com>, Dale Farnsworth <dale@farnsworth.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 List-Id: linux-serial@vger.kernel.org
 
-This matches the behaviour of other Unix-like systems that have SIGINFO
-and causes less harm to processes that do not install handlers for this
-signal, making the keyboard status character non-fatal for them.
+On Tue, Jun 25, 2019 at 02:26:41PM +0200, Christoph Hellwig wrote:
+> Hi Paul, Dale and Mark (I hope this reaches the right Mark),
 
-This is implemented with the assumption that SIGINFO is defined
-to be equivalent to SIGPWR; still, there is no reason for PWR to
-result in termination of the signal recipient anyway — it does not
-indicate there is a fatal problem with the recipient's execution
-context (like e.g. FPE/ILL do), and we have TERM/KILL for explicit
-termination requests.
+Hi Christoph.  Yes, you did reach the right Mark.  :)
 
-Signed-off-by: Arseny Maslennikov <ar@cs.msu.ru>
----
- include/linux/signal.h | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+> I've started auditing all users of DMA_ATTR_NON_CONSISTENT ot prepare
+> for major API improvements in that area.
+> 
+> One of the odd users is the mpsc ѕerial driver, which allocates DMA
+> memory with the above flag, and then actually properly calls
+> dma_cache_sync.  So far, so good.  But it turns out it also has
+> "#if defined(CONFIG_PPC32) && !defined(CONFIG_NOT_COHERENT_CACHE)"
+> ifdef blocks next to the dma_cache_sync calls that perform cache
+> maintainance for platforms that according to the ifdef claim to
+> be cache coherent.  According to the Kconfig the driver can
+> only build if the MV64X60 symbol is set, which is a ppc embedded 6xx
+> SOC, which appears to be configurable as either cache coherent, or
+> not.  But according to the code in the driver at least this device
+> always is not cache coherent.
+> 
+> It seems like we need to always mark that platform as potentially
+> not coherent, and then use the per-device flag to mark all device
+> except for this one as coherent.  Or did I miss anything?  Maybe
+> all this is actually dead code and can go away?
 
-diff --git a/include/linux/signal.h b/include/linux/signal.h
-index 9702016734b1..c365754ea647 100644
---- a/include/linux/signal.h
-+++ b/include/linux/signal.h
-@@ -360,7 +360,7 @@ extern bool unhandled_signal(struct task_struct *tsk, int sig);
-  *	|  SIGSYS/SIGUNUSED  |	coredump 	|
-  *	|  SIGSTKFLT         |	terminate	|
-  *	|  SIGWINCH          |	ignore   	|
-- *	|  SIGPWR            |	terminate	|
-+ *	|  SIGPWR            |	ignore   	|
-  *	|  SIGRTMIN-SIGRTMAX |	terminate       |
-  *	+--------------------+------------------+
-  *	|  non-POSIX signal  |  default action  |
-@@ -411,7 +411,8 @@ extern bool unhandled_signal(struct task_struct *tsk, int sig);
- 
- #define SIG_KERNEL_IGNORE_MASK (\
-         rt_sigmask(SIGCONT)   |  rt_sigmask(SIGCHLD)   | \
--	rt_sigmask(SIGWINCH)  |  rt_sigmask(SIGURG)    )
-+	rt_sigmask(SIGWINCH)  |  rt_sigmask(SIGURG)    | \
-+	rt_sigmask(SIGINFO)			       )
- 
- #define SIG_SPECIFIC_SICODES_MASK (\
- 	rt_sigmask(SIGILL)    |  rt_sigmask(SIGFPE)    | \
--- 
-2.20.1
+Yeah, the mpsc driver had lots of ugly cache related hacks because of
+cache coherency bugs in the early version of the MV64x60 bridge chips
+that it was embedded in.  That chip is pretty much dead now and I've
+removed core support for it from the powerpc tree.  Removing the mpsc
+driver is on my todo list but I've been busy and lazy.  So, to sum it
+up, don't spend any more time worrying about it as it should be removed.
+
+I'll post a patch to do that tonight and I'm sorry for any time you've
+spent looking at it so far.
+
+Mark
+--
