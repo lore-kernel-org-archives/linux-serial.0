@@ -1,33 +1,47 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [patch 0/5] *** DMA based UART driver for AST2500 ***
-Date: Tue, 25 Jun 2019 15:27:15 +0800
-Message-ID: <20190625072715.GB18197@kroah.com>
-References: <1561115855-4186-1-git-send-email-open.sudheer@gmail.com>
- <20190621131729.GA9997@kroah.com>
- <CAE-5=DTdo4qDUPRw+Giu=bCcpqu7EdLDt5ddDvqLSgGbuqE1Fg@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: "sudheer.v" <open.sudheer@gmail.com>
+Subject: [patch v3 0/5] *** DMA based UART driver for AST2500 ***
+Date: Tue, 25 Jun 2019 16:14:31 +0530
+Message-ID: <1561459476-14268-1-git-send-email-open.sudheer@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAE-5=DTdo4qDUPRw+Giu=bCcpqu7EdLDt5ddDvqLSgGbuqE1Fg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: sudheer v <open.sudheer@gmail.com>
-Cc: Jiri Slaby <jslaby@suse.com>, Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, ShivahShankar Shakarnarayan rao <shivahshankar.shankarnarayanrao@aspeedtech.com>, Shiva shankar <shivahshankar@gmail.com>, Sudheer V <sudheer.veliseti@aspeedtech.com>, sudheer veliseti <sudheer.open@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com, joel@jms.id.au, andrew@aj.id.au, benh@kernel.crashing.org, robh+dt@kernel.org, mark.rutland@arm.com, shivahshankar.shankarnarayanrao@aspeedtech.com, shivahshankar@gmail.com, sudheer.veliseti@aspeedtech.com
+Cc: sudheer veliseti <sudheer.open@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 10:30:32AM +0530, sudheer v wrote:
-> Hi Greg,
-> When i last submitted patches, i have not added change-logs.
-> and also used custom debugs instead of kernel dynamic debugs.
-> So i have resubmitted the patches , considering you have discarded old set.
-> I want to send any changes suggested  from now on wards  with versioning
-> V1,V2...so on.
-> Is this acceptable for you? or should i submit the patches again as V1 once
-> again.?
+From: sudheer veliseti <sudheer.open@gmail.com>
 
-No, please resend now as a v3 series, with the information that says
-what you changed from the previous versions.
+Hi,
+AST2500 has dedicated Uart DMA controller which has 12 sets of
+Tx and RX channels connected to UART controller directly.
+Since the DMA controller have dedicated buffers and registers,
+there would be little benifit in adding DMA framework overhead.
+So the software for DMA controller is included within the UART driver itself.
 
-thanks,
+Thanks and Regards
+Sudheer.V
 
-greg k-h
+changes in v3:
+- custom debugs replaced with pr_debug in 8250_ast2500_uart_dma.c
+- change logs added in patches
+
+sudheer veliseti (5):
+  AST2500 DMA UART driver
+  build configuration for AST2500 DMA UART driver
+  DT nodes for AST2500 DMA UART driver
+  defconfig and MAINTAINERS updated for AST2500 DMA UART driver
+  Documentation: DT bindings AST2500 DMA UART driver
+
+ .../bindings/serial/ast2500-dma-uart.txt      |   40 +
+ MAINTAINERS                                   |   13 +
+ arch/arm/boot/dts/aspeed-ast2500-evb.dts      |   21 +
+ arch/arm/boot/dts/aspeed-g5.dtsi              |   71 +-
+ arch/arm/configs/aspeed_g5_defconfig          |    1 +
+ .../tty/serial/8250/8250_ast2500_uart_dma.c   | 1879 +++++++++++++++++
+ drivers/tty/serial/8250/Kconfig               |   35 +-
+ drivers/tty/serial/8250/Makefile              |    1 +
+ 8 files changed, 2056 insertions(+), 5 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/ast2500-dma-uart.txt
+ create mode 100644 drivers/tty/serial/8250/8250_ast2500_uart_dma.c
+
+-- 
+2.17.1
