@@ -1,49 +1,24 @@
-From: Sergey Organov <sorganov@gmail.com>
-Subject: Re: [PATCH RFC v1 0/7] serial: imx: fix RTS and RTS/CTS handling
-Date: Wed, 26 Jun 2019 14:19:05 +0300
-Message-ID: <87ef3gr3va.fsf@osv.gnss.ru>
-References: <20190614072801.3187-1-s.hauer@pengutronix.de>
- <1561042073-617-1-git-send-email-sorganov@gmail.com>
- <20190626100041.a7hyyhubun6y2r2z@pengutronix.de>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [patch 2/5] genirq: Add optional hardware synchronization for
+ shutdown
+Date: Wed, 26 Jun 2019 15:03:54 +0200 (CEST)
+Message-ID: <alpine.DEB.2.21.1906261502450.32342@nanos.tec.linutronix.de>
+References: <20190625111353.863718167@linutronix.de> <20190625112405.666964552@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190626100041.a7hyyhubun6y2r2z@pengutronix.de> (Sascha Hauer's
- message of "Wed, 26 Jun 2019 12:00:41 +0200")
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Content-Type: text/plain; charset=US-ASCII
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190625112405.666964552@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: LKML <linux-kernel@vger.kernel.org>
+Cc: x86@kernel.org, Robert Hodaszi <Robert.Hodaszi@digi.com>, Vadim Pasternak <vadimp@mellanox.com>, Ido Schimmel <idosch@mellanox.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Sasha,
+On Tue, 25 Jun 2019, Thomas Gleixner wrote:
+>   *	Returns: false if a threaded handler is active.
+>   *
+>   *	This function may be called - with care - from IRQ context.
+> + *
+> + *	It does not check whether there is an interrupt on flight at the
+> + *	hardware level, but not serviced yet, as this might deadlock.
 
-Sascha Hauer <s.hauer@pengutronix.de> writes:
-> Hi Sergey,
->
-> On Thu, Jun 20, 2019 at 05:47:46PM +0300, Sergey Organov wrote:
->> The patches are not tested yet, so the RFC in the header. I'll re-roll
->> without RFC once Sasha Hauer tests them.
->> 
->> Sasha, in addition to already discussed fixes, I've also reordered 2
->> patches so that the sequence makes sense.
->> 
->
-> I reviewed and tested this series, so when resending you can add my:
->
-> Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
-> Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
-
-Thank you so much!
-
-Have a nice day,
-
--- Sergey
+  + when invoked from an interrupt disabled region.
