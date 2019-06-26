@@ -1,8 +1,8 @@
 From: Sergey Organov <sorganov@gmail.com>
-Subject: [PATCH v2 3/7] serial: imx: set_termios(): clarify RTS/CTS bits
- calculation
-Date: Wed, 26 Jun 2019 17:11:29 +0300
-Message-ID: <1561558293-7683-4-git-send-email-sorganov@gmail.com>
+Subject: [PATCH v2 2/7] serial: imx: set_termios(): factor-out 'ucr2' initial
+ value
+Date: Wed, 26 Jun 2019 17:11:28 +0300
+Message-ID: <1561558293-7683-3-git-send-email-sorganov@gmail.com>
 References: <20190614072801.3187-1-s.hauer@pengutronix.de>
  <1561558293-7683-1-git-send-email-sorganov@gmail.com>
 Mime-Version: 1.0
@@ -23,72 +23,32 @@ To: Sascha Hauer <s.hauer@pengutronix.de>
 Cc: Pengutronix Kernel Team <kernel@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-Avoid repeating the same code for rs485 twice.
-
-Make it obvious we clear CRTSCTS bit in termios->c_cflag whenever
-sport->have_rtscts is false.
-
-Make it obvious we clear UCR2_IRTS whenever CRTSCTS is set.
+Set common bits in a separate statement to make initialization
+explicit and not repeat the common part.
 
 Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
 Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
 Signed-off-by: Sergey Organov <sorganov@gmail.com>
 ---
- drivers/tty/serial/imx.c | 36 +++++++++++++-----------------------
- 1 file changed, 13 insertions(+), 23 deletions(-)
+ drivers/tty/serial/imx.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 87802fd..17e2322 100644
+index 1055124..87802fd 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -1567,35 +1567,25 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
+@@ -1563,10 +1563,9 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 
++	ucr2 = UCR2_SRST | UCR2_IRTS;
  	if ((termios->c_cflag & CSIZE) == CS8)
- 		ucr2 |= UCR2_WS;
+-		ucr2 = UCR2_WS | UCR2_SRST | UCR2_IRTS;
+-	else
+-		ucr2 = UCR2_SRST | UCR2_IRTS;
++		ucr2 |= UCR2_WS;
  
--	if (termios->c_cflag & CRTSCTS) {
--		if (sport->have_rtscts) {
--			ucr2 &= ~UCR2_IRTS;
-+	if (!sport->have_rtscts)
-+		termios->c_cflag &= ~CRTSCTS;
- 
--			if (port->rs485.flags & SER_RS485_ENABLED) {
--				/*
--				 * RTS is mandatory for rs485 operation, so keep
--				 * it under manual control and keep transmitter
--				 * disabled.
--				 */
--				if (port->rs485.flags &
--				    SER_RS485_RTS_AFTER_SEND)
--					imx_uart_rts_active(sport, &ucr2);
--				else
--					imx_uart_rts_inactive(sport, &ucr2);
--			} else {
--				imx_uart_rts_auto(sport, &ucr2);
--			}
--		} else {
--			termios->c_cflag &= ~CRTSCTS;
--		}
--	} else if (port->rs485.flags & SER_RS485_ENABLED) {
--		/* disable transmitter */
-+	if (port->rs485.flags & SER_RS485_ENABLED) {
-+		/*
-+		 * RTS is mandatory for rs485 operation, so keep
-+		 * it under manual control and keep transmitter
-+		 * disabled.
-+		 */
- 		if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
- 			imx_uart_rts_active(sport, &ucr2);
- 		else
- 			imx_uart_rts_inactive(sport, &ucr2);
--	}
- 
-+	} else if (termios->c_cflag & CRTSCTS)
-+		imx_uart_rts_auto(sport, &ucr2);
-+
-+	if (termios->c_cflag & CRTSCTS)
-+		ucr2 &= ~UCR2_IRTS;
- 
- 	if (termios->c_cflag & CSTOPB)
- 		ucr2 |= UCR2_STPB;
+ 	if (termios->c_cflag & CRTSCTS) {
+ 		if (sport->have_rtscts) {
 -- 
 2.10.0.1.g57b01a3
