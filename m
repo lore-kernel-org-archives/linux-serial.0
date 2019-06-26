@@ -1,100 +1,55 @@
-From: Arseny Maslennikov <ar@cs.msu.ru>
-Subject: Re: [PATCH v2 4/7] linux/signal.h: Ignore SIGINFO by default in new
- tasks
-Date: Wed, 26 Jun 2019 16:49:41 +0300
-Message-ID: <20190626134941.GA3668@cello>
-References: <20190625161153.29811-1-ar@cs.msu.ru>
- <20190625161153.29811-5-ar@cs.msu.ru>
- <20190625213215.GB3116@mit.edu>
+From: Sergey Organov <sorganov@gmail.com>
+Subject: [PATCH v2 0/7] serial: imx: fix RTS and RTS/CTS handling
+Date: Wed, 26 Jun 2019 17:11:26 +0300
+Message-ID: <1561558293-7683-1-git-send-email-sorganov@gmail.com>
+References: <20190614072801.3187-1-s.hauer@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="mYCpIKhGyMATD0i+"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190625213215.GB3116@mit.edu>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Theodore Ts'o <tytso@mit.edu>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "Vladimir D. Seleznev" <vseleznv@altlinux.org>, Rob Landley <rob@landley.net>, "Eric W. Biederman" <ebiederm@xmission.com>, Pavel Machek <pavel@ucw.cz>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190614072801.3187-1-s.hauer@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-
---mYCpIKhGyMATD0i+
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Jun 25, 2019 at 05:32:15PM -0400, Theodore Ts'o wrote:
-> On Tue, Jun 25, 2019 at 07:11:50PM +0300, Arseny Maslennikov wrote:
-> > This matches the behaviour of other Unix-like systems that have SIGINFO
-> > and causes less harm to processes that do not install handlers for this
-> > signal, making the keyboard status character non-fatal for them.
-> >=20
-> > This is implemented with the assumption that SIGINFO is defined
-> > to be equivalent to SIGPWR; still, there is no reason for PWR to
-> > result in termination of the signal recipient anyway =E2=80=94 it does =
-not
-> > indicate there is a fatal problem with the recipient's execution
-> > context (like e.g. FPE/ILL do), and we have TERM/KILL for explicit
-> > termination requests.
->=20
-> So this is a consequence of trying to overload SIGINFO with SIGPWR.
-
-Pretty much.
-
-> At least on some legacy Unix systems, the way SIGPWR worked was that
-> init would broadcast SIGPWR to all userspace process (with system
-> daemons on an exception list so they could get shutdown last).
-> Applications which didn't have a SIGPWR handler registered, would just
-> exit.  Those that did, were expected to clean up in preparation with
-> the impending shutdown.  After some period of time, then processes
-> would get hard killed and then system daemons would get shut down and
-> the system would cleanly shut itself down.
->=20
-> So SIGPWR acted much like SIGHUP, and that's why the default behavior
-> was "terminate".  Now, as far as I know, we've not actually used in
-> that way, at least for most common distributions, but there is a sane
-> reason why things are they way there are, and in there are people who
-> have been using SIGPWR the way it had originally been intended, there
-> is risk in overloading SIGINFO with SIGPWR --- in particular, typing
-> ^T might cause some enterprise database to start shutting itself down.  :=
--)
-
-Only if that enterprise database:
-1) has a controlling terminal (a strange condition for a daemon, IMHO)
-2) that terminal has the status character set in the struct termios.
-
->=20
-> (In particular it might be worth checking Linux ports of Oracle and
-> DB2.)
-
-A quick google got me this document:
-https://docs.oracle.com/cd/B28359_01/server.111/b32009.pdf
-It only ever mentions CHLD, CONT, INT, PIPE, TERM, URG and IO.
-
-I have no real experience with neither DB2 nor Oracle DB, though, and no
-way to get hold of that kind of software, so I don't know where to look
-further. If we'd like to be really sure no one's hurt we'll need someone
-with actual expertise here.
-
-
---mYCpIKhGyMATD0i+
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE56JD3UKTLEu/ddrm9dQjyAYL01AFAl0Td+cACgkQ9dQjyAYL
-01C+9Q//QnhdAMuhEYr16Lcyx+FX+ZuTVpxDBHa6pogsPcLTd0K+J4XxxPp2+jC/
-blxZ91l6mqNHkoESH7zXRyiZSHigh2HeFyymiE+89qtkf9ZO387f3vRjOtyu+UAz
-jOujhiWETPCrUb1Yfw6tzCHP4odH7mnTaIydNw7OYuWyyIvkRQXnv0HQJalouzqf
-F5hxr/1F0gMTomIr/dgc7bunQGFt3CzshZauHtdAPe7rainc3vbVvNqRHi9zJkL4
-rkqK+S9Z++l3+EP/K4rgFNU2sQ12wgOJKMR90cuRN+tnfEZp5hOZcsDlr6LWA6tD
-9BH7J5yCP8oNCecksvjDN49ZriS8aEoA/P6ojyjgVKDK5HipvCY+5LojaHjzDL23
-7PmWi7VY9JVHkmFM3bCoU1oX4iVTh5CnyBj593M96S+wcR0i+v7j9o8J8rtd4rwk
-Y9uM16BI4EcC+nNGefMS3e+qPVTn94WuzjH4myCTgGJPsO7wVZ4EYwBhioFT2tCs
-EeHXbVVcZiwlPVp+mb4ZDO71hhpVYsrxOFYAXPGHAyeXwtoXbYxIJoOUROqxN7LV
-qrZylTRi0ItP2NQpDMWbX9XcqOGcEs5+vlouLE/Hneoqkzx50xPFxdpjnthplCUN
-Dm7MxjPFqgdfHW4W0jfxITJrMX+vkxsrrSM1ClYE8lw06FHfV2A=
-=fn7K
------END PGP SIGNATURE-----
-
---mYCpIKhGyMATD0i+--
+UlRTIHNpZ25hbCBhbmQgUlRTL0NUUyBoYW5kc2hha2UgaGFuZGxpbmcgaGFkIGEgZmV3IHByb2Js
+ZW1zIHRoZXNlCnBhdGNoZXMgZml4LgoKSW4gYWRkaXRpb24sIG1pbm9yIGNsZWFudXBzIGFyZSBt
+YWRlIHRvIHRoZSBpbnZvbHZlZCBjb2RlLgoKQ2hhbmdlbG9nOgoKICB2MjoKICAgICAgKiBBcHBl
+bmRlZDogIlJldmlld2VkLWJ5OiIgYW5kICJUZXN0ZWQtYnk6IgogICAgICAgIFNhc2NoYSBIYXVl
+ciA8cy5oYXVlckBwZW5ndXRyb25peC5kZT4KCiAgICAgICogUmVtb3ZlZCAiUkZDIiBmcm9tIGhl
+YWRlcgoKICB2MToKCiAgICAgICogRml4ZWQgaW4gInNlcmlhbDogaW14OiBzZXRfdGVybWlvcygp
+OiBwcmVzZXJ2ZSBSVFMgc3RhdGUiCgotKwl1Y3IyID0gVUNSMl9TUlNUIHwgVUNSMl9JUlRTOwor
+Kwl1Y3IyIHw9IFVDUjJfU1JTVCB8IFVDUjJfSVJUUzsKICAgICAgCiAgICAgICAgYXMgbm90aWNl
+ZCBieSBMb3RoYXIgV2HDn21hbm4gPExXQEtBUk8tZWxlY3Ryb25pY3MuZGU+CgogICAgICAqIEZp
+eGVkIGluICJzZXJpYWw6IGlteDogc2V0X3Rlcm1pb3MoKTogcHJlc2VydmUgUlRTIHN0YXRlIgog
+ICAgICAKLSsJdWNyMiA9IG9sZF91Y3IyICYgKFVDUjJfVFhFTiB8IFVDUjJfUlhFTiB8IFVDUjJf
+QVRFTiB8IFVDUjJfQ1RTQyk7CisrCXVjcjIgPSBvbGRfdWNyMiAmIChVQ1IyX1RYRU4gfCBVQ1Iy
+X1JYRU4gfCBVQ1IyX0FURU4gfCBVQ1IyX0NUUyk7CgogICAgICAgIGFzIHRoZSBmaXggZm9yIHRo
+ZSBwcm9ibGVtIGZvdW5kIGJ5IFNhc2NoYSBIYXVlcgogICAgICAgIDxzLmhhdWVyQHBlbmd1dHJv
+bml4LmRlPgoKICAgICAgKiBSZW9yZGVyZWQ6CgogICAgICAgIHNlcmlhbDogaW14OiBzZXRfdGVy
+bWlvcygpOiBwcmVzZXJ2ZSBSVFMgc3RhdGUKICAgICAgICBzZXJpYWw6IGlteDogc2V0X3Rlcm1p
+b3MoKTogZG8gbm90IGVuYWJsZSBhdXRvUlRTIGlmIFJUUyBpcyB1bnNldAoKICAgICAgICBhcyB0
+aGUgbGF0dGVyIG1ha2VzIHNlbnNlIG9ubHkgcHJvdmlkZWQgdGhlIGZvcm1lciBpcyBhbHJlYWR5
+IGFwcGxpZWQuCiAgICAgIAoKU2VyZ2V5IE9yZ2Fub3YgKDcpOgogIHNlcmlhbDogaW14OiBmaXgg
+bG9ja2luZyBpbiBzZXRfdGVybWlvcygpCiAgc2VyaWFsOiBpbXg6IHNldF90ZXJtaW9zKCk6IGZh
+Y3Rvci1vdXQgJ3VjcjInIGluaXRpYWwgdmFsdWUKICBzZXJpYWw6IGlteDogc2V0X3Rlcm1pb3Mo
+KTogY2xhcmlmeSBSVFMvQ1RTIGJpdHMgY2FsY3VsYXRpb24KICBzZXJpYWw6IGlteDogc2V0X3Rl
+cm1pb3MoKTogcHJlc2VydmUgUlRTIHN0YXRlCiAgc2VyaWFsOiBpbXg6IHNldF90ZXJtaW9zKCk6
+IGRvIG5vdCBlbmFibGUgYXV0b1JUUyBpZiBSVFMgaXMgdW5zZXQKICBzZXJpYWw6IGlteDogc2V0
+X21jdHJsKCk6IGNvcnJlY3RseSByZXN0b3JlIGF1dG9SVFMgc3RhdGUKICBzZXJpYWw6IGlteDog
+Z2V0IHJpZCBvZiBpbXhfdWFydF9ydHNfYXV0bygpCgogZHJpdmVycy90dHkvc2VyaWFsL2lteC5j
+IHwgOTMgKysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiAx
+IGZpbGUgY2hhbmdlZCwgNDcgaW5zZXJ0aW9ucygrKSwgNDYgZGVsZXRpb25zKC0pCgotLQoyLjEw
+LjAuMS5nNTdiMDFhMwoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0
+cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGlu
+Zm8vbGludXgtYXJtLWtlcm5lbAo=
