@@ -1,52 +1,30 @@
-From: "Theodore Ts'o" <tytso@mit.edu>
-Subject: Re: [PATCH v2 4/7] linux/signal.h: Ignore SIGINFO by default in new
- tasks
-Date: Tue, 25 Jun 2019 17:32:15 -0400
-Message-ID: <20190625213215.GB3116@mit.edu>
-References: <20190625161153.29811-1-ar@cs.msu.ru>
- <20190625161153.29811-5-ar@cs.msu.ru>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: DMA coherency in drivers/tty/serial/mpsc.c
+Date: Wed, 26 Jun 2019 08:48:37 +0200
+Message-ID: <20190626064837.GA24531@lst.de>
+References: <20190625122641.GA4421@lst.de> <20190625163722.GA18626@animalcreek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190625161153.29811-5-ar@cs.msu.ru>
+In-Reply-To: <20190625163722.GA18626@animalcreek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arseny Maslennikov <ar@cs.msu.ru>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "Vladimir D. Seleznev" <vseleznv@altlinux.org>, Rob Landley <rob@landley.net>, "Eric W. Biederman" <ebiederm@xmission.com>, Pavel Machek <pavel@ucw.cz>
+To: Mark Greer <mgreer@animalcreek.com>
+Cc: Christoph Hellwig <hch@lst.de>, Paul Gortmaker <paul.gortmaker@windriver.com>, Dale Farnsworth <dale@farnsworth.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 07:11:50PM +0300, Arseny Maslennikov wrote:
-> This matches the behaviour of other Unix-like systems that have SIGINFO
-> and causes less harm to processes that do not install handlers for this
-> signal, making the keyboard status character non-fatal for them.
+On Tue, Jun 25, 2019 at 09:37:22AM -0700, Mark Greer wrote:
+> Yeah, the mpsc driver had lots of ugly cache related hacks because of
+> cache coherency bugs in the early version of the MV64x60 bridge chips
+> that it was embedded in.  That chip is pretty much dead now and I've
+> removed core support for it from the powerpc tree.  Removing the mpsc
+> driver is on my todo list but I've been busy and lazy.  So, to sum it
+> up, don't spend any more time worrying about it as it should be removed.
 > 
-> This is implemented with the assumption that SIGINFO is defined
-> to be equivalent to SIGPWR; still, there is no reason for PWR to
-> result in termination of the signal recipient anyway — it does not
-> indicate there is a fatal problem with the recipient's execution
-> context (like e.g. FPE/ILL do), and we have TERM/KILL for explicit
-> termination requests.
+> I'll post a patch to do that tonight and I'm sorry for any time you've
+> spent looking at it so far.
 
-So this is a consequence of trying to overload SIGINFO with SIGPWR.
-At least on some legacy Unix systems, the way SIGPWR worked was that
-init would broadcast SIGPWR to all userspace process (with system
-daemons on an exception list so they could get shutdown last).
-Applications which didn't have a SIGPWR handler registered, would just
-exit.  Those that did, were expected to clean up in preparation with
-the impending shutdown.  After some period of time, then processes
-would get hard killed and then system daemons would get shut down and
-the system would cleanly shut itself down.
-
-So SIGPWR acted much like SIGHUP, and that's why the default behavior
-was "terminate".  Now, as far as I know, we've not actually used in
-that way, at least for most common distributions, but there is a sane
-reason why things are they way there are, and in there are people who
-have been using SIGPWR the way it had originally been intended, there
-is risk in overloading SIGINFO with SIGPWR --- in particular, typing
-^T might cause some enterprise database to start shutting itself down.  :-)
-
-(In particular it might be worth checking Linux ports of Oracle and
-DB2.)
-
-					- Ted
+No problem.  And if future such broken chips show up we now have
+support for per-device DMA coherency settings and could actually
+handle it in a reaѕonably clean way.
