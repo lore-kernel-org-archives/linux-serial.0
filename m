@@ -1,7 +1,7 @@
 From: Sergey Organov <sorganov@gmail.com>
-Subject: [PATCH v2 1/7] serial: imx: fix locking in set_termios()
-Date: Wed, 26 Jun 2019 17:11:27 +0300
-Message-ID: <1561558293-7683-2-git-send-email-sorganov@gmail.com>
+Subject: [PATCH v2 4/7] serial: imx: set_termios(): preserve RTS state
+Date: Wed, 26 Jun 2019 17:11:30 +0300
+Message-ID: <1561558293-7683-5-git-send-email-sorganov@gmail.com>
 References: <20190614072801.3187-1-s.hauer@pengutronix.de>
  <1561558293-7683-1-git-send-email-sorganov@gmail.com>
 Mime-Version: 1.0
@@ -22,82 +22,60 @@ To: Sascha Hauer <s.hauer@pengutronix.de>
 Cc: Pengutronix Kernel Team <kernel@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 List-Id: linux-serial@vger.kernel.org
 
-imx_uart_set_termios() called imx_uart_rts_active(), or
-imx_uart_rts_inactive() before taking port->port.lock.
-
-As a consequence, sport->port.mctrl that these functions modify
-could have been changed without holding port->port.lock.
-
-Moved locking of port->port.lock above the calls to fix the issue.
+imx_set_termios() cleared RTS on every call, now fixed.
 
 Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
 Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
 Signed-off-by: Sergey Organov <sorganov@gmail.com>
 ---
- drivers/tty/serial/imx.c | 23 +++++++++++++----------
- 1 file changed, 13 insertions(+), 10 deletions(-)
+ drivers/tty/serial/imx.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index dff75dc..1055124 100644
+index 17e2322..e0f5365 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -383,6 +383,7 @@ static void imx_uart_ucrs_restore(struct imx_port *sport,
- }
- #endif
+@@ -1563,7 +1563,14 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
  
-+/* called with port.lock taken and irqs caller dependent */
- static void imx_uart_rts_active(struct imx_port *sport, u32 *ucr2)
- {
- 	*ucr2 &= ~(UCR2_CTSC | UCR2_CTS);
-@@ -391,6 +392,7 @@ static void imx_uart_rts_active(struct imx_port *sport, u32 *ucr2)
- 	mctrl_gpio_set(sport->gpios, sport->port.mctrl);
- }
+ 	spin_lock_irqsave(&sport->port.lock, flags);
  
-+/* called with port.lock taken and irqs caller dependent */
- static void imx_uart_rts_inactive(struct imx_port *sport, u32 *ucr2)
- {
- 	*ucr2 &= ~UCR2_CTSC;
-@@ -400,6 +402,7 @@ static void imx_uart_rts_inactive(struct imx_port *sport, u32 *ucr2)
- 	mctrl_gpio_set(sport->gpios, sport->port.mctrl);
- }
- 
-+/* called with port.lock taken and irqs caller dependent */
- static void imx_uart_rts_auto(struct imx_port *sport, u32 *ucr2)
- {
- 	*ucr2 |= UCR2_CTSC;
-@@ -1550,6 +1553,16 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
- 		old_csize = CS8;
- 	}
- 
-+	del_timer_sync(&sport->timer);
-+
+-	ucr2 = UCR2_SRST | UCR2_IRTS;
 +	/*
-+	 * Ask the core to calculate the divisor for us.
++	 * Read current UCR2 and save it for future use, then clear all the bits
++	 * except those we will or may need to preserve.
 +	 */
-+	baud = uart_get_baud_rate(port, termios, old, 50, port->uartclk / 16);
-+	quot = uart_get_divisor(port, baud);
++	old_ucr2 = imx_uart_readl(sport, UCR2);
++	ucr2 = old_ucr2 & (UCR2_TXEN | UCR2_RXEN | UCR2_ATEN | UCR2_CTS);
 +
-+	spin_lock_irqsave(&sport->port.lock, flags);
-+
++	ucr2 |= UCR2_SRST | UCR2_IRTS;
  	if ((termios->c_cflag & CSIZE) == CS8)
- 		ucr2 = UCR2_WS | UCR2_SRST | UCR2_IRTS;
- 	else
-@@ -1593,16 +1606,6 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
- 			ucr2 |= UCR2_PROE;
- 	}
+ 		ucr2 |= UCR2_WS;
  
--	del_timer_sync(&sport->timer);
--
--	/*
--	 * Ask the core to calculate the divisor for us.
--	 */
--	baud = uart_get_baud_rate(port, termios, old, 50, port->uartclk / 16);
--	quot = uart_get_divisor(port, baud);
--
--	spin_lock_irqsave(&sport->port.lock, flags);
--
- 	sport->port.read_status_mask = 0;
- 	if (termios->c_iflag & INPCK)
- 		sport->port.read_status_mask |= (URXD_FRMERR | URXD_PRERR);
+@@ -1632,7 +1639,6 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	imx_uart_writel(sport,
+ 			old_ucr1 & ~(UCR1_TXMPTYEN | UCR1_RRDYEN | UCR1_RTSDEN),
+ 			UCR1);
+-	old_ucr2 = imx_uart_readl(sport, UCR2);
+ 	imx_uart_writel(sport, old_ucr2 & ~UCR2_ATEN, UCR2);
+ 
+ 	while (!(imx_uart_readl(sport, USR2) & USR2_TXDC))
+@@ -1640,7 +1646,6 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 
+ 	/* then, disable everything */
+ 	imx_uart_writel(sport, old_ucr2 & ~(UCR2_TXEN | UCR2_RXEN | UCR2_ATEN), UCR2);
+-	old_ucr2 &= (UCR2_TXEN | UCR2_RXEN | UCR2_ATEN);
+ 
+ 	/* custom-baudrate handling */
+ 	div = sport->port.uartclk / (baud * 16);
+@@ -1678,8 +1683,7 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 
+ 	imx_uart_writel(sport, old_ucr1, UCR1);
+ 
+-	/* set the parity, stop bits and data size */
+-	imx_uart_writel(sport, ucr2 | old_ucr2, UCR2);
++	imx_uart_writel(sport, ucr2, UCR2);
+ 
+ 	if (UART_ENABLE_MS(&sport->port, termios->c_cflag))
+ 		imx_uart_enable_ms(&sport->port);
 -- 
 2.10.0.1.g57b01a3
