@@ -1,18 +1,15 @@
-From: Sergey Organov <sorganov@gmail.com>
-Subject: Re: [PATCH v2 4/7] serial: imx: set_termios(): preserve RTS state
-Date: Thu, 27 Jun 2019 09:15:20 +0300
-Message-ID: <874l4bk0zr.fsf@osv.gnss.ru>
-References: <20190614072801.3187-1-s.hauer@pengutronix.de>
- <1561558293-7683-1-git-send-email-sorganov@gmail.com>
- <1561558293-7683-5-git-send-email-sorganov@gmail.com>
- <20190627054040.fmox5woti4gztmat@pengutronix.de>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 1/2] serial: imx: remove duplicate handling of CTS change
+Date: Thu, 27 Jun 2019 08:16:07 +0200
+Message-ID: <20190627061607.4ehhr6jj6vkfjorl@pengutronix.de>
+References: <20190626101557.26299-1-s.hauer@pengutronix.de>
+ <20190626101557.26299-2-s.hauer@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190627054040.fmox5woti4gztmat@pengutronix.de> ("Uwe
- \=\?utf-8\?Q\?Kleine-K\=C3\=B6nig\=22's\?\= message of "Thu,
- 27 Jun 2019 07:40:40 +0200")
+Content-Disposition: inline
+In-Reply-To: <20190626101557.26299-2-s.hauer@pengutronix.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -22,30 +19,60 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>, Sascha Hauer <s.hauer@pengutronix.de>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>
+To: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>, Sergey Organov <sorganov@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
-VXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4gd3JpdGVz
-OgoKPiBPbiBXZWQsIEp1biAyNiwgMjAxOSBhdCAwNToxMTozMFBNICswMzAwLCBTZXJnZXkgT3Jn
-YW5vdiB3cm90ZToKPj4gaW14X3NldF90ZXJtaW9zKCkgY2xlYXJlZCBSVFMgb24gZXZlcnkgY2Fs
-bCwgbm93IGZpeGVkLgo+Cj4gSXMgdGhpcyBhIHJlYWwgcHJvYmxlbSwgb3Igc29tZXRoaW5nIHlv
-dSBub3RpY2VkIGJ5IGxvb2tpbmcgYXQgdGhlIGNvZGU/Cj4gSSB0aGluayBJIGFscmVhZHkgYXNr
-ZWQgdGhhdCBpbiBhIHByZXZpb3VzIHJvdW5kLCBpZiBzbyB0aGlzIHNob3VsZCBhdAo+IGxlYXN0
-IGJlIGV4cGxhaW5lZCBpbiBtb3JlIGRldGFpbCBpbiB0aGUgY29tbWl0IGxvZy4KClllcywgaXQg
-d2FzIHJlYWwgb2JzZXJ2ZWQgcHJvYmxlbS4gRXZlcnkgY2FsbCB0byBzZXRfdGVybWlvcyBmcm9t
-IHVzZXIKc3BhY2UgKHRocm91Z2ggdGNzZXRhdHRyKCkgZnVuY3Rpb24pIGNsZWFyZWQgUlRTLgoK
-PiBBbHNvIHBsZWFzZSBub3RlIHRoYXQgdGhpcyBpcyBhYm91dCB0aGUgVUNSMl9DVFMgZmxhZy4g
-KEl0IGlzLCBpc24ndAo+IGl0PyBJIGRvbid0IHVuZGVyc3RhbmQgaXQgYWZ0ZXIgc3RhcmluZyBh
-dCB0aGUgY29kZSBmb3IgYSB3aGlsZS4pCgoiQ1RTIiBpbiBpTVggdGVybXMgbWVhbnMgd2hhdCBl
-dmVyeWJvZHkgZWxzZSBjYWxscyAiUlRTIiEgUGxlYXNlIG5vdGljZQpob3cgdGhleSBhcmUgdXNl
-ZCBpbiB0aGUgZW50aXJlIGRyaXZlciwgZS5nLjoKCgkJaWYgKG1jdHJsICYgVElPQ01fUlRTKSB7
-CgkJCXVjcjIgfD0gVUNSMl9DVFM7CgoKPiBBc3N1bWluZyB0aGlzIGlzIGEgcmVhbCBmaXgsIGl0
-IHdvdWxkIGJlIGdyZWF0IGlmIHRoaXMgcGF0Y2ggY2FtZSBmaXJzdAo+IGluIHRoZSBzZXJpZXMg
-KGkuZS4gYmVmb3JlIHRoZSBjbGVhbnVwcykgYW5kIHdvdWxkIGJlIG1vcmUgc3RyYWlnaHQKPiBm
-b3J3YXJkIHRvIHVuZGVyc3RhbmQuCgpJIHJhdGhlciBiZWxpZXZlIHRoYXQgcHJlLWNsZWFudXBz
-IGFjdHVhbGx5IG1ha2UgdGhlIGZpeCBtb3JlCnN0cmFpZ2h0Zm9yd2FyZCB0byB1bmRlcnN0YW5k
-LgoKVGhhbmtzIQoKLS0gU2VyZ2V5CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2Vy
-bmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1h
-bi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
+On Wed, Jun 26, 2019 at 12:15:56PM +0200, Sascha Hauer wrote:
+> We have an interrupt for the CTS input (RTS in FSL speech). Its handler
+> calls uart_handle_cts_change(), so we shouldn't do this in
+> imx_uart_mctrl_check() again.
+> =
+
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+> ---
+>  drivers/tty/serial/imx.c | 6 ------
+>  1 file changed, 6 deletions(-)
+> =
+
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index a5e80a028e83..0419a084c0ed 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -805,12 +805,8 @@ static void imx_uart_clear_rx_errors(struct imx_port=
+ *sport);
+>  static unsigned int imx_uart_get_hwmctrl(struct imx_port *sport)
+>  {
+>  	unsigned int tmp =3D TIOCM_DSR;
+> -	unsigned usr1 =3D imx_uart_readl(sport, USR1);
+>  	unsigned usr2 =3D imx_uart_readl(sport, USR2);
+>  =
+
+> -	if (usr1 & USR1_RTSS)
+> -		tmp |=3D TIOCM_CTS;
+> -
+>  	/* in DCE mode DCDIN is always 0 */
+>  	if (!(usr2 & USR2_DCDIN))
+>  		tmp |=3D TIOCM_CAR;
+
+Is this hunk supposed to be included in this patch? I think it's wrong.
+
+> @@ -843,8 +839,6 @@ static void imx_uart_mctrl_check(struct imx_port *spo=
+rt)
+>  		sport->port.icount.dsr++;
+>  	if (changed & TIOCM_CAR)
+>  		uart_handle_dcd_change(&sport->port, status & TIOCM_CAR);
+> -	if (changed & TIOCM_CTS)
+> -		uart_handle_cts_change(&sport->port, status & TIOCM_CTS);
+
+This doesn't hurt, does it? Also imx_uart_mctrl_check is called from
+imx_uart_timeout which is supposed to catch missed interrupts and in
+this case uart_handle_cts_change() must be called.
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
