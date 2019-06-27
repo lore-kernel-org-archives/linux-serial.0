@@ -1,19 +1,17 @@
-From: Sergey Organov <sorganov@gmail.com>
-Subject: Re: [PATCH v2 3/7] serial: imx: set_termios(): clarify RTS/CTS bits
- calculation
-Date: Thu, 27 Jun 2019 08:58:06 +0300
-Message-ID: <87k1d7k1sh.fsf@osv.gnss.ru>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v2 6/7] serial: imx: set_mctrl(): correctly restore
+ autoRTS state
+Date: Thu, 27 Jun 2019 08:05:37 +0200
+Message-ID: <20190627060537.brmgsmoh3usr4vo6@pengutronix.de>
 References: <20190614072801.3187-1-s.hauer@pengutronix.de>
  <1561558293-7683-1-git-send-email-sorganov@gmail.com>
- <1561558293-7683-4-git-send-email-sorganov@gmail.com>
- <20190627052652.ey7cmzkztylfy7k3@pengutronix.de>
+ <1561558293-7683-7-git-send-email-sorganov@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190627052652.ey7cmzkztylfy7k3@pengutronix.de> ("Uwe
- \=\?utf-8\?Q\?Kleine-K\=C3\=B6nig\=22's\?\= message of "Thu,
- 27 Jun 2019 07:26:52 +0200")
+Content-Disposition: inline
+In-Reply-To: <1561558293-7683-7-git-send-email-sorganov@gmail.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -23,67 +21,76 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Sergey Organov <sorganov@gmail.com>
 Cc: Pengutronix Kernel Team <kernel@pengutronix.de>, Sascha Hauer <s.hauer@pengutronix.de>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
-VXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4gd3JpdGVz
-OgoKPiBPbiBXZWQsIEp1biAyNiwgMjAxOSBhdCAwNToxMToyOVBNICswMzAwLCBTZXJnZXkgT3Jn
-YW5vdiB3cm90ZToKPj4gQXZvaWQgcmVwZWF0aW5nIHRoZSBzYW1lIGNvZGUgZm9yIHJzNDg1IHR3
-aWNlLgo+PiAKPj4gTWFrZSBpdCBvYnZpb3VzIHdlIGNsZWFyIENSVFNDVFMgYml0IGluIHRlcm1p
-b3MtPmNfY2ZsYWcgd2hlbmV2ZXIKPj4gc3BvcnQtPmhhdmVfcnRzY3RzIGlzIGZhbHNlLgo+PiAK
-Pj4gTWFrZSBpdCBvYnZpb3VzIHdlIGNsZWFyIFVDUjJfSVJUUyB3aGVuZXZlciBDUlRTQ1RTIGlz
-IHNldC4KPj4gCj4+IFJldmlld2VkLWJ5OiBTYXNjaGEgSGF1ZXIgPHMuaGF1ZXJAcGVuZ3V0cm9u
-aXguZGU+Cj4+IFRlc3RlZC1ieTogU2FzY2hhIEhhdWVyIDxzLmhhdWVyQHBlbmd1dHJvbml4LmRl
-Pgo+PiBTaWduZWQtb2ZmLWJ5OiBTZXJnZXkgT3JnYW5vdiA8c29yZ2Fub3ZAZ21haWwuY29tPgo+
-PiAtLS0KPj4gIGRyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyB8IDM2ICsrKysrKysrKysrKystLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLQo+PiAgMSBmaWxlIGNoYW5nZWQsIDEzIGluc2VydGlvbnMoKyks
-IDIzIGRlbGV0aW9ucygtKQo+PiAKPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9p
-bXguYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYwo+PiBpbmRleCA4NzgwMmZkLi4xN2UyMzIy
-IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMKPj4gKysrIGIvZHJpdmVy
-cy90dHkvc2VyaWFsL2lteC5jCj4+IEBAIC0xNTY3LDM1ICsxNTY3LDI1IEBAIGlteF91YXJ0X3Nl
-dF90ZXJtaW9zKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsIHN0cnVjdCBrdGVybWlvcyAqdGVybWlv
-cywKPj4gIAlpZiAoKHRlcm1pb3MtPmNfY2ZsYWcgJiBDU0laRSkgPT0gQ1M4KQo+PiAgCQl1Y3Iy
-IHw9IFVDUjJfV1M7Cj4+ICAKPj4gLQlpZiAodGVybWlvcy0+Y19jZmxhZyAmIENSVFNDVFMpIHsK
-Pj4gLQkJaWYgKHNwb3J0LT5oYXZlX3J0c2N0cykgewo+PiAtCQkJdWNyMiAmPSB+VUNSMl9JUlRT
-Owo+PiArCWlmICghc3BvcnQtPmhhdmVfcnRzY3RzKQo+PiArCQl0ZXJtaW9zLT5jX2NmbGFnICY9
-IH5DUlRTQ1RTOwo+PiAgCj4+IC0JCQlpZiAocG9ydC0+cnM0ODUuZmxhZ3MgJiBTRVJfUlM0ODVf
-RU5BQkxFRCkgewo+PiAtCQkJCS8qCj4+IC0JCQkJICogUlRTIGlzIG1hbmRhdG9yeSBmb3IgcnM0
-ODUgb3BlcmF0aW9uLCBzbyBrZWVwCj4+IC0JCQkJICogaXQgdW5kZXIgbWFudWFsIGNvbnRyb2wg
-YW5kIGtlZXAgdHJhbnNtaXR0ZXIKPj4gLQkJCQkgKiBkaXNhYmxlZC4KPj4gLQkJCQkgKi8KPj4g
-LQkJCQlpZiAocG9ydC0+cnM0ODUuZmxhZ3MgJgo+PiAtCQkJCSAgICBTRVJfUlM0ODVfUlRTX0FG
-VEVSX1NFTkQpCj4+IC0JCQkJCWlteF91YXJ0X3J0c19hY3RpdmUoc3BvcnQsICZ1Y3IyKTsKPj4g
-LQkJCQllbHNlCj4+IC0JCQkJCWlteF91YXJ0X3J0c19pbmFjdGl2ZShzcG9ydCwgJnVjcjIpOwo+
-PiAtCQkJfSBlbHNlIHsKPj4gLQkJCQlpbXhfdWFydF9ydHNfYXV0byhzcG9ydCwgJnVjcjIpOwo+
-PiAtCQkJfQo+PiAtCQl9IGVsc2Ugewo+PiAtCQkJdGVybWlvcy0+Y19jZmxhZyAmPSB+Q1JUU0NU
-UzsKPj4gLQkJfQo+PiAtCX0gZWxzZSBpZiAocG9ydC0+cnM0ODUuZmxhZ3MgJiBTRVJfUlM0ODVf
-RU5BQkxFRCkgewo+PiAtCQkvKiBkaXNhYmxlIHRyYW5zbWl0dGVyICovCj4+ICsJaWYgKHBvcnQt
-PnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJMRUQpIHsKPj4gKwkJLyoKPj4gKwkJICogUlRT
-IGlzIG1hbmRhdG9yeSBmb3IgcnM0ODUgb3BlcmF0aW9uLCBzbyBrZWVwCj4+ICsJCSAqIGl0IHVu
-ZGVyIG1hbnVhbCBjb250cm9sIGFuZCBrZWVwIHRyYW5zbWl0dGVyCj4+ICsJCSAqIGRpc2FibGVk
-Lgo+PiArCQkgKi8KPj4gIAkJaWYgKHBvcnQtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X1JUU19B
-RlRFUl9TRU5EKQo+PiAgCQkJaW14X3VhcnRfcnRzX2FjdGl2ZShzcG9ydCwgJnVjcjIpOwo+PiAg
-CQllbHNlCj4+ICAJCQlpbXhfdWFydF9ydHNfaW5hY3RpdmUoc3BvcnQsICZ1Y3IyKTsKPj4gLQl9
-Cj4+ICAKPj4gKwl9IGVsc2UgaWYgKHRlcm1pb3MtPmNfY2ZsYWcgJiBDUlRTQ1RTKQo+PiArCQlp
-bXhfdWFydF9ydHNfYXV0byhzcG9ydCwgJnVjcjIpOwo+Cj4gSGVyZSBhIHNldCBvZiBicmFjZXMg
-aXMgbmVlZGVkIGV2ZW4gaWYgdGhlIGJvZHkgaGFzIG9ubHkgYSBzaW5nbGUKPiBsaW5lLgoKUmVh
-bGx5PyBzY3JpcHRzL2NoZWNrcGF0Y2gucGwgZGlkbid0IGNhdGNoIHRoaXMuCgpJZiBuZWVkZWQs
-IGlzIGl0IGVzc2VudGlhbCBlbm91Z2ggdG8gZml4IGhlcmUsIGFzIGZpbmFsIHJlc3VsdCBoYXMg
-dGhpcwpjaHVuayBkaWZmZXJlbnQgYW55d2F5IChhbmQgd2l0aCBicmFjZXMpPwoKPgo+PiArCj4+
-ICsJaWYgKHRlcm1pb3MtPmNfY2ZsYWcgJiBDUlRTQ1RTKQo+PiArCQl1Y3IyICY9IH5VQ1IyX0lS
-VFM7Cj4+ICAKPj4gIAlpZiAodGVybWlvcy0+Y19jZmxhZyAmIENTVE9QQikKPj4gIAkJdWNyMiB8
-PSBVQ1IyX1NUUEI7Cj4KPiBJcyB0aGlzIHBhdGNoIGludGVuZGVkIHRvIG5vdCBjaGFuZ2Ugc2Vt
-YW50aWM/IEkgd29uZGVyIGlmIGl0IGhpZGVzIGEKPiBmaXggYmVjYXVzZSBpZiBpbXhfdWFydF9z
-ZXRfdGVybWlvcygpIHdhcyBjYWxsZWQgd2l0aCB0ZXJtaW9zLT5jX2NmbGFnCj4gJiBDUlRTQ1RT
-IGFuZCAhc3BvcnQtPmhhdmVfcnRzY3RzIHRoZSByczQ4NSBibG9jayB3YXMgbm90IHJlYWNoZWQu
-IE5vdwo+IGl0IGlzLgoKQXMgY29tbWVudCBzYXlzICJSVFMgaXMgbWFuZGF0b3J5IGZvciByczQ4
-NSBvcGVyYXRpb24iLCBJIGFzc3VtZWQKU0VSX1JTNDg1X0VOQUJMRUQgYW5kICFzcG9ydC0+aGF2
-ZV9ydHNjdHMgYXJlIGluY29tcGF0aWJsZSwgc28KdGhlcmUgc2hvdWxkIGJlIG5vIGFjdHVhbCBz
-ZW1hbnRpYyBjaGFuZ2UgaGVyZS4gSSBtZWFuOgoKCWlmIChwb3J0LT5yczQ4NS5mbGFncyAmIFNF
-Ul9SUzQ4NV9FTkFCTEVEKSB7CiAgICAgICAgCWFzc2VydChzcG9ydC0+aGF2ZV9ydHNjdHMpOwoK
-c2hvdWxkIG5ldmVyIGZpcmUuCgpEbyB5b3UgdGhpbmsgSSByYXRoZXIgbmVlZCB0byBwdXQgYWRk
-aXRpb25hbCBjaGVjayBmb3IKc3BvcnQtPmhhdmVfcnRzY3RzIGluc2lkZSB0aGUgU0VSX1JTNDg1
-X0VOQUJMRUQgY2FzZT8KClRoYW5rcyEKCi0tIFNlcmdleQoKX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QK
-bGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRl
-YWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+On Wed, Jun 26, 2019 at 05:11:32PM +0300, Sergey Organov wrote:
+> imx_uart_set_mctrl() happened to set UCR2_CTSC bit whenever TIOCM_RTS
+> was set, no matter if RTS/CTS handshake is enabled or not. Now fixed by
+> turning handshake on only when CRTSCTS bit for the port is set.
+> =
+
+> Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
+> Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
+> Signed-off-by: Sergey Organov <sorganov@gmail.com>
+> ---
+>  drivers/tty/serial/imx.c | 13 +++++++++++--
+>  1 file changed, 11 insertions(+), 2 deletions(-)
+> =
+
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 4867f80..171347d 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -970,10 +970,19 @@ static void imx_uart_set_mctrl(struct uart_port *po=
+rt, unsigned int mctrl)
+>  	if (!(port->rs485.flags & SER_RS485_ENABLED)) {
+>  		u32 ucr2;
+>  =
+
+> +		/*
+> +		 * Turn off autoRTS (UCR2_CTSC) if RTS is lowered and restore
+> +		 * autoRTS setting if RTS is raised. Inverted UCR2_IRTS is set
+> +		 * if and only if CRTSCTS bit is set for the port, so we use it
+> +		 * to get the state to restore to.
+> +		 */
+
+The comment is quite complicated. I like the comments of Sascha's patch
+that addressed the same issue better.
+
+Are you using UCR2_IRTS as an indicator if CRTSCTS is set? If it's that
+what you intend to express in the second sentence that is hard to grasp.
+Something like:
+
+	UCR2_IRTS is unset iff the port is configured for CRTSCTS
+
+Also as the value of the CTS bit doesn't matter if CTSC is set, the
+order of the checks could be swapped to result in easier code (IMHO at
+least) that doesn't need a nested if.
+
+Something like:
+
+	ucr2 =3D imx_uart_readl(sport, UCR2);
+	ucr2 &=3D ~(UCR2_CTS | UCR2_CTSC);
+
+	/* UCR2_IRTS is unset iff the port is configured for CRTSCTS */
+	crtscts =3D !(ucr2 & UCR2_IRTS);
+
+	if (!(mctrl & TIOCM_RTS)) {
+		/* Force RTS inactive, i.e. UCR2_CTS=3D0 and UCR2_CTSC=3D0 */
+	} else if (crtscts) {
+		/* let the receiver control RTS */
+		ucr2 |=3D UCR2_CTSC;
+	} else {
+		/* Force RTS active */
+		ucr2 |=3D UCR2_CTS;
+	}
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
