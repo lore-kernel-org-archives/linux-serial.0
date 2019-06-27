@@ -1,16 +1,19 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v2 1/7] serial: imx: fix locking in set_termios()
-Date: Thu, 27 Jun 2019 07:05:20 +0200
-Message-ID: <20190627050520.n7grqfspfypmff4e@pengutronix.de>
+From: Sergey Organov <sorganov@gmail.com>
+Subject: Re: [PATCH v2 6/7] serial: imx: set_mctrl(): correctly restore
+ autoRTS state
+Date: Thu, 27 Jun 2019 10:01:54 +0300
+Message-ID: <87imsrik9p.fsf@osv.gnss.ru>
 References: <20190614072801.3187-1-s.hauer@pengutronix.de>
  <1561558293-7683-1-git-send-email-sorganov@gmail.com>
- <1561558293-7683-2-git-send-email-sorganov@gmail.com>
+ <1561558293-7683-7-git-send-email-sorganov@gmail.com>
+ <20190627060537.brmgsmoh3usr4vo6@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1561558293-7683-2-git-send-email-sorganov@gmail.com>
+In-Reply-To: <20190627060537.brmgsmoh3usr4vo6@pengutronix.de> ("Uwe
+ \=\?utf-8\?Q\?Kleine-K\=C3\=B6nig\=22's\?\= message of "Thu,
+ 27 Jun 2019 08:05:37 +0200")
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -20,34 +23,66 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Sergey Organov <sorganov@gmail.com>
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 Cc: Pengutronix Kernel Team <kernel@pengutronix.de>, Sascha Hauer <s.hauer@pengutronix.de>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
-
-On Wed, Jun 26, 2019 at 05:11:27PM +0300, Sergey Organov wrote:
-> imx_uart_set_termios() called imx_uart_rts_active(), or
-> imx_uart_rts_inactive() before taking port->port.lock.
-> =
-
-> As a consequence, sport->port.mctrl that these functions modify
-> could have been changed without holding port->port.lock.
-> =
-
-> Moved locking of port->port.lock above the calls to fix the issue.
-> =
-
-> Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
-> Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
-> Signed-off-by: Sergey Organov <sorganov@gmail.com>
-
-Reviewed-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+VXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4gd3JpdGVz
+OgoKPiBPbiBXZWQsIEp1biAyNiwgMjAxOSBhdCAwNToxMTozMlBNICswMzAwLCBTZXJnZXkgT3Jn
+YW5vdiB3cm90ZToKPj4gaW14X3VhcnRfc2V0X21jdHJsKCkgaGFwcGVuZWQgdG8gc2V0IFVDUjJf
+Q1RTQyBiaXQgd2hlbmV2ZXIgVElPQ01fUlRTCj4+IHdhcyBzZXQsIG5vIG1hdHRlciBpZiBSVFMv
+Q1RTIGhhbmRzaGFrZSBpcyBlbmFibGVkIG9yIG5vdC4gTm93IGZpeGVkIGJ5Cj4+IHR1cm5pbmcg
+aGFuZHNoYWtlIG9uIG9ubHkgd2hlbiBDUlRTQ1RTIGJpdCBmb3IgdGhlIHBvcnQgaXMgc2V0Lgo+
+PiAKPj4gUmV2aWV3ZWQtYnk6IFNhc2NoYSBIYXVlciA8cy5oYXVlckBwZW5ndXRyb25peC5kZT4K
+Pj4gVGVzdGVkLWJ5OiBTYXNjaGEgSGF1ZXIgPHMuaGF1ZXJAcGVuZ3V0cm9uaXguZGU+Cj4+IFNp
+Z25lZC1vZmYtYnk6IFNlcmdleSBPcmdhbm92IDxzb3JnYW5vdkBnbWFpbC5jb20+Cj4+IC0tLQo+
+PiAgZHJpdmVycy90dHkvc2VyaWFsL2lteC5jIHwgMTMgKysrKysrKysrKystLQo+PiAgMSBmaWxl
+IGNoYW5nZWQsIDExIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCj4+IAo+PiBkaWZmIC0t
+Z2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jIGIvZHJpdmVycy90dHkvc2VyaWFsL2lteC5j
+Cj4+IGluZGV4IDQ4NjdmODAuLjE3MTM0N2QgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvdHR5L3Nl
+cmlhbC9pbXguYwo+PiArKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMKPj4gQEAgLTk3MCwx
+MCArOTcwLDE5IEBAIHN0YXRpYyB2b2lkIGlteF91YXJ0X3NldF9tY3RybChzdHJ1Y3QgdWFydF9w
+b3J0ICpwb3J0LCB1bnNpZ25lZCBpbnQgbWN0cmwpCj4+ICAJaWYgKCEocG9ydC0+cnM0ODUuZmxh
+Z3MgJiBTRVJfUlM0ODVfRU5BQkxFRCkpIHsKPj4gIAkJdTMyIHVjcjI7Cj4+ICAKPj4gKwkJLyoK
+Pj4gKwkJICogVHVybiBvZmYgYXV0b1JUUyAoVUNSMl9DVFNDKSBpZiBSVFMgaXMgbG93ZXJlZCBh
+bmQgcmVzdG9yZQo+PiArCQkgKiBhdXRvUlRTIHNldHRpbmcgaWYgUlRTIGlzIHJhaXNlZC4gSW52
+ZXJ0ZWQgVUNSMl9JUlRTIGlzIHNldAo+PiArCQkgKiBpZiBhbmQgb25seSBpZiBDUlRTQ1RTIGJp
+dCBpcyBzZXQgZm9yIHRoZSBwb3J0LCBzbyB3ZSB1c2UgaXQKPj4gKwkJICogdG8gZ2V0IHRoZSBz
+dGF0ZSB0byByZXN0b3JlIHRvLgo+PiArCQkgKi8KPgo+IFRoZSBjb21tZW50IGlzIHF1aXRlIGNv
+bXBsaWNhdGVkLiBJIGxpa2UgdGhlIGNvbW1lbnRzIG9mIFNhc2NoYSdzIHBhdGNoCj4gdGhhdCBh
+ZGRyZXNzZWQgdGhlIHNhbWUgaXNzdWUgYmV0dGVyLgoKVGhpcyBvbmUgaXMgc2ltcGx5IG1vZGVs
+ZWQgYWZ0ZXIgc2ltaWxhciBjb21tZW50cyBpbiBvdGhlciBkcml2ZXJzLAp0aGVuIGFkZGluZyB0
+aGUgc3BlY2lmaWNzLgoKPiBBcmUgeW91IHVzaW5nIFVDUjJfSVJUUyBhcyBhbiBpbmRpY2F0b3Ig
+aWYgQ1JUU0NUUyBpcyBzZXQ/IElmIGl0J3MgdGhhdAo+IHdoYXQgeW91IGludGVuZCB0byBleHBy
+ZXNzIGluIHRoZSBzZWNvbmQgc2VudGVuY2UgdGhhdCBpcyBoYXJkIHRvIGdyYXNwLgo+IFNvbWV0
+aGluZyBsaWtlOgo+Cj4gCVVDUjJfSVJUUyBpcyB1bnNldCBpZmYgdGhlIHBvcnQgaXMgY29uZmln
+dXJlZCBmb3IgQ1JUU0NUUwoKWWVhaCwgZXhhY3RseS4gRmluZSwgSSdsbCBjaGFuZ2UgdGhpcywg
+dGhhbmtzIQoKPgo+IEFsc28gYXMgdGhlIHZhbHVlIG9mIHRoZSBDVFMgYml0IGRvZXNuJ3QgbWF0
+dGVyIGlmIENUU0MgaXMgc2V0LCB0aGUKPiBvcmRlciBvZiB0aGUgY2hlY2tzIGNvdWxkIGJlIHN3
+YXBwZWQgdG8gcmVzdWx0IGluIGVhc2llciBjb2RlIChJTUhPIGF0Cj4gbGVhc3QpIHRoYXQgZG9l
+c24ndCBuZWVkIGEgbmVzdGVkIGlmLgo+Cj4gU29tZXRoaW5nIGxpa2U6Cj4KPiAJdWNyMiA9IGlt
+eF91YXJ0X3JlYWRsKHNwb3J0LCBVQ1IyKTsKPiAJdWNyMiAmPSB+KFVDUjJfQ1RTIHwgVUNSMl9D
+VFNDKTsKPgo+IAkvKiBVQ1IyX0lSVFMgaXMgdW5zZXQgaWZmIHRoZSBwb3J0IGlzIGNvbmZpZ3Vy
+ZWQgZm9yIENSVFNDVFMgKi8KPiAJY3J0c2N0cyA9ICEodWNyMiAmIFVDUjJfSVJUUyk7Cj4KPiAJ
+aWYgKCEobWN0cmwgJiBUSU9DTV9SVFMpKSB7Cj4gCQkvKiBGb3JjZSBSVFMgaW5hY3RpdmUsIGku
+ZS4gVUNSMl9DVFM9MCBhbmQgVUNSMl9DVFNDPTAgKi8KPiAJfSBlbHNlIGlmIChjcnRzY3RzKSB7
+Cj4gCQkvKiBsZXQgdGhlIHJlY2VpdmVyIGNvbnRyb2wgUlRTICovCj4gCQl1Y3IyIHw9IFVDUjJf
+Q1RTQzsKPiAJfSBlbHNlIHsKPiAJCS8qIEZvcmNlIFJUUyBhY3RpdmUgKi8KPiAJCXVjcjIgfD0g
+VUNSMl9DVFM7Cj4gCX0KClJpZ2h0LCB0aGlzIGlzIGZ1bmN0aW9uYWxseSBjb3JyZWN0IGFzIHdl
+bGwsIGFuZCB0aHVzIGl0J3MgYSBtYXR0ZXIgb2YKdGFzdGUsIGJ1dCBJIHN0aWxsIGJlbGlldmUg
+dGhhdCB3aGF0IEkgc3VnZ2VzdGVkIGlzIGJldHRlcjoKCgl1Y3IyID0gaW14X3VhcnRfcmVhZGwo
+c3BvcnQsIFVDUjIpOwoJdWNyMiAmPSB+KFVDUjJfQ1RTIHwgVUNSMl9DVFNDKTsKCWlmIChtY3Ry
+bCAmIFRJT0NNX1JUUykgewoJCXVjcjIgfD0gVUNSMl9DVFM7CgkJaWYgKCEodWNyMiAmIFVDUjJf
+SVJUUykpCgkJCXVjcjIgfD0gVUNSMl9DVFNDOwoJfQoKRmlyc3QsIGl0IGFsd2F5cyBzZXRzIGhh
+cmR3YXJlIFJUUyBhY2NvcmRpbmcgdG8gVElPQ01fUlRTLCB0aGF0IElNSE8gaXMKbGVzcyBzdXJw
+cmlzaW5nIHRoYW4gY2xlYXJpbmcgaGFyZHdhcmUgUlRTIGJpdCB3aGVuIHBvcnQgaXMgY29uZmln
+dXJlZApDUlRTQ1RTLgoKU2Vjb25kLCAodW5mb3J0dW5hdGUpIGludGVyLWRlcGVuZGVuY3kgYmV0
+d2VlbiBUSU9DTV9SVFMgYW5kIENSVFNDVFMgaXMKYmV0dGVyIGlzb2xhdGVkLCBzbyB0byBnZXQg
+cmlkIG9mIGl0IChldmVuIGlmIG9ubHkgbWVudGFsbHkpLCBvbmx5CnJlbW92YWxzIGFyZSByZXF1
+aXJlZCwgdGhhdCByZWR1Y2VzIHRoZSBjb2RlIHRvIHF1aXRlIG9idmlvdXM6CgoJdWNyMiA9IGlt
+eF91YXJ0X3JlYWRsKHNwb3J0LCBVQ1IyKTsKCXVjcjIgJj0gfihVQ1IyX0NUUyk7CglpZiAobWN0
+cmwgJiBUSU9DTV9SVFMpCgkJdWNyMiB8PSBVQ1IyX0NUUzsKClRoYW5rcyEKCi0tIFNlcmdleQoK
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJt
+LWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3Jn
+Cmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtl
+cm5lbAo=
