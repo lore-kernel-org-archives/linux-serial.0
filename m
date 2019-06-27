@@ -1,17 +1,19 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v2 5/7] serial: imx: set_termios(): do not enable autoRTS
- if RTS is unset
-Date: Thu, 27 Jun 2019 07:47:33 +0200
-Message-ID: <20190627054733.wssatfb2i257737m@pengutronix.de>
+From: Sergey Organov <sorganov@gmail.com>
+Subject: Re: [PATCH v2 3/7] serial: imx: set_termios(): clarify RTS/CTS bits
+ calculation
+Date: Thu, 27 Jun 2019 08:58:06 +0300
+Message-ID: <87k1d7k1sh.fsf@osv.gnss.ru>
 References: <20190614072801.3187-1-s.hauer@pengutronix.de>
  <1561558293-7683-1-git-send-email-sorganov@gmail.com>
- <1561558293-7683-6-git-send-email-sorganov@gmail.com>
+ <1561558293-7683-4-git-send-email-sorganov@gmail.com>
+ <20190627052652.ey7cmzkztylfy7k3@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1561558293-7683-6-git-send-email-sorganov@gmail.com>
+In-Reply-To: <20190627052652.ey7cmzkztylfy7k3@pengutronix.de> ("Uwe
+ \=\?utf-8\?Q\?Kleine-K\=C3\=B6nig\=22's\?\= message of "Thu,
+ 27 Jun 2019 07:26:52 +0200")
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -21,45 +23,67 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Sergey Organov <sorganov@gmail.com>
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 Cc: Pengutronix Kernel Team <kernel@pengutronix.de>, Sascha Hauer <s.hauer@pengutronix.de>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Jun 26, 2019 at 05:11:31PM +0300, Sergey Organov wrote:
-> set_termios() shouldn't set UCR2_CTSC bit if UCR2_CTS (=3DTIOCM_RTS) is
-> cleared. Added corresponding check in imx_uart_rts_auto() to fix this.
-> =
-
-> Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
-> Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
-> Signed-off-by: Sergey Organov <sorganov@gmail.com>
-> ---
->  drivers/tty/serial/imx.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> =
-
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index e0f5365..4867f80 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -405,7 +405,8 @@ static void imx_uart_rts_inactive(struct imx_port *sp=
-ort, u32 *ucr2)
->  /* called with port.lock taken and irqs caller dependent */
->  static void imx_uart_rts_auto(struct imx_port *sport, u32 *ucr2)
->  {
-> -	*ucr2 |=3D UCR2_CTSC;
-> +	if (*ucr2 & UCR2_CTS)
-> +		*ucr2 |=3D UCR2_CTSC;
->  }
-
-I wonder if this patch is only correct in the presence of the previous
-patch. With the code currently in mainline imx_uart_rts_auto() is only
-called with UCR2_CTS unset.
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+VXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4gd3JpdGVz
+OgoKPiBPbiBXZWQsIEp1biAyNiwgMjAxOSBhdCAwNToxMToyOVBNICswMzAwLCBTZXJnZXkgT3Jn
+YW5vdiB3cm90ZToKPj4gQXZvaWQgcmVwZWF0aW5nIHRoZSBzYW1lIGNvZGUgZm9yIHJzNDg1IHR3
+aWNlLgo+PiAKPj4gTWFrZSBpdCBvYnZpb3VzIHdlIGNsZWFyIENSVFNDVFMgYml0IGluIHRlcm1p
+b3MtPmNfY2ZsYWcgd2hlbmV2ZXIKPj4gc3BvcnQtPmhhdmVfcnRzY3RzIGlzIGZhbHNlLgo+PiAK
+Pj4gTWFrZSBpdCBvYnZpb3VzIHdlIGNsZWFyIFVDUjJfSVJUUyB3aGVuZXZlciBDUlRTQ1RTIGlz
+IHNldC4KPj4gCj4+IFJldmlld2VkLWJ5OiBTYXNjaGEgSGF1ZXIgPHMuaGF1ZXJAcGVuZ3V0cm9u
+aXguZGU+Cj4+IFRlc3RlZC1ieTogU2FzY2hhIEhhdWVyIDxzLmhhdWVyQHBlbmd1dHJvbml4LmRl
+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBTZXJnZXkgT3JnYW5vdiA8c29yZ2Fub3ZAZ21haWwuY29tPgo+
+PiAtLS0KPj4gIGRyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyB8IDM2ICsrKysrKysrKysrKystLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLQo+PiAgMSBmaWxlIGNoYW5nZWQsIDEzIGluc2VydGlvbnMoKyks
+IDIzIGRlbGV0aW9ucygtKQo+PiAKPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9p
+bXguYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYwo+PiBpbmRleCA4NzgwMmZkLi4xN2UyMzIy
+IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMKPj4gKysrIGIvZHJpdmVy
+cy90dHkvc2VyaWFsL2lteC5jCj4+IEBAIC0xNTY3LDM1ICsxNTY3LDI1IEBAIGlteF91YXJ0X3Nl
+dF90ZXJtaW9zKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsIHN0cnVjdCBrdGVybWlvcyAqdGVybWlv
+cywKPj4gIAlpZiAoKHRlcm1pb3MtPmNfY2ZsYWcgJiBDU0laRSkgPT0gQ1M4KQo+PiAgCQl1Y3Iy
+IHw9IFVDUjJfV1M7Cj4+ICAKPj4gLQlpZiAodGVybWlvcy0+Y19jZmxhZyAmIENSVFNDVFMpIHsK
+Pj4gLQkJaWYgKHNwb3J0LT5oYXZlX3J0c2N0cykgewo+PiAtCQkJdWNyMiAmPSB+VUNSMl9JUlRT
+Owo+PiArCWlmICghc3BvcnQtPmhhdmVfcnRzY3RzKQo+PiArCQl0ZXJtaW9zLT5jX2NmbGFnICY9
+IH5DUlRTQ1RTOwo+PiAgCj4+IC0JCQlpZiAocG9ydC0+cnM0ODUuZmxhZ3MgJiBTRVJfUlM0ODVf
+RU5BQkxFRCkgewo+PiAtCQkJCS8qCj4+IC0JCQkJICogUlRTIGlzIG1hbmRhdG9yeSBmb3IgcnM0
+ODUgb3BlcmF0aW9uLCBzbyBrZWVwCj4+IC0JCQkJICogaXQgdW5kZXIgbWFudWFsIGNvbnRyb2wg
+YW5kIGtlZXAgdHJhbnNtaXR0ZXIKPj4gLQkJCQkgKiBkaXNhYmxlZC4KPj4gLQkJCQkgKi8KPj4g
+LQkJCQlpZiAocG9ydC0+cnM0ODUuZmxhZ3MgJgo+PiAtCQkJCSAgICBTRVJfUlM0ODVfUlRTX0FG
+VEVSX1NFTkQpCj4+IC0JCQkJCWlteF91YXJ0X3J0c19hY3RpdmUoc3BvcnQsICZ1Y3IyKTsKPj4g
+LQkJCQllbHNlCj4+IC0JCQkJCWlteF91YXJ0X3J0c19pbmFjdGl2ZShzcG9ydCwgJnVjcjIpOwo+
+PiAtCQkJfSBlbHNlIHsKPj4gLQkJCQlpbXhfdWFydF9ydHNfYXV0byhzcG9ydCwgJnVjcjIpOwo+
+PiAtCQkJfQo+PiAtCQl9IGVsc2Ugewo+PiAtCQkJdGVybWlvcy0+Y19jZmxhZyAmPSB+Q1JUU0NU
+UzsKPj4gLQkJfQo+PiAtCX0gZWxzZSBpZiAocG9ydC0+cnM0ODUuZmxhZ3MgJiBTRVJfUlM0ODVf
+RU5BQkxFRCkgewo+PiAtCQkvKiBkaXNhYmxlIHRyYW5zbWl0dGVyICovCj4+ICsJaWYgKHBvcnQt
+PnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJMRUQpIHsKPj4gKwkJLyoKPj4gKwkJICogUlRT
+IGlzIG1hbmRhdG9yeSBmb3IgcnM0ODUgb3BlcmF0aW9uLCBzbyBrZWVwCj4+ICsJCSAqIGl0IHVu
+ZGVyIG1hbnVhbCBjb250cm9sIGFuZCBrZWVwIHRyYW5zbWl0dGVyCj4+ICsJCSAqIGRpc2FibGVk
+Lgo+PiArCQkgKi8KPj4gIAkJaWYgKHBvcnQtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X1JUU19B
+RlRFUl9TRU5EKQo+PiAgCQkJaW14X3VhcnRfcnRzX2FjdGl2ZShzcG9ydCwgJnVjcjIpOwo+PiAg
+CQllbHNlCj4+ICAJCQlpbXhfdWFydF9ydHNfaW5hY3RpdmUoc3BvcnQsICZ1Y3IyKTsKPj4gLQl9
+Cj4+ICAKPj4gKwl9IGVsc2UgaWYgKHRlcm1pb3MtPmNfY2ZsYWcgJiBDUlRTQ1RTKQo+PiArCQlp
+bXhfdWFydF9ydHNfYXV0byhzcG9ydCwgJnVjcjIpOwo+Cj4gSGVyZSBhIHNldCBvZiBicmFjZXMg
+aXMgbmVlZGVkIGV2ZW4gaWYgdGhlIGJvZHkgaGFzIG9ubHkgYSBzaW5nbGUKPiBsaW5lLgoKUmVh
+bGx5PyBzY3JpcHRzL2NoZWNrcGF0Y2gucGwgZGlkbid0IGNhdGNoIHRoaXMuCgpJZiBuZWVkZWQs
+IGlzIGl0IGVzc2VudGlhbCBlbm91Z2ggdG8gZml4IGhlcmUsIGFzIGZpbmFsIHJlc3VsdCBoYXMg
+dGhpcwpjaHVuayBkaWZmZXJlbnQgYW55d2F5IChhbmQgd2l0aCBicmFjZXMpPwoKPgo+PiArCj4+
+ICsJaWYgKHRlcm1pb3MtPmNfY2ZsYWcgJiBDUlRTQ1RTKQo+PiArCQl1Y3IyICY9IH5VQ1IyX0lS
+VFM7Cj4+ICAKPj4gIAlpZiAodGVybWlvcy0+Y19jZmxhZyAmIENTVE9QQikKPj4gIAkJdWNyMiB8
+PSBVQ1IyX1NUUEI7Cj4KPiBJcyB0aGlzIHBhdGNoIGludGVuZGVkIHRvIG5vdCBjaGFuZ2Ugc2Vt
+YW50aWM/IEkgd29uZGVyIGlmIGl0IGhpZGVzIGEKPiBmaXggYmVjYXVzZSBpZiBpbXhfdWFydF9z
+ZXRfdGVybWlvcygpIHdhcyBjYWxsZWQgd2l0aCB0ZXJtaW9zLT5jX2NmbGFnCj4gJiBDUlRTQ1RT
+IGFuZCAhc3BvcnQtPmhhdmVfcnRzY3RzIHRoZSByczQ4NSBibG9jayB3YXMgbm90IHJlYWNoZWQu
+IE5vdwo+IGl0IGlzLgoKQXMgY29tbWVudCBzYXlzICJSVFMgaXMgbWFuZGF0b3J5IGZvciByczQ4
+NSBvcGVyYXRpb24iLCBJIGFzc3VtZWQKU0VSX1JTNDg1X0VOQUJMRUQgYW5kICFzcG9ydC0+aGF2
+ZV9ydHNjdHMgYXJlIGluY29tcGF0aWJsZSwgc28KdGhlcmUgc2hvdWxkIGJlIG5vIGFjdHVhbCBz
+ZW1hbnRpYyBjaGFuZ2UgaGVyZS4gSSBtZWFuOgoKCWlmIChwb3J0LT5yczQ4NS5mbGFncyAmIFNF
+Ul9SUzQ4NV9FTkFCTEVEKSB7CiAgICAgICAgCWFzc2VydChzcG9ydC0+aGF2ZV9ydHNjdHMpOwoK
+c2hvdWxkIG5ldmVyIGZpcmUuCgpEbyB5b3UgdGhpbmsgSSByYXRoZXIgbmVlZCB0byBwdXQgYWRk
+aXRpb25hbCBjaGVjayBmb3IKc3BvcnQtPmhhdmVfcnRzY3RzIGluc2lkZSB0aGUgU0VSX1JTNDg1
+X0VOQUJMRUQgY2FzZT8KClRoYW5rcyEKCi0tIFNlcmdleQoKX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QK
+bGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRl
+YWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
