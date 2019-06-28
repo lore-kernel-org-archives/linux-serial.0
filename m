@@ -1,246 +1,184 @@
 From: Marc Zyngier <marc.zyngier@arm.com>
-Subject: Re: [patch 1/5] genirq: Delay deactivation in free_irq()
-Date: Fri, 28 Jun 2019 08:42:06 +0100
-Message-ID: <0bb6aae3-744b-7752-04ec-9a0e68fb86e6@arm.com>
+Subject: Re: [patch 2/5] genirq: Add optional hardware synchronization for
+ shutdown
+Date: Fri, 28 Jun 2019 08:59:01 +0100
+Message-ID: <dbcd11d3-c967-a0a0-02a6-86d162f93a56@arm.com>
 References: <20190625111353.863718167@linutronix.de>
- <20190625112405.573914765@linutronix.de>
+ <20190625112405.666964552@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190625112405.573914765@linutronix.de>
+In-Reply-To: <20190625112405.666964552@linutronix.de>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Thomas Gleixner <tglx@linutronix.de>, LKML <linux-kernel@vger.kernel.org>
 Cc: x86@kernel.org, Robert Hodaszi <Robert.Hodaszi@digi.com>, Vadim Pasternak <vadimp@mellanox.com>, Ido Schimmel <idosch@mellanox.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Thomas,
-
 On 25/06/2019 12:13, Thomas Gleixner wrote:
-> When interrupts are shutdown, they are immediately deactivated in the
-> irqdomain hierarchy. While this looks obviously correct there is a subtle
-> issue:
+> free_irq() ensures that no hardware interrupt handler is executing on a
+> different CPU before actually releasing resources and deactivating the
+> interrupt completely in a domain hierarchy.
 > 
-> There might be an interrupt in flight when free_irq() is invoking the
-> shutdown. This is properly handled at the irq descriptor / primary handler
-> level, but the deactivation might completely disable resources which are
-> required to acknowledge the interrupt.
+> But that does not catch the case where the interrupt is on flight at the
+> hardware level but not yet serviced by the target CPU. That creates an
+> interesing race condition:
 > 
-> Split the shutdown code and deactivate the interrupt after synchronization
-> in free_irq(). Fixup all other usage sites where this is not an issue to
-> invoke the combined shutdown_and_deactivate() function instead.
+>    CPU 0                  CPU 1               IRQ CHIP
 > 
-> This still might be an issue if the interrupt in flight servicing is
-> delayed on a remote CPU beyond the invocation of synchronize_irq(), but
-> that cannot be handled at that level and needs to be handled in the
-> synchronize_irq() context.
+>                                               interrupt is raised
+>                                               sent to CPU1
+> 			  Unable to handle
+> 			  immediately
+> 			  (interrupts off,
+> 			   deep idle delay)
+>    mask()
+>    ...
+>    free()
+>      shutdown()
+>      synchronize_irq()
+>      release_resources()
+>                           do_IRQ()
+>                             -> resources are not available
 > 
-> Fixes: f8264e34965a ("irqdomain: Introduce new interfaces to support hierarchy irqdomains")
+> That might be harmless and just trigger a spurious interrupt warning, but
+> some interrupt chips might get into a wedged state.
+> 
+> Provide infrastructure for interrupt chips to provide an optional
+> irq_inflight() callback and use it for the synchronization in free_irq().
+> 
+> synchronize_[hard]irq() are not using this mechanism as it might actually
+> deadlock unter certain conditions.
+> 
+> Fixes: 464d12309e1b ("x86/vector: Switch IOAPIC to global reservation mode")
 > Reported-by: Robert Hodaszi <Robert.Hodaszi@digi.com>
 > Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 > ---
->  kernel/irq/autoprobe.c  |    6 +++---
->  kernel/irq/chip.c       |    6 ++++++
->  kernel/irq/cpuhotplug.c |    2 +-
->  kernel/irq/internals.h  |    1 +
->  kernel/irq/manage.c     |   12 +++++++++++-
->  5 files changed, 22 insertions(+), 5 deletions(-)
+>  include/linux/irq.h |    2 ++
+>  kernel/irq/manage.c |   29 ++++++++++++++++++++++++-----
+>  2 files changed, 26 insertions(+), 5 deletions(-)
 > 
-> --- a/kernel/irq/autoprobe.c
-> +++ b/kernel/irq/autoprobe.c
-> @@ -90,7 +90,7 @@ unsigned long probe_irq_on(void)
->  			/* It triggered already - consider it spurious. */
->  			if (!(desc->istate & IRQS_WAITING)) {
->  				desc->istate &= ~IRQS_AUTODETECT;
-> -				irq_shutdown(desc);
-> +				irq_shutdown_and_deactivate(desc);
->  			} else
->  				if (i < 32)
->  					mask |= 1 << i;
-> @@ -127,7 +127,7 @@ unsigned int probe_irq_mask(unsigned lon
->  				mask |= 1 << i;
+> --- a/include/linux/irq.h
+> +++ b/include/linux/irq.h
+> @@ -418,6 +418,7 @@ static inline irq_hw_number_t irqd_to_hw
+>   *			required. This is used for CPU hotplug where the
+>   *			target CPU is not yet set in the cpu_online_mask.
+>   * @irq_retrigger:	resend an IRQ to the CPU
+> + * @irq_inflight:	chip level detection of interrupts in flight (optional)
+>   * @irq_set_type:	set the flow type (IRQ_TYPE_LEVEL/etc.) of an IRQ
+>   * @irq_set_wake:	enable/disable power-management wake-on of an IRQ
+>   * @irq_bus_lock:	function to lock access to slow bus (i2c) chips
+> @@ -462,6 +463,7 @@ struct irq_chip {
 >  
->  			desc->istate &= ~IRQS_AUTODETECT;
-> -			irq_shutdown(desc);
-> +			irq_shutdown_and_deactivate(desc);
->  		}
->  		raw_spin_unlock_irq(&desc->lock);
->  	}
-> @@ -169,7 +169,7 @@ int probe_irq_off(unsigned long val)
->  				nr_of_irqs++;
->  			}
->  			desc->istate &= ~IRQS_AUTODETECT;
-> -			irq_shutdown(desc);
-> +			irq_shutdown_and_deactivate(desc);
->  		}
->  		raw_spin_unlock_irq(&desc->lock);
->  	}
-> --- a/kernel/irq/chip.c
-> +++ b/kernel/irq/chip.c
-> @@ -314,6 +314,12 @@ void irq_shutdown(struct irq_desc *desc)
->  		}
->  		irq_state_clr_started(desc);
->  	}
-> +}
-> +
-> +
-> +void irq_shutdown_and_deactivate(struct irq_desc *desc)
-> +{
-> +	irq_shutdown(desc);
->  	/*
->  	 * This must be called even if the interrupt was never started up,
->  	 * because the activation can happen before the interrupt is
-> --- a/kernel/irq/cpuhotplug.c
-> +++ b/kernel/irq/cpuhotplug.c
-> @@ -116,7 +116,7 @@ static bool migrate_one_irq(struct irq_d
->  		 */
->  		if (irqd_affinity_is_managed(d)) {
->  			irqd_set_managed_shutdown(d);
-> -			irq_shutdown(desc);
-> +			irq_shutdown_and_deactivate(desc);
->  			return false;
->  		}
->  		affinity = cpu_online_mask;
-> --- a/kernel/irq/internals.h
-> +++ b/kernel/irq/internals.h
-> @@ -82,6 +82,7 @@ extern int irq_activate_and_startup(stru
->  extern int irq_startup(struct irq_desc *desc, bool resend, bool force);
+>  	int		(*irq_set_affinity)(struct irq_data *data, const struct cpumask *dest, bool force);
+>  	int		(*irq_retrigger)(struct irq_data *data);
+> +	int		(*irq_inflight)(struct irq_data *data);
+
+I wonder how different this irq_inflight() is from the irq_get_irqchip_state()
+that can already report a number of states from the HW.
+
+It is also unclear to me how "in flight" maps to the internal state of
+the interrupt controller: Is it pending? Acked? If the interrupt has been
+masked already, pending should be harmless (the interrupt won't fire anymore).
+But seeing it in the acked would probably mean that it is on its way to being
+handled, with a potential splat.
+
+>  	int		(*irq_set_type)(struct irq_data *data, unsigned int flow_type);
+>  	int		(*irq_set_wake)(struct irq_data *data, unsigned int on);
 >  
->  extern void irq_shutdown(struct irq_desc *desc);
-> +extern void irq_shutdown_and_deactivate(struct irq_desc *desc);
->  extern void irq_enable(struct irq_desc *desc);
->  extern void irq_disable(struct irq_desc *desc);
->  extern void irq_percpu_enable(struct irq_desc *desc, unsigned int cpu);
 > --- a/kernel/irq/manage.c
 > +++ b/kernel/irq/manage.c
-> @@ -13,6 +13,7 @@
->  #include <linux/module.h>
->  #include <linux/random.h>
->  #include <linux/interrupt.h>
-> +#include <linux/irqdomain.h>
->  #include <linux/slab.h>
->  #include <linux/sched.h>
->  #include <linux/sched/rt.h>
-> @@ -1699,6 +1700,7 @@ static struct irqaction *__free_irq(stru
->  	/* If this was the last handler, shut down the IRQ line: */
->  	if (!desc->action) {
->  		irq_settings_clr_disable_unlazy(desc);
-> +		/* Only shutdown. Deactivate after synchronize_irq() */
-
-synchronize_hardirq()
-
->  		irq_shutdown(desc);
->  	}
+> @@ -35,8 +35,10 @@ static int __init setup_forced_irqthread
+>  early_param("threadirqs", setup_forced_irqthreads);
+>  #endif
 >  
-> @@ -1768,6 +1770,14 @@ static struct irqaction *__free_irq(stru
->  		 * require it to deallocate resources over the slow bus.
->  		 */
->  		chip_bus_lock(desc);
-> +		/*
-> +		 * There is no interrupt on the fly anymore. Deactivate it
-> +		 * completely.
-> +		 */
-> +		raw_spin_lock_irqsave(&desc->lock, flags);
-> +		irq_domain_deactivate_irq(&desc->irq_data);
-> +		raw_spin_unlock_irqrestore(&desc->lock, flags);
+> -static void __synchronize_hardirq(struct irq_desc *desc)
+> +static void __synchronize_hardirq(struct irq_desc *desc, bool sync_chip)
+>  {
+> +	struct irq_data *irqd = irq_desc_get_irq_data(desc);
+> +	struct irq_chip *chip = irq_data_get_irq_chip(irqd);
+>  	bool inprogress;
+>  
+>  	do {
+> @@ -52,6 +54,13 @@ static void __synchronize_hardirq(struct
+>  		/* Ok, that indicated we're done: double-check carefully. */
+>  		raw_spin_lock_irqsave(&desc->lock, flags);
+>  		inprogress = irqd_irq_inprogress(&desc->irq_data);
 > +
->  		irq_release_resources(desc);
->  		chip_bus_sync_unlock(desc);
->  		irq_remove_timings(desc);
-> @@ -1855,7 +1865,7 @@ static const void *__cleanup_nmi(unsigne
+> +		/*
+> +		 * If requested and supported, check at the chip whether it
+> +		 * is in flight at the hardware level:
+> +		 */
+> +		if (!inprogress && sync_chip && chip && chip->irq_inflight)
+> +			inprogress = chip->irq_inflight(irqd);
+
+To expand on what I was trying to exptree above, I wonder if that would 
+be similar to in effect to:
+
+		if (!inprogress && sync_chip && chip && chip->irq_get_irqchip_state)
+			chip->irq_get_irqchip_state(irqd, IRQCHIP_STATE_ACTIVE, &inprogress);
+				
+
+>  		raw_spin_unlock_irqrestore(&desc->lock, flags);
+>  
+>  		/* Oops, that failed? */
+> @@ -74,13 +83,16 @@ static void __synchronize_hardirq(struct
+>   *	Returns: false if a threaded handler is active.
+>   *
+>   *	This function may be called - with care - from IRQ context.
+> + *
+> + *	It does not check whether there is an interrupt on flight at the
+> + *	hardware level, but not serviced yet, as this might deadlock.
+>   */
+>  bool synchronize_hardirq(unsigned int irq)
+>  {
+>  	struct irq_desc *desc = irq_to_desc(irq);
+>  
+>  	if (desc) {
+> -		__synchronize_hardirq(desc);
+> +		__synchronize_hardirq(desc, false);
+>  		return !atomic_read(&desc->threads_active);
 >  	}
 >  
->  	irq_settings_clr_disable_unlazy(desc);
-> -	irq_shutdown(desc);
-> +	irq_shutdown_and_deactivate(desc);
+> @@ -97,13 +109,16 @@ EXPORT_SYMBOL(synchronize_hardirq);
+>   *	holding a resource the IRQ handler may need you will deadlock.
+>   *
+>   *	This function may be called - with care - from IRQ context.
+> + *
+> + *	It does not check whether there is an interrupt on flight at the
+> + *	hardware level, but not serviced yet, as this might deadlock.
+>   */
+>  void synchronize_irq(unsigned int irq)
+>  {
+>  	struct irq_desc *desc = irq_to_desc(irq);
 >  
->  	irq_release_resources(desc);
-The patch makes complete sense, so this comment is only a nit, feel free 
-to ignore me: I find it a bit odd that irq_shutdown() doesn't do the 
-full thing anymore, given that it is the "canonical" function, and that 
-__free_irq is the only one that has special needs. Suggestion below.
+>  	if (desc) {
+> -		__synchronize_hardirq(desc);
+> +		__synchronize_hardirq(desc, false);
+>  		/*
+>  		 * We made sure that no hardirq handler is
+>  		 * running. Now verify that no threaded handlers are
+> @@ -1729,8 +1744,12 @@ static struct irqaction *__free_irq(stru
+>  
+>  	unregister_handler_proc(irq, action);
+>  
+> -	/* Make sure it's not being used on another CPU: */
+> -	synchronize_hardirq(irq);
+> +	/*
+> +	 * Make sure it's not being used on another CPU and if the chip
+> +	 * supports it also make sure that there is no (not yet serviced)
+> +	 * interrupt on flight at the hardware level.
+> +	 */
+> +	__synchronize_hardirq(desc, true);
+>  
+>  #ifdef CONFIG_DEBUG_SHIRQ
+>  	/*
+> 
+> 
 
-Irrespective of which version you prefer:
-
-Reviewed-by: Marc Zyngier <marc.zyngier@arm.com>
+Thanks,
 
 	M.
-
-diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-index 29d6c7d070b4..aeab853fcc10 100644
---- a/kernel/irq/chip.c
-+++ b/kernel/irq/chip.c
-@@ -301,7 +301,7 @@ int irq_activate_and_startup(struct irq_desc *desc, bool resend)
- 
- static void __irq_disable(struct irq_desc *desc, bool mask);
- 
--void irq_shutdown(struct irq_desc *desc)
-+void __irq_shutdown(struct irq_desc *desc)
- {
- 	if (irqd_is_started(&desc->irq_data)) {
- 		desc->depth = 1;
-@@ -314,6 +314,11 @@ void irq_shutdown(struct irq_desc *desc)
- 		}
- 		irq_state_clr_started(desc);
- 	}
-+}
-+
-+void irq_shutdown(struct irq_desc *desc)
-+{
-+	__irq_shutdown(desc);
- 	/*
- 	 * This must be called even if the interrupt was never started up,
- 	 * because the activation can happen before the interrupt is
-diff --git a/kernel/irq/internals.h b/kernel/irq/internals.h
-index 70c3053bc1f6..107f7d342e3d 100644
---- a/kernel/irq/internals.h
-+++ b/kernel/irq/internals.h
-@@ -81,6 +81,7 @@ extern int irq_activate(struct irq_desc *desc);
- extern int irq_activate_and_startup(struct irq_desc *desc, bool resend);
- extern int irq_startup(struct irq_desc *desc, bool resend, bool force);
- 
-+extern void __irq_shutdown(struct irq_desc *desc);
- extern void irq_shutdown(struct irq_desc *desc);
- extern void irq_enable(struct irq_desc *desc);
- extern void irq_disable(struct irq_desc *desc);
-diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index 78f3ddeb7fe4..f19e3589989e 100644
---- a/kernel/irq/manage.c
-+++ b/kernel/irq/manage.c
-@@ -13,6 +13,7 @@
- #include <linux/module.h>
- #include <linux/random.h>
- #include <linux/interrupt.h>
-+#include <linux/irqdomain.h>
- #include <linux/slab.h>
- #include <linux/sched.h>
- #include <linux/sched/rt.h>
-@@ -1699,7 +1700,8 @@ static struct irqaction *__free_irq(struct irq_desc *desc, void *dev_id)
- 	/* If this was the last handler, shut down the IRQ line: */
- 	if (!desc->action) {
- 		irq_settings_clr_disable_unlazy(desc);
--		irq_shutdown(desc);
-+		/* Only shutdown. Deactivate after synchronize_hardirq() */
-+		__irq_shutdown(desc);
- 	}
- 
- #ifdef CONFIG_SMP
-@@ -1768,6 +1770,14 @@ static struct irqaction *__free_irq(struct irq_desc *desc, void *dev_id)
- 		 * require it to deallocate resources over the slow bus.
- 		 */
- 		chip_bus_lock(desc);
-+		/*
-+		 * There is no interrupt on the fly anymore. Deactivate it
-+		 * completely.
-+		 */
-+		raw_spin_lock_irqsave(&desc->lock, flags);
-+		irq_domain_deactivate_irq(&desc->irq_data);
-+		raw_spin_unlock_irqrestore(&desc->lock, flags);
-+
- 		irq_release_resources(desc);
- 		chip_bus_sync_unlock(desc);
- 		irq_remove_timings(desc);
-
 -- 
 Jazz is not dead. It just smells funny...
