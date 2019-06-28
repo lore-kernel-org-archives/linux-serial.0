@@ -1,7 +1,7 @@
 From: Fuqian Huang <huangfq.daxian@gmail.com>
-Subject: [PATCH 47/87] tty: serial: remove memset after pci_alloc_consistent in icom.c
-Date: Fri, 28 Jun 2019 01:41:35 +0800
-Message-ID: <20190627174136.4451-1-huangfq.daxian@gmail.com>
+Subject: [PATCH v2 21/27] tty: remove unneeded memset
+Date: Fri, 28 Jun 2019 10:50:00 +0800
+Message-ID: <20190628025000.15922-1-huangfq.daxian@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 Cc: Fuqian Huang <huangfq.daxian@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
