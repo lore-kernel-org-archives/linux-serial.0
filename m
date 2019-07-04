@@ -1,54 +1,42 @@
 From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: Re: [PATCH V2 1/2] serial/8250: Add support for NI-Serial
- PXI/PXIe+485 devices
-Date: Thu, 4 Jul 2019 10:15:00 +0200
-Message-ID: <20190704081500.GA6438@kroah.com>
-References: <20190703072435.34152-1-je.yen.tam@ni.com>
- <20190703084220.GD8996@kroah.com>
- <MN2PR04MB59207BEC9DBAB5E69656DD42B7FA0@MN2PR04MB5920.namprd04.prod.outlook.com>
+Subject: Re: Re: [PATCH V2 2/2] PCI: Add NI-Serial PXI/PXIe+485 device IDs
+Date: Thu, 4 Jul 2019 10:16:15 +0200
+Message-ID: <20190704081615.GB6438@kroah.com>
+References: <20190703072516.34199-1-je.yen.tam@ni.com>
+ <20190703083605.GA8996@kroah.com>
+ <MN2PR04MB5920BB86A99B1ABF946B2373B7FA0@MN2PR04MB5920.namprd04.prod.outlook.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <MN2PR04MB59207BEC9DBAB5E69656DD42B7FA0@MN2PR04MB5920.namprd04.prod.outlook.com>
+In-Reply-To: <MN2PR04MB5920BB86A99B1ABF946B2373B7FA0@MN2PR04MB5920.namprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Je Yen Tam <je.yen.tam@ni.com>
 Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jul 04, 2019 at 07:55:33AM +0000, Je Yen Tam wrote:
-> > On Wed, Jul 03, 2019 at 12:24:35AM -0700, jeyentam wrote:
-> > > Add support for NI-Serial PXIe-RS232, PXI-RS485 and PXIe-RS485 devices.
+On Thu, Jul 04, 2019 at 06:58:39AM +0000, Je Yen Tam wrote:
+> > On Wed, Jul 03, 2019 at 12:25:16AM -0700, jeyentam wrote:
+> > > Add NI PXIe-RS232, PXI-RS485 and PXIe-RS485 device IDs.
 > > >
 > > > Signed-off-by: jeyentam <je.yen.tam@ni.com>
+> > > ---
+> > >  include/linux/pci_ids.h | 12 ++++++++++++
+> > >  1 file changed, 12 insertions(+)
 > > 
-> > I need a "full" name here please.
+> > You have read the comment at the top of this file, right?  If so, why 
+> > are you adding these entries?
 > 
-> Ok, will do so.
-> 
-> > 
-> > Also, this patch breaks the build, which is not allowed, and makes me wonder how
-> > you tested it :(
-> 
-> I've tested my changes with the steps as follows, it did not break.
-> 
-> 1. Clone the Linux repo, check out the source and work on my project.
-> 2. Compile the kernel source with "make j4".
-> 3. Build the kernel modules with "make modules_install".
-> 4. Install the kernel with "make install".
-> 5. Reboot into the newly built kernel.
-> 6. The kernel worked well and able to fit my needs.
-> 
-> Noted that my source is checked out from the latest Linux kernel 5.2.0-rc6.
-> 
-> Also, I checked my patch using checkpatch.pl, it did not show any errors and 
-> warnings too.
-> 
-> May I know what do you mean by breaking the build?
+> Yes, but I think these entries should be added in because the NI-Serial PXI 
+> (RS232) device IDs already been defined in this file originally, so now I'm 
+> adding the newly supported NI-Serial PXI (RS485), PXIe (RS232) and PXIe 
+> (RS485) device IDs into here as they are the same product.
 
-If you only apply patch 1/2, the build breaks as you add new device ids
-in the second patch.  At every individual patch, you can not break the
-build.
+No, do not add new device ids to this file, only put them in the single
+file that needs it.  This file is for device ids that are shared across
+multiple drivers/files.
+
+You should not need to touch this file at all.
 
 thanks,
 
