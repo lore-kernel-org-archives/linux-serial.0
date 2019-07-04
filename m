@@ -1,64 +1,75 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 00/11] Platform drivers,
- provide a way to add sysfs groups easily
-Date: Thu,  4 Jul 2019 10:46:06 +0200
-Message-ID: <20190704084617.3602-1-gregkh@linuxfoundation.org>
+Subject: [PATCH 03/11] serial: sh-sci: use driver core functions, not sysfs ones.
+Date: Thu,  4 Jul 2019 10:46:09 +0200
+Message-ID: <20190704084617.3602-4-gregkh@linuxfoundation.org>
+References: <20190704084617.3602-1-gregkh@linuxfoundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190704084617.3602-1-gregkh@linuxfoundation.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
-Cc: linux-fbdev@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>, "Rafael J. Wysocki" <rafael@kernel.org>, dri-devel@lists.freedesktop.org, platform-driver-x86@vger.kernel.org, Mans Rullgard <mans@mansr.com>, "H. Peter Anvin" <hpa@zytor.com>, Romain Izard <romain.izard.pro@gmail.com>, Richard Gong <richard.gong@linux.intel.com>, Florian Fainelli <f.fainelli@gmail.com>, x86@kernel.org, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Ingo Molnar <mingo@redhat.com>, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Darren Hart <dvhart@infradead.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-input@vger.kernel.org, Borislav Petkov <bp@alien8.de>, Thomas Gleixner <tglx@linutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-arm-kernel@lists.infradead.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Dmitry Torokhov <dmitr>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-SWYgYSBwbGF0Zm9ybSBkcml2ZXIgd2FudHMgdG8gYWRkIGEgc3lzZnMgZ3JvdXAsIGl0IGhhcyB0
-byBkbyBzbyBpbiBhCnJhY3kgd2F5LCBhZGRpbmcgaXQgYWZ0ZXIgdGhlIGRyaXZlciBpcyBib3Vu
-ZC4gIFRvIHJlc29sdmUgdGhpcyBpc3N1ZSwKaGF2ZSB0aGUgcGxhdGZvcm0gZHJpdmVyIGNvcmUg
-ZG8gdGhpcyBmb3IgdGhlIGRyaXZlciwgbWFraW5nIHRoZQppbmRpdmlkdWFsIGRyaXZlcnMgbG9n
-aWMgc21hbGxlciBhbmQgc2ltcGxlciwgYW5kIHNvbHZpbmcgdGhlIHJhY2UgYXQKdGhlIHNhbWUg
-dGltZS4KCkFsbCBvZiB0aGVzZSBwYXRjaGVzIGRlcGVuZCBvbiB0aGUgZmlyc3QgcGF0Y2guICBJ
-J2xsIHRha2UgdGhlIGZpcnN0IG9uZQp0aHJvdWdoIG15IGRyaXZlci1jb3JlIHRyZWUsIGFuZCBh
-bnkgc3Vic3lzdGVtIG1haW50YWluZXIgY2FuIGVpdGhlciBhY2sKdGhlaXIgaW5kaXZpZHVsIHBh
-dGNoIGFuZCBJIHdpbGwgYmUgZ2xhZCB0byBhbHNvIG1lcmdlIGl0LCBvciB0aGV5IGNhbgp3YWl0
-IHVudGlsIGFmdGVyIDUuMy1yYzEgd2hlbiB0aGUgY29yZSBwYXRjaCBoaXRzIExpbnVzJ3MgdHJl
-ZSBhbmQgdGhlbgp0YWtlIGl0LCBpdCdzIHVwIHRvIHRoZW0uCgpUaGFuayB0byBSaWNoYXJkIEdv
-bmcgZm9yIHRoZSBpZGVhIGFuZCB0aGUgdGVzdGluZyBvZiB0aGUgcGxhdGZvcm0KZHJpdmVyIHBh
-dGNoLgoKR3JlZyBLcm9haC1IYXJ0bWFuICgxMSk6CiAgUGxhdGZvcm06IGFkZCBhIGRldl9ncm91
-cHMgcG9pbnRlciB0byBzdHJ1Y3QgcGxhdGZvcm1fZHJpdmVyCiAgdWlvOiB1aW9fZnNsX2VsYmNf
-Z3BjbTogY29udmVydCBwbGF0Zm9ybSBkcml2ZXIgdG8gdXNlIGRldl9ncm91cHMKICBzZXJpYWw6
-IHNoLXNjaTogdXNlIGRyaXZlciBjb3JlIGZ1bmN0aW9ucywgbm90IHN5c2ZzIG9uZXMuCiAgZmly
-bXdhcmU6IGFybV9zY3BpOiBjb252ZXJ0IHBsYXRmb3JtIGRyaXZlciB0byB1c2UgZGV2X2dyb3Vw
-cwogIG9scGM6IHgwMTogY29udmVydCBwbGF0Zm9ybSBkcml2ZXIgdG8gdXNlIGRldl9ncm91cHMK
-ICBwbGF0Zm9ybTogeDg2OiBocC13bWk6IGNvbnZlcnQgcGxhdGZvcm0gZHJpdmVyIHRvIHVzZSBk
-ZXZfZ3JvdXBzCiAgdmlkZW86IGZiZGV2OiB3bTg1MDVmYjogY29udmVydCBwbGF0Zm9ybSBkcml2
-ZXIgdG8gdXNlIGRldl9ncm91cHMKICB2aWRlbzogZmJkZXY6IHcxMDBmYjogY29udmVydCBwbGF0
-Zm9ybSBkcml2ZXIgdG8gdXNlIGRldl9ncm91cHMKICB2aWRlbzogZmJkZXY6IHNtNTAxZmI6IGNv
-bnZlcnQgcGxhdGZvcm0gZHJpdmVyIHRvIHVzZSBkZXZfZ3JvdXBzCiAgaW5wdXQ6IGtleWJvYXJk
-OiBncGlvX2tleXM6IGNvbnZlcnQgcGxhdGZvcm0gZHJpdmVyIHRvIHVzZSBkZXZfZ3JvdXBzCiAg
-aW5wdXQ6IGF4cDIweC1wZWs6IGNvbnZlcnQgcGxhdGZvcm0gZHJpdmVyIHRvIHVzZSBkZXZfZ3Jv
-dXBzCgogYXJjaC94ODYvcGxhdGZvcm0vb2xwYy9vbHBjLXhvMS1zY2kuYyB8IDE3ICsrKystLS0t
-LS0KIGRyaXZlcnMvYmFzZS9wbGF0Zm9ybS5jICAgICAgICAgICAgICAgfCA0MCArKysrKysrKysr
-KysrKystLS0tLS0tLQogZHJpdmVycy9maXJtd2FyZS9hcm1fc2NwaS5jICAgICAgICAgICB8ICA1
-ICstLQogZHJpdmVycy9pbnB1dC9rZXlib2FyZC9ncGlvX2tleXMuYyAgICB8IDEzICsrLS0tLS0t
-CiBkcml2ZXJzL2lucHV0L21pc2MvYXhwMjB4LXBlay5jICAgICAgIHwgMTUgKystLS0tLS0tCiBk
-cml2ZXJzL3BsYXRmb3JtL3g4Ni9ocC13bWkuYyAgICAgICAgIHwgNDcgKysrKysrKy0tLS0tLS0t
-LS0tLS0tLS0tLS0tCiBkcml2ZXJzL3R0eS9zZXJpYWwvc2gtc2NpLmMgICAgICAgICAgIHwgMjIg
-KysrKystLS0tLS0tLQogZHJpdmVycy91aW8vdWlvX2ZzbF9lbGJjX2dwY20uYyAgICAgICB8IDIz
-ICsrKysrLS0tLS0tLS0KIGRyaXZlcnMvdmlkZW8vZmJkZXYvc201MDFmYi5jICAgICAgICAgfCAz
-NyArKysrKy0tLS0tLS0tLS0tLS0tLS0KIGRyaXZlcnMvdmlkZW8vZmJkZXYvdzEwMGZiLmMgICAg
-ICAgICAgfCAyMyArKysrKystLS0tLS0tCiBkcml2ZXJzL3ZpZGVvL2ZiZGV2L3dtODUwNWZiLmMg
-ICAgICAgIHwgMTMgKysrKy0tLS0KIGluY2x1ZGUvbGludXgvcGxhdGZvcm1fZGV2aWNlLmggICAg
-ICAgfCAgMSArCiAxMiBmaWxlcyBjaGFuZ2VkLCA5NCBpbnNlcnRpb25zKCspLCAxNjIgZGVsZXRp
-b25zKC0pCgotLSAKMi4yMi4wCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVz
-a3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9k
-cmktZGV2ZWw=
+This is a driver, do not call "raw" sysfs functions, instead call driver
+core ones.  Specifically convert the use of sysfs_create_file() and
+sysfs_remove_file() to use device_create_file() and device_remove_file()
+
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/serial/sh-sci.c | 22 ++++++++--------------
+ 1 file changed, 8 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index abc705716aa0..69f9072505f7 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -3137,14 +3137,10 @@ static int sci_remove(struct platform_device *dev)
+ 
+ 	sci_cleanup_single(port);
+ 
+-	if (port->port.fifosize > 1) {
+-		sysfs_remove_file(&dev->dev.kobj,
+-				  &dev_attr_rx_fifo_trigger.attr);
+-	}
+-	if (type == PORT_SCIFA || type == PORT_SCIFB || type == PORT_HSCIF) {
+-		sysfs_remove_file(&dev->dev.kobj,
+-				  &dev_attr_rx_fifo_timeout.attr);
+-	}
++	if (port->port.fifosize > 1)
++		device_remove_file(&dev->dev, &dev_attr_rx_fifo_trigger);
++	if (type == PORT_SCIFA || type == PORT_SCIFB || type == PORT_HSCIF)
++		device_remove_file(&dev->dev, &dev_attr_rx_fifo_timeout);
+ 
+ 	return 0;
+ }
+@@ -3332,19 +3328,17 @@ static int sci_probe(struct platform_device *dev)
+ 		return ret;
+ 
+ 	if (sp->port.fifosize > 1) {
+-		ret = sysfs_create_file(&dev->dev.kobj,
+-				&dev_attr_rx_fifo_trigger.attr);
++		ret = device_create_file(&dev->dev, &dev_attr_rx_fifo_trigger);
+ 		if (ret)
+ 			return ret;
+ 	}
+ 	if (sp->port.type == PORT_SCIFA || sp->port.type == PORT_SCIFB ||
+ 	    sp->port.type == PORT_HSCIF) {
+-		ret = sysfs_create_file(&dev->dev.kobj,
+-				&dev_attr_rx_fifo_timeout.attr);
++		ret = device_create_file(&dev->dev, &dev_attr_rx_fifo_timeout);
+ 		if (ret) {
+ 			if (sp->port.fifosize > 1) {
+-				sysfs_remove_file(&dev->dev.kobj,
+-					&dev_attr_rx_fifo_trigger.attr);
++				device_remove_file(&dev->dev,
++						   &dev_attr_rx_fifo_trigger);
+ 			}
+ 			return ret;
+ 		}
+-- 
+2.22.0
