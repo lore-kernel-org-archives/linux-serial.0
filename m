@@ -1,7 +1,8 @@
 From: Sergey Organov <sorganov@gmail.com>
-Subject: [PATCH v3 4/7] serial: imx: set_termios(): preserve RTS state
-Date: Thu,  4 Jul 2019 16:00:26 +0300
-Message-ID: <1562245229-709-5-git-send-email-sorganov@gmail.com>
+Subject: [PATCH v3 5/7] serial: imx: set_termios(): do not enable autoRTS if
+ RTS is unset
+Date: Thu,  4 Jul 2019 16:00:27 +0300
+Message-ID: <1562245229-709-6-git-send-email-sorganov@gmail.com>
 References: <20190614072801.3187-1-s.hauer@pengutronix.de>
  <1562245229-709-1-git-send-email-sorganov@gmail.com>
 Mime-Version: 1.0
@@ -22,60 +23,40 @@ To: linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, Sergey Organov <sorganov@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-imx_set_termios() cleared RTS on every call, now fixed.
+set_termios() shouldn't set UCR2_CTSC bit if UCR2_CTS (=TIOCM_RTS) is
+cleared. Added corresponding check in imx_uart_rts_auto() to fix this.
 
 Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
 Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
 Signed-off-by: Sergey Organov <sorganov@gmail.com>
 ---
- drivers/tty/serial/imx.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ drivers/tty/serial/imx.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 17e2322..e0f5365 100644
+index e0f5365..5532887 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -1563,7 +1563,14 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
+@@ -405,7 +405,8 @@ static void imx_uart_rts_inactive(struct imx_port *sport, u32 *ucr2)
+ /* called with port.lock taken and irqs caller dependent */
+ static void imx_uart_rts_auto(struct imx_port *sport, u32 *ucr2)
+ {
+-	*ucr2 |= UCR2_CTSC;
++	if (*ucr2 & UCR2_CTS)
++		*ucr2 |= UCR2_CTSC;
+ }
  
- 	spin_lock_irqsave(&sport->port.lock, flags);
+ /* called with port.lock taken and irqs off */
+@@ -1588,8 +1589,9 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		else
+ 			imx_uart_rts_inactive(sport, &ucr2);
  
--	ucr2 = UCR2_SRST | UCR2_IRTS;
-+	/*
-+	 * Read current UCR2 and save it for future use, then clear all the bits
-+	 * except those we will or may need to preserve.
-+	 */
-+	old_ucr2 = imx_uart_readl(sport, UCR2);
-+	ucr2 = old_ucr2 & (UCR2_TXEN | UCR2_RXEN | UCR2_ATEN | UCR2_CTS);
-+
-+	ucr2 |= UCR2_SRST | UCR2_IRTS;
- 	if ((termios->c_cflag & CSIZE) == CS8)
- 		ucr2 |= UCR2_WS;
+-	} else if (termios->c_cflag & CRTSCTS)
++	} else if (termios->c_cflag & CRTSCTS) {
+ 		imx_uart_rts_auto(sport, &ucr2);
++	}
  
-@@ -1632,7 +1639,6 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
- 	imx_uart_writel(sport,
- 			old_ucr1 & ~(UCR1_TXMPTYEN | UCR1_RRDYEN | UCR1_RTSDEN),
- 			UCR1);
--	old_ucr2 = imx_uart_readl(sport, UCR2);
- 	imx_uart_writel(sport, old_ucr2 & ~UCR2_ATEN, UCR2);
- 
- 	while (!(imx_uart_readl(sport, USR2) & USR2_TXDC))
-@@ -1640,7 +1646,6 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- 	/* then, disable everything */
- 	imx_uart_writel(sport, old_ucr2 & ~(UCR2_TXEN | UCR2_RXEN | UCR2_ATEN), UCR2);
--	old_ucr2 &= (UCR2_TXEN | UCR2_RXEN | UCR2_ATEN);
- 
- 	/* custom-baudrate handling */
- 	div = sport->port.uartclk / (baud * 16);
-@@ -1678,8 +1683,7 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- 	imx_uart_writel(sport, old_ucr1, UCR1);
- 
--	/* set the parity, stop bits and data size */
--	imx_uart_writel(sport, ucr2 | old_ucr2, UCR2);
-+	imx_uart_writel(sport, ucr2, UCR2);
- 
- 	if (UART_ENABLE_MS(&sport->port, termios->c_cflag))
- 		imx_uart_enable_ms(&sport->port);
+ 	if (termios->c_cflag & CRTSCTS)
+ 		ucr2 &= ~UCR2_IRTS;
 -- 
 2.10.0.1.g57b01a3
