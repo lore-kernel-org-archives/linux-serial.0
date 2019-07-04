@@ -1,75 +1,63 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 03/11] serial: sh-sci: use driver core functions, not sysfs ones.
-Date: Thu,  4 Jul 2019 10:46:09 +0200
-Message-ID: <20190704084617.3602-4-gregkh@linuxfoundation.org>
-References: <20190704084617.3602-1-gregkh@linuxfoundation.org>
+From: Sergey Organov <sorganov@gmail.com>
+Subject: [PATCH v3 0/7] serial: imx: fix RTS and RTS/CTS handling
+Date: Thu,  4 Jul 2019 16:00:22 +0300
+Message-ID: <1562245229-709-1-git-send-email-sorganov@gmail.com>
+References: <20190614072801.3187-1-s.hauer@pengutronix.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190704084617.3602-1-gregkh@linuxfoundation.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190614072801.3187-1-s.hauer@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, Sergey Organov <sorganov@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-This is a driver, do not call "raw" sysfs functions, instead call driver
-core ones.  Specifically convert the use of sysfs_create_file() and
-sysfs_remove_file() to use device_create_file() and device_remove_file()
-
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/serial/sh-sci.c | 22 ++++++++--------------
- 1 file changed, 8 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index abc705716aa0..69f9072505f7 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -3137,14 +3137,10 @@ static int sci_remove(struct platform_device *dev)
- 
- 	sci_cleanup_single(port);
- 
--	if (port->port.fifosize > 1) {
--		sysfs_remove_file(&dev->dev.kobj,
--				  &dev_attr_rx_fifo_trigger.attr);
--	}
--	if (type == PORT_SCIFA || type == PORT_SCIFB || type == PORT_HSCIF) {
--		sysfs_remove_file(&dev->dev.kobj,
--				  &dev_attr_rx_fifo_timeout.attr);
--	}
-+	if (port->port.fifosize > 1)
-+		device_remove_file(&dev->dev, &dev_attr_rx_fifo_trigger);
-+	if (type == PORT_SCIFA || type == PORT_SCIFB || type == PORT_HSCIF)
-+		device_remove_file(&dev->dev, &dev_attr_rx_fifo_timeout);
- 
- 	return 0;
- }
-@@ -3332,19 +3328,17 @@ static int sci_probe(struct platform_device *dev)
- 		return ret;
- 
- 	if (sp->port.fifosize > 1) {
--		ret = sysfs_create_file(&dev->dev.kobj,
--				&dev_attr_rx_fifo_trigger.attr);
-+		ret = device_create_file(&dev->dev, &dev_attr_rx_fifo_trigger);
- 		if (ret)
- 			return ret;
- 	}
- 	if (sp->port.type == PORT_SCIFA || sp->port.type == PORT_SCIFB ||
- 	    sp->port.type == PORT_HSCIF) {
--		ret = sysfs_create_file(&dev->dev.kobj,
--				&dev_attr_rx_fifo_timeout.attr);
-+		ret = device_create_file(&dev->dev, &dev_attr_rx_fifo_timeout);
- 		if (ret) {
- 			if (sp->port.fifosize > 1) {
--				sysfs_remove_file(&dev->dev.kobj,
--					&dev_attr_rx_fifo_trigger.attr);
-+				device_remove_file(&dev->dev,
-+						   &dev_attr_rx_fifo_trigger);
- 			}
- 			return ret;
- 		}
--- 
-2.22.0
+UlRTIHNpZ25hbCBhbmQgUlRTL0NUUyBoYW5kc2hha2UgaGFuZGxpbmcgaGFkIGEgZmV3IHByb2Js
+ZW1zIHRoZXNlCnBhdGNoZXMgZml4LgoKSW4gYWRkaXRpb24sIG1pbm9yIGNsZWFudXBzIGFyZSBt
+YWRlIHRvIHRoZSBpbnZvbHZlZCBjb2RlLgoKQ2hhbmdlbG9nOgoKICB2MzoKCiAgICAgICogQXBw
+ZW5kZWQ6ICJSZXZpZXdlZC1ieToiCiAgICAgICAgVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5l
+LWtvZW5pZ0BwZW5ndXRyb25peC5kZT4KICAgICAgICB0byB0aGUgZmlyc3QgMiBwYXRjaGVzCgog
+ICAgICAqIEFkZGVkIGJyYWNlcyB0byBvbmUtbGluZSAnZWxzZSBpZicsIHRvIHRoZSAic2VyaWFs
+OiBpbXg6CiAgICAgICAgc2V0X3Rlcm1pb3MoKTogY2xhcmlmeSBSVFMvQ1RTIGJpdHMgY2FsY3Vs
+YXRpb24iLCBhcyBzdWdnZXN0ZWQKICAgICAgICBieSBVd2UgS2xlaW5lLUvDtm5pZyA8dS5rbGVp
+bmUta29lbmlnQHBlbmd1dHJvbml4LmRlPgoKICAgICAgKiBJbXByb3ZlZCBjb21tZW50cyBpbiAi
+c2VyaWFsOiBpbXg6IHNldF9tY3RybCgpOiBjb3JyZWN0bHkKICAgICAgICByZXN0b3JlIGF1dG9S
+VFMgc3RhdGUiLCBhcyBzdWdnZXN0ZWQgYnkgVXdlIEtsZWluZS1Lw7ZuaWcKICAgICAgICA8dS5r
+bGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRlPgoKICB2MjoKCiAgICAgICogQXBwZW5kZWQ6ICJS
+ZXZpZXdlZC1ieToiIGFuZCAiVGVzdGVkLWJ5OiIKICAgICAgICBTYXNjaGEgSGF1ZXIgPHMuaGF1
+ZXJAcGVuZ3V0cm9uaXguZGU+CgogICAgICAqIFJlbW92ZWQgIlJGQyIgZnJvbSBoZWFkZXIKCiAg
+djE6CgogICAgICAqIEZpeGVkIGluICJzZXJpYWw6IGlteDogc2V0X3Rlcm1pb3MoKTogcHJlc2Vy
+dmUgUlRTIHN0YXRlIgoKLSsJdWNyMiA9IFVDUjJfU1JTVCB8IFVDUjJfSVJUUzsKKysJdWNyMiB8
+PSBVQ1IyX1NSU1QgfCBVQ1IyX0lSVFM7CgogICAgICAgIGFzIG5vdGljZWQgYnkgTG90aGFyIFdh
+w59tYW5uIDxMV0BLQVJPLWVsZWN0cm9uaWNzLmRlPgoKICAgICAgKiBGaXhlZCBpbiAic2VyaWFs
+OiBpbXg6IHNldF90ZXJtaW9zKCk6IHByZXNlcnZlIFJUUyBzdGF0ZSIKCi0rCXVjcjIgPSBvbGRf
+dWNyMiAmIChVQ1IyX1RYRU4gfCBVQ1IyX1JYRU4gfCBVQ1IyX0FURU4gfCBVQ1IyX0NUU0MpOwor
+Kwl1Y3IyID0gb2xkX3VjcjIgJiAoVUNSMl9UWEVOIHwgVUNSMl9SWEVOIHwgVUNSMl9BVEVOIHwg
+VUNSMl9DVFMpOwoKICAgICAgICBhcyB0aGUgZml4IGZvciB0aGUgcHJvYmxlbSBmb3VuZCBieSBT
+YXNjaGEgSGF1ZXIKICAgICAgICA8cy5oYXVlckBwZW5ndXRyb25peC5kZT4KCiAgICAgICogUmVv
+cmRlcmVkOgoKICAgICAgICBzZXJpYWw6IGlteDogc2V0X3Rlcm1pb3MoKTogcHJlc2VydmUgUlRT
+IHN0YXRlCiAgICAgICAgc2VyaWFsOiBpbXg6IHNldF90ZXJtaW9zKCk6IGRvIG5vdCBlbmFibGUg
+YXV0b1JUUyBpZiBSVFMgaXMgdW5zZXQKCiAgICAgICAgYXMgdGhlIGxhdHRlciBtYWtlcyBzZW5z
+ZSBvbmx5IHByb3ZpZGVkIHRoZSBmb3JtZXIgaXMgYWxyZWFkeSBhcHBsaWVkLgoKClNlcmdleSBP
+cmdhbm92ICg3KToKICBzZXJpYWw6IGlteDogZml4IGxvY2tpbmcgaW4gc2V0X3Rlcm1pb3MoKQog
+IHNlcmlhbDogaW14OiBzZXRfdGVybWlvcygpOiBmYWN0b3Itb3V0ICd1Y3IyJyBpbml0aWFsIHZh
+bHVlCiAgc2VyaWFsOiBpbXg6IHNldF90ZXJtaW9zKCk6IGNsYXJpZnkgUlRTL0NUUyBiaXRzIGNh
+bGN1bGF0aW9uCiAgc2VyaWFsOiBpbXg6IHNldF90ZXJtaW9zKCk6IHByZXNlcnZlIFJUUyBzdGF0
+ZQogIHNlcmlhbDogaW14OiBzZXRfdGVybWlvcygpOiBkbyBub3QgZW5hYmxlIGF1dG9SVFMgaWYg
+UlRTIGlzIHVuc2V0CiAgc2VyaWFsOiBpbXg6IHNldF9tY3RybCgpOiBjb3JyZWN0bHkgcmVzdG9y
+ZSBhdXRvUlRTIHN0YXRlCiAgc2VyaWFsOiBpbXg6IGdldCByaWQgb2YgaW14X3VhcnRfcnRzX2F1
+dG8oKQoKIGRyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyB8IDk2ICsrKysrKysrKysrKysrKysrKysr
+KysrKystLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDUwIGluc2VydGlv
+bnMoKyksIDQ2IGRlbGV0aW9ucygtKQoKLS0KMi4xMC4wLjEuZzU3YjAxYTMKCl9fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFp
+bGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlz
+dHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
