@@ -1,62 +1,64 @@
-From: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Subject: Re: [patch v3 1/5] AST2500 DMA UART driver
-Date: Thu, 04 Jul 2019 09:04:55 +1000
-Message-ID: <c8b5e295c34aaf8b3d8b03aeaa980c88d870443a.camel@kernel.crashing.org>
-References: <1561459476-14268-1-git-send-email-open.sudheer@gmail.com>
-         <1561459476-14268-2-git-send-email-open.sudheer@gmail.com>
-         <20190703174926.GA12813@kroah.com>
+From: Je Yen Tam <je.yen.tam@ni.com>
+Subject: RE: Re: [PATCH V2 2/2] PCI: Add NI-Serial PXI/PXIe+485 device IDs
+Date: Thu, 4 Jul 2019 06:58:39 +0000
+Message-ID: <MN2PR04MB5920BB86A99B1ABF946B2373B7FA0@MN2PR04MB5920.namprd04.prod.outlook.com>
+References: <20190703072516.34199-1-je.yen.tam@ni.com>
+ <20190703083605.GA8996@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190703174926.GA12813@kroah.com>
+In-Reply-To: <20190703083605.GA8996@kroah.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>, "sudheer.v" <open.sudheer@gmail.com>
-Cc: jslaby@suse.com, joel@jms.id.au, andrew@aj.id.au, robh+dt@kernel.org, mark.rutland@arm.com, shivahshankar.shankarnarayanrao@aspeedtech.com, shivahshankar@gmail.com, sudheer.veliseti@aspeedtech.com, sudheer veliseti <sudheer.open@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 2019-07-03 at 19:49 +0200, Greg KH wrote:
-> > +
-> > +     if (tx_sts & UART_SDMA0_INT) {
-> > +             ast_uart_sdma_write(sdma, UART_SDMA0_INT, UART_TX_SDMA_ISR);
-> > +             ast_sdma_bufffdone(&(sdma->dma_ch->tx_dma_info[0]));
-> > +     } else if (tx_sts & UART_SDMA1_INT) {
-> > +             ast_uart_sdma_write(sdma, UART_SDMA1_INT, UART_TX_SDMA_ISR);
-> > +             ast_sdma_bufffdone(&(sdma->dma_ch->tx_dma_info[1]));
-> > +     } else if (tx_sts & UART_SDMA2_INT) {
-> > +             ast_uart_sdma_write(sdma, UART_SDMA2_INT, UART_TX_SDMA_ISR);
-> > +             ast_sdma_bufffdone(&(sdma->dma_ch->tx_dma_info[2]));
-> > +     } else if (tx_sts & UART_SDMA3_INT) {
-> > +             ast_uart_sdma_write(sdma, UART_SDMA3_INT, UART_TX_SDMA_ISR);
-> > +             ast_sdma_bufffdone(&(sdma->dma_ch->tx_dma_info[3]));
-> > +     } else if (tx_sts & UART_SDMA4_INT) {
-> > +             ast_uart_sdma_write(sdma, UART_SDMA4_INT, UART_TX_SDMA_ISR);
-> > +             ast_sdma_bufffdone(&(sdma->dma_ch->tx_dma_info[4]));
-> > +     } else if (tx_sts & UART_SDMA5_INT) {
-> > +             ast_uart_sdma_write(sdma, UART_SDMA5_INT, UART_TX_SDMA_ISR);
-> > +             ast_sdma_bufffdone(&(sdma->dma_ch->tx_dma_info[5]));
-> > +     } else if (tx_sts & UART_SDMA6_INT) {
-> > +             ast_uart_sdma_write(sdma, UART_SDMA6_INT, UART_TX_SDMA_ISR);
-> > +             ast_sdma_bufffdone(&(sdma->dma_ch->tx_dma_info[6]));
-> > +     } else if (tx_sts & UART_SDMA7_INT) {
-> > +             ast_uart_sdma_write(sdma, UART_SDMA7_INT, UART_TX_SDMA_ISR);
-> > +             ast_sdma_bufffdone(&(sdma->dma_ch->tx_dma_info[7]));
-> > +     } else if (tx_sts & UART_SDMA8_INT) {
-> > +             ast_uart_sdma_write(sdma, UART_SDMA8_INT, UART_TX_SDMA_ISR);
-> > +             ast_sdma_bufffdone(&(sdma->dma_ch->tx_dma_info[8]));
-> > +     } else if (tx_sts & UART_SDMA9_INT) {
-> > +             ast_uart_sdma_write(sdma, UART_SDMA9_INT, UART_TX_SDMA_ISR);
-> > +             ast_sdma_bufffdone(&(sdma->dma_ch->tx_dma_info[9]));
-> > +     } else if (tx_sts & UART_SDMA10_INT) {
-> > +             ast_uart_sdma_write(sdma, UART_SDMA10_INT, UART_TX_SDMA_ISR);
-> > +             ast_sdma_bufffdone(&(sdma->dma_ch->tx_dma_info[10]));
-> > +     } else if (tx_sts & UART_SDMA11_INT) {
-> > +             ast_uart_sdma_write(sdma, UART_SDMA11_INT, UART_TX_SDMA_ISR);
-> > +             ast_sdma_bufffdone(&(sdma->dma_ch->tx_dma_info[11]));
-> > +     } else {
-> > +     }
+> On Wed, Jul 03, 2019 at 12:25:16AM -0700, jeyentam wrote:
+> > Add NI PXIe-RS232, PXI-RS485 and PXIe-RS485 device IDs.
+> >
+> > Signed-off-by: jeyentam <je.yen.tam@ni.com>
+> > ---
+> >  include/linux/pci_ids.h | 12 ++++++++++++
+> >  1 file changed, 12 insertions(+)
+>=20
+> You have read the comment at the top of this file, right?  If so, why=20
+> are you adding these entries?
 
-Also this should be a for () loop...
+Yes, but I think these entries should be added in because the NI-Serial PXI=
+=20
+(RS232) device IDs already been defined in this file originally, so now I'm=
+=20
+adding the newly supported NI-Serial PXI (RS485), PXIe (RS232) and PXIe=20
+(RS485) device IDs into here as they are the same product.
 
-Cheers,
-Ben.
+>=20
+> > diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h index=20
+> > 70e86148cb1e..7fad4794789f 100644
+> > --- a/include/linux/pci_ids.h
+> > +++ b/include/linux/pci_ids.h
+> > @@ -1027,7 +1027,9 @@
+> >  #define PCI_DEVICE_ID_SUN_TOMATILLO	0xa801
+> >  #define PCI_DEVICE_ID_SUN_CASSINI	0xabba
+> >
+> > +/* NI-Serial Device IDs */
+> >  #define PCI_VENDOR_ID_NI		0x1093
+>=20
+> That's a vendor id, not a serial device id.
+
+Yes, will change it to vendor id.
+
+>=20
+> thanks,
+>=20
+> greg k-h
+
+
+Thank you.
+Regards,
+Je Yen Tam
+Staff Software Engineer
+National Instruments=A0
+o=A0=A0 604-3776397
+e=A0=A0 je.yen.tam@ni.com
