@@ -1,7 +1,7 @@
 From: jeyentam <je.yen.tam@ni.com>
-Subject: [PATCH v3] serial/8250: Add support for NI-Serial PXI/PXIe+485 devices
-Date: Fri, 5 Jul 2019 01:33:49 -0700
-Message-ID: <20190705083349.44047-1-je.yen.tam@ni.com>
+Subject: [PATCH v4] serial/8250: Add support for NI-Serial PXI/PXIe+485 devices
+Date: Fri, 5 Jul 2019 06:15:28 -0700
+Message-ID: <20190705131528.60752-1-je.yen.tam@ni.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -14,6 +14,26 @@ Add support for NI-Serial PXIe-RS232, PXI-RS485 and PXIe-RS485 devices.
 
 Signed-off-by: Je Yen Tam <je.yen.tam@ni.com>
 ---
+v3 -> v4:
+- Add changes description.
+
+v2 -> v3:
+- Add "full" name for author
+- Use BIT() macro for bits definition
+- Remove unnecessary WARN_ON()
+- Change debugging interface to ftrace
+- Fix indentation
+- Add NI PXIe-RS232 and PXI/PXIe-RS485 device IDs #defines
+
+v1 -> v2:
+- Fix unintended indentation 
+
+v1:
+- Add and rename #defines for 16550 UART Port Control Register
+- Add configuration for RS485 port.
+- Add device setup for NI PXI/PXIe-RS485 family.
+- Add PCI board attributes for NI PXIe-RS232 and PXI/PXIe-RS485 devices.
+
  drivers/tty/serial/8250/8250_pci.c | 298 ++++++++++++++++++++++++++++-
  1 file changed, 294 insertions(+), 4 deletions(-)
 
