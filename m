@@ -1,46 +1,43 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3 02/10] dt-bindings: serial: add optional pinctrl states
-Date: Tue, 9 Jul 2019 08:38:38 -0600
-Message-ID: <20190709143838.GA5665@bogus>
-References: <1560433800-12255-1-git-send-email-erwan.leray@st.com>
- <1560433800-12255-3-git-send-email-erwan.leray@st.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2] dt-bindings: serial: add documentation for Rx in-band
+ wakeup support
+Date: Tue, 9 Jul 2019 14:04:13 -0600
+Message-ID: <20190709200413.GA31193@bogus>
+References: <20190619084110.136713-1-tientzu@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1560433800-12255-3-git-send-email-erwan.leray@st.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Erwan Le Ray <erwan.leray@st.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>, Mark Rutland <mark.rutland@arm.com>, linux-serial@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Fabrice Gasnier <fabrice.gasnier@st.com>, Bich Hemon <bich.hemon@st.com>
+In-Reply-To: <20190619084110.136713-1-tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
+List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, changqi.hu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Jun 13, 2019 at 03:49:52PM +0200, Erwan Le Ray wrote:
-> From: Bich Hemon <bich.hemon@st.com>
+On Wed, 19 Jun 2019 16:41:10 +0800, Claire Chang wrote:
+> To support Rx in-band wakeup, one must create an interrupt specifier with
+> edge sensitivity on Rx pin and an addtional pinctrl to reconfigure Rx pin
+> to normal GPIO in sleep state. Driver will switch to sleep mode pinctrl and
+> enable irq wake before suspend and restore to default settings when
+> resuming.
 > 
-> Add options for pinctrl states:
-> - "sleep" for low power
-> - "idle" for low power and wakeup capabilities enabled
-> - "no_console_suspend" for enabling console messages in low power
+> Signed-off-by: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> ---
+> changes in v2:
+> just document 'interrupts' instead of 'interrupts-extended'
 > 
-> Signed-off-by: Bich Hemon <bich.hemon@st.com>
-> Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
+>  .../devicetree/bindings/serial/mtk-uart.txt         | 13 +++++++++++--
+>  1 file changed, 11 insertions(+), 2 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
-> index 5ec80c1..64a5ea9 100644
-> --- a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
-> +++ b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
-> @@ -13,7 +13,14 @@ Required properties:
->  - clocks: The input clock of the USART instance
->  
->  Optional properties:
-> -- pinctrl: The reference on the pins configuration
-> +- pinctrl-names: Set to "default". An additional "sleep" state can be defined
-> +  to set pins in sleep state when in low power. In case the device is used as
-> +  a wakeup source, "idle" state is defined in order to keep RX pin active.
-> +  For a console device, an optional state "no_console_suspend" can be defined
-> +  to enable console messages during suspend. Typically, "no_console_suspend" and
-> +  "default" states can refer to the same pin configuration.
 
-no_console_suspend is a linux thing and doesn't belong in DT.
+Applied, thanks.
 
 Rob
