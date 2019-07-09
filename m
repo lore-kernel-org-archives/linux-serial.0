@@ -1,25 +1,23 @@
-From: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v2] dt-bindings: serial: add documentation for Rx in-band
- wakeup support
-Date: Mon, 8 Jul 2019 19:04:40 +0800
-Message-ID: <CALiNf29kZ+PYx_jZQKRTcvJqOa6qOYpbXNQ9bryYMw6E0_pNfw@mail.gmail.com>
-References: <20190619084110.136713-1-tientzu@chromium.org>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3 01/10] dt-bindings: serial: stm32: add wakeup option
+Date: Tue, 9 Jul 2019 08:35:27 -0600
+Message-ID: <20190709143527.GA5489@bogus>
+References: <1560433800-12255-1-git-send-email-erwan.leray@st.com>
+ <1560433800-12255-2-git-send-email-erwan.leray@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20190619084110.136713-1-tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
-List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, changqi.hu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1560433800-12255-2-git-send-email-erwan.leray@st.com>
+Sender: linux-kernel-owner@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>, Mark Rutland <mark.rutland@arm.com>, linux-serial@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Erwan Le Ray <erwan.leray@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>, Bich Hemon <bich.hemon@st.com>
 List-Id: linux-serial@vger.kernel.org
 
-gentle ping, thanks
+On Thu, 13 Jun 2019 15:49:51 +0200, Erwan Le Ray wrote:
+> Add a note for enabling wakeup capabilities of usart
+> 
+> Signed-off-by: Bich Hemon <bich.hemon@st.com>
+> Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
+> 
+
+Reviewed-by: Rob Herring <robh@kernel.org>
