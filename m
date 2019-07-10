@@ -1,43 +1,217 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2] dt-bindings: serial: add documentation for Rx in-band
- wakeup support
-Date: Tue, 9 Jul 2019 14:04:13 -0600
-Message-ID: <20190709200413.GA31193@bogus>
-References: <20190619084110.136713-1-tientzu@chromium.org>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial patches for 5.3-rc1
+Date: Wed, 10 Jul 2019 15:32:47 +0200
+Message-ID: <20190710133247.GA24083@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190619084110.136713-1-tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
-List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, changqi.hu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 19 Jun 2019 16:41:10 +0800, Claire Chang wrote:
-> To support Rx in-band wakeup, one must create an interrupt specifier with
-> edge sensitivity on Rx pin and an addtional pinctrl to reconfigure Rx pin
-> to normal GPIO in sleep state. Driver will switch to sleep mode pinctrl and
-> enable irq wake before suspend and restore to default settings when
-> resuming.
-> 
-> Signed-off-by: Claire Chang <tientzu-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-> ---
-> changes in v2:
-> just document 'interrupts' instead of 'interrupts-extended'
-> 
->  .../devicetree/bindings/serial/mtk-uart.txt         | 13 +++++++++++--
->  1 file changed, 11 insertions(+), 2 deletions(-)
-> 
+The following changes since commit f2c7c76c5d0a443053e94adb9f0918fa2fb85c3a:
 
-Applied, thanks.
+  Linux 5.2-rc3 (2019-06-02 13:55:33 -0700)
 
-Rob
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.3-rc1
+
+for you to fetch changes up to 35a4ed0164e992c9c7b82eb1370081a292131904:
+
+  tty: serial: fsl_lpuart: add imx8qxp support (2019-07-04 15:53:45 +0200)
+
+----------------------------------------------------------------
+TTY / Serial driver updates for 5.3-rc1
+
+Here is the "large" TTY and Serial driver update for 5.3-rc1.
+
+It's in the negative number of lines overall as we removed an obsolete
+serial driver that was causing problems for some people who were trying
+to clean up some apis (the mpsc.c driver, which only worked for some
+pre-production hardware that no one has anymore.)
+
+Other than that, lots of tiny changes, cleaning up small things along
+with some platform-specific serial driver updates.
+
+All of these have been in linux-next for a while now with no reported
+issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Andy Shevchenko (2):
+      serial: 8250_of: Use of_device_get_match_data()
+      serial: 8250: factor out serial8250_{set,clear}_THRI() helpers
+
+Ben Hutchings (1):
+      Revert "consolemap: Fix a memory leaking bug in drivers/tty/vt/consolemap.c"
+
+Bich Hemon (1):
+      serial: stm32: select pinctrl state in each suspend/resume function
+
+Borut Seljak (1):
+      serial: stm32: fix a recursive locking in stm32_config_rs485
+
+Christophe Leroy (1):
+      tty: serial: cpm_uart - fix init when SMC is relocated
+
+Claire Chang (1):
+      uart: mediatek: support Rx in-band wakeup
+
+Doug Berger (1):
+      tty: amba-pl011: allow shared interrupt
+
+Erwan Le Ray (12):
+      serial: stm32: fix word length configuration
+      serial: stm32: fix rx error handling
+      serial: stm32: fix rx data length when parity enabled
+      serial: stm32: fix transmit_chars when tx is stopped
+      serial: stm32: Add support of TC bit status check
+      serial: stm32: fix wakeup source initialization
+      serial: stm32: fix the get_irq error case
+      serial: stm32: add support of timeout interrupt for RX
+      serial: stm32: update PIO transmission
+      serial: stm32: add support of TX FIFO threshold
+      serial: stm32: add support of RX FIFO threshold
+      serial: stm32: add RX and TX FIFO flush
+
+Fabio Estevam (3):
+      serial: fsl_lpuart: Use dev_info() instead of printk()
+      serial: imx: Use dev_info() instead of pr_info()
+      serial: fsl_lpuart: Remove unneeded OOM error message
+
+Fugang Duan (1):
+      tty: serial: fsl_lpuart: add imx8qxp support
+
+Geert Uytterhoeven (2):
+      serial: sh-sci: Fix TX DMA buffer flushing and workqueue races
+      serial: sh-sci: Terminate TX DMA during buffer flushing
+
+Gen Zhang (1):
+      consolemap: Fix a memory leaking bug in drivers/tty/vt/consolemap.c
+
+Greg Kroah-Hartman (2):
+      Merge 5.2-rc3 into tty-next
+      Revert "serial: stm32: select pinctrl state in each suspend/resume function"
+
+Grzegorz Halat (1):
+      vt/fbcon: deinitialize resources in visual_init() after failed memory allocation
+
+Hao Lee (1):
+      tty: serial: 8250: Fix type field in format string
+
+Jay Dolan (1):
+      serial: 8250: Add support for higher baud rates to Pericom chips
+
+Johan Hovold (3):
+      tty: simserial: drop unused iflag macro
+      tty: ipoctal: drop unused iflag macro
+      tty: cpm_uart: drop unused iflag macro
+
+Jorge Ramirez-Ortiz (1):
+      tty: serial: msm_serial: avoid system lockup condition
+
+Kefeng Wang (1):
+      tty/serial: digicolor: Fix digicolor-usart already registered warning
+
+Lin Yi (1):
+      tty: tty_io: fix driver refcount imbalance on error path
+
+Long Cheng (1):
+      serial: 8250-mtk: modify uart DMA rx
+
+Mark Greer (1):
+      serial: mpsc: Remove obsolete MPSC driver
+
+Nava kishore Manne (5):
+      serial: uartps: Use octal permission for module_param()
+      serial: uartps: Fix multiple line dereference
+      serial: uartps: Fix long line over 80 chars
+      serial: uartps: Do not add a trailing semicolon to macro
+      serial: uartps: Remove useless return from cdns_uart_poll_put_char
+
+Oliver Barta (1):
+      Revert "serial: 8250: Don't service RX FIFO if interrupts are disabled"
+
+Rautkoski Kimmo EXT (1):
+      serial: 8250: Fix TX interrupt handling condition
+
+Serge Semin (8):
+      tty: max310x: Simplify tx-work item code
+      tty: max310x: Introduce max310x_one port macro-wrapper
+      tty: max310x: Don't pass stacked buffers to SPI
+      tty: max310x: Fix invalid baudrate divisors calculator
+      tty: max310x: Add rx-during-tx rs485 flag support
+      tty: max310x: Optionally enable rs485 on startup
+      tty: max310x: Split uart characters insertion loop
+      tty: serial_core: Set port active bit in uart_port_activate
+
+Sergey Organov (4):
+      serial: imx: fix locking in set_termios()
+      serial: imx: set_termios(): factor-out 'ucr2' initial value
+      serial: imx: set_termios(): clarify RTS/CTS bits calculation
+      serial: imx: set_termios(): preserve RTS state
+
+Shubhrajyoti Datta (3):
+      serial: uartps: Move the spinlock after the read of the tx empty
+      serial: uartps: Add a timeout to the tx empty wait
+      serial: uartps: Use the same dynamic major number for all ports
+
+Stefan Roese (2):
+      serial: 8250: Add MSR/MCR TIOCM conversion wrapper functions
+      serial: mctrl_gpio: Check if GPIO property exisits before requesting it
+
+Thierry Reding (1):
+      tty: serial: 8250-of: Do not warn on deferred probe
+
+Wei Yongjun (1):
+      serial: 8250: 8250_core: Fix missing unlock on error in serial8250_register_8250_port()
+
+Yegor Yefremov (1):
+      tty/serial/8250: use mctrl_gpio helpers
+
+YueHaibing (1):
+      serial: stm32: Make stm32_get_databits static
+
+kbuild test robot (1):
+      serial: 8250: pericom_do_set_divisor can be static
+
+ Documentation/admin-guide/devices.txt             |    4 +-
+ Documentation/devicetree/bindings/serial/8250.txt |   19 +
+ arch/ia64/hp/sim/simserial.c                      |    2 -
+ drivers/ipack/devices/ipoctal.h                   |    1 -
+ drivers/tty/serial/8250/8250.h                    |   90 +-
+ drivers/tty/serial/8250/8250_core.c               |   20 +
+ drivers/tty/serial/8250/8250_dma.c                |   11 +-
+ drivers/tty/serial/8250/8250_mtk.c                |   73 +-
+ drivers/tty/serial/8250/8250_of.c                 |   14 +-
+ drivers/tty/serial/8250/8250_omap.c               |   43 +-
+ drivers/tty/serial/8250/8250_pci.c                |   97 +-
+ drivers/tty/serial/8250/8250_pnp.c                |    4 +-
+ drivers/tty/serial/8250/8250_port.c               |   50 +-
+ drivers/tty/serial/8250/Kconfig                   |    1 +
+ drivers/tty/serial/Kconfig                        |   14 -
+ drivers/tty/serial/Makefile                       |    1 -
+ drivers/tty/serial/amba-pl011.c                   |    2 +-
+ drivers/tty/serial/cpm_uart/cpm_uart_core.c       |   19 +-
+ drivers/tty/serial/digicolor-usart.c              |    6 +-
+ drivers/tty/serial/fsl_lpuart.c                   |  114 +-
+ drivers/tty/serial/imx.c                          |   82 +-
+ drivers/tty/serial/max310x.c                      |  157 +-
+ drivers/tty/serial/mpsc.c                         | 2138 ---------------------
+ drivers/tty/serial/msm_serial.c                   |    4 +
+ drivers/tty/serial/serial_core.c                  |    7 +-
+ drivers/tty/serial/serial_mctrl_gpio.c            |   14 +
+ drivers/tty/serial/sh-sci.c                       |   33 +-
+ drivers/tty/serial/stm32-usart.c                  |  348 +++-
+ drivers/tty/serial/stm32-usart.h                  |   33 +-
+ drivers/tty/serial/xilinx_uartps.c                |   37 +-
+ drivers/tty/tty_io.c                              |    4 +-
+ include/linux/mv643xx.h                           |   46 -
+ include/linux/serial_8250.h                       |    1 +
+ include/uapi/linux/serial_core.h                  |    2 +-
+ 34 files changed, 887 insertions(+), 2604 deletions(-)
+ delete mode 100644 drivers/tty/serial/mpsc.c
