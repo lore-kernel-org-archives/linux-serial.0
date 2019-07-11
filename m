@@ -1,217 +1,104 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial patches for 5.3-rc1
-Date: Wed, 10 Jul 2019 15:32:47 +0200
-Message-ID: <20190710133247.GA24083@kroah.com>
+From: Phil Elwell <phil-FnsA7b+Nu9XbIbC87yuRow@public.gmane.org>
+Subject: [PATCH] tty: amba-pl011: Make TX optimisation conditional
+Date: Thu, 11 Jul 2019 14:45:32 +0100
+Message-ID: <1562852732-123411-1-git-send-email-phil@raspberrypi.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-rpi-kernel-bounces+glkr-linux-rpi-kernel=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rpi-kernel>,
+ <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rpi-kernel/>
+List-Post: <mailto:linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rpi-kernel>,
+ <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "linux-rpi-kernel" <linux-rpi-kernel-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rpi-kernel-bounces+glkr-linux-rpi-kernel=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Dave Martin <Dave.Martin-5wv7dgnIgG8@public.gmane.org>, Jiri Slaby <jslaby-IBi9RG/b67k@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-serial@vger.kernel.org
 
-The following changes since commit f2c7c76c5d0a443053e94adb9f0918fa2fb85c3a:
+pl011_tx_chars takes a "from_irq" parameter to reduce the number of
+register accesses. When from_irq is true the function assumes that the
+FIFO is half empty and writes up to half a FIFO's worth of bytes
+without polling the FIFO status register, the reasoning being that
+the function is being called as a result of the TX interrupt being
+raised. This logic would work were it not for the fact that
+pl011_rx_chars, called from pl011_int before pl011_tx_chars, releases
+the spinlock before calling tty_flip_buffer_push.
 
-  Linux 5.2-rc3 (2019-06-02 13:55:33 -0700)
+A user thread writing to the UART claims the spinlock and ultimately
+calls pl011_tx_chars with from_irq set to false. This reverts to the
+older logic that polls the FIFO status register before sending every
+byte. If this happen on an SMP system during the section of the IRQ
+handler where the spinlock has been released, then by the time the TX
+interrupt handler is called, the FIFO may already be full, and any
+further writes are likely to be lost.
 
-are available in the Git repository at:
+The fix involves adding a per-port flag that is true iff running from
+within the interrupt handler and the spinlock has not yet been released.
+This flag is then used as the value for the from_irq parameter of
+pl011_tx_chars, causing polling to be used in the unsafe case.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.3-rc1
+Fixes: 1e84d22322ce ("serial/amba-pl011: Refactor and simplify TX FIFO handling")
 
-for you to fetch changes up to 35a4ed0164e992c9c7b82eb1370081a292131904:
+Signed-off-by: Phil Elwell <phil-FnsA7b+Nu9XbIbC87yuRow@public.gmane.org>
+---
+ drivers/tty/serial/amba-pl011.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-  tty: serial: fsl_lpuart: add imx8qxp support (2019-07-04 15:53:45 +0200)
-
-----------------------------------------------------------------
-TTY / Serial driver updates for 5.3-rc1
-
-Here is the "large" TTY and Serial driver update for 5.3-rc1.
-
-It's in the negative number of lines overall as we removed an obsolete
-serial driver that was causing problems for some people who were trying
-to clean up some apis (the mpsc.c driver, which only worked for some
-pre-production hardware that no one has anymore.)
-
-Other than that, lots of tiny changes, cleaning up small things along
-with some platform-specific serial driver updates.
-
-All of these have been in linux-next for a while now with no reported
-issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Andy Shevchenko (2):
-      serial: 8250_of: Use of_device_get_match_data()
-      serial: 8250: factor out serial8250_{set,clear}_THRI() helpers
-
-Ben Hutchings (1):
-      Revert "consolemap: Fix a memory leaking bug in drivers/tty/vt/consolemap.c"
-
-Bich Hemon (1):
-      serial: stm32: select pinctrl state in each suspend/resume function
-
-Borut Seljak (1):
-      serial: stm32: fix a recursive locking in stm32_config_rs485
-
-Christophe Leroy (1):
-      tty: serial: cpm_uart - fix init when SMC is relocated
-
-Claire Chang (1):
-      uart: mediatek: support Rx in-band wakeup
-
-Doug Berger (1):
-      tty: amba-pl011: allow shared interrupt
-
-Erwan Le Ray (12):
-      serial: stm32: fix word length configuration
-      serial: stm32: fix rx error handling
-      serial: stm32: fix rx data length when parity enabled
-      serial: stm32: fix transmit_chars when tx is stopped
-      serial: stm32: Add support of TC bit status check
-      serial: stm32: fix wakeup source initialization
-      serial: stm32: fix the get_irq error case
-      serial: stm32: add support of timeout interrupt for RX
-      serial: stm32: update PIO transmission
-      serial: stm32: add support of TX FIFO threshold
-      serial: stm32: add support of RX FIFO threshold
-      serial: stm32: add RX and TX FIFO flush
-
-Fabio Estevam (3):
-      serial: fsl_lpuart: Use dev_info() instead of printk()
-      serial: imx: Use dev_info() instead of pr_info()
-      serial: fsl_lpuart: Remove unneeded OOM error message
-
-Fugang Duan (1):
-      tty: serial: fsl_lpuart: add imx8qxp support
-
-Geert Uytterhoeven (2):
-      serial: sh-sci: Fix TX DMA buffer flushing and workqueue races
-      serial: sh-sci: Terminate TX DMA during buffer flushing
-
-Gen Zhang (1):
-      consolemap: Fix a memory leaking bug in drivers/tty/vt/consolemap.c
-
-Greg Kroah-Hartman (2):
-      Merge 5.2-rc3 into tty-next
-      Revert "serial: stm32: select pinctrl state in each suspend/resume function"
-
-Grzegorz Halat (1):
-      vt/fbcon: deinitialize resources in visual_init() after failed memory allocation
-
-Hao Lee (1):
-      tty: serial: 8250: Fix type field in format string
-
-Jay Dolan (1):
-      serial: 8250: Add support for higher baud rates to Pericom chips
-
-Johan Hovold (3):
-      tty: simserial: drop unused iflag macro
-      tty: ipoctal: drop unused iflag macro
-      tty: cpm_uart: drop unused iflag macro
-
-Jorge Ramirez-Ortiz (1):
-      tty: serial: msm_serial: avoid system lockup condition
-
-Kefeng Wang (1):
-      tty/serial: digicolor: Fix digicolor-usart already registered warning
-
-Lin Yi (1):
-      tty: tty_io: fix driver refcount imbalance on error path
-
-Long Cheng (1):
-      serial: 8250-mtk: modify uart DMA rx
-
-Mark Greer (1):
-      serial: mpsc: Remove obsolete MPSC driver
-
-Nava kishore Manne (5):
-      serial: uartps: Use octal permission for module_param()
-      serial: uartps: Fix multiple line dereference
-      serial: uartps: Fix long line over 80 chars
-      serial: uartps: Do not add a trailing semicolon to macro
-      serial: uartps: Remove useless return from cdns_uart_poll_put_char
-
-Oliver Barta (1):
-      Revert "serial: 8250: Don't service RX FIFO if interrupts are disabled"
-
-Rautkoski Kimmo EXT (1):
-      serial: 8250: Fix TX interrupt handling condition
-
-Serge Semin (8):
-      tty: max310x: Simplify tx-work item code
-      tty: max310x: Introduce max310x_one port macro-wrapper
-      tty: max310x: Don't pass stacked buffers to SPI
-      tty: max310x: Fix invalid baudrate divisors calculator
-      tty: max310x: Add rx-during-tx rs485 flag support
-      tty: max310x: Optionally enable rs485 on startup
-      tty: max310x: Split uart characters insertion loop
-      tty: serial_core: Set port active bit in uart_port_activate
-
-Sergey Organov (4):
-      serial: imx: fix locking in set_termios()
-      serial: imx: set_termios(): factor-out 'ucr2' initial value
-      serial: imx: set_termios(): clarify RTS/CTS bits calculation
-      serial: imx: set_termios(): preserve RTS state
-
-Shubhrajyoti Datta (3):
-      serial: uartps: Move the spinlock after the read of the tx empty
-      serial: uartps: Add a timeout to the tx empty wait
-      serial: uartps: Use the same dynamic major number for all ports
-
-Stefan Roese (2):
-      serial: 8250: Add MSR/MCR TIOCM conversion wrapper functions
-      serial: mctrl_gpio: Check if GPIO property exisits before requesting it
-
-Thierry Reding (1):
-      tty: serial: 8250-of: Do not warn on deferred probe
-
-Wei Yongjun (1):
-      serial: 8250: 8250_core: Fix missing unlock on error in serial8250_register_8250_port()
-
-Yegor Yefremov (1):
-      tty/serial/8250: use mctrl_gpio helpers
-
-YueHaibing (1):
-      serial: stm32: Make stm32_get_databits static
-
-kbuild test robot (1):
-      serial: 8250: pericom_do_set_divisor can be static
-
- Documentation/admin-guide/devices.txt             |    4 +-
- Documentation/devicetree/bindings/serial/8250.txt |   19 +
- arch/ia64/hp/sim/simserial.c                      |    2 -
- drivers/ipack/devices/ipoctal.h                   |    1 -
- drivers/tty/serial/8250/8250.h                    |   90 +-
- drivers/tty/serial/8250/8250_core.c               |   20 +
- drivers/tty/serial/8250/8250_dma.c                |   11 +-
- drivers/tty/serial/8250/8250_mtk.c                |   73 +-
- drivers/tty/serial/8250/8250_of.c                 |   14 +-
- drivers/tty/serial/8250/8250_omap.c               |   43 +-
- drivers/tty/serial/8250/8250_pci.c                |   97 +-
- drivers/tty/serial/8250/8250_pnp.c                |    4 +-
- drivers/tty/serial/8250/8250_port.c               |   50 +-
- drivers/tty/serial/8250/Kconfig                   |    1 +
- drivers/tty/serial/Kconfig                        |   14 -
- drivers/tty/serial/Makefile                       |    1 -
- drivers/tty/serial/amba-pl011.c                   |    2 +-
- drivers/tty/serial/cpm_uart/cpm_uart_core.c       |   19 +-
- drivers/tty/serial/digicolor-usart.c              |    6 +-
- drivers/tty/serial/fsl_lpuart.c                   |  114 +-
- drivers/tty/serial/imx.c                          |   82 +-
- drivers/tty/serial/max310x.c                      |  157 +-
- drivers/tty/serial/mpsc.c                         | 2138 ---------------------
- drivers/tty/serial/msm_serial.c                   |    4 +
- drivers/tty/serial/serial_core.c                  |    7 +-
- drivers/tty/serial/serial_mctrl_gpio.c            |   14 +
- drivers/tty/serial/sh-sci.c                       |   33 +-
- drivers/tty/serial/stm32-usart.c                  |  348 +++-
- drivers/tty/serial/stm32-usart.h                  |   33 +-
- drivers/tty/serial/xilinx_uartps.c                |   37 +-
- drivers/tty/tty_io.c                              |    4 +-
- include/linux/mv643xx.h                           |   46 -
- include/linux/serial_8250.h                       |    1 +
- include/uapi/linux/serial_core.h                  |    2 +-
- 34 files changed, 887 insertions(+), 2604 deletions(-)
- delete mode 100644 drivers/tty/serial/mpsc.c
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 5921a33..70c1dc9 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -270,6 +270,7 @@ struct uart_amba_port {
+ 	unsigned int		old_cr;		/* state during shutdown */
+ 	unsigned int		fixed_baud;	/* vendor-set fixed baud rate */
+ 	char			type[12];
++	bool			irq_locked;	/* in irq, unreleased lock */
+ #ifdef CONFIG_DMA_ENGINE
+ 	/* DMA stuff */
+ 	bool			using_tx_dma;
+@@ -814,6 +815,7 @@ __acquires(&uap->port.lock)
+ 		return;
+ 
+ 	/* Avoid deadlock with the DMA engine callback */
++	uap->irq_locked = 0;
+ 	spin_unlock(&uap->port.lock);
+ 	dmaengine_terminate_all(uap->dmatx.chan);
+ 	spin_lock(&uap->port.lock);
+@@ -941,6 +943,7 @@ static void pl011_dma_rx_chars(struct uart_amba_port *uap,
+ 		fifotaken = pl011_fifo_to_tty(uap);
+ 	}
+ 
++	uap->irq_locked = 0;
+ 	spin_unlock(&uap->port.lock);
+ 	dev_vdbg(uap->port.dev,
+ 		 "Took %d chars from DMA buffer and %d chars from the FIFO\n",
+@@ -1349,6 +1352,7 @@ __acquires(&uap->port.lock)
+ {
+ 	pl011_fifo_to_tty(uap);
+ 
++	uap->irq_locked = 0;
+ 	spin_unlock(&uap->port.lock);
+ 	tty_flip_buffer_push(&uap->port.state->port);
+ 	/*
+@@ -1483,6 +1487,7 @@ static irqreturn_t pl011_int(int irq, void *dev_id)
+ 	int handled = 0;
+ 
+ 	spin_lock_irqsave(&uap->port.lock, flags);
++	uap->irq_locked = 1;
+ 	status = pl011_read(uap, REG_RIS) & uap->im;
+ 	if (status) {
+ 		do {
+@@ -1502,7 +1507,7 @@ static irqreturn_t pl011_int(int irq, void *dev_id)
+ 				      UART011_CTSMIS|UART011_RIMIS))
+ 				pl011_modem_status(uap);
+ 			if (status & UART011_TXIS)
+-				pl011_tx_chars(uap, true);
++				pl011_tx_chars(uap, uap->irq_locked);
+ 
+ 			if (pass_counter-- == 0)
+ 				break;
+-- 
+2.7.4
