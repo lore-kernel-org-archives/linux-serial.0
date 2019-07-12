@@ -1,110 +1,202 @@
 From: Macpaul Lin <macpaul.lin@mediatek.com>
-Subject: [PATCH v6 0/8] Add basic SoC support for mt6765
-Date: Fri, 12 Jul 2019 17:43:36 +0800
-Message-ID: <1562924653-10056-1-git-send-email-macpaul.lin@mediatek.com>
+Subject: [PATCH v6 1/8] dt-bindings: clock: mediatek: document clk bindings for Mediatek MT6765 SoC
+Date: Fri, 12 Jul 2019 17:43:37 +0800
+Message-ID: <1562924653-10056-2-git-send-email-macpaul.lin@mediatek.com>
+References: <1562924653-10056-1-git-send-email-macpaul.lin@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1562924653-10056-1-git-send-email-macpaul.lin@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Rob Herring <robh+dt@kernel.org>, Marc Zyngier <marc.zyngier@arm.com>, Ryder Lee <ryder.lee@mediatek.com>, Stephen Boyd <sboyd@kernel.org>, Sean Wang <sean.wang@mediatek.com>, Mars Cheng <mars.cheng@mediatek.com>, Owen Chen <owen.chen@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc: wsd_upstream@mediatek.com, CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-clk@vger.kernel.org, Macpaul Lin <macpaul.lin@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-This patch adds basic SoC support for Mediatek's new 8-core SoC,
-MT6765, which is mainly for smartphone application.
+From: Mars Cheng <mars.cheng@mediatek.com>
 
-Changes in V6:
-1. Adapt V5's patchset to latest kernel tree.
-   Origin V5 patchset.
-   https://lore.kernel.org/patchwork/cover/963612/
-2. Due to clk's common code has been submit by other platform,
-   this patch set will have dependencies with the following patchsets
-   as the following orders.
-   2.a. [v8,00/21] MT8183 IOMMU SUPPORT
-        https://patchwork.kernel.org/cover/11023585/
-   2.b. [v11,0/6] Add basic node support for Mediatek MT8183 SoC
-        https://patchwork.kernel.org/cover/10962385/
-   2.c. [v6,00/14] Mediatek MT8183 scpsys support
-        https://patchwork.kernel.org/cover/11005751/
-3. Correct power related patches into dt-binding patches.
-4. Re-order V5's 4/11, 6/11, and 7/11 due clk common code change
-   and make dependencies in order.
-5. Update some commit message in clk related patches.
+This patch adds the binding documentation for apmixedsys, audsys, camsys,
+imgsys, infracfg, mipi0a, topckgen, vcodecsys
 
-Changes in V5:
-1. add clk support
-
-Changes in V4:
-1. add gic's settings in reg properties
-2. remove some patches about dt-bindings since GKH already took them
-
-Changes in V3:
-1. split dt-binding document patchs
-2. fix mt6765.dtsi warnings with W=12
-3. remove uncessary PPI affinity for timer
-4. add gicc base for gic dt node
-
-Changes in V2:
-1. fix clk properties in uart dts node
-2. fix typo in submit title
-3. add simple-bus in mt6765.dtsi
-4. use correct SPDX license format
-
-Mars Cheng (6):
-  dt-bindings: clock: mediatek: document clk bindings for Mediatek
-    MT6765 SoC
-  dt-bindings: mediatek: Add smi dts binding for Mediatek MT6765 SoC
-  dt-bindings: mediatek: add MT6765 power dt-bindings
-  clk: mediatek: add mt6765 clock IDs
-  soc: mediatek: add MT6765 scpsys and subdomain support
-  arm64: dts: mediatek: add mt6765 support
-
-Owen Chen (2):
-  clk: mediatek: Add MT6765 clock support
-  arm64: defconfig: add CONFIG_COMMON_CLK_MT6765_XXX clocks
-
- .../arm/mediatek/mediatek,apmixedsys.txt      |   1 +
- .../bindings/arm/mediatek/mediatek,audsys.txt |   1 +
- .../bindings/arm/mediatek/mediatek,camsys.txt |   1 +
- .../bindings/arm/mediatek/mediatek,imgsys.txt |   1 +
- .../arm/mediatek/mediatek,infracfg.txt        |   1 +
- .../bindings/arm/mediatek/mediatek,mipi0a.txt |  28 +
- .../bindings/arm/mediatek/mediatek,mmsys.txt  |   1 +
- .../arm/mediatek/mediatek,pericfg.txt         |   1 +
- .../arm/mediatek/mediatek,topckgen.txt        |   1 +
- .../arm/mediatek/mediatek,vcodecsys.txt       |  27 +
- .../mediatek,smi-common.txt                   |   1 +
- .../bindings/soc/mediatek/scpsys.txt          |   6 +
- arch/arm64/boot/dts/mediatek/Makefile         |   1 +
- arch/arm64/boot/dts/mediatek/mt6765-evb.dts   |  33 +
- arch/arm64/boot/dts/mediatek/mt6765.dtsi      | 253 +++++
- arch/arm64/configs/defconfig                  |   6 +
- drivers/clk/mediatek/Kconfig                  |  86 ++
- drivers/clk/mediatek/Makefile                 |   7 +
- drivers/clk/mediatek/clk-mt6765-audio.c       | 109 ++
- drivers/clk/mediatek/clk-mt6765-cam.c         |  83 ++
- drivers/clk/mediatek/clk-mt6765-img.c         |  79 ++
- drivers/clk/mediatek/clk-mt6765-mipi0a.c      |  77 ++
- drivers/clk/mediatek/clk-mt6765-mm.c          | 105 ++
- drivers/clk/mediatek/clk-mt6765-vcodec.c      |  79 ++
- drivers/clk/mediatek/clk-mt6765.c             | 961 ++++++++++++++++++
- drivers/soc/mediatek/mtk-scpsys.c             | 130 +++
- include/dt-bindings/clock/mt6765-clk.h        | 313 ++++++
- include/dt-bindings/power/mt6765-power.h      |  14 +
- 28 files changed, 2406 insertions(+)
+Signed-off-by: Mars Cheng <mars.cheng@mediatek.com>
+Signed-off-by: Owen Chen <owen.chen@mediatek.com>
+Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
+---
+ .../arm/mediatek/mediatek,apmixedsys.txt      |  1 +
+ .../bindings/arm/mediatek/mediatek,audsys.txt |  1 +
+ .../bindings/arm/mediatek/mediatek,camsys.txt |  1 +
+ .../bindings/arm/mediatek/mediatek,imgsys.txt |  1 +
+ .../arm/mediatek/mediatek,infracfg.txt        |  1 +
+ .../bindings/arm/mediatek/mediatek,mipi0a.txt | 28 +++++++++++++++++++
+ .../bindings/arm/mediatek/mediatek,mmsys.txt  |  1 +
+ .../arm/mediatek/mediatek,pericfg.txt         |  1 +
+ .../arm/mediatek/mediatek,topckgen.txt        |  1 +
+ .../arm/mediatek/mediatek,vcodecsys.txt       | 27 ++++++++++++++++++
+ 10 files changed, 63 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mipi0a.txt
  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,vcodecsys.txt
- create mode 100644 arch/arm64/boot/dts/mediatek/mt6765-evb.dts
- create mode 100644 arch/arm64/boot/dts/mediatek/mt6765.dtsi
- create mode 100644 drivers/clk/mediatek/clk-mt6765-audio.c
- create mode 100644 drivers/clk/mediatek/clk-mt6765-cam.c
- create mode 100644 drivers/clk/mediatek/clk-mt6765-img.c
- create mode 100644 drivers/clk/mediatek/clk-mt6765-mipi0a.c
- create mode 100644 drivers/clk/mediatek/clk-mt6765-mm.c
- create mode 100644 drivers/clk/mediatek/clk-mt6765-vcodec.c
- create mode 100644 drivers/clk/mediatek/clk-mt6765.c
- create mode 100644 include/dt-bindings/clock/mt6765-clk.h
- create mode 100644 include/dt-bindings/power/mt6765-power.h
 
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt
+index 161e63a6c254..5f2757e0f844 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,apmixedsys.txt
+@@ -8,6 +8,7 @@ Required Properties:
+ - compatible: Should be one of:
+ 	- "mediatek,mt2701-apmixedsys"
+ 	- "mediatek,mt2712-apmixedsys", "syscon"
++	- "mediatek,mt6765-apmixedsys", "syscon"
+ 	- "mediatek,mt6797-apmixedsys"
+ 	- "mediatek,mt7622-apmixedsys"
+ 	- "mediatek,mt7623-apmixedsys", "mediatek,mt2701-apmixedsys"
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,audsys.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,audsys.txt
+index f3cef1a6d95c..243db5275438 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,audsys.txt
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,audsys.txt
+@@ -7,6 +7,7 @@ Required Properties:
+ 
+ - compatible: Should be one of:
+ 	- "mediatek,mt2701-audsys", "syscon"
++	- "mediatek,mt6765-audsys", "syscon"
+ 	- "mediatek,mt7622-audsys", "syscon"
+ 	- "mediatek,mt7623-audsys", "mediatek,mt2701-audsys", "syscon"
+ 	- "mediatek,mt8183-audiosys", "syscon"
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,camsys.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,camsys.txt
+index d8930f64aa98..17acc4c5402c 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,camsys.txt
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,camsys.txt
+@@ -6,6 +6,7 @@ The MediaTek camsys controller provides various clocks to the system.
+ Required Properties:
+ 
+ - compatible: Should be one of:
++	- "mediatek,mt6765-camsys", "syscon"
+ 	- "mediatek,mt8183-camsys", "syscon"
+ - #clock-cells: Must be 1
+ 
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,imgsys.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,imgsys.txt
+index e3bc4a1e7a6e..4e7b617acfb6 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,imgsys.txt
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,imgsys.txt
+@@ -8,6 +8,7 @@ Required Properties:
+ - compatible: Should be one of:
+ 	- "mediatek,mt2701-imgsys", "syscon"
+ 	- "mediatek,mt2712-imgsys", "syscon"
++	- "mediatek,mt6765-imgsys", "syscon"
+ 	- "mediatek,mt6797-imgsys", "syscon"
+ 	- "mediatek,mt7623-imgsys", "mediatek,mt2701-imgsys", "syscon"
+ 	- "mediatek,mt8173-imgsys", "syscon"
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt
+index a90913988d7e..6a6ffb61dd29 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,infracfg.txt
+@@ -9,6 +9,7 @@ Required Properties:
+ - compatible: Should be one of:
+ 	- "mediatek,mt2701-infracfg", "syscon"
+ 	- "mediatek,mt2712-infracfg", "syscon"
++	- "mediatek,mt6765-infracfg", "syscon"
+ 	- "mediatek,mt6797-infracfg", "syscon"
+ 	- "mediatek,mt7622-infracfg", "syscon"
+ 	- "mediatek,mt7623-infracfg", "mediatek,mt2701-infracfg", "syscon"
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mipi0a.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mipi0a.txt
+new file mode 100644
+index 000000000000..49313055e574
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mipi0a.txt
+@@ -0,0 +1,28 @@
++Mediatek mipi0a (mipi_rx_ana_csi0a) controller
++============================
++
++The Mediatek mipi0a controller provides various clocks
++to the system.
++
++Required Properties:
++
++- compatible: Should be one of:
++	- "mediatek,mt6765-mipi0a", "syscon"
++- #clock-cells: Must be 1
++
++The mipi0a controller uses the common clk binding from
++Documentation/devicetree/bindings/clock/clock-bindings.txt
++The available clocks are defined in dt-bindings/clock/mt*-clk.h.
++
++The mipi0a controller also uses the common power domain from
++Documentation/devicetree/bindings/soc/mediatek/scpsys.txt
++The available power doamins are defined in dt-bindings/power/mt*-power.h.
++
++Example:
++
++mipi0a: mipi0a@11c10000 {
++	compatible = "mediatek,mt6765-mipi0a", "syscon";
++	reg = <0 0x11c10000 0 0x1000>;
++	power-domains = <&scpsys MT6765_POWER_DOMAIN_CAM>;
++	#clock-cells = <1>;
++};
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.txt
+index 545eab717c96..0c7b1698b98e 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.txt
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.txt
+@@ -8,6 +8,7 @@ Required Properties:
+ - compatible: Should be one of:
+ 	- "mediatek,mt2701-mmsys", "syscon"
+ 	- "mediatek,mt2712-mmsys", "syscon"
++	- "mediatek,mt6765-mmsys", "syscon"
+ 	- "mediatek,mt6797-mmsys", "syscon"
+ 	- "mediatek,mt7623-mmsys", "mediatek,mt2701-mmsys", "syscon"
+ 	- "mediatek,mt8173-mmsys", "syscon"
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.txt
+index 4c7e478117a0..b49b40741be1 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.txt
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.txt
+@@ -9,6 +9,7 @@ Required Properties:
+ - compatible: Should be one of:
+ 	- "mediatek,mt2701-pericfg", "syscon"
+ 	- "mediatek,mt2712-pericfg", "syscon"
++	- "mediatek,mt6765-pericfg", "syscon"
+ 	- "mediatek,mt7622-pericfg", "syscon"
+ 	- "mediatek,mt7623-pericfg", "mediatek,mt2701-pericfg", "syscon"
+ 	- "mediatek,mt7629-pericfg", "syscon"
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,topckgen.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,topckgen.txt
+index a023b8338960..21ad416bfeec 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,topckgen.txt
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,topckgen.txt
+@@ -8,6 +8,7 @@ Required Properties:
+ - compatible: Should be one of:
+ 	- "mediatek,mt2701-topckgen"
+ 	- "mediatek,mt2712-topckgen", "syscon"
++	- "mediatek,mt6765-topckgen", "syscon"
+ 	- "mediatek,mt6797-topckgen"
+ 	- "mediatek,mt7622-topckgen"
+ 	- "mediatek,mt7623-topckgen", "mediatek,mt2701-topckgen"
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,vcodecsys.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,vcodecsys.txt
+new file mode 100644
+index 000000000000..83f7f8634943
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,vcodecsys.txt
+@@ -0,0 +1,27 @@
++Mediatek vcodecsys controller
++============================
++
++The Mediatek vcodecsys controller provides various clocks to the system.
++
++Required Properties:
++
++- compatible: Should be one of:
++	- "mediatek,mt6765-vcodecsys", "syscon"
++- #clock-cells: Must be 1
++
++The vcodecsys controller uses the common clk binding from
++Documentation/devicetree/bindings/clock/clock-bindings.txt
++The available clocks are defined in dt-bindings/clock/mt*-clk.h.
++
++The vcodecsys controller also uses the common power domain from
++Documentation/devicetree/bindings/soc/mediatek/scpsys.txt
++The available power doamins are defined in dt-bindings/power/mt*-power.h.
++
++Example:
++
++venc_gcon: venc_gcon@17000000 {
++	compatible = "mediatek,mt6765-vcodecsys", "syscon";
++	reg = <0 0x17000000 0 0x10000>;
++	power-domains = <&scpsys MT6765_POWER_DOMAIN_VCODEC>;
++	#clock-cells = <1>;
++};
 -- 
 2.18.0
