@@ -1,82 +1,46 @@
-From: Matthew Garrett <matthewgarrett@google.com>
-Subject: [PATCH V35 18/29] Lock down TIOCSSERIAL
-Date: Mon, 15 Jul 2019 12:59:35 -0700
-Message-ID: <20190715195946.223443-19-matthewgarrett@google.com>
-References: <20190715195946.223443-1-matthewgarrett@google.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH 02/12] Documentation/arm: repointer docs to Documentation/arch/arm
+Date: Tue, 16 Jul 2019 16:51:05 +0200
+Message-ID: <CAJKOXPcnMM=h9-MW4qg4OTxaY5eBQ=4tH=Gbd3tSuckFvSOPcw@mail.gmail.com>
+References: <20190712022018.27989-1-alex.shi@linux.alibaba.com> <20190712022018.27989-2-alex.shi@linux.alibaba.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190715195946.223443-1-matthewgarrett@google.com>
+In-Reply-To: <20190712022018.27989-2-alex.shi@linux.alibaba.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: jmorris@namei.org
-Cc: linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org, linux-api@vger.kernel.org, David Howells <dhowells@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthew Garrett <mjg59@google.com>, Kees Cook <keescook@chromium.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+To: Alex Shi <alex.shi@linux.alibaba.com>
+Cc: linux-doc@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-omap@vger.kernel.org, linux-fbdev@vger.kernel.org, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-scsi@vger.kernel.org, linux-s390@vger.kernel.org, kvm@vger.kernel.org, linux-sh@vger.kernel.org, Kukjin Kim <kgene@kernel.org>, linux-crypto@vger.kernel.org, linux-input@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+On Fri, 12 Jul 2019 at 04:20, Alex Shi <alex.shi@linux.alibaba.com> wrote:
+>
+> Since we move 'arm/arm64' docs to Documentation/arch/{arm,arm64} dir,
+> redirect the doc pointer to them.
+>
+> Signed-off-by: Alex Shi <alex.shi@linux.alibaba.com>
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Cc: Kukjin Kim <kgene@kernel.org>
+> Cc: Krzysztof Kozlowski <krzk@kernel.org>
+> Cc: linux-doc@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-samsung-soc@vger.kernel.org
+> Cc: linux-crypto@vger.kernel.org
+> Cc: linux-input@vger.kernel.org
+> Cc: linux-serial@vger.kernel.org
+> ---
+>  Documentation/arch/arm/Samsung-S3C24XX/GPIO.txt    |  2 +-
+>  .../arch/arm/Samsung-S3C24XX/Overview.txt          |  6 +++---
+>  Documentation/arch/arm/Samsung/GPIO.txt            |  2 +-
+>  Documentation/arch/arm/Samsung/Overview.txt        |  4 ++--
+>  Documentation/devicetree/bindings/arm/xen.txt      |  2 +-
+>  Documentation/devicetree/booting-without-of.txt    |  4 ++--
+>  Documentation/translations/zh_CN/arm/Booting       |  4 ++--
+>  .../translations/zh_CN/arm/kernel_user_helpers.txt |  4 ++--
+>  MAINTAINERS                                        |  6 +++---
 
-Lock down TIOCSSERIAL as that can be used to change the ioport and irq
-settings on a serial port.  This only appears to be an issue for the serial
-drivers that use the core serial code.  All other drivers seem to either
-ignore attempts to change port/irq or give an error.
+I assume it will go through doc tree, so for Samsung:
+Acked-by: Krzysztof Kozlowski <krzk@kernel.org>
 
-Reported-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Signed-off-by: Matthew Garrett <mjg59@google.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-cc: Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org
----
- drivers/tty/serial/serial_core.c | 5 +++++
- include/linux/security.h         | 1 +
- security/lockdown/lockdown.c     | 1 +
- 3 files changed, 7 insertions(+)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 4223cb496764..6e713be1d4e9 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -22,6 +22,7 @@
- #include <linux/serial_core.h>
- #include <linux/delay.h>
- #include <linux/mutex.h>
-+#include <linux/security.h>
- 
- #include <linux/irq.h>
- #include <linux/uaccess.h>
-@@ -862,6 +863,10 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
- 		goto check_and_exit;
- 	}
- 
-+	retval = security_locked_down(LOCKDOWN_TIOCSSERIAL);
-+	if (retval && (change_irq || change_port))
-+		goto exit;
-+
- 	/*
- 	 * Ask the low level driver to verify the settings.
- 	 */
-diff --git a/include/linux/security.h b/include/linux/security.h
-index 3773ad09b831..8f7048395114 100644
---- a/include/linux/security.h
-+++ b/include/linux/security.h
-@@ -112,6 +112,7 @@ enum lockdown_reason {
- 	LOCKDOWN_MSR,
- 	LOCKDOWN_ACPI_TABLES,
- 	LOCKDOWN_PCMCIA_CIS,
-+	LOCKDOWN_TIOCSSERIAL,
- 	LOCKDOWN_INTEGRITY_MAX,
- 	LOCKDOWN_CONFIDENTIALITY_MAX,
- };
-diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
-index 96106c2870ef..07a49667f234 100644
---- a/security/lockdown/lockdown.c
-+++ b/security/lockdown/lockdown.c
-@@ -27,6 +27,7 @@ static char *lockdown_reasons[LOCKDOWN_CONFIDENTIALITY_MAX+1] = {
- 	[LOCKDOWN_MSR] = "raw MSR access",
- 	[LOCKDOWN_ACPI_TABLES] = "modified ACPI tables",
- 	[LOCKDOWN_PCMCIA_CIS] = "direct PCMCIA CIS storage",
-+	[LOCKDOWN_TIOCSSERIAL] = "reconfiguration of serial port IO",
- 	[LOCKDOWN_INTEGRITY_MAX] = "integrity",
- 	[LOCKDOWN_CONFIDENTIALITY_MAX] = "confidentiality",
- };
--- 
-2.22.0.510.g264f2c817a-goog
+Best regards,
+Krzysztof
