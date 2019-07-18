@@ -1,72 +1,82 @@
-From: Changqi Hu <changqi.hu@mediatek.com>
-Subject: [PATCH v2] serial: 8250-mtk: modify mtk uart power and clock management
-Date: Thu, 18 Jul 2019 20:58:36 +0800
-Message-ID: <1563454716-8355-1-git-send-email-changqi.hu@mediatek.com>
+From: Matthew Garrett <matthewgarrett@google.com>
+Subject: [PATCH V36 18/29] Lock down TIOCSSERIAL
+Date: Thu, 18 Jul 2019 12:44:04 -0700
+Message-ID: <20190718194415.108476-19-matthewgarrett@google.com>
+References: <20190718194415.108476-1-matthewgarrett@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190718194415.108476-1-matthewgarrett@google.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Changqi Hu <changqi.hu@mediatek.com>, Peter Shih <pihsun@chromium.org>, "Gustavo A. R. Silva" <gustavo@embeddedor.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com, Eddie Huang <eddie.huang@mediatek.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>
+To: jmorris@namei.org
+Cc: linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org, linux-api@vger.kernel.org, David Howells <dhowells@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthew Garrett <mjg59@google.com>, Kees Cook <keescook@chromium.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-modify mtk uart runtime interface, enable uart clock before register.
+From: David Howells <dhowells@redhat.com>
 
-Signed-off-by: Changqi Hu <changqi.hu@mediatek.com>
+Lock down TIOCSSERIAL as that can be used to change the ioport and irq
+settings on a serial port.  This only appears to be an issue for the serial
+drivers that use the core serial code.  All other drivers seem to either
+ignore attempts to change port/irq or give an error.
+
+Reported-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Matthew Garrett <mjg59@google.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
 ---
- drivers/tty/serial/8250/8250_mtk.c | 21 ++++++++-------------
- 1 file changed, 8 insertions(+), 13 deletions(-)
+ drivers/tty/serial/serial_core.c | 5 +++++
+ include/linux/security.h         | 1 +
+ security/lockdown/lockdown.c     | 1 +
+ 3 files changed, 7 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index b0113d1..a07c8ae 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -389,7 +389,7 @@ static int __maybe_unused mtk8250_runtime_suspend(struct device *dev)
- 	struct mtk8250_data *data = dev_get_drvdata(dev);
- 	struct uart_8250_port *up = serial8250_get_port(data->line);
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 4223cb496764..6e713be1d4e9 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -22,6 +22,7 @@
+ #include <linux/serial_core.h>
+ #include <linux/delay.h>
+ #include <linux/mutex.h>
++#include <linux/security.h>
  
--	/*wait until UART in idle status*/
-+	/* wait until UART in idle status */
- 	while
- 		(serial_in(up, MTK_UART_DEBUG0));
+ #include <linux/irq.h>
+ #include <linux/uaccess.h>
+@@ -862,6 +863,10 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
+ 		goto check_and_exit;
+ 	}
  
-@@ -426,23 +426,15 @@ static int __maybe_unused mtk8250_runtime_resume(struct device *dev)
- static void
- mtk8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
- {
--	struct uart_8250_port *up = up_to_u8250p(port);
--
--	if (!state) {
--		if (!(up->capabilities & UART_CAP_RPM))
--			mtk8250_runtime_resume(port->dev);
--		else
-+	if (!state)
-+		if (!mtk8250_runtime_resume(port->dev))
- 			pm_runtime_get_sync(port->dev);
--	}
- 
- 	serial8250_do_pm(port, state, old);
- 
--	if (state) {
--		if (!(up->capabilities & UART_CAP_RPM))
-+	if (state)
-+		if (!pm_runtime_put_sync_suspend(port->dev))
- 			mtk8250_runtime_suspend(port->dev);
--		else
--			pm_runtime_put_sync_suspend(port->dev);
--	}
- }
- 
- #ifdef CONFIG_SERIAL_8250_DMA
-@@ -554,6 +546,9 @@ static int mtk8250_probe(struct platform_device *pdev)
- 	platform_set_drvdata(pdev, data);
- 
- 	pm_runtime_enable(&pdev->dev);
-+	err = mtk8250_runtime_resume(&pdev->dev);
-+	if (err)
-+		return err;
- 
- 	data->line = serial8250_register_8250_port(&uart);
- 	if (data->line < 0)
++	retval = security_locked_down(LOCKDOWN_TIOCSSERIAL);
++	if (retval && (change_irq || change_port))
++		goto exit;
++
+ 	/*
+ 	 * Ask the low level driver to verify the settings.
+ 	 */
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 3773ad09b831..8f7048395114 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -112,6 +112,7 @@ enum lockdown_reason {
+ 	LOCKDOWN_MSR,
+ 	LOCKDOWN_ACPI_TABLES,
+ 	LOCKDOWN_PCMCIA_CIS,
++	LOCKDOWN_TIOCSSERIAL,
+ 	LOCKDOWN_INTEGRITY_MAX,
+ 	LOCKDOWN_CONFIDENTIALITY_MAX,
+ };
+diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
+index 22482e1b9a77..00a3a6438dd2 100644
+--- a/security/lockdown/lockdown.c
++++ b/security/lockdown/lockdown.c
+@@ -27,6 +27,7 @@ static char *lockdown_reasons[LOCKDOWN_CONFIDENTIALITY_MAX+1] = {
+ 	[LOCKDOWN_MSR] = "raw MSR access",
+ 	[LOCKDOWN_ACPI_TABLES] = "modifying ACPI tables",
+ 	[LOCKDOWN_PCMCIA_CIS] = "direct PCMCIA CIS storage",
++	[LOCKDOWN_TIOCSSERIAL] = "reconfiguration of serial port IO",
+ 	[LOCKDOWN_INTEGRITY_MAX] = "integrity",
+ 	[LOCKDOWN_CONFIDENTIALITY_MAX] = "confidentiality",
+ };
 -- 
-1.8.1.1.dirty
+2.22.0.510.g264f2c817a-goog
