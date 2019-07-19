@@ -1,120 +1,97 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 040/101] serial: mctrl_gpio: Check if GPIO property exisits before requesting it
-Date: Fri, 19 Jul 2019 00:06:31 -0400
-Message-ID: <20190719040732.17285-40-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 033/101] serial: imx: fix locking in set_termios()
+Date: Fri, 19 Jul 2019 00:06:24 -0400
+Message-ID: <20190719040732.17285-33-sashal@kernel.org>
 References: <20190719040732.17285-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <stable-owner@vger.kernel.org>
 In-Reply-To: <20190719040732.17285-1-sashal@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: stable-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Stefan Roese <sr@denx.de>, Mika Westerberg <mika.westerberg@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Yegor Yefremov <yegorslists@googlemail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Giulio Benetti <giulio.benetti@micronovasrl.com>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Cc: Sergey Organov <sorganov@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Stefan Roese <sr@denx.de>
+From: Sergey Organov <sorganov@gmail.com>
 
-[ Upstream commit d99482673f950817b30caf3fcdfb31179b050ce1 ]
+[ Upstream commit 4e828c3e09201512be5ee162393f334321f7cf01 ]
 
-This patch adds a check for the GPIOs property existence, before the
-GPIO is requested. This fixes an issue seen when the 8250 mctrl_gpio
-support is added (2nd patch in this patch series) on x86 platforms using
-ACPI.
+imx_uart_set_termios() called imx_uart_rts_active(), or
+imx_uart_rts_inactive() before taking port->port.lock.
 
-Here Mika's comments from 2016-08-09:
+As a consequence, sport->port.mctrl that these functions modify
+could have been changed without holding port->port.lock.
 
-"
-I noticed that with v4.8-rc1 serial console of some of our Broxton
-systems does not work properly anymore. I'm able to see output but input
-does not work.
+Moved locking of port->port.lock above the calls to fix the issue.
 
-I bisected it down to commit 4ef03d328769eddbfeca1f1c958fdb181a69c341
-("tty/serial/8250: use mctrl_gpio helpers").
-
-The reason why it fails is that in ACPI we do not have names for GPIOs
-(except when _DSD is used) so we use the "idx" to index into _CRS GPIO
-resources. Now mctrl_gpio_init_noauto() goes through a list of GPIOs
-calling devm_gpiod_get_index_optional() passing "idx" of 0 for each. The
-UART device in Broxton has following (simplified) ACPI description:
-
-    Device (URT4)
-    {
-        ...
-        Name (_CRS, ResourceTemplate () {
-            GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
-                    "\\_SB.GPO0", 0x00, ResourceConsumer)
-            {
-                0x003A
-            }
-            GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
-                    "\\_SB.GPO0", 0x00, ResourceConsumer)
-            {
-                0x003D
-            }
-        })
-
-In this case it finds the first GPIO (0x003A which happens to be RX pin
-for that UART), turns it into GPIO which then breaks input for the UART
-device. This also breaks systems with bluetooth connected to UART (those
-typically have some GPIOs in their _CRS).
-
-Any ideas how to fix this?
-
-We cannot just drop the _CRS index lookup fallback because that would
-break many existing machines out there so maybe we can limit this to
-only DT enabled machines. Or alternatively probe if the property first
-exists before trying to acquire the GPIOs (using
-device_property_present()).
-"
-
-This patch implements the fix suggested by Mika in his statement above.
-
-Signed-off-by: Stefan Roese <sr@denx.de>
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Tested-by: Yegor Yefremov <yegorslists@googlemail.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Yegor Yefremov <yegorslists@googlemail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Giulio Benetti <giulio.benetti@micronovasrl.com>
+Signed-off-by: Sergey Organov <sorganov@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/serial_mctrl_gpio.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/tty/serial/imx.c | 23 +++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
-index 1c06325beaca..07f318603e74 100644
---- a/drivers/tty/serial/serial_mctrl_gpio.c
-+++ b/drivers/tty/serial/serial_mctrl_gpio.c
-@@ -12,6 +12,7 @@
- #include <linux/termios.h>
- #include <linux/serial_core.h>
- #include <linux/module.h>
-+#include <linux/property.h>
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 0f67197a3783..105de92b0b3b 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -382,6 +382,7 @@ static void imx_uart_ucrs_restore(struct imx_port *sport,
+ }
+ #endif
  
- #include "serial_mctrl_gpio.h"
++/* called with port.lock taken and irqs caller dependent */
+ static void imx_uart_rts_active(struct imx_port *sport, u32 *ucr2)
+ {
+ 	*ucr2 &= ~(UCR2_CTSC | UCR2_CTS);
+@@ -390,6 +391,7 @@ static void imx_uart_rts_active(struct imx_port *sport, u32 *ucr2)
+ 	mctrl_gpio_set(sport->gpios, sport->port.mctrl);
+ }
  
-@@ -115,6 +116,19 @@ struct mctrl_gpios *mctrl_gpio_init_noauto(struct device *dev, unsigned int idx)
++/* called with port.lock taken and irqs caller dependent */
+ static void imx_uart_rts_inactive(struct imx_port *sport, u32 *ucr2)
+ {
+ 	*ucr2 &= ~UCR2_CTSC;
+@@ -399,6 +401,7 @@ static void imx_uart_rts_inactive(struct imx_port *sport, u32 *ucr2)
+ 	mctrl_gpio_set(sport->gpios, sport->port.mctrl);
+ }
  
- 	for (i = 0; i < UART_GPIO_MAX; i++) {
- 		enum gpiod_flags flags;
-+		char *gpio_str;
-+		bool present;
++/* called with port.lock taken and irqs caller dependent */
+ static void imx_uart_rts_auto(struct imx_port *sport, u32 *ucr2)
+ {
+ 	*ucr2 |= UCR2_CTSC;
+@@ -1554,6 +1557,16 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		old_csize = CS8;
+ 	}
+ 
++	del_timer_sync(&sport->timer);
 +
-+		/* Check if GPIO property exists and continue if not */
-+		gpio_str = kasprintf(GFP_KERNEL, "%s-gpios",
-+				     mctrl_gpios_desc[i].name);
-+		if (!gpio_str)
-+			continue;
++	/*
++	 * Ask the core to calculate the divisor for us.
++	 */
++	baud = uart_get_baud_rate(port, termios, old, 50, port->uartclk / 16);
++	quot = uart_get_divisor(port, baud);
 +
-+		present = device_property_present(dev, gpio_str);
-+		kfree(gpio_str);
-+		if (!present)
-+			continue;
++	spin_lock_irqsave(&sport->port.lock, flags);
++
+ 	if ((termios->c_cflag & CSIZE) == CS8)
+ 		ucr2 = UCR2_WS | UCR2_SRST | UCR2_IRTS;
+ 	else
+@@ -1597,16 +1610,6 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 			ucr2 |= UCR2_PROE;
+ 	}
  
- 		if (mctrl_gpios_desc[i].dir_out)
- 			flags = GPIOD_OUT_LOW;
+-	del_timer_sync(&sport->timer);
+-
+-	/*
+-	 * Ask the core to calculate the divisor for us.
+-	 */
+-	baud = uart_get_baud_rate(port, termios, old, 50, port->uartclk / 16);
+-	quot = uart_get_divisor(port, baud);
+-
+-	spin_lock_irqsave(&sport->port.lock, flags);
+-
+ 	sport->port.read_status_mask = 0;
+ 	if (termios->c_iflag & INPCK)
+ 		sport->port.read_status_mask |= (URXD_FRMERR | URXD_PRERR);
 -- 
 2.20.1
