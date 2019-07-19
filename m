@@ -1,60 +1,35 @@
 From: Navid Emamdoost <navid.emamdoost@gmail.com>
-Subject: [PATCH v2] 8250_lpss: check null return when calling pci_ioremap_bar
-Date: Fri, 19 Jul 2019 12:48:45 -0500
-Message-ID: <20190719174848.24216-1-navid.emamdoost@gmail.com>
-References: <20190719151519.GO9224@smile.fi.intel.com>
+Subject: [PATCH] lpss8250_dma_setup: there is memory leak when second allocation fails
+Date: Fri, 19 Jul 2019 13:11:58 -0500
+Message-ID: <20190719181200.25607-1-navid.emamdoost@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190719151519.GO9224@smile.fi.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: andriy.shevchenko@linux.intel.com
-Cc: emamd001@umn.edu, kjlu@umn.edu, smccaman@umn.edu, Navid Emamdoost <navid.emamdoost@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Vinod Koul <vkoul@kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: emamd001@umn.edu, kjlu@umn.edu, smccaman@umn.edu, Navid Emamdoost <navid.emamdoost@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Vinod Koul <vkoul@kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-pci_ioremap_bar may return null. This is eventually de-referenced at 
-drivers/dma/dw/core.c:1154 and drivers/dma/dw/core.c:1168. A null check 
-is needed to prevent null de-reference. I am adding the check and in case
- of failure. Thanks to Andy Shevchenko for the hint on the necessity of 
-pci_iounmap when exiting.
+in lpss8250_dma_setup, we need to release the first dma slave object
+allocated in case of the second allocation failure.
 
 Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
 ---
- drivers/tty/serial/8250/8250_lpss.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_lpss.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-index 53ca9ba6ab4b..d07e431110d9 100644
+index d07e431110d9..6e1f86db88b2 100644
 --- a/drivers/tty/serial/8250/8250_lpss.c
 +++ b/drivers/tty/serial/8250/8250_lpss.c
-@@ -169,10 +169,12 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
- 	struct pci_dev *pdev = to_pci_dev(port->dev);
- 	int ret;
+@@ -259,8 +259,10 @@ static int lpss8250_dma_setup(struct lpss8250 *lpss, struct uart_8250_port *port
+ 		return -ENOMEM;
  
-+	chip->pdata = &qrk_serial_dma_pdata;
- 	chip->dev = &pdev->dev;
- 	chip->irq = pci_irq_vector(pdev, 0);
- 	chip->regs = pci_ioremap_bar(pdev, 1);
--	chip->pdata = &qrk_serial_dma_pdata;
-+	if (!chip->regs)
-+		return;
+ 	tx_param = devm_kzalloc(dev, sizeof(*tx_param), GFP_KERNEL);
+-	if (!tx_param)
++	if (!tx_param) {
++		kfree(rx_param);
+ 		return -ENOMEM;
++	}
  
- 	/* Falling back to PIO mode if DMA probing fails */
- 	ret = dw_dma_probe(chip);
-@@ -195,11 +197,15 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
- 
- static void qrk_serial_exit_dma(struct lpss8250 *lpss)
- {
-+	struct dw_dma_chip *chip = &lpss->dma_chip;
- 	struct dw_dma_slave *param = &lpss->dma_param;
- 
- 	if (!param->dma_dev)
- 		return;
--	dw_dma_remove(&lpss->dma_chip);
-+
-+	dw_dma_remove(chip);
-+
-+	pci_iounmap(to_pci_dev(chip->dev), chip->regs);
- }
- #else	/* CONFIG_SERIAL_8250_DMA */
- static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port) {}
+ 	*rx_param = lpss->dma_param;
+ 	dma->rxconf.src_maxburst = lpss->dma_maxburst;
 -- 
 2.17.1
