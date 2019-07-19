@@ -1,12 +1,12 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.9 32/45] serial: sh-sci: Fix TX DMA buffer flushing and workqueue races
-Date: Fri, 19 Jul 2019 00:12:51 -0400
-Message-ID: <20190719041304.18849-32-sashal@kernel.org>
-References: <20190719041304.18849-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 24/35] serial: sh-sci: Fix TX DMA buffer flushing and workqueue races
+Date: Fri, 19 Jul 2019 00:14:12 -0400
+Message-ID: <20190719041423.19322-24-sashal@kernel.org>
+References: <20190719041423.19322-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20190719041304.18849-1-sashal@kernel.org>
+In-Reply-To: <20190719041423.19322-1-sashal@kernel.org>
 Sender: stable-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Eugeniu Rosca <erosca@de.adit-jv.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
@@ -59,10 +59,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 15 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 8ec8b3bbaf25..ea35f5144237 100644
+index 669134e27ed9..c450e32c153d 100644
 --- a/drivers/tty/serial/sh-sci.c
 +++ b/drivers/tty/serial/sh-sci.c
-@@ -1291,6 +1291,7 @@ static void work_fn_tx(struct work_struct *work)
+@@ -1203,6 +1203,7 @@ static void work_fn_tx(struct work_struct *work)
  	struct uart_port *port = &s->port;
  	struct circ_buf *xmit = &port->state->xmit;
  	dma_addr_t buf;
@@ -70,7 +70,7 @@ index 8ec8b3bbaf25..ea35f5144237 100644
  
  	/*
  	 * DMA is idle now.
-@@ -1300,16 +1301,23 @@ static void work_fn_tx(struct work_struct *work)
+@@ -1212,16 +1213,23 @@ static void work_fn_tx(struct work_struct *work)
  	 * consistent xmit buffer state.
  	 */
  	spin_lock_irq(&port->lock);
@@ -98,7 +98,7 @@ index 8ec8b3bbaf25..ea35f5144237 100644
  		dev_warn(port->dev, "Failed preparing Tx DMA descriptor\n");
  		/* switch to PIO */
  		sci_tx_dma_release(s, true);
-@@ -1319,20 +1327,20 @@ static void work_fn_tx(struct work_struct *work)
+@@ -1231,20 +1239,20 @@ static void work_fn_tx(struct work_struct *work)
  	dma_sync_single_for_device(chan->device->dev, buf, s->tx_dma_len,
  				   DMA_TO_DEVICE);
  
