@@ -1,54 +1,74 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.2 048/171] tty/serial: digicolor: Fix digicolor-usart already registered warning
-Date: Thu, 18 Jul 2019 23:54:39 -0400
-Message-ID: <20190719035643.14300-48-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 058/171] sunhv: Fix device naming inconsistency between sunhv_console and sunhv_reg
+Date: Thu, 18 Jul 2019 23:54:49 -0400
+Message-ID: <20190719035643.14300-58-sashal@kernel.org>
 References: <20190719035643.14300-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <stable-owner@vger.kernel.org>
 In-Reply-To: <20190719035643.14300-1-sashal@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: stable-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Kefeng Wang <wangkefeng.wang@huawei.com>, Hulk Robot <hulkci@huawei.com>, Baruch Siach <baruch@tkos.co.il>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Cc: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, "David S . Miller" <davem@davemloft.net>, Sasha Levin <sashal@kernel.org>, sparclinux@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Kefeng Wang <wangkefeng.wang@huawei.com>
+From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
 
-[ Upstream commit c7ad9ba0611c53cfe194223db02e3bca015f0674 ]
+[ Upstream commit 07a6d63eb1b54b5fb38092780fe618dfe1d96e23 ]
 
-When modprobe/rmmod/modprobe module, if platform_driver_register() fails,
-the kernel complained,
+In d5a2aa24, the name in struct console sunhv_console was changed from "ttyS"
+to "ttyHV" while the name in struct uart_ops sunhv_pops remained unchanged.
 
-  proc_dir_entry 'driver/digicolor-usart' already registered
-  WARNING: CPU: 1 PID: 5636 at fs/proc/generic.c:360 proc_register+0x19d/0x270
+This results in the hypervisor console device to be listed as "ttyHV0" under
+/proc/consoles while the device node is still named "ttyS0":
 
-Fix this by adding uart_unregister_driver() when platform_driver_register() fails.
+root@osaka:~# cat /proc/consoles
+ttyHV0               -W- (EC p  )    4:64
+tty0                 -WU (E     )    4:1
+root@osaka:~# readlink /sys/dev/char/4:64
+../../devices/root/f02836f0/f0285690/tty/ttyS0
+root@osaka:~#
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-Acked-by: Baruch Siach <baruch@tkos.co.il>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This means that any userland code which tries to determine the name of the
+device file of the hypervisor console device can not rely on the information
+provided by /proc/consoles. In particular, booting current versions of debian-
+installer inside a SPARC LDOM will fail with the installer unable to determine
+the console device.
+
+After renaming the device in struct uart_ops sunhv_pops to "ttyHV" as well,
+the inconsistency is fixed and it is possible again to determine the name
+of the device file of the hypervisor console device by reading the contents
+of /proc/console:
+
+root@osaka:~# cat /proc/consoles
+ttyHV0               -W- (EC p  )    4:64
+tty0                 -WU (E     )    4:1
+root@osaka:~# readlink /sys/dev/char/4:64
+../../devices/root/f02836f0/f0285690/tty/ttyHV0
+root@osaka:~#
+
+With this change, debian-installer works correctly when installing inside
+a SPARC LDOM.
+
+Signed-off-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/digicolor-usart.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/tty/serial/sunhv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/digicolor-usart.c
-index f460cca139e2..13ac36e2da4f 100644
---- a/drivers/tty/serial/digicolor-usart.c
-+++ b/drivers/tty/serial/digicolor-usart.c
-@@ -541,7 +541,11 @@ static int __init digicolor_uart_init(void)
- 	if (ret)
- 		return ret;
- 
--	return platform_driver_register(&digicolor_uart_platform);
-+	ret = platform_driver_register(&digicolor_uart_platform);
-+	if (ret)
-+		uart_unregister_driver(&digicolor_uart);
-+
-+	return ret;
- }
- module_init(digicolor_uart_init);
+diff --git a/drivers/tty/serial/sunhv.c b/drivers/tty/serial/sunhv.c
+index 63e34d868de8..f8503f8fc44e 100644
+--- a/drivers/tty/serial/sunhv.c
++++ b/drivers/tty/serial/sunhv.c
+@@ -397,7 +397,7 @@ static const struct uart_ops sunhv_pops = {
+ static struct uart_driver sunhv_reg = {
+ 	.owner			= THIS_MODULE,
+ 	.driver_name		= "sunhv",
+-	.dev_name		= "ttyS",
++	.dev_name		= "ttyHV",
+ 	.major			= TTY_MAJOR,
+ };
  
 -- 
 2.20.1
