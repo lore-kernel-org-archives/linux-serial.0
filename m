@@ -1,70 +1,159 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v4 1/3] serial: imx: set_termios(): do not enable autoRTS
- if RTS is unset
-Date: Fri, 19 Jul 2019 11:11:43 +0200
-Message-ID: <20190719091143.uhjxeibtolgswq2l@pengutronix.de>
-References: <20190614072801.3187-1-s.hauer@pengutronix.de>
- <1563526074-20399-1-git-send-email-sorganov@gmail.com>
- <1563526074-20399-2-git-send-email-sorganov@gmail.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH v3] serial: 8250-mtk: modify mtk uart power and clock
+ management
+Date: Fri, 19 Jul 2019 13:16:33 +0200
+Message-ID: <b2958b94-8938-3f6b-a636-012c5657f25d@gmail.com>
+References: <1563505182-2408-1-git-send-email-changqi.hu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1563526074-20399-2-git-send-email-sorganov@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Sergey Organov <sorganov@gmail.com>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1563505182-2408-1-git-send-email-changqi.hu@mediatek.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Changqi Hu <changqi.hu@mediatek.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Peter Shih <pihsun@chromium.org>, "Gustavo A. R. Silva" <gustavo@embeddedor.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com, Eddie Huang <eddie.huang@mediatek.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jul 19, 2019 at 11:47:52AM +0300, Sergey Organov wrote:
-> set_termios() shouldn't set UCR2_CTSC bit if UCR2_CTS (=3DTIOCM_RTS) is
-> cleared. Added corresponding check in imx_uart_rts_auto() to fix this.
 
-This is not understandable unless you read the reference manual.
 
-In terms understandable without manual, this patch does:
+On 19/07/2019 04:59, Changqi Hu wrote:
+> modify mtk uart runtime interface, add uart clock use count.
+> merge patch v1 and patch v2 together.
+> 
 
-	Don't let the receiver hardware control the RTS output if it was
-	requested to be inactive.
+Please try to explain better why we need this.
 
-> Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
-> Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
-> Signed-off-by: Sergey Organov <sorganov@gmail.com>
+> Signed-off-by: Changqi Hu <changqi.hu@mediatek.com>
 > ---
->  drivers/tty/serial/imx.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> =
 
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 57d6e6b..95d7984 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -405,7 +405,8 @@ static void imx_uart_rts_inactive(struct imx_port *sp=
-ort, u32 *ucr2)
->  /* called with port.lock taken and irqs caller dependent */
->  static void imx_uart_rts_auto(struct imx_port *sport, u32 *ucr2)
+Changelog from one version to another (like that you merged v1 and v2) should go
+here, as we don't want that to be part of the commit message once the patch is
+applied.
+
+Regards,
+Matthias
+
+>  drivers/tty/serial/8250/8250_mtk.c | 50 ++++++++++++++++++++++++--------------
+>  1 file changed, 32 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+> index f470ded..a07c8ae 100644
+> --- a/drivers/tty/serial/8250/8250_mtk.c
+> +++ b/drivers/tty/serial/8250/8250_mtk.c
+> @@ -31,6 +31,7 @@
+>  #define MTK_UART_RXTRI_AD	0x14	/* RX Trigger address */
+>  #define MTK_UART_FRACDIV_L	0x15	/* Fractional divider LSB address */
+>  #define MTK_UART_FRACDIV_M	0x16	/* Fractional divider MSB address */
+> +#define MTK_UART_DEBUG0	0x18
+>  #define MTK_UART_IER_XOFFI	0x20	/* Enable XOFF character interrupt */
+>  #define MTK_UART_IER_RTSI	0x40	/* Enable RTS Modem status interrupt */
+>  #define MTK_UART_IER_CTSI	0x80	/* Enable CTS Modem status interrupt */
+> @@ -386,9 +387,18 @@ static void mtk8250_set_flow_ctrl(struct uart_8250_port *up, int mode)
+>  static int __maybe_unused mtk8250_runtime_suspend(struct device *dev)
 >  {
-> -	*ucr2 |=3D UCR2_CTSC;
-> +	if (*ucr2 & UCR2_CTS)
-> +		*ucr2 |=3D UCR2_CTSC;
-
-I think this patch is wrong or the commit log is insufficient.
-imx_uart_rts_auto() has only a single caller and there ucr2 & UCR2_CTS is
-never true. And CTSC isn't restored anywhere, is it?
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+>  	struct mtk8250_data *data = dev_get_drvdata(dev);
+> +	struct uart_8250_port *up = serial8250_get_port(data->line);
+>  
+> -	clk_disable_unprepare(data->uart_clk);
+> -	clk_disable_unprepare(data->bus_clk);
+> +	/* wait until UART in idle status */
+> +	while
+> +		(serial_in(up, MTK_UART_DEBUG0));
+> +
+> +	if (data->clk_count == 0U) {
+> +		dev_dbg(dev, "%s clock count is 0\n", __func__);
+> +	} else {
+> +		clk_disable_unprepare(data->bus_clk);
+> +		data->clk_count--;
+> +	}
+>  
+>  	return 0;
+>  }
+> @@ -398,16 +408,16 @@ static int __maybe_unused mtk8250_runtime_resume(struct device *dev)
+>  	struct mtk8250_data *data = dev_get_drvdata(dev);
+>  	int err;
+>  
+> -	err = clk_prepare_enable(data->uart_clk);
+> -	if (err) {
+> -		dev_warn(dev, "Can't enable clock\n");
+> -		return err;
+> -	}
+> -
+> -	err = clk_prepare_enable(data->bus_clk);
+> -	if (err) {
+> -		dev_warn(dev, "Can't enable bus clock\n");
+> -		return err;
+> +	if (data->clk_count > 0U) {
+> +		dev_dbg(dev, "%s clock count is %d\n", __func__,
+> +			data->clk_count);
+> +	} else {
+> +		err = clk_prepare_enable(data->bus_clk);
+> +		if (err) {
+> +			dev_warn(dev, "Can't enable bus clock\n");
+> +			return err;
+> +		}
+> +		data->clk_count++;
+>  	}
+>  
+>  	return 0;
+> @@ -417,12 +427,14 @@ static int __maybe_unused mtk8250_runtime_resume(struct device *dev)
+>  mtk8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
+>  {
+>  	if (!state)
+> -		pm_runtime_get_sync(port->dev);
+> +		if (!mtk8250_runtime_resume(port->dev))
+> +			pm_runtime_get_sync(port->dev);
+>  
+>  	serial8250_do_pm(port, state, old);
+>  
+>  	if (state)
+> -		pm_runtime_put_sync_suspend(port->dev);
+> +		if (!pm_runtime_put_sync_suspend(port->dev))
+> +			mtk8250_runtime_suspend(port->dev);
+>  }
+>  
+>  #ifdef CONFIG_SERIAL_8250_DMA
+> @@ -499,6 +511,8 @@ static int mtk8250_probe(struct platform_device *pdev)
+>  	if (!data)
+>  		return -ENOMEM;
+>  
+> +	data->clk_count = 0;
+> +
+>  	if (pdev->dev.of_node) {
+>  		err = mtk8250_probe_of(pdev, &uart.port, data);
+>  		if (err)
+> @@ -531,6 +545,7 @@ static int mtk8250_probe(struct platform_device *pdev)
+>  
+>  	platform_set_drvdata(pdev, data);
+>  
+> +	pm_runtime_enable(&pdev->dev);
+>  	err = mtk8250_runtime_resume(&pdev->dev);
+>  	if (err)
+>  		return err;
+> @@ -539,9 +554,6 @@ static int mtk8250_probe(struct platform_device *pdev)
+>  	if (data->line < 0)
+>  		return data->line;
+>  
+> -	pm_runtime_set_active(&pdev->dev);
+> -	pm_runtime_enable(&pdev->dev);
+> -
+>  	return 0;
+>  }
+>  
+> @@ -552,11 +564,13 @@ static int mtk8250_remove(struct platform_device *pdev)
+>  	pm_runtime_get_sync(&pdev->dev);
+>  
+>  	serial8250_unregister_port(data->line);
+> -	mtk8250_runtime_suspend(&pdev->dev);
+>  
+>  	pm_runtime_disable(&pdev->dev);
+>  	pm_runtime_put_noidle(&pdev->dev);
+>  
+> +	if (!pm_runtime_status_suspended(&pdev->dev))
+> +		mtk8250_runtime_suspend(&pdev->dev);
+> +
+>  	return 0;
+>  }
+>  
+> 
