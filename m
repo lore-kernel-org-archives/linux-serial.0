@@ -1,120 +1,124 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.2 079/171] serial: mctrl_gpio: Check if GPIO property exisits before requesting it
-Date: Thu, 18 Jul 2019 23:55:10 -0400
-Message-ID: <20190719035643.14300-79-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 110/171] serial: sh-sci: Fix TX DMA buffer flushing and workqueue races
+Date: Thu, 18 Jul 2019 23:55:41 -0400
+Message-ID: <20190719035643.14300-110-sashal@kernel.org>
 References: <20190719035643.14300-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <stable-owner@vger.kernel.org>
 In-Reply-To: <20190719035643.14300-1-sashal@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: stable-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Stefan Roese <sr@denx.de>, Mika Westerberg <mika.westerberg@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Yegor Yefremov <yegorslists@googlemail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Giulio Benetti <giulio.benetti@micronovasrl.com>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Eugeniu Rosca <erosca@de.adit-jv.com>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Stefan Roese <sr@denx.de>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit d99482673f950817b30caf3fcdfb31179b050ce1 ]
+[ Upstream commit 8493eab02608b0e82f67b892aa72882e510c31d0 ]
 
-This patch adds a check for the GPIOs property existence, before the
-GPIO is requested. This fixes an issue seen when the 8250 mctrl_gpio
-support is added (2nd patch in this patch series) on x86 platforms using
-ACPI.
+When uart_flush_buffer() is called, the .flush_buffer() callback zeroes
+the tx_dma_len field.  This may race with the work queue function
+handling transmit DMA requests:
 
-Here Mika's comments from 2016-08-09:
+  1. If the buffer is flushed before the first DMA API call,
+     dmaengine_prep_slave_single() may be called with a zero length,
+     causing the DMA request to never complete, leading to messages
+     like:
 
-"
-I noticed that with v4.8-rc1 serial console of some of our Broxton
-systems does not work properly anymore. I'm able to see output but input
-does not work.
+        rcar-dmac e7300000.dma-controller: Channel Address Error happen
 
-I bisected it down to commit 4ef03d328769eddbfeca1f1c958fdb181a69c341
-("tty/serial/8250: use mctrl_gpio helpers").
+     and, with debug enabled:
 
-The reason why it fails is that in ACPI we do not have names for GPIOs
-(except when _DSD is used) so we use the "idx" to index into _CRS GPIO
-resources. Now mctrl_gpio_init_noauto() goes through a list of GPIOs
-calling devm_gpiod_get_index_optional() passing "idx" of 0 for each. The
-UART device in Broxton has following (simplified) ACPI description:
+	sh-sci e6e88000.serial: sci_dma_tx_work_fn: ffff800639b55000: 0...0, cookie 126
 
-    Device (URT4)
-    {
-        ...
-        Name (_CRS, ResourceTemplate () {
-            GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
-                    "\\_SB.GPO0", 0x00, ResourceConsumer)
-            {
-                0x003A
-            }
-            GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
-                    "\\_SB.GPO0", 0x00, ResourceConsumer)
-            {
-                0x003D
-            }
-        })
+     and DMA timeouts.
 
-In this case it finds the first GPIO (0x003A which happens to be RX pin
-for that UART), turns it into GPIO which then breaks input for the UART
-device. This also breaks systems with bluetooth connected to UART (those
-typically have some GPIOs in their _CRS).
+  2. If the buffer is flushed after the first DMA API call, but before
+     the second, dma_sync_single_for_device() may be called with a zero
+     length, causing the transmit data not to be flushed to RAM, and
+     leading to stale data being output.
 
-Any ideas how to fix this?
+Fix this by:
+  1. Letting sci_dma_tx_work_fn() return immediately if the transmit
+     buffer is empty,
+  2. Extending the critical section to cover all DMA preparational work,
+     so tx_dma_len stays consistent for all of it,
+  3. Using local copies of circ_buf.head and circ_buf.tail, to make sure
+     they match the actual operation above.
 
-We cannot just drop the _CRS index lookup fallback because that would
-break many existing machines out there so maybe we can limit this to
-only DT enabled machines. Or alternatively probe if the property first
-exists before trying to acquire the GPIOs (using
-device_property_present()).
-"
-
-This patch implements the fix suggested by Mika in his statement above.
-
-Signed-off-by: Stefan Roese <sr@denx.de>
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Tested-by: Yegor Yefremov <yegorslists@googlemail.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Yegor Yefremov <yegorslists@googlemail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Giulio Benetti <giulio.benetti@micronovasrl.com>
+Reported-by: Eugeniu Rosca <erosca@de.adit-jv.com>
+Suggested-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Eugeniu Rosca <erosca@de.adit-jv.com>
+Tested-by: Eugeniu Rosca <erosca@de.adit-jv.com>
+Link: https://lore.kernel.org/r/20190624123540.20629-2-geert+renesas@glider.be
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/serial_mctrl_gpio.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/tty/serial/sh-sci.c | 22 +++++++++++++++-------
+ 1 file changed, 15 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
-index 39ed56214cd3..2b400189be91 100644
---- a/drivers/tty/serial/serial_mctrl_gpio.c
-+++ b/drivers/tty/serial/serial_mctrl_gpio.c
-@@ -12,6 +12,7 @@
- #include <linux/termios.h>
- #include <linux/serial_core.h>
- #include <linux/module.h>
-+#include <linux/property.h>
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 1d25c4e2d0d2..d18c680aa64b 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1398,6 +1398,7 @@ static void sci_dma_tx_work_fn(struct work_struct *work)
+ 	struct circ_buf *xmit = &port->state->xmit;
+ 	unsigned long flags;
+ 	dma_addr_t buf;
++	int head, tail;
  
- #include "serial_mctrl_gpio.h"
+ 	/*
+ 	 * DMA is idle now.
+@@ -1407,16 +1408,23 @@ static void sci_dma_tx_work_fn(struct work_struct *work)
+ 	 * consistent xmit buffer state.
+ 	 */
+ 	spin_lock_irq(&port->lock);
+-	buf = s->tx_dma_addr + (xmit->tail & (UART_XMIT_SIZE - 1));
++	head = xmit->head;
++	tail = xmit->tail;
++	buf = s->tx_dma_addr + (tail & (UART_XMIT_SIZE - 1));
+ 	s->tx_dma_len = min_t(unsigned int,
+-		CIRC_CNT(xmit->head, xmit->tail, UART_XMIT_SIZE),
+-		CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE));
+-	spin_unlock_irq(&port->lock);
++		CIRC_CNT(head, tail, UART_XMIT_SIZE),
++		CIRC_CNT_TO_END(head, tail, UART_XMIT_SIZE));
++	if (!s->tx_dma_len) {
++		/* Transmit buffer has been flushed */
++		spin_unlock_irq(&port->lock);
++		return;
++	}
  
-@@ -116,6 +117,19 @@ struct mctrl_gpios *mctrl_gpio_init_noauto(struct device *dev, unsigned int idx)
+ 	desc = dmaengine_prep_slave_single(chan, buf, s->tx_dma_len,
+ 					   DMA_MEM_TO_DEV,
+ 					   DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+ 	if (!desc) {
++		spin_unlock_irq(&port->lock);
+ 		dev_warn(port->dev, "Failed preparing Tx DMA descriptor\n");
+ 		goto switch_to_pio;
+ 	}
+@@ -1424,18 +1432,18 @@ static void sci_dma_tx_work_fn(struct work_struct *work)
+ 	dma_sync_single_for_device(chan->device->dev, buf, s->tx_dma_len,
+ 				   DMA_TO_DEVICE);
  
- 	for (i = 0; i < UART_GPIO_MAX; i++) {
- 		enum gpiod_flags flags;
-+		char *gpio_str;
-+		bool present;
-+
-+		/* Check if GPIO property exists and continue if not */
-+		gpio_str = kasprintf(GFP_KERNEL, "%s-gpios",
-+				     mctrl_gpios_desc[i].name);
-+		if (!gpio_str)
-+			continue;
-+
-+		present = device_property_present(dev, gpio_str);
-+		kfree(gpio_str);
-+		if (!present)
-+			continue;
+-	spin_lock_irq(&port->lock);
+ 	desc->callback = sci_dma_tx_complete;
+ 	desc->callback_param = s;
+-	spin_unlock_irq(&port->lock);
+ 	s->cookie_tx = dmaengine_submit(desc);
+ 	if (dma_submit_error(s->cookie_tx)) {
++		spin_unlock_irq(&port->lock);
+ 		dev_warn(port->dev, "Failed submitting Tx DMA descriptor\n");
+ 		goto switch_to_pio;
+ 	}
  
- 		if (mctrl_gpios_desc[i].dir_out)
- 			flags = GPIOD_OUT_LOW;
++	spin_unlock_irq(&port->lock);
+ 	dev_dbg(port->dev, "%s: %p: %d...%d, cookie %d\n",
+-		__func__, xmit->buf, xmit->tail, xmit->head, s->cookie_tx);
++		__func__, xmit->buf, tail, head, s->cookie_tx);
+ 
+ 	dma_async_issue_pending(chan);
+ 	return;
 -- 
 2.20.1
