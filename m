@@ -1,7 +1,7 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.2 066/171] serial: imx: fix locking in set_termios()
-Date: Thu, 18 Jul 2019 23:54:57 -0400
-Message-ID: <20190719035643.14300-66-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 049/171] tty: serial: msm_serial: avoid system lockup condition
+Date: Thu, 18 Jul 2019 23:54:40 -0400
+Message-ID: <20190719035643.14300-49-sashal@kernel.org>
 References: <20190719035643.14300-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -9,89 +9,45 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190719035643.14300-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Sergey Organov <sorganov@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Cc: Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Sergey Organov <sorganov@gmail.com>
+From: Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
 
-[ Upstream commit 4e828c3e09201512be5ee162393f334321f7cf01 ]
+[ Upstream commit ba3684f99f1b25d2a30b6956d02d339d7acb9799 ]
 
-imx_uart_set_termios() called imx_uart_rts_active(), or
-imx_uart_rts_inactive() before taking port->port.lock.
+The function msm_wait_for_xmitr can be taken with interrupts
+disabled. In order to avoid a potential system lockup - demonstrated
+under stress testing conditions on SoC QCS404/5 - make sure we wait
+for a bounded amount of time.
 
-As a consequence, sport->port.mctrl that these functions modify
-could have been changed without holding port->port.lock.
+Tested on SoC QCS404.
 
-Moved locking of port->port.lock above the calls to fix the issue.
-
-Signed-off-by: Sergey Organov <sorganov@gmail.com>
+Signed-off-by: Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/imx.c | 23 +++++++++++++----------
- 1 file changed, 13 insertions(+), 10 deletions(-)
+ drivers/tty/serial/msm_serial.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 8b752e895053..10db3e54ac9e 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -383,6 +383,7 @@ static void imx_uart_ucrs_restore(struct imx_port *sport,
- }
- #endif
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 23833ad952ba..3657a24913fc 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -383,10 +383,14 @@ static void msm_request_rx_dma(struct msm_port *msm_port, resource_size_t base)
  
-+/* called with port.lock taken and irqs caller dependent */
- static void imx_uart_rts_active(struct imx_port *sport, u32 *ucr2)
+ static inline void msm_wait_for_xmitr(struct uart_port *port)
  {
- 	*ucr2 &= ~(UCR2_CTSC | UCR2_CTS);
-@@ -391,6 +392,7 @@ static void imx_uart_rts_active(struct imx_port *sport, u32 *ucr2)
- 	mctrl_gpio_set(sport->gpios, sport->port.mctrl);
- }
- 
-+/* called with port.lock taken and irqs caller dependent */
- static void imx_uart_rts_inactive(struct imx_port *sport, u32 *ucr2)
- {
- 	*ucr2 &= ~UCR2_CTSC;
-@@ -400,6 +402,7 @@ static void imx_uart_rts_inactive(struct imx_port *sport, u32 *ucr2)
- 	mctrl_gpio_set(sport->gpios, sport->port.mctrl);
- }
- 
-+/* called with port.lock taken and irqs caller dependent */
- static void imx_uart_rts_auto(struct imx_port *sport, u32 *ucr2)
- {
- 	*ucr2 |= UCR2_CTSC;
-@@ -1549,6 +1552,16 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
- 		old_csize = CS8;
++	unsigned int timeout = 500000;
++
+ 	while (!(msm_read(port, UART_SR) & UART_SR_TX_EMPTY)) {
+ 		if (msm_read(port, UART_ISR) & UART_ISR_TX_READY)
+ 			break;
+ 		udelay(1);
++		if (!timeout--)
++			break;
  	}
- 
-+	del_timer_sync(&sport->timer);
-+
-+	/*
-+	 * Ask the core to calculate the divisor for us.
-+	 */
-+	baud = uart_get_baud_rate(port, termios, old, 50, port->uartclk / 16);
-+	quot = uart_get_divisor(port, baud);
-+
-+	spin_lock_irqsave(&sport->port.lock, flags);
-+
- 	if ((termios->c_cflag & CSIZE) == CS8)
- 		ucr2 = UCR2_WS | UCR2_SRST | UCR2_IRTS;
- 	else
-@@ -1592,16 +1605,6 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
- 			ucr2 |= UCR2_PROE;
- 	}
- 
--	del_timer_sync(&sport->timer);
--
--	/*
--	 * Ask the core to calculate the divisor for us.
--	 */
--	baud = uart_get_baud_rate(port, termios, old, 50, port->uartclk / 16);
--	quot = uart_get_divisor(port, baud);
--
--	spin_lock_irqsave(&sport->port.lock, flags);
--
- 	sport->port.read_status_mask = 0;
- 	if (termios->c_iflag & INPCK)
- 		sport->port.read_status_mask |= (URXD_FRMERR | URXD_PRERR);
+ 	msm_write(port, UART_CR_CMD_RESET_TX_READY, UART_CR);
+ }
 -- 
 2.20.1
