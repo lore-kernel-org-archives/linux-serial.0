@@ -1,141 +1,86 @@
-From: Changqi Hu <changqi.hu@mediatek.com>
-Subject: [PATCH v3] serial: 8250-mtk: modify mtk uart power and clock management
-Date: Fri, 19 Jul 2019 10:59:42 +0800
-Message-ID: <1563505182-2408-1-git-send-email-changqi.hu@mediatek.com>
+From: Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 013/171] tty: serial: cpm_uart - fix init when SMC is relocated
+Date: Thu, 18 Jul 2019 23:54:04 -0400
+Message-ID: <20190719035643.14300-13-sashal@kernel.org>
+References: <20190719035643.14300-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190719035643.14300-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Changqi Hu <changqi.hu@mediatek.com>, Peter Shih <pihsun@chromium.org>, "Gustavo A. R. Silva" <gustavo@embeddedor.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com, Eddie Huang <eddie.huang@mediatek.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: Christophe Leroy <christophe.leroy@c-s.fr>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-modify mtk uart runtime interface, add uart clock use count.
-merge patch v1 and patch v2 together.
+From: Christophe Leroy <christophe.leroy@c-s.fr>
 
-Signed-off-by: Changqi Hu <changqi.hu@mediatek.com>
+[ Upstream commit 06aaa3d066db87e8478522d910285141d44b1e58 ]
+
+SMC relocation can also be activated earlier by the bootloader,
+so the driver's behaviour cannot rely on selected kernel config.
+
+When the SMC is relocated, CPM_CR_INIT_TRX cannot be used.
+
+But the only thing CPM_CR_INIT_TRX does is to clear the
+rstate and tstate registers, so this can be done manually,
+even when SMC is not relocated.
+
+Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
+Fixes: 9ab921201444 ("cpm_uart: fix non-console port startup bug")
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_mtk.c | 50 ++++++++++++++++++++++++--------------
- 1 file changed, 32 insertions(+), 18 deletions(-)
+ drivers/tty/serial/cpm_uart/cpm_uart_core.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index f470ded..a07c8ae 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -31,6 +31,7 @@
- #define MTK_UART_RXTRI_AD	0x14	/* RX Trigger address */
- #define MTK_UART_FRACDIV_L	0x15	/* Fractional divider LSB address */
- #define MTK_UART_FRACDIV_M	0x16	/* Fractional divider MSB address */
-+#define MTK_UART_DEBUG0	0x18
- #define MTK_UART_IER_XOFFI	0x20	/* Enable XOFF character interrupt */
- #define MTK_UART_IER_RTSI	0x40	/* Enable RTS Modem status interrupt */
- #define MTK_UART_IER_CTSI	0x80	/* Enable CTS Modem status interrupt */
-@@ -386,9 +387,18 @@ static void mtk8250_set_flow_ctrl(struct uart_8250_port *up, int mode)
- static int __maybe_unused mtk8250_runtime_suspend(struct device *dev)
- {
- 	struct mtk8250_data *data = dev_get_drvdata(dev);
-+	struct uart_8250_port *up = serial8250_get_port(data->line);
- 
--	clk_disable_unprepare(data->uart_clk);
--	clk_disable_unprepare(data->bus_clk);
-+	/* wait until UART in idle status */
-+	while
-+		(serial_in(up, MTK_UART_DEBUG0));
-+
-+	if (data->clk_count == 0U) {
-+		dev_dbg(dev, "%s clock count is 0\n", __func__);
-+	} else {
-+		clk_disable_unprepare(data->bus_clk);
-+		data->clk_count--;
-+	}
- 
- 	return 0;
- }
-@@ -398,16 +408,16 @@ static int __maybe_unused mtk8250_runtime_resume(struct device *dev)
- 	struct mtk8250_data *data = dev_get_drvdata(dev);
- 	int err;
- 
--	err = clk_prepare_enable(data->uart_clk);
--	if (err) {
--		dev_warn(dev, "Can't enable clock\n");
--		return err;
--	}
--
--	err = clk_prepare_enable(data->bus_clk);
--	if (err) {
--		dev_warn(dev, "Can't enable bus clock\n");
--		return err;
-+	if (data->clk_count > 0U) {
-+		dev_dbg(dev, "%s clock count is %d\n", __func__,
-+			data->clk_count);
-+	} else {
-+		err = clk_prepare_enable(data->bus_clk);
-+		if (err) {
-+			dev_warn(dev, "Can't enable bus clock\n");
-+			return err;
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+index b929c7ae3a27..7bab9a3eda92 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+@@ -407,7 +407,16 @@ static int cpm_uart_startup(struct uart_port *port)
+ 			clrbits16(&pinfo->sccp->scc_sccm, UART_SCCM_RX);
+ 		}
+ 		cpm_uart_initbd(pinfo);
+-		cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
++		if (IS_SMC(pinfo)) {
++			out_be32(&pinfo->smcup->smc_rstate, 0);
++			out_be32(&pinfo->smcup->smc_tstate, 0);
++			out_be16(&pinfo->smcup->smc_rbptr,
++				 in_be16(&pinfo->smcup->smc_rbase));
++			out_be16(&pinfo->smcup->smc_tbptr,
++				 in_be16(&pinfo->smcup->smc_tbase));
++		} else {
++			cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
 +		}
-+		data->clk_count++;
  	}
+ 	/* Install interrupt handler. */
+ 	retval = request_irq(port->irq, cpm_uart_int, 0, "cpm_uart", port);
+@@ -861,16 +870,14 @@ static void cpm_uart_init_smc(struct uart_cpm_port *pinfo)
+ 	         (u8 __iomem *)pinfo->tx_bd_base - DPRAM_BASE);
  
- 	return 0;
-@@ -417,12 +427,14 @@ static int __maybe_unused mtk8250_runtime_resume(struct device *dev)
- mtk8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
- {
- 	if (!state)
--		pm_runtime_get_sync(port->dev);
-+		if (!mtk8250_runtime_resume(port->dev))
-+			pm_runtime_get_sync(port->dev);
+ /*
+- *  In case SMC1 is being relocated...
++ *  In case SMC is being relocated...
+  */
+-#if defined (CONFIG_I2C_SPI_SMC1_UCODE_PATCH)
+ 	out_be16(&up->smc_rbptr, in_be16(&pinfo->smcup->smc_rbase));
+ 	out_be16(&up->smc_tbptr, in_be16(&pinfo->smcup->smc_tbase));
+ 	out_be32(&up->smc_rstate, 0);
+ 	out_be32(&up->smc_tstate, 0);
+ 	out_be16(&up->smc_brkcr, 1);              /* number of break chars */
+ 	out_be16(&up->smc_brkec, 0);
+-#endif
  
- 	serial8250_do_pm(port, state, old);
+ 	/* Set up the uart parameters in the
+ 	 * parameter ram.
+@@ -884,8 +891,6 @@ static void cpm_uart_init_smc(struct uart_cpm_port *pinfo)
+ 	out_be16(&up->smc_brkec, 0);
+ 	out_be16(&up->smc_brkcr, 1);
  
- 	if (state)
--		pm_runtime_put_sync_suspend(port->dev);
-+		if (!pm_runtime_put_sync_suspend(port->dev))
-+			mtk8250_runtime_suspend(port->dev);
- }
- 
- #ifdef CONFIG_SERIAL_8250_DMA
-@@ -499,6 +511,8 @@ static int mtk8250_probe(struct platform_device *pdev)
- 	if (!data)
- 		return -ENOMEM;
- 
-+	data->clk_count = 0;
-+
- 	if (pdev->dev.of_node) {
- 		err = mtk8250_probe_of(pdev, &uart.port, data);
- 		if (err)
-@@ -531,6 +545,7 @@ static int mtk8250_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, data);
- 
-+	pm_runtime_enable(&pdev->dev);
- 	err = mtk8250_runtime_resume(&pdev->dev);
- 	if (err)
- 		return err;
-@@ -539,9 +554,6 @@ static int mtk8250_probe(struct platform_device *pdev)
- 	if (data->line < 0)
- 		return data->line;
- 
--	pm_runtime_set_active(&pdev->dev);
--	pm_runtime_enable(&pdev->dev);
+-	cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
 -
- 	return 0;
- }
- 
-@@ -552,11 +564,13 @@ static int mtk8250_remove(struct platform_device *pdev)
- 	pm_runtime_get_sync(&pdev->dev);
- 
- 	serial8250_unregister_port(data->line);
--	mtk8250_runtime_suspend(&pdev->dev);
- 
- 	pm_runtime_disable(&pdev->dev);
- 	pm_runtime_put_noidle(&pdev->dev);
- 
-+	if (!pm_runtime_status_suspended(&pdev->dev))
-+		mtk8250_runtime_suspend(&pdev->dev);
-+
- 	return 0;
- }
- 
+ 	/* Set UART mode, 8 bit, no parity, one stop.
+ 	 * Enable receive and transmit.
+ 	 */
 -- 
-1.8.1.1.dirty
+2.20.1
