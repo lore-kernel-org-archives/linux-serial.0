@@ -1,66 +1,58 @@
-From: Dave Martin <Dave.Martin@arm.com>
-Subject: [RFC PATCH 2/2] serial: pl011: Don't bother pushing more TX data
- while TX irq is active
-Date: Fri, 19 Jul 2019 14:35:25 +0100
-Message-ID: <1563543325-12463-3-git-send-email-Dave.Martin@arm.com>
-References: <1563543325-12463-1-git-send-email-Dave.Martin@arm.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH] 8250_lpss: check null return when calling pci_ioremap_bar
+Date: Fri, 19 Jul 2019 16:37:35 +0300
+Message-ID: <20190719133735.GM9224@smile.fi.intel.com>
+References: <20190719025443.2368-1-navid.emamdoost@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1563543325-12463-1-git-send-email-Dave.Martin@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-serial@vger.kernel.org
-Cc: Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Phil Elwell <phil@raspberrypi.org>, linux-rpi-kernel@lists.infradead.org, Jiri Slaby <jslaby@suse.com>, Rogier Wolff <R.E.Wolff@BitWizard.nl>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190719025443.2368-1-navid.emamdoost@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Navid Emamdoost <navid.emamdoost@gmail.com>, Kangjie Lu <kjlu@umn.edu>, Aditya Pakki <pakki001@umn.edu>
+Cc: emamd001@umn.edu, smccaman@umn.edu, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Vinod Koul <vkoul@kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-When the TX irq is active, writing chars to the TX FIFO from
-anywhere except pl011_int() is pointless: the UART is already busy,
-and new chars will be picked up by pl011_int() as soon as there is
-FIFO space.
+On Thu, Jul 18, 2019 at 09:54:42PM -0500, Navid Emamdoost wrote:
+> pci_ioremap_bar may return null. This is eventually de-referenced at 
+> drivers/dma/dw/core.c:1154 and drivers/dma/dw/core.c:1168. A null check is
+>  needed to prevent null de-reference. I am adding the check and in case of
+>  failure returning -ENOMEM (I am not sure this is the best errno, you may 
+> consider it as a placeholder), and subsequently changing the caller’s 
+> return type, and propagating the error.
 
-To reduce the scope for surprises, bail out of pl011_start_tx_pio()
-without attempting to write to the FIFO or start TX DMA if the TX FIFO
-interrupt is already in use.
+Thanks for the patch, my comments below.
 
-This should also avoid pointless overhead in some situations.
+>  	chip->irq = pci_irq_vector(pdev, 0);
+>  	chip->regs = pci_ioremap_bar(pdev, 1);
+> +	if (!chip->regs)
+> +		return -ENOMEM;
 
-Signed-off-by: Dave Martin <Dave.Martin@arm.com>
+This is the same case as below, it's fine to go on without DMA support.
 
----
+>  	chip->pdata = &qrk_serial_dma_pdata;
 
-Please test both with and without this patch.
+So, I would rather to put like this...
 
-I believe with the previous patch in place, this patch is not strictly
-necessary.  However, if the UART is actively transmitting in the
-background already, it does make sense not to waste time trying polling
-the FIFO fill status or setting up DMA etc.
----
- drivers/tty/serial/amba-pl011.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Hold on, I remember someone already tried to fix this [1].
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index e24bbc0..f28935a 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1318,6 +1318,10 @@ static void pl011_start_tx(struct uart_port *port)
- 	struct uart_amba_port *uap =
- 	    container_of(port, struct uart_amba_port, port);
- 
-+	/* It's pointless to kick the UART if it's already transmitting... */
-+	if (uap->im & UART011_TXIM)
-+		return;
-+
- 	if (!pl011_dma_tx_start(uap))
- 		pl011_start_tx_pio(uap);
- }
+I dunno why it wasn't v5, due to [2].
+
+Also, similar to yours, but wrong [3].
+
+Thus, please, collaborate guys, and send one compiling solution  based on [1].
+
+>  	/* Falling back to PIO mode if DMA probing fails */
+>  	ret = dw_dma_probe(chip);
+>  	if (ret)
+> -		return;
+> +		return 0;
+
+[1]: https://www.spinics.net/lists/linux-serial/msg33965.html
+[2]: https://lists.01.org/pipermail/kbuild-all/2019-March/059215.html
+[3]: https://lore.kernel.org/patchwork/patch/1051000/
+
 -- 
-2.1.4
+With Best Regards,
+Andy Shevchenko
