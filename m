@@ -1,73 +1,86 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.1 050/141] serial: uartps: Use the same dynamic major number for all ports
-Date: Fri, 19 Jul 2019 00:01:15 -0400
-Message-ID: <20190719040246.15945-50-sashal@kernel.org>
-References: <20190719040246.15945-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 008/101] tty: serial: cpm_uart - fix init when SMC is relocated
+Date: Fri, 19 Jul 2019 00:05:59 -0400
+Message-ID: <20190719040732.17285-8-sashal@kernel.org>
+References: <20190719040732.17285-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190719040246.15945-1-sashal@kernel.org>
+In-Reply-To: <20190719040732.17285-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>, Michal Simek <michal.simek@xilinx.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Cc: Christophe Leroy <christophe.leroy@c-s.fr>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+From: Christophe Leroy <christophe.leroy@c-s.fr>
 
-[ Upstream commit ab262666018de6f4e206b021386b93ed0c164316 ]
+[ Upstream commit 06aaa3d066db87e8478522d910285141d44b1e58 ]
 
-Let kernel to find out major number dynamically for the first device and
-then reuse it for other instances.
-This fixes the issue that each uart is registered with a
-different major number.
+SMC relocation can also be activated earlier by the bootloader,
+so the driver's behaviour cannot rely on selected kernel config.
 
-After the patch:
-crw-------    1 root     root      253,   0 Jun 10 08:31 /dev/ttyPS0
-crw--w----    1 root     root      253,   1 Jan  1  1970 /dev/ttyPS1
+When the SMC is relocated, CPM_CR_INIT_TRX cannot be used.
 
-Fixes: 024ca329bfb9 ("serial: uartps: Register own uart console and driver structures")
-Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+But the only thing CPM_CR_INIT_TRX does is to clear the
+rstate and tstate registers, so this can be done manually,
+even when SMC is not relocated.
+
+Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
+Fixes: 9ab921201444 ("cpm_uart: fix non-console port startup bug")
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/xilinx_uartps.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/tty/serial/cpm_uart/cpm_uart_core.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 74089f5e5b53..fd0aa1e4e5ad 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -29,12 +29,12 @@
- 
- #define CDNS_UART_TTY_NAME	"ttyPS"
- #define CDNS_UART_NAME		"xuartps"
--#define CDNS_UART_MAJOR		0	/* use dynamic node allocation */
- #define CDNS_UART_FIFO_SIZE	64	/* FIFO size */
- #define CDNS_UART_REGISTER_SPACE	0x1000
- 
- /* Rx Trigger level */
- static int rx_trigger_level = 56;
-+static int uartps_major;
- module_param(rx_trigger_level, uint, S_IRUGO);
- MODULE_PARM_DESC(rx_trigger_level, "Rx trigger level, 1-63 bytes");
- 
-@@ -1507,7 +1507,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 	cdns_uart_uart_driver->owner = THIS_MODULE;
- 	cdns_uart_uart_driver->driver_name = driver_name;
- 	cdns_uart_uart_driver->dev_name	= CDNS_UART_TTY_NAME;
--	cdns_uart_uart_driver->major = CDNS_UART_MAJOR;
-+	cdns_uart_uart_driver->major = uartps_major;
- 	cdns_uart_uart_driver->minor = cdns_uart_data->id;
- 	cdns_uart_uart_driver->nr = 1;
- 
-@@ -1536,6 +1536,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 		goto err_out_id;
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+index e5389591bb4f..ad40c75bb58f 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+@@ -407,7 +407,16 @@ static int cpm_uart_startup(struct uart_port *port)
+ 			clrbits16(&pinfo->sccp->scc_sccm, UART_SCCM_RX);
+ 		}
+ 		cpm_uart_initbd(pinfo);
+-		cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
++		if (IS_SMC(pinfo)) {
++			out_be32(&pinfo->smcup->smc_rstate, 0);
++			out_be32(&pinfo->smcup->smc_tstate, 0);
++			out_be16(&pinfo->smcup->smc_rbptr,
++				 in_be16(&pinfo->smcup->smc_rbase));
++			out_be16(&pinfo->smcup->smc_tbptr,
++				 in_be16(&pinfo->smcup->smc_tbase));
++		} else {
++			cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
++		}
  	}
+ 	/* Install interrupt handler. */
+ 	retval = request_irq(port->irq, cpm_uart_int, 0, "cpm_uart", port);
+@@ -861,16 +870,14 @@ static void cpm_uart_init_smc(struct uart_cpm_port *pinfo)
+ 	         (u8 __iomem *)pinfo->tx_bd_base - DPRAM_BASE);
  
-+	uartps_major = cdns_uart_uart_driver->tty_driver->major;
- 	cdns_uart_data->cdns_uart_driver = cdns_uart_uart_driver;
+ /*
+- *  In case SMC1 is being relocated...
++ *  In case SMC is being relocated...
+  */
+-#if defined (CONFIG_I2C_SPI_SMC1_UCODE_PATCH)
+ 	out_be16(&up->smc_rbptr, in_be16(&pinfo->smcup->smc_rbase));
+ 	out_be16(&up->smc_tbptr, in_be16(&pinfo->smcup->smc_tbase));
+ 	out_be32(&up->smc_rstate, 0);
+ 	out_be32(&up->smc_tstate, 0);
+ 	out_be16(&up->smc_brkcr, 1);              /* number of break chars */
+ 	out_be16(&up->smc_brkec, 0);
+-#endif
  
- 	/*
+ 	/* Set up the uart parameters in the
+ 	 * parameter ram.
+@@ -884,8 +891,6 @@ static void cpm_uart_init_smc(struct uart_cpm_port *pinfo)
+ 	out_be16(&up->smc_brkec, 0);
+ 	out_be16(&up->smc_brkcr, 1);
+ 
+-	cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
+-
+ 	/* Set UART mode, 8 bit, no parity, one stop.
+ 	 * Enable receive and transmit.
+ 	 */
 -- 
 2.20.1
