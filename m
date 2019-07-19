@@ -1,7 +1,7 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 05/60] tty: serial: cpm_uart - fix init when SMC is relocated
-Date: Fri, 19 Jul 2019 00:10:14 -0400
-Message-ID: <20190719041109.18262-5-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 12/60] tty/serial: digicolor: Fix digicolor-usart already registered warning
+Date: Fri, 19 Jul 2019 00:10:21 -0400
+Message-ID: <20190719041109.18262-12-sashal@kernel.org>
 References: <20190719041109.18262-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -9,78 +9,46 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190719041109.18262-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Christophe Leroy <christophe.leroy@c-s.fr>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Cc: Kefeng Wang <wangkefeng.wang@huawei.com>, Hulk Robot <hulkci@huawei.com>, Baruch Siach <baruch@tkos.co.il>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@c-s.fr>
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
 
-[ Upstream commit 06aaa3d066db87e8478522d910285141d44b1e58 ]
+[ Upstream commit c7ad9ba0611c53cfe194223db02e3bca015f0674 ]
 
-SMC relocation can also be activated earlier by the bootloader,
-so the driver's behaviour cannot rely on selected kernel config.
+When modprobe/rmmod/modprobe module, if platform_driver_register() fails,
+the kernel complained,
 
-When the SMC is relocated, CPM_CR_INIT_TRX cannot be used.
+  proc_dir_entry 'driver/digicolor-usart' already registered
+  WARNING: CPU: 1 PID: 5636 at fs/proc/generic.c:360 proc_register+0x19d/0x270
 
-But the only thing CPM_CR_INIT_TRX does is to clear the
-rstate and tstate registers, so this can be done manually,
-even when SMC is not relocated.
+Fix this by adding uart_unregister_driver() when platform_driver_register() fails.
 
-Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
-Fixes: 9ab921201444 ("cpm_uart: fix non-console port startup bug")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Acked-by: Baruch Siach <baruch@tkos.co.il>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/cpm_uart/cpm_uart_core.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+ drivers/tty/serial/digicolor-usart.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-index 8b2b694334ec..8f5a5a16cb3b 100644
---- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-+++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
-@@ -421,7 +421,16 @@ static int cpm_uart_startup(struct uart_port *port)
- 			clrbits16(&pinfo->sccp->scc_sccm, UART_SCCM_RX);
- 		}
- 		cpm_uart_initbd(pinfo);
--		cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
-+		if (IS_SMC(pinfo)) {
-+			out_be32(&pinfo->smcup->smc_rstate, 0);
-+			out_be32(&pinfo->smcup->smc_tstate, 0);
-+			out_be16(&pinfo->smcup->smc_rbptr,
-+				 in_be16(&pinfo->smcup->smc_rbase));
-+			out_be16(&pinfo->smcup->smc_tbptr,
-+				 in_be16(&pinfo->smcup->smc_tbase));
-+		} else {
-+			cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
-+		}
- 	}
- 	/* Install interrupt handler. */
- 	retval = request_irq(port->irq, cpm_uart_int, 0, "cpm_uart", port);
-@@ -875,16 +884,14 @@ static void cpm_uart_init_smc(struct uart_cpm_port *pinfo)
- 	         (u8 __iomem *)pinfo->tx_bd_base - DPRAM_BASE);
+diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/digicolor-usart.c
+index 02ad6953b167..50ec5f1ac77f 100644
+--- a/drivers/tty/serial/digicolor-usart.c
++++ b/drivers/tty/serial/digicolor-usart.c
+@@ -545,7 +545,11 @@ static int __init digicolor_uart_init(void)
+ 	if (ret)
+ 		return ret;
  
- /*
-- *  In case SMC1 is being relocated...
-+ *  In case SMC is being relocated...
-  */
--#if defined (CONFIG_I2C_SPI_SMC1_UCODE_PATCH)
- 	out_be16(&up->smc_rbptr, in_be16(&pinfo->smcup->smc_rbase));
- 	out_be16(&up->smc_tbptr, in_be16(&pinfo->smcup->smc_tbase));
- 	out_be32(&up->smc_rstate, 0);
- 	out_be32(&up->smc_tstate, 0);
- 	out_be16(&up->smc_brkcr, 1);              /* number of break chars */
- 	out_be16(&up->smc_brkec, 0);
--#endif
+-	return platform_driver_register(&digicolor_uart_platform);
++	ret = platform_driver_register(&digicolor_uart_platform);
++	if (ret)
++		uart_unregister_driver(&digicolor_uart);
++
++	return ret;
+ }
+ module_init(digicolor_uart_init);
  
- 	/* Set up the uart parameters in the
- 	 * parameter ram.
-@@ -898,8 +905,6 @@ static void cpm_uart_init_smc(struct uart_cpm_port *pinfo)
- 	out_be16(&up->smc_brkec, 0);
- 	out_be16(&up->smc_brkcr, 1);
- 
--	cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
--
- 	/* Set UART mode, 8 bit, no parity, one stop.
- 	 * Enable receive and transmit.
- 	 */
 -- 
 2.20.1
