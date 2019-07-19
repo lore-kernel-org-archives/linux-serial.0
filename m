@@ -1,53 +1,64 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.1 036/141] tty: serial: msm_serial: avoid system lockup condition
-Date: Fri, 19 Jul 2019 00:01:01 -0400
-Message-ID: <20190719040246.15945-36-sashal@kernel.org>
-References: <20190719040246.15945-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 109/171] serial: sh-sci: Terminate TX DMA during buffer flushing
+Date: Thu, 18 Jul 2019 23:55:40 -0400
+Message-ID: <20190719035643.14300-109-sashal@kernel.org>
+References: <20190719035643.14300-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20190719040246.15945-1-sashal@kernel.org>
+In-Reply-To: <20190719035643.14300-1-sashal@kernel.org>
 Sender: stable-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Eugeniu Rosca <erosca@de.adit-jv.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit ba3684f99f1b25d2a30b6956d02d339d7acb9799 ]
+[ Upstream commit 775b7ffd7d6d5db320d99b0a485c51e04dfcf9f1 ]
 
-The function msm_wait_for_xmitr can be taken with interrupts
-disabled. In order to avoid a potential system lockup - demonstrated
-under stress testing conditions on SoC QCS404/5 - make sure we wait
-for a bounded amount of time.
+While the .flush_buffer() callback clears sci_port.tx_dma_len since
+commit 1cf4a7efdc71cab8 ("serial: sh-sci: Fix race condition causing
+garbage during shutdown"), it does not terminate a transmit DMA
+operation that may be in progress.
 
-Tested on SoC QCS404.
+Fix this by terminating any pending DMA operations, and resetting the
+corresponding cookie.
 
-Signed-off-by: Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Eugeniu Rosca <erosca@de.adit-jv.com>
+Tested-by: Eugeniu Rosca <erosca@de.adit-jv.com>
+
+Link: https://lore.kernel.org/r/20190624123540.20629-3-geert+renesas@glider.be
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/msm_serial.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/tty/serial/sh-sci.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 23833ad952ba..3657a24913fc 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -383,10 +383,14 @@ static void msm_request_rx_dma(struct msm_port *msm_port, resource_size_t base)
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index abc705716aa0..1d25c4e2d0d2 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1648,11 +1648,18 @@ static void sci_free_dma(struct uart_port *port)
  
- static inline void msm_wait_for_xmitr(struct uart_port *port)
+ static void sci_flush_buffer(struct uart_port *port)
  {
-+	unsigned int timeout = 500000;
++	struct sci_port *s = to_sci_port(port);
 +
- 	while (!(msm_read(port, UART_SR) & UART_SR_TX_EMPTY)) {
- 		if (msm_read(port, UART_ISR) & UART_ISR_TX_READY)
- 			break;
- 		udelay(1);
-+		if (!timeout--)
-+			break;
- 	}
- 	msm_write(port, UART_CR_CMD_RESET_TX_READY, UART_CR);
+ 	/*
+ 	 * In uart_flush_buffer(), the xmit circular buffer has just been
+-	 * cleared, so we have to reset tx_dma_len accordingly.
++	 * cleared, so we have to reset tx_dma_len accordingly, and stop any
++	 * pending transfers
+ 	 */
+-	to_sci_port(port)->tx_dma_len = 0;
++	s->tx_dma_len = 0;
++	if (s->chan_tx) {
++		dmaengine_terminate_async(s->chan_tx);
++		s->cookie_tx = -EINVAL;
++	}
  }
+ #else /* !CONFIG_SERIAL_SH_SCI_DMA */
+ static inline void sci_request_dma(struct uart_port *port)
 -- 
 2.20.1
