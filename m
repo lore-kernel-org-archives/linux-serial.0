@@ -1,8 +1,8 @@
-From: Sergey Organov <sorganov@gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCH v4 1/3] serial: imx: set_termios(): do not enable autoRTS
  if RTS is unset
-Date: Mon, 22 Jul 2019 10:42:57 +0300
-Message-ID: <87ftmy8qgu.fsf@osv.gnss.ru>
+Date: Mon, 22 Jul 2019 09:51:07 +0200
+Message-ID: <20190722075107.cc3tvf6gmxhaeh5m@pengutronix.de>
 References: <20190614072801.3187-1-s.hauer@pengutronix.de>
  <1563526074-20399-1-git-send-email-sorganov@gmail.com>
  <1563526074-20399-2-git-send-email-sorganov@gmail.com>
@@ -11,13 +11,13 @@ References: <20190614072801.3187-1-s.hauer@pengutronix.de>
  <20190719143151.gx43ndn2oy35h247@pengutronix.de>
  <87woge9hvz.fsf@osv.gnss.ru>
  <20190719201949.ldqlcwjhcmt7wwhg@pengutronix.de>
+ <87ftmy8qgu.fsf@osv.gnss.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190719201949.ldqlcwjhcmt7wwhg@pengutronix.de> ("Uwe
- \=\?utf-8\?Q\?Kleine-K\=C3\=B6nig\=22's\?\= message of "Fri,
- 19 Jul 2019 22:19:49 +0200")
+Content-Disposition: inline
+In-Reply-To: <87ftmy8qgu.fsf@osv.gnss.ru>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -27,63 +27,108 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Sergey Organov <sorganov@gmail.com>
 Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-VXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4gd3JpdGVz
-OgoKPiBPbiBGcmksIEp1bCAxOSwgMjAxOSBhdCAwNjoxMzo1MlBNICswMzAwLCBTZXJnZXkgT3Jn
-YW5vdiB3cm90ZToKPj4gSGVsbG8gVXdlLAo+PiAKPj4gVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xl
-aW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4gd3JpdGVzOgo+PiA+IEhlbGxvIFNlcmdleSwKPj4g
-Pgo+PiA+IE9uIEZyaSwgSnVsIDE5LCAyMDE5IGF0IDAzOjE4OjEzUE0gKzAzMDAsIFNlcmdleSBP
-cmdhbm92IHdyb3RlOgo+PiA+PiBVd2UgS2xlaW5lLUvDtm5pZyA8dS5rbGVpbmUta29lbmlnQHBl
-bmd1dHJvbml4LmRlPiB3cml0ZXM6Cj4+ID4+ID4gT24gRnJpLCBKdWwgMTksIDIwMTkgYXQgMTE6
-NDc6NTJBTSArMDMwMCwgU2VyZ2V5IE9yZ2Fub3Ygd3JvdGU6Cj4+ID4+ID4+IGRpZmYgLS1naXQg
-YS9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMKPj4g
-Pj4gPj4gaW5kZXggNTdkNmU2Yi4uOTVkNzk4NCAxMDA2NDQKPj4gPj4gPj4gLS0tIGEvZHJpdmVy
-cy90dHkvc2VyaWFsL2lteC5jCj4+ID4+ID4+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXgu
-Ywo+PiA+PiA+PiBAQCAtNDA1LDcgKzQwNSw4IEBAIHN0YXRpYyB2b2lkIGlteF91YXJ0X3J0c19p
-bmFjdGl2ZShzdHJ1Y3QgaW14X3BvcnQgKnNwb3J0LCB1MzIgKnVjcjIpCj4+ID4+ID4+ICAvKiBj
-YWxsZWQgd2l0aCBwb3J0LmxvY2sgdGFrZW4gYW5kIGlycXMgY2FsbGVyIGRlcGVuZGVudCAqLwo+
-PiA+PiA+PiAgc3RhdGljIHZvaWQgaW14X3VhcnRfcnRzX2F1dG8oc3RydWN0IGlteF9wb3J0ICpz
-cG9ydCwgdTMyICp1Y3IyKQo+PiA+PiA+PiAgewo+PiA+PiA+PiAtCSp1Y3IyIHw9IFVDUjJfQ1RT
-QzsKPj4gPj4gPj4gKwlpZiAoKnVjcjIgJiBVQ1IyX0NUUykKPj4gPj4gPj4gKwkJKnVjcjIgfD0g
-VUNSMl9DVFNDOwo+PiA+PiA+Cj4+ID4+ID4gSSB0aGluayB0aGlzIHBhdGNoIGlzIHdyb25nIG9y
-IHRoZSBjb21taXQgbG9nIGlzIGluc3VmZmljaWVudC4KPj4gPj4gPiBpbXhfdWFydF9ydHNfYXV0
-bygpIGhhcyBvbmx5IGEgc2luZ2xlIGNhbGxlciBhbmQgdGhlcmUgdWNyMiAmIFVDUjJfQ1RTIGlz
-Cj4+ID4+ID4gbmV2ZXIgdHJ1ZS4gQW5kIENUU0MgaXNuJ3QgcmVzdG9yZWQgYW55d2hlcmUsIGlz
-IGl0Pwo+PiA+PiAKPj4gPj4gVGhpcyBpcyByZWJhc2UgdG8gJ3R0eS1uZXh0JyBicmFuY2gsIGFu
-ZCB5b3UgbmVlZCB0byBsb29rIGF0IGl0IGluIHRoYXQKPj4gPj4gY29udGV4dC4gVGhlcmUsIHVj
-cjIgJiBVQ1IyX0NUUyBkb2VzIGFscmVhZHkgbWFrZSBzZW5zZSwgZHVlIHRvIHByZXZpb3VzCj4+
-ID4+IGZpeCB0aGF0IGlzIGFscmVhZHkgdGhlcmUuCj4+ID4KPj4gPiBJIGxvb2tlZCBhdCA1N2Q2
-ZTZiIHdoaWNoIGlzIHRoZSBmaWxlIHlvdSBwYXRjaGVkLiBBbmQgdGhlcmUKPj4gPiBpbXhfdWFy
-dF9ydHNfYXV0byBpcyBvbmx5IGV2ZXIgY2FsbGVkIHdpdGggKnVjcjIgbm90IGhhdmluZyBVQ1Iy
-X0NUUy4KPj4gPgo+PiA+IElmIHlvdSBzdGlsbCB0aGluayBJJ20gd3JvbmcsIHBsZWFzZSBpbXBy
-b3ZlIHRoZSBjb21taXQgbG9nCj4+ID4gYWNjb3JkaW5nbHkuCj4+IAo+PiBJIHN0aWxsIHRoaW5r
-IHlvdSBhcmUgd3JvbmcsIGJ1dCBJIGRvbid0IGtub3cgaG93IHRvIGltcHJvdmUgY29tbWl0IGxv
-Zy4KPj4gCj4+IFRvIGNoZWNrIGl0IG9uY2UgYWdhaW4sIEkganVzdCBkaWQ6Cj4+IAo+PiAkIGdp
-dCBzaG93IDU3ZDZlNmIgPiBpbXguYwo+PiAKPj4gVGhlcmUsIGluIGlteF91YXJ0X3NldF90ZXJt
-aW9zKCksIEkgc2VlOgo+PiAKPj4gMTU2OToJb2xkX3VjcjIgPSBpbXhfdWFydF9yZWFkbChzcG9y
-dCwgVUNSMik7Cj4+IDE1NzA6CXVjcjIgPSBvbGRfdWNyMiAmIChVQ1IyX1RYRU4gfCBVQ1IyX1JY
-RU4gfCBVQ1IyX0FURU4gfCBVQ1IyX0NUUyk7Cj4+IAo+PiBIZXJlLCBjdXJyZW50IFVDUjIgdmFs
-dWUgaXMgcmVhZCBpbnRvICdvbGRfdWNyMicgYW5kIHRoZW4gaXRzIC9jdXJyZW50Lwo+PiBVQ1Iy
-X0NUUyBiaXQgaXMgY29waWVkIGludG8gJ3VjcjInIChhbG9uZyB3aXRoIDMgb3RoZXIgYml0cyku
-Cj4+IAo+PiBUaGVuLCBsYXRlciBpbiB0aGUgc2FtZSBmdW5jdGlvbjoKPj4gCj4+IDE1OTE6CQlp
-bXhfdWFydF9ydHNfYXV0byhzcG9ydCwgJnVjcjIpOwo+PiAKPj4gaXMgY2FsbGVkIHRoYXQgY2Fu
-IGNoZWNrIC9jdXJyZW50LyBzdGF0ZSBvZiBVQ1IyX0NUUyBiaXQgaW4gJyp1Y3IyJy4KPj4gCj4+
-IFRoYXQncyB3aGF0IHRoZSBwYXRjaCBkb2VzLCBjaGVja3MgdGhpcyBiaXQuCj4+IAo+PiBTb3Jy
-eSwgSSBmYWlsIHRvIHNlZSBob3cgeW91IGNhbWUgdG8gY29uY2x1c2lvbiB0aGF0ICIqdWNyMiBu
-b3QgaGF2aW5nCj4+IFVDUjJfQ1RTIi4gRG8gd2UgbWF5YmUgc3RpbGwgcmVhZCBkaWZmZXJlbnQg
-dmVyc2lvbnMgb2YgdGhlIGZpbGU/Cj4KPiBObywgaXQncyBqdXN0IHRoYXQgSSBmYWlsZWQgdG8g
-c2VlIHRoYXQgVUNSMl9DVFMgaXMgaW4gdGhlIHNldCBvZiBiaXRzCj4gdGhhdCBhcmUgcmV0YWlu
-ZWQgZXZlbiB3aGVuIGxvb2tpbmcgdHdpY2UgOi18CgpBaCwgdGhhdCBvbmUuLi4gSG93IGZhbWls
-aWFyIDotKQoKPiBTbyB5b3UgY29udmluY2VkIG1lIHRoYXQgeW91IGFyZSByaWdodCBhbmQgaWYg
-eW91IHVwZGF0ZSB0aGUgY29tbWl0IGxvZwo+IGFzIGFncmVlZCBhbHJlYWR5IGJlZm9yZSBhbmQg
-ZXZlbiBhZGQgYSBjb21tZW50IGluIGlteF91YXJ0X3J0c19hdXRvCj4gYWxvbmcgdGhlIGxpbmVz
-IG9mCj4KPiAJLyoKPiAJICogT25seSBsZXQgdGhlIHJlY2VpdmVyIGNvbnRyb2wgUlRTIG91dHB1
-dCBpZiB3ZSB3ZXJlIG5vdAo+IAkgKiByZXF1ZXN0ZWQgdG8gaGF2ZSBSVFMgaW5hY3RpdmUgKHdo
-aWNoIHRoZW4gc2hvdWxkIHRha2UKPiAJICogcHJlY2VkZW5jZSkuCj4gCSAqLwo+Cj4geW91IGNh
-biBoYXZlIG15IEFjay4KCk9LLCB3aWxsIGRvCgpUaGFua3MhCgotLSBTZXJnZXkKCl9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwg
-bWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8v
-bGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+On Mon, Jul 22, 2019 at 10:42:57AM +0300, Sergey Organov wrote:
+> Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> writes:
+> =
+
+> > On Fri, Jul 19, 2019 at 06:13:52PM +0300, Sergey Organov wrote:
+> >> Hello Uwe,
+> >> =
+
+> >> Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> writes:
+> >> > Hello Sergey,
+> >> >
+> >> > On Fri, Jul 19, 2019 at 03:18:13PM +0300, Sergey Organov wrote:
+> >> >> Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> writes:
+> >> >> > On Fri, Jul 19, 2019 at 11:47:52AM +0300, Sergey Organov wrote:
+> >> >> >> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> >> >> >> index 57d6e6b..95d7984 100644
+> >> >> >> --- a/drivers/tty/serial/imx.c
+> >> >> >> +++ b/drivers/tty/serial/imx.c
+> >> >> >> @@ -405,7 +405,8 @@ static void imx_uart_rts_inactive(struct imx=
+_port *sport, u32 *ucr2)
+> >> >> >>  /* called with port.lock taken and irqs caller dependent */
+> >> >> >>  static void imx_uart_rts_auto(struct imx_port *sport, u32 *ucr2)
+> >> >> >>  {
+> >> >> >> -	*ucr2 |=3D UCR2_CTSC;
+> >> >> >> +	if (*ucr2 & UCR2_CTS)
+> >> >> >> +		*ucr2 |=3D UCR2_CTSC;
+> >> >> >
+> >> >> > I think this patch is wrong or the commit log is insufficient.
+> >> >> > imx_uart_rts_auto() has only a single caller and there ucr2 & UCR=
+2_CTS is
+> >> >> > never true. And CTSC isn't restored anywhere, is it?
+> >> >> =
+
+> >> >> This is rebase to 'tty-next' branch, and you need to look at it in =
+that
+> >> >> context. There, ucr2 & UCR2_CTS does already make sense, due to pre=
+vious
+> >> >> fix that is already there.
+> >> >
+> >> > I looked at 57d6e6b which is the file you patched. And there
+> >> > imx_uart_rts_auto is only ever called with *ucr2 not having UCR2_CTS.
+> >> >
+> >> > If you still think I'm wrong, please improve the commit log
+> >> > accordingly.
+> >> =
+
+> >> I still think you are wrong, but I don't know how to improve commit lo=
+g.
+> >> =
+
+> >> To check it once again, I just did:
+> >> =
+
+> >> $ git show 57d6e6b > imx.c
+> >> =
+
+> >> There, in imx_uart_set_termios(), I see:
+> >> =
+
+> >> 1569:	old_ucr2 =3D imx_uart_readl(sport, UCR2);
+> >> 1570:	ucr2 =3D old_ucr2 & (UCR2_TXEN | UCR2_RXEN | UCR2_ATEN | UCR2_CT=
+S);
+> >> =
+
+> >> Here, current UCR2 value is read into 'old_ucr2' and then its /current/
+> >> UCR2_CTS bit is copied into 'ucr2' (along with 3 other bits).
+> >> =
+
+> >> Then, later in the same function:
+> >> =
+
+> >> 1591:		imx_uart_rts_auto(sport, &ucr2);
+> >> =
+
+> >> is called that can check /current/ state of UCR2_CTS bit in '*ucr2'.
+> >> =
+
+> >> That's what the patch does, checks this bit.
+> >> =
+
+> >> Sorry, I fail to see how you came to conclusion that "*ucr2 not having
+> >> UCR2_CTS". Do we maybe still read different versions of the file?
+> >
+> > No, it's just that I failed to see that UCR2_CTS is in the set of bits
+> > that are retained even when looking twice :-|
+> =
+
+> Ah, that one... How familiar :-)
+
+I thought again a bit over the weekend about this. I wonder if it's
+correct to keep RTS active while going through .set_termios. Shouldn't
+it maybe always be inactive to prevent the other side sending data while
+we are changing the baud rate?
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
