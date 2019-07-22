@@ -1,14 +1,17 @@
-From: Sergey Organov <sorganov@gmail.com>
-Subject: [PATCH v6 3/3] serial: imx: get rid of imx_uart_rts_auto()
-Date: Mon, 22 Jul 2019 22:22:11 +0300
-Message-ID: <1563823331-5629-4-git-send-email-sorganov@gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v6 2/3] serial: imx: set_mctrl(): correctly restore
+ autoRTS state
+Date: Mon, 22 Jul 2019 22:24:06 +0200
+Message-ID: <20190722202406.hr74mg64sxoovah7@pengutronix.de>
 References: <20190614072801.3187-1-s.hauer@pengutronix.de>
  <1563823331-5629-1-git-send-email-sorganov@gmail.com>
+ <1563823331-5629-3-git-send-email-sorganov@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1563823331-5629-1-git-send-email-sorganov@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <1563823331-5629-3-git-send-email-sorganov@gmail.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -18,42 +21,65 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, Sergey Organov <sorganov@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-arm-kernel@lists.infradead.org
+To: Sergey Organov <sorganov@gmail.com>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Q2FsbGVkIGluIG9ubHkgb25lIHBsYWNlLCBmb3IgUlMyMzIsIGl0IG9ubHkgb2JzY3VyZXMgdGhp
-bmdzLCBhcyBpdApkb2Vzbid0IGdvIHdlbGwgd2l0aCAyIHNpbWlsYXIgbmFtZWQgZnVuY3Rpb25z
-LAppbXhfdWFydF9ydHNfaW5hY3RpdmUoKSBhbmQgaW14X3VhcnRfcnRzX2FjdGl2ZSgpLCB0aGF0
-IGJvdGggYXJlClJTNDg1LXNwZWNpZmljLgoKQWNrZWQtYnk6IFV3ZSBLbGVpbmUtS8O2bmlnIDx1
-LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+ClJldmlld2VkLWJ5OiBTYXNjaGEgSGF1ZXIg
-PHMuaGF1ZXJAcGVuZ3V0cm9uaXguZGU+ClRlc3RlZC1ieTogU2FzY2hhIEhhdWVyIDxzLmhhdWVy
-QHBlbmd1dHJvbml4LmRlPgpTaWduZWQtb2ZmLWJ5OiBTZXJnZXkgT3JnYW5vdiA8c29yZ2Fub3ZA
-Z21haWwuY29tPgotLS0KIGRyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyB8IDIxICsrKysrKysrLS0t
-LS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDggaW5zZXJ0aW9ucygrKSwgMTMgZGVsZXRpb25z
-KC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jIGIvZHJpdmVycy90dHkv
-c2VyaWFsL2lteC5jCmluZGV4IDA1OWJhMzUuLmQ5YTczYzcgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMv
-dHR5L3NlcmlhbC9pbXguYworKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMKQEAgLTQwMiwx
-NyArNDAyLDYgQEAgc3RhdGljIHZvaWQgaW14X3VhcnRfcnRzX2luYWN0aXZlKHN0cnVjdCBpbXhf
-cG9ydCAqc3BvcnQsIHUzMiAqdWNyMikKIAltY3RybF9ncGlvX3NldChzcG9ydC0+Z3Bpb3MsIHNw
-b3J0LT5wb3J0Lm1jdHJsKTsKIH0KIAotLyogY2FsbGVkIHdpdGggcG9ydC5sb2NrIHRha2VuIGFu
-ZCBpcnFzIGNhbGxlciBkZXBlbmRlbnQgKi8KLXN0YXRpYyB2b2lkIGlteF91YXJ0X3J0c19hdXRv
-KHN0cnVjdCBpbXhfcG9ydCAqc3BvcnQsIHUzMiAqdWNyMikKLXsKLQkvKgotCSAqIE9ubHkgbGV0
-IHJlY2VpdmVyIGNvbnRyb2wgUlRTIG91dHB1dCBpZiB3ZSB3ZXJlIG5vdCByZXF1ZXN0ZWQgdG8g
-aGF2ZQotCSAqIFJUUyBpbmFjdGl2ZSAod2hpY2ggdGhlbiBzaG91bGQgdGFrZSBwcmVjZWRlbmNl
-KS4KLQkgKi8KLQlpZiAoKnVjcjIgJiBVQ1IyX0NUUykKLQkJKnVjcjIgfD0gVUNSMl9DVFNDOwot
-fQotCiAvKiBjYWxsZWQgd2l0aCBwb3J0LmxvY2sgdGFrZW4gYW5kIGlycXMgb2ZmICovCiBzdGF0
-aWMgdm9pZCBpbXhfdWFydF9zdGFydF9yeChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQogewpAQCAt
-MTYwNCw4ICsxNTkzLDE0IEBAIGlteF91YXJ0X3NldF90ZXJtaW9zKHN0cnVjdCB1YXJ0X3BvcnQg
-KnBvcnQsIHN0cnVjdCBrdGVybWlvcyAqdGVybWlvcywKIAkJZWxzZQogCQkJaW14X3VhcnRfcnRz
-X2luYWN0aXZlKHNwb3J0LCAmdWNyMik7CiAKLQl9IGVsc2UgaWYgKHRlcm1pb3MtPmNfY2ZsYWcg
-JiBDUlRTQ1RTKQotCQlpbXhfdWFydF9ydHNfYXV0byhzcG9ydCwgJnVjcjIpOworCX0gZWxzZSBp
-ZiAodGVybWlvcy0+Y19jZmxhZyAmIENSVFNDVFMpIHsKKwkJLyoKKwkJICogT25seSBsZXQgcmVj
-ZWl2ZXIgY29udHJvbCBSVFMgb3V0cHV0IGlmIHdlIHdlcmUgbm90IHJlcXVlc3RlZAorCQkgKiB0
-byBoYXZlIFJUUyBpbmFjdGl2ZSAod2hpY2ggdGhlbiBzaG91bGQgdGFrZSBwcmVjZWRlbmNlKS4K
-KwkJICovCisJCWlmICh1Y3IyICYgVUNSMl9DVFMpCisJCQl1Y3IyIHw9IFVDUjJfQ1RTQzsKKwl9
-CiAKIAlpZiAodGVybWlvcy0+Y19jZmxhZyAmIENSVFNDVFMpCiAJCXVjcjIgJj0gflVDUjJfSVJU
-UzsKLS0gCjIuMTAuMC4xLmc1N2IwMWEzCgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJt
-LWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21h
-aWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+On Mon, Jul 22, 2019 at 10:22:10PM +0300, Sergey Organov wrote:
+> imx_uart_set_mctrl() happened to set UCR2_CTSC bit whenever TIOCM_RTS
+> was set, no matter if RTS/CTS handshake is enabled or not. Now fixed by
+> turning handshake on only when CRTSCTS bit for the port is set.
+> =
+
+> Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
+> Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
+> Signed-off-by: Sergey Organov <sorganov@gmail.com>
+> ---
+>  drivers/tty/serial/imx.c | 16 ++++++++++++++--
+>  1 file changed, 14 insertions(+), 2 deletions(-)
+> =
+
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 32f36d8..059ba35 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -974,10 +974,22 @@ static void imx_uart_set_mctrl(struct uart_port *po=
+rt, unsigned int mctrl)
+>  	if (!(port->rs485.flags & SER_RS485_ENABLED)) {
+>  		u32 ucr2;
+>  =
+
+> +		/*
+> +		 * Turn off autoRTS if RTS is lowered and restore autoRTS
+> +		 * setting if RTS is raised.
+
+"lower" and "raising" are misleading here. I recommend sticking to
+"active" and "inactive".
+
+> +		 */
+>  		ucr2 =3D imx_uart_readl(sport, UCR2);
+>  		ucr2 &=3D ~(UCR2_CTS | UCR2_CTSC);
+> -		if (mctrl & TIOCM_RTS)
+> -			ucr2 |=3D UCR2_CTS | UCR2_CTSC;
+> +		if (mctrl & TIOCM_RTS) {
+> +			ucr2 |=3D UCR2_CTS;
+> +			/*
+> +			 * UCR2_IRTS is unset if and only if the port is
+> +			 * configured for CRTSCTS, so we use inverted UCR2_IRTS
+> +			 * to get the state to restore to.
+> +			 */
+> +			if (!(ucr2 & UCR2_IRTS))
+> +				ucr2 |=3D UCR2_CTSC;
+> +		}
+
+If you teach imx_uart_rts_auto about IRTS this function could be reused
+here I think.
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
