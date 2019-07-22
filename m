@@ -1,13 +1,13 @@
 From: Arnd Bergmann <arnd@arndb.de>
 Subject: [PATCH 1/3] [net-next] net: remove netx ethernet driver
-Date: Mon, 22 Jul 2019 21:12:31 +0200
-Message-ID: <20190722191304.164929-1-arnd@arndb.de>
+Date: Mon, 22 Jul 2019 21:15:03 +0200
+Message-ID: <20190722191552.252805-1-arnd@arndb.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: "David S. Miller" <davem@davemloft.net>
-Cc: netdev@vger.kernel.org, linux-serial@vger.kernel.org, tglx@linutronix.de, gregkh@linuxfoundation.org, Sascha Hauer <s.hauer@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+Cc: netdev@vger.kernel.org, linux-serial@vger.kernel.org, tglx@linutronix.de, gregkh@linuxfoundation.org, Sascha Hauer <s.hauer@pengutronix.de>, Michael Trensch <MTrensch@hilscher.com>, Linus Walleij <linus.walleij@linaro.org>, Robert Schwebel <r.schwebel@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 The ARM netx platform got removed in 5.3, so this driver
