@@ -1,24 +1,21 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v4 1/3] serial: imx: set_termios(): do not enable autoRTS
+From: Sergey Organov <sorganov@gmail.com>
+Subject: Re: [PATCH v5 1/3] serial: imx: set_termios(): do not enable autoRTS
  if RTS is unset
-Date: Mon, 22 Jul 2019 18:47:05 +0200
-Message-ID: <20190722164705.4b752hrtnhpfzpk2@pengutronix.de>
-References: <20190719091143.uhjxeibtolgswq2l@pengutronix.de>
- <87h87idxq2.fsf@osv.gnss.ru>
- <20190719143151.gx43ndn2oy35h247@pengutronix.de>
- <87woge9hvz.fsf@osv.gnss.ru>
- <20190719201949.ldqlcwjhcmt7wwhg@pengutronix.de>
- <87ftmy8qgu.fsf@osv.gnss.ru>
- <20190722075107.cc3tvf6gmxhaeh5m@pengutronix.de>
- <87lfwq77el.fsf@osv.gnss.ru>
- <20190722094614.o5tqgmn3wql2apdz@pengutronix.de>
- <87ef2i5g4r.fsf@osv.gnss.ru>
+Date: Mon, 22 Jul 2019 22:09:41 +0300
+Message-ID: <87ftmx3myy.fsf@osv.gnss.ru>
+References: <20190614072801.3187-1-s.hauer@pengutronix.de>
+ <1563787330-1394-1-git-send-email-sorganov@gmail.com>
+ <1563787330-1394-2-git-send-email-sorganov@gmail.com>
+ <20190722095405.qdc77cb2qrgltzrx@pengutronix.de>
+ <877e8a5fz6.fsf@osv.gnss.ru>
+ <20190722162011.wv36d7epunjm4h4t@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <87ef2i5g4r.fsf@osv.gnss.ru>
+In-Reply-To: <20190722162011.wv36d7epunjm4h4t@pengutronix.de> ("Uwe
+ \=\?utf-8\?Q\?Kleine-K\=C3\=B6nig\=22's\?\= message of "Mon,
+ 22 Jul 2019 18:20:11 +0200")
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -28,163 +25,34 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Sergey Organov <sorganov@gmail.com>
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
 Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jul 22, 2019 at 04:54:28PM +0300, Sergey Organov wrote:
-> Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> writes:
-> =
-
-> > On Mon, Jul 22, 2019 at 12:20:02PM +0300, Sergey Organov wrote:
-> >> Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> writes:
-> >> =
-
-> >> > On Mon, Jul 22, 2019 at 10:42:57AM +0300, Sergey Organov wrote:
-> >> >> Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> writes:
-> >> >> =
-
-> >> >> > On Fri, Jul 19, 2019 at 06:13:52PM +0300, Sergey Organov wrote:
-> >> >> >> Hello Uwe,
-> >> >> >> =
-
-> >> >> >> Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> writes:
-> >> >> >> > Hello Sergey,
-> >> >> >> >
-> >> >> >> > On Fri, Jul 19, 2019 at 03:18:13PM +0300, Sergey Organov wrote:
-> >> >> >> >> Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> writes:
-> >> >> >> >> > On Fri, Jul 19, 2019 at 11:47:52AM +0300, Sergey Organov wr=
-ote:
-> >> >> >> >> >> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial=
-/imx.c
-> >> >> >> >> >> index 57d6e6b..95d7984 100644
-> >> >> >> >> >> --- a/drivers/tty/serial/imx.c
-> >> >> >> >> >> +++ b/drivers/tty/serial/imx.c
-> >> >> >> >> >> @@ -405,7 +405,8 @@ static void imx_uart_rts_inactive(stru=
-ct imx_port *sport, u32 *ucr2)
-> >> >> >> >> >>  /* called with port.lock taken and irqs caller dependent =
-*/
-> >> >> >> >> >>  static void imx_uart_rts_auto(struct imx_port *sport, u32=
- *ucr2)
-> >> >> >> >> >>  {
-> >> >> >> >> >> -	*ucr2 |=3D UCR2_CTSC;
-> >> >> >> >> >> +	if (*ucr2 & UCR2_CTS)
-> >> >> >> >> >> +		*ucr2 |=3D UCR2_CTSC;
-> >> >> >> >> >
-> >> >> >> >> > I think this patch is wrong or the commit log is insufficie=
-nt.
-> >> >> >> >> > imx_uart_rts_auto() has only a single caller and there ucr2=
- & UCR2_CTS is
-> >> >> >> >> > never true. And CTSC isn't restored anywhere, is it?
-> >> >> >> >> =
-
-> >> >> >> >> This is rebase to 'tty-next' branch, and you need to look at =
-it in that
-> >> >> >> >> context. There, ucr2 & UCR2_CTS does already make sense, due =
-to previous
-> >> >> >> >> fix that is already there.
-> >> >> >> >
-> >> >> >> > I looked at 57d6e6b which is the file you patched. And there
-> >> >> >> > imx_uart_rts_auto is only ever called with *ucr2 not having UC=
-R2_CTS.
-> >> >> >> >
-> >> >> >> > If you still think I'm wrong, please improve the commit log
-> >> >> >> > accordingly.
-> >> >> >> =
-
-> >> >> >> I still think you are wrong, but I don't know how to improve com=
-mit log.
-> >> >> >> =
-
-> >> >> >> To check it once again, I just did:
-> >> >> >> =
-
-> >> >> >> $ git show 57d6e6b > imx.c
-> >> >> >> =
-
-> >> >> >> There, in imx_uart_set_termios(), I see:
-> >> >> >> =
-
-> >> >> >> 1569:	old_ucr2 =3D imx_uart_readl(sport, UCR2);
-> >> >> >> 1570:	ucr2 =3D old_ucr2 & (UCR2_TXEN | UCR2_RXEN | UCR2_ATEN | U=
-CR2_CTS);
-> >> >> >> =
-
-> >> >> >> Here, current UCR2 value is read into 'old_ucr2' and then its /c=
-urrent/
-> >> >> >> UCR2_CTS bit is copied into 'ucr2' (along with 3 other bits).
-> >> >> >> =
-
-> >> >> >> Then, later in the same function:
-> >> >> >> =
-
-> >> >> >> 1591:		imx_uart_rts_auto(sport, &ucr2);
-> >> >> >> =
-
-> >> >> >> is called that can check /current/ state of UCR2_CTS bit in '*uc=
-r2'.
-> >> >> >> =
-
-> >> >> >> That's what the patch does, checks this bit.
-> >> >> >> =
-
-> >> >> >> Sorry, I fail to see how you came to conclusion that "*ucr2 not =
-having
-> >> >> >> UCR2_CTS". Do we maybe still read different versions of the file?
-> >> >> >
-> >> >> > No, it's just that I failed to see that UCR2_CTS is in the set of=
- bits
-> >> >> > that are retained even when looking twice :-|
-> >> >> =
-
-> >> >> Ah, that one... How familiar :-)
-> >> >
-> >> > I thought again a bit over the weekend about this. I wonder if it's
-> >> > correct to keep RTS active while going through .set_termios. Shouldn=
-'t
-> >> > it maybe always be inactive to prevent the other side sending data w=
-hile
-> >> > we are changing the baud rate?
-> >> =
-
-> >> I don't think it's a good idea to change RTS state over .set_terimios,
-> >> as it doesn't in fact solve anything (notice that the other end should
-> >> also change baud rate accordingly), and changes visible state (even if
-> >> temporarily) that it was not asked to change, that could in turn lead =
-to
-> >> utter surprises.
-> >
-> > It should for sure not be done in imx-uart specific code. But I think
-> > that deasserting RTS before calling .set_termios (iff rtscts is enabled)
-> > is a sane thing to do for generic code. I don't want to motivate the
-> > other side to send data while I reconfigure my receiver. Yes, this is a
-> > visible change, but IMHO a good one.
-> >
-> >> Correct changing of baud rates, bits, etc., could only be implemented =
-at
-> >> communication protocol level (read: application level), and there are
-> >> all the tools in the kernel to do it right, provided driver does not do
-> >> what it was not asked to do.
-> >
-> > Hmm, deasserting RTS while not being ready helps here. Otherwise the
-> > communication partner that sends first after both agreed to change the
-> > baud rate might start doing that before the receiver on the other end is
-> > done. When RTS is deasserted this race window is at least smaller.
-> =
-
-> In general, it's a wrong idea to do in the kernel what could be done as
-> efficiently at application level.
-
-I agree a bit here. If the resulting behaviour when relying on userspace
-might be wrong, the kernel should be free to fix (or smooth) it. (Even a
-WARN_ON_ONCE would be fine in my eyes.) But I don't care enough to
-discuss this further. The behaviour with the patch under discussion is
-better than before, so let's settle it with that.
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+VXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4gd3JpdGVz
+OgoKPiBPbiBNb24sIEp1bCAyMiwgMjAxOSBhdCAwNDo1Nzo0OVBNICswMzAwLCBTZXJnZXkgT3Jn
+YW5vdiB3cm90ZToKPj4gVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRy
+b25peC5kZT4gd3JpdGVzOgo+PiAKPj4gPiBPbiBNb24sIEp1bCAyMiwgMjAxOSBhdCAxMjoyMjow
+OFBNICswMzAwLCBTZXJnZXkgT3JnYW5vdiB3cm90ZToKPj4gPj4gRG9uJ3QgbGV0IHJlY2VpdmVy
+IGhhcmR3YXJlIGF1dG9tYXRpY2FsbHkgY29udHJvbCBSVFMgb3V0cHV0IGlmIGl0Cj4+ID4+IHdh
+cyByZXF1ZXN0ZWQgdG8gYmUgaW5hY3RpdmUuCj4+ID4+IAo+PiA+PiBUbyBlbnN1cmUgdGhpcywg
+c2V0X3Rlcm1pb3MoKSBzaG91bGRuJ3Qgc2V0IFVDUjJfQ1RTQyBiaXQgaWYgVUNSMl9DVFMKPj4g
+Pj4gKD1USU9DTV9SVFMpIGlzIGNsZWFyZWQuIEFkZGVkIGNvcnJlc3BvbmRpbmcgY2hlY2sgaW4g
+aW14X3VhcnRfcnRzX2F1dG8oKQo+PiA+PiB0byBmaXggdGhpcy4KPj4gPj4gCj4+ID4+IFJldmll
+d2VkLWJ5OiBVd2UgS2xlaW5lLUvDtm5pZyA8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRl
+Pgo+PiA+Cj4+ID4gSSB0aGluayBpdCdzIGEgYml0IGJvbGQgdG8gYWRkIGEgcmV2aWV3LXRhZyBm
+b3IgbWUgaGVyZS4gVGhlIGJlc3QgcmVhc29uCj4+ID4gZm9yIHRoYXQgdGhhdCBJJ20gYXdhcmUg
+b2YgaXMgdGhhdCBJIHdyb3RlIGZvciB2NDogIltJXWYgeW91IHVwZGF0ZSB0aGUKPj4gPiBjb21t
+aXQgbG9nIGFzIGFncmVlZCBhbHJlYWR5IGJlZm9yZSBhbmQgZXZlbiBhZGQgYSBjb21tZW50IGlu
+Cj4+ID4gaW14X3VhcnRfcnRzX2F1dG8gYWxvbmcgdGhlIGxpbmVzIG9mIC4uLiB5b3UgY2FuIGhh
+dmUgbXkgQWNrLiIgd2hpY2ggSU1PCj4+ID4gaXNuJ3QgZ29vZCBlbm91Z2ggdG8ganVzdGlmeSBh
+ICJSZXZpZXdlZC1ieSIuIEkgd291bGRuJ3QgZXZlbiBhZGQgYW4KPj4gPiBBY2tlZC1ieTogd2l0
+aG91dCB0aGUgb3RoZXIgcGVyc29uIGJlaW5nIGFibGUgdG8gYWN0dWFsbHkgc2VlIHRoZQo+PiA+
+IGNoYW5nZWQgcGF0Y2ggKGJ1dCB0aGlzIG1pZ2h0IGJlIGFyZ3VhYmxlKS4KPj4gCj4+IEknbGwg
+ZG8gd2hhdGV2ZXIgeW91IHNheS4gU2hvdWxkIEkgcmVtb3ZlIHRoZSBSZXZpZXdlZC1ieTogeW91
+LCBvciBpcyBpdAo+PiBPSyB0byBsZWF2ZSBpdCBpbiwgdG8gYXZvaWQgcmUtaXRlcmF0aW5nIGFn
+YWluPwo+Cj4gSSdkIGxpa2UgdG8gaGF2ZSBpdCBhbiBBY2tlZC1ieS4KCk9LLCB3aWxsIGRvLCB0
+aGFua3MhCgotLSBTZXJnZXkKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxA
+bGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xp
+c3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
