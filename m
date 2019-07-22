@@ -1,74 +1,89 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v2] 8250_lpss: check null return when calling pci_ioremap_bar
-Date: Sat, 20 Jul 2019 01:36:43 +0300
-Message-ID: <CAHp75Ve_fLZukJ2amKCUgFkMxmvMgOEL03v1OojHcE2eVvO3bg@mail.gmail.com>
-References: <20190719151519.GO9224@smile.fi.intel.com> <20190719174848.24216-1-navid.emamdoost@gmail.com>
+From: Sergey Organov <sorganov@gmail.com>
+Subject: Re: [PATCH v4 1/3] serial: imx: set_termios(): do not enable autoRTS
+ if RTS is unset
+Date: Mon, 22 Jul 2019 10:42:57 +0300
+Message-ID: <87ftmy8qgu.fsf@osv.gnss.ru>
+References: <20190614072801.3187-1-s.hauer@pengutronix.de>
+ <1563526074-20399-1-git-send-email-sorganov@gmail.com>
+ <1563526074-20399-2-git-send-email-sorganov@gmail.com>
+ <20190719091143.uhjxeibtolgswq2l@pengutronix.de>
+ <87h87idxq2.fsf@osv.gnss.ru>
+ <20190719143151.gx43ndn2oy35h247@pengutronix.de>
+ <87woge9hvz.fsf@osv.gnss.ru>
+ <20190719201949.ldqlcwjhcmt7wwhg@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190719174848.24216-1-navid.emamdoost@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Navid Emamdoost <navid.emamdoost@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, emamd001@umn.edu, Kangjie Lu <kjlu@umn.edu>, smccaman@umn.edu, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Vinod Koul <vkoul@kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190719201949.ldqlcwjhcmt7wwhg@pengutronix.de> ("Uwe
+ \=\?utf-8\?Q\?Kleine-K\=C3\=B6nig\=22's\?\= message of "Fri,
+ 19 Jul 2019 22:19:49 +0200")
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Jul 20, 2019 at 12:45 AM Navid Emamdoost
-<navid.emamdoost@gmail.com> wrote:
->
-> pci_ioremap_bar may return null. This is eventually de-referenced at
-> drivers/dma/dw/core.c:1154 and drivers/dma/dw/core.c:1168. A null check
-> is needed to prevent null de-reference. I am adding the check and in case
->  of failure. Thanks to Andy Shevchenko for the hint on the necessity of
-> pci_iounmap when exiting.
->
-
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-
-> Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
-> ---
->  drivers/tty/serial/8250/8250_lpss.c | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-> index 53ca9ba6ab4b..d07e431110d9 100644
-> --- a/drivers/tty/serial/8250/8250_lpss.c
-> +++ b/drivers/tty/serial/8250/8250_lpss.c
-> @@ -169,10 +169,12 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
->         struct pci_dev *pdev = to_pci_dev(port->dev);
->         int ret;
->
-> +       chip->pdata = &qrk_serial_dma_pdata;
->         chip->dev = &pdev->dev;
->         chip->irq = pci_irq_vector(pdev, 0);
->         chip->regs = pci_ioremap_bar(pdev, 1);
-> -       chip->pdata = &qrk_serial_dma_pdata;
-> +       if (!chip->regs)
-> +               return;
->
->         /* Falling back to PIO mode if DMA probing fails */
->         ret = dw_dma_probe(chip);
-> @@ -195,11 +197,15 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
->
->  static void qrk_serial_exit_dma(struct lpss8250 *lpss)
->  {
-> +       struct dw_dma_chip *chip = &lpss->dma_chip;
->         struct dw_dma_slave *param = &lpss->dma_param;
->
->         if (!param->dma_dev)
->                 return;
-> -       dw_dma_remove(&lpss->dma_chip);
-> +
-> +       dw_dma_remove(chip);
-> +
-> +       pci_iounmap(to_pci_dev(chip->dev), chip->regs);
->  }
->  #else  /* CONFIG_SERIAL_8250_DMA */
->  static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port) {}
-> --
-> 2.17.1
->
-
-
--- 
-With Best Regards,
-Andy Shevchenko
+VXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4gd3JpdGVz
+OgoKPiBPbiBGcmksIEp1bCAxOSwgMjAxOSBhdCAwNjoxMzo1MlBNICswMzAwLCBTZXJnZXkgT3Jn
+YW5vdiB3cm90ZToKPj4gSGVsbG8gVXdlLAo+PiAKPj4gVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xl
+aW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4gd3JpdGVzOgo+PiA+IEhlbGxvIFNlcmdleSwKPj4g
+Pgo+PiA+IE9uIEZyaSwgSnVsIDE5LCAyMDE5IGF0IDAzOjE4OjEzUE0gKzAzMDAsIFNlcmdleSBP
+cmdhbm92IHdyb3RlOgo+PiA+PiBVd2UgS2xlaW5lLUvDtm5pZyA8dS5rbGVpbmUta29lbmlnQHBl
+bmd1dHJvbml4LmRlPiB3cml0ZXM6Cj4+ID4+ID4gT24gRnJpLCBKdWwgMTksIDIwMTkgYXQgMTE6
+NDc6NTJBTSArMDMwMCwgU2VyZ2V5IE9yZ2Fub3Ygd3JvdGU6Cj4+ID4+ID4+IGRpZmYgLS1naXQg
+YS9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMKPj4g
+Pj4gPj4gaW5kZXggNTdkNmU2Yi4uOTVkNzk4NCAxMDA2NDQKPj4gPj4gPj4gLS0tIGEvZHJpdmVy
+cy90dHkvc2VyaWFsL2lteC5jCj4+ID4+ID4+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXgu
+Ywo+PiA+PiA+PiBAQCAtNDA1LDcgKzQwNSw4IEBAIHN0YXRpYyB2b2lkIGlteF91YXJ0X3J0c19p
+bmFjdGl2ZShzdHJ1Y3QgaW14X3BvcnQgKnNwb3J0LCB1MzIgKnVjcjIpCj4+ID4+ID4+ICAvKiBj
+YWxsZWQgd2l0aCBwb3J0LmxvY2sgdGFrZW4gYW5kIGlycXMgY2FsbGVyIGRlcGVuZGVudCAqLwo+
+PiA+PiA+PiAgc3RhdGljIHZvaWQgaW14X3VhcnRfcnRzX2F1dG8oc3RydWN0IGlteF9wb3J0ICpz
+cG9ydCwgdTMyICp1Y3IyKQo+PiA+PiA+PiAgewo+PiA+PiA+PiAtCSp1Y3IyIHw9IFVDUjJfQ1RT
+QzsKPj4gPj4gPj4gKwlpZiAoKnVjcjIgJiBVQ1IyX0NUUykKPj4gPj4gPj4gKwkJKnVjcjIgfD0g
+VUNSMl9DVFNDOwo+PiA+PiA+Cj4+ID4+ID4gSSB0aGluayB0aGlzIHBhdGNoIGlzIHdyb25nIG9y
+IHRoZSBjb21taXQgbG9nIGlzIGluc3VmZmljaWVudC4KPj4gPj4gPiBpbXhfdWFydF9ydHNfYXV0
+bygpIGhhcyBvbmx5IGEgc2luZ2xlIGNhbGxlciBhbmQgdGhlcmUgdWNyMiAmIFVDUjJfQ1RTIGlz
+Cj4+ID4+ID4gbmV2ZXIgdHJ1ZS4gQW5kIENUU0MgaXNuJ3QgcmVzdG9yZWQgYW55d2hlcmUsIGlz
+IGl0Pwo+PiA+PiAKPj4gPj4gVGhpcyBpcyByZWJhc2UgdG8gJ3R0eS1uZXh0JyBicmFuY2gsIGFu
+ZCB5b3UgbmVlZCB0byBsb29rIGF0IGl0IGluIHRoYXQKPj4gPj4gY29udGV4dC4gVGhlcmUsIHVj
+cjIgJiBVQ1IyX0NUUyBkb2VzIGFscmVhZHkgbWFrZSBzZW5zZSwgZHVlIHRvIHByZXZpb3VzCj4+
+ID4+IGZpeCB0aGF0IGlzIGFscmVhZHkgdGhlcmUuCj4+ID4KPj4gPiBJIGxvb2tlZCBhdCA1N2Q2
+ZTZiIHdoaWNoIGlzIHRoZSBmaWxlIHlvdSBwYXRjaGVkLiBBbmQgdGhlcmUKPj4gPiBpbXhfdWFy
+dF9ydHNfYXV0byBpcyBvbmx5IGV2ZXIgY2FsbGVkIHdpdGggKnVjcjIgbm90IGhhdmluZyBVQ1Iy
+X0NUUy4KPj4gPgo+PiA+IElmIHlvdSBzdGlsbCB0aGluayBJJ20gd3JvbmcsIHBsZWFzZSBpbXBy
+b3ZlIHRoZSBjb21taXQgbG9nCj4+ID4gYWNjb3JkaW5nbHkuCj4+IAo+PiBJIHN0aWxsIHRoaW5r
+IHlvdSBhcmUgd3JvbmcsIGJ1dCBJIGRvbid0IGtub3cgaG93IHRvIGltcHJvdmUgY29tbWl0IGxv
+Zy4KPj4gCj4+IFRvIGNoZWNrIGl0IG9uY2UgYWdhaW4sIEkganVzdCBkaWQ6Cj4+IAo+PiAkIGdp
+dCBzaG93IDU3ZDZlNmIgPiBpbXguYwo+PiAKPj4gVGhlcmUsIGluIGlteF91YXJ0X3NldF90ZXJt
+aW9zKCksIEkgc2VlOgo+PiAKPj4gMTU2OToJb2xkX3VjcjIgPSBpbXhfdWFydF9yZWFkbChzcG9y
+dCwgVUNSMik7Cj4+IDE1NzA6CXVjcjIgPSBvbGRfdWNyMiAmIChVQ1IyX1RYRU4gfCBVQ1IyX1JY
+RU4gfCBVQ1IyX0FURU4gfCBVQ1IyX0NUUyk7Cj4+IAo+PiBIZXJlLCBjdXJyZW50IFVDUjIgdmFs
+dWUgaXMgcmVhZCBpbnRvICdvbGRfdWNyMicgYW5kIHRoZW4gaXRzIC9jdXJyZW50Lwo+PiBVQ1Iy
+X0NUUyBiaXQgaXMgY29waWVkIGludG8gJ3VjcjInIChhbG9uZyB3aXRoIDMgb3RoZXIgYml0cyku
+Cj4+IAo+PiBUaGVuLCBsYXRlciBpbiB0aGUgc2FtZSBmdW5jdGlvbjoKPj4gCj4+IDE1OTE6CQlp
+bXhfdWFydF9ydHNfYXV0byhzcG9ydCwgJnVjcjIpOwo+PiAKPj4gaXMgY2FsbGVkIHRoYXQgY2Fu
+IGNoZWNrIC9jdXJyZW50LyBzdGF0ZSBvZiBVQ1IyX0NUUyBiaXQgaW4gJyp1Y3IyJy4KPj4gCj4+
+IFRoYXQncyB3aGF0IHRoZSBwYXRjaCBkb2VzLCBjaGVja3MgdGhpcyBiaXQuCj4+IAo+PiBTb3Jy
+eSwgSSBmYWlsIHRvIHNlZSBob3cgeW91IGNhbWUgdG8gY29uY2x1c2lvbiB0aGF0ICIqdWNyMiBu
+b3QgaGF2aW5nCj4+IFVDUjJfQ1RTIi4gRG8gd2UgbWF5YmUgc3RpbGwgcmVhZCBkaWZmZXJlbnQg
+dmVyc2lvbnMgb2YgdGhlIGZpbGU/Cj4KPiBObywgaXQncyBqdXN0IHRoYXQgSSBmYWlsZWQgdG8g
+c2VlIHRoYXQgVUNSMl9DVFMgaXMgaW4gdGhlIHNldCBvZiBiaXRzCj4gdGhhdCBhcmUgcmV0YWlu
+ZWQgZXZlbiB3aGVuIGxvb2tpbmcgdHdpY2UgOi18CgpBaCwgdGhhdCBvbmUuLi4gSG93IGZhbWls
+aWFyIDotKQoKPiBTbyB5b3UgY29udmluY2VkIG1lIHRoYXQgeW91IGFyZSByaWdodCBhbmQgaWYg
+eW91IHVwZGF0ZSB0aGUgY29tbWl0IGxvZwo+IGFzIGFncmVlZCBhbHJlYWR5IGJlZm9yZSBhbmQg
+ZXZlbiBhZGQgYSBjb21tZW50IGluIGlteF91YXJ0X3J0c19hdXRvCj4gYWxvbmcgdGhlIGxpbmVz
+IG9mCj4KPiAJLyoKPiAJICogT25seSBsZXQgdGhlIHJlY2VpdmVyIGNvbnRyb2wgUlRTIG91dHB1
+dCBpZiB3ZSB3ZXJlIG5vdAo+IAkgKiByZXF1ZXN0ZWQgdG8gaGF2ZSBSVFMgaW5hY3RpdmUgKHdo
+aWNoIHRoZW4gc2hvdWxkIHRha2UKPiAJICogcHJlY2VkZW5jZSkuCj4gCSAqLwo+Cj4geW91IGNh
+biBoYXZlIG15IEFjay4KCk9LLCB3aWxsIGRvCgpUaGFua3MhCgotLSBTZXJnZXkKCl9fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwg
+bWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8v
+bGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
