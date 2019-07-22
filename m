@@ -1,245 +1,65 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 3/3] uio: remove netx driver
-Date: Mon, 22 Jul 2019 21:15:05 +0200
-Message-ID: <20190722191552.252805-3-arnd@arndb.de>
-References: <20190722191552.252805-1-arnd@arndb.de>
+From: Sergey Organov <sorganov@gmail.com>
+Subject: [PATCH v6 0/3] serial: imx: fix RTS and RTS/CTS handling
+Date: Mon, 22 Jul 2019 22:22:08 +0300
+Message-ID: <1563823331-5629-1-git-send-email-sorganov@gmail.com>
+References: <20190614072801.3187-1-s.hauer@pengutronix.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190722191552.252805-1-arnd@arndb.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: netdev@vger.kernel.org, linux-serial@vger.kernel.org, tglx@linutronix.de, davem@davemloft.net, Sascha Hauer <s.hauer@pengutronix.de>, Michael Trensch <MTrensch@hilscher.com>, Linus Walleij <linus.walleij@linaro.org>, Robert Schwebel <r.schwebel@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190614072801.3187-1-s.hauer@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, Sergey Organov <sorganov@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-The netx platform got removed, so this driver is now
-useless.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/uio/Kconfig    |  11 ---
- drivers/uio/Makefile   |   1 -
- drivers/uio/uio_netx.c | 178 -----------------------------------------
- 3 files changed, 190 deletions(-)
- delete mode 100644 drivers/uio/uio_netx.c
-
-diff --git a/drivers/uio/Kconfig b/drivers/uio/Kconfig
-index 202ee81cfc2b..abc8dd97b474 100644
---- a/drivers/uio/Kconfig
-+++ b/drivers/uio/Kconfig
-@@ -94,17 +94,6 @@ config UIO_PCI_GENERIC
- 	  primarily, for virtualization scenarios.
- 	  If you compile this as a module, it will be called uio_pci_generic.
- 
--config UIO_NETX
--	tristate "Hilscher NetX Card driver"
--	depends on PCI
--	help
--	  Driver for Hilscher NetX based fieldbus cards (cifX, comX).
--	  This driver requires a userspace component that comes with the card
--	  or is available from Hilscher (http://www.hilscher.com).
--
--	  To compile this driver as a module, choose M here; the module
--	  will be called uio_netx.
--
- config UIO_FSL_ELBC_GPCM
- 	tristate "eLBC/GPCM driver"
- 	depends on FSL_LBC
-diff --git a/drivers/uio/Makefile b/drivers/uio/Makefile
-index c285dd2a4539..d94012263a42 100644
---- a/drivers/uio/Makefile
-+++ b/drivers/uio/Makefile
-@@ -6,7 +6,6 @@ obj-$(CONFIG_UIO_DMEM_GENIRQ)	+= uio_dmem_genirq.o
- obj-$(CONFIG_UIO_AEC)	+= uio_aec.o
- obj-$(CONFIG_UIO_SERCOS3)	+= uio_sercos3.o
- obj-$(CONFIG_UIO_PCI_GENERIC)	+= uio_pci_generic.o
--obj-$(CONFIG_UIO_NETX)	+= uio_netx.o
- obj-$(CONFIG_UIO_PRUSS)         += uio_pruss.o
- obj-$(CONFIG_UIO_MF624)         += uio_mf624.o
- obj-$(CONFIG_UIO_FSL_ELBC_GPCM)	+= uio_fsl_elbc_gpcm.o
-diff --git a/drivers/uio/uio_netx.c b/drivers/uio/uio_netx.c
-deleted file mode 100644
-index 9ae29ffde410..000000000000
---- a/drivers/uio/uio_netx.c
-+++ /dev/null
-@@ -1,178 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/*
-- * UIO driver for Hilscher NetX based fieldbus cards (cifX, comX).
-- * See http://www.hilscher.com for details.
-- *
-- * (C) 2007 Hans J. Koch <hjk@hansjkoch.de>
-- * (C) 2008 Manuel Traut <manut@linutronix.de>
-- *
-- */
--
--#include <linux/device.h>
--#include <linux/io.h>
--#include <linux/module.h>
--#include <linux/pci.h>
--#include <linux/slab.h>
--#include <linux/uio_driver.h>
--
--#define PCI_VENDOR_ID_HILSCHER		0x15CF
--#define PCI_DEVICE_ID_HILSCHER_NETX	0x0000
--#define PCI_DEVICE_ID_HILSCHER_NETPLC	0x0010
--#define PCI_SUBDEVICE_ID_NETPLC_RAM	0x0000
--#define PCI_SUBDEVICE_ID_NETPLC_FLASH	0x0001
--#define PCI_SUBDEVICE_ID_NXSB_PCA	0x3235
--#define PCI_SUBDEVICE_ID_NXPCA		0x3335
--
--#define DPM_HOST_INT_EN0	0xfff0
--#define DPM_HOST_INT_STAT0	0xffe0
--
--#define DPM_HOST_INT_MASK	0xe600ffff
--#define DPM_HOST_INT_GLOBAL_EN	0x80000000
--
--static irqreturn_t netx_handler(int irq, struct uio_info *dev_info)
--{
--	void __iomem *int_enable_reg = dev_info->mem[0].internal_addr
--					+ DPM_HOST_INT_EN0;
--	void __iomem *int_status_reg = dev_info->mem[0].internal_addr
--					+ DPM_HOST_INT_STAT0;
--
--	/* Is one of our interrupts enabled and active ? */
--	if (!(ioread32(int_enable_reg) & ioread32(int_status_reg)
--		& DPM_HOST_INT_MASK))
--		return IRQ_NONE;
--
--	/* Disable interrupt */
--	iowrite32(ioread32(int_enable_reg) & ~DPM_HOST_INT_GLOBAL_EN,
--		int_enable_reg);
--	return IRQ_HANDLED;
--}
--
--static int netx_pci_probe(struct pci_dev *dev,
--					const struct pci_device_id *id)
--{
--	struct uio_info *info;
--	int bar;
--
--	info = kzalloc(sizeof(struct uio_info), GFP_KERNEL);
--	if (!info)
--		return -ENOMEM;
--
--	if (pci_enable_device(dev))
--		goto out_free;
--
--	if (pci_request_regions(dev, "netx"))
--		goto out_disable;
--
--	switch (id->device) {
--	case PCI_DEVICE_ID_HILSCHER_NETX:
--		bar = 0;
--		info->name = "netx";
--		break;
--	case PCI_DEVICE_ID_HILSCHER_NETPLC:
--		bar = 0;
--		info->name = "netplc";
--		break;
--	default:
--		bar = 2;
--		info->name = "netx_plx";
--	}
--
--	/* BAR0 or 2 points to the card's dual port memory */
--	info->mem[0].addr = pci_resource_start(dev, bar);
--	if (!info->mem[0].addr)
--		goto out_release;
--	info->mem[0].internal_addr = ioremap(pci_resource_start(dev, bar),
--						pci_resource_len(dev, bar));
--
--	if (!info->mem[0].internal_addr)
--			goto out_release;
--
--	info->mem[0].size = pci_resource_len(dev, bar);
--	info->mem[0].memtype = UIO_MEM_PHYS;
--	info->irq = dev->irq;
--	info->irq_flags = IRQF_SHARED;
--	info->handler = netx_handler;
--	info->version = "0.0.1";
--
--	/* Make sure all interrupts are disabled */
--	iowrite32(0, info->mem[0].internal_addr + DPM_HOST_INT_EN0);
--
--	if (uio_register_device(&dev->dev, info))
--		goto out_unmap;
--
--	pci_set_drvdata(dev, info);
--	dev_info(&dev->dev, "Found %s card, registered UIO device.\n",
--				info->name);
--
--	return 0;
--
--out_unmap:
--	iounmap(info->mem[0].internal_addr);
--out_release:
--	pci_release_regions(dev);
--out_disable:
--	pci_disable_device(dev);
--out_free:
--	kfree(info);
--	return -ENODEV;
--}
--
--static void netx_pci_remove(struct pci_dev *dev)
--{
--	struct uio_info *info = pci_get_drvdata(dev);
--
--	/* Disable all interrupts */
--	iowrite32(0, info->mem[0].internal_addr + DPM_HOST_INT_EN0);
--	uio_unregister_device(info);
--	pci_release_regions(dev);
--	pci_disable_device(dev);
--	iounmap(info->mem[0].internal_addr);
--
--	kfree(info);
--}
--
--static struct pci_device_id netx_pci_ids[] = {
--	{
--		.vendor =	PCI_VENDOR_ID_HILSCHER,
--		.device =	PCI_DEVICE_ID_HILSCHER_NETX,
--		.subvendor =	0,
--		.subdevice =	0,
--	},
--	{
--		.vendor =       PCI_VENDOR_ID_HILSCHER,
--		.device =       PCI_DEVICE_ID_HILSCHER_NETPLC,
--		.subvendor =    PCI_VENDOR_ID_HILSCHER,
--		.subdevice =    PCI_SUBDEVICE_ID_NETPLC_RAM,
--	},
--	{
--		.vendor =       PCI_VENDOR_ID_HILSCHER,
--		.device =       PCI_DEVICE_ID_HILSCHER_NETPLC,
--		.subvendor =    PCI_VENDOR_ID_HILSCHER,
--		.subdevice =    PCI_SUBDEVICE_ID_NETPLC_FLASH,
--	},
--	{
--		.vendor =	PCI_VENDOR_ID_PLX,
--		.device =	PCI_DEVICE_ID_PLX_9030,
--		.subvendor =	PCI_VENDOR_ID_PLX,
--		.subdevice =	PCI_SUBDEVICE_ID_NXSB_PCA,
--	},
--	{
--		.vendor =	PCI_VENDOR_ID_PLX,
--		.device =	PCI_DEVICE_ID_PLX_9030,
--		.subvendor =	PCI_VENDOR_ID_PLX,
--		.subdevice =	PCI_SUBDEVICE_ID_NXPCA,
--	},
--	{ 0, }
--};
--
--static struct pci_driver netx_pci_driver = {
--	.name = "netx",
--	.id_table = netx_pci_ids,
--	.probe = netx_pci_probe,
--	.remove = netx_pci_remove,
--};
--
--module_pci_driver(netx_pci_driver);
--MODULE_DEVICE_TABLE(pci, netx_pci_ids);
--MODULE_LICENSE("GPL v2");
--MODULE_AUTHOR("Hans J. Koch, Manuel Traut");
--- 
-2.20.0
+VGhpcyBpcyByZWJhc2Ugb2YgdjMgb24gdG9wIG9mICd0dHktbmV4dCcsIHRvIGdldCByaWQgb2Yg
+Y29tbWl0cyB0aGF0CmFyZSBhbHJlYWR5IGFkb3B0ZWQgdG8gbWFpbmxpbmUuCgpSVFMgc2lnbmFs
+IGFuZCBSVFMvQ1RTIGhhbmRzaGFrZSBoYW5kbGluZyBoYWQgYSBmZXcgcHJvYmxlbXMgdGhlc2UK
+cGF0Y2hlcyBmaXguCgpJbiBhZGRpdGlvbiwgbWlub3IgY2xlYW51cHMgYXJlIG1hZGUgdG8gdGhl
+IGludm9sdmVkIGNvZGUuCgpDaGFuZ2Vsb2c6CgogIHY2OgoKICAgICAqIGNoYW5nZWQgIlJldmll
+d2VkLWJ5OiIgCiAgICAgICBVd2UgS2xlaW5lLUvDtm5pZyA8dS5rbGVpbmUta29lbmlnQHBlbmd1
+dHJvbml4LmRlPgogICAgICAgdG8gIkFja2VkLWJ5OiIgaGltLCBhY2NvcmRpbmcgdG8gaGlzIHJl
+cXVlc3QKCiAgdjU6CgogICAgICogaW1wcm92ZWQgY29tbWl0IGRlc2NyaXB0aW9uIGFuZCBhZGRl
+ZCBtb3JlIGNvbW1lbnRzIGZvcgogICAgICAgInNlcmlhbDogaW14OiBzZXRfdGVybWlvcygpOiBk
+byBub3QgZW5hYmxlIGF1dG9SVFMgaWYgUlRTIGlzCiAgICAgICB1bnNldCIgYXMgc3VnZ2VzdGVk
+IGJ5CiAgICAgICBVd2UgS2xlaW5lLUvDtm5pZyA8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJvbml4
+LmRlPgogICAgICAgYW5kIGFkZGVkIGNvcnJlc3BvbmRpbmcgIlJldmlld2VkLWJ5OiIKCiAgdjQ6
+CgogICAgICAqIHJlYmFzZWQgb24gdG9wIG9mICd0dHktbmV4dCcsIHRvIGdldCByaWQgb2YgY29t
+bWl0cyB0aGF0CiAgICAgICAgYXJlIGFscmVhZHkgYWRvcHRlZCB0byBtYWlubGluZS4KCiAgdjM6
+CgogICAgICAqIEltcHJvdmVkIGNvbW1lbnRzIGluICJzZXJpYWw6IGlteDogc2V0X21jdHJsKCk6
+IGNvcnJlY3RseQogICAgICAgIHJlc3RvcmUgYXV0b1JUUyBzdGF0ZSIsIGFzIHN1Z2dlc3RlZCBi
+eSBVd2UgS2xlaW5lLUvDtm5pZwogICAgICAgIDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXgu
+ZGU+CgogIHYyOgoKICAgICAgKiBBcHBlbmRlZDogIlJldmlld2VkLWJ5OiIgYW5kICJUZXN0ZWQt
+Ynk6IgogICAgICAgIFNhc2NoYSBIYXVlciA8cy5oYXVlckBwZW5ndXRyb25peC5kZT4KCiAgICAg
+ICogUmVtb3ZlZCAiUkZDIiBmcm9tIGhlYWRlcgoKICB2MToKCiAgICAgICogRml4ZWQgaW4gInNl
+cmlhbDogaW14OiBzZXRfdGVybWlvcygpOiBwcmVzZXJ2ZSBSVFMgc3RhdGUiCgotKwl1Y3IyID0g
+VUNSMl9TUlNUIHwgVUNSMl9JUlRTOworKwl1Y3IyIHw9IFVDUjJfU1JTVCB8IFVDUjJfSVJUUzsK
+CiAgICAgICAgYXMgbm90aWNlZCBieSBMb3RoYXIgV2HDn21hbm4gPExXQEtBUk8tZWxlY3Ryb25p
+Y3MuZGU+CgogICAgICAqIEZpeGVkIGluICJzZXJpYWw6IGlteDogc2V0X3Rlcm1pb3MoKTogcHJl
+c2VydmUgUlRTIHN0YXRlIgoKLSsJdWNyMiA9IG9sZF91Y3IyICYgKFVDUjJfVFhFTiB8IFVDUjJf
+UlhFTiB8IFVDUjJfQVRFTiB8IFVDUjJfQ1RTQyk7CisrCXVjcjIgPSBvbGRfdWNyMiAmIChVQ1Iy
+X1RYRU4gfCBVQ1IyX1JYRU4gfCBVQ1IyX0FURU4gfCBVQ1IyX0NUUyk7CgogICAgICAgIGFzIHRo
+ZSBmaXggZm9yIHRoZSBwcm9ibGVtIGZvdW5kIGJ5IFNhc2NoYSBIYXVlcgogICAgICAgIDxzLmhh
+dWVyQHBlbmd1dHJvbml4LmRlPgoKICAgICAgKiBSZW9yZGVyZWQ6CgogICAgICAgIHNlcmlhbDog
+aW14OiBzZXRfdGVybWlvcygpOiBwcmVzZXJ2ZSBSVFMgc3RhdGUKICAgICAgICBzZXJpYWw6IGlt
+eDogc2V0X3Rlcm1pb3MoKTogZG8gbm90IGVuYWJsZSBhdXRvUlRTIGlmIFJUUyBpcyB1bnNldAoK
+ICAgICAgICBhcyB0aGUgbGF0dGVyIG1ha2VzIHNlbnNlIG9ubHkgcHJvdmlkZWQgdGhlIGZvcm1l
+ciBpcyBhbHJlYWR5CiAgICAgICAgYXBwbGllZC4KClNlcmdleSBPcmdhbm92ICgzKToKICBzZXJp
+YWw6IGlteDogc2V0X3Rlcm1pb3MoKTogZG8gbm90IGVuYWJsZSBhdXRvUlRTIGlmIFJUUyBpcyB1
+bnNldAogIHNlcmlhbDogaW14OiBzZXRfbWN0cmwoKTogY29ycmVjdGx5IHJlc3RvcmUgYXV0b1JU
+UyBzdGF0ZQogIHNlcmlhbDogaW14OiBnZXQgcmlkIG9mIGlteF91YXJ0X3J0c19hdXRvKCkKCiBk
+cml2ZXJzL3R0eS9zZXJpYWwvaW14LmMgfCAzMiArKysrKysrKysrKysrKysrKysrKysrLS0tLS0t
+LS0tLQogMSBmaWxlIGNoYW5nZWQsIDIyIGluc2VydGlvbnMoKyksIDEwIGRlbGV0aW9ucygtKQoK
+LS0gCjIuMTAuMC4xLmc1N2IwMWEzCgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtl
+cm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxt
+YW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
