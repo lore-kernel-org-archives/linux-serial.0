@@ -1,44 +1,108 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 2/3] serial: remove netx serial driver
-Date: Tue, 23 Jul 2019 10:43:05 +0200
-Message-ID: <CAK8P3a1=Bnsxg-3RztGEL-c6muQjam-egyrsZfqc7_yjBzcGXA@mail.gmail.com>
-References: <20190722191552.252805-1-arnd@arndb.de> <20190722191552.252805-2-arnd@arndb.de>
- <CACRpkdbm5MpcNdm8EGTR=U8MpK2VPzEg=Us0-AxZzOZ=vVJSmQ@mail.gmail.com>
+From: Sergey Organov <sorganov@gmail.com>
+Subject: Re: [PATCH v6 2/3] serial: imx: set_mctrl(): correctly restore
+ autoRTS state
+Date: Tue, 23 Jul 2019 12:20:38 +0300
+Message-ID: <87h87d1509.fsf@osv.gnss.ru>
+References: <20190614072801.3187-1-s.hauer@pengutronix.de>
+ <1563823331-5629-1-git-send-email-sorganov@gmail.com>
+ <1563823331-5629-3-git-send-email-sorganov@gmail.com>
+ <20190722202406.hr74mg64sxoovah7@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CACRpkdbm5MpcNdm8EGTR=U8MpK2VPzEg=Us0-AxZzOZ=vVJSmQ@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, netdev <netdev@vger.kernel.org>, linux-serial@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, "David S. Miller" <davem@davemloft.net>, Sascha Hauer <s.hauer@pengutronix.de>, Michael Trensch <MTrensch@hilscher.com>, Robert Schwebel <r.schwebel@pengutronix.de>, Jiri Slaby <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190722202406.hr74mg64sxoovah7@pengutronix.de> ("Uwe
+ \=\?utf-8\?Q\?Kleine-K\=C3\=B6nig\=22's\?\= message of "Mon,
+ 22 Jul 2019 22:24:06 +0200")
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jul 23, 2019 at 10:26 AM Linus Walleij <linus.walleij@linaro.org> wrote:
->
-> On Mon, Jul 22, 2019 at 9:16 PM Arnd Bergmann <arnd@arndb.de> wrote:
->
-> > The netx platform got removed, so this driver is now
-> > useless.
-> >
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
->
-> We seem so overlap :)
-> https://marc.info/?l=linux-serial&m=156377843325488&w=2
->
-> Anyways, the patches are identical except here:
->
-> > -/* Hilscher netx */
-> > +/* Hilscher netx (removed) */
-> >  #define PORT_NETX      71
->
-> Is there some reason for keeping the magical number around?
-> When I looked over the file there seemed to be more "holes"
-> in the list.
-
-I looked at the same list and though I saw more obsolete entries
-than holes. The last ones that I saw getting removed were
-PORT_MFD in 2017 and PORT_V850E_UART in 2008.
-
-It probably doesn't matter as we have precedence for both.
-
-       Arnd
+VXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4gd3JpdGVz
+OgoKPiBPbiBNb24sIEp1bCAyMiwgMjAxOSBhdCAxMDoyMjoxMFBNICswMzAwLCBTZXJnZXkgT3Jn
+YW5vdiB3cm90ZToKPj4gaW14X3VhcnRfc2V0X21jdHJsKCkgaGFwcGVuZWQgdG8gc2V0IFVDUjJf
+Q1RTQyBiaXQgd2hlbmV2ZXIgVElPQ01fUlRTCj4+IHdhcyBzZXQsIG5vIG1hdHRlciBpZiBSVFMv
+Q1RTIGhhbmRzaGFrZSBpcyBlbmFibGVkIG9yIG5vdC4gTm93IGZpeGVkIGJ5Cj4+IHR1cm5pbmcg
+aGFuZHNoYWtlIG9uIG9ubHkgd2hlbiBDUlRTQ1RTIGJpdCBmb3IgdGhlIHBvcnQgaXMgc2V0Lgo+
+Pgo+PiBBY2tlZC1ieTogVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRy
+b25peC5kZT4KPj4gUmV2aWV3ZWQtYnk6IFNhc2NoYSBIYXVlciA8cy5oYXVlckBwZW5ndXRyb25p
+eC5kZT4KPj4gVGVzdGVkLWJ5OiBTYXNjaGEgSGF1ZXIgPHMuaGF1ZXJAcGVuZ3V0cm9uaXguZGU+
+Cj4+IFNpZ25lZC1vZmYtYnk6IFNlcmdleSBPcmdhbm92IDxzb3JnYW5vdkBnbWFpbC5jb20+Cj4+
+IC0tLQo+PiAgZHJpdmVycy90dHkvc2VyaWFsL2lteC5jIHwgMTYgKysrKysrKysrKysrKystLQo+
+PiAgMSBmaWxlIGNoYW5nZWQsIDE0IGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCj4+Cj4+
+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMgYi9kcml2ZXJzL3R0eS9zZXJp
+YWwvaW14LmMKPj4gaW5kZXggMzJmMzZkOC4uMDU5YmEzNSAxMDA2NDQKPj4gLS0tIGEvZHJpdmVy
+cy90dHkvc2VyaWFsL2lteC5jCj4+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYwo+PiBA
+QCAtOTc0LDEwICs5NzQsMjIgQEAgc3RhdGljIHZvaWQgaW14X3VhcnRfc2V0X21jdHJsKHN0cnVj
+dCB1YXJ0X3BvcnQgKnBvcnQsIHVuc2lnbmVkIGludCBtY3RybCkKPj4gIAlpZiAoIShwb3J0LT5y
+czQ4NS5mbGFncyAmIFNFUl9SUzQ4NV9FTkFCTEVEKSkgewo+PiAgCQl1MzIgdWNyMjsKPj4KPj4g
+KwkJLyoKPj4gKwkJICogVHVybiBvZmYgYXV0b1JUUyBpZiBSVFMgaXMgbG93ZXJlZCBhbmQgcmVz
+dG9yZSBhdXRvUlRTCj4+ICsJCSAqIHNldHRpbmcgaWYgUlRTIGlzIHJhaXNlZC4KPgo+ICJsb3dl
+ciIgYW5kICJyYWlzaW5nIiBhcmUgbWlzbGVhZGluZyBoZXJlLiBJIHJlY29tbWVuZCBzdGlja2lu
+ZyB0bwo+ICJhY3RpdmUiIGFuZCAiaW5hY3RpdmUiLgoKVGhpcyBpcyBjb3B5LXBhc3RlZCBmcm9t
+IHRoZSA4MjUwIGRyaXZlci4gSSdkIHByZWZlciB0byBsZWF2ZSBpdCBhcyBpcy4KCj4KPj4gKwkJ
+ICovCj4+ICAJCXVjcjIgPSBpbXhfdWFydF9yZWFkbChzcG9ydCwgVUNSMik7Cj4+ICAJCXVjcjIg
+Jj0gfihVQ1IyX0NUUyB8IFVDUjJfQ1RTQyk7Cj4+IC0JCWlmIChtY3RybCAmIFRJT0NNX1JUUykK
+Pj4gLQkJCXVjcjIgfD0gVUNSMl9DVFMgfCBVQ1IyX0NUU0M7Cj4+ICsJCWlmIChtY3RybCAmIFRJ
+T0NNX1JUUykgewo+PiArCQkJdWNyMiB8PSBVQ1IyX0NUUzsKPj4gKwkJCS8qCj4+ICsJCQkgKiBV
+Q1IyX0lSVFMgaXMgdW5zZXQgaWYgYW5kIG9ubHkgaWYgdGhlIHBvcnQgaXMKPj4gKwkJCSAqIGNv
+bmZpZ3VyZWQgZm9yIENSVFNDVFMsIHNvIHdlIHVzZSBpbnZlcnRlZCBVQ1IyX0lSVFMKPj4gKwkJ
+CSAqIHRvIGdldCB0aGUgc3RhdGUgdG8gcmVzdG9yZSB0by4KPj4gKwkJCSAqLwo+PiArCQkJaWYg
+KCEodWNyMiAmIFVDUjJfSVJUUykpCj4+ICsJCQkJdWNyMiB8PSBVQ1IyX0NUU0M7Cj4+ICsJCX0K
+Pgo+IElmIHlvdSB0ZWFjaCBpbXhfdWFydF9ydHNfYXV0byBhYm91dCBJUlRTIHRoaXMgZnVuY3Rp
+b24gY291bGQgYmUgcmV1c2VkCj4gaGVyZSBJIHRoaW5rLgoKWWVhaCwgYnV0IGlteF91YXJ0X3J0
+c19hdXRvX2lmX2NydHNjdHNfYW5kX3J0c19pc19hY3RpdmUoKSA/IEkgZmVlbApzb21ld2hhdCB1
+bmNvbWZvcnRhYmxlIGFib3V0IHRoYXQgbWl4aW5nIG9mIGRpZmZlcmVudCBwdXJwb3Nlcy4KCkJl
+c2lkZXMsIG9uZSBvZiB0aGUgcHVycG9zZXMgb2YgdGhlc2UgcGF0Y2ggc2VyaWVzIHdhcyB0byBn
+ZXQgcmlkIG9mCmlteF91YXJ0X3J0c19hdXRvKCkgYXMgaXRzIG5hbWUgaXMgY29uZnVzaW5nIGlu
+IHRoZSBjb250ZXh0IG9mIGV4aXN0aW5nCmlteF91YXJ0X3J0c19hY3RpdmUoKSBhbmQgaW14X3Vh
+cnRfcnRzX2luYWN0aXZlKCksIGFzIEkgYWxyZWFkeQpleHBsYWluZWQgYmVmb3JlLgoKV2UgY2Fu
+IHJlbmFtZSB0aGUgZnVuY3Rpb24gdG8gYXZvaWQgY29uZnVzaW9uLCBhZGQgeWV0IGFub3RoZXIg
+Y2hlY2sgdG8KaXQsIGFuZCBjYWxsIGl0IGZyb20gMiBwbGFjZXMsIGJ1dCBpdCdzIHN0aWxsIHF1
+ZXN0aW9uYWJsZSBpZiBpdCdzIGFuCmltcHJvdmVtZW50LCBhbmQgY291bGQgYmUgZG9uZSBhcyBh
+IGZvbGxvdy11cCBzdGVwIGFueXdheS4gSXQgd2lsbCBsb29rCnNvbWV0aGluZyBsaWtlIHRoaXMg
+dGhlbjoKCiAtLSA+OCAtLQoKICAgIHNlcmlhbDogaW14OiBmYWN0b3Igb3V0IGNvbW1vbiBjb2Rl
+IGludG8gbmV3IGlteF91YXJ0X3NldF9hdXRvX3J0cygpCgoJTW9kaWZpZWQgICBkcml2ZXJzL3R0
+eS9zZXJpYWwvaW14LmMKZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyBiL2Ry
+aXZlcnMvdHR5L3NlcmlhbC9pbXguYwppbmRleCBkOWE3M2M3Li5jOGI4NDdlIDEwMDY0NAotLS0g
+YS9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMKKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2lteC5j
+CkBAIC05NTQsNiArOTU0LDIwIEBAIHN0YXRpYyB1bnNpZ25lZCBpbnQgaW14X3VhcnRfZ2V0X21j
+dHJsKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpCiAJcmV0dXJuIHJldDsKIH0KCisvKgorICogQ29t
+cHV0ZSBhbmQgc2V0IGF1dG8gUlRTIGluICd1Y3IyJyBhY2NvcmRpbmcgdG8gdGhlIGN1cnJlbnQg
+c3RhdGUgb2YgUlRTCisgKiBzaWduYWwgYW5kIENSVFNDVFMgc3RhdGUgb2YgcG9ydCBjb25maWd1
+cmF0aW9uLgorICoKKyAqIFVzZSBpbnZlcnRlZCBVQ1IyX0lSVFMgdG8gZ2V0IHRoZSBzdGF0ZSBv
+ZiBDUlRTQ1RTLCBhbmQgZG9uJ3QgbGV0IHJlY2VpdmVyCisgKiBjb250cm9sIFJUUyBvdXRwdXQg
+aWYgUlRTIGlzIGluYWN0aXZlLgorICoKKyAqLworc3RhdGljIHZvaWQgaW14X3VhcnRfc2V0X2F1
+dG9fcnRzKHUzMiAqdWNyMikKK3sKKwlpZiAoKCp1Y3IyICYgVUNSMl9DVFMpICYmICEoKnVjcjIg
+JiBVQ1IyX0lSVFMpKQorCQkqdWNyMiB8PSBVQ1IyX0NUU0M7Cit9CisKIC8qIGNhbGxlZCB3aXRo
+IHBvcnQubG9jayB0YWtlbiBhbmQgaXJxcyBvZmYgKi8KIHN0YXRpYyB2b2lkIGlteF91YXJ0X3Nl
+dF9tY3RybChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0LCB1bnNpZ25lZCBpbnQgbWN0cmwpCiB7CkBA
+IC05NzEsMTMgKzk4NSw3IEBAIHN0YXRpYyB2b2lkIGlteF91YXJ0X3NldF9tY3RybChzdHJ1Y3Qg
+dWFydF9wb3J0ICpwb3J0LCB1bnNpZ25lZCBpbnQgbWN0cmwpCiAJCXVjcjIgJj0gfihVQ1IyX0NU
+UyB8IFVDUjJfQ1RTQyk7CiAJCWlmIChtY3RybCAmIFRJT0NNX1JUUykgewogCQkJdWNyMiB8PSBV
+Q1IyX0NUUzsKLQkJCS8qCi0JCQkgKiBVQ1IyX0lSVFMgaXMgdW5zZXQgaWYgYW5kIG9ubHkgaWYg
+dGhlIHBvcnQgaXMKLQkJCSAqIGNvbmZpZ3VyZWQgZm9yIENSVFNDVFMsIHNvIHdlIHVzZSBpbnZl
+cnRlZCBVQ1IyX0lSVFMKLQkJCSAqIHRvIGdldCB0aGUgc3RhdGUgdG8gcmVzdG9yZSB0by4KLQkJ
+CSAqLwotCQkJaWYgKCEodWNyMiAmIFVDUjJfSVJUUykpCi0JCQkJdWNyMiB8PSBVQ1IyX0NUU0M7
+CisJCQlpbXhfdWFydF9zZXRfYXV0b19ydHMoJnVjcjIpOwogCQl9CiAJCWlteF91YXJ0X3dyaXRl
+bChzcG9ydCwgdWNyMiwgVUNSMik7CiAJfQpAQCAtMTU5NCwxMiArMTYwMiw3IEBAIGlteF91YXJ0
+X3NldF90ZXJtaW9zKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsIHN0cnVjdCBrdGVybWlvcyAqdGVy
+bWlvcywKIAkJCWlteF91YXJ0X3J0c19pbmFjdGl2ZShzcG9ydCwgJnVjcjIpOwoKIAl9IGVsc2Ug
+aWYgKHRlcm1pb3MtPmNfY2ZsYWcgJiBDUlRTQ1RTKSB7Ci0JCS8qCi0JCSAqIE9ubHkgbGV0IHJl
+Y2VpdmVyIGNvbnRyb2wgUlRTIG91dHB1dCBpZiB3ZSB3ZXJlIG5vdCByZXF1ZXN0ZWQKLQkJICog
+dG8gaGF2ZSBSVFMgaW5hY3RpdmUgKHdoaWNoIHRoZW4gc2hvdWxkIHRha2UgcHJlY2VkZW5jZSku
+Ci0JCSAqLwotCQlpZiAodWNyMiAmIFVDUjJfQ1RTKQotCQkJdWNyMiB8PSBVQ1IyX0NUU0M7CisJ
+CWlteF91YXJ0X3NldF9hdXRvX3J0cygmdWNyMik7CiAJfQoKIAlpZiAodGVybWlvcy0+Y19jZmxh
+ZyAmIENSVFNDVFMpCgoKCi0tIFNlcmdleQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJt
+LWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21h
+aWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
