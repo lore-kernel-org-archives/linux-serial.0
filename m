@@ -1,27 +1,36 @@
 From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 1/3] [net-next] net: remove netx ethernet driver
-Date: Tue, 23 Jul 2019 10:23:57 +0200
-Message-ID: <CACRpkdZMRmF_CEhXJYyeNEThwHc-ihEReLgU2pvJWjWiBnNFWw@mail.gmail.com>
-References: <20190722191304.164929-1-arnd@arndb.de>
+Subject: Re: [PATCH 2/3] serial: remove netx serial driver
+Date: Tue, 23 Jul 2019 10:26:15 +0200
+Message-ID: <CACRpkdbm5MpcNdm8EGTR=U8MpK2VPzEg=Us0-AxZzOZ=vVJSmQ@mail.gmail.com>
+References: <20190722191552.252805-1-arnd@arndb.de> <20190722191552.252805-2-arnd@arndb.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <20190722191304.164929-1-arnd@arndb.de>
-Sender: netdev-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190722191552.252805-2-arnd@arndb.de>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Arnd Bergmann <arnd@arndb.de>
-Cc: "David S. Miller" <davem@davemloft.net>, netdev <netdev@vger.kernel.org>, linux-serial@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Greg KH <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, netdev <netdev@vger.kernel.org>, linux-serial@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, "David S. Miller" <davem@davemloft.net>, Sascha Hauer <s.hauer@pengutronix.de>, Michael Trensch <MTrensch@hilscher.com>, Robert Schwebel <r.schwebel@pengutronix.de>, Jiri Slaby <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jul 22, 2019 at 9:13 PM Arnd Bergmann <arnd@arndb.de> wrote:
+On Mon, Jul 22, 2019 at 9:16 PM Arnd Bergmann <arnd@arndb.de> wrote:
 
-> The ARM netx platform got removed in 5.3, so this driver
-> is now useless.
+> The netx platform got removed, so this driver is now
+> useless.
 >
 > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+We seem so overlap :)
+https://marc.info/?l=linux-serial&m=156377843325488&w=2
 
-I thought I sent a patch like this yesterday but it apparently
-never left the mailserver as I can't find it in the archives.
+Anyways, the patches are identical except here:
 
+> -/* Hilscher netx */
+> +/* Hilscher netx (removed) */
+>  #define PORT_NETX      71
+
+Is there some reason for keeping the magical number around?
+When I looked over the file there seemed to be more "holes"
+in the list.
+
+Yours,
 Linus Walleij
