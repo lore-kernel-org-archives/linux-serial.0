@@ -1,39 +1,54 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v3] serial: 8250-mtk: modify mtk uart power and clock
- management
-Date: Thu, 25 Jul 2019 11:47:51 +0200
-Message-ID: <20190725094751.GB31845@kroah.com>
-References: <1563505182-2408-1-git-send-email-changqi.hu@mediatek.com>
+Subject: Re: [PATCH 2/3] serial: remove netx serial driver
+Date: Thu, 25 Jul 2019 12:04:40 +0200
+Message-ID: <20190725100440.GC20445@kroah.com>
+References: <20190722191552.252805-1-arnd@arndb.de>
+ <20190722191552.252805-2-arnd@arndb.de>
+ <CACRpkdbm5MpcNdm8EGTR=U8MpK2VPzEg=Us0-AxZzOZ=vVJSmQ@mail.gmail.com>
+ <CAK8P3a1=Bnsxg-3RztGEL-c6muQjam-egyrsZfqc7_yjBzcGXA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1563505182-2408-1-git-send-email-changqi.hu@mediatek.com>
+In-Reply-To: <CAK8P3a1=Bnsxg-3RztGEL-c6muQjam-egyrsZfqc7_yjBzcGXA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Changqi Hu <changqi.hu@mediatek.com>
-Cc: Jiri Slaby <jslaby@suse.com>, Matthias Brugger <matthias.bgg@gmail.com>, Peter Shih <pihsun@chromium.org>, "Gustavo A. R. Silva" <gustavo@embeddedor.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com, Eddie Huang <eddie.huang@mediatek.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Linus Walleij <linus.walleij@linaro.org>, netdev <netdev@vger.kernel.org>, linux-serial@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, "David S. Miller" <davem@davemloft.net>, Sascha Hauer <s.hauer@pengutronix.de>, Michael Trensch <MTrensch@hilscher.com>, Robert Schwebel <r.schwebel@pengutronix.de>, Jiri Slaby <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jul 19, 2019 at 10:59:42AM +0800, Changqi Hu wrote:
-> modify mtk uart runtime interface, add uart clock use count.
-> merge patch v1 and patch v2 together.
+On Tue, Jul 23, 2019 at 10:43:05AM +0200, Arnd Bergmann wrote:
+> On Tue, Jul 23, 2019 at 10:26 AM Linus Walleij <linus.walleij@linaro.org> wrote:
+> >
+> > On Mon, Jul 22, 2019 at 9:16 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> >
+> > > The netx platform got removed, so this driver is now
+> > > useless.
+> > >
+> > > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> >
+> > We seem so overlap :)
+> > https://marc.info/?l=linux-serial&m=156377843325488&w=2
+> >
+> > Anyways, the patches are identical except here:
+> >
+> > > -/* Hilscher netx */
+> > > +/* Hilscher netx (removed) */
+> > >  #define PORT_NETX      71
+> >
+> > Is there some reason for keeping the magical number around?
+> > When I looked over the file there seemed to be more "holes"
+> > in the list.
 > 
-> Signed-off-by: Changqi Hu <changqi.hu@mediatek.com>
-> ---
->  drivers/tty/serial/8250/8250_mtk.c | 50 ++++++++++++++++++++++++--------------
->  1 file changed, 32 insertions(+), 18 deletions(-)
+> I looked at the same list and though I saw more obsolete entries
+> than holes. The last ones that I saw getting removed were
+> PORT_MFD in 2017 and PORT_V850E_UART in 2008.
+> 
+> It probably doesn't matter as we have precedence for both.
 
-Always describe what changed from the previous versions in the area
-below the --- line.
+I want to just get rid of that whole list as I don't think it's ever
+needed, but haven't spent the time digging through userspace code to
+verify it.
 
-Also, your changelog needs a lot more work.  Please read the section
-entitled "The canonical patch format" in the kernel file,
-Documentation/SubmittingPatches for a description of how to do this.
-
-thanks,
-
-greg k-h's patch email bot
-
-thanks,
+I'll take Linus's patch as it came first, thanks.
 
 greg k-h
