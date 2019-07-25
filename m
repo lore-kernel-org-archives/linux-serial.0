@@ -1,31 +1,39 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v6 4/8] clk: mediatek: add mt6765 clock IDs
-Date: Wed, 24 Jul 2019 14:46:21 -0600
-Message-ID: <20190724204621.GA13063@bogus>
-References: <1562924653-10056-1-git-send-email-macpaul.lin@mediatek.com>
- <1562924653-10056-5-git-send-email-macpaul.lin@mediatek.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3] serial: 8250-mtk: modify mtk uart power and clock
+ management
+Date: Thu, 25 Jul 2019 11:47:51 +0200
+Message-ID: <20190725094751.GB31845@kroah.com>
+References: <1563505182-2408-1-git-send-email-changqi.hu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1562924653-10056-5-git-send-email-macpaul.lin@mediatek.com>
+In-Reply-To: <1563505182-2408-1-git-send-email-changqi.hu@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: Sean Wang <sean.wang@mediatek.com>, Mars Cheng <mars.cheng@mediatek.com>, Owen Chen <owen.chen@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, wsd_upstream@mediatek.com, CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-clk@vger.kernel.org, Macpaul Lin <macpaul.lin@mediatek.com>
+To: Changqi Hu <changqi.hu@mediatek.com>
+Cc: Jiri Slaby <jslaby@suse.com>, Matthias Brugger <matthias.bgg@gmail.com>, Peter Shih <pihsun@chromium.org>, "Gustavo A. R. Silva" <gustavo@embeddedor.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com, Eddie Huang <eddie.huang@mediatek.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 12 Jul 2019 17:43:40 +0800, Macpaul Lin wrote:
-> From: Mars Cheng <mars.cheng@mediatek.com>
+On Fri, Jul 19, 2019 at 10:59:42AM +0800, Changqi Hu wrote:
+> modify mtk uart runtime interface, add uart clock use count.
+> merge patch v1 and patch v2 together.
 > 
-> Add MT6765 clock dt-bindings, include topckgen, apmixedsys,
-> infracfg, mcucfg and subsystem clocks.
-> 
-> Signed-off-by: Mars Cheng <mars.cheng@mediatek.com>
-> Signed-off-by: Owen Chen <owen.chen@mediatek.com>
-> Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
+> Signed-off-by: Changqi Hu <changqi.hu@mediatek.com>
 > ---
->  include/dt-bindings/clock/mt6765-clk.h | 313 +++++++++++++++++++++++++
->  1 file changed, 313 insertions(+)
->  create mode 100644 include/dt-bindings/clock/mt6765-clk.h
-> 
+>  drivers/tty/serial/8250/8250_mtk.c | 50 ++++++++++++++++++++++++--------------
+>  1 file changed, 32 insertions(+), 18 deletions(-)
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Always describe what changed from the previous versions in the area
+below the --- line.
+
+Also, your changelog needs a lot more work.  Please read the section
+entitled "The canonical patch format" in the kernel file,
+Documentation/SubmittingPatches for a description of how to do this.
+
+thanks,
+
+greg k-h's patch email bot
+
+thanks,
+
+greg k-h
