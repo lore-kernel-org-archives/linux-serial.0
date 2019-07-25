@@ -1,54 +1,155 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 2/3] serial: remove netx serial driver
-Date: Thu, 25 Jul 2019 12:04:40 +0200
-Message-ID: <20190725100440.GC20445@kroah.com>
-References: <20190722191552.252805-1-arnd@arndb.de>
- <20190722191552.252805-2-arnd@arndb.de>
- <CACRpkdbm5MpcNdm8EGTR=U8MpK2VPzEg=Us0-AxZzOZ=vVJSmQ@mail.gmail.com>
- <CAK8P3a1=Bnsxg-3RztGEL-c6muQjam-egyrsZfqc7_yjBzcGXA@mail.gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v4] serial/8250: Add support for NI-Serial PXI/PXIe+485
+ devices
+Date: Thu, 25 Jul 2019 12:12:34 +0200
+Message-ID: <20190725101234.GA7550@kroah.com>
+References: <20190705131528.60752-1-je.yen.tam@ni.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAK8P3a1=Bnsxg-3RztGEL-c6muQjam-egyrsZfqc7_yjBzcGXA@mail.gmail.com>
+In-Reply-To: <20190705131528.60752-1-je.yen.tam@ni.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Linus Walleij <linus.walleij@linaro.org>, netdev <netdev@vger.kernel.org>, linux-serial@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, "David S. Miller" <davem@davemloft.net>, Sascha Hauer <s.hauer@pengutronix.de>, Michael Trensch <MTrensch@hilscher.com>, Robert Schwebel <r.schwebel@pengutronix.de>, Jiri Slaby <jslaby@suse.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: jeyentam <je.yen.tam@ni.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Jul 23, 2019 at 10:43:05AM +0200, Arnd Bergmann wrote:
-> On Tue, Jul 23, 2019 at 10:26 AM Linus Walleij <linus.walleij@linaro.org> wrote:
-> >
-> > On Mon, Jul 22, 2019 at 9:16 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> >
-> > > The netx platform got removed, so this driver is now
-> > > useless.
-> > >
-> > > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> >
-> > We seem so overlap :)
-> > https://marc.info/?l=linux-serial&m=156377843325488&w=2
-> >
-> > Anyways, the patches are identical except here:
-> >
-> > > -/* Hilscher netx */
-> > > +/* Hilscher netx (removed) */
-> > >  #define PORT_NETX      71
-> >
-> > Is there some reason for keeping the magical number around?
-> > When I looked over the file there seemed to be more "holes"
-> > in the list.
+On Fri, Jul 05, 2019 at 06:15:28AM -0700, jeyentam wrote:
+> Add support for NI-Serial PXIe-RS232, PXI-RS485 and PXIe-RS485 devices.
 > 
-> I looked at the same list and though I saw more obsolete entries
-> than holes. The last ones that I saw getting removed were
-> PORT_MFD in 2017 and PORT_V850E_UART in 2008.
+> Signed-off-by: Je Yen Tam <je.yen.tam@ni.com>
+> ---
+> v3 -> v4:
+> - Add changes description.
 > 
-> It probably doesn't matter as we have precedence for both.
+> v2 -> v3:
+> - Add "full" name for author
+> - Use BIT() macro for bits definition
+> - Remove unnecessary WARN_ON()
+> - Change debugging interface to ftrace
+> - Fix indentation
+> - Add NI PXIe-RS232 and PXI/PXIe-RS485 device IDs #defines
+> 
+> v1 -> v2:
+> - Fix unintended indentation 
+> 
+> v1:
+> - Add and rename #defines for 16550 UART Port Control Register
+> - Add configuration for RS485 port.
+> - Add device setup for NI PXI/PXIe-RS485 family.
+> - Add PCI board attributes for NI PXIe-RS232 and PXI/PXIe-RS485 devices.
+> 
+>  drivers/tty/serial/8250/8250_pci.c | 298 ++++++++++++++++++++++++++++-
+>  1 file changed, 294 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> index df41397de478..23fe3b7197ad 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -730,8 +730,16 @@ static int pci_ni8430_init(struct pci_dev *dev)
+>  }
+>  
+>  /* UART Port Control Register */
+> -#define NI8430_PORTCON	0x0f
+> -#define NI8430_PORTCON_TXVR_ENABLE	(1 << 3)
+> +#define NI16550_PCR_OFFSET	0x0f
+> +#define NI16550_PCR_RS422	0x00
+> +#define NI16550_PCR_ECHO_RS485	0x01
+> +#define NI16550_PCR_DTR_RS485	0x02
+> +#define NI16550_PCR_AUTO_RS485	0x03
+> +#define NI16550_PCR_WIRE_MODE_MASK	0x03
+> +#define NI16550_PCR_TXVR_ENABLE_BIT	BIT(3)
+> +#define NI16550_PCR_RS485_TERMINATION_BIT	BIT(6)
+> +#define NI16550_ACR_DTR_AUTO_DTR	(0x2 << 3)
+> +#define NI16550_ACR_DTR_MANUAL_DTR	(0x0 << 3)
+>  
+>  static int
+>  pci_ni8430_setup(struct serial_private *priv,
+> @@ -753,14 +761,123 @@ pci_ni8430_setup(struct serial_private *priv,
+>  		return -ENOMEM;
+>  
+>  	/* enable the transceiver */
+> -	writeb(readb(p + offset + NI8430_PORTCON) | NI8430_PORTCON_TXVR_ENABLE,
+> -	       p + offset + NI8430_PORTCON);
+> +	writeb(readb(p + offset + NI16550_PCR_OFFSET) | NI16550_PCR_TXVR_ENABLE_BIT,
+> +	       p + offset + NI16550_PCR_OFFSET);
+>  
+>  	iounmap(p);
+>  
+>  	return setup_port(priv, port, bar, offset, board->reg_shift);
+>  }
+>  
+> +static int pci_ni8431_config_rs485(struct uart_port *port,
+> +	struct serial_rs485 *rs485)
+> +{
+> +	u8 pcr, acr;
+> +
+> +	struct uart_8250_port *up;
 
-I want to just get rid of that whole list as I don't think it's ever
-needed, but haven't spent the time digging through userspace code to
-verify it.
+No blank lines between variable definitions please.
 
-I'll take Linus's patch as it came first, thanks.
+> +
+> +	up = container_of(port, struct uart_8250_port, port);
+> +
+> +	acr = up->acr;
+> +
+> +	trace_printk("start ni16550_config_rs485\n");
+
+This line is not needed, right?
+
+> +
+> +	pcr = port->serial_in(port, NI16550_PCR_OFFSET);
+> +	pcr &= ~NI16550_PCR_WIRE_MODE_MASK;
+> +
+> +	if (rs485->flags & SER_RS485_ENABLED) {
+> +		/* RS-485 */
+> +		if ((rs485->flags & SER_RS485_RX_DURING_TX) &&
+> +			(rs485->flags & SER_RS485_RTS_ON_SEND)) {
+> +			dev_dbg(port->dev, "Invalid 2-wire mode\n");
+> +			return -EINVAL;
+> +		}
+> +
+> +		if (rs485->flags & SER_RS485_RX_DURING_TX) {
+> +			/* Echo */
+> +			dev_vdbg(port->dev, "2-wire DTR with echo\n");
+> +			pcr |= NI16550_PCR_ECHO_RS485;
+> +			acr |= NI16550_ACR_DTR_MANUAL_DTR;
+> +		} else {
+> +			/* Auto or DTR */
+> +			if (rs485->flags & SER_RS485_RTS_ON_SEND) {
+> +				/* Auto */
+> +				dev_vdbg(port->dev, "2-wire Auto\n");
+> +				pcr |= NI16550_PCR_AUTO_RS485;
+> +				acr |= NI16550_ACR_DTR_AUTO_DTR;
+> +			} else {
+> +				/* DTR-controlled */
+> +				/* No Echo */
+> +				dev_vdbg(port->dev, "2-wire DTR no echo\n");
+> +				pcr |= NI16550_PCR_DTR_RS485;
+> +				acr |= NI16550_ACR_DTR_MANUAL_DTR;
+> +			}
+> +		}
+> +	} else {
+> +		/* RS-422 */
+> +		dev_vdbg(port->dev, "4-wire\n");
+> +		pcr |= NI16550_PCR_RS422;
+> +		acr |= NI16550_ACR_DTR_MANUAL_DTR;
+> +	}
+> +
+> +	dev_dbg(port->dev, "write pcr: 0x%08x\n", pcr);
+> +	port->serial_out(port, NI16550_PCR_OFFSET, pcr);
+> +
+> +	up->acr = acr;
+> +	port->serial_out(port, UART_SCR, UART_ACR);
+> +	port->serial_out(port, UART_ICR, up->acr);
+> +
+> +	/* Update the cache. */
+> +	port->rs485 = *rs485;
+> +
+> +	trace_printk("end ni16550_config_rs485\n");
+
+Also drop this.
+
+thanks,
 
 greg k-h
