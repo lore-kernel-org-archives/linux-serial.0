@@ -1,7 +1,7 @@
 From: "sudheer.v" <open.sudheer@gmail.com>
-Subject: [patch v4 4/5] defconfig and MAINTAINERS updated for AST2500 DMA UART driver
-Date: Fri, 26 Jul 2019 18:57:19 +0530
-Message-ID: <1564147640-30753-5-git-send-email-open.sudheer@gmail.com>
+Subject: [patch v4 5/5] Documentation: DT bindings AST2500 DMA UART driver
+Date: Fri, 26 Jul 2019 18:57:20 +0530
+Message-ID: <1564147640-30753-6-git-send-email-open.sudheer@gmail.com>
 References: <1564147640-30753-1-git-send-email-open.sudheer@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1564147640-30753-1-git-send-email-open.sudheer@gmail.com>
@@ -12,55 +12,68 @@ List-Id: linux-serial@vger.kernel.org
 
 From: sudheer veliseti <sudheer.open@gmail.com>
 
-defconfig changes to add DMA based UART in AST2500
-Maintainers File updated.
+documentation for Dt bindings for DMA based UARTs in AST2500
 
 Signed-off-by: sudheer veliseti <sudheer.open@gmail.com>
 ---
 
 Changes in v4:
-- config name changed to CONFIG_SERIAL_AST_DMA_UART as per convention
+-
 Changes in v3:
-- Added changes logs 
+- change logs added
 
-MAINTAINERS                          | 12 ++++++++++++
- arch/arm/configs/aspeed_g5_defconfig |  1 +
- 2 files changed, 13 insertions(+)
+.../bindings/serial/ast2500-dma-uart.txt      | 43 +++++++++++++++++++
+ 1 file changed, 43 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/ast2500-dma-uart.txt
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 997e27ab492f..d814a52ecf99 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1347,6 +1347,18 @@ F:	drivers/crypto/axis
- F:	drivers/pinctrl/pinctrl-artpec*
- F:	Documentation/devicetree/bindings/pinctrl/axis,artpec6-pinctrl.txt
- 
-+ARM/ASPEED DMA UART DRIVER
-+M:	sudheer v <sudheer.open@gmail.com>
-+R:	Joel Stanley <joel@jms.id.au>
-+R:	Andrew Jeffery <andrew@aj.id.au>
-+R:	Vinod Koul <vkoul@kernel.org>
-+L:	dmaengine@vger.kernel.org
-+L:	openbmc@lists.ozlabs.org
-+L:	linux-aspeed@lists.ozlabs.org
-+S:	Maintained
-+F:	drivers/tty/serial/8250/8250_aspeed_uart_dma.c
-+F:	Documentation/devicetree/bindings/serial/ast-sdma-uart.txt
+diff --git a/Documentation/devicetree/bindings/serial/ast2500-dma-uart.txt b/Documentation/devicetree/bindings/serial/ast2500-dma-uart.txt
+new file mode 100644
+index 000000000000..6ebc60b51d4c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/ast2500-dma-uart.txt
+@@ -0,0 +1,43 @@
++DT Bindings DMA UART for AST25XX:
 +
- ARM/ASPEED I2C DRIVER
- M:	Brendan Higgins <brendanhiggins@google.com>
- R:	Benjamin Herrenschmidt <benh@kernel.crashing.org>
-diff --git a/arch/arm/configs/aspeed_g5_defconfig b/arch/arm/configs/aspeed_g5_defconfig
-index 1849cbc161b4..fc17cc9ddc00 100644
---- a/arch/arm/configs/aspeed_g5_defconfig
-+++ b/arch/arm/configs/aspeed_g5_defconfig
-@@ -144,6 +144,7 @@ CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_8250_NR_UARTS=6
- CONFIG_SERIAL_8250_RUNTIME_UARTS=6
-+CONFIG_SERIAL_AST_DMA_UART=y
- CONFIG_SERIAL_8250_EXTENDED=y
- CONFIG_SERIAL_8250_ASPEED_VUART=y
- CONFIG_SERIAL_8250_SHARE_IRQ=y
++node for DMA controller:
++                       ast_uart_sdma: uart_sdma@1e79e000 {
++                               compatible = "aspeed,ast-uart-sdma";
++                               reg = <0x1e79e000 0x400>;
++                               interrupts = <50>;
++                               status = "disabled";
++                       };
++this node  doesn't binds with any driver.
++DMA controller is handled as a separate SW layer,
++and is included in the same driver.
++This DMA controller node is included in DT
++just for Register and interrupt details
++
++
++
++node for DMA-UARTS :
++
++
++Required properties:
++
++- compatible: "aspeed,ast-sdma-uart"
++- reg: The base address of the UART register bank
++- interrupts: should contain interrupt specifier.
++- clocks: Clock driving the hardware;
++- pinctrl-0 : list of pinconfigurations
++- dma-channel: channel of DMA-controller which is used
++
++Example:
++
++	dma_uart1: dma_uart1@1e783000{
++        compatible = "aspeed,ast-sdma-uart";
++        reg = <0x1e783000 0x1000>;
++        reg-shift = <2>;
++        interrupts = <9>;
++        clocks = <&syscon ASPEED_CLK_GATE_UART1CLK>;
++        dma-channel = <0>;
++        no-loopback-test;
++        pinctrl-names = "default";
++        pinctrl-0 = <&pinctrl_txd1_default &pinctrl_rxd1_default>;
++        status = "disabled";
++        };
 -- 
 2.17.1
