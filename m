@@ -1,50 +1,70 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v7 3/3] serial: imx: get rid of imx_uart_rts_auto()
-Date: Fri, 26 Jul 2019 21:29:40 +0200
-Message-ID: <20190726192940.jy4frulgbetf5d2v@pengutronix.de>
-References: <20190614072801.3187-1-s.hauer@pengutronix.de>
- <1564167161-3972-1-git-send-email-sorganov@gmail.com>
- <1564167161-3972-4-git-send-email-sorganov@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1564167161-3972-4-git-send-email-sorganov@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Sergey Organov <sorganov@gmail.com>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, linux-arm-kernel@lists.infradead.org
+From: Navid Emamdoost <navid.emamdoost@gmail.com>
+Subject: [PATCH v3] 8250_lpss: check null return when calling pci_ioremap_bar
+Date: Fri, 26 Jul 2019 14:53:43 -0500
+Message-ID: <20190726195345.30294-1-navid.emamdoost@gmail.com>
+References: <20190726115746.GT9224@smile.fi.intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190726115746.GT9224@smile.fi.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: andriy.shevchenko@linux.intel.com
+Cc: emamd001@umn.edu, kjlu@umn.edu, b.zolnierkie@samsung.com, gregkh@linuxfoundation.org, smccaman@umn.edu, secalert@redhat.com, Navid Emamdoost <navid.emamdoost@gmail.com>, Jiri Slaby <jslaby@suse.com>, Vinod Koul <vkoul@kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jul 26, 2019 at 09:52:41PM +0300, Sergey Organov wrote:
-> Called in only one place, for RS232, it only obscures things, as it
-> doesn't go well with 2 similar named functions,
-> imx_uart_rts_inactive() and imx_uart_rts_active(), that both are
-> RS485-specific.
+pci_ioremap_bar may return null. This is eventually de-referenced at
+drivers/dma/dw/core.c:1154 and drivers/dma/dw/core.c:1168. A null check
+is needed to prevent null de-reference. I am adding the check and in case
+ of failure. Thanks to Andy Shevchenko for the hint on the necessity of
+pci_iounmap when exiting.
+Update: also covered the dw_dma_probe() failure.
 
-I don't share the critic. IMHO the name is fine. imx_uart_rts_inactive
-sets rts to its inactive level, imx_uart_rts_active() to its active
-level and imx_uart_rts_auto() lets the output drive automatically by the
-receiver.
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+---
+ drivers/tty/serial/8250/8250_lpss.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-The name started to be a bit wrong in patch 1 of the series however.
-
-And I still object removing this function because with the semantic this
-function got in patch 1 it is suiteable to be used in
-imx_uart_set_mctrl().
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index 53ca9ba6ab4b..19b356119ef6 100644
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -169,15 +169,20 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
+ 	struct pci_dev *pdev = to_pci_dev(port->dev);
+ 	int ret;
+ 
++	chip->pdata = &qrk_serial_dma_pdata;
+ 	chip->dev = &pdev->dev;
+ 	chip->irq = pci_irq_vector(pdev, 0);
+ 	chip->regs = pci_ioremap_bar(pdev, 1);
+-	chip->pdata = &qrk_serial_dma_pdata;
++	if (!chip->regs)
++		return;
+ 
+ 	/* Falling back to PIO mode if DMA probing fails */
+ 	ret = dw_dma_probe(chip);
+-	if (ret)
++	if (ret) {
++		dw_dma_remove(chip);
++		pci_iounmap(to_pci_dev(chip->dev), chip->regs);
+ 		return;
++	}
+ 
+ 	pci_try_set_mwi(pdev);
+ 
+@@ -195,11 +200,15 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
+ 
+ static void qrk_serial_exit_dma(struct lpss8250 *lpss)
+ {
++	struct dw_dma_chip *chip = &lpss->dma_chip;
+ 	struct dw_dma_slave *param = &lpss->dma_param;
+ 
+ 	if (!param->dma_dev)
+ 		return;
+-	dw_dma_remove(&lpss->dma_chip);
++
++	dw_dma_remove(chip);
++
++	pci_iounmap(to_pci_dev(chip->dev), chip->regs);
+ }
+ #else	/* CONFIG_SERIAL_8250_DMA */
+ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port) {}
+-- 
+2.17.1
