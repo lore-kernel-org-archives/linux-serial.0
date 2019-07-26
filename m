@@ -1,68 +1,54 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v2] 8250_lpss: check null return when calling
- pci_ioremap_bar
-Date: Fri, 26 Jul 2019 14:57:46 +0300
-Message-ID: <20190726115746.GT9224@smile.fi.intel.com>
-References: <20190719151519.GO9224@smile.fi.intel.com>
- <20190719174848.24216-1-navid.emamdoost@gmail.com>
- <CGME20190726113223eucas1p287f8f2df03f66658bd492c592fd426e6@eucas1p2.samsung.com>
- <afc360b9-6d05-72a6-4933-2fc0b84a7cf7@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: "sudheer.v" <open.sudheer@gmail.com>
+Subject: [patch v4 0/5] *** AST2500 DMA UART driver ***
+Date: Fri, 26 Jul 2019 18:57:15 +0530
+Message-ID: <1564147640-30753-1-git-send-email-open.sudheer@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <afc360b9-6d05-72a6-4933-2fc0b84a7cf7@samsung.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc: Navid Emamdoost <navid.emamdoost@gmail.com>, emamd001@umn.edu, kjlu@umn.edu, smccaman@umn.edu, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Vinod Koul <vkoul@kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com, joel@jms.id.au, andrew@aj.id.au, benh@kernel.crashing.org, robh+dt@kernel.org, mark.rutland@arm.com, shivahshankar.shankarnarayanrao@aspeedtech.com, sudheer.veliseti@aspeedtech.com
+Cc: sudheer veliseti <sudheer.open@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jul 26, 2019 at 01:32:21PM +0200, Bartlomiej Zolnierkiewicz wrote:
-> On 7/19/19 7:48 PM, Navid Emamdoost wrote:
-> > pci_ioremap_bar may return null. This is eventually de-referenced at 
-> > drivers/dma/dw/core.c:1154 and drivers/dma/dw/core.c:1168. A null check 
-> > is needed to prevent null de-reference. I am adding the check and in case
-> >  of failure. Thanks to Andy Shevchenko for the hint on the necessity of 
-> > pci_iounmap when exiting.
+From: sudheer veliseti <sudheer.open@gmail.com>
 
-> > @@ -169,10 +169,12 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
-> >  	struct pci_dev *pdev = to_pci_dev(port->dev);
-> >  	int ret;
-> >  
-> > +	chip->pdata = &qrk_serial_dma_pdata;
-> >  	chip->dev = &pdev->dev;
-> >  	chip->irq = pci_irq_vector(pdev, 0);
-> >  	chip->regs = pci_ioremap_bar(pdev, 1);
-> > -	chip->pdata = &qrk_serial_dma_pdata;
-> > +	if (!chip->regs)
-> > +		return;
-> >  
-> >  	/* Falling back to PIO mode if DMA probing fails */
-> >  	ret = dw_dma_probe(chip);
-> 
-> pci_iounmap() should also be called on dw_dma_probe() failure (in such
-> case param->dma_dev is NULL so pci_iounmap() in qrk_serial_exit_dma()
-> won't be called during exit).
+Hi,
 
-Oh, yes, good catch!
-Navid, can you send a follow up fix?
+In this patchset v4,all the comments provided for patchset v3
+are addressed.Also there is considerable
+change in the code related to how the per port
+uart structure is registerd with uart core.
+so the patch [patch v4 1/5] considerably differs from [patch v3 1/5]
 
-> > @@ -195,11 +197,15 @@ static void qrk_serial_setup_dma(struct lpss8250 *lpss, struct uart_port *port)
-> >  pci_iounmap
-> >  static void qrk_serial_exit_dma(struct lpss8250 *lpss)
-> >  {
-> > +	struct dw_dma_chip *chip = &lpss->dma_chip;
-> >  	struct dw_dma_slave *param = &lpss->dma_param;
-> >  
-> >  	if (!param->dma_dev)
-> >  		return;
-> > -	dw_dma_remove(&lpss->dma_chip);
-> > +
-> > +	dw_dma_remove(chip);
-> > +
-> > +	pci_iounmap(to_pci_dev(chip->dev), chip->regs);
-> >  }
+Thanks and Regards
+Sudheer.V
+
+changes in v4:
+- since TX uart interrupt is being invoked by 8250 framework
+  instead of expected TX DMA interrupt,registration of uart port is changed.
+  per port uart structure registration is done directly now
+  instead of going throgh 8250 framework.
+  so there is considerable change in code against v3 patch
+changes in v3:
+- custom debugs replaced with pr_debug in 8250_ast2500_uart_dma.c
+- change logs added in patches
+
+sudheer veliseti (5):
+  AST2500 DMA UART driver
+  build configuration for AST2500 DMA UART driver
+  DT nodes for AST2500 DMA UART driver
+  defconfig and MAINTAINERS updated for AST2500 DMA UART driver
+  Documentation: DT bindings AST2500 DMA UART driver
+
+ .../bindings/serial/ast2500-dma-uart.txt      |   43 +
+ MAINTAINERS                                   |   12 +
+ arch/arm/boot/dts/aspeed-ast2500-evb.dts      |   21 +
+ arch/arm/boot/dts/aspeed-g5.dtsi              |   71 +-
+ arch/arm/configs/aspeed_g5_defconfig          |    1 +
+ .../tty/serial/8250/8250_ast2500_uart_dma.c   | 1901 +++++++++++++++++
+ drivers/tty/serial/8250/Kconfig               |   45 +-
+ drivers/tty/serial/8250/Makefile              |    1 +
+ 8 files changed, 2090 insertions(+), 5 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/ast2500-dma-uart.txt
+ create mode 100644 drivers/tty/serial/8250/8250_ast2500_uart_dma.c
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.17.1
