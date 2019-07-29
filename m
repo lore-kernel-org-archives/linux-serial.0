@@ -1,130 +1,87 @@
-From: Arseny Maslennikov <ar@cs.msu.ru>
-Subject: Re: [PATCH v2 0/7] TTY Keyboard Status Request
-Date: Mon, 29 Jul 2019 13:56:12 +0300
-Message-ID: <20190729105612.GB25742@cello>
-References: <20190625161153.29811-1-ar@cs.msu.ru>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ZoaI/ZTpAVc4A5k6"
+From: "Enrico Weigelt, metux IT consult" <info@metux.net>
+Subject: [PATCH] drivers: tty: serial: amba-pl011: use generic ops request/release port
+Date: Mon, 29 Jul 2019 16:44:05 +0200
+Message-ID: <1564411445-26933-1-git-send-email-info@metux.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190625161153.29811-1-ar@cs.msu.ru>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: "Vladimir D. Seleznev" <vseleznv@altlinux.org>, Rob Landley <rob@landley.net>, "Eric W. Biederman" <ebiederm@xmission.com>, Pavel Machek <pavel@ucw.cz>
+To: linux-kernel@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
+From: Enrico Weigelt <info@metux.net>
 
---ZoaI/ZTpAVc4A5k6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Reduce boilerplate by using generic implementation of the trivial
+request_port/release_port operations. For that to work, we have to
+set the mapsize field accordingly.
+---
+ drivers/tty/serial/amba-pl011.c | 28 ++++++----------------------
+ 1 file changed, 6 insertions(+), 22 deletions(-)
 
-On Tue, Jun 25, 2019 at 07:11:46PM +0300, Arseny Maslennikov wrote:
-> This patch series introduces TTY keyboard status request, a feature of
-> the n_tty line discipline that reserves a character in struct termios
-> (^T by default) and reacts to it by printing a short informational line
-> to the terminal and sending a Unix signal to the tty's foreground
-> process group. The processes may, in response to the signal, output a
-> textual description of what they're doing.
->=20
-> The feature has been present in a similar form at least in
-> Free/Open/NetBSD; it would be nice to have something like this in Linux
-> as well. There is an LKML thread[1] where users have previously
-> expressed the rationale for this.
->=20
-> The current implementation does not break existing kernel API in any
-> way, since, fortunately, all the architectures supported by the kernel
-> happen to have at least 1 free byte in the termios control character
-> array.
->=20
-> The series should cleanly apply to tty-next.
->=20
-> To thoroughly test these, one might need at least a patched stty among
-> other tools, so I've brought up a simple initrd generator[2] which can
-> be used to create a lightweight environment to boot up in a VM and to
-> fiddle with.
->=20
-> [1] https://lore.kernel.org/lkml/1415200663.3247743.187387481.75CE9317@we=
-bmail.messagingengine.com/
-> [2] https://github.com/porrided/tty-kb-status-userspace
->=20
-> v2 <- v1: removed useless debugging bits.
->=20
-> Discussion of v1:
-> https://lore.kernel.org/lkml/20190605081906.28938-1-ar@cs.msu.ru/
->=20
-> Arseny Maslennikov (7):
->   signal.h: Define SIGINFO on all architectures
->   tty: termios: Reserve space for VSTATUS in .c_cc
->   n_tty: Send SIGINFO to fg pgrp on status request character
->   linux/signal.h: Ignore SIGINFO by default in new tasks
->   tty: Add NOKERNINFO lflag to termios
->   n_tty: ->ops->write: Cut core logic out to a separate function
->   n_tty: Provide an informational line on VSTATUS receipt
->=20
->  arch/alpha/include/asm/termios.h         |   4 +-
->  arch/alpha/include/uapi/asm/termbits.h   |   2 +
->  arch/arm/include/uapi/asm/signal.h       |   1 +
->  arch/h8300/include/uapi/asm/signal.h     |   1 +
->  arch/ia64/include/asm/termios.h          |   4 +-
->  arch/ia64/include/uapi/asm/signal.h      |   1 +
->  arch/ia64/include/uapi/asm/termbits.h    |   2 +
->  arch/m68k/include/uapi/asm/signal.h      |   1 +
->  arch/mips/include/asm/termios.h          |   4 +-
->  arch/mips/include/uapi/asm/signal.h      |   1 +
->  arch/mips/include/uapi/asm/termbits.h    |   2 +
->  arch/parisc/include/asm/termios.h        |   4 +-
->  arch/parisc/include/uapi/asm/signal.h    |   1 +
->  arch/parisc/include/uapi/asm/termbits.h  |   2 +
->  arch/powerpc/include/asm/termios.h       |   4 +-
->  arch/powerpc/include/uapi/asm/signal.h   |   1 +
->  arch/powerpc/include/uapi/asm/termbits.h |   2 +
->  arch/s390/include/asm/termios.h          |   4 +-
->  arch/s390/include/uapi/asm/signal.h      |   1 +
->  arch/sparc/include/asm/termios.h         |   4 +-
->  arch/sparc/include/uapi/asm/signal.h     |   2 +
->  arch/sparc/include/uapi/asm/termbits.h   |   2 +
->  arch/x86/include/uapi/asm/signal.h       |   1 +
->  arch/xtensa/include/uapi/asm/signal.h    |   1 +
->  arch/xtensa/include/uapi/asm/termbits.h  |   2 +
->  drivers/tty/Makefile                     |   3 +-
->  drivers/tty/n_tty.c                      |  70 ++++-
->  drivers/tty/n_tty_status.c               | 337 +++++++++++++++++++++++
->  include/asm-generic/termios.h            |   4 +-
->  include/linux/sched.h                    |   7 +
->  include/linux/signal.h                   |   5 +-
->  include/linux/tty.h                      |   7 +-
->  include/uapi/asm-generic/signal.h        |   1 +
->  include/uapi/asm-generic/termbits.h      |   2 +
->  34 files changed, 457 insertions(+), 33 deletions(-)
->  create mode 100644 drivers/tty/n_tty_status.c
->=20
-
-> Date: Tue, 25 Jun 2019 19:11:46 +0300
-Ping.
-
-The series should cleanly apply to 5.3-rc2 and to tty-next as of writing
-this email.
-
---ZoaI/ZTpAVc4A5k6
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE56JD3UKTLEu/ddrm9dQjyAYL01AFAl0+0MwACgkQ9dQjyAYL
-01CceRAAxHmrLCcZw6xWtjgyTLTvK2ktb1A5NKNpAErfPmBihjA7Vn5k9QBBegyL
-uRv95D/Hoz1LSXP7rwaQvKdH00S/ZlkHFHdw6hH7Q4gE6lN9L3jJoFY+lX9/9Oqw
-BCa94zOedislJIgRqPfs/OicYaSpHndNStfej9tFvhk43q0eULS+f9jxDsrO85BY
-nFbV2ECs3rd6ujT7tZj1Wc/NhViz0BsPDpfwassNov8Ik/L1UA5KPh2N8ezapGr4
-uP0K6YbDXfxQI2ivI2wB4d9BwNlAunDw0reVK2ENKw8vhWrsMbj9mLUexcaEJBbs
-nXxh4x7QdviSFmlgV0Jl/8Jwih4tijDuCcakV5IG2WPDSy04rKGJZeNvKDrVn2By
-GhHIqy7YTo7WLkRRM/Q24pG9wM5XX3TKemN4wIfkBsB+ZalxWtkWqsuOo1ftMBxk
-OUPl7PR25wUpKXGXVVzNB1rSvUHNaZNEe5tUSeOpMuhSNrI31EylxJOBNtm0yNsc
-lEpNNERaEo3hBWt4PCbXZk7J1xSAPMUsTnzz3ClwBGcLsd8DovajnRLNeN56ar00
-uS/iSwCug8f45CQy99KsCbQfw0vpO1IPAIkmse7uYrERxSMmRCqkksBAcOmgJzoV
-i67Klay9PfUBNJyX3OLEAuOadYXdi7a4b0G7/BNMo7VH7IM4yq8=
-=hAzz
------END PGP SIGNATURE-----
-
---ZoaI/ZTpAVc4A5k6--
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 5921a33..6b7c3c7 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2094,30 +2094,13 @@ static const char *pl011_type(struct uart_port *port)
+ }
+ 
+ /*
+- * Release the memory region(s) being used by 'port'
+- */
+-static void pl011_release_port(struct uart_port *port)
+-{
+-	release_mem_region(port->mapbase, SZ_4K);
+-}
+-
+-/*
+- * Request the memory region(s) being used by 'port'
+- */
+-static int pl011_request_port(struct uart_port *port)
+-{
+-	return request_mem_region(port->mapbase, SZ_4K, "uart-pl011")
+-			!= NULL ? 0 : -EBUSY;
+-}
+-
+-/*
+  * Configure/autoconfigure the port.
+  */
+ static void pl011_config_port(struct uart_port *port, int flags)
+ {
+ 	if (flags & UART_CONFIG_TYPE) {
+ 		port->type = PORT_AMBA;
+-		pl011_request_port(port);
++		uart_defops_request_port(port);
+ 	}
+ }
+ 
+@@ -2150,8 +2133,8 @@ static int pl011_verify_port(struct uart_port *port, struct serial_struct *ser)
+ 	.flush_buffer	= pl011_dma_flush_buffer,
+ 	.set_termios	= pl011_set_termios,
+ 	.type		= pl011_type,
+-	.release_port	= pl011_release_port,
+-	.request_port	= pl011_request_port,
++	.release_port	= uart_defops_release_port,
++	.request_port	= uart_defops_request_port,
+ 	.config_port	= pl011_config_port,
+ 	.verify_port	= pl011_verify_port,
+ #ifdef CONFIG_CONSOLE_POLL
+@@ -2181,8 +2164,8 @@ static unsigned int sbsa_uart_get_mctrl(struct uart_port *port)
+ 	.shutdown	= sbsa_uart_shutdown,
+ 	.set_termios	= sbsa_uart_set_termios,
+ 	.type		= pl011_type,
+-	.release_port	= pl011_release_port,
+-	.request_port	= pl011_request_port,
++	.release_port	= uart_defops_release_port,
++	.request_port	= uart_defops_request_port,
+ 	.config_port	= pl011_config_port,
+ 	.verify_port	= pl011_verify_port,
+ #ifdef CONFIG_CONSOLE_POLL
+@@ -2584,6 +2567,7 @@ static int pl011_setup_port(struct device *dev, struct uart_amba_port *uap,
+ 	uap->port.dev = dev;
+ 	uap->port.mapbase = mmiobase->start;
+ 	uap->port.membase = base;
++	uap->port.mapsize = SZ_4K;
+ 	uap->port.fifosize = uap->fifosize;
+ 	uap->port.flags = UPF_BOOT_AUTOCONF;
+ 	uap->port.line = index;
+-- 
+1.9.1
