@@ -1,7 +1,7 @@
 From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH 19/24] tty: serial: fsl_lpuart: Introduce lpuart_tx_dma_startup()
-Date: Mon, 29 Jul 2019 12:52:21 -0700
-Message-ID: <20190729195226.8862-20-andrew.smirnov@gmail.com>
+Subject: [PATCH 16/24] tty: serial: fsl_lpuart: Introduce lpuart_stopped_or_empty()
+Date: Mon, 29 Jul 2019 12:52:18 -0700
+Message-ID: <20190729195226.8862-17-andrew.smirnov@gmail.com>
 References: <20190729195226.8862-1-andrew.smirnov@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,9 +12,12 @@ To: linux-serial@vger.kernel.org
 Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, Stefan Agner <stefan@agner.ch>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Code configure DMA TX path in lpuart_startup(), lpuart32_startup() and
-lpuart_resume() is doing exactly the same thing, so move it into a
-standalone subroutine.
+The check for
+
+    uart_circ_empty(xmit) || uart_tx_stopped(&sport->port)
+
+appears in multiple places in the driver. Move it into a helper
+function.
 
 Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
 Cc: Stefan Agner <stefan@agner.ch>
@@ -28,93 +31,80 @@ Cc: linux-imx@nxp.com
 Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/tty/serial/fsl_lpuart.c | 53 ++++++++++++++-------------------
- 1 file changed, 23 insertions(+), 30 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 2ad5750fe511..558acf29cbed 100644
+index 7a0f96952291..a090b93211e3 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1434,6 +1434,26 @@ static void rx_dma_timer_init(struct lpuart_port *sport)
- 	add_timer(&sport->lpuart_timer);
+@@ -451,6 +451,11 @@ static void lpuart_dma_tx(struct lpuart_port *sport)
+ 	dma_async_issue_pending(sport->dma_tx_chan);
  }
  
-+static void lpuart_tx_dma_startup(struct lpuart_port *sport)
++static bool lpuart_stopped_or_empty(struct uart_port *port)
 +{
-+	u32 uartbaud;
-+
-+	if (sport->dma_tx_chan && !lpuart_dma_tx_request(&sport->port)) {
-+		init_waitqueue_head(&sport->dma_wait);
-+		sport->lpuart_dma_tx_use = true;
-+		if (lpuart_is_32(sport)) {
-+			uartbaud = lpuart32_read(&sport->port, UARTBAUD);
-+			lpuart32_write(&sport->port,
-+				       uartbaud | UARTBAUD_TDMAE, UARTBAUD);
-+		} else {
-+			writeb(readb(sport->port.membase + UARTCR5) |
-+				UARTCR5_TDMAS, sport->port.membase + UARTCR5);
-+		}
-+	} else {
-+		sport->lpuart_dma_tx_use = false;
-+	}
++	return uart_circ_empty(&port->state->xmit) || uart_tx_stopped(port);
 +}
 +
- static int lpuart_startup(struct uart_port *port)
+ static void lpuart_dma_tx_complete(void *arg)
  {
- 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
-@@ -1471,14 +1491,7 @@ static int lpuart_startup(struct uart_port *port)
- 		sport->lpuart_dma_rx_use = false;
- 	}
+ 	struct lpuart_port *sport = arg;
+@@ -478,7 +483,7 @@ static void lpuart_dma_tx_complete(void *arg)
  
--	if (sport->dma_tx_chan && !lpuart_dma_tx_request(port)) {
--		init_waitqueue_head(&sport->dma_wait);
--		sport->lpuart_dma_tx_use = true;
--		temp = readb(port->membase + UARTCR5);
--		writeb(temp | UARTCR5_TDMAS, port->membase + UARTCR5);
--	} else {
--		sport->lpuart_dma_tx_use = false;
--	}
-+	lpuart_tx_dma_startup(port);
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 
+-	if (!uart_circ_empty(xmit) && !uart_tx_stopped(&sport->port))
++	if (!lpuart_stopped_or_empty(&sport->port))
+ 		lpuart_dma_tx(sport);
  
  	spin_unlock_irqrestore(&sport->port.lock, flags);
- 
-@@ -1522,14 +1535,7 @@ static int lpuart32_startup(struct uart_port *port)
- 		sport->lpuart_dma_rx_use = false;
+@@ -679,7 +684,7 @@ static inline void lpuart_transmit_buffer(struct lpuart_port *sport)
+ 		return;
  	}
  
--	if (sport->dma_tx_chan && !lpuart_dma_tx_request(port)) {
--		init_waitqueue_head(&sport->dma_wait);
--		sport->lpuart_dma_tx_use = true;
--		temp = lpuart32_read(&sport->port, UARTBAUD);
--		lpuart32_write(&sport->port, temp | UARTBAUD_TDMAE, UARTBAUD);
--	} else {
--		sport->lpuart_dma_tx_use = false;
--	}
-+	lpuart_tx_dma_startup(port);
- 
- 	if (sport->lpuart_dma_rx_use) {
- 		/* RXWATER must be 0 */
-@@ -2581,20 +2587,7 @@ static int lpuart_resume(struct device *dev)
- 		}
+-	if (uart_circ_empty(xmit) || uart_tx_stopped(&sport->port)) {
++	if (lpuart_stopped_or_empty(&sport->port)) {
+ 		lpuart_stop_tx(&sport->port);
+ 		return;
+ 	}
+@@ -710,7 +715,7 @@ static inline void lpuart32_transmit_buffer(struct lpuart_port *sport)
+ 		return;
  	}
  
--	if (sport->dma_tx_chan && !lpuart_dma_tx_request(&sport->port)) {
--		init_waitqueue_head(&sport->dma_wait);
--		sport->lpuart_dma_tx_use = true;
--		if (lpuart_is_32(sport)) {
--			temp = lpuart32_read(&sport->port, UARTBAUD);
--			lpuart32_write(&sport->port,
--				       temp | UARTBAUD_TDMAE, UARTBAUD);
--		} else {
--			writeb(readb(sport->port.membase + UARTCR5) |
--				UARTCR5_TDMAS, sport->port.membase + UARTCR5);
--		}
--	} else {
--		sport->lpuart_dma_tx_use = false;
--	}
-+	lpuart_tx_dma_startup(sport);
+-	if (uart_circ_empty(xmit) || uart_tx_stopped(&sport->port)) {
++	if (lpuart_stopped_or_empty(&sport->port)) {
+ 		lpuart32_stop_tx(&sport->port);
+ 		return;
+ 	}
+@@ -738,14 +743,13 @@ static void lpuart_start_tx(struct uart_port *port)
+ {
+ 	struct lpuart_port *sport = container_of(port,
+ 			struct lpuart_port, port);
+-	struct circ_buf *xmit = &sport->port.state->xmit;
+ 	unsigned char temp;
  
- 	if (lpuart_is_32(sport)) {
- 		if (sport->lpuart_dma_rx_use) {
+ 	temp = readb(port->membase + UARTCR2);
+ 	writeb(temp | UARTCR2_TIE, port->membase + UARTCR2);
+ 
+ 	if (sport->lpuart_dma_tx_use) {
+-		if (!uart_circ_empty(xmit) && !uart_tx_stopped(port))
++		if (!lpuart_stopped_or_empty(port))
+ 			lpuart_dma_tx(sport);
+ 	} else {
+ 		if (readb(port->membase + UARTSR1) & UARTSR1_TDRE)
+@@ -756,11 +760,10 @@ static void lpuart_start_tx(struct uart_port *port)
+ static void lpuart32_start_tx(struct uart_port *port)
+ {
+ 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
+-	struct circ_buf *xmit = &sport->port.state->xmit;
+ 	unsigned long temp;
+ 
+ 	if (sport->lpuart_dma_tx_use) {
+-		if (!uart_circ_empty(xmit) && !uart_tx_stopped(port))
++		if (!lpuart_stopped_or_empty(port))
+ 			lpuart_dma_tx(sport);
+ 	} else {
+ 		temp = lpuart32_read(port, UARTCTRL);
 -- 
 2.21.0
