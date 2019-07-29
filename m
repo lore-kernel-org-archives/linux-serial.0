@@ -1,7 +1,7 @@
 From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH 12/24] tty: serial: fsl_lpuart: Clear CSTOPB unconditionally
-Date: Mon, 29 Jul 2019 12:52:14 -0700
-Message-ID: <20190729195226.8862-13-andrew.smirnov@gmail.com>
+Subject: [PATCH 13/24] tty: serial: fsl_lpuart: Use appropriate lpuart32_* I/O funcs
+Date: Mon, 29 Jul 2019 12:52:15 -0700
+Message-ID: <20190729195226.8862-14-andrew.smirnov@gmail.com>
 References: <20190729195226.8862-1-andrew.smirnov@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,9 +12,12 @@ To: linux-serial@vger.kernel.org
 Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, Stefan Agner <stefan@agner.ch>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Clearing CSTOPB bit if it is set is functionally equivalent to jsut
-clearing it unconditionally. Drop unnecessary check.
+When dealing with 32-bit variant of LPUART IP block appropriate I/O
+helpers have to be used to properly deal with endianness
+differences. Change all of the offending code to do that.
 
+Fixes: a5fa2660d787 ("tty/serial/fsl_lpuart: Add CONSOLE_POLL support
+for lpuart32.")
 Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
 Cc: Stefan Agner <stefan@agner.ch>
 Cc: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
@@ -27,22 +30,72 @@ Cc: linux-imx@nxp.com
 Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/tty/serial/fsl_lpuart.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 5a1e19733353..10f1af51c58d 100644
+index 10f1af51c58d..50a707c88a16 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1656,8 +1656,7 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
- 	else
- 		modem &= ~(UARTMODEM_RXRTSE | UARTMODEM_TXCTSE);
+@@ -616,26 +616,26 @@ static int lpuart32_poll_init(struct uart_port *port)
+ 	spin_lock_irqsave(&sport->port.lock, flags);
  
--	if (termios->c_cflag & CSTOPB)
--		termios->c_cflag &= ~CSTOPB;
-+	termios->c_cflag &= ~CSTOPB;
+ 	/* Disable Rx & Tx */
+-	writel(0, sport->port.membase + UARTCTRL);
++	lpuart32_write(&sport->port, UARTCTRL, 0);
  
- 	/* parity must be enabled when CS7 to match 8-bits format */
- 	if ((termios->c_cflag & CSIZE) == CS7)
+-	temp = readl(sport->port.membase + UARTFIFO);
++	temp = lpuart32_read(&sport->port, UARTFIFO);
+ 
+ 	/* Enable Rx and Tx FIFO */
+-	writel(temp | UARTFIFO_RXFE | UARTFIFO_TXFE,
+-		   sport->port.membase + UARTFIFO);
++	lpuart32_write(&sport->port, UARTFIFO,
++		       temp | UARTFIFO_RXFE | UARTFIFO_TXFE);
+ 
+ 	/* flush Tx and Rx FIFO */
+-	writel(UARTFIFO_TXFLUSH | UARTFIFO_RXFLUSH,
+-			sport->port.membase + UARTFIFO);
++	lpuart32_write(&sport->port, UARTFIFO,
++		       UARTFIFO_TXFLUSH | UARTFIFO_RXFLUSH);
+ 
+ 	/* explicitly clear RDRF */
+-	if (readl(sport->port.membase + UARTSTAT) & UARTSTAT_RDRF) {
+-		readl(sport->port.membase + UARTDATA);
+-		writel(UARTFIFO_RXUF, sport->port.membase + UARTFIFO);
++	if (lpuart32_read(&sport->port, UARTSTAT) & UARTSTAT_RDRF) {
++		lpuart32_read(&sport->port, UARTDATA);
++		lpuart32_write(&sport->port, UARTFIFO, UARTFIFO_RXUF);
+ 	}
+ 
+ 	/* Enable Rx and Tx */
+-	writel(UARTCTRL_RE | UARTCTRL_TE, sport->port.membase + UARTCTRL);
++	lpuart32_write(&sport->port, UARTCTRL, UARTCTRL_RE | UARTCTRL_TE);
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ 
+ 	return 0;
+@@ -643,18 +643,18 @@ static int lpuart32_poll_init(struct uart_port *port)
+ 
+ static void lpuart32_poll_put_char(struct uart_port *port, unsigned char c)
+ {
+-	while (!(readl(port->membase + UARTSTAT) & UARTSTAT_TDRE))
++	while (!(lpuart32_read(port, UARTSTAT) & UARTSTAT_TDRE))
+ 		barrier();
+ 
+-	writel(c, port->membase + UARTDATA);
++	lpuart32_write(port, UARTDATA, c);
+ }
+ 
+ static int lpuart32_poll_get_char(struct uart_port *port)
+ {
+-	if (!(readl(port->membase + UARTSTAT) & UARTSTAT_RDRF))
++	if (!(lpuart32_read(port, UARTSTAT) & UARTSTAT_RDRF))
+ 		return NO_POLL_CHAR;
+ 
+-	return readl(port->membase + UARTDATA);
++	return lpuart32_read(port, UARTDATA);
+ }
+ #endif
+ 
 -- 
 2.21.0
