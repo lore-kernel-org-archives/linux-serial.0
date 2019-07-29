@@ -1,92 +1,134 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v7 3/3] serial: imx: get rid of imx_uart_rts_auto()
-Date: Mon, 29 Jul 2019 11:29:34 +0200
-Message-ID: <20190729092934.4gjeqtj3q4wkgt6j@pengutronix.de>
-References: <20190614072801.3187-1-s.hauer@pengutronix.de>
- <1564167161-3972-1-git-send-email-sorganov@gmail.com>
- <1564167161-3972-4-git-send-email-sorganov@gmail.com>
- <20190726192940.jy4frulgbetf5d2v@pengutronix.de>
- <87wog1xlf8.fsf@osv.gnss.ru>
+From: Arseny Maslennikov <ar@cs.msu.ru>
+Subject: Re: [PATCH v2 4/7] linux/signal.h: Ignore SIGINFO by default in new
+ tasks
+Date: Mon, 29 Jul 2019 13:55:21 +0300
+Message-ID: <20190729105520.GA25742@cello>
+References: <20190625161153.29811-1-ar@cs.msu.ru>
+ <20190625161153.29811-5-ar@cs.msu.ru>
+ <20190625213215.GB3116@mit.edu>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="jI8keyz6grp/JLjh"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <87wog1xlf8.fsf@osv.gnss.ru>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Sergey Organov <sorganov@gmail.com>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20190625213215.GB3116@mit.edu>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Theodore Ts'o <tytso@mit.edu>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "Vladimir D. Seleznev" <vseleznv@altlinux.org>, Rob Landley <rob@landley.net>, "Eric W. Biederman" <ebiederm@xmission.com>, Pavel Machek <pavel@ucw.cz>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Jul 29, 2019 at 12:03:07PM +0300, Sergey Organov wrote:
-> Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> writes:
-> =
 
-> > On Fri, Jul 26, 2019 at 09:52:41PM +0300, Sergey Organov wrote:
-> >> Called in only one place, for RS232, it only obscures things, as it
-> >> doesn't go well with 2 similar named functions,
-> >> imx_uart_rts_inactive() and imx_uart_rts_active(), that both are
-> >> RS485-specific.
-> >
-> > I don't share the critic. IMHO the name is fine. imx_uart_rts_inactive
-> > sets rts to its inactive level,
-> > imx_uart_rts_active() to its active level
-> =
+--jI8keyz6grp/JLjh
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Not exactly, in fact both do more than that, in a similar manner.
+On Tue, Jun 25, 2019 at 05:32:15PM -0400, Theodore Ts'o wrote:
+> <...>
+>=20
+> (In particular it might be worth checking Linux ports of Oracle and
+> DB2.)
 
-They both handle mctrl-gpio, the autorts stuff isn't available for that,
-so we could fix that by letting rts-auto set the RTS gpio to active.
+A couple of weeks of asking around got me to have a look at a DB2 9.7
+instance.
 
-> > imx_uart_rts_auto() lets the output drive automatically by the
-> > receiver.
-> =
+sn1:~ # uname -a
+Linux sn1 2.6.16.60-0.54.5-ppc64 #1 SMP Fri Sep 4 01:28:03 UTC 2009 ppc64 p=
+pc64 ppc64 GNU/Linux
 
-> And this one was different and it was rather confusing when I've tried
-> to grok the logic of the driver.
-> =
+That particular deployment used the following set of processes:
 
-> > The name started to be a bit wrong in patch 1 of the series however.
-> =
+sn1:~ # ps -eo user,ppid,pid,pgid,sid,tty,state,cmd | grep db2 | grep -v ja=
+va
+bgpsysdb  8505   672  8504  7146 ?        S db2fmp ( ,0,0,0,0,0,0,0,1,0,8a6=
+678,14,1e014,2,0,1,171fc0,0x110000000,0x110000000,1600000,18002,2,384f00b7
+bgpsysdb  8505   687  8504  7146 ?        S db2fmp ( ,0,0,0,0,0,0,0,1,0,8a6=
+678,14,1e014,2,0,1,191fc0,0x110000000,0x110000000,1600000,18002,2,384f80b9
+bgpsysdb  8505  4309  8504  7146 ?        S db2fmp ( ,0,0,0,0,0,0,0,1,0,8a6=
+678,14,1e014,2,0,1,151fc0,0x110000000,0x110000000,1600000,18002,2,6f5080c5
+root         1  8505  8504  7146 ?        S db2wdog 0
+bgpsysdb  8505  8511  8511  7146 ?        S db2sysc 0
+root      8511  8512  8511  7146 ?        S db2ckpwd 0
+root      8511  8513  8511  7146 ?        S db2ckpwd 0
+root      8511  8514  8511  7146 ?        S db2ckpwd 0
+bgpsysdb  8505  8630  8504  7146 ?        S db2acd 0 ,0,0,0,1,0,0,0,1,0,8a6=
+678,14,1e014,2,0,1,11fc0,0x110000000,0x110000000,1600000,18002,2,398072
+bgpsysdb  8505 15280  8504  7146 ?        S db2fmp ( ,1,0,0,0,0,0,0,1,0,8a6=
+678,14,1e014,2,0,1,31fc0,0x110000000,0x110000000,1600000,18002,2,bd80bb
+bgpsysdb  8505 16032  8504  7146 ?        S db2fmp ( ,0,0,0,0,0,0,0,1,0,8a6=
+678,14,1e014,2,0,1,b1fc0,0x110000000,0x110000000,1600000,18002,2,81980ba
+bgpsysdb  8505 16073  8504  7146 ?        S db2fmp ( ,0,0,0,0,0,0,0,1,0,8a6=
+678,14,1e014,2,0,1,91fc0,0x110000000,0x110000000,1600000,18002,2,12300c0
+bgpsysdb  8505 17683  8504  7146 ?        S db2fmp ( ,0,0,0,0,0,0,0,1,0,8a6=
+678,14,1e014,2,0,1,131fc0,0x110000000,0x110000000,1600000,18002,2,248600db
+bgpsysdb  8505 30731  8504  7146 ?        S db2fmp ( ,0,0,0,0,0,0,0,1,0,8a6=
+678,14,1e014,2,0,1,f1fc0,0x110000000,0x110000000,1600000,18002,2,370080d1
 
-> The function was different from first two even before the patch, as it
-> does not do any of those additional things the first two do.
-> =
+None of them has a controlling tty, so ^T pressed at any tty won't send
+them a signal.
 
-> > And I still object removing this function because with the semantic
-> > this function got in patch 1 it is suiteable to be used in
-> > imx_uart_set_mctrl().
-> =
+To get an idea on how do they handle signals, we can look at
+/proc/*/status:
 
-> It is not, as it does require change to be used there, as we've already
-> seen, and then it becomes very different function from what it was at
-> the beginning.
-> =
+sn1:~ # cat /proc/{8512,8505,687,8511}/status | egrep '^(Pid|Sig|Shd)'
+Pid:    687
+SigQ:   0/128000
+SigPnd: 0000000000000000
+ShdPnd: 0000000000000000
+SigBlk: 0000000000000000
+SigIgn: fffffffe2bbaf007
+SigCgt: 00000001c44004f8
+Pid:    8505
+SigQ:   0/128000
+SigPnd: 0000000000000000
+ShdPnd: 0000000000000000
+SigBlk: fffffffe7ffbfeff
+SigIgn: fffffffe2fbaf007
+SigCgt: 00000001c0410ef8
+Pid:    8511
+SigQ:   0/128000
+SigPnd: 0000000000000000
+ShdPnd: 0000000000000000
+SigBlk: fffffffe7ffbfeff
+SigIgn: fffffffe23b3c005
+SigCgt: 00000001dc483efa
+Pid:    8512
+SigQ:   0/128000
+SigPnd: 0000000000000000
+ShdPnd: 0000000000000000
+SigBlk: 0000000000000000
+SigIgn: fffffffe2fbbf007
+SigCgt: 00000001c0400ef8
 
-> Even then, the end result I've shown you when attempting to somehow prese=
-rve
-> some re-incarnation of this function still seems more cumbersome to me
-> than the end result of these patches.
-> =
+It can be seen from the above that SIGPWR in particular is always
+ignored and sometimes blocked, which means its default disposition has
+no effect.
 
-> That said, this a matter of taste and style, not correctness, and could
-> be changed as a follow-up, not to risk breaking already tested patch
-> series.
+This leads me to think that DB2 in particular would be unaffected by the
+patch set.
 
-*shrug* I stop caring here.
+p.s.: I do not have shell access to the machine, and never did; the commands
+cited in this email were executed by a person who does, and the output
+was handed back to me.
 
-Best regards
-Uwe
+--jI8keyz6grp/JLjh
+Content-Type: application/pgp-signature; name="signature.asc"
 
--- =
+-----BEGIN PGP SIGNATURE-----
 
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+iQIzBAABCgAdFiEE56JD3UKTLEu/ddrm9dQjyAYL01AFAl0+0JAACgkQ9dQjyAYL
+01CzdRAAu38njim8DW61okHfX3GyhvxAvUy7Fg7QPJfoLIgFRrW+s6MB1myRyem+
+rvn+XScQaSlpH5a+aa50V3l3bxRuD38WF1+hU6USyjl4Jpv+DBFH5aNmYqkQIFJ1
+4yKySdyOVF+jFCIpdCihoT3nfRhim7rhd4sjlYX6zWzLEvnmsYe7zPm7BZMcNPTV
+wgEz/AwLXjtKCoa/W6EHQUiylutWcs0TLqMCQhYpt9p9FSg2/GmCczYGc1/SZ4en
+Fvjp7BMYg9Ha2rNnVHkd3QbJu6S+1eyKx5srz5x2CEuAwR3Q/ojw0f4kMJgUXqCk
+fqj81B9hxwXoV8f3gfhLUTmZO9tmt2hP9J9aLDFfETNxzhTs0hPdPW+7Vg3CsUQ/
+/WbGu6riGUsRQkUjvRoiisIVRHthxO2g6MD0taEJx3ZBfUFEtnNfzzP6xCrrKaHY
+LQ59yngfVUTVkHFlK+WYEHlhLXqrRHS1Kt9LFR/k7N6o7h2RspJoEOFzTZwlwV9+
+A2o4xAuUeg+3frmbUC3aWljzfet5FmSZ9And6QhtD1C40DQWVtZpitI6xWULcj1i
+UgLFd+/02Nu1jeDnfV1r5dWGdn1K7B1TmNJ8E0xZPwPQ+d8r3bN4Cg6lwVuz7wUp
+tba+wUzDoTqvjmJ6sHz5qwjBfzi+OKwBR2ip4AbkWMtY843R5lQ=
+=6Ez9
+-----END PGP SIGNATURE-----
+
+--jI8keyz6grp/JLjh--
