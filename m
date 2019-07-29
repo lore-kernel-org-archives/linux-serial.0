@@ -1,92 +1,116 @@
-From: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Subject: Re: [PATCH v3 5/7] mfd: ioc3: Add driver for SGI IOC3 chip
-Date: Mon, 29 Jul 2019 20:45:57 +0200
-Message-ID: <20190729204557.468db2153efefda96dd41ec0@suse.de>
-References: <20190613170636.6647-1-tbogendoerfer@suse.de>
-        <20190613170636.6647-6-tbogendoerfer@suse.de>
-        <20190725114716.GB23883@dell>
+From: Andrey Smirnov <andrew.smirnov@gmail.com>
+Subject: [PATCH 04/24] tty: serial: fsl_lpuart: Simplify RX/TX IRQ handlers
+Date: Mon, 29 Jul 2019 12:52:06 -0700
+Message-ID: <20190729195226.8862-5-andrew.smirnov@gmail.com>
+References: <20190729195226.8862-1-andrew.smirnov@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190725114716.GB23883@dell>
+In-Reply-To: <20190729195226.8862-1-andrew.smirnov@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, linux-input@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, Stefan Agner <stefan@agner.ch>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 25 Jul 2019 12:47:16 +0100
-Lee Jones <lee.jones@linaro.org> wrote:
+It appears that lpuart_rxint, lpuart_txint and lpuart32_rxint were
+modelled after identical function found in UART driver for
+i.MX. However, while said functions are used as individual IRQ
+handlers in i.MX driver (in case of i.MX1), it is not the case for
+LPUART. Given that, there's no need for us to restrict the prototype
+of the handler to irqreturn_t foo(int, void *) and we can drop all of
+uneened boilerplate code by changing it void foo(struct lpuart_port *).
 
-> On Thu, 13 Jun 2019, Thomas Bogendoerfer wrote:
-> > +/*
-> > + * On IP30 the RTC (a DS1687) is behind the IOC3 on the generic
-> > + * ByteBus regions. We have to write the RTC address of interest to
-> > + * IOC3_BYTEBUS_DEV1, then read the data from IOC3_BYTEBUS_DEV2.
-> > + * rtc->regs already points to IOC3_BYTEBUS_DEV1.
-> > + */
-> > +#define IP30_RTC_ADDR(rtc) (rtc->regs)
-> > +#define IP30_RTC_DATA(rtc) ((rtc->regs) + IOC3_BYTEBUS_DEV2 - IOC3_BYTEBUS_DEV1)
-> > +
-> > +static u8 ip30_rtc_read(struct ds1685_priv *rtc, int reg)
-> > +{
-> > +	writeb((reg & 0x7f), IP30_RTC_ADDR(rtc));
-> > +	return readb(IP30_RTC_DATA(rtc));
-> > +}
-> > +
-> > +static void ip30_rtc_write(struct ds1685_priv *rtc, int reg, u8 value)
-> > +{
-> > +	writeb((reg & 0x7f), IP30_RTC_ADDR(rtc));
-> > +	writeb(value, IP30_RTC_DATA(rtc));
-> > +}
-> 
-> Why is this not in the RTC driver?
+Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+Cc: Stefan Agner <stefan@agner.ch>
+Cc: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+Cc: Chris Healy <cphealy@gmail.com>
+Cc: Cory Tusar <cory.tusar@zii.aero>
+Cc: Lucas Stach <l.stach@pengutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-imx@nxp.com
+Cc: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
+ drivers/tty/serial/fsl_lpuart.c | 20 +++++++-------------
+ 1 file changed, 7 insertions(+), 13 deletions(-)
 
-because rtc1685 is used in different systems and accessing the chip
-differs between those systems. 
-
-> > +static struct ds1685_rtc_platform_data ip30_rtc_platform_data = {
-> > +	.bcd_mode = false,
-> > +	.no_irq = false,
-> > +	.uie_unsupported = true,
-> > +	.alloc_io_resources = true,
-> 
-> > +	.plat_read = ip30_rtc_read,
-> > +	.plat_write = ip30_rtc_write,
-> 
-> Call-backs in a non-subsystem API is pretty ugly IMHO.
-
-I agree
-
-> Where are these called from?
-
-drivers/rtc/rtc-ds1685.c
-
-I could do the same as done for serial8250 and add an additional .c file
-in  drivers/rtc which handles this for SGI-IP30. Alexandre would this work
-for you as well ?
-
-> > +#define IOC3_SID(_name, _sid, _setup) \
-> > +	{								   \
-> > +		.name = _name,						   \
-> > +		.sid = (PCI_VENDOR_ID_SGI << 16) | IOC3_SUBSYS_ ## _sid,   \
-> > +		.setup = _setup,					   \
-> > +	}
-> > +
-> > +static struct {
-> > +	const char *name;
-> > +	u32 sid;
-> > +	int (*setup)(struct ioc3_priv_data *ipd);
-> > +} ioc3_infos[] = {
-> 
-> IMHO it's neater if you separate the definition and static data part.
-
-I don't quite understand what you mean here. Should I move the #define at
-the beginning of the file ? Why is it neater ?
-
-Thomas.
-
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 56423ad02f0f..3e38970a444e 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -770,9 +770,8 @@ static unsigned int lpuart32_tx_empty(struct uart_port *port)
+ 	return 0;
+ }
+ 
+-static irqreturn_t lpuart_txint(int irq, void *dev_id)
++static void lpuart_txint(struct lpuart_port *sport)
+ {
+-	struct lpuart_port *sport = dev_id;
+ 	struct circ_buf *xmit = &sport->port.state->xmit;
+ 	unsigned long flags;
+ 
+@@ -803,12 +802,10 @@ static irqreturn_t lpuart_txint(int irq, void *dev_id)
+ 
+ out:
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+-	return IRQ_HANDLED;
+ }
+ 
+-static irqreturn_t lpuart_rxint(int irq, void *dev_id)
++static void lpuart_rxint(struct lpuart_port *sport)
+ {
+-	struct lpuart_port *sport = dev_id;
+ 	unsigned int flg, ignored = 0, overrun = 0;
+ 	struct tty_port *port = &sport->port.state->port;
+ 	unsigned long flags;
+@@ -877,12 +874,10 @@ static irqreturn_t lpuart_rxint(int irq, void *dev_id)
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ 
+ 	tty_flip_buffer_push(port);
+-	return IRQ_HANDLED;
+ }
+ 
+-static irqreturn_t lpuart32_rxint(int irq, void *dev_id)
++static void lpuart32_rxint(struct lpuart_port *sport)
+ {
+-	struct lpuart_port *sport = dev_id;
+ 	unsigned int flg, ignored = 0;
+ 	struct tty_port *port = &sport->port.state->port;
+ 	unsigned long flags;
+@@ -941,7 +936,6 @@ static irqreturn_t lpuart32_rxint(int irq, void *dev_id)
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ 
+ 	tty_flip_buffer_push(port);
+-	return IRQ_HANDLED;
+ }
+ 
+ static irqreturn_t lpuart_int(int irq, void *dev_id)
+@@ -952,10 +946,10 @@ static irqreturn_t lpuart_int(int irq, void *dev_id)
+ 	sts = readb(sport->port.membase + UARTSR1);
+ 
+ 	if (sts & UARTSR1_RDRF)
+-		lpuart_rxint(irq, dev_id);
++		lpuart_rxint(sport);
+ 
+ 	if (sts & UARTSR1_TDRE)
+-		lpuart_txint(irq, dev_id);
++		lpuart_txint(sport);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -970,10 +964,10 @@ static irqreturn_t lpuart32_int(int irq, void *dev_id)
+ 	rxcount = rxcount >> UARTWATER_RXCNT_OFF;
+ 
+ 	if ((sts & UARTSTAT_RDRF || rxcount > 0) && !sport->lpuart_dma_rx_use)
+-		lpuart32_rxint(irq, dev_id);
++		lpuart32_rxint(sport);
+ 
+ 	if ((sts & UARTSTAT_TDRE) && !sport->lpuart_dma_tx_use)
+-		lpuart_txint(irq, dev_id);
++		lpuart_txint(sport);
+ 
+ 	lpuart32_write(&sport->port, sts, UARTSTAT);
+ 	return IRQ_HANDLED;
 -- 
-SUSE Linux GmbH
-GF: Felix Imendörffer, Mary Higgins, Sri Rasiah
-HRB 21284 (AG Nürnberg)
+2.21.0
