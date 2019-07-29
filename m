@@ -1,7 +1,7 @@
 From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH 09/24] tty: serial: fls_lpuart: Split shared TX IRQ handler into two
-Date: Mon, 29 Jul 2019 12:52:11 -0700
-Message-ID: <20190729195226.8862-10-andrew.smirnov@gmail.com>
+Subject: [PATCH 14/24] tty: serial: fsl_lpuart: Introduce lpuart_wait_bit_set()
+Date: Mon, 29 Jul 2019 12:52:16 -0700
+Message-ID: <20190729195226.8862-15-andrew.smirnov@gmail.com>
 References: <20190729195226.8862-1-andrew.smirnov@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,13 +12,8 @@ To: linux-serial@vger.kernel.org
 Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, Stefan Agner <stefan@agner.ch>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-While sharing code for Tx interrupt handler between 8 and 32 bit
-variant of the peripheral saves a bit of code duplication it also adds
-quite a number of lpuart_is_32() checks which makes it harder to
-understand. Move shared bits back into corresponding
-lpuart*_transmit_buffer functions, split lpuart_txint into
-lpuart_txint and lpuart32_txint so we can drop all extra
-lpuart_is_32() check and make the code flow more linear.
+Busy polling on a bit in a register is used in multiple places in the
+driver. Move it into a shared function.
 
 Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
 Cc: Stefan Agner <stefan@agner.ch>
@@ -32,111 +27,115 @@ Cc: linux-imx@nxp.com
 Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/tty/serial/fsl_lpuart.c | 61 +++++++++++++++++++--------------
- 1 file changed, 35 insertions(+), 26 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 42 +++++++++++++++++----------------
+ 1 file changed, 22 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 1fe9b1b29a46..f87ea889ff86 100644
+index 50a707c88a16..dde5caf724ff 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -662,6 +662,18 @@ static inline void lpuart_transmit_buffer(struct lpuart_port *sport)
- {
- 	struct circ_buf *xmit = &sport->port.state->xmit;
- 
-+	if (sport->port.x_char) {
-+		writeb(sport->port.x_char, sport->port.membase + UARTDR);
-+		sport->port.icount.tx++;
-+		sport->port.x_char = 0;
-+		return;
-+	}
-+
-+	if (uart_circ_empty(xmit) || uart_tx_stopped(&sport->port)) {
-+		lpuart_stop_tx(&sport->port);
-+		return;
-+	}
-+
- 	while (!uart_circ_empty(xmit) &&
- 		(readb(sport->port.membase + UARTTCFIFO) < sport->txfifo_size)) {
- 		writeb(xmit->buf[xmit->tail], sport->port.membase + UARTDR);
-@@ -681,6 +693,18 @@ static inline void lpuart32_transmit_buffer(struct lpuart_port *sport)
- 	struct circ_buf *xmit = &sport->port.state->xmit;
- 	unsigned long txcnt;
- 
-+	if (sport->port.x_char) {
-+		lpuart32_write(&sport->port, sport->port.x_char, UARTDATA);
-+		sport->port.icount.tx++;
-+		sport->port.x_char = 0;
-+		return;
-+	}
-+
-+	if (uart_circ_empty(xmit) || uart_tx_stopped(&sport->port)) {
-+		lpuart32_stop_tx(&sport->port);
-+		return;
-+	}
-+
- 	txcnt = lpuart32_read(&sport->port, UARTWATER);
- 	txcnt = txcnt >> UARTWATER_TXCNT_OFF;
- 	txcnt &= UARTWATER_COUNT_MASK;
-@@ -772,34 +796,10 @@ static unsigned int lpuart32_tx_empty(struct uart_port *port)
- 
- static void lpuart_txint(struct lpuart_port *sport)
- {
--	struct circ_buf *xmit = &sport->port.state->xmit;
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&sport->port.lock, flags);
--	if (sport->port.x_char) {
--		if (lpuart_is_32(sport))
--			lpuart32_write(&sport->port, sport->port.x_char, UARTDATA);
--		else
--			writeb(sport->port.x_char, sport->port.membase + UARTDR);
--		sport->port.icount.tx++;
--		sport->port.x_char = 0;
--		goto out;
--	}
--
--	if (uart_circ_empty(xmit) || uart_tx_stopped(&sport->port)) {
--		if (lpuart_is_32(sport))
--			lpuart32_stop_tx(&sport->port);
--		else
--			lpuart_stop_tx(&sport->port);
--		goto out;
--	}
--
--	if (lpuart_is_32(sport))
--		lpuart32_transmit_buffer(sport);
--	else
--		lpuart_transmit_buffer(sport);
--
--out:
-+	lpuart_transmit_buffer(sport);
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
+@@ -548,6 +548,20 @@ static void lpuart_flush_buffer(struct uart_port *port)
+ 	}
  }
  
-@@ -875,6 +875,15 @@ static void lpuart_rxint(struct lpuart_port *sport)
- 	tty_flip_buffer_push(port);
- }
- 
-+static void lpuart32_txint(struct lpuart_port *sport)
++static void lpuart_wait_bit_set(struct uart_port *port, unsigned int offset,
++				u8 bit)
 +{
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&sport->port.lock, flags);
-+	lpuart32_transmit_buffer(sport);
-+	spin_unlock_irqrestore(&sport->port.lock, flags);
++	while (!(readb(port->membase + offset) & bit))
++		barrier();
 +}
 +
- static void lpuart32_rxint(struct lpuart_port *sport)
++static void lpuart32_wait_bit_set(struct uart_port *port, unsigned int offset,
++				  u32 bit)
++{
++	while (!(lpuart32_read(port, offset) & bit))
++		barrier();
++}
++
+ #if defined(CONFIG_CONSOLE_POLL)
+ 
+ static int lpuart_poll_init(struct uart_port *port)
+@@ -591,9 +605,7 @@ static int lpuart_poll_init(struct uart_port *port)
+ static void lpuart_poll_put_char(struct uart_port *port, unsigned char c)
  {
- 	unsigned int flg, ignored = 0;
-@@ -966,7 +975,7 @@ static irqreturn_t lpuart32_int(int irq, void *dev_id)
- 		lpuart32_rxint(sport);
+ 	/* drain */
+-	while (!(readb(port->membase + UARTSR1) & UARTSR1_TDRE))
+-		barrier();
+-
++	lpuart_wait_bit_set(port, UARTSR1, UARTSR1_TDRE);
+ 	writeb(c, port->membase + UARTDR);
+ }
  
- 	if ((sts & UARTSTAT_TDRE) && !sport->lpuart_dma_tx_use)
--		lpuart_txint(sport);
-+		lpuart32_txint(sport);
+@@ -643,9 +655,7 @@ static int lpuart32_poll_init(struct uart_port *port)
  
- 	lpuart32_write(&sport->port, sts, UARTSTAT);
- 	return IRQ_HANDLED;
+ static void lpuart32_poll_put_char(struct uart_port *port, unsigned char c)
+ {
+-	while (!(lpuart32_read(port, UARTSTAT) & UARTSTAT_TDRE))
+-		barrier();
+-
++	lpuart32_wait_bit_set(port, UARTSTAT, UARTSTAT_TDRE);
+ 	lpuart32_write(port, UARTDATA, c);
+ }
+ 
+@@ -1723,8 +1733,7 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	uart_update_timeout(port, termios->c_cflag, baud);
+ 
+ 	/* wait transmit engin complete */
+-	while (!(readb(sport->port.membase + UARTSR1) & UARTSR1_TC))
+-		barrier();
++	lpuart_wait_bit_set(&sport->port, UARTSR1, UARTSR1_TC);
+ 
+ 	/* disable transmit and receive */
+ 	writeb(old_cr2 & ~(UARTCR2_TE | UARTCR2_RE),
+@@ -1939,8 +1948,7 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	uart_update_timeout(port, termios->c_cflag, baud);
+ 
+ 	/* wait transmit engin complete */
+-	while (!(lpuart32_read(&sport->port, UARTSTAT) & UARTSTAT_TC))
+-		barrier();
++	lpuart32_wait_bit_set(&sport->port, UARTSTAT, UARTSTAT_TC);
+ 
+ 	/* disable transmit and receive */
+ 	lpuart32_write(&sport->port, old_ctrl & ~(UARTCTRL_TE | UARTCTRL_RE),
+@@ -2055,17 +2063,13 @@ static struct lpuart_port *lpuart_ports[UART_NR];
+ #ifdef CONFIG_SERIAL_FSL_LPUART_CONSOLE
+ static void lpuart_console_putchar(struct uart_port *port, int ch)
+ {
+-	while (!(readb(port->membase + UARTSR1) & UARTSR1_TDRE))
+-		barrier();
+-
++	lpuart_wait_bit_set(port, UARTSR1, UARTSR1_TDRE);
+ 	writeb(ch, port->membase + UARTDR);
+ }
+ 
+ static void lpuart32_console_putchar(struct uart_port *port, int ch)
+ {
+-	while (!(lpuart32_read(port, UARTSTAT) & UARTSTAT_TDRE))
+-		barrier();
+-
++	lpuart32_wait_bit_set(port, UARTSTAT, UARTSTAT_TDRE);
+ 	lpuart32_write(port, ch, UARTDATA);
+ }
+ 
+@@ -2091,8 +2095,7 @@ lpuart_console_write(struct console *co, const char *s, unsigned int count)
+ 	uart_console_write(&sport->port, s, count, lpuart_console_putchar);
+ 
+ 	/* wait for transmitter finish complete and restore CR2 */
+-	while (!(readb(sport->port.membase + UARTSR1) & UARTSR1_TC))
+-		barrier();
++	lpuart_wait_bit_set(&sport->port, UARTSR1, UARTSR1_TC);
+ 
+ 	writeb(old_cr2, sport->port.membase + UARTCR2);
+ 
+@@ -2122,8 +2125,7 @@ lpuart32_console_write(struct console *co, const char *s, unsigned int count)
+ 	uart_console_write(&sport->port, s, count, lpuart32_console_putchar);
+ 
+ 	/* wait for transmitter finish complete and restore CR2 */
+-	while (!(lpuart32_read(&sport->port, UARTSTAT) & UARTSTAT_TC))
+-		barrier();
++	lpuart32_wait_bit_set(&sport->port, UARTSTAT, UARTSTAT_TC);
+ 
+ 	lpuart32_write(&sport->port, old_cr, UARTCTRL);
+ 
 -- 
 2.21.0
