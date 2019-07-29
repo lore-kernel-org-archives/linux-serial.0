@@ -1,18 +1,18 @@
-From: Sergey Organov <sorganov@gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCH v7 3/3] serial: imx: get rid of imx_uart_rts_auto()
-Date: Mon, 29 Jul 2019 12:03:07 +0300
-Message-ID: <87wog1xlf8.fsf@osv.gnss.ru>
+Date: Mon, 29 Jul 2019 11:29:34 +0200
+Message-ID: <20190729092934.4gjeqtj3q4wkgt6j@pengutronix.de>
 References: <20190614072801.3187-1-s.hauer@pengutronix.de>
  <1564167161-3972-1-git-send-email-sorganov@gmail.com>
  <1564167161-3972-4-git-send-email-sorganov@gmail.com>
  <20190726192940.jy4frulgbetf5d2v@pengutronix.de>
+ <87wog1xlf8.fsf@osv.gnss.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190726192940.jy4frulgbetf5d2v@pengutronix.de> ("Uwe
- \=\?utf-8\?Q\?Kleine-K\=C3\=B6nig\=22's\?\= message of "Fri,
- 26 Jul 2019 21:29:40 +0200")
+Content-Disposition: inline
+In-Reply-To: <87wog1xlf8.fsf@osv.gnss.ru>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -22,39 +22,71 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Sergey Organov <sorganov@gmail.com>
 Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-VXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4gd3JpdGVz
-OgoKPiBPbiBGcmksIEp1bCAyNiwgMjAxOSBhdCAwOTo1Mjo0MVBNICswMzAwLCBTZXJnZXkgT3Jn
-YW5vdiB3cm90ZToKPj4gQ2FsbGVkIGluIG9ubHkgb25lIHBsYWNlLCBmb3IgUlMyMzIsIGl0IG9u
-bHkgb2JzY3VyZXMgdGhpbmdzLCBhcyBpdAo+PiBkb2Vzbid0IGdvIHdlbGwgd2l0aCAyIHNpbWls
-YXIgbmFtZWQgZnVuY3Rpb25zLAo+PiBpbXhfdWFydF9ydHNfaW5hY3RpdmUoKSBhbmQgaW14X3Vh
-cnRfcnRzX2FjdGl2ZSgpLCB0aGF0IGJvdGggYXJlCj4+IFJTNDg1LXNwZWNpZmljLgo+Cj4gSSBk
-b24ndCBzaGFyZSB0aGUgY3JpdGljLiBJTUhPIHRoZSBuYW1lIGlzIGZpbmUuIGlteF91YXJ0X3J0
-c19pbmFjdGl2ZQo+IHNldHMgcnRzIHRvIGl0cyBpbmFjdGl2ZSBsZXZlbCwKPiBpbXhfdWFydF9y
-dHNfYWN0aXZlKCkgdG8gaXRzIGFjdGl2ZSBsZXZlbAoKTm90IGV4YWN0bHksIGluIGZhY3QgYm90
-aCBkbyBtb3JlIHRoYW4gdGhhdCwgaW4gYSBzaW1pbGFyIG1hbm5lci4KCj4gaW14X3VhcnRfcnRz
-X2F1dG8oKSBsZXRzIHRoZSBvdXRwdXQgZHJpdmUgYXV0b21hdGljYWxseSBieSB0aGUKPiByZWNl
-aXZlci4KCkFuZCB0aGlzIG9uZSB3YXMgZGlmZmVyZW50IGFuZCBpdCB3YXMgcmF0aGVyIGNvbmZ1
-c2luZyB3aGVuIEkndmUgdHJpZWQKdG8gZ3JvayB0aGUgbG9naWMgb2YgdGhlIGRyaXZlci4KCj4g
-VGhlIG5hbWUgc3RhcnRlZCB0byBiZSBhIGJpdCB3cm9uZyBpbiBwYXRjaCAxIG9mIHRoZSBzZXJp
-ZXMgaG93ZXZlci4KClRoZSBmdW5jdGlvbiB3YXMgZGlmZmVyZW50IGZyb20gZmlyc3QgdHdvIGV2
-ZW4gYmVmb3JlIHRoZSBwYXRjaCwgYXMgaXQKZG9lcyBub3QgZG8gYW55IG9mIHRob3NlIGFkZGl0
-aW9uYWwgdGhpbmdzIHRoZSBmaXJzdCB0d28gZG8uCgo+IEFuZCBJIHN0aWxsIG9iamVjdCByZW1v
-dmluZyB0aGlzIGZ1bmN0aW9uIGJlY2F1c2Ugd2l0aCB0aGUgc2VtYW50aWMKPiB0aGlzIGZ1bmN0
-aW9uIGdvdCBpbiBwYXRjaCAxIGl0IGlzIHN1aXRlYWJsZSB0byBiZSB1c2VkIGluCj4gaW14X3Vh
-cnRfc2V0X21jdHJsKCkuCgpJdCBpcyBub3QsIGFzIGl0IGRvZXMgcmVxdWlyZSBjaGFuZ2UgdG8g
-YmUgdXNlZCB0aGVyZSwgYXMgd2UndmUgYWxyZWFkeQpzZWVuLCBhbmQgdGhlbiBpdCBiZWNvbWVz
-IHZlcnkgZGlmZmVyZW50IGZ1bmN0aW9uIGZyb20gd2hhdCBpdCB3YXMgYXQKdGhlIGJlZ2lubmlu
-Zy4KCkV2ZW4gdGhlbiwgdGhlIGVuZCByZXN1bHQgSSd2ZSBzaG93biB5b3Ugd2hlbiBhdHRlbXB0
-aW5nIHRvIHNvbWVob3cgcHJlc2VydmUKc29tZSByZS1pbmNhcm5hdGlvbiBvZiB0aGlzIGZ1bmN0
-aW9uIHN0aWxsIHNlZW1zIG1vcmUgY3VtYmVyc29tZSB0byBtZQp0aGFuIHRoZSBlbmQgcmVzdWx0
-IG9mIHRoZXNlIHBhdGNoZXMuCgpUaGF0IHNhaWQsIHRoaXMgYSBtYXR0ZXIgb2YgdGFzdGUgYW5k
-IHN0eWxlLCBub3QgY29ycmVjdG5lc3MsIGFuZCBjb3VsZApiZSBjaGFuZ2VkIGFzIGEgZm9sbG93
-LXVwLCBub3QgdG8gcmlzayBicmVha2luZyBhbHJlYWR5IHRlc3RlZCBwYXRjaApzZXJpZXMuCgpU
-aGFua3MsCgotLSBTZXJnZXkKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxA
-bGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xp
-c3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+On Mon, Jul 29, 2019 at 12:03:07PM +0300, Sergey Organov wrote:
+> Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> writes:
+> =
+
+> > On Fri, Jul 26, 2019 at 09:52:41PM +0300, Sergey Organov wrote:
+> >> Called in only one place, for RS232, it only obscures things, as it
+> >> doesn't go well with 2 similar named functions,
+> >> imx_uart_rts_inactive() and imx_uart_rts_active(), that both are
+> >> RS485-specific.
+> >
+> > I don't share the critic. IMHO the name is fine. imx_uart_rts_inactive
+> > sets rts to its inactive level,
+> > imx_uart_rts_active() to its active level
+> =
+
+> Not exactly, in fact both do more than that, in a similar manner.
+
+They both handle mctrl-gpio, the autorts stuff isn't available for that,
+so we could fix that by letting rts-auto set the RTS gpio to active.
+
+> > imx_uart_rts_auto() lets the output drive automatically by the
+> > receiver.
+> =
+
+> And this one was different and it was rather confusing when I've tried
+> to grok the logic of the driver.
+> =
+
+> > The name started to be a bit wrong in patch 1 of the series however.
+> =
+
+> The function was different from first two even before the patch, as it
+> does not do any of those additional things the first two do.
+> =
+
+> > And I still object removing this function because with the semantic
+> > this function got in patch 1 it is suiteable to be used in
+> > imx_uart_set_mctrl().
+> =
+
+> It is not, as it does require change to be used there, as we've already
+> seen, and then it becomes very different function from what it was at
+> the beginning.
+> =
+
+> Even then, the end result I've shown you when attempting to somehow prese=
+rve
+> some re-incarnation of this function still seems more cumbersome to me
+> than the end result of these patches.
+> =
+
+> That said, this a matter of taste and style, not correctness, and could
+> be changed as a follow-up, not to risk breaking already tested patch
+> series.
+
+*shrug* I stop caring here.
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
