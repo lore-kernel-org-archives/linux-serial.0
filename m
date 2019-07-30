@@ -1,166 +1,296 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] kgdboc: disable the console lock when in kgdb
-Date: Tue, 30 Jul 2019 17:38:18 +0200
-Message-ID: <20190730153818.GA1025@kroah.com>
-References: <20190725183551.169208-1-dianders@chromium.org>
- <20190726091630.GA20016@kroah.com>
- <CAD=FV=WVaksqBE4HBTMZwV1hv6_FJMmAqF+kWBpdfvsHQyRkSA@mail.gmail.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [patch v4 1/5] AST2500 DMA UART driver
+Date: Tue, 30 Jul 2019 17:47:59 +0200
+Message-ID: <20190730154759.GA26425@kroah.com>
+References: <1564147640-30753-1-git-send-email-open.sudheer@gmail.com>
+ <1564147640-30753-2-git-send-email-open.sudheer@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAD=FV=WVaksqBE4HBTMZwV1hv6_FJMmAqF+kWBpdfvsHQyRkSA@mail.gmail.com>
+In-Reply-To: <1564147640-30753-2-git-send-email-open.sudheer@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Doug Anderson <dianders@chromium.org>
-Cc: Jason Wessel <jason.wessel@windriver.com>, Daniel Thompson <daniel.thompson@linaro.org>, Daniel Vetter <daniel.vetter@intel.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Sam Ravnborg <sam@ravnborg.org>, Jiri Slaby <jslaby@suse.com>, kgdb-bugreport@lists.sourceforge.net, LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+To: "sudheer.v" <open.sudheer@gmail.com>
+Cc: jslaby@suse.com, joel@jms.id.au, andrew@aj.id.au, benh@kernel.crashing.org, robh+dt@kernel.org, mark.rutland@arm.com, shivahshankar.shankarnarayanrao@aspeedtech.com, sudheer.veliseti@aspeedtech.com, sudheer veliseti <sudheer.open@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Jul 26, 2019 at 09:19:21AM -0700, Doug Anderson wrote:
-> Hi,
+On Fri, Jul 26, 2019 at 06:57:16PM +0530, sudheer.v wrote:
+> From: sudheer veliseti <sudheer.open@gmail.com>
 > 
-> On Fri, Jul 26, 2019 at 2:16 AM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Thu, Jul 25, 2019 at 11:35:51AM -0700, Douglas Anderson wrote:
-> > > After commit ddde3c18b700 ("vt: More locking checks") kdb / kgdb has
-> > > become useless because my console is filled with spews of:
-> > >
-> > > WARNING: CPU: 0 PID: 0 at .../drivers/tty/vt/vt.c:3846 con_is_visible+0x50/0x74
-> > > CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.3.0-rc1+ #48
-> > > Hardware name: Rockchip (Device Tree)
-> > > Backtrace:
-> > > [<c020ce9c>] (dump_backtrace) from [<c020d188>] (show_stack+0x20/0x24)
-> > > [<c020d168>] (show_stack) from [<c0a8fc14>] (dump_stack+0xb0/0xd0)
-> > > [<c0a8fb64>] (dump_stack) from [<c0232c58>] (__warn+0xec/0x11c)
-> > > [<c0232b6c>] (__warn) from [<c0232dc4>] (warn_slowpath_null+0x4c/0x58)
-> > > [<c0232d78>] (warn_slowpath_null) from [<c06338a0>] (con_is_visible+0x50/0x74)
-> > > [<c0633850>] (con_is_visible) from [<c0634078>] (con_scroll+0x108/0x1ac)
-> > > [<c0633f70>] (con_scroll) from [<c0634160>] (lf+0x44/0x88)
-> > > [<c063411c>] (lf) from [<c06363ec>] (vt_console_print+0x1a4/0x2bc)
-> > > [<c0636248>] (vt_console_print) from [<c02f628c>] (vkdb_printf+0x420/0x8a4)
-> > > [<c02f5e6c>] (vkdb_printf) from [<c02f6754>] (kdb_printf+0x44/0x60)
-> > > [<c02f6714>] (kdb_printf) from [<c02fa6f4>] (kdb_main_loop+0xf4/0x6e0)
-> > > [<c02fa600>] (kdb_main_loop) from [<c02fd5f0>] (kdb_stub+0x268/0x398)
-> > > [<c02fd388>] (kdb_stub) from [<c02f3ba0>] (kgdb_cpu_enter+0x1f8/0x674)
-> > > [<c02f39a8>] (kgdb_cpu_enter) from [<c02f4330>] (kgdb_handle_exception+0x1c4/0x1fc)
-> > > [<c02f416c>] (kgdb_handle_exception) from [<c0210fe0>] (kgdb_compiled_brk_fn+0x30/0x3c)
-> > > [<c0210fb0>] (kgdb_compiled_brk_fn) from [<c020d7ac>] (do_undefinstr+0x180/0x1a0)
-> > > [<c020d62c>] (do_undefinstr) from [<c0201b44>] (__und_svc_finish+0x0/0x3c)
-> > > ...
-> > > [<c02f3224>] (kgdb_breakpoint) from [<c02f3310>] (sysrq_handle_dbg+0x58/0x6c)
-> > > [<c02f32b8>] (sysrq_handle_dbg) from [<c062abf0>] (__handle_sysrq+0xac/0x154)
-> > >
-> > > Let's disable this warning when we're in kgdb to avoid the spew.  The
-> > > whole system is stopped when we're in kgdb so we can't exactly wait
-> > > for someone else to drop the lock.  Presumably the best we can do is
-> > > to disable the warning and hope for the best.
-> > >
-> > > Fixes: ddde3c18b700 ("vt: More locking checks")
-> > > Cc: Daniel Vetter <daniel.vetter@intel.com>
-> > > Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> > > ---
-> > >
-> > >  drivers/tty/serial/kgdboc.c | 4 ++++
-> > >  1 file changed, 4 insertions(+)
-> > >
-> > > diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-> > > index bfe5e9e034ec..c7d51b51898f 100644
-> > > --- a/drivers/tty/serial/kgdboc.c
-> > > +++ b/drivers/tty/serial/kgdboc.c
-> > > @@ -277,10 +277,14 @@ static void kgdboc_pre_exp_handler(void)
-> > >       /* Increment the module count when the debugger is active */
-> > >       if (!kgdb_connected)
-> > >               try_module_get(THIS_MODULE);
-> > > +
-> > > +     atomic_inc(&ignore_console_lock_warning);
-> > >  }
-> > >
-> > >  static void kgdboc_post_exp_handler(void)
-> > >  {
-> > > +     atomic_dec(&ignore_console_lock_warning);
-> > > +
-> > >       /* decrement the module count when the debugger detaches */
-> > >       if (!kgdb_connected)
-> > >               module_put(THIS_MODULE);
-> > > --
-> > > 2.22.0.709.g102302147b-goog
-> >
-> > I have the following patch in my tree to go to Linus that I think might
-> > fix this issue for you.  Can you test it instead?
-> >
-> > thanks,
-> >
-> > greg k-h
-> >
-> > -----------------
-> >
-> >
-> > From 61d51456f35760a09e8aa1e6ddd247f1547015d3 Mon Sep 17 00:00:00 2001
-> > From: Daniel Vetter <daniel.vetter@ffwll.ch>
-> > Date: Thu, 18 Jul 2019 10:09:03 +0200
-> > Subject: [PATCH] vt: Grab console_lock around con_is_bound in show_bind
-> >
-> > Not really harmful not to, but also not harm in grabbing the lock. And
-> > this shuts up a new WARNING I introduced in commit ddde3c18b700 ("vt:
-> > More locking checks").
-> >
-> > Reported-by: Jens Remus <jremus@linux.ibm.com>
-> > Cc: linux-kernel@vger.kernel.org
-> > Cc: dri-devel@lists.freedesktop.org
-> > Cc: linux-fbdev@vger.kernel.org
-> > Cc: linux-s390@vger.kernel.org
-> > Cc: Nicolas Pitre <nicolas.pitre@linaro.org>
-> > Cc: Martin Hostettler <textshell@uchuujin.de>
-> > Cc: Adam Borowski <kilobyte@angband.pl>
-> > Cc: Mikulas Patocka <mpatocka@redhat.com>
-> > Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-> > Cc: Sam Ravnborg <sam@ravnborg.org>
-> > Fixes: ddde3c18b700 ("vt: More locking checks")
-> > Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-> > Tested-by: Jens Remus <jremus@linux.ibm.com>
-> > Acked-by: Sam Ravnborg <sam@ravnborg.org>
-> > Link: https://lore.kernel.org/r/20190718080903.22622-1-daniel.vetter@ffwll.ch
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > ---
-> >  drivers/tty/vt/vt.c | 6 +++++-
-> >  1 file changed, 5 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-> > index ec92f36ab5c4..34aa39d1aed9 100644
-> > --- a/drivers/tty/vt/vt.c
-> > +++ b/drivers/tty/vt/vt.c
-> > @@ -3771,7 +3771,11 @@ static ssize_t show_bind(struct device *dev, struct device_attribute *attr,
-> >                          char *buf)
-> >  {
-> >         struct con_driver *con = dev_get_drvdata(dev);
-> > -       int bind = con_is_bound(con->con);
-> > +       int bind;
-> > +
-> > +       console_lock();
-> > +       bind = con_is_bound(con->con);
-> > +       console_unlock();
-> >
-> >         return snprintf(buf, PAGE_SIZE, "%i\n", bind);
-> >  }
+> UART driver for Aspeed's bmc chip AST2500
 > 
-> Thanks for checking.  I had actually noticed that patch (I searched
-> the mailing lists for the short git hash of the commit that broke me
-> and found it) and had decided it wouldn't fix my problems.
-> Specifically I think it could only possibly fix things if the function
-> show_bind() was somewhere in my stack trace.  ...and it isn't.
+> Design approch:
+> AST2500 has dedicated Uart DMA controller which has 12 sets of Tx and RX channels
+> connected to UART controller directly.
+> Since the DMA controller have dedicated buffers and registers,
+> there would be little benifit in adding DMA framework overhead.
+> So the software for DMA controller is included within the UART driver itself.
 > 
-> ...but after your message I decided to be extra super sure.  I tried:
+> implementation details:
+> 'struct ast_uart_port' is populated and registered with uart_core.
+> code is organised into two layers UART-layer and DMA-Layer,both of them are
+> in the same file.UART-layer requests Rx and Tx dma channels
+> and registers callbacks with DMA controller software Layer
+> Interrupt service routine for DMA controller is the crucial one for Handling all
+> the tx and rx data. ISRs installed for individual uarts are just dummy,and are helpful 
+> only to report any spurious interrupts in hardware.
 > 
-> 1. Going back to mainline commit 6789f873ed37 ("Merge tag 'pm-5.3-rc2'
-> of git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm") and
-> picking commit 61d51456f357 ("vt: Grab console_lock around
-> con_is_bound in show_bind") from linuxnext.  It didn't fix my problem.
 > 
-> 2. Going to next-20190726.  It didn't fix my problem.
+> Signed-off-by: sudheer veliseti <sudheer.open@gmail.com>
+> ---
 > 
-> ...so indeed my patch addresses a different issue than the one you
-> pointed to, even if both fix problems introduced by the same commit.
+> Changes from v3->v4:
+> - per port uart structures are registerd directly with uart core 
+>   Instead of registering through 8250 Frame work,
+>   ast_uart_port is registered using uart_add_one_port
+> -SDMA_RX_FIX macro replaced with CONFIG_AST_UART_DMA_RX_INTERRUPT
+> -ast_uart_sdma_isr : DMA interrupt handler code is improvised
+> -replaced pr_debug with ftrace wherever appropriate
+> -dev_err is used in all error return cases
+> -uart driver structure ast25xx_uart_reg is modified
+> -driver name changed to ast2500-uart-dma-drv
+> -rx_timer initialisation and callback fn modified
+> 
+> Changes from v2->v3:
+> -custom debug replaced by in kerenl dynamic debug: pr_debug 
+> -change-logs added 
+> 
+> 
+> .../tty/serial/8250/8250_ast2500_uart_dma.c   | 1901 +++++++++++++++++
+>  1 file changed, 1901 insertions(+)
+>  create mode 100644 drivers/tty/serial/8250/8250_ast2500_uart_dma.c
+> 
+> diff --git a/drivers/tty/serial/8250/8250_ast2500_uart_dma.c b/drivers/tty/serial/8250/8250_ast2500_uart_dma.c
+> new file mode 100644
+> index 000000000000..bc830d605372
+> --- /dev/null
+> +++ b/drivers/tty/serial/8250/8250_ast2500_uart_dma.c
+> @@ -0,0 +1,1901 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + *  DMA UART Driver for ASPEED BMC chip: AST2500
+> + *
+> + *  Copyright (C) 2019 sudheer Kumar veliseti, Aspeed technology Inc.
+> + *  <open.sudheer@gmail.com>
 
-Thanks for testing, I'll go queue this up now.
+What was the copyright on the file you copied?  Please properly
+attribute that here.
+
+
+> + *
+> + */
+> +#include <linux/clk.h>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/module.h>
+> +#include <linux/of_address.h>
+> +#include <linux/of_irq.h>
+> +#include <linux/tty.h>
+> +#include <linux/tty_flip.h>
+> +#include "8250.h"
+> +
+> +#define SERIAL8250_CONSOLE NULL
+> +#define TTY_AST_MAJOR 204
+> +#define TTY_AST_MINOR 68
+
+Where did you get this minor number from?
+
+> +
+> +#define DMA_BUFF_SIZE		0x1000
+> +#define SDMA_RX_BUFF_SIZE	0x10000
+> +#define PASS_LIMIT 256
+> +#define UART_DMA_NR CONFIG_AST_NR_DMA_UARTS
+> +#define AST_UART_SDMA_CH 12
+> +
+> +/* enum ast_uart_chan_op
+> + * operation codes passed to the DMA code by the user, and also used
+> + * to inform the current channel owner of any changes to the system state
+> + */
+> +enum ast_uart_chan_op {
+> +	AST_UART_DMAOP_TRIGGER,
+> +	AST_UART_DMAOP_STOP,
+> +	AST_UART_DMAOP_PAUSE,
+> +};
+> +
+> +/* ast_uart_dma_cbfn: buffer callback routinei type */
+> +typedef void (*ast_uart_dma_cbfn)(void *dev_id, u16 len);
+> +
+> +struct ast_sdma_info {
+> +	u8 ch_no;
+> +	u8 direction;
+> +	u8 enable;
+> +	void *priv;
+> +	char *sdma_virt_addr;
+> +	dma_addr_t dma_phy_addr;
+> +	/* cdriver callbacks */
+> +	ast_uart_dma_cbfn callback_fn; /* buffer done callback */
+> +};
+> +
+> +struct ast_sdma_ch {
+> +	struct ast_sdma_info tx_dma_info[AST_UART_SDMA_CH];
+> +	struct ast_sdma_info rx_dma_info[AST_UART_SDMA_CH];
+> +};
+> +
+> +struct ast_sdma {
+> +	void __iomem *reg_base;
+> +	int dma_irq;
+> +	struct ast_sdma_ch *dma_ch;
+> +	struct regmap *map;
+> +};
+> +
+> +#define UART_TX_SDMA_EN		0x00
+> +#define UART_RX_SDMA_EN		0x04
+> +#define UART_SDMA_CONF		0x08 /* Misc, Buffer size  */
+> +#define UART_SDMA_TIMER		0x0C
+> +#define UART_TX_SDMA_REST	0x20
+> +#define UART_RX_SDMA_REST	0x24
+> +#define UART_TX_SDMA_IER	0x30
+> +#define UART_TX_SDMA_ISR	0x34
+> +#define UART_RX_SDMA_IER	0x38
+> +#define UART_RX_SDMA_ISR	0x3C
+> +#define UART_TX_R_POINT(x)	(0x40 + ((x) * 0x20))
+> +#define UART_TX_W_POINT(x)	(0x44 + ((x) * 0x20))
+> +#define UART_TX_SDMA_ADDR(x)	(0x48 + ((x) * 0x20))
+> +#define UART_RX_R_POINT(x)	(0x50 + ((x) * 0x20))
+> +#define UART_RX_W_POINT(x)	(0x54 + ((x) * 0x20))
+> +#define UART_RX_SDMA_ADDR(x)	(0x58 + ((x) * 0x20))
+> +#define SDMA_CH_EN(x)		BIT(x)
+> +
+> +#define SDMA_TX_BUFF_SIZE_MASK	(0x3)
+> +#define SDMA_SET_TX_BUFF_SIZE(x)(x)
+> +#define SDMA_BUFF_SIZE_1KB	(0x0)
+> +#define SDMA_BUFF_SIZE_4KB	(0x1)
+> +#define SDMA_BUFF_SIZE_16KB	(0x2)
+> +#define SDMA_BUFF_SIZE_64KB	(0x3)
+> +#define SDMA_RX_BUFF_SIZE_MASK	(0x3 << 2)
+> +#define SDMA_SET_RX_BUFF_SIZE(x)((x) << 2)
+> +#define SDMA_TIMEOUT_DIS	BIT(4)
+> +
+> +#define UART_SDMA11_INT		BIT(11)
+> +#define UART_SDMA10_INT		BIT(10)
+> +#define UART_SDMA9_INT		BIT(9)
+> +#define UART_SDMA8_INT		BIT(8)
+> +#define UART_SDMA7_INT		BIT(7)
+> +#define UART_SDMA6_INT		BIT(6)
+> +#define UART_SDMA5_INT		BIT(5)
+> +#define UART_SDMA4_INT		BIT(4)
+> +#define UART_SDMA3_INT		BIT(3)
+> +#define UART_SDMA2_INT		BIT(2)
+> +#define UART_SDMA1_INT		BIT(1)
+> +#define UART_SDMA0_INT		BIT(0)
+> +
+> +/*
+> + * Configuration:
+> + *   share_irqs - whether we pass IRQF_SHARED to request_irq().
+> + *   This option is unsafe when used on edge-triggered interrupts.
+> + */
+> +static unsigned int share_irqs = SERIAL8250_SHARE_IRQS;
+> +
+> +static unsigned int nr_uarts = CONFIG_AST_RUNTIME_DMA_UARTS;
+> +
+> +struct ast_uart_port {
+> +	struct uart_port port;
+> +	unsigned short capabilities; /* port capabilities */
+> +	unsigned short bugs;         /* port bugs */
+> +	unsigned int tx_loadsz;      /* transmit fifo load size */
+> +	unsigned char acr;
+> +	unsigned char ier;
+> +	unsigned char lcr;
+> +	unsigned char mcr;
+> +	unsigned char mcr_mask;  /* mask of user bits */
+> +	unsigned char mcr_force; /* mask of forced bits */
+> +	struct circ_buf rx_dma_buf;
+> +	struct circ_buf tx_dma_buf;
+> +	unsigned char dma_channel;
+> +	dma_addr_t dma_rx_addr; /* Mapped ADMA descr. table */
+> +	dma_addr_t dma_tx_addr; /* Mapped ADMA descr. table */
+> +#ifdef CONFIG_AST_UART_DMA_RX_INTERRUPT
+> +	struct tasklet_struct rx_tasklet;
+> +#else
+> +	struct timer_list rx_timer;
+> +	unsigned int workaround;
+> +#endif
+> +	struct tasklet_struct tx_tasklet;
+> +	spinlock_t lock;
+> +	int tx_done;
+> +	int tx_count;
+> +	struct platform_device *ast_uart_pdev;
+> +/*
+> + * Some bits in registers are cleared on a read, so they must
+> + * be saved whenever the register is read but the bits will not
+> + * be immediately processed.
+> + */
+> +#define LSR_SAVE_FLAGS UART_LSR_BRK_ERROR_BITS
+> +	unsigned char lsr_saved_flags;
+> +#define MSR_SAVE_FLAGS UART_MSR_ANY_DELTA
+> +	unsigned char msr_saved_flags;
+> +
+> +	/*
+> +	 * We provide a per-port pm hook.
+> +	 */
+> +	void (*pm)(struct uart_port *port, unsigned int state,
+> +						 unsigned int old);
+> +};
+> +
+> +static struct ast_uart_port ast_uart_ports[UART_DMA_NR];
+> +
+> +#define GET_DEV(ast_uart_port_priv_ptr)\
+> +		(ast_uart_port_priv_ptr->ast_uart_pdev->dev)
+> +
+> +static inline struct ast_uart_port *
+> +to_ast_dma_uart_port(struct uart_port *uart) {
+> +	return container_of(uart, struct ast_uart_port, port);
+> +}
+> +
+> +struct irq_info {
+> +	spinlock_t lock;
+> +	struct ast_uart_port *up;
+> +};
+> +
+> +static struct irq_info ast_uart_irq[1];
+> +static DEFINE_MUTEX(ast_uart_mutex);
+> +
+> +/*
+> + * Here we define the default xmit fifo size used for each type of UART.
+> + */
+> +static const struct serial8250_config uart_config[] = {
+> +	[PORT_UNKNOWN] = {
+> +		.name		= "unknown",
+> +		.fifo_size	= 1,
+> +		.tx_loadsz	= 1,
+> +	},
+> +	[PORT_8250] = {
+> +		.name		= "8250",
+> +		.fifo_size	= 1,
+> +		.tx_loadsz	= 1,
+> +	},
+> +	[PORT_16450] = {
+> +		.name		= "16450",
+> +		.fifo_size	= 1,
+> +		.tx_loadsz	= 1,
+> +	},
+> +	[PORT_16550] = {
+> +		.name		= "16550",
+> +		.fifo_size	= 1,
+> +		.tx_loadsz	= 1,
+> +	},
+> +	[PORT_16550A] = {
+> +		.name		= "16550A",
+> +		.fifo_size	= 16,
+> +		.tx_loadsz	= 16,
+> +		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10
+> +							| UART_FCR_DMA_SELECT,
+> +		.flags		= UART_CAP_FIFO,
+> +	},
+> +};
+
+I doubt you need all of these port types, right?  You only have one type
+of device, please strip out _ALL_ of the unneeded code in here.  You did
+a wholesale copy of the old driver, to get away with that you then need
+to customize it to work properly with your hardware _AND_ take away all
+code that is not needed for your hardware.
+
+Lots of this file can be removed, please do so.
+
+thanks,
 
 greg k-h
