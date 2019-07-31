@@ -1,65 +1,87 @@
 From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH v2 00/23] LPUART fixes and improvements
-Date: Wed, 31 Jul 2019 10:30:22 -0700
-Message-ID: <20190731173045.11718-1-andrew.smirnov@gmail.com>
+Subject: [PATCH v2 01/23] tty: serial: fsl_lpuart: fix framing error handling when using DMA
+Date: Wed, 31 Jul 2019 10:30:23 -0700
+Message-ID: <20190731173045.11718-2-andrew.smirnov@gmail.com>
+References: <20190731173045.11718-1-andrew.smirnov@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190731173045.11718-1-andrew.smirnov@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, Stefan Agner <stefan@agner.ch>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com, linux-kernel@vger.kernel.org
+Cc: Stefan Agner <stefan.agner@toradex.com>, Max Krummenacher <max.krummenacher@toradex.com>, Andrey Smirnov <andrew.smirnov@gmail.com>, Stefan Agner <stefan@agner.ch>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Everyone:
+From: Stefan Agner <stefan.agner@toradex.com>
 
-This series contains fixes/improvements to LPUART dirver I came up
-with recently as well as fixes picked up from Toradex and NXP Vybrid
-repos.
+When using DMA framing error get cleared properly. However, due
+to the additional read from the data register, an underflow in
+the receive FIFO buffer occurs (the FIFO pointer gets out of
+sync).
 
-Feedback is welcome!
+Clear the FIFO in case an underflow has occurred. Also disable the
+receiver during this operation and when reading the data register to
+minimize potential interference.
 
-Changes since [v1]:
+Signed-off-by: Stefan Agner <stefan.agner@toradex.com>
+Acked-by: Max Krummenacher <max.krummenacher@toradex.com>
+Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+Cc: Stefan Agner <stefan@agner.ch>
+Cc: Chris Healy <cphealy@gmail.com>
+Cc: Cory Tusar <cory.tusar@zii.aero>
+Cc: Lucas Stach <l.stach@pengutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-imx@nxp.com
+Cc: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
+ drivers/tty/serial/fsl_lpuart.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
- - Dropped "tty: serial: fsl_lpuart: Drop unnecessary sg_set_buf()
-   call" due to being a duplicate of "tty: serial: fsl_lpuart: remove
-   sg_set_buf() for sport->rx_sgl"
-   
- - Fixed build break in "tty: serial: fsl_lpuart: Introduce
-   lpuart_tx_dma_startup()"
-
-Thanks,
-Andrey Smirnov
-
-
-Andrey Smirnov (21):
-  tty: serial: fsl_lpuart: Flush HW FIFOs in .flush_buffer
-  tty: serial: fsl_lpuart: Simplify RX/TX IRQ handlers
-  tty: serial: fsl_lpuart: Fix bogus indentation
-  tty: serial: fsl_lpuart: Drop unnecessary uart_write_wakeup()
-  tty: serial: fsl_lpuart: Fix issue in software flow control
-  tty: serial: fls_lpuart: Split shared TX IRQ handler into two
-  tty: serial: fsl_lpuart: Drop no-op bit opearation
-  tty: serial: fsl_lpuart: Drop unnecessary extra parenthesis
-  tty: serial: fsl_lpuart: Clear CSTOPB unconditionally
-  tty: serial: fsl_lpuart: Use appropriate lpuart32_* I/O funcs
-  tty: serial: fsl_lpuart: Introduce lpuart_wait_bit_set()
-  tty: serial: fsl_lpuart: Use cpu_relax() instead of barrier()
-  tty: serial: fsl_lpuart: Introduce lpuart_stopped_or_empty()
-  tty: serial: fsl_lpuart: Drop unnecessary lpuart*_stop_tx()
-  tty: serial: fsl_lpuart: Introduce lpuart_dma_shutdown()
-  tty: serial: fsl_lpuart: Introduce lpuart_tx_dma_startup()
-  tty: serial: fsl_lpuart: Introduce lpuart_rx_dma_startup()
-  tty: serial: fsl_lpuart: Introduce lpuart32_configure()
-  tty: serial: fsl_lpuart: Introduce lpuart*_setup_watermark_enable()
-  tty: serial: fsl_lpuart: Don't enable TIE in .startup() or .resume()
-  tty: serial: fsl_lpuart: Ignore TX/RX interrupts if DMA is enabled
-
-Stefan Agner (2):
-  tty: serial: fsl_lpuart: fix framing error handling when using DMA
-  tty: serial: fsl_lpuart: flush receive FIFO after overruns
-
- drivers/tty/serial/fsl_lpuart.c | 493 +++++++++++++++++---------------
- 1 file changed, 261 insertions(+), 232 deletions(-)
-
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index d15e65f88214..0643fa368d35 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -983,6 +983,13 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
+ 		unsigned char sr = readb(sport->port.membase + UARTSR1);
+ 
+ 		if (sr & (UARTSR1_PE | UARTSR1_FE)) {
++			unsigned char cr2;
++
++			/* Disable receiver during this operation... */
++			cr2 = readb(sport->port.membase + UARTCR2);
++			cr2 &= ~UARTCR2_RE;
++			writeb(cr2, sport->port.membase + UARTCR2);
++
+ 			/* Read DR to clear the error flags */
+ 			readb(sport->port.membase + UARTDR);
+ 
+@@ -990,6 +997,25 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
+ 				sport->port.icount.parity++;
+ 			else if (sr & UARTSR1_FE)
+ 				sport->port.icount.frame++;
++			/*
++			 * At this point parity/framing error is
++			 * cleared However, since the DMA already read
++			 * the data register and we had to read it
++			 * again after reading the status register to
++			 * properly clear the flags, the FIFO actually
++			 * underflowed... This requires a clearing of
++			 * the FIFO...
++			 */
++			if (readb(sport->port.membase + UARTSFIFO) &
++			    UARTSFIFO_RXUF) {
++				writeb(UARTSFIFO_RXUF,
++				       sport->port.membase + UARTSFIFO);
++				writeb(UARTCFIFO_RXFLUSH,
++				       sport->port.membase + UARTCFIFO);
++			}
++
++			cr2 |= UARTCR2_RE;
++			writeb(cr2, sport->port.membase + UARTCR2);
+ 		}
+ 	}
+ 
 -- 
 2.21.0
