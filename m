@@ -1,7 +1,7 @@
 From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH v2 15/23] tty: serial: fsl_lpuart: Introduce lpuart_stopped_or_empty()
-Date: Wed, 31 Jul 2019 10:30:37 -0700
-Message-ID: <20190731173045.11718-16-andrew.smirnov@gmail.com>
+Subject: [PATCH v2 20/23] tty: serial: fsl_lpuart: Introduce lpuart32_configure()
+Date: Wed, 31 Jul 2019 10:30:42 -0700
+Message-ID: <20190731173045.11718-21-andrew.smirnov@gmail.com>
 References: <20190731173045.11718-1-andrew.smirnov@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,12 +12,9 @@ To: linux-serial@vger.kernel.org
 Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, Stefan Agner <stefan@agner.ch>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The check for
-
-    uart_circ_empty(xmit) || uart_tx_stopped(&sport->port)
-
-appears in multiple places in the driver. Move it into a helper
-function.
+Code doing final steps of TX/RX configuration in lpuart32_startup()
+and lpuart_resume() is identical, so move it into a standalone
+subroutine.
 
 Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
 Cc: Stefan Agner <stefan@agner.ch>
@@ -30,80 +27,81 @@ Cc: linux-imx@nxp.com
 Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/tty/serial/fsl_lpuart.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 48 +++++++++++++++------------------
+ 1 file changed, 21 insertions(+), 27 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 58043e01a242..e59dd90fc34c 100644
+index 7d67e9631623..5a6516f4bc93 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -452,6 +452,11 @@ static void lpuart_dma_tx(struct lpuart_port *sport)
- 	dma_async_issue_pending(sport->dma_tx_chan);
+@@ -1502,6 +1502,24 @@ static int lpuart_startup(struct uart_port *port)
+ 	return 0;
  }
  
-+static bool lpuart_stopped_or_empty(struct uart_port *port)
++static void lpuart32_configure(struct lpuart_port *sport)
 +{
-+	return uart_circ_empty(&port->state->xmit) || uart_tx_stopped(port);
++	unsigned long temp;
++
++	if (sport->lpuart_dma_rx_use) {
++		/* RXWATER must be 0 */
++		temp = lpuart32_read(&sport->port, UARTWATER);
++		temp &= ~(UARTWATER_WATER_MASK << UARTWATER_RXWATER_OFF);
++		lpuart32_write(&sport->port, temp, UARTWATER);
++	}
++	temp = lpuart32_read(&sport->port, UARTCTRL);
++	if (!sport->lpuart_dma_rx_use)
++		temp |= UARTCTRL_RIE;
++	if (!sport->lpuart_dma_tx_use)
++		temp |= UARTCTRL_TIE;
++	lpuart32_write(&sport->port, temp, UARTCTRL);
 +}
 +
- static void lpuart_dma_tx_complete(void *arg)
- {
- 	struct lpuart_port *sport = arg;
-@@ -479,7 +484,7 @@ static void lpuart_dma_tx_complete(void *arg)
- 
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 
--	if (!uart_circ_empty(xmit) && !uart_tx_stopped(&sport->port))
-+	if (!lpuart_stopped_or_empty(&sport->port))
- 		lpuart_dma_tx(sport);
- 
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
-@@ -680,7 +685,7 @@ static inline void lpuart_transmit_buffer(struct lpuart_port *sport)
- 		return;
- 	}
- 
--	if (uart_circ_empty(xmit) || uart_tx_stopped(&sport->port)) {
-+	if (lpuart_stopped_or_empty(&sport->port)) {
- 		lpuart_stop_tx(&sport->port);
- 		return;
- 	}
-@@ -711,7 +716,7 @@ static inline void lpuart32_transmit_buffer(struct lpuart_port *sport)
- 		return;
- 	}
- 
--	if (uart_circ_empty(xmit) || uart_tx_stopped(&sport->port)) {
-+	if (lpuart_stopped_or_empty(&sport->port)) {
- 		lpuart32_stop_tx(&sport->port);
- 		return;
- 	}
-@@ -739,14 +744,13 @@ static void lpuart_start_tx(struct uart_port *port)
- {
- 	struct lpuart_port *sport = container_of(port,
- 			struct lpuart_port, port);
--	struct circ_buf *xmit = &sport->port.state->xmit;
- 	unsigned char temp;
- 
- 	temp = readb(port->membase + UARTCR2);
- 	writeb(temp | UARTCR2_TIE, port->membase + UARTCR2);
- 
- 	if (sport->lpuart_dma_tx_use) {
--		if (!uart_circ_empty(xmit) && !uart_tx_stopped(port))
-+		if (!lpuart_stopped_or_empty(port))
- 			lpuart_dma_tx(sport);
- 	} else {
- 		if (readb(port->membase + UARTSR1) & UARTSR1_TDRE)
-@@ -757,11 +761,10 @@ static void lpuart_start_tx(struct uart_port *port)
- static void lpuart32_start_tx(struct uart_port *port)
+ static int lpuart32_startup(struct uart_port *port)
  {
  	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
--	struct circ_buf *xmit = &sport->port.state->xmit;
- 	unsigned long temp;
+@@ -1530,18 +1548,7 @@ static int lpuart32_startup(struct uart_port *port)
+ 	lpuart_rx_dma_startup(sport);
+ 	lpuart_tx_dma_startup(sport);
  
- 	if (sport->lpuart_dma_tx_use) {
--		if (!uart_circ_empty(xmit) && !uart_tx_stopped(port))
-+		if (!lpuart_stopped_or_empty(port))
- 			lpuart_dma_tx(sport);
- 	} else {
- 		temp = lpuart32_read(port, UARTCTRL);
+-	if (sport->lpuart_dma_rx_use) {
+-		/* RXWATER must be 0 */
+-		temp = lpuart32_read(&sport->port, UARTWATER);
+-		temp &= ~(UARTWATER_WATER_MASK << UARTWATER_RXWATER_OFF);
+-		lpuart32_write(&sport->port, temp, UARTWATER);
+-	}
+-	temp = lpuart32_read(&sport->port, UARTCTRL);
+-	if (!sport->lpuart_dma_rx_use)
+-		temp |= UARTCTRL_RIE;
+-	if (!sport->lpuart_dma_tx_use)
+-		temp |= UARTCTRL_TIE;
+-	lpuart32_write(&sport->port, temp, UARTCTRL);
++	lpuart32_configure(sport);
+ 
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ 	return 0;
+@@ -2581,21 +2588,8 @@ static int lpuart_resume(struct device *dev)
+ 
+ 	lpuart_tx_dma_startup(sport);
+ 
+-	if (lpuart_is_32(sport)) {
+-		if (sport->lpuart_dma_rx_use) {
+-			/* RXWATER must be 0 */
+-			temp = lpuart32_read(&sport->port, UARTWATER);
+-			temp &= ~(UARTWATER_WATER_MASK <<
+-				  UARTWATER_RXWATER_OFF);
+-			lpuart32_write(&sport->port, temp, UARTWATER);
+-		}
+-		temp = lpuart32_read(&sport->port, UARTCTRL);
+-		if (!sport->lpuart_dma_rx_use)
+-			temp |= UARTCTRL_RIE;
+-		if (!sport->lpuart_dma_tx_use)
+-			temp |= UARTCTRL_TIE;
+-		lpuart32_write(&sport->port, temp, UARTCTRL);
+-	}
++	if (lpuart_is_32(sport))
++		lpuart32_configure(sport);
+ 
+ 	uart_resume_port(&lpuart_reg, &sport->port);
+ 
 -- 
 2.21.0
