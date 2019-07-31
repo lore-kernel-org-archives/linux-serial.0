@@ -1,7 +1,7 @@
 From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH v2 07/23] tty: serial: fsl_lpuart: Fix issue in software flow control
-Date: Wed, 31 Jul 2019 10:30:29 -0700
-Message-ID: <20190731173045.11718-8-andrew.smirnov@gmail.com>
+Subject: [PATCH v2 12/23] tty: serial: fsl_lpuart: Use appropriate lpuart32_* I/O funcs
+Date: Wed, 31 Jul 2019 10:30:34 -0700
+Message-ID: <20190731173045.11718-13-andrew.smirnov@gmail.com>
 References: <20190731173045.11718-1-andrew.smirnov@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,24 +12,12 @@ To: linux-serial@vger.kernel.org
 Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, Stefan Agner <stefan@agner.ch>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Although I haven't observed this bug in practice, it seems that the
-code for handling x_char of LPUART is pretty much identical to that of
-i.MX. So the fix found in commit 7e2fb5aa8d81 ("serial: imx: Fix issue
-in software flow control"):
+When dealing with 32-bit variant of LPUART IP block appropriate I/O
+helpers have to be used to properly deal with endianness
+differences. Change all of the offending code to do that.
 
-    serial: imx: Fix issue in software flow control
-
-    After send out x_char in UART driver, x_char needs to be cleared
-    by UART driver itself, otherwise data in TXFIFO can no longer be
-    sent out.
-    Also tx counter needs to be increased to keep track of correct
-    number of transmitted data.
-
-    Signed-off-by: Jiada Wang <jiada_wang@mentor.com>
-    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-should apply here as well.
-
+Fixes: a5fa2660d787 ("tty/serial/fsl_lpuart: Add CONSOLE_POLL support
+for lpuart32.")
 Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
 Cc: Stefan Agner <stefan@agner.ch>
 Cc: Chris Healy <cphealy@gmail.com>
@@ -41,21 +29,72 @@ Cc: linux-imx@nxp.com
 Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/tty/serial/fsl_lpuart.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/fsl_lpuart.c | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index c35f81df0cff..8657addbfd1c 100644
+index a0f38d7caa76..395df8c7e1d5 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -782,6 +782,8 @@ static void lpuart_txint(struct lpuart_port *sport)
- 			lpuart32_write(&sport->port, sport->port.x_char, UARTDATA);
- 		else
- 			writeb(sport->port.x_char, sport->port.membase + UARTDR);
-+		sport->port.icount.tx++;
-+		sport->port.x_char = 0;
- 		goto out;
+@@ -617,26 +617,26 @@ static int lpuart32_poll_init(struct uart_port *port)
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 
+ 	/* Disable Rx & Tx */
+-	writel(0, sport->port.membase + UARTCTRL);
++	lpuart32_write(&sport->port, UARTCTRL, 0);
+ 
+-	temp = readl(sport->port.membase + UARTFIFO);
++	temp = lpuart32_read(&sport->port, UARTFIFO);
+ 
+ 	/* Enable Rx and Tx FIFO */
+-	writel(temp | UARTFIFO_RXFE | UARTFIFO_TXFE,
+-		   sport->port.membase + UARTFIFO);
++	lpuart32_write(&sport->port, UARTFIFO,
++		       temp | UARTFIFO_RXFE | UARTFIFO_TXFE);
+ 
+ 	/* flush Tx and Rx FIFO */
+-	writel(UARTFIFO_TXFLUSH | UARTFIFO_RXFLUSH,
+-			sport->port.membase + UARTFIFO);
++	lpuart32_write(&sport->port, UARTFIFO,
++		       UARTFIFO_TXFLUSH | UARTFIFO_RXFLUSH);
+ 
+ 	/* explicitly clear RDRF */
+-	if (readl(sport->port.membase + UARTSTAT) & UARTSTAT_RDRF) {
+-		readl(sport->port.membase + UARTDATA);
+-		writel(UARTFIFO_RXUF, sport->port.membase + UARTFIFO);
++	if (lpuart32_read(&sport->port, UARTSTAT) & UARTSTAT_RDRF) {
++		lpuart32_read(&sport->port, UARTDATA);
++		lpuart32_write(&sport->port, UARTFIFO, UARTFIFO_RXUF);
  	}
+ 
+ 	/* Enable Rx and Tx */
+-	writel(UARTCTRL_RE | UARTCTRL_TE, sport->port.membase + UARTCTRL);
++	lpuart32_write(&sport->port, UARTCTRL, UARTCTRL_RE | UARTCTRL_TE);
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ 
+ 	return 0;
+@@ -644,18 +644,18 @@ static int lpuart32_poll_init(struct uart_port *port)
+ 
+ static void lpuart32_poll_put_char(struct uart_port *port, unsigned char c)
+ {
+-	while (!(readl(port->membase + UARTSTAT) & UARTSTAT_TDRE))
++	while (!(lpuart32_read(port, UARTSTAT) & UARTSTAT_TDRE))
+ 		barrier();
+ 
+-	writel(c, port->membase + UARTDATA);
++	lpuart32_write(port, UARTDATA, c);
+ }
+ 
+ static int lpuart32_poll_get_char(struct uart_port *port)
+ {
+-	if (!(readl(port->membase + UARTSTAT) & UARTSTAT_RDRF))
++	if (!(lpuart32_read(port, UARTSTAT) & UARTSTAT_RDRF))
+ 		return NO_POLL_CHAR;
+ 
+-	return readl(port->membase + UARTDATA);
++	return lpuart32_read(port, UARTDATA);
+ }
+ #endif
  
 -- 
 2.21.0
