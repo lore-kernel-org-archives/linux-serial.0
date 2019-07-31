@@ -1,7 +1,7 @@
 From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH v2 02/23] tty: serial: fsl_lpuart: flush receive FIFO after overruns
-Date: Wed, 31 Jul 2019 10:30:24 -0700
-Message-ID: <20190731173045.11718-3-andrew.smirnov@gmail.com>
+Subject: [PATCH v2 22/23] tty: serial: fsl_lpuart: Don't enable TIE in .startup() or .resume()
+Date: Wed, 31 Jul 2019 10:30:44 -0700
+Message-ID: <20190731173045.11718-23-andrew.smirnov@gmail.com>
 References: <20190731173045.11718-1-andrew.smirnov@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -9,29 +9,20 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190731173045.11718-1-andrew.smirnov@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Stefan Agner <stefan.agner@toradex.com>, Max Krummenacher <max.krummenacher@toradex.com>, Stefan Agner <stefan@agner.ch>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com, linux-kernel@vger.kernel.org
+Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, Stefan Agner <stefan@agner.ch>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Stefan Agner <stefan.agner@toradex.com>
+Enabling TIE in .startup() callback causes the driver to start (or at
+least try) to transmit data before .start_tx() is called. Which, while
+harmless (since TIE handler will immediately disable it), is a no-op
+and shouldn't really happen. Drop UARTCR2_TIE from list of bits set in
+lpuart_startup().
 
-After overruns the FIFO pointers become misaligned. This
-typically shows by characters still being stuck in the FIFO
-despite the empty flag being asserted. After the first
-assertion of the overrun flag the empty flag still seems to
-indicate FIFO state correctly and all data can be read.
-However, after another overrun assertion the FIFO seems to
-be off by one such that the last received character is still
-in the FIFO (despite the empty flag being asserted).
+This change will also not enable TIE in .resume(), but it seems that,
+similart to .startup(), transmit interrupt shouldn't be enabled there
+either.
 
-Flushing the receive FIFO reinitializes pointers. Hence it
-is recommended to flush the FIFO after overruns, see also:
-https://community.nxp.com/thread/321175
-
-Hence, on assertion of the overrun flag read the remaining
-data from the FIFO and flush buffers.
-
-Signed-off-by: Stefan Agner <stefan.agner@toradex.com>
-Acked-by: Max Krummenacher <max.krummenacher@toradex.com>
+Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
 Cc: Stefan Agner <stefan@agner.ch>
 Cc: Chris Healy <cphealy@gmail.com>
 Cc: Cory Tusar <cory.tusar@zii.aero>
@@ -42,48 +33,21 @@ Cc: linux-imx@nxp.com
 Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/tty/serial/fsl_lpuart.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 0643fa368d35..317bbc1dd2b4 100644
+index 8ab5f9939597..237690a6e80a 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -799,7 +799,7 @@ static irqreturn_t lpuart_txint(int irq, void *dev_id)
- static irqreturn_t lpuart_rxint(int irq, void *dev_id)
- {
- 	struct lpuart_port *sport = dev_id;
--	unsigned int flg, ignored = 0;
-+	unsigned int flg, ignored = 0, overrun = 0;
- 	struct tty_port *port = &sport->port.state->port;
- 	unsigned long flags;
- 	unsigned char rx, sr;
-@@ -826,7 +826,7 @@ static irqreturn_t lpuart_rxint(int irq, void *dev_id)
- 				sport->port.icount.frame++;
+@@ -1410,7 +1410,7 @@ static void lpuart_setup_watermark_enable(struct lpuart_port *sport)
+ 	lpuart_setup_watermark(sport);
  
- 			if (sr & UARTSR1_OR)
--				sport->port.icount.overrun++;
-+				overrun++;
+ 	cr2 = readb(sport->port.membase + UARTCR2);
+-	cr2 |= UARTCR2_RIE | UARTCR2_TIE | UARTCR2_RE | UARTCR2_TE;
++	cr2 |= UARTCR2_RIE | UARTCR2_RE | UARTCR2_TE;
+ 	writeb(cr2, sport->port.membase + UARTCR2);
+ }
  
- 			if (sr & sport->port.ignore_status_mask) {
- 				if (++ignored > 100)
-@@ -853,6 +853,17 @@ static irqreturn_t lpuart_rxint(int irq, void *dev_id)
- 	}
- 
- out:
-+	if (overrun) {
-+		sport->port.icount.overrun += overrun;
-+
-+		/*
-+		 * Overruns cause FIFO pointers to become missaligned.
-+		 * Flushing the receive FIFO reinitializes the pointers.
-+		 */
-+		writeb(UARTCFIFO_RXFLUSH, sport->port.membase + UARTCFIFO);
-+		writeb(UARTSFIFO_RXOF, sport->port.membase + UARTSFIFO);
-+	}
-+
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
- 
- 	tty_flip_buffer_push(port);
 -- 
 2.21.0
