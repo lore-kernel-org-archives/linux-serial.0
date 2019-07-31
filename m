@@ -1,148 +1,286 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 11/14] ARM: lpc32xx: allow multiplatform build
-Date: Wed, 31 Jul 2019 21:56:53 +0200
-Message-ID: <20190731195713.3150463-12-arnd@arndb.de>
+Subject: [PATCH 12/14] ARM: dove: clean up mach/*.h headers
+Date: Wed, 31 Jul 2019 21:56:54 +0200
+Message-ID: <20190731195713.3150463-13-arnd@arndb.de>
 References: <20190731195713.3150463-1-arnd@arndb.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <20190731195713.3150463-1-arnd@arndb.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: soc@kernel.org, linux-arm-kernel@lists.infradead.org, Vladimir Zapolskiy <vz@mleia.com>, Sylvain Lemieux <slemieux.tyco@gmail.com>, Russell King <linux@armlinux.org.uk>, Gregory Clement <gregory.clement@bootlin.com>, Linus Walleij <linus.walleij@linaro.org>
-Cc: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, "David S. Miller" <davem@davemloft.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, Guenter Roeck <linux@roeck-us.net>, linux-gpio@vger.kernel.org, netdev@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: soc@kernel.org, linux-arm-kernel@lists.infradead.org, Vladimir Zapolskiy <vz@mleia.com>, Sylvain Lemieux <slemieux.tyco@gmail.com>, Russell King <linux@armlinux.org.uk>, Gregory Clement <gregory.clement@bootlin.com>, Linus Walleij <linus.walleij@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+Cc: linux-watchdog@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>, linux-serial@vger.kernel.org, netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guenter Roeck <linux@roeck-us.net>
 List-Id: linux-serial@vger.kernel.org
 
-All preparation work is done, so the platform can finally
-be moved into ARCH_MULTIPLATFORM. This requires a small
-change to the defconfig file to enable the platform.
+This is a simple move of all header files that are no longer
+included by anything else from the include/mach directory
+to the platform directory itself as preparation for
+multiplatform support.
+
+The mach/uncompress.h headers are left in place for now,
+and are mildly modified to be independent of the other
+headers. They will be removed entirely when ARCH_MULTIPLATFORM
+gets enabled and they become obsolete.
+
+Rather than updating the path names inside of the comments
+of each header, I delete those comments to avoid having to
+update them again, should they get moved or copied another
+time.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Andrew Lunn <andrew@lunn.ch>
 ---
- arch/arm/Kconfig                              | 17 +------
- arch/arm/configs/lpc32xx_defconfig            |  1 +
- arch/arm/mach-lpc32xx/Kconfig                 | 11 +++++
- .../mach-lpc32xx/include/mach/uncompress.h    | 48 -------------------
- 4 files changed, 14 insertions(+), 63 deletions(-)
- create mode 100644 arch/arm/mach-lpc32xx/Kconfig
- delete mode 100644 arch/arm/mach-lpc32xx/include/mach/uncompress.h
+ .../{include/mach => }/bridge-regs.h          |  4 +---
+ arch/arm/mach-dove/cm-a510.c                  |  3 +--
+ arch/arm/mach-dove/common.c                   |  4 ++--
+ arch/arm/mach-dove/dove-db-setup.c            |  2 +-
+ arch/arm/mach-dove/{include/mach => }/dove.h  |  4 +---
+ arch/arm/mach-dove/include/mach/hardware.h    | 19 -------------------
+ arch/arm/mach-dove/include/mach/uncompress.h  |  8 +++-----
+ arch/arm/mach-dove/irq.c                      |  5 ++++-
+ arch/arm/mach-dove/{include/mach => }/irqs.h  |  2 --
+ arch/arm/mach-dove/mpp.c                      |  2 +-
+ arch/arm/mach-dove/pcie.c                     |  4 ++--
+ arch/arm/mach-dove/{include/mach => }/pm.h    |  4 +---
+ 12 files changed, 17 insertions(+), 44 deletions(-)
+ rename arch/arm/mach-dove/{include/mach => }/bridge-regs.h (96%)
+ rename arch/arm/mach-dove/{include/mach => }/dove.h (99%)
+ delete mode 100644 arch/arm/mach-dove/include/mach/hardware.h
+ rename arch/arm/mach-dove/{include/mach => }/irqs.h (98%)
+ rename arch/arm/mach-dove/{include/mach => }/pm.h (97%)
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 33b00579beff..65808e17cb3b 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -478,21 +478,6 @@ config ARCH_W90X900
- 	  <http://www.nuvoton.com/hq/enu/ProductAndSales/ProductLines/
- 		ConsumerElectronicsIC/ARMMicrocontroller/ARMMicrocontroller>
+diff --git a/arch/arm/mach-dove/include/mach/bridge-regs.h b/arch/arm/mach-dove/bridge-regs.h
+similarity index 96%
+rename from arch/arm/mach-dove/include/mach/bridge-regs.h
+rename to arch/arm/mach-dove/bridge-regs.h
+index f4a5b34489b7..ace0b0bfbf11 100644
+--- a/arch/arm/mach-dove/include/mach/bridge-regs.h
++++ b/arch/arm/mach-dove/bridge-regs.h
+@@ -1,6 +1,4 @@
+ /*
+- * arch/arm/mach-dove/include/mach/bridge-regs.h
+- *
+  * Mbus-L to Mbus Bridge Registers
+  *
+  * This file is licensed under the terms of the GNU General Public
+@@ -11,7 +9,7 @@
+ #ifndef __ASM_ARCH_BRIDGE_REGS_H
+ #define __ASM_ARCH_BRIDGE_REGS_H
  
--config ARCH_LPC32XX
--	bool "NXP LPC32XX"
--	select ARM_AMBA
--	select CLKDEV_LOOKUP
--	select CLKSRC_LPC32XX
--	select COMMON_CLK
--	select CPU_ARM926T
--	select GENERIC_CLOCKEVENTS
--	select GENERIC_IRQ_MULTI_HANDLER
--	select GPIOLIB
--	select SPARSE_IRQ
--	select USE_OF
--	help
--	  Support for the NXP LPC32XX family of processors
+-#include <mach/dove.h>
++#include "dove.h"
+ 
+ #define CPU_CONFIG		(BRIDGE_VIRT_BASE + 0x0000)
+ 
+diff --git a/arch/arm/mach-dove/cm-a510.c b/arch/arm/mach-dove/cm-a510.c
+index b9a7c33db29a..9f25c993d863 100644
+--- a/arch/arm/mach-dove/cm-a510.c
++++ b/arch/arm/mach-dove/cm-a510.c
+@@ -22,8 +22,7 @@
+ #include <asm/mach-types.h>
+ #include <asm/mach/arch.h>
+ 
+-#include <mach/dove.h>
 -
- config ARCH_PXA
- 	bool "PXA2xx/PXA3xx-based"
- 	depends on MMU
-@@ -746,6 +731,8 @@ source "arch/arm/mach-keystone/Kconfig"
++#include "dove.h"
+ #include "common.h"
  
- source "arch/arm/mach-ks8695/Kconfig"
+ static struct mv643xx_eth_platform_data cm_a510_ge00_data = {
+diff --git a/arch/arm/mach-dove/common.c b/arch/arm/mach-dove/common.c
+index d7b826d2695c..01b830afcea9 100644
+--- a/arch/arm/mach-dove/common.c
++++ b/arch/arm/mach-dove/common.c
+@@ -22,11 +22,11 @@
+ #include <asm/mach/arch.h>
+ #include <asm/mach/map.h>
+ #include <asm/mach/time.h>
+-#include <mach/bridge-regs.h>
+-#include <mach/pm.h>
+ #include <plat/common.h>
+ #include <plat/irq.h>
+ #include <plat/time.h>
++#include "bridge-regs.h"
++#include "pm.h"
+ #include "common.h"
  
-+source "arch/arm/mach-lpc32xx/Kconfig"
-+
- source "arch/arm/mach-mediatek/Kconfig"
+ /* These can go away once Dove uses the mvebu-mbus DT binding */
+diff --git a/arch/arm/mach-dove/dove-db-setup.c b/arch/arm/mach-dove/dove-db-setup.c
+index 8971c3c0f0fe..418ab21b9d9b 100644
+--- a/arch/arm/mach-dove/dove-db-setup.c
++++ b/arch/arm/mach-dove/dove-db-setup.c
+@@ -24,7 +24,7 @@
+ #include <linux/gpio.h>
+ #include <asm/mach-types.h>
+ #include <asm/mach/arch.h>
+-#include <mach/dove.h>
++#include "dove.h"
+ #include "common.h"
  
- source "arch/arm/mach-meson/Kconfig"
-diff --git a/arch/arm/configs/lpc32xx_defconfig b/arch/arm/configs/lpc32xx_defconfig
-index 0cdc6c7974b3..2d75bd8dbaf0 100644
---- a/arch/arm/configs/lpc32xx_defconfig
-+++ b/arch/arm/configs/lpc32xx_defconfig
-@@ -12,6 +12,7 @@ CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- CONFIG_SYSCTL_SYSCALL=y
- CONFIG_EMBEDDED=y
- CONFIG_SLAB=y
-+# CONFIG_ARCH_MULTI_V7 is not set
- CONFIG_ARCH_LPC32XX=y
- CONFIG_AEABI=y
- CONFIG_ZBOOT_ROM_TEXT=0x0
-diff --git a/arch/arm/mach-lpc32xx/Kconfig b/arch/arm/mach-lpc32xx/Kconfig
-new file mode 100644
-index 000000000000..ec87c65f4536
---- /dev/null
-+++ b/arch/arm/mach-lpc32xx/Kconfig
-@@ -0,0 +1,11 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+
-+config ARCH_LPC32XX
-+	bool "NXP LPC32XX"
-+	depends on ARCH_MULTI_V5
-+	select ARM_AMBA
-+	select CLKSRC_LPC32XX
-+	select CPU_ARM926T
-+	select GPIOLIB
-+	help
-+	  Support for the NXP LPC32XX family of processors
-diff --git a/arch/arm/mach-lpc32xx/include/mach/uncompress.h b/arch/arm/mach-lpc32xx/include/mach/uncompress.h
+ static struct mv643xx_eth_platform_data dove_db_ge00_data = {
+diff --git a/arch/arm/mach-dove/include/mach/dove.h b/arch/arm/mach-dove/dove.h
+similarity index 99%
+rename from arch/arm/mach-dove/include/mach/dove.h
+rename to arch/arm/mach-dove/dove.h
+index 00f45458b3ec..539e735f968d 100644
+--- a/arch/arm/mach-dove/include/mach/dove.h
++++ b/arch/arm/mach-dove/dove.h
+@@ -1,6 +1,4 @@
+ /*
+- * arch/arm/mach-dove/include/mach/dove.h
+- *
+  * Generic definitions for Marvell Dove 88AP510 SoC
+  *
+  * This file is licensed under the terms of the GNU General Public
+@@ -11,7 +9,7 @@
+ #ifndef __ASM_ARCH_DOVE_H
+ #define __ASM_ARCH_DOVE_H
+ 
+-#include <mach/irqs.h>
++#include "irqs.h"
+ 
+ /*
+  * Marvell Dove address maps.
+diff --git a/arch/arm/mach-dove/include/mach/hardware.h b/arch/arm/mach-dove/include/mach/hardware.h
 deleted file mode 100644
-index 74b7aa0da0e4..000000000000
---- a/arch/arm/mach-lpc32xx/include/mach/uncompress.h
+index f1368b9a8ece..000000000000
+--- a/arch/arm/mach-dove/include/mach/hardware.h
 +++ /dev/null
-@@ -1,48 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-or-later */
+@@ -1,19 +0,0 @@
 -/*
-- * arch/arm/mach-lpc32xx/include/mach/uncompress.h
+- * arch/arm/mach-dove/include/mach/hardware.h
 - *
-- * Author: Kevin Wells <kevin.wells@nxp.com>
-- *
-- * Copyright (C) 2010 NXP Semiconductors
+- * This file is licensed under the terms of the GNU General Public
+- * License version 2.  This program is licensed "as is" without any
+- * warranty of any kind, whether express or implied.
 - */
 -
--#ifndef __ASM_ARM_ARCH_UNCOMPRESS_H
--#define __ASM_ARM_ARCH_UNCOMPRESS_H
+-#ifndef __ASM_ARCH_HARDWARE_H
+-#define __ASM_ARCH_HARDWARE_H
 -
--#include <linux/io.h>
+-#include "dove.h"
 -
--/*
-- * Uncompress output is hardcoded to standard UART 5
-- */
--
--#define UART_FIFO_CTL_TX_RESET	(1 << 2)
--#define UART_STATUS_TX_MT	(1 << 6)
--#define LPC32XX_UART5_BASE	0x40090000
--
--#define _UARTREG(x)		(void __iomem *)(LPC32XX_UART5_BASE + (x))
--
--#define LPC32XX_UART_DLLFIFO_O	0x00
--#define LPC32XX_UART_IIRFCR_O	0x08
--#define LPC32XX_UART_LSR_O	0x14
--
--static inline void putc(int ch)
--{
--	/* Wait for transmit FIFO to empty */
--	while ((__raw_readl(_UARTREG(LPC32XX_UART_LSR_O)) &
--		UART_STATUS_TX_MT) == 0)
--		;
--
--	__raw_writel((u32) ch, _UARTREG(LPC32XX_UART_DLLFIFO_O));
--}
--
--static inline void flush(void)
--{
--	__raw_writel(__raw_readl(_UARTREG(LPC32XX_UART_IIRFCR_O)) |
--		UART_FIFO_CTL_TX_RESET, _UARTREG(LPC32XX_UART_IIRFCR_O));
--}
--
--/* NULL functions; we don't presently need them */
--#define arch_decomp_setup()
--
+-/* Macros below are required for compatibility with PXA AC'97 driver.	*/
+-#define __REG(x)	(*((volatile u32 *)((x) - DOVE_SB_REGS_PHYS_BASE + \
+-				DOVE_SB_REGS_VIRT_BASE)))
+-#define __PREG(x)	(((u32)&(x)) - DOVE_SB_REGS_VIRT_BASE + \
+-		DOVE_SB_REGS_PHYS_BASE)
 -#endif
+diff --git a/arch/arm/mach-dove/include/mach/uncompress.h b/arch/arm/mach-dove/include/mach/uncompress.h
+index 5c8ae9b9d39a..7a4bd8838036 100644
+--- a/arch/arm/mach-dove/include/mach/uncompress.h
++++ b/arch/arm/mach-dove/include/mach/uncompress.h
+@@ -1,15 +1,13 @@
+ /*
+- * arch/arm/mach-dove/include/mach/uncompress.h
+- *
+  * This file is licensed under the terms of the GNU General Public
+  * License version 2.  This program is licensed "as is" without any
+  * warranty of any kind, whether express or implied.
+  */
+ 
+-#include <mach/dove.h>
++#define UART0_PHYS_BASE (0xf1000000 + 0x12000)
+ 
+-#define UART_THR ((volatile unsigned char *)(DOVE_UART0_PHYS_BASE + 0x0))
+-#define UART_LSR ((volatile unsigned char *)(DOVE_UART0_PHYS_BASE + 0x14))
++#define UART_THR ((volatile unsigned char *)(UART0_PHYS_BASE + 0x0))
++#define UART_LSR ((volatile unsigned char *)(UART0_PHYS_BASE + 0x14))
+ 
+ #define LSR_THRE	0x20
+ 
+diff --git a/arch/arm/mach-dove/irq.c b/arch/arm/mach-dove/irq.c
+index d6627c1f7f30..31ccbcee2627 100644
+--- a/arch/arm/mach-dove/irq.c
++++ b/arch/arm/mach-dove/irq.c
+@@ -11,9 +11,12 @@
+ #include <linux/irq.h>
+ #include <linux/io.h>
+ #include <asm/exception.h>
++
+ #include <plat/irq.h>
+-#include <mach/bridge-regs.h>
+ #include <plat/orion-gpio.h>
++
++#include "pm.h"
++#include "bridge-regs.h"
+ #include "common.h"
+ 
+ static int __initdata gpio0_irqs[4] = {
+diff --git a/arch/arm/mach-dove/include/mach/irqs.h b/arch/arm/mach-dove/irqs.h
+similarity index 98%
+rename from arch/arm/mach-dove/include/mach/irqs.h
+rename to arch/arm/mach-dove/irqs.h
+index 8ff0fa8b4fcd..a0742179faff 100644
+--- a/arch/arm/mach-dove/include/mach/irqs.h
++++ b/arch/arm/mach-dove/irqs.h
+@@ -1,6 +1,4 @@
+ /*
+- * arch/arm/mach-dove/include/mach/irqs.h
+- *
+  * IRQ definitions for Marvell Dove 88AP510 SoC
+  *
+  * This file is licensed under the terms of the GNU General Public
+diff --git a/arch/arm/mach-dove/mpp.c b/arch/arm/mach-dove/mpp.c
+index 8a433a51289c..6acd8488bb05 100644
+--- a/arch/arm/mach-dove/mpp.c
++++ b/arch/arm/mach-dove/mpp.c
+@@ -12,8 +12,8 @@
+ #include <linux/gpio.h>
+ #include <linux/io.h>
+ #include <plat/mpp.h>
+-#include <mach/dove.h>
+ #include <plat/orion-gpio.h>
++#include "dove.h"
+ #include "mpp.h"
+ 
+ struct dove_mpp_grp {
+diff --git a/arch/arm/mach-dove/pcie.c b/arch/arm/mach-dove/pcie.c
+index dfb62f3f5dcf..ee91ac6b5ebf 100644
+--- a/arch/arm/mach-dove/pcie.c
++++ b/arch/arm/mach-dove/pcie.c
+@@ -17,9 +17,9 @@
+ #include <asm/setup.h>
+ #include <asm/delay.h>
+ #include <plat/pcie.h>
+-#include <mach/irqs.h>
+-#include <mach/bridge-regs.h>
+ #include <plat/addr-map.h>
++#include "irqs.h"
++#include "bridge-regs.h"
+ #include "common.h"
+ 
+ struct pcie_port {
+diff --git a/arch/arm/mach-dove/include/mach/pm.h b/arch/arm/mach-dove/pm.h
+similarity index 97%
+rename from arch/arm/mach-dove/include/mach/pm.h
+rename to arch/arm/mach-dove/pm.h
+index d22b9b174007..01267746d707 100644
+--- a/arch/arm/mach-dove/include/mach/pm.h
++++ b/arch/arm/mach-dove/pm.h
+@@ -1,6 +1,4 @@
+ /*
+- * arch/arm/mach-dove/include/mach/pm.h
+- *
+  * This file is licensed under the terms of the GNU General Public
+  * License version 2.  This program is licensed "as is" without any
+  * warranty of any kind, whether express or implied.
+@@ -10,7 +8,7 @@
+ #define __ASM_ARCH_PM_H
+ 
+ #include <asm/errno.h>
+-#include <mach/irqs.h>
++#include "irqs.h"
+ 
+ #define CLOCK_GATING_CONTROL	(DOVE_PMU_VIRT_BASE + 0x38)
+ #define  CLOCK_GATING_BIT_USB0		0
 -- 
 2.20.0
