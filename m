@@ -1,7 +1,7 @@
 From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH v2 01/23] tty: serial: fsl_lpuart: fix framing error handling when using DMA
-Date: Wed, 31 Jul 2019 10:30:23 -0700
-Message-ID: <20190731173045.11718-2-andrew.smirnov@gmail.com>
+Subject: [PATCH v2 03/23] tty: serial: fsl_lpuart: Flush HW FIFOs in .flush_buffer
+Date: Wed, 31 Jul 2019 10:30:25 -0700
+Message-ID: <20190731173045.11718-4-andrew.smirnov@gmail.com>
 References: <20190731173045.11718-1-andrew.smirnov@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -9,22 +9,14 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190731173045.11718-1-andrew.smirnov@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Stefan Agner <stefan.agner@toradex.com>, Max Krummenacher <max.krummenacher@toradex.com>, Andrey Smirnov <andrew.smirnov@gmail.com>, Stefan Agner <stefan@agner.ch>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com, linux-kernel@vger.kernel.org
+Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, Fugang Duan <fugang.duan@nxp.com>, Stefan Agner <stefan@agner.ch>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Stefan Agner <stefan.agner@toradex.com>
+Switching baud rate might cause bogus data to appear in HW
+FIFO. Add code to do a HW FIFO flush to .flush_buffer callback to
+avoid that.
 
-When using DMA framing error get cleared properly. However, due
-to the additional read from the data register, an underflow in
-the receive FIFO buffer occurs (the FIFO pointer gets out of
-sync).
-
-Clear the FIFO in case an underflow has occurred. Also disable the
-receiver during this operation and when reading the data register to
-minimize potential interference.
-
-Signed-off-by: Stefan Agner <stefan.agner@toradex.com>
-Acked-by: Max Krummenacher <max.krummenacher@toradex.com>
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
 Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
 Cc: Stefan Agner <stefan@agner.ch>
 Cc: Chris Healy <cphealy@gmail.com>
@@ -36,52 +28,59 @@ Cc: linux-imx@nxp.com
 Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/tty/serial/fsl_lpuart.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ drivers/tty/serial/fsl_lpuart.c | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index d15e65f88214..0643fa368d35 100644
+index 317bbc1dd2b4..12ddca608eba 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -983,6 +983,13 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
- 		unsigned char sr = readb(sport->port.membase + UARTSR1);
+@@ -518,9 +518,16 @@ static int lpuart_dma_tx_request(struct uart_port *port)
+ 	return 0;
+ }
  
- 		if (sr & (UARTSR1_PE | UARTSR1_FE)) {
-+			unsigned char cr2;
++static bool lpuart_is_32(struct lpuart_port *sport)
++{
++	return sport->port.iotype == UPIO_MEM32 ||
++	       sport->port.iotype ==  UPIO_MEM32BE;
++}
 +
-+			/* Disable receiver during this operation... */
-+			cr2 = readb(sport->port.membase + UARTCR2);
-+			cr2 &= ~UARTCR2_RE;
-+			writeb(cr2, sport->port.membase + UARTCR2);
-+
- 			/* Read DR to clear the error flags */
- 			readb(sport->port.membase + UARTDR);
+ static void lpuart_flush_buffer(struct uart_port *port)
+ {
+ 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
++	u32 val;
  
-@@ -990,6 +997,25 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
- 				sport->port.icount.parity++;
- 			else if (sr & UARTSR1_FE)
- 				sport->port.icount.frame++;
-+			/*
-+			 * At this point parity/framing error is
-+			 * cleared However, since the DMA already read
-+			 * the data register and we had to read it
-+			 * again after reading the status register to
-+			 * properly clear the flags, the FIFO actually
-+			 * underflowed... This requires a clearing of
-+			 * the FIFO...
-+			 */
-+			if (readb(sport->port.membase + UARTSFIFO) &
-+			    UARTSFIFO_RXUF) {
-+				writeb(UARTSFIFO_RXUF,
-+				       sport->port.membase + UARTSFIFO);
-+				writeb(UARTCFIFO_RXFLUSH,
-+				       sport->port.membase + UARTCFIFO);
-+			}
-+
-+			cr2 |= UARTCR2_RE;
-+			writeb(cr2, sport->port.membase + UARTCR2);
+ 	if (sport->lpuart_dma_tx_use) {
+ 		if (sport->dma_tx_in_progress) {
+@@ -530,6 +537,16 @@ static void lpuart_flush_buffer(struct uart_port *port)
  		}
+ 		dmaengine_terminate_all(sport->dma_tx_chan);
  	}
++
++	if (lpuart_is_32(sport)) {
++		val = lpuart32_read(&sport->port, UARTFIFO);
++		val |= UARTFIFO_TXFLUSH | UARTFIFO_RXFLUSH;
++		lpuart32_write(&sport->port, val, UARTFIFO);
++	} else {
++		val = readb(sport->port.membase + UARTPFIFO);
++		val |= UARTCFIFO_TXFLUSH | UARTCFIFO_RXFLUSH;
++		writeb(val, sport->port.membase + UARTCFIFO);
++	}
+ }
  
+ #if defined(CONFIG_CONSOLE_POLL)
+@@ -754,12 +771,6 @@ static unsigned int lpuart32_tx_empty(struct uart_port *port)
+ 	return 0;
+ }
+ 
+-static bool lpuart_is_32(struct lpuart_port *sport)
+-{
+-	return sport->port.iotype == UPIO_MEM32 ||
+-	       sport->port.iotype ==  UPIO_MEM32BE;
+-}
+-
+ static irqreturn_t lpuart_txint(int irq, void *dev_id)
+ {
+ 	struct lpuart_port *sport = dev_id;
 -- 
 2.21.0
