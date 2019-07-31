@@ -1,7 +1,7 @@
 From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH v2 09/23] tty: serial: fsl_lpuart: Drop no-op bit opearation
-Date: Wed, 31 Jul 2019 10:30:31 -0700
-Message-ID: <20190731173045.11718-10-andrew.smirnov@gmail.com>
+Subject: [PATCH v2 07/23] tty: serial: fsl_lpuart: Fix issue in software flow control
+Date: Wed, 31 Jul 2019 10:30:29 -0700
+Message-ID: <20190731173045.11718-8-andrew.smirnov@gmail.com>
 References: <20190731173045.11718-1-andrew.smirnov@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,9 +12,23 @@ To: linux-serial@vger.kernel.org
 Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, Stefan Agner <stefan@agner.ch>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The check for termios->c_cflag & CRTSCTS ensure that if we reach else
-branch, CRTSCTS in termios->c_cflag is already going to be
-cleard. Doing so explicitly there is not necessary. Drop it.
+Although I haven't observed this bug in practice, it seems that the
+code for handling x_char of LPUART is pretty much identical to that of
+i.MX. So the fix found in commit 7e2fb5aa8d81 ("serial: imx: Fix issue
+in software flow control"):
+
+    serial: imx: Fix issue in software flow control
+
+    After send out x_char in UART driver, x_char needs to be cleared
+    by UART driver itself, otherwise data in TXFIFO can no longer be
+    sent out.
+    Also tx counter needs to be increased to keep track of correct
+    number of transmitted data.
+
+    Signed-off-by: Jiada Wang <jiada_wang@mentor.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+should apply here as well.
 
 Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
 Cc: Stefan Agner <stefan@agner.ch>
@@ -27,27 +41,21 @@ Cc: linux-imx@nxp.com
 Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/tty/serial/fsl_lpuart.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index ed6d3f836c93..b3cc44548b34 100644
+index c35f81df0cff..8657addbfd1c 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1650,12 +1650,10 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if (sport->port.rs485.flags & SER_RS485_ENABLED)
- 		termios->c_cflag &= ~CRTSCTS;
+@@ -782,6 +782,8 @@ static void lpuart_txint(struct lpuart_port *sport)
+ 			lpuart32_write(&sport->port, sport->port.x_char, UARTDATA);
+ 		else
+ 			writeb(sport->port.x_char, sport->port.membase + UARTDR);
++		sport->port.icount.tx++;
++		sport->port.x_char = 0;
+ 		goto out;
+ 	}
  
--	if (termios->c_cflag & CRTSCTS) {
-+	if (termios->c_cflag & CRTSCTS)
- 		modem |= (UARTMODEM_RXRTSE | UARTMODEM_TXCTSE);
--	} else {
--		termios->c_cflag &= ~CRTSCTS;
-+	else
- 		modem &= ~(UARTMODEM_RXRTSE | UARTMODEM_TXCTSE);
--	}
- 
- 	if (termios->c_cflag & CSTOPB)
- 		termios->c_cflag &= ~CSTOPB;
 -- 
 2.21.0
