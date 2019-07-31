@@ -1,7 +1,7 @@
 From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH v2 21/23] tty: serial: fsl_lpuart: Introduce lpuart*_setup_watermark_enable()
-Date: Wed, 31 Jul 2019 10:30:43 -0700
-Message-ID: <20190731173045.11718-22-andrew.smirnov@gmail.com>
+Subject: [PATCH v2 02/23] tty: serial: fsl_lpuart: flush receive FIFO after overruns
+Date: Wed, 31 Jul 2019 10:30:24 -0700
+Message-ID: <20190731173045.11718-3-andrew.smirnov@gmail.com>
 References: <20190731173045.11718-1-andrew.smirnov@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -9,14 +9,29 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190731173045.11718-1-andrew.smirnov@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
-Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, Stefan Agner <stefan@agner.ch>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com, linux-kernel@vger.kernel.org
+Cc: Stefan Agner <stefan.agner@toradex.com>, Max Krummenacher <max.krummenacher@toradex.com>, Stefan Agner <stefan@agner.ch>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Most users of lpuart*_setup_watermark() enable identical set of flags
-right after the call, so combine those two action into a subroutine
-and make use of it.
+From: Stefan Agner <stefan.agner@toradex.com>
 
-Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+After overruns the FIFO pointers become misaligned. This
+typically shows by characters still being stuck in the FIFO
+despite the empty flag being asserted. After the first
+assertion of the overrun flag the empty flag still seems to
+indicate FIFO state correctly and all data can be read.
+However, after another overrun assertion the FIFO seems to
+be off by one such that the last received character is still
+in the FIFO (despite the empty flag being asserted).
+
+Flushing the receive FIFO reinitializes pointers. Hence it
+is recommended to flush the FIFO after overruns, see also:
+https://community.nxp.com/thread/321175
+
+Hence, on assertion of the overrun flag read the remaining
+data from the FIFO and flush buffers.
+
+Signed-off-by: Stefan Agner <stefan.agner@toradex.com>
+Acked-by: Max Krummenacher <max.krummenacher@toradex.com>
 Cc: Stefan Agner <stefan@agner.ch>
 Cc: Chris Healy <cphealy@gmail.com>
 Cc: Cory Tusar <cory.tusar@zii.aero>
@@ -27,101 +42,48 @@ Cc: linux-imx@nxp.com
 Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/tty/serial/fsl_lpuart.c | 50 ++++++++++++++++++---------------
- 1 file changed, 28 insertions(+), 22 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 5a6516f4bc93..8ab5f9939597 100644
+index 0643fa368d35..317bbc1dd2b4 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1403,6 +1403,17 @@ static void lpuart_setup_watermark(struct lpuart_port *sport)
- 	writeb(cr2_saved, sport->port.membase + UARTCR2);
- }
- 
-+static void lpuart_setup_watermark_enable(struct lpuart_port *sport)
-+{
-+	unsigned char cr2;
-+
-+	lpuart_setup_watermark(sport);
-+
-+	cr2 = readb(sport->port.membase + UARTCR2);
-+	cr2 |= UARTCR2_RIE | UARTCR2_TIE | UARTCR2_RE | UARTCR2_TE;
-+	writeb(cr2, sport->port.membase + UARTCR2);
-+}
-+
- static void lpuart32_setup_watermark(struct lpuart_port *sport)
+@@ -799,7 +799,7 @@ static irqreturn_t lpuart_txint(int irq, void *dev_id)
+ static irqreturn_t lpuart_rxint(int irq, void *dev_id)
  {
- 	unsigned long val, ctrl;
-@@ -1428,6 +1439,17 @@ static void lpuart32_setup_watermark(struct lpuart_port *sport)
- 	lpuart32_write(&sport->port, ctrl_saved, UARTCTRL);
- }
+ 	struct lpuart_port *sport = dev_id;
+-	unsigned int flg, ignored = 0;
++	unsigned int flg, ignored = 0, overrun = 0;
+ 	struct tty_port *port = &sport->port.state->port;
+ 	unsigned long flags;
+ 	unsigned char rx, sr;
+@@ -826,7 +826,7 @@ static irqreturn_t lpuart_rxint(int irq, void *dev_id)
+ 				sport->port.icount.frame++;
  
-+static void lpuart32_setup_watermark_enable(struct lpuart_port *sport)
-+{
-+	u32 temp;
+ 			if (sr & UARTSR1_OR)
+-				sport->port.icount.overrun++;
++				overrun++;
+ 
+ 			if (sr & sport->port.ignore_status_mask) {
+ 				if (++ignored > 100)
+@@ -853,6 +853,17 @@ static irqreturn_t lpuart_rxint(int irq, void *dev_id)
+ 	}
+ 
+ out:
++	if (overrun) {
++		sport->port.icount.overrun += overrun;
 +
-+	lpuart32_setup_watermark(sport);
++		/*
++		 * Overruns cause FIFO pointers to become missaligned.
++		 * Flushing the receive FIFO reinitializes the pointers.
++		 */
++		writeb(UARTCFIFO_RXFLUSH, sport->port.membase + UARTCFIFO);
++		writeb(UARTSFIFO_RXOF, sport->port.membase + UARTSFIFO);
++	}
 +
-+	temp = lpuart32_read(&sport->port, UARTCTRL);
-+	temp |= UARTCTRL_RE | UARTCTRL_TE | UARTCTRL_ILIE;
-+	lpuart32_write(&sport->port, temp, UARTCTRL);
-+}
-+
- static void rx_dma_timer_init(struct lpuart_port *sport)
- {
- 	timer_setup(&sport->lpuart_timer, lpuart_timer_func, 0);
-@@ -1488,11 +1510,7 @@ static int lpuart_startup(struct uart_port *port)
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
  
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 
--	lpuart_setup_watermark(sport);
--
--	temp = readb(sport->port.membase + UARTCR2);
--	temp |= UARTCR2_RIE | UARTCR2_TIE | UARTCR2_RE | UARTCR2_TE;
--	writeb(temp, sport->port.membase + UARTCR2);
-+	lpuart_setup_watermark_enable(sport);
- 
- 	lpuart_rx_dma_startup(sport);
- 	lpuart_tx_dma_startup(sport);
-@@ -1538,11 +1556,7 @@ static int lpuart32_startup(struct uart_port *port)
- 
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 
--	lpuart32_setup_watermark(sport);
--
--	temp = lpuart32_read(&sport->port, UARTCTRL);
--	temp |= UARTCTRL_RE | UARTCTRL_TE | UARTCTRL_ILIE;
--	lpuart32_write(&sport->port, temp, UARTCTRL);
-+	lpuart32_setup_watermark_enable(sport);
- 
- 
- 	lpuart_rx_dma_startup(sport);
-@@ -2560,22 +2574,14 @@ static int lpuart_resume(struct device *dev)
- {
- 	struct lpuart_port *sport = dev_get_drvdata(dev);
- 	bool irq_wake = irqd_is_wakeup_set(irq_get_irq_data(sport->port.irq));
--	unsigned long temp;
- 
- 	if (sport->port.suspended && !irq_wake)
- 		lpuart_enable_clks(sport);
- 
--	if (lpuart_is_32(sport)) {
--		lpuart32_setup_watermark(sport);
--		temp = lpuart32_read(&sport->port, UARTCTRL);
--		temp |= UARTCTRL_RE | UARTCTRL_TE | UARTCTRL_ILIE;
--		lpuart32_write(&sport->port, temp, UARTCTRL);
--	} else {
--		lpuart_setup_watermark(sport);
--		temp = readb(sport->port.membase + UARTCR2);
--		temp |= UARTCR2_RIE | UARTCR2_TIE | UARTCR2_RE | UARTCR2_TE;
--		writeb(temp, sport->port.membase + UARTCR2);
--	}
-+	if (lpuart_is_32(sport))
-+		lpuart32_setup_watermark_enable(sport);
-+	else
-+		lpuart_setup_watermark_enable(sport);
- 
- 	if (sport->lpuart_dma_rx_use) {
- 		if (irq_wake) {
+ 	tty_flip_buffer_push(port);
 -- 
 2.21.0
