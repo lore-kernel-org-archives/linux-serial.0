@@ -1,146 +1,174 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 13/14] ARM: orion/mvebu: unify debug-ll virtual addresses
-Date: Wed, 31 Jul 2019 21:56:55 +0200
-Message-ID: <20190731195713.3150463-14-arnd@arndb.de>
+Subject: [PATCH 14/14] ARM: dove: multiplatform support
+Date: Wed, 31 Jul 2019 21:56:56 +0200
+Message-ID: <20190731195713.3150463-15-arnd@arndb.de>
 References: <20190731195713.3150463-1-arnd@arndb.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <netdev-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <20190731195713.3150463-1-arnd@arndb.de>
-Sender: netdev-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: soc@kernel.org, linux-arm-kernel@lists.infradead.org, Vladimir Zapolskiy <vz@mleia.com>, Sylvain Lemieux <slemieux.tyco@gmail.com>, Russell King <linux@armlinux.org.uk>, Gregory Clement <gregory.clement@bootlin.com>, Linus Walleij <linus.walleij@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, Guenter Roeck <linux@roeck-us.net>, linux-gpio@vger.kernel.org, netdev@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+Cc: linux-watchdog@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>, linux-serial@vger.kernel.org, netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guenter Roeck <linux@roeck-us.net>
 List-Id: linux-serial@vger.kernel.org
 
-In a multiplatform configuration, enabling DEBUG_LL breaks booting
-on all platforms with incompatible settings. In case of the Marvell
-platforms of the Orion/MVEBU family, the physical addresses are
-all the same, we just map them at different virtual addresses,
-which makes it impossible to run a kernel with DEBUG_LL enabled on
-a combination of the merged mvebu and the legacy boardfile based
-platforms.
+The dove platform is now ready to be enabled for multiplatform
+support, this patch does the switch over by modifying the Kconfig file,
+the defconfig and removing the last mach/*.h header that becomes obsolete
+with this.
 
-This is easily solved by using the same virtual address everywhere.
-I picked the address that is already used by mach-mvebu for UART0:
-0xfec12000. All these platforms have a 1MB region with their internal
-registers, almost always at physical address 0xf1000000, so I'm
-updating the iotable for that entry.
+This work was originally done in 2015 as all the ARMv7 machiens
+gove moved over to multiplatform builds, but at the time it conflicted
+with some patches that Russell was trying to upstream, so we
+left it at that.
 
-In case of mach-dove, this is slightly trickier, as the existing
-mapping is 8MB and a second 8MB mapping is already at the 0xfec00000
-address. I have verified from the datasheet that the last 7MB of the
-physical mapping are "reserved" and nothing in Linux tries to use
-it either. I'm putting this 1MB mapping at the same address as the
-others, and the second 8MB register area immediately before that.
+I hope that there is no longer a need to keep dove separate from the
+rest, so we can either add it to the other ARMv7 platforms, or just
+replace it with the DT based platform code for the same hardware
+in mach-mvebu and remove mach-dove entirely.
 
-Link: https://lore.kernel.org/linux-arm-kernel/87si3eb1z8.fsf@free-electrons.com/
+Acked-by: Andrew Lunn <andrew@lunn.ch>
+Cc: Russell King <linux@armlinux.org.uk>
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
-I posted this in 2015, and Gregory said he would like to see
-some testing on it. I don't think anyone ever tested it, but
-we probably still want to have this.
----
- arch/arm/Kconfig.debug          |  5 +----
- arch/arm/mach-dove/dove.h       | 10 +++++-----
- arch/arm/mach-mv78xx0/mv78xx0.h |  4 ++--
- arch/arm/mach-orion5x/orion5x.h |  4 ++--
- 4 files changed, 10 insertions(+), 13 deletions(-)
+ arch/arm/Kconfig                             | 16 ---------
+ arch/arm/configs/dove_defconfig              |  2 ++
+ arch/arm/mach-dove/Kconfig                   | 16 ++++++---
+ arch/arm/mach-dove/Makefile                  |  2 ++
+ arch/arm/mach-dove/include/mach/uncompress.h | 34 --------------------
+ 5 files changed, 16 insertions(+), 54 deletions(-)
+ delete mode 100644 arch/arm/mach-dove/include/mach/uncompress.h
 
-diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
-index 85710e078afb..0ad316a160c7 100644
---- a/arch/arm/Kconfig.debug
-+++ b/arch/arm/Kconfig.debug
-@@ -1772,10 +1772,7 @@ config DEBUG_UART_VIRT
- 	default 0xfc705000 if DEBUG_ZTE_ZX
- 	default 0xfcfe8600 if DEBUG_BCM63XX_UART
- 	default 0xfd000000 if DEBUG_SPEAR3XX || DEBUG_SPEAR13XX
--	default 0xfd012000 if DEBUG_MVEBU_UART0_ALTERNATE && ARCH_MV78XX0
- 	default 0xfd883000 if DEBUG_ALPINE_UART0
--	default 0xfde12000 if DEBUG_MVEBU_UART0_ALTERNATE && ARCH_DOVE
--	default 0xfe012000 if DEBUG_MVEBU_UART0_ALTERNATE && ARCH_ORION5X
- 	default 0xfe017000 if DEBUG_MMP_UART2
- 	default 0xfe018000 if DEBUG_MMP_UART3
- 	default 0xfe100000 if DEBUG_IMX23_UART || DEBUG_IMX28_UART
-@@ -1790,7 +1787,7 @@ config DEBUG_UART_VIRT
- 	default 0xfec02000 if DEBUG_SOCFPGA_UART0
- 	default 0xfec02100 if DEBUG_SOCFPGA_ARRIA10_UART1
- 	default 0xfec03000 if DEBUG_SOCFPGA_CYCLONE5_UART1
--	default 0xfec12000 if (DEBUG_MVEBU_UART0 || DEBUG_MVEBU_UART0_ALTERNATE) && ARCH_MVEBU
-+	default 0xfec12000 if DEBUG_MVEBU_UART0 || DEBUG_MVEBU_UART0_ALTERNATE
- 	default 0xfec12100 if DEBUG_MVEBU_UART1_ALTERNATE
- 	default 0xfec10000 if DEBUG_SIRFATLAS7_UART0
- 	default 0xfec20000 if DEBUG_DAVINCI_DMx_UART0
-diff --git a/arch/arm/mach-dove/dove.h b/arch/arm/mach-dove/dove.h
-index 539e735f968d..320ed1696abd 100644
---- a/arch/arm/mach-dove/dove.h
-+++ b/arch/arm/mach-dove/dove.h
-@@ -18,8 +18,8 @@
-  * c8000000	fdb00000	1M	Cryptographic SRAM
-  * e0000000	@runtime	128M	PCIe-0 Memory space
-  * e8000000	@runtime	128M	PCIe-1 Memory space
-- * f1000000	fde00000	8M	on-chip south-bridge registers
-- * f1800000	fe600000	8M	on-chip north-bridge registers
-+ * f1000000	fec00000	1M	on-chip south-bridge registers
-+ * f1800000	fe400000	8M	on-chip north-bridge registers
-  * f2000000	fee00000	1M	PCIe-0 I/O space
-  * f2100000	fef00000	1M	PCIe-1 I/O space
-  */
-@@ -42,11 +42,11 @@
- #define DOVE_SCRATCHPAD_SIZE		SZ_1M
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 65808e17cb3b..67f98f1ab399 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -435,22 +435,6 @@ config ARCH_IXP4XX
+ 	help
+ 	  Support for Intel's IXP4XX (XScale) family of processors.
  
- #define DOVE_SB_REGS_PHYS_BASE		0xf1000000
--#define DOVE_SB_REGS_VIRT_BASE		IOMEM(0xfde00000)
--#define DOVE_SB_REGS_SIZE		SZ_8M
-+#define DOVE_SB_REGS_VIRT_BASE		IOMEM(0xfec00000)
-+#define DOVE_SB_REGS_SIZE		SZ_1M
+-config ARCH_DOVE
+-	bool "Marvell Dove"
+-	select CPU_PJ4
+-	select GENERIC_CLOCKEVENTS
+-	select GENERIC_IRQ_MULTI_HANDLER
+-	select GPIOLIB
+-	select HAVE_PCI
+-	select MVEBU_MBUS
+-	select PINCTRL
+-	select PINCTRL_DOVE
+-	select PLAT_ORION_LEGACY
+-	select SPARSE_IRQ
+-	select PM_GENERIC_DOMAINS if PM
+-	help
+-	  Support for the Marvell Dove SoC 88AP510
+-
+ config ARCH_KS8695
+ 	bool "Micrel/Kendin KS8695"
+ 	select CLKSRC_MMIO
+diff --git a/arch/arm/configs/dove_defconfig b/arch/arm/configs/dove_defconfig
+index e70c997d5f4c..1ced32deac75 100644
+--- a/arch/arm/configs/dove_defconfig
++++ b/arch/arm/configs/dove_defconfig
+@@ -8,6 +8,8 @@ CONFIG_MODULES=y
+ CONFIG_MODULE_UNLOAD=y
+ # CONFIG_BLK_DEV_BSG is not set
+ CONFIG_PARTITION_ADVANCED=y
++# CONFIG_ARCH_MULTI_V6 is not set
++CONFIG_ARCH_MULTI_V7=y
+ CONFIG_ARCH_DOVE=y
+ CONFIG_MACH_DOVE_DB=y
+ CONFIG_MACH_CM_A510=y
+diff --git a/arch/arm/mach-dove/Kconfig b/arch/arm/mach-dove/Kconfig
+index 7747fe64420a..c30c69c664ea 100644
+--- a/arch/arm/mach-dove/Kconfig
++++ b/arch/arm/mach-dove/Kconfig
+@@ -1,7 +1,17 @@
+ # SPDX-License-Identifier: GPL-2.0
+-if ARCH_DOVE
++menuconfig ARCH_DOVE
++	bool "Marvell Dove" if ARCH_MULTI_V7
++	select CPU_PJ4
++	select GPIOLIB
++	select MVEBU_MBUS
++	select PINCTRL
++	select PINCTRL_DOVE
++	select PLAT_ORION_LEGACY
++	select PM_GENERIC_DOMAINS if PM
++	help
++	  Support for the Marvell Dove SoC 88AP510
  
- #define DOVE_NB_REGS_PHYS_BASE		0xf1800000
--#define DOVE_NB_REGS_VIRT_BASE		IOMEM(0xfe600000)
-+#define DOVE_NB_REGS_VIRT_BASE		IOMEM(0xfe400000)
- #define DOVE_NB_REGS_SIZE		SZ_8M
+-menu "Marvell Dove Implementations"
++if ARCH_DOVE
  
- #define DOVE_PCIE0_IO_PHYS_BASE		0xf2000000
-diff --git a/arch/arm/mach-mv78xx0/mv78xx0.h b/arch/arm/mach-mv78xx0/mv78xx0.h
-index 2db1265ec121..c1a9a1d1b295 100644
---- a/arch/arm/mach-mv78xx0/mv78xx0.h
-+++ b/arch/arm/mach-mv78xx0/mv78xx0.h
-@@ -37,7 +37,7 @@
-  * fee50000	f0d00000	64K	PCIe #5 I/O space
-  * fee60000	f0e00000	64K	PCIe #6 I/O space
-  * fee70000	f0f00000	64K	PCIe #7 I/O space
-- * fd000000	f1000000	1M	on-chip peripheral registers
-+ * fec00000	f1000000	1M	on-chip peripheral registers
-  */
- #define MV78XX0_CORE0_REGS_PHYS_BASE	0xf1020000
- #define MV78XX0_CORE1_REGS_PHYS_BASE	0xf1024000
-@@ -49,7 +49,7 @@
- #define MV78XX0_PCIE_IO_SIZE		SZ_1M
+ config DOVE_LEGACY
+ 	bool
+@@ -21,6 +31,4 @@ config MACH_CM_A510
+ 	  Say 'Y' here if you want your kernel to support the
+ 	  CompuLab CM-A510 Board.
  
- #define MV78XX0_REGS_PHYS_BASE		0xf1000000
--#define MV78XX0_REGS_VIRT_BASE		IOMEM(0xfd000000)
-+#define MV78XX0_REGS_VIRT_BASE		IOMEM(0xfec00000)
- #define MV78XX0_REGS_SIZE		SZ_1M
- 
- #define MV78XX0_PCIE_MEM_PHYS_BASE	0xc0000000
-diff --git a/arch/arm/mach-orion5x/orion5x.h b/arch/arm/mach-orion5x/orion5x.h
-index 3364df331f01..2b66120fba86 100644
---- a/arch/arm/mach-orion5x/orion5x.h
-+++ b/arch/arm/mach-orion5x/orion5x.h
-@@ -31,13 +31,13 @@
-  * fc000000	device bus mappings (cs0/cs1)
-  *
-  * virt		phys		size
-- * fe000000	f1000000	1M	on-chip peripheral registers
-+ * fec00000	f1000000	1M	on-chip peripheral registers
-  * fee00000	f2000000	64K	PCIe I/O space
-  * fee10000	f2100000	64K	PCI I/O space
-  * fd000000	f0000000	16M	PCIe WA space (Orion-1/Orion-NAS only)
-  ****************************************************************************/
- #define ORION5X_REGS_PHYS_BASE		0xf1000000
--#define ORION5X_REGS_VIRT_BASE		IOMEM(0xfe000000)
-+#define ORION5X_REGS_VIRT_BASE		IOMEM(0xfec00000)
- #define ORION5X_REGS_SIZE		SZ_1M
- 
- #define ORION5X_PCIE_IO_PHYS_BASE	0xf2000000
+-endmenu
+-
+ endif
+diff --git a/arch/arm/mach-dove/Makefile b/arch/arm/mach-dove/Makefile
+index cdf163cab738..e83f6492834d 100644
+--- a/arch/arm/mach-dove/Makefile
++++ b/arch/arm/mach-dove/Makefile
+@@ -1,4 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
++ccflags-$(CONFIG_ARCH_MULTIPLATFORM) := -I$(srctree)/arch/arm/plat-orion/include
++
+ obj-y				+= common.o
+ obj-$(CONFIG_DOVE_LEGACY)	+= irq.o mpp.o
+ obj-$(CONFIG_PCI)		+= pcie.o
+diff --git a/arch/arm/mach-dove/include/mach/uncompress.h b/arch/arm/mach-dove/include/mach/uncompress.h
+deleted file mode 100644
+index 7a4bd8838036..000000000000
+--- a/arch/arm/mach-dove/include/mach/uncompress.h
++++ /dev/null
+@@ -1,34 +0,0 @@
+-/*
+- * This file is licensed under the terms of the GNU General Public
+- * License version 2.  This program is licensed "as is" without any
+- * warranty of any kind, whether express or implied.
+- */
+-
+-#define UART0_PHYS_BASE (0xf1000000 + 0x12000)
+-
+-#define UART_THR ((volatile unsigned char *)(UART0_PHYS_BASE + 0x0))
+-#define UART_LSR ((volatile unsigned char *)(UART0_PHYS_BASE + 0x14))
+-
+-#define LSR_THRE	0x20
+-
+-static void putc(const char c)
+-{
+-	int i;
+-
+-	for (i = 0; i < 0x1000; i++) {
+-		/* Transmit fifo not full? */
+-		if (*UART_LSR & LSR_THRE)
+-			break;
+-	}
+-
+-	*UART_THR = c;
+-}
+-
+-static void flush(void)
+-{
+-}
+-
+-/*
+- * nothing to do
+- */
+-#define arch_decomp_setup()
 -- 
 2.20.0
