@@ -1,7 +1,7 @@
 From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH v2 12/23] tty: serial: fsl_lpuart: Use appropriate lpuart32_* I/O funcs
-Date: Wed, 31 Jul 2019 10:30:34 -0700
-Message-ID: <20190731173045.11718-13-andrew.smirnov@gmail.com>
+Subject: [PATCH v2 13/23] tty: serial: fsl_lpuart: Introduce lpuart_wait_bit_set()
+Date: Wed, 31 Jul 2019 10:30:35 -0700
+Message-ID: <20190731173045.11718-14-andrew.smirnov@gmail.com>
 References: <20190731173045.11718-1-andrew.smirnov@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,12 +12,9 @@ To: linux-serial@vger.kernel.org
 Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, Stefan Agner <stefan@agner.ch>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-When dealing with 32-bit variant of LPUART IP block appropriate I/O
-helpers have to be used to properly deal with endianness
-differences. Change all of the offending code to do that.
+Busy polling on a bit in a register is used in multiple places in the
+driver. Move it into a shared function.
 
-Fixes: a5fa2660d787 ("tty/serial/fsl_lpuart: Add CONSOLE_POLL support
-for lpuart32.")
 Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
 Cc: Stefan Agner <stefan@agner.ch>
 Cc: Chris Healy <cphealy@gmail.com>
@@ -29,72 +26,115 @@ Cc: linux-imx@nxp.com
 Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/tty/serial/fsl_lpuart.c | 28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 42 +++++++++++++++++----------------
+ 1 file changed, 22 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index a0f38d7caa76..395df8c7e1d5 100644
+index 395df8c7e1d5..eb748ef85da7 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -617,26 +617,26 @@ static int lpuart32_poll_init(struct uart_port *port)
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 
- 	/* Disable Rx & Tx */
--	writel(0, sport->port.membase + UARTCTRL);
-+	lpuart32_write(&sport->port, UARTCTRL, 0);
- 
--	temp = readl(sport->port.membase + UARTFIFO);
-+	temp = lpuart32_read(&sport->port, UARTFIFO);
- 
- 	/* Enable Rx and Tx FIFO */
--	writel(temp | UARTFIFO_RXFE | UARTFIFO_TXFE,
--		   sport->port.membase + UARTFIFO);
-+	lpuart32_write(&sport->port, UARTFIFO,
-+		       temp | UARTFIFO_RXFE | UARTFIFO_TXFE);
- 
- 	/* flush Tx and Rx FIFO */
--	writel(UARTFIFO_TXFLUSH | UARTFIFO_RXFLUSH,
--			sport->port.membase + UARTFIFO);
-+	lpuart32_write(&sport->port, UARTFIFO,
-+		       UARTFIFO_TXFLUSH | UARTFIFO_RXFLUSH);
- 
- 	/* explicitly clear RDRF */
--	if (readl(sport->port.membase + UARTSTAT) & UARTSTAT_RDRF) {
--		readl(sport->port.membase + UARTDATA);
--		writel(UARTFIFO_RXUF, sport->port.membase + UARTFIFO);
-+	if (lpuart32_read(&sport->port, UARTSTAT) & UARTSTAT_RDRF) {
-+		lpuart32_read(&sport->port, UARTDATA);
-+		lpuart32_write(&sport->port, UARTFIFO, UARTFIFO_RXUF);
+@@ -549,6 +549,20 @@ static void lpuart_flush_buffer(struct uart_port *port)
  	}
+ }
  
- 	/* Enable Rx and Tx */
--	writel(UARTCTRL_RE | UARTCTRL_TE, sport->port.membase + UARTCTRL);
-+	lpuart32_write(&sport->port, UARTCTRL, UARTCTRL_RE | UARTCTRL_TE);
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
++static void lpuart_wait_bit_set(struct uart_port *port, unsigned int offset,
++				u8 bit)
++{
++	while (!(readb(port->membase + offset) & bit))
++		barrier();
++}
++
++static void lpuart32_wait_bit_set(struct uart_port *port, unsigned int offset,
++				  u32 bit)
++{
++	while (!(lpuart32_read(port, offset) & bit))
++		barrier();
++}
++
+ #if defined(CONFIG_CONSOLE_POLL)
  
- 	return 0;
-@@ -644,18 +644,18 @@ static int lpuart32_poll_init(struct uart_port *port)
+ static int lpuart_poll_init(struct uart_port *port)
+@@ -592,9 +606,7 @@ static int lpuart_poll_init(struct uart_port *port)
+ static void lpuart_poll_put_char(struct uart_port *port, unsigned char c)
+ {
+ 	/* drain */
+-	while (!(readb(port->membase + UARTSR1) & UARTSR1_TDRE))
+-		barrier();
+-
++	lpuart_wait_bit_set(port, UARTSR1, UARTSR1_TDRE);
+ 	writeb(c, port->membase + UARTDR);
+ }
+ 
+@@ -644,9 +656,7 @@ static int lpuart32_poll_init(struct uart_port *port)
  
  static void lpuart32_poll_put_char(struct uart_port *port, unsigned char c)
  {
--	while (!(readl(port->membase + UARTSTAT) & UARTSTAT_TDRE))
-+	while (!(lpuart32_read(port, UARTSTAT) & UARTSTAT_TDRE))
- 		barrier();
- 
--	writel(c, port->membase + UARTDATA);
-+	lpuart32_write(port, UARTDATA, c);
+-	while (!(lpuart32_read(port, UARTSTAT) & UARTSTAT_TDRE))
+-		barrier();
+-
++	lpuart32_wait_bit_set(port, UARTSTAT, UARTSTAT_TDRE);
+ 	lpuart32_write(port, UARTDATA, c);
  }
  
- static int lpuart32_poll_get_char(struct uart_port *port)
+@@ -1722,8 +1732,7 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	uart_update_timeout(port, termios->c_cflag, baud);
+ 
+ 	/* wait transmit engin complete */
+-	while (!(readb(sport->port.membase + UARTSR1) & UARTSR1_TC))
+-		barrier();
++	lpuart_wait_bit_set(&sport->port, UARTSR1, UARTSR1_TC);
+ 
+ 	/* disable transmit and receive */
+ 	writeb(old_cr2 & ~(UARTCR2_TE | UARTCR2_RE),
+@@ -1938,8 +1947,7 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	uart_update_timeout(port, termios->c_cflag, baud);
+ 
+ 	/* wait transmit engin complete */
+-	while (!(lpuart32_read(&sport->port, UARTSTAT) & UARTSTAT_TC))
+-		barrier();
++	lpuart32_wait_bit_set(&sport->port, UARTSTAT, UARTSTAT_TC);
+ 
+ 	/* disable transmit and receive */
+ 	lpuart32_write(&sport->port, old_ctrl & ~(UARTCTRL_TE | UARTCTRL_RE),
+@@ -2054,17 +2062,13 @@ static struct lpuart_port *lpuart_ports[UART_NR];
+ #ifdef CONFIG_SERIAL_FSL_LPUART_CONSOLE
+ static void lpuart_console_putchar(struct uart_port *port, int ch)
  {
--	if (!(readl(port->membase + UARTSTAT) & UARTSTAT_RDRF))
-+	if (!(lpuart32_read(port, UARTSTAT) & UARTSTAT_RDRF))
- 		return NO_POLL_CHAR;
- 
--	return readl(port->membase + UARTDATA);
-+	return lpuart32_read(port, UARTDATA);
+-	while (!(readb(port->membase + UARTSR1) & UARTSR1_TDRE))
+-		barrier();
+-
++	lpuart_wait_bit_set(port, UARTSR1, UARTSR1_TDRE);
+ 	writeb(ch, port->membase + UARTDR);
  }
- #endif
+ 
+ static void lpuart32_console_putchar(struct uart_port *port, int ch)
+ {
+-	while (!(lpuart32_read(port, UARTSTAT) & UARTSTAT_TDRE))
+-		barrier();
+-
++	lpuart32_wait_bit_set(port, UARTSTAT, UARTSTAT_TDRE);
+ 	lpuart32_write(port, ch, UARTDATA);
+ }
+ 
+@@ -2090,8 +2094,7 @@ lpuart_console_write(struct console *co, const char *s, unsigned int count)
+ 	uart_console_write(&sport->port, s, count, lpuart_console_putchar);
+ 
+ 	/* wait for transmitter finish complete and restore CR2 */
+-	while (!(readb(sport->port.membase + UARTSR1) & UARTSR1_TC))
+-		barrier();
++	lpuart_wait_bit_set(&sport->port, UARTSR1, UARTSR1_TC);
+ 
+ 	writeb(old_cr2, sport->port.membase + UARTCR2);
+ 
+@@ -2121,8 +2124,7 @@ lpuart32_console_write(struct console *co, const char *s, unsigned int count)
+ 	uart_console_write(&sport->port, s, count, lpuart32_console_putchar);
+ 
+ 	/* wait for transmitter finish complete and restore CR2 */
+-	while (!(lpuart32_read(&sport->port, UARTSTAT) & UARTSTAT_TC))
+-		barrier();
++	lpuart32_wait_bit_set(&sport->port, UARTSTAT, UARTSTAT_TC);
+ 
+ 	lpuart32_write(&sport->port, old_cr, UARTCTRL);
  
 -- 
 2.21.0
