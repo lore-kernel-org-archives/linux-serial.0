@@ -1,7 +1,7 @@
 From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH v2 04/23] tty: serial: fsl_lpuart: Simplify RX/TX IRQ handlers
-Date: Wed, 31 Jul 2019 10:30:26 -0700
-Message-ID: <20190731173045.11718-5-andrew.smirnov@gmail.com>
+Subject: [PATCH v2 09/23] tty: serial: fsl_lpuart: Drop no-op bit opearation
+Date: Wed, 31 Jul 2019 10:30:31 -0700
+Message-ID: <20190731173045.11718-10-andrew.smirnov@gmail.com>
 References: <20190731173045.11718-1-andrew.smirnov@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,13 +12,9 @@ To: linux-serial@vger.kernel.org
 Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, Stefan Agner <stefan@agner.ch>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-It appears that lpuart_rxint, lpuart_txint and lpuart32_rxint were
-modelled after identical function found in UART driver for
-i.MX. However, while said functions are used as individual IRQ
-handlers in i.MX driver (in case of i.MX1), it is not the case for
-LPUART. Given that, there's no need for us to restrict the prototype
-of the handler to irqreturn_t foo(int, void *) and we can drop all of
-uneened boilerplate code by changing it void foo(struct lpuart_port *).
+The check for termios->c_cflag & CRTSCTS ensure that if we reach else
+branch, CRTSCTS in termios->c_cflag is already going to be
+cleard. Doing so explicitly there is not necessary. Drop it.
 
 Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
 Cc: Stefan Agner <stefan@agner.ch>
@@ -31,85 +27,27 @@ Cc: linux-imx@nxp.com
 Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/tty/serial/fsl_lpuart.c | 20 +++++++-------------
- 1 file changed, 7 insertions(+), 13 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 12ddca608eba..c60c5354a5b9 100644
+index ed6d3f836c93..b3cc44548b34 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -771,9 +771,8 @@ static unsigned int lpuart32_tx_empty(struct uart_port *port)
- 	return 0;
- }
+@@ -1650,12 +1650,10 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	if (sport->port.rs485.flags & SER_RS485_ENABLED)
+ 		termios->c_cflag &= ~CRTSCTS;
  
--static irqreturn_t lpuart_txint(int irq, void *dev_id)
-+static void lpuart_txint(struct lpuart_port *sport)
- {
--	struct lpuart_port *sport = dev_id;
- 	struct circ_buf *xmit = &sport->port.state->xmit;
- 	unsigned long flags;
+-	if (termios->c_cflag & CRTSCTS) {
++	if (termios->c_cflag & CRTSCTS)
+ 		modem |= (UARTMODEM_RXRTSE | UARTMODEM_TXCTSE);
+-	} else {
+-		termios->c_cflag &= ~CRTSCTS;
++	else
+ 		modem &= ~(UARTMODEM_RXRTSE | UARTMODEM_TXCTSE);
+-	}
  
-@@ -804,12 +803,10 @@ static irqreturn_t lpuart_txint(int irq, void *dev_id)
- 
- out:
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
--	return IRQ_HANDLED;
- }
- 
--static irqreturn_t lpuart_rxint(int irq, void *dev_id)
-+static void lpuart_rxint(struct lpuart_port *sport)
- {
--	struct lpuart_port *sport = dev_id;
- 	unsigned int flg, ignored = 0, overrun = 0;
- 	struct tty_port *port = &sport->port.state->port;
- 	unsigned long flags;
-@@ -878,12 +875,10 @@ static irqreturn_t lpuart_rxint(int irq, void *dev_id)
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
- 
- 	tty_flip_buffer_push(port);
--	return IRQ_HANDLED;
- }
- 
--static irqreturn_t lpuart32_rxint(int irq, void *dev_id)
-+static void lpuart32_rxint(struct lpuart_port *sport)
- {
--	struct lpuart_port *sport = dev_id;
- 	unsigned int flg, ignored = 0;
- 	struct tty_port *port = &sport->port.state->port;
- 	unsigned long flags;
-@@ -942,7 +937,6 @@ static irqreturn_t lpuart32_rxint(int irq, void *dev_id)
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
- 
- 	tty_flip_buffer_push(port);
--	return IRQ_HANDLED;
- }
- 
- static irqreturn_t lpuart_int(int irq, void *dev_id)
-@@ -953,10 +947,10 @@ static irqreturn_t lpuart_int(int irq, void *dev_id)
- 	sts = readb(sport->port.membase + UARTSR1);
- 
- 	if (sts & UARTSR1_RDRF)
--		lpuart_rxint(irq, dev_id);
-+		lpuart_rxint(sport);
- 
- 	if (sts & UARTSR1_TDRE)
--		lpuart_txint(irq, dev_id);
-+		lpuart_txint(sport);
- 
- 	return IRQ_HANDLED;
- }
-@@ -971,10 +965,10 @@ static irqreturn_t lpuart32_int(int irq, void *dev_id)
- 	rxcount = rxcount >> UARTWATER_RXCNT_OFF;
- 
- 	if ((sts & UARTSTAT_RDRF || rxcount > 0) && !sport->lpuart_dma_rx_use)
--		lpuart32_rxint(irq, dev_id);
-+		lpuart32_rxint(sport);
- 
- 	if ((sts & UARTSTAT_TDRE) && !sport->lpuart_dma_tx_use)
--		lpuart_txint(irq, dev_id);
-+		lpuart_txint(sport);
- 
- 	lpuart32_write(&sport->port, sts, UARTSTAT);
- 	return IRQ_HANDLED;
+ 	if (termios->c_cflag & CSTOPB)
+ 		termios->c_cflag &= ~CSTOPB;
 -- 
 2.21.0
