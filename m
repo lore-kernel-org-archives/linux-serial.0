@@ -1,47 +1,42 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] serial: mctrl_gpio: Avoid probe failures in case of
- missing gpiolib
-Date: Thu, 1 Aug 2019 16:47:07 +0200
-Message-ID: <20190801144707.vprfi4yy2shxmtyw@pengutronix.de>
-References: <20190801124446.15703-1-frieder.schrempf@kontron.de>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2 00/23] LPUART fixes and improvements
+Date: Thu, 1 Aug 2019 17:14:09 +0200
+Message-ID: <20190801151409.GA4508@kroah.com>
+References: <20190731173045.11718-1-andrew.smirnov@gmail.com>
+ <CAOMZO5BL1BO7XGNgwqZRRCeWNURemZEVzP26kVBacyw__0=RBA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190801124446.15703-1-frieder.schrempf@kontron.de>
+In-Reply-To: <CAOMZO5BL1BO7XGNgwqZRRCeWNURemZEVzP26kVBacyw__0=RBA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Schrempf Frieder <frieder.schrempf@kontron.de>
-Cc: "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-imx@nxp.com" <linux-imx@nxp.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Fabio Estevam <festevam@gmail.com>
+Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, linux-serial@vger.kernel.org, Stefan Agner <stefan@agner.ch>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Jiri Slaby <jslaby@suse.com>, NXP Linux Team <linux-imx@nxp.com>, linux-kernel <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Aug 01, 2019 at 12:46:42PM +0000, Schrempf Frieder wrote:
-> From: Frieder Schrempf <frieder.schrempf@kontron.de>
+On Wed, Jul 31, 2019 at 02:59:59PM -0300, Fabio Estevam wrote:
+> Hi Andrey,
 > 
-> If CONFIG_GPIOLIB is not enabled, mctrl_gpio_init() and
-> mctrl_gpio_init_noauto() will currently return an error pointer with
-> -ENOSYS. As the mctrl GPIOs are usually optional, drivers need to
-> check for this condition to allow continue probing.
+> On Wed, Jul 31, 2019 at 2:53 PM Andrey Smirnov <andrew.smirnov@gmail.com> wrote:
+> >
+> > Everyone:
+> >
+> > This series contains fixes/improvements to LPUART dirver I came up
+> > with recently as well as fixes picked up from Toradex and NXP Vybrid
+> > repos.
+> >
+> > Feedback is welcome!
+> >
+> > Changes since [v1]:
 > 
-> To avoid the need for this check in each driver, we return NULL
-> instead, as all the mctrl_gpio_*() functions are skipped anyway.
-> We also adapt mctrl_gpio_to_gpiod() to be in line with this change.
+> Greg has already applied some of these patches:
+> https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git/log/?h=tty-testing
 > 
-> Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
-> ---
->  drivers/tty/serial/serial_mctrl_gpio.c | 3 +++
->  drivers/tty/serial/serial_mctrl_gpio.h | 6 +++---
->  drivers/tty/serial/sh-sci.c            | 2 +-
+> Please rebase on his tree and send the remaining ones.
 
-I'd split the sh-sci change in a separate patch. And there is another
-instance in drivers/tty/serial/8250/8250_core.c that should be dropped.
+Yes, I can't drop patches I have already applied.  Andrey, just resend
+the ones that I have not applied.
 
-Other than that looks good.
+thanks,
 
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+greg k-h
