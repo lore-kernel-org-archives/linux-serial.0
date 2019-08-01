@@ -1,104 +1,84 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH] serial: mctrl_gpio: Avoid probe failures in case of
- missing gpiolib
-Date: Thu, 1 Aug 2019 10:19:45 -0300
-Message-ID: <CAOMZO5BPRNDQG_6PunUTxK7P=NF1DqjxvM+xEVMzX+rGd=h9hA@mail.gmail.com>
-References: <20190801124446.15703-1-frieder.schrempf@kontron.de>
+From: Neil Armstrong <narmstrong@baylibre.com>
+Subject: [RFC 0/9] dt-bindings: first tentative of conversion to yaml format
+Date: Thu,  1 Aug 2019 15:56:35 +0200
+Message-ID: <20190801135644.12843-1-narmstrong@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190801124446.15703-1-frieder.schrempf@kontron.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Schrempf Frieder <frieder.schrempf@kontron.de>
-Cc: "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "linux-imx@nxp.com" <linux-imx@nxp.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: robh+dt@kernel.org
+Cc: p.zabel@pengutronix.de, devicetree@vger.kernel.org, linux-watchdog@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>, jassisinghbrar@gmail.com, linux-spi@vger.kernel.org, linux-crypto@vger.kernel.org, linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org, kishon@ti.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Schrempf,
+This is a first tentative to convert some of the simplest Amlogic
+dt-bindings to the yaml format.
 
-On Thu, Aug 1, 2019 at 9:47 AM Schrempf Frieder
-<frieder.schrempf@kontron.de> wrote:
->
-> From: Frieder Schrempf <frieder.schrempf@kontron.de>
->
-> If CONFIG_GPIOLIB is not enabled, mctrl_gpio_init() and
-> mctrl_gpio_init_noauto() will currently return an error pointer with
-> -ENOSYS. As the mctrl GPIOs are usually optional, drivers need to
-> check for this condition to allow continue probing.
->
-> To avoid the need for this check in each driver, we return NULL
-> instead, as all the mctrl_gpio_*() functions are skipped anyway.
-> We also adapt mctrl_gpio_to_gpiod() to be in line with this change.
->
-> Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
+All have been tested using :
+$ make ARCH=arm64 dtbs_check
 
-Looks good to me:
+Issues with the amlogic arm64 DTs has already been identified thanks
+to the validation scripts. The DT fixes will be pushed once these yaml
+bindings are acked.
 
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
+Neil Armstrong (9):
+  dt-bindings: mailbox: meson-mhu: convert to yaml
+  dt-bindings: rng: amlogic,meson-rng: convert to yaml
+  dt-bindings: spi: meson: convert to yaml
+  dt-bindings: reset: amlogic,meson-reset: convert to yaml
+  dt-bindings: arm: amlogic: amlogic,meson-gx-ao-secure: convert to yaml
+  dt-bindings: phy: meson-g12a-usb2-phy: convert to yaml
+  dt-bindings: phy: meson-g12a-usb3-pcie-phy: convert to yaml
+  dt-bindings: serial: meson-uart: convert to yaml
+  dt-bindings: watchdog: meson-gxbb-wdt: convert to yaml
 
-Also adding Geert on Cc as the patch touches sh-sci.
+ .../amlogic/amlogic,meson-gx-ao-secure.txt    | 28 -------
+ .../amlogic/amlogic,meson-gx-ao-secure.yaml   | 42 +++++++++++
+ .../devicetree/bindings/mailbox/meson-mhu.txt | 34 ---------
+ .../bindings/mailbox/meson-mhu.yaml           | 53 +++++++++++++
+ .../bindings/phy/meson-g12a-usb2-phy.txt      | 22 ------
+ .../bindings/phy/meson-g12a-usb2-phy.yaml     | 67 +++++++++++++++++
+ .../bindings/phy/meson-g12a-usb3-pcie-phy.txt | 22 ------
+ .../phy/meson-g12a-usb3-pcie-phy.yaml         | 61 +++++++++++++++
+ .../bindings/reset/amlogic,meson-reset.txt    | 19 -----
+ .../bindings/reset/amlogic,meson-reset.yaml   | 40 ++++++++++
+ .../bindings/rng/amlogic,meson-rng.txt        | 21 ------
+ .../bindings/rng/amlogic,meson-rng.yaml       | 37 +++++++++
+ .../bindings/serial/amlogic,meson-uart.txt    | 38 ----------
+ .../bindings/serial/amlogic,meson-uart.yaml   | 75 +++++++++++++++++++
+ .../bindings/spi/amlogic,meson-gx-spicc.yaml  | 74 ++++++++++++++++++
+ .../bindings/spi/amlogic,meson6-spifc.yaml    | 57 ++++++++++++++
+ .../devicetree/bindings/spi/spi-meson.txt     | 55 --------------
+ .../bindings/watchdog/meson-gxbb-wdt.txt      | 16 ----
+ .../bindings/watchdog/meson-gxbb-wdt.yaml     | 37 +++++++++
+ 19 files changed, 543 insertions(+), 255 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/arm/amlogic/amlogic,meson-gx-ao-secure.txt
+ create mode 100644 Documentation/devicetree/bindings/arm/amlogic/amlogic,meson-gx-ao-secure.yaml
+ delete mode 100644 Documentation/devicetree/bindings/mailbox/meson-mhu.txt
+ create mode 100644 Documentation/devicetree/bindings/mailbox/meson-mhu.yaml
+ delete mode 100644 Documentation/devicetree/bindings/phy/meson-g12a-usb2-phy.txt
+ create mode 100644 Documentation/devicetree/bindings/phy/meson-g12a-usb2-phy.yaml
+ delete mode 100644 Documentation/devicetree/bindings/phy/meson-g12a-usb3-pcie-phy.txt
+ create mode 100644 Documentation/devicetree/bindings/phy/meson-g12a-usb3-pcie-phy.yaml
+ delete mode 100644 Documentation/devicetree/bindings/reset/amlogic,meson-reset.txt
+ create mode 100644 Documentation/devicetree/bindings/reset/amlogic,meson-reset.yaml
+ delete mode 100644 Documentation/devicetree/bindings/rng/amlogic,meson-rng.txt
+ create mode 100644 Documentation/devicetree/bindings/rng/amlogic,meson-rng.yaml
+ delete mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+ create mode 100644 Documentation/devicetree/bindings/spi/amlogic,meson-gx-spicc.yaml
+ create mode 100644 Documentation/devicetree/bindings/spi/amlogic,meson6-spifc.yaml
+ delete mode 100644 Documentation/devicetree/bindings/spi/spi-meson.txt
+ delete mode 100644 Documentation/devicetree/bindings/watchdog/meson-gxbb-wdt.txt
+ create mode 100644 Documentation/devicetree/bindings/watchdog/meson-gxbb-wdt.yaml
 
-Thanks
-
-
-> ---
->  drivers/tty/serial/serial_mctrl_gpio.c | 3 +++
->  drivers/tty/serial/serial_mctrl_gpio.h | 6 +++---
->  drivers/tty/serial/sh-sci.c            | 2 +-
->  3 files changed, 7 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
-> index 2b400189be91..54c43e02e375 100644
-> --- a/drivers/tty/serial/serial_mctrl_gpio.c
-> +++ b/drivers/tty/serial/serial_mctrl_gpio.c
-> @@ -61,6 +61,9 @@ EXPORT_SYMBOL_GPL(mctrl_gpio_set);
->  struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
->                                       enum mctrl_gpio_idx gidx)
->  {
-> +       if (gpios == NULL)
-> +               return NULL;
-> +
->         return gpios->gpio[gidx];
->  }
->  EXPORT_SYMBOL_GPL(mctrl_gpio_to_gpiod);
-> diff --git a/drivers/tty/serial/serial_mctrl_gpio.h b/drivers/tty/serial/serial_mctrl_gpio.h
-> index b7d3cca48ede..1b2ff503b2c2 100644
-> --- a/drivers/tty/serial/serial_mctrl_gpio.h
-> +++ b/drivers/tty/serial/serial_mctrl_gpio.h
-> @@ -114,19 +114,19 @@ static inline
->  struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
->                                       enum mctrl_gpio_idx gidx)
->  {
-> -       return ERR_PTR(-ENOSYS);
-> +       return NULL;
->  }
->
->  static inline
->  struct mctrl_gpios *mctrl_gpio_init(struct uart_port *port, unsigned int idx)
->  {
-> -       return ERR_PTR(-ENOSYS);
-> +       return NULL;
->  }
->
->  static inline
->  struct mctrl_gpios *mctrl_gpio_init_noauto(struct device *dev, unsigned int idx)
->  {
-> -       return ERR_PTR(-ENOSYS);
-> +       return NULL;
->  }
->
->  static inline
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index d18c680aa64b..249325b65ee0 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -3287,7 +3287,7 @@ static int sci_probe_single(struct platform_device *dev,
->                 return ret;
->
->         sciport->gpios = mctrl_gpio_init(&sciport->port, 0);
-> -       if (IS_ERR(sciport->gpios) && PTR_ERR(sciport->gpios) != -ENOSYS)
-> +       if (IS_ERR(sciport->gpios))
->                 return PTR_ERR(sciport->gpios);
->
->         if (sciport->has_rtscts) {
-> --
-> 2.17.1
+-- 
+2.22.0
