@@ -1,11 +1,13 @@
 From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: [RFC 0/9] dt-bindings: first tentative of conversion to yaml format
-Date: Thu,  1 Aug 2019 15:56:35 +0200
-Message-ID: <20190801135644.12843-1-narmstrong@baylibre.com>
+Subject: [RFC 8/9] dt-bindings: serial: meson-uart: convert to yaml
+Date: Thu,  1 Aug 2019 15:56:43 +0200
+Message-ID: <20190801135644.12843-9-narmstrong@baylibre.com>
+References: <20190801135644.12843-1-narmstrong@baylibre.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190801135644.12843-1-narmstrong@baylibre.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -16,69 +18,141 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: robh+dt@kernel.org
-Cc: p.zabel@pengutronix.de, devicetree@vger.kernel.org, linux-watchdog@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>, jassisinghbrar@gmail.com, linux-spi@vger.kernel.org, linux-crypto@vger.kernel.org, linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org, kishon@ti.com, linux-arm-kernel@lists.infradead.org
+Cc: linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>
 List-Id: linux-serial@vger.kernel.org
 
-This is a first tentative to convert some of the simplest Amlogic
-dt-bindings to the yaml format.
-
-All have been tested using :
-$ make ARCH=arm64 dtbs_check
-
-Issues with the amlogic arm64 DTs has already been identified thanks
-to the validation scripts. The DT fixes will be pushed once these yaml
-bindings are acked.
-
-Neil Armstrong (9):
-  dt-bindings: mailbox: meson-mhu: convert to yaml
-  dt-bindings: rng: amlogic,meson-rng: convert to yaml
-  dt-bindings: spi: meson: convert to yaml
-  dt-bindings: reset: amlogic,meson-reset: convert to yaml
-  dt-bindings: arm: amlogic: amlogic,meson-gx-ao-secure: convert to yaml
-  dt-bindings: phy: meson-g12a-usb2-phy: convert to yaml
-  dt-bindings: phy: meson-g12a-usb3-pcie-phy: convert to yaml
-  dt-bindings: serial: meson-uart: convert to yaml
-  dt-bindings: watchdog: meson-gxbb-wdt: convert to yaml
-
- .../amlogic/amlogic,meson-gx-ao-secure.txt    | 28 -------
- .../amlogic/amlogic,meson-gx-ao-secure.yaml   | 42 +++++++++++
- .../devicetree/bindings/mailbox/meson-mhu.txt | 34 ---------
- .../bindings/mailbox/meson-mhu.yaml           | 53 +++++++++++++
- .../bindings/phy/meson-g12a-usb2-phy.txt      | 22 ------
- .../bindings/phy/meson-g12a-usb2-phy.yaml     | 67 +++++++++++++++++
- .../bindings/phy/meson-g12a-usb3-pcie-phy.txt | 22 ------
- .../phy/meson-g12a-usb3-pcie-phy.yaml         | 61 +++++++++++++++
- .../bindings/reset/amlogic,meson-reset.txt    | 19 -----
- .../bindings/reset/amlogic,meson-reset.yaml   | 40 ++++++++++
- .../bindings/rng/amlogic,meson-rng.txt        | 21 ------
- .../bindings/rng/amlogic,meson-rng.yaml       | 37 +++++++++
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+---
  .../bindings/serial/amlogic,meson-uart.txt    | 38 ----------
  .../bindings/serial/amlogic,meson-uart.yaml   | 75 +++++++++++++++++++
- .../bindings/spi/amlogic,meson-gx-spicc.yaml  | 74 ++++++++++++++++++
- .../bindings/spi/amlogic,meson6-spifc.yaml    | 57 ++++++++++++++
- .../devicetree/bindings/spi/spi-meson.txt     | 55 --------------
- .../bindings/watchdog/meson-gxbb-wdt.txt      | 16 ----
- .../bindings/watchdog/meson-gxbb-wdt.yaml     | 37 +++++++++
- 19 files changed, 543 insertions(+), 255 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/arm/amlogic/amlogic,meson-gx-ao-secure.txt
- create mode 100644 Documentation/devicetree/bindings/arm/amlogic/amlogic,meson-gx-ao-secure.yaml
- delete mode 100644 Documentation/devicetree/bindings/mailbox/meson-mhu.txt
- create mode 100644 Documentation/devicetree/bindings/mailbox/meson-mhu.yaml
- delete mode 100644 Documentation/devicetree/bindings/phy/meson-g12a-usb2-phy.txt
- create mode 100644 Documentation/devicetree/bindings/phy/meson-g12a-usb2-phy.yaml
- delete mode 100644 Documentation/devicetree/bindings/phy/meson-g12a-usb3-pcie-phy.txt
- create mode 100644 Documentation/devicetree/bindings/phy/meson-g12a-usb3-pcie-phy.yaml
- delete mode 100644 Documentation/devicetree/bindings/reset/amlogic,meson-reset.txt
- create mode 100644 Documentation/devicetree/bindings/reset/amlogic,meson-reset.yaml
- delete mode 100644 Documentation/devicetree/bindings/rng/amlogic,meson-rng.txt
- create mode 100644 Documentation/devicetree/bindings/rng/amlogic,meson-rng.yaml
+ 2 files changed, 75 insertions(+), 38 deletions(-)
  delete mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
  create mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
- create mode 100644 Documentation/devicetree/bindings/spi/amlogic,meson-gx-spicc.yaml
- create mode 100644 Documentation/devicetree/bindings/spi/amlogic,meson6-spifc.yaml
- delete mode 100644 Documentation/devicetree/bindings/spi/spi-meson.txt
- delete mode 100644 Documentation/devicetree/bindings/watchdog/meson-gxbb-wdt.txt
- create mode 100644 Documentation/devicetree/bindings/watchdog/meson-gxbb-wdt.yaml
 
+diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
+deleted file mode 100644
+index c06c045126fc..000000000000
+--- a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
++++ /dev/null
+@@ -1,38 +0,0 @@
+-Amlogic Meson SoC UART Serial Interface
+-=======================================
+-
+-The Amlogic Meson SoC UART Serial Interface is present on a large range
+-of SoCs, and can be present either in the "Always-On" power domain or the
+-"Everything-Else" power domain.
+-
+-The particularity of the "Always-On" Serial Interface is that the hardware
+-is active since power-on and does not need any clock gating and is usable
+-as very early serial console.
+-
+-Required properties:
+-- compatible : compatible: value should be different for each SoC family as :
+-	- Meson6 : "amlogic,meson6-uart"
+-	- Meson8 : "amlogic,meson8-uart"
+-	- Meson8b : "amlogic,meson8b-uart"
+-	- GX (GXBB, GXL, GXM) : "amlogic,meson-gx-uart"
+-	eventually followed by : "amlogic,meson-ao-uart" if this UART interface
+-	is in the "Always-On" power domain.
+-- reg : offset and length of the register set for the device.
+-- interrupts : identifier to the device interrupt
+-- clocks : a list of phandle + clock-specifier pairs, one for each
+-	   entry in clock names.
+-- clock-names :
+-   * "xtal" for external xtal clock identifier
+-   * "pclk" for the bus core clock, either the clk81 clock or the gate clock
+-   * "baud" for the source of the baudrate generator, can be either the xtal
+-	or the pclk.
+-
+-e.g.
+-uart_A: serial@84c0 {
+-	compatible = "amlogic,meson-gx-uart";
+-	reg = <0x0 0x84c0 0x0 0x14>;
+-	interrupts = <GIC_SPI 26 IRQ_TYPE_EDGE_RISING>;
+-	/* Use xtal as baud rate clock source */
+-	clocks = <&xtal>, <&clkc CLKID_UART0>, <&xtal>;
+-	clock-names = "xtal", "pclk", "baud";
+-};
+diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+new file mode 100644
+index 000000000000..e150e3504fa0
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+@@ -0,0 +1,75 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++# Copyright 2019 BayLibre, SAS
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/serial/amlogic,meson-uart.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: Amlogic Meson SoC UART Serial Interface
++
++maintainers:
++  - Neil Armstrong <narmstrong@baylibre.com>
++
++description: |
++  The Amlogic Meson SoC UART Serial Interface is present on a large range
++  of SoCs, and can be present either in the "Always-On" power domain or the
++  "Everything-Else" power domain.
++
++  The particularity of the "Always-On" Serial Interface is that the hardware
++  is active since power-on and does not need any clock gating and is usable
++  as very early serial console.
++
++properties:
++  compatible:
++    oneOf:
++      - description: Allways-on power domain UART controller
++        items:
++        - enum:
++          - amlogic,meson6-uart
++          - amlogic,meson8-uart
++          - amlogic,meson8b-uart
++          - amlogic,meson-gx-uart
++        - const: amlogic,meson-ao-uart
++      - description: Everything-Else power domain UART controller
++        enum:
++        - amlogic,meson6-uart
++        - amlogic,meson8-uart
++        - amlogic,meson8b-uart
++        - amlogic,meson-gx-uart
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    minItems: 3
++    maxItems: 3
++
++  clock-names:
++    description: |
++      "xtal" for external xtal clock identifier
++      "pclk" for the bus core clock, either the clk81 clock or the gate clock
++      "baud" for the source of the baudrate generator, can be either the xtal
++      or the pclk.
++    items:
++      - const: xtal
++      - const: pclk
++      - const: baud
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++
++examples:
++  - |
++    serial@84c0 {
++          compatible = "amlogic,meson-gx-uart";
++          reg = <0x84c0 0x14>;
++          interrupts = <26>;
++          clocks = <&xtal>, <&pclk>, <&xtal>;
++          clock-names = "xtal", "pclk", "baud";
++    };
 -- 
 2.22.0
