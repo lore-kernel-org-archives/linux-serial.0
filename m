@@ -1,35 +1,82 @@
-From: Rob Herring <robh+dt@kernel.org>
-Subject: Re: [RFC 0/9] dt-bindings: first tentative of conversion to yaml
- format
-Date: Thu, 1 Aug 2019 09:20:03 -0600
-Message-ID: <CAL_JsqL7FEAJ9S5j9JSwfj+t8434KsEOcxKEMWNFnG00b07JMA@mail.gmail.com>
-References: <20190801135644.12843-1-narmstrong@baylibre.com>
+From: Schrempf Frieder <frieder.schrempf@kontron.de>
+Subject: [PATCH v2 1/3] serial: mctrl_gpio: Avoid probe failures in case of
+ missing gpiolib
+Date: Thu, 1 Aug 2019 18:45:21 +0000
+Message-ID: <20190801184505.17239-1-frieder.schrempf@kontron.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190801135644.12843-1-narmstrong@baylibre.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Neil Armstrong <narmstrong@baylibre.com>
-Cc: Philipp Zabel <p.zabel@pengutronix.de>, devicetree@vger.kernel.org, LINUX-WATCHDOG <linux-watchdog@vger.kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>, linux-spi <linux-spi@vger.kernel.org>, "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" <linux-crypto@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, linux-amlogic@lists.infradead.org, Kishon Vijay Abraham I <kishon@ti.com>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-imx@nxp.com" <linux-imx@nxp.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "geert+renesas@glider.be" <geert+renesas@glider.be>, Schrempf Frieder <frieder.schrempf@kontron.de>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Aug 1, 2019 at 7:56 AM Neil Armstrong <narmstrong@baylibre.com> wrote:
->
-> This is a first tentative to convert some of the simplest Amlogic
-> dt-bindings to the yaml format.
+From: Frieder Schrempf <frieder.schrempf@kontron.de>
 
-Great to see this.
+If CONFIG_GPIOLIB is not enabled, mctrl_gpio_init() and
+mctrl_gpio_init_noauto() will currently return an error pointer with
+-ENOSYS. As the mctrl GPIOs are usually optional, drivers need to
+check for this condition to allow continue probing.
 
-I've gone thru all of the patches. Some of the same minor comments I
-made also apply to the patches I didn't comment on.
+To avoid the need for this check in each driver, we return NULL
+instead, as all the mctrl_gpio_*() functions are skipped anyway.
+We also adapt mctrl_gpio_to_gpiod() to be in line with this change.
 
-Rob
+Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
+---
+Changes in v2
+=============
+* Move the sh_sci changes to a separate patch
+* Add a patch for the 8250 driver
+* Add Fabio's R-b tag
+---
+ drivers/tty/serial/serial_mctrl_gpio.c | 3 +++
+ drivers/tty/serial/serial_mctrl_gpio.h | 6 +++---
+ 2 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
+index 2b400189be91..54c43e02e375 100644
+--- a/drivers/tty/serial/serial_mctrl_gpio.c
++++ b/drivers/tty/serial/serial_mctrl_gpio.c
+@@ -61,6 +61,9 @@ EXPORT_SYMBOL_GPL(mctrl_gpio_set);
+ struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
+ 				      enum mctrl_gpio_idx gidx)
+ {
++	if (gpios == NULL)
++		return NULL;
++
+ 	return gpios->gpio[gidx];
+ }
+ EXPORT_SYMBOL_GPL(mctrl_gpio_to_gpiod);
+diff --git a/drivers/tty/serial/serial_mctrl_gpio.h b/drivers/tty/serial/serial_mctrl_gpio.h
+index b7d3cca48ede..1b2ff503b2c2 100644
+--- a/drivers/tty/serial/serial_mctrl_gpio.h
++++ b/drivers/tty/serial/serial_mctrl_gpio.h
+@@ -114,19 +114,19 @@ static inline
+ struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
+ 				      enum mctrl_gpio_idx gidx)
+ {
+-	return ERR_PTR(-ENOSYS);
++	return NULL;
+ }
+ 
+ static inline
+ struct mctrl_gpios *mctrl_gpio_init(struct uart_port *port, unsigned int idx)
+ {
+-	return ERR_PTR(-ENOSYS);
++	return NULL;
+ }
+ 
+ static inline
+ struct mctrl_gpios *mctrl_gpio_init_noauto(struct device *dev, unsigned int idx)
+ {
+-	return ERR_PTR(-ENOSYS);
++	return NULL;
+ }
+ 
+ static inline
+-- 
+2.17.1
