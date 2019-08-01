@@ -1,65 +1,63 @@
-From: Vivek Gautam <vivek.gautam@codeaurora.org>
-Subject: [PATCH 1/1] tty: serial: qcom_geni_serial: Update the oversampling rate
-Date: Thu,  1 Aug 2019 17:41:53 +0530
-Message-ID: <20190801121153.10613-1-vivek.gautam@codeaurora.org>
+From: Rob Landley <rob@landley.net>
+Subject: Re: [PATCH v2 7/7] n_tty: Provide an informational line on VSTATUS
+ receipt
+Date: Thu, 1 Aug 2019 07:35:33 -0500
+Message-ID: <c6750387-8888-0b48-1d82-fd13c4466aa9@landley.net>
+References: <20190625161153.29811-1-ar@cs.msu.ru>
+ <20190625161153.29811-8-ar@cs.msu.ru> <20190730161940.GA15798@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190730161940.GA15798@kroah.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: agross@kernel.org, gregkh@linuxfoundation.org, linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: jslaby@suse.com, linux-kernel@vger.kernel.org, bjorn.andersson@linaro.org, Vivek Gautam <vivek.gautam@codeaurora.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Arseny Maslennikov <ar@cs.msu.ru>
+Cc: Jiri Slaby <jslaby@suse.com>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "Vladimir D. Seleznev" <vseleznv@altlinux.org>, "Eric W. Biederman" <ebiederm@xmission.com>, Pavel Machek <pavel@ucw.cz>
 List-Id: linux-serial@vger.kernel.org
 
-For QUP IP versions 2.5 and above the oversampling rate is halved
-from 32 to 16. Update this rate after reading hardware version
-register, so that the clock divider value is correctly set to
-achieve required baud rate.
+On 7/30/19 11:19 AM, Greg Kroah-Hartman wrote:
+> On Tue, Jun 25, 2019 at 07:11:53PM +0300, Arseny Maslennikov wrote:
+>> If the three termios local flags isig, icanon, iexten are enabled
+>> and the local flag nokerninfo is disabled for a tty governed
+>> by the n_tty line discipline, then on receiving the keyboard status
+>> character n_tty will generate a status message and write it out to
+>> the tty before sending SIGINFO to the tty's foreground process group.
+>>
+>> This kerninfo line contains information about the current system load
+>> as well as some properties of "the most interesting" process in the
+>> tty's current foreground process group, namely:
+>>  - its PID as seen inside its deepest PID namespace;
+>>    * the whole process group ought to be in a single PID namespace,
+>>      so this is actually deterministic
+>>  - its saved command name truncated to 16 bytes (task_struct::comm);
+>>    * at the time of writing TASK_COMM_LEN == 16
+>>  - its state and some related bits, procps-style;
+>>  - for S and D: its symbolic wait channel, if available; or a short
+>>    description for other process states instead;
+>>  - its user, system and real rusage time values;
+>>  - its resident set size (as well as the high watermark) in kilobytes.
+> 
+> Why is this really all needed as we have the SysRq handlers that report
+> all of this today?
 
-Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
----
- drivers/tty/serial/qcom_geni_serial.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+People were lamenting the lack of siginfo in linux back in May, I offered to try
+to implement it, several people jumped in to offer suggestions, and it turns out
+you can't really do it without kernel support.
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 35e5f9c5d5be..318f811585cc 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -920,12 +920,13 @@ static unsigned long get_clk_cfg(unsigned long clk_freq)
- 	return 0;
- }
- 
--static unsigned long get_clk_div_rate(unsigned int baud, unsigned int *clk_div)
-+static unsigned long get_clk_div_rate(unsigned int baud,
-+			unsigned int sampling_rate, unsigned int *clk_div)
- {
- 	unsigned long ser_clk;
- 	unsigned long desired_clk;
- 
--	desired_clk = baud * UART_OVERSAMPLING;
-+	desired_clk = baud * sampling_rate;
- 	ser_clk = get_clk_cfg(desired_clk);
- 	if (!ser_clk) {
- 		pr_err("%s: Can't find matching DFS entry for baud %d\n",
-@@ -951,12 +952,20 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 	u32 ser_clk_cfg;
- 	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
- 	unsigned long clk_rate;
-+	u32 ver, sampling_rate;
- 
- 	qcom_geni_serial_stop_rx(uport);
- 	/* baud rate */
- 	baud = uart_get_baud_rate(uport, termios, old, 300, 4000000);
- 	port->baud = baud;
--	clk_rate = get_clk_div_rate(baud, &clk_div);
-+
-+	sampling_rate = UART_OVERSAMPLING;
-+	/* Sampling rate is halved for IP versions >= 2.5 */
-+	ver = geni_se_get_qup_hw_version(&port->se);
-+	if (GENI_SE_VERSION_MAJOR(ver) >= 2 && GENI_SE_VERSION_MINOR(ver) >= 5)
-+		sampling_rate /= 2;
-+
-+	clk_rate = get_clk_div_rate(baud, sampling_rate, &clk_div);
- 	if (!clk_rate)
- 		goto out_restart_rx;
- 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+https://twitter.com/landley/status/1131764323196522498
+
+ >> The "most interesting" process is chosen as follows:
+>>  - runnables over everything
+>>  - uninterruptibles over everything else
+>>  - among 2 runnables pick the biggest utime + stime
+>>  - any unresolved ties are decided in favour of greatest PID.
+> 
+> This does not feel like something that the tty core code should be doing
+> at all.
+
+I couldn't figure out how to do it without kernel support when I tried.
+
+http://lists.landley.net/pipermail/toybox-landley.net/2019-May/010461.html
+
+Rob
