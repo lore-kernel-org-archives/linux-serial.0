@@ -1,45 +1,42 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 00/14] ARM: move lpc32xx and dove to multiplatform
-Date: Thu, 1 Aug 2019 09:33:23 +0200
-Message-ID: <CAK8P3a1Lgbz9RwVaOgNq=--gwvEG70tUi67XwsswjgnXAX6EhA@mail.gmail.com>
-References: <20190731195713.3150463-1-arnd@arndb.de> <20190731225303.GC1330@shell.armlinux.org.uk>
+From: Schrempf Frieder <frieder.schrempf@kontron.de>
+Subject: [PATCH] serial: imx: Avoid probe failure in case of missing gpiolib
+Date: Thu, 1 Aug 2019 08:18:05 +0000
+Message-ID: <20190801081524.22577-1-frieder.schrempf@kontron.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <20190731225303.GC1330@shell.armlinux.org.uk>
-Sender: netdev-owner@vger.kernel.org
-To: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc: soc@kernel.org, Linux ARM <linux-arm-kernel@lists.infradead.org>, Vladimir Zapolskiy <vz@mleia.com>, Sylvain Lemieux <slemieux.tyco@gmail.com>, Gregory Clement <gregory.clement@bootlin.com>, Linus Walleij <linus.walleij@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, "David S. Miller" <davem@davemloft.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, Guenter Roeck <linux@roeck-us.net>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Networking <netdev@vger.kernel.org>, linux-serial@vger.kernel.org, USB list <linux-usb@vger.kernel.org>, LINUXWATCHDOG <linux-watchdog@vger.kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>
+Cc: Schrempf Frieder <frieder.schrempf@kontron.de>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Aug 1, 2019 at 12:53 AM Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
->
-> On Wed, Jul 31, 2019 at 09:56:42PM +0200, Arnd Bergmann wrote:
-> > For dove, the patches are basically what I had proposed back in
-> > 2015 when all other ARMv6/ARMv7 machines became part of a single
-> > kernel build. I don't know what the state is mach-dove support is,
-> > compared to the DT based support in mach-mvebu for the same
-> > hardware. If they are functionally the same, we could also just
-> > remove mach-dove rather than applying my patches.
->
-> Well, the good news is that I'm down to a small board support file
-> for the Dove Cubox now - but the bad news is, that there's still a
-> board support file necessary to support everything the Dove SoC has
-> to offer.
->
-> Even for a DT based Dove Cubox, I'm still using mach-dove, but it
-> may be possible to drop most of mach-dove now.  Without spending a
-> lot of time digging through it, it's impossible to really know.
+From: Frieder Schrempf <frieder.schrempf@kontron.de>
 
-Ok, so we won't remove it then, but I'd like to merge my patches to
-at least get away from the special case of requiring a separate kernel
-image for it.
+If CONFIG_GPIOLIB is not enabled, mctrl_gpio_init() will return
+-ENOSYS and cause the probing of the imx UART to fail. As the
+GPIOs are optional, we should continue probing in this case.
 
-Can you try if applying patches 12 and 14 from my series causes
-problems for you? (it may be easier to apply the entire set
-or pull from [1] to avoid rebase conflicts).
+Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
+---
+ drivers/tty/serial/imx.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-     Arnd
-
-[1] kernel.org:/pub/scm/linux/kernel/git/arnd/playground.git mach-cleanup-5.4
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 10db3e54ac9e..51714498dacf 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -2237,7 +2237,9 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 	timer_setup(&sport->timer, imx_uart_timeout, 0);
+ 
+ 	sport->gpios = mctrl_gpio_init(&sport->port, 0);
+-	if (IS_ERR(sport->gpios))
++	if (PTR_ERR(sport->gpios) == -ENOSYS)
++		sport->gpios = NULL;
++	else if (IS_ERR(sport->gpios))
+ 		return PTR_ERR(sport->gpios);
+ 
+ 	sport->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
+-- 
+2.17.1
