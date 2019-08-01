@@ -1,73 +1,66 @@
-From: Pavel Machek <pavel@denx.de>
-Subject: Re: [PATCH v2 7/7] n_tty: Provide an informational line on VSTATUS
- receipt
-Date: Thu, 1 Aug 2019 12:10:12 +0200
-Message-ID: <20190801101012.GA4816@amd>
-References: <20190625161153.29811-1-ar@cs.msu.ru>
- <20190625161153.29811-8-ar@cs.msu.ru>
- <20190730161940.GA15798@kroah.com>
- <20190731222359.GA20574@cello>
- <20190801092020.GB19329@kroah.com>
+From: Schrempf Frieder <frieder.schrempf@kontron.de>
+Subject: Re: [PATCH] serial: imx: Avoid probe failure in case of missing
+ gpiolib
+Date: Thu, 1 Aug 2019 10:59:54 +0000
+Message-ID: <0174be55-5e40-8cc7-82c7-54f9de46f711@kontron.de>
+References: <20190801081524.22577-1-frieder.schrempf@kontron.de>
+ <20190801084827.m42ci3amo37hmesi@pengutronix.de>
+ <0674d68b-99fa-3408-1dd1-22dc84144b43@kontron.de>
+ <20190801095529.dm3pvgts6cy6mbiq@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="LZvS9be/3tNcYl/X"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190801092020.GB19329@kroah.com>
+In-Reply-To: <20190801095529.dm3pvgts6cy6mbiq@pengutronix.de>
+Content-Language: en-US
+Content-ID: <0628AA5336195744A936E2B9B571403C@snt-world.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Arseny Maslennikov <ar@cs.msu.ru>, Jiri Slaby <jslaby@suse.com>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "Vladimir D. Seleznev" <vseleznv@altlinux.org>, Rob Landley <rob@landley.net>, "Eric W. Biederman" <ebiederm@xmission.com>
+To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>
 List-Id: linux-serial@vger.kernel.org
 
-
---LZvS9be/3tNcYl/X
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi!
-
-> > The use-case for this is different: the ^T-line as proposed by this
-> > patch is for the user that interacts with a system through a terminal, =
-who
-> > wants to be informed not about the whole system (sort of what SysRq-t
-> > tells you), but about what they run on that particular tty.
->=20
-> Ok, fair enough, although if you just add a new sysrq option for "what
-> is running on this tty", would that help resolve this?
-
-This is meant for unpriviledged users, unlike sysrq.
-
-> > This is much less about "why does my system/kernel seem to hang?" or
-> > exposing low-level internals (registers, hrtimers, locks, ...), and more
-> > about "is my SSH terminal session unresponsive?" and "I ran a command,
-> > it doesn't finish, how's it doing?".
-> > e.g. A user might want to know if their SSH connection is alive without
-> > interrupting anything, while having no access both to SysRq and console,
-> > and no one in fg pgrp actually handles SIGINFO.
->=20
-> If you have access to a tty, you should have access to sysrq, right?
-
-No. This is supposed to work over ssh. SysRq is not supposed to work
-over ssh; that would be a security hole.
-
-Best regards,
-									Pavel
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---LZvS9be/3tNcYl/X
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAl1CuoQACgkQMOfwapXb+vK3gQCfcVYhklm354XQ/g8no7Y8CTU6
-zdsAn0kzH5QdUuT6Ax/Vz6mumSrD+H+n
-=xg6J
------END PGP SIGNATURE-----
-
---LZvS9be/3tNcYl/X--
+T24gMDEuMDguMTkgMTE6NTUsIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOg0KPiBPbiBUaHUsIEF1
+ZyAwMSwgMjAxOSBhdCAwOToyODozM0FNICswMDAwLCBTY2hyZW1wZiBGcmllZGVyIHdyb3RlOg0K
+Pj4gSGkgVXdlLA0KPj4NCj4+IE9uIDAxLjA4LjE5IDEwOjQ4LCBVd2UgS2xlaW5lLUvDtm5pZyB3
+cm90ZToNCj4+PiBPbiBUaHUsIEF1ZyAwMSwgMjAxOSBhdCAwODoxODowNUFNICswMDAwLCBTY2hy
+ZW1wZiBGcmllZGVyIHdyb3RlOg0KPj4+PiBGcm9tOiBGcmllZGVyIFNjaHJlbXBmIDxmcmllZGVy
+LnNjaHJlbXBmQGtvbnRyb24uZGU+DQo+Pj4+DQo+Pj4+IElmIENPTkZJR19HUElPTElCIGlzIG5v
+dCBlbmFibGVkLCBtY3RybF9ncGlvX2luaXQoKSB3aWxsIHJldHVybg0KPj4+PiAtRU5PU1lTIGFu
+ZCBjYXVzZSB0aGUgcHJvYmluZyBvZiB0aGUgaW14IFVBUlQgdG8gZmFpbC4gQXMgdGhlDQo+Pj4+
+IEdQSU9zIGFyZSBvcHRpb25hbCwgd2Ugc2hvdWxkIGNvbnRpbnVlIHByb2JpbmcgaW4gdGhpcyBj
+YXNlLg0KPj4+DQo+Pj4gSXMgdGhpcyByZWFsbHkgc3RpbGwgdGhlIGNhc2U/IE9uIHdoaWNoIHZl
+cnNpb24gZGlkIHlvdSBoaXQgdGhpcw0KPj4+IHByb2JsZW0/DQo+Pg0KPj4gWWVzLCBJIHRoaW5r
+IGl0IGlzLiBJIHVzZWQgdjUuMi41LCB0aGF0IGFscmVhZHkgaGFzIGQ5OTQ4MjY3M2Y5NS4NCj4+
+DQo+Pj4NCj4+PiBJIHdvdWxkIGV4cGVjdCB0aGF0IGlzIGdvbmUgd2l0aA0KPj4+IGQ5OTQ4MjY3
+M2Y5NTA4MTdiMzBjYWYzZmNkZmIzMTE3OWIwNTBjZTEgaWYgbm90IGVhcmxpZXIuDQo+Pg0KPj4g
+SSB0aGluayB0aGlzIGlzIGEgZGlmZmVyZW50IHByb2JsZW0uIElmIENPTkZJR19HUElPTElCIGlz
+IGRpc2FibGVkLA0KPj4gbWN0cmxfZ3Bpb19pbml0KCkgcmV0dXJucyAtRU5PU1lTIHVuY29uZGl0
+aW9uYWxseSBoZXJlOiBbMV0uIFRoZQ0KPj4gZXhpc3RpbmcgcGF0Y2ggKGQ5OTQ4MjY3M2Y5NSkg
+c2VlbXMgdG8gaGFuZGxlIHRoZSBjYXNlIHdoZW4NCj4+IENPTkZJR19HUElPTElCIGlzIGVuYWJs
+ZWQsIGJ1dCBubyBvciBub3QgYWxsIEdQSU9zIGFyZSBnaXZlbiBpbiB0aGUgZHRiLg0KPiANCj4g
+QWgsIEkgc2VlLg0KPiANCj4gSSBkb24ndCB0aGluayB3ZSBzaG91bGQgaGFuZGxlIHRoaXMgb24g
+YSBwZXItZHJpdmVyIGJhc2lzLiBTbyBteQ0KPiBzdWdnZXN0aW9uIGlzIHRvIGRyb3AgdGhlIGR1
+bW15IGltcGxlbWVudGF0aW9uIGZvciBtY3RybF9ncGlvIGlmIEdQSU9MSUINCj4gaXMgZGlzYWJs
+ZWQuIFRoZW4gdGhlIGJlaGF2aW91ciBzaG91bGQgYmUgY29uc2lzdGFudCB3aXRoIHRoZSBncGlv
+IHN0dWZmDQo+IHJldHVybmluZyBOVUxMIGluIHRoaXMgY2FzZS4gKE9yIGFsdGVybmF0aXZlbHkg
+YWRhcHQgdGhlIGR1bW15DQo+IGltcGxlbWVudGF0aW9uIHRvIHNob3J0Y3V0IGFuZCBiZWhhdmUg
+aWRlbnRpY2FsbHkuKQ0KDQpJIGdldCB5b3VyIHBvaW50LCBidXQgaXQgc2VlbXMgYSBiaXQgc3Ry
+YW5nZSB0byBnbyBkb3duIGFsbCB0aGUgd2F5IGZyb20gDQp0aGUgZHJpdmVyIHRvIG1jdHJsX2dw
+aW9faW5pdF9ub2F1dG8oKSBhbmQgaW50byB0aGUgbG9vcCBqdXN0IHRvIHJldHVybiANCmFuIGVt
+cHR5IHN0cnVjdCBtY3RybF9ncGlvcyB0byB0aGUgZHJpdmVyIHRoYXQgd2lsbCBiZSBsb29wZWQg
+b3ZlciBhZ2FpbiANCm9uIGVhY2ggY2FsbCBvZiBtY3RybF9ncGlvXyooKS4NCg0KU28gSSB3b3Vs
+ZCByYXRoZXIgZ28gd2l0aCBhIHZhcmlhdGlvbiBvZiB5b3VyIHNlY29uZCBwcm9wb3NhbCBhbmQg
+a2VlcCANCnRoZSBkdW1teSBpbXBsZW1lbnRhdGlvbiwgYnV0IGxldCBpdCByZXR1cm4gTlVMTCBp
+bnN0ZWFkIG9mIGFuIGVycm9yIA0KcG9pbnRlciwgYXMgYWxsIHRoZSBtY3RybF9ncGlvXyooKSBm
+dW5jdGlvbnMgYWxyZWFkeSBzZWVtIHRvIGhhdmUgYSANCmNoZWNrIGZvciBncGlvcyA9PSBOVUxM
+Lg0KDQpXaGF0IGRvIHlvdSB0aGluaz8NCg0KPiANCj4gKEhhdmluZyBzYWlkIHRoYXQgSSBkb24n
+dCBsaWtlIGdwaW9saWIncyBiZWhhdmlvdXIgb2YgcmV0dXJuaW5nIE5VTEwgZm9yDQo+IHRoZSBv
+cHRpb25hbCBjYWxscyBpZiBpdCdzIGRpc2FibGVkLCBidXQgaGF2aW5nIG1jdHJsX2dwaW8gYmVo
+YXZlDQo+IGRpZmZlcmVudGx5IGlzIHdvcnNlLikNCj4gDQo+PiBUaGUgc2gtc2NpLmMgZHJpdmVy
+IGhhcyBhIHNpbWlsYXIgY2hlY2sgdG8gc2tpcCB0aGlzIGNhc2U6IFsyXS4NCj4gDQo+IFRoaXMg
+c2hvdWxkIHRoYW4gYmUgZHJvcHBlZCwgdG9vLg0KPiANCj4gQmVzdCByZWdhcmRzDQo+IFV3ZQ0K
+PiANCj4+IFsxXQ0KPj4gaHR0cHM6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5l
+bC9naXQvdG9ydmFsZHMvbGludXguZ2l0L3RyZWUvZHJpdmVycy90dHkvc2VyaWFsL3NlcmlhbF9t
+Y3RybF9ncGlvLmgjbjEyMQ0KPj4gWzJdDQo+PiBodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9z
+Y20vbGludXgva2VybmVsL2dpdC90b3J2YWxkcy9saW51eC5naXQvdHJlZS9kcml2ZXJzL3R0eS9z
+ZXJpYWwvc2gtc2NpLmMjbjMyOTANCj4g
