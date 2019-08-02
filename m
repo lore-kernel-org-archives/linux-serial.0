@@ -1,65 +1,41 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 05/14] gpio: lpc32xx: allow building on non-lpc32xx targets
-Date: Fri, 2 Aug 2019 13:19:55 +0200
-Message-ID: <CAK8P3a3KpKvRKXY72toE_5eAp4ER_Mre0GX3guwGeQgsY2HX+g@mail.gmail.com>
-References: <20190731195713.3150463-1-arnd@arndb.de>
- <20190731195713.3150463-6-arnd@arndb.de>
- <CAMpxmJWFfT_vrDas2fzW5tnxskk9kmgHQpGnGQ-_C20UaS_jhA@mail.gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v3 1/4] serial: mctrl_gpio: Avoid probe failures in case
+ of missing gpiolib
+Date: Fri, 2 Aug 2019 14:08:54 +0200
+Message-ID: <20190802120854.k3arbz6pk6n5ayti@pengutronix.de>
+References: <20190802100349.8659-1-frieder.schrempf@kontron.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CAMpxmJWFfT_vrDas2fzW5tnxskk9kmgHQpGnGQ-_C20UaS_jhA@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, LINUXWATCHDOG <linux-watchdog@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, Jason Cooper <jason@lakedaemon.net>, "David S. Miller" <davem@davemloft.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Gregory Clement <gregory.clement@bootlin.com>, USB list <linux-usb@vger.kernel.org>, Russell King <linux@armlinux.org.uk>, Vladimir Zapolskiy <vz@mleia.com>, linux-gpio <linux-gpio@vger.kernel.org>, soc@kernel.org, netdev <netdev@vger.kernel.org>, Alan Stern <stern@rowland.harvard.edu>, Guenter Roeck <linux@roeck-us.net>, linux-serial@vger.kernel.org, Sylvain Lemieux <slemieux.tyco@gmail.com>, Lee Jones <lee.jones@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, arm-soc <linux-arm-kernel@lists.infradead.org>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190802100349.8659-1-frieder.schrempf@kontron.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Schrempf Frieder <frieder.schrempf@kontron.de>
+Cc: "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-imx@nxp.com" <linux-imx@nxp.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "geert+renesas@glider.be" <geert+renesas@glider.be>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Aug 2, 2019 at 9:10 AM Bartosz Golaszewski
-<bgolaszewski@baylibre.com> wrote:
-> > -#include <mach/hardware.h>
-> > -#include <mach/platform.h>
-> > +#define _GPREG(x)                              (x)
->
-> What purpose does this macro serve?
->
-> >
-> >  #define LPC32XX_GPIO_P3_INP_STATE              _GPREG(0x000)
-> >  #define LPC32XX_GPIO_P3_OUTP_SET               _GPREG(0x004)
+On Fri, Aug 02, 2019 at 10:04:09AM +0000, Schrempf Frieder wrote:
+> From: Frieder Schrempf <frieder.schrempf@kontron.de>
+> 
+> If CONFIG_GPIOLIB is not enabled, mctrl_gpio_init() and
+> mctrl_gpio_init_noauto() will currently return an error pointer with
+> -ENOSYS. As the mctrl GPIOs are usually optional, drivers need to
+> check for this condition to allow continue probing.
+> 
+> To avoid the need for this check in each driver, we return NULL
+> instead, as all the mctrl_gpio_*() functions are skipped anyway.
+> We also adapt mctrl_gpio_to_gpiod() to be in line with this change.
+> 
+> Reviewed-by: Fabio Estevam <festevam@gmail.com>
+> Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
 
-In the existing code base, this macro converts a register offset to
-an __iomem pointer for a gpio register. I changed the definition of the
-macro here to keep the number of changes down, but I it's just
-as easy to remove it if you prefer.
+Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-> > @@ -167,14 +166,26 @@ struct lpc32xx_gpio_chip {
-> >         struct gpio_regs        *gpio_grp;
-> >  };
-> >
-> > +void __iomem *gpio_reg_base;
->
-> Any reason why this can't be made part of struct lpc32xx_gpio_chip?
+Thanks
+Uwe
 
-It could be, but it's the same for each instance, and not known until
-probe() time, so the same pointer would need to be copied into each
-instance that is otherwise read-only.
-
-Let me know if you'd prefer me to rework these two things or leave
-them as they are.
-
-> > +static inline u32 gpreg_read(unsigned long offset)
->
-> Here and elsewhere: could you please keep the lpc32xx_gpio prefix for
-> all symbols?
-
-Sure.
-
-      Arnd
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
