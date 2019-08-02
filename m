@@ -1,41 +1,69 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Device to write to all (serial) consoles
-Date: Fri, 2 Aug 2019 18:02:43 +0200
-Message-ID: <20190802160243.GA15484@kroah.com>
-References: <32c2d26f-ec4a-b9a6-b42c-07b27f99ea28@molgen.mpg.de>
+From: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+Subject: [PATCH 0/6] Add initial support for S32V234-EVB
+Date: Fri, 2 Aug 2019 19:47:14 +0000
+Message-ID: <20190802194702.30249-1-stefan-gabriel.mirea@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <32c2d26f-ec4a-b9a6-b42c-07b27f99ea28@molgen.mpg.de>
+Content-Language: en-US
+Content-ID: <58E68E0B34376C44AD3829F4B67C58FE@eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Menzel <pmenzel@molgen.mpg.de>
-Cc: linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Donald Buczek <buczek@molgen.mpg.de>
+To: "corbet@lwn.net" <corbet@lwn.net>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will@kernel.org" <will@kernel.org>, "shawnguo@kernel.org" <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>
+Cc: "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Aug 02, 2019 at 03:23:08PM +0200, Paul Menzel wrote:
-> Dear Linux folks,
-> 
-> 
-> On a lot of devices, like servers, you have more than one serial console,
-> and you do not always know, how they are numbered. Therefore, we start a
-> console on ttyS0 and ttyS1.
-> 
-> In user space, we also would like to write to both consoles to not worry
-> about the numbering. Writing to `/dev/console` only write to the active
-> console.
-
-So the same data to multiple console devices with just one userspace
-call?  Why?
-
->     $ more /proc/consoles # I think
->     tty0                 -WU (EC p  )    4:1
->     ttyS0                -W- (E  p a)    4:65
->     ttyS1                -W- (E  p a)    4:65
-> 
-> Does a device exist, or can a device be configured so you can write to
-> all (serial) consoles from user space?
-
-With one syscall, not that I know of, sorry.
-
-greg k-h
+SGVsbG8sDQoNCk5YUCdzIFMzMlYyMzRbMV0gKCJUcmVlcnVubmVyIikgdmlzaW9uIG1pY3JvcHJv
+Y2Vzc29ycyBhcmUgdGFyZ2V0ZWQgZm9yDQpoaWdoLXBlcmZvcm1hbmNlLCBjb21wdXRhdGlvbmFs
+bHkgaW50ZW5zaXZlIHZpc2lvbiBhbmQgc2Vuc29yIGZ1c2lvbg0KYXBwbGljYXRpb25zIHRoYXQg
+cmVxdWlyZSBhdXRvbW90aXZlIHNhZmV0eSBsZXZlbHMuIFRoZXkgaW5jbHVkZSBsZWFkaW5nDQpl
+ZGdlIENhbWVyYSBWaXNpb24gbW9kdWxlcyBsaWtlIEFQRVgtMiwgSVNQIGFuZCBHUFUuIFRoZSBT
+MzJWMjM0LUVWQiBhbmQNClMzMlYyMzQtU0JDIGJvYXJkcyBhcmUgYXZhaWxhYmxlIGZvciBjdXN0
+b21lciBldmFsdWF0aW9uLg0KDQpUaGUgZm9sbG93aW5nIHBhdGNoIHNlcmllcyBpbnRyb2R1Y2Vz
+IG1pbmltYWwgZW5hYmxlbWVudCBzdXBwb3J0IGZvciB0aGUNCk5YUCBTMzJWMjM0LUVWQjJbMl0g
+Ym9hcmQsIHdoaWNoIGxldmVyYWdlcyBtb3N0IG9mIHRoZSBTb0MgY2FwYWJpbGl0aWVzLg0KVGhl
+IHNlcmllcyBpbmNsdWRlcyBhIGRyaXZlciBmb3Igb3BlcmF0aW5nIHRoZSBvbi1jaGlwIExJTkZs
+ZXhEIGNvbnRyb2xsZXINCmluIFVBUlQgbW9kZS4NCg0KSW4gdGhlIGZ1dHVyZSwgd2UgYWltIHRv
+IHN1Ym1pdCBtdWx0aXBsZSBkcml2ZXJzIHVwc3RyZWFtLCB3aGljaCBjYW4gYmUNCmZvdW5kIGlu
+IHRoZSBrZXJuZWwgb2Ygb3VyIEF1dG8gTGludXggQlNQWzNdICgiQUxCIiksIHN0YXJ0aW5nIHdp
+dGggYmFzaWMNCnBpbm11eGluZywgY2xvY2sgYW5kIHVTREhDIGRyaXZlcnMuDQoNCkZvciB2YWxp
+ZGF0aW9uLCB5b3UgY2FuIHVzZSB0aGUgVS1Cb290IGJvb3Rsb2FkZXIgaW4gdGhlIEFMQls0XSwg
+d2hpY2ggd2UNCmJ1aWxkIGFuZCB0ZXN0IHdpdGggb3VyIHBhdGNoZWQgdmVyc2lvbiBvZiB0aGUg
+TGluYXJvIEdDQyA2LjMuMSAyMDE3LjA1DQp0b29sY2hhaW4gZm9yIEFSTSA2NC1iaXQsIHdpdGgg
+c291cmNlcyBhdmFpbGFibGUgb24gWzVdLg0KDQpbMV0gaHR0cHM6Ly93d3cubnhwLmNvbS9wcm9k
+dWN0cy9wcm9jZXNzb3JzLWFuZC1taWNyb2NvbnRyb2xsZXJzL2FybS1iYXNlZC1wcm9jZXNzb3Jz
+LWFuZC1tY3VzL3MzMi1hdXRvbW90aXZlLXBsYXRmb3JtL3Zpc2lvbi1wcm9jZXNzb3ItZm9yLWZy
+b250LWFuZC1zdXJyb3VuZC12aWV3LWNhbWVyYS1tYWNoaW5lLWxlYXJuaW5nLWFuZC1zZW5zb3It
+ZnVzaW9uOlMzMlYyMzQNClsyXSBodHRwczovL3d3dy5ueHAuY29tL3N1cHBvcnQvZGV2ZWxvcGVy
+LXJlc291cmNlcy9ldmFsdWF0aW9uLWFuZC1kZXZlbG9wbWVudC1ib2FyZHMvdWx0cmEtcmVsaWFi
+bGUtZGV2LXBsYXRmb3Jtcy9zMzJ2LW1wdXMtcGxhdGZvcm1zL3MzMnYtdmlzaW9uLWFuZC1zZW5z
+b3ItZnVzaW9uLWV2YWx1YXRpb24tc3lzdGVtOlMzMlYyMzRFVkINClszXSBodHRwczovL3NvdXJj
+ZS5jb2RlYXVyb3JhLm9yZy9leHRlcm5hbC9hdXRvYnNwczMyL2xpbnV4Lw0KWzRdIGh0dHBzOi8v
+c291cmNlLmNvZGVhdXJvcmEub3JnL2V4dGVybmFsL2F1dG9ic3BzMzIvdS1ib290Lw0KWzVdIGh0
+dHBzOi8vc291cmNlLmNvZGVhdXJvcmEub3JnL2V4dGVybmFsL3MzMmRzL2NvbXBpbGVyL2djYy8N
+Cg0KRWRkeSBQZXRyaciZb3IgKDEpOg0KICBkdC1iaW5kaW5nczogYXJtOiBmc2w6IEFkZCB0aGUg
+UzMyVjIzNC1FVkIgYm9hcmQNCg0KTWloYWVsYSBNYXJ0aW5hcyAoMik6DQogIGFybTY0OiBJbnRy
+b2R1Y2UgY29uZmlnIGZvciBTMzINCiAgYXJtNjQ6IGRlZmNvbmZpZzogRW5hYmxlIGNvbmZpZ3Mg
+Zm9yIFMzMlYyMzQNCg0KU3RlZmFuLUdhYnJpZWwgTWlyZWEgKDEpOg0KICB0dHk6IHNlcmlhbDog
+QWRkIGxpbmZsZXh1YXJ0IGRyaXZlciBmb3IgUzMyVjIzNA0KDQpTdG9pY2EgQ29zbWluLVN0ZWZh
+biAoMik6DQogIGFybTY0OiBkdHM6IGZzbDogQWRkIGRldmljZSB0cmVlIGZvciBTMzJWMjM0LUVW
+Qg0KICBkdC1iaW5kaW5nczogc2VyaWFsOiBEb2N1bWVudCBGcmVlc2NhbGUgTElORmxleCBVQVJU
+DQoNCiAuLi4vYWRtaW4tZ3VpZGUva2VybmVsLXBhcmFtZXRlcnMudHh0ICAgICAgICAgfCAgIDYg
+Kw0KIC4uLi9kZXZpY2V0cmVlL2JpbmRpbmdzL2FybS9mc2wueWFtbCAgICAgICAgICB8ICAgNiAr
+DQogLi4uL2JpbmRpbmdzL3NlcmlhbC9mc2wsczMyLWxpbmZsZXh1YXJ0LnR4dCAgIHwgIDI0ICsN
+CiBhcmNoL2FybTY0L0tjb25maWcucGxhdGZvcm1zICAgICAgICAgICAgICAgICAgfCAgIDUgKw0K
+IGFyY2gvYXJtNjQvYm9vdC9kdHMvZnJlZXNjYWxlL01ha2VmaWxlICAgICAgICB8ICAgMiArDQog
+Li4uL2Jvb3QvZHRzL2ZyZWVzY2FsZS9mc2wtczMydjIzNC1ldmIuZHRzICAgIHwgIDIwICsNCiAu
+Li4vYXJtNjQvYm9vdC9kdHMvZnJlZXNjYWxlL2ZzbC1zMzJ2MjM0LmR0c2kgfCAxMzAgKysrDQog
+YXJjaC9hcm02NC9jb25maWdzL2RlZmNvbmZpZyAgICAgICAgICAgICAgICAgIHwgICAzICsNCiBk
+cml2ZXJzL3R0eS9zZXJpYWwvS2NvbmZpZyAgICAgICAgICAgICAgICAgICAgfCAgMTUgKw0KIGRy
+aXZlcnMvdHR5L3NlcmlhbC9NYWtlZmlsZSAgICAgICAgICAgICAgICAgICB8ICAgMSArDQogZHJp
+dmVycy90dHkvc2VyaWFsL2ZzbF9saW5mbGV4dWFydC5jICAgICAgICAgIHwgOTU2ICsrKysrKysr
+KysrKysrKysrKw0KIGluY2x1ZGUvdWFwaS9saW51eC9zZXJpYWxfY29yZS5oICAgICAgICAgICAg
+ICB8ICAgMyArDQogMTIgZmlsZXMgY2hhbmdlZCwgMTE3MSBpbnNlcnRpb25zKCspDQogY3JlYXRl
+IG1vZGUgMTAwNjQ0IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9zZXJpYWwvZnNs
+LHMzMi1saW5mbGV4dWFydC50eHQNCiBjcmVhdGUgbW9kZSAxMDA2NDQgYXJjaC9hcm02NC9ib290
+L2R0cy9mcmVlc2NhbGUvZnNsLXMzMnYyMzQtZXZiLmR0cw0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBh
+cmNoL2FybTY0L2Jvb3QvZHRzL2ZyZWVzY2FsZS9mc2wtczMydjIzNC5kdHNpDQogY3JlYXRlIG1v
+ZGUgMTAwNjQ0IGRyaXZlcnMvdHR5L3NlcmlhbC9mc2xfbGluZmxleHVhcnQuYw0KDQotLSANCjIu
+MjIuMA0KDQo=
