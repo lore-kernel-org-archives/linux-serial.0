@@ -1,7 +1,7 @@
 From: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-Subject: [PATCH 3/6] arm64: dts: fsl: Add device tree for S32V234-EVB
-Date: Fri, 2 Aug 2019 19:47:20 +0000
-Message-ID: <20190802194702.30249-4-stefan-gabriel.mirea@nxp.com>
+Subject: [PATCH 4/6] dt-bindings: serial: Document Freescale LINFlex UART
+Date: Fri, 2 Aug 2019 19:47:21 +0000
+Message-ID: <20190802194702.30249-5-stefan-gabriel.mirea@nxp.com>
 References: <20190802194702.30249-1-stefan-gabriel.mirea@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
@@ -11,207 +11,55 @@ In-Reply-To: <20190802194702.30249-1-stefan-gabriel.mirea@nxp.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: "corbet@lwn.net" <corbet@lwn.net>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will@kernel.org" <will@kernel.org>, "shawnguo@kernel.org" <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>
-Cc: "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Cosmin Stefan Stoica <cosmin.stoica@nxp.com>, Dan Nica <dan.nica@nxp.com>, Larisa Ileana Grigore <larisa.grigore@nxp.com>
+Cc: "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Cosmin Stefan Stoica <cosmin.stoica@nxp.com>, Larisa Ileana Grigore <larisa.grigore@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
 From: Stoica Cosmin-Stefan <cosmin.stoica@nxp.com>
 
-Add initial version of device tree for S32V234-EVB, including nodes for the
-4 Cortex-A53 cores, AIPS bus with UART modules, ARM architected timer and
-Generic Interrupt Controller (GIC).
-
-Keep SoC level separate from board level to let future boards with this SoC
-share common properties, while the dts files will keep board-dependent
-properties.
+Add documentation for the serial communication interface module (LINFlex),
+found in two instances on S32V234.
 
 Signed-off-by: Stoica Cosmin-Stefan <cosmin.stoica@nxp.com>
-Signed-off-by: Mihaela Martinas <Mihaela.Martinas@freescale.com>
-Signed-off-by: Dan Nica <dan.nica@nxp.com>
 Signed-off-by: Larisa Grigore <Larisa.Grigore@nxp.com>
-Signed-off-by: Phu Luu An <phu.luuan@nxp.com>
 Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
 ---
- arch/arm64/boot/dts/freescale/Makefile        |   2 +
- .../boot/dts/freescale/fsl-s32v234-evb.dts    |  20 +++
- .../arm64/boot/dts/freescale/fsl-s32v234.dtsi | 130 ++++++++++++++++++
- 3 files changed, 152 insertions(+)
- create mode 100644 arch/arm64/boot/dts/freescale/fsl-s32v234-evb.dts
- create mode 100644 arch/arm64/boot/dts/freescale/fsl-s32v234.dtsi
+ .../bindings/serial/fsl,s32-linflexuart.txt   | 24 +++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/fsl,s32-linfle=
+xuart.txt
 
-diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/f=
-reescale/Makefile
-index c043aca66572..3af29b58a833 100644
---- a/arch/arm64/boot/dts/freescale/Makefile
-+++ b/arch/arm64/boot/dts/freescale/Makefile
-@@ -26,3 +26,5 @@ dtb-$(CONFIG_ARCH_MXC) +=3D imx8mq-librem5-devkit.dtb
- dtb-$(CONFIG_ARCH_MXC) +=3D imx8mq-zii-ultra-rmb3.dtb
- dtb-$(CONFIG_ARCH_MXC) +=3D imx8mq-zii-ultra-zest.dtb
- dtb-$(CONFIG_ARCH_MXC) +=3D imx8qxp-mek.dtb
-+
-+dtb-$(CONFIG_ARCH_S32) +=3D fsl-s32v234-evb.dtb
-diff --git a/arch/arm64/boot/dts/freescale/fsl-s32v234-evb.dts b/arch/arm64=
-/boot/dts/freescale/fsl-s32v234-evb.dts
+diff --git a/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.t=
+xt b/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.txt
 new file mode 100644
-index 000000000000..9b3983402998
+index 000000000000..957ffeaca9f1
 --- /dev/null
-+++ b/arch/arm64/boot/dts/freescale/fsl-s32v234-evb.dts
-@@ -0,0 +1,20 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Copyright 2015-2016 Freescale Semiconductor, Inc.
-+ * Copyright 2016-2017 NXP
-+ */
++++ b/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.txt
+@@ -0,0 +1,24 @@
++* Freescale Linflex UART
 +
-+/dts-v1/;
-+#include "fsl-s32v234.dtsi"
++The LINFlexD controller implements several LIN protocol versions, as well =
+as
++support for full-duplex UART communication through 8-bit and 9-bit frames.=
+ The
++Linflex UART driver enables operation only in UART mode.
 +
-+/ {
-+	compatible =3D "fsl,s32v234-evb", "fsl,s32v234";
++See chapter 47 ("LINFlexD") in the reference manual[1].
++
++Required properties:
++- compatible :
++  - "fsl,s32-linflexuart" for linflex configured in uart mode which
++  is compatible with the one integrated on S32V234 SoC
++- reg : Address and length of the register set for the device
++- interrupts : Should contain uart interrupt
++
++Example:
++uart0:serial@40053000 {
++	compatible =3D "fsl,s32-linflexuart";
++	reg =3D <0x0 0x40053000 0x0 0x1000>;
++	interrupts =3D <0 59 4>;
++	status =3D "disabled";
 +};
 +
-+&uart0 {
-+	status =3D "okay";
-+};
-+
-+&uart1 {
-+	status =3D "okay";
-+};
-diff --git a/arch/arm64/boot/dts/freescale/fsl-s32v234.dtsi b/arch/arm64/bo=
-ot/dts/freescale/fsl-s32v234.dtsi
-new file mode 100644
-index 000000000000..6d686d3ba997
---- /dev/null
-+++ b/arch/arm64/boot/dts/freescale/fsl-s32v234.dtsi
-@@ -0,0 +1,130 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Copyright 2015-2016 Freescale Semiconductor, Inc.
-+ * Copyright 2016-2018 NXP
-+ */
-+
-+/memreserve/ 0x80000000 0x00010000;
-+
-+/ {
-+	model =3D "Freescale S32V234";
-+	compatible =3D "fsl,s32v234";
-+	interrupt-parent =3D <&gic>;
-+	#address-cells =3D <2>;
-+	#size-cells =3D <2>;
-+
-+	aliases {
-+		serial0 =3D &uart0;
-+		serial1 =3D &uart1;
-+	};
-+
-+	cpus {
-+		#address-cells =3D <2>;
-+		#size-cells =3D <0>;
-+
-+		cpu0: cpu@0 {
-+			device_type =3D "cpu";
-+			compatible =3D "arm,cortex-a53";
-+			reg =3D <0x0 0x0>;
-+			enable-method =3D "spin-table";
-+			cpu-release-addr =3D <0x0 0x80000000>;
-+			next-level-cache =3D <&cluster0_l2_cache>;
-+		};
-+		cpu1: cpu@1 {
-+			device_type =3D "cpu";
-+			compatible =3D "arm,cortex-a53";
-+			reg =3D <0x0 0x1>;
-+			enable-method =3D "spin-table";
-+			cpu-release-addr =3D <0x0 0x80000000>;
-+			next-level-cache =3D <&cluster0_l2_cache>;
-+		};
-+		cpu2: cpu@100 {
-+			device_type =3D "cpu";
-+			compatible =3D "arm,cortex-a53";
-+			reg =3D <0x0 0x100>;
-+			enable-method =3D "spin-table";
-+			cpu-release-addr =3D <0x0 0x80000000>;
-+			next-level-cache =3D <&cluster1_l2_cache>;
-+		};
-+		cpu3: cpu@101 {
-+			device_type =3D "cpu";
-+			compatible =3D "arm,cortex-a53";
-+			reg =3D <0x0 0x101>;
-+			enable-method =3D "spin-table";
-+			cpu-release-addr =3D <0x0 0x80000000>;
-+			next-level-cache =3D <&cluster1_l2_cache>;
-+		};
-+
-+		cluster0_l2_cache: l2-cache0 {
-+			compatible =3D "cache";
-+		};
-+
-+		cluster1_l2_cache: l2-cache1 {
-+			compatible =3D "cache";
-+		};
-+	};
-+
-+	soc {
-+		#address-cells =3D <2>;
-+		#size-cells =3D <2>;
-+		compatible =3D "simple-bus";
-+		interrupt-parent =3D <&gic>;
-+		ranges;
-+
-+		aips0: aips-bus@40000000 {
-+			compatible =3D "simple-bus";
-+			#address-cells =3D <2>;
-+			#size-cells =3D <2>;
-+			interrupt-parent =3D <&gic>;
-+			reg =3D <0x0 0x40000000 0x0 0x7D000>;
-+			ranges;
-+
-+			uart0: serial@40053000 {
-+				compatible =3D "fsl,s32-linflexuart";
-+				reg =3D <0x0 0x40053000 0x0 0x1000>;
-+				interrupts =3D <0 59 1>;
-+				status =3D "disabled";
-+			};
-+		};
-+
-+		aips1: aips-bus@40080000 {
-+			compatible =3D "simple-bus";
-+			#address-cells =3D <2>;
-+			#size-cells =3D <2>;
-+			interrupt-parent =3D <&gic>;
-+			reg =3D <0x0 0x40080000 0x0 0x70000>;
-+			ranges;
-+
-+			uart1: serial@400bc000 {
-+				compatible =3D "fsl,s32-linflexuart";
-+				reg =3D <0x0 0x400bc000 0x0 0x1000>;
-+				interrupts =3D <0 60 1>;
-+				status =3D "disabled";
-+			};
-+		};
-+	};
-+
-+	timer {
-+		compatible =3D "arm,armv8-timer";
-+		interrupts =3D <1 13 0xf08>,
-+			     <1 14 0xf08>,
-+			     <1 11 0xf08>,
-+			     <1 10 0xf08>;
-+		/* clock-frequency might be modified by u-boot, depending on the
-+		 * chip version.
-+		 */
-+		clock-frequency =3D <10000000>;
-+	};
-+
-+	gic: interrupt-controller@7d001000 {
-+		compatible =3D "arm,cortex-a15-gic", "arm,cortex-a9-gic";
-+		#interrupt-cells =3D <3>;
-+		#address-cells =3D <0>;
-+		interrupt-controller;
-+		reg =3D <0 0x7d001000 0 0x1000>,
-+		      <0 0x7d002000 0 0x2000>,
-+		      <0 0x7d004000 0 0x2000>,
-+		      <0 0x7d006000 0 0x2000>;
-+		interrupts =3D <1 9 0xf04>;
-+	};
-+};
++[1] https://www.nxp.com/webapp/Download?colCode=3DS32V234RM
 --=20
 2.22.0
