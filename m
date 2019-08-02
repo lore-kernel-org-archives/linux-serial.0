@@ -1,237 +1,65 @@
-From: Arseny Maslennikov <ar@cs.msu.ru>
-Subject: Re: [PATCH v2 7/7] n_tty: Provide an informational line on VSTATUS
- receipt
-Date: Fri, 2 Aug 2019 14:04:52 +0300
-Message-ID: <20190802110450.GC20574@cello>
-References: <20190625161153.29811-1-ar@cs.msu.ru>
- <20190625161153.29811-8-ar@cs.msu.ru>
- <20190730161940.GA15798@kroah.com>
- <20190731222359.GA20574@cello>
- <20190801092020.GB19329@kroah.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 05/14] gpio: lpc32xx: allow building on non-lpc32xx targets
+Date: Fri, 2 Aug 2019 13:19:55 +0200
+Message-ID: <CAK8P3a3KpKvRKXY72toE_5eAp4ER_Mre0GX3guwGeQgsY2HX+g@mail.gmail.com>
+References: <20190731195713.3150463-1-arnd@arndb.de>
+ <20190731195713.3150463-6-arnd@arndb.de>
+ <CAMpxmJWFfT_vrDas2fzW5tnxskk9kmgHQpGnGQ-_C20UaS_jhA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="VywGB/WGlW4DM4P8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190801092020.GB19329@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, "Vladimir D. Seleznev" <vseleznv@altlinux.org>, Rob Landley <rob@landley.net>, "Eric W. Biederman" <ebiederm@xmission.com>, Pavel Machek <pavel@ucw.cz>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CAMpxmJWFfT_vrDas2fzW5tnxskk9kmgHQpGnGQ-_C20UaS_jhA@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Cc: Andrew Lunn <andrew@lunn.ch>, LINUXWATCHDOG <linux-watchdog@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, Jason Cooper <jason@lakedaemon.net>, "David S. Miller" <davem@davemloft.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Gregory Clement <gregory.clement@bootlin.com>, USB list <linux-usb@vger.kernel.org>, Russell King <linux@armlinux.org.uk>, Vladimir Zapolskiy <vz@mleia.com>, linux-gpio <linux-gpio@vger.kernel.org>, soc@kernel.org, netdev <netdev@vger.kernel.org>, Alan Stern <stern@rowland.harvard.edu>, Guenter Roeck <linux@roeck-us.net>, linux-serial@vger.kernel.org, Sylvain Lemieux <slemieux.tyco@gmail.com>, Lee Jones <lee.jones@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, arm-soc <linux-arm-kernel@lists.infradead.org>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
+On Fri, Aug 2, 2019 at 9:10 AM Bartosz Golaszewski
+<bgolaszewski@baylibre.com> wrote:
+> > -#include <mach/hardware.h>
+> > -#include <mach/platform.h>
+> > +#define _GPREG(x)                              (x)
+>
+> What purpose does this macro serve?
+>
+> >
+> >  #define LPC32XX_GPIO_P3_INP_STATE              _GPREG(0x000)
+> >  #define LPC32XX_GPIO_P3_OUTP_SET               _GPREG(0x004)
 
---VywGB/WGlW4DM4P8
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In the existing code base, this macro converts a register offset to
+an __iomem pointer for a gpio register. I changed the definition of the
+macro here to keep the number of changes down, but I it's just
+as easy to remove it if you prefer.
 
-Sorry for the delay, yesterday was rough.
+> > @@ -167,14 +166,26 @@ struct lpc32xx_gpio_chip {
+> >         struct gpio_regs        *gpio_grp;
+> >  };
+> >
+> > +void __iomem *gpio_reg_base;
+>
+> Any reason why this can't be made part of struct lpc32xx_gpio_chip?
 
-On Thu, Aug 01, 2019 at 11:20:20AM +0200, Greg Kroah-Hartman wrote:
-> On Thu, Aug 01, 2019 at 01:23:59AM +0300, Arseny Maslennikov wrote:
-> > On Tue, Jul 30, 2019 at 06:19:40PM +0200, Greg Kroah-Hartman wrote:
-> > > On Tue, Jun 25, 2019 at 07:11:53PM +0300, Arseny Maslennikov wrote:
-> > > > If the three termios local flags isig, icanon, iexten are enabled
-> > > > and the local flag nokerninfo is disabled for a tty governed
-> > > > by the n_tty line discipline, then on receiving the keyboard status
-> > > > character n_tty will generate a status message and write it out to
-> > > > the tty before sending SIGINFO to the tty's foreground process grou=
-p.
-> > > >=20
-> > > > <...>
-> > >=20
-> > > Why is this really all needed as we have the SysRq handlers that repo=
-rt
-> > > all of this today?
-> >=20
-> > Different use-cases have different needs; SysRq is targeted at a differ=
-ent
-> > audience; see below.
-> >=20
-> > > > The "most interesting" process is chosen as follows:
-> > > >  - runnables over everything
-> > > >  - uninterruptibles over everything else
-> > > >  - among 2 runnables pick the biggest utime + stime
-> > > >  - any unresolved ties are decided in favour of greatest PID.
-> > >=20
-> > > This does not feel like something that the tty core code should be do=
-ing
-> > > at all.
-> >=20
-> > Yes, this selection part is quite clumsy. In defense of it, one could
-> > argue that we already have the whole n_tty implemented in kernel-space.
->=20
-> One could argue that :)
->=20
-> > One way we could get rid of this is to display a summarized statistic
-> > for the whole pgrp: pgid, oldest real time, cumulative utime and stime,
-> > cumulative memory usage. Would this be more acceptable? Are there any
-> > other ideas?
->=20
-> Given that I really think you are just making something up here that no
-> one really is needing for their workflow, but would just be "cool to
-> have", I say do whatever you think is right.
->=20
-> And there is nothing wrong with "cool to have" things, I'm not trying to
-> dismiss this, it's just that all new features come with the "you must
-> support this until the end of time" requirement that we must balance it
-> with.
->=20
+It could be, but it's the same for each instance, and not known until
+probe() time, so the same pointer would need to be copied into each
+instance that is otherwise read-only.
 
-To be fair, the kerninfo line itself is intended for the user's eyes; it
-can't even be programmatically read by anyone in a Linux system except
-pty masters, so I don't feel it has to be particularly stable, since
-changing its contents won't break anyone.
-So IMO we could still tweak something about it after we merge this.
-Of course this cannot be said about the signal part of the patch series,
-which interfaces with processes and is a proper part of the outward
-kernel API, thus subject to the kernel's policy.
+Let me know if you'd prefer me to rework these two things or leave
+them as they are.
 
-> > > > While the kerninfo line is not very useful for debugging the kernel
-> > > > itself, since we have much more powerful debugging tools, it still =
-gives
-> > > > the user behind the terminal some meaningful feedback to a VSTATUS =
-that
-> > > > works even if no processes respond.
-> > >=20
-> > > That's what SysRq is for.  If there's a specific set of values that we
-> > > don't currently report in that facility, why not just add the
-> > > information there?  It's much simpler and "safer" that way.
-> >=20
-> > SysRq is intended for the person either administrating the system to be=
- used in
-> > emergency (e.g. f for the oom kill, the famous s-u-b combo also comes to
-> > mind) or debugging the kernel, and it indeed does a much better job for
-> > those purposes.  In both use-cases mentioned the person has access to
-> > the system console, where the sysrq button handlers produce all their
-> > output, if any, and to either a physical keyboard / serial console or to
-> > /proc/sysrq-trigger, whose mode is 0200 (writable by uid 0 only).
-> >=20
-> > The use-case for this is different: the ^T-line as proposed by this
-> > patch is for the user that interacts with a system through a terminal, =
-who
-> > wants to be informed not about the whole system (sort of what SysRq-t
-> > tells you), but about what they run on that particular tty.
->=20
-> Ok, fair enough, although if you just add a new sysrq option for "what
-> is running on this tty", would that help resolve this?
->=20
+> > +static inline u32 gpreg_read(unsigned long offset)
+>
+> Here and elsewhere: could you please keep the lpc32xx_gpio prefix for
+> all symbols?
 
-I see at least two problems here:
-1) sysrq is not accessible by unprivileged users (and here goes the
-   whole idea of sysrq being designed for different purposes, etc.)
-2) Even if we fix it and somehow allow unpriv users to do the equivalent
-   of `echo $letter > /proc/sysrq-trigger' for a particular letter,
-   there still are UI issues.  (yes, UI issues are better dealt with
-   outside the kernel, but that's not the point) It still has to dump
-   info to the particular tty (let's remember, console is unaccessible
-   and shared to the whole system), that is a novelty for sysrq. There
-   still is the open question about how to make a VSTATUS press trigger
-   that sysrq button in addition to signalling fg pgrp without shoving
-   this bit into every other userspace program.
+Sure.
 
-To sum up, this looks worse to me than integrating with n_tty.
-
-In general, the main appeal of the feature is in it being activated by a
-single keypress handled by the line discipline, from any tty.
-
-> > This is much less about "why does my system/kernel seem to hang?" or
-> > exposing low-level internals (registers, hrtimers, locks, ...), and more
-> > about "is my SSH terminal session unresponsive?" and "I ran a command,
-> > it doesn't finish, how's it doing?".
-> > e.g. A user might want to know if their SSH connection is alive without
-> > interrupting anything, while having no access both to SysRq and console,
-> > and no one in fg pgrp actually handles SIGINFO.
->=20
-> If you have access to a tty, you should have access to sysrq, right?
->=20
-
-No.
-SSH gives you access to a pty, which doesn't seem to handle BREAK; the
-BREAK SysRq activation method does not work there.
-As Pavel correctly noted, if the user is unprivileged, they can't use
-/proc/sysrq-trigger as well.
-
-> > SysRq is system-wide, whereas this is per-terminal and only cares about
-> > one tty which the status char is pressed at and its foreground pgrp
-> > (most likely it's the foreground shell job).
-> >=20
-> > I hope this is clear enough.
->=20
-> It is, yes.  My big objection is the crazy code I point out above, as
-> well as the "create a totally new interface when we might be able to use
-> an existing one" that you need to convince me is really required :)
->=20
-
-The signal part (patches [1-4]/7) is not really new, since we've had
-Unix-like signals for ages.
-(You've probably meant the [5-7]/7, but there's no such thing as a too
-detailed explanation).
-The compelling reasons for a new signal are:
-- it provides asynchronous process notification, as opposed to e. g. a
-  POLLIN on a file descriptor, which is not noticed by the recipient
-  until they poll(2);
-- to make use of the mechanism, an existing app does not have to be
-  rewritten in a certain way =E2=80=94 a signal handler just gets called, i=
-f the
-  signal is not blocked =E2=80=94 so it's easy to use from applications.
-- it aligns well with the current practice of the line discipline
-  relaying user requests to processes via signals.
-
-As for the line: before I started writing the patch I thought a lot
-about how we could move the status line logic away from n_tty and, when
-^T is pressed, have it notify someone in userspace, who would look up
-all the pieces in /proc and write() the line to the tty. Obviously this
-approach should be much more flexible and easier to maintain from the
-kernel perspective.  One candidate for this could actually be the tty's
-session leader (most often that's the interactive shell).
-
-To be convenient, the feature needs to have at least the following
-qualities:
-- the status line has to come first, since it's the only invariant; this
-  way it's easy to visually find if needed and just as easy to ignore
-  otherwise;
-- the reaction to VSTATUS has to be as responsive as it can reasonably
-  be and as the system load allows. (btw, SysRq does well in this
-  regard, but the drawbacks outweigh this, see above)
-The only way we can secure the first point is to signal a process, wait
-for it to get scheduled, wait a little more for it to compose and send
-output, and only then to signal the pgrp and be done. This is
-potentially slow and might lock up the tty's input receive queue for
-sizable amounts of time. What if the session leader opts-in to do this
-and then ignores this kind of request / never responds altogether? This
-gets messy fast. So we can't guarantee the second point.
-If we focus on responsiveness, we can't wait for processes at all, so we
-ping them and be done with it. This means no output ordering guarantees,
-it all gets interleaved and, consequently, less readable and less useful
-overall.
-Further tweaking the protocol gives the risk of making it too complicated.
-
-So I gave up on the idea and went with this patch, which ticks both boxes
-mentioned above. Of course, I'd love to have an ideal solution, and a
-pony too. :)
-
-(Or perhaps I'm thinking inside the box and missing a clue and someone
-reading this does not. This is a public list, anyway)
-
---VywGB/WGlW4DM4P8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE56JD3UKTLEu/ddrm9dQjyAYL01AFAl1EGMsACgkQ9dQjyAYL
-01DGFg/9EBepEaQmqLdWaczAJcvHnDDAXSgR3U+hDHJM7RBqroz6At87S1eL15NH
-S0xx7d0JD6S5ARfcAGNR7SbkDhF7jpTJDwBm4g+Yzty/awPZ/9NpOSqK7qalzWU2
-rLWMwAWjKJwO6GciEQxFjBKgeblSuHijbNVHPMkOwAoMRS+4ywQh4qVHWc0mSesc
-w5IffG7sphmDWHc8BJxnQL/CVn0jcApt0ny3z021fwiLFIMBnarcZBtTI9axHfrd
-sWLUPup2RcABqRAtTVk+mYhIS8ajpgcjlwJrgQAH54EzKYU3GfnThsbEE4xUyNtc
-CSW6eawn9zNHLFmoOevZoYOZZ9Xn924vvXXQYzqxPcsXgmQgIA+xGCaqhMPIZBN/
-yRBOY5mszbzlAfUMAsDjEg2sfUUj0H+zpJzlz7a/Ex1ZyfEA0EzK0A38pS6fchc5
-ceTI/6Pb6Vg9+roNgH48Yxpq9X101PJFO4qhrv9E1a9vPTx2ERjMGVEL+MS3MVBT
-gnMOvVRH9englf/UQlOZDuZjt1Rdo7+gFKYD06zelBcyUfLC+5Lo5fcGI9CQXvOf
-u36nF+w8YIY3+T76MheIHluX1kmJvPK2QRpHb1Mz8WMw2wKGtctKBg+CanlWWaOD
-Ho1vkyE3a+TDzvLlYH+4q8u/2F+zCNoiR/0ic7AqEfb3bW7ErHs=
-=txBO
------END PGP SIGNATURE-----
-
---VywGB/WGlW4DM4P8--
+      Arnd
