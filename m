@@ -1,38 +1,39 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v3 4/4] serial: 8250: Don't check for mctrl_gpio_init()
- returning -ENOSYS
-Date: Fri, 2 Aug 2019 14:26:23 +0200
-Message-ID: <20190802122623.GA25281@kroah.com>
-References: <20190802100349.8659-1-frieder.schrempf@kontron.de>
- <20190802100349.8659-4-frieder.schrempf@kontron.de>
- <20190802121555.dl6rpjphgaxdvcke@pengutronix.de>
+From: YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH -next] tty: serial: qcom_geni_serial: use devm_platform_ioremap_resource() to simplify code
+Date: Fri, 2 Aug 2019 21:08:17 +0800
+Message-ID: <20190802130817.16220-1-yuehaibing@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190802121555.dl6rpjphgaxdvcke@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Schrempf Frieder <frieder.schrempf@kontron.de>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-imx@nxp.com" <linux-imx@nxp.com>, "geert+renesas@glider.be" <geert+renesas@glider.be>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: agross@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org, YueHaibing <yuehaibing@huawei.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Aug 02, 2019 at 02:15:55PM +0200, Uwe Kleine-König wrote:
-> On Fri, Aug 02, 2019 at 10:04:11AM +0000, Schrempf Frieder wrote:
-> > From: Frieder Schrempf <frieder.schrempf@kontron.de>
-> > 
-> > Now that the mctrl_gpio code returns NULL instead of ERR_PTR(-ENOSYS)
-> > if CONFIG_GPIOLIB is disabled, we can safely remove this check.
-> > 
-> > Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
-> 
-> Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> 
-> @greg: This patch doesn't depend on patch 2; ditto for patch 3. So only
-> taking patches 1, 3 and 4 should be fine. This way Frieder's v4 only
-> have to care for patch 2. (Assuming noone objects to 1, 3 and 4 of
-> course.)
+Use devm_platform_ioremap_resource() to simplify the code a bit.
+This is detected by coccinelle.
 
-Sounds good, I'll do that, thanks.
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-greg k-h
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index f879710..af695b6 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -198,10 +198,8 @@ static int qcom_geni_serial_request_port(struct uart_port *uport)
+ {
+ 	struct platform_device *pdev = to_platform_device(uport->dev);
+ 	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
+-	struct resource *res;
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	uport->membase = devm_ioremap_resource(&pdev->dev, res);
++	uport->membase = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(uport->membase))
+ 		return PTR_ERR(uport->membase);
+ 	port->se.base = uport->membase;
+-- 
+2.7.4
