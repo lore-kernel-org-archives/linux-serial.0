@@ -1,54 +1,58 @@
-From: Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH 1/6] dt-bindings: arm: fsl: Add the S32V234-EVB board
-Date: Fri, 2 Aug 2019 16:38:16 -0600
-Message-ID: <CAL_JsqL++GZBxczxePni9ysNq06kObB4EzJEi1e4M=PurPZFgQ@mail.gmail.com>
-References: <20190802194702.30249-1-stefan-gabriel.mirea@nxp.com> <20190802194702.30249-2-stefan-gabriel.mirea@nxp.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: Device to write to all (serial) consoles
+Date: Sat, 3 Aug 2019 08:46:39 +0200
+Message-ID: <20190803064639.GB10855@kroah.com>
+References: <32c2d26f-ec4a-b9a6-b42c-07b27f99ea28@molgen.mpg.de>
+ <20190802160243.GA15484@kroah.com>
+ <cab1fe06-0dc7-e7c1-50ac-cc01773c5ef5@molgen.mpg.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190802194702.30249-2-stefan-gabriel.mirea@nxp.com>
+Content-Disposition: inline
+In-Reply-To: <cab1fe06-0dc7-e7c1-50ac-cc01773c5ef5@molgen.mpg.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-Cc: "corbet@lwn.net" <corbet@lwn.net>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will@kernel.org" <will@kernel.org>, "shawnguo@kernel.org" <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>, "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Eddy Petrisor <eddy.petrisor@nxp.com>
+To: Paul Menzel <pmenzel@molgen.mpg.de>
+Cc: linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Donald Buczek <buczek@molgen.mpg.de>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Aug 2, 2019 at 1:47 PM Stefan-gabriel Mirea
-<stefan-gabriel.mirea@nxp.com> wrote:
->
-> From: Eddy Petri=C8=99or <eddy.petrisor@nxp.com>
->
-> Add entry for the NXP S32V234 Customer Evaluation Board to the board/SoC
-> bindings.
->
-> Signed-off-by: Eddy Petri=C8=99or <eddy.petrisor@nxp.com>
-> Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-> ---
->  Documentation/devicetree/bindings/arm/fsl.yaml | 6 ++++++
->  1 file changed, 6 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentati=
-on/devicetree/bindings/arm/fsl.yaml
-> index 7294ac36f4c0..104d60a11177 100644
-> --- a/Documentation/devicetree/bindings/arm/fsl.yaml
-> +++ b/Documentation/devicetree/bindings/arm/fsl.yaml
-> @@ -309,4 +309,10 @@ properties:
->                - fsl,ls2088a-rdb
->            - const: fsl,ls2088a
->
-> +      - description: S32V234 Customer Evaluation Board
+On Fri, Aug 02, 2019 at 09:59:06PM +0200, Paul Menzel wrote:
+> Dear Greg,
+> 
+> 
+> On 02.08.19 18:02, Greg Kroah-Hartman wrote:
+> > On Fri, Aug 02, 2019 at 03:23:08PM +0200, Paul Menzel wrote:
+> 
+> > > On a lot of devices, like servers, you have more than one serial console,
+> > > and you do not always know, how they are numbered. Therefore, we start a
+> > > console on ttyS0 and ttyS1.
+> > > 
+> > > In user space, we also would like to write to both consoles to not worry
+> > > about the numbering. Writing to `/dev/console` only write to the active
+> > > console.
+> > 
+> > So the same data to multiple console devices with just one userspace
+> > call?  Why?
+> 
+> Because the cable is always connected to the port on the back side, and
+> sometimes the port in the front has ID 0, and the one in the back 1, and
+> other times vice versa. We do not want to track that, and it would be
+> convenient to just write to both ports.
+> 
+> > >      $ more /proc/consoles # I think
+> > >      tty0                 -WU (EC p  )    4:1
+> > >      ttyS0                -W- (E  p a)    4:65
+> > >      ttyS1                -W- (E  p a)    4:65
+> > > 
+> > > Does a device exist, or can a device be configured so you can write to
+> > > all (serial) consoles from user space?
+> > 
+> > With one syscall, not that I know of, sorry.
+> 
+> Can such a device be created with udev or so?
 
-Most of the entries in this file are for all the boards for an SoC.
+No, a single device node can not reference multiple device nodes at the
+same time, sorry.  That's just not how they work at all.
 
-> +        items:
-> +          - enum:
-> +              - fsl,s32v234-evb
+thanks,
 
-If that's not going to be the case here, you can use 'const' here.
-
-> +          - const: fsl,s32v234
-> +
->  ...
-> --
-> 2.22.0
->
+greg k-h
