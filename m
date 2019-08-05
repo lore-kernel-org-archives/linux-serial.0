@@ -1,67 +1,44 @@
-From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: Re: [PATCH 05/14] gpio: lpc32xx: allow building on non-lpc32xx targets
-Date: Mon, 5 Aug 2019 10:27:48 +0200
-Message-ID: <CAMpxmJUdSnp0QNwWB0rJ1opFrYs9R2KSVS64Tz8X5GDYAJYLpg@mail.gmail.com>
-References: <20190731195713.3150463-1-arnd@arndb.de> <20190731195713.3150463-6-arnd@arndb.de>
- <CAMpxmJWFfT_vrDas2fzW5tnxskk9kmgHQpGnGQ-_C20UaS_jhA@mail.gmail.com> <CAK8P3a3KpKvRKXY72toE_5eAp4ER_Mre0GX3guwGeQgsY2HX+g@mail.gmail.com>
+From: Schrempf Frieder <frieder.schrempf@kontron.de>
+Subject: Re: [PATCH v3 2/4] serial: mctrl_gpio: Add a NULL check to
+ mctrl_gpio_to_gpiod()
+Date: Mon, 5 Aug 2019 09:01:39 +0000
+Message-ID: <f866213b-fd3b-8602-6c11-56cb65a1ea05@kontron.de>
+References: <20190802100349.8659-1-frieder.schrempf@kontron.de>
+ <20190802100349.8659-2-frieder.schrempf@kontron.de>
+ <20190802121231.wk6yg5mkyivs3rni@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <CAK8P3a3KpKvRKXY72toE_5eAp4ER_Mre0GX3guwGeQgsY2HX+g@mail.gmail.com>
-Sender: netdev-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: soc@kernel.org, arm-soc <linux-arm-kernel@lists.infradead.org>, Vladimir Zapolskiy <vz@mleia.com>, Sylvain Lemieux <slemieux.tyco@gmail.com>, Russell King <linux@armlinux.org.uk>, Gregory Clement <gregory.clement@bootlin.com>, Linus Walleij <linus.walleij@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, "David S. Miller" <davem@davemloft.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, Guenter Roeck <linux@roeck-us.net>, linux-gpio <linux-gpio@vger.kernel.org>, netdev <netdev@vger.kernel.org>, linux-serial@vger.kernel.org, USB list <linux-usb@vger.kernel.org>, LINUXWATCHDOG <linux-watchdog@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190802121231.wk6yg5mkyivs3rni@pengutronix.de>
+Content-Language: en-US
+Content-ID: <AF108CA9207A10409A058A7C2410B1EC@snt-world.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
+Cc: "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-imx@nxp.com" <linux-imx@nxp.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "geert+renesas@glider.be" <geert+renesas@glider.be>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-pt., 2 sie 2019 o 13:20 Arnd Bergmann <arnd@arndb.de> napisa=C5=82(a):
->
-> On Fri, Aug 2, 2019 at 9:10 AM Bartosz Golaszewski
-> <bgolaszewski@baylibre.com> wrote:
-> > > -#include <mach/hardware.h>
-> > > -#include <mach/platform.h>
-> > > +#define _GPREG(x)                              (x)
-> >
-> > What purpose does this macro serve?
-> >
-> > >
-> > >  #define LPC32XX_GPIO_P3_INP_STATE              _GPREG(0x000)
-> > >  #define LPC32XX_GPIO_P3_OUTP_SET               _GPREG(0x004)
->
-> In the existing code base, this macro converts a register offset to
-> an __iomem pointer for a gpio register. I changed the definition of the
-> macro here to keep the number of changes down, but I it's just
-> as easy to remove it if you prefer.
-
-Could you just add a comment so that it's clear at first glance?
-
->
-> > > @@ -167,14 +166,26 @@ struct lpc32xx_gpio_chip {
-> > >         struct gpio_regs        *gpio_grp;
-> > >  };
-> > >
-> > > +void __iomem *gpio_reg_base;
-> >
-> > Any reason why this can't be made part of struct lpc32xx_gpio_chip?
->
-> It could be, but it's the same for each instance, and not known until
-> probe() time, so the same pointer would need to be copied into each
-> instance that is otherwise read-only.
->
-> Let me know if you'd prefer me to rework these two things or leave
-> them as they are.
-
-I would prefer not to have global state in the driver, let's just
-store the pointer in the data passed to gpiochip_add_data().
-
-Bart
-
->
-> > > +static inline u32 gpreg_read(unsigned long offset)
-> >
-> > Here and elsewhere: could you please keep the lpc32xx_gpio prefix for
-> > all symbols?
->
-> Sure.
->
->       Arnd
+T24gMDIuMDguMTkgMTQ6MTIsIFV3ZSBLbGVpbmUtS8O2bmlnIHdyb3RlOg0KPiBPbiBGcmksIEF1
+ZyAwMiwgMjAxOSBhdCAxMDowNDoxMEFNICswMDAwLCBTY2hyZW1wZiBGcmllZGVyIHdyb3RlOg0K
+Pj4gRnJvbTogRnJpZWRlciBTY2hyZW1wZiA8ZnJpZWRlci5zY2hyZW1wZkBrb250cm9uLmRlPg0K
+Pj4NCj4+IEFzIGl0IGlzIGFsbG93ZWQgdG8gdXNlIHRoZSBtY3RybF9ncGlvXyogZnVuY3Rpb25z
+IGJlZm9yZQ0KPj4gaW5pdGlhbGl6YXRpb24gKGFzIHRoZSA4MjUwIGRyaXZlciBkb2VzIGFjY29y
+ZGluZyB0byA0MzRiZTBhZTdhYTcpLA0KPiANCj4gQWN0dWFsbHkgSSB3YXMgc3VycHJpc2VkIHNv
+bWUgdGltZSBhZ28gdGhhdCA4MjUwIHVzZWQgc2VyaWFsX21jdHJsDQo+IHdpdGhvdXQgZmlyc3Qg
+aW5pdGlhbGl6aW5nIGl0IGFuZCBleHBlY3RpbmcgaXQgdG8gd29yay4gSSBkaWRuJ3QgbG9vayBp
+bg0KPiBkZXRhaWwsIGJ1dCBJIHdvdWxkbid0IGdvIHNvIGZhciB0byBjYWxsIHRoaXMgImFsbG93
+ZWQiLiBUaGUgY29tbWl0DQo+IGl0c2VsZiBjYWxscyBpdCAid29ya2Fyb3VuZCIgd2hpY2ggc2Vl
+bXMgYSBiZXR0ZXIgbWF0Y2guDQoNCk9rLCBidXQgaWYgdGhpcyBpcyBjb25zaWRlcmVkIHRvIGJl
+IGEgd29ya2Fyb3VuZCBhbmQgYXMgdGhlIDgyNTAgZHJpdmVyIA0KZG9lcyBub3QgdXNlIG1jdHJs
+X2dwaW9fdG9fZ3Bpb2QoKSwgd2Ugc2hvdWxkIG1heWJlIGp1c3QgZHJvcCB0aGlzIHBhdGNoIA0K
+aW5zdGVhZCBvZiBlbmNvdXJhZ2luZyBvdGhlcnMgdG8gdXNlIG1jdHJsX2dwaW8gYmVmb3JlIGlu
+aXRpYWxpemF0aW9uLg0KDQpJJ20gcmVhbGx5IG5vdCBzdXJlIHdoYXQncyBiZXN0LCBzbyBkZXBl
+bmRpbmcgb24gd2hhdCB5b3Ugd2lsbCBwcm9wb3NlLCANCkknbGwgc2VuZCBhIG5ldyB2ZXJzaW9u
+IG9mIHRoaXMgcGF0Y2ggd2l0aCBhZGp1c3RlZCBjb21taXQgbWVzc2FnZSBvciBub3QuDQoNCkJ5
+IHRoZSB3YXksIFV3ZSBhbmQgRmFiaW86IFRoYW5rcyBmb3IgeW91ciByZXZpZXdzIQ0KDQo+IA0K
+Pj4gaXQgc2VlbXMgYXBwcm9wcmlhdGUgdG8gaGF2ZSBhIE5VTEwgY2hlY2sgaW4gYWxsIG9mIHRo
+ZSBmdW5jdGlvbnMuDQo+PiBPdGhlcndpc2UgdGhlIG1jdHJsX2dwaW9fdG9fZ3Bpb2QoKSBmdW5j
+dGlvbiBpcyBwcm9uZSB0byBiZSB1c2VkDQo+PiBpbiBhIGNvbnRleHQgdGhhdCBjYW4gbGVhZCB0
+byBhIE5VTEwgcG9pbnRlciBkZXJlZmVyZW5jZS4NCj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBGcmll
+ZGVyIFNjaHJlbXBmIDxmcmllZGVyLnNjaHJlbXBmQGtvbnRyb24uZGU+DQo+IA0KPiBCZXN0IHJl
+Z2FyZHMNCj4gVXdlDQo+IA==
