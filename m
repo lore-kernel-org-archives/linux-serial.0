@@ -1,7 +1,7 @@
 From: Andrey Smirnov <andrew.smirnov@gmail.com>
-Subject: [PATCH v3 2/6] tty: serial: fsl_lpuart: Introduce lpuart_rx_dma_startup()
-Date: Mon,  5 Aug 2019 11:56:57 -0700
-Message-ID: <20190805185701.22863-3-andrew.smirnov@gmail.com>
+Subject: [PATCH v3 6/6] tty: serial: fsl_lpuart: Ignore TX/RX interrupts if DMA is enabled
+Date: Mon,  5 Aug 2019 11:57:01 -0700
+Message-ID: <20190805185701.22863-7-andrew.smirnov@gmail.com>
 References: <20190805185701.22863-1-andrew.smirnov@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,9 +12,10 @@ To: linux-serial@vger.kernel.org
 Cc: Andrey Smirnov <andrew.smirnov@gmail.com>, Stefan Agner <stefan@agner.ch>, Chris Healy <cphealy@gmail.com>, Cory Tusar <cory.tusar@zii.aero>, Lucas Stach <l.stach@pengutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Code doing initial DMA RX configuration in lpuart_startup() and
-lpuart32_startup() is exactly the same, so move it into a standalone
-subroutine.
+In a mixed DMA/IRQ use-case (e.g.: DMA for TX, IRQ for RX), interrupt
+handler might try to handle Rx/Tx condition it shouldn't. Change the
+code to only handle TX/RX event if corresponding path isn't being
+handled by DMA.
 
 Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
 Cc: Stefan Agner <stefan@agner.ch>
@@ -27,74 +28,25 @@ Cc: linux-imx@nxp.com
 Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/tty/serial/fsl_lpuart.c | 40 ++++++++++++++-------------------
- 1 file changed, 17 insertions(+), 23 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 9da4529ee223..4b59801a0a0c 100644
+index 5c3cc1051aa8..3e17bb8a0b16 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1455,6 +1455,21 @@ static void lpuart_tx_dma_startup(struct lpuart_port *sport)
- 	}
- }
+@@ -967,10 +967,10 @@ static irqreturn_t lpuart_int(int irq, void *dev_id)
  
-+static void lpuart_rx_dma_startup(struct lpuart_port *sport)
-+{
-+	if (sport->dma_rx_chan && !lpuart_start_rx_dma(sport)) {
-+		/* set Rx DMA timeout */
-+		sport->dma_rx_timeout = msecs_to_jiffies(DMA_RX_TIMEOUT);
-+		if (!sport->dma_rx_timeout)
-+			sport->dma_rx_timeout = 1;
-+
-+		sport->lpuart_dma_rx_use = true;
-+		rx_dma_timer_init(sport);
-+	} else {
-+		sport->lpuart_dma_rx_use = false;
-+	}
-+}
-+
- static int lpuart_startup(struct uart_port *port)
- {
- 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
-@@ -1479,18 +1494,7 @@ static int lpuart_startup(struct uart_port *port)
- 	temp |= UARTCR2_RIE | UARTCR2_TIE | UARTCR2_RE | UARTCR2_TE;
- 	writeb(temp, sport->port.membase + UARTCR2);
+ 	sts = readb(sport->port.membase + UARTSR1);
  
--	if (sport->dma_rx_chan && !lpuart_start_rx_dma(sport)) {
--		/* set Rx DMA timeout */
--		sport->dma_rx_timeout = msecs_to_jiffies(DMA_RX_TIMEOUT);
--		if (!sport->dma_rx_timeout)
--		     sport->dma_rx_timeout = 1;
--
--		sport->lpuart_dma_rx_use = true;
--		rx_dma_timer_init(sport);
--	} else {
--		sport->lpuart_dma_rx_use = false;
--	}
--
-+	lpuart_rx_dma_startup(sport);
- 	lpuart_tx_dma_startup(sport);
+-	if (sts & UARTSR1_RDRF)
++	if (sts & UARTSR1_RDRF && !sport->lpuart_dma_rx_use)
+ 		lpuart_rxint(sport);
  
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
-@@ -1522,18 +1526,8 @@ static int lpuart32_startup(struct uart_port *port)
- 	temp |= UARTCTRL_RE | UARTCTRL_TE | UARTCTRL_ILIE;
- 	lpuart32_write(&sport->port, temp, UARTCTRL);
+-	if (sts & UARTSR1_TDRE)
++	if (sts & UARTSR1_TDRE && !sport->lpuart_dma_tx_use)
+ 		lpuart_txint(sport);
  
--	if (sport->dma_rx_chan && !lpuart_start_rx_dma(sport)) {
--		/* set Rx DMA timeout */
--		sport->dma_rx_timeout = msecs_to_jiffies(DMA_RX_TIMEOUT);
--		if (!sport->dma_rx_timeout)
--			sport->dma_rx_timeout = 1;
--
--		sport->lpuart_dma_rx_use = true;
--		rx_dma_timer_init(sport);
--	} else {
--		sport->lpuart_dma_rx_use = false;
--	}
- 
-+	lpuart_rx_dma_startup(sport);
- 	lpuart_tx_dma_startup(sport);
- 
- 	if (sport->lpuart_dma_rx_use) {
+ 	return IRQ_HANDLED;
 -- 
 2.21.0
