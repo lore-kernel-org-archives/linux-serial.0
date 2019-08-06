@@ -1,16 +1,18 @@
-From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: Re: [RFCv2 0/9] dt-bindings: first tentative of conversion to yaml
- format
-Date: Tue, 6 Aug 2019 09:42:19 +0200
-Message-ID: <4e87b12f-ef92-49d8-1e1d-9bc5ba5c3c8d@baylibre.com>
-References: <20190805120320.32282-1-narmstrong@baylibre.com>
- <CAL_JsqJzwtSXX0nrS7RBP8u-e=16SiWOBjLrvy8Amc08PfpXag@mail.gmail.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v3 4/4] serial: 8250: Don't check for mctrl_gpio_init()
+ returning -ENOSYS
+Date: Tue, 6 Aug 2019 09:44:11 +0200
+Message-ID: <20190806074411.coizcyqs54ylgq3e@pengutronix.de>
+References: <20190802100349.8659-1-frieder.schrempf@kontron.de>
+ <20190802100349.8659-4-frieder.schrempf@kontron.de>
+ <20190802121555.dl6rpjphgaxdvcke@pengutronix.de>
+ <20190802122623.GA25281@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CAL_JsqJzwtSXX0nrS7RBP8u-e=16SiWOBjLrvy8Amc08PfpXag@mail.gmail.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20190802122623.GA25281@kroah.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -20,52 +22,48 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Rob Herring <robh+dt@kernel.org>
-Cc: Philipp Zabel <p.zabel@pengutronix.de>, devicetree@vger.kernel.org, LINUX-WATCHDOG <linux-watchdog@vger.kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>, linux-spi <linux-spi@vger.kernel.org>, "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" <linux-crypto@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, linux-amlogic@lists.infradead.org, Kishon Vijay Abraham I <kishon@ti.com>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "geert+renesas@glider.be" <geert+renesas@glider.be>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Schrempf Frieder <frieder.schrempf@kontron.de>, "linux-imx@nxp.com" <linux-imx@nxp.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>, Jiri Slaby <jslaby@suse.com>, "festevam@gmail.com" <festevam@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Rob,
+Hey Greg
 
-On 05/08/2019 23:51, Rob Herring wrote:
-> On Mon, Aug 5, 2019 at 6:03 AM Neil Armstrong <narmstrong@baylibre.com> wrote:
->>
->> This is a first tentative to convert some of the simplest Amlogic
->> dt-bindings to the yaml format.
->>
->> All have been tested using :
->> $ make ARCH=arm64 dtbs_check
->>
->> Issues with the amlogic arm64 DTs has already been identified thanks
->> to the validation scripts. The DT fixes will be pushed once these yaml
->> bindings are acked.
->>
->> Changes since rfc v1:
->> - Fixed bindings according to Rob's comments
->> - Added commit log
->> - renamed yaml files using amlogic prefix
->>
->> Neil Armstrong (9):
->>   dt-bindings: mailbox: meson-mhu: convert to yaml
->>   dt-bindings: rng: amlogic,meson-rng: convert to yaml
->>   dt-bindings: spi: meson: convert to yaml
->>   dt-bindings: reset: amlogic,meson-reset: convert to yaml
->>   dt-bindings: arm: amlogic: amlogic,meson-gx-ao-secure: convert to yaml
->>   dt-bindings: phy: meson-g12a-usb2-phy: convert to yaml
->>   dt-bindings: phy: meson-g12a-usb3-pcie-phy: convert to yaml
->>   dt-bindings: serial: meson-uart: convert to yaml
->>   dt-bindings: watchdog: meson-gxbb-wdt: convert to yaml
-> 
-> For the series,
-> 
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> 
-> What's your merge plan? Do you want me to take the whole series?
+On Fri, Aug 02, 2019 at 02:26:23PM +0200, Greg Kroah-Hartman wrote:
+> On Fri, Aug 02, 2019 at 02:15:55PM +0200, Uwe Kleine-K=F6nig wrote:
+> > On Fri, Aug 02, 2019 at 10:04:11AM +0000, Schrempf Frieder wrote:
+> > > From: Frieder Schrempf <frieder.schrempf@kontron.de>
+> > > =
 
-I planned to split them for each subsystem, but it may be much simpler
-if you take the whole serie.
+> > > Now that the mctrl_gpio code returns NULL instead of ERR_PTR(-ENOSYS)
+> > > if CONFIG_GPIOLIB is disabled, we can safely remove this check.
+> > > =
 
-Neil
+> > > Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
+> > =
 
-> 
-> Rob
-> 
+> > Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> > =
+
+> > @greg: This patch doesn't depend on patch 2; ditto for patch 3. So only
+> > taking patches 1, 3 and 4 should be fine. This way Frieder's v4 only
+> > have to care for patch 2. (Assuming noone objects to 1, 3 and 4 of
+> > course.)
+> =
+
+> Sounds good, I'll do that, thanks.
+
+again you somehow managed to mangle my name :-|
+
+$ git log -3 8f0df898b27926e443d13770adfd828cc0f50148 | grep Uwe
+    Acked-by: Uwe Kleine-Knig <u.kleine-koenig@pengutronix.de>
+    Acked-by: Uwe Kleine-Knig <u.kleine-koenig@pengutronix.de>
+    Reviewed-by: Uwe Kleine-Knig <u.kleine-koenig@pengutronix.de>
+
+in all three instances the =F6 is missing.
+
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
