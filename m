@@ -1,17 +1,14 @@
-From: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 5/6] tty: serial: Add linflexuart driver for S32V234
-Date: Tue, 6 Aug 2019 20:40:42 +0200
-Message-ID: <20190806184042.GA26041@kroah.com>
-References: <20190802194702.30249-1-stefan-gabriel.mirea@nxp.com>
- <20190802194702.30249-6-stefan-gabriel.mirea@nxp.com>
- <20190805153114.GA16836@kroah.com>
- <HE1PR0402MB28579034C09EB49A76A4F8E7DFD50@HE1PR0402MB2857.eurprd04.prod.outlook.com>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: Re: [RFCv2 8/9] dt-bindings: serial: meson-uart: convert to yaml
+Date: Tue, 6 Aug 2019 21:18:02 +0200
+Message-ID: <CAFBinCBSC-wrSxKajwfQNJuzf3ZGFNS4bYPE8qnJF92gTMK_8w@mail.gmail.com>
+References: <20190805120320.32282-1-narmstrong@baylibre.com>
+ <20190805120320.32282-9-narmstrong@baylibre.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <HE1PR0402MB28579034C09EB49A76A4F8E7DFD50@HE1PR0402MB2857.eurprd04.prod.outlook.com>
+In-Reply-To: <20190805120320.32282-9-narmstrong@baylibre.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -21,51 +18,115 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "corbet@lwn.net" <corbet@lwn.net>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Larisa Ileana Grigore <larisa.grigore@nxp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Leo Li <leoyang.li@nxp.com>, Cosmin Stefan Stoica <cosmin.stoica@nxp.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "will@kernel.org" <will@kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Neil Armstrong <narmstrong@baylibre.com>
+Cc: linux-amlogic@lists.infradead.org, robh+dt@kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, Aug 06, 2019 at 05:11:17PM +0000, Stefan-gabriel Mirea wrote:
-> On 8/5/2019 6:31 PM, gregkh@linuxfoundation.org wrote:
-> > On Fri, Aug 02, 2019 at 07:47:23PM +0000, Stefan-gabriel Mirea wrote:
-> >>
-> >> +/* Freescale Linflex UART */
-> >> +#define PORT_LINFLEXUART     121
-> > 
-> > Do you really need this modified?
-> 
-> Hello Greg,
-> 
-> This macro is meant to be assigned to port->type in the config_port
-> method from uart_ops, in order for verify_port to know if the received
-> serial_struct structure was really targeted for a LINFlex port. It
-> needs to be defined outside, to avoid "collisions" with other drivers.
+Hi Neil,
 
-Yes, I know what it goes to, but does anyone in userspace actually use
-it?
+On Mon, Aug 5, 2019 at 2:06 PM Neil Armstrong <narmstrong@baylibre.com> wrote:
+>
+> Now that we have the DT validation in place, let's convert the device tree
+> bindings for the Amlogic UART Serial controller over to a YAML schemas.
+>
+> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+two nit-picks below, but overall this looks good:
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-> As far as I see, uart_set_info() will actually fail at the
-> "baud_base < 9600" check[1], right after calling verify_port(), when
-> performing an ioctl() on "/dev/console" with TIOCSSERIAL using a
-> serial_struct obtained with TIOCGSERIAL. This happens because this
-> reduced version of the LINFlex UART driver will not touch the uartclk
-> field of the uart_port (as there is currently no clock support).
-> Therefore, the linflex_config/verify_port() functions, along with the
-> PORT_LINFLEXUART macro, may be indeed unnecessary at this point (and
-> should be added later). Is this what you mean?
+> ---
+>  .../bindings/serial/amlogic,meson-uart.txt    | 38 ----------
+>  .../bindings/serial/amlogic,meson-uart.yaml   | 73 +++++++++++++++++++
+>  2 files changed, 73 insertions(+), 38 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
+>  create mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+>
+> diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
+> deleted file mode 100644
+> index c06c045126fc..000000000000
+> --- a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
+> +++ /dev/null
+> @@ -1,38 +0,0 @@
+> -Amlogic Meson SoC UART Serial Interface
+> -=======================================
+> -
+> -The Amlogic Meson SoC UART Serial Interface is present on a large range
+> -of SoCs, and can be present either in the "Always-On" power domain or the
+> -"Everything-Else" power domain.
+> -
+> -The particularity of the "Always-On" Serial Interface is that the hardware
+> -is active since power-on and does not need any clock gating and is usable
+> -as very early serial console.
+> -
+> -Required properties:
+> -- compatible : compatible: value should be different for each SoC family as :
+> -       - Meson6 : "amlogic,meson6-uart"
+> -       - Meson8 : "amlogic,meson8-uart"
+> -       - Meson8b : "amlogic,meson8b-uart"
+> -       - GX (GXBB, GXL, GXM) : "amlogic,meson-gx-uart"
+> -       eventually followed by : "amlogic,meson-ao-uart" if this UART interface
+> -       is in the "Always-On" power domain.
+> -- reg : offset and length of the register set for the device.
+> -- interrupts : identifier to the device interrupt
+> -- clocks : a list of phandle + clock-specifier pairs, one for each
+> -          entry in clock names.
+> -- clock-names :
+> -   * "xtal" for external xtal clock identifier
+> -   * "pclk" for the bus core clock, either the clk81 clock or the gate clock
+> -   * "baud" for the source of the baudrate generator, can be either the xtal
+> -       or the pclk.
+> -
+> -e.g.
+> -uart_A: serial@84c0 {
+> -       compatible = "amlogic,meson-gx-uart";
+> -       reg = <0x0 0x84c0 0x0 0x14>;
+> -       interrupts = <GIC_SPI 26 IRQ_TYPE_EDGE_RISING>;
+> -       /* Use xtal as baud rate clock source */
+> -       clocks = <&xtal>, <&clkc CLKID_UART0>, <&xtal>;
+> -       clock-names = "xtal", "pclk", "baud";
+> -};
+> diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+> new file mode 100644
+> index 000000000000..5d48a8c04aa9
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+> @@ -0,0 +1,73 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +# Copyright 2019 BayLibre, SAS
+> +%YAML 1.2
+> +---
+> +$id: "http://devicetree.org/schemas/serial/amlogic,meson-uart.yaml#"
+> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> +
+> +title: Amlogic Meson SoC UART Serial Interface
+> +
+> +maintainers:
+> +  - Neil Armstrong <narmstrong@baylibre.com>
+> +
+> +description: |
+> +  The Amlogic Meson SoC UART Serial Interface is present on a large range
+> +  of SoCs, and can be present either in the "Always-On" power domain or the
+> +  "Everything-Else" power domain.
+> +
+> +  The particularity of the "Always-On" Serial Interface is that the hardware
+> +  is active since power-on and does not need any clock gating and is usable
+> +  as very early serial console.
+> +
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      - description: Allways-on power domain UART controller
+Always instead of Allways
 
-No, see below.
-
-> Other than that, I do not see anything wrong with the addition of a
-> define in serial_core.h for this purpose (which is also what most of the
-> serial drivers do, including amba-pl011.c, mentioned in
-> Documentation/driver-api/serial/driver.rst as providing the reference
-> implementation), so please be more specific.
-
-I am getting tired of dealing with merge issues with that list, and no
-one seems to be able to find where they are really needed for userspace,
-especially for new devices.  What happens if you do not have use it?
-
-thanks,
-
-greg k-h
+[...]
+> +examples:
+> +  - |
+> +    serial@84c0 {
+> +          compatible = "amlogic,meson-gx-uart";
+> +          reg = <0x84c0 0x14>;
+> +          interrupts = <26>;
+> +          clocks = <&xtal>, <&pclk>, <&xtal>;
+> +          clock-names = "xtal", "pclk", "baud";
+> +    };
+more a hint than a nit-pick: you can add #includes to the example,
+just like in the real .dtb
+then you can keep the GIC_SPI and IRQ_TYPE_... macros
