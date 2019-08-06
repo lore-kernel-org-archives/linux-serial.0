@@ -1,7 +1,7 @@
 From: Sylvain Lemieux <slemieux.tyco@gmail.com>
 Subject: Re: [PATCH 07/14] net: lpc-enet: move phy setup into platform code
-Date: Tue, 6 Aug 2019 16:11:38 -0400
-Message-ID: <CA+rxa6pcw7une0YUyMd1ZxUpcAqRRqZHcEUXxTYuscmpDUsCuQ@mail.gmail.com>
+Date: Tue, 6 Aug 2019 16:12:54 -0400
+Message-ID: <CA+rxa6pZ7RLAOR1AQqdcNWxvk8dyoMR586n0d2e_b8SHU-jyWA@mail.gmail.com>
 References: <20190731195713.3150463-1-arnd@arndb.de> <20190731195713.3150463-8-arnd@arndb.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
@@ -11,6 +11,8 @@ Sender: linux-kernel-owner@vger.kernel.org
 To: Arnd Bergmann <arnd@arndb.de>
 Cc: soc@kernel.org, "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>, Vladimir Zapolskiy <vz@mleia.com>, Russell King <linux@armlinux.org.uk>, Gregory Clement <gregory.clement@bootlin.com>, Linus Walleij <linus.walleij@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, "David S. Miller" <davem@davemloft.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, Guenter Roeck <linux@roeck-us.net>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Networking <netdev@vger.kernel.org>, linux-serial@vger.kernel.org, USB list <linux-usb@vger.kernel.org>, LINUXWATCHDOG <linux-watchdog@vger.kernel.org>, Linux
 List-Id: linux-serial@vger.kernel.org
+
+Acked-by: Sylvain Lemieux <slemieux.tyco@gmail.com>
 
 On Wed, Jul 31, 2019 at 4:01 PM Arnd Bergmann <arnd@arndb.de> wrote:
 >
