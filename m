@@ -1,86 +1,114 @@
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH 3/5] serial: lantiq: Make IRQ & ISR assignment dynamic
-Date: Wed, 7 Aug 2019 16:29:57 +0300
-Message-ID: <20190807132957.GY30120@smile.fi.intel.com>
+Subject: Re: [PATCH 5/5] serial: lantiq: Add support for Lightning Mountain
+ SoC
+Date: Wed, 7 Aug 2019 16:31:23 +0300
+Message-ID: <20190807133123.GZ30120@smile.fi.intel.com>
 References: <cover.1565160764.git.rahul.tanwar@linux.intel.com>
- <6dd57ea99f734bd4e413f6913914c0a93c00f295.1565160764.git.rahul.tanwar@linux.intel.com>
+ <a947355d6cf0ab71205e81779e1549f42f3f945a.1565160764.git.rahul.tanwar@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <6dd57ea99f734bd4e413f6913914c0a93c00f295.1565160764.git.rahul.tanwar@linux.intel.com>
+In-Reply-To: <a947355d6cf0ab71205e81779e1549f42f3f945a.1565160764.git.rahul.tanwar@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Rahul Tanwar <rahul.tanwar@linux.intel.com>
 Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, jslaby@suse.com, robh+dt@kernel.org, mark.rutland@arm.com, qi-ming.wu@intel.com, cheol.yong.kim@intel.com, rahul.tanwar@intel.com
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Aug 07, 2019 at 05:21:33PM +0800, Rahul Tanwar wrote:
-> This driver/IP is reused across multiple SoCs. Older SoCs supported three
-> separate IRQs for tx, rx & err interrupts. Newer Lightning Mountain SoC
-> supports single IRQ for all of tx/rx/err interrupts. This patch modifies
-> the driver design to support dynamic assignment of IRQ resources & ISRs
-> based on devicetree node compatible entries.
+On Wed, Aug 07, 2019 at 05:21:35PM +0800, Rahul Tanwar wrote:
+> This patch adds IRQ & ISR support in the driver for Lightning Mountain SoC.
 
-> +struct ltq_soc_data {
-> +	int	(*fetch_irq)(struct platform_device *pdev,
-> +				 struct ltq_uart_port *ltq_port);
+> +#define ASC_IRNCR_MASK		0x7
 
-This can be simple
+GENMASK() ?
 
-	int	(*fetch_irq)(struct device *dev, struct ltq_uart_port *ltq_port);
-
-(Note one line and struct device instead of platform_device)
-
-> +	int	(*request_irq)(struct uart_port *port);
-> +	void	(*free_irq)(struct uart_port *port);
-> +};
-
-> +	retval = ltq_port->soc->request_irq(port);
-> +	if(retval)
-
-Space is missed.
-
->  		return retval;
-
-
-> +static int fetch_irq_lantiq(struct platform_device *pdev,
-> +			    struct ltq_uart_port *ltq_port)
+> +static irqreturn_t lqasc_irq(int irq, void *p)
 > +{
-> +	struct device_node *node = pdev->dev.of_node;
+> +	unsigned long flags;
+> +	u32 stat;
+> +	struct uart_port *port = p;
+> +	struct ltq_uart_port *ltq_port = to_ltq_uart_port(port);
+> +
+> +	spin_lock_irqsave(&ltq_port->lock, flags);
+> +	stat = readl(port->membase + LTQ_ASC_IRNCR);
+> +	if (!(stat & ASC_IRNCR_MASK)) {
+> +		spin_unlock_irqrestore(&ltq_port->lock, flags);
+> +		return IRQ_NONE;
+> +	}
+
+> +	spin_unlock_irqrestore(&ltq_port->lock, flags);
+
+Are you sure the below does not need a serialization?
+
+If it's not the case, you may unlock the lock immediately after readl().
+
+> +
+> +	if (stat & ASC_IRNCR_TIR)
+> +		lqasc_tx_int(irq, p);
+> +
+> +	if (stat & ASC_IRNCR_RIR)
+> +		lqasc_rx_int(irq, p);
+> +
+> +	if (stat & ASC_IRNCR_EIR)
+> +		lqasc_err_int(irq, p);
+> +
+> +	return IRQ_HANDLED;
+> +}
+
+> +static int fetch_irq_intel(struct platform_device *pdev,
+> +			   struct ltq_uart_port *ltq_port)
+> +{
 > +	struct uart_port *port = &ltq_port->port;
-> +	struct resource irqres[3];
 > +	int ret;
 > +
-> +	ret = of_irq_to_resource_table(node, irqres, 3);
-> +	if (ret != 3) {
+> +	ret = of_irq_get(pdev->dev.of_node, 0);
+> +	if (ret < 0) {
 > +		dev_err(&pdev->dev,
-> +			"failed to get IRQs for serial port\n");
+> +			"failed to fetch IRQ for serial port\n");
+
 > +		return -ENODEV;
+
+	return ret;
+
 > +	}
-> +	ltq_port->tx_irq = irqres[0].start;
-> +	ltq_port->rx_irq = irqres[1].start;
-> +	ltq_port->err_irq = irqres[2].start;
-> +	port->irq = irqres[0].start;
+> +	ltq_port->common_irq = ret;
+> +	port->irq = ret;
 > +
 
 > +	return ret;
 
-I'm not sure you need to return known value. 0 will be good enough...
+Same as per patch 3, i.e.
+
+	return 0;
 
 > +}
 
-> +	ltq_port->soc = of_device_get_match_data(&pdev->dev);
-> +	ret = ltq_port->soc->fetch_irq(pdev, ltq_port);
+> +static int request_irq_intel(struct uart_port *port)
+> +{
+> +	struct ltq_uart_port *ltq_port = to_ltq_uart_port(port);
+> +	int retval;
+> +
+> +	retval = request_irq(ltq_port->common_irq, lqasc_irq, 0,
+> +			     "asc_irq", port);
 
-> +	if (ret < 0)
+> +	if (retval) {
+> +		dev_err(port->dev, "failed to request asc_irq\n");
+> +		return retval;
+> +	}
+> +
+> +	return 0;
 
-...and thus simple...
+	if (retval)
+		dev_err();
 
-	if (ret)
+	return retval;
 
-...may be used.
+> +}
 
-> +		return ret;
+> +
+> +
+
+One blank line is enough.
 
 -- 
 With Best Regards,
