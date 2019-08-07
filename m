@@ -1,115 +1,75 @@
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH 5/5] serial: lantiq: Add support for Lightning Mountain
- SoC
-Date: Wed, 7 Aug 2019 16:31:23 +0300
-Message-ID: <20190807133123.GZ30120@smile.fi.intel.com>
-References: <cover.1565160764.git.rahul.tanwar@linux.intel.com>
- <a947355d6cf0ab71205e81779e1549f42f3f945a.1565160764.git.rahul.tanwar@linux.intel.com>
+From: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+Subject: Re: [PATCH 5/6] tty: serial: Add linflexuart driver for S32V234
+Date: Wed, 7 Aug 2019 16:42:17 +0000
+Message-ID: <VI1PR0402MB2863C4406C06B0BDA3581822DFD40@VI1PR0402MB2863.eurprd04.prod.outlook.com>
+References: <20190802194702.30249-1-stefan-gabriel.mirea@nxp.com>
+ <20190802194702.30249-6-stefan-gabriel.mirea@nxp.com>
+ <20190805153114.GA16836@kroah.com>
+ <HE1PR0402MB28579034C09EB49A76A4F8E7DFD50@HE1PR0402MB2857.eurprd04.prod.outlook.com>
+ <20190806184042.GA26041@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <a947355d6cf0ab71205e81779e1549f42f3f945a.1565160764.git.rahul.tanwar@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rahul Tanwar <rahul.tanwar@linux.intel.com>
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, jslaby@suse.com, robh+dt@kernel.org, mark.rutland@arm.com, qi-ming.wu@intel.com, cheol.yong.kim@intel.com, rahul.tanwar@intel.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "corbet@lwn.net" <corbet@lwn.net>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Larisa Ileana Grigore <larisa.grigore@nxp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Leo Li <leoyang.li@nxp.com>, Cosmin Stefan Stoica <cosmin.stoica@nxp.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "will@kernel.org" <will@kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Aug 07, 2019 at 05:21:35PM +0800, Rahul Tanwar wrote:
-> This patch adds IRQ & ISR support in the driver for Lightning Mountain SoC.
+On 8/6/2019 9:40 PM, gregkh@linuxfoundation.org wrote:
+> On Tue, Aug 06, 2019 at 05:11:17PM +0000, Stefan-gabriel Mirea wrote:
+>> On 8/5/2019 6:31 PM, gregkh@linuxfoundation.org wrote:
+>>> On Fri, Aug 02, 2019 at 07:47:23PM +0000, Stefan-gabriel Mirea wrote:
+>>>>
+>>>> +/* Freescale Linflex UART */
+>>>> +#define PORT_LINFLEXUART     121
+>>>
+>>> Do you really need this modified?
+>>
+>> Hello Greg,
+>>
+>> This macro is meant to be assigned to port->type in the config_port
+>> method from uart_ops, in order for verify_port to know if the received
+>> serial_struct structure was really targeted for a LINFlex port. It
+>> needs to be defined outside, to avoid "collisions" with other drivers.
+> 
+> Yes, I know what it goes to, but does anyone in userspace actually use
+> it?
 
-> +#define ASC_IRNCR_MASK		0x7
+No, we do not use it from userspace, but kept the pattern only for
+conformance.
 
-GENMASK() ?
+>> Other than that, I do not see anything wrong with the addition of a
+>> define in serial_core.h for this purpose (which is also what most of the
+>> serial drivers do, including amba-pl011.c, mentioned in
+>> Documentation/driver-api/serial/driver.rst as providing the reference
+>> implementation), so please be more specific.
+> 
+> I am getting tired of dealing with merge issues with that list, and no
+> one seems to be able to find where they are really needed for userspace,
+> especially for new devices.  What happens if you do not have use it?
 
-> +static irqreturn_t lqasc_irq(int irq, void *p)
-> +{
-> +	unsigned long flags;
-> +	u32 stat;
-> +	struct uart_port *port = p;
-> +	struct ltq_uart_port *ltq_port = to_ltq_uart_port(port);
-> +
-> +	spin_lock_irqsave(&ltq_port->lock, flags);
-> +	stat = readl(port->membase + LTQ_ASC_IRNCR);
-> +	if (!(stat & ASC_IRNCR_MASK)) {
-> +		spin_unlock_irqrestore(&ltq_port->lock, flags);
-> +		return IRQ_NONE;
-> +	}
+I see. If I drop its usage completely and leave 'type' from the
+uart_port as 0, uart_port_startup() will fail when finding that
+uport->type == PORT_UNKNOWN at [1] (there may be other effects as well,
+e.g. due to the check in uart_configure_port[2]).
 
-> +	spin_unlock_irqrestore(&ltq_port->lock, flags);
+So I suppose that I need to define some nonzero 'PORT_KNOWN' macro in
+the driver and use that one internally for 'type'. Is my understanding
+correct? Will there be any problems if I define it to a positive integer
+which is already assigned to another driver, according to serial_core.h?
 
-Are you sure the below does not need a serialization?
+Regards,
+Stefan
 
-If it's not the case, you may unlock the lock immediately after readl().
-
-> +
-> +	if (stat & ASC_IRNCR_TIR)
-> +		lqasc_tx_int(irq, p);
-> +
-> +	if (stat & ASC_IRNCR_RIR)
-> +		lqasc_rx_int(irq, p);
-> +
-> +	if (stat & ASC_IRNCR_EIR)
-> +		lqasc_err_int(irq, p);
-> +
-> +	return IRQ_HANDLED;
-> +}
-
-> +static int fetch_irq_intel(struct platform_device *pdev,
-> +			   struct ltq_uart_port *ltq_port)
-> +{
-> +	struct uart_port *port = &ltq_port->port;
-> +	int ret;
-> +
-> +	ret = of_irq_get(pdev->dev.of_node, 0);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev,
-> +			"failed to fetch IRQ for serial port\n");
-
-> +		return -ENODEV;
-
-	return ret;
-
-> +	}
-> +	ltq_port->common_irq = ret;
-> +	port->irq = ret;
-> +
-
-> +	return ret;
-
-Same as per patch 3, i.e.
-
-	return 0;
-
-> +}
-
-> +static int request_irq_intel(struct uart_port *port)
-> +{
-> +	struct ltq_uart_port *ltq_port = to_ltq_uart_port(port);
-> +	int retval;
-> +
-> +	retval = request_irq(ltq_port->common_irq, lqasc_irq, 0,
-> +			     "asc_irq", port);
-
-> +	if (retval) {
-> +		dev_err(port->dev, "failed to request asc_irq\n");
-> +		return retval;
-> +	}
-> +
-> +	return 0;
-
-	if (retval)
-		dev_err();
-
-	return retval;
-
-> +}
-
-> +
-> +
-
-One blank line is enough.
-
--- 
-With Best Regards,
-Andy Shevchenko
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/tty/serial/serial_core.c?h=v5.3-rc1#n188
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/tty/serial/serial_core.c?h=v5.3-rc1#n2348
