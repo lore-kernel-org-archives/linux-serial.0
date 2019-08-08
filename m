@@ -1,161 +1,255 @@
-From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: [PATCH 8/9] dt-bindings: serial: meson-uart: convert to yaml
-Date: Thu,  8 Aug 2019 10:51:38 +0200
-Message-ID: <20190808085139.21438-9-narmstrong@baylibre.com>
-References: <20190808085139.21438-1-narmstrong@baylibre.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190808085139.21438-1-narmstrong@baylibre.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: robh+dt@kernel.org
-Cc: Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org, Martin Blumenstingl <martin.blumenstingl@googlemail.com>, Neil Armstrong <narmstrong@baylibre.com>, linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+From: Rahul Tanwar <rahul.tanwar@linux.intel.com>
+Subject: [PATCH v2 2/3] serial: lantiq: Make IRQ & ISR assignment dynamic
+Date: Thu,  8 Aug 2019 18:02:07 +0800
+Message-ID: <b166a0593bee191fcd77b5bdf8fedc6f6330a371.1565257887.git.rahul.tanwar@linux.intel.com>
+References: <cover.1565257887.git.rahul.tanwar@linux.intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1565257887.git.rahul.tanwar@linux.intel.com>
+In-Reply-To: <cover.1565257887.git.rahul.tanwar@linux.intel.com>
+References: <cover.1565257887.git.rahul.tanwar@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
+Cc: linux-kernel@vger.kernel.org, jslaby@suse.com, andriy.shevchenko@intel.com, qi-ming.wu@intel.com, cheol.yong.kim@intel.com, rahul.tanwar@intel.com, Rahul Tanwar <rahul.tanwar@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-Now that we have the DT validation in place, let's convert the device tree
-bindings for the Amlogic UART Serial controller over to a YAML schemas.
+This driver/IP is reused across multiple SoCs. Older SoCs supported three
+separate IRQs for tx, rx & err interrupts. Newer Lightning Mountain SoC
+supports single IRQ for all of tx/rx/err interrupts. This patch modifies
+the driver design to support dynamic assignment of IRQ resources & ISRs
+based on devicetree node compatible entries.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Signed-off-by: Rahul Tanwar <rahul.tanwar@linux.intel.com>
 ---
- .../bindings/serial/amlogic,meson-uart.txt    | 38 ----------
- .../bindings/serial/amlogic,meson-uart.yaml   | 73 +++++++++++++++++++
- 2 files changed, 73 insertions(+), 38 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+ drivers/tty/serial/lantiq.c | 141 ++++++++++++++++++++++++++++++--------------
+ 1 file changed, 96 insertions(+), 45 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
-deleted file mode 100644
-index c06c045126fc..000000000000
---- a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
-+++ /dev/null
-@@ -1,38 +0,0 @@
--Amlogic Meson SoC UART Serial Interface
--=======================================
+diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
+index 660d21db57dc..b129531dfb9a 100644
+--- a/drivers/tty/serial/lantiq.c
++++ b/drivers/tty/serial/lantiq.c
+@@ -100,6 +100,12 @@ static void lqasc_tx_chars(struct uart_port *port);
+ static struct ltq_uart_port *lqasc_port[MAXPORTS];
+ static struct uart_driver lqasc_reg;
+ 
++struct ltq_soc_data {
++	int	(*fetch_irq)(struct device *dev, struct ltq_uart_port *ltq_port);
++	int	(*request_irq)(struct uart_port *port);
++	void	(*free_irq)(struct uart_port *port);
++};
++
+ struct ltq_uart_port {
+ 	struct uart_port	port;
+ 	/* clock used to derive divider */
+@@ -110,6 +116,8 @@ struct ltq_uart_port {
+ 	unsigned int		rx_irq;
+ 	unsigned int		err_irq;
+ 	spinlock_t		lock; /* exclusive access for multi core */
++
++	const struct ltq_soc_data	*soc;
+ };
+ 
+ static inline void asc_update_bits(u32 clear, u32 set, void __iomem *reg)
+@@ -343,35 +351,12 @@ lqasc_startup(struct uart_port *port)
+ 
+ 	spin_unlock_irqrestore(&ltq_port->lock, flags);
+ 
+-	retval = request_irq(ltq_port->tx_irq, lqasc_tx_int,
+-		0, "asc_tx", port);
+-	if (retval) {
+-		pr_err("failed to request lqasc_tx_int\n");
++	retval = ltq_port->soc->request_irq(port);
++	if (retval)
+ 		return retval;
+-	}
 -
--The Amlogic Meson SoC UART Serial Interface is present on a large range
--of SoCs, and can be present either in the "Always-On" power domain or the
--"Everything-Else" power domain.
+-	retval = request_irq(ltq_port->rx_irq, lqasc_rx_int,
+-		0, "asc_rx", port);
+-	if (retval) {
+-		pr_err("failed to request lqasc_rx_int\n");
+-		goto err1;
+-	}
 -
--The particularity of the "Always-On" Serial Interface is that the hardware
--is active since power-on and does not need any clock gating and is usable
--as very early serial console.
+-	retval = request_irq(ltq_port->err_irq, lqasc_err_int,
+-		0, "asc_err", port);
+-	if (retval) {
+-		pr_err("failed to request lqasc_err_int\n");
+-		goto err2;
+-	}
+ 
+ 	__raw_writel(ASC_IRNREN_RX | ASC_IRNREN_ERR | ASC_IRNREN_TX,
+ 		port->membase + LTQ_ASC_IRNREN);
+-	return 0;
 -
--Required properties:
--- compatible : compatible: value should be different for each SoC family as :
--	- Meson6 : "amlogic,meson6-uart"
--	- Meson8 : "amlogic,meson8-uart"
--	- Meson8b : "amlogic,meson8b-uart"
--	- GX (GXBB, GXL, GXM) : "amlogic,meson-gx-uart"
--	eventually followed by : "amlogic,meson-ao-uart" if this UART interface
--	is in the "Always-On" power domain.
--- reg : offset and length of the register set for the device.
--- interrupts : identifier to the device interrupt
--- clocks : a list of phandle + clock-specifier pairs, one for each
--	   entry in clock names.
--- clock-names :
--   * "xtal" for external xtal clock identifier
--   * "pclk" for the bus core clock, either the clk81 clock or the gate clock
--   * "baud" for the source of the baudrate generator, can be either the xtal
--	or the pclk.
+-err2:
+-	free_irq(ltq_port->rx_irq, port);
+-err1:
+-	free_irq(ltq_port->tx_irq, port);
+ 	return retval;
+ }
+ 
+@@ -381,9 +366,7 @@ lqasc_shutdown(struct uart_port *port)
+ 	struct ltq_uart_port *ltq_port = to_ltq_uart_port(port);
+ 	unsigned long flags;
+ 
+-	free_irq(ltq_port->tx_irq, port);
+-	free_irq(ltq_port->rx_irq, port);
+-	free_irq(ltq_port->err_irq, port);
++	ltq_port->soc->free_irq(port);
+ 
+ 	spin_lock_irqsave(&ltq_port->lock, flags);
+ 	__raw_writel(0, port->membase + LTQ_ASC_CON);
+@@ -705,24 +688,98 @@ static struct uart_driver lqasc_reg = {
+ 	.cons =		&lqasc_console,
+ };
+ 
++static int fetch_irq_lantiq(struct device *dev, struct ltq_uart_port *ltq_port)
++{
++	struct uart_port *port = &ltq_port->port;
++	struct resource irqres[3];
++	int ret;
++
++	ret = of_irq_to_resource_table(dev->of_node, irqres, 3);
++	if (ret != 3) {
++		dev_err(dev,
++			"failed to get IRQs for serial port\n");
++		return -ENODEV;
++	}
++	ltq_port->tx_irq = irqres[0].start;
++	ltq_port->rx_irq = irqres[1].start;
++	ltq_port->err_irq = irqres[2].start;
++	port->irq = irqres[0].start;
++
++	return 0;
++}
++
++static int request_irq_lantiq(struct uart_port *port)
++{
++	struct ltq_uart_port *ltq_port = to_ltq_uart_port(port);
++	int retval;
++
++	retval = request_irq(ltq_port->tx_irq, lqasc_tx_int,
++			     0, "asc_tx", port);
++	if (retval) {
++		dev_err(port->dev, "failed to request asc_tx\n");
++		return retval;
++	}
++
++	retval = request_irq(ltq_port->rx_irq, lqasc_rx_int,
++			     0, "asc_rx", port);
++	if (retval) {
++		dev_err(port->dev, "failed to request asc_rx\n");
++		goto err1;
++	}
++
++	retval = request_irq(ltq_port->err_irq, lqasc_err_int,
++			     0, "asc_err", port);
++	if (retval) {
++		dev_err(port->dev, "failed to request asc_err\n");
++		goto err2;
++	}
++	return 0;
++
++err2:
++	free_irq(ltq_port->rx_irq, port);
++err1:
++	free_irq(ltq_port->tx_irq, port);
++	return retval;
++}
++
++static void free_irq_lantiq(struct uart_port *port)
++{
++	struct ltq_uart_port *ltq_port = to_ltq_uart_port(port);
++
++	free_irq(ltq_port->tx_irq, port);
++	free_irq(ltq_port->rx_irq, port);
++	free_irq(ltq_port->err_irq, port);
++}
++
+ static int __init
+ lqasc_probe(struct platform_device *pdev)
+ {
+ 	struct device_node *node = pdev->dev.of_node;
+ 	struct ltq_uart_port *ltq_port;
+ 	struct uart_port *port;
+-	struct resource *mmres, irqres[3];
++	struct resource *mmres;
+ 	int line;
+ 	int ret;
+ 
+ 	mmres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	ret = of_irq_to_resource_table(node, irqres, 3);
+-	if (!mmres || (ret != 3)) {
++	if (!mmres) {
+ 		dev_err(&pdev->dev,
+-			"failed to get memory/irq for serial port\n");
++			"failed to get memory for serial port\n");
+ 		return -ENODEV;
+ 	}
+ 
++	ltq_port = devm_kzalloc(&pdev->dev, sizeof(struct ltq_uart_port),
++				GFP_KERNEL);
++	if (!ltq_port)
++		return -ENOMEM;
++
++	port = &ltq_port->port;
++
++	ltq_port->soc = of_device_get_match_data(&pdev->dev);
++	ret = ltq_port->soc->fetch_irq(&pdev->dev, ltq_port);
++	if (ret)
++		return ret;
++
+ 	/* get serial id */
+ 	line = of_alias_get_id(node, "serial");
+ 	if (line < 0) {
+@@ -743,13 +800,6 @@ lqasc_probe(struct platform_device *pdev)
+ 		return -EBUSY;
+ 	}
+ 
+-	ltq_port = devm_kzalloc(&pdev->dev, sizeof(struct ltq_uart_port),
+-			GFP_KERNEL);
+-	if (!ltq_port)
+-		return -ENOMEM;
 -
--e.g.
--uart_A: serial@84c0 {
--	compatible = "amlogic,meson-gx-uart";
--	reg = <0x0 0x84c0 0x0 0x14>;
--	interrupts = <GIC_SPI 26 IRQ_TYPE_EDGE_RISING>;
--	/* Use xtal as baud rate clock source */
--	clocks = <&xtal>, <&clkc CLKID_UART0>, <&xtal>;
--	clock-names = "xtal", "pclk", "baud";
--};
-diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
-new file mode 100644
-index 000000000000..214fe8beddc3
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
-@@ -0,0 +1,73 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+# Copyright 2019 BayLibre, SAS
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/serial/amlogic,meson-uart.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+-	port = &ltq_port->port;
+-
+ 	port->iotype	= SERIAL_IO_MEM;
+ 	port->flags	= UPF_BOOT_AUTOCONF | UPF_IOREMAP;
+ 	port->ops	= &lqasc_pops;
+@@ -758,7 +808,6 @@ lqasc_probe(struct platform_device *pdev)
+ 	port->line	= line;
+ 	port->dev	= &pdev->dev;
+ 	/* unused, just to be backward-compatible */
+-	port->irq	= irqres[0].start;
+ 	port->mapbase	= mmres->start;
+ 
+ 	if (IS_ENABLED(CONFIG_LANTIQ) && !IS_ENABLED(CONFIG_COMMON_CLK))
+@@ -778,10 +827,6 @@ lqasc_probe(struct platform_device *pdev)
+ 	else
+ 		ltq_port->clk = devm_clk_get(&pdev->dev, "asc");
+ 
+-	ltq_port->tx_irq = irqres[0].start;
+-	ltq_port->rx_irq = irqres[1].start;
+-	ltq_port->err_irq = irqres[2].start;
+-
+ 	spin_lock_init(&ltq_port->lock);
+ 	lqasc_port[line] = ltq_port;
+ 	platform_set_drvdata(pdev, ltq_port);
+@@ -791,8 +836,14 @@ lqasc_probe(struct platform_device *pdev)
+ 	return ret;
+ }
+ 
++static const struct ltq_soc_data soc_data_lantiq = {
++	.fetch_irq = fetch_irq_lantiq,
++	.request_irq = request_irq_lantiq,
++	.free_irq = free_irq_lantiq,
++};
 +
-+title: Amlogic Meson SoC UART Serial Interface
-+
-+maintainers:
-+  - Neil Armstrong <narmstrong@baylibre.com>
-+
-+description: |
-+  The Amlogic Meson SoC UART Serial Interface is present on a large range
-+  of SoCs, and can be present either in the "Always-On" power domain or the
-+  "Everything-Else" power domain.
-+
-+  The particularity of the "Always-On" Serial Interface is that the hardware
-+  is active since power-on and does not need any clock gating and is usable
-+  as very early serial console.
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - description: Always-on power domain UART controller
-+        items:
-+        - enum:
-+          - amlogic,meson6-uart
-+          - amlogic,meson8-uart
-+          - amlogic,meson8b-uart
-+          - amlogic,meson-gx-uart
-+        - const: amlogic,meson-ao-uart
-+      - description: Everything-Else power domain UART controller
-+        enum:
-+        - amlogic,meson6-uart
-+        - amlogic,meson8-uart
-+        - amlogic,meson8b-uart
-+        - amlogic,meson-gx-uart
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    items:
-+      - description: external xtal clock identifier
-+      - description: the bus core clock, either the clk81 clock or the gate clock
-+      - description: the source of the baudrate generator, can be either the xtal or the pclk
-+
-+  clock-names:
-+    items:
-+      - const: xtal
-+      - const: pclk
-+      - const: baud
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+
-+examples:
-+  - |
-+    serial@84c0 {
-+          compatible = "amlogic,meson-gx-uart";
-+          reg = <0x84c0 0x14>;
-+          interrupts = <26>;
-+          clocks = <&xtal>, <&pclk>, <&xtal>;
-+          clock-names = "xtal", "pclk", "baud";
-+    };
+ static const struct of_device_id ltq_asc_match[] = {
+-	{ .compatible = "lantiq,asc" },
++	{ .compatible = "lantiq,asc", .data = &soc_data_lantiq },
+ 	{},
+ };
+ 
 -- 
-2.22.0
+2.11.0
