@@ -1,46 +1,62 @@
-From: Rahul Tanwar <rahul.tanwar@linux.intel.com>
-Subject: [PATCH v2 0/3] serial: lantiq: Update driver to support new SoC
-Date: Thu,  8 Aug 2019 18:02:05 +0800
-Message-ID: <cover.1565257887.git.rahul.tanwar@linux.intel.com>
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v2 1/3] serial: lantiq: Use proper DT compatible string
+Date: Thu, 8 Aug 2019 14:20:56 +0300
+Message-ID: <20190808112056.GK30120@smile.fi.intel.com>
+References: <cover.1565257887.git.rahul.tanwar@linux.intel.com>
+ <57e2b69e9fbd93328a477b4c7dd2dcc78784ecb1.1565257887.git.rahul.tanwar@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <57e2b69e9fbd93328a477b4c7dd2dcc78784ecb1.1565257887.git.rahul.tanwar@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
-Cc: linux-kernel@vger.kernel.org, jslaby@suse.com, andriy.shevchenko@intel.com, qi-ming.wu@intel.com, cheol.yong.kim@intel.com, rahul.tanwar@intel.com, Rahul Tanwar <rahul.tanwar@linux.intel.com>
+To: Rahul Tanwar <rahul.tanwar@linux.intel.com>
+Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, jslaby@suse.com, qi-ming.wu@intel.com, cheol.yong.kim@intel.com, rahul.tanwar@intel.com
 List-Id: linux-serial@vger.kernel.org
 
-There is a new Intel Atom based Lightning Mountain(LGM) network processor SoC
-which reuses Lantiq ASC serial controller IP. This patch series updates the
-driver design and code to add support for LGM SoC as well.
+On Thu, Aug 08, 2019 at 06:02:06PM +0800, Rahul Tanwar wrote:
+> Use explicit string instead of a macro for devicetree compatible string.
+> 
+> This series of patches is to add support for multiple SoCs which reuse the same
+> serial controller IP. The following patches will add another compatible string
+> to support new Lightning Mountain(LGM) SoC. So it makes sense to have the
+> compatible strings explicitly mentioned instead of a fixed macro.
+> 
 
-These patches are baselined upon Linux 5.3-rc2 at below Git tree:
-git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-Patch 1 modifies devicetree compatible string to a use explicit string instead
-of a fixed macro because this patch series adds support for multiple SoCs.
-
-Patch 2 modifies driver design to support dynamic assignment of IRQ resources
-& ISRs based on devicetree node compatible entries. This is because new LGM SoC
-supports single IRQ for all tx/rx/err interrupts while older SoCs support three
-separate IRQs for tx/rx/err interrupts.
-
-Patch 3 adds LGM SoC specific IRQ/ISR support.
-
-v2:
-* Address review concerns.
-* Separate dt binding document from this patch series. Will try to push it
-  separately by first converting existing txt file to YAML and then add new
-  properties.
-* Omit resending one patch in this series which is already reviewed & added
-  to tty-next.
-
-
-Rahul Tanwar (3):
-  serial: lantiq: Use proper DT compatible string
-  serial: lantiq: Make IRQ & ISR assignment dynamic
-  serial: lantiq: Add support for Lightning Mountain SoC
-
- drivers/tty/serial/lantiq.c | 214 ++++++++++++++++++++++++++++++++++----------
- 1 file changed, 168 insertions(+), 46 deletions(-)
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Signed-off-by: Rahul Tanwar <rahul.tanwar@linux.intel.com>
+> ---
+>  drivers/tty/serial/lantiq.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
+> index 42e27b48e9cc..660d21db57dc 100644
+> --- a/drivers/tty/serial/lantiq.c
+> +++ b/drivers/tty/serial/lantiq.c
+> @@ -693,7 +693,7 @@ lqasc_serial_early_console_setup(struct earlycon_device *device,
+>  	device->con->write = lqasc_serial_early_console_write;
+>  	return 0;
+>  }
+> -OF_EARLYCON_DECLARE(lantiq, DRVNAME, lqasc_serial_early_console_setup);
+> +OF_EARLYCON_DECLARE(lantiq, "lantiq,asc", lqasc_serial_early_console_setup);
+>  
+>  static struct uart_driver lqasc_reg = {
+>  	.owner =	THIS_MODULE,
+> @@ -792,7 +792,7 @@ lqasc_probe(struct platform_device *pdev)
+>  }
+>  
+>  static const struct of_device_id ltq_asc_match[] = {
+> -	{ .compatible = DRVNAME },
+> +	{ .compatible = "lantiq,asc" },
+>  	{},
+>  };
+>  
+> -- 
+> 2.11.0
+> 
 
 -- 
-2.11.0
+With Best Regards,
+Andy Shevchenko
