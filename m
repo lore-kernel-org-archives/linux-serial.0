@@ -1,155 +1,43 @@
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v2 3/3] serial: lantiq: Add support for Lightning
- Mountain SoC
-Date: Thu, 8 Aug 2019 14:26:48 +0300
-Message-ID: <20190808112648.GM30120@smile.fi.intel.com>
-References: <cover.1565257887.git.rahul.tanwar@linux.intel.com>
- <0df20f6e4bbf9de09c85a5c92c92e642f62f441f.1565257887.git.rahul.tanwar@linux.intel.com>
+From: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+Subject: Re: [PATCH 5/6] tty: serial: Add linflexuart driver for S32V234
+Date: Thu, 8 Aug 2019 12:47:00 +0000
+Message-ID: <VI1PR0402MB28635661A4A294EC6F01095EDFD70@VI1PR0402MB2863.eurprd04.prod.outlook.com>
+References: <20190802194702.30249-1-stefan-gabriel.mirea@nxp.com>
+ <20190802194702.30249-6-stefan-gabriel.mirea@nxp.com>
+ <20190808080832.nleult5bknmzr3ze@willie-the-truck>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <0df20f6e4bbf9de09c85a5c92c92e642f62f441f.1565257887.git.rahul.tanwar@linux.intel.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rahul Tanwar <rahul.tanwar@linux.intel.com>
-Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, jslaby@suse.com, qi-ming.wu@intel.com, cheol.yong.kim@intel.com, rahul.tanwar@intel.com
+To: Will Deacon <will@kernel.org>
+Cc: "corbet@lwn.net" <corbet@lwn.net>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>, "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Cosmin Stefan Stoica <cosmin.stoica@nxp.com>, Larisa Ileana Grigore <larisa.grigore@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Aug 08, 2019 at 06:02:08PM +0800, Rahul Tanwar wrote:
-> This patch adds IRQ & ISR support in the driver for Lightning Mountain SoC.
-> 
-
-I dunno if DT binding should go first, otherwise, FWIW,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-
-> Signed-off-by: Rahul Tanwar <rahul.tanwar@linux.intel.com>
-> ---
->  drivers/tty/serial/lantiq.c | 71 +++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 71 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
-> index b129531dfb9a..fcbea43dc334 100644
-> --- a/drivers/tty/serial/lantiq.c
-> +++ b/drivers/tty/serial/lantiq.c
-> @@ -57,6 +57,7 @@
->  #define ASC_IRNCR_TIR		0x1
->  #define ASC_IRNCR_RIR		0x2
->  #define ASC_IRNCR_EIR		0x4
-> +#define ASC_IRNCR_MASK		GENMASK(2, 0)
->  
->  #define ASCOPT_CSIZE		0x3
->  #define TXFIFO_FL		1
-> @@ -115,6 +116,7 @@ struct ltq_uart_port {
->  	unsigned int		tx_irq;
->  	unsigned int		rx_irq;
->  	unsigned int		err_irq;
-> +	unsigned int		common_irq;
->  	spinlock_t		lock; /* exclusive access for multi core */
->  
->  	const struct ltq_soc_data	*soc;
-> @@ -293,6 +295,31 @@ lqasc_rx_int(int irq, void *_port)
->  	return IRQ_HANDLED;
->  }
->  
-> +static irqreturn_t lqasc_irq(int irq, void *p)
-> +{
-> +	unsigned long flags;
-> +	u32 stat;
-> +	struct uart_port *port = p;
-> +	struct ltq_uart_port *ltq_port = to_ltq_uart_port(port);
-> +
-> +	spin_lock_irqsave(&ltq_port->lock, flags);
-> +	stat = readl(port->membase + LTQ_ASC_IRNCR);
-> +	spin_unlock_irqrestore(&ltq_port->lock, flags);
-> +	if (!(stat & ASC_IRNCR_MASK))
-> +		return IRQ_NONE;
-> +
-> +	if (stat & ASC_IRNCR_TIR)
-> +		lqasc_tx_int(irq, p);
-> +
-> +	if (stat & ASC_IRNCR_RIR)
-> +		lqasc_rx_int(irq, p);
-> +
-> +	if (stat & ASC_IRNCR_EIR)
-> +		lqasc_err_int(irq, p);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
->  static unsigned int
->  lqasc_tx_empty(struct uart_port *port)
->  {
-> @@ -677,6 +704,7 @@ lqasc_serial_early_console_setup(struct earlycon_device *device,
->  	return 0;
->  }
->  OF_EARLYCON_DECLARE(lantiq, "lantiq,asc", lqasc_serial_early_console_setup);
-> +OF_EARLYCON_DECLARE(lantiq, "intel,lgm-asc", lqasc_serial_early_console_setup);
->  
->  static struct uart_driver lqasc_reg = {
->  	.owner =	THIS_MODULE,
-> @@ -751,6 +779,42 @@ static void free_irq_lantiq(struct uart_port *port)
->  	free_irq(ltq_port->err_irq, port);
->  }
->  
-> +static int fetch_irq_intel(struct device *dev, struct ltq_uart_port *ltq_port)
-> +{
-> +	struct uart_port *port = &ltq_port->port;
-> +	int ret;
-> +
-> +	ret = of_irq_get(dev->of_node, 0);
-> +	if (ret < 0) {
-> +		dev_err(dev, "failed to fetch IRQ for serial port\n");
-> +		return ret;
-> +	}
-> +	ltq_port->common_irq = ret;
-> +	port->irq = ret;
-> +
-> +	return 0;
-> +}
-> +
-> +static int request_irq_intel(struct uart_port *port)
-> +{
-> +	struct ltq_uart_port *ltq_port = to_ltq_uart_port(port);
-> +	int retval;
-> +
-> +	retval = request_irq(ltq_port->common_irq, lqasc_irq, 0,
-> +			     "asc_irq", port);
-> +	if (retval)
-> +		dev_err(port->dev, "failed to request asc_irq\n");
-> +
-> +	return retval;
-> +}
-> +
-> +static void free_irq_intel(struct uart_port *port)
-> +{
-> +	struct ltq_uart_port *ltq_port = to_ltq_uart_port(port);
-> +
-> +	free_irq(ltq_port->common_irq, port);
-> +}
-> +
->  static int __init
->  lqasc_probe(struct platform_device *pdev)
->  {
-> @@ -842,8 +906,15 @@ static const struct ltq_soc_data soc_data_lantiq = {
->  	.free_irq = free_irq_lantiq,
->  };
->  
-> +static const struct ltq_soc_data soc_data_intel = {
-> +	.fetch_irq = fetch_irq_intel,
-> +	.request_irq = request_irq_intel,
-> +	.free_irq = free_irq_intel,
-> +};
-> +
->  static const struct of_device_id ltq_asc_match[] = {
->  	{ .compatible = "lantiq,asc", .data = &soc_data_lantiq },
-> +	{ .compatible = "intel,lgm-asc", .data = &soc_data_intel },
->  	{},
->  };
->  
-> -- 
-> 2.11.0
-> 
-
--- 
-With Best Regards,
-Andy Shevchenko
+Hello Will,=0A=
+=0A=
+On 8/8/2019 11:08 AM, Will Deacon wrote:=0A=
+> On Fri, Aug 02, 2019 at 07:47:23PM +0000, Stefan-gabriel Mirea wrote:=0A=
+>> +             linflex,<addr>=0A=
+>> +                     Use early console provided by Freescale LinFlex UA=
+RT=0A=
+>> +                     serial driver for NXP S32V234 SoCs. A valid base=
+=0A=
+>> +                     address must be provided, and the serial port must=
+=0A=
+>> +                     already be setup and configured.=0A=
+> =0A=
+> Why isn't earlycon=3D sufficient for this?=0A=
+=0A=
+"earlycon=3D" is not actually supported. I will fix this in the next=0A=
+version by adding a /chosen/stdout-path to the dts. The compatible=0A=
+string provided to OF_EARLYCON_DECLARE will also be changed from=0A=
+"fsl,s32v234-linflexuart" to "fsl,s32-linflexuart" to match the one in=0A=
+the device tree nodes. I missed this after importing a rename from our=0A=
+codebase.=0A=
+=0A=
+Should I remove this addition from kernel-parameters.txt after that?=0A=
+=0A=
+Regards,=0A=
+Stefan=0A=
