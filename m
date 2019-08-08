@@ -1,81 +1,94 @@
-From: Will Deacon <will@kernel.org>
-Subject: Re: [PATCH 5/6] tty: serial: Add linflexuart driver for S32V234
-Date: Thu, 8 Aug 2019 09:08:33 +0100
-Message-ID: <20190808080832.nleult5bknmzr3ze@willie-the-truck>
-References: <20190802194702.30249-1-stefan-gabriel.mirea@nxp.com>
- <20190802194702.30249-6-stefan-gabriel.mirea@nxp.com>
+From: Neil Armstrong <narmstrong@baylibre.com>
+Subject: [PATCH 0/9] dt-bindings: first tentative of conversion to yaml format
+Date: Thu,  8 Aug 2019 10:51:30 +0200
+Message-ID: <20190808085139.21438-1-narmstrong@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190802194702.30249-6-stefan-gabriel.mirea@nxp.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-Cc: "corbet@lwn.net" <corbet@lwn.net>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>, "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Cosmin Stefan Stoica <cosmin.stoica@nxp.com>, Larisa Ileana Grigore <larisa.grigore@nxp.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: robh+dt@kernel.org
+Cc: p.zabel@pengutronix.de, devicetree@vger.kernel.org, linux-watchdog@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>, jassisinghbrar@gmail.com, linux-spi@vger.kernel.org, linux-crypto@vger.kernel.org, linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org, kishon@ti.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Aug 02, 2019 at 07:47:23PM +0000, Stefan-gabriel Mirea wrote:
-> Introduce support for LINFlex driver, based on:
-> - the version of Freescale LPUART driver after commit b3e3bf2ef2c7 ("Merge
->   4.0-rc7 into tty-next");
-> - commit abf1e0a98083 ("tty: serial: fsl_lpuart: lock port on console
->   write").
-> In this basic version, the driver can be tested using initramfs and relies
-> on the clocks and pin muxing set up by U-Boot.
-> 
-> Remarks concerning the earlycon support:
-> 
-> - LinFlexD does not allow character transmissions in the INIT mode (see
->   section 47.4.2.1 in the reference manual[1]). Therefore, a mutual
->   exclusion between the first linflex_setup_watermark/linflex_set_termios
->   executions and linflex_earlycon_putchar was employed and the characters
->   normally sent to earlycon during initialization are kept in a buffer and
->   sent afterwards.
-> 
-> - Empirically, character transmission is also forbidden within the last 1-2
->   ms before entering the INIT mode, so we use an explicit timeout
->   (PREINIT_DELAY) between linflex_earlycon_putchar and the first call to
->   linflex_setup_watermark.
-> 
-> - U-Boot currently uses the UART FIFO mode, while this driver makes the
->   transition to the buffer mode. Therefore, the earlycon putchar function
->   matches the U-Boot behavior before initializations and the Linux behavior
->   after.
-> 
-> [1] https://www.nxp.com/webapp/Download?colCode=S32V234RM
-> 
-> Signed-off-by: Stoica Cosmin-Stefan <cosmin.stoica@nxp.com>
-> Signed-off-by: Adrian.Nitu <adrian.nitu@freescale.com>
-> Signed-off-by: Larisa Grigore <Larisa.Grigore@nxp.com>
-> Signed-off-by: Ana Nedelcu <B56683@freescale.com>
-> Signed-off-by: Mihaela Martinas <Mihaela.Martinas@freescale.com>
-> Signed-off-by: Matthew Nunez <matthew.nunez@nxp.com>
-> [stefan-gabriel.mirea@nxp.com: Reduced for upstreaming and implemented
->                                earlycon support]
-> Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-> ---
->  .../admin-guide/kernel-parameters.txt         |   6 +
->  drivers/tty/serial/Kconfig                    |  15 +
->  drivers/tty/serial/Makefile                   |   1 +
->  drivers/tty/serial/fsl_linflexuart.c          | 956 ++++++++++++++++++
->  include/uapi/linux/serial_core.h              |   3 +
->  5 files changed, 981 insertions(+)
->  create mode 100644 drivers/tty/serial/fsl_linflexuart.c
-> 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index 46b826fcb5ad..4d545732aadc 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -1090,6 +1090,12 @@
->  			the framebuffer, pass the 'ram' option so that it is
->  			mapped with the correct attributes.
->  
-> +		linflex,<addr>
-> +			Use early console provided by Freescale LinFlex UART
-> +			serial driver for NXP S32V234 SoCs. A valid base
-> +			address must be provided, and the serial port must
-> +			already be setup and configured.
+This is a first tentative to convert some of the simplest Amlogic
+dt-bindings to the yaml format.
 
-Why isn't earlycon= sufficient for this?
+All have been tested using :
+$ make ARCH=arm64 dtbs_check
 
-Will
+Issues with the amlogic arm64 DTs has already been identified thanks
+to the validation scripts. The DT fixes will be pushed once these yaml
+bindings are acked.
+
+Changes since rfc v2:
+- Collected Rob's, Martin's, Philipp's and Guenter's tags
+- Removed mhu maxItems: 3 to leave only minItems
+- Fixed flash@0 in spifc example
+
+Changes since rfc v1:
+- Fixed bindings according to Rob's comments
+- Added commit log
+- renamed yaml files using amlogic prefix
+
+Neil Armstrong (9):
+  dt-bindings: mailbox: meson-mhu: convert to yaml
+  dt-bindings: rng: amlogic,meson-rng: convert to yaml
+  dt-bindings: spi: meson: convert to yaml
+  dt-bindings: reset: amlogic,meson-reset: convert to yaml
+  dt-bindings: arm: amlogic: amlogic,meson-gx-ao-secure: convert to yaml
+  dt-bindings: phy: meson-g12a-usb2-phy: convert to yaml
+  dt-bindings: phy: meson-g12a-usb3-pcie-phy: convert to yaml
+  dt-bindings: serial: meson-uart: convert to yaml
+  dt-bindings: watchdog: meson-gxbb-wdt: convert to yaml
+
+ .../amlogic/amlogic,meson-gx-ao-secure.txt    | 28 -------
+ .../amlogic/amlogic,meson-gx-ao-secure.yaml   | 52 +++++++++++++
+ .../mailbox/amlogic,meson-gxbb-mhu.yaml       | 52 +++++++++++++
+ .../devicetree/bindings/mailbox/meson-mhu.txt | 34 ---------
+ .../phy/amlogic,meson-g12a-usb2-phy.yaml      | 63 ++++++++++++++++
+ .../phy/amlogic,meson-g12a-usb3-pcie-phy.yaml | 57 +++++++++++++++
+ .../bindings/phy/meson-g12a-usb2-phy.txt      | 22 ------
+ .../bindings/phy/meson-g12a-usb3-pcie-phy.txt | 22 ------
+ .../bindings/reset/amlogic,meson-reset.txt    | 19 -----
+ .../bindings/reset/amlogic,meson-reset.yaml   | 37 ++++++++++
+ .../bindings/rng/amlogic,meson-rng.txt        | 21 ------
+ .../bindings/rng/amlogic,meson-rng.yaml       | 37 ++++++++++
+ .../bindings/serial/amlogic,meson-uart.txt    | 38 ----------
+ .../bindings/serial/amlogic,meson-uart.yaml   | 73 +++++++++++++++++++
+ .../bindings/spi/amlogic,meson-gx-spicc.yaml  | 67 +++++++++++++++++
+ .../bindings/spi/amlogic,meson6-spifc.yaml    | 53 ++++++++++++++
+ .../devicetree/bindings/spi/spi-meson.txt     | 55 --------------
+ .../watchdog/amlogic,meson-gxbb-wdt.yaml      | 37 ++++++++++
+ .../bindings/watchdog/meson-gxbb-wdt.txt      | 16 ----
+ 19 files changed, 528 insertions(+), 255 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/arm/amlogic/amlogic,meson-gx-ao-secure.txt
+ create mode 100644 Documentation/devicetree/bindings/arm/amlogic/amlogic,meson-gx-ao-secure.yaml
+ create mode 100644 Documentation/devicetree/bindings/mailbox/amlogic,meson-gxbb-mhu.yaml
+ delete mode 100644 Documentation/devicetree/bindings/mailbox/meson-mhu.txt
+ create mode 100644 Documentation/devicetree/bindings/phy/amlogic,meson-g12a-usb2-phy.yaml
+ create mode 100644 Documentation/devicetree/bindings/phy/amlogic,meson-g12a-usb3-pcie-phy.yaml
+ delete mode 100644 Documentation/devicetree/bindings/phy/meson-g12a-usb2-phy.txt
+ delete mode 100644 Documentation/devicetree/bindings/phy/meson-g12a-usb3-pcie-phy.txt
+ delete mode 100644 Documentation/devicetree/bindings/reset/amlogic,meson-reset.txt
+ create mode 100644 Documentation/devicetree/bindings/reset/amlogic,meson-reset.yaml
+ delete mode 100644 Documentation/devicetree/bindings/rng/amlogic,meson-rng.txt
+ create mode 100644 Documentation/devicetree/bindings/rng/amlogic,meson-rng.yaml
+ delete mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+ create mode 100644 Documentation/devicetree/bindings/spi/amlogic,meson-gx-spicc.yaml
+ create mode 100644 Documentation/devicetree/bindings/spi/amlogic,meson6-spifc.yaml
+ delete mode 100644 Documentation/devicetree/bindings/spi/spi-meson.txt
+ create mode 100644 Documentation/devicetree/bindings/watchdog/amlogic,meson-gxbb-wdt.yaml
+ delete mode 100644 Documentation/devicetree/bindings/watchdog/meson-gxbb-wdt.txt
+
+-- 
+2.22.0
