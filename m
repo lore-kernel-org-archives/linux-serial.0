@@ -1,79 +1,66 @@
-From: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [PATCH v3 5/7] mfd: ioc3: Add driver for SGI IOC3 chip
-Date: Fri, 9 Aug 2019 14:22:54 +0200
-Message-ID: <20190809122254.GN3600@piout.net>
-References: <20190613170636.6647-1-tbogendoerfer@suse.de>
- <20190613170636.6647-6-tbogendoerfer@suse.de>
- <20190725114716.GB23883@dell>
- <20190729204557.468db2153efefda96dd41ec0@suse.de>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 05/14] gpio: lpc32xx: allow building on non-lpc32xx targets
+Date: Fri, 9 Aug 2019 16:18:43 +0200
+Message-ID: <CAK8P3a1NT_yoP39y52oJTMsFCb96-bRyuMm=+5HPPsxyq0fJDA@mail.gmail.com>
+References: <20190731195713.3150463-1-arnd@arndb.de> <20190731195713.3150463-6-arnd@arndb.de>
+ <CAMpxmJWFfT_vrDas2fzW5tnxskk9kmgHQpGnGQ-_C20UaS_jhA@mail.gmail.com>
+ <CAK8P3a3KpKvRKXY72toE_5eAp4ER_Mre0GX3guwGeQgsY2HX+g@mail.gmail.com> <CAMpxmJUdSnp0QNwWB0rJ1opFrYs9R2KSVS64Tz8X5GDYAJYLpg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <netdev-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190729204557.468db2153efefda96dd41ec0@suse.de>
-Sender: netdev-owner@vger.kernel.org
-To: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Cc: Lee Jones <lee.jones@linaro.org>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, linux-input@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAMpxmJUdSnp0QNwWB0rJ1opFrYs9R2KSVS64Tz8X5GDYAJYLpg@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Cc: soc@kernel.org, arm-soc <linux-arm-kernel@lists.infradead.org>, Vladimir Zapolskiy <vz@mleia.com>, Sylvain Lemieux <slemieux.tyco@gmail.com>, Russell King <linux@armlinux.org.uk>, Gregory Clement <gregory.clement@bootlin.com>, Linus Walleij <linus.walleij@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, "David S. Miller" <davem@davemloft.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, Guenter Roeck <linux@roeck-us.net>, linux-gpio <linux-gpio@vger.kernel.org>, netdev <netdev@vger.kernel.org>, linux-serial@vger.kernel.org, USB list <linux-usb@vger.kernel.org>, LINUXWATCHDOG <linux-watchdog@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 29/07/2019 20:45:57+0200, Thomas Bogendoerfer wrote:
-> On Thu, 25 Jul 2019 12:47:16 +0100
-> Lee Jones <lee.jones@linaro.org> wrote:
-> 
-> > On Thu, 13 Jun 2019, Thomas Bogendoerfer wrote:
-> > > +/*
-> > > + * On IP30 the RTC (a DS1687) is behind the IOC3 on the generic
-> > > + * ByteBus regions. We have to write the RTC address of interest to
-> > > + * IOC3_BYTEBUS_DEV1, then read the data from IOC3_BYTEBUS_DEV2.
-> > > + * rtc->regs already points to IOC3_BYTEBUS_DEV1.
-> > > + */
-> > > +#define IP30_RTC_ADDR(rtc) (rtc->regs)
-> > > +#define IP30_RTC_DATA(rtc) ((rtc->regs) + IOC3_BYTEBUS_DEV2 - IOC3_BYTEBUS_DEV1)
-> > > +
-> > > +static u8 ip30_rtc_read(struct ds1685_priv *rtc, int reg)
-> > > +{
-> > > +	writeb((reg & 0x7f), IP30_RTC_ADDR(rtc));
-> > > +	return readb(IP30_RTC_DATA(rtc));
-> > > +}
-> > > +
-> > > +static void ip30_rtc_write(struct ds1685_priv *rtc, int reg, u8 value)
-> > > +{
-> > > +	writeb((reg & 0x7f), IP30_RTC_ADDR(rtc));
-> > > +	writeb(value, IP30_RTC_DATA(rtc));
-> > > +}
-> > 
-> > Why is this not in the RTC driver?
-> 
-> because rtc1685 is used in different systems and accessing the chip
-> differs between those systems. 
-> 
-> > > +static struct ds1685_rtc_platform_data ip30_rtc_platform_data = {
-> > > +	.bcd_mode = false,
-> > > +	.no_irq = false,
-> > > +	.uie_unsupported = true,
-> > > +	.alloc_io_resources = true,
-> > 
-> > > +	.plat_read = ip30_rtc_read,
-> > > +	.plat_write = ip30_rtc_write,
-> > 
-> > Call-backs in a non-subsystem API is pretty ugly IMHO.
-> 
-> I agree
-> 
-> > Where are these called from?
-> 
-> drivers/rtc/rtc-ds1685.c
-> 
-> I could do the same as done for serial8250 and add an additional .c file
-> in  drivers/rtc which handles this for SGI-IP30. Alexandre would this work
-> for you as well ?
-> 
+On Mon, Aug 5, 2019 at 10:28 AM Bartosz Golaszewski
+<bgolaszewski@baylibre.com> wrote:
+>
+> pt., 2 sie 2019 o 13:20 Arnd Bergmann <arnd@arndb.de> napisał(a):
+> >
+> > On Fri, Aug 2, 2019 at 9:10 AM Bartosz Golaszewski
+> > <bgolaszewski@baylibre.com> wrote:
+> > > > -#include <mach/hardware.h>
+> > > > -#include <mach/platform.h>
+> > > > +#define _GPREG(x)                              (x)
+> > >
+> > > What purpose does this macro serve?
+> > >
+> > > >
+> > > >  #define LPC32XX_GPIO_P3_INP_STATE              _GPREG(0x000)
+> > > >  #define LPC32XX_GPIO_P3_OUTP_SET               _GPREG(0x004)
+> >
+> > In the existing code base, this macro converts a register offset to
+> > an __iomem pointer for a gpio register. I changed the definition of the
+> > macro here to keep the number of changes down, but I it's just
+> > as easy to remove it if you prefer.
+>
+> Could you just add a comment so that it's clear at first glance?
 
-As it is not particularly big, you could put that directly in
-rtc-ds1685.c.
+I ended up removing the macro. With the change to keep the reg_base as
+a struct member, this ends up being a relatively small change, and it's
+more straightforward that way.
 
+> > > > @@ -167,14 +166,26 @@ struct lpc32xx_gpio_chip {
+> > > >         struct gpio_regs        *gpio_grp;
+> > > >  };
+> > > >
+> > > > +void __iomem *gpio_reg_base;
+> > >
+> > > Any reason why this can't be made part of struct lpc32xx_gpio_chip?
+> >
+> > It could be, but it's the same for each instance, and not known until
+> > probe() time, so the same pointer would need to be copied into each
+> > instance that is otherwise read-only.
+> >
+> > Let me know if you'd prefer me to rework these two things or leave
+> > them as they are.
+>
+> I would prefer not to have global state in the driver, let's just
+> store the pointer in the data passed to gpiochip_add_data().
 
--- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Ok, done.
+
+       Arnd
