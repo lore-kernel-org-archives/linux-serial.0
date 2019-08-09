@@ -1,79 +1,64 @@
-From: =?big5?B?RGViYmllIExpdSC8QrJRtdg=?= <debbie_liu@sunix.com>
-Subject: RE: [PATCH 2/2] parport: parport_serial: Add support for Sunix Multi
- I/O boards
-Date: Fri, 9 Aug 2019 09:18:45 +0000
-Message-ID: <HK0PR03MB337716592BB6E476F01417E5EED60@HK0PR03MB3377.apcprd03.prod.outlook.com>
-References: <20190808184004.20162-1-kai.heng.feng@canonical.com>
- <20190808184004.20162-2-kai.heng.feng@canonical.com>
+From: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+Subject: Re: [PATCH 5/6] tty: serial: Add linflexuart driver for S32V234
+Date: Fri, 9 Aug 2019 09:45:40 +0000
+Message-ID: <VI1PR0402MB2863B3E3E2F93CBA8ADB96E5DFD60@VI1PR0402MB2863.eurprd04.prod.outlook.com>
+References: <20190802194702.30249-1-stefan-gabriel.mirea@nxp.com>
+ <20190802194702.30249-6-stefan-gabriel.mirea@nxp.com>
+ <20190808080832.nleult5bknmzr3ze@willie-the-truck>
+ <VI1PR0402MB28635661A4A294EC6F01095EDFD70@VI1PR0402MB2863.eurprd04.prod.outlook.com>
+ <20190808171711.nk7ljqkugtketu4q@willie-the-truck>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="big5"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190808184004.20162-2-kai.heng.feng@canonical.com>
-Content-Language: zh-TW
-Sender: linux-kernel-owner@vger.kernel.org
-To: Kai-Heng Feng <kai.heng.feng@canonical.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "sudipm.mukherjee@gmail.com" <sudipm.mukherjee@gmail.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, =?big5?B?TW9ycmlzIEt1IKVqpOWrVA==?= <morris_ku@sunix.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Will Deacon <will@kernel.org>
+Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "corbet@lwn.net" <corbet@lwn.net>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Leo Li <leoyang.li@nxp.com>, Cosmin Stefan Stoica <cosmin.stoica@nxp.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Larisa Ileana Grigore <larisa.grigore@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
-VGVzdGVkLWJ5OiBEZWJiaWUgTGl1ICA8ZGViYmllX2xpdUBzdW5peC5jb20+DQoNCk5pY2UgZGF5
-LA0KRGViYmllIExpdSAvIFN1bml4IFdXIFNhbGVzIERlcHQuDQpUZWwgoUcrODg2LTItODkxMy0x
-OTg3oUBleHQuMjc2OSANCg0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogS2Fp
-LUhlbmcgRmVuZyA8a2FpLmhlbmcuZmVuZ0BjYW5vbmljYWwuY29tPiANClNlbnQ6IEZyaWRheSwg
-QXVndXN0IDA5LCAyMDE5IDI6NDAgQU0NClRvOiBncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZzsg
-c3VkaXBtLm11a2hlcmplZUBnbWFpbC5jb20NCkNjOiBsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwu
-b3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBLYWktSGVuZyBGZW5nIDxrYWkuaGVu
-Zy5mZW5nQGNhbm9uaWNhbC5jb20+OyBNb3JyaXMgS3UgpWqk5atUIDxtb3JyaXNfa3VAc3VuaXgu
-Y29tPjsgRGViYmllIExpdSC8QrJRtdggPGRlYmJpZV9saXVAc3VuaXguY29tPg0KU3ViamVjdDog
-W1BBVENIIDIvMl0gcGFycG9ydDogcGFycG9ydF9zZXJpYWw6IEFkZCBzdXBwb3J0IGZvciBTdW5p
-eCBNdWx0aSBJL08gYm9hcmRzDQoNClN1bml4IE11bHRpIEkvTyBib2FyZHMgYXJlIGRpZmZlcmVu
-dCB0byBUaW1lZGlhJ3MuDQoNClRoaXMgcGF0Y2ggYWRkcyBwcm9wZXIgc3VwcG9ydCBmb3IgU3Vu
-aXggTUlPIGJvYXJkcyB3aXRoIDEgcGFyYWxsZWwgYW5kIHVwIHRvIDQgc2VyaWFsIHBvcnRzLg0K
-DQpDYzogTW9ycmlzIEt1IDxtb3JyaXNfa3VAc3VuaXguY29tPg0KQ2M6IERlYmJpZSBMaXUgPGRl
-YmJpZV9saXVAc3VuaXguY29tPg0KU2lnbmVkLW9mZi1ieTogS2FpLUhlbmcgRmVuZyA8a2FpLmhl
-bmcuZmVuZ0BjYW5vbmljYWwuY29tPg0KLS0tDQogZHJpdmVycy9wYXJwb3J0L3BhcnBvcnRfc2Vy
-aWFsLmMgfCA0NCArKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLS0tLQ0KIDEgZmlsZSBjaGFu
-Z2VkLCAzMiBpbnNlcnRpb25zKCspLCAxMiBkZWxldGlvbnMoLSkNCg0KZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvcGFycG9ydC9wYXJwb3J0X3NlcmlhbC5jIGIvZHJpdmVycy9wYXJwb3J0L3BhcnBvcnRf
-c2VyaWFsLmMNCmluZGV4IDQ2MWZkOGEyNDI3OC4uNjBkNWQ5ODUxMTNjIDEwMDY0NA0KLS0tIGEv
-ZHJpdmVycy9wYXJwb3J0L3BhcnBvcnRfc2VyaWFsLmMNCisrKyBiL2RyaXZlcnMvcGFycG9ydC9w
-YXJwb3J0X3NlcmlhbC5jDQpAQCAtNjEsNyArNjEsMTAgQEAgZW51bSBwYXJwb3J0X3BjX3BjaV9j
-YXJkcyB7DQogCXdjaF9jaDM4Ml8wczFwLA0KIAl3Y2hfY2gzODJfMnMxcCwNCiAJYnJhaW5ib3hl
-c181czFwLA0KLQlzdW5peF8yczFwLA0KKwlzdW5peF80MDA4YSwNCisJc3VuaXhfNTA2OWEsDQor
-CXN1bml4XzUwNzlhLA0KKwlzdW5peF81MDk5YSwNCiB9Ow0KIA0KIC8qIGVhY2ggZWxlbWVudCBk
-aXJlY3RseSBpbmRleGVkIGZyb20gZW51bSBsaXN0LCBhYm92ZSAqLyBAQCAtMTUxLDcgKzE1NCwx
-MCBAQCBzdGF0aWMgc3RydWN0IHBhcnBvcnRfcGNfcGNpIGNhcmRzW10gPSB7DQogCS8qIHdjaF9j
-aDM4Ml8wczFwKi8JCXsgMSwgeyB7IDIsIC0xfSwgfSB9LA0KIAkvKiB3Y2hfY2gzODJfMnMxcCov
-ICAgICAgICAgICAgIHsgMSwgeyB7IDIsIC0xfSwgfSB9LA0KIAkvKiBicmFpbmJveGVzXzVzMXAg
-Ki8gICAgICAgICAgIHsgMSwgeyB7IDMsIC0xIH0sIH0gfSwNCi0JLyogc3VuaXhfMnMxcCAqLyAg
-ICAgICAgICAgICAgICB7IDEsIHsgeyAzLCAtMSB9LCB9IH0sDQorCS8qIHN1bml4XzQwMDhhICov
-CQl7IDEsIHsgeyAxLCAyIH0sIH0gfSwNCisJLyogc3VuaXhfNTA2OWEgKi8JCXsgMSwgeyB7IDEs
-IDIgfSwgfSB9LA0KKwkvKiBzdW5peF81MDc5YSAqLwkJeyAxLCB7IHsgMSwgMiB9LCB9IH0sDQor
-CS8qIHN1bml4XzUwOTlhICovCQl7IDEsIHsgeyAxLCAyIH0sIH0gfSwNCiB9Ow0KIA0KIHN0YXRp
-YyBzdHJ1Y3QgcGNpX2RldmljZV9pZCBwYXJwb3J0X3NlcmlhbF9wY2lfdGJsW10gPSB7IEBAIC0y
-NjEsMTMgKzI2NywxNSBAQCBzdGF0aWMgc3RydWN0IHBjaV9kZXZpY2VfaWQgcGFycG9ydF9zZXJp
-YWxfcGNpX3RibFtdID0gew0KIAl7IFBDSV9WRU5ET1JfSURfSU5UQVNISUVMRCwgMHg0MTAwLA0K
-IAkgIFBDSV9BTllfSUQsIFBDSV9BTllfSUQsIDAsIDAsIGJyYWluYm94ZXNfNXMxcCB9LA0KIA0K
-LQkvKg0KLQkgKiBNb3JlIFNVTklYIHZhcmlhdGlvbnMuIEF0IGxlYXN0IG9uZSBvZiB0aGVzZSBo
-YXMgcGFydCBudW1iZXINCi0JICogJzUwNzlBIGJ1dCBzdWJkZXZpY2UgMHgxMDIuIFRoYXQgYm9h
-cmQgcmVwb3J0cyAweDA3MDggYXMNCi0JICogaXRzIFBDSSBDbGFzcy4NCi0JICovDQorCS8qIFN1
-bml4IGJvYXJkcyAqLw0KIAl7IFBDSV9WRU5ET1JfSURfU1VOSVgsIFBDSV9ERVZJQ0VfSURfU1VO
-SVhfMTk5OSwgUENJX1ZFTkRPUl9JRF9TVU5JWCwNCi0JICAweDAxMDIsIDAsIDAsIHN1bml4XzJz
-MXAgfSwNCisJICAweDAxMDAsIDAsIDAsIHN1bml4XzQwMDhhIH0sDQorCXsgUENJX1ZFTkRPUl9J
-RF9TVU5JWCwgUENJX0RFVklDRV9JRF9TVU5JWF8xOTk5LCBQQ0lfVkVORE9SX0lEX1NVTklYLA0K
-KwkgIDB4MDEwMSwgMCwgMCwgc3VuaXhfNTA2OWEgfSwNCisJeyBQQ0lfVkVORE9SX0lEX1NVTklY
-LCBQQ0lfREVWSUNFX0lEX1NVTklYXzE5OTksIFBDSV9WRU5ET1JfSURfU1VOSVgsDQorCSAgMHgw
-MTAyLCAwLCAwLCBzdW5peF81MDc5YSB9LA0KKwl7IFBDSV9WRU5ET1JfSURfU1VOSVgsIFBDSV9E
-RVZJQ0VfSURfU1VOSVhfMTk5OSwgUENJX1ZFTkRPUl9JRF9TVU5JWCwNCisJICAweDAxMDQsIDAs
-IDAsIHN1bml4XzUwOTlhIH0sDQogDQogCXsgMCwgfSAvKiB0ZXJtaW5hdGUgbGlzdCAqLw0KIH07
-DQpAQCAtNTE2LDExICs1MjQsMjMgQEAgc3RhdGljIHN0cnVjdCBwY2lzZXJpYWxfYm9hcmQgcGNp
-X3BhcnBvcnRfc2VyaWFsX2JvYXJkc1tdID0gew0KIAkJLmJhc2VfYmF1ZAk9IDkyMTYwMCwNCiAJ
-CS51YXJ0X29mZnNldAk9IDgsDQogCX0sDQotCVtzdW5peF8yczFwXSA9IHsNCi0JCS5mbGFncwkJ
-PSBGTF9CQVNFMHxGTF9CQVNFX0JBUlMsDQorCVtzdW5peF80MDA4YV0gPSB7DQorCQkubnVtX3Bv
-cnRzCT0gMCwNCisJfSwNCisJW3N1bml4XzUwNjlhXSA9IHsNCisJCS5udW1fcG9ydHMJPSAxLA0K
-KwkJLmJhc2VfYmF1ZCAgICAgID0gOTIxNjAwLA0KKwkJLnVhcnRfb2Zmc2V0CT0gMHg4LA0KKwl9
-LA0KKwlbc3VuaXhfNTA3OWFdID0gew0KIAkJLm51bV9wb3J0cwk9IDIsDQotCQkuYmFzZV9iYXVk
-CT0gOTIxNjAwLA0KLQkJLnVhcnRfb2Zmc2V0CT0gOCwNCisJCS5iYXNlX2JhdWQgICAgICA9IDky
-MTYwMCwNCisJCS51YXJ0X29mZnNldAk9IDB4OCwNCisJfSwNCisJW3N1bml4XzUwOTlhXSA9IHsN
-CisJCS5udW1fcG9ydHMJPSA0LA0KKwkJLmJhc2VfYmF1ZCAgICAgID0gOTIxNjAwLA0KKwkJLnVh
-cnRfb2Zmc2V0CT0gMHg4LA0KIAl9LA0KIH07DQogDQotLQ0KMi4xNy4xDQoNCg==
+On 8/8/2019 8:17 PM, Will Deacon wrote:
+> On Thu, Aug 08, 2019 at 12:47:00PM +0000, Stefan-gabriel Mirea wrote:
+>> On 8/8/2019 11:08 AM, Will Deacon wrote:
+>>> On Fri, Aug 02, 2019 at 07:47:23PM +0000, Stefan-gabriel Mirea wrote:
+>>>> +             linflex,<addr>
+>>>> +                     Use early console provided by Freescale LinFlex UART
+>>>> +                     serial driver for NXP S32V234 SoCs. A valid base
+>>>> +                     address must be provided, and the serial port must
+>>>> +                     already be setup and configured.
+>>>
+>>> Why isn't earlycon= sufficient for this?
+>>
+>> "earlycon=" is not actually supported. I will fix this in the next
+>> version by adding a /chosen/stdout-path to the dts. The compatible
+>> string provided to OF_EARLYCON_DECLARE will also be changed from
+>> "fsl,s32v234-linflexuart" to "fsl,s32-linflexuart" to match the one in
+>> the device tree nodes. I missed this after importing a rename from our
+>> codebase.
+>>
+>> Should I remove this addition from kernel-parameters.txt after that?
+> 
+> Yes, if you can use earlycon instead, then you can drop your custom option
+> entirely and therefore there's no need to document it either.
+
+Can you please clarify what you mean by "drop your custom option"? The
+"linflex" option documented in the paragraph is the name of the
+earlycon_id declared via "OF_EARLYCON_DECLARE(linflex, ...)". We have
+not done anything particular to accept it in the parameter value.
+
+We do use earlycon (e.g. "earlycon=linflex,0x40053000"), we just do not
+support an empty value after "=", which needs to be fixed as I
+understand, because it does not respect the comment[1] about ARM64.
+
+Regards,
+Stefan
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/admin-guide/kernel-parameters.txt?h=v5.3-rc3#n980
