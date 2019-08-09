@@ -1,76 +1,48 @@
 From: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-Subject: [PATCH v2 0/6] Add initial support for S32V234-EVB
-Date: Fri, 9 Aug 2019 11:29:06 +0000
-Message-ID: <20190809112853.15846-1-stefan-gabriel.mirea@nxp.com>
+Subject: [PATCH v2 2/6] arm64: Introduce config for S32
+Date: Fri, 9 Aug 2019 11:29:10 +0000
+Message-ID: <20190809112853.15846-3-stefan-gabriel.mirea@nxp.com>
+References: <20190809112853.15846-1-stefan-gabriel.mirea@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190809112853.15846-1-stefan-gabriel.mirea@nxp.com>
 Content-Language: en-US
-Content-ID: <C9556161C6F6534893AD1C6086F98C1D@eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: "corbet@lwn.net" <corbet@lwn.net>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will@kernel.org" <will@kernel.org>, "shawnguo@kernel.org" <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>
-Cc: "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Cc: "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Cosmin Stefan Stoica <cosmin.stoica@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
-SGVsbG8sDQoNCk5YUCdzIFMzMlYyMzRbMV0gKCJUcmVlcnVubmVyIikgdmlzaW9uIG1pY3JvcHJv
-Y2Vzc29ycyBhcmUgdGFyZ2V0ZWQgZm9yDQpoaWdoLXBlcmZvcm1hbmNlLCBjb21wdXRhdGlvbmFs
-bHkgaW50ZW5zaXZlIHZpc2lvbiBhbmQgc2Vuc29yIGZ1c2lvbg0KYXBwbGljYXRpb25zIHRoYXQg
-cmVxdWlyZSBhdXRvbW90aXZlIHNhZmV0eSBsZXZlbHMuIFRoZXkgaW5jbHVkZSBsZWFkaW5nDQpl
-ZGdlIENhbWVyYSBWaXNpb24gbW9kdWxlcyBsaWtlIEFQRVgtMiwgSVNQIGFuZCBHUFUuIFRoZSBT
-MzJWMjM0LUVWQiBhbmQNClMzMlYyMzQtU0JDIGJvYXJkcyBhcmUgYXZhaWxhYmxlIGZvciBjdXN0
-b21lciBldmFsdWF0aW9uLg0KDQpUaGUgZm9sbG93aW5nIHBhdGNoIHNlcmllcyBpbnRyb2R1Y2Vz
-IG1pbmltYWwgZW5hYmxlbWVudCBzdXBwb3J0IGZvciB0aGUNCk5YUCBTMzJWMjM0LUVWQjJbMl0g
-Ym9hcmQsIHdoaWNoIGxldmVyYWdlcyBtb3N0IG9mIHRoZSBTb0MgY2FwYWJpbGl0aWVzLg0KVGhl
-IHNlcmllcyBpbmNsdWRlcyBhIGRyaXZlciBmb3Igb3BlcmF0aW5nIHRoZSBvbi1jaGlwIExJTkZs
-ZXhEIGNvbnRyb2xsZXINCmluIFVBUlQgbW9kZS4NCg0KSW4gdGhlIGZ1dHVyZSwgd2UgYWltIHRv
-IHN1Ym1pdCBtdWx0aXBsZSBkcml2ZXJzIHVwc3RyZWFtLCB3aGljaCBjYW4gYmUNCmZvdW5kIGlu
-IHRoZSBrZXJuZWwgb2Ygb3VyIEF1dG8gTGludXggQlNQWzNdICgiQUxCIiksIHN0YXJ0aW5nIHdp
-dGggYmFzaWMNCnBpbm11eGluZywgY2xvY2sgYW5kIHVTREhDIGRyaXZlcnMuDQoNCkZvciB2YWxp
-ZGF0aW9uLCB5b3UgY2FuIHVzZSB0aGUgVS1Cb290IGJvb3Rsb2FkZXIgaW4gdGhlIEFMQls0XSwg
-d2hpY2ggd2UNCmJ1aWxkIGFuZCB0ZXN0IHdpdGggb3VyIHBhdGNoZWQgdmVyc2lvbiBvZiB0aGUg
-TGluYXJvIEdDQyA2LjMuMSAyMDE3LjA1DQp0b29sY2hhaW4gZm9yIEFSTSA2NC1iaXQsIHdpdGgg
-c291cmNlcyBhdmFpbGFibGUgb24gWzVdLg0KDQpDaGFuZ2VzIGluIHYyOg0KKiBVcGRhdGUgdGhl
-IGVudHJ5IGluIGZzbC55YW1sIHRvIGFwcGx5IHRvIGFsbCBTMzJWMjM0IGJhc2VkIGJvYXJkczsN
-CiogQWRkIGNob3NlbiBub2RlIHRvIGR0cywgd2l0aCBhICdzdGRvdXQtcGF0aCcgcHJvcGVydHkg
-Zm9yIGVhcmx5Y29uOw0KKiBSZW1vdmUgbGluZmxleF92ZXJpZnlfcG9ydCgpLCBiZWNhdXNlIGl0
-IHdhcyBvbmx5IGNhbGxlZCBmcm9tDQogIHVhcnRfc2V0X2luZm8oKSwgd2hpY2ggd2FzIGdvaW5n
-IHRvIGFsd2F5cyBmYWlsIGF0IHRoZSAiYmF1ZF9iYXNlIDwgOTYwMCINCiAgY2hlY2ssIGFzIHdl
-IGFyZSBub3QgdXNpbmcgdWFydGNsayBmcm9tIHVhcnRfcG9ydCB5ZXQ7DQoqIEZpeCBjb21wYXRp
-YmxlIHN0cmluZyB1c2VkIGluIE9GX0VBUkxZQ09OX0RFQ0xBUkUuDQoNClsxXSBodHRwczovL3d3
-dy5ueHAuY29tL3Byb2R1Y3RzL3Byb2Nlc3NvcnMtYW5kLW1pY3JvY29udHJvbGxlcnMvYXJtLWJh
-c2VkLXByb2Nlc3NvcnMtYW5kLW1jdXMvczMyLWF1dG9tb3RpdmUtcGxhdGZvcm0vdmlzaW9uLXBy
-b2Nlc3Nvci1mb3ItZnJvbnQtYW5kLXN1cnJvdW5kLXZpZXctY2FtZXJhLW1hY2hpbmUtbGVhcm5p
-bmctYW5kLXNlbnNvci1mdXNpb246UzMyVjIzNA0KWzJdIGh0dHBzOi8vd3d3Lm54cC5jb20vc3Vw
-cG9ydC9kZXZlbG9wZXItcmVzb3VyY2VzL2V2YWx1YXRpb24tYW5kLWRldmVsb3BtZW50LWJvYXJk
-cy91bHRyYS1yZWxpYWJsZS1kZXYtcGxhdGZvcm1zL3MzMnYtbXB1cy1wbGF0Zm9ybXMvczMydi12
-aXNpb24tYW5kLXNlbnNvci1mdXNpb24tZXZhbHVhdGlvbi1zeXN0ZW06UzMyVjIzNEVWQg0KWzNd
-IGh0dHBzOi8vc291cmNlLmNvZGVhdXJvcmEub3JnL2V4dGVybmFsL2F1dG9ic3BzMzIvbGludXgv
-DQpbNF0gaHR0cHM6Ly9zb3VyY2UuY29kZWF1cm9yYS5vcmcvZXh0ZXJuYWwvYXV0b2JzcHMzMi91
-LWJvb3QvDQpbNV0gaHR0cHM6Ly9zb3VyY2UuY29kZWF1cm9yYS5vcmcvZXh0ZXJuYWwvczMyZHMv
-Y29tcGlsZXIvZ2NjLw0KDQpFZGR5IFBldHJpyJlvciAoMSk6DQogIGR0LWJpbmRpbmdzOiBhcm06
-IGZzbDogQWRkIHRoZSBTMzJWMjM0LUVWQiBib2FyZA0KDQpNaWhhZWxhIE1hcnRpbmFzICgyKToN
-CiAgYXJtNjQ6IEludHJvZHVjZSBjb25maWcgZm9yIFMzMg0KICBhcm02NDogZGVmY29uZmlnOiBF
-bmFibGUgY29uZmlncyBmb3IgUzMyVjIzNA0KDQpTdGVmYW4tR2FicmllbCBNaXJlYSAoMSk6DQog
-IHR0eTogc2VyaWFsOiBBZGQgbGluZmxleHVhcnQgZHJpdmVyIGZvciBTMzJWMjM0DQoNClN0b2lj
-YSBDb3NtaW4tU3RlZmFuICgyKToNCiAgYXJtNjQ6IGR0czogZnNsOiBBZGQgZGV2aWNlIHRyZWUg
-Zm9yIFMzMlYyMzQtRVZCDQogIGR0LWJpbmRpbmdzOiBzZXJpYWw6IERvY3VtZW50IEZyZWVzY2Fs
-ZSBMSU5GbGV4IFVBUlQNCg0KIC4uLi9hZG1pbi1ndWlkZS9rZXJuZWwtcGFyYW1ldGVycy50eHQg
-ICAgICAgICB8ICAgNiArDQogLi4uL2RldmljZXRyZWUvYmluZGluZ3MvYXJtL2ZzbC55YW1sICAg
-ICAgICAgIHwgICA2ICsNCiAuLi4vYmluZGluZ3Mvc2VyaWFsL2ZzbCxzMzItbGluZmxleHVhcnQu
-dHh0ICAgfCAgMjQgKw0KIGFyY2gvYXJtNjQvS2NvbmZpZy5wbGF0Zm9ybXMgICAgICAgICAgICAg
-ICAgICB8ICAgNSArDQogYXJjaC9hcm02NC9ib290L2R0cy9mcmVlc2NhbGUvTWFrZWZpbGUgICAg
-ICAgIHwgICAyICsNCiAuLi4vYm9vdC9kdHMvZnJlZXNjYWxlL2ZzbC1zMzJ2MjM0LWV2Yi5kdHMg
-ICAgfCAgMjQgKw0KIC4uLi9hcm02NC9ib290L2R0cy9mcmVlc2NhbGUvZnNsLXMzMnYyMzQuZHRz
-aSB8IDEzMCArKysNCiBhcmNoL2FybTY0L2NvbmZpZ3MvZGVmY29uZmlnICAgICAgICAgICAgICAg
-ICAgfCAgIDMgKw0KIGRyaXZlcnMvdHR5L3NlcmlhbC9LY29uZmlnICAgICAgICAgICAgICAgICAg
-ICB8ICAxNSArDQogZHJpdmVycy90dHkvc2VyaWFsL01ha2VmaWxlICAgICAgICAgICAgICAgICAg
-IHwgICAxICsNCiBkcml2ZXJzL3R0eS9zZXJpYWwvZnNsX2xpbmZsZXh1YXJ0LmMgICAgICAgICAg
-fCA5NDIgKysrKysrKysrKysrKysrKysrDQogaW5jbHVkZS91YXBpL2xpbnV4L3NlcmlhbF9jb3Jl
-LmggICAgICAgICAgICAgIHwgICAzICsNCiAxMiBmaWxlcyBjaGFuZ2VkLCAxMTYxIGluc2VydGlv
-bnMoKykNCiBjcmVhdGUgbW9kZSAxMDA2NDQgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRp
-bmdzL3NlcmlhbC9mc2wsczMyLWxpbmZsZXh1YXJ0LnR4dA0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBh
-cmNoL2FybTY0L2Jvb3QvZHRzL2ZyZWVzY2FsZS9mc2wtczMydjIzNC1ldmIuZHRzDQogY3JlYXRl
-IG1vZGUgMTAwNjQ0IGFyY2gvYXJtNjQvYm9vdC9kdHMvZnJlZXNjYWxlL2ZzbC1zMzJ2MjM0LmR0
-c2kNCiBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy90dHkvc2VyaWFsL2ZzbF9saW5mbGV4dWFy
-dC5jDQoNCi0tIA0KMi4yMi4wDQoNCg==
+From: Mihaela Martinas <Mihaela.Martinas@freescale.com>
+
+Add configuration option for the Freescale S32 platform family in
+Kconfig.platforms. For starters, the only SoC supported will be Treerunner
+(S32V234), with a single execution target: the S32V234-EVB (rev 29288)
+board.
+
+Signed-off-by: Mihaela Martinas <Mihaela.Martinas@freescale.com>
+Signed-off-by: Stoica Cosmin-Stefan <cosmin.stoica@nxp.com>
+Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+---
+ arch/arm64/Kconfig.platforms | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+index 4778c775de1b..a9a6152d37eb 100644
+--- a/arch/arm64/Kconfig.platforms
++++ b/arch/arm64/Kconfig.platforms
+@@ -210,6 +210,11 @@ config ARCH_ROCKCHIP
+ 	  This enables support for the ARMv8 based Rockchip chipsets,
+ 	  like the RK3368.
+=20
++config ARCH_S32
++	bool "Freescale S32 SoC Family"
++	help
++	  This enables support for the Freescale S32 family of processors.
++
+ config ARCH_SEATTLE
+ 	bool "AMD Seattle SoC Family"
+ 	help
+--=20
+2.22.0
