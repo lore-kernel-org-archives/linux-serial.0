@@ -1,34 +1,221 @@
 From: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-Subject: [PATCH v2 1/6] dt-bindings: arm: fsl: Add the S32V234-EVB board
-Date: Fri, 9 Aug 2019 11:29:08 +0000
-Message-ID: <20190809112853.15846-2-stefan-gabriel.mirea@nxp.com>
+Subject: [PATCH v2 3/6] arm64: dts: fsl: Add device tree for S32V234-EVB
+Date: Fri, 9 Aug 2019 11:29:12 +0000
+Message-ID: <20190809112853.15846-4-stefan-gabriel.mirea@nxp.com>
 References: <20190809112853.15846-1-stefan-gabriel.mirea@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190809112853.15846-1-stefan-gabriel.mirea@nxp.com>
 Content-Language: en-US
-Content-ID: <EFD5A50DFD96F44EA7EE9C248A236DF0@eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: "corbet@lwn.net" <corbet@lwn.net>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will@kernel.org" <will@kernel.org>, "shawnguo@kernel.org" <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>
-Cc: "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Eddy Petrisor <eddy.petrisor@nxp.com>
+Cc: "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Cosmin Stefan Stoica <cosmin.stoica@nxp.com>, Dan Nica <dan.nica@nxp.com>, Larisa Ileana Grigore <larisa.grigore@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
-RnJvbTogRWRkeSBQZXRyaciZb3IgPGVkZHkucGV0cmlzb3JAbnhwLmNvbT4NCg0KQWRkIGVudHJ5
-IGZvciB0aGUgTlhQIFMzMlYyMzQgQ3VzdG9tZXIgRXZhbHVhdGlvbiBCb2FyZCB0byB0aGUgYm9h
-cmQvU29DDQpiaW5kaW5ncy4NCg0KU2lnbmVkLW9mZi1ieTogRWRkeSBQZXRyaciZb3IgPGVkZHku
-cGV0cmlzb3JAbnhwLmNvbT4NClNpZ25lZC1vZmYtYnk6IFN0ZWZhbi1HYWJyaWVsIE1pcmVhIDxz
-dGVmYW4tZ2FicmllbC5taXJlYUBueHAuY29tPg0KLS0tDQogRG9jdW1lbnRhdGlvbi9kZXZpY2V0
-cmVlL2JpbmRpbmdzL2FybS9mc2wueWFtbCB8IDYgKysrKysrDQogMSBmaWxlIGNoYW5nZWQsIDYg
-aW5zZXJ0aW9ucygrKQ0KDQpkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2Jp
-bmRpbmdzL2FybS9mc2wueWFtbCBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9h
-cm0vZnNsLnlhbWwNCmluZGV4IDcyOTRhYzM2ZjRjMC4uNTk3YzU2M2JkZWM5IDEwMDY0NA0KLS0t
-IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2FybS9mc2wueWFtbA0KKysrIGIv
-RG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2FybS9mc2wueWFtbA0KQEAgLTMwOSw0
-ICszMDksMTAgQEAgcHJvcGVydGllczoNCiAgICAgICAgICAgICAgIC0gZnNsLGxzMjA4OGEtcmRi
-DQogICAgICAgICAgIC0gY29uc3Q6IGZzbCxsczIwODhhDQogDQorICAgICAgLSBkZXNjcmlwdGlv
-bjogUzMyVjIzNCBiYXNlZCBCb2FyZHMNCisgICAgICAgIGl0ZW1zOg0KKyAgICAgICAgICAtIGVu
-dW06DQorICAgICAgICAgICAgICAtIGZzbCxzMzJ2MjM0LWV2YiAgICAgICAgICAgIyBTMzJWMjM0
-LUVWQjIgQ3VzdG9tZXIgRXZhbHVhdGlvbiBCb2FyZA0KKyAgICAgICAgICAtIGNvbnN0OiBmc2ws
-czMydjIzNA0KKw0KIC4uLg0KLS0gDQoyLjIyLjANCg0K
+From: Stoica Cosmin-Stefan <cosmin.stoica@nxp.com>
+
+Add initial version of device tree for S32V234-EVB, including nodes for the
+4 Cortex-A53 cores, AIPS bus with UART modules, ARM architected timer and
+Generic Interrupt Controller (GIC).
+
+Keep SoC level separate from board level to let future boards with this SoC
+share common properties, while the dts files will keep board-dependent
+properties.
+
+Signed-off-by: Stoica Cosmin-Stefan <cosmin.stoica@nxp.com>
+Signed-off-by: Mihaela Martinas <Mihaela.Martinas@freescale.com>
+Signed-off-by: Dan Nica <dan.nica@nxp.com>
+Signed-off-by: Larisa Grigore <Larisa.Grigore@nxp.com>
+Signed-off-by: Phu Luu An <phu.luuan@nxp.com>
+Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+---
+ arch/arm64/boot/dts/freescale/Makefile        |   2 +
+ .../boot/dts/freescale/fsl-s32v234-evb.dts    |  24 ++++
+ .../arm64/boot/dts/freescale/fsl-s32v234.dtsi | 130 ++++++++++++++++++
+ 3 files changed, 156 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/freescale/fsl-s32v234-evb.dts
+ create mode 100644 arch/arm64/boot/dts/freescale/fsl-s32v234.dtsi
+
+diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/f=
+reescale/Makefile
+index c043aca66572..3af29b58a833 100644
+--- a/arch/arm64/boot/dts/freescale/Makefile
++++ b/arch/arm64/boot/dts/freescale/Makefile
+@@ -26,3 +26,5 @@ dtb-$(CONFIG_ARCH_MXC) +=3D imx8mq-librem5-devkit.dtb
+ dtb-$(CONFIG_ARCH_MXC) +=3D imx8mq-zii-ultra-rmb3.dtb
+ dtb-$(CONFIG_ARCH_MXC) +=3D imx8mq-zii-ultra-zest.dtb
+ dtb-$(CONFIG_ARCH_MXC) +=3D imx8qxp-mek.dtb
++
++dtb-$(CONFIG_ARCH_S32) +=3D fsl-s32v234-evb.dtb
+diff --git a/arch/arm64/boot/dts/freescale/fsl-s32v234-evb.dts b/arch/arm64=
+/boot/dts/freescale/fsl-s32v234-evb.dts
+new file mode 100644
+index 000000000000..92bf6c5563a3
+--- /dev/null
++++ b/arch/arm64/boot/dts/freescale/fsl-s32v234-evb.dts
+@@ -0,0 +1,24 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright 2015-2016 Freescale Semiconductor, Inc.
++ * Copyright 2016-2017 NXP
++ */
++
++/dts-v1/;
++#include "fsl-s32v234.dtsi"
++
++/ {
++	compatible =3D "fsl,s32v234-evb", "fsl,s32v234";
++
++	chosen {
++		stdout-path =3D "serial0:115200n8";
++	};
++};
++
++&uart0 {
++	status =3D "okay";
++};
++
++&uart1 {
++	status =3D "okay";
++};
+diff --git a/arch/arm64/boot/dts/freescale/fsl-s32v234.dtsi b/arch/arm64/bo=
+ot/dts/freescale/fsl-s32v234.dtsi
+new file mode 100644
+index 000000000000..6d686d3ba997
+--- /dev/null
++++ b/arch/arm64/boot/dts/freescale/fsl-s32v234.dtsi
+@@ -0,0 +1,130 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright 2015-2016 Freescale Semiconductor, Inc.
++ * Copyright 2016-2018 NXP
++ */
++
++/memreserve/ 0x80000000 0x00010000;
++
++/ {
++	model =3D "Freescale S32V234";
++	compatible =3D "fsl,s32v234";
++	interrupt-parent =3D <&gic>;
++	#address-cells =3D <2>;
++	#size-cells =3D <2>;
++
++	aliases {
++		serial0 =3D &uart0;
++		serial1 =3D &uart1;
++	};
++
++	cpus {
++		#address-cells =3D <2>;
++		#size-cells =3D <0>;
++
++		cpu0: cpu@0 {
++			device_type =3D "cpu";
++			compatible =3D "arm,cortex-a53";
++			reg =3D <0x0 0x0>;
++			enable-method =3D "spin-table";
++			cpu-release-addr =3D <0x0 0x80000000>;
++			next-level-cache =3D <&cluster0_l2_cache>;
++		};
++		cpu1: cpu@1 {
++			device_type =3D "cpu";
++			compatible =3D "arm,cortex-a53";
++			reg =3D <0x0 0x1>;
++			enable-method =3D "spin-table";
++			cpu-release-addr =3D <0x0 0x80000000>;
++			next-level-cache =3D <&cluster0_l2_cache>;
++		};
++		cpu2: cpu@100 {
++			device_type =3D "cpu";
++			compatible =3D "arm,cortex-a53";
++			reg =3D <0x0 0x100>;
++			enable-method =3D "spin-table";
++			cpu-release-addr =3D <0x0 0x80000000>;
++			next-level-cache =3D <&cluster1_l2_cache>;
++		};
++		cpu3: cpu@101 {
++			device_type =3D "cpu";
++			compatible =3D "arm,cortex-a53";
++			reg =3D <0x0 0x101>;
++			enable-method =3D "spin-table";
++			cpu-release-addr =3D <0x0 0x80000000>;
++			next-level-cache =3D <&cluster1_l2_cache>;
++		};
++
++		cluster0_l2_cache: l2-cache0 {
++			compatible =3D "cache";
++		};
++
++		cluster1_l2_cache: l2-cache1 {
++			compatible =3D "cache";
++		};
++	};
++
++	soc {
++		#address-cells =3D <2>;
++		#size-cells =3D <2>;
++		compatible =3D "simple-bus";
++		interrupt-parent =3D <&gic>;
++		ranges;
++
++		aips0: aips-bus@40000000 {
++			compatible =3D "simple-bus";
++			#address-cells =3D <2>;
++			#size-cells =3D <2>;
++			interrupt-parent =3D <&gic>;
++			reg =3D <0x0 0x40000000 0x0 0x7D000>;
++			ranges;
++
++			uart0: serial@40053000 {
++				compatible =3D "fsl,s32-linflexuart";
++				reg =3D <0x0 0x40053000 0x0 0x1000>;
++				interrupts =3D <0 59 1>;
++				status =3D "disabled";
++			};
++		};
++
++		aips1: aips-bus@40080000 {
++			compatible =3D "simple-bus";
++			#address-cells =3D <2>;
++			#size-cells =3D <2>;
++			interrupt-parent =3D <&gic>;
++			reg =3D <0x0 0x40080000 0x0 0x70000>;
++			ranges;
++
++			uart1: serial@400bc000 {
++				compatible =3D "fsl,s32-linflexuart";
++				reg =3D <0x0 0x400bc000 0x0 0x1000>;
++				interrupts =3D <0 60 1>;
++				status =3D "disabled";
++			};
++		};
++	};
++
++	timer {
++		compatible =3D "arm,armv8-timer";
++		interrupts =3D <1 13 0xf08>,
++			     <1 14 0xf08>,
++			     <1 11 0xf08>,
++			     <1 10 0xf08>;
++		/* clock-frequency might be modified by u-boot, depending on the
++		 * chip version.
++		 */
++		clock-frequency =3D <10000000>;
++	};
++
++	gic: interrupt-controller@7d001000 {
++		compatible =3D "arm,cortex-a15-gic", "arm,cortex-a9-gic";
++		#interrupt-cells =3D <3>;
++		#address-cells =3D <0>;
++		interrupt-controller;
++		reg =3D <0 0x7d001000 0 0x1000>,
++		      <0 0x7d002000 0 0x2000>,
++		      <0 0x7d004000 0 0x2000>,
++		      <0 0x7d006000 0 0x2000>;
++		interrupts =3D <1 9 0xf04>;
++	};
++};
+--=20
+2.22.0
