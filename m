@@ -1,27 +1,45 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 00/16] ARM: remove ks8695 and w90x900 platforms
-Date: Sat, 10 Aug 2019 09:29:00 +0200
-Message-ID: <20190810072900.GA16359@kroah.com>
-References: <20190809202749.742267-1-arnd@arndb.de>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [GIT PULL] TTY/Serial fixes for 5.3-rc4
+Date: Sat, 10 Aug 2019 13:52:35 +0200
+Message-ID: <20190810115235.GA5930@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <netdev-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190809202749.742267-1-arnd@arndb.de>
-Sender: netdev-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: soc@kernel.org, "Wanzongshun (Vincent)" <wanzongshun@huawei.com>, Greg Ungerer <gerg@kernel.org>, linux-serial@vger.kernel.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, linux-input@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, linux-gpio@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>, Mark Brown <broonie@kernel.org>, alsa-devel@alsa-project.org, linux-spi@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-fbdev@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>, linux-mtd@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Aug 09, 2019 at 10:27:28PM +0200, Arnd Bergmann wrote:
-> As discussed previously, these two ARM platforms have no
-> known remaining users, let's remove them completely.
-> 
-> Subsystem maintainers: feel free to take the driver removals
-> through your respective trees, they are all independent of
-> one another. We can merge any remaining patches through the
-> soc tree.
+The following changes since commit 609488bc979f99f805f34e9a32c1e3b71179d10b:
 
-Serial and USB host controller driver patches applied, thanks!
+  Linux 5.3-rc2 (2019-07-28 12:47:02 -0700)
 
-greg k-h
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.3-rc4
+
+for you to fetch changes up to 81eaadcae81b4c1bf01649a3053d1f54e2d81cf1:
+
+  kgdboc: disable the console lock when in kgdb (2019-07-30 17:39:39 +0200)
+
+----------------------------------------------------------------
+TTY fix for 5.3-rc4
+
+Here is a single tty kgdb fix for 5.3-rc4.
+
+It fixes an annoying log message that has caused kdb to become useless.
+It's another fallout from ddde3c18b700 ("vt: More locking checks") which
+tries to enforce locking checks more strictly in the tty layer,
+unfortunatly when kdb is stopped, there's no need for locks :)
+
+This patch has been linux-next for a while with no reported issues
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Douglas Anderson (1):
+      kgdboc: disable the console lock when in kgdb
+
+ drivers/tty/serial/kgdboc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
