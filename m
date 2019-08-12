@@ -1,7 +1,7 @@
 From: Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Subject: [PATCH 10/14] serial: tegra: add support to use 8 bytes trigger
-Date: Mon, 12 Aug 2019 16:58:19 +0530
-Message-ID: <1565609303-27000-11-git-send-email-kyarlagadda@nvidia.com>
+Subject: [PATCH 11/14] serial: tegra: DT for Adjusted baud rates
+Date: Mon, 12 Aug 2019 16:58:20 +0530
+Message-ID: <1565609303-27000-12-git-send-email-kyarlagadda@nvidia.com>
 References: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -9,77 +9,67 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com, jonathanh@nvidia.com, ldewangan@nvidia.com, jslaby@suse.com
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Shardar Shariff Md <smohammed@nvidia.com>, Krishna Yarlagadda <kyarlagadda@nvidia.com>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Krishna Yarlagadda <kyarlagadda@nvidia.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Shardar Shariff Md <smohammed@nvidia.com>
+Tegra186 chip has a hardware issue resulting in frame errors when
+tolerance level for baud rate is negative. Provided entries to adjust
+baud rate to be within acceptable range and work with devices that
+can send negative baud rate. Also report error when baud rate set is
+out of tolerance range of controller updated in device tree.
 
-Add support to use 8 bytes trigger for Tegra186 SOC.
-
-Signed-off-by: Shardar Shariff Md <smohammed@nvidia.com>
 Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
 ---
- drivers/tty/serial/serial-tegra.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ .../bindings/serial/nvidia,tegra20-hsuart.txt      | 32 ++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index 329923c..03d1d20 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -88,6 +88,7 @@ struct tegra_uart_chip_data {
- 	bool	support_clk_src_div;
- 	bool	fifo_mode_enable_status;
- 	int	uart_max_port;
-+	int	dma_burst_bytes;
- };
- 
- struct tegra_uart_port {
-@@ -933,7 +934,12 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
- 	 * programmed in the DMA registers.
- 	 */
- 	tup->fcr_shadow = UART_FCR_ENABLE_FIFO;
--	tup->fcr_shadow |= UART_FCR_R_TRIG_01;
+diff --git a/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt b/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
+index 187ec78..1ce3fd4 100644
+--- a/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
++++ b/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
+@@ -20,6 +20,37 @@ Required properties:
+ Optional properties:
+ - nvidia,enable-modem-interrupt: Enable modem interrupts. Should be enable
+ 		only if all 8 lines of UART controller are pinmuxed.
++- nvidia,adjust-baud-rates: List of entries providing percentage of baud rate
++  adjustment within a range.
++  Each entry contains sets of 3 values. Range low/high and adjusted rate.
++  <range_low range_high adjusted_rate>
++  When baud rate set on controller falls within the range mentioned in this
++  field, baud rate will be adjusted by percentage mentioned here.
++  Ex: <9600 115200 200>
++  Increase baud rate by 2% when set baud rate falls within range 9600 to 115200
 +
-+	if (tup->cdata->dma_burst_bytes == 8)
-+		tup->fcr_shadow |= UART_FCR_R_TRIG_10;
-+	else
-+		tup->fcr_shadow |= UART_FCR_R_TRIG_01;
++Baud Rate tolerance:
++  Standard UART devices are expected to have tolerance for baud rate error by
++  -4 to +4 %. All Tegra devices till Tegra210 had this support. However,
++  Tegra186 chip has a known hardware issue. UART Rx baud rate tolerance level
++  is 0% to +4% in 1-stop config. Otherwise, the received data will have
++  corruption/invalid framing errors. Parker errata suggests adjusting baud
++  rate to be higher than the deviations observed in Tx.
 +
- 	tup->fcr_shadow |= TEGRA_UART_TX_TRIG_16B;
- 	tegra_uart_write(tup, tup->fcr_shadow, UART_FCR);
++  Tx deviation of connected device can be captured over scope (or noted from
++  its spec) for valid range and Tegra baud rate has to be set above actual
++  Tx baud rate observed. To do this we use nvidia,adjust-baud-rates
++
++  As an example, consider there is deviation observed in Tx for baud rates as
++  listed below.
++  0 to 9600 has 1% deviation
++  9600 to 115200 2% deviation
++  This slight deviation is expcted and Tegra UART is expected to handle it. Due
++  to the issue stated above, baud rate on Tegra UART should be set equal to or
++  above deviation observed for avoiding frame errors.
++  Property should be set like this
++  nvidia,adjust-baud-rates = <0 9600 100>,
++  			     <9600 115200 200>;
  
-@@ -1046,7 +1052,7 @@ static int tegra_uart_dma_channel_allocate(struct tegra_uart_port *tup,
- 		}
- 		dma_sconfig.src_addr = tup->uport.mapbase;
- 		dma_sconfig.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
--		dma_sconfig.src_maxburst = 4;
-+		dma_sconfig.src_maxburst = tup->cdata->dma_burst_bytes;
- 		tup->rx_dma_chan = dma_chan;
- 		tup->rx_dma_buf_virt = dma_buf;
- 		tup->rx_dma_buf_phys = dma_phys;
-@@ -1325,6 +1331,7 @@ static struct tegra_uart_chip_data tegra20_uart_chip_data = {
- 	.support_clk_src_div		= false,
- 	.fifo_mode_enable_status	= false,
- 	.uart_max_port			= 5,
-+	.dma_burst_bytes		= 4,
+ Example:
+ 
+@@ -34,4 +65,5 @@ serial@70006000 {
+ 	reset-names = "serial";
+ 	dmas = <&apbdma 8>, <&apbdma 8>;
+ 	dma-names = "rx", "tx";
++	nvidia,adjust-baud-rates = <1000000 4000000 136>; /* 1.36% shift */
  };
- 
- static struct tegra_uart_chip_data tegra30_uart_chip_data = {
-@@ -1333,6 +1340,7 @@ static struct tegra_uart_chip_data tegra30_uart_chip_data = {
- 	.support_clk_src_div		= true,
- 	.fifo_mode_enable_status	= false,
- 	.uart_max_port			= 5,
-+	.dma_burst_bytes		= 4,
- };
- 
- static struct tegra_uart_chip_data tegra186_uart_chip_data = {
-@@ -1341,6 +1349,7 @@ static struct tegra_uart_chip_data tegra186_uart_chip_data = {
- 	.support_clk_src_div		= true,
- 	.fifo_mode_enable_status	= true,
- 	.uart_max_port			= 5,
-+	.dma_burst_bytes		= 8,
- };
- 
- static const struct of_device_id tegra_uart_of_match[] = {
 -- 
 2.7.4
