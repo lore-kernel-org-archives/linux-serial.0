@@ -1,7 +1,7 @@
 From: Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Subject: [PATCH 11/14] serial: tegra: DT for Adjusted baud rates
-Date: Mon, 12 Aug 2019 16:58:20 +0530
-Message-ID: <1565609303-27000-12-git-send-email-kyarlagadda@nvidia.com>
+Subject: [PATCH 12/14] serial: tegra: add support to adjust baud rate
+Date: Mon, 12 Aug 2019 16:58:21 +0530
+Message-ID: <1565609303-27000-13-git-send-email-kyarlagadda@nvidia.com>
 References: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -9,8 +9,11 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com, jonathanh@nvidia.com, ldewangan@nvidia.com, jslaby@suse.com
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Krishna Yarlagadda <kyarlagadda@nvidia.com>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Krishna Yarlagadda <kyarlagadda@nvidia.com>, Shardar Shariff Md <smohammed@nvidia.com>
 List-Id: linux-serial@vger.kernel.org
+
+Add support to adjust baud rates to fall under supported tolerance
+range through DT.
 
 Tegra186 chip has a hardware issue resulting in frame errors when
 tolerance level for baud rate is negative. Provided entries to adjust
@@ -18,58 +21,125 @@ baud rate to be within acceptable range and work with devices that
 can send negative baud rate. Also report error when baud rate set is
 out of tolerance range of controller updated in device tree.
 
+Signed-off-by: Shardar Shariff Md <smohammed@nvidia.com>
 Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
 ---
- .../bindings/serial/nvidia,tegra20-hsuart.txt      | 32 ++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+ drivers/tty/serial/serial-tegra.c | 68 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 68 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt b/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
-index 187ec78..1ce3fd4 100644
---- a/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
-+++ b/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
-@@ -20,6 +20,37 @@ Required properties:
- Optional properties:
- - nvidia,enable-modem-interrupt: Enable modem interrupts. Should be enable
- 		only if all 8 lines of UART controller are pinmuxed.
-+- nvidia,adjust-baud-rates: List of entries providing percentage of baud rate
-+  adjustment within a range.
-+  Each entry contains sets of 3 values. Range low/high and adjusted rate.
-+  <range_low range_high adjusted_rate>
-+  When baud rate set on controller falls within the range mentioned in this
-+  field, baud rate will be adjusted by percentage mentioned here.
-+  Ex: <9600 115200 200>
-+  Increase baud rate by 2% when set baud rate falls within range 9600 to 115200
-+
-+Baud Rate tolerance:
-+  Standard UART devices are expected to have tolerance for baud rate error by
-+  -4 to +4 %. All Tegra devices till Tegra210 had this support. However,
-+  Tegra186 chip has a known hardware issue. UART Rx baud rate tolerance level
-+  is 0% to +4% in 1-stop config. Otherwise, the received data will have
-+  corruption/invalid framing errors. Parker errata suggests adjusting baud
-+  rate to be higher than the deviations observed in Tx.
-+
-+  Tx deviation of connected device can be captured over scope (or noted from
-+  its spec) for valid range and Tegra baud rate has to be set above actual
-+  Tx baud rate observed. To do this we use nvidia,adjust-baud-rates
-+
-+  As an example, consider there is deviation observed in Tx for baud rates as
-+  listed below.
-+  0 to 9600 has 1% deviation
-+  9600 to 115200 2% deviation
-+  This slight deviation is expcted and Tegra UART is expected to handle it. Due
-+  to the issue stated above, baud rate on Tegra UART should be set equal to or
-+  above deviation observed for avoiding frame errors.
-+  Property should be set like this
-+  nvidia,adjust-baud-rates = <0 9600 100>,
-+  			     <9600 115200 200>;
- 
- Example:
- 
-@@ -34,4 +65,5 @@ serial@70006000 {
- 	reset-names = "serial";
- 	dmas = <&apbdma 8>, <&apbdma 8>;
- 	dma-names = "rx", "tx";
-+	nvidia,adjust-baud-rates = <1000000 4000000 136>; /* 1.36% shift */
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index 03d1d20..3c9e5c5 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -91,6 +91,12 @@ struct tegra_uart_chip_data {
+ 	int	dma_burst_bytes;
  };
+ 
++struct tegra_baud_tolerance {
++	u32 lower_range_baud;
++	u32 upper_range_baud;
++	s32 tolerance;
++};
++
+ struct tegra_uart_port {
+ 	struct uart_port			uport;
+ 	const struct tegra_uart_chip_data	*cdata;
+@@ -127,6 +133,8 @@ struct tegra_uart_port {
+ 	dma_cookie_t				rx_cookie;
+ 	unsigned int				tx_bytes_requested;
+ 	unsigned int				rx_bytes_requested;
++	struct tegra_baud_tolerance		*baud_tolerance;
++	int					n_adjustable_baud_rates;
+ };
+ 
+ static void tegra_uart_start_next_tx(struct tegra_uart_port *tup);
+@@ -329,6 +337,21 @@ static void tegra_uart_fifo_reset(struct tegra_uart_port *tup, u8 fcr_bits)
+ 		set_rts(tup, true);
+ }
+ 
++static long tegra_get_tolerance_rate(struct tegra_uart_port *tup,
++				     unsigned int baud, long rate)
++{
++	int i;
++
++	for (i = 0; i < tup->n_adjustable_baud_rates; ++i) {
++		if (baud >= tup->baud_tolerance[i].lower_range_baud &&
++		    baud <= tup->baud_tolerance[i].upper_range_baud)
++			return (rate + (rate *
++				tup->baud_tolerance[i].tolerance) / 10000);
++	}
++
++	return rate;
++}
++
+ static int tegra_set_baudrate(struct tegra_uart_port *tup, unsigned int baud)
+ {
+ 	unsigned long rate;
+@@ -342,6 +365,9 @@ static int tegra_set_baudrate(struct tegra_uart_port *tup, unsigned int baud)
+ 
+ 	if (tup->cdata->support_clk_src_div) {
+ 		rate = baud * 16;
++		if (tup->n_adjustable_baud_rates)
++			rate = tegra_get_tolerance_rate(tup, baud, rate);
++
+ 		ret = clk_set_rate(tup->uart_clk, rate);
+ 		if (ret < 0) {
+ 			dev_err(tup->uport.dev,
+@@ -1312,6 +1338,12 @@ static int tegra_uart_parse_dt(struct platform_device *pdev,
+ {
+ 	struct device_node *np = pdev->dev.of_node;
+ 	int port;
++	int ret;
++	int index;
++	u32 pval;
++	int count;
++	int n_entries;
++
+ 
+ 	port = of_alias_get_id(np, "serial");
+ 	if (port < 0) {
+@@ -1322,6 +1354,42 @@ static int tegra_uart_parse_dt(struct platform_device *pdev,
+ 
+ 	tup->enable_modem_interrupt = of_property_read_bool(np,
+ 					"nvidia,enable-modem-interrupt");
++	n_entries = of_property_count_u32_elems(np, "nvidia,adjust-baud-rates");
++	if (n_entries > 0) {
++		tup->n_adjustable_baud_rates = n_entries / 3;
++		tup->baud_tolerance =
++		devm_kzalloc(&pdev->dev, (tup->n_adjustable_baud_rates) *
++			     sizeof(*tup->baud_tolerance), GFP_KERNEL);
++		if (!tup->baud_tolerance)
++			return -ENOMEM;
++		for (count = 0, index = 0; count < n_entries; count += 3,
++		     index++) {
++			ret =
++			of_property_read_u32_index(np,
++						   "nvidia,adjust-baud-rates",
++						   count, &pval);
++			if (!ret)
++				tup->baud_tolerance[index].lower_range_baud =
++				pval;
++			ret =
++			of_property_read_u32_index(np,
++						   "nvidia,adjust-baud-rates",
++						   count + 1, &pval);
++			if (!ret)
++				tup->baud_tolerance[index].upper_range_baud =
++				pval;
++			ret =
++			of_property_read_u32_index(np,
++						   "nvidia,adjust-baud-rates",
++						   count + 2, &pval);
++			if (!ret)
++				tup->baud_tolerance[index].tolerance =
++				(s32)pval;
++		}
++	} else {
++		tup->n_adjustable_baud_rates = 0;
++	}
++
+ 	return 0;
+ }
+ 
 -- 
 2.7.4
