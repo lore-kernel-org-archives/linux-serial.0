@@ -1,57 +1,86 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v4 8/9] MIPS: SGI-IP27: fix readb/writeb addressing
-Date: Sun, 11 Aug 2019 09:29:07 +0200
-Message-ID: <20190811072907.GA1416@kroah.com>
-References: <20190809103235.16338-1-tbogendoerfer@suse.de>
- <20190809103235.16338-9-tbogendoerfer@suse.de>
- <CAHp75Vd_083R9sRsspVuJ3ZMTxpVR79PF5Lg-bpnMxRfN+b7wA@mail.gmail.com>
+From: Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>
+Subject: [PATCH] serial: 8250_pci: Implement MSI(-X) support
+Date: Mon, 12 Aug 2019 13:21:52 +0200
+Message-ID: <20190812112152.693622-1-ralf.ramsauer@oth-regensburg.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAHp75Vd_083R9sRsspVuJ3ZMTxpVR79PF5Lg-bpnMxRfN+b7wA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Thomas Bogendoerfer <tbogendoerfer@suse.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Jiri Slaby <jslaby@suse.com>, Evgeniy Polyakov <zbr@ioremap.net>, linux-mips@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-input <linux-input@vger.kernel.org>, netdev <netdev@vger.kernel.org>, "open list:REAL TIME CLOCK (RTC) SUBSYSTEM" <linux-rtc@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@v>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <jailhouse-dev+bncBD4JZQXE5UFRBVUXYXVAKGQEOZ4OGMI@googlegroups.com>
+Sender: jailhouse-dev@googlegroups.com
+List-Post: <https://groups.google.com/group/jailhouse-dev/post>, <mailto:jailhouse-dev@googlegroups.com>
+List-Help: <https://groups.google.com/support/>, <mailto:jailhouse-dev+help@googlegroups.com>
+List-Archive: <https://groups.google.com/group/jailhouse-dev
+List-Subscribe: <https://groups.google.com/group/jailhouse-dev/subscribe>, <mailto:jailhouse-dev+subscribe@googlegroups.com>
+List-Unsubscribe: <mailto:googlegroups-manage+175645748590+unsubscribe@googlegroups.com>,
+ <https://groups.google.com/group/jailhouse-dev/subscribe>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, jailhouse-dev@googlegroups.com
+Cc: Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>, Jay Dolan <jay.dolan@accesio.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Aug 10, 2019 at 04:22:23PM +0300, Andy Shevchenko wrote:
-> On Fri, Aug 9, 2019 at 1:34 PM Thomas Bogendoerfer
-> <tbogendoerfer@suse.de> wrote:
-> >
-> > Our chosen byte swapping, which is what firmware already uses, is to
-> > do readl/writel by normal lw/sw intructions (data invariance). This
-> > also means we need to mangle addresses for u8 and u16 accesses. The
-> > mangling for 16bit has been done aready, but 8bit one was missing.
-> > Correcting this causes different addresses for accesses to the
-> > SuperIO and local bus of the IOC3 chip. This is fixed by changing
-> > byte order in ioc3 and m48rtc_rtc structs.
-> 
-> >  /* serial port register map */
-> >  struct ioc3_serialregs {
-> > -       uint32_t        sscr;
-> > -       uint32_t        stpir;
-> > -       uint32_t        stcir;
-> > -       uint32_t        srpir;
-> > -       uint32_t        srcir;
-> > -       uint32_t        srtr;
-> > -       uint32_t        shadow;
-> > +       u32     sscr;
-> > +       u32     stpir;
-> > +       u32     stcir;
-> > +       u32     srpir;
-> > +       u32     srcir;
-> > +       u32     srtr;
-> > +       u32     shadow;
-> >  };
-> 
-> Isn't it a churn? AFAIU kernel documentation the uint32_t is okay to
-> use, just be consistent inside one module / driver.
-> Am I mistaken?
+There may be setups, where legacy interrupts are not available. This is
+the caese, e.g., when Linux runs as guest (aka. non-root cell) of the
+partitioning hypervisor Jailhouse. There, only MSI(-X) interrupts are
+available for guests.
 
-No, but really it uint* shouldn't be used anywhere in the kernel source
-as it does not make sense.
+But the 8250_pci driver currently only supports legacy ints. So let's
+enable MSI(-X) interrupts.
 
-thanks,
+Nevertheless, this needs to handled with care: while many 8250 devices
+actually claim to support MSI(-X) interrupts it should not be enabled be
+default. I had at least one device in my hands with broken MSI
+implementation.
 
-greg k-h
+So better introduce a whitelist with devices that are known to support
+MSI(-X) interrupts. I tested all devices mentioned in the patch.
+
+Signed-off-by: Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>
+---
+ drivers/tty/serial/8250/8250_pci.c | 27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index bbe5cba21522..97992884c0ee 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -53,6 +53,16 @@ struct serial_private {
+ 	int			line[0];
+ };
+ 
++static const struct pci_device_id pci_use_msi[] = {
++	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9900,
++			 0xA000, 0x1000) },
++	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9912,
++			 0xA000, 0x1000) },
++	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9922,
++			 0xA000, 0x1000) },
++	{ }
++};
++
+ static int pci_default_setup(struct serial_private*,
+ 	  const struct pciserial_board*, struct uart_8250_port *, int);
+ 
+@@ -3643,7 +3653,22 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
+ 	memset(&uart, 0, sizeof(uart));
+ 	uart.port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ;
+ 	uart.port.uartclk = board->base_baud * 16;
+-	uart.port.irq = get_pci_irq(dev, board);
++
++	if (pci_match_id(pci_use_msi, dev)) {
++		dev_dbg(&dev->dev, "Using MSI(-X) interrupts\n");
++		pci_set_master(dev);
++		rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_ALL_TYPES);
++	} else {
++		dev_dbg(&dev->dev, "Using legacy interrupts\n");
++		rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_LEGACY);
++	}
++	if (rc < 0) {
++		kfree(priv);
++		priv = ERR_PTR(rc);
++		goto err_deinit;
++	}
++
++	uart.port.irq = pci_irq_vector(dev, 0);
+ 	uart.port.dev = &dev->dev;
+ 
+ 	for (i = 0; i < nr_ports; i++) {
+-- 
+2.22.0
