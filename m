@@ -1,7 +1,7 @@
 From: Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Subject: [PATCH 09/14] serial: tegra: set maximum num of uart ports to 8
-Date: Mon, 12 Aug 2019 16:58:18 +0530
-Message-ID: <1565609303-27000-10-git-send-email-kyarlagadda@nvidia.com>
+Subject: [PATCH 13/14] serial: tegra: report clk rate errors
+Date: Mon, 12 Aug 2019 16:58:22 +0530
+Message-ID: <1565609303-27000-14-git-send-email-kyarlagadda@nvidia.com>
 References: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -9,101 +9,168 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com, jonathanh@nvidia.com, ldewangan@nvidia.com, jslaby@suse.com
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Shardar Shariff Md <smohammed@nvidia.com>, Krishna Yarlagadda <kyarlagadda@nvidia.com>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Krishna Yarlagadda <kyarlagadda@nvidia.com>, Shardar Shariff Md <smohammed@nvidia.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Shardar Shariff Md <smohammed@nvidia.com>
-
-Set maximum number of UART ports to 8 as older chips have 7 ports and
-Tergra194 and later chips will have 8 ports. Add this info to chip data
-and register uart driver in platform driver probe.
+Standard UART controllers support +/-4% baud rate error tolerance.
+Tegra186 only supports 0% to +4% error tolerance whereas other Tegra
+chips support standard +/-4% rate. Add chip data for knowing error
+tolerance level for each soc. Creating new compatible for Tegra194 chip
+as it supports baud rate error tolerance of -2 to +2 %, different from
+older chips.
 
 Signed-off-by: Shardar Shariff Md <smohammed@nvidia.com>
 Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
 ---
- drivers/tty/serial/serial-tegra.c | 21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+ drivers/tty/serial/serial-tegra.c | 58 +++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 56 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index e0379d9..329923c 100644
+index 3c9e5c5..3e02f27 100644
 --- a/drivers/tty/serial/serial-tegra.c
 +++ b/drivers/tty/serial/serial-tegra.c
-@@ -62,7 +62,7 @@
- #define TEGRA_UART_TX_TRIG_4B			0x20
- #define TEGRA_UART_TX_TRIG_1B			0x30
- 
--#define TEGRA_UART_MAXIMUM			5
-+#define TEGRA_UART_MAXIMUM			8
- 
- /* Default UART setting when started: 115200 no parity, stop, 8 data bits */
- #define TEGRA_UART_DEFAULT_BAUD			115200
-@@ -87,6 +87,7 @@ struct tegra_uart_chip_data {
- 	bool	allow_txfifo_reset_fifo_mode;
- 	bool	support_clk_src_div;
+@@ -89,6 +89,8 @@ struct tegra_uart_chip_data {
  	bool	fifo_mode_enable_status;
-+	int	uart_max_port;
+ 	int	uart_max_port;
+ 	int	dma_burst_bytes;
++	int	error_tolerance_low_range;
++	int	error_tolerance_high_range;
  };
  
- struct tegra_uart_port {
-@@ -1323,6 +1324,7 @@ static struct tegra_uart_chip_data tegra20_uart_chip_data = {
- 	.allow_txfifo_reset_fifo_mode	= true,
- 	.support_clk_src_div		= false,
+ struct tegra_baud_tolerance {
+@@ -135,6 +137,8 @@ struct tegra_uart_port {
+ 	unsigned int				rx_bytes_requested;
+ 	struct tegra_baud_tolerance		*baud_tolerance;
+ 	int					n_adjustable_baud_rates;
++	int					required_rate;
++	int					configured_rate;
+ };
+ 
+ static void tegra_uart_start_next_tx(struct tegra_uart_port *tup);
+@@ -352,6 +356,22 @@ static long tegra_get_tolerance_rate(struct tegra_uart_port *tup,
+ 	return rate;
+ }
+ 
++static int tegra_check_rate_in_range(struct tegra_uart_port *tup)
++{
++	long diff;
++
++	diff = ((long)(tup->configured_rate - tup->required_rate) * 10000)
++		/ tup->required_rate;
++	if (diff < (tup->cdata->error_tolerance_low_range * 100) ||
++	    diff > (tup->cdata->error_tolerance_high_range * 100)) {
++		dev_err(tup->uport.dev,
++			"configured baud rate is out of range by %d", diff);
++		return -EIO;
++	}
++
++	return 0;
++}
++
+ static int tegra_set_baudrate(struct tegra_uart_port *tup, unsigned int baud)
+ {
+ 	unsigned long rate;
+@@ -365,6 +385,8 @@ static int tegra_set_baudrate(struct tegra_uart_port *tup, unsigned int baud)
+ 
+ 	if (tup->cdata->support_clk_src_div) {
+ 		rate = baud * 16;
++		tup->required_rate = rate;
++
+ 		if (tup->n_adjustable_baud_rates)
+ 			rate = tegra_get_tolerance_rate(tup, baud, rate);
+ 
+@@ -374,7 +396,11 @@ static int tegra_set_baudrate(struct tegra_uart_port *tup, unsigned int baud)
+ 				"clk_set_rate() failed for rate %lu\n", rate);
+ 			return ret;
+ 		}
++		tup->configured_rate = clk_get_rate(tup->uart_clk);
+ 		divisor = 1;
++		ret = tegra_check_rate_in_range(tup);
++		if (ret < 0)
++			return ret;
+ 	} else {
+ 		rate = clk_get_rate(tup->uart_clk);
+ 		divisor = DIV_ROUND_CLOSEST(rate, baud * 16);
+@@ -992,7 +1018,11 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
+ 	 * enqueued
+ 	 */
+ 	tup->lcr_shadow = TEGRA_UART_DEFAULT_LSR;
+-	tegra_set_baudrate(tup, TEGRA_UART_DEFAULT_BAUD);
++	ret = tegra_set_baudrate(tup, TEGRA_UART_DEFAULT_BAUD);
++	if (ret < 0) {
++		dev_err(tup->uport.dev, "Failed to set baud rate\n");
++		return ret;
++	}
+ 	tup->fcr_shadow |= UART_FCR_DMA_SELECT;
+ 	tegra_uart_write(tup, tup->fcr_shadow, UART_FCR);
+ 
+@@ -1191,6 +1221,7 @@ static void tegra_uart_set_termios(struct uart_port *u,
+ 	struct clk *parent_clk = clk_get_parent(tup->uart_clk);
+ 	unsigned long parent_clk_rate = clk_get_rate(parent_clk);
+ 	int max_divider = (tup->cdata->support_clk_src_div) ? 0x7FFF : 0xFFFF;
++	int ret;
+ 
+ 	max_divider *= 16;
+ 	spin_lock_irqsave(&u->lock, flags);
+@@ -1263,7 +1294,11 @@ static void tegra_uart_set_termios(struct uart_port *u,
+ 			parent_clk_rate/max_divider,
+ 			parent_clk_rate/16);
+ 	spin_unlock_irqrestore(&u->lock, flags);
+-	tegra_set_baudrate(tup, baud);
++	ret = tegra_set_baudrate(tup, baud);
++	if (ret < 0) {
++		dev_err(tup->uport.dev, "Failed to set baud rate\n");
++		return;
++	}
+ 	if (tty_termios_baud_rate(termios))
+ 		tty_termios_encode_baud_rate(termios, baud, baud);
+ 	spin_lock_irqsave(&u->lock, flags);
+@@ -1400,6 +1435,8 @@ static struct tegra_uart_chip_data tegra20_uart_chip_data = {
  	.fifo_mode_enable_status	= false,
-+	.uart_max_port			= 5,
+ 	.uart_max_port			= 5,
+ 	.dma_burst_bytes		= 4,
++	.error_tolerance_low_range	= 0,
++	.error_tolerance_high_range	= 4,
  };
  
  static struct tegra_uart_chip_data tegra30_uart_chip_data = {
-@@ -1330,6 +1332,7 @@ static struct tegra_uart_chip_data tegra30_uart_chip_data = {
- 	.allow_txfifo_reset_fifo_mode	= false,
- 	.support_clk_src_div		= true,
+@@ -1409,6 +1446,8 @@ static struct tegra_uart_chip_data tegra30_uart_chip_data = {
  	.fifo_mode_enable_status	= false,
-+	.uart_max_port			= 5,
+ 	.uart_max_port			= 5,
+ 	.dma_burst_bytes		= 4,
++	.error_tolerance_low_range	= 0,
++	.error_tolerance_high_range	= 4,
  };
  
  static struct tegra_uart_chip_data tegra186_uart_chip_data = {
-@@ -1337,6 +1340,7 @@ static struct tegra_uart_chip_data tegra186_uart_chip_data = {
- 	.allow_txfifo_reset_fifo_mode	= false,
- 	.support_clk_src_div		= true,
+@@ -1418,6 +1457,18 @@ static struct tegra_uart_chip_data tegra186_uart_chip_data = {
  	.fifo_mode_enable_status	= true,
-+	.uart_max_port			= 5,
+ 	.uart_max_port			= 5,
+ 	.dma_burst_bytes		= 8,
++	.error_tolerance_low_range	= 0,
++	.error_tolerance_high_range	= 4,
++};
++
++static struct tegra_uart_chip_data tegra194_uart_chip_data = {
++	.tx_fifo_full_status		= true,
++	.allow_txfifo_reset_fifo_mode	= false,
++	.support_clk_src_div		= true,
++	.fifo_mode_enable_status	= true,
++	.dma_burst_bytes		= 8,
++	.error_tolerance_low_range	= -2,
++	.error_tolerance_high_range	= 2,
  };
  
  static const struct of_device_id tegra_uart_of_match[] = {
-@@ -1386,6 +1390,7 @@ static int tegra_uart_probe(struct platform_device *pdev)
- 	u->type = PORT_TEGRA;
- 	u->fifosize = 32;
- 	tup->cdata = cdata;
-+	tegra_uart_driver.nr = cdata->uart_max_port;
- 
- 	platform_set_drvdata(pdev, tup);
- 	resource = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-@@ -1411,6 +1416,13 @@ static int tegra_uart_probe(struct platform_device *pdev)
- 		return PTR_ERR(tup->rst);
- 	}
- 
-+	ret = uart_register_driver(&tegra_uart_driver);
-+	if (ret < 0) {
-+		pr_err("Could not register %s driver\n",
-+		       tegra_uart_driver.driver_name);
-+		return ret;
-+	}
-+
- 	u->iotype = UPIO_MEM32;
- 	ret = platform_get_irq(pdev, 0);
- 	if (ret < 0) {
-@@ -1472,13 +1484,6 @@ static int __init tegra_uart_init(void)
- {
- 	int ret;
- 
--	ret = uart_register_driver(&tegra_uart_driver);
--	if (ret < 0) {
--		pr_err("Could not register %s driver\n",
--			tegra_uart_driver.driver_name);
--		return ret;
--	}
--
- 	ret = platform_driver_register(&tegra_uart_platform_driver);
- 	if (ret < 0) {
- 		pr_err("Uart platform driver register failed, e = %d\n", ret);
+@@ -1431,6 +1482,9 @@ static const struct of_device_id tegra_uart_of_match[] = {
+ 		.compatible     = "nvidia,tegra186-hsuart",
+ 		.data		= &tegra186_uart_chip_data,
+ 	}, {
++		.compatible     = "nvidia,tegra194-hsuart",
++		.data		= &tegra194_uart_chip_data,
++	}, {
+ 	},
+ };
+ MODULE_DEVICE_TABLE(of, tegra_uart_of_match);
 -- 
 2.7.4
