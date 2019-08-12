@@ -1,73 +1,51 @@
-From: Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Subject: [PATCH 06/14] serial: tegra: report error to upper tty layer
-Date: Mon, 12 Aug 2019 16:58:15 +0530
-Message-ID: <1565609303-27000-7-git-send-email-kyarlagadda@nvidia.com>
-References: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
+From: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [PATCH] tty/serial: atmel: remove redundant assignment to ret
+Date: Mon, 12 Aug 2019 17:05:15 +0200
+Message-ID: <20190812150515.GQ3600@piout.net>
+References: <20190809174042.6276-1-colin.king@canonical.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
+Content-Disposition: inline
+In-Reply-To: <20190809174042.6276-1-colin.king@canonical.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com, jonathanh@nvidia.com, ldewangan@nvidia.com, jslaby@suse.com
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Krishna Yarlagadda <kyarlagadda@nvidia.com>, Shardar Shariff Md <smohammed@nvidia.com>
+To: Colin King <colin.king@canonical.com>
+Cc: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Report overrun/parity/frame/break errors to top tty layer. Add support
-to ignore break character if IGNBRK is set.
+On 09/08/2019 18:40:42+0100, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> Variable ret is initialized to a value that is never read and it
+> is re-assigned later. The initialization is redundant and can be
+> removed.
+> 
+> Addresses-Coverity: ("Unused value")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 
-Signed-off-by: Shardar Shariff Md <smohammed@nvidia.com>
-Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
----
- drivers/tty/serial/serial-tegra.c | 19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
+> ---
+>  drivers/tty/serial/atmel_serial.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index 0b4f36905321..19a85d6fe3d2 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -2888,7 +2888,7 @@ static int atmel_serial_probe(struct platform_device *pdev)
+>  	struct atmel_uart_port *atmel_port;
+>  	struct device_node *np = pdev->dev.parent->of_node;
+>  	void *data;
+> -	int ret = -ENODEV;
+> +	int ret;
+>  	bool rs485_enabled;
+>  
+>  	BUILD_BUG_ON(ATMEL_SERIAL_RINGSIZE & (ATMEL_SERIAL_RINGSIZE - 1));
+> -- 
+> 2.20.1
+> 
 
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index f6a3f4e..7ab81bb 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -374,13 +374,21 @@ static char tegra_uart_decode_rx_error(struct tegra_uart_port *tup,
- 			tup->uport.icount.frame++;
- 			dev_err(tup->uport.dev, "Got frame errors\n");
- 		} else if (lsr & UART_LSR_BI) {
--			dev_err(tup->uport.dev, "Got Break\n");
--			tup->uport.icount.brk++;
--			/* If FIFO read error without any data, reset Rx FIFO */
-+			/*
-+			 * Break error
-+			 * If FIFO read error without any data, reset Rx FIFO
-+			 */
- 			if (!(lsr & UART_LSR_DR) && (lsr & UART_LSR_FIFOE))
- 				tegra_uart_fifo_reset(tup, UART_FCR_CLEAR_RCVR);
-+			if (tup->uport.ignore_status_mask & UART_LSR_BI)
-+				return TTY_BREAK;
-+			flag = TTY_BREAK;
-+			tup->uport.icount.brk++;
-+			dev_err(tup->uport.dev, "Got Break\n");
- 		}
-+		uart_insert_char(&tup->uport, lsr, UART_LSR_OE, 0, flag);
- 	}
-+
- 	return flag;
- }
- 
-@@ -562,6 +570,9 @@ static void tegra_uart_handle_rx_pio(struct tegra_uart_port *tup,
- 			break;
- 
- 		flag = tegra_uart_decode_rx_error(tup, lsr);
-+		if (flag != TTY_NORMAL)
-+			continue;
-+
- 		ch = (unsigned char) tegra_uart_read(tup, UART_RX);
- 		tup->uport.icount.rx++;
- 
-@@ -1224,6 +1235,8 @@ static void tegra_uart_set_termios(struct uart_port *u,
- 	/* Ignore all characters if CREAD is not set */
- 	if ((termios->c_cflag & CREAD) == 0)
- 		tup->uport.ignore_status_mask |= UART_LSR_DR;
-+	if (termios->c_iflag & IGNBRK)
-+		tup->uport.ignore_status_mask |= UART_LSR_BI;
- 
- 	spin_unlock_irqrestore(&u->lock, flags);
- }
 -- 
-2.7.4
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
