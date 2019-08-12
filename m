@@ -1,7 +1,7 @@
 From: Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Subject: [PATCH 12/14] serial: tegra: add support to adjust baud rate
-Date: Mon, 12 Aug 2019 16:58:21 +0530
-Message-ID: <1565609303-27000-13-git-send-email-kyarlagadda@nvidia.com>
+Subject: [PATCH 09/14] serial: tegra: set maximum num of uart ports to 8
+Date: Mon, 12 Aug 2019 16:58:18 +0530
+Message-ID: <1565609303-27000-10-git-send-email-kyarlagadda@nvidia.com>
 References: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -9,137 +9,101 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com, jonathanh@nvidia.com, ldewangan@nvidia.com, jslaby@suse.com
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Krishna Yarlagadda <kyarlagadda@nvidia.com>, Shardar Shariff Md <smohammed@nvidia.com>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Shardar Shariff Md <smohammed@nvidia.com>, Krishna Yarlagadda <kyarlagadda@nvidia.com>
 List-Id: linux-serial@vger.kernel.org
 
-Add support to adjust baud rates to fall under supported tolerance
-range through DT.
+From: Shardar Shariff Md <smohammed@nvidia.com>
 
-Tegra186 chip has a hardware issue resulting in frame errors when
-tolerance level for baud rate is negative. Provided entries to adjust
-baud rate to be within acceptable range and work with devices that
-can send negative baud rate. Also report error when baud rate set is
-out of tolerance range of controller updated in device tree.
+Set maximum number of UART ports to 8 as older chips have 7 ports and
+Tergra194 and later chips will have 8 ports. Add this info to chip data
+and register uart driver in platform driver probe.
 
 Signed-off-by: Shardar Shariff Md <smohammed@nvidia.com>
 Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
 ---
- drivers/tty/serial/serial-tegra.c | 68 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 68 insertions(+)
+ drivers/tty/serial/serial-tegra.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index 03d1d20..3c9e5c5 100644
+index e0379d9..329923c 100644
 --- a/drivers/tty/serial/serial-tegra.c
 +++ b/drivers/tty/serial/serial-tegra.c
-@@ -91,6 +91,12 @@ struct tegra_uart_chip_data {
- 	int	dma_burst_bytes;
+@@ -62,7 +62,7 @@
+ #define TEGRA_UART_TX_TRIG_4B			0x20
+ #define TEGRA_UART_TX_TRIG_1B			0x30
+ 
+-#define TEGRA_UART_MAXIMUM			5
++#define TEGRA_UART_MAXIMUM			8
+ 
+ /* Default UART setting when started: 115200 no parity, stop, 8 data bits */
+ #define TEGRA_UART_DEFAULT_BAUD			115200
+@@ -87,6 +87,7 @@ struct tegra_uart_chip_data {
+ 	bool	allow_txfifo_reset_fifo_mode;
+ 	bool	support_clk_src_div;
+ 	bool	fifo_mode_enable_status;
++	int	uart_max_port;
  };
  
-+struct tegra_baud_tolerance {
-+	u32 lower_range_baud;
-+	u32 upper_range_baud;
-+	s32 tolerance;
-+};
-+
  struct tegra_uart_port {
- 	struct uart_port			uport;
- 	const struct tegra_uart_chip_data	*cdata;
-@@ -127,6 +133,8 @@ struct tegra_uart_port {
- 	dma_cookie_t				rx_cookie;
- 	unsigned int				tx_bytes_requested;
- 	unsigned int				rx_bytes_requested;
-+	struct tegra_baud_tolerance		*baud_tolerance;
-+	int					n_adjustable_baud_rates;
+@@ -1323,6 +1324,7 @@ static struct tegra_uart_chip_data tegra20_uart_chip_data = {
+ 	.allow_txfifo_reset_fifo_mode	= true,
+ 	.support_clk_src_div		= false,
+ 	.fifo_mode_enable_status	= false,
++	.uart_max_port			= 5,
  };
  
- static void tegra_uart_start_next_tx(struct tegra_uart_port *tup);
-@@ -329,6 +337,21 @@ static void tegra_uart_fifo_reset(struct tegra_uart_port *tup, u8 fcr_bits)
- 		set_rts(tup, true);
- }
+ static struct tegra_uart_chip_data tegra30_uart_chip_data = {
+@@ -1330,6 +1332,7 @@ static struct tegra_uart_chip_data tegra30_uart_chip_data = {
+ 	.allow_txfifo_reset_fifo_mode	= false,
+ 	.support_clk_src_div		= true,
+ 	.fifo_mode_enable_status	= false,
++	.uart_max_port			= 5,
+ };
  
-+static long tegra_get_tolerance_rate(struct tegra_uart_port *tup,
-+				     unsigned int baud, long rate)
-+{
-+	int i;
-+
-+	for (i = 0; i < tup->n_adjustable_baud_rates; ++i) {
-+		if (baud >= tup->baud_tolerance[i].lower_range_baud &&
-+		    baud <= tup->baud_tolerance[i].upper_range_baud)
-+			return (rate + (rate *
-+				tup->baud_tolerance[i].tolerance) / 10000);
+ static struct tegra_uart_chip_data tegra186_uart_chip_data = {
+@@ -1337,6 +1340,7 @@ static struct tegra_uart_chip_data tegra186_uart_chip_data = {
+ 	.allow_txfifo_reset_fifo_mode	= false,
+ 	.support_clk_src_div		= true,
+ 	.fifo_mode_enable_status	= true,
++	.uart_max_port			= 5,
+ };
+ 
+ static const struct of_device_id tegra_uart_of_match[] = {
+@@ -1386,6 +1390,7 @@ static int tegra_uart_probe(struct platform_device *pdev)
+ 	u->type = PORT_TEGRA;
+ 	u->fifosize = 32;
+ 	tup->cdata = cdata;
++	tegra_uart_driver.nr = cdata->uart_max_port;
+ 
+ 	platform_set_drvdata(pdev, tup);
+ 	resource = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+@@ -1411,6 +1416,13 @@ static int tegra_uart_probe(struct platform_device *pdev)
+ 		return PTR_ERR(tup->rst);
+ 	}
+ 
++	ret = uart_register_driver(&tegra_uart_driver);
++	if (ret < 0) {
++		pr_err("Could not register %s driver\n",
++		       tegra_uart_driver.driver_name);
++		return ret;
 +	}
 +
-+	return rate;
-+}
-+
- static int tegra_set_baudrate(struct tegra_uart_port *tup, unsigned int baud)
+ 	u->iotype = UPIO_MEM32;
+ 	ret = platform_get_irq(pdev, 0);
+ 	if (ret < 0) {
+@@ -1472,13 +1484,6 @@ static int __init tegra_uart_init(void)
  {
- 	unsigned long rate;
-@@ -342,6 +365,9 @@ static int tegra_set_baudrate(struct tegra_uart_port *tup, unsigned int baud)
+ 	int ret;
  
- 	if (tup->cdata->support_clk_src_div) {
- 		rate = baud * 16;
-+		if (tup->n_adjustable_baud_rates)
-+			rate = tegra_get_tolerance_rate(tup, baud, rate);
-+
- 		ret = clk_set_rate(tup->uart_clk, rate);
- 		if (ret < 0) {
- 			dev_err(tup->uport.dev,
-@@ -1312,6 +1338,12 @@ static int tegra_uart_parse_dt(struct platform_device *pdev,
- {
- 	struct device_node *np = pdev->dev.of_node;
- 	int port;
-+	int ret;
-+	int index;
-+	u32 pval;
-+	int count;
-+	int n_entries;
-+
- 
- 	port = of_alias_get_id(np, "serial");
- 	if (port < 0) {
-@@ -1322,6 +1354,42 @@ static int tegra_uart_parse_dt(struct platform_device *pdev,
- 
- 	tup->enable_modem_interrupt = of_property_read_bool(np,
- 					"nvidia,enable-modem-interrupt");
-+	n_entries = of_property_count_u32_elems(np, "nvidia,adjust-baud-rates");
-+	if (n_entries > 0) {
-+		tup->n_adjustable_baud_rates = n_entries / 3;
-+		tup->baud_tolerance =
-+		devm_kzalloc(&pdev->dev, (tup->n_adjustable_baud_rates) *
-+			     sizeof(*tup->baud_tolerance), GFP_KERNEL);
-+		if (!tup->baud_tolerance)
-+			return -ENOMEM;
-+		for (count = 0, index = 0; count < n_entries; count += 3,
-+		     index++) {
-+			ret =
-+			of_property_read_u32_index(np,
-+						   "nvidia,adjust-baud-rates",
-+						   count, &pval);
-+			if (!ret)
-+				tup->baud_tolerance[index].lower_range_baud =
-+				pval;
-+			ret =
-+			of_property_read_u32_index(np,
-+						   "nvidia,adjust-baud-rates",
-+						   count + 1, &pval);
-+			if (!ret)
-+				tup->baud_tolerance[index].upper_range_baud =
-+				pval;
-+			ret =
-+			of_property_read_u32_index(np,
-+						   "nvidia,adjust-baud-rates",
-+						   count + 2, &pval);
-+			if (!ret)
-+				tup->baud_tolerance[index].tolerance =
-+				(s32)pval;
-+		}
-+	} else {
-+		tup->n_adjustable_baud_rates = 0;
-+	}
-+
- 	return 0;
- }
- 
+-	ret = uart_register_driver(&tegra_uart_driver);
+-	if (ret < 0) {
+-		pr_err("Could not register %s driver\n",
+-			tegra_uart_driver.driver_name);
+-		return ret;
+-	}
+-
+ 	ret = platform_driver_register(&tegra_uart_platform_driver);
+ 	if (ret < 0) {
+ 		pr_err("Uart platform driver register failed, e = %d\n", ret);
 -- 
 2.7.4
