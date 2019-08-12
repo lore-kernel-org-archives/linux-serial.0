@@ -1,49 +1,78 @@
 From: Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Subject: [PATCH 00/14] serial: tegra: Tegra186 support and fixes
-Date: Mon, 12 Aug 2019 16:58:09 +0530
-Message-ID: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
+Subject: [PATCH 01/14] serial: tegra: add internal loopback functionality
+Date: Mon, 12 Aug 2019 16:58:10 +0530
+Message-ID: <1565609303-27000-2-git-send-email-kyarlagadda@nvidia.com>
+References: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com, jonathanh@nvidia.com, ldewangan@nvidia.com, jslaby@suse.com
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Krishna Yarlagadda <kyarlagadda@nvidia.com>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Andreas Abel <aabel@nvidia.com>, Krishna Yarlagadda <kyarlagadda@nvidia.com>
 List-Id: linux-serial@vger.kernel.org
 
-Series of patches adding enhancements to exising UART driver and adding
-support for new chip Tegra186 and Tegra194.
+From: Andreas Abel <aabel@nvidia.com>
 
-Tegra186 uses GPCDMA for dma transfers which is still not available in
-mainstream. However, it can work in PIO/FIFO mode and support added for it.
-Also Tegra186 has a hardware issue where it does not meet tolernace +/-4% and
-to work around it, device tree entries provided to adjust baud rate for a
-particular range.
+Add the internal loopback functionality that can be enabled with
+TIOCM_LOOP.
 
-Ahung Cheng (2):
-  serial: tegra: avoid reg access when clk disabled
-  serial: tegra: protect IER against LCR.DLAB
+Signed-off-by: Andreas Abel <aabel@nvidia.com>
+Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
+---
+ drivers/tty/serial/serial-tegra.c | 26 ++++++++++++++++++++++----
+ 1 file changed, 22 insertions(+), 4 deletions(-)
 
-Andreas Abel (1):
-  serial: tegra: add internal loopback functionality
-
-Krishna Yarlagadda (7):
-  serial: tegra: report error to upper tty layer
-  serial: tegra: add compatible for new chips
-  serial: tegra: check for FIFO mode enabled status
-  serial: tegra: DT for Adjusted baud rates
-  serial: tegra: add support to adjust baud rate
-  serial: tegra: report clk rate errors
-  serial: tegra: Add PIO mode support
-
-Shardar Shariff Md (4):
-  serial: tegra: add support to ignore read
-  serial: tegra: flush the RX fifo on frame error
-  serial: tegra: set maximum num of uart ports to 8
-  serial: tegra: add support to use 8 bytes trigger
-
- .../bindings/serial/nvidia,tegra20-hsuart.txt      |  35 +-
- drivers/tty/serial/serial-tegra.c                  | 405 ++++++++++++++++++---
- 2 files changed, 385 insertions(+), 55 deletions(-)
-
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index d5269aa..19f4c24 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -4,7 +4,7 @@
+  *
+  * High-speed serial driver for NVIDIA Tegra SoCs
+  *
+- * Copyright (c) 2012-2013, NVIDIA CORPORATION.  All rights reserved.
++ * Copyright (c) 2012-2019, NVIDIA CORPORATION.  All rights reserved.
+  *
+  * Author: Laxman Dewangan <ldewangan@nvidia.com>
+  */
+@@ -192,16 +192,34 @@ static void set_dtr(struct tegra_uart_port *tup, bool active)
+ 	}
+ }
+ 
++static void set_loopbk(struct tegra_uart_port *tup, bool active)
++{
++	unsigned long mcr = tup->mcr_shadow;
++
++	if (active)
++		mcr |= UART_MCR_LOOP;
++	else
++		mcr &= ~UART_MCR_LOOP;
++
++	if (mcr != tup->mcr_shadow) {
++		tegra_uart_write(tup, mcr, UART_MCR);
++		tup->mcr_shadow = mcr;
++	}
++}
++
+ static void tegra_uart_set_mctrl(struct uart_port *u, unsigned int mctrl)
+ {
+ 	struct tegra_uart_port *tup = to_tegra_uport(u);
+-	int dtr_enable;
++	int enable;
+ 
+ 	tup->rts_active = !!(mctrl & TIOCM_RTS);
+ 	set_rts(tup, tup->rts_active);
+ 
+-	dtr_enable = !!(mctrl & TIOCM_DTR);
+-	set_dtr(tup, dtr_enable);
++	enable = !!(mctrl & TIOCM_DTR);
++	set_dtr(tup, enable);
++
++	enable = !!(mctrl & TIOCM_LOOP);
++	set_loopbk(tup, enable);
+ }
+ 
+ static void tegra_uart_break_ctl(struct uart_port *u, int break_ctl)
 -- 
 2.7.4
