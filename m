@@ -1,39 +1,53 @@
-From: Razvan Stefanescu <razvan.stefanescu@microchip.com>
-Subject: [PATCH] tty/serial: atmel: reschedule TX after RX was started
-Date: Tue, 13 Aug 2019 10:40:25 +0300
-Message-ID: <20190813074025.16218-1-razvan.stefanescu@microchip.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v2 1/2] serial: 8250_pci: Add support for Sunix serial boards
+Date: Tue, 13 Aug 2019 11:23:35 +0300
+Message-ID: <CAHp75VedrnJDOoJGuYJiFAx3ODGAMFx7nTKuoErNn3NWYSn_gA@mail.gmail.com>
+References: <20190809190130.30773-1-kai.heng.feng@canonical.com>
+ <CAHp75VeGs8K+da+4CaqNjm_ci86KoLcmhY8GaJO7jm__J0TcSQ@mail.gmail.com>
+ <93860D98-9CB7-4D3D-8917-E15591BD1EC4@canonical.com> <20190813061228.GH6670@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190813061228.GH6670@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Ludovic Desroches <ludovic.desroches@microchip.com>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Kai-Heng Feng <kai.heng.feng@canonical.com>, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Morris Ku <morris_ku@sunix.com>, Debbie Liu <debbie_liu@sunix.com>
 List-Id: linux-serial@vger.kernel.org
 
-When half-duplex RS485 communication is used, after RX is started, TX
-tasklet still needs to be  scheduled tasklet. This avoids console freezing
-when more data is to be transmitted, if the serial communication is not
-closed.
+On Tue, Aug 13, 2019 at 9:12 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+> On Tue, Aug 13, 2019 at 12:36:40PM +0800, Kai-Heng Feng wrote:
+> > at 21:18, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > > On Fri, Aug 9, 2019 at 10:05 PM Kai-Heng Feng
+> > > <kai.heng.feng@canonical.com> wrote:
 
-Fixes: 69646d7a3689 ("tty/serial: atmel: RS485 HD w/DMA: enable RX after TX is stopped")
+> > > Can you, please, split out the Sunix quirk driver to a separate module
+> > > (see examples like: 8250_exar, 8250_lpss, 8250_mid)?
+> > > And then with a fewer LOCs add a new boards.
+> >
+> > Greg asked Sunix to use existing 8250_pci.c instead of its own module.
+> > It only needs a special setup function, other parts are just 8250_pci.
+>
+> Agreed.  And this patch is already in my tree :)
+>
+> If people really worry about size issues, start carving this up by
+> different configuration options, or yes, split it up into tiny modules
+> (but note the overhead there when things get too tiny, it's a
+> diminishing return).
 
-Signed-off-by: Razvan Stefanescu <razvan.stefanescu@microchip.com>
----
- drivers/tty/serial/atmel_serial.c | 1 -
- 1 file changed, 1 deletion(-)
+It's always a trade off and associative pros and cons. If Sunix is a
+simple one, I tend to agree that 8250_pci is a good place. For rather
+big quirk modules, like Exar one, the separate sounds better (and as
+we can see from retrospective of maintenance).
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 0b4f36905321..8e667967928a 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -1400,7 +1400,6 @@ atmel_handle_transmit(struct uart_port *port, unsigned int pending)
- 
- 			atmel_port->hd_start_rx = false;
- 			atmel_start_rx(port);
--			return;
- 		}
- 
- 		atmel_tasklet_schedule(atmel_port, &atmel_port->tasklet_tx);
+>
+> > Why does split them a better idea? I even think of squashing 8250_moxa into
+> > 8250_pci.
+>
+> I would agree with you, I bet you save space if you do that.
+
+
+
 -- 
-2.20.1
+With Best Regards,
+Andy Shevchenko
