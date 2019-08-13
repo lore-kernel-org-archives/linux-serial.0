@@ -1,58 +1,32 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 01/14] serial: tegra: add internal loopback functionality
-Date: Tue, 13 Aug 2019 11:38:32 +0200
-Message-ID: <20190813093832.GF1137@ulmo>
-References: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
- <1565609303-27000-2-git-send-email-kyarlagadda@nvidia.com>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Subject: Re: [PATCH v4 3/9] nvmem: core: add nvmem_device_find
+Date: Tue, 13 Aug 2019 10:40:34 +0100
+Message-ID: <8d18de64-9234-fcba-aa3d-b46789eb62a5@linaro.org>
+References: <20190809103235.16338-1-tbogendoerfer@suse.de>
+ <20190809103235.16338-4-tbogendoerfer@suse.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="QXO0/MSS4VvK6f+D"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1565609303-27000-2-git-send-email-kyarlagadda@nvidia.com>
+In-Reply-To: <20190809103235.16338-4-tbogendoerfer@suse.de>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Cc: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, jonathanh@nvidia.com, ldewangan@nvidia.com, jslaby@suse.com, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Andreas Abel <aabel@nvidia.com>
+To: Thomas Bogendoerfer <tbogendoerfer@suse.de>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Evgeniy Polyakov <zbr@ioremap.net>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, linux-input@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
 
---QXO0/MSS4VvK6f+D
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 12, 2019 at 04:58:10PM +0530, Krishna Yarlagadda wrote:
-> From: Andreas Abel <aabel@nvidia.com>
->=20
-> Add the internal loopback functionality that can be enabled with
-> TIOCM_LOOP.
->=20
-> Signed-off-by: Andreas Abel <aabel@nvidia.com>
-> Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
+On 09/08/2019 11:32, Thomas Bogendoerfer wrote:
+> nvmem_device_find provides a way to search for nvmem devices with
+> the help of a match function simlair to bus_find_device.
+> 
+> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
 > ---
->  drivers/tty/serial/serial-tegra.c | 26 ++++++++++++++++++++++----
->  1 file changed, 22 insertions(+), 4 deletions(-)
+>   drivers/nvmem/core.c           | 62 ++++++++++++++++++++++--------------------
+>   include/linux/nvmem-consumer.h |  9 ++++++
+>   2 files changed, 41 insertions(+), 30 deletions(-)
 
-Acked-by: Thierry Reding <treding@nvidia.com>
+Have you considered using nvmem_register_notifier() ?
 
---QXO0/MSS4VvK6f+D
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl1ShRgACgkQ3SOs138+
-s6FvcA/+O460rdaqlCYb/O1T4GYVbOQkOb/QbYwx+jFmLZ1ZaX43C5NJ4d5vYmqc
-Eo9HNlYUgKut+AewjxX1fkNSebJT3SB0OlzW8ynLKsvAvEuloi54J2DfiSTqcRqr
-QfkpEb5mAjBV6124k69a8a4vIb3xtgyYtheBmRNmFDgWscPTzm5u5Pys1yaferWV
-mWvRFDQivavI/KH/OiN4/bB+w92ukbYZkK4gumohJD02T6T7CTscHLJscW5CGTUj
-DET5xdJPKUkDYiOaXSZWxkEyGojGCIIOMpZ+pASUyHI73JanVO3uXVT2lopo49px
-zVGqkXGqVCL2VhlHgnzVq/H+q6n2/sxDdeOcwzln/9vB/0BEDg7OI2kn9LcFRwOc
-ThnObc5zTHvzagJm4zfAj+kMmLBELAyNYPSXnoJl+/wHhbK9FJutyo7Ys9onuKIi
-tq1W34LBiWa6QkTjZaMRX4oLL0p6oa5upyMy5DJ4iaaUCQHlUHtD48UA3SqVQxxY
-BmOAtUTjYyDt/w7sg6Ci6cPMYiOTYPyqd7XwleVQnDsmYom9JU2pvaSC2XDdAH2U
-oFIrnX/CtBU9XSD8PSDjTl0m9yFVDH7RJQM0LhF7+fEa/2IxqgfgH7Y1yPQZGtQS
-nYa7ftvYSqSoz3QLGGOVZmrhYjOzDEOQ3uuH5HX5tPgPJISbAbU=
-=KYrm
------END PGP SIGNATURE-----
-
---QXO0/MSS4VvK6f+D--
+--srini
