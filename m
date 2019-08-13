@@ -1,59 +1,107 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 04/14] serial: tegra: protect IER against LCR.DLAB
-Date: Tue, 13 Aug 2019 11:46:35 +0200
-Message-ID: <20190813094635.GI1137@ulmo>
+Subject: Re: [PATCH 05/14] serial: tegra: flush the RX fifo on frame error
+Date: Tue, 13 Aug 2019 11:48:32 +0200
+Message-ID: <20190813094832.GJ1137@ulmo>
 References: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
- <1565609303-27000-5-git-send-email-kyarlagadda@nvidia.com>
+ <1565609303-27000-6-git-send-email-kyarlagadda@nvidia.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="cVp8NMj01v+Em8Se"
+        protocol="application/pgp-signature"; boundary="Xssso5lpTBgMxDfe"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1565609303-27000-5-git-send-email-kyarlagadda@nvidia.com>
+In-Reply-To: <1565609303-27000-6-git-send-email-kyarlagadda@nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Cc: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, jonathanh@nvidia.com, ldewangan@nvidia.com, jslaby@suse.com, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Ahung Cheng <ahcheng@nvidia.com>
+Cc: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, jonathanh@nvidia.com, ldewangan@nvidia.com, jslaby@suse.com, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Shardar Shariff Md <smohammed@nvidia.com>
 List-Id: linux-serial@vger.kernel.org
 
 
---cVp8NMj01v+Em8Se
+--Xssso5lpTBgMxDfe
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 12, 2019 at 04:58:13PM +0530, Krishna Yarlagadda wrote:
-> From: Ahung Cheng <ahcheng@nvidia.com>
+On Mon, Aug 12, 2019 at 04:58:14PM +0530, Krishna Yarlagadda wrote:
+> From: Shardar Shariff Md <smohammed@nvidia.com>
 >=20
-> The IER and DLH registers occupy the same address space, selected by
-> the LCR.DLAB bit. Hence, add port lock to protect IER when LCR.DLAB bit
-> is set.
->=20
-> Signed-off-by: Ahung Cheng <ahcheng@nvidia.com>
+> FIFO reset/flush code implemented now does not follow programming
+> guidelines. RTS line has to be turned off while flushing fifos to
+> avoid new transfers. Also check LSR bits UART_LSR_TEMT and UART_LSR_DR
+> to confirm fifos are flushed.
+
+You use inconsistent spelling for FIFO here.
+
+> Signed-off-by: Shardar Shariff Md <smohammed@nvidia.com>
 > Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
 > ---
->  drivers/tty/serial/serial-tegra.c | 3 +++
->  1 file changed, 3 insertions(+)
+>  drivers/tty/serial/serial-tegra.c | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
+>=20
+> diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/seria=
+l-tegra.c
+> index ae7225c..f6a3f4e 100644
+> --- a/drivers/tty/serial/serial-tegra.c
+> +++ b/drivers/tty/serial/serial-tegra.c
+> @@ -266,6 +266,10 @@ static void tegra_uart_wait_sym_time(struct tegra_ua=
+rt_port *tup,
+>  static void tegra_uart_fifo_reset(struct tegra_uart_port *tup, u8 fcr_bi=
+ts)
+>  {
+>  	unsigned long fcr =3D tup->fcr_shadow;
+> +	unsigned int lsr, tmout =3D 10000;
+> +
+> +	if (tup->rts_active)
+> +		set_rts(tup, false);
+> =20
+>  	if (tup->cdata->allow_txfifo_reset_fifo_mode) {
+>  		fcr |=3D fcr_bits & (UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
+> @@ -289,6 +293,17 @@ static void tegra_uart_fifo_reset(struct tegra_uart_=
+port *tup, u8 fcr_bits)
+>  	 * to propagate, otherwise data could be lost.
+>  	 */
+>  	tegra_uart_wait_cycle_time(tup, 32);
+> +
+> +	do {
+> +		lsr =3D tegra_uart_read(tup, UART_LSR);
+> +		if (lsr | UART_LSR_TEMT)
+> +			if (!(lsr & UART_LSR_DR))
 
-Acked-by: Thierry Reding <treding@nvidia.com>
+Can't both of these go on the same line?
 
---cVp8NMj01v+Em8Se
+Thierry
+
+> +				break;
+> +		udelay(1);
+> +	} while (--tmout);
+> +
+> +	if (tup->rts_active)
+> +		set_rts(tup, true);
+>  }
+> =20
+>  static int tegra_set_baudrate(struct tegra_uart_port *tup, unsigned int =
+baud)
+> --=20
+> 2.7.4
+>=20
+
+--Xssso5lpTBgMxDfe
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl1ShvoACgkQ3SOs138+
-s6ELYg/+O1adqcMU5/CWtP2Mlzii/9QsLg7Ocr3E1iAHX1QgRkmcf85BzjkgPUt1
-2T6erGS1mdXQFtlWADtskxzCWdKeOoUlKAdPmbApwB0QF+ELBUhjbOGfRS1vUg6I
-/9jeiW70PL9cvuw1/X2E/hIwMTNPWmKfnvP+ONzUwlwQ2Kw98FoW9zbNAUlPgS1B
-tj61fXIFNgNhVL2PbAUsWXfakFADl/X4dGxs+pDLOL61xUi4Ag4CXhS6tGckEKwS
-6alqh/cxVmOl4OFAdaTo5dUX3rZ91dAg7Q420SjpkzVZBqxuj5lW2yHLetYVyXXZ
-4LX/QOa7wSo8ImnnxhcNJQcEyL6DxP1szp2Cpp077tfokinqLg7jd1wf+PYJgRcU
-8hE2XwpiUOg2+MHCZ2seseQ16zBJIgwI4CW+hmQJaxDeO45TCObZVD2Q/UqT+pFC
-s8RnxF33IpYatRaIFrrDMJNOrg0+hPbZQlip2epvheR5uXNmtGVX9D9hIlnaaGLj
-VfFr04huq6qaW8VPzYjWNnFQaclFHCt5OLJqa7KUHZlmGD6GB2XPiJIcuQ/MEoBd
-iZDvcHNDuonVWu7YlDqaj+Zk+AU/mstYsNjF+j9mdwKbg3/UI61YCvtXLRTgNUmX
-A5lpw2v9X1xdro8y9hJ6vKDQCaRSgwxd5nf7KCkNnRtQ6HOgefw=
-=itlT
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl1Sh28ACgkQ3SOs138+
+s6EtEg//doVYuGtPItd+PnimbHPvK65iBFfPnNyDNeLkFEWRXc9Lr/YNMEZRvXXk
+jSCB5dOOO6bawhT2cAqpph/9dza4Vvc+944teuITF9d42ymDjjMfcFjAFegqtFsb
+zTlE8CzX2bs1y+0xks/8LGhHgaUPDU1NgVHnhwWjo2IIZvnOBjL8eWalCwfiNO6M
+jo9UOV5xAZyXOk+RtheaE4VfGcgSBW3TbqWtl1TjhZ73E9d/S+r4eHo918GhD+n6
+c4/Z9155gI0KEJyvQBGBSUaWAW6Ok9Yzq9rn2IjW9/uaU7Su3n+UBuv1bIB50Juj
+ihpWn/k/07mM+T8AKeu0COxpmoLUvbYM9kU0gAz7xLFsFws68/+nJfUigmwCZgLA
+BnOixrT6rgSmZcyR/50fep2hrqwBNZ51fZ2u5fKWBBUGDGwbsef4wLKmih5OC6Le
+5+bDoP70Z8xhLZYEeXsSOTn4lPka+6NRXha8W+LE3OYeeBYOrNYfDUc/jPeif47J
+guZLpd1CH3bJnvR0mQR0DIZGKhRMd3Czbcw+opvnepeVO7kmzSkUl1bbX/6J9h7I
+ODfTut2Y6Q9OzqdwJObm3VpnchB/uEHkMrOVMYjYPzkhbH5sgX2mXr60+O8VAzHI
+My0BQvCge2+Ybv3e8SV1YusY6pV4Fjp8svAC9LmuB0WnAxJszZw=
+=dpAL
 -----END PGP SIGNATURE-----
 
---cVp8NMj01v+Em8Se--
+--Xssso5lpTBgMxDfe--
