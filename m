@@ -1,8 +1,8 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 3/3] serial: sh-sci: Don't check for mctrl_gpio_to_gpiod()
+Subject: [PATCH 2/3] serial: mxs-auart: Don't check for mctrl_gpio_to_gpiod()
  returning error
-Date: Wed, 14 Aug 2019 11:27:57 +0200
-Message-ID: <20190814092757.13726-4-geert+renesas@glider.be>
+Date: Wed, 14 Aug 2019 11:27:56 +0200
+Message-ID: <20190814092757.13726-3-geert+renesas@glider.be>
 References: <20190814092757.13726-1-geert+renesas@glider.be>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -36,41 +36,25 @@ drop usages of IS_ERR_OR_NULL") in the mctrl-gpio core.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/sh-sci.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ drivers/tty/serial/mxs-auart.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 7f565fcbf1ca4c5e..4e754a4850e6db63 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2099,12 +2099,12 @@ static unsigned int sci_get_mctrl(struct uart_port *port)
- 	if (s->autorts) {
- 		if (sci_get_cts(port))
- 			mctrl |= TIOCM_CTS;
--	} else if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_CTS))) {
-+	} else if (!mctrl_gpio_to_gpiod(gpios, UART_GPIO_CTS)) {
- 		mctrl |= TIOCM_CTS;
- 	}
--	if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_DSR)))
-+	if (!mctrl_gpio_to_gpiod(gpios, UART_GPIO_DSR))
- 		mctrl |= TIOCM_DSR;
--	if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_DCD)))
-+	if (!mctrl_gpio_to_gpiod(gpios, UART_GPIO_DCD))
- 		mctrl |= TIOCM_CAR;
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index 4c188f4079b3ea68..e3452597068292f9 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -969,10 +969,8 @@ static int mxs_auart_dma_init(struct mxs_auart_port *s)
  
- 	return mctrl;
-@@ -3285,10 +3285,8 @@ static int sci_probe_single(struct platform_device *dev,
- 		return PTR_ERR(sciport->gpios);
+ }
  
- 	if (sciport->has_rtscts) {
--		if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(sciport->gpios,
--							UART_GPIO_CTS)) ||
--		    !IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(sciport->gpios,
--							UART_GPIO_RTS))) {
-+		if (mctrl_gpio_to_gpiod(sciport->gpios, UART_GPIO_CTS) ||
-+		    mctrl_gpio_to_gpiod(sciport->gpios, UART_GPIO_RTS)) {
- 			dev_err(&dev->dev, "Conflicting RTS/CTS config\n");
- 			return -EINVAL;
- 		}
+-#define RTS_AT_AUART()	IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(s->gpios,	\
+-							UART_GPIO_RTS))
+-#define CTS_AT_AUART()	IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(s->gpios,	\
+-							UART_GPIO_CTS))
++#define RTS_AT_AUART()	!mctrl_gpio_to_gpiod(s->gpios, UART_GPIO_RTS)
++#define CTS_AT_AUART()	!mctrl_gpio_to_gpiod(s->gpios, UART_GPIO_CTS)
+ static void mxs_auart_settermios(struct uart_port *u,
+ 				 struct ktermios *termios,
+ 				 struct ktermios *old)
 -- 
 2.17.1
