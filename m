@@ -1,8 +1,8 @@
 From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 1/3] serial: atmel: Don't check for mctrl_gpio_to_gpiod()
+Subject: [PATCH 3/3] serial: sh-sci: Don't check for mctrl_gpio_to_gpiod()
  returning error
-Date: Wed, 14 Aug 2019 11:29:22 +0200
-Message-ID: <20190814092924.13857-2-geert+renesas@glider.be>
+Date: Wed, 14 Aug 2019 11:29:24 +0200
+Message-ID: <20190814092924.13857-4-geert+renesas@glider.be>
 References: <20190814092757.13726-1-geert+renesas@glider.be>
  <20190814092924.13857-1-geert+renesas@glider.be>
 Mime-Version: 1.0
@@ -37,49 +37,41 @@ drop usages of IS_ERR_OR_NULL") in the mctrl-gpio core.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/atmel_serial.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ drivers/tty/serial/sh-sci.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 19a85d6fe3d20541..e9620a81166b7dc1 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -303,32 +303,28 @@ static unsigned int atmel_get_lines_status(struct uart_port *port)
- 
- 	mctrl_gpio_get(atmel_port->gpios, &ret);
- 
--	if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
--						UART_GPIO_CTS))) {
-+	if (mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_CTS)) {
- 		if (ret & TIOCM_CTS)
- 			status &= ~ATMEL_US_CTS;
- 		else
- 			status |= ATMEL_US_CTS;
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 7f565fcbf1ca4c5e..4e754a4850e6db63 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -2099,12 +2099,12 @@ static unsigned int sci_get_mctrl(struct uart_port *port)
+ 	if (s->autorts) {
+ 		if (sci_get_cts(port))
+ 			mctrl |= TIOCM_CTS;
+-	} else if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_CTS))) {
++	} else if (!mctrl_gpio_to_gpiod(gpios, UART_GPIO_CTS)) {
+ 		mctrl |= TIOCM_CTS;
  	}
+-	if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_DSR)))
++	if (!mctrl_gpio_to_gpiod(gpios, UART_GPIO_DSR))
+ 		mctrl |= TIOCM_DSR;
+-	if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_DCD)))
++	if (!mctrl_gpio_to_gpiod(gpios, UART_GPIO_DCD))
+ 		mctrl |= TIOCM_CAR;
  
--	if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
--						UART_GPIO_DSR))) {
-+	if (mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_DSR)) {
- 		if (ret & TIOCM_DSR)
- 			status &= ~ATMEL_US_DSR;
- 		else
- 			status |= ATMEL_US_DSR;
- 	}
+ 	return mctrl;
+@@ -3285,10 +3285,8 @@ static int sci_probe_single(struct platform_device *dev,
+ 		return PTR_ERR(sciport->gpios);
  
--	if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
--						UART_GPIO_RI))) {
-+	if (mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_RI)) {
- 		if (ret & TIOCM_RI)
- 			status &= ~ATMEL_US_RI;
- 		else
- 			status |= ATMEL_US_RI;
- 	}
- 
--	if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
--						UART_GPIO_DCD))) {
-+	if (mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_DCD)) {
- 		if (ret & TIOCM_CD)
- 			status &= ~ATMEL_US_DCD;
- 		else
+ 	if (sciport->has_rtscts) {
+-		if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(sciport->gpios,
+-							UART_GPIO_CTS)) ||
+-		    !IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(sciport->gpios,
+-							UART_GPIO_RTS))) {
++		if (mctrl_gpio_to_gpiod(sciport->gpios, UART_GPIO_CTS) ||
++		    mctrl_gpio_to_gpiod(sciport->gpios, UART_GPIO_RTS)) {
+ 			dev_err(&dev->dev, "Conflicting RTS/CTS config\n");
+ 			return -EINVAL;
+ 		}
 -- 
 2.17.1
