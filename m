@@ -1,17 +1,17 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 Subject: Re: [PATCH 1/3] serial: atmel: Don't check for mctrl_gpio_to_gpiod()
  returning error
-Date: Wed, 14 Aug 2019 11:35:58 +0200
-Message-ID: <20190814093558.xlx5ck54dw2dgb6k@pengutronix.de>
+Date: Wed, 14 Aug 2019 12:20:33 +0200
+Message-ID: <CAMuHMdWNj-H9B8E9=NeCgLracBuJODfPyBYJERh=vt4oNFUkGw@mail.gmail.com>
 References: <20190814092757.13726-1-geert+renesas@glider.be>
  <20190814092924.13857-1-geert+renesas@glider.be>
  <20190814092924.13857-2-geert+renesas@glider.be>
+ <20190814093558.xlx5ck54dw2dgb6k@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20190814092924.13857-2-geert+renesas@glider.be>
+In-Reply-To: <20190814093558.xlx5ck54dw2dgb6k@pengutronix.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -21,65 +21,56 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, linux-serial@vger.kernel.org, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, Frieder Schrempf <frieder.schrempf@kontron.de>, linux-renesas-soc@vger.kernel.org, Ludovic Desroches <ludovic.desroches@microchip.com>, NXP Linux Team <linux-imx@nxp.com>, Fabio Estevam <festevam@gmail.com>, Jiri Slaby <jslaby@suse.com>, Shawn Guo <shawnguo@kernel.org>, linux-arm-kernel@lists.infradead.org
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, Geert Uytterhoeven <geert+renesas@glider.be>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, Frieder Schrempf <frieder.schrempf@kontron.de>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, NXP Linux Team <linux-imx@nxp.com>, Fabio Estevam <festevam@gmail.com>, Jiri Slaby <jslaby@suse.com>, Shawn Guo <shawnguo@kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
-
-[adding the Atmel guys to Cc]
-
-On Wed, Aug 14, 2019 at 11:29:22AM +0200, Geert Uytterhoeven wrote:
-> Since commit 1d267ea6539f2663 ("serial: mctrl-gpio: simplify init
-> routine"), mctrl_gpio_init() returns failure if the assignment to any
-> member of the gpio array results in an error pointer.
-> Since commit c359522194593815 ("serial: mctrl_gpio: Avoid probe failures
-> in case of missing gpiolib"), mctrl_gpio_to_gpiod() returns NULL in the
-> !CONFIG_GPIOLIB case.
-> Hence there is no longer a need to check for mctrl_gpio_to_gpiod()
-> returning an error value.  A simple NULL check is sufficient.
-> =
-
-> This follows the spirit of commit 445df7ff3fd1a0a9 ("serial: mctrl-gpio:
-> drop usages of IS_ERR_OR_NULL") in the mctrl-gpio core.
-> =
-
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  drivers/tty/serial/atmel_serial.c | 12 ++++--------
->  1 file changed, 4 insertions(+), 8 deletions(-)
-> =
-
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel=
-_serial.c
-> index 19a85d6fe3d20541..e9620a81166b7dc1 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -303,32 +303,28 @@ static unsigned int atmel_get_lines_status(struct u=
-art_port *port)
->  =
-
->  	mctrl_gpio_get(atmel_port->gpios, &ret);
->  =
-
-> -	if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
-> -						UART_GPIO_CTS))) {
-> +	if (mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_CTS)) {
->  		if (ret & TIOCM_CTS)
->  			status &=3D ~ATMEL_US_CTS;
->  		else
->  			status |=3D ATMEL_US_CTS;
->  	}
-
-The change is fine, but it seems the atmel driver doesn't use mctrl_gpio
-as expected (at least as expected by me). IMHO driving the hardware
-function of the CTS pin shouldn't be conditional on the presence of a
-cts-gpio. Is there a reason not to just drop the if completely?
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+SGkgVXdlLAoKT24gV2VkLCBBdWcgMTQsIDIwMTkgYXQgMTE6MzYgQU0gVXdlIEtsZWluZS1Lw7Zu
+aWcKPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4gd3JvdGU6Cj4gT24gV2VkLCBBdWcg
+MTQsIDIwMTkgYXQgMTE6Mjk6MjJBTSArMDIwMCwgR2VlcnQgVXl0dGVyaG9ldmVuIHdyb3RlOgo+
+ID4gU2luY2UgY29tbWl0IDFkMjY3ZWE2NTM5ZjI2NjMgKCJzZXJpYWw6IG1jdHJsLWdwaW86IHNp
+bXBsaWZ5IGluaXQKPiA+IHJvdXRpbmUiKSwgbWN0cmxfZ3Bpb19pbml0KCkgcmV0dXJucyBmYWls
+dXJlIGlmIHRoZSBhc3NpZ25tZW50IHRvIGFueQo+ID4gbWVtYmVyIG9mIHRoZSBncGlvIGFycmF5
+IHJlc3VsdHMgaW4gYW4gZXJyb3IgcG9pbnRlci4KPiA+IFNpbmNlIGNvbW1pdCBjMzU5NTIyMTk0
+NTkzODE1ICgic2VyaWFsOiBtY3RybF9ncGlvOiBBdm9pZCBwcm9iZSBmYWlsdXJlcwo+ID4gaW4g
+Y2FzZSBvZiBtaXNzaW5nIGdwaW9saWIiKSwgbWN0cmxfZ3Bpb190b19ncGlvZCgpIHJldHVybnMg
+TlVMTCBpbiB0aGUKPiA+ICFDT05GSUdfR1BJT0xJQiBjYXNlLgo+ID4gSGVuY2UgdGhlcmUgaXMg
+bm8gbG9uZ2VyIGEgbmVlZCB0byBjaGVjayBmb3IgbWN0cmxfZ3Bpb190b19ncGlvZCgpCj4gPiBy
+ZXR1cm5pbmcgYW4gZXJyb3IgdmFsdWUuICBBIHNpbXBsZSBOVUxMIGNoZWNrIGlzIHN1ZmZpY2ll
+bnQuCj4gPgo+ID4gVGhpcyBmb2xsb3dzIHRoZSBzcGlyaXQgb2YgY29tbWl0IDQ0NWRmN2ZmM2Zk
+MWEwYTkgKCJzZXJpYWw6IG1jdHJsLWdwaW86Cj4gPiBkcm9wIHVzYWdlcyBvZiBJU19FUlJfT1Jf
+TlVMTCIpIGluIHRoZSBtY3RybC1ncGlvIGNvcmUuCj4gPgo+ID4gU2lnbmVkLW9mZi1ieTogR2Vl
+cnQgVXl0dGVyaG9ldmVuIDxnZWVydCtyZW5lc2FzQGdsaWRlci5iZT4KPiA+IC0tLQo+ID4gIGRy
+aXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYyB8IDEyICsrKystLS0tLS0tLQo+ID4gIDEg
+ZmlsZSBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDggZGVsZXRpb25zKC0pCj4gPgo+ID4gZGlm
+ZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYyBiL2RyaXZlcnMvdHR5
+L3NlcmlhbC9hdG1lbF9zZXJpYWwuYwo+ID4gaW5kZXggMTlhODVkNmZlM2QyMDU0MS4uZTk2MjBh
+ODExNjZiN2RjMSAxMDA2NDQKPiA+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJp
+YWwuYwo+ID4gKysrIGIvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5jCj4gPiBAQCAt
+MzAzLDMyICszMDMsMjggQEAgc3RhdGljIHVuc2lnbmVkIGludCBhdG1lbF9nZXRfbGluZXNfc3Rh
+dHVzKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpCj4gPgo+ID4gICAgICAgbWN0cmxfZ3Bpb19nZXQo
+YXRtZWxfcG9ydC0+Z3Bpb3MsICZyZXQpOwo+ID4KPiA+IC0gICAgIGlmICghSVNfRVJSX09SX05V
+TEwobWN0cmxfZ3Bpb190b19ncGlvZChhdG1lbF9wb3J0LT5ncGlvcywKPiA+IC0gICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBVQVJUX0dQSU9fQ1RTKSkpIHsKPiA+
+ICsgICAgIGlmIChtY3RybF9ncGlvX3RvX2dwaW9kKGF0bWVsX3BvcnQtPmdwaW9zLCBVQVJUX0dQ
+SU9fQ1RTKSkgewo+ID4gICAgICAgICAgICAgICBpZiAocmV0ICYgVElPQ01fQ1RTKQo+ID4gICAg
+ICAgICAgICAgICAgICAgICAgIHN0YXR1cyAmPSB+QVRNRUxfVVNfQ1RTOwo+ID4gICAgICAgICAg
+ICAgICBlbHNlCj4gPiAgICAgICAgICAgICAgICAgICAgICAgc3RhdHVzIHw9IEFUTUVMX1VTX0NU
+UzsKPiA+ICAgICAgIH0KPgo+IFRoZSBjaGFuZ2UgaXMgZmluZSwgYnV0IGl0IHNlZW1zIHRoZSBh
+dG1lbCBkcml2ZXIgZG9lc24ndCB1c2UgbWN0cmxfZ3Bpbwo+IGFzIGV4cGVjdGVkIChhdCBsZWFz
+dCBhcyBleHBlY3RlZCBieSBtZSkuIElNSE8gZHJpdmluZyB0aGUgaGFyZHdhcmUKPiBmdW5jdGlv
+biBvZiB0aGUgQ1RTIHBpbiBzaG91bGRuJ3QgYmUgY29uZGl0aW9uYWwgb24gdGhlIHByZXNlbmNl
+IG9mIGEKPiBjdHMtZ3Bpby4gSXMgdGhlcmUgYSByZWFzb24gbm90IHRvIGp1c3QgZHJvcCB0aGUg
+aWYgY29tcGxldGVseT8KClRoZSBhYm92ZSBjb2RlIHJldHVybnMgdGhlIGhhcmR3YXJlIHN0YXR1
+cyBpZiBDVFMgaXMgbm90IGEgR1BJTywgYW5kCnJldHVybnMgKG92ZXJyaWRlcyB3aXRoKSB0aGUg
+R1BJTyBzdGF0dXMgaWYgQ1RTIGlzIGEgR1BJTy4KSXNuJ3QgdGhhdCBjb3JyZWN0LCBvciBhbSBJ
+IG1pc3Npbmcgc29tZXRoaW5nPwoKR3J7b2V0amUsZWV0aW5nfXMsCgogICAgICAgICAgICAgICAg
+ICAgICAgICBHZWVydAoKLS0gCkdlZXJ0IFV5dHRlcmhvZXZlbiAtLSBUaGVyZSdzIGxvdHMgb2Yg
+TGludXggYmV5b25kIGlhMzIgLS0gZ2VlcnRAbGludXgtbTY4ay5vcmcKCkluIHBlcnNvbmFsIGNv
+bnZlcnNhdGlvbnMgd2l0aCB0ZWNobmljYWwgcGVvcGxlLCBJIGNhbGwgbXlzZWxmIGEgaGFja2Vy
+LiBCdXQKd2hlbiBJJ20gdGFsa2luZyB0byBqb3VybmFsaXN0cyBJIGp1c3Qgc2F5ICJwcm9ncmFt
+bWVyIiBvciBzb21ldGhpbmcgbGlrZSB0aGF0LgogICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIC0tIExpbnVzIFRvcnZhbGRzCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2Vy
+bmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1h
+bi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
