@@ -1,106 +1,73 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 1/3] serial: atmel: Don't check for mctrl_gpio_to_gpiod()
- returning error
-Date: Wed, 14 Aug 2019 13:08:04 +0200
-Message-ID: <20190814110804.2ceo2upc3su7muup@pengutronix.de>
-References: <20190814092757.13726-1-geert+renesas@glider.be>
- <20190814092924.13857-1-geert+renesas@glider.be>
- <20190814092924.13857-2-geert+renesas@glider.be>
- <20190814093558.xlx5ck54dw2dgb6k@pengutronix.de>
- <CAMuHMdWNj-H9B8E9=NeCgLracBuJODfPyBYJERh=vt4oNFUkGw@mail.gmail.com>
+From: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Subject: Re: [PATCH v4 8/9] MIPS: SGI-IP27: fix readb/writeb addressing
+Date: Wed, 14 Aug 2019 13:40:12 +0200
+Message-ID: <20190814134012.0a1793598a478b55f6361924@suse.de>
+References: <20190809103235.16338-1-tbogendoerfer@suse.de>
+        <20190809103235.16338-9-tbogendoerfer@suse.de>
+        <CAHp75Vd_083R9sRsspVuJ3ZMTxpVR79PF5Lg-bpnMxRfN+b7wA@mail.gmail.com>
+        <20190811072907.GA1416@kroah.com>
+        <90129235-58c2-aeed-a9d3-96f4a8f45709@amsat.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdWNj-H9B8E9=NeCgLracBuJODfPyBYJERh=vt4oNFUkGw@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, Geert Uytterhoeven <geert+renesas@glider.be>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, Frieder Schrempf <frieder.schrempf@kontron.de>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, NXP Linux Team <linux-imx@nxp.com>, Fabio Estevam <festevam@gmail.com>, Jiri Slaby <jslaby@suse.com>, Shawn Guo <shawnguo@kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <90129235-58c2-aeed-a9d3-96f4a8f45709@amsat.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Philippe =?ISO-8859-1?Q?Mathieu-Daud=E9?= <f4bug@amsat.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Jiri Slaby <jslaby@suse.com>, Evgeniy Polyakov <zbr@ioremap.net>, linux-mips@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-input <linux-input@vger.kernel.org>, netdev <netdev@vger.kernel.org>, "open list:REAL TIME CLOCK (RTC) SUBSYSTEM" <linux-rtc@vger.kernel>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Aug 14, 2019 at 12:20:33PM +0200, Geert Uytterhoeven wrote:
-> Hi Uwe,
-> =
+On Tue, 13 Aug 2019 10:47:13 +0200
+Philippe Mathieu-Daudé <f4bug@amsat.org> wrote:
 
-> On Wed, Aug 14, 2019 at 11:36 AM Uwe Kleine-K=F6nig
-> <u.kleine-koenig@pengutronix.de> wrote:
-> > On Wed, Aug 14, 2019 at 11:29:22AM +0200, Geert Uytterhoeven wrote:
-> > > Since commit 1d267ea6539f2663 ("serial: mctrl-gpio: simplify init
-> > > routine"), mctrl_gpio_init() returns failure if the assignment to any
-> > > member of the gpio array results in an error pointer.
-> > > Since commit c359522194593815 ("serial: mctrl_gpio: Avoid probe failu=
-res
-> > > in case of missing gpiolib"), mctrl_gpio_to_gpiod() returns NULL in t=
-he
-> > > !CONFIG_GPIOLIB case.
-> > > Hence there is no longer a need to check for mctrl_gpio_to_gpiod()
-> > > returning an error value.  A simple NULL check is sufficient.
-> > >
-> > > This follows the spirit of commit 445df7ff3fd1a0a9 ("serial: mctrl-gp=
-io:
-> > > drop usages of IS_ERR_OR_NULL") in the mctrl-gpio core.
-> > >
-> > > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > > ---
-> > >  drivers/tty/serial/atmel_serial.c | 12 ++++--------
-> > >  1 file changed, 4 insertions(+), 8 deletions(-)
-> > >
-> > > diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/a=
-tmel_serial.c
-> > > index 19a85d6fe3d20541..e9620a81166b7dc1 100644
-> > > --- a/drivers/tty/serial/atmel_serial.c
-> > > +++ b/drivers/tty/serial/atmel_serial.c
-> > > @@ -303,32 +303,28 @@ static unsigned int atmel_get_lines_status(stru=
-ct uart_port *port)
-> > >
-> > >       mctrl_gpio_get(atmel_port->gpios, &ret);
-> > >
-> > > -     if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
-> > > -                                             UART_GPIO_CTS))) {
-> > > +     if (mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_CTS)) {
-> > >               if (ret & TIOCM_CTS)
-> > >                       status &=3D ~ATMEL_US_CTS;
-> > >               else
-> > >                       status |=3D ATMEL_US_CTS;
-> > >       }
-> >
-> > The change is fine, but it seems the atmel driver doesn't use mctrl_gpio
-> > as expected (at least as expected by me). IMHO driving the hardware
-> > function of the CTS pin shouldn't be conditional on the presence of a
-> > cts-gpio. Is there a reason not to just drop the if completely?
-> =
+> Hi Thomas,
+> 
+> On 8/11/19 9:29 AM, Greg Kroah-Hartman wrote:
+> > On Sat, Aug 10, 2019 at 04:22:23PM +0300, Andy Shevchenko wrote:
+> >> On Fri, Aug 9, 2019 at 1:34 PM Thomas Bogendoerfer
+> >> <tbogendoerfer@suse.de> wrote:
+> >>>
+> >>> Our chosen byte swapping, which is what firmware already uses, is to
+> >>> do readl/writel by normal lw/sw intructions (data invariance). This
+> >>> also means we need to mangle addresses for u8 and u16 accesses. The
+> >>> mangling for 16bit has been done aready, but 8bit one was missing.
+> >>> Correcting this causes different addresses for accesses to the
+> >>> SuperIO and local bus of the IOC3 chip. This is fixed by changing
+> >>> byte order in ioc3 and m48rtc_rtc structs.
+> >>
+> >>>  /* serial port register map */
+> >>>  struct ioc3_serialregs {
+> >>> -       uint32_t        sscr;
+> >>> -       uint32_t        stpir;
+> >>> -       uint32_t        stcir;
+> >>> -       uint32_t        srpir;
+> >>> -       uint32_t        srcir;
+> >>> -       uint32_t        srtr;
+> >>> -       uint32_t        shadow;
+> >>> +       u32     sscr;
+> >>> +       u32     stpir;
+> >>> +       u32     stcir;
+> >>> +       u32     srpir;
+> >>> +       u32     srcir;
+> >>> +       u32     srtr;
+> >>> +       u32     shadow;
+> >>>  };
+> >>
+> >> Isn't it a churn? AFAIU kernel documentation the uint32_t is okay to
+> >> use, just be consistent inside one module / driver.
+> >> Am I mistaken?
+> > 
+> > No, but really it uint* shouldn't be used anywhere in the kernel source
+> > as it does not make sense.
+> 
+> If you respin your series, please send this cleanup as a separate patch.
 
-> The above code returns the hardware status if CTS is not a GPIO, and
-> returns (overrides with) the GPIO status if CTS is a GPIO.
-> Isn't that correct, or am I missing something?
+no need for an extra patch. I realized that patch 7 in this series introduces
+all of these uint32_t. So i already fixed it there.
 
-I took a deeper look into this driver now. The task for
-atmel_get_lines_status() isn't to implement the get_mctrl() callback.
+Thomas.
 
-Instead this is called in the irqhandler to set ATMEL_US_RI in a
-"pending" value that then later in atmel_handle_status() is translated
-to a "ring" event that is handled there.
-
-So the right cleanup would be to let atmel_get_lines_status() just be
-
-	return atmel_uart_readl(port, ATMEL_US_CSR);
-
-. If something happend on the lines implemented as gpio the driver's irq
-function isn't called anyhow.
-
-Best regards
-Uwe
-
--- =
-
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+-- 
+SUSE Linux GmbH
+GF: Felix Imendörffer, Mary Higgins, Sri Rasiah
+HRB 21284 (AG Nürnberg)
