@@ -1,64 +1,63 @@
-From: Rahul Tanwar <rahul.tanwar@linux.intel.com>
-Subject: [PATCH 2/2] dt-bindings: lantiq: Update for new SoC
-Date: Wed, 14 Aug 2019 16:22:35 +0800
-Message-ID: <f901ea1aaf6272b1e538772c3c6bb17adad5d003.1565770074.git.rahul.tanwar@linux.intel.com>
-References: <cover.1565770074.git.rahul.tanwar@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1565770074.git.rahul.tanwar@linux.intel.com>
-In-Reply-To: <cover.1565770074.git.rahul.tanwar@linux.intel.com>
-References: <cover.1565770074.git.rahul.tanwar@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, robh+dt@kernel.org, robh@kernel.org, mark.rutland@arm.com, linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, andriy.shevchenko@intel.com, qi-ming.wu@intel.com, cheol.yong.kim@intel.com, rahul.tanwar@intel.com, Rahul Tanwar <rahul.tanwar@linux.intel.com>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 0/3] serial: Don't check for mctrl_gpio_to_gpiod() returning
+ error
+Date: Wed, 14 Aug 2019 11:27:54 +0200
+Message-ID: <20190814092757.13726-1-geert+renesas@glider.be>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>, Richard Genoud <richard.genoud@gmail.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, linux-renesas-soc@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Intel Lightning Mountain(LGM) SoC reuses Lantiq ASC serial controller IP.
-This patch updates the dt bindings to support LGM as well.
+	Hi Greg, Jiri,
 
-Signed-off-by: Rahul Tanwar <rahul.tanwar@linux.intel.com>
----
- .../devicetree/bindings/serial/lantiq_asc.yaml          | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+Since commit 1d267ea6539f2663 ("serial: mctrl-gpio: simplify init
+routine"), mctrl_gpio_init() returns failure if the assignment to any
+member of the gpio array results in an error pointer.
+Since commit c359522194593815 ("serial: mctrl_gpio: Avoid probe failures
+in case of missing gpiolib"), mctrl_gpio_to_gpiod() returns NULL in the
+!CONFIG_GPIOLIB case.
+Hence there is no longer a need to check in serial drivers if
+mctrl_gpio_to_gpiod() returns an error value.  A simple NULL check is
+sufficient.
 
-diff --git a/Documentation/devicetree/bindings/serial/lantiq_asc.yaml b/Documentation/devicetree/bindings/serial/lantiq_asc.yaml
-index 9757f0a24232..d552fd31c16c 100644
---- a/Documentation/devicetree/bindings/serial/lantiq_asc.yaml
-+++ b/Documentation/devicetree/bindings/serial/lantiq_asc.yaml
-@@ -17,6 +17,7 @@ properties:
-     oneOf:
-       items:
-         - const: lantiq,asc
-+        - const: intel,lgm-asc
- 
-   reg:
-     maxItems: 1
-@@ -28,6 +29,12 @@ properties:
-       - description: tx or combined interrupt
-       - description: rx interrupt
-       - description: err interrupt
-+    description:
-+      For lantiq,asc compatible, it supports 3 separate
-+      interrupts for tx rx & err. Whereas, for intel,lgm-asc
-+      compatible, it supports combined single interrupt for 
-+      all of tx, rx & err interrupts.
-+
- 
-   clocks:
-     description:
-@@ -67,4 +74,14 @@ examples:
-             interrupts = <112 113 114>;
-     };
- 
-+  - |
-+    asc0: serial@e0a00000 {
-+            compatible = "intel,lgm-asc";
-+            reg = <0xe0a00000 0x1000>;
-+            interrupt-parent = <&ioapic1>;
-+            interrupts = <128 1>;
-+            clocks = <&cgu0 LGM_CLK_NOC4>, <&cgu0 LGM_GCLK_ASC0>;
-+            clock-names = "freq", "asc";
-+    };
-+
- ...
+This series follows the spirit of commit 445df7ff3fd1a0a9 ("serial:
+mctrl-gpio: drop usages of IS_ERR_OR_NULL") in the mctrl-gpio core.
+
+Thanks!
+
+Geert Uytterhoeven (3):
+  serial: atmel: Don't check for mctrl_gpio_to_gpiod() returning error
+  serial: mxs-auart: Don't check for mctrl_gpio_to_gpiod() returning
+    error
+  serial: sh-sci: Don't check for mctrl_gpio_to_gpiod() returning error
+
+ drivers/tty/serial/atmel_serial.c | 12 ++++--------
+ drivers/tty/serial/mxs-auart.c    |  6 ++----
+ drivers/tty/serial/sh-sci.c       | 12 +++++-------
+ 3 files changed, 11 insertions(+), 19 deletions(-)
+
 -- 
-2.11.0
+2.17.1
+
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
