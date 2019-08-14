@@ -1,15 +1,17 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 3/3] serial: sh-sci: Don't check for mctrl_gpio_to_gpiod()
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 1/3] serial: atmel: Don't check for mctrl_gpio_to_gpiod()
  returning error
-Date: Wed, 14 Aug 2019 11:29:24 +0200
-Message-ID: <20190814092924.13857-4-geert+renesas@glider.be>
+Date: Wed, 14 Aug 2019 11:35:58 +0200
+Message-ID: <20190814093558.xlx5ck54dw2dgb6k@pengutronix.de>
 References: <20190814092757.13726-1-geert+renesas@glider.be>
  <20190814092924.13857-1-geert+renesas@glider.be>
+ <20190814092924.13857-2-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190814092924.13857-1-geert+renesas@glider.be>
+Content-Disposition: inline
+In-Reply-To: <20190814092924.13857-2-geert+renesas@glider.be>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,59 +21,65 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>, Richard Genoud <richard.genoud@gmail.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Frieder Schrempf <frieder.schrempf@kontron.de>, linux-renesas-soc@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, linux-arm-kernel@lists.infradead.org
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, linux-serial@vger.kernel.org, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, Frieder Schrempf <frieder.schrempf@kontron.de>, linux-renesas-soc@vger.kernel.org, Ludovic Desroches <ludovic.desroches@microchip.com>, NXP Linux Team <linux-imx@nxp.com>, Fabio Estevam <festevam@gmail.com>, Jiri Slaby <jslaby@suse.com>, Shawn Guo <shawnguo@kernel.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Since commit 1d267ea6539f2663 ("serial: mctrl-gpio: simplify init
-routine"), mctrl_gpio_init() returns failure if the assignment to any
-member of the gpio array results in an error pointer.
-Since commit c359522194593815 ("serial: mctrl_gpio: Avoid probe failures
-in case of missing gpiolib"), mctrl_gpio_to_gpiod() returns NULL in the
-!CONFIG_GPIOLIB case.
-Hence there is no longer a need to check for mctrl_gpio_to_gpiod()
-returning an error value.  A simple NULL check is sufficient.
+Hello,
 
-This follows the spirit of commit 445df7ff3fd1a0a9 ("serial: mctrl-gpio:
-drop usages of IS_ERR_OR_NULL") in the mctrl-gpio core.
+[adding the Atmel guys to Cc]
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- drivers/tty/serial/sh-sci.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+On Wed, Aug 14, 2019 at 11:29:22AM +0200, Geert Uytterhoeven wrote:
+> Since commit 1d267ea6539f2663 ("serial: mctrl-gpio: simplify init
+> routine"), mctrl_gpio_init() returns failure if the assignment to any
+> member of the gpio array results in an error pointer.
+> Since commit c359522194593815 ("serial: mctrl_gpio: Avoid probe failures
+> in case of missing gpiolib"), mctrl_gpio_to_gpiod() returns NULL in the
+> !CONFIG_GPIOLIB case.
+> Hence there is no longer a need to check for mctrl_gpio_to_gpiod()
+> returning an error value.  A simple NULL check is sufficient.
+> =
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 7f565fcbf1ca4c5e..4e754a4850e6db63 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2099,12 +2099,12 @@ static unsigned int sci_get_mctrl(struct uart_port *port)
- 	if (s->autorts) {
- 		if (sci_get_cts(port))
- 			mctrl |= TIOCM_CTS;
--	} else if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_CTS))) {
-+	} else if (!mctrl_gpio_to_gpiod(gpios, UART_GPIO_CTS)) {
- 		mctrl |= TIOCM_CTS;
- 	}
--	if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_DSR)))
-+	if (!mctrl_gpio_to_gpiod(gpios, UART_GPIO_DSR))
- 		mctrl |= TIOCM_DSR;
--	if (IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(gpios, UART_GPIO_DCD)))
-+	if (!mctrl_gpio_to_gpiod(gpios, UART_GPIO_DCD))
- 		mctrl |= TIOCM_CAR;
- 
- 	return mctrl;
-@@ -3285,10 +3285,8 @@ static int sci_probe_single(struct platform_device *dev,
- 		return PTR_ERR(sciport->gpios);
- 
- 	if (sciport->has_rtscts) {
--		if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(sciport->gpios,
--							UART_GPIO_CTS)) ||
--		    !IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(sciport->gpios,
--							UART_GPIO_RTS))) {
-+		if (mctrl_gpio_to_gpiod(sciport->gpios, UART_GPIO_CTS) ||
-+		    mctrl_gpio_to_gpiod(sciport->gpios, UART_GPIO_RTS)) {
- 			dev_err(&dev->dev, "Conflicting RTS/CTS config\n");
- 			return -EINVAL;
- 		}
--- 
-2.17.1
+> This follows the spirit of commit 445df7ff3fd1a0a9 ("serial: mctrl-gpio:
+> drop usages of IS_ERR_OR_NULL") in the mctrl-gpio core.
+> =
+
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  drivers/tty/serial/atmel_serial.c | 12 ++++--------
+>  1 file changed, 4 insertions(+), 8 deletions(-)
+> =
+
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel=
+_serial.c
+> index 19a85d6fe3d20541..e9620a81166b7dc1 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -303,32 +303,28 @@ static unsigned int atmel_get_lines_status(struct u=
+art_port *port)
+>  =
+
+>  	mctrl_gpio_get(atmel_port->gpios, &ret);
+>  =
+
+> -	if (!IS_ERR_OR_NULL(mctrl_gpio_to_gpiod(atmel_port->gpios,
+> -						UART_GPIO_CTS))) {
+> +	if (mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_CTS)) {
+>  		if (ret & TIOCM_CTS)
+>  			status &=3D ~ATMEL_US_CTS;
+>  		else
+>  			status |=3D ATMEL_US_CTS;
+>  	}
+
+The change is fine, but it seems the atmel driver doesn't use mctrl_gpio
+as expected (at least as expected by me). IMHO driving the hardware
+function of the CTS pin shouldn't be conditional on the presence of a
+cts-gpio. Is there a reason not to just drop the if completely?
+
+Best regards
+Uwe
+
+-- =
+
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
