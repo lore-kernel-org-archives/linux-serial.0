@@ -1,379 +1,56 @@
-From: Stephen Boyd <sboyd@kernel.org>
-Subject: Re: [PATCH v6 5/8] clk: mediatek: Add MT6765 clock support
-Date: Wed, 14 Aug 2019 17:27:20 -0700
-Message-ID: <20190815002721.A71C72083B@mail.kernel.org>
-References: <1562924653-10056-1-git-send-email-macpaul.lin@mediatek.com> <1562924653-10056-6-git-send-email-macpaul.lin@mediatek.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 00/14] ARM: move lpc32xx and dove to multiplatform
+Date: Thu, 15 Aug 2019 15:11:25 +0200
+Message-ID: <CAK8P3a0=GrjM_HOBgqy5V3pOsA6w1EDOtEQO9dZG2Cw+-2niaw@mail.gmail.com>
+References: <20190731195713.3150463-1-arnd@arndb.de> <20190731225303.GC1330@shell.armlinux.org.uk>
+ <CAK8P3a1Lgbz9RwVaOgNq=--gwvEG70tUi67XwsswjgnXAX6EhA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1562924653-10056-6-git-send-email-macpaul.lin@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Marc Zyngier <marc.zyngier@arm.com>, Mars Cheng <mars.cheng@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Owen Chen <owen.chen@mediatek.com>, Rob Herring <robh+dt@kernel.org>, Ryder Lee <ryder.lee@mediatek.com>, Sean Wang <sean.wang@mediatek.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
-Cc: wsd_upstream@mediatek.com, CC Hwang <cc.hwang@mediatek.com>, Loda Chou <loda.chou@mediatek.com>, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-clk@vger.kernel.org, Macpaul Lin <macpaul.lin@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <CAK8P3a1Lgbz9RwVaOgNq=--gwvEG70tUi67XwsswjgnXAX6EhA@mail.gmail.com>
+Sender: netdev-owner@vger.kernel.org
+To: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc: SoC Team <soc@kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Vladimir Zapolskiy <vz@mleia.com>, Sylvain Lemieux <slemieux.tyco@gmail.com>, Gregory Clement <gregory.clement@bootlin.com>, Linus Walleij <linus.walleij@linaro.org>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, "David S. Miller" <davem@davemloft.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, Guenter Roeck <linux@roeck-us.net>, "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, Networking <netdev@vger.kernel.org>, linux-serial@vger.kernel.org, USB list <linux-usb@vger.kernel.org>, LINUXWATCHDOG <linux-watchdog@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Quoting Macpaul Lin (2019-07-12 02:43:41)
-> diff --git a/drivers/clk/mediatek/clk-mt6765-audio.c b/drivers/clk/mediat=
-ek/clk-mt6765-audio.c
-> new file mode 100644
-> index 000000000000..41f19343dfb9
-> --- /dev/null
-> +++ b/drivers/clk/mediatek/clk-mt6765-audio.c
-> @@ -0,0 +1,109 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (c) 2018 MediaTek Inc.
-> + * Author: Owen Chen <owen.chen@mediatek.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
+On Thu, Aug 1, 2019 at 9:33 AM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> On Thu, Aug 1, 2019 at 12:53 AM Russell King - ARM Linux admin
+> <linux@armlinux.org.uk> wrote:
+> >
+> > On Wed, Jul 31, 2019 at 09:56:42PM +0200, Arnd Bergmann wrote:
+> > > For dove, the patches are basically what I had proposed back in
+> > > 2015 when all other ARMv6/ARMv7 machines became part of a single
+> > > kernel build. I don't know what the state is mach-dove support is,
+> > > compared to the DT based support in mach-mvebu for the same
+> > > hardware. If they are functionally the same, we could also just
+> > > remove mach-dove rather than applying my patches.
+> >
+> > Well, the good news is that I'm down to a small board support file
+> > for the Dove Cubox now - but the bad news is, that there's still a
+> > board support file necessary to support everything the Dove SoC has
+> > to offer.
+> >
+> > Even for a DT based Dove Cubox, I'm still using mach-dove, but it
+> > may be possible to drop most of mach-dove now.  Without spending a
+> > lot of time digging through it, it's impossible to really know.
+>
+> Ok, so we won't remove it then, but I'd like to merge my patches to
+> at least get away from the special case of requiring a separate kernel
+> image for it.
+>
+> Can you try if applying patches 12 and 14 from my series causes
+> problems for you? (it may be easier to apply the entire set
+> or pull from [1] to avoid rebase conflicts).
 
-Please use SPDX tags.
+I applied patches 12 and 13 into the soc tree now. There are some
+other pending multiplatform conversions (iop32x, ep93xx, lpc32xx,
+omap1), but it looks like none of those will be complete for 5.4.
 
-> + */
-> +
-> +#include <linux/clk-provider.h>
-> +#include <linux/platform_device.h>
-> +
-> +#include "clk-mtk.h"
-> +#include "clk-gate.h"
-> +
-> diff --git a/drivers/clk/mediatek/clk-mt6765-vcodec.c b/drivers/clk/media=
-tek/clk-mt6765-vcodec.c
-> new file mode 100644
-> index 000000000000..eb9ae1c2c99c
-> --- /dev/null
-> +++ b/drivers/clk/mediatek/clk-mt6765-vcodec.c
-> @@ -0,0 +1,79 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (c) 2018 MediaTek Inc.
-> + * Author: Owen Chen <owen.chen@mediatek.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
+I now expect that we can get most of the preparation into 5.4,
+and maybe move them all over together in 5.5 after some more
+testing. If someone finds a problem with the one of the
+preparation steps, that we can revert the individual patches
+more easily.
 
-SPDX tags.
-
-> diff --git a/drivers/clk/mediatek/clk-mt6765.c b/drivers/clk/mediatek/clk=
--mt6765.c
-> new file mode 100644
-> index 000000000000..f716a48a926d
-> --- /dev/null
-> +++ b/drivers/clk/mediatek/clk-mt6765.c
-> @@ -0,0 +1,961 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (c) 2018 MediaTek Inc.
-> + * Author: Owen Chen <owen.chen@mediatek.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-
-SPDX tags.
-
-> + */
-> +
-> +#include <linux/clk-provider.h>
-> +#include <linux/of.h>
-> +#include <linux/of_address.h>
-> +#include <linux/slab.h>
-> +#include <linux/mfd/syscon.h>
-
-Is this used? Maybe I deleted it.
-
-> +#include <linux/of_device.h>
-> +#include <linux/platform_device.h>
-[...]
-> +
-> +static const char * const axi_parents[] =3D {
-> +       "clk26m",
-> +       "syspll_d7",
-> +       "syspll1_d4",
-> +       "syspll3_d2"
-> +};
-> +
-> +static const char * const mem_parents[] =3D {
-> +       "clk26m",
-> +       "dmpll_ck",
-> +       "apll1_ck"
-> +};
-> +
-> +static const char * const mm_parents[] =3D {
-> +       "clk26m",
-> +       "mmpll_ck",
-> +       "syspll1_d2",
-> +       "syspll_d5",
-> +       "syspll1_d4",
-> +       "univpll_d5",
-> +       "univpll1_d2",
-> +       "mmpll_d2"
-> +};
-> +
-> +static const char * const scp_parents[] =3D {
-> +       "clk26m",
-> +       "syspll4_d2",
-> +       "univpll2_d2",
-> +       "syspll1_d2",
-> +       "univpll1_d2",
-> +       "syspll_d3",
-> +       "univpll_d3"
-> +};
-> +
-> +static const char * const mfg_parents[] =3D {
-> +       "clk26m",
-> +       "mfgpll_ck",
-> +       "syspll_d3",
-> +       "univpll_d3"
-> +};
-> +
-> +static const char * const atb_parents[] =3D {
-> +       "clk26m",
-> +       "syspll1_d4",
-> +       "syspll1_d2"
-> +};
-> +
-> +static const char * const camtg_parents[] =3D {
-> +       "clk26m",
-> +       "usb20_192m_d8",
-> +       "univpll2_d8",
-> +       "usb20_192m_d4",
-> +       "univpll2_d32",
-> +       "usb20_192m_d16",
-> +       "usb20_192m_d32"
-> +};
-> +
-> +static const char * const uart_parents[] =3D {
-> +       "clk26m",
-> +       "univpll2_d8"
-> +};
-> +
-> +static const char * const spi_parents[] =3D {
-> +       "clk26m",
-> +       "syspll3_d2",
-> +       "syspll4_d2",
-> +       "syspll2_d4"
-> +};
-> +
-> +static const char * const msdc5hclk_parents[] =3D {
-> +       "clk26m",
-> +       "syspll1_d2",
-> +       "univpll1_d4",
-> +       "syspll2_d2"
-> +};
-> +
-> +static const char * const msdc50_0_parents[] =3D {
-> +       "clk26m",
-> +       "msdcpll_ck",
-> +       "syspll2_d2",
-> +       "syspll4_d2",
-> +       "univpll1_d2",
-> +       "syspll1_d2",
-> +       "univpll_d5",
-> +       "univpll1_d4"
-> +};
-> +
-> +static const char * const msdc30_1_parents[] =3D {
-> +       "clk26m",
-> +       "msdcpll_d2",
-> +       "univpll2_d2",
-> +       "syspll2_d2",
-> +       "syspll1_d4",
-> +       "univpll1_d4",
-> +       "usb20_192m_d4",
-> +       "syspll2_d4"
-> +};
-> +
-> +static const char * const audio_parents[] =3D {
-> +       "clk26m",
-> +       "syspll3_d4",
-> +       "syspll4_d4",
-> +       "syspll1_d16"
-> +};
-> +
-> +static const char * const aud_intbus_parents[] =3D {
-> +       "clk26m",
-> +       "syspll1_d4",
-> +       "syspll4_d2"
-> +};
-> +
-> +static const char * const aud_1_parents[] =3D {
-> +       "clk26m",
-> +       "apll1_ck"
-> +};
-> +
-> +static const char * const aud_engen1_parents[] =3D {
-> +       "clk26m",
-> +       "apll1_d2",
-> +       "apll1_d4",
-> +       "apll1_d8"
-> +};
-> +
-> +static const char * const disp_pwm_parents[] =3D {
-> +       "clk26m",
-> +       "univpll2_d4",
-> +       "ulposc1_d2",
-> +       "ulposc1_d8"
-> +};
-> +
-> +static const char * const sspm_parents[] =3D {
-> +       "clk26m",
-> +       "syspll1_d2",
-> +       "syspll_d3"
-> +};
-> +
-> +static const char * const dxcc_parents[] =3D {
-> +       "clk26m",
-> +       "syspll1_d2",
-> +       "syspll1_d4",
-> +       "syspll1_d8"
-> +};
-> +
-> +static const char * const usb_top_parents[] =3D {
-> +       "clk26m",
-> +       "univpll3_d4"
-> +};
-> +
-> +static const char * const spm_parents[] =3D {
-> +       "clk26m",
-> +       "syspll1_d8"
-> +};
-> +
-> +static const char * const i2c_parents[] =3D {
-> +       "clk26m",
-> +       "univpll3_d4",
-> +       "univpll3_d2",
-> +       "syspll1_d8",
-> +       "syspll2_d8"
-> +};
-> +
-> +static const char * const pwm_parents[] =3D {
-> +       "clk26m",
-> +       "univpll3_d4",
-> +       "syspll1_d8"
-> +};
-> +
-> +static const char * const seninf_parents[] =3D {
-> +       "clk26m",
-> +       "univpll1_d4",
-> +       "univpll1_d2",
-> +       "univpll2_d2"
-> +};
-> +
-> +static const char * const aes_fde_parents[] =3D {
-> +       "clk26m",
-> +       "msdcpll_ck",
-> +       "univpll_d3",
-> +       "univpll2_d2",
-> +       "univpll1_d2",
-> +       "syspll1_d2"
-> +};
-> +
-> +static const char * const ulposc_parents[] =3D {
-> +       "clk26m",
-> +       "ulposc1_d4",
-> +       "ulposc1_d8",
-> +       "ulposc1_d16",
-> +       "ulposc1_d32"
-> +};
-> +
-> +static const char * const camtm_parents[] =3D {
-> +       "clk26m",
-> +       "univpll1_d4",
-> +       "univpll1_d2",
-> +       "univpll2_d2"
-> +};
-> +
-
-Can you migrate this driver to the new way of specifying clk parents?
-That way we don't just have lists of strings.
-
-> +#define INVALID_UPDATE_REG 0xFFFFFFFF
-> +#define INVALID_UPDATE_SHIFT -1
-> +#define INVALID_MUX_GATE -1
-> +
-> +static const struct mtk_mux top_muxes[] =3D {
-> +       /* CLK_CFG_0 */
-> +       MUX_GATE_CLR_SET_UPD_FLAGS(CLK_TOP_AXI_SEL, "axi_sel", axi_parent=
-s,
-> +                             CLK_CFG_0, CLK_CFG_0_SET, CLK_CFG_0_CLR,
-> +                             0, 2, 7, CLK_CFG_UPDATE, 0, CLK_IS_CRITICAL=
-),
-
-Please add a comment why CLK_IS_CRITICAL flag is used in each place.
-
-> +       MUX_GATE_CLR_SET_UPD_FLAGS(CLK_TOP_MEM_SEL, "mem_sel", mem_parent=
-s,
-> +                             CLK_CFG_0, CLK_CFG_0_SET, CLK_CFG_0_CLR,
-> +                             8, 2, 15, CLK_CFG_UPDATE, 1, CLK_IS_CRITICA=
-L),
-> +       MUX_GATE_CLR_SET_UPD(CLK_TOP_MM_SEL, "mm_sel", mm_parents, CLK_CF=
-G_0,
-> +                       CLK_CFG_0_SET, CLK_CFG_0_CLR, 16, 3, 23,
-> +                       CLK_CFG_UPDATE, 2),
-> +       MUX_GATE_CLR_SET_UPD(CLK_TOP_SCP_SEL, "scp_sel", scp_parents, CLK=
-_CFG_0,
-> +                       CLK_CFG_0_SET, CLK_CFG_0_CLR, 24, 3, 31,
-> +                       CLK_CFG_UPDATE, 3),
-[...]
-> +       }, {
-> +               .compatible =3D "mediatek,mt6765-topckgen",
-> +               .data =3D clk_mt6765_top_probe,
-> +       }, {
-> +               .compatible =3D "mediatek,mt6765-infracfg",
-> +               .data =3D clk_mt6765_ifr_probe,
-> +       }, {
-> +               /* sentinel */
-> +       }
-> +};
-> +
-> +static int clk_mt6765_probe(struct platform_device *pdev)
-> +{
-> +       int (*clk_probe)(struct platform_device *d);
-> +       int r;
-> +
-> +       clk_probe =3D of_device_get_match_data(&pdev->dev);
-> +       if (!clk_probe)
-> +               return -EINVAL;
-> +
-> +       r =3D clk_probe(pdev);
-> +       if (r)
-> +               dev_err(&pdev->dev,
-> +                       "could not register clock provider: %s: %d\n",
-> +                       pdev->name, r);
-> +
-> +       return r;
-> +}
-> +
-> +static struct platform_driver clk_mt6765_drv =3D {
-> +       .probe =3D clk_mt6765_probe,
-> +       .driver =3D {
-> +               .name =3D "clk-mt6765",
-> +               .owner =3D THIS_MODULE,
-
-Remove this line, platform_driver_register() should take care of it.
-
-> +               .of_match_table =3D of_match_clk_mt6765,
-> +       },
-> +};
-> +
+      Arnd
