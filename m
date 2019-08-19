@@ -1,185 +1,79 @@
-From: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Subject: [PATCH v5 03/17] nvmem: core: add nvmem_device_find
-Date: Mon, 19 Aug 2019 18:31:26 +0200
-Message-ID: <20190819163144.3478-4-tbogendoerfer@suse.de>
-References: <20190819163144.3478-1-tbogendoerfer@suse.de>
+From: Jon Hunter <jonathanh@nvidia.com>
+Subject: Re: [PATCH 10/14] serial: tegra: add support to use 8 bytes trigger
+Date: Mon, 19 Aug 2019 21:29:15 +0100
+Message-ID: <dda0d866-ae7a-8655-7b26-4c28249c0be8@nvidia.com>
+References: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
+ <1565609303-27000-11-git-send-email-kyarlagadda@nvidia.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190819163144.3478-1-tbogendoerfer@suse.de>
+In-Reply-To: <1565609303-27000-11-git-send-email-kyarlagadda@nvidia.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jonathan Corbet <corbet@lwn.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Evgeniy Polyakov <zbr@ioremap.net>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-input@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+To: Krishna Yarlagadda <kyarlagadda@nvidia.com>, gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com, ldewangan@nvidia.com, jslaby@suse.com
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Shardar Shariff Md <smohammed@nvidia.com>
 List-Id: linux-serial@vger.kernel.org
 
-nvmem_device_find provides a way to search for nvmem devices with
-the help of a match function simlair to bus_find_device.
 
-Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
----
- Documentation/driver-api/nvmem.rst |  2 ++
- drivers/nvmem/core.c               | 62 ++++++++++++++++++++------------------
- include/linux/nvmem-consumer.h     |  9 ++++++
- 3 files changed, 43 insertions(+), 30 deletions(-)
+On 12/08/2019 12:28, Krishna Yarlagadda wrote:
+> From: Shardar Shariff Md <smohammed@nvidia.com>
+> 
+> Add support to use 8 bytes trigger for Tegra186 SOC.
+> 
+> Signed-off-by: Shardar Shariff Md <smohammed@nvidia.com>
+> Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
+> ---
+>  drivers/tty/serial/serial-tegra.c | 13 +++++++++++--
+>  1 file changed, 11 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+> index 329923c..03d1d20 100644
+> --- a/drivers/tty/serial/serial-tegra.c
+> +++ b/drivers/tty/serial/serial-tegra.c
+> @@ -88,6 +88,7 @@ struct tegra_uart_chip_data {
+>  	bool	support_clk_src_div;
+>  	bool	fifo_mode_enable_status;
+>  	int	uart_max_port;
+> +	int	dma_burst_bytes;
 
-diff --git a/Documentation/driver-api/nvmem.rst b/Documentation/driver-api/nvmem.rst
-index d9d958d5c824..287e86819640 100644
---- a/Documentation/driver-api/nvmem.rst
-+++ b/Documentation/driver-api/nvmem.rst
-@@ -129,6 +129,8 @@ To facilitate such consumers NVMEM framework provides below apis::
-   struct nvmem_device *nvmem_device_get(struct device *dev, const char *name);
-   struct nvmem_device *devm_nvmem_device_get(struct device *dev,
- 					   const char *name);
-+  struct nvmem_device *nvmem_device_find(void *data,
-+			int (*match)(struct device *dev, const void *data));
-   void nvmem_device_put(struct nvmem_device *nvmem);
-   int nvmem_device_read(struct nvmem_device *nvmem, unsigned int offset,
- 		      size_t bytes, void *buf);
-diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
-index ac5d945be88a..e591ba54758f 100644
---- a/drivers/nvmem/core.c
-+++ b/drivers/nvmem/core.c
-@@ -76,36 +76,18 @@ static struct bus_type nvmem_bus_type = {
- 	.name		= "nvmem",
- };
- 
-+#if IS_ENABLED(CONFIG_OF)
- static int of_nvmem_match(struct device *dev, const void *nvmem_np)
- {
- 	return dev->of_node == nvmem_np;
- }
-+#endif
- 
--static struct nvmem_device *of_nvmem_find(struct device_node *nvmem_np)
-+static int nvmem_match_name(struct device *dev, const void *data)
- {
--	struct device *d;
--
--	if (!nvmem_np)
--		return NULL;
--
--	d = bus_find_device(&nvmem_bus_type, NULL, nvmem_np, of_nvmem_match);
--
--	if (!d)
--		return NULL;
-+	const char *name = data;
- 
--	return to_nvmem_device(d);
--}
--
--static struct nvmem_device *nvmem_find(const char *name)
--{
--	struct device *d;
--
--	d = bus_find_device_by_name(&nvmem_bus_type, NULL, name);
--
--	if (!d)
--		return NULL;
--
--	return to_nvmem_device(d);
-+	return sysfs_streq(name, dev_name(dev));
- }
- 
- static void nvmem_cell_drop(struct nvmem_cell *cell)
-@@ -537,13 +519,16 @@ int devm_nvmem_unregister(struct device *dev, struct nvmem_device *nvmem)
- }
- EXPORT_SYMBOL(devm_nvmem_unregister);
- 
--static struct nvmem_device *__nvmem_device_get(struct device_node *np,
--					       const char *nvmem_name)
-+static struct nvmem_device *__nvmem_device_get(void *data,
-+			int (*match)(struct device *dev, const void *data))
- {
- 	struct nvmem_device *nvmem = NULL;
-+	struct device *dev;
- 
- 	mutex_lock(&nvmem_mutex);
--	nvmem = np ? of_nvmem_find(np) : nvmem_find(nvmem_name);
-+	dev = bus_find_device(&nvmem_bus_type, NULL, data, match);
-+	if (dev)
-+		nvmem = to_nvmem_device(dev);
- 	mutex_unlock(&nvmem_mutex);
- 	if (!nvmem)
- 		return ERR_PTR(-EPROBE_DEFER);
-@@ -592,7 +577,7 @@ struct nvmem_device *of_nvmem_device_get(struct device_node *np, const char *id)
- 	if (!nvmem_np)
- 		return ERR_PTR(-ENOENT);
- 
--	return __nvmem_device_get(nvmem_np, NULL);
-+	return __nvmem_device_get(nvmem_np, of_nvmem_match);
- }
- EXPORT_SYMBOL_GPL(of_nvmem_device_get);
- #endif
-@@ -618,10 +603,26 @@ struct nvmem_device *nvmem_device_get(struct device *dev, const char *dev_name)
- 
- 	}
- 
--	return __nvmem_device_get(NULL, dev_name);
-+	return __nvmem_device_get((void *)dev_name, nvmem_match_name);
- }
- EXPORT_SYMBOL_GPL(nvmem_device_get);
- 
-+/**
-+ * nvmem_device_find() - Find nvmem device with matching function
-+ *
-+ * @data: Data to pass to match function
-+ * @match: Callback function to check device
-+ *
-+ * Return: ERR_PTR() on error or a valid pointer to a struct nvmem_device
-+ * on success.
-+ */
-+struct nvmem_device *nvmem_device_find(void *data,
-+			int (*match)(struct device *dev, const void *data))
-+{
-+	return __nvmem_device_get(data, match);
-+}
-+EXPORT_SYMBOL_GPL(nvmem_device_find);
-+
- static int devm_nvmem_device_match(struct device *dev, void *res, void *data)
- {
- 	struct nvmem_device **nvmem = res;
-@@ -715,7 +716,8 @@ nvmem_cell_get_from_lookup(struct device *dev, const char *con_id)
- 		if ((strcmp(lookup->dev_id, dev_id) == 0) &&
- 		    (strcmp(lookup->con_id, con_id) == 0)) {
- 			/* This is the right entry. */
--			nvmem = __nvmem_device_get(NULL, lookup->nvmem_name);
-+			nvmem = __nvmem_device_get((void *)lookup->nvmem_name,
-+						   nvmem_match_name);
- 			if (IS_ERR(nvmem)) {
- 				/* Provider may not be registered yet. */
- 				cell = ERR_CAST(nvmem);
-@@ -785,7 +787,7 @@ struct nvmem_cell *of_nvmem_cell_get(struct device_node *np, const char *id)
- 	if (!nvmem_np)
- 		return ERR_PTR(-EINVAL);
- 
--	nvmem = __nvmem_device_get(nvmem_np, NULL);
-+	nvmem = __nvmem_device_get(nvmem_np, of_nvmem_match);
- 	of_node_put(nvmem_np);
- 	if (IS_ERR(nvmem))
- 		return ERR_CAST(nvmem);
-diff --git a/include/linux/nvmem-consumer.h b/include/linux/nvmem-consumer.h
-index 8f8be5b00060..02dc4aa992b2 100644
---- a/include/linux/nvmem-consumer.h
-+++ b/include/linux/nvmem-consumer.h
-@@ -89,6 +89,9 @@ void nvmem_del_cell_lookups(struct nvmem_cell_lookup *entries,
- int nvmem_register_notifier(struct notifier_block *nb);
- int nvmem_unregister_notifier(struct notifier_block *nb);
- 
-+struct nvmem_device *nvmem_device_find(void *data,
-+			int (*match)(struct device *dev, const void *data));
-+
- #else
- 
- static inline struct nvmem_cell *nvmem_cell_get(struct device *dev,
-@@ -204,6 +207,12 @@ static inline int nvmem_unregister_notifier(struct notifier_block *nb)
- 	return -EOPNOTSUPP;
- }
- 
-+static inline struct nvmem_device *nvmem_device_find(void *data,
-+			int (*match)(struct device *dev, const void *data))
-+{
-+	return NULL;
-+}
-+
- #endif /* CONFIG_NVMEM */
- 
- #if IS_ENABLED(CONFIG_NVMEM) && IS_ENABLED(CONFIG_OF)
+I assume that this is a maximum, so why not say max_dma_burst_bytes?
+
+>  };
+>  
+>  struct tegra_uart_port {
+> @@ -933,7 +934,12 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
+>  	 * programmed in the DMA registers.
+>  	 */
+>  	tup->fcr_shadow = UART_FCR_ENABLE_FIFO;
+> -	tup->fcr_shadow |= UART_FCR_R_TRIG_01;
+> +
+> +	if (tup->cdata->dma_burst_bytes == 8)
+> +		tup->fcr_shadow |= UART_FCR_R_TRIG_10;
+> +	else
+> +		tup->fcr_shadow |= UART_FCR_R_TRIG_01;
+> +
+>  	tup->fcr_shadow |= TEGRA_UART_TX_TRIG_16B;
+>  	tegra_uart_write(tup, tup->fcr_shadow, UART_FCR);
+>  
+> @@ -1046,7 +1052,7 @@ static int tegra_uart_dma_channel_allocate(struct tegra_uart_port *tup,
+>  		}
+>  		dma_sconfig.src_addr = tup->uport.mapbase;
+>  		dma_sconfig.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+> -		dma_sconfig.src_maxburst = 4;
+> +		dma_sconfig.src_maxburst = tup->cdata->dma_burst_bytes;
+>  		tup->rx_dma_chan = dma_chan;
+>  		tup->rx_dma_buf_virt = dma_buf;
+>  		tup->rx_dma_buf_phys = dma_phys;
+> @@ -1325,6 +1331,7 @@ static struct tegra_uart_chip_data tegra20_uart_chip_data = {
+>  	.support_clk_src_div		= false,
+>  	.fifo_mode_enable_status	= false,
+>  	.uart_max_port			= 5,
+> +	.dma_burst_bytes		= 4,
+
+Isn't it simpler to store the TRIG value here?
+
+Jon
+
 -- 
-2.13.7
+nvpublic
