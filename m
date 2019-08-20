@@ -1,44 +1,74 @@
-From: Mao Wenan <maowenan@huawei.com>
-Subject: [PATCH linux-next] tty: serial: add dependence for CONFIG_SERIAL_FSL_LINFLEXUART
-Date: Tue, 20 Aug 2019 20:40:15 +0800
-Message-ID: <20190820124015.28409-1-maowenan@huawei.com>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH 1/3] serial: atmel: Don't check for mctrl_gpio_to_gpiod()
+ returning error
+Date: Tue, 20 Aug 2019 17:11:56 +0200
+Message-ID: <fc23b475-db5f-a311-5c7e-9fac15da3684@gmail.com>
+References: <20190814092757.13726-1-geert+renesas@glider.be>
+ <20190814092924.13857-1-geert+renesas@glider.be>
+ <20190814092924.13857-2-geert+renesas@glider.be>
+ <20190814093558.xlx5ck54dw2dgb6k@pengutronix.de>
+ <CAMuHMdWNj-H9B8E9=NeCgLracBuJODfPyBYJERh=vt4oNFUkGw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com, linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, Mao Wenan <maowenan@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CAMuHMdWNj-H9B8E9=NeCgLracBuJODfPyBYJERh=vt4oNFUkGw@mail.gmail.com>
+Content-Language: fr
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, Geert Uytterhoeven <geert+renesas@glider.be>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, Frieder Schrempf <frieder.schrempf@kontron.de>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, NXP Linux Team <linux-imx@nxp.com>, Fabio Estevam <festevam@gmail.com>, Jiri Slaby <jslaby@suse.com>, Shawn Guo <shawnguo@kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-When CONFIG_SERIAL_FSL_LINFLEXUART=y and CONFIG_PRINTK is not set,
-one compilation error is found as below:
-drivers/tty/serial/fsl_linflexuart.c: In function linflex_earlycon_putchar:
-drivers/tty/serial/fsl_linflexuart.c:608:31: error: CONFIG_LOG_BUF_SHIFT undeclared
-(first use in this function); did you mean CONFIG_ISA_BUS_API?
-  if (earlycon_buf.len >= 1 << CONFIG_LOG_BUF_SHIFT)
-                               ^~~~~~~~~~~~~~~~~~~~
-                               CONFIG_ISA_BUS_API
-This because CONFIG_LOG_BUF_SHIFT is depended on CONFIG_PRINTK, fix this
-by adding dependence for CONFIG_SERIAL_FSL_LINFLEXUART.
-
-Fixes: b953815b819b ("tty: serial: Add linflexuart driver for S32V234")
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
----
- drivers/tty/serial/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index d9caf3242b25..4789b5d62f63 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1392,6 +1392,7 @@ config SERIAL_FSL_LPUART_CONSOLE
- 
- config SERIAL_FSL_LINFLEXUART
- 	tristate "Freescale linflexuart serial port support"
-+	depends on PRINTK
- 	select SERIAL_CORE
- 	help
- 	  Support for the on-chip linflexuart on some Freescale SOCs.
--- 
-2.20.1
+SGksCkxlIDE0LzA4LzIwMTkgw6AgMTI6MjAsIEdlZXJ0IFV5dHRlcmhvZXZlbiBhIMOpY3JpdMKg
+Ogo+IEhpIFV3ZSwKPiAKPiBPbiBXZWQsIEF1ZyAxNCwgMjAxOSBhdCAxMTozNiBBTSBVd2UgS2xl
+aW5lLUvDtm5pZwo+IDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+IHdyb3RlOgo+PiBP
+biBXZWQsIEF1ZyAxNCwgMjAxOSBhdCAxMToyOToyMkFNICswMjAwLCBHZWVydCBVeXR0ZXJob2V2
+ZW4gd3JvdGU6Cj4+PiBTaW5jZSBjb21taXQgMWQyNjdlYTY1MzlmMjY2MyAoInNlcmlhbDogbWN0
+cmwtZ3Bpbzogc2ltcGxpZnkgaW5pdAo+Pj4gcm91dGluZSIpLCBtY3RybF9ncGlvX2luaXQoKSBy
+ZXR1cm5zIGZhaWx1cmUgaWYgdGhlIGFzc2lnbm1lbnQgdG8gYW55Cj4+PiBtZW1iZXIgb2YgdGhl
+IGdwaW8gYXJyYXkgcmVzdWx0cyBpbiBhbiBlcnJvciBwb2ludGVyLgo+Pj4gU2luY2UgY29tbWl0
+IGMzNTk1MjIxOTQ1OTM4MTUgKCJzZXJpYWw6IG1jdHJsX2dwaW86IEF2b2lkIHByb2JlIGZhaWx1
+cmVzCj4+PiBpbiBjYXNlIG9mIG1pc3NpbmcgZ3Bpb2xpYiIpLCBtY3RybF9ncGlvX3RvX2dwaW9k
+KCkgcmV0dXJucyBOVUxMIGluIHRoZQo+Pj4gIUNPTkZJR19HUElPTElCIGNhc2UuCj4+PiBIZW5j
+ZSB0aGVyZSBpcyBubyBsb25nZXIgYSBuZWVkIHRvIGNoZWNrIGZvciBtY3RybF9ncGlvX3RvX2dw
+aW9kKCkKPj4+IHJldHVybmluZyBhbiBlcnJvciB2YWx1ZS4gIEEgc2ltcGxlIE5VTEwgY2hlY2sg
+aXMgc3VmZmljaWVudC4KPj4+Cj4+PiBUaGlzIGZvbGxvd3MgdGhlIHNwaXJpdCBvZiBjb21taXQg
+NDQ1ZGY3ZmYzZmQxYTBhOSAoInNlcmlhbDogbWN0cmwtZ3BpbzoKPj4+IGRyb3AgdXNhZ2VzIG9m
+IElTX0VSUl9PUl9OVUxMIikgaW4gdGhlIG1jdHJsLWdwaW8gY29yZS4KPj4+Cj4+PiBTaWduZWQt
+b2ZmLWJ5OiBHZWVydCBVeXR0ZXJob2V2ZW4gPGdlZXJ0K3JlbmVzYXNAZ2xpZGVyLmJlPgo+Pj4g
+LS0tCj4+PiAgZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5jIHwgMTIgKysrKy0tLS0t
+LS0tCj4+PiAgMSBmaWxlIGNoYW5nZWQsIDQgaW5zZXJ0aW9ucygrKSwgOCBkZWxldGlvbnMoLSkK
+Pj4+Cj4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5jIGIv
+ZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5jCj4+PiBpbmRleCAxOWE4NWQ2ZmUzZDIw
+NTQxLi5lOTYyMGE4MTE2NmI3ZGMxIDEwMDY0NAo+Pj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFs
+L2F0bWVsX3NlcmlhbC5jCj4+PiArKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFs
+LmMKPj4+IEBAIC0zMDMsMzIgKzMwMywyOCBAQCBzdGF0aWMgdW5zaWduZWQgaW50IGF0bWVsX2dl
+dF9saW5lc19zdGF0dXMoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkKPj4+Cj4+PiAgICAgICBtY3Ry
+bF9ncGlvX2dldChhdG1lbF9wb3J0LT5ncGlvcywgJnJldCk7Cj4+Pgo+Pj4gLSAgICAgaWYgKCFJ
+U19FUlJfT1JfTlVMTChtY3RybF9ncGlvX3RvX2dwaW9kKGF0bWVsX3BvcnQtPmdwaW9zLAo+Pj4g
+LSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFVBUlRfR1BJT19D
+VFMpKSkgewo+Pj4gKyAgICAgaWYgKG1jdHJsX2dwaW9fdG9fZ3Bpb2QoYXRtZWxfcG9ydC0+Z3Bp
+b3MsIFVBUlRfR1BJT19DVFMpKSB7Cj4+PiAgICAgICAgICAgICAgIGlmIChyZXQgJiBUSU9DTV9D
+VFMpCj4+PiAgICAgICAgICAgICAgICAgICAgICAgc3RhdHVzICY9IH5BVE1FTF9VU19DVFM7Cj4+
+PiAgICAgICAgICAgICAgIGVsc2UKPj4+ICAgICAgICAgICAgICAgICAgICAgICBzdGF0dXMgfD0g
+QVRNRUxfVVNfQ1RTOwo+Pj4gICAgICAgfQo+Pgo+PiBUaGUgY2hhbmdlIGlzIGZpbmUsIGJ1dCBp
+dCBzZWVtcyB0aGUgYXRtZWwgZHJpdmVyIGRvZXNuJ3QgdXNlIG1jdHJsX2dwaW8KPj4gYXMgZXhw
+ZWN0ZWQgKGF0IGxlYXN0IGFzIGV4cGVjdGVkIGJ5IG1lKS4gSU1ITyBkcml2aW5nIHRoZSBoYXJk
+d2FyZQo+PiBmdW5jdGlvbiBvZiB0aGUgQ1RTIHBpbiBzaG91bGRuJ3QgYmUgY29uZGl0aW9uYWwg
+b24gdGhlIHByZXNlbmNlIG9mIGEKPj4gY3RzLWdwaW8uIElzIHRoZXJlIGEgcmVhc29uIG5vdCB0
+byBqdXN0IGRyb3AgdGhlIGlmIGNvbXBsZXRlbHk/Cj4gCj4gVGhlIGFib3ZlIGNvZGUgcmV0dXJu
+cyB0aGUgaGFyZHdhcmUgc3RhdHVzIGlmIENUUyBpcyBub3QgYSBHUElPLCBhbmQKPiByZXR1cm5z
+IChvdmVycmlkZXMgd2l0aCkgdGhlIEdQSU8gc3RhdHVzIGlmIENUUyBpcyBhIEdQSU8uCj4gSXNu
+J3QgdGhhdCBjb3JyZWN0LCBvciBhbSBJIG1pc3Npbmcgc29tZXRoaW5nPwpZZXMsIHRoYXQncyBj
+b3JyZWN0LgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
+bGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZy
+YWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGlu
+dXgtYXJtLWtlcm5lbAo=
