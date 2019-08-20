@@ -1,59 +1,33 @@
-From: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Subject: Re: [PATCH v5 15/17] mfd: ioc3: Add driver for SGI IOC3 chip
-Date: Tue, 20 Aug 2019 10:17:34 +0200
-Message-ID: <20190820101734.bffe41588e0c92094b9dba3d@suse.de>
-References: <20190819163144.3478-1-tbogendoerfer@suse.de>
-        <20190819163144.3478-16-tbogendoerfer@suse.de>
-        <20190820062308.GK3545@piout.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8BIT
+From: Rahul Tanwar <rahul.tanwar@linux.intel.com>
+Subject: [PATCH v2 0/2] dt-bindings: serial: lantiq: Convert to YAML & add support for new SoC
+Date: Tue, 20 Aug 2019 16:29:00 +0800
+Message-ID: <cover.1566288689.git.rahul.tanwar@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190820062308.GK3545@piout.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: Jonathan Corbet <corbet@lwn.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Evgeniy Polyakov <zbr@ioremap.net>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-input@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+To: robh+dt@kernel.org, devicetree@vger.kernel.org, gregkh@linuxfoundation.org, mark.rutland@arm.com, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, andriy.shevchenko@intel.com, qi-ming.wu@intel.com, cheol.yong.kim@intel.com, rahul.tanwar@intel.com, Rahul Tanwar <rahul.tanwar@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Tue, 20 Aug 2019 08:23:08 +0200
-Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
-> On 19/08/2019 18:31:38+0200, Thomas Bogendoerfer wrote:
-> > diff --git a/drivers/mfd/ioc3.c b/drivers/mfd/ioc3.c
-> > new file mode 100644
-> > index 000000000000..5bcb3461a189
-> > --- /dev/null
-> > +++ b/drivers/mfd/ioc3.c
-> > @@ -0,0 +1,586 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * SGI IOC3 multifunction device driver
-> > + *
-> > + * Copyright (C) 2018, 2019 Thomas Bogendoerfer <tbogendoerfer@suse.de>
-> > + *
-> > + * Based on work by:
-> > + *   Stanislaw Skowronek <skylark@unaligned.org>
-> > + *   Joshua Kinard <kumba@gentoo.org>
-> > + *   Brent Casavant <bcasavan@sgi.com> - IOC4 master driver
-> > + *   Pat Gefre <pfg@sgi.com> - IOC3 serial port IRQ demuxer
-> > + */
-> > +
-> > +#include <linux/delay.h>
-> > +#include <linux/errno.h>
-> > +#include <linux/interrupt.h>
-> > +#include <linux/mfd/core.h>
-> > +#include <linux/module.h>
-> > +#include <linux/pci.h>
-> > +#include <linux/platform_device.h>
-> > +#include <linux/platform_data/sgi-w1.h>
-> > +#include <linux/rtc/ds1685.h>
-> I don't think this include is necessary.
+There is a new product which reuses Lantiq serial controller IP. Patch 1 in this
+series converts existing lantiq dt bindings to YAML schema and Patch 2 updates
+it to support newer product.
 
-you are right. I'll move it to the patch where IP30 systemboard gets added.
+These patches are baselined upon Linux 5.3-rc4 at below Git tree:
+git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
 
-Thanks,
-Thomas.
+v2:
+* Update license to GPL-2.0-only.
+* Fix trailing whitespace error.
+
+Rahul Tanwar (2):
+  dt-bindings: serial: lantiq: Convert to YAML schema
+  dt-bindings: lantiq: Update for new SoC
+
+ .../devicetree/bindings/serial/lantiq_asc.txt      | 31 --------
+ .../devicetree/bindings/serial/lantiq_asc.yaml     | 87 ++++++++++++++++++++++
+ 2 files changed, 87 insertions(+), 31 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/lantiq_asc.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/lantiq_asc.yaml
 
 -- 
-SUSE Linux GmbH
-GF: Felix Imendörffer, Mary Higgins, Sri Rasiah
-HRB 21284 (AG Nürnberg)
+2.11.0
