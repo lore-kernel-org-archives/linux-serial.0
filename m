@@ -1,12 +1,12 @@
 From: Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v2 2/2] dt-bindings: lantiq: Update for new SoC
-Date: Tue, 20 Aug 2019 11:00:50 -0500
-Message-ID: <CAL_JsqJK=TFsAt4kegGs2ymnWpY4tuDXNJF0RFpvZJmuPHJMYA@mail.gmail.com>
-References: <cover.1566288689.git.rahul.tanwar@linux.intel.com> <fa6b20015dc6bfe247e1b2a07bdc5c727595a04b.1566288689.git.rahul.tanwar@linux.intel.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: serial: lantiq: Convert to YAML schema
+Date: Tue, 20 Aug 2019 11:07:49 -0500
+Message-ID: <CAL_JsqKmyEn5iXuibmZGcvRpaiyUjVoi4-2e9NKY9eYnWLL7iQ@mail.gmail.com>
+References: <cover.1566288689.git.rahul.tanwar@linux.intel.com> <772527bd87da45eeef905d9b9d46a8d99915a116.1566288689.git.rahul.tanwar@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <fa6b20015dc6bfe247e1b2a07bdc5c727595a04b.1566288689.git.rahul.tanwar@linux.intel.com>
+In-Reply-To: <772527bd87da45eeef905d9b9d46a8d99915a116.1566288689.git.rahul.tanwar@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Rahul Tanwar <rahul.tanwar@linux.intel.com>
 Cc: devicetree@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Andy Shevchenko <andriy.shevchenko@intel.com>, qi-ming.wu@intel.com, cheol.yong.kim@intel.com, rahul.tanwar@intel.com
@@ -15,66 +15,112 @@ List-Id: linux-serial@vger.kernel.org
 On Tue, Aug 20, 2019 at 3:29 AM Rahul Tanwar
 <rahul.tanwar@linux.intel.com> wrote:
 >
-> Intel Lightning Mountain(LGM) SoC reuses Lantiq ASC serial controller IP.
-> Update the dt bindings to support LGM as well.
+> Convert the existing DT binding document for Lantiq SoC ASC serial controller
+> from txt format to YAML format.
 >
 > Signed-off-by: Rahul Tanwar <rahul.tanwar@linux.intel.com>
 > ---
->  .../devicetree/bindings/serial/lantiq_asc.yaml          | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
->
+>  .../devicetree/bindings/serial/lantiq_asc.txt      | 31 ----------
+>  .../devicetree/bindings/serial/lantiq_asc.yaml     | 70 ++++++++++++++++++++++
+
+Use the compatible name: lantiq,asc.yaml
+
+Don't forget the $id value too.
+
+>  2 files changed, 70 insertions(+), 31 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/serial/lantiq_asc.txt
+>  create mode 100644 Documentation/devicetree/bindings/serial/lantiq_asc.yaml
+
+
 > diff --git a/Documentation/devicetree/bindings/serial/lantiq_asc.yaml b/Documentation/devicetree/bindings/serial/lantiq_asc.yaml
-> index 54b90490f4fb..92807b59b024 100644
-> --- a/Documentation/devicetree/bindings/serial/lantiq_asc.yaml
+> new file mode 100644
+> index 000000000000..54b90490f4fb
+> --- /dev/null
 > +++ b/Documentation/devicetree/bindings/serial/lantiq_asc.yaml
-> @@ -17,6 +17,7 @@ properties:
->      oneOf:
->        items:
->          - const: lantiq,asc
-> +        - const: intel,lgm-asc
+> @@ -0,0 +1,70 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/serial/lantiq_asc.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Lantiq SoC ASC serial controller
+> +
+> +maintainers:
+> +  - Rahul Tanwar <rahul.tanwar@intel.com>
+> +
+> +allOf:
+> +  - $ref: /schemas/serial.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      items:
+> +        - const: lantiq,asc
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    minItems: 1
 
-Better expressed as:
+Technically, 1 item is not allowed until patch 2 (or the old doc was wrong).
 
-compatible:
-  enum:
-    - intel,lgm-asc
-    - lantiq,asc
-
->
->    reg:
->      maxItems: 1
-> @@ -28,6 +29,12 @@ properties:
->        - description: tx or combined interrupt
->        - description: rx interrupt
->        - description: err interrupt
+> +    maxItems: 3
+> +    items:
+> +      - description: tx or combined interrupt
+> +      - description: rx interrupt
+> +      - description: err interrupt
+> +
+> +  clocks:
 > +    description:
-> +      For lantiq,asc compatible, it supports 3 separate
-> +      interrupts for tx rx & err. Whereas, for intel,lgm-asc
-> +      compatible, it supports combined single interrupt for
-> +      all of tx, rx & err interrupts.
+> +      When present, first entry listed should contain phandle
+> +      to the frequency clock and second entry should contain
+> +      phandle to the gate clock.
 
-This can be expressed with an if/then schema. There's some examples in
-the tree how to do that.
+Schema needs to define how many entries:
+
+items:
+  - description: ...
+  - description: ...
 
 > +
->
->    clocks:
->      description:
-> @@ -67,4 +74,14 @@ examples:
->              interrupts = <112 113 114>;
->      };
->
+> +  clock-names:
+> +    items:
+> +      - const: freq
+> +      - const: asc
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +
+> +
+> +examples:
 > +  - |
-> +    asc0: serial@e0a00000 {
-> +            compatible = "intel,lgm-asc";
-> +            reg = <0xe0a00000 0x1000>;
-> +            interrupt-parent = <&ioapic1>;
-> +            interrupts = <128 1>;
-> +            clocks = <&cgu0 LGM_CLK_NOC4>, <&cgu0 LGM_GCLK_ASC0>;
+> +    asc0: serial@16600000 {
+> +            compatible = "lantiq,asc";
+> +            reg = <0x16600000 0x100000>;
+> +            interrupt-parent = <&gic>;
+> +            interrupts = <GIC_SHARED 103 IRQ_TYPE_LEVEL_HIGH>,
+> +                         <GIC_SHARED 105 IRQ_TYPE_LEVEL_HIGH>,
+> +                         <GIC_SHARED 106 IRQ_TYPE_LEVEL_HIGH>;
+> +            clocks = <&cgu CLK_SSX4>, <&cgu GCLK_UART>;
 > +            clock-names = "freq", "asc";
 > +    };
 > +
->  ...
+> +  - |
+> +    asc1: serial@e100c00 {
+
+I don't think this 2nd example adds anything.
+
+> +            compatible = "lantiq,asc";
+> +            reg = <0xE100C00 0x400>;
+> +            interrupt-parent = <&icu0>;
+> +            interrupts = <112 113 114>;
+> +    };
+> +
+> +...
 > --
 > 2.11.0
 >
