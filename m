@@ -1,88 +1,80 @@
-From: Richard Genoud <richard.genoud@gmail.com>
-Subject: Re: [PATCH 1/3] serial: atmel: Don't check for mctrl_gpio_to_gpiod()
- returning error
-Date: Tue, 20 Aug 2019 17:47:47 +0200
-Message-ID: <95a9b7ed-71a5-f58c-92dd-913893535f3a@gmail.com>
-References: <20190814092757.13726-1-geert+renesas@glider.be>
- <20190814092924.13857-1-geert+renesas@glider.be>
- <20190814092924.13857-2-geert+renesas@glider.be>
- <20190814093558.xlx5ck54dw2dgb6k@pengutronix.de>
- <CAMuHMdWNj-H9B8E9=NeCgLracBuJODfPyBYJERh=vt4oNFUkGw@mail.gmail.com>
- <20190814110804.2ceo2upc3su7muup@pengutronix.de>
+From: Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v2 2/2] dt-bindings: lantiq: Update for new SoC
+Date: Tue, 20 Aug 2019 11:00:50 -0500
+Message-ID: <CAL_JsqJK=TFsAt4kegGs2ymnWpY4tuDXNJF0RFpvZJmuPHJMYA@mail.gmail.com>
+References: <cover.1566288689.git.rahul.tanwar@linux.intel.com> <fa6b20015dc6bfe247e1b2a07bdc5c727595a04b.1566288689.git.rahul.tanwar@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20190814110804.2ceo2upc3su7muup@pengutronix.de>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, Geert Uytterhoeven <geert+renesas@glider.be>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, Frieder Schrempf <frieder.schrempf@kontron.de>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, NXP Linux Team <linux-imx@nxp.com>, Fabio Estevam <festevam@gmail.com>, Jiri Slaby <jslaby@suse.com>, Shawn Guo <shawnguo@kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <fa6b20015dc6bfe247e1b2a07bdc5c727595a04b.1566288689.git.rahul.tanwar@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rahul Tanwar <rahul.tanwar@linux.intel.com>
+Cc: devicetree@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Andy Shevchenko <andriy.shevchenko@intel.com>, qi-ming.wu@intel.com, cheol.yong.kim@intel.com, rahul.tanwar@intel.com
 List-Id: linux-serial@vger.kernel.org
 
-TGUgMTQvMDgvMjAxOSDDoCAxMzowOCwgVXdlIEtsZWluZS1Lw7ZuaWcgYSDDqWNyaXTCoDoKPiBP
-biBXZWQsIEF1ZyAxNCwgMjAxOSBhdCAxMjoyMDozM1BNICswMjAwLCBHZWVydCBVeXR0ZXJob2V2
-ZW4gd3JvdGU6Cj4+IEhpIFV3ZSwKPj4KPj4gT24gV2VkLCBBdWcgMTQsIDIwMTkgYXQgMTE6MzYg
-QU0gVXdlIEtsZWluZS1Lw7ZuaWcKPj4gPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4g
-d3JvdGU6Cj4+PiBPbiBXZWQsIEF1ZyAxNCwgMjAxOSBhdCAxMToyOToyMkFNICswMjAwLCBHZWVy
-dCBVeXR0ZXJob2V2ZW4gd3JvdGU6Cj4+Pj4gU2luY2UgY29tbWl0IDFkMjY3ZWE2NTM5ZjI2NjMg
-KCJzZXJpYWw6IG1jdHJsLWdwaW86IHNpbXBsaWZ5IGluaXQKPj4+PiByb3V0aW5lIiksIG1jdHJs
-X2dwaW9faW5pdCgpIHJldHVybnMgZmFpbHVyZSBpZiB0aGUgYXNzaWdubWVudCB0byBhbnkKPj4+
-PiBtZW1iZXIgb2YgdGhlIGdwaW8gYXJyYXkgcmVzdWx0cyBpbiBhbiBlcnJvciBwb2ludGVyLgo+
-Pj4+IFNpbmNlIGNvbW1pdCBjMzU5NTIyMTk0NTkzODE1ICgic2VyaWFsOiBtY3RybF9ncGlvOiBB
-dm9pZCBwcm9iZSBmYWlsdXJlcwo+Pj4+IGluIGNhc2Ugb2YgbWlzc2luZyBncGlvbGliIiksIG1j
-dHJsX2dwaW9fdG9fZ3Bpb2QoKSByZXR1cm5zIE5VTEwgaW4gdGhlCj4+Pj4gIUNPTkZJR19HUElP
-TElCIGNhc2UuCj4+Pj4gSGVuY2UgdGhlcmUgaXMgbm8gbG9uZ2VyIGEgbmVlZCB0byBjaGVjayBm
-b3IgbWN0cmxfZ3Bpb190b19ncGlvZCgpCj4+Pj4gcmV0dXJuaW5nIGFuIGVycm9yIHZhbHVlLiAg
-QSBzaW1wbGUgTlVMTCBjaGVjayBpcyBzdWZmaWNpZW50Lgo+Pj4+Cj4+Pj4gVGhpcyBmb2xsb3dz
-IHRoZSBzcGlyaXQgb2YgY29tbWl0IDQ0NWRmN2ZmM2ZkMWEwYTkgKCJzZXJpYWw6IG1jdHJsLWdw
-aW86Cj4+Pj4gZHJvcCB1c2FnZXMgb2YgSVNfRVJSX09SX05VTEwiKSBpbiB0aGUgbWN0cmwtZ3Bp
-byBjb3JlLgo+Pj4+Cj4+Pj4gU2lnbmVkLW9mZi1ieTogR2VlcnQgVXl0dGVyaG9ldmVuIDxnZWVy
-dCtyZW5lc2FzQGdsaWRlci5iZT4KPj4+PiAtLS0KPj4+PiAgZHJpdmVycy90dHkvc2VyaWFsL2F0
-bWVsX3NlcmlhbC5jIHwgMTIgKysrKy0tLS0tLS0tCj4+Pj4gIDEgZmlsZSBjaGFuZ2VkLCA0IGlu
-c2VydGlvbnMoKyksIDggZGVsZXRpb25zKC0pCj4+Pj4KPj4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVy
-cy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5jIGIvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3Nl
-cmlhbC5jCj4+Pj4gaW5kZXggMTlhODVkNmZlM2QyMDU0MS4uZTk2MjBhODExNjZiN2RjMSAxMDA2
-NDQKPj4+PiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMKPj4+PiArKysg
-Yi9kcml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMKPj4+PiBAQCAtMzAzLDMyICszMDMs
-MjggQEAgc3RhdGljIHVuc2lnbmVkIGludCBhdG1lbF9nZXRfbGluZXNfc3RhdHVzKHN0cnVjdCB1
-YXJ0X3BvcnQgKnBvcnQpCj4+Pj4KPj4+PiAgICAgICBtY3RybF9ncGlvX2dldChhdG1lbF9wb3J0
-LT5ncGlvcywgJnJldCk7Cj4+Pj4KPj4+PiAtICAgICBpZiAoIUlTX0VSUl9PUl9OVUxMKG1jdHJs
-X2dwaW9fdG9fZ3Bpb2QoYXRtZWxfcG9ydC0+Z3Bpb3MsCj4+Pj4gLSAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIFVBUlRfR1BJT19DVFMpKSkgewo+Pj4+ICsgICAg
-IGlmIChtY3RybF9ncGlvX3RvX2dwaW9kKGF0bWVsX3BvcnQtPmdwaW9zLCBVQVJUX0dQSU9fQ1RT
-KSkgewo+Pj4+ICAgICAgICAgICAgICAgaWYgKHJldCAmIFRJT0NNX0NUUykKPj4+PiAgICAgICAg
-ICAgICAgICAgICAgICAgc3RhdHVzICY9IH5BVE1FTF9VU19DVFM7Cj4+Pj4gICAgICAgICAgICAg
-ICBlbHNlCj4+Pj4gICAgICAgICAgICAgICAgICAgICAgIHN0YXR1cyB8PSBBVE1FTF9VU19DVFM7
-Cj4+Pj4gICAgICAgfQo+Pj4KPj4+IFRoZSBjaGFuZ2UgaXMgZmluZSwgYnV0IGl0IHNlZW1zIHRo
-ZSBhdG1lbCBkcml2ZXIgZG9lc24ndCB1c2UgbWN0cmxfZ3Bpbwo+Pj4gYXMgZXhwZWN0ZWQgKGF0
-IGxlYXN0IGFzIGV4cGVjdGVkIGJ5IG1lKS4gSU1ITyBkcml2aW5nIHRoZSBoYXJkd2FyZQo+Pj4g
-ZnVuY3Rpb24gb2YgdGhlIENUUyBwaW4gc2hvdWxkbid0IGJlIGNvbmRpdGlvbmFsIG9uIHRoZSBw
-cmVzZW5jZSBvZiBhCj4+PiBjdHMtZ3Bpby4gSXMgdGhlcmUgYSByZWFzb24gbm90IHRvIGp1c3Qg
-ZHJvcCB0aGUgaWYgY29tcGxldGVseT8KPj4KPj4gVGhlIGFib3ZlIGNvZGUgcmV0dXJucyB0aGUg
-aGFyZHdhcmUgc3RhdHVzIGlmIENUUyBpcyBub3QgYSBHUElPLCBhbmQKPj4gcmV0dXJucyAob3Zl
-cnJpZGVzIHdpdGgpIHRoZSBHUElPIHN0YXR1cyBpZiBDVFMgaXMgYSBHUElPLgo+PiBJc24ndCB0
-aGF0IGNvcnJlY3QsIG9yIGFtIEkgbWlzc2luZyBzb21ldGhpbmc/Cj4gCj4gSSB0b29rIGEgZGVl
-cGVyIGxvb2sgaW50byB0aGlzIGRyaXZlciBub3cuIFRoZSB0YXNrIGZvcgo+IGF0bWVsX2dldF9s
-aW5lc19zdGF0dXMoKSBpc24ndCB0byBpbXBsZW1lbnQgdGhlIGdldF9tY3RybCgpIGNhbGxiYWNr
-Lgo+IAo+IEluc3RlYWQgdGhpcyBpcyBjYWxsZWQgaW4gdGhlIGlycWhhbmRsZXIgdG8gc2V0IEFU
-TUVMX1VTX1JJIGluIGEKPiAicGVuZGluZyIgdmFsdWUgdGhhdCB0aGVuIGxhdGVyIGluIGF0bWVs
-X2hhbmRsZV9zdGF0dXMoKSBpcyB0cmFuc2xhdGVkCj4gdG8gYSAicmluZyIgZXZlbnQgdGhhdCBp
-cyBoYW5kbGVkIHRoZXJlLgo+IAo+IFNvIHRoZSByaWdodCBjbGVhbnVwIHdvdWxkIGJlIHRvIGxl
-dCBhdG1lbF9nZXRfbGluZXNfc3RhdHVzKCkganVzdCBiZQo+IAo+IAlyZXR1cm4gYXRtZWxfdWFy
-dF9yZWFkbChwb3J0LCBBVE1FTF9VU19DU1IpOwo+IAo+IC4gSWYgc29tZXRoaW5nIGhhcHBlbmQg
-b24gdGhlIGxpbmVzIGltcGxlbWVudGVkIGFzIGdwaW8gdGhlIGRyaXZlcidzIGlycQo+IGZ1bmN0
-aW9uIGlzbid0IGNhbGxlZCBhbnlob3cuCgpJJ2QgbGlrZSB0byBnaXZlIGl0IGEgZ29vZCB0ZXN0
-IHRvIGJlIHN1cmUsIGFuZCBJJ2xsIGdldCBiYWNrIHRvIHlvdS4KClRoYW5rcywKUmljaGFyZAoK
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJt
-LWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3Jn
-Cmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtl
-cm5lbAo=
+On Tue, Aug 20, 2019 at 3:29 AM Rahul Tanwar
+<rahul.tanwar@linux.intel.com> wrote:
+>
+> Intel Lightning Mountain(LGM) SoC reuses Lantiq ASC serial controller IP.
+> Update the dt bindings to support LGM as well.
+>
+> Signed-off-by: Rahul Tanwar <rahul.tanwar@linux.intel.com>
+> ---
+>  .../devicetree/bindings/serial/lantiq_asc.yaml          | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/serial/lantiq_asc.yaml b/Documentation/devicetree/bindings/serial/lantiq_asc.yaml
+> index 54b90490f4fb..92807b59b024 100644
+> --- a/Documentation/devicetree/bindings/serial/lantiq_asc.yaml
+> +++ b/Documentation/devicetree/bindings/serial/lantiq_asc.yaml
+> @@ -17,6 +17,7 @@ properties:
+>      oneOf:
+>        items:
+>          - const: lantiq,asc
+> +        - const: intel,lgm-asc
+
+Better expressed as:
+
+compatible:
+  enum:
+    - intel,lgm-asc
+    - lantiq,asc
+
+>
+>    reg:
+>      maxItems: 1
+> @@ -28,6 +29,12 @@ properties:
+>        - description: tx or combined interrupt
+>        - description: rx interrupt
+>        - description: err interrupt
+> +    description:
+> +      For lantiq,asc compatible, it supports 3 separate
+> +      interrupts for tx rx & err. Whereas, for intel,lgm-asc
+> +      compatible, it supports combined single interrupt for
+> +      all of tx, rx & err interrupts.
+
+This can be expressed with an if/then schema. There's some examples in
+the tree how to do that.
+
+> +
+>
+>    clocks:
+>      description:
+> @@ -67,4 +74,14 @@ examples:
+>              interrupts = <112 113 114>;
+>      };
+>
+> +  - |
+> +    asc0: serial@e0a00000 {
+> +            compatible = "intel,lgm-asc";
+> +            reg = <0xe0a00000 0x1000>;
+> +            interrupt-parent = <&ioapic1>;
+> +            interrupts = <128 1>;
+> +            clocks = <&cgu0 LGM_CLK_NOC4>, <&cgu0 LGM_GCLK_ASC0>;
+> +            clock-names = "freq", "asc";
+> +    };
+> +
+>  ...
+> --
+> 2.11.0
+>
