@@ -1,83 +1,54 @@
-From: Matthew Garrett <matthewgarrett@google.com>
-Subject: [PATCH V40 18/29] lockdown: Lock down TIOCSSERIAL
-Date: Mon, 19 Aug 2019 17:17:54 -0700
-Message-ID: <20190820001805.241928-19-matthewgarrett@google.com>
-References: <20190820001805.241928-1-matthewgarrett@google.com>
+From: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [PATCH v5 15/17] mfd: ioc3: Add driver for SGI IOC3 chip
+Date: Tue, 20 Aug 2019 08:23:08 +0200
+Message-ID: <20190820062308.GK3545@piout.net>
+References: <20190819163144.3478-1-tbogendoerfer@suse.de>
+ <20190819163144.3478-16-tbogendoerfer@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190820001805.241928-1-matthewgarrett@google.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: jmorris@namei.org
-Cc: linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org, linux-api@vger.kernel.org, David Howells <dhowells@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthew Garrett <mjg59@google.com>, Kees Cook <keescook@chromium.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <netdev-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190819163144.3478-16-tbogendoerfer@suse.de>
+Sender: netdev-owner@vger.kernel.org
+To: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc: Jonathan Corbet <corbet@lwn.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Evgeniy Polyakov <zbr@ioremap.net>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-input@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+Hi,
 
-Lock down TIOCSSERIAL as that can be used to change the ioport and irq
-settings on a serial port.  This only appears to be an issue for the serial
-drivers that use the core serial code.  All other drivers seem to either
-ignore attempts to change port/irq or give an error.
+On 19/08/2019 18:31:38+0200, Thomas Bogendoerfer wrote:
+> diff --git a/drivers/mfd/ioc3.c b/drivers/mfd/ioc3.c
+> new file mode 100644
+> index 000000000000..5bcb3461a189
+> --- /dev/null
+> +++ b/drivers/mfd/ioc3.c
+> @@ -0,0 +1,586 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * SGI IOC3 multifunction device driver
+> + *
+> + * Copyright (C) 2018, 2019 Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> + *
+> + * Based on work by:
+> + *   Stanislaw Skowronek <skylark@unaligned.org>
+> + *   Joshua Kinard <kumba@gentoo.org>
+> + *   Brent Casavant <bcasavan@sgi.com> - IOC4 master driver
+> + *   Pat Gefre <pfg@sgi.com> - IOC3 serial port IRQ demuxer
+> + */
+> +
+> +#include <linux/delay.h>
+> +#include <linux/errno.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/mfd/core.h>
+> +#include <linux/module.h>
+> +#include <linux/pci.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/platform_data/sgi-w1.h>
+> +#include <linux/rtc/ds1685.h>
+I don't think this include is necessary.
 
-Reported-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Signed-off-by: Matthew Garrett <mjg59@google.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-cc: Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org
-Signed-off-by: James Morris <jmorris@namei.org>
----
- drivers/tty/serial/serial_core.c | 5 +++++
- include/linux/security.h         | 1 +
- security/lockdown/lockdown.c     | 1 +
- 3 files changed, 7 insertions(+)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 83f4dd0bfd74..bbad407557b9 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -22,6 +22,7 @@
- #include <linux/serial_core.h>
- #include <linux/delay.h>
- #include <linux/mutex.h>
-+#include <linux/security.h>
- 
- #include <linux/irq.h>
- #include <linux/uaccess.h>
-@@ -862,6 +863,10 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
- 		goto check_and_exit;
- 	}
- 
-+	retval = security_locked_down(LOCKDOWN_TIOCSSERIAL);
-+	if (retval && (change_irq || change_port))
-+		goto exit;
-+
- 	/*
- 	 * Ask the low level driver to verify the settings.
- 	 */
-diff --git a/include/linux/security.h b/include/linux/security.h
-index 683f0607e6f2..b4a85badb03a 100644
---- a/include/linux/security.h
-+++ b/include/linux/security.h
-@@ -112,6 +112,7 @@ enum lockdown_reason {
- 	LOCKDOWN_MSR,
- 	LOCKDOWN_ACPI_TABLES,
- 	LOCKDOWN_PCMCIA_CIS,
-+	LOCKDOWN_TIOCSSERIAL,
- 	LOCKDOWN_INTEGRITY_MAX,
- 	LOCKDOWN_CONFIDENTIALITY_MAX,
- };
-diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
-index db3477585972..771c77f9c04a 100644
---- a/security/lockdown/lockdown.c
-+++ b/security/lockdown/lockdown.c
-@@ -27,6 +27,7 @@ static char *lockdown_reasons[LOCKDOWN_CONFIDENTIALITY_MAX+1] = {
- 	[LOCKDOWN_MSR] = "raw MSR access",
- 	[LOCKDOWN_ACPI_TABLES] = "modifying ACPI tables",
- 	[LOCKDOWN_PCMCIA_CIS] = "direct PCMCIA CIS storage",
-+	[LOCKDOWN_TIOCSSERIAL] = "reconfiguration of serial port IO",
- 	[LOCKDOWN_INTEGRITY_MAX] = "integrity",
- 	[LOCKDOWN_CONFIDENTIALITY_MAX] = "confidentiality",
- };
 -- 
-2.23.0.rc1.153.gdeed80330f-goog
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
