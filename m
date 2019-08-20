@@ -1,38 +1,83 @@
-From: Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: Re: [PATCH v5 12/17] net: sgi: ioc3-eth: use dma-direct for dma
- allocations
-Date: Mon, 19 Aug 2019 17:07:35 -0700
-Message-ID: <20190819170735.13884ec9@cakuba.netronome.com>
-References: <20190819163144.3478-1-tbogendoerfer@suse.de>
-        <20190819163144.3478-13-tbogendoerfer@suse.de>
+From: Matthew Garrett <matthewgarrett@google.com>
+Subject: [PATCH V40 18/29] lockdown: Lock down TIOCSSERIAL
+Date: Mon, 19 Aug 2019 17:17:54 -0700
+Message-ID: <20190820001805.241928-19-matthewgarrett@google.com>
+References: <20190820001805.241928-1-matthewgarrett@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190819163144.3478-13-tbogendoerfer@suse.de>
+In-Reply-To: <20190820001805.241928-1-matthewgarrett@google.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Cc: Jonathan Corbet <corbet@lwn.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Evgeniy Polyakov <zbr@ioremap.net>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-input@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+To: jmorris@namei.org
+Cc: linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org, linux-api@vger.kernel.org, David Howells <dhowells@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthew Garrett <mjg59@google.com>, Kees Cook <keescook@chromium.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, 19 Aug 2019 18:31:35 +0200, Thomas Bogendoerfer wrote:
-> @@ -1386,18 +1427,24 @@ static netdev_tx_t ioc3_start_xmit(struct sk_buff *skb, struct net_device *dev)
->  		unsigned long b2 = (data | 0x3fffUL) + 1UL;
->  		unsigned long s1 = b2 - data;
->  		unsigned long s2 = data + len - b2;
-> +		dma_addr_t d;
->  
->  		desc->cmd    = cpu_to_be32(len | ETXD_INTWHENDONE |
->  					   ETXD_B1V | ETXD_B2V | w0);
->  		desc->bufcnt = cpu_to_be32((s1 << ETXD_B1CNT_SHIFT) |
->  					   (s2 << ETXD_B2CNT_SHIFT));
-> -		desc->p1     = cpu_to_be64(ioc3_map(skb->data, 1));
-> -		desc->p2     = cpu_to_be64(ioc3_map((void *)b2, 1));
-> +		d = dma_map_single(ip->dma_dev, skb->data, s1, DMA_TO_DEVICE);
+From: David Howells <dhowells@redhat.com>
 
-You'll need to check the DMA address with dma_mapping_error(dev, addr),
-otherwise static checkers will get upset.
+Lock down TIOCSSERIAL as that can be used to change the ioport and irq
+settings on a serial port.  This only appears to be an issue for the serial
+drivers that use the core serial code.  All other drivers seem to either
+ignore attempts to change port/irq or give an error.
 
-> +		desc->p1     = cpu_to_be64(ioc3_map(d, PCI64_ATTR_PREF));
-> +		d = dma_map_single(ip->dma_dev, (void *)b2, s1, DMA_TO_DEVICE);
-> +		desc->p2     = cpu_to_be64(ioc3_map(d, PCI64_ATTR_PREF));
+Reported-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Matthew Garrett <mjg59@google.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: James Morris <jmorris@namei.org>
+---
+ drivers/tty/serial/serial_core.c | 5 +++++
+ include/linux/security.h         | 1 +
+ security/lockdown/lockdown.c     | 1 +
+ 3 files changed, 7 insertions(+)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 83f4dd0bfd74..bbad407557b9 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -22,6 +22,7 @@
+ #include <linux/serial_core.h>
+ #include <linux/delay.h>
+ #include <linux/mutex.h>
++#include <linux/security.h>
+ 
+ #include <linux/irq.h>
+ #include <linux/uaccess.h>
+@@ -862,6 +863,10 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
+ 		goto check_and_exit;
+ 	}
+ 
++	retval = security_locked_down(LOCKDOWN_TIOCSSERIAL);
++	if (retval && (change_irq || change_port))
++		goto exit;
++
+ 	/*
+ 	 * Ask the low level driver to verify the settings.
+ 	 */
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 683f0607e6f2..b4a85badb03a 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -112,6 +112,7 @@ enum lockdown_reason {
+ 	LOCKDOWN_MSR,
+ 	LOCKDOWN_ACPI_TABLES,
+ 	LOCKDOWN_PCMCIA_CIS,
++	LOCKDOWN_TIOCSSERIAL,
+ 	LOCKDOWN_INTEGRITY_MAX,
+ 	LOCKDOWN_CONFIDENTIALITY_MAX,
+ };
+diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
+index db3477585972..771c77f9c04a 100644
+--- a/security/lockdown/lockdown.c
++++ b/security/lockdown/lockdown.c
+@@ -27,6 +27,7 @@ static char *lockdown_reasons[LOCKDOWN_CONFIDENTIALITY_MAX+1] = {
+ 	[LOCKDOWN_MSR] = "raw MSR access",
+ 	[LOCKDOWN_ACPI_TABLES] = "modifying ACPI tables",
+ 	[LOCKDOWN_PCMCIA_CIS] = "direct PCMCIA CIS storage",
++	[LOCKDOWN_TIOCSSERIAL] = "reconfiguration of serial port IO",
+ 	[LOCKDOWN_INTEGRITY_MAX] = "integrity",
+ 	[LOCKDOWN_CONFIDENTIALITY_MAX] = "confidentiality",
+ };
+-- 
+2.23.0.rc1.153.gdeed80330f-goog
