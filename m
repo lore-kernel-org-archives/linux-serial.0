@@ -1,40 +1,95 @@
-From: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: Re: [PATCH v4 3/9] nvmem: core: add nvmem_device_find
-Date: Wed, 21 Aug 2019 14:48:46 +0200
-Message-ID: <20190821124846.GA12591@alpha.franken.de>
-References: <20190809103235.16338-1-tbogendoerfer@suse.de>
- <20190809103235.16338-4-tbogendoerfer@suse.de>
- <8d18de64-9234-fcba-aa3d-b46789eb62a5@linaro.org>
- <20190814134616.b4dab3c0aa6ac913d78edb6a@suse.de>
- <31d680ee-ddb3-8536-c915-576222d263e1@linaro.org>
- <20190816140942.GA15050@alpha.franken.de>
- <fca76e6d-fa0b-176b-abcf-e7551b22e6a9@linaro.org>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH 1/3] serial: atmel: Don't check for mctrl_gpio_to_gpiod()
+ returning error
+Date: Wed, 21 Aug 2019 17:27:01 +0200
+Message-ID: <352d8f55-afe2-9f76-ad92-f15a9faa16a8@gmail.com>
+References: <20190814092757.13726-1-geert+renesas@glider.be>
+ <20190814092924.13857-1-geert+renesas@glider.be>
+ <20190814092924.13857-2-geert+renesas@glider.be>
+ <20190814093558.xlx5ck54dw2dgb6k@pengutronix.de>
+ <CAMuHMdWNj-H9B8E9=NeCgLracBuJODfPyBYJERh=vt4oNFUkGw@mail.gmail.com>
+ <20190814110804.2ceo2upc3su7muup@pengutronix.de>
+ <95a9b7ed-71a5-f58c-92dd-913893535f3a@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <netdev-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <fca76e6d-fa0b-176b-abcf-e7551b22e6a9@linaro.org>
-Sender: netdev-owner@vger.kernel.org
-To: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc: Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Evgeniy Polyakov <zbr@ioremap.net>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, linux-input@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <95a9b7ed-71a5-f58c-92dd-913893535f3a@gmail.com>
+Content-Language: fr
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, Geert Uytterhoeven <geert+renesas@glider.be>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, Frieder Schrempf <frieder.schrempf@kontron.de>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, NXP Linux Team <linux-imx@nxp.com>, Fabio Estevam <festevam@gmail.com>, Jiri Slaby <jslaby@suse.com>, Shawn Guo <shawnguo@kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Aug 19, 2019 at 05:03:42PM +0100, Srinivas Kandagatla wrote:
-> >>On 14/08/2019 12:46, Thomas Bogendoerfer wrote:
-> >these patches are not in Linus tree, yet. I guess they will show up
-> >in 5.4. No idea how to deal with it right now, do you ?
-> All these patches are due to go in next merge window,
-> You should base your patch on top of linux-next.
-
-that depends, which maintainer will merge this series. Right now
-it doesn't look like this series will make it into 5.4 as there
-is still no sign form the W1 maintainer. My idea is to break out
-the 5.4 parts and submit it. So I'll rebase the nvmem patch to
-linux-next and send it. Hope it will be ok,  if the user of
-the new function will show up in 5.5.
-
-Thomas.
-
--- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+TGUgMjAvMDgvMjAxOSDDoCAxNzo0NywgUmljaGFyZCBHZW5vdWQgYSDDqWNyaXTCoDoKPiBMZSAx
+NC8wOC8yMDE5IMOgIDEzOjA4LCBVd2UgS2xlaW5lLUvDtm5pZyBhIMOpY3JpdMKgOgo+PiBPbiBX
+ZWQsIEF1ZyAxNCwgMjAxOSBhdCAxMjoyMDozM1BNICswMjAwLCBHZWVydCBVeXR0ZXJob2V2ZW4g
+d3JvdGU6Cj4+PiBIaSBVd2UsCj4+Pgo+Pj4gT24gV2VkLCBBdWcgMTQsIDIwMTkgYXQgMTE6MzYg
+QU0gVXdlIEtsZWluZS1Lw7ZuaWcKPj4+IDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+
+IHdyb3RlOgo+Pj4+IE9uIFdlZCwgQXVnIDE0LCAyMDE5IGF0IDExOjI5OjIyQU0gKzAyMDAsIEdl
+ZXJ0IFV5dHRlcmhvZXZlbiB3cm90ZToKPj4+Pj4gU2luY2UgY29tbWl0IDFkMjY3ZWE2NTM5ZjI2
+NjMgKCJzZXJpYWw6IG1jdHJsLWdwaW86IHNpbXBsaWZ5IGluaXQKPj4+Pj4gcm91dGluZSIpLCBt
+Y3RybF9ncGlvX2luaXQoKSByZXR1cm5zIGZhaWx1cmUgaWYgdGhlIGFzc2lnbm1lbnQgdG8gYW55
+Cj4+Pj4+IG1lbWJlciBvZiB0aGUgZ3BpbyBhcnJheSByZXN1bHRzIGluIGFuIGVycm9yIHBvaW50
+ZXIuCj4+Pj4+IFNpbmNlIGNvbW1pdCBjMzU5NTIyMTk0NTkzODE1ICgic2VyaWFsOiBtY3RybF9n
+cGlvOiBBdm9pZCBwcm9iZSBmYWlsdXJlcwo+Pj4+PiBpbiBjYXNlIG9mIG1pc3NpbmcgZ3Bpb2xp
+YiIpLCBtY3RybF9ncGlvX3RvX2dwaW9kKCkgcmV0dXJucyBOVUxMIGluIHRoZQo+Pj4+PiAhQ09O
+RklHX0dQSU9MSUIgY2FzZS4KPj4+Pj4gSGVuY2UgdGhlcmUgaXMgbm8gbG9uZ2VyIGEgbmVlZCB0
+byBjaGVjayBmb3IgbWN0cmxfZ3Bpb190b19ncGlvZCgpCj4+Pj4+IHJldHVybmluZyBhbiBlcnJv
+ciB2YWx1ZS4gIEEgc2ltcGxlIE5VTEwgY2hlY2sgaXMgc3VmZmljaWVudC4KPj4+Pj4KPj4+Pj4g
+VGhpcyBmb2xsb3dzIHRoZSBzcGlyaXQgb2YgY29tbWl0IDQ0NWRmN2ZmM2ZkMWEwYTkgKCJzZXJp
+YWw6IG1jdHJsLWdwaW86Cj4+Pj4+IGRyb3AgdXNhZ2VzIG9mIElTX0VSUl9PUl9OVUxMIikgaW4g
+dGhlIG1jdHJsLWdwaW8gY29yZS4KPj4+Pj4KPj4+Pj4gU2lnbmVkLW9mZi1ieTogR2VlcnQgVXl0
+dGVyaG9ldmVuIDxnZWVydCtyZW5lc2FzQGdsaWRlci5iZT4KPj4+Pj4gLS0tCj4+Pj4+ICBkcml2
+ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMgfCAxMiArKysrLS0tLS0tLS0KPj4+Pj4gIDEg
+ZmlsZSBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDggZGVsZXRpb25zKC0pCj4+Pj4+Cj4+Pj4+
+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMgYi9kcml2ZXJz
+L3R0eS9zZXJpYWwvYXRtZWxfc2VyaWFsLmMKPj4+Pj4gaW5kZXggMTlhODVkNmZlM2QyMDU0MS4u
+ZTk2MjBhODExNjZiN2RjMSAxMDA2NDQKPj4+Pj4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2F0
+bWVsX3NlcmlhbC5jCj4+Pj4+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwu
+Ywo+Pj4+PiBAQCAtMzAzLDMyICszMDMsMjggQEAgc3RhdGljIHVuc2lnbmVkIGludCBhdG1lbF9n
+ZXRfbGluZXNfc3RhdHVzKHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpCj4+Pj4+Cj4+Pj4+ICAgICAg
+IG1jdHJsX2dwaW9fZ2V0KGF0bWVsX3BvcnQtPmdwaW9zLCAmcmV0KTsKPj4+Pj4KPj4+Pj4gLSAg
+ICAgaWYgKCFJU19FUlJfT1JfTlVMTChtY3RybF9ncGlvX3RvX2dwaW9kKGF0bWVsX3BvcnQtPmdw
+aW9zLAo+Pj4+PiAtICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+VUFSVF9HUElPX0NUUykpKSB7Cj4+Pj4+ICsgICAgIGlmIChtY3RybF9ncGlvX3RvX2dwaW9kKGF0
+bWVsX3BvcnQtPmdwaW9zLCBVQVJUX0dQSU9fQ1RTKSkgewo+Pj4+PiAgICAgICAgICAgICAgIGlm
+IChyZXQgJiBUSU9DTV9DVFMpCj4+Pj4+ICAgICAgICAgICAgICAgICAgICAgICBzdGF0dXMgJj0g
+fkFUTUVMX1VTX0NUUzsKPj4+Pj4gICAgICAgICAgICAgICBlbHNlCj4+Pj4+ICAgICAgICAgICAg
+ICAgICAgICAgICBzdGF0dXMgfD0gQVRNRUxfVVNfQ1RTOwo+Pj4+PiAgICAgICB9Cj4+Pj4KPj4+
+PiBUaGUgY2hhbmdlIGlzIGZpbmUsIGJ1dCBpdCBzZWVtcyB0aGUgYXRtZWwgZHJpdmVyIGRvZXNu
+J3QgdXNlIG1jdHJsX2dwaW8KPj4+PiBhcyBleHBlY3RlZCAoYXQgbGVhc3QgYXMgZXhwZWN0ZWQg
+YnkgbWUpLiBJTUhPIGRyaXZpbmcgdGhlIGhhcmR3YXJlCj4+Pj4gZnVuY3Rpb24gb2YgdGhlIENU
+UyBwaW4gc2hvdWxkbid0IGJlIGNvbmRpdGlvbmFsIG9uIHRoZSBwcmVzZW5jZSBvZiBhCj4+Pj4g
+Y3RzLWdwaW8uIElzIHRoZXJlIGEgcmVhc29uIG5vdCB0byBqdXN0IGRyb3AgdGhlIGlmIGNvbXBs
+ZXRlbHk/Cj4+Pgo+Pj4gVGhlIGFib3ZlIGNvZGUgcmV0dXJucyB0aGUgaGFyZHdhcmUgc3RhdHVz
+IGlmIENUUyBpcyBub3QgYSBHUElPLCBhbmQKPj4+IHJldHVybnMgKG92ZXJyaWRlcyB3aXRoKSB0
+aGUgR1BJTyBzdGF0dXMgaWYgQ1RTIGlzIGEgR1BJTy4KPj4+IElzbid0IHRoYXQgY29ycmVjdCwg
+b3IgYW0gSSBtaXNzaW5nIHNvbWV0aGluZz8KPj4KPj4gSSB0b29rIGEgZGVlcGVyIGxvb2sgaW50
+byB0aGlzIGRyaXZlciBub3cuIFRoZSB0YXNrIGZvcgo+PiBhdG1lbF9nZXRfbGluZXNfc3RhdHVz
+KCkgaXNuJ3QgdG8gaW1wbGVtZW50IHRoZSBnZXRfbWN0cmwoKSBjYWxsYmFjay4KPj4KPj4gSW5z
+dGVhZCB0aGlzIGlzIGNhbGxlZCBpbiB0aGUgaXJxaGFuZGxlciB0byBzZXQgQVRNRUxfVVNfUkkg
+aW4gYQo+PiAicGVuZGluZyIgdmFsdWUgdGhhdCB0aGVuIGxhdGVyIGluIGF0bWVsX2hhbmRsZV9z
+dGF0dXMoKSBpcyB0cmFuc2xhdGVkCj4+IHRvIGEgInJpbmciIGV2ZW50IHRoYXQgaXMgaGFuZGxl
+ZCB0aGVyZS4KPj4KPj4gU28gdGhlIHJpZ2h0IGNsZWFudXAgd291bGQgYmUgdG8gbGV0IGF0bWVs
+X2dldF9saW5lc19zdGF0dXMoKSBqdXN0IGJlCj4+Cj4+IAlyZXR1cm4gYXRtZWxfdWFydF9yZWFk
+bChwb3J0LCBBVE1FTF9VU19DU1IpOwo+Pgo+PiAuIElmIHNvbWV0aGluZyBoYXBwZW5kIG9uIHRo
+ZSBsaW5lcyBpbXBsZW1lbnRlZCBhcyBncGlvIHRoZSBkcml2ZXIncyBpcnEKPj4gZnVuY3Rpb24g
+aXNuJ3QgY2FsbGVkIGFueWhvdy4KPiAKPiBJJ2QgbGlrZSB0byBnaXZlIGl0IGEgZ29vZCB0ZXN0
+IHRvIGJlIHN1cmUsIGFuZCBJJ2xsIGdldCBiYWNrIHRvIHlvdS4KClNvLCBVd2UgaXMgcmlnaHQu
+ClNpbmNlIGNvbW1pdCBjZTU5ZTQ4ZmRiYWQgKCJzZXJpYWw6IG1jdHJsX2dwaW86IGltcGxlbWVu
+dCBpbnRlcnJ1cHQgaGFuZGxpbmciKSwKYXRtZWxfZ2V0X2xpbmVzX3N0YXR1cygpIGNhbiBiZSBj
+b21wbGV0bHkga2lsbGVkIGFuZCByZXBsYWNlZCBieSA6CmF0bWVsX3VhcnRfcmVhZGwocG9ydCwg
+QVRNRUxfVVNfQ1NSKTsKCkdlZXJ0LCBkbyB5b3Ugd2FudCB0byBzZW5kIGEgcGF0Y2ggZm9yIHRo
+YXQsIG9yIHNob3VsZCBJIGRvIGl0ID8KCgpUaGFua3MsClJpY2hhcmQKCl9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGlu
+ZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMu
+aW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
