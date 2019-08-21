@@ -1,33 +1,83 @@
-From: Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: Re: [PATCH v5 10/17] net: sgi: ioc3-eth: rework skb rx handling
-Date: Wed, 21 Aug 2019 13:37:57 -0700
-Message-ID: <20190821133757.4fb5253c@cakuba.netronome.com>
-References: <20190819163144.3478-1-tbogendoerfer@suse.de>
-        <20190819163144.3478-11-tbogendoerfer@suse.de>
-        <20190819165522.451f2ea2@cakuba.netronome.com>
-        <20190821162847.479c9967d4dc8026fe65fa0e@suse.de>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 4/6] dt-bindings: serial: Document Freescale LINFlex
+ UART
+Date: Wed, 21 Aug 2019 16:18:41 -0500
+Message-ID: <20190821211841.GA16627@bogus>
+References: <20190809112853.15846-1-stefan-gabriel.mirea@nxp.com>
+ <20190809112853.15846-5-stefan-gabriel.mirea@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190821162847.479c9967d4dc8026fe65fa0e@suse.de>
+Content-Disposition: inline
+In-Reply-To: <20190809112853.15846-5-stefan-gabriel.mirea@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Cc: Jonathan Corbet <corbet@lwn.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Evgeniy Polyakov <zbr@ioremap.net>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-input@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org, Jesper Dangaard Brouer <brouer@redhat.com>
+To: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+Cc: "corbet@lwn.net" <corbet@lwn.net>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will@kernel.org" <will@kernel.org>, "shawnguo@kernel.org" <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>, "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Cosmin Stefan Stoica <cosmin.stoica@nxp.com>, Larisa Ileana Grigore <larisa.grigore@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 21 Aug 2019 16:28:47 +0200, Thomas Bogendoerfer wrote:
-> > This looks like a DMA engine alignment requirement, more than an
-> > optimization.  
+On Fri, Aug 09, 2019 at 11:29:14AM +0000, Stefan-gabriel Mirea wrote:
+> From: Stoica Cosmin-Stefan <cosmin.stoica@nxp.com>
 > 
-> that true, there are two constraints for the rx buffers, start must be aligned
-> to 128 bytes and a buffer must not cross a 16kbyte boundary. I was already
-> thinking of allocating pages and chop them up. Is there a Linux API available,
-> which could help for implementing this ?
+> Add documentation for the serial communication interface module (LINFlex),
+> found in two instances on S32V234.
 > 
-> I'll probably drop this patch or only change the skb_put stuff plus RX_BUF_SIZE
-> define.
+> Signed-off-by: Stoica Cosmin-Stefan <cosmin.stoica@nxp.com>
+> Signed-off-by: Larisa Grigore <Larisa.Grigore@nxp.com>
+> Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+> ---
+>  .../bindings/serial/fsl,s32-linflexuart.txt   | 24 +++++++++++++++++++
+>  1 file changed, 24 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.txt b/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.txt
+> new file mode 100644
+> index 000000000000..957ffeaca9f1
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.txt
+> @@ -0,0 +1,24 @@
+> +* Freescale Linflex UART
 
-Sounds a little like frag allocator (napi_alloc_frag()/
-netdev_alloc_frag()), but I'm not sure you'd have sufficient control
-to skip over the 16k boundary.. Perhaps others have better suggestions.
+Be consistent with the name: LINFlexD?
+
+> +
+> +The LINFlexD controller implements several LIN protocol versions, as well as
+> +support for full-duplex UART communication through 8-bit and 9-bit frames. The
+> +Linflex UART driver enables operation only in UART mode.
+
+What the driver supports or not is independent of the binding.
+
+> +
+> +See chapter 47 ("LINFlexD") in the reference manual[1].
+> +
+> +Required properties:
+> +- compatible :
+> +  - "fsl,s32-linflexuart" for linflex configured in uart mode which
+
+LINFlexD?
+
+> +  is compatible with the one integrated on S32V234 SoC
+
+Compatibles should be SoC specific. Is 's32' specific enough to account 
+for any differences or future bugs found?
+
+> +- reg : Address and length of the register set for the device
+> +- interrupts : Should contain uart interrupt
+> +
+> +Example:
+> +uart0:serial@40053000 {
+
+space    ^
+
+> +	compatible = "fsl,s32-linflexuart";
+> +	reg = <0x0 0x40053000 0x0 0x1000>;
+> +	interrupts = <0 59 4>;
+> +	status = "disabled";
+
+Don't show status in examples.
+
+> +};
+> +
+> +[1] https://www.nxp.com/webapp/Download?colCode=S32V234RM
+> -- 
+> 2.22.0
+> 
