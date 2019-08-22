@@ -1,76 +1,40 @@
-From: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-Subject: Re: [PATCH v2 4/6] dt-bindings: serial: Document Freescale LINFlex
- UART
-Date: Thu, 22 Aug 2019 17:41:07 +0000
-Message-ID: <VI1PR0402MB28638ABB58605D7D2ADBA852DFA50@VI1PR0402MB2863.eurprd04.prod.outlook.com>
-References: <20190809112853.15846-1-stefan-gabriel.mirea@nxp.com>
- <20190809112853.15846-5-stefan-gabriel.mirea@nxp.com>
- <20190821211841.GA16627@bogus>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH V1 1/1] serial: 8250_pci: Add F81504A series Support
+Date: Thu, 22 Aug 2019 14:15:11 -0700
+Message-ID: <20190822211511.GA11893@kroah.com>
+References: <1565933249-23076-1-git-send-email-hpeter+linux_kernel@gmail.com>
+ <20190816112644.GF30120@smile.fi.intel.com>
+ <8e052919-b012-ff3f-f108-380d1ce5f7e7@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <8e052919-b012-ff3f-f108-380d1ce5f7e7@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: "corbet@lwn.net" <corbet@lwn.net>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will@kernel.org" <will@kernel.org>, "shawnguo@kernel.org" <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>, "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Cosmin Stefan Stoica <cosmin.stoica@nxp.com>, Larisa Ileana Grigore <larisa.grigore@nxp.com>
+To: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jslaby@suse.com, jay.dolan@accesio.com, hslester96@gmail.com, je.yen.tam@ni.com, lkp@intel.com, kai.heng.feng@canonical.com, heikki.krogerus@linux.intel.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, peter_hong@fintek.com.tw, "Ji-Ze Hong (Peter Hong)" <hpeter+linux_kernel@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hello Rob,=0A=
-=0A=
-Thank you for the review.=0A=
-=0A=
-On 8/22/2019 12:18 AM, Rob Herring wrote:=0A=
-> On Fri, Aug 09, 2019 at 11:29:14AM +0000, Stefan-gabriel Mirea wrote:=0A=
->> +* Freescale Linflex UART=0A=
-> =0A=
-> Be consistent with the name: LINFlexD?=0A=
-=0A=
-This was also brought up in our internal review. However, the reference=0A=
-manual is also inconsistent, using LINFlexD, LINflexD, LinFlexD,=0A=
-LINFlex, LINFLEX, LinFlex and Linflex. I will switch to 'LINFlexD'=0A=
-everywhere, though.=0A=
-=0A=
->> +The LINFlexD controller implements several LIN protocol versions, as we=
-ll as=0A=
->> +support for full-duplex UART communication through 8-bit and 9-bit fram=
-es. The=0A=
->> +Linflex UART driver enables operation only in UART mode.=0A=
-> =0A=
-> What the driver supports or not is independent of the binding.=0A=
-=0A=
-Ok, I will remove the last sentence ("The Linflex UART driver enables=0A=
-operation only in UART mode").=0A=
-=0A=
->> +  - "fsl,s32-linflexuart" for linflex configured in uart mode which=0A=
-> =0A=
-> LINFlexD?=0A=
-=0A=
-Will fix; I agree that the all lowercase version has no occurrence in=0A=
-the reference manual.=0A=
-=0A=
->> +  is compatible with the one integrated on S32V234 SoC=0A=
-> =0A=
-> Compatibles should be SoC specific. Is 's32' specific enough to account=
-=0A=
-> for any differences or future bugs found?=0A=
-=0A=
-It is probably not. I will change it to "fsl,s32v234-linflexuart" (as=0A=
-well as in the device tree and driver).=0A=
-=0A=
->> +Example:=0A=
->> +uart0:serial@40053000 {=0A=
-> =0A=
-> space    ^=0A=
-> =0A=
->> +     compatible =3D "fsl,s32-linflexuart";=0A=
->> +     reg =3D <0x0 0x40053000 0x0 0x1000>;=0A=
->> +     interrupts =3D <0 59 4>;=0A=
->> +     status =3D "disabled";=0A=
-> =0A=
-> Don't show status in examples.=0A=
-=0A=
-Will fix these too.=0A=
-=0A=
-Regards,=0A=
-Stefan=0A=
+On Mon, Aug 19, 2019 at 08:49:50AM +0800, Ji-Ze Hong (Peter Hong) wrote:
+> Hi,
+> 
+> Andy Shevchenko 於 2019/8/16 下午 07:26 寫道:
+> > On Fri, Aug 16, 2019 at 01:27:29PM +0800, Ji-Ze Hong (Peter Hong) wrote:
+> > > Fintek F81504A/508A/512A is PCIE to 4/8/12 UARTs device. It's support
+> > > IO/MMIO/PCIE conf to access all functions. The old F81504/508/512 is
+> > > only support IO.
+> > 
+> > We have 8250_fintek.
+> > Isn't it a right place to add these?
+> > 
+> 
+> The 8250_fintek implements PNP device with id PNP0501.
+> Should I also implements PCIe device in this file?
+
+Does it use the same logic?  If so, that makes sense, but if you can not
+share anything, then no, it does not make sense.
+
+thanks,
+
+greg k-h
