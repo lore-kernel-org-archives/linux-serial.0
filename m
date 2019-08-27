@@ -1,183 +1,70 @@
 From: Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Subject: RE: [PATCH 09/14] serial: tegra: set maximum num of uart ports to 8
-Date: Tue, 27 Aug 2019 09:30:42 +0000
-Message-ID: <SN6PR12MB273486EC7A958CFA427C0B37C3A00@SN6PR12MB2734.namprd12.prod.outlook.com>
+Subject: RE: [PATCH 10/14] serial: tegra: add support to use 8 bytes trigger
+Date: Tue, 27 Aug 2019 09:31:00 +0000
+Message-ID: <SN6PR12MB27340AB6574C72FD4DCC901DC3A00@SN6PR12MB2734.namprd12.prod.outlook.com>
 References: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
- <1565609303-27000-10-git-send-email-kyarlagadda@nvidia.com>
- <20190813101955.GN1137@ulmo>
+ <1565609303-27000-11-git-send-email-kyarlagadda@nvidia.com>
+ <dda0d866-ae7a-8655-7b26-4c28249c0be8@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190813101955.GN1137@ulmo>
+In-Reply-To: <dda0d866-ae7a-8655-7b26-4c28249c0be8@nvidia.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, Jonathan Hunter <jonathanh@nvidia.com>, Laxman Dewangan <ldewangan@nvidia.com>, "jslaby@suse.com" <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Shardar Mohammed <smohammed@nvidia.com>
+To: Jonathan Hunter <jonathanh@nvidia.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, Laxman Dewangan <ldewangan@nvidia.com>, "jslaby@suse.com" <jslaby@suse.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Shardar Mohammed <smohammed@nvidia.com>
 List-Id: linux-serial@vger.kernel.org
 
-> -----Original Message-----
-> From: Thierry Reding <thierry.reding@gmail.com>
-> Sent: Tuesday, August 13, 2019 3:50 PM
-> To: Krishna Yarlagadda <kyarlagadda@nvidia.com>
-> Cc: gregkh@linuxfoundation.org; robh+dt@kernel.org;=20
-> mark.rutland@arm.com; Jonathan Hunter <jonathanh@nvidia.com>; Laxman=20
-> Dewangan <ldewangan@nvidia.com>; jslaby@suse.com; linux-=20
-> serial@vger.kernel.org; devicetree@vger.kernel.org; linux-=20
-> tegra@vger.kernel.org; linux-kernel@vger.kernel.org; Shardar Mohammed=20
-> <smohammed@nvidia.com>
-> Subject: Re: [PATCH 09/14] serial: tegra: set maximum num of uart=20
-> ports to 8
->=20
-> On Mon, Aug 12, 2019 at 04:58:18PM +0530, Krishna Yarlagadda wrote:
-> > From: Shardar Shariff Md <smohammed@nvidia.com>
-> >
-> > Set maximum number of UART ports to 8 as older chips have 7 ports=20
-> > and
-> > Tergra194 and later chips will have 8 ports. Add this info to chip=20
-> > data and register uart driver in platform driver probe.
-> >
-> > Signed-off-by: Shardar Shariff Md <smohammed@nvidia.com>
-> > Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
-> > ---
-> >  drivers/tty/serial/serial-tegra.c | 21 +++++++++++++--------
-> >  1 file changed, 13 insertions(+), 8 deletions(-)
-> >
-> > diff --git a/drivers/tty/serial/serial-tegra.c
-> > b/drivers/tty/serial/serial-tegra.c
-> > index e0379d9..329923c 100644
-> > --- a/drivers/tty/serial/serial-tegra.c
-> > +++ b/drivers/tty/serial/serial-tegra.c
-> > @@ -62,7 +62,7 @@
-> >  #define TEGRA_UART_TX_TRIG_4B			0x20
-> >  #define TEGRA_UART_TX_TRIG_1B			0x30
-> >
-> > -#define TEGRA_UART_MAXIMUM			5
-> > +#define TEGRA_UART_MAXIMUM			8
-> >
-> >  /* Default UART setting when started: 115200 no parity, stop, 8 data b=
-its */
-> >  #define TEGRA_UART_DEFAULT_BAUD			115200
-> > @@ -87,6 +87,7 @@ struct tegra_uart_chip_data {
-> >  	bool	allow_txfifo_reset_fifo_mode;
-> >  	bool	support_clk_src_div;
-> >  	bool	fifo_mode_enable_status;
-> > +	int	uart_max_port;
-> >  };
-> >
-> >  struct tegra_uart_port {
-> > @@ -1323,6 +1324,7 @@ static struct tegra_uart_chip_data
-> tegra20_uart_chip_data =3D {
-> >  	.allow_txfifo_reset_fifo_mode	=3D true,
-> >  	.support_clk_src_div		=3D false,
-> >  	.fifo_mode_enable_status	=3D false,
-> > +	.uart_max_port			=3D 5,
-> >  };
-> >
-> >  static struct tegra_uart_chip_data tegra30_uart_chip_data =3D { @@
-> > -1330,6 +1332,7 @@ static struct tegra_uart_chip_data
-> tegra30_uart_chip_data =3D {
-> >  	.allow_txfifo_reset_fifo_mode	=3D false,
-> >  	.support_clk_src_div		=3D true,
-> >  	.fifo_mode_enable_status	=3D false,
-> > +	.uart_max_port			=3D 5,
-> >  };
-> >
-> >  static struct tegra_uart_chip_data tegra186_uart_chip_data =3D { @@
-> > -1337,6 +1340,7 @@ static struct tegra_uart_chip_data
-> tegra186_uart_chip_data =3D {
-> >  	.allow_txfifo_reset_fifo_mode	=3D false,
-> >  	.support_clk_src_div		=3D true,
-> >  	.fifo_mode_enable_status	=3D true,
-> > +	.uart_max_port			=3D 5,
->=20
-> You say in the commit message that the older chips have 7 ports, but=20
-> here you say they have 5. Which one is it?
->=20
-> >  };
-> >
-> >  static const struct of_device_id tegra_uart_of_match[] =3D { @@=20
-> > -1386,6
-> > +1390,7 @@ static int tegra_uart_probe(struct platform_device *pdev)
-> >  	u->type =3D PORT_TEGRA;
-> >  	u->fifosize =3D 32;
-> >  	tup->cdata =3D cdata;
-> > +	tegra_uart_driver.nr =3D cdata->uart_max_port;
-> >
-> >  	platform_set_drvdata(pdev, tup);
-> >  	resource =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> @@
-> > -1411,6 +1416,13 @@ static int tegra_uart_probe(struct=20
-> > platform_device
-> *pdev)
-> >  		return PTR_ERR(tup->rst);
-> >  	}
-> >
-> > +	ret =3D uart_register_driver(&tegra_uart_driver);
-> > +	if (ret < 0) {
-> > +		pr_err("Could not register %s driver\n",
-> > +		       tegra_uart_driver.driver_name);
-> > +		return ret;
-> > +	}
->=20
-> I don't think this is the right place for this. You're going to try to=20
-> register the driver once for each instance of the Tegra UART that will be=
- probed.
->=20
-> I'm surprised that this works at all because there's a BUG_ON() early=20
-> in
-> uart_register_driver() that checks for the existence of drv->state,=20
-> which means that the second instance of tegra_uart_probe() should=20
-> trigger that and cause the kernel to crash.
->=20
-> I think it's better to either create an additional of_device_id table=20
-> that is used to match on the top-level node's compatible string and=20
-> which only contains the maximum number of ports for the given SoC, or=20
-> you could add code to
-> tegra_uart_init() that counts the number of ports that do match and=20
-> initialize tegra_uart_driver.nr using that number. It would something lik=
-e this:
->=20
-> 	unsigned int count =3D 0;
->=20
-> 	for_each_matching_node(np, &tegra_uart_of_match)
-> 		count++;
->=20
-> 	tegra_uart_driver.nr =3D count;
->=20
-> You could also add additional checks in the loop, perhaps something
-> like:
->=20
-> 	for_each_matching_node(np, &tegra_uart_of_match)
-> 		if (of_device_is_available(np))
-> 			count++
->=20
-> Though that would prevent any UARTs from getting added via dynamic=20
-> device tree manipulation.
->=20
-> Thierry
->=20
-Multiple port entries does result in failures which I missed. I will fix th=
-is
-as suggested.
-KY
-> > +
-> >  	u->iotype =3D UPIO_MEM32;
-> >  	ret =3D platform_get_irq(pdev, 0);
-> >  	if (ret < 0) {
-> > @@ -1472,13 +1484,6 @@ static int __init tegra_uart_init(void)  {
-> >  	int ret;
-> >
-> > -	ret =3D uart_register_driver(&tegra_uart_driver);
-> > -	if (ret < 0) {
-> > -		pr_err("Could not register %s driver\n",
-> > -			tegra_uart_driver.driver_name);
-> > -		return ret;
-> > -	}
-> > -
-> >  	ret =3D platform_driver_register(&tegra_uart_platform_driver);
-> >  	if (ret < 0) {
-> >  		pr_err("Uart platform driver register failed, e =3D %d\n", ret);
-> > --
-> > 2.7.4
-> >
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKb25hdGhhbiBIdW50ZXIgPGpv
+bmF0aGFuaEBudmlkaWEuY29tPg0KPiBTZW50OiBUdWVzZGF5LCBBdWd1c3QgMjAsIDIwMTkgMTo1
+OSBBTQ0KPiBUbzogS3Jpc2huYSBZYXJsYWdhZGRhIDxreWFybGFnYWRkYUBudmlkaWEuY29tPjsN
+Cj4gZ3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc7IHJvYmgrZHRAa2VybmVsLm9yZzsgbWFyay5y
+dXRsYW5kQGFybS5jb207DQo+IHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbTsgTGF4bWFuIERld2Fu
+Z2FuIDxsZGV3YW5nYW5AbnZpZGlhLmNvbT47DQo+IGpzbGFieUBzdXNlLmNvbQ0KPiBDYzogbGlu
+dXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZzsgZGV2aWNldHJlZUB2Z2VyLmtlcm5lbC5vcmc7IGxp
+bnV4LQ0KPiB0ZWdyYUB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5v
+cmc7IFNoYXJkYXIgTW9oYW1tZWQNCj4gPHNtb2hhbW1lZEBudmlkaWEuY29tPg0KPiBTdWJqZWN0
+OiBSZTogW1BBVENIIDEwLzE0XSBzZXJpYWw6IHRlZ3JhOiBhZGQgc3VwcG9ydCB0byB1c2UgOCBi
+eXRlcyB0cmlnZ2VyDQo+IA0KPiANCj4gT24gMTIvMDgvMjAxOSAxMjoyOCwgS3Jpc2huYSBZYXJs
+YWdhZGRhIHdyb3RlOg0KPiA+IEZyb206IFNoYXJkYXIgU2hhcmlmZiBNZCA8c21vaGFtbWVkQG52
+aWRpYS5jb20+DQo+ID4NCj4gPiBBZGQgc3VwcG9ydCB0byB1c2UgOCBieXRlcyB0cmlnZ2VyIGZv
+ciBUZWdyYTE4NiBTT0MuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBTaGFyZGFyIFNoYXJpZmYg
+TWQgPHNtb2hhbW1lZEBudmlkaWEuY29tPg0KPiA+IFNpZ25lZC1vZmYtYnk6IEtyaXNobmEgWWFy
+bGFnYWRkYSA8a3lhcmxhZ2FkZGFAbnZpZGlhLmNvbT4NCj4gPiAtLS0NCj4gPiAgZHJpdmVycy90
+dHkvc2VyaWFsL3NlcmlhbC10ZWdyYS5jIHwgMTMgKysrKysrKysrKystLQ0KPiA+ICAxIGZpbGUg
+Y2hhbmdlZCwgMTEgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYg
+LS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvc2VyaWFsLXRlZ3JhLmMgYi9kcml2ZXJzL3R0eS9z
+ZXJpYWwvc2VyaWFsLXRlZ3JhLmMNCj4gPiBpbmRleCAzMjk5MjNjLi4wM2QxZDIwIDEwMDY0NA0K
+PiA+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9zZXJpYWwtdGVncmEuYw0KPiA+ICsrKyBiL2Ry
+aXZlcnMvdHR5L3NlcmlhbC9zZXJpYWwtdGVncmEuYw0KPiA+IEBAIC04OCw2ICs4OCw3IEBAIHN0
+cnVjdCB0ZWdyYV91YXJ0X2NoaXBfZGF0YSB7DQo+ID4gIAlib29sCXN1cHBvcnRfY2xrX3NyY19k
+aXY7DQo+ID4gIAlib29sCWZpZm9fbW9kZV9lbmFibGVfc3RhdHVzOw0KPiA+ICAJaW50CXVhcnRf
+bWF4X3BvcnQ7DQo+ID4gKwlpbnQJZG1hX2J1cnN0X2J5dGVzOw0KPiANCj4gSSBhc3N1bWUgdGhh
+dCB0aGlzIGlzIGEgbWF4aW11bSwgc28gd2h5IG5vdCBzYXkgbWF4X2RtYV9idXJzdF9ieXRlcz8N
+Clllcy4gVGhpcyBpcyBtYXhpbXVtLiBXaWxsIHVwZGF0ZS4NCg0KPiANCj4gPiAgfTsNCj4gPg0K
+PiA+ICBzdHJ1Y3QgdGVncmFfdWFydF9wb3J0IHsNCj4gPiBAQCAtOTMzLDcgKzkzNCwxMiBAQCBz
+dGF0aWMgaW50IHRlZ3JhX3VhcnRfaHdfaW5pdChzdHJ1Y3QNCj4gdGVncmFfdWFydF9wb3J0ICp0
+dXApDQo+ID4gIAkgKiBwcm9ncmFtbWVkIGluIHRoZSBETUEgcmVnaXN0ZXJzLg0KPiA+ICAJICov
+DQo+ID4gIAl0dXAtPmZjcl9zaGFkb3cgPSBVQVJUX0ZDUl9FTkFCTEVfRklGTzsNCj4gPiAtCXR1
+cC0+ZmNyX3NoYWRvdyB8PSBVQVJUX0ZDUl9SX1RSSUdfMDE7DQo+ID4gKw0KPiA+ICsJaWYgKHR1
+cC0+Y2RhdGEtPmRtYV9idXJzdF9ieXRlcyA9PSA4KQ0KPiA+ICsJCXR1cC0+ZmNyX3NoYWRvdyB8
+PSBVQVJUX0ZDUl9SX1RSSUdfMTA7DQo+ID4gKwllbHNlDQo+ID4gKwkJdHVwLT5mY3Jfc2hhZG93
+IHw9IFVBUlRfRkNSX1JfVFJJR18wMTsNCj4gPiArDQo+ID4gIAl0dXAtPmZjcl9zaGFkb3cgfD0g
+VEVHUkFfVUFSVF9UWF9UUklHXzE2QjsNCj4gPiAgCXRlZ3JhX3VhcnRfd3JpdGUodHVwLCB0dXAt
+PmZjcl9zaGFkb3csIFVBUlRfRkNSKTsNCj4gPg0KPiA+IEBAIC0xMDQ2LDcgKzEwNTIsNyBAQCBz
+dGF0aWMgaW50DQo+IHRlZ3JhX3VhcnRfZG1hX2NoYW5uZWxfYWxsb2NhdGUoc3RydWN0IHRlZ3Jh
+X3VhcnRfcG9ydCAqdHVwLA0KPiA+ICAJCX0NCj4gPiAgCQlkbWFfc2NvbmZpZy5zcmNfYWRkciA9
+IHR1cC0+dXBvcnQubWFwYmFzZTsNCj4gPiAgCQlkbWFfc2NvbmZpZy5zcmNfYWRkcl93aWR0aCA9
+DQo+IERNQV9TTEFWRV9CVVNXSURUSF8xX0JZVEU7DQo+ID4gLQkJZG1hX3Njb25maWcuc3JjX21h
+eGJ1cnN0ID0gNDsNCj4gPiArCQlkbWFfc2NvbmZpZy5zcmNfbWF4YnVyc3QgPSB0dXAtPmNkYXRh
+LT5kbWFfYnVyc3RfYnl0ZXM7DQo+ID4gIAkJdHVwLT5yeF9kbWFfY2hhbiA9IGRtYV9jaGFuOw0K
+PiA+ICAJCXR1cC0+cnhfZG1hX2J1Zl92aXJ0ID0gZG1hX2J1ZjsNCj4gPiAgCQl0dXAtPnJ4X2Rt
+YV9idWZfcGh5cyA9IGRtYV9waHlzOw0KPiA+IEBAIC0xMzI1LDYgKzEzMzEsNyBAQCBzdGF0aWMg
+c3RydWN0IHRlZ3JhX3VhcnRfY2hpcF9kYXRhDQo+IHRlZ3JhMjBfdWFydF9jaGlwX2RhdGEgPSB7
+DQo+ID4gIAkuc3VwcG9ydF9jbGtfc3JjX2RpdgkJPSBmYWxzZSwNCj4gPiAgCS5maWZvX21vZGVf
+ZW5hYmxlX3N0YXR1cwk9IGZhbHNlLA0KPiA+ICAJLnVhcnRfbWF4X3BvcnQJCQk9IDUsDQo+ID4g
+KwkuZG1hX2J1cnN0X2J5dGVzCQk9IDQsDQo+IA0KPiBJc24ndCBpdCBzaW1wbGVyIHRvIHN0b3Jl
+IHRoZSBUUklHIHZhbHVlIGhlcmU/DQo+IA0KPiBKb24NClRSSUcgdmFsdWUgd2lsbCBoYXZlIHRv
+IGJlIGNvbnZlcnRlZCB0byBtYXggYnVyc3QgYW5kIG9uZSBvZiBpdCBuZWVkcyB0byBiZQ0KZGVy
+aXZlZCBmcm9tIG90aGVyLg0KS1kNCj4gDQo+IC0tDQo+IG52cHVibGljDQo=
