@@ -1,70 +1,30 @@
-From: Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Subject: RE: [PATCH 10/14] serial: tegra: add support to use 8 bytes trigger
-Date: Tue, 27 Aug 2019 09:31:00 +0000
-Message-ID: <SN6PR12MB27340AB6574C72FD4DCC901DC3A00@SN6PR12MB2734.namprd12.prod.outlook.com>
-References: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
- <1565609303-27000-11-git-send-email-kyarlagadda@nvidia.com>
- <dda0d866-ae7a-8655-7b26-4c28249c0be8@nvidia.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3 1/2] dt-bindings: serial: lantiq: Convert to YAML
+ schema
+Date: Tue, 27 Aug 2019 12:21:23 -0500
+Message-ID: <20190827172123.GA9417@bogus>
+References: <cover.1566370151.git.rahul.tanwar@linux.intel.com>
+ <b8e0fa2981176dba29cd8e29f14532501cf962b4.1566370151.git.rahul.tanwar@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <dda0d866-ae7a-8655-7b26-4c28249c0be8@nvidia.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <b8e0fa2981176dba29cd8e29f14532501cf962b4.1566370151.git.rahul.tanwar@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jonathan Hunter <jonathanh@nvidia.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, Laxman Dewangan <ldewangan@nvidia.com>, "jslaby@suse.com" <jslaby@suse.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Shardar Mohammed <smohammed@nvidia.com>
+Cc: robh+dt@kernel.org, devicetree@vger.kernel.org, gregkh@linuxfoundation.org, mark.rutland@arm.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, andriy.shevchenko@intel.com, qi-ming.wu@intel.com, cheol.yong.kim@intel.com, rahul.tanwar@intel.com, Rahul Tanwar <rahul.tanwar@linux.intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKb25hdGhhbiBIdW50ZXIgPGpv
-bmF0aGFuaEBudmlkaWEuY29tPg0KPiBTZW50OiBUdWVzZGF5LCBBdWd1c3QgMjAsIDIwMTkgMTo1
-OSBBTQ0KPiBUbzogS3Jpc2huYSBZYXJsYWdhZGRhIDxreWFybGFnYWRkYUBudmlkaWEuY29tPjsN
-Cj4gZ3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc7IHJvYmgrZHRAa2VybmVsLm9yZzsgbWFyay5y
-dXRsYW5kQGFybS5jb207DQo+IHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbTsgTGF4bWFuIERld2Fu
-Z2FuIDxsZGV3YW5nYW5AbnZpZGlhLmNvbT47DQo+IGpzbGFieUBzdXNlLmNvbQ0KPiBDYzogbGlu
-dXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZzsgZGV2aWNldHJlZUB2Z2VyLmtlcm5lbC5vcmc7IGxp
-bnV4LQ0KPiB0ZWdyYUB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5v
-cmc7IFNoYXJkYXIgTW9oYW1tZWQNCj4gPHNtb2hhbW1lZEBudmlkaWEuY29tPg0KPiBTdWJqZWN0
-OiBSZTogW1BBVENIIDEwLzE0XSBzZXJpYWw6IHRlZ3JhOiBhZGQgc3VwcG9ydCB0byB1c2UgOCBi
-eXRlcyB0cmlnZ2VyDQo+IA0KPiANCj4gT24gMTIvMDgvMjAxOSAxMjoyOCwgS3Jpc2huYSBZYXJs
-YWdhZGRhIHdyb3RlOg0KPiA+IEZyb206IFNoYXJkYXIgU2hhcmlmZiBNZCA8c21vaGFtbWVkQG52
-aWRpYS5jb20+DQo+ID4NCj4gPiBBZGQgc3VwcG9ydCB0byB1c2UgOCBieXRlcyB0cmlnZ2VyIGZv
-ciBUZWdyYTE4NiBTT0MuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBTaGFyZGFyIFNoYXJpZmYg
-TWQgPHNtb2hhbW1lZEBudmlkaWEuY29tPg0KPiA+IFNpZ25lZC1vZmYtYnk6IEtyaXNobmEgWWFy
-bGFnYWRkYSA8a3lhcmxhZ2FkZGFAbnZpZGlhLmNvbT4NCj4gPiAtLS0NCj4gPiAgZHJpdmVycy90
-dHkvc2VyaWFsL3NlcmlhbC10ZWdyYS5jIHwgMTMgKysrKysrKysrKystLQ0KPiA+ICAxIGZpbGUg
-Y2hhbmdlZCwgMTEgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYg
-LS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvc2VyaWFsLXRlZ3JhLmMgYi9kcml2ZXJzL3R0eS9z
-ZXJpYWwvc2VyaWFsLXRlZ3JhLmMNCj4gPiBpbmRleCAzMjk5MjNjLi4wM2QxZDIwIDEwMDY0NA0K
-PiA+IC0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9zZXJpYWwtdGVncmEuYw0KPiA+ICsrKyBiL2Ry
-aXZlcnMvdHR5L3NlcmlhbC9zZXJpYWwtdGVncmEuYw0KPiA+IEBAIC04OCw2ICs4OCw3IEBAIHN0
-cnVjdCB0ZWdyYV91YXJ0X2NoaXBfZGF0YSB7DQo+ID4gIAlib29sCXN1cHBvcnRfY2xrX3NyY19k
-aXY7DQo+ID4gIAlib29sCWZpZm9fbW9kZV9lbmFibGVfc3RhdHVzOw0KPiA+ICAJaW50CXVhcnRf
-bWF4X3BvcnQ7DQo+ID4gKwlpbnQJZG1hX2J1cnN0X2J5dGVzOw0KPiANCj4gSSBhc3N1bWUgdGhh
-dCB0aGlzIGlzIGEgbWF4aW11bSwgc28gd2h5IG5vdCBzYXkgbWF4X2RtYV9idXJzdF9ieXRlcz8N
-Clllcy4gVGhpcyBpcyBtYXhpbXVtLiBXaWxsIHVwZGF0ZS4NCg0KPiANCj4gPiAgfTsNCj4gPg0K
-PiA+ICBzdHJ1Y3QgdGVncmFfdWFydF9wb3J0IHsNCj4gPiBAQCAtOTMzLDcgKzkzNCwxMiBAQCBz
-dGF0aWMgaW50IHRlZ3JhX3VhcnRfaHdfaW5pdChzdHJ1Y3QNCj4gdGVncmFfdWFydF9wb3J0ICp0
-dXApDQo+ID4gIAkgKiBwcm9ncmFtbWVkIGluIHRoZSBETUEgcmVnaXN0ZXJzLg0KPiA+ICAJICov
-DQo+ID4gIAl0dXAtPmZjcl9zaGFkb3cgPSBVQVJUX0ZDUl9FTkFCTEVfRklGTzsNCj4gPiAtCXR1
-cC0+ZmNyX3NoYWRvdyB8PSBVQVJUX0ZDUl9SX1RSSUdfMDE7DQo+ID4gKw0KPiA+ICsJaWYgKHR1
-cC0+Y2RhdGEtPmRtYV9idXJzdF9ieXRlcyA9PSA4KQ0KPiA+ICsJCXR1cC0+ZmNyX3NoYWRvdyB8
-PSBVQVJUX0ZDUl9SX1RSSUdfMTA7DQo+ID4gKwllbHNlDQo+ID4gKwkJdHVwLT5mY3Jfc2hhZG93
-IHw9IFVBUlRfRkNSX1JfVFJJR18wMTsNCj4gPiArDQo+ID4gIAl0dXAtPmZjcl9zaGFkb3cgfD0g
-VEVHUkFfVUFSVF9UWF9UUklHXzE2QjsNCj4gPiAgCXRlZ3JhX3VhcnRfd3JpdGUodHVwLCB0dXAt
-PmZjcl9zaGFkb3csIFVBUlRfRkNSKTsNCj4gPg0KPiA+IEBAIC0xMDQ2LDcgKzEwNTIsNyBAQCBz
-dGF0aWMgaW50DQo+IHRlZ3JhX3VhcnRfZG1hX2NoYW5uZWxfYWxsb2NhdGUoc3RydWN0IHRlZ3Jh
-X3VhcnRfcG9ydCAqdHVwLA0KPiA+ICAJCX0NCj4gPiAgCQlkbWFfc2NvbmZpZy5zcmNfYWRkciA9
-IHR1cC0+dXBvcnQubWFwYmFzZTsNCj4gPiAgCQlkbWFfc2NvbmZpZy5zcmNfYWRkcl93aWR0aCA9
-DQo+IERNQV9TTEFWRV9CVVNXSURUSF8xX0JZVEU7DQo+ID4gLQkJZG1hX3Njb25maWcuc3JjX21h
-eGJ1cnN0ID0gNDsNCj4gPiArCQlkbWFfc2NvbmZpZy5zcmNfbWF4YnVyc3QgPSB0dXAtPmNkYXRh
-LT5kbWFfYnVyc3RfYnl0ZXM7DQo+ID4gIAkJdHVwLT5yeF9kbWFfY2hhbiA9IGRtYV9jaGFuOw0K
-PiA+ICAJCXR1cC0+cnhfZG1hX2J1Zl92aXJ0ID0gZG1hX2J1ZjsNCj4gPiAgCQl0dXAtPnJ4X2Rt
-YV9idWZfcGh5cyA9IGRtYV9waHlzOw0KPiA+IEBAIC0xMzI1LDYgKzEzMzEsNyBAQCBzdGF0aWMg
-c3RydWN0IHRlZ3JhX3VhcnRfY2hpcF9kYXRhDQo+IHRlZ3JhMjBfdWFydF9jaGlwX2RhdGEgPSB7
-DQo+ID4gIAkuc3VwcG9ydF9jbGtfc3JjX2RpdgkJPSBmYWxzZSwNCj4gPiAgCS5maWZvX21vZGVf
-ZW5hYmxlX3N0YXR1cwk9IGZhbHNlLA0KPiA+ICAJLnVhcnRfbWF4X3BvcnQJCQk9IDUsDQo+ID4g
-KwkuZG1hX2J1cnN0X2J5dGVzCQk9IDQsDQo+IA0KPiBJc24ndCBpdCBzaW1wbGVyIHRvIHN0b3Jl
-IHRoZSBUUklHIHZhbHVlIGhlcmU/DQo+IA0KPiBKb24NClRSSUcgdmFsdWUgd2lsbCBoYXZlIHRv
-IGJlIGNvbnZlcnRlZCB0byBtYXggYnVyc3QgYW5kIG9uZSBvZiBpdCBuZWVkcyB0byBiZQ0KZGVy
-aXZlZCBmcm9tIG90aGVyLg0KS1kNCj4gDQo+IC0tDQo+IG52cHVibGljDQo=
+On Wed, 21 Aug 2019 15:06:51 +0800, Rahul Tanwar wrote:
+> Convert the existing DT binding document for Lantiq SoC ASC serial controller
+> from txt format to YAML format.
+> 
+> Signed-off-by: Rahul Tanwar <rahul.tanwar@linux.intel.com>
+> ---
+>  .../devicetree/bindings/serial/lantiq,asc.yaml     | 55 ++++++++++++++++++++++
+>  .../devicetree/bindings/serial/lantiq_asc.txt      | 31 ------------
+>  2 files changed, 55 insertions(+), 31 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/serial/lantiq,asc.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/serial/lantiq_asc.txt
+> 
+
+Reviewed-by: Rob Herring <robh@kernel.org>
