@@ -1,15 +1,15 @@
 From: Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Subject: RE: [PATCH 02/14] serial: tegra: add support to ignore read
-Date: Tue, 27 Aug 2019 09:29:21 +0000
-Message-ID: <SN6PR12MB2734D67C01A97D87D1735EDBC3A00@SN6PR12MB2734.namprd12.prod.outlook.com>
+Subject: RE: [PATCH 05/14] serial: tegra: flush the RX fifo on frame error
+Date: Tue, 27 Aug 2019 09:29:41 +0000
+Message-ID: <SN6PR12MB2734D923E15A855CB1E2B7BEC3A00@SN6PR12MB2734.namprd12.prod.outlook.com>
 References: <1565609303-27000-1-git-send-email-kyarlagadda@nvidia.com>
- <1565609303-27000-3-git-send-email-kyarlagadda@nvidia.com>
- <20190813094208.GG1137@ulmo>
+ <1565609303-27000-6-git-send-email-kyarlagadda@nvidia.com>
+ <20190813094832.GJ1137@ulmo>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190813094208.GG1137@ulmo>
+In-Reply-To: <20190813094832.GJ1137@ulmo>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>
@@ -17,9 +17,8 @@ Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "robh+dt@kernel.o
 List-Id: linux-serial@vger.kernel.org
 
 > -----Original Message-----
-> From: linux-tegra-owner@vger.kernel.org <linux-tegra-
-> owner@vger.kernel.org> On Behalf Of Thierry Reding
-> Sent: Tuesday, August 13, 2019 3:12 PM
+> From: Thierry Reding <thierry.reding@gmail.com>
+> Sent: Tuesday, August 13, 2019 3:19 PM
 > To: Krishna Yarlagadda <kyarlagadda@nvidia.com>
 > Cc: gregkh@linuxfoundation.org; robh+dt@kernel.org;
 > mark.rutland@arm.com; Jonathan Hunter <jonathanh@nvidia.com>; Laxman
@@ -27,76 +26,74 @@ List-Id: linux-serial@vger.kernel.org
 > serial@vger.kernel.org; devicetree@vger.kernel.org; linux-
 > tegra@vger.kernel.org; linux-kernel@vger.kernel.org; Shardar Mohammed
 > <smohammed@nvidia.com>
-> Subject: Re: [PATCH 02/14] serial: tegra: add support to ignore read
+> Subject: Re: [PATCH 05/14] serial: tegra: flush the RX fifo on frame erro=
+r
 >=20
-> On Mon, Aug 12, 2019 at 04:58:11PM +0530, Krishna Yarlagadda wrote:
+> On Mon, Aug 12, 2019 at 04:58:14PM +0530, Krishna Yarlagadda wrote:
 > > From: Shardar Shariff Md <smohammed@nvidia.com>
 > >
-> > Add support to ignore read characters if CREAD flag is not set.
-> >
+> > FIFO reset/flush code implemented now does not follow programming
+> > guidelines. RTS line has to be turned off while flushing fifos to
+> > avoid new transfers. Also check LSR bits UART_LSR_TEMT and
+> UART_LSR_DR
+> > to confirm fifos are flushed.
+>=20
+> You use inconsistent spelling for FIFO here.
+Will fix in next version and take care of this in all patches
+
+>=20
 > > Signed-off-by: Shardar Shariff Md <smohammed@nvidia.com>
 > > Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
 > > ---
-> >  drivers/tty/serial/serial-tegra.c | 12 ++++++++++++
-> >  1 file changed, 12 insertions(+)
+> >  drivers/tty/serial/serial-tegra.c | 15 +++++++++++++++
+> >  1 file changed, 15 insertions(+)
 > >
 > > diff --git a/drivers/tty/serial/serial-tegra.c
 > > b/drivers/tty/serial/serial-tegra.c
-> > index 19f4c24..93d299e 100644
+> > index ae7225c..f6a3f4e 100644
 > > --- a/drivers/tty/serial/serial-tegra.c
 > > +++ b/drivers/tty/serial/serial-tegra.c
-> > @@ -542,6 +542,9 @@ static void tegra_uart_handle_rx_pio(struct
-> tegra_uart_port *tup,
-> >  		ch =3D (unsigned char) tegra_uart_read(tup, UART_RX);
-> >  		tup->uport.icount.rx++;
-> >
-> > +		if (tup->uport.ignore_status_mask & UART_LSR_DR)
-> > +			continue;
+> > @@ -266,6 +266,10 @@ static void tegra_uart_wait_sym_time(struct
+> > tegra_uart_port *tup,  static void tegra_uart_fifo_reset(struct
+> > tegra_uart_port *tup, u8 fcr_bits)  {
+> >  	unsigned long fcr =3D tup->fcr_shadow;
+> > +	unsigned int lsr, tmout =3D 10000;
 > > +
-> >  		if (!uart_handle_sysrq_char(&tup->uport, ch) && tty)
-> >  			tty_insert_flip_char(tty, ch, flag);
+> > +	if (tup->rts_active)
+> > +		set_rts(tup, false);
+> >
+> >  	if (tup->cdata->allow_txfifo_reset_fifo_mode) {
+> >  		fcr |=3D fcr_bits & (UART_FCR_CLEAR_RCVR |
+> UART_FCR_CLEAR_XMIT); @@
+> > -289,6 +293,17 @@ static void tegra_uart_fifo_reset(struct tegra_uart_p=
+ort
+> *tup, u8 fcr_bits)
+> >  	 * to propagate, otherwise data could be lost.
+> >  	 */
+> >  	tegra_uart_wait_cycle_time(tup, 32);
+> > +
+> > +	do {
+> > +		lsr =3D tegra_uart_read(tup, UART_LSR);
+> > +		if (lsr | UART_LSR_TEMT)
+> > +			if (!(lsr & UART_LSR_DR))
 >=20
-> Is it a good idea to ignore even sysrq characters if CREAD is not set?
-> According to termios, CREAD enables the receiver, so technically if it is=
-n't set
-> you can't even receive sysrq characters. But I don't know if there are an=
-y
-> rules regarding this.
->=20
-> Is this the same way that other drivers work?
+> Can't both of these go on the same line?
 >=20
 > Thierry
 >=20
-Looked into few drivers and sysrq characters are not ignored. This driver d=
-oes
-not support console driver. So this might not be needed.
-
+They can be. Will fix in next version
 KY
-> >  	} while (1);
-> > @@ -562,6 +565,10 @@ static void tegra_uart_copy_rx_to_tty(struct
-> tegra_uart_port *tup,
-> >  		dev_err(tup->uport.dev, "No tty port\n");
-> >  		return;
-> >  	}
+
+> > +				break;
+> > +		udelay(1);
+> > +	} while (--tmout);
 > > +
-> > +	if (tup->uport.ignore_status_mask & UART_LSR_DR)
-> > +		return;
-> > +
-> >  	dma_sync_single_for_cpu(tup->uport.dev, tup->rx_dma_buf_phys,
-> >  				TEGRA_UART_RX_DMA_BUFFER_SIZE,
-> DMA_FROM_DEVICE);
-> >  	copied =3D tty_insert_flip_string(tty, @@ -1190,6 +1197,11 @@ static
-> > void tegra_uart_set_termios(struct uart_port *u,
-> >  	tegra_uart_write(tup, tup->ier_shadow, UART_IER);
-> >  	tegra_uart_read(tup, UART_IER);
+> > +	if (tup->rts_active)
+> > +		set_rts(tup, true);
+> >  }
 > >
-> > +	tup->uport.ignore_status_mask =3D 0;
-> > +	/* Ignore all characters if CREAD is not set */
-> > +	if ((termios->c_cflag & CREAD) =3D=3D 0)
-> > +		tup->uport.ignore_status_mask |=3D UART_LSR_DR;
-> > +
-> >  	spin_unlock_irqrestore(&u->lock, flags);  }
-> >
+> >  static int tegra_set_baudrate(struct tegra_uart_port *tup, unsigned
+> > int baud)
 > > --
 > > 2.7.4
 > >
