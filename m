@@ -1,33 +1,57 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3 6/7] dt-bindings: serial: Document Freescale LINFlexD
- UART
-Date: Tue, 27 Aug 2019 15:26:21 -0500
-Message-ID: <20190827202621.GA703@bogus>
-References: <20190823191115.18490-1-stefan-gabriel.mirea@nxp.com>
- <20190823191115.18490-7-stefan-gabriel.mirea@nxp.com>
+From: Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: mmotm 2019-08-24-16-02 uploaded
+ (drivers/tty/serial/fsl_linflexuart.c:)
+Date: Tue, 27 Aug 2019 18:14:32 -0700
+Message-ID: <b082b200-7298-6cd5-6981-44439bc2d788@infradead.org>
+References: <20190824230323.REILuVBbY%akpm@linux-foundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190823191115.18490-7-stefan-gabriel.mirea@nxp.com>
+In-Reply-To: <20190824230323.REILuVBbY%akpm@linux-foundation.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-Cc: "corbet@lwn.net" <corbet@lwn.net>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will@kernel.org" <will@kernel.org>, "shawnguo@kernel.org" <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>, "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Cosmin Stefan Stoica <cosmin.stoica@nxp.com>, Larisa
+To: akpm@linux-foundation.org, broonie@kernel.org, linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-next@vger.kernel.org, mhocko@suse.cz, mm-commits@vger.kernel.org, sfr@canb.auug.org.au, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Fugang Duan <fugang.duan@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 23 Aug 2019 19:11:40 +0000, Stefan-gabriel Mirea wrote:
-> From: Stoica Cosmin-Stefan <cosmin.stoica@nxp.com>
+On 8/24/19 4:03 PM, akpm@linux-foundation.org wrote:
+> The mm-of-the-moment snapshot 2019-08-24-16-02 has been uploaded to
 > 
-> Add documentation for the serial communication interface module (LINFlexD),
-> found in two instances on S32V234.
+>    http://www.ozlabs.org/~akpm/mmotm/
 > 
-> Signed-off-by: Stoica Cosmin-Stefan <cosmin.stoica@nxp.com>
-> Signed-off-by: Larisa Grigore <Larisa.Grigore@nxp.com>
-> Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-> ---
->  .../bindings/serial/fsl,s32-linflexuart.txt   | 22 +++++++++++++++++++
->  1 file changed, 22 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.txt
+> mmotm-readme.txt says
 > 
+> README for mm-of-the-moment:
+> 
+> http://www.ozlabs.org/~akpm/mmotm/
+> 
+> This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
+> more than once a week.
+> 
+> You will need quilt to apply these patches to the latest Linus release (5.x
+> or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
+> http://ozlabs.org/~akpm/mmotm/series
+> 
+> The file broken-out.tar.gz contains two datestamp files: .DATE and
+> .DATE-yyyy-mm-dd-hh-mm-ss.  Both contain the string yyyy-mm-dd-hh-mm-ss,
+> followed by the base kernel version against which this patch series is to
+> be applied.
+> 
+> This tree is partially included in linux-next.  To see which patches are
+> included in linux-next, consult the `series' file.  Only the patches
+> within the #NEXT_PATCHES_START/#NEXT_PATCHES_END markers are included in
+> linux-next.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+on i386:
+when CONFIG_PRINTK is not set/enabled:
+
+../drivers/tty/serial/fsl_linflexuart.c: In function ‘linflex_earlycon_putchar’:
+../drivers/tty/serial/fsl_linflexuart.c:608:31: error: ‘CONFIG_LOG_BUF_SHIFT’ undeclared (first use in this function); did you mean ‘CONFIG_DEBUG_SHIRQ’?
+  if (earlycon_buf.len >= 1 << CONFIG_LOG_BUF_SHIFT)
+                               ^~~~~~~~~~~~~~~~~~~~
+                               CONFIG_DEBUG_SHIRQ
+
+
+-- 
+~Randy
