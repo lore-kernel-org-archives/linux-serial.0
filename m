@@ -1,7 +1,7 @@
 From: Sergey Organov <sorganov@gmail.com>
-Subject: [PATCH v2 4/5] serial: imx: fix data breakage on termios change
-Date: Wed, 28 Aug 2019 21:37:54 +0300
-Message-ID: <1567017475-11919-5-git-send-email-sorganov@gmail.com>
+Subject: [PATCH v2 5/5] serial: imx: use Tx ready rather than Tx empty irq
+Date: Wed, 28 Aug 2019 21:37:55 +0300
+Message-ID: <1567017475-11919-6-git-send-email-sorganov@gmail.com>
 References: <20190530152950.25377-1-sorganov@gmail.com>
  <1567017475-11919-1-git-send-email-sorganov@gmail.com>
 Mime-Version: 1.0
@@ -22,53 +22,99 @@ To: linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, Sergey Organov <sorganov@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-imx_set_termios(): avoid writing baud rate divider registers when the
-values to be written are the same as current. Any writing seems to
-restart transmission/receiving logic in the hardware, that leads to
-data breakage even when rate doesn't in fact change. E.g., user
-switches RTS/CTS handshake and suddenly gets broken bytes.
+This should help to avoid unnecessary gaps in transmission while
+adding little overhead due to low default Tx threshold level (2
+bytes).
 
 Signed-off-by: Sergey Organov <sorganov@gmail.com>
 ---
- drivers/tty/serial/imx.c | 19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
+ drivers/tty/serial/imx.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index cc3783c..e89045a 100644
+index e89045a..87c58f9 100644
 --- a/drivers/tty/serial/imx.c
 +++ b/drivers/tty/serial/imx.c
-@@ -1545,7 +1545,7 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
- 	unsigned int baud, quot;
- 	unsigned int old_csize = old ? old->c_cflag & CSIZE : CS8;
- 	unsigned long div;
--	unsigned long num, denom;
-+	unsigned long num, denom, old_ubir, old_ubmr;
- 	uint64_t tdiv64;
+@@ -439,7 +439,7 @@ static void imx_uart_stop_tx(struct uart_port *port)
+ 		return;
  
- 	/*
-@@ -1670,8 +1670,21 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
- 	ufcr = (ufcr & (~UFCR_RFDIV)) | UFCR_RFDIV_REG(div);
- 	imx_uart_writel(sport, ufcr, UFCR);
+ 	ucr1 = imx_uart_readl(sport, UCR1);
+-	imx_uart_writel(sport, ucr1 & ~UCR1_TXMPTYEN, UCR1);
++	imx_uart_writel(sport, ucr1 & ~UCR1_TRDYEN, UCR1);
  
--	imx_uart_writel(sport, num, UBIR);
--	imx_uart_writel(sport, denom, UBMR);
-+	/*
-+	 *  Two registers below should always be written both and in this
-+	 *  particular order. One consequence is that we need to check if any of
-+	 *  them changes and then update both. We do need the check for change
-+	 *  as even writing the same values seem to "restart"
-+	 *  transmission/receiving logic in the hardware, that leads to data
-+	 *  breakage even when rate doesn't in fact change. E.g., user switches
-+	 *  RTS/CTS handshake and suddenly gets broken bytes.
-+	 */
-+	old_ubir = imx_uart_readl(sport, UBIR);
-+	old_ubmr = imx_uart_readl(sport, UBMR);
-+	if (old_ubir != num || old_ubmr != denom) {
-+		imx_uart_writel(sport, num, UBIR);
-+		imx_uart_writel(sport, denom, UBMR);
-+	}
+ 	/* in rs485 mode disable transmitter if shifter is empty */
+ 	if (port->rs485.flags & SER_RS485_ENABLED &&
+@@ -517,7 +517,7 @@ static inline void imx_uart_transmit_buffer(struct imx_port *sport)
+ 		 * and the TX IRQ is disabled.
+ 		 **/
+ 		ucr1 = imx_uart_readl(sport, UCR1);
+-		ucr1 &= ~UCR1_TXMPTYEN;
++		ucr1 &= ~UCR1_TRDYEN;
+ 		if (sport->dma_is_txing) {
+ 			ucr1 |= UCR1_TXDMAEN;
+ 			imx_uart_writel(sport, ucr1, UCR1);
+@@ -679,7 +679,7 @@ static void imx_uart_start_tx(struct uart_port *port)
  
- 	if (!imx_uart_is_imx1(sport))
- 		imx_uart_writel(sport, sport->port.uartclk / div / 1000,
+ 	if (!sport->dma_is_enabled) {
+ 		ucr1 = imx_uart_readl(sport, UCR1);
+-		imx_uart_writel(sport, ucr1 | UCR1_TXMPTYEN, UCR1);
++		imx_uart_writel(sport, ucr1 | UCR1_TRDYEN, UCR1);
+ 	}
+ 
+ 	if (sport->dma_is_enabled) {
+@@ -688,7 +688,7 @@ static void imx_uart_start_tx(struct uart_port *port)
+ 			 * disable TX DMA to let TX interrupt to send X-char */
+ 			ucr1 = imx_uart_readl(sport, UCR1);
+ 			ucr1 &= ~UCR1_TXDMAEN;
+-			ucr1 |= UCR1_TXMPTYEN;
++			ucr1 |= UCR1_TRDYEN;
+ 			imx_uart_writel(sport, ucr1, UCR1);
+ 			return;
+ 		}
+@@ -874,7 +874,7 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
+ 		usr1 &= ~USR1_RRDY;
+ 	if ((ucr2 & UCR2_ATEN) == 0)
+ 		usr1 &= ~USR1_AGTIM;
+-	if ((ucr1 & UCR1_TXMPTYEN) == 0)
++	if ((ucr1 & UCR1_TRDYEN) == 0)
+ 		usr1 &= ~USR1_TRDY;
+ 	if ((ucr4 & UCR4_TCEN) == 0)
+ 		usr2 &= ~USR2_TXDC;
+@@ -1474,7 +1474,7 @@ static void imx_uart_shutdown(struct uart_port *port)
+ 
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 	ucr1 = imx_uart_readl(sport, UCR1);
+-	ucr1 &= ~(UCR1_TXMPTYEN | UCR1_RRDYEN | UCR1_RTSDEN | UCR1_UARTEN | UCR1_RXDMAEN | UCR1_ATDMAEN);
++	ucr1 &= ~(UCR1_TRDYEN | UCR1_RRDYEN | UCR1_RTSDEN | UCR1_UARTEN | UCR1_RXDMAEN | UCR1_ATDMAEN);
+ 
+ 	imx_uart_writel(sport, ucr1, UCR1);
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
+@@ -1778,7 +1778,7 @@ static int imx_uart_poll_init(struct uart_port *port)
+ 		ucr1 |= IMX1_UCR1_UARTCLKEN;
+ 
+ 	ucr1 |= UCR1_UARTEN;
+-	ucr1 &= ~(UCR1_TXMPTYEN | UCR1_RTSDEN | UCR1_RRDYEN);
++	ucr1 &= ~(UCR1_TRDYEN | UCR1_RTSDEN | UCR1_RRDYEN);
+ 
+ 	ucr2 |= UCR2_RXEN;
+ 	ucr2 &= ~UCR2_ATEN;
+@@ -1938,7 +1938,7 @@ imx_uart_console_write(struct console *co, const char *s, unsigned int count)
+ 	if (imx_uart_is_imx1(sport))
+ 		ucr1 |= IMX1_UCR1_UARTCLKEN;
+ 	ucr1 |= UCR1_UARTEN;
+-	ucr1 &= ~(UCR1_TXMPTYEN | UCR1_RRDYEN | UCR1_RTSDEN);
++	ucr1 &= ~(UCR1_TRDYEN | UCR1_RRDYEN | UCR1_RTSDEN);
+ 
+ 	imx_uart_writel(sport, ucr1, UCR1);
+ 
+@@ -2294,7 +2294,7 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 	/* Disable interrupts before requesting them */
+ 	ucr1 = imx_uart_readl(sport, UCR1);
+ 	ucr1 &= ~(UCR1_ADEN | UCR1_TRDYEN | UCR1_IDEN | UCR1_RRDYEN |
+-		 UCR1_TXMPTYEN | UCR1_RTSDEN);
++		 UCR1_TRDYEN | UCR1_RTSDEN);
+ 	imx_uart_writel(sport, ucr1, UCR1);
+ 
+ 	if (!imx_uart_is_imx1(sport) && sport->dte_mode) {
 -- 
 2.10.0.1.g57b01a3
