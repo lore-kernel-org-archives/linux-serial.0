@@ -1,57 +1,54 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: mmotm 2019-08-24-16-02 uploaded
- (drivers/tty/serial/fsl_linflexuart.c:)
-Date: Tue, 27 Aug 2019 18:14:32 -0700
-Message-ID: <b082b200-7298-6cd5-6981-44439bc2d788@infradead.org>
-References: <20190824230323.REILuVBbY%akpm@linux-foundation.org>
+From: Sergey Organov <sorganov@gmail.com>
+Subject: [PATCH v2 0/5] Serial: imx: various fixes
+Date: Wed, 28 Aug 2019 21:37:50 +0300
+Message-ID: <1567017475-11919-1-git-send-email-sorganov@gmail.com>
+References: <20190530152950.25377-1-sorganov@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190824230323.REILuVBbY%akpm@linux-foundation.org>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: akpm@linux-foundation.org, broonie@kernel.org, linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-next@vger.kernel.org, mhocko@suse.cz, mm-commits@vger.kernel.org, sfr@canb.auug.org.au, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Fugang Duan <fugang.duan@nxp.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190530152950.25377-1-sorganov@gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, Sergey Organov <sorganov@gmail.com>, NXP Linux Team <linux-imx@nxp.com>, Pengutronix Kernel Team <kernel@pengutronix.de>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On 8/24/19 4:03 PM, akpm@linux-foundation.org wrote:
-> The mm-of-the-moment snapshot 2019-08-24-16-02 has been uploaded to
-> 
->    http://www.ozlabs.org/~akpm/mmotm/
-> 
-> mmotm-readme.txt says
-> 
-> README for mm-of-the-moment:
-> 
-> http://www.ozlabs.org/~akpm/mmotm/
-> 
-> This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
-> more than once a week.
-> 
-> You will need quilt to apply these patches to the latest Linus release (5.x
-> or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
-> http://ozlabs.org/~akpm/mmotm/series
-> 
-> The file broken-out.tar.gz contains two datestamp files: .DATE and
-> .DATE-yyyy-mm-dd-hh-mm-ss.  Both contain the string yyyy-mm-dd-hh-mm-ss,
-> followed by the base kernel version against which this patch series is to
-> be applied.
-> 
-> This tree is partially included in linux-next.  To see which patches are
-> included in linux-next, consult the `series' file.  Only the patches
-> within the #NEXT_PATCHES_START/#NEXT_PATCHES_END markers are included in
-> linux-next.
+The original problem that caused these changes was broken bytes being
+sent/received at random on RTS/CTS handshake switch (i.e., on
+setting/clearing termios CRTSCTS bit).
 
-on i386:
-when CONFIG_PRINTK is not set/enabled:
+As it went, a few other problems were found and fixed, and then the
+fix for original issue has been split into multiple patches that seem
+to make sense by themselves. Thus, the "serial: imx: fix data breakage
+on termios change", that finally fixes the issue, depends on 2
+preceding patches.
 
-../drivers/tty/serial/fsl_linflexuart.c: In function ‘linflex_earlycon_putchar’:
-../drivers/tty/serial/fsl_linflexuart.c:608:31: error: ‘CONFIG_LOG_BUF_SHIFT’ undeclared (first use in this function); did you mean ‘CONFIG_DEBUG_SHIRQ’?
-  if (earlycon_buf.len >= 1 << CONFIG_LOG_BUF_SHIFT)
-                               ^~~~~~~~~~~~~~~~~~~~
-                               CONFIG_DEBUG_SHIRQ
+The last patch in the series, "serial: imx: use Tx ready rather than
+Tx empty irq" is independent of the rest and doesn't fix any serious
+issue, but it should get rid of holes in continuous output,
+specifically in PIO mode.
 
+Changes in v2:
+  - Removed wrong [PATCH 1/8] serial: imx: fix DTR inversion
+  - Rebased on top of "tty-next"
+
+Sergey Organov (5):
+  serial: imx: get rid of unbounded busy-waiting loop
+  serial: imx: do not stop Rx/Tx on termios change
+  serial: imx: do not disable individual irqs during termios change
+  serial: imx: fix data breakage on termios change
+  serial: imx: use Tx ready rather than Tx empty irq
+
+ drivers/tty/serial/imx.c | 56 ++++++++++++++++++++++--------------------------
+ 1 file changed, 26 insertions(+), 30 deletions(-)
 
 -- 
-~Randy
+2.10.0.1.g57b01a3
