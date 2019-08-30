@@ -1,91 +1,62 @@
-From: Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>
-Subject: Re: [PATCH] serial: 8250_pci: Implement MSI(-X) support
-Date: Fri, 30 Aug 2019 00:33:09 +0200
-Message-ID: <740fc1e7-fb3d-c0c7-c17b-2ea3a8864d89@oth-regensburg.de>
-References: <20190812112152.693622-1-ralf.ramsauer@oth-regensburg.de>
+From: =?iso-8859-1?Q?Christoph_Vogtl=E4nder?=
+        <Christoph.Vogtlaender@sigma-surface-science.com>
+Subject: [PATCH] serial: max310x: Properly set flags in AutoCTS mode
+Date: Fri, 30 Aug 2019 09:58:34 +0000
+Message-ID: <47a1918df72a4b28b124a53e055e045a@SSSDEEX.i.sigma-surface-science.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <jailhouse-dev+bncBD4JZQXE5UFRBKFFUHVQKGQEAVPIVIY@googlegroups.com>
-Sender: jailhouse-dev@googlegroups.com
-In-Reply-To: <20190812112152.693622-1-ralf.ramsauer@oth-regensburg.de>
-Content-Language: en-PH
-List-Post: <https://groups.google.com/group/jailhouse-dev/post>, <mailto:jailhouse-dev@googlegroups.com>
-List-Help: <https://groups.google.com/support/>, <mailto:jailhouse-dev+help@googlegroups.com>
-List-Archive: <https://groups.google.com/group/jailhouse-dev
-List-Subscribe: <https://groups.google.com/group/jailhouse-dev/subscribe>, <mailto:jailhouse-dev+subscribe@googlegroups.com>
-List-Unsubscribe: <mailto:googlegroups-manage+175645748590+unsubscribe@googlegroups.com>,
- <https://groups.google.com/group/jailhouse-dev/subscribe>
-To: Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, jailhouse-dev@googlegroups.com
-Cc: Jay Dolan <jay.dolan@accesio.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Language: de-DE
+Sender: linux-kernel-owner@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, =?iso-8859-1?Q?Christoph_Vogtl=E4nder?= <Christoph.Vogtlaender@sigma-surface-science.com>
 List-Id: linux-serial@vger.kernel.org
 
-*ping* :)
+Commit 391f93f2ec9f ("serial: core: Rework hw-assisted flow control
+support") has changed the way the AutoCTS mode is handled.
 
-On 8/12/19 1:21 PM, Ralf Ramsauer wrote:
-> There may be setups, where legacy interrupts are not available. This is
-> the caese, e.g., when Linux runs as guest (aka. non-root cell) of the
-> partitioning hypervisor Jailhouse. There, only MSI(-X) interrupts are
-> available for guests.
-> 
-> But the 8250_pci driver currently only supports legacy ints. So let's
-> enable MSI(-X) interrupts.
-> 
-> Nevertheless, this needs to handled with care: while many 8250 devices
-> actually claim to support MSI(-X) interrupts it should not be enabled be
-> default. I had at least one device in my hands with broken MSI
-> implementation.
-> 
-> So better introduce a whitelist with devices that are known to support
-> MSI(-X) interrupts. I tested all devices mentioned in the patch.
-> 
-> Signed-off-by: Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>
-> ---
->  drivers/tty/serial/8250/8250_pci.c | 27 ++++++++++++++++++++++++++-
->  1 file changed, 26 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> index bbe5cba21522..97992884c0ee 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -53,6 +53,16 @@ struct serial_private {
->  	int			line[0];
->  };
->  
-> +static const struct pci_device_id pci_use_msi[] = {
-> +	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9900,
-> +			 0xA000, 0x1000) },
-> +	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9912,
-> +			 0xA000, 0x1000) },
-> +	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9922,
-> +			 0xA000, 0x1000) },
-> +	{ }
-> +};
-> +
->  static int pci_default_setup(struct serial_private*,
->  	  const struct pciserial_board*, struct uart_8250_port *, int);
->  
-> @@ -3643,7 +3653,22 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
->  	memset(&uart, 0, sizeof(uart));
->  	uart.port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ;
->  	uart.port.uartclk = board->base_baud * 16;
-> -	uart.port.irq = get_pci_irq(dev, board);
-> +
-> +	if (pci_match_id(pci_use_msi, dev)) {
-> +		dev_dbg(&dev->dev, "Using MSI(-X) interrupts\n");
-> +		pci_set_master(dev);
-> +		rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_ALL_TYPES);
-> +	} else {
-> +		dev_dbg(&dev->dev, "Using legacy interrupts\n");
-> +		rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_LEGACY);
-> +	}
-> +	if (rc < 0) {
-> +		kfree(priv);
-> +		priv = ERR_PTR(rc);
-> +		goto err_deinit;
-> +	}
-> +
-> +	uart.port.irq = pci_irq_vector(dev, 0);
->  	uart.port.dev = &dev->dev;
->  
->  	for (i = 0; i < nr_ports; i++) {
-> 
+According to that change, serial drivers which enable H/W AutoCTS mode must
+set UPSTAT_AUTORTS, UPSTAT_AUTOCTS and UPSTAT_AUTOXOFF to prevent the
+serial core from inadvertently disabling RX or TX. This patch adds proper
+handling of UPSTAT_AUTORTS, UPSTAT_AUTOCTS and UPSTAT_AUTOXOFF flags.
+
+Signed-off-by: Christoph Vogtländer <c.vogtlaender@sigma-surface-science.com>
+---
+ drivers/tty/serial/max310x.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index 0e24235..fb5a7e0 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -859,15 +859,23 @@ static void max310x_set_termios(struct uart_port *port,
+ /* Configure flow control */
+ max310x_port_write(port, MAX310X_XON1_REG, termios->c_cc[VSTART]);
+ max310x_port_write(port, MAX310X_XOFF1_REG, termios->c_cc[VSTOP]);
+-if (termios->c_cflag & CRTSCTS)
++
++port->status &= ~(UPSTAT_AUTOCTS | UPSTAT_AUTORTS | UPSTAT_AUTOXOFF);
++
++if (termios->c_cflag & CRTSCTS) {
++/* Enable AUTORTS and AUTOCTS */
++port->status |= UPSTAT_AUTOCTS | UPSTAT_AUTORTS;
+ flow |= MAX310X_FLOWCTRL_AUTOCTS_BIT |
+ MAX310X_FLOWCTRL_AUTORTS_BIT;
++}
+ if (termios->c_iflag & IXON)
+ flow |= MAX310X_FLOWCTRL_SWFLOW3_BIT |
+ MAX310X_FLOWCTRL_SWFLOWEN_BIT;
+-if (termios->c_iflag & IXOFF)
++if (termios->c_iflag & IXOFF) {
++port->status |= UPSTAT_AUTOXOFF;
+ flow |= MAX310X_FLOWCTRL_SWFLOW1_BIT |
+ MAX310X_FLOWCTRL_SWFLOWEN_BIT;
++}
+ max310x_port_write(port, MAX310X_FLOWCTRL_REG, flow);
+
+ /* Get baud rate generator configuration */
+--
+2.7.4
+
+
+Sigma Surface Science GmbH, Idsteiner Str. 78, 65232 Taunusstein. Amtsgericht Wiesbaden, HRB 27422. Geschäftsführer: Norbert Nold
