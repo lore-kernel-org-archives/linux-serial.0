@@ -1,66 +1,141 @@
-From: =?iso-8859-1?Q?Christoph_Vogtl=E4nder?=
-        <Christoph.Vogtlaender@sigma-surface-science.com>
-Subject: [PATCH] serial: max310x: turn off transmitter before activating
- AutoCTS or auto transmitter flow control
-Date: Fri, 30 Aug 2019 09:58:41 +0000
-Message-ID: <bd9fb8e75d0e45218eb110c25bb539ef@SSSDEEX.i.sigma-surface-science.com>
+From: Pragnesh Patel <pragnesh.patel@sifive.com>
+Subject: [PATCH] dt-bindings: serial: Convert riscv,
+ sifive-serial to json-schema
+Date: Sun,  1 Sep 2019 12:39:21 +0530
+Message-ID: <1567321765-3738-1-git-send-email-pragnesh.patel@sifive.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Language: de-DE
-Sender: linux-kernel-owner@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, =?iso-8859-1?Q?Christoph_Vogtl=E4nder?= <Christoph.Vogtlaender@sigma-surface-science.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
+To: palmer@sifive.com, paul.walmsley@sifive.com
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Albert Ou <aou@eecs.berkeley.edu>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org, Pragnesh Patel <pragnesh.patel@sifive.com>
 List-Id: linux-serial@vger.kernel.org
 
-As documented in the data-sheet, the transmitter must be disabled before
-activating AutoCTS or auto transmitter flow control. Accordingly, the
-transmitter must be enabled after AutoCTS or auto transmitter flow
-control gets deactivated.
+Convert the riscv,sifive-serial binding to DT schema using json-schema.
 
-Signed-off-by: Christoph Vogtländer <c.vogtlaender@sigma-surface-science.com>
+Signed-off-by: Pragnesh Patel <pragnesh.patel@sifive.com>
 ---
- drivers/tty/serial/max310x.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ .../devicetree/bindings/serial/sifive-serial.txt   | 33 ------------
+ .../devicetree/bindings/serial/sifive-serial.yaml  | 62 ++++++++++++++++++++++
+ 2 files changed, 62 insertions(+), 33 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/sifive-serial.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/sifive-serial.yaml
 
-diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index fb5a7e0e58e9..adfef6dae4a7 100644
---- a/drivers/tty/serial/max310x.c
-+++ b/drivers/tty/serial/max310x.c
-@@ -860,6 +860,15 @@ static void max310x_set_termios(struct uart_port *port,
- max310x_port_write(port, MAX310X_XON1_REG, termios->c_cc[VSTART]);
- max310x_port_write(port, MAX310X_XOFF1_REG, termios->c_cc[VSTOP]);
-
-+/* Disable transmitter before enabling AutoCTS or auto transmitter
-+ * flow control
-+ */
-+if (termios->c_cflag & CRTSCTS || termios->c_iflag & IXOFF) {
-+max310x_port_update(port, MAX310X_MODE1_REG,
-+    MAX310X_MODE1_TXDIS_BIT,
-+    MAX310X_MODE1_TXDIS_BIT);
-+}
+diff --git a/Documentation/devicetree/bindings/serial/sifive-serial.txt b/Documentation/devicetree/bindings/serial/sifive-serial.txt
+deleted file mode 100644
+index c86b1e5..0000000
+--- a/Documentation/devicetree/bindings/serial/sifive-serial.txt
++++ /dev/null
+@@ -1,33 +0,0 @@
+-SiFive asynchronous serial interface (UART)
+-
+-Required properties:
+-
+-- compatible: should be something similar to
+-	      "sifive,<chip>-uart" for the UART as integrated
+-	      on a particular chip, and "sifive,uart<version>" for the
+-	      general UART IP block programming model.	Supported
+-	      compatible strings as of the date of this writing are:
+-	      "sifive,fu540-c000-uart" for the SiFive UART v0 as
+-	      integrated onto the SiFive FU540 chip, or "sifive,uart0"
+-	      for the SiFive UART v0 IP block with no chip integration
+-	      tweaks (if any)
+-- reg: address and length of the register space
+-- interrupts: Should contain the UART interrupt identifier
+-- clocks: Should contain a clock identifier for the UART's parent clock
+-
+-
+-UART HDL that corresponds to the IP block version numbers can be found
+-here:
+-
+-https://github.com/sifive/sifive-blocks/tree/master/src/main/scala/devices/uart
+-
+-
+-Example:
+-
+-uart0: serial@10010000 {
+-	compatible = "sifive,fu540-c000-uart", "sifive,uart0";
+-	interrupt-parent = <&plic0>;
+-	interrupts = <80>;
+-	reg = <0x0 0x10010000 0x0 0x1000>;
+-	clocks = <&prci PRCI_CLK_TLCLK>;
+-};
+diff --git a/Documentation/devicetree/bindings/serial/sifive-serial.yaml b/Documentation/devicetree/bindings/serial/sifive-serial.yaml
+new file mode 100644
+index 0000000..56fa935
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/sifive-serial.yaml
+@@ -0,0 +1,62 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/sifive-serial.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- port->status &= ~(UPSTAT_AUTOCTS | UPSTAT_AUTORTS | UPSTAT_AUTOXOFF);
-
- if (termios->c_cflag & CRTSCTS) {
-@@ -878,6 +887,15 @@ static void max310x_set_termios(struct uart_port *port,
- }
- max310x_port_write(port, MAX310X_FLOWCTRL_REG, flow);
-
-+/* Enable transmitter after disabling AutoCTS and auto transmitter
-+ * flow control
-+ */
-+if (!(termios->c_cflag & CRTSCTS) && !(termios->c_iflag & IXOFF)) {
-+max310x_port_update(port, MAX310X_MODE1_REG,
-+    MAX310X_MODE1_TXDIS_BIT,
-+    0);
-+}
++title: SiFive asynchronous serial interface (UART)
 +
- /* Get baud rate generator configuration */
- baud = uart_get_baud_rate(port, termios, old,
-   port->uartclk / 16 / 0xffff,
---
-2.22.1
-
-
-Sigma Surface Science GmbH, Idsteiner Str. 78, 65232 Taunusstein. Amtsgericht Wiesbaden, HRB 27422. Geschäftsführer: Norbert Nold
++maintainers:
++  - Pragnesh Patel <pragnesh.patel@sifive.com>
++  - Paul Walmsley  <paul.walmsley@sifive.com>
++  - Palmer Dabbelt <palmer@sifive.com>
++
++allOf:
++  - $ref: /schemas/serial.yaml#
++
++properties:
++  compatible:
++    enum:
++      - sifive,fu540-c000-uart
++      - sifive,uart0
++
++    description:
++      Should be something similar to "sifive,<chip>-uart"
++      for the UART as integrated on a particular chip,
++      and "sifive,uart<version>" for the general UART IP
++      block programming model.
++
++      UART HDL that corresponds to the IP block version
++      numbers can be found here -
++
++      https://github.com/sifive/sifive-blocks/tree/master/src/main/scala/devices/uart
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++
++additionalProperties: false
++
++examples:
++  - |
++      #include <dt-bindings/clock/sifive-fu540-prci.h>
++      serial@10010000 {
++        compatible = "sifive,fu540-c000-uart", "sifive,uart0";
++        interrupt-parent = <&plic0>;
++        interrupts = <80>;
++        reg = <0x0 0x10010000 0x0 0x1000>;
++        clocks = <&prci PRCI_CLK_TLCLK>;
++      };
++
++...
+-- 
+2.7.4
