@@ -1,46 +1,35 @@
-From: Baolin Wang <baolin.wang@linaro.org>
-Subject: [BACKPORT 4.14.y 8/8] serial: sprd: Modify the baud rate calculation formula
-Date: Tue,  3 Sep 2019 15:01:25 +0800
-Message-ID: <b72268635867cb643912bd842f4980c5d24cb2df.1567492316.git.baolin.wang@linaro.org>
-References: <cover.1567492316.git.baolin.wang@linaro.org>
+From: Paul Burton <paul.burton@mips.com>
+Subject: Re: [PATCH v5 04/17] MIPS: PCI: refactor ioc3 special handling
+Date: Tue, 3 Sep 2019 09:10:53 +0000
+Message-ID: <MWHPR2201MB12779E08754158B97B8A9A83C1B90@MWHPR2201MB1277.namprd22.prod.outlook.com>
+References: <20190819163144.3478-5-tbogendoerfer@suse.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1567492316.git.baolin.wang@linaro.org>
+In-Reply-To: <20190819163144.3478-5-tbogendoerfer@suse.de>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: stable@vger.kernel.org, gregkh@linuxfoundation.org
-Cc: lanqing.liu@unisoc.com, linux-serial@vger.kernel.org, arnd@arndb.de, baolin.wang@linaro.org, orsonzhai@gmail.com, vincent.guittot@linaro.org, linux-kernel@vger.kernel.org
+To: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc: Jonathan Corbet <corbet@lwn.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <pburton@wavecomp.com>, James Hogan <jhogan@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Evgeniy Polyakov <zbr@ioremap.net>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Lanqing Liu <lanqing.liu@unisoc.com>
+Hello,
 
-When the source clock is not divisible by the expected baud rate and
-the remainder is not less than half of the expected baud rate, the old
-formular will round up the frequency division coefficient. This will
-make the actual baud rate less than the expected value and can not meet
-the external transmission requirements.
+Thomas Bogendoerfer wrote:
+> Refactored code to only have one ioc3 special handling for read
+> access and one for write access.
 
-Thus this patch modifies the baud rate calculation formula to support
-the serial controller output the maximum baud rate.
+Applied to mips-next.
 
-Signed-off-by: Lanqing Liu <lanqing.liu@unisoc.com>
-Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
----
- drivers/tty/serial/sprd_serial.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> commit 813cafc4109c
+> https://git.kernel.org/mips/c/813cafc4109c
+>=20
+> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> Signed-off-by: Paul Burton <paul.burton@mips.com>
 
-diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-index e902494..72e96ab8 100644
---- a/drivers/tty/serial/sprd_serial.c
-+++ b/drivers/tty/serial/sprd_serial.c
-@@ -380,7 +380,7 @@ static void sprd_set_termios(struct uart_port *port,
- 	/* ask the core to calculate the divisor for us */
- 	baud = uart_get_baud_rate(port, termios, old, 0, SPRD_BAUD_IO_LIMIT);
- 
--	quot = (unsigned int)((port->uartclk + baud / 2) / baud);
-+	quot = port->uartclk / baud;
- 
- 	/* set data length */
- 	switch (termios->c_cflag & CSIZE) {
--- 
-1.7.9.5
+Thanks,
+    Paul
+
+[ This message was auto-generated; if you believe anything is incorrect
+  then please email paul.burton@mips.com to report it. ]
