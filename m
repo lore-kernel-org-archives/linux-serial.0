@@ -1,61 +1,46 @@
 From: Baolin Wang <baolin.wang@linaro.org>
-Subject: [BACKPORT 4.14.y 0/8] Candidates from Spreadtrum 4.14 product kernel
-Date: Tue,  3 Sep 2019 14:53:46 +0800
-Message-ID: <cover.1567492316.git.baolin.wang@linaro.org>
+Subject: [BACKPORT 4.14.y 8/8] serial: sprd: Modify the baud rate calculation formula
+Date: Tue,  3 Sep 2019 15:01:25 +0800
+Message-ID: <b72268635867cb643912bd842f4980c5d24cb2df.1567492316.git.baolin.wang@linaro.org>
+References: <cover.1567492316.git.baolin.wang@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1567492316.git.baolin.wang@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: stable@vger.kernel.org, chris@chris-wilson.co.uk, airlied@linux.ie, davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, edumazet@google.com, peterz@infradead.org, mingo@redhat.com, vyasevich@gmail.com, nhorman@tuxdriver.com, linus.walleij@linaro.org, natechancellor@gmail.com, sre@kernel.org, paulus@samba.org, gregkh@linuxfoundation.org
-Cc: intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org, netdev@vger.kernel.org, longman@redhat.com, hariprasad.kelam@gmail.com, linux-sctp@vger.kernel.org, linux-gpio@vger.kernel.org, david@lechnology.com, linux-pm@vger.kernel.org, ebiggers@google.com, linux-ppp@vger.kernel.org, lanqing.liu@unisoc.com, linux-serial@vger.kernel.org, arnd@arndb.de, baolin.wang@linaro.org, orsonzhai@gmail.com, vincent.guittot@linaro.org, linux-kernel@vger.kernel.org
+To: stable@vger.kernel.org, gregkh@linuxfoundation.org
+Cc: lanqing.liu@unisoc.com, linux-serial@vger.kernel.org, arnd@arndb.de, baolin.wang@linaro.org, orsonzhai@gmail.com, vincent.guittot@linaro.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-With Arnd's script [1] help, I found some bugfixes in Spreadtrum 4.14 product
-kernel, but missing in v4.14.141:
+From: Lanqing Liu <lanqing.liu@unisoc.com>
 
-86fda90ab588 net: sctp: fix warning "NULL check before some freeing functions is not needed"
-25a09ce79639 ppp: mppe: Revert "ppp: mppe: Add softdep to arc4"
-d9b308b1f8a1 drm/i915/fbdev: Actually configure untiled displays
-47d3d7fdb10a ip6: fix skb leak in ip6frag_expire_frag_queue()
-5b9cea15a3de serial: sprd: Modify the baud rate calculation formula
-513e1073d52e locking/lockdep: Add debug_locks check in __lock_downgrade()
-957063c92473 pinctrl: sprd: Use define directive for sprd_pinconf_params values
-87a2b65fc855 power: supply: sysfs: ratelimit property read error message
+When the source clock is not divisible by the expected baud rate and
+the remainder is not less than half of the expected baud rate, the old
+formular will round up the frequency division coefficient. This will
+make the actual baud rate less than the expected value and can not meet
+the external transmission requirements.
 
-[1] https://lore.kernel.org/lkml/20190322154425.3852517-19-arnd@arndb.de/T/
+Thus this patch modifies the baud rate calculation formula to support
+the serial controller output the maximum baud rate.
 
-Chris Wilson (1):
-  drm/i915/fbdev: Actually configure untiled displays
+Signed-off-by: Lanqing Liu <lanqing.liu@unisoc.com>
+Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
+---
+ drivers/tty/serial/sprd_serial.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-David Lechner (1):
-  power: supply: sysfs: ratelimit property read error message
-
-Eric Biggers (1):
-  ppp: mppe: Revert "ppp: mppe: Add softdep to arc4"
-
-Eric Dumazet (1):
-  ip6: fix skb leak in ip6frag_expire_frag_queue()
-
-Hariprasad Kelam (1):
-  net: sctp: fix warning "NULL check before some freeing functions is
-    not needed"
-
-Lanqing Liu (1):
-  serial: sprd: Modify the baud rate calculation formula
-
-Nathan Chancellor (1):
-  pinctrl: sprd: Use define directive for sprd_pinconf_params values
-
-Waiman Long (1):
-  locking/lockdep: Add debug_locks check in __lock_downgrade()
-
- drivers/gpu/drm/i915/intel_fbdev.c        |   12 +++++++-----
- drivers/net/ppp/ppp_mppe.c                |    1 -
- drivers/pinctrl/sprd/pinctrl-sprd.c       |    6 ++----
- drivers/power/supply/power_supply_sysfs.c |    3 ++-
- drivers/tty/serial/sprd_serial.c          |    2 +-
- include/net/ipv6_frag.h                   |    1 -
- kernel/locking/lockdep.c                  |    3 +++
- net/sctp/sm_make_chunk.c                  |   12 ++++--------
- 8 files changed, 19 insertions(+), 21 deletions(-)
-
+diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
+index e902494..72e96ab8 100644
+--- a/drivers/tty/serial/sprd_serial.c
++++ b/drivers/tty/serial/sprd_serial.c
+@@ -380,7 +380,7 @@ static void sprd_set_termios(struct uart_port *port,
+ 	/* ask the core to calculate the divisor for us */
+ 	baud = uart_get_baud_rate(port, termios, old, 0, SPRD_BAUD_IO_LIMIT);
+ 
+-	quot = (unsigned int)((port->uartclk + baud / 2) / baud);
++	quot = port->uartclk / baud;
+ 
+ 	/* set data length */
+ 	switch (termios->c_cflag & CSIZE) {
 -- 
 1.7.9.5
