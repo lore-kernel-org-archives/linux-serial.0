@@ -1,236 +1,61 @@
-From: Pragnesh Patel <pragnesh.patel@sifive.com>
-Subject: Re: [PATCH] dt-bindings: serial: Convert riscv,sifive-serial to json-schema
-Date: Tue, 3 Sep 2019 12:21:51 +0530
-Message-ID: <CAN8ut8KMjo4KVcgLp6AhZOpuLwWMJ8HeiecH70RgYnLQQ05M9w@mail.gmail.com>
-References: <1567321765-3738-1-git-send-email-pragnesh.patel@sifive.com> <5d6d1b81.1c69fb81.7eabb.cabd@mx.google.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+From: Baolin Wang <baolin.wang@linaro.org>
+Subject: [BACKPORT 4.14.y 0/8] Candidates from Spreadtrum 4.14 product kernel
+Date: Tue,  3 Sep 2019 14:53:46 +0800
+Message-ID: <cover.1567492316.git.baolin.wang@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5d6d1b81.1c69fb81.7eabb.cabd@mx.google.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Palmer Dabbelt <palmer@sifive.com>, Paul Walmsley <paul.walmsley@sifive.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Albert Ou <aou@eecs.berkeley.edu>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+To: stable@vger.kernel.org, chris@chris-wilson.co.uk, airlied@linux.ie, davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, edumazet@google.com, peterz@infradead.org, mingo@redhat.com, vyasevich@gmail.com, nhorman@tuxdriver.com, linus.walleij@linaro.org, natechancellor@gmail.com, sre@kernel.org, paulus@samba.org, gregkh@linuxfoundation.org
+Cc: intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org, netdev@vger.kernel.org, longman@redhat.com, hariprasad.kelam@gmail.com, linux-sctp@vger.kernel.org, linux-gpio@vger.kernel.org, david@lechnology.com, linux-pm@vger.kernel.org, ebiggers@google.com, linux-ppp@vger.kernel.org, lanqing.liu@unisoc.com, linux-serial@vger.kernel.org, arnd@arndb.de, baolin.wang@linaro.org, orsonzhai@gmail.com, vincent.guittot@linaro.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Mon, Sep 2, 2019 at 7:09 PM Rob Herring <robh@kernel.org> wrote:
->
-> On Sun, Sep 01, 2019 at 12:39:21PM +0530, Pragnesh Patel wrote:
-> > Convert the riscv,sifive-serial binding to DT schema using json-schema.
-> >
-> > Signed-off-by: Pragnesh Patel <pragnesh.patel@sifive.com>
-> > ---
-> >  .../devicetree/bindings/serial/sifive-serial.txt   | 33 ------------
-> >  .../devicetree/bindings/serial/sifive-serial.yaml  | 62 ++++++++++++++++++++++
-> >  2 files changed, 62 insertions(+), 33 deletions(-)
-> >  delete mode 100644 Documentation/devicetree/bindings/serial/sifive-serial.txt
-> >  create mode 100644 Documentation/devicetree/bindings/serial/sifive-serial.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/serial/sifive-serial.txt b/Documentation/devicetree/bindings/serial/sifive-serial.txt
-> > deleted file mode 100644
-> > index c86b1e5..0000000
-> > --- a/Documentation/devicetree/bindings/serial/sifive-serial.txt
-> > +++ /dev/null
-> > @@ -1,33 +0,0 @@
-> > -SiFive asynchronous serial interface (UART)
-> > -
-> > -Required properties:
-> > -
-> > -- compatible: should be something similar to
-> > -           "sifive,<chip>-uart" for the UART as integrated
-> > -           on a particular chip, and "sifive,uart<version>" for the
-> > -           general UART IP block programming model.  Supported
-> > -           compatible strings as of the date of this writing are:
-> > -           "sifive,fu540-c000-uart" for the SiFive UART v0 as
-> > -           integrated onto the SiFive FU540 chip, or "sifive,uart0"
-> > -           for the SiFive UART v0 IP block with no chip integration
-> > -           tweaks (if any)
-> > -- reg: address and length of the register space
-> > -- interrupts: Should contain the UART interrupt identifier
-> > -- clocks: Should contain a clock identifier for the UART's parent clock
-> > -
-> > -
-> > -UART HDL that corresponds to the IP block version numbers can be found
-> > -here:
-> > -
-> > -https://github.com/sifive/sifive-blocks/tree/master/src/main/scala/devices/uart
-> > -
-> > -
-> > -Example:
-> > -
-> > -uart0: serial@10010000 {
-> > -     compatible = "sifive,fu540-c000-uart", "sifive,uart0";
-> > -     interrupt-parent = <&plic0>;
-> > -     interrupts = <80>;
-> > -     reg = <0x0 0x10010000 0x0 0x1000>;
-> > -     clocks = <&prci PRCI_CLK_TLCLK>;
-> > -};
-> > diff --git a/Documentation/devicetree/bindings/serial/sifive-serial.yaml b/Documentation/devicetree/bindings/serial/sifive-serial.yaml
-> > new file mode 100644
-> > index 0000000..56fa935
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/serial/sifive-serial.yaml
-> > @@ -0,0 +1,62 @@
-> > +# SPDX-License-Identifier: GPL-2.0
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/serial/sifive-serial.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: SiFive asynchronous serial interface (UART)
-> > +
-> > +maintainers:
-> > +  - Pragnesh Patel <pragnesh.patel@sifive.com>
-> > +  - Paul Walmsley  <paul.walmsley@sifive.com>
-> > +  - Palmer Dabbelt <palmer@sifive.com>
-> > +
-> > +allOf:
-> > +  - $ref: /schemas/serial.yaml#
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - sifive,fu540-c000-uart
-> > +      - sifive,uart0
->
-> This is wrong and should have warned if you tested this on 5.3.
->
-> items:
->   - const: sifive,fu540-c000-uart
->   - const: sifive,uart0
->
+With Arnd's script [1] help, I found some bugfixes in Spreadtrum 4.14 product
+kernel, but missing in v4.14.141:
 
-Thanks for the correction, i will update this in v2 patch.
+86fda90ab588 net: sctp: fix warning "NULL check before some freeing functions is not needed"
+25a09ce79639 ppp: mppe: Revert "ppp: mppe: Add softdep to arc4"
+d9b308b1f8a1 drm/i915/fbdev: Actually configure untiled displays
+47d3d7fdb10a ip6: fix skb leak in ip6frag_expire_frag_queue()
+5b9cea15a3de serial: sprd: Modify the baud rate calculation formula
+513e1073d52e locking/lockdep: Add debug_locks check in __lock_downgrade()
+957063c92473 pinctrl: sprd: Use define directive for sprd_pinconf_params values
+87a2b65fc855 power: supply: sysfs: ratelimit property read error message
 
-I haven't got any warnings due to my patch.
-For your reference, following is the list of warnings when i did "make
-dtbs_check" (kernel version - 5.3.0-rc7)
+[1] https://lore.kernel.org/lkml/20190322154425.3852517-19-arnd@arndb.de/T/
 
-/home/pragneshp/opensource/linux/Documentation/devicetree/bindings/riscv/cpus.example.dt.yaml:
-cpu@0: compatible:0: 'riscv' is not one of ['sifive,rocket0',
-'sifive,e5', 'sifive,e51', 'sifive,u54-mc', 'sifive,u54', 'sifive,u5']
-/home/pragneshp/opensource/linux/Documentation/devicetree/bindings/riscv/cpus.example.dt.yaml:
-cpu@0: compatible: ['riscv'] is too short
-/home/pragneshp/opensource/linux/Documentation/devicetree/bindings/riscv/cpus.example.dt.yaml:
-cpu@0: 'timebase-frequency' is a required property
-/home/pragneshp/opensource/linux/Documentation/devicetree/bindings/riscv/cpus.example.dt.yaml:
-cpu@0: 'timebase-frequency' is a required property
-/home/pragneshp/opensource/linux/Documentation/devicetree/bindings/riscv/cpus.example.dt.yaml:
-cpu@1: 'timebase-frequency' is a required property
+Chris Wilson (1):
+  drm/i915/fbdev: Actually configure untiled displays
 
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-/: compatible: ['sifive,hifive-unleashed-a00', 'sifive,fu540-c000'] is
-too short
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@3: 'timebase-frequency' is a required property
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@3: compatible: Additional items are not allowed ('riscv' was
-unexpected)
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@3: compatible:1: 'riscv' was expected
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@3: compatible: ['sifive,u54-mc', 'sifive,rocket0', 'riscv'] is too
-long
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@1: 'timebase-frequency' is a required property
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@1: compatible: Additional items are not allowed ('riscv' was
-unexpected)
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@1: compatible:1: 'riscv' was expected
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@1: compatible: ['sifive,u54-mc', 'sifive,rocket0', 'riscv'] is too
-long
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@4: 'timebase-frequency' is a required property
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@4: compatible: Additional items are not allowed ('riscv' was
-unexpected)
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@4: compatible:1: 'riscv' was expected
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@4: compatible: ['sifive,u54-mc', 'sifive,rocket0', 'riscv'] is too
-long
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@2: 'timebase-frequency' is a required property
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@2: compatible: Additional items are not allowed ('riscv' was
-unexpected)
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@2: compatible:1: 'riscv' was expected
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@2: compatible: ['sifive,u54-mc', 'sifive,rocket0', 'riscv'] is too
-long
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@0: compatible: Additional items are not allowed ('riscv' was
-unexpected)
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@0: compatible:1: 'riscv' was expected
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-cpu@0: compatible: ['sifive,e51', 'sifive,rocket0', 'riscv'] is too
-long
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-soc: compatible:0: 'sifive,fu540-c000' is not one of
-['sifive,hifive-unleashed-a00']
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-soc: compatible:1: 'sifive,fu540-c000' was expected
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-soc: compatible:2: 'sifive,fu540' was expected
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-soc: $nodename:0: '/' was expected
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-soc: spi@10041000:reg:0: [0, 268701696, 0, 4096, 0, 805306368, 0,
-268435456] is too long
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-soc: ethernet@10090000:reg:0: [0, 269025280, 0, 8192, 0, 269090816, 0,
-4096] is too long
-/home/pragneshp/opensource/linux/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dt.yaml:
-soc: spi@10040000:reg:0: [0, 268697600, 0, 4096, 0, 536870912, 0,
-268435456] is too long
+David Lechner (1):
+  power: supply: sysfs: ratelimit property read error message
 
+Eric Biggers (1):
+  ppp: mppe: Revert "ppp: mppe: Add softdep to arc4"
 
->
-> > +
-> > +    description:
-> > +      Should be something similar to "sifive,<chip>-uart"
-> > +      for the UART as integrated on a particular chip,
-> > +      and "sifive,uart<version>" for the general UART IP
-> > +      block programming model.
-> > +
-> > +      UART HDL that corresponds to the IP block version
-> > +      numbers can be found here -
-> > +
-> > +      https://github.com/sifive/sifive-blocks/tree/master/src/main/scala/devices/uart
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +
-> > +  clocks:
-> > +    maxItems: 1
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - interrupts
-> > +  - clocks
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +      #include <dt-bindings/clock/sifive-fu540-prci.h>
-> > +      serial@10010000 {
-> > +        compatible = "sifive,fu540-c000-uart", "sifive,uart0";
-> > +        interrupt-parent = <&plic0>;
-> > +        interrupts = <80>;
-> > +        reg = <0x0 0x10010000 0x0 0x1000>;
-> > +        clocks = <&prci PRCI_CLK_TLCLK>;
-> > +      };
-> > +
-> > +...
-> > --
-> > 2.7.4
-> >
->
+Eric Dumazet (1):
+  ip6: fix skb leak in ip6frag_expire_frag_queue()
+
+Hariprasad Kelam (1):
+  net: sctp: fix warning "NULL check before some freeing functions is
+    not needed"
+
+Lanqing Liu (1):
+  serial: sprd: Modify the baud rate calculation formula
+
+Nathan Chancellor (1):
+  pinctrl: sprd: Use define directive for sprd_pinconf_params values
+
+Waiman Long (1):
+  locking/lockdep: Add debug_locks check in __lock_downgrade()
+
+ drivers/gpu/drm/i915/intel_fbdev.c        |   12 +++++++-----
+ drivers/net/ppp/ppp_mppe.c                |    1 -
+ drivers/pinctrl/sprd/pinctrl-sprd.c       |    6 ++----
+ drivers/power/supply/power_supply_sysfs.c |    3 ++-
+ drivers/tty/serial/sprd_serial.c          |    2 +-
+ include/net/ipv6_frag.h                   |    1 -
+ kernel/locking/lockdep.c                  |    3 +++
+ net/sctp/sm_make_chunk.c                  |   12 ++++--------
+ 8 files changed, 19 insertions(+), 21 deletions(-)
+
+-- 
+1.7.9.5
