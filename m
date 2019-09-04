@@ -1,7 +1,7 @@
 From: Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Subject: [PATCH V2 07/12] serial: tegra: set maximum num of uart ports to 8
-Date: Wed, 4 Sep 2019 10:13:02 +0530
-Message-ID: <1567572187-29820-8-git-send-email-kyarlagadda@nvidia.com>
+Subject: [PATCH V2 08/12] serial: tegra: add support to use 8 bytes trigger
+Date: Wed, 4 Sep 2019 10:13:03 +0530
+Message-ID: <1567572187-29820-9-git-send-email-kyarlagadda@nvidia.com>
 References: <1567572187-29820-1-git-send-email-kyarlagadda@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,85 +12,72 @@ To: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, thierr
 Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Krishna Yarlagadda <kyarlagadda@nvidia.com>, Shardar Shariff Md <smohammed@nvidia.com>
 List-Id: linux-serial@vger.kernel.org
 
-Set maximum number of UART ports to 8 as older chips have 5 ports and
-Tergra186 and later chips will have 8 ports. Add this info to chip
-data. Read device tree compatible of this driver and register uart
-driver with max ports of matching chip data.
+Add support to use 8 bytes trigger for Tegra186 SOC.
 
 Signed-off-by: Shardar Shariff Md <smohammed@nvidia.com>
 Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
 ---
- drivers/tty/serial/serial-tegra.c | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+ drivers/tty/serial/serial-tegra.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index 69af621..8422516 100644
+index 8422516..02f8535 100644
 --- a/drivers/tty/serial/serial-tegra.c
 +++ b/drivers/tty/serial/serial-tegra.c
-@@ -62,7 +62,7 @@
- #define TEGRA_UART_TX_TRIG_4B			0x20
- #define TEGRA_UART_TX_TRIG_1B			0x30
- 
--#define TEGRA_UART_MAXIMUM			5
-+#define TEGRA_UART_MAXIMUM			8
- 
- /* Default UART setting when started: 115200 no parity, stop, 8 data bits */
- #define TEGRA_UART_DEFAULT_BAUD			115200
-@@ -87,6 +87,7 @@ struct tegra_uart_chip_data {
- 	bool	allow_txfifo_reset_fifo_mode;
+@@ -88,6 +88,7 @@ struct tegra_uart_chip_data {
  	bool	support_clk_src_div;
  	bool	fifo_mode_enable_status;
-+	int	uart_max_port;
+ 	int	uart_max_port;
++	int	max_dma_burst_bytes;
  };
  
  struct tegra_uart_port {
-@@ -1322,6 +1323,7 @@ static struct tegra_uart_chip_data tegra20_uart_chip_data = {
- 	.allow_txfifo_reset_fifo_mode	= true,
+@@ -931,7 +932,12 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
+ 	 * programmed in the DMA registers.
+ 	 */
+ 	tup->fcr_shadow = UART_FCR_ENABLE_FIFO;
+-	tup->fcr_shadow |= UART_FCR_R_TRIG_01;
++
++	if (tup->cdata->max_dma_burst_bytes == 8)
++		tup->fcr_shadow |= UART_FCR_R_TRIG_10;
++	else
++		tup->fcr_shadow |= UART_FCR_R_TRIG_01;
++
+ 	tup->fcr_shadow |= TEGRA_UART_TX_TRIG_16B;
+ 	tegra_uart_write(tup, tup->fcr_shadow, UART_FCR);
+ 
+@@ -1045,7 +1051,7 @@ static int tegra_uart_dma_channel_allocate(struct tegra_uart_port *tup,
+ 		}
+ 		dma_sconfig.src_addr = tup->uport.mapbase;
+ 		dma_sconfig.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+-		dma_sconfig.src_maxburst = 4;
++		dma_sconfig.src_maxburst = tup->cdata->max_dma_burst_bytes;
+ 		tup->rx_dma_chan = dma_chan;
+ 		tup->rx_dma_buf_virt = dma_buf;
+ 		tup->rx_dma_buf_phys = dma_phys;
+@@ -1324,6 +1330,7 @@ static struct tegra_uart_chip_data tegra20_uart_chip_data = {
  	.support_clk_src_div		= false,
  	.fifo_mode_enable_status	= false,
-+	.uart_max_port			= 5,
+ 	.uart_max_port			= 5,
++	.max_dma_burst_bytes		= 4,
  };
  
  static struct tegra_uart_chip_data tegra30_uart_chip_data = {
-@@ -1329,6 +1331,7 @@ static struct tegra_uart_chip_data tegra30_uart_chip_data = {
- 	.allow_txfifo_reset_fifo_mode	= false,
+@@ -1332,6 +1339,7 @@ static struct tegra_uart_chip_data tegra30_uart_chip_data = {
  	.support_clk_src_div		= true,
  	.fifo_mode_enable_status	= false,
-+	.uart_max_port			= 5,
+ 	.uart_max_port			= 5,
++	.max_dma_burst_bytes		= 4,
  };
  
  static struct tegra_uart_chip_data tegra186_uart_chip_data = {
-@@ -1336,6 +1339,7 @@ static struct tegra_uart_chip_data tegra186_uart_chip_data = {
- 	.allow_txfifo_reset_fifo_mode	= false,
+@@ -1340,6 +1348,7 @@ static struct tegra_uart_chip_data tegra186_uart_chip_data = {
  	.support_clk_src_div		= true,
  	.fifo_mode_enable_status	= true,
-+	.uart_max_port			= 8,
+ 	.uart_max_port			= 8,
++	.max_dma_burst_bytes		= 8,
  };
  
  static const struct of_device_id tegra_uart_of_match[] = {
-@@ -1468,11 +1472,22 @@ static struct platform_driver tegra_uart_platform_driver = {
- static int __init tegra_uart_init(void)
- {
- 	int ret;
-+	struct device_node *node;
-+	const struct of_device_id *match = NULL;
-+	const struct tegra_uart_chip_data *cdata = NULL;
-+
-+	node = of_find_matching_node(NULL, tegra_uart_of_match);
-+	if (node)
-+		match = of_match_node(tegra_uart_of_match, node);
-+	if (match)
-+		cdata = match->data;
-+	if (cdata)
-+		tegra_uart_driver.nr = cdata->uart_max_port;
- 
- 	ret = uart_register_driver(&tegra_uart_driver);
- 	if (ret < 0) {
- 		pr_err("Could not register %s driver\n",
--			tegra_uart_driver.driver_name);
-+		       tegra_uart_driver.driver_name);
- 		return ret;
- 	}
- 
 -- 
 2.7.4
