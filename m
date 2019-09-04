@@ -1,7 +1,7 @@
 From: Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Subject: [PATCH V2 02/12] serial: tegra: avoid reg access when clk disabled
-Date: Wed, 4 Sep 2019 10:12:57 +0530
-Message-ID: <1567572187-29820-3-git-send-email-kyarlagadda@nvidia.com>
+Subject: [PATCH V2 03/12] serial: tegra: flush the RX fifo on frame error
+Date: Wed, 4 Sep 2019 10:12:58 +0530
+Message-ID: <1567572187-29820-4-git-send-email-kyarlagadda@nvidia.com>
 References: <1567572187-29820-1-git-send-email-kyarlagadda@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -9,85 +9,53 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1567572187-29820-1-git-send-email-kyarlagadda@nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com, jonathanh@nvidia.com, ldewangan@nvidia.com, jslaby@suse.com
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Ahung Cheng <ahcheng@nvidia.com>, Shardar Mohammed <smohammed@nvidia.com>, Krishna Yarlagadda <kyarlagadda@nvidia.com>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Shardar Shariff Md <smohammed@nvidia.com>, Krishna Yarlagadda <kyarlagadda@nvidia.com>
 List-Id: linux-serial@vger.kernel.org
 
-From: Ahung Cheng <ahcheng@nvidia.com>
+From: Shardar Shariff Md <smohammed@nvidia.com>
 
-This avoids two race conditions from the UART shutdown sequence both
-leading to 'Machine check error in AXI2APB' and kernel oops.
+FIFO reset/flush code implemented now does not follow programming
+guidelines. RTS line has to be turned off while flushing FIFOs to
+avoid new transfers. Also check LSR bits UART_LSR_TEMT and UART_LSR_DR
+to confirm FIFOs are flushed.
 
-One was that the clock was disabled before the DMA was terminated making
-it possible for the DMA callbacks to be called after the clock was
-disabled. These callbacks could write to the UART registers causing
-timeout.
-
-The second was that the clock was disabled before the UART was
-completely flagged as closed. This is done after the shutdown is called
-and a new write could be started after the clock was disabled.
-tegra_uart_start_pio_tx could be called causing timeout.
-
-Given that the baud rate is reset at the end of shutdown sequence, this
-fix is to examine the baud rate to avoid register access from both race
-conditions.
-
-Besides, terminate the DMA before disabling the clock.
-
-Signed-off-by: Ahung Cheng <ahcheng@nvidia.com>
-Signed-off-by: Shardar Mohammed <smohammed@nvidia.com>
+Signed-off-by: Shardar Shariff Md <smohammed@nvidia.com>
 Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
 ---
- drivers/tty/serial/serial-tegra.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+ drivers/tty/serial/serial-tegra.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
 diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index 9c15c87..29bf7b7 100644
+index 29bf7b7..4cd6d5f 100644
 --- a/drivers/tty/serial/serial-tegra.c
 +++ b/drivers/tty/serial/serial-tegra.c
-@@ -126,6 +126,8 @@ struct tegra_uart_port {
- 
- static void tegra_uart_start_next_tx(struct tegra_uart_port *tup);
- static int tegra_uart_start_rx_dma(struct tegra_uart_port *tup);
-+static void tegra_uart_dma_channel_free(struct tegra_uart_port *tup,
-+					bool dma_to_memory);
- 
- static inline unsigned long tegra_uart_read(struct tegra_uart_port *tup,
- 		unsigned long reg)
-@@ -461,6 +463,9 @@ static void tegra_uart_start_next_tx(struct tegra_uart_port *tup)
- 	unsigned long count;
- 	struct circ_buf *xmit = &tup->uport.state->xmit;
- 
-+	if (!tup->current_baud)
-+		return;
+@@ -266,6 +266,10 @@ static void tegra_uart_wait_sym_time(struct tegra_uart_port *tup,
+ static void tegra_uart_fifo_reset(struct tegra_uart_port *tup, u8 fcr_bits)
+ {
+ 	unsigned long fcr = tup->fcr_shadow;
++	unsigned int lsr, tmout = 10000;
 +
- 	tail = (unsigned long)&xmit->buf[xmit->tail];
- 	count = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
- 	if (!count)
-@@ -832,6 +837,12 @@ static void tegra_uart_hw_deinit(struct tegra_uart_port *tup)
- 	tup->current_baud = 0;
- 	spin_unlock_irqrestore(&tup->uport.lock, flags);
++	if (tup->rts_active)
++		set_rts(tup, false);
  
-+	tup->rx_in_progress = 0;
-+	tup->tx_in_progress = 0;
+ 	if (tup->cdata->allow_txfifo_reset_fifo_mode) {
+ 		fcr |= fcr_bits & (UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
+@@ -289,6 +293,16 @@ static void tegra_uart_fifo_reset(struct tegra_uart_port *tup, u8 fcr_bits)
+ 	 * to propagate, otherwise data could be lost.
+ 	 */
+ 	tegra_uart_wait_cycle_time(tup, 32);
 +
-+	tegra_uart_dma_channel_free(tup, true);
-+	tegra_uart_dma_channel_free(tup, false);
++	do {
++		lsr = tegra_uart_read(tup, UART_LSR);
++		if ((lsr | UART_LSR_TEMT) && !(lsr & UART_LSR_DR))
++			break;
++		udelay(1);
++	} while (--tmout);
 +
- 	clk_disable_unprepare(tup->uart_clk);
++	if (tup->rts_active)
++		set_rts(tup, true);
  }
  
-@@ -1069,12 +1080,6 @@ static void tegra_uart_shutdown(struct uart_port *u)
- 	struct tegra_uart_port *tup = to_tegra_uport(u);
- 
- 	tegra_uart_hw_deinit(tup);
--
--	tup->rx_in_progress = 0;
--	tup->tx_in_progress = 0;
--
--	tegra_uart_dma_channel_free(tup, true);
--	tegra_uart_dma_channel_free(tup, false);
- 	free_irq(u->irq, tup);
- }
- 
+ static int tegra_set_baudrate(struct tegra_uart_port *tup, unsigned int baud)
 -- 
 2.7.4
