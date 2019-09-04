@@ -1,71 +1,30 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: max310x: turn off transmitter before activating
- AutoCTS or auto transmitter flow control
-Date: Wed, 4 Sep 2019 09:30:22 +0200
-Message-ID: <20190904073022.GB9729@kroah.com>
-References: <bd9fb8e75d0e45218eb110c25bb539ef@SSSDEEX.i.sigma-surface-science.com>
+From: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3 4/7] serial: fsl_linflexuart: Be consistent with the
+ name
+Date: Wed, 4 Sep 2019 09:52:59 +0200
+Message-ID: <20190904075259.GA10983@kroah.com>
+References: <20190823191115.18490-1-stefan-gabriel.mirea@nxp.com>
+ <20190823191115.18490-5-stefan-gabriel.mirea@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <bd9fb8e75d0e45218eb110c25bb539ef@SSSDEEX.i.sigma-surface-science.com>
+In-Reply-To: <20190823191115.18490-5-stefan-gabriel.mirea@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph =?iso-8859-1?Q?Vogtl=E4nder?= <Christoph.Vogtlaender@sigma-surface-science.com>
-Cc: Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+Cc: "corbet@lwn.net" <corbet@lwn.net>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will@kernel.org" <will@kernel.org>, "shawnguo@kernel.org" <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>, "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Aug 30, 2019 at 09:58:41AM +0000, Christoph Vogtländer wrote:
-> As documented in the data-sheet, the transmitter must be disabled before
-> activating AutoCTS or auto transmitter flow control. Accordingly, the
-> transmitter must be enabled after AutoCTS or auto transmitter flow
-> control gets deactivated.
+On Fri, Aug 23, 2019 at 07:11:37PM +0000, Stefan-gabriel Mirea wrote:
+> For consistency reasons, spell the controller name as "LINFlexD" in
+> comments and documentation.
 > 
-> Signed-off-by: Christoph Vogtländer <c.vogtlaender@sigma-surface-science.com>
+> Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
 > ---
->  drivers/tty/serial/max310x.c | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-> index fb5a7e0e58e9..adfef6dae4a7 100644
-> --- a/drivers/tty/serial/max310x.c
-> +++ b/drivers/tty/serial/max310x.c
-> @@ -860,6 +860,15 @@ static void max310x_set_termios(struct uart_port *port,
->  max310x_port_write(port, MAX310X_XON1_REG, termios->c_cc[VSTART]);
->  max310x_port_write(port, MAX310X_XOFF1_REG, termios->c_cc[VSTOP]);
-> 
-> +/* Disable transmitter before enabling AutoCTS or auto transmitter
-> + * flow control
-> + */
-> +if (termios->c_cflag & CRTSCTS || termios->c_iflag & IXOFF) {
-> +max310x_port_update(port, MAX310X_MODE1_REG,
-> +    MAX310X_MODE1_TXDIS_BIT,
-> +    MAX310X_MODE1_TXDIS_BIT);
-> +}
-> +
->  port->status &= ~(UPSTAT_AUTOCTS | UPSTAT_AUTORTS | UPSTAT_AUTOXOFF);
-> 
->  if (termios->c_cflag & CRTSCTS) {
-> @@ -878,6 +887,15 @@ static void max310x_set_termios(struct uart_port *port,
->  }
->  max310x_port_write(port, MAX310X_FLOWCTRL_REG, flow);
-> 
-> +/* Enable transmitter after disabling AutoCTS and auto transmitter
-> + * flow control
-> + */
-> +if (!(termios->c_cflag & CRTSCTS) && !(termios->c_iflag & IXOFF)) {
-> +max310x_port_update(port, MAX310X_MODE1_REG,
-> +    MAX310X_MODE1_TXDIS_BIT,
-> +    0);
-> +}
-> +
->  /* Get baud rate generator configuration */
->  baud = uart_get_baud_rate(port, termios, old,
->    port->uartclk / 16 / 0xffff,
-> --
-> 2.22.1
-> 
+>  Documentation/admin-guide/kernel-parameters.txt | 2 +-
+>  drivers/tty/serial/Kconfig                      | 8 ++++----
+>  drivers/tty/serial/fsl_linflexuart.c            | 4 ++--
+>  include/uapi/linux/serial_core.h                | 4 ++--
+>  4 files changed, 9 insertions(+), 9 deletions(-)
 
-Same problem here, this is impossible to apply.
-
-greg k-h
+Doesn't apply to my tty-next tree :(
