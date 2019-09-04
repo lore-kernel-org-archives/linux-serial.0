@@ -1,7 +1,7 @@
 From: Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Subject: [PATCH V2 04/12] serial: tegra: report error to upper tty layer
-Date: Wed, 4 Sep 2019 10:12:59 +0530
-Message-ID: <1567572187-29820-5-git-send-email-kyarlagadda@nvidia.com>
+Subject: [PATCH V2 05/12] dt-binding: serial: tegra: add new chips
+Date: Wed, 4 Sep 2019 10:13:00 +0530
+Message-ID: <1567572187-29820-6-git-send-email-kyarlagadda@nvidia.com>
 References: <1567572187-29820-1-git-send-email-kyarlagadda@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -9,65 +9,36 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1567572187-29820-1-git-send-email-kyarlagadda@nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com, jonathanh@nvidia.com, ldewangan@nvidia.com, jslaby@suse.com
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Krishna Yarlagadda <kyarlagadda@nvidia.com>, Shardar Shariff Md <smohammed@nvidia.com>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Krishna Yarlagadda <kyarlagadda@nvidia.com>
 List-Id: linux-serial@vger.kernel.org
 
-Report overrun/parity/frame/break errors to top tty layer. Add support
-to ignore break character if IGNBRK is set.
+Add new compatible string for Tegra186. It differs from earlier chips
+as it has FIFO mode enable check and 8 byte DMA buffer.
+Add new compatible string for Tegra194. Tegra194 has different error
+tolerance levels for baud rate compared to older chips.
 
-Signed-off-by: Shardar Shariff Md <smohammed@nvidia.com>
 Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
 ---
- drivers/tty/serial/serial-tegra.c | 19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
+ Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-index 4cd6d5f..c3f9913 100644
---- a/drivers/tty/serial/serial-tegra.c
-+++ b/drivers/tty/serial/serial-tegra.c
-@@ -373,13 +373,21 @@ static char tegra_uart_decode_rx_error(struct tegra_uart_port *tup,
- 			tup->uport.icount.frame++;
- 			dev_err(tup->uport.dev, "Got frame errors\n");
- 		} else if (lsr & UART_LSR_BI) {
--			dev_err(tup->uport.dev, "Got Break\n");
--			tup->uport.icount.brk++;
--			/* If FIFO read error without any data, reset Rx FIFO */
-+			/*
-+			 * Break error
-+			 * If FIFO read error without any data, reset Rx FIFO
-+			 */
- 			if (!(lsr & UART_LSR_DR) && (lsr & UART_LSR_FIFOE))
- 				tegra_uart_fifo_reset(tup, UART_FCR_CLEAR_RCVR);
-+			if (tup->uport.ignore_status_mask & UART_LSR_BI)
-+				return TTY_BREAK;
-+			flag = TTY_BREAK;
-+			tup->uport.icount.brk++;
-+			dev_dbg(tup->uport.dev, "Got Break\n");
- 		}
-+		uart_insert_char(&tup->uport, lsr, UART_LSR_OE, 0, flag);
- 	}
+diff --git a/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt b/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
+index d7edf73..dab31d4 100644
+--- a/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
++++ b/Documentation/devicetree/bindings/serial/nvidia,tegra20-hsuart.txt
+@@ -1,7 +1,12 @@
+ NVIDIA Tegra20/Tegra30 high speed (DMA based) UART controller driver.
+ 
+ Required properties:
+-- compatible : should be "nvidia,tegra30-hsuart", "nvidia,tegra20-hsuart".
++- compatible : should be,
++  "nvidia,tegra20-hsuart" for Tegra20,
++  "nvidia,tegra30-hsuart" for Tegra30,
++  "nvidia,tegra186-hsuart" for Tegra186,
++  "nvidia,tegra194-hsuart" for Tegra194.
 +
- 	return flag;
- }
- 
-@@ -561,6 +569,9 @@ static void tegra_uart_handle_rx_pio(struct tegra_uart_port *tup,
- 			break;
- 
- 		flag = tegra_uart_decode_rx_error(tup, lsr);
-+		if (flag != TTY_NORMAL)
-+			continue;
-+
- 		ch = (unsigned char) tegra_uart_read(tup, UART_RX);
- 		tup->uport.icount.rx++;
- 
-@@ -1223,6 +1234,8 @@ static void tegra_uart_set_termios(struct uart_port *u,
- 	/* Ignore all characters if CREAD is not set */
- 	if ((termios->c_cflag & CREAD) == 0)
- 		tup->uport.ignore_status_mask |= UART_LSR_DR;
-+	if (termios->c_iflag & IGNBRK)
-+		tup->uport.ignore_status_mask |= UART_LSR_BI;
- 
- 	spin_unlock_irqrestore(&u->lock, flags);
- }
+ - reg: Should contain UART controller registers location and length.
+ - interrupts: Should contain UART controller interrupts.
+ - clocks: Must contain one entry, for the module clock.
 -- 
 2.7.4
