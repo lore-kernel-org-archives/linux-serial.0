@@ -1,53 +1,63 @@
 From: Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Subject: [PATCH V2 00/12] serial: tegra: Tegra186 support and fixes
-Date: Wed, 4 Sep 2019 10:12:55 +0530
-Message-ID: <1567572187-29820-1-git-send-email-kyarlagadda@nvidia.com>
+Subject: [PATCH V2 01/12] serial: tegra: add support to ignore read
+Date: Wed, 4 Sep 2019 10:12:56 +0530
+Message-ID: <1567572187-29820-2-git-send-email-kyarlagadda@nvidia.com>
+References: <1567572187-29820-1-git-send-email-kyarlagadda@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1567572187-29820-1-git-send-email-kyarlagadda@nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: gregkh@linuxfoundation.org, robh+dt@kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com, jonathanh@nvidia.com, ldewangan@nvidia.com, jslaby@suse.com
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Krishna Yarlagadda <kyarlagadda@nvidia.com>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Shardar Shariff Md <smohammed@nvidia.com>, Krishna Yarlagadda <kyarlagadda@nvidia.com>
 List-Id: linux-serial@vger.kernel.org
 
-Series of patches adding enhancements to exising UART driver and adding
-support for new chip Tegra186 and Tegra194.
-Tegra186 uses GPCDMA for dma transfers which is still not available in
-mainstream. However, it can work in PIO/FIFO mode and support added for it.
-Also Tegra186 has a hardware issue where it does not meet tolernace +/-4% and
-to work around it, device tree entries provided to adjust baud rate for a
-particular range.
+From: Shardar Shariff Md <smohammed@nvidia.com>
 
-Changes from V1:
-Consistent spellings and few other cosmetic changes.
-Do not ignore sysrq request when ignoring reads.
-Remove WARN_ON for errors that are user triggered.
-Fix max ports for Tegra186 and Tegra194
-Register uart driver in init by reading max ports from dt.
-Rename burst size and wait api for FIFO enable.
+Add support to ignore read characters if CREAD flag is not set.
 
+Signed-off-by: Shardar Shariff Md <smohammed@nvidia.com>
+Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
+---
+ drivers/tty/serial/serial-tegra.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-Ahung Cheng (1):
-  serial: tegra: avoid reg access when clk disabled
-
-Krishna Yarlagadda (9):
-  serial: tegra: report error to upper tty layer
-  dt-binding: serial: tegra: add new chips
-  serial: tegra: check for FIFO mode enabled status
-  serial: tegra: set maximum num of uart ports to 8
-  serial: tegra: add support to use 8 bytes trigger
-  serial: tegra: DT for Adjusted baud rates
-  serial: tegra: add support to adjust baud rate
-  serial: tegra: report clk rate errors
-  serial: tegra: Add PIO mode support
-
-Shardar Shariff Md (2):
-  serial: tegra: add support to ignore read
-  serial: tegra: flush the RX fifo on frame error
-
- .../bindings/serial/nvidia,tegra20-hsuart.txt      |  39 ++-
- drivers/tty/serial/serial-tegra.c                  | 374 ++++++++++++++++++---
- 2 files changed, 368 insertions(+), 45 deletions(-)
-
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index 82a8d51..9c15c87 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -547,6 +547,9 @@ static void tegra_uart_handle_rx_pio(struct tegra_uart_port *tup,
+ 
+ 		if (!uart_handle_sysrq_char(&tup->uport, ch) && tty)
+ 			tty_insert_flip_char(tty, ch, flag);
++
++		if (tup->uport.ignore_status_mask & UART_LSR_DR)
++			continue;
+ 	} while (1);
+ }
+ 
+@@ -565,6 +568,10 @@ static void tegra_uart_copy_rx_to_tty(struct tegra_uart_port *tup,
+ 		dev_err(tup->uport.dev, "No tty port\n");
+ 		return;
+ 	}
++
++	if (tup->uport.ignore_status_mask & UART_LSR_DR)
++		return;
++
+ 	dma_sync_single_for_cpu(tup->uport.dev, tup->rx_dma_buf_phys,
+ 				TEGRA_UART_RX_DMA_BUFFER_SIZE, DMA_FROM_DEVICE);
+ 	copied = tty_insert_flip_string(tty,
+@@ -1193,6 +1200,11 @@ static void tegra_uart_set_termios(struct uart_port *u,
+ 	tegra_uart_write(tup, tup->ier_shadow, UART_IER);
+ 	tegra_uart_read(tup, UART_IER);
+ 
++	tup->uport.ignore_status_mask = 0;
++	/* Ignore all characters if CREAD is not set */
++	if ((termios->c_cflag & CREAD) == 0)
++		tup->uport.ignore_status_mask |= UART_LSR_DR;
++
+ 	spin_unlock_irqrestore(&u->lock, flags);
+ }
+ 
 -- 
 2.7.4
