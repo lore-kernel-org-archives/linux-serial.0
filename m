@@ -1,45 +1,71 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: 8250_pci: Implement MSI(-X) support
-Date: Wed, 4 Sep 2019 09:22:06 +0200
-Message-ID: <20190904072206.GA30185@kroah.com>
-References: <20190812112152.693622-1-ralf.ramsauer@oth-regensburg.de>
- <740fc1e7-fb3d-c0c7-c17b-2ea3a8864d89@oth-regensburg.de>
+Subject: Re: [PATCH] serial: max310x: turn off transmitter before activating
+ AutoCTS or auto transmitter flow control
+Date: Wed, 4 Sep 2019 09:30:22 +0200
+Message-ID: <20190904073022.GB9729@kroah.com>
+References: <bd9fb8e75d0e45218eb110c25bb539ef@SSSDEEX.i.sigma-surface-science.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <jailhouse-dev+bncBCUJ7YGL3QFBBIOMXXVQKGQEM32NPPQ@googlegroups.com>
-Sender: jailhouse-dev@googlegroups.com
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <740fc1e7-fb3d-c0c7-c17b-2ea3a8864d89@oth-regensburg.de>
-List-Post: <https://groups.google.com/group/jailhouse-dev/post>, <mailto:jailhouse-dev@googlegroups.com>
-List-Help: <https://groups.google.com/support/>, <mailto:jailhouse-dev+help@googlegroups.com>
-List-Archive: <https://groups.google.com/group/jailhouse-dev
-List-Subscribe: <https://groups.google.com/group/jailhouse-dev/subscribe>, <mailto:jailhouse-dev+subscribe@googlegroups.com>
-List-Unsubscribe: <mailto:googlegroups-manage+175645748590+unsubscribe@googlegroups.com>,
- <https://groups.google.com/group/jailhouse-dev/subscribe>
-To: Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>
-Cc: Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, jailhouse-dev@googlegroups.com, Jay Dolan <jay.dolan@accesio.com>
+In-Reply-To: <bd9fb8e75d0e45218eb110c25bb539ef@SSSDEEX.i.sigma-surface-science.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph =?iso-8859-1?Q?Vogtl=E4nder?= <Christoph.Vogtlaender@sigma-surface-science.com>
+Cc: Jiri Slaby <jslaby@suse.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Aug 30, 2019 at 12:33:09AM +0200, Ralf Ramsauer wrote:
-> *ping* :)
+On Fri, Aug 30, 2019 at 09:58:41AM +0000, Christoph Vogtländer wrote:
+> As documented in the data-sheet, the transmitter must be disabled before
+> activating AutoCTS or auto transmitter flow control. Accordingly, the
+> transmitter must be enabled after AutoCTS or auto transmitter flow
+> control gets deactivated.
 > 
-> On 8/12/19 1:21 PM, Ralf Ramsauer wrote:
-> > There may be setups, where legacy interrupts are not available. This is
-> > the caese, e.g., when Linux runs as guest (aka. non-root cell) of the
-> > partitioning hypervisor Jailhouse. There, only MSI(-X) interrupts are
-> > available for guests.
-> > 
-> > But the 8250_pci driver currently only supports legacy ints. So let's
-> > enable MSI(-X) interrupts.
-> > 
-> > Nevertheless, this needs to handled with care: while many 8250 devices
-> > actually claim to support MSI(-X) interrupts it should not be enabled be
-> > default. I had at least one device in my hands with broken MSI
-> > implementation.
-> > 
-> > So better introduce a whitelist with devices that are known to support
-> > MSI(-X) interrupts. I tested all devices mentioned in the patch.
-> > 
-> > Signed-off-by: Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>
+> Signed-off-by: Christoph Vogtländer <c.vogtlaender@sigma-surface-science.com>
+> ---
+>  drivers/tty/serial/max310x.c | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+> index fb5a7e0e58e9..adfef6dae4a7 100644
+> --- a/drivers/tty/serial/max310x.c
+> +++ b/drivers/tty/serial/max310x.c
+> @@ -860,6 +860,15 @@ static void max310x_set_termios(struct uart_port *port,
+>  max310x_port_write(port, MAX310X_XON1_REG, termios->c_cc[VSTART]);
+>  max310x_port_write(port, MAX310X_XOFF1_REG, termios->c_cc[VSTOP]);
+> 
+> +/* Disable transmitter before enabling AutoCTS or auto transmitter
+> + * flow control
+> + */
+> +if (termios->c_cflag & CRTSCTS || termios->c_iflag & IXOFF) {
+> +max310x_port_update(port, MAX310X_MODE1_REG,
+> +    MAX310X_MODE1_TXDIS_BIT,
+> +    MAX310X_MODE1_TXDIS_BIT);
+> +}
+> +
+>  port->status &= ~(UPSTAT_AUTOCTS | UPSTAT_AUTORTS | UPSTAT_AUTOXOFF);
+> 
+>  if (termios->c_cflag & CRTSCTS) {
+> @@ -878,6 +887,15 @@ static void max310x_set_termios(struct uart_port *port,
+>  }
+>  max310x_port_write(port, MAX310X_FLOWCTRL_REG, flow);
+> 
+> +/* Enable transmitter after disabling AutoCTS and auto transmitter
+> + * flow control
+> + */
+> +if (!(termios->c_cflag & CRTSCTS) && !(termios->c_iflag & IXOFF)) {
+> +max310x_port_update(port, MAX310X_MODE1_REG,
+> +    MAX310X_MODE1_TXDIS_BIT,
+> +    0);
+> +}
+> +
+>  /* Get baud rate generator configuration */
+>  baud = uart_get_baud_rate(port, termios, old,
+>    port->uartclk / 16 / 0xffff,
+> --
+> 2.22.1
+> 
 
-Ok, will queue this up, let's see what breaks :)
+Same problem here, this is impossible to apply.
+
+greg k-h
