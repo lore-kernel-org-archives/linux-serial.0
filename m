@@ -1,86 +1,39 @@
-From: Baolin Wang <baolin.wang@linaro.org>
-Subject: Re: [BACKPORT 4.14.y v2 6/6] serial: sprd: Modify the baud rate
- calculation formula
-Date: Thu, 5 Sep 2019 17:58:05 +0800
-Message-ID: <CAMz4kuJGmQxfy5mi1aZNL8SA8MQBSTTyDeWcHHEtG2aXsFZgug@mail.gmail.com>
-References: <cover.1567649728.git.baolin.wang@linaro.org> <4fe6ec82960301126b9f4be52dd6083c30e17420.1567649729.git.baolin.wang@linaro.org>
- <20190905090130.GF1701@localhost>
+From: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+Subject: Re: [PATCH v3 4/7] serial: fsl_linflexuart: Be consistent with the
+ name
+Date: Thu, 5 Sep 2019 11:32:06 +0000
+Message-ID: <VI1PR0402MB2863B0A0D1D12FA9CC2515E2DFBB0@VI1PR0402MB2863.eurprd04.prod.outlook.com>
+References: <20190823191115.18490-1-stefan-gabriel.mirea@nxp.com>
+ <20190823191115.18490-5-stefan-gabriel.mirea@nxp.com>
+ <20190904075259.GA10983@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190905090130.GF1701@localhost>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Johan Hovold <johan@kernel.org>
-Cc: "# 3.4.x" <stable@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, lanqing.liu@unisoc.com, linux-serial@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Orson Zhai <orsonzhai@gmail.com>, Vincent Guittot <vincent.guittot@linaro.org>, LKML <linux-kernel@vger.kernel.org>
+To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "corbet@lwn.net" <corbet@lwn.net>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will@kernel.org" <will@kernel.org>, "shawnguo@kernel.org" <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>, "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Johan,
-
-On Thu, 5 Sep 2019 at 17:01, Johan Hovold <johan@kernel.org> wrote:
->
-> On Thu, Sep 05, 2019 at 11:11:26AM +0800, Baolin Wang wrote:
-> > From: Lanqing Liu <lanqing.liu@unisoc.com>
-> >
-> > [Upstream commit 5b9cea15a3de5d65000d49f626b71b00d42a0577]
-> >
-> > When the source clock is not divisible by the expected baud rate and
-> > the remainder is not less than half of the expected baud rate, the old
-> > formular will round up the frequency division coefficient. This will
-> > make the actual baud rate less than the expected value and can not meet
-> > the external transmission requirements.
-> >
-> > Thus this patch modifies the baud rate calculation formula to support
-> > the serial controller output the maximum baud rate.
-> >
-> > Signed-off-by: Lanqing Liu <lanqing.liu@unisoc.com>
-> > Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
-> > ---
-> >  drivers/tty/serial/sprd_serial.c |    2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-> > index e902494..72e96ab8 100644
-> > --- a/drivers/tty/serial/sprd_serial.c
-> > +++ b/drivers/tty/serial/sprd_serial.c
-> > @@ -380,7 +380,7 @@ static void sprd_set_termios(struct uart_port *port,
-> >       /* ask the core to calculate the divisor for us */
-> >       baud = uart_get_baud_rate(port, termios, old, 0, SPRD_BAUD_IO_LIMIT);
-> >
-> > -     quot = (unsigned int)((port->uartclk + baud / 2) / baud);
-> > +     quot = port->uartclk / baud;
->
-> Are you sure the original patch is even correct?
->
-> By replacing the divisor rounding with truncation you are introducing
-> larger errors for some baud rates, something which could possibly even
-> break working systems.
-
-Our UART clock source is 26M, and there is no difference for lower
-than 3M baud rate between dividing closest or dividing down. But we
-have one special use case is our BT/GPS want to set 3.25M baud rate,
-but we have to select 3M baud rate in baud_table since no 3.25M
-setting. So in this case if we use the old formula, we will only get
-about 2.8M baud rate, which can not meet our requirement. If we change
-the dividing down method, we can get 3.25M baud rate.
-
-I have to say this is a workaroud for our special case, and can solve
-our problem. If you have any good suggestion, we can change to a
-better solution. Thanks.
-
->
-> Perhaps the original patch should even be reverted, but in any case
-> backporting this to stable looks questionable.
->
-> >
-> >       /* set data length */
-> >       switch (termios->c_cflag & CSIZE) {
->
-> Johan
-
-
-
--- 
-Baolin Wang
-Best Regards
+Hello Greg,=0A=
+=0A=
+On 9/4/2019 10:53 AM, gregkh@linuxfoundation.org wrote:=0A=
+> On Fri, Aug 23, 2019 at 07:11:37PM +0000, Stefan-gabriel Mirea wrote:=0A=
+>> For consistency reasons, spell the controller name as "LINFlexD" in=0A=
+>> comments and documentation.=0A=
+>>=0A=
+>> Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>=0A=
+>> ---=0A=
+>>  Documentation/admin-guide/kernel-parameters.txt | 2 +-=0A=
+>>  drivers/tty/serial/Kconfig                      | 8 ++++----=0A=
+>>  drivers/tty/serial/fsl_linflexuart.c            | 4 ++--=0A=
+>>  include/uapi/linux/serial_core.h                | 4 ++--=0A=
+>>  4 files changed, 9 insertions(+), 9 deletions(-)=0A=
+> =0A=
+> Doesn't apply to my tty-next tree :(=0A=
+=0A=
+Thanks for letting me know; I will fix this in v4.=0A=
+=0A=
+Regards,=0A=
+Stefan=0A=
