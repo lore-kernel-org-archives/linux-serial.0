@@ -1,52 +1,36 @@
-From: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-Subject: [PATCH v4 6/6] arm64: defconfig: Enable configs for S32V234
-Date: Thu, 5 Sep 2019 11:58:41 +0000
-Message-ID: <20190905115803.19565-7-stefan-gabriel.mirea@nxp.com>
-References: <20190905115803.19565-1-stefan-gabriel.mirea@nxp.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v3] 8250_lpss: check null return when calling
+ pci_ioremap_bar
+Date: Sat, 7 Sep 2019 18:53:42 +0300
+Message-ID: <20190907155342.GG2680@smile.fi.intel.com>
+References: <20190726115746.GT9224@smile.fi.intel.com>
+ <20190726195345.30294-1-navid.emamdoost@gmail.com>
+ <CAEkB2ERhxLj7ogoy1E3j8d4MyEZqroWS1tPRxyJXR2oLhNz+LQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190905115803.19565-1-stefan-gabriel.mirea@nxp.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <CAEkB2ERhxLj7ogoy1E3j8d4MyEZqroWS1tPRxyJXR2oLhNz+LQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "corbet@lwn.net" <corbet@lwn.net>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will@kernel.org" <will@kernel.org>, "shawnguo@kernel.org" <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>
-Cc: "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Cosmin Stefan Stoica <cosmin.stoica@nxp.com>
+To: Navid Emamdoost <navid.emamdoost@gmail.com>
+Cc: Navid Emamdoost <emamd001@umn.edu>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Vinod Koul <vkoul@kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Mihaela Martinas <Mihaela.Martinas@freescale.com>
+On Fri, Sep 06, 2019 at 05:32:39PM -0500, Navid Emamdoost wrote:
 
-Enable support for the S32V234 SoC, including the previously added UART
-driver.
+> I was wondering is anyone reviewing this patch?
+> https://lore.kernel.org/patchwork/patch/1106267/
 
-Signed-off-by: Mihaela Martinas <Mihaela.Martinas@freescale.com>
-Signed-off-by: Adrian.Nitu <adrian.nitu@freescale.com>
-Signed-off-by: Stoica Cosmin-Stefan <cosmin.stoica@nxp.com>
-Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
----
- arch/arm64/configs/defconfig | 3 +++
- 1 file changed, 3 insertions(+)
+Why?
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 0e58ef02880c..bb5aa95a8455 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -48,6 +48,7 @@ CONFIG_ARCH_MXC=3Dy
- CONFIG_ARCH_QCOM=3Dy
- CONFIG_ARCH_RENESAS=3Dy
- CONFIG_ARCH_ROCKCHIP=3Dy
-+CONFIG_ARCH_S32=3Dy
- CONFIG_ARCH_SEATTLE=3Dy
- CONFIG_ARCH_STRATIX10=3Dy
- CONFIG_ARCH_SYNQUACER=3Dy
-@@ -347,6 +348,8 @@ CONFIG_SERIAL_XILINX_PS_UART=3Dy
- CONFIG_SERIAL_XILINX_PS_UART_CONSOLE=3Dy
- CONFIG_SERIAL_FSL_LPUART=3Dy
- CONFIG_SERIAL_FSL_LPUART_CONSOLE=3Dy
-+CONFIG_SERIAL_FSL_LINFLEXUART=3Dy
-+CONFIG_SERIAL_FSL_LINFLEXUART_CONSOLE=3Dy
- CONFIG_SERIAL_MVEBU_UART=3Dy
- CONFIG_SERIAL_DEV_BUS=3Dy
- CONFIG_VIRTIO_CONSOLE=3Dy
---=20
-2.22.0
+The one below is a part of upstraem
+
+commit f5d6aadf3b6434f11393e33be9fd25a56d0bc872
+Author: Navid Emamdoost <navid.emamdoost@gmail.com>
+Date:   Fri Jul 19 12:48:45 2019 -0500
+
+    8250_lpss: check null return when calling pci_ioremap_bar
+
+-- 
+With Best Regards,
+Andy Shevchenko
