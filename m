@@ -1,34 +1,35 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v3] 8250_lpss: check null return when calling
- pci_ioremap_bar
-Date: Sat, 7 Sep 2019 19:16:07 +0300
-Message-ID: <20190907161607.GK2680@smile.fi.intel.com>
-References: <20190726115746.GT9224@smile.fi.intel.com>
- <20190726195345.30294-1-navid.emamdoost@gmail.com>
- <CAEkB2ERhxLj7ogoy1E3j8d4MyEZqroWS1tPRxyJXR2oLhNz+LQ@mail.gmail.com>
- <20190907155342.GG2680@smile.fi.intel.com>
- <CAEkB2ET-SQFiBbroxDFEVrPxto6a2wLJf0NM7R=ERcPargr66Q@mail.gmail.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] tty: serial: owl: Fix the link time qualifier of 'owl_uart_exit()'
+Date: Tue, 10 Sep 2019 06:11:29 +0200
+Message-ID: <20190910041129.6978-1-christophe.jaillet@wanadoo.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAEkB2ET-SQFiBbroxDFEVrPxto6a2wLJf0NM7R=ERcPargr66Q@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Navid Emamdoost <navid.emamdoost@gmail.com>
-Cc: Navid Emamdoost <emamd001@umn.edu>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Vinod Koul <vkoul@kernel.org>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+To: gregkh@linuxfoundation.org, jslaby@suse.com, afaerber@suse.de, manivannan.sadhasivam@linaro.org
+Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 List-Id: linux-serial@vger.kernel.org
 
-On Sat, Sep 07, 2019 at 11:06:29AM -0500, Navid Emamdoost wrote:
-> Cool! I thought it is forgotten, as there were no response to the v3 of the
-> patch.
+'exit' functions should be marked as __exit, not __init.
 
-Nevertheless, you may send a follow up, since one call to pci_iounmap() is
-missed when dw_dma_probe() fails.
+Fixes: fc60a8b675bd ("tty: serial: owl: Implement console driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/tty/serial/owl-uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Thanks for letting me know.
-
-You're welcome.
-
+diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
+index 03963af77b15..d2d8b3494685 100644
+--- a/drivers/tty/serial/owl-uart.c
++++ b/drivers/tty/serial/owl-uart.c
+@@ -740,7 +740,7 @@ static int __init owl_uart_init(void)
+ 	return ret;
+ }
+ 
+-static void __init owl_uart_exit(void)
++static void __exit owl_uart_exit(void)
+ {
+ 	platform_driver_unregister(&owl_uart_platform_driver);
+ 	uart_unregister_driver(&owl_uart_driver);
 -- 
-With Best Regards,
-Andy Shevchenko
+2.20.1
