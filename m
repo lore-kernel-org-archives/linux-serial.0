@@ -1,35 +1,35 @@
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] tty: serial: rda: Fix the link time qualifier of 'rda_uart_exit()'
-Date: Tue, 10 Sep 2019 06:17:02 +0200
-Message-ID: <20190910041702.7357-1-christophe.jaillet@wanadoo.fr>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH] serial/sifive: select SERIAL_EARLYCON
+Date: Tue, 10 Sep 2019 07:59:23 +0200
+Message-ID: <20190910055923.28384-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: manivannan.sadhasivam@linaro.org, gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-unisoc@lists.infradead.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To: gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: paul.walmsley@sifive.com, linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-'exit' functions should be marked as __exit, not __init.
+The sifive serial driver implements earlycon support, but unless
+another driver is built in that supports earlycon support it won't
+be usable.  Explicitly select SERIAL_EARLYCON instead.
 
-Fixes: c10b13325ced ("tty: serial: Add RDA8810PL UART driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/tty/serial/rda-uart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/rda-uart.c b/drivers/tty/serial/rda-uart.c
-index c1b0d7662ef9..ff9a27d48bca 100644
---- a/drivers/tty/serial/rda-uart.c
-+++ b/drivers/tty/serial/rda-uart.c
-@@ -815,7 +815,7 @@ static int __init rda_uart_init(void)
- 	return ret;
- }
- 
--static void __init rda_uart_exit(void)
-+static void __exit rda_uart_exit(void)
- {
- 	platform_driver_unregister(&rda_uart_platform_driver);
- 	uart_unregister_driver(&rda_uart_driver);
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 530cb966092f..6b77a72278e3 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1075,6 +1075,7 @@ config SERIAL_SIFIVE_CONSOLE
+ 	bool "Console on SiFive UART"
+ 	depends on SERIAL_SIFIVE=y
+ 	select SERIAL_CORE_CONSOLE
++	select SERIAL_EARLYCON
+ 	help
+ 	  Select this option if you would like to use a SiFive UART as the
+ 	  system console.
 -- 
 2.20.1
