@@ -1,40 +1,64 @@
-From: Andreas Schwab <schwab@suse.de>
-Subject: Re: [PATCH] serial/sifive: select SERIAL_EARLYCON
-Date: Tue, 10 Sep 2019 16:42:33 +0200
-Message-ID: <mvmftl4p606.fsf@suse.de>
-References: <20190910055923.28384-1-hch@lst.de> <mvm4l1kskny.fsf@suse.de>
-        <20190910070503.GA31743@lst.de> <mvmzhjcr2d4.fsf@suse.de>
-        <20190910143630.GA6794@lst.de>
+From: Philipp Puschmann <philipp.puschmann@emlix.com>
+Subject: [PATCH 1/4] dmaengine: imx-sdma: fix buffer ownership
+Date: Wed, 11 Sep 2019 16:49:40 +0200
+Message-ID: <20190911144943.21554-2-philipp.puschmann@emlix.com>
+References: <20190911144943.21554-1-philipp.puschmann@emlix.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190910143630.GA6794@lst.de> (Christoph Hellwig's message of
-        "Tue, 10 Sep 2019 16:36:30 +0200")
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: gregkh@linuxfoundation.org, jslaby@suse.com, paul.walmsley@sifive.com, linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190911144943.21554-1-philipp.puschmann@emlix.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de, jslaby@suse.com, vkoul@kernel.org, linux-imx@nxp.com, kernel@pengutronix.de, gregkh@linuxfoundation.org, dmaengine@vger.kernel.org, dan.j.williams@intel.com, festevam@gmail.com, Philipp Puschmann <philipp.puschmann@emlix.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-On Sep 10 2019, Christoph Hellwig <hch@lst.de> wrote:
+BD_DONE flag marks ownership of the buffer. When 1 SDMA owns the buffer,
+when 0 ARM owns it. When processing the buffers in
+sdma_update_channel_loop the ownership of the currently processed buffer
+was set to SDMA again before running the callback function of the the
+buffer and while the sdma script may be running in parallel. So there was
+the possibility to get the buffer overwritten by SDMA before it has been
+processed by kernel leading to kind of random errors in the upper layers,
+e.g. bluetooth.
 
-> On Tue, Sep 10, 2019 at 10:18:15AM +0200, Andreas Schwab wrote:
->> > How so?  Wіth OF and a stdout path you just set earlycon on the
->> > command line without any arguments and it will be found.
->> 
->> Doesn't work for me.
->> 
->> [    0.000000] Malformed early option 'earlycon'
->
-> That functionality is implemented by param_setup_earlycon and
-> early_init_dt_scan_chosen_stdout.  Check why those aren't built into
-> your kernel.
+It may be further a good idea to make the status struct member volatile or
+access it using writel or similar to rule out that the compiler sets the
+BD_DONE flag before the callback routine has finished.
 
-They are.
+Signed-off-by: Philipp Puschmann <philipp.puschmann@emlix.com>
+---
+ drivers/dma/imx-sdma.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Andreas.
-
+diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
+index a01f4b5d793c..1abb14ff394d 100644
+--- a/drivers/dma/imx-sdma.c
++++ b/drivers/dma/imx-sdma.c
+@@ -802,7 +802,6 @@ static void sdma_update_channel_loop(struct sdma_channel *sdmac)
+ 		*/
+ 
+ 		desc->chn_real_count = bd->mode.count;
+-		bd->mode.status |= BD_DONE;
+ 		bd->mode.count = desc->period_len;
+ 		desc->buf_ptail = desc->buf_tail;
+ 		desc->buf_tail = (desc->buf_tail + 1) % desc->num_bd;
+@@ -817,6 +816,8 @@ static void sdma_update_channel_loop(struct sdma_channel *sdmac)
+ 		dmaengine_desc_get_callback_invoke(&desc->vd.tx, NULL);
+ 		spin_lock(&sdmac->vc.lock);
+ 
++		bd->mode.status |= BD_DONE;
++
+ 		if (error)
+ 			sdmac->status = old_status;
+ 	}
 -- 
-Andreas Schwab, SUSE Labs, schwab@suse.de
-GPG Key fingerprint = 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D7
-"And now for something completely different."
+2.23.0
