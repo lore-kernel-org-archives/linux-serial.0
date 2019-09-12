@@ -1,27 +1,20 @@
 From: Fabio Estevam <festevam@gmail.com>
 Subject: Re: [PATCH 0/4] Fix UART DMA freezes for iMX6
-Date: Thu, 12 Sep 2019 12:31:02 -0300
-Message-ID: <CAOMZO5Bxks8709gEA+8OFH2b0LYqJd1EmpSbKEgPJo+64Pf3EA@mail.gmail.com>
+Date: Thu, 12 Sep 2019 15:23:34 -0300
+Message-ID: <CAOMZO5BKiZGF=iR071DaWLp-_7wTVJKLbOn3ihwPeVVSNF6nCg@mail.gmail.com>
 References: <20190911144943.21554-1-philipp.puschmann@emlix.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190911144943.21554-1-philipp.puschmann@emlix.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Philipp Puschmann <philipp.puschmann@emlix.com>, Robin Gong <yibin.gong@nxp.com>, Fugang Duan <fugang.duan@nxp.com>
-Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Sascha Hauer <s.hauer@pengutronix.de>, linux-kernel <linux-kernel@vger.kernel.org>, Vinod <vkoul@kernel.org>, NXP Linux Team <linux-imx@nxp.com>, Sascha Hauer <kernel@pengutronix.de>, Jiri Slaby <jslaby@suse.com>, dmaengine@vger.kernel.org, Dan Williams <dan.j.williams@intel.com>, Shawn Guo <shawnguo@kernel.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
+Cc: linux-kernel <linux-kernel@vger.kernel.org>, Vinod <vkoul@kernel.org>, Dan Williams <dan.j.williams@intel.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Sascha Hauer <kernel@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, dmaengine@vger.kernel.org, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-[Adding Robin and Andy]
+Hi Philipp,
+
+Thanks for submitting these fixes.
 
 On Wed, Sep 11, 2019 at 11:50 AM Philipp Puschmann
 <philipp.puschmann@emlix.com> wrote:
@@ -54,11 +47,14 @@ On Wed, Sep 11, 2019 at 11:50 AM Philipp Puschmann
 >   dmaengine: imx-sdma: fix dma freezes
 >   serial: imx: adapt rx buffer and dma periods
 >   dmaengine: imx-sdma: drop redundant variable
->
->  drivers/dma/imx-sdma.c   | 32 ++++++++++++++++++++++----------
->  drivers/tty/serial/imx.c |  5 ++---
->  2 files changed, 24 insertions(+), 13 deletions(-)
->
-> --
-> 2.23.0
->
+
+I have some suggestions:
+
+1. Please split this in two series: one for dmaengine and other one for serial
+
+2. Please add Fixes tag when appropriate, so that the fixes can be
+backported to stable kernels.
+
+3. Please Cc Robin and Andy
+
+Thanks
