@@ -1,38 +1,30 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH] tty: 8250_of: Use software emulated RS485 direction
- control
-Date: Fri, 13 Sep 2019 18:05:50 +0300
-Message-ID: <20190913150550.GS2680@smile.fi.intel.com>
-References: <20190913050105.1132080-1-hs@denx.de>
- <20190913102409.GF2680@smile.fi.intel.com>
- <51a21dde-a471-6e8e-8048-50437d740f7f@denx.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Palmer Dabbelt <palmer@sifive.com>
+Subject: Re: [PATCH] serial/sifive: select SERIAL_EARLYCON
+Date: Fri, 13 Sep 2019 13:40:27 -0700 (PDT)
+Message-ID: <mhng-218f6b9f-bfd8-4adb-8147-298989494bcf@palmer-si-x1e>
+References: <20190910143630.GA6794@lst.de>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <51a21dde-a471-6e8e-8048-50437d740f7f@denx.de>
+In-Reply-To: <20190910143630.GA6794@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Heiko Schocher <hs@denx.de>
-Cc: linux-serial@vger.kernel.org, Alexander Sverdlin <alexander.sverdlin@nokia.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, John Garry <john.garry@huawei.com>, Linus Walleij <linus.walleij@linaro.org>, Lubomir Rintel <lkundrak@v3.sk>, Rob Herring <robh@kernel.org>, Thierry Reding <treding@nvidia.com>, linux-kernel@vger.kernel.org
+Cc: schwab@suse.de, Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Paul Walmsley <paul.walmsley@sifive.com>, linux-riscv@lists.infradead.org, Christoph Hellwig <hch@lst.de>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Sep 13, 2019 at 04:51:30PM +0200, Heiko Schocher wrote:
-> Am 13.09.2019 um 12:24 schrieb Andy Shevchenko:
-> > On Fri, Sep 13, 2019 at 07:01:05AM +0200, Heiko Schocher wrote:
+On Tue, 10 Sep 2019 07:36:30 PDT (-0700), Christoph Hellwig wrote:
+> On Tue, Sep 10, 2019 at 10:18:15AM +0200, Andreas Schwab wrote:
+>> > How so?  Wіth OF and a stdout path you just set earlycon on the
+>> > command line without any arguments and it will be found.
+>> 
+>> Doesn't work for me.
+>> 
+>> [    0.000000] Malformed early option 'earlycon'
+>
+> That functionality is implemented by param_setup_earlycon and
+> early_init_dt_scan_chosen_stdout.  Check why those aren't built into
+> your kernel.
 
-> > > Patch is based on:
-> > > git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> > > commit:
-> > > 505a8ec7e11a - Revert "drm/i915/userptr: Acquire the page lock around set_page_dirty()"
-> > 
-> > More reliably is to base on corresponding subsystem tree, i.e. tty-next for
-> > this case.
-> 
-> Ok, should I send a rebased v2 (I tend to wait for other comments)?
-
-I didn't give any comments WRT patch itself, so, I don't see any needs to send
-v2 right now.
-
--- 
-With Best Regards,
-Andy Shevchenko
+OpenEmbedded passes "earlycon=sbi", which I can find in the doumentation.  I 
+can't find anything about just "earlycon".  I've sent a patch adding sbi to the 
+list of earlycon arguments.
