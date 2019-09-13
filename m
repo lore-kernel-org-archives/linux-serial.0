@@ -1,60 +1,86 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH 0/4] Fix UART DMA freezes for iMX6
-Date: Thu, 12 Sep 2019 15:23:34 -0300
-Message-ID: <CAOMZO5BKiZGF=iR071DaWLp-_7wTVJKLbOn3ihwPeVVSNF6nCg@mail.gmail.com>
-References: <20190911144943.21554-1-philipp.puschmann@emlix.com>
+From: Heiko Schocher <hs@denx.de>
+Subject: [PATCH] tty: 8250_of: Use software emulated RS485 direction control
+Date: Fri, 13 Sep 2019 07:01:05 +0200
+Message-ID: <20190913050105.1132080-1-hs@denx.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190911144943.21554-1-philipp.puschmann@emlix.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Philipp Puschmann <philipp.puschmann@emlix.com>, Robin Gong <yibin.gong@nxp.com>, Fugang Duan <fugang.duan@nxp.com>
-Cc: linux-kernel <linux-kernel@vger.kernel.org>, Vinod <vkoul@kernel.org>, Dan Williams <dan.j.williams@intel.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Sascha Hauer <kernel@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, dmaengine@vger.kernel.org, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org
+To: linux-serial@vger.kernel.org
+Cc: Heiko Schocher <hs@denx.de>, Alexander Sverdlin <alexander.sverdlin@nokia.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, John Garry <john.garry@huawei.com>, Linus Walleij <linus.walleij@linaro.org>, Lubomir Rintel <lkundrak@v3.sk>, Rob Herring <robh@kernel.org>, Thierry Reding <treding@nvidia.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Philipp,
+Use software emulated RS485 direction control to provide RS485 API
 
-Thanks for submitting these fixes.
+Currently it is not possible to use rs485 as pointer to
+rs485_config struct in struct uart_port is NULL in case we
+configure the port through device tree.
 
-On Wed, Sep 11, 2019 at 11:50 AM Philipp Puschmann
-<philipp.puschmann@emlix.com> wrote:
->
-> For some years and since many kernel versions there are reports that
-> RX UART DMA channel stops working at one point. So far the usual workaround was
-> to disable RX DMA. This patches try to fix the underlying problem.
->
-> When a running sdma script does not find any usable destination buffer to put
-> its data into it just leads to stopping the channel being scheduled again. As
-> solution we we manually retrigger the sdma script for this channel and by this
-> dissolve the freeze.
->
-> While this seems to work fine so far a further patch in this series increases
-> the number of RX DMA periods for UART to reduce use cases running into such
-> a situation.
->
-> This patch series was tested with the current kernel and backported to
-> kernel 4.15 with a special use case using a WL1837MOD via UART and provoking
-> the hanging of UART RX DMA within seconds after starting a test application.
-> It resulted in well known
->   "Bluetooth: hci0: command 0x0408 tx timeout"
-> errors and complete stop of UART data reception. Our Bluetooth traffic consists
-> of many independent small packets, mostly only a few bytes, causing high usage
-> of periods.
->
->
-> Philipp Puschmann (4):
->   dmaengine: imx-sdma: fix buffer ownership
->   dmaengine: imx-sdma: fix dma freezes
->   serial: imx: adapt rx buffer and dma periods
->   dmaengine: imx-sdma: drop redundant variable
+Signed-off-by: Heiko Schocher <hs@denx.de>
 
-I have some suggestions:
+---
+Patch is based on:
+git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+commit:
+505a8ec7e11a - Revert "drm/i915/userptr: Acquire the page lock around set_page_dirty()"
 
-1. Please split this in two series: one for dmaengine and other one for serial
+checkpatch output:
+$ ./scripts/checkpatch.pl 0001-tty-8250_of-Use-software-emulated-RS485-direction-co.patch
+total: 0 errors, 0 warnings, 43 lines checked
 
-2. Please add Fixes tag when appropriate, so that the fixes can be
-backported to stable kernels.
+0001-tty-8250_of-Use-software-emulated-RS485-direction-co.patch has no obvious style problems and is ready for submission.
 
-3. Please Cc Robin and Andy
+ drivers/tty/serial/8250/8250_of.c | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-Thanks
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index 0826cfdbd4063..92fbf46ce3bd9 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -48,6 +48,36 @@ static inline void tegra_serial_handle_break(struct uart_port *port)
+ }
+ #endif
+ 
++static int of_8250_rs485_config(struct uart_port *port,
++				  struct serial_rs485 *rs485)
++{
++	struct uart_8250_port *up = up_to_u8250p(port);
++
++	/* Clamp the delays to [0, 100ms] */
++	rs485->delay_rts_before_send = min(rs485->delay_rts_before_send, 100U);
++	rs485->delay_rts_after_send  = min(rs485->delay_rts_after_send, 100U);
++
++	port->rs485 = *rs485;
++
++	/*
++	 * Both serial8250_em485_init and serial8250_em485_destroy
++	 * are idempotent
++	 */
++	if (rs485->flags & SER_RS485_ENABLED) {
++		int ret = serial8250_em485_init(up);
++
++		if (ret) {
++			rs485->flags &= ~SER_RS485_ENABLED;
++			port->rs485.flags &= ~SER_RS485_ENABLED;
++		}
++		return ret;
++	}
++
++	serial8250_em485_destroy(up);
++
++	return 0;
++}
++
+ /*
+  * Fill a struct uart_port for a given device node
+  */
+@@ -178,6 +208,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 		port->flags |= UPF_SKIP_TEST;
+ 
+ 	port->dev = &ofdev->dev;
++	port->rs485_config = of_8250_rs485_config;
+ 
+ 	switch (type) {
+ 	case PORT_TEGRA:
+-- 
+2.21.0
