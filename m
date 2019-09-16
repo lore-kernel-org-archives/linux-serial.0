@@ -1,71 +1,29 @@
-From: Philipp Puschmann <philipp.puschmann@emlix.com>
+From: Fabio Estevam <festevam@gmail.com>
 Subject: Re: [PATCH 0/4] Fix UART DMA freezes for iMX6
-Date: Mon, 16 Sep 2019 15:55:04 +0200
-Message-ID: <2613a28d-d363-ee4e-679a-e7442e6fde48@emlix.com>
+Date: Mon, 16 Sep 2019 11:00:47 -0300
+Message-ID: <CAOMZO5BftiJcpefSaM0-DAdhOqrKfv4k5n=y1RhbTpZ=HZDtOQ@mail.gmail.com>
 References: <20190911144943.21554-1-philipp.puschmann@emlix.com>
- <CAOMZO5BKiZGF=iR071DaWLp-_7wTVJKLbOn3ihwPeVVSNF6nCg@mail.gmail.com>
+ <CAOMZO5BKiZGF=iR071DaWLp-_7wTVJKLbOn3ihwPeVVSNF6nCg@mail.gmail.com> <2613a28d-d363-ee4e-679a-e7442e6fde48@emlix.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAOMZO5BKiZGF=iR071DaWLp-_7wTVJKLbOn3ihwPeVVSNF6nCg@mail.gmail.com>
-Content-Language: de-DE
+In-Reply-To: <2613a28d-d363-ee4e-679a-e7442e6fde48@emlix.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>, Robin Gong <yibin.gong@nxp.com>, Fugang Duan <fugang.duan@nxp.com>
-Cc: linux-kernel <linux-kernel@vger.kernel.org>, Vinod <vkoul@kernel.org>, Dan Williams <dan.j.williams@intel.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <kernel@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+To: Philipp Puschmann <philipp.puschmann@emlix.com>
+Cc: Robin Gong <yibin.gong@nxp.com>, Fugang Duan <fugang.duan@nxp.com>, linux-kernel <linux-kernel@vger.kernel.org>, Vinod <vkoul@kernel.org>, Dan Williams <dan.j.williams@intel.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <kernel@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, dmaengine@vger.kernel.org, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Fabio,
+Hi Philipp,
 
-Am 12.09.19 um 20:23 schrieb Fabio Estevam:
-> Hi Philipp,
-> 
-> Thanks for submitting these fixes.
-> 
-> On Wed, Sep 11, 2019 at 11:50 AM Philipp Puschmann
-> <philipp.puschmann@emlix.com> wrote:
->>
->> For some years and since many kernel versions there are reports that
->> RX UART DMA channel stops working at one point. So far the usual workaround was
->> to disable RX DMA. This patches try to fix the underlying problem.
->>
->> When a running sdma script does not find any usable destination buffer to put
->> its data into it just leads to stopping the channel being scheduled again. As
->> solution we we manually retrigger the sdma script for this channel and by this
->> dissolve the freeze.
->>
->> While this seems to work fine so far a further patch in this series increases
->> the number of RX DMA periods for UART to reduce use cases running into such
->> a situation.
->>
->> This patch series was tested with the current kernel and backported to
->> kernel 4.15 with a special use case using a WL1837MOD via UART and provoking
->> the hanging of UART RX DMA within seconds after starting a test application.
->> It resulted in well known
->>   "Bluetooth: hci0: command 0x0408 tx timeout"
->> errors and complete stop of UART data reception. Our Bluetooth traffic consists
->> of many independent small packets, mostly only a few bytes, causing high usage
->> of periods.
->>
->>
->> Philipp Puschmann (4):
->>   dmaengine: imx-sdma: fix buffer ownership
->>   dmaengine: imx-sdma: fix dma freezes
->>   serial: imx: adapt rx buffer and dma periods
->>   dmaengine: imx-sdma: drop redundant variable
-> 
-> I have some suggestions:
-> 
-> 1. Please split this in two series: one for dmaengine and other one for serial
-> 
-> 2. Please add Fixes tag when appropriate, so that the fixes can be
-> backported to stable kernels.
-> 
-> 3. Please Cc Robin and Andy
-> 
-> Thanks
-> 
+On Mon, Sep 16, 2019 at 10:55 AM Philipp Puschmann
+<philipp.puschmann@emlix.com> wrote:
 
-Thanks for the hints. I will apply them if the contentual feedback is positive.
+> Thanks for the hints. I will apply them if the contentual feedback is positive.
+>
+> p.s. Did you forget to add Andy? I don't see a Andy in the to- and cc-list.
 
-p.s. Did you forget to add Andy? I don't see a Andy in the to- and cc-list.
+Andy's e-mail is fugang.duan@nxp.com, which I added on Cc.
+
+I think your patches look good and are in good shape to be resubmitted.
+
+Thanks for fixing these hard to debug issues!
