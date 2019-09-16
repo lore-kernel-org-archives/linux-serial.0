@@ -1,29 +1,60 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH 0/4] Fix UART DMA freezes for iMX6
-Date: Mon, 16 Sep 2019 11:00:47 -0300
-Message-ID: <CAOMZO5BftiJcpefSaM0-DAdhOqrKfv4k5n=y1RhbTpZ=HZDtOQ@mail.gmail.com>
+From: Andy Duan <fugang.duan@nxp.com>
+Subject: RE: [EXT] Re: [PATCH 0/4] Fix UART DMA freezes for iMX6
+Date: Mon, 16 Sep 2019 14:10:18 +0000
+Message-ID: <VI1PR0402MB3600FB067CC5FABCAB1EBBB6FF8C0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
 References: <20190911144943.21554-1-philipp.puschmann@emlix.com>
- <CAOMZO5BKiZGF=iR071DaWLp-_7wTVJKLbOn3ihwPeVVSNF6nCg@mail.gmail.com> <2613a28d-d363-ee4e-679a-e7442e6fde48@emlix.com>
+ <CAOMZO5BKiZGF=iR071DaWLp-_7wTVJKLbOn3ihwPeVVSNF6nCg@mail.gmail.com>
+ <2613a28d-d363-ee4e-679a-e7442e6fde48@emlix.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <2613a28d-d363-ee4e-679a-e7442e6fde48@emlix.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Philipp Puschmann <philipp.puschmann@emlix.com>
-Cc: Robin Gong <yibin.gong@nxp.com>, Fugang Duan <fugang.duan@nxp.com>, linux-kernel <linux-kernel@vger.kernel.org>, Vinod <vkoul@kernel.org>, Dan Williams <dan.j.williams@intel.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <kernel@pengutronix.de>, NXP Linux Team <linux-imx@nxp.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, dmaengine@vger.kernel.org, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, linux-serial@vger.kernel.org
+To: Philipp Puschmann <philipp.puschmann@emlix.com>, Fabio Estevam <festevam@gmail.com>, Robin Gong <yibin.gong@nxp.com>
+Cc: linux-kernel <linux-kernel@vger.kernel.org>, Vinod <vkoul@kernel.org>, Dan Williams <dan.j.williams@intel.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <kernel@pengutronix.de>, dl-linux-imx <linux-imx@nxp.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Philipp,
-
-On Mon, Sep 16, 2019 at 10:55 AM Philipp Puschmann
-<philipp.puschmann@emlix.com> wrote:
-
-> Thanks for the hints. I will apply them if the contentual feedback is positive.
->
-> p.s. Did you forget to add Andy? I don't see a Andy in the to- and cc-list.
-
-Andy's e-mail is fugang.duan@nxp.com, which I added on Cc.
-
-I think your patches look good and are in good shape to be resubmitted.
-
-Thanks for fixing these hard to debug issues!
+RnJvbTogUGhpbGlwcCBQdXNjaG1hbm4gPHBoaWxpcHAucHVzY2htYW5uQGVtbGl4LmNvbT4gU2Vu
+dDogTW9uZGF5LCBTZXB0ZW1iZXIgMTYsIDIwMTkgOTo1NSBQTQ0KPiBIaSBGYWJpbywNCj4gDQo+
+IEFtIDEyLjA5LjE5IHVtIDIwOjIzIHNjaHJpZWIgRmFiaW8gRXN0ZXZhbToNCj4gPiBIaSBQaGls
+aXBwLA0KPiA+DQo+ID4gVGhhbmtzIGZvciBzdWJtaXR0aW5nIHRoZXNlIGZpeGVzLg0KPiA+DQo+
+ID4gT24gV2VkLCBTZXAgMTEsIDIwMTkgYXQgMTE6NTAgQU0gUGhpbGlwcCBQdXNjaG1hbm4NCj4g
+PiA8cGhpbGlwcC5wdXNjaG1hbm5AZW1saXguY29tPiB3cm90ZToNCj4gPj4NCj4gPj4gRm9yIHNv
+bWUgeWVhcnMgYW5kIHNpbmNlIG1hbnkga2VybmVsIHZlcnNpb25zIHRoZXJlIGFyZSByZXBvcnRz
+IHRoYXQNCj4gPj4gUlggVUFSVCBETUEgY2hhbm5lbCBzdG9wcyB3b3JraW5nIGF0IG9uZSBwb2lu
+dC4gU28gZmFyIHRoZSB1c3VhbA0KPiA+PiB3b3JrYXJvdW5kIHdhcyB0byBkaXNhYmxlIFJYIERN
+QS4gVGhpcyBwYXRjaGVzIHRyeSB0byBmaXggdGhlIHVuZGVybHlpbmcNCj4gcHJvYmxlbS4NCj4g
+Pj4NCj4gPj4gV2hlbiBhIHJ1bm5pbmcgc2RtYSBzY3JpcHQgZG9lcyBub3QgZmluZCBhbnkgdXNh
+YmxlIGRlc3RpbmF0aW9uDQo+ID4+IGJ1ZmZlciB0byBwdXQgaXRzIGRhdGEgaW50byBpdCBqdXN0
+IGxlYWRzIHRvIHN0b3BwaW5nIHRoZSBjaGFubmVsDQo+ID4+IGJlaW5nIHNjaGVkdWxlZCBhZ2Fp
+bi4gQXMgc29sdXRpb24gd2Ugd2UgbWFudWFsbHkgcmV0cmlnZ2VyIHRoZSBzZG1hDQo+ID4+IHNj
+cmlwdCBmb3IgdGhpcyBjaGFubmVsIGFuZCBieSB0aGlzIGRpc3NvbHZlIHRoZSBmcmVlemUuDQo+
+ID4+DQo+ID4+IFdoaWxlIHRoaXMgc2VlbXMgdG8gd29yayBmaW5lIHNvIGZhciBhIGZ1cnRoZXIg
+cGF0Y2ggaW4gdGhpcyBzZXJpZXMNCj4gPj4gaW5jcmVhc2VzIHRoZSBudW1iZXIgb2YgUlggRE1B
+IHBlcmlvZHMgZm9yIFVBUlQgdG8gcmVkdWNlIHVzZSBjYXNlcw0KPiA+PiBydW5uaW5nIGludG8g
+c3VjaCBhIHNpdHVhdGlvbi4NCj4gPj4NCj4gPj4gVGhpcyBwYXRjaCBzZXJpZXMgd2FzIHRlc3Rl
+ZCB3aXRoIHRoZSBjdXJyZW50IGtlcm5lbCBhbmQgYmFja3BvcnRlZA0KPiA+PiB0byBrZXJuZWwg
+NC4xNSB3aXRoIGEgc3BlY2lhbCB1c2UgY2FzZSB1c2luZyBhIFdMMTgzN01PRCB2aWEgVUFSVCBh
+bmQNCj4gPj4gcHJvdm9raW5nIHRoZSBoYW5naW5nIG9mIFVBUlQgUlggRE1BIHdpdGhpbiBzZWNv
+bmRzIGFmdGVyIHN0YXJ0aW5nIGEgdGVzdA0KPiBhcHBsaWNhdGlvbi4NCj4gPj4gSXQgcmVzdWx0
+ZWQgaW4gd2VsbCBrbm93bg0KPiA+PiAgICJCbHVldG9vdGg6IGhjaTA6IGNvbW1hbmQgMHgwNDA4
+IHR4IHRpbWVvdXQiDQo+ID4+IGVycm9ycyBhbmQgY29tcGxldGUgc3RvcCBvZiBVQVJUIGRhdGEg
+cmVjZXB0aW9uLiBPdXIgQmx1ZXRvb3RoDQo+ID4+IHRyYWZmaWMgY29uc2lzdHMgb2YgbWFueSBp
+bmRlcGVuZGVudCBzbWFsbCBwYWNrZXRzLCBtb3N0bHkgb25seSBhIGZldw0KPiA+PiBieXRlcywg
+Y2F1c2luZyBoaWdoIHVzYWdlIG9mIHBlcmlvZHMuDQo+ID4+DQo+ID4+DQo+ID4+IFBoaWxpcHAg
+UHVzY2htYW5uICg0KToNCj4gPj4gICBkbWFlbmdpbmU6IGlteC1zZG1hOiBmaXggYnVmZmVyIG93
+bmVyc2hpcA0KPiA+PiAgIGRtYWVuZ2luZTogaW14LXNkbWE6IGZpeCBkbWEgZnJlZXplcw0KPiA+
+PiAgIHNlcmlhbDogaW14OiBhZGFwdCByeCBidWZmZXIgYW5kIGRtYSBwZXJpb2RzDQo+ID4+ICAg
+ZG1hZW5naW5lOiBpbXgtc2RtYTogZHJvcCByZWR1bmRhbnQgdmFyaWFibGUNCj4gPg0KPiA+IEkg
+aGF2ZSBzb21lIHN1Z2dlc3Rpb25zOg0KPiA+DQo+ID4gMS4gUGxlYXNlIHNwbGl0IHRoaXMgaW4g
+dHdvIHNlcmllczogb25lIGZvciBkbWFlbmdpbmUgYW5kIG90aGVyIG9uZQ0KPiA+IGZvciBzZXJp
+YWwNCj4gPg0KPiA+IDIuIFBsZWFzZSBhZGQgRml4ZXMgdGFnIHdoZW4gYXBwcm9wcmlhdGUsIHNv
+IHRoYXQgdGhlIGZpeGVzIGNhbiBiZQ0KPiA+IGJhY2twb3J0ZWQgdG8gc3RhYmxlIGtlcm5lbHMu
+DQo+ID4NCj4gPiAzLiBQbGVhc2UgQ2MgUm9iaW4gYW5kIEFuZHkNCj4gPg0KPiA+IFRoYW5rcw0K
+PiA+DQo+IA0KPiBUaGFua3MgZm9yIHRoZSBoaW50cy4gSSB3aWxsIGFwcGx5IHRoZW0gaWYgdGhl
+IGNvbnRlbnR1YWwgZmVlZGJhY2sgaXMgcG9zaXRpdmUuDQo+IA0KPiBwLnMuIERpZCB5b3UgZm9y
+Z2V0IHRvIGFkZCBBbmR5PyBJIGRvbid0IHNlZSBhIEFuZHkgaW4gdGhlIHRvLSBhbmQgY2MtbGlz
+dC4NCg0KRm9yIGRtYSBhbmQgdWFydCwgcGxlYXNlIHRvLSBtZSBhbmQgeWliaW4uZ29uZ0BueHAu
+Y29tLCB0aGFua3MuDQoNCkFuZHkNCg==
