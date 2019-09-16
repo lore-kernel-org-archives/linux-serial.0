@@ -1,23 +1,68 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH] serial/sifive: select SERIAL_EARLYCON
-Date: Mon, 16 Sep 2019 08:42:53 +0200
-Message-ID: <20190916064253.GA24654@lst.de>
-References: <20190910143630.GA6794@lst.de> <mhng-218f6b9f-bfd8-4adb-8147-298989494bcf@palmer-si-x1e>
+From: Robin Gong <yibin.gong@nxp.com>
+Subject: RE: [PATCH 0/4] Fix UART DMA freezes for iMX6
+Date: Mon, 16 Sep 2019 08:02:49 +0000
+Message-ID: <VE1PR04MB66383FAB08506993B305AC8D898C0@VE1PR04MB6638.eurprd04.prod.outlook.com>
+References: <20190911144943.21554-1-philipp.puschmann@emlix.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <mhng-218f6b9f-bfd8-4adb-8147-298989494bcf@palmer-si-x1e>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Palmer Dabbelt <palmer@sifive.com>
-Cc: schwab@suse.de, Christoph Hellwig <hch@lst.de>, Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Paul Walmsley <paul.walmsley@sifive.com>, linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190911144943.21554-1-philipp.puschmann@emlix.com>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Philipp Puschmann <philipp.puschmann@emlix.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "jslaby@suse.com" <jslaby@suse.com>, "vkoul@kernel.org" <vkoul@kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "dan.j.williams@intel.com" <dan.j.williams@intel.com>, "festevam@gmail.com" <festevam@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Sep 13, 2019 at 01:40:27PM -0700, Palmer Dabbelt wrote:
-> OpenEmbedded passes "earlycon=sbi", which I can find in the doumentation.  
-> I can't find anything about just "earlycon".  I've sent a patch adding sbi 
-> to the list of earlycon arguments.
+On 2019/9/11 Philipp Puschmann <philipp.puschmann@emlix.com> wrote:
+> For some years and since many kernel versions there are reports that RX
+> UART DMA channel stops working at one point. So far the usual workaround
+> was to disable RX DMA. This patches try to fix the underlying problem.
+> 
+> When a running sdma script does not find any usable destination buffer to put
+> its data into it just leads to stopping the channel being scheduled again. As
+> solution we we manually retrigger the sdma script for this channel and by this
+> dissolve the freeze.
+> 
+> While this seems to work fine so far a further patch in this series increases the
+> number of RX DMA periods for UART to reduce use cases running into such a
+> situation.
+> 
+> This patch series was tested with the current kernel and backported to kernel
+> 4.15 with a special use case using a WL1837MOD via UART and provoking the
+Hi Philipp, Could your Bluetooth issue be reproduce on latest linux-next? Or did
+your kernel which can be reproduced include the below patch?
 
-earlycon without arguments is documented, although just for ARM64.
-I can send a patch to update it to properly cover all DT platforms
-in addition.
+commit d1a792f3b4072bfac4150bb62aa34917b77fdb6d
+Author: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Date:   Wed Jun 25 13:00:33 2014 +0100
+
+    Update imx-sdma cyclic handling to report residue
+> hanging of UART RX DMA within seconds after starting a test application.
+> It resulted in well known
+>   "Bluetooth: hci0: command 0x0408 tx timeout"
+> errors and complete stop of UART data reception. Our Bluetooth traffic
+> consists of many independent small packets, mostly only a few bytes, causing
+> high usage of periods.
+> 
+> 
+> Philipp Puschmann (4):
+>   dmaengine: imx-sdma: fix buffer ownership
+>   dmaengine: imx-sdma: fix dma freezes
+>   serial: imx: adapt rx buffer and dma periods
+>   dmaengine: imx-sdma: drop redundant variable
+> 
+>  drivers/dma/imx-sdma.c   | 32 ++++++++++++++++++++++----------
+>  drivers/tty/serial/imx.c |  5 ++---
+>  2 files changed, 24 insertions(+), 13 deletions(-)
+> 
+> --
+> 2.23.0
