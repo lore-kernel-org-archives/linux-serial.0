@@ -1,60 +1,62 @@
-From: Andy Duan <fugang.duan@nxp.com>
-Subject: RE: [EXT] Re: [PATCH 0/4] Fix UART DMA freezes for iMX6
-Date: Mon, 16 Sep 2019 14:10:18 +0000
-Message-ID: <VI1PR0402MB3600FB067CC5FABCAB1EBBB6FF8C0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+From: Lucas Stach <l.stach@pengutronix.de>
+Subject: Re: [PATCH 1/4] dmaengine: imx-sdma: fix buffer ownership
+Date: Mon, 16 Sep 2019 16:17:00 +0200
+Message-ID: <9bcf315369449a025828410396935b679aae14bf.camel@pengutronix.de>
 References: <20190911144943.21554-1-philipp.puschmann@emlix.com>
- <CAOMZO5BKiZGF=iR071DaWLp-_7wTVJKLbOn3ihwPeVVSNF6nCg@mail.gmail.com>
- <2613a28d-d363-ee4e-679a-e7442e6fde48@emlix.com>
+         <20190911144943.21554-2-philipp.puschmann@emlix.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <2613a28d-d363-ee4e-679a-e7442e6fde48@emlix.com>
-Content-Language: en-US
+In-Reply-To: <20190911144943.21554-2-philipp.puschmann@emlix.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Philipp Puschmann <philipp.puschmann@emlix.com>, Fabio Estevam <festevam@gmail.com>, Robin Gong <yibin.gong@nxp.com>
-Cc: linux-kernel <linux-kernel@vger.kernel.org>, Vinod <vkoul@kernel.org>, Dan Williams <dan.j.williams@intel.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <kernel@pengutronix.de>, dl-linux-imx <linux-imx@nxp.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+To: Philipp Puschmann <philipp.puschmann@emlix.com>, linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de, jslaby@suse.com, vkoul@kernel.org, linux-imx@nxp.com, kernel@pengutronix.de, gregkh@linuxfoundation.org, dmaengine@vger.kernel.org, dan.j.williams@intel.com, festevam@gmail.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-RnJvbTogUGhpbGlwcCBQdXNjaG1hbm4gPHBoaWxpcHAucHVzY2htYW5uQGVtbGl4LmNvbT4gU2Vu
-dDogTW9uZGF5LCBTZXB0ZW1iZXIgMTYsIDIwMTkgOTo1NSBQTQ0KPiBIaSBGYWJpbywNCj4gDQo+
-IEFtIDEyLjA5LjE5IHVtIDIwOjIzIHNjaHJpZWIgRmFiaW8gRXN0ZXZhbToNCj4gPiBIaSBQaGls
-aXBwLA0KPiA+DQo+ID4gVGhhbmtzIGZvciBzdWJtaXR0aW5nIHRoZXNlIGZpeGVzLg0KPiA+DQo+
-ID4gT24gV2VkLCBTZXAgMTEsIDIwMTkgYXQgMTE6NTAgQU0gUGhpbGlwcCBQdXNjaG1hbm4NCj4g
-PiA8cGhpbGlwcC5wdXNjaG1hbm5AZW1saXguY29tPiB3cm90ZToNCj4gPj4NCj4gPj4gRm9yIHNv
-bWUgeWVhcnMgYW5kIHNpbmNlIG1hbnkga2VybmVsIHZlcnNpb25zIHRoZXJlIGFyZSByZXBvcnRz
-IHRoYXQNCj4gPj4gUlggVUFSVCBETUEgY2hhbm5lbCBzdG9wcyB3b3JraW5nIGF0IG9uZSBwb2lu
-dC4gU28gZmFyIHRoZSB1c3VhbA0KPiA+PiB3b3JrYXJvdW5kIHdhcyB0byBkaXNhYmxlIFJYIERN
-QS4gVGhpcyBwYXRjaGVzIHRyeSB0byBmaXggdGhlIHVuZGVybHlpbmcNCj4gcHJvYmxlbS4NCj4g
-Pj4NCj4gPj4gV2hlbiBhIHJ1bm5pbmcgc2RtYSBzY3JpcHQgZG9lcyBub3QgZmluZCBhbnkgdXNh
-YmxlIGRlc3RpbmF0aW9uDQo+ID4+IGJ1ZmZlciB0byBwdXQgaXRzIGRhdGEgaW50byBpdCBqdXN0
-IGxlYWRzIHRvIHN0b3BwaW5nIHRoZSBjaGFubmVsDQo+ID4+IGJlaW5nIHNjaGVkdWxlZCBhZ2Fp
-bi4gQXMgc29sdXRpb24gd2Ugd2UgbWFudWFsbHkgcmV0cmlnZ2VyIHRoZSBzZG1hDQo+ID4+IHNj
-cmlwdCBmb3IgdGhpcyBjaGFubmVsIGFuZCBieSB0aGlzIGRpc3NvbHZlIHRoZSBmcmVlemUuDQo+
-ID4+DQo+ID4+IFdoaWxlIHRoaXMgc2VlbXMgdG8gd29yayBmaW5lIHNvIGZhciBhIGZ1cnRoZXIg
-cGF0Y2ggaW4gdGhpcyBzZXJpZXMNCj4gPj4gaW5jcmVhc2VzIHRoZSBudW1iZXIgb2YgUlggRE1B
-IHBlcmlvZHMgZm9yIFVBUlQgdG8gcmVkdWNlIHVzZSBjYXNlcw0KPiA+PiBydW5uaW5nIGludG8g
-c3VjaCBhIHNpdHVhdGlvbi4NCj4gPj4NCj4gPj4gVGhpcyBwYXRjaCBzZXJpZXMgd2FzIHRlc3Rl
-ZCB3aXRoIHRoZSBjdXJyZW50IGtlcm5lbCBhbmQgYmFja3BvcnRlZA0KPiA+PiB0byBrZXJuZWwg
-NC4xNSB3aXRoIGEgc3BlY2lhbCB1c2UgY2FzZSB1c2luZyBhIFdMMTgzN01PRCB2aWEgVUFSVCBh
-bmQNCj4gPj4gcHJvdm9raW5nIHRoZSBoYW5naW5nIG9mIFVBUlQgUlggRE1BIHdpdGhpbiBzZWNv
-bmRzIGFmdGVyIHN0YXJ0aW5nIGEgdGVzdA0KPiBhcHBsaWNhdGlvbi4NCj4gPj4gSXQgcmVzdWx0
-ZWQgaW4gd2VsbCBrbm93bg0KPiA+PiAgICJCbHVldG9vdGg6IGhjaTA6IGNvbW1hbmQgMHgwNDA4
-IHR4IHRpbWVvdXQiDQo+ID4+IGVycm9ycyBhbmQgY29tcGxldGUgc3RvcCBvZiBVQVJUIGRhdGEg
-cmVjZXB0aW9uLiBPdXIgQmx1ZXRvb3RoDQo+ID4+IHRyYWZmaWMgY29uc2lzdHMgb2YgbWFueSBp
-bmRlcGVuZGVudCBzbWFsbCBwYWNrZXRzLCBtb3N0bHkgb25seSBhIGZldw0KPiA+PiBieXRlcywg
-Y2F1c2luZyBoaWdoIHVzYWdlIG9mIHBlcmlvZHMuDQo+ID4+DQo+ID4+DQo+ID4+IFBoaWxpcHAg
-UHVzY2htYW5uICg0KToNCj4gPj4gICBkbWFlbmdpbmU6IGlteC1zZG1hOiBmaXggYnVmZmVyIG93
-bmVyc2hpcA0KPiA+PiAgIGRtYWVuZ2luZTogaW14LXNkbWE6IGZpeCBkbWEgZnJlZXplcw0KPiA+
-PiAgIHNlcmlhbDogaW14OiBhZGFwdCByeCBidWZmZXIgYW5kIGRtYSBwZXJpb2RzDQo+ID4+ICAg
-ZG1hZW5naW5lOiBpbXgtc2RtYTogZHJvcCByZWR1bmRhbnQgdmFyaWFibGUNCj4gPg0KPiA+IEkg
-aGF2ZSBzb21lIHN1Z2dlc3Rpb25zOg0KPiA+DQo+ID4gMS4gUGxlYXNlIHNwbGl0IHRoaXMgaW4g
-dHdvIHNlcmllczogb25lIGZvciBkbWFlbmdpbmUgYW5kIG90aGVyIG9uZQ0KPiA+IGZvciBzZXJp
-YWwNCj4gPg0KPiA+IDIuIFBsZWFzZSBhZGQgRml4ZXMgdGFnIHdoZW4gYXBwcm9wcmlhdGUsIHNv
-IHRoYXQgdGhlIGZpeGVzIGNhbiBiZQ0KPiA+IGJhY2twb3J0ZWQgdG8gc3RhYmxlIGtlcm5lbHMu
-DQo+ID4NCj4gPiAzLiBQbGVhc2UgQ2MgUm9iaW4gYW5kIEFuZHkNCj4gPg0KPiA+IFRoYW5rcw0K
-PiA+DQo+IA0KPiBUaGFua3MgZm9yIHRoZSBoaW50cy4gSSB3aWxsIGFwcGx5IHRoZW0gaWYgdGhl
-IGNvbnRlbnR1YWwgZmVlZGJhY2sgaXMgcG9zaXRpdmUuDQo+IA0KPiBwLnMuIERpZCB5b3UgZm9y
-Z2V0IHRvIGFkZCBBbmR5PyBJIGRvbid0IHNlZSBhIEFuZHkgaW4gdGhlIHRvLSBhbmQgY2MtbGlz
-dC4NCg0KRm9yIGRtYSBhbmQgdWFydCwgcGxlYXNlIHRvLSBtZSBhbmQgeWliaW4uZ29uZ0BueHAu
-Y29tLCB0aGFua3MuDQoNCkFuZHkNCg==
+On Mi, 2019-09-11 at 16:49 +0200, Philipp Puschmann wrote:
+> BD_DONE flag marks ownership of the buffer. When 1 SDMA owns the buffer,
+> when 0 ARM owns it. When processing the buffers in
+> sdma_update_channel_loop the ownership of the currently processed buffer
+> was set to SDMA again before running the callback function of the the
+> buffer and while the sdma script may be running in parallel. So there was
+> the possibility to get the buffer overwritten by SDMA before it has been
+> processed by kernel leading to kind of random errors in the upper layers,
+> e.g. bluetooth.
+> 
+> It may be further a good idea to make the status struct member volatile or
+> access it using writel or similar to rule out that the compiler sets the
+> BD_DONE flag before the callback routine has finished.
+> 
+> Signed-off-by: Philipp Puschmann <philipp.puschmann@emlix.com>
+> ---
+>  drivers/dma/imx-sdma.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
+> index a01f4b5d793c..1abb14ff394d 100644
+> --- a/drivers/dma/imx-sdma.c
+> +++ b/drivers/dma/imx-sdma.c
+> @@ -802,7 +802,6 @@ static void sdma_update_channel_loop(struct sdma_channel *sdmac)
+>  		*/
+>  
+>  		desc->chn_real_count = bd->mode.count;
+> -		bd->mode.status |= BD_DONE;
+>  		bd->mode.count = desc->period_len;
+>  		desc->buf_ptail = desc->buf_tail;
+>  		desc->buf_tail = (desc->buf_tail + 1) % desc->num_bd;
+> @@ -817,6 +816,8 @@ static void sdma_update_channel_loop(struct sdma_channel *sdmac)
+>  		dmaengine_desc_get_callback_invoke(&desc->vd.tx, NULL);
+>  		spin_lock(&sdmac->vc.lock);
+
+To address your comment from the second paragraph of the commit message
+there should be a dma_wmb() here before changing the status flag.
+
+Regards,
+Lucas
+
+> +		bd->mode.status |= BD_DONE;
+> +
+>  		if (error)
+>  			sdmac->status = old_status;
+>  	}
