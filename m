@@ -1,45 +1,44 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH] serial: uartlite: fix exit path null pointer
-Date: Mon, 16 Sep 2019 16:12:23 -0700
-Message-ID: <9c8e6581-6fcc-a595-0897-4d90f5d710df@infradead.org>
+From: Andreas Schwab <schwab@suse.de>
+Subject: Re: [PATCH] serial/sifive: select SERIAL_EARLYCON
+Date: Tue, 17 Sep 2019 09:43:25 +0200
+Message-ID: <mvma7b3e5b6.fsf@suse.de>
+References: <mhng-5091669f-461c-4e62-a71c-e16957801fad@palmer-si-x1c4>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Language: en-US
+In-Reply-To: <mhng-5091669f-461c-4e62-a71c-e16957801fad@palmer-si-x1c4>
+        (Palmer Dabbelt's message of "Mon, 16 Sep 2019 14:38:39 -0700 (PDT)")
 Sender: linux-kernel-owner@vger.kernel.org
-To: "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Korsgaard <jacmet@sunsite.dk>
+To: Palmer Dabbelt <palmer@sifive.com>
+Cc: Christoph Hellwig <hch@lst.de>, Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Paul Walmsley <paul.walmsley@sifive.com>, linux-riscv@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+On Sep 16 2019, Palmer Dabbelt <palmer@sifive.com> wrote:
 
-Call uart_unregister_driver() conditionally instead of
-unconditionally, only if it has been previously registered.
+> but we don't set it for the HiFive Unleashed.  I'd call that a bug,
+> something like this
+>
+> diff --git a/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dts b/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dts
+> index 93d68cbd64fe..6d0ec76d93fe 100644
+> --- a/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dts
+> +++ b/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dts
+> @@ -13,6 +13,7 @@
+>        compatible = "sifive,hifive-unleashed-a00", "sifive,fu540-c000";
+>
+>        chosen {
+> +               stdout-path = &uart0;
+>        };
+>
+>        cpus {
+>
+> should fix it.  LMK if I've misunderstood something.
 
-This uses driver.state, just as the sh-sci.c driver does.
+If that's how it's supposed to work, ok.  Other platforms add it in
+u-boot.
 
-Fixes this null pointer dereference in tty_unregister_driver(),
-since the 'driver' argument is null:
+Andreas.
 
-  general protection fault: 0000 [#1] PREEMPT SMP KASAN PTI
-  RIP: 0010:tty_unregister_driver+0x25/0x1d0
-
-Fixes: 238b8721a554 ("serial uartlite driver")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Peter Korsgaard <jacmet@sunsite.dk>
----
- drivers/tty/serial/uartlite.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
---- lnx-53.orig/drivers/tty/serial/uartlite.c
-+++ lnx-53/drivers/tty/serial/uartlite.c
-@@ -897,7 +897,8 @@ static int __init ulite_init(void)
- static void __exit ulite_exit(void)
- {
- 	platform_driver_unregister(&ulite_platform_driver);
--	uart_unregister_driver(&ulite_uart_driver);
-+	if (ulite_uart_driver.state)
-+		uart_unregister_driver(&ulite_uart_driver);
- }
- 
- module_init(ulite_init);
+-- 
+Andreas Schwab, SUSE Labs, schwab@suse.de
+GPG Key fingerprint = 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D7
+"And now for something completely different."
