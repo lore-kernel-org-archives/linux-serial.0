@@ -1,44 +1,36 @@
-From: Andreas Schwab <schwab@suse.de>
-Subject: Re: [PATCH] serial/sifive: select SERIAL_EARLYCON
-Date: Tue, 17 Sep 2019 09:43:25 +0200
-Message-ID: <mvma7b3e5b6.fsf@suse.de>
-References: <mhng-5091669f-461c-4e62-a71c-e16957801fad@palmer-si-x1c4>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: Qian Cai <cai@lca.pw>
+Subject: [PATCH] tty/amba-pl011: fix a -Wunused-function warning
+Date: Tue, 17 Sep 2019 09:19:00 -0400
+Message-ID: <1568726340-4518-1-git-send-email-cai@lca.pw>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <mhng-5091669f-461c-4e62-a71c-e16957801fad@palmer-si-x1c4>
-        (Palmer Dabbelt's message of "Mon, 16 Sep 2019 14:38:39 -0700 (PDT)")
 Sender: linux-kernel-owner@vger.kernel.org
-To: Palmer Dabbelt <palmer@sifive.com>
-Cc: Christoph Hellwig <hch@lst.de>, Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Paul Walmsley <paul.walmsley@sifive.com>, linux-riscv@lists.infradead.org
+To: linux@armlinux.org.uk, gregkh@linuxfoundation.org
+Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Qian Cai <cai@lca.pw>
 List-Id: linux-serial@vger.kernel.org
 
-On Sep 16 2019, Palmer Dabbelt <palmer@sifive.com> wrote:
+pl011_dma_probe() is only used in pl011_dma_startup() which does only
+exist when CONFIG_DMA_ENGINE=y, so remove the unused dummy version to
+silence the warning.
 
-> but we don't set it for the HiFive Unleashed.  I'd call that a bug,
-> something like this
->
-> diff --git a/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dts b/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dts
-> index 93d68cbd64fe..6d0ec76d93fe 100644
-> --- a/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dts
-> +++ b/arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dts
-> @@ -13,6 +13,7 @@
->        compatible = "sifive,hifive-unleashed-a00", "sifive,fu540-c000";
->
->        chosen {
-> +               stdout-path = &uart0;
->        };
->
->        cpus {
->
-> should fix it.  LMK if I've misunderstood something.
+Signed-off-by: Qian Cai <cai@lca.pw>
+---
+ drivers/tty/serial/amba-pl011.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-If that's how it's supposed to work, ok.  Other platforms add it in
-u-boot.
-
-Andreas.
-
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 5921a33b2a07..91b59f1cd3e6 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1236,10 +1236,6 @@ static inline bool pl011_dma_rx_running(struct uart_amba_port *uap)
+ 
+ #else
+ /* Blank functions if the DMA engine is not available */
+-static inline void pl011_dma_probe(struct uart_amba_port *uap)
+-{
+-}
+-
+ static inline void pl011_dma_remove(struct uart_amba_port *uap)
+ {
+ }
 -- 
-Andreas Schwab, SUSE Labs, schwab@suse.de
-GPG Key fingerprint = 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D7
-"And now for something completely different."
+1.8.3.1
