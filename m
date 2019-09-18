@@ -1,61 +1,133 @@
-From: Lanqing Liu <liuhhome@gmail.com>
-Subject: [PATCH] serial: sprd: Add polling IO support
-Date: Wed, 18 Sep 2019 16:15:05 +0800
-Message-ID: <a634860d9194cc235298d6d8bbd2282bf6f853c4.1568793195.git.liuhhome@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: gregkh@linuxfoundation.org, jslaby@suse.com
-Cc: baolin.wang@linaro.org, lanqing.liu@unisoc.com, liuhhome@gmail.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, orsonzhai@gmail.com, zhang.lyra@gmail.com
+From: Andrew Murray <andrew.murray@arm.com>
+Subject: Re: [PATCH v3 00/26] Add definition for the number of standard PCI
+ BARs
+Date: Wed, 18 Sep 2019 10:20:39 +0100
+Message-ID: <20190918092038.GC9720@e119886-lin.cambridge.arm.com>
+References: <20190916204158.6889-1-efremov@linux.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+Content-Disposition: inline
+In-Reply-To: <20190916204158.6889-1-efremov@linux.com>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
+To: Denis Efremov <efremov@linux.com>
+Cc: Ulf Hansson <ulf.hansson@linaro.org>, linux-usb@vger.kernel.org, linux-ia64@vger.kernel.org, Sebastian Ott <sebott@linux.ibm.com>, linux-pci@vger.kernel.org, devel@driverdev.osuosl.org, linux-hyperv@vger.kernel.org, linux-ide@vger.kernel.org, Peter Jones <pjones@redhat.com>, "H . Peter Anvin" <hpa@zytor.com>, netdev@vger.kernel.org, Sasha Levin <sashal@kernel.org>, linux-s390@vger.kernel.org, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Stephen Hemminger <sthemmin@microsoft.com>, Maxim Levitsky <maximlevitsky@gmail.com>, linux-scsi@vger.kernel.org, x86@kernel.org, Kishon Vijay Abraham I <kishon@ti.com>, Jeff Kirsher <jeffrey.t.kirsher@intel.com>, linux-serial@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>, Matt Turner <mattst88@gmail.com>, Jack Wang <jinpu.wang@cloud.ionos.com>, "James E.J. Bottomley" <jejb@linux.ibm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-In order to access the UART without the interrupts, the kernel uses
-the basic polling methods for IO with the device. With these methods
-implemented, it is now possible to enable kgdb during early boot over serial.
+On Mon, Sep 16, 2019 at 11:41:32PM +0300, Denis Efremov wrote:
+> Code that iterates over all standard PCI BARs typically uses
+> PCI_STD_RESOURCE_END, but this is error-prone because it requires
+> "i <= PCI_STD_RESOURCE_END" rather than something like
+> "i < PCI_STD_NUM_BARS". We could add such a definition and use it the same
+> way PCI_SRIOV_NUM_BARS is used. The patchset also replaces constant (6)
+> with new define PCI_STD_NUM_BARS where appropriate and removes local
+> declarations for the number of PCI BARs.
 
-Signed-off-by: Lanqing Liu <liuhhome@gmail.com>
----
- drivers/tty/serial/sprd_serial.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+I've made several comments to various patches, however for all the patches
+you can add:
 
-diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-index 73d71a4..579ab41 100644
---- a/drivers/tty/serial/sprd_serial.c
-+++ b/drivers/tty/serial/sprd_serial.c
-@@ -911,6 +911,24 @@ static void sprd_pm(struct uart_port *port, unsigned int state,
- 	}
- }
- 
-+#ifdef CONFIG_CONSOLE_POLL
-+static int sprd_poll_get_char(struct uart_port *port)
-+{
-+	while (!(serial_in(port, SPRD_STS1) & SPRD_RX_FIFO_CNT_MASK))
-+		cpu_relax();
-+
-+	return serial_in(port, SPRD_RXD);
-+}
-+
-+static void sprd_poll_put_char(struct uart_port *port, unsigned char ch)
-+{
-+	while (serial_in(port, SPRD_STS1) & SPRD_TX_FIFO_CNT_MASK)
-+		cpu_relax();
-+
-+	serial_out(port, SPRD_TXD, ch);
-+}
-+#endif
-+
- static const struct uart_ops serial_sprd_ops = {
- 	.tx_empty = sprd_tx_empty,
- 	.get_mctrl = sprd_get_mctrl,
-@@ -928,6 +946,10 @@ static void sprd_pm(struct uart_port *port, unsigned int state,
- 	.config_port = sprd_config_port,
- 	.verify_port = sprd_verify_port,
- 	.pm = sprd_pm,
-+#ifdef CONFIG_CONSOLE_POLL
-+	.poll_get_char	= sprd_poll_get_char,
-+	.poll_put_char	= sprd_poll_put_char,
-+#endif
- };
- 
- #ifdef CONFIG_SERIAL_SPRD_CONSOLE
--- 
-1.9.1
+Reviewed-by: Andrew Murray <andrew.murray@arm.com>
+
+> 
+> Changes in v3:
+>   - Updated commits description.
+>   - Refactored "< PCI_ROM_RESOURCE" with "< PCI_STD_NUM_BARS" in loops.
+>   - Refactored "<= BAR_5" with "< PCI_STD_NUM_BARS" in loops.
+>   - Removed local define GASKET_NUM_BARS.
+>   - Removed local define PCI_NUM_BAR_RESOURCES.
+> 
+> Changes in v2:
+>   - Reversed checks in pci_iomap_range,pci_iomap_wc_range.
+>   - Refactored loops in vfio_pci to keep PCI_STD_RESOURCES.
+>   - Added 2 new patches to replace the magic constant with new define.
+>   - Splitted net patch in v1 to separate stmmac and dwc-xlgmac patches.
+> 
+> Denis Efremov (26):
+>   PCI: Add define for the number of standard PCI BARs
+>   PCI: hv: Use PCI_STD_NUM_BARS
+>   PCI: dwc: Use PCI_STD_NUM_BARS
+>   PCI: endpoint: Use PCI_STD_NUM_BARS
+>   misc: pci_endpoint_test: Use PCI_STD_NUM_BARS
+>   s390/pci: Use PCI_STD_NUM_BARS
+>   x86/PCI: Loop using PCI_STD_NUM_BARS
+>   alpha/PCI: Use PCI_STD_NUM_BARS
+>   ia64: Use PCI_STD_NUM_BARS
+>   stmmac: pci: Loop using PCI_STD_NUM_BARS
+>   net: dwc-xlgmac: Loop using PCI_STD_NUM_BARS
+>   ixgb: use PCI_STD_NUM_BARS
+>   e1000: Use PCI_STD_NUM_BARS
+>   rapidio/tsi721: Loop using PCI_STD_NUM_BARS
+>   efifb: Loop using PCI_STD_NUM_BARS
+>   fbmem: use PCI_STD_NUM_BARS
+>   vfio_pci: Loop using PCI_STD_NUM_BARS
+>   scsi: pm80xx: Use PCI_STD_NUM_BARS
+>   ata: sata_nv: Use PCI_STD_NUM_BARS
+>   staging: gasket: Use PCI_STD_NUM_BARS
+>   serial: 8250_pci: Use PCI_STD_NUM_BARS
+>   pata_atp867x: Use PCI_STD_NUM_BARS
+>   memstick: use PCI_STD_NUM_BARS
+>   USB: core: Use PCI_STD_NUM_BARS
+>   usb: pci-quirks: Use PCI_STD_NUM_BARS
+>   devres: use PCI_STD_NUM_BARS
+> 
+>  arch/alpha/kernel/pci-sysfs.c                 |  8 ++---
+>  arch/ia64/sn/pci/pcibr/pcibr_dma.c            |  4 +--
+>  arch/s390/include/asm/pci.h                   |  5 +--
+>  arch/s390/include/asm/pci_clp.h               |  6 ++--
+>  arch/s390/pci/pci.c                           | 16 +++++-----
+>  arch/s390/pci/pci_clp.c                       |  6 ++--
+>  arch/x86/pci/common.c                         |  2 +-
+>  arch/x86/pci/intel_mid_pci.c                  |  2 +-
+>  drivers/ata/pata_atp867x.c                    |  2 +-
+>  drivers/ata/sata_nv.c                         |  2 +-
+>  drivers/memstick/host/jmb38x_ms.c             |  2 +-
+>  drivers/misc/pci_endpoint_test.c              |  8 ++---
+>  drivers/net/ethernet/intel/e1000/e1000.h      |  1 -
+>  drivers/net/ethernet/intel/e1000/e1000_main.c |  2 +-
+>  drivers/net/ethernet/intel/ixgb/ixgb.h        |  1 -
+>  drivers/net/ethernet/intel/ixgb/ixgb_main.c   |  2 +-
+>  .../net/ethernet/stmicro/stmmac/stmmac_pci.c  |  4 +--
+>  .../net/ethernet/synopsys/dwc-xlgmac-pci.c    |  2 +-
+>  drivers/pci/controller/dwc/pci-dra7xx.c       |  2 +-
+>  .../pci/controller/dwc/pci-layerscape-ep.c    |  2 +-
+>  drivers/pci/controller/dwc/pcie-artpec6.c     |  2 +-
+>  .../pci/controller/dwc/pcie-designware-plat.c |  2 +-
+>  drivers/pci/controller/dwc/pcie-designware.h  |  2 +-
+>  drivers/pci/controller/pci-hyperv.c           | 10 +++---
+>  drivers/pci/endpoint/functions/pci-epf-test.c | 10 +++---
+>  drivers/pci/pci-sysfs.c                       |  4 +--
+>  drivers/pci/pci.c                             | 13 ++++----
+>  drivers/pci/proc.c                            |  4 +--
+>  drivers/pci/quirks.c                          |  4 +--
+>  drivers/rapidio/devices/tsi721.c              |  2 +-
+>  drivers/scsi/pm8001/pm8001_hwi.c              |  2 +-
+>  drivers/scsi/pm8001/pm8001_init.c             |  2 +-
+>  drivers/staging/gasket/gasket_constants.h     |  3 --
+>  drivers/staging/gasket/gasket_core.c          | 12 +++----
+>  drivers/staging/gasket/gasket_core.h          |  4 +--
+>  drivers/tty/serial/8250/8250_pci.c            |  8 ++---
+>  drivers/usb/core/hcd-pci.c                    |  2 +-
+>  drivers/usb/host/pci-quirks.c                 |  2 +-
+>  drivers/vfio/pci/vfio_pci.c                   | 11 ++++---
+>  drivers/vfio/pci/vfio_pci_config.c            | 32 ++++++++++---------
+>  drivers/vfio/pci/vfio_pci_private.h           |  4 +--
+>  drivers/video/fbdev/core/fbmem.c              |  4 +--
+>  drivers/video/fbdev/efifb.c                   |  2 +-
+>  include/linux/pci-epc.h                       |  2 +-
+>  include/linux/pci.h                           |  2 +-
+>  include/uapi/linux/pci_regs.h                 |  1 +
+>  lib/devres.c                                  |  2 +-
+>  47 files changed, 112 insertions(+), 115 deletions(-)
+> 
+> -- 
+> 2.21.0
+> 
