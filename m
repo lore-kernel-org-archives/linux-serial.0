@@ -1,109 +1,57 @@
-From: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-Subject: [PATCH] tty: serial: linflexuart: Fix magic SysRq handling
-Date: Wed, 18 Sep 2019 18:45:49 +0000
-Message-ID: <20190918184439.7465-1-stefan-gabriel.mirea@nxp.com>
+From: Markus Elfring <Markus.Elfring@web.de>
+Subject: [PATCH] serial: bcm2835: Use devm_platform_ioremap_resource() in
+ bcm2835aux_serial_probe()
+Date: Wed, 18 Sep 2019 22:12:40 +0200
+Message-ID: <fcb34c72-89c7-9993-fc0a-ba3a61708bec@web.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, kbuild test robot <lkp@intel.com>, Dan Carpenter <dan.carpenter@oracle.com>
+To: linux-serial@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org, bcm-kernel-feedback-list@broadcom.com, Eric Anholt <eric@anholt.net>, Florian Fainelli <f.fainelli@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Martin Sperl <kernel@martin.sperl.org>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Stefan Wahren <wahrenst@gmx.net>, Stephen Boyd <swboyd@chromium.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org, Bartosz Golaszewski <bgolaszewski@baylibre.com>, Himanshu Jha <himanshujha199640@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Following an incorrect indentation reported to me by Dan Carpenter, I
-noticed that the SysRq lines were inherited from the lpuart driver[1] (note
-how the 'continue' is aligned to 'sport->port.sysrq =3D 0') and we have nev=
-er
-actually tested the SysRq support.
+From: Markus Elfring <elfring@users.sourceforge.net>
+Date: Wed, 18 Sep 2019 22:00:14 +0200
 
-'sport->sysrq =3D 0' is not necessary neither before nor after 'continue',
-because sysrq will already be 0 after uart_handle_sysrq_char() will finish.
-Also, since the LINFlexD driver never called uart_handle_break(), sysrq
-would have never been set to a nonzero value, so uart_handle_sysrq_char()
-was not going to do anything.
+Simplify this function implementation by using a known wrapper function.
 
-Break conditions are detected based on a null data byte along with a
-framing error (stop bit sampled to 0).
+This issue was detected by using the Coccinelle software.
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree=
-/drivers/tty/serial/fsl_lpuart.c?h=3Db3e3bf2ef2c74f5ce5c19510edbbb9bfc1d249=
-c2#n659
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+=2D--
+ drivers/tty/serial/8250/8250_bcm2835aux.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-Fixes: 09864c1cdf5c ("tty: serial: Add linflexuart driver for S32V234")
-Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-Reported-by: kbuild test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/tty/serial/fsl_linflexuart.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/seria=
+l/8250/8250_bcm2835aux.c
+index 8ce700c1a7fc..e2c9d19fc8e9 100644
+=2D-- a/drivers/tty/serial/8250/8250_bcm2835aux.c
++++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
+@@ -25,7 +25,6 @@ struct bcm2835aux_data {
+ static int bcm2835aux_serial_probe(struct platform_device *pdev)
+ {
+ 	struct bcm2835aux_data *data;
+-	struct resource *res;
+ 	int ret;
 
-diff --git a/drivers/tty/serial/fsl_linflexuart.c b/drivers/tty/serial/fsl_=
-linflexuart.c
-index 68d74f2b5106..a32f0d2afd59 100644
---- a/drivers/tty/serial/fsl_linflexuart.c
-+++ b/drivers/tty/serial/fsl_linflexuart.c
-@@ -3,7 +3,7 @@
-  * Freescale linflexuart serial port driver
-  *
-  * Copyright 2012-2016 Freescale Semiconductor, Inc.
-- * Copyright 2017-2018 NXP
-+ * Copyright 2017-2019 NXP
-  */
-=20
- #if defined(CONFIG_SERIAL_FSL_LINFLEXUART_CONSOLE) && \
-@@ -246,12 +246,14 @@ static irqreturn_t linflex_rxint(int irq, void *dev_i=
-d)
- 	struct tty_port *port =3D &sport->state->port;
- 	unsigned long flags, status;
- 	unsigned char rx;
-+	bool brk;
-=20
- 	spin_lock_irqsave(&sport->lock, flags);
-=20
- 	status =3D readl(sport->membase + UARTSR);
- 	while (status & LINFLEXD_UARTSR_RMB) {
- 		rx =3D readb(sport->membase + BDRM);
-+		brk =3D false;
- 		flg =3D TTY_NORMAL;
- 		sport->icount.rx++;
-=20
-@@ -261,8 +263,11 @@ static irqreturn_t linflex_rxint(int irq, void *dev_id=
-)
- 				status |=3D LINFLEXD_UARTSR_SZF;
- 			if (status & LINFLEXD_UARTSR_BOF)
- 				status |=3D LINFLEXD_UARTSR_BOF;
--			if (status & LINFLEXD_UARTSR_FEF)
-+			if (status & LINFLEXD_UARTSR_FEF) {
-+				if (!rx)
-+					brk =3D true;
- 				status |=3D LINFLEXD_UARTSR_FEF;
-+			}
- 			if (status & LINFLEXD_UARTSR_PE)
- 				status |=3D  LINFLEXD_UARTSR_PE;
- 		}
-@@ -271,13 +276,15 @@ static irqreturn_t linflex_rxint(int irq, void *dev_i=
-d)
- 		       sport->membase + UARTSR);
- 		status =3D readl(sport->membase + UARTSR);
-=20
--		if (uart_handle_sysrq_char(sport, (unsigned char)rx))
--			continue;
--
-+		if (brk) {
-+			uart_handle_break(sport);
-+		} else {
- #ifdef SUPPORT_SYSRQ
--			sport->sysrq =3D 0;
-+			if (uart_handle_sysrq_char(sport, (unsigned char)rx))
-+				continue;
- #endif
--		tty_insert_flip_char(port, rx, flg);
-+			tty_insert_flip_char(port, rx, flg);
-+		}
- 	}
-=20
- 	spin_unlock_irqrestore(&sport->lock, flags);
---=20
-2.22.0
+ 	/* allocate the custom structure */
+@@ -61,12 +60,7 @@ static int bcm2835aux_serial_probe(struct platform_devi=
+ce *pdev)
+ 	data->uart.port.irq =3D ret;
+
+ 	/* map the main registers */
+-	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!res) {
+-		dev_err(&pdev->dev, "memory resource not found");
+-		return -EINVAL;
+-	}
+-	data->uart.port.membase =3D devm_ioremap_resource(&pdev->dev, res);
++	data->uart.port.membase =3D devm_platform_ioremap_resource(pdev, 0);
+ 	ret =3D PTR_ERR_OR_ZERO(data->uart.port.membase);
+ 	if (ret)
+ 		return ret;
+=2D-
+2.23.0
