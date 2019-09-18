@@ -1,323 +1,83 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [GIT PULL] TTY/Serial patches for 5.4-rc1
-Date: Wed, 18 Sep 2019 13:47:26 +0200
-Message-ID: <20190918114726.GA1899411@kroah.com>
+From: Baolin Wang <baolin.wang@linaro.org>
+Subject: Re: [PATCH] serial: sprd: Add polling IO support
+Date: Wed, 18 Sep 2019 20:10:14 +0800
+Message-ID: <CAMz4kuLrAWDaZj2Am452BX+aVO0yCQB_cCiNUx4FAamoX6KWtA@mail.gmail.com>
+References: <a634860d9194cc235298d6d8bbd2282bf6f853c4.1568793195.git.liuhhome@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+In-Reply-To: <a634860d9194cc235298d6d8bbd2282bf6f853c4.1568793195.git.liuhhome@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Lanqing Liu <liuhhome@gmail.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, lanqing.liu@unisoc.com, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Orson Zhai <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-The following changes since commit d45331b00ddb179e291766617259261c112db872:
+Hi Lanqing,
 
-  Linux 5.3-rc4 (2019-08-11 13:26:41 -0700)
+On Wed, 18 Sep 2019 at 16:16, Lanqing Liu <liuhhome@gmail.com> wrote:
+>
+> In order to access the UART without the interrupts, the kernel uses
+> the basic polling methods for IO with the device. With these methods
+> implemented, it is now possible to enable kgdb during early boot over serial.
+>
+> Signed-off-by: Lanqing Liu <liuhhome@gmail.com>
+> ---
+>  drivers/tty/serial/sprd_serial.c | 22 ++++++++++++++++++++++
+>  1 file changed, 22 insertions(+)
+>
+> diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
+> index 73d71a4..579ab41 100644
+> --- a/drivers/tty/serial/sprd_serial.c
+> +++ b/drivers/tty/serial/sprd_serial.c
+> @@ -911,6 +911,24 @@ static void sprd_pm(struct uart_port *port, unsigned int state,
+>         }
+>  }
+>
+> +#ifdef CONFIG_CONSOLE_POLL
+> +static int sprd_poll_get_char(struct uart_port *port)
+> +{
+> +       while (!(serial_in(port, SPRD_STS1) & SPRD_RX_FIFO_CNT_MASK))
+> +               cpu_relax();
+> +
+> +       return serial_in(port, SPRD_RXD);
+> +}
+> +
+> +static void sprd_poll_put_char(struct uart_port *port, unsigned char ch)
+> +{
+> +       while (serial_in(port, SPRD_STS1) & SPRD_TX_FIFO_CNT_MASK)
+> +               cpu_relax();
+> +
+> +       serial_out(port, SPRD_TXD, ch);
+> +}
+> +#endif
 
-are available in the Git repository at:
+When I tested your patch, I found only one case can work if the port
+used by KGDB is same with the port selected as console, which means
+this port will be powered on all the time. We had implemented the
+power management for the UART ports, so I think you should enable the
+clock for the port used by KGDB in poll_init(), then other ports can
+be used by KGDB.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.4-rc1
+> +
+>  static const struct uart_ops serial_sprd_ops = {
+>         .tx_empty = sprd_tx_empty,
+>         .get_mctrl = sprd_get_mctrl,
+> @@ -928,6 +946,10 @@ static void sprd_pm(struct uart_port *port, unsigned int state,
+>         .config_port = sprd_config_port,
+>         .verify_port = sprd_verify_port,
+>         .pm = sprd_pm,
+> +#ifdef CONFIG_CONSOLE_POLL
+> +       .poll_get_char  = sprd_poll_get_char,
+> +       .poll_put_char  = sprd_poll_put_char,
+> +#endif
+>  };
+>
+>  #ifdef CONFIG_SERIAL_SPRD_CONSOLE
+> --
+> 1.9.1
+>
 
-for you to fetch changes up to 1dce2df3ee06e4f10fd9b8919a0f2e90e0ac3188:
 
-  serial: tegra: Add PIO mode support (2019-09-05 10:00:05 +0200)
-
-----------------------------------------------------------------
-TTY/Serial driver changes for 5.4-rc1
-
-Even in this age, people are still making new serial port silicon,
-why...
-
-Anyway, here's the TTY and Serial driver update for 5.4-rc1.  Lots of
-changes in here for a number of embedded serial port devices that are
-being worked on because people really like to see those console logs...
-
-Other than that, nothing major here, no core tty changes that anyone
-should care about.
-
-All of these have been in linux-next for a while with no reported
-issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Aaron Sierra (1):
-      serial: 8250_exar: Absorb remaining 8250_port INT0 support
-
-Ahung Cheng (2):
-      serial: tegra: protect IER against LCR.DLAB
-      serial: tegra: avoid reg access when clk disabled
-
-Andreas Abel (1):
-      serial: tegra: add internal loopback functionality
-
-Andrey Smirnov (21):
-      tty: serial: fsl_lpuart: Flush HW FIFOs in .flush_buffer
-      tty: serial: fsl_lpuart: Simplify RX/TX IRQ handlers
-      tty: serial: fsl_lpuart: Fix bogus indentation
-      tty: serial: fsl_lpuart: Drop unnecessary uart_write_wakeup()
-      tty: serial: fsl_lpuart: Fix issue in software flow control
-      tty: serial: fls_lpuart: Split shared TX IRQ handler into two
-      tty: serial: fsl_lpuart: Drop no-op bit opearation
-      tty: serial: fsl_lpuart: Drop unnecessary extra parenthesis
-      tty: serial: fsl_lpuart: Clear CSTOPB unconditionally
-      tty: serial: fsl_lpuart: Use appropriate lpuart32_* I/O funcs
-      tty: serial: fsl_lpuart: Introduce lpuart_wait_bit_set()
-      tty: serial: fsl_lpuart: Use cpu_relax() instead of barrier()
-      tty: serial: fsl_lpuart: Introduce lpuart_stopped_or_empty()
-      tty: serial: fsl_lpuart: Drop unnecessary lpuart*_stop_tx()
-      tty: serial: fsl_lpuart: Introduce lpuart_dma_shutdown()
-      tty: serial: fsl_lpuart: Introduce lpuart_tx_dma_startup()
-      tty: serial: fsl_lpuart: Introduce lpuart_rx_dma_startup()
-      tty: serial: fsl_lpuart: Introduce lpuart32_configure()
-      tty: serial: fsl_lpuart: Introduce lpuart*_setup_watermark_enable()
-      tty: serial: fsl_lpuart: Don't enable TIE in .startup() or .resume()
-      tty: serial: fsl_lpuart: Ignore TX/RX interrupts if DMA is enabled
-
-Andy Shevchenko (17):
-      serial: 8250_exar: Use struct_size() helper
-      serial: 8250_pnp: Move to struct dev_pm_ops
-      serial: 8250_exar: No need to autoconfigure Exar ports
-      serial: 8250_exar: Extract PM routine from 8250_port
-      serial: 8250_exar: Move custom divisor support out from 8250_port
-      serial: 8250_exar: Consolidate callback assignments in default_setup()
-      serial: 8250_exar: Replace msleep(1) with usleep_range()
-      serial: 8250_dw: Use a unified new dev variable in remove
-      serial: 8250_dw: use pointer to uart local variable
-      serial: 8250_dw: split Synopsys DesignWare 8250 common functions
-      serial: 8250_dw: switch to use 8250_dwlib library
-      serial: 8250_lpss: switch to use 8250_dwlib library
-      serial: 8250_lpss: add fractional divisor support
-      serial: 8250_lpss: register DMA IRQ and pool with instance ID
-      serial: 8250_lpss: Get rid of custom LPSS_DEVICE() macro
-      serial: 8250_lpss: Enable HS UART on Elkhart Lake
-      serial: mctrl_gpio: Use gpiod flags directly
-
-Arnd Bergmann (1):
-      serial: remove ks8695 driver
-
-Baolin Wang (1):
-      serial: sprd: Add loopback function support
-
-Christoph Vogtländer (2):
-      serial: max310x: Properly set flags in AutoCTS mode
-      serial: max310x: turn off transmitter before activating AutoCTS or auto transmitter flow control
-
-Chuhong Yuan (2):
-      serial: 8250: Use dev_get_drvdata where possible
-      tty: nozomi: Use dev_get_drvdata
-
-Chunyan Zhang (4):
-      serial: sprd: check the right port and membase
-      serial: sprd: add console_initcall in sprd's uart driver
-      serial: sprd: keep console alive even if missing the 'enable' clock
-      serial: sprd: correct the wrong sequence of arguments
-
-Colin Ian King (2):
-      tty/isicom: remove redundant assignment to variable word_count
-      tty/serial: atmel: remove redundant assignment to ret
-
-Erwan Le Ray (4):
-      dt-bindings: serial: stm32: add wakeup option
-      serial: stm32: select pinctrl state in each suspend/resume function
-      serial: stm32: add pm_runtime support
-      serial: stm32: Use __maybe_unused instead of #if CONFIG_PM_SLEEP
-
-Frieder Schrempf (3):
-      serial: mctrl_gpio: Avoid probe failures in case of missing gpiolib
-      serial: sh-sci: Don't check for mctrl_gpio_init() returning -ENOSYS
-      serial: 8250: Don't check for mctrl_gpio_init() returning -ENOSYS
-
-Fugang Duan (5):
-      tty: serial: fsl_lpuart: remove the dev.coherent_dma_mask zero setting
-      tty: serial: fsl_lpuart: add earlycon for imx8qxp platform
-      tty: serial: fsl_lpuart: use kzalloc() instead of kmalloc()
-      tty: serial: fsl_lpuart: remove sg_set_buf() for sport->rx_sgl
-      tty: serial: fsl_lpuart: correct the FIFO depth size
-
-Fuqian Huang (1):
-      tty: serial: Remove call to memset after pci_alloc_consistent
-
-Geert Uytterhoeven (3):
-      serial: sh-sci: Use DEVICE_ATTR_RW() for rx_fifo_trigger
-      serial: sh-sci: Don't check for mctrl_gpio_to_gpiod() returning error
-      serial: mxs-auart: Don't check for mctrl_gpio_to_gpiod() returning error
-
-Greg Kroah-Hartman (1):
-      serial: sh-sci: use driver core functions, not sysfs ones.
-
-Jan Kundrát (1):
-      tty: max310x: fix off-by-one buffer access when storing overrun
-
-Je Yen Tam (1):
-      serial/8250: Add support for NI-Serial PXI/PXIe+485 devices
-
-Ji-Ze Hong (Peter Hong) (1):
-      serial: 8250_pci: Add F81504A series Support
-
-Joe Perches (1):
-      tty: hvcs: Fix odd use of strlcpy
-
-Kai-Heng Feng (3):
-      serial: 8250_pci: Add support for Sunix serial boards
-      parport: parport_serial: Add support for Sunix Multi I/O boards
-      serial: 8250_pci: Merge 8250_moxa to 8250_pci
-
-Krishna Yarlagadda (9):
-      serial: tegra: report error to upper tty layer
-      dt-binding: serial: tegra: add new chips
-      serial: tegra: check for FIFO mode enabled status
-      serial: tegra: set maximum num of uart ports to 8
-      serial: tegra: add support to use 8 bytes trigger
-      serial: tegra: DT for Adjusted baud rates
-      serial: tegra: add support to adjust baud rate
-      serial: tegra: report clk rate errors
-      serial: tegra: Add PIO mode support
-
-Mao Wenan (1):
-      tty: serial: add dependence for CONFIG_SERIAL_FSL_LINFLEXUART
-
-Martin Hundebøll (5):
-      tty: n_gsm: remove obsolete mknod doc example
-      tty: n_gsm: update doc example to use header for N_GSM0710 define
-      tty: n_gsm: add helpers to convert mux-num to/from tty-base
-      tty: n_gsm: add ioctl to map serial device to mux'ed tty
-      tty: n_gsm: avoid recursive locking with async port hangup
-
-Navid Emamdoost (1):
-      8250_lpss: check null return when calling pci_ioremap_bar
-
-Pragnesh Patel (1):
-      dt-bindings: serial: Convert riscv,sifive-serial to json-schema
-
-Rahul Tanwar (4):
-      serial: lantiq: Add SMP support
-      serial: lantiq: Use proper DT compatible string
-      serial: lantiq: Make IRQ & ISR assignment dynamic
-      serial: lantiq: Add support for Lightning Mountain SoC
-
-Ralf Ramsauer (1):
-      serial: 8250_pci: Implement MSI(-X) support
-
-Razvan Stefanescu (1):
-      tty/serial: atmel: reschedule TX after RX was started
-
-Richard Genoud (1):
-      tty/serial: atmel: remove unneeded atmel_get_lines_status function
-
-Robert Middleton (1):
-      serial: 8250_exar: Clear buffer before shutdown
-
-Sergey Organov (8):
-      serial: imx: set_termios(): do not enable autoRTS if RTS is unset
-      serial: imx: set_mctrl(): correctly restore autoRTS state
-      serial: imx: get rid of imx_uart_rts_auto()
-      serial: imx: get rid of unbounded busy-waiting loop
-      serial: imx: do not stop Rx/Tx on termios change
-      serial: imx: do not disable individual irqs during termios change
-      serial: imx: fix data breakage on termios change
-      serial: imx: use Tx ready rather than Tx empty irq
-
-Shardar Shariff Md (2):
-      serial: tegra: add support to ignore read
-      serial: tegra: flush the RX fifo on frame error
-
-Stefan Agner (2):
-      tty: serial: fsl_lpuart: fix framing error handling when using DMA
-      tty: serial: fsl_lpuart: flush receive FIFO after overruns
-
-Stefan-gabriel Mirea (2):
-      tty: serial: Add linflexuart driver for S32V234
-      serial: fsl_linflexuart: Update compatible string
-
-Stephen Boyd (1):
-      tty: Remove dev_err() usage after platform_get_irq()
-
-Stephen Rothwell (1):
-      xilinx_uartps.c: suppress "may be used uninitialised" warning
-
-Stoica Cosmin-Stefan (1):
-      dt-bindings: serial: Document Freescale LINFlexD UART
-
-Tony Lindgren (1):
-      serial: 8250_omap: Fix idling for unloaded serdev drivers
-
-Vivek Gautam (1):
-      tty: serial: qcom_geni_serial: Update the oversampling rate
-
-Wei Yongjun (1):
-      tty: serial: linflexuart: Use DEFINE_SPINLOCK() for spinlock
-
-YueHaibing (1):
-      tty: serial: qcom_geni_serial: use devm_platform_ioremap_resource() to simplify code
-
-kbuild test robot (1):
-      tty: serial: fix platform_no_drv_owner.cocci warnings
-
- Documentation/admin-guide/kernel-parameters.txt    |   6 +
- .../bindings/serial/fsl,s32-linflexuart.txt        |  22 +
- .../bindings/serial/nvidia,tegra20-hsuart.txt      |  39 +-
- .../devicetree/bindings/serial/sifive-serial.txt   |  33 -
- .../devicetree/bindings/serial/sifive-serial.yaml  |  62 ++
- .../devicetree/bindings/serial/st,stm32-usart.txt  |   5 +
- Documentation/driver-api/serial/n_gsm.rst          |  19 +-
- drivers/parport/parport_serial.c                   |  44 +-
- drivers/tty/hvc/hvcs.c                             |   4 +-
- drivers/tty/isicom.c                               |   1 -
- drivers/tty/n_gsm.c                                |  25 +-
- drivers/tty/nozomi.c                               |   4 +-
- drivers/tty/serial/8250/8250_bcm2835aux.c          |   4 +-
- drivers/tty/serial/8250/8250_core.c                |   6 +-
- drivers/tty/serial/8250/8250_dw.c                  | 173 +---
- drivers/tty/serial/8250/8250_dwlib.c               | 126 +++
- drivers/tty/serial/8250/8250_dwlib.h               |  19 +
- drivers/tty/serial/8250/8250_exar.c                | 114 ++-
- drivers/tty/serial/8250/8250_lpc18xx.c             |   4 +-
- drivers/tty/serial/8250/8250_lpss.c                |  76 +-
- drivers/tty/serial/8250/8250_moxa.c                | 155 ----
- drivers/tty/serial/8250/8250_omap.c                |  11 +-
- drivers/tty/serial/8250/8250_pci.c                 | 651 +++++++++++++-
- drivers/tty/serial/8250/8250_pnp.c                 |  20 +-
- drivers/tty/serial/8250/8250_port.c                |  93 +-
- drivers/tty/serial/8250/8250_uniphier.c            |   4 +-
- drivers/tty/serial/8250/Kconfig                    |  15 +-
- drivers/tty/serial/8250/Makefile                   |   2 +-
- drivers/tty/serial/Kconfig                         |  33 +-
- drivers/tty/serial/Makefile                        |   2 +-
- drivers/tty/serial/amba-pl011.c                    |   5 +-
- drivers/tty/serial/atmel_serial.c                  |  51 +-
- drivers/tty/serial/fsl_linflexuart.c               | 937 +++++++++++++++++++++
- drivers/tty/serial/fsl_lpuart.c                    | 518 ++++++------
- drivers/tty/serial/icom.c                          |   2 -
- drivers/tty/serial/imx.c                           |  88 +-
- drivers/tty/serial/lantiq.c                        | 261 ++++--
- drivers/tty/serial/lpc32xx_hs.c                    |   5 +-
- drivers/tty/serial/max310x.c                       |  32 +-
- drivers/tty/serial/mvebu-uart.c                    |  12 +-
- drivers/tty/serial/mxs-auart.c                     |   6 +-
- drivers/tty/serial/owl-uart.c                      |   4 +-
- drivers/tty/serial/qcom_geni_serial.c              |  23 +-
- drivers/tty/serial/rda-uart.c                      |   4 +-
- drivers/tty/serial/sccnxp.c                        |   1 -
- drivers/tty/serial/serial-tegra.c                  | 407 +++++++--
- drivers/tty/serial/serial_ks8695.c                 | 698 ---------------
- drivers/tty/serial/serial_mctrl_gpio.c             |  36 +-
- drivers/tty/serial/serial_mctrl_gpio.h             |   6 +-
- drivers/tty/serial/sh-sci.c                        |  50 +-
- drivers/tty/serial/sifive.c                        |   4 +-
- drivers/tty/serial/sprd_serial.c                   |  58 +-
- drivers/tty/serial/stm32-usart.c                   |  72 +-
- drivers/tty/serial/xilinx_uartps.c                 |   2 +-
- include/uapi/linux/gsmmux.h                        |   2 +
- include/uapi/linux/serial_core.h                   |   9 +-
- 56 files changed, 3207 insertions(+), 1858 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.txt
- delete mode 100644 Documentation/devicetree/bindings/serial/sifive-serial.txt
- create mode 100644 Documentation/devicetree/bindings/serial/sifive-serial.yaml
- create mode 100644 drivers/tty/serial/8250/8250_dwlib.c
- create mode 100644 drivers/tty/serial/8250/8250_dwlib.h
- delete mode 100644 drivers/tty/serial/8250/8250_moxa.c
- create mode 100644 drivers/tty/serial/fsl_linflexuart.c
- delete mode 100644 drivers/tty/serial/serial_ks8695.c
+-- 
+Baolin Wang
+Best Regards
