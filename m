@@ -1,36 +1,61 @@
-From: Qian Cai <cai@lca.pw>
-Subject: [PATCH] tty/amba-pl011: fix a -Wunused-function warning
-Date: Tue, 17 Sep 2019 09:19:00 -0400
-Message-ID: <1568726340-4518-1-git-send-email-cai@lca.pw>
+From: Lanqing Liu <liuhhome@gmail.com>
+Subject: [PATCH] serial: sprd: Add polling IO support
+Date: Wed, 18 Sep 2019 16:15:05 +0800
+Message-ID: <a634860d9194cc235298d6d8bbd2282bf6f853c4.1568793195.git.liuhhome@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux@armlinux.org.uk, gregkh@linuxfoundation.org
-Cc: jslaby@suse.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Qian Cai <cai@lca.pw>
+To: gregkh@linuxfoundation.org, jslaby@suse.com
+Cc: baolin.wang@linaro.org, lanqing.liu@unisoc.com, liuhhome@gmail.com, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, orsonzhai@gmail.com, zhang.lyra@gmail.com
 List-Id: linux-serial@vger.kernel.org
 
-pl011_dma_probe() is only used in pl011_dma_startup() which does only
-exist when CONFIG_DMA_ENGINE=y, so remove the unused dummy version to
-silence the warning.
+In order to access the UART without the interrupts, the kernel uses
+the basic polling methods for IO with the device. With these methods
+implemented, it is now possible to enable kgdb during early boot over serial.
 
-Signed-off-by: Qian Cai <cai@lca.pw>
+Signed-off-by: Lanqing Liu <liuhhome@gmail.com>
 ---
- drivers/tty/serial/amba-pl011.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/tty/serial/sprd_serial.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 5921a33b2a07..91b59f1cd3e6 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1236,10 +1236,6 @@ static inline bool pl011_dma_rx_running(struct uart_amba_port *uap)
- 
- #else
- /* Blank functions if the DMA engine is not available */
--static inline void pl011_dma_probe(struct uart_amba_port *uap)
--{
--}
--
- static inline void pl011_dma_remove(struct uart_amba_port *uap)
- {
+diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
+index 73d71a4..579ab41 100644
+--- a/drivers/tty/serial/sprd_serial.c
++++ b/drivers/tty/serial/sprd_serial.c
+@@ -911,6 +911,24 @@ static void sprd_pm(struct uart_port *port, unsigned int state,
+ 	}
  }
+ 
++#ifdef CONFIG_CONSOLE_POLL
++static int sprd_poll_get_char(struct uart_port *port)
++{
++	while (!(serial_in(port, SPRD_STS1) & SPRD_RX_FIFO_CNT_MASK))
++		cpu_relax();
++
++	return serial_in(port, SPRD_RXD);
++}
++
++static void sprd_poll_put_char(struct uart_port *port, unsigned char ch)
++{
++	while (serial_in(port, SPRD_STS1) & SPRD_TX_FIFO_CNT_MASK)
++		cpu_relax();
++
++	serial_out(port, SPRD_TXD, ch);
++}
++#endif
++
+ static const struct uart_ops serial_sprd_ops = {
+ 	.tx_empty = sprd_tx_empty,
+ 	.get_mctrl = sprd_get_mctrl,
+@@ -928,6 +946,10 @@ static void sprd_pm(struct uart_port *port, unsigned int state,
+ 	.config_port = sprd_config_port,
+ 	.verify_port = sprd_verify_port,
+ 	.pm = sprd_pm,
++#ifdef CONFIG_CONSOLE_POLL
++	.poll_get_char	= sprd_poll_get_char,
++	.poll_put_char	= sprd_poll_put_char,
++#endif
+ };
+ 
+ #ifdef CONFIG_SERIAL_SPRD_CONSOLE
 -- 
-1.8.3.1
+1.9.1
