@@ -1,83 +1,24 @@
-From: Baolin Wang <baolin.wang@linaro.org>
-Subject: Re: [PATCH] serial: sprd: Add polling IO support
-Date: Wed, 18 Sep 2019 20:10:14 +0800
-Message-ID: <CAMz4kuLrAWDaZj2Am452BX+aVO0yCQB_cCiNUx4FAamoX6KWtA@mail.gmail.com>
-References: <a634860d9194cc235298d6d8bbd2282bf6f853c4.1568793195.git.liuhhome@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+From: pr-tracker-bot@kernel.org
+Subject: Re: [GIT PULL] TTY/Serial patches for 5.4-rc1
+Date: Wed, 18 Sep 2019 18:20:24 +0000
+Message-ID: <156883082464.23903.7758080359677649894.pr-tracker-bot@kernel.org>
+References: <20190918114726.GA1899411@kroah.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <a634860d9194cc235298d6d8bbd2282bf6f853c4.1568793195.git.liuhhome@gmail.com>
+In-Reply-To: <20190918114726.GA1899411@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lanqing Liu <liuhhome@gmail.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, lanqing.liu@unisoc.com, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Orson Zhai <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Lanqing,
+The pull request you sent on Wed, 18 Sep 2019 13:47:26 +0200:
 
-On Wed, 18 Sep 2019 at 16:16, Lanqing Liu <liuhhome@gmail.com> wrote:
->
-> In order to access the UART without the interrupts, the kernel uses
-> the basic polling methods for IO with the device. With these methods
-> implemented, it is now possible to enable kgdb during early boot over serial.
->
-> Signed-off-by: Lanqing Liu <liuhhome@gmail.com>
-> ---
->  drivers/tty/serial/sprd_serial.c | 22 ++++++++++++++++++++++
->  1 file changed, 22 insertions(+)
->
-> diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-> index 73d71a4..579ab41 100644
-> --- a/drivers/tty/serial/sprd_serial.c
-> +++ b/drivers/tty/serial/sprd_serial.c
-> @@ -911,6 +911,24 @@ static void sprd_pm(struct uart_port *port, unsigned int state,
->         }
->  }
->
-> +#ifdef CONFIG_CONSOLE_POLL
-> +static int sprd_poll_get_char(struct uart_port *port)
-> +{
-> +       while (!(serial_in(port, SPRD_STS1) & SPRD_RX_FIFO_CNT_MASK))
-> +               cpu_relax();
-> +
-> +       return serial_in(port, SPRD_RXD);
-> +}
-> +
-> +static void sprd_poll_put_char(struct uart_port *port, unsigned char ch)
-> +{
-> +       while (serial_in(port, SPRD_STS1) & SPRD_TX_FIFO_CNT_MASK)
-> +               cpu_relax();
-> +
-> +       serial_out(port, SPRD_TXD, ch);
-> +}
-> +#endif
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.4-rc1
 
-When I tested your patch, I found only one case can work if the port
-used by KGDB is same with the port selected as console, which means
-this port will be powered on all the time. We had implemented the
-power management for the UART ports, so I think you should enable the
-clock for the port used by KGDB in poll_init(), then other ports can
-be used by KGDB.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/e444d51b14c4795074f485c79debd234931f0e49
 
-> +
->  static const struct uart_ops serial_sprd_ops = {
->         .tx_empty = sprd_tx_empty,
->         .get_mctrl = sprd_get_mctrl,
-> @@ -928,6 +946,10 @@ static void sprd_pm(struct uart_port *port, unsigned int state,
->         .config_port = sprd_config_port,
->         .verify_port = sprd_verify_port,
->         .pm = sprd_pm,
-> +#ifdef CONFIG_CONSOLE_POLL
-> +       .poll_get_char  = sprd_poll_get_char,
-> +       .poll_put_char  = sprd_poll_put_char,
-> +#endif
->  };
->
->  #ifdef CONFIG_SERIAL_SPRD_CONSOLE
-> --
-> 1.9.1
->
-
+Thank you!
 
 -- 
-Baolin Wang
-Best Regards
+Deet-doot-dot, I am a bot.
+https://korg.wiki.kernel.org/userdoc/prtracker
