@@ -1,58 +1,42 @@
-From: Philipp Puschmann <philipp.puschmann@emlix.com>
-Subject: [PATCH v2] serial: imx: adapt rx buffer and dma periods
-Date: Thu, 19 Sep 2019 12:26:28 +0200
-Message-ID: <20190919102628.23621-1-philipp.puschmann@emlix.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v2] serial: imx: adapt rx buffer and dma periods
+Date: Thu, 19 Sep 2019 13:22:16 +0200
+Message-ID: <20190919112216.qjkx5wvqhsadjxg5@pengutronix.de>
+References: <20190919102628.23621-1-philipp.puschmann@emlix.com>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190919102628.23621-1-philipp.puschmann@emlix.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, yibin.gong@nxp.com, fugang.duan@nxp.com, l.stach@pengutronix.de, jslaby@suse.com, shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Philipp Puschmann <philipp.puschmann@emlix.com>
+To: Philipp Puschmann <philipp.puschmann@emlix.com>
+Cc: linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org, yibin.gong@nxp.com, fugang.duan@nxp.com, l.stach@pengutronix.de, jslaby@suse.com, shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Using only 4 DMA periods for UART RX is very few if we have a high
-frequency of small transfers - like in our case using Bluetooth with
-many small packets via UART - causing many dma transfers but in each
-only filling a fraction of a single buffer. Such a case may lead to
-the situation that DMA RX transfer is triggered but no free buffer is
-available. While we have addressed the dma handling already with
-"dmaengine: imx-sdma: fix dma freezes" we still want to avoid
-UART RX FIFO overrun. So we decrease the size of the buffers and
-increase their number and the total buffer size.
+On Thu, Sep 19, 2019 at 12:26:28PM +0200, Philipp Puschmann wrote:
+> Using only 4 DMA periods for UART RX is very few if we have a high
+> frequency of small transfers - like in our case using Bluetooth with
+> many small packets via UART - causing many dma transfers but in each
+> only filling a fraction of a single buffer. Such a case may lead to
+> the situation that DMA RX transfer is triggered but no free buffer is
+> available. While we have addressed the dma handling already with
+> "dmaengine: imx-sdma: fix dma freezes" we still want to avoid
 
-Signed-off-by: Philipp Puschmann <philipp.puschmann@emlix.com>
-Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
----
+Is this statement still true now that you split this patch out of your
+bigger series?
 
-Changelog v2:
- - split this patch from series "Fix UART DMA freezes for iMX6"
- - add Reviewed-by tag
+> UART RX FIFO overrun. So we decrease the size of the buffers and
+> increase their number and the total buffer size.
 
- drivers/tty/serial/imx.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+What happens when such an RX FIFO overrun happens? Are characters lost?
+Or only time? Does your change have an influence if I do fewer but
+bigger transfers?
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 87c58f9f6390..51dc19833eab 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1034,8 +1034,6 @@ static void imx_uart_timeout(struct timer_list *t)
- 	}
- }
- 
--#define RX_BUF_SIZE	(PAGE_SIZE)
--
- /*
-  * There are two kinds of RX DMA interrupts(such as in the MX6Q):
-  *   [1] the RX DMA buffer is full.
-@@ -1118,7 +1116,8 @@ static void imx_uart_dma_rx_callback(void *data)
- }
- 
- /* RX DMA buffer periods */
--#define RX_DMA_PERIODS 4
-+#define RX_DMA_PERIODS	16
-+#define RX_BUF_SIZE	(PAGE_SIZE / 4)
- 
- static int imx_uart_start_rx_dma(struct imx_port *sport)
- {
+Best regards
+Uwe
+
 -- 
-2.23.0
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
