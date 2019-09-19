@@ -1,107 +1,73 @@
-From: hhome liu <liuhhome@gmail.com>
-Subject: Re: [PATCH v2] serial: sprd: Add polling IO support
-Date: Thu, 19 Sep 2019 11:32:19 +0800
-Message-ID: <CAHshu7PFHv_i=rvxkgdmPqyego1PsEO2z4qzi4pYnWH=6LovUg@mail.gmail.com>
-References: <f112a741c053ac5fb0637e2f058be81e17f78ccc.1568862391.git.liuhhome@gmail.com>
- <CAMz4kuJzYa_4TsvgdWo4nZ9ReroEf9+LCqQh4DD5jO8jfSnf3w@mail.gmail.com>
+From: Philipp Puschmann <philipp.puschmann@emlix.com>
+Subject: Re: [PATCH 1/4] dmaengine: imx-sdma: fix buffer ownership
+Date: Thu, 19 Sep 2019 11:20:16 +0200
+Message-ID: <bd6ff4fb-0cbd-675e-a4f2-d311cfe2c62d@emlix.com>
+References: <20190911144943.21554-1-philipp.puschmann@emlix.com>
+ <20190911144943.21554-2-philipp.puschmann@emlix.com>
+ <9bcf315369449a025828410396935b679aae14bf.camel@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAMz4kuJzYa_4TsvgdWo4nZ9ReroEf9+LCqQh4DD5jO8jfSnf3w@mail.gmail.com>
+In-Reply-To: <9bcf315369449a025828410396935b679aae14bf.camel@pengutronix.de>
+Content-Language: de-DE
 Sender: linux-kernel-owner@vger.kernel.org
-To: Baolin Wang <baolin.wang@linaro.org>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, =?UTF-8?B?5YiY5bKa5riFIChMYW5xaW5nIExpdSk=?= <lanqing.liu@unisoc.com>, linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Orson Zhai <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>
+To: Lucas Stach <l.stach@pengutronix.de>, linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de, jslaby@suse.com, vkoul@kernel.org, linux-imx@nxp.com, kernel@pengutronix.de, gregkh@linuxfoundation.org, dmaengine@vger.kernel.org, dan.j.williams@intel.com, festevam@gmail.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-Baolin Wang <baolin.wang@linaro.org> =E4=BA=8E2019=E5=B9=B49=E6=9C=8819=E6=
-=97=A5=E5=91=A8=E5=9B=9B =E4=B8=8A=E5=8D=8811:21=E5=86=99=E9=81=93=EF=BC=9A
->
-> Hi,
->
-> On Thu, 19 Sep 2019 at 11:10, Lanqing Liu <liuhhome@gmail.com> wrote:
-> >
-> > In order to access the UART without the interrupts, the kernel uses
-> > the basic polling methods for IO with the device. With these methods
-> > implemented, it is now possible to enable kgdb during early boot over s=
-erial.
-> >
-> > Signed-off-by: Lanqing Liu <liuhhome@gmail.com>
-> > ---
-> > Change from v1:
-> >  - Add poll_init() support.
->
-> Looks good to me and the KGDB can work well on my board, so feel free
-> to add my tags:
-> Reviewed-by: Baolin Wang <baolin.wang@linaro.org>
-> Tested-by: Baolin Wang <baolin.wang@linaro.org>
->
-ok, thanks
-> > ---
-> >  drivers/tty/serial/sprd_serial.c | 33 ++++++++++++++++++++++++++++++++=
-+
-> >  1 file changed, 33 insertions(+)
-> >
-> > diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd=
-_serial.c
-> > index 73d71a4..d833160 100644
-> > --- a/drivers/tty/serial/sprd_serial.c
-> > +++ b/drivers/tty/serial/sprd_serial.c
-> > @@ -911,6 +911,34 @@ static void sprd_pm(struct uart_port *port, unsign=
-ed int state,
-> >         }
-> >  }
-> >
-> > +#ifdef CONFIG_CONSOLE_POLL
-> > +static int sprd_poll_init(struct uart_port *port)
-> > +{
-> > +       if (port->state->pm_state !=3D UART_PM_STATE_ON) {
-> > +               sprd_pm(port, UART_PM_STATE_ON, 0);
-> > +               port->state->pm_state =3D UART_PM_STATE_ON;
-> > +       }
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +static int sprd_poll_get_char(struct uart_port *port)
-> > +{
-> > +       while (!(serial_in(port, SPRD_STS1) & SPRD_RX_FIFO_CNT_MASK))
-> > +               cpu_relax();
-> > +
-> > +       return serial_in(port, SPRD_RXD);
-> > +}
-> > +
-> > +static void sprd_poll_put_char(struct uart_port *port, unsigned char c=
-h)
-> > +{
-> > +       while (serial_in(port, SPRD_STS1) & SPRD_TX_FIFO_CNT_MASK)
-> > +               cpu_relax();
-> > +
-> > +       serial_out(port, SPRD_TXD, ch);
-> > +}
-> > +#endif
-> > +
-> >  static const struct uart_ops serial_sprd_ops =3D {
-> >         .tx_empty =3D sprd_tx_empty,
-> >         .get_mctrl =3D sprd_get_mctrl,
-> > @@ -928,6 +956,11 @@ static void sprd_pm(struct uart_port *port, unsign=
-ed int state,
-> >         .config_port =3D sprd_config_port,
-> >         .verify_port =3D sprd_verify_port,
-> >         .pm =3D sprd_pm,
-> > +#ifdef CONFIG_CONSOLE_POLL
-> > +       .poll_init      =3D sprd_poll_init,
-> > +       .poll_get_char  =3D sprd_poll_get_char,
-> > +       .poll_put_char  =3D sprd_poll_put_char,
-> > +#endif
-> >  };
-> >
-> >  #ifdef CONFIG_SERIAL_SPRD_CONSOLE
-> > --
-> > 1.9.1
-> >
->
->
-> --
-> Baolin Wang
-> Best Regards
+Am 16.09.19 um 16:17 schrieb Lucas Stach:
+> On Mi, 2019-09-11 at 16:49 +0200, Philipp Puschmann wrote:
+>> BD_DONE flag marks ownership of the buffer. When 1 SDMA owns the buffer,
+>> when 0 ARM owns it. When processing the buffers in
+>> sdma_update_channel_loop the ownership of the currently processed buffer
+>> was set to SDMA again before running the callback function of the the
+>> buffer and while the sdma script may be running in parallel. So there was
+>> the possibility to get the buffer overwritten by SDMA before it has been
+>> processed by kernel leading to kind of random errors in the upper layers,
+>> e.g. bluetooth.
+>>
+>> It may be further a good idea to make the status struct member volatile or
+>> access it using writel or similar to rule out that the compiler sets the
+>> BD_DONE flag before the callback routine has finished.
+>>
+>> Signed-off-by: Philipp Puschmann <philipp.puschmann@emlix.com>
+>> ---
+>>  drivers/dma/imx-sdma.c | 3 ++-
+>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
+>> index a01f4b5d793c..1abb14ff394d 100644
+>> --- a/drivers/dma/imx-sdma.c
+>> +++ b/drivers/dma/imx-sdma.c
+>> @@ -802,7 +802,6 @@ static void sdma_update_channel_loop(struct sdma_channel *sdmac)
+>>  		*/
+>>  
+>>  		desc->chn_real_count = bd->mode.count;
+>> -		bd->mode.status |= BD_DONE;
+>>  		bd->mode.count = desc->period_len;
+>>  		desc->buf_ptail = desc->buf_tail;
+>>  		desc->buf_tail = (desc->buf_tail + 1) % desc->num_bd;
+>> @@ -817,6 +816,8 @@ static void sdma_update_channel_loop(struct sdma_channel *sdmac)
+>>  		dmaengine_desc_get_callback_invoke(&desc->vd.tx, NULL);
+>>  		spin_lock(&sdmac->vc.lock);
+> 
+> To address your comment from the second paragraph of the commit message
+> there should be a dma_wmb() here before changing the status flag.
+> 
+> Regards,
+> Lucas
+
+Hi Lucas,
+
+thanks for your feedback. I will apply the hints to v2 of the patches.
+
+Regards,
+Philipp
+> 
+>> +		bd->mode.status |= BD_DONE;
+>> +
+>>  		if (error)
+>>  			sdmac->status = old_status;
+>>  	}
+> 
