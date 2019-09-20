@@ -1,89 +1,94 @@
-From: Andy Duan <fugang.duan@nxp.com>
-Subject: RE: [EXT] [PATCH v3] serial: imx: adapt rx buffer and dma periods
-Date: Fri, 20 Sep 2019 07:33:36 +0000
-Message-ID: <VI1PR0402MB3600A07887B73FA9EB310524FF880@VI1PR0402MB3600.eurprd04.prod.outlook.com>
-References: <20190919145114.13006-1-philipp.puschmann@emlix.com>
- <VI1PR0402MB3600CA068AEBAC63D3CE6A4CFF880@VI1PR0402MB3600.eurprd04.prod.outlook.com>
- <ac67f010-1b2c-6996-f542-ab955ca86489@emlix.com>
+From: Johan Hovold <johan@kernel.org>
+Subject: Re: [BACKPORT 4.14.y v2 6/6] serial: sprd: Modify the baud rate
+ calculation formula
+Date: Fri, 20 Sep 2019 10:06:51 +0200
+Message-ID: <20190920080651.GJ30545@localhost>
+References: <cover.1567649728.git.baolin.wang@linaro.org>
+ <4fe6ec82960301126b9f4be52dd6083c30e17420.1567649729.git.baolin.wang@linaro.org>
+ <20190905090130.GF1701@localhost>
+ <CAMz4kuJGmQxfy5mi1aZNL8SA8MQBSTTyDeWcHHEtG2aXsFZgug@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <ac67f010-1b2c-6996-f542-ab955ca86489@emlix.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <CAMz4kuJGmQxfy5mi1aZNL8SA8MQBSTTyDeWcHHEtG2aXsFZgug@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Philipp Puschmann <philipp.puschmann@emlix.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc: "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, Robin Gong <yibin.gong@nxp.com>, "l.stach@pengutronix.de" <l.stach@pengutronix.de>, "jslaby@suse.com" <jslaby@suse.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, dl-linux-imx <linux-imx@nxp.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Baolin Wang <baolin.wang@linaro.org>
+Cc: Johan Hovold <johan@kernel.org>, "# 3.4.x" <stable@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, lanqing.liu@unisoc.com, linux-serial@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Orson Zhai <orsonzhai@gmail.com>, Vincent Guittot <vincent.guittot@linaro.org>, LKML <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-RnJvbTogUGhpbGlwcCBQdXNjaG1hbm4gPHBoaWxpcHAucHVzY2htYW5uQGVtbGl4LmNvbT4gU2Vu
-dDogRnJpZGF5LCBTZXB0ZW1iZXIgMjAsIDIwMTkgMzowNiBQTQ0KPiBBbSAyMC4wOS4xOSB1bSAw
-NTo0MiBzY2hyaWViIEFuZHkgRHVhbjoNCj4gPiBGcm9tOiBQaGlsaXBwIFB1c2NobWFubiA8cGhp
-bGlwcC5wdXNjaG1hbm5AZW1saXguY29tPiBTZW50OiBUaHVyc2RheSwNCj4gPiBTZXB0ZW1iZXIg
-MTksIDIwMTkgMTA6NTEgUE0NCj4gPj4gVXNpbmcgb25seSA0IERNQSBwZXJpb2RzIGZvciBVQVJU
-IFJYIGlzIHZlcnkgZmV3IGlmIHdlIGhhdmUgYSBoaWdoDQo+ID4+IGZyZXF1ZW5jeSBvZiBzbWFs
-bCB0cmFuc2ZlcnMgLSBsaWtlIGluIG91ciBjYXNlIHVzaW5nIEJsdWV0b290aCB3aXRoDQo+ID4+
-IG1hbnkgc21hbGwgcGFja2V0cyB2aWEgVUFSVCAtIGNhdXNpbmcgbWFueSBkbWEgdHJhbnNmZXJz
-IGJ1dCBpbiBlYWNoDQo+ID4+IG9ubHkgZmlsbGluZyBhIGZyYWN0aW9uIG9mIGEgc2luZ2xlIGJ1
-ZmZlci4gU3VjaCBhIGNhc2UgbWF5IGxlYWQgdG8NCj4gPj4gdGhlIHNpdHVhdGlvbiB0aGF0IERN
-QSBSWCB0cmFuc2ZlciBpcyB0cmlnZ2VyZWQgYnV0IG5vIGZyZWUgYnVmZmVyIGlzDQo+ID4+IGF2
-YWlsYWJsZS4gV2hlbiB0aGlzIGhhcHBlbnMgZG1hIGNoYW5uZWwgaXN0IHN0b3BwZWQgLSB3aXRo
-IHRoZSBwYXRjaA0KPiA+PiAiZG1hZW5naW5lOiBpbXgtc2RtYTogZml4IGRtYSBmcmVlemVzIiB0
-ZW1wb3JhcmlseSBvbmx5IC0gd2l0aCB0aGUNCj4gPj4gcG9zc2libGUgY29uc2VxdWVuY2VzIHRo
-YXQ6DQo+ID4+IHdpdGggZGlzYWJsZWQgaHcgZmxvdyBjb250cm9sOg0KPiA+PiAgIElmIGVub3Vn
-aCBkYXRhIGlzIGluY29taW5nIG9uIFVBUlQgcG9ydCB0aGUgUlggRklGTyBydW5zIG92ZXIgYW5k
-DQo+ID4+ICAgY2hhcmFjdGVycyB3aWxsIGJlIGxvc3QuIFdoYXQgdGhlbiBoYXBwZW5zIGRlcGVu
-ZHMgb24gdXBwZXIgbGF5ZXIuDQo+ID4+DQo+ID4+IHdpdGggZW5hYmxlZCBodyBmbG93IGNvbnRy
-b2w6DQo+ID4+ICAgSWYgZW5vdWdoIGRhdGEgaXMgaW5jb21pbmcgb24gVUFSVCBwb3J0IHRoZSBS
-WCBGSUZPIHJlYWNoZXMgYSBsZXZlbA0KPiA+PiAgIHdoZXJlIENUUyBpcyBkZWFzc2VydGVkIGFu
-ZCByZW1vdGUgZGV2aWNlIHNlbmRpbmcgdGhlIGRhdGEgc3RvcHMuDQo+ID4+ICAgSWYgaXQgZmFp
-bHMgdG8gc3RvcCB0aW1lbHkgdGhlIGkuTVgnIFJYIEZJRk8gbWF5IHJ1biBvdmVyIGFuZCBkYXRh
-DQo+ID4+ICAgZ2V0IGxvc3QuIE90aGVyd2lzZSBpdCdzIGludGVybmFsIFRYIGJ1ZmZlciBtYXkg
-Z2V0dGluZyBmaWxsZWQgdG8NCj4gPj4gICBhIHBvaW50IHdoZXJlIGl0IHJ1bnMgb3ZlciBhbmQg
-ZGF0YSBpcyBhZ2FpbiBsb3N0LiBJdCBkZXBlbmRzIG9uDQo+ID4+ICAgdGhlIHJlbW90ZSBkZXZp
-Y2UgaG93IHRoaXMgY2FzZSBpcyBoYW5kbGVkIGFuZCBpZiBpdCBpcyByZWNvdmVyYWJsZS4NCj4g
-Pj4NCj4gPj4gT2J2aW91c2x5IHdlIHdhbnQgdG8gYXZvaWQgaGF2aW5nIG5vIGZyZWUgYnVmZmVy
-cyBhdmFpbGFibGUuIFNvIHdlDQo+ID4+IGRlY3JlYXNlIHRoZSBzaXplIG9mIHRoZSBidWZmZXJz
-IGFuZCBpbmNyZWFzZSB0aGVpciBudW1iZXIgYW5kIHRoZSB0b3RhbA0KPiBidWZmZXIgc2l6ZS4N
-Cj4gPj4NCj4gPj4gU2lnbmVkLW9mZi1ieTogUGhpbGlwcCBQdXNjaG1hbm4gPHBoaWxpcHAucHVz
-Y2htYW5uQGVtbGl4LmNvbT4NCj4gPj4gUmV2aWV3ZWQtYnk6IEx1Y2FzIFN0YWNoIDxsLnN0YWNo
-QHBlbmd1dHJvbml4LmRlPg0KPiA+PiAtLS0NCj4gPj4NCj4gPj4gQ2hhbmdlbG9nIHYzOg0KPiA+
-PiAgLSBlbmhhbmNlIGRlc2NyaXB0aW9uDQo+ID4+DQo+ID4+IENoYW5nZWxvZyB2MjoNCj4gPj4g
-IC0gc3BsaXQgdGhpcyBwYXRjaCBmcm9tIHNlcmllcyAiRml4IFVBUlQgRE1BIGZyZWV6ZXMgZm9y
-IGlNWDYiDQo+ID4+ICAtIGFkZCBSZXZpZXdlZC1ieSB0YWcNCj4gPj4NCj4gPj4gIGRyaXZlcnMv
-dHR5L3NlcmlhbC9pbXguYyB8IDUgKystLS0NCj4gPj4gIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2Vy
-dGlvbnMoKyksIDMgZGVsZXRpb25zKC0pDQo+ID4+DQo+ID4+IGRpZmYgLS1naXQgYS9kcml2ZXJz
-L3R0eS9zZXJpYWwvaW14LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMNCj4gPj4gaW5kZXgg
-ODdjNThmOWY2MzkwLi41MWRjMTk4MzNlYWIgMTAwNjQ0DQo+ID4+IC0tLSBhL2RyaXZlcnMvdHR5
-L3NlcmlhbC9pbXguYw0KPiA+PiArKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMNCj4gPj4g
-QEAgLTEwMzQsOCArMTAzNCw2IEBAIHN0YXRpYyB2b2lkIGlteF91YXJ0X3RpbWVvdXQoc3RydWN0
-IHRpbWVyX2xpc3QNCj4gKnQpDQo+ID4+ICAgICAgICAgfQ0KPiA+PiAgfQ0KPiA+Pg0KPiA+PiAt
-I2RlZmluZSBSWF9CVUZfU0laRSAgICAoUEFHRV9TSVpFKQ0KPiA+PiAtDQo+ID4+ICAvKg0KPiA+
-PiAgICogVGhlcmUgYXJlIHR3byBraW5kcyBvZiBSWCBETUEgaW50ZXJydXB0cyhzdWNoIGFzIGlu
-IHRoZSBNWDZRKToNCj4gPj4gICAqICAgWzFdIHRoZSBSWCBETUEgYnVmZmVyIGlzIGZ1bGwuDQo+
-ID4+IEBAIC0xMTE4LDcgKzExMTYsOCBAQCBzdGF0aWMgdm9pZCBpbXhfdWFydF9kbWFfcnhfY2Fs
-bGJhY2sodm9pZA0KPiA+PiAqZGF0YSkgIH0NCj4gPj4NCj4gPj4gIC8qIFJYIERNQSBidWZmZXIg
-cGVyaW9kcyAqLw0KPiA+PiAtI2RlZmluZSBSWF9ETUFfUEVSSU9EUyA0DQo+ID4+ICsjZGVmaW5l
-IFJYX0RNQV9QRVJJT0RTIDE2DQo+ID4+ICsjZGVmaW5lIFJYX0JVRl9TSVpFICAgIChQQUdFX1NJ
-WkUgLyA0KQ0KPiA+Pg0KPiA+IFdoeSB0byBkZWNyZWFzZSB0aGUgRE1BIFJYIGJ1ZmZlciBzaXpl
-IGhlcmUgPw0KPiA+DQo+ID4gVGhlIGN1cnJlbnQgRE1BIGltcGxlbWVudGF0aW9uIHN1cHBvcnQg
-RE1BIGN5Y2xpYyBtb2RlLCBvbmUgU0RNQSBCRA0KPiA+IHJlY2VpdmUgb25lIEJsdWV0b290aCBm
-cmFtZSBjYW4gYnJpbmcgYmV0dGVyIHBlcmZvcm1hbmNlLg0KPiA+IEFzIHlvdSBrbm93LCBmb3Ig
-TDJDQVAsIGEgbWF4aW11bSB0cmFuc21pc3Npb24gdW5pdCAoTVRVKSBhc3NvY2lhdGVkDQo+ID4g
-d2l0aCB0aGUgbGFyZ2VzdCBCYXNlYmFuZCBwYXlsb2FkIGlzIDM0MSBieXRlcyBmb3IgREg1IHBh
-Y2tldHMuDQo+ID4NCj4gPiBTbyBJIHN1Z2dlc3QgdG8gaW5jcmVhc2UgUlhfQlVGX1NJWkUgYWxv
-bmcgd2l0aCBSWF9ETUFfUEVSSU9EUyB0bw0KPiBmZWFzaWJsZSB2YWx1ZS4NCj4gDQo+IEkgZGVi
-dWdnZWQgYW5kIGRldmVsb3BlZCB0aGlzIHBhdGNoZXMgb24gYSBzeXN0ZW0gd2l0aCBhIDQuMTUg
-a2VybmVsLiBXaGVuDQo+IHByZXBhcmVkIGZvciB1cHN0cmVhbSBpIGhhdmUgYWRhcHRlZCBzb21l
-IGRldGFpbHMgYW5kIG1pc3NlZCBhIGltcG9ydGFudA0KPiB0aGluZyBoZXJlLiBJdCBzaG91bGQg
-c2F5Og0KPiANCj4gKyNkZWZpbmUgUlhfQlVGX1NJWkUgICAgKFJYX0RNQV9QRVJJT0RTICogUEFH
-RV9TSVpFIC8gNCkNCj4gDQo+IFllcywgaSB3YW50ZWQgdG8gaW5jcmVhc2UgdGhlIHRvdGFsIGJ1
-ZmZlciBzaXplIHRvbywgZXZlbiB3cm90ZSBpdCBpbiB0aGUNCj4gZGVzY3JpcHRpb24uDQo+IEkg
-d2lsbCBwcmVwYXJlIGEgdmVyc2lvbiA0LCB0aGFua3MgZm9yIHRoZSBoaW50Lg0KDQpPa2F5LCB0
-aGFuayB5b3UgZm9yIHN1Ym1pdCB0aGUgU0RNQS91YXJ0IHBhdGNoIHNldC4NCg0KPiANCj4gSnVz
-dCBmb3IgaW5mbzogQSBzaW5nbGUgUlggRE1BIHBlcmlvZCBha2EgYnVmZmVyIGNhbiBiZSBmaWxs
-ZWQgd2l0aCBtdXRsaXBsZQ0KPiBwYWNrZXRzIGluIHJlZ2FyZCBvZiB0aGUgdXBwZXIgbGF5ZXIs
-IGhlcmUgQlQuDQoNClllcywgdGhhdCBkZXBlbmRzIG9uIHN5c3RlbSBsb2FkaW5nLiANCg0KPiAN
-Cj4gDQo+IFJlZ2FyZHMsDQo+IFBoaWxpcHANCj4gPg0KPiA+IEFuZHkNCj4gPg0KPiA+PiAgc3Rh
-dGljIGludCBpbXhfdWFydF9zdGFydF9yeF9kbWEoc3RydWN0IGlteF9wb3J0ICpzcG9ydCkgIHsN
-Cj4gPj4gLS0NCj4gPj4gMi4yMy4wDQo+ID4NCg==
+On Thu, Sep 05, 2019 at 05:58:05PM +0800, Baolin Wang wrote:
+> Hi Johan,
+> 
+> On Thu, 5 Sep 2019 at 17:01, Johan Hovold <johan@kernel.org> wrote:
+> >
+> > On Thu, Sep 05, 2019 at 11:11:26AM +0800, Baolin Wang wrote:
+> > > From: Lanqing Liu <lanqing.liu@unisoc.com>
+> > >
+> > > [Upstream commit 5b9cea15a3de5d65000d49f626b71b00d42a0577]
+> > >
+> > > When the source clock is not divisible by the expected baud rate and
+> > > the remainder is not less than half of the expected baud rate, the old
+> > > formular will round up the frequency division coefficient. This will
+> > > make the actual baud rate less than the expected value and can not meet
+> > > the external transmission requirements.
+> > >
+> > > Thus this patch modifies the baud rate calculation formula to support
+> > > the serial controller output the maximum baud rate.
+> > >
+> > > Signed-off-by: Lanqing Liu <lanqing.liu@unisoc.com>
+> > > Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
+> > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
+> > > ---
+> > >  drivers/tty/serial/sprd_serial.c |    2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
+> > > index e902494..72e96ab8 100644
+> > > --- a/drivers/tty/serial/sprd_serial.c
+> > > +++ b/drivers/tty/serial/sprd_serial.c
+> > > @@ -380,7 +380,7 @@ static void sprd_set_termios(struct uart_port *port,
+> > >       /* ask the core to calculate the divisor for us */
+> > >       baud = uart_get_baud_rate(port, termios, old, 0, SPRD_BAUD_IO_LIMIT);
+> > >
+> > > -     quot = (unsigned int)((port->uartclk + baud / 2) / baud);
+> > > +     quot = port->uartclk / baud;
+> >
+> > Are you sure the original patch is even correct?
+> >
+> > By replacing the divisor rounding with truncation you are introducing
+> > larger errors for some baud rates, something which could possibly even
+> > break working systems.
+> 
+> Our UART clock source is 26M, and there is no difference for lower
+> than 3M baud rate between dividing closest or dividing down.
+
+But there is; you have introduced larger errors for at least a few
+standard rates by changing to truncation.
+
+> But we have one special use case is our BT/GPS want to set 3.25M baud
+> rate, but we have to select 3M baud rate in baud_table since no 3.25M
+> setting. So in this case if we use the old formula, we will only get
+> about 2.8M baud rate, which can not meet our requirement. If we change
+> the dividing down method, we can get 3.25M baud rate.
+> 
+> I have to say this is a workaroud for our special case, and can solve
+> our problem. If you have any good suggestion, we can change to a
+> better solution. Thanks.
+
+Yeah, I don't think purposefully introducing larger errors, and risk
+breaking other people's setups, to work around that use case is
+warranted.
+
+We have an interface for setting arbitrary baudrates (TCSETS2) which you
+can you use (even if glibc support is still not in place). You'd just
+need to lift the seemingly arbitrary limitation to 3 Mbaud in the driver
+first.
+
+> > Perhaps the original patch should even be reverted, but in any case
+> > backporting this to stable looks questionable.
+
+So I think reverting this may be the right thing to do.
+
+Johan
