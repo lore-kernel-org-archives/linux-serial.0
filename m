@@ -1,7 +1,7 @@
 From: Hans de Goede <hdegoede@redhat.com>
 Subject: Re: [PATCH] serdev: Add ACPI devices by ResourceSource field
-Date: Fri, 20 Sep 2019 10:50:25 +0200
-Message-ID: <79c9533f-882d-f2b2-b6f3-b94fa49b4367@redhat.com>
+Date: Fri, 20 Sep 2019 17:00:29 +0200
+Message-ID: <50b016a1-ed4a-b848-4658-a05731727d7e@redhat.com>
 References: <20190919195624.1140941-1-luzmaximilian@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8; format=flowed
@@ -14,15 +14,9 @@ To: Maximilian Luz <luzmaximilian@gmail.com>
 Cc: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Johan Hovold <johan@kernel.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Maximilian,
+Hi,
 
-Interesting patch. Some comments about the i2c situation below.
-
-Also I will give this a test-run on some of the existing devices
-which rely on the instantiation of serdev devices for ACPI
-devices which are childs of the uart device.
-
-On 19-09-2019 21:56, Maximilian Luz wrote:
+On 9/19/19 9:56 PM, Maximilian Luz wrote:
 > When registering a serdev controller, ACPI needs to be checked for
 > devices attached to it. Currently, all immediate children of the ACPI
 > node of the controller are assumed to be UART client devices for this
@@ -38,6 +32,40 @@ On 19-09-2019 21:56, Maximilian Luz wrote:
 > controller via this field.
 >=20
 > Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
+
+So as promised I've given this patch a try, unfortunately it breaks
+existing users of ACPI serdev device instantation.
+
+After adding this patch "ls /sys/bus/serial/devices" is empty,
+where as before it gives:
+
+[root@dhcp-45-50 ~]# ls -l /sys/bus/serial/devices/
+total 0
+lrwxrwxrwx. 1 root root 0 Sep 20 16:43 serial0 -> ../../../devices/pci0000:=
+00/8086228A:00/serial0
+lrwxrwxrwx. 1 root root 0 Sep 20 16:43 serial0-0 -> ../../../devices/pci000=
+0:00/8086228A:00/serial0/serial0-0
+
+And since the serdev is missing bluetooth does not work.
+
+(ACPI instantiated serdev is used for UART attached Blueooth HCI-s on
+many Cherry Trail devices).
+
+I haven't looked why your patch is breakig things, I have a large backlog
+so I do not have time for that.
+
+But if you can provide me with a version of the patch with a bunch of
+debug printk-s added I'm happy to run that for you.
+
+I'll also send you the DSDT of the device I tested on off-list.
+
+Regards,
+
+Hans
+
+
+
+
 > ---
 > This patch is similar to the the implementations in drivers/spi/spi.c
 > (see commit 4c3c59544f33e97cf8557f27e05a9904ead16363) and
@@ -46,47 +74,123 @@ On 19-09-2019 21:56, Maximilian Luz wrote:
 > namespace, but only match the first SPI or I2C resource (respectively),
 > so I think there may be problems when multiple SPI or I2C resources are
 > defined under the same ACPI device node (as in second or third SPI/I2C
-> resource definitions being ignored).
-
-Right, so from the i2c side of things, the story with multiple
-I2cSerialBusV2 resources is that normally we want to instantiate
-only 1 kernel "struct device" for 1 ACPI "Device()" definition.
-
-If a single I2C chip/device listens on multiple addresses then
-usually the other addresses can be derived from the first one and
-the device-driver can get a handle to access the other addresses by
-using e.g. i2c_new_dummy or i2c_new_secondary_device.
-
-With that said of course there are exceptions where vendors get
-creative and put multiple I2cSerialBusV2 resources in a single
-ACPI "Device()" even though they point to separate chips.
-
-For this we have some special handling in:
-drivers/platform/x86/i2c-multi-instantiate.c
-
-Also note how drivers/platform/x86/i2c-multi-instantiate.c maps the
-original ACPI HID as e.g. "BSG1160" to per device match strings,
-because if there are multiple I2cSerialBusV2 resources and they
-point to separate chips, then we need something to get the right
-driver to bind to each I2cSerialBusV2 address, so the normal
-modalias of e.g. acpi:BSG1160 is no good, we need a different modalias
-for each I2cSerialBusV2 address.
-
-Another way of looking at this is a typical _CRS for a device with
-*SerialBusV2 resources will also have 1 or more Interrupt resources
-and 1 or more GPIO resources. We are not instantiating separate
-"struct device"-s in the kernel for each of those, since all the
-resources together describe a single device, so we instantiate e.g.
-an i2c_client and then the i2c_driver's probe method calls e.g.
-platform_get_irq() to get the IRQ(s).
-
-Given the above I think you may want to also limit your patch to
-only instantiate a "struct device" for the first UARTSerialBusV2
-in an ACPI "Device()"'s  .
-
-I hope this sheds some clarity on the (muddy) situation wrt
-I2cSerialBusV2 handling.
-
-Regards,
-
-Hans
+> resource definitions being ignored). Please note, however, that I am by
+> no means qualified with regards to this, and this might be totally fine.
+> Nevertheless I'd appreciate if anyone with more knowledge on the subject
+> could have a look at it. This patch would avoid this problem (for UART)
+> by simply walking all resource definitions via acpi_walk_resources.
+>=20
+> There is a further issue in the serdev ACPI implementation that this
+> patch does not address: ACPI UART resource definitions contain things
+> like the initial baud-rate, parity, flow-control, etc. As far as I know,
+> these things can currently only be set once the device is opened.
+> Furthermore, some option values, such as ParityTypeMark, are not (yet)
+> supported. I'd be willing to try and implement setting the currently
+> supported values based on ACPI for a future patch, if anyone can provide
+> me with some pointers on how to do that.
+>=20
+> I have personally tested this patch on a Microsoft Surface Book 2, which
+> like all newer MS Surface devices has a UART EC, and it has been in use
+> (in some form or another) for a couple of months on other Surface
+> devices via a patched kernel [1, 2, 3]. I can, however, not speak for
+> any non-Microsoft devices or potential Apple ACPI quirks.
+>=20
+> [1]: https://github.com/jakeday/linux-surface/
+> [2]: https://github.com/qzed/linux-surface/
+> [3]: https://github.com/qzed/linux-surfacegen5-acpi/
+>=20
+>   drivers/tty/serdev/core.c | 64 ++++++++++++++++++++++++++++++++++-----
+>   1 file changed, 56 insertions(+), 8 deletions(-)
+>=20
+> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> index a0ac16ee6575..1c8360deea77 100644
+> --- a/drivers/tty/serdev/core.c
+> +++ b/drivers/tty/serdev/core.c
+> @@ -582,18 +582,64 @@ static acpi_status acpi_serdev_register_device(stru=
+ct serdev_controller *ctrl,
+>   =09return AE_OK;
+>   }
+>  =20
+> -static acpi_status acpi_serdev_add_device(acpi_handle handle, u32 level,
+> -=09=09=09=09       void *data, void **return_value)
+> +struct acpi_serdev_resource_context {
+> +=09struct serdev_controller *controller;
+> +=09struct acpi_device *device;
+> +};
+> +
+> +static acpi_status
+> +acpi_serdev_add_device_from_resource(struct acpi_resource *resource, voi=
+d *data)
+>   {
+> -=09struct serdev_controller *ctrl =3D data;
+> -=09struct acpi_device *adev;
+> +=09struct acpi_serdev_resource_context *ctx
+> +=09=09=3D (struct acpi_serdev_resource_context *)data;
+> +=09struct acpi_resource_source *ctrl_name;
+> +=09acpi_handle ctrl_handle;
+> +
+> +=09if (resource->type !=3D ACPI_RESOURCE_TYPE_SERIAL_BUS)
+> +=09=09return AE_OK;
+>  =20
+> -=09if (acpi_bus_get_device(handle, &adev))
+> +=09if (resource->data.common_serial_bus.type
+> +=09    !=3D ACPI_RESOURCE_SERIAL_TYPE_UART)
+>   =09=09return AE_OK;
+>  =20
+> -=09return acpi_serdev_register_device(ctrl, adev);
+> +=09ctrl_name =3D &resource->data.common_serial_bus.resource_source;
+> +=09if (ctrl_name->string_length =3D=3D 0 || !ctrl_name->string_ptr)
+> +=09=09return AE_OK;
+> +
+> +=09if (acpi_get_handle(ctx->device->handle, ctrl_name->string_ptr,
+> +=09=09=09    &ctrl_handle))
+> +=09=09return AE_OK;
+> +
+> +=09if (ctrl_handle =3D=3D ACPI_HANDLE(ctx->controller->dev.parent))
+> +=09=09return acpi_serdev_register_device(ctx->controller,
+> +=09=09=09=09=09=09   ctx->device);
+> +
+> +=09return AE_OK;
+>   }
+>  =20
+> +static acpi_status
+> +acpi_serdev_add_devices_from_resources(acpi_handle handle, u32 level,
+> +=09=09=09=09       void *data, void **return_value)
+> +{
+> +=09struct acpi_serdev_resource_context ctx;
+> +=09acpi_status status;
+> +
+> +=09ctx.controller =3D (struct serdev_controller *)data;
+> +=09status =3D acpi_bus_get_device(handle, &ctx.device);
+> +=09if (status)
+> +=09=09return AE_OK;=09=09// ignore device if not present
+> +
+> +=09status =3D acpi_walk_resources(handle, METHOD_NAME__CRS,
+> +=09=09=09=09     acpi_serdev_add_device_from_resource,
+> +=09=09=09=09     &ctx);
+> +=09if (status =3D=3D AE_NOT_FOUND)
+> +=09=09return AE_OK;=09=09// ignore if _CRS is not found
+> +=09else
+> +=09=09return status;
+> +}
+> +
+> +#define SERDEV_ACPI_ENUMERATE_MAX_DEPTH=09=0932
+> +
+>   static int acpi_serdev_register_devices(struct serdev_controller *ctrl)
+>   {
+>   =09acpi_status status;
+> @@ -603,8 +649,10 @@ static int acpi_serdev_register_devices(struct serde=
+v_controller *ctrl)
+>   =09if (!handle)
+>   =09=09return -ENODEV;
+>  =20
+> -=09status =3D acpi_walk_namespace(ACPI_TYPE_DEVICE, handle, 1,
+> -=09=09=09=09     acpi_serdev_add_device, NULL, ctrl, NULL);
+> +=09status =3D acpi_walk_namespace(ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT,
+> +=09=09=09=09     SERDEV_ACPI_ENUMERATE_MAX_DEPTH,
+> +=09=09=09=09     acpi_serdev_add_devices_from_resources,
+> +=09=09=09=09     NULL, ctrl, NULL);
+>   =09if (ACPI_FAILURE(status))
+>   =09=09dev_dbg(&ctrl->dev, "failed to enumerate serdev slaves\n");
+>  =20
+>=20
