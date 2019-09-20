@@ -1,94 +1,92 @@
-From: Johan Hovold <johan@kernel.org>
-Subject: Re: [BACKPORT 4.14.y v2 6/6] serial: sprd: Modify the baud rate
- calculation formula
-Date: Fri, 20 Sep 2019 10:06:51 +0200
-Message-ID: <20190920080651.GJ30545@localhost>
-References: <cover.1567649728.git.baolin.wang@linaro.org>
- <4fe6ec82960301126b9f4be52dd6083c30e17420.1567649729.git.baolin.wang@linaro.org>
- <20190905090130.GF1701@localhost>
- <CAMz4kuJGmQxfy5mi1aZNL8SA8MQBSTTyDeWcHHEtG2aXsFZgug@mail.gmail.com>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: Re: [PATCH] serdev: Add ACPI devices by ResourceSource field
+Date: Fri, 20 Sep 2019 10:50:25 +0200
+Message-ID: <79c9533f-882d-f2b2-b6f3-b94fa49b4367@redhat.com>
+References: <20190919195624.1140941-1-luzmaximilian@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAMz4kuJGmQxfy5mi1aZNL8SA8MQBSTTyDeWcHHEtG2aXsFZgug@mail.gmail.com>
+In-Reply-To: <20190919195624.1140941-1-luzmaximilian@gmail.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Baolin Wang <baolin.wang@linaro.org>
-Cc: Johan Hovold <johan@kernel.org>, "# 3.4.x" <stable@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, lanqing.liu@unisoc.com, linux-serial@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Orson Zhai <orsonzhai@gmail.com>, Vincent Guittot <vincent.guittot@linaro.org>, LKML <linux-kernel@vger.kernel.org>
+To: Maximilian Luz <luzmaximilian@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Johan Hovold <johan@kernel.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Sep 05, 2019 at 05:58:05PM +0800, Baolin Wang wrote:
-> Hi Johan,
-> 
-> On Thu, 5 Sep 2019 at 17:01, Johan Hovold <johan@kernel.org> wrote:
-> >
-> > On Thu, Sep 05, 2019 at 11:11:26AM +0800, Baolin Wang wrote:
-> > > From: Lanqing Liu <lanqing.liu@unisoc.com>
-> > >
-> > > [Upstream commit 5b9cea15a3de5d65000d49f626b71b00d42a0577]
-> > >
-> > > When the source clock is not divisible by the expected baud rate and
-> > > the remainder is not less than half of the expected baud rate, the old
-> > > formular will round up the frequency division coefficient. This will
-> > > make the actual baud rate less than the expected value and can not meet
-> > > the external transmission requirements.
-> > >
-> > > Thus this patch modifies the baud rate calculation formula to support
-> > > the serial controller output the maximum baud rate.
-> > >
-> > > Signed-off-by: Lanqing Liu <lanqing.liu@unisoc.com>
-> > > Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
-> > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
-> > > ---
-> > >  drivers/tty/serial/sprd_serial.c |    2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-> > > index e902494..72e96ab8 100644
-> > > --- a/drivers/tty/serial/sprd_serial.c
-> > > +++ b/drivers/tty/serial/sprd_serial.c
-> > > @@ -380,7 +380,7 @@ static void sprd_set_termios(struct uart_port *port,
-> > >       /* ask the core to calculate the divisor for us */
-> > >       baud = uart_get_baud_rate(port, termios, old, 0, SPRD_BAUD_IO_LIMIT);
-> > >
-> > > -     quot = (unsigned int)((port->uartclk + baud / 2) / baud);
-> > > +     quot = port->uartclk / baud;
-> >
-> > Are you sure the original patch is even correct?
-> >
-> > By replacing the divisor rounding with truncation you are introducing
-> > larger errors for some baud rates, something which could possibly even
-> > break working systems.
-> 
-> Our UART clock source is 26M, and there is no difference for lower
-> than 3M baud rate between dividing closest or dividing down.
+Hi Maximilian,
 
-But there is; you have introduced larger errors for at least a few
-standard rates by changing to truncation.
+Interesting patch. Some comments about the i2c situation below.
 
-> But we have one special use case is our BT/GPS want to set 3.25M baud
-> rate, but we have to select 3M baud rate in baud_table since no 3.25M
-> setting. So in this case if we use the old formula, we will only get
-> about 2.8M baud rate, which can not meet our requirement. If we change
-> the dividing down method, we can get 3.25M baud rate.
-> 
-> I have to say this is a workaroud for our special case, and can solve
-> our problem. If you have any good suggestion, we can change to a
-> better solution. Thanks.
+Also I will give this a test-run on some of the existing devices
+which rely on the instantiation of serdev devices for ACPI
+devices which are childs of the uart device.
 
-Yeah, I don't think purposefully introducing larger errors, and risk
-breaking other people's setups, to work around that use case is
-warranted.
+On 19-09-2019 21:56, Maximilian Luz wrote:
+> When registering a serdev controller, ACPI needs to be checked for
+> devices attached to it. Currently, all immediate children of the ACPI
+> node of the controller are assumed to be UART client devices for this
+> controller. Furthermore, these devices are not searched elsewhere.
+>=20
+> This is incorrect: Similar to SPI and I2C devices, the UART client
+> device definition (via UARTSerialBusV2) can reside anywhere in the ACPI
+> namespace as resource definition inside the _CRS method and points to
+> the controller via its ResourceSource field. This field may either
+> contain a fully qualified or relative path, indicating the controller
+> device. To address this, we need to walk over the whole ACPI namespace,
+> looking at each resource definition, and match the client device to the
+> controller via this field.
+>=20
+> Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
+> ---
+> This patch is similar to the the implementations in drivers/spi/spi.c
+> (see commit 4c3c59544f33e97cf8557f27e05a9904ead16363) and
+> drivers/i2c/i2c-core-acpi.c. However, I think that there may be an
+> issues with these two implementations: Both walk over the whole ACPI
+> namespace, but only match the first SPI or I2C resource (respectively),
+> so I think there may be problems when multiple SPI or I2C resources are
+> defined under the same ACPI device node (as in second or third SPI/I2C
+> resource definitions being ignored).
 
-We have an interface for setting arbitrary baudrates (TCSETS2) which you
-can you use (even if glibc support is still not in place). You'd just
-need to lift the seemingly arbitrary limitation to 3 Mbaud in the driver
-first.
+Right, so from the i2c side of things, the story with multiple
+I2cSerialBusV2 resources is that normally we want to instantiate
+only 1 kernel "struct device" for 1 ACPI "Device()" definition.
 
-> > Perhaps the original patch should even be reverted, but in any case
-> > backporting this to stable looks questionable.
+If a single I2C chip/device listens on multiple addresses then
+usually the other addresses can be derived from the first one and
+the device-driver can get a handle to access the other addresses by
+using e.g. i2c_new_dummy or i2c_new_secondary_device.
 
-So I think reverting this may be the right thing to do.
+With that said of course there are exceptions where vendors get
+creative and put multiple I2cSerialBusV2 resources in a single
+ACPI "Device()" even though they point to separate chips.
 
-Johan
+For this we have some special handling in:
+drivers/platform/x86/i2c-multi-instantiate.c
+
+Also note how drivers/platform/x86/i2c-multi-instantiate.c maps the
+original ACPI HID as e.g. "BSG1160" to per device match strings,
+because if there are multiple I2cSerialBusV2 resources and they
+point to separate chips, then we need something to get the right
+driver to bind to each I2cSerialBusV2 address, so the normal
+modalias of e.g. acpi:BSG1160 is no good, we need a different modalias
+for each I2cSerialBusV2 address.
+
+Another way of looking at this is a typical _CRS for a device with
+*SerialBusV2 resources will also have 1 or more Interrupt resources
+and 1 or more GPIO resources. We are not instantiating separate
+"struct device"-s in the kernel for each of those, since all the
+resources together describe a single device, so we instantiate e.g.
+an i2c_client and then the i2c_driver's probe method calls e.g.
+platform_get_irq() to get the IRQ(s).
+
+Given the above I think you may want to also limit your patch to
+only instantiate a "struct device" for the first UARTSerialBusV2
+in an ACPI "Device()"'s  .
+
+I hope this sheds some clarity on the (muddy) situation wrt
+I2cSerialBusV2 handling.
+
+Regards,
+
+Hans
