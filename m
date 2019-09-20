@@ -1,108 +1,89 @@
-From: Philipp Puschmann <philipp.puschmann@emlix.com>
-Subject: Re: [EXT] [PATCH v3] serial: imx: adapt rx buffer and dma periods
-Date: Fri, 20 Sep 2019 09:06:03 +0200
-Message-ID: <ac67f010-1b2c-6996-f542-ab955ca86489@emlix.com>
+From: Andy Duan <fugang.duan@nxp.com>
+Subject: RE: [EXT] [PATCH v3] serial: imx: adapt rx buffer and dma periods
+Date: Fri, 20 Sep 2019 07:33:36 +0000
+Message-ID: <VI1PR0402MB3600A07887B73FA9EB310524FF880@VI1PR0402MB3600.eurprd04.prod.outlook.com>
 References: <20190919145114.13006-1-philipp.puschmann@emlix.com>
  <VI1PR0402MB3600CA068AEBAC63D3CE6A4CFF880@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+ <ac67f010-1b2c-6996-f542-ab955ca86489@emlix.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <VI1PR0402MB3600CA068AEBAC63D3CE6A4CFF880@VI1PR0402MB3600.eurprd04.prod.outlook.com>
-Content-Language: de-DE
+In-Reply-To: <ac67f010-1b2c-6996-f542-ab955ca86489@emlix.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Duan <fugang.duan@nxp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Philipp Puschmann <philipp.puschmann@emlix.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Cc: "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, Robin Gong <yibin.gong@nxp.com>, "l.stach@pengutronix.de" <l.stach@pengutronix.de>, "jslaby@suse.com" <jslaby@suse.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, dl-linux-imx <linux-imx@nxp.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Andy,
-
-Am 20.09.19 um 05:42 schrieb Andy Duan:
-> From: Philipp Puschmann <philipp.puschmann@emlix.com> Sent: Thursday, September 19, 2019 10:51 PM
->> Using only 4 DMA periods for UART RX is very few if we have a high frequency
->> of small transfers - like in our case using Bluetooth with many small packets
->> via UART - causing many dma transfers but in each only filling a fraction of a
->> single buffer. Such a case may lead to the situation that DMA RX transfer is
->> triggered but no free buffer is available. When this happens dma channel ist
->> stopped - with the patch
->> "dmaengine: imx-sdma: fix dma freezes" temporarily only - with the possible
->> consequences that:
->> with disabled hw flow control:
->>   If enough data is incoming on UART port the RX FIFO runs over and
->>   characters will be lost. What then happens depends on upper layer.
->>
->> with enabled hw flow control:
->>   If enough data is incoming on UART port the RX FIFO reaches a level
->>   where CTS is deasserted and remote device sending the data stops.
->>   If it fails to stop timely the i.MX' RX FIFO may run over and data
->>   get lost. Otherwise it's internal TX buffer may getting filled to
->>   a point where it runs over and data is again lost. It depends on
->>   the remote device how this case is handled and if it is recoverable.
->>
->> Obviously we want to avoid having no free buffers available. So we decrease
->> the size of the buffers and increase their number and the total buffer size.
->>
->> Signed-off-by: Philipp Puschmann <philipp.puschmann@emlix.com>
->> Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
->> ---
->>
->> Changelog v3:
->>  - enhance description
->>
->> Changelog v2:
->>  - split this patch from series "Fix UART DMA freezes for iMX6"
->>  - add Reviewed-by tag
->>
->>  drivers/tty/serial/imx.c | 5 ++---
->>  1 file changed, 2 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c index
->> 87c58f9f6390..51dc19833eab 100644
->> --- a/drivers/tty/serial/imx.c
->> +++ b/drivers/tty/serial/imx.c
->> @@ -1034,8 +1034,6 @@ static void imx_uart_timeout(struct timer_list *t)
->>         }
->>  }
->>
->> -#define RX_BUF_SIZE    (PAGE_SIZE)
->> -
->>  /*
->>   * There are two kinds of RX DMA interrupts(such as in the MX6Q):
->>   *   [1] the RX DMA buffer is full.
->> @@ -1118,7 +1116,8 @@ static void imx_uart_dma_rx_callback(void
->> *data)  }
->>
->>  /* RX DMA buffer periods */
->> -#define RX_DMA_PERIODS 4
->> +#define RX_DMA_PERIODS 16
->> +#define RX_BUF_SIZE    (PAGE_SIZE / 4)
->>
-> Why to decrease the DMA RX buffer size here ?
-> 
-> The current DMA implementation support DMA cyclic mode, one SDMA BD receive one Bluetooth frame can
-> bring better performance.
-> As you know, for L2CAP, a maximum transmission unit (MTU) associated with the largest Baseband payload
-> is 341 bytes for DH5 packets.
-> 
-> So I suggest to increase RX_BUF_SIZE along with RX_DMA_PERIODS to feasible value.
-
-I debugged and developed this patches on a system with a 4.15 kernel. When prepared for upstream i have adapted
-some details and missed a important thing here. It should say:
-
-+#define RX_BUF_SIZE    (RX_DMA_PERIODS * PAGE_SIZE / 4)
-
-Yes, i wanted to increase the total buffer size too, even wrote it in the description.
-I will prepare a version 4, thanks for the hint.
-
-Just for info: A single RX DMA period aka buffer can be filled with mutliple packets in regard of the upper layer, here BT.
-
-
-Regards,
-Philipp
-> 
-> Andy
-> 
->>  static int imx_uart_start_rx_dma(struct imx_port *sport)  {
->> --
->> 2.23.0
-> 
+RnJvbTogUGhpbGlwcCBQdXNjaG1hbm4gPHBoaWxpcHAucHVzY2htYW5uQGVtbGl4LmNvbT4gU2Vu
+dDogRnJpZGF5LCBTZXB0ZW1iZXIgMjAsIDIwMTkgMzowNiBQTQ0KPiBBbSAyMC4wOS4xOSB1bSAw
+NTo0MiBzY2hyaWViIEFuZHkgRHVhbjoNCj4gPiBGcm9tOiBQaGlsaXBwIFB1c2NobWFubiA8cGhp
+bGlwcC5wdXNjaG1hbm5AZW1saXguY29tPiBTZW50OiBUaHVyc2RheSwNCj4gPiBTZXB0ZW1iZXIg
+MTksIDIwMTkgMTA6NTEgUE0NCj4gPj4gVXNpbmcgb25seSA0IERNQSBwZXJpb2RzIGZvciBVQVJU
+IFJYIGlzIHZlcnkgZmV3IGlmIHdlIGhhdmUgYSBoaWdoDQo+ID4+IGZyZXF1ZW5jeSBvZiBzbWFs
+bCB0cmFuc2ZlcnMgLSBsaWtlIGluIG91ciBjYXNlIHVzaW5nIEJsdWV0b290aCB3aXRoDQo+ID4+
+IG1hbnkgc21hbGwgcGFja2V0cyB2aWEgVUFSVCAtIGNhdXNpbmcgbWFueSBkbWEgdHJhbnNmZXJz
+IGJ1dCBpbiBlYWNoDQo+ID4+IG9ubHkgZmlsbGluZyBhIGZyYWN0aW9uIG9mIGEgc2luZ2xlIGJ1
+ZmZlci4gU3VjaCBhIGNhc2UgbWF5IGxlYWQgdG8NCj4gPj4gdGhlIHNpdHVhdGlvbiB0aGF0IERN
+QSBSWCB0cmFuc2ZlciBpcyB0cmlnZ2VyZWQgYnV0IG5vIGZyZWUgYnVmZmVyIGlzDQo+ID4+IGF2
+YWlsYWJsZS4gV2hlbiB0aGlzIGhhcHBlbnMgZG1hIGNoYW5uZWwgaXN0IHN0b3BwZWQgLSB3aXRo
+IHRoZSBwYXRjaA0KPiA+PiAiZG1hZW5naW5lOiBpbXgtc2RtYTogZml4IGRtYSBmcmVlemVzIiB0
+ZW1wb3JhcmlseSBvbmx5IC0gd2l0aCB0aGUNCj4gPj4gcG9zc2libGUgY29uc2VxdWVuY2VzIHRo
+YXQ6DQo+ID4+IHdpdGggZGlzYWJsZWQgaHcgZmxvdyBjb250cm9sOg0KPiA+PiAgIElmIGVub3Vn
+aCBkYXRhIGlzIGluY29taW5nIG9uIFVBUlQgcG9ydCB0aGUgUlggRklGTyBydW5zIG92ZXIgYW5k
+DQo+ID4+ICAgY2hhcmFjdGVycyB3aWxsIGJlIGxvc3QuIFdoYXQgdGhlbiBoYXBwZW5zIGRlcGVu
+ZHMgb24gdXBwZXIgbGF5ZXIuDQo+ID4+DQo+ID4+IHdpdGggZW5hYmxlZCBodyBmbG93IGNvbnRy
+b2w6DQo+ID4+ICAgSWYgZW5vdWdoIGRhdGEgaXMgaW5jb21pbmcgb24gVUFSVCBwb3J0IHRoZSBS
+WCBGSUZPIHJlYWNoZXMgYSBsZXZlbA0KPiA+PiAgIHdoZXJlIENUUyBpcyBkZWFzc2VydGVkIGFu
+ZCByZW1vdGUgZGV2aWNlIHNlbmRpbmcgdGhlIGRhdGEgc3RvcHMuDQo+ID4+ICAgSWYgaXQgZmFp
+bHMgdG8gc3RvcCB0aW1lbHkgdGhlIGkuTVgnIFJYIEZJRk8gbWF5IHJ1biBvdmVyIGFuZCBkYXRh
+DQo+ID4+ICAgZ2V0IGxvc3QuIE90aGVyd2lzZSBpdCdzIGludGVybmFsIFRYIGJ1ZmZlciBtYXkg
+Z2V0dGluZyBmaWxsZWQgdG8NCj4gPj4gICBhIHBvaW50IHdoZXJlIGl0IHJ1bnMgb3ZlciBhbmQg
+ZGF0YSBpcyBhZ2FpbiBsb3N0LiBJdCBkZXBlbmRzIG9uDQo+ID4+ICAgdGhlIHJlbW90ZSBkZXZp
+Y2UgaG93IHRoaXMgY2FzZSBpcyBoYW5kbGVkIGFuZCBpZiBpdCBpcyByZWNvdmVyYWJsZS4NCj4g
+Pj4NCj4gPj4gT2J2aW91c2x5IHdlIHdhbnQgdG8gYXZvaWQgaGF2aW5nIG5vIGZyZWUgYnVmZmVy
+cyBhdmFpbGFibGUuIFNvIHdlDQo+ID4+IGRlY3JlYXNlIHRoZSBzaXplIG9mIHRoZSBidWZmZXJz
+IGFuZCBpbmNyZWFzZSB0aGVpciBudW1iZXIgYW5kIHRoZSB0b3RhbA0KPiBidWZmZXIgc2l6ZS4N
+Cj4gPj4NCj4gPj4gU2lnbmVkLW9mZi1ieTogUGhpbGlwcCBQdXNjaG1hbm4gPHBoaWxpcHAucHVz
+Y2htYW5uQGVtbGl4LmNvbT4NCj4gPj4gUmV2aWV3ZWQtYnk6IEx1Y2FzIFN0YWNoIDxsLnN0YWNo
+QHBlbmd1dHJvbml4LmRlPg0KPiA+PiAtLS0NCj4gPj4NCj4gPj4gQ2hhbmdlbG9nIHYzOg0KPiA+
+PiAgLSBlbmhhbmNlIGRlc2NyaXB0aW9uDQo+ID4+DQo+ID4+IENoYW5nZWxvZyB2MjoNCj4gPj4g
+IC0gc3BsaXQgdGhpcyBwYXRjaCBmcm9tIHNlcmllcyAiRml4IFVBUlQgRE1BIGZyZWV6ZXMgZm9y
+IGlNWDYiDQo+ID4+ICAtIGFkZCBSZXZpZXdlZC1ieSB0YWcNCj4gPj4NCj4gPj4gIGRyaXZlcnMv
+dHR5L3NlcmlhbC9pbXguYyB8IDUgKystLS0NCj4gPj4gIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2Vy
+dGlvbnMoKyksIDMgZGVsZXRpb25zKC0pDQo+ID4+DQo+ID4+IGRpZmYgLS1naXQgYS9kcml2ZXJz
+L3R0eS9zZXJpYWwvaW14LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMNCj4gPj4gaW5kZXgg
+ODdjNThmOWY2MzkwLi41MWRjMTk4MzNlYWIgMTAwNjQ0DQo+ID4+IC0tLSBhL2RyaXZlcnMvdHR5
+L3NlcmlhbC9pbXguYw0KPiA+PiArKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMNCj4gPj4g
+QEAgLTEwMzQsOCArMTAzNCw2IEBAIHN0YXRpYyB2b2lkIGlteF91YXJ0X3RpbWVvdXQoc3RydWN0
+IHRpbWVyX2xpc3QNCj4gKnQpDQo+ID4+ICAgICAgICAgfQ0KPiA+PiAgfQ0KPiA+Pg0KPiA+PiAt
+I2RlZmluZSBSWF9CVUZfU0laRSAgICAoUEFHRV9TSVpFKQ0KPiA+PiAtDQo+ID4+ICAvKg0KPiA+
+PiAgICogVGhlcmUgYXJlIHR3byBraW5kcyBvZiBSWCBETUEgaW50ZXJydXB0cyhzdWNoIGFzIGlu
+IHRoZSBNWDZRKToNCj4gPj4gICAqICAgWzFdIHRoZSBSWCBETUEgYnVmZmVyIGlzIGZ1bGwuDQo+
+ID4+IEBAIC0xMTE4LDcgKzExMTYsOCBAQCBzdGF0aWMgdm9pZCBpbXhfdWFydF9kbWFfcnhfY2Fs
+bGJhY2sodm9pZA0KPiA+PiAqZGF0YSkgIH0NCj4gPj4NCj4gPj4gIC8qIFJYIERNQSBidWZmZXIg
+cGVyaW9kcyAqLw0KPiA+PiAtI2RlZmluZSBSWF9ETUFfUEVSSU9EUyA0DQo+ID4+ICsjZGVmaW5l
+IFJYX0RNQV9QRVJJT0RTIDE2DQo+ID4+ICsjZGVmaW5lIFJYX0JVRl9TSVpFICAgIChQQUdFX1NJ
+WkUgLyA0KQ0KPiA+Pg0KPiA+IFdoeSB0byBkZWNyZWFzZSB0aGUgRE1BIFJYIGJ1ZmZlciBzaXpl
+IGhlcmUgPw0KPiA+DQo+ID4gVGhlIGN1cnJlbnQgRE1BIGltcGxlbWVudGF0aW9uIHN1cHBvcnQg
+RE1BIGN5Y2xpYyBtb2RlLCBvbmUgU0RNQSBCRA0KPiA+IHJlY2VpdmUgb25lIEJsdWV0b290aCBm
+cmFtZSBjYW4gYnJpbmcgYmV0dGVyIHBlcmZvcm1hbmNlLg0KPiA+IEFzIHlvdSBrbm93LCBmb3Ig
+TDJDQVAsIGEgbWF4aW11bSB0cmFuc21pc3Npb24gdW5pdCAoTVRVKSBhc3NvY2lhdGVkDQo+ID4g
+d2l0aCB0aGUgbGFyZ2VzdCBCYXNlYmFuZCBwYXlsb2FkIGlzIDM0MSBieXRlcyBmb3IgREg1IHBh
+Y2tldHMuDQo+ID4NCj4gPiBTbyBJIHN1Z2dlc3QgdG8gaW5jcmVhc2UgUlhfQlVGX1NJWkUgYWxv
+bmcgd2l0aCBSWF9ETUFfUEVSSU9EUyB0bw0KPiBmZWFzaWJsZSB2YWx1ZS4NCj4gDQo+IEkgZGVi
+dWdnZWQgYW5kIGRldmVsb3BlZCB0aGlzIHBhdGNoZXMgb24gYSBzeXN0ZW0gd2l0aCBhIDQuMTUg
+a2VybmVsLiBXaGVuDQo+IHByZXBhcmVkIGZvciB1cHN0cmVhbSBpIGhhdmUgYWRhcHRlZCBzb21l
+IGRldGFpbHMgYW5kIG1pc3NlZCBhIGltcG9ydGFudA0KPiB0aGluZyBoZXJlLiBJdCBzaG91bGQg
+c2F5Og0KPiANCj4gKyNkZWZpbmUgUlhfQlVGX1NJWkUgICAgKFJYX0RNQV9QRVJJT0RTICogUEFH
+RV9TSVpFIC8gNCkNCj4gDQo+IFllcywgaSB3YW50ZWQgdG8gaW5jcmVhc2UgdGhlIHRvdGFsIGJ1
+ZmZlciBzaXplIHRvbywgZXZlbiB3cm90ZSBpdCBpbiB0aGUNCj4gZGVzY3JpcHRpb24uDQo+IEkg
+d2lsbCBwcmVwYXJlIGEgdmVyc2lvbiA0LCB0aGFua3MgZm9yIHRoZSBoaW50Lg0KDQpPa2F5LCB0
+aGFuayB5b3UgZm9yIHN1Ym1pdCB0aGUgU0RNQS91YXJ0IHBhdGNoIHNldC4NCg0KPiANCj4gSnVz
+dCBmb3IgaW5mbzogQSBzaW5nbGUgUlggRE1BIHBlcmlvZCBha2EgYnVmZmVyIGNhbiBiZSBmaWxs
+ZWQgd2l0aCBtdXRsaXBsZQ0KPiBwYWNrZXRzIGluIHJlZ2FyZCBvZiB0aGUgdXBwZXIgbGF5ZXIs
+IGhlcmUgQlQuDQoNClllcywgdGhhdCBkZXBlbmRzIG9uIHN5c3RlbSBsb2FkaW5nLiANCg0KPiAN
+Cj4gDQo+IFJlZ2FyZHMsDQo+IFBoaWxpcHANCj4gPg0KPiA+IEFuZHkNCj4gPg0KPiA+PiAgc3Rh
+dGljIGludCBpbXhfdWFydF9zdGFydF9yeF9kbWEoc3RydWN0IGlteF9wb3J0ICpzcG9ydCkgIHsN
+Cj4gPj4gLS0NCj4gPj4gMi4yMy4wDQo+ID4NCg==
