@@ -1,91 +1,87 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH] serdev: Add ACPI devices by ResourceSource field
-Date: Mon, 23 Sep 2019 10:14:40 +0200
-Message-ID: <8bed7cde-1f59-c5bf-9506-757dd89ad594@redhat.com>
-References: <20190919195624.1140941-1-luzmaximilian@gmail.com>
- <50b016a1-ed4a-b848-4658-a05731727d7e@redhat.com>
- <4c2cc8b7-8541-0912-3162-399777dc8dd2@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+From: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Subject: [PATCH v6 0/4] Use MFD framework for SGI IOC3 drivers
+Date: Mon, 23 Sep 2019 13:46:30 +0200
+Message-ID: <20190923114636.6748-1-tbogendoerfer@suse.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <4c2cc8b7-8541-0912-3162-399777dc8dd2@gmail.com>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Maximilian Luz <luzmaximilian@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Johan Hovold <johan@kernel.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, linux-serial@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Jonathan Corbet <corbet@lwn.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi,
+SGI IOC3 ASIC includes support for ethernet, PS2 keyboard/mouse,
+NIC (number in a can), GPIO and a byte  bus. By attaching a
+SuperIO chip to it, it also supports serial lines and a parallel
+port. The chip is used on a variety of SGI systems with different
+configurations. This patchset moves code out of the network driver,
+which doesn't belong there, into its new place a MFD driver and
+specific platform drivers for the different subfunctions.
 
-On 23-09-2019 00:29, Maximilian Luz wrote:
-> Hi all,
->=20
-> On 9/20/19 5:00 PM, Hans de Goede wrote:
->> So as promised I've given this patch a try, unfortunately it breaks
->> existing users of ACPI serdev device instantation.
->>
->> After adding this patch "ls /sys/bus/serial/devices" is empty,
->> where as before it gives:
->>
->> [root@dhcp-45-50 ~]# ls -l /sys/bus/serial/devices/
->> total 0
->> lrwxrwxrwx. 1 root root 0 Sep 20 16:43 serial0 -> ../../../devices/pci00=
-00:00/8086228A:00/serial0
->> lrwxrwxrwx. 1 root root 0 Sep 20 16:43 serial0-0 -> ../../../devices/pci=
-0000:00/8086228A:00/serial0/serial0-0
->>
->> And since the serdev is missing bluetooth does not work.
->=20
-> Thanks to some testing by Hans, it turns out that the reason for this is
-> that acpi_walk_resources fails with AE_AML_INVALID_RESOURCE_TYPE for a
-> specific device. If anyone is interested, the _CRS of the device in
-> question is
->=20
->  =C2=A0=C2=A0=C2=A0 Method (_CRS, 0, NotSerialized)=C2=A0 // _CRS: Curren=
-t Resource Settings
->  =C2=A0=C2=A0=C2=A0 {
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Name (NAM, Buffer (0x14)
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 {
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "\\_S=
-B.PCI0.SDHB.BRC1"
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 })
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Name (SPB, Buffer (0x0C)
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 {
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* 00=
-00 */=C2=A0 0x8E, 0x1D, 0x00, 0x01, 0x00, 0xC0, 0x02, 0x00,
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* 00=
-08 */=C2=A0 0x00, 0x01, 0x00, 0x00
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 })
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Name (END, ResourceTemplate (=
-)
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 {
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 })
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Concatenate (SPB, NAM, Local0=
-)
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Concatenate (Local0, END, Loc=
-al1)
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Return (Local1)
->  =C2=A0=C2=A0=C2=A0 }
->=20
-> To solve this, I propose ignoring errors that occur when evaluating the
-> _CRS method. Note that with the previously discussed change for v2,
-> where we will only look at the first device in _CRS, we should be able
-> to handle errors from the actual serdev device allocation separately
-> (and only ignore AML evaluation errors).
->=20
-> Further, I think it might also make sense to move the status and
-> already-enumerated checks out of acpi_serdev_register_device to before
-> looking at _CRS.
+Changes in v6:
+ - dropped patches accepted for v5.4-rc1
+ - moved serio patch to ip30 patch series
+ - adapted nvmem patch
 
-Ack, this is what drivers/i2c/i2c-core-acpi.c is doing and more in general
-all ACPI enumeration code always first checks _STA before doing anything
-else, so I think it would be best to do this here too.
+Changes in v5:
+ - requested by Jakub I've splited ioc3 ethernet driver changes into
+   more steps to make the transition more visible; on the way there 
+   I've "checkpatched" the driver and reduced code reorderings
+ - dropped all uint16_t and uint32_t
+ - added nvmem API extension to the documenation file
+ - changed to use request_irq/free_irq in serio driver
+ - removed wrong kfree() in serio error path
 
-Actually I think it might be best to fully copy how drivers/i2c/i2c-core-ac=
-pi.c
-does things.
+Changes in v4:
+ - added w1 drivers to the series after merge in 5.3 failed because
+   of no response from maintainer and other parts of this series
+   won't work without that drivers
+ - moved ip30 systemboard support to the ip30 series, which will
+   deal with rtc oddity Lee found
+ - converted to use devm_platform_ioremap_resource
+ - use PLATFORM_DEVID_AUTO for serial, ethernet and serio in mfd driver
+ - fixed reverse christmas order in ioc3-eth.c
+ - formating issue found by Lee
+ - re-worked irq request/free in serio driver to avoid crashes during
+   probe/remove
 
-Regards,
+Changes in v3:
+ - use 1-wire subsystem for handling proms
+ - pci-xtalk driver uses prom information to create PCI subsystem
+   ids for use in MFD driver
+ - changed MFD driver to only use static declared mfd_cells
+ - added IP30 system board setup to MFD driver
+ - mac address is now read from ioc3-eth driver with nvmem framework
 
-Hans
+Changes in v2:
+ - fixed issue in ioc3kbd.c reported by Dmitry Torokhov
+ - merged IP27 RTC removal and 8250 serial driver addition into
+   main MFD patch to keep patches bisectable
+
+Thomas Bogendoerfer (4):
+  nvmem: core: add nvmem_device_find
+  MIPS: PCI: use information from 1-wire PROM for IOC3 detection
+  mfd: ioc3: Add driver for SGI IOC3 chip
+  MIPS: SGI-IP27: fix readb/writeb addressing
+
+ Documentation/driver-api/nvmem.rst            |   2 +
+ arch/mips/include/asm/mach-ip27/mangle-port.h |   4 +-
+ arch/mips/include/asm/pci/bridge.h            |   1 +
+ arch/mips/include/asm/sn/ioc3.h               |  47 ++-
+ arch/mips/pci/pci-xtalk-bridge.c              | 135 +++++-
+ arch/mips/sgi-ip27/ip27-timer.c               |  20 -
+ arch/mips/sgi-ip27/ip27-xtalk.c               |  38 +-
+ drivers/mfd/Kconfig                           |  13 +
+ drivers/mfd/Makefile                          |   1 +
+ drivers/mfd/ioc3.c                            | 585 ++++++++++++++++++++++++++
+ drivers/net/ethernet/sgi/Kconfig              |   4 +-
+ drivers/net/ethernet/sgi/ioc3-eth.c           | 561 +++++-------------------
+ drivers/nvmem/core.c                          |  61 ++-
+ drivers/rtc/rtc-m48t35.c                      |  11 +
+ drivers/tty/serial/8250/8250_ioc3.c           |  98 +++++
+ drivers/tty/serial/8250/Kconfig               |  11 +
+ drivers/tty/serial/8250/Makefile              |   1 +
+ include/linux/nvmem-consumer.h                |   9 +
+ 18 files changed, 1054 insertions(+), 548 deletions(-)
+ create mode 100644 drivers/mfd/ioc3.c
+ create mode 100644 drivers/tty/serial/8250/8250_ioc3.c
+
+-- 
+2.13.7
