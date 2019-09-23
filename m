@@ -1,7 +1,7 @@
 From: Philipp Puschmann <philipp.puschmann@emlix.com>
-Subject: [PATCH v3] serial: imx: adapt rx buffer and dma periods
-Date: Mon, 23 Sep 2019 15:58:42 +0200
-Message-ID: <20190923135842.956-1-philipp.puschmann@emlix.com>
+Subject: [PATCH v4] serial: imx: adapt rx buffer and dma periods
+Date: Mon, 23 Sep 2019 15:59:16 +0200
+Message-ID: <20190923135916.1212-1-philipp.puschmann@emlix.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
