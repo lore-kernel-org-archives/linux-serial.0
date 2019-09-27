@@ -1,267 +1,380 @@
-Return-Path: <SRS0=wRUq=XV=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=lhCo=XW=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-6.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 896C5C4360C
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Sep 2019 19:44:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF0EAC4360C
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Sep 2019 20:56:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 49DCF222C2
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Sep 2019 19:44:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 916C72146E
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Sep 2019 20:56:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ptL+t++P"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ANXWnMzE"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728624AbfIZToX (ORCPT
+        id S1725306AbfI0U4P (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 Sep 2019 15:44:23 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:41200 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728454AbfIZToX (ORCPT
+        Fri, 27 Sep 2019 16:56:15 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:40486 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727243AbfI0U4P (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 Sep 2019 15:44:23 -0400
-Received: by mail-io1-f68.google.com with SMTP id r26so9679958ioh.8;
-        Thu, 26 Sep 2019 12:44:22 -0700 (PDT)
+        Fri, 27 Sep 2019 16:56:15 -0400
+Received: by mail-wr1-f65.google.com with SMTP id l3so4631012wru.7
+        for <linux-serial@vger.kernel.org>; Fri, 27 Sep 2019 13:56:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7YaOJjbeJ4vHzFNCKN4Rfl7SNbQO++40kW4opqhFvjE=;
-        b=ptL+t++PhjIDsGKfuLy0BchccV5YdocaOsRsXZ/4JqKqUKoQzhFSC1NY4npM9rE3Yl
-         C7Zl9VNtkmAwuniXVUGj4fMyTDLJ9ep+95WejAowbtGq6FHtnA2xpNZVLKkTBrGnzor0
-         0V+gRFuTh35NxWLvtKPNWwtsROhtajgumBlMHA4ZM5svWHQtB83GqJQoIMPvnDLX0Mog
-         7cFhKRgDTuCirRwxX668mKmMZkEuY9LObevYVy1kBjI8F/Gm4TsEt4zLDYd6uSq7cZCt
-         gi9GXWN/AxMMuWydGrQclQzQp/+PcBWPKz+vNmn/hh8LJXIC7WXRfqGKq1Ck+jfEHf1j
-         qu3w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=t0TosnO27cdnisKv6Rq91WfaOLDbTxfw0dddHvTXSBU=;
+        b=ANXWnMzEE237AqKC5j/jf1ZR+2/sRQqLdn4KzNhF1Hda712snRnL5zFfCDxsEKAifY
+         SbpydfydXdYvzH1e5z4BFVZljDbidAIfpMrJ91aUl7cEtpw2srSHmF/q/hvyJ4P0oRUc
+         0sPW5897vGxwuh7EDz7mCUOYfjW6gnx3pBN8n2hKyHjew5ScWm+ej5scP5fHZsjDnlIC
+         6dNRR5o7jBpaib5HtzpXyXsDYXwKQZ/udSXnfZ2pxirVYeZxUhP5OzikukK50+1nv6XO
+         9ObdDohHxyFJebZZQe5N6cdWnLxSho45z+qDjymx8vL5HXWQsQb+LwibCvxjiymz4zqs
+         BNig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7YaOJjbeJ4vHzFNCKN4Rfl7SNbQO++40kW4opqhFvjE=;
-        b=UevvZPYC0oERjnJCZc2pso/1jVu71iwvggUtlT5hqDw9Pz/IyPp9uj1lUdemN5TeQx
-         y3M3EVrGpm7wYXX9sqSzqoZGlBbCfwfSfXwnUv2204z7Whm0RspeKr6mM6EKpVAMqxRp
-         3aOaHdRmnFCnV8luqDV7GV2qnfANPC1RKZ6750iKw8GrC8DBgefZuIj/P7cMt51WaZYM
-         wEG9oDSIwzrcsTO+P3XWxmoOOqMjaGEemfgro9BCoaR4mNfvxXkFyd3aG5SKOhgO+75W
-         GxItr5WbNDroD+0WRPQMDo1DBS1J7zxWPV73pJkzfaJWMI7E/e5WqaReE1SPtxj99Cp3
-         scUw==
-X-Gm-Message-State: APjAAAX+4J9zmiZmpI0kINxseiE+rvneaUiCnTl1wgpRRXGbwOqAbhFl
-        Zw5GKmZjCQSx2r8KpTrGAHM/C+hRNZXlCo8yrvI=
-X-Google-Smtp-Source: APXvYqws94RCz1OEKmJWcCJfFYz8odw3snwroxEbJRlT5VqNIjb8opn290GiegEG8UnQeVF3x/P4koKd12cnxdqwU+Y=
-X-Received: by 2002:a92:3f0a:: with SMTP id m10mr357121ila.158.1569527062022;
- Thu, 26 Sep 2019 12:44:22 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=t0TosnO27cdnisKv6Rq91WfaOLDbTxfw0dddHvTXSBU=;
+        b=aYeoJqqcqyPazIBH7DQ99j0BfpCzHqVsU+HpnVF3TudxT652sWI1H3u3mw5EOTKAcc
+         0xtJpqjlI4uaQ6qr3tiQnqa9kxsv8WsZZmCoQif6c7iO7LnyRcadAOn/wT3KKdOZyZHu
+         FHaK/7c0C/FtbgBXCGltLrt2wAVsNU8/RyMORG/KuI5LuKePKURIz6ITjmGluwcu//fU
+         jDYjLpcUgg76NdvIc7olteZX3ZUMlblzmnAlzelb83KjfqhsSomUTgBFoxIosRzZXwgW
+         uvgn3WK9Yt5PgGx7OeWg8kagy0JIzkbgjgMs2i9ovHxybaXYXNz97HW8ZH2ivMDWIw0E
+         YRvw==
+X-Gm-Message-State: APjAAAXFskS24+TYgxIVEvRmEWdDnuepcv7BUyqOHQy78EuMoDDlbXWx
+        MybzT+Q5N/s75eJzS6VARj4=
+X-Google-Smtp-Source: APXvYqw2qOZpZ/+R+kXNzJ7h6DrDLKrhPmtpnppVFP1E6bxKG3rLtzLK2ZK+Yc9hBZCASkxLYSZHlg==
+X-Received: by 2002:a5d:4041:: with SMTP id w1mr4298339wrp.313.1569617770847;
+        Fri, 27 Sep 2019 13:56:10 -0700 (PDT)
+Received: from pterjan.home ([2a00:23c5:3186:6f01:c1b4:914c:8f87:b7d0])
+        by smtp.googlemail.com with ESMTPSA id q10sm9690396wrd.39.2019.09.27.13.56.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Sep 2019 13:56:09 -0700 (PDT)
+From:   Pascal Terjan <pterjan@gmail.com>
+X-Google-Original-From: Pascal Terjan <pterjan@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>
+Cc:     linux-m68k@lists.linux-m68k.org, linux-serial@vger.kernel.org,
+        Pascal Terjan <pterjan@google.com>
+Subject: [PATCH] Remove every trace of SERIAL_MAGIC
+Date:   Fri, 27 Sep 2019 22:55:24 +0200
+Message-Id: <20190927205524.250238-1-pterjan@google.com>
+X-Mailer: git-send-email 2.23.0.444.g18eeb5a265-goog
 MIME-Version: 1.0
-References: <20190919145114.13006-1-philipp.puschmann@emlix.com>
- <VI1PR0402MB3600CA068AEBAC63D3CE6A4CFF880@VI1PR0402MB3600.eurprd04.prod.outlook.com>
- <ac67f010-1b2c-6996-f542-ab955ca86489@emlix.com> <CAHCN7xL0BKmt8xrhuB4rrvOqkCM5AUJ6YAzbcU8eNDXbzj4fZg@mail.gmail.com>
- <15be848facd5e80222e5db30c61fe72f82a85713.camel@analog.com>
-In-Reply-To: <15be848facd5e80222e5db30c61fe72f82a85713.camel@analog.com>
-From:   Adam Ford <aford173@gmail.com>
-Date:   Thu, 26 Sep 2019 14:44:10 -0500
-Message-ID:
- <CAHCN7xK=kxEFiuUEX=q4R3XEyeaAp+HGFCUpYkYUESMhqwMA6A@mail.gmail.com>
-Subject: Re: [EXT] [PATCH v3] serial: imx: adapt rx buffer and dma periods
-To:     "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-Cc:     "philipp.puschmann@emlix.com" <philipp.puschmann@emlix.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "linux-imx@nxp.com" <linux-imx@nxp.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "yibin.gong@nxp.com" <yibin.gong@nxp.com>,
-        "fugang.duan@nxp.com" <fugang.duan@nxp.com>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "jslaby@suse.com" <jslaby@suse.com>,
-        "l.stach@pengutronix.de" <l.stach@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20190926194410.wBj04Ze0wQIXeGyg_0KymOB0PbXQoSU_wLCoh1y1gus@z>
 
-On Thu, Sep 26, 2019 at 1:37 AM Ardelean, Alexandru
-<alexandru.Ardelean@analog.com> wrote:
->
-> On Wed, 2019-09-25 at 10:14 -0500, Adam Ford wrote:
-> > [External]
-> >
-> > On Fri, Sep 20, 2019 at 2:06 AM Philipp Puschmann
-> > <philipp.puschmann@emlix.com> wrote:
-> > > Hi Andy,
-> > >
-> > > Am 20.09.19 um 05:42 schrieb Andy Duan:
-> > > > From: Philipp Puschmann <philipp.puschmann@emlix.com> Sent: Thursday,
-> > > > September 19, 2019 10:51 PM
-> > > > > Using only 4 DMA periods for UART RX is very few if we have a high
-> > > > > frequency
-> > > > > of small transfers - like in our case using Bluetooth with many
-> > > > > small packets
-> > > > > via UART - causing many dma transfers but in each only filling a
-> > > > > fraction of a
-> > > > > single buffer. Such a case may lead to the situation that DMA RX
-> > > > > transfer is
-> > > > > triggered but no free buffer is available. When this happens dma
-> > > > > channel ist
-> > > > > stopped - with the patch
-> > > > > "dmaengine: imx-sdma: fix dma freezes" temporarily only - with the
-> > > > > possible
-> > > > > consequences that:
-> >
-> > I have an i.MX6Q with Wl1837MOD on UART 2 with flow control, and I am
-> > getting Bluetooth transfer timeouts.
-> > (see imx6-logicpd-som.dtsi)
-> >
-> > On top of 5.3.1, I have installed:
-> >
-> > dmaengine: imx-sdma: fix buffer ownership
-> > dmaengine: imx-sdma: fix dma freezes
-> > dmaengine: imx-sdma: drop redundant variable
-> > dmaengine: imx-sdma: fix kernel hangs with SLUB slab allocator
-> > serial: imx: adapt rx buffer and dma periods
-> >
-> > and I still get timeouts:
-> >
-> > [   66.632006] Bluetooth: hci0: command 0xff36 tx timeout
-> > [   76.790499] Bluetooth: hci0: command 0x1001 tx timeout
-> > [   87.110488] Bluetooth: hci0: command 0xff36 tx timeout
-> > [   97.270507] Bluetooth: hci0: command 0x1001 tx timeout
-> > [  107.590457] Bluetooth: hci0: command 0xff36 tx timeout
-> > [  117.750477] Bluetooth: hci0: command 0x1001 tx timeout
-> > [  226.390499] Bluetooth: hci0: command 0xfe38 tx timeout
-> > [  231.590735] Bluetooth: hci0: command tx timeout
-> >
-> > I did a bisect and found the start of my problems came from
-> >
-> > 361deb7243d2 ("dmaengine: dmatest: wrap src & dst data into a struct")
->
-> That commit only touches `drivers/dma/dmatest.c`
-> Are you using that module?
->
-> It's a "unit-test" module for testing DMAengine drivers.
-> The only way that can break anything [from what I can tell], is if it is
-> being run. It will probably put the DMA into a weird state (it is a test-
-> module after-all), and it may require some DMAs to be reset.
-> I admit it would be nice that the test-module would put the DMA back into a
-> normal-working state, but that effort could be big for some cases.
+The only code mentioning it doesn't build (and hasn't at least since git)
+and doesn't include the header defining it.
 
-I will bisect it again.  I removed the CONFIG_DMATEST from the
-omx_v6_v7_defconfig, and I still got the failure using Kernel 5.3.1,
-so I'll work on this tomorrow and try to narrow it down better with
-and without the test module installed.
+This means removing support for checking magic in amiserial.c
+(SERIAL_PARANOIA_CHECK option), which was checking a magic field which
+doesn't currently exist in the struct.
+---
+ Documentation/process/magic-number.rst        |  1 -
+ .../it_IT/process/magic-number.rst            |  1 -
+ .../zh_CN/process/magic-number.rst            |  1 -
+ drivers/net/wan/z85230.h                      |  2 -
+ drivers/tty/amiserial.c                       | 81 +------------------
+ 5 files changed, 1 insertion(+), 85 deletions(-)
 
-adam
->
->
-> >
-> > This happened sometime between v5.0 and v5.1
-> >
-> > Is there a patch I missed somewhere?  Do I need to change my device
-> > tree configuration somehow to allocate the proper DMA memory?
-> >
-> >
-> >
-> > > > > with disabled hw flow control:
-> > > > >   If enough data is incoming on UART port the RX FIFO runs over and
-> > > > >   characters will be lost. What then happens depends on upper
-> > > > > layer.
-> > > > >
-> > > > > with enabled hw flow control:
-> > > > >   If enough data is incoming on UART port the RX FIFO reaches a
-> > > > > level
-> > > > >   where CTS is deasserted and remote device sending the data stops.
-> > > > >   If it fails to stop timely the i.MX' RX FIFO may run over and
-> > > > > data
-> > > > >   get lost. Otherwise it's internal TX buffer may getting filled to
-> > > > >   a point where it runs over and data is again lost. It depends on
-> > > > >   the remote device how this case is handled and if it is
-> > > > > recoverable.
-> > > > >
-> > > > > Obviously we want to avoid having no free buffers available. So we
-> > > > > decrease
-> > > > > the size of the buffers and increase their number and the total
-> > > > > buffer size.
-> > > > >
-> > > > > Signed-off-by: Philipp Puschmann <philipp.puschmann@emlix.com>
-> > > > > Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
-> > > > > ---
-> > > > >
-> > > > > Changelog v3:
-> > > > >  - enhance description
-> > > > >
-> > > > > Changelog v2:
-> > > > >  - split this patch from series "Fix UART DMA freezes for iMX6"
-> > > > >  - add Reviewed-by tag
-> > > > >
-> > > > >  drivers/tty/serial/imx.c | 5 ++---
-> > > > >  1 file changed, 2 insertions(+), 3 deletions(-)
-> > > > >
-> > > > > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> > > > > index
-> > > > > 87c58f9f6390..51dc19833eab 100644
-> > > > > --- a/drivers/tty/serial/imx.c
-> > > > > +++ b/drivers/tty/serial/imx.c
-> > > > > @@ -1034,8 +1034,6 @@ static void imx_uart_timeout(struct
-> > > > > timer_list *t)
-> > > > >         }
-> > > > >  }
-> > > > >
-> > > > > -#define RX_BUF_SIZE    (PAGE_SIZE)
-> > > > > -
-> > > > >  /*
-> > > > >   * There are two kinds of RX DMA interrupts(such as in the MX6Q):
-> > > > >   *   [1] the RX DMA buffer is full.
-> > > > > @@ -1118,7 +1116,8 @@ static void imx_uart_dma_rx_callback(void
-> > > > > *data)  }
-> > > > >
-> > > > >  /* RX DMA buffer periods */
-> > > > > -#define RX_DMA_PERIODS 4
-> > > > > +#define RX_DMA_PERIODS 16
-> > > > > +#define RX_BUF_SIZE    (PAGE_SIZE / 4)
-> > > > >
-> > > > Why to decrease the DMA RX buffer size here ?
-> > > >
-> > > > The current DMA implementation support DMA cyclic mode, one SDMA BD
-> > > > receive one Bluetooth frame can
-> > > > bring better performance.
-> > > > As you know, for L2CAP, a maximum transmission unit (MTU) associated
-> > > > with the largest Baseband payload
-> > > > is 341 bytes for DH5 packets.
-> > > >
-> > > > So I suggest to increase RX_BUF_SIZE along with RX_DMA_PERIODS to
-> > > > feasible value.
-> > >
-> > > I debugged and developed this patches on a system with a 4.15 kernel.
-> > > When prepared for upstream i have adapted
-> > > some details and missed a important thing here. It should say:
-> > >
-> > > +#define RX_BUF_SIZE    (RX_DMA_PERIODS * PAGE_SIZE / 4)
-> > >
-> > > Yes, i wanted to increase the total buffer size too, even wrote it in
-> > > the description.
-> > > I will prepare a version 4, thanks for the hint.
-> > >
-> > > Just for info: A single RX DMA period aka buffer can be filled with
-> > > mutliple packets in regard of the upper layer, here BT.
-> > >
-> > >
-> > > Regards,
-> > > Philipp
-> > > > Andy
-> > > >
-> > > > >  static int imx_uart_start_rx_dma(struct imx_port *sport)  {
-> > > > > --
-> > > > > 2.23.0
-> > >
-> > > _______________________________________________
-> > > linux-arm-kernel mailing list
-> > > linux-arm-kernel@lists.infradead.org
-> > > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+diff --git a/Documentation/process/magic-number.rst b/Documentation/process/magic-number.rst
+index 547bbf28e615..eee9b44553b3 100644
+--- a/Documentation/process/magic-number.rst
++++ b/Documentation/process/magic-number.rst
+@@ -81,7 +81,6 @@ FF_MAGIC              0x4646           fc_info                  ``drivers/net/ip
+ ISICOM_MAGIC          0x4d54           isi_port                 ``include/linux/isicom.h``
+ PTY_MAGIC             0x5001                                    ``drivers/char/pty.c``
+ PPP_MAGIC             0x5002           ppp                      ``include/linux/if_pppvar.h``
+-SERIAL_MAGIC          0x5301           async_struct             ``include/linux/serial.h``
+ SSTATE_MAGIC          0x5302           serial_state             ``include/linux/serial.h``
+ SLIP_MAGIC            0x5302           slip                     ``drivers/net/slip.h``
+ STRIP_MAGIC           0x5303           strip                    ``drivers/net/strip.c``
+diff --git a/Documentation/translations/it_IT/process/magic-number.rst b/Documentation/translations/it_IT/process/magic-number.rst
+index ed1121d0ba84..783e0de314a0 100644
+--- a/Documentation/translations/it_IT/process/magic-number.rst
++++ b/Documentation/translations/it_IT/process/magic-number.rst
+@@ -87,7 +87,6 @@ FF_MAGIC              0x4646           fc_info                  ``drivers/net/ip
+ ISICOM_MAGIC          0x4d54           isi_port                 ``include/linux/isicom.h``
+ PTY_MAGIC             0x5001                                    ``drivers/char/pty.c``
+ PPP_MAGIC             0x5002           ppp                      ``include/linux/if_pppvar.h``
+-SERIAL_MAGIC          0x5301           async_struct             ``include/linux/serial.h``
+ SSTATE_MAGIC          0x5302           serial_state             ``include/linux/serial.h``
+ SLIP_MAGIC            0x5302           slip                     ``drivers/net/slip.h``
+ STRIP_MAGIC           0x5303           strip                    ``drivers/net/strip.c``
+diff --git a/Documentation/translations/zh_CN/process/magic-number.rst b/Documentation/translations/zh_CN/process/magic-number.rst
+index 15c592518194..e4c225996af0 100644
+--- a/Documentation/translations/zh_CN/process/magic-number.rst
++++ b/Documentation/translations/zh_CN/process/magic-number.rst
+@@ -70,7 +70,6 @@ FF_MAGIC              0x4646           fc_info                  ``drivers/net/ip
+ ISICOM_MAGIC          0x4d54           isi_port                 ``include/linux/isicom.h``
+ PTY_MAGIC             0x5001                                    ``drivers/char/pty.c``
+ PPP_MAGIC             0x5002           ppp                      ``include/linux/if_pppvar.h``
+-SERIAL_MAGIC          0x5301           async_struct             ``include/linux/serial.h``
+ SSTATE_MAGIC          0x5302           serial_state             ``include/linux/serial.h``
+ SLIP_MAGIC            0x5302           slip                     ``drivers/net/slip.h``
+ STRIP_MAGIC           0x5303           strip                    ``drivers/net/strip.c``
+diff --git a/drivers/net/wan/z85230.h b/drivers/net/wan/z85230.h
+index 32ae710d4f40..1081d171e477 100644
+--- a/drivers/net/wan/z85230.h
++++ b/drivers/net/wan/z85230.h
+@@ -421,8 +421,6 @@ extern struct z8530_irqhandler z8530_sync, z8530_async, z8530_nop;
+  *	Asynchronous Interfacing
+  */
+ 
+-#define SERIAL_MAGIC 0x5301
+-
+ /*
+  * The size of the serial xmit buffer is 1 page, or 4096 bytes
+  */
+diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
+index 8330fd809a05..0af81a82df8f 100644
+--- a/drivers/tty/amiserial.c
++++ b/drivers/tty/amiserial.c
+@@ -23,17 +23,12 @@
+  */
+ 
+ /*
+- * Serial driver configuration section.  Here are the various options:
++ * Serial driver configuration section.
+  *
+- * SERIAL_PARANOIA_CHECK
+- * 		Check the magic number for the async_structure where
+- * 		ever possible.
+  */
+ 
+ #include <linux/delay.h>
+ 
+-#undef SERIAL_PARANOIA_CHECK
+-
+ /* Set of debugging defines */
+ 
+ #undef SERIAL_DEBUG_INTR
+@@ -132,28 +127,6 @@ static struct serial_state rs_table[1];
+ 
+ #define serial_isroot()	(capable(CAP_SYS_ADMIN))
+ 
+-
+-static inline int serial_paranoia_check(struct serial_state *info,
+-					char *name, const char *routine)
+-{
+-#ifdef SERIAL_PARANOIA_CHECK
+-	static const char *badmagic =
+-		"Warning: bad magic number for serial struct (%s) in %s\n";
+-	static const char *badinfo =
+-		"Warning: null async_struct for (%s) in %s\n";
+-
+-	if (!info) {
+-		printk(badinfo, name, routine);
+-		return 1;
+-	}
+-	if (info->magic != SERIAL_MAGIC) {
+-		printk(badmagic, name, routine);
+-		return 1;
+-	}
+-#endif
+-	return 0;
+-}
+-
+ /* some serial hardware definitions */
+ #define SDR_OVRUN   (1<<15)
+ #define SDR_RBF     (1<<14)
+@@ -189,9 +162,6 @@ static void rs_stop(struct tty_struct *tty)
+ 	struct serial_state *info = tty->driver_data;
+ 	unsigned long flags;
+ 
+-	if (serial_paranoia_check(info, tty->name, "rs_stop"))
+-		return;
+-
+ 	local_irq_save(flags);
+ 	if (info->IER & UART_IER_THRI) {
+ 		info->IER &= ~UART_IER_THRI;
+@@ -209,9 +179,6 @@ static void rs_start(struct tty_struct *tty)
+ 	struct serial_state *info = tty->driver_data;
+ 	unsigned long flags;
+ 
+-	if (serial_paranoia_check(info, tty->name, "rs_start"))
+-		return;
+-
+ 	local_irq_save(flags);
+ 	if (info->xmit.head != info->xmit.tail
+ 	    && info->xmit.buf
+@@ -783,9 +750,6 @@ static int rs_put_char(struct tty_struct *tty, unsigned char ch)
+ 
+ 	info = tty->driver_data;
+ 
+-	if (serial_paranoia_check(info, tty->name, "rs_put_char"))
+-		return 0;
+-
+ 	if (!info->xmit.buf)
+ 		return 0;
+ 
+@@ -808,9 +772,6 @@ static void rs_flush_chars(struct tty_struct *tty)
+ 	struct serial_state *info = tty->driver_data;
+ 	unsigned long flags;
+ 
+-	if (serial_paranoia_check(info, tty->name, "rs_flush_chars"))
+-		return;
+-
+ 	if (info->xmit.head == info->xmit.tail
+ 	    || tty->stopped
+ 	    || tty->hw_stopped
+@@ -833,9 +794,6 @@ static int rs_write(struct tty_struct * tty, const unsigned char *buf, int count
+ 	struct serial_state *info = tty->driver_data;
+ 	unsigned long flags;
+ 
+-	if (serial_paranoia_check(info, tty->name, "rs_write"))
+-		return 0;
+-
+ 	if (!info->xmit.buf)
+ 		return 0;
+ 
+@@ -878,8 +836,6 @@ static int rs_write_room(struct tty_struct *tty)
+ {
+ 	struct serial_state *info = tty->driver_data;
+ 
+-	if (serial_paranoia_check(info, tty->name, "rs_write_room"))
+-		return 0;
+ 	return CIRC_SPACE(info->xmit.head, info->xmit.tail, SERIAL_XMIT_SIZE);
+ }
+ 
+@@ -887,8 +843,6 @@ static int rs_chars_in_buffer(struct tty_struct *tty)
+ {
+ 	struct serial_state *info = tty->driver_data;
+ 
+-	if (serial_paranoia_check(info, tty->name, "rs_chars_in_buffer"))
+-		return 0;
+ 	return CIRC_CNT(info->xmit.head, info->xmit.tail, SERIAL_XMIT_SIZE);
+ }
+ 
+@@ -897,8 +851,6 @@ static void rs_flush_buffer(struct tty_struct *tty)
+ 	struct serial_state *info = tty->driver_data;
+ 	unsigned long flags;
+ 
+-	if (serial_paranoia_check(info, tty->name, "rs_flush_buffer"))
+-		return;
+ 	local_irq_save(flags);
+ 	info->xmit.head = info->xmit.tail = 0;
+ 	local_irq_restore(flags);
+@@ -914,9 +866,6 @@ static void rs_send_xchar(struct tty_struct *tty, char ch)
+ 	struct serial_state *info = tty->driver_data;
+         unsigned long flags;
+ 
+-	if (serial_paranoia_check(info, tty->name, "rs_send_xchar"))
+-		return;
+-
+ 	info->x_char = ch;
+ 	if (ch) {
+ 		/* Make sure transmit interrupts are on */
+@@ -952,9 +901,6 @@ static void rs_throttle(struct tty_struct * tty)
+ 	printk("throttle %s ....\n", tty_name(tty));
+ #endif
+ 
+-	if (serial_paranoia_check(info, tty->name, "rs_throttle"))
+-		return;
+-
+ 	if (I_IXOFF(tty))
+ 		rs_send_xchar(tty, STOP_CHAR(tty));
+ 
+@@ -974,9 +920,6 @@ static void rs_unthrottle(struct tty_struct * tty)
+ 	printk("unthrottle %s ....\n", tty_name(tty));
+ #endif
+ 
+-	if (serial_paranoia_check(info, tty->name, "rs_unthrottle"))
+-		return;
+-
+ 	if (I_IXOFF(tty)) {
+ 		if (info->x_char)
+ 			info->x_char = 0;
+@@ -1109,8 +1052,6 @@ static int rs_tiocmget(struct tty_struct *tty)
+ 	unsigned char control, status;
+ 	unsigned long flags;
+ 
+-	if (serial_paranoia_check(info, tty->name, "rs_ioctl"))
+-		return -ENODEV;
+ 	if (tty_io_error(tty))
+ 		return -EIO;
+ 
+@@ -1131,8 +1072,6 @@ static int rs_tiocmset(struct tty_struct *tty, unsigned int set,
+ 	struct serial_state *info = tty->driver_data;
+ 	unsigned long flags;
+ 
+-	if (serial_paranoia_check(info, tty->name, "rs_ioctl"))
+-		return -ENODEV;
+ 	if (tty_io_error(tty))
+ 		return -EIO;
+ 
+@@ -1155,12 +1094,8 @@ static int rs_tiocmset(struct tty_struct *tty, unsigned int set,
+  */
+ static int rs_break(struct tty_struct *tty, int break_state)
+ {
+-	struct serial_state *info = tty->driver_data;
+ 	unsigned long flags;
+ 
+-	if (serial_paranoia_check(info, tty->name, "rs_break"))
+-		return -EINVAL;
+-
+ 	local_irq_save(flags);
+ 	if (break_state == -1)
+ 	  custom.adkcon = AC_SETCLR | AC_UARTBRK;
+@@ -1212,9 +1147,6 @@ static int rs_ioctl(struct tty_struct *tty,
+ 	DEFINE_WAIT(wait);
+ 	int ret;
+ 
+-	if (serial_paranoia_check(info, tty->name, "rs_ioctl"))
+-		return -ENODEV;
+-
+ 	if ((cmd != TIOCSERCONFIG) &&
+ 	    (cmd != TIOCMIWAIT) && (cmd != TIOCGICOUNT)) {
+ 		if (tty_io_error(tty))
+@@ -1333,9 +1265,6 @@ static void rs_close(struct tty_struct *tty, struct file * filp)
+ 	struct serial_state *state = tty->driver_data;
+ 	struct tty_port *port = &state->tport;
+ 
+-	if (serial_paranoia_check(state, tty->name, "rs_close"))
+-		return;
+-
+ 	if (tty_port_close_start(port, tty, filp) == 0)
+ 		return;
+ 
+@@ -1379,9 +1308,6 @@ static void rs_wait_until_sent(struct tty_struct *tty, int timeout)
+ 	unsigned long orig_jiffies, char_time;
+ 	int lsr;
+ 
+-	if (serial_paranoia_check(info, tty->name, "rs_wait_until_sent"))
+-		return;
+-
+ 	if (info->xmit_fifo_size == 0)
+ 		return; /* Just in case.... */
+ 
+@@ -1440,9 +1366,6 @@ static void rs_hangup(struct tty_struct *tty)
+ {
+ 	struct serial_state *info = tty->driver_data;
+ 
+-	if (serial_paranoia_check(info, tty->name, "rs_hangup"))
+-		return;
+-
+ 	rs_flush_buffer(tty);
+ 	shutdown(tty, info);
+ 	info->tport.count = 0;
+@@ -1467,8 +1390,6 @@ static int rs_open(struct tty_struct *tty, struct file * filp)
+ 	port->tty = tty;
+ 	tty->driver_data = info;
+ 	tty->port = port;
+-	if (serial_paranoia_check(info, tty->name, "rs_open"))
+-		return -ENODEV;
+ 
+ 	port->low_latency = (port->flags & ASYNC_LOW_LATENCY) ? 1 : 0;
+ 
+-- 
+2.23.0.444.g18eeb5a265-goog
+
