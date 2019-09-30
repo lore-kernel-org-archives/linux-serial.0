@@ -1,7 +1,7 @@
 From: Mateusz Holenko <mholenko@antmicro.com>
-Subject: [PATCH 1/3] dt-bindings: vendor: add vendor prefix for LiteX
-Date: Mon, 30 Sep 2019 15:04:11 +0200
-Message-ID: <20190930130411.GA8312@localhost.localdomain>
+Subject: [PATCH 2/3] dt-bindings: serial: document LiteUART bindings
+Date: Mon, 30 Sep 2019 15:04:30 +0200
+Message-ID: <20190930130430.GA9080@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -13,26 +13,50 @@ List-Id: linux-serial@vger.kernel.org
 
 From: Filip Kokosinski <fkokosinski@internships.antmicro.com>
 
-Add vendor prefix for LiteX SoC builder.
+Add documentation for LiteUART devicetree bindings.
 
 Signed-off-by: Filip Kokosinski <fkokosinski@internships.antmicro.com>
 Signed-off-by: Mateusz Holenko <mholenko@antmicro.com>
 ---
- Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ .../devicetree/bindings/serial/litex,liteuart.txt    | 12 ++++++++++++
+ MAINTAINERS                                          |  6 ++++++
+ 2 files changed, 18 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/litex,liteuart.txt
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index 329b668da..4143c52a8 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -533,6 +533,8 @@ patternProperties:
-     description: Linux-specific binding
-   "^linx,.*":
-     description: Linx Technologies
-+  "^litex,.*":
-+    description: LiteX SoC builder
-   "^lltc,.*":
-     description: Linear Technology Corporation
-   "^logicpd,.*":
+diff --git a/Documentation/devicetree/bindings/serial/litex,liteuart.txt b/Documentation/devicetree/bindings/serial/litex,liteuart.txt
+new file mode 100644
+index 000000000..13c71a0c9
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/litex,liteuart.txt
+@@ -0,0 +1,12 @@
++LiteUART serial controller
++
++Required properties:
++- compatible: should be "litex,liteuart"
++- reg: base address and length of the register set for this device
++
++Example:
++
++uart0: serial@f0001000 {
++	compatible = "litex,liteuart";
++	reg = <0xe0001800 0x100>;
++};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index b2326dece..65a6cf296 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9462,6 +9462,12 @@ F:	Documentation/misc-devices/lis3lv02d.rst
+ F:	drivers/misc/lis3lv02d/
+ F:	drivers/platform/x86/hp_accel.c
+ 
++LITEX PLATFORM
++M:	Karol Gugala <kgugala@antmicro.com>
++M:	Mateusz Holenko <mholenko@antmicro.com>
++S:	Maintained
++F:	Documentation/devicetree/bindings/serial/litex,liteuart.txt
++
+ LIVE PATCHING
+ M:	Josh Poimboeuf <jpoimboe@redhat.com>
+ M:	Jiri Kosina <jikos@kernel.org>
 -- 
 2.23.0
