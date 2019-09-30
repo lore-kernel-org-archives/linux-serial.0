@@ -1,501 +1,128 @@
-From: Mateusz Holenko <mholenko@antmicro.com>
-Subject: [PATCH 3/3] drivers/tty/serial: add LiteUART driver
-Date: Mon, 30 Sep 2019 15:04:52 +0200
-Message-ID: <20190930130452.GA9838@localhost.localdomain>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH RESEND v3 00/26] Add definition for the number of
+ standard PCI BARs
+Date: Mon, 30 Sep 2019 14:58:55 -0500
+Message-ID: <20190930195855.GA191519@google.com>
+References: <20190927234026.23342-1-efremov@linux.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
 Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Cc: Karol Gugala <kgugala@antmicro.com>, Mateusz Holenko <mholenko@antmicro.com>, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, Maxime Ripard <mripard@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Heiko Stuebner <heiko@sntech.de>, Sam Ravnborg <sam@ravnborg.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Icenowy Zheng <icenowy@aosc.io>, Mauro Carvalho Chehab <mchehab+samsung@kernel.org>, "David S. Miller" <davem@davemloft.net>, "Paul E. McKenney" <paulmck@linux.ibm.com>
+In-Reply-To: <20190927234026.23342-1-efremov@linux.com>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
+To: Denis Efremov <efremov@linux.com>
+Cc: devel@driverdev.osuosl.org, linux-s390@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-usb@vger.kernel.org, linux-ia64@vger.kernel.org, linux-scsi@vger.kernel.org, kvm@vger.kernel.org, linux-serial@vger.kernel.org, linux-pci@vger.kernel.org, x86@kernel.org, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org, netdev@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-serial@vger.kernel.org
 
-From: Filip Kokosinski <fkokosinski@internships.antmicro.com>
+On Sat, Sep 28, 2019 at 02:40:26AM +0300, Denis Efremov wrote:
+> Code that iterates over all standard PCI BARs typically uses
+> PCI_STD_RESOURCE_END, but this is error-prone because it requires
+> "i <= PCI_STD_RESOURCE_END" rather than something like
+> "i < PCI_STD_NUM_BARS". We could add such a definition and use it the same
+> way PCI_SRIOV_NUM_BARS is used. The patchset also replaces constant (6)
+> with new define PCI_STD_NUM_BARS where appropriate and removes local
+> declarations for the number of PCI BARs.
+> 
+> Changes in v3:
+>   - Updated commits description.
+>   - Refactored "< PCI_ROM_RESOURCE" with "< PCI_STD_NUM_BARS" in loops.
+>   - Refactored "<= BAR_5" with "< PCI_STD_NUM_BARS" in loops.
+>   - Removed local define GASKET_NUM_BARS.
+>   - Removed local define PCI_NUM_BAR_RESOURCES.
+> 
+> Changes in v2:
+>   - Reversed checks in pci_iomap_range,pci_iomap_wc_range.
+>   - Refactored loops in vfio_pci to keep PCI_STD_RESOURCES.
+>   - Added 2 new patches to replace the magic constant with new define.
+>   - Splitted net patch in v1 to separate stmmac and dwc-xlgmac patches.
+> 
+> Denis Efremov (26):
+>   PCI: Add define for the number of standard PCI BARs
+>   PCI: hv: Use PCI_STD_NUM_BARS
+>   PCI: dwc: Use PCI_STD_NUM_BARS
+>   PCI: endpoint: Use PCI_STD_NUM_BARS
+>   misc: pci_endpoint_test: Use PCI_STD_NUM_BARS
+>   s390/pci: Use PCI_STD_NUM_BARS
+>   x86/PCI: Loop using PCI_STD_NUM_BARS
+>   alpha/PCI: Use PCI_STD_NUM_BARS
+>   ia64: Use PCI_STD_NUM_BARS
+>   stmmac: pci: Loop using PCI_STD_NUM_BARS
+>   net: dwc-xlgmac: Loop using PCI_STD_NUM_BARS
+>   ixgb: use PCI_STD_NUM_BARS
+>   e1000: Use PCI_STD_NUM_BARS
+>   rapidio/tsi721: Loop using PCI_STD_NUM_BARS
+>   efifb: Loop using PCI_STD_NUM_BARS
+>   fbmem: use PCI_STD_NUM_BARS
+>   vfio_pci: Loop using PCI_STD_NUM_BARS
+>   scsi: pm80xx: Use PCI_STD_NUM_BARS
+>   ata: sata_nv: Use PCI_STD_NUM_BARS
+>   staging: gasket: Use PCI_STD_NUM_BARS
+>   serial: 8250_pci: Use PCI_STD_NUM_BARS
+>   pata_atp867x: Use PCI_STD_NUM_BARS
+>   memstick: use PCI_STD_NUM_BARS
+>   USB: core: Use PCI_STD_NUM_BARS
+>   usb: pci-quirks: Use PCI_STD_NUM_BARS
+>   devres: use PCI_STD_NUM_BARS
+> 
+>  arch/alpha/kernel/pci-sysfs.c                 |  8 ++---
+>  arch/ia64/sn/pci/pcibr/pcibr_dma.c            |  4 +--
+>  arch/s390/include/asm/pci.h                   |  5 +--
+>  arch/s390/include/asm/pci_clp.h               |  6 ++--
+>  arch/s390/pci/pci.c                           | 16 +++++-----
+>  arch/s390/pci/pci_clp.c                       |  6 ++--
+>  arch/x86/pci/common.c                         |  2 +-
+>  arch/x86/pci/intel_mid_pci.c                  |  2 +-
+>  drivers/ata/pata_atp867x.c                    |  2 +-
+>  drivers/ata/sata_nv.c                         |  2 +-
+>  drivers/memstick/host/jmb38x_ms.c             |  2 +-
+>  drivers/misc/pci_endpoint_test.c              |  8 ++---
+>  drivers/net/ethernet/intel/e1000/e1000.h      |  1 -
+>  drivers/net/ethernet/intel/e1000/e1000_main.c |  2 +-
+>  drivers/net/ethernet/intel/ixgb/ixgb.h        |  1 -
+>  drivers/net/ethernet/intel/ixgb/ixgb_main.c   |  2 +-
+>  .../net/ethernet/stmicro/stmmac/stmmac_pci.c  |  4 +--
+>  .../net/ethernet/synopsys/dwc-xlgmac-pci.c    |  2 +-
+>  drivers/pci/controller/dwc/pci-dra7xx.c       |  2 +-
+>  .../pci/controller/dwc/pci-layerscape-ep.c    |  2 +-
+>  drivers/pci/controller/dwc/pcie-artpec6.c     |  2 +-
+>  .../pci/controller/dwc/pcie-designware-plat.c |  2 +-
+>  drivers/pci/controller/dwc/pcie-designware.h  |  2 +-
+>  drivers/pci/controller/pci-hyperv.c           | 10 +++---
+>  drivers/pci/endpoint/functions/pci-epf-test.c | 10 +++---
+>  drivers/pci/pci-sysfs.c                       |  4 +--
+>  drivers/pci/pci.c                             | 13 ++++----
+>  drivers/pci/proc.c                            |  4 +--
+>  drivers/pci/quirks.c                          |  4 +--
+>  drivers/rapidio/devices/tsi721.c              |  2 +-
+>  drivers/scsi/pm8001/pm8001_hwi.c              |  2 +-
+>  drivers/scsi/pm8001/pm8001_init.c             |  2 +-
+>  drivers/staging/gasket/gasket_constants.h     |  3 --
+>  drivers/staging/gasket/gasket_core.c          | 12 +++----
+>  drivers/staging/gasket/gasket_core.h          |  4 +--
+>  drivers/tty/serial/8250/8250_pci.c            |  8 ++---
+>  drivers/usb/core/hcd-pci.c                    |  2 +-
+>  drivers/usb/host/pci-quirks.c                 |  2 +-
+>  drivers/vfio/pci/vfio_pci.c                   | 11 ++++---
+>  drivers/vfio/pci/vfio_pci_config.c            | 32 ++++++++++---------
+>  drivers/vfio/pci/vfio_pci_private.h           |  4 +--
+>  drivers/video/fbdev/core/fbmem.c              |  4 +--
+>  drivers/video/fbdev/efifb.c                   |  2 +-
+>  include/linux/pci-epc.h                       |  2 +-
+>  include/linux/pci.h                           |  2 +-
+>  include/uapi/linux/pci_regs.h                 |  1 +
+>  lib/devres.c                                  |  2 +-
+>  47 files changed, 112 insertions(+), 115 deletions(-)
 
-This commit adds driver for the FPGA-based LiteUART serial controller
-from LiteX SoC builder.
+Applied to pci/resource for v5.5, thanks!
 
-The current implementation supports LiteUART configured
-for 32 bit data width and 8 bit CSR bus width.
-
-It does not support IRQ.
-
-Signed-off-by: Filip Kokosinski <fkokosinski@internships.antmicro.com>
-Signed-off-by: Mateusz Holenko <mholenko@antmicro.com>
----
- MAINTAINERS                      |   1 +
- drivers/tty/serial/Kconfig       |  30 +++
- drivers/tty/serial/Makefile      |   1 +
- drivers/tty/serial/liteuart.c    | 382 +++++++++++++++++++++++++++++++
- include/uapi/linux/serial_core.h |   3 +
- 5 files changed, 417 insertions(+)
- create mode 100644 drivers/tty/serial/liteuart.c
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 65a6cf296..d108b6044 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -9467,6 +9467,7 @@ M:	Karol Gugala <kgugala@antmicro.com>
- M:	Mateusz Holenko <mholenko@antmicro.com>
- S:	Maintained
- F:	Documentation/devicetree/bindings/serial/litex,liteuart.txt
-+F:	drivers/tty/serial/liteuart.c
- 
- LIVE PATCHING
- M:	Josh Poimboeuf <jpoimboe@redhat.com>
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 4789b5d62..b01fe12a1 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1571,6 +1571,36 @@ config SERIAL_MILBEAUT_USIO_CONSOLE
- 	  receives all kernel messages and warnings and which allows logins in
- 	  single user mode).
- 
-+config SERIAL_LITEUART
-+	tristate "LiteUART serial port support"
-+	depends on HAS_IOMEM
-+	depends on OF
-+	select SERIAL_CORE
-+	help
-+	  This driver is for the FPGA-based LiteUART serial controller from LiteX
-+	  SoC builder.
-+
-+	  Say 'Y' here if you wish to use the LiteUART serial controller.
-+	  Otherwise, say 'N'.
-+
-+config SERIAL_LITEUART_NR_PORTS
-+	int "Number of LiteUART ports"
-+	depends on SERIAL_LITEUART
-+	default "1"
-+	help
-+	  Set this to the number of serial ports you want the driver
-+	  to support.
-+
-+config SERIAL_LITEUART_CONSOLE
-+	bool "LiteUART serial port console support"
-+	depends on SERIAL_LITEUART=y
-+	select SERIAL_CORE_CONSOLE
-+	help
-+	  Say 'Y' here if you wish to use the FPGA-based LiteUART serial controller
-+	  from LiteX SoC builder as the system console (the system console is the
-+	  device which receives all kernel messages and warnings and which allows
-+	  logins in single user mode). Otherwise, say 'N'.
-+
- endmenu
- 
- config SERIAL_MCTRL_GPIO
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index 863f47056..c8d7e2046 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -89,6 +89,7 @@ obj-$(CONFIG_SERIAL_OWL)	+= owl-uart.o
- obj-$(CONFIG_SERIAL_RDA)	+= rda-uart.o
- obj-$(CONFIG_SERIAL_MILBEAUT_USIO) += milbeaut_usio.o
- obj-$(CONFIG_SERIAL_SIFIVE)	+= sifive.o
-+obj-$(CONFIG_SERIAL_LITEUART) += liteuart.o
- 
- # GPIOLIB helpers for modem control lines
- obj-$(CONFIG_SERIAL_MCTRL_GPIO)	+= serial_mctrl_gpio.o
-diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-new file mode 100644
-index 000000000..4c4eaa73f
---- /dev/null
-+++ b/drivers/tty/serial/liteuart.c
-@@ -0,0 +1,382 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * LiteUART serial controller (LiteX) Driver
-+ *
-+ * Copyright (C) 2019 Antmicro Ltd <www.antmicro.com>
-+ */
-+
-+#include <linux/console.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_address.h>
-+#include <linux/of_platform.h>
-+#include <linux/serial.h>
-+#include <linux/serial_core.h>
-+#include <linux/timer.h>
-+#include <linux/tty_flip.h>
-+
-+/* module-related defines */
-+#define DRIVER_NAME	"liteuart"
-+#define DRIVER_MAJOR	0
-+#define DRIVER_MINOR	0
-+#define DEV_NAME	"ttyLXU"
-+
-+/* base address offsets */
-+#define OFF_RXTX	0x00
-+#define OFF_TXFULL	0x04
-+#define OFF_RXEMPTY	0x08
-+#define OFF_EV_STATUS	0x0c
-+#define OFF_EV_PENDING	0x10
-+#define OFF_EV_ENABLE	0x14
-+
-+/* events */
-+#define EV_TX	0x1
-+#define EV_RX	0x2
-+
-+/* setting/getting registers */
-+#ifdef __LITTLE_ENDIAN
-+# define PORT_REG_SET(port, off, val)	iowrite32(val, port->membase + \
-+		OFF_##off)
-+# define PORT_REG_GET(port, off)	ioread32(port->membase + OFF_##off)
-+#else
-+# define PORT_REG_SET(port, off, val)	iowrite32be(val, port->membase + \
-+		OFF_##off)
-+# define PORT_REG_GET(port, off)	ioread32be(port->membase + OFF_##off)
-+#endif
-+
-+struct liteuart_port {
-+	struct uart_port port;
-+	struct timer_list timer;
-+};
-+
-+#define to_liteuart_port(port)	container_of(port, struct liteuart_port, port)
-+
-+static struct liteuart_port liteuart_ports[CONFIG_SERIAL_LITEUART_NR_PORTS];
-+
-+#ifdef CONFIG_SERIAL_LITEUART_CONSOLE
-+static struct console liteuart_console;
-+#endif
-+
-+static struct uart_driver liteuart_driver = {
-+	.owner = THIS_MODULE,
-+	.driver_name = DRIVER_NAME,
-+	.dev_name = DEV_NAME,
-+	.major = DRIVER_MAJOR,
-+	.minor = DRIVER_MINOR,
-+	.nr = CONFIG_SERIAL_LITEUART_NR_PORTS,
-+#ifdef CONFIG_SERIAL_LITEUART_CONSOLE
-+	.cons = &liteuart_console,
-+#endif
-+};
-+
-+static void liteuart_timer(struct timer_list *t)
-+{
-+	struct liteuart_port *uart = from_timer(uart, t, timer);
-+	struct uart_port *port = &uart->port;
-+	unsigned int flg = TTY_NORMAL;
-+	int ch;
-+	unsigned int status;
-+
-+	while ((status = !PORT_REG_GET(port, RXEMPTY)) == 1) {
-+		ch = PORT_REG_GET(port, RXTX);
-+		port->icount.rx++;
-+
-+		/* necessary for RXEMPTY to refresh its value */
-+		PORT_REG_SET(port, EV_PENDING, EV_TX | EV_RX);
-+
-+		/* no overflow bits in status */
-+		if (!(uart_handle_sysrq_char(port, ch)))
-+			uart_insert_char(port, status, 0, ch, flg);
-+
-+		tty_flip_buffer_push(&port->state->port);
-+	}
-+
-+	mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
-+}
-+
-+static void liteuart_putchar(struct uart_port *port, int ch)
-+{
-+	while (PORT_REG_GET(port, TXFULL))
-+		cpu_relax();
-+
-+	PORT_REG_SET(port, RXTX, ch);
-+}
-+
-+static unsigned int liteuart_tx_empty(struct uart_port *port)
-+{
-+	/* not really tx empty, just checking if tx is not full */
-+	if (!PORT_REG_GET(port, TXFULL))
-+		return TIOCSER_TEMT;
-+
-+	return 0;
-+}
-+
-+static void liteuart_set_mctrl(struct uart_port *port, unsigned int mctrl)
-+{
-+	/* modem control register is not present in LiteUART */
-+}
-+
-+static unsigned int liteuart_get_mctrl(struct uart_port *port)
-+{
-+	return TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
-+}
-+
-+static void liteuart_stop_tx(struct uart_port *port)
-+{
-+}
-+
-+static void liteuart_start_tx(struct uart_port *port)
-+{
-+	struct circ_buf *xmit = &port->state->xmit;
-+	unsigned char ch;
-+
-+	if (unlikely(port->x_char)) {
-+		PORT_REG_SET(port, RXTX, port->x_char);
-+		port->icount.tx++;
-+		port->x_char = 0;
-+	} else if (!uart_circ_empty(xmit)) {
-+		while (xmit->head != xmit->tail) {
-+			ch = xmit->buf[xmit->tail];
-+			xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-+			port->icount.tx++;
-+			liteuart_putchar(port, ch);
-+		}
-+	}
-+
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-+		uart_write_wakeup(port);
-+}
-+
-+static void liteuart_stop_rx(struct uart_port *port)
-+{
-+	struct liteuart_port *uart = to_liteuart_port(port);
-+
-+	/* just delete timer */
-+	del_timer(&uart->timer);
-+}
-+
-+static void liteuart_break_ctl(struct uart_port *port, int break_state)
-+{
-+	/* LiteUART doesn't support sending break signal */
-+}
-+
-+static int liteuart_startup(struct uart_port *port)
-+{
-+	struct liteuart_port *uart = to_liteuart_port(port);
-+
-+	/* disable events */
-+	PORT_REG_SET(port, EV_ENABLE, 0);
-+
-+	/* prepare timer for polling */
-+	timer_setup(&uart->timer, liteuart_timer, 0);
-+	mod_timer(&uart->timer, jiffies + uart_poll_timeout(port));
-+
-+	return 0;
-+}
-+
-+static void liteuart_shutdown(struct uart_port *port)
-+{
-+}
-+
-+static void liteuart_set_termios(struct uart_port *port, struct ktermios *new,
-+				 struct ktermios *old)
-+{
-+	unsigned int baud;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+
-+	/* update baudrate */
-+	baud = uart_get_baud_rate(port, new, old, 0, 460800);
-+	uart_update_timeout(port, new->c_cflag, baud);
-+
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+static const char *liteuart_type(struct uart_port *port)
-+{
-+	return (port->type == PORT_LITEUART) ? DRIVER_NAME : NULL;
-+}
-+
-+static void liteuart_release_port(struct uart_port *port)
-+{
-+}
-+
-+static int liteuart_request_port(struct uart_port *port)
-+{
-+	return 0;
-+}
-+
-+static void liteuart_config_port(struct uart_port *port, int flags)
-+{
-+	if (flags & UART_CONFIG_TYPE)
-+		port->type = PORT_LITEUART;
-+}
-+
-+static int liteuart_verify_port(struct uart_port *port,
-+				struct serial_struct *ser)
-+{
-+	if (port->type != PORT_UNKNOWN && ser->type != PORT_LITEUART)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+static const struct uart_ops liteuart_ops = {
-+	.tx_empty	= liteuart_tx_empty,
-+	.set_mctrl	= liteuart_set_mctrl,
-+	.get_mctrl	= liteuart_get_mctrl,
-+	.stop_tx	= liteuart_stop_tx,
-+	.start_tx	= liteuart_start_tx,
-+	.stop_rx	= liteuart_stop_rx,
-+	.break_ctl	= liteuart_break_ctl,
-+	.startup	= liteuart_startup,
-+	.shutdown	= liteuart_shutdown,
-+	.set_termios	= liteuart_set_termios,
-+	.type		= liteuart_type,
-+	.release_port	= liteuart_release_port,
-+	.request_port	= liteuart_request_port,
-+	.config_port	= liteuart_config_port,
-+	.verify_port	= liteuart_verify_port,
-+};
-+
-+static int liteuart_probe(struct platform_device *pdev)
-+{
-+	struct device_node *np = pdev->dev.of_node;
-+	struct liteuart_port *uart;
-+	struct uart_port *port;
-+	int dev_id;
-+
-+	/* no device tree */
-+	if (!np)
-+		return -ENODEV;
-+
-+	dev_id = of_alias_get_id(np, "serial");
-+	if (dev_id < 0 || dev_id >= CONFIG_SERIAL_LITEUART_NR_PORTS)
-+		return -EINVAL;
-+
-+	uart = &liteuart_ports[dev_id];
-+	port = &uart->port;
-+
-+	/* get {map,mem}base */
-+	port->mapbase = platform_get_resource(pdev, IORESOURCE_MEM, 0)->start;
-+	port->membase = of_iomap(np, 0);
-+	if (!port->membase)
-+		return -ENXIO;
-+
-+	/* values not from device tree */
-+	port->dev = &pdev->dev;
-+	port->iotype = UPIO_MEM;
-+	port->flags = UPF_BOOT_AUTOCONF;
-+	port->ops = &liteuart_ops;
-+	port->regshift = 2;
-+	port->fifosize = 16;
-+	port->iobase = 1;
-+	port->type = PORT_UNKNOWN;
-+	port->line = dev_id;
-+
-+	return uart_add_one_port(&liteuart_driver,
-+				 &liteuart_ports[dev_id].port);
-+}
-+
-+static int liteuart_remove(struct platform_device *pdev)
-+{
-+	return 0;
-+}
-+
-+static const struct of_device_id liteuart_of_match[] = {
-+	{ .compatible = "litex,liteuart" },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, liteuart_of_match);
-+
-+static struct platform_driver liteuart_platform_driver = {
-+	.probe = liteuart_probe,
-+	.remove = liteuart_remove,
-+	.driver = {
-+		.name = DRIVER_NAME,
-+		.of_match_table = of_match_ptr(liteuart_of_match),
-+	},
-+};
-+
-+#ifdef CONFIG_SERIAL_LITEUART_CONSOLE
-+
-+static void liteuart_console_write(struct console *co, const char *s,
-+	unsigned int count)
-+{
-+	struct uart_port *port = &liteuart_ports[co->index].port;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	uart_console_write(port, s, count, liteuart_putchar);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
-+static int liteuart_console_setup(struct console *co, char *options)
-+{
-+	struct uart_port *port;
-+	int baud = 115200;
-+	int bits = 8;
-+	int parity = 'n';
-+	int flow = 'n';
-+
-+	port = &liteuart_ports[co->index].port;
-+	if (!port->membase)
-+		return -ENODEV;
-+
-+	if (options)
-+		uart_parse_options(options, &baud, &parity, &bits, &flow);
-+
-+	return uart_set_options(port, co, baud, parity, bits, flow);
-+}
-+
-+static struct console liteuart_console = {
-+	.name = DRIVER_NAME,
-+	.write = liteuart_console_write,
-+	.device = uart_console_device,
-+	.setup = liteuart_console_setup,
-+	.flags = CON_PRINTBUFFER,
-+	.index = -1,
-+	.data = &liteuart_driver,
-+};
-+
-+static int __init liteuart_console_init(void)
-+{
-+	register_console(&liteuart_console);
-+
-+	return 0;
-+}
-+
-+console_initcall(liteuart_console_init);
-+#endif /* CONFIG_SERIAL_LITEUART_CONSOLE */
-+
-+static int __init liteuart_init(void)
-+{
-+	int res;
-+
-+	res = uart_register_driver(&liteuart_driver);
-+	if (res)
-+		return res;
-+
-+	res = platform_driver_register(&liteuart_platform_driver);
-+	if (res) {
-+		uart_unregister_driver(&liteuart_driver);
-+		return res;
-+	}
-+
-+	return 0;
-+}
-+
-+static void __exit liteuart_exit(void)
-+{
-+	platform_driver_unregister(&liteuart_platform_driver);
-+	uart_unregister_driver(&liteuart_driver);
-+}
-+
-+module_init(liteuart_init);
-+module_exit(liteuart_exit);
-+
-+MODULE_AUTHOR("Antmicro Ltd <www.antmicro.com>");
-+MODULE_DESCRIPTION("LiteUART serial driver");
-+MODULE_LICENSE("GPL");
-+MODULE_ALIAS("platform:" DRIVER_NAME);
-diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-index 0f4f87a6f..8fe6b0bf8 100644
---- a/include/uapi/linux/serial_core.h
-+++ b/include/uapi/linux/serial_core.h
-@@ -293,4 +293,7 @@
- /* Freescale Linflex UART */
- #define PORT_LINFLEXUART	121
- 
-+/* LiteUART */
-+#define PORT_LITEUART	122
-+
- #endif /* _UAPILINUX_SERIAL_CORE_H */
--- 
-2.23.0
+I ended up squashing these all together because they're all related
+and tiny.
