@@ -1,93 +1,118 @@
-Return-Path: <SRS0=vVzV=XY=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=tOPF=XZ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.2 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F5D2C4360C
-	for <linux-serial@archiver.kernel.org>; Sun, 29 Sep 2019 21:43:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B692EC388F4
+	for <linux-serial@archiver.kernel.org>; Mon, 30 Sep 2019 13:04:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 40BB520863
-	for <linux-serial@archiver.kernel.org>; Sun, 29 Sep 2019 21:43:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8E52B21924
+	for <linux-serial@archiver.kernel.org>; Mon, 30 Sep 2019 13:04:05 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=antmicro-com.20150623.gappssmtp.com header.i=@antmicro-com.20150623.gappssmtp.com header.b="Et0O9/tG"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729010AbfI2VnZ (ORCPT
+        id S1731184AbfI3NED (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 29 Sep 2019 17:43:25 -0400
-Received: from imap1.codethink.co.uk ([176.9.8.82]:46618 "EHLO
-        imap1.codethink.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728853AbfI2VnZ (ORCPT
+        Mon, 30 Sep 2019 09:04:03 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:34463 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730802AbfI3NEC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 29 Sep 2019 17:43:25 -0400
-Received: from host-78-144-222-197.as13285.net ([78.144.222.197] helo=[192.168.1.13])
-        by imap1.codethink.co.uk with esmtpsa (Exim 4.84_2 #1 (Debian))
-        id 1iEgyQ-0003Jj-R2; Sun, 29 Sep 2019 22:43:22 +0100
-Subject: Re: [PATCH v2 2/3] serial: 8250_exar: Refactor exar_shutdown()
-To:     Robert Middleton <robert.middleton@rm5248.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Aaron Sierra <asierra@xes-inc.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, Jan Kiszka <jan.kiszka@siemens.com>
-References: <20190805100518.9818-2-andriy.shevchenko@linux.intel.com>
- <CAKpcJVZTy963y3TOXSYSBFVOpVTWEOyJKUYxv1pHNGz3Y1aPTA@mail.gmail.com>
- <20190805142147.GK23480@smile.fi.intel.com>
- <CAKpcJVYfcVAmoB63EbmJaix6v+2JJ5BujAcdduQLcw-ES+f3ZQ@mail.gmail.com>
- <20190806152407.GF30120@smile.fi.intel.com>
- <20190806153110.GG30120@smile.fi.intel.com>
- <CAKpcJVYTC8MN6A51iip=cyvkfXVy2NS-c3FyhAi9qcxsgJkQRw@mail.gmail.com>
- <CAKpcJVaL-BqL0G=_hT6WHz6kCr05sHS1jDQnaM0s_WFWCb6n_A@mail.gmail.com>
- <20190807150425.GC30120@smile.fi.intel.com>
- <CAKpcJVYmTK-kw5eZJtcMWBSMmOk4ijqu-1oh9cEswi4q98QHAg@mail.gmail.com>
- <20190808121148.GT30120@smile.fi.intel.com>
- <d4ec5a0a-08e3-4da9-bf43-fb1269d0b996@codethink.co.uk>
- <d64d54fd-5d21-f0a5-8804-b4a0ce486c59@codethink.co.uk>
- <CAKpcJVaNyv-D3eehF4rcE7ZvihRcsdHm+dOWAea0+6CETY6L=Q@mail.gmail.com>
-From:   Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
-Message-ID: <29ab74c4-490b-ef4a-011a-ba75fc4321cb@codethink.co.uk>
-Date:   Sun, 29 Sep 2019 22:43:22 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        Mon, 30 Sep 2019 09:04:02 -0400
+Received: by mail-lf1-f67.google.com with SMTP id r22so6980703lfm.1
+        for <linux-serial@vger.kernel.org>; Mon, 30 Sep 2019 06:04:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=antmicro-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=NKz061ZKrfKpmulUXMfGM39xSIQHkJ/qfJErKxufWTs=;
+        b=Et0O9/tGHYkgEKZtIGpCcrr6TOROMY5wZ7ALUslSNVg39r1XOCZMKomLMfcH3uf3B0
+         xz/WiE0S/yexoIOk0AC9NqaNvBNPiEDC/rvvm4LOhFU5fOFQJb9pSYD/h80DeicEjkLr
+         NBcHoNV03AGP8s5x3LHa2Kh80NJLv9U049I8U0H3F1K0A6torSBtsWAYizr1SGifdh6+
+         GMFWfoXAPEpIHtVoMz6JPUQOm1XlzGfql0LM/YNnyF5CZYsrYtX8vOJXKT5fa4qmxBdr
+         dBnGYVnKR4uulhidzNqkHG9o2Vt49/UssWx3sAhNimhrTLuryWGb2pMJks51PKwL1ju5
+         cJqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=NKz061ZKrfKpmulUXMfGM39xSIQHkJ/qfJErKxufWTs=;
+        b=CBiWsz/lj5Ajd8k8sGEHugsbBTkDFxor2c2BbTA1unq1kwfxYaor12fdUZKYdCBwMZ
+         SQH/ejpoPE9rFrLqFQlYbLIJ+7vzPkmvCm80oYnxaCRTOXcaljAcARce3niw3sL9euxS
+         j+CpiLQ1iYNGoQQmLxVjW9cKNMwoy4KnLrJo5lKsSFHIsDogXB1awjE4mTVfg32C+t3u
+         5bTrEHMD1YcZg2xSNMMAAODfpmiJuC4RkgrF7BkoI6jb/NqAr+ms9LlTNR/VSNM4+pcF
+         op2WnGrQ54W/trP4SEtZtxwJrI/mju8d0HBBBcn3AEcW+uK0sNRShC4fl+iKsGaaJ7Kc
+         ScfA==
+X-Gm-Message-State: APjAAAXrSkoX5GWTLDxQQP5sNmf6U995GA9aCufiZeowaPhbYONWe+J3
+        yqxxXJUem5iAPn2klgt3nUEQdQ==
+X-Google-Smtp-Source: APXvYqzDz/EV5ey9sKE1NK4jYT+12yoR14i2vO/m28H9eOEdKF9EPYknV1nV56KgFRg+yVNgqwUEhQ==
+X-Received: by 2002:a19:c709:: with SMTP id x9mr11722949lff.20.1569848640277;
+        Mon, 30 Sep 2019 06:04:00 -0700 (PDT)
+Received: from localhost.localdomain (d79-196.icpnet.pl. [77.65.79.196])
+        by smtp.gmail.com with ESMTPSA id 4sm3315620ljv.87.2019.09.30.06.03.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Sep 2019 06:03:59 -0700 (PDT)
+Date:   Mon, 30 Sep 2019 15:03:52 +0200
+From:   Mateusz Holenko <mholenko@antmicro.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org,
+        Maxime Ripard <mripard@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>
+Subject: [PATCH 0/3] LiteUART serial driver
+Message-ID: <20190930130352.GA5898@localhost.localdomain>
 MIME-Version: 1.0
-In-Reply-To: <CAKpcJVaNyv-D3eehF4rcE7ZvihRcsdHm+dOWAea0+6CETY6L=Q@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
+Message-ID: <20190930130352.cAl6lGgEwUBSBss0DYoWw2Rv5LdOUUTTkt1hbit1Kfo@z>
 
+This patchset introduces support for LiteUART
+- serial device from LiteX SoC builder
+(https://github.com/enjoy-digital/litex).
 
+In the following patchset I will add
+a new mor1kx-based (OpenRISC) platform that
+uses this device.
 
-On 29/09/2019 22:30, Robert Middleton wrote:
-> On Sun, Sep 29, 2019 at 2:15 PM Sudip Mukherjee
-> <sudip.mukherjee@codethink.co.uk> wrote:
->>
->> Hi Robert,
->>
->> Sorry for the delay. I managed to test it today. My test file contained
->> 70 lines of "The quick brown fox jumps over the lazy dog". I used upto
->> 1200 Baudrate to send the text from the desktop using the Exar serial I
->> have and I did not notice any message loss on the receiving laptop.
->> Please let me know if you want me to test further.
->>
-> 
-> Two questions:
-> 1. What kernel version?  If you didn't have a problem, I can try with
-> the exact version that you have as well and see if I can reproduce on
-> my side.
+Later I plan to extend this platform by
+adding support for more devices from LiteX suite.
 
-v5.3.1
+Filip Kokosinski (3):
+  dt-bindings: vendor: add vendor prefix for LiteX
+  dt-bindings: serial: document LiteUART bindings
+  drivers/tty/serial: add LiteUART driver
 
-> 2. Did you test this via 'cat text-file.txt > /dev/ttySX' ?  I'm
-> assuming that you are, but just want to make sure.
-
-Yes. On the desktop which has the Exar hardware "cat fox.txt >
-/dev/ttyS4" and on the laptop which is the receiver a terminal to read
-from /dev/ttyUSB0.
-
+ .../bindings/serial/litex,liteuart.txt        |  12 +
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ MAINTAINERS                                   |   7 +
+ drivers/tty/serial/Kconfig                    |  30 ++
+ drivers/tty/serial/Makefile                   |   1 +
+ drivers/tty/serial/liteuart.c                 | 382 ++++++++++++++++++
+ include/uapi/linux/serial_core.h              |   3 +
+ 7 files changed, 437 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/litex,liteuart.txt
+ create mode 100644 drivers/tty/serial/liteuart.c
 
 -- 
-Regards
-Sudip
+2.23.0
+
