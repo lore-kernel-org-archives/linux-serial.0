@@ -2,146 +2,87 @@ Return-Path: <SRS0=tOPF=XZ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4779C32792
-	for <linux-serial@archiver.kernel.org>; Mon, 30 Sep 2019 21:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4526CC388F3
+	for <linux-serial@archiver.kernel.org>; Mon, 30 Sep 2019 23:06:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A5FBC2168B
-	for <linux-serial@archiver.kernel.org>; Mon, 30 Sep 2019 21:32:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 10F2E2168B
+	for <linux-serial@archiver.kernel.org>; Mon, 30 Sep 2019 23:06:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1569879161;
-	bh=ahrG45JXVtUfkKqLUmvU7THmziQbpk9vQeSUmrjpTn4=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=KYDpz5GCG4q7WVPWnl9Pm+0v7H9GJW7RAFsco22KUgBynvhWfFGRwQDjpvgVA7aX/
-	 wLiyOp0kFWCLQOfc6qjAe3+co0xvwedUWgpfryEiDIuo2oY9VOeD+yKXlL6mqXo0AN
-	 xFeS2cjh1Yn71d+Taak/YqWbyQ+nUJVjbUzKV3bE=
+	s=default; t=1569884805;
+	bh=9Hy+NYzTLxWtRLKIzH9yyoXyrvpEUHVT1hqu/iE1Zxg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=ilvksHPobwDp0+Htjpml8mmOTEhZ/ezCx1KZ18SSSetbl8WbAtdnTdrVYHlxpAw2L
+	 yTipz55r97nQtupw+3SresRYu0pcIJZF77Kxw5Osvf/XT3+EE42SFtXLweDjwrXGQG
+	 xs46YfufXn4pVHZebK6LpvkvFz2v4rXstLnfwL54=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727884AbfI3Vcl (ORCPT
+        id S1730573AbfI3XGo (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 30 Sep 2019 17:32:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51700 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726504AbfI3Vcl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 30 Sep 2019 17:32:41 -0400
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 621A621A4C;
-        Mon, 30 Sep 2019 21:32:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1569879159;
-        bh=ahrG45JXVtUfkKqLUmvU7THmziQbpk9vQeSUmrjpTn4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ZHq9Iid0BbcFZon6JAJa0Ns1LeLXWyA3y3CHxpLnMmZQP4jE0ySqZl79ZhI5AAMj7
-         k7GDfiQmnUIPLDhpRZZUhEp9WeAj6gnl4VG9oem/NCq4OxW5YBNSdgo3FERubtHHSt
-         hAUhe7ijMx3TQOa4lXjRRfhAnkprImxZy6Eiivw4=
-Received: by mail-qk1-f172.google.com with SMTP id 4so9212925qki.6;
-        Mon, 30 Sep 2019 14:32:39 -0700 (PDT)
-X-Gm-Message-State: APjAAAU5kSyGZQWuDbnXpqf6ooq9zBW9I3Qr9IWpzdILpDdPTZlRgEYJ
-        /BtKdKaokNBxOyUUtp6M/9Rw4z7/oNen1nmDKA==
-X-Google-Smtp-Source: APXvYqwmdAG0zihvbA/HDPLGoFaCcqTkPDudG+MUypShjhLGzz8mxUI+We5DRSX0QT0g6JWF+E3QA4gzC4d8PIMbsA0=
-X-Received: by 2002:a05:620a:7da:: with SMTP id 26mr2286889qkb.119.1569879158412;
- Mon, 30 Sep 2019 14:32:38 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190930130430.GA9080@localhost.localdomain>
-In-Reply-To: <20190930130430.GA9080@localhost.localdomain>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Mon, 30 Sep 2019 16:32:27 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqLXJNvWOOajS4JVVek=h+v_Fxrx58ogQ0Cz+5n5Sh0+=g@mail.gmail.com>
-Message-ID:
- <CAL_JsqLXJNvWOOajS4JVVek=h+v_Fxrx58ogQ0Cz+5n5Sh0+=g@mail.gmail.com>
-Subject: Re: [PATCH 2/3] dt-bindings: serial: document LiteUART bindings
-To:     Mateusz Holenko <mholenko@antmicro.com>
+        Mon, 30 Sep 2019 19:06:44 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:37980 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728073AbfI3XGo (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 30 Sep 2019 19:06:44 -0400
+Received: by mail-ot1-f66.google.com with SMTP id e11so9891238otl.5;
+        Mon, 30 Sep 2019 16:06:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=TLweXOijwFdWK7zNbWqDh8rchrcqU7bnczWWmbnZWEc=;
+        b=THurTXQ9o7QVgCqQcOvbZq4p1SR495WtDjpQMQzWVaPA6sqYNC4Z7MmSi++XQEBGoT
+         N3AsRk5s9aXRmsJYgjJpHfl6IiUaU6A4M1OpcjKxc1Wer/UYcSxPtqhafJcUoF50CZq8
+         Flq0cB7pQ0ivw+6vQNT6JAq9HwUHe/98B1vE6x1HItm/P2NsXdwERWLfTViDjbLE0++G
+         Gg3+GT4dOiORLPV0P4KuEmN0lnWqw0B9r2UiIUjlODxvPsBw8yT45db3Sz8zPmrMPRGW
+         h4KRZ2JbuwFvnR66xa5qGy9E75N41YtWdMXoVkGeW5TqQfXdP/74PJFewX8doGCxEAo+
+         3UjA==
+X-Gm-Message-State: APjAAAXxF7IPY0h1kuXFamTdc6ot7AO/kMgjc1gm7t1F7pAImxhOF438
+        a45+O7sz046FIewe1ewkFDS0tS0=
+X-Google-Smtp-Source: APXvYqy9IdRxqr9jkjAfdLo8ZvulzWBwkEmpIj0mqCLCs+9tviGNsGq8m1QktiGsU7PZ7bH2zqbA7w==
+X-Received: by 2002:a05:6830:1e2d:: with SMTP id t13mr3153803otr.357.1569884801924;
+        Mon, 30 Sep 2019 16:06:41 -0700 (PDT)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id n27sm4030641otr.32.2019.09.30.16.06.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Sep 2019 16:06:41 -0700 (PDT)
+Date:   Mon, 30 Sep 2019 18:06:39 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Biju Das <biju.das@bp.renesas.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Mark Rutland <mark.rutland@arm.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        devicetree@vger.kernel.org, Karol Gugala <kgugala@antmicro.com>,
-        Jiri Slaby <jslaby@suse.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Icenowy Zheng <icenowy@aosc.io>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
+        Biju Das <biju.das@bp.renesas.com>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Simon Horman <horms@verge.net.au>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Fabrizio Castro <fabrizio.castro@bp.renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: serial: sh-sci: Document r8a774b1 bindings
+Message-ID: <20190930230639.GA28632@bogus>
+References: <1568724324-26995-1-git-send-email-biju.das@bp.renesas.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1568724324-26995-1-git-send-email-biju.das@bp.renesas.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20190930213227.A6ao4idhztwtJ_zVe8ltnUQHlYL5QeJ_C2UVuQMQYBQ@z>
 
-On Mon, Sep 30, 2019 at 8:04 AM Mateusz Holenko <mholenko@antmicro.com> wrote:
->
-> From: Filip Kokosinski <fkokosinski@internships.antmicro.com>
->
-> Add documentation for LiteUART devicetree bindings.
->
-> Signed-off-by: Filip Kokosinski <fkokosinski@internships.antmicro.com>
-> Signed-off-by: Mateusz Holenko <mholenko@antmicro.com>
+On Tue, 17 Sep 2019 13:45:24 +0100, Biju Das wrote:
+> RZ/G2N (R8A774B1) SoC also has the R-Car Gen3 compatible SCIF and
+> HSCIF ports, so document the SoC specific bindings.
+> 
+> Signed-off-by: Biju Das <biju.das@bp.renesas.com>
 > ---
->  .../devicetree/bindings/serial/litex,liteuart.txt    | 12 ++++++++++++
->  MAINTAINERS                                          |  6 ++++++
->  2 files changed, 18 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/litex,liteuart.txt
+>  Documentation/devicetree/bindings/serial/renesas,sci-serial.txt | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
 
-Please make this a schema. See
-Documentation/devicetree/writing-schema.rst (or .md before 5.4).
-
->
-> diff --git a/Documentation/devicetree/bindings/serial/litex,liteuart.txt b/Documentation/devicetree/bindings/serial/litex,liteuart.txt
-> new file mode 100644
-> index 000000000..13c71a0c9
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/litex,liteuart.txt
-> @@ -0,0 +1,12 @@
-> +LiteUART serial controller
-> +
-> +Required properties:
-> +- compatible: should be "litex,liteuart"
-
-Only 1 version?
-
-> +- reg: base address and length of the register set for this device
-
-Is there really no interrupt line? That should be added if there's h/w
-support even if the driver doesn't yet support it.
-
-> +
-> +Example:
-> +
-> +uart0: serial@f0001000 {
-
-Wrong unit address. Should be "@e0001800".
-
-
-> +       compatible = "litex,liteuart";
-> +       reg = <0xe0001800 0x100>;
-> +};
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index b2326dece..65a6cf296 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -9462,6 +9462,12 @@ F:       Documentation/misc-devices/lis3lv02d.rst
->  F:     drivers/misc/lis3lv02d/
->  F:     drivers/platform/x86/hp_accel.c
->
-> +LITEX PLATFORM
-> +M:     Karol Gugala <kgugala@antmicro.com>
-> +M:     Mateusz Holenko <mholenko@antmicro.com>
-> +S:     Maintained
-> +F:     Documentation/devicetree/bindings/serial/litex,liteuart.txt
-> +
->  LIVE PATCHING
->  M:     Josh Poimboeuf <jpoimboe@redhat.com>
->  M:     Jiri Kosina <jikos@kernel.org>
-> --
-> 2.23.0
->
+Acked-by: Rob Herring <robh@kernel.org>
