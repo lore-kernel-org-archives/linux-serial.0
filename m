@@ -4,123 +4,90 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15121ECE589
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Oct 2019 11:58:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10659C352AA
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Oct 2019 18:07:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E115820640
-	for <linux-serial@archiver.kernel.org>; Tue,  1 Oct 2019 11:58:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D8D9C20B7C
+	for <linux-serial@archiver.kernel.org>; Tue,  1 Oct 2019 18:07:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726402AbfJAL63 (ORCPT
+        id S1730761AbfJASHr (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 1 Oct 2019 07:58:29 -0400
-Received: from mga11.intel.com ([192.55.52.93]:1403 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725839AbfJAL63 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 1 Oct 2019 07:58:29 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 01 Oct 2019 04:58:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,571,1559545200"; 
-   d="scan'208";a="194506098"
-Received: from pipin.fi.intel.com ([10.237.72.175])
-  by orsmga003.jf.intel.com with ESMTP; 01 Oct 2019 04:58:26 -0700
-From:   Felipe Balbi <felipe.balbi@linux.intel.com>
+        Tue, 1 Oct 2019 14:07:47 -0400
+Received: from michel.telenet-ops.be ([195.130.137.88]:37246 "EHLO
+        michel.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727850AbfJASHr (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 1 Oct 2019 14:07:47 -0400
+Received: from ramsan ([84.194.98.4])
+        by michel.telenet-ops.be with bizsmtp
+        id 8J7l2100805gfCL06J7l2D; Tue, 01 Oct 2019 20:07:45 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan with esmtp (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1iFMYr-0008Ku-4p; Tue, 01 Oct 2019 20:07:45 +0200
+Received: from geert by rox.of.borg with local (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1iFMYr-0000Ho-2G; Tue, 01 Oct 2019 20:07:45 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-serial@vger.kernel.org,
-        Felipe Balbi <felipe.balbi@linux.intel.com>
-Subject: [PATCH v2] serial: 8250_lpss: Switch over to MSI interrupts
-Date:   Tue,  1 Oct 2019 14:58:25 +0300
-Message-Id: <20191001115825.795700-1-felipe.balbi@linux.intel.com>
-X-Mailer: git-send-email 2.23.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Cc:     Stephen Boyd <swboyd@chromium.org>,
+        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] serial: sh-sci: Use platform_get_irq_optional() for optional interrupts
+Date:   Tue,  1 Oct 2019 20:07:43 +0200
+Message-Id: <20191001180743.1041-1-geert+renesas@glider.be>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Message-ID: <20191001180743.pB0qbvj0A8niPxSZ_MhlTdO77QN87Y7Iwcxr9kdwEOM@z>
 
-Some devices support MSI interrupts. Let's at least try to use them in
-platforms that provide MSI capability.
+As platform_get_irq() now prints an error when the interrupt does not
+exist, scary warnings may be printed for optional interrupts:
 
-While at that, remove the now duplicated code from qrp_serial_setup().
+    sh-sci e6550000.serial: IRQ index 1 not found
+    sh-sci e6550000.serial: IRQ index 2 not found
+    sh-sci e6550000.serial: IRQ index 3 not found
+    sh-sci e6550000.serial: IRQ index 4 not found
+    sh-sci e6550000.serial: IRQ index 5 not found
 
-Signed-off-by: Felipe Balbi <felipe.balbi@linux.intel.com>
+Fix this by calling platform_get_irq_optional() instead for all but the
+first interrupts, which are optional.
+
+Fixes: 7723f4c5ecdb8d83 ("driver core: platform: Add an error message to platform_get_irq*()")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
+This is a fix for v5.4-rc1.
+---
+ drivers/tty/serial/sh-sci.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-Changes since v1:
-	- Remove duplicated code from qrk_serial_setup()
-
- drivers/tty/serial/8250/8250_lpss.c | 21 +++++++++------------
- 1 file changed, 9 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-index 5f72ef3ea574..60eff3240c8a 100644
---- a/drivers/tty/serial/8250/8250_lpss.c
-+++ b/drivers/tty/serial/8250/8250_lpss.c
-@@ -221,17 +221,6 @@ static void qrk_serial_exit_dma(struct lpss8250 *lpss) {}
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 4e754a4850e6db63..22e5d4e13714e863 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -2894,8 +2894,12 @@ static int sci_init_single(struct platform_device *dev,
+ 	port->mapbase = res->start;
+ 	sci_port->reg_size = resource_size(res);
  
- static int qrk_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
- {
--	struct pci_dev *pdev = to_pci_dev(port->dev);
--	int ret;
--
--	pci_set_master(pdev);
--
--	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_ALL_TYPES);
--	if (ret < 0)
--		return ret;
--
--	port->irq = pci_irq_vector(pdev, 0);
--
- 	qrk_serial_setup_dma(lpss, port);
- 	return 0;
- }
-@@ -293,16 +282,22 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	if (ret)
- 		return ret;
+-	for (i = 0; i < ARRAY_SIZE(sci_port->irqs); ++i)
+-		sci_port->irqs[i] = platform_get_irq(dev, i);
++	for (i = 0; i < ARRAY_SIZE(sci_port->irqs); ++i) {
++		if (i)
++			sci_port->irqs[i] = platform_get_irq_optional(dev, i);
++		else
++			sci_port->irqs[i] = platform_get_irq(dev, i);
++	}
  
-+	pci_set_master(pdev);
-+
- 	lpss = devm_kzalloc(&pdev->dev, sizeof(*lpss), GFP_KERNEL);
- 	if (!lpss)
- 		return -ENOMEM;
- 
-+	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_ALL_TYPES);
-+	if (ret < 0)
-+		return ret;
-+
- 	lpss->board = (struct lpss8250_board *)id->driver_data;
- 
- 	memset(&uart, 0, sizeof(struct uart_8250_port));
- 
- 	uart.port.dev = &pdev->dev;
--	uart.port.irq = pdev->irq;
-+	uart.port.irq = pci_irq_vector(pdev, 0);
- 	uart.port.private_data = &lpss->data;
- 	uart.port.type = PORT_16550A;
- 	uart.port.iotype = UPIO_MEM;
-@@ -337,6 +332,7 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- err_exit:
- 	if (lpss->board->exit)
- 		lpss->board->exit(lpss);
-+	pci_free_irq_vectors(pdev);
- 	return ret;
- }
- 
-@@ -348,6 +344,7 @@ static void lpss8250_remove(struct pci_dev *pdev)
- 
- 	if (lpss->board->exit)
- 		lpss->board->exit(lpss);
-+	pci_free_irq_vectors(pdev);
- }
- 
- static const struct lpss8250_board byt_board = {
+ 	/* The SCI generates several interrupts. They can be muxed together or
+ 	 * connected to different interrupt lines. In the muxed case only one
 -- 
-2.23.0
+2.17.1
 
