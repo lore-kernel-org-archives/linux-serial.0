@@ -1,68 +1,106 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] serial: sh-sci: Use platform_get_irq_optional() for
- optional interrupts
-Date: Wed, 2 Oct 2019 13:28:51 +0200
-Message-ID: <CAMuHMdWQhvWOMjEpJrXV0nuKUc=wT6Zi_ZLjKco0Lkgeis8NyQ@mail.gmail.com>
-References: <20191001180743.1041-1-geert+renesas@glider.be> <201910021701.JBV8khAI%lkp@intel.com>
+From: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+Subject: [PATCH v5 0/5] Add initial support for S32V234-EVB
+Date: Wed, 2 Oct 2019 13:04:38 +0000
+Message-ID: <20191002130425.28905-1-stefan-gabriel.mirea@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <201910021701.JBV8khAI%lkp@intel.com>
+Content-Language: en-US
+Content-ID: <CECC0E352FF9974F8779C045346C4632@eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: kbuild test robot <lkp@intel.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, kbuild-all@01.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Stephen Boyd <swboyd@chromium.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: "corbet@lwn.net" <corbet@lwn.net>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will@kernel.org" <will@kernel.org>
+Cc: "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Kbuild test robot,
-
-On Wed, Oct 2, 2019 at 11:53 AM kbuild test robot <lkp@intel.com> wrote:
-> I love your patch! Yet something to improve:
->
-> [auto build test ERROR on tty/tty-testing]
-> [cannot apply to v5.4-rc1 next-20191001]
-
-Strange, this patch applies to all of v5.4-rc1, tty/tty-testing, and
-next-20191001?
-
-> url:    https://github.com/0day-ci/linux/commits/Geert-Uytterhoeven/serial-sh-sci-Use-platform_get_irq_optional-for-optional-interrupts/20191002-171547
-
-Oh, this is still the old tty/tty-testing before it was rebased to v5.4-rc1,
-i.e. still based on v5.3-rc4.  That explains the build failure.
-
-That does not explain why you couldn't apply this patch to v5.4-rc1 and
-next-20191001, though.
-
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-> config: sparc64-allmodconfig (attached as .config)
-> compiler: sparc64-linux-gcc (GCC) 7.4.0
-> reproduce:
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # save the attached .config to linux build tree
->         GCC_VERSION=7.4.0 make.cross ARCH=sparc64
->
-> If you fix the issue, kindly add following tag
-> Reported-by: kbuild test robot <lkp@intel.com>
->
-> All errors (new ones prefixed by >>):
->
->    drivers/tty/serial/sh-sci.c: In function 'sci_init_single':
-> >> drivers/tty/serial/sh-sci.c:2899:24: error: implicit declaration of function 'platform_get_irq_optional'; did you mean 'platform_get_irq_byname'? [-Werror=implicit-function-declaration]
->        sci_port->irqs[i] = platform_get_irq_optional(dev, i);
->                            ^~~~~~~~~~~~~~~~~~~~~~~~~
->                            platform_get_irq_byname
->    cc1: some warnings being treated as errors
-
-FTR, not reproducible on sparc on v5.4-rc1, current tty/tty-testing, and
-next-20191001.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+SGVsbG8sDQoNCk5YUCdzIFMzMlYyMzRbMV0gKCJUcmVlcnVubmVyIikgdmlzaW9uIG1pY3JvcHJv
+Y2Vzc29ycyBhcmUgdGFyZ2V0ZWQgZm9yDQpoaWdoLXBlcmZvcm1hbmNlLCBjb21wdXRhdGlvbmFs
+bHkgaW50ZW5zaXZlIHZpc2lvbiBhbmQgc2Vuc29yIGZ1c2lvbg0KYXBwbGljYXRpb25zIHRoYXQg
+cmVxdWlyZSBhdXRvbW90aXZlIHNhZmV0eSBsZXZlbHMuIFRoZXkgaW5jbHVkZSBsZWFkaW5nDQpl
+ZGdlIENhbWVyYSBWaXNpb24gbW9kdWxlcyBsaWtlIEFQRVgtMiwgSVNQIGFuZCBHUFUuIFRoZSBT
+MzJWMjM0LUVWQiBhbmQNClMzMlYyMzQtU0JDIGJvYXJkcyBhcmUgYXZhaWxhYmxlIGZvciBjdXN0
+b21lciBldmFsdWF0aW9uLg0KDQpUaGUgZm9sbG93aW5nIHBhdGNoIHNlcmllcyBpbnRyb2R1Y2Vz
+IG1pbmltYWwgZW5hYmxlbWVudCBzdXBwb3J0IGZvciB0aGUNCk5YUCBTMzJWMjM0LUVWQjJbMl0g
+Ym9hcmQsIHdoaWNoIGxldmVyYWdlcyBtb3N0IG9mIHRoZSBTb0MgY2FwYWJpbGl0aWVzLg0KVXAg
+dG8gdjIsIHRoaXMgc2VyaWVzIGFsc28gaW5jbHVkZWQgdGhlIGZzbF9saW5mbGV4dWFydCBkcml2
+ZXIsIHdoaWNoIGhhcw0KYmVlbiBpbmNsdWRlZCBpbiBMaW51eCA1LjQtcmMxWzNdLg0KDQpJbiB0
+aGUgZnV0dXJlLCB3ZSBhaW0gdG8gc3VibWl0IG11bHRpcGxlIGRyaXZlcnMgdXBzdHJlYW0sIHdo
+aWNoIGNhbiBiZQ0KZm91bmQgaW4gdGhlIGtlcm5lbCBvZiBvdXIgQXV0byBMaW51eCBCU1BbNF0g
+KCJBTEIiKSwgc3RhcnRpbmcgd2l0aCBiYXNpYw0KcGlubXV4aW5nLCBjbG9jayBhbmQgdVNESEMg
+ZHJpdmVycy4NCg0KRm9yIHZhbGlkYXRpb24sIHlvdSBjYW4gdXNlIHRoZSBVLUJvb3QgYm9vdGxv
+YWRlciBpbiB0aGUgQUxCWzVdLCB3aGljaCB3ZQ0KYnVpbGQgYW5kIHRlc3Qgd2l0aCBvdXIgcGF0
+Y2hlZCB2ZXJzaW9uIG9mIHRoZSBMaW5hcm8gR0NDIDYuMy4xIDIwMTcuMDUNCnRvb2xjaGFpbiBm
+b3IgQVJNIDY0LWJpdCwgd2l0aCBzb3VyY2VzIGF2YWlsYWJsZSBvbiBbNl0uDQoNCkNoYW5nZXMg
+aW4gdjU6DQoqIFJlbW92ZSB0aGUgcGF0Y2ggJ2R0LWJpbmRpbmdzOiBzZXJpYWw6IERvY3VtZW50
+IEZyZWVzY2FsZSBMSU5GbGV4RCBVQVJUJw0KICBmb2xsb3dpbmcgaXRzIGFjY2VwdGFuY2UgaW4g
+TGludXggNS40LXJjMVs4XTsNCiogUmViYXNlIHRoZSBvdGhlciBwYXRjaGVzIG9uIHY1LjQtcmMx
+Lg0KDQpDaGFuZ2VzIGluIHY0Og0KKiBSZW1vdmUgdGhlIHBhdGNoICdzZXJpYWw6IGZzbF9saW5m
+bGV4dWFydDogVXBkYXRlIGNvbXBhdGlibGUgc3RyaW5nJw0KICBmb2xsb3dpbmcgaXRzIGFjY2Vw
+dGFuY2VbN107DQoqIFJlYmFzZSB0aGUgcGF0Y2ggJ3NlcmlhbDogZnNsX2xpbmZsZXh1YXJ0OiBC
+ZSBjb25zaXN0ZW50IHdpdGggdGhlIG5hbWUnDQogIG9uIHRoZSB0dHktbmV4dCBicmFuY2ggaW4g
+R3JlZydzIHR0eSBnaXQgdHJlZS4NCg0KQ2hhbmdlcyBpbiB2MzoNCiogUmVtb3ZlIHRoZSBwYXRj
+aCAndHR5OiBzZXJpYWw6IEFkZCBsaW5mbGV4dWFydCBkcml2ZXIgZm9yIFMzMlYyMzQnDQogIGZv
+bGxvd2luZyBpdHMgYWNjZXB0YW5jZVszXTsNCiogUmVwbGFjZSAnRnJlZXNjYWxlJyB3aXRoICdO
+WFAnIGluIHRoZSBBUkNIX1MzMiBjb25maWcgZGVmaW5pdGlvbiBhbmQgdGhlDQogICdtb2RlbCcg
+cHJvcGVydHkgZnJvbSB0aGUgZGV2aWNlIHRyZWU7DQoqIFJlbW92ZSB0aGUgJ2ZzbC0nIHByZWZp
+eGVzIGZyb20gdGhlIGR0c2kgYW5kIGR0cyBmaWxlIG5hbWVzOw0KKiBNb3ZlIHRoZSAnbW9kZWwn
+IHByb3BlcnR5IGZyb20gKGZzbC0pczMydjIzNC5kdHNpIHRvIHMzMnYyMzQtZXZiLmR0czsNCiog
+QWRkIG5ld2xpbmVzIGJldHdlZW4gdGhlIGNwdSBub2RlcyBpbiBzMzJ2MjM0LmR0c2k7DQoqIE1h
+a2UgdXNlIG9mIEdJQ19TUEksIEdJQ19QUEksIEdJQ19DUFVfTUFTS19TSU1QTEUgYW5kIElSUV9U
+WVBFXyogaW4gdGhlDQogICdpbnRlcnJ1cHRzJyB0dXBsZXM7DQoqIE1vdmUgdGhlICd0aW1lcicg
+YW5kICdpbnRlcnJ1cHQtY29udHJvbGxlcicgbm9kZXMgYmVmb3JlICdzb2MnIGluDQogIHMzMnYy
+MzQuZHRzaTsNCiogQmUgY29uc2lzdGVudCB3aXRoIHRoZSAnTElORmxleEQnIHNwZWxsaW5nIGlu
+IGRvY3VtZW50YXRpb24sIHN0cmluZ3MgYW5kDQogIGNvbW1lbnRzOyBhZGQgbmV3IHBhdGNoICdz
+ZXJpYWw6IGZzbF9saW5mbGV4dWFydDogQmUgY29uc2lzdGVudCB3aXRoIHRoZQ0KICBuYW1lJyB0
+byB1cGRhdGUgdGhlIExJTkZsZXhEIGRyaXZlciBhcyB3ZWxsOw0KKiBSZW1vdmUgZnJvbSBmc2ws
+czMyLWxpbmZsZXh1YXJ0LnR4dCBhIHN0YXRlbWVudCByZWdhcmRpbmcgdGhlIGxpbWl0YXRpb24N
+CiAgdG8gVUFSVCBtb2RlOw0KKiBNYWtlIHRoZSBjb21wYXRpYmxlIHN0cmluZyBTb0Mgc3BlY2lm
+aWMgKCJmc2wsczMydjIzNC1saW5mbGV4dWFydCIpOyBhZGQNCiAgbmV3IHBhdGNoICdzZXJpYWw6
+IGZzbF9saW5mbGV4dWFydDogVXBkYXRlIGNvbXBhdGlibGUgc3RyaW5nJyB0byB1cGRhdGUNCiAg
+dGhlIExJTkZsZXhEIGRyaXZlciBhcyB3ZWxsOw0KKiBJbiB0aGUgTElORmxleEQgYmluZGluZyBk
+b2N1bWVudGF0aW9uLCBpbnNlcnQgYSBzcGFjZSBiZXR3ZWVuIGxhYmVsIGFuZA0KICBub2RlIG5h
+bWUgYW5kIHJlbW92ZSB0aGUgJ3N0YXR1cycgcHJvcGVydHkuDQoNCkNoYW5nZXMgaW4gdjI6DQoq
+IFVwZGF0ZSB0aGUgZW50cnkgaW4gZnNsLnlhbWwgdG8gYXBwbHkgdG8gYWxsIFMzMlYyMzQgYmFz
+ZWQgYm9hcmRzOw0KKiBBZGQgY2hvc2VuIG5vZGUgdG8gZHRzLCB3aXRoIGEgJ3N0ZG91dC1wYXRo
+JyBwcm9wZXJ0eSBmb3IgZWFybHljb247DQoqIFJlbW92ZSBsaW5mbGV4X3ZlcmlmeV9wb3J0KCks
+IGJlY2F1c2UgaXQgd2FzIG9ubHkgY2FsbGVkIGZyb20NCiAgdWFydF9zZXRfaW5mbygpLCB3aGlj
+aCB3YXMgZ29pbmcgdG8gYWx3YXlzIGZhaWwgYXQgdGhlICJiYXVkX2Jhc2UgPCA5NjAwIg0KICBj
+aGVjaywgYXMgd2UgYXJlIG5vdCB1c2luZyB1YXJ0Y2xrIGZyb20gdWFydF9wb3J0IHlldDsNCiog
+Rml4IGNvbXBhdGlibGUgc3RyaW5nIHVzZWQgaW4gT0ZfRUFSTFlDT05fREVDTEFSRS4NCg0KWzFd
+IGh0dHBzOi8vd3d3Lm54cC5jb20vcHJvZHVjdHMvcHJvY2Vzc29ycy1hbmQtbWljcm9jb250cm9s
+bGVycy9hcm0tYmFzZWQtcHJvY2Vzc29ycy1hbmQtbWN1cy9zMzItYXV0b21vdGl2ZS1wbGF0Zm9y
+bS92aXNpb24tcHJvY2Vzc29yLWZvci1mcm9udC1hbmQtc3Vycm91bmQtdmlldy1jYW1lcmEtbWFj
+aGluZS1sZWFybmluZy1hbmQtc2Vuc29yLWZ1c2lvbjpTMzJWMjM0DQpbMl0gaHR0cHM6Ly93d3cu
+bnhwLmNvbS9zdXBwb3J0L2RldmVsb3Blci1yZXNvdXJjZXMvZXZhbHVhdGlvbi1hbmQtZGV2ZWxv
+cG1lbnQtYm9hcmRzL3VsdHJhLXJlbGlhYmxlLWRldi1wbGF0Zm9ybXMvczMydi1tcHVzLXBsYXRm
+b3Jtcy9zMzJ2LXZpc2lvbi1hbmQtc2Vuc29yLWZ1c2lvbi1ldmFsdWF0aW9uLXN5c3RlbTpTMzJW
+MjM0RVZCDQpbM10gaHR0cHM6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9n
+aXQvdG9ydmFsZHMvbGludXguZ2l0L2NvbW1pdC8/aWQ9MDk4NjRjMWNkZjVjNTM3YmQwMWJmZjQ1
+MTgxNDA2ZTQyMmVhOTg4Yw0KWzRdIGh0dHBzOi8vc291cmNlLmNvZGVhdXJvcmEub3JnL2V4dGVy
+bmFsL2F1dG9ic3BzMzIvbGludXgvDQpbNV0gaHR0cHM6Ly9zb3VyY2UuY29kZWF1cm9yYS5vcmcv
+ZXh0ZXJuYWwvYXV0b2JzcHMzMi91LWJvb3QvDQpbNl0gaHR0cHM6Ly9zb3VyY2UuY29kZWF1cm9y
+YS5vcmcvZXh0ZXJuYWwvczMyZHMvY29tcGlsZXIvZ2NjLw0KWzddIGh0dHBzOi8vZ2l0Lmtlcm5l
+bC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L3RvcnZhbGRzL2xpbnV4LmdpdC9jb21taXQv
+P2lkPTJiZDM2NjFlYTBlYjIwNTY4NTJjYmM1OGM1ZDk2YmI0ZGYyZjE2NGYNCls4XSBodHRwczov
+L2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC90b3J2YWxkcy9saW51eC5n
+aXQvY29tbWl0Lz9pZD0wZTE2ZmVhYjZjY2UyYjkxZDI5OTZkNGJjNGVmZjAxZWNlNTc3YzRhDQoN
+CkVkZHkgUGV0cmnImW9yICgxKToNCiAgZHQtYmluZGluZ3M6IGFybTogZnNsOiBBZGQgdGhlIFMz
+MlYyMzQtRVZCIGJvYXJkDQoNCk1paGFlbGEgTWFydGluYXMgKDIpOg0KICBhcm02NDogSW50cm9k
+dWNlIGNvbmZpZyBmb3IgUzMyDQogIGFybTY0OiBkZWZjb25maWc6IEVuYWJsZSBjb25maWdzIGZv
+ciBTMzJWMjM0DQoNClN0ZWZhbi1HYWJyaWVsIE1pcmVhICgxKToNCiAgc2VyaWFsOiBmc2xfbGlu
+ZmxleHVhcnQ6IEJlIGNvbnNpc3RlbnQgd2l0aCB0aGUgbmFtZQ0KDQpTdG9pY2EgQ29zbWluLVN0
+ZWZhbiAoMSk6DQogIGFybTY0OiBkdHM6IGZzbDogQWRkIGRldmljZSB0cmVlIGZvciBTMzJWMjM0
+LUVWQg0KDQogLi4uL2FkbWluLWd1aWRlL2tlcm5lbC1wYXJhbWV0ZXJzLnR4dCAgICAgICAgIHwg
+ICAyICstDQogLi4uL2RldmljZXRyZWUvYmluZGluZ3MvYXJtL2ZzbC55YW1sICAgICAgICAgIHwg
+ICA2ICsNCiBhcmNoL2FybTY0L0tjb25maWcucGxhdGZvcm1zICAgICAgICAgICAgICAgICAgfCAg
+IDUgKw0KIGFyY2gvYXJtNjQvYm9vdC9kdHMvZnJlZXNjYWxlL01ha2VmaWxlICAgICAgICB8ICAg
+MiArDQogYXJjaC9hcm02NC9ib290L2R0cy9mcmVlc2NhbGUvczMydjIzNC1ldmIuZHRzIHwgIDI1
+ICsrKysNCiBhcmNoL2FybTY0L2Jvb3QvZHRzL2ZyZWVzY2FsZS9zMzJ2MjM0LmR0c2kgICAgfCAx
+MzkgKysrKysrKysrKysrKysrKysrDQogYXJjaC9hcm02NC9jb25maWdzL2RlZmNvbmZpZyAgICAg
+ICAgICAgICAgICAgIHwgICAzICsNCiBkcml2ZXJzL3R0eS9zZXJpYWwvS2NvbmZpZyAgICAgICAg
+ICAgICAgICAgICAgfCAgIDggKy0NCiBkcml2ZXJzL3R0eS9zZXJpYWwvZnNsX2xpbmZsZXh1YXJ0
+LmMgICAgICAgICAgfCAgIDQgKy0NCiBpbmNsdWRlL3VhcGkvbGludXgvc2VyaWFsX2NvcmUuaCAg
+ICAgICAgICAgICAgfCAgIDQgKy0NCiAxMCBmaWxlcyBjaGFuZ2VkLCAxODkgaW5zZXJ0aW9ucygr
+KSwgOSBkZWxldGlvbnMoLSkNCiBjcmVhdGUgbW9kZSAxMDA2NDQgYXJjaC9hcm02NC9ib290L2R0
+cy9mcmVlc2NhbGUvczMydjIzNC1ldmIuZHRzDQogY3JlYXRlIG1vZGUgMTAwNjQ0IGFyY2gvYXJt
+NjQvYm9vdC9kdHMvZnJlZXNjYWxlL3MzMnYyMzQuZHRzaQ0KDQotLSANCjIuMjIuMA0KDQo=
