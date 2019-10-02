@@ -1,51 +1,49 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] serial: sh-sci: Use platform_get_irq_optional() for optional interrupts
-Date: Tue,  1 Oct 2019 20:07:43 +0200
-Message-ID: <20191001180743.1041-1-geert+renesas@glider.be>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: RE: [PATCH] serial: sh-sci: Use platform_get_irq_optional() for
+ optional interrupts
+Date: Wed, 2 Oct 2019 04:49:48 +0000
+Message-ID: <TYAPR01MB4544E8D4235AA2DF1D81BEC3D89C0@TYAPR01MB4544.jpnprd01.prod.outlook.com>
+References: <20191001180743.1041-1-geert+renesas@glider.be>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20191001180743.1041-1-geert+renesas@glider.be>
+Content-Language: ja-JP
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
-Cc: Stephen Boyd <swboyd@chromium.org>, linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+To: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>
+Cc: Stephen Boyd <swboyd@chromium.org>, "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-As platform_get_irq() now prints an error when the interrupt does not
-exist, scary warnings may be printed for optional interrupts:
+Hi Geert-san,
 
-    sh-sci e6550000.serial: IRQ index 1 not found
-    sh-sci e6550000.serial: IRQ index 2 not found
-    sh-sci e6550000.serial: IRQ index 3 not found
-    sh-sci e6550000.serial: IRQ index 4 not found
-    sh-sci e6550000.serial: IRQ index 5 not found
+> From: Geert Uytterhoeven, Sent: Wednesday, October 2, 2019 3:08 AM
+>=20
+> As platform_get_irq() now prints an error when the interrupt does not
+> exist, scary warnings may be printed for optional interrupts:
+>=20
+>     sh-sci e6550000.serial: IRQ index 1 not found
+>     sh-sci e6550000.serial: IRQ index 2 not found
+>     sh-sci e6550000.serial: IRQ index 3 not found
+>     sh-sci e6550000.serial: IRQ index 4 not found
+>     sh-sci e6550000.serial: IRQ index 5 not found
+>=20
+> Fix this by calling platform_get_irq_optional() instead for all but the
+> first interrupts, which are optional.
+>=20
+> Fixes: 7723f4c5ecdb8d83 ("driver core: platform: Add an error message to =
+platform_get_irq*()")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> This is a fix for v5.4-rc1.
 
-Fix this by calling platform_get_irq_optional() instead for all but the
-first interrupts, which are optional.
+Thank you for the patch!
 
-Fixes: 7723f4c5ecdb8d83 ("driver core: platform: Add an error message to platform_get_irq*()")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
-This is a fix for v5.4-rc1.
----
- drivers/tty/serial/sh-sci.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 4e754a4850e6db63..22e5d4e13714e863 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2894,8 +2894,12 @@ static int sci_init_single(struct platform_device *dev,
- 	port->mapbase = res->start;
- 	sci_port->reg_size = resource_size(res);
- 
--	for (i = 0; i < ARRAY_SIZE(sci_port->irqs); ++i)
--		sci_port->irqs[i] = platform_get_irq(dev, i);
-+	for (i = 0; i < ARRAY_SIZE(sci_port->irqs); ++i) {
-+		if (i)
-+			sci_port->irqs[i] = platform_get_irq_optional(dev, i);
-+		else
-+			sci_port->irqs[i] = platform_get_irq(dev, i);
-+	}
- 
- 	/* The SCI generates several interrupts. They can be muxed together or
- 	 * connected to different interrupt lines. In the muxed case only one
--- 
-2.17.1
+And, I tested this patch on R-Car H3. So,
+
+Tested-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+
+Best regards,
+Yoshihiro Shimoda
