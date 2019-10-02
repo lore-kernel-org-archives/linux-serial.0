@@ -2,149 +2,134 @@ Return-Path: <SRS0=7mFb=X3=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74AACC10F14
-	for <linux-serial@archiver.kernel.org>; Wed,  2 Oct 2019 18:33:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6365C10F14
+	for <linux-serial@archiver.kernel.org>; Wed,  2 Oct 2019 19:04:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 47FA221D82
-	for <linux-serial@archiver.kernel.org>; Wed,  2 Oct 2019 18:33:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A2271218DE
+	for <linux-serial@archiver.kernel.org>; Wed,  2 Oct 2019 19:04:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=wavecomp.com header.i=@wavecomp.com header.b="P31RELQS"
+	dkim=pass (1024-bit key) header.d=rm5248.com header.i=@rm5248.com header.b="RHGHABGZ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728495AbfJBSdb (ORCPT
+        id S1726669AbfJBTEB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 2 Oct 2019 14:33:31 -0400
-Received: from mail-eopbgr720094.outbound.protection.outlook.com ([40.107.72.94]:6377
-        "EHLO NAM05-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728213AbfJBSdb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 2 Oct 2019 14:33:31 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H2Z44t4l6DDQx5heTyHhbbaqjDKGFv85hX4c0ilXMpIwxx8oSYRfAV4jZ9ZujhOBn9yijMzDUuKJgUDRKY6TPWaVgnqmsrXuxpPgincyJxfuWzeK+MmTShRvLyOUtqU4xQ1+EUf/dFKn2nQO6jGn1fN4LWRSBhhp0+8BcfVof+pNyHjV3zke7ZEzyjQ7JIDqZao3UKzJ9BgXvWs/AGlTDX2F6ymPvpykbHT+Tp80y38kuHKC5p9dNgl17qIPh/KO+HQY5iLyLrg8vppt6wAOevNU8e7XK4F6iBcGhrwcwJiI0ff5srTgabCZCVejFSBDLf+xLoFtELMQJ0NElChbaw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MfaakOvVKh6sWe2c1NFlTgWaa+PjdjxjhohWVtSafkM=;
- b=iMD+PkIRXPcyuj2wZlcht0LbK33EvQD9TR0sXnIki0hc8UXwOXnctHHLGBMEkIDonQg5UmF7df6OFiv7Rv9d2uzLb4LBUOLAWZ3i8uxywp/vgTEOUrWn2B8MhupYp1AQqaSbV0NUTQejzU6OUASbIIGdTQLD+e5NVZxTaPyZIUeiPaG0aptBVkGa17xDTfZLEVjzosZ9NdJCIJbvA5omgmNJODkO7p3vyYXBR89EHfdILDsnzipDhQN5RN57wCIEhGzBuFygjvs7IVwOvi0fs3HGIqeXD+kCp7krVHxyvMZU2+fXoHDyVNdJQVVd+3dr+7HdvN3TbjCZsWu+zFkHZQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=wavecomp.com; dmarc=pass action=none header.from=mips.com;
- dkim=pass header.d=mips.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wavecomp.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MfaakOvVKh6sWe2c1NFlTgWaa+PjdjxjhohWVtSafkM=;
- b=P31RELQSunA/xbpOBnmNdw2Rr/vq8g56BqFNWV2GsNXaO9lvYtgbdGknjoMcozkvZNcasVBupvP+IKoh3e8Dyr9cTPigaRgsFZz7Yjn3XcGwuqOpzNVmBQ4O69okJ5ERYdgdDLmo5ey637/6pab9fOefeO/np22A1mbtvWlqelk=
-Received: from MWHPR2201MB1277.namprd22.prod.outlook.com (10.172.60.12) by
- MWHPR2201MB1728.namprd22.prod.outlook.com (10.164.206.158) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2305.20; Wed, 2 Oct 2019 18:33:28 +0000
-Received: from MWHPR2201MB1277.namprd22.prod.outlook.com
- ([fe80::498b:c2cd:e816:1481]) by MWHPR2201MB1277.namprd22.prod.outlook.com
- ([fe80::498b:c2cd:e816:1481%2]) with mapi id 15.20.2305.023; Wed, 2 Oct 2019
- 18:33:28 +0000
-From:   Paul Burton <paul.burton@mips.com>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-CC:     Thomas Bogendoerfer <tbogendoerfer@suse.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        James Hogan <jhogan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v6 1/4] nvmem: core: add nvmem_device_find
-Thread-Topic: [PATCH v6 1/4] nvmem: core: add nvmem_device_find
-Thread-Index: AQHVeU/izk9pg3Pj4EutFLPn+qErTQ==
-Date:   Wed, 2 Oct 2019 18:33:28 +0000
-Message-ID: <20191002183327.grhkxlbyu65vvhr4@pburton-laptop>
-References: <20190923114636.6748-1-tbogendoerfer@suse.de>
- <20190923114636.6748-2-tbogendoerfer@suse.de>
- <ce44c762-f9a6-b4ef-fa8a-19ee4a6d391f@linaro.org>
-In-Reply-To: <ce44c762-f9a6-b4ef-fa8a-19ee4a6d391f@linaro.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: BYAPR11CA0075.namprd11.prod.outlook.com
- (2603:10b6:a03:f4::16) To MWHPR2201MB1277.namprd22.prod.outlook.com
- (2603:10b6:301:18::12)
-user-agent: NeoMutt/20180716
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=pburton@wavecomp.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [12.94.197.246]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 26570fdc-ab56-4eab-f9cf-08d7476704a0
-x-ms-traffictypediagnostic: MWHPR2201MB1728:
-x-microsoft-antispam-prvs: <MWHPR2201MB1728A3B40E419150E36038B8C19C0@MWHPR2201MB1728.namprd22.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-forefront-prvs: 0178184651
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(366004)(346002)(136003)(376002)(39850400004)(396003)(55674003)(51914003)(189003)(199004)(229853002)(99286004)(476003)(186003)(26005)(33716001)(446003)(486006)(7736002)(76176011)(44832011)(66556008)(6916009)(1076003)(66066001)(386003)(11346002)(7416002)(478600001)(102836004)(25786009)(52116002)(14454004)(5660300002)(4744005)(305945005)(6506007)(53546011)(3846002)(8676002)(316002)(4326008)(6246003)(6436002)(58126008)(42882007)(256004)(54906003)(2906002)(6116002)(71190400001)(71200400001)(66446008)(64756008)(66476007)(66946007)(81156014)(8936002)(81166006)(6486002)(9686003)(6512007);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR2201MB1728;H:MWHPR2201MB1277.namprd22.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: wavecomp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: OcLuc9kmZQnZ975cJcf7sfkyc7Ta3aSUnvXxqjJ/iiT0jVgnYFbgPs+Y7xr3mcvwb9szDk3fN/7ZaYYHY+6Zq1fvkYCak445zCrot+g2hwiFasPIDQC7PSePKu9roXokZhW7aMknMJID5mikX8Tdel+Z3EPsTY6zvgBiQHGgqQulmAe7Cb9RRkOTASyR+vLJHF7IygL8tx786GpLacegCTBqRmJQqS5uVVYKexIfjCGbAugt+DFrhhQA8l26dJskDu3rc7Bhda/njE37+8KnVH5q3hUJmNb9Kp2BEIXjdj6cwEvR1EIrpXF8Iq105sNkql+3V3qRa9bKdloF4Q0VL84VEE6V8UJTsaaGBEaOq1oafxUjHgfkXV36hcG33jiM9B+nTLdX9zLqg3exT/B/Qpe8zfTpI/Er1LGuGjdBqgs=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="UTF-8"
-Content-ID: <F75C05FC784E8D4589A7A23C018BBA8C@namprd22.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Wed, 2 Oct 2019 15:04:01 -0400
+Received: from egyptian.birch.relay.mailchannels.net ([23.83.209.56]:48305
+        "EHLO egyptian.birch.relay.mailchannels.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726076AbfJBTEB (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 2 Oct 2019 15:04:01 -0400
+X-Sender-Id: dreamhost|x-authsender|robert.middleton@rm5248.com
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 3DD7E8C0A28
+        for <linux-serial@vger.kernel.org>; Wed,  2 Oct 2019 19:03:59 +0000 (UTC)
+Received: from pdx1-sub0-mail-a58.g.dreamhost.com (100-96-91-70.trex.outbound.svc.cluster.local [100.96.91.70])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 905B28C05D8
+        for <linux-serial@vger.kernel.org>; Wed,  2 Oct 2019 19:03:58 +0000 (UTC)
+X-Sender-Id: dreamhost|x-authsender|robert.middleton@rm5248.com
+Received: from pdx1-sub0-mail-a58.g.dreamhost.com ([TEMPUNAVAIL].
+ [64.90.62.162])
+        (using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384)
+        by 0.0.0.0:2500 (trex/5.17.5);
+        Wed, 02 Oct 2019 19:03:59 +0000
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|robert.middleton@rm5248.com
+X-MailChannels-Auth-Id: dreamhost
+X-Tank-Tangy: 519cd0c95757dded_1570043039023_3482591509
+X-MC-Loop-Signature: 1570043039023:1095877291
+X-MC-Ingress-Time: 1570043039023
+Received: from pdx1-sub0-mail-a58.g.dreamhost.com (localhost [127.0.0.1])
+        by pdx1-sub0-mail-a58.g.dreamhost.com (Postfix) with ESMTP id 3303E80670
+        for <linux-serial@vger.kernel.org>; Wed,  2 Oct 2019 12:03:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=rm5248.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=rm5248.com; bh=3qObEB6Y0Iqj5zMiD5X6cXyBj4g=; b=
+        RHGHABGZOv/FLi09i0/7Movsf3PlBj/O1bWPV0z5xsGHTYtPD4730v26jKycgSpp
+        3PIb1tt0BUKweqSN2tWI8gCm1RXgjytnUtY1yfiak2uJOgmmZ3iopLCAkctqusO+
+        zo2Aso24yUSQZBJ55/3O5v6ei4kC1LKsqWRYUQIQjkA=
+Received: from mail-io1-f53.google.com (mail-io1-f53.google.com [209.85.166.53])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: robert.middleton@rm5248.com)
+        by pdx1-sub0-mail-a58.g.dreamhost.com (Postfix) with ESMTPSA id 04D3B8066F
+        for <linux-serial@vger.kernel.org>; Wed,  2 Oct 2019 12:03:55 -0700 (PDT)
+Received: by mail-io1-f53.google.com with SMTP id h144so59396368iof.7
+        for <linux-serial@vger.kernel.org>; Wed, 02 Oct 2019 12:03:55 -0700 (PDT)
+X-Gm-Message-State: APjAAAXlNvozHMtp3pxta+J5QuikI2AbOernjh4QQhIdwVCWAZ9EjMLZ
+        9MSEQLo5+Q3asKoRD4o0z8MrC5iCDi/f14uRSEI=
+X-Google-Smtp-Source: APXvYqx9BKzccx7fKL2nj60U1O4zGVz6ssKKb7yntMm0ibjPO56ywX3mJ7CZ4Cq9ctbVNSsOFSFeWkOMi3+8xFDVZ8k=
+X-Received: by 2002:a92:d0c6:: with SMTP id y6mr5359801ila.307.1570043035253;
+ Wed, 02 Oct 2019 12:03:55 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: mips.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 26570fdc-ab56-4eab-f9cf-08d7476704a0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Oct 2019 18:33:28.4365
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 463607d3-1db3-40a0-8a29-970c56230104
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: cxslBc7G3MeA2bVoNVt+BrLBaslT17n4DwWa8m+QkD4eqcfd912Dc8kYocR1/i9IVgx7RD3PnIaxEUpv0i/chw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR2201MB1728
+References: <20190805100518.9818-2-andriy.shevchenko@linux.intel.com>
+ <CAKpcJVZTy963y3TOXSYSBFVOpVTWEOyJKUYxv1pHNGz3Y1aPTA@mail.gmail.com>
+ <20190805142147.GK23480@smile.fi.intel.com> <CAKpcJVYfcVAmoB63EbmJaix6v+2JJ5BujAcdduQLcw-ES+f3ZQ@mail.gmail.com>
+ <20190806152407.GF30120@smile.fi.intel.com> <20190806153110.GG30120@smile.fi.intel.com>
+ <CAKpcJVYTC8MN6A51iip=cyvkfXVy2NS-c3FyhAi9qcxsgJkQRw@mail.gmail.com>
+ <CAKpcJVaL-BqL0G=_hT6WHz6kCr05sHS1jDQnaM0s_WFWCb6n_A@mail.gmail.com>
+ <20190807150425.GC30120@smile.fi.intel.com> <CAKpcJVYmTK-kw5eZJtcMWBSMmOk4ijqu-1oh9cEswi4q98QHAg@mail.gmail.com>
+ <20190808121148.GT30120@smile.fi.intel.com> <d4ec5a0a-08e3-4da9-bf43-fb1269d0b996@codethink.co.uk>
+ <d64d54fd-5d21-f0a5-8804-b4a0ce486c59@codethink.co.uk> <CAKpcJVaNyv-D3eehF4rcE7ZvihRcsdHm+dOWAea0+6CETY6L=Q@mail.gmail.com>
+ <29ab74c4-490b-ef4a-011a-ba75fc4321cb@codethink.co.uk>
+In-Reply-To: <29ab74c4-490b-ef4a-011a-ba75fc4321cb@codethink.co.uk>
+X-DH-BACKEND: pdx1-sub0-mail-a58
+From:   Robert Middleton <robert.middleton@rm5248.com>
+Date:   Wed, 2 Oct 2019 15:03:43 -0400
+X-Gmail-Original-Message-ID: <CAKpcJVbVRw3AdmQgmU-UovUWQ0aU6mz16DnuTwk4H+tBB9RRdA@mail.gmail.com>
+Message-ID: <CAKpcJVbVRw3AdmQgmU-UovUWQ0aU6mz16DnuTwk4H+tBB9RRdA@mail.gmail.com>
+Subject: Re: [PATCH v2 2/3] serial: 8250_exar: Refactor exar_shutdown()
+To:     Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Aaron Sierra <asierra@xes-inc.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, Jan Kiszka <jan.kiszka@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+X-VR-OUT-STATUS: OK
+X-VR-OUT-SCORE: -100
+X-VR-OUT-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedufedrgeeigddufedvucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuggftfghnshhusghstghrihgsvgdpffftgfetoffjqffuvfenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepgghfjgfhfffkuffvtgesthdtredttddtjeenucfhrhhomheptfhosggvrhhtucfoihguughlvghtohhnuceorhhosggvrhhtrdhmihguughlvghtohhnsehrmhehvdegkedrtghomheqnecukfhppedvtdelrdekhedrudeiiedrheefnecurfgrrhgrmhepmhhouggvpehsmhhtphdphhgvlhhopehmrghilhdqihhouddqfhehfedrghhoohhglhgvrdgtohhmpdhinhgvthepvddtledrkeehrdduieeirdehfedprhgvthhurhhnqdhprghthheptfhosggvrhhtucfoihguughlvghtohhnuceorhhosggvrhhtrdhmihguughlvghtohhnsehrmhehvdegkedrtghomheqpdhmrghilhhfrhhomheprhhosggvrhhtrdhmihguughlvghtohhnsehrmhehvdegkedrtghomhdpnhhrtghpthhtoheplhhinhhugidqshgvrhhirghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191002183328.rpTpQfbQ36QrD2talBJ1N9NgtXJl_EP_2PkulbfKBYM@z>
 
-Hello,
+On Sun, Sep 29, 2019 at 5:43 PM Sudip Mukherjee
+<sudip.mukherjee@codethink.co.uk> wrote:
+>
+>
+>
+> On 29/09/2019 22:30, Robert Middleton wrote:
+> > On Sun, Sep 29, 2019 at 2:15 PM Sudip Mukherjee
+> > <sudip.mukherjee@codethink.co.uk> wrote:
+> >>
+> >> Hi Robert,
+> >>
+> >> Sorry for the delay. I managed to test it today. My test file contained
+> >> 70 lines of "The quick brown fox jumps over the lazy dog". I used upto
+> >> 1200 Baudrate to send the text from the desktop using the Exar serial I
+> >> have and I did not notice any message loss on the receiving laptop.
+> >> Please let me know if you want me to test further.
+> >>
+> >
+> > Two questions:
+> > 1. What kernel version?  If you didn't have a problem, I can try with
+> > the exact version that you have as well and see if I can reproduce on
+> > my side.
+>
+> v5.3.1
+>
+> > 2. Did you test this via 'cat text-file.txt > /dev/ttySX' ?  I'm
+> > assuming that you are, but just want to make sure.
+>
+> Yes. On the desktop which has the Exar hardware "cat fox.txt >
+> /dev/ttyS4" and on the laptop which is the receiver a terminal to read
+> from /dev/ttyUSB0.
 
-On Tue, Oct 01, 2019 at 11:11:58AM +0100, Srinivas Kandagatla wrote:
-> On 23/09/2019 12:46, Thomas Bogendoerfer wrote:
-> > nvmem_device_find provides a way to search for nvmem devices with
-> > the help of a match function simlair to bus_find_device.
-> >=20
-> > Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-> > ---
->=20
-> Thanks for the patch,
-> This patch looks good for me.
->=20
-> Do you know which tree is going to pick this series up?
->=20
-> I can either apply this patch to nvmem tree
->=20
-> or here is my Ack for this patch to take it via other trees.
->=20
-> Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-> Acked-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Thanks for checking; I still have the issue on my side, it is very
+weird.  Would you mind if I send you a video off-list that shows what
+is happening on my end?  I'm pretty much at a loss at this point.
 
-Thanks - if you don't mind I'll take this through mips-next along with
-the following patch that depends on it.
-
-Thomas: I see patch 3 has an issue reported by the kbuild test robot,
-        and still needs acks from the MFD & network maintainers. Can I
-	presume it's safe to apply patches 1 & 2 without 3 & 4 in the
-	meantime?
-
-Paul
+-Robert Middleton
