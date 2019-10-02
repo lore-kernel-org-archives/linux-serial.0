@@ -1,52 +1,72 @@
-From: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-Subject: [PATCH v5 5/5] arm64: defconfig: Enable configs for S32V234
-Date: Wed, 2 Oct 2019 13:04:46 +0000
-Message-ID: <20191002130425.28905-6-stefan-gabriel.mirea@nxp.com>
-References: <20191002130425.28905-1-stefan-gabriel.mirea@nxp.com>
+From: "Chen, Rong A" <rong.a.chen@intel.com>
+Subject: Re: [kbuild-all] Re: [PATCH] serial: sh-sci: Use
+ platform_get_irq_optional() for optional interrupts
+Date: Wed, 2 Oct 2019 22:20:52 +0800
+Message-ID: <26cf2dd9-2788-bc23-03c4-beb8ed68ef97@intel.com>
+References: <20191001180743.1041-1-geert+renesas@glider.be>
+ <201910021701.JBV8khAI%lkp@intel.com>
+ <CAMuHMdWQhvWOMjEpJrXV0nuKUc=wT6Zi_ZLjKco0Lkgeis8NyQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191002130425.28905-1-stefan-gabriel.mirea@nxp.com>
+In-Reply-To: <CAMuHMdWQhvWOMjEpJrXV0nuKUc=wT6Zi_ZLjKco0Lkgeis8NyQ@mail.gmail.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: "corbet@lwn.net" <corbet@lwn.net>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will@kernel.org" <will@kernel.org>
-Cc: "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Cosmin Stefan Stoica <cosmin.stoica@nxp.com>
+To: Geert Uytterhoeven <geert@linux-m68k.org>, kbuild test robot <lkp@intel.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, kbuild-all@01.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Stephen Boyd <swboyd@chromium.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-From: Mihaela Martinas <Mihaela.Martinas@freescale.com>
+Hi Geert,
 
-Enable support for the S32V234 SoC, including the previously added UART
-driver.
+Thanks for your clarification. we are on vacation this week, and we'll 
+take a look asap.
 
-Signed-off-by: Mihaela Martinas <Mihaela.Martinas@freescale.com>
-Signed-off-by: Adrian.Nitu <adrian.nitu@freescale.com>
-Signed-off-by: Stoica Cosmin-Stefan <cosmin.stoica@nxp.com>
-Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
----
- arch/arm64/configs/defconfig | 3 +++
- 1 file changed, 3 insertions(+)
+Best Regards,
+Rong Chen
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 8e05c39eab08..aa59450557b8 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -48,6 +48,7 @@ CONFIG_ARCH_MXC=3Dy
- CONFIG_ARCH_QCOM=3Dy
- CONFIG_ARCH_RENESAS=3Dy
- CONFIG_ARCH_ROCKCHIP=3Dy
-+CONFIG_ARCH_S32=3Dy
- CONFIG_ARCH_SEATTLE=3Dy
- CONFIG_ARCH_STRATIX10=3Dy
- CONFIG_ARCH_SYNQUACER=3Dy
-@@ -352,6 +353,8 @@ CONFIG_SERIAL_XILINX_PS_UART=3Dy
- CONFIG_SERIAL_XILINX_PS_UART_CONSOLE=3Dy
- CONFIG_SERIAL_FSL_LPUART=3Dy
- CONFIG_SERIAL_FSL_LPUART_CONSOLE=3Dy
-+CONFIG_SERIAL_FSL_LINFLEXUART=3Dy
-+CONFIG_SERIAL_FSL_LINFLEXUART_CONSOLE=3Dy
- CONFIG_SERIAL_MVEBU_UART=3Dy
- CONFIG_SERIAL_DEV_BUS=3Dy
- CONFIG_VIRTIO_CONSOLE=3Dy
---=20
-2.22.0
+On 10/2/2019 7:28 PM, Geert Uytterhoeven wrote:
+> Hi Kbuild test robot,
+>
+> On Wed, Oct 2, 2019 at 11:53 AM kbuild test robot <lkp@intel.com> wrote:
+>> I love your patch! Yet something to improve:
+>>
+>> [auto build test ERROR on tty/tty-testing]
+>> [cannot apply to v5.4-rc1 next-20191001]
+> Strange, this patch applies to all of v5.4-rc1, tty/tty-testing, and
+> next-20191001?
+>
+>> url:    https://github.com/0day-ci/linux/commits/Geert-Uytterhoeven/serial-sh-sci-Use-platform_get_irq_optional-for-optional-interrupts/20191002-171547
+> Oh, this is still the old tty/tty-testing before it was rebased to v5.4-rc1,
+> i.e. still based on v5.3-rc4.  That explains the build failure.
+>
+> That does not explain why you couldn't apply this patch to v5.4-rc1 and
+> next-20191001, though.
+>
+>> base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+>> config: sparc64-allmodconfig (attached as .config)
+>> compiler: sparc64-linux-gcc (GCC) 7.4.0
+>> reproduce:
+>>          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>>          chmod +x ~/bin/make.cross
+>>          # save the attached .config to linux build tree
+>>          GCC_VERSION=7.4.0 make.cross ARCH=sparc64
+>>
+>> If you fix the issue, kindly add following tag
+>> Reported-by: kbuild test robot <lkp@intel.com>
+>>
+>> All errors (new ones prefixed by >>):
+>>
+>>     drivers/tty/serial/sh-sci.c: In function 'sci_init_single':
+>>>> drivers/tty/serial/sh-sci.c:2899:24: error: implicit declaration of function 'platform_get_irq_optional'; did you mean 'platform_get_irq_byname'? [-Werror=implicit-function-declaration]
+>>         sci_port->irqs[i] = platform_get_irq_optional(dev, i);
+>>                             ^~~~~~~~~~~~~~~~~~~~~~~~~
+>>                             platform_get_irq_byname
+>>     cc1: some warnings being treated as errors
+> FTR, not reproducible on sparc on v5.4-rc1, current tty/tty-testing, and
+> next-20191001.
+>
+> Gr{oetje,eeting}s,
+>
+>                          Geert
+>
