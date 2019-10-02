@@ -2,113 +2,149 @@ Return-Path: <SRS0=7mFb=X3=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9225CC35280
-	for <linux-serial@archiver.kernel.org>; Wed,  2 Oct 2019 14:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74AACC10F14
+	for <linux-serial@archiver.kernel.org>; Wed,  2 Oct 2019 18:33:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 72D9421848
-	for <linux-serial@archiver.kernel.org>; Wed,  2 Oct 2019 14:21:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 47FA221D82
+	for <linux-serial@archiver.kernel.org>; Wed,  2 Oct 2019 18:33:32 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=wavecomp.com header.i=@wavecomp.com header.b="P31RELQS"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726902AbfJBOU6 (ORCPT
+        id S1728495AbfJBSdb (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 2 Oct 2019 10:20:58 -0400
-Received: from mga07.intel.com ([134.134.136.100]:36612 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726214AbfJBOU6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 2 Oct 2019 10:20:58 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Oct 2019 07:20:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,574,1559545200"; 
-   d="scan'208";a="391592758"
-Received: from zhizhuan-mobl.ccr.corp.intel.com (HELO [10.255.28.55]) ([10.255.28.55])
-  by fmsmga005.fm.intel.com with ESMTP; 02 Oct 2019 07:20:53 -0700
-Subject: Re: [kbuild-all] Re: [PATCH] serial: sh-sci: Use
- platform_get_irq_optional() for optional interrupts
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        kbuild test robot <lkp@intel.com>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>, kbuild-all@01.org,
+        Wed, 2 Oct 2019 14:33:31 -0400
+Received: from mail-eopbgr720094.outbound.protection.outlook.com ([40.107.72.94]:6377
+        "EHLO NAM05-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728213AbfJBSdb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 2 Oct 2019 14:33:31 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=H2Z44t4l6DDQx5heTyHhbbaqjDKGFv85hX4c0ilXMpIwxx8oSYRfAV4jZ9ZujhOBn9yijMzDUuKJgUDRKY6TPWaVgnqmsrXuxpPgincyJxfuWzeK+MmTShRvLyOUtqU4xQ1+EUf/dFKn2nQO6jGn1fN4LWRSBhhp0+8BcfVof+pNyHjV3zke7ZEzyjQ7JIDqZao3UKzJ9BgXvWs/AGlTDX2F6ymPvpykbHT+Tp80y38kuHKC5p9dNgl17qIPh/KO+HQY5iLyLrg8vppt6wAOevNU8e7XK4F6iBcGhrwcwJiI0ff5srTgabCZCVejFSBDLf+xLoFtELMQJ0NElChbaw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MfaakOvVKh6sWe2c1NFlTgWaa+PjdjxjhohWVtSafkM=;
+ b=iMD+PkIRXPcyuj2wZlcht0LbK33EvQD9TR0sXnIki0hc8UXwOXnctHHLGBMEkIDonQg5UmF7df6OFiv7Rv9d2uzLb4LBUOLAWZ3i8uxywp/vgTEOUrWn2B8MhupYp1AQqaSbV0NUTQejzU6OUASbIIGdTQLD+e5NVZxTaPyZIUeiPaG0aptBVkGa17xDTfZLEVjzosZ9NdJCIJbvA5omgmNJODkO7p3vyYXBR89EHfdILDsnzipDhQN5RN57wCIEhGzBuFygjvs7IVwOvi0fs3HGIqeXD+kCp7krVHxyvMZU2+fXoHDyVNdJQVVd+3dr+7HdvN3TbjCZsWu+zFkHZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=wavecomp.com; dmarc=pass action=none header.from=mips.com;
+ dkim=pass header.d=mips.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wavecomp.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MfaakOvVKh6sWe2c1NFlTgWaa+PjdjxjhohWVtSafkM=;
+ b=P31RELQSunA/xbpOBnmNdw2Rr/vq8g56BqFNWV2GsNXaO9lvYtgbdGknjoMcozkvZNcasVBupvP+IKoh3e8Dyr9cTPigaRgsFZz7Yjn3XcGwuqOpzNVmBQ4O69okJ5ERYdgdDLmo5ey637/6pab9fOefeO/np22A1mbtvWlqelk=
+Received: from MWHPR2201MB1277.namprd22.prod.outlook.com (10.172.60.12) by
+ MWHPR2201MB1728.namprd22.prod.outlook.com (10.164.206.158) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2305.20; Wed, 2 Oct 2019 18:33:28 +0000
+Received: from MWHPR2201MB1277.namprd22.prod.outlook.com
+ ([fe80::498b:c2cd:e816:1481]) by MWHPR2201MB1277.namprd22.prod.outlook.com
+ ([fe80::498b:c2cd:e816:1481%2]) with mapi id 15.20.2305.023; Wed, 2 Oct 2019
+ 18:33:28 +0000
+From:   Paul Burton <paul.burton@mips.com>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+CC:     Thomas Bogendoerfer <tbogendoerfer@suse.de>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        James Hogan <jhogan@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20191001180743.1041-1-geert+renesas@glider.be>
- <201910021701.JBV8khAI%lkp@intel.com>
- <CAMuHMdWQhvWOMjEpJrXV0nuKUc=wT6Zi_ZLjKco0Lkgeis8NyQ@mail.gmail.com>
-From:   "Chen, Rong A" <rong.a.chen@intel.com>
-Message-ID: <26cf2dd9-2788-bc23-03c4-beb8ed68ef97@intel.com>
-Date:   Wed, 2 Oct 2019 22:20:52 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <CAMuHMdWQhvWOMjEpJrXV0nuKUc=wT6Zi_ZLjKco0Lkgeis8NyQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format="flowed"
-Content-Transfer-Encoding: 7bit
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH v6 1/4] nvmem: core: add nvmem_device_find
+Thread-Topic: [PATCH v6 1/4] nvmem: core: add nvmem_device_find
+Thread-Index: AQHVeU/izk9pg3Pj4EutFLPn+qErTQ==
+Date:   Wed, 2 Oct 2019 18:33:28 +0000
+Message-ID: <20191002183327.grhkxlbyu65vvhr4@pburton-laptop>
+References: <20190923114636.6748-1-tbogendoerfer@suse.de>
+ <20190923114636.6748-2-tbogendoerfer@suse.de>
+ <ce44c762-f9a6-b4ef-fa8a-19ee4a6d391f@linaro.org>
+In-Reply-To: <ce44c762-f9a6-b4ef-fa8a-19ee4a6d391f@linaro.org>
+Accept-Language: en-US
 Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: BYAPR11CA0075.namprd11.prod.outlook.com
+ (2603:10b6:a03:f4::16) To MWHPR2201MB1277.namprd22.prod.outlook.com
+ (2603:10b6:301:18::12)
+user-agent: NeoMutt/20180716
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=pburton@wavecomp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [12.94.197.246]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 26570fdc-ab56-4eab-f9cf-08d7476704a0
+x-ms-traffictypediagnostic: MWHPR2201MB1728:
+x-microsoft-antispam-prvs: <MWHPR2201MB1728A3B40E419150E36038B8C19C0@MWHPR2201MB1728.namprd22.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 0178184651
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(366004)(346002)(136003)(376002)(39850400004)(396003)(55674003)(51914003)(189003)(199004)(229853002)(99286004)(476003)(186003)(26005)(33716001)(446003)(486006)(7736002)(76176011)(44832011)(66556008)(6916009)(1076003)(66066001)(386003)(11346002)(7416002)(478600001)(102836004)(25786009)(52116002)(14454004)(5660300002)(4744005)(305945005)(6506007)(53546011)(3846002)(8676002)(316002)(4326008)(6246003)(6436002)(58126008)(42882007)(256004)(54906003)(2906002)(6116002)(71190400001)(71200400001)(66446008)(64756008)(66476007)(66946007)(81156014)(8936002)(81166006)(6486002)(9686003)(6512007);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR2201MB1728;H:MWHPR2201MB1277.namprd22.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: wavecomp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: OcLuc9kmZQnZ975cJcf7sfkyc7Ta3aSUnvXxqjJ/iiT0jVgnYFbgPs+Y7xr3mcvwb9szDk3fN/7ZaYYHY+6Zq1fvkYCak445zCrot+g2hwiFasPIDQC7PSePKu9roXokZhW7aMknMJID5mikX8Tdel+Z3EPsTY6zvgBiQHGgqQulmAe7Cb9RRkOTASyR+vLJHF7IygL8tx786GpLacegCTBqRmJQqS5uVVYKexIfjCGbAugt+DFrhhQA8l26dJskDu3rc7Bhda/njE37+8KnVH5q3hUJmNb9Kp2BEIXjdj6cwEvR1EIrpXF8Iq105sNkql+3V3qRa9bKdloF4Q0VL84VEE6V8UJTsaaGBEaOq1oafxUjHgfkXV36hcG33jiM9B+nTLdX9zLqg3exT/B/Qpe8zfTpI/Er1LGuGjdBqgs=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="UTF-8"
+Content-ID: <F75C05FC784E8D4589A7A23C018BBA8C@namprd22.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: mips.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 26570fdc-ab56-4eab-f9cf-08d7476704a0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Oct 2019 18:33:28.4365
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 463607d3-1db3-40a0-8a29-970c56230104
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: cxslBc7G3MeA2bVoNVt+BrLBaslT17n4DwWa8m+QkD4eqcfd912Dc8kYocR1/i9IVgx7RD3PnIaxEUpv0i/chw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR2201MB1728
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191002142052.MIR-K89FRt9khmMth_LDpGNShH3V4SE7Gol0ZEb1iX8@z>
+Message-ID: <20191002183328.rpTpQfbQ36QrD2talBJ1N9NgtXJl_EP_2PkulbfKBYM@z>
 
-Hi Geert,
+Hello,
 
-Thanks for your clarification. we are on vacation this week, and we'll 
-take a look asap.
+On Tue, Oct 01, 2019 at 11:11:58AM +0100, Srinivas Kandagatla wrote:
+> On 23/09/2019 12:46, Thomas Bogendoerfer wrote:
+> > nvmem_device_find provides a way to search for nvmem devices with
+> > the help of a match function simlair to bus_find_device.
+> >=20
+> > Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> > ---
+>=20
+> Thanks for the patch,
+> This patch looks good for me.
+>=20
+> Do you know which tree is going to pick this series up?
+>=20
+> I can either apply this patch to nvmem tree
+>=20
+> or here is my Ack for this patch to take it via other trees.
+>=20
+> Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> Acked-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-Best Regards,
-Rong Chen
+Thanks - if you don't mind I'll take this through mips-next along with
+the following patch that depends on it.
 
-On 10/2/2019 7:28 PM, Geert Uytterhoeven wrote:
-> Hi Kbuild test robot,
->
-> On Wed, Oct 2, 2019 at 11:53 AM kbuild test robot <lkp@intel.com> wrote:
->> I love your patch! Yet something to improve:
->>
->> [auto build test ERROR on tty/tty-testing]
->> [cannot apply to v5.4-rc1 next-20191001]
-> Strange, this patch applies to all of v5.4-rc1, tty/tty-testing, and
-> next-20191001?
->
->> url:    https://github.com/0day-ci/linux/commits/Geert-Uytterhoeven/serial-sh-sci-Use-platform_get_irq_optional-for-optional-interrupts/20191002-171547
-> Oh, this is still the old tty/tty-testing before it was rebased to v5.4-rc1,
-> i.e. still based on v5.3-rc4.  That explains the build failure.
->
-> That does not explain why you couldn't apply this patch to v5.4-rc1 and
-> next-20191001, though.
->
->> base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
->> config: sparc64-allmodconfig (attached as .config)
->> compiler: sparc64-linux-gcc (GCC) 7.4.0
->> reproduce:
->>          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->>          chmod +x ~/bin/make.cross
->>          # save the attached .config to linux build tree
->>          GCC_VERSION=7.4.0 make.cross ARCH=sparc64
->>
->> If you fix the issue, kindly add following tag
->> Reported-by: kbuild test robot <lkp@intel.com>
->>
->> All errors (new ones prefixed by >>):
->>
->>     drivers/tty/serial/sh-sci.c: In function 'sci_init_single':
->>>> drivers/tty/serial/sh-sci.c:2899:24: error: implicit declaration of function 'platform_get_irq_optional'; did you mean 'platform_get_irq_byname'? [-Werror=implicit-function-declaration]
->>         sci_port->irqs[i] = platform_get_irq_optional(dev, i);
->>                             ^~~~~~~~~~~~~~~~~~~~~~~~~
->>                             platform_get_irq_byname
->>     cc1: some warnings being treated as errors
-> FTR, not reproducible on sparc on v5.4-rc1, current tty/tty-testing, and
-> next-20191001.
->
-> Gr{oetje,eeting}s,
->
->                          Geert
->
+Thomas: I see patch 3 has an issue reported by the kbuild test robot,
+        and still needs acks from the MFD & network maintainers. Can I
+	presume it's safe to apply patches 1 & 2 without 3 & 4 in the
+	meantime?
 
+Paul
