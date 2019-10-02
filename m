@@ -1,72 +1,50 @@
-From: "Chen, Rong A" <rong.a.chen@intel.com>
-Subject: Re: [kbuild-all] Re: [PATCH] serial: sh-sci: Use
- platform_get_irq_optional() for optional interrupts
-Date: Wed, 2 Oct 2019 22:20:52 +0800
-Message-ID: <26cf2dd9-2788-bc23-03c4-beb8ed68ef97@intel.com>
-References: <20191001180743.1041-1-geert+renesas@glider.be>
- <201910021701.JBV8khAI%lkp@intel.com>
- <CAMuHMdWQhvWOMjEpJrXV0nuKUc=wT6Zi_ZLjKco0Lkgeis8NyQ@mail.gmail.com>
+From: Paul Burton <paul.burton@mips.com>
+Subject: Re: [PATCH v6 1/4] nvmem: core: add nvmem_device_find
+Date: Wed, 2 Oct 2019 18:33:28 +0000
+Message-ID: <20191002183327.grhkxlbyu65vvhr4@pburton-laptop>
+References: <20190923114636.6748-1-tbogendoerfer@suse.de>
+ <20190923114636.6748-2-tbogendoerfer@suse.de>
+ <ce44c762-f9a6-b4ef-fa8a-19ee4a6d391f@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdWQhvWOMjEpJrXV0nuKUc=wT6Zi_ZLjKco0Lkgeis8NyQ@mail.gmail.com>
+In-Reply-To: <ce44c762-f9a6-b4ef-fa8a-19ee4a6d391f@linaro.org>
 Content-Language: en-US
+Content-ID: <F75C05FC784E8D4589A7A23C018BBA8C@namprd22.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>, kbuild test robot <lkp@intel.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, kbuild-all@01.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Stephen Boyd <swboyd@chromium.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc: Thomas Bogendoerfer <tbogendoerfer@suse.de>, Jonathan Corbet <corbet@lwn.net>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Geert,
+Hello,
 
-Thanks for your clarification. we are on vacation this week, and we'll 
-take a look asap.
+On Tue, Oct 01, 2019 at 11:11:58AM +0100, Srinivas Kandagatla wrote:
+> On 23/09/2019 12:46, Thomas Bogendoerfer wrote:
+> > nvmem_device_find provides a way to search for nvmem devices with
+> > the help of a match function simlair to bus_find_device.
+> >=20
+> > Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> > ---
+>=20
+> Thanks for the patch,
+> This patch looks good for me.
+>=20
+> Do you know which tree is going to pick this series up?
+>=20
+> I can either apply this patch to nvmem tree
+>=20
+> or here is my Ack for this patch to take it via other trees.
+>=20
+> Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> Acked-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-Best Regards,
-Rong Chen
+Thanks - if you don't mind I'll take this through mips-next along with
+the following patch that depends on it.
 
-On 10/2/2019 7:28 PM, Geert Uytterhoeven wrote:
-> Hi Kbuild test robot,
->
-> On Wed, Oct 2, 2019 at 11:53 AM kbuild test robot <lkp@intel.com> wrote:
->> I love your patch! Yet something to improve:
->>
->> [auto build test ERROR on tty/tty-testing]
->> [cannot apply to v5.4-rc1 next-20191001]
-> Strange, this patch applies to all of v5.4-rc1, tty/tty-testing, and
-> next-20191001?
->
->> url:    https://github.com/0day-ci/linux/commits/Geert-Uytterhoeven/serial-sh-sci-Use-platform_get_irq_optional-for-optional-interrupts/20191002-171547
-> Oh, this is still the old tty/tty-testing before it was rebased to v5.4-rc1,
-> i.e. still based on v5.3-rc4.  That explains the build failure.
->
-> That does not explain why you couldn't apply this patch to v5.4-rc1 and
-> next-20191001, though.
->
->> base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
->> config: sparc64-allmodconfig (attached as .config)
->> compiler: sparc64-linux-gcc (GCC) 7.4.0
->> reproduce:
->>          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->>          chmod +x ~/bin/make.cross
->>          # save the attached .config to linux build tree
->>          GCC_VERSION=7.4.0 make.cross ARCH=sparc64
->>
->> If you fix the issue, kindly add following tag
->> Reported-by: kbuild test robot <lkp@intel.com>
->>
->> All errors (new ones prefixed by >>):
->>
->>     drivers/tty/serial/sh-sci.c: In function 'sci_init_single':
->>>> drivers/tty/serial/sh-sci.c:2899:24: error: implicit declaration of function 'platform_get_irq_optional'; did you mean 'platform_get_irq_byname'? [-Werror=implicit-function-declaration]
->>         sci_port->irqs[i] = platform_get_irq_optional(dev, i);
->>                             ^~~~~~~~~~~~~~~~~~~~~~~~~
->>                             platform_get_irq_byname
->>     cc1: some warnings being treated as errors
-> FTR, not reproducible on sparc on v5.4-rc1, current tty/tty-testing, and
-> next-20191001.
->
-> Gr{oetje,eeting}s,
->
->                          Geert
->
+Thomas: I see patch 3 has an issue reported by the kbuild test robot,
+        and still needs acks from the MFD & network maintainers. Can I
+	presume it's safe to apply patches 1 & 2 without 3 & 4 in the
+	meantime?
+
+Paul
