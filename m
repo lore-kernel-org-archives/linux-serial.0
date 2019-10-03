@@ -1,106 +1,109 @@
-Return-Path: <SRS0=7mFb=X3=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=fcdp=X4=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6451DC47404
-	for <linux-serial@archiver.kernel.org>; Wed,  2 Oct 2019 19:24:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8A53C10F14
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Oct 2019 08:12:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 41C6A21D82
-	for <linux-serial@archiver.kernel.org>; Wed,  2 Oct 2019 19:24:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A5B0721A4C
+	for <linux-serial@archiver.kernel.org>; Thu,  3 Oct 2019 08:12:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729047AbfJBTYy convert rfc822-to-8bit (ORCPT
+        id S1726225AbfJCIMI (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 2 Oct 2019 15:24:54 -0400
-Received: from mx2.suse.de ([195.135.220.15]:60996 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726076AbfJBTYy (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 2 Oct 2019 15:24:54 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 6EB2FAD09;
-        Wed,  2 Oct 2019 19:24:51 +0000 (UTC)
-Date:   Wed, 2 Oct 2019 21:08:31 +0200
-From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
-To:     Paul Burton <paul.burton@mips.com>
-Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        James Hogan <jhogan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Thu, 3 Oct 2019 04:12:08 -0400
+Received: from imap1.codethink.co.uk ([176.9.8.82]:42180 "EHLO
+        imap1.codethink.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725879AbfJCIMI (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 3 Oct 2019 04:12:08 -0400
+Received: from host-2-98-44-217.as13285.net ([2.98.44.217] helo=[192.168.1.13])
+        by imap1.codethink.co.uk with esmtpsa (Exim 4.84_2 #1 (Debian))
+        id 1iFwDV-0000xO-OM; Thu, 03 Oct 2019 09:12:05 +0100
+Subject: Re: [PATCH v2 2/3] serial: 8250_exar: Refactor exar_shutdown()
+To:     Robert Middleton <robert.middleton@rm5248.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Aaron Sierra <asierra@xes-inc.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v6 1/4] nvmem: core: add nvmem_device_find
-Message-Id: <20191002210831.f7fa10ad7f055801df26669d@suse.de>
-In-Reply-To: <20191002183327.grhkxlbyu65vvhr4@pburton-laptop>
-References: <20190923114636.6748-1-tbogendoerfer@suse.de>
-        <20190923114636.6748-2-tbogendoerfer@suse.de>
-        <ce44c762-f9a6-b4ef-fa8a-19ee4a6d391f@linaro.org>
-        <20191002183327.grhkxlbyu65vvhr4@pburton-laptop>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+        linux-serial@vger.kernel.org, Jan Kiszka <jan.kiszka@siemens.com>
+References: <20190805100518.9818-2-andriy.shevchenko@linux.intel.com>
+ <CAKpcJVZTy963y3TOXSYSBFVOpVTWEOyJKUYxv1pHNGz3Y1aPTA@mail.gmail.com>
+ <20190805142147.GK23480@smile.fi.intel.com>
+ <CAKpcJVYfcVAmoB63EbmJaix6v+2JJ5BujAcdduQLcw-ES+f3ZQ@mail.gmail.com>
+ <20190806152407.GF30120@smile.fi.intel.com>
+ <20190806153110.GG30120@smile.fi.intel.com>
+ <CAKpcJVYTC8MN6A51iip=cyvkfXVy2NS-c3FyhAi9qcxsgJkQRw@mail.gmail.com>
+ <CAKpcJVaL-BqL0G=_hT6WHz6kCr05sHS1jDQnaM0s_WFWCb6n_A@mail.gmail.com>
+ <20190807150425.GC30120@smile.fi.intel.com>
+ <CAKpcJVYmTK-kw5eZJtcMWBSMmOk4ijqu-1oh9cEswi4q98QHAg@mail.gmail.com>
+ <20190808121148.GT30120@smile.fi.intel.com>
+ <d4ec5a0a-08e3-4da9-bf43-fb1269d0b996@codethink.co.uk>
+ <d64d54fd-5d21-f0a5-8804-b4a0ce486c59@codethink.co.uk>
+ <CAKpcJVaNyv-D3eehF4rcE7ZvihRcsdHm+dOWAea0+6CETY6L=Q@mail.gmail.com>
+ <29ab74c4-490b-ef4a-011a-ba75fc4321cb@codethink.co.uk>
+ <CAKpcJVbVRw3AdmQgmU-UovUWQ0aU6mz16DnuTwk4H+tBB9RRdA@mail.gmail.com>
+From:   Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+Message-ID: <29b3474a-4226-cd86-643d-4d8ce237bcd5@codethink.co.uk>
+Date:   Thu, 3 Oct 2019 09:12:04 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <CAKpcJVbVRw3AdmQgmU-UovUWQ0aU6mz16DnuTwk4H+tBB9RRdA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191002190831.0nvEmidGFXHOcfpw7FFlktkV7miUo5-1uN5vkU0rFAU@z>
 
-On Wed, 2 Oct 2019 18:33:28 +0000
-Paul Burton <paul.burton@mips.com> wrote:
 
-> Hello,
+
+On 02/10/2019 20:03, Robert Middleton wrote:
+> On Sun, Sep 29, 2019 at 5:43 PM Sudip Mukherjee
+> <sudip.mukherjee@codethink.co.uk> wrote:
+>>
+>>
+>>
+>> On 29/09/2019 22:30, Robert Middleton wrote:
+>>> On Sun, Sep 29, 2019 at 2:15 PM Sudip Mukherjee
+>>> <sudip.mukherjee@codethink.co.uk> wrote:
+>>>>
+>>>> Hi Robert,
+>>>>
+>>>> Sorry for the delay. I managed to test it today. My test file contained
+>>>> 70 lines of "The quick brown fox jumps over the lazy dog". I used upto
+>>>> 1200 Baudrate to send the text from the desktop using the Exar serial I
+>>>> have and I did not notice any message loss on the receiving laptop.
+>>>> Please let me know if you want me to test further.
+>>>>
+>>>
+>>> Two questions:
+>>> 1. What kernel version?  If you didn't have a problem, I can try with
+>>> the exact version that you have as well and see if I can reproduce on
+>>> my side.
+>>
+>> v5.3.1
+>>
+>>> 2. Did you test this via 'cat text-file.txt > /dev/ttySX' ?  I'm
+>>> assuming that you are, but just want to make sure.
+>>
+>> Yes. On the desktop which has the Exar hardware "cat fox.txt >
+>> /dev/ttyS4" and on the laptop which is the receiver a terminal to read
+>> from /dev/ttyUSB0.
 > 
-> On Tue, Oct 01, 2019 at 11:11:58AM +0100, Srinivas Kandagatla wrote:
-> > On 23/09/2019 12:46, Thomas Bogendoerfer wrote:
-> > > nvmem_device_find provides a way to search for nvmem devices with
-> > > the help of a match function simlair to bus_find_device.
-> > > 
-> > > Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-> > > ---
-> > 
-> > Thanks for the patch,
-> > This patch looks good for me.
-> > 
-> > Do you know which tree is going to pick this series up?
-> > 
-> > I can either apply this patch to nvmem tree
-> > 
-> > or here is my Ack for this patch to take it via other trees.
-> > 
-> > Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-> > Acked-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-> 
-> Thanks - if you don't mind I'll take this through mips-next along with
-> the following patch that depends on it.
-> 
-> Thomas: I see patch 3 has an issue reported by the kbuild test robot,
+> Thanks for checking; I still have the issue on my side, it is very
+> weird.  Would you mind if I send you a video off-list that shows what
+> is happening on my end?  I'm pretty much at a loss at this point.
 
-yes, that's because kbuild robot tries to build it 32bit. I'm going to make
-it depend on 64bit all possible ioc3 platforms only support 64bit kernels.
+sure.
+and both your transmitter and receiver has the Exar serial or is it on
+just the transmitter side? lets take it offlist and debug the issue first.
 
->         and still needs acks from the MFD & network maintainers. Can I
-> 	presume it's safe to apply patches 1 & 2 without 3 & 4 in the
-> 	meantime?
-
-yes, thank you.
-
-Thomas.
 
 -- 
-SUSE Software Solutions Germany GmbH
-HRB 247165 (AG München)
-Geschäftsführer: Felix Imendörffer
+Regards
+Sudip
