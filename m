@@ -7,55 +7,59 @@ X-Spam-Status: No, score=-0.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6160C4360C
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 10:02:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A0CC4360C
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 10:39:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7D2E1215EA
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 10:02:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B465F2133F
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 10:39:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QMWp6/G+"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Mp2DLOFO"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729093AbfJDKCS (ORCPT
+        id S1729440AbfJDKjM (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Oct 2019 06:02:18 -0400
-Received: from mail-io1-f51.google.com ([209.85.166.51]:36262 "EHLO
-        mail-io1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726927AbfJDKCS (ORCPT
+        Fri, 4 Oct 2019 06:39:12 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:46487 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729319AbfJDKjM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Oct 2019 06:02:18 -0400
-Received: by mail-io1-f51.google.com with SMTP id b136so12272048iof.3;
-        Fri, 04 Oct 2019 03:02:18 -0700 (PDT)
+        Fri, 4 Oct 2019 06:39:12 -0400
+Received: by mail-io1-f67.google.com with SMTP id c6so12344806ioo.13;
+        Fri, 04 Oct 2019 03:39:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=zVzaL13aBMw0U8JG2NOEmJnjPxX8zMVFzGvL8Tcw4zE=;
-        b=QMWp6/G+6FQ1g1EQynFBy9qWtAZZvbEl3vOY2ZedehHYyxKZxM/Eonl4lW4ykcXIC9
-         3kiJdmKWs3Q8Z/0PPZNV7FfF+lkzhC7tyZp5I3lgBnlk2/dx0jCtyxFuUP4Kq3q+UaV9
-         j2zrTEBpydXkC24ZBOnRVqg8olG2y1m5ntg+ouIBV18wnKLvdHTJ1aSe0LOrqXlPBRMg
-         foVktVWwiAPyFKX202xdxFE1O3kdUG2v59sGkmod4c92aICgMbdfr3t/6fwCY/60fxD/
-         XUFu2W2PvCyn4JFcZUizrR5n4vGtTn3UgiVAkGHeJMU2jVoSr8F2M0+F6HsBwLf42ngb
-         vg8Q==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=qZkq2IFXpYdFUAnRVtV16PjDv6kvLyNtOPmSknMDol4=;
+        b=Mp2DLOFOq3R1RI5KaWj39fc1oBw6TxRdIvXzsQ0B0fhH/lbeuSRNfiJKbUfuQrK7WH
+         5luCH418ZMKmk7qe9lJvudy6XbTFEhj7D24H5TAsxvrxV9kq6YvyOUFFCSEJQTbWr3i8
+         QbzrQTlwPeXbbkREqQ7/g37cQ9U+TPxmI3kcGQT/HFPvRsiNQp9ok+J4fvOV22K0oTHf
+         C/vE9TMqxqjz4qzKwM6517/YXKAE3/+7CqG9BLlzpl2DT3ffDBl1/2aEBm4lH4gaAnhp
+         ZIKW5V7EqoetyfZ4eF1VqmLidThv1DLK79zUP3ikQRTs7AIT8W8LGkyER9YzZvO9u2Ry
+         k1xg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=zVzaL13aBMw0U8JG2NOEmJnjPxX8zMVFzGvL8Tcw4zE=;
-        b=Pa8Iea1+rBsZKbGTf2sy8N82+lgIjLJVCeZQ6SpiG2DyyDZrua0XQS3pXYN+xhIGBW
-         anSqK1hTFzrgH6XOYqdOLzxor+T+G4MMfdLj3NLmNrUzNUaDmaGJXJ2HBOi8nkCphU8M
-         lkkkLrGy98NSEMelfwqdTWg0gNQuCYPAv26BERjsV0Qe365BuEpI5glcfkYG5faA4jty
-         j/9MxbNtnUygAr7nC726icOXNZn4Ghvf3FnrK7GFKteLE570gDcs4vYMgr1K4XuWk+ib
-         poh+u1biin+Pd3/Jys4dbtXvmLcgidH8OJ5ex5F6tZD8Uv+pmChLO/I2mE9R5ToGZCKc
-         bSLw==
-X-Gm-Message-State: APjAAAWGzyOPD1jUVqhW0ofvcmcKB1kW7uRiPc68mekQ8+LUUI7G6bot
-        3Ery/jKeKLEoGyO2Vx69AgUV+s3lR6/zoGjwXIY=
-X-Google-Smtp-Source: APXvYqzMrdeHLGJcpBa6sb2EAlzKy/w8w1xOVCGpGNdUkhtzyFrrOpSnqNRE8cnlYFCtBJxxnh89exYjDJhjAyKlo4M=
-X-Received: by 2002:a05:6638:3a5:: with SMTP id z5mr13854093jap.95.1570183337214;
- Fri, 04 Oct 2019 03:02:17 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=qZkq2IFXpYdFUAnRVtV16PjDv6kvLyNtOPmSknMDol4=;
+        b=Wdl7ISq4J9kwt1hnhdu44b95oUsN/aRLoCE4u2NelaYpbJHncV/8wObUCCVgTYjurt
+         umNwNvKUwQ+JoFuJziyzHcl94u7WYFOEZS79wl3HgwyxsJPF/0nRM+1vbofGMWuqqPW4
+         vIjWeHNS46HOn4wGklGTKBv76hmr2GkTNaK6VY8gLfzwEQymIhqooOn+j97i6GI14Zb6
+         RXd/DxScQkPz93xSlbVroSq68k7MokDfvNR/e6BOdv8RG1kyqk/IOaRCSNNvAadbZwpo
+         dTVuR4UVR63Rty6KSWlLUdpswS7NZVMd1OnxEEtdT4/DGEib0qtR2D0fMfUZ4ZX0TCP9
+         sNPw==
+X-Gm-Message-State: APjAAAXO8ZW3xS4aN513bkWf4o4nb4YuqvNBKkmmZXrRi+Y8Z6/LFTV8
+        MsAM73gAGizBUQnct+kfRkHe4/0DDEcDjczpGSM=
+X-Google-Smtp-Source: APXvYqz+Xj/q8hbRyOg8+71Aa+R2dm9DnYdbORf3IizXzCYBaNRlGKcl0yuGyJeYNFdYvisEVnWOazRJtqbNoFnP1I0=
+X-Received: by 2002:a02:65cd:: with SMTP id u196mr13949946jab.3.1570185550237;
+ Fri, 04 Oct 2019 03:39:10 -0700 (PDT)
 MIME-Version: 1.0
+References: <CAHCN7xLO5VgA6tW4p7QjwPv_QXv==zbC38TxXtsR5x9H0mUGJA@mail.gmail.com>
+In-Reply-To: <CAHCN7xLO5VgA6tW4p7QjwPv_QXv==zbC38TxXtsR5x9H0mUGJA@mail.gmail.com>
 From:   Adam Ford <aford173@gmail.com>
-Date:   Fri, 4 Oct 2019 05:02:05 -0500
+Date:   Fri, 4 Oct 2019 05:38:59 -0500
 Message-ID:
- <CAHCN7xLO5VgA6tW4p7QjwPv_QXv==zbC38TxXtsR5x9H0mUGJA@mail.gmail.com>
-Subject: DM3730 Bluetooth Performance differences between SERIAL_8250_OMAP vs SERIAL_OMAP
+ <CAHCN7xJPv7W381R7LS4bB8xWWpugz2NwbTUtj-hqHnDBZ9MFzA@mail.gmail.com>
+Subject: Re: DM3730 Bluetooth Performance differences between SERIAL_8250_OMAP
+ vs SERIAL_OMAP
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
@@ -66,51 +70,66 @@ Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191004100205.lI8Kd7BnbOWA0C4q9VtJmgi5ZePrldPJWMNaCi5JMHQ@z>
+Message-ID: <20191004103859.rB5ZHc_mAdRV1ojPQhOiNh19E-jr2YgwE4J7WxV9v5s@z>
 
-I am running Kernel 5.3.2 trying to troubleshoot some intermittent
-Bluetooth issues, and I think I have narrowed it down to the serial
-driver in use.
-By default, omap2plus_defconfig enables both SERIAL_8250_OMAP and
-SERIAL_OMAP.  I have my console device configured as  ttyS0, and all
-appears fine.  When I enable Bluetooth, however, I get intermittent
-errors on an DM3730 / OMAP3630.
+On Fri, Oct 4, 2019 at 5:02 AM Adam Ford <aford173@gmail.com> wrote:
+>
+> I am running Kernel 5.3.2 trying to troubleshoot some intermittent
+> Bluetooth issues, and I think I have narrowed it down to the serial
+> driver in use.
 
-Using the 8250 driver for Blueotooth I get intermittent frame errors
-and data loss.
+I should have also noted that it's using UART2 with CTS and RTS on the
+DM3730 (omap3630) and its configured with a baud rate of 3M.
+I tried slowing it to 115200, but that didn't help.  I tried disabling
+the DMA hooks from the device tree, and that didn't help.
 
-Scanning ...
-[   28.482452] Bluetooth: hci0: Frame reassembly failed (-84)
-[   36.162170] Bluetooth: hci0: Frame reassembly failed (-84)
-        F4:4E:FC:C9:2F:57       BluJax
-# l2ping F4:4E:FC:C9:2F:57
-Ping: F4:4E:FC:C9:2F:57 from 00:18:30:49:7D:63 (data size 44) ...
-44 bytes from F4:4E:FC:C9:2F:57 id 0 time 8.27ms
-no response from F4:4E:FC:C9:2F:57: id 1
-^C2 sent, 1 received, 50% loss
+> By default, omap2plus_defconfig enables both SERIAL_8250_OMAP and
+> SERIAL_OMAP.  I have my console device configured as  ttyS0, and all
+> appears fine.  When I enable Bluetooth, however, I get intermittent
+> errors on an DM3730 / OMAP3630.
+>
+> Using the 8250 driver for Blueotooth I get intermittent frame errors
+> and data loss.
+>
+> Scanning ...
+> [   28.482452] Bluetooth: hci0: Frame reassembly failed (-84)
+> [   36.162170] Bluetooth: hci0: Frame reassembly failed (-84)
+>         F4:4E:FC:C9:2F:57       BluJax
+> # l2ping F4:4E:FC:C9:2F:57
+> Ping: F4:4E:FC:C9:2F:57 from 00:18:30:49:7D:63 (data size 44) ...
+> 44 bytes from F4:4E:FC:C9:2F:57 id 0 time 8.27ms
+> no response from F4:4E:FC:C9:2F:57: id 1
+> ^C2 sent, 1 received, 50% loss
+>
+> (after a fairly long hang, I hit control-c)
+>
+> However, disabling the 8250 driver and using the only SERIAL_OMAP and
+> the console routed to ttyO0, the Bluetooth works well, so I believe it
+> to be a serial driver issue and not a Bluetooth error.
+>
+> # hcitool scan
+> Scanning ...
+>         F4:4E:FC:C9:2F:57       BluJax
+> ^C
+> # l2ping F4:4E:FC:C9:2F:57
+> Ping: F4:4E:FC:C9:2F:57 from 00:18:30:49:7D:63 (data size 44) ...
+> 44 bytes from F4:4E:FC:C9:2F:57 id 0 time 6.90ms
+> ...
+> 44 bytes from F4:4E:FC:C9:2F:57 id 14 time 28.29ms
+> ^C15 sent, 15 received, 0% loss
+> #
+>
+> 0% loss and regular, repeatable communication without any Frame
+> reassembly errors.
+>
 
-(after a fairly long hang, I hit control-c)
+I tried disabling SERIAL_OMAP and using only SERIAL_8250_OMAP, but
+that didn't help.  Because the issue goes away when I disable
+SERIAL_8250_OMAP, I am wondering if something is either being
+misconfigured or some IRQ or DMA integration is missing that may be
+present with the older SERIAL_OMAP driver.
 
-However, disabling the 8250 driver and using the only SERIAL_OMAP and
-the console routed to ttyO0, the Bluetooth works well, so I believe it
-to be a serial driver issue and not a Bluetooth error.
-
-# hcitool scan
-Scanning ...
-        F4:4E:FC:C9:2F:57       BluJax
-^C
-# l2ping F4:4E:FC:C9:2F:57
-Ping: F4:4E:FC:C9:2F:57 from 00:18:30:49:7D:63 (data size 44) ...
-44 bytes from F4:4E:FC:C9:2F:57 id 0 time 6.90ms
-...
-44 bytes from F4:4E:FC:C9:2F:57 id 14 time 28.29ms
-^C15 sent, 15 received, 0% loss
-#
-
-0% loss and regular, repeatable communication without any Frame
-reassembly errors.
-
-Any suggestions on how to troubleshoot or what might cause the
-difference between the two drivers?
-
-adam
+> Any suggestions on how to troubleshoot or what might cause the
+> difference between the two drivers?
+>
+> adam
