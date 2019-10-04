@@ -2,314 +2,207 @@ Return-Path: <SRS0=XuIp=X5=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5259C47404
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 15:14:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85B0EC47404
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 16:51:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A3249207FF
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 15:14:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1570202080;
-	bh=jGn2GriHknRcM7VEKcN/Vhe/Y3uO7QORd6PlkeTX3q4=;
-	h=From:To:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=vG443qSW9ePXp6+rq4Xr/RfsKsssfyCfFzqh7oVrpBmAjMgGIQr4xaZj6zJflQ5OJ
-	 fTKl5Aq9GqUJY4rbUsUT6sYZOYH0I54XP+3hfNJtsHM2sD2IIA9hlfzyJFgIIETmcF
-	 TPAbiOTHeprqSEl+mDOsllLW7XHj2GIkhwgWz2aA=
+	by mail.kernel.org (Postfix) with ESMTP id 50FE7222BE
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 16:51:40 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rtGE/maS"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389165AbfJDPOg (ORCPT
+        id S1728346AbfJDQvk (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Oct 2019 11:14:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52402 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388802AbfJDPOf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Oct 2019 11:14:35 -0400
-Received: from localhost.localdomain (unknown [194.230.155.145])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A4B08207FF;
-        Fri,  4 Oct 2019 15:14:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570202074;
-        bh=jGn2GriHknRcM7VEKcN/Vhe/Y3uO7QORd6PlkeTX3q4=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=biAfqQM7ksmdl6mE9+E6iqLHtsiTP7ck7fq/ivIpyTTedBKFP9Se204xAqgDrwbNI
-         jc/1GqGw5vGRFIzak0OnN/rnzhz6AFddTd+72tYCbnN6dVR/AbLTFaWYf8vf09giWG
-         l5YRnMkEZuVKfYWfVWLpMBAoiP24ZYbX7xMUR79c=
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Kukjin Kim <kgene@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Lee Jones <lee.jones@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Maciej Falkowski <m.falkowski@samsung.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH 3/3] dt-bindings: serial: Convert Samsung UART bindings to json-schema
-Date:   Fri,  4 Oct 2019 17:14:14 +0200
-Message-Id: <20191004151414.8458-3-krzk@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191004151414.8458-1-krzk@kernel.org>
-References: <20191004151414.8458-1-krzk@kernel.org>
+        Fri, 4 Oct 2019 12:51:40 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:33930 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725932AbfJDQvj (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 4 Oct 2019 12:51:39 -0400
+Received: by mail-io1-f66.google.com with SMTP id q1so15067208ion.1;
+        Fri, 04 Oct 2019 09:51:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1m5jMl+j0wFCdGUDGZKKaL6nviatVJQaN7YzAwj3ZUs=;
+        b=rtGE/maStH7QAtH/Tydy2qxQVsveofu5bu6sC5eRUZYx9ILOFtWaXSSpEFFf2iHYF2
+         5RIK5U43/6p/zgoe7l3fvcpLHWE1il4GxscoIR+p/PS1bSNc2dmu2g+PVfpK5/rQBGck
+         LictbWaY7Dav8baespzhw7QubnIvI09sguG/VFRmSmK/jZ84YvIV6U4SNWxWpUJq3lBd
+         K46xH3c7BoYCZavKfwV28ETdeh+MgDs1c4yaxshWpB7fc3dc4Q9qaYaDE5DWUBiKDTIj
+         AmczBSiM0UKf8FAa2WFLSIdrFmHcv+WBlZ/J+rUS8ySyBG9/yFHcYYyN1NuN5PBq2Fel
+         LLKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1m5jMl+j0wFCdGUDGZKKaL6nviatVJQaN7YzAwj3ZUs=;
+        b=pPiQCR+Y2d3uaYdWxdNRlu5mapuS3tMq90i3j8OYo03ktUr/bqL7PijFJAziQCi88V
+         OWnLYS8kqO90uPZ8Gwb6sJ5YE96H6Ayu7FfRdkVEwYoEWQXctYlHnVagsHVboEiYXT/A
+         NOP0xw1d+i1gObV9qsmqxlSNV4QdysLfzXA+ZREukECU8H1ut7bxEkHbqb7pDqxXJMaP
+         YmO6hpPUNgyswDplE9etb1YPDe/NznYFYUqHvF3tRqCsEoKDxelE+5YJhdnX9Pujfjl9
+         Y6H9Fq54FYagR5Qz0rcpvr1FShkwB8ZW/7lAf+8B707Vi5fVfWpGBOtcmyinvN1+6lKJ
+         Y5OQ==
+X-Gm-Message-State: APjAAAVcaOptkwxsqNxzjf6GATVpT+Fo8wHiwyWFSz+1FN++Zl9kFjNr
+        sNSfzoEBzfNIgD44h0r7Bpkm1tdNyPOfPRZlr1Q=
+X-Google-Smtp-Source: APXvYqxjbUkl/PPycJs0mioIVrdWJpeRRCmnG8ST8fukbge6BCLJArIZwITPrFFWqLG9P9I6pPOilOofsMdWyBXaoOg=
+X-Received: by 2002:a92:3314:: with SMTP id a20mr16052072ilf.276.1570207898037;
+ Fri, 04 Oct 2019 09:51:38 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAHCN7xLO5VgA6tW4p7QjwPv_QXv==zbC38TxXtsR5x9H0mUGJA@mail.gmail.com>
+ <CAHCN7xJPv7W381R7LS4bB8xWWpugz2NwbTUtj-hqHnDBZ9MFzA@mail.gmail.com>
+ <CAGm1_kv6RMUDppu6ZjY9Dq7QL=hS=D+e3KS37+V0ncbwoXE6mQ@mail.gmail.com> <CAHCN7xKsGz4UA4gfM5jpS9UE-V7_k265G_hB=wQ5Ueh3T5kaNQ@mail.gmail.com>
+In-Reply-To: <CAHCN7xKsGz4UA4gfM5jpS9UE-V7_k265G_hB=wQ5Ueh3T5kaNQ@mail.gmail.com>
+From:   Adam Ford <aford173@gmail.com>
+Date:   Fri, 4 Oct 2019 11:51:27 -0500
+Message-ID:
+ <CAHCN7xKirqyj3un1k+QNeoKc0DvOt4g8ScFScG02pZF=OX+GZg@mail.gmail.com>
+Subject: Re: DM3730 Bluetooth Performance differences between SERIAL_8250_OMAP
+ vs SERIAL_OMAP
+To:     Yegor Yefremov <yegorslists@googlemail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-OMAP <linux-omap@vger.kernel.org>,
+        Vignesh R <vigneshr@ti.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Message-ID: <20191004151414.gOUheH7Mfhit-FNzekoVsFcKGCD36UH4GCpaKZt0HGw@z>
+Message-ID: <20191004165127.mtQaTPdtnXGQswSu7MI3ZKE1OGi_F11YGPJBHNqldEM@z>
 
-Convert Samsung S3C/S5P/Exynos Serial/UART bindings to DT schema format
-using json-schema.
+On Fri, Oct 4, 2019 at 9:08 AM Adam Ford <aford173@gmail.com> wrote:
+>
+> On Fri, Oct 4, 2019 at 7:27 AM Yegor Yefremov
+> <yegorslists@googlemail.com> wrote:
+> >
+> > Hi Adam,
+> >
+> > On Fri, Oct 4, 2019 at 12:39 PM Adam Ford <aford173@gmail.com> wrote:
+> > >
+> > > On Fri, Oct 4, 2019 at 5:02 AM Adam Ford <aford173@gmail.com> wrote:
+> > > >
+> > > > I am running Kernel 5.3.2 trying to troubleshoot some intermittent
+> > > > Bluetooth issues, and I think I have narrowed it down to the serial
+> > > > driver in use.
+> > >
+> > > I should have also noted that it's using UART2 with CTS and RTS on the
+> > > DM3730 (omap3630) and its configured with a baud rate of 3M.
+> > > I tried slowing it to 115200, but that didn't help.  I tried disabling
+> > > the DMA hooks from the device tree, and that didn't help.
+> > >
+> > > > By default, omap2plus_defconfig enables both SERIAL_8250_OMAP and
+> > > > SERIAL_OMAP.  I have my console device configured as  ttyS0, and all
+> > > > appears fine.  When I enable Bluetooth, however, I get intermittent
+> > > > errors on an DM3730 / OMAP3630.
+> > > >
+> > > > Using the 8250 driver for Blueotooth I get intermittent frame errors
+> > > > and data loss.
+> > > >
+> > > > Scanning ...
+> > > > [   28.482452] Bluetooth: hci0: Frame reassembly failed (-84)
+> > > > [   36.162170] Bluetooth: hci0: Frame reassembly failed (-84)
+> > > >         F4:4E:FC:C9:2F:57       BluJax
+> > > > # l2ping F4:4E:FC:C9:2F:57
+> > > > Ping: F4:4E:FC:C9:2F:57 from 00:18:30:49:7D:63 (data size 44) ...
+> > > > 44 bytes from F4:4E:FC:C9:2F:57 id 0 time 8.27ms
+> > > > no response from F4:4E:FC:C9:2F:57: id 1
+> > > > ^C2 sent, 1 received, 50% loss
+> > > >
+> > > > (after a fairly long hang, I hit control-c)
+> > > >
+> > > > However, disabling the 8250 driver and using the only SERIAL_OMAP and
+> > > > the console routed to ttyO0, the Bluetooth works well, so I believe it
+> > > > to be a serial driver issue and not a Bluetooth error.
+> > > >
+> > > > # hcitool scan
+> > > > Scanning ...
+> > > >         F4:4E:FC:C9:2F:57       BluJax
+> > > > ^C
+> > > > # l2ping F4:4E:FC:C9:2F:57
+> > > > Ping: F4:4E:FC:C9:2F:57 from 00:18:30:49:7D:63 (data size 44) ...
+> > > > 44 bytes from F4:4E:FC:C9:2F:57 id 0 time 6.90ms
+> > > > ...
+> > > > 44 bytes from F4:4E:FC:C9:2F:57 id 14 time 28.29ms
+> > > > ^C15 sent, 15 received, 0% loss
+> > > > #
+> > > >
+> > > > 0% loss and regular, repeatable communication without any Frame
+> > > > reassembly errors.
+> > > >
+> > >
+> > > I tried disabling SERIAL_OMAP and using only SERIAL_8250_OMAP, but
+> > > that didn't help.  Because the issue goes away when I disable
+> > > SERIAL_8250_OMAP, I am wondering if something is either being
+> > > misconfigured or some IRQ or DMA integration is missing that may be
+> > > present with the older SERIAL_OMAP driver.
+> > >
+> > > > Any suggestions on how to troubleshoot or what might cause the
+> > > > difference between the two drivers?
+> >
+> > Can it be related to this issue [1]? Can you confirm that 5.2 is
+> > working as expected with the 8250 driver?
+> >
+> > [1] https://marc.info/?l=linux-serial&m=156965039008649&w=2
+>
+> I reverted the whole 8250 directory to d99482673f95 ("serial:
+> mctrl_gpio: Check if GPIO property exisits before requesting it") and
+> it is somewhat better, but it's not as good as the stock OMAP serial
+> driver.  I get some frame errors and eventually, I get some timeouts,
+> but it's not as bad.  I'll try to implement the RTS and CTS as gpio
+> pins and change the device tree accordingly.  It might shed some light
+> on the situation.
 
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
----
- .../bindings/mfd/samsung,exynos5433-lpass.txt |   2 +-
- .../bindings/serial/samsung_uart.txt          |  58 -------
- .../bindings/serial/samsung_uart.yaml         | 148 ++++++++++++++++++
- 3 files changed, 149 insertions(+), 59 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/serial/samsung_uart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/samsung_uart.yaml
+I tried to manually setup RTS and CTS pins as GPIO, but that didn't
+work, so I changed it back.
 
-diff --git a/Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.txt b/Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.txt
-index d759da606f75..30ea27c3936d 100644
---- a/Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.txt
-+++ b/Documentation/devicetree/bindings/mfd/samsung,exynos5433-lpass.txt
-@@ -18,7 +18,7 @@ an optional sub-node. For "samsung,exynos5433-lpass" compatible this includes:
- UART, SLIMBUS, PCM, I2S, DMAC, Timers 0...4, VIC, WDT 0...1 devices.
- 
- Bindings of the sub-nodes are described in:
--  ../serial/samsung_uart.txt
-+  ../serial/samsung_uart.yaml
-   ../sound/samsung-i2s.txt
-   ../dma/arm-pl330.txt
- 
-diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.txt b/Documentation/devicetree/bindings/serial/samsung_uart.txt
-deleted file mode 100644
-index e85f37ec33f0..000000000000
---- a/Documentation/devicetree/bindings/serial/samsung_uart.txt
-+++ /dev/null
-@@ -1,58 +0,0 @@
--* Samsung's UART Controller
--
--The Samsung's UART controller is used for interfacing SoC with serial
--communicaion devices.
--
--Required properties:
--- compatible: should be one of following:
--  - "samsung,exynos4210-uart" -  Exynos4210 SoC,
--  - "samsung,s3c2410-uart" - compatible with ports present on S3C2410 SoC,
--  - "samsung,s3c2412-uart" - compatible with ports present on S3C2412 SoC,
--  - "samsung,s3c2440-uart" - compatible with ports present on S3C2440 SoC,
--  - "samsung,s3c6400-uart" - compatible with ports present on S3C6400 SoC,
--  - "samsung,s5pv210-uart" - compatible with ports present on S5PV210 SoC.
--
--- reg: base physical address of the controller and length of memory mapped
--  region.
--
--- interrupts: a single interrupt signal to SoC interrupt controller,
--  according to interrupt bindings documentation [1].
--
--- clock-names: input names of clocks used by the controller:
--  - "uart" - controller bus clock,
--  - "clk_uart_baudN" - Nth baud base clock input (N = 0, 1, ...),
--    according to SoC User's Manual (only N = 0 is allowedfor SoCs without
--    internal baud clock mux).
--- clocks: phandles and specifiers for all clocks specified in "clock-names"
--  property, in the same order, according to clock bindings documentation [2].
--
--[1] Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
--[2] Documentation/devicetree/bindings/clock/clock-bindings.txt
--
--Optional properties:
--- samsung,uart-fifosize: The fifo size supported by the UART channel
--
--Note: Each Samsung UART should have an alias correctly numbered in the
--"aliases" node, according to serialN format, where N is the port number
--(non-negative decimal integer) as specified by User's Manual of respective
--SoC.
--
--Example:
--	aliases {
--		serial0 = &uart0;
--		serial1 = &uart1;
--		serial2 = &uart2;
--	};
--
--Example:
--	uart1: serial@7f005400 {
--		compatible = "samsung,s3c6400-uart";
--		reg = <0x7f005400 0x100>;
--		interrupt-parent = <&vic1>;
--		interrupts = <6>;
--		clock-names = "uart", "clk_uart_baud2",
--				"clk_uart_baud3";
--		clocks = <&clocks PCLK_UART1>, <&clocks PCLK_UART1>,
--				<&clocks SCLK_UART>;
--		samsung,uart-fifosize = <16>;
--	};
-diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-new file mode 100644
-index 000000000000..276bea1c231a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-@@ -0,0 +1,148 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/serial/samsung_uart.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Samsung S3C, S5P and Exynos SoC UART Controller
-+
-+maintainers:
-+  - Krzysztof Kozlowski <krzk@kernel.org>
-+  - Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-+
-+description: |+
-+  Each Samsung UART should have an alias correctly numbered in the "aliases"
-+  node, according to serialN format, where N is the port number (non-negative
-+  decimal integer) as specified by User's Manual of respective SoC.
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - samsung,s3c2410-uart
-+          - samsung,s3c2412-uart
-+          - samsung,s3c2440-uart
-+          - samsung,s3c6400-uart
-+          - samsung,s5pv210-uart
-+          - samsung,exynos4210-uart
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    minItems: 2
-+    maxItems: 5
-+
-+  clock-names:
-+    description: |
-+      List of clock names:
-+        - "uart" - controller bus clock,
-+        - "clk_uart_baudN" - Nth baud base clock input (N = 0, 1, ...).
-+      N = 0 is allowed for SoCs without internal baud clock mux.
-+    minItems: 2
-+    maxItems: 5
-+    allOf:
-+      - uniqueItems: true
-+      - oneOf:
-+          - items:
-+              - const: uart
-+              - pattern: '^clk_uart_baud[0-3]$'
-+          - items:
-+              - const: uart
-+              - pattern: '^clk_uart_baud[0-3]$'
-+              - pattern: '^clk_uart_baud[0-3]$'
-+          - items:
-+              - const: uart
-+              - pattern: '^clk_uart_baud[0-3]$'
-+              - pattern: '^clk_uart_baud[0-3]$'
-+              - pattern: '^clk_uart_baud[0-3]$'
-+          - items:
-+              - const: uart
-+              - pattern: '^clk_uart_baud[0-3]$'
-+              - pattern: '^clk_uart_baud[0-3]$'
-+              - pattern: '^clk_uart_baud[0-3]$'
-+              - pattern: '^clk_uart_baud[0-3]$'
-+
-+  interrupts:
-+    minItems: 1
-+    maxItems: 2
-+
-+  samsung,uart-fifosize:
-+    description: The fifo size supported by the UART channel
-+    allOf:
-+      - $ref: /schemas/types.yaml#/definitions/uint32
-+      - enum: [16, 64, 256]
-+
-+required:
-+  - compatible
-+  - clocks
-+  - clock-names
-+  - interrupts
-+  - reg
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - samsung,s3c2410-uart
-+              - samsung,s5pv210-uart
-+    then:
-+      properties:
-+        clocks:
-+          minItems: 2
-+          maxItems: 3
-+        clock-names:
-+          minItems: 2
-+          maxItems: 3
-+          allOf:
-+            - uniqueItems: true
-+            - oneOf:
-+                - items:
-+                    - const: uart
-+                    - pattern: '^clk_uart_baud[0-1]$'
-+                - items:
-+                    - const: uart
-+                    - pattern: '^clk_uart_baud[0-1]$'
-+                    - pattern: '^clk_uart_baud[0-1]$'
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - samsung,exynos4210-uart
-+    then:
-+      properties:
-+        clocks:
-+          minItems: 2
-+          maxItems: 2
-+        clock-names:
-+          minItems: 2
-+          maxItems: 2
-+          allOf:
-+            - uniqueItems: true
-+            - items:
-+                - const: uart
-+                - const: clk_uart_baud0
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/samsung,s3c64xx-clock.h>
-+
-+    aliases {
-+        serial0 = &uart0;
-+    };
-+
-+    uart0: serial@7f005000 {
-+        compatible = "samsung,s3c6400-uart";
-+        reg = <0x7f005000 0x100>;
-+        interrupt-parent = <&vic1>;
-+        interrupts = <5>;
-+        clock-names = "uart", "clk_uart_baud2",
-+                      "clk_uart_baud3";
-+        clocks = <&clocks PCLK_UART0>, <&clocks PCLK_UART0>,
-+                 <&clocks SCLK_UART>;
-+        samsung,uart-fifosize = <16>;
-+    };
--- 
-2.17.1
+It looks like the clocking is correct.  I don't know enough about the
+DMA or the IRQ to know if it's working correctly.
 
+I was wondering if the problem is in the handshaking or not.
+I added " uart-has-rtscts;" to by uart node thinking it might help,
+but it did not.
+
+>
+8250_omap.c has some checks to see if we can enable autoRTS:
+
+if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW &&
+    !up->gpios) {
+     /* Enable AUTOCTS (autoRTS is enabled when RTS is raised) */
+     ...
+}
+
+Based on this, I would expect up->gpios to always be zero if we want
+auto RTS CTS.
+
+I threw some debug code into the serial driver to look at the status
+of the various flags that go into setting up auto RTS/CTS.
+
+[   13.837005] termios->c_cflag & CRTSCTS = 80000000
+[   13.841888] up->port.flags & UPF_HARD_FLOW = 300000
+[   13.846801] up->gpios = ce3f3cc0
+[   17.166595] termios->c_cflag & CRTSCTS = 0
+[   17.170745] up->port.flags & UPF_HARD_FLOW = 300000
+[   17.175781] up->gpios = ce3f3d40
+
+I don't know which port is which, but I only have two active uarts
+(console and Bluetooth)
+The Bluetooth port should use handshaking and the console should not.
+
+From the look of the dump, up->gpios is never 0, so the last
+evaluation would always be false unless I am misinterpreting
+something.
+
+I tried to modify the check to remove !up->gpios check, but that
+didn't help either, but it made it a little better.
+
+
+> adam
+> >
+> > Cheers,
+> > Yegor
