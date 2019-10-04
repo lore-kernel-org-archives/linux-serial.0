@@ -1,49 +1,69 @@
-From: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Subject: Re: [PATCH v7 3/5] mfd: ioc3: Add driver for SGI IOC3 chip
-Date: Fri, 4 Oct 2019 19:25:09 +0200
-Message-ID: <20191004192509.98d4bbda4468c6b9407bc370@suse.de>
-References: <20191003095235.5158-1-tbogendoerfer@suse.de>
-        <20191003095235.5158-4-tbogendoerfer@suse.de>
-        <20191004144453.GQ18429@dell>
+From: Adam Ford <aford173@gmail.com>
+Subject: Re: [PATCH] serial: 8250_omap: Fix idling for unloaded serdev drivers
+Date: Fri, 4 Oct 2019 14:29:35 -0500
+Message-ID: <CAHCN7x+6KYjnm5daRe_Y5XEWnDBWQnz8rOKYH2wTgx9avvokmQ@mail.gmail.com>
+References: <20190723115400.46432-1-tony@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8BIT
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <20191004144453.GQ18429@dell>
-Sender: netdev-owner@vger.kernel.org
-To: "David S. Miller" <davem@davemloft.net>
-Cc: Jonathan Corbet <corbet@lwn.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190723115400.46432-1-tony@atomide.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Vignesh R <vigneshr@ti.com>, linux-serial@vger.kernel.org, Linux-OMAP <linux-omap@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Johan Hovold <johan@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, 4 Oct 2019 15:44:53 +0100
-Lee Jones <lee.jones@linaro.org> wrote:
+On Tue, Jul 23, 2019 at 5:21 PM Tony Lindgren <tony@atomide.com> wrote:
+>
+> For many years omap variants have been setting the runtime PM
+> autosuspend delay to -1 to prevent unsafe policy with lossy first
+> character on wake-up. The user must specifically enable the timeout
+> for UARTs if desired.
+>
+> We must not enable the workaround for serdev devices though. It leads
+> into UARTs not idling if no serdev devices are loaded and there is no
+> sysfs entry to configure the UART in that case. And this means that
+> my PM may not work unless the serdev modules are loaded.
+>
+> We can detect a serdev device being configured based on a dts child
+> node, and we can simply skip the workround in that case. And the
+> serdev driver can idle the port during runtime when suitable if an
+> out-of-band wake-up GPIO line exists for example.
+>
+> Let's also add some comments to the workaround while at it.
 
-> On Thu, 03 Oct 2019, Thomas Bogendoerfer wrote:
-> > +	if (mask & BIT(IOC3_IRQ_ETH_DOMAIN))
-> > +		/* if eth irq is enabled we need to check in eth irq regs */
-> 
-> Nit: Comments should be expressive.  Please expand all of the
-> short-hand in this sentence.  It would also be nicer if you started
-> with an uppercase character.
-> 
-> Same with all of the other comments in this file.
+This seems to help some of the stability issues I am seeing on the
+DM3730 UART2 running Bluetooth at 3000000 baud.
+Does it make sense to backport this to the stable kernels?
 
-ok.
+adam
 
-> Other than that, it looks like it's really coming together.  Once the
-> above is fixed, please re-sumbit with my:
-
-Thanks.
-
-David, 
-
-before re-posting with the english grammer pimp up, is there anything
-I should improve for the network part ? If not, could I get a acked-by
-from your side ?
-
-Thomas.
-
--- 
-SUSE Software Solutions Germany GmbH
-HRB 247165 (AG München)
-Geschäftsführer: Felix Imendörffer
+>
+> Cc: Johan Hovold <johan@kernel.org>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> ---
+>  drivers/tty/serial/8250/8250_omap.c | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -1234,7 +1234,16 @@ static int omap8250_probe(struct platform_device *pdev)
+>
+>         device_init_wakeup(&pdev->dev, true);
+>         pm_runtime_use_autosuspend(&pdev->dev);
+> -       pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
+> +
+> +       /*
+> +        * Disable runtime PM until autosuspend delay unless specifically
+> +        * enabled by the user via sysfs. This is the historic way to
+> +        * prevent an unsafe default policy with lossy characters on wake-up.
+> +        * For serdev devices this is not needed, the policy can be managed by
+> +        * the serdev driver.
+> +        */
+> +       if (!of_get_available_child_count(pdev->dev.of_node))
+> +               pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
+>
+>         pm_runtime_irq_safe(&pdev->dev);
+>         pm_runtime_enable(&pdev->dev);
+> --
+> 2.21.0
