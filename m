@@ -2,133 +2,125 @@ Return-Path: <SRS0=XuIp=X5=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C06FEC4360C
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 13:40:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA069C4CED1
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 13:51:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 97CDF20867
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 13:40:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A0E0D20700
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 13:51:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="hYK89Msw"
+	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="coyEnILW"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388433AbfJDNkw (ORCPT
+        id S2388657AbfJDNvR (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Oct 2019 09:40:52 -0400
-Received: from mail-eopbgr00071.outbound.protection.outlook.com ([40.107.0.71]:35812
+        Fri, 4 Oct 2019 09:51:17 -0400
+Received: from mail-eopbgr00072.outbound.protection.outlook.com ([40.107.0.72]:65284
         "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388270AbfJDNkw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Oct 2019 09:40:52 -0400
+        id S2388527AbfJDNvR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 4 Oct 2019 09:51:17 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oEd4B/gU1Z5k76q2obnkYnRiKhut2+E/X+dBNc6XJbXrxLViqlUPFUi1Y5SJPES+rZy05RaSunOJp3LL/GHXPBkdSZu9qc5PA3e65VcPvmF/yBfFiDsZWaolZFphbYOrAND+jVVrNhN3xNaLaU5iemFLzm8OAJm4DJ/Xruicxf+6PvoNkbhO6oDdyxDcmIcmeZk1TyqL1/2A59VLISSpw0woD/l9ImL9XIyWnXjN93xtDaJzEwYo7bcDzl1BQwfI9NElYyK/YdQMufW+84aWauLaKVwXRGpM8pPGiyqDt/M+tHLowRmBn6uEbPU0WQ1tT6Y9fh4au1ZklfW6dc9WjQ==
+ b=b5k8M1HYwQOdrGGvXHwhsHooJ+aGtONjp0t9gWMNUWpShL44WCHvADvEsQ5ky7UCsW2s78G2JdaPP9QF6jgJ6xkjah0QfNtLze74PXyJMmPou3C32sAW0DfZATON/WdBU/j2V07PXj7nymCQkDKuFLI188cuQE2xUnDh/HTFeSBU9s7qv0kaGDpKU45Gh5usQqVsXxWM8w3wZ5GCXGRP2eFhvFIH0ugbb5fAEYBdx14swewiG7cFz7mtZLXx4vZK5OUr63LDCPX0sZ7o/NP0SxvI6PQdpJE1DKhdzspW5el3dx5ExgvyYR+AFIontG/09MKl7Bx8VGw2Lw2RjeV7Bw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GAqQhnB9OCw+1cyAwit8CjnmkGxZUd5/qxjBxXYoZmU=;
- b=KH60EO6gda78uBXR+AQCPseEUKHmHpK7ekGQn9U0Pnfl2LPCH66MOurD6UFX6kRBI9ngu8V15lB9UvHSh55C7knla5HJx2vvbGLbv2VpyLGq8Iee0Onc26up8BWiG7hYLf8KnwvKF20tELX7aTHtR8DzivLV8LxScW+p6NBIo0dRnUFA4+LiVuSb4Mj/B+psW4p2L4ObItUkZYYwIMkJL1WmANYWjYT6FUGkLLi2d9gk6iHUVrDJAtL5F61sPtkXJNwJdtQ0EoDfisOZn0+enJv2/iKblEbgLwz+jNszE1Ah1bCqe37d84G+Elym1jtCI051qpe4rJYH+trePssmnQ==
+ bh=9npxNhs88NFpxqoq756lV+eagp1ip6ql3PP5CAJXuyg=;
+ b=gQ+yQyfT7uoTQEPMehpxKV1LLefFZs3VjVg1FBf9fRAfzCPt+GNZyV2k9FeWdiQvts3MhfhzJxMV5pr6mU3IrtsJLsJ5k+LTbZpfTkUUrJqzY+bmQ8LFHDdmG+emBJiBnfaH3VoRfCF2Y4dgYFKzGFvreaJs73vJj/E+BpG0jKjDzPueY4xurVOfrfUBTellOOlLIr2o4ei9IqGvoInJyC+rcZGwAOxKVHh25Fs31vWEUPAvCfIoL80qhaea8rvTr7g5bbWzybjI+rUAE5yoUrfciZaPTvCpIP7b52kQk48LXnxsGU4mABPc76uZX4eNxYjD1t7UcRhGVRFpzg9pww==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GAqQhnB9OCw+1cyAwit8CjnmkGxZUd5/qxjBxXYoZmU=;
- b=hYK89MswdX0Jbzuz3PNCoMt/XpZzjpH11+EVG0GSqPOKq2Pjl2QqkQzOPi43VB28+n4tdvGACxqubkTCKdsdfuo7aL34Pct4HJ/GMosSt5H9kFtxeyGdjmpb8pa/ItV0raNmIQCrnBSDqQnOkjQVa1l+i/KzJf1bgfZ3vgMNmkU=
+ bh=9npxNhs88NFpxqoq756lV+eagp1ip6ql3PP5CAJXuyg=;
+ b=coyEnILWcK0Fzc41t7WWbbVgH5pINuQVyKco7Dp9qNqXd7ew9pYEWKZ2/k/kFLE3PJmYFcHLGI0yhmBIn5jcTnbqcCE/IrvbQEFZ7xWK7SH6AfkYLBcsOFK4AFlIrj2xLCp/Q7+ZzU2+OF+bteEvI8KOtLvcQJB12hBmz/pI0hU=
 Received: from VI1PR0402MB2863.eurprd04.prod.outlook.com (10.175.20.18) by
- VI1PR0402MB3838.eurprd04.prod.outlook.com (52.134.16.24) with Microsoft SMTP
+ VI1PR0402MB3629.eurprd04.prod.outlook.com (52.134.5.29) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2305.20; Fri, 4 Oct 2019 13:40:48 +0000
+ 15.20.2305.20; Fri, 4 Oct 2019 13:51:14 +0000
 Received: from VI1PR0402MB2863.eurprd04.prod.outlook.com
  ([fe80::fd33:c447:3cab:c36]) by VI1PR0402MB2863.eurprd04.prod.outlook.com
  ([fe80::fd33:c447:3cab:c36%7]) with mapi id 15.20.2305.023; Fri, 4 Oct 2019
- 13:40:48 +0000
+ 13:51:14 +0000
 From:   Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-CC:     "corbet@lwn.net" <corbet@lwn.net>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "jslaby@suse.com" <jslaby@suse.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v5 3/5] serial: fsl_linflexuart: Be consistent with the
- name
-Thread-Topic: [PATCH v5 3/5] serial: fsl_linflexuart: Be consistent with the
- name
-Thread-Index: AQHVerlUg6aq6mZeEE2PCdc5NmXbcA==
-Date:   Fri, 4 Oct 2019 13:40:48 +0000
-Message-ID:
- <VI1PR0402MB2863C5C76A9F709B98C7BDE7DF9E0@VI1PR0402MB2863.eurprd04.prod.outlook.com>
-References: <20191002130425.28905-1-stefan-gabriel.mirea@nxp.com>
- <20191002130425.28905-4-stefan-gabriel.mirea@nxp.com>
- <20191004130712.GA622272@kroah.com>
+To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "jslaby@suse.com" <jslaby@suse.com>
+CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH] tty: serial: Fix PORT_LINFLEXUART definition
+Thread-Topic: [PATCH] tty: serial: Fix PORT_LINFLEXUART definition
+Thread-Index: AQHVerrJiuFF1uxZiE6Hq3Ub4oE5OQ==
+Date:   Fri, 4 Oct 2019 13:51:13 +0000
+Message-ID: <20191004135058.18007-1-stefan-gabriel.mirea@nxp.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.22.0
+x-clientproxiedby: AM5PR0201CA0017.eurprd02.prod.outlook.com
+ (2603:10a6:203:3d::27) To VI1PR0402MB2863.eurprd04.prod.outlook.com
+ (2603:10a6:800:af::18)
 authentication-results: spf=none (sender IP is )
  smtp.mailfrom=stefan-gabriel.mirea@nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
 x-originating-ip: [212.146.100.6]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ffc368f5-ff23-4639-bdb6-08d748d07722
+x-ms-office365-filtering-correlation-id: 96f7dbbb-190b-441b-70f2-08d748d1ebc0
 x-ms-office365-filtering-ht: Tenant
-x-ms-traffictypediagnostic: VI1PR0402MB3838:
-x-microsoft-antispam-prvs: <VI1PR0402MB38385C8E83847431008C90B9DF9E0@VI1PR0402MB3838.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-traffictypediagnostic: VI1PR0402MB3629:
+x-microsoft-antispam-prvs: <VI1PR0402MB36299DFE3638CA29F7034DCBDF9E0@VI1PR0402MB3629.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1388;
 x-forefront-prvs: 018093A9B5
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(39860400002)(136003)(376002)(396003)(189003)(199004)(66066001)(8936002)(7416002)(52536014)(4744005)(99286004)(6916009)(66556008)(4326008)(66476007)(64756008)(66446008)(7696005)(76176011)(305945005)(186003)(6506007)(7736002)(26005)(102836004)(53546011)(8676002)(1730700003)(81156014)(446003)(5660300002)(81166006)(86362001)(74316002)(2351001)(256004)(25786009)(229853002)(3846002)(2501003)(6116002)(33656002)(6246003)(476003)(14454004)(316002)(76116006)(66946007)(91956017)(6436002)(71190400001)(2906002)(54906003)(71200400001)(5640700003)(478600001)(55016002)(9686003)(486006);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3838;H:VI1PR0402MB2863.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(136003)(396003)(366004)(346002)(376002)(199004)(189003)(36756003)(2501003)(386003)(4326008)(6506007)(6436002)(6486002)(102836004)(478600001)(3846002)(6116002)(110136005)(8936002)(8676002)(81156014)(52116002)(5660300002)(1076003)(2906002)(14454004)(54906003)(7736002)(66066001)(71190400001)(71200400001)(305945005)(4744005)(81166006)(6512007)(66446008)(316002)(186003)(486006)(64756008)(66476007)(2616005)(66556008)(256004)(14444005)(99286004)(476003)(66946007)(86362001)(26005)(25786009)(50226002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3629;H:VI1PR0402MB2863.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: nxp.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: QrAuTePPkOPBlNQQrMGP8w3ZsaCtxJcmtggHpE0mPvCaNgHQS+K678/MDPid6KYDFCarx/f077OWnYUau1Hw2er8NBZojmLd00mtx+SzigYx5PvU5vbfVo0t1VA/qPHOA+kf0atAUgg+oPd4t8QrSEovXBgju+enu/3ncfNelfrV3j7ahquvO766FbItanmC8A1wTw0oW01RzweGYcfUz8gIXOhSHazXb++8ohBck/6WaptOAhDQjY7zTIrw0yk2WRbwpcQPyQkG5JVUIvM8V0DyNdPFzXUnZO3k1z0CqzrNT0r/07m5UX6zMM1OTFT6sYxrPU3JzWThXqvTkfUE8Tk3T/QC3ov31iyYEvYJbXKZWi9O6YafZ7SZxF5jRfk5GYMWdw99ZuPO4T3OoKLh/4/MycI0eXuptEB2txDeIWo=
+x-microsoft-antispam-message-info: 9MV8JAl30gkCPLMQf90JUTWJ7Hy3kBNm1K5r39+NJLwcRQPmROIyxGQXkIHF+IQNBmnqoaSHdkzK2YLWXEdluc6MskjnM0rFdeUP6g1xy8tdb5UFM8sQhSJTO+Mohj0sr/D0lNly9tlC8AfanCEPy3OhSMM5EzaY/piMSB0Lz9dAYzSKyA9KuNVVETQsdHXP94qZ2FFrLSEyHQJEOmE0nvrZ+nxsvjA0H47WvuGy/aP6a9Z/l/xMmIQbqIB0BDa3QDuNgc6MKAkO3SAXPp8nMG0MNKMm+1DpqOj841Uq6CKMyAkgmQx85RO60Ha3BL+CgKyAfhcq9n9zlN9XHHujVXUflyHyZ+t66jhusq0QQJtg56W3fUDMsTwUovc6juAhNJans9c77ygD2x/wlIoRLP2u79CiqvxVTma/kGOa3sI=
 x-ms-exchange-transport-forked: True
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ffc368f5-ff23-4639-bdb6-08d748d07722
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Oct 2019 13:40:48.3908
+X-MS-Exchange-CrossTenant-Network-Message-Id: 96f7dbbb-190b-441b-70f2-08d748d1ebc0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Oct 2019 13:51:13.9505
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gSLWXAjH9eSH5rkmCl197xtAMsiXR4XoDSUT4b8ZutalNRANy9ITFfglCgDwwi/LkAY5+Gkye5nLLu6fIQFH3JzMDyIy90YjKWufCPyWg6U=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3838
+X-MS-Exchange-CrossTenant-userprincipalname: w1BztDMatGZrjvRJdJe7CWITLQfwgCsQaNVVPLEfo7VgH1losVBxxox0x9sS3X4MscpQvwitEJOHKkQQt4t2qwoi8CerlzciVFRNZwTyB44=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3629
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191004134048.fui1t1TTw1EKmdHDH-fe4IGCGay2xhi2jTW21dubaMM@z>
+Message-ID: <20191004135113.sPylRrEmdlNGLFwtei_IuNXBgvnE-QtSNF0TKAkDk7E@z>
 
-Hello Greg,=0A=
-=0A=
-On 10/4/2019 4:07 PM, gregkh@linuxfoundation.org wrote:=0A=
-> On Wed, Oct 02, 2019 at 01:04:42PM +0000, Stefan-gabriel Mirea wrote:=0A=
->> --- a/include/uapi/linux/serial_core.h=0A=
->> +++ b/include/uapi/linux/serial_core.h=0A=
->> @@ -290,7 +290,7 @@=0A=
->>  /* Sunix UART */=0A=
->>  #define PORT_SUNIX   121=0A=
->>=0A=
->> -/* Freescale Linflex UART */=0A=
->> -#define PORT_LINFLEXUART     121=0A=
->> +/* Freescale LINFlexD UART */=0A=
->> +#define PORT_LINFLEXUART     122=0A=
-> =0A=
-> This is a different change, and one that should be split out and=0A=
-> submitted now, for 5.4.  Please do that as the id number is incorrect,=0A=
-> don't bury a valid change in the middle of a "marketing renamed the=0A=
-> device" patch :)=0A=
-=0A=
-I will do that, thanks!=0A=
-=0A=
-Regards,=0A=
-Stefan=0A=
+The port type macros should have different values for different devices.
+Currently, PORT_LINFLEXUART conflicts with PORT_SUNIX.
+
+Fixes: 09864c1cdf5c ("tty: serial: Add linflexuart driver for S32V234")
+Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+---
+ include/uapi/linux/serial_core.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_c=
+ore.h
+index 0f4f87a6fd54..e7fe550b6038 100644
+--- a/include/uapi/linux/serial_core.h
++++ b/include/uapi/linux/serial_core.h
+@@ -291,6 +291,6 @@
+ #define PORT_SUNIX	121
+=20
+ /* Freescale Linflex UART */
+-#define PORT_LINFLEXUART	121
++#define PORT_LINFLEXUART	122
+=20
+ #endif /* _UAPILINUX_SERIAL_CORE_H */
+--=20
+2.22.0
+
