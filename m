@@ -6,120 +6,92 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39650C47404
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 13:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB0A4C4360C
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 13:35:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1A026207FF
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 13:29:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 87C8E222C2
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 13:35:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388244AbfJDN3Z (ORCPT
+        id S2388272AbfJDNfr (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Oct 2019 09:29:25 -0400
-Received: from outpost1.zedat.fu-berlin.de ([130.133.4.66]:57117 "EHLO
-        outpost1.zedat.fu-berlin.de" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387917AbfJDN3Z (ORCPT
+        Fri, 4 Oct 2019 09:35:47 -0400
+Received: from 216-12-86-13.cv.mvl.ntelos.net ([216.12.86.13]:48500 "EHLO
+        brightrain.aerifal.cx" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388244AbfJDNfq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Oct 2019 09:29:25 -0400
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.85)
-          with esmtps (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id <1iGNe5-000i0S-Uh>; Fri, 04 Oct 2019 15:29:21 +0200
-Received: from x4e3645f0.dyn.telefonica.de ([78.54.69.240] helo=[192.168.1.8])
-          by inpost2.zedat.fu-berlin.de (Exim 4.85)
-          with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id <1iGNe5-0021S1-Kw>; Fri, 04 Oct 2019 15:29:21 +0200
-Subject: Re: [PATCH] Remove every trace of SERIAL_MAGIC
-To:     Pascal Terjan <pterjan@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>
-Cc:     linux-serial@vger.kernel.org, linux-m68k@lists.linux-m68k.org
-References: <20191004124505.GA556034@kroah.com>
- <20191004132001.99027-1-pterjan@google.com>
-From:   John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Autocrypt: addr=glaubitz@physik.fu-berlin.de; keydata=
- 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
- scOkTAZQGVpD/8AaLH4v1w==
-Message-ID: <e1b5cbbe-e44a-7119-286f-79c1fec08e1f@physik.fu-berlin.de>
-Date:   Fri, 4 Oct 2019 15:29:20 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.0
+        Fri, 4 Oct 2019 09:35:46 -0400
+X-Greylist: delayed 895 seconds by postgrey-1.27 at vger.kernel.org; Fri, 04 Oct 2019 09:35:46 EDT
+Received: from dalias by brightrain.aerifal.cx with local (Exim 3.15 #2)
+        id 1iGNVR-0002sV-00; Fri, 04 Oct 2019 13:20:25 +0000
+Date:   Fri, 4 Oct 2019 09:20:25 -0400
+From:   Rich Felker <dalias@libc.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jiri Slaby <jslaby@suse.com>, linux-sh@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: Re: [PATCH v4 0/2] drivers: make early_platform code SuperH-specific
+Message-ID: <20191004132025.GQ16318@brightrain.aerifal.cx>
+References: <20191003092913.10731-1-brgl@bgdev.pl>
+ <20191004130031.GA596158@kroah.com>
 MIME-Version: 1.0
-In-Reply-To: <20191004132001.99027-1-pterjan@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: 78.54.69.240
+Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: inline
+In-Reply-To: <20191004130031.GA596158@kroah.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
+Message-ID: <20191004132025.6vrgVsH8Y5a7UKPa4KyGL86SRq4lbTmdz1lvkeYmQwY@z>
 
-On 10/4/19 3:20 PM, Pascal Terjan wrote:
-> The only code mentioning it doesn't build (and hasn't at least since git)
-> and doesn't include the header defining it.
-What do you mean, amiserial doesn't build?
+On Fri, Oct 04, 2019 at 03:00:31PM +0200, Greg Kroah-Hartman wrote:
+> On Thu, Oct 03, 2019 at 11:29:11AM +0200, Bartosz Golaszewski wrote:
+> > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> > 
+> > Some time ago I started a discussion about the need for a proper early device
+> > probing mechanism[1]. One that would be based on real platform drivers and
+> > support both platform data and device tree.
+> > 
+> > While we're far from reaching any consensus on the implementation, Arnd
+> > suggested that I start off by moving the SuperH-specific early platform
+> > drivers implementation to arch/sh[2].
+> > 
+> > This series is the first attempt at making way for a new, less hacky
+> > implementation.
+> > 
+> > The first patch moves all the early_platform code to arch/sh.
+> > 
+> > The second patch prefixes all early_platform symbols with 'sh_'.
+> > 
+> > [1] https://lkml.org/lkml/2018/4/26/657
+> > [2] https://lkml.org/lkml/2018/4/27/239
+> > 
+> > v1 -> v2:
+> > - certain drivers are compiled for arm/mach-shmobile too - we need to
+> >   add ifdefs for CONFIG_SUPERH around early_platform calls
+> > 
+> > v2 -> v3:
+> > - added a stub for is_early_platform_device() which always returns false
+> >   on non-SuperH architectures
+> > 
+> > v3 -> v4:
+> > - rebased on top of v5.4-rc1
+> > - removed patches that are already upstream from the series
+> > 
+> > Bartosz Golaszewski (2):
+> >   drivers: move the early platform device support to arch/sh
+> >   sh: add the sh_ prefix to early platform symbols
+> 
+> I like this, any objection from anyone if I take this in my driver-core
+> tree for 5.5-rc1?
 
-root@elgar:~> grep AMIGA_BUILTIN_SERIAL /boot/config-$(uname -r)
-CONFIG_AMIGA_BUILTIN_SERIAL=y
-root@elgar:~>
+I don't think I have any objection. It will probably make gratuitous
+merge conflicts with Sato-san's old device tree sh4 work when we get
+back to finishing that, but that's not really a big deal.
 
-root@elgar:~> uname -a
-Linux elgar 5.2.0-2-m68k #1 Debian 5.2.9-2 (2019-08-21) m68k GNU/Linux
-root@elgar:~>
-
-We're using this driver, it works just fine.
-
-And I'm not sure what SERIAL_MAGIC does. Is that for CONFIG_MAGIC_SYSRQ_SERIAL?
-Because we still use that, too. Although I haven't tested it for a while but
-I'm using the serial console on my Amiga 4000 right now using amiserial.c.
-
-Adrian
-
--- 
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer - glaubitz@debian.org
-`. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+Rich
