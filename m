@@ -1,165 +1,147 @@
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH 3/3] dt-bindings: serial: Convert Samsung UART bindings to
- json-schema
-Date: Fri,  4 Oct 2019 17:14:14 +0200
-Message-ID: <20191004151414.8458-3-krzk@kernel.org>
-References: <20191004151414.8458-1-krzk@kernel.org>
+From: Adam Ford <aford173@gmail.com>
+Subject: Re: DM3730 Bluetooth Performance differences between SERIAL_8250_OMAP
+ vs SERIAL_OMAP
+Date: Fri, 4 Oct 2019 11:51:27 -0500
+Message-ID: <CAHCN7xKirqyj3un1k+QNeoKc0DvOt4g8ScFScG02pZF=OX+GZg@mail.gmail.com>
+References: <CAHCN7xLO5VgA6tW4p7QjwPv_QXv==zbC38TxXtsR5x9H0mUGJA@mail.gmail.com>
+ <CAHCN7xJPv7W381R7LS4bB8xWWpugz2NwbTUtj-hqHnDBZ9MFzA@mail.gmail.com>
+ <CAGm1_kv6RMUDppu6ZjY9Dq7QL=hS=D+e3KS37+V0ncbwoXE6mQ@mail.gmail.com> <CAHCN7xKsGz4UA4gfM5jpS9UE-V7_k265G_hB=wQ5Ueh3T5kaNQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20191004151414.8458-1-krzk@kernel.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Maciej Falkowski <m.falkowski@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAHCN7xKsGz4UA4gfM5jpS9UE-V7_k265G_hB=wQ5Ueh3T5kaNQ@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Yegor Yefremov <yegorslists@googlemail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux-OMAP <linux-omap@vger.kernel.org>, Vignesh R <vigneshr@ti.com>
 List-Id: linux-serial@vger.kernel.org
 
-Q29udmVydCBTYW1zdW5nIFMzQy9TNVAvRXh5bm9zIFNlcmlhbC9VQVJUIGJpbmRpbmdzIHRvIERU
-IHNjaGVtYSBmb3JtYXQKdXNpbmcganNvbi1zY2hlbWEuCgpTaWduZWQtb2ZmLWJ5OiBLcnp5c3p0
-b2YgS296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+Ci0tLQogLi4uL2JpbmRpbmdzL21mZC9zYW1z
-dW5nLGV4eW5vczU0MzMtbHBhc3MudHh0IHwgICAyICstCiAuLi4vYmluZGluZ3Mvc2VyaWFsL3Nh
-bXN1bmdfdWFydC50eHQgICAgICAgICAgfCAgNTggLS0tLS0tLQogLi4uL2JpbmRpbmdzL3Nlcmlh
-bC9zYW1zdW5nX3VhcnQueWFtbCAgICAgICAgIHwgMTQ4ICsrKysrKysrKysrKysrKysrKwogMyBm
-aWxlcyBjaGFuZ2VkLCAxNDkgaW5zZXJ0aW9ucygrKSwgNTkgZGVsZXRpb25zKC0pCiBkZWxldGUg
-bW9kZSAxMDA2NDQgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3NlcmlhbC9zYW1z
-dW5nX3VhcnQudHh0CiBjcmVhdGUgbW9kZSAxMDA2NDQgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVl
-L2JpbmRpbmdzL3NlcmlhbC9zYW1zdW5nX3VhcnQueWFtbAoKZGlmZiAtLWdpdCBhL0RvY3VtZW50
-YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9tZmQvc2Ftc3VuZyxleHlub3M1NDMzLWxwYXNzLnR4
-dCBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9tZmQvc2Ftc3VuZyxleHlub3M1
-NDMzLWxwYXNzLnR4dAppbmRleCBkNzU5ZGE2MDZmNzUuLjMwZWEyN2MzOTM2ZCAxMDA2NDQKLS0t
-IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL21mZC9zYW1zdW5nLGV4eW5vczU0
-MzMtbHBhc3MudHh0CisrKyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9tZmQv
-c2Ftc3VuZyxleHlub3M1NDMzLWxwYXNzLnR4dApAQCAtMTgsNyArMTgsNyBAQCBhbiBvcHRpb25h
-bCBzdWItbm9kZS4gRm9yICJzYW1zdW5nLGV4eW5vczU0MzMtbHBhc3MiIGNvbXBhdGlibGUgdGhp
-cyBpbmNsdWRlczoKIFVBUlQsIFNMSU1CVVMsIFBDTSwgSTJTLCBETUFDLCBUaW1lcnMgMC4uLjQs
-IFZJQywgV0RUIDAuLi4xIGRldmljZXMuCiAKIEJpbmRpbmdzIG9mIHRoZSBzdWItbm9kZXMgYXJl
-IGRlc2NyaWJlZCBpbjoKLSAgLi4vc2VyaWFsL3NhbXN1bmdfdWFydC50eHQKKyAgLi4vc2VyaWFs
-L3NhbXN1bmdfdWFydC55YW1sCiAgIC4uL3NvdW5kL3NhbXN1bmctaTJzLnR4dAogICAuLi9kbWEv
-YXJtLXBsMzMwLnR4dAogCmRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmlu
-ZGluZ3Mvc2VyaWFsL3NhbXN1bmdfdWFydC50eHQgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUv
-YmluZGluZ3Mvc2VyaWFsL3NhbXN1bmdfdWFydC50eHQKZGVsZXRlZCBmaWxlIG1vZGUgMTAwNjQ0
-CmluZGV4IGU4NWYzN2VjMzNmMC4uMDAwMDAwMDAwMDAwCi0tLSBhL0RvY3VtZW50YXRpb24vZGV2
-aWNldHJlZS9iaW5kaW5ncy9zZXJpYWwvc2Ftc3VuZ191YXJ0LnR4dAorKysgL2Rldi9udWxsCkBA
-IC0xLDU4ICswLDAgQEAKLSogU2Ftc3VuZydzIFVBUlQgQ29udHJvbGxlcgotCi1UaGUgU2Ftc3Vu
-ZydzIFVBUlQgY29udHJvbGxlciBpcyB1c2VkIGZvciBpbnRlcmZhY2luZyBTb0Mgd2l0aCBzZXJp
-YWwKLWNvbW11bmljYWlvbiBkZXZpY2VzLgotCi1SZXF1aXJlZCBwcm9wZXJ0aWVzOgotLSBjb21w
-YXRpYmxlOiBzaG91bGQgYmUgb25lIG9mIGZvbGxvd2luZzoKLSAgLSAic2Ftc3VuZyxleHlub3M0
-MjEwLXVhcnQiIC0gIEV4eW5vczQyMTAgU29DLAotICAtICJzYW1zdW5nLHMzYzI0MTAtdWFydCIg
-LSBjb21wYXRpYmxlIHdpdGggcG9ydHMgcHJlc2VudCBvbiBTM0MyNDEwIFNvQywKLSAgLSAic2Ft
-c3VuZyxzM2MyNDEyLXVhcnQiIC0gY29tcGF0aWJsZSB3aXRoIHBvcnRzIHByZXNlbnQgb24gUzND
-MjQxMiBTb0MsCi0gIC0gInNhbXN1bmcsczNjMjQ0MC11YXJ0IiAtIGNvbXBhdGlibGUgd2l0aCBw
-b3J0cyBwcmVzZW50IG9uIFMzQzI0NDAgU29DLAotICAtICJzYW1zdW5nLHMzYzY0MDAtdWFydCIg
-LSBjb21wYXRpYmxlIHdpdGggcG9ydHMgcHJlc2VudCBvbiBTM0M2NDAwIFNvQywKLSAgLSAic2Ft
-c3VuZyxzNXB2MjEwLXVhcnQiIC0gY29tcGF0aWJsZSB3aXRoIHBvcnRzIHByZXNlbnQgb24gUzVQ
-VjIxMCBTb0MuCi0KLS0gcmVnOiBiYXNlIHBoeXNpY2FsIGFkZHJlc3Mgb2YgdGhlIGNvbnRyb2xs
-ZXIgYW5kIGxlbmd0aCBvZiBtZW1vcnkgbWFwcGVkCi0gIHJlZ2lvbi4KLQotLSBpbnRlcnJ1cHRz
-OiBhIHNpbmdsZSBpbnRlcnJ1cHQgc2lnbmFsIHRvIFNvQyBpbnRlcnJ1cHQgY29udHJvbGxlciwK
-LSAgYWNjb3JkaW5nIHRvIGludGVycnVwdCBiaW5kaW5ncyBkb2N1bWVudGF0aW9uIFsxXS4KLQot
-LSBjbG9jay1uYW1lczogaW5wdXQgbmFtZXMgb2YgY2xvY2tzIHVzZWQgYnkgdGhlIGNvbnRyb2xs
-ZXI6Ci0gIC0gInVhcnQiIC0gY29udHJvbGxlciBidXMgY2xvY2ssCi0gIC0gImNsa191YXJ0X2Jh
-dWROIiAtIE50aCBiYXVkIGJhc2UgY2xvY2sgaW5wdXQgKE4gPSAwLCAxLCAuLi4pLAotICAgIGFj
-Y29yZGluZyB0byBTb0MgVXNlcidzIE1hbnVhbCAob25seSBOID0gMCBpcyBhbGxvd2VkZm9yIFNv
-Q3Mgd2l0aG91dAotICAgIGludGVybmFsIGJhdWQgY2xvY2sgbXV4KS4KLS0gY2xvY2tzOiBwaGFu
-ZGxlcyBhbmQgc3BlY2lmaWVycyBmb3IgYWxsIGNsb2NrcyBzcGVjaWZpZWQgaW4gImNsb2NrLW5h
-bWVzIgotICBwcm9wZXJ0eSwgaW4gdGhlIHNhbWUgb3JkZXIsIGFjY29yZGluZyB0byBjbG9jayBi
-aW5kaW5ncyBkb2N1bWVudGF0aW9uIFsyXS4KLQotWzFdIERvY3VtZW50YXRpb24vZGV2aWNldHJl
-ZS9iaW5kaW5ncy9pbnRlcnJ1cHQtY29udHJvbGxlci9pbnRlcnJ1cHRzLnR4dAotWzJdIERvY3Vt
-ZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9jbG9jay9jbG9jay1iaW5kaW5ncy50eHQKLQot
-T3B0aW9uYWwgcHJvcGVydGllczoKLS0gc2Ftc3VuZyx1YXJ0LWZpZm9zaXplOiBUaGUgZmlmbyBz
-aXplIHN1cHBvcnRlZCBieSB0aGUgVUFSVCBjaGFubmVsCi0KLU5vdGU6IEVhY2ggU2Ftc3VuZyBV
-QVJUIHNob3VsZCBoYXZlIGFuIGFsaWFzIGNvcnJlY3RseSBudW1iZXJlZCBpbiB0aGUKLSJhbGlh
-c2VzIiBub2RlLCBhY2NvcmRpbmcgdG8gc2VyaWFsTiBmb3JtYXQsIHdoZXJlIE4gaXMgdGhlIHBv
-cnQgbnVtYmVyCi0obm9uLW5lZ2F0aXZlIGRlY2ltYWwgaW50ZWdlcikgYXMgc3BlY2lmaWVkIGJ5
-IFVzZXIncyBNYW51YWwgb2YgcmVzcGVjdGl2ZQotU29DLgotCi1FeGFtcGxlOgotCWFsaWFzZXMg
-ewotCQlzZXJpYWwwID0gJnVhcnQwOwotCQlzZXJpYWwxID0gJnVhcnQxOwotCQlzZXJpYWwyID0g
-JnVhcnQyOwotCX07Ci0KLUV4YW1wbGU6Ci0JdWFydDE6IHNlcmlhbEA3ZjAwNTQwMCB7Ci0JCWNv
-bXBhdGlibGUgPSAic2Ftc3VuZyxzM2M2NDAwLXVhcnQiOwotCQlyZWcgPSA8MHg3ZjAwNTQwMCAw
-eDEwMD47Ci0JCWludGVycnVwdC1wYXJlbnQgPSA8JnZpYzE+OwotCQlpbnRlcnJ1cHRzID0gPDY+
-OwotCQljbG9jay1uYW1lcyA9ICJ1YXJ0IiwgImNsa191YXJ0X2JhdWQyIiwKLQkJCQkiY2xrX3Vh
-cnRfYmF1ZDMiOwotCQljbG9ja3MgPSA8JmNsb2NrcyBQQ0xLX1VBUlQxPiwgPCZjbG9ja3MgUENM
-S19VQVJUMT4sCi0JCQkJPCZjbG9ja3MgU0NMS19VQVJUPjsKLQkJc2Ftc3VuZyx1YXJ0LWZpZm9z
-aXplID0gPDE2PjsKLQl9OwpkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2Jp
-bmRpbmdzL3NlcmlhbC9zYW1zdW5nX3VhcnQueWFtbCBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJl
-ZS9iaW5kaW5ncy9zZXJpYWwvc2Ftc3VuZ191YXJ0LnlhbWwKbmV3IGZpbGUgbW9kZSAxMDA2NDQK
-aW5kZXggMDAwMDAwMDAwMDAwLi4yNzZiZWExYzIzMWEKLS0tIC9kZXYvbnVsbAorKysgYi9Eb2N1
-bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mvc2VyaWFsL3NhbXN1bmdfdWFydC55YW1sCkBA
-IC0wLDAgKzEsMTQ4IEBACisjIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wCislWUFN
-TCAxLjIKKy0tLQorJGlkOiBodHRwOi8vZGV2aWNldHJlZS5vcmcvc2NoZW1hcy9zZXJpYWwvc2Ft
-c3VuZ191YXJ0LnlhbWwjCiskc2NoZW1hOiBodHRwOi8vZGV2aWNldHJlZS5vcmcvbWV0YS1zY2hl
-bWFzL2NvcmUueWFtbCMKKwordGl0bGU6IFNhbXN1bmcgUzNDLCBTNVAgYW5kIEV4eW5vcyBTb0Mg
-VUFSVCBDb250cm9sbGVyCisKK21haW50YWluZXJzOgorICAtIEtyenlzenRvZiBLb3psb3dza2kg
-PGtyemtAa2VybmVsLm9yZz4KKyAgLSBHcmVnIEtyb2FoLUhhcnRtYW4gPGdyZWdraEBsaW51eGZv
-dW5kYXRpb24ub3JnPgorCitkZXNjcmlwdGlvbjogfCsKKyAgRWFjaCBTYW1zdW5nIFVBUlQgc2hv
-dWxkIGhhdmUgYW4gYWxpYXMgY29ycmVjdGx5IG51bWJlcmVkIGluIHRoZSAiYWxpYXNlcyIKKyAg
-bm9kZSwgYWNjb3JkaW5nIHRvIHNlcmlhbE4gZm9ybWF0LCB3aGVyZSBOIGlzIHRoZSBwb3J0IG51
-bWJlciAobm9uLW5lZ2F0aXZlCisgIGRlY2ltYWwgaW50ZWdlcikgYXMgc3BlY2lmaWVkIGJ5IFVz
-ZXIncyBNYW51YWwgb2YgcmVzcGVjdGl2ZSBTb0MuCisKK3Byb3BlcnRpZXM6CisgIGNvbXBhdGli
-bGU6CisgICAgaXRlbXM6CisgICAgICAtIGVudW06CisgICAgICAgICAgLSBzYW1zdW5nLHMzYzI0
-MTAtdWFydAorICAgICAgICAgIC0gc2Ftc3VuZyxzM2MyNDEyLXVhcnQKKyAgICAgICAgICAtIHNh
-bXN1bmcsczNjMjQ0MC11YXJ0CisgICAgICAgICAgLSBzYW1zdW5nLHMzYzY0MDAtdWFydAorICAg
-ICAgICAgIC0gc2Ftc3VuZyxzNXB2MjEwLXVhcnQKKyAgICAgICAgICAtIHNhbXN1bmcsZXh5bm9z
-NDIxMC11YXJ0CisKKyAgcmVnOgorICAgIG1heEl0ZW1zOiAxCisKKyAgY2xvY2tzOgorICAgIG1p
-bkl0ZW1zOiAyCisgICAgbWF4SXRlbXM6IDUKKworICBjbG9jay1uYW1lczoKKyAgICBkZXNjcmlw
-dGlvbjogfAorICAgICAgTGlzdCBvZiBjbG9jayBuYW1lczoKKyAgICAgICAgLSAidWFydCIgLSBj
-b250cm9sbGVyIGJ1cyBjbG9jaywKKyAgICAgICAgLSAiY2xrX3VhcnRfYmF1ZE4iIC0gTnRoIGJh
-dWQgYmFzZSBjbG9jayBpbnB1dCAoTiA9IDAsIDEsIC4uLikuCisgICAgICBOID0gMCBpcyBhbGxv
-d2VkIGZvciBTb0NzIHdpdGhvdXQgaW50ZXJuYWwgYmF1ZCBjbG9jayBtdXguCisgICAgbWluSXRl
-bXM6IDIKKyAgICBtYXhJdGVtczogNQorICAgIGFsbE9mOgorICAgICAgLSB1bmlxdWVJdGVtczog
-dHJ1ZQorICAgICAgLSBvbmVPZjoKKyAgICAgICAgICAtIGl0ZW1zOgorICAgICAgICAgICAgICAt
-IGNvbnN0OiB1YXJ0CisgICAgICAgICAgICAgIC0gcGF0dGVybjogJ15jbGtfdWFydF9iYXVkWzAt
-M10kJworICAgICAgICAgIC0gaXRlbXM6CisgICAgICAgICAgICAgIC0gY29uc3Q6IHVhcnQKKyAg
-ICAgICAgICAgICAgLSBwYXR0ZXJuOiAnXmNsa191YXJ0X2JhdWRbMC0zXSQnCisgICAgICAgICAg
-ICAgIC0gcGF0dGVybjogJ15jbGtfdWFydF9iYXVkWzAtM10kJworICAgICAgICAgIC0gaXRlbXM6
-CisgICAgICAgICAgICAgIC0gY29uc3Q6IHVhcnQKKyAgICAgICAgICAgICAgLSBwYXR0ZXJuOiAn
-XmNsa191YXJ0X2JhdWRbMC0zXSQnCisgICAgICAgICAgICAgIC0gcGF0dGVybjogJ15jbGtfdWFy
-dF9iYXVkWzAtM10kJworICAgICAgICAgICAgICAtIHBhdHRlcm46ICdeY2xrX3VhcnRfYmF1ZFsw
-LTNdJCcKKyAgICAgICAgICAtIGl0ZW1zOgorICAgICAgICAgICAgICAtIGNvbnN0OiB1YXJ0Cisg
-ICAgICAgICAgICAgIC0gcGF0dGVybjogJ15jbGtfdWFydF9iYXVkWzAtM10kJworICAgICAgICAg
-ICAgICAtIHBhdHRlcm46ICdeY2xrX3VhcnRfYmF1ZFswLTNdJCcKKyAgICAgICAgICAgICAgLSBw
-YXR0ZXJuOiAnXmNsa191YXJ0X2JhdWRbMC0zXSQnCisgICAgICAgICAgICAgIC0gcGF0dGVybjog
-J15jbGtfdWFydF9iYXVkWzAtM10kJworCisgIGludGVycnVwdHM6CisgICAgbWluSXRlbXM6IDEK
-KyAgICBtYXhJdGVtczogMgorCisgIHNhbXN1bmcsdWFydC1maWZvc2l6ZToKKyAgICBkZXNjcmlw
-dGlvbjogVGhlIGZpZm8gc2l6ZSBzdXBwb3J0ZWQgYnkgdGhlIFVBUlQgY2hhbm5lbAorICAgIGFs
-bE9mOgorICAgICAgLSAkcmVmOiAvc2NoZW1hcy90eXBlcy55YW1sIy9kZWZpbml0aW9ucy91aW50
-MzIKKyAgICAgIC0gZW51bTogWzE2LCA2NCwgMjU2XQorCityZXF1aXJlZDoKKyAgLSBjb21wYXRp
-YmxlCisgIC0gY2xvY2tzCisgIC0gY2xvY2stbmFtZXMKKyAgLSBpbnRlcnJ1cHRzCisgIC0gcmVn
-CisKK2FsbE9mOgorICAtIGlmOgorICAgICAgcHJvcGVydGllczoKKyAgICAgICAgY29tcGF0aWJs
-ZToKKyAgICAgICAgICBjb250YWluczoKKyAgICAgICAgICAgIGVudW06CisgICAgICAgICAgICAg
-IC0gc2Ftc3VuZyxzM2MyNDEwLXVhcnQKKyAgICAgICAgICAgICAgLSBzYW1zdW5nLHM1cHYyMTAt
-dWFydAorICAgIHRoZW46CisgICAgICBwcm9wZXJ0aWVzOgorICAgICAgICBjbG9ja3M6CisgICAg
-ICAgICAgbWluSXRlbXM6IDIKKyAgICAgICAgICBtYXhJdGVtczogMworICAgICAgICBjbG9jay1u
-YW1lczoKKyAgICAgICAgICBtaW5JdGVtczogMgorICAgICAgICAgIG1heEl0ZW1zOiAzCisgICAg
-ICAgICAgYWxsT2Y6CisgICAgICAgICAgICAtIHVuaXF1ZUl0ZW1zOiB0cnVlCisgICAgICAgICAg
-ICAtIG9uZU9mOgorICAgICAgICAgICAgICAgIC0gaXRlbXM6CisgICAgICAgICAgICAgICAgICAg
-IC0gY29uc3Q6IHVhcnQKKyAgICAgICAgICAgICAgICAgICAgLSBwYXR0ZXJuOiAnXmNsa191YXJ0
-X2JhdWRbMC0xXSQnCisgICAgICAgICAgICAgICAgLSBpdGVtczoKKyAgICAgICAgICAgICAgICAg
-ICAgLSBjb25zdDogdWFydAorICAgICAgICAgICAgICAgICAgICAtIHBhdHRlcm46ICdeY2xrX3Vh
-cnRfYmF1ZFswLTFdJCcKKyAgICAgICAgICAgICAgICAgICAgLSBwYXR0ZXJuOiAnXmNsa191YXJ0
-X2JhdWRbMC0xXSQnCisKKyAgLSBpZjoKKyAgICAgIHByb3BlcnRpZXM6CisgICAgICAgIGNvbXBh
-dGlibGU6CisgICAgICAgICAgY29udGFpbnM6CisgICAgICAgICAgICBlbnVtOgorICAgICAgICAg
-ICAgICAtIHNhbXN1bmcsZXh5bm9zNDIxMC11YXJ0CisgICAgdGhlbjoKKyAgICAgIHByb3BlcnRp
-ZXM6CisgICAgICAgIGNsb2NrczoKKyAgICAgICAgICBtaW5JdGVtczogMgorICAgICAgICAgIG1h
-eEl0ZW1zOiAyCisgICAgICAgIGNsb2NrLW5hbWVzOgorICAgICAgICAgIG1pbkl0ZW1zOiAyCisg
-ICAgICAgICAgbWF4SXRlbXM6IDIKKyAgICAgICAgICBhbGxPZjoKKyAgICAgICAgICAgIC0gdW5p
-cXVlSXRlbXM6IHRydWUKKyAgICAgICAgICAgIC0gaXRlbXM6CisgICAgICAgICAgICAgICAgLSBj
-b25zdDogdWFydAorICAgICAgICAgICAgICAgIC0gY29uc3Q6IGNsa191YXJ0X2JhdWQwCisKK2V4
-YW1wbGVzOgorICAtIHwKKyAgICAjaW5jbHVkZSA8ZHQtYmluZGluZ3MvY2xvY2svc2Ftc3VuZyxz
-M2M2NHh4LWNsb2NrLmg+CisKKyAgICBhbGlhc2VzIHsKKyAgICAgICAgc2VyaWFsMCA9ICZ1YXJ0
-MDsKKyAgICB9OworCisgICAgdWFydDA6IHNlcmlhbEA3ZjAwNTAwMCB7CisgICAgICAgIGNvbXBh
-dGlibGUgPSAic2Ftc3VuZyxzM2M2NDAwLXVhcnQiOworICAgICAgICByZWcgPSA8MHg3ZjAwNTAw
-MCAweDEwMD47CisgICAgICAgIGludGVycnVwdC1wYXJlbnQgPSA8JnZpYzE+OworICAgICAgICBp
-bnRlcnJ1cHRzID0gPDU+OworICAgICAgICBjbG9jay1uYW1lcyA9ICJ1YXJ0IiwgImNsa191YXJ0
-X2JhdWQyIiwKKyAgICAgICAgICAgICAgICAgICAgICAiY2xrX3VhcnRfYmF1ZDMiOworICAgICAg
-ICBjbG9ja3MgPSA8JmNsb2NrcyBQQ0xLX1VBUlQwPiwgPCZjbG9ja3MgUENMS19VQVJUMD4sCisg
-ICAgICAgICAgICAgICAgIDwmY2xvY2tzIFNDTEtfVUFSVD47CisgICAgICAgIHNhbXN1bmcsdWFy
-dC1maWZvc2l6ZSA9IDwxNj47CisgICAgfTsKLS0gCjIuMTcuMQoKX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmkt
-ZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3Jn
-L21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVs
+On Fri, Oct 4, 2019 at 9:08 AM Adam Ford <aford173@gmail.com> wrote:
+>
+> On Fri, Oct 4, 2019 at 7:27 AM Yegor Yefremov
+> <yegorslists@googlemail.com> wrote:
+> >
+> > Hi Adam,
+> >
+> > On Fri, Oct 4, 2019 at 12:39 PM Adam Ford <aford173@gmail.com> wrote:
+> > >
+> > > On Fri, Oct 4, 2019 at 5:02 AM Adam Ford <aford173@gmail.com> wrote:
+> > > >
+> > > > I am running Kernel 5.3.2 trying to troubleshoot some intermittent
+> > > > Bluetooth issues, and I think I have narrowed it down to the serial
+> > > > driver in use.
+> > >
+> > > I should have also noted that it's using UART2 with CTS and RTS on the
+> > > DM3730 (omap3630) and its configured with a baud rate of 3M.
+> > > I tried slowing it to 115200, but that didn't help.  I tried disabling
+> > > the DMA hooks from the device tree, and that didn't help.
+> > >
+> > > > By default, omap2plus_defconfig enables both SERIAL_8250_OMAP and
+> > > > SERIAL_OMAP.  I have my console device configured as  ttyS0, and all
+> > > > appears fine.  When I enable Bluetooth, however, I get intermittent
+> > > > errors on an DM3730 / OMAP3630.
+> > > >
+> > > > Using the 8250 driver for Blueotooth I get intermittent frame errors
+> > > > and data loss.
+> > > >
+> > > > Scanning ...
+> > > > [   28.482452] Bluetooth: hci0: Frame reassembly failed (-84)
+> > > > [   36.162170] Bluetooth: hci0: Frame reassembly failed (-84)
+> > > >         F4:4E:FC:C9:2F:57       BluJax
+> > > > # l2ping F4:4E:FC:C9:2F:57
+> > > > Ping: F4:4E:FC:C9:2F:57 from 00:18:30:49:7D:63 (data size 44) ...
+> > > > 44 bytes from F4:4E:FC:C9:2F:57 id 0 time 8.27ms
+> > > > no response from F4:4E:FC:C9:2F:57: id 1
+> > > > ^C2 sent, 1 received, 50% loss
+> > > >
+> > > > (after a fairly long hang, I hit control-c)
+> > > >
+> > > > However, disabling the 8250 driver and using the only SERIAL_OMAP and
+> > > > the console routed to ttyO0, the Bluetooth works well, so I believe it
+> > > > to be a serial driver issue and not a Bluetooth error.
+> > > >
+> > > > # hcitool scan
+> > > > Scanning ...
+> > > >         F4:4E:FC:C9:2F:57       BluJax
+> > > > ^C
+> > > > # l2ping F4:4E:FC:C9:2F:57
+> > > > Ping: F4:4E:FC:C9:2F:57 from 00:18:30:49:7D:63 (data size 44) ...
+> > > > 44 bytes from F4:4E:FC:C9:2F:57 id 0 time 6.90ms
+> > > > ...
+> > > > 44 bytes from F4:4E:FC:C9:2F:57 id 14 time 28.29ms
+> > > > ^C15 sent, 15 received, 0% loss
+> > > > #
+> > > >
+> > > > 0% loss and regular, repeatable communication without any Frame
+> > > > reassembly errors.
+> > > >
+> > >
+> > > I tried disabling SERIAL_OMAP and using only SERIAL_8250_OMAP, but
+> > > that didn't help.  Because the issue goes away when I disable
+> > > SERIAL_8250_OMAP, I am wondering if something is either being
+> > > misconfigured or some IRQ or DMA integration is missing that may be
+> > > present with the older SERIAL_OMAP driver.
+> > >
+> > > > Any suggestions on how to troubleshoot or what might cause the
+> > > > difference between the two drivers?
+> >
+> > Can it be related to this issue [1]? Can you confirm that 5.2 is
+> > working as expected with the 8250 driver?
+> >
+> > [1] https://marc.info/?l=linux-serial&m=156965039008649&w=2
+>
+> I reverted the whole 8250 directory to d99482673f95 ("serial:
+> mctrl_gpio: Check if GPIO property exisits before requesting it") and
+> it is somewhat better, but it's not as good as the stock OMAP serial
+> driver.  I get some frame errors and eventually, I get some timeouts,
+> but it's not as bad.  I'll try to implement the RTS and CTS as gpio
+> pins and change the device tree accordingly.  It might shed some light
+> on the situation.
+
+I tried to manually setup RTS and CTS pins as GPIO, but that didn't
+work, so I changed it back.
+
+It looks like the clocking is correct.  I don't know enough about the
+DMA or the IRQ to know if it's working correctly.
+
+I was wondering if the problem is in the handshaking or not.
+I added " uart-has-rtscts;" to by uart node thinking it might help,
+but it did not.
+
+>
+8250_omap.c has some checks to see if we can enable autoRTS:
+
+if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW &&
+    !up->gpios) {
+     /* Enable AUTOCTS (autoRTS is enabled when RTS is raised) */
+     ...
+}
+
+Based on this, I would expect up->gpios to always be zero if we want
+auto RTS CTS.
+
+I threw some debug code into the serial driver to look at the status
+of the various flags that go into setting up auto RTS/CTS.
+
+[   13.837005] termios->c_cflag & CRTSCTS = 80000000
+[   13.841888] up->port.flags & UPF_HARD_FLOW = 300000
+[   13.846801] up->gpios = ce3f3cc0
+[   17.166595] termios->c_cflag & CRTSCTS = 0
+[   17.170745] up->port.flags & UPF_HARD_FLOW = 300000
+[   17.175781] up->gpios = ce3f3d40
+
+I don't know which port is which, but I only have two active uarts
+(console and Bluetooth)
+The Bluetooth port should use handshaking and the console should not.
+
+>From the look of the dump, up->gpios is never 0, so the last
+evaluation would always be false unless I am misinterpreting
+something.
+
+I tried to modify the check to remove !up->gpios check, but that
+didn't help either, but it made it a little better.
+
+
+> adam
+> >
+> > Cheers,
+> > Yegor
