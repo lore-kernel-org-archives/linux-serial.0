@@ -2,87 +2,133 @@ Return-Path: <SRS0=XuIp=X5=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B79EFC4360C
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 17:25:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B4CC4360C
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 19:29:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 928B4222C4
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 17:25:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3AD91215EA
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 19:29:53 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mHbN9Zq3"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388197AbfJDRZP convert rfc822-to-8bit (ORCPT
+        id S1728954AbfJDT3t (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Oct 2019 13:25:15 -0400
-Received: from mx2.suse.de ([195.135.220.15]:37452 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388081AbfJDRZP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Oct 2019 13:25:15 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 73E47AB7D;
-        Fri,  4 Oct 2019 17:25:12 +0000 (UTC)
-Date:   Fri, 4 Oct 2019 19:25:09 +0200
-From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Fri, 4 Oct 2019 15:29:49 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:45202 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725932AbfJDT3t (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 4 Oct 2019 15:29:49 -0400
+Received: by mail-io1-f68.google.com with SMTP id c25so15905328iot.12;
+        Fri, 04 Oct 2019 12:29:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=y0OJ7/SgReOk2grQFvLnWH91Op9wRRMdd5tOpx1hbC4=;
+        b=mHbN9Zq37CUj7dDvd5GrFR4IpOo9GIoKPErGNZnhpHnU56KhvOuWcFlRocijnLctvK
+         VLqMyrAwP66rgebj4xeayopAFe9kezh8O0LUhQNIP/3WCjkmfCts8nUSNKv0IA4O3kXS
+         9uZmUiVfs/da+hSDrhijeCxDwnUvpbeNy+nUUGPoi7HzCK3irA33zewV4A7tcGGX374y
+         Qpk+rsA3D1yrJATG9JfbEflWw/+SyUnbWD0Z71jrVxzDaVdR5IpKN18eJGXFbGdxpYwn
+         s8dSDWR37eSDNVweXavLH0TGAt6R0ircrGNjs7pylUYmHUHuMAfTY4H5zmExHRBrdQR+
+         MdTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=y0OJ7/SgReOk2grQFvLnWH91Op9wRRMdd5tOpx1hbC4=;
+        b=mfI9rzDhvBYzE3bFn5jWbdGoEB0oJL7lm01Q7+lkBvNkLM9Qz/O6GaW78sA3LdOlNP
+         8BkgQ+LBZTlo+dzeBfLUE9Nw46JEKFO/Ov7476iutneCNcEnjDB+HHngM/CgrafnMJv2
+         wEManqk8LDZxo0XfduKl9b6NQErC6N9chQ/MIGfpnqws33UsFicKq+JZgXprPr2vZgl2
+         wnPtaDTqo0UveO1hZZ/T2pfabnAX0daxd1OR67Zg5ve+ohB4xMB8MpdiVAIAWyKltQ+D
+         Q2IBVQzYKqFUxVlJt6J79WS1iE9SG2T6r73CUIU6h2GR/4CVjgKuMLAhrWZBBiuRYHdu
+         BYFg==
+X-Gm-Message-State: APjAAAWAFWa40gFDQXhvy5leYrFovHO4ETd3lkQ88/XVIB1y4AEF9kmT
+        TZE4zY+ebpGq50wLSSTAUqjxwFCbC//iFmW5LGU=
+X-Google-Smtp-Source: APXvYqzaMGngribRRvqu3VAuNb5LGILxFgGbQKy7BcwnBkr8wOogbBTVo+amQa6LHmrdHfubVeo8mjbYvh53Yxf3djg=
+X-Received: by 2002:a92:3314:: with SMTP id a20mr16796103ilf.276.1570217386586;
+ Fri, 04 Oct 2019 12:29:46 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190723115400.46432-1-tony@atomide.com>
+In-Reply-To: <20190723115400.46432-1-tony@atomide.com>
+From:   Adam Ford <aford173@gmail.com>
+Date:   Fri, 4 Oct 2019 14:29:35 -0500
+Message-ID:
+ <CAHCN7x+6KYjnm5daRe_Y5XEWnDBWQnz8rOKYH2wTgx9avvokmQ@mail.gmail.com>
+Subject: Re: [PATCH] serial: 8250_omap: Fix idling for unloaded serdev drivers
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Peter Hurley <peter@hurleysoftware.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v7 3/5] mfd: ioc3: Add driver for SGI IOC3 chip
-Message-Id: <20191004192509.98d4bbda4468c6b9407bc370@suse.de>
-In-Reply-To: <20191004144453.GQ18429@dell>
-References: <20191003095235.5158-1-tbogendoerfer@suse.de>
-        <20191003095235.5158-4-tbogendoerfer@suse.de>
-        <20191004144453.GQ18429@dell>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
-Mime-Version: 1.0
+        Peter Ujfalusi <peter.ujfalusi@ti.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh R <vigneshr@ti.com>, linux-serial@vger.kernel.org,
+        Linux-OMAP <linux-omap@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Johan Hovold <johan@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191004172509.1EOUPoWsJqn2Qqfsk2y9QI5tYhPtMloZyu5tWU24y5Q@z>
+Message-ID: <20191004192935.pKWmXSlwzPmiOlgCQsrZoDiWkm6hoH_zFmUNObSx8Lo@z>
 
-On Fri, 4 Oct 2019 15:44:53 +0100
-Lee Jones <lee.jones@linaro.org> wrote:
+On Tue, Jul 23, 2019 at 5:21 PM Tony Lindgren <tony@atomide.com> wrote:
+>
+> For many years omap variants have been setting the runtime PM
+> autosuspend delay to -1 to prevent unsafe policy with lossy first
+> character on wake-up. The user must specifically enable the timeout
+> for UARTs if desired.
+>
+> We must not enable the workaround for serdev devices though. It leads
+> into UARTs not idling if no serdev devices are loaded and there is no
+> sysfs entry to configure the UART in that case. And this means that
+> my PM may not work unless the serdev modules are loaded.
+>
+> We can detect a serdev device being configured based on a dts child
+> node, and we can simply skip the workround in that case. And the
+> serdev driver can idle the port during runtime when suitable if an
+> out-of-band wake-up GPIO line exists for example.
+>
+> Let's also add some comments to the workaround while at it.
 
-> On Thu, 03 Oct 2019, Thomas Bogendoerfer wrote:
-> > +	if (mask & BIT(IOC3_IRQ_ETH_DOMAIN))
-> > +		/* if eth irq is enabled we need to check in eth irq regs */
-> 
-> Nit: Comments should be expressive.  Please expand all of the
-> short-hand in this sentence.  It would also be nicer if you started
-> with an uppercase character.
-> 
-> Same with all of the other comments in this file.
+This seems to help some of the stability issues I am seeing on the
+DM3730 UART2 running Bluetooth at 3000000 baud.
+Does it make sense to backport this to the stable kernels?
 
-ok.
+adam
 
-> Other than that, it looks like it's really coming together.  Once the
-> above is fixed, please re-sumbit with my:
-
-Thanks.
-
-David, 
-
-before re-posting with the english grammer pimp up, is there anything
-I should improve for the network part ? If not, could I get a acked-by
-from your side ?
-
-Thomas.
-
--- 
-SUSE Software Solutions Germany GmbH
-HRB 247165 (AG München)
-Geschäftsführer: Felix Imendörffer
+>
+> Cc: Johan Hovold <johan@kernel.org>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> ---
+>  drivers/tty/serial/8250/8250_omap.c | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -1234,7 +1234,16 @@ static int omap8250_probe(struct platform_device *pdev)
+>
+>         device_init_wakeup(&pdev->dev, true);
+>         pm_runtime_use_autosuspend(&pdev->dev);
+> -       pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
+> +
+> +       /*
+> +        * Disable runtime PM until autosuspend delay unless specifically
+> +        * enabled by the user via sysfs. This is the historic way to
+> +        * prevent an unsafe default policy with lossy characters on wake-up.
+> +        * For serdev devices this is not needed, the policy can be managed by
+> +        * the serdev driver.
+> +        */
+> +       if (!of_get_available_child_count(pdev->dev.of_node))
+> +               pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
+>
+>         pm_runtime_irq_safe(&pdev->dev);
+>         pm_runtime_enable(&pdev->dev);
+> --
+> 2.21.0
