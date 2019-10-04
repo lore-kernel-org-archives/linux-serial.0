@@ -2,95 +2,74 @@ Return-Path: <SRS0=XuIp=X5=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9D4FC47404
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 21:43:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5201EC4360C
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 21:43:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AE38F222C5
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 21:43:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 13105222C7
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 21:43:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="MJ9Cw0wp"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="SzIHv3+0"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730508AbfJDVni (ORCPT
+        id S1731193AbfJDVnn (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Oct 2019 17:43:38 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:43284 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730325AbfJDVnh (ORCPT
+        Fri, 4 Oct 2019 17:43:43 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:33871 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731008AbfJDVnm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Oct 2019 17:43:37 -0400
-Received: by mail-pf1-f194.google.com with SMTP id a2so4665514pfo.10
-        for <linux-serial@vger.kernel.org>; Fri, 04 Oct 2019 14:43:37 -0700 (PDT)
+        Fri, 4 Oct 2019 17:43:42 -0400
+Received: by mail-pf1-f196.google.com with SMTP id b128so4709955pfa.1
+        for <linux-serial@vger.kernel.org>; Fri, 04 Oct 2019 14:43:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=42znpoZzZjmG9yaRFQAzNvyi78UFWYqHsVeXsUAMBvM=;
-        b=MJ9Cw0wp0Mh+XkAZ37PArMbq3cXXTtMOK8MgPDNXCkP0yXajJDHPB5xaYgU0YftimM
-         IZ9Xr5C2yJosZi22FLfNZvyhDcgs9mFbobfjnE1WeFcBQ21xU74RMtcoRM+q4pMigeCm
-         sJyAZ9okOsrTu89hmigncAMqTy1HVXQqwb/PM=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=KYqhUzS8HE1cnO8UdG/YMABSsj7RMiZQf8ujMpDsg38=;
+        b=SzIHv3+0O3IFBCQgv6SlK9PRdrnepFVN3IU4oIF/xIrYq9Guh4+M5CrG9e6QJN8LVR
+         90zTBpWeDh+xmHcqdMc2IZwz8MsCkeIvp5zmhtSJy8bw68TD/iYA2LhAjfL0nA2stH6Z
+         QHEz/fDC6IIcysCX7B8Gs09IMw00MiuRI26QM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=42znpoZzZjmG9yaRFQAzNvyi78UFWYqHsVeXsUAMBvM=;
-        b=HeR+lzXSOtM4bYp12gU1SJi1SPesimi/nhYH+SrqD5g0w2voEejCBy7MMrpz9LOY9n
-         Q/TK8rnTCNgZFVyIoOKGbXTYswn9Uf9y/05rtCwN+4uRJKCKkaRsxgXoCZ+TNx8VjPFw
-         +9W1Cprjzi3orAz0UnKl1R/l4MZRDmkAvzR8CZrTvbncJ4K/q4vvX7lVwMonBYBKd8vt
-         vnHqtAuuD/KyMs9xCBSGYsMIeOzjEfcrB+jKWqulN4ftLETHD/9+FOte1wDVsbOeZ71m
-         +RfTah5+ke30Zn4DM4u1rzo56CJ2eY1cIWO0hKyy4oXgfIEGOYAvzeyM8i2USlG+L1m5
-         n0KQ==
-X-Gm-Message-State: APjAAAWpVLT4tU+575OufcVTmeR/eL+OLG0vKPRyIbZBIN3q4A3wkOWm
-        a7ginh+Rp3f6DasKmX8jJJrXRQ==
-X-Google-Smtp-Source: APXvYqy1SG4O+l1PxmR4D+2nW3K5VMykMwaSO5DOFDZyCRsqYuEK129X6z1/RcOxIP4TfZnnBe0BMw==
-X-Received: by 2002:a17:90a:e017:: with SMTP id u23mr4003152pjy.55.1570225416541;
-        Fri, 04 Oct 2019 14:43:36 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=KYqhUzS8HE1cnO8UdG/YMABSsj7RMiZQf8ujMpDsg38=;
+        b=KIN7pJCFbdVirY8qfSDHwRmuaoHyjNhVI1+QjYCih1N+k2Lq85fp4pDVCc1HmO+q0T
+         SeUWn8PJjCgtrTSBxa67jeOcN1uo13DewSqCzyQ7gQ4qnJ42Y4D2XwFWjXfQljcnOZGz
+         F1mHdcW8tVlfxeNIGGt24M9vBHDzsCzavqc8V18klPRss8ywhr4vlByo3dbbbKKMOmx7
+         QeVRJpZG/85hStEsPcyuBiqqERRc86er73+4LmVCL/Xz5uOZT9YW+av8LjRaPhcLoBr+
+         7GKPovmxvNUtMl4qNL4m+H71Uet3rMeGcGu0QEYR0YBEqdRUp08m8F/Cq9BW7LcJK3iG
+         QCzw==
+X-Gm-Message-State: APjAAAVLSqFRpWKxW62gM5CshS6MPmaGyBmeAGj2nkpMZxOQiAHGERk2
+        Hu+Lbnm05dW8nG4hkg5jar8Y8Q==
+X-Google-Smtp-Source: APXvYqz7mzsKpN03FsntoZLxhE5RUeypTshq2XnMRI8bvDbdP/OZ4waMAySdismOk/rx+jJeww/MUg==
+X-Received: by 2002:a17:90a:28a5:: with SMTP id f34mr19138434pjd.93.1570225421174;
+        Fri, 04 Oct 2019 14:43:41 -0700 (PDT)
 Received: from smtp.gmail.com ([2620:15c:202:1:fa53:7765:582b:82b9])
-        by smtp.gmail.com with ESMTPSA id a11sm10446799pfg.94.2019.10.04.14.43.35
+        by smtp.gmail.com with ESMTPSA id a11sm10446799pfg.94.2019.10.04.14.43.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Oct 2019 14:43:36 -0700 (PDT)
+        Fri, 04 Oct 2019 14:43:40 -0700 (PDT)
 From:   Stephen Boyd <swboyd@chromium.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        alsa-devel@alsa-project.org, Andrew Lunn <andrew@lunn.ch>,
-        Arnd Bergmann <arnd@arndb.de>, Dan Murphy <dmurphy@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Frank Rowand <frowand.list@gmail.com>,
+Cc:     Arnd Bergmann <arnd@arndb.de>,
         Geert Uytterhoeven <geert@linux-m68k.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Jean Delvare <jdelvare@suse.com>, Jiri Slaby <jslaby@suse.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-hwmon@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Jiri Slaby <jslaby@suse.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Pavel Machek <pavel@ucw.cz>,
-        Richard Leitner <richard.leitner@skidata.com>,
-        Riku Voipio <riku.voipio@iki.fi>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>
-Subject: [PATCH 00/10] Stop NULLifying match pointer in of_match_device()
-Date:   Fri,  4 Oct 2019 14:43:24 -0700
-Message-Id: <20191004214334.149976-1-swboyd@chromium.org>
+        Frank Rowand <frowand.list@gmail.com>,
+        linux-serial@vger.kernel.org
+Subject: [PATCH 05/10] serial: stm32: Use of_device_get_match_data()
+Date:   Fri,  4 Oct 2019 14:43:29 -0700
+Message-Id: <20191004214334.149976-6-swboyd@chromium.org>
 X-Mailer: git-send-email 2.23.0.581.g78d2f28ef7-goog
+In-Reply-To: <20191004214334.149976-1-swboyd@chromium.org>
+References: <20191004214334.149976-1-swboyd@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
@@ -98,88 +77,317 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Message-ID: <20191004214324.qQa-uRbyG3OLiRGDDonCRkm6Sh5vbKEbHicwt3hZbhE@z>
+Message-ID: <20191004214329.zA-iNilxpMNX6HH_DIhnXRb4oEK0eXTagbV49JqeUKk@z>
 
-of_match_device() uses of_match_ptr() to make the match table argument
-NULL via the pre-processor when CONFIG_OF=n. This makes life harder for
-compilers who think that match tables are never used and warn about
-unused variables when CONFIG_OF=n. This series changes various callers
-to use of_device_get_match_data() instead, which doesn't have this
-problem, and removes the of_match_ptr() usage from of_match_device() so
-that the compiler can stop complaining about unused variables. It will
-do dead code elimination instead and remove the match table if it isn't
-actually used.
+This driver casts away the constness of struct stm32_usart_info that is
+pointed to by the of match table. Use of_device_get_match_data() instead
+of of_match_device() here and push the const throughout the code so that
+we don't cast away const. This nicely avoids referencing the match table
+when it is undefined with configurations where CONFIG_OF=n and fixes the
+const issues.
 
-Huge Cc list!
-
-Cc: Alessandro Zummo <a.zummo@towertech.it>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: Alexandre Torgue <alexandre.torgue@st.com>
-Cc: <alsa-devel@alsa-project.org>
-Cc: Andrew Lunn <andrew@lunn.ch>
 Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Dan Murphy <dmurphy@ti.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Frank Rowand <frowand.list@gmail.com>
 Cc: Geert Uytterhoeven <geert@linux-m68k.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Gregory Clement <gregory.clement@bootlin.com>
-Cc: Grygorii Strashko <grygorii.strashko@ti.com>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Jacek Anaszewski <jacek.anaszewski@gmail.com>
-Cc: Jacopo Mondi <jacopo@jmondi.org>
-Cc: Jaroslav Kysela <perex@perex.cz>
-Cc: Jason Cooper <jason@lakedaemon.net>
-Cc: Jean Delvare <jdelvare@suse.com>
 Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Liam Girdwood <lgirdwood@gmail.com>
-Cc: <linux-hwmon@vger.kernel.org>
-Cc: <linux-leds@vger.kernel.org>
-Cc: <linux-media@vger.kernel.org>
-Cc: <linux-omap@vger.kernel.org>
-Cc: <linux-renesas-soc@vger.kernel.org>
-Cc: <linux-rtc@vger.kernel.org>
-Cc: <linux-serial@vger.kernel.org>
-Cc: <linux-spi@vger.kernel.org>
-Cc: <linux-usb@vger.kernel.org>
-Cc: Mark Brown <broonie@kernel.org>
-Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: Paul Cercueil <paul@crapouillou.net>
-Cc: Pavel Machek <pavel@ucw.cz>
-Cc: Richard Leitner <richard.leitner@skidata.com>
-Cc: Riku Voipio <riku.voipio@iki.fi>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
 Cc: Rob Herring <robh+dt@kernel.org>
-Cc: Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
-Cc: Takashi Iwai <tiwai@suse.com>
+Cc: Frank Rowand <frowand.list@gmail.com>
+Cc: <linux-serial@vger.kernel.org>
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+---
 
-Stephen Boyd (10):
-  leds: pca953x: Use of_device_get_match_data()
-  media: renesas-ceu: Use of_device_get_match_data()
-  rtc: armada38x: Use of_device_get_match_data()
-  drivers: net: davinci_mdio: Use of_device_get_match_data()
-  serial: stm32: Use of_device_get_match_data()
-  usb: usb251xb: Use of_device_get_match_data()
-  ASoC: jz4740: Use of_device_get_match_data()
-  spi: gpio: Look for a device node instead of match
-  hwmon: (lm70) Avoid undefined reference to match table
-  of/device: Don't NULLify match table in of_match_device() with
-    CONFIG_OF=n
+Please ack or pick for immediate merge so the last patch can be merged.
 
- drivers/hwmon/lm70.c                   |  2 +-
- drivers/leds/leds-pca9532.c            | 14 +----
- drivers/media/platform/renesas-ceu.c   |  2 +-
- drivers/net/ethernet/ti/davinci_mdio.c | 12 ++---
- drivers/rtc/rtc-armada38x.c            | 10 ++--
- drivers/spi/spi-gpio.c                 |  5 +-
- drivers/tty/serial/stm32-usart.c       | 71 ++++++++++++--------------
- drivers/tty/serial/stm32-usart.h       |  2 +-
- drivers/usb/misc/usb251xb.c            | 12 ++---
- include/linux/of_device.h              |  4 +-
- sound/soc/jz4740/jz4740-i2s.c          |  5 +-
- 11 files changed, 55 insertions(+), 84 deletions(-)
+ drivers/tty/serial/stm32-usart.c | 71 +++++++++++++++-----------------
+ drivers/tty/serial/stm32-usart.h |  2 +-
+ 2 files changed, 35 insertions(+), 38 deletions(-)
 
-
-base-commit: 54ecb8f7028c5eb3d740bb82b0f1d90f2df63c5c
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index df90747ee3a8..b837aa6e89a4 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -102,8 +102,8 @@ static int stm32_config_rs485(struct uart_port *port,
+ 			      struct serial_rs485 *rs485conf)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+-	struct stm32_usart_config *cfg = &stm32_port->info->cfg;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_config *cfg = &stm32_port->info->cfg;
+ 	u32 usartdiv, baud, cr1, cr3;
+ 	bool over8;
+ 
+@@ -171,7 +171,7 @@ static int stm32_pending_rx(struct uart_port *port, u32 *sr, int *last_res,
+ 			    bool threaded)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 	enum dma_status status;
+ 	struct dma_tx_state state;
+ 
+@@ -196,7 +196,7 @@ static unsigned long stm32_get_char(struct uart_port *port, u32 *sr,
+ 				    int *last_res)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 	unsigned long c;
+ 
+ 	if (stm32_port->rx_ch) {
+@@ -216,7 +216,7 @@ static void stm32_receive_chars(struct uart_port *port, bool threaded)
+ {
+ 	struct tty_port *tport = &port->state->port;
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 	unsigned long c;
+ 	u32 sr;
+ 	char flag;
+@@ -287,7 +287,7 @@ static void stm32_tx_dma_complete(void *arg)
+ {
+ 	struct uart_port *port = arg;
+ 	struct stm32_port *stm32port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32port->info->ofs;
+ 
+ 	stm32_clr_bits(port, ofs->cr3, USART_CR3_DMAT);
+ 	stm32port->tx_dma_busy = false;
+@@ -299,7 +299,7 @@ static void stm32_tx_dma_complete(void *arg)
+ static void stm32_tx_interrupt_enable(struct uart_port *port)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 
+ 	/*
+ 	 * Enables TX FIFO threashold irq when FIFO is enabled,
+@@ -314,7 +314,7 @@ static void stm32_tx_interrupt_enable(struct uart_port *port)
+ static void stm32_tx_interrupt_disable(struct uart_port *port)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 
+ 	if (stm32_port->fifoen)
+ 		stm32_clr_bits(port, ofs->cr3, USART_CR3_TXFTIE);
+@@ -325,7 +325,7 @@ static void stm32_tx_interrupt_disable(struct uart_port *port)
+ static void stm32_transmit_chars_pio(struct uart_port *port)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 	struct circ_buf *xmit = &port->state->xmit;
+ 
+ 	if (stm32_port->tx_dma_busy) {
+@@ -352,7 +352,7 @@ static void stm32_transmit_chars_pio(struct uart_port *port)
+ static void stm32_transmit_chars_dma(struct uart_port *port)
+ {
+ 	struct stm32_port *stm32port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32port->info->ofs;
+ 	struct circ_buf *xmit = &port->state->xmit;
+ 	struct dma_async_tx_descriptor *desc = NULL;
+ 	dma_cookie_t cookie;
+@@ -413,7 +413,7 @@ static void stm32_transmit_chars_dma(struct uart_port *port)
+ static void stm32_transmit_chars(struct uart_port *port)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 	struct circ_buf *xmit = &port->state->xmit;
+ 
+ 	if (port->x_char) {
+@@ -453,7 +453,7 @@ static irqreturn_t stm32_interrupt(int irq, void *ptr)
+ {
+ 	struct uart_port *port = ptr;
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 	u32 sr;
+ 
+ 	spin_lock(&port->lock);
+@@ -500,7 +500,7 @@ static irqreturn_t stm32_threaded_interrupt(int irq, void *ptr)
+ static unsigned int stm32_tx_empty(struct uart_port *port)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 
+ 	return readl_relaxed(port->membase + ofs->isr) & USART_SR_TXE;
+ }
+@@ -508,7 +508,7 @@ static unsigned int stm32_tx_empty(struct uart_port *port)
+ static void stm32_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 
+ 	if ((mctrl & TIOCM_RTS) && (port->status & UPSTAT_AUTORTS))
+ 		stm32_set_bits(port, ofs->cr3, USART_CR3_RTSE);
+@@ -543,7 +543,7 @@ static void stm32_start_tx(struct uart_port *port)
+ static void stm32_throttle(struct uart_port *port)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+@@ -558,7 +558,7 @@ static void stm32_throttle(struct uart_port *port)
+ static void stm32_unthrottle(struct uart_port *port)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+@@ -573,7 +573,7 @@ static void stm32_unthrottle(struct uart_port *port)
+ static void stm32_stop_rx(struct uart_port *port)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 
+ 	stm32_clr_bits(port, ofs->cr1, stm32_port->cr1_irq);
+ 	if (stm32_port->cr3_irq)
+@@ -589,7 +589,7 @@ static void stm32_break_ctl(struct uart_port *port, int break_state)
+ static int stm32_startup(struct uart_port *port)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 	const char *name = to_platform_device(port->dev)->name;
+ 	u32 val;
+ 	int ret;
+@@ -625,8 +625,8 @@ static int stm32_startup(struct uart_port *port)
+ static void stm32_shutdown(struct uart_port *port)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+-	struct stm32_usart_config *cfg = &stm32_port->info->cfg;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_config *cfg = &stm32_port->info->cfg;
+ 	u32 val, isr;
+ 	int ret;
+ 
+@@ -682,8 +682,8 @@ static void stm32_set_termios(struct uart_port *port, struct ktermios *termios,
+ 			    struct ktermios *old)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+-	struct stm32_usart_config *cfg = &stm32_port->info->cfg;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_config *cfg = &stm32_port->info->cfg;
+ 	struct serial_rs485 *rs485conf = &port->rs485;
+ 	unsigned int baud, bits;
+ 	u32 usartdiv, mantissa, fraction, oversampling;
+@@ -876,8 +876,8 @@ static void stm32_pm(struct uart_port *port, unsigned int state,
+ {
+ 	struct stm32_port *stm32port = container_of(port,
+ 			struct stm32_port, port);
+-	struct stm32_usart_offsets *ofs = &stm32port->info->ofs;
+-	struct stm32_usart_config *cfg = &stm32port->info->cfg;
++	const struct stm32_usart_offsets *ofs = &stm32port->info->ofs;
++	const struct stm32_usart_config *cfg = &stm32port->info->cfg;
+ 	unsigned long flags = 0;
+ 
+ 	switch (state) {
+@@ -1010,7 +1010,7 @@ MODULE_DEVICE_TABLE(of, stm32_match);
+ static int stm32_of_dma_rx_probe(struct stm32_port *stm32port,
+ 				 struct platform_device *pdev)
+ {
+-	struct stm32_usart_offsets *ofs = &stm32port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32port->info->ofs;
+ 	struct uart_port *port = &stm32port->port;
+ 	struct device *dev = &pdev->dev;
+ 	struct dma_slave_config config;
+@@ -1082,7 +1082,7 @@ static int stm32_of_dma_rx_probe(struct stm32_port *stm32port,
+ static int stm32_of_dma_tx_probe(struct stm32_port *stm32port,
+ 				 struct platform_device *pdev)
+ {
+-	struct stm32_usart_offsets *ofs = &stm32port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32port->info->ofs;
+ 	struct uart_port *port = &stm32port->port;
+ 	struct device *dev = &pdev->dev;
+ 	struct dma_slave_config config;
+@@ -1132,7 +1132,6 @@ static int stm32_of_dma_tx_probe(struct stm32_port *stm32port,
+ 
+ static int stm32_serial_probe(struct platform_device *pdev)
+ {
+-	const struct of_device_id *match;
+ 	struct stm32_port *stm32port;
+ 	int ret;
+ 
+@@ -1140,10 +1139,8 @@ static int stm32_serial_probe(struct platform_device *pdev)
+ 	if (!stm32port)
+ 		return -ENODEV;
+ 
+-	match = of_match_device(stm32_match, &pdev->dev);
+-	if (match && match->data)
+-		stm32port->info = (struct stm32_usart_info *)match->data;
+-	else
++	stm32port->info = of_device_get_match_data(&pdev->dev);
++	if (!stm32port->info)
+ 		return -EINVAL;
+ 
+ 	ret = stm32_init_port(stm32port, pdev);
+@@ -1202,7 +1199,7 @@ static int stm32_serial_remove(struct platform_device *pdev)
+ {
+ 	struct uart_port *port = platform_get_drvdata(pdev);
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 	int err;
+ 
+ 	pm_runtime_get_sync(&pdev->dev);
+@@ -1247,7 +1244,7 @@ static int stm32_serial_remove(struct platform_device *pdev)
+ static void stm32_console_putchar(struct uart_port *port, int ch)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 
+ 	while (!(readl_relaxed(port->membase + ofs->isr) & USART_SR_TXE))
+ 		cpu_relax();
+@@ -1259,8 +1256,8 @@ static void stm32_console_write(struct console *co, const char *s, unsigned cnt)
+ {
+ 	struct uart_port *port = &stm32_ports[co->index].port;
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+-	struct stm32_usart_config *cfg = &stm32_port->info->cfg;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_config *cfg = &stm32_port->info->cfg;
+ 	unsigned long flags;
+ 	u32 old_cr1, new_cr1;
+ 	int locked = 1;
+@@ -1346,8 +1343,8 @@ static void __maybe_unused stm32_serial_enable_wakeup(struct uart_port *port,
+ 						      bool enable)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+-	struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+-	struct stm32_usart_config *cfg = &stm32_port->info->cfg;
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	const struct stm32_usart_config *cfg = &stm32_port->info->cfg;
+ 	u32 val;
+ 
+ 	if (stm32_port->wakeirq <= 0)
+diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
+index a175c1094dc8..2aa4d1149d97 100644
+--- a/drivers/tty/serial/stm32-usart.h
++++ b/drivers/tty/serial/stm32-usart.h
+@@ -259,7 +259,7 @@ struct stm32_usart_info stm32h7_info = {
+ struct stm32_port {
+ 	struct uart_port port;
+ 	struct clk *clk;
+-	struct stm32_usart_info *info;
++	const struct stm32_usart_info *info;
+ 	struct dma_chan *rx_ch;  /* dma rx channel            */
+ 	dma_addr_t rx_dma_buf;   /* dma rx buffer bus address */
+ 	unsigned char *rx_buf;   /* dma rx buffer cpu address */
 -- 
 Sent by a computer through tubes
+
