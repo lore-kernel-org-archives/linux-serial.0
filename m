@@ -1,36 +1,37 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [PATCH] serial: uartps: Fix uartps_major handling
-Date: Fri, 4 Oct 2019 15:04:26 +0200
-Message-ID: <bcc281df-0fcc-f870-842b-213d1539dbca@xilinx.com>
-References: <00a269bc15c4f8c0a73c14958c5d7a5d37ff70ce.1568359707.git.michal.simek@xilinx.com>
- <20191004125203.GA583048@kroah.com>
+From: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v5 3/5] serial: fsl_linflexuart: Be consistent with the
+ name
+Date: Fri, 4 Oct 2019 15:07:12 +0200
+Message-ID: <20191004130712.GA622272@kroah.com>
+References: <20191002130425.28905-1-stefan-gabriel.mirea@nxp.com>
+ <20191002130425.28905-4-stefan-gabriel.mirea@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191004125203.GA583048@kroah.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20191002130425.28905-4-stefan-gabriel.mirea@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Michal Simek <michal.simek@xilinx.com>
-Cc: linux-kernel@vger.kernel.org, monstr@monstr.eu, git@xilinx.com, Paul Thomas <pthomas8589@gmail.com>, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+To: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+Cc: "corbet@lwn.net" <corbet@lwn.net>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will@kernel.org" <will@kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On 04. 10. 19 14:52, Greg Kroah-Hartman wrote:
-> On Fri, Sep 13, 2019 at 09:28:29AM +0200, Michal Simek wrote:
->> There are two parts which should be fixed. The first one is to assigned
->> uartps_major at the end of probe() to avoid complicated logic when
->> something fails.
->> The second part is initialized uartps_major number to 0 when last device is
->> removed. This will ensure that on next probe driver will ask for new
->> dynamic major number.
->>
->> Fixes: c9712e333809 ("serial: uartps: Use the same dynamic major number for all ports")
-> 
-> This is not a valid sha1 in Linus's tree :(
-> 
-> Please fix up and resend.
+On Wed, Oct 02, 2019 at 01:04:42PM +0000, Stefan-gabriel Mirea wrote:
+> --- a/include/uapi/linux/serial_core.h
+> +++ b/include/uapi/linux/serial_core.h
+> @@ -290,7 +290,7 @@
+>  /* Sunix UART */
+>  #define PORT_SUNIX	121
+>  
+> -/* Freescale Linflex UART */
+> -#define PORT_LINFLEXUART	121
+> +/* Freescale LINFlexD UART */
+> +#define PORT_LINFLEXUART	122
 
-grr. It is sha1 from stable tree. Will resend.
+This is a different change, and one that should be split out and
+submitted now, for 5.4.  Please do that as the id number is incorrect,
+don't bury a valid change in the middle of a "marketing renamed the
+device" patch :)
 
-Thanks,
-Michal
+thanks,
+
+greg k-h
