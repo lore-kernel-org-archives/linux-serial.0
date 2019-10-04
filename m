@@ -2,112 +2,107 @@ Return-Path: <SRS0=XuIp=X5=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0324CC47404
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 12:54:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8560CC47404
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 13:00:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CBBE1222C0
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 12:54:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4F9B521D81
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 13:00:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1570193690;
-	bh=MM7IOqWgkdbOitP7bMDfuncCK3Gie1OWlQpqXI5OzJA=;
+	s=default; t=1570194035;
+	bh=5Q/iWTgymOppj9DeDqpQWfy6Ic9FHuGC0vgACNbYbd0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=kd5eFg7kyLYQALxrfBKLPbhtS3q5UdiJiM3nVqjxGI919KFA2nWMaQ1KvuQj3tbcD
-	 lpHlrX3/YcXkO/1x1vQSG6u+RzC5u0GZJQAJwUZyi+IBXV00bT6kVD4fTwxB7HmcYw
-	 QbDy4lzgU+bDqMFBJqy0QsO0HIRpTWuiWzxhXM3M=
+	b=CHl/c7r/WxcTqBtYK3QAheU0niTjKu/05LoQtS0tXgw7ZkWK1gB9jCorpDQqsDLci
+	 6fMX5rNoYzolAcSr1RTpSs8kzdosO4NUX5RLd0rGjzhqU4qmoT1PmOTNRCks4bjP1G
+	 Ydbf5lvWBI0p7zFbldKptJBGd8txryno3IjNZnkE=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388061AbfJDMyu (ORCPT
+        id S2387834AbfJDNAf (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Oct 2019 08:54:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34368 "EHLO mail.kernel.org"
+        Fri, 4 Oct 2019 09:00:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36284 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387769AbfJDMyu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Oct 2019 08:54:50 -0400
+        id S2387593AbfJDNAe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 4 Oct 2019 09:00:34 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 082E62070B;
-        Fri,  4 Oct 2019 12:54:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D7B73207FF;
+        Fri,  4 Oct 2019 13:00:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570193689;
-        bh=MM7IOqWgkdbOitP7bMDfuncCK3Gie1OWlQpqXI5OzJA=;
+        s=default; t=1570194033;
+        bh=5Q/iWTgymOppj9DeDqpQWfy6Ic9FHuGC0vgACNbYbd0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QYJmfHCf10oqPx/Yw73jVx8CFUmuFBqH8G3U6b9tqOWUlohBXRtLSzuawBbVXcnUR
-         yHg1pzIclSZ4OXMIzDAywNzH3p/kBYl+bOcxF0ImRpUhiq7McbxSYEvtnpelwuzqtW
-         5ZtdhuFw1C/BtBtGp7MtJhDA0tdT8EOZzcmfTYmA=
-Date:   Fri, 4 Oct 2019 14:54:46 +0200
+        b=jeWNxAVjM4M9jRnwjBw1GFUCfukHqXGsDW5rJu7N0l04+zMSDtyZVPUWlR7BmlWPW
+         Pf8rFwhCg6vy/1UMQMas0rybf6WEZzSjEubo9xj49BqcCMo8veo/EBye4ja8KOnHZd
+         iPIwswtomqveq0U9KIpbFVNiWnUPXYYEX4JVu/C8=
+Date:   Fri, 4 Oct 2019 15:00:31 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH] serial: move Non-standard serial drivers menu to the
- Serial drivers menu
-Message-ID: <20191004125446.GB583048@kroah.com>
-References: <8e583967-4453-368b-6be5-a24df9b2b5dc@infradead.org>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jiri Slaby <jslaby@suse.com>, linux-sh@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: Re: [PATCH v4 0/2] drivers: make early_platform code SuperH-specific
+Message-ID: <20191004130031.GA596158@kroah.com>
+References: <20191003092913.10731-1-brgl@bgdev.pl>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Disposition: inline
-In-Reply-To: <8e583967-4453-368b-6be5-a24df9b2b5dc@infradead.org>
+In-Reply-To: <20191003092913.10731-1-brgl@bgdev.pl>
 User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191004125446.v53imeJSW7ff-BdXL5PUcCIZJFbr2YNWFaFlgKqyu20@z>
+Message-ID: <20191004130031.LPxkSuOFIx0wYgaWXc1b7xb5F08pZeoJG9jFNdwIawo@z>
 
-On Wed, Sep 25, 2019 at 06:16:28PM -0700, Randy Dunlap wrote:
-> From: Randy Dunlap <rdunlap@infradead.org>
+On Thu, Oct 03, 2019 at 11:29:11AM +0200, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 > 
-> Since Non-standard serial port drivers are also Serial drivers,
-> move the "Non-standard serial port support" menu to be under/in
-> the "Serial drivers" menu. With this move, the "Serial drivers"
-> menu contains (a) 8250/16550 support, (b) non-8250 support, and
-> (c) non-standard serial port support.
+> Some time ago I started a discussion about the need for a proper early device
+> probing mechanism[1]. One that would be based on real platform drivers and
+> support both platform data and device tree.
 > 
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> ---
->  drivers/tty/Kconfig        |  119 -----------------------------------
->  drivers/tty/serial/Kconfig |  119 +++++++++++++++++++++++++++++++++++
->  2 files changed, 119 insertions(+), 119 deletions(-)
+> While we're far from reaching any consensus on the implementation, Arnd
+> suggested that I start off by moving the SuperH-specific early platform
+> drivers implementation to arch/sh[2].
 > 
-> --- lnx-53.orig/drivers/tty/Kconfig
-> +++ lnx-53/drivers/tty/Kconfig
-> @@ -151,125 +151,6 @@ config LEGACY_PTY_COUNT
->  	  When not in use, each legacy PTY occupies 12 bytes on 32-bit
->  	  architectures and 24 bytes on 64-bit architectures.
->  
-> -config SERIAL_NONSTANDARD
-> -	bool "Non-standard serial port support"
-> -	depends on HAS_IOMEM
-> -	---help---
-> -	  Say Y here if you have any non-standard serial boards -- boards
-> -	  which aren't supported using the standard "dumb" serial driver.
-> -	  This includes intelligent serial boards such as Cyclades,
-> -	  Digiboards, etc. These are usually used for systems that need many
-> -	  serial ports because they serve many terminals or dial-in
-> -	  connections.
-> -
-> -	  Note that the answer to this question won't directly affect the
-> -	  kernel: saying N will just cause the configurator to skip all
-> -	  the questions about non-standard serial boards.
-> -
-> -	  Most people can say N here.
-> -
-> -config ROCKETPORT
-> -	tristate "Comtrol RocketPort support"
-> -	depends on SERIAL_NONSTANDARD && (ISA || EISA || PCI)
+> This series is the first attempt at making way for a new, less hacky
+> implementation.
+> 
+> The first patch moves all the early_platform code to arch/sh.
+> 
+> The second patch prefixes all early_platform symbols with 'sh_'.
+> 
+> [1] https://lkml.org/lkml/2018/4/26/657
+> [2] https://lkml.org/lkml/2018/4/27/239
+> 
+> v1 -> v2:
+> - certain drivers are compiled for arm/mach-shmobile too - we need to
+>   add ifdefs for CONFIG_SUPERH around early_platform calls
+> 
+> v2 -> v3:
+> - added a stub for is_early_platform_device() which always returns false
+>   on non-SuperH architectures
+> 
+> v3 -> v4:
+> - rebased on top of v5.4-rc1
+> - removed patches that are already upstream from the series
+> 
+> Bartosz Golaszewski (2):
+>   drivers: move the early platform device support to arch/sh
+>   sh: add the sh_ prefix to early platform symbols
 
-I would agree with the move, but the files are not in
-drivers/tty/serial/ for the drivers you are asking to configure in that
-directory.
-
-So unless we want to move these drivers (and it's not really worth it,
-unless we want to create drivers/tty/serial/obsolete/ or something like
-that), I would just leave this alone.
+I like this, any objection from anyone if I take this in my driver-core
+tree for 5.5-rc1?
 
 thanks,
 
