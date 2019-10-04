@@ -2,160 +2,134 @@ Return-Path: <SRS0=XuIp=X5=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D20ADC47404
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 14:08:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CB88C4CED1
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 14:37:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A620420873
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 14:08:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0395920700
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 14:37:24 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AFdIlwJw"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="FsAZndhB"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388802AbfJDOI0 (ORCPT
+        id S2389140AbfJDOhX (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Oct 2019 10:08:26 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:37717 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388376AbfJDOI0 (ORCPT
+        Fri, 4 Oct 2019 10:37:23 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:39460 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389100AbfJDOhX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Oct 2019 10:08:26 -0400
-Received: by mail-io1-f68.google.com with SMTP id b19so13835226iob.4;
-        Fri, 04 Oct 2019 07:08:25 -0700 (PDT)
+        Fri, 4 Oct 2019 10:37:23 -0400
+Received: by mail-wm1-f65.google.com with SMTP id v17so6130457wml.4
+        for <linux-serial@vger.kernel.org>; Fri, 04 Oct 2019 07:37:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uzkPOSU8Ouy39k0YoAh95vN8AhycLXhvB11rMhtKOIM=;
-        b=AFdIlwJwAD2j5XHSFHy3ujkkvS/1K3NuIMCGTa3fD289v+ILUxoHsOeYW3r63dJOls
-         eOZKDqnkHIVsSoMvWeiGuQqOcI4pIo6Af1FqdZjdg8O8Ny9xhBLDFZ76We0cCSEsSGCF
-         pKUBeEhL615SRK/WXnb36Z3j2jSRUAl97PbiVa5olzxBkoL9ciAl+jyitSkNSoWVLUpP
-         8ILAOLsNNd6+19ke/+ybk9VQQg5WArK+Meuk+jbTRI4Dapukdpfi6HYZWfCfIuhvx1eQ
-         udsh3wR6prAO4o3OHKSb0O0xVlfAT291pMY6pzV3MXUpTA9DkLG6BJTXlGefw3pAuQee
-         Rsng==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=M/bUMMwqhNt3Ns3PLD9fJksR9IwlrBLW7LrP5HWQF+c=;
+        b=FsAZndhBRWOshUk2HtpFWBNhf8XA3iFaT+XxTApJiTi4sWWDA8mEi4lEWRyTonYxLE
+         ZydU83dqlBb8DOGRZ22Vay1pRKjZ4Q54J3PwVxVrEm5b22dhcyv+niYmuPHtnpPA+gtF
+         Ne3c/iFvOSgGU4NrDjQM2qM4RqbJWDijBpfuM6Irnohrlp5mf+h6XHoAkq7RB/bH06jG
+         YVkfy/4F+0esR4D1tsBSWe3OI+GV/pvuOQf8JYjyDLCkrZqjuSQOqUCrqtbqS6hl29kf
+         IL35Xa2IkpfLN6XzneIEOQCivUmEthM3mZQ4KH2A9fJ7srdvawl557EFAr/n1HJRYmsD
+         NbRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uzkPOSU8Ouy39k0YoAh95vN8AhycLXhvB11rMhtKOIM=;
-        b=BtVHA6s6NAN4sFZHTb04axB+oyMU715UV8UR+hi3FrNiEJ42tMSlrhe8ofAFvDqR9M
-         Zwtqs3GcrAMBsG35LY5sBPaJquALTqtBkv0tsXvZLjcLmKDibVlCC9PWT4/EbnvN4uEH
-         mJP6Hzrdg13zzuHrYT1pbTwmdfRbppJM7zHmIZY+Qm5BZlgLnoMoC9JwuyqZlNV05m2p
-         rE1LuKmfK5bu7erP6eVD4YdRVOsuEraDsAGDickAxBSwXXpWioxQd+0kVKIblvct9EtV
-         wMltunJ3cYWY8eQOCEjItAvp8wlFO6V2QpHRkjT4/ltHAgFrTI5CvLedVaB0GphLJDGF
-         4Wsg==
-X-Gm-Message-State: APjAAAWWY3ULbanfWJLv1BV7Q+ppAB1QZRKPUMNmv48Oqoe4Ua0yyGV/
-        SNMv+vV1s60WFV6trtwWn2b9DvTaCAuKfq/PbBc=
-X-Google-Smtp-Source: APXvYqzWggmyOwesjFCEmzm0yxrC3gofPGGTaE+Fi3c088hl3DPsXtlVILDI/J3lL//9OdwOHnA094RdIjrwy6Rszek=
-X-Received: by 2002:a92:d84d:: with SMTP id h13mr15901954ilq.205.1570198104548;
- Fri, 04 Oct 2019 07:08:24 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=M/bUMMwqhNt3Ns3PLD9fJksR9IwlrBLW7LrP5HWQF+c=;
+        b=JolXiaPczLc+ivGqv/Q8BkP5BynVIH2wHYA7aSRyMGGN3uDy94DMipcgQiLcqDO3yg
+         NxM9wgR5NYiwAvzIKNQ6GIcyNDAKYUAXZtEX/yLuNZNdWtrgZahhkqhF6fIp2RJLNF6m
+         Pl6z50Nc3Atk9gLkML8H5M1441S8hqh1QxwHGIXAD+XImnN3gRoPmxpI9Cmi7Hex7yq8
+         JoYo6uPM/kIocncPJ8qzt3POxfD2dYf5WQK8BT3rGsLOragFAYWg8W9QsB9AMHDqgnh4
+         5m+SJIsyG0rD6DOtD8DgFXC+4a2Ybom+D8OsvGMGti6DKYeEJ/NPWwmorc92mvwuzfde
+         iQ5Q==
+X-Gm-Message-State: APjAAAXaGZ+DYZjQz+HGGdtHWC9VcVxjfJ607l8rBcFU5GLslLhOwuQl
+        ZOl+MwT9ySRHI+ZjfgA5rSRV9g==
+X-Google-Smtp-Source: APXvYqxHRyx7yuiTH9IFzXeP2ivnk2BBRSV88nnMFiXyc7Dc5BayI1lrnlB/z2mqvBmn5UbH1qOKKw==
+X-Received: by 2002:a1c:5942:: with SMTP id n63mr11413363wmb.65.1570199841070;
+        Fri, 04 Oct 2019 07:37:21 -0700 (PDT)
+Received: from dell ([2.27.167.122])
+        by smtp.gmail.com with ESMTPSA id u25sm5195823wml.4.2019.10.04.07.37.20
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 04 Oct 2019 07:37:20 -0700 (PDT)
+Date:   Fri, 4 Oct 2019 15:37:18 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     kbuild test robot <lkp@intel.com>
+Cc:     Thomas Bogendoerfer <tbogendoerfer@suse.de>, kbuild-all@01.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v6 3/4] mfd: ioc3: Add driver for SGI IOC3 chip
+Message-ID: <20191004143718.GM18429@dell>
+References: <20190923114636.6748-4-tbogendoerfer@suse.de>
+ <201909232145.eyOJqt2k%lkp@intel.com>
 MIME-Version: 1.0
-References: <CAHCN7xLO5VgA6tW4p7QjwPv_QXv==zbC38TxXtsR5x9H0mUGJA@mail.gmail.com>
- <CAHCN7xJPv7W381R7LS4bB8xWWpugz2NwbTUtj-hqHnDBZ9MFzA@mail.gmail.com> <CAGm1_kv6RMUDppu6ZjY9Dq7QL=hS=D+e3KS37+V0ncbwoXE6mQ@mail.gmail.com>
-In-Reply-To: <CAGm1_kv6RMUDppu6ZjY9Dq7QL=hS=D+e3KS37+V0ncbwoXE6mQ@mail.gmail.com>
-From:   Adam Ford <aford173@gmail.com>
-Date:   Fri, 4 Oct 2019 09:08:13 -0500
-Message-ID:
- <CAHCN7xKsGz4UA4gfM5jpS9UE-V7_k265G_hB=wQ5Ueh3T5kaNQ@mail.gmail.com>
-Subject: Re: DM3730 Bluetooth Performance differences between SERIAL_8250_OMAP
- vs SERIAL_OMAP
-To:     Yegor Yefremov <yegorslists@googlemail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-OMAP <linux-omap@vger.kernel.org>,
-        Vignesh R <vigneshr@ti.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <201909232145.eyOJqt2k%lkp@intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191004140813.eSADKO0hcv1zipfM7jkxWyvh5nqWJwbCEYg5yIfAAAs@z>
+Message-ID: <20191004143718.p15UsOTXF41HI-CJ-NHtCjpqR7MhR2VLhXxLSOgta64@z>
 
-On Fri, Oct 4, 2019 at 7:27 AM Yegor Yefremov
-<yegorslists@googlemail.com> wrote:
->
-> Hi Adam,
->
-> On Fri, Oct 4, 2019 at 12:39 PM Adam Ford <aford173@gmail.com> wrote:
-> >
-> > On Fri, Oct 4, 2019 at 5:02 AM Adam Ford <aford173@gmail.com> wrote:
-> > >
-> > > I am running Kernel 5.3.2 trying to troubleshoot some intermittent
-> > > Bluetooth issues, and I think I have narrowed it down to the serial
-> > > driver in use.
-> >
-> > I should have also noted that it's using UART2 with CTS and RTS on the
-> > DM3730 (omap3630) and its configured with a baud rate of 3M.
-> > I tried slowing it to 115200, but that didn't help.  I tried disabling
-> > the DMA hooks from the device tree, and that didn't help.
-> >
-> > > By default, omap2plus_defconfig enables both SERIAL_8250_OMAP and
-> > > SERIAL_OMAP.  I have my console device configured as  ttyS0, and all
-> > > appears fine.  When I enable Bluetooth, however, I get intermittent
-> > > errors on an DM3730 / OMAP3630.
-> > >
-> > > Using the 8250 driver for Blueotooth I get intermittent frame errors
-> > > and data loss.
-> > >
-> > > Scanning ...
-> > > [   28.482452] Bluetooth: hci0: Frame reassembly failed (-84)
-> > > [   36.162170] Bluetooth: hci0: Frame reassembly failed (-84)
-> > >         F4:4E:FC:C9:2F:57       BluJax
-> > > # l2ping F4:4E:FC:C9:2F:57
-> > > Ping: F4:4E:FC:C9:2F:57 from 00:18:30:49:7D:63 (data size 44) ...
-> > > 44 bytes from F4:4E:FC:C9:2F:57 id 0 time 8.27ms
-> > > no response from F4:4E:FC:C9:2F:57: id 1
-> > > ^C2 sent, 1 received, 50% loss
-> > >
-> > > (after a fairly long hang, I hit control-c)
-> > >
-> > > However, disabling the 8250 driver and using the only SERIAL_OMAP and
-> > > the console routed to ttyO0, the Bluetooth works well, so I believe it
-> > > to be a serial driver issue and not a Bluetooth error.
-> > >
-> > > # hcitool scan
-> > > Scanning ...
-> > >         F4:4E:FC:C9:2F:57       BluJax
-> > > ^C
-> > > # l2ping F4:4E:FC:C9:2F:57
-> > > Ping: F4:4E:FC:C9:2F:57 from 00:18:30:49:7D:63 (data size 44) ...
-> > > 44 bytes from F4:4E:FC:C9:2F:57 id 0 time 6.90ms
-> > > ...
-> > > 44 bytes from F4:4E:FC:C9:2F:57 id 14 time 28.29ms
-> > > ^C15 sent, 15 received, 0% loss
-> > > #
-> > >
-> > > 0% loss and regular, repeatable communication without any Frame
-> > > reassembly errors.
-> > >
-> >
-> > I tried disabling SERIAL_OMAP and using only SERIAL_8250_OMAP, but
-> > that didn't help.  Because the issue goes away when I disable
-> > SERIAL_8250_OMAP, I am wondering if something is either being
-> > misconfigured or some IRQ or DMA integration is missing that may be
-> > present with the older SERIAL_OMAP driver.
-> >
-> > > Any suggestions on how to troubleshoot or what might cause the
-> > > difference between the two drivers?
->
-> Can it be related to this issue [1]? Can you confirm that 5.2 is
-> working as expected with the 8250 driver?
->
-> [1] https://marc.info/?l=linux-serial&m=156965039008649&w=2
+On Mon, 23 Sep 2019, kbuild test robot wrote:
 
-I reverted the whole 8250 directory to d99482673f95 ("serial:
-mctrl_gpio: Check if GPIO property exisits before requesting it") and
-it is somewhat better, but it's not as good as the stock OMAP serial
-driver.  I get some frame errors and eventually, I get some timeouts,
-but it's not as bad.  I'll try to implement the RTS and CTS as gpio
-pins and change the device tree accordingly.  It might shed some light
-on the situation.
+> Hi Thomas,
+> 
+> I love your patch! Perhaps something to improve:
+> 
+> [auto build test WARNING on linus/master]
+> [cannot apply to v5.3 next-20190920]
+> [if your patch is applied to the wrong git tree, please drop us a note to help
+> improve the system. BTW, we also suggest to use '--base' option to specify the
+> base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
+> 
+> url:    https://github.com/0day-ci/linux/commits/Thomas-Bogendoerfer/Use-MFD-framework-for-SGI-IOC3-drivers/20190923-194903
+> config: mips-allmodconfig (attached as .config)
+> compiler: mips-linux-gcc (GCC) 7.4.0
+> reproduce:
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # save the attached .config to linux build tree
+>         GCC_VERSION=7.4.0 make.cross ARCH=mips 
+> 
+> If you fix the issue, kindly add following tag
+> Reported-by: kbuild test robot <lkp@intel.com>
+> 
+> All warnings (new ones prefixed by >>):
+> 
+>    drivers//mfd/ioc3.c: In function 'ioc3_eth_setup':
+> >> drivers//mfd/ioc3.c:281:54: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 4 has type 'resource_size_t {aka unsigned int}' [-Wformat=]
+>        sizeof(ioc3_w1_platform_data.dev_id), "ioc3-%012llx",
+>                                                    ~~~~~~^
+>                                                    %012x
+>        ipd->pdev->resource->start);
+>        ~~~~~~~~~~~~~~~~~~~~~~~~~~                         
 
-adam
->
-> Cheers,
-> Yegor
+I assume you plan on fixing this Thomas?
+
+
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
