@@ -2,89 +2,71 @@ Return-Path: <SRS0=XuIp=X5=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F02F3C4360C
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 22:05:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40493C4360C
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 22:54:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C1717222C0
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 22:05:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 014CA20873
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 22:54:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nZkZlV4E"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b="RoVawQ43"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728356AbfJDWFn (ORCPT
+        id S1726669AbfJDWyK (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Oct 2019 18:05:43 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:41259 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726002AbfJDWFn (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Oct 2019 18:05:43 -0400
-Received: by mail-lf1-f68.google.com with SMTP id r2so5472121lfn.8;
-        Fri, 04 Oct 2019 15:05:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1U1sHNHSit/75tybDvgS4j4jmfFzL9R579gD2Or6c0w=;
-        b=nZkZlV4EeE83+Lga9AsP1nvv9cCzhZxi370TP9tn6hoIDUeKIjgqTvZRH9f0AJVYw8
-         9vwiK6Jt12wL+rh9z6O/5bFaTtnRiJ/xGhFqZivOatnu6wM2fh4vLao8MRhcHNmAyA+m
-         IZdRfMih4YSzLyID78rnZebTgQTQLsbe0jWwnUFun+Hgd+YyCj+mUNu57QMGK0v0vUbC
-         8JKKzMRs+m+zQ2eSXqqpqA4x5+6xlcPK+TUMCgnlt8Bt73ha4HTPbNd0CQduq64tLYwI
-         y4tukxBDvPij/O6rfu3BNaz9WEcLkW/0kKDZ+jQZKrzicDMu3gibh/sMqCzB4yC1g7qz
-         jbHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1U1sHNHSit/75tybDvgS4j4jmfFzL9R579gD2Or6c0w=;
-        b=Y2jkT4bGwXQmiVRLQy4zA2ZCFCPRNZdxfgPvxgYkFxvgb3hzInbBQxS4WaqxPumjDT
-         ln2ntf7U8Sf8uYsHBqfaX3Pb08PIdlV0tlm9pcdwJm8l/eyc2idXV5XZZ5/z7/Mw+kg3
-         fkHz13dOPI6TcX/vs52QN80kFQH4SxNW2ZKi/W6tCOSY/VQQwcCiJ9gY7OT55mB86bN3
-         vlDsfl32Y0KQxP4Fy41hDCJxfC0/hNzioAYtdiFhRcuLd53GwTJdINyb4nf/7G8kHdn8
-         l0LFPRUdZXJ+VSwf/yp4gFaIboAFMeLO0AYsTovp4ag/H3kOV3uDYdh2Jeqyr+hbOXY4
-         Is3g==
-X-Gm-Message-State: APjAAAW8z8yk08DAuVgtstEm6mf2d3NWfcjgLg7/Clp2JG3A7fP07jqi
-        TRodzfZVaz9Z0MRnSd9NDF2/SD8aCPn/1Kl7Gsg=
-X-Google-Smtp-Source: APXvYqwFuAivknQ9HtZbl+Q/9um5UvGUEnD+GzIraTpjEfIPG8XcnNwX/+gnZrT0CjUYxWon+S3bUNPtNyGDfaWp+Ic=
-X-Received: by 2002:ac2:47e3:: with SMTP id b3mr9669807lfp.80.1570226740863;
- Fri, 04 Oct 2019 15:05:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191004215537.5308-1-andrew.smirnov@gmail.com>
-In-Reply-To: <20191004215537.5308-1-andrew.smirnov@gmail.com>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Fri, 4 Oct 2019 19:06:03 -0300
-Message-ID:
- <CAOMZO5A2QvTa1h3fDHitbqgSXf0CTc4KuZS5Er0cHb3zpkC+cA@mail.gmail.com>
-Subject: Re: [PATCH] tty: serial: fsl_lpuart: Fix lpuart_flush_buffer()
+        Fri, 4 Oct 2019 18:54:10 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33536 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725730AbfJDWyK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 4 Oct 2019 18:54:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=19m7S1ibmLavrZocSRtbIxgDYoEh4ZDgSaklaxr4C+0=; b=RoVawQ43TmYht9G8E0Tv66fR6Q
+        xHjHxAiGrRAUs3kAOD8aXD21+iFFomqFnLF6vsLBntn3iJ7LuQjnFWGs3Q8kNg49BtN0m1Q10bdpN
+        TcaiZlf6mn39RJVZ9+SXInEoRCjdLumAJSzwslKFyYGqN8Qhen3E/6/JtPMXlgVQUy18=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iGWSV-0003ji-5G; Sat, 05 Oct 2019 00:53:59 +0200
+Date:   Sat, 5 Oct 2019 00:53:59 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
 To:     Andrey Smirnov <andrew.smirnov@gmail.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stefan Agner <stefan@agner.ch>, Andrew Lunn <andrew@lunn.ch>,
+        Stefan Agner <stefan@agner.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Chris Healy <cphealy@gmail.com>,
         Cory Tusar <cory.tusar@zii.aero>,
         Lucas Stach <l.stach@pengutronix.de>,
-        Jiri Slaby <jslaby@suse.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
+        Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] tty: serial: fsl_lpuart: Fix lpuart_flush_buffer()
+Message-ID: <20191004225359.GE3817@lunn.ch>
+References: <20191004215537.5308-1-andrew.smirnov@gmail.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: inline
+In-Reply-To: <20191004215537.5308-1-andrew.smirnov@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191004220603.qooE7hdS0H_DJeyvv1szgDQZ7wxExr6WHRdWqV3gI6A@z>
+Message-ID: <20191004225359.Cd2CXvTDlHOIYCYNBIv_qWiV-KEdpe4xqo61g5DIY8U@z>
 
-On Fri, Oct 4, 2019 at 6:59 PM Andrey Smirnov <andrew.smirnov@gmail.com> wrote:
->
+On Fri, Oct 04, 2019 at 02:55:37PM -0700, Andrey Smirnov wrote:
 > Fix incorrect read-modify-write sequence in lpuart_flush_buffer() that
 > was reading from UARTPFIFO and writing to UARTCFIFO instead of
 > operating solely on the latter.
->
+> 
 > Fixes: 9bc19af9dacb ("tty: serial: fsl_lpuart: Flush HW FIFOs in .flush_buffer")
 > Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
 
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
+Tested-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
