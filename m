@@ -1,58 +1,63 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v4 0/2] drivers: make early_platform code SuperH-specific
-Date: Fri, 4 Oct 2019 15:00:31 +0200
-Message-ID: <20191004130031.GA596158@kroah.com>
-References: <20191003092913.10731-1-brgl@bgdev.pl>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: [PATCH v2] serial: uartps: Fix uartps_major handling
+Date: Fri,  4 Oct 2019 15:04:11 +0200
+Message-ID: <d2652cda992833315c4f96f06953eb547f928918.1570194248.git.michal.simek@xilinx.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20191003092913.10731-1-brgl@bgdev.pl>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bartosz Golaszewski <brgl@bgdev.pl>
-Cc: Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Jiri Slaby <jslaby@suse.com>, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Bartosz Golaszewski <bgolaszewski@baylibre.com>
+To: linux-kernel@vger.kernel.org, monstr@monstr.eu, michal.simek@xilinx.com, git@xilinx.com, Paul Thomas <pthomas8589@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, Oct 03, 2019 at 11:29:11AM +0200, Bartosz Golaszewski wrote:
-> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> 
-> Some time ago I started a discussion about the need for a proper early device
-> probing mechanism[1]. One that would be based on real platform drivers and
-> support both platform data and device tree.
-> 
-> While we're far from reaching any consensus on the implementation, Arnd
-> suggested that I start off by moving the SuperH-specific early platform
-> drivers implementation to arch/sh[2].
-> 
-> This series is the first attempt at making way for a new, less hacky
-> implementation.
-> 
-> The first patch moves all the early_platform code to arch/sh.
-> 
-> The second patch prefixes all early_platform symbols with 'sh_'.
-> 
-> [1] https://lkml.org/lkml/2018/4/26/657
-> [2] https://lkml.org/lkml/2018/4/27/239
-> 
-> v1 -> v2:
-> - certain drivers are compiled for arm/mach-shmobile too - we need to
->   add ifdefs for CONFIG_SUPERH around early_platform calls
-> 
-> v2 -> v3:
-> - added a stub for is_early_platform_device() which always returns false
->   on non-SuperH architectures
-> 
-> v3 -> v4:
-> - rebased on top of v5.4-rc1
-> - removed patches that are already upstream from the series
-> 
-> Bartosz Golaszewski (2):
->   drivers: move the early platform device support to arch/sh
->   sh: add the sh_ prefix to early platform symbols
+There are two parts which should be fixed. The first one is to assigned
+uartps_major at the end of probe() to avoid complicated logic when
+something fails.
+The second part is initialized uartps_major number to 0 when last device is
+removed. This will ensure that on next probe driver will ask for new
+dynamic major number.
 
-I like this, any objection from anyone if I take this in my driver-core
-tree for 5.5-rc1?
+Fixes: ab262666018d ("serial: uartps: Use the same dynamic major number for all ports")
+Reported-by: Paul Thomas <pthomas8589@gmail.com>
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+---
 
-thanks,
+Changes in v2:
+- Use sha1 from Linus tree not stable tree
 
-greg k-h
+ drivers/tty/serial/xilinx_uartps.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index da4563aaaf5c..4e55bc327a54 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -1550,7 +1550,6 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 		goto err_out_id;
+ 	}
+ 
+-	uartps_major = cdns_uart_uart_driver->tty_driver->major;
+ 	cdns_uart_data->cdns_uart_driver = cdns_uart_uart_driver;
+ 
+ 	/*
+@@ -1680,6 +1679,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 		console_port = NULL;
+ #endif
+ 
++	uartps_major = cdns_uart_uart_driver->tty_driver->major;
+ 	cdns_uart_data->cts_override = of_property_read_bool(pdev->dev.of_node,
+ 							     "cts-override");
+ 	return 0;
+@@ -1741,6 +1741,12 @@ static int cdns_uart_remove(struct platform_device *pdev)
+ 		console_port = NULL;
+ #endif
+ 
++	/* If this is last instance major number should be initialized */
++	mutex_lock(&bitmap_lock);
++	if (bitmap_empty(bitmap, MAX_UART_INSTANCES))
++		uartps_major = 0;
++	mutex_unlock(&bitmap_lock);
++
+ 	uart_unregister_driver(cdns_uart_data->cdns_uart_driver);
+ 	return rc;
+ }
+-- 
+2.17.1
