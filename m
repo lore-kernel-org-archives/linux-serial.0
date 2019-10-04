@@ -1,62 +1,50 @@
-From: Rich Felker <dalias@libc.org>
-Subject: Re: [PATCH v4 0/2] drivers: make early_platform code SuperH-specific
-Date: Fri, 4 Oct 2019 09:20:25 -0400
-Message-ID: <20191004132025.GQ16318@brightrain.aerifal.cx>
-References: <20191003092913.10731-1-brgl@bgdev.pl>
- <20191004130031.GA596158@kroah.com>
+From: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+Subject: Re: [PATCH v5 3/5] serial: fsl_linflexuart: Be consistent with the
+ name
+Date: Fri, 4 Oct 2019 13:40:48 +0000
+Message-ID: <VI1PR0402MB2863C5C76A9F709B98C7BDE7DF9E0@VI1PR0402MB2863.eurprd04.prod.outlook.com>
+References: <20191002130425.28905-1-stefan-gabriel.mirea@nxp.com>
+ <20191002130425.28905-4-stefan-gabriel.mirea@nxp.com>
+ <20191004130712.GA622272@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20191004130031.GA596158@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Bartosz Golaszewski <brgl@bgdev.pl>, Yoshinori Sato <ysato@users.sourceforge.jp>, "Rafael J . Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Jiri Slaby <jslaby@suse.com>, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "corbet@lwn.net" <corbet@lwn.net>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, "will@kernel.org" <will@kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Oct 04, 2019 at 03:00:31PM +0200, Greg Kroah-Hartman wrote:
-> On Thu, Oct 03, 2019 at 11:29:11AM +0200, Bartosz Golaszewski wrote:
-> > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> > 
-> > Some time ago I started a discussion about the need for a proper early device
-> > probing mechanism[1]. One that would be based on real platform drivers and
-> > support both platform data and device tree.
-> > 
-> > While we're far from reaching any consensus on the implementation, Arnd
-> > suggested that I start off by moving the SuperH-specific early platform
-> > drivers implementation to arch/sh[2].
-> > 
-> > This series is the first attempt at making way for a new, less hacky
-> > implementation.
-> > 
-> > The first patch moves all the early_platform code to arch/sh.
-> > 
-> > The second patch prefixes all early_platform symbols with 'sh_'.
-> > 
-> > [1] https://lkml.org/lkml/2018/4/26/657
-> > [2] https://lkml.org/lkml/2018/4/27/239
-> > 
-> > v1 -> v2:
-> > - certain drivers are compiled for arm/mach-shmobile too - we need to
-> >   add ifdefs for CONFIG_SUPERH around early_platform calls
-> > 
-> > v2 -> v3:
-> > - added a stub for is_early_platform_device() which always returns false
-> >   on non-SuperH architectures
-> > 
-> > v3 -> v4:
-> > - rebased on top of v5.4-rc1
-> > - removed patches that are already upstream from the series
-> > 
-> > Bartosz Golaszewski (2):
-> >   drivers: move the early platform device support to arch/sh
-> >   sh: add the sh_ prefix to early platform symbols
+Hello Greg,
+
+On 10/4/2019 4:07 PM, gregkh@linuxfoundation.org wrote:
+> On Wed, Oct 02, 2019 at 01:04:42PM +0000, Stefan-gabriel Mirea wrote:
+>> --- a/include/uapi/linux/serial_core.h
+>> +++ b/include/uapi/linux/serial_core.h
+>> @@ -290,7 +290,7 @@
+>>  /* Sunix UART */
+>>  #define PORT_SUNIX   121
+>>
+>> -/* Freescale Linflex UART */
+>> -#define PORT_LINFLEXUART     121
+>> +/* Freescale LINFlexD UART */
+>> +#define PORT_LINFLEXUART     122
 > 
-> I like this, any objection from anyone if I take this in my driver-core
-> tree for 5.5-rc1?
+> This is a different change, and one that should be split out and
+> submitted now, for 5.4.  Please do that as the id number is incorrect,
+> don't bury a valid change in the middle of a "marketing renamed the
+> device" patch :)
 
-I don't think I have any objection. It will probably make gratuitous
-merge conflicts with Sato-san's old device tree sh4 work when we get
-back to finishing that, but that's not really a big deal.
+I will do that, thanks!
 
-Rich
+Regards,
+Stefan
