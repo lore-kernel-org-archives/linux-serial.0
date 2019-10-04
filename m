@@ -2,147 +2,100 @@ Return-Path: <SRS0=XuIp=X5=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 923B2C4360C
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 12:27:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E20F0C4360C
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 12:45:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 678F5215EA
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 12:27:59 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.b="KtOZZQLW"
+	by mail.kernel.org (Postfix) with ESMTP id AA0FF21D71
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 12:45:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1570193108;
+	bh=sRs7snurDrY7aNegXSG/glvUBJk3hz4ywZp9JmKIFuQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=BwFWJtB5pPdPM5e1Nkt5eDdMocn9s5T5+8MBxLOwfFETPstrqbC/X/ldSSprD7gOq
+	 hM5IXPQIELzza5O3H2CSUBI0EmwtVDdJeRI4jbakrkaPoqDRVsQFqED9NoyL0EoRnh
+	 7jjsIZnxJA/1zTDxtzp93PgGMhxazOWliM5e0E54=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729364AbfJDM1z (ORCPT
+        id S1727587AbfJDMpI (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Oct 2019 08:27:55 -0400
-Received: from mail-ua1-f65.google.com ([209.85.222.65]:43697 "EHLO
-        mail-ua1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730606AbfJDM1x (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Oct 2019 08:27:53 -0400
-Received: by mail-ua1-f65.google.com with SMTP id k24so1962929uag.10;
-        Fri, 04 Oct 2019 05:27:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wSaY7W6VdgweKOp9jTYZreYJLfH4I8nv1hwYNYCfNYk=;
-        b=KtOZZQLWCS4cSkTOhxNhKpVdlgScCqqd1k9O1sOLLv3yWqmzDmWQCdv8SbIdZBoMW1
-         p+XTPTLA1kfle7EHLlKSnLYcUlzSuqJptOPqafa3svn7Hf80RAA2Cx71KzunAZVY5CKI
-         8ojxRA8Gp9JZxvfYXIFcqiBo5VkICsvGOOLms+dAmKNc2Gyb1ABs5C4J6QthrMsOZNdB
-         mA5kWsr4Hs0Zx6aJQedGIHQBYMfbbCdUocr8j9BalA5nxZKpqtZiAC0qFj6rsGSkNaVO
-         NBFkJf8d9O/ZSW6P4AaWH+j1E+rTmA4hXSMSg0moPcRF/G6BePZfF5CN15CA+rHi0N3V
-         MILQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wSaY7W6VdgweKOp9jTYZreYJLfH4I8nv1hwYNYCfNYk=;
-        b=mtlLCuTCcBLd05SOXYG8dYN1SnnX2nuGNWkEGT8e9CSLzbeyAO5hFA5xIlha4VUN+L
-         ox0TwflDvulY3lwc5omUCkWW+yg6HpwYdZPdyQHocYSPmHL2Xz2vePYQWu9JdevbPG/k
-         J3If6Pkrnx4kopnrYSdbJpCY2kdKtNRpPc0SCjHkk+DllXhALIDHpCzhmpgcsLTe2ifv
-         I+Ur6SxmXqcwiZPtE5Vp8HUbcXq8qb0cOfYAwOd1oiaq1YbDUvVM+B3dBA63EzGVAyyl
-         OAqHDIXthDflIOk2AmdbvBqXLOxO6PNYxzWF/pjRXFOihDDTxI20tiz+oq62csuIcxEa
-         jSCQ==
-X-Gm-Message-State: APjAAAV/TQbYXSW9CD0HgYtFdK0/dskZBuvQApVkhOp4jGCOvYfNtZwq
-        02/RaAtxq3HJq/Vff5EvI6kySIr7U3T/BJpZ3vQ=
-X-Google-Smtp-Source: APXvYqyUkWxXFI6t/ssjecMpUlOsdFzkDM1l5GdegvctcVigKJWMkEH5L7iuW0BTIlwrQde45JWQ1TaHnD69ETrLuPE=
-X-Received: by 2002:ab0:2397:: with SMTP id b23mr317737uan.91.1570192072150;
- Fri, 04 Oct 2019 05:27:52 -0700 (PDT)
+        Fri, 4 Oct 2019 08:45:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58172 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726024AbfJDMpI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 4 Oct 2019 08:45:08 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2FE7D20862;
+        Fri,  4 Oct 2019 12:45:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1570193107;
+        bh=sRs7snurDrY7aNegXSG/glvUBJk3hz4ywZp9JmKIFuQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oGXnKA6vAFYzlflBwNKGjSUTINUF7dy11ZJSteuU1jqMYvrR3NLG5itBY5JV3JXty
+         Qn/ZqfQ3rqDqgPPyxZPiv+8pfeb2p3MSG7V/TlI3BO4qVBiKJctHTyFSyB8tIkUHdF
+         Faq9NE07r7Ax9p9GzpvySwkyJ72+ZZv+PjAHAORk=
+Date:   Fri, 4 Oct 2019 14:45:05 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Pascal Terjan <pterjan@gmail.com>
+Cc:     Jiri Slaby <jslaby@suse.com>, linux-m68k@lists.linux-m68k.org,
+        linux-serial@vger.kernel.org, Pascal Terjan <pterjan@google.com>
+Subject: Re: [PATCH] Remove every trace of SERIAL_MAGIC
+Message-ID: <20191004124505.GA556034@kroah.com>
+References: <20190927205524.250238-1-pterjan@google.com>
 MIME-Version: 1.0
-References: <CAHCN7xLO5VgA6tW4p7QjwPv_QXv==zbC38TxXtsR5x9H0mUGJA@mail.gmail.com>
- <CAHCN7xJPv7W381R7LS4bB8xWWpugz2NwbTUtj-hqHnDBZ9MFzA@mail.gmail.com>
-In-Reply-To: <CAHCN7xJPv7W381R7LS4bB8xWWpugz2NwbTUtj-hqHnDBZ9MFzA@mail.gmail.com>
-From:   Yegor Yefremov <yegorslists@googlemail.com>
-Date:   Fri, 4 Oct 2019 14:27:39 +0200
-Message-ID:
- <CAGm1_kv6RMUDppu6ZjY9Dq7QL=hS=D+e3KS37+V0ncbwoXE6mQ@mail.gmail.com>
-Subject: Re: DM3730 Bluetooth Performance differences between SERIAL_8250_OMAP
- vs SERIAL_OMAP
-To:     Adam Ford <aford173@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-OMAP <linux-omap@vger.kernel.org>,
-        Vignesh R <vigneshr@ti.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190927205524.250238-1-pterjan@google.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191004122739.PIMgMn6Ymg4EudAMjL5EHxAAtWzZaxuxQG3qbAxu0YE@z>
 
-Hi Adam,
+On Fri, Sep 27, 2019 at 10:55:24PM +0200, Pascal Terjan wrote:
+> The only code mentioning it doesn't build (and hasn't at least since git)
+> and doesn't include the header defining it.
+> 
+> This means removing support for checking magic in amiserial.c
+> (SERIAL_PARANOIA_CHECK option), which was checking a magic field which
+> doesn't currently exist in the struct.
+> ---
+>  Documentation/process/magic-number.rst        |  1 -
+>  .../it_IT/process/magic-number.rst            |  1 -
+>  .../zh_CN/process/magic-number.rst            |  1 -
+>  drivers/net/wan/z85230.h                      |  2 -
+>  drivers/tty/amiserial.c                       | 81 +------------------
+>  5 files changed, 1 insertion(+), 85 deletions(-)
 
-On Fri, Oct 4, 2019 at 12:39 PM Adam Ford <aford173@gmail.com> wrote:
->
-> On Fri, Oct 4, 2019 at 5:02 AM Adam Ford <aford173@gmail.com> wrote:
-> >
-> > I am running Kernel 5.3.2 trying to troubleshoot some intermittent
-> > Bluetooth issues, and I think I have narrowed it down to the serial
-> > driver in use.
->
-> I should have also noted that it's using UART2 with CTS and RTS on the
-> DM3730 (omap3630) and its configured with a baud rate of 3M.
-> I tried slowing it to 115200, but that didn't help.  I tried disabling
-> the DMA hooks from the device tree, and that didn't help.
->
-> > By default, omap2plus_defconfig enables both SERIAL_8250_OMAP and
-> > SERIAL_OMAP.  I have my console device configured as  ttyS0, and all
-> > appears fine.  When I enable Bluetooth, however, I get intermittent
-> > errors on an DM3730 / OMAP3630.
-> >
-> > Using the 8250 driver for Blueotooth I get intermittent frame errors
-> > and data loss.
-> >
-> > Scanning ...
-> > [   28.482452] Bluetooth: hci0: Frame reassembly failed (-84)
-> > [   36.162170] Bluetooth: hci0: Frame reassembly failed (-84)
-> >         F4:4E:FC:C9:2F:57       BluJax
-> > # l2ping F4:4E:FC:C9:2F:57
-> > Ping: F4:4E:FC:C9:2F:57 from 00:18:30:49:7D:63 (data size 44) ...
-> > 44 bytes from F4:4E:FC:C9:2F:57 id 0 time 8.27ms
-> > no response from F4:4E:FC:C9:2F:57: id 1
-> > ^C2 sent, 1 received, 50% loss
-> >
-> > (after a fairly long hang, I hit control-c)
-> >
-> > However, disabling the 8250 driver and using the only SERIAL_OMAP and
-> > the console routed to ttyO0, the Bluetooth works well, so I believe it
-> > to be a serial driver issue and not a Bluetooth error.
-> >
-> > # hcitool scan
-> > Scanning ...
-> >         F4:4E:FC:C9:2F:57       BluJax
-> > ^C
-> > # l2ping F4:4E:FC:C9:2F:57
-> > Ping: F4:4E:FC:C9:2F:57 from 00:18:30:49:7D:63 (data size 44) ...
-> > 44 bytes from F4:4E:FC:C9:2F:57 id 0 time 6.90ms
-> > ...
-> > 44 bytes from F4:4E:FC:C9:2F:57 id 14 time 28.29ms
-> > ^C15 sent, 15 received, 0% loss
-> > #
-> >
-> > 0% loss and regular, repeatable communication without any Frame
-> > reassembly errors.
-> >
->
-> I tried disabling SERIAL_OMAP and using only SERIAL_8250_OMAP, but
-> that didn't help.  Because the issue goes away when I disable
-> SERIAL_8250_OMAP, I am wondering if something is either being
-> misconfigured or some IRQ or DMA integration is missing that may be
-> present with the older SERIAL_OMAP driver.
->
-> > Any suggestions on how to troubleshoot or what might cause the
-> > difference between the two drivers?
+Hi,
 
-Can it be related to this issue [1]? Can you confirm that 5.2 is
-working as expected with the 8250 driver?
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
-[1] https://marc.info/?l=linux-serial&m=156965039008649&w=2
+You are receiving this message because of the following common error(s)
+as indicated below:
 
-Cheers,
-Yegor
+- Your patch does not have a Signed-off-by: line.  Please read the
+  kernel file, Documentation/SubmittingPatches and resend it after
+  adding that line.  Note, the line needs to be in the body of the
+  email, before the patch, not at the bottom of the patch or in the
+  email signature.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
