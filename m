@@ -7,38 +7,38 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F523C47404
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 15:14:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0AB0C47404
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 15:14:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1D8FE222C4
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 15:14:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8E7DE2133F
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 15:14:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1570202075;
-	bh=T+96WbhywkN9TZ3RgQsCxJM8eZpY0gKukrAqlx2v0jM=;
-	h=From:To:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=mS4HFL0v708GGXN3NfhEUhG+mQTEOUUj96PgGt4nvWgr36Y07FXCpQnT0YkYYQfGK
-	 O3lZ8WeaVRXmb5m7wreP2hls+bW8IWixDwzfOziXvFye2cU6jhB9F5vuoM8Z6D4Jzs
-	 Ut747dS4R/QTKxGKdmcFRBWhqcPeLDxn7lJFVzf8=
+	s=default; t=1570202076;
+	bh=At7Vw3YFrrg3TOqKMg8f1TsgKNBKoiEKL7wq9XiiUKk=;
+	h=From:To:Subject:Date:List-ID:From;
+	b=E20xYkkIU9RFoFzu9df+ayDinJm2IDfCCdaC5GiFSXUOh+KY65dO8WiptDewn+w81
+	 GHGSErCWfbFi4ucVrGLjYBe7yoWyigySyqUZGB2DZgL5Vxso2mOcn1peejj4UPN5m8
+	 QahNQUKezighDujxnCaSBSb7xm+XS2pK6EDc1jAQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389773AbfJDPOb (ORCPT
+        id S2389586AbfJDPO0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Oct 2019 11:14:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52224 "EHLO mail.kernel.org"
+        Fri, 4 Oct 2019 11:14:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52010 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389596AbfJDPOa (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Oct 2019 11:14:30 -0400
+        id S2389086AbfJDPOZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 4 Oct 2019 11:14:25 -0400
 Received: from localhost.localdomain (unknown [194.230.155.145])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BA3AC222C2;
-        Fri,  4 Oct 2019 15:14:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4017F207FF;
+        Fri,  4 Oct 2019 15:14:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570202070;
-        bh=T+96WbhywkN9TZ3RgQsCxJM8eZpY0gKukrAqlx2v0jM=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=XbNy0vjvtdDr7yclvUmZXuFX91a7a2NmRHOkhWFrYJdsLiTWwiw/PY+VE2zOSgaJc
-         JFCE8U5N2omSGBkLx5Jk0Qwqr+2WfhjbCDPbIZ3uKUHxw7weadLSquNzRFbcUSBly3
-         QGtdp9XUgZgmaydqz8uauSYOun9jHAwHXMzTCQrE=
+        s=default; t=1570202065;
+        bh=At7Vw3YFrrg3TOqKMg8f1TsgKNBKoiEKL7wq9XiiUKk=;
+        h=From:To:Subject:Date:From;
+        b=BeGHmF7Rbd6pkfOjo2uCfn8OcrdTdcDJynBCXDiHZNqmgwIE1+aRy4wZQW23eUGGP
+         U+RHRG2J0ZC+B7hAvb/Ik0Nsr00FdebTvb84NysQA4HHgL8yfGWaQ2VW+9bCdu7zMd
+         kUWdVsOOM75RFDTU0Ja0JGS5R4l69pzZnlhyyzYs=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Kukjin Kim <kgene@kernel.org>,
         Krzysztof Kozlowski <krzk@kernel.org>,
@@ -54,39 +54,42 @@ To:     Kukjin Kim <kgene@kernel.org>,
         linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH 2/3] dt-bindings: gpu: samsung-rotator: Fix indentation
-Date:   Fri,  4 Oct 2019 17:14:13 +0200
-Message-Id: <20191004151414.8458-2-krzk@kernel.org>
+Subject: [PATCH 1/3] dt-bindings: arm: samsung: Force clkoutN names to be unique in PMU
+Date:   Fri,  4 Oct 2019 17:14:12 +0200
+Message-Id: <20191004151414.8458-1-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191004151414.8458-1-krzk@kernel.org>
-References: <20191004151414.8458-1-krzk@kernel.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Message-ID: <20191004151413.qjuMNyZI-n4pDHC-hoHEl7fRV-jUJJd6h9vIf-_QYjA@z>
+Message-ID: <20191004151412.sGaxsfBkZpSKCvQH4WIcz4o2G3I-NNnedECCnP6h_eg@z>
 
-Array elements under 'items' should be indented.
+The clkoutN names of clocks must be unique because they represent
+unique inputs of clock multiplexer.
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- Documentation/devicetree/bindings/gpu/samsung-rotator.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/arm/samsung/pmu.yaml | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/gpu/samsung-rotator.yaml b/Documentation/devicetree/bindings/gpu/samsung-rotator.yaml
-index 45ce562435fa..f4dfa6fc724c 100644
---- a/Documentation/devicetree/bindings/gpu/samsung-rotator.yaml
-+++ b/Documentation/devicetree/bindings/gpu/samsung-rotator.yaml
-@@ -27,7 +27,7 @@ properties:
+diff --git a/Documentation/devicetree/bindings/arm/samsung/pmu.yaml b/Documentation/devicetree/bindings/arm/samsung/pmu.yaml
+index 73b56fc5bf58..d8e03716f5d2 100644
+--- a/Documentation/devicetree/bindings/arm/samsung/pmu.yaml
++++ b/Documentation/devicetree/bindings/arm/samsung/pmu.yaml
+@@ -53,8 +53,10 @@ properties:
+       List of clock names for particular CLKOUT mux inputs
+     minItems: 1
+     maxItems: 32
+-    items:
+-      pattern: '^clkout([0-9]|[12][0-9]|3[0-1])$'
++    allOf:
++      - items:
++          pattern: '^clkout([0-9]|[12][0-9]|3[0-1])$'
++      - uniqueItems: true
  
-   clock-names:
-     items:
--    - const: rotator
-+      - const: rotator
- 
- required:
-   - compatible
+   clocks:
+     minItems: 1
 -- 
 2.17.1
 
