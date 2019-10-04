@@ -2,133 +2,184 @@ Return-Path: <SRS0=XuIp=X5=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B4CC4360C
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 19:29:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9D4FC47404
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 21:43:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3AD91215EA
-	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 19:29:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AE38F222C5
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 21:43:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mHbN9Zq3"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="MJ9Cw0wp"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728954AbfJDT3t (ORCPT
+        id S1730508AbfJDVni (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Oct 2019 15:29:49 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:45202 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725932AbfJDT3t (ORCPT
+        Fri, 4 Oct 2019 17:43:38 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:43284 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730325AbfJDVnh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Oct 2019 15:29:49 -0400
-Received: by mail-io1-f68.google.com with SMTP id c25so15905328iot.12;
-        Fri, 04 Oct 2019 12:29:47 -0700 (PDT)
+        Fri, 4 Oct 2019 17:43:37 -0400
+Received: by mail-pf1-f194.google.com with SMTP id a2so4665514pfo.10
+        for <linux-serial@vger.kernel.org>; Fri, 04 Oct 2019 14:43:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y0OJ7/SgReOk2grQFvLnWH91Op9wRRMdd5tOpx1hbC4=;
-        b=mHbN9Zq37CUj7dDvd5GrFR4IpOo9GIoKPErGNZnhpHnU56KhvOuWcFlRocijnLctvK
-         VLqMyrAwP66rgebj4xeayopAFe9kezh8O0LUhQNIP/3WCjkmfCts8nUSNKv0IA4O3kXS
-         9uZmUiVfs/da+hSDrhijeCxDwnUvpbeNy+nUUGPoi7HzCK3irA33zewV4A7tcGGX374y
-         Qpk+rsA3D1yrJATG9JfbEflWw/+SyUnbWD0Z71jrVxzDaVdR5IpKN18eJGXFbGdxpYwn
-         s8dSDWR37eSDNVweXavLH0TGAt6R0ircrGNjs7pylUYmHUHuMAfTY4H5zmExHRBrdQR+
-         MdTw==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=42znpoZzZjmG9yaRFQAzNvyi78UFWYqHsVeXsUAMBvM=;
+        b=MJ9Cw0wp0Mh+XkAZ37PArMbq3cXXTtMOK8MgPDNXCkP0yXajJDHPB5xaYgU0YftimM
+         IZ9Xr5C2yJosZi22FLfNZvyhDcgs9mFbobfjnE1WeFcBQ21xU74RMtcoRM+q4pMigeCm
+         sJyAZ9okOsrTu89hmigncAMqTy1HVXQqwb/PM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y0OJ7/SgReOk2grQFvLnWH91Op9wRRMdd5tOpx1hbC4=;
-        b=mfI9rzDhvBYzE3bFn5jWbdGoEB0oJL7lm01Q7+lkBvNkLM9Qz/O6GaW78sA3LdOlNP
-         8BkgQ+LBZTlo+dzeBfLUE9Nw46JEKFO/Ov7476iutneCNcEnjDB+HHngM/CgrafnMJv2
-         wEManqk8LDZxo0XfduKl9b6NQErC6N9chQ/MIGfpnqws33UsFicKq+JZgXprPr2vZgl2
-         wnPtaDTqo0UveO1hZZ/T2pfabnAX0daxd1OR67Zg5ve+ohB4xMB8MpdiVAIAWyKltQ+D
-         Q2IBVQzYKqFUxVlJt6J79WS1iE9SG2T6r73CUIU6h2GR/4CVjgKuMLAhrWZBBiuRYHdu
-         BYFg==
-X-Gm-Message-State: APjAAAWAFWa40gFDQXhvy5leYrFovHO4ETd3lkQ88/XVIB1y4AEF9kmT
-        TZE4zY+ebpGq50wLSSTAUqjxwFCbC//iFmW5LGU=
-X-Google-Smtp-Source: APXvYqzaMGngribRRvqu3VAuNb5LGILxFgGbQKy7BcwnBkr8wOogbBTVo+amQa6LHmrdHfubVeo8mjbYvh53Yxf3djg=
-X-Received: by 2002:a92:3314:: with SMTP id a20mr16796103ilf.276.1570217386586;
- Fri, 04 Oct 2019 12:29:46 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190723115400.46432-1-tony@atomide.com>
-In-Reply-To: <20190723115400.46432-1-tony@atomide.com>
-From:   Adam Ford <aford173@gmail.com>
-Date:   Fri, 4 Oct 2019 14:29:35 -0500
-Message-ID:
- <CAHCN7x+6KYjnm5daRe_Y5XEWnDBWQnz8rOKYH2wTgx9avvokmQ@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250_omap: Fix idling for unloaded serdev drivers
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Peter Hurley <peter@hurleysoftware.com>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=42znpoZzZjmG9yaRFQAzNvyi78UFWYqHsVeXsUAMBvM=;
+        b=HeR+lzXSOtM4bYp12gU1SJi1SPesimi/nhYH+SrqD5g0w2voEejCBy7MMrpz9LOY9n
+         Q/TK8rnTCNgZFVyIoOKGbXTYswn9Uf9y/05rtCwN+4uRJKCKkaRsxgXoCZ+TNx8VjPFw
+         +9W1Cprjzi3orAz0UnKl1R/l4MZRDmkAvzR8CZrTvbncJ4K/q4vvX7lVwMonBYBKd8vt
+         vnHqtAuuD/KyMs9xCBSGYsMIeOzjEfcrB+jKWqulN4ftLETHD/9+FOte1wDVsbOeZ71m
+         +RfTah5+ke30Zn4DM4u1rzo56CJ2eY1cIWO0hKyy4oXgfIEGOYAvzeyM8i2USlG+L1m5
+         n0KQ==
+X-Gm-Message-State: APjAAAWpVLT4tU+575OufcVTmeR/eL+OLG0vKPRyIbZBIN3q4A3wkOWm
+        a7ginh+Rp3f6DasKmX8jJJrXRQ==
+X-Google-Smtp-Source: APXvYqy1SG4O+l1PxmR4D+2nW3K5VMykMwaSO5DOFDZyCRsqYuEK129X6z1/RcOxIP4TfZnnBe0BMw==
+X-Received: by 2002:a17:90a:e017:: with SMTP id u23mr4003152pjy.55.1570225416541;
+        Fri, 04 Oct 2019 14:43:36 -0700 (PDT)
+Received: from smtp.gmail.com ([2620:15c:202:1:fa53:7765:582b:82b9])
+        by smtp.gmail.com with ESMTPSA id a11sm10446799pfg.94.2019.10.04.14.43.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Oct 2019 14:43:36 -0700 (PDT)
+From:   Stephen Boyd <swboyd@chromium.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        alsa-devel@alsa-project.org, Andrew Lunn <andrew@lunn.ch>,
+        Arnd Bergmann <arnd@arndb.de>, Dan Murphy <dmurphy@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh R <vigneshr@ti.com>, linux-serial@vger.kernel.org,
-        Linux-OMAP <linux-omap@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Johan Hovold <johan@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Jean Delvare <jdelvare@suse.com>, Jiri Slaby <jslaby@suse.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-hwmon@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Pavel Machek <pavel@ucw.cz>,
+        Richard Leitner <richard.leitner@skidata.com>,
+        Riku Voipio <riku.voipio@iki.fi>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>
+Subject: [PATCH 00/10] Stop NULLifying match pointer in of_match_device()
+Date:   Fri,  4 Oct 2019 14:43:24 -0700
+Message-Id: <20191004214334.149976-1-swboyd@chromium.org>
+X-Mailer: git-send-email 2.23.0.581.g78d2f28ef7-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191004192935.pKWmXSlwzPmiOlgCQsrZoDiWkm6hoH_zFmUNObSx8Lo@z>
+Content-Type: text/plain; charset="UTF-8"
+Message-ID: <20191004214324.qQa-uRbyG3OLiRGDDonCRkm6Sh5vbKEbHicwt3hZbhE@z>
 
-On Tue, Jul 23, 2019 at 5:21 PM Tony Lindgren <tony@atomide.com> wrote:
->
-> For many years omap variants have been setting the runtime PM
-> autosuspend delay to -1 to prevent unsafe policy with lossy first
-> character on wake-up. The user must specifically enable the timeout
-> for UARTs if desired.
->
-> We must not enable the workaround for serdev devices though. It leads
-> into UARTs not idling if no serdev devices are loaded and there is no
-> sysfs entry to configure the UART in that case. And this means that
-> my PM may not work unless the serdev modules are loaded.
->
-> We can detect a serdev device being configured based on a dts child
-> node, and we can simply skip the workround in that case. And the
-> serdev driver can idle the port during runtime when suitable if an
-> out-of-band wake-up GPIO line exists for example.
->
-> Let's also add some comments to the workaround while at it.
+of_match_device() uses of_match_ptr() to make the match table argument
+NULL via the pre-processor when CONFIG_OF=n. This makes life harder for
+compilers who think that match tables are never used and warn about
+unused variables when CONFIG_OF=n. This series changes various callers
+to use of_device_get_match_data() instead, which doesn't have this
+problem, and removes the of_match_ptr() usage from of_match_device() so
+that the compiler can stop complaining about unused variables. It will
+do dead code elimination instead and remove the match table if it isn't
+actually used.
 
-This seems to help some of the stability issues I am seeing on the
-DM3730 UART2 running Bluetooth at 3000000 baud.
-Does it make sense to backport this to the stable kernels?
+Huge Cc list!
 
-adam
+Cc: Alessandro Zummo <a.zummo@towertech.it>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Cc: <alsa-devel@alsa-project.org>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Dan Murphy <dmurphy@ti.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Frank Rowand <frowand.list@gmail.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Gregory Clement <gregory.clement@bootlin.com>
+Cc: Grygorii Strashko <grygorii.strashko@ti.com>
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Jacek Anaszewski <jacek.anaszewski@gmail.com>
+Cc: Jacopo Mondi <jacopo@jmondi.org>
+Cc: Jaroslav Kysela <perex@perex.cz>
+Cc: Jason Cooper <jason@lakedaemon.net>
+Cc: Jean Delvare <jdelvare@suse.com>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Liam Girdwood <lgirdwood@gmail.com>
+Cc: <linux-hwmon@vger.kernel.org>
+Cc: <linux-leds@vger.kernel.org>
+Cc: <linux-media@vger.kernel.org>
+Cc: <linux-omap@vger.kernel.org>
+Cc: <linux-renesas-soc@vger.kernel.org>
+Cc: <linux-rtc@vger.kernel.org>
+Cc: <linux-serial@vger.kernel.org>
+Cc: <linux-spi@vger.kernel.org>
+Cc: <linux-usb@vger.kernel.org>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: Paul Cercueil <paul@crapouillou.net>
+Cc: Pavel Machek <pavel@ucw.cz>
+Cc: Richard Leitner <richard.leitner@skidata.com>
+Cc: Riku Voipio <riku.voipio@iki.fi>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+Cc: Takashi Iwai <tiwai@suse.com>
 
->
-> Cc: Johan Hovold <johan@kernel.org>
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-> ---
->  drivers/tty/serial/8250/8250_omap.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -1234,7 +1234,16 @@ static int omap8250_probe(struct platform_device *pdev)
->
->         device_init_wakeup(&pdev->dev, true);
->         pm_runtime_use_autosuspend(&pdev->dev);
-> -       pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
-> +
-> +       /*
-> +        * Disable runtime PM until autosuspend delay unless specifically
-> +        * enabled by the user via sysfs. This is the historic way to
-> +        * prevent an unsafe default policy with lossy characters on wake-up.
-> +        * For serdev devices this is not needed, the policy can be managed by
-> +        * the serdev driver.
-> +        */
-> +       if (!of_get_available_child_count(pdev->dev.of_node))
-> +               pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
->
->         pm_runtime_irq_safe(&pdev->dev);
->         pm_runtime_enable(&pdev->dev);
-> --
-> 2.21.0
+Stephen Boyd (10):
+  leds: pca953x: Use of_device_get_match_data()
+  media: renesas-ceu: Use of_device_get_match_data()
+  rtc: armada38x: Use of_device_get_match_data()
+  drivers: net: davinci_mdio: Use of_device_get_match_data()
+  serial: stm32: Use of_device_get_match_data()
+  usb: usb251xb: Use of_device_get_match_data()
+  ASoC: jz4740: Use of_device_get_match_data()
+  spi: gpio: Look for a device node instead of match
+  hwmon: (lm70) Avoid undefined reference to match table
+  of/device: Don't NULLify match table in of_match_device() with
+    CONFIG_OF=n
+
+ drivers/hwmon/lm70.c                   |  2 +-
+ drivers/leds/leds-pca9532.c            | 14 +----
+ drivers/media/platform/renesas-ceu.c   |  2 +-
+ drivers/net/ethernet/ti/davinci_mdio.c | 12 ++---
+ drivers/rtc/rtc-armada38x.c            | 10 ++--
+ drivers/spi/spi-gpio.c                 |  5 +-
+ drivers/tty/serial/stm32-usart.c       | 71 ++++++++++++--------------
+ drivers/tty/serial/stm32-usart.h       |  2 +-
+ drivers/usb/misc/usb251xb.c            | 12 ++---
+ include/linux/of_device.h              |  4 +-
+ sound/soc/jz4740/jz4740-i2s.c          |  5 +-
+ 11 files changed, 55 insertions(+), 84 deletions(-)
+
+
+base-commit: 54ecb8f7028c5eb3d740bb82b0f1d90f2df63c5c
+-- 
+Sent by a computer through tubes
