@@ -1,98 +1,116 @@
-Return-Path: <SRS0=fcdp=X4=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=XuIp=X5=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6BE9C4CED1
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Oct 2019 17:31:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6160C4360C
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 10:02:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AEC7B21D71
-	for <linux-serial@archiver.kernel.org>; Thu,  3 Oct 2019 17:31:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7D2E1215EA
+	for <linux-serial@archiver.kernel.org>; Fri,  4 Oct 2019 10:02:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="EvjKgRek"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QMWp6/G+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730215AbfJCQKT (ORCPT
+        id S1729093AbfJDKCS (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 3 Oct 2019 12:10:19 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:46756 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732585AbfJCQKS (ORCPT
+        Fri, 4 Oct 2019 06:02:18 -0400
+Received: from mail-io1-f51.google.com ([209.85.166.51]:36262 "EHLO
+        mail-io1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726927AbfJDKCS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 3 Oct 2019 12:10:18 -0400
-Received: by mail-pl1-f196.google.com with SMTP id q24so1718841plr.13
-        for <linux-serial@vger.kernel.org>; Thu, 03 Oct 2019 09:10:18 -0700 (PDT)
+        Fri, 4 Oct 2019 06:02:18 -0400
+Received: by mail-io1-f51.google.com with SMTP id b136so12272048iof.3;
+        Fri, 04 Oct 2019 03:02:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=message-id:mime-version:content-transfer-encoding:in-reply-to
-         :references:from:to:cc:subject:user-agent:date;
-        bh=v9Xix4ukYpxBHBe1n3DXedqcwTHB0Vaz/YT0zLakIIo=;
-        b=EvjKgRekrDRXydliKainNvs1EDKpTaQC9hbAsmM3L4SgVhnCamPwwGeWgzLCmD/6ZN
-         YJihKrj4Aua03JcGiXSnnv9gCPNFzimjX/dj6do1v8Tarr4QDToU5Y7qaBlDo7r0dOjB
-         7MqZGdDBTEaz9H1tW70rmHCyl63UhJarLzgIk=
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=zVzaL13aBMw0U8JG2NOEmJnjPxX8zMVFzGvL8Tcw4zE=;
+        b=QMWp6/G+6FQ1g1EQynFBy9qWtAZZvbEl3vOY2ZedehHYyxKZxM/Eonl4lW4ykcXIC9
+         3kiJdmKWs3Q8Z/0PPZNV7FfF+lkzhC7tyZp5I3lgBnlk2/dx0jCtyxFuUP4Kq3q+UaV9
+         j2zrTEBpydXkC24ZBOnRVqg8olG2y1m5ntg+ouIBV18wnKLvdHTJ1aSe0LOrqXlPBRMg
+         foVktVWwiAPyFKX202xdxFE1O3kdUG2v59sGkmod4c92aICgMbdfr3t/6fwCY/60fxD/
+         XUFu2W2PvCyn4JFcZUizrR5n4vGtTn3UgiVAkGHeJMU2jVoSr8F2M0+F6HsBwLf42ngb
+         vg8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:mime-version
-         :content-transfer-encoding:in-reply-to:references:from:to:cc:subject
-         :user-agent:date;
-        bh=v9Xix4ukYpxBHBe1n3DXedqcwTHB0Vaz/YT0zLakIIo=;
-        b=UxAF6jLyXpMyCioczwmyyKtGrGHKwgnwYDyUk34jOfANdGoibdt4p+KIeuXEC0W/mi
-         WH4IC/M5yQqyMTo3V0Mw6vok1nsO2OQdi+sohhJo2mrKxPaSlsAQk/3s1uIQEkx+qpuF
-         WuC4Aby53vw7vCNKffl/jmLYFqvSX6izYf+M/oE0vZlVq3ZkrGcLV90xycuS7oeEEY31
-         eDqw2sF+PDBzPUbDx0NsWa2DMQeZHPiNiV0Ng1cvmT6a42keTP2l5zunabuAeVD69VwO
-         kfymHdbWlkZMgiEeWEjnFzNVQ93wwF0UWCGBf5kZzcy+LcYdtuPhsoTxW5xk9BowKAJo
-         sXsA==
-X-Gm-Message-State: APjAAAXTPO5XGADlEiLRH8CsaKQPcjCqstxWE25YDqxhHCGyBsY6iiqO
-        NxTmWksg77t5fUZGYc24PMAVMw==
-X-Google-Smtp-Source: APXvYqwv9TynoMmQOqZjRuUUV4/ZHjd2t53y5sK2b6fAukPfOM6uRj4H5n6IfZmi7UusPIcmhIpQeQ==
-X-Received: by 2002:a17:902:ba82:: with SMTP id k2mr9926433pls.293.1570119017817;
-        Thu, 03 Oct 2019 09:10:17 -0700 (PDT)
-Received: from chromium.org ([2620:15c:202:1:fa53:7765:582b:82b9])
-        by smtp.gmail.com with ESMTPSA id b69sm3516011pfb.132.2019.10.03.09.10.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Oct 2019 09:10:17 -0700 (PDT)
-Message-ID: <5d961d69.1c69fb81.43b1b.addf@mx.google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=zVzaL13aBMw0U8JG2NOEmJnjPxX8zMVFzGvL8Tcw4zE=;
+        b=Pa8Iea1+rBsZKbGTf2sy8N82+lgIjLJVCeZQ6SpiG2DyyDZrua0XQS3pXYN+xhIGBW
+         anSqK1hTFzrgH6XOYqdOLzxor+T+G4MMfdLj3NLmNrUzNUaDmaGJXJ2HBOi8nkCphU8M
+         lkkkLrGy98NSEMelfwqdTWg0gNQuCYPAv26BERjsV0Qe365BuEpI5glcfkYG5faA4jty
+         j/9MxbNtnUygAr7nC726icOXNZn4Ghvf3FnrK7GFKteLE570gDcs4vYMgr1K4XuWk+ib
+         poh+u1biin+Pd3/Jys4dbtXvmLcgidH8OJ5ex5F6tZD8Uv+pmChLO/I2mE9R5ToGZCKc
+         bSLw==
+X-Gm-Message-State: APjAAAWGzyOPD1jUVqhW0ofvcmcKB1kW7uRiPc68mekQ8+LUUI7G6bot
+        3Ery/jKeKLEoGyO2Vx69AgUV+s3lR6/zoGjwXIY=
+X-Google-Smtp-Source: APXvYqzMrdeHLGJcpBa6sb2EAlzKy/w8w1xOVCGpGNdUkhtzyFrrOpSnqNRE8cnlYFCtBJxxnh89exYjDJhjAyKlo4M=
+X-Received: by 2002:a05:6638:3a5:: with SMTP id z5mr13854093jap.95.1570183337214;
+ Fri, 04 Oct 2019 03:02:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20191001180743.1041-1-geert+renesas@glider.be>
-References: <20191001180743.1041-1-geert+renesas@glider.be>
-From:   Stephen Boyd <swboyd@chromium.org>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>
-Cc:     linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH] serial: sh-sci: Use platform_get_irq_optional() for optional interrupts
-User-Agent: alot/0.8.1
-Date:   Thu, 03 Oct 2019 09:10:16 -0700
+From:   Adam Ford <aford173@gmail.com>
+Date:   Fri, 4 Oct 2019 05:02:05 -0500
+Message-ID:
+ <CAHCN7xLO5VgA6tW4p7QjwPv_QXv==zbC38TxXtsR5x9H0mUGJA@mail.gmail.com>
+Subject: DM3730 Bluetooth Performance differences between SERIAL_8250_OMAP vs SERIAL_OMAP
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-OMAP <linux-omap@vger.kernel.org>,
+        Vignesh R <vigneshr@ti.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191003161016.0F5ygzvGGm2P3CQhRUBm5ZBQ8XnA2TQW2Ur8jGMjZMg@z>
+Message-ID: <20191004100205.lI8Kd7BnbOWA0C4q9VtJmgi5ZePrldPJWMNaCi5JMHQ@z>
 
-Quoting Geert Uytterhoeven (2019-10-01 11:07:43)
-> As platform_get_irq() now prints an error when the interrupt does not
-> exist, scary warnings may be printed for optional interrupts:
->=20
->     sh-sci e6550000.serial: IRQ index 1 not found
->     sh-sci e6550000.serial: IRQ index 2 not found
->     sh-sci e6550000.serial: IRQ index 3 not found
->     sh-sci e6550000.serial: IRQ index 4 not found
->     sh-sci e6550000.serial: IRQ index 5 not found
->=20
-> Fix this by calling platform_get_irq_optional() instead for all but the
-> first interrupts, which are optional.
->=20
-> Fixes: 7723f4c5ecdb8d83 ("driver core: platform: Add an error message to =
-platform_get_irq*()")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
+I am running Kernel 5.3.2 trying to troubleshoot some intermittent
+Bluetooth issues, and I think I have narrowed it down to the serial
+driver in use.
+By default, omap2plus_defconfig enables both SERIAL_8250_OMAP and
+SERIAL_OMAP.  I have my console device configured as  ttyS0, and all
+appears fine.  When I enable Bluetooth, however, I get intermittent
+errors on an DM3730 / OMAP3630.
 
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Using the 8250 driver for Blueotooth I get intermittent frame errors
+and data loss.
 
+Scanning ...
+[   28.482452] Bluetooth: hci0: Frame reassembly failed (-84)
+[   36.162170] Bluetooth: hci0: Frame reassembly failed (-84)
+        F4:4E:FC:C9:2F:57       BluJax
+# l2ping F4:4E:FC:C9:2F:57
+Ping: F4:4E:FC:C9:2F:57 from 00:18:30:49:7D:63 (data size 44) ...
+44 bytes from F4:4E:FC:C9:2F:57 id 0 time 8.27ms
+no response from F4:4E:FC:C9:2F:57: id 1
+^C2 sent, 1 received, 50% loss
+
+(after a fairly long hang, I hit control-c)
+
+However, disabling the 8250 driver and using the only SERIAL_OMAP and
+the console routed to ttyO0, the Bluetooth works well, so I believe it
+to be a serial driver issue and not a Bluetooth error.
+
+# hcitool scan
+Scanning ...
+        F4:4E:FC:C9:2F:57       BluJax
+^C
+# l2ping F4:4E:FC:C9:2F:57
+Ping: F4:4E:FC:C9:2F:57 from 00:18:30:49:7D:63 (data size 44) ...
+44 bytes from F4:4E:FC:C9:2F:57 id 0 time 6.90ms
+...
+44 bytes from F4:4E:FC:C9:2F:57 id 14 time 28.29ms
+^C15 sent, 15 received, 0% loss
+#
+
+0% loss and regular, repeatable communication without any Frame
+reassembly errors.
+
+Any suggestions on how to troubleshoot or what might cause the
+difference between the two drivers?
+
+adam
