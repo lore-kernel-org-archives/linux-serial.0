@@ -2,235 +2,89 @@ Return-Path: <SRS0=B5Ni=X6=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02031C47404
-	for <linux-serial@archiver.kernel.org>; Sat,  5 Oct 2019 03:45:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 310EDC47404
+	for <linux-serial@archiver.kernel.org>; Sat,  5 Oct 2019 06:53:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C31B120873
-	for <linux-serial@archiver.kernel.org>; Sat,  5 Oct 2019 03:45:57 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iLaLvLZP"
+	by mail.kernel.org (Postfix) with ESMTP id EE193222BE
+	for <linux-serial@archiver.kernel.org>; Sat,  5 Oct 2019 06:53:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1570258403;
+	bh=Ae3CoYHyQyeGJxzoUlqKsX4JVnFfMox8TRhou//5Oe0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=zDwzFazEV2aixqeg4HULJLUD+YdGBpWuzYIvi0tZ3pTLtJ/i/l4YijEEEHpexHTYK
+	 OXRkvORlvHALLOSVJcxY4NVvAQVEptYoRoxUD9EWPoiA/W+envm4+TvjeqPFCI0vj9
+	 wnfCbX79Ihx3ALjnroJDVW61zkG0OMLMgwmrOl0U=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725974AbfJEDpz (ORCPT
+        id S1726953AbfJEGxW (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 4 Oct 2019 23:45:55 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:42934 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725907AbfJEDpy (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 4 Oct 2019 23:45:54 -0400
-Received: by mail-io1-f68.google.com with SMTP id n197so17740899iod.9;
-        Fri, 04 Oct 2019 20:45:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RbOV3wUZGc55OMGd29XCe5o36BtLuTkL2nl8j4ZexH8=;
-        b=iLaLvLZPDI3+ubx2d1POYTJlXGaqW+uAKgvv/uUNV6F+dNuF/AH/LVe3pXauHSdsBv
-         j0yNP+tEZNx7Ha+jUAQrwSK2+0UEpT9nmrH7bBXzrueGjd/aAUrzw2fmf/o0Jk/D7z52
-         XyEeU5YtkRixCKjG6zeT/rOUaoHY5q4lLK1uZwQUgHR4y0AZT81aawaZvdntGsHnQnGf
-         beo6Jpt/A9Yl5tfuLPpnWYzcZClBVoWjB4NB07MCY90BmHXubbt39PRIoj9FdLBWP5zC
-         PLkK9uQSW0P5Yn4x0PsFQm1+TLw2bp0ZTZd95OsnYHyuW8YkNPSfhxYfsH6D/a16obIJ
-         kbmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RbOV3wUZGc55OMGd29XCe5o36BtLuTkL2nl8j4ZexH8=;
-        b=qwu6Ea1rbJNrv+IUNP85HTzQUsCKSoaoYuopt0pIlogDqpGrP8cxbysLAub3J3GfPA
-         L1pTsBC3erBo8zxlnKXNaniTkhvS1dvTs9W4oaiE6AqNXoFCvjRFkrMmjRF+1cGUhGaO
-         AjE6mlNxwoYPuEvBYVCR5hFRkvr3xAmjlbKxwXC9Rveex7s1YqUl5KZGHutzKs7ff+Fo
-         D5RmtJ7Z+wIVMmf7xYZsYAHDNaRLGlbO2tG6PPM9jyO6+DdyHnXJwuT7aeg0YtsG54oL
-         8xOrMRAXIPe6bpDshBdNkO0LxxF1dSlHOFVexAhg5ESf0/leg7+9HKuNgWbynl98MIPG
-         9/Wg==
-X-Gm-Message-State: APjAAAVtlnN5bjFvUFBT1nQl5eYm1GNavYYHRyE7MYvIsJALQXfYtPm0
-        uuzN00WBtJRM63CdhK+27Z1lfJZsypUYbwdqynw=
-X-Google-Smtp-Source: APXvYqz3tCzOSy/+h7h3l/lcKeA+u1PiF903ta+om2XMsvEk/JNZMNqbbHXnymtiAUL86JYced4BzI8YhAWqrun8eo0=
-X-Received: by 2002:a02:6017:: with SMTP id i23mr935803jac.0.1570247153151;
- Fri, 04 Oct 2019 20:45:53 -0700 (PDT)
+        Sat, 5 Oct 2019 02:53:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53602 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725927AbfJEGxW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 5 Oct 2019 02:53:22 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 03F192133F;
+        Sat,  5 Oct 2019 06:53:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1570258400;
+        bh=Ae3CoYHyQyeGJxzoUlqKsX4JVnFfMox8TRhou//5Oe0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sybu7AavQJ1mF1KnXqEHtAtbHX+f8Nb48d/qVSnRpV3EURppeFZcy/pM1BTcajzOM
+         4wAjMozHpsBXQqx0nuDi0iR+YPZW2j+6rD72L5xucP9KjwyDUN7Ptkj+1Lh7rMbekv
+         UFOU5Kgu6MwGe7oYJyTIhlsODd44qM64LnRTttwE=
+Date:   Sat, 5 Oct 2019 08:53:17 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH 05/10] serial: stm32: Use of_device_get_match_data()
+Message-ID: <20191005065317.GC928719@kroah.com>
+References: <20191004214334.149976-1-swboyd@chromium.org>
+ <20191004214334.149976-6-swboyd@chromium.org>
 MIME-Version: 1.0
-References: <CAHCN7xLO5VgA6tW4p7QjwPv_QXv==zbC38TxXtsR5x9H0mUGJA@mail.gmail.com>
- <CAHCN7xJPv7W381R7LS4bB8xWWpugz2NwbTUtj-hqHnDBZ9MFzA@mail.gmail.com>
- <CAGm1_kv6RMUDppu6ZjY9Dq7QL=hS=D+e3KS37+V0ncbwoXE6mQ@mail.gmail.com>
- <CAHCN7xKsGz4UA4gfM5jpS9UE-V7_k265G_hB=wQ5Ueh3T5kaNQ@mail.gmail.com> <CAHCN7xKirqyj3un1k+QNeoKc0DvOt4g8ScFScG02pZF=OX+GZg@mail.gmail.com>
-In-Reply-To: <CAHCN7xKirqyj3un1k+QNeoKc0DvOt4g8ScFScG02pZF=OX+GZg@mail.gmail.com>
-From:   Adam Ford <aford173@gmail.com>
-Date:   Fri, 4 Oct 2019 22:45:46 -0500
-Message-ID:
- <CAHCN7xLkBi0dWiuirh7sAgywKFM5Oe=sU3nojSuN2MMzkqyEEA@mail.gmail.com>
-Subject: Re: DM3730 Bluetooth Performance differences between SERIAL_8250_OMAP
- vs SERIAL_OMAP
-To:     Yegor Yefremov <yegorslists@googlemail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-OMAP <linux-omap@vger.kernel.org>,
-        Vignesh R <vigneshr@ti.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: inline
+In-Reply-To: <20191004214334.149976-6-swboyd@chromium.org>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191005034546.bmp81ghKPXOPiUOyo56X09zNzzwiX1zzcKvfY5upLEg@z>
+Message-ID: <20191005065317.M7oUgSu2CtM-ce2F91joaxAY33HKJNI2iv9theNF5q0@z>
 
-On Fri, Oct 4, 2019 at 11:51 AM Adam Ford <aford173@gmail.com> wrote:
->
-> On Fri, Oct 4, 2019 at 9:08 AM Adam Ford <aford173@gmail.com> wrote:
-> >
-> > On Fri, Oct 4, 2019 at 7:27 AM Yegor Yefremov
-> > <yegorslists@googlemail.com> wrote:
-> > >
-> > > Hi Adam,
-> > >
-> > > On Fri, Oct 4, 2019 at 12:39 PM Adam Ford <aford173@gmail.com> wrote:
-> > > >
-> > > > On Fri, Oct 4, 2019 at 5:02 AM Adam Ford <aford173@gmail.com> wrote:
-> > > > >
-> > > > > I am running Kernel 5.3.2 trying to troubleshoot some intermittent
-> > > > > Bluetooth issues, and I think I have narrowed it down to the serial
-> > > > > driver in use.
-> > > >
-> > > > I should have also noted that it's using UART2 with CTS and RTS on the
-> > > > DM3730 (omap3630) and its configured with a baud rate of 3M.
-> > > > I tried slowing it to 115200, but that didn't help.  I tried disabling
-> > > > the DMA hooks from the device tree, and that didn't help.
-> > > >
-> > > > > By default, omap2plus_defconfig enables both SERIAL_8250_OMAP and
-> > > > > SERIAL_OMAP.  I have my console device configured as  ttyS0, and all
-> > > > > appears fine.  When I enable Bluetooth, however, I get intermittent
-> > > > > errors on an DM3730 / OMAP3630.
-> > > > >
-> > > > > Using the 8250 driver for Blueotooth I get intermittent frame errors
-> > > > > and data loss.
-> > > > >
-> > > > > Scanning ...
-> > > > > [   28.482452] Bluetooth: hci0: Frame reassembly failed (-84)
-> > > > > [   36.162170] Bluetooth: hci0: Frame reassembly failed (-84)
-> > > > >         F4:4E:FC:C9:2F:57       BluJax
-> > > > > # l2ping F4:4E:FC:C9:2F:57
-> > > > > Ping: F4:4E:FC:C9:2F:57 from 00:18:30:49:7D:63 (data size 44) ...
-> > > > > 44 bytes from F4:4E:FC:C9:2F:57 id 0 time 8.27ms
-> > > > > no response from F4:4E:FC:C9:2F:57: id 1
-> > > > > ^C2 sent, 1 received, 50% loss
-> > > > >
-> > > > > (after a fairly long hang, I hit control-c)
-> > > > >
-> > > > > However, disabling the 8250 driver and using the only SERIAL_OMAP and
-> > > > > the console routed to ttyO0, the Bluetooth works well, so I believe it
-> > > > > to be a serial driver issue and not a Bluetooth error.
-> > > > >
-> > > > > # hcitool scan
-> > > > > Scanning ...
-> > > > >         F4:4E:FC:C9:2F:57       BluJax
-> > > > > ^C
-> > > > > # l2ping F4:4E:FC:C9:2F:57
-> > > > > Ping: F4:4E:FC:C9:2F:57 from 00:18:30:49:7D:63 (data size 44) ...
-> > > > > 44 bytes from F4:4E:FC:C9:2F:57 id 0 time 6.90ms
-> > > > > ...
-> > > > > 44 bytes from F4:4E:FC:C9:2F:57 id 14 time 28.29ms
-> > > > > ^C15 sent, 15 received, 0% loss
-> > > > > #
-> > > > >
-> > > > > 0% loss and regular, repeatable communication without any Frame
-> > > > > reassembly errors.
-> > > > >
-> > > >
-> > > > I tried disabling SERIAL_OMAP and using only SERIAL_8250_OMAP, but
-> > > > that didn't help.  Because the issue goes away when I disable
-> > > > SERIAL_8250_OMAP, I am wondering if something is either being
-> > > > misconfigured or some IRQ or DMA integration is missing that may be
-> > > > present with the older SERIAL_OMAP driver.
-> > > >
-> > > > > Any suggestions on how to troubleshoot or what might cause the
-> > > > > difference between the two drivers?
-> > >
-> > > Can it be related to this issue [1]? Can you confirm that 5.2 is
-> > > working as expected with the 8250 driver?
-> > >
-> > > [1] https://marc.info/?l=linux-serial&m=156965039008649&w=2
-> >
-> > I reverted the whole 8250 directory to d99482673f95 ("serial:
-> > mctrl_gpio: Check if GPIO property exisits before requesting it") and
-> > it is somewhat better, but it's not as good as the stock OMAP serial
-> > driver.  I get some frame errors and eventually, I get some timeouts,
-> > but it's not as bad.  I'll try to implement the RTS and CTS as gpio
-> > pins and change the device tree accordingly.  It might shed some light
-> > on the situation.
->
-> I tried to manually setup RTS and CTS pins as GPIO, but that didn't
-> work, so I changed it back.
->
-> It looks like the clocking is correct.  I don't know enough about the
-> DMA or the IRQ to know if it's working correctly.
->
-> I was wondering if the problem is in the handshaking or not.
-> I added " uart-has-rtscts;" to by uart node thinking it might help,
-> but it did not.
->
-> >
-> 8250_omap.c has some checks to see if we can enable autoRTS:
->
-> if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW &&
->     !up->gpios) {
->      /* Enable AUTOCTS (autoRTS is enabled when RTS is raised) */
->      ...
-> }
->
-> Based on this, I would expect up->gpios to always be zero if we want
-> auto RTS CTS.
->
-> I threw some debug code into the serial driver to look at the status
-> of the various flags that go into setting up auto RTS/CTS.
->
-> [   13.837005] termios->c_cflag & CRTSCTS = 80000000
-> [   13.841888] up->port.flags & UPF_HARD_FLOW = 300000
-> [   13.846801] up->gpios = ce3f3cc0
-> [   17.166595] termios->c_cflag & CRTSCTS = 0
-> [   17.170745] up->port.flags & UPF_HARD_FLOW = 300000
-> [   17.175781] up->gpios = ce3f3d40
->
-> I don't know which port is which, but I only have two active uarts
-> (console and Bluetooth)
-> The Bluetooth port should use handshaking and the console should not.
->
-> From the look of the dump, up->gpios is never 0, so the last
-> evaluation would always be false unless I am misinterpreting
-> something.
->
-> I tried to modify the check to remove !up->gpios check, but that
-> didn't help either, but it made it a little better.
+On Fri, Oct 04, 2019 at 02:43:29PM -0700, Stephen Boyd wrote:
+> This driver casts away the constness of struct stm32_usart_info that is
+> pointed to by the of match table. Use of_device_get_match_data() instead
+> of of_match_device() here and push the const throughout the code so that
+> we don't cast away const. This nicely avoids referencing the match table
+> when it is undefined with configurations where CONFIG_OF=n and fixes the
+> const issues.
+> 
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.com>
+> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> Cc: Alexandre Torgue <alexandre.torgue@st.com>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Frank Rowand <frowand.list@gmail.com>
+> Cc: <linux-serial@vger.kernel.org>
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> ---
+> 
+> Please ack or pick for immediate merge so the last patch can be merged.
 
-I have it working now on the 5.3.y branch, but I had to do 4 things.
-
-1)   Disable the older OMAP serial driver
-2)   Apply [1] patch
-3)   Disable 8250 DMA support
-4)  Remove checks for !up->gpios in the 8250-omap.c code.
-
-With all those changes, I am able to successfully and repeatedly scan
-and l2ping Bluetooth devices.  Without any one of those, I get frame
-errors or lost packets.
-
-I wonder if we can dump the legacy omap serial driver once  the 8250
-driver is working better.  That would eliminate at least one of the 4.
-I am not sure what's up with the DMA, and I've already stated some
-thoughts on item 4 in a previous e-mail.
-
-I think the [1] patch is probably going to help fix some other issues
-and should probably be backported, but by itself it isn't enough to
-fix the Bluetooth problem on the OMAP3630.
-
-[1] - https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/tty/serial/8250/8250_omap.c?h=v5.4-rc1&id=627a545c6bb0c7de09208e6546f5111290477261
-
-adam
->
->
-> > adam
-> > >
-> > > Cheers,
-> > > Yegor
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
