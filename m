@@ -1,35 +1,48 @@
 From: Adam Ford <aford173@gmail.com>
-Subject: [PATCH V2 1/2] serial: mctrl_gpio: Check for NULL pointer
-Date: Sun,  6 Oct 2019 11:33:11 -0500
-Message-ID: <20191006163314.23191-1-aford173@gmail.com>
+Subject: [PATCH V2 2/2] serial: 8250_omap: Fix gpio check for auto RTS/CTS
+Date: Sun,  6 Oct 2019 11:33:12 -0500
+Message-ID: <20191006163314.23191-2-aford173@gmail.com>
+References: <20191006163314.23191-1-aford173@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20191006163314.23191-1-aford173@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-serial@vger.kernel.org
 Cc: Adam Ford <aford173@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Vignesh R <vigneshr@ti.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Douglas Anderson <dianders@chromium.org>, Tony Lindgren <tony@atomide.com>, Yegor Yefremov <yegorslists@googlemail.com>, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-When using mctrl_gpio_to_gpiod, it dereferences gpios into a single
-requested GPIO.  This dereferencing can break if gpios is NULL,
-so this patch adds a NULL check before dereferencing it.  If
-gpios is NULL, this function will also return NULL.
+There are two checks to see if the manual gpio is configured, but
+these the check is seeing if the structure is NULL instead it
+should check to see if there are CTS and/or RTS pins defined.
+
+This patch uses checks for those individual pins instead of
+checking for the structure itself to restore auto RTS/CTS.
 
 Signed-off-by: Adam Ford <aford173@gmail.com>
 ---
-V2:  This patch is new to the V2 of this series, so patch 2/2 can 
-     work without risking a NULL dereference
-diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
-index d9074303c88e..fb4781292d40 100644
---- a/drivers/tty/serial/serial_mctrl_gpio.c
-+++ b/drivers/tty/serial/serial_mctrl_gpio.c
-@@ -66,6 +66,9 @@ EXPORT_SYMBOL_GPL(mctrl_gpio_set);
- struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
- 				      enum mctrl_gpio_idx gidx)
- {
-+	if (gpios == NULL)
-+		return NULL;
-+
- 	return gpios->gpio[gidx];
- }
- EXPORT_SYMBOL_GPL(mctrl_gpio_to_gpiod);
+V2:  Made the NULL dererence check from patch 1/2 come before this.
+
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index c68e2b3a1634..836e736ae188 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -141,7 +141,7 @@ static void omap8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 
+ 	serial8250_do_set_mctrl(port, mctrl);
+ 
+-	if (!up->gpios) {
++	if (!mctrl_gpio_to_gpiod(up->gpios, UART_GPIO_RTS)) {
+ 		/*
+ 		 * Turn off autoRTS if RTS is lowered and restore autoRTS
+ 		 * setting if RTS is raised
+@@ -456,7 +456,8 @@ static void omap_8250_set_termios(struct uart_port *port,
+ 	up->port.status &= ~(UPSTAT_AUTOCTS | UPSTAT_AUTORTS | UPSTAT_AUTOXOFF);
+ 
+ 	if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW &&
+-	    !up->gpios) {
++	    !mctrl_gpio_to_gpiod(up->gpios, UART_GPIO_RTS) &&
++	    !mctrl_gpio_to_gpiod(up->gpios, UART_GPIO_CTS)) {
+ 		/* Enable AUTOCTS (autoRTS is enabled when RTS is raised) */
+ 		up->port.status |= UPSTAT_AUTOCTS | UPSTAT_AUTORTS;
+ 		priv->efr |= UART_EFR_CTS;
 -- 
 2.17.1
