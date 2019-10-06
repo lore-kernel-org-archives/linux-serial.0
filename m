@@ -1,48 +1,27 @@
 From: Adam Ford <aford173@gmail.com>
-Subject: [PATCH V2 2/2] serial: 8250_omap: Fix gpio check for auto RTS/CTS
-Date: Sun,  6 Oct 2019 11:33:12 -0500
-Message-ID: <20191006163314.23191-2-aford173@gmail.com>
-References: <20191006163314.23191-1-aford173@gmail.com>
+Subject: Serial 8250 DMA Broken on OMAP3630
+Date: Sun, 6 Oct 2019 12:04:47 -0500
+Message-ID: <CAHCN7x+oXNA6WRiq1OnDdcgDTJrm-QyazyYLw-ow0vPMMmrVbQ@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191006163314.23191-1-aford173@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-serial@vger.kernel.org
-Cc: Adam Ford <aford173@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Vignesh R <vigneshr@ti.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Douglas Anderson <dianders@chromium.org>, Tony Lindgren <tony@atomide.com>, Yegor Yefremov <yegorslists@googlemail.com>, linux-kernel@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Vignesh R <vigneshr@ti.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Douglas Anderson <dianders@chromium.org>, Adam Ford <aford173@gmail.com>, Tony Lindgren <tony@atomide.com>, Yegor Yefremov <yegorslists@googlemail.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-There are two checks to see if the manual gpio is configured, but
-these the check is seeing if the structure is NULL instead it
-should check to see if there are CTS and/or RTS pins defined.
+Has anyone else had any issues using the CONFIG_SERIAL_8250_DMA on the OMAP?
 
-This patch uses checks for those individual pins instead of
-checking for the structure itself to restore auto RTS/CTS.
+I can use the DMA on the legacy, omap-serial driver, but when I enable
+the DMA on the 8250-omap driver, I get missing frames in Bluetooth.
 
-Signed-off-by: Adam Ford <aford173@gmail.com>
----
-V2:  Made the NULL dererence check from patch 1/2 come before this.
+The older driver seems to have an ISR that seems to address a variety
+of items compared to the very tiny ISR for 8250-omap.c.
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index c68e2b3a1634..836e736ae188 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -141,7 +141,7 @@ static void omap8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 
- 	serial8250_do_set_mctrl(port, mctrl);
- 
--	if (!up->gpios) {
-+	if (!mctrl_gpio_to_gpiod(up->gpios, UART_GPIO_RTS)) {
- 		/*
- 		 * Turn off autoRTS if RTS is lowered and restore autoRTS
- 		 * setting if RTS is raised
-@@ -456,7 +456,8 @@ static void omap_8250_set_termios(struct uart_port *port,
- 	up->port.status &= ~(UPSTAT_AUTOCTS | UPSTAT_AUTORTS | UPSTAT_AUTOXOFF);
- 
- 	if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW &&
--	    !up->gpios) {
-+	    !mctrl_gpio_to_gpiod(up->gpios, UART_GPIO_RTS) &&
-+	    !mctrl_gpio_to_gpiod(up->gpios, UART_GPIO_CTS)) {
- 		/* Enable AUTOCTS (autoRTS is enabled when RTS is raised) */
- 		up->port.status |= UPSTAT_AUTOCTS | UPSTAT_AUTORTS;
- 		priv->efr |= UART_EFR_CTS;
--- 
-2.17.1
+I am not exactly sure where to start, but if someone has any
+suggestions on how I can troubleshoot, please let me know.  As of now,
+I have to disable CONFIG_SERIAL_8250_DMA to get the Bluetooth
+connected to UART2 operational on a DM3730 at 3,000,000 baud, but it
+appears to work just fine after some patches I just submitted for
+handling RTS/CTS.  The legacy omap-serial driver works fine with DMA.
+
+adam
