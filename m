@@ -1,217 +1,123 @@
-From: Adam Ford <aford173@gmail.com>
-Subject: Re: DM3730 Bluetooth Performance differences between SERIAL_8250_OMAP
- vs SERIAL_OMAP
-Date: Sat, 5 Oct 2019 20:23:58 -0500
-Message-ID: <CAHCN7xL8Ekgi=ht-pNhA7w+E3NAb2J5DY9khEsPmCscQZ=04ww@mail.gmail.com>
-References: <CAHCN7xLO5VgA6tW4p7QjwPv_QXv==zbC38TxXtsR5x9H0mUGJA@mail.gmail.com>
- <CAHCN7xJPv7W381R7LS4bB8xWWpugz2NwbTUtj-hqHnDBZ9MFzA@mail.gmail.com>
- <CAGm1_kv6RMUDppu6ZjY9Dq7QL=hS=D+e3KS37+V0ncbwoXE6mQ@mail.gmail.com>
- <CAHCN7xKsGz4UA4gfM5jpS9UE-V7_k265G_hB=wQ5Ueh3T5kaNQ@mail.gmail.com>
- <CAHCN7xKirqyj3un1k+QNeoKc0DvOt4g8ScFScG02pZF=OX+GZg@mail.gmail.com> <CAHCN7xLkBi0dWiuirh7sAgywKFM5Oe=sU3nojSuN2MMzkqyEEA@mail.gmail.com>
+From: Shawn Guo <shawnguo@kernel.org>
+Subject: Re: [PATCH v4 3/6] serial: fsl_linflexuart: Be consistent with the
+ name
+Date: Sun, 6 Oct 2019 09:56:50 +0800
+Message-ID: <20191006015647.GJ7150@dragon>
+References: <20190905115803.19565-1-stefan-gabriel.mirea@nxp.com>
+ <20190905115803.19565-4-stefan-gabriel.mirea@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHCN7xLkBi0dWiuirh7sAgywKFM5Oe=sU3nojSuN2MMzkqyEEA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Yegor Yefremov <yegorslists@googlemail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux-OMAP <linux-omap@vger.kernel.org>, Vignesh R <vigneshr@ti.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20190905115803.19565-4-stefan-gabriel.mirea@nxp.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "corbet@lwn.net" <corbet@lwn.net>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Leo Li <leoyang.li@nxp.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "jslaby@suse.com" <jslaby@suse.com>, "will@kernel.org" <will@kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Oct 4, 2019 at 10:45 PM Adam Ford <aford173@gmail.com> wrote:
->
-> On Fri, Oct 4, 2019 at 11:51 AM Adam Ford <aford173@gmail.com> wrote:
-> >
-> > On Fri, Oct 4, 2019 at 9:08 AM Adam Ford <aford173@gmail.com> wrote:
-> > >
-> > > On Fri, Oct 4, 2019 at 7:27 AM Yegor Yefremov
-> > > <yegorslists@googlemail.com> wrote:
-> > > >
-> > > > Hi Adam,
-> > > >
-> > > > On Fri, Oct 4, 2019 at 12:39 PM Adam Ford <aford173@gmail.com> wrote:
-> > > > >
-> > > > > On Fri, Oct 4, 2019 at 5:02 AM Adam Ford <aford173@gmail.com> wrote:
-> > > > > >
-> > > > > > I am running Kernel 5.3.2 trying to troubleshoot some intermittent
-> > > > > > Bluetooth issues, and I think I have narrowed it down to the serial
-> > > > > > driver in use.
-> > > > >
-> > > > > I should have also noted that it's using UART2 with CTS and RTS on the
-> > > > > DM3730 (omap3630) and its configured with a baud rate of 3M.
-> > > > > I tried slowing it to 115200, but that didn't help.  I tried disabling
-> > > > > the DMA hooks from the device tree, and that didn't help.
-> > > > >
-> > > > > > By default, omap2plus_defconfig enables both SERIAL_8250_OMAP and
-> > > > > > SERIAL_OMAP.  I have my console device configured as  ttyS0, and all
-> > > > > > appears fine.  When I enable Bluetooth, however, I get intermittent
-> > > > > > errors on an DM3730 / OMAP3630.
-> > > > > >
-> > > > > > Using the 8250 driver for Blueotooth I get intermittent frame errors
-> > > > > > and data loss.
-> > > > > >
-> > > > > > Scanning ...
-> > > > > > [   28.482452] Bluetooth: hci0: Frame reassembly failed (-84)
-> > > > > > [   36.162170] Bluetooth: hci0: Frame reassembly failed (-84)
-> > > > > >         F4:4E:FC:C9:2F:57       BluJax
-> > > > > > # l2ping F4:4E:FC:C9:2F:57
-> > > > > > Ping: F4:4E:FC:C9:2F:57 from 00:18:30:49:7D:63 (data size 44) ...
-> > > > > > 44 bytes from F4:4E:FC:C9:2F:57 id 0 time 8.27ms
-> > > > > > no response from F4:4E:FC:C9:2F:57: id 1
-> > > > > > ^C2 sent, 1 received, 50% loss
-> > > > > >
-> > > > > > (after a fairly long hang, I hit control-c)
-> > > > > >
-> > > > > > However, disabling the 8250 driver and using the only SERIAL_OMAP and
-> > > > > > the console routed to ttyO0, the Bluetooth works well, so I believe it
-> > > > > > to be a serial driver issue and not a Bluetooth error.
-> > > > > >
-> > > > > > # hcitool scan
-> > > > > > Scanning ...
-> > > > > >         F4:4E:FC:C9:2F:57       BluJax
-> > > > > > ^C
-> > > > > > # l2ping F4:4E:FC:C9:2F:57
-> > > > > > Ping: F4:4E:FC:C9:2F:57 from 00:18:30:49:7D:63 (data size 44) ...
-> > > > > > 44 bytes from F4:4E:FC:C9:2F:57 id 0 time 6.90ms
-> > > > > > ...
-> > > > > > 44 bytes from F4:4E:FC:C9:2F:57 id 14 time 28.29ms
-> > > > > > ^C15 sent, 15 received, 0% loss
-> > > > > > #
-> > > > > >
-> > > > > > 0% loss and regular, repeatable communication without any Frame
-> > > > > > reassembly errors.
-> > > > > >
-> > > > >
-> > > > > I tried disabling SERIAL_OMAP and using only SERIAL_8250_OMAP, but
-> > > > > that didn't help.  Because the issue goes away when I disable
-> > > > > SERIAL_8250_OMAP, I am wondering if something is either being
-> > > > > misconfigured or some IRQ or DMA integration is missing that may be
-> > > > > present with the older SERIAL_OMAP driver.
-> > > > >
-> > > > > > Any suggestions on how to troubleshoot or what might cause the
-> > > > > > difference between the two drivers?
-> > > >
-> > > > Can it be related to this issue [1]? Can you confirm that 5.2 is
-> > > > working as expected with the 8250 driver?
-> > > >
-> > > > [1] https://marc.info/?l=linux-serial&m=156965039008649&w=2
-> > >
-> > > I reverted the whole 8250 directory to d99482673f95 ("serial:
-> > > mctrl_gpio: Check if GPIO property exisits before requesting it") and
-> > > it is somewhat better, but it's not as good as the stock OMAP serial
-> > > driver.  I get some frame errors and eventually, I get some timeouts,
-> > > but it's not as bad.  I'll try to implement the RTS and CTS as gpio
-> > > pins and change the device tree accordingly.  It might shed some light
-> > > on the situation.
-> >
-> > I tried to manually setup RTS and CTS pins as GPIO, but that didn't
-> > work, so I changed it back.
-> >
-> > It looks like the clocking is correct.  I don't know enough about the
-> > DMA or the IRQ to know if it's working correctly.
-> >
-> > I was wondering if the problem is in the handshaking or not.
-> > I added " uart-has-rtscts;" to by uart node thinking it might help,
-> > but it did not.
-> >
-> > >
-> > 8250_omap.c has some checks to see if we can enable autoRTS:
-> >
-> > if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW &&
-> >     !up->gpios) {
-> >      /* Enable AUTOCTS (autoRTS is enabled when RTS is raised) */
-> >      ...
-> > }
-> >
-> > Based on this, I would expect up->gpios to always be zero if we want
-> > auto RTS CTS.
-> >
-> > I threw some debug code into the serial driver to look at the status
-> > of the various flags that go into setting up auto RTS/CTS.
-> >
-> > [   13.837005] termios->c_cflag & CRTSCTS = 80000000
-> > [   13.841888] up->port.flags & UPF_HARD_FLOW = 300000
-> > [   13.846801] up->gpios = ce3f3cc0
-> > [   17.166595] termios->c_cflag & CRTSCTS = 0
-> > [   17.170745] up->port.flags & UPF_HARD_FLOW = 300000
-> > [   17.175781] up->gpios = ce3f3d40
-> >
-> > I don't know which port is which, but I only have two active uarts
-> > (console and Bluetooth)
-> > The Bluetooth port should use handshaking and the console should not.
-> >
-> > From the look of the dump, up->gpios is never 0, so the last
-> > evaluation would always be false unless I am misinterpreting
-> > something.
-> >
-> > I tried to modify the check to remove !up->gpios check, but that
-> > didn't help either, but it made it a little better.
->
-> I have it working now on the 5.3.y branch, but I had to do 4 things.
->
-> 1)   Disable the older OMAP serial driver
-> 2)   Apply [1] patch
-> 3)   Disable 8250 DMA support
-> 4)  Remove checks for !up->gpios in the 8250-omap.c code.
->
-> With all those changes, I am able to successfully and repeatedly scan
-> and l2ping Bluetooth devices.  Without any one of those, I get frame
-> errors or lost packets.
->
-> I wonder if we can dump the legacy omap serial driver once  the 8250
-> driver is working better.  That would eliminate at least one of the 4.
-> I am not sure what's up with the DMA, and I've already stated some
-> thoughts on item 4 in a previous e-mail.
->
-> I think the [1] patch is probably going to help fix some other issues
-> and should probably be backported, but by itself it isn't enough to
-> fix the Bluetooth problem on the OMAP3630.
->
-> [1] - https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/tty/serial/8250/8250_omap.c?h=v5.4-rc1&id=627a545c6bb0c7de09208e6546f5111290477261
->
-In the latest 'master' branch of 5.4-RC1 (43b815c6a8e7), I have
-confirmed that by removing the DMA and forcing the checks for
-!up->gpios to be true to keep the hardware flow control working, I can
-repeatably make Bluetooth work.
+On Thu, Sep 05, 2019 at 11:58:36AM +0000, Stefan-gabriel Mirea wrote:
+> For consistency reasons, spell the controller name as "LINFlexD" in
+> comments and documentation.
+> 
+> Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
 
-I am not sure what's broken in the DMA, but the check for  !up->gpios
-is never false, so it never actually does the code inside to address
-handshaking
+Hi Greg,
 
-index c68e2b3a1634..884fcba61303 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -141,7 +141,7 @@ static void omap8250_set_mctrl(struct uart_port
-*port, unsigned int mctrl)
+The series looks good to me.  I assume that you will take this patch
+and #5.
 
-        serial8250_do_set_mctrl(port, mctrl);
+Shawn
 
--       if (!up->gpios) {
-+       if (1 /* !up->gpios */) {
-                /*
-                 * Turn off autoRTS if RTS is lowered and restore autoRTS
-                 * setting if RTS is raised
-@@ -455,8 +455,7 @@ static void omap_8250_set_termios(struct uart_port *port,
-        priv->efr = 0;
-        up->port.status &= ~(UPSTAT_AUTOCTS | UPSTAT_AUTORTS | UPSTAT_AUTOXOFF);
-
--       if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW &&
--           !up->gpios) {
-+       if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW) {
-                /* Enable AUTOCTS (autoRTS is enabled when RTS is raised) */
-                up->port.status |= UPSTAT_AUTOCTS | UPSTAT_AUTORTS;
-                priv->efr |= UART_EFR_CTS;
-
-I know this is wrong to do what I did, but whatever is setting gpios
-is clearly not setting it to NULL, so I am guessing these checks here
-to be something else or something needs to be able to set these to
-NULL when there are no manually configured gpio pints for cts/rts.
-
-adam
-
-> adam
-> >
-> >
-> > > adam
-> > > >
-> > > > Cheers,
-> > > > Yegor
+> ---
+>  Documentation/admin-guide/kernel-parameters.txt | 2 +-
+>  drivers/tty/serial/Kconfig                      | 8 ++++----
+>  drivers/tty/serial/fsl_linflexuart.c            | 4 ++--
+>  include/uapi/linux/serial_core.h                | 4 ++--
+>  4 files changed, 9 insertions(+), 9 deletions(-)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index 614012a61754..23162492ea2f 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -1091,7 +1091,7 @@
+>  			mapped with the correct attributes.
+>  
+>  		linflex,<addr>
+> -			Use early console provided by Freescale LinFlex UART
+> +			Use early console provided by Freescale LINFlexD UART
+>  			serial driver for NXP S32V234 SoCs. A valid base
+>  			address must be provided, and the serial port must
+>  			already be setup and configured.
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index b658589208bf..2d5115375345 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -1434,19 +1434,19 @@ config SERIAL_FSL_LPUART_CONSOLE
+>  	  you can make it the console by answering Y to this option.
+>  
+>  config SERIAL_FSL_LINFLEXUART
+> -	tristate "Freescale linflexuart serial port support"
+> +	tristate "Freescale LINFlexD UART serial port support"
+>  	depends on PRINTK
+>  	select SERIAL_CORE
+>  	help
+> -	  Support for the on-chip linflexuart on some Freescale SOCs.
+> +	  Support for the on-chip LINFlexD UART on some Freescale SOCs.
+>  
+>  config SERIAL_FSL_LINFLEXUART_CONSOLE
+> -	bool "Console on Freescale linflexuart serial port"
+> +	bool "Console on Freescale LINFlexD UART serial port"
+>  	depends on SERIAL_FSL_LINFLEXUART=y
+>  	select SERIAL_CORE_CONSOLE
+>  	select SERIAL_EARLYCON
+>  	help
+> -	  If you have enabled the linflexuart serial port on the Freescale
+> +	  If you have enabled the LINFlexD UART serial port on the Freescale
+>  	  SoCs, you can make it the console by answering Y to this option.
+>  
+>  config SERIAL_CONEXANT_DIGICOLOR
+> diff --git a/drivers/tty/serial/fsl_linflexuart.c b/drivers/tty/serial/fsl_linflexuart.c
+> index 26b9601a0952..ca90551384ca 100644
+> --- a/drivers/tty/serial/fsl_linflexuart.c
+> +++ b/drivers/tty/serial/fsl_linflexuart.c
+> @@ -1,6 +1,6 @@
+>  // SPDX-License-Identifier: GPL-2.0-or-later
+>  /*
+> - * Freescale linflexuart serial port driver
+> + * Freescale LINFlexD UART serial port driver
+>   *
+>   * Copyright 2012-2016 Freescale Semiconductor, Inc.
+>   * Copyright 2017-2018 NXP
+> @@ -938,5 +938,5 @@ static void __exit linflex_serial_exit(void)
+>  module_init(linflex_serial_init);
+>  module_exit(linflex_serial_exit);
+>  
+> -MODULE_DESCRIPTION("Freescale linflex serial port driver");
+> +MODULE_DESCRIPTION("Freescale LINFlexD serial port driver");
+>  MODULE_LICENSE("GPL v2");
+> diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+> index 63fa56b899e8..26967c2f4a4f 100644
+> --- a/include/uapi/linux/serial_core.h
+> +++ b/include/uapi/linux/serial_core.h
+> @@ -293,7 +293,7 @@
+>  /* Sunix UART */
+>  #define PORT_SUNIX	121
+>  
+> -/* Freescale Linflex UART */
+> -#define PORT_LINFLEXUART	121
+> +/* Freescale LINFlexD UART */
+> +#define PORT_LINFLEXUART	122
+>  
+>  #endif /* _UAPILINUX_SERIAL_CORE_H */
+> -- 
+> 2.22.0
+> 
