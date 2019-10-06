@@ -1,27 +1,45 @@
-From: Adam Ford <aford173@gmail.com>
-Subject: Serial 8250 DMA Broken on OMAP3630
-Date: Sun, 6 Oct 2019 12:04:47 -0500
-Message-ID: <CAHCN7x+oXNA6WRiq1OnDdcgDTJrm-QyazyYLw-ow0vPMMmrVbQ@mail.gmail.com>
+From: Yegor Yefremov <yegorslists@googlemail.com>
+Subject: Re: [PATCH V2 1/2] serial: mctrl_gpio: Check for NULL pointer
+Date: Sun, 6 Oct 2019 20:11:14 +0200
+Message-ID: <CAGm1_kvC7745jhRawSinTtMr4LSbTFaE7-pnoar=tpjLD2nDcQ@mail.gmail.com>
+References: <20191006163314.23191-1-aford173@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20191006163314.23191-1-aford173@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Vignesh R <vigneshr@ti.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Douglas Anderson <dianders@chromium.org>, Adam Ford <aford173@gmail.com>, Tony Lindgren <tony@atomide.com>, Yegor Yefremov <yegorslists@googlemail.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Adam Ford <aford173@gmail.com>
+Cc: linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Vignesh R <vigneshr@ti.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Douglas Anderson <dianders@chromium.org>, Tony Lindgren <tony@atomide.com>, kernel list <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-Has anyone else had any issues using the CONFIG_SERIAL_8250_DMA on the OMAP?
+On Sun, Oct 6, 2019 at 6:33 PM Adam Ford <aford173@gmail.com> wrote:
+>
+> When using mctrl_gpio_to_gpiod, it dereferences gpios into a single
+> requested GPIO.  This dereferencing can break if gpios is NULL,
+> so this patch adds a NULL check before dereferencing it.  If
+> gpios is NULL, this function will also return NULL.
+>
+> Signed-off-by: Adam Ford <aford173@gmail.com>
 
-I can use the DMA on the legacy, omap-serial driver, but when I enable
-the DMA on the 8250-omap driver, I get missing frames in Bluetooth.
+Reviewed-by: Yegor Yefremov <yegorslists@googlemail.com>
 
-The older driver seems to have an ISR that seems to address a variety
-of items compared to the very tiny ISR for 8250-omap.c.
-
-I am not exactly sure where to start, but if someone has any
-suggestions on how I can troubleshoot, please let me know.  As of now,
-I have to disable CONFIG_SERIAL_8250_DMA to get the Bluetooth
-connected to UART2 operational on a DM3730 at 3,000,000 baud, but it
-appears to work just fine after some patches I just submitted for
-handling RTS/CTS.  The legacy omap-serial driver works fine with DMA.
-
-adam
+> ---
+> V2:  This patch is new to the V2 of this series, so patch 2/2 can
+>      work without risking a NULL dereference
+> diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
+> index d9074303c88e..fb4781292d40 100644
+> --- a/drivers/tty/serial/serial_mctrl_gpio.c
+> +++ b/drivers/tty/serial/serial_mctrl_gpio.c
+> @@ -66,6 +66,9 @@ EXPORT_SYMBOL_GPL(mctrl_gpio_set);
+>  struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
+>                                       enum mctrl_gpio_idx gidx)
+>  {
+> +       if (gpios == NULL)
+> +               return NULL;
+> +
+>         return gpios->gpio[gidx];
+>  }
+>  EXPORT_SYMBOL_GPL(mctrl_gpio_to_gpiod);
+> --
+> 2.17.1
+>
