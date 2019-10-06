@@ -2,89 +2,110 @@ Return-Path: <SRS0=KpTF=X7=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-6.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89BC4C4360C
-	for <linux-serial@archiver.kernel.org>; Sun,  6 Oct 2019 17:05:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE7CBC4360C
+	for <linux-serial@archiver.kernel.org>; Sun,  6 Oct 2019 18:11:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 508E620700
-	for <linux-serial@archiver.kernel.org>; Sun,  6 Oct 2019 17:05:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 944012053B
+	for <linux-serial@archiver.kernel.org>; Sun,  6 Oct 2019 18:11:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="H2hsRIaA"
+	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.b="JqZwTLTB"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726443AbfJFRE7 (ORCPT
+        id S1726699AbfJFSL1 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 6 Oct 2019 13:04:59 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:41053 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725905AbfJFRE7 (ORCPT
+        Sun, 6 Oct 2019 14:11:27 -0400
+Received: from mail-vk1-f194.google.com ([209.85.221.194]:38414 "EHLO
+        mail-vk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726559AbfJFSL0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 6 Oct 2019 13:04:59 -0400
-Received: by mail-io1-f68.google.com with SMTP id n26so23611675ioj.8;
-        Sun, 06 Oct 2019 10:04:59 -0700 (PDT)
+        Sun, 6 Oct 2019 14:11:26 -0400
+Received: by mail-vk1-f194.google.com with SMTP id s72so2496911vkh.5;
+        Sun, 06 Oct 2019 11:11:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=ClCXwi/HR6v0nj5tJBTnRSpqKbdtOUUK586xb5JDUJ0=;
-        b=H2hsRIaAyT9Xy/esJm2nvsDH9vbpAiXZca6RGDF1U4rAarZ5nA0TpI092n7Lv5UDjV
-         hT6/YA/1n6ceBIoEc2rKRTog40RGOKUomA/bK7ePMOvG4ue5h7BmoZQ+FkspN/K91goQ
-         q5B5imlf92wSp2Woi+RqHxyzgF09d7iXyBanIMpu7gDW+TlMLbLYe6UnUqDwlXVBv48i
-         szn/q0vp02HzPF7We/pSHc8e82miCKM6dFSoUDRgnx6j2imDvEMSmjjc8jprwRinlW6y
-         AStGbcIdaCLAusdw2EuHxpOVw/eRDAqqaLwVWCI/ve3LNJqq03PQrVeLZGOer95H3Qix
-         WonA==
+        d=googlemail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XvhZjKNZd7ezMcvYLdUk4d1cF2+Jz0JmAVSLszIBT2A=;
+        b=JqZwTLTBp0H21eSD9zA8Q1JSuXLhZKi7280qCXLWNDa1vX10J2yxVcXrL16QdtUBHc
+         pScVR9B4JReFA2lfJRixZS3CbtSxM72X2/JB5xyQGWhFZ7aW9lYzMHKADT0TAwuUYT6y
+         fd0q+u8xzBDFujeR4IZaTIiLWU8G6xSR1lQJI0DGMSSB8RAQC1C/CDsiE9ESKClMtWrT
+         SAnqYhCjzB6I7qKJxmJgagNFt6CU5AymX6FLNLJ5NqhdSoUxcm1CYOzOJO48EfJO5dX4
+         cuhKe2+IlBv/71jVH8LP9xRkhJl7stAqVp1WhHxKlKHi1UvXoFWdmldAdOxPPpYZ92VE
+         AYmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=ClCXwi/HR6v0nj5tJBTnRSpqKbdtOUUK586xb5JDUJ0=;
-        b=Y1x1W1j6D7aiGVtdKNJDXeS9luufKySEtKZSFZAvxmspoe7GWo2wZEgIwyIgqrxZWH
-         MHJj3mYyg26dDRwuTXYdaKUGD4RwYnhUmbhEcoHCyoW7Woejo/HCOr1DVW9e3nJVfpWe
-         Z34zcnhkNUEPvrUmOcuLC4G9qfx81zS3sANPvBINI9e4HBmcTUYaVBFQD9qH1X6wwkMW
-         eE3LuYpBUpIB6IzOlDGcrejNgBDlQw6ysDIwxNACGj6ap1Dfp6Fi6iZF2qnJVeMixy+C
-         jhxm5qvEwwhR+gAnngBua/PhBOEP7IEULDnvSUWGSJFOjhe6+z1I9FX37cpiffgzWf8Q
-         P7CQ==
-X-Gm-Message-State: APjAAAW2HMGCS+b4X9bUuT3/f2Fa4MhFPwPW/gSHwX6IVqbHKQJI8ojx
-        CrASCZB3lpjNIKjvPjMYz+K0NgQ8W/N30ZvYKGY=
-X-Google-Smtp-Source: APXvYqx59hPBCA1dsvATyMaiZ3U2Ns8IhBB/Ple32/dXXypkjmmtRPbof1jOTnLY6s8PLIEuNMg3++oOuXSEM7EZO0A=
-X-Received: by 2002:a6b:cd81:: with SMTP id d123mr22810239iog.78.1570381498362;
- Sun, 06 Oct 2019 10:04:58 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XvhZjKNZd7ezMcvYLdUk4d1cF2+Jz0JmAVSLszIBT2A=;
+        b=BcfTHUMsVu+cBYySQ9INou3NNOLk7vl/7K58R0mzLXoMmHYv5gGvpp+2Mq6MicaroE
+         PFJt6GgIyEbUY5FK7QYNEx+DcsU1ZfXzxWc5F6QqjqzVsfxLh32JA7sDGTaWufAQ24Vj
+         94NAw2NBes8OUg2OivANhK007TTaix/BxS+1ackx2l//0W1BDC0hFytDCf17M12G+349
+         MKouz2zQamv95SY50abpxeZfXI2LIABqe3zHiLVBQsMn8W5VpWbES2o2v8JXxDbqoX5j
+         ZR0soUSRcHKD67/ujq1VLf20TLT3r+t8PQIaMVBcq628bvD0HgmK3hpbSgpd5BN/DmyX
+         KrEA==
+X-Gm-Message-State: APjAAAVnOZBVNi3tMRcOCLClCqC7aTGqLt7U1niFyrzOUEEfY36t1/l6
+        7hTwa5Yn2WR66sJVJ7AJLibElm/zvT5NtL3XzUU=
+X-Google-Smtp-Source: APXvYqxuW3H8XQIumbD21ksD8zppbT4zFvS2Lqcjei2gxAhaMSAXkJ/r6UQnGb4Eyn+eJNoiJigfqPfjsFvR+e1x15o=
+X-Received: by 2002:a1f:a705:: with SMTP id q5mr12627945vke.85.1570385484250;
+ Sun, 06 Oct 2019 11:11:24 -0700 (PDT)
 MIME-Version: 1.0
-From:   Adam Ford <aford173@gmail.com>
-Date:   Sun, 6 Oct 2019 12:04:47 -0500
+References: <20191006163314.23191-1-aford173@gmail.com>
+In-Reply-To: <20191006163314.23191-1-aford173@gmail.com>
+From:   Yegor Yefremov <yegorslists@googlemail.com>
+Date:   Sun, 6 Oct 2019 20:11:14 +0200
 Message-ID:
- <CAHCN7x+oXNA6WRiq1OnDdcgDTJrm-QyazyYLw-ow0vPMMmrVbQ@mail.gmail.com>
-Subject: Serial 8250 DMA Broken on OMAP3630
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, Vignesh R <vigneshr@ti.com>,
+ <CAGm1_kvC7745jhRawSinTtMr4LSbTFaE7-pnoar=tpjLD2nDcQ@mail.gmail.com>
+Subject: Re: [PATCH V2 1/2] serial: mctrl_gpio: Check for NULL pointer
+To:     Adam Ford <aford173@gmail.com>
+Cc:     linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Vignesh R <vigneshr@ti.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
         Douglas Anderson <dianders@chromium.org>,
-        Adam Ford <aford173@gmail.com>,
         Tony Lindgren <tony@atomide.com>,
-        Yegor Yefremov <yegorslists@googlemail.com>,
-        linux-serial@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        kernel list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191006170447.iQOE49DrJDs-k8RcfY7ZNNVoa76EhU-AGj06kft-JFU@z>
+Message-ID: <20191006181114.rQ8bgyHPgzH4magNNtmaHMLkUC1nFSb_cMQ90uRTsFA@z>
 
-Has anyone else had any issues using the CONFIG_SERIAL_8250_DMA on the OMAP?
+On Sun, Oct 6, 2019 at 6:33 PM Adam Ford <aford173@gmail.com> wrote:
+>
+> When using mctrl_gpio_to_gpiod, it dereferences gpios into a single
+> requested GPIO.  This dereferencing can break if gpios is NULL,
+> so this patch adds a NULL check before dereferencing it.  If
+> gpios is NULL, this function will also return NULL.
+>
+> Signed-off-by: Adam Ford <aford173@gmail.com>
 
-I can use the DMA on the legacy, omap-serial driver, but when I enable
-the DMA on the 8250-omap driver, I get missing frames in Bluetooth.
+Reviewed-by: Yegor Yefremov <yegorslists@googlemail.com>
 
-The older driver seems to have an ISR that seems to address a variety
-of items compared to the very tiny ISR for 8250-omap.c.
-
-I am not exactly sure where to start, but if someone has any
-suggestions on how I can troubleshoot, please let me know.  As of now,
-I have to disable CONFIG_SERIAL_8250_DMA to get the Bluetooth
-connected to UART2 operational on a DM3730 at 3,000,000 baud, but it
-appears to work just fine after some patches I just submitted for
-handling RTS/CTS.  The legacy omap-serial driver works fine with DMA.
-
-adam
+> ---
+> V2:  This patch is new to the V2 of this series, so patch 2/2 can
+>      work without risking a NULL dereference
+> diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
+> index d9074303c88e..fb4781292d40 100644
+> --- a/drivers/tty/serial/serial_mctrl_gpio.c
+> +++ b/drivers/tty/serial/serial_mctrl_gpio.c
+> @@ -66,6 +66,9 @@ EXPORT_SYMBOL_GPL(mctrl_gpio_set);
+>  struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
+>                                       enum mctrl_gpio_idx gidx)
+>  {
+> +       if (gpios == NULL)
+> +               return NULL;
+> +
+>         return gpios->gpio[gidx];
+>  }
+>  EXPORT_SYMBOL_GPL(mctrl_gpio_to_gpiod);
+> --
+> 2.17.1
+>
