@@ -2,116 +2,112 @@ Return-Path: <SRS0=/4l0=YA=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9307AC47404
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Oct 2019 14:44:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B52E4C47404
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Oct 2019 15:56:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 64C8821871
-	for <linux-serial@archiver.kernel.org>; Mon,  7 Oct 2019 14:44:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1570459465;
-	bh=VtWId5vYYsclunErfb5u6anv5q7krptmTQWAa+3fm0o=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=RiTmFVponCdqTHtL7atSbO+c9x31T3PmyumrcL2UqM9JIbMHu/GhE6xo7RQz8x7SF
-	 y1De4ndcNglP6WkLNCnV7qMEl5C6NxQE6YcWRzd0ty6O6+COQaQWU9hjdxnE/xDF5D
-	 EVk2rk/k/8f/1tweD8uvkjweVlUZvP6RI7VnMths=
+	by mail.kernel.org (Postfix) with ESMTP id 916162067B
+	for <linux-serial@archiver.kernel.org>; Mon,  7 Oct 2019 15:56:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727711AbfJGOoZ (ORCPT
+        id S1728774AbfJGP4t (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 7 Oct 2019 10:44:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55248 "EHLO mail.kernel.org"
+        Mon, 7 Oct 2019 11:56:49 -0400
+Received: from muru.com ([72.249.23.125]:35636 "EHLO muru.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727490AbfJGOoY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 7 Oct 2019 10:44:24 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BAD9D21721;
-        Mon,  7 Oct 2019 14:44:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570459464;
-        bh=VtWId5vYYsclunErfb5u6anv5q7krptmTQWAa+3fm0o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=y/zA5wDpgBSS11fa0DPaotgCqyxAoUoP9sjoIkwDWeErZuOUvC9zQ1cht0PlgJCz7
-         oDOWEFjt3bzZFMMkF97mKTsU/ISIiQrBAPj2O+qpMWGY2JRAVAA9w6qLmhdCbLR5Qq
-         c2q9JMvQKLIEaZvl2XAwY0aDEx/POtvwuHZgOkxc=
-Date:   Mon, 7 Oct 2019 16:44:21 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Rich Felker <dalias@libc.org>
-Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jiri Slaby <jslaby@suse.com>, linux-sh@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: Re: [PATCH v4 0/2] drivers: make early_platform code SuperH-specific
-Message-ID: <20191007144421.GA966763@kroah.com>
-References: <20191003092913.10731-1-brgl@bgdev.pl>
- <20191004130031.GA596158@kroah.com>
- <20191004132025.GQ16318@brightrain.aerifal.cx>
+        id S1727791AbfJGP4t (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 7 Oct 2019 11:56:49 -0400
+Received: from atomide.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id E459280A5;
+        Mon,  7 Oct 2019 15:57:20 +0000 (UTC)
+Date:   Mon, 7 Oct 2019 08:56:44 -0700
+From:   Tony Lindgren <tony@atomide.com>
+To:     Adam Ford <aford173@gmail.com>
+Cc:     Peter Hurley <peter@hurleysoftware.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Ujfalusi <peter.ujfalusi@ti.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh R <vigneshr@ti.com>, linux-serial@vger.kernel.org,
+        Linux-OMAP <linux-omap@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH] serial: 8250_omap: Fix idling for unloaded serdev drivers
+Message-ID: <20191007155644.GR5610@atomide.com>
+References: <20190723115400.46432-1-tony@atomide.com>
+ <CAHCN7x+6KYjnm5daRe_Y5XEWnDBWQnz8rOKYH2wTgx9avvokmQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Disposition: inline
-In-Reply-To: <20191004132025.GQ16318@brightrain.aerifal.cx>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <CAHCN7x+6KYjnm5daRe_Y5XEWnDBWQnz8rOKYH2wTgx9avvokmQ@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191007144421.qVrOfW2cAm9UMEJvB1DIbvjMrPkxeKfoKT7QvUGofUg@z>
+Message-ID: <20191007155644.kX1RJJHr4NFM04CAS29EFJeMZAwwQmN1Qbn4_EWHuF4@z>
 
-On Fri, Oct 04, 2019 at 09:20:25AM -0400, Rich Felker wrote:
-> On Fri, Oct 04, 2019 at 03:00:31PM +0200, Greg Kroah-Hartman wrote:
-> > On Thu, Oct 03, 2019 at 11:29:11AM +0200, Bartosz Golaszewski wrote:
-> > > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> > > 
-> > > Some time ago I started a discussion about the need for a proper early device
-> > > probing mechanism[1]. One that would be based on real platform drivers and
-> > > support both platform data and device tree.
-> > > 
-> > > While we're far from reaching any consensus on the implementation, Arnd
-> > > suggested that I start off by moving the SuperH-specific early platform
-> > > drivers implementation to arch/sh[2].
-> > > 
-> > > This series is the first attempt at making way for a new, less hacky
-> > > implementation.
-> > > 
-> > > The first patch moves all the early_platform code to arch/sh.
-> > > 
-> > > The second patch prefixes all early_platform symbols with 'sh_'.
-> > > 
-> > > [1] https://lkml.org/lkml/2018/4/26/657
-> > > [2] https://lkml.org/lkml/2018/4/27/239
-> > > 
-> > > v1 -> v2:
-> > > - certain drivers are compiled for arm/mach-shmobile too - we need to
-> > >   add ifdefs for CONFIG_SUPERH around early_platform calls
-> > > 
-> > > v2 -> v3:
-> > > - added a stub for is_early_platform_device() which always returns false
-> > >   on non-SuperH architectures
-> > > 
-> > > v3 -> v4:
-> > > - rebased on top of v5.4-rc1
-> > > - removed patches that are already upstream from the series
-> > > 
-> > > Bartosz Golaszewski (2):
-> > >   drivers: move the early platform device support to arch/sh
-> > >   sh: add the sh_ prefix to early platform symbols
-> > 
-> > I like this, any objection from anyone if I take this in my driver-core
-> > tree for 5.5-rc1?
+* Adam Ford <aford173@gmail.com> [191004 19:30]:
+> On Tue, Jul 23, 2019 at 5:21 PM Tony Lindgren <tony@atomide.com> wrote:
+> >
+> > For many years omap variants have been setting the runtime PM
+> > autosuspend delay to -1 to prevent unsafe policy with lossy first
+> > character on wake-up. The user must specifically enable the timeout
+> > for UARTs if desired.
+> >
+> > We must not enable the workaround for serdev devices though. It leads
+> > into UARTs not idling if no serdev devices are loaded and there is no
+> > sysfs entry to configure the UART in that case. And this means that
+> > my PM may not work unless the serdev modules are loaded.
+> >
+> > We can detect a serdev device being configured based on a dts child
+> > node, and we can simply skip the workround in that case. And the
+> > serdev driver can idle the port during runtime when suitable if an
+> > out-of-band wake-up GPIO line exists for example.
+> >
+> > Let's also add some comments to the workaround while at it.
 > 
-> I don't think I have any objection. It will probably make gratuitous
-> merge conflicts with Sato-san's old device tree sh4 work when we get
-> back to finishing that, but that's not really a big deal.
+> This seems to help some of the stability issues I am seeing on the
+> DM3730 UART2 running Bluetooth at 3000000 baud.
+> Does it make sense to backport this to the stable kernels?
 
-Ok, I've queued it up in my tree now, thanks,
+Sure if it helps with issues, it should be safe to apply to earlier
+kernels that have serdev potentially in use.
 
-greg k-h
+No need for earlier kernels before serdev though.
+
+Regards,
+
+Tony
+
+> > Cc: Johan Hovold <johan@kernel.org>
+> > Signed-off-by: Tony Lindgren <tony@atomide.com>
+> > ---
+> >  drivers/tty/serial/8250/8250_omap.c | 11 ++++++++++-
+> >  1 file changed, 10 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> > --- a/drivers/tty/serial/8250/8250_omap.c
+> > +++ b/drivers/tty/serial/8250/8250_omap.c
+> > @@ -1234,7 +1234,16 @@ static int omap8250_probe(struct platform_device *pdev)
+> >
+> >         device_init_wakeup(&pdev->dev, true);
+> >         pm_runtime_use_autosuspend(&pdev->dev);
+> > -       pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
+> > +
+> > +       /*
+> > +        * Disable runtime PM until autosuspend delay unless specifically
+> > +        * enabled by the user via sysfs. This is the historic way to
+> > +        * prevent an unsafe default policy with lossy characters on wake-up.
+> > +        * For serdev devices this is not needed, the policy can be managed by
+> > +        * the serdev driver.
+> > +        */
+> > +       if (!of_get_available_child_count(pdev->dev.of_node))
+> > +               pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
+> >
+> >         pm_runtime_irq_safe(&pdev->dev);
+> >         pm_runtime_enable(&pdev->dev);
+> > --
+> > 2.21.0
