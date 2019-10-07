@@ -1,66 +1,78 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v4 0/2] drivers: make early_platform code SuperH-specific
-Date: Mon, 7 Oct 2019 16:44:21 +0200
-Message-ID: <20191007144421.GA966763@kroah.com>
-References: <20191003092913.10731-1-brgl@bgdev.pl>
- <20191004130031.GA596158@kroah.com>
- <20191004132025.GQ16318@brightrain.aerifal.cx>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH] serial: 8250_omap: Fix idling for unloaded serdev drivers
+Date: Mon, 7 Oct 2019 08:56:44 -0700
+Message-ID: <20191007155644.GR5610@atomide.com>
+References: <20190723115400.46432-1-tony@atomide.com>
+ <CAHCN7x+6KYjnm5daRe_Y5XEWnDBWQnz8rOKYH2wTgx9avvokmQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20191004132025.GQ16318@brightrain.aerifal.cx>
+In-Reply-To: <CAHCN7x+6KYjnm5daRe_Y5XEWnDBWQnz8rOKYH2wTgx9avvokmQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rich Felker <dalias@libc.org>
-Cc: Bartosz Golaszewski <brgl@bgdev.pl>, Yoshinori Sato <ysato@users.sourceforge.jp>, "Rafael J . Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Jiri Slaby <jslaby@suse.com>, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Bartosz Golaszewski <bgolaszewski@baylibre.com>
+To: Adam Ford <aford173@gmail.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Vignesh R <vigneshr@ti.com>, linux-serial@vger.kernel.org, Linux-OMAP <linux-omap@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Johan Hovold <johan@kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Fri, Oct 04, 2019 at 09:20:25AM -0400, Rich Felker wrote:
-> On Fri, Oct 04, 2019 at 03:00:31PM +0200, Greg Kroah-Hartman wrote:
-> > On Thu, Oct 03, 2019 at 11:29:11AM +0200, Bartosz Golaszewski wrote:
-> > > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> > > 
-> > > Some time ago I started a discussion about the need for a proper early device
-> > > probing mechanism[1]. One that would be based on real platform drivers and
-> > > support both platform data and device tree.
-> > > 
-> > > While we're far from reaching any consensus on the implementation, Arnd
-> > > suggested that I start off by moving the SuperH-specific early platform
-> > > drivers implementation to arch/sh[2].
-> > > 
-> > > This series is the first attempt at making way for a new, less hacky
-> > > implementation.
-> > > 
-> > > The first patch moves all the early_platform code to arch/sh.
-> > > 
-> > > The second patch prefixes all early_platform symbols with 'sh_'.
-> > > 
-> > > [1] https://lkml.org/lkml/2018/4/26/657
-> > > [2] https://lkml.org/lkml/2018/4/27/239
-> > > 
-> > > v1 -> v2:
-> > > - certain drivers are compiled for arm/mach-shmobile too - we need to
-> > >   add ifdefs for CONFIG_SUPERH around early_platform calls
-> > > 
-> > > v2 -> v3:
-> > > - added a stub for is_early_platform_device() which always returns false
-> > >   on non-SuperH architectures
-> > > 
-> > > v3 -> v4:
-> > > - rebased on top of v5.4-rc1
-> > > - removed patches that are already upstream from the series
-> > > 
-> > > Bartosz Golaszewski (2):
-> > >   drivers: move the early platform device support to arch/sh
-> > >   sh: add the sh_ prefix to early platform symbols
-> > 
-> > I like this, any objection from anyone if I take this in my driver-core
-> > tree for 5.5-rc1?
+* Adam Ford <aford173@gmail.com> [191004 19:30]:
+> On Tue, Jul 23, 2019 at 5:21 PM Tony Lindgren <tony@atomide.com> wrote:
+> >
+> > For many years omap variants have been setting the runtime PM
+> > autosuspend delay to -1 to prevent unsafe policy with lossy first
+> > character on wake-up. The user must specifically enable the timeout
+> > for UARTs if desired.
+> >
+> > We must not enable the workaround for serdev devices though. It leads
+> > into UARTs not idling if no serdev devices are loaded and there is no
+> > sysfs entry to configure the UART in that case. And this means that
+> > my PM may not work unless the serdev modules are loaded.
+> >
+> > We can detect a serdev device being configured based on a dts child
+> > node, and we can simply skip the workround in that case. And the
+> > serdev driver can idle the port during runtime when suitable if an
+> > out-of-band wake-up GPIO line exists for example.
+> >
+> > Let's also add some comments to the workaround while at it.
 > 
-> I don't think I have any objection. It will probably make gratuitous
-> merge conflicts with Sato-san's old device tree sh4 work when we get
-> back to finishing that, but that's not really a big deal.
+> This seems to help some of the stability issues I am seeing on the
+> DM3730 UART2 running Bluetooth at 3000000 baud.
+> Does it make sense to backport this to the stable kernels?
 
-Ok, I've queued it up in my tree now, thanks,
+Sure if it helps with issues, it should be safe to apply to earlier
+kernels that have serdev potentially in use.
 
-greg k-h
+No need for earlier kernels before serdev though.
+
+Regards,
+
+Tony
+
+> > Cc: Johan Hovold <johan@kernel.org>
+> > Signed-off-by: Tony Lindgren <tony@atomide.com>
+> > ---
+> >  drivers/tty/serial/8250/8250_omap.c | 11 ++++++++++-
+> >  1 file changed, 10 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> > --- a/drivers/tty/serial/8250/8250_omap.c
+> > +++ b/drivers/tty/serial/8250/8250_omap.c
+> > @@ -1234,7 +1234,16 @@ static int omap8250_probe(struct platform_device *pdev)
+> >
+> >         device_init_wakeup(&pdev->dev, true);
+> >         pm_runtime_use_autosuspend(&pdev->dev);
+> > -       pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
+> > +
+> > +       /*
+> > +        * Disable runtime PM until autosuspend delay unless specifically
+> > +        * enabled by the user via sysfs. This is the historic way to
+> > +        * prevent an unsafe default policy with lossy characters on wake-up.
+> > +        * For serdev devices this is not needed, the policy can be managed by
+> > +        * the serdev driver.
+> > +        */
+> > +       if (!of_get_available_child_count(pdev->dev.of_node))
+> > +               pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
+> >
+> >         pm_runtime_irq_safe(&pdev->dev);
+> >         pm_runtime_enable(&pdev->dev);
+> > --
+> > 2.21.0
