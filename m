@@ -1,78 +1,37 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH] serial: 8250_omap: Fix idling for unloaded serdev drivers
-Date: Mon, 7 Oct 2019 08:56:44 -0700
-Message-ID: <20191007155644.GR5610@atomide.com>
-References: <20190723115400.46432-1-tony@atomide.com>
- <CAHCN7x+6KYjnm5daRe_Y5XEWnDBWQnz8rOKYH2wTgx9avvokmQ@mail.gmail.com>
+From: Paul Burton <paul.burton@mips.com>
+Subject: Re: [PATCH v7 1/5] nvmem: core: add nvmem_device_find
+Date: Mon, 7 Oct 2019 17:54:02 +0000
+Message-ID: <MWHPR2201MB12773F2193BDE76C4A5E1A74C19B0@MWHPR2201MB1277.namprd22.prod.outlook.com>
+References: <20191003095235.5158-2-tbogendoerfer@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAHCN7x+6KYjnm5daRe_Y5XEWnDBWQnz8rOKYH2wTgx9avvokmQ@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Adam Ford <aford173@gmail.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Vignesh R <vigneshr@ti.com>, linux-serial@vger.kernel.org, Linux-OMAP <linux-omap@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Johan Hovold <johan@kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <20191003095235.5158-2-tbogendoerfer@suse.de>
+Content-Language: en-US
+Sender: netdev-owner@vger.kernel.org
+To: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc: Jonathan Corbet <corbet@lwn.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <pburton@wavecomp.com>, James Hogan <jhogan@kernel.org>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-seri>
 List-Id: linux-serial@vger.kernel.org
 
-* Adam Ford <aford173@gmail.com> [191004 19:30]:
-> On Tue, Jul 23, 2019 at 5:21 PM Tony Lindgren <tony@atomide.com> wrote:
-> >
-> > For many years omap variants have been setting the runtime PM
-> > autosuspend delay to -1 to prevent unsafe policy with lossy first
-> > character on wake-up. The user must specifically enable the timeout
-> > for UARTs if desired.
-> >
-> > We must not enable the workaround for serdev devices though. It leads
-> > into UARTs not idling if no serdev devices are loaded and there is no
-> > sysfs entry to configure the UART in that case. And this means that
-> > my PM may not work unless the serdev modules are loaded.
-> >
-> > We can detect a serdev device being configured based on a dts child
-> > node, and we can simply skip the workround in that case. And the
-> > serdev driver can idle the port during runtime when suitable if an
-> > out-of-band wake-up GPIO line exists for example.
-> >
-> > Let's also add some comments to the workaround while at it.
-> 
-> This seems to help some of the stability issues I am seeing on the
-> DM3730 UART2 running Bluetooth at 3000000 baud.
-> Does it make sense to backport this to the stable kernels?
+Hello,
 
-Sure if it helps with issues, it should be safe to apply to earlier
-kernels that have serdev potentially in use.
+Thomas Bogendoerfer wrote:
+> nvmem_device_find provides a way to search for nvmem devices with
+> the help of a match function simlair to bus_find_device.
 
-No need for earlier kernels before serdev though.
+Applied to mips-next.
 
-Regards,
+> commit 8c2a2b8c2ff6
+> https://git.kernel.org/mips/c/8c2a2b8c2ff6
+>=20
+> Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> Acked-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> Signed-off-by: Paul Burton <paul.burton@mips.com>
 
-Tony
+Thanks,
+    Paul
 
-> > Cc: Johan Hovold <johan@kernel.org>
-> > Signed-off-by: Tony Lindgren <tony@atomide.com>
-> > ---
-> >  drivers/tty/serial/8250/8250_omap.c | 11 ++++++++++-
-> >  1 file changed, 10 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> > --- a/drivers/tty/serial/8250/8250_omap.c
-> > +++ b/drivers/tty/serial/8250/8250_omap.c
-> > @@ -1234,7 +1234,16 @@ static int omap8250_probe(struct platform_device *pdev)
-> >
-> >         device_init_wakeup(&pdev->dev, true);
-> >         pm_runtime_use_autosuspend(&pdev->dev);
-> > -       pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
-> > +
-> > +       /*
-> > +        * Disable runtime PM until autosuspend delay unless specifically
-> > +        * enabled by the user via sysfs. This is the historic way to
-> > +        * prevent an unsafe default policy with lossy characters on wake-up.
-> > +        * For serdev devices this is not needed, the policy can be managed by
-> > +        * the serdev driver.
-> > +        */
-> > +       if (!of_get_available_child_count(pdev->dev.of_node))
-> > +               pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
-> >
-> >         pm_runtime_irq_safe(&pdev->dev);
-> >         pm_runtime_enable(&pdev->dev);
-> > --
-> > 2.21.0
+[ This message was auto-generated; if you believe anything is incorrect
+  then please email paul.burton@mips.com to report it. ]
