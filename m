@@ -1,62 +1,73 @@
-From: Krzysztof Kozlowski <krzk@kernel.org>
+From: Rob Herring <robh+dt@kernel.org>
 Subject: Re: [PATCH 1/3] dt-bindings: arm: samsung: Force clkoutN names to be
  unique in PMU
-Date: Tue, 8 Oct 2019 14:50:38 +0200
-Message-ID: <20191008125038.GA2550@pi3>
-References: <20191004151414.8458-1-krzk@kernel.org>
- <CAL_JsqJDTcHu5oXG6zszGHCBhTE6EW94AANUjyMV78SkKcn5yA@mail.gmail.com>
+Date: Tue, 8 Oct 2019 09:05:32 -0500
+Message-ID: <CAL_Jsq+GcsUWN6kjBLkyr1rHGh6_4=w6JL6+k7DBXkBcvHcSBw@mail.gmail.com>
+References: <20191004151414.8458-1-krzk@kernel.org> <CAL_JsqJDTcHu5oXG6zszGHCBhTE6EW94AANUjyMV78SkKcn5yA@mail.gmail.com>
+ <20191008125038.GA2550@pi3>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <CAL_JsqJDTcHu5oXG6zszGHCBhTE6EW94AANUjyMV78SkKcn5yA@mail.gmail.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Rob Herring <robh+dt@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, Maciej Falkowski <m.falkowski@samsung.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, David Airlie <airlied@linux.ie>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, Kukjin Kim <kgene@kernel.org>, Lee Jones <lee.jones@linaro.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, Marek Szyprowski <m.szyprowski@samsung.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20191008125038.GA2550@pi3>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Kukjin Kim <kgene@kernel.org>, Mark Rutland <mark.rutland@arm.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Lee Jones <lee.jones@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Maciej Falkowski <m.falkowski@samsung.com>, Marek Szyprowski <m.szyprowski@samsung.com>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, devicetree@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-T24gVHVlLCBPY3QgMDgsIDIwMTkgYXQgMDc6Mzg6MTRBTSAtMDUwMCwgUm9iIEhlcnJpbmcgd3Jv
-dGU6Cj4gT24gRnJpLCBPY3QgNCwgMjAxOSBhdCAxMDoxNCBBTSBLcnp5c3p0b2YgS296bG93c2tp
-IDxrcnprQGtlcm5lbC5vcmc+IHdyb3RlOgo+ID4KPiA+IFRoZSBjbGtvdXROIG5hbWVzIG9mIGNs
-b2NrcyBtdXN0IGJlIHVuaXF1ZSBiZWNhdXNlIHRoZXkgcmVwcmVzZW50Cj4gPiB1bmlxdWUgaW5w
-dXRzIG9mIGNsb2NrIG11bHRpcGxleGVyLgo+ID4KPiA+IFNpZ25lZC1vZmYtYnk6IEtyenlzenRv
-ZiBLb3psb3dza2kgPGtyemtAa2VybmVsLm9yZz4KPiA+IC0tLQo+ID4gIERvY3VtZW50YXRpb24v
-ZGV2aWNldHJlZS9iaW5kaW5ncy9hcm0vc2Ftc3VuZy9wbXUueWFtbCB8IDYgKysrKy0tCj4gPiAg
-MSBmaWxlIGNoYW5nZWQsIDQgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKPiA+Cj4gPiBk
-aWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2FybS9zYW1zdW5n
-L3BtdS55YW1sIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2FybS9zYW1zdW5n
-L3BtdS55YW1sCj4gPiBpbmRleCA3M2I1NmZjNWJmNTguLmQ4ZTAzNzE2ZjVkMiAxMDA2NDQKPiA+
-IC0tLSBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9hcm0vc2Ftc3VuZy9wbXUu
-eWFtbAo+ID4gKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2FybS9zYW1z
-dW5nL3BtdS55YW1sCj4gPiBAQCAtNTMsOCArNTMsMTAgQEAgcHJvcGVydGllczoKPiA+ICAgICAg
-ICBMaXN0IG9mIGNsb2NrIG5hbWVzIGZvciBwYXJ0aWN1bGFyIENMS09VVCBtdXggaW5wdXRzCj4g
-PiAgICAgIG1pbkl0ZW1zOiAxCj4gPiAgICAgIG1heEl0ZW1zOiAzMgo+ID4gLSAgICBpdGVtczoK
-PiA+IC0gICAgICBwYXR0ZXJuOiAnXmNsa291dChbMC05XXxbMTJdWzAtOV18M1swLTFdKSQnCj4g
-PiArICAgIGFsbE9mOgo+ID4gKyAgICAgIC0gaXRlbXM6Cj4gPiArICAgICAgICAgIHBhdHRlcm46
-ICdeY2xrb3V0KFswLTldfFsxMl1bMC05XXwzWzAtMV0pJCcKPiA+ICsgICAgICAtIHVuaXF1ZUl0
-ZW1zOiB0cnVlCj4gCj4gWW91IHNob3VsZG4ndCBuZWVkIHRoZSAnYWxsT2YnLCBqdXN0IGFkZCB1
-bmlxdWVJdGVtcyBhdCB0aGUgc2FtZSBsZXZlbCBhcyBpdGVtcy4KCklmIHlvdSBtZWFuIHNvbWV0
-aGluZyBsaWtlOgogIDU2ICAgICB1bmlxdWVJdGVtczogdHJ1ZQogIDU3ICAgICBpdGVtczoKICA1
-OCAgICAgICBwYXR0ZXJuOiAnXmNsa291dChbMC05XXxbMTJdWzAtOV18M1swLTFdKSQnCgpUaGVu
-IHRoZSBkdF9iaW5kaW5nX2NoZWNrIGZhaWxzOgoKZGV2L2xpbnV4L0RvY3VtZW50YXRpb24vZGV2
-aWNldHJlZS9iaW5kaW5ncy9hcm0vc2Ftc3VuZy9wbXUueWFtbDogcHJvcGVydGllczpjbG9jay1u
-YW1lczoKJ3VuaXF1ZUl0ZW1zJyBpcyBub3Qgb25lIG9mIFsnJHJlZicsICdhZGRpdGlvbmFsSXRl
-bXMnLCAnYWRkaXRpb25hbFByb3BlcnRpZXMnLCAnYWxsT2YnLCAnYW55T2YnLCAnY29uc3QnLCAn
-Y29udGFpbnMnLCAnZGVmYXVsdCcsICdkZXBlbmRlbmNpZXMnLCAnZGVwcmVjYXRlZCcsICdkZXNj
-cmlwdGlvbicsICdlbHNlJywgJ2VudW0nLCAnaXRlbXMnLCAnaWYnLCAnbWluSXRlbXMnLCAnbWlu
-aW11bScsICdtYXhJdGVtcycsICdtYXhpbXVtJywgJ25vdCcsICdvbmVPZicsICdwYXR0ZXJuJywg
-J3BhdHRlcm5Qcm9wZXJ0aWVzJywgJ3Byb3BlcnRpZXMnLCAncmVxdWlyZWQnLCAndGhlbicsICd0
-eXBlJywgJ3R5cGVTaXplJywgJ3VuZXZhbHVhdGVkUHJvcGVydGllcyddCgpCZXN0IHJlZ2FyZHMs
-CktyenlzenRvZgoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9y
-ZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZl
-bA==
+On Tue, Oct 8, 2019 at 7:50 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+>
+> On Tue, Oct 08, 2019 at 07:38:14AM -0500, Rob Herring wrote:
+> > On Fri, Oct 4, 2019 at 10:14 AM Krzysztof Kozlowski <krzk@kernel.org> w=
+rote:
+> > >
+> > > The clkoutN names of clocks must be unique because they represent
+> > > unique inputs of clock multiplexer.
+> > >
+> > > Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> > > ---
+> > >  Documentation/devicetree/bindings/arm/samsung/pmu.yaml | 6 ++++--
+> > >  1 file changed, 4 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/arm/samsung/pmu.yaml b=
+/Documentation/devicetree/bindings/arm/samsung/pmu.yaml
+> > > index 73b56fc5bf58..d8e03716f5d2 100644
+> > > --- a/Documentation/devicetree/bindings/arm/samsung/pmu.yaml
+> > > +++ b/Documentation/devicetree/bindings/arm/samsung/pmu.yaml
+> > > @@ -53,8 +53,10 @@ properties:
+> > >        List of clock names for particular CLKOUT mux inputs
+> > >      minItems: 1
+> > >      maxItems: 32
+> > > -    items:
+> > > -      pattern: '^clkout([0-9]|[12][0-9]|3[0-1])$'
+> > > +    allOf:
+> > > +      - items:
+> > > +          pattern: '^clkout([0-9]|[12][0-9]|3[0-1])$'
+> > > +      - uniqueItems: true
+> >
+> > You shouldn't need the 'allOf', just add uniqueItems at the same level =
+as items.
+>
+> If you mean something like:
+>   56     uniqueItems: true
+>   57     items:
+>   58       pattern: '^clkout([0-9]|[12][0-9]|3[0-1])$'
+>
+> Then the dt_binding_check fails:
+>
+> dev/linux/Documentation/devicetree/bindings/arm/samsung/pmu.yaml: propert=
+ies:clock-names:
+> 'uniqueItems' is not one of ['$ref', 'additionalItems', 'additionalProper=
+ties', 'allOf', 'anyOf', 'const', 'contains', 'default', 'dependencies', 'd=
+eprecated', 'description', 'else', 'enum', 'items', 'if', 'minItems', 'mini=
+mum', 'maxItems', 'maximum', 'not', 'oneOf', 'pattern', 'patternProperties'=
+, 'properties', 'required', 'then', 'type', 'typeSize', 'unevaluatedPropert=
+ies']
+
+I can add it.
+
+The other option is to fix this in the clock schema. I'm not sure if
+there's a need for duplicate clock-names. Seems unlikely. I'll test
+that.
+
+Rob
