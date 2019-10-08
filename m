@@ -1,41 +1,44 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH] serial: fix kernel-doc warning in comments
-Date: Tue, 8 Oct 2019 13:46:53 -0700
-Message-ID: <e989641c-224a-1090-e596-e7cc800bed44@infradead.org>
+From: Paul Walmsley <paul.walmsley@sifive.com>
+Subject: [PATCH] Documentation: admin-guide: add earlycon documentation for
+ the sifive serial driver
+Date: Tue, 8 Oct 2019 16:08:27 -0700 (PDT)
+Message-ID: <alpine.DEB.2.21.9999.1910081606370.11044@viisi.sifive.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>
+To: corbet@lwn.net
+Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, schwab@suse.de, hch@lst.de
 List-Id: linux-serial@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
 
-Fix Sphinx warning in serial_core.c:
+Document earlycon usage for the SiFive serial port driver in the same
+fashion as for the other serial port IP blocks, since the SiFive
+serial port driver supports it.
 
-../drivers/tty/serial/serial_core.c:1969: WARNING: Definition list ends without a blank line; unexpected unindent.
-
-Fixes: 73abaf87f01b ("serial: earlycon: Refactor parse_options into serial core")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Paul Walmsley <paul.walmsley@sifive.com>
+Reported-by: Andreas Schwab <schwab@suse.de>
+Cc: Christoph Hellwig <hch@lst.de>
 ---
- drivers/tty/serial/serial_core.c |    2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/admin-guide/kernel-parameters.txt | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- linux-next-20191008.orig/drivers/tty/serial/serial_core.c
-+++ linux-next-20191008/drivers/tty/serial/serial_core.c
-@@ -1964,8 +1964,10 @@ uart_get_console(struct uart_port *ports
-  *	   console=<name>,io|mmio|mmio16|mmio32|mmio32be|mmio32native,<addr>,<options>
-  *
-  *	The optional form
-+ *
-  *	   earlycon=<name>,0x<addr>,<options>
-  *	   console=<name>,0x<addr>,<options>
-+ *
-  *	is also accepted; the returned @iotype will be UPIO_MEM.
-  *
-  *	Returns 0 on success or -EINVAL on failure
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index c7ac2f3ac99f..90becb00221b 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -1106,6 +1106,12 @@
+ 			address must be provided, and the serial port must
+ 			already be setup and configured.
+ 
++		sifive,<addr>
++			Start an early, polled-mode console on a SiFive
++			serial port at the specified address.  The port must
++			already be setup and configured.  Options are not
++			yet supported.
++
+ 	earlyprintk=	[X86,SH,ARM,M68k,S390]
+ 			earlyprintk=vga
+ 			earlyprintk=sclp
+-- 
+2.23.0
