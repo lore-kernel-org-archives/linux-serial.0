@@ -2,103 +2,87 @@ Return-Path: <SRS0=YA87=YB=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8795C10F14
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Oct 2019 15:10:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE6D3C4360C
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Oct 2019 20:46:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 825A1206BB
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Oct 2019 15:10:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1570547437;
-	bh=ZwNYdJEcqdnycNPUhUKzVR7Mj81YHnVJ+qnDhlhWJbA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=Wq7iQ0iZo3gZMGcKyZZrYd5U63uoFoYuyZRQg8Kdx2nEr93TmP9il/ooHPGXGgZSu
-	 X2cOjIBABMClifyw90A4gGwHBwKmrzy+yUxlnQdiEilVydfgOhAGtFnaqjOi4fDeHa
-	 GClYHYXiThy0TCxfmRYl+nklNW538dAXvPnt5xaE=
+	by mail.kernel.org (Postfix) with ESMTP id 968C7206C0
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Oct 2019 20:46:55 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="h3ds8Dwr"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726066AbfJHPKe (ORCPT
+        id S1730720AbfJHUqz (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Oct 2019 11:10:34 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:36468 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725989AbfJHPKd (ORCPT
+        Tue, 8 Oct 2019 16:46:55 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:57462 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730523AbfJHUqz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Oct 2019 11:10:33 -0400
-Received: by mail-wr1-f65.google.com with SMTP id y19so19868009wrd.3;
-        Tue, 08 Oct 2019 08:10:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=jDr1BzlICCTlwhp3uNGJEPl314YzfcfD31Fib2fRNSo=;
-        b=fxrRLXHiFr9wcrSrK69zhEYSFeedRkodUXLrs8Mdsd9rpVEY2kgpk2ejmAw/e7rmgt
-         xptxfzSJ3cnZ+qQRsGc16l/NOy8dx2N5/tLvFAGCOqEUZ3ApVRgxixCZlTJ4//jj/UPf
-         LsKWfifF/8HrsB9OYukj+kJWFLNO27319nuP1QtlmAFs4C1/UFWKsKNShl4AFgtjHfc6
-         +kIK9YxqwjqsCHihiUKi+KL88Goqkljx/Urh0UbFQvoRisHpnqj+uDys63LST1/ah9F4
-         XUZVEdBXDAuytgkq14CvU9nikhppnqLv1oodvsk9oFMJTZyxGWBcSa3s+5UU7xI5EKcY
-         W2LA==
-X-Gm-Message-State: APjAAAWKgsBa4WPakrimhevEwSuh0IMCRgT+U7XUNeu6Qec40HqWm6aK
-        UPS1jVyDrRw2Ckbqec+Xa8QfimiI
-X-Google-Smtp-Source: APXvYqzX4ka2psn6HEE8SlAx19V028jaUxy26b9V7r9ws/He1WJtNpQAY+Uuwiz4uo5g6s4xsd7i9w==
-X-Received: by 2002:adf:ecc1:: with SMTP id s1mr19736353wro.223.1570547431457;
-        Tue, 08 Oct 2019 08:10:31 -0700 (PDT)
-Received: from pi3 ([194.230.155.145])
-        by smtp.googlemail.com with ESMTPSA id 90sm26487496wrr.1.2019.10.08.08.10.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Oct 2019 08:10:30 -0700 (PDT)
-Date:   Tue, 8 Oct 2019 17:10:28 +0200
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Kukjin Kim <kgene@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Lee Jones <lee.jones@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Maciej Falkowski <m.falkowski@samsung.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH 1/3] dt-bindings: arm: samsung: Force clkoutN names to be
- unique in PMU
-Message-ID: <20191008151028.GA2720@pi3>
-References: <20191004151414.8458-1-krzk@kernel.org>
- <CAL_JsqJDTcHu5oXG6zszGHCBhTE6EW94AANUjyMV78SkKcn5yA@mail.gmail.com>
- <20191008125038.GA2550@pi3>
- <CAL_Jsq+GcsUWN6kjBLkyr1rHGh6_4=w6JL6+k7DBXkBcvHcSBw@mail.gmail.com>
- <CAL_JsqKBzZCShxx99aB4z15XYNbUionVicmfNNXEfq=iohWLCA@mail.gmail.com>
- <20191008142900.GA2635@pi3>
- <CAL_Jsq+ObMD=inkMFqkZbKFoKZUxw53gUMnjsC1pU5GwumK8LQ@mail.gmail.com>
- <20191008150456.GA2683@pi3>
+        Tue, 8 Oct 2019 16:46:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:MIME-Version:Date:Message-ID:Subject:From:Cc:To:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=LKj/7Fff1CfpZBnq21VwwwS/cCFdn8vI3qeat/yQhkQ=; b=h3ds8DwrjR8pC8djYU7u6u5ry
+        RGpLR1VdaW3vUz4bWpHmdEuekoZM4OBGPGui3MwcCYcgX2d+zd47Ypqc1eRkeCBEdbq1GrFN5c9ww
+        mt9IEZcBaBng03XjMcPtOunGHtMu6j98wEwQ86dv606XbUjKqw6h5X35Mon3SY9+k1wnIA+MbbE7D
+        zKYChpFJikxDtSpf06eULy37EwIT8sODU61JhiipTropkiV7/M0U15+ma5bRL2aZQq6j61VaHo/Z8
+        JcL7zmxXIG7Hm0I7rSIX6MP/4k5q8XXiDJLah5RDXqqUEdMoGdgxPxBR9TbOCJdGJQoBWIDR7HoxT
+        t2bmNVVtQ==;
+Received: from [2601:1c0:6280:3f0::9ef4]
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.2 #3 (Red Hat Linux))
+        id 1iHwNh-0006Gq-Qv; Tue, 08 Oct 2019 20:46:54 +0000
+To:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Peter Hurley <peter@hurleysoftware.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH] serial: fix kernel-doc warning in comments
+Message-ID: <e989641c-224a-1090-e596-e7cc800bed44@infradead.org>
+Date:   Tue, 8 Oct 2019 13:46:53 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Disposition: inline
-In-Reply-To: <20191008150456.GA2683@pi3>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191008151028.RZmVLVy-rH66-cE1SvNACFXZ09zpH8G7978JuTgES2g@z>
+Message-ID: <20191008204653.wXhKgnXIAQQPs1zotRZksyS-Fn3oWbVbSnWK59uN2No@z>
 
-On Tue, Oct 08, 2019 at 05:04:56PM +0200, Krzysztof Kozlowski wrote:
-> On Tue, Oct 08, 2019 at 09:38:15AM -0500, Rob Herring wrote:
-> > Are you running using DT_SCHEMA_FILES? If so, you won't get the core schema.
-> 
-> Ah, yes, now I see proper errors. Thanks for pointing this.
-> 
-> I'll send next version of this patch only (if others are ok).
-> 
+From: Randy Dunlap <rdunlap@infradead.org>
 
-Of course, there will be no v2, this patch can be just skipped.
+Fix Sphinx warning in serial_core.c:
 
-Best regards,
-Krzysztof
+../drivers/tty/serial/serial_core.c:1969: WARNING: Definition list ends without a blank line; unexpected unindent.
+
+Fixes: 73abaf87f01b ("serial: earlycon: Refactor parse_options into serial core")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/serial/serial_core.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+--- linux-next-20191008.orig/drivers/tty/serial/serial_core.c
++++ linux-next-20191008/drivers/tty/serial/serial_core.c
+@@ -1964,8 +1964,10 @@ uart_get_console(struct uart_port *ports
+  *	   console=<name>,io|mmio|mmio16|mmio32|mmio32be|mmio32native,<addr>,<options>
+  *
+  *	The optional form
++ *
+  *	   earlycon=<name>,0x<addr>,<options>
+  *	   console=<name>,0x<addr>,<options>
++ *
+  *	is also accepted; the returned @iotype will be UPIO_MEM.
+  *
+  *	Returns 0 on success or -EINVAL on failure
 
