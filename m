@@ -2,60 +2,57 @@ Return-Path: <SRS0=YA87=YB=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C7BC4360C
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Oct 2019 12:38:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F0DAC4360C
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Oct 2019 12:50:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D27DE217D7
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Oct 2019 12:38:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0886D2070B
+	for <linux-serial@archiver.kernel.org>; Tue,  8 Oct 2019 12:50:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1570538308;
-	bh=0172FbZMwE+uHkpHQaDTjmrpy7r6UVMZViKRxp2jAkE=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=w2q0v2VWxWfcVefSwxvf9lUEYnrqwBN2jNUQcO8VzVdpRo2O1TnwJXjLxJYtDC5i7
-	 saloqHJqIGWqFWRE4ooY82tqg8H0H4mHmWhMUYZ0z/HTT8JSHCs1MoRDNXOFxgSJcj
-	 B8bN/R2w9cY211Qh+Obawx1WAR1fz2thrW9VuHaQ=
+	s=default; t=1570539050;
+	bh=OySsODi2IfcQ285IR9RvwAvsWOvDc/nsOHoTuBIMQtU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=GUxY2d7HTt56qqEZUjEj9GdgnTBtPmVcDdDO9pSKaQI2eNBPUeGh19pIJaefAVRGG
+	 +je9DV7U6YLHpNyhP0VE6ST1wReDvJ1eEo9YAMDDJEb9gQ46T4+ufMon3sKFNli0n0
+	 m3kTFsd2azat+8/ch9F1+Z6ZCVKjaUZIbSRNOuss=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730775AbfJHMi2 (ORCPT
+        id S1731005AbfJHMuq (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Oct 2019 08:38:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37230 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730705AbfJHMi2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Oct 2019 08:38:28 -0400
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 27E3F20815;
-        Tue,  8 Oct 2019 12:38:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570538307;
-        bh=0172FbZMwE+uHkpHQaDTjmrpy7r6UVMZViKRxp2jAkE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Fj0cjOYfJqhfG7IwXrmsg43ZvERQ73aD0HiD62uK8K0QAnuFy4VbETrnvYSymrBqN
-         xM7+aR53XRnXLF/IMVEBQZral9XGk3sgp1dp0oYVgvM71fmByrgK0ow2kcUo6seEJK
-         WtzTvf6j2ztu57+zCR9T41ITyxFFnOHtYtMF77Dg=
-Received: by mail-qt1-f178.google.com with SMTP id 3so25036855qta.1;
-        Tue, 08 Oct 2019 05:38:27 -0700 (PDT)
-X-Gm-Message-State: APjAAAWy7yPA/NtOvpSA6JR3NprGx8Az19d2KJ7yNuGjuPzyDXqjvnis
-        K4kBX5jtWvt8+jEEf+4j0OI9GPFAKm8BTMhU1w==
-X-Google-Smtp-Source: APXvYqzxC6rl6FMV1ScqL2fgXOVZv3hYhSzySpUPq3nsKaUzT0TVTrLa+50ZC/gUauiPJFRY9Nd2MNSIBGFt1IYYeV8=
-X-Received: by 2002:ac8:6982:: with SMTP id o2mr35571093qtq.143.1570538306332;
- Tue, 08 Oct 2019 05:38:26 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191004151414.8458-1-krzk@kernel.org>
-In-Reply-To: <20191004151414.8458-1-krzk@kernel.org>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Tue, 8 Oct 2019 07:38:14 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqJDTcHu5oXG6zszGHCBhTE6EW94AANUjyMV78SkKcn5yA@mail.gmail.com>
-Message-ID:
- <CAL_JsqJDTcHu5oXG6zszGHCBhTE6EW94AANUjyMV78SkKcn5yA@mail.gmail.com>
-Subject: Re: [PATCH 1/3] dt-bindings: arm: samsung: Force clkoutN names to be
- unique in PMU
-To:     Krzysztof Kozlowski <krzk@kernel.org>
+        Tue, 8 Oct 2019 08:50:46 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:36287 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730541AbfJHMup (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 8 Oct 2019 08:50:45 -0400
+Received: by mail-wm1-f66.google.com with SMTP id m18so3013420wmc.1;
+        Tue, 08 Oct 2019 05:50:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=bFWMwkdfgSlqbJTIDocqKJvGwcD57UaC11+rFmnz6Kc=;
+        b=GhkTuSjagptOd/MCxBGk0X8z723P3bWDQ3JDjvCeXGKMHyUmd6o0BroJSAhraSuAMl
+         p99UIV07b+280mG3NlnwwarJxXiZV4neia70FwuNiZxSdXELDeN3h9eegzsyzsTneLYY
+         kPj9Z4FnrZttUpB0vNsqxwWlsGtXYQ1P0NPNXg7jmQfDmYc+MyLSL/uPEdx0v5Ygpff8
+         cBFHKDSj+i8zqNJCQ4rU62ho8JbHYtMNhgokjW3EUf9PX1yXYMVLyxqs2NY6DGjheCRv
+         x+fEtDQucKvKxrdHdnM+/XeYs/OLJQLWdALjh+5YKL8CLRnhA3XRk/xd+uEEe49spyZ1
+         87IA==
+X-Gm-Message-State: APjAAAW/lw6q+1vSZwV2SUyoKANwQBZP+r1DQf6A/cshdJYi9x/LhSKp
+        RD68D+AnlXQ1jOCBk9rOgqU=
+X-Google-Smtp-Source: APXvYqynsGw67zM/kLC2+YxQ7cWPgz0Fnub1csInHDDTqUjZRtD9OaXw2dWRP/82MQmeVhcp3vQOIg==
+X-Received: by 2002:a7b:cd13:: with SMTP id f19mr3469466wmj.4.1570539043033;
+        Tue, 08 Oct 2019 05:50:43 -0700 (PDT)
+Received: from pi3 ([194.230.155.145])
+        by smtp.googlemail.com with ESMTPSA id 63sm24153438wri.25.2019.10.08.05.50.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Oct 2019 05:50:42 -0700 (PDT)
+Date:   Tue, 8 Oct 2019 14:50:38 +0200
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Rob Herring <robh+dt@kernel.org>
 Cc:     Kukjin Kim <kgene@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
         David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
@@ -70,38 +67,61 @@ Cc:     Kukjin Kim <kgene@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         dri-devel <dri-devel@lists.freedesktop.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH 1/3] dt-bindings: arm: samsung: Force clkoutN names to be
+ unique in PMU
+Message-ID: <20191008125038.GA2550@pi3>
+References: <20191004151414.8458-1-krzk@kernel.org>
+ <CAL_JsqJDTcHu5oXG6zszGHCBhTE6EW94AANUjyMV78SkKcn5yA@mail.gmail.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: inline
+In-Reply-To: <CAL_JsqJDTcHu5oXG6zszGHCBhTE6EW94AANUjyMV78SkKcn5yA@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191008123814.s5GJC5wo_8E5ZgyyMsoZJmAKQla1S-rvm46H5SDyj2w@z>
+Message-ID: <20191008125038.Vab_w5hrzq13Xvs5Q_hE33YKq-wDNI_R_dNB7e7k710@z>
 
-On Fri, Oct 4, 2019 at 10:14 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
->
-> The clkoutN names of clocks must be unique because they represent
-> unique inputs of clock multiplexer.
->
-> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-> ---
->  Documentation/devicetree/bindings/arm/samsung/pmu.yaml | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/arm/samsung/pmu.yaml b/Documentation/devicetree/bindings/arm/samsung/pmu.yaml
-> index 73b56fc5bf58..d8e03716f5d2 100644
-> --- a/Documentation/devicetree/bindings/arm/samsung/pmu.yaml
-> +++ b/Documentation/devicetree/bindings/arm/samsung/pmu.yaml
-> @@ -53,8 +53,10 @@ properties:
->        List of clock names for particular CLKOUT mux inputs
->      minItems: 1
->      maxItems: 32
-> -    items:
-> -      pattern: '^clkout([0-9]|[12][0-9]|3[0-1])$'
-> +    allOf:
-> +      - items:
-> +          pattern: '^clkout([0-9]|[12][0-9]|3[0-1])$'
-> +      - uniqueItems: true
+On Tue, Oct 08, 2019 at 07:38:14AM -0500, Rob Herring wrote:
+> On Fri, Oct 4, 2019 at 10:14 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> >
+> > The clkoutN names of clocks must be unique because they represent
+> > unique inputs of clock multiplexer.
+> >
+> > Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> > ---
+> >  Documentation/devicetree/bindings/arm/samsung/pmu.yaml | 6 ++++--
+> >  1 file changed, 4 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/arm/samsung/pmu.yaml b/Documentation/devicetree/bindings/arm/samsung/pmu.yaml
+> > index 73b56fc5bf58..d8e03716f5d2 100644
+> > --- a/Documentation/devicetree/bindings/arm/samsung/pmu.yaml
+> > +++ b/Documentation/devicetree/bindings/arm/samsung/pmu.yaml
+> > @@ -53,8 +53,10 @@ properties:
+> >        List of clock names for particular CLKOUT mux inputs
+> >      minItems: 1
+> >      maxItems: 32
+> > -    items:
+> > -      pattern: '^clkout([0-9]|[12][0-9]|3[0-1])$'
+> > +    allOf:
+> > +      - items:
+> > +          pattern: '^clkout([0-9]|[12][0-9]|3[0-1])$'
+> > +      - uniqueItems: true
+> 
+> You shouldn't need the 'allOf', just add uniqueItems at the same level as items.
 
-You shouldn't need the 'allOf', just add uniqueItems at the same level as items.
+If you mean something like:
+  56     uniqueItems: true
+  57     items:
+  58       pattern: '^clkout([0-9]|[12][0-9]|3[0-1])$'
 
-Rob
+Then the dt_binding_check fails:
+
+dev/linux/Documentation/devicetree/bindings/arm/samsung/pmu.yaml: properties:clock-names:
+'uniqueItems' is not one of ['$ref', 'additionalItems', 'additionalProperties', 'allOf', 'anyOf', 'const', 'contains', 'default', 'dependencies', 'deprecated', 'description', 'else', 'enum', 'items', 'if', 'minItems', 'minimum', 'maxItems', 'maximum', 'not', 'oneOf', 'pattern', 'patternProperties', 'properties', 'required', 'then', 'type', 'typeSize', 'unevaluatedProperties']
+
+Best regards,
+Krzysztof
+
+
