@@ -2,61 +2,101 @@ Return-Path: <SRS0=/1L5=YC=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D48ECE58D
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 10:06:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51037C47404
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 10:17:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 41BD3206C0
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 10:06:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 35242206C0
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 10:17:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730646AbfJIKGY (ORCPT
+        id S1730871AbfJIKRg (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Oct 2019 06:06:24 -0400
-Received: from mx2.suse.de ([195.135.220.15]:56990 "EHLO mx1.suse.de"
+        Wed, 9 Oct 2019 06:17:36 -0400
+Received: from mx2.suse.de ([195.135.220.15]:32892 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726211AbfJIKGY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Oct 2019 06:06:24 -0400
+        id S1730734AbfJIKRd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 9 Oct 2019 06:17:33 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 9E888AE48;
-        Wed,  9 Oct 2019 10:06:22 +0000 (UTC)
-From:   Andreas Schwab <schwab@suse.de>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        by mx1.suse.de (Postfix) with ESMTP id 18FC8AE48;
+        Wed,  9 Oct 2019 10:17:29 +0000 (UTC)
+From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Jonathan Corbet <corbet@lwn.net>,
-        "open list\:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list\:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH] Documentation: admin-guide: add earlycon documentation for the sifive serial driver
-References: <alpine.DEB.2.21.9999.1910081606370.11044@viisi.sifive.com>
-        <CAMuHMdVdPFSU_3VEtO=P73kqLezV5Dmki=N3nxsKibzy-U5pBg@mail.gmail.com>
-X-Yow:  My pants just went to high school in the Carlsbad Caverns!!!
-Date:   Wed, 09 Oct 2019 12:06:22 +0200
-In-Reply-To: <CAMuHMdVdPFSU_3VEtO=P73kqLezV5Dmki=N3nxsKibzy-U5pBg@mail.gmail.com>
-        (Geert Uytterhoeven's message of "Wed, 9 Oct 2019 08:56:29 +0200")
-Message-ID: <mvmv9syz10h.fsf@suse.de>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.3 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH v8 5/5] MIPS: SGI-IP27: Enable ethernet phy on second Origin 200 module
+Date:   Wed,  9 Oct 2019 12:17:12 +0200
+Message-Id: <20191009101713.12238-6-tbogendoerfer@suse.de>
+X-Mailer: git-send-email 2.16.4
+In-Reply-To: <20191009101713.12238-1-tbogendoerfer@suse.de>
+References: <20191009101713.12238-1-tbogendoerfer@suse.de>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191009100622.yhSoogNyT5jAXsrFi5BsNpcHrAkYdBoB_1YuRNe-LYQ@z>
+Content-Type: text/plain; charset="UTF-8"
+Message-ID: <20191009101712.HY21QOa5itZIQZq6rbfr-rLgRjlFjYKuwvPBOdGxrAo@z>
 
-On Okt 09 2019, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+PROM only enables ethernet PHY on first Origin 200 module, so we must
+do it ourselves for the second module.
 
-> I believe risc-v is DT-only, so if chosen/stdout-path is set up
+Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+---
+ arch/mips/pci/pci-ip27.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
-If.  Currently, it isn't.
-
-Andreas.
-
+diff --git a/arch/mips/pci/pci-ip27.c b/arch/mips/pci/pci-ip27.c
+index 441eb9383b20..7cc784cb299b 100644
+--- a/arch/mips/pci/pci-ip27.c
++++ b/arch/mips/pci/pci-ip27.c
+@@ -7,6 +7,11 @@
+  * Copyright (C) 1999, 2000, 04 Ralf Baechle (ralf@linux-mips.org)
+  * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
+  */
++#include <asm/sn/addrs.h>
++#include <asm/sn/types.h>
++#include <asm/sn/klconfig.h>
++#include <asm/sn/hub.h>
++#include <asm/sn/ioc3.h>
+ #include <asm/pci/bridge.h>
+ 
+ dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
+@@ -31,3 +36,20 @@ int pcibus_to_node(struct pci_bus *bus)
+ }
+ EXPORT_SYMBOL(pcibus_to_node);
+ #endif /* CONFIG_NUMA */
++
++static void ip29_fixup_phy(struct pci_dev *dev)
++{
++	int nasid = pcibus_to_node(dev->bus);
++	u32 sid;
++
++	if (nasid != 1)
++		return; /* only needed on second module */
++
++	/* enable ethernet PHY on IP29 systemboard */
++	pci_read_config_dword(dev, PCI_SUBSYSTEM_VENDOR_ID, &sid);
++	if (sid == ((PCI_VENDOR_ID_SGI << 16) | IOC3_SUBSYS_IP29_SYSBOARD))
++		REMOTE_HUB_S(nasid, MD_LED0, 0x09);
++}
++
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_SGI, PCI_DEVICE_ID_SGI_IOC3,
++			ip29_fixup_phy);
 -- 
-Andreas Schwab, SUSE Labs, schwab@suse.de
-GPG Key fingerprint = 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D7
-"And now for something completely different."
+2.16.4
+
