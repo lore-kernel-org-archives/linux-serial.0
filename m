@@ -2,263 +2,109 @@ Return-Path: <SRS0=/1L5=YC=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CF87C47404
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 12:33:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61FCEECE58D
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 13:42:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0983C21835
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 12:33:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 35E4420B7C
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 13:42:56 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VRKHcF33"
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="xq47ib1o"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731231AbfJIMdU (ORCPT
+        id S1731133AbfJINmz (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Oct 2019 08:33:20 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:46275 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731225AbfJIMdT (ORCPT
+        Wed, 9 Oct 2019 09:42:55 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:50938 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731072AbfJINmz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Oct 2019 08:33:19 -0400
-Received: by mail-wr1-f66.google.com with SMTP id o18so2708981wrv.13;
-        Wed, 09 Oct 2019 05:33:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:subject:to:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vtczsSGiPqX2EarRjg69FTPPSDg/+oHy5PBJ6riudmE=;
-        b=VRKHcF33MuAVh8nJp6TdXPlcz8puGlOW1dMxMm9921cfiAdGpqfTgRYnpXPxV4yfEQ
-         rmDG/XRipy5J2QrF391S1rH40u5q2O3yUuoiRyQbeIQ4toi0jtadtuvVadmy//AhZuuD
-         ftjYKXFvrCPbaRonwq3L0hIZjuv4DDJ1IMoSO5TNad/vdqWVz9UoQG0UL7qqbplUM1Tf
-         vtV9k+cWmTKpmcGVxLAZEfzQ/BfgivnsgyBq8zKK74r8qf29yrzwKnt7/3lo07jQFDPx
-         9VyHcHBG3pidk2RsyDgimMETdHU6kbCDA0uMazDqaiM+MAYYFaZ8qWHpTjTohMAn8I+v
-         DeFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:subject:to:references:from:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vtczsSGiPqX2EarRjg69FTPPSDg/+oHy5PBJ6riudmE=;
-        b=MjfoVKuGRcMrO8K0PAnmFmh41IK/MK5mS8ZNBjGep1zXNh2ixQ/cM3zU/eNhK4oKfa
-         Q0Y8b56Hi7csQK/DDEc8bM/ZLKiZFL4mbeGBYZO12AA6Jh8BD1SYvHvFZDFw8pIk1sAO
-         REqlWoNIfO4wJ1GCn90oPXvJOYH9W4o5IyraZYHuenZ0WM8MNs82VoLNJrgvwfL4oC0p
-         TyfBoCHGjPL3dHCMm8/lnpT85fj2d5R2+P6+OPucPzbmqSsuoIZsa5NUxlj6ii1PYwct
-         PSUcoPOmIiZl/n/iIzS76j2eADbMzurr1ef+xPoGKZmgyk9xLtGujaXolkslkRGqpsiV
-         aMjQ==
-X-Gm-Message-State: APjAAAXx2Uhn9CUelqURUFAeDNqr1CM+Zed4CZbo/L97rUqF5RF9O88+
-        Pwxf01QkLgCZRoCDMjtGleNZ+OzGtRk=
-X-Google-Smtp-Source: APXvYqxV4P4UsHua3rlzN/cRN7SJ3sI08LuJFjwO/Tfeazlm5xN6PUyppxrB5XdoOows7eA+mcwiJw==
-X-Received: by 2002:a5d:6b03:: with SMTP id v3mr2850669wrw.182.1570624395704;
-        Wed, 09 Oct 2019 05:33:15 -0700 (PDT)
-Received: from [192.168.1.35] (46.red-83-42-66.dynamicip.rima-tde.net. [83.42.66.46])
-        by smtp.gmail.com with ESMTPSA id t13sm4432525wra.70.2019.10.09.05.33.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Oct 2019 05:33:14 -0700 (PDT)
-Subject: Re: [PATCH v8 1/5] nvmem: core: add nvmem_device_find
-To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Wed, 9 Oct 2019 09:42:55 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id x99DgXJs086811;
+        Wed, 9 Oct 2019 08:42:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1570628553;
+        bh=s1ULam50Hr59d2Q+B3GgfeudAX6pTL2y0nYltbe755s=;
+        h=Subject:To:References:From:Date:In-Reply-To;
+        b=xq47ib1oRQsmvETxShS6fOnordxgxaJcSSgGFM92czD3ma6v6RsgHtdocnk6ya6+Y
+         /Tq78BNHjY72gI3CiG3IEAUnE+2H1sQdGhT6oincmZyiw/gKU0PTNehFq0x/XJ6M4h
+         rxfcBAf0cifMHRCCf9XPzzdsZkCivhFAHfX4cBbE=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id x99DgWYf087295;
+        Wed, 9 Oct 2019 08:42:33 -0500
+Received: from DLEE114.ent.ti.com (157.170.170.25) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Wed, 9 Oct
+ 2019 08:42:29 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+ Frontend Transport; Wed, 9 Oct 2019 08:42:29 -0500
+Received: from [172.24.145.136] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id x99DgTen078224;
+        Wed, 9 Oct 2019 08:42:29 -0500
+Subject: Re: Serial 8250 DMA Broken on OMAP3630
+To:     Adam Ford <aford173@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-References: <20191009101713.12238-1-tbogendoerfer@suse.de>
- <20191009101713.12238-2-tbogendoerfer@suse.de>
-From:   =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <f4bug@amsat.org>
-Message-ID: <6d1d6ec0-344d-e94c-6c65-2b1d41cdc2ce@amsat.org>
-Date:   Wed, 9 Oct 2019 14:33:12 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.0
+        Jiri Slaby <jslaby@suse.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Yegor Yefremov <yegorslists@googlemail.com>,
+        <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <CAHCN7x+oXNA6WRiq1OnDdcgDTJrm-QyazyYLw-ow0vPMMmrVbQ@mail.gmail.com>
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+Message-ID: <3d5b3a12-a21c-f464-e7d1-252ccd768ff8@ti.com>
+Date:   Wed, 9 Oct 2019 19:13:00 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20191009101713.12238-2-tbogendoerfer@suse.de>
-Content-Type: text/plain; charset="UTF-8"; format="flowed"
+In-Reply-To: <CAHCN7x+oXNA6WRiq1OnDdcgDTJrm-QyazyYLw-ow0vPMMmrVbQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191009123312.zfHOSPk9zzB3hLHALw7Hm4pvnjktTkzd6Fl28V4aJDI@z>
+Message-ID: <20191009134300.z45qWyL8XJ0gnYSKgt9r5kuqstATUMh_Bgt4hXSeVm8@z>
 
-On 10/9/19 12:17 PM, Thomas Bogendoerfer wrote:
-> nvmem_device_find provides a way to search for nvmem devices with
-> the help of a match function simlair to bus_find_device.
+Hi Adam,
+
+On 06/10/19 10:34 PM, Adam Ford wrote:
+> Has anyone else had any issues using the CONFIG_SERIAL_8250_DMA on the OMAP?
 > 
-> Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-> Acked-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-> ---
->   Documentation/driver-api/nvmem.rst |  2 ++
->   drivers/nvmem/core.c               | 61 +++++++++++++++++---------------------
->   include/linux/nvmem-consumer.h     |  9 ++++++
->   3 files changed, 38 insertions(+), 34 deletions(-)
+> I can use the DMA on the legacy, omap-serial driver, but when I enable
+> the DMA on the 8250-omap driver, I get missing frames in Bluetooth.
 > 
-> diff --git a/Documentation/driver-api/nvmem.rst b/Documentation/driver-api/nvmem.rst
-> index d9d958d5c824..287e86819640 100644
-> --- a/Documentation/driver-api/nvmem.rst
-> +++ b/Documentation/driver-api/nvmem.rst
-> @@ -129,6 +129,8 @@ To facilitate such consumers NVMEM framework provides below apis::
->     struct nvmem_device *nvmem_device_get(struct device *dev, const char *name);
->     struct nvmem_device *devm_nvmem_device_get(struct device *dev,
->   					   const char *name);
-> +  struct nvmem_device *nvmem_device_find(void *data,
-> +			int (*match)(struct device *dev, const void *data));
->     void nvmem_device_put(struct nvmem_device *nvmem);
->     int nvmem_device_read(struct nvmem_device *nvmem, unsigned int offset,
->   		      size_t bytes, void *buf);
-> diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
-> index 057d1ff87d5d..9f1ee9c766ec 100644
-> --- a/drivers/nvmem/core.c
-> +++ b/drivers/nvmem/core.c
-> @@ -76,33 +76,6 @@ static struct bus_type nvmem_bus_type = {
->   	.name		= "nvmem",
->   };
->   
-> -static struct nvmem_device *of_nvmem_find(struct device_node *nvmem_np)
-> -{
-> -	struct device *d;
-> -
-> -	if (!nvmem_np)
-> -		return NULL;
-> -
-> -	d = bus_find_device_by_of_node(&nvmem_bus_type, nvmem_np);
-> -
-> -	if (!d)
-> -		return NULL;
-> -
-> -	return to_nvmem_device(d);
-> -}
-> -
-> -static struct nvmem_device *nvmem_find(const char *name)
-> -{
-> -	struct device *d;
-> -
-> -	d = bus_find_device_by_name(&nvmem_bus_type, NULL, name);
-> -
-> -	if (!d)
-> -		return NULL;
-> -
-> -	return to_nvmem_device(d);
-> -}
-> -
->   static void nvmem_cell_drop(struct nvmem_cell *cell)
->   {
->   	blocking_notifier_call_chain(&nvmem_notifier, NVMEM_CELL_REMOVE, cell);
-> @@ -532,13 +505,16 @@ int devm_nvmem_unregister(struct device *dev, struct nvmem_device *nvmem)
->   }
->   EXPORT_SYMBOL(devm_nvmem_unregister);
->   
-> -static struct nvmem_device *__nvmem_device_get(struct device_node *np,
-> -					       const char *nvmem_name)
-> +static struct nvmem_device *__nvmem_device_get(void *data,
-> +			int (*match)(struct device *dev, const void *data))
->   {
->   	struct nvmem_device *nvmem = NULL;
-> +	struct device *dev;
->   
->   	mutex_lock(&nvmem_mutex);
-> -	nvmem = np ? of_nvmem_find(np) : nvmem_find(nvmem_name);
-> +	dev = bus_find_device(&nvmem_bus_type, NULL, data, match);
-> +	if (dev)
-> +		nvmem = to_nvmem_device(dev);
->   	mutex_unlock(&nvmem_mutex);
->   	if (!nvmem)
->   		return ERR_PTR(-EPROBE_DEFER);
-> @@ -587,7 +563,7 @@ struct nvmem_device *of_nvmem_device_get(struct device_node *np, const char *id)
->   	if (!nvmem_np)
->   		return ERR_PTR(-ENOENT);
->   
-> -	return __nvmem_device_get(nvmem_np, NULL);
-> +	return __nvmem_device_get(nvmem_np, device_match_of_node);
->   }
->   EXPORT_SYMBOL_GPL(of_nvmem_device_get);
->   #endif
-> @@ -613,10 +589,26 @@ struct nvmem_device *nvmem_device_get(struct device *dev, const char *dev_name)
->   
->   	}
->   
-> -	return __nvmem_device_get(NULL, dev_name);
-> +	return __nvmem_device_get((void *)dev_name, device_match_name);
->   }
->   EXPORT_SYMBOL_GPL(nvmem_device_get);
->   
-> +/**
-> + * nvmem_device_find() - Find nvmem device with matching function
-> + *
-> + * @data: Data to pass to match function
-> + * @match: Callback function to check device
-> + *
-> + * Return: ERR_PTR() on error or a valid pointer to a struct nvmem_device
-> + * on success.
-> + */
-> +struct nvmem_device *nvmem_device_find(void *data,
-> +			int (*match)(struct device *dev, const void *data))
-> +{
-> +	return __nvmem_device_get(data, match);
-> +}
-> +EXPORT_SYMBOL_GPL(nvmem_device_find);
-> +
->   static int devm_nvmem_device_match(struct device *dev, void *res, void *data)
->   {
->   	struct nvmem_device **nvmem = res;
-> @@ -710,7 +702,8 @@ nvmem_cell_get_from_lookup(struct device *dev, const char *con_id)
->   		if ((strcmp(lookup->dev_id, dev_id) == 0) &&
->   		    (strcmp(lookup->con_id, con_id) == 0)) {
->   			/* This is the right entry. */
-> -			nvmem = __nvmem_device_get(NULL, lookup->nvmem_name);
-> +			nvmem = __nvmem_device_get((void *)lookup->nvmem_name,
-> +						   device_match_name);
->   			if (IS_ERR(nvmem)) {
->   				/* Provider may not be registered yet. */
->   				cell = ERR_CAST(nvmem);
-> @@ -780,7 +773,7 @@ struct nvmem_cell *of_nvmem_cell_get(struct device_node *np, const char *id)
->   	if (!nvmem_np)
->   		return ERR_PTR(-EINVAL);
->   
-> -	nvmem = __nvmem_device_get(nvmem_np, NULL);
-> +	nvmem = __nvmem_device_get(nvmem_np, device_match_of_node);
->   	of_node_put(nvmem_np);
->   	if (IS_ERR(nvmem))
->   		return ERR_CAST(nvmem);
-> diff --git a/include/linux/nvmem-consumer.h b/include/linux/nvmem-consumer.h
-> index 8f8be5b00060..02dc4aa992b2 100644
-> --- a/include/linux/nvmem-consumer.h
-> +++ b/include/linux/nvmem-consumer.h
-> @@ -89,6 +89,9 @@ void nvmem_del_cell_lookups(struct nvmem_cell_lookup *entries,
->   int nvmem_register_notifier(struct notifier_block *nb);
->   int nvmem_unregister_notifier(struct notifier_block *nb);
->   
-> +struct nvmem_device *nvmem_device_find(void *data,
-> +			int (*match)(struct device *dev, const void *data));
-> +
->   #else
->   
->   static inline struct nvmem_cell *nvmem_cell_get(struct device *dev,
-> @@ -204,6 +207,12 @@ static inline int nvmem_unregister_notifier(struct notifier_block *nb)
->   	return -EOPNOTSUPP;
->   }
->   
-> +static inline struct nvmem_device *nvmem_device_find(void *data,
-> +			int (*match)(struct device *dev, const void *data))
-> +{
-> +	return NULL;
-> +}
-> +
->   #endif /* CONFIG_NVMEM */
->   
->   #if IS_ENABLED(CONFIG_NVMEM) && IS_ENABLED(CONFIG_OF)
+> The older driver seems to have an ISR that seems to address a variety
+> of items compared to the very tiny ISR for 8250-omap.c.
+> 
+> I am not exactly sure where to start, but if someone has any
+> suggestions on how I can troubleshoot, please let me know.  As of now,
+> I have to disable CONFIG_SERIAL_8250_DMA to get the Bluetooth
+> connected to UART2 operational on a DM3730 at 3,000,000 baud, but it
+> appears to work just fine after some patches I just submitted for
+> handling RTS/CTS.  The legacy omap-serial driver works fine with DMA.
 > 
 
-Reviewed-by: Philippe Mathieu-Daudé <f4bug@amsat.org>
+Mainline omap-serial does not support DMA (evident from lack of
+dmaengine API calls) and therefore is not a regression. So OMAP3 UART
+DMA was never tested at least with 8250 driver.
+I am not sure enabling UART DMA on OMAP3 would be a trivial job. We need
+analyse of whether all erratas workarounds are implemented and see if
+there any difference wrt DMA integration itself. Do we know if UART DMA
+ever worked on OMAP3 previously?
+
+> adam
+> 
+
+-- 
+Regards
+Vignesh
