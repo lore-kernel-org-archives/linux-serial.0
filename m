@@ -1,42 +1,36 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] tty: serial: imx: Only get second/third IRQ when there
- is more than one IRQ
-Date: Wed, 9 Oct 2019 11:29:54 +0200
-Message-ID: <20191009092954.srlx5wjaqueps7nz@pengutronix.de>
+From: Anson Huang <anson.huang@nxp.com>
+Subject: RE: [PATCH] tty: serial: imx: Only get second/third IRQ when there is
+ more than one IRQ
+Date: Wed, 9 Oct 2019 09:36:36 +0000
+Message-ID: <DB3PR0402MB3916361F60FA8ACBB434E7ADF5950@DB3PR0402MB3916.eurprd04.prod.outlook.com>
 References: <1570601911-9162-1-git-send-email-Anson.Huang@nxp.com>
  <20191009065315.wgdvmkv6skteyul4@pengutronix.de>
  <CAHp75VcWXT+j5cfVzxPL+3YdgR+3uhFSb0qEDRr4YL+WenVKUQ@mail.gmail.com>
+ <20191009092954.srlx5wjaqueps7nz@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAHp75VcWXT+j5cfVzxPL+3YdgR+3uhFSb0qEDRr4YL+WenVKUQ@mail.gmail.com>
+In-Reply-To: <20191009092954.srlx5wjaqueps7nz@pengutronix.de>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Anson Huang <Anson.Huang@nxp.com>, Stephen Boyd <swboyd@chromium.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Sascha Hauer <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, dl-linux-imx <Linux-imx@nxp.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Stephen Boyd <swboyd@chromium.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Sascha Hauer <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Oct 09, 2019 at 11:12:20AM +0300, Andy Shevchenko wrote:
-> On Wed, Oct 9, 2019 at 9:53 AM Uwe Kleine-König
-> <u.kleine-koenig@pengutronix.de> wrote:
-> 
-> > The patch is fine given the changed behaviour of platform_get_irq. I
-> > wonder if it is sensible to introduce a variant of platform_get_irq (say
-> > platform_get_irq_nowarn) that behaves like __platform_get_irq does
-> > today. Then the imx driver would just call platform_get_irq_nowarn
-> > without having to check the number of available irqs first.
-> 
-> It's being discussed in parallel thread about
-> platform_get_irq_optional() which won't issue a warning.
-
-This is even already in 5.4-rc1 as
-8973ea47901c81a1912bd05f1577bed9b5b52506.
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+DQoNCj4gT24gV2VkLCBPY3QgMDksIDIwMTkgYXQgMTE6MTI6MjBBTSArMDMwMCwgQW5keSBTaGV2
+Y2hlbmtvIHdyb3RlOg0KPiA+IE9uIFdlZCwgT2N0IDksIDIwMTkgYXQgOTo1MyBBTSBVd2UgS2xl
+aW5lLUvDtm5pZw0KPiA+IDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+IHdyb3RlOg0K
+PiA+DQo+ID4gPiBUaGUgcGF0Y2ggaXMgZmluZSBnaXZlbiB0aGUgY2hhbmdlZCBiZWhhdmlvdXIg
+b2YgcGxhdGZvcm1fZ2V0X2lycS4gSQ0KPiA+ID4gd29uZGVyIGlmIGl0IGlzIHNlbnNpYmxlIHRv
+IGludHJvZHVjZSBhIHZhcmlhbnQgb2YgcGxhdGZvcm1fZ2V0X2lycQ0KPiA+ID4gKHNheQ0KPiA+
+ID4gcGxhdGZvcm1fZ2V0X2lycV9ub3dhcm4pIHRoYXQgYmVoYXZlcyBsaWtlIF9fcGxhdGZvcm1f
+Z2V0X2lycSBkb2VzDQo+ID4gPiB0b2RheS4gVGhlbiB0aGUgaW14IGRyaXZlciB3b3VsZCBqdXN0
+IGNhbGwgcGxhdGZvcm1fZ2V0X2lycV9ub3dhcm4NCj4gPiA+IHdpdGhvdXQgaGF2aW5nIHRvIGNo
+ZWNrIHRoZSBudW1iZXIgb2YgYXZhaWxhYmxlIGlycXMgZmlyc3QuDQo+ID4NCj4gPiBJdCdzIGJl
+aW5nIGRpc2N1c3NlZCBpbiBwYXJhbGxlbCB0aHJlYWQgYWJvdXQNCj4gPiBwbGF0Zm9ybV9nZXRf
+aXJxX29wdGlvbmFsKCkgd2hpY2ggd29uJ3QgaXNzdWUgYSB3YXJuaW5nLg0KPiANCj4gVGhpcyBp
+cyBldmVuIGFscmVhZHkgaW4gNS40LXJjMSBhcw0KPiA4OTczZWE0NzkwMWM4MWExOTEyYmQwNWYx
+NTc3YmVkOWI1YjUyNTA2Lg0KDQpHcmVhdCwgSSB3aWxsIHNlbmQgb3V0IGEgVjIgdXNpbmcgcGxh
+dGZvcm1fZ2V0X2lycV9vcHRpb25hbCgpIGZvciBzZWNvbmQvdGhpcmQgSVJRLg0KDQpUaGFua3Ms
+DQpBbnNvbg0K
