@@ -1,107 +1,95 @@
-Return-Path: <SRS0=YA87=YB=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=/1L5=YC=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD06CC4360C
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Oct 2019 23:08:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97932C47404
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 06:20:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 90BEE21721
-	for <linux-serial@archiver.kernel.org>; Tue,  8 Oct 2019 23:08:31 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="b7/9uQ66"
+	by mail.kernel.org (Postfix) with ESMTP id 7693421835
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 06:20:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729279AbfJHXIb (ORCPT
+        id S1726651AbfJIGU4 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 8 Oct 2019 19:08:31 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:35117 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725848AbfJHXIb (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 8 Oct 2019 19:08:31 -0400
-Received: by mail-io1-f66.google.com with SMTP id q10so791468iop.2
-        for <linux-serial@vger.kernel.org>; Tue, 08 Oct 2019 16:08:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=date:from:to:cc:subject:message-id:user-agent:mime-version;
-        bh=t3QL86pnLLp7H0YYwH/FdnAoL7Vq3h3qOuyHpBMWRk0=;
-        b=b7/9uQ66uupBgYsVJw0ZQPL+EeFq27QaSUNsKPah4m0OvuJROtA65r5jxaJDF6YnlX
-         iab1ki5mx3Sz+PRjV2NBtM3e0agwYbL0MUmyzBc+FrmvdBPAMPnrn7DQl2TsOa4ilXBB
-         TPlk8zNqG+fZTqi2FBhsRM5PJ+QDfRKHaC7s3/fft/hXNXzQDOuuFjutP5SgSKQErlFi
-         lXfOIHBDmRgk54rWLXvHgOQ4ihDsxsCN7V6ytatzlbO6/BbM75VTkSAwd2qMSEv8mEyo
-         u8Rs20zqVaO+JNiGR3XyoVsxl3YHYkxOOTD7H7SgKxtQrdfsLWAIntkXUsKP4qOvUtEZ
-         L+lA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
-         :mime-version;
-        bh=t3QL86pnLLp7H0YYwH/FdnAoL7Vq3h3qOuyHpBMWRk0=;
-        b=twxuAz/tLCR/FX0TAuQTck41AS2SeDZicLrv4NLcqzwPPNIsfk3mSKIB/yXmv+w4wI
-         v6ghPwPLeVWrLUMFM3M50KZiftUF6uVtu47J+hAcuXBqmyTW+haikJ8lhrG3KX7UKUJi
-         ZTV2ipSUCUsUickkRyR5b3/9njHpShOzQE5BnVwlRd46nFv+9ieIS6wZOhEdjwNfhefW
-         agvnKKZ95iWTkrn9Wc1rRyLsd2wd+334CfxFrSmpZDegkgOR4BNVNlfvZ28PKB0wEHpi
-         AyZP+lUR/R5VtOzB64WmgkP7DOUDT6uggDu/XzSJAmy4IazvRsgxKyFjiY7dpOA7RszF
-         QuUQ==
-X-Gm-Message-State: APjAAAVGpXL29O6rskiTB5ZItGTL9cYqn3UmuyD5GfQmd/9lyTuI/XvE
-        mZ+ievfA4dZeWH+fvARmTB0X6fRYmjY=
-X-Google-Smtp-Source: APXvYqw9T/3Qa+z2vFNUc/+LzFnPBHh8p1vHwRgtUolzXIAAClxQUyxSFD7Sse4Dm7TGhqZE04GXvA==
-X-Received: by 2002:a92:8fc6:: with SMTP id r67mr121939ilk.25.1570576110234;
-        Tue, 08 Oct 2019 16:08:30 -0700 (PDT)
-Received: from localhost ([64.62.168.194])
-        by smtp.gmail.com with ESMTPSA id d26sm195329ioc.16.2019.10.08.16.08.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Oct 2019 16:08:29 -0700 (PDT)
-Date:   Tue, 8 Oct 2019 16:08:27 -0700 (PDT)
-From:   Paul Walmsley <paul.walmsley@sifive.com>
-X-X-Sender: paulw@viisi.sifive.com
-To:     corbet@lwn.net
-cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, schwab@suse.de, hch@lst.de
-Subject: [PATCH] Documentation: admin-guide: add earlycon documentation for
- the sifive serial driver
-Message-ID: <alpine.DEB.2.21.9999.1910081606370.11044@viisi.sifive.com>
-User-Agent: Alpine 2.21.9999 (DEB 301 2018-08-15)
-MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 9 Oct 2019 02:20:56 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:50952 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726254AbfJIGU4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 9 Oct 2019 02:20:56 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id C16261A0394;
+        Wed,  9 Oct 2019 08:20:52 +0200 (CEST)
+Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id E1DAC1A00A7;
+        Wed,  9 Oct 2019 08:20:47 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id B22D7402EC;
+        Wed,  9 Oct 2019 14:20:41 +0800 (SGT)
+From:   Anson Huang <Anson.Huang@nxp.com>
+To:     gregkh@linuxfoundation.org, jslaby@suse.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     Linux-imx@nxp.com
+Subject: [PATCH] tty: serial: imx: Only get second/third IRQ when there is more than one IRQ
+Date:   Wed,  9 Oct 2019 14:18:31 +0800
+Message-Id: <1570601911-9162-1-git-send-email-Anson.Huang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191008230827.oQ4_Exm8Gika6f91R8R8DkaCDWkYkpZ415xpD7w4hKQ@z>
+Content-Type: text/plain; charset="UTF-8"
+Message-ID: <20191009061831.ByVcUbcU6JMoo_Oae_F2L06QlapvQ9QSskBEGFIZtr4@z>
 
+All i.MX SoCs except i.MX1 have ONLY 1 IRQ, so it is better to check
+the IRQ count before getting second/third IRQ to avoid below error
+message during probe:
 
-Document earlycon usage for the SiFive serial port driver in the same
-fashion as for the other serial port IP blocks, since the SiFive
-serial port driver supports it.
+[    0.726219] imx-uart 30860000.serial: IRQ index 1 not found
+[    0.731329] imx-uart 30860000.serial: IRQ index 2 not found
 
-Signed-off-by: Paul Walmsley <paul.walmsley@sifive.com>
-Reported-by: Andreas Schwab <schwab@suse.de>
-Cc: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
 ---
- Documentation/admin-guide/kernel-parameters.txt | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/tty/serial/imx.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index c7ac2f3ac99f..90becb00221b 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -1106,6 +1106,12 @@
- 			address must be provided, and the serial port must
- 			already be setup and configured.
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 504d81c..081fa82 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -2198,6 +2198,7 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 	u32 ucr1;
+ 	struct resource *res;
+ 	int txirq, rxirq, rtsirq;
++	int irq_count;
  
-+		sifive,<addr>
-+			Start an early, polled-mode console on a SiFive
-+			serial port at the specified address.  The port must
-+			already be setup and configured.  Options are not
-+			yet supported.
+ 	sport = devm_kzalloc(&pdev->dev, sizeof(*sport), GFP_KERNEL);
+ 	if (!sport)
+@@ -2220,9 +2221,17 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 	if (IS_ERR(base))
+ 		return PTR_ERR(base);
+ 
++	irq_count = platform_irq_count(pdev);
++	if (irq_count < 0)
++		return irq_count;
 +
- 	earlyprintk=	[X86,SH,ARM,M68k,S390]
- 			earlyprintk=vga
- 			earlyprintk=sclp
+ 	rxirq = platform_get_irq(pdev, 0);
+-	txirq = platform_get_irq(pdev, 1);
+-	rtsirq = platform_get_irq(pdev, 2);
++	if (irq_count > 1) {
++		txirq = platform_get_irq(pdev, 1);
++		rtsirq = platform_get_irq(pdev, 2);
++	} else {
++		txirq = rtsirq = -ENXIO;
++	}
+ 
+ 	sport->port.dev = &pdev->dev;
+ 	sport->port.mapbase = res->start;
 -- 
-2.23.0
+2.7.4
 
