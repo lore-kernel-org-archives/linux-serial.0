@@ -2,384 +2,84 @@ Return-Path: <SRS0=/1L5=YC=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC25C47404
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 10:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4D0FC47404
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 10:55:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E419E21848
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 10:18:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7D62F21721
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 10:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731113AbfJIKSI (ORCPT
+        id S1730954AbfJIKzu (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Oct 2019 06:18:08 -0400
-Received: from mx2.suse.de ([195.135.220.15]:60984 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730490AbfJIKRb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Oct 2019 06:17:31 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id DD38CAF87;
-        Wed,  9 Oct 2019 10:17:27 +0000 (UTC)
-From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Wed, 9 Oct 2019 06:55:50 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:36375 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727035AbfJIKzu (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 9 Oct 2019 06:55:50 -0400
+Received: by mail-ot1-f67.google.com with SMTP id 67so1325901oto.3;
+        Wed, 09 Oct 2019 03:55:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=x3unWFkcJpXKNb8dXSk7twjyfVkZd7Gwb6TQxf0CzFw=;
+        b=lAmUTsQY/CZlaq/zouJspiWWkWjppJp7Bz40rl8QTVpeci1l9iUh513qoiNsMcTl5O
+         zkOubDZRouSluts+9nyFP19B14ky/wnw8CwyC+KidIood94Zmw1TSeZUghnbjfeLJ2tx
+         GiYQFLGGXnz6X0l6fB3I8sX9vSmSMHj+UaYI2y/rkhEqOsfDrKY7eR+kRGthVwLbrcKP
+         AKlw3LBXhjHk7Xdm4sfBWKOskixf9Q6zw/EBvRo7tmLrKlrVtt/tOoEP7HRd46gjjs8Z
+         m0ES2RYkxcwW2jLtqolMu36gPd6RxRJhE6eM1FAVp+gEz8yisG/pFYWWnoLti1OwxTyK
+         hP3w==
+X-Gm-Message-State: APjAAAU0ymdXheYJJlU3ePFOKE4EgWvZZPUhkbU7PhNLEc/a11LBi0Jx
+        VMBE3f7nTsiC9Ocg2KT1IHcN0BB1jbSm1UIz+bU=
+X-Google-Smtp-Source: APXvYqw5IAzTjVBhlc8iRLqf+cdJpgzj6zNsVffXtkNnQdcMdYKmNwxtMA0YZ+q29ei9YF0gwMf5pwNvdwDZQVDcfXk=
+X-Received: by 2002:a9d:70d0:: with SMTP id w16mr2140239otj.107.1570618548788;
+ Wed, 09 Oct 2019 03:55:48 -0700 (PDT)
+MIME-Version: 1.0
+References: <alpine.DEB.2.21.9999.1910081606370.11044@viisi.sifive.com>
+ <CAMuHMdVdPFSU_3VEtO=P73kqLezV5Dmki=N3nxsKibzy-U5pBg@mail.gmail.com> <mvmv9syz10h.fsf@suse.de>
+In-Reply-To: <mvmv9syz10h.fsf@suse.de>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 9 Oct 2019 12:55:37 +0200
+Message-ID:
+ <CAMuHMdVh=CUXKwnXee067cRccVBDVuwWpo1wP7crAaCFA=y2Tw@mail.gmail.com>
+Subject: Re: [PATCH] Documentation: admin-guide: add earlycon documentation
+ for the sifive serial driver
+To:     Andreas Schwab <schwab@suse.de>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
         Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH v8 2/5] MIPS: PCI: use information from 1-wire PROM for IOC3 detection
-Date:   Wed,  9 Oct 2019 12:17:09 +0200
-Message-Id: <20191009101713.12238-3-tbogendoerfer@suse.de>
-X-Mailer: git-send-email 2.16.4
-In-Reply-To: <20191009101713.12238-1-tbogendoerfer@suse.de>
-References: <20191009101713.12238-1-tbogendoerfer@suse.de>
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Message-ID: <20191009101709.Jv-OCXR3qgaRyyOw0uCBUJ8opfT_rHS-H6EK9r6oDU4@z>
+Message-ID: <20191009105537.43D0LEYY-Ki5vBE2OxwFtrQQ4RUHawKRJayZpRjSHDg@z>
 
-IOC3 chips in SGI system are conntected to a bridge ASIC, which has
-a 1-wire prom attached with part number information. This changeset
-uses this information to create PCI subsystem information, which
-the MFD driver uses for further platform device setup.
+Hi Andreas,
 
-Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
----
- arch/mips/include/asm/pci/bridge.h |   1 +
- arch/mips/include/asm/sn/ioc3.h    |   9 +++
- arch/mips/pci/pci-xtalk-bridge.c   | 135 ++++++++++++++++++++++++++++++++++++-
- arch/mips/sgi-ip27/ip27-xtalk.c    |  38 +++++++++--
- 4 files changed, 175 insertions(+), 8 deletions(-)
+On Wed, Oct 9, 2019 at 12:06 PM Andreas Schwab <schwab@suse.de> wrote:
+> On Okt 09 2019, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > I believe risc-v is DT-only, so if chosen/stdout-path is set up
+>
+> If.  Currently, it isn't.
 
-diff --git a/arch/mips/include/asm/pci/bridge.h b/arch/mips/include/asm/pci/bridge.h
-index a92cd30b48c9..3bc630ff9ad4 100644
---- a/arch/mips/include/asm/pci/bridge.h
-+++ b/arch/mips/include/asm/pci/bridge.h
-@@ -807,6 +807,7 @@ struct bridge_controller {
- 	unsigned long		intr_addr;
- 	struct irq_domain	*domain;
- 	unsigned int		pci_int[8];
-+	u32			ioc3_sid[8];
- 	nasid_t			nasid;
- };
- 
-diff --git a/arch/mips/include/asm/sn/ioc3.h b/arch/mips/include/asm/sn/ioc3.h
-index a947eed48fee..78ef760ddde4 100644
---- a/arch/mips/include/asm/sn/ioc3.h
-+++ b/arch/mips/include/asm/sn/ioc3.h
-@@ -590,4 +590,13 @@ struct ioc3_etxd {
- 
- #define MIDR_DATA_MASK		0x0000ffff
- 
-+/* subsystem IDs supplied by card detection in pci-xtalk-bridge */
-+#define	IOC3_SUBSYS_IP27_BASEIO6G	0xc300
-+#define	IOC3_SUBSYS_IP27_MIO		0xc301
-+#define	IOC3_SUBSYS_IP27_BASEIO		0xc302
-+#define	IOC3_SUBSYS_IP29_SYSBOARD	0xc303
-+#define	IOC3_SUBSYS_IP30_SYSBOARD	0xc304
-+#define	IOC3_SUBSYS_MENET		0xc305
-+#define	IOC3_SUBSYS_MENET4		0xc306
-+
- #endif /* MIPS_SN_IOC3_H */
-diff --git a/arch/mips/pci/pci-xtalk-bridge.c b/arch/mips/pci/pci-xtalk-bridge.c
-index 7b4d40354ee7..dcf6117a17c3 100644
---- a/arch/mips/pci/pci-xtalk-bridge.c
-+++ b/arch/mips/pci/pci-xtalk-bridge.c
-@@ -11,16 +11,22 @@
- #include <linux/dma-direct.h>
- #include <linux/platform_device.h>
- #include <linux/platform_data/xtalk-bridge.h>
-+#include <linux/nvmem-consumer.h>
-+#include <linux/crc16.h>
- 
- #include <asm/pci/bridge.h>
- #include <asm/paccess.h>
- #include <asm/sn/irq_alloc.h>
-+#include <asm/sn/ioc3.h>
-+
-+#define CRC16_INIT	0
-+#define CRC16_VALID	0xb001
- 
- /*
-  * Most of the IOC3 PCI config register aren't present
-  * we emulate what is needed for a normal PCI enumeration
-  */
--static int ioc3_cfg_rd(void *addr, int where, int size, u32 *value)
-+static int ioc3_cfg_rd(void *addr, int where, int size, u32 *value, u32 sid)
- {
- 	u32 cf, shift, mask;
- 
-@@ -30,6 +36,9 @@ static int ioc3_cfg_rd(void *addr, int where, int size, u32 *value)
- 		if (get_dbe(cf, (u32 *)addr))
- 			return PCIBIOS_DEVICE_NOT_FOUND;
- 		break;
-+	case 0x2c:
-+		cf = sid;
-+		break;
- 	case 0x3c:
- 		/* emulate sane interrupt pin value */
- 		cf = 0x00000100;
-@@ -111,7 +120,8 @@ static int pci_conf0_read_config(struct pci_bus *bus, unsigned int devfn,
- 	 */
- 	if (cf == (PCI_VENDOR_ID_SGI | (PCI_DEVICE_ID_SGI_IOC3 << 16))) {
- 		addr = &bridge->b_type0_cfg_dev[slot].f[fn].l[where >> 2];
--		return ioc3_cfg_rd(addr, where, size, value);
-+		return ioc3_cfg_rd(addr, where, size, value,
-+				   bc->ioc3_sid[slot]);
- 	}
- 
- 	addr = &bridge->b_type0_cfg_dev[slot].f[fn].c[where ^ (4 - size)];
-@@ -149,7 +159,8 @@ static int pci_conf1_read_config(struct pci_bus *bus, unsigned int devfn,
- 	 */
- 	if (cf == (PCI_VENDOR_ID_SGI | (PCI_DEVICE_ID_SGI_IOC3 << 16))) {
- 		addr = &bridge->b_type1_cfg.c[(fn << 8) | (where & ~3)];
--		return ioc3_cfg_rd(addr, where, size, value);
-+		return ioc3_cfg_rd(addr, where, size, value,
-+				   bc->ioc3_sid[slot]);
- 	}
- 
- 	addr = &bridge->b_type1_cfg.c[(fn << 8) | (where ^ (4 - size))];
-@@ -426,6 +437,117 @@ static int bridge_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
- 	return irq;
- }
- 
-+#define IOC3_SID(sid)	(PCI_VENDOR_ID_SGI << 16 | (sid))
-+
-+static void bridge_setup_ip27_baseio6g(struct bridge_controller *bc)
-+{
-+	bc->ioc3_sid[2] = IOC3_SID(IOC3_SUBSYS_IP27_BASEIO6G);
-+	bc->ioc3_sid[6] = IOC3_SID(IOC3_SUBSYS_IP27_MIO);
-+}
-+
-+static void bridge_setup_ip27_baseio(struct bridge_controller *bc)
-+{
-+	bc->ioc3_sid[2] = IOC3_SID(IOC3_SUBSYS_IP27_BASEIO);
-+}
-+
-+static void bridge_setup_ip29_baseio(struct bridge_controller *bc)
-+{
-+	bc->ioc3_sid[2] = IOC3_SID(IOC3_SUBSYS_IP29_SYSBOARD);
-+}
-+
-+static void bridge_setup_ip30_sysboard(struct bridge_controller *bc)
-+{
-+	bc->ioc3_sid[2] = IOC3_SID(IOC3_SUBSYS_IP30_SYSBOARD);
-+}
-+
-+static void bridge_setup_menet(struct bridge_controller *bc)
-+{
-+	bc->ioc3_sid[0] = IOC3_SID(IOC3_SUBSYS_MENET);
-+	bc->ioc3_sid[1] = IOC3_SID(IOC3_SUBSYS_MENET);
-+	bc->ioc3_sid[2] = IOC3_SID(IOC3_SUBSYS_MENET);
-+	bc->ioc3_sid[3] = IOC3_SID(IOC3_SUBSYS_MENET4);
-+}
-+
-+#define BRIDGE_BOARD_SETUP(_partno, _setup)	\
-+	{ .match = _partno, .setup = _setup }
-+
-+static const struct {
-+	char *match;
-+	void (*setup)(struct bridge_controller *bc);
-+} bridge_ioc3_devid[] = {
-+	BRIDGE_BOARD_SETUP("030-0734-", bridge_setup_ip27_baseio6g),
-+	BRIDGE_BOARD_SETUP("030-0880-", bridge_setup_ip27_baseio6g),
-+	BRIDGE_BOARD_SETUP("030-1023-", bridge_setup_ip27_baseio),
-+	BRIDGE_BOARD_SETUP("030-1124-", bridge_setup_ip27_baseio),
-+	BRIDGE_BOARD_SETUP("030-1025-", bridge_setup_ip29_baseio),
-+	BRIDGE_BOARD_SETUP("030-1244-", bridge_setup_ip29_baseio),
-+	BRIDGE_BOARD_SETUP("030-1389-", bridge_setup_ip29_baseio),
-+	BRIDGE_BOARD_SETUP("030-0887-", bridge_setup_ip30_sysboard),
-+	BRIDGE_BOARD_SETUP("030-1467-", bridge_setup_ip30_sysboard),
-+	BRIDGE_BOARD_SETUP("030-0873-", bridge_setup_menet),
-+};
-+
-+static void bridge_setup_board(struct bridge_controller *bc, char *partnum)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(bridge_ioc3_devid); i++)
-+		if (!strncmp(partnum, bridge_ioc3_devid[i].match,
-+			     strlen(bridge_ioc3_devid[i].match))) {
-+			bridge_ioc3_devid[i].setup(bc);
-+		}
-+}
-+
-+static int bridge_nvmem_match(struct device *dev, const void *data)
-+{
-+	const char *name = dev_name(dev);
-+	const char *prefix = data;
-+
-+	if (strlen(name) < strlen(prefix))
-+		return 0;
-+
-+	return memcmp(prefix, dev_name(dev), strlen(prefix)) == 0;
-+}
-+
-+static int bridge_get_partnum(u64 baddr, char *partnum)
-+{
-+	struct nvmem_device *nvmem;
-+	char prefix[24];
-+	u8 prom[64];
-+	int i, j;
-+	int ret;
-+
-+	snprintf(prefix, sizeof(prefix), "bridge-%012llx-0b-", baddr);
-+
-+	nvmem = nvmem_device_find(prefix, bridge_nvmem_match);
-+	if (IS_ERR(nvmem))
-+		return PTR_ERR(nvmem);
-+
-+	ret = nvmem_device_read(nvmem, 0, 64, prom);
-+	nvmem_device_put(nvmem);
-+
-+	if (ret != 64)
-+		return ret;
-+
-+	if (crc16(CRC16_INIT, prom, 32) != CRC16_VALID ||
-+	    crc16(CRC16_INIT, prom + 32, 32) != CRC16_VALID)
-+		return -EINVAL;
-+
-+	/* Assemble part number */
-+	j = 0;
-+	for (i = 0; i < 19; i++)
-+		if (prom[i + 11] != ' ')
-+			partnum[j++] = prom[i + 11];
-+
-+	for (i = 0; i < 6; i++)
-+		if (prom[i + 32] != ' ')
-+			partnum[j++] = prom[i + 32];
-+
-+	partnum[j] = 0;
-+
-+	return 0;
-+}
-+
- static int bridge_probe(struct platform_device *pdev)
- {
- 	struct xtalk_bridge_platform_data *bd = dev_get_platdata(&pdev->dev);
-@@ -434,9 +556,14 @@ static int bridge_probe(struct platform_device *pdev)
- 	struct pci_host_bridge *host;
- 	struct irq_domain *domain, *parent;
- 	struct fwnode_handle *fn;
-+	char partnum[26];
- 	int slot;
- 	int err;
- 
-+	/* get part number from one wire prom */
-+	if (bridge_get_partnum(virt_to_phys((void *)bd->bridge_addr), partnum))
-+		return -EPROBE_DEFER; /* not available yet */
-+
- 	parent = irq_get_default_host();
- 	if (!parent)
- 		return -ENODEV;
-@@ -517,6 +644,8 @@ static int bridge_probe(struct platform_device *pdev)
- 	}
- 	bridge_read(bc, b_wid_tflush);	  /* wait until Bridge PIO complete */
- 
-+	bridge_setup_board(bc, partnum);
-+
- 	host->dev.parent = dev;
- 	host->sysdata = bc;
- 	host->busnr = 0;
-diff --git a/arch/mips/sgi-ip27/ip27-xtalk.c b/arch/mips/sgi-ip27/ip27-xtalk.c
-index 4a1f0b0c29e2..9b7524362a11 100644
---- a/arch/mips/sgi-ip27/ip27-xtalk.c
-+++ b/arch/mips/sgi-ip27/ip27-xtalk.c
-@@ -10,6 +10,7 @@
- #include <linux/kernel.h>
- #include <linux/smp.h>
- #include <linux/platform_device.h>
-+#include <linux/platform_data/sgi-w1.h>
- #include <linux/platform_data/xtalk-bridge.h>
- #include <asm/sn/addrs.h>
- #include <asm/sn/types.h>
-@@ -26,9 +27,35 @@
- static void bridge_platform_create(nasid_t nasid, int widget, int masterwid)
- {
- 	struct xtalk_bridge_platform_data *bd;
-+	struct sgi_w1_platform_data *wd;
- 	struct platform_device *pdev;
-+	struct resource w1_res;
- 	unsigned long offset;
- 
-+	offset = NODE_OFFSET(nasid);
-+
-+	wd = kzalloc(sizeof(*wd), GFP_KERNEL);
-+	if (!wd)
-+		goto no_mem;
-+
-+	snprintf(wd->dev_id, sizeof(wd->dev_id), "bridge-%012lx",
-+		 offset + (widget << SWIN_SIZE_BITS));
-+
-+	memset(&w1_res, 0, sizeof(w1_res));
-+	w1_res.start = offset + (widget << SWIN_SIZE_BITS) +
-+				offsetof(struct bridge_regs, b_nic);
-+	w1_res.end = w1_res.start + 3;
-+	w1_res.flags = IORESOURCE_MEM;
-+
-+	pdev = platform_device_alloc("sgi_w1", PLATFORM_DEVID_AUTO);
-+	if (!pdev) {
-+		kfree(wd);
-+		goto no_mem;
-+	}
-+	platform_device_add_resources(pdev, &w1_res, 1);
-+	platform_device_add_data(pdev, wd, sizeof(*wd));
-+	platform_device_add(pdev);
-+
- 	bd = kzalloc(sizeof(*bd), GFP_KERNEL);
- 	if (!bd)
- 		goto no_mem;
-@@ -38,7 +65,6 @@ static void bridge_platform_create(nasid_t nasid, int widget, int masterwid)
- 		goto no_mem;
- 	}
- 
--	offset = NODE_OFFSET(nasid);
- 
- 	bd->bridge_addr = RAW_NODE_SWIN_BASE(nasid, widget);
- 	bd->intr_addr	= BIT_ULL(47) + 0x01800000 + PI_INT_PEND_MOD;
-@@ -46,14 +72,14 @@ static void bridge_platform_create(nasid_t nasid, int widget, int masterwid)
- 	bd->masterwid	= masterwid;
- 
- 	bd->mem.name	= "Bridge PCI MEM";
--	bd->mem.start	= offset + (widget << SWIN_SIZE_BITS);
--	bd->mem.end	= bd->mem.start + SWIN_SIZE - 1;
-+	bd->mem.start	= offset + (widget << SWIN_SIZE_BITS) + BRIDGE_DEVIO0;
-+	bd->mem.end	= offset + (widget << SWIN_SIZE_BITS) + SWIN_SIZE - 1;
- 	bd->mem.flags	= IORESOURCE_MEM;
- 	bd->mem_offset	= offset;
- 
- 	bd->io.name	= "Bridge PCI IO";
--	bd->io.start	= offset + (widget << SWIN_SIZE_BITS);
--	bd->io.end	= bd->io.start + SWIN_SIZE - 1;
-+	bd->io.start	= offset + (widget << SWIN_SIZE_BITS) + BRIDGE_DEVIO0;
-+	bd->io.end	= offset + (widget << SWIN_SIZE_BITS) + SWIN_SIZE - 1;
- 	bd->io.flags	= IORESOURCE_IO;
- 	bd->io_offset	= offset;
- 
-@@ -81,6 +107,8 @@ static int probe_one_port(nasid_t nasid, int widget, int masterwid)
- 		bridge_platform_create(nasid, widget, masterwid);
- 		break;
- 	default:
-+		pr_info("xtalk:n%d/%d unknown widget (0x%x)\n",
-+			nasid, widget, partnum);
- 		break;
- 	}
- 
+IC. So isn't it better to fix that, instead of pointing people to more obscure
+legacy solutions?
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.16.4
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
