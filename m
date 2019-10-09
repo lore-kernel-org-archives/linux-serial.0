@@ -2,84 +2,110 @@ Return-Path: <SRS0=/1L5=YC=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4D0FC47404
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 10:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BFD7C47404
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 12:25:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7D62F21721
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 10:55:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E59D121721
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 12:25:33 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="uP1ipqzG"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730954AbfJIKzu (ORCPT
+        id S1731043AbfJIMZ3 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Oct 2019 06:55:50 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:36375 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727035AbfJIKzu (ORCPT
+        Wed, 9 Oct 2019 08:25:29 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:51015 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730861AbfJIMZ2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Oct 2019 06:55:50 -0400
-Received: by mail-ot1-f67.google.com with SMTP id 67so1325901oto.3;
-        Wed, 09 Oct 2019 03:55:49 -0700 (PDT)
+        Wed, 9 Oct 2019 08:25:28 -0400
+Received: by mail-wm1-f68.google.com with SMTP id 5so2360281wmg.0;
+        Wed, 09 Oct 2019 05:25:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:subject:to:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Nua5OwsPnbNn30zwIcxj0beDs8kg/5lbLMEpadI7ppk=;
+        b=uP1ipqzGDpN1R6Nms0UCBk1psp927dNjLCNGdZSxCo+8XEWhWNKOBg2RDaDB96DfJf
+         4UcrqRQT1wSnZsimngeyACcA8nV1/CnBjndXcc4tYxxKeVv8luxk3yXgeJivxXsjHyRT
+         6S0xgVerM2OXSriKBG6ds8XFggKkZ40+NU22lk2cyO/7EKYS2JND/BHaH/4zOSfaR/Xe
+         Sf1UL9AAASTFnrPT9ivMJspyLF+L27cDatMKG9wUnfTnaCzmsoFqJWnaCF7DzEbMi1Fx
+         tujQZcAddlMeuvOamIWxHm4Ew+uJWu23j/EQDkTUPcJE/DIqfSQ64EU5Z5JC/pg94v/c
+         dq6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=x3unWFkcJpXKNb8dXSk7twjyfVkZd7Gwb6TQxf0CzFw=;
-        b=lAmUTsQY/CZlaq/zouJspiWWkWjppJp7Bz40rl8QTVpeci1l9iUh513qoiNsMcTl5O
-         zkOubDZRouSluts+9nyFP19B14ky/wnw8CwyC+KidIood94Zmw1TSeZUghnbjfeLJ2tx
-         GiYQFLGGXnz6X0l6fB3I8sX9vSmSMHj+UaYI2y/rkhEqOsfDrKY7eR+kRGthVwLbrcKP
-         AKlw3LBXhjHk7Xdm4sfBWKOskixf9Q6zw/EBvRo7tmLrKlrVtt/tOoEP7HRd46gjjs8Z
-         m0ES2RYkxcwW2jLtqolMu36gPd6RxRJhE6eM1FAVp+gEz8yisG/pFYWWnoLti1OwxTyK
-         hP3w==
-X-Gm-Message-State: APjAAAU0ymdXheYJJlU3ePFOKE4EgWvZZPUhkbU7PhNLEc/a11LBi0Jx
-        VMBE3f7nTsiC9Ocg2KT1IHcN0BB1jbSm1UIz+bU=
-X-Google-Smtp-Source: APXvYqw5IAzTjVBhlc8iRLqf+cdJpgzj6zNsVffXtkNnQdcMdYKmNwxtMA0YZ+q29ei9YF0gwMf5pwNvdwDZQVDcfXk=
-X-Received: by 2002:a9d:70d0:: with SMTP id w16mr2140239otj.107.1570618548788;
- Wed, 09 Oct 2019 03:55:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <alpine.DEB.2.21.9999.1910081606370.11044@viisi.sifive.com>
- <CAMuHMdVdPFSU_3VEtO=P73kqLezV5Dmki=N3nxsKibzy-U5pBg@mail.gmail.com> <mvmv9syz10h.fsf@suse.de>
-In-Reply-To: <mvmv9syz10h.fsf@suse.de>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 9 Oct 2019 12:55:37 +0200
-Message-ID:
- <CAMuHMdVh=CUXKwnXee067cRccVBDVuwWpo1wP7crAaCFA=y2Tw@mail.gmail.com>
-Subject: Re: [PATCH] Documentation: admin-guide: add earlycon documentation
- for the sifive serial driver
-To:     Andreas Schwab <schwab@suse.de>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        h=x-gm-message-state:sender:subject:to:references:from:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Nua5OwsPnbNn30zwIcxj0beDs8kg/5lbLMEpadI7ppk=;
+        b=Rx59OopVrgZwKGy3RH0geJDQYRB7cPZhN/fwClAzAKxotaRgr64guOQERFdcbcomuE
+         PRT78GPGHfmi4Rv0JNLxVniE96u83HvGwtB0S6tXdeMEhmzzIAcEM4hhm/7MJd2aP7Ik
+         VmRIwEYmC+v7NRpo2sTyr0bMPSdPq/vjRzx9jOaJN9pjU+ECvAMZtrslIApuTJ8bCxM4
+         BcWpFRX+Jnk7dIApY7o4N+dhG1q9H6rNwdtObM76zvNndkdbrlA0v+lhvIw5F305iwAk
+         jIcI6h3074UEulRFZJa0gkmhbvB+a4tZrqr0FP6i2Uqt2pvoX2NkPAWBWT9EzRqoVDii
+         4+NQ==
+X-Gm-Message-State: APjAAAVbc05YkRp8Yh+g1uiKlVpTICm7PvrnQAAy+aI7pNo8z2LEC0EP
+        EYytKombXMvmmyH/vKsio1Og/6grfiU=
+X-Google-Smtp-Source: APXvYqz5OSnwj4duPROK4v5pcFuX2jdZ4kqAmKthfByNi0LQaLJaPXjjt0a4ls1yw/qM1y0+vza2EA==
+X-Received: by 2002:a1c:3908:: with SMTP id g8mr2311817wma.34.1570623925358;
+        Wed, 09 Oct 2019 05:25:25 -0700 (PDT)
+Received: from [192.168.1.35] (46.red-83-42-66.dynamicip.rima-tde.net. [83.42.66.46])
+        by smtp.gmail.com with ESMTPSA id c17sm2807618wrc.60.2019.10.09.05.25.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Oct 2019 05:25:24 -0700 (PDT)
+Subject: Re: [PATCH v8 2/5] MIPS: PCI: use information from 1-wire PROM for
+ IOC3 detection
+To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
         Jonathan Corbet <corbet@lwn.net>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Christoph Hellwig <hch@lst.de>
-Content-Type: text/plain; charset="UTF-8"
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-serial@vger.kernel.org
+References: <20191009101713.12238-1-tbogendoerfer@suse.de>
+ <20191009101713.12238-3-tbogendoerfer@suse.de>
+From:   =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <f4bug@amsat.org>
+Message-ID: <ea44d4a2-3011-fba8-4d6a-7b63c77ba00a@amsat.org>
+Date:   Wed, 9 Oct 2019 14:25:22 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.0
+MIME-Version: 1.0
+In-Reply-To: <20191009101713.12238-3-tbogendoerfer@suse.de>
+Content-Type: text/plain; charset="UTF-8"; format="flowed"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191009105537.43D0LEYY-Ki5vBE2OxwFtrQQ4RUHawKRJayZpRjSHDg@z>
+Message-ID: <20191009122522.qRkwo5iXoR51DarFQh1SLoKq4uEKIK1XcBQ7vEc5IDw@z>
 
-Hi Andreas,
+On 10/9/19 12:17 PM, Thomas Bogendoerfer wrote:
+> IOC3 chips in SGI system are conntected to a bridge ASIC, which has
 
-On Wed, Oct 9, 2019 at 12:06 PM Andreas Schwab <schwab@suse.de> wrote:
-> On Okt 09 2019, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > I believe risc-v is DT-only, so if chosen/stdout-path is set up
->
-> If.  Currently, it isn't.
+Typo: "connected".
 
-IC. So isn't it better to fix that, instead of pointing people to more obscure
-legacy solutions?
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> a 1-wire prom attached with part number information. This changeset
+> uses this information to create PCI subsystem information, which
+> the MFD driver uses for further platform device setup.
+> 
+> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> ---
+>   arch/mips/include/asm/pci/bridge.h |   1 +
+>   arch/mips/include/asm/sn/ioc3.h    |   9 +++
+>   arch/mips/pci/pci-xtalk-bridge.c   | 135 ++++++++++++++++++++++++++++++++++++-
+>   arch/mips/sgi-ip27/ip27-xtalk.c    |  38 +++++++++--
+>   4 files changed, 175 insertions(+), 8 deletions(-)
