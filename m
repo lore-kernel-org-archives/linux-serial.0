@@ -1,79 +1,64 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] tty: serial: imx: Only get second/third IRQ when there
- is more than one IRQ
-Date: Wed, 9 Oct 2019 08:53:15 +0200
-Message-ID: <20191009065315.wgdvmkv6skteyul4@pengutronix.de>
-References: <1570601911-9162-1-git-send-email-Anson.Huang@nxp.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] Documentation: admin-guide: add earlycon documentation
+ for the sifive serial driver
+Date: Wed, 9 Oct 2019 08:56:29 +0200
+Message-ID: <CAMuHMdVdPFSU_3VEtO=P73kqLezV5Dmki=N3nxsKibzy-U5pBg@mail.gmail.com>
+References: <alpine.DEB.2.21.9999.1910081606370.11044@viisi.sifive.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1570601911-9162-1-git-send-email-Anson.Huang@nxp.com>
+In-Reply-To: <alpine.DEB.2.21.9999.1910081606370.11044@viisi.sifive.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Anson Huang <Anson.Huang@nxp.com>, Stephen Boyd <swboyd@chromium.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: jslaby@suse.com, shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Linux-imx@nxp.com, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
+To: Paul Walmsley <paul.walmsley@sifive.com>
+Cc: Jonathan Corbet <corbet@lwn.net>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Andreas Schwab <schwab@suse.de>, Christoph Hellwig <hch@lst.de>
 List-Id: linux-serial@vger.kernel.org
 
-Hello,
+Hi Paul,
 
-On Wed, Oct 09, 2019 at 02:18:31PM +0800, Anson Huang wrote:
-> All i.MX SoCs except i.MX1 have ONLY 1 IRQ, so it is better to check
-> the IRQ count before getting second/third IRQ to avoid below error
-> message during probe:
-> 
-> [    0.726219] imx-uart 30860000.serial: IRQ index 1 not found
-> [    0.731329] imx-uart 30860000.serial: IRQ index 2 not found
+On Wed, Oct 9, 2019 at 1:09 AM Paul Walmsley <paul.walmsley@sifive.com> wrote:
+> Document earlycon usage for the SiFive serial port driver in the same
+> fashion as for the other serial port IP blocks, since the SiFive
+> serial port driver supports it.
+>
+> Signed-off-by: Paul Walmsley <paul.walmsley@sifive.com>
+> Reported-by: Andreas Schwab <schwab@suse.de>
+> Cc: Christoph Hellwig <hch@lst.de>
 
-This message was introduced in commit
-7723f4c5ecdb8d832f049f8483beb0d1081cedf6 for 5.4-rc1. I added the
-involved people to the recipents of this mail.
+Thanks for your patch!
 
-> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+Why do you need this?
+I believe risc-v is DT-only, so if chosen/stdout-path is set up, just
+passing "earlycon" (without any options) should work.
+
 > ---
->  drivers/tty/serial/imx.c | 13 +++++++++++--
->  1 file changed, 11 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 504d81c..081fa82 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -2198,6 +2198,7 @@ static int imx_uart_probe(struct platform_device *pdev)
->  	u32 ucr1;
->  	struct resource *res;
->  	int txirq, rxirq, rtsirq;
-> +	int irq_count;
->  
->  	sport = devm_kzalloc(&pdev->dev, sizeof(*sport), GFP_KERNEL);
->  	if (!sport)
-> @@ -2220,9 +2221,17 @@ static int imx_uart_probe(struct platform_device *pdev)
->  	if (IS_ERR(base))
->  		return PTR_ERR(base);
->  
-> +	irq_count = platform_irq_count(pdev);
-> +	if (irq_count < 0)
-> +		return irq_count;
+>  Documentation/admin-guide/kernel-parameters.txt | 6 ++++++
+>  1 file changed, 6 insertions(+)
+>
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index c7ac2f3ac99f..90becb00221b 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -1106,6 +1106,12 @@
+>                         address must be provided, and the serial port must
+>                         already be setup and configured.
+>
+> +               sifive,<addr>
+> +                       Start an early, polled-mode console on a SiFive
+> +                       serial port at the specified address.  The port must
+> +                       already be setup and configured.  Options are not
+> +                       yet supported.
 > +
->  	rxirq = platform_get_irq(pdev, 0);
-> -	txirq = platform_get_irq(pdev, 1);
-> -	rtsirq = platform_get_irq(pdev, 2);
-> +	if (irq_count > 1) {
-> +		txirq = platform_get_irq(pdev, 1);
-> +		rtsirq = platform_get_irq(pdev, 2);
-> +	} else {
-> +		txirq = rtsirq = -ENXIO;
-> +	}
+>         earlyprintk=    [X86,SH,ARM,M68k,S390]
+>                         earlyprintk=vga
+>                         earlyprintk=sclp
 
-The patch is fine given the changed behaviour of platform_get_irq. I
-wonder if it is sensible to introduce a variant of platform_get_irq (say
-platform_get_irq_nowarn) that behaves like __platform_get_irq does
-today. Then the imx driver would just call platform_get_irq_nowarn
-without having to check the number of available irqs first.
+Gr{oetje,eeting}s,
 
-Best regards
-Uwe
+                        Geert
 
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
