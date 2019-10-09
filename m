@@ -1,60 +1,31 @@
-From: Anson Huang <anson.huang@nxp.com>
-Subject: RE: [PATCH] tty: serial: imx: Only get second/third IRQ when there is
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH] tty: serial: imx: Only get second/third IRQ when there is
  more than one IRQ
-Date: Wed, 9 Oct 2019 07:43:24 +0000
-Message-ID: <DB3PR0402MB391677227A688D5DD56A8417F5950@DB3PR0402MB3916.eurprd04.prod.outlook.com>
-References: <1570601911-9162-1-git-send-email-Anson.Huang@nxp.com>
- <20191009065315.wgdvmkv6skteyul4@pengutronix.de>
- <DB3PR0402MB39165F9CE876772F8F94F187F5950@DB3PR0402MB3916.eurprd04.prod.outlook.com>
- <20191009071403.ugd2wuac6ue5zsd6@pengutronix.de>
- <DB3PR0402MB39161E02A9D042948B71FDCDF5950@DB3PR0402MB3916.eurprd04.prod.outlook.com>
- <20191009073717.qlr2svma5fiaf4ad@pengutronix.de>
+Date: Wed, 9 Oct 2019 11:12:20 +0300
+Message-ID: <CAHp75VcWXT+j5cfVzxPL+3YdgR+3uhFSb0qEDRr4YL+WenVKUQ@mail.gmail.com>
+References: <1570601911-9162-1-git-send-email-Anson.Huang@nxp.com> <20191009065315.wgdvmkv6skteyul4@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191009073717.qlr2svma5fiaf4ad@pengutronix.de>
-Content-Language: en-US
+In-Reply-To: <20191009065315.wgdvmkv6skteyul4@pengutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
-Cc: Stephen Boyd <swboyd@chromium.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Anson Huang <Anson.Huang@nxp.com>, Stephen Boyd <swboyd@chromium.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Sascha Hauer <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, dl-linux-imx <Linux-imx@nxp.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 List-Id: linux-serial@vger.kernel.org
 
-SGksIFV3ZQ0KDQo+IE9uIFdlZCwgT2N0IDA5LCAyMDE5IGF0IDA3OjI0OjU3QU0gKzAwMDAsIEFu
-c29uIEh1YW5nIHdyb3RlOg0KPiA+ID4gT24gV2VkLCBPY3QgMDksIDIwMTkgYXQgMDY6NTg6MjRB
-TSArMDAwMCwgQW5zb24gSHVhbmcgd3JvdGU6DQo+ID4gPiA+ID4gVGhlIHBhdGNoIGlzIGZpbmUg
-Z2l2ZW4gdGhlIGNoYW5nZWQgYmVoYXZpb3VyIG9mDQo+ID4gPiA+ID4gcGxhdGZvcm1fZ2V0X2ly
-cS4gSSB3b25kZXIgaWYgaXQgaXMgc2Vuc2libGUgdG8gaW50cm9kdWNlIGENCj4gPiA+ID4gPiB2
-YXJpYW50IG9mIHBsYXRmb3JtX2dldF9pcnEgKHNheQ0KPiA+ID4gPiA+IHBsYXRmb3JtX2dldF9p
-cnFfbm93YXJuKSB0aGF0IGJlaGF2ZXMgbGlrZSBfX3BsYXRmb3JtX2dldF9pcnENCj4gPiA+ID4g
-PiBkb2VzIHQgVGhlbiB0aGUgaW14IGRyaXZlciB3b3VsZCBqdXN0IGNhbGwNCj4gPiA+ID4gPiBw
-bGF0Zm9ybV9nZXRfaXJxX25vd2FybiB3aXRob3V0IGhhdmluZyB0byBjaGVjayB0aGUgbnVtYmVy
-IG9mDQo+IGF2YWlsYWJsZSBpcnFzIGZpcnN0Lg0KPiA+ID4gPg0KPiA+ID4gPiBBZ3JlZWQsIGl0
-IHdvdWxkIGJlIG5pY2UgaWYgd2UgY2FuIGZpeCB0aGlzIGZyb20gdGhlIEFQSSBsZXZlbCwNCj4g
-PiA+ID4gdGhpcyBpcyB0byBzYXZlIG1hbnkgcGF0Y2hlcyBmcm9tIHZhcmlvdXMgZHJpdmVycyBz
-aWRlLCBsZXQgbWUNCj4gPiA+ID4ga25vdyBpZiBhZ3JlZW1lbnQgaXMgcmVhY2hlZCBhbmQgSSB3
-aWxsIGRvIHRoZSBwYXRjaC4NCj4gPiA+DQo+ID4gPiBJIHdvdWxkbid0IGV4cGVjdCB0aGF0IG1v
-c3QgY2FsbGVycyBhY3R1YWxseSB3YW50IGFuIGVycm9yIG1lc3NhZ2UNCj4gPiA+IGFuZCBzbyB0
-aGVzZSBuZWVkIGEgZGlmZmVyZW50IHBhdGNoIChpLmUuIGRyb3BwaW5nIHRoZSBlcnJvciBtZXNz
-YWdlIGJ5DQo+IHRoZSBjYWxsZXIpLg0KPiA+ID4gVGhpcyB0eXBlIG9mIHBhdGNoIGlzIGZpbmUg
-YW5kIHRoZSBub3JtYWwgbG9hZCB3aGVuIHNvbWV0aGluZyBpcw0KPiA+ID4gY29uc29saWRhdGVk
-Lg0KPiA+ID4NCj4gPiA+IFdoaWNoIG90aGVyIGRyaXZlcnMgZG8geW91IGhhdmUgb24geW91ciBy
-YWRhciB0aGF0IGRvbid0IHdhbnQgYW4NCj4gPiA+IGVycm9yIG1lc3NhZ2UgaWYgcGxhdGZvcm1f
-Z2V0X2lycSgpIGZhaWxzPw0KPiA+DQo+ID4gSSBkaWQgTk9UIG1lYW4gZHJpdmVycyBkb24ndCB3
-YW50IGFuIGVycm9yIHdoZW4gZ2V0dGluZyBpcnEgZmFpbGVkLA0KPiA+IGJ1dCBJIGp1c3QgYWdy
-ZWUgdGhhdCBpbnRyb2R1Y2luZyBhbm90aGVyIEFQSSB3aXRoIG5vd2FybiBhcyB5b3UNCj4gPiBt
-ZW50aW9uZWQgdXBwZXIsIHRoZW4gaS5NWCBkcml2ZXIgY2FuIGNhbGwgaXQuIEZvciBub3csIHRo
-ZSBGRUMgZHJpdmVyDQo+ID4gYWxzbyBoYXZlIG1hbnkgc3VjaCBlcnJvciBtZXNzYWdlLCB3ZSB3
-aWxsIGZpeCBsYXRlci4NCj4gPg0KPiA+IFNvIGlmIHRoZSBBUEkgd2l0aCBub3dhcm4gaXMgYWRk
-ZWQsIHRoZW4gSSBjYW4gY2hhbmdlIHRoZSBBUEkgY2FsbCBpbg0KPiA+IHNvbWUgaS5NWCBkcml2
-ZXIgaW5zdGVhZCBvZiBnZXR0aW5nIGlycV9jb3VudCBmaXJzdC4gRG8geW91IHRoaW5rIEkNCj4g
-PiBzaG91bGQgYWRkIHRoZSBub3dhcm4gQVBJIGFuZCByZWRvIHRoaXMgcGF0Y2ggdG8gY2FsbCBp
-dD8NCj4gDQo+IEhhdmluZyBhIHBhdGNoIChvciBhIHNldCBvZiBwYXRjaGVzKSBpcyBwcm9iYWJs
-eSBoZWxwZnVsIHRvIGdldCBmb3J3YXJkIGhlcmUsDQo+IHllcy4gWW91IGhhdmUgbXkgYmxlc3Np
-bmcgdG8gY3JlYXRlIGEgc3VnZ2VzdGlvbi4gKE5vdCB0aGF0IHlvdSBhY3R1YWxseSBuZWVkDQo+
-IHRoYXQgOi0pDQoNClRoYW5rcywgT0ssIHRoZW4gSSB3aWxsIGxlYXZlIHRoaXMgcGF0Y2ggYXMg
-aXQgaXMgZm9yIG5vdywgYW5kIGxlYXZlIG90aGVycyB0byBkZWNpZGUgd2hldGhlcg0KdG8gYWRk
-IGEgcGF0Y2ggb2YgYWRkaW5nIG5ldyBBUEkgb2Ygbm93YXJuLiBTb21lIGRyaXZlcnMgbmVlZCB0
-byBiZSBjaGFuZ2VkIGFueXdheSB0byBhdm9pZA0KdGhpcyBlcnJvciBtZXNzYWdlLCBlaXRoZXIg
-Z2V0dGluZyBpcnEgY291bnQgZmlyc3Qgb3IgY2FsbGluZyBuZXcgQVBJIG9uY2UgaXQgaXMgYWRk
-ZWQuDQoNClRoYW5rcywNCkFuc29uDQo=
+On Wed, Oct 9, 2019 at 9:53 AM Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
+
+> The patch is fine given the changed behaviour of platform_get_irq. I
+> wonder if it is sensible to introduce a variant of platform_get_irq (say
+> platform_get_irq_nowarn) that behaves like __platform_get_irq does
+> today. Then the imx driver would just call platform_get_irq_nowarn
+> without having to check the number of available irqs first.
+
+It's being discussed in parallel thread about
+platform_get_irq_optional() which won't issue a warning.
+
+--=20
+With Best Regards,
+Andy Shevchenko
