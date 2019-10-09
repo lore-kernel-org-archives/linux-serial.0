@@ -1,81 +1,61 @@
-From: Anson Huang <anson.huang@nxp.com>
-Subject: RE: [PATCH] tty: serial: imx: Only get second/third IRQ when there is
- more than one IRQ
-Date: Wed, 9 Oct 2019 07:24:57 +0000
-Message-ID: <DB3PR0402MB39161E02A9D042948B71FDCDF5950@DB3PR0402MB3916.eurprd04.prod.outlook.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] tty: serial: imx: Only get second/third IRQ when there
+ is more than one IRQ
+Date: Wed, 9 Oct 2019 09:37:17 +0200
+Message-ID: <20191009073717.qlr2svma5fiaf4ad@pengutronix.de>
 References: <1570601911-9162-1-git-send-email-Anson.Huang@nxp.com>
  <20191009065315.wgdvmkv6skteyul4@pengutronix.de>
  <DB3PR0402MB39165F9CE876772F8F94F187F5950@DB3PR0402MB3916.eurprd04.prod.outlook.com>
  <20191009071403.ugd2wuac6ue5zsd6@pengutronix.de>
+ <DB3PR0402MB39161E02A9D042948B71FDCDF5950@DB3PR0402MB3916.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191009071403.ugd2wuac6ue5zsd6@pengutronix.de>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <DB3PR0402MB39161E02A9D042948B71FDCDF5950@DB3PR0402MB3916.eurprd04.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>
+To: Anson Huang <anson.huang@nxp.com>
 Cc: Stephen Boyd <swboyd@chromium.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "jslaby@suse.com" <jslaby@suse.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-SGksIFV3ZQ0KDQo+IE9uIFdlZCwgT2N0IDA5LCAyMDE5IGF0IDA2OjU4OjI0QU0gKzAwMDAsIEFu
-c29uIEh1YW5nIHdyb3RlOg0KPiA+ID4gT24gV2VkLCBPY3QgMDksIDIwMTkgYXQgMDI6MTg6MzFQ
-TSArMDgwMCwgQW5zb24gSHVhbmcgd3JvdGU6DQo+ID4gPiA+IEFsbCBpLk1YIFNvQ3MgZXhjZXB0
-IGkuTVgxIGhhdmUgT05MWSAxIElSUSwgc28gaXQgaXMgYmV0dGVyIHRvDQo+ID4gPiA+IGNoZWNr
-IHRoZSBJUlEgY291bnQgYmVmb3JlIGdldHRpbmcgc2Vjb25kL3RoaXJkIElSUSB0byBhdm9pZCBi
-ZWxvdw0KPiA+ID4gPiBlcnJvciBtZXNzYWdlIGR1cmluZyBwcm9iZToNCj4gPiA+ID4NCj4gPiA+
-ID4gWyAgICAwLjcyNjIxOV0gaW14LXVhcnQgMzA4NjAwMDAuc2VyaWFsOiBJUlEgaW5kZXggMSBu
-b3QgZm91bmQNCj4gPiA+ID4gWyAgICAwLjczMTMyOV0gaW14LXVhcnQgMzA4NjAwMDAuc2VyaWFs
-OiBJUlEgaW5kZXggMiBub3QgZm91bmQNCj4gPiA+DQo+ID4gPiBUaGlzIG1lc3NhZ2Ugd2FzIGlu
-dHJvZHVjZWQgaW4gY29tbWl0DQo+ID4gPiA3NzIzZjRjNWVjZGI4ZDgzMmYwNDlmODQ4M2JlYjBk
-MTA4MWNlZGY2IGZvciA1LjQtcmMxLiBJIGFkZGVkIHRoZQ0KPiA+ID4gaW52b2x2ZWQgcGVvcGxl
-IHRvIHRoZSByZWNpcGVudHMgb2YgdGhpcyBtYWlsLg0KPiA+DQo+ID4gWWVzLCBJIG5vdGljZWQg
-dGhpcywgdGhhbmtzLg0KPiA+DQo+ID4gPg0KPiA+ID4gPiBTaWduZWQtb2ZmLWJ5OiBBbnNvbiBI
-dWFuZyA8QW5zb24uSHVhbmdAbnhwLmNvbT4NCj4gPiA+ID4gLS0tDQo+ID4gPiA+ICBkcml2ZXJz
-L3R0eS9zZXJpYWwvaW14LmMgfCAxMyArKysrKysrKysrKy0tDQo+ID4gPiA+ICAxIGZpbGUgY2hh
-bmdlZCwgMTEgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkNCj4gPiA+ID4NCj4gPiA+ID4g
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyBiL2RyaXZlcnMvdHR5L3Nlcmlh
-bC9pbXguYw0KPiA+ID4gPiBpbmRleA0KPiA+ID4gPiA1MDRkODFjLi4wODFmYTgyIDEwMDY0NA0K
-PiA+ID4gPiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMNCj4gPiA+ID4gKysrIGIvZHJp
-dmVycy90dHkvc2VyaWFsL2lteC5jDQo+ID4gPiA+IEBAIC0yMTk4LDYgKzIxOTgsNyBAQCBzdGF0
-aWMgaW50IGlteF91YXJ0X3Byb2JlKHN0cnVjdA0KPiA+ID4gPiBwbGF0Zm9ybV9kZXZpY2UNCj4g
-PiA+ICpwZGV2KQ0KPiA+ID4gPiAgCXUzMiB1Y3IxOw0KPiA+ID4gPiAgCXN0cnVjdCByZXNvdXJj
-ZSAqcmVzOw0KPiA+ID4gPiAgCWludCB0eGlycSwgcnhpcnEsIHJ0c2lycTsNCj4gPiA+ID4gKwlp
-bnQgaXJxX2NvdW50Ow0KPiA+ID4gPg0KPiA+ID4gPiAgCXNwb3J0ID0gZGV2bV9remFsbG9jKCZw
-ZGV2LT5kZXYsIHNpemVvZigqc3BvcnQpLCBHRlBfS0VSTkVMKTsNCj4gPiA+ID4gIAlpZiAoIXNw
-b3J0KQ0KPiA+ID4gPiBAQCAtMjIyMCw5ICsyMjIxLDE3IEBAIHN0YXRpYyBpbnQgaW14X3VhcnRf
-cHJvYmUoc3RydWN0DQo+ID4gPiBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+ID4gPiA+ICAJaWYg
-KElTX0VSUihiYXNlKSkNCj4gPiA+ID4gIAkJcmV0dXJuIFBUUl9FUlIoYmFzZSk7DQo+ID4gPiA+
-DQo+ID4gPiA+ICsJaXJxX2NvdW50ID0gcGxhdGZvcm1faXJxX2NvdW50KHBkZXYpOw0KPiA+ID4g
-PiArCWlmIChpcnFfY291bnQgPCAwKQ0KPiA+ID4gPiArCQlyZXR1cm4gaXJxX2NvdW50Ow0KPiA+
-ID4gPiArDQo+ID4gPiA+ICAJcnhpcnEgPSBwbGF0Zm9ybV9nZXRfaXJxKHBkZXYsIDApOw0KPiA+
-ID4gPiAtCXR4aXJxID0gcGxhdGZvcm1fZ2V0X2lycShwZGV2LCAxKTsNCj4gPiA+ID4gLQlydHNp
-cnEgPSBwbGF0Zm9ybV9nZXRfaXJxKHBkZXYsIDIpOw0KPiA+ID4gPiArCWlmIChpcnFfY291bnQg
-PiAxKSB7DQo+ID4gPiA+ICsJCXR4aXJxID0gcGxhdGZvcm1fZ2V0X2lycShwZGV2LCAxKTsNCj4g
-PiA+ID4gKwkJcnRzaXJxID0gcGxhdGZvcm1fZ2V0X2lycShwZGV2LCAyKTsNCj4gPiA+ID4gKwl9
-IGVsc2Ugew0KPiA+ID4gPiArCQl0eGlycSA9IHJ0c2lycSA9IC1FTlhJTzsNCj4gPiA+ID4gKwl9
-DQo+ID4gPg0KPiA+ID4gVGhlIHBhdGNoIGlzIGZpbmUgZ2l2ZW4gdGhlIGNoYW5nZWQgYmVoYXZp
-b3VyIG9mIHBsYXRmb3JtX2dldF9pcnEuIEkNCj4gPiA+IHdvbmRlciBpZiBpdCBpcyBzZW5zaWJs
-ZSB0byBpbnRyb2R1Y2UgYSB2YXJpYW50IG9mIHBsYXRmb3JtX2dldF9pcnENCj4gPiA+IChzYXkN
-Cj4gPiA+IHBsYXRmb3JtX2dldF9pcnFfbm93YXJuKSB0aGF0IGJlaGF2ZXMgbGlrZSBfX3BsYXRm
-b3JtX2dldF9pcnEgZG9lcyB0DQo+ID4gPiBUaGVuIHRoZSBpbXggZHJpdmVyIHdvdWxkIGp1c3Qg
-Y2FsbCBwbGF0Zm9ybV9nZXRfaXJxX25vd2FybiB3aXRob3V0DQo+ID4gPiBoYXZpbmcgdG8gY2hl
-Y2sgdGhlIG51bWJlciBvZiBhdmFpbGFibGUgaXJxcyBmaXJzdC4NCj4gPg0KPiA+IEFncmVlZCwg
-aXQgd291bGQgYmUgbmljZSBpZiB3ZSBjYW4gZml4IHRoaXMgZnJvbSB0aGUgQVBJIGxldmVsLCB0
-aGlzDQo+ID4gaXMgdG8gc2F2ZSBtYW55IHBhdGNoZXMgZnJvbSB2YXJpb3VzIGRyaXZlcnMgc2lk
-ZSwgbGV0IG1lIGtub3cgaWYNCj4gPiBhZ3JlZW1lbnQgaXMgcmVhY2hlZCBhbmQgSSB3aWxsIGRv
-IHRoZSBwYXRjaC4NCj4gDQo+IEkgd291bGRuJ3QgZXhwZWN0IHRoYXQgbW9zdCBjYWxsZXJzIGFj
-dHVhbGx5IHdhbnQgYW4gZXJyb3IgbWVzc2FnZSBhbmQgc28NCj4gdGhlc2UgbmVlZCBhIGRpZmZl
-cmVudCBwYXRjaCAoaS5lLiBkcm9wcGluZyB0aGUgZXJyb3IgbWVzc2FnZSBieSB0aGUgY2FsbGVy
-KS4NCj4gVGhpcyB0eXBlIG9mIHBhdGNoIGlzIGZpbmUgYW5kIHRoZSBub3JtYWwgbG9hZCB3aGVu
-IHNvbWV0aGluZyBpcw0KPiBjb25zb2xpZGF0ZWQuDQo+IA0KPiBXaGljaCBvdGhlciBkcml2ZXJz
-IGRvIHlvdSBoYXZlIG9uIHlvdXIgcmFkYXIgdGhhdCBkb24ndCB3YW50IGFuIGVycm9yDQo+IG1l
-c3NhZ2UgaWYgcGxhdGZvcm1fZ2V0X2lycSgpIGZhaWxzPw0KDQpJIGRpZCBOT1QgbWVhbiBkcml2
-ZXJzIGRvbid0IHdhbnQgYW4gZXJyb3Igd2hlbiBnZXR0aW5nIGlycSBmYWlsZWQsIGJ1dCBJIGp1
-c3QNCmFncmVlIHRoYXQgaW50cm9kdWNpbmcgYW5vdGhlciBBUEkgd2l0aCBub3dhcm4gYXMgeW91
-IG1lbnRpb25lZCB1cHBlciwgdGhlbg0KaS5NWCBkcml2ZXIgY2FuIGNhbGwgaXQuIEZvciBub3cs
-IHRoZSBGRUMgZHJpdmVyIGFsc28gaGF2ZSBtYW55IHN1Y2ggZXJyb3IgbWVzc2FnZSwNCndlIHdp
-bGwgZml4IGxhdGVyLg0KDQpTbyBpZiB0aGUgQVBJIHdpdGggbm93YXJuIGlzIGFkZGVkLCB0aGVu
-IEkgY2FuIGNoYW5nZSB0aGUgQVBJIGNhbGwgaW4gc29tZSBpLk1YIGRyaXZlcg0KaW5zdGVhZCBv
-ZiBnZXR0aW5nIGlycV9jb3VudCBmaXJzdC4gRG8geW91IHRoaW5rIEkgc2hvdWxkIGFkZCB0aGUg
-bm93YXJuIEFQSSBhbmQgcmVkbw0KdGhpcyBwYXRjaCB0byBjYWxsIGl0PyANCg0KQW5zb24NCg==
+On Wed, Oct 09, 2019 at 07:24:57AM +0000, Anson Huang wrote:
+> > On Wed, Oct 09, 2019 at 06:58:24AM +0000, Anson Huang wrote:
+> > > > The patch is fine given the changed behaviour of platform_get_irq. I
+> > > > wonder if it is sensible to introduce a variant of platform_get_irq (say
+> > > > platform_get_irq_nowarn) that behaves like __platform_get_irq does t
+> > > > Then the imx driver would just call platform_get_irq_nowarn without
+> > > > having to check the number of available irqs first.
+> > >
+> > > Agreed, it would be nice if we can fix this from the API level, this
+> > > is to save many patches from various drivers side, let me know if
+> > > agreement is reached and I will do the patch.
+> > 
+> > I wouldn't expect that most callers actually want an error message and so
+> > these need a different patch (i.e. dropping the error message by the caller).
+> > This type of patch is fine and the normal load when something is
+> > consolidated.
+> > 
+> > Which other drivers do you have on your radar that don't want an error
+> > message if platform_get_irq() fails?
+> 
+> I did NOT mean drivers don't want an error when getting irq failed, but I just
+> agree that introducing another API with nowarn as you mentioned upper, then
+> i.MX driver can call it. For now, the FEC driver also have many such error message,
+> we will fix later.
+> 
+> So if the API with nowarn is added, then I can change the API call in some i.MX driver
+> instead of getting irq_count first. Do you think I should add the nowarn API and redo
+> this patch to call it? 
+
+Having a patch (or a set of patches) is probably helpful to get forward
+here, yes. You have my blessing to create a suggestion. (Not that you
+actually need that :-)
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
