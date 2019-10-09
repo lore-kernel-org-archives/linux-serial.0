@@ -1,37 +1,33 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] Documentation: admin-guide: add earlycon documentation
- for the sifive serial driver
-Date: Wed, 9 Oct 2019 12:55:37 +0200
-Message-ID: <CAMuHMdVh=CUXKwnXee067cRccVBDVuwWpo1wP7crAaCFA=y2Tw@mail.gmail.com>
-References: <alpine.DEB.2.21.9999.1910081606370.11044@viisi.sifive.com>
- <CAMuHMdVdPFSU_3VEtO=P73kqLezV5Dmki=N3nxsKibzy-U5pBg@mail.gmail.com> <mvmv9syz10h.fsf@suse.de>
+From: =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <f4bug@amsat.org>
+Subject: Re: [PATCH v8 2/5] MIPS: PCI: use information from 1-wire PROM for
+ IOC3 detection
+Date: Wed, 9 Oct 2019 14:25:22 +0200
+Message-ID: <ea44d4a2-3011-fba8-4d6a-7b63c77ba00a@amsat.org>
+References: <20191009101713.12238-1-tbogendoerfer@suse.de>
+ <20191009101713.12238-3-tbogendoerfer@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <mvmv9syz10h.fsf@suse.de>
+In-Reply-To: <20191009101713.12238-3-tbogendoerfer@suse.de>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Andreas Schwab <schwab@suse.de>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>, Jonathan Corbet <corbet@lwn.net>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Christoph Hellwig <hch@lst.de>
+To: Thomas Bogendoerfer <tbogendoerfer@suse.de>, Jakub Kicinski <jakub.kicinski@netronome.com>, Jonathan Corbet <corbet@lwn.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-Hi Andreas,
+On 10/9/19 12:17 PM, Thomas Bogendoerfer wrote:
+> IOC3 chips in SGI system are conntected to a bridge ASIC, which has
 
-On Wed, Oct 9, 2019 at 12:06 PM Andreas Schwab <schwab@suse.de> wrote:
-> On Okt 09 2019, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > I believe risc-v is DT-only, so if chosen/stdout-path is set up
->
-> If.  Currently, it isn't.
+Typo: "connected".
 
-IC. So isn't it better to fix that, instead of pointing people to more obscure
-legacy solutions?
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> a 1-wire prom attached with part number information. This changeset
+> uses this information to create PCI subsystem information, which
+> the MFD driver uses for further platform device setup.
+> 
+> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> ---
+>   arch/mips/include/asm/pci/bridge.h |   1 +
+>   arch/mips/include/asm/sn/ioc3.h    |   9 +++
+>   arch/mips/pci/pci-xtalk-bridge.c   | 135 ++++++++++++++++++++++++++++++++++++-
+>   arch/mips/sgi-ip27/ip27-xtalk.c    |  38 +++++++++--
+>   4 files changed, 175 insertions(+), 8 deletions(-)
