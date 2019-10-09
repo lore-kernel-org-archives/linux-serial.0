@@ -1,56 +1,58 @@
-From: Ben Dooks <ben.dooks@codethink.co.uk>
-Subject: [PATCH] serial: sirf: make register info static
-Date: Wed,  9 Oct 2019 14:53:56 +0100
-Message-ID: <20191009135356.11180-1-ben.dooks@codethink.co.uk>
+From: Adam Ford <aford173@gmail.com>
+Subject: Re: Serial 8250 DMA Broken on OMAP3630
+Date: Wed, 9 Oct 2019 09:08:57 -0500
+Message-ID: <CAHCN7xJDS_NwT8VZbOQgsA6iHkeTLt4UrR2vFmzkCtWYCYzQrg@mail.gmail.com>
+References: <CAHCN7x+oXNA6WRiq1OnDdcgDTJrm-QyazyYLw-ow0vPMMmrVbQ@mail.gmail.com>
+ <3d5b3a12-a21c-f464-e7d1-252ccd768ff8@ti.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <3d5b3a12-a21c-f464-e7d1-252ccd768ff8@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@lists.codethink.co.uk
-Cc: Ben Dooks <ben.dooks@codethink.co.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Barry Song <baohua@kernel.org>, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Vignesh Raghavendra <vigneshr@ti.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Douglas Anderson <dianders@chromium.org>, Tony Lindgren <tony@atomide.com>, Yegor Yefremov <yegorslists@googlemail.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-The sirfsoc_usp and sirfsoc_uart objects are not
-used outside of the drivers/tty/serial/sirfsoc_uart.o
-so make them static. Fixes following sparse warnings:
+On Wed, Oct 9, 2019 at 8:42 AM Vignesh Raghavendra <vigneshr@ti.com> wrote:
+>
+> Hi Adam,
+>
+> On 06/10/19 10:34 PM, Adam Ford wrote:
+> > Has anyone else had any issues using the CONFIG_SERIAL_8250_DMA on the OMAP?
+> >
+> > I can use the DMA on the legacy, omap-serial driver, but when I enable
+> > the DMA on the 8250-omap driver, I get missing frames in Bluetooth.
+> >
+> > The older driver seems to have an ISR that seems to address a variety
+> > of items compared to the very tiny ISR for 8250-omap.c.
+> >
+> > I am not exactly sure where to start, but if someone has any
+> > suggestions on how I can troubleshoot, please let me know.  As of now,
+> > I have to disable CONFIG_SERIAL_8250_DMA to get the Bluetooth
+> > connected to UART2 operational on a DM3730 at 3,000,000 baud, but it
+> > appears to work just fine after some patches I just submitted for
+> > handling RTS/CTS.  The legacy omap-serial driver works fine with DMA.
+> >
+>
+> Mainline omap-serial does not support DMA (evident from lack of
+> dmaengine API calls) and therefore is not a regression. So OMAP3 UART
+> DMA was never tested at least with 8250 driver.
+> I am not sure enabling UART DMA on OMAP3 would be a trivial job. We need
+> analyse of whether all erratas workarounds are implemented and see if
+> there any difference wrt DMA integration itself. Do we know if UART DMA
+> ever worked on OMAP3 previously?
 
-drivers/tty/serial/sirfsoc_uart.h:123:30: warning: symbol 'sirfsoc_usp' was not declared. Should it be static?
-drivers/tty/serial/sirfsoc_uart.h:189:30: warning: symbol 'sirfsoc_uart' was not declared. Should it be static?
+Can we disable CONFIG_SERIAL_8250_DMA from omap2plus_defconfig?   As
+of right now, it's the only way I can use the Bluetooth.  There are
+#ifdef's in the 8250-omap driver, so it looks like some of the hooks
+are there, but if it's incomplete, it seems like we shouldn't enable
+this config option by default yet.
 
-Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
----
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Barry Song <baohua@kernel.org>
-Cc: linux-serial@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
----
- drivers/tty/serial/sirfsoc_uart.h | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/sirfsoc_uart.h b/drivers/tty/serial/sirfsoc_uart.h
-index 004ca684d3ae..637b09d3fe79 100644
---- a/drivers/tty/serial/sirfsoc_uart.h
-+++ b/drivers/tty/serial/sirfsoc_uart.h
-@@ -120,7 +120,8 @@ static u32 uart_usp_ff_empty_mask(struct uart_port *port)
- 	empty_bit = ilog2(port->fifosize) + 1;
- 	return (1 << empty_bit);
- }
--struct sirfsoc_uart_register sirfsoc_usp = {
-+
-+static struct sirfsoc_uart_register sirfsoc_usp = {
- 	.uart_reg = {
- 		.sirfsoc_mode1		= 0x0000,
- 		.sirfsoc_mode2		= 0x0004,
-@@ -186,7 +187,7 @@ struct sirfsoc_uart_register sirfsoc_usp = {
- 	},
- };
- 
--struct sirfsoc_uart_register sirfsoc_uart = {
-+static struct sirfsoc_uart_register sirfsoc_uart = {
- 	.uart_reg = {
- 		.sirfsoc_line_ctrl	= 0x0040,
- 		.sirfsoc_tx_rx_en	= 0x004c,
--- 
-2.23.0
+adam
+>
+> > adam
+> >
+>
+> --
+> Regards
+> Vignesh
