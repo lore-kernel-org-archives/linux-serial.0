@@ -2,128 +2,83 @@ Return-Path: <SRS0=/1L5=YC=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E92FC47404
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 09:36:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEBA3ECE58D
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 09:51:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CE49921835
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 09:36:47 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="mfWWrmgq"
+	by mail.kernel.org (Postfix) with ESMTP id 8F4DB21848
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 09:51:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726579AbfJIJgr (ORCPT
+        id S1729471AbfJIJvu (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Oct 2019 05:36:47 -0400
-Received: from mail-eopbgr140087.outbound.protection.outlook.com ([40.107.14.87]:53760
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725942AbfJIJgr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Oct 2019 05:36:47 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BA4xlQP0xTGQ6PCoi4r1X58yQCPAWE7FGZi1riDuPAI6F+SsRhk0av3Xuv7aaEbKBGCs3AJlRstX4PKV5aqLX6r/DTt/XQVf8FHvjz/frwdAVEOrpJPNb0IjSRYfQphp6PzZA0qimzszk4+6LHoMctld0z9g5Aj4qfeeZ8s4qEfZCM43/UZqCcMPIVEeqOgze1OQtPAAwLT4GpZo64yZjALJ9iwWdAhxzdcKkJ/GTAciTR9RjXK5csXw6cjVDTzT2CqgXsclPbE9zLZb+w89ic7Ts5dt70VlmEEmox96CaEpmY4S5MbOtkiHAVUTSXUSlBTghceIXGGJ+eFC4ZrAag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tCW4u4cTVQufD2z2wU75Ak0Niq8DgcQPprcAbmmCVTk=;
- b=mo8vIld0ZvgaTeOKeK6MUzsJ++LZkULi6dh1HZlImiim7/OoxUG4jIVa29Nbo6QLMfrIBZhE/wBlkg1s0awJXJrCcLs4Em33Z6djHYuOjgfED5QquChlgR35BqtgJaQoiflENh1xpUvGT9IYsH/U9RSUTCodr/wkvqVs4wpnwZI7FGTISsNHkGdkpv/zZ7ERFHpKSw+lylUAPdozpVxkZWW+fJITsEFDXp2ihTOFFTUqB0jYXmn+7YcoEo4douLzX+5QQbYQeEgeNvQW27SLXwfs5XOQblB1v2Un1bGsM7aKJFo6mqqAmEvYo2cGmr91czYo1o2Y5g1hit7CVDTVgA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tCW4u4cTVQufD2z2wU75Ak0Niq8DgcQPprcAbmmCVTk=;
- b=mfWWrmgqfQMA87UWm1U/M+/y4CKFtpVM46BooQc5kifMDNvG+Zi/MP62LNTvTVxBK24xE3z+hf+/kqUxQEkJYOdAJnyPwwY6L3mHIrEG18t5BmpehIlsDLnjt4RUciAZDfeO2s2ppFx9ZSRs3x8z+Nrv5GYBgTvL3F5Yx8gG3WU=
-Received: from DB3PR0402MB3916.eurprd04.prod.outlook.com (52.134.72.18) by
- DB3PR0402MB3819.eurprd04.prod.outlook.com (52.134.71.158) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2305.20; Wed, 9 Oct 2019 09:36:37 +0000
-Received: from DB3PR0402MB3916.eurprd04.prod.outlook.com
- ([fe80::d469:ad51:2bec:19f0]) by DB3PR0402MB3916.eurprd04.prod.outlook.com
- ([fe80::d469:ad51:2bec:19f0%6]) with mapi id 15.20.2347.016; Wed, 9 Oct 2019
- 09:36:36 +0000
-From:   Anson Huang <anson.huang@nxp.com>
-To:     =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-CC:     Stephen Boyd <swboyd@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: RE: [PATCH] tty: serial: imx: Only get second/third IRQ when there is
- more than one IRQ
-Thread-Topic: [PATCH] tty: serial: imx: Only get second/third IRQ when there
- is more than one IRQ
-Thread-Index: AQHVfmm1cibywjMA5UifVvn4HL9DWadR35+AgAAWGACAABWsAIAAAYTg
-Date:   Wed, 9 Oct 2019 09:36:36 +0000
-Message-ID:
- <DB3PR0402MB3916361F60FA8ACBB434E7ADF5950@DB3PR0402MB3916.eurprd04.prod.outlook.com>
-References: <1570601911-9162-1-git-send-email-Anson.Huang@nxp.com>
- <20191009065315.wgdvmkv6skteyul4@pengutronix.de>
- <CAHp75VcWXT+j5cfVzxPL+3YdgR+3uhFSb0qEDRr4YL+WenVKUQ@mail.gmail.com>
- <20191009092954.srlx5wjaqueps7nz@pengutronix.de>
-In-Reply-To: <20191009092954.srlx5wjaqueps7nz@pengutronix.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=anson.huang@nxp.com; 
-x-originating-ip: [119.31.174.66]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 53d2e6b9-8a1f-4a32-7715-08d74c9c2e33
-x-ms-office365-filtering-ht: Tenant
-x-ms-traffictypediagnostic: DB3PR0402MB3819:|DB3PR0402MB3819:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB3PR0402MB38196D4B4619CEC2F89CBD45F5950@DB3PR0402MB3819.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4941;
-x-forefront-prvs: 018577E36E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(39860400002)(396003)(376002)(136003)(366004)(199004)(189003)(76176011)(6506007)(186003)(316002)(102836004)(66574012)(9686003)(55016002)(5660300002)(86362001)(71200400001)(110136005)(7416002)(6436002)(7736002)(14454004)(256004)(53546011)(54906003)(8936002)(14444005)(305945005)(26005)(71190400001)(44832011)(81166006)(478600001)(81156014)(74316002)(486006)(33656002)(4744005)(7696005)(8676002)(66946007)(25786009)(99286004)(476003)(64756008)(2906002)(52536014)(4326008)(66446008)(76116006)(229853002)(6246003)(66066001)(66476007)(11346002)(446003)(3846002)(6116002)(66556008);DIR:OUT;SFP:1101;SCL:1;SRVR:DB3PR0402MB3819;H:DB3PR0402MB3916.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 6a2rFiUszuw8ynZa+e4o8ia2IwLUFW7AOdspivEjB06hMaV/rjZZhSYp2kdNx6gdvDm59cWmyvO87cOp4ZuFWQbu0fWTwk6IQqYTjzMk36FH1DYXWr1G944oG/HEKUiaVkOR/761IXU8To3oiHtFDmGjdt+sGDlQiG6s2QEDG2La7p/gP0FNcdjvdr/fH62D+BPQY2R8NfhSWkZr5ehpF8SrtPF10NQZMRMtc9NomhIVD6AGiS86EYXv6DQsxVYeXTf21ChbzkIvuifcgXGWnouxLkZ+5XIEQD1ymLhmqapMTECSbwn3UrtLK/q3DHbXUGfPSK1BlAe2py7YYvThKJ/ToMe8qQqA3SGu4G57Ar0Fj6sEbq1vwZ70EMmoNLjSFXLr9xSTcYJXa4E5HCiZovxU83PXa+BLEWrtqaw6r/s=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 53d2e6b9-8a1f-4a32-7715-08d74c9c2e33
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Oct 2019 09:36:36.9458
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +rnmy4NrVGDGpidqGaueJ/izqGoOppwQoxJSJA5zuhavb19CTFljIEZNCmL4W7ogxftzZ7Etqb9fiVTYJlYF0g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0402MB3819
+        Wed, 9 Oct 2019 05:51:50 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:35598 "EHLO inva021.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727657AbfJIJvu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 9 Oct 2019 05:51:50 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 6275C2003A5;
+        Wed,  9 Oct 2019 11:51:48 +0200 (CEST)
+Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 452862001C1;
+        Wed,  9 Oct 2019 11:51:42 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 9025E402B1;
+        Wed,  9 Oct 2019 17:51:34 +0800 (SGT)
+From:   Anson Huang <Anson.Huang@nxp.com>
+To:     gregkh@linuxfoundation.org, jslaby@suse.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        rafael.j.wysocki@intel.com, swboyd@chromium.org,
+        andy.shevchenko@gmail.com, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Linux-imx@nxp.com
+Subject: [PATCH V2] tty: serial: imx: Use platform_get_irq_optional() for optional IRQs
+Date:   Wed,  9 Oct 2019 17:49:19 +0800
+Message-Id: <1570614559-11900-1-git-send-email-Anson.Huang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191009093636.OHv5zbYiOIijrodKi6UPJrMX59wzCqAIWOBE28c8kHw@z>
+Content-Type: text/plain; charset="UTF-8"
+Message-ID: <20191009094919.3mISC4CKPeQvxozYCCSdKD5E77HvE5ZqQ-gvxIeiShA@z>
 
-DQoNCj4gT24gV2VkLCBPY3QgMDksIDIwMTkgYXQgMTE6MTI6MjBBTSArMDMwMCwgQW5keSBTaGV2
-Y2hlbmtvIHdyb3RlOg0KPiA+IE9uIFdlZCwgT2N0IDksIDIwMTkgYXQgOTo1MyBBTSBVd2UgS2xl
-aW5lLUvDtm5pZw0KPiA+IDx1LmtsZWluZS1rb2VuaWdAcGVuZ3V0cm9uaXguZGU+IHdyb3RlOg0K
-PiA+DQo+ID4gPiBUaGUgcGF0Y2ggaXMgZmluZSBnaXZlbiB0aGUgY2hhbmdlZCBiZWhhdmlvdXIg
-b2YgcGxhdGZvcm1fZ2V0X2lycS4gSQ0KPiA+ID4gd29uZGVyIGlmIGl0IGlzIHNlbnNpYmxlIHRv
-IGludHJvZHVjZSBhIHZhcmlhbnQgb2YgcGxhdGZvcm1fZ2V0X2lycQ0KPiA+ID4gKHNheQ0KPiA+
-ID4gcGxhdGZvcm1fZ2V0X2lycV9ub3dhcm4pIHRoYXQgYmVoYXZlcyBsaWtlIF9fcGxhdGZvcm1f
-Z2V0X2lycSBkb2VzDQo+ID4gPiB0b2RheS4gVGhlbiB0aGUgaW14IGRyaXZlciB3b3VsZCBqdXN0
-IGNhbGwgcGxhdGZvcm1fZ2V0X2lycV9ub3dhcm4NCj4gPiA+IHdpdGhvdXQgaGF2aW5nIHRvIGNo
-ZWNrIHRoZSBudW1iZXIgb2YgYXZhaWxhYmxlIGlycXMgZmlyc3QuDQo+ID4NCj4gPiBJdCdzIGJl
-aW5nIGRpc2N1c3NlZCBpbiBwYXJhbGxlbCB0aHJlYWQgYWJvdXQNCj4gPiBwbGF0Zm9ybV9nZXRf
-aXJxX29wdGlvbmFsKCkgd2hpY2ggd29uJ3QgaXNzdWUgYSB3YXJuaW5nLg0KPiANCj4gVGhpcyBp
-cyBldmVuIGFscmVhZHkgaW4gNS40LXJjMSBhcw0KPiA4OTczZWE0NzkwMWM4MWExOTEyYmQwNWYx
-NTc3YmVkOWI1YjUyNTA2Lg0KDQpHcmVhdCwgSSB3aWxsIHNlbmQgb3V0IGEgVjIgdXNpbmcgcGxh
-dGZvcm1fZ2V0X2lycV9vcHRpb25hbCgpIGZvciBzZWNvbmQvdGhpcmQgSVJRLg0KDQpUaGFua3Ms
-DQpBbnNvbg0K
+All i.MX SoCs except i.MX1 have ONLY one necessary IRQ, use
+platform_get_irq_optional() to get second/third IRQ which are
+optional to avoid below error message during probe:
+
+[    0.726219] imx-uart 30860000.serial: IRQ index 1 not found
+[    0.731329] imx-uart 30860000.serial: IRQ index 2 not found
+
+Fixes: 7723f4c5ecdb8d83 ("driver core: platform: Add an error message to platform_get_irq*()")
+Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+---
+Changes since V1:
+	- use platform_get_irq_optional() directly instead of getting irq count.
+---
+ drivers/tty/serial/imx.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 504d81c..357d3ff 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -2221,8 +2221,8 @@ static int imx_uart_probe(struct platform_device *pdev)
+ 		return PTR_ERR(base);
+ 
+ 	rxirq = platform_get_irq(pdev, 0);
+-	txirq = platform_get_irq(pdev, 1);
+-	rtsirq = platform_get_irq(pdev, 2);
++	txirq = platform_get_irq_optional(pdev, 1);
++	rtsirq = platform_get_irq_optional(pdev, 2);
+ 
+ 	sport->port.dev = &pdev->dev;
+ 	sport->port.mapbase = res->start;
+-- 
+2.7.4
+
