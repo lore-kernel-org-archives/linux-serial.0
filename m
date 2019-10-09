@@ -1,64 +1,59 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] Documentation: admin-guide: add earlycon documentation
- for the sifive serial driver
-Date: Wed, 9 Oct 2019 08:56:29 +0200
-Message-ID: <CAMuHMdVdPFSU_3VEtO=P73kqLezV5Dmki=N3nxsKibzy-U5pBg@mail.gmail.com>
-References: <alpine.DEB.2.21.9999.1910081606370.11044@viisi.sifive.com>
+From: Anson Huang <anson.huang@nxp.com>
+Subject: RE: [PATCH] tty: serial: imx: Only get second/third IRQ when there is
+ more than one IRQ
+Date: Wed, 9 Oct 2019 06:58:24 +0000
+Message-ID: <DB3PR0402MB39165F9CE876772F8F94F187F5950@DB3PR0402MB3916.eurprd04.prod.outlook.com>
+References: <1570601911-9162-1-git-send-email-Anson.Huang@nxp.com>
+ <20191009065315.wgdvmkv6skteyul4@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <alpine.DEB.2.21.9999.1910081606370.11044@viisi.sifive.com>
+In-Reply-To: <20191009065315.wgdvmkv6skteyul4@pengutronix.de>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Walmsley <paul.walmsley@sifive.com>
-Cc: Jonathan Corbet <corbet@lwn.net>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Andreas Schwab <schwab@suse.de>, Christoph Hellwig <hch@lst.de>
+To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>, Stephen Boyd <swboyd@chromium.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "jslaby@suse.com" <jslaby@suse.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com" <festevam@gmail.com>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Paul,
-
-On Wed, Oct 9, 2019 at 1:09 AM Paul Walmsley <paul.walmsley@sifive.com> wrote:
-> Document earlycon usage for the SiFive serial port driver in the same
-> fashion as for the other serial port IP blocks, since the SiFive
-> serial port driver supports it.
->
-> Signed-off-by: Paul Walmsley <paul.walmsley@sifive.com>
-> Reported-by: Andreas Schwab <schwab@suse.de>
-> Cc: Christoph Hellwig <hch@lst.de>
-
-Thanks for your patch!
-
-Why do you need this?
-I believe risc-v is DT-only, so if chosen/stdout-path is set up, just
-passing "earlycon" (without any options) should work.
-
-> ---
->  Documentation/admin-guide/kernel-parameters.txt | 6 ++++++
->  1 file changed, 6 insertions(+)
->
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index c7ac2f3ac99f..90becb00221b 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -1106,6 +1106,12 @@
->                         address must be provided, and the serial port must
->                         already be setup and configured.
->
-> +               sifive,<addr>
-> +                       Start an early, polled-mode console on a SiFive
-> +                       serial port at the specified address.  The port must
-> +                       already be setup and configured.  Options are not
-> +                       yet supported.
-> +
->         earlyprintk=    [X86,SH,ARM,M68k,S390]
->                         earlyprintk=vga
->                         earlyprintk=sclp
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+SGksIFV3ZQ0KDQo+IE9uIFdlZCwgT2N0IDA5LCAyMDE5IGF0IDAyOjE4OjMxUE0gKzA4MDAsIEFu
+c29uIEh1YW5nIHdyb3RlOg0KPiA+IEFsbCBpLk1YIFNvQ3MgZXhjZXB0IGkuTVgxIGhhdmUgT05M
+WSAxIElSUSwgc28gaXQgaXMgYmV0dGVyIHRvIGNoZWNrDQo+ID4gdGhlIElSUSBjb3VudCBiZWZv
+cmUgZ2V0dGluZyBzZWNvbmQvdGhpcmQgSVJRIHRvIGF2b2lkIGJlbG93IGVycm9yDQo+ID4gbWVz
+c2FnZSBkdXJpbmcgcHJvYmU6DQo+ID4NCj4gPiBbICAgIDAuNzI2MjE5XSBpbXgtdWFydCAzMDg2
+MDAwMC5zZXJpYWw6IElSUSBpbmRleCAxIG5vdCBmb3VuZA0KPiA+IFsgICAgMC43MzEzMjldIGlt
+eC11YXJ0IDMwODYwMDAwLnNlcmlhbDogSVJRIGluZGV4IDIgbm90IGZvdW5kDQo+IA0KPiBUaGlz
+IG1lc3NhZ2Ugd2FzIGludHJvZHVjZWQgaW4gY29tbWl0DQo+IDc3MjNmNGM1ZWNkYjhkODMyZjA0
+OWY4NDgzYmViMGQxMDgxY2VkZjYgZm9yIDUuNC1yYzEuIEkgYWRkZWQgdGhlDQo+IGludm9sdmVk
+IHBlb3BsZSB0byB0aGUgcmVjaXBlbnRzIG9mIHRoaXMgbWFpbC4NCg0KWWVzLCBJIG5vdGljZWQg
+dGhpcywgdGhhbmtzLg0KDQo+IA0KPiA+IFNpZ25lZC1vZmYtYnk6IEFuc29uIEh1YW5nIDxBbnNv
+bi5IdWFuZ0BueHAuY29tPg0KPiA+IC0tLQ0KPiA+ICBkcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMg
+fCAxMyArKysrKysrKysrKy0tDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAxMSBpbnNlcnRpb25zKCsp
+LCAyIGRlbGV0aW9ucygtKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3Nlcmlh
+bC9pbXguYyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9pbXguYyBpbmRleA0KPiA+IDUwNGQ4MWMuLjA4
+MWZhODIgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jDQo+ID4gKysr
+IGIvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jDQo+ID4gQEAgLTIxOTgsNiArMjE5OCw3IEBAIHN0
+YXRpYyBpbnQgaW14X3VhcnRfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZQ0KPiAqcGRldikN
+Cj4gPiAgCXUzMiB1Y3IxOw0KPiA+ICAJc3RydWN0IHJlc291cmNlICpyZXM7DQo+ID4gIAlpbnQg
+dHhpcnEsIHJ4aXJxLCBydHNpcnE7DQo+ID4gKwlpbnQgaXJxX2NvdW50Ow0KPiA+DQo+ID4gIAlz
+cG9ydCA9IGRldm1fa3phbGxvYygmcGRldi0+ZGV2LCBzaXplb2YoKnNwb3J0KSwgR0ZQX0tFUk5F
+TCk7DQo+ID4gIAlpZiAoIXNwb3J0KQ0KPiA+IEBAIC0yMjIwLDkgKzIyMjEsMTcgQEAgc3RhdGlj
+IGludCBpbXhfdWFydF9wcm9iZShzdHJ1Y3QNCj4gcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KPiA+
+ICAJaWYgKElTX0VSUihiYXNlKSkNCj4gPiAgCQlyZXR1cm4gUFRSX0VSUihiYXNlKTsNCj4gPg0K
+PiA+ICsJaXJxX2NvdW50ID0gcGxhdGZvcm1faXJxX2NvdW50KHBkZXYpOw0KPiA+ICsJaWYgKGly
+cV9jb3VudCA8IDApDQo+ID4gKwkJcmV0dXJuIGlycV9jb3VudDsNCj4gPiArDQo+ID4gIAlyeGly
+cSA9IHBsYXRmb3JtX2dldF9pcnEocGRldiwgMCk7DQo+ID4gLQl0eGlycSA9IHBsYXRmb3JtX2dl
+dF9pcnEocGRldiwgMSk7DQo+ID4gLQlydHNpcnEgPSBwbGF0Zm9ybV9nZXRfaXJxKHBkZXYsIDIp
+Ow0KPiA+ICsJaWYgKGlycV9jb3VudCA+IDEpIHsNCj4gPiArCQl0eGlycSA9IHBsYXRmb3JtX2dl
+dF9pcnEocGRldiwgMSk7DQo+ID4gKwkJcnRzaXJxID0gcGxhdGZvcm1fZ2V0X2lycShwZGV2LCAy
+KTsNCj4gPiArCX0gZWxzZSB7DQo+ID4gKwkJdHhpcnEgPSBydHNpcnEgPSAtRU5YSU87DQo+ID4g
+Kwl9DQo+IA0KPiBUaGUgcGF0Y2ggaXMgZmluZSBnaXZlbiB0aGUgY2hhbmdlZCBiZWhhdmlvdXIg
+b2YgcGxhdGZvcm1fZ2V0X2lycS4gSSB3b25kZXINCj4gaWYgaXQgaXMgc2Vuc2libGUgdG8gaW50
+cm9kdWNlIGEgdmFyaWFudCBvZiBwbGF0Zm9ybV9nZXRfaXJxIChzYXkNCj4gcGxhdGZvcm1fZ2V0
+X2lycV9ub3dhcm4pIHRoYXQgYmVoYXZlcyBsaWtlIF9fcGxhdGZvcm1fZ2V0X2lycSBkb2VzIHQN
+Cj4gVGhlbiB0aGUgaW14IGRyaXZlciB3b3VsZCBqdXN0IGNhbGwgcGxhdGZvcm1fZ2V0X2lycV9u
+b3dhcm4gd2l0aG91dCBoYXZpbmcNCj4gdG8gY2hlY2sgdGhlIG51bWJlciBvZiBhdmFpbGFibGUg
+aXJxcyBmaXJzdC4NCg0KQWdyZWVkLCBpdCB3b3VsZCBiZSBuaWNlIGlmIHdlIGNhbiBmaXggdGhp
+cyBmcm9tIHRoZSBBUEkgbGV2ZWwsIHRoaXMgaXMgdG8gc2F2ZSBtYW55IHBhdGNoZXMNCmZyb20g
+dmFyaW91cyBkcml2ZXJzIHNpZGUsIGxldCBtZSBrbm93IGlmIGFncmVlbWVudCBpcyByZWFjaGVk
+IGFuZCBJIHdpbGwgZG8gdGhlIHBhdGNoLg0KDQpUaGFua3MsDQpBbnNvbi4NCg==
