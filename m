@@ -2,121 +2,101 @@ Return-Path: <SRS0=/1L5=YC=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A41C47404
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 14:09:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A7F4ECE58D
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 14:31:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EA31121848
-	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 14:09:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1EB2B218AC
+	for <linux-serial@archiver.kernel.org>; Wed,  9 Oct 2019 14:31:23 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ItHuOga3"
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="htQS7103"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730238AbfJIOJK (ORCPT
+        id S1731434AbfJIObU (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Oct 2019 10:09:10 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:46898 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729883AbfJIOJK (ORCPT
+        Wed, 9 Oct 2019 10:31:20 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:43013 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731083AbfJIObU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Oct 2019 10:09:10 -0400
-Received: by mail-io1-f68.google.com with SMTP id c6so5148905ioo.13;
-        Wed, 09 Oct 2019 07:09:09 -0700 (PDT)
+        Wed, 9 Oct 2019 10:31:20 -0400
+Received: by mail-io1-f67.google.com with SMTP id v2so5378579iob.10
+        for <linux-serial@vger.kernel.org>; Wed, 09 Oct 2019 07:31:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WrZAk5gJkER1O1xn2TCucF4dEQP6LH4cuHnhethSJ8M=;
-        b=ItHuOga3a0OFHONWEPlKRcF5GP+jCkkvEjryppl8BJ8T5PIdxFMrWrT5UTLk5uy83g
-         5OCtgnfkD45s3QNWiV9VXifVJKgc4MVZk7OCN8YYk5+n/tO/GCZQOlbp07EjVaQTeJ7B
-         l5K1vBtEaTyy/6aad+Fkc9HCzCa36sg5CZ8Cp6SeS69iQuVpkoSW9nyePKlQ/RvI/92n
-         JtYgdXEDo0Ot8wEC28eYJGpgm2O+3YLxJVYMlMOe7MVuXg2O+08Q2PQdIiu8ZihNX/eJ
-         Iu4oJlsa2gpQ7Dh9R3UEkO7684Ha862Hr66jV7E+E9zui0mE7uFLCMUHnb6uh4+ZQw/V
-         W4GA==
+        d=sifive.com; s=google;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :user-agent:mime-version;
+        bh=pKB7Ijnwk47zF1Sui8uqCszhqTFAlw2ztEvx8myXms8=;
+        b=htQS71038oSKVcTiOiVBOPZdKlFBEupsi5wTlAWKgcmpPZsoGM+chhV5THF95PQDNU
+         0/0Z2dbhHOSz6tOXL1Yl5rrkVlFrJksyHWU0SyopxFJpF7f8SbQ/Kb9WqvJm3njgsWIT
+         HInMDSyhVGUD1TmbdaXL84YyIKOcLKkDHiyNE8Zz3pZ/85bOpTHJJYC1Ll+vUsmqF1T7
+         TGPR2iFI4IKoj8vtpa6x2DQGg/8a/Fr9v2oMHrHeFRpK7X40bVdS8zmotwCkGZnzyRE8
+         OFgih4WKih5Cx9AUvmozvkzfQqPbJj2uKDV2r1JpciuQiC0E4JVJWyh1Y9OW5/hqWiik
+         sOMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WrZAk5gJkER1O1xn2TCucF4dEQP6LH4cuHnhethSJ8M=;
-        b=PW3A0k51Zhf+uRAVAzI57KigqxmJ7UIiUTGvjBowua9tmGBEwCStU/iuVUwDu559xN
-         /tAGSKd2x0iLp09/GdrFBCCI99i/TFh6O7+q0QkyJArI7VPaZhWpOKEfZEIvxBEVLD48
-         lGCREr288CNnVLhvlaZ68A2M7OgPPAyt/d1E8HkHTbSHMYsC3YzA2UKM3a84EIf7EDmb
-         i5a40fHO1Rb2RtcZ7aJiJeA81FNA5EC25AfZjHKLIgpBTqX/JMUy8drNCWqZrjnskRf+
-         yDYWgTxh3d1vl9zgcS3ugYYBBw3PMnV2iJ547uOSACSrcDQsQABQXp/5+VDbO4XY7YdZ
-         Yjrg==
-X-Gm-Message-State: APjAAAVrhm3ZzmUo8vQqbSVJ+GfIKqVHYt1PHbKk/2fepvBOK8a23AjL
-        iPOl5HAhGA2vyaZ2uVYlfVsgtC4ipfsRI6XzSJI=
-X-Google-Smtp-Source: APXvYqydLUN9gXf0yzgt77Zbc8y4VKX5W7xoCP1U5BA0C169qM9cU6AyjGMeW1wmLxpllA1iM/VBGRA6ZSvHF9wowLw=
-X-Received: by 2002:a02:a11e:: with SMTP id f30mr3223182jag.95.1570630148852;
- Wed, 09 Oct 2019 07:09:08 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:user-agent:mime-version;
+        bh=pKB7Ijnwk47zF1Sui8uqCszhqTFAlw2ztEvx8myXms8=;
+        b=re2HOuHiX9kht4O3IC5cy8IOPbNm2Ecv3yUU3YWZW4h5AH8uXj+le259Nt/ogKp2LP
+         sZjsSDVrxRJO/VMl8RDuDP9rVpdKXgdZ+M4zzjlfTnrQVjR3o+6yWBqC++wYz40StH19
+         Hg0bJXmtLyHceoy/4p9XUPD/FrAwIgrMsjqIhmTNyqaxXjgblDWQibiolIOPQf0L/uzK
+         eGbNSMeY2JaeZXGnVsSAhSo/hwTwdPK5/PWvEeh8VhlDIMgfKPkMMd8rEuGnWsID2IwL
+         ya7syunNXHQfPAWLCqH+jyF9U3+DRtKvVddkzsEfKndih0dvPeO9N/69Q/1QwWNd8hK2
+         qsLA==
+X-Gm-Message-State: APjAAAUKSe7GxO+IMNe0u1T55ZA6cRIAKf+ITQv40uTraMHAt3R5xTLI
+        jAI218ueYy4mWbfcog1mts7HZw==
+X-Google-Smtp-Source: APXvYqxbDM6b4U2rzv0BGL/QF62gtvZXMwLwAcbvx/3w5WEHhaoahcynYrpIG1KyHIdJKvv4G99y9Q==
+X-Received: by 2002:a02:a156:: with SMTP id m22mr3333754jah.62.1570631479110;
+        Wed, 09 Oct 2019 07:31:19 -0700 (PDT)
+Received: from localhost ([64.62.168.194])
+        by smtp.gmail.com with ESMTPSA id x12sm1044888ioh.76.2019.10.09.07.31.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Oct 2019 07:31:18 -0700 (PDT)
+Date:   Wed, 9 Oct 2019 07:31:16 -0700 (PDT)
+From:   Paul Walmsley <paul.walmsley@sifive.com>
+X-X-Sender: paulw@viisi.sifive.com
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+cc:     Andreas Schwab <schwab@suse.de>, Jonathan Corbet <corbet@lwn.net>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH] Documentation: admin-guide: add earlycon documentation
+ for the sifive serial driver
+In-Reply-To: <CAMuHMdVh=CUXKwnXee067cRccVBDVuwWpo1wP7crAaCFA=y2Tw@mail.gmail.com>
+Message-ID: <alpine.DEB.2.21.9999.1910090720290.11044@viisi.sifive.com>
+References: <alpine.DEB.2.21.9999.1910081606370.11044@viisi.sifive.com> <CAMuHMdVdPFSU_3VEtO=P73kqLezV5Dmki=N3nxsKibzy-U5pBg@mail.gmail.com> <mvmv9syz10h.fsf@suse.de> <CAMuHMdVh=CUXKwnXee067cRccVBDVuwWpo1wP7crAaCFA=y2Tw@mail.gmail.com>
+User-Agent: Alpine 2.21.9999 (DEB 301 2018-08-15)
 MIME-Version: 1.0
-References: <CAHCN7x+oXNA6WRiq1OnDdcgDTJrm-QyazyYLw-ow0vPMMmrVbQ@mail.gmail.com>
- <3d5b3a12-a21c-f464-e7d1-252ccd768ff8@ti.com>
-In-Reply-To: <3d5b3a12-a21c-f464-e7d1-252ccd768ff8@ti.com>
-From:   Adam Ford <aford173@gmail.com>
-Date:   Wed, 9 Oct 2019 09:08:57 -0500
-Message-ID:
- <CAHCN7xJDS_NwT8VZbOQgsA6iHkeTLt4UrR2vFmzkCtWYCYzQrg@mail.gmail.com>
-Subject: Re: Serial 8250 DMA Broken on OMAP3630
-To:     Vignesh Raghavendra <vigneshr@ti.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Douglas Anderson <dianders@chromium.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Yegor Yefremov <yegorslists@googlemail.com>,
-        linux-serial@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191009140857.G6gOMGaMcbm-VU68buaygUn-64jIvwf7fUfbdRcuhyo@z>
+Message-ID: <20191009143116.fWKP_re1hX-IXogyyP8LWtVZlHVxofH1gwFYsMSIUyM@z>
 
-On Wed, Oct 9, 2019 at 8:42 AM Vignesh Raghavendra <vigneshr@ti.com> wrote:
->
-> Hi Adam,
->
-> On 06/10/19 10:34 PM, Adam Ford wrote:
-> > Has anyone else had any issues using the CONFIG_SERIAL_8250_DMA on the OMAP?
-> >
-> > I can use the DMA on the legacy, omap-serial driver, but when I enable
-> > the DMA on the 8250-omap driver, I get missing frames in Bluetooth.
-> >
-> > The older driver seems to have an ISR that seems to address a variety
-> > of items compared to the very tiny ISR for 8250-omap.c.
-> >
-> > I am not exactly sure where to start, but if someone has any
-> > suggestions on how I can troubleshoot, please let me know.  As of now,
-> > I have to disable CONFIG_SERIAL_8250_DMA to get the Bluetooth
-> > connected to UART2 operational on a DM3730 at 3,000,000 baud, but it
-> > appears to work just fine after some patches I just submitted for
-> > handling RTS/CTS.  The legacy omap-serial driver works fine with DMA.
-> >
->
-> Mainline omap-serial does not support DMA (evident from lack of
-> dmaengine API calls) and therefore is not a regression. So OMAP3 UART
-> DMA was never tested at least with 8250 driver.
-> I am not sure enabling UART DMA on OMAP3 would be a trivial job. We need
-> analyse of whether all erratas workarounds are implemented and see if
-> there any difference wrt DMA integration itself. Do we know if UART DMA
-> ever worked on OMAP3 previously?
+Hi Geert,
 
-Can we disable CONFIG_SERIAL_8250_DMA from omap2plus_defconfig?   As
-of right now, it's the only way I can use the Bluetooth.  There are
-#ifdef's in the 8250-omap driver, so it looks like some of the hooks
-are there, but if it's incomplete, it seems like we shouldn't enable
-this config option by default yet.
+On Wed, 9 Oct 2019, Geert Uytterhoeven wrote:
 
-adam
->
-> > adam
+> On Wed, Oct 9, 2019 at 12:06 PM Andreas Schwab <schwab@suse.de> wrote:
+> > On Okt 09 2019, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > > I believe risc-v is DT-only, so if chosen/stdout-path is set up
 > >
->
-> --
-> Regards
-> Vignesh
+> > If.  Currently, it isn't.
+> 
+> IC. So isn't it better to fix that, instead of pointing people to more obscure
+> legacy solutions?
+
+There's nothing that's RISC-V specific about the SiFive serial IP or 
+its driver.  So the issue of whether RISC-V is DT-only or not probably 
+shouldn't impact whether we document that the SiFive serial driver 
+supports earlycon.
+
+best regards,
+
+- Paul
