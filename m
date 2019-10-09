@@ -1,58 +1,36 @@
-From: Adam Ford <aford173@gmail.com>
-Subject: Re: Serial 8250 DMA Broken on OMAP3630
-Date: Wed, 9 Oct 2019 09:08:57 -0500
-Message-ID: <CAHCN7xJDS_NwT8VZbOQgsA6iHkeTLt4UrR2vFmzkCtWYCYzQrg@mail.gmail.com>
-References: <CAHCN7x+oXNA6WRiq1OnDdcgDTJrm-QyazyYLw-ow0vPMMmrVbQ@mail.gmail.com>
- <3d5b3a12-a21c-f464-e7d1-252ccd768ff8@ti.com>
+From: Paul Walmsley <paul.walmsley@sifive.com>
+Subject: Re: [PATCH] Documentation: admin-guide: add earlycon documentation
+ for the sifive serial driver
+Date: Wed, 9 Oct 2019 07:31:16 -0700 (PDT)
+Message-ID: <alpine.DEB.2.21.9999.1910090720290.11044@viisi.sifive.com>
+References: <alpine.DEB.2.21.9999.1910081606370.11044@viisi.sifive.com> <CAMuHMdVdPFSU_3VEtO=P73kqLezV5Dmki=N3nxsKibzy-U5pBg@mail.gmail.com> <mvmv9syz10h.fsf@suse.de> <CAMuHMdVh=CUXKwnXee067cRccVBDVuwWpo1wP7crAaCFA=y2Tw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <3d5b3a12-a21c-f464-e7d1-252ccd768ff8@ti.com>
+In-Reply-To: <CAMuHMdVh=CUXKwnXee067cRccVBDVuwWpo1wP7crAaCFA=y2Tw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vignesh Raghavendra <vigneshr@ti.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Douglas Anderson <dianders@chromium.org>, Tony Lindgren <tony@atomide.com>, Yegor Yefremov <yegorslists@googlemail.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Andreas Schwab <schwab@suse.de>, Jonathan Corbet <corbet@lwn.net>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Christoph Hellwig <hch@lst.de>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, Oct 9, 2019 at 8:42 AM Vignesh Raghavendra <vigneshr@ti.com> wrote:
->
-> Hi Adam,
->
-> On 06/10/19 10:34 PM, Adam Ford wrote:
-> > Has anyone else had any issues using the CONFIG_SERIAL_8250_DMA on the OMAP?
-> >
-> > I can use the DMA on the legacy, omap-serial driver, but when I enable
-> > the DMA on the 8250-omap driver, I get missing frames in Bluetooth.
-> >
-> > The older driver seems to have an ISR that seems to address a variety
-> > of items compared to the very tiny ISR for 8250-omap.c.
-> >
-> > I am not exactly sure where to start, but if someone has any
-> > suggestions on how I can troubleshoot, please let me know.  As of now,
-> > I have to disable CONFIG_SERIAL_8250_DMA to get the Bluetooth
-> > connected to UART2 operational on a DM3730 at 3,000,000 baud, but it
-> > appears to work just fine after some patches I just submitted for
-> > handling RTS/CTS.  The legacy omap-serial driver works fine with DMA.
-> >
->
-> Mainline omap-serial does not support DMA (evident from lack of
-> dmaengine API calls) and therefore is not a regression. So OMAP3 UART
-> DMA was never tested at least with 8250 driver.
-> I am not sure enabling UART DMA on OMAP3 would be a trivial job. We need
-> analyse of whether all erratas workarounds are implemented and see if
-> there any difference wrt DMA integration itself. Do we know if UART DMA
-> ever worked on OMAP3 previously?
+Hi Geert,
 
-Can we disable CONFIG_SERIAL_8250_DMA from omap2plus_defconfig?   As
-of right now, it's the only way I can use the Bluetooth.  There are
-#ifdef's in the 8250-omap driver, so it looks like some of the hooks
-are there, but if it's incomplete, it seems like we shouldn't enable
-this config option by default yet.
+On Wed, 9 Oct 2019, Geert Uytterhoeven wrote:
 
-adam
->
-> > adam
+> On Wed, Oct 9, 2019 at 12:06 PM Andreas Schwab <schwab@suse.de> wrote:
+> > On Okt 09 2019, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > > I believe risc-v is DT-only, so if chosen/stdout-path is set up
 > >
->
-> --
-> Regards
-> Vignesh
+> > If.  Currently, it isn't.
+> 
+> IC. So isn't it better to fix that, instead of pointing people to more obscure
+> legacy solutions?
+
+There's nothing that's RISC-V specific about the SiFive serial IP or 
+its driver.  So the issue of whether RISC-V is DT-only or not probably 
+shouldn't impact whether we document that the SiFive serial driver 
+supports earlycon.
+
+best regards,
+
+- Paul
