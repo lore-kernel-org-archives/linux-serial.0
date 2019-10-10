@@ -1,75 +1,51 @@
-From: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Subject: Re: [PATCH v8 3/5] mfd: ioc3: Add driver for SGI IOC3 chip
-Date: Thu, 10 Oct 2019 15:29:49 +0200
-Message-ID: <20191010152949.f5049c2728beffa38f07c924@suse.de>
-References: <20191009101713.12238-1-tbogendoerfer@suse.de>
-        <20191009101713.12238-4-tbogendoerfer@suse.de>
-        <20191009201714.19296e3f@cakuba.netronome.com>
+From: Adam Ford <aford173@gmail.com>
+Subject: Re: Serial 8250 DMA Broken on OMAP3630
+Date: Thu, 10 Oct 2019 09:11:29 -0500
+Message-ID: <CAHCN7x+B5nw=muPPTXAv+Pwx69bJSmi2jZhC68fA=rtN7=ELoA@mail.gmail.com>
+References: <CAHCN7x+oXNA6WRiq1OnDdcgDTJrm-QyazyYLw-ow0vPMMmrVbQ@mail.gmail.com>
+ <3d5b3a12-a21c-f464-e7d1-252ccd768ff8@ti.com> <CAHCN7xJDS_NwT8VZbOQgsA6iHkeTLt4UrR2vFmzkCtWYCYzQrg@mail.gmail.com>
+ <20191009173446.GL5610@atomide.com> <CAHCN7xJYJ7f3b9D+tMw=f4zda8H=NyNV4UdeT+65MJxrcu3bkg@mail.gmail.com>
+ <20191009201612.GQ5610@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8BIT
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <20191009201714.19296e3f@cakuba.netronome.com>
-Sender: netdev-owner@vger.kernel.org
-To: Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc: Jonathan Corbet <corbet@lwn.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20191009201612.GQ5610@atomide.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: Vignesh Raghavendra <vigneshr@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Douglas Anderson <dianders@chromium.org>, Yegor Yefremov <yegorslists@googlemail.com>, linux-serial@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
-On Wed, 9 Oct 2019 20:17:14 -0700
-Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
+On Wed, Oct 9, 2019 at 3:16 PM Tony Lindgren <tony@atomide.com> wrote:
+>
+> * Adam Ford <aford173@gmail.com> [191009 19:28]:
+> > On Wed, Oct 9, 2019 at 12:34 PM Tony Lindgren <tony@atomide.com> wrote:
+> > > From what I recall I tested that DMA on omap3 worked fine with runtime
+> > > PM for console. Certainly there are issues still remaining though.
+> > >
+> > > If you want to disable dma for a specific port, just delete the
+> > > add /delete-property/dma-names for the port in question in your
+> > > board specific dts file.
+> > >
+> > > See 8250_omap.c for of_property_count_strings(np, "dma-names").
+> >
+> > Thank you.  That seems to have worked.  I'll check the AM3517 when I
+> > have some time to see if it needs the same patch.  For now, I pushed
+> > the patch to the omap mailing list for the Logic PD Torpedo board.
+> >
+> > Should we consider removing the OMAP_SERIAL from omap2plus_defconfig
+> > in the 8250 is the preferred driver?  It seems odd to me that both
+> > drivers are enabled.
+>
+> We have CONFIG_SERIAL_8250_OMAP=y and by default also we have
+> CONFIG_SERIAL_8250_OMAP_TTYO_FIXUP=y. With those omap_serial
+> won't probe.. So yeah I guess for v5.5 we could drop the
+> option for CONFIG_SERIAL_OMAP for both omap2plus_defconfig and
+> multi_v7_defconfig.
 
-> On Wed,  9 Oct 2019 12:17:10 +0200, Thomas Bogendoerfer wrote:
-> [...]
-> > +static int ioc3_cad_duo_setup(struct ioc3_priv_data *ipd)
-> > +{
-> > +	int ret;
-> > +
-> > +	ret = ioc3_irq_domain_setup(ipd, ipd->pdev->irq);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	ret = ioc3_eth_setup(ipd, true);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	return ioc3_kbd_setup(ipd);
-> > +}
-> 
-> None of these setup calls have a "cleanup" or un-setup call. Is this
-> really okay? I know nothing about MFD, but does mfd_add_devices() not
-> require a remove for example? Doesn't the IRQ handling need cleanup?
+Do you want me to push a patch for that, or is that something you want to do?
 
-good catch, I'll add that.
-
-> > +	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-> > +	if (ret) {
-> > +		dev_warn(&pdev->dev,
-> > +			 "Failed to set 64-bit DMA mask, trying 32-bit\n");
-> > +		ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-> > +		if (ret) {
-> > +			dev_err(&pdev->dev, "Can't set DMA mask, aborting\n");
-> > +			return ret;
-> 
-> So failing here we don't care about disabling the pci deivce..
-
-fixed in the next version.
-
-> > +
-> > +	/*
-> > +	 * Map all IOC3 registers.  These are shared between subdevices
-> > +	 * so the main IOC3 module manages them.
-> > +	 */
-> > +	regs = pci_ioremap_bar(pdev, 0);
-> 
-> This doesn't seem unmapped on error paths, nor remove?
-
-will fix.
-
-Thank you for the review.
-
-Thomas.
-
--- 
-SUSE Software Solutions Germany GmbH
-HRB 247165 (AG München)
-Geschäftsführer: Felix Imendörffer
+adam
+>
+> Regards,
+>
+> Tony
