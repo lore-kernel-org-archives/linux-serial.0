@@ -2,144 +2,138 @@ Return-Path: <SRS0=h7F0=YD=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC3C1ECE58E
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Oct 2019 16:37:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E416BECE58D
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Oct 2019 16:52:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8695320B7C
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Oct 2019 16:37:20 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=cogentembedded-com.20150623.gappssmtp.com header.i=@cogentembedded-com.20150623.gappssmtp.com header.b="MStOefh8"
+	by mail.kernel.org (Postfix) with ESMTP id CA59D218AC
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Oct 2019 16:52:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726332AbfJJQhU (ORCPT
+        id S1726703AbfJJQwg (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Oct 2019 12:37:20 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:45896 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726299AbfJJQhU (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Oct 2019 12:37:20 -0400
-Received: by mail-lj1-f193.google.com with SMTP id q64so6853974ljb.12
-        for <linux-serial@vger.kernel.org>; Thu, 10 Oct 2019 09:37:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:references:from:organization:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yfyOriptMBDiaNAXMAHeFqoD+N162h27NUaqIbiMn8g=;
-        b=MStOefh8juSpz0SHnnQad09QT4Fa6DBUzzsFT+0kynCLK95vCaQjDcLVS5v/xzigeU
-         qCpyG75sS7RxMUxZmmOhdOl/epXfJeRXXOfrA4nvR6kFbjPVCgFF5evbfVSP37qQYDxS
-         fUfhRHIyYZrsNsXMHDHxL4hZCXSQD0rD3FYGQzoGBdIjSAdGPgN/CndJNspJ5TzDDt/V
-         8+qfJjBselXWOwch9wHOBIMAbn0EM7xsyXfWJ/thT94GFR5K4sF+VRWYQS6DzF1vJIP6
-         xnmDEvdwh7CsQgLndLAdyoT8cjr1XKTH1qVG3y9nHq3AYOlQ6yv2IxOHCjUIx8V4D+Gg
-         6lxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=yfyOriptMBDiaNAXMAHeFqoD+N162h27NUaqIbiMn8g=;
-        b=pFHdF3vSkLz8QvMj7LmjQhj6l76roXcGAoQmfR/o+ZwxanF1I7fEoNG95LAw1PPYb/
-         60KDDE88YsDuQYXBJkH/P3PQelUWzjTFkmfBrIuu15L0J3EqCt94aj/l4OxohWqrfDGF
-         DcrkW7Z61WGkeB0Th3PVGHCOflVqTvSWEg9Fx5mz79f+lSn8y09xdnTnG0Healrc1YCT
-         b8hLANqRYzWOHKGJyYEETme31pSCT10hLyVL0bQ4IliX+OywfKv/ODQsXmuDTEMh/6o8
-         igZ3m9YjTwCGLcV8Rg2EX80SffxKvXSOT0mGXN3AVfEsAJj+B80Dtj+PuSD1Q7QreZcC
-         4oSA==
-X-Gm-Message-State: APjAAAXhA8WMoCLx/1UIHs0Y0cMy5fhjWgo3LJ8HCGmnRXYjmDcCKw2o
-        Bmpzw7GuS1IArXCjlbJBSYDVs1o2ZB8=
-X-Google-Smtp-Source: APXvYqxQzg7PeYXEqZES/u8aJpwejbzcaBWpM2ZrtmNSR43Do+7YWdlXHee3xVamjDLKq3Nb1NVijA==
-X-Received: by 2002:a2e:9119:: with SMTP id m25mr6930040ljg.106.1570725438077;
-        Thu, 10 Oct 2019 09:37:18 -0700 (PDT)
-Received: from wasted.cogentembedded.com ([2a00:1fa0:46de:289:1600:123:1371:e3f7])
-        by smtp.gmail.com with ESMTPSA id b20sm1328867ljo.106.2019.10.10.09.37.16
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 10 Oct 2019 09:37:17 -0700 (PDT)
-Subject: Re: [PATCH v9 5/5] MIPS: SGI-IP27: Enable ethernet phy on second
- Origin 200 module
-To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-References: <20191010145953.21327-1-tbogendoerfer@suse.de>
- <20191010145953.21327-6-tbogendoerfer@suse.de>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Organization: Cogent Embedded
-Message-ID: <102db20a-0c37-3e28-2d14-e9c6eaa55f5c@cogentembedded.com>
-Date:   Thu, 10 Oct 2019 19:37:15 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.1
-MIME-Version: 1.0
-In-Reply-To: <20191010145953.21327-6-tbogendoerfer@suse.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Language: en-MW
-Content-Transfer-Encoding: 7bit
+        Thu, 10 Oct 2019 12:52:36 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:46580 "EHLO inva021.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726276AbfJJQwe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 10 Oct 2019 12:52:34 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 5980D2001FA;
+        Thu, 10 Oct 2019 18:52:31 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 4A089200076;
+        Thu, 10 Oct 2019 18:52:31 +0200 (CEST)
+Received: from fsr-ub1664-026.ea.freescale.net (fsr-ub1664-026.ea.freescale.net [10.171.81.59])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id A18A6205FA;
+        Thu, 10 Oct 2019 18:52:30 +0200 (CEST)
+From:   Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+To:     corbet@lwn.net, robh+dt@kernel.org, mark.rutland@arm.com,
+        gregkh@linuxfoundation.org, catalin.marinas@arm.com,
+        will@kernel.org, shawnguo@kernel.org, leoyang.li@nxp.com
+Cc:     jslaby@suse.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v6 3/5] serial: fsl_linflexuart: Be consistent with the name
+Date:   Thu, 10 Oct 2019 19:52:26 +0300
+Message-Id: <1570726348-6420-4-git-send-email-stefan-gabriel.mirea@nxp.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1570726348-6420-1-git-send-email-stefan-gabriel.mirea@nxp.com>
+References: <1570726348-6420-1-git-send-email-stefan-gabriel.mirea@nxp.com>
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191010163715.l2or5ClJpGs4aoyXHfpMdfsw7qaIjKMhLqmywTp_Qk0@z>
+Content-Type: text/plain; charset="UTF-8"
+Message-ID: <20191010165226.vaiHdcSCVpBOHVLDjTuZH2vAelDbYnIjPA-zB8yhYtY@z>
 
-On 10/10/2019 05:59 PM, Thomas Bogendoerfer wrote:
+For consistency reasons, spell the controller name as "LINFlexD" in
+comments and documentation.
 
-> PROM only enables ethernet PHY on first Origin 200 module, so we must
-> do it ourselves for the second module.
-> 
-> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-> ---
->  arch/mips/pci/pci-ip27.c | 22 ++++++++++++++++++++++
->  1 file changed, 22 insertions(+)
-> 
-> diff --git a/arch/mips/pci/pci-ip27.c b/arch/mips/pci/pci-ip27.c
-> index 441eb9383b20..7cc784cb299b 100644
-> --- a/arch/mips/pci/pci-ip27.c
-> +++ b/arch/mips/pci/pci-ip27.c
-> @@ -7,6 +7,11 @@
->   * Copyright (C) 1999, 2000, 04 Ralf Baechle (ralf@linux-mips.org)
->   * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
->   */
-> +#include <asm/sn/addrs.h>
-> +#include <asm/sn/types.h>
-> +#include <asm/sn/klconfig.h>
-> +#include <asm/sn/hub.h>
-> +#include <asm/sn/ioc3.h>
->  #include <asm/pci/bridge.h>
->  
->  dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-> @@ -31,3 +36,20 @@ int pcibus_to_node(struct pci_bus *bus)
->  }
->  EXPORT_SYMBOL(pcibus_to_node);
->  #endif /* CONFIG_NUMA */
-> +
-> +static void ip29_fixup_phy(struct pci_dev *dev)
-> +{
-> +	int nasid = pcibus_to_node(dev->bus);
-> +	u32 sid;
-> +
-> +	if (nasid != 1)
-> +		return; /* only needed on second module */
-> +
-> +	/* enable ethernet PHY on IP29 systemboard */
-> +	pci_read_config_dword(dev, PCI_SUBSYSTEM_VENDOR_ID, &sid);
-> +	if (sid == ((PCI_VENDOR_ID_SGI << 16) | IOC3_SUBSYS_IP29_SYSBOARD))
+Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+---
+ Documentation/admin-guide/kernel-parameters.txt | 2 +-
+ drivers/tty/serial/Kconfig                      | 8 ++++----
+ drivers/tty/serial/fsl_linflexuart.c            | 4 ++--
+ include/uapi/linux/serial_core.h                | 2 +-
+ 4 files changed, 8 insertions(+), 8 deletions(-)
 
-   I thought PCI was little endian, thuis vendor ID at offset 0 and device ID
-at offset 2?
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index c7ac2f3ac99f..666326d74415 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -1101,7 +1101,7 @@
+ 			mapped with the correct attributes.
+ 
+ 		linflex,<addr>
+-			Use early console provided by Freescale LinFlex UART
++			Use early console provided by Freescale LINFlexD UART
+ 			serial driver for NXP S32V234 SoCs. A valid base
+ 			address must be provided, and the serial port must
+ 			already be setup and configured.
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 4789b5d62f63..c8e11f62ea19 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1391,19 +1391,19 @@ config SERIAL_FSL_LPUART_CONSOLE
+ 	  you can make it the console by answering Y to this option.
+ 
+ config SERIAL_FSL_LINFLEXUART
+-	tristate "Freescale linflexuart serial port support"
++	tristate "Freescale LINFlexD UART serial port support"
+ 	depends on PRINTK
+ 	select SERIAL_CORE
+ 	help
+-	  Support for the on-chip linflexuart on some Freescale SOCs.
++	  Support for the on-chip LINFlexD UART on some Freescale SOCs.
+ 
+ config SERIAL_FSL_LINFLEXUART_CONSOLE
+-	bool "Console on Freescale linflexuart serial port"
++	bool "Console on Freescale LINFlexD UART serial port"
+ 	depends on SERIAL_FSL_LINFLEXUART=y
+ 	select SERIAL_CORE_CONSOLE
+ 	select SERIAL_EARLYCON
+ 	help
+-	  If you have enabled the linflexuart serial port on the Freescale
++	  If you have enabled the LINFlexD UART serial port on the Freescale
+ 	  SoCs, you can make it the console by answering Y to this option.
+ 
+ config SERIAL_CONEXANT_DIGICOLOR
+diff --git a/drivers/tty/serial/fsl_linflexuart.c b/drivers/tty/serial/fsl_linflexuart.c
+index 68d74f2b5106..2d39e13176e1 100644
+--- a/drivers/tty/serial/fsl_linflexuart.c
++++ b/drivers/tty/serial/fsl_linflexuart.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0-or-later
+ /*
+- * Freescale linflexuart serial port driver
++ * Freescale LINFlexD UART serial port driver
+  *
+  * Copyright 2012-2016 Freescale Semiconductor, Inc.
+  * Copyright 2017-2018 NXP
+@@ -933,5 +933,5 @@ static void __exit linflex_serial_exit(void)
+ module_init(linflex_serial_init);
+ module_exit(linflex_serial_exit);
+ 
+-MODULE_DESCRIPTION("Freescale linflex serial port driver");
++MODULE_DESCRIPTION("Freescale LINFlexD serial port driver");
+ MODULE_LICENSE("GPL v2");
+diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+index 0f4f87a6fd54..49e61963e754 100644
+--- a/include/uapi/linux/serial_core.h
++++ b/include/uapi/linux/serial_core.h
+@@ -290,7 +290,7 @@
+ /* Sunix UART */
+ #define PORT_SUNIX	121
+ 
+-/* Freescale Linflex UART */
++/* Freescale LINFlexD UART */
+ #define PORT_LINFLEXUART	121
+ 
+ #endif /* _UAPILINUX_SERIAL_CORE_H */
+-- 
+2.22.0
 
-[...]
-
-MBR, Sergei
