@@ -2,360 +2,256 @@ Return-Path: <SRS0=h7F0=YD=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA344C4360C
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Oct 2019 03:17:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A2F4C4360C
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Oct 2019 08:59:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AAFB92086D
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Oct 2019 03:17:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 544042190F
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Oct 2019 08:59:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=netronome-com.20150623.gappssmtp.com header.i=@netronome-com.20150623.gappssmtp.com header.b="b/kwKX2g"
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="XwHGMQYu";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="fLEX2doG"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732688AbfJJDRa (ORCPT
+        id S2388900AbfJJIoP (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 9 Oct 2019 23:17:30 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:46918 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732657AbfJJDRa (ORCPT
+        Thu, 10 Oct 2019 04:44:15 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:53986 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387593AbfJJIoP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 9 Oct 2019 23:17:30 -0400
-Received: by mail-pg1-f196.google.com with SMTP id b8so2698539pgm.13
-        for <linux-serial@vger.kernel.org>; Wed, 09 Oct 2019 20:17:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=kY/bVM8NPPhWM5n5R/JBXuhfZP0mLRdPFxKvulfxjhE=;
-        b=b/kwKX2g8z5tQN7+hqOe5cv2MC4W999X9JBTtnsuv3jUrBD2IgpLD44BkXwS89jJI2
-         FLqDniJeEUDDc/zQfcWZFOmWgPu2g0VBMBrHzrQtMC/hm9g1fTaVq+3XqiMnj0fhaX2n
-         Bz6uTXTvKzAnEU263FeXzVs68O3EDz85BnQCnXVLpdX7SaKjOQz6NOXArlqUivDzVkys
-         4FsPNsGQRIb0i8W2oBiRKOXmiM89w72HUpALWggVVsQljAwfTm7h4sNXL6hQp7jEv/K5
-         5zEfMleJLkwvM2vzTeChPQXF2fgTDmU8yaeNW5hS7Hxb9OphWsIQsmsxypmvgGbecXnj
-         lInw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=kY/bVM8NPPhWM5n5R/JBXuhfZP0mLRdPFxKvulfxjhE=;
-        b=qIXZrZgM9fbObtqksAbQaCrcOAzrEGdxHSEwyGpmjleFd/jq3ejPiaK2jQGInFxHob
-         ewXatGu9wxf/R1hQR8Nhh8ZrLcR+AT6yoAF5vTowyn6RP/SkcvABgbN1s1f7Na2x1gQC
-         j4OBypRCCa3grWzHegeiw9JW/CKERp26vD9uX4+vN8Q5jO6qrMOW+bimt7jELrmygJOA
-         m8eBvbHWGWEWs0oc9t8gDHh6I/A6r4ZTsw776sCg24EaerMMB6zv0uTXRdtJBykPwln3
-         Xpyt875XT9qCCMWPJOT+Q4cqGG1Movu2Um13lO9Y/lHrZqU0WLzM5tnaRm2aFyEf6MtA
-         AtUg==
-X-Gm-Message-State: APjAAAVu8YLrspVX5HsIL9k2fjDQ4FYVVWc1uUAvQ4nm5TY7sD7yGHh5
-        bgxmR7LtsAsnY6C2azpfDPZsupAAvlM=
-X-Google-Smtp-Source: APXvYqxt0g28r+WeOzUj3UUiSa6duhn4yPHsl+IVBqo3qzlng2jdfRfrxmVchTG8XnNUuQvQ4Xh9nQ==
-X-Received: by 2002:a17:90a:195d:: with SMTP id 29mr8564999pjh.130.1570677448982;
-        Wed, 09 Oct 2019 20:17:28 -0700 (PDT)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id s21sm3861589pgv.37.2019.10.09.20.17.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Oct 2019 20:17:28 -0700 (PDT)
-Date:   Wed, 9 Oct 2019 20:17:14 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v8 3/5] mfd: ioc3: Add driver for SGI IOC3 chip
-Message-ID: <20191009201714.19296e3f@cakuba.netronome.com>
-In-Reply-To: <20191009101713.12238-4-tbogendoerfer@suse.de>
-References: <20191009101713.12238-1-tbogendoerfer@suse.de>
-        <20191009101713.12238-4-tbogendoerfer@suse.de>
-Organization: Netronome Systems, Ltd.
+        Thu, 10 Oct 2019 04:44:15 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 9C4166110F; Thu, 10 Oct 2019 08:44:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1570697053;
+        bh=UDhKVkz9QY0QGvMmnBlutkzlXc66C4GbTuW0RB9n/1w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XwHGMQYup3q6hldfwXVxCPlhzQEYoYZxtFYduY0lcR3Xm8iUd2zfvCPi5oGkYZzFP
+         qSGyKjZ9A81q9h08zOMmh7XSDxhSSWU0N91j7WuhCXwBw0ft8NnYFTWr3p4PVB5Unv
+         c5vSe8ETLQ4VxurHXZhKcQp79ayblw8N4oQxTRhk=
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by smtp.codeaurora.org (Postfix) with ESMTP id 94CEC6119F;
+        Thu, 10 Oct 2019 08:44:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1570697050;
+        bh=UDhKVkz9QY0QGvMmnBlutkzlXc66C4GbTuW0RB9n/1w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fLEX2doG+P+oecPqTV5RAMF6Leho228CZoNyzMKT6Yw5BGnUdx8oSJAJFGI6xl5vI
+         ITRFM4COQ/VrA9hrm3M4bH+kSu5PR8JVjVIUBRrzbkRt0iTijaQbdCSuRKdxS8VbbU
+         EsLiXhCHSSy3dz1JN3uHrTrUnPfqJOQ/NP1Q0vLE=
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
+Date:   Thu, 10 Oct 2019 14:14:09 +0530
+From:   akashast@codeaurora.org
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     agross@kernel.org, gregkh@linuxfoundation.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        mgautam@codeaurora.org, jslaby@suse.com,
+        bjorn.andersson@linaro.org, linux-arm-msm-owner@vger.kernel.org
+Subject: Re: [PATCH] tty: serial: qcom_geni_serial: Wakeup over UART RX
+In-Reply-To: <5d83c725.1c69fb81.9e57a.5569@mx.google.com>
+References: <1568877366-1758-1-git-send-email-akashast@codeaurora.org>
+ <5d83c725.1c69fb81.9e57a.5569@mx.google.com>
+Message-ID: <f50ca3b2bd4dbd081c3270d93df4ca7a@codeaurora.org>
+X-Sender: akashast@codeaurora.org
+User-Agent: Roundcube Webmail/1.2.5
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191010031714.r8ZzJLQ5sc9qN7Y37S5yEjB4Jx0_A1kSscbOSDREbxc@z>
 
-On Wed,  9 Oct 2019 12:17:10 +0200, Thomas Bogendoerfer wrote:
-> SGI IOC3 chip has integrated ethernet, keyboard and mouse interface.
-> It also supports connecting a SuperIO chip for serial and parallel
-> interfaces. IOC3 is used inside various SGI systemboards and add-on
-> cards with different equipped external interfaces.
+On 2019-09-19 23:51, Stephen Boyd wrote:
+> Quoting Akash Asthana (2019-09-19 00:16:06)
+>> Add system wakeup capability over UART RX line for wakeup capable 
+>> UART.
+>> When system is suspended, RX line act as an interrupt to wakeup system
+>> for any communication requests from peer.
+>> 
+>> Cleanup of IRQ registration, moving it to probe from startup function.
 > 
-> Support for ethernet and serial interfaces were implemented inside
-> the network driver. This patchset moves out the not network related
-> parts to a new MFD driver, which takes care of card detection,
-> setup of platform devices and interrupt distribution for the subdevices.
+> Probably should be a different patch than the one that adds wakeup irq
+> handling.
 > 
-> Serial portion: Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+
+Sure, will do it.
+
+>> 
+>> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+>> ---
+>>  drivers/tty/serial/qcom_geni_serial.c | 73 
+>> +++++++++++++++++++++++++++++------
+>>  1 file changed, 62 insertions(+), 11 deletions(-)
+>> 
+>> diff --git a/drivers/tty/serial/qcom_geni_serial.c 
+>> b/drivers/tty/serial/qcom_geni_serial.c
+>> index 35e5f9c..43d1da4 100644
+>> --- a/drivers/tty/serial/qcom_geni_serial.c
+>> +++ b/drivers/tty/serial/qcom_geni_serial.c
+>> @@ -19,6 +19,8 @@
+>>  #include <linux/slab.h>
+>>  #include <linux/tty.h>
+>>  #include <linux/tty_flip.h>
+>> +#include <linux/pm_wakeirq.h>
+>> +#include <linux/irq.h>
 > 
-> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> Can you sort these includes alphabetically? Or at least attempt to 
+> place
+> this somewhere in there alphabetically?
+> 
 
-> +static int ip27_baseio6g_setup(struct ioc3_priv_data *ipd)
-> +{
-> +	int ret, io_irq;
-> +
-> +	io_irq = ioc3_map_irq(ipd->pdev, PCI_SLOT(ipd->pdev->devfn) + 2);
-> +	ret = ioc3_irq_domain_setup(ipd, io_irq);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ioc3_eth_setup(ipd, false);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ioc3_serial_setup(ipd);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ioc3_m48t35_setup(ipd);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return ioc3_kbd_setup(ipd);
-> +}
-> +
-> +static int ip27_mio_setup(struct ioc3_priv_data *ipd)
-> +{
-> +	int ret;
-> +
-> +	ret = ioc3_irq_domain_setup(ipd, ipd->pdev->irq);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ioc3_serial_setup(ipd);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return ioc3_kbd_setup(ipd);
-> +}
-> +
-> +static int ip29_sysboard_setup(struct ioc3_priv_data *ipd)
-> +{
-> +	int ret, io_irq;
-> +
-> +	io_irq = ioc3_map_irq(ipd->pdev, PCI_SLOT(ipd->pdev->devfn) + 1);
-> +	ret = ioc3_irq_domain_setup(ipd, io_irq);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ioc3_eth_setup(ipd, false);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ioc3_serial_setup(ipd);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ioc3_m48t35_setup(ipd);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return ioc3_kbd_setup(ipd);
-> +}
-> +
-> +static int ioc3_menet_setup(struct ioc3_priv_data *ipd)
-> +{
-> +	int ret, io_irq;
-> +
-> +	io_irq = ioc3_map_irq(ipd->pdev, PCI_SLOT(ipd->pdev->devfn) + 4);
-> +	ret = ioc3_irq_domain_setup(ipd, io_irq);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ioc3_eth_setup(ipd, false);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return ioc3_serial_setup(ipd);
-> +}
-> +
-> +static int ioc3_menet4_setup(struct ioc3_priv_data *ipd)
-> +{
-> +	return ioc3_eth_setup(ipd, false);
-> +}
-> +
-> +static int ioc3_cad_duo_setup(struct ioc3_priv_data *ipd)
-> +{
-> +	int ret;
-> +
-> +	ret = ioc3_irq_domain_setup(ipd, ipd->pdev->irq);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ioc3_eth_setup(ipd, true);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return ioc3_kbd_setup(ipd);
-> +}
+ok
 
-None of these setup calls have a "cleanup" or un-setup call. Is this
-really okay? I know nothing about MFD, but does mfd_add_devices() not
-require a remove for example?  Doesn't the IRQ handling need cleanup?
+>> 
+>>  /* UART specific GENI registers */
+>>  #define SE_UART_LOOPBACK_CFG           0x22c
+>> @@ -98,6 +100,8 @@
+>>  #define CONSOLE_RX_BYTES_PW 4
+>>  #endif
+>> 
+>> +#define WAKEUP_EVENT_MSEC   2000
+> 
+> This is used one place. Just inline it and drop this define.
+> 
 
-> +/* Helper macro for filling ioc3_info array */
-> +#define IOC3_SID(_name, _sid, _setup) \
-> +	{								   \
-> +		.name = _name,						   \
-> +		.sid = (PCI_VENDOR_ID_SGI << 16) | IOC3_SUBSYS_ ## _sid,   \
-> +		.setup = _setup,					   \
-> +	}
-> +
-> +static struct {
-> +	const char *name;
-> +	u32 sid;
-> +	int (*setup)(struct ioc3_priv_data *ipd);
-> +} ioc3_infos[] = {
-> +	IOC3_SID("IP27 BaseIO6G", IP27_BASEIO6G, &ip27_baseio6g_setup),
-> +	IOC3_SID("IP27 MIO", IP27_MIO, &ip27_mio_setup),
-> +	IOC3_SID("IP27 BaseIO", IP27_BASEIO, &ip27_baseio_setup),
-> +	IOC3_SID("IP29 System Board", IP29_SYSBOARD, &ip29_sysboard_setup),
-> +	IOC3_SID("MENET", MENET, &ioc3_menet_setup),
-> +	IOC3_SID("MENET4", MENET4, &ioc3_menet4_setup)
-> +};
-> +#undef IOC3_SID
-> +
-> +static int ioc3_setup(struct ioc3_priv_data *ipd)
-> +{
-> +	u32 sid;
-> +	int i;
-> +
-> +	/* Clear IRQs */
-> +	writel(~0, &ipd->regs->sio_iec);
-> +	writel(~0, &ipd->regs->sio_ir);
-> +	writel(0, &ipd->regs->eth.eier);
-> +	writel(~0, &ipd->regs->eth.eisr);
-> +
-> +	/* Read subsystem vendor id and subsystem id */
-> +	pci_read_config_dword(ipd->pdev, PCI_SUBSYSTEM_VENDOR_ID, &sid);
-> +
-> +	for (i = 0; i < ARRAY_SIZE(ioc3_infos); i++)
-> +		if (sid == ioc3_infos[i].sid) {
-> +			pr_info("ioc3: %s\n", ioc3_infos[i].name);
-> +			return ioc3_infos[i].setup(ipd);
-> +		}
-> +
-> +	/* Treat everything not identified by PCI subid as CAD DUO */
-> +	pr_info("ioc3: CAD DUO\n");
-> +	return ioc3_cad_duo_setup(ipd);
-> +}
-> +
-> +static int ioc3_mfd_probe(struct pci_dev *pdev,
-> +			  const struct pci_device_id *pci_id)
-> +{
-> +	struct ioc3_priv_data *ipd;
-> +	struct ioc3 __iomem *regs;
-> +	int ret;
-> +
-> +	ret = pci_enable_device(pdev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	pci_write_config_byte(pdev, PCI_LATENCY_TIMER, IOC3_LATENCY);
-> +	pci_set_master(pdev);
-> +
-> +	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-> +	if (ret) {
-> +		dev_warn(&pdev->dev,
-> +			 "Failed to set 64-bit DMA mask, trying 32-bit\n");
-> +		ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-> +		if (ret) {
-> +			dev_err(&pdev->dev, "Can't set DMA mask, aborting\n");
-> +			return ret;
+ok
 
-So failing here we don't care about disabling the pci deivce..
+>> +
+>>  struct qcom_geni_serial_port {
+>>         struct uart_port uport;
+>>         struct geni_se se;
+>> @@ -115,6 +119,7 @@ struct qcom_geni_serial_port {
+>>         bool brk;
+>> 
+>>         unsigned int tx_remaining;
+>> +       int wakeup_irq;
+>>  };
+>> 
+>>  static const struct uart_ops qcom_geni_console_pops;
+>> @@ -756,6 +761,15 @@ static void qcom_geni_serial_handle_tx(struct 
+>> uart_port *uport, bool done,
+>>                 uart_write_wakeup(uport);
+>>  }
+>> 
+>> +static irqreturn_t qcom_geni_serial_wakeup_isr(int isr, void *dev)
+>> +{
+>> +       struct uart_port *uport = dev;
+>> +
+>> +       pm_wakeup_event(uport->dev, WAKEUP_EVENT_MSEC);
+>> +
+>> +       return IRQ_HANDLED;
+>> +}
+>> +
+>>  static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
+>>  {
+>>         u32 m_irq_en;
+>> @@ -1290,6 +1297,8 @@ static int qcom_geni_serial_probe(struct 
+>> platform_device *pdev)
+>>         port->rx_fifo_depth = DEF_FIFO_DEPTH_WORDS;
+>>         port->tx_fifo_width = DEF_FIFO_WIDTH_BITS;
+>> 
+>> +       scnprintf(port->name, sizeof(port->name), 
+>> "qcom_geni_serial_%s%d",
+>> +               (uart_console(uport) ? "console" : "uart"), 
+>> uport->line);
+> 
+> This looks like an unrelated change?
+> 
 
-> +		}
-> +	}
-> +
-> +	/* Set up per-IOC3 data */
-> +	ipd = devm_kzalloc(&pdev->dev, sizeof(struct ioc3_priv_data),
-> +			   GFP_KERNEL);
-> +	if (!ipd) {
-> +		ret = -ENOMEM;
-> +		goto out_disable_device;
+We moved this change to probe from startup as part of IRQ cleanup. We 
+are initializing port->name variable here that is used in 
+devm_request_irq call.
 
-..but here we do?
+>>         irq = platform_get_irq(pdev, 0);
+>>         if (irq < 0) {
+>>                 dev_err(&pdev->dev, "Failed to get IRQ %d\n", irq);
+>> @@ -1297,6 +1306,39 @@ static int qcom_geni_serial_probe(struct 
+>> platform_device *pdev)
+>>         }
+>>         uport->irq = irq;
+>> 
+>> +       irq_set_status_flags(uport->irq, IRQ_NOAUTOEN);
+>> +       ret = devm_request_irq(uport->dev, uport->irq, 
+>> qcom_geni_serial_isr,
+>> +                               IRQF_TRIGGER_HIGH, port->name, uport);
+>> +       if (ret) {
+>> +               dev_err(uport->dev, "Failed to get IRQ ret %d\n", 
+>> ret);
+>> +               return ret;
+>> +       }
+>> +
+>> +       if (!console) {
+>> +               port->wakeup_irq = platform_get_irq(pdev, 1);
+> 
+> Can you use dev_pm_set_wake_irq() instead?
+> 
 
-> +	}
-> +	ipd->pdev = pdev;
-> +
-> +	/*
-> +	 * Map all IOC3 registers.  These are shared between subdevices
-> +	 * so the main IOC3 module manages them.
-> +	 */
-> +	regs = pci_ioremap_bar(pdev, 0);
+okay, we are using this API this will take care of 
+enable_irq_wake/disable_irq_wake during suspend and resume but still, we 
+need to enable/disable wakeup irq in suspend and resume call.
 
-This doesn't seem unmapped on error paths, nor remove?
+>> +               if (port->wakeup_irq < 0) {
+>> +                       dev_err(&pdev->dev, "Failed to get wakeup IRQ 
+>> %d\n",
+>> +                                                       
+>> port->wakeup_irq);
+>> +               } else {
+>> +                       dev_info(&pdev->dev, "wakeup_irq =%d\n",
+>> +                               port->wakeup_irq);
+> 
+> Please no dev_info() messages like this.
+> 
 
-> +	if (!regs) {
-> +		dev_warn(&pdev->dev, "ioc3: Unable to remap PCI BAR for %s.\n",
-> +			 pci_name(pdev));
-> +		ret = -ENOMEM;
-> +		goto out_disable_device;
-> +	}
-> +	ipd->regs = regs;
-> +
-> +	/* Track PCI-device specific data */
-> +	pci_set_drvdata(pdev, ipd);
-> +
-> +	ret = ioc3_setup(ipd);
-> +	if (ret)
-> +		goto out_disable_device;
-> +
-> +	return 0;
-> +
-> +out_disable_device:
-> +	pci_disable_device(pdev);
-> +	return ret;
-> +}
-> +
-> +static void ioc3_mfd_remove(struct pci_dev *pdev)
-> +{
-> +	struct ioc3_priv_data *ipd;
-> +
-> +	ipd = pci_get_drvdata(pdev);
-> +
-> +	/* Clear and disable all IRQs */
-> +	writel(~0, &ipd->regs->sio_iec);
-> +	writel(~0, &ipd->regs->sio_ir);
-> +
-> +	/* Release resources */
-> +	if (ipd->domain) {
-> +		irq_domain_remove(ipd->domain);
-> +		free_irq(ipd->domain_irq, (void *)ipd);
-> +	}
-> +	pci_disable_device(pdev);
-> +}
-> +
-> +static struct pci_device_id ioc3_mfd_id_table[] = {
-> +	{ PCI_VENDOR_ID_SGI, PCI_DEVICE_ID_SGI_IOC3, PCI_ANY_ID, PCI_ANY_ID },
-> +	{ 0, },
-> +};
-> +MODULE_DEVICE_TABLE(pci, ioc3_mfd_id_table);
-> +
-> +static struct pci_driver ioc3_mfd_driver = {
-> +	.name = "IOC3",
-> +	.id_table = ioc3_mfd_id_table,
-> +	.probe = ioc3_mfd_probe,
-> +	.remove = ioc3_mfd_remove,
-> +};
-> +
-> +module_pci_driver(ioc3_mfd_driver);
-> +
-> +MODULE_AUTHOR("Thomas Bogendoerfer <tbogendoerfer@suse.de>");
-> +MODULE_DESCRIPTION("SGI IOC3 MFD driver");
-> +MODULE_LICENSE("GPL v2");
+ok
+
+>> +                       irq_set_status_flags(port->wakeup_irq, 
+>> IRQ_NOAUTOEN);
+>> +                       ret = devm_request_irq(uport->dev, 
+>> port->wakeup_irq,
+>> +                               qcom_geni_serial_wakeup_isr,
+>> +                               IRQF_TRIGGER_FALLING, "uart_wakeup", 
+>> uport);
+>> +                       if (ret) {
+>> +                               dev_err(uport->dev, "Failed to 
+>> register wakeup "
+>> +                                       "IRQ ret %d\n", ret);
+> 
+> Don't split format strings across many lines. The arguments can go to a
+> different line, but the string can be on a single line.
+> 
+
+ok
+
+>> +                               return ret;
+>> +                       }
+>> +
+>> +                       device_init_wakeup(&pdev->dev, true);
+>> +                       ret = enable_irq_wake(port->wakeup_irq);
+>> +                       if (unlikely(ret))
+>> +                               dev_err(uport->dev, "%s:Failed to set 
+>> IRQ "
+>> +                                       "wake:%d\n", __func__, ret);
+>> +               }
+>> +       }
+>>         uport->private_data = drv;
+>>         platform_set_drvdata(pdev, port);
+>>         port->handle_rx = console ? handle_rx_console : 
+>> handle_rx_uart;
+>> @@ -1311,6 +1353,7 @@ static int qcom_geni_serial_remove(struct 
+>> platform_device *pdev)
+>>         struct uart_driver *drv = port->uport.private_data;
+>> 
+>>         uart_remove_one_port(drv, &port->uport);
+>> +
+>>         return 0;
+>>  }
+>> 
+> 
+> This hunk shouldn't be here. Please drop
+
+ok
+
