@@ -1,66 +1,44 @@
-From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: Re: [PATCH v9 5/5] MIPS: SGI-IP27: Enable ethernet phy on second
- Origin 200 module
-Date: Thu, 10 Oct 2019 19:37:15 +0300
-Message-ID: <102db20a-0c37-3e28-2d14-e9c6eaa55f5c@cogentembedded.com>
-References: <20191010145953.21327-1-tbogendoerfer@suse.de>
- <20191010145953.21327-6-tbogendoerfer@suse.de>
+From: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+Subject: [PATCH v6 1/5] dt-bindings: arm: fsl: Add the S32V234-EVB board
+Date: Thu, 10 Oct 2019 19:52:24 +0300
+Message-ID: <1570726348-6420-2-git-send-email-stefan-gabriel.mirea@nxp.com>
+References: <1570726348-6420-1-git-send-email-stefan-gabriel.mirea@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <20191010145953.21327-6-tbogendoerfer@suse.de>
-Content-Language: en-MW
-Sender: netdev-owner@vger.kernel.org
-To: Thomas Bogendoerfer <tbogendoerfer@suse.de>, Jakub Kicinski <jakub.kicinski@netronome.com>, Jonathan Corbet <corbet@lwn.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1570726348-6420-1-git-send-email-stefan-gabriel.mirea@nxp.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: corbet@lwn.net, robh+dt@kernel.org, mark.rutland@arm.com, gregkh@linuxfoundation.org, catalin.marinas@arm.com, will@kernel.org, shawnguo@kernel.org, leoyang.li@nxp.com
+Cc: jslaby@suse.com, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, =?UTF-8?q?Eddy=20Petri=C8=99or?= <eddy.petrisor@nxp.com>
 List-Id: linux-serial@vger.kernel.org
 
-On 10/10/2019 05:59 PM, Thomas Bogendoerfer wrote:
+From: Eddy Petrișor <eddy.petrisor@nxp.com>
 
-> PROM only enables ethernet PHY on first Origin 200 module, so we must
-> do it ourselves for the second module.
-> 
-> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-> ---
->  arch/mips/pci/pci-ip27.c | 22 ++++++++++++++++++++++
->  1 file changed, 22 insertions(+)
-> 
-> diff --git a/arch/mips/pci/pci-ip27.c b/arch/mips/pci/pci-ip27.c
-> index 441eb9383b20..7cc784cb299b 100644
-> --- a/arch/mips/pci/pci-ip27.c
-> +++ b/arch/mips/pci/pci-ip27.c
-> @@ -7,6 +7,11 @@
->   * Copyright (C) 1999, 2000, 04 Ralf Baechle (ralf@linux-mips.org)
->   * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
->   */
-> +#include <asm/sn/addrs.h>
-> +#include <asm/sn/types.h>
-> +#include <asm/sn/klconfig.h>
-> +#include <asm/sn/hub.h>
-> +#include <asm/sn/ioc3.h>
->  #include <asm/pci/bridge.h>
->  
->  dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-> @@ -31,3 +36,20 @@ int pcibus_to_node(struct pci_bus *bus)
->  }
->  EXPORT_SYMBOL(pcibus_to_node);
->  #endif /* CONFIG_NUMA */
-> +
-> +static void ip29_fixup_phy(struct pci_dev *dev)
-> +{
-> +	int nasid = pcibus_to_node(dev->bus);
-> +	u32 sid;
-> +
-> +	if (nasid != 1)
-> +		return; /* only needed on second module */
-> +
-> +	/* enable ethernet PHY on IP29 systemboard */
-> +	pci_read_config_dword(dev, PCI_SUBSYSTEM_VENDOR_ID, &sid);
-> +	if (sid == ((PCI_VENDOR_ID_SGI << 16) | IOC3_SUBSYS_IP29_SYSBOARD))
+Add entry for the NXP S32V234 Customer Evaluation Board to the board/SoC
+bindings.
 
-   I thought PCI was little endian, thuis vendor ID at offset 0 and device ID
-at offset 2?
+Signed-off-by: Eddy Petrișor <eddy.petrisor@nxp.com>
+Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ Documentation/devicetree/bindings/arm/fsl.yaml | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-[...]
-
-MBR, Sergei
+diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
+index 1b4b4e6573b5..c211f4f82e25 100644
+--- a/Documentation/devicetree/bindings/arm/fsl.yaml
++++ b/Documentation/devicetree/bindings/arm/fsl.yaml
+@@ -335,4 +335,10 @@ properties:
+               - fsl,ls2088a-rdb
+           - const: fsl,ls2088a
+ 
++      - description: S32V234 based Boards
++        items:
++          - enum:
++              - fsl,s32v234-evb           # S32V234-EVB2 Customer Evaluation Board
++          - const: fsl,s32v234
++
+ ...
+-- 
+2.22.0
