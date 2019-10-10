@@ -2,102 +2,115 @@ Return-Path: <SRS0=h7F0=YD=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A59C4360C
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Oct 2019 13:19:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DDC0C4360C
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Oct 2019 13:29:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 87CCE21920
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Oct 2019 13:19:08 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="vPGKjlfQ"
+	by mail.kernel.org (Postfix) with ESMTP id 0FD62206B6
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Oct 2019 13:29:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388178AbfJJNTE (ORCPT
+        id S2387758AbfJJN3w convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Oct 2019 09:19:04 -0400
-Received: from mail-wr1-f51.google.com ([209.85.221.51]:40589 "EHLO
-        mail-wr1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388329AbfJJNTC (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Oct 2019 09:19:02 -0400
-Received: by mail-wr1-f51.google.com with SMTP id h4so7880217wrv.7;
-        Thu, 10 Oct 2019 06:19:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=cU2Z1he193fGQfwYVGWXirAJ34kU3C29gXJ8rRkJamw=;
-        b=vPGKjlfQDkdDEt4C1sBLoyEU4P8EUM8qOBnrSZsBimJeNmaKLK/JhWxhEWBJujWcBk
-         TIoicQuLtu0gL3aHzwrxyTGZrteoEn8ke3zp/bC2itrXLmOk3/ct7dPmd/X8QQqabT1u
-         6upmvGlnnYWezEJZeFz9dFBleVuhZZseRoLlN5njRp5vLP30W8yur6mm8i2T79zyyD1J
-         5+4/CtDyrK0eOI5L+sEp6Gm75DOHhN0Z3c9O9P1cNJl9UaTz2sJV/wTEIQWTzvhD7fPz
-         UZd1h1oporKC8j+1LcFkhkORaf06CCY3JDP/deap43PBVdW5wiCghbMfg3qcfiPVDxwm
-         YOaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=cU2Z1he193fGQfwYVGWXirAJ34kU3C29gXJ8rRkJamw=;
-        b=rEGlQJgrq2LmpANuG9fOhrvRSdPL9PKlVNSqvoe3RvXCdjB2hyI4kKI8Uu1+lfM8Mz
-         m3RgT4Z04G6IE9YMvrIiLcDYugf/JkQC3cUZSLTQeOCpDSwq5ggrtDUitSVe1Ib+j0Fg
-         HchJ3+44+Ew0qtzgJaX4Tu7wz17FmjwJCTDUowJvmxwW7UuGdk+DKbamE4NPfsH6y+qf
-         aSrLljbEgKqNlx4gifkur4q0UjUZv/mfVKXElWOq475hhXM8XW8IpMI+N1jFt56ewXU+
-         01/crhZUllP/WzBSU/UqQdSOTDVZDTiL4yascHcAPOGDYdHmFfGLDGsKptYdc0DuIi1o
-         oIgA==
-X-Gm-Message-State: APjAAAWBojZL/c9kNc8zmzdq8yE+YBIbembMjzZRssdtRHTv19RVdYkM
-        0ECVdghcyuEWyyLYjJqi5HWF1sFr
-X-Google-Smtp-Source: APXvYqyY34PXFOxPL+JOw98k0b9U39Y6bs5YHdz8yme77Kl47Ru/r1ga+iLNYRV2qXw3PlaP7QHB9Q==
-X-Received: by 2002:adf:9cca:: with SMTP id h10mr8249674wre.339.1570713540365;
-        Thu, 10 Oct 2019 06:19:00 -0700 (PDT)
-Received: from [192.168.2.202] (pD9EA3280.dip0.t-ipconnect.de. [217.234.50.128])
-        by smtp.gmail.com with ESMTPSA id r65sm7208546wmr.9.2019.10.10.06.18.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Oct 2019 06:18:59 -0700 (PDT)
-Subject: Re: [PATCH v2] serdev: Add ACPI devices by ResourceSource field
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     Rob Herring <robh@kernel.org>,
+        Thu, 10 Oct 2019 09:29:52 -0400
+Received: from mx2.suse.de ([195.135.220.15]:48462 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727489AbfJJN3w (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 10 Oct 2019 09:29:52 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 17B43AC40;
+        Thu, 10 Oct 2019 13:29:50 +0000 (UTC)
+Date:   Thu, 10 Oct 2019 15:29:49 +0200
+From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, Johan Hovold <johan@kernel.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>, linux-serial@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190924162226.1493407-1-luzmaximilian@gmail.com>
- <03d11e04-aaad-4851-c7d6-feaf62793670@redhat.com>
-From:   Maximilian Luz <luzmaximilian@gmail.com>
-Message-ID: <84883ba0-ec01-9114-5c4a-e468cf85dfec@gmail.com>
-Date:   Thu, 10 Oct 2019 15:18:58 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
-MIME-Version: 1.0
-In-Reply-To: <03d11e04-aaad-4851-c7d6-feaf62793670@redhat.com>
-Content-Type: text/plain; charset="UTF-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v8 3/5] mfd: ioc3: Add driver for SGI IOC3 chip
+Message-Id: <20191010152949.f5049c2728beffa38f07c924@suse.de>
+In-Reply-To: <20191009201714.19296e3f@cakuba.netronome.com>
+References: <20191009101713.12238-1-tbogendoerfer@suse.de>
+        <20191009101713.12238-4-tbogendoerfer@suse.de>
+        <20191009201714.19296e3f@cakuba.netronome.com>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191010131858.sCrtjxvuN1tPCW4s9VS08MhZxj0xeYdxnOhKVLrSwyE@z>
+Message-ID: <20191010132949.rjO6byXp6ORnFbd1tK6xtpECEUaf1CSlSvo5HxtOKxA@z>
 
-Hi,
+On Wed, 9 Oct 2019 20:17:14 -0700
+Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
 
-On 10/10/19 12:22 PM, Hans de Goede wrote:
-> This patch looks good to me and it works on my test hw with serial
-> attached BT HCI:
+> On Wed,  9 Oct 2019 12:17:10 +0200, Thomas Bogendoerfer wrote:
+> [...]
+> > +static int ioc3_cad_duo_setup(struct ioc3_priv_data *ipd)
+> > +{
+> > +	int ret;
+> > +
+> > +	ret = ioc3_irq_domain_setup(ipd, ipd->pdev->irq);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = ioc3_eth_setup(ipd, true);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	return ioc3_kbd_setup(ipd);
+> > +}
 > 
-> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-> Tested-by: Hans de Goede <hdegoede@redhat.com>
+> None of these setup calls have a "cleanup" or un-setup call. Is this
+> really okay? I know nothing about MFD, but does mfd_add_devices() not
+> require a remove for example? Doesn't the IRQ handling need cleanup?
+
+good catch, I'll add that.
+
+> > +	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+> > +	if (ret) {
+> > +		dev_warn(&pdev->dev,
+> > +			 "Failed to set 64-bit DMA mask, trying 32-bit\n");
+> > +		ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+> > +		if (ret) {
+> > +			dev_err(&pdev->dev, "Can't set DMA mask, aborting\n");
+> > +			return ret;
 > 
-> Regards,
+> So failing here we don't care about disabling the pci deivce..
+
+fixed in the next version.
+
+> > +
+> > +	/*
+> > +	 * Map all IOC3 registers.  These are shared between subdevices
+> > +	 * so the main IOC3 module manages them.
+> > +	 */
+> > +	regs = pci_ioremap_bar(pdev, 0);
 > 
-> Hans
+> This doesn't seem unmapped on error paths, nor remove?
 
-Awesome, thank you!
+will fix.
 
-Regards,
+Thank you for the review.
 
-Maximilian
+Thomas.
+
+-- 
+SUSE Software Solutions Germany GmbH
+HRB 247165 (AG München)
+Geschäftsführer: Felix Imendörffer
