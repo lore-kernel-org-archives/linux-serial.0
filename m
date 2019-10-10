@@ -2,68 +2,63 @@ Return-Path: <SRS0=h7F0=YD=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC570C4360C
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Oct 2019 10:22:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A59C4360C
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Oct 2019 13:19:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 71260218AC
-	for <linux-serial@archiver.kernel.org>; Thu, 10 Oct 2019 10:22:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 87CCE21920
+	for <linux-serial@archiver.kernel.org>; Thu, 10 Oct 2019 13:19:08 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="adWal0lR"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="vPGKjlfQ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727218AbfJJKWt (ORCPT
+        id S2388178AbfJJNTE (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Oct 2019 06:22:49 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:45642 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726201AbfJJKWt (ORCPT
+        Thu, 10 Oct 2019 09:19:04 -0400
+Received: from mail-wr1-f51.google.com ([209.85.221.51]:40589 "EHLO
+        mail-wr1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388329AbfJJNTC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Oct 2019 06:22:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1570702967;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=763TboRhwbFAPE8Tn1DDSJS6cQFbIRSIWcu9+jRDeSw=;
-        b=adWal0lRF3lcO40xwnXiT2qS3BwNW4OXIIdNvypYSvan4baDj4NzzFr7U674FjjLXrjckV
-        rfo5/pPZH5ZgPh+VbqLmqFGnxPhBmRsck5tyY21TLwL6ADrjTTfh6ErRvUkF8jqhGvZWkB
-        3dbiai68V4yGlUvuVkeh8bQC6dfmORk=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-126-Ldlo-kAcPKKVMuZZ5Qf_WQ-1; Thu, 10 Oct 2019 06:22:45 -0400
-Received: by mail-ed1-f72.google.com with SMTP id n14so3321632edt.3
-        for <linux-serial@vger.kernel.org>; Thu, 10 Oct 2019 03:22:45 -0700 (PDT)
+        Thu, 10 Oct 2019 09:19:02 -0400
+Received: by mail-wr1-f51.google.com with SMTP id h4so7880217wrv.7;
+        Thu, 10 Oct 2019 06:19:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=cU2Z1he193fGQfwYVGWXirAJ34kU3C29gXJ8rRkJamw=;
+        b=vPGKjlfQDkdDEt4C1sBLoyEU4P8EUM8qOBnrSZsBimJeNmaKLK/JhWxhEWBJujWcBk
+         TIoicQuLtu0gL3aHzwrxyTGZrteoEn8ke3zp/bC2itrXLmOk3/ct7dPmd/X8QQqabT1u
+         6upmvGlnnYWezEJZeFz9dFBleVuhZZseRoLlN5njRp5vLP30W8yur6mm8i2T79zyyD1J
+         5+4/CtDyrK0eOI5L+sEp6Gm75DOHhN0Z3c9O9P1cNJl9UaTz2sJV/wTEIQWTzvhD7fPz
+         UZd1h1oporKC8j+1LcFkhkORaf06CCY3JDP/deap43PBVdW5wiCghbMfg3qcfiPVDxwm
+         YOaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=+suHDuntDF5i1uewtQAOqzeVn7++Q9V4dkvIc6Lm+UU=;
-        b=YGEEdvnms4820OYyWYBWLrjO5oglFkpXTaC9dj/z6OdOjIBAy1Y7iId1rkwDHCR9TS
-         fit1SdRkhJKQCo+vJ0A4O5kLRvnGJt5F7/4P8LO3wVP3ACV1QrIYrsggWNBtGAosvKfi
-         KA5MX9HEHQa5cLBZc6nMR3OGy2y9ne955EHIPyZMhY9u3J+oG5lR8Ofl5pZuA6A4Fulo
-         jdCqJMGuKgKXu5uJw8NjapYLfFeDeJ1uuHxJutFdlxxvBNhL+B1Kw8UOldg/+tygLvP4
-         R30fn+r9JtlKJVMGLUEpyJbcL7ATUiDr3oMw8arEhS0UaGTT/je+lRTWEjhe8LUR670F
-         VkAQ==
-X-Gm-Message-State: APjAAAWoxE5mVO8F4XKH0aJa5b/xZFkNNlApxovDo78VGFg9/LuW3Szp
-        0NqZPdfI6H4RVzj8X8r8mo89OBObvI6waEZcnXTcj8PAigAlV6z9x8d8nKreHE05GsJySHjcgp3
-        VP4TKOiZ5fB5ryEWLCiJaRbJY
-X-Received: by 2002:a50:ed0b:: with SMTP id j11mr7481333eds.50.1570702964246;
-        Thu, 10 Oct 2019 03:22:44 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwf6PwtzYiLj0NiaSMAUZxbEnhQsSzIhn4y0fznpU9qn8twvN5iMNsQaK5QBv+HbJxfqQFIEQ==
-X-Received: by 2002:a50:ed0b:: with SMTP id j11mr7481313eds.50.1570702963988;
-        Thu, 10 Oct 2019 03:22:43 -0700 (PDT)
-Received: from shalem.localdomain (2001-1c00-0c14-2800-ec23-a060-24d5-2453.cable.dynamic.v6.ziggo.nl. [2001:1c00:c14:2800:ec23:a060:24d5:2453])
-        by smtp.gmail.com with ESMTPSA id my6sm621204ejb.55.2019.10.10.03.22.42
+        bh=cU2Z1he193fGQfwYVGWXirAJ34kU3C29gXJ8rRkJamw=;
+        b=rEGlQJgrq2LmpANuG9fOhrvRSdPL9PKlVNSqvoe3RvXCdjB2hyI4kKI8Uu1+lfM8Mz
+         m3RgT4Z04G6IE9YMvrIiLcDYugf/JkQC3cUZSLTQeOCpDSwq5ggrtDUitSVe1Ib+j0Fg
+         HchJ3+44+Ew0qtzgJaX4Tu7wz17FmjwJCTDUowJvmxwW7UuGdk+DKbamE4NPfsH6y+qf
+         aSrLljbEgKqNlx4gifkur4q0UjUZv/mfVKXElWOq475hhXM8XW8IpMI+N1jFt56ewXU+
+         01/crhZUllP/WzBSU/UqQdSOTDVZDTiL4yascHcAPOGDYdHmFfGLDGsKptYdc0DuIi1o
+         oIgA==
+X-Gm-Message-State: APjAAAWBojZL/c9kNc8zmzdq8yE+YBIbembMjzZRssdtRHTv19RVdYkM
+        0ECVdghcyuEWyyLYjJqi5HWF1sFr
+X-Google-Smtp-Source: APXvYqyY34PXFOxPL+JOw98k0b9U39Y6bs5YHdz8yme77Kl47Ru/r1ga+iLNYRV2qXw3PlaP7QHB9Q==
+X-Received: by 2002:adf:9cca:: with SMTP id h10mr8249674wre.339.1570713540365;
+        Thu, 10 Oct 2019 06:19:00 -0700 (PDT)
+Received: from [192.168.2.202] (pD9EA3280.dip0.t-ipconnect.de. [217.234.50.128])
+        by smtp.gmail.com with ESMTPSA id r65sm7208546wmr.9.2019.10.10.06.18.58
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Oct 2019 03:22:43 -0700 (PDT)
+        Thu, 10 Oct 2019 06:18:59 -0700 (PDT)
 Subject: Re: [PATCH v2] serdev: Add ACPI devices by ResourceSource field
-To:     Maximilian Luz <luzmaximilian@gmail.com>
+To:     Hans de Goede <hdegoede@redhat.com>
 Cc:     Rob Herring <robh@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>, Johan Hovold <johan@kernel.org>,
@@ -71,249 +66,38 @@ Cc:     Rob Herring <robh@kernel.org>,
         Len Brown <lenb@kernel.org>, linux-serial@vger.kernel.org,
         linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20190924162226.1493407-1-luzmaximilian@gmail.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-Message-ID: <03d11e04-aaad-4851-c7d6-feaf62793670@redhat.com>
-Date:   Thu, 10 Oct 2019 12:22:42 +0200
+ <03d11e04-aaad-4851-c7d6-feaf62793670@redhat.com>
+From:   Maximilian Luz <luzmaximilian@gmail.com>
+Message-ID: <84883ba0-ec01-9114-5c4a-e468cf85dfec@gmail.com>
+Date:   Thu, 10 Oct 2019 15:18:58 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.1.1
 MIME-Version: 1.0
-In-Reply-To: <20190924162226.1493407-1-luzmaximilian@gmail.com>
-Content-Language: en-US
-X-MC-Unique: Ldlo-kAcPKKVMuZZ5Qf_WQ-1
-X-Mimecast-Spam-Score: 0
+In-Reply-To: <03d11e04-aaad-4851-c7d6-feaf62793670@redhat.com>
 Content-Type: text/plain; charset="UTF-8"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191010102242.W2CaQUOr-N_ZbGHbzE6RRGeJdbFhPgGJwjkwfPzpDto@z>
+Message-ID: <20191010131858.sCrtjxvuN1tPCW4s9VS08MhZxj0xeYdxnOhKVLrSwyE@z>
 
 Hi,
 
-On 24-09-2019 18:22, Maximilian Luz wrote:
-> When registering a serdev controller, ACPI needs to be checked for
-> devices attached to it. Currently, all immediate children of the ACPI
-> node of the controller are assumed to be UART client devices for this
-> controller. Furthermore, these devices are not searched elsewhere.
->=20
-> This is incorrect: Similar to SPI and I2C devices, the UART client
-> device definition (via UARTSerialBusV2) can reside anywhere in the ACPI
-> namespace as resource definition inside the _CRS method and points to
-> the controller via its ResourceSource field. This field may either
-> contain a fully qualified or relative path, indicating the controller
-> device. To address this, we need to walk over the whole ACPI namespace,
-> looking at each resource definition, and match the client device to the
-> controller via this field.
->=20
-> This patch is based on the existing acpi serial bus implementations in
-> drivers/i2c/i2c-core-acpi.c and drivers/spi/spi.c, specifically commit
-> 4c3c59544f33e97cf8557f27e05a9904ead16363 ("spi/acpi: enumerate all SPI
-> slaves in the namespace").
->=20
-> Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
+On 10/10/19 12:22 PM, Hans de Goede wrote:
+> This patch looks good to me and it works on my test hw with serial
+> attached BT HCI:
+> 
+> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+> Tested-by: Hans de Goede <hdegoede@redhat.com>
+> 
+> Regards,
+> 
+> Hans
 
-Thank you for the new version.
-
-This patch looks good to me and it works on my test hw with serial
-attached BT HCI:
-
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Tested-by: Hans de Goede <hdegoede@redhat.com>
+Awesome, thank you!
 
 Regards,
 
-Hans
-
-
-
-> ---
-> Changes compared to v1:
-> - Patch now reflects the behavior of the existing ACPI serial bus
->    implementations (drivers/i2c/i2c-core-acpi.c and drivers/spi/spi.c),
->    with a maximum of one serdev client device per ACPI device node
->    allocated.
->=20
-> - Ignores and continues on errors from AML code execution and resource
->    parsing.
->=20
-> Notes:
->    The resource lookup is kept generic (similarly to the implementations
->    it is based on), meaning that it should be fairly simple to extend
->    acpi_serdev_parse_resource and acpi_serdev_check_resources to get and
->    return more information about the serdev client device (e.g. initial
->    baud rate) once this is required.
->=20
->    If multiple device definitions inside a single _CRS block ever become
->    a concern, the lookup function can be instructed as to which
->    UARTSerialBusV2 resource should be considered by spefifying its index
->    in acpi_serdev_lookup.index. This is again based on the I2C
->    implementation. Currently the last resource definition is chosen (i.e.
->    index =3D -1) to reflect the behavior of the other ACPI serial bus
->    implementations.
-> ---
->   drivers/tty/serdev/core.c | 111 +++++++++++++++++++++++++++++++++-----
->   1 file changed, 99 insertions(+), 12 deletions(-)
->=20
-> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> index a0ac16ee6575..226adeec2aed 100644
-> --- a/drivers/tty/serdev/core.c
-> +++ b/drivers/tty/serdev/core.c
-> @@ -552,16 +552,97 @@ static int of_serdev_register_devices(struct serdev=
-_controller *ctrl)
->   }
->  =20
->   #ifdef CONFIG_ACPI
-> +
-> +#define SERDEV_ACPI_MAX_SCAN_DEPTH 32
-> +
-> +struct acpi_serdev_lookup {
-> +=09acpi_handle device_handle;
-> +=09acpi_handle controller_handle;
-> +=09int n;
-> +=09int index;
-> +};
-> +
-> +static int acpi_serdev_parse_resource(struct acpi_resource *ares, void *=
-data)
-> +{
-> +=09struct acpi_serdev_lookup *lookup =3D data;
-> +=09struct acpi_resource_uart_serialbus *sb;
-> +=09acpi_status status;
-> +
-> +=09if (ares->type !=3D ACPI_RESOURCE_TYPE_SERIAL_BUS)
-> +=09=09return 1;
-> +
-> +=09if (ares->data.common_serial_bus.type !=3D ACPI_RESOURCE_SERIAL_TYPE_=
-UART)
-> +=09=09return 1;
-> +
-> +=09if (lookup->index !=3D -1 && lookup->n++ !=3D lookup->index)
-> +=09=09return 1;
-> +
-> +=09sb =3D &ares->data.uart_serial_bus;
-> +
-> +=09status =3D acpi_get_handle(lookup->device_handle,
-> +=09=09=09=09 sb->resource_source.string_ptr,
-> +=09=09=09=09 &lookup->controller_handle);
-> +=09if (ACPI_FAILURE(status))
-> +=09=09return 1;
-> +
-> +=09/*
-> +=09 * NOTE: Ideally, we would also want to retreive other properties her=
-e,
-> +=09 * once setting them before opening the device is supported by serdev=
-.
-> +=09 */
-> +
-> +=09return 1;
-> +}
-> +
-> +static int acpi_serdev_do_lookup(struct acpi_device *adev,
-> +                                 struct acpi_serdev_lookup *lookup)
-> +{
-> +=09struct list_head resource_list;
-> +=09int ret;
-> +
-> +=09lookup->device_handle =3D acpi_device_handle(adev);
-> +=09lookup->controller_handle =3D NULL;
-> +=09lookup->n =3D 0;
-> +
-> +=09INIT_LIST_HEAD(&resource_list);
-> +=09ret =3D acpi_dev_get_resources(adev, &resource_list,
-> +=09=09=09=09     acpi_serdev_parse_resource, lookup);
-> +=09acpi_dev_free_resource_list(&resource_list);
-> +
-> +=09if (ret < 0)
-> +=09=09return -EINVAL;
-> +
-> +=09return 0;
-> +}
-> +
-> +static int acpi_serdev_check_resources(struct serdev_controller *ctrl,
-> +=09=09=09=09       struct acpi_device *adev)
-> +{
-> +=09struct acpi_serdev_lookup lookup;
-> +=09int ret;
-> +
-> +=09if (acpi_bus_get_status(adev) || !adev->status.present)
-> +=09=09return -EINVAL;
-> +
-> +=09/* Look for UARTSerialBusV2 resource */
-> +=09lookup.index =3D -1;=09// we only care for the last device
-> +
-> +=09ret =3D acpi_serdev_do_lookup(adev, &lookup);
-> +=09if (ret)
-> +=09=09return ret;
-> +
-> +=09/* Make sure controller and ResourceSource handle match */
-> +=09if (ACPI_HANDLE(ctrl->dev.parent) !=3D lookup.controller_handle)
-> +=09=09return -ENODEV;
-> +
-> +=09return 0;
-> +}
-> +
->   static acpi_status acpi_serdev_register_device(struct serdev_controller=
- *ctrl,
-> -=09=09=09=09=09    struct acpi_device *adev)
-> +=09=09=09=09=09       struct acpi_device *adev)
->   {
-> -=09struct serdev_device *serdev =3D NULL;
-> +=09struct serdev_device *serdev;
->   =09int err;
->  =20
-> -=09if (acpi_bus_get_status(adev) || !adev->status.present ||
-> -=09    acpi_device_enumerated(adev))
-> -=09=09return AE_OK;
-> -
->   =09serdev =3D serdev_device_alloc(ctrl);
->   =09if (!serdev) {
->   =09=09dev_err(&ctrl->dev, "failed to allocate serdev device for %s\n",
-> @@ -583,7 +664,7 @@ static acpi_status acpi_serdev_register_device(struct=
- serdev_controller *ctrl,
->   }
->  =20
->   static acpi_status acpi_serdev_add_device(acpi_handle handle, u32 level=
-,
-> -=09=09=09=09       void *data, void **return_value)
-> +=09=09=09=09=09  void *data, void **return_value)
->   {
->   =09struct serdev_controller *ctrl =3D data;
->   =09struct acpi_device *adev;
-> @@ -591,22 +672,28 @@ static acpi_status acpi_serdev_add_device(acpi_hand=
-le handle, u32 level,
->   =09if (acpi_bus_get_device(handle, &adev))
->   =09=09return AE_OK;
->  =20
-> +=09if (acpi_device_enumerated(adev))
-> +=09=09return AE_OK;
-> +
-> +=09if (acpi_serdev_check_resources(ctrl, adev))
-> +=09=09return AE_OK;
-> +
->   =09return acpi_serdev_register_device(ctrl, adev);
->   }
->  =20
-> +
->   static int acpi_serdev_register_devices(struct serdev_controller *ctrl)
->   {
->   =09acpi_status status;
-> -=09acpi_handle handle;
->  =20
-> -=09handle =3D ACPI_HANDLE(ctrl->dev.parent);
-> -=09if (!handle)
-> +=09if (!has_acpi_companion(ctrl->dev.parent))
->   =09=09return -ENODEV;
->  =20
-> -=09status =3D acpi_walk_namespace(ACPI_TYPE_DEVICE, handle, 1,
-> +=09status =3D acpi_walk_namespace(ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT,
-> +=09=09=09=09     SERDEV_ACPI_MAX_SCAN_DEPTH,
->   =09=09=09=09     acpi_serdev_add_device, NULL, ctrl, NULL);
->   =09if (ACPI_FAILURE(status))
-> -=09=09dev_dbg(&ctrl->dev, "failed to enumerate serdev slaves\n");
-> +=09=09dev_warn(&ctrl->dev, "failed to enumerate serdev slaves\n");
->  =20
->   =09if (!ctrl->serdev)
->   =09=09return -ENODEV;
->=20
-
+Maximilian
