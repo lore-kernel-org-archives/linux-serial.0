@@ -1,162 +1,48 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 11/36] ARM: s5pv210: split from plat-samsung
-Date: Thu, 10 Oct 2019 22:29:55 +0200
-Message-ID: <20191010203043.1241612-11-arnd@arndb.de>
-References: <20191010202802.1132272-1-arnd@arndb.de>
- <20191010203043.1241612-1-arnd@arndb.de>
+From: Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: Re: [PATCH v9 3/5] mfd: ioc3: Add driver for SGI IOC3 chip
+Date: Thu, 10 Oct 2019 20:00:02 -0700
+Message-ID: <20191010200002.5fe5f34f@cakuba.netronome.com>
+References: <20191010145953.21327-1-tbogendoerfer@suse.de>
+        <20191010145953.21327-4-tbogendoerfer@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20191010203043.1241612-1-arnd@arndb.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sangbeom Kim <sbkim73@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Liam Girdwood <lgirdwood@gmail.com>
-Cc: linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, linux-samsung-soc@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-kernel@vger.kernel.org, linus.walleij@linaro.org, linux-mmc@vger.kernel.org, Takashi Iwai <tiwai@suse.com>, Jaroslav Kysela <perex@perex.cz>, Mauro Carvalho Chehab <mchehab+samsung@kernel.org>, Faiz Abbas <faiz_abbas@ti.com>, =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>, linux-serial@vger.kernel.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Olof Johansson <olof@lixom.net>, linux-spi@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20191010145953.21327-4-tbogendoerfer@suse.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc: Jonathan Corbet <corbet@lwn.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-These can be build completely independently, so split
-the two Kconfig symbols.
+On Thu, 10 Oct 2019 16:59:49 +0200, Thomas Bogendoerfer wrote:
+>  	dev = alloc_etherdev(sizeof(struct ioc3_private));
+> -	if (!dev) {
+> -		err = -ENOMEM;
+> -		goto out_disable;
+> -	}
+> -
+> -	if (pci_using_dac)
+> -		dev->features |= NETIF_F_HIGHDMA;
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- arch/arm/Kconfig.debug        | 6 +++---
- arch/arm/Makefile             | 1 -
- arch/arm/plat-samsung/Kconfig | 2 +-
- drivers/mmc/host/Kconfig      | 2 +-
- drivers/pwm/Kconfig           | 2 +-
- drivers/spi/Kconfig           | 2 +-
- drivers/tty/serial/Kconfig    | 2 +-
- sound/soc/samsung/Kconfig     | 2 +-
- 8 files changed, 9 insertions(+), 10 deletions(-)
+Looks like the NETIF_F_HIGHDMA feature will not longer be set, is that
+okay?
 
-diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
-index 9c4f2d6deb06..4c4e97ae4fcb 100644
---- a/arch/arm/Kconfig.debug
-+++ b/arch/arm/Kconfig.debug
-@@ -998,7 +998,7 @@ choice
- 		  via SCIFA4 on Renesas SH-Mobile AG5 (SH73A0).
- 
- 	config DEBUG_S3C_UART0
--		depends on PLAT_SAMSUNG || ARCH_EXYNOS
-+		depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
- 		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
- 		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
- 		select DEBUG_S3C64XX_UART if ARCH_S3C64XX
-@@ -1010,7 +1010,7 @@ choice
- 		  by the boot-loader before use.
- 
- 	config DEBUG_S3C_UART1
--		depends on PLAT_SAMSUNG || ARCH_EXYNOS
-+		depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
- 		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
- 		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
- 		select DEBUG_S3C64XX_UART if ARCH_S3C64XX
-@@ -1022,7 +1022,7 @@ choice
- 		  by the boot-loader before use.
- 
- 	config DEBUG_S3C_UART2
--		depends on PLAT_SAMSUNG || ARCH_EXYNOS
-+		depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
- 		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
- 		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
- 		select DEBUG_S3C64XX_UART if ARCH_S3C64XX
-diff --git a/arch/arm/Makefile b/arch/arm/Makefile
-index f492d7c338fe..a1bc15cda751 100644
---- a/arch/arm/Makefile
-+++ b/arch/arm/Makefile
-@@ -235,7 +235,6 @@ machine-$(CONFIG_PLAT_SPEAR)		+= spear
- # by CONFIG_* macro name.
- plat-$(CONFIG_ARCH_OMAP)	+= omap
- plat-$(CONFIG_ARCH_S3C64XX)	+= samsung
--plat-$(CONFIG_ARCH_S5PV210)	+= samsung
- plat-$(CONFIG_PLAT_ORION)	+= orion
- plat-$(CONFIG_PLAT_PXA)		+= pxa
- plat-$(CONFIG_PLAT_S3C24XX)	+= samsung
-diff --git a/arch/arm/plat-samsung/Kconfig b/arch/arm/plat-samsung/Kconfig
-index 740bdb23f38a..1530946cc672 100644
---- a/arch/arm/plat-samsung/Kconfig
-+++ b/arch/arm/plat-samsung/Kconfig
-@@ -4,7 +4,7 @@
- 
- config PLAT_SAMSUNG
- 	bool
--	depends on PLAT_S3C24XX || ARCH_S3C64XX || ARCH_S5PV210
-+	depends on PLAT_S3C24XX || ARCH_S3C64XX
- 	default y
- 	select GENERIC_IRQ_CHIP
- 	select NO_IOPORT_MAP
-diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
-index 400a581c918c..16a0e5430b44 100644
---- a/drivers/mmc/host/Kconfig
-+++ b/drivers/mmc/host/Kconfig
-@@ -275,7 +275,7 @@ config MMC_SDHCI_TEGRA
- 
- config MMC_SDHCI_S3C
- 	tristate "SDHCI support on Samsung S3C SoC"
--	depends on MMC_SDHCI && (PLAT_SAMSUNG || ARCH_EXYNOS)
-+	depends on MMC_SDHCI && (PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS)
- 	help
- 	  This selects the Secure Digital Host Controller Interface (SDHCI)
- 	  often referrered to as the HSMMC block in some of the Samsung S3C
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index e3a2518503ed..8eb738cac0c7 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -394,7 +394,7 @@ config PWM_ROCKCHIP
- 
- config PWM_SAMSUNG
- 	tristate "Samsung PWM support"
--	depends on PLAT_SAMSUNG || ARCH_EXYNOS
-+	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
- 	help
- 	  Generic PWM framework driver for Samsung.
- 
-diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
-index 6f7fdcbb9151..355391ee643d 100644
---- a/drivers/spi/Kconfig
-+++ b/drivers/spi/Kconfig
-@@ -625,7 +625,7 @@ config SPI_S3C24XX_FIQ
- 
- config SPI_S3C64XX
- 	tristate "Samsung S3C64XX series type SPI"
--	depends on (PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST)
-+	depends on (PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST)
- 	help
- 	  SPI driver for Samsung S3C64XX and newer SoCs.
- 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 4789b5d62f63..17f01cf3009c 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -237,7 +237,7 @@ config SERIAL_CLPS711X_CONSOLE
- 
- config SERIAL_SAMSUNG
- 	tristate "Samsung SoC serial support"
--	depends on PLAT_SAMSUNG || ARCH_EXYNOS
-+	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
- 	select SERIAL_CORE
- 	help
- 	  Support for the on-chip UARTs on the Samsung S3C24XX series CPUs,
-diff --git a/sound/soc/samsung/Kconfig b/sound/soc/samsung/Kconfig
-index 638983123d8f..7a0035dd9995 100644
---- a/sound/soc/samsung/Kconfig
-+++ b/sound/soc/samsung/Kconfig
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0-only
- menuconfig SND_SOC_SAMSUNG
- 	tristate "ASoC support for Samsung"
--	depends on PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST
-+	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST
- 	depends on COMMON_CLK
- 	select SND_SOC_GENERIC_DMAENGINE_PCM
- 	---help---
--- 
-2.20.0
+> -	err = pci_request_regions(pdev, "ioc3");
+> -	if (err)
+> -		goto out_free;
+> +	if (!dev)
+> +		return -ENOMEM;
+>  
+>  	SET_NETDEV_DEV(dev, &pdev->dev);
+>  
+>  	ip = netdev_priv(dev);
+> -	ip->dev = dev;
+> -	ip->dma_dev = &pdev->dev;
+> -
+> -	dev->irq = pdev->irq;
+> +	ip->dma_dev = pdev->dev.parent;
+> +	ip->regs = devm_platform_ioremap_resource(pdev, 0);
+> +	if (!ip->regs) {
+> +		err = -ENOMEM;
+> +		goto out_free;
+> +	}
