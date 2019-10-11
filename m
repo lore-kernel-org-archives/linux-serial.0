@@ -2,140 +2,127 @@ Return-Path: <SRS0=zFmD=YE=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3382C47404
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 09:48:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40324ECE58C
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 11:56:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 758192084C
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 09:48:49 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="enVIRGGD";
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="enVIRGGD"
+	by mail.kernel.org (Postfix) with ESMTP id 1DCAA206CD
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 11:56:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727641AbfJKJst (ORCPT
+        id S1727541AbfJKL4O (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Oct 2019 05:48:49 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:34624 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727470AbfJKJst (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Oct 2019 05:48:49 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id B032360AA3; Fri, 11 Oct 2019 09:48:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1570787327;
-        bh=LZttN4Q6nh1yY9TN0gKFBPwWhpkdhCfv74mQOWuTlZM=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=enVIRGGDsEDp2gO/lHIMnF7wqujLvRj59IEJlLi38NjbiAEbJqeB/pmf1mZPM00Ob
-         Qv5Gj8GtrZ8tik/3QoS49aYdxRSrC9kPQBgKpVj5cBXBONIQle+kXxW+b06W6eAUtD
-         LImrdRQ2NaqOHSWLsYn+P0ZJQjOnOv1ZWcb3G1nA=
-Received: from [10.252.222.65] (blr-c-bdr-fw-01_globalnat_allzones-outside.qualcomm.com [103.229.19.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: akashast@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id E9736606CF;
-        Fri, 11 Oct 2019 09:48:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1570787327;
-        bh=LZttN4Q6nh1yY9TN0gKFBPwWhpkdhCfv74mQOWuTlZM=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=enVIRGGDsEDp2gO/lHIMnF7wqujLvRj59IEJlLi38NjbiAEbJqeB/pmf1mZPM00Ob
-         Qv5Gj8GtrZ8tik/3QoS49aYdxRSrC9kPQBgKpVj5cBXBONIQle+kXxW+b06W6eAUtD
-         LImrdRQ2NaqOHSWLsYn+P0ZJQjOnOv1ZWcb3G1nA=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E9736606CF
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-Subject: Re: [PATCH V2 2/2] tty: serial: qcom_geni_serial: Wakeup over UART RX
-To:     Stephen Boyd <swboyd@chromium.org>, gregkh@linuxfoundation.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        mgautam@codeaurora.org, bjorn.andersson@linaro.org
-References: <1570700803-17566-1-git-send-email-akashast@codeaurora.org>
- <5d9f3f4f.1c69fb81.5120f.b90e@mx.google.com>
-From:   Akash Asthana <akashast@codeaurora.org>
-Message-ID: <a7dabb1d-b6af-acc5-ba4e-923ee5fc6ee3@codeaurora.org>
-Date:   Fri, 11 Oct 2019 15:18:42 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        Fri, 11 Oct 2019 07:56:14 -0400
+Received: from mga05.intel.com ([192.55.52.43]:24480 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727243AbfJKL4O (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 11 Oct 2019 07:56:14 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Oct 2019 04:56:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,284,1566889200"; 
+   d="scan'208";a="197559763"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga003.jf.intel.com with ESMTP; 11 Oct 2019 04:56:12 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 25A4648B; Fri, 11 Oct 2019 14:56:10 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Robert Middleton <robert.middleton@rm5248.com>,
+        Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>,
+        Aaron Sierra <asierra@xes-inc.com>
+Subject: [PATCH v1] serial: 8250_exar: Move Exar pieces to custom ->startup()
+Date:   Fri, 11 Oct 2019 14:56:10 +0300
+Message-Id: <20191011115610.81507-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-In-Reply-To: <5d9f3f4f.1c69fb81.5120f.b90e@mx.google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+There is a one more step to consolidate Exar bits under 8250_exar umbrella.
+This time we introduce a custom ->startup() callback where the Exar specific
+settings are applied.
 
-On 10/10/2019 7:55 PM, Stephen Boyd wrote:
-> Quoting Akash Asthana (2019-10-10 02:46:43)
->> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
->> index 5180cd8..ff63728 100644
->> --- a/drivers/tty/serial/qcom_geni_serial.c
->> +++ b/drivers/tty/serial/qcom_geni_serial.c
->> @@ -1306,6 +1317,29 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
->>                  return ret;
->>          }
->>   
->> +       if (!console) {
->> +               port->wakeup_irq = platform_get_irq(pdev, 1);
-> Should use platform_get_irq_optional() it seems.
-OK
->
->> +               if (port->wakeup_irq < 0) {
->> +                       dev_err(&pdev->dev, "Failed to get wakeup IRQ %d\n",
->> +                                       port->wakeup_irq);
->> +               } else {
->> +                       irq_set_status_flags(port->wakeup_irq, IRQ_NOAUTOEN);
->> +                       ret = devm_request_irq(uport->dev, port->wakeup_irq,
->> +                               qcom_geni_serial_wakeup_isr,
->> +                               IRQF_TRIGGER_FALLING, "uart_wakeup", uport);
->> +                       if (ret) {
->> +                               dev_err(uport->dev, "Failed to register wakeup IRQ ret %d\n",
->> +                                               ret);
->> +                               return ret;
->> +                       }
->> +
->> +                       device_init_wakeup(&pdev->dev, true);
->> +                       ret = dev_pm_set_wake_irq(&pdev->dev, port->wakeup_irq);
-> Why can't we use dev_pm_set_dedicated_wake_irq() here?
+Cc: Robert Middleton <robert.middleton@rm5248.com>
+Cc: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+Cc: Aaron Sierra <asierra@xes-inc.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_exar.c | 19 +++++++++++++++++++
+ drivers/tty/serial/8250/8250_port.c | 14 --------------
+ 2 files changed, 19 insertions(+), 14 deletions(-)
 
-If we use this API then handler "handle_threaded_wake_irq" uses device 
-specific pm_runtime functions to wake the device and currently this
-
-driver don't support runtime PM callbacks. Also, we want to register 
-"qcom_geni_serial_wakeup_isr" as our IRQ handler for wakeup scenario.
-
->
->> +                       if (unlikely(ret))
->> +                               dev_err(uport->dev, "%s:Failed to set IRQ wake:%d\n",
->> +                                               __func__, ret);
->> +               }
->> +       }
->>          uport->private_data = drv;
->>          platform_set_drvdata(pdev, port);
->>          port->handle_rx = console ? handle_rx_console : handle_rx_uart;
->> @@ -1328,7 +1362,12 @@ static int __maybe_unused qcom_geni_serial_sys_suspend(struct device *dev)
->>          struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
->>          struct uart_port *uport = &port->uport;
->>   
->> -       return uart_suspend_port(uport->private_data, uport);
->> +       uart_suspend_port(uport->private_data, uport);
->> +
->> +       if (port->wakeup_irq > 0)
->> +               enable_irq(port->wakeup_irq);
->> +
-> Then this is hopefully done automatically?
->
->> +       return 0;
->>   }
->>   
->>   static int __maybe_unused qcom_geni_serial_sys_resume(struct device *dev)
-
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+index 597eb9d16f21..108cd55f9c4d 100644
+--- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -166,6 +166,23 @@ static void xr17v35x_set_divisor(struct uart_port *p, unsigned int baud,
+ 	serial_port_out(p, 0x2, quot_frac);
+ }
+ 
++static int xr17v35x_startup(struct uart_port *port)
++{
++	/*
++	 * First enable access to IER [7:5], ISR [5:4], FCR [5:4],
++	 * MCR [7:5] and MSR [7:0]
++	 */
++	serial_port_out(port, UART_XR_EFR, UART_EFR_ECB);
++
++	/*
++	 * Make sure all interrups are masked until initialization is
++	 * complete and the FIFOs are cleared
++	 */
++	serial_port_out(port, UART_IER, 0);
++
++	return serial8250_do_startup(port);
++}
++
+ static void exar_shutdown(struct uart_port *port)
+ {
+ 	unsigned char lsr;
+@@ -212,6 +229,8 @@ static int default_setup(struct exar8250 *priv, struct pci_dev *pcidev,
+ 
+ 		port->port.get_divisor = xr17v35x_get_divisor;
+ 		port->port.set_divisor = xr17v35x_set_divisor;
++
++		port->port.startup = xr17v35x_startup;
+ 	} else {
+ 		port->port.type = PORT_XR17D15X;
+ 	}
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 8407166610ce..90655910b0c7 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2114,20 +2114,6 @@ int serial8250_do_startup(struct uart_port *port)
+ 	enable_rsa(up);
+ #endif
+ 
+-	if (port->type == PORT_XR17V35X) {
+-		/*
+-		 * First enable access to IER [7:5], ISR [5:4], FCR [5:4],
+-		 * MCR [7:5] and MSR [7:0]
+-		 */
+-		serial_port_out(port, UART_XR_EFR, UART_EFR_ECB);
+-
+-		/*
+-		 * Make sure all interrups are masked until initialization is
+-		 * complete and the FIFOs are cleared
+-		 */
+-		serial_port_out(port, UART_IER, 0);
+-	}
+-
+ 	/*
+ 	 * Clear the FIFO buffers and disable them.
+ 	 * (they will be reenabled in set_termios())
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+2.23.0
 
