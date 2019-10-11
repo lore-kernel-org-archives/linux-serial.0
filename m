@@ -2,159 +2,124 @@ Return-Path: <SRS0=zFmD=YE=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4069CECE58C
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 05:52:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F2F8C47404
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 07:39:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 233E4214E0
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 05:52:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 253532064A
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 07:39:22 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="EQ/l29+S";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="amdASn4+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727329AbfJKFwb (ORCPT
+        id S1727272AbfJKHjV (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Oct 2019 01:52:31 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:52107 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727335AbfJKFwb (ORCPT
+        Fri, 11 Oct 2019 03:39:21 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:39392 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726853AbfJKHjV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Oct 2019 01:52:31 -0400
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1iInqC-0008KX-1r; Fri, 11 Oct 2019 07:51:52 +0200
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1iInq9-0001Vy-3U; Fri, 11 Oct 2019 07:51:49 +0200
-Date:   Fri, 11 Oct 2019 07:51:49 +0200
-From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Kukjin Kim <kgene@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Sangbeom Kim <sbkim73@samsung.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linus.walleij@linaro.org,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Olof Johansson <olof@lixom.net>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        =?iso-8859-1?Q?Cl=E9ment_P=E9ron?= <peron.clem@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Faiz Abbas <faiz_abbas@ti.com>, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH 11/36] ARM: s5pv210: split from plat-samsung
-Message-ID: <20191011055149.4dudr4tk2znpt65u@pengutronix.de>
-References: <20191010202802.1132272-1-arnd@arndb.de>
- <20191010203043.1241612-1-arnd@arndb.de>
- <20191010203043.1241612-11-arnd@arndb.de>
+        Fri, 11 Oct 2019 03:39:21 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 27626606CF; Fri, 11 Oct 2019 07:39:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1570779560;
+        bh=igbGnpEs+8yznnX8LP1VDR520YvxYge06B1VKFmy1Hg=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=EQ/l29+SfWAyCV6OvGCPRabfmj4xvVKrIe1lrq0YiT2nS+JhdggQ2080rfe3uN4Vw
+         xORmOC15dHBT21Geuj7S18/UNBIaSHiL5unHxpSEd2ylqV6Lacz+MPoIv7QRGL4Lb1
+         xKV8rKthA0kwZwrn8H37kMr2KkiS0kZOR6kIBhWE=
+Received: from [10.252.222.65] (blr-c-bdr-fw-01_globalnat_allzones-outside.qualcomm.com [103.229.19.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 09EF2606CF;
+        Fri, 11 Oct 2019 07:39:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1570779559;
+        bh=igbGnpEs+8yznnX8LP1VDR520YvxYge06B1VKFmy1Hg=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=amdASn4+H2sls1+4W2CIwYjd3prMQKARYT4/DrKPaOnXTlPCZJy6S8VXtddxr05u0
+         vBa2YdCFLp4voq18fKdPhj8VeOtBJpgT6FN6Z6N0x5ktL+Mjb06IBUFgPYNGtqcHjl
+         W94vun3/UZ+vyNNBv9IR6NSQfEHzNi7viv+5MpRg=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 09EF2606CF
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+Subject: Re: [PATCH V2 1/2] tty: serial: qcom_geni_serial: IRQ cleanup
+To:     Stephen Boyd <swboyd@chromium.org>, gregkh@linuxfoundation.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        mgautam@codeaurora.org, bjorn.andersson@linaro.org
+References: <1570700763-17319-1-git-send-email-akashast@codeaurora.org>
+ <5d9f3dfa.1c69fb81.84c4b.30bf@mx.google.com>
+From:   Akash Asthana <akashast@codeaurora.org>
+Message-ID: <010dd569-d172-fdcf-0bfa-8caaf41a4d46@codeaurora.org>
+Date:   Fri, 11 Oct 2019 13:09:06 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Disposition: inline
+In-Reply-To: <5d9f3dfa.1c69fb81.84c4b.30bf@mx.google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191010203043.1241612-11-arnd@arndb.de>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191011055149.KL6OC0YTkcnSVXmZmgpV8NHEPDDzH42vN8YFkNNgdG8@z>
 
-On Thu, Oct 10, 2019 at 10:29:55PM +0200, Arnd Bergmann wrote:
-> These can be build completely independently, so split
-> the two Kconfig symbols.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-I'd mention the two symbols' names you're working on in the commit log.
-I guess it's about PLAT_SAMSUNG and ARCH_S5PV210. And I wouldn't call it
-"split" which IMHO suggests there was only one symbol before.
+On 10/10/2019 7:49 PM, Stephen Boyd wrote:
+> Quoting Akash Asthana (2019-10-10 02:46:03)
+>> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+>> index 14c6306..5180cd8 100644
+>> --- a/drivers/tty/serial/qcom_geni_serial.c
+>> +++ b/drivers/tty/serial/qcom_geni_serial.c
+>> @@ -1297,11 +1291,21 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+>>          port->rx_fifo_depth = DEF_FIFO_DEPTH_WORDS;
+>>          port->tx_fifo_width = DEF_FIFO_WIDTH_BITS;
+>>   
+>> +       scnprintf(port->name, sizeof(port->name), "qcom_geni_serial_%s%d",
+>> +               (uart_console(uport) ? "console" : "uart"), uport->line);
+> Drop useless parenthesis. Also, it might make more sense to make this a
+> devm_kasprintf() call now.
 
-Maybe:
+OK
 
-	Don't imply PLAT_SAMSUNG if ARCH_S5PV210 is enabled
+>>          irq = platform_get_irq(pdev, 0);
+>>          if (irq < 0)
+>>                  return irq;
+>>          uport->irq = irq;
+>>   
+>> +       irq_set_status_flags(uport->irq, IRQ_NOAUTOEN);
+> Is there a reason why we can't always leave the irq enabled and request
+> it later once the uart structure has been fully initialized?
 
-would be a better subject line?
+According to current design we are requesting IRQ handler in probe, and 
+we enable and disable it from the startup(port open) and shutdown(port 
+close) function respectively.
 
-> ---
->  arch/arm/Kconfig.debug        | 6 +++---
->  arch/arm/Makefile             | 1 -
->  arch/arm/plat-samsung/Kconfig | 2 +-
->  drivers/mmc/host/Kconfig      | 2 +-
->  drivers/pwm/Kconfig           | 2 +-
->  drivers/spi/Kconfig           | 2 +-
->  drivers/tty/serial/Kconfig    | 2 +-
->  sound/soc/samsung/Kconfig     | 2 +-
->  8 files changed, 9 insertions(+), 10 deletions(-)
-> 
-> diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
-> index 9c4f2d6deb06..4c4e97ae4fcb 100644
-> --- a/arch/arm/Kconfig.debug
-> +++ b/arch/arm/Kconfig.debug
-> @@ -998,7 +998,7 @@ choice
->  		  via SCIFA4 on Renesas SH-Mobile AG5 (SH73A0).
->  
->  	config DEBUG_S3C_UART0
-> -		depends on PLAT_SAMSUNG || ARCH_EXYNOS
-> +		depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
->  		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
->  		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
->  		select DEBUG_S3C64XX_UART if ARCH_S3C64XX
-> @@ -1010,7 +1010,7 @@ choice
->  		  by the boot-loader before use.
->  
->  	config DEBUG_S3C_UART1
-> -		depends on PLAT_SAMSUNG || ARCH_EXYNOS
-> +		depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
->  		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
->  		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
->  		select DEBUG_S3C64XX_UART if ARCH_S3C64XX
-> @@ -1022,7 +1022,7 @@ choice
->  		  by the boot-loader before use.
->  
->  	config DEBUG_S3C_UART2
-> -		depends on PLAT_SAMSUNG || ARCH_EXYNOS
-> +		depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
->  		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
->  		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
->  		select DEBUG_S3C64XX_UART if ARCH_S3C64XX
-> diff --git a/arch/arm/Makefile b/arch/arm/Makefile
-> index f492d7c338fe..a1bc15cda751 100644
-> --- a/arch/arm/Makefile
-> +++ b/arch/arm/Makefile
-> @@ -235,7 +235,6 @@ machine-$(CONFIG_PLAT_SPEAR)		+= spear
->  # by CONFIG_* macro name.
->  plat-$(CONFIG_ARCH_OMAP)	+= omap
->  plat-$(CONFIG_ARCH_S3C64XX)	+= samsung
-> -plat-$(CONFIG_ARCH_S5PV210)	+= samsung
+We need to call for disable_irq in shutdown function because client has 
+closed the port and we don't expect any transfer requests after it.
 
-Would it make more sense to make this
+>>request it later once the uart structure has been fully initialized?
 
-	plat-$(PLAT_SAMSUNG) += samsung
+     Is the ask is to move request irq later in probe after the uport is 
+fully initialized?
 
-(in a separate patch)? Hmm, it seems there is no plat-y for
-PLAT_S3C24XX=y builds. Is this intended? If yes, the directory name
-containing "samsung" suggests something that seems untrue.
-
-Best regards
-Uwe
+>> +       ret = devm_request_irq(uport->dev, uport->irq, qcom_geni_serial_isr,
+>> +                       IRQF_TRIGGER_HIGH, port->name, uport);
+>> +       if (ret) {
+>> +               dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
+>> +               return ret;
+>> +       }
+>> +
+>>          uport->private_data = drv;
+>>          platform_set_drvdata(pdev, port);
+>>          port->handle_rx = console ? handle_rx_console : handle_rx_uart;
 
 -- 
-Pengutronix e.K.                           | Uwe Kleine-K�nig            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+
