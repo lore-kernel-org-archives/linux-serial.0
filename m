@@ -2,124 +2,82 @@ Return-Path: <SRS0=zFmD=YE=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F2F8C47404
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 07:39:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DAD5ECE58C
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 08:37:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 253532064A
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 07:39:22 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="EQ/l29+S";
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="amdASn4+"
+	by mail.kernel.org (Postfix) with ESMTP id E24072196E
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 08:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727272AbfJKHjV (ORCPT
+        id S1726751AbfJKIhO convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Oct 2019 03:39:21 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:39392 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726853AbfJKHjV (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Oct 2019 03:39:21 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 27626606CF; Fri, 11 Oct 2019 07:39:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1570779560;
-        bh=igbGnpEs+8yznnX8LP1VDR520YvxYge06B1VKFmy1Hg=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=EQ/l29+SfWAyCV6OvGCPRabfmj4xvVKrIe1lrq0YiT2nS+JhdggQ2080rfe3uN4Vw
-         xORmOC15dHBT21Geuj7S18/UNBIaSHiL5unHxpSEd2ylqV6Lacz+MPoIv7QRGL4Lb1
-         xKV8rKthA0kwZwrn8H37kMr2KkiS0kZOR6kIBhWE=
-Received: from [10.252.222.65] (blr-c-bdr-fw-01_globalnat_allzones-outside.qualcomm.com [103.229.19.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: akashast@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 09EF2606CF;
-        Fri, 11 Oct 2019 07:39:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1570779559;
-        bh=igbGnpEs+8yznnX8LP1VDR520YvxYge06B1VKFmy1Hg=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=amdASn4+H2sls1+4W2CIwYjd3prMQKARYT4/DrKPaOnXTlPCZJy6S8VXtddxr05u0
-         vBa2YdCFLp4voq18fKdPhj8VeOtBJpgT6FN6Z6N0x5ktL+Mjb06IBUFgPYNGtqcHjl
-         W94vun3/UZ+vyNNBv9IR6NSQfEHzNi7viv+5MpRg=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 09EF2606CF
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-Subject: Re: [PATCH V2 1/2] tty: serial: qcom_geni_serial: IRQ cleanup
-To:     Stephen Boyd <swboyd@chromium.org>, gregkh@linuxfoundation.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        mgautam@codeaurora.org, bjorn.andersson@linaro.org
-References: <1570700763-17319-1-git-send-email-akashast@codeaurora.org>
- <5d9f3dfa.1c69fb81.84c4b.30bf@mx.google.com>
-From:   Akash Asthana <akashast@codeaurora.org>
-Message-ID: <010dd569-d172-fdcf-0bfa-8caaf41a4d46@codeaurora.org>
-Date:   Fri, 11 Oct 2019 13:09:06 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <5d9f3dfa.1c69fb81.84c4b.30bf@mx.google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+        Fri, 11 Oct 2019 04:37:14 -0400
+Received: from mx2.suse.de ([195.135.220.15]:50344 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726397AbfJKIhO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 11 Oct 2019 04:37:14 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id EB590ADDD;
+        Fri, 11 Oct 2019 08:37:11 +0000 (UTC)
+Date:   Fri, 11 Oct 2019 10:37:10 +0200
+From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v9 3/5] mfd: ioc3: Add driver for SGI IOC3 chip
+Message-Id: <20191011103710.6c45fdbc9a05fdd13177193e@suse.de>
+In-Reply-To: <20191010200002.5fe5f34f@cakuba.netronome.com>
+References: <20191010145953.21327-1-tbogendoerfer@suse.de>
+        <20191010145953.21327-4-tbogendoerfer@suse.de>
+        <20191010200002.5fe5f34f@cakuba.netronome.com>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
+Message-ID: <20191011083710.S4lxdDVa-pFXLNd2FsewoUEHyqIpkmS3ZB6W3TJmRfg@z>
 
+On Thu, 10 Oct 2019 20:00:02 -0700
+Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
 
-On 10/10/2019 7:49 PM, Stephen Boyd wrote:
-> Quoting Akash Asthana (2019-10-10 02:46:03)
->> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
->> index 14c6306..5180cd8 100644
->> --- a/drivers/tty/serial/qcom_geni_serial.c
->> +++ b/drivers/tty/serial/qcom_geni_serial.c
->> @@ -1297,11 +1291,21 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
->>          port->rx_fifo_depth = DEF_FIFO_DEPTH_WORDS;
->>          port->tx_fifo_width = DEF_FIFO_WIDTH_BITS;
->>   
->> +       scnprintf(port->name, sizeof(port->name), "qcom_geni_serial_%s%d",
->> +               (uart_console(uport) ? "console" : "uart"), uport->line);
-> Drop useless parenthesis. Also, it might make more sense to make this a
-> devm_kasprintf() call now.
+> On Thu, 10 Oct 2019 16:59:49 +0200, Thomas Bogendoerfer wrote:
+> >  	dev = alloc_etherdev(sizeof(struct ioc3_private));
+> > -	if (!dev) {
+> > -		err = -ENOMEM;
+> > -		goto out_disable;
+> > -	}
+> > -
+> > -	if (pci_using_dac)
+> > -		dev->features |= NETIF_F_HIGHDMA;
+> 
+> Looks like the NETIF_F_HIGHDMA feature will not longer be set, is that
+> okay?
 
-OK
+yes, all platforms where ioc3 is usable are running 64bit kernels without
+HIGHMEM.
 
->>          irq = platform_get_irq(pdev, 0);
->>          if (irq < 0)
->>                  return irq;
->>          uport->irq = irq;
->>   
->> +       irq_set_status_flags(uport->irq, IRQ_NOAUTOEN);
-> Is there a reason why we can't always leave the irq enabled and request
-> it later once the uart structure has been fully initialized?
-
-According to current design we are requesting IRQ handler in probe, and 
-we enable and disable it from the startup(port open) and shutdown(port 
-close) function respectively.
-
-We need to call for disable_irq in shutdown function because client has 
-closed the port and we don't expect any transfer requests after it.
-
->>request it later once the uart structure has been fully initialized?
-
- Â Â Â  Is the ask is to move request irq later in probe after the uport is 
-fully initialized?
-
->> +       ret = devm_request_irq(uport->dev, uport->irq, qcom_geni_serial_isr,
->> +                       IRQF_TRIGGER_HIGH, port->name, uport);
->> +       if (ret) {
->> +               dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
->> +               return ret;
->> +       }
->> +
->>          uport->private_data = drv;
->>          platform_set_drvdata(pdev, port);
->>          port->handle_rx = console ? handle_rx_console : handle_rx_uart;
+Thomas.
 
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
-
+SUSE Software Solutions Germany GmbH
+HRB 247165 (AG München)
+Geschäftsführer: Felix Imendörffer
