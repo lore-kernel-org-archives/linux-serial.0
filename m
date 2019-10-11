@@ -2,79 +2,140 @@ Return-Path: <SRS0=zFmD=YE=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08992C47404
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 09:28:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3382C47404
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 09:48:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D12E021D71
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 09:28:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 758192084C
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 09:48:49 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="enVIRGGD";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="enVIRGGD"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727587AbfJKJ2H convert rfc822-to-8bit (ORCPT
+        id S1727641AbfJKJst (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 11 Oct 2019 05:28:07 -0400
-Received: from mx2.suse.de ([195.135.220.15]:55754 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727314AbfJKJ2H (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 11 Oct 2019 05:28:07 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id DC74DB175;
-        Fri, 11 Oct 2019 09:28:04 +0000 (UTC)
-Date:   Fri, 11 Oct 2019 11:28:04 +0200
-From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
-To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v9 5/5] MIPS: SGI-IP27: Enable ethernet phy on second
- Origin 200 module
-Message-Id: <20191011112804.ef8079aa9bad5c81ce473fbd@suse.de>
-In-Reply-To: <102db20a-0c37-3e28-2d14-e9c6eaa55f5c@cogentembedded.com>
-References: <20191010145953.21327-1-tbogendoerfer@suse.de>
-        <20191010145953.21327-6-tbogendoerfer@suse.de>
-        <102db20a-0c37-3e28-2d14-e9c6eaa55f5c@cogentembedded.com>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+        Fri, 11 Oct 2019 05:48:49 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:34624 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727470AbfJKJst (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 11 Oct 2019 05:48:49 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id B032360AA3; Fri, 11 Oct 2019 09:48:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1570787327;
+        bh=LZttN4Q6nh1yY9TN0gKFBPwWhpkdhCfv74mQOWuTlZM=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=enVIRGGDsEDp2gO/lHIMnF7wqujLvRj59IEJlLi38NjbiAEbJqeB/pmf1mZPM00Ob
+         Qv5Gj8GtrZ8tik/3QoS49aYdxRSrC9kPQBgKpVj5cBXBONIQle+kXxW+b06W6eAUtD
+         LImrdRQ2NaqOHSWLsYn+P0ZJQjOnOv1ZWcb3G1nA=
+Received: from [10.252.222.65] (blr-c-bdr-fw-01_globalnat_allzones-outside.qualcomm.com [103.229.19.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id E9736606CF;
+        Fri, 11 Oct 2019 09:48:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1570787327;
+        bh=LZttN4Q6nh1yY9TN0gKFBPwWhpkdhCfv74mQOWuTlZM=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=enVIRGGDsEDp2gO/lHIMnF7wqujLvRj59IEJlLi38NjbiAEbJqeB/pmf1mZPM00Ob
+         Qv5Gj8GtrZ8tik/3QoS49aYdxRSrC9kPQBgKpVj5cBXBONIQle+kXxW+b06W6eAUtD
+         LImrdRQ2NaqOHSWLsYn+P0ZJQjOnOv1ZWcb3G1nA=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E9736606CF
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+Subject: Re: [PATCH V2 2/2] tty: serial: qcom_geni_serial: Wakeup over UART RX
+To:     Stephen Boyd <swboyd@chromium.org>, gregkh@linuxfoundation.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        mgautam@codeaurora.org, bjorn.andersson@linaro.org
+References: <1570700803-17566-1-git-send-email-akashast@codeaurora.org>
+ <5d9f3f4f.1c69fb81.5120f.b90e@mx.google.com>
+From:   Akash Asthana <akashast@codeaurora.org>
+Message-ID: <a7dabb1d-b6af-acc5-ba4e-923ee5fc6ee3@codeaurora.org>
+Date:   Fri, 11 Oct 2019 15:18:42 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <5d9f3f4f.1c69fb81.5120f.b90e@mx.google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191011092804.wVeIPkDh9d3sc1ok3Pd8WNXQFrdq5_5t7m0G0h2Nu6s@z>
 
-On Thu, 10 Oct 2019 19:37:15 +0300
-Sergei Shtylyov <sergei.shtylyov@cogentembedded.com> wrote:
 
-> On 10/10/2019 05:59 PM, Thomas Bogendoerfer wrote:
-> > +	/* enable ethernet PHY on IP29 systemboard */
-> > +	pci_read_config_dword(dev, PCI_SUBSYSTEM_VENDOR_ID, &sid);
-> > +	if (sid == ((PCI_VENDOR_ID_SGI << 16) | IOC3_SUBSYS_IP29_SYSBOARD))
-> 
->    I thought PCI was little endian, thuis vendor ID at offset 0 and device ID
-> at offset 2?
+On 10/10/2019 7:55 PM, Stephen Boyd wrote:
+> Quoting Akash Asthana (2019-10-10 02:46:43)
+>> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+>> index 5180cd8..ff63728 100644
+>> --- a/drivers/tty/serial/qcom_geni_serial.c
+>> +++ b/drivers/tty/serial/qcom_geni_serial.c
+>> @@ -1306,6 +1317,29 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+>>                  return ret;
+>>          }
+>>   
+>> +       if (!console) {
+>> +               port->wakeup_irq = platform_get_irq(pdev, 1);
+> Should use platform_get_irq_optional() it seems.
+OK
+>
+>> +               if (port->wakeup_irq < 0) {
+>> +                       dev_err(&pdev->dev, "Failed to get wakeup IRQ %d\n",
+>> +                                       port->wakeup_irq);
+>> +               } else {
+>> +                       irq_set_status_flags(port->wakeup_irq, IRQ_NOAUTOEN);
+>> +                       ret = devm_request_irq(uport->dev, port->wakeup_irq,
+>> +                               qcom_geni_serial_wakeup_isr,
+>> +                               IRQF_TRIGGER_FALLING, "uart_wakeup", uport);
+>> +                       if (ret) {
+>> +                               dev_err(uport->dev, "Failed to register wakeup IRQ ret %d\n",
+>> +                                               ret);
+>> +                               return ret;
+>> +                       }
+>> +
+>> +                       device_init_wakeup(&pdev->dev, true);
+>> +                       ret = dev_pm_set_wake_irq(&pdev->dev, port->wakeup_irq);
+> Why can't we use dev_pm_set_dedicated_wake_irq() here?
 
-you are right. I already messed it up in pci-xtalk-bridge.c. As this is just a
-fake sub device id, there is no harm, but I'll fix it.
+If we use this API then handler "handle_threaded_wake_irq" uses device 
+specific pm_runtime functions to wake the device and currently this
 
-Thomas.
+driver don't support runtime PM callbacks. Also, we want to register 
+"qcom_geni_serial_wakeup_isr" as our IRQ handler for wakeup scenario.
+
+>
+>> +                       if (unlikely(ret))
+>> +                               dev_err(uport->dev, "%s:Failed to set IRQ wake:%d\n",
+>> +                                               __func__, ret);
+>> +               }
+>> +       }
+>>          uport->private_data = drv;
+>>          platform_set_drvdata(pdev, port);
+>>          port->handle_rx = console ? handle_rx_console : handle_rx_uart;
+>> @@ -1328,7 +1362,12 @@ static int __maybe_unused qcom_geni_serial_sys_suspend(struct device *dev)
+>>          struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
+>>          struct uart_port *uport = &port->uport;
+>>   
+>> -       return uart_suspend_port(uport->private_data, uport);
+>> +       uart_suspend_port(uport->private_data, uport);
+>> +
+>> +       if (port->wakeup_irq > 0)
+>> +               enable_irq(port->wakeup_irq);
+>> +
+> Then this is hopefully done automatically?
+>
+>> +       return 0;
+>>   }
+>>   
+>>   static int __maybe_unused qcom_geni_serial_sys_resume(struct device *dev)
 
 -- 
-SUSE Software Solutions Germany GmbH
-HRB 247165 (AG München)
-Geschäftsführer: Felix Imendörffer
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+
