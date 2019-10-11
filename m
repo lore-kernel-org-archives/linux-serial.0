@@ -2,121 +2,159 @@ Return-Path: <SRS0=zFmD=YE=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8966DC10F14
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 03:00:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4069CECE58C
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 05:52:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6167A21A4A
-	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 03:00:20 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=netronome-com.20150623.gappssmtp.com header.i=@netronome-com.20150623.gappssmtp.com header.b="KzBWLKoF"
+	by mail.kernel.org (Postfix) with ESMTP id 233E4214E0
+	for <linux-serial@archiver.kernel.org>; Fri, 11 Oct 2019 05:52:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726743AbfJKDAT (ORCPT
+        id S1727329AbfJKFwb (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 10 Oct 2019 23:00:19 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:45574 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726116AbfJKDAT (ORCPT
+        Fri, 11 Oct 2019 01:52:31 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:52107 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727335AbfJKFwb (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 10 Oct 2019 23:00:19 -0400
-Received: by mail-pg1-f196.google.com with SMTP id r1so3715011pgj.12
-        for <linux-serial@vger.kernel.org>; Thu, 10 Oct 2019 20:00:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=nP3GB4eev/Uw/7TzzPBf7q6vVOFurBjXFqfQUZ+MDGI=;
-        b=KzBWLKoFEXWJXPLXk8rihO70idubrVY0AvebVOxegnFY86QJmJGnQAku+lqeexuYjB
-         9G74EjZ5ZvlXtWdwx6WwfpqvWL6VZhkBTLucMGD8v4+2hORNhyJnUiBwwpBCF8JxvYyl
-         Y/VEUCQaO4qMcQjX25jnBmyNowejWuBTvCczZAtLpuYiP3fyFPOQUIuwfkc7KI12BXX2
-         EwM6/7cZLGE5aW9q4v+KkZG7M4Ko8VEfRigsYkPSfXxu8CCT86YN8Kz/jywZSNG+JnPs
-         /EYL79jv7SvwRhbBYvBe5MtI4NC0fHqrZX5X0RP9DTqt0mKF84SdidfQjH90hJrCfHuU
-         JAsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=nP3GB4eev/Uw/7TzzPBf7q6vVOFurBjXFqfQUZ+MDGI=;
-        b=eUh/LXC6Zagj7G+TBVWy7jqixL4aFgEjuec+xuwqNSk89pX0oWt4ysuIidpPzx4BIY
-         UDmoYG+ArAf6TE16UqSw9unSNR/mhWGAHYblrCCV5jHPMliUiTdi8r9vhLphk8PCTKAV
-         /zYr5rWLfdEB3uBD+QWu15fW9Mj4Cla6ZMPUIQFaYLITgsVRvVFS5ozZXCeS0cg3uXC9
-         nw6b9KWyevwjtj4WjAOgFOT/n++P+BzsIwCy/Dp4zsKLDCLhRLfAVjS+sElTatt0jDTg
-         8tYHAmCTAHKV924cBBzVAFhX53OV/Gn2ZhmknsyNGfZj9terQGpCI0fuuti+tkmeLiA5
-         kH2g==
-X-Gm-Message-State: APjAAAWtaG4/ythx6Uh7qQQKdZfaMcfHF8jLJMTSRawV9TOj+3x+Gknh
-        LtfTgWaRnfvNpBhoyj0loY8M7w==
-X-Google-Smtp-Source: APXvYqyC7PSkR8RT7VypdyqNldAyGXeW91322WLbhsrNNwrkgAMBn6eiIibb+JzCUjR+ko/vo+L6ow==
-X-Received: by 2002:a65:688a:: with SMTP id e10mr13223631pgt.122.1570762818461;
-        Thu, 10 Oct 2019 20:00:18 -0700 (PDT)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id q6sm8505284pgn.44.2019.10.10.20.00.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2019 20:00:18 -0700 (PDT)
-Date:   Thu, 10 Oct 2019 20:00:02 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Fri, 11 Oct 2019 01:52:31 -0400
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1iInqC-0008KX-1r; Fri, 11 Oct 2019 07:51:52 +0200
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1iInq9-0001Vy-3U; Fri, 11 Oct 2019 07:51:49 +0200
+Date:   Fri, 11 Oct 2019 07:51:49 +0200
+From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Kukjin Kim <kgene@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v9 3/5] mfd: ioc3: Add driver for SGI IOC3 chip
-Message-ID: <20191010200002.5fe5f34f@cakuba.netronome.com>
-In-Reply-To: <20191010145953.21327-4-tbogendoerfer@suse.de>
-References: <20191010145953.21327-1-tbogendoerfer@suse.de>
-        <20191010145953.21327-4-tbogendoerfer@suse.de>
-Organization: Netronome Systems, Ltd.
+        Jiri Slaby <jslaby@suse.com>,
+        Sangbeom Kim <sbkim73@samsung.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linus.walleij@linaro.org,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, Olof Johansson <olof@lixom.net>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        =?iso-8859-1?Q?Cl=E9ment_P=E9ron?= <peron.clem@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Faiz Abbas <faiz_abbas@ti.com>, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH 11/36] ARM: s5pv210: split from plat-samsung
+Message-ID: <20191011055149.4dudr4tk2znpt65u@pengutronix.de>
+References: <20191010202802.1132272-1-arnd@arndb.de>
+ <20191010203043.1241612-1-arnd@arndb.de>
+ <20191010203043.1241612-11-arnd@arndb.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191010203043.1241612-11-arnd@arndb.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191011030002.9eytSUKqT_2loTv-sKxoAXpnuYAwwdvr1Vdt2rV7cbc@z>
+Message-ID: <20191011055149.KL6OC0YTkcnSVXmZmgpV8NHEPDDzH42vN8YFkNNgdG8@z>
 
-On Thu, 10 Oct 2019 16:59:49 +0200, Thomas Bogendoerfer wrote:
->  	dev = alloc_etherdev(sizeof(struct ioc3_private));
-> -	if (!dev) {
-> -		err = -ENOMEM;
-> -		goto out_disable;
-> -	}
-> -
-> -	if (pci_using_dac)
-> -		dev->features |= NETIF_F_HIGHDMA;
+On Thu, Oct 10, 2019 at 10:29:55PM +0200, Arnd Bergmann wrote:
+> These can be build completely independently, so split
+> the two Kconfig symbols.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Looks like the NETIF_F_HIGHDMA feature will not longer be set, is that
-okay?
+I'd mention the two symbols' names you're working on in the commit log.
+I guess it's about PLAT_SAMSUNG and ARCH_S5PV210. And I wouldn't call it
+"split" which IMHO suggests there was only one symbol before.
 
-> -	err = pci_request_regions(pdev, "ioc3");
-> -	if (err)
-> -		goto out_free;
-> +	if (!dev)
-> +		return -ENOMEM;
+Maybe:
+
+	Don't imply PLAT_SAMSUNG if ARCH_S5PV210 is enabled
+
+would be a better subject line?
+
+> ---
+>  arch/arm/Kconfig.debug        | 6 +++---
+>  arch/arm/Makefile             | 1 -
+>  arch/arm/plat-samsung/Kconfig | 2 +-
+>  drivers/mmc/host/Kconfig      | 2 +-
+>  drivers/pwm/Kconfig           | 2 +-
+>  drivers/spi/Kconfig           | 2 +-
+>  drivers/tty/serial/Kconfig    | 2 +-
+>  sound/soc/samsung/Kconfig     | 2 +-
+>  8 files changed, 9 insertions(+), 10 deletions(-)
+> 
+> diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+> index 9c4f2d6deb06..4c4e97ae4fcb 100644
+> --- a/arch/arm/Kconfig.debug
+> +++ b/arch/arm/Kconfig.debug
+> @@ -998,7 +998,7 @@ choice
+>  		  via SCIFA4 on Renesas SH-Mobile AG5 (SH73A0).
 >  
->  	SET_NETDEV_DEV(dev, &pdev->dev);
+>  	config DEBUG_S3C_UART0
+> -		depends on PLAT_SAMSUNG || ARCH_EXYNOS
+> +		depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
+>  		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
+>  		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
+>  		select DEBUG_S3C64XX_UART if ARCH_S3C64XX
+> @@ -1010,7 +1010,7 @@ choice
+>  		  by the boot-loader before use.
 >  
->  	ip = netdev_priv(dev);
-> -	ip->dev = dev;
-> -	ip->dma_dev = &pdev->dev;
-> -
-> -	dev->irq = pdev->irq;
-> +	ip->dma_dev = pdev->dev.parent;
-> +	ip->regs = devm_platform_ioremap_resource(pdev, 0);
-> +	if (!ip->regs) {
-> +		err = -ENOMEM;
-> +		goto out_free;
-> +	}
+>  	config DEBUG_S3C_UART1
+> -		depends on PLAT_SAMSUNG || ARCH_EXYNOS
+> +		depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
+>  		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
+>  		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
+>  		select DEBUG_S3C64XX_UART if ARCH_S3C64XX
+> @@ -1022,7 +1022,7 @@ choice
+>  		  by the boot-loader before use.
+>  
+>  	config DEBUG_S3C_UART2
+> -		depends on PLAT_SAMSUNG || ARCH_EXYNOS
+> +		depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
+>  		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
+>  		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
+>  		select DEBUG_S3C64XX_UART if ARCH_S3C64XX
+> diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+> index f492d7c338fe..a1bc15cda751 100644
+> --- a/arch/arm/Makefile
+> +++ b/arch/arm/Makefile
+> @@ -235,7 +235,6 @@ machine-$(CONFIG_PLAT_SPEAR)		+= spear
+>  # by CONFIG_* macro name.
+>  plat-$(CONFIG_ARCH_OMAP)	+= omap
+>  plat-$(CONFIG_ARCH_S3C64XX)	+= samsung
+> -plat-$(CONFIG_ARCH_S5PV210)	+= samsung
 
+Would it make more sense to make this
+
+	plat-$(PLAT_SAMSUNG) += samsung
+
+(in a separate patch)? Hmm, it seems there is no plat-y for
+PLAT_S3C24XX=y builds. Is this intended? If yes, the directory name
+containing "samsung" suggests something that seems untrue.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
