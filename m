@@ -2,84 +2,141 @@ Return-Path: <SRS0=yK5Y=YF=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7EBAC4360C
-	for <linux-serial@archiver.kernel.org>; Sat, 12 Oct 2019 07:35:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59F21C10F14
+	for <linux-serial@archiver.kernel.org>; Sat, 12 Oct 2019 16:18:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 80BBF2196E
-	for <linux-serial@archiver.kernel.org>; Sat, 12 Oct 2019 07:35:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 313192087E
+	for <linux-serial@archiver.kernel.org>; Sat, 12 Oct 2019 16:18:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1570865740;
-	bh=GxHn9HvGbNAY8QyAyt0bW9sVjM5iu68qu3vwy7Md6hw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=pgBxQijA294BG4k54PZmt07GE9u53OEsMMRwPxWS84WtJneGwTp+WiOPSP0O0SGnZ
-	 vx9P/P+UE1kJ8Hk7Ia69vHoRndG91ETYsSSJpr78MTms3xpkrBqHPRXRPxDU257z8x
-	 YmTI2a9GFof+CKk3bWVTRsA+EQ1OX+slQtmYOkLo=
+	s=default; t=1570897100;
+	bh=jWiKjnx7PWQqEmrk3KPVS7AVXK4uTwoEwikRODdNAr0=;
+	h=Date:From:To:Cc:Subject:List-ID:From;
+	b=QteXlKbe8Yb9LiyHVknJAxfRr+odbu/IjDRMM60Nla57dtjepdoj4bZq3Xn3Xp1VC
+	 xpd4JIzJfmSnt9DjtT0Ykkf7NZJKg9h+etpJyCYwGZcK/+AoTl+oNdOw2aMXJc1qgJ
+	 5uoNQTZBuZNLG0Zsr+Nll0KuDcAPqI+j0EZuQVjA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728911AbfJLHfh (ORCPT
+        id S1729374AbfJLQST (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 12 Oct 2019 03:35:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38468 "EHLO mail.kernel.org"
+        Sat, 12 Oct 2019 12:18:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45122 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727014AbfJLHfh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 12 Oct 2019 03:35:37 -0400
+        id S1729387AbfJLQQT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 12 Oct 2019 12:16:19 -0400
 Received: from localhost (unknown [62.119.166.9])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 62B002067B;
-        Sat, 12 Oct 2019 07:35:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7155F21850;
+        Sat, 12 Oct 2019 16:16:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570865736;
-        bh=GxHn9HvGbNAY8QyAyt0bW9sVjM5iu68qu3vwy7Md6hw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Wf0Chk14Q8JRdONhUFmvnnjQF+nf84HsjEcys57x/X2LyBiiaLSOL0wLH1SNjY7QJ
-         +AHjCBhflbxwGYJN8LBpK7MhTp3WmXkco4A7Ohj3HxZGNIrrFzJxzaeocaR0NYvcef
-         BoI72kqFgiRNidLDZIyhTQdnodkX8I4Ny1Ak2f6U=
-Date:   Sat, 12 Oct 2019 09:35:31 +0200
+        s=default; t=1570896978;
+        bh=jWiKjnx7PWQqEmrk3KPVS7AVXK4uTwoEwikRODdNAr0=;
+        h=Date:From:To:Cc:Subject:From;
+        b=UntGHDNXn6E6/pt2hq1Z0zNWnLW6W0oKiJKUZwUH8H3ndoQeZjmxqQUCLCsFI58GK
+         ho/t+eodrNccRKeAJ0hZMn4Cuv+WQxpcieidhmY6NUvMaWobZv3WXh8o4/IewY0io5
+         XXP2B8Q13kZMbwVK2WFsBLoS6DJjvQCqeGnMxMh4=
+Date:   Sat, 12 Oct 2019 18:16:14 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Zhou Yanjie <zhouyanjie@zoho.com>
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, paul.burton@mips.com, mark.rutland@arm.com,
-        syq@debian.org, ulf.hansson@linaro.org, linus.walleij@linaro.org,
-        armijn@tjaldur.nl, tglx@linutronix.de, yuehaibing@huawei.com,
-        malat@debian.org, ezequiel@collabora.com, paul@crapouillou.net,
-        linux-serial@vger.kernel.org, jslaby@suse.com,
-        jiaxun.yang@flygoat.com, 772753199@qq.com
-Subject: Re: [PATCH v3 1/2] Serial: Ingenic: Add support for the X1000.
-Message-ID: <20191012073531.GA2036970@kroah.com>
-References: <1548667176-119830-1-git-send-email-zhouyanjie@zoho.com>
- <1548695029-11900-1-git-send-email-zhouyanjie@zoho.com>
- <1548695029-11900-2-git-send-email-zhouyanjie@zoho.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial fixes for 5.4-rc3
+Message-ID: <20191012161614.GA2191633@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Disposition: inline
-In-Reply-To: <1548695029-11900-2-git-send-email-zhouyanjie@zoho.com>
 User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191012073531.bD8sfiN4RanAGjA20YGmyyE7PbIWJPkyIMBF3Hj_OL4@z>
+Message-ID: <20191012161614.6erKO_zQ4a8KVyAHFSunh9zb_i_JbRjgtZCnQds5g90@z>
 
-On Sat, Oct 12, 2019 at 01:13:23PM +0800, Zhou Yanjie wrote:
-> Add support for probing the 8250_ingenic driver on the
-> X1000 Soc from Ingenic.
-> 
-> Signed-off-by: Zhou Yanjie <zhouyanjie@zoho.com>
-> ---
->  drivers/tty/serial/8250/8250_ingenic.c | 13 +++++++++----
->  1 file changed, 9 insertions(+), 4 deletions(-)
+The following changes since commit 54ecb8f7028c5eb3d740bb82b0f1d90f2df63c5c:
 
-<snip>
+  Linux 5.4-rc1 (2019-09-30 10:35:40 -0700)
 
-you seem to have two patches merged into one here, please fix up and
-resend.
+are available in the Git repository at:
 
-thanks,
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.4-rc3
 
-greg k-h
+for you to fetch changes up to 10deeac921647c929c67752d377f22e632d55d1c:
+
+  MAINTAINERS: kgdb: Add myself as a reviewer for kgdb/kdb (2019-10-11 08:40:29 +0200)
+
+----------------------------------------------------------------
+TTY/Serial driver fixes for 5.4-rc3
+
+Here are some small tty and serial driver fixes for 5.4-rc3 that resolve
+a number of reported issues and regressions.
+
+None of these are huge, full details are in the shortlog.  THere's also
+a MAINTAINERS update that I think you might have already taken in your
+tree already, but git should handle that merge easily.
+
+All have been in linux-next with no reported issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Adam Ford (2):
+      serial: mctrl_gpio: Check for NULL pointer
+      serial: 8250_omap: Fix gpio check for auto RTS/CTS
+
+Andrey Smirnov (1):
+      tty: serial: fsl_lpuart: Fix lpuart_flush_buffer()
+
+Anson Huang (1):
+      tty: serial: imx: Use platform_get_irq_optional() for optional IRQs
+
+Biju Das (1):
+      dt-bindings: serial: sh-sci: Document r8a774b1 bindings
+
+Christoph Hellwig (1):
+      serial/sifive: select SERIAL_EARLYCON
+
+Christophe JAILLET (2):
+      tty: serial: owl: Fix the link time qualifier of 'owl_uart_exit()'
+      tty: serial: rda: Fix the link time qualifier of 'rda_uart_exit()'
+
+Douglas Anderson (1):
+      MAINTAINERS: kgdb: Add myself as a reviewer for kgdb/kdb
+
+Geert Uytterhoeven (1):
+      serial: sh-sci: Use platform_get_irq_optional() for optional interrupts
+
+Michal Simek (1):
+      serial: uartps: Fix uartps_major handling
+
+Randy Dunlap (3):
+      serial: uartlite: fix exit path null pointer
+      tty: n_hdlc: fix build on SPARC
+      serial: fix kernel-doc warning in comments
+
+Stefan-gabriel Mirea (2):
+      tty: serial: linflexuart: Fix magic SysRq handling
+      tty: serial: Fix PORT_LINFLEXUART definition
+
+ .../bindings/serial/renesas,sci-serial.txt          |  2 ++
+ MAINTAINERS                                         |  1 +
+ drivers/tty/n_hdlc.c                                |  5 +++++
+ drivers/tty/serial/8250/8250_omap.c                 |  5 +++--
+ drivers/tty/serial/Kconfig                          |  1 +
+ drivers/tty/serial/fsl_linflexuart.c                | 21 ++++++++++++++-------
+ drivers/tty/serial/fsl_lpuart.c                     |  2 +-
+ drivers/tty/serial/imx.c                            |  4 ++--
+ drivers/tty/serial/owl-uart.c                       |  2 +-
+ drivers/tty/serial/rda-uart.c                       |  2 +-
+ drivers/tty/serial/serial_core.c                    |  2 ++
+ drivers/tty/serial/serial_mctrl_gpio.c              |  3 +++
+ drivers/tty/serial/sh-sci.c                         |  8 ++++++--
+ drivers/tty/serial/uartlite.c                       |  3 ++-
+ drivers/tty/serial/xilinx_uartps.c                  |  8 +++++++-
+ include/uapi/linux/serial_core.h                    |  2 +-
+ 16 files changed, 52 insertions(+), 19 deletions(-)
