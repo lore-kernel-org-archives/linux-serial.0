@@ -1,38 +1,34 @@
-From: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Subject: Re: [PATCH v9 5/5] MIPS: SGI-IP27: Enable ethernet phy on second
- Origin 200 module
-Date: Fri, 11 Oct 2019 11:28:04 +0200
-Message-ID: <20191011112804.ef8079aa9bad5c81ce473fbd@suse.de>
-References: <20191010145953.21327-1-tbogendoerfer@suse.de>
-        <20191010145953.21327-6-tbogendoerfer@suse.de>
-        <102db20a-0c37-3e28-2d14-e9c6eaa55f5c@cogentembedded.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3 1/2] Serial: Ingenic: Add support for the X1000.
+Date: Sat, 12 Oct 2019 09:35:31 +0200
+Message-ID: <20191012073531.GA2036970@kroah.com>
+References: <1548667176-119830-1-git-send-email-zhouyanjie@zoho.com>
+ <1548695029-11900-1-git-send-email-zhouyanjie@zoho.com>
+ <1548695029-11900-2-git-send-email-zhouyanjie@zoho.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <102db20a-0c37-3e28-2d14-e9c6eaa55f5c@cogentembedded.com>
+Content-Disposition: inline
+In-Reply-To: <1548695029-11900-2-git-send-email-zhouyanjie@zoho.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Cc: Jakub Kicinski <jakub.kicinski@netronome.com>, Jonathan Corbet <corbet@lwn.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+To: Zhou Yanjie <zhouyanjie@zoho.com>
+Cc: linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org, devicetree@vger.kernel.org, robh+dt@kernel.org, paul.burton@mips.com, mark.rutland@arm.com, syq@debian.org, ulf.hansson@linaro.org, linus.walleij@linaro.org, armijn@tjaldur.nl, tglx@linutronix.de, yuehaibing@huawei.com, malat@debian.org, ezequiel@collabora.com, paul@crapouillou.net, linux-serial@vger.kernel.org, jslaby@suse.com, jiaxun.yang@flygoat.com, 772753199@qq.com
 List-Id: linux-serial@vger.kernel.org
 
-On Thu, 10 Oct 2019 19:37:15 +0300
-Sergei Shtylyov <sergei.shtylyov@cogentembedded.com> wrote:
-
-> On 10/10/2019 05:59 PM, Thomas Bogendoerfer wrote:
-> > +	/* enable ethernet PHY on IP29 systemboard */
-> > +	pci_read_config_dword(dev, PCI_SUBSYSTEM_VENDOR_ID, &sid);
-> > +	if (sid == ((PCI_VENDOR_ID_SGI << 16) | IOC3_SUBSYS_IP29_SYSBOARD))
+On Sat, Oct 12, 2019 at 01:13:23PM +0800, Zhou Yanjie wrote:
+> Add support for probing the 8250_ingenic driver on the
+> X1000 Soc from Ingenic.
 > 
->    I thought PCI was little endian, thuis vendor ID at offset 0 and device ID
-> at offset 2?
+> Signed-off-by: Zhou Yanjie <zhouyanjie@zoho.com>
+> ---
+>  drivers/tty/serial/8250/8250_ingenic.c | 13 +++++++++----
+>  1 file changed, 9 insertions(+), 4 deletions(-)
 
-you are right. I already messed it up in pci-xtalk-bridge.c. As this is just a
-fake sub device id, there is no harm, but I'll fix it.
+<snip>
 
-Thomas.
+you seem to have two patches merged into one here, please fix up and
+resend.
 
--- 
-SUSE Software Solutions Germany GmbH
-HRB 247165 (AG München)
-Geschäftsführer: Felix Imendörffer
+thanks,
+
+greg k-h
