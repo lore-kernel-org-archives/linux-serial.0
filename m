@@ -1,74 +1,97 @@
-Return-Path: <SRS0=yK5Y=YF=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=VAlw=YG=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5855C10F14
-	for <linux-serial@archiver.kernel.org>; Sat, 12 Oct 2019 22:55:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB615C4360C
+	for <linux-serial@archiver.kernel.org>; Sun, 13 Oct 2019 22:00:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BC8AE21655
-	for <linux-serial@archiver.kernel.org>; Sat, 12 Oct 2019 22:55:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1570920912;
-	bh=0mjWQWyQLOm5KOj3ES7NaUhzZvbfQHrrg+Gd7osy5LI=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:List-ID:From;
-	b=NoUORyNU+lWVp8k8Wb12joiII+gJ3+y2Fojw+O1Jpc1psyBWVstz2OalsZOepFkvl
-	 ZY38drqLZ5Bpl2SqoG/+3/b8IkoEt5A6p96bXGhl3Wqsyic2rmmeHHFrq2EqKGzf/G
-	 q5e328QQiUwgGrDelOiPS4b/M5UESP/AwLePCeAo=
+	by mail.kernel.org (Postfix) with ESMTP id 971022064A
+	for <linux-serial@archiver.kernel.org>; Sun, 13 Oct 2019 22:00:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728855AbfJLWzH (ORCPT
+        id S1728579AbfJMWAV (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 12 Oct 2019 18:55:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47498 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727747AbfJLWzG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 12 Oct 2019 18:55:06 -0400
-Subject: Re: [GIT PULL] TTY/Serial fixes for 5.4-rc3
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570920906;
-        bh=0mjWQWyQLOm5KOj3ES7NaUhzZvbfQHrrg+Gd7osy5LI=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=jlIcdauXlmhsRVCdBm5wa/aHjZRn+h4kXfTCpuORWIjtR8qgQH6QEHnPLR1BDgemk
-         y0SS2jv+isHyJgNs72tLor1SOUzY+7VEoun0JLrzygpcvFpGR+XiFuTBNEBxi3ruV+
-         6Cd78VOtpjKZ/fSYqh736aygeLEA9haiGJaaN+tA=
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20191012161614.GA2191633@kroah.com>
-References: <20191012161614.GA2191633@kroah.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20191012161614.GA2191633@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.4-rc3
-X-PR-Tracked-Commit-Id: 10deeac921647c929c67752d377f22e632d55d1c
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 82c87e7d4068d0fc368c3e7356a94e7b87c29544
-Message-Id:
- <157092090627.32460.7017728602784776573.pr-tracker-bot@kernel.org>
-Date:   Sat, 12 Oct 2019 22:55:06 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        Sun, 13 Oct 2019 18:00:21 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:46956 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727492AbfJMWAV (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 13 Oct 2019 18:00:21 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1iJluT-0001eV-2g; Sun, 13 Oct 2019 22:00:17 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, Michael Moese <mmoese@suse.de>,
+        linux-serial@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] 8250-men-mcb: fix error checking when get_num_ports returns -ENODEV
+Date:   Sun, 13 Oct 2019 23:00:16 +0100
+Message-Id: <20191013220016.9369-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Message-ID: <20191012225506.00fpJw4-ywXSq2veaUqwjoPYi7xhTVNJIDPHkOHVjsE@z>
+Message-ID: <20191013220016.S9gapP5aDfYjMvrq4D6hV2SXNZyPsVYK9nAHxdUyuDY@z>
 
-The pull request you sent on Sat, 12 Oct 2019 18:16:14 +0200:
+From: Colin Ian King <colin.king@canonical.com>
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.4-rc3
+The current checking for failure on the number of ports fails when
+-ENODEV is returned from the call to get_num_ports. Fix this by making
+num_ports and loop counter i signed rather than unsigned ints. Also
+add check for num_ports being less than zero to check for -ve error
+returns.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/82c87e7d4068d0fc368c3e7356a94e7b87c29544
+Addresses-Coverity: ("Unsigned compared against 0")
+Fixes: e2fea54e4592 ("8250-men-mcb: add support for 16z025 and 16z057")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/tty/serial/8250/8250_men_mcb.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Thank you!
-
+diff --git a/drivers/tty/serial/8250/8250_men_mcb.c b/drivers/tty/serial/8250/8250_men_mcb.c
+index 02c5aff58a74..8df89e9cd254 100644
+--- a/drivers/tty/serial/8250/8250_men_mcb.c
++++ b/drivers/tty/serial/8250/8250_men_mcb.c
+@@ -72,8 +72,8 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
+ {
+ 	struct serial_8250_men_mcb_data *data;
+ 	struct resource *mem;
+-	unsigned int num_ports;
+-	unsigned int i;
++	int num_ports;
++	int i;
+ 	void __iomem *membase;
+ 
+ 	mem = mcb_get_resource(mdev, IORESOURCE_MEM);
+@@ -88,7 +88,7 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
+ 	dev_dbg(&mdev->dev, "found a 16z%03u with %u ports\n",
+ 		mdev->id, num_ports);
+ 
+-	if (num_ports == 0 || num_ports > 4) {
++	if (num_ports <= 0 || num_ports > 4) {
+ 		dev_err(&mdev->dev, "unexpected number of ports: %u\n",
+ 			num_ports);
+ 		return -ENODEV;
+@@ -133,7 +133,7 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
+ 
+ static void serial_8250_men_mcb_remove(struct mcb_device *mdev)
+ {
+-	unsigned int num_ports, i;
++	int num_ports, i;
+ 	struct serial_8250_men_mcb_data *data = mcb_get_drvdata(mdev);
+ 
+ 	if (!data)
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+2.20.1
+
