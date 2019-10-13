@@ -1,24 +1,63 @@
-From: pr-tracker-bot@kernel.org
-Subject: Re: [GIT PULL] TTY/Serial fixes for 5.4-rc3
-Date: Sat, 12 Oct 2019 22:55:06 +0000
-Message-ID: <157092090627.32460.7017728602784776573.pr-tracker-bot@kernel.org>
-References: <20191012161614.GA2191633@kroah.com>
+From: Colin King <colin.king@canonical.com>
+Subject: [PATCH] 8250-men-mcb: fix error checking when get_num_ports returns -ENODEV
+Date: Sun, 13 Oct 2019 23:00:16 +0100
+Message-ID: <20191013220016.9369-1-colin.king@canonical.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191012161614.GA2191633@kroah.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Michael Moese <mmoese@suse.de>, linux-serial@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-serial@vger.kernel.org
 
-The pull request you sent on Sat, 12 Oct 2019 18:16:14 +0200:
+From: Colin Ian King <colin.king@canonical.com>
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.4-rc3
+The current checking for failure on the number of ports fails when
+-ENODEV is returned from the call to get_num_ports. Fix this by making
+num_ports and loop counter i signed rather than unsigned ints. Also
+add check for num_ports being less than zero to check for -ve error
+returns.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/82c87e7d4068d0fc368c3e7356a94e7b87c29544
+Addresses-Coverity: ("Unsigned compared against 0")
+Fixes: e2fea54e4592 ("8250-men-mcb: add support for 16z025 and 16z057")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/tty/serial/8250/8250_men_mcb.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Thank you!
-
+diff --git a/drivers/tty/serial/8250/8250_men_mcb.c b/drivers/tty/serial/8250/8250_men_mcb.c
+index 02c5aff58a74..8df89e9cd254 100644
+--- a/drivers/tty/serial/8250/8250_men_mcb.c
++++ b/drivers/tty/serial/8250/8250_men_mcb.c
+@@ -72,8 +72,8 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
+ {
+ 	struct serial_8250_men_mcb_data *data;
+ 	struct resource *mem;
+-	unsigned int num_ports;
+-	unsigned int i;
++	int num_ports;
++	int i;
+ 	void __iomem *membase;
+ 
+ 	mem = mcb_get_resource(mdev, IORESOURCE_MEM);
+@@ -88,7 +88,7 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
+ 	dev_dbg(&mdev->dev, "found a 16z%03u with %u ports\n",
+ 		mdev->id, num_ports);
+ 
+-	if (num_ports == 0 || num_ports > 4) {
++	if (num_ports <= 0 || num_ports > 4) {
+ 		dev_err(&mdev->dev, "unexpected number of ports: %u\n",
+ 			num_ports);
+ 		return -ENODEV;
+@@ -133,7 +133,7 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
+ 
+ static void serial_8250_men_mcb_remove(struct mcb_device *mdev)
+ {
+-	unsigned int num_ports, i;
++	int num_ports, i;
+ 	struct serial_8250_men_mcb_data *data = mcb_get_drvdata(mdev);
+ 
+ 	if (!data)
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+2.20.1
