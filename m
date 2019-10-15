@@ -1,24 +1,36 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] serial: core: Use cons->index for preferred console registration
-Date: Tue, 15 Oct 2019 16:40:35 +0200
-Message-ID: <CAMuHMdXq1XkQKTeA0XOhk6QzoyK0DUMiesVwXkBwWQbunWH+Fg@mail.gmail.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serial: core: Use cons->index for preferred console
+ registration
+Date: Tue, 15 Oct 2019 19:54:22 +0200
+Message-ID: <20191015175422.GA1072965@kroah.com>
 References: <4a877f1c7189a7c45b59a6ebfc3de607e8758949.1567434470.git.michal.simek@xilinx.com>
  <CAMuHMdWY2VsY-CyAxSvpm1XYicAWqU7NORSQofQ+T195DwyLUg@mail.gmail.com>
- <7284590f-2b74-1b47-2d61-783ad8d5f46f@monstr.eu> <CAMuHMdWZYALZB1bP5Mtoq4Nj5iubzdWBf1vRY9Mh5QvjCDhBgA@mail.gmail.com>
+ <7284590f-2b74-1b47-2d61-783ad8d5f46f@monstr.eu>
+ <CAMuHMdWZYALZB1bP5Mtoq4Nj5iubzdWBf1vRY9Mh5QvjCDhBgA@mail.gmail.com>
  <622f4c5e-e3ed-3f91-254d-78d905de79c9@xilinx.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
 In-Reply-To: <622f4c5e-e3ed-3f91-254d-78d905de79c9@xilinx.com>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Michal Simek <michal.simek@xilinx.com>
-Cc: Michal Simek <monstr@monstr.eu>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Marek Vasut <marek.vasut+renesas@gmail.com>
+Cc: Michal Simek <monstr@monstr.eu>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-serial@vger.kernel.org
 
-Hi Michal,
-
-On Tue, Oct 15, 2019 at 4:37 PM Michal Simek <michal.simek@xilinx.com> wrote:
+On Tue, Oct 15, 2019 at 04:36:56PM +0200, Michal Simek wrote:
 > On 15. 10. 19 11:51, Geert Uytterhoeven wrote:
+> > Hi Michal,
+> > 
 > > On Tue, Oct 15, 2019 at 11:22 AM Michal Simek <monstr@monstr.eu> wrote:
 > >> On 15. 10. 19 11:19, Geert Uytterhoeven wrote:
 > >>> On Mon, Sep 2, 2019 at 4:29 PM Michal Simek <michal.simek@xilinx.com> wrote:
@@ -55,14 +67,14 @@ On Tue, Oct 15, 2019 at 4:37 PM Michal Simek <michal.simek@xilinx.com> wrote:
 > >>
 > >> Sorry for trouble with this patch. Can you please point me to dts files
 > >> for these boards and also what's the value you have in uport->line and
-> >
+> > 
 > > arch/arm/boot/dts/r8a7791-koelsch.dts
 > > arch/arm64/boot/dts/renesas/r8a7795-salvator-xs.dts
-> >
+> > 
 > >> uport->cons->index?
-> >
+> > 
 > > On r8a7791/koelsch:
-> >
+> > 
 > >     Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
 > >     platform serial8250: uport->line = 0, uport->cons->index = -1
 > >     platform serial8250: uport->line = 1, uport->cons->index = -1
@@ -76,9 +88,9 @@ On Tue, Oct 15, 2019 at 4:37 PM Michal Simek <michal.simek@xilinx.com> wrote:
 > >     sh-sci e6e68000.serial: uport->line = 1, uport->cons->index = 0
 > >     e6e68000.serial: ttySC1 at MMIO 0xe6e68000 (irq = 80, base_baud =
 > > 0) is a scif
-> >
+> > 
 > > On r8a7795/salvator-xs:
-> >
+> > 
 > >     sh-sci e6550000.serial: uport->line = 1, uport->cons->index = -1
 > >     e6550000.serial: ttySC1 at MMIO 0xe6550000 (irq = 34, base_baud =
 > > 0) is a hscif
@@ -86,24 +98,20 @@ On Tue, Oct 15, 2019 at 4:37 PM Michal Simek <michal.simek@xilinx.com> wrote:
 > >   * e6e88000.serial: ttySC0 at MMIO 0xe6e88000 (irq = 120, base_baud =
 > > 0) is a scif
 > >     printk: console [ttySC0] enabled
-> >
+> > 
 > > Actual serial consoles marked with *.
-> >
+> > 
 > > There are no 8250 serial ports in the system, shmobile_defconfig just includes
 > > driver support for it.
->
+> 
 > ok. I will take a look at why it is not initialized in this case. Do you
 > have any qemu available for these boards?
+> 
+> Greg: Please revert this patch I will investigate why it is failing.
 
-Not me.  But Marek (CC) may have something.
+Which patch exactly?  Can you provide a revert?  That makes it easiest
+for me.
 
-Gr{oetje,eeting}s,
+thanks,
 
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+greg k-h
