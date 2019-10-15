@@ -2,156 +2,160 @@ Return-Path: <SRS0=N/nd=YI=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86973ECE588
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 18:08:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CCA5C10F14
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 19:04:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 62F222168B
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 18:08:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5021820663
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 19:04:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571162892;
-	bh=5AnmJWnwSLd45t+Cg3Vuhkl5YGkWgQB/xzBwzn/ZTNQ=;
+	s=default; t=1571166249;
+	bh=uZgAp1ozuyx2WfOSBNpCU+1Pb4y1LkDwehrcM2jObWg=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=OVupl3B5q1dxsnLNM/V44j/EiMZOkwLGm8DK/ps3/VBl7tCgT5WMvaX+H32Bcqhnd
-	 MYFtQzl/I6VeVxDXwgjoHbZnb9SkRnjLZV2/olR3vkqnlycFbOFXPm7pRIru6PmlKw
-	 1xT4n4EqNQPbf6MSbf/XrzIt6wBRpPgBtjcoRxhU=
+	b=WzLD8wPhStvXhNwZQ2b0Sh0T+UCWFU37gzMPjFOl19cktR/3ixUnTY/BaHv2tQNS7
+	 dsbhWUaTYN7pvvYZtEPhihIl3TFteGghkH0XErlLX9/wJuvKKEhXLRXQUF2AS/jVqT
+	 ImdzBWg7/UtuR0+g5KK8nBLiz7XC4gdIu/JGg+og=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728076AbfJOSIM (ORCPT
+        id S1729836AbfJOTEJ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Oct 2019 14:08:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39740 "EHLO mail.kernel.org"
+        Tue, 15 Oct 2019 15:04:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52698 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725820AbfJOSIL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Oct 2019 14:08:11 -0400
+        id S1729457AbfJOTEI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 15 Oct 2019 15:04:08 -0400
 Received: from localhost (unknown [38.98.37.135])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2BB3620659;
-        Tue, 15 Oct 2019 18:08:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1F0C020663;
+        Tue, 15 Oct 2019 19:04:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571162890;
-        bh=5AnmJWnwSLd45t+Cg3Vuhkl5YGkWgQB/xzBwzn/ZTNQ=;
+        s=default; t=1571166247;
+        bh=uZgAp1ozuyx2WfOSBNpCU+1Pb4y1LkDwehrcM2jObWg=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bzzJ8FU6Wp971eJ1oy+xtv0AxDMMXHoC32JRAFGGLP6TugImeZF2hNNI6JBe5oaG0
-         7/+XL8BpBWi0stVAC8iXLkGDKUX51ZrssNGCOyJSbOPnmbfpKOQLLh6r/Z7CENqbyf
-         vIJ+AKdLDfp5VEKiZPyhpkxevylD3OaUvyEa1hqY=
-Date:   Tue, 15 Oct 2019 19:54:22 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Michal Simek <michal.simek@xilinx.com>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michal Simek <monstr@monstr.eu>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Subject: Re: [PATCH] serial: core: Use cons->index for preferred console
- registration
-Message-ID: <20191015175422.GA1072965@kroah.com>
-References: <4a877f1c7189a7c45b59a6ebfc3de607e8758949.1567434470.git.michal.simek@xilinx.com>
- <CAMuHMdWY2VsY-CyAxSvpm1XYicAWqU7NORSQofQ+T195DwyLUg@mail.gmail.com>
- <7284590f-2b74-1b47-2d61-783ad8d5f46f@monstr.eu>
- <CAMuHMdWZYALZB1bP5Mtoq4Nj5iubzdWBf1vRY9Mh5QvjCDhBgA@mail.gmail.com>
- <622f4c5e-e3ed-3f91-254d-78d905de79c9@xilinx.com>
+        b=WrpblMneMwYQrznHuUqCh+WSGHmMfbtf/PcLb6PMbKFhymrKpvJGy5AGL0NQKWWq0
+         UxNbgxoa7hcMIj9OW4dNZBGseOYnahpyqXjqbAGKalx3x2myR3J7kRUOAdjsL2Agil
+         GAbZ/0qrCbMlsOzjRyEl6AwCCgmgwsjjfkwLjVHk=
+Date:   Tue, 15 Oct 2019 20:58:06 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Akash Asthana <akashast@codeaurora.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        mgautam@codeaurora.org, bjorn.andersson@linaro.org,
+        swboyd@chromium.org, msavaliy@codeaurora.org
+Subject: Re: [PATCH v3 1/2] tty: serial: qcom_geni_serial: IRQ cleanup
+Message-ID: <20191015185806.GA1139790@kroah.com>
+References: <1571119863-14105-1-git-send-email-akashast@codeaurora.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <622f4c5e-e3ed-3f91-254d-78d905de79c9@xilinx.com>
+In-Reply-To: <1571119863-14105-1-git-send-email-akashast@codeaurora.org>
 User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191015175422.me5d1Ldg4jEuz_7VmkEidtFiG5-ZHdXn_59462G2qKY@z>
 
-On Tue, Oct 15, 2019 at 04:36:56PM +0200, Michal Simek wrote:
-> On 15. 10. 19 11:51, Geert Uytterhoeven wrote:
-> > Hi Michal,
-> > 
-> > On Tue, Oct 15, 2019 at 11:22 AM Michal Simek <monstr@monstr.eu> wrote:
-> >> On 15. 10. 19 11:19, Geert Uytterhoeven wrote:
-> >>> On Mon, Sep 2, 2019 at 4:29 PM Michal Simek <michal.simek@xilinx.com> wrote:
-> >>>> The reason for this patch is xilinx_uartps driver which create one dynamic
-> >>>> instance per IP with unique major and minor combinations. drv->nr is in
-> >>>> this case all the time setup to 1. That means that uport->line is all the
-> >>>> time setup to 0 and drv->tty_driver->name_base is doing shift in name to
-> >>>> for example ttyPS3.
-> >>>>
-> >>>> register_console() is looping over console_cmdline array and looking for
-> >>>> proper name/index combination which is in our case ttyPS/3.
-> >>>> That's why every instance of driver needs to be registered with proper
-> >>>> combination of name/number (ttyPS/3). Using uport->line is doing
-> >>>> registration with ttyPS/0 which is wrong that's why proper console index
-> >>>> should be used which is in cons->index field.
-> >>>>
-> >>>> Also it is visible that recording console should be done based on
-> >>>> information about console not about the port but in most cases numbers are
-> >>>> the same and xilinx_uartps is only one exception now.
-> >>>>
-> >>>> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> >>>
-> >>> This is now commit 91daae03188e0dd1 ("serial: core: Use cons->index
-> >>> for preferred console registration") in tty-next.
-> >>>
-> >>> This has been bisected to break the serial console on (at least)
-> >>> r8a7791/koelsch and r8a7795/h3-salvator-xs.
-> >>>
-> >>> The line "printk: console [ttySC0] enabled" is no longer printed.
-> >>> The system continues booting without any serial console output, and the
-> >>> login prompt never appears on the serial console.
-> >>>
-> >>> Reverting this commit fixes the issue.
-> >>
-> >> Sorry for trouble with this patch. Can you please point me to dts files
-> >> for these boards and also what's the value you have in uport->line and
-> > 
-> > arch/arm/boot/dts/r8a7791-koelsch.dts
-> > arch/arm64/boot/dts/renesas/r8a7795-salvator-xs.dts
-> > 
-> >> uport->cons->index?
-> > 
-> > On r8a7791/koelsch:
-> > 
-> >     Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
-> >     platform serial8250: uport->line = 0, uport->cons->index = -1
-> >     platform serial8250: uport->line = 1, uport->cons->index = -1
-> >     platform serial8250: uport->line = 2, uport->cons->index = -1
-> >     platform serial8250: uport->line = 3, uport->cons->index = -1
-> >     SuperH (H)SCI(F) driver initialized
-> >   * sh-sci e6e60000.serial: uport->line = 0, uport->cons->index = -1
-> >   * e6e60000.serial: ttySC0 at MMIO 0xe6e60000 (irq = 79, base_baud =
-> > 0) is a scif
-> >     printk: console [ttySC0] enabled
-> >     sh-sci e6e68000.serial: uport->line = 1, uport->cons->index = 0
-> >     e6e68000.serial: ttySC1 at MMIO 0xe6e68000 (irq = 80, base_baud =
-> > 0) is a scif
-> > 
-> > On r8a7795/salvator-xs:
-> > 
-> >     sh-sci e6550000.serial: uport->line = 1, uport->cons->index = -1
-> >     e6550000.serial: ttySC1 at MMIO 0xe6550000 (irq = 34, base_baud =
-> > 0) is a hscif
-> >   * sh-sci e6e88000.serial: uport->line = 0, uport->cons->index = -1
-> >   * e6e88000.serial: ttySC0 at MMIO 0xe6e88000 (irq = 120, base_baud =
-> > 0) is a scif
-> >     printk: console [ttySC0] enabled
-> > 
-> > Actual serial consoles marked with *.
-> > 
-> > There are no 8250 serial ports in the system, shmobile_defconfig just includes
-> > driver support for it.
+On Tue, Oct 15, 2019 at 11:41:03AM +0530, Akash Asthana wrote:
+> Move ISR registration from startup to probe function to avoid registering
+> it everytime when the port open is called for driver.
 > 
-> ok. I will take a look at why it is not initialized in this case. Do you
-> have any qemu available for these boards?
+> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+> ---
+> Changes in v3:
+>  - Address review comments on v2 patch.
+>  - Using devm_kasprintf instead of scnprintf API.
 > 
-> Greg: Please revert this patch I will investigate why it is failing.
+>  drivers/tty/serial/qcom_geni_serial.c | 30 +++++++++++++++++++-----------
+>  1 file changed, 19 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 14c6306..12dc007 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -9,6 +9,7 @@
+>  #include <linux/console.h>
+>  #include <linux/io.h>
+>  #include <linux/iopoll.h>
+> +#include <linux/irq.h>
+>  #include <linux/module.h>
+>  #include <linux/of.h>
+>  #include <linux/of_device.h>
+> @@ -101,7 +102,7 @@
+>  struct qcom_geni_serial_port {
+>  	struct uart_port uport;
+>  	struct geni_se se;
+> -	char name[20];
+> +	const char *name;
+>  	u32 tx_fifo_depth;
+>  	u32 tx_fifo_width;
+>  	u32 rx_fifo_depth;
+> @@ -830,7 +831,7 @@ static void qcom_geni_serial_shutdown(struct uart_port *uport)
+>  	if (uart_console(uport))
+>  		console_stop(uport->cons);
+>  
+> -	free_irq(uport->irq, uport);
+> +	disable_irq(uport->irq);
+>  	spin_lock_irqsave(&uport->lock, flags);
+>  	qcom_geni_serial_stop_tx(uport);
+>  	qcom_geni_serial_stop_rx(uport);
+> @@ -890,21 +891,14 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
+>  	int ret;
+>  	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
+>  
+> -	scnprintf(port->name, sizeof(port->name),
+> -		  "qcom_serial_%s%d",
+> -		(uart_console(uport) ? "console" : "uart"), uport->line);
+> -
+>  	if (!port->setup) {
+>  		ret = qcom_geni_serial_port_setup(uport);
+>  		if (ret)
+>  			return ret;
+>  	}
+> +	enable_irq(uport->irq);
+>  
+> -	ret = request_irq(uport->irq, qcom_geni_serial_isr, IRQF_TRIGGER_HIGH,
+> -							port->name, uport);
+> -	if (ret)
+> -		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
+> -	return ret;
+> +	return 0;
+>  }
+>  
+>  static unsigned long get_clk_cfg(unsigned long clk_freq)
+> @@ -1297,11 +1291,25 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+>  	port->rx_fifo_depth = DEF_FIFO_DEPTH_WORDS;
+>  	port->tx_fifo_width = DEF_FIFO_WIDTH_BITS;
+>  
+> +	port->name = devm_kasprintf(uport->dev, GFP_KERNEL,
+> +			"qcom_geni_serial_%s%d",
+> +			uart_console(uport) ? "console" : "uart", uport->line);
+> +	if (!port->name)
+> +		return ERR_PTR(-ENOMEM);
 
-Which patch exactly?  Can you provide a revert?  That makes it easiest
-for me.
+Why are you returning a pointer when the return type of this function is
+int?  Did the compiler not complain?  Shouldn't this just be -ENOMEM?
+
+
+> +
+>  	irq = platform_get_irq(pdev, 0);
+>  	if (irq < 0)
+>  		return irq;
+>  	uport->irq = irq;
+>  
+> +	irq_set_status_flags(uport->irq, IRQ_NOAUTOEN);
+> +	ret = devm_request_irq(uport->dev, uport->irq, qcom_geni_serial_isr,
+> +			IRQF_TRIGGER_HIGH, port->name, uport);
+> +	if (ret) {
+> +		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
+
+Why print this out?  Doesn't the function print an error if it fails?
+
+> +		return ret;
+
+See, an int return value :)
 
 thanks,
 
