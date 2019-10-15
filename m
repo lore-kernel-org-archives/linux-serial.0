@@ -1,122 +1,161 @@
-Return-Path: <SRS0=05d9=YH=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=N/nd=YI=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF1E4C47404
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Oct 2019 06:55:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CEA8C10F14
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 06:11:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D116620854
-	for <linux-serial@archiver.kernel.org>; Mon, 14 Oct 2019 06:55:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5BE7021848
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 06:11:37 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="iKT3tdEd";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="LDEUVV9+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729966AbfJNGzS (ORCPT
+        id S1726338AbfJOGLg (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 14 Oct 2019 02:55:18 -0400
-Received: from mx2.suse.de ([195.135.220.15]:58724 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726618AbfJNGzS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 14 Oct 2019 02:55:18 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 637DBAC2E;
-        Mon, 14 Oct 2019 06:55:16 +0000 (UTC)
-Subject: Re: [PATCH] 8250-men-mcb: fix error checking when get_num_ports
- returns -ENODEV
-To:     Colin King <colin.king@canonical.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20191013220016.9369-1-colin.king@canonical.com>
-From:   Michael Moese <mmoese@suse.de>
-Message-ID: <022c9a2b-0929-3a76-7976-dca717a5bc73@suse.de>
-Date:   Mon, 14 Oct 2019 08:55:15 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.0
-MIME-Version: 1.0
-In-Reply-To: <20191013220016.9369-1-colin.king@canonical.com>
-Content-Type: text/plain; charset="UTF-8"; format="flowed"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        Tue, 15 Oct 2019 02:11:36 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:38164 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726101AbfJOGLg (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 15 Oct 2019 02:11:36 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 2847060B7A; Tue, 15 Oct 2019 06:11:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1571119895;
+        bh=CL5p7UDYzcCYK5CH6ddtzm9DcIuN04km1NLtYfXgE4M=;
+        h=From:To:Cc:Subject:Date:From;
+        b=iKT3tdEdCufXlR1O33WHeI6u6ch0XEgyzMMr+fPcf/CkfQbNra2Hu3lI5W1EzDdN+
+         0+755bejGci9/pMh5Net3um6sPRHKDRfQVr+Fd64Czg+HHdqja7mFpqfVfkkeGm74s
+         d8xXd9OZ77eplEumfZIWQaKsT2v4gndfZqLjje4w=
+Received: from akashast-linux.qualcomm.com (blr-c-bdr-fw-01_globalnat_allzones-outside.qualcomm.com [103.229.19.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 64ECE60A23;
+        Tue, 15 Oct 2019 06:11:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1571119894;
+        bh=CL5p7UDYzcCYK5CH6ddtzm9DcIuN04km1NLtYfXgE4M=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LDEUVV9+9TWYGJBmkz/gus0R18+pTHSvp7fMOFauZcRNxMC8WjTr8eMVcfnDbA8YH
+         HxHNy+SPoY2ANL3CHJjVVWUbWZuMMdaryzV+5WDsODVOPMzmbQGjSNaCEvF8sGuQ50
+         KZvO8PuKtzxRlXm2ZYwEtUA3b3viXvltyCYuVx74=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 64ECE60A23
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+From:   Akash Asthana <akashast@codeaurora.org>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        mgautam@codeaurora.org, bjorn.andersson@linaro.org,
+        swboyd@chromium.org, msavaliy@codeaurora.org,
+        Akash Asthana <akashast@codeaurora.org>
+Subject: [PATCH v3 1/2] tty: serial: qcom_geni_serial: IRQ cleanup
+Date:   Tue, 15 Oct 2019 11:41:03 +0530
+Message-Id: <1571119863-14105-1-git-send-email-akashast@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191014065515.SgczQMS3ncY-Sgw7vujn0kf40LuJnUxGfnwoMoGFb9k@z>
 
+Move ISR registration from startup to probe function to avoid registering
+it everytime when the port open is called for driver.
 
+Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+---
+Changes in v3:
+ - Address review comments on v2 patch.
+ - Using devm_kasprintf instead of scnprintf API.
 
-On 14.10.19 00:00, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> The current checking for failure on the number of ports fails when
-> -ENODEV is returned from the call to get_num_ports. Fix this by making
-> num_ports and loop counter i signed rather than unsigned ints. Also
-> add check for num_ports being less than zero to check for -ve error
-> returns.
-> 
-> Addresses-Coverity: ("Unsigned compared against 0")
-> Fixes: e2fea54e4592 ("8250-men-mcb: add support for 16z025 and 16z057")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+ drivers/tty/serial/qcom_geni_serial.c | 30 +++++++++++++++++++-----------
+ 1 file changed, 19 insertions(+), 11 deletions(-)
 
-This looks more than reasonable to me, thanks.
-
-Reviewed-by: Michael Moese <mmoese@suse.de>
-
-> ---
->   drivers/tty/serial/8250/8250_men_mcb.c | 8 ++++----
->   1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_men_mcb.c b/drivers/tty/serial/8250/8250_men_mcb.c
-> index 02c5aff58a74..8df89e9cd254 100644
-> --- a/drivers/tty/serial/8250/8250_men_mcb.c
-> +++ b/drivers/tty/serial/8250/8250_men_mcb.c
-> @@ -72,8 +72,8 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
->   {
->   	struct serial_8250_men_mcb_data *data;
->   	struct resource *mem;
-> -	unsigned int num_ports;
-> -	unsigned int i;
-> +	int num_ports;
-> +	int i;
->   	void __iomem *membase;
->   
->   	mem = mcb_get_resource(mdev, IORESOURCE_MEM);
-> @@ -88,7 +88,7 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
->   	dev_dbg(&mdev->dev, "found a 16z%03u with %u ports\n",
->   		mdev->id, num_ports);
->   
-> -	if (num_ports == 0 || num_ports > 4) {
-> +	if (num_ports <= 0 || num_ports > 4) {
->   		dev_err(&mdev->dev, "unexpected number of ports: %u\n",
->   			num_ports);
->   		return -ENODEV;
-> @@ -133,7 +133,7 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
->   
->   static void serial_8250_men_mcb_remove(struct mcb_device *mdev)
->   {
-> -	unsigned int num_ports, i;
-> +	int num_ports, i;
->   	struct serial_8250_men_mcb_data *data = mcb_get_drvdata(mdev);
->   
->   	if (!data)
-> 
-
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 14c6306..12dc007 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -9,6 +9,7 @@
+ #include <linux/console.h>
+ #include <linux/io.h>
+ #include <linux/iopoll.h>
++#include <linux/irq.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+@@ -101,7 +102,7 @@
+ struct qcom_geni_serial_port {
+ 	struct uart_port uport;
+ 	struct geni_se se;
+-	char name[20];
++	const char *name;
+ 	u32 tx_fifo_depth;
+ 	u32 tx_fifo_width;
+ 	u32 rx_fifo_depth;
+@@ -830,7 +831,7 @@ static void qcom_geni_serial_shutdown(struct uart_port *uport)
+ 	if (uart_console(uport))
+ 		console_stop(uport->cons);
+ 
+-	free_irq(uport->irq, uport);
++	disable_irq(uport->irq);
+ 	spin_lock_irqsave(&uport->lock, flags);
+ 	qcom_geni_serial_stop_tx(uport);
+ 	qcom_geni_serial_stop_rx(uport);
+@@ -890,21 +891,14 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
+ 	int ret;
+ 	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
+ 
+-	scnprintf(port->name, sizeof(port->name),
+-		  "qcom_serial_%s%d",
+-		(uart_console(uport) ? "console" : "uart"), uport->line);
+-
+ 	if (!port->setup) {
+ 		ret = qcom_geni_serial_port_setup(uport);
+ 		if (ret)
+ 			return ret;
+ 	}
++	enable_irq(uport->irq);
+ 
+-	ret = request_irq(uport->irq, qcom_geni_serial_isr, IRQF_TRIGGER_HIGH,
+-							port->name, uport);
+-	if (ret)
+-		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
+-	return ret;
++	return 0;
+ }
+ 
+ static unsigned long get_clk_cfg(unsigned long clk_freq)
+@@ -1297,11 +1291,25 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+ 	port->rx_fifo_depth = DEF_FIFO_DEPTH_WORDS;
+ 	port->tx_fifo_width = DEF_FIFO_WIDTH_BITS;
+ 
++	port->name = devm_kasprintf(uport->dev, GFP_KERNEL,
++			"qcom_geni_serial_%s%d",
++			uart_console(uport) ? "console" : "uart", uport->line);
++	if (!port->name)
++		return ERR_PTR(-ENOMEM);
++
+ 	irq = platform_get_irq(pdev, 0);
+ 	if (irq < 0)
+ 		return irq;
+ 	uport->irq = irq;
+ 
++	irq_set_status_flags(uport->irq, IRQ_NOAUTOEN);
++	ret = devm_request_irq(uport->dev, uport->irq, qcom_geni_serial_isr,
++			IRQF_TRIGGER_HIGH, port->name, uport);
++	if (ret) {
++		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
++		return ret;
++	}
++
+ 	uport->private_data = drv;
+ 	platform_set_drvdata(pdev, port);
+ 	port->handle_rx = console ? handle_rx_console : handle_rx_uart;
 -- 
-Michael Moese <mmoese@suse.de>
-QA Engineer
-PGP Fingerprint: 4CCE 3896 F873 2CA5 2382  3C6F 6021 375C 8635 7E74
-
-SUSE Software Solutions Germany GmbH
-Maxfeldstr. 5
-90409 Nürnberg
-Germany
-
-(HRB 247165, AG München)
-Geschäftsführer: Felix Imendörffer
-
-
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
 
