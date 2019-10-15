@@ -2,107 +2,138 @@ Return-Path: <SRS0=N/nd=YI=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D247ECE58E
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 09:22:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B8D7C10F14
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 09:22:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3CB9C21925
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 09:22:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F2A7B21848
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 09:22:43 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=monstr-eu.20150623.gappssmtp.com header.i=@monstr-eu.20150623.gappssmtp.com header.b="t6ymZoFb"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729724AbfJOJV7 (ORCPT
+        id S1729765AbfJOJWk (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Oct 2019 05:21:59 -0400
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:40570 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726320AbfJOJV5 (ORCPT
+        Tue, 15 Oct 2019 05:22:40 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:44438 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727692AbfJOJWk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Oct 2019 05:21:57 -0400
-Received: by mail-oi1-f193.google.com with SMTP id k9so16191304oib.7;
-        Tue, 15 Oct 2019 02:21:56 -0700 (PDT)
+        Tue, 15 Oct 2019 05:22:40 -0400
+Received: by mail-wr1-f67.google.com with SMTP id z9so22897962wrl.11
+        for <linux-serial@vger.kernel.org>; Tue, 15 Oct 2019 02:22:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=monstr-eu.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=2je19/jggqbWGMcPX5ioTjzRrP7lElzkm+gR+CMtb1s=;
+        b=t6ymZoFbHyXWn7joBIpKhc1/Fk7hGoXzMT7H0wq4ZeHllCiAji04Xri2PLIyIEe0K4
+         aV6Hd+5tLEJuEjhpZeMxPh8uWPYl5fmPcVXoNvUvMWxnL3HIDs5SQsJOka8gOtVcgJyu
+         bTpCLu48QLSl0y06glXhzj3r6eN+YadDUz6uElqozVW/mfDvsLeeRm/I9qRi/tkmMXAO
+         9WF1Cuo7ga1gWqH2yhmo/ZMPYfPMdTUcgNEOM5+x7JLI7uA72NdHfzZDfWEzN5Aohpz7
+         2Uy6krH2/5nS8XW+mUcWCpiOi7ozFkAK89bTklLmSPjCTPV7snMkcD/xR1vclSk1E6hX
+         /MhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PtZh1eDtsmQe32hnrI0UGHtD+cjDd+0nCV/54zTIuBk=;
-        b=kGsnv1meq/8FB1K2P321sOwyTGB6Cvqg3DEUvmg/9cQOpvJMmWH5W5lw8H0K6vCGYh
-         rqCu67+aMJhYiVXDc0rmVUmpN0GbNkgx2Fetcbi+LjdJNXwNsq1tU9dh6v/QLiQ66IqH
-         G5dhGMRjxj77ZyySbKZMMddfgpqUYmXRFVhT+h5qazZ7g/lXbLm6Xb4REts27ndp8X3F
-         H688fa0RAqxE5MPlnl7r78z6sQi0kwbyfMR41X4tHM7S9zRHcFeR98P65CWCzeD5+gGV
-         fSuuaLMc0sIwlbIO5ZUJwnHIEiKtyypLlRXs/SQD+RZHoYaoSL2pDR7BHzCy+kVCzBny
-         j9Tg==
-X-Gm-Message-State: APjAAAWsdUpwGOn3QuMTy5xhnKfZMr603/r3DVOQJTs1pSfOB9LB7da3
-        jo1/o4wPk/HTZs4Pl6SWTmmUbcLyGvgxnEAG4h8=
-X-Google-Smtp-Source: APXvYqw0gXgXjRpDJpbD6WQpA/u9qvGHCsZIlT5z2CnJru+kAxXX/OPiETm/V4VjDweqAIamotwbSKqQbEw73JKBUCk=
-X-Received: by 2002:a05:6808:3b4:: with SMTP id n20mr17701290oie.131.1571131316044;
- Tue, 15 Oct 2019 02:21:56 -0700 (PDT)
-MIME-Version: 1.0
-References: <4a877f1c7189a7c45b59a6ebfc3de607e8758949.1567434470.git.michal.simek@xilinx.com>
- <CAMuHMdWY2VsY-CyAxSvpm1XYicAWqU7NORSQofQ+T195DwyLUg@mail.gmail.com>
-In-Reply-To: <CAMuHMdWY2VsY-CyAxSvpm1XYicAWqU7NORSQofQ+T195DwyLUg@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 15 Oct 2019 11:21:44 +0200
-Message-ID:
- <CAMuHMdUN0GNWd7+zqRhXz7Uinnojx-bK+LW6Q_Q75yBNuUycxw@mail.gmail.com>
-Subject: Re: [PATCH] serial: core: Use cons->index for preferred console registration
-To:     Michal Simek <michal.simek@xilinx.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2je19/jggqbWGMcPX5ioTjzRrP7lElzkm+gR+CMtb1s=;
+        b=nNQx8ojioE9MEPag1R5TYWIN/pY1EtW9rtW4SwXHiO1Z5JhGtJJsNmNQ43WCtfNGds
+         EH7Obz4vtgfl76osqGET1aVB7E2llWp4Kv+9sxBQJrw3FFE2ZfaXbty93/y7MDrcbOg1
+         ljP2NQa3+pH7Q7xncsnQkule8JMLsOha7UmBpKhGdORPkSa3QH6lP8GVMH/C71UyhAxc
+         kzuAKoLNCBBu+/SS9AhCD8HqmbbITZaHCh6X+fXeT7AvEaZZHPzOMNMHnlaMZU+N4/ZJ
+         hGyXaLUl3+A6sB3UvPRSJC+FnoL7qsYO/YpqlFnzS6MdmxNdu0tbkZtCzMlyrQCrtCNn
+         3kvw==
+X-Gm-Message-State: APjAAAWePK3g0+mRvn+vNIs0LB8lBjPZAQA4f/KsFUcC1ZZQYX4M/7iH
+        hmUtte9XX3vv8u6cn4kYFl6zGpAyUJHKYgI2
+X-Google-Smtp-Source: APXvYqwtTGnp6OslciBY1LUwBRbdzvF4fDuwq90HSlfX12UVnZt+lZAJaFSOB1eOJV7AXXat0IRRuA==
+X-Received: by 2002:a05:6000:1283:: with SMTP id f3mr27844709wrx.370.1571131357654;
+        Tue, 15 Oct 2019 02:22:37 -0700 (PDT)
+Received: from [74.125.133.108] ([149.199.62.130])
+        by smtp.gmail.com with ESMTPSA id z6sm19523901wro.16.2019.10.15.02.22.33
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 15 Oct 2019 02:22:36 -0700 (PDT)
+Subject: Re: [PATCH] serial: core: Use cons->index for preferred console
+ registration
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michal Simek <michal.simek@xilinx.com>
 Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Michal Simek <monstr@monstr.eu>, Jiri Slaby <jslaby@suse.com>,
+        Jiri Slaby <jslaby@suse.com>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Linux ARM <linux-arm-kernel@lists.infradead.org>,
         Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+References: <4a877f1c7189a7c45b59a6ebfc3de607e8758949.1567434470.git.michal.simek@xilinx.com>
+ <CAMuHMdWY2VsY-CyAxSvpm1XYicAWqU7NORSQofQ+T195DwyLUg@mail.gmail.com>
+From:   Michal Simek <monstr@monstr.eu>
+Message-ID: <7284590f-2b74-1b47-2d61-783ad8d5f46f@monstr.eu>
+Date:   Tue, 15 Oct 2019 11:22:28 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <CAMuHMdWY2VsY-CyAxSvpm1XYicAWqU7NORSQofQ+T195DwyLUg@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191015092144.uZiXWtVURNFO4O_oEN__EslMjW2Lzv7wjQxqets19bg@z>
+Message-ID: <20191015092228.I1dD_SyBULBe1R1AzP73pe0-JcB1TekY_1LimwSHmVc@z>
 
-On Tue, Oct 15, 2019 at 11:19 AM Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
+Hi Geert,
+
+On 15. 10. 19 11:19, Geert Uytterhoeven wrote:
+> Hi Michal,
+> 
 > On Mon, Sep 2, 2019 at 4:29 PM Michal Simek <michal.simek@xilinx.com> wrote:
-> > The reason for this patch is xilinx_uartps driver which create one dynamic
-> > instance per IP with unique major and minor combinations. drv->nr is in
-> > this case all the time setup to 1. That means that uport->line is all the
-> > time setup to 0 and drv->tty_driver->name_base is doing shift in name to
-> > for example ttyPS3.
-> >
-> > register_console() is looping over console_cmdline array and looking for
-> > proper name/index combination which is in our case ttyPS/3.
-> > That's why every instance of driver needs to be registered with proper
-> > combination of name/number (ttyPS/3). Using uport->line is doing
-> > registration with ttyPS/0 which is wrong that's why proper console index
-> > should be used which is in cons->index field.
-> >
-> > Also it is visible that recording console should be done based on
-> > information about console not about the port but in most cases numbers are
-> > the same and xilinx_uartps is only one exception now.
-> >
-> > Signed-off-by: Michal Simek <michal.simek@xilinx.com>
->
+>> The reason for this patch is xilinx_uartps driver which create one dynamic
+>> instance per IP with unique major and minor combinations. drv->nr is in
+>> this case all the time setup to 1. That means that uport->line is all the
+>> time setup to 0 and drv->tty_driver->name_base is doing shift in name to
+>> for example ttyPS3.
+>>
+>> register_console() is looping over console_cmdline array and looking for
+>> proper name/index combination which is in our case ttyPS/3.
+>> That's why every instance of driver needs to be registered with proper
+>> combination of name/number (ttyPS/3). Using uport->line is doing
+>> registration with ttyPS/0 which is wrong that's why proper console index
+>> should be used which is in cons->index field.
+>>
+>> Also it is visible that recording console should be done based on
+>> information about console not about the port but in most cases numbers are
+>> the same and xilinx_uartps is only one exception now.
+>>
+>> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+> 
 > This is now commit 91daae03188e0dd1 ("serial: core: Use cons->index
 > for preferred console registration") in tty-next.
->
+> 
 > This has been bisected to break the serial console on (at least)
 > r8a7791/koelsch and r8a7795/h3-salvator-xs.
->
+> 
 > The line "printk: console [ttySC0] enabled" is no longer printed.
-
-s/is no longer printed/no longer appears in the kernel log/, of course.
-
 > The system continues booting without any serial console output, and the
 > login prompt never appears on the serial console.
+> 
+> Reverting this commit fixes the issue.
 
-Gr{oetje,eeting}s,
+Sorry for trouble with this patch. Can you please point me to dts files
+for these boards and also what's the value you have in uport->line and
+uport->cons->index?
 
-                        Geert
+Thanks,
+Michal
+
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
+w: www.monstr.eu p: +42-0-721842854
+Maintainer of Linux kernel - Xilinx Microblaze
+Maintainer of Linux kernel - Xilinx Zynq ARM and ZynqMP ARM64 SoCs
+U-Boot custodian - Xilinx Microblaze/Zynq/ZynqMP/Versal SoCs
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
