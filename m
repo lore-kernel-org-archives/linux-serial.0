@@ -2,223 +2,250 @@ Return-Path: <SRS0=N/nd=YI=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF85DECE58F
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 12:10:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E925ECE58F
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 14:13:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 91DC5205F4
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 12:10:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2BBD72168B
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 14:13:41 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="y1zTKzdT"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730976AbfJOMKG (ORCPT
+        id S1732545AbfJOONk (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Oct 2019 08:10:06 -0400
-Received: from mx2.suse.de ([195.135.220.15]:58024 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730655AbfJOMKF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Oct 2019 08:10:05 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 0F763B398;
-        Tue, 15 Oct 2019 12:10:01 +0000 (UTC)
-From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Tue, 15 Oct 2019 10:13:40 -0400
+Received: from mail-vs1-f67.google.com ([209.85.217.67]:41256 "EHLO
+        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732543AbfJOONk (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 15 Oct 2019 10:13:40 -0400
+Received: by mail-vs1-f67.google.com with SMTP id l2so13216878vsr.8
+        for <linux-serial@vger.kernel.org>; Tue, 15 Oct 2019 07:13:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b/eFKQ/v4cr/yPgp0izVLyHlXJnLa4HICmgwi01lXvc=;
+        b=y1zTKzdTdmsrc43HicE1W4OcK2myObdXuvjFUiN6jPSz0v4CsQcuh/7ktoHHvscwUe
+         WAwmr+69J8UQWkzDEau4wVhaYHdaO4IdBaGAc7OY4t7+8gjIaturNOu7H8P+woacKeaX
+         Q2AZx29vX20cH0G+wE6lGHbjFqhEgd6TDQt5NFwoEMYBFVyy98pBTsVcCU/gKEmrlJdN
+         kXucwpHKaYU3S/aY7SwELglpgMrbYVpYBXYvalu8VW/Qx9KsRMtEKMtH8+zawqcSiAaB
+         Tm6cWyWtdfchVHsvvoCwiwb379LpR2fZ0vwCzFIUCU3Atp7GrKAl4d9J2wJ6rvb4hXrN
+         eWsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b/eFKQ/v4cr/yPgp0izVLyHlXJnLa4HICmgwi01lXvc=;
+        b=r+aXKOwBYR4jGr+0YkGAcf8U7Ri2M9DmDCdQF1Pysv94JEHrdxrQW5DAuOSn6yLVhG
+         CD73FWZxY2DKYAnC1Au+Warflnx9VC/BAuhqqgCk+5goJtEl5cdDGI5T78sqBn0OnyCW
+         Zj4pnc7Iq/Q+N0/MQ9lvgXgA+IsX2ZuJ5DV91Xu8fj9MeEXhWXkfWGN7g6gDAPpyOfkK
+         27Q+9vVzcBCWH1bkhF37XzsBeDYjdw9yi73BjgV3+tDCpmIRctNVHh/zSTXlfF9wwSA3
+         SQWCChlQKC6PfsQflmifWdN46MQhB2mtZLf6hOAG0vH4/vUJPFFzkHfauVKZSsXCXOkI
+         glLg==
+X-Gm-Message-State: APjAAAXxmWT+J7X3qZL0R6jTfchbtT+CtufCJw2v5I4ge2tpyLzO7+Az
+        L/UZzV6fsoGZPqcjlLfdU9KqLKxinlzgwHWDR4DZ4WcL
+X-Google-Smtp-Source: APXvYqxluszvLcVxMEdWdPelTTF58EOAxfZDkgM4jA/rH5H2Cc2i74AuIVwFlZIgVdMLDs2o7gG3CCQM2jc+SegK0h8=
+X-Received: by 2002:a05:6102:5e1:: with SMTP id w1mr4153604vsf.191.1571148818927;
+ Tue, 15 Oct 2019 07:13:38 -0700 (PDT)
+MIME-Version: 1.0
+References: <20191010202802.1132272-1-arnd@arndb.de> <20191010203043.1241612-1-arnd@arndb.de>
+ <20191010203043.1241612-11-arnd@arndb.de>
+In-Reply-To: <20191010203043.1241612-11-arnd@arndb.de>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Tue, 15 Oct 2019 16:13:02 +0200
+Message-ID:
+ <CAPDyKFqkRApT-q4ssi1Hn2cmLY=0K7bKXdo-D42q+xACFcC9dQ@mail.gmail.com>
+Subject: Re: [PATCH 11/36] ARM: s5pv210: split from plat-samsung
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Kukjin Kim <kgene@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH v10 1/6] nvmem: core: add nvmem_device_find
-Date:   Tue, 15 Oct 2019 14:09:46 +0200
-Message-Id: <20191015120953.2597-2-tbogendoerfer@suse.de>
-X-Mailer: git-send-email 2.16.4
-In-Reply-To: <20191015120953.2597-1-tbogendoerfer@suse.de>
-References: <20191015120953.2597-1-tbogendoerfer@suse.de>
+        Jiri Slaby <jslaby@suse.com>,
+        Sangbeom Kim <sbkim73@samsung.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Liam Girdwood <lgirdwood@gmail.com>, linux-pwm@vger.kernel.org,
+        alsa-devel@alsa-project.org,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        Takashi Iwai <tiwai@suse.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Faiz Abbas <faiz_abbas@ti.com>,
+        =?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>,
+        linux-serial@vger.kernel.org,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Olof Johansson <olof@lixom.net>,
+        linux-spi@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Message-ID: <20191015120946.WzKNFHqpkqDoLxz0p2TyM5sB3pKSZkjPM6qIRuS8gfc@z>
+Message-ID: <20191015141302.coG5v3d1nODWFgEApeo4zOp55a8wvK7C9t5ZfjYTntY@z>
 
-nvmem_device_find provides a way to search for nvmem devices with
-the help of a match function simlair to bus_find_device.
+On Thu, 10 Oct 2019 at 22:38, Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> These can be build completely independently, so split
+> the two Kconfig symbols.
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  arch/arm/Kconfig.debug        | 6 +++---
+>  arch/arm/Makefile             | 1 -
+>  arch/arm/plat-samsung/Kconfig | 2 +-
+>  drivers/mmc/host/Kconfig      | 2 +-
+>  drivers/pwm/Kconfig           | 2 +-
+>  drivers/spi/Kconfig           | 2 +-
+>  drivers/tty/serial/Kconfig    | 2 +-
+>  sound/soc/samsung/Kconfig     | 2 +-
+>  8 files changed, 9 insertions(+), 10 deletions(-)
 
-Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Acked-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
----
- Documentation/driver-api/nvmem.rst |  2 ++
- drivers/nvmem/core.c               | 61 +++++++++++++++++---------------------
- include/linux/nvmem-consumer.h     |  9 ++++++
- 3 files changed, 38 insertions(+), 34 deletions(-)
+For the mmc parts:
 
-diff --git a/Documentation/driver-api/nvmem.rst b/Documentation/driver-api/nvmem.rst
-index d9d958d5c824..287e86819640 100644
---- a/Documentation/driver-api/nvmem.rst
-+++ b/Documentation/driver-api/nvmem.rst
-@@ -129,6 +129,8 @@ To facilitate such consumers NVMEM framework provides below apis::
-   struct nvmem_device *nvmem_device_get(struct device *dev, const char *name);
-   struct nvmem_device *devm_nvmem_device_get(struct device *dev,
- 					   const char *name);
-+  struct nvmem_device *nvmem_device_find(void *data,
-+			int (*match)(struct device *dev, const void *data));
-   void nvmem_device_put(struct nvmem_device *nvmem);
-   int nvmem_device_read(struct nvmem_device *nvmem, unsigned int offset,
- 		      size_t bytes, void *buf);
-diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
-index 057d1ff87d5d..9f1ee9c766ec 100644
---- a/drivers/nvmem/core.c
-+++ b/drivers/nvmem/core.c
-@@ -76,33 +76,6 @@ static struct bus_type nvmem_bus_type = {
- 	.name		= "nvmem",
- };
- 
--static struct nvmem_device *of_nvmem_find(struct device_node *nvmem_np)
--{
--	struct device *d;
--
--	if (!nvmem_np)
--		return NULL;
--
--	d = bus_find_device_by_of_node(&nvmem_bus_type, nvmem_np);
--
--	if (!d)
--		return NULL;
--
--	return to_nvmem_device(d);
--}
--
--static struct nvmem_device *nvmem_find(const char *name)
--{
--	struct device *d;
--
--	d = bus_find_device_by_name(&nvmem_bus_type, NULL, name);
--
--	if (!d)
--		return NULL;
--
--	return to_nvmem_device(d);
--}
--
- static void nvmem_cell_drop(struct nvmem_cell *cell)
- {
- 	blocking_notifier_call_chain(&nvmem_notifier, NVMEM_CELL_REMOVE, cell);
-@@ -532,13 +505,16 @@ int devm_nvmem_unregister(struct device *dev, struct nvmem_device *nvmem)
- }
- EXPORT_SYMBOL(devm_nvmem_unregister);
- 
--static struct nvmem_device *__nvmem_device_get(struct device_node *np,
--					       const char *nvmem_name)
-+static struct nvmem_device *__nvmem_device_get(void *data,
-+			int (*match)(struct device *dev, const void *data))
- {
- 	struct nvmem_device *nvmem = NULL;
-+	struct device *dev;
- 
- 	mutex_lock(&nvmem_mutex);
--	nvmem = np ? of_nvmem_find(np) : nvmem_find(nvmem_name);
-+	dev = bus_find_device(&nvmem_bus_type, NULL, data, match);
-+	if (dev)
-+		nvmem = to_nvmem_device(dev);
- 	mutex_unlock(&nvmem_mutex);
- 	if (!nvmem)
- 		return ERR_PTR(-EPROBE_DEFER);
-@@ -587,7 +563,7 @@ struct nvmem_device *of_nvmem_device_get(struct device_node *np, const char *id)
- 	if (!nvmem_np)
- 		return ERR_PTR(-ENOENT);
- 
--	return __nvmem_device_get(nvmem_np, NULL);
-+	return __nvmem_device_get(nvmem_np, device_match_of_node);
- }
- EXPORT_SYMBOL_GPL(of_nvmem_device_get);
- #endif
-@@ -613,10 +589,26 @@ struct nvmem_device *nvmem_device_get(struct device *dev, const char *dev_name)
- 
- 	}
- 
--	return __nvmem_device_get(NULL, dev_name);
-+	return __nvmem_device_get((void *)dev_name, device_match_name);
- }
- EXPORT_SYMBOL_GPL(nvmem_device_get);
- 
-+/**
-+ * nvmem_device_find() - Find nvmem device with matching function
-+ *
-+ * @data: Data to pass to match function
-+ * @match: Callback function to check device
-+ *
-+ * Return: ERR_PTR() on error or a valid pointer to a struct nvmem_device
-+ * on success.
-+ */
-+struct nvmem_device *nvmem_device_find(void *data,
-+			int (*match)(struct device *dev, const void *data))
-+{
-+	return __nvmem_device_get(data, match);
-+}
-+EXPORT_SYMBOL_GPL(nvmem_device_find);
-+
- static int devm_nvmem_device_match(struct device *dev, void *res, void *data)
- {
- 	struct nvmem_device **nvmem = res;
-@@ -710,7 +702,8 @@ nvmem_cell_get_from_lookup(struct device *dev, const char *con_id)
- 		if ((strcmp(lookup->dev_id, dev_id) == 0) &&
- 		    (strcmp(lookup->con_id, con_id) == 0)) {
- 			/* This is the right entry. */
--			nvmem = __nvmem_device_get(NULL, lookup->nvmem_name);
-+			nvmem = __nvmem_device_get((void *)lookup->nvmem_name,
-+						   device_match_name);
- 			if (IS_ERR(nvmem)) {
- 				/* Provider may not be registered yet. */
- 				cell = ERR_CAST(nvmem);
-@@ -780,7 +773,7 @@ struct nvmem_cell *of_nvmem_cell_get(struct device_node *np, const char *id)
- 	if (!nvmem_np)
- 		return ERR_PTR(-EINVAL);
- 
--	nvmem = __nvmem_device_get(nvmem_np, NULL);
-+	nvmem = __nvmem_device_get(nvmem_np, device_match_of_node);
- 	of_node_put(nvmem_np);
- 	if (IS_ERR(nvmem))
- 		return ERR_CAST(nvmem);
-diff --git a/include/linux/nvmem-consumer.h b/include/linux/nvmem-consumer.h
-index 8f8be5b00060..02dc4aa992b2 100644
---- a/include/linux/nvmem-consumer.h
-+++ b/include/linux/nvmem-consumer.h
-@@ -89,6 +89,9 @@ void nvmem_del_cell_lookups(struct nvmem_cell_lookup *entries,
- int nvmem_register_notifier(struct notifier_block *nb);
- int nvmem_unregister_notifier(struct notifier_block *nb);
- 
-+struct nvmem_device *nvmem_device_find(void *data,
-+			int (*match)(struct device *dev, const void *data));
-+
- #else
- 
- static inline struct nvmem_cell *nvmem_cell_get(struct device *dev,
-@@ -204,6 +207,12 @@ static inline int nvmem_unregister_notifier(struct notifier_block *nb)
- 	return -EOPNOTSUPP;
- }
- 
-+static inline struct nvmem_device *nvmem_device_find(void *data,
-+			int (*match)(struct device *dev, const void *data))
-+{
-+	return NULL;
-+}
-+
- #endif /* CONFIG_NVMEM */
- 
- #if IS_ENABLED(CONFIG_NVMEM) && IS_ENABLED(CONFIG_OF)
--- 
-2.16.4
+Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
 
+Kind regards
+Uffe
+
+
+>
+> diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+> index 9c4f2d6deb06..4c4e97ae4fcb 100644
+> --- a/arch/arm/Kconfig.debug
+> +++ b/arch/arm/Kconfig.debug
+> @@ -998,7 +998,7 @@ choice
+>                   via SCIFA4 on Renesas SH-Mobile AG5 (SH73A0).
+>
+>         config DEBUG_S3C_UART0
+> -               depends on PLAT_SAMSUNG || ARCH_EXYNOS
+> +               depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
+>                 select DEBUG_EXYNOS_UART if ARCH_EXYNOS
+>                 select DEBUG_S3C24XX_UART if ARCH_S3C24XX
+>                 select DEBUG_S3C64XX_UART if ARCH_S3C64XX
+> @@ -1010,7 +1010,7 @@ choice
+>                   by the boot-loader before use.
+>
+>         config DEBUG_S3C_UART1
+> -               depends on PLAT_SAMSUNG || ARCH_EXYNOS
+> +               depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
+>                 select DEBUG_EXYNOS_UART if ARCH_EXYNOS
+>                 select DEBUG_S3C24XX_UART if ARCH_S3C24XX
+>                 select DEBUG_S3C64XX_UART if ARCH_S3C64XX
+> @@ -1022,7 +1022,7 @@ choice
+>                   by the boot-loader before use.
+>
+>         config DEBUG_S3C_UART2
+> -               depends on PLAT_SAMSUNG || ARCH_EXYNOS
+> +               depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
+>                 select DEBUG_EXYNOS_UART if ARCH_EXYNOS
+>                 select DEBUG_S3C24XX_UART if ARCH_S3C24XX
+>                 select DEBUG_S3C64XX_UART if ARCH_S3C64XX
+> diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+> index f492d7c338fe..a1bc15cda751 100644
+> --- a/arch/arm/Makefile
+> +++ b/arch/arm/Makefile
+> @@ -235,7 +235,6 @@ machine-$(CONFIG_PLAT_SPEAR)                += spear
+>  # by CONFIG_* macro name.
+>  plat-$(CONFIG_ARCH_OMAP)       += omap
+>  plat-$(CONFIG_ARCH_S3C64XX)    += samsung
+> -plat-$(CONFIG_ARCH_S5PV210)    += samsung
+>  plat-$(CONFIG_PLAT_ORION)      += orion
+>  plat-$(CONFIG_PLAT_PXA)                += pxa
+>  plat-$(CONFIG_PLAT_S3C24XX)    += samsung
+> diff --git a/arch/arm/plat-samsung/Kconfig b/arch/arm/plat-samsung/Kconfig
+> index 740bdb23f38a..1530946cc672 100644
+> --- a/arch/arm/plat-samsung/Kconfig
+> +++ b/arch/arm/plat-samsung/Kconfig
+> @@ -4,7 +4,7 @@
+>
+>  config PLAT_SAMSUNG
+>         bool
+> -       depends on PLAT_S3C24XX || ARCH_S3C64XX || ARCH_S5PV210
+> +       depends on PLAT_S3C24XX || ARCH_S3C64XX
+>         default y
+>         select GENERIC_IRQ_CHIP
+>         select NO_IOPORT_MAP
+> diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
+> index 400a581c918c..16a0e5430b44 100644
+> --- a/drivers/mmc/host/Kconfig
+> +++ b/drivers/mmc/host/Kconfig
+> @@ -275,7 +275,7 @@ config MMC_SDHCI_TEGRA
+>
+>  config MMC_SDHCI_S3C
+>         tristate "SDHCI support on Samsung S3C SoC"
+> -       depends on MMC_SDHCI && (PLAT_SAMSUNG || ARCH_EXYNOS)
+> +       depends on MMC_SDHCI && (PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS)
+>         help
+>           This selects the Secure Digital Host Controller Interface (SDHCI)
+>           often referrered to as the HSMMC block in some of the Samsung S3C
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index e3a2518503ed..8eb738cac0c7 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -394,7 +394,7 @@ config PWM_ROCKCHIP
+>
+>  config PWM_SAMSUNG
+>         tristate "Samsung PWM support"
+> -       depends on PLAT_SAMSUNG || ARCH_EXYNOS
+> +       depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
+>         help
+>           Generic PWM framework driver for Samsung.
+>
+> diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
+> index 6f7fdcbb9151..355391ee643d 100644
+> --- a/drivers/spi/Kconfig
+> +++ b/drivers/spi/Kconfig
+> @@ -625,7 +625,7 @@ config SPI_S3C24XX_FIQ
+>
+>  config SPI_S3C64XX
+>         tristate "Samsung S3C64XX series type SPI"
+> -       depends on (PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST)
+> +       depends on (PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST)
+>         help
+>           SPI driver for Samsung S3C64XX and newer SoCs.
+>
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index 4789b5d62f63..17f01cf3009c 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -237,7 +237,7 @@ config SERIAL_CLPS711X_CONSOLE
+>
+>  config SERIAL_SAMSUNG
+>         tristate "Samsung SoC serial support"
+> -       depends on PLAT_SAMSUNG || ARCH_EXYNOS
+> +       depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
+>         select SERIAL_CORE
+>         help
+>           Support for the on-chip UARTs on the Samsung S3C24XX series CPUs,
+> diff --git a/sound/soc/samsung/Kconfig b/sound/soc/samsung/Kconfig
+> index 638983123d8f..7a0035dd9995 100644
+> --- a/sound/soc/samsung/Kconfig
+> +++ b/sound/soc/samsung/Kconfig
+> @@ -1,7 +1,7 @@
+>  # SPDX-License-Identifier: GPL-2.0-only
+>  menuconfig SND_SOC_SAMSUNG
+>         tristate "ASoC support for Samsung"
+> -       depends on PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST
+> +       depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST
+>         depends on COMMON_CLK
+>         select SND_SOC_GENERIC_DMAENGINE_PCM
+>         ---help---
+> --
+> 2.20.0
+>
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
