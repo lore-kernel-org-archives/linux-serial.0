@@ -3,144 +3,215 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-5.2 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 522DDC10F14
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 14:24:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DB50ECE588
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 14:37:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 29A2F2064A
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 14:24:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4435E20854
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 14:37:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="vdm+Kl7G"
+	dkim=pass (1024-bit key) header.d=xilinx.onmicrosoft.com header.i=@xilinx.onmicrosoft.com header.b="sDw34uGu"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732635AbfJOOYF (ORCPT
+        id S1732766AbfJOOhN (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Oct 2019 10:24:05 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:36532 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732050AbfJOOYF (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Oct 2019 10:24:05 -0400
-Received: by mail-wr1-f67.google.com with SMTP id y19so24146823wrd.3;
-        Tue, 15 Oct 2019 07:24:03 -0700 (PDT)
+        Tue, 15 Oct 2019 10:37:13 -0400
+Received: from mail-eopbgr720059.outbound.protection.outlook.com ([40.107.72.59]:20653
+        "EHLO NAM05-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1732599AbfJOOhM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 15 Oct 2019 10:37:12 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=etWl/WIFTpZZnNGO/da7tZ3LjVjcP20J9sclVAtJI25dtwdTFoHtTuAr79eK4dB5Fyr1epP222W2CElT7hk8nnv61psfPfI5/dRKnE8qNE81+ouUTQWr/3oOo8fzy1gBDHY1xBil2h2d1Nw7qVAt4FJuNyqvy02MUMle6IZplrLKgW2HuUWYxmMJ0jwuwX6h2AyAIC1fkj6/FM5q+9eYOC0DtANLaeGdOkIR7Nu6tp1gDBy36qzR1WRhjg3clduWUoouC0oVBEDtntoVT6Ef44IsHIUvogwcXRXH/shCzfOgutAVKuPxEUSu6iSF2i1HdXJBQHwsrWweDOtRa9d0uA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zuvBu2FEKPwRrPWYEZo1dAM/E6K1lFR5hb7zZT3YlCg=;
+ b=dT7w9qU9oea3Pg32adt9r7JmF6rf3xdnFb8rfcP38orQKqD1AqGVGu6fvJMyKpuE327USTSmSqDeVRO8vL/dgs0/+DtcogEZT72PM8Z2cDJ6yr6vpq8TXHt7pAJZBc0uSPKMsCnSGPG0fxjyloj3BbtIo60p7OqYu3rl5PotPSsK5mkf5fHkPsAF5/pkTT1G7Fkbm5/EeaPcni8nTFd06dlJ45oJ7J9MklGp9n24D61YdYqe/M+WSZwvd4MRBzshWvboVtTB2JzFGPTlBa0eB2fM+gKNUMfUY3psoBPgs0BXYkhJDTFFmn25MUpwuN3QmAmOmVmScoVTtmt8JuOtxw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.60.83) smtp.rcpttodomain=linux-m68k.org smtp.mailfrom=xilinx.com;
+ dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
+ not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=FAnSKJ9Pew82PkAXBmKY6NLtUVGPV5vweCMQygZLvvc=;
-        b=vdm+Kl7Gd2y8KQLrE/HVhM8oojADmvZGvILZ1fyliGX2ZgMa9FIC9w8kzDxAMJuDjd
-         tqCIlnyOggnEoSYxZJ1Y7rUjNA8gBdVlFKsxpYi6hy+nkIaklBboKo7lkhwMrlJaFdcL
-         0MgFqVTbuVUK1wuhcUhTp6rfthPK1vSdRge5O5Pcq3XW0+3kZIbigf+Y6dfavg/k4dCB
-         ghGvkniJqx3yGmzSZ/i0UOfsGeMwIDESQLlGA6wl4Sfvol8nxxLE84K0mdY9BbZriZMa
-         jRZoCjXC1ZUMbID1bn/0THaqWglcm+43TCn6DU24RN3vOs0NIrGxEtg6aXLoyDPw1t9r
-         60rA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=FAnSKJ9Pew82PkAXBmKY6NLtUVGPV5vweCMQygZLvvc=;
-        b=LoRbyyAamea4yIyHmKq3+N3E268YK1cwMt/LUb0XVPDjJtEDael2FatBqbLHPEiMMi
-         fdiGNv59qkE+Fnq6mbYcLg2EZ6ZmwCIsgJkIGEsr4AHAHLjavOwhjreUNTot0RnX4x/h
-         J01Bw8dGYGhswoScBGuMdluceudXqFREkNj0GcTheUM0KHojga/TQnAVSWuAFNCamrXj
-         xVwXyGGwqxBtDKEHHSPDtXCtcmwJeJjaj34PUMAeCiRMIrbuUKoV+gtZ0z+HU4n/GZ/+
-         uPH+BE6l7nhu0F8gni6TlJsFdSs1SqzsGx4amiHn/LY++xRjt4a8MJ33Srp8kHPpeStf
-         kFXQ==
-X-Gm-Message-State: APjAAAU8kNazSvLVC2tY93MIt+OD5xan5O29/OoWkrUSKNk16hKvpL7T
-        xnxzCnNxfCWlJH22OZBXxpo=
-X-Google-Smtp-Source: APXvYqxMLLgnR0vPxF/fKc2CDYJpM14udBOYJNSRJ7usNIA2JSpBWl8XxRhB+VXeRePSyanx9OYDig==
-X-Received: by 2002:a5d:51c8:: with SMTP id n8mr215083wrv.228.1571149442587;
-        Tue, 15 Oct 2019 07:24:02 -0700 (PDT)
-Received: from localhost (p2E5BE2CE.dip0.t-ipconnect.de. [46.91.226.206])
-        by smtp.gmail.com with ESMTPSA id f20sm17308471wmb.6.2019.10.15.07.24.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Oct 2019 07:24:00 -0700 (PDT)
-Date:   Tue, 15 Oct 2019 16:23:59 +0200
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Kukjin Kim <kgene@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zuvBu2FEKPwRrPWYEZo1dAM/E6K1lFR5hb7zZT3YlCg=;
+ b=sDw34uGuhfgfbm87SaswzBuNMCjgpbFJznTVej5LmKp7B7jfQZqrNXJk1xZ9h6h2i5V3V/ht8abwtMiVFwXaQkR5J5EbjKKdRl4FFW/aFmBC8aE4UPc0inzr9ld9YMfT+mg2EuyP9jG4iOnjpjYX6hCGA1tQ1oEXCnrmnGkV90M=
+Received: from MWHPR02CA0036.namprd02.prod.outlook.com (2603:10b6:301:60::25)
+ by MWHPR02MB2734.namprd02.prod.outlook.com (2603:10b6:300:10b::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2347.18; Tue, 15 Oct
+ 2019 14:37:09 +0000
+Received: from SN1NAM02FT007.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e44::204) by MWHPR02CA0036.outlook.office365.com
+ (2603:10b6:301:60::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2347.16 via Frontend
+ Transport; Tue, 15 Oct 2019 14:37:08 +0000
+Authentication-Results: spf=pass (sender IP is 149.199.60.83)
+ smtp.mailfrom=xilinx.com; linux-m68k.org; dkim=none (message not signed)
+ header.d=none;linux-m68k.org; dmarc=bestguesspass action=none
+ header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
+Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
+ SN1NAM02FT007.mail.protection.outlook.com (10.152.72.88) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2347.16
+ via Frontend Transport; Tue, 15 Oct 2019 14:37:08 +0000
+Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
+        (envelope-from <michal.simek@xilinx.com>)
+        id 1iKNwi-0006BP-2q; Tue, 15 Oct 2019 07:37:08 -0700
+Received: from [127.0.0.1] (helo=localhost)
+        by xsj-pvapsmtp01 with smtp (Exim 4.63)
+        (envelope-from <michal.simek@xilinx.com>)
+        id 1iKNwc-0008Mm-Vh; Tue, 15 Oct 2019 07:37:03 -0700
+Received: from xsj-pvapsmtp01 (smtp-fallback.xilinx.com [149.199.38.66] (may be forged))
+        by xsj-smtp-dlp1.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id x9FEaxtH011496;
+        Tue, 15 Oct 2019 07:36:59 -0700
+Received: from [172.30.17.123]
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <michals@xilinx.com>)
+        id 1iKNwZ-0008LE-EK; Tue, 15 Oct 2019 07:36:59 -0700
+Subject: Re: [PATCH] serial: core: Use cons->index for preferred console
+ registration
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michal Simek <monstr@monstr.eu>
+Cc:     Michal Simek <michal.simek@xilinx.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Jiri Slaby <jslaby@suse.com>,
-        Sangbeom Kim <sbkim73@samsung.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linus.walleij@linaro.org,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Olof Johansson <olof@lixom.net>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        =?utf-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Faiz Abbas <faiz_abbas@ti.com>, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH 11/36] ARM: s5pv210: split from plat-samsung
-Message-ID: <20191015142359.GA1101003@ulmo>
-References: <20191010202802.1132272-1-arnd@arndb.de>
- <20191010203043.1241612-1-arnd@arndb.de>
- <20191010203043.1241612-11-arnd@arndb.de>
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+References: <4a877f1c7189a7c45b59a6ebfc3de607e8758949.1567434470.git.michal.simek@xilinx.com>
+ <CAMuHMdWY2VsY-CyAxSvpm1XYicAWqU7NORSQofQ+T195DwyLUg@mail.gmail.com>
+ <7284590f-2b74-1b47-2d61-783ad8d5f46f@monstr.eu>
+ <CAMuHMdWZYALZB1bP5Mtoq4Nj5iubzdWBf1vRY9Mh5QvjCDhBgA@mail.gmail.com>
+From:   Michal Simek <michal.simek@xilinx.com>
+Message-ID: <622f4c5e-e3ed-3f91-254d-78d905de79c9@xilinx.com>
+Date:   Tue, 15 Oct 2019 16:36:56 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="d6Gm4EdcadzBjdND"
-Content-Disposition: inline
-In-Reply-To: <20191010203043.1241612-11-arnd@arndb.de>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <CAMuHMdWZYALZB1bP5Mtoq4Nj5iubzdWBf1vRY9Mh5QvjCDhBgA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-RCIS-Action: ALLOW
+X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
+X-TM-AS-User-Approved-Sender: Yes;Yes
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:149.199.60.83;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(376002)(136003)(396003)(346002)(189003)(199004)(9786002)(336012)(230700001)(31696002)(11346002)(446003)(8936002)(36386004)(5660300002)(50466002)(229853002)(478600001)(356004)(6666004)(186003)(23676004)(8676002)(106002)(70206006)(36756003)(2906002)(2486003)(26005)(65956001)(4326008)(70586007)(14444005)(31686004)(76176011)(81166006)(44832011)(126002)(47776003)(476003)(65806001)(6246003)(486006)(305945005)(426003)(2616005)(81156014)(53546011)(316002)(110136005)(54906003)(58126008)(42866002);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR02MB2734;H:xsj-pvapsmtpgw01;FPR:;SPF:Pass;LANG:en;PTR:unknown-60-83.xilinx.com;MX:1;A:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f891033b-fea0-48ab-5966-08d7517d2860
+X-MS-TrafficTypeDiagnostic: MWHPR02MB2734:
+X-LD-Processed: 657af505-d5df-48d0-8300-c31994686c5c,ExtAddr
+X-Microsoft-Antispam-PRVS: <MWHPR02MB2734D4DFD08DE1A87DDDC699C6930@MWHPR02MB2734.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Forefront-PRVS: 01917B1794
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: e50BbnGs/24ha5olcnfhAncKaoT5LTBtBgBWH5WsAk+CBvEy4QGnoPlNAxyNxkUzfS5WfU7Oaqpj67wpvLQtmRSLvycYVwFjttMnEdbX5zmVQCn9RpW7CXbQ5oaJPYjDcADHKRw9W3XtG5l+7JZgt1edbYuXDBOzEj84DgXddMeKoGWo2RMJBgYfxZYLpfKP9BwJL7WKU+MhFC9laQzVD6yoZDr705bu25em6PT6lsZxee75eHHEvHmp0tkKZ8kAwQEgvCMxC+3z0x1cKxws+zQUHXbvYalWSePCTysQnMBIbq1Akj5prpJKUyjuQhtq5mvCGQrYamSvD9jRVfLNRuOzwIZOV16D51I3UDclmv8gDIufcQjg8v+D0hDoEnadE4uUMi81oGtsXqfihSFtOlw/JXEfsdRyDRS2gLPpK5o=
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Oct 2019 14:37:08.4889
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f891033b-fea0-48ab-5966-08d7517d2860
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR02MB2734
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191015142359.3mKVhVDp90QPlUtGUunpUaB7UZlMVCxIeyIqJNBgqLQ@z>
+Message-ID: <20191015143656.EuRmKLQBaiEKNeu_bUVaS0VCa7AeFOqe9dpCdb7WwZo@z>
 
+On 15. 10. 19 11:51, Geert Uytterhoeven wrote:
+> Hi Michal,
+> 
+> On Tue, Oct 15, 2019 at 11:22 AM Michal Simek <monstr@monstr.eu> wrote:
+>> On 15. 10. 19 11:19, Geert Uytterhoeven wrote:
+>>> On Mon, Sep 2, 2019 at 4:29 PM Michal Simek <michal.simek@xilinx.com> wrote:
+>>>> The reason for this patch is xilinx_uartps driver which create one dynamic
+>>>> instance per IP with unique major and minor combinations. drv->nr is in
+>>>> this case all the time setup to 1. That means that uport->line is all the
+>>>> time setup to 0 and drv->tty_driver->name_base is doing shift in name to
+>>>> for example ttyPS3.
+>>>>
+>>>> register_console() is looping over console_cmdline array and looking for
+>>>> proper name/index combination which is in our case ttyPS/3.
+>>>> That's why every instance of driver needs to be registered with proper
+>>>> combination of name/number (ttyPS/3). Using uport->line is doing
+>>>> registration with ttyPS/0 which is wrong that's why proper console index
+>>>> should be used which is in cons->index field.
+>>>>
+>>>> Also it is visible that recording console should be done based on
+>>>> information about console not about the port but in most cases numbers are
+>>>> the same and xilinx_uartps is only one exception now.
+>>>>
+>>>> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+>>>
+>>> This is now commit 91daae03188e0dd1 ("serial: core: Use cons->index
+>>> for preferred console registration") in tty-next.
+>>>
+>>> This has been bisected to break the serial console on (at least)
+>>> r8a7791/koelsch and r8a7795/h3-salvator-xs.
+>>>
+>>> The line "printk: console [ttySC0] enabled" is no longer printed.
+>>> The system continues booting without any serial console output, and the
+>>> login prompt never appears on the serial console.
+>>>
+>>> Reverting this commit fixes the issue.
+>>
+>> Sorry for trouble with this patch. Can you please point me to dts files
+>> for these boards and also what's the value you have in uport->line and
+> 
+> arch/arm/boot/dts/r8a7791-koelsch.dts
+> arch/arm64/boot/dts/renesas/r8a7795-salvator-xs.dts
+> 
+>> uport->cons->index?
+> 
+> On r8a7791/koelsch:
+> 
+>     Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+>     platform serial8250: uport->line = 0, uport->cons->index = -1
+>     platform serial8250: uport->line = 1, uport->cons->index = -1
+>     platform serial8250: uport->line = 2, uport->cons->index = -1
+>     platform serial8250: uport->line = 3, uport->cons->index = -1
+>     SuperH (H)SCI(F) driver initialized
+>   * sh-sci e6e60000.serial: uport->line = 0, uport->cons->index = -1
+>   * e6e60000.serial: ttySC0 at MMIO 0xe6e60000 (irq = 79, base_baud =
+> 0) is a scif
+>     printk: console [ttySC0] enabled
+>     sh-sci e6e68000.serial: uport->line = 1, uport->cons->index = 0
+>     e6e68000.serial: ttySC1 at MMIO 0xe6e68000 (irq = 80, base_baud =
+> 0) is a scif
+> 
+> On r8a7795/salvator-xs:
+> 
+>     sh-sci e6550000.serial: uport->line = 1, uport->cons->index = -1
+>     e6550000.serial: ttySC1 at MMIO 0xe6550000 (irq = 34, base_baud =
+> 0) is a hscif
+>   * sh-sci e6e88000.serial: uport->line = 0, uport->cons->index = -1
+>   * e6e88000.serial: ttySC0 at MMIO 0xe6e88000 (irq = 120, base_baud =
+> 0) is a scif
+>     printk: console [ttySC0] enabled
+> 
+> Actual serial consoles marked with *.
+> 
+> There are no 8250 serial ports in the system, shmobile_defconfig just includes
+> driver support for it.
 
---d6Gm4EdcadzBjdND
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+ok. I will take a look at why it is not initialized in this case. Do you
+have any qemu available for these boards?
 
-On Thu, Oct 10, 2019 at 10:29:55PM +0200, Arnd Bergmann wrote:
-[...]
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index e3a2518503ed..8eb738cac0c7 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -394,7 +394,7 @@ config PWM_ROCKCHIP
-> =20
->  config PWM_SAMSUNG
->  	tristate "Samsung PWM support"
-> -	depends on PLAT_SAMSUNG || ARCH_EXYNOS
-> +	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
->  	help
->  	  Generic PWM framework driver for Samsung.
-> =20
+Greg: Please revert this patch I will investigate why it is failing.
 
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
+Thanks,
+Michal
 
---d6Gm4EdcadzBjdND
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl2l1n0ACgkQ3SOs138+
-s6Eb7xAAsZ9JZaeRn7IjUZs/yz8zD5TWoNpojsmj6Kzf947MW5cgaZEJei22skVy
-3Kv1ogZu1N2WO2L7v//P9waAgCs0EuHgeRkT+UgsW2AapaShdkNmMh0tgJNWGFLm
-JwwGVB6rfjuBVYQgICBlfKzPdA9KDQNlxJPJmE3lC2kAQ5KWtsWHJIuWpk3zruQK
-rZyp33ecFy4Xa+Sxue8CTgyUoHv+t7fhjtpAn/NgMJGy4WGi5lfn8S9bkb9uULHD
-cZY4hv+EPC/GAaMQJ6HX9BwGnY1l+Mh8K7uH323OWAMQUqNAgKYuGvhUYSCtLPB1
-WNdTjM1kkz93c1pLaikNdKtO3NhqrmXD+fKwmEF7xCQqEfBvPznq4ipHb4MHJEih
-YLw8CGBBCX51LOghEJsYi0dMhvWdq4WFJcmXCcjWBYygVWkbvwkdCZSOTdeyI3GE
-QTTlWslD1YDL7FuwCYPLBpldFi1JT8hFwP8oK3VTSxmpd4j8mjDKsMHpHtzzTGe/
-6Le5t6ewz0rvR5ZFAnZB04VlIFV+l+Zx3e3Bxaqc2h/I6u1yagTZuPSknB7FJRPs
-ic4Qr6sfKbK7LMuIIohElzhuVHcEeIfZ3NYAkWh7t9sqefIRrJUcDcPkz3sQ/8Vn
-ChkBlbp/IuPwYuSPNI9nf7EW5vFjV7aTYZFXI7mj5M3kK5suvsU=
-=4m87
------END PGP SIGNATURE-----
-
---d6Gm4EdcadzBjdND--
