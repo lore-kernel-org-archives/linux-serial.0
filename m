@@ -1,112 +1,170 @@
-From: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Subject: [PATCH v10 0/6] Use MFD framework for SGI IOC3 drivers
-Date: Tue, 15 Oct 2019 14:09:45 +0200
-Message-ID: <20191015120953.2597-1-tbogendoerfer@suse.de>
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH 11/36] ARM: s5pv210: split from plat-samsung
+Date: Tue, 15 Oct 2019 16:13:02 +0200
+Message-ID: <CAPDyKFqkRApT-q4ssi1Hn2cmLY=0K7bKXdo-D42q+xACFcC9dQ@mail.gmail.com>
+References: <20191010202802.1132272-1-arnd@arndb.de> <20191010203043.1241612-1-arnd@arndb.de>
+ <20191010203043.1241612-11-arnd@arndb.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20191010203043.1241612-11-arnd@arndb.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jakub Kicinski <jakub.kicinski@netronome.com>, Jonathan Corbet <corbet@lwn.net>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Lee Jones <lee.jones@linaro.org>, "David S. Miller" <davem@davemloft.net>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, netdev@vger.kernel.org, linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sangbeom Kim <sbkim73@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Liam Girdwood <lgirdwood@gmail.com>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, Takashi Iwai <tiwai@suse.com>, Jaroslav Kysela <perex@perex.cz>, Mauro Carvalho Chehab <mchehab>
 List-Id: linux-serial@vger.kernel.org
 
-SGI IOC3 ASIC includes support for ethernet, PS2 keyboard/mouse,
-NIC (number in a can), GPIO and a byte  bus. By attaching a
-SuperIO chip to it, it also supports serial lines and a parallel
-port. The chip is used on a variety of SGI systems with different
-configurations. This patchset moves code out of the network driver,
-which doesn't belong there, into its new place a MFD driver and
-specific platform drivers for the different subfunctions.
+On Thu, 10 Oct 2019 at 22:38, Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> These can be build completely independently, so split
+> the two Kconfig symbols.
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  arch/arm/Kconfig.debug        | 6 +++---
+>  arch/arm/Makefile             | 1 -
+>  arch/arm/plat-samsung/Kconfig | 2 +-
+>  drivers/mmc/host/Kconfig      | 2 +-
+>  drivers/pwm/Kconfig           | 2 +-
+>  drivers/spi/Kconfig           | 2 +-
+>  drivers/tty/serial/Kconfig    | 2 +-
+>  sound/soc/samsung/Kconfig     | 2 +-
+>  8 files changed, 9 insertions(+), 10 deletions(-)
 
-Changes in v10:
- - generation of fake subdevice ID had vendor and device ID swapped
+For the mmc parts:
 
-Changes in v9:
- - remove generated MFD devices, when driver is removed or in case
-   of a mfd device setup error
- - remove irq domain, if setup of mfd devices failed
- - pci_iounmap on exit/error cases
- - added irq domain unmap function
+Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
 
-Changes in v8:
- - Re-worked comments in drivers/mfd/ioc3.c
- - Added select CRC16 to ioc3-eth.c
- - Patches 1 and 2 are already taken to mips-next, but
-   for completeness of the series they are still included.
-   What's missing to get the remaining 3 patches via the MIPS
-   tree is an ack from a network maintainer
+Kind regards
+Uffe
 
-Changes in v7:
- - added patch to enable ethernet phy for Origin 200 systems
- - depend on 64bit for ioc3 mfd driver
 
-Changes in v6:
- - dropped patches accepted for v5.4-rc1
- - moved serio patch to ip30 patch series
- - adapted nvmem patch
-
-Changes in v5:
- - requested by Jakub I've splited ioc3 ethernet driver changes into
-   more steps to make the transition more visible; on the way there 
-   I've "checkpatched" the driver and reduced code reorderings
- - dropped all uint16_t and uint32_t
- - added nvmem API extension to the documenation file
- - changed to use request_irq/free_irq in serio driver
- - removed wrong kfree() in serio error path
-
-Changes in v4:
- - added w1 drivers to the series after merge in 5.3 failed because
-   of no response from maintainer and other parts of this series
-   won't work without that drivers
- - moved ip30 systemboard support to the ip30 series, which will
-   deal with rtc oddity Lee found
- - converted to use devm_platform_ioremap_resource
- - use PLATFORM_DEVID_AUTO for serial, ethernet and serio in mfd driver
- - fixed reverse christmas order in ioc3-eth.c
- - formating issue found by Lee
- - re-worked irq request/free in serio driver to avoid crashes during
-   probe/remove
-
-Changes in v3:
- - use 1-wire subsystem for handling proms
- - pci-xtalk driver uses prom information to create PCI subsystem
-   ids for use in MFD driver
- - changed MFD driver to only use static declared mfd_cells
- - added IP30 system board setup to MFD driver
- - mac address is now read from ioc3-eth driver with nvmem framework
-
-Changes in v2:
- - fixed issue in ioc3kbd.c reported by Dmitry Torokhov
- - merged IP27 RTC removal and 8250 serial driver addition into
-   main MFD patch to keep patches bisectable
-
-Thomas Bogendoerfer (6):
-  nvmem: core: add nvmem_device_find
-  MIPS: PCI: use information from 1-wire PROM for IOC3 detection
-  MIPS: PCI: Fix fake subdevice ID for IOC3
-  mfd: ioc3: Add driver for SGI IOC3 chip
-  MIPS: SGI-IP27: fix readb/writeb addressing
-  MIPS: SGI-IP27: Enable ethernet phy on second Origin 200 module
-
- Documentation/driver-api/nvmem.rst            |   2 +
- arch/mips/include/asm/mach-ip27/mangle-port.h |   4 +-
- arch/mips/include/asm/pci/bridge.h            |   1 +
- arch/mips/include/asm/sn/ioc3.h               |  47 +-
- arch/mips/pci/pci-ip27.c                      |  22 +
- arch/mips/pci/pci-xtalk-bridge.c              | 135 +++++-
- arch/mips/sgi-ip27/ip27-timer.c               |  20 -
- arch/mips/sgi-ip27/ip27-xtalk.c               |  38 +-
- drivers/mfd/Kconfig                           |  13 +
- drivers/mfd/Makefile                          |   1 +
- drivers/mfd/ioc3.c                            | 605 ++++++++++++++++++++++++++
- drivers/net/ethernet/sgi/Kconfig              |   5 +-
- drivers/net/ethernet/sgi/ioc3-eth.c           | 561 +++++-------------------
- drivers/nvmem/core.c                          |  61 ++-
- drivers/rtc/rtc-m48t35.c                      |  11 +
- drivers/tty/serial/8250/8250_ioc3.c           |  98 +++++
- drivers/tty/serial/8250/Kconfig               |  11 +
- drivers/tty/serial/8250/Makefile              |   1 +
- include/linux/nvmem-consumer.h                |   9 +
- 19 files changed, 1097 insertions(+), 548 deletions(-)
- create mode 100644 drivers/mfd/ioc3.c
- create mode 100644 drivers/tty/serial/8250/8250_ioc3.c
-
--- 
-2.16.4
+>
+> diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+> index 9c4f2d6deb06..4c4e97ae4fcb 100644
+> --- a/arch/arm/Kconfig.debug
+> +++ b/arch/arm/Kconfig.debug
+> @@ -998,7 +998,7 @@ choice
+>                   via SCIFA4 on Renesas SH-Mobile AG5 (SH73A0).
+>
+>         config DEBUG_S3C_UART0
+> -               depends on PLAT_SAMSUNG || ARCH_EXYNOS
+> +               depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
+>                 select DEBUG_EXYNOS_UART if ARCH_EXYNOS
+>                 select DEBUG_S3C24XX_UART if ARCH_S3C24XX
+>                 select DEBUG_S3C64XX_UART if ARCH_S3C64XX
+> @@ -1010,7 +1010,7 @@ choice
+>                   by the boot-loader before use.
+>
+>         config DEBUG_S3C_UART1
+> -               depends on PLAT_SAMSUNG || ARCH_EXYNOS
+> +               depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
+>                 select DEBUG_EXYNOS_UART if ARCH_EXYNOS
+>                 select DEBUG_S3C24XX_UART if ARCH_S3C24XX
+>                 select DEBUG_S3C64XX_UART if ARCH_S3C64XX
+> @@ -1022,7 +1022,7 @@ choice
+>                   by the boot-loader before use.
+>
+>         config DEBUG_S3C_UART2
+> -               depends on PLAT_SAMSUNG || ARCH_EXYNOS
+> +               depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
+>                 select DEBUG_EXYNOS_UART if ARCH_EXYNOS
+>                 select DEBUG_S3C24XX_UART if ARCH_S3C24XX
+>                 select DEBUG_S3C64XX_UART if ARCH_S3C64XX
+> diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+> index f492d7c338fe..a1bc15cda751 100644
+> --- a/arch/arm/Makefile
+> +++ b/arch/arm/Makefile
+> @@ -235,7 +235,6 @@ machine-$(CONFIG_PLAT_SPEAR)                += spear
+>  # by CONFIG_* macro name.
+>  plat-$(CONFIG_ARCH_OMAP)       += omap
+>  plat-$(CONFIG_ARCH_S3C64XX)    += samsung
+> -plat-$(CONFIG_ARCH_S5PV210)    += samsung
+>  plat-$(CONFIG_PLAT_ORION)      += orion
+>  plat-$(CONFIG_PLAT_PXA)                += pxa
+>  plat-$(CONFIG_PLAT_S3C24XX)    += samsung
+> diff --git a/arch/arm/plat-samsung/Kconfig b/arch/arm/plat-samsung/Kconfig
+> index 740bdb23f38a..1530946cc672 100644
+> --- a/arch/arm/plat-samsung/Kconfig
+> +++ b/arch/arm/plat-samsung/Kconfig
+> @@ -4,7 +4,7 @@
+>
+>  config PLAT_SAMSUNG
+>         bool
+> -       depends on PLAT_S3C24XX || ARCH_S3C64XX || ARCH_S5PV210
+> +       depends on PLAT_S3C24XX || ARCH_S3C64XX
+>         default y
+>         select GENERIC_IRQ_CHIP
+>         select NO_IOPORT_MAP
+> diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
+> index 400a581c918c..16a0e5430b44 100644
+> --- a/drivers/mmc/host/Kconfig
+> +++ b/drivers/mmc/host/Kconfig
+> @@ -275,7 +275,7 @@ config MMC_SDHCI_TEGRA
+>
+>  config MMC_SDHCI_S3C
+>         tristate "SDHCI support on Samsung S3C SoC"
+> -       depends on MMC_SDHCI && (PLAT_SAMSUNG || ARCH_EXYNOS)
+> +       depends on MMC_SDHCI && (PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS)
+>         help
+>           This selects the Secure Digital Host Controller Interface (SDHCI)
+>           often referrered to as the HSMMC block in some of the Samsung S3C
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index e3a2518503ed..8eb738cac0c7 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -394,7 +394,7 @@ config PWM_ROCKCHIP
+>
+>  config PWM_SAMSUNG
+>         tristate "Samsung PWM support"
+> -       depends on PLAT_SAMSUNG || ARCH_EXYNOS
+> +       depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
+>         help
+>           Generic PWM framework driver for Samsung.
+>
+> diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
+> index 6f7fdcbb9151..355391ee643d 100644
+> --- a/drivers/spi/Kconfig
+> +++ b/drivers/spi/Kconfig
+> @@ -625,7 +625,7 @@ config SPI_S3C24XX_FIQ
+>
+>  config SPI_S3C64XX
+>         tristate "Samsung S3C64XX series type SPI"
+> -       depends on (PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST)
+> +       depends on (PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST)
+>         help
+>           SPI driver for Samsung S3C64XX and newer SoCs.
+>
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index 4789b5d62f63..17f01cf3009c 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -237,7 +237,7 @@ config SERIAL_CLPS711X_CONSOLE
+>
+>  config SERIAL_SAMSUNG
+>         tristate "Samsung SoC serial support"
+> -       depends on PLAT_SAMSUNG || ARCH_EXYNOS
+> +       depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
+>         select SERIAL_CORE
+>         help
+>           Support for the on-chip UARTs on the Samsung S3C24XX series CPUs,
+> diff --git a/sound/soc/samsung/Kconfig b/sound/soc/samsung/Kconfig
+> index 638983123d8f..7a0035dd9995 100644
+> --- a/sound/soc/samsung/Kconfig
+> +++ b/sound/soc/samsung/Kconfig
+> @@ -1,7 +1,7 @@
+>  # SPDX-License-Identifier: GPL-2.0-only
+>  menuconfig SND_SOC_SAMSUNG
+>         tristate "ASoC support for Samsung"
+> -       depends on PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST
+> +       depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST
+>         depends on COMMON_CLK
+>         select SND_SOC_GENERIC_DMAENGINE_PCM
+>         ---help---
+> --
+> 2.20.0
+>
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
