@@ -2,155 +2,105 @@ Return-Path: <SRS0=N/nd=YI=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F637ECE58F
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 19:05:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0267FECE595
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 19:24:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EB49620663
-	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 19:05:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571166305;
-	bh=ZIaAvZnbtHuEZ4yVB6QTkkDmhzPaea3XJQXci8c1v1Q=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=abQiBPUoHpKAt+oiVRZ3BF2lzuNjrh5kz9g1dyoSCIZHtFb9zQGIvC13Iz8P0xt0a
-	 RO8bNBB7n4hF9T5yRL2XvSEw37Mq9ZBNEXCcOQTXw6Z27wHR6ufTJDWzRA30yXHNc1
-	 u72unx0ejBGOTT/qipWhBvCrLN430laDnQLWAXGU=
+	by mail.kernel.org (Postfix) with ESMTP id CCCDA20854
+	for <linux-serial@archiver.kernel.org>; Tue, 15 Oct 2019 19:24:01 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=netronome-com.20150623.gappssmtp.com header.i=@netronome-com.20150623.gappssmtp.com header.b="RYS+rUjs"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389218AbfJOTFB (ORCPT
+        id S1731971AbfJOTYB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 15 Oct 2019 15:05:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52796 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729457AbfJOTFB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 15 Oct 2019 15:05:01 -0400
-Received: from localhost (unknown [38.98.37.135])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 81CDC20663;
-        Tue, 15 Oct 2019 19:04:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571166298;
-        bh=ZIaAvZnbtHuEZ4yVB6QTkkDmhzPaea3XJQXci8c1v1Q=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ysEUE+w2/SUgcm+INApP0pKGfkn+eJIxJi0wsXYoMDuLs+6Ztvx6GN0NKN8SFGtqf
-         4b8liCT/Ywy9rBuFRUtBwHV8L4DFP1e6xlDxdltbzrGGrg5vlR9JPadIZVZgiyzjLr
-         q4S3RCcNutRbS11kdKfgZo/W1BHLrQXFP92HiGIU=
-Date:   Tue, 15 Oct 2019 21:01:55 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-Cc:     corbet@lwn.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        catalin.marinas@arm.com, will@kernel.org, shawnguo@kernel.org,
-        leoyang.li@nxp.com, jslaby@suse.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v6 3/5] serial: fsl_linflexuart: Be consistent with the
- name
-Message-ID: <20191015190155.GA1140159@kroah.com>
-References: <1570726348-6420-1-git-send-email-stefan-gabriel.mirea@nxp.com>
- <1570726348-6420-4-git-send-email-stefan-gabriel.mirea@nxp.com>
+        Tue, 15 Oct 2019 15:24:01 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:51840 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731973AbfJOTYA (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 15 Oct 2019 15:24:00 -0400
+Received: by mail-wm1-f65.google.com with SMTP id 7so285006wme.1
+        for <linux-serial@vger.kernel.org>; Tue, 15 Oct 2019 12:23:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=sGIf1A0kMtMnaW4pOlmzIuINChMCw+EoGElWJi8OM/Y=;
+        b=RYS+rUjs8n1SAm+EKr6ITzHclq8uS0tk2bNEF8hL7qChdRjtdm8bSyI+TOw7IL20Zz
+         +m3QwFIOz3vwxlIpqXtVvQofTHRAdkhZa08KA1dBKD+ySwqO9vLdcvTYkgfRKVvkfR5F
+         nu94op6DRtVwOihEgY25yO9AoEfNGCFpMsaOWOz5H0e86TSWYr0VK6Vp1cNdSCiLbQ3k
+         OoMTfL9liDolQytEm9fAAPWoViG/4QQpvQiQGlG4sJS2Rqzc8hNhuF2wfuzg9zdil3Os
+         R68rWhpgmDj3CXS1+mnpb1sw7CF8qQUvaBvxS7NBWp5UO4PbV0FQH3esl0ffiC3AJkvL
+         jEmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=sGIf1A0kMtMnaW4pOlmzIuINChMCw+EoGElWJi8OM/Y=;
+        b=gNioDekwJa9QfvhlCsdzhMEOe331/JAPLzWALCIv9iEf2s4VRFT/Y3AN4m5nSMx31v
+         RpIlr0pqYGCtJLPK9Q1snWVsApe4zAVYLPKtPSmhjGlz8k/ze8Zbc52ZEAggAoKmIt16
+         Oa9wD9VSruOCUl8+DdX1SDcw9kPlUK/MPlWwfIkM4nlZx/IDK+JjAeotrAVIH8oga/ez
+         h99OZVmCJkHo7W3o+KAtYVM5nhJWTzrRzTfcgrWhOF9KW2X+ExSyyL7QZfqa0gfvzvLh
+         SCjrdFXL5z8ISV1oPgwb2vv8Nfd99rYKIY1253e9ZSeEXNvZv/w17VPTkziPvZVGN8qE
+         wwPQ==
+X-Gm-Message-State: APjAAAUjiHRwc7CP2BhpFHrigDdb2e3AYqRevlRakynvxjuA6nyyK9Ki
+        GoNqyVgkh95/lGK9EncyEJwMLQ==
+X-Google-Smtp-Source: APXvYqyuIZCpxcHjHSu2akPqvtD9M3f4BwzEOSMCJdAW/wBj5T4UUF7iJgW8CIdRFdevy/qFfKy9RQ==
+X-Received: by 2002:a7b:cf28:: with SMTP id m8mr96679wmg.161.1571167437483;
+        Tue, 15 Oct 2019 12:23:57 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id u10sm167418wmm.0.2019.10.15.12.23.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Oct 2019 12:23:57 -0700 (PDT)
+Date:   Tue, 15 Oct 2019 12:23:49 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v10 4/6] mfd: ioc3: Add driver for SGI IOC3 chip
+Message-ID: <20191015122349.612a230b@cakuba.netronome.com>
+In-Reply-To: <20191015120953.2597-5-tbogendoerfer@suse.de>
+References: <20191015120953.2597-1-tbogendoerfer@suse.de>
+        <20191015120953.2597-5-tbogendoerfer@suse.de>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Disposition: inline
-In-Reply-To: <1570726348-6420-4-git-send-email-stefan-gabriel.mirea@nxp.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
-Message-ID: <20191015190155.sP6TftHHlpisP-mgPPiHGpsKIjHl_UFPxoowe9dN7Qg@z>
+Message-ID: <20191015192349.PVKsCByokf1My4GatQwFnN9Bhs40NwbxyB-2z_RiuHE@z>
 
-On Thu, Oct 10, 2019 at 07:52:26PM +0300, Stefan-Gabriel Mirea wrote:
-> For consistency reasons, spell the controller name as "LINFlexD" in
-> comments and documentation.
+On Tue, 15 Oct 2019 14:09:49 +0200, Thomas Bogendoerfer wrote:
+> SGI IOC3 chip has integrated ethernet, keyboard and mouse interface.
+> It also supports connecting a SuperIO chip for serial and parallel
+> interfaces. IOC3 is used inside various SGI systemboards and add-on
+> cards with different equipped external interfaces.
 > 
-> Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-> ---
->  Documentation/admin-guide/kernel-parameters.txt | 2 +-
->  drivers/tty/serial/Kconfig                      | 8 ++++----
->  drivers/tty/serial/fsl_linflexuart.c            | 4 ++--
->  include/uapi/linux/serial_core.h                | 2 +-
->  4 files changed, 8 insertions(+), 8 deletions(-)
+> Support for ethernet and serial interfaces were implemented inside
+> the network driver. This patchset moves out the not network related
+> parts to a new MFD driver, which takes care of card detection,
+> setup of platform devices and interrupt distribution for the subdevices.
 > 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index c7ac2f3ac99f..666326d74415 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -1101,7 +1101,7 @@
->  			mapped with the correct attributes.
->  
->  		linflex,<addr>
-> -			Use early console provided by Freescale LinFlex UART
-> +			Use early console provided by Freescale LINFlexD UART
->  			serial driver for NXP S32V234 SoCs. A valid base
->  			address must be provided, and the serial port must
->  			already be setup and configured.
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 4789b5d62f63..c8e11f62ea19 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -1391,19 +1391,19 @@ config SERIAL_FSL_LPUART_CONSOLE
->  	  you can make it the console by answering Y to this option.
->  
->  config SERIAL_FSL_LINFLEXUART
-> -	tristate "Freescale linflexuart serial port support"
-> +	tristate "Freescale LINFlexD UART serial port support"
->  	depends on PRINTK
->  	select SERIAL_CORE
->  	help
-> -	  Support for the on-chip linflexuart on some Freescale SOCs.
-> +	  Support for the on-chip LINFlexD UART on some Freescale SOCs.
->  
->  config SERIAL_FSL_LINFLEXUART_CONSOLE
-> -	bool "Console on Freescale linflexuart serial port"
-> +	bool "Console on Freescale LINFlexD UART serial port"
->  	depends on SERIAL_FSL_LINFLEXUART=y
->  	select SERIAL_CORE_CONSOLE
->  	select SERIAL_EARLYCON
->  	help
-> -	  If you have enabled the linflexuart serial port on the Freescale
-> +	  If you have enabled the LINFlexD UART serial port on the Freescale
->  	  SoCs, you can make it the console by answering Y to this option.
->  
->  config SERIAL_CONEXANT_DIGICOLOR
-> diff --git a/drivers/tty/serial/fsl_linflexuart.c b/drivers/tty/serial/fsl_linflexuart.c
-> index 68d74f2b5106..2d39e13176e1 100644
-> --- a/drivers/tty/serial/fsl_linflexuart.c
-> +++ b/drivers/tty/serial/fsl_linflexuart.c
-> @@ -1,6 +1,6 @@
->  // SPDX-License-Identifier: GPL-2.0-or-later
->  /*
-> - * Freescale linflexuart serial port driver
-> + * Freescale LINFlexD UART serial port driver
->   *
->   * Copyright 2012-2016 Freescale Semiconductor, Inc.
->   * Copyright 2017-2018 NXP
-> @@ -933,5 +933,5 @@ static void __exit linflex_serial_exit(void)
->  module_init(linflex_serial_init);
->  module_exit(linflex_serial_exit);
->  
-> -MODULE_DESCRIPTION("Freescale linflex serial port driver");
-> +MODULE_DESCRIPTION("Freescale LINFlexD serial port driver");
->  MODULE_LICENSE("GPL v2");
-> diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-> index 0f4f87a6fd54..49e61963e754 100644
-> --- a/include/uapi/linux/serial_core.h
-> +++ b/include/uapi/linux/serial_core.h
-> @@ -290,7 +290,7 @@
->  /* Sunix UART */
->  #define PORT_SUNIX	121
->  
-> -/* Freescale Linflex UART */
-> +/* Freescale LINFlexD UART */
->  #define PORT_LINFLEXUART	121
->  
->  #endif /* _UAPILINUX_SERIAL_CORE_H */
-> -- 
-> 2.22.0
+> Serial portion: Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
 > 
+> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
 
-This patch does not apply to my tree :(
-
+Looks good, I think.
