@@ -1,63 +1,103 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 11/36] ARM: s5pv210: split from plat-samsung
-Date: Tue, 15 Oct 2019 16:23:59 +0200
-Message-ID: <20191015142359.GA1101003@ulmo>
-References: <20191010202802.1132272-1-arnd@arndb.de>
- <20191010203043.1241612-1-arnd@arndb.de>
- <20191010203043.1241612-11-arnd@arndb.de>
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: Re: [PATCH] serial: core: Use cons->index for preferred console
+ registration
+Date: Tue, 15 Oct 2019 16:36:56 +0200
+Message-ID: <622f4c5e-e3ed-3f91-254d-78d905de79c9@xilinx.com>
+References: <4a877f1c7189a7c45b59a6ebfc3de607e8758949.1567434470.git.michal.simek@xilinx.com>
+ <CAMuHMdWY2VsY-CyAxSvpm1XYicAWqU7NORSQofQ+T195DwyLUg@mail.gmail.com>
+ <7284590f-2b74-1b47-2d61-783ad8d5f46f@monstr.eu>
+ <CAMuHMdWZYALZB1bP5Mtoq4Nj5iubzdWBf1vRY9Mh5QvjCDhBgA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="d6Gm4EdcadzBjdND"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20191010203043.1241612-11-arnd@arndb.de>
+In-Reply-To: <CAMuHMdWZYALZB1bP5Mtoq4Nj5iubzdWBf1vRY9Mh5QvjCDhBgA@mail.gmail.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Sangbeom Kim <sbkim73@samsung.com>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Liam Girdwood <lgirdwood@gmail.com>, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linus.walleij@linaro.org, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, Olof Johansson <olof@lixom.net>, Sascha Hauer <s.hauer@pengutronix.de>, =?utf-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>, Mauro Carvalho Chehab <mchehab+samsung@kernel.org>, Bartlomi
+To: Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>
+Cc: Michal Simek <michal.simek@xilinx.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Jiri Slaby <jslaby@suse.com>, "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
 
+On 15. 10. 19 11:51, Geert Uytterhoeven wrote:
+> Hi Michal,
+> 
+> On Tue, Oct 15, 2019 at 11:22 AM Michal Simek <monstr@monstr.eu> wrote:
+>> On 15. 10. 19 11:19, Geert Uytterhoeven wrote:
+>>> On Mon, Sep 2, 2019 at 4:29 PM Michal Simek <michal.simek@xilinx.com> wrote:
+>>>> The reason for this patch is xilinx_uartps driver which create one dynamic
+>>>> instance per IP with unique major and minor combinations. drv->nr is in
+>>>> this case all the time setup to 1. That means that uport->line is all the
+>>>> time setup to 0 and drv->tty_driver->name_base is doing shift in name to
+>>>> for example ttyPS3.
+>>>>
+>>>> register_console() is looping over console_cmdline array and looking for
+>>>> proper name/index combination which is in our case ttyPS/3.
+>>>> That's why every instance of driver needs to be registered with proper
+>>>> combination of name/number (ttyPS/3). Using uport->line is doing
+>>>> registration with ttyPS/0 which is wrong that's why proper console index
+>>>> should be used which is in cons->index field.
+>>>>
+>>>> Also it is visible that recording console should be done based on
+>>>> information about console not about the port but in most cases numbers are
+>>>> the same and xilinx_uartps is only one exception now.
+>>>>
+>>>> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+>>>
+>>> This is now commit 91daae03188e0dd1 ("serial: core: Use cons->index
+>>> for preferred console registration") in tty-next.
+>>>
+>>> This has been bisected to break the serial console on (at least)
+>>> r8a7791/koelsch and r8a7795/h3-salvator-xs.
+>>>
+>>> The line "printk: console [ttySC0] enabled" is no longer printed.
+>>> The system continues booting without any serial console output, and the
+>>> login prompt never appears on the serial console.
+>>>
+>>> Reverting this commit fixes the issue.
+>>
+>> Sorry for trouble with this patch. Can you please point me to dts files
+>> for these boards and also what's the value you have in uport->line and
+> 
+> arch/arm/boot/dts/r8a7791-koelsch.dts
+> arch/arm64/boot/dts/renesas/r8a7795-salvator-xs.dts
+> 
+>> uport->cons->index?
+> 
+> On r8a7791/koelsch:
+> 
+>     Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+>     platform serial8250: uport->line = 0, uport->cons->index = -1
+>     platform serial8250: uport->line = 1, uport->cons->index = -1
+>     platform serial8250: uport->line = 2, uport->cons->index = -1
+>     platform serial8250: uport->line = 3, uport->cons->index = -1
+>     SuperH (H)SCI(F) driver initialized
+>   * sh-sci e6e60000.serial: uport->line = 0, uport->cons->index = -1
+>   * e6e60000.serial: ttySC0 at MMIO 0xe6e60000 (irq = 79, base_baud =
+> 0) is a scif
+>     printk: console [ttySC0] enabled
+>     sh-sci e6e68000.serial: uport->line = 1, uport->cons->index = 0
+>     e6e68000.serial: ttySC1 at MMIO 0xe6e68000 (irq = 80, base_baud =
+> 0) is a scif
+> 
+> On r8a7795/salvator-xs:
+> 
+>     sh-sci e6550000.serial: uport->line = 1, uport->cons->index = -1
+>     e6550000.serial: ttySC1 at MMIO 0xe6550000 (irq = 34, base_baud =
+> 0) is a hscif
+>   * sh-sci e6e88000.serial: uport->line = 0, uport->cons->index = -1
+>   * e6e88000.serial: ttySC0 at MMIO 0xe6e88000 (irq = 120, base_baud =
+> 0) is a scif
+>     printk: console [ttySC0] enabled
+> 
+> Actual serial consoles marked with *.
+> 
+> There are no 8250 serial ports in the system, shmobile_defconfig just includes
+> driver support for it.
 
---d6Gm4EdcadzBjdND
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+ok. I will take a look at why it is not initialized in this case. Do you
+have any qemu available for these boards?
 
-On Thu, Oct 10, 2019 at 10:29:55PM +0200, Arnd Bergmann wrote:
-[...]
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index e3a2518503ed..8eb738cac0c7 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -394,7 +394,7 @@ config PWM_ROCKCHIP
-> =20
->  config PWM_SAMSUNG
->  	tristate "Samsung PWM support"
-> -	depends on PLAT_SAMSUNG || ARCH_EXYNOS
-> +	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
->  	help
->  	  Generic PWM framework driver for Samsung.
-> =20
+Greg: Please revert this patch I will investigate why it is failing.
 
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
-
---d6Gm4EdcadzBjdND
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl2l1n0ACgkQ3SOs138+
-s6Eb7xAAsZ9JZaeRn7IjUZs/yz8zD5TWoNpojsmj6Kzf947MW5cgaZEJei22skVy
-3Kv1ogZu1N2WO2L7v//P9waAgCs0EuHgeRkT+UgsW2AapaShdkNmMh0tgJNWGFLm
-JwwGVB6rfjuBVYQgICBlfKzPdA9KDQNlxJPJmE3lC2kAQ5KWtsWHJIuWpk3zruQK
-rZyp33ecFy4Xa+Sxue8CTgyUoHv+t7fhjtpAn/NgMJGy4WGi5lfn8S9bkb9uULHD
-cZY4hv+EPC/GAaMQJ6HX9BwGnY1l+Mh8K7uH323OWAMQUqNAgKYuGvhUYSCtLPB1
-WNdTjM1kkz93c1pLaikNdKtO3NhqrmXD+fKwmEF7xCQqEfBvPznq4ipHb4MHJEih
-YLw8CGBBCX51LOghEJsYi0dMhvWdq4WFJcmXCcjWBYygVWkbvwkdCZSOTdeyI3GE
-QTTlWslD1YDL7FuwCYPLBpldFi1JT8hFwP8oK3VTSxmpd4j8mjDKsMHpHtzzTGe/
-6Le5t6ewz0rvR5ZFAnZB04VlIFV+l+Zx3e3Bxaqc2h/I6u1yagTZuPSknB7FJRPs
-ic4Qr6sfKbK7LMuIIohElzhuVHcEeIfZ3NYAkWh7t9sqefIRrJUcDcPkz3sQ/8Vn
-ChkBlbp/IuPwYuSPNI9nf7EW5vFjV7aTYZFXI7mj5M3kK5suvsU=
-=4m87
------END PGP SIGNATURE-----
-
---d6Gm4EdcadzBjdND--
+Thanks,
+Michal
