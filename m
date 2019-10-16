@@ -2,83 +2,92 @@ Return-Path: <SRS0=V6uU=YJ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C82AFFA372A
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Oct 2019 12:48:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 616AFFA372A
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Oct 2019 13:17:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A1473218DE
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Oct 2019 12:48:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2B34620659
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Oct 2019 13:17:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1571231851;
+	bh=7ICZu5U89hohYmbn6gUIgQxhJVCaU/53F1xp5OJCAdw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=IllC6bhAMMpKfanLg+1URk93Xc5TX1/Q9xsuQ0U33GpBav2/ABZduI4xNe+0eidUD
+	 SUh+g7vMh2iJrRzNB2CZiUCGVr4HjgRuj6cyIGoENtiCiDoGSmpvGzSHKwuwKDk/I3
+	 jmukof/21OAFYs2IY/uP0FBKQrGKdteOT4BEm3Qg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393246AbfJPMsb (ORCPT
+        id S1728554AbfJPNRa (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 16 Oct 2019 08:48:31 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:53124 "EHLO inva021.nxp.com"
+        Wed, 16 Oct 2019 09:17:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38408 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390639AbfJPMsb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Oct 2019 08:48:31 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id A20E7200534;
-        Wed, 16 Oct 2019 14:48:29 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 94E9C20052F;
-        Wed, 16 Oct 2019 14:48:29 +0200 (CEST)
-Received: from fsr-ub1664-026.ea.freescale.net (fsr-ub1664-026.ea.freescale.net [10.171.81.59])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id E789D205D2;
-        Wed, 16 Oct 2019 14:48:28 +0200 (CEST)
-From:   Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-To:     corbet@lwn.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        gregkh@linuxfoundation.org, catalin.marinas@arm.com,
-        will@kernel.org, shawnguo@kernel.org, leoyang.li@nxp.com
-Cc:     jslaby@suse.com, linux-doc@vger.kernel.org,
+        id S1726530AbfJPNRa (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 16 Oct 2019 09:17:30 -0400
+Received: from localhost (unknown [209.136.236.94])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 638072064A;
+        Wed, 16 Oct 2019 13:17:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571231848;
+        bh=7ICZu5U89hohYmbn6gUIgQxhJVCaU/53F1xp5OJCAdw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eunc4yEZFEINPkgHN8b4Tbj6+hH1biz99q2FXxR7IDh5zAgJi8zK2UH+lYxO3ePXc
+         1L4L9fjwTz9sbtvSVgHYS7ATAQyL4PTv+mHRir5ttKx8fj4Cc+ene2SaYhlFb5jjzo
+         pcUTb19YqjH+ArFzlqcanlrooE3Xi81U/oYfy+ck=
+Date:   Wed, 16 Oct 2019 06:17:28 -0700
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+Cc:     corbet@lwn.net, robh+dt@kernel.org, mark.rutland@arm.com,
+        catalin.marinas@arm.com, will@kernel.org, shawnguo@kernel.org,
+        leoyang.li@nxp.com, jslaby@suse.com, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        =?UTF-8?q?Eddy=20Petri=C8=99or?= <eddy.petrisor@nxp.com>
-Subject: [PATCH v7 1/5] dt-bindings: arm: fsl: Add the S32V234-EVB board
-Date:   Wed, 16 Oct 2019 15:48:23 +0300
-Message-Id: <1571230107-8493-2-git-send-email-stefan-gabriel.mirea@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1571230107-8493-1-git-send-email-stefan-gabriel.mirea@nxp.com>
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v7 0/5] Add initial support for S32V234-EVB
+Message-ID: <20191016131728.GA56859@kroah.com>
 References: <1571230107-8493-1-git-send-email-stefan-gabriel.mirea@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1571230107-8493-1-git-send-email-stefan-gabriel.mirea@nxp.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Eddy Petrișor <eddy.petrisor@nxp.com>
+On Wed, Oct 16, 2019 at 03:48:22PM +0300, Stefan-Gabriel Mirea wrote:
+> Hello,
+> 
+> NXP's S32V234[1] ("Treerunner") vision microprocessors are targeted for
+> high-performance, computationally intensive vision and sensor fusion
+> applications that require automotive safety levels. They include leading
+> edge Camera Vision modules like APEX-2, ISP and GPU. The S32V234-EVB and
+> S32V234-SBC boards are available for customer evaluation.
+> 
+> The following patch series introduces minimal enablement support for the
+> NXP S32V234-EVB2[2] board, which leverages most of the SoC capabilities.
+> Up to v2, this series also included the fsl_linflexuart driver, which has
+> been included in Linux 5.4-rc1[3].
+> 
+> In the future, we aim to submit multiple drivers upstream, which can be
+> found in the kernel of our Auto Linux BSP[4] ("ALB"), starting with basic
+> pinmuxing, clock and uSDHC drivers.
+> 
+> For validation, you can use the U-Boot bootloader in the ALB[5], which we
+> build and test with our patched version of the Linaro GCC 6.3.1 2017.05
+> toolchain for ARM 64-bit, with sources available on [6].
+> 
+> Changes in v7:
+> * Rebase the patch 'serial: fsl_linflexuart: Be consistent with the name'
+>   on the tty-next branch in Greg's tty git tree.
 
-Add entry for the NXP S32V234 Customer Evaluation Board to the board/SoC
-bindings.
+I've taken patch 3 in my tty-next tree.  The others should probably go
+through an arm-specific tree, right?
 
-Signed-off-by: Eddy Petrișor <eddy.petrisor@nxp.com>
-Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- Documentation/devicetree/bindings/arm/fsl.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
+thanks,
 
-diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
-index 1b4b4e6573b5..c211f4f82e25 100644
---- a/Documentation/devicetree/bindings/arm/fsl.yaml
-+++ b/Documentation/devicetree/bindings/arm/fsl.yaml
-@@ -335,4 +335,10 @@ properties:
-               - fsl,ls2088a-rdb
-           - const: fsl,ls2088a
- 
-+      - description: S32V234 based Boards
-+        items:
-+          - enum:
-+              - fsl,s32v234-evb           # S32V234-EVB2 Customer Evaluation Board
-+          - const: fsl,s32v234
-+
- ...
--- 
-2.22.0
-
+greg k-h
