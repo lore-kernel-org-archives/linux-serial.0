@@ -2,88 +2,104 @@ Return-Path: <SRS0=V6uU=YJ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2611AFA372A
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Oct 2019 17:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA96FECE599
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Oct 2019 20:28:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F2E972082C
-	for <linux-serial@archiver.kernel.org>; Wed, 16 Oct 2019 17:43:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 928B621848
+	for <linux-serial@archiver.kernel.org>; Wed, 16 Oct 2019 20:28:17 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=agner.ch header.i=@agner.ch header.b="0Bj1ax5y"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392056AbfJPRnx convert rfc822-to-8bit (ORCPT
+        id S2437153AbfJPU2R (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 16 Oct 2019 13:43:53 -0400
-Received: from mx2.suse.de ([195.135.220.15]:49672 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2390723AbfJPRnw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 16 Oct 2019 13:43:52 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 687E2B5FD;
-        Wed, 16 Oct 2019 17:23:22 +0000 (UTC)
-Date:   Wed, 16 Oct 2019 19:23:21 +0200
-From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v10 4/6] mfd: ioc3: Add driver for SGI IOC3 chip
-Message-Id: <20191016192321.c1ef8ea7c2533d6c8e1b98a2@suse.de>
-In-Reply-To: <20191015122349.612a230b@cakuba.netronome.com>
-References: <20191015120953.2597-1-tbogendoerfer@suse.de>
-        <20191015120953.2597-5-tbogendoerfer@suse.de>
-        <20191015122349.612a230b@cakuba.netronome.com>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8BIT
+        Wed, 16 Oct 2019 16:28:17 -0400
+Received: from mail.kmu-office.ch ([178.209.48.109]:37792 "EHLO
+        mail.kmu-office.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2437130AbfJPU2R (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 16 Oct 2019 16:28:17 -0400
+X-Greylist: delayed 356 seconds by postgrey-1.27 at vger.kernel.org; Wed, 16 Oct 2019 16:28:15 EDT
+Received: from webmail.kmu-office.ch (unknown [IPv6:2a02:418:6a02::a3])
+        by mail.kmu-office.ch (Postfix) with ESMTPSA id 99BEE5C052F;
+        Wed, 16 Oct 2019 22:22:18 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=agner.ch; s=dkim;
+        t=1571257338;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7rhWHMWzbaH3FPArIdQN0BDFHgNFLgh3atbU/r2yG+s=;
+        b=0Bj1ax5yusDcatXxJSGoRb9OtpibtRTNMek6gG0csB7zJcfMEt8jgeBpXW/x5UHdr5myta
+        e5YLIOmYA2aSx8D2pLNlor65F2dWptinusWx8UtMv32oUz9BclVx58nWSQ43yqqlfbnFTh
+        SbE7174QO/m37NPzyLxFS7mehb0BDGU=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 16 Oct 2019 22:22:18 +0200
+From:   Stefan Agner <stefan@agner.ch>
+To:     Philippe Schenker <philippe.schenker@toradex.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org,
+        Max Krummenacher <max.krummenacher@toradex.com>,
+        Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org,
+        Fugang Duan <fugang.duan@nxp.com>, linux-imx@nxp.com,
+        Andrey Smirnov <andrew.smirnov@gmail.com>
+Subject: Re: [PATCH v1 2/3] tty: serial: lpuart: Use defines that correspond
+ to correct register
+In-Reply-To: <20191016151845.15859-2-philippe.schenker@toradex.com>
+References: <20191016151845.15859-1-philippe.schenker@toradex.com>
+ <20191016151845.15859-2-philippe.schenker@toradex.com>
+Message-ID: <8512c4712d0500c1c46186c2b52a7350@agner.ch>
+X-Sender: stefan@agner.ch
+User-Agent: Roundcube Webmail/1.3.9
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 15 Oct 2019 12:23:49 -0700
-Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
+On 2019-10-16 17:18, Philippe Schenker wrote:
+> Use UARTMODIR defines instead of UARTMODEM as it is a 32-bit function
 
-> On Tue, 15 Oct 2019 14:09:49 +0200, Thomas Bogendoerfer wrote:
-> > SGI IOC3 chip has integrated ethernet, keyboard and mouse interface.
-> > It also supports connecting a SuperIO chip for serial and parallel
-> > interfaces. IOC3 is used inside various SGI systemboards and add-on
-> > cards with different equipped external interfaces.
-> > 
-> > Support for ethernet and serial interfaces were implemented inside
-> > the network driver. This patchset moves out the not network related
-> > parts to a new MFD driver, which takes care of card detection,
-> > setup of platform devices and interrupt distribution for the subdevices.
-> > 
-> > Serial portion: Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
-> > 
-> > Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+This reads a bit strange at first. Also it is helpful for later to state
+that this does not make a difference in practise, so how about:
+
+Use define from the 32-bit register description UARTMODIR_* instead of
+UARTMODEM_*. The value is the same, so there is no functional change.
+
+Otherwise looks good to me:
+
+Reviewed-by: Stefan Agner <stefan.agner@toradex.com>
+
+--
+Stefan
+
 > 
-> Looks good, I think.
-
-thank you. 
-
-Now how do I get an Acked-by for the network part to merge it via
-the MIPS tree ?
-
-Thomas.
-
--- 
-SUSE Software Solutions Germany GmbH
-HRB 36809 (AG Nürnberg)
-Geschäftsführer: Felix Imendörffer
+> Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>
+> ---
+> 
+>  drivers/tty/serial/fsl_lpuart.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+> index f3271857621c..346b4a070ce9 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -1879,10 +1879,10 @@ lpuart32_set_termios(struct uart_port *port,
+> struct ktermios *termios,
+>  	}
+>  
+>  	if (termios->c_cflag & CRTSCTS) {
+> -		modem |= UARTMODEM_RXRTSE | UARTMODEM_TXCTSE;
+> +		modem |= (UARTMODIR_RXRTSE | UARTMODIR_TXCTSE);
+>  	} else {
+>  		termios->c_cflag &= ~CRTSCTS;
+> -		modem &= ~(UARTMODEM_RXRTSE | UARTMODEM_TXCTSE);
+> +		modem &= ~(UARTMODIR_RXRTSE | UARTMODIR_TXCTSE);
+>  	}
+>  
+>  	if (termios->c_cflag & CSTOPB)
