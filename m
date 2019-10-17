@@ -2,186 +2,157 @@ Return-Path: <SRS0=5/AJ=YK=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6485FA3735
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Oct 2019 13:34:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3167EECE58E
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Oct 2019 14:14:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A2B942089C
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Oct 2019 13:34:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E9ED120854
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Oct 2019 14:14:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.b="KoXi67O0"
+	dkim=pass (1024-bit key) header.d=toradex.com header.i=@toradex.com header.b="Cn0TC56b"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733089AbfJQNe4 (ORCPT
+        id S2394841AbfJQOOo (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Oct 2019 09:34:56 -0400
-Received: from mail-vs1-f65.google.com ([209.85.217.65]:43849 "EHLO
-        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729175AbfJQNez (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Oct 2019 09:34:55 -0400
-Received: by mail-vs1-f65.google.com with SMTP id b1so1575045vsr.10
-        for <linux-serial@vger.kernel.org>; Thu, 17 Oct 2019 06:34:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=C5+TmQVQS998VubTxcOceutOBLnwucDz7rmPN8Lfbng=;
-        b=KoXi67O0j6g5Ab217wWWplpuMnks7/YI/fMBU0toKsGb1rB6seTNc/t1cksUHkub0M
-         ZSb4wgDc2Z8coytAqytDC/9mbre/BjDcDwwoLskM7xqh575k/qMyU+BIidW6+38ftMkB
-         s0fIy7CBIbOb5uVxLP0HcmsuY8WTCsij7VUCYJ5cLwq7xlRZ5aiHpbHMaGycNSCIcTkt
-         Os7wje8Jo2wPbbFIX9G5uyJdBMts0kdixgdoV4O8hKr1KOsB9GkqFL4v09lOwabXuVXi
-         LkpNBNQysgsQ1qhpoZUOJRmBh/VIQOO3oInyEIbcik6ZngBiQP4Zw6t3AVn1zYmk/ggN
-         SBEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=C5+TmQVQS998VubTxcOceutOBLnwucDz7rmPN8Lfbng=;
-        b=hNI/d+dWiLIYqK4tC+lbok/1mdFbpmM4XwwronXTwWYOumWO9hdCVzIcuoqHCMM38A
-         IoDPkdVICAJE/86Ym8vwixScjP3r7H06dzvN9HEzanXQUVmwUVgZN/sQcOvU3s0n/QWI
-         rbcUx5LsLWFztoOPyZf+Iod51t/8xCzvIQ6syVbZ3lKyT09iJKXoe93f6MPzSY96pfxt
-         /HDuDVoL23rgDaOvCggOlt8jYcaSqs4KRi1FclnBXTTmMuhWL2YqC8wc8SviCS1R567W
-         3V8Uc0xWwjbFj32PKIw5HpueCjVBqJU5CNfXQjfSwle/fpjAl3p7byqRe1fxEajP4Ez0
-         bxoQ==
-X-Gm-Message-State: APjAAAWdg+f3fYMHPmRgtLo79VahoYBaLUw6YaoL0f3LCZPQ3WcTjgqh
-        PnNvq+lW6whqJhaRGjwtJA5OvSSKzXLZ34xkHc4=
-X-Google-Smtp-Source: APXvYqx5nAla+aBg2s58R6P9M8eCSzkClyHCJwd6Bj1VXjffA9DqOj44ef9HCNuzprkzPa73zAHIHQAfQ17nHa4X7Eg=
-X-Received: by 2002:a67:c995:: with SMTP id y21mr1910931vsk.143.1571319294249;
- Thu, 17 Oct 2019 06:34:54 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAEXMXLRBpQcSq3SrvL4LkG8_7S0CWJFGqRCnjywjbUEPZg9XxQ@mail.gmail.com>
- <CAEXMXLSty8v1K_yaxoAnoMEny=XYn2ngUdCPi_0uTqy5NTViAQ@mail.gmail.com>
- <CAGm1_ksE038XOzqXHw6iSAxq8mCegM8Ej8cdPvP5Tu_EBouSLQ@mail.gmail.com>
- <CAEXMXLSCW33wCho-7damt-aem0Z76xypr-AHY0zmR5T8PwLS7A@mail.gmail.com> <CAEXMXLSkNXPYQtzLtnxTzeVAL5MvafsG1yUZHjn8Stg-UZyT=g@mail.gmail.com>
-In-Reply-To: <CAEXMXLSkNXPYQtzLtnxTzeVAL5MvafsG1yUZHjn8Stg-UZyT=g@mail.gmail.com>
-From:   Yegor Yefremov <yegorslists@googlemail.com>
-Date:   Thu, 17 Oct 2019 15:34:41 +0200
-Message-ID: <CAGm1_ksD6UDdW-3B4KkkoP1QYhp307YMyzf-GPx1Vu1oCFka+A@mail.gmail.com>
-Subject: Re: Regression since 4a96895f74c9633b51427fd080ab70fa62b65bc4
-To:     =?UTF-8?Q?Nuno_Gon=C3=A7alves?= <nunojpg@gmail.com>
-Cc:     linux-serial@vger.kernel.org, Stefan Roese <sr@denx.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Giulio Benetti <giulio.benetti@benettiengineering.com>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 17 Oct 2019 10:14:44 -0400
+Received: from mail-eopbgr130137.outbound.protection.outlook.com ([40.107.13.137]:54430
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2394836AbfJQOOo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 17 Oct 2019 10:14:44 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YNgbEJQrNtaAm0Tzt9Yb0fyku1/L5A2C0rH0QoaqGS0MYgclNGxBXMpAVoofoW+2bxTDZzvHMSlI6+Ju56Q0qEUgFVao1kQqK166YA3+giNfhemi4xQfc8FLVdj7AN4TD/xytL91LT09FjgKrRj+kcQemT0ZCvUCEDO0QgZruK/Kvn0kk1Fm0JKWM4dqCNrJjHH5sR3je0RKaE025JwxLoN5+zb3aRCZLOCiiwT3Fnp3nw7QMoz/j7YgJvr7qttkUoHPQhcuIQbNm2fhKrtU8YkwNXDlQV+1IwTkUlP3JOFN2XD0CNiCKt2/2wCLP57ElCPZYQt0Eq3Nph7UWh8mJA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=N6LIcr+kArlEvgSDuljDT1IwaMtvn/GHjTreLE0nANw=;
+ b=YheABDG3pXYJms96tAniAdIxHacNuRRSI1Dwc8YgIluZHHiM8EZ7DzVYdzTKWp2Ih+CEA7lQkdMsEyG4MSBMn8sbMpPZoNyRteDE8HPaUj6Da6vzT5aN9IZHZTuOeSLJ7793rAmOQwMqLGCQ4q0D4z1TVoZ8rGww+zkYwUQhwblj3ZZDRJ4sOSsoWaTuJuRWRuClZKNWEHnHSSktI0W0TN75rP7HuBE07S0rifrmHRasdCCuUBIMfk0NAa/HpRbdZb40D1SXW2lXSI/9XKX6YZeVZOu3QvTogv5jubcv9ZpopVAJgC+e+spXmBcorTKHgsOP29yGEy1YQ4a08xN9bw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
+ dkim=pass header.d=toradex.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=N6LIcr+kArlEvgSDuljDT1IwaMtvn/GHjTreLE0nANw=;
+ b=Cn0TC56b2LOPNGUIQtVq+gxyfB5LgpsPW0srr/3zuFaR+OmKX+EvwaUnWpHIANul1GumVXgu/tTRutE9rsB+K8ktlO6uR9kHj+QI+pZX9nErVopHql6UA1jjnE0YFr15suSAR6v8dDmarTE0ntdK9RDqoeYOvx2LVkS2Bm5EO+0=
+Received: from VI1PR0502MB3965.eurprd05.prod.outlook.com (52.134.19.20) by
+ VI1PR0502MB2990.eurprd05.prod.outlook.com (10.172.255.19) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2347.19; Thu, 17 Oct 2019 14:14:39 +0000
+Received: from VI1PR0502MB3965.eurprd05.prod.outlook.com
+ ([fe80::f427:26bb:85cf:abad]) by VI1PR0502MB3965.eurprd05.prod.outlook.com
+ ([fe80::f427:26bb:85cf:abad%7]) with mapi id 15.20.2347.023; Thu, 17 Oct 2019
+ 14:14:39 +0000
+From:   Philippe Schenker <philippe.schenker@toradex.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+CC:     Max Krummenacher <max.krummenacher@toradex.com>,
+        Jiri Slaby <jslaby@suse.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Fugang Duan <fugang.duan@nxp.com>,
+        Stefan Agner <stefan@agner.ch>,
+        "linux-imx@nxp.com" <linux-imx@nxp.com>,
+        Andrey Smirnov <andrew.smirnov@gmail.com>,
+        Philippe Schenker <philippe.schenker@toradex.com>
+Subject: [PATCH v2 1/3] tty: serial: lpuart: Remove unnecessary code from
+ set_mctrl
+Thread-Topic: [PATCH v2 1/3] tty: serial: lpuart: Remove unnecessary code from
+ set_mctrl
+Thread-Index: AQHVhPU2EBX8M1xP2UCKLhG8jBwn/A==
+Date:   Thu, 17 Oct 2019 14:14:38 +0000
+Message-ID: <20191017141428.10330-1-philippe.schenker@toradex.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM0PR0202CA0036.eurprd02.prod.outlook.com
+ (2603:10a6:208:1::49) To VI1PR0502MB3965.eurprd05.prod.outlook.com
+ (2603:10a6:803:26::20)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=philippe.schenker@toradex.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.23.0
+x-originating-ip: [46.140.72.82]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 915fa753-d661-4c1f-3113-08d7530c58a3
+x-ms-traffictypediagnostic: VI1PR0502MB2990:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0502MB2990A13585566E72F5923BC2F46D0@VI1PR0502MB2990.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5516;
+x-forefront-prvs: 01930B2BA8
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(366004)(39850400004)(346002)(136003)(376002)(396003)(189003)(199004)(1076003)(81166006)(3846002)(102836004)(64756008)(186003)(386003)(52116002)(26005)(66446008)(44832011)(8676002)(486006)(476003)(7736002)(4326008)(66476007)(6506007)(6116002)(478600001)(86362001)(25786009)(66946007)(66556008)(305945005)(5660300002)(36756003)(81156014)(14454004)(71200400001)(50226002)(110136005)(71190400001)(316002)(99286004)(2616005)(6486002)(2906002)(256004)(54906003)(107886003)(8936002)(2501003)(6436002)(6512007)(66066001);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR0502MB2990;H:VI1PR0502MB3965.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: toradex.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: UxF3aMVyxHsZ9HoESrTN3dxa3yeQqC52nTxqCqHlKCFmvYblTA6HIcHvy3o08rgywQ0WDSuyRkZfETrIZOp9TL1IGe9Gm1xp/v7hyUb/rhNPuBBiqbLdP0CUM01jcGJm1k3Fc0Fp5h7uq+d+7Cuwz/rhBW5iyUct6LtbB2vflkgAayLCsVpmm7wnwPmDOOZP1pwQXQv/iZ1TIiC/2ClUOuebQEWV4x+jYgPU4g0zbCamgoKwKOEmSt2Fnk7Rlq+JcbvRhuPB7LLKyZ1gUicFywUomel4aG8tov6lrR+0fWuI2j8jPFsAh9zzFVJU/lkPJ+BzlKUOZLDeGJP61gDmZq3SP4IN/sMDoM58C7DaHSXQ5j5/zb2OduxFPVXgrph4M0pofR7bhNaNHE71vOqJ6WHQnAkz0t8OR4EOY3sebhc=
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 915fa753-d661-4c1f-3113-08d7530c58a3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Oct 2019 14:14:39.0765
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2X0j/U1FGNhZHsp7JuQ+54H/Bvfv4T0OffgviCeqfuQrXY8EnA6IzJJzsVg/LeStBhON4bOaqOPJzFOiREeeYZedlPq3ej05K40R4E5zE4A=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0502MB2990
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Nuno,
+Currently flow control is not working due to lpuart32_set_mctrl that is
+clearing TXCTSE bit in all cases. This bit gets earlier setup by
+lpuart32_set_termios.
 
-On Thu, Oct 17, 2019 at 11:19 AM Nuno Gon=C3=A7alves <nunojpg@gmail.com> wr=
-ote:
->
-> Hi Yegor,
->
-> I'm not sure if by your previous message you think I have some kind of
-> hardware or DT issue or if this is being handled as a regression.
+As I read in Documentation set_mctrl is also not meant for hardware
+flow control rather than gpio setting and clearing a RTS signal.
+Therefore I guess it is safe to remove the whole code in
+lpuart32_set_mctrl.
 
-There were some upstreamed fixes recently. See commits [1], [2]. Also,
-make sure DMA for OMAP-8250 driver is disabled. Let me know if RTS/CTS
-is working as expected on am335x. See this discussion [3].
+This was tested with console on a i.MX8QXP SoC.
 
-[1] https://marc.info/?l=3Dlinux-kernel&m=3D157037963426476&w=3D2
-[2] https://marc.info/?l=3Dlinux-kernel&m=3D157037964726483&w=3D2
-[3] https://marc.info/?l=3Dlinux-omap&m=3D157018333915769&w=3D2
+Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>
+Reviewed-by: Fugang Duan <fugang.duan@nxp.com>
 
-Yegor
+---
 
-> Thanks,
-> Nuno
->
-> On Tue, Oct 1, 2019 at 11:03 PM Nuno Gon=C3=A7alves <nunojpg@gmail.com> w=
-rote:
-> >
-> > Yes, I remember seeing those warnings.
-> >
-> > On Tue, Oct 1, 2019 at 10:02 PM Yegor Yefremov
-> > <yegorslists@googlemail.com> wrote:
-> > >
-> > > Hi Nuno,
-> > >
-> > > On Sun, Sep 29, 2019 at 8:46 AM Nuno Gon=C3=A7alves <nunojpg@gmail.co=
-m> wrote:
-> > > >
-> > > > I have since found that I am affected by two apparently different
-> > > > regressions since 5.3.
-> > > >
-> > > > 4a96895f74c9633b51427fd080ab70fa62b65bc4 is only confirmed to affec=
-t
-> > > > me on a omap8250 where the issue is that there are a few char error=
-s
-> > > > every few seconds. I can't confirm if chars are added, removed or
-> > > > changed, for now I only can confirm my state machine looses trackin=
-g.
-> > >
-> > > Can you see kernel warnings about an overrun on OMAP UART?
-> > >
-> > > > I will make a separate report from the problem identified on sunxi.
-> > > >
-> > > > On Sat, Sep 28, 2019 at 7:59 AM Nuno Gon=C3=A7alves <nunojpg@gmail.=
-com> wrote:
-> > > > >
-> > > > > On 32 bit arm platforms (am335x and sunxi) I get unexpected bytes=
- on
-> > > > > serial ports after this commit.
-> > > > >
-> > > > > I use CTS (so: for input flow control).
-> > > > >
-> > > > > I've observed two different issues, one where I get just a few mi=
-ssed
-> > > > > or added bytes about once a minute, and another where I get total=
-ly
-> > > > > unexpected chars until I reopen the port.
-> > > > >
-> > > > > I will have a hard time to analyse and give a better description =
-of
-> > > > > how exactly the port is failing, so maybe you have a idea of what=
- is
-> > > > > the issue with this patch.
-> > > > >
-> > > > > I've reverted this on top of 5.3.1 and consistently got the issue=
- fixed.
-> > > > >
-> > > > > Thanks,
-> > > > > Nuno
-> > > > >
-> > > > > commit 4a96895f74c9633b51427fd080ab70fa62b65bc4
-> > > > > Author: Yegor Yefremov <yegorslists@googlemail.com>
-> > > > > Date:   Thu Jun 20 08:24:20 2019 +0200
-> > > > >
-> > > > >     tty/serial/8250: use mctrl_gpio helpers
-> > > > >
-> > > > >     This patch permits the usage for GPIOs to control
-> > > > >     the CTS/RTS/DTR/DSR/DCD/RI signals.
-> > > > >
-> > > > >     Changed by Stefan:
-> > > > >     Only call mctrl_gpio_init(), if the device has no ACPI compan=
-ion device
-> > > > >     to not break existing ACPI based systems. Also only use the m=
-ctrl_gpio_
-> > > > >     functions when "gpios" is available.
-> > > > >
-> > > > >     Use MSR / MCR <-> TIOCM wrapper functions.
-> > > > >
-> > > > >     Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
-> > > > >     Signed-off-by: Stefan Roese <sr@denx.de>
-> > > > >     Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.c=
-om>
-> > > > >     Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com=
->
-> > > > >     Tested-by: Yegor Yefremov <yegorslists@googlemail.com>
-> > > > >     Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
-> > > > >     Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > > > >     Cc: Giulio Benetti <giulio.benetti@micronovasrl.com>
-> > > > >     Cc: Yegor Yefremov <yegorslists@googlemail.com>
-> > > > >     Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > > >     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org=
->
+Changes in v2:
+- Added Fugang Duan's review
+
+ drivers/tty/serial/fsl_lpuart.c | 11 -----------
+ 1 file changed, 11 deletions(-)
+
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuar=
+t.c
+index 537896c4d887..f3271857621c 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -1333,18 +1333,7 @@ static void lpuart_set_mctrl(struct uart_port *port,=
+ unsigned int mctrl)
+=20
+ static void lpuart32_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
+-	unsigned long temp;
+-
+-	temp =3D lpuart32_read(port, UARTMODIR) &
+-			~(UARTMODIR_RXRTSE | UARTMODIR_TXCTSE);
+-
+-	if (mctrl & TIOCM_RTS)
+-		temp |=3D UARTMODIR_RXRTSE;
+-
+-	if (mctrl & TIOCM_CTS)
+-		temp |=3D UARTMODIR_TXCTSE;
+=20
+-	lpuart32_write(port, temp, UARTMODIR);
+ }
+=20
+ static void lpuart_break_ctl(struct uart_port *port, int break_state)
+--=20
+2.23.0
+
