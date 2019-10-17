@@ -2,110 +2,177 @@ Return-Path: <SRS0=5/AJ=YK=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD89BFA3733
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Oct 2019 10:19:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABB1BECE58E
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Oct 2019 11:08:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8C3BB2082C
-	for <linux-serial@archiver.kernel.org>; Thu, 17 Oct 2019 10:19:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7BE702082C
+	for <linux-serial@archiver.kernel.org>; Thu, 17 Oct 2019 11:08:30 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="m3BKU69A";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="g5JUoKKE"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2501959AbfJQKTf convert rfc822-to-8bit (ORCPT
+        id S2404352AbfJQLIa (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 17 Oct 2019 06:19:35 -0400
-Received: from mx2.suse.de ([195.135.220.15]:36378 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731515AbfJQKTe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 17 Oct 2019 06:19:34 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id B5E31B196;
-        Thu, 17 Oct 2019 10:19:31 +0000 (UTC)
-Date:   Thu, 17 Oct 2019 12:19:27 +0200
-From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v10 4/6] mfd: ioc3: Add driver for SGI IOC3 chip
-Message-Id: <20191017121927.866d7d3b3bcec9ef570822eb@suse.de>
-In-Reply-To: <20191016103813.24447c64@cakuba.netronome.com>
-References: <20191015120953.2597-1-tbogendoerfer@suse.de>
-        <20191015120953.2597-5-tbogendoerfer@suse.de>
-        <20191015122349.612a230b@cakuba.netronome.com>
-        <20191016192321.c1ef8ea7c2533d6c8e1b98a2@suse.de>
-        <20191016103813.24447c64@cakuba.netronome.com>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8BIT
+        Thu, 17 Oct 2019 07:08:30 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:58618 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2393652AbfJQLIa (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 17 Oct 2019 07:08:30 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 7164860850; Thu, 17 Oct 2019 11:08:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1571310508;
+        bh=GPCRlQVMxZHefy3hFpc0A0bqbH8c5xALNX9clcCr67U=;
+        h=From:Subject:To:Cc:References:Date:In-Reply-To:From;
+        b=m3BKU69AP+IDb+OiEM9Jlxhgx+HnKFSDFqLuARp5zuo9qosCN51gycYxlnf4tDQk1
+         sRibrSXq9L1hjDLaXmsjoKwSiB4A570yLkgB3uEgr88MRFsO4lLZ26sDfeOecQNhAl
+         vxMNeLgH2KsZaiBPOqtvGxaDJtfDFqeAEnGGCuHE=
+Received: from [10.252.222.65] (blr-c-bdr-fw-01_globalnat_allzones-outside.qualcomm.com [103.229.19.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7BE3160588;
+        Thu, 17 Oct 2019 11:08:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1571310506;
+        bh=GPCRlQVMxZHefy3hFpc0A0bqbH8c5xALNX9clcCr67U=;
+        h=From:Subject:To:Cc:References:Date:In-Reply-To:From;
+        b=g5JUoKKEWQl0dO5PdbUIziIi1N1V5W5jjKkMmXjf1CCD2OM8Nno/1MIeX8xKwmw/d
+         gNhyeeg0unBjAalJR0whb9E8sBRYenNtcCTaidzNyosVX2qRvm/mps+WDNLeK2ACvJ
+         BSfvjCAnyIFV+lxz4UcVTlhJUDa3xkQD/y0p1g+E=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7BE3160588
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+From:   Akash Asthana <akashast@codeaurora.org>
+Subject: Re: [PATCH v3 1/2] tty: serial: qcom_geni_serial: IRQ cleanup
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        mgautam@codeaurora.org, bjorn.andersson@linaro.org,
+        swboyd@chromium.org, msavaliy@codeaurora.org
+References: <1571119863-14105-1-git-send-email-akashast@codeaurora.org>
+ <20191015185806.GA1139790@kroah.com>
+Message-ID: <1210428a-d02e-0408-f46e-a22cd99d7984@codeaurora.org>
+Date:   Thu, 17 Oct 2019 16:38:14 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <20191015185806.GA1139790@kroah.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 16 Oct 2019 10:38:13 -0700
-Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
 
-> On Wed, 16 Oct 2019 19:23:21 +0200, Thomas Bogendoerfer wrote:
-> > On Tue, 15 Oct 2019 12:23:49 -0700
-> > Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
-> > 
-> > > On Tue, 15 Oct 2019 14:09:49 +0200, Thomas Bogendoerfer wrote:  
-> > > > SGI IOC3 chip has integrated ethernet, keyboard and mouse interface.
-> > > > It also supports connecting a SuperIO chip for serial and parallel
-> > > > interfaces. IOC3 is used inside various SGI systemboards and add-on
-> > > > cards with different equipped external interfaces.
-> > > > 
-> > > > Support for ethernet and serial interfaces were implemented inside
-> > > > the network driver. This patchset moves out the not network related
-> > > > parts to a new MFD driver, which takes care of card detection,
-> > > > setup of platform devices and interrupt distribution for the subdevices.
-> > > > 
-> > > > Serial portion: Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > > Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
-> > > > 
-> > > > Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>  
-> > > 
-> > > Looks good, I think.  
-> > 
-> > thank you. 
-> > 
-> > Now how do I get an Acked-by for the network part to merge it via
-> > the MIPS tree ?
-> 
-> Oh, via the MIPS tree? It was quite unclear which these would land it,
-> at least to an untrained mind like mine :) It could be useful to
-> provide some info on how you want this merged and what you expect from
-> whom in the cover letter in the future.
-
-it's there in the cover letter under "Changes in v8":
-
- - Patches 1 and 2 are already taken to mips-next, but
-   for completeness of the series they are still included.
-   What's missing to get the remaining 3 patches via the MIPS
-   tree is an ack from a network maintainer
-
-> Hopefully Dave will be able to give you an official ack.
-
-/me hopes as well.
-
-Thomas.
+On 10/16/2019 12:28 AM, Greg KH wrote:
+> On Tue, Oct 15, 2019 at 11:41:03AM +0530, Akash Asthana wrote:
+>> Move ISR registration from startup to probe function to avoid registering
+>> it everytime when the port open is called for driver.
+>>
+>> Signed-off-by: Akash Asthana<akashast@codeaurora.org>
+>> ---
+>> Changes in v3:
+>>   - Address review comments on v2 patch.
+>>   - Using devm_kasprintf instead of scnprintf API.
+>>
+>>   drivers/tty/serial/qcom_geni_serial.c | 30 +++++++++++++++++++-----------
+>>   1 file changed, 19 insertions(+), 11 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+>> index 14c6306..12dc007 100644
+>> --- a/drivers/tty/serial/qcom_geni_serial.c
+>> +++ b/drivers/tty/serial/qcom_geni_serial.c
+>> @@ -9,6 +9,7 @@
+>>   #include <linux/console.h>
+>>   #include <linux/io.h>
+>>   #include <linux/iopoll.h>
+>> +#include <linux/irq.h>
+>>   #include <linux/module.h>
+>>   #include <linux/of.h>
+>>   #include <linux/of_device.h>
+>> @@ -101,7 +102,7 @@
+>>   struct qcom_geni_serial_port {
+>>   	struct uart_port uport;
+>>   	struct geni_se se;
+>> -	char name[20];
+>> +	const char *name;
+>>   	u32 tx_fifo_depth;
+>>   	u32 tx_fifo_width;
+>>   	u32 rx_fifo_depth;
+>> @@ -830,7 +831,7 @@ static void qcom_geni_serial_shutdown(struct uart_port *uport)
+>>   	if (uart_console(uport))
+>>   		console_stop(uport->cons);
+>>   
+>> -	free_irq(uport->irq, uport);
+>> +	disable_irq(uport->irq);
+>>   	spin_lock_irqsave(&uport->lock, flags);
+>>   	qcom_geni_serial_stop_tx(uport);
+>>   	qcom_geni_serial_stop_rx(uport);
+>> @@ -890,21 +891,14 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
+>>   	int ret;
+>>   	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
+>>   
+>> -	scnprintf(port->name, sizeof(port->name),
+>> -		  "qcom_serial_%s%d",
+>> -		(uart_console(uport) ? "console" : "uart"), uport->line);
+>> -
+>>   	if (!port->setup) {
+>>   		ret = qcom_geni_serial_port_setup(uport);
+>>   		if (ret)
+>>   			return ret;
+>>   	}
+>> +	enable_irq(uport->irq);
+>>   
+>> -	ret = request_irq(uport->irq, qcom_geni_serial_isr, IRQF_TRIGGER_HIGH,
+>> -							port->name, uport);
+>> -	if (ret)
+>> -		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
+>> -	return ret;
+>> +	return 0;
+>>   }
+>>   
+>>   static unsigned long get_clk_cfg(unsigned long clk_freq)
+>> @@ -1297,11 +1291,25 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+>>   	port->rx_fifo_depth = DEF_FIFO_DEPTH_WORDS;
+>>   	port->tx_fifo_width = DEF_FIFO_WIDTH_BITS;
+>>   
+>> +	port->name = devm_kasprintf(uport->dev, GFP_KERNEL,
+>> +			"qcom_geni_serial_%s%d",
+>> +			uart_console(uport) ? "console" : "uart", uport->line);
+>> +	if (!port->name)
+>> +		return ERR_PTR(-ENOMEM);
+> Why are you returning a pointer when the return type of this function is
+> int?  Did the compiler not complain?  Shouldn't this just be -ENOMEM?
+Sorry about it! I will take care of this in future. I missed it due to 
+compiler setting, every warning was not treated as error.
+>> +
+>>   	irq = platform_get_irq(pdev, 0);
+>>   	if (irq < 0)
+>>   		return irq;
+>>   	uport->irq = irq;
+>>   
+>> +	irq_set_status_flags(uport->irq, IRQ_NOAUTOEN);
+>> +	ret = devm_request_irq(uport->dev, uport->irq, qcom_geni_serial_isr,
+>> +			IRQF_TRIGGER_HIGH, port->name, uport);
+>> +	if (ret) {
+>> +		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
+> Why print this out?  Doesn't the function print an error if it fails?
+The function doesn't print error for every failure paths.
+>> +		return ret;
+> See, an int return value :)
+>
+> thanks,
+>
+> greg k-h
 
 -- 
-SUSE Software Solutions Germany GmbH
-HRB 36809 (AG Nürnberg)
-Geschäftsführer: Felix Imendörffer
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+
