@@ -1,80 +1,40 @@
-From: Ed Vance <EdV@macrolink.com>
-Subject: [PATCH] 2.4.20-rc1 16654 UART drops xmit data
-Date: Thu, 31 Oct 2002 09:56:48 -0800
+From: "Professional " <no-reply@cfl.rr.com>
+Subject: Reach 24+ Million Active Internet Buyers
+Date: Tue, 05 Nov 2002 12:47:41
 Sender: linux-serial-owner@vger.kernel.org
-Message-ID: <11E89240C407D311958800A0C9ACF7D1A33C8A@EXCHANGE>
+Message-ID: <20021105174233Z265014-32598+4248@vger.kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
+Content-Type: text/plain;charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-serial-owner@vger.kernel.org>
 List-Id: linux-serial@vger.kernel.org
-To: 'linux-serial' <linux-serial@vger.kernel.org>, 'linux-kernel' <linux-kernel@vger.kernel.org>
-Cc: 'Marcelo Tosatti' <marcelo@conectiva.com.br>
+To: linux-serial@vger.kernel.org
 
-Fix for dropped xmit data on 16654 UART. 
+Hello, 
 
-serial.c 2.4.20-rc1
+My name is Candice Rourke, the Director of ABRIS--Advertising Marketing and Sales Professionals. I wanted to take a moment and introduce you to our company and its unique web-partner, BikiniHangout.com where there are bikini supermodels, photographers, casting directors, agencies, talent contests, fitness competitions, natural bodybuilders, sports entertainment, and thousands of Hot Unique Products!  
 
-This trivial patch limits execution of the Elan work-around code to 
-UARTs detected as type 8250, 16450, 16550 and 16550A. During transmit,
-the Exar 16C654 UART frequently has leftover THRI status visible in 
-its IIR register when the THRE status is not present in the LSR 
-register and a transmit interrupt is not pending. This interacts with 
-the Elan LSR timing work-around to cause serial driver to write more 
-data to a 16C654 UART before the UART is ready to take it. 
+Reach 24+ Million Active Internet Buyers
 
----------------------------------------------------------------- 
-Ed Vance              edv (at) macrolink (dot) com
-Macrolink, Inc.       1500 N. Kellogg Dr  Anaheim, CA  92807
-----------------------------------------------------------------
+We have uniquely positioned Bikini Hangout's interactive network to reach more than 24 million active Internet buyers and pride ourselves in the ability to consistently deliver high quality traffic, yielding superior response rates. Your website, product or service will be exposed to our huge network of Internet buyers crafted to meet any size budget.  
 
-diff -urN -X dontdiff.txt linux-2.4.20-rc1/drivers/char/serial.c
-linux-654fix/drivers/char/serial.c
---- linux-2.4.20-rc1/drivers/char/serial.c	Mon Oct 28 12:19:17 2002
-+++ linux-654fix/drivers/char/serial.c	Wed Oct 30 10:12:00 2002
-@@ -792,6 +792,23 @@
- 	}
- }
- 
-+/*
-+ * Returns != 0 (true) if UART is ready for more transmit data.
-+ * This function contains a work-around for a silicon bug in the UARTs 
-+ * of the AMD Elan microcontroller. The LSR THRE bit is set late and 
-+ * may be missed by the interrupt routine, so an IIR THRI status is also
-+ * treated as an LSR THRE status. This causes xmit data loss on 16C654 
-+ * UARTs (and perhaps others) so the work-around is applied only to 
-+ * ports detected as generic UART types 8250, 16450, 16550 and 16550A. 
-+ */
-+static _INLINE_ int uart_transmit_ready(struct async_struct *info,
-+					int status, int iir)
-+{
-+	return (status & UART_LSR_THRE) || 
-+	       ((info->state->type <= PORT_16550A) &&
-+	        ((iir & UART_IIR_ID) == UART_IIR_THRI));
-+}
-+
- #ifdef CONFIG_SERIAL_SHARE_IRQ
- /*
-  * This is the serial driver's generic interrupt routine
-@@ -842,9 +859,7 @@
- 		if (status & UART_LSR_DR)
- 			receive_chars(info, &status, regs);
- 		check_modem_status(info);
--		if ((status & UART_LSR_THRE) ||
--			/* for buggy ELAN processors */
--			((iir & UART_IIR_ID) == UART_IIR_THRI))
-+		if (uart_transmit_ready(info, status, iir))
- 			transmit_chars(info, 0);
- 
- 	next:
-@@ -909,9 +924,7 @@
- 		if (status & UART_LSR_DR)
- 			receive_chars(info, &status, regs);
- 		check_modem_status(info);
--		if ((status & UART_LSR_THRE) ||
--		    /* For buggy ELAN processors */
--		    ((iir & UART_IIR_ID) == UART_IIR_THRI))
-+		if (uart_transmit_ready(info, status, iir))
- 			transmit_chars(info, 0);
- 		if (pass_counter++ > RS_ISR_PASS_LIMIT) {
- #if SERIAL_DEBUG_INTR
+Bikini Hangout gives visitors what they want in the latest swimwear styles, beauty tips, fresh weight-loss ideas, and exercises for the mind body and soul. Get healthy recipes and a chance to talk live with bodybuilders, supermodels, fitness experts and national competitors from around the world. Take a tour of our free model galleries, classic car and biker slide shows, live cams, Hollywood exclusives, hot travel destinations, daily news and services ranging from dating to gaming. 
+
+We offer many different advertising campaigns that can handle your entire Internet marketing needs, serving thousands of clients and creating millions of dollars in sales for our customers.
+
+Receive a FREE initial consultation to review all available options tailored to your specific needs. We promise to deliver what we advertise and your satisfaction is 100% guaranteed.
+
+Visit our online media kit:
+http://www.bikinihangout.com/advertise/index.htm
+
+Sincerely, 
+
+
+Candice Rourke
+Advertising & Marketing Director
+E-mail: abrisadvertising@aol.com
+
+This email is sent in compliance with strict anti-abuse and NO SPAM regulations. Your address was collected as a result of posting to a link, a classified ad, or you are on a list that we have purchased through a third party. To remove your E-mail address simply type REMOVE in the subject line. 
+
+
+
