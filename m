@@ -2,88 +2,108 @@ Return-Path: <SRS0=Hh8y=YL=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA9BBCA9EA1
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 10:39:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9CF7CA9EA1
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 12:52:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9780A222BD
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 10:39:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571395177;
-	bh=fAxq5uZDgA71q0E+EM9KYGGqgdMO/URCOCKYV60akkU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=Y3WnLjyQEwsIFLYxq4HGBlpbfNfDJ4f1/oq+vnUWBSDsKU7Bw3YqlG1EMwmthtUCJ
-	 2NI/rwWWdI5cPzG1KWhXHD3fWSXAqVeIkuHr3/za9v5doecjQVb6av8Jjf+V6eOzNe
-	 /7QDpOR1W7rnhjr3AN5BbhCDXF+Xt3MsuyVvJPrw=
+	by mail.kernel.org (Postfix) with ESMTP id AEB37222C2
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 12:52:43 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="ZqtTvUId"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439276AbfJRKjS (ORCPT
+        id S2408140AbfJRMwn (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Oct 2019 06:39:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60388 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2439166AbfJRKjR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Oct 2019 06:39:17 -0400
-Received: from localhost (unknown [209.136.236.94])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D14FC222BD;
-        Fri, 18 Oct 2019 10:39:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571395156;
-        bh=fAxq5uZDgA71q0E+EM9KYGGqgdMO/URCOCKYV60akkU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BN1+wD0qTRHbnQIaZ8UODya+pY1GZy3Nd9ZrsTsookRPYfazZtby9emFzpMHVT48/
-         qIJkZZtvCS8lan184PtgnlkqAg7xufbYFWexLZsaL2PY439SHQlVJVvV7Wun6LwY0f
-         lHYYBBJ0moU9cyAc+IG7zfK7+9KD0T6SzgftEyXY=
-Date:   Fri, 18 Oct 2019 03:39:15 -0700
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     Maximilian Luz <luzmaximilian@gmail.com>,
-        Johan Hovold <johan@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Rob Herring <robh@kernel.org>, Jiri Slaby <jslaby@suse.com>,
-        Len Brown <lenb@kernel.org>, linux-serial@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] serdev: Add ACPI devices by ResourceSource field
-Message-ID: <20191018103915.GA1174466@kroah.com>
-References: <20190924162226.1493407-1-luzmaximilian@gmail.com>
- <03d11e04-aaad-4851-c7d6-feaf62793670@redhat.com>
- <84883ba0-ec01-9114-5c4a-e468cf85dfec@gmail.com>
- <2257692.4kSTgpFGC2@kreacher>
+        Fri, 18 Oct 2019 08:52:43 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:37774 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726875AbfJRMwm (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 18 Oct 2019 08:52:42 -0400
+Received: by mail-lj1-f195.google.com with SMTP id l21so6122911lje.4
+        for <linux-serial@vger.kernel.org>; Fri, 18 Oct 2019 05:52:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=X8tXbinQHwrpjZVR5SZDxD1u91iSiuAMbDTcJXFPWb8=;
+        b=ZqtTvUIddQBWXaS8eT4AyKxHQxxb4LutuCYu8Et1I6qRRkCdNpIZDsBMkkiqP5LJJ3
+         T++Y9k8fNV6dq4whnCc4qJYUxpkzOBGqaKv9D+WlmA2Nnrs7pPTF+ryD2Ysn6PV0lyhL
+         my8Exob7bYpSp/7oQ9MbAyg6EO3GvkCC8XS9U=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=X8tXbinQHwrpjZVR5SZDxD1u91iSiuAMbDTcJXFPWb8=;
+        b=sYVGNO54himgAVnMJkNC5JexIxbzTvxaLOVu1f5aD31acXLQWcduH4E0MMKjn3Af8t
+         KOeLyBh//HaekvB+QbmXiPUBF5ajqrhNfJzn2nwwx2bXCYH72k//BKVO7g+4ECIN5Y05
+         T318tzxErbOdvgObvTfvrCCKfzavZtuzNo62K5pWPjs/jc6iMzkUfy1bF/gsqcCeMNaw
+         sfraNzF+MHjkL6feC0lOY/vRrLAX45RZegtrq9XmncNzr8AWz/DAiYowI9XTFGCj3osE
+         msJgaCBnXUKlvfve1aju1U4CkX601FkAFA/9iwEOFGZ9xiZWrp3vqMj5MxluWhGppvPn
+         MGkQ==
+X-Gm-Message-State: APjAAAWvuRWFbXap306PPxq4YbbMen3ppDWdidIKyTg1vF9+vlLFdYhh
+        rCx8VOdCgqab0Ff0EF5F1bglJA==
+X-Google-Smtp-Source: APXvYqyF9yPf+tbU7h7RQICAL7Ec07Pxt3Ja7hV0UEFHDzE2BYMYhcr3tkeM8h/HHzKMwhMhBwF9EQ==
+X-Received: by 2002:a2e:3919:: with SMTP id g25mr6031311lja.162.1571403159942;
+        Fri, 18 Oct 2019 05:52:39 -0700 (PDT)
+Received: from prevas-ravi.prevas.se ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id m17sm7454792lje.0.2019.10.18.05.52.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Oct 2019 05:52:38 -0700 (PDT)
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+To:     Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, Timur Tabi <timur@kernel.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Subject: [PATCH 0/7] towards QE support on ARM
+Date:   Fri, 18 Oct 2019 14:52:27 +0200
+Message-Id: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2257692.4kSTgpFGC2@kreacher>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Oct 18, 2019 at 12:16:27PM +0200, Rafael J. Wysocki wrote:
-> On Thursday, October 10, 2019 3:18:58 PM CEST Maximilian Luz wrote:
-> > Hi,
-> > 
-> > On 10/10/19 12:22 PM, Hans de Goede wrote:
-> > > This patch looks good to me and it works on my test hw with serial
-> > > attached BT HCI:
-> > > 
-> > > Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-> > > Tested-by: Hans de Goede <hdegoede@redhat.com>
-> > > 
-> > > Regards,
-> > > 
-> > > Hans
-> > 
-> > Awesome, thank you!
-> 
-> Is anyone taking care of this patch, or should I do that?
+There have been several attempts in the past few years to allow
+building the QUICC engine drivers for platforms other than PPC. This
+is (the beginning of) yet another attempt. I hope I can get someone to
+pick up these relatively trivial patches (I _think_ they shouldn't
+change functionality at all), and then I'll continue slowly working
+towards removing the PPC32 dependency for CONFIG_QUICC_ENGINE.
 
-It's already in my tty-next branch, so no need for you to do anything :)
+Tested on an MPC8309-derived board.
 
-thanks,
+Rasmus Villemoes (7):
+  soc: fsl: qe: remove space-before-tab
+  soc: fsl: qe: drop volatile qualifier of struct qe_ic::regs
+  soc: fsl: qe: avoid ppc-specific io accessors
+  soc: fsl: qe: replace spin_event_timeout by readx_poll_timeout_atomic
+  serial: make SERIAL_QE depend on PPC32
+  serial: ucc_uart.c: explicitly include asm/cpm.h
+  soc/fsl/qe/qe.h: remove include of asm/cpm.h
 
-greg k-h
+ drivers/soc/fsl/qe/gpio.c     | 30 ++++++++--------
+ drivers/soc/fsl/qe/qe.c       | 44 +++++++++++------------
+ drivers/soc/fsl/qe/qe_ic.c    |  8 ++---
+ drivers/soc/fsl/qe/qe_ic.h    |  2 +-
+ drivers/soc/fsl/qe/qe_io.c    | 40 ++++++++++-----------
+ drivers/soc/fsl/qe/qe_tdm.c   |  8 ++---
+ drivers/soc/fsl/qe/ucc.c      | 12 +++----
+ drivers/soc/fsl/qe/ucc_fast.c | 66 ++++++++++++++++++-----------------
+ drivers/soc/fsl/qe/ucc_slow.c | 38 ++++++++++----------
+ drivers/soc/fsl/qe/usb.c      |  2 +-
+ drivers/tty/serial/Kconfig    |  1 +
+ drivers/tty/serial/ucc_uart.c |  1 +
+ include/soc/fsl/qe/qe.h       |  1 -
+ 13 files changed, 126 insertions(+), 127 deletions(-)
+
+-- 
+2.20.1
+
