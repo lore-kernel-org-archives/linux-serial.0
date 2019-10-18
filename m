@@ -4,52 +4,53 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73D5ACA9EA9
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:18:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82CDCCA9EA0
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:26:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3CDED21852
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:18:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4978E20854
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:26:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571437134;
-	bh=a7lsjfD5XOqATd/HHMEqnA12kAyKJex2d6w/wuLsBQY=;
+	s=default; t=1571437560;
+	bh=vOxgA07gZhgreIxvC378VR7YjrXYnrjkGDXa/aPtFWM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=sYw8v7CuDO5b+X0K9U4p6W4SrybCDO7y/WZ7oBAbYGr+tqOAY09E93hsPPZ/UdXJp
-	 tQ3gjnk8YkxAK/TA3zImx1WEsNqv9ZJtSS6wzvNCEQQd8ZRxOJYneCiFDekeKkuTgL
-	 5TfqH7/A0nNNFr8FxZOFYZ1miosg9+bJUhn2WvQA=
+	b=2siUA0aNHRFsPVT46mVAef44FretAlyvMCY4cLyY/JPj1NiXkdkaCZL36ctZ+9eyY
+	 aObTNAPobo5psL3+KZ24rd8FGAhirEIsvSxZZa5BayNwPobuQuq3xQK3PxzZybjlBj
+	 CNfLBRcnEkkXhhjEi5DWsZvNr6/eLTl1SsKtTtYg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404289AbfJRWSx (ORCPT
+        id S1728138AbfJRWEY (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Oct 2019 18:18:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39222 "EHLO mail.kernel.org"
+        Fri, 18 Oct 2019 18:04:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36026 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732466AbfJRWHI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Oct 2019 18:07:08 -0400
+        id S1728132AbfJRWEX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 18 Oct 2019 18:04:23 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D595B222D1;
-        Fri, 18 Oct 2019 22:07:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6AC5D222C3;
+        Fri, 18 Oct 2019 22:04:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571436427;
-        bh=a7lsjfD5XOqATd/HHMEqnA12kAyKJex2d6w/wuLsBQY=;
+        s=default; t=1571436263;
+        bh=vOxgA07gZhgreIxvC378VR7YjrXYnrjkGDXa/aPtFWM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l8K8kXkV5X6ITlNBvmDS/Yc57O6AcvtHUCDIzhi+vl2O9KlNS5vtP2ixgJn/Sv+8W
-         32b8UJ37BAn5V6xJxKhKn7QuikiWlX6l2lFSRjv4i0zLvit+QYrMSvW9oasMR5ZOC7
-         AQhH1ZRaGVIpqbXwhtWoJt7cIM7EKUD1TSh36+jE=
+        b=SZ9MqoHAbQFXjrsFXiixRxE8S/iFEzbJd990tTRgDnnmXM0MAeVUoijPD5UurRO8g
+         foD7XOrpjjvom9I8ypiBHe0M8fXzGZ0fs5UCRolfpKfGQTS2tKem5T20gqSwvAp7lv
+         fPeFW9kaSdWjE2Xd1I+MfzzUluepzEPGctPK9Zow=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+Cc:     Adam Ford <aford173@gmail.com>,
+        Yegor Yefremov <yegorslists@googlemail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 069/100] tty: serial: owl: Fix the link time qualifier of 'owl_uart_exit()'
-Date:   Fri, 18 Oct 2019 18:04:54 -0400
-Message-Id: <20191018220525.9042-69-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.3 45/89] serial: 8250_omap: Fix gpio check for auto RTS/CTS
+Date:   Fri, 18 Oct 2019 18:02:40 -0400
+Message-Id: <20191018220324.8165-45-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191018220525.9042-1-sashal@kernel.org>
-References: <20191018220525.9042-1-sashal@kernel.org>
+In-Reply-To: <20191018220324.8165-1-sashal@kernel.org>
+References: <20191018220324.8165-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -59,34 +60,49 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Adam Ford <aford173@gmail.com>
 
-[ Upstream commit 6264dab6efd6069f0387efb078a9960b5642377b ]
+[ Upstream commit fc64f7abbef2dae7ee4c94702fb3cf9a2be5431a ]
 
-'exit' functions should be marked as __exit, not __init.
+There are two checks to see if the manual gpio is configured, but
+these the check is seeing if the structure is NULL instead it
+should check to see if there are CTS and/or RTS pins defined.
 
-Fixes: fc60a8b675bd ("tty: serial: owl: Implement console driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/20190910041129.6978-1-christophe.jaillet@wanadoo.fr
+This patch uses checks for those individual pins instead of
+checking for the structure itself to restore auto RTS/CTS.
+
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Reviewed-by: Yegor Yefremov <yegorslists@googlemail.com>
+Link: https://lore.kernel.org/r/20191006163314.23191-2-aford173@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/owl-uart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_omap.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
-index 29a6dc6a8d23c..73fcc6bdb0312 100644
---- a/drivers/tty/serial/owl-uart.c
-+++ b/drivers/tty/serial/owl-uart.c
-@@ -742,7 +742,7 @@ static int __init owl_uart_init(void)
- 	return ret;
- }
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 3ef65cbd2478a..e4b08077f8757 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -141,7 +141,7 @@ static void omap8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
  
--static void __init owl_uart_exit(void)
-+static void __exit owl_uart_exit(void)
- {
- 	platform_driver_unregister(&owl_uart_platform_driver);
- 	uart_unregister_driver(&owl_uart_driver);
+ 	serial8250_do_set_mctrl(port, mctrl);
+ 
+-	if (!up->gpios) {
++	if (!mctrl_gpio_to_gpiod(up->gpios, UART_GPIO_RTS)) {
+ 		/*
+ 		 * Turn off autoRTS if RTS is lowered and restore autoRTS
+ 		 * setting if RTS is raised
+@@ -456,7 +456,8 @@ static void omap_8250_set_termios(struct uart_port *port,
+ 	up->port.status &= ~(UPSTAT_AUTOCTS | UPSTAT_AUTORTS | UPSTAT_AUTOXOFF);
+ 
+ 	if (termios->c_cflag & CRTSCTS && up->port.flags & UPF_HARD_FLOW &&
+-	    !up->gpios) {
++	    !mctrl_gpio_to_gpiod(up->gpios, UART_GPIO_RTS) &&
++	    !mctrl_gpio_to_gpiod(up->gpios, UART_GPIO_CTS)) {
+ 		/* Enable AUTOCTS (autoRTS is enabled when RTS is raised) */
+ 		up->port.status |= UPSTAT_AUTOCTS | UPSTAT_AUTORTS;
+ 		priv->efr |= UART_EFR_CTS;
 -- 
 2.20.1
 
