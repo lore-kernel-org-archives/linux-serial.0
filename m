@@ -2,106 +2,162 @@ Return-Path: <SRS0=Hh8y=YL=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76E9DCA9EA0
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 19:47:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12826CA9EA0
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 20:16:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 45B2720869
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 19:47:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D3AD7222C3
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 20:16:46 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CINJsrk3"
+	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="evkfOJaN"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395002AbfJRTr0 (ORCPT
+        id S2443292AbfJRUQq (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Oct 2019 15:47:26 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:55456 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730242AbfJRTr0 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Oct 2019 15:47:26 -0400
-Received: by mail-wm1-f66.google.com with SMTP id a6so7297484wma.5;
-        Fri, 18 Oct 2019 12:47:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=29JeKgSY9LOeN+no+XK07axfqq3O5QcjOGKm4qRL5EM=;
-        b=CINJsrk36mjN7138rzjhlMMfh4ilot3xmvC1TB2d9BRMmAacU52tSwExBmUwbYZjRl
-         nqJ6tQzdzbYY+DvgKoxR9QJBH/HWI05vv4ChdX4pB02PH3lmbKTvUC1OCi08k+osbo0z
-         aGt3tSr8qVVSKLa+/2lYqorZVEdCWuyxsY+TKNX9IUbUVLaA0PFfJ/Ci6UZeykwMOBJW
-         nBdAFdHArkTvM2OJMedMfGZ1ojFwLr2qJhkZ2iPrqbseNMxIzJ8n64X5FHJ6NF4kRwPU
-         odLGBVCQZcrBIzlbkptRcvY/z8jSbm5K0ZosPqNxBmcJ4ycyZSkQ1c+9aIUYzpXYSTke
-         Iqaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=29JeKgSY9LOeN+no+XK07axfqq3O5QcjOGKm4qRL5EM=;
-        b=jha1AXYPpHJsP8pe/r3NUuIQsa0Aj32m0fNr1dCz1+6d1lRsYA0QbYAsT6X8CsETDu
-         s7hsmp+5E2jC9KKmppHDbbpU8Y7imUTq+KFvOC/ERMuNPFCOCvVqn8ZzUDcwmOzujTeV
-         H58ty54aXwYeGBBOlscTG6jLjjoPGxN1G4bJmSXKB2XZDxf+vb2xbkOUupunAI6Jm0CS
-         y/wvag84cxTWerA30ZIhaXdJ1F4+It41dOCBzyo6rTR4+4tRkiLgtdufpf7vokaRM1WH
-         dhFh24cnQuRgGsw7k8bn/znDAl0XO3mY+5Xl++bUYBtRIXUr/jg4BTUN5wsHpMxl3ElK
-         Zxlw==
-X-Gm-Message-State: APjAAAUxDIIxyFEq6zb4Ys47dXR7uQ4GyYAYoKoBEhm7FcqKoCRedYLL
-        jeAOZtUYZcQrdYDDXFIDDY4zCA66
-X-Google-Smtp-Source: APXvYqy5sv6eFU4eQ/y6qL6QoHw1G3w39Y6P+ecZKsa5W/pDOYxVgfTVPiUv+YZiOHdPCetozDLF7Q==
-X-Received: by 2002:a7b:c94f:: with SMTP id i15mr9181923wml.8.1571428043566;
-        Fri, 18 Oct 2019 12:47:23 -0700 (PDT)
-Received: from debian.office.codethink.co.uk. ([78.40.148.180])
-        by smtp.gmail.com with ESMTPSA id q124sm11346224wma.5.2019.10.18.12.47.22
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 18 Oct 2019 12:47:22 -0700 (PDT)
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH] tty: serial: samsung: rename to fix build warning
-Date:   Fri, 18 Oct 2019 20:47:07 +0100
-Message-Id: <20191018194707.27188-1-sudipm.mukherjee@gmail.com>
-X-Mailer: git-send-email 2.11.0
+        Fri, 18 Oct 2019 16:16:46 -0400
+Received: from mail-eopbgr00069.outbound.protection.outlook.com ([40.107.0.69]:34798
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729451AbfJRUQq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 18 Oct 2019 16:16:46 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GCspO0M3RrGmA87kuNkxogTwkieGkHQNugNq0SOd0RKJnNczTkDiFmtUn0mTs9mfQ3Oa5kEZ/3uLXNdvkdD8FpIi6DtuoI06nGAqJb16M3+SP6sQPKOvt0hDOdgnKdDUPH6Su/UucNdalDfGmvh6cEuisVvePL3SsdsdAYjkpFeSde8WopA+uLzDFuJqpDyt8AkStNyRNRFG/jQoKaMAauJcqPRkqacRCJbZjZGKFsOPt4Zz1gpFSAj8qSy3VZ8+ZQVWLsQFM2JULZJuhbZcfC5yVXvWDFkGp6IRlvme88MSALQiYHIn1aJNqEh9CdntK1hxJY8O9uEtjYr4LqDAEw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LypLTGCen3B/aXHTsoz3SA3fJ+BBotxHMPxkIKk1bZs=;
+ b=Knlvmh9nPIW+uIFk8CEQpH8CYytphUuSljYuI0HFQAsXDKNz9DPtYZ9DiwjiQSRQU/T3Seja1jL8K6ekMkRQ6NYz3pBQaVyuQR8yRhRmMn2cEvMN0ysPORs7i4hIEcuONRyGOVTB+juVaepu5vaZnfxtn0xeKtoW5sQCR5/QKZCTc71iayqG6vnO7fv2YV01ylRc6yx4wGBXKvzG/sp3vImIT9nyaTg08oVO1zXgORudyQ267gPlPQ7ZD7Q0H2/berPrQmZcsAlYbOX8sIfkZZYgsN8AuZCYl5sDVoTC0Ul03v9ylze6uJP+lvIdi8QsnKvOokwAIHX1LOIBY7VxFw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LypLTGCen3B/aXHTsoz3SA3fJ+BBotxHMPxkIKk1bZs=;
+ b=evkfOJaN6WgtUP/qgdrE8pGXSIntN+CU3HF7NIOLUqUKkEncG/BDCBISya3+w+vybyzLzgN/wKaJG37pTidDV9xm2gsp4svdM36QdcEYGlpYMBA2sf/c+xkqoMl4PMKYd370Zxf7rG7zaoghY43nSFZxrnSTftBj6J4W4r560to=
+Received: from VE1PR04MB6687.eurprd04.prod.outlook.com (20.179.234.30) by
+ VE1PR04MB6446.eurprd04.prod.outlook.com (20.179.233.157) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2347.18; Fri, 18 Oct 2019 20:16:42 +0000
+Received: from VE1PR04MB6687.eurprd04.prod.outlook.com
+ ([fe80::c93:c279:545b:b6b6]) by VE1PR04MB6687.eurprd04.prod.outlook.com
+ ([fe80::c93:c279:545b:b6b6%3]) with mapi id 15.20.2347.024; Fri, 18 Oct 2019
+ 20:16:42 +0000
+From:   Leo Li <leoyang.li@nxp.com>
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Qiang Zhao <qiang.zhao@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, Timur Tabi <timur@kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Subject: RE: [PATCH 0/7] towards QE support on ARM
+Thread-Topic: [PATCH 0/7] towards QE support on ARM
+Thread-Index: AQHVhbLu+r0C+NWO3EyME7mfzv8ktqdg1Qrw
+Date:   Fri, 18 Oct 2019 20:16:42 +0000
+Message-ID: <VE1PR04MB6687DA0268FAF03D3E77A23B8F6C0@VE1PR04MB6687.eurprd04.prod.outlook.com>
+References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
+In-Reply-To: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=leoyang.li@nxp.com; 
+x-originating-ip: [64.157.242.222]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8e096d09-24d3-4fd3-0950-08d754081747
+x-ms-office365-filtering-ht: Tenant
+x-ms-traffictypediagnostic: VE1PR04MB6446:|VE1PR04MB6446:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VE1PR04MB644681593788C7190C0625498F6C0@VE1PR04MB6446.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-forefront-prvs: 01949FE337
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(346002)(39860400002)(396003)(376002)(13464003)(199004)(189003)(66946007)(66476007)(64756008)(66446008)(66556008)(486006)(76116006)(66066001)(99286004)(8936002)(256004)(2201001)(74316002)(305945005)(9686003)(229853002)(55016002)(5660300002)(7736002)(14454004)(52536014)(71200400001)(71190400001)(11346002)(25786009)(2501003)(33656002)(3846002)(6116002)(6246003)(6436002)(102836004)(8676002)(6506007)(53546011)(186003)(81156014)(81166006)(86362001)(76176011)(446003)(478600001)(476003)(316002)(26005)(2906002)(110136005)(7696005);DIR:OUT;SFP:1101;SCL:1;SRVR:VE1PR04MB6446;H:VE1PR04MB6687.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: W1wMUnAHWVaVIDqef64/YQ+JDXfd5ZUk7x2rdG9fe8GoiebHsiqqkn0viqJuOO+jtmiexw9wVax3i39xLwRDq+QPmUqsuLehL8KGlbS3NEEuNQo9nfnDQg7v1yUOIs2x3Htjt7Ur9M2Fg52VY/FFWfLKItjb/fbV1LfQvuw3nrmGDq8CJWe2fyXRKJDjRIMK0G17JQ/pw+eHK9BoFUGzdDpVx/K/woPeve1B2LjHqftl8DGxFLZyhjDWtSX3Maz78BVgnoXFSuUwJ0EDmJxlaicSXtZtMWAcnrM/sOjCpt0rCguQpmpf2hjWLBsG7OPMwCjTzSJE5t8ZxdVYSJ7WvO98bo91yb1y7uCIdbhioXwJnSPHPMcllsWhpnhZBacETYRLLEd/xaHlTeVU6hkmg6l3sU/RA/aW32dxzHPQSm4=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8e096d09-24d3-4fd3-0950-08d754081747
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Oct 2019 20:16:42.2098
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: W1QtZMERHmzxnb2ZwIxQG5kxur90oeuV0kkyEnXz0Hkx3G/CwuncZUXO9y9pLgxqPXcDai1kSQuqpMsjZAiUAA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6446
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The build of arm allmodconfig gives a warning:
 
-warning: same module names found:
-  drivers/tty/serial/samsung.ko
-  drivers/mtd/nand/onenand/samsung.ko
 
-Rename drivers/tty/serial/samsung.c to drivers/tty/serial/samsung_tty.c
-to fix the warning.
+> -----Original Message-----
+> From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> Sent: Friday, October 18, 2019 7:52 AM
+> To: Qiang Zhao <qiang.zhao@nxp.com>; Leo Li <leoyang.li@nxp.com>; Greg
+> Kroah-Hartman <gregkh@linuxfoundation.org>; Jiri Slaby
+> <jslaby@suse.com>; Timur Tabi <timur@kernel.org>; linuxppc-
+> dev@lists.ozlabs.org; linux-arm-kernel@lists.infradead.org; linux-
+> kernel@vger.kernel.org; linux-serial@vger.kernel.org
+> Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> Subject: [PATCH 0/7] towards QE support on ARM
+>=20
+> There have been several attempts in the past few years to allow building =
+the
+> QUICC engine drivers for platforms other than PPC. This is (the beginning=
+ of)
+> yet another attempt. I hope I can get someone to pick up these relatively
+> trivial patches (I _think_ they shouldn't change functionality at all), a=
+nd then
+> I'll continue slowly working towards removing the PPC32 dependency for
+> CONFIG_QUICC_ENGINE.
 
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
----
- drivers/tty/serial/Makefile                     | 2 +-
- drivers/tty/serial/{samsung.c => samsung_tty.c} | 0
- 2 files changed, 1 insertion(+), 1 deletion(-)
- rename drivers/tty/serial/{samsung.c => samsung_tty.c} (100%)
+Hi Rasmus,
 
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index 863f47056539..d056ee6cca33 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -30,7 +30,7 @@ obj-$(CONFIG_SERIAL_PXA_NON8250) += pxa.o
- obj-$(CONFIG_SERIAL_PNX8XXX) += pnx8xxx_uart.o
- obj-$(CONFIG_SERIAL_SA1100) += sa1100.o
- obj-$(CONFIG_SERIAL_BCM63XX) += bcm63xx_uart.o
--obj-$(CONFIG_SERIAL_SAMSUNG) += samsung.o
-+obj-$(CONFIG_SERIAL_SAMSUNG) += samsung_tty.o
- obj-$(CONFIG_SERIAL_MAX3100) += max3100.o
- obj-$(CONFIG_SERIAL_MAX310X) += max310x.o
- obj-$(CONFIG_SERIAL_IP22_ZILOG) += ip22zilog.o
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung_tty.c
-similarity index 100%
-rename from drivers/tty/serial/samsung.c
-rename to drivers/tty/serial/samsung_tty.c
--- 
-2.11.0
+I don't fully understand the motivation of this work.  As far as I know the=
+ QUICC ENGINE is only used on PowerPC based SoCs.  Can you give an example =
+on how is it used on ARM system?
+
+>=20
+> Tested on an MPC8309-derived board.
+
+MPC8309 is also PPC based.
+
+>=20
+> Rasmus Villemoes (7):
+>   soc: fsl: qe: remove space-before-tab
+>   soc: fsl: qe: drop volatile qualifier of struct qe_ic::regs
+>   soc: fsl: qe: avoid ppc-specific io accessors
+>   soc: fsl: qe: replace spin_event_timeout by readx_poll_timeout_atomic
+>   serial: make SERIAL_QE depend on PPC32
+>   serial: ucc_uart.c: explicitly include asm/cpm.h
+>   soc/fsl/qe/qe.h: remove include of asm/cpm.h
+>=20
+>  drivers/soc/fsl/qe/gpio.c     | 30 ++++++++--------
+>  drivers/soc/fsl/qe/qe.c       | 44 +++++++++++------------
+>  drivers/soc/fsl/qe/qe_ic.c    |  8 ++---
+>  drivers/soc/fsl/qe/qe_ic.h    |  2 +-
+>  drivers/soc/fsl/qe/qe_io.c    | 40 ++++++++++-----------
+>  drivers/soc/fsl/qe/qe_tdm.c   |  8 ++---
+>  drivers/soc/fsl/qe/ucc.c      | 12 +++----
+>  drivers/soc/fsl/qe/ucc_fast.c | 66 ++++++++++++++++++-----------------
+>  drivers/soc/fsl/qe/ucc_slow.c | 38 ++++++++++----------
+>  drivers/soc/fsl/qe/usb.c      |  2 +-
+>  drivers/tty/serial/Kconfig    |  1 +
+>  drivers/tty/serial/ucc_uart.c |  1 +
+>  include/soc/fsl/qe/qe.h       |  1 -
+>  13 files changed, 126 insertions(+), 127 deletions(-)
+>=20
+> --
+> 2.20.1
 
