@@ -4,50 +4,50 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45677CA9EA0
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:26:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAC6ECA9EA9
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:27:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0F82C20640
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:26:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BBB2420663
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:27:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571437575;
-	bh=I2FBoCDye4dsVyowU5HepiJpF/G674+D7HmyGV02wAo=;
+	s=default; t=1571437629;
+	bh=Paqb7OqL+I6rrIchpLW5US/fo31+mNb4aU/UsTEfsTQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=dGEbGBWxesgd8nNUPARZubiH+Eo+d3TlFEndJDSPVBQ3EAVwc74hWS2a3hu+PkXx6
-	 kWZEEF5ybe6RzpzLGjiV2+ax/FqU/LQBQEIOhLC+LqRZ0RuHtmeRYw6L44JwLN1oYZ
-	 MIIodw6VLgI3+Uggf/z8jSgKEobDQ635Uf95FEPI=
+	b=c0TKMfmAbmCWOTdDXuWMYFkulmQy87vxwwHIyfVwktLsw80bN5uUkIsBLuizqdbSI
+	 YeseJWY9eQLObr9479dTn2yHkCuB4poqCK4tmsN2SZpYrYo8QbDZHVlWhKbFkWJd2e
+	 oaqBvYXsEDTaBHUxo+QXhMDTFZrtvnK1hNb+KnK4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405998AbfJRW0I (ORCPT
+        id S2404359AbfJRW1H (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Oct 2019 18:26:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35992 "EHLO mail.kernel.org"
+        Fri, 18 Oct 2019 18:27:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35734 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728098AbfJRWEW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Oct 2019 18:04:22 -0400
+        id S1727710AbfJRWEG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 18 Oct 2019 18:04:06 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2ECDF222C6;
-        Fri, 18 Oct 2019 22:04:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 455DF20679;
+        Fri, 18 Oct 2019 22:04:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571436261;
-        bh=I2FBoCDye4dsVyowU5HepiJpF/G674+D7HmyGV02wAo=;
+        s=default; t=1571436246;
+        bh=Paqb7OqL+I6rrIchpLW5US/fo31+mNb4aU/UsTEfsTQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tJAuRchGJJ+XLk41MbftkHuz8JupqBuPBOTlYyhhmO0W5fjJojOvH/R60kC6HDJ6Z
-         Jui4iv1aqEf5cKUWatEuJ94bqO0lUz3sXyPcNckvd8PnZbVYzehaAeQPh8+XNHWnPm
-         8Br5C4G5cyWzOucEUkeTDSk4Fqr59bS7G9M/hIyc=
+        b=dJYUHN+qi8jJ5KKOZD51mRXmqL4+BwDa5gQPb0jHTS9EMq+TmwN1ce9Eg73hoGlbQ
+         UTEeLVXsDIJ4DU8mUcZTMbWjYVsc1cGR9cflyDtQVu9VDXZuT2k72Lh/i5IMjMhRVI
+         VYZFjo68LVdwOMNfs3Xfx5hCo2YuktXFSIABP/x4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Adam Ford <aford173@gmail.com>,
-        Yegor Yefremov <yegorslists@googlemail.com>,
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 44/89] serial: mctrl_gpio: Check for NULL pointer
-Date:   Fri, 18 Oct 2019 18:02:39 -0400
-Message-Id: <20191018220324.8165-44-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.3 30/89] serial/sifive: select SERIAL_EARLYCON
+Date:   Fri, 18 Oct 2019 18:02:25 -0400
+Message-Id: <20191018220324.8165-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191018220324.8165-1-sashal@kernel.org>
 References: <20191018220324.8165-1-sashal@kernel.org>
@@ -60,38 +60,35 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Adam Ford <aford173@gmail.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit 37e3ab00e4734acc15d96b2926aab55c894f4d9c ]
+[ Upstream commit 7e2a165de5a52003d10a611ee3884cdb5c44e8cd ]
 
-When using mctrl_gpio_to_gpiod, it dereferences gpios into a single
-requested GPIO.  This dereferencing can break if gpios is NULL,
-so this patch adds a NULL check before dereferencing it.  If
-gpios is NULL, this function will also return NULL.
+The sifive serial driver implements earlycon support, but unless
+another driver is built in that supports earlycon support it won't
+be usable.  Explicitly select SERIAL_EARLYCON instead.
 
-Signed-off-by: Adam Ford <aford173@gmail.com>
-Reviewed-by: Yegor Yefremov <yegorslists@googlemail.com>
-Link: https://lore.kernel.org/r/20191006163314.23191-1-aford173@gmail.com
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Paul Walmsley <paul.walmsley@sifive.com>
+Link: https://lore.kernel.org/r/20190910055923.28384-1-hch@lst.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/serial_mctrl_gpio.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/serial/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
-index 2b400189be911..54c43e02e3755 100644
---- a/drivers/tty/serial/serial_mctrl_gpio.c
-+++ b/drivers/tty/serial/serial_mctrl_gpio.c
-@@ -61,6 +61,9 @@ EXPORT_SYMBOL_GPL(mctrl_gpio_set);
- struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
- 				      enum mctrl_gpio_idx gidx)
- {
-+	if (gpios == NULL)
-+		return NULL;
-+
- 	return gpios->gpio[gidx];
- }
- EXPORT_SYMBOL_GPL(mctrl_gpio_to_gpiod);
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 3083dbae35f7e..3b436ccd29dad 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1075,6 +1075,7 @@ config SERIAL_SIFIVE_CONSOLE
+ 	bool "Console on SiFive UART"
+ 	depends on SERIAL_SIFIVE=y
+ 	select SERIAL_CORE_CONSOLE
++	select SERIAL_EARLYCON
+ 	help
+ 	  Select this option if you would like to use a SiFive UART as the
+ 	  system console.
 -- 
 2.20.1
 
