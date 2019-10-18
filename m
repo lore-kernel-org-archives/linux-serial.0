@@ -3,97 +3,105 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7750CA9EA0
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 12:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76E9DCA9EA0
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 19:47:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8AE13222C9
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 12:53:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 45B2720869
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 19:47:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="I8XtwIaY"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CINJsrk3"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2410083AbfJRMxG (ORCPT
+        id S2395002AbfJRTr0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Oct 2019 08:53:06 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:43032 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2410066AbfJRMwy (ORCPT
+        Fri, 18 Oct 2019 15:47:26 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:55456 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730242AbfJRTr0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Oct 2019 08:52:54 -0400
-Received: by mail-lj1-f194.google.com with SMTP id n14so6089804ljj.10
-        for <linux-serial@vger.kernel.org>; Fri, 18 Oct 2019 05:52:52 -0700 (PDT)
+        Fri, 18 Oct 2019 15:47:26 -0400
+Received: by mail-wm1-f66.google.com with SMTP id a6so7297484wma.5;
+        Fri, 18 Oct 2019 12:47:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zynimEHSa2z793BfmzBbQkfkisgqCtAkV6BR9OsqlmE=;
-        b=I8XtwIaYLYlfxg9NNy6ELtflmn8AM1cj4JKiG746px15j1nQkF152ypbwtndZWIK6U
-         fpsGGyBDxtjg7QmbR17VQAv77y3IUubgjwsdpncHc0qga1+kFg35E3D1g6NMY/X4MLte
-         gBtvKk3S2nRNRmpwOlubL7lPWAZnrDp9bGpmU=
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=29JeKgSY9LOeN+no+XK07axfqq3O5QcjOGKm4qRL5EM=;
+        b=CINJsrk36mjN7138rzjhlMMfh4ilot3xmvC1TB2d9BRMmAacU52tSwExBmUwbYZjRl
+         nqJ6tQzdzbYY+DvgKoxR9QJBH/HWI05vv4ChdX4pB02PH3lmbKTvUC1OCi08k+osbo0z
+         aGt3tSr8qVVSKLa+/2lYqorZVEdCWuyxsY+TKNX9IUbUVLaA0PFfJ/Ci6UZeykwMOBJW
+         nBdAFdHArkTvM2OJMedMfGZ1ojFwLr2qJhkZ2iPrqbseNMxIzJ8n64X5FHJ6NF4kRwPU
+         odLGBVCQZcrBIzlbkptRcvY/z8jSbm5K0ZosPqNxBmcJ4ycyZSkQ1c+9aIUYzpXYSTke
+         Iqaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zynimEHSa2z793BfmzBbQkfkisgqCtAkV6BR9OsqlmE=;
-        b=MOTa5Ist1Q+kXhsJNR7mjDq9CpP54TEc2zAvCKi7Cw3V7p5vQnLUWBN0e7abWB+OI4
-         OAspNn15q7P9e8LqMx73Awyy3TU24PN289SofL9oF+e5+AzSTkoCJVV9dO6FhYfcL3kc
-         cH/vxuHry3OD7aIs8MvT9sZ7E64vSwWsapPpvwJPogUF98zMuy/Soh7wx7/HE+jqwPxn
-         bywe6gMLhpYxWieWJd0j83kv/lG9GRJZbolCwq3eYPmiflKEM1Gdfz3bmb1bdr9qu5nl
-         GLrVNLnuJsao790OssT6U9opAZCB8OrutgOAd34GrrwbVwb3Hn49/gP1cQ1Uu/JaV5hA
-         no4w==
-X-Gm-Message-State: APjAAAW7iClXllGfxEHVKnCVpNAu5JYhL7dCrdEd57JIKhCNpG3pI5nP
-        gLYrAKlSnjsoDQbJhwQPaLwx6A==
-X-Google-Smtp-Source: APXvYqzL15xzNiCg30fEr7XFvHwNNnUijyABeFrBXYL+96A0QzVaeXNN1l+/dWTNB2mw6SlvUo0HFQ==
-X-Received: by 2002:a2e:584b:: with SMTP id x11mr6266881ljd.36.1571403171701;
-        Fri, 18 Oct 2019 05:52:51 -0700 (PDT)
-Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id m17sm7454792lje.0.2019.10.18.05.52.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Oct 2019 05:52:50 -0700 (PDT)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
-        Timur Tabi <timur@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=29JeKgSY9LOeN+no+XK07axfqq3O5QcjOGKm4qRL5EM=;
+        b=jha1AXYPpHJsP8pe/r3NUuIQsa0Aj32m0fNr1dCz1+6d1lRsYA0QbYAsT6X8CsETDu
+         s7hsmp+5E2jC9KKmppHDbbpU8Y7imUTq+KFvOC/ERMuNPFCOCvVqn8ZzUDcwmOzujTeV
+         H58ty54aXwYeGBBOlscTG6jLjjoPGxN1G4bJmSXKB2XZDxf+vb2xbkOUupunAI6Jm0CS
+         y/wvag84cxTWerA30ZIhaXdJ1F4+It41dOCBzyo6rTR4+4tRkiLgtdufpf7vokaRM1WH
+         dhFh24cnQuRgGsw7k8bn/znDAl0XO3mY+5Xl++bUYBtRIXUr/jg4BTUN5wsHpMxl3ElK
+         Zxlw==
+X-Gm-Message-State: APjAAAUxDIIxyFEq6zb4Ys47dXR7uQ4GyYAYoKoBEhm7FcqKoCRedYLL
+        jeAOZtUYZcQrdYDDXFIDDY4zCA66
+X-Google-Smtp-Source: APXvYqy5sv6eFU4eQ/y6qL6QoHw1G3w39Y6P+ecZKsa5W/pDOYxVgfTVPiUv+YZiOHdPCetozDLF7Q==
+X-Received: by 2002:a7b:c94f:: with SMTP id i15mr9181923wml.8.1571428043566;
+        Fri, 18 Oct 2019 12:47:23 -0700 (PDT)
+Received: from debian.office.codethink.co.uk. ([78.40.148.180])
+        by smtp.gmail.com with ESMTPSA id q124sm11346224wma.5.2019.10.18.12.47.22
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 18 Oct 2019 12:47:22 -0700 (PDT)
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 6/7] serial: ucc_uart.c: explicitly include asm/cpm.h
-Date:   Fri, 18 Oct 2019 14:52:33 +0200
-Message-Id: <20191018125234.21825-7-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
-References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH] tty: serial: samsung: rename to fix build warning
+Date:   Fri, 18 Oct 2019 20:47:07 +0100
+Message-Id: <20191018194707.27188-1-sudipm.mukherjee@gmail.com>
+X-Mailer: git-send-email 2.11.0
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This driver uses #defines from asm/cpm.h, so instead of relying on
-some other header pulling that in, do that explicitly.
+The build of arm allmodconfig gives a warning:
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+warning: same module names found:
+  drivers/tty/serial/samsung.ko
+  drivers/mtd/nand/onenand/samsung.ko
+
+Rename drivers/tty/serial/samsung.c to drivers/tty/serial/samsung_tty.c
+to fix the warning.
+
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 ---
- drivers/tty/serial/ucc_uart.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/Makefile                     | 2 +-
+ drivers/tty/serial/{samsung.c => samsung_tty.c} | 0
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+ rename drivers/tty/serial/{samsung.c => samsung_tty.c} (100%)
 
-diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
-index a0555ae2b1ef..e2c998badf81 100644
---- a/drivers/tty/serial/ucc_uart.c
-+++ b/drivers/tty/serial/ucc_uart.c
-@@ -33,6 +33,7 @@
- 
- #include <linux/firmware.h>
- #include <asm/reg.h>
-+#include <asm/cpm.h>
- 
- /*
-  * The GUMR flag for Soft UART.  This would normally be defined in qe.h,
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index 863f47056539..d056ee6cca33 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -30,7 +30,7 @@ obj-$(CONFIG_SERIAL_PXA_NON8250) += pxa.o
+ obj-$(CONFIG_SERIAL_PNX8XXX) += pnx8xxx_uart.o
+ obj-$(CONFIG_SERIAL_SA1100) += sa1100.o
+ obj-$(CONFIG_SERIAL_BCM63XX) += bcm63xx_uart.o
+-obj-$(CONFIG_SERIAL_SAMSUNG) += samsung.o
++obj-$(CONFIG_SERIAL_SAMSUNG) += samsung_tty.o
+ obj-$(CONFIG_SERIAL_MAX3100) += max3100.o
+ obj-$(CONFIG_SERIAL_MAX310X) += max310x.o
+ obj-$(CONFIG_SERIAL_IP22_ZILOG) += ip22zilog.o
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung_tty.c
+similarity index 100%
+rename from drivers/tty/serial/samsung.c
+rename to drivers/tty/serial/samsung_tty.c
 -- 
-2.20.1
+2.11.0
 
