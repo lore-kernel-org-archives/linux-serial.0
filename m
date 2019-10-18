@@ -4,52 +4,52 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B53A8CA9EA0
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:15:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73D5ACA9EA9
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:18:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7DB5720872
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:15:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3CDED21852
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:18:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571436955;
-	bh=A9SrPWrxdxcoRsjxb35PkZdHMlnw+DL9OVAPVfkxeww=;
+	s=default; t=1571437134;
+	bh=a7lsjfD5XOqATd/HHMEqnA12kAyKJex2d6w/wuLsBQY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=eHI/G9MysDYlKTOVXcibJmWEzqVEUbWmARY4YcdcZwUVzfcUz+m6TlPYABZ/+bH6e
-	 Y9EAZTuKBvxef0xbieBjFFTdZoeo1oFo9Bs/uP49PvsdhxhjEceIBHi5lsRVJfoTeP
-	 zEufYmzHSPdCNJjOieq4zFy5Rna8OKT3UqOg6JLs=
+	b=sYw8v7CuDO5b+X0K9U4p6W4SrybCDO7y/WZ7oBAbYGr+tqOAY09E93hsPPZ/UdXJp
+	 tQ3gjnk8YkxAK/TA3zImx1WEsNqv9ZJtSS6wzvNCEQQd8ZRxOJYneCiFDekeKkuTgL
+	 5TfqH7/A0nNNFr8FxZOFYZ1miosg9+bJUhn2WvQA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404042AbfJRWPq (ORCPT
+        id S2404289AbfJRWSx (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Oct 2019 18:15:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41334 "EHLO mail.kernel.org"
+        Fri, 18 Oct 2019 18:18:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39222 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388150AbfJRWIq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Oct 2019 18:08:46 -0400
+        id S1732466AbfJRWHI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 18 Oct 2019 18:07:08 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0B6BC222D4;
-        Fri, 18 Oct 2019 22:08:44 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D595B222D1;
+        Fri, 18 Oct 2019 22:07:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571436525;
-        bh=A9SrPWrxdxcoRsjxb35PkZdHMlnw+DL9OVAPVfkxeww=;
+        s=default; t=1571436427;
+        bh=a7lsjfD5XOqATd/HHMEqnA12kAyKJex2d6w/wuLsBQY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FFIkvENhgcKyy64pHxQAHMRuYs2TvI0E2b/Ky+msMwfzP2+euiJErutUSS/jLZtQ+
-         3qEd/SlfKFMmTIRJt93aA1ynjEMEM34LOUt6pyWrUOZmLvTtSar1+ZYHpW39QFHt+i
-         c+b4jxoTq5rRvJqKr86oYZDOyXXGOt65I/ySy2uw=
+        b=l8K8kXkV5X6ITlNBvmDS/Yc57O6AcvtHUCDIzhi+vl2O9KlNS5vtP2ixgJn/Sv+8W
+         32b8UJ37BAn5V6xJxKhKn7QuikiWlX6l2lFSRjv4i0zLvit+QYrMSvW9oasMR5ZOC7
+         AQhH1ZRaGVIpqbXwhtWoJt7cIM7EKUD1TSh36+jE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 32/56] tty: serial: owl: Fix the link time qualifier of 'owl_uart_exit()'
-Date:   Fri, 18 Oct 2019 18:07:29 -0400
-Message-Id: <20191018220753.10002-32-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 069/100] tty: serial: owl: Fix the link time qualifier of 'owl_uart_exit()'
+Date:   Fri, 18 Oct 2019 18:04:54 -0400
+Message-Id: <20191018220525.9042-69-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191018220753.10002-1-sashal@kernel.org>
-References: <20191018220753.10002-1-sashal@kernel.org>
+In-Reply-To: <20191018220525.9042-1-sashal@kernel.org>
+References: <20191018220525.9042-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -75,10 +75,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
-index b9c8593653347..d774f6013d7b6 100644
+index 29a6dc6a8d23c..73fcc6bdb0312 100644
 --- a/drivers/tty/serial/owl-uart.c
 +++ b/drivers/tty/serial/owl-uart.c
-@@ -754,7 +754,7 @@ static int __init owl_uart_init(void)
+@@ -742,7 +742,7 @@ static int __init owl_uart_init(void)
  	return ret;
  }
  
