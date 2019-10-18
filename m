@@ -2,52 +2,55 @@ Return-Path: <SRS0=Hh8y=YL=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66564CA9EA0
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:12:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CAB5CA9EA0
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:13:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3716220854
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:12:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 18A6921D7C
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:13:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571436775;
-	bh=zvFwupQjRYeGk0G8wiV8tm3Pju0m4nPE2GO8bW7N2no=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=DGNfoj8cuIVyZwBJeGzqjZ0Grf4ssZAPRoyNrz4XvvHZ3cvQ3x8ygsOlCT4V41Jcs
-	 LnMsPQpGfeUGVrBSVpJ8lLCZHytYi0fCgz38xnHCZxYMyarjSEQKBAM2g/IiLUWfMs
-	 HuTr5sUzv3xW+eL4aAxMlKvmT2K5na5Ma/3NPSIk=
+	s=default; t=1571436820;
+	bh=6YTxUo/vV96WT4vAvISg0yT5ieDjpadh9376XMiWhpQ=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=JSjAnjCb93Ec335E23Hsy+zQLUqOptuEOlRfZh4q/xVItXfXLPVSM7ywjTO/o0KxU
+	 GV+896e6vTgT1DrD9om2NqEyDBESUlv5B/reQJ8Tdn+nKMYv+jinMqbH3ATMw17GEn
+	 dDLGtQAixZ0k6YCwVSDUUk3ZOxOuzOqGfDGqjIJc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389897AbfJRWMx (ORCPT
+        id S2389293AbfJRWJt (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Oct 2019 18:12:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43004 "EHLO mail.kernel.org"
+        Fri, 18 Oct 2019 18:09:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42452 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389752AbfJRWKK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Oct 2019 18:10:10 -0400
+        id S2389286AbfJRWJs (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 18 Oct 2019 18:09:48 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AE0B8222D1;
-        Fri, 18 Oct 2019 22:10:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EA1E222474;
+        Fri, 18 Oct 2019 22:09:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571436609;
-        bh=zvFwupQjRYeGk0G8wiV8tm3Pju0m4nPE2GO8bW7N2no=;
-        h=From:To:Cc:Subject:Date:From;
-        b=jfrF5lxMV4YhuGzMydcOM+/0rAQZ0oIq+im7XZtV5AElwlNP2ZbYxLPudlxcHYArW
-         wi9xXuFVb99ORaSh/nLyFbcgo4oRevqRKXvKm/Kz9az07p1PGO0vJ8vCpwxDH1BdNg
-         15JS5GRwbqvl+zoDiLLVgXtPEgaSYWMoGjmHhZps=
+        s=default; t=1571436587;
+        bh=6YTxUo/vV96WT4vAvISg0yT5ieDjpadh9376XMiWhpQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZgQXJxNGCe4pQtVjuc1XMwi/hNkwqdlv3suHN/DS9pEYNQmRO2Qcsm/AMlNUCdz89
+         2hiO5yQvqgGkYtmb71J80yZwTgCkQZ4j47yd4Zrj12MQAVcsrOf/EO3jx49V2udUg6
+         dbs+TCZ9V6h52G5RkyiIspNmF0OkDzXPT4c9dU50=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Phil Elwell <phil@raspberrypi.org>,
+Cc:     Adam Ford <aford173@gmail.com>,
+        Yegor Yefremov <yegorslists@googlemail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 01/21] sc16is7xx: Fix for "Unexpected interrupt: 8"
-Date:   Fri, 18 Oct 2019 18:09:47 -0400
-Message-Id: <20191018221007.10851-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 16/29] serial: mctrl_gpio: Check for NULL pointer
+Date:   Fri, 18 Oct 2019 18:09:07 -0400
+Message-Id: <20191018220920.10545-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191018220920.10545-1-sashal@kernel.org>
+References: <20191018220920.10545-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -57,119 +60,38 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Phil Elwell <phil@raspberrypi.org>
+From: Adam Ford <aford173@gmail.com>
 
-[ Upstream commit 30ec514d440cf2c472c8e4b0079af2c731f71a3e ]
+[ Upstream commit 37e3ab00e4734acc15d96b2926aab55c894f4d9c ]
 
-The SC16IS752 has an Enhanced Feature Register which is aliased at the
-same address as the Interrupt Identification Register; accessing it
-requires that a magic value is written to the Line Configuration
-Register. If an interrupt is raised while the EFR is mapped in then
-the ISR won't be able to access the IIR, leading to the "Unexpected
-interrupt" error messages.
+When using mctrl_gpio_to_gpiod, it dereferences gpios into a single
+requested GPIO.  This dereferencing can break if gpios is NULL,
+so this patch adds a NULL check before dereferencing it.  If
+gpios is NULL, this function will also return NULL.
 
-Avoid the problem by claiming a mutex around accesses to the EFR
-register, also claiming the mutex in the interrupt handler work
-item (this is equivalent to disabling interrupts to interlock against
-a non-threaded interrupt handler).
-
-See: https://github.com/raspberrypi/linux/issues/2529
-
-Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Reviewed-by: Yegor Yefremov <yegorslists@googlemail.com>
+Link: https://lore.kernel.org/r/20191006163314.23191-1-aford173@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sc16is7xx.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ drivers/tty/serial/serial_mctrl_gpio.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 032f3c13b8c45..a3dfefa33e3c1 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -332,6 +332,7 @@ struct sc16is7xx_port {
- 	struct kthread_worker		kworker;
- 	struct task_struct		*kworker_task;
- 	struct kthread_work		irq_work;
-+	struct mutex			efr_lock;
- 	struct sc16is7xx_one		p[0];
- };
- 
-@@ -496,6 +497,21 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
- 		div /= 4;
- 	}
- 
-+	/* In an amazing feat of design, the Enhanced Features Register shares
-+	 * the address of the Interrupt Identification Register, and is
-+	 * switched in by writing a magic value (0xbf) to the Line Control
-+	 * Register. Any interrupt firing during this time will see the EFR
-+	 * where it expects the IIR to be, leading to "Unexpected interrupt"
-+	 * messages.
-+	 *
-+	 * Prevent this possibility by claiming a mutex while accessing the
-+	 * EFR, and claiming the same mutex from within the interrupt handler.
-+	 * This is similar to disabling the interrupt, but that doesn't work
-+	 * because the bulk of the interrupt processing is run as a workqueue
-+	 * job in thread context.
-+	 */
-+	mutex_lock(&s->efr_lock);
-+
- 	lcr = sc16is7xx_port_read(port, SC16IS7XX_LCR_REG);
- 
- 	/* Open the LCR divisors for configuration */
-@@ -511,6 +527,8 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
- 	/* Put LCR back to the normal mode */
- 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG, lcr);
- 
-+	mutex_unlock(&s->efr_lock);
-+
- 	sc16is7xx_port_update(port, SC16IS7XX_MCR_REG,
- 			      SC16IS7XX_MCR_CLKSEL_BIT,
- 			      prescaler);
-@@ -693,6 +711,8 @@ static void sc16is7xx_ist(struct kthread_work *ws)
+diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
+index d2da6aa7f27d0..1bb15edcf1e77 100644
+--- a/drivers/tty/serial/serial_mctrl_gpio.c
++++ b/drivers/tty/serial/serial_mctrl_gpio.c
+@@ -68,6 +68,9 @@ EXPORT_SYMBOL_GPL(mctrl_gpio_set);
+ struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
+ 				      enum mctrl_gpio_idx gidx)
  {
- 	struct sc16is7xx_port *s = to_sc16is7xx_port(ws, irq_work);
- 
-+	mutex_lock(&s->efr_lock);
++	if (gpios == NULL)
++		return NULL;
 +
- 	while (1) {
- 		bool keep_polling = false;
- 		int i;
-@@ -702,6 +722,8 @@ static void sc16is7xx_ist(struct kthread_work *ws)
- 		if (!keep_polling)
- 			break;
- 	}
-+
-+	mutex_unlock(&s->efr_lock);
+ 	return gpios->gpio[gidx];
  }
- 
- static irqreturn_t sc16is7xx_irq(int irq, void *dev_id)
-@@ -888,6 +910,9 @@ static void sc16is7xx_set_termios(struct uart_port *port,
- 	if (!(termios->c_cflag & CREAD))
- 		port->ignore_status_mask |= SC16IS7XX_LSR_BRK_ERROR_MASK;
- 
-+	/* As above, claim the mutex while accessing the EFR. */
-+	mutex_lock(&s->efr_lock);
-+
- 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG,
- 			     SC16IS7XX_LCR_CONF_MODE_B);
- 
-@@ -909,6 +934,8 @@ static void sc16is7xx_set_termios(struct uart_port *port,
- 	/* Update LCR register */
- 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG, lcr);
- 
-+	mutex_unlock(&s->efr_lock);
-+
- 	/* Get baud rate generator configuration */
- 	baud = uart_get_baud_rate(port, termios, old,
- 				  port->uartclk / 16 / 4 / 0xffff,
-@@ -1172,6 +1199,7 @@ static int sc16is7xx_probe(struct device *dev,
- 	s->regmap = regmap;
- 	s->devtype = devtype;
- 	dev_set_drvdata(dev, s);
-+	mutex_init(&s->efr_lock);
- 
- 	init_kthread_worker(&s->kworker);
- 	init_kthread_work(&s->irq_work, sc16is7xx_ist);
+ EXPORT_SYMBOL_GPL(mctrl_gpio_to_gpiod);
 -- 
 2.20.1
 
