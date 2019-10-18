@@ -4,53 +4,53 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFCCCCA9EAC
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:08:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29D74CA9EA9
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:12:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BB8A6222D4
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:08:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E43C1222C2
+	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:12:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571436533;
-	bh=7Hz5cFinExP0sQs8VQ/Osxg5CIeMdGKkH2cwpUXVmLU=;
+	s=default; t=1571436726;
+	bh=EjkITLXyNWDDCTnEmWuqo6H79NQjrvKt7URBqdB9VYw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=vqv7bwRIynEQMyn313cHJUbeaVA+S2AFVwMamz9rT6sgNcJn4jVwArsuO39TsHELR
-	 diobJYXivThGCAD3VVM3MGW3Up2q79kBLxFsjLFjao1MYN2I+g5M1pwDyhY16JX+2T
-	 7bmp5r9CaB79kUhdJlH6hRDu33iL9FxsCt0qxBfc=
+	b=hP1PjuZQ+YWn7YgC1UuLZNzkq2N81VMBRYkHmFAatysqw4fQwUbMYLb7XmcyeovtK
+	 2nVxvEip/KvGqTxVZuZuiTPtSiZRaNSmdiooET3tXx4gmtE28mq9CtJRHrAr0Va0Hb
+	 yZBktfqqTGgvFcY9twbrsvsSgPflHbhhStMxiWlY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388254AbfJRWIv (ORCPT
+        id S2390081AbfJRWKZ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Oct 2019 18:08:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41418 "EHLO mail.kernel.org"
+        Fri, 18 Oct 2019 18:10:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43306 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388232AbfJRWIu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Oct 2019 18:08:50 -0400
+        id S2390049AbfJRWKY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 18 Oct 2019 18:10:24 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 66F4A2245D;
-        Fri, 18 Oct 2019 22:08:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1BD6222476;
+        Fri, 18 Oct 2019 22:10:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571436530;
-        bh=7Hz5cFinExP0sQs8VQ/Osxg5CIeMdGKkH2cwpUXVmLU=;
+        s=default; t=1571436623;
+        bh=EjkITLXyNWDDCTnEmWuqo6H79NQjrvKt7URBqdB9VYw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dyslc6VtSF0ite7QHOVoqMjp9L5zGuDnZQwHYu0qZnqvFP2MswXcCDFpTE9FlfmA0
-         l9hZ+j8wg7YgGlPe+U9B46SL+WZEneU+5fn2uz2Haz/GJ2ZQvA5f3Dm3sJt//6NhQO
-         BntINGQEAUR8W5ugneKWTT0aA6PhThfN3zjGxtXo=
+        b=rgrtKyvqePzvoI+8DptvfUfhxkC9uvV+Wqs3oFL/Y5O10F7DVcoBsaqr20JAO3v+t
+         A3mEofOjOtemz8JfBZg5ZBF1M3FI3rEgFAerBdXGd2hnNzVZi+wlbVwsC2yny6LG5M
+         Km4Z+oiNWRWkXTriH7YxvxtCdrMpDK6mU1vjRgYI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Adam Ford <aford173@gmail.com>,
         Yegor Yefremov <yegorslists@googlemail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 36/56] serial: mctrl_gpio: Check for NULL pointer
-Date:   Fri, 18 Oct 2019 18:07:33 -0400
-Message-Id: <20191018220753.10002-36-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 11/21] serial: mctrl_gpio: Check for NULL pointer
+Date:   Fri, 18 Oct 2019 18:09:57 -0400
+Message-Id: <20191018221007.10851-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191018220753.10002-1-sashal@kernel.org>
-References: <20191018220753.10002-1-sashal@kernel.org>
+In-Reply-To: <20191018221007.10851-1-sashal@kernel.org>
+References: <20191018221007.10851-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -79,10 +79,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 3 insertions(+)
 
 diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
-index 42e42e3e7a6e6..388f710468490 100644
+index 02147361eaa94..2b5329a3d716a 100644
 --- a/drivers/tty/serial/serial_mctrl_gpio.c
 +++ b/drivers/tty/serial/serial_mctrl_gpio.c
-@@ -69,6 +69,9 @@ EXPORT_SYMBOL_GPL(mctrl_gpio_set);
+@@ -67,6 +67,9 @@ EXPORT_SYMBOL_GPL(mctrl_gpio_set);
  struct gpio_desc *mctrl_gpio_to_gpiod(struct mctrl_gpios *gpios,
  				      enum mctrl_gpio_idx gidx)
  {
