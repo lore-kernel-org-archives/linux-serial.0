@@ -1,92 +1,120 @@
-Return-Path: <SRS0=Hh8y=YL=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=Np7v=YM=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFF1CCA9EA9
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:27:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7923CCA9EAC
+	for <linux-serial@archiver.kernel.org>; Sat, 19 Oct 2019 21:06:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B13A320640
-	for <linux-serial@archiver.kernel.org>; Fri, 18 Oct 2019 22:27:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571437640;
-	bh=a7lsjfD5XOqATd/HHMEqnA12kAyKJex2d6w/wuLsBQY=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=S95IjMKhJlq57prTsMB9ARQJxm+ED7NCQrfCYV5p8Z3oG2IRjOHQ3FsCwGIzm8dp1
-	 CmI0nLmgRi8Tcm9j00bv/SjODASjwZ9Vd3q/jqp1d/02+BPIXGsinIIhrxjd0egzAU
-	 EMGKAwNjUGQQV/E50uTFYdRSO/Yfvloh+1XdT6t8=
+	by mail.kernel.org (Postfix) with ESMTP id 4ADF22064A
+	for <linux-serial@archiver.kernel.org>; Sat, 19 Oct 2019 21:06:29 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lhkpCh9C"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390526AbfJRW1O (ORCPT
+        id S1726152AbfJSVG2 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 18 Oct 2019 18:27:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35704 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727671AbfJRWEE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 18 Oct 2019 18:04:04 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3D9752246A;
-        Fri, 18 Oct 2019 22:04:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571436243;
-        bh=a7lsjfD5XOqATd/HHMEqnA12kAyKJex2d6w/wuLsBQY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MOvscl0bkm45WNJOAu1nCLtf1L5BpeMYQW4Pl4vx9hMc+Fakmgq4lAHaTklfTNP+r
-         U95+8NxdJTq2M/zqaV+A0yf8HLTQuA8xlkXVZovR3V7KEF21SNQpJ7tFHfJlngg8zp
-         tyFO/53ILPoSiImSTxnGcaTM1CSKrsbmbw1Sa7xs=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 28/89] tty: serial: owl: Fix the link time qualifier of 'owl_uart_exit()'
-Date:   Fri, 18 Oct 2019 18:02:23 -0400
-Message-Id: <20191018220324.8165-28-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191018220324.8165-1-sashal@kernel.org>
-References: <20191018220324.8165-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+        Sat, 19 Oct 2019 17:06:28 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:33212 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726129AbfJSVG2 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 19 Oct 2019 17:06:28 -0400
+Received: by mail-pl1-f195.google.com with SMTP id d22so4590683pls.0;
+        Sat, 19 Oct 2019 14:06:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=RtlAkYH1/9Xe5FbxpSbJIDnr8807L6EpWQnr1xtse+w=;
+        b=lhkpCh9CuYWOsq9d3aTSAtzipZvirVyxX0zPNo/N7hJX4p8fJ+c9zBn8ZF7TP98AWR
+         q+vJIBjBDaxUpmq821AsRxbn7iewOyVMXjv+OM90EOIMlnXTQ8QQ1n4zlWUiIklimZ7P
+         lSzObmDBAAbZs+Uc02iHSUvEDdSlakmr0Gn8udrDPb+L9R89eQqujxEtZlyh6RzBPD1f
+         3/sVLSyTd7CIemnTxsCL6zItewx0e2zXfjwABkzT3I38FreJfT3m29Y+EXmQtilphLcm
+         Iv6NfVgdhf1CzIs0oy4E5LKJwZdlDJKGEcv+SZmAQ/d9cI/edBZ2xNIo2346ZB/l4mck
+         XZ+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=RtlAkYH1/9Xe5FbxpSbJIDnr8807L6EpWQnr1xtse+w=;
+        b=cl9+ZGyfLjt980DTxdsAb3Dg0FmwzgtATHp/G97SJyBaSbiX9pibf2OpuhEeqU8ikC
+         FdcYEeEnLlXSxHWORCZobgS1nhXBlPmQH1KGsuCMCj8dTwpwG8xaSrXDx1R5zSn6s8L3
+         KMP3XL+0sAHPH+XKc8BlJ0JZxLmiPlfSOXbxGAtU96FroZ8DSASc/DmlKl5m1oY0uS8q
+         h5R0W+KeDpSgihGfvoCioeY63A0Jm5aV4a+/bPVCOCuBWOJfNje9thhs90vdkgxA0OXT
+         ItkuXuuLthZWrpKw/Fugpq7TBXp1NICiGGsV0vXKnyUpWYTjEwLRRePAd3u8ONHEk0Cx
+         4Hag==
+X-Gm-Message-State: APjAAAUpzEMeoe2M5zJ+4A8wC+SCBdBokyud2iqyCahqBNHbYsFRT8mh
+        cD5JZnw51qGcdIgDkC2wDxM=
+X-Google-Smtp-Source: APXvYqyeavuYSW6adRkMes3cIdvD+qtvameT2H6Hm82W9gIn4yNRrxd5lvc0t80fx3uvEosdSCISnQ==
+X-Received: by 2002:a17:902:848e:: with SMTP id c14mr16729221plo.217.1571519187859;
+        Sat, 19 Oct 2019 14:06:27 -0700 (PDT)
+Received: from aw-bldr-10.qualcomm.com (i-global254.qualcomm.com. [199.106.103.254])
+        by smtp.gmail.com with ESMTPSA id w14sm12588476pge.56.2019.10.19.14.06.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 19 Oct 2019 14:06:27 -0700 (PDT)
+From:   Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        gregkh@linuxfoundation.org, jslaby@suse.com
+Cc:     linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Subject: [PATCH] tty: serial: msm_serial: Fix flow control
+Date:   Sat, 19 Oct 2019 14:06:16 -0700
+Message-Id: <20191019210616.41199-1-jeffrey.l.hugo@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+hci_qca interfaces to the wcn3990 via a uart_dm on the msm8998 mtp and
+Lenovo Miix 630 laptop.  As part of initializing the wcn3990, hci_qca
+disables flow, configures the uart baudrate, and then reenables flow - at
+which point an event is expected to be received over the uart from the
+wcn3990.  It is observed that this event comes after the baudrate change
+but before hci_qca re-enables flow. This is unexpected, and is a result of
+msm_reset() being broken.
 
-[ Upstream commit 6264dab6efd6069f0387efb078a9960b5642377b ]
+According to the uart_dm hardware documentation, it is recommended that
+automatic hardware flow control be enabled by setting RX_RDY_CTL.  Auto
+hw flow control will manage RFR based on the configured watermark.  When
+there is space to receive data, the hw will assert RFR.  When the watermark
+is hit, the hw will de-assert RFR.
 
-'exit' functions should be marked as __exit, not __init.
+The hardware documentation indicates that RFR can me manually managed via
+CR when RX_RDY_CTL is not set.  SET_RFR asserts RFR, and RESET_RFR
+de-asserts RFR.
 
-Fixes: fc60a8b675bd ("tty: serial: owl: Implement console driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/20190910041129.6978-1-christophe.jaillet@wanadoo.fr
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+msm_reset() is broken because after resetting the hardware, it
+unconditionally asserts RFR via SET_RFR.  This enables flow regardless of
+the current configuration, and would undo a previous flow disable
+operation.  It should instead de-assert RFR via RESET_RFR to block flow
+until the hardware is reconfigured.  msm_serial should rely on the client
+to specify that flow should be enabled, either via mctrl() or the termios
+structure, and only assert RFR in response to those triggers.
+
+Fixes: 04896a77a97b ("msm_serial: serial driver for MSM7K onboard serial peripheral.")
+Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
 ---
- drivers/tty/serial/owl-uart.c | 2 +-
+ drivers/tty/serial/msm_serial.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
-index 29a6dc6a8d23c..73fcc6bdb0312 100644
---- a/drivers/tty/serial/owl-uart.c
-+++ b/drivers/tty/serial/owl-uart.c
-@@ -742,7 +742,7 @@ static int __init owl_uart_init(void)
- 	return ret;
- }
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 3657a24913fc..aedabf7646f1 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -987,7 +987,7 @@ static void msm_reset(struct uart_port *port)
+ 	msm_write(port, UART_CR_CMD_RESET_ERR, UART_CR);
+ 	msm_write(port, UART_CR_CMD_RESET_BREAK_INT, UART_CR);
+ 	msm_write(port, UART_CR_CMD_RESET_CTS, UART_CR);
+-	msm_write(port, UART_CR_CMD_SET_RFR, UART_CR);
++	msm_write(port, UART_CR_CMD_RESET_RFR, UART_CR);
  
--static void __init owl_uart_exit(void)
-+static void __exit owl_uart_exit(void)
- {
- 	platform_driver_unregister(&owl_uart_platform_driver);
- 	uart_unregister_driver(&owl_uart_driver);
+ 	/* Disable DM modes */
+ 	if (msm_port->is_uartdm)
 -- 
-2.20.1
+2.17.1
 
