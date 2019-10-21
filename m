@@ -2,146 +2,182 @@ Return-Path: <SRS0=1XbT=YO=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28AE4CA9EB7
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Oct 2019 16:26:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C05AECA9EAF
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Oct 2019 22:11:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EF60F2084B
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Oct 2019 16:26:27 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="L8KbCMIZ"
+	by mail.kernel.org (Postfix) with ESMTP id 8DBE9205C9
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Oct 2019 22:11:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730049AbfJUQ0P (ORCPT
+        id S1730389AbfJUWLZ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Oct 2019 12:26:15 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:34826 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730036AbfJUQ0P (ORCPT
+        Mon, 21 Oct 2019 18:11:25 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:42616 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726672AbfJUWLZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Oct 2019 12:26:15 -0400
-Received: by mail-pf1-f194.google.com with SMTP id 205so8740570pfw.2
-        for <linux-serial@vger.kernel.org>; Mon, 21 Oct 2019 09:26:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=FeEqDDuvyH1j0FkwnEHXEhJ7z7vVV3mb+til5JuVy4E=;
-        b=L8KbCMIZMxP2/ikOEVCaVOtgQiYYSXPdgW250Tq1STkF49vaQk3R5o7/jn3v5ajZbp
-         ydqA0q4Y7eZeucZjxDPT/99FlOAjOoFBxXR+42r+/Rkiey25D2gehkw0tu3RhUlmCKpG
-         o2oUle2jrjk5Q8f35+5xyrFgxajAkboXJop9KDriQvfZyaTxqY8uY3Bazh4lD8gAnlBZ
-         2yU3WuGv0nljF2MGSgD1AkYO3QrFrbykPlnVsu+7xKD+/7ecDGB35eephrOR/tbVALDD
-         1ImzxUDYILfSZGXq51tA24qE+j5WKw/gYMUVr0JgAIjxRFtWuQSpYxx3WYEg9n5T5D6/
-         UjCA==
+        Mon, 21 Oct 2019 18:11:25 -0400
+Received: by mail-oi1-f194.google.com with SMTP id i185so12445957oif.9;
+        Mon, 21 Oct 2019 15:11:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=FeEqDDuvyH1j0FkwnEHXEhJ7z7vVV3mb+til5JuVy4E=;
-        b=jDycdTLZ+hMcVQGyTG0VINU2RNZTl3SQAzVJJ+AY6qVhSer6Tl89+pHWDi/RlhTEI5
-         6Zrtxkh8I9avHE8v+95G/160jZ6AaOcP3Ouh2ruHP+TFwSRjsD+jIEzOoVoWwS54cTPH
-         M9Strdw018t6124pMAYpfx69qa+u8ZPiwaSoyBo3Jx0WGvnu+mSpK5/CngaRZF6+ve6x
-         rtdWmMtocTiSs8uRqXIjXHBuumcr9cG8E6TdKW+kTy00Zu1upyX7ZsBof4lGpZxCy5YD
-         43epIfIdO1vEAqTCnXhlAGede6RGgDFEFQ87aDchjG59mbWk+Hf1jLhwmRR5miz4e6kM
-         yNeg==
-X-Gm-Message-State: APjAAAWiewBy+hYGeSPEa487vWLhVYBOxv35bAFb+NbNDlvLtlwdPRBC
-        B9xOpsw6QDNapBSkUpK3/5l2Wg==
-X-Google-Smtp-Source: APXvYqy5d6rToN0TKdq5fL7MqUzExsdEL3H+tedaCNY+lPF4cHGJooqBtskg5MACrNiAARL8PJwnqw==
-X-Received: by 2002:a62:b504:: with SMTP id y4mr15005944pfe.40.1571675173480;
-        Mon, 21 Oct 2019 09:26:13 -0700 (PDT)
-Received: from tuxbook-pro (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
-        by smtp.gmail.com with ESMTPSA id x5sm15983429pfi.32.2019.10.21.09.26.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Oct 2019 09:26:12 -0700 (PDT)
-Date:   Mon, 21 Oct 2019 09:26:10 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-Cc:     agross@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] tty: serial: msm_serial: Fix flow control
-Message-ID: <20191021162610.GC1204@tuxbook-pro>
-References: <20191021154616.25457-1-jeffrey.l.hugo@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AVWauA2uNxWXhbatFT0jdg/LbLg2y15EPeDl4ltv22c=;
+        b=uENsSb97hBNzlbardz/xRIpq0n8d6EBBBxOU1jEDDZW4qu0A7B8MKWzuCttUd8N3iD
+         kB0dpzJe4bnYItlt8dlRjzjb64Ac5pdptd4MmmZrPcrhZD4UMPCZmokRUaT/e9SE7E93
+         vWcbaec2e7UzLD75eac+iXuDkjnRy710nIMg8SMElaovZOYLfw9lTHIHChBLvoU05m10
+         zYLuJ4Ew4CMSGUuiK6qK6dxEDiyBzXNMwX63R/viySWqGN2+Z2XYjZ/98mYjy87+F43A
+         X9Khgyx54jrGB7RZ/cGj4+4q6BrtkahEzdPZvhcvMi4GCaE1SHFxGdJYtDJlPjgQrhgH
+         hAOg==
+X-Gm-Message-State: APjAAAUjlrFy6g8YpxqjOO5BuBsLl8RYJTsKGTmm1n7vM/r4VOL2ACSX
+        X90SHhIBmNa0+hIv6GOnQOFOL/dT
+X-Google-Smtp-Source: APXvYqxJyOan6rwXOSB0I3nvX6f/aCBqNC8AavRI76NDu20PSNpu1QcC7deXOvezGiEjQYA1Y9U7lw==
+X-Received: by 2002:a05:6808:7c7:: with SMTP id f7mr270577oij.116.1571695883014;
+        Mon, 21 Oct 2019 15:11:23 -0700 (PDT)
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com. [209.85.167.176])
+        by smtp.gmail.com with ESMTPSA id k3sm4484747otn.38.2019.10.21.15.11.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Oct 2019 15:11:22 -0700 (PDT)
+Received: by mail-oi1-f176.google.com with SMTP id 83so12499444oii.1;
+        Mon, 21 Oct 2019 15:11:22 -0700 (PDT)
+X-Received: by 2002:aca:d88b:: with SMTP id p133mr259539oig.51.1571695881836;
+ Mon, 21 Oct 2019 15:11:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191021154616.25457-1-jeffrey.l.hugo@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
+ <VE1PR04MB6687DA0268FAF03D3E77A23B8F6C0@VE1PR04MB6687.eurprd04.prod.outlook.com>
+ <e02fa027-9c78-3272-d2d7-7ad2b0ed3ab0@rasmusvillemoes.dk> <CADRPPNREUK1SVxO4P5qb2COn+T04dtYgpVEzrveKUt16hBqAtQ@mail.gmail.com>
+ <679bf33b-8c05-b77a-0cb2-d79dc5bfbe75@rasmusvillemoes.dk>
+In-Reply-To: <679bf33b-8c05-b77a-0cb2-d79dc5bfbe75@rasmusvillemoes.dk>
+From:   Li Yang <leoyang.li@nxp.com>
+Date:   Mon, 21 Oct 2019 17:11:10 -0500
+X-Gmail-Original-Message-ID: <CADRPPNSiMUy77Dhxjg03sHDxyZzWf_BP8a5+fCncbynyO_cNGg@mail.gmail.com>
+Message-ID: <CADRPPNSiMUy77Dhxjg03sHDxyZzWf_BP8a5+fCncbynyO_cNGg@mail.gmail.com>
+Subject: Re: [PATCH 0/7] towards QE support on ARM
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     Timur Tabi <timur@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Qiang Zhao <qiang.zhao@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon 21 Oct 08:46 PDT 2019, Jeffrey Hugo wrote:
+On Mon, Oct 21, 2019 at 3:46 AM Rasmus Villemoes
+<linux@rasmusvillemoes.dk> wrote:
+>
+> On 18/10/2019 23.52, Li Yang wrote:
+> > On Fri, Oct 18, 2019 at 3:54 PM Rasmus Villemoes
+> > <linux@rasmusvillemoes.dk> wrote:
+> >>
+> >> On 18/10/2019 22.16, Leo Li wrote:
+> >>>
+> >>>>
+> >>>> There have been several attempts in the past few years to allow building the
+> >>>> QUICC engine drivers for platforms other than PPC. This is (the beginning of)
+> >>>> yet another attempt. I hope I can get someone to pick up these relatively
+> >>>> trivial patches (I _think_ they shouldn't change functionality at all), and then
+> >>>> I'll continue slowly working towards removing the PPC32 dependency for
+> >>>> CONFIG_QUICC_ENGINE.
+> >>>
+> >>> Hi Rasmus,
+> >>>
+> >>> I don't fully understand the motivation of this work.  As far as I know the QUICC ENGINE is only used on PowerPC based SoCs.
+> >>
+> >> Hm, you're not the Leo Li that participated in this thread
+> >> <https://lore.kernel.org/lkml/AM3PR04MB11857AE8D2B0BE56121B97D391C90@AM3PR04MB1185.eurprd04.prod.outlook.com/T/#u>?
+> >
+> > Oops, I totally forgot about this discussion which is just three years
+> > ago.  :)  The QE-HDLC on LS1021a is kind of a special case.
+> >
+> >>
+> >>
+> >>  Can you give an example on how is it used on ARM system?
+> >>
+> >> LS1021A, for example, which is the one I'm aiming for getting fully
+> >> supported in mainline.
+> >> <https://www.nxp.com/products/processors-and-microcontrollers/arm-processors/layerscape-communication-process/qoriq-layerscape-1021a-dual-core-communications-processor-with-lcd-controller:LS1021A>
+> >>
+> >> The forks at https://github.com/qoriq-open-source/linux.git have various
+> >> degrees of support (grep for commits saying stuff like "remove PPCisms"
+> >> - some versions can be found on
+> >> <https://lore.kernel.org/lkml/?q=remove+ppcisms>). Our current kernel is
+> >> based on commits from the now-vanished 4.1 branch, and unfortunately at
+> >> least the 4.14 branch (LSDK-18.06-V4.14) trivially doesn't build on ARM,
+> >> despite the PPC32 dependency having been removed from CONFIG_QUICC_ENGINE.
+> >
+> > Can you try the 4.14 branch from a newer LSDK release?  LS1021a should
+> > be supported platform on LSDK.  If it is broken, something is wrong.
+>
+> What newer release? LSDK-18.06-V4.14 is the latest -V4.14 tag at
+> https://github.com/qoriq-open-source/linux.git, and identical to the
 
-> hci_qca interfaces to the wcn3990 via a uart_dm on the msm8998 mtp and
-> Lenovo Miix 630 laptop.  As part of initializing the wcn3990, hci_qca
-> disables flow, configures the uart baudrate, and then reenables flow - at
-> which point an event is expected to be received over the uart from the
-> wcn3990.  It is observed that this event comes after the baudrate change
-> but before hci_qca re-enables flow. This is unexpected, and is a result of
-> msm_reset() being broken.
-> 
-> According to the uart_dm hardware documentation, it is recommended that
-> automatic hardware flow control be enabled by setting RX_RDY_CTL.  Auto
-> hw flow control will manage RFR based on the configured watermark.  When
-> there is space to receive data, the hw will assert RFR.  When the watermark
-> is hit, the hw will de-assert RFR.
-> 
-> The hardware documentation indicates that RFR can me manually managed via
-> CR when RX_RDY_CTL is not set.  SET_RFR asserts RFR, and RESET_RFR
-> de-asserts RFR.
-> 
-> msm_reset() is broken because after resetting the hardware, it
-> unconditionally asserts RFR via SET_RFR.  This enables flow regardless of
-> the current configuration, and would undo a previous flow disable
-> operation.  It should instead de-assert RFR via RESET_RFR to block flow
-> until the hardware is reconfigured.  msm_serial should rely on the client
-> to specify that flow should be enabled, either via mctrl() or the termios
-> structure, and only assert RFR in response to those triggers.
-> 
-> Fixes: 04896a77a97b ("msm_serial: serial driver for MSM7K onboard serial peripheral.")
-> Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+That tree has been abandoned for a while, we probably should state
+that in the github.  The latest tree can be found at
+https://source.codeaurora.org/external/qoriq/qoriq-components/linux/
 
-Looks good!
+> linux-4.14 branch. And despite commit 4c33e2d0576b removing the PPC32
+> dependency from QUICC_ENGINE, it clearly hasn't been built on arm, since
+> back around v4.12, mainline's qe.c grew a call to pvr_version_is which
+> is ppc-only. So from that I sort of assumed that NXP had dropped trying
+> to support the LS1021A even in their own kernels.
+>
+> In any case, we have zero interest in running an NXP kernel. Maybe I
+> should clarify what I meant by "based on commits from" above: We're
+> currently running a mainline 4.14 kernel on LS1021A, with a few patches
+> inspired from the NXP 4.1 branch applied on top - but also with some
+> manual fixes for e.g. the pvr_version_is() issue. Now we want to move
+> that to a 4.19-based kernel (so that it aligns with our MPC8309 platform).
 
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+We also provide 4.19 based kernel in the codeaurora repo.  I think it
+will be helpful to reuse patches there if you want to make your own
+tree.
 
-> ---
-> 
-> v2:
-> -mask out RX_RDY_CTL in msm_reset() to close a small race window for RFR
-> 
->  drivers/tty/serial/msm_serial.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-> index 3657a24913fc..00964b6e4ac1 100644
-> --- a/drivers/tty/serial/msm_serial.c
-> +++ b/drivers/tty/serial/msm_serial.c
-> @@ -980,6 +980,7 @@ static unsigned int msm_get_mctrl(struct uart_port *port)
->  static void msm_reset(struct uart_port *port)
->  {
->  	struct msm_port *msm_port = UART_TO_MSM(port);
-> +	unsigned int mr;
->  
->  	/* reset everything */
->  	msm_write(port, UART_CR_CMD_RESET_RX, UART_CR);
-> @@ -987,7 +988,10 @@ static void msm_reset(struct uart_port *port)
->  	msm_write(port, UART_CR_CMD_RESET_ERR, UART_CR);
->  	msm_write(port, UART_CR_CMD_RESET_BREAK_INT, UART_CR);
->  	msm_write(port, UART_CR_CMD_RESET_CTS, UART_CR);
-> -	msm_write(port, UART_CR_CMD_SET_RFR, UART_CR);
-> +	msm_write(port, UART_CR_CMD_RESET_RFR, UART_CR);
-> +	mr = msm_read(port, UART_MR1);
-> +	mr &= ~UART_MR1_RX_RDY_CTL;
-> +	msm_write(port, mr, UART_MR1);
->  
->  	/* Disable DM modes */
->  	if (msm_port->is_uartdm)
-> -- 
-> 2.17.1
-> 
+>
+> >> This is just some first few steps, and I'm not claiming
+> >> that this is sufficient to make the QE drivers build on ARM yet. But I
+> >> have a customer with both mpc8309-based and ls1021a-based platforms, and
+> >> they want to run the same, as-close-to-mainline-as-possible, kernel on
+> >> both. So I will take a piecemeal approach, and try to make sure I don't
+> >> break the ppc boards in the process (just building and booting one board
+> >> is of course not sufficient, but better than nothing). Once I get to
+> >> actually build some of the QE drivers for ARM, I'll of course also test
+> >> them.
+> >
+> > Understood.  Zhao Qiang also maintains some patches similar to your
+> > patchset and I think they are tested on ARM.  But the review of these
+> > patches from last submission didn't finish.  It looks like your
+> > patches are better divided but not really verified on ARM.  Zhao
+> > Qiang's patches are tested but maybe need some final touch for
+> > cleaning up.  I will let you guys decide what is the best approach to
+> > make this upstreamed.
+>
+> Yes, as I said, I wanted to try a fresh approach since Zhao
+> Qiang's patches seemed to be getting nowhere. Splitting the patches into
+> smaller pieces is definitely part of that - for example, the completely
+> trivial whitespace fix in patch 1 is to make sure the later coccinelle
+> generated patch is precisely that (i.e., a later respin can just rerun
+> the coccinelle script, with zero manual fixups). I also want to avoid
+> mixing the ppcism cleanups with other things (e.g. replacing some
+> of_get_property() by of_property_read_u32()). And the "testing on ARM"
+> part comes once I get to actually building on ARM. But there's not much
+> point doing all that unless there's some indication that this can be
+> applied to some tree that actually feeds into Linus', which is why I
+> started with a few trivial patches and precisely to start this discussion.
+
+Right.  I'm really interested in getting this applied to my tree and
+make it upstream.  Zhao Qiang, can you help to review Rasmus's patches
+and comment?
+
+Regards,
+Leo
