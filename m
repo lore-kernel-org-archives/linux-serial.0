@@ -5,183 +5,143 @@ X-Spam-Level:
 X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31733CA9EAF
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Oct 2019 16:24:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28AE4CA9EB7
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Oct 2019 16:26:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EE8E12084B
-	for <linux-serial@archiver.kernel.org>; Mon, 21 Oct 2019 16:24:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EF60F2084B
+	for <linux-serial@archiver.kernel.org>; Mon, 21 Oct 2019 16:26:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="edd0nwuT"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="L8KbCMIZ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727392AbfJUQY4 (ORCPT
+        id S1730049AbfJUQ0P (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 21 Oct 2019 12:24:56 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:44985 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727171AbfJUQY4 (ORCPT
+        Mon, 21 Oct 2019 12:26:15 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:34826 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730036AbfJUQ0P (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 21 Oct 2019 12:24:56 -0400
-Received: by mail-pf1-f193.google.com with SMTP id q21so8718805pfn.11
-        for <linux-serial@vger.kernel.org>; Mon, 21 Oct 2019 09:24:55 -0700 (PDT)
+        Mon, 21 Oct 2019 12:26:15 -0400
+Received: by mail-pf1-f194.google.com with SMTP id 205so8740570pfw.2
+        for <linux-serial@vger.kernel.org>; Mon, 21 Oct 2019 09:26:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=Q/traTAzUCkMoaq6gCxr6p0QNW1dzGwjW0hCS/Ckn1Y=;
-        b=edd0nwuTBmd/YbwPiwvl4aTbWbu2IiLCjnRcCWXN5zWWTLFjuz+J1P06T8W09JiyIO
-         YCzUZYfLqAp/FtUd5CC2qr8ecBiutE64OK1pi7nHxsXTkfhdGJA4fcFGWVQT0+vNsdn6
-         lEP36KhXDY877zqGLUhx1BbPJBtRZ4p/aFWZ2g+98yca3UOuQTbojC5VxYXuDNhoJHfa
-         IQiWw7qfe45q+rGOn+t9oiXPZuWskJIGjWbpQ3lahHuPfs+bNBIwXUXnA3Nau5QjU2cY
-         tJrOYelb+1Yojksra2akGeD3qarhMi4rvDhC7fDrgdHhxaMt52Bz90B1uGkglqt050Ko
-         mHxA==
+        bh=FeEqDDuvyH1j0FkwnEHXEhJ7z7vVV3mb+til5JuVy4E=;
+        b=L8KbCMIZMxP2/ikOEVCaVOtgQiYYSXPdgW250Tq1STkF49vaQk3R5o7/jn3v5ajZbp
+         ydqA0q4Y7eZeucZjxDPT/99FlOAjOoFBxXR+42r+/Rkiey25D2gehkw0tu3RhUlmCKpG
+         o2oUle2jrjk5Q8f35+5xyrFgxajAkboXJop9KDriQvfZyaTxqY8uY3Bazh4lD8gAnlBZ
+         2yU3WuGv0nljF2MGSgD1AkYO3QrFrbykPlnVsu+7xKD+/7ecDGB35eephrOR/tbVALDD
+         1ImzxUDYILfSZGXq51tA24qE+j5WKw/gYMUVr0JgAIjxRFtWuQSpYxx3WYEg9n5T5D6/
+         UjCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Q/traTAzUCkMoaq6gCxr6p0QNW1dzGwjW0hCS/Ckn1Y=;
-        b=XbQdLSla6uZO57KthvzP6pWipgRTHYRlPoi260ct1hbh39bO2Z+g2x4c73wM3h/AT3
-         JsZ9EzKcImcTyhZwqcaZHec0dtyjjXZtsnWtCTqyyOmraT+/ZXGwknlEurLo9Z5nmp9x
-         Iwr+kNAso6ouIeEDwDh/R8JTB8D4VCBiiW6mPNXJ037yAEfO3ttQAZF1S8QMZBAVyTWq
-         6l2a6DPir74PnrPQI6wcRztS0ozzQeXK0P2z5gULKvUxN5WIuYTl9b3B7TwLi6QFaWv5
-         l9ezsTPlVeVxP7WldJ89zT3G5tvqBlp6Yaqnpn7Y0bCrp0gdetzDNoDzJIqC5ciLApzi
-         NVKw==
-X-Gm-Message-State: APjAAAUcYbmgO1ApEMAUqU+XgiKyQNhj4zBxoihzwAscD1gtc4NTUUYV
-        kNDPQNrntXjIJYXlVPKAZkmYMg==
-X-Google-Smtp-Source: APXvYqwADvFpQj9Hwz44alQIvmrEfjbMOc3EqzFpa+C8H+uyNKvvFbsztZdImX96dzLDDaKRI6UBRw==
-X-Received: by 2002:a65:4c03:: with SMTP id u3mr26669120pgq.440.1571675095108;
-        Mon, 21 Oct 2019 09:24:55 -0700 (PDT)
+        bh=FeEqDDuvyH1j0FkwnEHXEhJ7z7vVV3mb+til5JuVy4E=;
+        b=jDycdTLZ+hMcVQGyTG0VINU2RNZTl3SQAzVJJ+AY6qVhSer6Tl89+pHWDi/RlhTEI5
+         6Zrtxkh8I9avHE8v+95G/160jZ6AaOcP3Ouh2ruHP+TFwSRjsD+jIEzOoVoWwS54cTPH
+         M9Strdw018t6124pMAYpfx69qa+u8ZPiwaSoyBo3Jx0WGvnu+mSpK5/CngaRZF6+ve6x
+         rtdWmMtocTiSs8uRqXIjXHBuumcr9cG8E6TdKW+kTy00Zu1upyX7ZsBof4lGpZxCy5YD
+         43epIfIdO1vEAqTCnXhlAGede6RGgDFEFQ87aDchjG59mbWk+Hf1jLhwmRR5miz4e6kM
+         yNeg==
+X-Gm-Message-State: APjAAAWiewBy+hYGeSPEa487vWLhVYBOxv35bAFb+NbNDlvLtlwdPRBC
+        B9xOpsw6QDNapBSkUpK3/5l2Wg==
+X-Google-Smtp-Source: APXvYqy5d6rToN0TKdq5fL7MqUzExsdEL3H+tedaCNY+lPF4cHGJooqBtskg5MACrNiAARL8PJwnqw==
+X-Received: by 2002:a62:b504:: with SMTP id y4mr15005944pfe.40.1571675173480;
+        Mon, 21 Oct 2019 09:26:13 -0700 (PDT)
 Received: from tuxbook-pro (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
-        by smtp.gmail.com with ESMTPSA id d5sm15042362pjw.31.2019.10.21.09.24.53
+        by smtp.gmail.com with ESMTPSA id x5sm15983429pfi.32.2019.10.21.09.26.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Oct 2019 09:24:54 -0700 (PDT)
-Date:   Mon, 21 Oct 2019 09:24:52 -0700
+        Mon, 21 Oct 2019 09:26:12 -0700 (PDT)
+Date:   Mon, 21 Oct 2019 09:26:10 -0700
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
 To:     Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        jslaby@suse.com, MSM <linux-arm-msm@vger.kernel.org>,
-        linux-serial@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] tty: serial: msm_serial: Fix flow control
-Message-ID: <20191021162452.GB1204@tuxbook-pro>
-References: <20191019210616.41199-1-jeffrey.l.hugo@gmail.com>
- <20191020062816.GE1669@tuxbook-pro>
- <CAOCk7NpvXb3zBAM1DQng3sQWgWXc5AP2vo=i+gX0mQtA2W7QWg@mail.gmail.com>
+Cc:     agross@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] tty: serial: msm_serial: Fix flow control
+Message-ID: <20191021162610.GC1204@tuxbook-pro>
+References: <20191021154616.25457-1-jeffrey.l.hugo@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAOCk7NpvXb3zBAM1DQng3sQWgWXc5AP2vo=i+gX0mQtA2W7QWg@mail.gmail.com>
+In-Reply-To: <20191021154616.25457-1-jeffrey.l.hugo@gmail.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon 21 Oct 08:19 PDT 2019, Jeffrey Hugo wrote:
+On Mon 21 Oct 08:46 PDT 2019, Jeffrey Hugo wrote:
 
-> On Sun, Oct 20, 2019 at 12:28 AM Bjorn Andersson
-> <bjorn.andersson@linaro.org> wrote:
-> >
-> > On Sat 19 Oct 14:06 PDT 2019, Jeffrey Hugo wrote:
-> >
-> > > hci_qca interfaces to the wcn3990 via a uart_dm on the msm8998 mtp and
-> > > Lenovo Miix 630 laptop.  As part of initializing the wcn3990, hci_qca
-> > > disables flow, configures the uart baudrate, and then reenables flow - at
-> > > which point an event is expected to be received over the uart from the
-> > > wcn3990.  It is observed that this event comes after the baudrate change
-> > > but before hci_qca re-enables flow. This is unexpected, and is a result of
-> > > msm_reset() being broken.
-> > >
-> > > According to the uart_dm hardware documentation, it is recommended that
-> > > automatic hardware flow control be enabled by setting RX_RDY_CTL.  Auto
-> > > hw flow control will manage RFR based on the configured watermark.  When
-> > > there is space to receive data, the hw will assert RFR.  When the watermark
-> > > is hit, the hw will de-assert RFR.
-> > >
-> > > The hardware documentation indicates that RFR can me manually managed via
-> > > CR when RX_RDY_CTL is not set.  SET_RFR asserts RFR, and RESET_RFR
-> > > de-asserts RFR.
-> > >
-> > > msm_reset() is broken because after resetting the hardware, it
-> > > unconditionally asserts RFR via SET_RFR.  This enables flow regardless of
-> > > the current configuration, and would undo a previous flow disable
-> > > operation.  It should instead de-assert RFR via RESET_RFR to block flow
-> > > until the hardware is reconfigured.  msm_serial should rely on the client
-> > > to specify that flow should be enabled, either via mctrl() or the termios
-> > > structure, and only assert RFR in response to those triggers.
-> > >
-> >
-> > I traced msm_reset() and msm_set_mctrl() and I get the following:
-> >        swapper/0-1     [000] d..1     3.091726: msm_set_mctrl: msm_set_mctrl() reset rfr
-> >        swapper/0-1     [000] d..1     3.117046: msm_set_mctrl: msm_set_mctrl() reset rfr
-> >        swapper/0-1     [000] d..1     3.125484: msm_set_termios: msm_reset() set rfr
-> >        swapper/0-1     [003] d..1     4.491430: msm_set_termios: msm_reset() set rfr
-> >        swapper/0-1     [003] d..1     4.491733: msm_set_mctrl: msm_set_mctrl() auto rfr
-> >            login-313   [001] d..1    78.010785: msm_set_mctrl: msm_set_mctrl() reset rfr
-> >            login-313   [001] d..1    78.011007: msm_set_termios: msm_reset() set rfr
-> >            login-313   [001] d..1    78.011021: msm_set_mctrl: msm_set_mctrl() auto rfr
-> >            login-313   [001] d..1    78.063330: msm_set_termios: msm_reset() set rfr
-> >            login-313   [001] d..1    78.063641: msm_set_termios: msm_reset() set rfr
-> >
-> > So while your change does make sense for BT, wouldn't this mean that
-> > with your patch and a 4-pin UART for the console I would end this dance
-> > with receive flow blocked?
+> hci_qca interfaces to the wcn3990 via a uart_dm on the msm8998 mtp and
+> Lenovo Miix 630 laptop.  As part of initializing the wcn3990, hci_qca
+> disables flow, configures the uart baudrate, and then reenables flow - at
+> which point an event is expected to be received over the uart from the
+> wcn3990.  It is observed that this event comes after the baudrate change
+> but before hci_qca re-enables flow. This is unexpected, and is a result of
+> msm_reset() being broken.
 > 
-> No.  I don't think it occurred to you to consider how RX_RDY_CTL
-> factors into this.  RX_RDY_CTL allows the hardware to enable flow when
-> the hardware determines it is able to receive data.  RX_RDY_CTL gets
-> set in mctrl, and set_termios - essentially when the uart client has
-> indicated flow can be enabled.
+> According to the uart_dm hardware documentation, it is recommended that
+> automatic hardware flow control be enabled by setting RX_RDY_CTL.  Auto
+> hw flow control will manage RFR based on the configured watermark.  When
+> there is space to receive data, the hw will assert RFR.  When the watermark
+> is hit, the hw will de-assert RFR.
 > 
-
-I see, so per above trace when login does it's rfr toggling RX_RDY_CTL
-is already set (and will be maintained), so we'll allow flow at each
-part of the process.
-
-> Even though the console is a 2 wire console on msm8998, the driver
-> will go through the same flow.  I verified that RX_RDY_CTL is set on
-> the console uart after boot, so we won't end up with flow blocked.
+> The hardware documentation indicates that RFR can me manually managed via
+> CR when RX_RDY_CTL is not set.  SET_RFR asserts RFR, and RESET_RFR
+> de-asserts RFR.
 > 
-> However, this does bring up another issue.  RX_RDY_CTL doesn't get
-> unset in msm_reset.  RESET_RX will disable the rx path in the
-> hardware, and prevent RX_RDY_CTL from being active, but the rx path is
-> enabled in set_baud_rate() before RX_RDY_CTL can be masked out in
-> set_termios, so there may be a small window where flow can
-> inadvertently enabled.  I'll spin a v2 that also unsets RX_RDY_CTL in
-> msm_reset().
+> msm_reset() is broken because after resetting the hardware, it
+> unconditionally asserts RFR via SET_RFR.  This enables flow regardless of
+> the current configuration, and would undo a previous flow disable
+> operation.  It should instead de-assert RFR via RESET_RFR to block flow
+> until the hardware is reconfigured.  msm_serial should rely on the client
+> to specify that flow should be enabled, either via mctrl() or the termios
+> structure, and only assert RFR in response to those triggers.
 > 
+> Fixes: 04896a77a97b ("msm_serial: serial driver for MSM7K onboard serial peripheral.")
+> Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
 
-Yes, that sounds reasonable. And for the console case the difference
-will be that we deassert RFR while the serial is being reset and
-reconfigured; which sounds like the right thing to do.
+Looks good!
 
-Regards,
-Bjorn
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-> >
-> > Regards,
-> > Bjorn
-> >
-> > > Fixes: 04896a77a97b ("msm_serial: serial driver for MSM7K onboard serial peripheral.")
-> > > Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-> > > ---
-> > >  drivers/tty/serial/msm_serial.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-> > > index 3657a24913fc..aedabf7646f1 100644
-> > > --- a/drivers/tty/serial/msm_serial.c
-> > > +++ b/drivers/tty/serial/msm_serial.c
-> > > @@ -987,7 +987,7 @@ static void msm_reset(struct uart_port *port)
-> > >       msm_write(port, UART_CR_CMD_RESET_ERR, UART_CR);
-> > >       msm_write(port, UART_CR_CMD_RESET_BREAK_INT, UART_CR);
-> > >       msm_write(port, UART_CR_CMD_RESET_CTS, UART_CR);
-> > > -     msm_write(port, UART_CR_CMD_SET_RFR, UART_CR);
-> > > +     msm_write(port, UART_CR_CMD_RESET_RFR, UART_CR);
-> > >
-> > >       /* Disable DM modes */
-> > >       if (msm_port->is_uartdm)
-> > > --
-> > > 2.17.1
-> > >
+> ---
+> 
+> v2:
+> -mask out RX_RDY_CTL in msm_reset() to close a small race window for RFR
+> 
+>  drivers/tty/serial/msm_serial.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+> index 3657a24913fc..00964b6e4ac1 100644
+> --- a/drivers/tty/serial/msm_serial.c
+> +++ b/drivers/tty/serial/msm_serial.c
+> @@ -980,6 +980,7 @@ static unsigned int msm_get_mctrl(struct uart_port *port)
+>  static void msm_reset(struct uart_port *port)
+>  {
+>  	struct msm_port *msm_port = UART_TO_MSM(port);
+> +	unsigned int mr;
+>  
+>  	/* reset everything */
+>  	msm_write(port, UART_CR_CMD_RESET_RX, UART_CR);
+> @@ -987,7 +988,10 @@ static void msm_reset(struct uart_port *port)
+>  	msm_write(port, UART_CR_CMD_RESET_ERR, UART_CR);
+>  	msm_write(port, UART_CR_CMD_RESET_BREAK_INT, UART_CR);
+>  	msm_write(port, UART_CR_CMD_RESET_CTS, UART_CR);
+> -	msm_write(port, UART_CR_CMD_SET_RFR, UART_CR);
+> +	msm_write(port, UART_CR_CMD_RESET_RFR, UART_CR);
+> +	mr = msm_read(port, UART_MR1);
+> +	mr &= ~UART_MR1_RX_RDY_CTL;
+> +	msm_write(port, mr, UART_MR1);
+>  
+>  	/* Disable DM modes */
+>  	if (msm_port->is_uartdm)
+> -- 
+> 2.17.1
+> 
