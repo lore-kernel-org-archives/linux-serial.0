@@ -2,104 +2,136 @@ Return-Path: <SRS0=Ceqv=YP=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61843CA9EA0
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Oct 2019 10:17:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3195BCA9EA0
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Oct 2019 14:01:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 33DDC21783
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Oct 2019 10:17:49 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="h/3Uo75y"
+	by mail.kernel.org (Postfix) with ESMTP id 108B121920
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Oct 2019 14:01:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729810AbfJVKRs (ORCPT
+        id S1732006AbfJVOBc convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Oct 2019 06:17:48 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:34100 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726847AbfJVKRs (ORCPT
+        Tue, 22 Oct 2019 10:01:32 -0400
+Received: from mout.kundenserver.de ([212.227.126.187]:60191 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727805AbfJVOBc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Oct 2019 06:17:48 -0400
-Received: by mail-lj1-f196.google.com with SMTP id j19so16566368lja.1
-        for <linux-serial@vger.kernel.org>; Tue, 22 Oct 2019 03:17:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=UPQHJmcEnXeH/iiZIyJlOmriHnC0d9InpVAG+IS31RU=;
-        b=h/3Uo75yRFQRRe+mjVmd8cMUmSai80wzLccdR09BlGw6HnocUgAczaz4IgYFRWgG3H
-         OJdRbFB9Mz9fLShfMfIQz/v973qofYhFRWlTSouwX+s3dVq2XD/i9xdJL7HBCWbL6ait
-         GeYoY67YnMUOYKMguf97VQFeB/gYvg8+cWRaM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=UPQHJmcEnXeH/iiZIyJlOmriHnC0d9InpVAG+IS31RU=;
-        b=coicvJ12u1+bj0Ti968TNxo8s25HhWlVMUBQEe2CzExg7rOZ20daLiiqa3NSR7IZGh
-         oItX4UM6+WZ3JWASkEMdPmSdV5bwXrlS6u+KzHzadTib8EIrDKhja3DF8mS5fm9fx4ao
-         P1sBraY2gnNKrswKEdj9P5qH2yV6P0dYFOJoe7N1IHNUFLQOffyN/zVS7JsBksbeAmVv
-         MoWRaCKHxsIUkgeITPsnaeKve8t9afObjFZyrTXCxaBEAazFF2swunf9AnI5eqnKKnRi
-         KENlkCVxWg6JkdzSCUOMwMfJQVwUfb1zVYBUD1GZwq53ncrNHlpLuGrQ+p1DUIq/lorn
-         d1vw==
-X-Gm-Message-State: APjAAAXdKfAVEMlMCkrZVWzCzIxP80cRTzTmyNZ7vE9URqBW9GR9/9OV
-        8NwN+m6lWuhKeOlsmPJoHC8muhus8oSlMxbA
-X-Google-Smtp-Source: APXvYqwrLO6yXk3q5+ZZIbKEWNFhquBa+3kRuXdGYBzSGzi6Tc86djtM/ixn33Sd74ROetfVBAw3WQ==
-X-Received: by 2002:a2e:8716:: with SMTP id m22mr10796456lji.102.1571739466229;
-        Tue, 22 Oct 2019 03:17:46 -0700 (PDT)
-Received: from [172.16.11.28] ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id b19sm7866434lji.41.2019.10.22.03.17.45
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 22 Oct 2019 03:17:45 -0700 (PDT)
-Subject: Re: [PATCH 0/7] towards QE support on ARM
-To:     Qiang Zhao <qiang.zhao@nxp.com>, Leo Li <leoyang.li@nxp.com>
-Cc:     Timur Tabi <timur@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
- <VE1PR04MB6687DA0268FAF03D3E77A23B8F6C0@VE1PR04MB6687.eurprd04.prod.outlook.com>
- <e02fa027-9c78-3272-d2d7-7ad2b0ed3ab0@rasmusvillemoes.dk>
- <CADRPPNREUK1SVxO4P5qb2COn+T04dtYgpVEzrveKUt16hBqAtQ@mail.gmail.com>
- <679bf33b-8c05-b77a-0cb2-d79dc5bfbe75@rasmusvillemoes.dk>
- <CADRPPNSiMUy77Dhxjg03sHDxyZzWf_BP8a5+fCncbynyO_cNGg@mail.gmail.com>
- <VE1PR04MB676825D5709839AEF75ED44C91680@VE1PR04MB6768.eurprd04.prod.outlook.com>
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Message-ID: <43033011-1a2a-dea3-e3c9-75895f997407@rasmusvillemoes.dk>
-Date:   Tue, 22 Oct 2019 12:17:44 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        Tue, 22 Oct 2019 10:01:32 -0400
+Received: from mail-qk1-f173.google.com ([209.85.222.173]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.129]) with ESMTPSA (Nemesis)
+ id 1Ml6Vg-1hbmf00qzM-00lVCj; Tue, 22 Oct 2019 16:01:30 +0200
+Received: by mail-qk1-f173.google.com with SMTP id u184so16330124qkd.4;
+        Tue, 22 Oct 2019 07:01:29 -0700 (PDT)
+X-Gm-Message-State: APjAAAXylN35vLp7LcKQWl1mf/SQRyJQ+Jhfx/+/q50VBkwkAbUAvipI
+        gNDSSJZLA0cTPMgfqe6gRRGBTM0Cjfe+mrVbDZM=
+X-Google-Smtp-Source: APXvYqzNJSBsmzArUiJoxHmomaDqQtkgb7eiZl33ieH3Pnwwm1/FZ2lXqT+Z19UoP0NfH21IBu5WdckCCzmNgI5QFYQ=
+X-Received: by 2002:a37:a50f:: with SMTP id o15mr1985123qke.3.1571752888552;
+ Tue, 22 Oct 2019 07:01:28 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <VE1PR04MB676825D5709839AEF75ED44C91680@VE1PR04MB6768.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20191010202802.1132272-1-arnd@arndb.de> <20191010203043.1241612-1-arnd@arndb.de>
+ <20191010203043.1241612-11-arnd@arndb.de> <20191011055149.4dudr4tk2znpt65u@pengutronix.de>
+In-Reply-To: <20191011055149.4dudr4tk2znpt65u@pengutronix.de>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 22 Oct 2019 16:01:12 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1st8gR7u+8-oyP6HrzZdmrzhq7PRonYuz0a5O8rfKaSA@mail.gmail.com>
+Message-ID: <CAK8P3a1st8gR7u+8-oyP6HrzZdmrzhq7PRonYuz0a5O8rfKaSA@mail.gmail.com>
+Subject: Re: [PATCH 11/36] ARM: s5pv210: split from plat-samsung
+To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Kukjin Kim <kgene@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Sangbeom Kim <sbkim73@samsung.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
+        <linux-samsung-soc@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, Olof Johansson <olof@lixom.net>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        =?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Faiz Abbas <faiz_abbas@ti.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        linux-serial@vger.kernel.org,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:Hv7SAjdeGUOuU0McebMKe8pPPZg0PjMGWOl/Urvv+a4u20VCEki
+ BFcgNMzF1Ce2YeJaDkJj/8e1qZD+QsK9q7XCqvXzzhWPfq25ha/TveFndkJVh3L2f/jhBlx
+ JciffjQ98mgELP72Tjk9qG3zcowbLTUYNBfBre1jKWUn5R768dPB81VhbT5M0AnUbkgzJYs
+ ZewkdgDUCJWp7CJE7usUg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:hRmFgw04pHw=:GuyhHbXPjvHIFHW4LRgnKZ
+ JUUU3xWSamtSYw54My8YFjIeR73SnkKRIsMIAdVCUi9rvsNxaJDcJxRYNlfLkI9DzpPfqpQTA
+ I7G1r69BMop3/1BDwtYEmRW0ol67cpVwD/kRph1WTOrhogNP4yfHwpwAygty8a9J5EPEFMil9
+ KWPpH/57iFFSeaJ2YSuFIPyWMBBLQl++b3TSh0BHi/XCSUDfvpjhqMgO4R1ah5Jw6OWW4lHMu
+ wHzuHnAmBRT9HCPxwqvPkFsKoJ1IkKua7U8vB/6Pt2WkXimrVAhOKtzbeh+tQnF5aArHzooI2
+ BKkzGzuHxPakyMObe5/QrkDyKv89Rg1fE1Tjf2oCbGlQXVnxUPsgKK6hM9Ocm7HgKQY4sdfBG
+ /B2HCfkNZwHUdK6ZWvg84yx54x5BvnSLxf8zXn78HzDm+IsVlr1PDezP3mgrfXj3zQK+h+l7G
+ Glkjok+W2Nb8gODf1HZ31B3Yw8cStsgywOo2itc9dTJ2hFqEvHrGQA0urUm+7j/uW0JJ6MsQ+
+ bC9PCelDGsrVTiO2ViP/Lpam7+ce0lYliOJv1EkYMITtMm//AcupeTwf0O/j9mghlw2gSMgdL
+ ezJMy71zKCYvT99BZzOgTJuaUEOtzv9Eu0ZzW5YJaI1iZZ2mMr4uA00vDupp4Q8dQfW5k3RHY
+ 6k4TnW4N/haFxfLXHSwFbv9quv8KHVwTWLUXy9ygc3odU+r+hpSfgfAPD/wYDJlCHDLu7X0LF
+ l4A+x3+t3SGQHn8iI91phMXHlOW5YMGjvfVpPrU6aJZzSJWKOCAewYLuFBiF6C7SiNgfB7jbe
+ 2Pq0cXaLg4l7xTsen5u4CNRbXmq2yYggxPCbU73Fyk5nVz+3xg8cIrHy/l7DmXg1wfM444Q9S
+ tU94dcFtWb1hgiPPpMyw==
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 22/10/2019 04.24, Qiang Zhao wrote:
-> On Mon, Oct 22, 2019 at 6:11 AM Leo Li wrote
+On Fri, Oct 11, 2019 at 7:51 AM Uwe Kleine-König
+<u.kleine-koenig@pengutronix.de> wrote:
+>
+> On Thu, Oct 10, 2019 at 10:29:55PM +0200, Arnd Bergmann wrote:
+> > These can be build completely independently, so split
+> > the two Kconfig symbols.
+> >
+> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+>
+> I'd mention the two symbols' names you're working on in the commit log.
+> I guess it's about PLAT_SAMSUNG and ARCH_S5PV210. And I wouldn't call it
+> "split" which IMHO suggests there was only one symbol before.
+>
+> Maybe:
+>
+>         Don't imply PLAT_SAMSUNG if ARCH_S5PV210 is enabled
+>
+> would be a better subject line?
 
->> Right.  I'm really interested in getting this applied to my tree and make it
->> upstream.  Zhao Qiang, can you help to review Rasmus's patches and
->> comment?
-> 
-> As you know, I maintained a similar patchset removing PPC, and someone told me qe_ic should moved into drivers/irqchip/.
-> I also thought qe_ic is a interrupt control driver, should be moved into dir irqchip.
+Ok, changed to
 
-Yes, and I also plan to do that at some point. However, that's
-orthogonal to making the driver build on ARM, so I don't want to mix the
-two. Making it usable on ARM is my/our priority currently.
+ARM: s5pv210: don't imply CONFIG_PLAT_SAMSUNG
 
-I'd appreciate your input on my patches.
+> > @@ -235,7 +235,6 @@ machine-$(CONFIG_PLAT_SPEAR)              += spear
+> >  # by CONFIG_* macro name.
+> >  plat-$(CONFIG_ARCH_OMAP)     += omap
+> >  plat-$(CONFIG_ARCH_S3C64XX)  += samsung
+> > -plat-$(CONFIG_ARCH_S5PV210)  += samsung
+>
+> Would it make more sense to make this
+>
+>         plat-$(PLAT_SAMSUNG) += samsung
+>
+> (in a separate patch)? Hmm, it seems there is no plat-y for
+> PLAT_S3C24XX=y builds. Is this intended? If yes, the directory name
+> containing "samsung" suggests something that seems untrue.
 
-Rasmus
+By the end of the series, the plat-samsung directory is completely
+removed (folded into mach-s3c), so that would only add more
+churn for the same result I think.
 
+     Arnd
