@@ -2,136 +2,119 @@ Return-Path: <SRS0=Ceqv=YP=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3195BCA9EA0
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Oct 2019 14:01:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7829CA9EA0
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Oct 2019 15:06:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 108B121920
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Oct 2019 14:01:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 793EF20700
+	for <linux-serial@archiver.kernel.org>; Tue, 22 Oct 2019 15:06:06 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=c-s.fr header.i=@c-s.fr header.b="IjCNGVD/"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732006AbfJVOBc convert rfc822-to-8bit (ORCPT
+        id S1731531AbfJVPGG (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Oct 2019 10:01:32 -0400
-Received: from mout.kundenserver.de ([212.227.126.187]:60191 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727805AbfJVOBc (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Oct 2019 10:01:32 -0400
-Received: from mail-qk1-f173.google.com ([209.85.222.173]) by
- mrelayeu.kundenserver.de (mreue010 [212.227.15.129]) with ESMTPSA (Nemesis)
- id 1Ml6Vg-1hbmf00qzM-00lVCj; Tue, 22 Oct 2019 16:01:30 +0200
-Received: by mail-qk1-f173.google.com with SMTP id u184so16330124qkd.4;
-        Tue, 22 Oct 2019 07:01:29 -0700 (PDT)
-X-Gm-Message-State: APjAAAXylN35vLp7LcKQWl1mf/SQRyJQ+Jhfx/+/q50VBkwkAbUAvipI
-        gNDSSJZLA0cTPMgfqe6gRRGBTM0Cjfe+mrVbDZM=
-X-Google-Smtp-Source: APXvYqzNJSBsmzArUiJoxHmomaDqQtkgb7eiZl33ieH3Pnwwm1/FZ2lXqT+Z19UoP0NfH21IBu5WdckCCzmNgI5QFYQ=
-X-Received: by 2002:a37:a50f:: with SMTP id o15mr1985123qke.3.1571752888552;
- Tue, 22 Oct 2019 07:01:28 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191010202802.1132272-1-arnd@arndb.de> <20191010203043.1241612-1-arnd@arndb.de>
- <20191010203043.1241612-11-arnd@arndb.de> <20191011055149.4dudr4tk2znpt65u@pengutronix.de>
-In-Reply-To: <20191011055149.4dudr4tk2znpt65u@pengutronix.de>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 22 Oct 2019 16:01:12 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1st8gR7u+8-oyP6HrzZdmrzhq7PRonYuz0a5O8rfKaSA@mail.gmail.com>
-Message-ID: <CAK8P3a1st8gR7u+8-oyP6HrzZdmrzhq7PRonYuz0a5O8rfKaSA@mail.gmail.com>
-Subject: Re: [PATCH 11/36] ARM: s5pv210: split from plat-samsung
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Kukjin Kim <kgene@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        Tue, 22 Oct 2019 11:06:06 -0400
+Received: from pegase1.c-s.fr ([93.17.236.30]:11144 "EHLO pegase1.c-s.fr"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725788AbfJVPGG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 22 Oct 2019 11:06:06 -0400
+Received: from localhost (mailhub1-int [192.168.12.234])
+        by localhost (Postfix) with ESMTP id 46yGzZ3WYzz9txrJ;
+        Tue, 22 Oct 2019 17:06:02 +0200 (CEST)
+Authentication-Results: localhost; dkim=pass
+        reason="1024-bit key; insecure key"
+        header.d=c-s.fr header.i=@c-s.fr header.b=IjCNGVD/; dkim-adsp=pass;
+        dkim-atps=neutral
+X-Virus-Scanned: Debian amavisd-new at c-s.fr
+Received: from pegase1.c-s.fr ([192.168.12.234])
+        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
+        with ESMTP id Jh8cJZ18iESD; Tue, 22 Oct 2019 17:06:02 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase1.c-s.fr (Postfix) with ESMTP id 46yGzZ0Wppz9txrG;
+        Tue, 22 Oct 2019 17:06:02 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=c-s.fr; s=mail;
+        t=1571756762; bh=ZTTwSzcfyFlbzpNpRSH3QAO6LqI52zwrKBYTswAtHNM=;
+        h=Subject:To:References:From:Date:In-Reply-To:From;
+        b=IjCNGVD/m+/3chtJGoKPuCqnoE/qjdU6NrH1x41xizbG/AhCOYIRQB+QO5vlsJ7/2
+         wqzZ2eWImxNZQ/T4BDEEKb61YVt/OeI3FXDBrXiajTMpFSqXvckl1n+kYp1ejLLCul
+         xWiNhXxkahj2A8m2aG1TrGbwz8FSVKfdFtjxUDFc=
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 80D6D8B93A;
+        Tue, 22 Oct 2019 17:06:03 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id JxnfEccYQSsS; Tue, 22 Oct 2019 17:06:03 +0200 (CEST)
+Received: from po16098vm.idsi0.si.c-s.fr (unknown [192.168.4.90])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id DAC5A8B931;
+        Tue, 22 Oct 2019 17:06:02 +0200 (CEST)
+Subject: Re: [PATCH 0/7] towards QE support on ARM
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Sangbeom Kim <sbkim73@samsung.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
-        <linux-samsung-soc@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Olof Johansson <olof@lixom.net>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        =?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Faiz Abbas <faiz_abbas@ti.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        linux-serial@vger.kernel.org,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:Hv7SAjdeGUOuU0McebMKe8pPPZg0PjMGWOl/Urvv+a4u20VCEki
- BFcgNMzF1Ce2YeJaDkJj/8e1qZD+QsK9q7XCqvXzzhWPfq25ha/TveFndkJVh3L2f/jhBlx
- JciffjQ98mgELP72Tjk9qG3zcowbLTUYNBfBre1jKWUn5R768dPB81VhbT5M0AnUbkgzJYs
- ZewkdgDUCJWp7CJE7usUg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:hRmFgw04pHw=:GuyhHbXPjvHIFHW4LRgnKZ
- JUUU3xWSamtSYw54My8YFjIeR73SnkKRIsMIAdVCUi9rvsNxaJDcJxRYNlfLkI9DzpPfqpQTA
- I7G1r69BMop3/1BDwtYEmRW0ol67cpVwD/kRph1WTOrhogNP4yfHwpwAygty8a9J5EPEFMil9
- KWPpH/57iFFSeaJ2YSuFIPyWMBBLQl++b3TSh0BHi/XCSUDfvpjhqMgO4R1ah5Jw6OWW4lHMu
- wHzuHnAmBRT9HCPxwqvPkFsKoJ1IkKua7U8vB/6Pt2WkXimrVAhOKtzbeh+tQnF5aArHzooI2
- BKkzGzuHxPakyMObe5/QrkDyKv89Rg1fE1Tjf2oCbGlQXVnxUPsgKK6hM9Ocm7HgKQY4sdfBG
- /B2HCfkNZwHUdK6ZWvg84yx54x5BvnSLxf8zXn78HzDm+IsVlr1PDezP3mgrfXj3zQK+h+l7G
- Glkjok+W2Nb8gODf1HZ31B3Yw8cStsgywOo2itc9dTJ2hFqEvHrGQA0urUm+7j/uW0JJ6MsQ+
- bC9PCelDGsrVTiO2ViP/Lpam7+ce0lYliOJv1EkYMITtMm//AcupeTwf0O/j9mghlw2gSMgdL
- ezJMy71zKCYvT99BZzOgTJuaUEOtzv9Eu0ZzW5YJaI1iZZ2mMr4uA00vDupp4Q8dQfW5k3RHY
- 6k4TnW4N/haFxfLXHSwFbv9quv8KHVwTWLUXy9ygc3odU+r+hpSfgfAPD/wYDJlCHDLu7X0LF
- l4A+x3+t3SGQHn8iI91phMXHlOW5YMGjvfVpPrU6aJZzSJWKOCAewYLuFBiF6C7SiNgfB7jbe
- 2Pq0cXaLg4l7xTsen5u4CNRbXmq2yYggxPCbU73Fyk5nVz+3xg8cIrHy/l7DmXg1wfM444Q9S
- tU94dcFtWb1hgiPPpMyw==
+        Jiri Slaby <jslaby@suse.com>, Timur Tabi <timur@kernel.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
+From:   Christophe Leroy <christophe.leroy@c-s.fr>
+Message-ID: <e50640a4-bf6b-9859-2acf-81f4af9c6409@c-s.fr>
+Date:   Tue, 22 Oct 2019 15:06:02 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.7.0
+MIME-Version: 1.0
+In-Reply-To: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Oct 11, 2019 at 7:51 AM Uwe Kleine-König
-<u.kleine-koenig@pengutronix.de> wrote:
->
-> On Thu, Oct 10, 2019 at 10:29:55PM +0200, Arnd Bergmann wrote:
-> > These can be build completely independently, so split
-> > the two Kconfig symbols.
-> >
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
->
-> I'd mention the two symbols' names you're working on in the commit log.
-> I guess it's about PLAT_SAMSUNG and ARCH_S5PV210. And I wouldn't call it
-> "split" which IMHO suggests there was only one symbol before.
->
-> Maybe:
->
->         Don't imply PLAT_SAMSUNG if ARCH_S5PV210 is enabled
->
-> would be a better subject line?
 
-Ok, changed to
 
-ARM: s5pv210: don't imply CONFIG_PLAT_SAMSUNG
+On 10/18/2019 12:52 PM, Rasmus Villemoes wrote:
+> There have been several attempts in the past few years to allow
+> building the QUICC engine drivers for platforms other than PPC. This
+> is (the beginning of) yet another attempt. I hope I can get someone to
+> pick up these relatively trivial patches (I _think_ they shouldn't
+> change functionality at all), and then I'll continue slowly working
+> towards removing the PPC32 dependency for CONFIG_QUICC_ENGINE.
+> 
+> Tested on an MPC8309-derived board.
+> 
+> Rasmus Villemoes (7):
+>    soc: fsl: qe: remove space-before-tab
+>    soc: fsl: qe: drop volatile qualifier of struct qe_ic::regs
+>    soc: fsl: qe: avoid ppc-specific io accessors
+>    soc: fsl: qe: replace spin_event_timeout by readx_poll_timeout_atomic
+>    serial: make SERIAL_QE depend on PPC32
+>    serial: ucc_uart.c: explicitly include asm/cpm.h
+>    soc/fsl/qe/qe.h: remove include of asm/cpm.h
 
-> > @@ -235,7 +235,6 @@ machine-$(CONFIG_PLAT_SPEAR)              += spear
-> >  # by CONFIG_* macro name.
-> >  plat-$(CONFIG_ARCH_OMAP)     += omap
-> >  plat-$(CONFIG_ARCH_S3C64XX)  += samsung
-> > -plat-$(CONFIG_ARCH_S5PV210)  += samsung
->
-> Would it make more sense to make this
->
->         plat-$(PLAT_SAMSUNG) += samsung
->
-> (in a separate patch)? Hmm, it seems there is no plat-y for
-> PLAT_S3C24XX=y builds. Is this intended? If yes, the directory name
-> containing "samsung" suggests something that seems untrue.
+Please copy the entire series to linuxppc-dev list. We are missing 5/7 
+and 7/7 (see 
+https://patchwork.ozlabs.org/project/linuxppc-dev/list/?series=137048)
 
-By the end of the series, the plat-samsung directory is completely
-removed (folded into mach-s3c), so that would only add more
-churn for the same result I think.
+Christophe
 
-     Arnd
+> 
+>   drivers/soc/fsl/qe/gpio.c     | 30 ++++++++--------
+>   drivers/soc/fsl/qe/qe.c       | 44 +++++++++++------------
+>   drivers/soc/fsl/qe/qe_ic.c    |  8 ++---
+>   drivers/soc/fsl/qe/qe_ic.h    |  2 +-
+>   drivers/soc/fsl/qe/qe_io.c    | 40 ++++++++++-----------
+>   drivers/soc/fsl/qe/qe_tdm.c   |  8 ++---
+>   drivers/soc/fsl/qe/ucc.c      | 12 +++----
+>   drivers/soc/fsl/qe/ucc_fast.c | 66 ++++++++++++++++++-----------------
+>   drivers/soc/fsl/qe/ucc_slow.c | 38 ++++++++++----------
+>   drivers/soc/fsl/qe/usb.c      |  2 +-
+>   drivers/tty/serial/Kconfig    |  1 +
+>   drivers/tty/serial/ucc_uart.c |  1 +
+>   include/soc/fsl/qe/qe.h       |  1 -
+>   13 files changed, 126 insertions(+), 127 deletions(-)
+> 
