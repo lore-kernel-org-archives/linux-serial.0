@@ -2,134 +2,130 @@ Return-Path: <SRS0=A6+4=YQ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.2 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AC1DCA9EA0
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Oct 2019 02:52:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DFF7CA9EB6
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Oct 2019 09:46:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 040E12086D
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Oct 2019 02:52:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 042DC2064A
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Oct 2019 09:46:55 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="bKTS3jwk"
+	dkim=pass (2048-bit key) header.d=antmicro-com.20150623.gappssmtp.com header.i=@antmicro-com.20150623.gappssmtp.com header.b="iWWJBSsJ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389240AbfJWCwV (ORCPT
+        id S2403879AbfJWJqz (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Oct 2019 22:52:21 -0400
-Received: from mail-eopbgr150040.outbound.protection.outlook.com ([40.107.15.40]:23270
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1732555AbfJWCwV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Oct 2019 22:52:21 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OxxVEgqqpNJV9RQ2W7wp/xaD9RzrFOGGqBJFNkWXUnazhprK6lxdG+I0GH4A1cMjqH/DxJxRBvz71t3oEeopv4OVpfDuWKfOQ7XyPoJOauFJIRVWy9cIbSC+vHMrJYTkwIjPNGPh+SO6iJai2DKkOXlZcBxukotrIDsP5sdSlL89ExEUyRpFaUulIzoG3HcD43wom+3iACuL13u13SJj1NesHkd94ChKynm2hgJpAhdm0XZPDIILEWfs7EqXVo6fQxbF7PeQOVZgNjWwOeiFMx0DZxWQzu6yfAM8VmueZSLpP2QsA9N/IdHSE7ocYkl8lu2BkG2GFTFp+sHccVdLdA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8IG1aAOv/Nt6RK3cp/JPIR3TQJv39g2UFp6qKhG1cw8=;
- b=PGJiZZ3btbBzf7ECw/SwiYdmKA3GLx/K3up97HoQ2Z7y9OVMFzloGqFyii8JHiq6hGiMEZTkyfINaiMIMqWDRxuqszv/lcS/DokaJI1wib3o+HxNVJ+b0ODPzA9E7Y9EB8em4uFNZzybP4ni0voNnYKblainY39S1nJZgJwq9+jY/z5TU/H7/7gzzS4fSp7OLfNB9oSIOLLUomOQoZP9zZecmxacy/MqXdHMZn3rEpIOCh6OQmea4POKK1yJgrzMDAM+jOuNUxQEsaUMAnRvKu3tCJypQQuN16fQnSB1r7ZJhk0O4c5uCmMf8JSBi9l52EQDMURnJqUC51QuVsFLvg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8IG1aAOv/Nt6RK3cp/JPIR3TQJv39g2UFp6qKhG1cw8=;
- b=bKTS3jwkRNRUKkGI1vCtbBl/hjZBkOPeL1MFWarl+TquAABUDeQvwAyAhX55pzdiyXIY/rJ+4CCwAblTZrnGvHXyLP42Rbhjmj7XY1f6mJdAdIJgDeUttIrshzV1rF0O35g3ukfx6ap4q54YvrlalK9x6Jl/+lW81pGkGHiVXc4=
-Received: from VE1PR04MB6768.eurprd04.prod.outlook.com (10.255.118.26) by
- VE1PR04MB6560.eurprd04.prod.outlook.com (20.179.234.89) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.16; Wed, 23 Oct 2019 02:52:16 +0000
-Received: from VE1PR04MB6768.eurprd04.prod.outlook.com
- ([fe80::50aa:3111:47b1:82d4]) by VE1PR04MB6768.eurprd04.prod.outlook.com
- ([fe80::50aa:3111:47b1:82d4%4]) with mapi id 15.20.2367.022; Wed, 23 Oct 2019
- 02:52:16 +0000
-From:   Qiang Zhao <qiang.zhao@nxp.com>
-To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Leo Li <leoyang.li@nxp.com>
-CC:     Timur Tabi <timur@kernel.org>,
+        Wed, 23 Oct 2019 05:46:55 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:46432 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390656AbfJWJqy (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 23 Oct 2019 05:46:54 -0400
+Received: by mail-lf1-f68.google.com with SMTP id t8so15492791lfc.13
+        for <linux-serial@vger.kernel.org>; Wed, 23 Oct 2019 02:46:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=antmicro-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=NUrailuYahzDYxkjJS54qJtYYGOoPtD3tuebWIbgYWw=;
+        b=iWWJBSsJMWh1Sxb4ok0cc4yWTbK22wcrpajWflfoJ5mqYzLy07wUSgAxJlGypl8z/q
+         9MVuHNt+EQ/9e8qsWdk/bHxYVi5GitY8dOZ+wHlGHCMYnzRIF0smxhm2fjUXKVKBsfLO
+         22UibMFwZBSCiO+AWUXbaLYCQVMuAti7Asu/nZ3TJplyEIWg9ZRaciU0UOFhKDoYQKCl
+         OEjfHC/REyqAsqI/wO+CThHnIDKGTM4NZsEz0zm52Ay2m3kfAZjYE4hw4wY7mCYjQdsI
+         pvZRSqSUSbXbtECtL/0lrKKkT5nPJPDuPw8Z1oq02RO9+tQn2wmnNK6LqGSgb2xRTb1P
+         Ku4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=NUrailuYahzDYxkjJS54qJtYYGOoPtD3tuebWIbgYWw=;
+        b=ZxEKZa/Fk3P39X/gvmAZsuT9XO29kXBocmvV1fOSYUx6kLNGTc1YrSomVpBkk6UXqx
+         taY9IHIuLWmdnHo9P1veE+ghQDr9+h8UBWgZclHy6/ZU6ut5vYZ098L74Z4mqhoXD2rE
+         7paLggldUjds6exMEBD/F0TIllBdLk9a9xeN8cNp/yHs2LpI6y1aA60XJn5Thn6no+ZB
+         7XOGAyymVFQz/KIvANPMqcjPxK7mq8USWazUBbWCXTZLh0tS5w0iir6DrQBomKh3aRCa
+         rC4BVrrvr5ccYnqRgU8qANFqwAVpXTfeyt9ityncRUJpt5g2KWYeKsx9FkSyjneI+sty
+         Ci0Q==
+X-Gm-Message-State: APjAAAUw/GUMO+XhSRu+/JW5G9/huyDhy0gvqjyFQTs/rQTdZKqSwyvh
+        1giIUxcRZJcdMlH+d78/IZcHxg==
+X-Google-Smtp-Source: APXvYqyiMaknslJYi92ku9LKesfFa2KrWv5Ps1HmUYO6mVbOAVW1HiJIA3EQ9rCcz+fX/7UgngQNjg==
+X-Received: by 2002:ac2:4c15:: with SMTP id t21mr19713464lfq.7.1571824010612;
+        Wed, 23 Oct 2019 02:46:50 -0700 (PDT)
+Received: from localhost.localdomain (d79-196.icpnet.pl. [77.65.79.196])
+        by smtp.gmail.com with ESMTPSA id z6sm2124716lfa.10.2019.10.23.02.46.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Oct 2019 02:46:49 -0700 (PDT)
+Date:   Wed, 23 Oct 2019 11:46:44 +0200
+From:   Mateusz Holenko <mholenko@antmicro.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: RE: [PATCH 0/7] towards QE support on ARM
-Thread-Topic: [PATCH 0/7] towards QE support on ARM
-Thread-Index: AQHVhbLuscviMhsVQkGS0n9+bwSiSadg1oMAgAAJ4ICAABDsgIAD2sSAgADhagCAAERzIIAAho0AgAETvgA=
-Date:   Wed, 23 Oct 2019 02:52:15 +0000
-Message-ID: <VE1PR04MB6768D3023802D62AB9FE2F6E916B0@VE1PR04MB6768.eurprd04.prod.outlook.com>
-References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
- <VE1PR04MB6687DA0268FAF03D3E77A23B8F6C0@VE1PR04MB6687.eurprd04.prod.outlook.com>
- <e02fa027-9c78-3272-d2d7-7ad2b0ed3ab0@rasmusvillemoes.dk>
- <CADRPPNREUK1SVxO4P5qb2COn+T04dtYgpVEzrveKUt16hBqAtQ@mail.gmail.com>
- <679bf33b-8c05-b77a-0cb2-d79dc5bfbe75@rasmusvillemoes.dk>
- <CADRPPNSiMUy77Dhxjg03sHDxyZzWf_BP8a5+fCncbynyO_cNGg@mail.gmail.com>
- <VE1PR04MB676825D5709839AEF75ED44C91680@VE1PR04MB6768.eurprd04.prod.outlook.com>
- <43033011-1a2a-dea3-e3c9-75895f997407@rasmusvillemoes.dk>
-In-Reply-To: <43033011-1a2a-dea3-e3c9-75895f997407@rasmusvillemoes.dk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=qiang.zhao@nxp.com; 
-x-originating-ip: [119.31.174.73]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 4f0e611e-0318-4741-81b7-08d75764035a
-x-ms-traffictypediagnostic: VE1PR04MB6560:|VE1PR04MB6560:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VE1PR04MB65601DD973721416A91E6A3A916B0@VE1PR04MB6560.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
-x-forefront-prvs: 019919A9E4
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(136003)(396003)(39860400002)(376002)(346002)(199004)(189003)(13464003)(25786009)(52536014)(256004)(5660300002)(14454004)(66066001)(478600001)(446003)(11346002)(476003)(486006)(64756008)(66556008)(66476007)(66446008)(44832011)(66946007)(186003)(26005)(33656002)(86362001)(76116006)(71200400001)(71190400001)(6116002)(99286004)(3846002)(76176011)(6506007)(53546011)(102836004)(2906002)(7696005)(110136005)(54906003)(6636002)(316002)(55016002)(9686003)(6436002)(6246003)(81166006)(81156014)(8676002)(8936002)(4326008)(229853002)(7736002)(305945005)(74316002);DIR:OUT;SFP:1101;SCL:1;SRVR:VE1PR04MB6560;H:VE1PR04MB6768.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: fYKXrcPqHny2rw4F80nQzaFbLxaybaO4KVcUrezLLHNK90wfQkxb9wfFJ3WYJJU5zTl4x4yyP45erAdUvrG6Xet47AIMexpeN6v71BZOiCnGDMkbkK3+QORYUcUYF1iGiC6NHKqzOBcz5SmnLBoSZdF9NnId3q9xINQbbKsO0feQqHW66qzWdEfdduT3OuZCQD1T9+cU3P9oRoEAc/+3zMy7QhhaMZEd63JnUQwfNxi9dJ7Oh853ca4kxfjvSNaYmlxXgdsUBLWXn/Zsc8xP7/XJoXaUviaITMnVusT9k17LhgB2mAYXJnRMGIpX3nkGX/+DAZV2xRIKyNSTOmDb5Ls0XdEWOKSah8dOHpz1fYMvj1SbedoCvuPU7n7Wwywc4RPRTrkAUKI1zeY09UUpyMZrTPwi+1eB7nWUieJ4E64UkD91AVtQ+Q38j9LfoVCb
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Jiri Slaby <jslaby@suse.com>, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Cc:     Stafford Horne <shorne@gmail.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Filip Kokosinski <fkokosinski@internships.antmicro.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/4] LiteUART serial driver
+Message-ID: <20191023114634.13657-0-mholenko@antmicro.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4f0e611e-0318-4741-81b7-08d75764035a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Oct 2019 02:52:15.9584
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5yc+eEKkwj0rZlGymP3Sar9dpIcBAvJNwixaf1FqQqrhR7iUTmH3igIPUpIgwpgg/3gXStZjP1nS0vkjWPEsyQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6560
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-T24gMjIvMTAvMjAxOSAxODoxOCwgUmFzbXVzIFZpbGxlbW9lcyA8bGludXhAcmFzbXVzdmlsbGVt
-b2VzLmRrPiB3cm90ZToNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUmFz
-bXVzIFZpbGxlbW9lcyA8bGludXhAcmFzbXVzdmlsbGVtb2VzLmRrPg0KPiBTZW50OiAyMDE55bm0
-MTDmnIgyMuaXpSAxODoxOA0KPiBUbzogUWlhbmcgWmhhbyA8cWlhbmcuemhhb0BueHAuY29tPjsg
-TGVvIExpIDxsZW95YW5nLmxpQG54cC5jb20+DQo+IENjOiBUaW11ciBUYWJpIDx0aW11ckBrZXJu
-ZWwub3JnPjsgR3JlZyBLcm9haC1IYXJ0bWFuDQo+IDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9y
-Zz47IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7DQo+IGxpbnV4LXNlcmlhbEB2Z2VyLmtl
-cm5lbC5vcmc7IEppcmkgU2xhYnkgPGpzbGFieUBzdXNlLmNvbT47DQo+IGxpbnV4cHBjLWRldkBs
-aXN0cy5vemxhYnMub3JnOyBsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcNCj4g
-U3ViamVjdDogUmU6IFtQQVRDSCAwLzddIHRvd2FyZHMgUUUgc3VwcG9ydCBvbiBBUk0NCj4gDQo+
-IE9uIDIyLzEwLzIwMTkgMDQuMjQsIFFpYW5nIFpoYW8gd3JvdGU6DQo+ID4gT24gTW9uLCBPY3Qg
-MjIsIDIwMTkgYXQgNjoxMSBBTSBMZW8gTGkgd3JvdGUNCj4gDQo+ID4+IFJpZ2h0LiAgSSdtIHJl
-YWxseSBpbnRlcmVzdGVkIGluIGdldHRpbmcgdGhpcyBhcHBsaWVkIHRvIG15IHRyZWUgYW5kDQo+
-ID4+IG1ha2UgaXQgdXBzdHJlYW0uICBaaGFvIFFpYW5nLCBjYW4geW91IGhlbHAgdG8gcmV2aWV3
-IFJhc211cydzDQo+ID4+IHBhdGNoZXMgYW5kIGNvbW1lbnQ/DQo+ID4NCj4gPiBBcyB5b3Uga25v
-dywgSSBtYWludGFpbmVkIGEgc2ltaWxhciBwYXRjaHNldCByZW1vdmluZyBQUEMsIGFuZCBzb21l
-b25lDQo+IHRvbGQgbWUgcWVfaWMgc2hvdWxkIG1vdmVkIGludG8gZHJpdmVycy9pcnFjaGlwLy4N
-Cj4gPiBJIGFsc28gdGhvdWdodCBxZV9pYyBpcyBhIGludGVycnVwdCBjb250cm9sIGRyaXZlciwg
-c2hvdWxkIGJlIG1vdmVkIGludG8gZGlyDQo+IGlycWNoaXAuDQo+IA0KPiBZZXMsIGFuZCBJIGFs
-c28gcGxhbiB0byBkbyB0aGF0IGF0IHNvbWUgcG9pbnQuIEhvd2V2ZXIsIHRoYXQncyBvcnRob2dv
-bmFsIHRvDQo+IG1ha2luZyB0aGUgZHJpdmVyIGJ1aWxkIG9uIEFSTSwgc28gSSBkb24ndCB3YW50
-IHRvIG1peCB0aGUgdHdvLiBNYWtpbmcgaXQNCj4gdXNhYmxlIG9uIEFSTSBpcyBteS9vdXIgcHJp
-b3JpdHkgY3VycmVudGx5Lg0KPiANCj4gSSdkIGFwcHJlY2lhdGUgeW91ciBpbnB1dCBvbiBteSBw
-YXRjaGVzLg0KDQpZZXMsIHdlIGNhbiBwdXQgdGhpcyBwYXRjaHNldCBpbiBmaXJzdCBwbGFjZSwg
-ZW5zdXJlIGl0IGNhbiBidWlsZCBhbmQgd29yayBvbiBBUk0sIHRoZW4gcHVzaCBhbm90aGVyIHBh
-dGNoc2V0IHRvIG1vdmUgcWVfaWMuDQoNCkJlc3QgUmVnYXJkcywNClFpYW5nDQoNCg==
+This patchset introduces support for LiteUART
+- serial device from LiteX SoC builder
+(https://github.com/enjoy-digital/litex).
+
+In the following patchset I will add
+a new mor1kx-based (OpenRISC) platform that
+uses this device.
+
+Later I plan to extend this platform by
+adding support for more devices from LiteX suite.
+
+Changes in v2:
+- binding description rewritten to a yaml schema file
+- added litex.h header with common register access functions
+
+Filip Kokosinski (3):
+  dt-bindings: vendor: add vendor prefix for LiteX
+  dt-bindings: serial: document LiteUART bindings
+  drivers/tty/serial: add LiteUART driver
+
+Mateusz Holenko (1):
+  litex: add common LiteX header
+
+ .../bindings/serial/litex,liteuart.yaml       |  38 ++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ MAINTAINERS                                   |   8 +
+ drivers/tty/serial/Kconfig                    |  30 ++
+ drivers/tty/serial/Makefile                   |   1 +
+ drivers/tty/serial/liteuart.c                 | 373 ++++++++++++++++++
+ include/linux/litex.h                         |  59 +++
+ include/uapi/linux/serial_core.h              |   3 +
+ 8 files changed, 514 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/litex,liteuart.yaml
+ create mode 100644 drivers/tty/serial/liteuart.c
+ create mode 100644 include/linux/litex.h
+
+-- 
+2.23.0
+
