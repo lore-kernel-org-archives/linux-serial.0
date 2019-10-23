@@ -1,107 +1,135 @@
-Return-Path: <SRS0=Ceqv=YP=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=A6+4=YQ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AD9DCA9EA0
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Oct 2019 16:21:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AC1DCA9EA0
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Oct 2019 02:52:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 73E9A21906
-	for <linux-serial@archiver.kernel.org>; Tue, 22 Oct 2019 16:21:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 040E12086D
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Oct 2019 02:52:22 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="bKTS3jwk"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732197AbfJVQVC convert rfc822-to-8bit (ORCPT
+        id S2389240AbfJWCwV (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 22 Oct 2019 12:21:02 -0400
-Received: from mout.kundenserver.de ([212.227.126.187]:57715 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731795AbfJVQVB (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 22 Oct 2019 12:21:01 -0400
-Received: from mail-qt1-f173.google.com ([209.85.160.173]) by
- mrelayeu.kundenserver.de (mreue011 [212.227.15.129]) with ESMTPSA (Nemesis)
- id 1MS3zP-1iSkhU2FY3-00TUuV; Tue, 22 Oct 2019 18:20:59 +0200
-Received: by mail-qt1-f173.google.com with SMTP id e14so7848020qto.1;
-        Tue, 22 Oct 2019 09:20:58 -0700 (PDT)
-X-Gm-Message-State: APjAAAUEAGN4gaRKmWrYNcXWxxrjr9EpakHb0V6ccEo0QzQadSWzAwwv
-        gi0XGRiecf2QPS6ja97yKeDLEfmUA3j4tbdrYnA=
-X-Google-Smtp-Source: APXvYqyoLKHktNxYMbHgU6oEzWDucDHxX3DzLUXc70BjhpXFB5K+Mcs4VGMIh8ghBPfcQzJ4zkTEBWIuMQ3o+13CFPs=
-X-Received: by 2002:ac8:33d4:: with SMTP id d20mr4201539qtb.204.1571761258010;
- Tue, 22 Oct 2019 09:20:58 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191010202802.1132272-1-arnd@arndb.de> <20191010203043.1241612-1-arnd@arndb.de>
- <20191010203043.1241612-11-arnd@arndb.de> <20191011055149.4dudr4tk2znpt65u@pengutronix.de>
- <CAK8P3a1st8gR7u+8-oyP6HrzZdmrzhq7PRonYuz0a5O8rfKaSA@mail.gmail.com> <20191022155307.izh4ryorm7thw7tq@pengutronix.de>
-In-Reply-To: <20191022155307.izh4ryorm7thw7tq@pengutronix.de>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 22 Oct 2019 18:20:41 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1mvbss6Q-CQBYRAf7ozYgyOu3WFGkoaSaoJriUbuRACA@mail.gmail.com>
-Message-ID: <CAK8P3a1mvbss6Q-CQBYRAf7ozYgyOu3WFGkoaSaoJriUbuRACA@mail.gmail.com>
-Subject: Re: [PATCH 11/36] ARM: s5pv210: split from plat-samsung
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Kukjin Kim <kgene@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        Tue, 22 Oct 2019 22:52:21 -0400
+Received: from mail-eopbgr150040.outbound.protection.outlook.com ([40.107.15.40]:23270
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1732555AbfJWCwV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 22 Oct 2019 22:52:21 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OxxVEgqqpNJV9RQ2W7wp/xaD9RzrFOGGqBJFNkWXUnazhprK6lxdG+I0GH4A1cMjqH/DxJxRBvz71t3oEeopv4OVpfDuWKfOQ7XyPoJOauFJIRVWy9cIbSC+vHMrJYTkwIjPNGPh+SO6iJai2DKkOXlZcBxukotrIDsP5sdSlL89ExEUyRpFaUulIzoG3HcD43wom+3iACuL13u13SJj1NesHkd94ChKynm2hgJpAhdm0XZPDIILEWfs7EqXVo6fQxbF7PeQOVZgNjWwOeiFMx0DZxWQzu6yfAM8VmueZSLpP2QsA9N/IdHSE7ocYkl8lu2BkG2GFTFp+sHccVdLdA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8IG1aAOv/Nt6RK3cp/JPIR3TQJv39g2UFp6qKhG1cw8=;
+ b=PGJiZZ3btbBzf7ECw/SwiYdmKA3GLx/K3up97HoQ2Z7y9OVMFzloGqFyii8JHiq6hGiMEZTkyfINaiMIMqWDRxuqszv/lcS/DokaJI1wib3o+HxNVJ+b0ODPzA9E7Y9EB8em4uFNZzybP4ni0voNnYKblainY39S1nJZgJwq9+jY/z5TU/H7/7gzzS4fSp7OLfNB9oSIOLLUomOQoZP9zZecmxacy/MqXdHMZn3rEpIOCh6OQmea4POKK1yJgrzMDAM+jOuNUxQEsaUMAnRvKu3tCJypQQuN16fQnSB1r7ZJhk0O4c5uCmMf8JSBi9l52EQDMURnJqUC51QuVsFLvg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8IG1aAOv/Nt6RK3cp/JPIR3TQJv39g2UFp6qKhG1cw8=;
+ b=bKTS3jwkRNRUKkGI1vCtbBl/hjZBkOPeL1MFWarl+TquAABUDeQvwAyAhX55pzdiyXIY/rJ+4CCwAblTZrnGvHXyLP42Rbhjmj7XY1f6mJdAdIJgDeUttIrshzV1rF0O35g3ukfx6ap4q54YvrlalK9x6Jl/+lW81pGkGHiVXc4=
+Received: from VE1PR04MB6768.eurprd04.prod.outlook.com (10.255.118.26) by
+ VE1PR04MB6560.eurprd04.prod.outlook.com (20.179.234.89) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2347.16; Wed, 23 Oct 2019 02:52:16 +0000
+Received: from VE1PR04MB6768.eurprd04.prod.outlook.com
+ ([fe80::50aa:3111:47b1:82d4]) by VE1PR04MB6768.eurprd04.prod.outlook.com
+ ([fe80::50aa:3111:47b1:82d4%4]) with mapi id 15.20.2367.022; Wed, 23 Oct 2019
+ 02:52:16 +0000
+From:   Qiang Zhao <qiang.zhao@nxp.com>
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Leo Li <leoyang.li@nxp.com>
+CC:     Timur Tabi <timur@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Sangbeom Kim <sbkim73@samsung.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
-        <linux-samsung-soc@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Olof Johansson <olof@lixom.net>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        =?UTF-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Faiz Abbas <faiz_abbas@ti.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        linux-serial@vger.kernel.org,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:xTdslASVHIHUrHhldeTRZ3xwo4TLBMkIDaRn2OpT7m/YuhjhG+R
- XGtLKP+rAYVQiiYn/reZitmB/yJfTdP5fj6vMJUJFpaR5pumcjBEOGsubcXG0r84wqo5Vjy
- oPlP0Md5i33LzD8vXTAQWgxCYETGOKt/+y1WK7gZy58SMqd960JFgp3qz3CXZlZ4EMlJ59A
- 5yJ1p/dha+zR44g0r7y6Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:NJVNCE6D9/4=:bQGwHELXkragiXw7Rw7/m4
- cHgkoRcooelGES7hld6EZ6U3fPNI4aQcn2SzNGd1oxjRjSBfC42rcMDeSqjLJi03n9AVA/pXH
- QHlMuSwVgihQOffzuDk9O5VPAq5Qfas81/sgr7ZOZNtf1R/cjPX0dk0F2yCWzFbU8rTEBY27C
- ShF/6dAHu7qwO7BoBwm24P/B8U2olEHn8+iuaMLTd8utDAy0dk0mdsza8yVFoqODzpALUTBtg
- oPPJGBik0a9OjAb0DA8YEW6NmX1EQCUr/5pVQjH/HTSQ4Z0R8NFmelbccjIPAwWpCm6NoGk+Q
- 8DqCRptOiP7sk+WvgIs7nIbEh8IQBN+u9HGIhLoKMUn6ej1QlOSaauLdRCfuVwOHpS3XuM1yy
- k7jdRuRC++5kMpIbjnLic9McD2VL+BB8q0CJqKBa9tetAZcnsO2cRrcqML/187XpJaIsuPj+E
- jbrPVbjqKOjvRCkme/fMeAq+SCUK5q17S+Smc35ARQ1UK++KS5vWD98uhH3sQL57lLM5D8J5c
- ZlXey4O0CH1rEt5ujM5dbf+Y1cBFHxfxDDqTVb1bRnVf6ftgbh2w4WT8+gwXeONDdieFsDhdt
- jnry3ZefwYP/WCamKpQ5MGN7ycwY8j09z7bBQK8xjMQORv0LJTo01vCyTStmHqhQ/DUmIV1Xb
- /MG8pQ0LzLbNVFWedHIXfivsczUsdG32euwZ5/z+bIPT+XZ35hQSc9TWJuupODk5qK778jkB+
- NLOEjcM9133PGsomXQTIgpgnDo8xv0c0lWj1V5ecvMH2/9wj2YmLVPGhL1ptIuWnJwk5WKg04
- D/sgim9q7VMsNDuoaAjMA+iTJM+tzsUmNuDIioG5BY6EmhPHiKdm9TxLSA+uSxQUKBooQ0aQP
- fybl0M2Y7nN//7Hhcm4A==
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: RE: [PATCH 0/7] towards QE support on ARM
+Thread-Topic: [PATCH 0/7] towards QE support on ARM
+Thread-Index: AQHVhbLuscviMhsVQkGS0n9+bwSiSadg1oMAgAAJ4ICAABDsgIAD2sSAgADhagCAAERzIIAAho0AgAETvgA=
+Date:   Wed, 23 Oct 2019 02:52:15 +0000
+Message-ID: <VE1PR04MB6768D3023802D62AB9FE2F6E916B0@VE1PR04MB6768.eurprd04.prod.outlook.com>
+References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
+ <VE1PR04MB6687DA0268FAF03D3E77A23B8F6C0@VE1PR04MB6687.eurprd04.prod.outlook.com>
+ <e02fa027-9c78-3272-d2d7-7ad2b0ed3ab0@rasmusvillemoes.dk>
+ <CADRPPNREUK1SVxO4P5qb2COn+T04dtYgpVEzrveKUt16hBqAtQ@mail.gmail.com>
+ <679bf33b-8c05-b77a-0cb2-d79dc5bfbe75@rasmusvillemoes.dk>
+ <CADRPPNSiMUy77Dhxjg03sHDxyZzWf_BP8a5+fCncbynyO_cNGg@mail.gmail.com>
+ <VE1PR04MB676825D5709839AEF75ED44C91680@VE1PR04MB6768.eurprd04.prod.outlook.com>
+ <43033011-1a2a-dea3-e3c9-75895f997407@rasmusvillemoes.dk>
+In-Reply-To: <43033011-1a2a-dea3-e3c9-75895f997407@rasmusvillemoes.dk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=qiang.zhao@nxp.com; 
+x-originating-ip: [119.31.174.73]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 4f0e611e-0318-4741-81b7-08d75764035a
+x-ms-traffictypediagnostic: VE1PR04MB6560:|VE1PR04MB6560:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VE1PR04MB65601DD973721416A91E6A3A916B0@VE1PR04MB6560.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5516;
+x-forefront-prvs: 019919A9E4
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(136003)(396003)(39860400002)(376002)(346002)(199004)(189003)(13464003)(25786009)(52536014)(256004)(5660300002)(14454004)(66066001)(478600001)(446003)(11346002)(476003)(486006)(64756008)(66556008)(66476007)(66446008)(44832011)(66946007)(186003)(26005)(33656002)(86362001)(76116006)(71200400001)(71190400001)(6116002)(99286004)(3846002)(76176011)(6506007)(53546011)(102836004)(2906002)(7696005)(110136005)(54906003)(6636002)(316002)(55016002)(9686003)(6436002)(6246003)(81166006)(81156014)(8676002)(8936002)(4326008)(229853002)(7736002)(305945005)(74316002);DIR:OUT;SFP:1101;SCL:1;SRVR:VE1PR04MB6560;H:VE1PR04MB6768.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: fYKXrcPqHny2rw4F80nQzaFbLxaybaO4KVcUrezLLHNK90wfQkxb9wfFJ3WYJJU5zTl4x4yyP45erAdUvrG6Xet47AIMexpeN6v71BZOiCnGDMkbkK3+QORYUcUYF1iGiC6NHKqzOBcz5SmnLBoSZdF9NnId3q9xINQbbKsO0feQqHW66qzWdEfdduT3OuZCQD1T9+cU3P9oRoEAc/+3zMy7QhhaMZEd63JnUQwfNxi9dJ7Oh853ca4kxfjvSNaYmlxXgdsUBLWXn/Zsc8xP7/XJoXaUviaITMnVusT9k17LhgB2mAYXJnRMGIpX3nkGX/+DAZV2xRIKyNSTOmDb5Ls0XdEWOKSah8dOHpz1fYMvj1SbedoCvuPU7n7Wwywc4RPRTrkAUKI1zeY09UUpyMZrTPwi+1eB7nWUieJ4E64UkD91AVtQ+Q38j9LfoVCb
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4f0e611e-0318-4741-81b7-08d75764035a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Oct 2019 02:52:15.9584
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 5yc+eEKkwj0rZlGymP3Sar9dpIcBAvJNwixaf1FqQqrhR7iUTmH3igIPUpIgwpgg/3gXStZjP1nS0vkjWPEsyQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6560
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Oct 22, 2019 at 5:53 PM Uwe Kleine-König
-<u.kleine-koenig@pengutronix.de> wrote:
-> The background of my question was me wondering if builds
-> for PLAT_S3C24XX=y (before your patch series) don't need plat-samsung.
-
-What I found is that the DT-based platforms (exynos and s5p) need almost nothing
-from plat-samsung, while the board files and the s3c24xx/s3c64xx power
-management
-needs almost all of it.
-
-      Arnd
+T24gMjIvMTAvMjAxOSAxODoxOCwgUmFzbXVzIFZpbGxlbW9lcyA8bGludXhAcmFzbXVzdmlsbGVt
+b2VzLmRrPiB3cm90ZToNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUmFz
+bXVzIFZpbGxlbW9lcyA8bGludXhAcmFzbXVzdmlsbGVtb2VzLmRrPg0KPiBTZW50OiAyMDE55bm0
+MTDmnIgyMuaXpSAxODoxOA0KPiBUbzogUWlhbmcgWmhhbyA8cWlhbmcuemhhb0BueHAuY29tPjsg
+TGVvIExpIDxsZW95YW5nLmxpQG54cC5jb20+DQo+IENjOiBUaW11ciBUYWJpIDx0aW11ckBrZXJu
+ZWwub3JnPjsgR3JlZyBLcm9haC1IYXJ0bWFuDQo+IDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9y
+Zz47IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7DQo+IGxpbnV4LXNlcmlhbEB2Z2VyLmtl
+cm5lbC5vcmc7IEppcmkgU2xhYnkgPGpzbGFieUBzdXNlLmNvbT47DQo+IGxpbnV4cHBjLWRldkBs
+aXN0cy5vemxhYnMub3JnOyBsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcNCj4g
+U3ViamVjdDogUmU6IFtQQVRDSCAwLzddIHRvd2FyZHMgUUUgc3VwcG9ydCBvbiBBUk0NCj4gDQo+
+IE9uIDIyLzEwLzIwMTkgMDQuMjQsIFFpYW5nIFpoYW8gd3JvdGU6DQo+ID4gT24gTW9uLCBPY3Qg
+MjIsIDIwMTkgYXQgNjoxMSBBTSBMZW8gTGkgd3JvdGUNCj4gDQo+ID4+IFJpZ2h0LiAgSSdtIHJl
+YWxseSBpbnRlcmVzdGVkIGluIGdldHRpbmcgdGhpcyBhcHBsaWVkIHRvIG15IHRyZWUgYW5kDQo+
+ID4+IG1ha2UgaXQgdXBzdHJlYW0uICBaaGFvIFFpYW5nLCBjYW4geW91IGhlbHAgdG8gcmV2aWV3
+IFJhc211cydzDQo+ID4+IHBhdGNoZXMgYW5kIGNvbW1lbnQ/DQo+ID4NCj4gPiBBcyB5b3Uga25v
+dywgSSBtYWludGFpbmVkIGEgc2ltaWxhciBwYXRjaHNldCByZW1vdmluZyBQUEMsIGFuZCBzb21l
+b25lDQo+IHRvbGQgbWUgcWVfaWMgc2hvdWxkIG1vdmVkIGludG8gZHJpdmVycy9pcnFjaGlwLy4N
+Cj4gPiBJIGFsc28gdGhvdWdodCBxZV9pYyBpcyBhIGludGVycnVwdCBjb250cm9sIGRyaXZlciwg
+c2hvdWxkIGJlIG1vdmVkIGludG8gZGlyDQo+IGlycWNoaXAuDQo+IA0KPiBZZXMsIGFuZCBJIGFs
+c28gcGxhbiB0byBkbyB0aGF0IGF0IHNvbWUgcG9pbnQuIEhvd2V2ZXIsIHRoYXQncyBvcnRob2dv
+bmFsIHRvDQo+IG1ha2luZyB0aGUgZHJpdmVyIGJ1aWxkIG9uIEFSTSwgc28gSSBkb24ndCB3YW50
+IHRvIG1peCB0aGUgdHdvLiBNYWtpbmcgaXQNCj4gdXNhYmxlIG9uIEFSTSBpcyBteS9vdXIgcHJp
+b3JpdHkgY3VycmVudGx5Lg0KPiANCj4gSSdkIGFwcHJlY2lhdGUgeW91ciBpbnB1dCBvbiBteSBw
+YXRjaGVzLg0KDQpZZXMsIHdlIGNhbiBwdXQgdGhpcyBwYXRjaHNldCBpbiBmaXJzdCBwbGFjZSwg
+ZW5zdXJlIGl0IGNhbiBidWlsZCBhbmQgd29yayBvbiBBUk0sIHRoZW4gcHVzaCBhbm90aGVyIHBh
+dGNoc2V0IHRvIG1vdmUgcWVfaWMuDQoNCkJlc3QgUmVnYXJkcywNClFpYW5nDQoNCg==
