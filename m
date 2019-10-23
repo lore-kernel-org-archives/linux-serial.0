@@ -2,238 +2,91 @@ Return-Path: <SRS0=A6+4=YQ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A199CA9EB6
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Oct 2019 12:15:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EDD8CA9EB9
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Oct 2019 12:30:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5423D21872
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Oct 2019 12:15:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571832911;
-	bh=RxeOCBhuQMFjPX/vJ5iianWpQA1L/U9Nua00cNLciaI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=Rl3n4jVooxKcba6FYwTCfI7HjP/XadBwNQOv2RXrVX+Cmnx/ULtz3LyOyNJ8RDevN
-	 J8JLot9FpuOplfR3bxuBVoupuYT+tMV1L5GokcOzKf4YKfE67hWcGiBVK9kXZyYd/n
-	 MQDC2+znK3Vm5Di3dLx+qhHmTI/+CR2ioiuH4jOg=
+	by mail.kernel.org (Postfix) with ESMTP id EC3152086D
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Oct 2019 12:30:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391241AbfJWMPF (ORCPT
+        id S2391347AbfJWMaP (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Oct 2019 08:15:05 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:37190 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726803AbfJWMPF (ORCPT
+        Wed, 23 Oct 2019 08:30:15 -0400
+Received: from michel.telenet-ops.be ([195.130.137.88]:37368 "EHLO
+        michel.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391345AbfJWMaP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Oct 2019 08:15:05 -0400
-Received: by mail-ed1-f66.google.com with SMTP id r4so15580375edy.4;
-        Wed, 23 Oct 2019 05:15:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=EM2bqpofr7QfnOYg3+B2AOXvOUUZQ5S8Y8TJAmAFfq0=;
-        b=aHLwrBSYHYBX8ny5Ytg9RTFyowYRjSeR65rt8zybXVNkcDEKyozlfQxUzsb66+moAq
-         aaGy/Re7vaSZUhCz6VL1nSSbqNoTiVaLtLSKY66jbPs/qb61XP4aVk+uFPAxU3ETQZJa
-         beZdRvbsylAMgadk6CJ/TOUSZ34UeedrIFrHRzn9RqIoi9mHPOY5PWC0qrCDzTj0Vghd
-         sZSs23Fq+oqBWlxTaqf2tGSV87I8jhE4s+hrrXCdZ0DRxMvz5BeLG4v/UHM++sN+znbg
-         rDDbKTDne8oFIq+YJgay5vNzUpaSPsWxlA0GmWziVIdULIsxKioXu11mL/m5qfKTFfM/
-         +/Eg==
-X-Gm-Message-State: APjAAAXd7/qWlzK/zFIGfaOBTOFGiggIwiyKOzcSEtZ7l/EBEerENDAX
-        P8bruKoY1lcO4QVIyUannDQ=
-X-Google-Smtp-Source: APXvYqzMHg39Wi2a6r4kf+i1HiG2eaoZDJ9aezTMqReWB2uYi5hp2/274lnrfoQNk4EHNQ+xelbuwA==
-X-Received: by 2002:a17:906:a0f:: with SMTP id w15mr12009761ejf.321.1571832902425;
-        Wed, 23 Oct 2019 05:15:02 -0700 (PDT)
-Received: from pi3 ([194.230.155.217])
-        by smtp.googlemail.com with ESMTPSA id r16sm760759eds.72.2019.10.23.05.15.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Oct 2019 05:15:01 -0700 (PDT)
-Date:   Wed, 23 Oct 2019 14:14:58 +0200
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Kukjin Kim <kgene@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Sangbeom Kim <sbkim73@samsung.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linus.walleij@linaro.org,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Olof Johansson <olof@lixom.net>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        =?utf-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Faiz Abbas <faiz_abbas@ti.com>, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH 11/36] ARM: s5pv210: split from plat-samsung
-Message-ID: <20191023121458.GB11048@pi3>
-References: <20191010202802.1132272-1-arnd@arndb.de>
- <20191010203043.1241612-1-arnd@arndb.de>
- <20191010203043.1241612-11-arnd@arndb.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20191010203043.1241612-11-arnd@arndb.de>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+        Wed, 23 Oct 2019 08:30:15 -0400
+Received: from ramsan ([84.194.98.4])
+        by michel.telenet-ops.be with bizsmtp
+        id H0WE2100C05gfCL060WEwH; Wed, 23 Oct 2019 14:30:14 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan with esmtp (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1iNFmI-00011i-Af; Wed, 23 Oct 2019 14:30:14 +0200
+Received: from geert by rox.of.borg with local (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1iNFmI-0003GO-9I; Wed, 23 Oct 2019 14:30:14 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Cc:     Eugeniu Rosca <erosca@de.adit-jv.com>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v2] dt-bindings: serial: sh-sci: Document r8a77961 bindings
+Date:   Wed, 23 Oct 2019 14:30:10 +0200
+Message-Id: <20191023123010.12501-1-geert+renesas@glider.be>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Oct 10, 2019 at 10:29:55PM +0200, Arnd Bergmann wrote:
-> These can be build completely independently, so split
-> the two Kconfig symbols.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  arch/arm/Kconfig.debug        | 6 +++---
->  arch/arm/Makefile             | 1 -
->  arch/arm/plat-samsung/Kconfig | 2 +-
->  drivers/mmc/host/Kconfig      | 2 +-
->  drivers/pwm/Kconfig           | 2 +-
->  drivers/spi/Kconfig           | 2 +-
->  drivers/tty/serial/Kconfig    | 2 +-
->  sound/soc/samsung/Kconfig     | 2 +-
->  8 files changed, 9 insertions(+), 10 deletions(-)
-> 
-> diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
-> index 9c4f2d6deb06..4c4e97ae4fcb 100644
-> --- a/arch/arm/Kconfig.debug
-> +++ b/arch/arm/Kconfig.debug
-> @@ -998,7 +998,7 @@ choice
->  		  via SCIFA4 on Renesas SH-Mobile AG5 (SH73A0).
->  
->  	config DEBUG_S3C_UART0
-> -		depends on PLAT_SAMSUNG || ARCH_EXYNOS
-> +		depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
+Document support for the SCIF and HSCIF serial ports in the Renesas
+R-Car M3-W+ (R8A77961) SoC.
 
-How are you going to select DEBUG_S5PV210_UART now?
+Update all references to R-Car M3-W from "r8a7796" to "r8a77960", to
+avoid confusion between R-Car M3-W (R8A77960) and M3-W+.
 
-Best regards,
-Krzysztof
+No driver update is needed.
 
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+---
+v2:
+  - Split v1[1] in per-subsystem series,
+  - Add Reviewed-by,
+  - Update R-Car M3-W references.
 
->  		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
->  		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
->  		select DEBUG_S3C64XX_UART if ARCH_S3C64XX
-> @@ -1010,7 +1010,7 @@ choice
->  		  by the boot-loader before use.
->  
->  	config DEBUG_S3C_UART1
-> -		depends on PLAT_SAMSUNG || ARCH_EXYNOS
-> +		depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
->  		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
->  		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
->  		select DEBUG_S3C64XX_UART if ARCH_S3C64XX
-> @@ -1022,7 +1022,7 @@ choice
->  		  by the boot-loader before use.
->  
->  	config DEBUG_S3C_UART2
-> -		depends on PLAT_SAMSUNG || ARCH_EXYNOS
-> +		depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
->  		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
->  		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
->  		select DEBUG_S3C64XX_UART if ARCH_S3C64XX
-> diff --git a/arch/arm/Makefile b/arch/arm/Makefile
-> index f492d7c338fe..a1bc15cda751 100644
-> --- a/arch/arm/Makefile
-> +++ b/arch/arm/Makefile
-> @@ -235,7 +235,6 @@ machine-$(CONFIG_PLAT_SPEAR)		+= spear
->  # by CONFIG_* macro name.
->  plat-$(CONFIG_ARCH_OMAP)	+= omap
->  plat-$(CONFIG_ARCH_S3C64XX)	+= samsung
-> -plat-$(CONFIG_ARCH_S5PV210)	+= samsung
->  plat-$(CONFIG_PLAT_ORION)	+= orion
->  plat-$(CONFIG_PLAT_PXA)		+= pxa
->  plat-$(CONFIG_PLAT_S3C24XX)	+= samsung
-> diff --git a/arch/arm/plat-samsung/Kconfig b/arch/arm/plat-samsung/Kconfig
-> index 740bdb23f38a..1530946cc672 100644
-> --- a/arch/arm/plat-samsung/Kconfig
-> +++ b/arch/arm/plat-samsung/Kconfig
-> @@ -4,7 +4,7 @@
->  
->  config PLAT_SAMSUNG
->  	bool
-> -	depends on PLAT_S3C24XX || ARCH_S3C64XX || ARCH_S5PV210
-> +	depends on PLAT_S3C24XX || ARCH_S3C64XX
->  	default y
->  	select GENERIC_IRQ_CHIP
->  	select NO_IOPORT_MAP
-> diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
-> index 400a581c918c..16a0e5430b44 100644
-> --- a/drivers/mmc/host/Kconfig
-> +++ b/drivers/mmc/host/Kconfig
-> @@ -275,7 +275,7 @@ config MMC_SDHCI_TEGRA
->  
->  config MMC_SDHCI_S3C
->  	tristate "SDHCI support on Samsung S3C SoC"
-> -	depends on MMC_SDHCI && (PLAT_SAMSUNG || ARCH_EXYNOS)
-> +	depends on MMC_SDHCI && (PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS)
->  	help
->  	  This selects the Secure Digital Host Controller Interface (SDHCI)
->  	  often referrered to as the HSMMC block in some of the Samsung S3C
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index e3a2518503ed..8eb738cac0c7 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -394,7 +394,7 @@ config PWM_ROCKCHIP
->  
->  config PWM_SAMSUNG
->  	tristate "Samsung PWM support"
-> -	depends on PLAT_SAMSUNG || ARCH_EXYNOS
-> +	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
->  	help
->  	  Generic PWM framework driver for Samsung.
->  
-> diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
-> index 6f7fdcbb9151..355391ee643d 100644
-> --- a/drivers/spi/Kconfig
-> +++ b/drivers/spi/Kconfig
-> @@ -625,7 +625,7 @@ config SPI_S3C24XX_FIQ
->  
->  config SPI_S3C64XX
->  	tristate "Samsung S3C64XX series type SPI"
-> -	depends on (PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST)
-> +	depends on (PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST)
->  	help
->  	  SPI driver for Samsung S3C64XX and newer SoCs.
->  
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 4789b5d62f63..17f01cf3009c 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -237,7 +237,7 @@ config SERIAL_CLPS711X_CONSOLE
->  
->  config SERIAL_SAMSUNG
->  	tristate "Samsung SoC serial support"
-> -	depends on PLAT_SAMSUNG || ARCH_EXYNOS
-> +	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
->  	select SERIAL_CORE
->  	help
->  	  Support for the on-chip UARTs on the Samsung S3C24XX series CPUs,
-> diff --git a/sound/soc/samsung/Kconfig b/sound/soc/samsung/Kconfig
-> index 638983123d8f..7a0035dd9995 100644
-> --- a/sound/soc/samsung/Kconfig
-> +++ b/sound/soc/samsung/Kconfig
-> @@ -1,7 +1,7 @@
->  # SPDX-License-Identifier: GPL-2.0-only
->  menuconfig SND_SOC_SAMSUNG
->  	tristate "ASoC support for Samsung"
-> -	depends on PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST
-> +	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST
->  	depends on COMMON_CLK
->  	select SND_SOC_GENERIC_DMAENGINE_PCM
->  	---help---
-> -- 
-> 2.20.0
-> 
+[1] "[PATCH/RFC 00/19] arm64: dts: renesas: Initial support for R-Car M3-W+"
+    https://lore.kernel.org/linux-renesas-soc/20191007102332.12196-1-geert+renesas@glider.be/
+---
+ .../devicetree/bindings/serial/renesas,sci-serial.txt       | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+index b143d9a21b2de13e..a5edf4b70c7ab657 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
++++ b/Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
+@@ -54,8 +54,10 @@ Required properties:
+     - "renesas,hscif-r8a7794" for R8A7794 (R-Car E2) HSCIF compatible UART.
+     - "renesas,scif-r8a7795" for R8A7795 (R-Car H3) SCIF compatible UART.
+     - "renesas,hscif-r8a7795" for R8A7795 (R-Car H3) HSCIF compatible UART.
+-    - "renesas,scif-r8a7796" for R8A7796 (R-Car M3-W) SCIF compatible UART.
+-    - "renesas,hscif-r8a7796" for R8A7796 (R-Car M3-W) HSCIF compatible UART.
++    - "renesas,scif-r8a7796" for R8A77960 (R-Car M3-W) SCIF compatible UART.
++    - "renesas,hscif-r8a7796" for R8A77960 (R-Car M3-W) HSCIF compatible UART.
++    - "renesas,scif-r8a77961" for R8A77961 (R-Car M3-W+) SCIF compatible UART.
++    - "renesas,hscif-r8a77961" for R8A77961 (R-Car M3-W+) HSCIF compatible UART.
+     - "renesas,scif-r8a77965" for R8A77965 (R-Car M3-N) SCIF compatible UART.
+     - "renesas,hscif-r8a77965" for R8A77965 (R-Car M3-N) HSCIF compatible UART.
+     - "renesas,scif-r8a77970" for R8A77970 (R-Car V3M) SCIF compatible UART.
+-- 
+2.17.1
+
