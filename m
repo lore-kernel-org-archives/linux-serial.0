@@ -4,59 +4,59 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.2 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31D52CA9EB7
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Oct 2019 09:47:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58082CA9EB6
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Oct 2019 09:47:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 087C820650
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Oct 2019 09:47:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 22B1721872
+	for <linux-serial@archiver.kernel.org>; Wed, 23 Oct 2019 09:47:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=antmicro-com.20150623.gappssmtp.com header.i=@antmicro-com.20150623.gappssmtp.com header.b="ruKkzUTL"
+	dkim=pass (2048-bit key) header.d=antmicro-com.20150623.gappssmtp.com header.i=@antmicro-com.20150623.gappssmtp.com header.b="yRrrB+ap"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403892AbfJWJrC (ORCPT
+        id S2404018AbfJWJrM (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Oct 2019 05:47:02 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:44756 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403909AbfJWJrC (ORCPT
+        Wed, 23 Oct 2019 05:47:12 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:37152 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2403909AbfJWJrM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Oct 2019 05:47:02 -0400
-Received: by mail-lj1-f196.google.com with SMTP id c4so5244452lja.11
-        for <linux-serial@vger.kernel.org>; Wed, 23 Oct 2019 02:47:00 -0700 (PDT)
+        Wed, 23 Oct 2019 05:47:12 -0400
+Received: by mail-lj1-f193.google.com with SMTP id l21so20370066lje.4
+        for <linux-serial@vger.kernel.org>; Wed, 23 Oct 2019 02:47:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=antmicro-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=5D/98Qr89wbFVwJF6mHbYmv3d9VRFdzIYm8k8FiOp5Q=;
-        b=ruKkzUTLntI3NhquKP/wJRZ6g55f8qwwq2c7Nv6kUCNo/8739j6EMpou5VAceCo4F7
-         Kno/a9xQ/VkQKHNdgtUzz+41CwDqq48GcCyy/OMy0jflV+VgCFrsuMlJZgA+yQFCIKwY
-         py9iGz4lxpF9o7r44+4/1rOPtHKFqWbjAO0K3HHZ1pq7nftQLvdUqSUdRRt0S4xio/zb
-         hizTwaUGasT+nZ1LU1dSY3MPgpuhDGVmI00IxGEbgLOXl7bLapvovLDDSNBaUxC5zXK3
-         flndj8nW84qUVbUinRsHIvErTyxBw2NLcJiDAHo/UKeNufh3ZDD+VrXVrJZ6wPxx42Jg
-         WOIA==
+        bh=z5E9vMdaflAYdOO0uDYnAuQqG7zXE5bnhgh3Hkb4fu0=;
+        b=yRrrB+apvStxNdvUaxXg9aE730JEymnAhvMUsGXJjy3TwjuFQ9FFQTN2fYgXp4PAFX
+         eBVIjkDzf6E+IyLm54Al8QTH/9f2hawJerDRFO42ezJtxURQEE1vqQzoAcqjrKOOva9+
+         8Vlg78TnBuq9GdeZsxCo+OjnE6N/V0O5l1v39gWLwLZuNCv9rib1rZU5ZiXwZZF0iAi1
+         QeYGqxET3M65AxqJ7FrtHpQWLAfCjFIlYVdL5SUosKtKYcjZwFkFYtluSxCrWOFbdtwQ
+         CsciUfRVYfq/YgTJp0MAkBCRtYE4IJO9kGK7lrUT0dtOcyutP9s4XZLTTp6I1mAmEHJg
+         vOUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=5D/98Qr89wbFVwJF6mHbYmv3d9VRFdzIYm8k8FiOp5Q=;
-        b=Pwbh0p637dJJ7SYarzld7fYP3Zwn7fehVhPltFXos7rVmpODYLFhmIwnrU/t86uXpV
-         QS9NItFtmaXns3wd66vnnotBsTo79RmgskmAEq1rnaLdtPM4j78myOWook2Cw7RWleyT
-         EIK9fxY9FWYnFWYLJ3syKWqqelzsJyEA0FB9j0Eb712vyCsfRQb49GjSKRKXijwaiUVe
-         U7H72gMkxi2kIVXbP7E8KfmNCwPiR4PxFjvlYnEEF5ZL0tl2KLbepktAzbKWbR32davX
-         0Gq7wafaO1LB6fCinV+ueg168RYmUNQOd3HaKJxxlo87bBozE2wt9XvJ1SoaRxxFiLli
-         HWKg==
-X-Gm-Message-State: APjAAAVnLPSOZwUg0Pqj1wP8dsmciaELsAv7qUvbp2B0tQkKzJJVkBdM
-        8fwV2QXpLKbu5pnxkfLDGra9NQ==
-X-Google-Smtp-Source: APXvYqzTJhJA80ZJmQC6Cou54jLksvBq8AuI1omdjiPQAP0+y0Az4jIN3QbUqcMmN7Vw5GhWh0od6A==
-X-Received: by 2002:a2e:8684:: with SMTP id l4mr21199174lji.53.1571824019631;
-        Wed, 23 Oct 2019 02:46:59 -0700 (PDT)
+        bh=z5E9vMdaflAYdOO0uDYnAuQqG7zXE5bnhgh3Hkb4fu0=;
+        b=AcMvr6GjJDMnryLfio4+gEJ7+5j9a0FbBcZ6t+BTACpkR5yh6T3jqTZSanzbySTm8G
+         6XSugMjMy1g0tv4udrkii6m1QWKrZB59w7wHXH1MPQORuW7NY7nTuz7eWreehjbANimY
+         Ww/dLbC2d7tStbdzJjrxV43hhmaWAKynwdMUL3D2AnZw95u/jtIEguoo9SEqiTnYxosl
+         6PNYbN1HJ0Ee8pO6dPleXCPt4uGmbCGpJPg68I+MGihebQuApaWHhWvfd8QlpSeSUOkH
+         Dm8HQOdyrVkuZiciQT1jQrPHWN11k9gqtttdFXVu3qZdCghE5LI3bEvOZd+SBEophNUd
+         GWnA==
+X-Gm-Message-State: APjAAAWNJEDgaKIHRC/yjQqxRrq97ZqvZ00TCudt/lefeDyZSYcC8q8I
+        o2Kq5CQyitDTwAX2/db3n8jmCQ==
+X-Google-Smtp-Source: APXvYqwECn4TDrEhXArmXu+D/zcuw6cduoFSr/1s9scKUSiwBZz16Vub3aXs7nR21cECdA59IbUM0w==
+X-Received: by 2002:a2e:1214:: with SMTP id t20mr22627690lje.240.1571824030217;
+        Wed, 23 Oct 2019 02:47:10 -0700 (PDT)
 Received: from localhost.localdomain (d79-196.icpnet.pl. [77.65.79.196])
-        by smtp.gmail.com with ESMTPSA id k9sm1129230ljk.91.2019.10.23.02.46.58
+        by smtp.gmail.com with ESMTPSA id y26sm9630753ljj.90.2019.10.23.02.47.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Oct 2019 02:46:58 -0700 (PDT)
-Date:   Wed, 23 Oct 2019 11:46:54 +0200
+        Wed, 23 Oct 2019 02:47:09 -0700 (PDT)
+Date:   Wed, 23 Oct 2019 11:47:04 +0200
 From:   Mateusz Holenko <mholenko@antmicro.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
@@ -79,8 +79,8 @@ Cc:     Stafford Horne <shorne@gmail.com>,
         Icenowy Zheng <icenowy@aosc.io>,
         Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/4] dt-bindings: vendor: add vendor prefix for LiteX
-Message-ID: <20191023114634.13657-1-mholenko@antmicro.com>
+Subject: [PATCH v2 2/4] litex: add common LiteX header
+Message-ID: <20191023114634.13657-2-mholenko@antmicro.com>
 References: <20191023114634.13657-0-mholenko@antmicro.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -92,31 +92,99 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Filip Kokosinski <fkokosinski@internships.antmicro.com>
+It provides helper CSR access functions used by all
+LiteX drivers.
 
-Add vendor prefix for LiteX SoC builder.
-
-Signed-off-by: Filip Kokosinski <fkokosinski@internships.antmicro.com>
 Signed-off-by: Mateusz Holenko <mholenko@antmicro.com>
 ---
-No changes in v2.
+This commit has been introduced in v2 of the patchset.
 
- Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ MAINTAINERS           |  6 +++++
+ include/linux/litex.h | 59 +++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 65 insertions(+)
+ create mode 100644 include/linux/litex.h
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index 967e78c5ec0a..dae98f826290 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -537,6 +537,8 @@ patternProperties:
-     description: Linux-specific binding
-   "^linx,.*":
-     description: Linx Technologies
-+  "^litex,.*":
-+    description: LiteX SoC builder
-   "^lltc,.*":
-     description: Linear Technology Corporation
-   "^logicpd,.*":
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 296de2b51c83..eaa51209bfb2 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9493,6 +9493,12 @@ F:	Documentation/misc-devices/lis3lv02d.rst
+ F:	drivers/misc/lis3lv02d/
+ F:	drivers/platform/x86/hp_accel.c
+ 
++LITEX PLATFORM
++M:	Karol Gugala <kgugala@antmicro.com>
++M:	Mateusz Holenko <mholenko@antmicro.com>
++S:	Maintained
++F:	include/linux/litex.h
++
+ LIVE PATCHING
+ M:	Josh Poimboeuf <jpoimboe@redhat.com>
+ M:	Jiri Kosina <jikos@kernel.org>
+diff --git a/include/linux/litex.h b/include/linux/litex.h
+new file mode 100644
+index 000000000000..e793d2d7c881
+--- /dev/null
++++ b/include/linux/litex.h
+@@ -0,0 +1,59 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Common LiteX header providing
++ * helper functions for accessing CSRs.
++ *
++ * Copyright (C) 2019 Antmicro <www.antmicro.com>
++ */
++
++#ifndef _LINUX_LITEX_H
++#define _LINUX_LITEX_H
++
++#include <linux/io.h>
++#include <linux/types.h>
++#include <linux/compiler_types.h>
++
++#define LITEX_REG_SIZE             0x4
++#define LITEX_SUBREG_SIZE          0x1
++#define LITEX_SUBREG_SIZE_BIT      (LITEX_SUBREG_SIZE * 8)
++
++#ifdef __LITTLE_ENDIAN
++# define LITEX_READ_REG(addr)                  ioread32(addr)
++# define LITEX_READ_REG_OFF(addr, off)         ioread32(addr + off)
++# define LITEX_WRITE_REG(val, addr)            iowrite32(val, addr)
++# define LITEX_WRITE_REG_OFF(val, addr, off)   iowrite32(val, addr + off)
++#else
++# define LITEX_READ_REG(addr)                  ioread32be(addr)
++# define LITEX_READ_REG_OFF(addr, off)         ioread32be(addr + off)
++# define LITEX_WRITE_REG(val, addr)            iowrite32be(val, addr)
++# define LITEX_WRITE_REG_OFF(val, addr, off)   iowrite32be(val, addr + off)
++#endif
++
++/* Helper functions for manipulating LiteX registers */
++
++static inline void litex_set_reg(void __iomem *reg, u32 reg_size, u32 val)
++{
++	u32 shifted_data, shift, i;
++
++	for (i = 0; i < reg_size; ++i) {
++		shift = ((reg_size - i - 1) * LITEX_SUBREG_SIZE_BIT);
++		shifted_data = val >> shift;
++		LITEX_WRITE_REG(shifted_data, reg + (LITEX_REG_SIZE * i));
++	}
++}
++
++static inline u32 litex_get_reg(void __iomem *reg, u32 reg_size)
++{
++	u32 shifted_data, shift, i;
++	u32 result = 0;
++
++	for (i = 0; i < reg_size; ++i) {
++		shifted_data = LITEX_READ_REG(reg + (LITEX_REG_SIZE * i));
++		shift = ((reg_size - i - 1) * LITEX_SUBREG_SIZE_BIT);
++		result |= (shifted_data << shift);
++	}
++
++	return result;
++}
++
++#endif /* _LINUX_LITEX_H */
 -- 
 2.23.0
-
