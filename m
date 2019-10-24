@@ -1,134 +1,118 @@
-Return-Path: <SRS0=A6+4=YQ=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=Ln1x=YR=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADFF9CA9EB6
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Oct 2019 14:12:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18DBCCA9EAF
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Oct 2019 20:03:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7F3772086D
-	for <linux-serial@archiver.kernel.org>; Wed, 23 Oct 2019 14:12:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571839957;
-	bh=aVuB+kbcyfFS5VKfJ8DdDA8G+/LuM70QRxmO3sxZC4g=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=yN41t9VPdopCumoi5drXJmrMJ6Zl9necy8FPV/VD2BxIcd6+iZHKVKGo5faxZNw71
-	 vqQ01BkLLicnCe01q/ARElMOQn2Z4CjtqQfP+OtbBRnwWcdllcG1gHUjEMhf3O/v5I
-	 TX/xvk+sXgPly8RF8rhMBXVeKAcUIb5TI2GHzXvA=
+	by mail.kernel.org (Postfix) with ESMTP id E5FE920684
+	for <linux-serial@archiver.kernel.org>; Thu, 24 Oct 2019 20:03:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405590AbfJWOM3 (ORCPT
+        id S1726060AbfJXUDP convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 23 Oct 2019 10:12:29 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:44482 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405316AbfJWOM3 (ORCPT
+        Thu, 24 Oct 2019 16:03:15 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:33307 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725919AbfJXUDP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 23 Oct 2019 10:12:29 -0400
-Received: by mail-ed1-f66.google.com with SMTP id r16so15850605edq.11;
-        Wed, 23 Oct 2019 07:12:26 -0700 (PDT)
+        Thu, 24 Oct 2019 16:03:15 -0400
+Received: by mail-oi1-f196.google.com with SMTP id a15so21793577oic.0;
+        Thu, 24 Oct 2019 13:03:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=rcTMyT1DxjA7fFrS2w24JzXu+0SnoZwJUx+ToqxoQbY=;
-        b=FnUPTeClwtKNqLjQPMFpQm0p4bhUkbflqUYO7UEG+hyFyZVhjZiTsf4NoFA9XYyTe+
-         V/dhZuVxT3Og3mA0VGA6bPYauFduz338RgypJymPhfRg51npRHOlTYhy+YNyDVFa71CQ
-         pDXm3uKCqadjRMENRqPDgHPQbW0WnDZ8HxH+OSIvm669GTsR1Py5j/6hN8iftKbNYuQj
-         Cdn3tnGQqeWvA6whCrU2M3gSRLIWrkkfFeNtMOXiKvzwQZKZhIuXzpCaVXfxsKLS8y3h
-         ewjtgPv+7Qn9QzeZrh97+/bVEZ/VUGo75ZCNX68eHbcP8LS7UhxRs/H/LCm53dl331Ai
-         uqCg==
-X-Gm-Message-State: APjAAAXsFKwQJnoIOXwHhJO0UHlYmbfpppfA6Q8hEGWo6tnmE51WHufL
-        QdETKQ90T0PcgEi0bINFee0=
-X-Google-Smtp-Source: APXvYqxkd9DwWDZi/qHKDFHlMK0H8AlyVBKbEwPxz7lMmEqyzeKCvZ18JbP/k1gOjozG9nkYwgwxAA==
-X-Received: by 2002:a50:ee8d:: with SMTP id f13mr25391791edr.285.1571839945480;
-        Wed, 23 Oct 2019 07:12:25 -0700 (PDT)
-Received: from pi3 ([194.230.155.217])
-        by smtp.googlemail.com with ESMTPSA id p9sm60974edx.4.2019.10.23.07.12.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Oct 2019 07:12:24 -0700 (PDT)
-Date:   Wed, 23 Oct 2019 16:12:21 +0200
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Kukjin Kim <kgene@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Sangbeom Kim <sbkim73@samsung.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
-        <linux-samsung-soc@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Olof Johansson <olof@lixom.net>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        =?utf-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Faiz Abbas <faiz_abbas@ti.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        linux-serial@vger.kernel.org,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>
-Subject: Re: [PATCH 11/36] ARM: s5pv210: split from plat-samsung
-Message-ID: <20191023141221.GA11575@pi3>
-References: <20191010202802.1132272-1-arnd@arndb.de>
- <20191010203043.1241612-1-arnd@arndb.de>
- <20191010203043.1241612-11-arnd@arndb.de>
- <20191023121458.GB11048@pi3>
- <CAK8P3a3ktdA12vpi6zrTXs7-03efk2Ke_0_mQ9X40MLNcZnEqA@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=igey018oqO3qwGLtBSWMuY/lWCADIgWzGXzdJ93djzQ=;
+        b=ZP6iyDI7xuCIHoPJa4GItuVXkZyGqrtSUiP7+UouPD8wTQhPuAeNAMxcoRVfqHpxgh
+         Zzh9K1GvNufatBaVXyCMYthSo/4msYD7KYf7BOML8vPr7h6mz247EpJfFCBv1MDViORC
+         K8THOo7aalRVWURUoTqFKZ1vF7iSefQnlD98ZHJmcw/l26xRR8QUZ0WO4DS+1pmYN5QI
+         LRPs3JX5B9PNftXTRR68l6mzEdFJ36PEd7s/eO6Fb3+q9hyrQBtxEE23q2xz8H3QzVg2
+         uiAN54NUDOKdUzcMbR8EPMwpjcP/hRPoU0LEXxHSuAMBHxbZA5yVAFQSVwSz4wT81e9B
+         MLTw==
+X-Gm-Message-State: APjAAAV7Y2+UsO5WZoNGVPZazVsaAgC4jFwBXjp0I0kJu/eo3l30EhYP
+        wptkk6QD0APDzpGH5KGcRQ7LwhO2VG0=
+X-Google-Smtp-Source: APXvYqz16SuuuCtJ6biLPfr/1HjWSlBhlQoOjy7B2BFNBgaMd7fhOAkIkFhNXBLSOCRuEWwCpha+AQ==
+X-Received: by 2002:aca:aac6:: with SMTP id t189mr5022022oie.171.1571947392534;
+        Thu, 24 Oct 2019 13:03:12 -0700 (PDT)
+Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com. [209.85.167.179])
+        by smtp.gmail.com with ESMTPSA id n4sm2583538oic.2.2019.10.24.13.03.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Oct 2019 13:03:10 -0700 (PDT)
+Received: by mail-oi1-f179.google.com with SMTP id s5so6349123oie.10;
+        Thu, 24 Oct 2019 13:03:10 -0700 (PDT)
+X-Received: by 2002:aca:d88b:: with SMTP id p133mr6042557oig.51.1571947390375;
+ Thu, 24 Oct 2019 13:03:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a3ktdA12vpi6zrTXs7-03efk2Ke_0_mQ9X40MLNcZnEqA@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
+ <VE1PR04MB6687DA0268FAF03D3E77A23B8F6C0@VE1PR04MB6687.eurprd04.prod.outlook.com>
+ <e02fa027-9c78-3272-d2d7-7ad2b0ed3ab0@rasmusvillemoes.dk> <CADRPPNREUK1SVxO4P5qb2COn+T04dtYgpVEzrveKUt16hBqAtQ@mail.gmail.com>
+ <679bf33b-8c05-b77a-0cb2-d79dc5bfbe75@rasmusvillemoes.dk> <CADRPPNSiMUy77Dhxjg03sHDxyZzWf_BP8a5+fCncbynyO_cNGg@mail.gmail.com>
+ <VE1PR04MB676825D5709839AEF75ED44C91680@VE1PR04MB6768.eurprd04.prod.outlook.com>
+ <43033011-1a2a-dea3-e3c9-75895f997407@rasmusvillemoes.dk> <VE1PR04MB6768D3023802D62AB9FE2F6E916B0@VE1PR04MB6768.eurprd04.prod.outlook.com>
+In-Reply-To: <VE1PR04MB6768D3023802D62AB9FE2F6E916B0@VE1PR04MB6768.eurprd04.prod.outlook.com>
+From:   Li Yang <leoyang.li@nxp.com>
+Date:   Thu, 24 Oct 2019 15:02:59 -0500
+X-Gmail-Original-Message-ID: <CADRPPNRnOH9OgJC7VNYxj5tj87PQzHcvtofqK2xb4Uc7eNCkMg@mail.gmail.com>
+Message-ID: <CADRPPNRnOH9OgJC7VNYxj5tj87PQzHcvtofqK2xb4Uc7eNCkMg@mail.gmail.com>
+Subject: Re: [PATCH 0/7] towards QE support on ARM
+To:     Qiang Zhao <qiang.zhao@nxp.com>
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Timur Tabi <timur@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Oct 23, 2019 at 03:17:35PM +0200, Arnd Bergmann wrote:
-> On Wed, Oct 23, 2019 at 2:15 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
-> > On Thu, Oct 10, 2019 at 10:29:55PM +0200, Arnd Bergmann wrote:
-> > > These can be build completely independently, so split
-> > > the two Kconfig symbols.
-> > >       config DEBUG_S3C_UART0
-> > > -             depends on PLAT_SAMSUNG || ARCH_EXYNOS
-> > > +             depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
+On Tue, Oct 22, 2019 at 9:54 PM Qiang Zhao <qiang.zhao@nxp.com> wrote:
+>
+> On 22/10/2019 18:18, Rasmus Villemoes <linux@rasmusvillemoes.dk> wrote:
+> > -----Original Message-----
+> > From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> > Sent: 2019年10月22日 18:18
+> > To: Qiang Zhao <qiang.zhao@nxp.com>; Leo Li <leoyang.li@nxp.com>
+> > Cc: Timur Tabi <timur@kernel.org>; Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org>; linux-kernel@vger.kernel.org;
+> > linux-serial@vger.kernel.org; Jiri Slaby <jslaby@suse.com>;
+> > linuxppc-dev@lists.ozlabs.org; linux-arm-kernel@lists.infradead.org
+> > Subject: Re: [PATCH 0/7] towards QE support on ARM
 > >
-> > How are you going to select DEBUG_S5PV210_UART now?
-> 
-> I don't see a problem here, the patch should not change the behavior at all.
-> 
-> The whole entry now looks like:
-> 
->         config DEBUG_S3C_UART0
->                 depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS
->                 select DEBUG_EXYNOS_UART if ARCH_EXYNOS
->                 select DEBUG_S3C24XX_UART if ARCH_S3C24XX
->                 select DEBUG_S3C64XX_UART if ARCH_S3C64XX
->                 select DEBUG_S5PV210_UART if ARCH_S5PV210
->                 bool "Use Samsung S3C UART 0 for low-level debug"
-> 
-> so this will work as before with any of ARCH_EXYNOS, ARCH_S3C24XX,
-> ARCH_S3C64XX and ARCH_S5PV210.
-> 
-> What am I missing?
+> > On 22/10/2019 04.24, Qiang Zhao wrote:
+> > > On Mon, Oct 22, 2019 at 6:11 AM Leo Li wrote
+> >
+> > >> Right.  I'm really interested in getting this applied to my tree and
+> > >> make it upstream.  Zhao Qiang, can you help to review Rasmus's
+> > >> patches and comment?
+> > >
+> > > As you know, I maintained a similar patchset removing PPC, and someone
+> > told me qe_ic should moved into drivers/irqchip/.
+> > > I also thought qe_ic is a interrupt control driver, should be moved into dir
+> > irqchip.
+> >
+> > Yes, and I also plan to do that at some point. However, that's orthogonal to
+> > making the driver build on ARM, so I don't want to mix the two. Making it
+> > usable on ARM is my/our priority currently.
+> >
+> > I'd appreciate your input on my patches.
+>
+> Yes, we can put this patchset in first place, ensure it can build and work on ARM, then push another patchset to move qe_ic.
 
-Ah, everything is OK, I mixed up removed with added line so it looked
-reversed (removal of ARCH_S5PV210).
+Right.  I would only accept a patch series that can really build and
+work on ARM.  At least the current out-of-tree patches can make it
+work on ARM.  If we accept partial changes, there is no way to make it
+work on the latest kernel on ARM then.
 
-Looks good.
-
-Best regards,
-Krzysztof
-
+Regards,
+Leo
