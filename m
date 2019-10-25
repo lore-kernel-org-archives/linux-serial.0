@@ -2,105 +2,116 @@ Return-Path: <SRS0=5Xrm=YS=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9F0CCA9EA0
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Oct 2019 12:42:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48F76CA9EBD
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Oct 2019 12:56:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 79FFA21D71
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Oct 2019 12:42:31 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="jKc8arHS"
+	by mail.kernel.org (Postfix) with ESMTP id 2A244206DD
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Oct 2019 12:56:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504544AbfJYMmX (ORCPT
+        id S2439483AbfJYM4u (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Oct 2019 08:42:23 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:44669 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2504541AbfJYMla (ORCPT
+        Fri, 25 Oct 2019 08:56:50 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:39448 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2438960AbfJYM4u (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Oct 2019 08:41:30 -0400
-Received: by mail-lf1-f67.google.com with SMTP id g3so1608807lfb.11
-        for <linux-serial@vger.kernel.org>; Fri, 25 Oct 2019 05:41:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=vlC6c2mLi3OFOrUlQdhK/IVokJUA43/TPqoeSB5eKTw=;
-        b=jKc8arHSmx2y4WG6E6pxme2fpIipCQg3lj3xfo/NE13M78vwKaac8r87bS926CIlOe
-         G8HjFyTR6NrrVEFfD2f145q33utez8HIUqLF7wEvHmOg4BYXyAYRqgdqUUut5SdZTL4F
-         2f2wUM68LsShYG8dX6rYt18eoJRknZHtyrkIQ=
+        Fri, 25 Oct 2019 08:56:50 -0400
+Received: by mail-ot1-f66.google.com with SMTP id s22so2006038otr.6;
+        Fri, 25 Oct 2019 05:56:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=vlC6c2mLi3OFOrUlQdhK/IVokJUA43/TPqoeSB5eKTw=;
-        b=hVYdTvClfrSqU9qdMSWhIEtojvvmuIIOYbjhFMHSFzYT2AD5fn36ikqQPBE/rS7v34
-         FrN2rHCMbKceb1op09D0vb7jPDNWJsA+KWXTV3LEu3TzEJ+CGjnuIhC7985vLTIyokFZ
-         bd9u2X8tDcngYuR+1dorO9E5SyJrool7R3ANOKNikV5KTQo8WfHCDOr+donS5N0ub5fv
-         e5PttbQFN1tAds/uBMK14r97RXamBAW+ynR2Byjff0R7cKp5Y9nZGMXeFbA9pgAg6sHe
-         0l8e8i8tBeN2kJ6MhNhEeYfw5P5Zh8/AsYapBLFuwix5XXfIU8GRfA46wPWl18TZ50+B
-         4Pnw==
-X-Gm-Message-State: APjAAAVBder9OxaIr0OpLrPDKdqLuEx3SPKGC5F+uZUpiaaIgCssxGGz
-        t3zn7gT3DPdUdoHnbtrN/p4/Vw==
-X-Google-Smtp-Source: APXvYqyOmmWKDKIwnL+Dz+ZoHsEg95l0xY0B31Vt0IMF9adkil2MZ7+eec85cG8dv6k9ac6S6ZK0SA==
-X-Received: by 2002:a19:f018:: with SMTP id p24mr2542630lfc.93.1572007288855;
-        Fri, 25 Oct 2019 05:41:28 -0700 (PDT)
-Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id 10sm821028lfy.57.2019.10.25.05.41.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Oct 2019 05:41:28 -0700 (PDT)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
-        Christophe Leroy <christophe.leroy@c-s.fr>
-Cc:     linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Scott Wood <oss@buserror.net>,
-        Valentin Longchamp <valentin.longchamp@keymile.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-serial@vger.kernel.org
-Subject: [PATCH v2 20/23] serial: make SERIAL_QE depend on PPC32
-Date:   Fri, 25 Oct 2019 14:40:55 +0200
-Message-Id: <20191025124058.22580-21-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191025124058.22580-1-linux@rasmusvillemoes.dk>
-References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
- <20191025124058.22580-1-linux@rasmusvillemoes.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Hj0kvi+vVbyfIJI30UL1Cpmnr3zPIpRpeA9rzCxH54U=;
+        b=i4grp6CEYmePOU1teGRTNDyM9fK1TwP6tYXBDB42ixbJv13HBSaq/HFy009r3uSHwx
+         m0ekoivF8mqUvLu4J3A1sOldaUxEa5ApHVpmLESwt538mP1ukX8mWgRQ4pxunTeqmW/8
+         CoWy2Q6VSgooWr3TfYk+DWpYxP0PcjD1HyKvE4M9XwRlOTS2WpIQG+y41cBPL6B8piMT
+         TxEnaHdPGSX92ijd4f5VC8RMOrkLv1QdUaVl5BXkP1l6QSqhKfeJ7R7cJcy50W93Z8xH
+         kNYfSNrIpBiYnpQXesGynQNBkp44CG2g/2Rw4470hGmwC5gKkxaDfxsgoMjrAOVQ0rDw
+         5sZA==
+X-Gm-Message-State: APjAAAU1Ubs1KWk8brAjVr3bgfyEwrWdR+P753sznOEpLUwZ0rwB/Xuj
+        Lg+VP8lPJPIGu6OEQttEyAUuzgC825SpEPCzNk4=
+X-Google-Smtp-Source: APXvYqyGZIlyFoM/7awbc2SMmvfFJP+ChjfvSdn1k5oIzBGk3fKsfPhFJ49DQVrqFikAaFR6J0W278qfnN/Mt4JoFLk=
+X-Received: by 2002:a9d:422:: with SMTP id 31mr2544652otc.107.1572008208146;
+ Fri, 25 Oct 2019 05:56:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190114172930.7508-1-robh@kernel.org> <20190114172930.7508-2-robh@kernel.org>
+In-Reply-To: <20190114172930.7508-2-robh@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 25 Oct 2019 14:56:36 +0200
+Message-ID: <CAMuHMdVnPREgPmn5TAmiqXSxuAYKv_AkQ6StZiDH79vKMRuBGg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] dt-bindings: serial: Move renesas,rzn1-uart into
+ the snps-dw-apb-uart binding
+To:     Rob Herring <robh@kernel.org>
+Cc:     "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Simon Horman <horms+renesas@verge.net.au>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Currently SERIAL_QE depends on QUICC_ENGINE, which in turn depends on
-PPC32, so this doesn't add any extra dependency. However, the QUICC
-Engine IP block also exists on some arm boards, so this serves as
-preparation for removing the PPC32 dependency from QUICC_ENGINE and
-build the QE support in drivers/soc/fsl/qe, while preventing
-allmodconfig/randconfig failures due to SERIAL_QE not being supported
-yet.
+Hi Rob,
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- drivers/tty/serial/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+On Mon, Jan 14, 2019 at 6:30 PM Rob Herring <robh@kernel.org> wrote:
+> The renesas,rzn1-uart binding only differs in compatible string from the
+> snps-dw-apb-uart binding. Move it there, converting it to json-schema in
+> the process.
+>
+> Cc: Phil Edworthy <phil.edworthy@renesas.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-serial@vger.kernel.org
+> Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+> Signed-off-by: Rob Herring <robh@kernel.org>
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 67a9eb3f94ce..78246f535809 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1056,6 +1056,7 @@ config SERIAL_LANTIQ
- config SERIAL_QE
- 	tristate "Freescale QUICC Engine serial port support"
- 	depends on QUICC_ENGINE
-+	depends on PPC32
- 	select SERIAL_CORE
- 	select FW_LOADER
- 	help
+> --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> @@ -15,6 +15,11 @@ allOf:
+>  properties:
+>    compatible:
+>      oneOf:
+> +      - items:
+> +          - enum:
+> +              - renesas,r9a06g032-uart
+> +              - renesas,r9a06g033-uart
+> +          - const: renesas,rzn1-uart
+>        - items:
+>            - enum:
+>                - rockchip,px30-uart
+
+With ARCH=arm and shmobile_defconfig, "make dtbs_check
+DT_SCHEMA_FILES=Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml"
+complains:
+
+arch/arm/boot/dts/r9a06g032-rzn1d400-db.dt.yaml: compatible:
+['renesas,r9a06g032-uart', 'renesas,rzn1-uart', 'snps,dw-apb-uart'] is
+not valid under any of the given schemas
+arch/arm/boot/dts/r9a06g032-rzn1d400-db.dt.yaml: compatible:
+['renesas,r9a06g032-uart', 'renesas,rzn1-uart', 'snps,dw-apb-uart'] is
+not valid under any of the given schemas
+arch/arm/boot/dts/r9a06g032-rzn1d400-db.dt.yaml: compatible:
+['renesas,r9a06g032-uart', 'renesas,rzn1-uart', 'snps,dw-apb-uart'] is
+not valid under any of the given schemas
+
+Do you know what's wrong?
+Thanks!
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.23.0
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
