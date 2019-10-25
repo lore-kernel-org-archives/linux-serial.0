@@ -1,118 +1,84 @@
-Return-Path: <SRS0=Ln1x=YR=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=5Xrm=YS=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18DBCCA9EAF
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Oct 2019 20:03:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08B04CA9EA0
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Oct 2019 10:53:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E5FE920684
-	for <linux-serial@archiver.kernel.org>; Thu, 24 Oct 2019 20:03:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CBB2321929
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Oct 2019 10:53:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726060AbfJXUDP convert rfc822-to-8bit (ORCPT
+        id S2392288AbfJYKxV (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 24 Oct 2019 16:03:15 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:33307 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725919AbfJXUDP (ORCPT
+        Fri, 25 Oct 2019 06:53:21 -0400
+Received: from sci-ig2.spreadtrum.com ([222.66.158.135]:48316 "EHLO
+        SHSQR01.unisoc.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2390265AbfJYKxV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 24 Oct 2019 16:03:15 -0400
-Received: by mail-oi1-f196.google.com with SMTP id a15so21793577oic.0;
-        Thu, 24 Oct 2019 13:03:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=igey018oqO3qwGLtBSWMuY/lWCADIgWzGXzdJ93djzQ=;
-        b=ZP6iyDI7xuCIHoPJa4GItuVXkZyGqrtSUiP7+UouPD8wTQhPuAeNAMxcoRVfqHpxgh
-         Zzh9K1GvNufatBaVXyCMYthSo/4msYD7KYf7BOML8vPr7h6mz247EpJfFCBv1MDViORC
-         K8THOo7aalRVWURUoTqFKZ1vF7iSefQnlD98ZHJmcw/l26xRR8QUZ0WO4DS+1pmYN5QI
-         LRPs3JX5B9PNftXTRR68l6mzEdFJ36PEd7s/eO6Fb3+q9hyrQBtxEE23q2xz8H3QzVg2
-         uiAN54NUDOKdUzcMbR8EPMwpjcP/hRPoU0LEXxHSuAMBHxbZA5yVAFQSVwSz4wT81e9B
-         MLTw==
-X-Gm-Message-State: APjAAAV7Y2+UsO5WZoNGVPZazVsaAgC4jFwBXjp0I0kJu/eo3l30EhYP
-        wptkk6QD0APDzpGH5KGcRQ7LwhO2VG0=
-X-Google-Smtp-Source: APXvYqz16SuuuCtJ6biLPfr/1HjWSlBhlQoOjy7B2BFNBgaMd7fhOAkIkFhNXBLSOCRuEWwCpha+AQ==
-X-Received: by 2002:aca:aac6:: with SMTP id t189mr5022022oie.171.1571947392534;
-        Thu, 24 Oct 2019 13:03:12 -0700 (PDT)
-Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com. [209.85.167.179])
-        by smtp.gmail.com with ESMTPSA id n4sm2583538oic.2.2019.10.24.13.03.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Oct 2019 13:03:10 -0700 (PDT)
-Received: by mail-oi1-f179.google.com with SMTP id s5so6349123oie.10;
-        Thu, 24 Oct 2019 13:03:10 -0700 (PDT)
-X-Received: by 2002:aca:d88b:: with SMTP id p133mr6042557oig.51.1571947390375;
- Thu, 24 Oct 2019 13:03:10 -0700 (PDT)
+        Fri, 25 Oct 2019 06:53:21 -0400
+X-Greylist: delayed 1403 seconds by postgrey-1.27 at vger.kernel.org; Fri, 25 Oct 2019 06:53:20 EDT
+Received: from SHSQR01.spreadtrum.com (localhost [127.0.0.2] (may be forged))
+        by SHSQR01.unisoc.com with ESMTP id x9PATuPm052443
+        for <linux-serial@vger.kernel.org>; Fri, 25 Oct 2019 18:29:56 +0800 (CST)
+        (envelope-from Chunyan.Zhang@unisoc.com)
+Received: from ig2.spreadtrum.com (bjmbx01.spreadtrum.com [10.0.64.7])
+        by SHSQR01.spreadtrum.com with ESMTPS id x9PATZEq051688
+        (version=TLSv1 cipher=AES256-SHA bits=256 verify=NO);
+        Fri, 25 Oct 2019 18:29:35 +0800 (CST)
+        (envelope-from Chunyan.Zhang@unisoc.com)
+Received: from localhost (10.0.74.79) by BJMBX01.spreadtrum.com (10.0.64.7)
+ with Microsoft SMTP Server (TLS) id 15.0.847.32; Fri, 25 Oct 2019 18:29:17
+ +0800
+From:   Chunyan Zhang <chunyan.zhang@unisoc.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     <devicetree@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Chunyan Zhang <chunyan.zhang@unisoc.com>
+Subject: [PATCH 0/3] Add Unisoc's SC9863A support
+Date:   Fri, 25 Oct 2019 18:29:12 +0800
+Message-ID: <20191025102915.23677-1-chunyan.zhang@unisoc.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
- <VE1PR04MB6687DA0268FAF03D3E77A23B8F6C0@VE1PR04MB6687.eurprd04.prod.outlook.com>
- <e02fa027-9c78-3272-d2d7-7ad2b0ed3ab0@rasmusvillemoes.dk> <CADRPPNREUK1SVxO4P5qb2COn+T04dtYgpVEzrveKUt16hBqAtQ@mail.gmail.com>
- <679bf33b-8c05-b77a-0cb2-d79dc5bfbe75@rasmusvillemoes.dk> <CADRPPNSiMUy77Dhxjg03sHDxyZzWf_BP8a5+fCncbynyO_cNGg@mail.gmail.com>
- <VE1PR04MB676825D5709839AEF75ED44C91680@VE1PR04MB6768.eurprd04.prod.outlook.com>
- <43033011-1a2a-dea3-e3c9-75895f997407@rasmusvillemoes.dk> <VE1PR04MB6768D3023802D62AB9FE2F6E916B0@VE1PR04MB6768.eurprd04.prod.outlook.com>
-In-Reply-To: <VE1PR04MB6768D3023802D62AB9FE2F6E916B0@VE1PR04MB6768.eurprd04.prod.outlook.com>
-From:   Li Yang <leoyang.li@nxp.com>
-Date:   Thu, 24 Oct 2019 15:02:59 -0500
-X-Gmail-Original-Message-ID: <CADRPPNRnOH9OgJC7VNYxj5tj87PQzHcvtofqK2xb4Uc7eNCkMg@mail.gmail.com>
-Message-ID: <CADRPPNRnOH9OgJC7VNYxj5tj87PQzHcvtofqK2xb4Uc7eNCkMg@mail.gmail.com>
-Subject: Re: [PATCH 0/7] towards QE support on ARM
-To:     Qiang Zhao <qiang.zhao@nxp.com>
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Timur Tabi <timur@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.0.74.79]
+X-ClientProxiedBy: SHCAS03.spreadtrum.com (10.0.1.207) To
+ BJMBX01.spreadtrum.com (10.0.64.7)
+X-MAIL: SHSQR01.spreadtrum.com x9PATZEq051688
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Oct 22, 2019 at 9:54 PM Qiang Zhao <qiang.zhao@nxp.com> wrote:
->
-> On 22/10/2019 18:18, Rasmus Villemoes <linux@rasmusvillemoes.dk> wrote:
-> > -----Original Message-----
-> > From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-> > Sent: 2019年10月22日 18:18
-> > To: Qiang Zhao <qiang.zhao@nxp.com>; Leo Li <leoyang.li@nxp.com>
-> > Cc: Timur Tabi <timur@kernel.org>; Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org>; linux-kernel@vger.kernel.org;
-> > linux-serial@vger.kernel.org; Jiri Slaby <jslaby@suse.com>;
-> > linuxppc-dev@lists.ozlabs.org; linux-arm-kernel@lists.infradead.org
-> > Subject: Re: [PATCH 0/7] towards QE support on ARM
-> >
-> > On 22/10/2019 04.24, Qiang Zhao wrote:
-> > > On Mon, Oct 22, 2019 at 6:11 AM Leo Li wrote
-> >
-> > >> Right.  I'm really interested in getting this applied to my tree and
-> > >> make it upstream.  Zhao Qiang, can you help to review Rasmus's
-> > >> patches and comment?
-> > >
-> > > As you know, I maintained a similar patchset removing PPC, and someone
-> > told me qe_ic should moved into drivers/irqchip/.
-> > > I also thought qe_ic is a interrupt control driver, should be moved into dir
-> > irqchip.
-> >
-> > Yes, and I also plan to do that at some point. However, that's orthogonal to
-> > making the driver build on ARM, so I don't want to mix the two. Making it
-> > usable on ARM is my/our priority currently.
-> >
-> > I'd appreciate your input on my patches.
->
-> Yes, we can put this patchset in first place, ensure it can build and work on ARM, then push another patchset to move qe_ic.
 
-Right.  I would only accept a patch series that can really build and
-work on ARM.  At least the current out-of-tree patches can make it
-work on ARM.  If we accept partial changes, there is no way to make it
-work on the latest kernel on ARM then.
+SC9863A has Octa-core ARM Cortex A55 application processor. Find more
+details about this chip on the website: http://www.unisoc.com/sc9863a
 
-Regards,
-Leo
+Chunyan Zhang (3):
+  dt-bindings: serial: Add a new compatible string for SC9863A
+  dt-bindings: arm: Add bindings for Unisoc's SC9863A
+  arm64: dts: Add Unisoc's SC9863A SoC support
+
+ .../devicetree/bindings/arm/sprd.txt          |   8 +
+ .../devicetree/bindings/serial/sprd-uart.txt  |   1 +
+ arch/arm64/boot/dts/sprd/Makefile             |   3 +-
+ arch/arm64/boot/dts/sprd/sc9863a.dtsi         | 536 ++++++++++++++++++
+ arch/arm64/boot/dts/sprd/sharkl3.dtsi         | 188 ++++++
+ arch/arm64/boot/dts/sprd/sp9863a-1h10.dts     |  40 ++
+ 6 files changed, 775 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm64/boot/dts/sprd/sc9863a.dtsi
+ create mode 100644 arch/arm64/boot/dts/sprd/sharkl3.dtsi
+ create mode 100644 arch/arm64/boot/dts/sprd/sp9863a-1h10.dts
+
+-- 
+2.20.1
+
+
