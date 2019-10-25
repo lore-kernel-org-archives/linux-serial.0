@@ -2,122 +2,102 @@ Return-Path: <SRS0=5Xrm=YS=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA795CA9EA0
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Oct 2019 14:38:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8737CA9EA0
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Oct 2019 23:36:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A9BE521D81
-	for <linux-serial@archiver.kernel.org>; Fri, 25 Oct 2019 14:38:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 881E820578
+	for <linux-serial@archiver.kernel.org>; Fri, 25 Oct 2019 23:36:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1572014332;
-	bh=AkE3nm4ubF5/EO1cFZkqukp8zA1WVu1viPzaXXARFtM=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=JDpPfn5W7e0/YbXiMy7mBtiAHZHZjDrXx+FbLMmA71yc7v1lAvkwQQlXQzZfymntw
-	 oVA7HlGD/68FS9i108okDsmNdHFhCE7RvLGKZKU0qxJdTmC6OfFJ4j8Br4E0qoERXO
-	 jxiVm0I8QHpzxbptH962A32hSJNi/HJYumbM5VIk=
+	s=default; t=1572046612;
+	bh=Q+R4TaibVUX4jiQdxeM1DVlHqPXZJ16mAiIKYbQ1GnM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=EqOU4BScctiF/Pp2p7wP5+LtUjA8gDmomUL67iKpS534xJ2rgt40flihXTJx9IV1D
+	 Dk0WRh+9UC+IuTU4M2whAcc8Sx3BJW885vaSDBstd9eFa+cLsMsouNW1X987TmyfJ1
+	 mzxmo8i32wvLKoRxneslOuSyTGCgzUnx//4r+PT8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439947AbfJYOiw (ORCPT
+        id S1726060AbfJYXgw (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Oct 2019 10:38:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44740 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2436853AbfJYOiw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Oct 2019 10:38:52 -0400
-Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 90BD621D81;
-        Fri, 25 Oct 2019 14:38:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572014330;
-        bh=AkE3nm4ubF5/EO1cFZkqukp8zA1WVu1viPzaXXARFtM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=YkHZ5Kdw6OzUmMHmtFlubwGhtQz9dGNx+Nl9C0c/bcWv7WTEvxqpev9ijPcwINPf0
-         tqLjwnFbxagnzTARckMiLqCzWs3gFT1D2GEbkk0y+OfcIcVWrKwm9Wo7xWzr7BvGdU
-         dK5K6kHroj/+8GlqBM2Dpip/Zn+T5k9di40qo1Ws=
-Received: by mail-qt1-f181.google.com with SMTP id o25so3555747qtr.5;
-        Fri, 25 Oct 2019 07:38:50 -0700 (PDT)
-X-Gm-Message-State: APjAAAUDUhNbgXo7GY4vyhfjT7/8DC4JphKIFES16hft01zzeLrKy6dS
-        dG4FZJxpaaZOJHzNSfW/v2bf8PQLwfGiQFWtxQ==
-X-Google-Smtp-Source: APXvYqwP7zlM/7H+9Klz2cNbc5ag3yy3z3qx99EgctsarDBZBEDTLP4BVusibZ9dUCf9ps4wwRmLN7FD5B0tlpr89PI=
-X-Received: by 2002:ac8:44d9:: with SMTP id b25mr3451209qto.300.1572014329732;
- Fri, 25 Oct 2019 07:38:49 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190114172930.7508-1-robh@kernel.org> <20190114172930.7508-2-robh@kernel.org>
- <CAMuHMdVnPREgPmn5TAmiqXSxuAYKv_AkQ6StZiDH79vKMRuBGg@mail.gmail.com>
-In-Reply-To: <CAMuHMdVnPREgPmn5TAmiqXSxuAYKv_AkQ6StZiDH79vKMRuBGg@mail.gmail.com>
+        Fri, 25 Oct 2019 19:36:52 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:42027 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725919AbfJYXgv (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 25 Oct 2019 19:36:51 -0400
+Received: by mail-oi1-f195.google.com with SMTP id i185so2700358oif.9;
+        Fri, 25 Oct 2019 16:36:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=QelFjeLnXTzQm+/jVY211bMV4zz68SHWxUjeRItzkdk=;
+        b=mF3WkcocZxZ6ge77t8sPJf9EGSCJ5cQOBMVlAQmjF8upskmK43O7OWOuv3dKGQRzjZ
+         QVT/CtPfMBZyimnXylHH8N0bGztRBLck/iT9IcW1V4jjbkunyLs9s85sJOZkQgp5Xz7M
+         X5WweB0olvDAxm/jPX6+uP3S7+jHFCUOva76+7230msyJObruMWqN69vtbk7/+N8eXpI
+         jd4vNZAOw7ECdVRQSCAFMZGLTZ05ey/4O1Zmr4SNAtihEOj8A/vR4Y3tGlQUhQnVsvYm
+         OBYmzdJDiBrb8qL1AjA0uSzQGKg510Hs7W3ZePZnzuWwXGSLnhakElh7pFwRz9bj/I6Y
+         SiLA==
+X-Gm-Message-State: APjAAAWw5lX9OQ0mNI/HbAFBwHOWNXR8yaFZL4rAjAdcels+tLK1Gafv
+        RbJxzrwqIlqqm+bvnKJ7tg==
+X-Google-Smtp-Source: APXvYqzUdlvG3uMUrVRI3bkL4tL/thoeu4v0Mzcv11oPGxvYMjVRskwBP70/En6JHS2t/rJdUtp9lA==
+X-Received: by 2002:aca:f403:: with SMTP id s3mr5214754oih.23.1572046609344;
+        Fri, 25 Oct 2019 16:36:49 -0700 (PDT)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id m50sm1252608otc.80.2019.10.25.16.36.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Oct 2019 16:36:48 -0700 (PDT)
+Date:   Fri, 25 Oct 2019 18:36:48 -0500
 From:   Rob Herring <robh@kernel.org>
-Date:   Fri, 25 Oct 2019 09:38:37 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqLu3MAkY_YuSG=WtDCB3kwmQURstTwy2aVdkGv7m0JgMQ@mail.gmail.com>
-Message-ID: <CAL_JsqLu3MAkY_YuSG=WtDCB3kwmQURstTwy2aVdkGv7m0JgMQ@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] dt-bindings: serial: Move renesas,rzn1-uart into
- the snps-dw-apb-uart binding
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Simon Horman <horms+renesas@verge.net.au>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
+To:     Mateusz Holenko <mholenko@antmicro.com>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jiri Slaby <jslaby@suse.com>, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org, Stafford Horne <shorne@gmail.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Filip Kokosinski <fkokosinski@internships.antmicro.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] dt-bindings: vendor: add vendor prefix for LiteX
+Message-ID: <20191025233648.GA10625@bogus>
+References: <20191023114634.13657-0-mholenko@antmicro.com>
+ <20191023114634.13657-1-mholenko@antmicro.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191023114634.13657-1-mholenko@antmicro.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Oct 25, 2019 at 7:56 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Rob,
->
-> On Mon, Jan 14, 2019 at 6:30 PM Rob Herring <robh@kernel.org> wrote:
-> > The renesas,rzn1-uart binding only differs in compatible string from the
-> > snps-dw-apb-uart binding. Move it there, converting it to json-schema in
-> > the process.
-> >
-> > Cc: Phil Edworthy <phil.edworthy@renesas.com>
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: linux-serial@vger.kernel.org
-> > Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
-> > Signed-off-by: Rob Herring <robh@kernel.org>
->
-> > --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> > +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> > @@ -15,6 +15,11 @@ allOf:
-> >  properties:
-> >    compatible:
-> >      oneOf:
-> > +      - items:
-> > +          - enum:
-> > +              - renesas,r9a06g032-uart
-> > +              - renesas,r9a06g033-uart
-> > +          - const: renesas,rzn1-uart
-> >        - items:
-> >            - enum:
-> >                - rockchip,px30-uart
->
-> With ARCH=arm and shmobile_defconfig, "make dtbs_check
-> DT_SCHEMA_FILES=Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml"
-> complains:
->
-> arch/arm/boot/dts/r9a06g032-rzn1d400-db.dt.yaml: compatible:
-> ['renesas,r9a06g032-uart', 'renesas,rzn1-uart', 'snps,dw-apb-uart'] is
-> not valid under any of the given schemas
-> arch/arm/boot/dts/r9a06g032-rzn1d400-db.dt.yaml: compatible:
-> ['renesas,r9a06g032-uart', 'renesas,rzn1-uart', 'snps,dw-apb-uart'] is
-> not valid under any of the given schemas
-> arch/arm/boot/dts/r9a06g032-rzn1d400-db.dt.yaml: compatible:
-> ['renesas,r9a06g032-uart', 'renesas,rzn1-uart', 'snps,dw-apb-uart'] is
-> not valid under any of the given schemas
->
-> Do you know what's wrong?
+On Wed, 23 Oct 2019 11:46:54 +0200, Mateusz Holenko wrote:
+> From: Filip Kokosinski <fkokosinski@internships.antmicro.com>
+> 
+> Add vendor prefix for LiteX SoC builder.
+> 
+> Signed-off-by: Filip Kokosinski <fkokosinski@internships.antmicro.com>
+> Signed-off-by: Mateusz Holenko <mholenko@antmicro.com>
+> ---
+> No changes in v2.
+> 
+>  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
 
-The addition doesn't allow for "snps,dw-apb-uart". Guess I relied on
-the binding doc being accurate. So we need to either drop it from dts
-files if the generic compatible is never useful (maybe simple cases
-like earlycon?) or add it here.
-
-Rob
+Acked-by: Rob Herring <robh@kernel.org>
