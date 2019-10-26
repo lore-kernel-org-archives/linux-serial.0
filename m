@@ -2,99 +2,106 @@ Return-Path: <SRS0=cigD=YT=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71E14CA9EA0
-	for <linux-serial@archiver.kernel.org>; Sat, 26 Oct 2019 00:22:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0769CA9EA0
+	for <linux-serial@archiver.kernel.org>; Sat, 26 Oct 2019 02:11:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 376EB20679
-	for <linux-serial@archiver.kernel.org>; Sat, 26 Oct 2019 00:22:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1572049346;
-	bh=nScLw/OJ9wg1qptMf2Vzmj0uEQ9CKNJv/d836gXcLhw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=YCCI28mIU26ICiMHjEQ9xyPERU7CQQiGv5ubolLKp/poqJNWsVAbOED5YkVa+hkWe
-	 8fsjQqMRBAHP5cDs0/4fEvcBdKZ6CTjjJCn0oCFa43Ef8qlazorVWp7VFKQ91VQkwy
-	 Jpm06s6rEyE1XAWdhb9zT0q5GWojkjGQSxg2WiRk=
+	by mail.kernel.org (Postfix) with ESMTP id 8046A21D7B
+	for <linux-serial@archiver.kernel.org>; Sat, 26 Oct 2019 02:11:32 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LfxksKUJ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725887AbfJZAWZ (ORCPT
+        id S1726060AbfJZCLc (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Oct 2019 20:22:25 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:35020 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725865AbfJZAWZ (ORCPT
+        Fri, 25 Oct 2019 22:11:32 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:43326 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725954AbfJZCLc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Oct 2019 20:22:25 -0400
-Received: by mail-oi1-f196.google.com with SMTP id n16so489401oig.2;
-        Fri, 25 Oct 2019 17:22:25 -0700 (PDT)
+        Fri, 25 Oct 2019 22:11:32 -0400
+Received: by mail-wr1-f67.google.com with SMTP id c2so4298447wrr.10;
+        Fri, 25 Oct 2019 19:11:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9ALQdhB5h3cKalAoVvOYU2qpe569Ks5R2FX4vQ5KEM0=;
+        b=LfxksKUJvXxznvcTIid8C09TRv1SJkXLT6K706LJCbwK/TUbqfTzijG0vqZ4Bx4Buc
+         qE0kRJT37SvRiWvnx6tw1TafGfA9AZXMHj4u44Hy3XwsRxo/TQuOCrSvbeOsLMutt4vw
+         HIfhktuA02JuxlizIP01M5kIXRNoo3kjbOZ6g3JkEE+WFVWT9179q0LXW8ykKc+u1sXD
+         iaZdHVrqDjqODrJE0m0KY9h0wwx9xy3l/xs8Zn1vMFhgjJ8EnDBNLUOmDb6Ph7cH1YtH
+         MS2Mb/T33eDeRGCGp7mQCALzFLOWPqp4mUm7RVsgQtH3gPCsTXVCFupKyZulzLfHm2WV
+         u9Ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=sD4+t4O6I6/yZhYnM4tEH5BwgfVk2lbaDmYQkcXTSss=;
-        b=bIhRNJiq+XDcyzZbjNCkXtk6Z6gfnIG65URm3REhs+T5wPrI66YnDKgarBaVbMXgHo
-         hPwtcGMul0jOaRigNCg9cSRUb2qNDklVXyy6G2HrhM6yjabhfh4/yi99ecQDuBELhVuG
-         N4oIwReRmtranj2EL1VepAPoZiOTS2clv8B1F7IcfjrO/8gVlXm38iZZRnGNYKsp5Mf/
-         yJmEK5JunsgluNwEkzWNivBfMRu47Xbb44ka1mL9v0fzA4NX3z8uIKp6GZDwrgOgolEb
-         0r05koOV7Y7XFFWvHvAACD/KdCGWgp3OLyqxCuIVA+FiFBweRlmuUNpW0NYRQyZ13n/U
-         lseQ==
-X-Gm-Message-State: APjAAAWei0K/BfnygqqBnG4y1Ofgq6vqQNn/BKnyFC99OyGvYHuaT06d
-        CurnlTYhVellzcTalCDQfg==
-X-Google-Smtp-Source: APXvYqzsZncJeOkIGZCFFf85Cr89J0uYfd90yKvsRDYwFdeZQ5fBsMc84Nw4AHv7I6cSQQVxvqdMqQ==
-X-Received: by 2002:aca:1703:: with SMTP id j3mr5091232oii.94.1572049344641;
-        Fri, 25 Oct 2019 17:22:24 -0700 (PDT)
-Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id p184sm1062879oia.11.2019.10.25.17.22.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Oct 2019 17:22:24 -0700 (PDT)
-Date:   Fri, 25 Oct 2019 19:22:23 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH v2] dt-bindings: serial: sh-sci: Document r8a77961
- bindings
-Message-ID: <20191026002223.GA14822@bogus>
-References: <20191023123010.12501-1-geert+renesas@glider.be>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9ALQdhB5h3cKalAoVvOYU2qpe569Ks5R2FX4vQ5KEM0=;
+        b=lYvQL49eUhpcKr1F56EsjTcqphBxg021ZezNVHMTaaT3snNu+y66N17XWW5UzjRVBK
+         xql2bB82iiP8/8bs5c03tqtgCksrf1lmWuwNNGvLO1xhPk5OnCVWknFYqtZZ7rSxHhg3
+         7qjaVU/oTOXX67tmNMnAQ8+TMaNGuE6Q2ngEverEwV+JbtjRGCvmv7yH0z5Aj+y4R4gc
+         tgyZwO4+4+Jcs+1065K8DWZL/aaEk6lAQHJWYBw2Yn9G2IChUP8OsmLfJy6DxH/fZDsF
+         iHWH61MPLPS05DyIlvyID5YgpW4ZX2QyOFctB0EzqwE5qbmyoYLbP0TBgvvRbFEI0XcW
+         k2nw==
+X-Gm-Message-State: APjAAAXXYFvDXs8Wtby1fJvtHY/nUvUSqVUU7e0BcmBm10SbCYuUl6OE
+        fpeoDgOFnit3Fn8PEmikyGbs2WlPPqo8xmu6Qujmcw==
+X-Google-Smtp-Source: APXvYqy9WIvJ8mlOEnf1bsTVAEZqNwjann/RSa9Iiqk+fNe+gqyRdq1x/PwGQ7DH0ZwB9Oy00XC30ELcQR3QqRApCzg=
+X-Received: by 2002:adf:e403:: with SMTP id g3mr4931960wrm.128.1572055888508;
+ Fri, 25 Oct 2019 19:11:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191023123010.12501-1-geert+renesas@glider.be>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20191025102915.23677-1-chunyan.zhang@unisoc.com> <20191025102915.23677-2-chunyan.zhang@unisoc.com>
+In-Reply-To: <20191025102915.23677-2-chunyan.zhang@unisoc.com>
+From:   Orson Zhai <orsonzhai@gmail.com>
+Date:   Sat, 26 Oct 2019 10:11:17 +0800
+Message-ID: <CA+H2tpHkYwQLEO7ftLebErsEXBQnRS37gFOoKoG+_jnt5+0r-A@mail.gmail.com>
+Subject: Re: [PATCH 1/3] dt-bindings: serial: Add a new compatible string for SC9863A
+To:     Chunyan Zhang <chunyan.zhang@unisoc.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 23 Oct 2019 14:30:10 +0200, Geert Uytterhoeven wrote:
-> Document support for the SCIF and HSCIF serial ports in the Renesas
-> R-Car M3-W+ (R8A77961) SoC.
-> 
-> Update all references to R-Car M3-W from "r8a7796" to "r8a77960", to
-> avoid confusion between R-Car M3-W (R8A77960) and M3-W+.
-> 
-> No driver update is needed.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> ---
-> v2:
->   - Split v1[1] in per-subsystem series,
->   - Add Reviewed-by,
->   - Update R-Car M3-W references.
-> 
-> [1] "[PATCH/RFC 00/19] arm64: dts: renesas: Initial support for R-Car M3-W+"
->     https://lore.kernel.org/linux-renesas-soc/20191007102332.12196-1-geert+renesas@glider.be/
-> ---
->  .../devicetree/bindings/serial/renesas,sci-serial.txt       | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
+Hi Chunyan,
 
-Acked-by: Rob Herring <robh@kernel.org>
+On Fri, Oct 25, 2019 at 6:30 PM Chunyan Zhang <chunyan.zhang@unisoc.com> wrote:
+>
+>
+> SC9863A use the same serial device which SC9836 uses.
+>
+> Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
+> ---
+>  Documentation/devicetree/bindings/serial/sprd-uart.txt | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/Documentation/devicetree/bindings/serial/sprd-uart.txt b/Documentation/devicetree/bindings/serial/sprd-uart.txt
+> index 9607dc616205..0a9f8a7809e1 100644
+> --- a/Documentation/devicetree/bindings/serial/sprd-uart.txt
+> +++ b/Documentation/devicetree/bindings/serial/sprd-uart.txt
+> @@ -4,6 +4,7 @@ Required properties:
+>  - compatible: must be one of:
+>    * "sprd,sc9836-uart"
+>    * "sprd,sc9860-uart", "sprd,sc9836-uart"
+> +  * "sprd,sc9863-uart", "sprd,sc9836-uart"
+
+Duplicated 9836 with above line?
+
+-Orson
+
+>
+>  - reg: offset and length of the register set for the device
+>  - interrupts: exactly one interrupt specifier
+> --
+> 2.20.1
+>
+>
