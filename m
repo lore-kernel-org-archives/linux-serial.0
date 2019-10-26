@@ -4,106 +4,97 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD9F2CA9EBC
-	for <linux-serial@archiver.kernel.org>; Sat, 26 Oct 2019 00:14:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71E14CA9EA0
+	for <linux-serial@archiver.kernel.org>; Sat, 26 Oct 2019 00:22:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AB550206DD
-	for <linux-serial@archiver.kernel.org>; Sat, 26 Oct 2019 00:14:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 376EB20679
+	for <linux-serial@archiver.kernel.org>; Sat, 26 Oct 2019 00:22:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1572048899;
-	bh=QOOyFWPjQXLwaN1Tit7zQQ7wBCOPVs0Fsr/AynP69F0=;
+	s=default; t=1572049346;
+	bh=nScLw/OJ9wg1qptMf2Vzmj0uEQ9CKNJv/d836gXcLhw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=jbv/Yz75+Q1araEE6EJNogDDP8yS8ReNNwrBFoe4Woav8Bp+k3xxlhOi17oWeqoKw
-	 WvsZRhPauNH00HlsWB2k3HXOvViAIoJFQ1v931Ftt4TAvHeqGwjfNskHHqWllrHyu3
-	 6B1KaynWp4PcQGACzm1FCLV/8dyLmPSYFoi91AGo=
+	b=YCCI28mIU26ICiMHjEQ9xyPERU7CQQiGv5ubolLKp/poqJNWsVAbOED5YkVa+hkWe
+	 8fsjQqMRBAHP5cDs0/4fEvcBdKZ6CTjjJCn0oCFa43Ef8qlazorVWp7VFKQ91VQkwy
+	 Jpm06s6rEyE1XAWdhb9zT0q5GWojkjGQSxg2WiRk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726030AbfJZAO4 (ORCPT
+        id S1725887AbfJZAWZ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 25 Oct 2019 20:14:56 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:37374 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725955AbfJZAO4 (ORCPT
+        Fri, 25 Oct 2019 20:22:25 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:35020 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725865AbfJZAWZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 25 Oct 2019 20:14:56 -0400
-Received: by mail-ot1-f66.google.com with SMTP id 53so3244364otv.4;
-        Fri, 25 Oct 2019 17:14:54 -0700 (PDT)
+        Fri, 25 Oct 2019 20:22:25 -0400
+Received: by mail-oi1-f196.google.com with SMTP id n16so489401oig.2;
+        Fri, 25 Oct 2019 17:22:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=b/fqKzX/vnTAVXMLKRT3D/CXlKeMTuTH7nGknDqJCHE=;
-        b=CwOqd67V71iNrl5V4cIF+g+AdlF8RlHY2SG/VJwNNedOX/kG1pyhl7oRKKHuH7ID0s
-         hFQB725lMDfiNZK8hfX7cQ6K8QEtoIvA4V7t6h7tmoXCiGj29WZPfBnTSizKqfqr6YjP
-         QUZzT6lxC9izWhqJ9jsOVwQRckP50BgOsjTLJTOTVF6ooF0v/splhQewm1fzPNs19Bv2
-         3zt3TKdRDKRQX7Af+KuHwrXcQcGzXef3Nz03DE+57Z7rOFXOFS1IYzjVY5yzHe0WSMeM
-         kuTF/iNBTHJrClvthZ4IM5YOQGE3JY9Dj5Guq9SOexGVMeYDvlHDUjnB6fKPWRv0A+n9
-         EnLQ==
-X-Gm-Message-State: APjAAAVhCVe38/FBA/hGaXj61XG9V9cTQML3opZjkAP6mMwoiCrkLmoK
-        KrjckWoRaWi0D7LAtZhZQg==
-X-Google-Smtp-Source: APXvYqyK0gWiKJACY34bQRCBt53yRAiREV/XUoMTHmacL7PgkxZyfxgYB+13H3jFjEqEmo1FjWtfIQ==
-X-Received: by 2002:a9d:721c:: with SMTP id u28mr4945875otj.359.1572048894172;
-        Fri, 25 Oct 2019 17:14:54 -0700 (PDT)
+        bh=sD4+t4O6I6/yZhYnM4tEH5BwgfVk2lbaDmYQkcXTSss=;
+        b=bIhRNJiq+XDcyzZbjNCkXtk6Z6gfnIG65URm3REhs+T5wPrI66YnDKgarBaVbMXgHo
+         hPwtcGMul0jOaRigNCg9cSRUb2qNDklVXyy6G2HrhM6yjabhfh4/yi99ecQDuBELhVuG
+         N4oIwReRmtranj2EL1VepAPoZiOTS2clv8B1F7IcfjrO/8gVlXm38iZZRnGNYKsp5Mf/
+         yJmEK5JunsgluNwEkzWNivBfMRu47Xbb44ka1mL9v0fzA4NX3z8uIKp6GZDwrgOgolEb
+         0r05koOV7Y7XFFWvHvAACD/KdCGWgp3OLyqxCuIVA+FiFBweRlmuUNpW0NYRQyZ13n/U
+         lseQ==
+X-Gm-Message-State: APjAAAWei0K/BfnygqqBnG4y1Ofgq6vqQNn/BKnyFC99OyGvYHuaT06d
+        CurnlTYhVellzcTalCDQfg==
+X-Google-Smtp-Source: APXvYqzsZncJeOkIGZCFFf85Cr89J0uYfd90yKvsRDYwFdeZQ5fBsMc84Nw4AHv7I6cSQQVxvqdMqQ==
+X-Received: by 2002:aca:1703:: with SMTP id j3mr5091232oii.94.1572049344641;
+        Fri, 25 Oct 2019 17:22:24 -0700 (PDT)
 Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id c21sm1218018otp.15.2019.10.25.17.14.53
+        by smtp.gmail.com with ESMTPSA id p184sm1062879oia.11.2019.10.25.17.22.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Oct 2019 17:14:53 -0700 (PDT)
-Date:   Fri, 25 Oct 2019 19:14:52 -0500
+        Fri, 25 Oct 2019 17:22:24 -0700 (PDT)
+Date:   Fri, 25 Oct 2019 19:22:23 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Mateusz Holenko <mholenko@antmicro.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, devicetree@vger.kernel.org,
-        linux-serial@vger.kernel.org, Stafford Horne <shorne@gmail.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Filip Kokosinski <fkokosinski@internships.antmicro.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Icenowy Zheng <icenowy@aosc.io>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] dt-bindings: serial: document LiteUART bindings
-Message-ID: <20191026001452.GA2522@bogus>
-References: <20191023114634.13657-0-mholenko@antmicro.com>
- <20191023114634.13657-3-mholenko@antmicro.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Eugeniu Rosca <erosca@de.adit-jv.com>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: Re: [PATCH v2] dt-bindings: serial: sh-sci: Document r8a77961
+ bindings
+Message-ID: <20191026002223.GA14822@bogus>
+References: <20191023123010.12501-1-geert+renesas@glider.be>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191023114634.13657-3-mholenko@antmicro.com>
+In-Reply-To: <20191023123010.12501-1-geert+renesas@glider.be>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 23 Oct 2019 11:47:14 +0200, Mateusz Holenko wrote:
-> From: Filip Kokosinski <fkokosinski@internships.antmicro.com>
+On Wed, 23 Oct 2019 14:30:10 +0200, Geert Uytterhoeven wrote:
+> Document support for the SCIF and HSCIF serial ports in the Renesas
+> R-Car M3-W+ (R8A77961) SoC.
 > 
-> Add documentation for LiteUART devicetree bindings.
+> Update all references to R-Car M3-W from "r8a7796" to "r8a77960", to
+> avoid confusion between R-Car M3-W (R8A77960) and M3-W+.
 > 
-> Signed-off-by: Filip Kokosinski <fkokosinski@internships.antmicro.com>
-> Signed-off-by: Mateusz Holenko <mholenko@antmicro.com>
+> No driver update is needed.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 > ---
-> Changes in v2:
-> - binding description rewritten to a yaml schema file
-> - added interrupt line
-> - fixed unit address
-> - patch number changed from 2 to 3
+> v2:
+>   - Split v1[1] in per-subsystem series,
+>   - Add Reviewed-by,
+>   - Update R-Car M3-W references.
 > 
->  .../bindings/serial/litex,liteuart.yaml       | 38 +++++++++++++++++++
->  MAINTAINERS                                   |  1 +
->  2 files changed, 39 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/litex,liteuart.yaml
+> [1] "[PATCH/RFC 00/19] arm64: dts: renesas: Initial support for R-Car M3-W+"
+>     https://lore.kernel.org/linux-renesas-soc/20191007102332.12196-1-geert+renesas@glider.be/
+> ---
+>  .../devicetree/bindings/serial/renesas,sci-serial.txt       | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 > 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Rob Herring <robh@kernel.org>
