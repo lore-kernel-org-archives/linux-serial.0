@@ -1,71 +1,101 @@
-Return-Path: <SRS0=cigD=YT=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=1yIU=YU=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05802CA9EBE
-	for <linux-serial@archiver.kernel.org>; Sat, 26 Oct 2019 20:45:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1DC8CA9EBC
+	for <linux-serial@archiver.kernel.org>; Sun, 27 Oct 2019 05:55:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C180620867
-	for <linux-serial@archiver.kernel.org>; Sat, 26 Oct 2019 20:45:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C7E7D21726
+	for <linux-serial@archiver.kernel.org>; Sun, 27 Oct 2019 05:55:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1572122711;
-	bh=DoiqC5n4O5p1SIvWDN9Zgky/N1zlFWTAwnTl3K+Rlmg=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:List-ID:From;
-	b=hoa7A/CzZqraa8nAWyFRN7p74s/lzJdH8wZyUp4q+8UKDoxYXoyTDzEj/y9mb93Gq
-	 Dtvm2F40f6I2c7xDorXTosZZoc+df12ypXdG/SSbTY7IVwnq4C3RqfbgiQhpekA5p9
-	 3xAcrvRPUKBd46XAvY18DwQc2paiki5Y8iyc75Bs=
+	s=default; t=1572155733;
+	bh=jtBjayTTb5ZpeqPXv+78jPZ2NRE4DZyshLqrtUTXw6g=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=rcG6Op/a3rUvImmn5iclVtDUcn9SG1ZVuAei5NeRydungZ9dIUCebNZD/CsozcFAZ
+	 sdpushmD5coDhy3Zr2Y2+dNsaKwHCR7qBwr0Xgkj+9YXhTnNZ6xvR+0M434o2SA/tm
+	 yhqIptWJgn40h+MaegBDv5oRFyzNgPH+/kUIhe1M=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726489AbfJZUpI (ORCPT
+        id S1725935AbfJ0Fzb (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 26 Oct 2019 16:45:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38004 "EHLO mail.kernel.org"
+        Sun, 27 Oct 2019 01:55:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51206 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726707AbfJZUpI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 26 Oct 2019 16:45:08 -0400
-Subject: Re: [GIT PULL] TTY/Serial fix for 5.4-rc5
+        id S1725838AbfJ0Fzb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 27 Oct 2019 01:55:31 -0400
+Received: from localhost (mobile-166-176-122-39.mycingular.net [166.176.122.39])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 145872070B;
+        Sun, 27 Oct 2019 05:55:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572122707;
-        bh=DoiqC5n4O5p1SIvWDN9Zgky/N1zlFWTAwnTl3K+Rlmg=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=s8SP9CaoYcmphAUMSYNk/RgsKxGWHPIoz7Wmv1ALQeEUMGiOgkWIixtMFC5eSF4r1
-         K6ujHRMGRIq14MgAWJbJPMlaMld8MY6LGSnF9frruEvFl7ib9k8H4bqKo3GPYXnW7d
-         EXU4VrBJxQIABl7R9oxeQcFqxTZPH6I4V/DEenXQ=
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20191026181903.GA649190@kroah.com>
-References: <20191026181903.GA649190@kroah.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20191026181903.GA649190@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.4-rc5
-X-PR-Tracked-Commit-Id: f50b6805dbb993152025ec04dea094c40cc93a0c
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 297689545916c40b65a86d4871e5610a024c8993
-Message-Id: <157212270769.6077.12928537949082949893.pr-tracker-bot@kernel.org>
-Date:   Sat, 26 Oct 2019 20:45:07 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        s=default; t=1572155730;
+        bh=jtBjayTTb5ZpeqPXv+78jPZ2NRE4DZyshLqrtUTXw6g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Qli9x4PUhclzEsZxZRV3YpBo1LT67a+K6My4btjyn4ZpDsyzafbW7SPcGpF93DWXc
+         VRp/Ere+1aWRDln+T3pGKOg6M6eZK9GVsB8LA2A3tL1yzmhwF51XkAsXzkJDTdbb1x
+         z34qUacypGwLiReOHTtwogPB6UkGxNN6nbDvpqlU=
+Date:   Sun, 27 Oct 2019 00:55:28 -0500
+From:   Andy Gross <agross@kernel.org>
+To:     Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Cc:     bjorn.andersson@linaro.org, gregkh@linuxfoundation.org,
+        jslaby@suse.com, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] tty: serial: msm_serial: Fix flow control
+Message-ID: <20191027055528.GJ5514@hector.lan>
+Mail-Followup-To: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+        bjorn.andersson@linaro.org, gregkh@linuxfoundation.org,
+        jslaby@suse.com, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20191021154616.25457-1-jeffrey.l.hugo@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191021154616.25457-1-jeffrey.l.hugo@gmail.com>
+User-Agent: Mutt/1.5.23.1 (2014-03-12)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The pull request you sent on Sat, 26 Oct 2019 20:19:03 +0200:
+On Mon, Oct 21, 2019 at 08:46:16AM -0700, Jeffrey Hugo wrote:
+> hci_qca interfaces to the wcn3990 via a uart_dm on the msm8998 mtp and
+> Lenovo Miix 630 laptop.  As part of initializing the wcn3990, hci_qca
+> disables flow, configures the uart baudrate, and then reenables flow - at
+> which point an event is expected to be received over the uart from the
+> wcn3990.  It is observed that this event comes after the baudrate change
+> but before hci_qca re-enables flow. This is unexpected, and is a result of
+> msm_reset() being broken.
+> 
+> According to the uart_dm hardware documentation, it is recommended that
+> automatic hardware flow control be enabled by setting RX_RDY_CTL.  Auto
+> hw flow control will manage RFR based on the configured watermark.  When
+> there is space to receive data, the hw will assert RFR.  When the watermark
+> is hit, the hw will de-assert RFR.
+> 
+> The hardware documentation indicates that RFR can me manually managed via
+> CR when RX_RDY_CTL is not set.  SET_RFR asserts RFR, and RESET_RFR
+> de-asserts RFR.
+> 
+> msm_reset() is broken because after resetting the hardware, it
+> unconditionally asserts RFR via SET_RFR.  This enables flow regardless of
+> the current configuration, and would undo a previous flow disable
+> operation.  It should instead de-assert RFR via RESET_RFR to block flow
+> until the hardware is reconfigured.  msm_serial should rely on the client
+> to specify that flow should be enabled, either via mctrl() or the termios
+> structure, and only assert RFR in response to those triggers.
+> 
+> Fixes: 04896a77a97b ("msm_serial: serial driver for MSM7K onboard serial peripheral.")
+> Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+> ---
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.4-rc5
+Reviewed-by: Andy Gross <agross@kernel.org>
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/297689545916c40b65a86d4871e5610a024c8993
+Greg, can you pick this one up?
 
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+Thanks,
+Andy
