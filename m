@@ -2,107 +2,149 @@ Return-Path: <SRS0=S9+s=YW=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB02ACA9EAE
-	for <linux-serial@archiver.kernel.org>; Tue, 29 Oct 2019 21:46:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5370CCA9EAE
+	for <linux-serial@archiver.kernel.org>; Tue, 29 Oct 2019 22:44:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9A0A721721
-	for <linux-serial@archiver.kernel.org>; Tue, 29 Oct 2019 21:46:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1572385574;
-	bh=cOrTVqvB+bpLeUHvdQ9wpiF/tsADAa/IgEYhzucn2Qk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=dEOmla6EEsNzblzFvbsozYytsh1AM/oUGrtTvuZdnqz3nyh5orK4e+mVeEAjqV/UP
-	 6pkrHtKRXisoQ1fzDmm6FnGEJGKYbXc1nYCdYd2PPK9PG8t6HOdvEsrtIYszX2lWx6
-	 3UTslWKTeKuBskEZbnH+GEYKm2JoJ8XMyjKEpk7w=
+	by mail.kernel.org (Postfix) with ESMTP id EA0DC20862
+	for <linux-serial@archiver.kernel.org>; Tue, 29 Oct 2019 22:44:36 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="ammmhVMd"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729025AbfJ2VqO (ORCPT
+        id S1726009AbfJ2Wog (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 29 Oct 2019 17:46:14 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:36915 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726364AbfJ2VqO (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 29 Oct 2019 17:46:14 -0400
-Received: by mail-oi1-f196.google.com with SMTP id y194so198145oie.4;
-        Tue, 29 Oct 2019 14:46:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=yJCcYJZxu+ClTD5mONx1BPgjKtKL8ywc/i/0sGI3cjs=;
-        b=jMaATXtT4AlBJO6UwDQBAezFkZfONXxgzzBYfks+mwlX2NuVIgtETGovUPHVpfNCiG
-         HceETN0GOruKMxUEKz7pBaC9yXdW9bEiqi2+QBGxQr0E/aGo4PzYjaGZoAsHwBqkfvvQ
-         kbrQUHImwci1kZm+jlkCzUzSAKgxqWYkrf3JkJhl1LwYe/lCUbZ8G6bo7/Wnak3QTbx6
-         +bsRt+QMkpybAQPgmpi1fKsKyRpeMCtp94TQu/p/EZh5BpAsLYS2ULa2P16EvaAdw1ZN
-         zVt8JpX3L6SthF/gfQWt/Uhy9Cb8AA9zFHcAZzQ62JnPB1Fk2HgWi0gL6zVtUg7zXi0w
-         44Og==
-X-Gm-Message-State: APjAAAVA1Vrq4/RQ6npf9rjzoTr+8qhl+il+pENn6wDcoykUumGA87VF
-        pL6FrZtLGeNSd1zbya5vJjurfLuqsA==
-X-Google-Smtp-Source: APXvYqwPXaijas36sViYh9m6BOsvN8Quaw3gVnxynwsDpGLqfDJ59AdtsfwABefP7yfQUtH/S0XxvA==
-X-Received: by 2002:aca:fc92:: with SMTP id a140mr5726869oii.153.1572385571564;
-        Tue, 29 Oct 2019 14:46:11 -0700 (PDT)
-Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id 88sm75531otb.63.2019.10.29.14.46.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Oct 2019 14:46:10 -0700 (PDT)
-Date:   Tue, 29 Oct 2019 16:46:10 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Chunyan Zhang <chunyan.zhang@unisoc.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>
-Subject: Re: [PATCH 2/3] dt-bindings: arm: Add bindings for Unisoc's SC9863A
-Message-ID: <20191029214610.GA20831@bogus>
-References: <20191025102915.23677-1-chunyan.zhang@unisoc.com>
- <20191025102915.23677-3-chunyan.zhang@unisoc.com>
+        Tue, 29 Oct 2019 18:44:36 -0400
+Received: from mail-eopbgr50066.outbound.protection.outlook.com ([40.107.5.66]:22950
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725830AbfJ2Wog (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 29 Oct 2019 18:44:36 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BkFpA6Q+GhzLGDenxbmSIDGxZVop0PIszwCyNdBvkDiXCSOB9NPmD8QFJiqmtw3dnVCbGuz4AQUBjI8QjMbYbzwa8yflcicdGwfGlYMGH9vCBtz5rwhqfj3l9DwgmdbwhF586w6H1cZTiaTVMvGgmu3d1CZbjY8+GnLedSFYeoAx1Y/hjmvf2p0HVM1RpE/d9AwPVIQ4oyBPIzd5hWO51Kce/5zN6I6OGi0BVRpj5FmKJ2UiMx9sO3C18ZCAM4DVbj9mh3cKn1chsqs/UQ8G03uslUwgeZ65UwaKFtlZ156eRu3o9bpi2Q9hbnqSSL6KHXP/wsWvnpggF0fOxcXG6A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GRBpJvjoxoG+b5Dpj6WaVjn3b9s8OVOD0L9cM3sVYf0=;
+ b=Xp6QeNgc3kF8lrjlDxxm7h9SIOiNdC/4gmlQVGNgG4yyzP8Ek6hkLy+FBTCT4itCZgj9pU9rUd51KFoQYpkMsWTPyukcdzV51KIUf+UoGhcAnubFCHJwQnk1mXl5Qfft+gKJQmQetkwutG08I3NLzA8kL838iTuW7eyTM/pE0svtRYmlAm3SS3m6cSE8UMp9UDe1cpGrH/0f0px3gHyDxKBT71e9lY7Ku9m5ZnIxJy/WJt3jLu3vx1w+T6tisKWZT6l8g+snsYu9wKVmaW4ZosK+J/xIYBsFHLDTbC2tGInFXundHGgUanYmrZXaRtjBnex/9OExpvisrpn+8q15yQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GRBpJvjoxoG+b5Dpj6WaVjn3b9s8OVOD0L9cM3sVYf0=;
+ b=ammmhVMdEYiOh6hOtUAP72gs3FQ2RCPWlwwpsnMDvd1uf8pmv4DaeyjctPvAUSy2RyaSJ5T2txpQ+KLtAsqkXS1mtp+bJVpjtr3CTCSH1T87dp+WSVlS77hQsRrmJSlDdTTz1ABAoG5rkMMErIo/FEleZE9xC1hWjCoyY4LG8YA=
+Received: from VE1PR04MB6687.eurprd04.prod.outlook.com (20.179.234.30) by
+ VE1PR04MB6543.eurprd04.prod.outlook.com (20.179.235.139) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2387.24; Tue, 29 Oct 2019 22:44:32 +0000
+Received: from VE1PR04MB6687.eurprd04.prod.outlook.com
+ ([fe80::c93:c279:545b:b6b6]) by VE1PR04MB6687.eurprd04.prod.outlook.com
+ ([fe80::c93:c279:545b:b6b6%3]) with mapi id 15.20.2387.027; Tue, 29 Oct 2019
+ 22:44:32 +0000
+From:   Leo Li <leoyang.li@nxp.com>
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Qiang Zhao <qiang.zhao@nxp.com>,
+        Christophe Leroy <christophe.leroy@c-s.fr>
+CC:     "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Scott Wood <oss@buserror.net>,
+        Valentin Longchamp <valentin.longchamp@keymile.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Subject: RE: [PATCH v2 20/23] serial: make SERIAL_QE depend on PPC32
+Thread-Topic: [PATCH v2 20/23] serial: make SERIAL_QE depend on PPC32
+Thread-Index: AQHVizGGK1AbHr0Ag0SyT1h3bdNPg6dyPcDA
+Date:   Tue, 29 Oct 2019 22:44:32 +0000
+Message-ID: <VE1PR04MB6687CA599C89D46076C9B3518F610@VE1PR04MB6687.eurprd04.prod.outlook.com>
+References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
+ <20191025124058.22580-1-linux@rasmusvillemoes.dk>
+ <20191025124058.22580-21-linux@rasmusvillemoes.dk>
+In-Reply-To: <20191025124058.22580-21-linux@rasmusvillemoes.dk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=leoyang.li@nxp.com; 
+x-originating-ip: [64.157.242.222]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: a3e55dcc-d939-4d99-6d34-08d75cc19112
+x-ms-traffictypediagnostic: VE1PR04MB6543:|VE1PR04MB6543:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VE1PR04MB6543B7A877FD5E98318097AD8F610@VE1PR04MB6543.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6108;
+x-forefront-prvs: 0205EDCD76
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(39860400002)(396003)(366004)(136003)(346002)(13464003)(189003)(199004)(476003)(7736002)(81166006)(8936002)(486006)(8676002)(11346002)(9686003)(81156014)(6246003)(446003)(55016002)(74316002)(6436002)(33656002)(2906002)(5660300002)(186003)(26005)(305945005)(229853002)(7696005)(14454004)(102836004)(76176011)(6506007)(316002)(25786009)(66066001)(52536014)(54906003)(110136005)(256004)(4326008)(478600001)(66476007)(66446008)(64756008)(66556008)(66946007)(76116006)(86362001)(71200400001)(71190400001)(99286004)(6116002)(3846002)(53546011);DIR:OUT;SFP:1101;SCL:1;SRVR:VE1PR04MB6543;H:VE1PR04MB6687.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: YQgycBYrXi9jcB4wzGPw0x8N9jH4WK21MqUtjzhkBpmZIghiEAOOKu95oQ+s1h4NNlNBIKFLw+kXzXQmaJSOSLHeZZL2sUjTFGFadFX87W02zHlR7e+o19Bn8cktNA+xXo35fJQjSzYHkodh1oLlNCwk1wu0QlwNRbghIg+e60zM6ZV+2Q34J48zZ8gib1Ak2LfHmP4cV5pj2nNQCUuclzzUMDb0LTZ5kCURPRX/4pqv/d1QPrqiZA7cFlqS4R/GpKZx9oGJk4AijRp3YuGILMMBpeQJ/jUkgiimVcIp9wUo3OqVEEyHbE9bvH+bytZlRS0PYNtM5ivRcYFONzDwWnPTzl4ieBWzBIOZYxAI2JyPmXGod+P0B3Du7vwwmniurHv8iX+r/CcZtg9vAK03peKraFexNBnasoSd6uBJQUuSMn0zbdwXmMRPdazQHTcX
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191025102915.23677-3-chunyan.zhang@unisoc.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a3e55dcc-d939-4d99-6d34-08d75cc19112
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Oct 2019 22:44:32.6792
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 0ExFPY5twVtJy4ZezuXPXbnyoeFBTa9UfIfdDgB9+Xcj8txvBAnc+XTeR3HI0E9gZNrc2dMjoI7reZh7W6qfmA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6543
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Oct 25, 2019 at 06:29:14PM +0800, Chunyan Zhang wrote:
-> 
-> Added bindings for Unisoc's SC9863A board and SC9863A SoC.
-> 
-> Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
+
+
+> -----Original Message-----
+> From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> Sent: Friday, October 25, 2019 7:41 AM
+> To: Qiang Zhao <qiang.zhao@nxp.com>; Leo Li <leoyang.li@nxp.com>;
+> Christophe Leroy <christophe.leroy@c-s.fr>
+> Cc: linuxppc-dev@lists.ozlabs.org; linux-arm-kernel@lists.infradead.org;
+> linux-kernel@vger.kernel.org; Scott Wood <oss@buserror.net>; Valentin
+> Longchamp <valentin.longchamp@keymile.com>; Rasmus Villemoes
+> <linux@rasmusvillemoes.dk>; linux-serial@vger.kernel.org
+> Subject: [PATCH v2 20/23] serial: make SERIAL_QE depend on PPC32
+>=20
+> Currently SERIAL_QE depends on QUICC_ENGINE, which in turn depends on
+> PPC32, so this doesn't add any extra dependency. However, the QUICC
+> Engine IP block also exists on some arm boards, so this serves as prepara=
+tion
+> for removing the PPC32 dependency from QUICC_ENGINE and build the QE
+> support in drivers/soc/fsl/qe, while preventing allmodconfig/randconfig
+> failures due to SERIAL_QE not being supported yet.
+>=20
+> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+
+I think your purpose of this series is to make the QE UART not depending on=
+ PPC32.  If it does accomplish that then we don't need this change.
+
 > ---
->  Documentation/devicetree/bindings/arm/sprd.txt | 8 ++++++++
->  1 file changed, 8 insertions(+)
+>  drivers/tty/serial/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig inde=
+x
+> 67a9eb3f94ce..78246f535809 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -1056,6 +1056,7 @@ config SERIAL_LANTIQ  config SERIAL_QE
+>  	tristate "Freescale QUICC Engine serial port support"
+>  	depends on QUICC_ENGINE
+> +	depends on PPC32
+>  	select SERIAL_CORE
+>  	select FW_LOADER
+>  	help
+> --
+> 2.23.0
 
-Can you please convert this to DT schema first. See 
-Documentation/devicetree/writing-schema.rst.
-
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/sprd.txt b/Documentation/devicetree/bindings/arm/sprd.txt
-> index 3df034b13e28..c244c911f8df 100644
-> --- a/Documentation/devicetree/bindings/arm/sprd.txt
-> +++ b/Documentation/devicetree/bindings/arm/sprd.txt
-> @@ -12,3 +12,11 @@ Required root node properties:
->  SP9860G 3GFHD Board
->  Required root node properties:
->  	- compatible = "sprd,sp9860g-1h10", "sprd,sc9860";
-> +
-> +SC9863A SoC
-> +Required root node properties:
-> +	- compatible = "sprd,sc9863a"
-> +
-> +SP9863A-1H10 Board
-> +Required root node properties:
-> +	- compatible = "sprd,sp9863a-1h10", "sprd,sc9863a";
-> -- 
-> 2.20.1
-> 
-> 
