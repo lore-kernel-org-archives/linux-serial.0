@@ -1,90 +1,120 @@
-Return-Path: <SRS0=1MuI=YV=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=S9+s=YW=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6914ECA9EC0
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Oct 2019 15:00:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B8E1CA9EC0
+	for <linux-serial@archiver.kernel.org>; Tue, 29 Oct 2019 02:48:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 39A4020873
-	for <linux-serial@archiver.kernel.org>; Mon, 28 Oct 2019 15:00:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E155D20717
+	for <linux-serial@archiver.kernel.org>; Tue, 29 Oct 2019 02:48:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="IO3JNKK/"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KYXgJtgo"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728053AbfJ1PAS (ORCPT
+        id S1730888AbfJ2Cs0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Oct 2019 11:00:18 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:45908 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726913AbfJ1PAS (ORCPT
+        Mon, 28 Oct 2019 22:48:26 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:43364 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727350AbfJ2Cs0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Oct 2019 11:00:18 -0400
-Received: by mail-pf1-f196.google.com with SMTP id c7so5863488pfo.12
-        for <linux-serial@vger.kernel.org>; Mon, 28 Oct 2019 08:00:17 -0700 (PDT)
+        Mon, 28 Oct 2019 22:48:26 -0400
+Received: by mail-wr1-f68.google.com with SMTP id n1so4492901wra.10;
+        Mon, 28 Oct 2019 19:48:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=message-id:mime-version:content-transfer-encoding:in-reply-to
-         :references:from:cc:to:subject:user-agent:date;
-        bh=MTTVVCGnYYa+0y7u4ASzLEPiU17XRxSToavC2yaOJYI=;
-        b=IO3JNKK/w9Pw+TBvaaeDL+vHVoIXi3Bca/2/Pih7WoSBuzCqtP7W1mBQLha0Q6fZTH
-         1/tuL7aUzLgbrahGTyKjk+xJ3iScXtIz64qoluta9k/H8Ga6Pe042pgsaOMpEvJoZluh
-         aNPyLeU8NNFBD1X09tKqOe09KVaIfBowwLpg4=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gteraG87XCdj5xSgInB/PvpzdZKgoT7TtTZ9+9ieQnY=;
+        b=KYXgJtgop4xEAbJ5U1sDVAAOoFj+g+2/3RxYykRDsFMlUNtjtSnnULpJApifFpS1F/
+         nRmou4871/MmQQ9ysAKm5FqNeQGG8kX1/mzKsX21kaeZw9C89wrnk8wx5XG3GsbIe3em
+         So/+8DdijXhe5gsZcmF2xO7NFlcTVLj7mdV1FgGXSkI+FEk37Ce8NzQyXdnp99ofWgj1
+         X054yld+7l2G57BpTVXp6ikjfZyJ1Q5+/8Yj/mXLXuAydorFc4jr+aXoAGthRP2GGESh
+         ri8fDPLvfL5WJLkWEjBVVAkZhgWvNUTt11IUyGRnsHFsQrssOkFksFEOYG79rrGoZ11w
+         ojlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:mime-version
-         :content-transfer-encoding:in-reply-to:references:from:cc:to:subject
-         :user-agent:date;
-        bh=MTTVVCGnYYa+0y7u4ASzLEPiU17XRxSToavC2yaOJYI=;
-        b=UGc1R0BYXKKY2rzU9J2K6qivFq20MGFFJmotRPfg2dxPT0jCMiroNCkZMdXk3P0LD7
-         wNJYalfSzPRsj5idRXAG2iEGbiPs8fzJDJtv02Rmi3vm+XxBXGQF5rs6z8XPZqHwOEfx
-         QCZyIaxYfDUjzgoAPv3SWxPcsmNQ9hvyuKIDjrXYI8lMKj5cZdgCrqcRCaGyjuHhgtdT
-         Nj1ULOoceQNqoyrYyaX9HFKn6gq+ocoJb0gIMKRzhDF1U3PLCwQGLEh77eMv8WW5Ntzs
-         t+qF+TECkFJIO/tmn7y9nyd7TEmksuOx7kUlZpP8WZ+CebYVm4oKNVxt1Ix6aRf4RdHb
-         FrZQ==
-X-Gm-Message-State: APjAAAWE5jOF4k4A8801dhtMV9nu+ngDERG6IN5mlH4/tP6ndIqUKfoK
-        XNClXWxM+Oc00+A78aGgcfg2Aw==
-X-Google-Smtp-Source: APXvYqzBoVFd0sHisLrTISIXTJ2g2OheAr8faUVDpE649aEq5i8UVcr2ktpqDSPiVqc2A6BLLgnnWg==
-X-Received: by 2002:a17:90a:304:: with SMTP id 4mr524532pje.128.1572274817037;
-        Mon, 28 Oct 2019 08:00:17 -0700 (PDT)
-Received: from chromium.org ([2620:15c:202:1:fa53:7765:582b:82b9])
-        by smtp.gmail.com with ESMTPSA id r33sm3125806pjb.5.2019.10.28.08.00.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Oct 2019 08:00:16 -0700 (PDT)
-Message-ID: <5db70280.1c69fb81.c9f08.a848@mx.google.com>
-Content-Type: text/plain; charset="utf-8"
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gteraG87XCdj5xSgInB/PvpzdZKgoT7TtTZ9+9ieQnY=;
+        b=LD5EQ7zjKSLXjYBMSjVWK9u60yjti6LQLXlVS5S939va0MVyWGSaFhLSyIlk4njyiC
+         AHzr37EQLl9e0Lhmn2O5P4pNJUnSBaM5605lO17nl3UN0+ynP7CYp62Fv7il6HglM3N6
+         BkVxGn7D9kyMDR4R/AkmrSIUpUewYrd3PzWlX/lmhPQqqh56Av/TaR9zdbpzR9UTyLdu
+         shTW2hVLwKwkR208U9Ij8/kM/SuYncUB0wVWeEYLNMPJxTKyezbTEJ8Vq6YApega5Eqv
+         l0jLJebKaJ8YRWZuu5VIsVuMU1ZFyDs/Oia/mTRsQbjavptZ30bxA6AnMs8q/hFnnZLC
+         E9WA==
+X-Gm-Message-State: APjAAAVhQ1tt2FO/HkYXFXyoNeAOA7z6BJvNhe//CzEAGU23Xfo748tQ
+        4Bt0tVP2o7jHPmuBvBw5HJOdVORp0toC2ryE8JU=
+X-Google-Smtp-Source: APXvYqyCnGBv7rgt4wt2fvjFkhPMhg3/hSA/t9Nk3hOEOwreIo3dDyDVdayfbU1xUEfSkz5mRqAK9ayZBItouzgdpyk=
+X-Received: by 2002:a5d:6281:: with SMTP id k1mr17999142wru.69.1572317304467;
+ Mon, 28 Oct 2019 19:48:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <c20319ce-77e2-a4ea-5d7a-a84b8858a938@codeaurora.org>
-References: <1570700803-17566-1-git-send-email-akashast@codeaurora.org> <5d9f3f4f.1c69fb81.5120f.b90e@mx.google.com> <a7dabb1d-b6af-acc5-ba4e-923ee5fc6ee3@codeaurora.org> <5da627aa.1c69fb81.e2d51.203d@mx.google.com> <c20319ce-77e2-a4ea-5d7a-a84b8858a938@codeaurora.org>
-From:   Stephen Boyd <swboyd@chromium.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        mgautam@codeaurora.org, bjorn.andersson@linaro.org
-To:     Akash Asthana <akashast@codeaurora.org>, gregkh@linuxfoundation.org
-Subject: Re: [PATCH V2 2/2] tty: serial: qcom_geni_serial: Wakeup over UART RX
-User-Agent: alot/0.8.1
-Date:   Mon, 28 Oct 2019 08:00:15 -0700
+References: <20191025102915.23677-1-chunyan.zhang@unisoc.com>
+ <20191025102915.23677-2-chunyan.zhang@unisoc.com> <CA+H2tpHkYwQLEO7ftLebErsEXBQnRS37gFOoKoG+_jnt5+0r-A@mail.gmail.com>
+In-Reply-To: <CA+H2tpHkYwQLEO7ftLebErsEXBQnRS37gFOoKoG+_jnt5+0r-A@mail.gmail.com>
+From:   Chunyan Zhang <zhang.lyra@gmail.com>
+Date:   Tue, 29 Oct 2019 10:47:48 +0800
+Message-ID: <CAAfSe-uz396tvOSa6g-BJpwzARDi2uaPrCsP01f3A-Jww_c7BA@mail.gmail.com>
+Subject: Re: [PATCH 1/3] dt-bindings: serial: Add a new compatible string for SC9863A
+To:     Orson Zhai <orsonzhai@gmail.com>
+Cc:     Chunyan Zhang <chunyan.zhang@unisoc.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        DTML <devicetree@vger.kernel.org>, linux-serial@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Baolin Wang <baolin.wang7@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Quoting Akash Asthana (2019-10-17 04:10:10)
->=20
-> On 10/16/2019 1:40 AM, Stephen Boyd wrote:
-> > Why can't we make this driver use runtime PM?
->=20
-> Currently there are no plans to use runtime PM as we are interested in
-> enabling wakeup irq as part of system suspend only.
->=20
->=20
+On Sat, 26 Oct 2019 at 10:11, Orson Zhai <orsonzhai@gmail.com> wrote:
+>
+> Hi Chunyan,
+>
+> On Fri, Oct 25, 2019 at 6:30 PM Chunyan Zhang <chunyan.zhang@unisoc.com> wrote:
+> >
+> >
+> > SC9863A use the same serial device which SC9836 uses.
+> >
+> > Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
+> > ---
+> >  Documentation/devicetree/bindings/serial/sprd-uart.txt | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/serial/sprd-uart.txt b/Documentation/devicetree/bindings/serial/sprd-uart.txt
+> > index 9607dc616205..0a9f8a7809e1 100644
+> > --- a/Documentation/devicetree/bindings/serial/sprd-uart.txt
+> > +++ b/Documentation/devicetree/bindings/serial/sprd-uart.txt
+> > @@ -4,6 +4,7 @@ Required properties:
+> >  - compatible: must be one of:
+> >    * "sprd,sc9836-uart"
+> >    * "sprd,sc9860-uart", "sprd,sc9836-uart"
+> > +  * "sprd,sc9863-uart", "sprd,sc9836-uart"
+>
+> Duplicated 9836 with above line?
 
-Does the wakeup irq code require runtime PM? I thought that any wake irq
-attached to a device is armed during system wide suspend and disabled on
-resume. See device_wakeup_arm_wake_irqs() called from
-dpm_suspend_noirq().
+We can just use "sprd,sc9836-uart" for SC9860 and SC9863 SoCs though,
+added a new compatible string in case we'll have some difference for
+serial on SC9863A in the furture.
 
-So why can't we use the common code that manages wakeup irqs for
-devices?
+Thanks,
+Chunyan
+
+>
+> -Orson
+>
+> >
+> >  - reg: offset and length of the register set for the device
+> >  - interrupts: exactly one interrupt specifier
+> > --
+> > 2.20.1
+> >
+> >
