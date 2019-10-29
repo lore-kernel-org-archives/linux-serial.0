@@ -2,119 +2,87 @@ Return-Path: <SRS0=S9+s=YW=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B8E1CA9EC0
-	for <linux-serial@archiver.kernel.org>; Tue, 29 Oct 2019 02:48:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97026CA9EAE
+	for <linux-serial@archiver.kernel.org>; Tue, 29 Oct 2019 21:44:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E155D20717
-	for <linux-serial@archiver.kernel.org>; Tue, 29 Oct 2019 02:48:26 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KYXgJtgo"
+	by mail.kernel.org (Postfix) with ESMTP id 67FFD20717
+	for <linux-serial@archiver.kernel.org>; Tue, 29 Oct 2019 21:44:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1572385474;
+	bh=8iUEH6z9hE6us/KlQwrWs9Q5Ca9DiooS6oz64YNbYQc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=hzDHewR8zEmiq1xn9dAtL+RSQCPxgvupX/i7zN9qJbghrHYfyyqHrbkQ0qXYXZoAl
+	 Xy+q4e/qS6qqxLE+Sv8KD0LPNQw7SjJol+1wnblaJMDbl6vMhW7v0fNvhKnM1DEm3T
+	 C7AjyWmwpDL2nisZkHNApKMqCy6NdmYO/fBe/rDU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730888AbfJ2Cs0 (ORCPT
+        id S1729232AbfJ2Voa (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 28 Oct 2019 22:48:26 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:43364 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727350AbfJ2Cs0 (ORCPT
+        Tue, 29 Oct 2019 17:44:30 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:33852 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727706AbfJ2Voa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 28 Oct 2019 22:48:26 -0400
-Received: by mail-wr1-f68.google.com with SMTP id n1so4492901wra.10;
-        Mon, 28 Oct 2019 19:48:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gteraG87XCdj5xSgInB/PvpzdZKgoT7TtTZ9+9ieQnY=;
-        b=KYXgJtgop4xEAbJ5U1sDVAAOoFj+g+2/3RxYykRDsFMlUNtjtSnnULpJApifFpS1F/
-         nRmou4871/MmQQ9ysAKm5FqNeQGG8kX1/mzKsX21kaeZw9C89wrnk8wx5XG3GsbIe3em
-         So/+8DdijXhe5gsZcmF2xO7NFlcTVLj7mdV1FgGXSkI+FEk37Ce8NzQyXdnp99ofWgj1
-         X054yld+7l2G57BpTVXp6ikjfZyJ1Q5+/8Yj/mXLXuAydorFc4jr+aXoAGthRP2GGESh
-         ri8fDPLvfL5WJLkWEjBVVAkZhgWvNUTt11IUyGRnsHFsQrssOkFksFEOYG79rrGoZ11w
-         ojlQ==
+        Tue, 29 Oct 2019 17:44:30 -0400
+Received: by mail-ot1-f66.google.com with SMTP id m19so294731otp.1;
+        Tue, 29 Oct 2019 14:44:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gteraG87XCdj5xSgInB/PvpzdZKgoT7TtTZ9+9ieQnY=;
-        b=LD5EQ7zjKSLXjYBMSjVWK9u60yjti6LQLXlVS5S939va0MVyWGSaFhLSyIlk4njyiC
-         AHzr37EQLl9e0Lhmn2O5P4pNJUnSBaM5605lO17nl3UN0+ynP7CYp62Fv7il6HglM3N6
-         BkVxGn7D9kyMDR4R/AkmrSIUpUewYrd3PzWlX/lmhPQqqh56Av/TaR9zdbpzR9UTyLdu
-         shTW2hVLwKwkR208U9Ij8/kM/SuYncUB0wVWeEYLNMPJxTKyezbTEJ8Vq6YApega5Eqv
-         l0jLJebKaJ8YRWZuu5VIsVuMU1ZFyDs/Oia/mTRsQbjavptZ30bxA6AnMs8q/hFnnZLC
-         E9WA==
-X-Gm-Message-State: APjAAAVhQ1tt2FO/HkYXFXyoNeAOA7z6BJvNhe//CzEAGU23Xfo748tQ
-        4Bt0tVP2o7jHPmuBvBw5HJOdVORp0toC2ryE8JU=
-X-Google-Smtp-Source: APXvYqyCnGBv7rgt4wt2fvjFkhPMhg3/hSA/t9Nk3hOEOwreIo3dDyDVdayfbU1xUEfSkz5mRqAK9ayZBItouzgdpyk=
-X-Received: by 2002:a5d:6281:: with SMTP id k1mr17999142wru.69.1572317304467;
- Mon, 28 Oct 2019 19:48:24 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191025102915.23677-1-chunyan.zhang@unisoc.com>
- <20191025102915.23677-2-chunyan.zhang@unisoc.com> <CA+H2tpHkYwQLEO7ftLebErsEXBQnRS37gFOoKoG+_jnt5+0r-A@mail.gmail.com>
-In-Reply-To: <CA+H2tpHkYwQLEO7ftLebErsEXBQnRS37gFOoKoG+_jnt5+0r-A@mail.gmail.com>
-From:   Chunyan Zhang <zhang.lyra@gmail.com>
-Date:   Tue, 29 Oct 2019 10:47:48 +0800
-Message-ID: <CAAfSe-uz396tvOSa6g-BJpwzARDi2uaPrCsP01f3A-Jww_c7BA@mail.gmail.com>
-Subject: Re: [PATCH 1/3] dt-bindings: serial: Add a new compatible string for SC9863A
-To:     Orson Zhai <orsonzhai@gmail.com>
-Cc:     Chunyan Zhang <chunyan.zhang@unisoc.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=eERT633zpTpiXVAkUrSD8WDkRXUEU8DoMl3k7v69kII=;
+        b=kgzLP0Jweg7tactR9I/lx5oTpXIgiSqPyNeOinutVFWqrnsw5XMdUepOLfCZir8LT+
+         IAex/r9icoDISRAgwBKM5sdHEeKWytQKXHc1kZxjju+JauGyZh6vda2KFSpGj2E0Epea
+         iprY4g9fK5W+K9oQW/Jnnsiiim2KszHAKg50VDkiGL1pD+Nrtu4suOqWIhH5njIJ47Sr
+         EgL4RXV+MX6f79v+x9DvYZbs3L22MJVFCuyUimW6W14Z3xY0SHLARD2NWJPf+oeWoOuF
+         z+I/1kGr9DOMIxYK+3S0iLZMmele8uO2TpD7wUDEoIupSa3NlsgujEWmzsLW49RFS5O3
+         XMJw==
+X-Gm-Message-State: APjAAAW3zKvWbZ3+t43XDvRuiSlfi0/VfT1+1z1g8eIdnTNIbUpEtdWI
+        j3sOLDNc2YOTJmS0eNJpfg==
+X-Google-Smtp-Source: APXvYqyoecpFPppfXsLEqIWXXUlD+Ze9wBUz1nEAtV4aAW6npe4LAXNR78CkMfncFjuo+CHl60g4kg==
+X-Received: by 2002:a9d:1d2:: with SMTP id e76mr20727064ote.30.1572385469478;
+        Tue, 29 Oct 2019 14:44:29 -0700 (PDT)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id o22sm70063otk.47.2019.10.29.14.44.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Oct 2019 14:44:28 -0700 (PDT)
+Date:   Tue, 29 Oct 2019 16:44:28 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Chunyan Zhang <chunyan.zhang@unisoc.com>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        DTML <devicetree@vger.kernel.org>, linux-serial@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Baolin Wang <baolin.wang7@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Chunyan Zhang <chunyan.zhang@unisoc.com>
+Subject: Re: [PATCH 1/3] dt-bindings: serial: Add a new compatible string for
+ SC9863A
+Message-ID: <20191029214428.GA20706@bogus>
+References: <20191025102915.23677-1-chunyan.zhang@unisoc.com>
+ <20191025102915.23677-2-chunyan.zhang@unisoc.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191025102915.23677-2-chunyan.zhang@unisoc.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, 26 Oct 2019 at 10:11, Orson Zhai <orsonzhai@gmail.com> wrote:
->
-> Hi Chunyan,
->
-> On Fri, Oct 25, 2019 at 6:30 PM Chunyan Zhang <chunyan.zhang@unisoc.com> wrote:
-> >
-> >
-> > SC9863A use the same serial device which SC9836 uses.
-> >
-> > Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
-> > ---
-> >  Documentation/devicetree/bindings/serial/sprd-uart.txt | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/Documentation/devicetree/bindings/serial/sprd-uart.txt b/Documentation/devicetree/bindings/serial/sprd-uart.txt
-> > index 9607dc616205..0a9f8a7809e1 100644
-> > --- a/Documentation/devicetree/bindings/serial/sprd-uart.txt
-> > +++ b/Documentation/devicetree/bindings/serial/sprd-uart.txt
-> > @@ -4,6 +4,7 @@ Required properties:
-> >  - compatible: must be one of:
-> >    * "sprd,sc9836-uart"
-> >    * "sprd,sc9860-uart", "sprd,sc9836-uart"
-> > +  * "sprd,sc9863-uart", "sprd,sc9836-uart"
->
-> Duplicated 9836 with above line?
+On Fri, 25 Oct 2019 18:29:13 +0800, Chunyan Zhang wrote:
+> 
+> SC9863A use the same serial device which SC9836 uses.
+> 
+> Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
+> ---
+>  Documentation/devicetree/bindings/serial/sprd-uart.txt | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-We can just use "sprd,sc9836-uart" for SC9860 and SC9863 SoCs though,
-added a new compatible string in case we'll have some difference for
-serial on SC9863A in the furture.
-
-Thanks,
-Chunyan
-
->
-> -Orson
->
-> >
-> >  - reg: offset and length of the register set for the device
-> >  - interrupts: exactly one interrupt specifier
-> > --
-> > 2.20.1
-> >
-> >
+Acked-by: Rob Herring <robh@kernel.org>
