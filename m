@@ -2,114 +2,118 @@ Return-Path: <SRS0=srAR=YX=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81B4DCA9EC5
-	for <linux-serial@archiver.kernel.org>; Wed, 30 Oct 2019 10:56:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E2FCA9EC6
+	for <linux-serial@archiver.kernel.org>; Wed, 30 Oct 2019 16:00:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5724220717
-	for <linux-serial@archiver.kernel.org>; Wed, 30 Oct 2019 10:56:04 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=c-s.fr header.i=@c-s.fr header.b="X/66W8k7"
+	by mail.kernel.org (Postfix) with ESMTP id 81BE220679
+	for <linux-serial@archiver.kernel.org>; Wed, 30 Oct 2019 16:00:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1572451247;
+	bh=9CtT65Z849232WiDVbFzdI/KWnr+z2wOnr7nMlIbsiA=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=FR7kYKo6lS0vV6op2CiHdged8ubB9rpDOHiW9/5nzJeTnigY6uf0AJv3V9Hl+OnfL
+	 00Tt+Fvb5QW5RG4H1NYP4fWihwSkQ+uLI3Fg+zeh/id4R3EwandVzE/95LxWzlU0+D
+	 CBeTbY+07SmMnxuxPZQwvhOf2zJ6BbiJa4rM9XQk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726187AbfJ3K4E (ORCPT
+        id S1726836AbfJ3QAm (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 30 Oct 2019 06:56:04 -0400
-Received: from pegase1.c-s.fr ([93.17.236.30]:13483 "EHLO pegase1.c-s.fr"
+        Wed, 30 Oct 2019 12:00:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56722 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726096AbfJ3K4D (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 30 Oct 2019 06:56:03 -0400
-Received: from localhost (mailhub1-int [192.168.12.234])
-        by localhost (Postfix) with ESMTP id 47353P44N8z9vC12;
-        Wed, 30 Oct 2019 11:56:01 +0100 (CET)
-Authentication-Results: localhost; dkim=pass
-        reason="1024-bit key; insecure key"
-        header.d=c-s.fr header.i=@c-s.fr header.b=X/66W8k7; dkim-adsp=pass;
-        dkim-atps=neutral
-X-Virus-Scanned: Debian amavisd-new at c-s.fr
-Received: from pegase1.c-s.fr ([192.168.12.234])
-        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
-        with ESMTP id 8ksOLoirlNZc; Wed, 30 Oct 2019 11:56:01 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase1.c-s.fr (Postfix) with ESMTP id 47353P2wNYz9vC0y;
-        Wed, 30 Oct 2019 11:56:01 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=c-s.fr; s=mail;
-        t=1572432961; bh=NOsDc85kaLL3wmTkoC+345ALS2CMn66OoExIe3uJdWQ=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=X/66W8k7NYYmbQqEwciiXTc9kN6YBJT5WfxXA3jwGiVxzZITAZzVw3JrOwx/ZvSab
-         Il0cjEFCH7JmM6k3AOs3hgFYQ1sibicqs2iz61u9SaECKgzqbeFgWCoEe3AZkpunN3
-         8Fg21Pg53mFiBwyqVhuQg+JvQoCLD08AMrP/ciRA=
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 7A8218B875;
-        Wed, 30 Oct 2019 11:56:02 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id KnDVmLJswb7k; Wed, 30 Oct 2019 11:56:02 +0100 (CET)
-Received: from [192.168.4.90] (unknown [192.168.4.90])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 9F85C8B7C7;
-        Wed, 30 Oct 2019 11:56:00 +0100 (CET)
-Subject: Re: [PATCH v2 20/23] serial: make SERIAL_QE depend on PPC32
-To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>
-Cc:     linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Scott Wood <oss@buserror.net>,
-        Valentin Longchamp <valentin.longchamp@keymile.com>,
-        linux-serial@vger.kernel.org
-References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
- <20191025124058.22580-1-linux@rasmusvillemoes.dk>
- <20191025124058.22580-21-linux@rasmusvillemoes.dk>
-From:   Christophe Leroy <christophe.leroy@c-s.fr>
-Message-ID: <869673da-da66-8cc6-68bc-2bbdfd44b1e6@c-s.fr>
-Date:   Wed, 30 Oct 2019 11:56:00 +0100
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1728512AbfJ3PzK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 30 Oct 2019 11:55:10 -0400
+Received: from sasha-vm.mshome.net (100.50.158.77.rev.sfr.net [77.158.50.100])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 041B820874;
+        Wed, 30 Oct 2019 15:55:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1572450909;
+        bh=9CtT65Z849232WiDVbFzdI/KWnr+z2wOnr7nMlIbsiA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hyPM7l8POtF+SjWMhCGgfLWBZSzLp9U3bpEE15kvGDSZMbfxPdVexDD6OD5rhAPMp
+         wxjaPsOFImmIn/XoTqK1YLRsW0rWyNbRbSJYXUTHc0vPdgjLoR3M/M0v+a17ne/kYz
+         OBl/ED+cLw6MVp/WozwOM2NkVlNiWzkkqKffi3FI=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Colin Ian King <colin.king@canonical.com>,
+        Michael Moese <mmoese@suse.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 22/38] 8250-men-mcb: fix error checking when get_num_ports returns -ENODEV
+Date:   Wed, 30 Oct 2019 11:53:50 -0400
+Message-Id: <20191030155406.10109-22-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191030155406.10109-1-sashal@kernel.org>
+References: <20191030155406.10109-1-sashal@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20191025124058.22580-21-linux@rasmusvillemoes.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: fr
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+From: Colin Ian King <colin.king@canonical.com>
 
+[ Upstream commit f50b6805dbb993152025ec04dea094c40cc93a0c ]
 
-Le 25/10/2019 à 14:40, Rasmus Villemoes a écrit :
-> Currently SERIAL_QE depends on QUICC_ENGINE, which in turn depends on
-> PPC32, so this doesn't add any extra dependency. However, the QUICC
-> Engine IP block also exists on some arm boards, so this serves as
-> preparation for removing the PPC32 dependency from QUICC_ENGINE and
-> build the QE support in drivers/soc/fsl/qe, while preventing
-> allmodconfig/randconfig failures due to SERIAL_QE not being supported
-> yet.
-> 
-> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-> ---
->   drivers/tty/serial/Kconfig | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> index 67a9eb3f94ce..78246f535809 100644
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -1056,6 +1056,7 @@ config SERIAL_LANTIQ
->   config SERIAL_QE
->   	tristate "Freescale QUICC Engine serial port support"
->   	depends on QUICC_ENGINE
-> +	depends on PPC32
+The current checking for failure on the number of ports fails when
+-ENODEV is returned from the call to get_num_ports. Fix this by making
+num_ports and loop counter i signed rather than unsigned ints. Also
+add check for num_ports being less than zero to check for -ve error
+returns.
 
-Same, would be more obvious as
-	depends on QUICC_ENGINE && PPC32
+Addresses-Coverity: ("Unsigned compared against 0")
+Fixes: e2fea54e4592 ("8250-men-mcb: add support for 16z025 and 16z057")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Reviewed-by: Michael Moese <mmoese@suse.de>
+Link: https://lore.kernel.org/r/20191013220016.9369-1-colin.king@canonical.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/8250/8250_men_mcb.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Christophe
+diff --git a/drivers/tty/serial/8250/8250_men_mcb.c b/drivers/tty/serial/8250/8250_men_mcb.c
+index 127017cc41d92..057b1eaf6d2eb 100644
+--- a/drivers/tty/serial/8250/8250_men_mcb.c
++++ b/drivers/tty/serial/8250/8250_men_mcb.c
+@@ -71,8 +71,8 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
+ {
+ 	struct serial_8250_men_mcb_data *data;
+ 	struct resource *mem;
+-	unsigned int num_ports;
+-	unsigned int i;
++	int num_ports;
++	int i;
+ 	void __iomem *membase;
+ 
+ 	mem = mcb_get_resource(mdev, IORESOURCE_MEM);
+@@ -87,7 +87,7 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
+ 	dev_dbg(&mdev->dev, "found a 16z%03u with %u ports\n",
+ 		mdev->id, num_ports);
+ 
+-	if (num_ports == 0 || num_ports > 4) {
++	if (num_ports <= 0 || num_ports > 4) {
+ 		dev_err(&mdev->dev, "unexpected number of ports: %u\n",
+ 			num_ports);
+ 		return -ENODEV;
+@@ -132,7 +132,7 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
+ 
+ static void serial_8250_men_mcb_remove(struct mcb_device *mdev)
+ {
+-	unsigned int num_ports, i;
++	int num_ports, i;
+ 	struct serial_8250_men_mcb_data *data = mcb_get_drvdata(mdev);
+ 
+ 	if (!data)
+-- 
+2.20.1
 
->   	select SERIAL_CORE
->   	select FW_LOADER
->   	help
-> 
