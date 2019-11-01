@@ -1,119 +1,101 @@
-Return-Path: <SRS0=srAR=YX=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=4rmH=YZ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50DD8CA9EC5
-	for <linux-serial@archiver.kernel.org>; Wed, 30 Oct 2019 16:02:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43C10CA9ECF
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Nov 2019 08:54:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 20665208E3
-	for <linux-serial@archiver.kernel.org>; Wed, 30 Oct 2019 16:02:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1572451323;
-	bh=Jcyg7XjWUAWVTdX7CZVkV0MKQtcJLFsqCZ9uBBB3WFE=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=dqId1uoWbYgxz3r3cqibv61CtoUmc5QU2q7Lw6RT5OHG7051lVJT1c5vz8qTz9bZc
-	 cHo3efv934wux2l+E0sB5r3qCzTd6fd2ofRsGf7DZUqFcxNryUN9pVAVoxIj1U6s9a
-	 H6YtXo56r/oDFkQHvkx1NhUzJEjtUvkuvbBxFDiA=
+	by mail.kernel.org (Postfix) with ESMTP id 15DCE217F9
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Nov 2019 08:54:46 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Lq9f0u/x"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728149AbfJ3PxU (ORCPT
+        id S1726982AbfKAIyp (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 30 Oct 2019 11:53:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54560 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728145AbfJ3PxU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 30 Oct 2019 11:53:20 -0400
-Received: from sasha-vm.mshome.net (100.50.158.77.rev.sfr.net [77.158.50.100])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 065BF208C0;
-        Wed, 30 Oct 2019 15:53:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572450799;
-        bh=Jcyg7XjWUAWVTdX7CZVkV0MKQtcJLFsqCZ9uBBB3WFE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H2IKo0ffFhpbgm1ctSs7kwdvw2IQe7hLsFA9ItSN6uGk5Tsu/mxu5Q0TJYAK+OIQP
-         WZU/+SmwVa9Q3P+fAkxQ5Q3rl3KdbL3t9td/znJy/B/T85rwDcjSL+LtQD/cqXko97
-         P8Pr9dED8+y+UAaGBvHeQyk2NHkOP2bOhZjTHzEw=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Colin Ian King <colin.king@canonical.com>,
-        Michael Moese <mmoese@suse.de>,
+        Fri, 1 Nov 2019 04:54:45 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:34239 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726663AbfKAIyp (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 1 Nov 2019 04:54:45 -0400
+Received: by mail-qt1-f196.google.com with SMTP id e14so12122851qto.1;
+        Fri, 01 Nov 2019 01:54:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=srb0ElFij+q7mw1HtNeJS8i5fDcmZ/1MfEVFElDzt2c=;
+        b=Lq9f0u/xSxlvxrO/S71aPgUQwh24EXzIhA+gMr5czvAlrRfyIQoDQ3dTLYSQuWmaFG
+         CsAdPQ17dtXVMq7jZefocrbcqigg8HSgYgl2mwaCHXi5QtBViD3mijCDBMIoZGc7Xtmv
+         iWwVNNeC3rXkmtyw9a+5vIgCO7gAtX8wZAVTqIu9Ko3WMZOKHpUXuzQ4xA48NMg6i/0C
+         bXVjqxOO5c0Q5meHbp/LxrWe1ukJ5bRYCibyudZxFbWKBAU+0Vmnc1SbbWgoTqAzVShP
+         sJf/OsCp2aQFRdS9n2Q6Mpr02VDXDlU9SXXFOWctLmujz0/qxYOnco0ld2OdFzvYQwjC
+         xUhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=srb0ElFij+q7mw1HtNeJS8i5fDcmZ/1MfEVFElDzt2c=;
+        b=P5C2FfYgpIoMUzlUoTGQUUqIumu9r6ula8Lzl5SQFpp2P8M8yGp973b8lpgj9inYTq
+         od8PMjMA/dAXLRN4rvqmq0aDuTQnPWNuujNaRgE7rUY5m/2SaAXX45Fix4sPHgKmAXmt
+         JJkwizZFFERpyb6O2IgHE5NrQM/slGq4KzDZhJLy2MaOEH0uTZfYvOKTpsbVUF1zeL5A
+         98tJaIz+WbqLDM6R3K1JiGq7iw84izhVpEOtiCKq8exzLqXeplzjrS4xlheA+DYcjbOs
+         iisCvdDdCJGoGdZYdmCB+v8iHVjb+/dCYmAtX6CFu+nlJq6Ax3o5Ln17XvOm9vDbAT5z
+         r/gA==
+X-Gm-Message-State: APjAAAV24wfe7Wbbx16ycxWoguRWPcjkchczXYHRuL58Fj3wIwyy+WPj
+        GKziH+jyWzSJUBfqwJqqVlM=
+X-Google-Smtp-Source: APXvYqz8P1RrTcQd5eOO322Bx2fIad1nUPqIFw7IgU59KfITvdM5IolWxX1u7jTIyv4Q1bgXvpRiyw==
+X-Received: by 2002:ac8:424d:: with SMTP id r13mr9924571qtm.111.1572598484318;
+        Fri, 01 Nov 2019 01:54:44 -0700 (PDT)
+Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
+        by smtp.gmail.com with ESMTPSA id a18sm3653517qkc.2.2019.11.01.01.54.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Nov 2019 01:54:43 -0700 (PDT)
+From:   Chuhong Yuan <hslester96@gmail.com>
+Cc:     Peter Korsgaard <jacmet@sunsite.dk>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 52/81] 8250-men-mcb: fix error checking when get_num_ports returns -ENODEV
-Date:   Wed, 30 Oct 2019 11:48:58 -0400
-Message-Id: <20191030154928.9432-52-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191030154928.9432-1-sashal@kernel.org>
-References: <20191030154928.9432-1-sashal@kernel.org>
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
+Subject: [PATCH] tty: serial: uartlite: use clk_disable_unprepare to match clk_prepare_enable
+Date:   Fri,  1 Nov 2019 16:54:33 +0800
+Message-Id: <20191101085433.10399-1-hslester96@gmail.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+The driver uses clk_prepare_enable in ulite_probe but uses clk_unprepare
+in ulite_remove, which does not match.
+Replace clk_unprepare with clk_disable_unprepare to fix it.
 
-[ Upstream commit f50b6805dbb993152025ec04dea094c40cc93a0c ]
-
-The current checking for failure on the number of ports fails when
--ENODEV is returned from the call to get_num_ports. Fix this by making
-num_ports and loop counter i signed rather than unsigned ints. Also
-add check for num_ports being less than zero to check for -ve error
-returns.
-
-Addresses-Coverity: ("Unsigned compared against 0")
-Fixes: e2fea54e4592 ("8250-men-mcb: add support for 16z025 and 16z057")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Reviewed-by: Michael Moese <mmoese@suse.de>
-Link: https://lore.kernel.org/r/20191013220016.9369-1-colin.king@canonical.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 ---
- drivers/tty/serial/8250/8250_men_mcb.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/serial/uartlite.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_men_mcb.c b/drivers/tty/serial/8250/8250_men_mcb.c
-index 02c5aff58a740..8df89e9cd2542 100644
---- a/drivers/tty/serial/8250/8250_men_mcb.c
-+++ b/drivers/tty/serial/8250/8250_men_mcb.c
-@@ -72,8 +72,8 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
- {
- 	struct serial_8250_men_mcb_data *data;
- 	struct resource *mem;
--	unsigned int num_ports;
--	unsigned int i;
-+	int num_ports;
-+	int i;
- 	void __iomem *membase;
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index 06e79c11141d..3d245827be27 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -862,7 +862,7 @@ static int ulite_remove(struct platform_device *pdev)
+ 	struct uartlite_data *pdata = port->private_data;
+ 	int rc;
  
- 	mem = mcb_get_resource(mdev, IORESOURCE_MEM);
-@@ -88,7 +88,7 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
- 	dev_dbg(&mdev->dev, "found a 16z%03u with %u ports\n",
- 		mdev->id, num_ports);
- 
--	if (num_ports == 0 || num_ports > 4) {
-+	if (num_ports <= 0 || num_ports > 4) {
- 		dev_err(&mdev->dev, "unexpected number of ports: %u\n",
- 			num_ports);
- 		return -ENODEV;
-@@ -133,7 +133,7 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
- 
- static void serial_8250_men_mcb_remove(struct mcb_device *mdev)
- {
--	unsigned int num_ports, i;
-+	int num_ports, i;
- 	struct serial_8250_men_mcb_data *data = mcb_get_drvdata(mdev);
- 
- 	if (!data)
+-	clk_unprepare(pdata->clk);
++	clk_disable_unprepare(pdata->clk);
+ 	rc = ulite_release(&pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
+ 	pm_runtime_set_suspended(&pdev->dev);
 -- 
-2.20.1
+2.23.0
 
