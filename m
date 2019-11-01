@@ -2,93 +2,130 @@ Return-Path: <SRS0=4rmH=YZ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DB06CA9ECF
-	for <linux-serial@archiver.kernel.org>; Fri,  1 Nov 2019 11:42:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 249C2CA9ECF
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Nov 2019 12:42:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 21F4D2086D
-	for <linux-serial@archiver.kernel.org>; Fri,  1 Nov 2019 11:42:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1572608522;
-	bh=8F2KZ/QvW49TRD9cHvhB3AGuKjTErRe1CrxdJvRO0fI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=RAIhLluJHNEh/tJMGpOQ+r1773UEUDstTnhR8M9eoFGo5hMPkVUcjkaRphX3fxdXZ
-	 kSXf86Og4ZeJqrqVIw++KwCcK2DSkOIPTlKMwI0dlTf0LWecDSv54f1PlwX4Z21jSL
-	 CEtuUt0j/FYB68LRdYjaPKN7aYcmSSBgv/hHsQDs=
+	by mail.kernel.org (Postfix) with ESMTP id EFA4B21924
+	for <linux-serial@archiver.kernel.org>; Fri,  1 Nov 2019 12:42:55 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="FgkhkzeS"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727177AbfKALl5 (ORCPT
+        id S1730813AbfKAMmz (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 1 Nov 2019 07:41:57 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:39628 "EHLO
+        Fri, 1 Nov 2019 08:42:55 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:41176 "EHLO
         mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726710AbfKALl4 (ORCPT
+        with ESMTP id S1730802AbfKAMmz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 1 Nov 2019 07:41:56 -0400
-Received: by mail-lj1-f194.google.com with SMTP id y3so9943636ljj.6;
-        Fri, 01 Nov 2019 04:41:55 -0700 (PDT)
+        Fri, 1 Nov 2019 08:42:55 -0400
+Received: by mail-lj1-f194.google.com with SMTP id m9so10090704ljh.8
+        for <linux-serial@vger.kernel.org>; Fri, 01 Nov 2019 05:42:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=zPi0SchlJBpcK2Uafamd7sY3psIZzF+ErFogb8EsMtA=;
+        b=FgkhkzeSYJafzm+DXrl6r0ta0raYRc/ZnjHF6yCQHxFbbGNUxEdzoS/j/aXd3Z2EAO
+         hw9z52EZvMA2GL3c0mAU2KtYNwS9SYbSqE/jeozwpGumHKa2VCr+wpc1rEJNszK7u+I7
+         0ZPLO2ccA2UHvIcStPP44EBdQttMJjlSayBbY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=PUVw5pKvFL1V3WBR7Xy8T99diauMbncCUtUodFNi4iw=;
-        b=FQeb7YJu7/k2LGGMaoKtNN9e/WDgBbvzmlsRnbWfxwbsUBG8yq7HxrVeB0NFPxhlPq
-         /rxcsobtZjTcw9jqaEsZWQGx2EY0FWg/eu7OBYwTLUZHL53FEc/eEHaVkS3bewGiPCRa
-         3XTmFyc4nzg7iMlrryIuR+oeL76yB18lstCB8iZ0YU/qnu5VBb58z1X60I2K5xY+WLzU
-         OtiEX+BZogtDo4DktKC/Tl1JbpZ/bIZq2CWWEeMtbYR1cStE65LL8z2we8aQ+oJvgBZj
-         V5DYSCDSD9WM0L3gWPlvXowym93oTrSpiE8gjpSuoUcsevjdaPzGDjUBSps02wJog7nW
-         9SiA==
-X-Gm-Message-State: APjAAAWG2lZ54GQuRsvSedwI4Lbs8tLU5In7NU5raEU57Pnz/78kJKLt
-        6yroLy3g3cDYxvs+9lTxTivzLcKp
-X-Google-Smtp-Source: APXvYqyuOxCXp80A/3Vf8r/kLxNHoC4Hrei7jUTKsQCfluRvYShj0xgspEqS/QBGis4p2JkAAY30XQ==
-X-Received: by 2002:a05:651c:10e:: with SMTP id a14mr7744228ljb.177.1572608514450;
-        Fri, 01 Nov 2019 04:41:54 -0700 (PDT)
-Received: from xi.terra (c-51f1e055.07-184-6d6c6d4.bbcust.telenor.se. [85.224.241.81])
-        by smtp.gmail.com with ESMTPSA id t22sm2446134lfg.91.2019.11.01.04.41.53
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=zPi0SchlJBpcK2Uafamd7sY3psIZzF+ErFogb8EsMtA=;
+        b=R2E7a9pXS5zAT4l5n3Ik3/FQndopFPsdCUZdHbGAQoB2KjBhEdn8IVRVWFJq+qIRUm
+         T9Ssy6M1bjNbu2fmkB3RhW763hJUb7NRKM3WQs96rO21xcgG/wJNPzZsYZivikmmpB6t
+         I7QdXlt56lZVlgOADvo/pFxsQvHApcTIvMr5U79QDoIeLlwNMaTLWlmmpD2kNLGZ3zbV
+         2cwcqI6BxZXPJIJftLzKfeLUPrm+HpJV1AFyLRll1bVCSB2uA3pA7SsvIstSBe2IeXD7
+         KRhrxAM+PGT67XVrUb2RIkhbwPIQ1tQs6ejl5lFlzlxjwPkHp7r2X1lX9j+Rq7XFILtq
+         RxEA==
+X-Gm-Message-State: APjAAAUd9MGvTHyyugakS1eqh/ZkuTH4uq4Tac+yLG56nb7gIfYyHdLP
+        yZnLlX0MhOMHtgzqp6qL5OYXWQ==
+X-Google-Smtp-Source: APXvYqwEgK3pWHNhLdwW3stHSxRWQSbXwYpIh6GddHwwHetrW/PUmKwb0NC0I7oqmSb92E/no6nwnw==
+X-Received: by 2002:a2e:819a:: with SMTP id e26mr4744325ljg.26.1572612172961;
+        Fri, 01 Nov 2019 05:42:52 -0700 (PDT)
+Received: from prevas-ravi.prevas.se ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id o26sm2458540lfi.57.2019.11.01.05.42.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Nov 2019 04:41:53 -0700 (PDT)
-Received: from johan by xi.terra with local (Exim 4.92.3)
-        (envelope-from <johan@kernel.org>)
-        id 1iQVJR-00030H-4S; Fri, 01 Nov 2019 12:41:53 +0100
-Date:   Fri, 1 Nov 2019 12:41:53 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Mao Wenan <maowenan@huawei.com>
-Cc:     jacmet@sunsite.dk, gregkh@linuxfoundation.org, jslaby@suse.com,
-        shubhrajyoti.datta@xilinx.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH -next] serial: uartlite: Missing uart_unregister_driver()
- on error in ulite_probe()
-Message-ID: <20191101114153.GC3657@localhost>
-References: <20191101111950.47817-1-maowenan@huawei.com>
+        Fri, 01 Nov 2019 05:42:52 -0700 (PDT)
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+To:     Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
+        Christophe Leroy <christophe.leroy@c-s.fr>
+Cc:     linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Scott Wood <oss@buserror.net>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-serial@vger.kernel.org
+Subject: [PATCH v3 31/36] serial: ucc_uart: stub out soft_uart_init for !CONFIG_PPC32
+Date:   Fri,  1 Nov 2019 13:42:05 +0100
+Message-Id: <20191101124210.14510-32-linux@rasmusvillemoes.dk>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20191101124210.14510-1-linux@rasmusvillemoes.dk>
+References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
+ <20191101124210.14510-1-linux@rasmusvillemoes.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191101111950.47817-1-maowenan@huawei.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Nov 01, 2019 at 07:19:50PM +0800, Mao Wenan wrote:
-> If uart_register_driver(&ulite_uart_driver) is success,
-> but followed function is failed in ulite_probe, it needs to call
-> uart_unregister_driver to unregister.
-> 
-> Fixes: f33cf776617b ("serial-uartlite: Move the uart register")
-> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+The Soft UART hack is only needed for some PPC-based SOCs. To allow
+building this driver for non-PPC, guard soft_uart_init() and its
+helpers by CONFIG_PPC32, and use a no-op soft_uart_init() otherwise.
 
-No, this is broken. The driver is deregistered at module unload.
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+---
+ drivers/tty/serial/ucc_uart.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
-That said, f33cf776617b ("serial-uartlite: Move the uart register")
-should never have been merged as I have pointed out before:
+diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
+index f286e91714cb..313697842e24 100644
+--- a/drivers/tty/serial/ucc_uart.c
++++ b/drivers/tty/serial/ucc_uart.c
+@@ -33,7 +33,10 @@
+ 
+ #include <linux/firmware.h>
+ #include <soc/fsl/cpm.h>
+-#include <asm/reg.h>
++
++#ifdef CONFIG_PPC32
++#include <asm/reg.h> /* mfspr, SPRN_SVR */
++#endif
+ 
+ /*
+  * The GUMR flag for Soft UART.  This would normally be defined in qe.h,
+@@ -1096,6 +1099,8 @@ static const struct uart_ops qe_uart_pops = {
+ 	.verify_port    = qe_uart_verify_port,
+ };
+ 
++
++#ifdef CONFIG_PPC32
+ /*
+  * Obtain the SOC model number and revision level
+  *
+@@ -1238,6 +1243,16 @@ static int soft_uart_init(struct platform_device *ofdev)
+ 	return 0;
+ }
+ 
++#else /* !CONFIG_PPC32 */
++
++static int soft_uart_init(struct platform_device *ofdev)
++{
++	return 0;
++}
++
++#endif
++
++
+ static int ucc_uart_probe(struct platform_device *ofdev)
+ {
+ 	struct device_node *np = ofdev->dev.of_node;
+-- 
+2.23.0
 
-	https://lkml.kernel.org/r/20190523091839.GC568@localhost
-
-I'll see if I can find some time to revisit this and start yelling at
-Xilinx people again.
-
-Johan
