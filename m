@@ -2,110 +2,106 @@ Return-Path: <SRS0=XcX2=Y4=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8A2CCA9ECF
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Nov 2019 08:04:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5133CA9EB5
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Nov 2019 16:41:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8AB3221744
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Nov 2019 08:04:00 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="TrDTWGfM"
+	by mail.kernel.org (Postfix) with ESMTP id 933AD2089C
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Nov 2019 16:41:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1572885687;
+	bh=/Rvgp2d7W+mkkoTIM0LPd9nYN7M9Kdt2YVgFzxeEai4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=tJkBoxkgz9VagZL4i98fnHvrjthbipQCKko6gQpMDngrQXLpdJl6qJ51l/ub3Qs1F
+	 9QW8m3KgrhbN1cY0/J7zwm6P6yF/3IPARC31BtJCfLTgB4aCbWihiCoRLjTj9+n7rl
+	 /AJmA6ncluuJQ80cvTHPPUA0sK7SY9UKUU9kz9bs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727861AbfKDID7 (ORCPT
+        id S1729035AbfKDQl1 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Nov 2019 03:03:59 -0500
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:40711 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727499AbfKDID5 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Nov 2019 03:03:57 -0500
-Received: by mail-lf1-f66.google.com with SMTP id f4so11481036lfk.7
-        for <linux-serial@vger.kernel.org>; Mon, 04 Nov 2019 00:03:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LxAxNMBVL+dSGienin6qaCrk7en5CTrpwUxUJmlZZRg=;
-        b=TrDTWGfMBfFjlWZ8uZDUT0w3BNWxwNGte+a8IpvcI6chs9MWID54loPeAyScghAAh8
-         c7UhsZiHgMWlgfVzsY3JlounwUiaxX53oS0f2R2DthwMn0wijXA35T62J9fbrpjvwxSd
-         vvkuLYbB2jATrla63DCyxhxyaqfj/lNl8Jy6g=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=LxAxNMBVL+dSGienin6qaCrk7en5CTrpwUxUJmlZZRg=;
-        b=URPAMBMhvarb0AbVcVw9Om9LCKHtIzlgBiXKJ9OMJTD/64G+XC9TrzIRee9Ifq4eXy
-         wbKlhZghlIB1IV5/hZv4sQzpmbsf9odxQuV+FS0DjAiU1ye84O8lmtAX0imHKoqE6naU
-         ydoa+4xFrGUM5wKTdKetg4hGO+0pivDjqm2GtWs93UY94Mogg2y+99ND7jxyKXmu0Jw9
-         PwxXLSdG2zpsBW3Z/sPfRP+LnwqLHatHpYc+2K6NwKGWQX/p3lNkdcMM9Bn5dGCumIpv
-         7H1gTk1FPYbbls8tfe9fjtJaCflTzlofa5QG9tQlhhAT2iru5NGikHe7nC9db0vp7t3r
-         N0ow==
-X-Gm-Message-State: APjAAAWfwwPQc03MPd6BwdlQC9SpgpoGy39wJt7fPj4vDamyaJmMYpFv
-        yqNWOyq8mTVUM7lNX6ws3W+1qRnsFWzoOw==
-X-Google-Smtp-Source: APXvYqwZ6WMPtJAcL4H1FSM0qke7qolXLVZOH2UexXvXSedbKeL3kV7Vji/MC2YFBHtLQv0vvrHfxw==
-X-Received: by 2002:ac2:4357:: with SMTP id o23mr3316354lfl.51.1572854634877;
-        Mon, 04 Nov 2019 00:03:54 -0800 (PST)
-Received: from [172.16.11.28] ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id e2sm6742553lfc.2.2019.11.04.00.03.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 04 Nov 2019 00:03:54 -0800 (PST)
-Subject: Re: [PATCH v3 31/36] serial: ucc_uart: stub out soft_uart_init for
- !CONFIG_PPC32
-To:     Christophe Leroy <christophe.leroy@c-s.fr>,
-        Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>
-Cc:     linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Scott Wood <oss@buserror.net>, linux-serial@vger.kernel.org
-References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
- <20191101124210.14510-1-linux@rasmusvillemoes.dk>
- <20191101124210.14510-32-linux@rasmusvillemoes.dk>
- <53c1c463-53fc-2005-3b62-a6f430815b45@c-s.fr>
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Message-ID: <6d1e4a08-4107-753f-8701-d3acb44b0104@rasmusvillemoes.dk>
-Date:   Mon, 4 Nov 2019 09:03:52 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        Mon, 4 Nov 2019 11:41:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35352 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728322AbfKDQl1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 4 Nov 2019 11:41:27 -0500
+Received: from localhost (host6-102.lan-isdn.imaginet.fr [195.68.6.102])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1ADDB20663;
+        Mon,  4 Nov 2019 16:41:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1572885686;
+        bh=/Rvgp2d7W+mkkoTIM0LPd9nYN7M9Kdt2YVgFzxeEai4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OssM3MIm+0cTRCds0C8iQVCssXHvZZ+3MscLziQ7QRPsXuv4czERjfsfy1EVKmDKV
+         k6INEG6f0eFbvqmN4AAhE1jjA58kOsJyxIN1lsw8CHFWIj4Ca0fkjYawsJG0dEkBDc
+         aTfCcvws6ejEvXDGjVhW9/lZ9m8QHChEPbR/9OII=
+Date:   Mon, 4 Nov 2019 17:41:23 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>, jslaby@suse.com,
+        MSM <linux-arm-msm@vger.kernel.org>,
+        linux-serial@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] tty: serial: msm_serial: Fix flow control
+Message-ID: <20191104164123.GA2256087@kroah.com>
+References: <20191021154616.25457-1-jeffrey.l.hugo@gmail.com>
+ <20191027055528.GJ5514@hector.lan>
+ <CAOCk7Nptm=Cz17FFKKvsgVxXRgJ-m9zK4RKysqhjb4cwPweSXg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <53c1c463-53fc-2005-3b62-a6f430815b45@c-s.fr>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOCk7Nptm=Cz17FFKKvsgVxXRgJ-m9zK4RKysqhjb4cwPweSXg@mail.gmail.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 01/11/2019 17.27, Christophe Leroy wrote:
+On Sun, Nov 03, 2019 at 02:51:17PM -0700, Jeffrey Hugo wrote:
+> On Sat, Oct 26, 2019 at 11:55 PM Andy Gross <agross@kernel.org> wrote:
+> >
+> > On Mon, Oct 21, 2019 at 08:46:16AM -0700, Jeffrey Hugo wrote:
+> > > hci_qca interfaces to the wcn3990 via a uart_dm on the msm8998 mtp and
+> > > Lenovo Miix 630 laptop.  As part of initializing the wcn3990, hci_qca
+> > > disables flow, configures the uart baudrate, and then reenables flow - at
+> > > which point an event is expected to be received over the uart from the
+> > > wcn3990.  It is observed that this event comes after the baudrate change
+> > > but before hci_qca re-enables flow. This is unexpected, and is a result of
+> > > msm_reset() being broken.
+> > >
+> > > According to the uart_dm hardware documentation, it is recommended that
+> > > automatic hardware flow control be enabled by setting RX_RDY_CTL.  Auto
+> > > hw flow control will manage RFR based on the configured watermark.  When
+> > > there is space to receive data, the hw will assert RFR.  When the watermark
+> > > is hit, the hw will de-assert RFR.
+> > >
+> > > The hardware documentation indicates that RFR can me manually managed via
+> > > CR when RX_RDY_CTL is not set.  SET_RFR asserts RFR, and RESET_RFR
+> > > de-asserts RFR.
+> > >
+> > > msm_reset() is broken because after resetting the hardware, it
+> > > unconditionally asserts RFR via SET_RFR.  This enables flow regardless of
+> > > the current configuration, and would undo a previous flow disable
+> > > operation.  It should instead de-assert RFR via RESET_RFR to block flow
+> > > until the hardware is reconfigured.  msm_serial should rely on the client
+> > > to specify that flow should be enabled, either via mctrl() or the termios
+> > > structure, and only assert RFR in response to those triggers.
+> > >
+> > > Fixes: 04896a77a97b ("msm_serial: serial driver for MSM7K onboard serial peripheral.")
+> > > Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+> > > ---
+> >
+> > Reviewed-by: Andy Gross <agross@kernel.org>
+> >
+> > Greg, can you pick this one up?
+> >
+> > Thanks,
+> > Andy
 > 
-> 
-> Le 01/11/2019 à 13:42, Rasmus Villemoes a écrit :
->> The Soft UART hack is only needed for some PPC-based SOCs. To allow
->> building this driver for non-PPC, guard soft_uart_init() and its
->> helpers by CONFIG_PPC32, and use a no-op soft_uart_init() otherwise.
-> 
-> I don't like too much ifdefs in C files, especially arch specific ifdefs
-> in generic drivers.
+> Greg, will this be queued for 5.5?
 
-Me neither. However,
-
-> How do we get the QE version on ARM ?
-> 
-> Wouldn't it be cleaner to create a helper for getting the QE version,
-> which would be defined in an arch specific header file, calling
-> mfspr(SPRN_SVR) on powerpc and whatever needed on arm ?
-
-First, that would mean we'd have to introduce "depends on PPC32 || ARM"
-rather than drop "depends on PPC32". Second, the way the SOC version is
-being used to construct the name of the microcode blob seems very
-ppc-specific, so I don't see how one can reasonably define an interface
-that would work for all architectures. But it's also kind of moot since
-the ARM SOCs don't need this workaround.
-
-IMO, having to add qe-specific code to arch/ is a cure worse than the
-disease. I'd much rather add arch-specific code to qe.
-
-Rasmus
+Yes, catching up now...
