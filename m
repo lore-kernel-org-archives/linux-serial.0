@@ -6,55 +6,55 @@ X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E53ECA9ED3
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Nov 2019 07:38:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8A2CCA9ECF
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Nov 2019 08:04:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 45414222D2
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Nov 2019 07:38:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8AB3221744
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Nov 2019 08:04:00 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="fKyAoSLb"
+	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="TrDTWGfM"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726391AbfKDHir (ORCPT
+        id S1727861AbfKDID7 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Nov 2019 02:38:47 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:37975 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726633AbfKDHiq (ORCPT
+        Mon, 4 Nov 2019 03:03:59 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:40711 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727499AbfKDID5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Nov 2019 02:38:46 -0500
-Received: by mail-lj1-f193.google.com with SMTP id v8so758105ljh.5
-        for <linux-serial@vger.kernel.org>; Sun, 03 Nov 2019 23:38:44 -0800 (PST)
+        Mon, 4 Nov 2019 03:03:57 -0500
+Received: by mail-lf1-f66.google.com with SMTP id f4so11481036lfk.7
+        for <linux-serial@vger.kernel.org>; Mon, 04 Nov 2019 00:03:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=rasmusvillemoes.dk; s=google;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Skx+IlvEjbz4Ey3Z8Es5BpI/gDpf4xIU9seBvakWE2o=;
-        b=fKyAoSLbBB7K6Hwz7WQ1hkLB8UolD91873nvpgYDwu3vHgk9FskSurtOXN9GkL1c/5
-         O1QO4r/LPsSNuj4aQkwxPg2auKprW4F4lCLH/I6JsLtqOEwdNwfRS8W2sWECsVQqK6CO
-         JdWAYkhmIGvDXKDiJ6rIDpzfpG3P7N4TPq36U=
+        bh=LxAxNMBVL+dSGienin6qaCrk7en5CTrpwUxUJmlZZRg=;
+        b=TrDTWGfMBfFjlWZ8uZDUT0w3BNWxwNGte+a8IpvcI6chs9MWID54loPeAyScghAAh8
+         c7UhsZiHgMWlgfVzsY3JlounwUiaxX53oS0f2R2DthwMn0wijXA35T62J9fbrpjvwxSd
+         vvkuLYbB2jATrla63DCyxhxyaqfj/lNl8Jy6g=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=Skx+IlvEjbz4Ey3Z8Es5BpI/gDpf4xIU9seBvakWE2o=;
-        b=guRX0yPyDwU2LNpfn58lNGb2UAvxggNU615VwN5RPgEDqNoXONUCva2ze7vVZGnMQx
-         2b9k/cyhQj82JbuHvCamudWXfZqcc5V+mqtCbEz9h0KCd5/kwi2EOU3YW1bKkb9jtPte
-         3a8Sn6kGxljwh7pLEyUiilvYtsLRiltp3RKZG04zgLsg0HDtp+L3WkTojey+rWvOB13G
-         5LZKwTDLgQQ9NHIrJapJckKW/CgAvXrpIEo7wH8bIVJETkzyBCvGSrxyOC8T2QcIylwQ
-         /mvH/+IZEmR17tPF8sdW9fKAMS8cgO5poEjRaWaoV0XtoOCcngr6ZDiGKJgp2ZaWj3Ma
-         vE4w==
-X-Gm-Message-State: APjAAAUVDJ/JEnGeFZUhcdf3IaJ3ePERGb/60Xne34iUsDO+1IVzbskr
-        0zI0lcQGnQ0T4hnD4rjdCzCViUS35BwzXg==
-X-Google-Smtp-Source: APXvYqy0dojhXdV/Wyv7nl7DnnJ1xyl+IlR4kyBZvriN/BA2WM6WGs9kvJj6pwDEOoKIklqLOYQZtg==
-X-Received: by 2002:a2e:5d1:: with SMTP id 200mr18228489ljf.50.1572853123654;
-        Sun, 03 Nov 2019 23:38:43 -0800 (PST)
+        bh=LxAxNMBVL+dSGienin6qaCrk7en5CTrpwUxUJmlZZRg=;
+        b=URPAMBMhvarb0AbVcVw9Om9LCKHtIzlgBiXKJ9OMJTD/64G+XC9TrzIRee9Ifq4eXy
+         wbKlhZghlIB1IV5/hZv4sQzpmbsf9odxQuV+FS0DjAiU1ye84O8lmtAX0imHKoqE6naU
+         ydoa+4xFrGUM5wKTdKetg4hGO+0pivDjqm2GtWs93UY94Mogg2y+99ND7jxyKXmu0Jw9
+         PwxXLSdG2zpsBW3Z/sPfRP+LnwqLHatHpYc+2K6NwKGWQX/p3lNkdcMM9Bn5dGCumIpv
+         7H1gTk1FPYbbls8tfe9fjtJaCflTzlofa5QG9tQlhhAT2iru5NGikHe7nC9db0vp7t3r
+         N0ow==
+X-Gm-Message-State: APjAAAWfwwPQc03MPd6BwdlQC9SpgpoGy39wJt7fPj4vDamyaJmMYpFv
+        yqNWOyq8mTVUM7lNX6ws3W+1qRnsFWzoOw==
+X-Google-Smtp-Source: APXvYqwZ6WMPtJAcL4H1FSM0qke7qolXLVZOH2UexXvXSedbKeL3kV7Vji/MC2YFBHtLQv0vvrHfxw==
+X-Received: by 2002:ac2:4357:: with SMTP id o23mr3316354lfl.51.1572854634877;
+        Mon, 04 Nov 2019 00:03:54 -0800 (PST)
 Received: from [172.16.11.28] ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id c5sm6344575ljd.57.2019.11.03.23.38.42
+        by smtp.gmail.com with ESMTPSA id e2sm6742553lfc.2.2019.11.04.00.03.53
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 03 Nov 2019 23:38:42 -0800 (PST)
-Subject: Re: [PATCH v3 28/36] serial: ucc_uart: explicitly include
- soc/fsl/cpm.h
+        Mon, 04 Nov 2019 00:03:54 -0800 (PST)
+Subject: Re: [PATCH v3 31/36] serial: ucc_uart: stub out soft_uart_init for
+ !CONFIG_PPC32
 To:     Christophe Leroy <christophe.leroy@c-s.fr>,
         Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>
 Cc:     linuxppc-dev@lists.ozlabs.org,
@@ -62,15 +62,15 @@ Cc:     linuxppc-dev@lists.ozlabs.org,
         Scott Wood <oss@buserror.net>, linux-serial@vger.kernel.org
 References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
  <20191101124210.14510-1-linux@rasmusvillemoes.dk>
- <20191101124210.14510-29-linux@rasmusvillemoes.dk>
- <a921b57b-04d5-4874-89e2-df29dfe99bfc@c-s.fr>
+ <20191101124210.14510-32-linux@rasmusvillemoes.dk>
+ <53c1c463-53fc-2005-3b62-a6f430815b45@c-s.fr>
 From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Message-ID: <0acb2e96-3485-5e49-bed1-8deb2051cb91@rasmusvillemoes.dk>
-Date:   Mon, 4 Nov 2019 08:38:41 +0100
+Message-ID: <6d1e4a08-4107-753f-8701-d3acb44b0104@rasmusvillemoes.dk>
+Date:   Mon, 4 Nov 2019 09:03:52 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <a921b57b-04d5-4874-89e2-df29dfe99bfc@c-s.fr>
+In-Reply-To: <53c1c463-53fc-2005-3b62-a6f430815b45@c-s.fr>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -79,20 +79,33 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 01/11/2019 17.19, Christophe Leroy wrote:
-> Le 01/11/2019 à 13:42, Rasmus Villemoes a écrit :
->> This driver uses #defines from soc/fsl/cpm.h, so instead of relying on
->> some other header pulling that in, do that explicitly. This is
->> preparation for allowing this driver to build on ARM.
->>
+On 01/11/2019 17.27, Christophe Leroy wrote:
 > 
-> UCC are only on QE.
-> CPM has SCCs. instead.
-> So this driver shouldn't need cpm.h
+> 
+> Le 01/11/2019 à 13:42, Rasmus Villemoes a écrit :
+>> The Soft UART hack is only needed for some PPC-based SOCs. To allow
+>> building this driver for non-PPC, guard soft_uart_init() and its
+>> helpers by CONFIG_PPC32, and use a no-op soft_uart_init() otherwise.
+> 
+> I don't like too much ifdefs in C files, especially arch specific ifdefs
+> in generic drivers.
 
-But it does. At the very least for the BD_SC_* defines, possibly others
-things. It's possible one could split off the common part to a separate
-header, but that sort of cleanup/refactoring is beyond what I'd be
-comfortable including in this series.
+Me neither. However,
+
+> How do we get the QE version on ARM ?
+> 
+> Wouldn't it be cleaner to create a helper for getting the QE version,
+> which would be defined in an arch specific header file, calling
+> mfspr(SPRN_SVR) on powerpc and whatever needed on arm ?
+
+First, that would mean we'd have to introduce "depends on PPC32 || ARM"
+rather than drop "depends on PPC32". Second, the way the SOC version is
+being used to construct the name of the microcode blob seems very
+ppc-specific, so I don't see how one can reasonably define an interface
+that would work for all architectures. But it's also kind of moot since
+the ARM SOCs don't need this workaround.
+
+IMO, having to add qe-specific code to arch/ is a cure worse than the
+disease. I'd much rather add arch-specific code to qe.
 
 Rasmus
