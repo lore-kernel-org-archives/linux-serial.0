@@ -1,113 +1,98 @@
-Return-Path: <SRS0=f3Vh=Y3=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=XcX2=Y4=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3102ECA9EB0
-	for <linux-serial@archiver.kernel.org>; Sun,  3 Nov 2019 21:51:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E53ECA9ED3
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Nov 2019 07:38:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 01684214D9
-	for <linux-serial@archiver.kernel.org>; Sun,  3 Nov 2019 21:51:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 45414222D2
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Nov 2019 07:38:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Hoy5ufyo"
+	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="fKyAoSLb"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728243AbfKCVv3 (ORCPT
+        id S1726391AbfKDHir (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 3 Nov 2019 16:51:29 -0500
-Received: from mail-io1-f67.google.com ([209.85.166.67]:34955 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727380AbfKCVv3 (ORCPT
+        Mon, 4 Nov 2019 02:38:47 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:37975 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726633AbfKDHiq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 3 Nov 2019 16:51:29 -0500
-Received: by mail-io1-f67.google.com with SMTP id x21so677527iol.2;
-        Sun, 03 Nov 2019 13:51:28 -0800 (PST)
+        Mon, 4 Nov 2019 02:38:46 -0500
+Received: by mail-lj1-f193.google.com with SMTP id v8so758105ljh.5
+        for <linux-serial@vger.kernel.org>; Sun, 03 Nov 2019 23:38:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lgLWVbnYsmp8GTfjtkJQ6PMmsjA0Nkny+EyycF5N+NM=;
-        b=Hoy5ufyo3HMrwiKzs049mLa9IUVYs0l4COHDLR2cN8MCEGzesPfcSq/UAzytFwcSpX
-         jdssTa/6NE0Vzyh4B+HRPhkFOcrF52w4Dzd4eqeOVRBcLrE3XkkmUib+6nzjCL22kyiS
-         vDq/DJSzEQSNZsqIVkZM2BxCBVxEEiyL343EZsZLi3UM9Yqm57zfeCq3HN3XZRt0UrqK
-         GasW+HfOgIeEMAUz1lmSOUKWonItNX/wG+ijzsT1Y+rPBeq9dRxSzn4Y/5A4irsXzJiz
-         YhNuURecQGWkBNQnaEMoUw7yR3My+3PMK+VmTj9PV378/3pmv01kiDpaRtXztVKPTMaH
-         bVIw==
+        d=rasmusvillemoes.dk; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Skx+IlvEjbz4Ey3Z8Es5BpI/gDpf4xIU9seBvakWE2o=;
+        b=fKyAoSLbBB7K6Hwz7WQ1hkLB8UolD91873nvpgYDwu3vHgk9FskSurtOXN9GkL1c/5
+         O1QO4r/LPsSNuj4aQkwxPg2auKprW4F4lCLH/I6JsLtqOEwdNwfRS8W2sWECsVQqK6CO
+         JdWAYkhmIGvDXKDiJ6rIDpzfpG3P7N4TPq36U=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lgLWVbnYsmp8GTfjtkJQ6PMmsjA0Nkny+EyycF5N+NM=;
-        b=b+/cykFbX1WOoK13o4oECnFkOfx1BStlPqr57A2W65Ri8ZpfLqckNcmen2p4bRxDLJ
-         /3ECzKDGEXV/Yo5TA6m/VNM/f3bZRxUmV7bjtDDSJGzC8B8gRVemzOPHTPq2bETuZU1b
-         iDVwNLT3vvDjjbvN0SL1GL3LRSJIQQfKbn3jMZQFryoi253Di5If7q2OC1tZEYsZJgFH
-         2InSlPfzw6k9uJA5xmHLbubwLQWvtqO4Gw6xShi89g2sN2Z/RB8D6UvZLE43BvxA7kRf
-         +68Sl+UMG+0eS9TThbD4mFIQfpHCCzpCwR3zqqPVT0ydt+KiADDqcdzTCnnVF+jey8Mq
-         m/VQ==
-X-Gm-Message-State: APjAAAWSgE3LX4LUJu2JJ0qlALiYwB3edx4F04h/WDhQ+CMwEMKbXM44
-        WuFns1XpQnEwgmiUp92QF1Qu/+c3X6dSSPd9QNY=
-X-Google-Smtp-Source: APXvYqyji1eJd3MTZ9BmTrD9R9Rf5+0/OgRzgO+3osoTpI9uw+bnkZe69du9hFxeNIXjyWCvn5/9l1SQVAlWerAk1XY=
-X-Received: by 2002:a5d:91d2:: with SMTP id k18mr20651366ior.178.1572817888371;
- Sun, 03 Nov 2019 13:51:28 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Skx+IlvEjbz4Ey3Z8Es5BpI/gDpf4xIU9seBvakWE2o=;
+        b=guRX0yPyDwU2LNpfn58lNGb2UAvxggNU615VwN5RPgEDqNoXONUCva2ze7vVZGnMQx
+         2b9k/cyhQj82JbuHvCamudWXfZqcc5V+mqtCbEz9h0KCd5/kwi2EOU3YW1bKkb9jtPte
+         3a8Sn6kGxljwh7pLEyUiilvYtsLRiltp3RKZG04zgLsg0HDtp+L3WkTojey+rWvOB13G
+         5LZKwTDLgQQ9NHIrJapJckKW/CgAvXrpIEo7wH8bIVJETkzyBCvGSrxyOC8T2QcIylwQ
+         /mvH/+IZEmR17tPF8sdW9fKAMS8cgO5poEjRaWaoV0XtoOCcngr6ZDiGKJgp2ZaWj3Ma
+         vE4w==
+X-Gm-Message-State: APjAAAUVDJ/JEnGeFZUhcdf3IaJ3ePERGb/60Xne34iUsDO+1IVzbskr
+        0zI0lcQGnQ0T4hnD4rjdCzCViUS35BwzXg==
+X-Google-Smtp-Source: APXvYqy0dojhXdV/Wyv7nl7DnnJ1xyl+IlR4kyBZvriN/BA2WM6WGs9kvJj6pwDEOoKIklqLOYQZtg==
+X-Received: by 2002:a2e:5d1:: with SMTP id 200mr18228489ljf.50.1572853123654;
+        Sun, 03 Nov 2019 23:38:43 -0800 (PST)
+Received: from [172.16.11.28] ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id c5sm6344575ljd.57.2019.11.03.23.38.42
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 03 Nov 2019 23:38:42 -0800 (PST)
+Subject: Re: [PATCH v3 28/36] serial: ucc_uart: explicitly include
+ soc/fsl/cpm.h
+To:     Christophe Leroy <christophe.leroy@c-s.fr>,
+        Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>
+Cc:     linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Scott Wood <oss@buserror.net>, linux-serial@vger.kernel.org
+References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
+ <20191101124210.14510-1-linux@rasmusvillemoes.dk>
+ <20191101124210.14510-29-linux@rasmusvillemoes.dk>
+ <a921b57b-04d5-4874-89e2-df29dfe99bfc@c-s.fr>
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Message-ID: <0acb2e96-3485-5e49-bed1-8deb2051cb91@rasmusvillemoes.dk>
+Date:   Mon, 4 Nov 2019 08:38:41 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-References: <20191021154616.25457-1-jeffrey.l.hugo@gmail.com> <20191027055528.GJ5514@hector.lan>
-In-Reply-To: <20191027055528.GJ5514@hector.lan>
-From:   Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-Date:   Sun, 3 Nov 2019 14:51:17 -0700
-Message-ID: <CAOCk7Nptm=Cz17FFKKvsgVxXRgJ-m9zK4RKysqhjb4cwPweSXg@mail.gmail.com>
-Subject: Re: [PATCH v2] tty: serial: msm_serial: Fix flow control
-To:     Andy Gross <agross@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>, jslaby@suse.com,
-        MSM <linux-arm-msm@vger.kernel.org>,
-        linux-serial@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <a921b57b-04d5-4874-89e2-df29dfe99bfc@c-s.fr>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Oct 26, 2019 at 11:55 PM Andy Gross <agross@kernel.org> wrote:
->
-> On Mon, Oct 21, 2019 at 08:46:16AM -0700, Jeffrey Hugo wrote:
-> > hci_qca interfaces to the wcn3990 via a uart_dm on the msm8998 mtp and
-> > Lenovo Miix 630 laptop.  As part of initializing the wcn3990, hci_qca
-> > disables flow, configures the uart baudrate, and then reenables flow - at
-> > which point an event is expected to be received over the uart from the
-> > wcn3990.  It is observed that this event comes after the baudrate change
-> > but before hci_qca re-enables flow. This is unexpected, and is a result of
-> > msm_reset() being broken.
-> >
-> > According to the uart_dm hardware documentation, it is recommended that
-> > automatic hardware flow control be enabled by setting RX_RDY_CTL.  Auto
-> > hw flow control will manage RFR based on the configured watermark.  When
-> > there is space to receive data, the hw will assert RFR.  When the watermark
-> > is hit, the hw will de-assert RFR.
-> >
-> > The hardware documentation indicates that RFR can me manually managed via
-> > CR when RX_RDY_CTL is not set.  SET_RFR asserts RFR, and RESET_RFR
-> > de-asserts RFR.
-> >
-> > msm_reset() is broken because after resetting the hardware, it
-> > unconditionally asserts RFR via SET_RFR.  This enables flow regardless of
-> > the current configuration, and would undo a previous flow disable
-> > operation.  It should instead de-assert RFR via RESET_RFR to block flow
-> > until the hardware is reconfigured.  msm_serial should rely on the client
-> > to specify that flow should be enabled, either via mctrl() or the termios
-> > structure, and only assert RFR in response to those triggers.
-> >
-> > Fixes: 04896a77a97b ("msm_serial: serial driver for MSM7K onboard serial peripheral.")
-> > Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-> > ---
->
-> Reviewed-by: Andy Gross <agross@kernel.org>
->
-> Greg, can you pick this one up?
->
-> Thanks,
-> Andy
+On 01/11/2019 17.19, Christophe Leroy wrote:
+> Le 01/11/2019 à 13:42, Rasmus Villemoes a écrit :
+>> This driver uses #defines from soc/fsl/cpm.h, so instead of relying on
+>> some other header pulling that in, do that explicitly. This is
+>> preparation for allowing this driver to build on ARM.
+>>
+> 
+> UCC are only on QE.
+> CPM has SCCs. instead.
+> So this driver shouldn't need cpm.h
 
-Greg, will this be queued for 5.5?
+But it does. At the very least for the BD_SC_* defines, possibly others
+things. It's possible one could split off the common part to a separate
+header, but that sort of cleanup/refactoring is beyond what I'd be
+comfortable including in this series.
+
+Rasmus
