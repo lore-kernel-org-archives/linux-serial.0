@@ -2,106 +2,105 @@ Return-Path: <SRS0=XcX2=Y4=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5133CA9EB5
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Nov 2019 16:41:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED747CA9ED3
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Nov 2019 16:43:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 933AD2089C
-	for <linux-serial@archiver.kernel.org>; Mon,  4 Nov 2019 16:41:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B8A4520869
+	for <linux-serial@archiver.kernel.org>; Mon,  4 Nov 2019 16:43:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1572885687;
-	bh=/Rvgp2d7W+mkkoTIM0LPd9nYN7M9Kdt2YVgFzxeEai4=;
+	s=default; t=1572885836;
+	bh=ua5TnJiV9UElAM1ICyBSiRDTY3JpDWVR/RLyCZEi54I=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=tJkBoxkgz9VagZL4i98fnHvrjthbipQCKko6gQpMDngrQXLpdJl6qJ51l/ub3Qs1F
-	 9QW8m3KgrhbN1cY0/J7zwm6P6yF/3IPARC31BtJCfLTgB4aCbWihiCoRLjTj9+n7rl
-	 /AJmA6ncluuJQ80cvTHPPUA0sK7SY9UKUU9kz9bs=
+	b=zs6vYwZtV44iLubLdGpOlSbeu9oG/xTT0tKTPXGE4uP0nMiVeXq0XtdmAd+O9Tdfw
+	 aodZNm+mWVabV6Wls19syfTe6ZJ5TYetx8cPYHyQfqYUtDcMY2A+wjPhOI01jYiY6E
+	 bIajAXOU0Arzpme1AJoWHyPfrs86vxumlO0NOxhY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729035AbfKDQl1 (ORCPT
+        id S1728174AbfKDQn4 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 Nov 2019 11:41:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35352 "EHLO mail.kernel.org"
+        Mon, 4 Nov 2019 11:43:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36428 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728322AbfKDQl1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 Nov 2019 11:41:27 -0500
+        id S1727861AbfKDQn4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 4 Nov 2019 11:43:56 -0500
 Received: from localhost (host6-102.lan-isdn.imaginet.fr [195.68.6.102])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1ADDB20663;
-        Mon,  4 Nov 2019 16:41:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6698B20869;
+        Mon,  4 Nov 2019 16:43:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572885686;
-        bh=/Rvgp2d7W+mkkoTIM0LPd9nYN7M9Kdt2YVgFzxeEai4=;
+        s=default; t=1572885834;
+        bh=ua5TnJiV9UElAM1ICyBSiRDTY3JpDWVR/RLyCZEi54I=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OssM3MIm+0cTRCds0C8iQVCssXHvZZ+3MscLziQ7QRPsXuv4czERjfsfy1EVKmDKV
-         k6INEG6f0eFbvqmN4AAhE1jjA58kOsJyxIN1lsw8CHFWIj4Ca0fkjYawsJG0dEkBDc
-         aTfCcvws6ejEvXDGjVhW9/lZ9m8QHChEPbR/9OII=
-Date:   Mon, 4 Nov 2019 17:41:23 +0100
+        b=Z+9W5IlKUo5yoCZC2nYPNXOh2dPCwe1uffgh/kNyuEHQT0fzQH7c8QtiuBwxbjN9T
+         Fy9Gh0aZ3xdSmHGM403Jkd79HthBlyWsEtGXa2h/tjn1hmVo4E8T8rVc+kX8TIgEA3
+         qYFs2ZbThXaunfxLbVuC/Fotk1XFdggWV2Rhrm4M=
+Date:   Mon, 4 Nov 2019 17:43:51 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>, jslaby@suse.com,
-        MSM <linux-arm-msm@vger.kernel.org>,
-        linux-serial@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] tty: serial: msm_serial: Fix flow control
-Message-ID: <20191104164123.GA2256087@kroah.com>
-References: <20191021154616.25457-1-jeffrey.l.hugo@gmail.com>
- <20191027055528.GJ5514@hector.lan>
- <CAOCk7Nptm=Cz17FFKKvsgVxXRgJ-m9zK4RKysqhjb4cwPweSXg@mail.gmail.com>
+To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc:     Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH] tty: serial: samsung: rename to fix build warning
+Message-ID: <20191104164351.GA2269025@kroah.com>
+References: <20191018194707.27188-1-sudipm.mukherjee@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAOCk7Nptm=Cz17FFKKvsgVxXRgJ-m9zK4RKysqhjb4cwPweSXg@mail.gmail.com>
+In-Reply-To: <20191018194707.27188-1-sudipm.mukherjee@gmail.com>
 User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Nov 03, 2019 at 02:51:17PM -0700, Jeffrey Hugo wrote:
-> On Sat, Oct 26, 2019 at 11:55 PM Andy Gross <agross@kernel.org> wrote:
-> >
-> > On Mon, Oct 21, 2019 at 08:46:16AM -0700, Jeffrey Hugo wrote:
-> > > hci_qca interfaces to the wcn3990 via a uart_dm on the msm8998 mtp and
-> > > Lenovo Miix 630 laptop.  As part of initializing the wcn3990, hci_qca
-> > > disables flow, configures the uart baudrate, and then reenables flow - at
-> > > which point an event is expected to be received over the uart from the
-> > > wcn3990.  It is observed that this event comes after the baudrate change
-> > > but before hci_qca re-enables flow. This is unexpected, and is a result of
-> > > msm_reset() being broken.
-> > >
-> > > According to the uart_dm hardware documentation, it is recommended that
-> > > automatic hardware flow control be enabled by setting RX_RDY_CTL.  Auto
-> > > hw flow control will manage RFR based on the configured watermark.  When
-> > > there is space to receive data, the hw will assert RFR.  When the watermark
-> > > is hit, the hw will de-assert RFR.
-> > >
-> > > The hardware documentation indicates that RFR can me manually managed via
-> > > CR when RX_RDY_CTL is not set.  SET_RFR asserts RFR, and RESET_RFR
-> > > de-asserts RFR.
-> > >
-> > > msm_reset() is broken because after resetting the hardware, it
-> > > unconditionally asserts RFR via SET_RFR.  This enables flow regardless of
-> > > the current configuration, and would undo a previous flow disable
-> > > operation.  It should instead de-assert RFR via RESET_RFR to block flow
-> > > until the hardware is reconfigured.  msm_serial should rely on the client
-> > > to specify that flow should be enabled, either via mctrl() or the termios
-> > > structure, and only assert RFR in response to those triggers.
-> > >
-> > > Fixes: 04896a77a97b ("msm_serial: serial driver for MSM7K onboard serial peripheral.")
-> > > Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-> > > ---
-> >
-> > Reviewed-by: Andy Gross <agross@kernel.org>
-> >
-> > Greg, can you pick this one up?
-> >
-> > Thanks,
-> > Andy
+On Fri, Oct 18, 2019 at 08:47:07PM +0100, Sudip Mukherjee wrote:
+> The build of arm allmodconfig gives a warning:
 > 
-> Greg, will this be queued for 5.5?
+> warning: same module names found:
+>   drivers/tty/serial/samsung.ko
+>   drivers/mtd/nand/onenand/samsung.ko
+> 
+> Rename drivers/tty/serial/samsung.c to drivers/tty/serial/samsung_tty.c
+> to fix the warning.
+> 
+> Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+> ---
+>  drivers/tty/serial/Makefile                     | 2 +-
+>  drivers/tty/serial/{samsung.c => samsung_tty.c} | 0
+>  2 files changed, 1 insertion(+), 1 deletion(-)
+>  rename drivers/tty/serial/{samsung.c => samsung_tty.c} (100%)
+> 
+> diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+> index 863f47056539..d056ee6cca33 100644
+> --- a/drivers/tty/serial/Makefile
+> +++ b/drivers/tty/serial/Makefile
+> @@ -30,7 +30,7 @@ obj-$(CONFIG_SERIAL_PXA_NON8250) += pxa.o
+>  obj-$(CONFIG_SERIAL_PNX8XXX) += pnx8xxx_uart.o
+>  obj-$(CONFIG_SERIAL_SA1100) += sa1100.o
+>  obj-$(CONFIG_SERIAL_BCM63XX) += bcm63xx_uart.o
+> -obj-$(CONFIG_SERIAL_SAMSUNG) += samsung.o
+> +obj-$(CONFIG_SERIAL_SAMSUNG) += samsung_tty.o
+>  obj-$(CONFIG_SERIAL_MAX3100) += max3100.o
+>  obj-$(CONFIG_SERIAL_MAX310X) += max310x.o
+>  obj-$(CONFIG_SERIAL_IP22_ZILOG) += ip22zilog.o
+> diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung_tty.c
+> similarity index 100%
+> rename from drivers/tty/serial/samsung.c
+> rename to drivers/tty/serial/samsung_tty.c
+> -- 
+> 2.11.0
+> 
 
-Yes, catching up now...
+
+What are you going to break if you rename this module?
+
+What configs enable both of these other than allmodconfig?  Why rename
+the tty driver and not the mtd driver?  Why not both?
+
+thanks,
+
+greg k-h
