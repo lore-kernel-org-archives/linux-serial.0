@@ -2,159 +2,172 @@ Return-Path: <SRS0=mTc+=Y5=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33548C49EAB
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Nov 2019 09:57:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 284DEC47E49
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Nov 2019 17:17:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 02EB220869
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Nov 2019 09:57:56 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="GFz3gyql";
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="GFz3gyql"
+	by mail.kernel.org (Postfix) with ESMTP id 0084F21929
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Nov 2019 17:17:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1572974233;
+	bh=9YzAebsFkiZYSL1sOxXS3D9D0ldP6eryrhISUy5LQ5o=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=beIBYOMperqD3RtWenuR80y9odCZgxmfbUdRuvzhZliqA40nrIRO96AHpx8AlrmXg
+	 CC2hTLqe/lWlY75zRReVMQ4foSG0KrSKw9xdKXbG29seYYJ+1SiTCG5iCZqXZCoOP0
+	 FLaOkSScRWUlE4osIcmnfX/eRNMU5IQcEAxStq5Y=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387960AbfKEJ5z (ORCPT
+        id S2390284AbfKERRL (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Nov 2019 04:57:55 -0500
-Received: from smtp.codeaurora.org ([198.145.29.96]:35588 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730454AbfKEJ5z (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Nov 2019 04:57:55 -0500
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id C844060A1B; Tue,  5 Nov 2019 09:57:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1572947873;
-        bh=1OgN3v4K0Y2QAPtzBaGy9XQW6fn4fdB2ScSQ0qqSInM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=GFz3gyqllQooDBn3kwBf0wG9Zo5mS64h8cT6kI4Joch2g+zXAaD7m1WijUqez/TMb
-         3s29bdohGU0bHHJvRaUbMlUcvx4ArMfZjsUaJTb1y0v8dWWfExsqgvZogV4WqhZTi6
-         WF2GCgHHAO0FFmAVcxoIoo289JE2sqvSFYjVwD+4=
-Received: from akashast-linux.qualcomm.com (blr-c-bdr-fw-01_globalnat_allzones-outside.qualcomm.com [103.229.19.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        Tue, 5 Nov 2019 12:17:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48018 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388860AbfKERRL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 5 Nov 2019 12:17:11 -0500
+Received: from localhost (unknown [62.119.166.9])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: akashast@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 250A5607EF;
-        Tue,  5 Nov 2019 09:57:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1572947873;
-        bh=1OgN3v4K0Y2QAPtzBaGy9XQW6fn4fdB2ScSQ0qqSInM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=GFz3gyqllQooDBn3kwBf0wG9Zo5mS64h8cT6kI4Joch2g+zXAaD7m1WijUqez/TMb
-         3s29bdohGU0bHHJvRaUbMlUcvx4ArMfZjsUaJTb1y0v8dWWfExsqgvZogV4WqhZTi6
-         WF2GCgHHAO0FFmAVcxoIoo289JE2sqvSFYjVwD+4=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 250A5607EF
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-From:   Akash Asthana <akashast@codeaurora.org>
-To:     gregkh@linuxfoundation.org
+        by mail.kernel.org (Postfix) with ESMTPSA id D6041214D8;
+        Tue,  5 Nov 2019 17:17:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1572974230;
+        bh=9YzAebsFkiZYSL1sOxXS3D9D0ldP6eryrhISUy5LQ5o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DTjmCIEqoHxzqXcRFGRXBE6nDQe1UJHPKawojEKCpBYIdNSwiE2HIQJ4ODzjAeJE3
+         fyf/ZmAijh9L/rV6t3ZHbuLzvwJHODkac0qDJ9IIPV3+aXy5VfOk++nMBy4zxOXv7o
+         0wtB7DY7s6tEjrGN0fsjW9jvZ9w3MYBdzv/70eac=
+Date:   Tue, 5 Nov 2019 18:17:05 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Akash Asthana <akashast@codeaurora.org>
 Cc:     linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        mgautam@codeaurora.org, swboyd@chromium.org,
-        Akash Asthana <akashast@codeaurora.org>
-Subject: [PATCH v4 2/2] tty: serial: qcom_geni_serial: Wakeup over UART RX
-Date:   Tue,  5 Nov 2019 15:27:40 +0530
-Message-Id: <1572947860-30645-1-git-send-email-akashast@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
+        mgautam@codeaurora.org, swboyd@chromium.org
+Subject: Re: [PATCH v4 1/2] tty: serial: qcom_geni_serial: IRQ cleanup
+Message-ID: <20191105171705.GB2815774@kroah.com>
+References: <1572947835-30600-1-git-send-email-akashast@codeaurora.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1572947835-30600-1-git-send-email-akashast@codeaurora.org>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add system wakeup capability over UART RX line for wakeup capable UART.
-When system is suspended, RX line act as an interrupt to wakeup system
-for any communication requests from peer.
+On Tue, Nov 05, 2019 at 03:27:15PM +0530, Akash Asthana wrote:
+> Move ISR registration from startup to probe function to avoid registering
+> it everytime when the port open is called for driver.
+> 
+> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+> ---
+> Changes in v4:
+>  - As per Stephen's comment, move ISR registration(later in probe) after
+>    registering uart port with serial core.
+>  - As per Greg's comment, corrected returning of PTR value from integer type
+>    function(probe).
+> 
+> Changes in v3:
+>  - As per Stephen's comment, using devm_kasprintf instead of scnprintf API.
+> 
+>  drivers/tty/serial/qcom_geni_serial.c | 38 ++++++++++++++++++++++++-----------
+>  1 file changed, 26 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 14c6306..634054a 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -9,6 +9,7 @@
+>  #include <linux/console.h>
+>  #include <linux/io.h>
+>  #include <linux/iopoll.h>
+> +#include <linux/irq.h>
+>  #include <linux/module.h>
+>  #include <linux/of.h>
+>  #include <linux/of_device.h>
+> @@ -101,7 +102,7 @@
+>  struct qcom_geni_serial_port {
+>  	struct uart_port uport;
+>  	struct geni_se se;
+> -	char name[20];
+> +	const char *name;
+>  	u32 tx_fifo_depth;
+>  	u32 tx_fifo_width;
+>  	u32 rx_fifo_depth;
+> @@ -830,7 +831,7 @@ static void qcom_geni_serial_shutdown(struct uart_port *uport)
+>  	if (uart_console(uport))
+>  		console_stop(uport->cons);
+>  
+> -	free_irq(uport->irq, uport);
+> +	disable_irq(uport->irq);
+>  	spin_lock_irqsave(&uport->lock, flags);
+>  	qcom_geni_serial_stop_tx(uport);
+>  	qcom_geni_serial_stop_rx(uport);
+> @@ -890,21 +891,14 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
+>  	int ret;
+>  	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
+>  
+> -	scnprintf(port->name, sizeof(port->name),
+> -		  "qcom_serial_%s%d",
+> -		(uart_console(uport) ? "console" : "uart"), uport->line);
+> -
+>  	if (!port->setup) {
+>  		ret = qcom_geni_serial_port_setup(uport);
+>  		if (ret)
+>  			return ret;
+>  	}
+> +	enable_irq(uport->irq);
+>  
+> -	ret = request_irq(uport->irq, qcom_geni_serial_isr, IRQF_TRIGGER_HIGH,
+> -							port->name, uport);
+> -	if (ret)
+> -		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
+> -	return ret;
+> +	return 0;
+>  }
+>  
+>  static unsigned long get_clk_cfg(unsigned long clk_freq)
+> @@ -1297,6 +1291,12 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+>  	port->rx_fifo_depth = DEF_FIFO_DEPTH_WORDS;
+>  	port->tx_fifo_width = DEF_FIFO_WIDTH_BITS;
+>  
+> +	port->name = devm_kasprintf(uport->dev, GFP_KERNEL,
+> +			"qcom_geni_serial_%s%d",
+> +			uart_console(uport) ? "console" : "uart", uport->line);
+> +	if (!port->name)
+> +		return -ENOMEM;
+> +
+>  	irq = platform_get_irq(pdev, 0);
+>  	if (irq < 0)
+>  		return irq;
+> @@ -1307,7 +1307,21 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+>  	port->handle_rx = console ? handle_rx_console : handle_rx_uart;
+>  	if (!console)
+>  		device_create_file(uport->dev, &dev_attr_loopback);
+> -	return uart_add_one_port(drv, uport);
+> +
+> +	ret = uart_add_one_port(drv, uport);
+> +	if (ret)
+> +		return ret;
 
-Signed-off-by: Akash Asthana <akashast@codeaurora.org>
----
-Changes in V4:
- - As per Greg's comment, removed extra dev_err logging.
- - As per Stephen's comment, using common code that manage wakeirq irqs for
-   devices. Using dev_pm_set_dedicated_wake_irq API that will take care of
-   requesting and attaching wakeup irqs for devices. Also, it sets wakeirq
-   status to WAKE_IRQ_DEDICATED_ALLOCATED as a result enabling/disabling of
-   wake irq will be managed by suspend/resume framework so, removed the code
-   for enabling and disabling of wake irq from the driver.
+What is going to remove the sysfs file you just created above (in a racy
+way, it's broken and needs to be fixed, but that's a different issue
+here...)?
 
-Changes in V3:
- - As per Stephen's comment, using platform_get_irq_optional API to get wakeup
-   IRQ for device.
 
-Changes in V2:
- - As per Stephen's comment, splitted V1 patch into 2 seperate patch.
-   a) Clean up of core IRQ registration b) Add wakeup feature.
+> +
+> +	irq_set_status_flags(uport->irq, IRQ_NOAUTOEN);
+> +	ret = devm_request_irq(uport->dev, uport->irq, qcom_geni_serial_isr,
+> +			IRQF_TRIGGER_HIGH, port->name, uport);
+> +	if (ret) {
+> +		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
+> +		uart_remove_one_port(drv, uport);
+> +		return ret;
 
- drivers/tty/serial/qcom_geni_serial.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+Does this remove the sysfs file?
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 634054a..56dad67 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -14,6 +14,8 @@
- #include <linux/of.h>
- #include <linux/of_device.h>
- #include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/pm_wakeirq.h>
- #include <linux/qcom-geni-se.h>
- #include <linux/serial.h>
- #include <linux/serial_core.h>
-@@ -116,6 +118,7 @@ struct qcom_geni_serial_port {
- 	bool brk;
- 
- 	unsigned int tx_remaining;
-+	int wakeup_irq;
- };
- 
- static const struct uart_ops qcom_geni_console_pops;
-@@ -1302,6 +1305,9 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 		return irq;
- 	uport->irq = irq;
- 
-+	if (!console)
-+		port->wakeup_irq = platform_get_irq_optional(pdev, 1);
-+
- 	uport->private_data = drv;
- 	platform_set_drvdata(pdev, port);
- 	port->handle_rx = console ? handle_rx_console : handle_rx_uart;
-@@ -1321,6 +1327,23 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
-+	if (port->wakeup_irq > 0) {
-+		/*
-+		 * Set pm_runtime status as ACTIVE so that wakeup_irq gets
-+		 * enabled/disabled from dev_pm_arm_wake_irq  during  system
-+		 * suspend/resume respectively.
-+		 */
-+		pm_runtime_set_active(&pdev->dev);
-+		device_init_wakeup(&pdev->dev, true);
-+		ret = dev_pm_set_dedicated_wake_irq(&pdev->dev,
-+						port->wakeup_irq);
-+		if (ret) {
-+			device_init_wakeup(&pdev->dev, false);
-+			uart_remove_one_port(drv, uport);
-+			return ret;
-+		}
-+	}
-+
- 	return ret;
- }
- 
-@@ -1330,6 +1353,10 @@ static int qcom_geni_serial_remove(struct platform_device *pdev)
- 	struct uart_driver *drv = port->uport.private_data;
- 
- 	uart_remove_one_port(drv, &port->uport);
-+
-+	device_init_wakeup(&pdev->dev, false);
-+	dev_pm_clear_wake_irq(&pdev->dev);
-+
- 	return 0;
- }
- 
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+thanks,
 
+greg k-h
