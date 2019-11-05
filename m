@@ -2,105 +2,104 @@ Return-Path: <SRS0=mTc+=Y5=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 921CBCA9EDB
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Nov 2019 08:43:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E82C49EAB
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Nov 2019 09:56:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6C6C720717
-	for <linux-serial@archiver.kernel.org>; Tue,  5 Nov 2019 08:43:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 50C4B20869
+	for <linux-serial@archiver.kernel.org>; Tue,  5 Nov 2019 09:56:54 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="SFqRFPkY";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="dVysDF0i"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729597AbfKEInB (ORCPT
+        id S1730592AbfKEJ4y (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 Nov 2019 03:43:01 -0500
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:36091 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727401AbfKEInA (ORCPT
+        Tue, 5 Nov 2019 04:56:54 -0500
+Received: from smtp.codeaurora.org ([198.145.29.96]:35140 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730454AbfKEJ4x (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 Nov 2019 03:43:00 -0500
-Received: by mail-ot1-f65.google.com with SMTP id s3so9347031otk.3
-        for <linux-serial@vger.kernel.org>; Tue, 05 Nov 2019 00:43:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=p+JwvCyNQZrexeHFulYuJg58ql4mf+z4stztGAEpABo=;
-        b=GsFWq3kdKteXntWjlSbgOgMh3j0/RSym80/OVWBiCWPV8ODtjn5ifZLEy+h2uLsm1n
-         fOgqSTeXOyVn2+rJCatYsIvHCPtxElCvbAU9xzvxT9zuhOHXTudLDJPcX3DKOh5jSIcS
-         q520GZlCdERgfebwozgWQrzVIa9pQjOomzBef3Z0TmkdHhqSchjoWuEOYQxptPb3D+uz
-         qginQLGg5YuF5irkU9Sn7/VyGvm4HiOcDKXopIVnMY16w6xhhseeZK7SoLw9VKvRVxLv
-         wZd0ZOZ2D2XGaHywHIkWGJLgScVL1Gss4zR4QQBInXdQ9d8FExq3wSCR9wBsqJtVSiR0
-         s7GQ==
-X-Gm-Message-State: APjAAAV36JoUBvtMaOjgNwVZsxtM3uxj/2lr2nlvIZ3V93/SvfWWhbW0
-        dWz57fJBzFjtPOZkvFyS4h5skqdLaJLrGho5rwc=
-X-Google-Smtp-Source: APXvYqx+5QomUWgGs2WmEELvfhS1StbN2l8NrgFKZfoPwalXqUzMRzoyNCmHigrVRNN30YlWOzUuBDvJWTgJHKx2MHg=
-X-Received: by 2002:a9d:191e:: with SMTP id j30mr12253029ota.297.1572943380002;
- Tue, 05 Nov 2019 00:43:00 -0800 (PST)
+        Tue, 5 Nov 2019 04:56:53 -0500
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 2676061013; Tue,  5 Nov 2019 09:56:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1572947813;
+        bh=NcLd2Rk71BMU372HX0VmNVk5C2EEg2yC9K68DL5K5nw=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=SFqRFPkYo3x4bKKxH4vitQ6UIV3/XEiMGSg7PoLAFRAspnow67VBX+P4q+iRPH9My
+         VApRSEwSpYxU+XMRRINh/k99jovpv0mUm0ZgQds/XYUyOBEHlKS5hsOrfaw6sqZBUs
+         3A7QCC24XItjYBn/+1QMjcYgfsFQ9h/tq21E0TbM=
+Received: from [10.252.222.65] (blr-c-bdr-fw-01_globalnat_allzones-outside.qualcomm.com [103.229.19.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 8A28D607EF;
+        Tue,  5 Nov 2019 09:56:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1572947812;
+        bh=NcLd2Rk71BMU372HX0VmNVk5C2EEg2yC9K68DL5K5nw=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=dVysDF0iYvrVqxaJTrTEZ1q82FBn1TdjGv7toSAlPIwG7h81Mm1yKSwUv/PXJIQHv
+         gnwgue/m6Z271EcMkNjgUauFJI3/w0IPloxO039hvGK4tk0sTJFXdVHbYVxhAb3qsc
+         /+dBG6iEPbfsIOGrAOA0vQZgtmyMgs3whnOsQfuc=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 8A28D607EF
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+Subject: Re: [PATCH V2 2/2] tty: serial: qcom_geni_serial: Wakeup over UART RX
+To:     Stephen Boyd <swboyd@chromium.org>, gregkh@linuxfoundation.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        mgautam@codeaurora.org, bjorn.andersson@linaro.org
+References: <1570700803-17566-1-git-send-email-akashast@codeaurora.org>
+ <5d9f3f4f.1c69fb81.5120f.b90e@mx.google.com>
+ <a7dabb1d-b6af-acc5-ba4e-923ee5fc6ee3@codeaurora.org>
+ <5da627aa.1c69fb81.e2d51.203d@mx.google.com>
+ <c20319ce-77e2-a4ea-5d7a-a84b8858a938@codeaurora.org>
+ <5db70280.1c69fb81.c9f08.a848@mx.google.com>
+From:   Akash Asthana <akashast@codeaurora.org>
+Message-ID: <454445c2-635e-83fa-50d8-b5e2a24dd466@codeaurora.org>
+Date:   Tue, 5 Nov 2019 15:26:47 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-References: <20191004132256.GA715053@kroah.com> <20191104193525.229055-1-pterjan@google.com>
-In-Reply-To: <20191104193525.229055-1-pterjan@google.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 5 Nov 2019 09:42:49 +0100
-Message-ID: <CAMuHMdUm+s4UaBrtxvXaLg1EUmsoYYG=6JvnWzC0ivbyzdMBZw@mail.gmail.com>
-Subject: Re: [PATCH v3] Remove every trace of SERIAL_MAGIC
-To:     Pascal Terjan <pterjan@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <5db70280.1c69fb81.c9f08.a848@mx.google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Pascal,
 
-On Mon, Nov 4, 2019 at 8:35 PM Pascal Terjan <pterjan@google.com> wrote:
-> This means removing support for some debugging code in amiserial.c
-> (SERIAL_PARANOIA_CHECK option), which was checking a magic field which
-> doesn't currently exist in the struct. That code hasn't built at least
-> since git.
+On 10/28/2019 8:30 PM, Stephen Boyd wrote:
+> Quoting Akash Asthana (2019-10-17 04:10:10)
+>> On 10/16/2019 1:40 AM, Stephen Boyd wrote:
+>>> Why can't we make this driver use runtime PM?
+>> Currently there are no plans to use runtime PM as we are interested in
+>> enabling wakeup irq as part of system suspend only.
+>>
+>>
+> Does the wakeup irq code require runtime PM? I thought that any wake irq
+> attached to a device is armed during system wide suspend and disabled on
+> resume. See device_wakeup_arm_wake_irqs() called from
+> dpm_suspend_noirq().
 >
-> Removing the definition from the header is safe anyway as that code was
-> from another driver and not including it.
->
-> Signed-off-by: Pascal Terjan <pterjan@google.com>
+> So why can't we use the common code that manages wakeup irqs for
+> devices?
 
-Thanks for your patch!
+After reading about device_wakeup_arm_wake_irqs() and 
+dpm_suspend_noirq() APIs it's clear to me
 
-> --- a/drivers/tty/amiserial.c
-> +++ b/drivers/tty/amiserial.c
-> @@ -23,17 +23,12 @@
->   */
->
->  /*
-> - * Serial driver configuration section.  Here are the various options:
-> + * Serial driver configuration section.
->   *
-> - * SERIAL_PARANOIA_CHECK
-> - *             Check the magic number for the async_structure where
-> - *             ever possible.
->   */
+that we don't require runtime PM feature. We have now aligned our driver 
+to use common code that manages
 
-You might as well drop the whole comment block, as no options are left.
+wakeup irqs for devices.
 
-With that fixed:
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Thanks for suggesting this changes!
 
-BTW, there's a similar serial_paranoia_check() in drivers/tty/cyclades.c,
-which is active, but doesn't serve much purpose, IMHO.
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
