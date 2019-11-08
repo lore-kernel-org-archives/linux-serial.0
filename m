@@ -4,55 +4,55 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F05C5DF60
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Nov 2019 13:03:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A832FFA372C
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Nov 2019 13:03:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1C7EE2248B
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Nov 2019 13:03:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 74409206A3
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Nov 2019 13:03:36 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="iVy3OBxW"
+	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="aPlA/IoE"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727205AbfKHNDb (ORCPT
+        id S1729790AbfKHNCL (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 Nov 2019 08:03:31 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:41270 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730065AbfKHNCM (ORCPT
+        Fri, 8 Nov 2019 08:02:11 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:33355 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729967AbfKHNCK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 Nov 2019 08:02:12 -0500
-Received: by mail-lj1-f196.google.com with SMTP id m9so6114352ljh.8
-        for <linux-serial@vger.kernel.org>; Fri, 08 Nov 2019 05:02:10 -0800 (PST)
+        Fri, 8 Nov 2019 08:02:10 -0500
+Received: by mail-lf1-f68.google.com with SMTP id d6so4018710lfc.0
+        for <linux-serial@vger.kernel.org>; Fri, 08 Nov 2019 05:02:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=rasmusvillemoes.dk; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Rl5uwkPm7ODgb0mKXC73DMWhjRD0JTB3vFmrVrN5ZB0=;
-        b=iVy3OBxWjNuefDddBNbhbl7Cs/NtWVdjCC/od1h2NY+gSnjfqrNC9xMyzWE6JCHadL
-         meWz1TdGa1kFUaFe1LBV/jM67MkOrHyRosHmDMbLKH/YlGIs4KIFUjA0IRlMr2sAmplm
-         OZODn39ovzWFKJB/jcopkfA5Ou+HMW8/g56bE=
+        bh=D4oV4L5jtcWTxjf1oA8VyXP7dsMMZPn/dF9MUNC7L/c=;
+        b=aPlA/IoEhffEEFblnc9V412rJ8ksNjaxqTklchpJf/K3W357zmqd5+CvTMVOjUGR9f
+         vHpBOP8gHlMWtsf0tBnmICEexywoHMojiuEDFPSR7FbopkcwuW99c0TFG3mLnJli/rDJ
+         uIN1m9iOBe+LG2yqEIrL2SRuPet7yWk+uHSH4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Rl5uwkPm7ODgb0mKXC73DMWhjRD0JTB3vFmrVrN5ZB0=;
-        b=m8JcYvebxFu+ciiHIvg63Ik9P7kGMwCuD4ipKIHn7eAlkBhFcDodTCZ53vwqQh0tDf
-         zXwEPTyEIM+2Fe5TCU2/RG/RNSdaHCxlePp7wD08xtZF6vofXvqEf7W86hYqJfw3lgfv
-         Ag/8VghoPLfYiR2tmITy34JNCTJLFeWGxJ5GYFF/20lnG40PWUcrf5U2sinzX3OCOBO2
-         Aj7YxQf2XQRttKify2q5dGbWKA0jq7z3m/tOLLJwk7NK9l0sO5ov6G/jnwa7vQzV1bcf
-         YI44cF2cO1EtJjxQonTSkRLqJS0+3Gcx0jtOirAcDxYYAPnfpDnzYKm9xeHLwce7nXT5
-         +OIA==
-X-Gm-Message-State: APjAAAW/7KFz62NQlY1/SbmPXaTeqgtuyntqEI28YpIt6VlIqtK+t6wI
-        Jj5PRKBlZ0l0wXooZWqI+13ZlQ==
-X-Google-Smtp-Source: APXvYqzZa5jEsgyjO4bjCEsZXjRtgdus6spNSgtKC++GgbqHCKBa6/dHZb1FcDGJ/haiGgd6jr0bwA==
-X-Received: by 2002:a05:651c:1124:: with SMTP id e4mr6831944ljo.52.1573218130055;
-        Fri, 08 Nov 2019 05:02:10 -0800 (PST)
+        bh=D4oV4L5jtcWTxjf1oA8VyXP7dsMMZPn/dF9MUNC7L/c=;
+        b=ewK7Iz2KYQCY1GCsAWLyxIxXta6tRj3b39ROvryPR1TqKRKzUwXQndfMTmQ8h6qEbq
+         D3aywx77hTcR/V+A69/4SXRu8sBQmphHScXx+6GcBWM8aCGsxJ+z0znTUDhUA4+7mDbn
+         YfSdVHtoMIkUSmMl+DruBfnDll/kf/o5hjmuqQaP5v0O/yhlhNWuaK6trQCEaoqSXCeH
+         pFu6uUucqYsEpCejEubhflmT/R2sMlnbK2nn7ppBIN48z8QGIoSj45ZUYw0GtDgKT5Lg
+         XTo2G71TSPaeCaNWyggk03L3mstyD7Y5D9gMur6ccjjzmSzfoh8fMjhul1DvJtF4H2EU
+         9VEA==
+X-Gm-Message-State: APjAAAX37WoSj3/U4KnCRJ10X8R751eRiu/oErcsXwEGVYQOVNkvywYl
+        zVMiS6FcFx9kr7WhqVq2YyNIKQ==
+X-Google-Smtp-Source: APXvYqx/gMz4mkd5jKISKNXvWqvyaBmxQjDUwz3+6YpcYYTuJ8t1hWtanWE3i6cbS5YimIzMWNnZtg==
+X-Received: by 2002:a19:911c:: with SMTP id t28mr6379304lfd.84.1573218128817;
+        Fri, 08 Nov 2019 05:02:08 -0800 (PST)
 Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id d28sm2454725lfn.33.2019.11.08.05.02.08
+        by smtp.gmail.com with ESMTPSA id d28sm2454725lfn.33.2019.11.08.05.02.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Nov 2019 05:02:09 -0800 (PST)
+        Fri, 08 Nov 2019 05:02:08 -0800 (PST)
 From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
 To:     Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
         Christophe Leroy <christophe.leroy@c-s.fr>
@@ -61,9 +61,9 @@ Cc:     linuxppc-dev@lists.ozlabs.org,
         Scott Wood <oss@buserror.net>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         linux-serial@vger.kernel.org
-Subject: [PATCH v4 33/47] serial: ucc_uart: access __be32 field using be32_to_cpu
-Date:   Fri,  8 Nov 2019 14:01:09 +0100
-Message-Id: <20191108130123.6839-34-linux@rasmusvillemoes.dk>
+Subject: [PATCH v4 32/47] serial: ucc_uart: use of_property_read_u32() in ucc_uart_probe()
+Date:   Fri,  8 Nov 2019 14:01:08 +0100
+Message-Id: <20191108130123.6839-33-linux@rasmusvillemoes.dk>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191108130123.6839-1-linux@rasmusvillemoes.dk>
 References: <20191108130123.6839-1-linux@rasmusvillemoes.dk>
@@ -74,45 +74,117 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The buf member of struct qe_bd is a __be32, so to make this work on
-little-endian hosts, use be32_to_cpu when reading it.
+For this to work correctly on little-endian hosts, don't access the
+device-tree properties directly in native endianness, but use the
+of_property_read_u32() helper.
 
 Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 ---
- drivers/tty/serial/ucc_uart.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/serial/ucc_uart.c | 41 +++++++++++++++--------------------
+ 1 file changed, 17 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
-index f5ea84928a3b..a5330582b610 100644
+index 313697842e24..f5ea84928a3b 100644
 --- a/drivers/tty/serial/ucc_uart.c
 +++ b/drivers/tty/serial/ucc_uart.c
-@@ -343,7 +343,7 @@ static int qe_uart_tx_pump(struct uart_qe_port *qe_port)
- 		/* Pick next descriptor and fill from buffer */
- 		bdp = qe_port->tx_cur;
+@@ -1256,10 +1256,10 @@ static int soft_uart_init(struct platform_device *ofdev)
+ static int ucc_uart_probe(struct platform_device *ofdev)
+ {
+ 	struct device_node *np = ofdev->dev.of_node;
+-	const unsigned int *iprop;      /* Integer OF properties */
+ 	const char *sprop;      /* String OF properties */
+ 	struct uart_qe_port *qe_port = NULL;
+ 	struct resource res;
++	u32 val;
+ 	int ret;
  
--		p = qe2cpu_addr(bdp->buf, qe_port);
-+		p = qe2cpu_addr(be32_to_cpu(bdp->buf), qe_port);
+ 	/*
+@@ -1290,23 +1290,19 @@ static int ucc_uart_probe(struct platform_device *ofdev)
  
- 		*p++ = port->x_char;
- 		qe_iowrite16be(1, &bdp->length);
-@@ -371,7 +371,7 @@ static int qe_uart_tx_pump(struct uart_qe_port *qe_port)
- 	while (!(qe_ioread16be(&bdp->status) & BD_SC_READY) &&
- 	       (xmit->tail != xmit->head)) {
- 		count = 0;
--		p = qe2cpu_addr(bdp->buf, qe_port);
-+		p = qe2cpu_addr(be32_to_cpu(bdp->buf), qe_port);
- 		while (count < qe_port->tx_fifosize) {
- 			*p++ = xmit->buf[xmit->tail];
- 			xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-@@ -491,7 +491,7 @@ static void qe_uart_int_rx(struct uart_qe_port *qe_port)
+ 	/* Get the UCC number (device ID) */
+ 	/* UCCs are numbered 1-7 */
+-	iprop = of_get_property(np, "cell-index", NULL);
+-	if (!iprop) {
+-		iprop = of_get_property(np, "device-id", NULL);
+-		if (!iprop) {
+-			dev_err(&ofdev->dev, "UCC is unspecified in "
+-				"device tree\n");
+-			ret = -EINVAL;
+-			goto out_free;
+-		}
++	if (of_property_read_u32(np, "cell-index", &val) &&
++	    of_property_read_u32(np, "device-id", &val)) {
++		dev_err(&ofdev->dev, "UCC is unspecified in device tree\n");
++		ret = -EINVAL;
++		goto out_free;
+ 	}
+ 
+-	if ((*iprop < 1) || (*iprop > UCC_MAX_NUM)) {
+-		dev_err(&ofdev->dev, "no support for UCC%u\n", *iprop);
++	if (val < 1 || val > UCC_MAX_NUM) {
++		dev_err(&ofdev->dev, "no support for UCC%u\n", val);
+ 		ret = -ENODEV;
+ 		goto out_free;
+ 	}
+-	qe_port->ucc_num = *iprop - 1;
++	qe_port->ucc_num = val - 1;
+ 
+ 	/*
+ 	 * In the future, we should not require the BRG to be specified in the
+@@ -1350,13 +1346,12 @@ static int ucc_uart_probe(struct platform_device *ofdev)
+ 	}
+ 
+ 	/* Get the port number, numbered 0-3 */
+-	iprop = of_get_property(np, "port-number", NULL);
+-	if (!iprop) {
++	if (of_property_read_u32(np, "port-number", &val)) {
+ 		dev_err(&ofdev->dev, "missing port-number in device tree\n");
+ 		ret = -EINVAL;
+ 		goto out_free;
+ 	}
+-	qe_port->port.line = *iprop;
++	qe_port->port.line = val;
+ 	if (qe_port->port.line >= UCC_MAX_UART) {
+ 		dev_err(&ofdev->dev, "port-number must be 0-%u\n",
+ 			UCC_MAX_UART - 1);
+@@ -1386,31 +1381,29 @@ static int ucc_uart_probe(struct platform_device *ofdev)
  		}
+ 	}
  
- 		/* get pointer */
--		cp = qe2cpu_addr(bdp->buf, qe_port);
-+		cp = qe2cpu_addr(be32_to_cpu(bdp->buf), qe_port);
+-	iprop = of_get_property(np, "brg-frequency", NULL);
+-	if (!iprop) {
++	if (of_property_read_u32(np, "brg-frequency", &val)) {
+ 		dev_err(&ofdev->dev,
+ 		       "missing brg-frequency in device tree\n");
+ 		ret = -EINVAL;
+ 		goto out_np;
+ 	}
  
- 		/* loop through the buffer */
- 		while (i-- > 0) {
+-	if (*iprop)
+-		qe_port->port.uartclk = *iprop;
++	if (val)
++		qe_port->port.uartclk = val;
+ 	else {
+ 		/*
+ 		 * Older versions of U-Boot do not initialize the brg-frequency
+ 		 * property, so in this case we assume the BRG frequency is
+ 		 * half the QE bus frequency.
+ 		 */
+-		iprop = of_get_property(np, "bus-frequency", NULL);
+-		if (!iprop) {
++		if (of_property_read_u32(np, "bus-frequency", &val)) {
+ 			dev_err(&ofdev->dev,
+ 				"missing QE bus-frequency in device tree\n");
+ 			ret = -EINVAL;
+ 			goto out_np;
+ 		}
+-		if (*iprop)
+-			qe_port->port.uartclk = *iprop / 2;
++		if (val)
++			qe_port->port.uartclk = val / 2;
+ 		else {
+ 			dev_err(&ofdev->dev,
+ 				"invalid QE bus-frequency in device tree\n");
 -- 
 2.23.0
 
