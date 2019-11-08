@@ -2,93 +2,243 @@ Return-Path: <SRS0=ooY1=ZA=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B52DBC5DF60
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Nov 2019 10:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C45C3FC6196
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Nov 2019 12:07:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7D64E218AE
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Nov 2019 10:36:57 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sNZqoQ2+"
+	by mail.kernel.org (Postfix) with ESMTP id 9235221924
+	for <linux-serial@archiver.kernel.org>; Fri,  8 Nov 2019 12:07:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1573214856;
+	bh=6Wjnw45fi1Pp9pwaOW/zFICTaYR/dlHhA6uONnThtAM=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=Nf8/M/lCL4c976vhAtWUvtq4BgaJcCPC2+OhV5TsSSRc6K1Qd64OgNKA5+3e24igz
+	 gkXNi1nExJVkOWlVmP3ckL1dG0rBo0QSagDtK6sxdAXJVPzZgEjabVB5C6CyHXjS2u
+	 zvKo2huJa5Gz37hEQplfLQm6pPGQn5IGjITFnTaI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731886AbfKHKg5 (ORCPT
+        id S2390545AbfKHMHa (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 Nov 2019 05:36:57 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:39164 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727459AbfKHKg5 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 Nov 2019 05:36:57 -0500
-Received: by mail-wm1-f65.google.com with SMTP id t26so5657638wmi.4;
-        Fri, 08 Nov 2019 02:36:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MEXF10pbCi/JcvJPKMBMyBQnQ1Lcl4D2c+JLZNuxiCw=;
-        b=sNZqoQ2+uGWBWl+DRYbaEIpcLb25IAP7Ki9NsyghUtRK45xPt179v29LnF1z1XBaA5
-         BHgtq7GtMbnyzx32HAKqjs8TBQjmLnSuQmF2xzcavoq55sJhFRZd/TH+MmdEK0CFy8vy
-         bP/3PwVbqwnD6HygMSJXZCodVJ7HISVfZVVi2vtZ+OlyJTM7dbY7INyiBKIsPamNnmMU
-         72w6BI79UTe6roi4VtX3s63fFqTTqBq/2WDzPKMxz/xMQXMPxV1TpnMlmwjNI+2HAvzp
-         EkAfyUWz5e95ALSnlRBGwvwBQLEa68bZuok0dhGpcUInuOGuts14tu9dq4V4pSkPbnkM
-         hw1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MEXF10pbCi/JcvJPKMBMyBQnQ1Lcl4D2c+JLZNuxiCw=;
-        b=nr8Z24PYlSfi0DcALleM0JB9qHxmpGfzyA1WnArzxTCVduQ4Pbnx1SA0gDZUa+7DEl
-         jjh6TA4j9X7i1VJfpTuZaubqdT7h66vAm4tyFJTfH9g13DIqk7h1luMieWW59Xev+FHc
-         ua9XNaVqLHlZFtWDu8jfhO8h6g4DxvhN6Mk+ehG6A60eukJ2sCx7Rf97BoPSeJgdNUD9
-         AGdmJGeAGywUfZNNj6Bwmhig6eJ7Dee4mfhwnqFyOCqx++LmzW9Mm3Vcd9vd9+whF/3a
-         Fefm6qJvVH7GEmGSnUsoe78LRbFkrqSG6SAeB7r2eoYHNltaQe8A0KEDutA6ocWSjjKq
-         Ctuw==
-X-Gm-Message-State: APjAAAV7r+WO+OEvPJdVJyxBLaqTk3hstdO/PnBK2X69lR5iN/wmEdIO
-        KhnHGEmT3mdu2G97uBg/FbN2ZM57/NVWB4zCR44=
-X-Google-Smtp-Source: APXvYqzsGeI5MbddRtNTNzPUK53wJSBm/jWA4dTQNR21VUJUj6X5mukDJeWaZEPqd0MPzSFeqa/CCRkIUpSixPLluHk=
-X-Received: by 2002:a1c:4456:: with SMTP id r83mr7248491wma.2.1573209414740;
- Fri, 08 Nov 2019 02:36:54 -0800 (PST)
-MIME-Version: 1.0
-References: <20191025102915.23677-1-chunyan.zhang@unisoc.com>
- <20191025102915.23677-2-chunyan.zhang@unisoc.com> <20191029214428.GA20706@bogus>
-In-Reply-To: <20191029214428.GA20706@bogus>
-From:   Chunyan Zhang <zhang.lyra@gmail.com>
-Date:   Fri, 8 Nov 2019 18:36:18 +0800
-Message-ID: <CAAfSe-uOj=uX16JK9PmDhSJma9reVsN=Rgvz-Vd27ogK_poh2w@mail.gmail.com>
-Subject: Re: [PATCH 1/3] dt-bindings: serial: Add a new compatible string for SC9863A
-To:     Rob Herring <robh@kernel.org>
-Cc:     Chunyan Zhang <chunyan.zhang@unisoc.com>,
-        Mark Rutland <mark.rutland@arm.com>,
+        Fri, 8 Nov 2019 07:07:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53908 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389043AbfKHLky (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 8 Nov 2019 06:40:54 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EEE4521D7E;
+        Fri,  8 Nov 2019 11:40:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1573213253;
+        bh=6Wjnw45fi1Pp9pwaOW/zFICTaYR/dlHhA6uONnThtAM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Thl/n9uC/fb4uFfpVje9nRtTtWTAQIDOo05DxG3qxVEZx3l9Prevee7H4e6pIRr/m
+         wTx3fcwjWR2ykmQIl7Im/ePqbmxAmrOuFcOWPHsunuoLf7REdqF7ACWaP3eXwKQ7XA
+         LdhEkPZhrcM4+v0khNkHiYxBLiLycNYC573UHusk=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Radu Pirea <radu.pirea@microchip.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        DTML <devicetree@vger.kernel.org>, linux-serial@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Lee Jones <lee.jones@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 118/205] tty/serial: atmel: Change the driver to work under at91-usart MFD
+Date:   Fri,  8 Nov 2019 06:36:25 -0500
+Message-Id: <20191108113752.12502-118-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191108113752.12502-1-sashal@kernel.org>
+References: <20191108113752.12502-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 30 Oct 2019 at 05:44, Rob Herring <robh@kernel.org> wrote:
->
-> On Fri, 25 Oct 2019 18:29:13 +0800, Chunyan Zhang wrote:
-> >
-> > SC9863A use the same serial device which SC9836 uses.
-> >
-> > Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
-> > ---
-> >  Documentation/devicetree/bindings/serial/sprd-uart.txt | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
->
-> Acked-by: Rob Herring <robh@kernel.org>
+From: Radu Pirea <radu.pirea@microchip.com>
 
-Should we convert this to yaml schema as well?
+[ Upstream commit c24d25317a7c6bb3053d4c193b3cf57d1e9a3e4b ]
 
-Thanks,
-Chunyan
+This patch modifies the place where resources and device tree properties
+are searched.
+
+Signed-off-by: Radu Pirea <radu.pirea@microchip.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Acked-by: Richard Genoud <richard.genoud@gmail.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/Kconfig        |  1 +
+ drivers/tty/serial/atmel_serial.c | 42 ++++++++++++++++++++-----------
+ 2 files changed, 28 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index df8bd0c7b97db..32886c3046413 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -118,6 +118,7 @@ config SERIAL_ATMEL
+ 	depends on ARCH_AT91 || COMPILE_TEST
+ 	select SERIAL_CORE
+ 	select SERIAL_MCTRL_GPIO if GPIOLIB
++	select MFD_AT91_USART
+ 	help
+ 	  This enables the driver for the on-chip UARTs of the Atmel
+ 	  AT91 processors.
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index dd8949e8fcd7a..251f708f47f76 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -195,8 +195,7 @@ static struct console atmel_console;
+ 
+ #if defined(CONFIG_OF)
+ static const struct of_device_id atmel_serial_dt_ids[] = {
+-	{ .compatible = "atmel,at91rm9200-usart" },
+-	{ .compatible = "atmel,at91sam9260-usart" },
++	{ .compatible = "atmel,at91rm9200-usart-serial" },
+ 	{ /* sentinel */ }
+ };
+ #endif
+@@ -926,6 +925,7 @@ static void atmel_tx_dma(struct uart_port *port)
+ static int atmel_prepare_tx_dma(struct uart_port *port)
+ {
+ 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
++	struct device *mfd_dev = port->dev->parent;
+ 	dma_cap_mask_t		mask;
+ 	struct dma_slave_config config;
+ 	int ret, nent;
+@@ -933,7 +933,7 @@ static int atmel_prepare_tx_dma(struct uart_port *port)
+ 	dma_cap_zero(mask);
+ 	dma_cap_set(DMA_SLAVE, mask);
+ 
+-	atmel_port->chan_tx = dma_request_slave_channel(port->dev, "tx");
++	atmel_port->chan_tx = dma_request_slave_channel(mfd_dev, "tx");
+ 	if (atmel_port->chan_tx == NULL)
+ 		goto chan_err;
+ 	dev_info(port->dev, "using %s for tx DMA transfers\n",
+@@ -1104,6 +1104,7 @@ static void atmel_rx_from_dma(struct uart_port *port)
+ static int atmel_prepare_rx_dma(struct uart_port *port)
+ {
+ 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
++	struct device *mfd_dev = port->dev->parent;
+ 	struct dma_async_tx_descriptor *desc;
+ 	dma_cap_mask_t		mask;
+ 	struct dma_slave_config config;
+@@ -1115,7 +1116,7 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
+ 	dma_cap_zero(mask);
+ 	dma_cap_set(DMA_CYCLIC, mask);
+ 
+-	atmel_port->chan_rx = dma_request_slave_channel(port->dev, "rx");
++	atmel_port->chan_rx = dma_request_slave_channel(mfd_dev, "rx");
+ 	if (atmel_port->chan_rx == NULL)
+ 		goto chan_err;
+ 	dev_info(port->dev, "using %s for rx DMA transfers\n",
+@@ -2246,8 +2247,8 @@ static const char *atmel_type(struct uart_port *port)
+  */
+ static void atmel_release_port(struct uart_port *port)
+ {
+-	struct platform_device *pdev = to_platform_device(port->dev);
+-	int size = pdev->resource[0].end - pdev->resource[0].start + 1;
++	struct platform_device *mpdev = to_platform_device(port->dev->parent);
++	int size = resource_size(mpdev->resource);
+ 
+ 	release_mem_region(port->mapbase, size);
+ 
+@@ -2262,8 +2263,8 @@ static void atmel_release_port(struct uart_port *port)
+  */
+ static int atmel_request_port(struct uart_port *port)
+ {
+-	struct platform_device *pdev = to_platform_device(port->dev);
+-	int size = pdev->resource[0].end - pdev->resource[0].start + 1;
++	struct platform_device *mpdev = to_platform_device(port->dev->parent);
++	int size = resource_size(mpdev->resource);
+ 
+ 	if (!request_mem_region(port->mapbase, size, "atmel_serial"))
+ 		return -EBUSY;
+@@ -2365,27 +2366,28 @@ static int atmel_init_port(struct atmel_uart_port *atmel_port,
+ {
+ 	int ret;
+ 	struct uart_port *port = &atmel_port->uart;
++	struct platform_device *mpdev = to_platform_device(pdev->dev.parent);
+ 
+ 	atmel_init_property(atmel_port, pdev);
+ 	atmel_set_ops(port);
+ 
+-	uart_get_rs485_mode(&pdev->dev, &port->rs485);
++	uart_get_rs485_mode(&mpdev->dev, &port->rs485);
+ 
+ 	port->iotype		= UPIO_MEM;
+ 	port->flags		= UPF_BOOT_AUTOCONF | UPF_IOREMAP;
+ 	port->ops		= &atmel_pops;
+ 	port->fifosize		= 1;
+ 	port->dev		= &pdev->dev;
+-	port->mapbase	= pdev->resource[0].start;
+-	port->irq	= pdev->resource[1].start;
++	port->mapbase		= mpdev->resource[0].start;
++	port->irq		= mpdev->resource[1].start;
+ 	port->rs485_config	= atmel_config_rs485;
+-	port->membase	= NULL;
++	port->membase		= NULL;
+ 
+ 	memset(&atmel_port->rx_ring, 0, sizeof(atmel_port->rx_ring));
+ 
+ 	/* for console, the clock could already be configured */
+ 	if (!atmel_port->clk) {
+-		atmel_port->clk = clk_get(&pdev->dev, "usart");
++		atmel_port->clk = clk_get(&mpdev->dev, "usart");
+ 		if (IS_ERR(atmel_port->clk)) {
+ 			ret = PTR_ERR(atmel_port->clk);
+ 			atmel_port->clk = NULL;
+@@ -2718,13 +2720,22 @@ static void atmel_serial_probe_fifos(struct atmel_uart_port *atmel_port,
+ static int atmel_serial_probe(struct platform_device *pdev)
+ {
+ 	struct atmel_uart_port *atmel_port;
+-	struct device_node *np = pdev->dev.of_node;
++	struct device_node *np = pdev->dev.parent->of_node;
+ 	void *data;
+ 	int ret = -ENODEV;
+ 	bool rs485_enabled;
+ 
+ 	BUILD_BUG_ON(ATMEL_SERIAL_RINGSIZE & (ATMEL_SERIAL_RINGSIZE - 1));
+ 
++	/*
++	 * In device tree there is no node with "atmel,at91rm9200-usart-serial"
++	 * as compatible string. This driver is probed by at91-usart mfd driver
++	 * which is just a wrapper over the atmel_serial driver and
++	 * spi-at91-usart driver. All attributes needed by this driver are
++	 * found in of_node of parent.
++	 */
++	pdev->dev.of_node = np;
++
+ 	ret = of_alias_get_id(np, "serial");
+ 	if (ret < 0)
+ 		/* port id not found in platform data nor device-tree aliases:
+@@ -2860,6 +2871,7 @@ static int atmel_serial_remove(struct platform_device *pdev)
+ 
+ 	clk_put(atmel_port->clk);
+ 	atmel_port->clk = NULL;
++	pdev->dev.of_node = NULL;
+ 
+ 	return ret;
+ }
+@@ -2870,7 +2882,7 @@ static struct platform_driver atmel_serial_driver = {
+ 	.suspend	= atmel_serial_suspend,
+ 	.resume		= atmel_serial_resume,
+ 	.driver		= {
+-		.name			= "atmel_usart",
++		.name			= "atmel_usart_serial",
+ 		.of_match_table		= of_match_ptr(atmel_serial_dt_ids),
+ 	},
+ };
+-- 
+2.20.1
+
