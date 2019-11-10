@@ -1,120 +1,109 @@
-Return-Path: <SRS0=ooY1=ZA=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=ityy=ZC=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34449FA372C
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Nov 2019 15:46:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D6BC43331
+	for <linux-serial@archiver.kernel.org>; Sun, 10 Nov 2019 02:40:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 10F87215EA
-	for <linux-serial@archiver.kernel.org>; Fri,  8 Nov 2019 15:46:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EC906215EA
+	for <linux-serial@archiver.kernel.org>; Sun, 10 Nov 2019 02:40:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1573353631;
+	bh=oO0gUUG/vj63i5VoHzt41VVsBO2NgniuaSJlilhfdaM=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=thpYWfDyheJ1UIIFltWcxkNEp5yy0qq+WYJWGxKIjPFp71U9CESE/TETrlmI04Agp
+	 YubesPLb87barnyT7Nnh8xPv3UYbS68N6gRAuO03k3Jk0mP171PEQ1XBq3Vs9zkWML
+	 rya1u1YZdhAEzyJto4VgDxAKlTTh4Ok1AQicn2nI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726101AbfKHPqX (ORCPT
+        id S1726897AbfKJCk3 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 Nov 2019 10:46:23 -0500
-Received: from mail-out.m-online.net ([212.18.0.9]:60413 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726049AbfKHPqX (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 Nov 2019 10:46:23 -0500
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 478l4D1VvVz1qqxw;
-        Fri,  8 Nov 2019 16:46:20 +0100 (CET)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 478l4C6vxFz1qqkP;
-        Fri,  8 Nov 2019 16:46:19 +0100 (CET)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id oPMuBfsf3od4; Fri,  8 Nov 2019 16:46:17 +0100 (CET)
-X-Auth-Info: R+d3Ak8txY0y/6ScNMK+0PMVmEPWfuNdg6uOiLwAUhY=
-Received: from [IPv6:::1] (unknown [195.140.253.167])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Sat, 9 Nov 2019 21:40:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33360 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726879AbfKJCk2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 9 Nov 2019 21:40:28 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Fri,  8 Nov 2019 16:46:17 +0100 (CET)
-From:   Marek Vasut <marex@denx.de>
-Subject: Re: Minimal patch against TI AM335x UART swallowing the first byte
- using the 8250_omap driver in RS485 mode
-To:     Falco Hyfing <hyfinglists@gmail.com>, linux-omap@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Cc:     giulio.benetti@benettiengineering.com, aford173@gmail.com,
-        andrej.skvortzov@gmail.com, sr@denx.de, rafael.gago@gmail.com,
-        avistel@gmail.com, matwey.kornilov@gmail.com,
-        yegorslists@gmail.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <249e4532-e7a6-a1f3-499f-8a2beef82f41@gmail.com>
-Message-ID: <932c4b91-b8ec-a7c5-6155-79539a3ca885@denx.de>
-Date:   Fri, 8 Nov 2019 16:45:48 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        by mail.kernel.org (Postfix) with ESMTPSA id 74149214E0;
+        Sun, 10 Nov 2019 02:40:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1573353627;
+        bh=oO0gUUG/vj63i5VoHzt41VVsBO2NgniuaSJlilhfdaM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XEWhsSV9NiosNOrZLv/YenTHS8tzauTd4M4a4pK+wGJuD37DU7Qpsv7yUIWa/leqr
+         dqUhUzZx4tf5l/uVcxKgLoTtTDUw2X1kZWTH2I5AUBEufqo++uJzhi3h55YVfR9sDI
+         7vcw/Ldc1D6tE+/bIk3W3kJn41qbpbEvBgPPURVw=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 011/191] serial: samsung: Enable baud clock for UART reset procedure in resume
+Date:   Sat,  9 Nov 2019 21:37:13 -0500
+Message-Id: <20191110024013.29782-11-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191110024013.29782-1-sashal@kernel.org>
+References: <20191110024013.29782-1-sashal@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <249e4532-e7a6-a1f3-499f-8a2beef82f41@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 11/8/19 3:41 PM, Falco Hyfing wrote:
+From: Marek Szyprowski <m.szyprowski@samsung.com>
 
-Hi,
+[ Upstream commit 1ff3652bc7111df26b5807037f624be294cf69d5 ]
 
-> I stumbled upon this unresolved issue where the TI AM335x UART is
-> sporadically swallowing the first byte using the 8250_omap driver in
-> RS485 mode.
-> 
-> Previous discussions of the issue ended on Christmas Eve last year. For
-> reference:
-> https://marc.info/?w=2&r=1&s=fix+clearing+fifos+rs485+mode+again&q=t
+Ensure that the baud clock is also enabled for UART register writes in
+driver resume. On Exynos5433 SoC this is needed to avoid external abort
+issue.
 
-Right, I'm sorry for not following up on that thread anymore. I was ill
-during that time and I didn't have the energy to counter all those
-negative emails. So thanks for picking this up.
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/samsung.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-I think the issue is a generic one though, and affects various other
-16550 UARTs, it's not isolated to the OMAP UART, which is why I patched
-the generic code. I think if we could solve the quirk of that JZ4780
-UART, the generic approach would work.
-
-> As our company plans to move our serial device servers' firmware to an
-> upstream kernel version we need a solution for this problem.
-> 
-> I appended a small patch that seems to resolve the issue for our products.
-> 
-> I would like to kindly ask whether you could test this patch with
-> various serial hardware that would be affected by this driver.
-> 
-> Kind regards,
-> 
->     Falco Hyfing
->     Software Engineer at VisionSystems GmbH
-> 
-> 
-> diff --git a/drivers/tty/serial/8250/8250_port.c
-> b/drivers/tty/serial/8250/8250_port.c
-> index 8407166610ce..25dd44d5f6ff 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -1405,7 +1405,8 @@ static void __do_stop_tx_rs485(struct
-> uart_8250_port *p)
->          * Enable previously disabled RX interrupts.
->          */
->         if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX)) {
-> -               serial8250_clear_and_reinit_fifos(p);
-> +               serial_port_out(&p->port, UART_FCR, p->fcr |
-> +                               UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
-> 
->                 p->ier |= UART_IER_RLSI | UART_IER_RDI;
->                 serial_port_out(&p->port, UART_IER, p->ier);
-> 
-
-
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index c6058b52d5d59..2a49b6d876b87 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -1944,7 +1944,11 @@ static int s3c24xx_serial_resume(struct device *dev)
+ 
+ 	if (port) {
+ 		clk_prepare_enable(ourport->clk);
++		if (!IS_ERR(ourport->baudclk))
++			clk_prepare_enable(ourport->baudclk);
+ 		s3c24xx_serial_resetport(port, s3c24xx_port_to_cfg(port));
++		if (!IS_ERR(ourport->baudclk))
++			clk_disable_unprepare(ourport->baudclk);
+ 		clk_disable_unprepare(ourport->clk);
+ 
+ 		uart_resume_port(&s3c24xx_uart_drv, port);
+@@ -1967,7 +1971,11 @@ static int s3c24xx_serial_resume_noirq(struct device *dev)
+ 			if (rx_enabled(port))
+ 				uintm &= ~S3C64XX_UINTM_RXD_MSK;
+ 			clk_prepare_enable(ourport->clk);
++			if (!IS_ERR(ourport->baudclk))
++				clk_prepare_enable(ourport->baudclk);
+ 			wr_regl(port, S3C64XX_UINTM, uintm);
++			if (!IS_ERR(ourport->baudclk))
++				clk_disable_unprepare(ourport->baudclk);
+ 			clk_disable_unprepare(ourport->clk);
+ 		}
+ 	}
 -- 
-Best regards,
-Marek Vasut
+2.20.1
+
