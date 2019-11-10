@@ -7,51 +7,53 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0068CC43331
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B383DC17443
 	for <linux-serial@archiver.kernel.org>; Sun, 10 Nov 2019 03:06:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BF7CF215EA
-	for <linux-serial@archiver.kernel.org>; Sun, 10 Nov 2019 03:06:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7F4CA215EA
+	for <linux-serial@archiver.kernel.org>; Sun, 10 Nov 2019 03:06:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1573355198;
-	bh=srycieWXSGszwVJ8ASQMK8t1Lxk8Er2ie0ADMyYiDBU=;
+	s=default; t=1573355199;
+	bh=oDKOZKsGlOSOwbHZ/0xDL00iTc9xm4wYxZZxvU1I6Pc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=C6rKSCqBVjHlKzHWZdIq9K37bHfeR/pDBPvLJNRwBsecBHxhcsn3HSu+Rukc9mzXz
-	 KFLyu27c0HFX2ekDgNxO/Jt8bJb0utyTt2InMQ2/NjqxpJJARNT3UT9spoFzuCFWTb
-	 yOmGDO/q0RhjQYc4CxyrGXN6R4at8iwzo7sJwQws=
+	b=gjt1/1t3JCFGrWTYnqxja+h8pAMy1hWf0oPJgdr9AEWaeT/8H5BfLwXVQiPkXeF5o
+	 pRHTg6voXR50TnhxeDvXWsZwrqifqQPIPiPbhlfFYa+Yyx3NffHU8yzHEGFdoImfBa
+	 +2McFnIOFZEBPoDVYnWH2po/jZ7ajYkyWSprgx2A=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726582AbfKJCps (ORCPT
+        id S1727647AbfKJDGi (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 9 Nov 2019 21:45:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47982 "EHLO mail.kernel.org"
+        Sat, 9 Nov 2019 22:06:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48056 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728913AbfKJCpr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 9 Nov 2019 21:45:47 -0500
+        id S1728784AbfKJCps (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 9 Nov 2019 21:45:48 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A752D21850;
-        Sun, 10 Nov 2019 02:45:45 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CD90B2085B;
+        Sun, 10 Nov 2019 02:45:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573353946;
-        bh=srycieWXSGszwVJ8ASQMK8t1Lxk8Er2ie0ADMyYiDBU=;
+        s=default; t=1573353947;
+        bh=oDKOZKsGlOSOwbHZ/0xDL00iTc9xm4wYxZZxvU1I6Pc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sG5rDt7uJYHMnS+fkf34ybJdZdjo8Ml+IMX9Il5bk/D0bRE3tf53w77b1EGnYljwB
-         JgapFapLnTBKSHL8uRVnCGXF/0+UKIQzNjYhFr56hD4QimSZLxi5ej6GucXRYhb15E
-         tqJP0aCvTntj4ngv6QiaE1Ctod38eqPXDDd5mTDE=
+        b=IHKHNiuaha/Zg8i/x5zBJUqfcVPsns89kxR5k59R39uLFWF8WwEwPHZFbKRM9nDjk
+         Vp886a/y9nDoiK85sjKCMgeASa2QnNwzgmPsRo46bS9c4h4INllNAjDhnTGJv978T2
+         PyVrxMQ18weirXZyROv34R/sC/vNe6b0s/ze/xzs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
+Cc:     Anton Vasilyev <vasilyev@ispras.ru>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 004/109] serial: samsung: Enable baud clock for UART reset procedure in resume
-Date:   Sat,  9 Nov 2019 21:43:56 -0500
-Message-Id: <20191110024541.31567-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 005/109] serial: mxs-auart: Fix potential infinite loop
+Date:   Sat,  9 Nov 2019 21:43:57 -0500
+Message-Id: <20191110024541.31567-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191110024541.31567-1-sashal@kernel.org>
 References: <20191110024541.31567-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -60,50 +62,43 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Marek Szyprowski <m.szyprowski@samsung.com>
+From: Anton Vasilyev <vasilyev@ispras.ru>
 
-[ Upstream commit 1ff3652bc7111df26b5807037f624be294cf69d5 ]
+[ Upstream commit 5963e8a3122471cadfe0eba41c4ceaeaa5c8bb4d ]
 
-Ensure that the baud clock is also enabled for UART register writes in
-driver resume. On Exynos5433 SoC this is needed to avoid external abort
-issue.
+On the error path of mxs_auart_request_gpio_irq() is performed
+backward iterating with index i of enum type. Underline enum type
+may be unsigned char. In this case check (--i >= 0) will be always
+true and error handling goes into infinite loop.
 
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+The patch changes the check so that it is valid for signed and unsigned
+types.
+
+Found by Linux Driver Verification project (linuxtesting.org).
+
+Signed-off-by: Anton Vasilyev <vasilyev@ispras.ru>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/samsung.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/tty/serial/mxs-auart.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index f4b8e4e17a868..808373d4e37a6 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -1922,7 +1922,11 @@ static int s3c24xx_serial_resume(struct device *dev)
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index 673c8fd7e34f6..e83750831f15e 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -1638,8 +1638,9 @@ static int mxs_auart_request_gpio_irq(struct mxs_auart_port *s)
  
- 	if (port) {
- 		clk_prepare_enable(ourport->clk);
-+		if (!IS_ERR(ourport->baudclk))
-+			clk_prepare_enable(ourport->baudclk);
- 		s3c24xx_serial_resetport(port, s3c24xx_port_to_cfg(port));
-+		if (!IS_ERR(ourport->baudclk))
-+			clk_disable_unprepare(ourport->baudclk);
- 		clk_disable_unprepare(ourport->clk);
+ 	/*
+ 	 * If something went wrong, rollback.
++	 * Be careful: i may be unsigned.
+ 	 */
+-	while (err && (--i >= 0))
++	while (err && (i-- > 0))
+ 		if (irq[i] >= 0)
+ 			free_irq(irq[i], s);
  
- 		uart_resume_port(&s3c24xx_uart_drv, port);
-@@ -1945,7 +1949,11 @@ static int s3c24xx_serial_resume_noirq(struct device *dev)
- 			if (rx_enabled(port))
- 				uintm &= ~S3C64XX_UINTM_RXD_MSK;
- 			clk_prepare_enable(ourport->clk);
-+			if (!IS_ERR(ourport->baudclk))
-+				clk_prepare_enable(ourport->baudclk);
- 			wr_regl(port, S3C64XX_UINTM, uintm);
-+			if (!IS_ERR(ourport->baudclk))
-+				clk_disable_unprepare(ourport->baudclk);
- 			clk_disable_unprepare(ourport->clk);
- 		}
- 	}
 -- 
 2.20.1
 
