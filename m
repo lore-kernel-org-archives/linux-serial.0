@@ -2,105 +2,102 @@ Return-Path: <SRS0=6WdS=ZF=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3368C47414
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Nov 2019 16:16:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EC81C432C3
+	for <linux-serial@archiver.kernel.org>; Wed, 13 Nov 2019 22:26:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 33D5D2248B
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Nov 2019 15:38:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7531A206F0
+	for <linux-serial@archiver.kernel.org>; Wed, 13 Nov 2019 22:26:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1573659521;
-	bh=xiijqc6sxMdUhjGiDVt2wLp1FYdGEjXrUs2kHGurt8E=;
+	s=default; t=1573683967;
+	bh=IaZwQoupZ1O2UE0fYS2yhW1U2yOjOwRsRTRJvyJ4II0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=YEpEf7nHlAF0tpVmqVmCDglqOMGvWKV+oJaG/dxVWszq2EIm+rhGlbADFdy9RKW/Z
-	 ejTKKfRxVANVtSh3nv0t7SoT/BpYpIf2lVyHV4Y7Nh5t4Bn7tFGXV+dha1UzHiFFRD
-	 YP+rHI2pfSSfY//ry1RdTX907W8YKOGYfqBzGnIA=
+	b=IsJrn5W91KCX1+m9ZaTbNLo6M3H/LEXIYn8sKO+WeonV8LFKq0vDa23RXEFJu5JYX
+	 xy2JJ5XVbUHRMzQ6ZqtPuDe2bUn7zwVQ5qY8Vgrk8RviolqP9vjkcIEI3NYNni+Chr
+	 N3ohXkjkVuEDGJ1h8ldI3z/p5z+94YdL0R4ySriw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727963AbfKMPik (ORCPT
+        id S1726409AbfKMW0G (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 Nov 2019 10:38:40 -0500
-Received: from mail-lj1-f171.google.com ([209.85.208.171]:43234 "EHLO
-        mail-lj1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726335AbfKMPik (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 Nov 2019 10:38:40 -0500
-Received: by mail-lj1-f171.google.com with SMTP id y23so3057764ljh.10
-        for <linux-serial@vger.kernel.org>; Wed, 13 Nov 2019 07:38:39 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=1kiWOxfY5UIlzRxB19J70vkuSv6tH7qGcWYRtg+UY5I=;
-        b=mlz+ij+xS2D8a35PC5N9mtT+9YRuwn7aE9sbMllavJtE89AUoJM0YZrT3Y8St+ahPG
-         0D1udKembqU8wIoYmdIXUPPs+9XL+RaDa6vgTsq3ggA0pxCCBogZ5411gEI6q65DbJh1
-         TgLHD7yr9/HfOdLdW12dCroKeNSW/CTNk9rehc/C548S8TXsklQgpswes3+1TV22cK+Y
-         iV157oXCiQ4MQ8Y3O4Mr+3s5vMXvvOX/vdMPJX48Y5i1eCSkCoZlvP2mxWES8v4Z5emg
-         hYiwsWwaO9ZsTkYR5jdbpMa4wAvsvOoEbz5PYuf5XDf0BDfRyZIw0b0phfmap+VM1zVC
-         O8Bw==
-X-Gm-Message-State: APjAAAUd/V/f+uaSfl2hUt9hgyF/0t7g23Qo6jGR1+5ECe9YkqpCaMhO
-        3yoZRXQewNlizcHVxOENnQo=
-X-Google-Smtp-Source: APXvYqzWHllHeCVBPrcKmBoPM2JRT2j327XBrMle2XUMvntmDHax+Bafij3/QKkvsYKDLRxAqTHeAw==
-X-Received: by 2002:a2e:b0e3:: with SMTP id h3mr2971393ljl.193.1573659518599;
-        Wed, 13 Nov 2019 07:38:38 -0800 (PST)
-Received: from xi.terra (c-51f1e055.07-184-6d6c6d4.bbcust.telenor.se. [85.224.241.81])
-        by smtp.gmail.com with ESMTPSA id s28sm1245337lfp.92.2019.11.13.07.38.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Nov 2019 07:38:37 -0800 (PST)
-Received: from johan by xi.terra with local (Exim 4.92.3)
-        (envelope-from <johan@kernel.org>)
-        id 1iUujG-0001yy-HR; Wed, 13 Nov 2019 16:38:46 +0100
-Date:   Wed, 13 Nov 2019 16:38:46 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     shubhrajyoti.datta@gmail.com
-Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        Wed, 13 Nov 2019 17:26:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50676 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726251AbfKMW0F (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 13 Nov 2019 17:26:05 -0500
+Received: from localhost (unknown [61.58.47.46])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B9D2E206EE;
+        Wed, 13 Nov 2019 22:26:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1573683966;
+        bh=IaZwQoupZ1O2UE0fYS2yhW1U2yOjOwRsRTRJvyJ4II0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=W+smA6JpBdW6av1PQUQrHOHYmTu3Lt9VqF+bOEGEshrj6kastp5BScK5aoe/ZIlGM
+         wvtBebpeX4/VcDRN+KeFAjUJKmJhFBgloyjQg0YwDE/lvvfr5BCyDVzTglTCVTkhSS
+         X1XKDvuWzarVLU7gXJwOsd3freV2exV5xD9p9w7Q=
+Date:   Thu, 14 Nov 2019 06:26:02 +0800
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     shubhrajyoti.datta@gmail.com, linux-serial@vger.kernel.org,
         jacmet@sunsite.dk, git@xilinx.com,
         Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
         Michal Simek <michal.simek@xilinx.com>
 Subject: Re: [PATCHv5] serial-uartlite: Remove ULITE_NR_PORTS macro
-Message-ID: <20191113153846.GW11035@localhost>
+Message-ID: <20191113222602.GA5302@kroah.com>
 References: <1573646408-392094-1-git-send-email-shubhrajyoti.datta@gmail.com>
+ <20191113153846.GW11035@localhost>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1573646408-392094-1-git-send-email-shubhrajyoti.datta@gmail.com>
+In-Reply-To: <20191113153846.GW11035@localhost>
 User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Nov 13, 2019 at 12:00:08PM +0000, shubhrajyoti.datta@gmail.com wrote:
-> From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+On Wed, Nov 13, 2019 at 04:38:46PM +0100, Johan Hovold wrote:
+> On Wed, Nov 13, 2019 at 12:00:08PM +0000, shubhrajyoti.datta@gmail.com wrote:
+> > From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+> > 
+> > This patch is removing ULITE_NR_PORTS macro which limits number of
+> > ports which can be used. Every instance is registering own struct
+> > uart_driver with minor number which corresponds to alias ID (or 0 now).
+> > and with 1 uart port. The same alias ID is saved to
+> > tty_driver->name_base which is key field for creating ttyULX name.
+> > 
+> > Because name_base and minor number are setup already there is no need to
+> > setup any port->line number because 0 is the right value.
+> > 
+> > Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+> > Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+> > ---
+> > v4: patch addition
+> > v5: Merge the patch so that all the patches compile
 > 
-> This patch is removing ULITE_NR_PORTS macro which limits number of
-> ports which can be used. Every instance is registering own struct
-> uart_driver with minor number which corresponds to alias ID (or 0 now).
-> and with 1 uart port. The same alias ID is saved to
-> tty_driver->name_base which is key field for creating ttyULX name.
+> Greg, 
 > 
-> Because name_base and minor number are setup already there is no need to
-> setup any port->line number because 0 is the right value.
+> Please do not merge this. This is a hack which really needs to be
+> reconsidered as I've pointed before
 > 
-> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> ---
-> v4: patch addition
-> v5: Merge the patch so that all the patches compile
+> 	 https://lkml.kernel.org/r/20190523091839.GC568@localhost
+> 
+> I suggest you also drop the first two patches that you applied to
+> tty-testing earlier today.
 
-Greg, 
+Oops, my fault, will go drop all of these, thanks.
 
-Please do not merge this. This is a hack which really needs to be
-reconsidered as I've pointed before
+> Shubhrajyoti, please keep on CC with these changes. I'll try to review
+> this again and get back to you shortly.
 
-	 https://lkml.kernel.org/r/20190523091839.GC568@localhost
+I think we should also revert all the previous changes as well, as you
+have pointed out.  This driver needs a good overhaul, but not in this
+way :(
 
-I suggest you also drop the first two patches that you applied to
-tty-testing earlier today.
+thanks,
 
-Shubhrajyoti, please keep on CC with these changes. I'll try to review
-this again and get back to you shortly.
-
-Johan
+greg k-h
