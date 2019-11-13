@@ -2,100 +2,177 @@ Return-Path: <SRS0=6WdS=ZF=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEF73C17449
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Nov 2019 09:47:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22437C43331
+	for <linux-serial@archiver.kernel.org>; Wed, 13 Nov 2019 10:48:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 98A3022466
-	for <linux-serial@archiver.kernel.org>; Wed, 13 Nov 2019 09:47:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E886A214E0
+	for <linux-serial@archiver.kernel.org>; Wed, 13 Nov 2019 10:48:50 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="eyAFFpQz"
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="aPbmhKek";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="aPbmhKek"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727468AbfKMJq4 (ORCPT
+        id S1726340AbfKMKsu (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 Nov 2019 04:46:56 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:59074 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725996AbfKMJqz (ORCPT
+        Wed, 13 Nov 2019 05:48:50 -0500
+Received: from smtp.codeaurora.org ([198.145.29.96]:56032 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726138AbfKMKsu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 Nov 2019 04:46:55 -0500
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id xAD9jAoK083668;
-        Wed, 13 Nov 2019 03:45:10 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1573638310;
-        bh=uqVnqEg7jfzzCNxKlUaeLRD250zrEeSg57M2s2f3wmI=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=eyAFFpQzIWXMss7edh7mGgf6r85grW1ciR5t+B3y0SIjacKUz++sBUtFJlxHJSfYu
-         x6qrR8Vqgip05sTx6kuPhIYMdO5Fh2lFBiJ1C1bLIwbcX4hX5gRqvLcvCB6jvldE6R
-         +1RcRmWseqaiO9ZWWOVBe4Xpfr5+R3OsFoDBW+NY=
-Received: from DFLE106.ent.ti.com (dfle106.ent.ti.com [10.64.6.27])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xAD9jAJ8088897
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 13 Nov 2019 03:45:10 -0600
-Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Wed, 13
- Nov 2019 03:44:51 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Wed, 13 Nov 2019 03:44:51 -0600
-Received: from feketebors.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id xAD9j2KB078225;
-        Wed, 13 Nov 2019 03:45:06 -0600
-From:   Peter Ujfalusi <peter.ujfalusi@ti.com>
-To:     <gregkh@linuxfoundation.org>, <linux@armlinux.org.uk>,
-        <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <ldewangan@nvidia.com>, <thierry.reding@gmail.com>,
-        <jonathanh@nvidia.com>
-CC:     <vkoul@kernel.org>, <jslaby@suse.com>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-tegra@vger.kernel.org>
-Subject: [PATCH 1/3] tty: serial: amba-pl011: Use dma_request_chan() directly for channel request
-Date:   Wed, 13 Nov 2019 11:46:16 +0200
-Message-ID: <20191113094618.1725-2-peter.ujfalusi@ti.com>
-X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20191113094618.1725-1-peter.ujfalusi@ti.com>
-References: <20191113094618.1725-1-peter.ujfalusi@ti.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+        Wed, 13 Nov 2019 05:48:50 -0500
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id C82756053B; Wed, 13 Nov 2019 10:48:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1573642128;
+        bh=D04D7dnFG22G8WWSbOngQnJW+3O26cXP21Q7gTbDLhw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=aPbmhKekTc9LCM/2yryPlCvQ6f8z1bydPiULCDV9e5qMiqVtkG1ndszKbscPq1MBr
+         SLwQoQ7wz9r0xGxyqa7mUQkmraNSK16n3E/hN2a/t/yIIbgwvigd9Fy2ICKShqAu9q
+         fVc5TMm2beqjnZZqe08h+YmwKi8qXDtzpUd1/3s4=
+Received: from akashast-linux.qualcomm.com (blr-c-bdr-fw-01_globalnat_allzones-outside.qualcomm.com [103.229.19.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 8C5B46030B;
+        Wed, 13 Nov 2019 10:48:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1573642128;
+        bh=D04D7dnFG22G8WWSbOngQnJW+3O26cXP21Q7gTbDLhw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=aPbmhKekTc9LCM/2yryPlCvQ6f8z1bydPiULCDV9e5qMiqVtkG1ndszKbscPq1MBr
+         SLwQoQ7wz9r0xGxyqa7mUQkmraNSK16n3E/hN2a/t/yIIbgwvigd9Fy2ICKShqAu9q
+         fVc5TMm2beqjnZZqe08h+YmwKi8qXDtzpUd1/3s4=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 8C5B46030B
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+From:   Akash Asthana <akashast@codeaurora.org>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        mgautam@codeaurora.org, swboyd@chromium.org,
+        msavaliy@codeaurora.org, Akash Asthana <akashast@codeaurora.org>
+Subject: [PATCH v5 1/3] tty: serial: qcom_geni_serial: IRQ cleanup
+Date:   Wed, 13 Nov 2019 16:18:31 +0530
+Message-Id: <1573642111-17479-1-git-send-email-akashast@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-dma_request_slave_channel_reason() is:
-#define dma_request_slave_channel_reason(dev, name) \
-	dma_request_chan(dev, name)
+Move ISR registration from startup to probe function to avoid registering
+it everytime when the port open is called for driver.
 
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Signed-off-by: Akash Asthana <akashast@codeaurora.org>
 ---
- drivers/tty/serial/amba-pl011.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in v5:
+ - No change.
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index ae63266e181f..38e2d25f7e23 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -414,7 +414,7 @@ static void pl011_dma_probe(struct uart_amba_port *uap)
- 	dma_cap_mask_t mask;
+Changes in v4:
+ - As per Stephen's comment, move ISR registration(later in probe) after
+   registering uart port with serial core.
+ - As per Greg's comment, corrected returning of PTR value from integer type
+   function(probe).
+
+Changes in v3:
+ - As per Stephen's comment, using devm_kasprintf instead of scnprintf API.
+
+ drivers/tty/serial/qcom_geni_serial.c | 38 ++++++++++++++++++++++++-----------
+ 1 file changed, 26 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 14c6306..634054a 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -9,6 +9,7 @@
+ #include <linux/console.h>
+ #include <linux/io.h>
+ #include <linux/iopoll.h>
++#include <linux/irq.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+@@ -101,7 +102,7 @@
+ struct qcom_geni_serial_port {
+ 	struct uart_port uport;
+ 	struct geni_se se;
+-	char name[20];
++	const char *name;
+ 	u32 tx_fifo_depth;
+ 	u32 tx_fifo_width;
+ 	u32 rx_fifo_depth;
+@@ -830,7 +831,7 @@ static void qcom_geni_serial_shutdown(struct uart_port *uport)
+ 	if (uart_console(uport))
+ 		console_stop(uport->cons);
  
- 	uap->dma_probed = true;
--	chan = dma_request_slave_channel_reason(dev, "tx");
-+	chan = dma_request_chan(dev, "tx");
- 	if (IS_ERR(chan)) {
- 		if (PTR_ERR(chan) == -EPROBE_DEFER) {
- 			uap->dma_probed = false;
+-	free_irq(uport->irq, uport);
++	disable_irq(uport->irq);
+ 	spin_lock_irqsave(&uport->lock, flags);
+ 	qcom_geni_serial_stop_tx(uport);
+ 	qcom_geni_serial_stop_rx(uport);
+@@ -890,21 +891,14 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
+ 	int ret;
+ 	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
+ 
+-	scnprintf(port->name, sizeof(port->name),
+-		  "qcom_serial_%s%d",
+-		(uart_console(uport) ? "console" : "uart"), uport->line);
+-
+ 	if (!port->setup) {
+ 		ret = qcom_geni_serial_port_setup(uport);
+ 		if (ret)
+ 			return ret;
+ 	}
++	enable_irq(uport->irq);
+ 
+-	ret = request_irq(uport->irq, qcom_geni_serial_isr, IRQF_TRIGGER_HIGH,
+-							port->name, uport);
+-	if (ret)
+-		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
+-	return ret;
++	return 0;
+ }
+ 
+ static unsigned long get_clk_cfg(unsigned long clk_freq)
+@@ -1297,6 +1291,12 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+ 	port->rx_fifo_depth = DEF_FIFO_DEPTH_WORDS;
+ 	port->tx_fifo_width = DEF_FIFO_WIDTH_BITS;
+ 
++	port->name = devm_kasprintf(uport->dev, GFP_KERNEL,
++			"qcom_geni_serial_%s%d",
++			uart_console(uport) ? "console" : "uart", uport->line);
++	if (!port->name)
++		return -ENOMEM;
++
+ 	irq = platform_get_irq(pdev, 0);
+ 	if (irq < 0)
+ 		return irq;
+@@ -1307,7 +1307,21 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+ 	port->handle_rx = console ? handle_rx_console : handle_rx_uart;
+ 	if (!console)
+ 		device_create_file(uport->dev, &dev_attr_loopback);
+-	return uart_add_one_port(drv, uport);
++
++	ret = uart_add_one_port(drv, uport);
++	if (ret)
++		return ret;
++
++	irq_set_status_flags(uport->irq, IRQ_NOAUTOEN);
++	ret = devm_request_irq(uport->dev, uport->irq, qcom_geni_serial_isr,
++			IRQF_TRIGGER_HIGH, port->name, uport);
++	if (ret) {
++		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
++		uart_remove_one_port(drv, uport);
++		return ret;
++	}
++
++	return ret;
+ }
+ 
+ static int qcom_geni_serial_remove(struct platform_device *pdev)
 -- 
-Peter
-
-Texas Instruments Finland Oy, Porkkalankatu 22, 00180 Helsinki.
-Y-tunnus/Business ID: 0615521-4. Kotipaikka/Domicile: Helsinki
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
 
