@@ -2,99 +2,86 @@ Return-Path: <SRS0=2UiA=ZG=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7850CC432C3
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Nov 2019 03:47:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2472C432C3
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Nov 2019 05:15:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 75C79206E4
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Nov 2019 03:47:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C9490206EC
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Nov 2019 05:15:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1573703271;
-	bh=xUwCDNjkHhFhbCYz6R0V7HBpEO36wYc8OSVLjNz91h0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=CkM/UvWOEoxU+w1yI/foc1STnd3CcSSmSeQ6PrKdEYLDCKavp2uWsN8c1EzkaIOfI
-	 s6trQzUDkOngCCLWdPgIN5o4pt7MgXu59dLmUfUn0OsOD51YdXi2n0HmkDmHU68cO4
-	 ZB6o4KO2bU/6DayBuvLhYCVAQgFnv/2gbOw4aA9c=
+	s=default; t=1573708528;
+	bh=WigUSF3alcgcj3pSwFXkYJTAsdWSBKH1LxuGN0UIWDw=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
+	b=JXVoNR8ONYSv3BGWwpN9LNM5zjO72yy3nF86JamJ1+NXITVpjrxgnUdiXQyqnkqZi
+	 6hMf7N4nXs83U3MenqbGZ0PpSHVXIOnngJCy7fxCbQodhb4rpHYDCWyIiHDCzT7Ik6
+	 kAy+hMhcXML6BHZflDfFm8NyDtfVxZKBCUljfBKM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726598AbfKNDru (ORCPT
+        id S1726254AbfKNFP2 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 Nov 2019 22:47:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40258 "EHLO mail.kernel.org"
+        Thu, 14 Nov 2019 00:15:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46968 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726393AbfKNDru (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 Nov 2019 22:47:50 -0500
-Received: from localhost (unknown [124.219.31.93])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726002AbfKNFP2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 14 Nov 2019 00:15:28 -0500
+Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C4720206E1;
-        Thu, 14 Nov 2019 03:47:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8F0EA20706;
+        Thu, 14 Nov 2019 05:15:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573703270;
-        bh=xUwCDNjkHhFhbCYz6R0V7HBpEO36wYc8OSVLjNz91h0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GXX99mkhvZAktUDdROtjjSRsXaVK3DorFc85wrSnj76qR19D4b1BfuUI5hTS5istl
-         kGr9Ck5GJPdvUg9Hb2b0DMcnrdGLJ55HldVoKEogyEaYucH9Msgvnf1mevj8zeJQyf
-         4A+mfpLJBIbU67oADMwhIP26K8txA8F170cL7W/I=
-Date:   Thu, 14 Nov 2019 11:47:47 +0800
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Cc:     Jiri Slaby <jslaby@suse.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH] tty: serial: samsung: rename to fix build warning
-Message-ID: <20191114034747.GA188438@kroah.com>
-References: <20191018194707.27188-1-sudipm.mukherjee@gmail.com>
- <20191104164351.GA2269025@kroah.com>
- <CADVatmMzZ9AByeUBtqdrfE_apK58oMYLxSuBrDdLh2XTQzKE9A@mail.gmail.com>
+        s=default; t=1573708527;
+        bh=WigUSF3alcgcj3pSwFXkYJTAsdWSBKH1LxuGN0UIWDw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=hfgI9clc/bfFjOJFNB8C3UnyfZXN9St0vvpgPg/LyZdPTevrQKGiWvHgi+DnGBZaa
+         ZYT84kVbh/eZSglzPmBmRMhXVUUXNHrsxH0co3c4tcKweJVZbfuqDHUDvczV5IEAu5
+         OX7MG6Aqd2BpTIhh+V2DBODnIkR0Uwxqxi+myWC4=
+Received: by mail-qv1-f51.google.com with SMTP id g18so1849816qvp.8;
+        Wed, 13 Nov 2019 21:15:27 -0800 (PST)
+X-Gm-Message-State: APjAAAXIWE/+YLTIwHJLQNqhGN9VtiMgJPwuIfVya+uMqa4SeW1seBw/
+        OxkACUTqiFG53GEZ0O7Vc0cbWw/jjmLPqWG8Pvs=
+X-Google-Smtp-Source: APXvYqwlPTIblvxl8u3zUhl8hD3W9ECXciROrFiU7RcbJjYQxah0YbroDoQ4zkxAaXhihEABx4qt8MPf48+py6OCV2g=
+X-Received: by 2002:ad4:462d:: with SMTP id x13mr6475849qvv.105.1573708526559;
+ Wed, 13 Nov 2019 21:15:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CADVatmMzZ9AByeUBtqdrfE_apK58oMYLxSuBrDdLh2XTQzKE9A@mail.gmail.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+References: <20191108130123.6839-1-linux@rasmusvillemoes.dk> <20191108130123.6839-31-linux@rasmusvillemoes.dk>
+In-Reply-To: <20191108130123.6839-31-linux@rasmusvillemoes.dk>
+From:   Timur Tabi <timur@kernel.org>
+Date:   Wed, 13 Nov 2019 23:14:49 -0600
+X-Gmail-Original-Message-ID: <CAOZdJXVQ_wQLK-4uutb2e6zOt0b8FBVY3qoWdoo4UM8p7=bV0A@mail.gmail.com>
+Message-ID: <CAOZdJXVQ_wQLK-4uutb2e6zOt0b8FBVY3qoWdoo4UM8p7=bV0A@mail.gmail.com>
+Subject: Re: [PATCH v4 30/47] serial: ucc_uart: factor out soft_uart initialization
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
+        Christophe Leroy <christophe.leroy@c-s.fr>,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Scott Wood <oss@buserror.net>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 11, 2019 at 03:18:38PM +0000, Sudip Mukherjee wrote:
-> Hi Greg,
-> 
-> On Mon, Nov 4, 2019 at 4:43 PM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Fri, Oct 18, 2019 at 08:47:07PM +0100, Sudip Mukherjee wrote:
-> > > The build of arm allmodconfig gives a warning:
-> > >
-> > > warning: same module names found:
-> > >   drivers/tty/serial/samsung.ko
-> > >   drivers/mtd/nand/onenand/samsung.ko
-> > >
-> > > Rename drivers/tty/serial/samsung.c to drivers/tty/serial/samsung_tty.c
-> > > to fix the warning.
-> > >
-> <snip>
-> >
-> >
-> > What are you going to break if you rename this module?
-> 
-> hopefully nothing.
-> 
-> >
-> > What configs enable both of these other than allmodconfig?  Why rename
-> > the tty driver and not the mtd driver?  Why not both?
-> 
-> But, there is no other config defined which has both enabled. Though I can
-> make one, but since it is not defined and no one else has reported this, I think
-> its better if you discard this. ( I think you already have :) )  or if
-> you want I can
-> send a v2 renaming both.
+On Fri, Nov 8, 2019 at 7:03 AM Rasmus Villemoes
+<linux@rasmusvillemoes.dk> wrote:
+>
+> -       /*
+> -        * Determine if we need Soft-UART mode
+> -        */
+>         if (of_find_property(np, "soft-uart", NULL)) {
+>                 dev_dbg(&ofdev->dev, "using Soft-UART mode\n");
+>                 soft_uart = 1;
+> +       } else {
+> +               return 0;
+>         }
 
-Let's rename both and cause equal pain :)
+How about:
 
-thanks,
+if (!of_find_property(np, "soft-uart", NULL))
+    return 0;
 
-greg k-h
+And I think you should be able to get rid of the "soft_uart" variable.
