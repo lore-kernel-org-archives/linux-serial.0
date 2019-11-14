@@ -2,86 +2,109 @@ Return-Path: <SRS0=2UiA=ZG=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2472C432C3
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Nov 2019 05:15:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4AC7C432C3
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Nov 2019 07:05:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C9490206EC
-	for <linux-serial@archiver.kernel.org>; Thu, 14 Nov 2019 05:15:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1573708528;
-	bh=WigUSF3alcgcj3pSwFXkYJTAsdWSBKH1LxuGN0UIWDw=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=JXVoNR8ONYSv3BGWwpN9LNM5zjO72yy3nF86JamJ1+NXITVpjrxgnUdiXQyqnkqZi
-	 6hMf7N4nXs83U3MenqbGZ0PpSHVXIOnngJCy7fxCbQodhb4rpHYDCWyIiHDCzT7Ik6
-	 kAy+hMhcXML6BHZflDfFm8NyDtfVxZKBCUljfBKM=
+	by mail.kernel.org (Postfix) with ESMTP id A19EA2071B
+	for <linux-serial@archiver.kernel.org>; Thu, 14 Nov 2019 07:05:18 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="NzCSkIDf"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726254AbfKNFP2 (ORCPT
+        id S1725977AbfKNHFS (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Nov 2019 00:15:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46968 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726002AbfKNFP2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Nov 2019 00:15:28 -0500
-Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8F0EA20706;
-        Thu, 14 Nov 2019 05:15:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573708527;
-        bh=WigUSF3alcgcj3pSwFXkYJTAsdWSBKH1LxuGN0UIWDw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=hfgI9clc/bfFjOJFNB8C3UnyfZXN9St0vvpgPg/LyZdPTevrQKGiWvHgi+DnGBZaa
-         ZYT84kVbh/eZSglzPmBmRMhXVUUXNHrsxH0co3c4tcKweJVZbfuqDHUDvczV5IEAu5
-         OX7MG6Aqd2BpTIhh+V2DBODnIkR0Uwxqxi+myWC4=
-Received: by mail-qv1-f51.google.com with SMTP id g18so1849816qvp.8;
-        Wed, 13 Nov 2019 21:15:27 -0800 (PST)
-X-Gm-Message-State: APjAAAXIWE/+YLTIwHJLQNqhGN9VtiMgJPwuIfVya+uMqa4SeW1seBw/
-        OxkACUTqiFG53GEZ0O7Vc0cbWw/jjmLPqWG8Pvs=
-X-Google-Smtp-Source: APXvYqwlPTIblvxl8u3zUhl8hD3W9ECXciROrFiU7RcbJjYQxah0YbroDoQ4zkxAaXhihEABx4qt8MPf48+py6OCV2g=
-X-Received: by 2002:ad4:462d:: with SMTP id x13mr6475849qvv.105.1573708526559;
- Wed, 13 Nov 2019 21:15:26 -0800 (PST)
+        Thu, 14 Nov 2019 02:05:18 -0500
+Received: from hqemgate16.nvidia.com ([216.228.121.65]:5891 "EHLO
+        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725852AbfKNHFS (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 14 Nov 2019 02:05:18 -0500
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5dccfc750000>; Wed, 13 Nov 2019 23:04:21 -0800
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate102.nvidia.com (PGP Universal service);
+  Wed, 13 Nov 2019 23:05:17 -0800
+X-PGP-Universal: processed;
+        by hqpgpgate102.nvidia.com on Wed, 13 Nov 2019 23:05:17 -0800
+Received: from [10.26.11.169] (172.20.13.39) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 14 Nov
+ 2019 07:05:14 +0000
+Subject: Re: [PATCH 3/3] tty: serial: tegra: Use dma_request_chan() directly
+ for channel request
+To:     Peter Ujfalusi <peter.ujfalusi@ti.com>,
+        <gregkh@linuxfoundation.org>, <linux@armlinux.org.uk>,
+        <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <ldewangan@nvidia.com>, <thierry.reding@gmail.com>
+CC:     <vkoul@kernel.org>, <jslaby@suse.com>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-tegra@vger.kernel.org>
+References: <20191113094618.1725-1-peter.ujfalusi@ti.com>
+ <20191113094618.1725-4-peter.ujfalusi@ti.com>
+From:   Jon Hunter <jonathanh@nvidia.com>
+Message-ID: <17285b24-b94b-7e86-d386-c5cf3c15c259@nvidia.com>
+Date:   Thu, 14 Nov 2019 07:05:12 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-References: <20191108130123.6839-1-linux@rasmusvillemoes.dk> <20191108130123.6839-31-linux@rasmusvillemoes.dk>
-In-Reply-To: <20191108130123.6839-31-linux@rasmusvillemoes.dk>
-From:   Timur Tabi <timur@kernel.org>
-Date:   Wed, 13 Nov 2019 23:14:49 -0600
-X-Gmail-Original-Message-ID: <CAOZdJXVQ_wQLK-4uutb2e6zOt0b8FBVY3qoWdoo4UM8p7=bV0A@mail.gmail.com>
-Message-ID: <CAOZdJXVQ_wQLK-4uutb2e6zOt0b8FBVY3qoWdoo4UM8p7=bV0A@mail.gmail.com>
-Subject: Re: [PATCH v4 30/47] serial: ucc_uart: factor out soft_uart initialization
-To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc:     Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
-        Christophe Leroy <christophe.leroy@c-s.fr>,
-        linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Scott Wood <oss@buserror.net>, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191113094618.1725-4-peter.ujfalusi@ti.com>
+X-Originating-IP: [172.20.13.39]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1573715061; bh=MmGvVClaBSWbtzpBesfEo9w93+ReynyzrTv2qlyinUQ=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
+         User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
+         X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=NzCSkIDf9d12kW3MGV3mug7cFZnDJlreQu81Qr6LBXvQylzu3tZ11GtT/aolC9wKy
+         QBptuI0yVaOZ6fahNQCQocvg9kHQYNZGrN9kspr6TzjNk+2hL/Y0HhYT9m+4SBzfJT
+         TGR4orC5nLpmA1A34lzswdmHFH+4v7rtFNDTwPVLvMFfXx1n0hCa4xuE84TjY0EJx9
+         htmguJR0/LuUzNiV8siJ0L+ZGQxW/Ez0viy+lmVhfMyK/mfEztDKC2Twg+25GqTgUp
+         fg0ngmbyE3LPrbIoW1bKPLA71BJMpdscXlifLo4JLxRT+As64lXLBugQlAeib40Rcv
+         +GsV9h98+dfQA==
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Nov 8, 2019 at 7:03 AM Rasmus Villemoes
-<linux@rasmusvillemoes.dk> wrote:
->
-> -       /*
-> -        * Determine if we need Soft-UART mode
-> -        */
->         if (of_find_property(np, "soft-uart", NULL)) {
->                 dev_dbg(&ofdev->dev, "using Soft-UART mode\n");
->                 soft_uart = 1;
-> +       } else {
-> +               return 0;
->         }
 
-How about:
+On 13/11/2019 09:46, Peter Ujfalusi wrote:
+> dma_request_slave_channel_reason() is:
+> #define dma_request_slave_channel_reason(dev, name) \
+> 	dma_request_chan(dev, name)
+> 
+> Signed-off-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
+> ---
+>  drivers/tty/serial/serial-tegra.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+> index 2f599515c133..b6ace6290e23 100644
+> --- a/drivers/tty/serial/serial-tegra.c
+> +++ b/drivers/tty/serial/serial-tegra.c
+> @@ -1122,8 +1122,7 @@ static int tegra_uart_dma_channel_allocate(struct tegra_uart_port *tup,
+>  	int ret;
+>  	struct dma_slave_config dma_sconfig;
+>  
+> -	dma_chan = dma_request_slave_channel_reason(tup->uport.dev,
+> -						dma_to_memory ? "rx" : "tx");
+> +	dma_chan = dma_request_chan(tup->uport.dev, dma_to_memory ? "rx" : "tx");
+>  	if (IS_ERR(dma_chan)) {
+>  		ret = PTR_ERR(dma_chan);
+>  		dev_err(tup->uport.dev,
+> 
 
-if (!of_find_property(np, "soft-uart", NULL))
-    return 0;
+Acked-by: Jon Hunter <jonathanh@nvidia.com>
 
-And I think you should be able to get rid of the "soft_uart" variable.
+Cheers!
+Jon
+
+-- 
+nvpublic
