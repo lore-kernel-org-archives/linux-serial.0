@@ -2,130 +2,106 @@ Return-Path: <SRS0=rp3o=ZH=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90314C432C3
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Nov 2019 04:34:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E8E6C432C3
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Nov 2019 04:41:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6331820728
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Nov 2019 04:34:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1924C206E6
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Nov 2019 04:41:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="plD1YOaN"
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="Q70FVA6m";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="Q70FVA6m"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726986AbfKOEeA (ORCPT
+        id S1726958AbfKOElv (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Nov 2019 23:34:00 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:39637 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726755AbfKOEd7 (ORCPT
+        Thu, 14 Nov 2019 23:41:51 -0500
+Received: from smtp.codeaurora.org ([198.145.29.96]:58068 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726549AbfKOElv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Nov 2019 23:33:59 -0500
-Received: by mail-pg1-f195.google.com with SMTP id 29so5188056pgm.6;
-        Thu, 14 Nov 2019 20:33:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=uG8EYto2G5KUs/xrRVV9nqvd+H7D1BzazmBvDXAUch4=;
-        b=plD1YOaNtJ71eOne2Z0YRcvw2L0eBFV+IsZdz01pd3dF/+Cp7NEW+SaLgddIzKXvIb
-         kv2oQTPWaU9yuuvo9mhmpZlgPLnVwIx8sBAiz4A9FDvwlESV8kTbUli5Crq9aI9MOXCf
-         HlaVk45La7pdje3K/dt9Opmq3P6teL6SnnSkLRgp/XTIYRSFR8vsW8ODOj8mfKR67wEi
-         aegHhKAy6bAszf8Vu1eZbUUhXXi2v7ltLq3ixDO9dqlx890OGZSwfLpFXG1d9CWLFZ59
-         I+9pZZSCHI7Zu947gxt/ktg3F+hdamMooXOsoFzv96ozqUF5hPZmBt+g39YCyaghndFu
-         rtNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=uG8EYto2G5KUs/xrRVV9nqvd+H7D1BzazmBvDXAUch4=;
-        b=J1d01wNZs5YzqpAmdbFPqwW76Hg2UvD2nv0rn8A+fM78m7sfQuv1RI8kZ3hzuT9/8k
-         GRR8fznDTBkwGz057QMPwnjN1EALBtltN68XeLB73tCpJGHC+cdi8NWpT62r+KXpWu2a
-         eYzdiRgUcH+nmNQGj5gzf/vQLo3FlV6TAsWHiNrcV5+OGEr1lfCmzYleiZey4cqApq2Z
-         M1FqTs/irNalYLyLBrhl1Ecgp1TgdztZ0FI+1L/RxkERoIUnIoZK6fuxeBZakWoCekrT
-         kG6wY8nF6pUrKp7aOYM7/hludotlfNIeEQ8pXkj/jvv4lUotTUVzH5lMXMg+SvXf4MR6
-         Vcpw==
-X-Gm-Message-State: APjAAAWGQ3LEzioigAfJOaYga0jUl1fUoMWGpAjdUYMzDX2dVJYjdm1p
-        CX0PAHFSMq9Y8BUfOnbObPUyIXVhqGA=
-X-Google-Smtp-Source: APXvYqzdYiwsPqZoNlVml6tlzRZzQKB4JQJ2ZAJztAW0vdJWLBdWIj5wPzwiGCeMgkTS6VEnWQ+S3A==
-X-Received: by 2002:a62:aa0a:: with SMTP id e10mr5708723pff.46.1573792439044;
-        Thu, 14 Nov 2019 20:33:59 -0800 (PST)
-Received: from localhost ([2401:fa00:8f:203:250d:e71d:5a0a:9afe])
-        by smtp.gmail.com with ESMTPSA id m11sm1769772pgd.62.2019.11.14.20.33.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Nov 2019 20:33:57 -0800 (PST)
-Date:   Fri, 15 Nov 2019 13:33:56 +0900
-From:   Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Jonathan Richardson <jonathan.richardson@broadcom.com>,
-        gregkh@linuxfoundation.org, jslaby@suse.com,
-        sergey.senozhatsky@gmail.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Scott Branden <scott.branden@broadcom.com>,
-        Ray Jui <ray.jui@broadcom.com>,
-        Srinath Mannam <srinath.mannam@broadcom.com>
-Subject: Re: console output duplicated when registering additional consoles
-Message-ID: <20191115043356.GA220831@google.com>
-References: <CAHrpVsUHgJA3wjh4fDg43y5OFCCvQb-HSRpyGyhFEKXcWw8WnQ@mail.gmail.com>
- <CAHrpVsW6jRUYK_mu+dLaBvucAAtUPQ0zcH6_NxsUsTrPewiY_w@mail.gmail.com>
- <20191114095737.wl5nvxu3w6p5thfc@pathway.suse.cz>
+        Thu, 14 Nov 2019 23:41:51 -0500
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id E30A460D95; Fri, 15 Nov 2019 04:41:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1573792910;
+        bh=qsY5NenwafRfeqjlDioZWx/vkOeWR9D5y1vVlLbgoPI=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=Q70FVA6moXftxoDhvUwU4Qd0mMiHieqsB98hyh/6g9ebA99MykXE9bjRibt0mbTNt
+         oNXEwstNsBi0yteOZHLLykGKjCV70/Nu0JXtTfjJa5J989VzP4lHUTrlKKHweO05Em
+         Q/UmbTZ4e0oc3H22UtlolDUKO3FyVLwClnEMeBzw=
+Received: from [192.168.0.8] (unknown [183.83.138.47])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 6E95860590;
+        Fri, 15 Nov 2019 04:41:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1573792910;
+        bh=qsY5NenwafRfeqjlDioZWx/vkOeWR9D5y1vVlLbgoPI=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=Q70FVA6moXftxoDhvUwU4Qd0mMiHieqsB98hyh/6g9ebA99MykXE9bjRibt0mbTNt
+         oNXEwstNsBi0yteOZHLLykGKjCV70/Nu0JXtTfjJa5J989VzP4lHUTrlKKHweO05Em
+         Q/UmbTZ4e0oc3H22UtlolDUKO3FyVLwClnEMeBzw=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6E95860590
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+Subject: Re: [PATCH v5 1/3] tty: serial: qcom_geni_serial: IRQ cleanup
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        mgautam@codeaurora.org, swboyd@chromium.org,
+        msavaliy@codeaurora.org
+References: <1573642111-17479-1-git-send-email-akashast@codeaurora.org>
+ <20191113105603.GA2083219@kroah.com>
+From:   Akash Asthana <akashast@codeaurora.org>
+Message-ID: <8aacf270-7e0f-8f8f-aac6-4cdaf6d3fd21@codeaurora.org>
+Date:   Fri, 15 Nov 2019 10:11:40 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191114095737.wl5nvxu3w6p5thfc@pathway.suse.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191113105603.GA2083219@kroah.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Gosh, that part of printk is really complex.
 
-On (19/11/14 10:57), Petr Mladek wrote:
-> For a proper solution we would need to match boot and real
-> consoles that write messages into the physical device.
-> But I am afraid that there is no support for this.
+On 11/13/2019 4:26 PM, Greg KH wrote:
+> On Wed, Nov 13, 2019 at 04:18:31PM +0530, Akash Asthana wrote:
+>> Move ISR registration from startup to probe function to avoid registering
+>> it everytime when the port open is called for driver.
+>>
+>> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+>> ---
+>> Changes in v5:
+>>   - No change.
+> This series does not apply at all to my tty-next branch of my tty git
+> tree.  What did you make it against?  Please rebase it and resend so
+> that it can be applied.
+>
+> thanks,
+>
+> greg k-h
 
-Wouldn't those have same tty driver?
+Please revert below 2 commits and apply the patches in series.
 
----
+1) 8b7103f31950443fd5727d7d80d3c65416b5a390   (v2 patch)
 
- kernel/printk/printk.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+2) 3e4aaea7a0391d47f6ffff1f10594c658a67c881 (v2 patch)
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index f1b08015d3fa..a84cb20acf42 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -2690,6 +2690,19 @@ static int __init keep_bootcon_setup(char *str)
- 
- early_param("keep_bootcon", keep_bootcon_setup);
- 
-+static bool known_console_driver(struct console *newcon)
-+{
-+	struct console *con;
-+
-+	for_each_console(con) {
-+		if (!(con->flags & CON_ENABLED))
-+			continue;
-+		if (con->device && con->device == newcon->device)
-+			return true;
-+	}
-+	return false;
-+}
-+
- /*
-  * The console driver calls this routine during kernel initialization
-  * to register the console printing procedure with printk() and to
-@@ -2828,6 +2841,9 @@ void register_console(struct console *newcon)
- 	if (newcon->flags & CON_EXTENDED)
- 		nr_ext_console_drivers++;
- 
-+	if (known_console_driver(newcon))
-+		newcon->flags &= ~CON_PRINTBUFFER;
-+
- 	if (newcon->flags & CON_PRINTBUFFER) {
- 		/*
- 		 * console_unlock(); will print out the buffered messages
+I have verified the same on tty-next branch, it's applying cleanly.
+
+Thanks,
+
+Akash
+
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+
