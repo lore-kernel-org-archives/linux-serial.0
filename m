@@ -2,79 +2,130 @@ Return-Path: <SRS0=rp3o=ZH=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F75C432C3
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Nov 2019 04:26:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90314C432C3
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Nov 2019 04:34:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A5B4E20731
-	for <linux-serial@archiver.kernel.org>; Fri, 15 Nov 2019 04:26:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1573791991;
-	bh=9wOq687Qi/2lX8IlVmx3X62wxNLXabR/kcOYgP+5Zic=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=ws43vuPBf1d/PADAQffPJ0NYyWmr7y0R9opgVLC5eOftVrOizB8upyorGMBTAoFcE
-	 jP4iBqZ0zpYnn+A/NBqCK8Po1WUd/9s/gdwqy13lRUTLlH78+Z4s6GWXWb1rKVbiTb
-	 jkJ3aCCQ4l8tCCck3DzGWMKgpLInruBxjVYH4+Wc=
+	by mail.kernel.org (Postfix) with ESMTP id 6331820728
+	for <linux-serial@archiver.kernel.org>; Fri, 15 Nov 2019 04:34:00 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="plD1YOaN"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726786AbfKOE0b (ORCPT
+        id S1726986AbfKOEeA (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 Nov 2019 23:26:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50124 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726661AbfKOE0b (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 Nov 2019 23:26:31 -0500
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 760A020731;
-        Fri, 15 Nov 2019 04:26:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573791990;
-        bh=9wOq687Qi/2lX8IlVmx3X62wxNLXabR/kcOYgP+5Zic=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=KRpj0jxqSegt9Nw4hWezOFc+3piXWWS0uzU6orlkh5W/H0zEhswSnT8XaLD7HuLtl
-         7oHNud3SfJmDxTgZ33qFavoPYuHMwP59ZF93vdykTnucwKJyjd3s/0RUwBlDBMwson
-         RMC9Epl151y4HMRqHoOmLSH2j+LfU+ftqc9i7S7w=
-Received: by mail-qk1-f171.google.com with SMTP id m125so7097973qkd.8;
-        Thu, 14 Nov 2019 20:26:30 -0800 (PST)
-X-Gm-Message-State: APjAAAUE7B22djlh3bhDr1bgenZ1puDZKlUVv9mDHXGiqc0xoN1Ltnms
-        BTL6PDC8BJl6rcaclxJ/GfY/0LOcsSwv1Hn2RDQ=
-X-Google-Smtp-Source: APXvYqyLFzHjZ7tEQMeLkCQSkpPg0rZdqFl6WRIPEi5xIjuml+zSKU9pde3u+lplCRandR9s/b1zLnOoGmwvymczkds=
-X-Received: by 2002:a37:9d44:: with SMTP id g65mr10614078qke.302.1573791989555;
- Thu, 14 Nov 2019 20:26:29 -0800 (PST)
+        Thu, 14 Nov 2019 23:34:00 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:39637 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726755AbfKOEd7 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 14 Nov 2019 23:33:59 -0500
+Received: by mail-pg1-f195.google.com with SMTP id 29so5188056pgm.6;
+        Thu, 14 Nov 2019 20:33:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=uG8EYto2G5KUs/xrRVV9nqvd+H7D1BzazmBvDXAUch4=;
+        b=plD1YOaNtJ71eOne2Z0YRcvw2L0eBFV+IsZdz01pd3dF/+Cp7NEW+SaLgddIzKXvIb
+         kv2oQTPWaU9yuuvo9mhmpZlgPLnVwIx8sBAiz4A9FDvwlESV8kTbUli5Crq9aI9MOXCf
+         HlaVk45La7pdje3K/dt9Opmq3P6teL6SnnSkLRgp/XTIYRSFR8vsW8ODOj8mfKR67wEi
+         aegHhKAy6bAszf8Vu1eZbUUhXXi2v7ltLq3ixDO9dqlx890OGZSwfLpFXG1d9CWLFZ59
+         I+9pZZSCHI7Zu947gxt/ktg3F+hdamMooXOsoFzv96ozqUF5hPZmBt+g39YCyaghndFu
+         rtNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=uG8EYto2G5KUs/xrRVV9nqvd+H7D1BzazmBvDXAUch4=;
+        b=J1d01wNZs5YzqpAmdbFPqwW76Hg2UvD2nv0rn8A+fM78m7sfQuv1RI8kZ3hzuT9/8k
+         GRR8fznDTBkwGz057QMPwnjN1EALBtltN68XeLB73tCpJGHC+cdi8NWpT62r+KXpWu2a
+         eYzdiRgUcH+nmNQGj5gzf/vQLo3FlV6TAsWHiNrcV5+OGEr1lfCmzYleiZey4cqApq2Z
+         M1FqTs/irNalYLyLBrhl1Ecgp1TgdztZ0FI+1L/RxkERoIUnIoZK6fuxeBZakWoCekrT
+         kG6wY8nF6pUrKp7aOYM7/hludotlfNIeEQ8pXkj/jvv4lUotTUVzH5lMXMg+SvXf4MR6
+         Vcpw==
+X-Gm-Message-State: APjAAAWGQ3LEzioigAfJOaYga0jUl1fUoMWGpAjdUYMzDX2dVJYjdm1p
+        CX0PAHFSMq9Y8BUfOnbObPUyIXVhqGA=
+X-Google-Smtp-Source: APXvYqzdYiwsPqZoNlVml6tlzRZzQKB4JQJ2ZAJztAW0vdJWLBdWIj5wPzwiGCeMgkTS6VEnWQ+S3A==
+X-Received: by 2002:a62:aa0a:: with SMTP id e10mr5708723pff.46.1573792439044;
+        Thu, 14 Nov 2019 20:33:59 -0800 (PST)
+Received: from localhost ([2401:fa00:8f:203:250d:e71d:5a0a:9afe])
+        by smtp.gmail.com with ESMTPSA id m11sm1769772pgd.62.2019.11.14.20.33.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Nov 2019 20:33:57 -0800 (PST)
+Date:   Fri, 15 Nov 2019 13:33:56 +0900
+From:   Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Jonathan Richardson <jonathan.richardson@broadcom.com>,
+        gregkh@linuxfoundation.org, jslaby@suse.com,
+        sergey.senozhatsky@gmail.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Scott Branden <scott.branden@broadcom.com>,
+        Ray Jui <ray.jui@broadcom.com>,
+        Srinath Mannam <srinath.mannam@broadcom.com>
+Subject: Re: console output duplicated when registering additional consoles
+Message-ID: <20191115043356.GA220831@google.com>
+References: <CAHrpVsUHgJA3wjh4fDg43y5OFCCvQb-HSRpyGyhFEKXcWw8WnQ@mail.gmail.com>
+ <CAHrpVsW6jRUYK_mu+dLaBvucAAtUPQ0zcH6_NxsUsTrPewiY_w@mail.gmail.com>
+ <20191114095737.wl5nvxu3w6p5thfc@pathway.suse.cz>
 MIME-Version: 1.0
-References: <20191108130123.6839-1-linux@rasmusvillemoes.dk> <20191108130123.6839-33-linux@rasmusvillemoes.dk>
-In-Reply-To: <20191108130123.6839-33-linux@rasmusvillemoes.dk>
-From:   Timur Tabi <timur@kernel.org>
-Date:   Thu, 14 Nov 2019 22:25:52 -0600
-X-Gmail-Original-Message-ID: <CAOZdJXVpDSk2AWT7pYjrsk5HUmAeosCNf8zWX1CEEtZshAh9Sw@mail.gmail.com>
-Message-ID: <CAOZdJXVpDSk2AWT7pYjrsk5HUmAeosCNf8zWX1CEEtZshAh9Sw@mail.gmail.com>
-Subject: Re: [PATCH v4 32/47] serial: ucc_uart: use of_property_read_u32() in ucc_uart_probe()
-To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc:     Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
-        Christophe Leroy <christophe.leroy@c-s.fr>,
-        linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Scott Wood <oss@buserror.net>, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191114095737.wl5nvxu3w6p5thfc@pathway.suse.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Nov 8, 2019 at 7:03 AM Rasmus Villemoes
-<linux@rasmusvillemoes.dk> wrote:
->
-> +       if (of_property_read_u32(np, "cell-index", &val) &&
-> +           of_property_read_u32(np, "device-id", &val)) {
+Gosh, that part of printk is really complex.
 
-I know that this is technically correct, but it's obfuscated IMHO.
-'val' is set correctly only when of_property_read_u32(...) is "false",
-which is doubly-weird because of_property_read_u32(...) doesn't
-actually return a boolean.
+On (19/11/14 10:57), Petr Mladek wrote:
+> For a proper solution we would need to match boot and real
+> consoles that write messages into the physical device.
+> But I am afraid that there is no support for this.
 
-I would rather you break this into two if-statements like the original code.
+Wouldn't those have same tty driver?
+
+---
+
+ kernel/printk/printk.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index f1b08015d3fa..a84cb20acf42 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2690,6 +2690,19 @@ static int __init keep_bootcon_setup(char *str)
+ 
+ early_param("keep_bootcon", keep_bootcon_setup);
+ 
++static bool known_console_driver(struct console *newcon)
++{
++	struct console *con;
++
++	for_each_console(con) {
++		if (!(con->flags & CON_ENABLED))
++			continue;
++		if (con->device && con->device == newcon->device)
++			return true;
++	}
++	return false;
++}
++
+ /*
+  * The console driver calls this routine during kernel initialization
+  * to register the console printing procedure with printk() and to
+@@ -2828,6 +2841,9 @@ void register_console(struct console *newcon)
+ 	if (newcon->flags & CON_EXTENDED)
+ 		nr_ext_console_drivers++;
+ 
++	if (known_console_driver(newcon))
++		newcon->flags &= ~CON_PRINTBUFFER;
++
+ 	if (newcon->flags & CON_PRINTBUFFER) {
+ 		/*
+ 		 * console_unlock(); will print out the buffered messages
