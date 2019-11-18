@@ -2,117 +2,129 @@ Return-Path: <SRS0=fJeH=ZK=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57F07C43215
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Nov 2019 19:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79348C43215
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Nov 2019 21:38:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3222922304
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Nov 2019 19:40:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1574106015;
-	bh=lALNLNHKbLarFmQFbxabtTEuqMU5yok9zA5BXn9uNZI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=Blyiph43bIavCUbZmZ3UcRQjLLl5YMeWGomjIM3oQFjP0u6PWfrW+5lmxK2b6y1iP
-	 xGZZWABVuTCOWcUzVd4bvir0ujKegnZikReGm8S6jBEflNE78Y2JDBoT8nB+wWxp9k
-	 V4lkeWfr1Xe4v5tcYWV+jQyd4bJeVjk/pT0tr7v4=
+	by mail.kernel.org (Postfix) with ESMTP id 5867422317
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Nov 2019 21:38:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726942AbfKRTkO (ORCPT
+        id S1726717AbfKRViR (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 Nov 2019 14:40:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55380 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726922AbfKRTkO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 Nov 2019 14:40:14 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2D9EA222A7;
-        Mon, 18 Nov 2019 19:40:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574106014;
-        bh=lALNLNHKbLarFmQFbxabtTEuqMU5yok9zA5BXn9uNZI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iULnfiZRncZXT1wdLSC9N/cmrBnpdDaxGz1vqxUFjhYrjG2wrBsDICJKIzKr2ah3K
-         PC7op5otsD/S+I5XTjZ6z+FAMOpQqrOpWogHC4nTNB/+r/Etv122svvoWte0CVDisG
-         TNUfFwTcOAY8On1gGQ08uZAw4lS5dEensszJNeUQ=
-Date:   Mon, 18 Nov 2019 20:40:10 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Richard Weinberger <richard@nod.at>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jiri Slaby <jslaby@suse.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-mtd <linux-mtd@lists.infradead.org>,
-        linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v2] {tty: serial, nand: onenand}: samsung: rename to fix
- build warning
-Message-ID: <20191118194010.GA606660@kroah.com>
-References: <20191117202435.28127-1-sudipm.mukherjee@gmail.com>
- <20191118114657.GA228826@kroah.com>
- <1505628642.90849.1574081270290.JavaMail.zimbra@nod.at>
- <20191118202257.6cfd1a7e@xps13>
- <884028732.91086.1574105504462.JavaMail.zimbra@nod.at>
+        Mon, 18 Nov 2019 16:38:17 -0500
+Received: from mail-io1-f66.google.com ([209.85.166.66]:40860 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726272AbfKRViQ (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 18 Nov 2019 16:38:16 -0500
+Received: by mail-io1-f66.google.com with SMTP id p6so20571070iod.7
+        for <linux-serial@vger.kernel.org>; Mon, 18 Nov 2019 13:38:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=s0l4HZKdtgXTRgqqDAlM3aIr0uwN5tbm3lAzGjvXOfU=;
+        b=NypYyAXB48zj08S50RkTJaeZR3Xncpt6tIq+Kb/4Djegu9xgaoJKzsPa+MXaM8u6ie
+         SSN73YK14XqKud+G+h7aCUnb9RS90oywdqpT7kDtyIw3NJXL+U9sjltlpeUVZs+VwSJD
+         RlOJUTPJG1sQdOPfojNzDmPLO+HINTMODCsl4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=s0l4HZKdtgXTRgqqDAlM3aIr0uwN5tbm3lAzGjvXOfU=;
+        b=BIl7nRTGOenmXhxllJ4EyV83EaT7+P+wDBk5z/wRAS4RhgJwadhi4Z86AJX1A3Py85
+         OhHLL55hmy1A5YoOPVl0cxsERCYWJdwgRbcIV7q1OXNoXUTabZWvn37QRp91pw0zFrd6
+         HuCZcEk0jhB6SDplrVTZEVkpal/2RX58qmsFRJWPdx7AfaZfxOAqd/8Pv9KSxivshL7u
+         L/RrqRcuy5YMghev3akVyTqxqARd6FRW0vLASDhenN6BxpLuWVFSauFth+XSGCBPfVF8
+         zTDAYVOW38kTdaCefFCWPr61t33Y8+3A6XqWA/Jyywe8iAcI78koYJeGYpFbWuyLtm6a
+         25jQ==
+X-Gm-Message-State: APjAAAU0W/2yUjav2tsdsiMmA1EjSpDfcjnF4JNcdXmpIfIF9ulZVNHv
+        4sojmHfdGF5yv164jVIdOzjlxr+oGqMY/2cfj3t0Wg==
+X-Google-Smtp-Source: APXvYqxf9SXzdHA0asg8wxWMr4ymfFv3a2UwU9eZoumz/2tmxPZzqUOj9OT1SU9J52fkjxeMDd3pzwdgx8tsavlQlxM=
+X-Received: by 2002:a02:ca57:: with SMTP id i23mr15043918jal.36.1574113095689;
+ Mon, 18 Nov 2019 13:38:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <884028732.91086.1574105504462.JavaMail.zimbra@nod.at>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+References: <CAHrpVsUHgJA3wjh4fDg43y5OFCCvQb-HSRpyGyhFEKXcWw8WnQ@mail.gmail.com>
+ <CAHrpVsW6jRUYK_mu+dLaBvucAAtUPQ0zcH6_NxsUsTrPewiY_w@mail.gmail.com>
+ <20191114095737.wl5nvxu3w6p5thfc@pathway.suse.cz> <20191115043356.GA220831@google.com>
+In-Reply-To: <20191115043356.GA220831@google.com>
+From:   Jonathan Richardson <jonathan.richardson@broadcom.com>
+Date:   Mon, 18 Nov 2019 13:38:04 -0800
+Message-ID: <CAHrpVsWu54rKg3bGhY6WVj5d-myYxGSEkxGhOJKTyyc1EH4qOA@mail.gmail.com>
+Subject: Re: console output duplicated when registering additional consoles
+To:     Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc:     Petr Mladek <pmladek@suse.com>, gregkh@linuxfoundation.org,
+        jslaby@suse.com, sergey.senozhatsky@gmail.com,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Scott Branden <scott.branden@broadcom.com>,
+        Ray Jui <ray.jui@broadcom.com>,
+        Srinath Mannam <srinath.mannam@broadcom.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Nov 18, 2019 at 08:31:44PM +0100, Richard Weinberger wrote:
-> ----- Ursprüngliche Mail -----
-> > Von: "Miquel Raynal" <miquel.raynal@bootlin.com>
-> > An: "richard" <richard@nod.at>
-> > CC: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, "Sudip Mukherjee" <sudipm.mukherjee@gmail.com>, "Kyungmin Park"
-> > <kyungmin.park@samsung.com>, "Vignesh Raghavendra" <vigneshr@ti.com>, "Jiri Slaby" <jslaby@suse.com>, "linux-kernel"
-> > <linux-kernel@vger.kernel.org>, "linux-mtd" <linux-mtd@lists.infradead.org>, "linux-serial"
-> > <linux-serial@vger.kernel.org>
-> > Gesendet: Montag, 18. November 2019 20:22:57
-> > Betreff: Re: [PATCH v2] {tty: serial, nand: onenand}: samsung: rename to fix build warning
-> 
-> > Hi all,
-> > 
-> > Richard Weinberger <richard@nod.at> wrote on Mon, 18 Nov 2019 13:47:50
-> > +0100 (CET):
-> > 
-> >> ----- Ursprüngliche Mail -----
-> >> >> I was not sure if this should have been two different patch, but since
-> >> >> this will be fixing the same problem so it seems its better to have them
-> >> >> in a single patch.
-> >> >> 
-> >> >>  drivers/mtd/nand/onenand/Makefile                     | 2 +-
-> >> >>  drivers/mtd/nand/onenand/{samsung.c => samsung_mtd.c} | 0
-> >> >>  drivers/tty/serial/Makefile                           | 2 +-
-> >> >>  drivers/tty/serial/{samsung.c => samsung_tty.c}       | 0
-> >> >>  4 files changed, 2 insertions(+), 2 deletions(-)
-> >> >>  rename drivers/mtd/nand/onenand/{samsung.c => samsung_mtd.c} (100%)
-> >> >>  rename drivers/tty/serial/{samsung.c => samsung_tty.c} (100%)
-> >> > 
-> >> > I can take this in the tty tree if the mtd maintainer gives an ack for
-> >> > it...
-> >> 
-> >> Acked-by: Richard Weinberger <richard@nod.at>
-> > 
-> > If it is not too late, I am not a big fan of the new naming which is
-> > rather not descriptive. Files in the onenand subdirectory are:
-> > * onenand_<something>.c for the base files
-> > * <vendor>.c for the vendors files (currently: omap2.c and samsung.c).
-> 
-> Well, I'm fine with the naming either way. :-)
+On Thu, Nov 14, 2019 at 8:33 PM Sergey Senozhatsky
+<sergey.senozhatsky.work@gmail.com> wrote:
+>
+> Gosh, that part of printk is really complex.
+>
+> On (19/11/14 10:57), Petr Mladek wrote:
+> > For a proper solution we would need to match boot and real
+> > consoles that write messages into the physical device.
+> > But I am afraid that there is no support for this.
+>
+> Wouldn't those have same tty driver?
+>
+> ---
+>
+>  kernel/printk/printk.c | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+>
+> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> index f1b08015d3fa..a84cb20acf42 100644
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -2690,6 +2690,19 @@ static int __init keep_bootcon_setup(char *str)
+>
+>  early_param("keep_bootcon", keep_bootcon_setup);
+>
+> +static bool known_console_driver(struct console *newcon)
+> +{
+> +       struct console *con;
+> +
+> +       for_each_console(con) {
+> +               if (!(con->flags & CON_ENABLED))
+> +                       continue;
+> +               if (con->device && con->device == newcon->device)
+> +                       return true;
+> +       }
+> +       return false;
+> +}
+> +
+>  /*
+>   * The console driver calls this routine during kernel initialization
+>   * to register the console printing procedure with printk() and to
+> @@ -2828,6 +2841,9 @@ void register_console(struct console *newcon)
+>         if (newcon->flags & CON_EXTENDED)
+>                 nr_ext_console_drivers++;
+>
+> +       if (known_console_driver(newcon))
+> +               newcon->flags &= ~CON_PRINTBUFFER;
+> +
+>         if (newcon->flags & CON_PRINTBUFFER) {
+>                 /*
+>                  * console_unlock(); will print out the buffered messages
 
-If you want to rename the mtd driver later, that's fine, I'll take this
-for now for 5.5-rc1 and you all can bikeshed it for 5.5-final :)
-
-thanks,
-
-greg k-h
+Thanks. It also needs to be cleared when the second console driver is
+registered (of the same type, boot or normal), not just when a normal
+con replaces a bootconsole. A simple way of avoiding the problem I'm
+seeing is to not even set the CON_PRINTBUFFER flag on my consoles. It
+skips the replay and the output on all consoles looks fine. The flag
+is only used by register_console(), although I don't think that is the
+intended usage? There are no console drivers that do this.
