@@ -1,143 +1,100 @@
-Return-Path: <SRS0=BaqY=ZJ=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=fJeH=ZK=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BD44C432C0
-	for <linux-serial@archiver.kernel.org>; Sun, 17 Nov 2019 20:24:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D97A5C432C3
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Nov 2019 02:48:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 521CC206F4
-	for <linux-serial@archiver.kernel.org>; Sun, 17 Nov 2019 20:24:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AD61C206D4
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Nov 2019 02:48:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VAhShT4Y"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bJ3uOU3F"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726128AbfKQUYl (ORCPT
+        id S1726578AbfKRCsm (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 17 Nov 2019 15:24:41 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:38951 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726119AbfKQUYl (ORCPT
+        Sun, 17 Nov 2019 21:48:42 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:38975 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726568AbfKRCsm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 17 Nov 2019 15:24:41 -0500
-Received: by mail-wr1-f66.google.com with SMTP id l7so17026298wrp.6;
-        Sun, 17 Nov 2019 12:24:39 -0800 (PST)
+        Sun, 17 Nov 2019 21:48:42 -0500
+Received: by mail-pj1-f67.google.com with SMTP id t103so1033823pjb.6;
+        Sun, 17 Nov 2019 18:48:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=IUxQw7G9TADghldCcYoUqe3xol1SpZ9SeCsa+dH2lVI=;
-        b=VAhShT4YLFAAEeUX84eHEMF5xj5KMok6kStnxT93Jj+dscCQPsB1ggSGNp8t+Ogc4p
-         2cy/9dhfRPGgXqHTCh+fjbPG77D1g/tRPcD/1t5j85Jjuiuk8GwB9Neb1bRiZ+F3OIFc
-         nVKNtubcOzIr0lutZuWI+hHhb+Fs9SzYotXdejIKEWAEDkF8IkIoCV/FWTAq75nyGP+w
-         uImYzuVnYYbh92C375XOOm55V1a5OtfEwqx5MoEttpN22ISJC/rkm2dILPybLJLN7hsm
-         0NX+tBSkeHXPno3O5z8oek+jAw55Th2nDlfclMV4hGGU7WzYw8QCKDErNPu5kjEv55+P
-         bJ1A==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R6TiJnoCZMVB94Jb1OinOc0NFo4+1L3OR+Z9/bchwqM=;
+        b=bJ3uOU3FStjRGKfXMD0IgiIHyIHaHeOsqDzYk+eOwu9ZnIZmR87tv5m5kvq0Q6Uvpg
+         huY/FO82GK1T52tznbKfM/qZnz8qsJyowmri8F4ErYOAQH2g/8rJNXh8Fc/J0+5t7NbH
+         lmfQsVsM2Po8ujf/PW6IN7rc+VhY49XQEeLp3GXIFmwLYzo1lwB/vn3u8/7Tch1/TCns
+         DwwJX4dAqOlGTlDgzBAZejzUlmkJWNC4ooSUArppyyMLLLHLa8HTlZyIi/WqwlA88NuS
+         JKdjwBt4SWZqDN0b9XbqfwwIZ6SzjpiC5TMtz5myVKaOwieoXENJf+/+bpljVpesGnUT
+         OAMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=IUxQw7G9TADghldCcYoUqe3xol1SpZ9SeCsa+dH2lVI=;
-        b=Xm2DAJ6EGmpEAKnvLUtrllsBPdY/t7FkoCN2KXVT2VYAzzz0+e8AeHy+jOZz+YfPLE
-         4Uqlmc5T52km92mSwXUlLf8Vui+f/a0nHiVtQ3PeNV5hX6ucQ9qtgq0mEIVCeGXk/ef6
-         5gD9jgskxKZxj1X5yYHmhvqIFE/5bpBRbkPby0yyHwpRpoefkCBFtf980OEmc3zsKuvV
-         i90sVuHm9X3+Rj3/nKJt3JPDitAs0vqugrqT/aVs33vjf/Q0cL79+6h9B+tgvIA1E4Ei
-         xcsq2gw0/eqe6H7+VSCgUYhsqhyImDxbG2E6kf1Wsxy1gTO5sTIxfGxlqG0LL/u9eRMw
-         Ta4Q==
-X-Gm-Message-State: APjAAAXt5X3n9186LRcuuJ5d0vFZgEe3NVQ4yefz51wFzdtgPDivsdhY
-        VIGq1sXbiR5W0LRaJHy0nA0=
-X-Google-Smtp-Source: APXvYqxRvsFNNbAdZe3wFWBqjruArbkV8Rv6VXA8w1ZrP6Xh5SGeIX8nfBaGOerT4YBs1Y0UJJFVhw==
-X-Received: by 2002:a5d:67c2:: with SMTP id n2mr26150338wrw.222.1574022278756;
-        Sun, 17 Nov 2019 12:24:38 -0800 (PST)
-Received: from debian.lan (host-78-144-219-162.as13285.net. [78.144.219.162])
-        by smtp.gmail.com with ESMTPSA id x5sm17045704wmj.7.2019.11.17.12.24.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 17 Nov 2019 12:24:38 -0800 (PST)
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-To:     Kyungmin Park <kyungmin.park@samsung.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-serial@vger.kernel.org,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH v2] {tty: serial, nand: onenand}: samsung: rename to fix build warning
-Date:   Sun, 17 Nov 2019 20:24:35 +0000
-Message-Id: <20191117202435.28127-1-sudipm.mukherjee@gmail.com>
-X-Mailer: git-send-email 2.11.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R6TiJnoCZMVB94Jb1OinOc0NFo4+1L3OR+Z9/bchwqM=;
+        b=DA3tLEK08FUBEfT72j6Ej85TJGtTb8xtoOuxGvEiE6YEFforSZLtC1SU+OFCIFC2vw
+         jOS+BfxmGgKRhP8eLofDqJLmJwqoCex7GTH4YgbjJED3mjo05f03Gz/kEDY/qLZWl3I5
+         3By0tUpn64yAzpcSSxRBPKfyfSEwhlFCCOeQ4BdnVAjLtKjvATiYaIdoR7x4lHlMYX3o
+         42LL6fDBqLiu9LOUnn5OFZA12PGD5TEImMhjDrhjlya7yD7XruTIyeAby5FqX14zZZoC
+         kjXDAwuWGVWrpYjv4Mo6LlB+SCykpi4J+YSHepLYsGybyLyYaNhD0daFK4kMsX+woMFl
+         j1Tg==
+X-Gm-Message-State: APjAAAVy6GnM6dp3Nv4GFAnNkPIznjTt9bmofMHGlJOf+Jpefe3x/DfD
+        s9Fptxkrftq3+YRF3SDXd90=
+X-Google-Smtp-Source: APXvYqzfon0Icl2/hJ9cVmBewveNRNDkUAlslVU/A+fF8FXFnaA5pyJIxr9wfFYHU6EJXCija+CpdA==
+X-Received: by 2002:a17:90a:9b87:: with SMTP id g7mr36305892pjp.64.1574045321552;
+        Sun, 17 Nov 2019 18:48:41 -0800 (PST)
+Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
+        by smtp.gmail.com with ESMTPSA id x10sm18991935pfn.36.2019.11.17.18.48.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Nov 2019 18:48:40 -0800 (PST)
+From:   Chuhong Yuan <hslester96@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
+Subject: [PATCH] serial: ifx6x60: add missed pm_runtime_disable
+Date:   Mon, 18 Nov 2019 10:48:33 +0800
+Message-Id: <20191118024833.21587-1-hslester96@gmail.com>
+X-Mailer: git-send-email 2.24.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Any arm config which has 'CONFIG_MTD_ONENAND_SAMSUNG=m' and
-'CONFIG_SERIAL_SAMSUNG=m' gives a build warning:
+The driver forgets to call pm_runtime_disable in remove.
+Add the missed calls to fix it.
 
-warning: same module names found:
-  drivers/tty/serial/samsung.ko
-  drivers/mtd/nand/onenand/samsung.ko
-
-Rename both drivers/tty/serial/samsung.c to
-drivers/tty/serial/samsung_tty.c and drivers/mtd/nand/onenand/samsung.c
-drivers/mtd/nand/onenand/samsung_mtd.c to fix the warning.
-
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 ---
+ drivers/tty/serial/ifx6x60.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-v1: only renamed drivers/tty/serial/samsung.c
-link: https://lore.kernel.org/lkml/20191018194707.27188-1-sudipm.mukherjee@gmail.com
-
-v2: rename both files.
-
-I was not sure if this should have been two different patch, but since
-this will be fixing the same problem so it seems its better to have them
-in a single patch.
-
- drivers/mtd/nand/onenand/Makefile                     | 2 +-
- drivers/mtd/nand/onenand/{samsung.c => samsung_mtd.c} | 0
- drivers/tty/serial/Makefile                           | 2 +-
- drivers/tty/serial/{samsung.c => samsung_tty.c}       | 0
- 4 files changed, 2 insertions(+), 2 deletions(-)
- rename drivers/mtd/nand/onenand/{samsung.c => samsung_mtd.c} (100%)
- rename drivers/tty/serial/{samsung.c => samsung_tty.c} (100%)
-
-diff --git a/drivers/mtd/nand/onenand/Makefile b/drivers/mtd/nand/onenand/Makefile
-index f8b624aca9cc..a27b635eb23a 100644
---- a/drivers/mtd/nand/onenand/Makefile
-+++ b/drivers/mtd/nand/onenand/Makefile
-@@ -9,6 +9,6 @@ obj-$(CONFIG_MTD_ONENAND)		+= onenand.o
- # Board specific.
- obj-$(CONFIG_MTD_ONENAND_GENERIC)	+= generic.o
- obj-$(CONFIG_MTD_ONENAND_OMAP2)		+= omap2.o
--obj-$(CONFIG_MTD_ONENAND_SAMSUNG)       += samsung.o
-+obj-$(CONFIG_MTD_ONENAND_SAMSUNG)       += samsung_mtd.o
- 
- onenand-objs = onenand_base.o onenand_bbt.o
-diff --git a/drivers/mtd/nand/onenand/samsung.c b/drivers/mtd/nand/onenand/samsung_mtd.c
-similarity index 100%
-rename from drivers/mtd/nand/onenand/samsung.c
-rename to drivers/mtd/nand/onenand/samsung_mtd.c
-diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
-index 863f47056539..d056ee6cca33 100644
---- a/drivers/tty/serial/Makefile
-+++ b/drivers/tty/serial/Makefile
-@@ -30,7 +30,7 @@ obj-$(CONFIG_SERIAL_PXA_NON8250) += pxa.o
- obj-$(CONFIG_SERIAL_PNX8XXX) += pnx8xxx_uart.o
- obj-$(CONFIG_SERIAL_SA1100) += sa1100.o
- obj-$(CONFIG_SERIAL_BCM63XX) += bcm63xx_uart.o
--obj-$(CONFIG_SERIAL_SAMSUNG) += samsung.o
-+obj-$(CONFIG_SERIAL_SAMSUNG) += samsung_tty.o
- obj-$(CONFIG_SERIAL_MAX3100) += max3100.o
- obj-$(CONFIG_SERIAL_MAX310X) += max310x.o
- obj-$(CONFIG_SERIAL_IP22_ZILOG) += ip22zilog.o
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung_tty.c
-similarity index 100%
-rename from drivers/tty/serial/samsung.c
-rename to drivers/tty/serial/samsung_tty.c
+diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
+index ffefd218761e..31033d517e82 100644
+--- a/drivers/tty/serial/ifx6x60.c
++++ b/drivers/tty/serial/ifx6x60.c
+@@ -1230,6 +1230,9 @@ static int ifx_spi_spi_remove(struct spi_device *spi)
+ 	struct ifx_spi_device *ifx_dev = spi_get_drvdata(spi);
+ 	/* stop activity */
+ 	tasklet_kill(&ifx_dev->io_work_tasklet);
++
++	pm_runtime_disable(&spi->dev);
++
+ 	/* free irq */
+ 	free_irq(gpio_to_irq(ifx_dev->gpio.reset_out), ifx_dev);
+ 	free_irq(gpio_to_irq(ifx_dev->gpio.srdy), ifx_dev);
 -- 
-2.11.0
+2.24.0
 
