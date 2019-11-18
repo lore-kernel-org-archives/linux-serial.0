@@ -4,55 +4,55 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8D70C43215
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Nov 2019 11:25:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4688C432C0
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Nov 2019 11:25:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B81BA20878
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Nov 2019 11:25:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A677B2084D
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Nov 2019 11:25:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="QnjQ3VWO"
+	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="ZiZ90qqp"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727352AbfKRLYR (ORCPT
+        id S1727655AbfKRLZb (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 Nov 2019 06:24:17 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:52325 "EHLO
+        Mon, 18 Nov 2019 06:25:31 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:51866 "EHLO
         mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727341AbfKRLYQ (ORCPT
+        with ESMTP id S1727333AbfKRLYO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 Nov 2019 06:24:16 -0500
-Received: by mail-wm1-f67.google.com with SMTP id l1so16932927wme.2
-        for <linux-serial@vger.kernel.org>; Mon, 18 Nov 2019 03:24:14 -0800 (PST)
+        Mon, 18 Nov 2019 06:24:14 -0500
+Received: by mail-wm1-f67.google.com with SMTP id q70so16935397wme.1
+        for <linux-serial@vger.kernel.org>; Mon, 18 Nov 2019 03:24:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=rasmusvillemoes.dk; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=WxOc+VLC43HvcGUQEhtnARm5XJC9SvDuTVy7GLZ6cO4=;
-        b=QnjQ3VWOrv5PqpLTTONtUNJkMMdER+gYHmgfEkx7i09mBONlZmA/0Ghuyr0aUYP2aW
-         U/YgU7RU58BAa2/IkpVvBi2Xo/SAIQz1EbXkWqySpqdTAvpMhouJioJsdRg9KS90UVZT
-         r1jJf3H4VJblOarFcnmE8ZmwCSBWDu2Gj5Z+A=
+        bh=zPi0SchlJBpcK2Uafamd7sY3psIZzF+ErFogb8EsMtA=;
+        b=ZiZ90qqpfO5qG7SMgAh9/PB8QFX94uZpsWOqL6XjsbR9k5YCqcy9OSx87H09ThU+0w
+         vys3j3NPV7goOMpCenbAPyOKNvRwKCMnbmiGxqi+1n2EGup9wl2ulfLkuB0N+ksQaWh5
+         tpchHcQSPNzqhcfPrkJ1VxR3gsSN+rvrINqOs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=WxOc+VLC43HvcGUQEhtnARm5XJC9SvDuTVy7GLZ6cO4=;
-        b=AIDtW9EONz7/1nS4PsFWrFUVx2zjEj0hn3JfgZ4F/klHIP1+6cyc70FFqocKVXAIzv
-         D/4AI/lAftQLDhmKRidWfOhzO2X1YtG//TCF6iurTjibE2MU/HynsiSNOIzETkJZjUUM
-         Gof5jap8xS7tngHVc5fDtcjjES2IKt45IjDXOMVjrzL1YAY9bErNE6l8xdExizb/sItc
-         tquozwtFsgDE/QCh4uwfZhI7J/5dHfNlpCMzapxId8fZ7z+tV9NuEEjSBgb0fIRlLo49
-         Qv60NUYEYZRdjBLZz6XdDTU227DdKsK1xhqDO10vRdzN8ERFUdyCLTJYgK3hBa+3snNi
-         Mpbw==
-X-Gm-Message-State: APjAAAWx+oA6mOx4I819Vz3mBtNLow57tOIsjqC3Xgo1PrOo6+EYEUAY
-        SK3Ir/3lmhhXeh9FSj4t8qFyOQ==
-X-Google-Smtp-Source: APXvYqx/ho3Ljxs26hkLbFmc2D6E11Ax3AsxH25Z1dc5EmTrLZlpwCsYbpXxWXFX6Gb+7ZDImZlg0A==
-X-Received: by 2002:a1c:2745:: with SMTP id n66mr28612250wmn.171.1574076254260;
-        Mon, 18 Nov 2019 03:24:14 -0800 (PST)
-Received: from prevas-ravi.prevas.se (ip-5-186-115-54.cgn.fibianet.dk. [5.186.115.54])
-        by smtp.gmail.com with ESMTPSA id y2sm21140815wmy.2.2019.11.18.03.24.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        bh=zPi0SchlJBpcK2Uafamd7sY3psIZzF+ErFogb8EsMtA=;
+        b=cPrVNRBufWImyBjmYdlOHijdnzX/cz8jjj6kZgkflMUEKQJwj2ml0A9NGpBvvVxe/b
+         FpYcrAUqKo7Bvk9bfbm8lZNF/VWnuRHj8aKx9M9Jqj0kT28hANS+4vP+UF3EYRLGu3i4
+         7NrVUMVjXBlBx2FXyY03jgdt2o6IfBJ18Xldgs2K1d/TahP9booSW5ETJIV/f12ckqB8
+         lhbFUthWYFzsxmOPCPwJbJoJQuHCSYhfBs3sSlFfFFTurvCUm8CTQjA/RQTjjn+h11D/
+         kHKFVyX0qAJKkhSytWQat+tDkjkR9dJC721cElhKlRfRTGl2THa6cZeLW+HUA0LDXtX+
+         OpLw==
+X-Gm-Message-State: APjAAAUIJqqnczEYQ0th0TqhjOyIPUBPNA2OzWVMZPTH+HTATyFMkYEW
+        4uxjffDV/kmfmFxuZEZVwC80gA==
+X-Google-Smtp-Source: APXvYqyMlre0ptC746RrIs0o3/q5vSgHaOfHInZsRln9L66Xi9zEqoUBbz9OzBot4n1Ofcy+OJlHFw==
+X-Received: by 2002:a1c:b607:: with SMTP id g7mr29865871wmf.94.1574076252099;
         Mon, 18 Nov 2019 03:24:12 -0800 (PST)
+Received: from prevas-ravi.prevas.se (ip-5-186-115-54.cgn.fibianet.dk. [5.186.115.54])
+        by smtp.gmail.com with ESMTPSA id y2sm21140815wmy.2.2019.11.18.03.24.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Nov 2019 03:24:11 -0800 (PST)
 From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
 To:     Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
         Christophe Leroy <christophe.leroy@c-s.fr>
@@ -61,9 +61,9 @@ Cc:     linuxppc-dev@lists.ozlabs.org,
         Scott Wood <oss@buserror.net>, Timur Tabi <timur@kernel.org>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         linux-serial@vger.kernel.org
-Subject: [PATCH v5 32/48] serial: ucc_uart: use of_property_read_u32() in ucc_uart_probe()
-Date:   Mon, 18 Nov 2019 12:23:08 +0100
-Message-Id: <20191118112324.22725-33-linux@rasmusvillemoes.dk>
+Subject: [PATCH v5 31/48] serial: ucc_uart: stub out soft_uart_init for !CONFIG_PPC32
+Date:   Mon, 18 Nov 2019 12:23:07 +0100
+Message-Id: <20191118112324.22725-32-linux@rasmusvillemoes.dk>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191118112324.22725-1-linux@rasmusvillemoes.dk>
 References: <20191118112324.22725-1-linux@rasmusvillemoes.dk>
@@ -74,115 +74,57 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-For this to work correctly on little-endian hosts, don't access the
-device-tree properties directly in native endianness, but use the
-of_property_read_u32() helper.
+The Soft UART hack is only needed for some PPC-based SOCs. To allow
+building this driver for non-PPC, guard soft_uart_init() and its
+helpers by CONFIG_PPC32, and use a no-op soft_uart_init() otherwise.
 
 Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 ---
- drivers/tty/serial/ucc_uart.c | 36 +++++++++++++++--------------------
- 1 file changed, 15 insertions(+), 21 deletions(-)
+ drivers/tty/serial/ucc_uart.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
-index 313697842e24..c055abf4c919 100644
+index f286e91714cb..313697842e24 100644
 --- a/drivers/tty/serial/ucc_uart.c
 +++ b/drivers/tty/serial/ucc_uart.c
-@@ -1256,10 +1256,10 @@ static int soft_uart_init(struct platform_device *ofdev)
+@@ -33,7 +33,10 @@
+ 
+ #include <linux/firmware.h>
+ #include <soc/fsl/cpm.h>
+-#include <asm/reg.h>
++
++#ifdef CONFIG_PPC32
++#include <asm/reg.h> /* mfspr, SPRN_SVR */
++#endif
+ 
+ /*
+  * The GUMR flag for Soft UART.  This would normally be defined in qe.h,
+@@ -1096,6 +1099,8 @@ static const struct uart_ops qe_uart_pops = {
+ 	.verify_port    = qe_uart_verify_port,
+ };
+ 
++
++#ifdef CONFIG_PPC32
+ /*
+  * Obtain the SOC model number and revision level
+  *
+@@ -1238,6 +1243,16 @@ static int soft_uart_init(struct platform_device *ofdev)
+ 	return 0;
+ }
+ 
++#else /* !CONFIG_PPC32 */
++
++static int soft_uart_init(struct platform_device *ofdev)
++{
++	return 0;
++}
++
++#endif
++
++
  static int ucc_uart_probe(struct platform_device *ofdev)
  {
  	struct device_node *np = ofdev->dev.of_node;
--	const unsigned int *iprop;      /* Integer OF properties */
- 	const char *sprop;      /* String OF properties */
- 	struct uart_qe_port *qe_port = NULL;
- 	struct resource res;
-+	u32 val;
- 	int ret;
- 
- 	/*
-@@ -1290,23 +1290,20 @@ static int ucc_uart_probe(struct platform_device *ofdev)
- 
- 	/* Get the UCC number (device ID) */
- 	/* UCCs are numbered 1-7 */
--	iprop = of_get_property(np, "cell-index", NULL);
--	if (!iprop) {
--		iprop = of_get_property(np, "device-id", NULL);
--		if (!iprop) {
--			dev_err(&ofdev->dev, "UCC is unspecified in "
--				"device tree\n");
-+	if (of_property_read_u32(np, "cell-index", &val)) {
-+		if (of_property_read_u32(np, "device-id", &val)) {
-+			dev_err(&ofdev->dev, "UCC is unspecified in device tree\n");
- 			ret = -EINVAL;
- 			goto out_free;
- 		}
- 	}
- 
--	if ((*iprop < 1) || (*iprop > UCC_MAX_NUM)) {
--		dev_err(&ofdev->dev, "no support for UCC%u\n", *iprop);
-+	if (val < 1 || val > UCC_MAX_NUM) {
-+		dev_err(&ofdev->dev, "no support for UCC%u\n", val);
- 		ret = -ENODEV;
- 		goto out_free;
- 	}
--	qe_port->ucc_num = *iprop - 1;
-+	qe_port->ucc_num = val - 1;
- 
- 	/*
- 	 * In the future, we should not require the BRG to be specified in the
-@@ -1350,13 +1347,12 @@ static int ucc_uart_probe(struct platform_device *ofdev)
- 	}
- 
- 	/* Get the port number, numbered 0-3 */
--	iprop = of_get_property(np, "port-number", NULL);
--	if (!iprop) {
-+	if (of_property_read_u32(np, "port-number", &val)) {
- 		dev_err(&ofdev->dev, "missing port-number in device tree\n");
- 		ret = -EINVAL;
- 		goto out_free;
- 	}
--	qe_port->port.line = *iprop;
-+	qe_port->port.line = val;
- 	if (qe_port->port.line >= UCC_MAX_UART) {
- 		dev_err(&ofdev->dev, "port-number must be 0-%u\n",
- 			UCC_MAX_UART - 1);
-@@ -1386,31 +1382,29 @@ static int ucc_uart_probe(struct platform_device *ofdev)
- 		}
- 	}
- 
--	iprop = of_get_property(np, "brg-frequency", NULL);
--	if (!iprop) {
-+	if (of_property_read_u32(np, "brg-frequency", &val)) {
- 		dev_err(&ofdev->dev,
- 		       "missing brg-frequency in device tree\n");
- 		ret = -EINVAL;
- 		goto out_np;
- 	}
- 
--	if (*iprop)
--		qe_port->port.uartclk = *iprop;
-+	if (val)
-+		qe_port->port.uartclk = val;
- 	else {
- 		/*
- 		 * Older versions of U-Boot do not initialize the brg-frequency
- 		 * property, so in this case we assume the BRG frequency is
- 		 * half the QE bus frequency.
- 		 */
--		iprop = of_get_property(np, "bus-frequency", NULL);
--		if (!iprop) {
-+		if (of_property_read_u32(np, "bus-frequency", &val)) {
- 			dev_err(&ofdev->dev,
- 				"missing QE bus-frequency in device tree\n");
- 			ret = -EINVAL;
- 			goto out_np;
- 		}
--		if (*iprop)
--			qe_port->port.uartclk = *iprop / 2;
-+		if (val)
-+			qe_port->port.uartclk = val / 2;
- 		else {
- 			dev_err(&ofdev->dev,
- 				"invalid QE bus-frequency in device tree\n");
 -- 
 2.23.0
 
