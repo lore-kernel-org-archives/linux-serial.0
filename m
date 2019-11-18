@@ -2,99 +2,98 @@ Return-Path: <SRS0=fJeH=ZK=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E6BC43215
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Nov 2019 11:25:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B129BC432C3
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Nov 2019 11:47:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D1A092084D
-	for <linux-serial@archiver.kernel.org>; Mon, 18 Nov 2019 11:25:44 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="bIXhboGA"
+	by mail.kernel.org (Postfix) with ESMTP id 798C420748
+	for <linux-serial@archiver.kernel.org>; Mon, 18 Nov 2019 11:47:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1574077622;
+	bh=kDnVWqM8rv4v0DFbARQKnL4pnCPNws5EF5tS19PJ2+o=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=wycN6jOKt80XZ4LxRvYt2R0odU6SNIQk/TnjAu/tKQ9FJZaR1KBlj/NtyBO8s+tUu
+	 /K6t3sQmK2QiPCr3XrNT/JLddd3Tyo9lP9blciOuKSdQaNXnffA6acto+Hbx8D5vpw
+	 KcajLgcgmqrKkBwvEgLS8plXfSp3B62RfWnKwHkg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727675AbfKRLZl (ORCPT
+        id S1726562AbfKRLrC (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 Nov 2019 06:25:41 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:33021 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727250AbfKRLYJ (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 Nov 2019 06:24:09 -0500
-Received: by mail-wm1-f68.google.com with SMTP id a17so15756505wmb.0
-        for <linux-serial@vger.kernel.org>; Mon, 18 Nov 2019 03:24:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=skc4BB3FfJVhrMQufim0pPb5lTLStBal+/ZiI3PgHrk=;
-        b=bIXhboGAOfHEuhy5XNvLSkt/v8AbF7er8M7+DnbVSRGu/nfzVD9BIZMY9lvVjK01yq
-         x4OwM95DdJqvHHmAn2AEIZpahfvZGZTl5VI+0W8Nii1hH0oJGGfoxnKmw/9+dD48TPoO
-         1EZMF/DjpiyKhwbirwHabUH+m5MatGIRUQD+Q=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=skc4BB3FfJVhrMQufim0pPb5lTLStBal+/ZiI3PgHrk=;
-        b=XN7t9vfNvwqF1UfMFg5lB2P7Onph6zciPfwyID92mP+jAgXj6wUg6wJAYnlsaDBPQB
-         lCAcsR4sdilqnym/s0R1yee8uQjFbQOgihfjOl4gF2uH+6S8Sv1wCVRFTmonTGoPHm85
-         tQabSQ2/2481FcgZEaPntSNQsCTSU6SjfGdUogP0KnT/bQTzAzIRaz3IsOdpPzMXYT07
-         Tpa6+XQelNYqk6Y2PKCD+8W8sEXTPQrV+sFAqyktXsaR2oNym8NoP7JIg2HJusKABBK7
-         BwSDwBgSHdjYnaTIBOhmrTTWe+c/XgiDPxjUaxSPCfGB/CRdxyT/HnzZXSIbT5KzsPUP
-         ZwBg==
-X-Gm-Message-State: APjAAAXSKuEYiYiWy3rIxaO00kHMCTCT8FTOlGn25YuuqS8MG3BMpO7q
-        lWFnm20RAMO3u5rVJ8tE4Bs2Eg==
-X-Google-Smtp-Source: APXvYqzv/wXIsjaRbMxH9N3IlxmKxJic89M7wV8bzm0V/mj0kc0XrptcV3zjVvdAWMEcHYldq3xfjg==
-X-Received: by 2002:a7b:c768:: with SMTP id x8mr29728216wmk.26.1574076247328;
-        Mon, 18 Nov 2019 03:24:07 -0800 (PST)
-Received: from prevas-ravi.prevas.se (ip-5-186-115-54.cgn.fibianet.dk. [5.186.115.54])
-        by smtp.gmail.com with ESMTPSA id y2sm21140815wmy.2.2019.11.18.03.24.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Nov 2019 03:24:07 -0800 (PST)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
-        Christophe Leroy <christophe.leroy@c-s.fr>
-Cc:     linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Scott Wood <oss@buserror.net>, Timur Tabi <timur@kernel.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-serial@vger.kernel.org
-Subject: [PATCH v5 28/48] serial: ucc_uart: explicitly include soc/fsl/cpm.h
-Date:   Mon, 18 Nov 2019 12:23:04 +0100
-Message-Id: <20191118112324.22725-29-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191118112324.22725-1-linux@rasmusvillemoes.dk>
-References: <20191118112324.22725-1-linux@rasmusvillemoes.dk>
+        Mon, 18 Nov 2019 06:47:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54756 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726460AbfKRLrB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 18 Nov 2019 06:47:01 -0500
+Received: from localhost (unknown [89.205.134.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3FB5820730;
+        Mon, 18 Nov 2019 11:47:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1574077621;
+        bh=kDnVWqM8rv4v0DFbARQKnL4pnCPNws5EF5tS19PJ2+o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=feKrCvQ/m8Ef+oJobtODMFU/XcxXBRqauk0eAksInQzk60LFEAgNKobEQ/8djXNv5
+         SdqcRwonoa3KFQt2IANfPfJy1hUC6al1156N2ZzeXxFqzBcrATsNn3ry8d6fDDotjk
+         aJ+T9NNv1Sxv4LKP2WJOIGl1ohIEsJFHgpW31F1E=
+Date:   Mon, 18 Nov 2019 12:46:57 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc:     Kyungmin Park <kyungmin.park@samsung.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2] {tty: serial, nand: onenand}: samsung: rename to fix
+ build warning
+Message-ID: <20191118114657.GA228826@kroah.com>
+References: <20191117202435.28127-1-sudipm.mukherjee@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191117202435.28127-1-sudipm.mukherjee@gmail.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This driver uses #defines from soc/fsl/cpm.h, so instead of relying on
-some other header pulling that in, do that explicitly. This is
-preparation for allowing this driver to build on ARM.
+On Sun, Nov 17, 2019 at 08:24:35PM +0000, Sudip Mukherjee wrote:
+> Any arm config which has 'CONFIG_MTD_ONENAND_SAMSUNG=m' and
+> 'CONFIG_SERIAL_SAMSUNG=m' gives a build warning:
+> 
+> warning: same module names found:
+>   drivers/tty/serial/samsung.ko
+>   drivers/mtd/nand/onenand/samsung.ko
+> 
+> Rename both drivers/tty/serial/samsung.c to
+> drivers/tty/serial/samsung_tty.c and drivers/mtd/nand/onenand/samsung.c
+> drivers/mtd/nand/onenand/samsung_mtd.c to fix the warning.
+> 
+> Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+> ---
+> 
+> v1: only renamed drivers/tty/serial/samsung.c
+> link: https://lore.kernel.org/lkml/20191018194707.27188-1-sudipm.mukherjee@gmail.com
+> 
+> v2: rename both files.
+> 
+> I was not sure if this should have been two different patch, but since
+> this will be fixing the same problem so it seems its better to have them
+> in a single patch.
+> 
+>  drivers/mtd/nand/onenand/Makefile                     | 2 +-
+>  drivers/mtd/nand/onenand/{samsung.c => samsung_mtd.c} | 0
+>  drivers/tty/serial/Makefile                           | 2 +-
+>  drivers/tty/serial/{samsung.c => samsung_tty.c}       | 0
+>  4 files changed, 2 insertions(+), 2 deletions(-)
+>  rename drivers/mtd/nand/onenand/{samsung.c => samsung_mtd.c} (100%)
+>  rename drivers/tty/serial/{samsung.c => samsung_tty.c} (100%)
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- drivers/tty/serial/ucc_uart.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
-index a0555ae2b1ef..7e802616cba8 100644
---- a/drivers/tty/serial/ucc_uart.c
-+++ b/drivers/tty/serial/ucc_uart.c
-@@ -32,6 +32,7 @@
- #include <soc/fsl/qe/ucc_slow.h>
- 
- #include <linux/firmware.h>
-+#include <soc/fsl/cpm.h>
- #include <asm/reg.h>
- 
- /*
--- 
-2.23.0
+I can take this in the tty tree if the mtd maintainer gives an ack for
+it...
 
