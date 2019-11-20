@@ -2,113 +2,290 @@ Return-Path: <SRS0=EWsb=ZM=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC74C432C0
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Nov 2019 09:03:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E9BBC432C0
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Nov 2019 13:38:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 689052243F
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Nov 2019 09:03:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E710B224FC
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Nov 2019 13:38:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1574257134;
+	bh=OGyvxxufgY2sQjCluqmGhbKmqgIDv4cVe/ho7ZRYV8w=;
+	h=From:To:Cc:Subject:Date:List-ID:From;
+	b=kgdlmurcDhmG99prQi0dftDMelmEINlVrhLzCqgtuN7z/nI1uHiPfqchwTH0r1QpF
+	 7RDxw/JzYskt14nDz9jgchwvJcAaRY3sky0GkaDoPWrANLPhACHXn5aqpsViOxaGLT
+	 IP6nTAkz9AxqFQ3LtBhP1mL8G699AyqUFjQjd0ps=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728031AbfKTJDu convert rfc822-to-8bit (ORCPT
+        id S1729880AbfKTNit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Nov 2019 04:03:50 -0500
-Received: from relay5-d.mail.gandi.net ([217.70.183.197]:34301 "EHLO
-        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727814AbfKTJDt (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Nov 2019 04:03:49 -0500
-X-Originating-IP: 90.76.211.102
-Received: from xps13 (lfbn-1-2154-102.w90-76.abo.wanadoo.fr [90.76.211.102])
-        (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 54F251C0016;
-        Wed, 20 Nov 2019 09:03:46 +0000 (UTC)
-Date:   Wed, 20 Nov 2019 10:03:45 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Richard Weinberger <richard@nod.at>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jiri Slaby <jslaby@suse.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-mtd <linux-mtd@lists.infradead.org>,
-        linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v2] {tty: serial, nand: onenand}: samsung: rename to fix
- build warning
-Message-ID: <20191120100345.038dd232@xps13>
-In-Reply-To: <20191118194010.GA606660@kroah.com>
-References: <20191117202435.28127-1-sudipm.mukherjee@gmail.com>
-        <20191118114657.GA228826@kroah.com>
-        <1505628642.90849.1574081270290.JavaMail.zimbra@nod.at>
-        <20191118202257.6cfd1a7e@xps13>
-        <884028732.91086.1574105504462.JavaMail.zimbra@nod.at>
-        <20191118194010.GA606660@kroah.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+        Wed, 20 Nov 2019 08:38:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46096 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729825AbfKTNis (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 20 Nov 2019 08:38:48 -0500
+Received: from localhost.localdomain (unknown [118.189.143.39])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D9C33224D0;
+        Wed, 20 Nov 2019 13:38:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1574257127;
+        bh=OGyvxxufgY2sQjCluqmGhbKmqgIDv4cVe/ho7ZRYV8w=;
+        h=From:To:Cc:Subject:Date:From;
+        b=rjHHgUQlUGyWervs/3d4KOKSxuYxK+ZuWFQerotWMSvCliqKjL8oOXwGEqY92vSiQ
+         zfJduJbdUuH6JEFzLVppBs5UZR7StoTDAE7VEf9UqFJ0AxZCzCQ0pUqD0ivUq6cDNl
+         5cChFc7D7t9OhX91CtNMOXrUPTII4bGPEKnxOiHU=
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linuxppc-dev@lists.ozlabs.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH] tty: Fix Kconfig indentation
+Date:   Wed, 20 Nov 2019 21:38:43 +0800
+Message-Id: <20191120133843.13189-1-krzk@kernel.org>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Greg,
+Adjust indentation from spaces to tab (+optional two spaces) as in
+coding style with command like:
+	$ sed -e 's/^        /\t/' -i */Kconfig
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote on Mon, 18 Nov
-2019 20:40:10 +0100:
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+---
+ drivers/tty/Kconfig             | 26 ++++-----
+ drivers/tty/hvc/Kconfig         |  4 +-
+ drivers/tty/serial/8250/Kconfig |  2 +-
+ drivers/tty/serial/Kconfig      | 96 ++++++++++++++++-----------------
+ 4 files changed, 64 insertions(+), 64 deletions(-)
 
-> On Mon, Nov 18, 2019 at 08:31:44PM +0100, Richard Weinberger wrote:
-> > ----- Ursprüngliche Mail -----  
-> > > Von: "Miquel Raynal" <miquel.raynal@bootlin.com>
-> > > An: "richard" <richard@nod.at>
-> > > CC: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, "Sudip Mukherjee" <sudipm.mukherjee@gmail.com>, "Kyungmin Park"
-> > > <kyungmin.park@samsung.com>, "Vignesh Raghavendra" <vigneshr@ti.com>, "Jiri Slaby" <jslaby@suse.com>, "linux-kernel"
-> > > <linux-kernel@vger.kernel.org>, "linux-mtd" <linux-mtd@lists.infradead.org>, "linux-serial"
-> > > <linux-serial@vger.kernel.org>
-> > > Gesendet: Montag, 18. November 2019 20:22:57
-> > > Betreff: Re: [PATCH v2] {tty: serial, nand: onenand}: samsung: rename to fix build warning  
-> >   
-> > > Hi all,
-> > > 
-> > > Richard Weinberger <richard@nod.at> wrote on Mon, 18 Nov 2019 13:47:50
-> > > +0100 (CET):
-> > >   
-> > >> ----- Ursprüngliche Mail -----  
-> > >> >> I was not sure if this should have been two different patch, but since
-> > >> >> this will be fixing the same problem so it seems its better to have them
-> > >> >> in a single patch.
-> > >> >> 
-> > >> >>  drivers/mtd/nand/onenand/Makefile                     | 2 +-
-> > >> >>  drivers/mtd/nand/onenand/{samsung.c => samsung_mtd.c} | 0
-> > >> >>  drivers/tty/serial/Makefile                           | 2 +-
-> > >> >>  drivers/tty/serial/{samsung.c => samsung_tty.c}       | 0
-> > >> >>  4 files changed, 2 insertions(+), 2 deletions(-)
-> > >> >>  rename drivers/mtd/nand/onenand/{samsung.c => samsung_mtd.c} (100%)
-> > >> >>  rename drivers/tty/serial/{samsung.c => samsung_tty.c} (100%)  
-> > >> > 
-> > >> > I can take this in the tty tree if the mtd maintainer gives an ack for
-> > >> > it...  
-> > >> 
-> > >> Acked-by: Richard Weinberger <richard@nod.at>  
-> > > 
-> > > If it is not too late, I am not a big fan of the new naming which is
-> > > rather not descriptive. Files in the onenand subdirectory are:
-> > > * onenand_<something>.c for the base files
-> > > * <vendor>.c for the vendors files (currently: omap2.c and samsung.c).  
-> > 
-> > Well, I'm fine with the naming either way. :-)  
-> 
-> If you want to rename the mtd driver later, that's fine, I'll take this
-> for now for 5.5-rc1 and you all can bikeshed it for 5.5-final :)
+diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig
+index c7623f99ac0f..ec53b1d4aef3 100644
+--- a/drivers/tty/Kconfig
++++ b/drivers/tty/Kconfig
+@@ -85,13 +85,13 @@ config VT_HW_CONSOLE_BINDING
+        bool "Support for binding and unbinding console drivers"
+        depends on HW_CONSOLE
+        ---help---
+-         The virtual terminal is the device that interacts with the physical
+-         terminal through console drivers. On these systems, at least one
+-         console driver is loaded. In other configurations, additional console
+-         drivers may be enabled, such as the framebuffer console. If more than
+-         1 console driver is enabled, setting this to 'y' will allow you to
+-         select the console driver that will serve as the backend for the
+-         virtual terminals.
++	 The virtual terminal is the device that interacts with the physical
++	 terminal through console drivers. On these systems, at least one
++	 console driver is loaded. In other configurations, additional console
++	 drivers may be enabled, such as the framebuffer console. If more than
++	 1 console driver is enabled, setting this to 'y' will allow you to
++	 select the console driver that will serve as the backend for the
++	 virtual terminals.
+ 
+ 	 See <file:Documentation/driver-api/console.rst> for more
+ 	 information. For framebuffer console users, please refer to
+@@ -173,15 +173,15 @@ config ROCKETPORT
+ 	depends on SERIAL_NONSTANDARD && (ISA || EISA || PCI)
+ 	help
+ 	  This driver supports Comtrol RocketPort and RocketModem PCI boards.   
+-          These boards provide 2, 4, 8, 16, or 32 high-speed serial ports or
+-          modems.  For information about the RocketPort/RocketModem  boards
+-          and this driver read <file:Documentation/driver-api/serial/rocket.rst>.
++	  These boards provide 2, 4, 8, 16, or 32 high-speed serial ports or
++	  modems.  For information about the RocketPort/RocketModem  boards
++	  and this driver read <file:Documentation/driver-api/serial/rocket.rst>.
+ 
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called rocket.
+ 
+ 	  If you want to compile this driver into the kernel, say Y here.  If
+-          you don't have a Comtrol RocketPort/RocketModem card installed, say N.
++	  you don't have a Comtrol RocketPort/RocketModem card installed, say N.
+ 
+ config CYCLADES
+ 	tristate "Cyclades async mux support"
+@@ -437,8 +437,8 @@ config MIPS_EJTAG_FDC_KGDB
+ 	depends on MIPS_EJTAG_FDC_TTY && KGDB
+ 	default y
+ 	help
+-          This enables the use of KGDB over an FDC channel, allowing KGDB to be
+-          used remotely or when a serial port isn't available.
++	  This enables the use of KGDB over an FDC channel, allowing KGDB to be
++	  used remotely or when a serial port isn't available.
+ 
+ config MIPS_EJTAG_FDC_KGDB_CHAN
+ 	int "KGDB FDC channel"
+diff --git a/drivers/tty/hvc/Kconfig b/drivers/tty/hvc/Kconfig
+index 4487a6b9acc8..94734ac511bf 100644
+--- a/drivers/tty/hvc/Kconfig
++++ b/drivers/tty/hvc/Kconfig
+@@ -74,7 +74,7 @@ config HVC_UDBG
+        depends on PPC
+        select HVC_DRIVER
+        help
+-         This is meant to be used during HW bring up or debugging when
++	 This is meant to be used during HW bring up or debugging when
+ 	 no other console mechanism exist but udbg, to get you a quick
+ 	 console for userspace. Do NOT enable in production kernels. 
+ 
+@@ -83,7 +83,7 @@ config HVC_DCC
+        depends on ARM || ARM64
+        select HVC_DRIVER
+        help
+-         This console uses the JTAG DCC on ARM to create a console under the HVC
++	 This console uses the JTAG DCC on ARM to create a console under the HVC
+ 	 driver. This console is used through a JTAG only on ARM. If you don't have
+ 	 a JTAG then you probably don't want this option.
+ 
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index 771ac5dc6023..fab3d4f20667 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -335,7 +335,7 @@ config SERIAL_8250_BCM2835AUX
+ 
+ 	  Features and limitations of the UART are
+ 	    Registers are similar to 16650 registers,
+-              set bits in the control registers that are unsupported
++	      set bits in the control registers that are unsupported
+ 	      are ignored and read back as 0
+ 	    7/8 bit operation with 1 start and 1 stop bit
+ 	    8 symbols deep fifo for rx and tx
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 78e0a049a3df..99f5da3bf913 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -287,26 +287,26 @@ config SERIAL_SAMSUNG_CONSOLE
+ 	  boot time.)
+ 
+ config SERIAL_SIRFSOC
+-        tristate "SiRF SoC Platform Serial port support"
+-        depends on ARCH_SIRF
+-        select SERIAL_CORE
+-        help
+-          Support for the on-chip UART on the CSR SiRFprimaII series,
+-          providing /dev/ttySiRF0, 1 and 2 (note, some machines may not
+-          provide all of these ports, depending on how the serial port
+-          pins are configured).
++	tristate "SiRF SoC Platform Serial port support"
++	depends on ARCH_SIRF
++	select SERIAL_CORE
++	help
++	  Support for the on-chip UART on the CSR SiRFprimaII series,
++	  providing /dev/ttySiRF0, 1 and 2 (note, some machines may not
++	  provide all of these ports, depending on how the serial port
++	  pins are configured).
+ 
+ config SERIAL_SIRFSOC_CONSOLE
+-        bool "Support for console on SiRF SoC serial port"
+-        depends on SERIAL_SIRFSOC=y
+-        select SERIAL_CORE_CONSOLE
+-        help
+-          Even if you say Y here, the currently visible virtual console
+-          (/dev/tty0) will still be used as the system console by default, but
+-          you can alter that using a kernel command line option such as
+-          "console=ttySiRFx". (Try "man bootparam" or see the documentation of
+-          your boot loader about how to pass options to the kernel at
+-          boot time.)
++	bool "Support for console on SiRF SoC serial port"
++	depends on SERIAL_SIRFSOC=y
++	select SERIAL_CORE_CONSOLE
++	help
++	  Even if you say Y here, the currently visible virtual console
++	  (/dev/tty0) will still be used as the system console by default, but
++	  you can alter that using a kernel command line option such as
++	  "console=ttySiRFx". (Try "man bootparam" or see the documentation of
++	  your boot loader about how to pass options to the kernel at
++	  boot time.)
+ 
+ config SERIAL_TEGRA
+ 	tristate "NVIDIA Tegra20/30 SoC serial controller"
+@@ -1078,41 +1078,41 @@ config SERIAL_SCCNXP_CONSOLE
+ 	  Support for console on SCCNXP serial ports.
+ 
+ config SERIAL_SC16IS7XX_CORE
+-        tristate
++	tristate
+ 
+ config SERIAL_SC16IS7XX
+-        tristate "SC16IS7xx serial support"
+-        select SERIAL_CORE
+-        depends on (SPI_MASTER && !I2C) || I2C
+-        help
+-          This selects support for SC16IS7xx serial ports.
+-          Supported ICs are SC16IS740, SC16IS741, SC16IS750, SC16IS752,
+-          SC16IS760 and SC16IS762. Select supported buses using options below.
++	tristate "SC16IS7xx serial support"
++	select SERIAL_CORE
++	depends on (SPI_MASTER && !I2C) || I2C
++	help
++	  This selects support for SC16IS7xx serial ports.
++	  Supported ICs are SC16IS740, SC16IS741, SC16IS750, SC16IS752,
++	  SC16IS760 and SC16IS762. Select supported buses using options below.
+ 
+ config SERIAL_SC16IS7XX_I2C
+-        bool "SC16IS7xx for I2C interface"
+-        depends on SERIAL_SC16IS7XX
+-        depends on I2C
+-        select SERIAL_SC16IS7XX_CORE if SERIAL_SC16IS7XX
+-        select REGMAP_I2C if I2C
+-        default y
+-        help
+-          Enable SC16IS7xx driver on I2C bus,
+-          If required say y, and say n to i2c if not required,
+-          Enabled by default to support oldconfig.
+-          You must select at least one bus for the driver to be built.
++	bool "SC16IS7xx for I2C interface"
++	depends on SERIAL_SC16IS7XX
++	depends on I2C
++	select SERIAL_SC16IS7XX_CORE if SERIAL_SC16IS7XX
++	select REGMAP_I2C if I2C
++	default y
++	help
++	  Enable SC16IS7xx driver on I2C bus,
++	  If required say y, and say n to i2c if not required,
++	  Enabled by default to support oldconfig.
++	  You must select at least one bus for the driver to be built.
+ 
+ config SERIAL_SC16IS7XX_SPI
+-        bool "SC16IS7xx for spi interface"
+-        depends on SERIAL_SC16IS7XX
+-        depends on SPI_MASTER
+-        select SERIAL_SC16IS7XX_CORE if SERIAL_SC16IS7XX
+-        select REGMAP_SPI if SPI_MASTER
+-        help
+-          Enable SC16IS7xx driver on SPI bus,
+-          If required say y, and say n to spi if not required,
+-          This is additional support to exsisting driver.
+-          You must select at least one bus for the driver to be built.
++	bool "SC16IS7xx for spi interface"
++	depends on SERIAL_SC16IS7XX
++	depends on SPI_MASTER
++	select SERIAL_SC16IS7XX_CORE if SERIAL_SC16IS7XX
++	select REGMAP_SPI if SPI_MASTER
++	help
++	  Enable SC16IS7xx driver on SPI bus,
++	  If required say y, and say n to spi if not required,
++	  This is additional support to exsisting driver.
++	  You must select at least one bus for the driver to be built.
+ 
+ config SERIAL_TIMBERDALE
+ 	tristate "Support for timberdale UART"
+@@ -1212,7 +1212,7 @@ config SERIAL_ALTERA_UART_CONSOLE
+ 	  Enable a Altera UART port to be the system console.
+ 
+ config SERIAL_IFX6X60
+-        tristate "SPI protocol driver for Infineon 6x60 modem (EXPERIMENTAL)"
++	tristate "SPI protocol driver for Infineon 6x60 modem (EXPERIMENTAL)"
+ 	depends on GPIOLIB || COMPILE_TEST
+ 	depends on SPI && HAS_DMA
+ 	help
+-- 
+2.17.1
 
-Let's not rename it twice, if nobody want's another naming I'm fine
-with this one.
-
-Acked-by: Miquel Raynal <miquel.raynal@bootlin.com>
-
-Cheers!
-Miquèl
