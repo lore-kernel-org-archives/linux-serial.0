@@ -2,107 +2,113 @@ Return-Path: <SRS0=EWsb=ZM=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97C6EC432C0
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Nov 2019 00:28:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC74C432C0
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Nov 2019 09:03:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6D8AC20857
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Nov 2019 00:28:50 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="u6m+fvbr"
+	by mail.kernel.org (Postfix) with ESMTP id 689052243F
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Nov 2019 09:03:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727417AbfKTA2u (ORCPT
+        id S1728031AbfKTJDu convert rfc822-to-8bit (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 Nov 2019 19:28:50 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:44997 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727222AbfKTA2t (ORCPT
+        Wed, 20 Nov 2019 04:03:50 -0500
+Received: from relay5-d.mail.gandi.net ([217.70.183.197]:34301 "EHLO
+        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727814AbfKTJDt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 Nov 2019 19:28:49 -0500
-Received: by mail-pl1-f194.google.com with SMTP id az9so12891700plb.11;
-        Tue, 19 Nov 2019 16:28:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=59m1/eC8riScAm7JjDY1BbKSHZjxRRJlakTsu9UypXk=;
-        b=u6m+fvbrFbkzotXSv+4PIHEhiipKPpH3/vM1YpESWnlFPCVgJilpTlwgPnd+l4t8os
-         RbLOsK7eAbjW5D6UfBkBeuSAaf6h+vPC3zAA6VMNLQ2ekpIeu1EJSu/uc8OYmnzkId04
-         N83RBv6vAB3ymbrk9iy9F9y48Pfo+0wWEwKfGuidCMdHLEhx3OcdfNXTZ6QyTkwdUk0z
-         8YKLFWW6LZH2xMPvKAruN5e7qLJfCHqSafw4mvF+DdqTwbqFa3Ql/C5XHqd4MfUPicsU
-         OfHUUKG2IClRvGmzJTLiYLN6BqznKfVSxPWHjJQ2lBnn9Pvw0hFXzMZTz8TRSF5V2k0q
-         UqsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=59m1/eC8riScAm7JjDY1BbKSHZjxRRJlakTsu9UypXk=;
-        b=iuRIe7wQiMFTmvVBpwOMaPFUa4F8/vn75OF6vNyLcGEfjrwPfccmchf0aNU43DHOnT
-         //ptjpf7JWxC/fjE8oU9r3GEnLpBacS01sU0qJhueb3GDa9XYyusc37E8bE/2YYIWJuM
-         yj83pwLRUJ0ka3v4Unos9u9Ix/9V8s+IAWCwaTjKLz0Q/RpYSbP42JmqFIm2fSo5yRlJ
-         wpxRF6jyZ3a4Uw129MeUunFb16+m52jqdp/oNYSYBZBrRvW/YY5Xz4FIKf6oV7jNF12K
-         rccXcQ1mAVeiH+5//3RxqEXnbNtWp3bSilY3u3/sp4ZkRcvXz7r/Mi9YFeUUxjy4NufL
-         Ulcw==
-X-Gm-Message-State: APjAAAVcDL7rzos5pmGa+IgeXv4uClwhd49mUlZVgEYQVG8n9B2JFCaD
-        RrsGs/haUmRv6bA9h35HylY=
-X-Google-Smtp-Source: APXvYqwR7pa5QPsLveMk9oWSg5gV6GTebzlLq2pddIcNPZ1ASeWDJj7HhjTX0jV8jEDny143ZyKy9Q==
-X-Received: by 2002:a17:90a:1742:: with SMTP id 2mr385613pjm.93.1574209729243;
-        Tue, 19 Nov 2019 16:28:49 -0800 (PST)
-Received: from localhost ([2401:fa00:8f:203:250d:e71d:5a0a:9afe])
-        by smtp.gmail.com with ESMTPSA id v63sm26454431pfb.181.2019.11.19.16.28.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Nov 2019 16:28:48 -0800 (PST)
-Date:   Wed, 20 Nov 2019 09:28:46 +0900
-From:   Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Jonathan Richardson <jonathan.richardson@broadcom.com>,
-        Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
-        gregkh@linuxfoundation.org, jslaby@suse.com,
-        sergey.senozhatsky@gmail.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Scott Branden <scott.branden@broadcom.com>,
-        Ray Jui <ray.jui@broadcom.com>,
-        Srinath Mannam <srinath.mannam@broadcom.com>
-Subject: Re: console output duplicated when registering additional consoles
-Message-ID: <20191120002846.GA255928@google.com>
-References: <CAHrpVsUHgJA3wjh4fDg43y5OFCCvQb-HSRpyGyhFEKXcWw8WnQ@mail.gmail.com>
- <CAHrpVsW6jRUYK_mu+dLaBvucAAtUPQ0zcH6_NxsUsTrPewiY_w@mail.gmail.com>
- <20191114095737.wl5nvxu3w6p5thfc@pathway.suse.cz>
- <20191115043356.GA220831@google.com>
- <CAHrpVsWu54rKg3bGhY6WVj5d-myYxGSEkxGhOJKTyyc1EH4qOA@mail.gmail.com>
- <20191119113027.74lp3dsg5ftvylp4@pathway.suse.cz>
+        Wed, 20 Nov 2019 04:03:49 -0500
+X-Originating-IP: 90.76.211.102
+Received: from xps13 (lfbn-1-2154-102.w90-76.abo.wanadoo.fr [90.76.211.102])
+        (Authenticated sender: miquel.raynal@bootlin.com)
+        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 54F251C0016;
+        Wed, 20 Nov 2019 09:03:46 +0000 (UTC)
+Date:   Wed, 20 Nov 2019 10:03:45 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Richard Weinberger <richard@nod.at>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Jiri Slaby <jslaby@suse.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-mtd <linux-mtd@lists.infradead.org>,
+        linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH v2] {tty: serial, nand: onenand}: samsung: rename to fix
+ build warning
+Message-ID: <20191120100345.038dd232@xps13>
+In-Reply-To: <20191118194010.GA606660@kroah.com>
+References: <20191117202435.28127-1-sudipm.mukherjee@gmail.com>
+        <20191118114657.GA228826@kroah.com>
+        <1505628642.90849.1574081270290.JavaMail.zimbra@nod.at>
+        <20191118202257.6cfd1a7e@xps13>
+        <884028732.91086.1574105504462.JavaMail.zimbra@nod.at>
+        <20191118194010.GA606660@kroah.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191119113027.74lp3dsg5ftvylp4@pathway.suse.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On (19/11/19 12:30), Petr Mladek wrote:
-> On Mon 2019-11-18 13:38:04, Jonathan Richardson wrote:
-> > On Thu, Nov 14, 2019 at 8:33 PM Sergey Senozhatsky
-> > <sergey.senozhatsky.work@gmail.com> wrote:
-> > >
-> > > Gosh, that part of printk is really complex.
-> > >
-> > > On (19/11/14 10:57), Petr Mladek wrote:
-> > > > For a proper solution we would need to match boot and real
-> > > > consoles that write messages into the physical device.
-> > > > But I am afraid that there is no support for this.
-> > >
-> > > Wouldn't those have same tty driver?
+Hi Greg,
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote on Mon, 18 Nov
+2019 20:40:10 +0100:
+
+> On Mon, Nov 18, 2019 at 08:31:44PM +0100, Richard Weinberger wrote:
+> > ----- Ursprüngliche Mail -----  
+> > > Von: "Miquel Raynal" <miquel.raynal@bootlin.com>
+> > > An: "richard" <richard@nod.at>
+> > > CC: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, "Sudip Mukherjee" <sudipm.mukherjee@gmail.com>, "Kyungmin Park"
+> > > <kyungmin.park@samsung.com>, "Vignesh Raghavendra" <vigneshr@ti.com>, "Jiri Slaby" <jslaby@suse.com>, "linux-kernel"
+> > > <linux-kernel@vger.kernel.org>, "linux-mtd" <linux-mtd@lists.infradead.org>, "linux-serial"
+> > > <linux-serial@vger.kernel.org>
+> > > Gesendet: Montag, 18. November 2019 20:22:57
+> > > Betreff: Re: [PATCH v2] {tty: serial, nand: onenand}: samsung: rename to fix build warning  
+> >   
+> > > Hi all,
+> > > 
+> > > Richard Weinberger <richard@nod.at> wrote on Mon, 18 Nov 2019 13:47:50
+> > > +0100 (CET):
+> > >   
+> > >> ----- Ursprüngliche Mail -----  
+> > >> >> I was not sure if this should have been two different patch, but since
+> > >> >> this will be fixing the same problem so it seems its better to have them
+> > >> >> in a single patch.
+> > >> >> 
+> > >> >>  drivers/mtd/nand/onenand/Makefile                     | 2 +-
+> > >> >>  drivers/mtd/nand/onenand/{samsung.c => samsung_mtd.c} | 0
+> > >> >>  drivers/tty/serial/Makefile                           | 2 +-
+> > >> >>  drivers/tty/serial/{samsung.c => samsung_tty.c}       | 0
+> > >> >>  4 files changed, 2 insertions(+), 2 deletions(-)
+> > >> >>  rename drivers/mtd/nand/onenand/{samsung.c => samsung_mtd.c} (100%)
+> > >> >>  rename drivers/tty/serial/{samsung.c => samsung_tty.c} (100%)  
+> > >> > 
+> > >> > I can take this in the tty tree if the mtd maintainer gives an ack for
+> > >> > it...  
+> > >> 
+> > >> Acked-by: Richard Weinberger <richard@nod.at>  
+> > > 
+> > > If it is not too late, I am not a big fan of the new naming which is
+> > > rather not descriptive. Files in the onenand subdirectory are:
+> > > * onenand_<something>.c for the base files
+> > > * <vendor>.c for the vendors files (currently: omap2.c and samsung.c).  
+> > 
+> > Well, I'm fine with the naming either way. :-)  
 > 
-> Interesting idea. Well, do early consoles have tty driver?
+> If you want to rename the mtd driver later, that's fine, I'll take this
+> for now for 5.5-rc1 and you all can bikeshed it for 5.5-final :)
 
-Good question! I'm not sure.
-netcon, for instance, doesn't have tty driver, yet still has to find
-a proper net device to write the data to. They have some magic inside.
+Let's not rename it twice, if nobody want's another naming I'm fine
+with this one.
 
-	-ss
+Acked-by: Miquel Raynal <miquel.raynal@bootlin.com>
+
+Cheers!
+Miquèl
