@@ -4,179 +4,114 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA419C432C0
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Nov 2019 15:42:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B5BC432C0
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Nov 2019 15:44:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B773D2071F
-	for <linux-serial@archiver.kernel.org>; Wed, 20 Nov 2019 15:42:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8CCA820709
+	for <linux-serial@archiver.kernel.org>; Wed, 20 Nov 2019 15:44:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1574264579;
-	bh=lYA73il6i3J1+F/qks+KtJ7Xy1P07dI3VP4HbWEIyvs=;
+	s=default; t=1574264697;
+	bh=J2YwIMKoAFnw6lYEcrpJ1BtEA5teUNpu9YL+k4Fd20U=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=OiR/CAMx5XiZ6a9FFXwaPz1vJlsRdZJ1a6iGL+LBRlsj9rKozn42CXGTNSaowL+ht
-	 QW1am4N0iYb7DWHnkjoKOYPnoraQUdj+KwyKSW2gLGs9X3X6n3k1FVDNIDJmsgI31c
-	 4IKKpoTjk2lJnvc21dZhfdEhTN5sj14csoav3Y3I=
+	b=1ADVUIMczoADmobFXj6+wl/M00jwL+8d0Sy2uX3ZHh6MTOBhjQZCWGS5ZqzCkMnho
+	 HXQXxbVbRdIP2xwZc+eXqISa/iRbDjT8GcywDArZTUld9c/85oKeNSHw2MiiuCxC7Q
+	 LzNuTyHCKIOUnvNVdFIxQS+gO8+lSA1USAgSy0zQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732199AbfKTPmj (ORCPT
+        id S1731043AbfKTPo4 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 Nov 2019 10:42:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41138 "EHLO mail.kernel.org"
+        Wed, 20 Nov 2019 10:44:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43284 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730106AbfKTPmj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 Nov 2019 10:42:39 -0500
+        id S1730971AbfKTPox (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 20 Nov 2019 10:44:53 -0500
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E8B2820709;
-        Wed, 20 Nov 2019 15:42:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 73DF420674;
+        Wed, 20 Nov 2019 15:44:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574264557;
-        bh=lYA73il6i3J1+F/qks+KtJ7Xy1P07dI3VP4HbWEIyvs=;
+        s=default; t=1574264692;
+        bh=J2YwIMKoAFnw6lYEcrpJ1BtEA5teUNpu9YL+k4Fd20U=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ka7S4pOc+VaOoxYIgKYlvUAQotGBd1twFQz7recQ59AmLhA3JXhKipNLa9mk8/EWT
-         Jj3fC/FFUVznctd6dnLkLhgw/XVrvOj4xDWcIGeWjealWFCrBF16EawIgzoPmrzHXE
-         g+2++SCwKI6Pml+yrtDKg9fcIjVXaTjqRXSy10xk=
-Date:   Wed, 20 Nov 2019 16:42:35 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jiangfeng Xiao <xiaojiangfeng@huawei.com>
-Cc:     jslaby@suse.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, leeyou.li@huawei.com,
-        nixiaoming@huawei.com, zhangwen8@huawei.com
-Subject: Re: [PATCH] serial: serial_core: Perform NULL checks for break_ctl
- ops
-Message-ID: <20191120154235.GA3004157@kroah.com>
-References: <1574263133-28259-1-git-send-email-xiaojiangfeng@huawei.com>
+        b=LCB47beV2T+jgwFv5LH9O5QszgjSWllWH5eZDd69dFoIjFOlufTAMld5xebUakOA7
+         XvsFMB3aSyuEyovavFCkSFxJO9mGh/3UdZGsO7inU5+q8sf+x6L4Vjx37Pu1vH1yGp
+         UJkYAfC3+pLGunv3OA+aQ1+3H+3FbftCDzWcMjPI=
+Date:   Wed, 20 Nov 2019 16:44:50 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc:     Jiri Slaby <jslaby@suse.com>, Rob Herring <robh@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH 2/2] tty: add retry to tty_init_dev() to workaround a
+ race condition
+Message-ID: <20191120154450.GB3004157@kroah.com>
+References: <20191120151709.14148-1-sudipm.mukherjee@gmail.com>
+ <20191120151709.14148-2-sudipm.mukherjee@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1574263133-28259-1-git-send-email-xiaojiangfeng@huawei.com>
+In-Reply-To: <20191120151709.14148-2-sudipm.mukherjee@gmail.com>
 User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Nov 20, 2019 at 11:18:53PM +0800, Jiangfeng Xiao wrote:
-> Doing fuzz test on sbsa uart device, causes a kernel crash
-> due to NULL pointer dereference:
+On Wed, Nov 20, 2019 at 03:17:09PM +0000, Sudip Mukherjee wrote:
+> There seems to be a race condition in tty drivers and I could see on
+> many boot cycles a NULL pointer dereference as tty_init_dev() tries to
+> do 'tty->port->itty = tty' even though tty->port is NULL.
+> 'tty->port' will be set by the driver and if the driver has not yet done
+> it before we open the tty device we can get to this situation. By adding
+> some extra debug prints, I noticed that tty_port_link_device() is
+> initialising 'driver->ports[index]' just few microseconds after I
+> get the warning.
+> So, add one retry so that tty_init_dev() will return -EAGAIN on its first
+> try if 'tty->port' is not set yet, and then tty_open() will try to open
+> it again.
 > 
-> ------------[ cut here ]------------
-> Unable to handle kernel paging request at virtual address fffffffffffffffc
-> pgd = ffffffe331723000
-> [fffffffffffffffc] *pgd=0000002333595003, *pud=0000002333595003, *pmd=00000
-> Internal error: Oops: 96000005 [#1] PREEMPT SMP
-> Modules linked in: ping(O) jffs2 rtos_snapshot(O) pramdisk(O) hisi_sfc(O)
-> Drv_Nandc_K(O) Drv_SysCtl_K(O) Drv_SysClk_K(O) bsp_reg(O) hns3(O)
-> hns3_uio_enet(O) hclgevf(O) hclge(O) hnae3(O) mdio_factory(O)
-> mdio_registry(O) mdio_dev(O) mdio(O) hns3_info(O) rtos_kbox_panic(O)
-> uart_suspend(O) rsm(O) stp llc tunnel4 xt_tcpudp ipt_REJECT nf_reject_ipv4
-> iptable_filter ip_tables x_tables sd_mod xhci_plat_hcd xhci_pci xhci_hcd
-> usbmon usbhid usb_storage ohci_platform ohci_pci ohci_hcd hid_generic hid
-> ehci_platform ehci_pci ehci_hcd vfat fat usbcore usb_common scsi_mod
-> yaffs2multi(O) ext4 jbd2 ext2 mbcache ofpart i2c_dev i2c_core uio ubi nand
-> nand_ecc nand_ids cfi_cmdset_0002 cfi_cmdset_0001 cfi_probe gen_probe
-> cmdlinepart chipreg mtdblock mtd_blkdevs mtd nfsd auth_rpcgss oid_registry
-> nfsv3 nfs nfs_acl lockd sunrpc grace autofs4
-> CPU: 2 PID: 2385 Comm: tty_fuzz_test Tainted: G           O    4.4.193 #1
-> task: ffffffe32b23f110 task.stack: ffffffe32bda4000
-> PC is at uart_break_ctl+0x44/0x84
-> LR is at uart_break_ctl+0x34/0x84
-> pc : [<ffffff8393196098>] lr : [<ffffff8393196088>] pstate: 80000005
-> sp : ffffffe32bda7cc0
-> x29: ffffffe32bda7cc0 x28: ffffffe32b23f110
-> x27: ffffff8393402000 x26: 0000000000000000
-> x25: ffffffe32b233f40 x24: ffffffc07a8ec680
-> x23: 0000000000005425 x22: 00000000ffffffff
-> x21: ffffffe33ed73c98 x20: 0000000000000000
-> x19: ffffffe33ed94168 x18: 0000000000000004
-> x17: 0000007f92ae9d30 x16: ffffff8392fa6064
-> x15: 0000000000000010 x14: 0000000000000000
-> x13: 0000000000000000 x12: 0000000000000000
-> x11: 0000000000000020 x10: 0000007ffdac1708
-> x9 : 0000000000000078 x8 : 000000000000001d
-> x7 : 0000000052a64887 x6 : ffffffe32bda7e08
-> x5 : ffffffe32b23c000 x4 : 0000005fbc5b0000
-> x3 : ffffff83938d5018 x2 : 0000000000000080
-> x1 : ffffffe32b23c040 x0 : ffffff83934428f8
-> virtual start addr offset is 38ac00000
-> module base offset is 2cd4cf1000
-> linear region base offset is : 0
-> Process tty_fuzz_test (pid: 2385, stack limit = 0xffffffe32bda4000)
-> Stack: (0xffffffe32bda7cc0 to 0xffffffe32bda8000)
-> 7cc0: ffffffe32bda7cf0 ffffff8393177718 ffffffc07a8ec680 ffffff8393196054
-> 7ce0: 000000001739f2e0 0000007ffdac1978 ffffffe32bda7d20 ffffff8393179a1c
-> 7d00: 0000000000000000 ffffff8393c0a000 ffffffc07a8ec680 cb88537fdc8ba600
-> 7d20: ffffffe32bda7df0 ffffff8392fa5a40 ffffff8393c0a000 0000000000005425
-> 7d40: 0000007ffdac1978 ffffffe32b233f40 ffffff8393178dcc 0000000000000003
-> 7d60: 000000000000011d 000000000000001d ffffffe32b23f110 000000000000029e
-> 7d80: ffffffe34fe8d5d0 0000000000000000 ffffffe32bda7e14 cb88537fdc8ba600
-> 7da0: ffffffe32bda7e30 ffffff8393042cfc ffffff8393c41720 ffffff8393c46410
-> 7dc0: ffffff839304fa68 ffffffe32b233f40 0000000000005425 0000007ffdac1978
-> 7de0: 000000000000011d cb88537fdc8ba600 ffffffe32bda7e70 ffffff8392fa60cc
-> 7e00: 0000000000000000 ffffffe32b233f40 ffffffe32b233f40 0000000000000003
-> 7e20: 0000000000005425 0000007ffdac1978 ffffffe32bda7e70 ffffff8392fa60b0
-> 7e40: 0000000000000280 ffffffe32b233f40 ffffffe32b233f40 0000000000000003
-> 7e60: 0000000000005425 cb88537fdc8ba600 0000000000000000 ffffff8392e02e78
-> 7e80: 0000000000000280 0000005fbc5b0000 ffffffffffffffff 0000007f92ae9d3c
-> 7ea0: 0000000060000000 0000000000000015 0000000000000003 0000000000005425
-> 7ec0: 0000007ffdac1978 0000000000000000 00000000a54c910e 0000007f92b95014
-> 7ee0: 0000007f92b95090 0000000052a64887 000000000000001d 0000000000000078
-> 7f00: 0000007ffdac1708 0000000000000020 0000000000000000 0000000000000000
-> 7f20: 0000000000000000 0000000000000010 000000556acf0090 0000007f92ae9d30
-> 7f40: 0000000000000004 000000556acdef10 0000000000000000 000000556acdebd0
-> 7f60: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
-> 7f80: 0000000000000000 0000000000000000 0000000000000000 0000007ffdac1840
-> 7fa0: 000000556acdedcc 0000007ffdac1840 0000007f92ae9d3c 0000000060000000
-> 7fc0: 0000000000000000 0000000000000000 0000000000000003 000000000000001d
-> 7fe0: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
-> Call trace:
-> Exception stack(0xffffffe32bda7ab0 to 0xffffffe32bda7bf0)
-> 7aa0:                                   0000000000001000 0000007fffffffff
-> 7ac0: ffffffe32bda7cc0 ffffff8393196098 0000000080000005 0000000000000025
-> 7ae0: ffffffe32b233f40 ffffff83930d777c ffffffe32bda7b30 ffffff83930d777c
-> 7b00: ffffffe32bda7be0 ffffff83938d5000 ffffffe32bda7be0 ffffffe32bda7c20
-> 7b20: ffffffe32bda7b60 ffffff83930d777c ffffffe32bda7c10 ffffff83938d5000
-> 7b40: ffffffe32bda7c10 ffffffe32bda7c50 ffffff8393c0a000 ffffffe32b23f110
-> 7b60: ffffffe32bda7b70 ffffff8392e09df4 ffffffe32bda7bb0 cb88537fdc8ba600
-> 7b80: ffffff83934428f8 ffffffe32b23c040 0000000000000080 ffffff83938d5018
-> 7ba0: 0000005fbc5b0000 ffffffe32b23c000 ffffffe32bda7e08 0000000052a64887
-> 7bc0: 000000000000001d 0000000000000078 0000007ffdac1708 0000000000000020
-> 7be0: 0000000000000000 0000000000000000
-> [<ffffff8393196098>] uart_break_ctl+0x44/0x84
-> [<ffffff8393177718>] send_break+0xa0/0x114
-> [<ffffff8393179a1c>] tty_ioctl+0xc50/0xe84
-> [<ffffff8392fa5a40>] do_vfs_ioctl+0xc4/0x6e8
-> [<ffffff8392fa60cc>] SyS_ioctl+0x68/0x9c
-> [<ffffff8392e02e78>] __sys_trace_return+0x0/0x4
-> Code: b9410ea0 34000160 f9408aa0 f9402814 (b85fc280)
-> ---[ end trace 8606094f1960c5e0 ]---
-> Kernel panic - not syncing: Fatal exception
-> 
-> Fix this problem by adding NULL checks prior to calling break_ctl ops.
-> 
-> Signed-off-by: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
+> Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 > ---
->  drivers/tty/serial/serial_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/tty/pty.c                   |  2 +-
+>  drivers/tty/serdev/serdev-ttyport.c |  2 +-
+>  drivers/tty/tty_io.c                | 20 ++++++++++++++------
+>  include/linux/tty.h                 |  3 ++-
+>  4 files changed, 18 insertions(+), 9 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index c4a414a..b0a6eb1 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1111,7 +1111,7 @@ static int uart_break_ctl(struct tty_struct *tty, int break_state)
->  	if (!uport)
->  		goto out;
+> diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+> index 00099a8439d2..22e8c40d9f9c 100644
+> --- a/drivers/tty/pty.c
+> +++ b/drivers/tty/pty.c
+> @@ -842,7 +842,7 @@ static int ptmx_open(struct inode *inode, struct file *filp)
 >  
-> -	if (uport->type != PORT_UNKNOWN)
-> +	if (uport->type != PORT_UNKNOWN && uport->ops->break_ctl)
+>  
+>  	mutex_lock(&tty_mutex);
+> -	tty = tty_init_dev(ptm_driver, index);
+> +	tty = tty_init_dev(ptm_driver, index, 0);
 
-What serial driver does not define break_ctl?
+Horrible naming scheme for this new "flag".
 
-You are running with a bunch of "out-of-tree" drivers, perhaps one of
-those needs to be fixed here instead?
+Look at that call here, can you instantly tell what this call is doing
+with "0"?  I sure can not :(
+
+If you really want to do this, you make a different function,
+tty_init_dev_retry() and then have that pass in a retry flag in the tty
+core, so that any users always know what they are doing here.
+
+But, this really feels like a race in the code somewhere:
+
+> --- a/drivers/tty/tty_io.c
+> +++ b/drivers/tty/tty_io.c
+> @@ -1295,6 +1295,7 @@ static int tty_reopen(struct tty_struct *tty)
+>   *	tty_init_dev		-	initialise a tty device
+>   *	@driver: tty driver we are opening a device on
+>   *	@idx: device index
+> + *	@retry: retry count if driver has not set tty->port yet
+
+Why would tty->port not be set up already?  The caller has control over
+this, what is not happening correctly to cause this?
 
 thanks,
 
