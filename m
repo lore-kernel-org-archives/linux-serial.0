@@ -4,49 +4,50 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C1E0C432C0
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 05:56:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4DAAC432C0
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 05:59:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D945C20717
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 05:56:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8CCC120659
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 05:59:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1574402184;
-	bh=yswybrNRsWsvoHS/VoCxngFKHac2PIA2wYGZakRfmRY=;
+	s=default; t=1574402399;
+	bh=M3ojh6xd7Sh422K7jc7cJuoAtbq2AUgs1fVwY82uxaM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=refZ8ebmMLUjfACIUS/KP7JZvr4vebDEwWUuYYx22VdsIBrxkipWVXEkFzg7OHl1n
-	 GMJQpacdDQTyveiLhiLc8Uo8Qf83SSQ+0ISmzM7qidxiN3CwbghW8wPUBM0TFjLffQ
-	 9d9SmECE2jRW8ZJSOlXYW0XuqEkhGoKihGPXy86s=
+	b=GmJpbC5E31KJuC2EdAJe/N96n/ghTUe1CYugycFIxjXr8YKx4mjQ2ld3slFoyl7TM
+	 MiqiunXG0WBIyBRv4jbNBue6y2cWorwGwLYoSBa/oPQWr9+tazALn6FuWLHWdmW+r1
+	 NST3cBqOs3GFc6bbu1Vr9OphOAhncB0DK2VKBFgk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729127AbfKVF4Y (ORCPT
+        id S1727782AbfKVF5o (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Nov 2019 00:56:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34154 "EHLO mail.kernel.org"
+        Fri, 22 Nov 2019 00:57:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36226 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729122AbfKVF4X (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Nov 2019 00:56:23 -0500
+        id S1728497AbfKVF5n (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 22 Nov 2019 00:57:43 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B4A982072D;
-        Fri, 22 Nov 2019 05:56:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EC6742072E;
+        Fri, 22 Nov 2019 05:57:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574402182;
-        bh=yswybrNRsWsvoHS/VoCxngFKHac2PIA2wYGZakRfmRY=;
+        s=default; t=1574402262;
+        bh=M3ojh6xd7Sh422K7jc7cJuoAtbq2AUgs1fVwY82uxaM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t+q+2/Glb6WU8ZwFmsNg6I5xhV4s9ySSqyHWo/FTXSizJQYC29G3EW0Wc6XYPKeX4
-         58vWNq37wQdFdSwiHZn5qVqsPsGSKO836PUTRdV4KXE5GZOIoDWG5/LCLAAYIK3NBv
-         jbtNzHQ6Cg0NClDmhLw1DARYURFEE0gyADeIIm0U=
+        b=C2QE73mXs52s2cO8AP91bh1tt970N23g5r2+nJUbG6swyB7qOeWQp17CEHC7hAqIP
+         QHPfdtwHV/GuMt2Mnxjov2Gq1zyCK5VJqu9wY1ocuS2lNDv5rAP4MyZDgIfELHRl26
+         UVqRrLMFvwYCYjCYDeF6iqLpMq+oyCn1OmdzeA6w=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>,
+Cc:     He Zhe <zhe.he@windriver.com>,
+        Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 033/127] serial: 8250: Rate limit serial port rx interrupts during input overruns
-Date:   Fri, 22 Nov 2019 00:54:11 -0500
-Message-Id: <20191122055544.3299-32-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 103/127] serial: 8250: Fix serial8250 initialization crash
+Date:   Fri, 22 Nov 2019 00:55:21 -0500
+Message-Id: <20191122055544.3299-102-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191122055544.3299-1-sashal@kernel.org>
 References: <20191122055544.3299-1-sashal@kernel.org>
@@ -59,143 +60,70 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>
+From: He Zhe <zhe.he@windriver.com>
 
-[ Upstream commit 6d7f677a2afa1c82d7fc7af7f9159cbffd5dc010 ]
+[ Upstream commit 352c4cf40c4a7d439fa5d30aa2160f54b394da82 ]
 
-When a serial port gets faulty or gets flooded with inputs, its interrupt
-handler starts to work double time to get the characters to the workqueue
-for the tty layer to handle them. When this busy time on the serial/tty
-subsystem happens during boot, where it is also busy on the userspace
-trying to initialise, some processes can continuously get preempted
-and will be on hold until the interrupts subside.
+The initialization code of interrupt backoff work might reference NULL
+pointer and cause the following crash, if no port was found.
 
-The fix is to backoff on processing received characters for a specified
-amount of time when an input overrun is seen (received a new character
-before the previous one is processed). This only stops receive and will
-continue to transmit characters to serial port. After the backoff period
-is done, it receive will be re-enabled. This is optional and will only
-be enabled by setting 'overrun-throttle-ms' in the dts.
+[   10.017727] CPU 0 Unable to handle kernel paging request at virtual address 000001b0, epc == 807088e0, ra == 8070863c
+---- snip ----
+[   11.704470] [<807088e0>] serial8250_register_8250_port+0x318/0x4ac
+[   11.747251] [<80708d74>] serial8250_probe+0x148/0x1c0
+[   11.789301] [<80728450>] platform_drv_probe+0x40/0x94
+[   11.830515] [<807264f8>] really_probe+0xf8/0x318
+[   11.870876] [<80726b7c>] __driver_attach+0x110/0x12c
+[   11.910960] [<80724374>] bus_for_each_dev+0x78/0xcc
+[   11.951134] [<80725958>] bus_add_driver+0x200/0x234
+[   11.989756] [<807273d8>] driver_register+0x84/0x148
+[   12.029832] [<80d72f84>] serial8250_init+0x138/0x198
+[   12.070447] [<80100e6c>] do_one_initcall+0x5c/0x2a0
+[   12.110104] [<80d3a208>] kernel_init_freeable+0x370/0x484
+[   12.150722] [<80a49420>] kernel_init+0x10/0xf8
+[   12.191517] [<8010756c>] ret_from_kernel_thread+0x14/0x1c
 
-Signed-off-by: Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>
+This patch makes sure the initialization code can be reached only if a port
+is found.
+
+Fixes: 6d7f677a2afa ("serial: 8250: Rate limit serial port rx interrupts during input overruns")
+Signed-off-by: He Zhe <zhe.he@windriver.com>
+Reviewed-by: Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_core.c | 25 +++++++++++++++++++++++++
- drivers/tty/serial/8250/8250_fsl.c  | 23 ++++++++++++++++++++++-
- drivers/tty/serial/8250/8250_of.c   |  5 +++++
- include/linux/serial_8250.h         |  4 ++++
- 4 files changed, 56 insertions(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_core.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index d29b512a7d9fa..ceeea4b159c4b 100644
+index ceeea4b159c4b..c698ebab6d3bd 100644
 --- a/drivers/tty/serial/8250/8250_core.c
 +++ b/drivers/tty/serial/8250/8250_core.c
-@@ -953,6 +953,21 @@ static struct uart_8250_port *serial8250_find_match_or_unused(struct uart_port *
- 	return NULL;
- }
+@@ -1077,15 +1077,16 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
  
-+static void serial_8250_overrun_backoff_work(struct work_struct *work)
-+{
-+	struct uart_8250_port *up =
-+	    container_of(to_delayed_work(work), struct uart_8250_port,
-+			 overrun_backoff);
-+	struct uart_port *port = &up->port;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	up->ier |= UART_IER_RLSI | UART_IER_RDI;
-+	up->port.read_status_mask |= UART_LSR_DR;
-+	serial_out(up, UART_IER, up->ier);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
- /**
-  *	serial8250_register_8250_port - register a serial port
-  *	@up: serial port template
-@@ -1063,6 +1078,16 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
  			ret = 0;
  		}
- 	}
-+
-+	/* Initialise interrupt backoff work if required */
-+	if (up->overrun_backoff_time_ms > 0) {
-+		uart->overrun_backoff_time_ms = up->overrun_backoff_time_ms;
-+		INIT_DELAYED_WORK(&uart->overrun_backoff,
-+				  serial_8250_overrun_backoff_work);
-+	} else {
-+		uart->overrun_backoff_time_ms = 0;
-+	}
-+
- 	mutex_unlock(&serial_mutex);
+-	}
  
- 	return ret;
-diff --git a/drivers/tty/serial/8250/8250_fsl.c b/drivers/tty/serial/8250/8250_fsl.c
-index 910bfee5a88b7..cc138c24ae889 100644
---- a/drivers/tty/serial/8250/8250_fsl.c
-+++ b/drivers/tty/serial/8250/8250_fsl.c
-@@ -48,8 +48,29 @@ int fsl8250_handle_irq(struct uart_port *port)
- 
- 	lsr = orig_lsr = up->port.serial_in(&up->port, UART_LSR);
- 
--	if (lsr & (UART_LSR_DR | UART_LSR_BI))
-+	/* Process incoming characters first */
-+	if ((lsr & (UART_LSR_DR | UART_LSR_BI)) &&
-+	    (up->ier & (UART_IER_RLSI | UART_IER_RDI))) {
- 		lsr = serial8250_rx_chars(up, lsr);
-+	}
-+
-+	/* Stop processing interrupts on input overrun */
-+	if ((orig_lsr & UART_LSR_OE) && (up->overrun_backoff_time_ms > 0)) {
-+		unsigned long delay;
-+
-+		up->ier = port->serial_in(port, UART_IER);
-+		if (up->ier & (UART_IER_RLSI | UART_IER_RDI)) {
-+			port->ops->stop_rx(port);
+-	/* Initialise interrupt backoff work if required */
+-	if (up->overrun_backoff_time_ms > 0) {
+-		uart->overrun_backoff_time_ms = up->overrun_backoff_time_ms;
+-		INIT_DELAYED_WORK(&uart->overrun_backoff,
+-				  serial_8250_overrun_backoff_work);
+-	} else {
+-		uart->overrun_backoff_time_ms = 0;
++		/* Initialise interrupt backoff work if required */
++		if (up->overrun_backoff_time_ms > 0) {
++			uart->overrun_backoff_time_ms =
++				up->overrun_backoff_time_ms;
++			INIT_DELAYED_WORK(&uart->overrun_backoff,
++					serial_8250_overrun_backoff_work);
 +		} else {
-+			/* Keep restarting the timer until
-+			 * the input overrun subsides.
-+			 */
-+			cancel_delayed_work(&up->overrun_backoff);
++			uart->overrun_backoff_time_ms = 0;
 +		}
-+
-+		delay = msecs_to_jiffies(up->overrun_backoff_time_ms);
-+		schedule_delayed_work(&up->overrun_backoff, delay);
-+	}
+ 	}
  
- 	serial8250_modem_status(up);
- 
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-index ec510e342e06c..c51044ba503c3 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -232,6 +232,11 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
- 	if (of_property_read_bool(ofdev->dev.of_node, "auto-flow-control"))
- 		port8250.capabilities |= UART_CAP_AFE;
- 
-+	if (of_property_read_u32(ofdev->dev.of_node,
-+			"overrun-throttle-ms",
-+			&port8250.overrun_backoff_time_ms) != 0)
-+		port8250.overrun_backoff_time_ms = 0;
-+
- 	ret = serial8250_register_8250_port(&port8250);
- 	if (ret < 0)
- 		goto err_dispose;
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index a27ef5f564317..791a6be0e3949 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -134,6 +134,10 @@ struct uart_8250_port {
- 	void			(*dl_write)(struct uart_8250_port *, int);
- 
- 	struct uart_8250_em485 *em485;
-+
-+	/* Serial port overrun backoff */
-+	struct delayed_work overrun_backoff;
-+	u32 overrun_backoff_time_ms;
- };
- 
- static inline struct uart_8250_port *up_to_u8250p(struct uart_port *up)
+ 	mutex_unlock(&serial_mutex);
 -- 
 2.20.1
 
