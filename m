@@ -2,72 +2,78 @@ Return-Path: <SRS0=aNI9=ZO=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00326C43215
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 11:15:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80F1FC432C0
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 11:34:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CD21420730
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 11:15:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1574421307;
-	bh=ifgfHgV49YcPx8kfrpEB/pTuXJnJCq8CYBm1IT5+Mr8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=Dn/2C4qyqEu5WWKH1i7fuGr9qmOKsnpzRZxWJ7m/V8d3zCAZGYWtqAR9CCTteG8z1
-	 Z6kq2JbpPc+d7EcIP5hu5zt73/uHz6sJkwwG6xpYeZqQvWuk0cVBN2YrL1qxbwVuAZ
-	 azq7/W+Av3Seb4ocfZ8c+ZpvxT8dIaJLN+YwfiaI=
+	by mail.kernel.org (Postfix) with ESMTP id 5D4992068E
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 11:34:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727615AbfKVLPE (ORCPT
+        id S1727350AbfKVLd7 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Nov 2019 06:15:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45344 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729023AbfKVLPB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Nov 2019 06:15:01 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 67F742070E;
-        Fri, 22 Nov 2019 11:15:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574421300;
-        bh=ifgfHgV49YcPx8kfrpEB/pTuXJnJCq8CYBm1IT5+Mr8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=akcMeEEhNVQ1VdQfaigVjxBzNeeZwSIJS1+1WdyTMuyOfJwvUl+RA70E5BxdkSi9O
-         dNWDFFc8AYEOpSzAcL1aykduSR2aj+5t/mNJGt9iqCH2+C960sUq/wJkBYHRlVfVx6
-         uWX20twpjKgKAJRl4HqUv0QDR+84V0Qw5QQY5cEE=
-Date:   Fri, 22 Nov 2019 12:14:10 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Chen Wandun <chenwandun@huawei.com>
-Cc:     jslaby@suse.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        Fri, 22 Nov 2019 06:33:59 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7167 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726563AbfKVLd7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 22 Nov 2019 06:33:59 -0500
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 7E1134FD29F0237A331A;
+        Fri, 22 Nov 2019 19:33:53 +0800 (CST)
+Received: from [127.0.0.1] (10.173.221.225) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Fri, 22 Nov 2019
+ 19:33:48 +0800
+From:   Chen Wandun <chenwandun@huawei.com>
 Subject: Re: [PATCH] {tty: serial, nand: onenand}: remove variable 'ufstat'
  set but not used
-Message-ID: <20191122111410.GA2024666@kroah.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     <jslaby@suse.com>, <linux-serial@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
 References: <1574421159-113624-1-git-send-email-chenwandun@huawei.com>
+ <20191122111410.GA2024666@kroah.com>
+Message-ID: <62b2cfc1-416c-f7c7-3029-6dd7ad12ea46@huawei.com>
+Date:   Fri, 22 Nov 2019 19:33:47 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1574421159-113624-1-git-send-email-chenwandun@huawei.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <20191122111410.GA2024666@kroah.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.173.221.225]
+X-CFilter-Loop: Reflected
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Nov 22, 2019 at 07:12:39PM +0800, Chen Wandun wrote:
-> Fixes gcc '-Wunused-but-set-variable' warning:
+
+
+On 2019/11/22 19:14, Greg KH wrote:
+> On Fri, Nov 22, 2019 at 07:12:39PM +0800, Chen Wandun wrote:
+>> Fixes gcc '-Wunused-but-set-variable' warning:
+>>
+>> drivers/tty/serial/samsung_tty.c: In function s3c24xx_serial_rx_chars_dma:
+>> drivers/tty/serial/samsung_tty.c:549:24: warning: variable ufstat set but not used [-Wunused-but-set-variable]
+>>
+>> Signed-off-by: Chen Wandun <chenwandun@huawei.com>
 > 
-> drivers/tty/serial/samsung_tty.c: In function s3c24xx_serial_rx_chars_dma:
-> drivers/tty/serial/samsung_tty.c:549:24: warning: variable ufstat set but not used [-Wunused-but-set-variable]
+> Your subject line is really odd, can you please fix that up and resend?
+I check the git log of drivers/tty/serial/samsung_tty.c,
+it seem like the subject line should be:
+{tty: serial, nand: onenand}: samsung: remove variable 'ufstat' set but not used
+
+Is that OK?
+
+Thanks
+Chen Wandun
 > 
-> Signed-off-by: Chen Wandun <chenwandun@huawei.com>
+> thanks,
+> 
+> greg k-h
+> 
+> .
+> 
 
-Your subject line is really odd, can you please fix that up and resend?
-
-thanks,
-
-greg k-h
