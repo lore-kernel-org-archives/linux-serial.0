@@ -2,85 +2,79 @@ Return-Path: <SRS0=aNI9=ZO=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B4E7C432C0
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 10:34:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D81D2C43215
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 11:07:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E625120714
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 10:34:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B6646208A3
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 11:07:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728043AbfKVKeF (ORCPT
+        id S1731730AbfKVLFg (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Nov 2019 05:34:05 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:47611 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727303AbfKVKeF (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Nov 2019 05:34:05 -0500
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1iY6GI-0002wX-Nd; Fri, 22 Nov 2019 11:34:02 +0100
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1iY6GF-0003jP-8l; Fri, 22 Nov 2019 11:33:59 +0100
-Date:   Fri, 22 Nov 2019 11:33:59 +0100
-From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Andy Duan <fugang.duan@nxp.com>
-Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "jslaby@suse.com" <jslaby@suse.com>,
-        "festevam@gmail.com" <festevam@gmail.com>, kernel@pengutronix.de,
-        Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH tty/serial 1/1] tty: serial: imx: fix sysrq lockdep issue
-Message-ID: <20191122103359.fud44lh5wl5d3gxe@pengutronix.de>
-References: <1574416632-32321-1-git-send-email-fugang.duan@nxp.com>
+        Fri, 22 Nov 2019 06:05:36 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7165 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728326AbfKVLFf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 22 Nov 2019 06:05:35 -0500
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 5BB24C7723AC9CBA3167;
+        Fri, 22 Nov 2019 19:05:33 +0800 (CST)
+Received: from localhost.localdomain (10.90.53.225) by
+ DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
+ 14.3.439.0; Fri, 22 Nov 2019 19:05:24 +0800
+From:   Chen Wandun <chenwandun@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <jslaby@suse.com>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <chenwandun@huawei.com>
+Subject: [PATCH] {tty: serial, nand: onenand}: remove variable 'ufstat' set but not used
+Date:   Fri, 22 Nov 2019 19:12:39 +0800
+Message-ID: <1574421159-113624-1-git-send-email-chenwandun@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1574416632-32321-1-git-send-email-fugang.duan@nxp.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Type: text/plain
+X-Originating-IP: [10.90.53.225]
+X-CFilter-Loop: Reflected
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+Fixes gcc '-Wunused-but-set-variable' warning:
 
-On Fri, Nov 22, 2019 at 10:00:53AM +0000, Andy Duan wrote:
-> From: Fugang Duan <fugang.duan@nxp.com>
-> 
-> commit dbdda842fe96 ("printk: Add console owner and waiter logic to
-> load balance console writes") introduces the lockdep issue for imx
-> serial driver in sysrq case:
->      CPU0                    CPU1
->      ----                    ----
-> lock(&port_lock_key);
->                              lock(console_owner);
->                              lock(&port_lock_key);
-> lock(console_owner);
-> 
-> It should unlock port_lock_key in handle_sysrq().
+drivers/tty/serial/samsung_tty.c: In function s3c24xx_serial_rx_chars_dma:
+drivers/tty/serial/samsung_tty.c:549:24: warning: variable ufstat set but not used [-Wunused-but-set-variable]
 
-I already discussed this problem some time ago but then failed to
-complete the topic. You might want to look at the old discussion, see
-https://www.spinics.net/lists/kernel/msg3266353.html.
+Signed-off-by: Chen Wandun <chenwandun@huawei.com>
+---
+ drivers/tty/serial/samsung_tty.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Best regards
-Uwe
-
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index 83fd516..ab3c7d1 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -546,7 +546,7 @@ static void s3c24xx_serial_rx_drain_fifo(struct s3c24xx_uart_port *ourport);
+ 
+ static irqreturn_t s3c24xx_serial_rx_chars_dma(void *dev_id)
+ {
+-	unsigned int utrstat, ufstat, received;
++	unsigned int utrstat, received;
+ 	struct s3c24xx_uart_port *ourport = dev_id;
+ 	struct uart_port *port = &ourport->port;
+ 	struct s3c24xx_uart_dma *dma = ourport->dma;
+@@ -556,7 +556,7 @@ static irqreturn_t s3c24xx_serial_rx_chars_dma(void *dev_id)
+ 	struct dma_tx_state state;
+ 
+ 	utrstat = rd_regl(port, S3C2410_UTRSTAT);
+-	ufstat = rd_regl(port, S3C2410_UFSTAT);
++	rd_regl(port, S3C2410_UFSTAT);
+ 
+ 	spin_lock_irqsave(&port->lock, flags);
+ 
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+2.7.4
+
