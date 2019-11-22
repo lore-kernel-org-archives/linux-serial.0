@@ -2,79 +2,72 @@ Return-Path: <SRS0=aNI9=ZO=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D81D2C43215
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 11:07:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00326C43215
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 11:15:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B6646208A3
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 11:07:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CD21420730
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 11:15:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1574421307;
+	bh=ifgfHgV49YcPx8kfrpEB/pTuXJnJCq8CYBm1IT5+Mr8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=Dn/2C4qyqEu5WWKH1i7fuGr9qmOKsnpzRZxWJ7m/V8d3zCAZGYWtqAR9CCTteG8z1
+	 Z6kq2JbpPc+d7EcIP5hu5zt73/uHz6sJkwwG6xpYeZqQvWuk0cVBN2YrL1qxbwVuAZ
+	 azq7/W+Av3Seb4ocfZ8c+ZpvxT8dIaJLN+YwfiaI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731730AbfKVLFg (ORCPT
+        id S1727615AbfKVLPE (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Nov 2019 06:05:36 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7165 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728326AbfKVLFf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Nov 2019 06:05:35 -0500
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 5BB24C7723AC9CBA3167;
-        Fri, 22 Nov 2019 19:05:33 +0800 (CST)
-Received: from localhost.localdomain (10.90.53.225) by
- DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
- 14.3.439.0; Fri, 22 Nov 2019 19:05:24 +0800
-From:   Chen Wandun <chenwandun@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <jslaby@suse.com>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <chenwandun@huawei.com>
-Subject: [PATCH] {tty: serial, nand: onenand}: remove variable 'ufstat' set but not used
-Date:   Fri, 22 Nov 2019 19:12:39 +0800
-Message-ID: <1574421159-113624-1-git-send-email-chenwandun@huawei.com>
-X-Mailer: git-send-email 2.7.4
+        Fri, 22 Nov 2019 06:15:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45344 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729023AbfKVLPB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 22 Nov 2019 06:15:01 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 67F742070E;
+        Fri, 22 Nov 2019 11:15:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1574421300;
+        bh=ifgfHgV49YcPx8kfrpEB/pTuXJnJCq8CYBm1IT5+Mr8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=akcMeEEhNVQ1VdQfaigVjxBzNeeZwSIJS1+1WdyTMuyOfJwvUl+RA70E5BxdkSi9O
+         dNWDFFc8AYEOpSzAcL1aykduSR2aj+5t/mNJGt9iqCH2+C960sUq/wJkBYHRlVfVx6
+         uWX20twpjKgKAJRl4HqUv0QDR+84V0Qw5QQY5cEE=
+Date:   Fri, 22 Nov 2019 12:14:10 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Chen Wandun <chenwandun@huawei.com>
+Cc:     jslaby@suse.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] {tty: serial, nand: onenand}: remove variable 'ufstat'
+ set but not used
+Message-ID: <20191122111410.GA2024666@kroah.com>
+References: <1574421159-113624-1-git-send-email-chenwandun@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.90.53.225]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1574421159-113624-1-git-send-email-chenwandun@huawei.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Fixes gcc '-Wunused-but-set-variable' warning:
+On Fri, Nov 22, 2019 at 07:12:39PM +0800, Chen Wandun wrote:
+> Fixes gcc '-Wunused-but-set-variable' warning:
+> 
+> drivers/tty/serial/samsung_tty.c: In function s3c24xx_serial_rx_chars_dma:
+> drivers/tty/serial/samsung_tty.c:549:24: warning: variable ufstat set but not used [-Wunused-but-set-variable]
+> 
+> Signed-off-by: Chen Wandun <chenwandun@huawei.com>
 
-drivers/tty/serial/samsung_tty.c: In function s3c24xx_serial_rx_chars_dma:
-drivers/tty/serial/samsung_tty.c:549:24: warning: variable ufstat set but not used [-Wunused-but-set-variable]
+Your subject line is really odd, can you please fix that up and resend?
 
-Signed-off-by: Chen Wandun <chenwandun@huawei.com>
----
- drivers/tty/serial/samsung_tty.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+thanks,
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 83fd516..ab3c7d1 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -546,7 +546,7 @@ static void s3c24xx_serial_rx_drain_fifo(struct s3c24xx_uart_port *ourport);
- 
- static irqreturn_t s3c24xx_serial_rx_chars_dma(void *dev_id)
- {
--	unsigned int utrstat, ufstat, received;
-+	unsigned int utrstat, received;
- 	struct s3c24xx_uart_port *ourport = dev_id;
- 	struct uart_port *port = &ourport->port;
- 	struct s3c24xx_uart_dma *dma = ourport->dma;
-@@ -556,7 +556,7 @@ static irqreturn_t s3c24xx_serial_rx_chars_dma(void *dev_id)
- 	struct dma_tx_state state;
- 
- 	utrstat = rd_regl(port, S3C2410_UTRSTAT);
--	ufstat = rd_regl(port, S3C2410_UFSTAT);
-+	rd_regl(port, S3C2410_UFSTAT);
- 
- 	spin_lock_irqsave(&port->lock, flags);
- 
--- 
-2.7.4
-
+greg k-h
