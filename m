@@ -4,52 +4,52 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D30B6C432C0
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 06:06:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5423C432C0
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 06:10:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A05022068F
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 06:06:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 747B32068E
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 06:10:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1574402819;
-	bh=d0ntVbZyiTVQFUBkfKqRFVdd7wKYeRXw4kRDxXAxktk=;
+	s=default; t=1574403035;
+	bh=1kQsmX0swMTAzM23lP+WYgI3kFE27ittERjogfKgQlA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=D0OSwc89kpAGKkyDwxtWFlG4GXg8nr4ZEo0E8Y7ysdkWt7XhVvBXelLugd6+kNBNF
-	 ZTy1PiBVlDkg7wC7P9TNgNqNiXf3w5PXZLMpiKEZg817UNc+PM/VpVmdtPClP9ruP9
-	 koJC320N04uY3ZGluezQSKmMxUl5JsTpHJ5LrbwU=
+	b=kwwj4FCchQDjSEnQfra2fxc8dWaImk30/shBQhk/rVAxIXPLZju9VWVMxLCgABZcX
+	 fETaJ5eLzSDBw4J0TkupvcZ0B8PNhMqportWGtLEiC/Bxymk2KnTrgUvgDzJTMMqFy
+	 XZp5uWR9IKfysL3BfaezFkD0odAwqXLAANJy8Aj8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727493AbfKVGGz (ORCPT
+        id S1727782AbfKVGKe (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Nov 2019 01:06:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40730 "EHLO mail.kernel.org"
+        Fri, 22 Nov 2019 01:10:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34688 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729639AbfKVGCN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Nov 2019 01:02:13 -0500
+        id S1728653AbfKVF4t (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 22 Nov 2019 00:56:49 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0087F20715;
-        Fri, 22 Nov 2019 06:02:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2879A207FA;
+        Fri, 22 Nov 2019 05:56:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574402532;
-        bh=d0ntVbZyiTVQFUBkfKqRFVdd7wKYeRXw4kRDxXAxktk=;
+        s=default; t=1574402208;
+        bh=1kQsmX0swMTAzM23lP+WYgI3kFE27ittERjogfKgQlA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iABZwBkib8v1bRpr+uPWNhit+pknhoR5F+BxAiHFnMk0diSINCTu7JizEuVGqCVjA
-         zQdPhetjP0i5aWm1pD9wPlb0Kh8uHZixyBHt30LonKphGPcdp6AIVZJAsBzVGklNYS
-         uD9j4Hr9zm1jB1srMBVXTATDPhnx2ZEnIILmUuWM=
+        b=XyFmQbY/EY4iSCweSscBFS0TkszOyuD7TFCe4O7nDwlVyRX/Sj0gE5ml2l1RlUerh
+         HJacqICi/+IefxHctTe3SMeHRauPvcO1OdCNcUgmrMcC554QNCapZB9Qk1aZA8txDM
+         3WfpSMTHXigq0L6153OkFfFy/q4yLUCXHPm7GYUM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Alexander Shiyan <shc_work@mail.ru>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 40/91] serial: max310x: Fix tx_empty() callback
-Date:   Fri, 22 Nov 2019 01:00:38 -0500
-Message-Id: <20191122060129.4239-39-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 057/127] serial: max310x: Fix tx_empty() callback
+Date:   Fri, 22 Nov 2019 00:54:35 -0500
+Message-Id: <20191122055544.3299-56-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191122060129.4239-1-sashal@kernel.org>
-References: <20191122060129.4239-1-sashal@kernel.org>
+In-Reply-To: <20191122055544.3299-1-sashal@kernel.org>
+References: <20191122055544.3299-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -76,7 +76,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 2 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index bacc7e284c0c1..80ab672d61cc4 100644
+index 0969a0d97b2be..cec995ec11eab 100644
 --- a/drivers/tty/serial/max310x.c
 +++ b/drivers/tty/serial/max310x.c
 @@ -769,12 +769,9 @@ static void max310x_start_tx(struct uart_port *port)
