@@ -4,52 +4,53 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D504C43215
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 06:13:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85C76C43215
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 06:20:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E6F922073F
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 06:13:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5AC0F2068E
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 06:20:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1574403221;
-	bh=jzremZJt9uCCXqYmgSJYucLdl1Qtl9dFmP4sQefk5tQ=;
+	s=default; t=1574403650;
+	bh=67ctx2UvLzaWfCpTse8B8UnbRzR1jz/Cquxpnsnzme4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=NPMYtoP4kgLmnNw3vB4TGcswYXYuweCtM55Z+t5ew4scJE9qYfVfM6v7mQjLlry0c
-	 CuCrANJ8Cl2lW/bUCvLN7BDFcdNTe5oTsk5Pg68QTtdO4u7S7ta6Vw+ETZFKDOUYwW
-	 cyNy8DRnQ/t5eydQnImuDOHZrK2NGCduuWCUQKlY=
+	b=mThOsyNBulVyP6Mr77Ys+VlW0sHrl+HaEIGAJijjJb5L0tQDb1Fk4qZ662GibNVg7
+	 O6r3PzPsS2oaLIiZNnvYD1BWZsefG6wGJkbSozcg/S1j9lrPAIT8q2vLvgT/uHk3TI
+	 /7nhldECwIPFz5af8MdGASM155JhV5Nimf5WPFQM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729437AbfKVGNj (ORCPT
+        id S1728579AbfKVFwe (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Nov 2019 01:13:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50960 "EHLO mail.kernel.org"
+        Fri, 22 Nov 2019 00:52:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58306 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729435AbfKVGNj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Nov 2019 01:13:39 -0500
+        id S1728573AbfKVFwd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 22 Nov 2019 00:52:33 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EE9342071B;
-        Fri, 22 Nov 2019 06:13:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E642A20721;
+        Fri, 22 Nov 2019 05:52:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574403218;
-        bh=jzremZJt9uCCXqYmgSJYucLdl1Qtl9dFmP4sQefk5tQ=;
+        s=default; t=1574401952;
+        bh=67ctx2UvLzaWfCpTse8B8UnbRzR1jz/Cquxpnsnzme4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uV2o5U8moDA+/lOoxmKGCrzFZNapG4SAPvnu73nwbwM8oo/WUl2/yqvnCyAQramt+
-         JvxTI3lkW5ayNblsHH3CVUQ7qyEQAK63y+8YjUSYZZKwNLvLRMl6iqv4ez1XnE8tKk
-         E3qwYU/q6aY9Q2ULa3AHfOaNHAYul966vSSChREU=
+        b=kW99yPSu5MPovPzhTCaxBhN4yGMfYrwOkHAYzQFmd/2RfoFIPZj7gpGu62u4ehjgy
+         fbkNcjwozVXaFRFBjyxqehr1Do1qtvdWd63CwtIuMSMLXQOs/udzoyftuPrF3vkzWl
+         yE4+fhNYllsp6JB9mOLlEf6Q/tktGgs2uQdGjZIg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Shiyan <shc_work@mail.ru>,
+Cc:     He Zhe <zhe.he@windriver.com>,
+        Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 33/68] serial: max310x: Fix tx_empty() callback
-Date:   Fri, 22 Nov 2019 01:12:26 -0500
-Message-Id: <20191122061301.4947-32-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 175/219] serial: 8250: Fix serial8250 initialization crash
+Date:   Fri, 22 Nov 2019 00:48:27 -0500
+Message-Id: <20191122054911.1750-168-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191122061301.4947-1-sashal@kernel.org>
-References: <20191122061301.4947-1-sashal@kernel.org>
+In-Reply-To: <20191122054911.1750-1-sashal@kernel.org>
+References: <20191122054911.1750-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -59,41 +60,70 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Alexander Shiyan <shc_work@mail.ru>
+From: He Zhe <zhe.he@windriver.com>
 
-[ Upstream commit a8da3c7873ea57acb8f9cea58c0af477522965aa ]
+[ Upstream commit 352c4cf40c4a7d439fa5d30aa2160f54b394da82 ]
 
-Function max310x_tx_empty() accesses the IRQSTS register, which is
-cleared by IC when reading, so if there is an interrupt status, we
-will lose it. This patch implement the transmitter check only by
-the current FIFO level.
+The initialization code of interrupt backoff work might reference NULL
+pointer and cause the following crash, if no port was found.
 
-Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+[   10.017727] CPU 0 Unable to handle kernel paging request at virtual address 000001b0, epc == 807088e0, ra == 8070863c
+---- snip ----
+[   11.704470] [<807088e0>] serial8250_register_8250_port+0x318/0x4ac
+[   11.747251] [<80708d74>] serial8250_probe+0x148/0x1c0
+[   11.789301] [<80728450>] platform_drv_probe+0x40/0x94
+[   11.830515] [<807264f8>] really_probe+0xf8/0x318
+[   11.870876] [<80726b7c>] __driver_attach+0x110/0x12c
+[   11.910960] [<80724374>] bus_for_each_dev+0x78/0xcc
+[   11.951134] [<80725958>] bus_add_driver+0x200/0x234
+[   11.989756] [<807273d8>] driver_register+0x84/0x148
+[   12.029832] [<80d72f84>] serial8250_init+0x138/0x198
+[   12.070447] [<80100e6c>] do_one_initcall+0x5c/0x2a0
+[   12.110104] [<80d3a208>] kernel_init_freeable+0x370/0x484
+[   12.150722] [<80a49420>] kernel_init+0x10/0xf8
+[   12.191517] [<8010756c>] ret_from_kernel_thread+0x14/0x1c
+
+This patch makes sure the initialization code can be reached only if a port
+is found.
+
+Fixes: 6d7f677a2afa ("serial: 8250: Rate limit serial port rx interrupts during input overruns")
+Signed-off-by: He Zhe <zhe.he@windriver.com>
+Reviewed-by: Darwin Dingel <darwin.dingel@alliedtelesis.co.nz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/max310x.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/tty/serial/8250/8250_core.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index a66fb7afecc71..e13e95733fa3c 100644
---- a/drivers/tty/serial/max310x.c
-+++ b/drivers/tty/serial/max310x.c
-@@ -763,12 +763,9 @@ static void max310x_start_tx(struct uart_port *port)
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 0e65d4261f94c..69aaee5d7fe14 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -1074,15 +1074,16 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
  
- static unsigned int max310x_tx_empty(struct uart_port *port)
- {
--	unsigned int lvl, sts;
-+	u8 lvl = max310x_port_read(port, MAX310X_TXFIFOLVL_REG);
+ 			ret = 0;
+ 		}
+-	}
  
--	lvl = max310x_port_read(port, MAX310X_TXFIFOLVL_REG);
--	sts = max310x_port_read(port, MAX310X_IRQSTS_REG);
--
--	return ((sts & MAX310X_IRQ_TXEMPTY_BIT) && !lvl) ? TIOCSER_TEMT : 0;
-+	return lvl ? 0 : TIOCSER_TEMT;
- }
+-	/* Initialise interrupt backoff work if required */
+-	if (up->overrun_backoff_time_ms > 0) {
+-		uart->overrun_backoff_time_ms = up->overrun_backoff_time_ms;
+-		INIT_DELAYED_WORK(&uart->overrun_backoff,
+-				  serial_8250_overrun_backoff_work);
+-	} else {
+-		uart->overrun_backoff_time_ms = 0;
++		/* Initialise interrupt backoff work if required */
++		if (up->overrun_backoff_time_ms > 0) {
++			uart->overrun_backoff_time_ms =
++				up->overrun_backoff_time_ms;
++			INIT_DELAYED_WORK(&uart->overrun_backoff,
++					serial_8250_overrun_backoff_work);
++		} else {
++			uart->overrun_backoff_time_ms = 0;
++		}
+ 	}
  
- static unsigned int max310x_get_mctrl(struct uart_port *port)
+ 	mutex_unlock(&serial_mutex);
 -- 
 2.20.1
 
