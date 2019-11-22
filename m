@@ -4,47 +4,47 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F26D4C432C0
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 10:00:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1102C432C0
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 10:02:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id ABED920707
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 10:00:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7830B20707
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 10:02:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="sHc5+4Aj"
+	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="WKgwvFXd"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726500AbfKVKA6 (ORCPT
+        id S1726417AbfKVKCN (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Nov 2019 05:00:58 -0500
-Received: from mail-eopbgr00055.outbound.protection.outlook.com ([40.107.0.55]:41475
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        Fri, 22 Nov 2019 05:02:13 -0500
+Received: from mail-eopbgr50082.outbound.protection.outlook.com ([40.107.5.82]:35485
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726100AbfKVKA6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Nov 2019 05:00:58 -0500
+        id S1726100AbfKVKCM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 22 Nov 2019 05:02:12 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DJNyIcZhsdck3Kh0KXQJdo6wMpg4ph9wUhV01yoCJmBVgWTR+KvwITADzI6uXRPlcOxROI+PlB33dx7p7SRY/SnyfRed2abWYESdeyfQlsyZ/MdeX4JL0WZycK1GnNwqdqp4ivn0+pi/Ti3ejIoP8K/KC/AEyThaYntRLHv276s9jP3Ma92fzUChHU2XiyAMYloF4SbsoN3X4DUmdvmIby6dq3EBr8onw+5lMQJR/KGSBPzBkfvnySJZcL3Xadclj1tukXfN3+JjsQ9V/aFGYESNprn+T/LfLL2OuzU4mefn30S0zhtlrhEoTH1szJp1J4zQCiKhV1RVkymbBohbjQ==
+ b=N4DQqhGJTKq5D88NxDFEFhCz/WXrnJquypSQe4aIpcvXcCZdMv/gbh/SoXxceKcGCACNand53DW0Dfv0UiE7lkTFokeBBMQFFy45ybH+ulb2skaDdtJNNFGZm+/U2L50eEArWwLW/mGYtHVVFlNWsrOUR40wxvhQU/5iN0xbsY9yO1oJs6udbX3duln2qYiJppK0mJsOlzHf/jcNHShi3Gtn78ec3N0uCiWawmX5gxRJ6orMxj6xs1pinzHfTH3rlnqXjYKiVVPGOBFRLM9IG7Z2TxshOC6FCfJoBxN96IjhAQ4TNEHX7rU1n7ZvwX4TT5x54XN/HBPyVywK76VrGg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0xwoYCFqi0ewOmjG2pAGoRO1UYkvwc2rZqYWT8ApOGI=;
- b=gi2iYyDHOjEL/3Wk5rhJp7Jy/zH9EVA241zq5BtUUajlfLR/l/DGUQc3K+iRVGAkTk3PXB/a/avuQYaOrVfLRPN9Q4HsP1JXnEE7wzF+mUVdN+I3Gq4K8SjgQ1uYgJbEvurW92Xmq6IMPKqfTv+zpM60iT5ituGPa1RTtCWnEnhc5Re34P06SmBFi3zUsyZx+OUj6fPyJ26PguUBhN+oeLKjKayu4RiUQoTNVx8T6UvbQ4YXAqFQJu43fJAFSTajrG7LdIOp3pjQaFHQa50W/hWE4hPes3HEKNkUWu1tst3vGgu0+/ChnELFaShjfJVZFR36dMD+s37+d/c9zXBrFQ==
+ bh=QKJcD36E7HwRdMTCg0LqWCnV+sqQJ2rbu4EE7tRvYm0=;
+ b=QNx0T+TP+cL7Vh71VBAWsOLicJJKW6bJShYwtY+lD90UYS6wYYV46x54r1IQjfncJATwlD8viJPmfoXqusvsR+XT0leZRBxSqFFM3WQA/RD/LyxaSWlUdqC0Gc023mmJDGzw8sozKmNco4kvMWIdzn+FKQhpSyhRXt0fwOhJKLbRTFsmHfr0yf45XQZlP2CBN5rjqRKfp1oh5oB+pIrft4Vh+NIokJsBgf0MM9Uxfvno5B8NAio8M2ia5I8foVH7uB1mICrOAaClexwZ5ir2f1SV2lUy4UhCJEISMgW/olKz3QaDdfLlePCft/uCASAtV5b8oyIgmQ/mcmn4v3Ng3Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0xwoYCFqi0ewOmjG2pAGoRO1UYkvwc2rZqYWT8ApOGI=;
- b=sHc5+4AjEFNWglaIEh/GuEo4GJd2XtRea5iTgU8xqqm1CJL3ssdXUwQHuJbwKw2uBLXoxUGOFAMXRVw34ysDVucsqkQ/mdDqH3Ghs1HSTOQxrPupCzGZ3FP7DlK1efqWXXGLGK40q5so0cYpEF67TD3or68+YKY5ZxWHBjGDQKQ=
+ bh=QKJcD36E7HwRdMTCg0LqWCnV+sqQJ2rbu4EE7tRvYm0=;
+ b=WKgwvFXd1NqPYLcGaE6kQY4O9oxBQ1WTnJaymUnXMCvzumTZNTKvy87rVb+wHURrP2pUsoBcEfUzXgHw0FJctLarCv2fR+EFAAH/zqvbXg+4AAmY4DQdCGPFTtS5Ux5pISq/7w6W3+MFwxE4bRuuPJGKAOJiZE7UZDeuFWrISM8=
 Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com (52.134.3.146) by
- VI1PR0402MB3423.eurprd04.prod.outlook.com (52.134.4.145) with Microsoft SMTP
+ VI1PR0402MB3581.eurprd04.prod.outlook.com (52.134.1.160) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2451.27; Fri, 22 Nov 2019 10:00:53 +0000
+ 15.20.2474.19; Fri, 22 Nov 2019 10:02:06 +0000
 Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com
  ([fe80::30e0:6638:e97c:e625]) by VI1PR0402MB3600.eurprd04.prod.outlook.com
  ([fe80::30e0:6638:e97c:e625%7]) with mapi id 15.20.2474.019; Fri, 22 Nov 2019
- 10:00:53 +0000
+ 10:02:06 +0000
 From:   Andy Duan <fugang.duan@nxp.com>
 To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
 CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
@@ -52,18 +52,20 @@ CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
         Andy Duan <fugang.duan@nxp.com>,
         "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
         "festevam@gmail.com" <festevam@gmail.com>
-Subject: [PATCH tty/serial 1/1] tty: serial: imx: fix sysrq lockdep issue
-Thread-Topic: [PATCH tty/serial 1/1] tty: serial: imx: fix sysrq lockdep issue
-Thread-Index: AQHVoRu6Bk8vNebpvUC1GhrGJLMZuQ==
-Date:   Fri, 22 Nov 2019 10:00:53 +0000
-Message-ID: <1574416632-32321-1-git-send-email-fugang.duan@nxp.com>
+Subject: [PATCH tty/serial 1/1] tty: serial: lpuart: fix the sysrq lockdep
+ issue
+Thread-Topic: [PATCH tty/serial 1/1] tty: serial: lpuart: fix the sysrq
+ lockdep issue
+Thread-Index: AQHVoRvlFD1B/nANU0Kz1ZuGJ7KeHA==
+Date:   Fri, 22 Nov 2019 10:02:06 +0000
+Message-ID: <1574416704-32428-1-git-send-email-fugang.duan@nxp.com>
 Accept-Language: zh-CN, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 x-mailer: git-send-email 2.7.4
-x-clientproxiedby: HK2PR04CA0046.apcprd04.prod.outlook.com
- (2603:1096:202:14::14) To VI1PR0402MB3600.eurprd04.prod.outlook.com
+x-clientproxiedby: HK2PR02CA0220.apcprd02.prod.outlook.com
+ (2603:1096:201:20::32) To VI1PR0402MB3600.eurprd04.prod.outlook.com
  (2603:10a6:803:7::18)
 authentication-results: spf=none (sender IP is )
  smtp.mailfrom=fugang.duan@nxp.com; 
@@ -71,30 +73,59 @@ x-ms-exchange-messagesentrepresentingtype: 1
 x-originating-ip: [119.31.174.66]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 966098bc-9103-4e92-fcef-08d76f32dc6b
-x-ms-traffictypediagnostic: VI1PR0402MB3423:|VI1PR0402MB3423:
+x-ms-office365-filtering-correlation-id: 4cf684c8-64f6-4ea1-928c-08d76f330801
+x-ms-traffictypediagnostic: VI1PR0402MB3581:|VI1PR0402MB3581:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR0402MB34238FED0395EFFB74C095E5FF490@VI1PR0402MB3423.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1332;
+x-microsoft-antispam-prvs: <VI1PR0402MB35815FA27D61314FCECC52DAFF490@VI1PR0402MB3581.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:364;
 x-forefront-prvs: 02296943FF
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(39860400002)(346002)(376002)(136003)(189003)(199004)(36756003)(6512007)(54906003)(6486002)(14454004)(52116002)(305945005)(64756008)(66556008)(8936002)(66446008)(66476007)(50226002)(25786009)(5640700003)(2501003)(6116002)(2906002)(66066001)(316002)(3846002)(2351001)(6436002)(81166006)(71190400001)(71200400001)(4326008)(6506007)(186003)(386003)(256004)(86362001)(7736002)(2616005)(478600001)(5660300002)(81156014)(6916009)(99286004)(26005)(102836004)(66946007)(8676002)(1730700003)(5024004)(14444005);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3423;H:VI1PR0402MB3600.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(366004)(39860400002)(396003)(346002)(136003)(199004)(189003)(186003)(66066001)(25786009)(7736002)(305945005)(99286004)(2351001)(3846002)(6116002)(6486002)(2906002)(6506007)(386003)(6512007)(6436002)(5640700003)(26005)(86362001)(4326008)(2501003)(36756003)(14444005)(256004)(102836004)(81166006)(81156014)(1730700003)(8676002)(8936002)(50226002)(478600001)(2616005)(14454004)(316002)(66446008)(64756008)(66556008)(66476007)(5660300002)(66946007)(71200400001)(71190400001)(52116002)(6916009)(54906003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3581;H:VI1PR0402MB3600.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: nxp.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: s40+nKV4xcUZHA9BEqDBzeArWPVauYC4svXdsJaQolDtRC57mBm2XuRBaptckzP14WYcnYKFApjIVn3Ovjid9NF1/2dAl6hO31atrbwTTbymrnVCOcti9+XLcOaQjsSQH0qKsvtQBKSNHsb7YHiYXydZWawIzz9ocw3zxtyIm640A0SUjpI8hDlqsplXJRmbXkLn4LYR4gX9KQWMqvhwXBK01gWIUU+cnxC6e7JPwKkzK2e7sq/Gk993ro/LBWkqfdujj/bKF1Syrb9vMf5VV6voAJtGQt8zvEdqIDtsJ1KYSkMlwSbb6DN4b8+oAWviMRE+IJxyinScCnEm+tu+lg5pFQOSAS7LJZGAUxpcuaWD7QsDnUGy35ccJqo+GnJ86h2fjyGqCdJ0MCN4Hpd9KprgC3Mr9p+MX5VtVIsP60nx5/YwZNZNucFDN32cb7Mc
+x-microsoft-antispam-message-info: =?iso-8859-1?Q?ZKI9ggZjtSwL9bI57YSfCYvRzkmPFvPl47MkHu20zDrqdjqegJYexnfGV0?=
+ =?iso-8859-1?Q?AYZyUe1yAEuic2At5EpBtegnjzQp0gnIIpWY3hHM68WVds+ge8oCwM6xIS?=
+ =?iso-8859-1?Q?xcN5qPXW3RuuqZszdO4lGvs5G7p/2jMaQYZDLT/HEKke4H/A8oxPsUSzxN?=
+ =?iso-8859-1?Q?HS+0ceo0N3xi6kRBOs3GNHVGHuhYUz4p4bugXGFLYCZGib8NPV8MgrRRNY?=
+ =?iso-8859-1?Q?UCW2vOP8CGyKWnMToJfYK32Jui4WD90sQXLlmnIIFf8CokslCzlRywRSAL?=
+ =?iso-8859-1?Q?J+sHcDv51WognkaPgoYDLcWmtC8l/kfaTXtND283hpfVQCkzNtJTipzZjx?=
+ =?iso-8859-1?Q?LsEhoZK9VA/bZktzPu5CBT2lut28UPR0/NTruA8em6XZ9Nulte2x56k5+y?=
+ =?iso-8859-1?Q?wpu38AMN48t7bvGApc714NxWEQpZbHtl1pKaREYVuFpBMn6brD9CpEpMU1?=
+ =?iso-8859-1?Q?NXk9gUJtgYH8ggnws6poKWycYfN1YK26m0e8buGgC6v9kyU3Su/p4Mvcuj?=
+ =?iso-8859-1?Q?P2ZgRe4l4e9iPdGF3wVzShmdaTAfwhOjeFmNYO3rTNMjs0WrFUCI7fJ32f?=
+ =?iso-8859-1?Q?P1pAb0AjvKtifrIbAjmrm5CY+gcaV86Rfc3Z/7JoOsdW8u9olKG0wuXecH?=
+ =?iso-8859-1?Q?U5gCyUKTFV44GuziaADXTOuBxuZJNFqUnTxa+esNYyGEcrAWyr27ugKhaM?=
+ =?iso-8859-1?Q?oX/wo+SCQWfF9x9JKpZlJDFy/JKS86lN3dJYYmQJtPVIDv7emUCgSm54Am?=
+ =?iso-8859-1?Q?IaiZ8jDRPROMpLJgp+s9Y28B5uM7JjWbqbduj6BbyNhnTTAnAURn9YNeQU?=
+ =?iso-8859-1?Q?7H4VQ2t09wMXaeokFHDbPtkxcuhfWGlTNKDkE7l5c6pzQS/n8dnAvF7UHI?=
+ =?iso-8859-1?Q?+enzInhQOZP+lgVqWpF///DKFbYNFAEEoxwHjjuJimPd5gBfffnFJNJU+v?=
+ =?iso-8859-1?Q?5r48N3d9WbZwPbWFWaVO42ffMuWAk8KLQp5/kiZk25hvbdayjTFlvNkmS1?=
+ =?iso-8859-1?Q?UGGohYaq0z6EkH82vr/bImkMItyW9+DAeaB/134yjPZ6A2qcb+aD5frjVL?=
+ =?iso-8859-1?Q?ulH+HIwuB9jCtEFEDbjBeeOPec9oE8RASU27DEtDj8RQlxGP6L1G/qOvE1?=
+ =?iso-8859-1?Q?c0OGU/yBaAt6yIYPIQGKWYvQ2Qpwt/fa73J5qRr3vQHYgnKhoaWZs+4U/J?=
+ =?iso-8859-1?Q?udJZv8UoxbIIEDNM2L9J9yb7X5BKsYGDbJeXKooz73+P2lG+cZggi5b3gw?=
+ =?iso-8859-1?Q?xPyDHXYST455TsBDhGv7mGDpgzU4284DcRudzkBukV4DuF9eillzfsk9Qn?=
+ =?iso-8859-1?Q?zgb8ptqq3s8Ov+q6cp7a4pFjAAnIPxYgENA8Gxzsd/x0ECkoZMoCBxpHc3?=
+ =?iso-8859-1?Q?tulWMRy5QIPrmkch32oGKlW39ynGRMHRQRis9lOI8AcXDOHE7jQbw6n94l?=
+ =?iso-8859-1?Q?rOo38YsdHTpGybPwJzqLaR8p+20Wrd632I/hfXkA0IpE6mFN1Lofniw6ug?=
+ =?iso-8859-1?Q?DCCYo7kXK1aCLT+pBHxpz0E0t5o+bSPThOJX6o2/1camN7XBCR//MokD9V?=
+ =?iso-8859-1?Q?hHCBS/vIMNbxxQ6a3manGTVX7toeu7iXr5kz0DtiiHSr57Fi8rEd5htRAt?=
+ =?iso-8859-1?Q?KuAF4djmuSjHvV9moacfEOmnwVYTC4tLpZXjqadojfPtgmrWhWlYyis0zm?=
+ =?iso-8859-1?Q?qPuYeCO1wDxygVHnmYHgWftMQk6NcztlQU85PA0LQQFZYLTTeqEe9Ack2S?=
+ =?iso-8859-1?Q?DGyLlh2Kg8S7yq2MSaEegk79E=3D?=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 966098bc-9103-4e92-fcef-08d76f32dc6b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Nov 2019 10:00:53.7604
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4cf684c8-64f6-4ea1-928c-08d76f330801
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Nov 2019 10:02:06.6559
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /LBfY1nMPGrdb/4YuG6PjVmsX5p5AK3L4Nltqwhc+FoKW4kPBEFA0h7TauH5X1BUPFCvS6T4bf6PZwB623omdQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3423
+X-MS-Exchange-CrossTenant-userprincipalname: q7EZGiEBVAa9q35ZPMI1YGqMeKCkVfNftZjRHPDF7iQh93x0SMdbjwsrbTRqRGWfnyk6Z7Tmg0phKjkp4e+aiA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3581
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
@@ -103,8 +134,9 @@ X-Mailing-List: linux-serial@vger.kernel.org
 From: Fugang Duan <fugang.duan@nxp.com>
 
 commit dbdda842fe96 ("printk: Add console owner and waiter logic to
-load balance console writes") introduces the lockdep issue for imx
+load balance console writes") introduces the lockdep issue for lpuart
 serial driver in sysrq case:
+
      CPU0                    CPU1
      ----                    ----
 lock(&port_lock_key);
@@ -114,164 +146,52 @@ lock(console_owner);
 
 It should unlock port_lock_key in handle_sysrq().
 
-lockdep splats:
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D
-WARNING: possible circular locking dependency detected
-------------------------------------------------------
-swapper/0/0 is trying to acquire lock:
-c141e540 (console_owner){-...}, at: console_unlock+0x180/0x5e4
-
-but task is already holding lock:
-d864e450 (&port_lock_key){-.-.}, at: imx_uart_rxint+0x18/0x294
-
-which lock already depends on the new lock.
-
-the existing dependency chain (in reverse order) is:
-
--> #1 (&port_lock_key){-.-.}:
-       imx_uart_console_write+0x1b4/0x1dc
-       console_unlock+0x2a4/0x5e4
-       register_console+0x1ec/0x3b4
-       uart_add_one_port+0x480/0x4e8
-       platform_drv_probe+0x48/0x98
-       really_probe+0x1d8/0x34c
-       driver_probe_device+0x5c/0x168
-       device_driver_attach+0x58/0x60
-       __driver_attach+0x58/0xd0
-       bus_for_each_dev+0x74/0xbc
-       bus_add_driver+0x150/0x1dc
-       driver_register+0x74/0x108
-       imx_uart_init+0x20/0x40
-       do_one_initcall+0x84/0x348
-       kernel_init_freeable+0x11c/0x1e0
-       kernel_init+0x8/0x110
-       ret_from_fork+0x14/0x20
-       0x0
-
--> #0 (console_owner){-...}:
-       lock_acquire+0xcc/0x204
-       console_unlock+0x208/0x5e4
-       vprintk_emit+0x108/0x2c8
-       vprintk_default+0x20/0x28
-       printk+0x2c/0x58
-       __handle_sysrq+0x178/0x1f0
-       imx_uart_rxint+0x234/0x294
-       imx_uart_int+0x210/0x2f0
-       __handle_irq_event_percpu+0x48/0x34c
-       handle_irq_event_percpu+0x2c/0x88
-       handle_irq_event+0x38/0x5c
-       handle_fasteoi_irq+0xc8/0x180
-       generic_handle_irq+0x20/0x34
-       __handle_domain_irq+0x64/0xdc
-       gic_handle_irq+0x48/0x9c
-       __irq_svc+0x70/0x98
-       cpuidle_enter_state+0x16c/0x520
-       cpuidle_enter_state+0x16c/0x520
-       cpuidle_enter+0x28/0x38
-       do_idle+0x1dc/0x2b0
-       cpu_startup_entry+0x18/0x1c
-       start_kernel+0x404/0x4cc
-
-other info that might help us debug this:
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(&port_lock_key);
-                               lock(console_owner);
-                               lock(&port_lock_key);
-  lock(console_owner);
-
- *** DEADLOCK ***
-
-3 locks held by swapper/0/0:
- #0: d864e450 (&port_lock_key){-.-.}, at: imx_uart_rxint+0x18/0x294
- #1: c141eb88 (rcu_read_lock){....}, at: __handle_sysrq+0x0/0x1f0
- #2: c141e4c0 (console_lock){+.+.}, at: vprintk_emit+0xfc/0x2c8
-
-stack backtrace:
-CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W
-Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
-[<c0112e30>] (unwind_backtrace) from [<c010cdc0>] (show_stack+0x10/0x14)
-[<c010cdc0>] (show_stack) from [<c0d2a73c>] (dump_stack+0xe0/0x114)
-[<c0d2a73c>] (dump_stack) from [<c018f744>] (check_noncircular+0x138/0x1ec)
-[<c018f744>] (check_noncircular) from [<c0191730>] (__lock_acquire+0xe00/0x=
-2418)
-[<c0191730>] (__lock_acquire) from [<c01935c0>] (lock_acquire+0xcc/0x204)
-[<c01935c0>] (lock_acquire) from [<c019e41c>] (console_unlock+0x208/0x5e4)
-[<c019e41c>] (console_unlock) from [<c019fd38>] (vprintk_emit+0x108/0x2c8)
-[<c019fd38>] (vprintk_emit) from [<c019ff18>] (vprintk_default+0x20/0x28)
-[<c019ff18>] (vprintk_default) from [<c01a04e0>] (printk+0x2c/0x58)
-[<c01a04e0>] (printk) from [<c061e990>] (__handle_sysrq+0x178/0x1f0)
-[<c061e990>] (__handle_sysrq) from [<c0635cb0>] (imx_uart_rxint+0x234/0x294=
-)
-[<c0635cb0>] (imx_uart_rxint) from [<c06376a8>] (imx_uart_int+0x210/0x2f0)
-[<c06376a8>] (imx_uart_int) from [<c01a1cdc>] (__handle_irq_event_percpu+0x=
-48/0x34c)
-[<c01a1cdc>] (__handle_irq_event_percpu) from [<c01a200c>] (handle_irq_even=
-t_percpu+0x2c/0x88)
-[<c01a200c>] (handle_irq_event_percpu) from [<c01a20a0>] (handle_irq_event+=
-0x38/0x5c)
-[<c01a20a0>] (handle_irq_event) from [<c01a6930>] (handle_fasteoi_irq+0xc8/=
-0x180)
-[<c01a6930>] (handle_fasteoi_irq) from [<c01a0e10>] (generic_handle_irq+0x2=
-0/0x34)
-[<c01a0e10>] (generic_handle_irq) from [<c01a1418>] (__handle_domain_irq+0x=
-64/0xdc)
-[<c01a1418>] (__handle_domain_irq) from [<c054bcd0>] (gic_handle_irq+0x48/0=
-x9c)
-[<c054bcd0>] (gic_handle_irq) from [<c0101a70>] (__irq_svc+0x70/0x98)
-Exception stack(0xc1401ed8 to 0xc1401f20)
-1ec0:                                                       00000001 000000=
-06
-1ee0: 00000000 c140c600 00000001 5b0881e8 c140f934 db6eadb8 c1504668 000009=
-8b
-1f00: 0000098b 5c28eb3d 00000000 c1401f28 c0194520 c0938fcc 20070013 ffffff=
-ff
-[<c0101a70>] (__irq_svc) from [<c0938fcc>] (cpuidle_enter_state+0x16c/0x520=
-)
-[<c0938fcc>] (cpuidle_enter_state) from [<c09393bc>] (cpuidle_enter+0x28/0x=
-38)
-[<c09393bc>] (cpuidle_enter) from [<c016f6a4>] (do_idle+0x1dc/0x2b0)
-[<c016f6a4>] (do_idle) from [<c016fb2c>] (cpu_startup_entry+0x18/0x1c)
-[<c016fb2c>] (cpu_startup_entry) from [<c1300e20>] (start_kernel+0x404/0x4c=
-c)
-
 Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
 ---
- drivers/tty/serial/imx.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/tty/serial/fsl_lpuart.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index a9e20e6..a665439 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -736,6 +736,7 @@ static irqreturn_t imx_uart_rxint(int irq, void *dev_id=
-)
-=20
- 	while (imx_uart_readl(sport, USR2) & USR2_RDR) {
- 		u32 usr2;
-+		int sysrq;
-=20
- 		flg =3D TTY_NORMAL;
- 		sport->port.icount.rx++;
-@@ -749,7 +750,11 @@ static irqreturn_t imx_uart_rxint(int irq, void *dev_i=
-d)
- 				continue;
- 		}
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuar=
+t.c
+index 4e128d1..2ddb777 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -836,7 +836,7 @@ static void lpuart_rxint(struct lpuart_port *sport)
+ 		sr =3D readb(sport->port.membase + UARTSR1);
+ 		rx =3D readb(sport->port.membase + UARTDR);
 =20
 -		if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx))
-+		spin_unlock(&sport->port.lock);
-+		sysrq =3D uart_handle_sysrq_char(&sport->port, (unsigned char)rx);
-+		spin_lock(&sport->port.lock);
-+
-+		if (sysrq)
++		if (uart_prepare_sysrq_char(&sport->port, (unsigned char)rx))
  			continue;
 =20
- 		if (unlikely(rx & URXD_ERR)) {
+ 		if (sr & (UARTSR1_PE | UARTSR1_OR | UARTSR1_FE)) {
+@@ -884,7 +884,7 @@ static void lpuart_rxint(struct lpuart_port *sport)
+ 		writeb(UARTSFIFO_RXOF, sport->port.membase + UARTSFIFO);
+ 	}
+=20
+-	spin_unlock_irqrestore(&sport->port.lock, flags);
++	uart_unlock_and_check_sysrq(&sport->port, flags);
+=20
+ 	tty_flip_buffer_push(port);
+ }
+@@ -918,7 +918,7 @@ static void lpuart32_rxint(struct lpuart_port *sport)
+ 		rx =3D lpuart32_read(&sport->port, UARTDATA);
+ 		rx &=3D 0x3ff;
+=20
+-		if (uart_handle_sysrq_char(&sport->port, (unsigned char)rx))
++		if (uart_prepare_sysrq_char(&sport->port, (unsigned char)rx))
+ 			continue;
+=20
+ 		if (sr & (UARTSTAT_PE | UARTSTAT_OR | UARTSTAT_FE)) {
+@@ -955,7 +955,7 @@ static void lpuart32_rxint(struct lpuart_port *sport)
+ 	}
+=20
+ out:
+-	spin_unlock_irqrestore(&sport->port.lock, flags);
++	uart_unlock_and_check_sysrq(&sport->port, flags);
+=20
+ 	tty_flip_buffer_push(port);
+ }
 --=20
 2.7.4
 
