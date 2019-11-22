@@ -2,107 +2,132 @@ Return-Path: <SRS0=aNI9=ZO=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA017C432C3
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 18:24:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E819C432C3
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 18:46:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9316020721
-	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 18:24:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 177F92071C
+	for <linux-serial@archiver.kernel.org>; Fri, 22 Nov 2019 18:46:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="jVNkUXPD"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="adtUzSvC"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726695AbfKVSYV (ORCPT
+        id S1726062AbfKVSqV (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 Nov 2019 13:24:21 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:37710 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726676AbfKVSYV (ORCPT
+        Fri, 22 Nov 2019 13:46:21 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:35873 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726698AbfKVSqV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 Nov 2019 13:24:21 -0500
-Received: by mail-pf1-f194.google.com with SMTP id p24so3855567pfn.4
-        for <linux-serial@vger.kernel.org>; Fri, 22 Nov 2019 10:24:19 -0800 (PST)
+        Fri, 22 Nov 2019 13:46:21 -0500
+Received: by mail-pj1-f66.google.com with SMTP id cq11so3401898pjb.3
+        for <linux-serial@vger.kernel.org>; Fri, 22 Nov 2019 10:46:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=message-id:mime-version:content-transfer-encoding:in-reply-to
-         :references:subject:from:cc:to:user-agent:date;
-        bh=7hJrD72iS4CTV/eqPsnjwRrd+DhYn98Uq27ZJW54QGw=;
-        b=jVNkUXPD5bIky3irD3XcBYEQIK7JcGj0S/ZADQDIQbgMGmjfzDAhNSuX0UiNNGxXVp
-         easfSnO5urLLc4lWAyEwRtQZ5asuP8eWlxh6XA92LJWPOtkoRcd0BG3dT7JpZtbVWrIT
-         v6sFK7x/kCmw9pHEnTnBto9MzcJKku7jB8Ay0=
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=9XnDb7Q/IygLgTSRY7SeZwvkE08Zst4cGrNTkzkS96o=;
+        b=adtUzSvCsWX468rx5R8F7PruMHga/0PUW/ZE3rqPEUxn/YxLoh/JKlMiy9+nZ4XhCj
+         6jqSdenfcrsTGyG+hYUE7GJpzq8RKsyU+3vguQ+JT40Xx/BRPhxR5hNa9tvKYAQJJEmx
+         ug2U1ijvy9ktHQKXm0Q8wKNrkpfiA26bGEy08=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:mime-version
-         :content-transfer-encoding:in-reply-to:references:subject:from:cc:to
-         :user-agent:date;
-        bh=7hJrD72iS4CTV/eqPsnjwRrd+DhYn98Uq27ZJW54QGw=;
-        b=RAqo2lOtk1Gj2jnjT1/R/FIWWFGni7Di0svQkOj46LYAD/LbBDpVaL5TpbiwDyfMak
-         l2zaQuhrah8k+qmuQpDeu8rptUbVvvMvwb5b/UuW/oJoDzupmKpTgN4s42pr0TH61S+Z
-         7yeLSNrrU9f2LYxubHpb7WCU+nw0XdgrVn2sUh3gum2aWCu2CQIk/vUgW3AFoSoAAvzV
-         f0HDTbJ5kvWsS+BNVgyAaAasxeOPi+mum3xihZ05NxlP3oVkPZe39tkWl+cGgdO9DtOK
-         IEz3d4T+8NPJda4JIxsxippXflslnL47cop7AsFrBUUZ6LEhvAJN/4CmfPzYDTUsxH/q
-         Wuog==
-X-Gm-Message-State: APjAAAUF9gHyTghxXwUlzap47zjcMo9aOivudZcjbtzrUkncR0WgE3Um
-        lGbjbDLieJN3xWjhanv2Pp9D4Q==
-X-Google-Smtp-Source: APXvYqwCGkNyOf7R8AA7Mp1x3NFIKX+iqD3uwFFsfJ7BP7zudBzdBbCdOkwtqqovQITmU05HGDrOgw==
-X-Received: by 2002:aa7:870c:: with SMTP id b12mr19227631pfo.30.1574447058874;
-        Fri, 22 Nov 2019 10:24:18 -0800 (PST)
-Received: from chromium.org ([2620:15c:202:1:fa53:7765:582b:82b9])
-        by smtp.gmail.com with ESMTPSA id n8sm7183258pgs.44.2019.11.22.10.24.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Nov 2019 10:24:18 -0800 (PST)
-Message-ID: <5dd827d2.1c69fb81.51ab0.220e@mx.google.com>
-Content-Type: text/plain; charset="utf-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=9XnDb7Q/IygLgTSRY7SeZwvkE08Zst4cGrNTkzkS96o=;
+        b=oC8PYHJzTKG9qD5gU4YokqAaFEFeX3IouUdHA23eUh1m0XTahiUjqfXY3tXZjqQEI0
+         EVFam0VQ/GnwElAvFqvXi2+hy3dw0boKpniRPasTY3wcfxf25ZDlfIkEsVzbiaTIBt8F
+         M2n0BgdlcFcv+apNpFe57Ka6AD6DB1L130hh65QcunSzQiXadrwsR/cisdLv36hiutwi
+         bqMUFiVNUAPWT5uIMAq8BnIL1dNCtH38nLmhp82I7qPy7qTu8SAqVIy7+Whse8YQbVLo
+         1u6xrJOfla3tj5T6CNPd0L91uwicvv59fii8OTv94S2SaM1Tjy6qNlMeXfu8DBj4twul
+         XapA==
+X-Gm-Message-State: APjAAAXYy7yJMVZNsOnYt3EUM/6yVKTVvKRlH0s/aOqShPn8gqsE8SGD
+        6Y6bWRIgqNOjJG/RAudILOGfN6igYmI=
+X-Google-Smtp-Source: APXvYqxdSCDY1pz30iWJARX7yjsOYRJC+q3IVnarA7giUUrnGrvRUXePwiklSmlBDTvlpPAVjwIaAg==
+X-Received: by 2002:a17:902:b945:: with SMTP id h5mr15631521pls.291.1574448380152;
+        Fri, 22 Nov 2019 10:46:20 -0800 (PST)
+Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
+        by smtp.gmail.com with ESMTPSA id z1sm3893020pju.27.2019.11.22.10.46.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Nov 2019 10:46:19 -0800 (PST)
+Date:   Fri, 22 Nov 2019 10:46:18 -0800
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Akash Asthana <akashast@codeaurora.org>
+Cc:     gregkh@linuxfoundation.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v6 3/5] tty: serial: qcom_geni_serial: IRQ cleanup
+Message-ID: <20191122184618.GN27773@google.com>
+References: <1574432266-20732-1-git-send-email-akashast@codeaurora.org>
+ <0101016e937a3e05-f74c5c73-a964-45f2-ae71-6daed292e8ee-000000@us-west-2.amazonses.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <0101016e91dcbb45-f54cf6e5-8ace-457a-96cc-edec41305719-000000@us-west-2.amazonses.com>
-References: <1573642136-30488-1-git-send-email-akashast@codeaurora.org> <5dcd919d.1c69fb81.1c304.2dc5@mx.google.com> <55a02d0f-2dec-2ba7-82e6-f21a8c86792a@codeaurora.org> <5dceff73.1c69fb81.e286f.aa4e@mx.google.com> <0101016e91dcbb45-f54cf6e5-8ace-457a-96cc-edec41305719-000000@us-west-2.amazonses.com>
-Subject: Re: [PATCH v5 2/3] tty: serial: qcom_geni_serial: Wakeup over UART RX
-From:   Stephen Boyd <swboyd@chromium.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        mgautam@codeaurora.org, msavaliy@codeaurora.org
-To:     Akash Asthana <akashast@codeaurora.org>, gregkh@linuxfoundation.org
-User-Agent: alot/0.8.1
-Date:   Fri, 22 Nov 2019 10:24:17 -0800
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <0101016e937a3e05-f74c5c73-a964-45f2-ae71-6daed292e8ee-000000@us-west-2.amazonses.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Quoting Akash Asthana (2019-11-21 22:46:32)
->=20
-> On 11/16/2019 1:11 AM, Stephen Boyd wrote:
-> > Quoting Akash Asthana (2019-11-15 02:00:44)
-> >> On 11/14/2019 11:10 PM, Stephen Boyd wrote:
-> >>> Quoting Akash Asthana (2019-11-13 02:48:56)
-> >>>> Add system wakeup capability over UART RX line for wakeup capable UA=
-RT.
-> >>>> When system is suspended, RX line act as an interrupt to wakeup syst=
-em
-> >>>> for any communication requests from peer.
-> >>> How does the RX line get remuxed as a GPIO interrupt here? Is that
-> >>> through some pinctrl magic in DT or just via enabling/disabling the
-> >>> interrupt?
-> >> Yes, For wakeup capable UART node, we have registered UART RX line with
-> >> TLMM interrupt controller in DT file . Example: if GPIO48 is UART RX l=
-ine
-> >>
-> >> interrupts-extended =3D=C2=A0 <&intc GIC_SPI 607 IRQ_TYPE_LEVEL_HIGH>,=
-=C2=A0 <&tlmm
-> >> 48 IRQ_TYPE_EDGE_FALLING>;
-> > Right. So is gpio48 muxed as 'uart' function forever and the interrupt
-> > logic in tlmm is connected to that pad regardless of the function
-> > selected? I thought that gpios through TLMM had to be muxed as function
-> > 0, i.e. gpio function, so that interrupts worked. But maybe that's wrong
-> > and it can work without that.
->=20
-> Yes, gpio48 is muxed as "uart' function function forever. There is no=20
-> need to mux gpio48 to
->=20
-> gpio function, interrupts can work without that.
->=20
+On Fri, Nov 22, 2019 at 02:18:12PM +0000, Akash Asthana wrote:
+> Move ISR registration from startup to probe function to avoid registering
+> it everytime when the port open is called for driver.
+> 
+> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+> ---
+> Changes in v6:
+>  - Rebased on tty-next branch
+> 
+> Changes in v5:
+>  - No change.
+> 
+> Changes in v4:
+>  - As per Stephen's comment, move ISR registration(later in probe) after
+>    registering uart port with serial core.
+>  - As per Greg's comment, corrected returning of PTR value from integer type
+>    function(probe).
+> 
+> Changes in v3:
+>  - As per Stephen's comment, using devm_kasprintf instead of scnprintf API.
+> 
+>  drivers/tty/serial/qcom_geni_serial.c | 38 ++++++++++++++++++++++++-----------
+>  1 file changed, 26 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 14c6306..634054a 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+>
+> ...
+>
+> @@ -1307,7 +1307,21 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+>  	port->handle_rx = console ? handle_rx_console : handle_rx_uart;
+>  	if (!console)
+>  		device_create_file(uport->dev, &dev_attr_loopback);
+> -	return uart_add_one_port(drv, uport);
+> +
+> +	ret = uart_add_one_port(drv, uport);
+> +	if (ret)
+> +		return ret;
+> +
+> +	irq_set_status_flags(uport->irq, IRQ_NOAUTOEN);
+> +	ret = devm_request_irq(uport->dev, uport->irq, qcom_geni_serial_isr,
+> +			IRQF_TRIGGER_HIGH, port->name, uport);
+> +	if (ret) {
+> +		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
+> +		uart_remove_one_port(drv, uport);
+> +		return ret;
 
-Ok thanks for confirming.
+nit: could fall through
 
+> +	}
+> +
+> +	return ret;
+
+nit: if not falling through above this could/should be 0.
+
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
