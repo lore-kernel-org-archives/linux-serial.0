@@ -2,109 +2,86 @@ Return-Path: <SRS0=Up7l=ZR=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	FORGED_MUA_MOZILLA,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7217C432C0
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Nov 2019 08:06:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40E63C432C0
+	for <linux-serial@archiver.kernel.org>; Mon, 25 Nov 2019 12:03:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A6B5020815
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Nov 2019 08:06:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1547B2075C
+	for <linux-serial@archiver.kernel.org>; Mon, 25 Nov 2019 12:03:37 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="IAmYDIvd";
+	dkim=pass (1024-bit key) header.d=amazonses.com header.i=@amazonses.com header.b="GqzTkp2x"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725940AbfKYIGh (ORCPT
+        id S1727111AbfKYMDg (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 25 Nov 2019 03:06:37 -0500
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:42746 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbfKYIGh (ORCPT
+        Mon, 25 Nov 2019 07:03:36 -0500
+Received: from a27-10.smtp-out.us-west-2.amazonses.com ([54.240.27.10]:37016
+        "EHLO a27-10.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725862AbfKYMDg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 25 Nov 2019 03:06:37 -0500
-Received: by mail-oi1-f195.google.com with SMTP id o12so12251234oic.9;
-        Mon, 25 Nov 2019 00:06:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gAuJIv9yn4YXOSzk5PZReQ2dPQGSJ4vZoOY3jPtStjc=;
-        b=QWyvj/CFps7CV2EU9tzcrwuhr5T+shDGdnNpPkBnIHKM+J+s84shb5PExAaVokpBzA
-         Ekhu7Doqily5QBpaNCZ5cIb2T2Al5ggwTyxyxkOADyIKBLZr4cvEu1jduuuSxKE46QJb
-         DwKFStZZRU5z5Alm0f7lrXILu6YcLBXIVdgB7o4l8R8PRdCLZN9LfEtwa/uxtbGUDAFk
-         +pS2Ky1jn0oInBAocvzK1bWQFM23Mik1g+/nzoBdUVybx/IdKKGdsYf7ET3GBtMwEBQT
-         cNrVppLAvfq+N2NSEbPwkfszD8aEp6WgGwsclImgYIow7eRdjpionZxpTVn/Tuipyr3k
-         6pjQ==
-X-Gm-Message-State: APjAAAVG7C3oNcQfKnn8Kx3PbaH9X5Aw/vWLI4KCrfoGWb3g7AeSIDuX
-        bXqZBEquYhlqdXpA1M0y3uKPSnaYP2goQlS/qhc=
-X-Google-Smtp-Source: APXvYqwpeDUhNSpQ/oCrYrAiLsRBMIpwYQpPGW9c/ztktaU9IBlgDfMBbUNbBU4Re6q5x3Nv2eZgOEhw4M2WPaFTbaU=
-X-Received: by 2002:aca:3a86:: with SMTP id h128mr20980328oia.131.1574669195789;
- Mon, 25 Nov 2019 00:06:35 -0800 (PST)
+        Mon, 25 Nov 2019 07:03:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1574683415;
+        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+        bh=f0tNqJ+tpXJTD3tqUeDs5/VtS8SWjl8eSoD8rOe274s=;
+        b=IAmYDIvdxdr/4FwCMbI/yBn0zWDPDdT633riiz6d52kbWvk9vovdSvxxi6dAXFJp
+        MvSBbDK0yUb7FoplzeQKhPXWr1ujzHqDQlJ0jk/Pjj+enGS2cHvc/EWOhFcF/fgUds5
+        TgoYpflsXoDOJ+xqKDAsBNMm7kxs6C1xRhSE2U7Y=
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=gdwg2y3kokkkj5a55z2ilkup5wp5hhxx; d=amazonses.com; t=1574683415;
+        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:Feedback-ID;
+        bh=f0tNqJ+tpXJTD3tqUeDs5/VtS8SWjl8eSoD8rOe274s=;
+        b=GqzTkp2xEe1G1oHUZBscqLbGfJi9jHBRsKaIyE7SkUOdHkoG4UQIQdWcE/ZgsJi6
+        zjSOw9YTp2buRZzvY81VZR+A4uZdiy9jL4oF3deDHImHoq5kYD95pIur9XY9B6ifrmI
+        dVGOt6MXvgjVrz+73Jw9nmT/F0VvDL18qguFfNTU=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 39109C447B4
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+Subject: Re: [PATCH v6 0/5] Add wakeup support and move loopback to TIOCM_LOOP
+To:     Stephen Boyd <swboyd@chromium.org>, gregkh@linuxfoundation.org
+Cc:     mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org
+References: <0101016e937a0ef9-36754afa-105c-416f-b308-b5bed0cc0ccb-000000@us-west-2.amazonses.com>
+ <5dd827b1.1c69fb81.a7ff0.5ab4@mx.google.com>
+From:   Akash Asthana <akashast@codeaurora.org>
+Message-ID: <0101016ea27214d1-5cb5b74e-ca7b-410c-a9e7-bb0da9f6b2d7-000000@us-west-2.amazonses.com>
+Date:   Mon, 25 Nov 2019 12:03:35 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
 MIME-Version: 1.0
-References: <20191122101721.7222-1-jslaby@suse.cz>
-In-Reply-To: <20191122101721.7222-1-jslaby@suse.cz>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 25 Nov 2019 09:06:24 +0100
-Message-ID: <CAMuHMdXETD5azNxPgzzhbx_kNh93EN3a8q6FcEVBV=MvLXzYGw@mail.gmail.com>
-Subject: Re: [PATCH] tty: don't crash in tty_init_dev when missing tty_port
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <5dd827b1.1c69fb81.a7ff0.5ab4@mx.google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-SES-Outgoing: 2019.11.25-54.240.27.10
+Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Jiri,
 
-On Fri, Nov 22, 2019 at 11:20 AM Jiri Slaby <jslaby@suse.cz> wrote:
-> We currently warn the user when tty->port is not set in tty_init_dev
-> yet. The warning says that the kernel will crash later. And it really
-> will only few lines below at:
-> tty->port->itty = tty;
->
-> So be nice and avoid the crash -- return an error instead. And update
-> the warning.
-
-As per Greg's comment on another patch in
-https://lore.kernel.org/lkml/20191121135743.GA552517@kroah.com/,
-that will still cause systems with panic-on-warn to reboot.
-
-> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-> Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-> ---
->  drivers/tty/tty_io.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-> index cb6370906a6d..d9f54c7d94f2 100644
-> --- a/drivers/tty/tty_io.c
-> +++ b/drivers/tty/tty_io.c
-> @@ -1345,9 +1345,12 @@ struct tty_struct *tty_init_dev(struct tty_driver *driver, int idx)
->         if (!tty->port)
->                 tty->port = driver->ports[idx];
->
-> -       WARN_RATELIMIT(!tty->port,
-> -                       "%s: %s driver does not set tty->port. This will crash the kernel later. Fix the driver!\n",
-> -                       __func__, tty->driver->name);
-> +       if (WARN_RATELIMIT(!tty->port,
-> +                       "%s: %s driver does not set tty->port. This would crash the kernel. Fix the driver!\n",
-> +                       __func__, tty->driver->name)) {
-> +               retval = -EINVAL;
-> +               goto err_release_lock;
-> +       }
->
->         retval = tty_ldisc_lock(tty, 5 * HZ);
->         if (retval)
-
-Gr{oetje,eeting}s,
-
-                        Geert
+On 11/22/2019 11:53 PM, Stephen Boyd wrote:
+> Quoting Akash Asthana (2019-11-22 06:18:00)
+>> This series adds wakeup support over UART RX line and moves loopback
+>> support to TIOCM_LOOP.
+>> Patch 1 & 2 reverts the V2 changes for wakeup support on tty-next tip.
+>> Patch 3 & 4 adds V6 changes for wakeup support.
+>>
+>> Akash Asthana (5):
+>>    Revert "tty: serial: qcom_geni_serial: Wakeup over UART RX"
+>>    Revert "tty: serial: qcom_geni_serial: IRQ cleanup"
+>>    tty: serial: qcom_geni_serial: IRQ cleanup
+>>    tty: serial: qcom_geni_serial: Wakeup over UART RX
+>>    tty: serial: qcom_geni_serial: Move loopback support to TIOCM_LOOP
+> Maybe the reverts aren't necessary? Is it possible to fix up the patches
+> that are already merged in Greg's tree?
+Ok, I will fix up already merged patches.
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
