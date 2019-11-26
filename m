@@ -1,148 +1,148 @@
-Return-Path: <SRS0=Up7l=ZR=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=3tiM=ZS=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB4B4C432C0
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Nov 2019 16:06:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B69B5C432C0
+	for <linux-serial@archiver.kernel.org>; Tue, 26 Nov 2019 09:02:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9DCBD2068E
-	for <linux-serial@archiver.kernel.org>; Mon, 25 Nov 2019 16:06:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8439E2073F
+	for <linux-serial@archiver.kernel.org>; Tue, 26 Nov 2019 09:02:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="jjisLgX4"
+	dkim=pass (2048-bit key) header.d=antmicro.com header.i=@antmicro.com header.b="ZjtgOV/p"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728454AbfKYQGG (ORCPT
+        id S1727142AbfKZJCa (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 25 Nov 2019 11:06:06 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:42485 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728533AbfKYQGG (ORCPT
+        Tue, 26 Nov 2019 04:02:30 -0500
+Received: from mail-il1-f193.google.com ([209.85.166.193]:41177 "EHLO
+        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727112AbfKZJCa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 25 Nov 2019 11:06:06 -0500
-Received: by mail-pg1-f195.google.com with SMTP id q17so7391380pgt.9
-        for <linux-serial@vger.kernel.org>; Mon, 25 Nov 2019 08:06:05 -0800 (PST)
+        Tue, 26 Nov 2019 04:02:30 -0500
+Received: by mail-il1-f193.google.com with SMTP id q15so16923068ils.8
+        for <linux-serial@vger.kernel.org>; Tue, 26 Nov 2019 01:02:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=message-id:mime-version:content-transfer-encoding:in-reply-to
-         :references:subject:from:cc:to:user-agent:date;
-        bh=uZogxMLKmu5ag7/Tehf3/UKuF5mtSeXbYA+YVlKXCag=;
-        b=jjisLgX4SfQj1tGf3EchqcYmktFL/caWBphKbHwHvOIi3Tz6G2g2sVnWRkZ2tT+r6s
-         t7scmR1R57RMIyrEl5eCttpCzw91+bwjSHfrHUgwefdbELaNDQjtbdI68m+nbybXmt1X
-         KaQVzCMSrZP+8OLFMHBkkq06lznqPN8WRnB6w=
+        d=antmicro.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=t3siywQMic4+3G/dPDeE17s5VtxexJ2M1JK1S3ouM4A=;
+        b=ZjtgOV/pr8z2qVPm7aKOTj8vneLya3QFAGjk+lNJj/QRunSEptXSIUv964TfpaXgRB
+         F3OKkiaNaSAD62pS0zHb9Avv1FbKH8LTbkug33+fFZwVSPcIVSdPG2OaYPJFu6GUkPs5
+         HoFCyAmD5YbmF23GK7W1JsY6CkqiKro/Yg565+jxX4ce1wygC+VMaUuGF6dJtlaxI4Ym
+         sNzF1zkjllRTjDM+OqPE2rH++4EddtYqGSSZV4suxjs7Ed8/0bKxHOkaSpDWp3HMBmY5
+         SkPvXeknRMoR9EGxWpz6IMr/+rKYOyJpDqQC4eL5FSrnbZKGvVFqx9l0IZDWAjuVtzsh
+         3xLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:mime-version
-         :content-transfer-encoding:in-reply-to:references:subject:from:cc:to
-         :user-agent:date;
-        bh=uZogxMLKmu5ag7/Tehf3/UKuF5mtSeXbYA+YVlKXCag=;
-        b=X5CWOSZ91uGQfKYN2d9ccq//kig2zclcjAFtnAsYe68H7Q5sFI0t2/mQBrRfIGATtq
-         D9vJK3CmvgrR407EdmHNWFp6+Hi1a/CflBuGcC2cFVBl5i0W01Cfkchsf4JQhZgqv95F
-         gWzvvSoXBB6OcSJW5qYiT1MQZzHbu5N5I3uWZf8XuW5LbpWt9eB2WutCqXZvEY9PWIZ1
-         lpltth/GNJokWZ0eS4reWw8Oeq3GNvLkWnxVrN/7heZ959dhinB/KOWroG4dXtfUYS0u
-         li0TIent10nBkJjw0lwhzPl7FOZ0llIVToM3bAim4mJSB8GqDPPxBG2uhtEX4CPa9xv5
-         P3Bw==
-X-Gm-Message-State: APjAAAWxE3zCeAL9bF7jTl21fHzd66fkoeHhoZlYoYn+hoN8J1m/YK6p
-        29WDp7KdAEHfNS3x4ej1sKmwOw==
-X-Google-Smtp-Source: APXvYqzq/YbOa34s32fl9fREiHshITN5k9L7eNRFQjS1QMNaaSNmOrJRLw+P2V/k2xlMaJUgj7QNtA==
-X-Received: by 2002:a62:4ec4:: with SMTP id c187mr35379472pfb.113.1574697965387;
-        Mon, 25 Nov 2019 08:06:05 -0800 (PST)
-Received: from chromium.org ([2620:15c:202:1:fa53:7765:582b:82b9])
-        by smtp.gmail.com with ESMTPSA id l13sm8749354pjq.18.2019.11.25.08.06.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Nov 2019 08:06:04 -0800 (PST)
-Message-ID: <5ddbfbec.1c69fb81.c6c96.3c18@mx.google.com>
-Content-Type: text/plain; charset="utf-8"
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=t3siywQMic4+3G/dPDeE17s5VtxexJ2M1JK1S3ouM4A=;
+        b=uaXts4EecmpUsgJ7/1JTwR5a3ZZe3tqO86ZypK6D1jCEsYRiabWZZELPxvpCUGzj1V
+         K12/aGWWpdn/KGHcXz1/3wsbHAM6ONh50wB4NVRMpLJv5fD1H9tkvAn4nKVxB1hdbKYW
+         EvrcEzgXSWvcl8Qft3OaIobkFIL5rvnBBFTHItjdnI1B8LeSc89EyK2w1RPCQM/T82CW
+         2ottejWUlX6yJOh74y/vDoBCVT512A1aykQySuXEV/skZSf9xZyLUddwsrTX2+BHUo4y
+         R7O6Ct4IqwQ1TrCE6MfTginFiCLMUgYL1hmaLQIlxl+3tQSkP3V/2NA9f6LYWDulVREl
+         2ruQ==
+X-Gm-Message-State: APjAAAWsNtgG2E7F25q1wffuy3CJ02oI4xeLDHmtzNJSGmyuPBWYJDLM
+        k778D4ThaUMseyu+1mvL/QdbRqJx8xUS/OVovykUHA==
+X-Google-Smtp-Source: APXvYqy4JJs4tw+DQhFyc6W+aR+iSnEHpG2/S9kZTb9FNJ0ZfmIWFBpeEsmr/idfvM6lF5Zm2kkdOgUlGH9+yBjM+B0=
+X-Received: by 2002:a05:6e02:4d2:: with SMTP id f18mr37130431ils.270.1574758949256;
+ Tue, 26 Nov 2019 01:02:29 -0800 (PST)
 MIME-Version: 1.0
+References: <20191023114634.13657-0-mholenko@antmicro.com> <20191023114634.13657-2-mholenko@antmicro.com>
+ <20191120192648.GA3087498@kroah.com>
+In-Reply-To: <20191120192648.GA3087498@kroah.com>
+From:   Mateusz Holenko <mholenko@antmicro.com>
+Date:   Tue, 26 Nov 2019 10:02:18 +0100
+Message-ID: <CAPk366QgcOYPZJXM46o3Gn8ksFYYoNwJvnunUe7y0aLNgJuSRg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/4] litex: add common LiteX header
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jiri Slaby <jslaby@suse.com>, devicetree@vger.kernel.org,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Stafford Horne <shorne@gmail.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Filip Kokosinski <fkokosinski@internships.antmicro.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <0101016ea31bae6b-614d45a0-ddb0-4f82-b906-48850f439280-000000@us-west-2.amazonses.com>
-References: <1574694511-31479-1-git-send-email-akashast@codeaurora.org> <0101016ea31bae6b-614d45a0-ddb0-4f82-b906-48850f439280-000000@us-west-2.amazonses.com>
-Subject: Re: [PATCH V7 1/2] tty: serial: qcom_geni_serial: Wakeup IRQ cleanup
-From:   Stephen Boyd <swboyd@chromium.org>
-Cc:     mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, mka@chromium.org,
-        Akash Asthana <akashast@codeaurora.org>
-To:     Akash Asthana <akashast@codeaurora.org>, gregkh@linuxfoundation.org
-User-Agent: alot/0.8.1
-Date:   Mon, 25 Nov 2019 08:06:03 -0800
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Quoting Akash Asthana (2019-11-25 07:08:50)
-> This patch is the continuation of below mentioned commits which adds wake=
-up
-> feature over the UART RX line.
-> 1)commit 3e4aaea7a039 ("tty: serial: qcom_geni_serial: IRQ cleanup")[v2]
-> 2)commit 8b7103f31950 ("tty: serial: qcom_geni_serial: Wakeup over UART
->   RX")[v2]
->=20
-> The following cleanup is done based on upstream comment received on
-> subsequent versions of the above-mentioned commits to simplifying the cod=
-e.
->  - Use devm_kasprintf API in place of scnprintf.
->  - Use dev_pm_set_dedicated_wake_irq API that will take care of
->    requesting and attaching wakeup irqs for devices. Also, it sets wakeirq
->    status to WAKE_IRQ_DEDICATED_ALLOCATED as a result enabling/disabling =
-of
->    wake irq will be managed by suspend/resume framework. We can remove the
->    code for enabling and disabling of wake irq from the this driver.
->  - Use platform_get_irq_optional API to get optional wakeup IRQ for
->    device.
->  - Move ISR registration later in probe after uart port gets register with
->    serial core.
->=20
-> Patch link:
->  - https://patchwork.kernel.org/patch/11189717/ (v3)
->  - https://patchwork.kernel.org/patch/11227435/ (v4)
->  - https://patchwork.kernel.org/patch/11241669/ (v5)
->  - https://patchwork.kernel.org/patch/11258045/ (v6)
->=20
-> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
-> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+=C5=9Br., 20 lis 2019 o 20:26 Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> napisa=C5=82(a):
+>
+> On Wed, Oct 23, 2019 at 11:47:04AM +0200, Mateusz Holenko wrote:
+> > +#ifdef __LITTLE_ENDIAN
+> > +# define LITEX_READ_REG(addr)                  ioread32(addr)
+> > +# define LITEX_READ_REG_OFF(addr, off)         ioread32(addr + off)
+> > +# define LITEX_WRITE_REG(val, addr)            iowrite32(val, addr)
+> > +# define LITEX_WRITE_REG_OFF(val, addr, off)   iowrite32(val, addr + o=
+ff)
+> > +#else
+> > +# define LITEX_READ_REG(addr)                  ioread32be(addr)
+> > +# define LITEX_READ_REG_OFF(addr, off)         ioread32be(addr + off)
+> > +# define LITEX_WRITE_REG(val, addr)            iowrite32be(val, addr)
+> > +# define LITEX_WRITE_REG_OFF(val, addr, off)   iowrite32be(val, addr +=
+ off)
+> > +#endif
+>
+> I just noticed this.
+>
+> Ick, this is not good.  You will run into problems in the future with
+> this, I can guarantee it.  What about systems where the CPU is one
+> endian and the hardware in the other?  It will happen trust us.
 
-Ok sure.
+As mentioned in the previous comment, LiteX CSRs are guaranteed to be
+always little-endian - this includes configurations with both
+big-endian and little-endian CPUs.
 
-> ---
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/q=
-com_geni_serial.c
-> index ff63728..55b1d8b 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -1302,50 +1294,58 @@ static int qcom_geni_serial_probe(struct platform=
-_device *pdev)
->         port->rx_fifo_depth =3D DEF_FIFO_DEPTH_WORDS;
->         port->tx_fifo_width =3D DEF_FIFO_WIDTH_BITS;
-> =20
-> -       scnprintf(port->name, sizeof(port->name), "qcom_geni_serial_%s%d",
-> -               (uart_console(uport) ? "console" : "uart"), uport->line);
-> +       port->name =3D devm_kasprintf(uport->dev, GFP_KERNEL,
-> +                       "qcom_geni_serial_%s%d",
-> +                       uart_console(uport) ? "console" : "uart", uport->=
-line);
-> +       if (!port->name)
-> +               return -ENOMEM;
-> +
->         irq =3D platform_get_irq(pdev, 0);
->         if (irq < 0)
->                 return irq;
->         uport->irq =3D irq;
-> =20
-> +       if (!console)
-> +               port->wakeup_irq =3D platform_get_irq_optional(pdev, 1);
+The aim of including the ifdef section was exactly to target situation
+where endianness is different for CPU and devices. As such this
+approach *should* work.
 
-Is there a DT binding update for this? It would be nice if the GENI SE
-binding was updated to by YAML.
+> Make these real functions (inline is nice) and pass in the pointer to
+> the device so you can test for it and call the correct function based on
+> the cpu/hardware type.
+>
+> And what about bitfields?  What endian are they for your
+> system/hardware?
+>
+> Almost no kernel code should EVER be testing __LITTLE_ENDIAN, don't add
+> to it as it is not a good idea.
 
-> +
-> +       uport->private_data =3D drv;
-> +       platform_set_drvdata(pdev, port);
-> +       port->handle_rx =3D console ? handle_rx_console : handle_rx_uart;
-> +       if (!console)
-> +               device_create_file(uport->dev, &dev_attr_loopback);
-> +
+If I understand correctly, you suggest to replace compile-time
+ifdefing with probing the endianness in the runtime (by reading some
+register that should return a known value, say 1, and testing how bits
+are arranged). This is a good idea, as it protects against breaking an
+always-little-endian property of LiteX CSRs in the future.
+
+I'll include this in the next version of the patchset.
+
+> thanks,
+>
+> greg k-h
+
+Thanks for your comments!
+
+--=20
+Mateusz Holenko
+Antmicro Ltd | www.antmicro.com
+Roosevelta 22, 60-829 Poznan, Poland
