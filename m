@@ -1,139 +1,433 @@
-Return-Path: <SRS0=3tiM=ZS=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=S98g=ZT=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	FORGED_MUA_MOZILLA,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D338C432C0
-	for <linux-serial@archiver.kernel.org>; Tue, 26 Nov 2019 12:22:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3EB8C432C0
+	for <linux-serial@archiver.kernel.org>; Wed, 27 Nov 2019 03:53:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E3C602082F
-	for <linux-serial@archiver.kernel.org>; Tue, 26 Nov 2019 12:22:00 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="oSTAzZaa";
-	dkim=pass (1024-bit key) header.d=amazonses.com header.i=@amazonses.com header.b="XsJP4pn9"
+	by mail.kernel.org (Postfix) with ESMTP id A7E402071E
+	for <linux-serial@archiver.kernel.org>; Wed, 27 Nov 2019 03:53:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728323AbfKZMWA (ORCPT
+        id S1726526AbfK0DxA (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 26 Nov 2019 07:22:00 -0500
-Received: from a27-185.smtp-out.us-west-2.amazonses.com ([54.240.27.185]:54890
-        "EHLO a27-185.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727733AbfKZMWA (ORCPT
+        Tue, 26 Nov 2019 22:53:00 -0500
+Received: from mx0a-00010702.pphosted.com ([148.163.156.75]:57372 "EHLO
+        mx0b-00010702.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726525AbfK0DxA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 26 Nov 2019 07:22:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1574770919;
-        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-        bh=Ttu+6ofExiF/Y4usUuA4r1/+Sh4A1mMo6YxP2R7eeGE=;
-        b=oSTAzZaaZhF+/fbFYz4LiFOVfzyLpT/9OqpSmZTeTb6DDMyigaVn1VZZHWA/HSYT
-        voOkhKxuO6fwcvaKaGulaKtQCoBtlkgIK32gqnFlPk5XXYJNqAbDKFXY50qFgYVtM2x
-        y3OUJy98WRFDeiNckSG16SgSwgCxuv9CkEwqzK9Y=
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=gdwg2y3kokkkj5a55z2ilkup5wp5hhxx; d=amazonses.com; t=1574770919;
-        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:Feedback-ID;
-        bh=Ttu+6ofExiF/Y4usUuA4r1/+Sh4A1mMo6YxP2R7eeGE=;
-        b=XsJP4pn9e9orEZl6Fjl/lIBlLBQVtXNp4Z4lIJF0/0SNq+bNqFBNfciDZypIpG+Z
-        aHIAUNPvKxC4+YRgouBOVlSY18dw7WbMVGY/vLNkROl7RqbFb7jT61kUuV9IYq7vlMs
-        G/jierc7gjKFaU9O+VhldgnvnLK+AO+sixsORHcQ=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 42C99C43383
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-Subject: Re: [PATCH V7 1/2] tty: serial: qcom_geni_serial: Wakeup IRQ cleanup
-To:     Stephen Boyd <swboyd@chromium.org>, gregkh@linuxfoundation.org
-Cc:     mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, mka@chromium.org
-References: <1574694511-31479-1-git-send-email-akashast@codeaurora.org>
- <0101016ea31bae6b-614d45a0-ddb0-4f82-b906-48850f439280-000000@us-west-2.amazonses.com>
- <5ddbfbec.1c69fb81.c6c96.3c18@mx.google.com>
-From:   Akash Asthana <akashast@codeaurora.org>
-Message-ID: <0101016ea7a9463f-6363f81f-3b22-4b66-b8c3-23c5bf1cc624-000000@us-west-2.amazonses.com>
-Date:   Tue, 26 Nov 2019 12:21:59 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+        Tue, 26 Nov 2019 22:53:00 -0500
+X-Greylist: delayed 2067 seconds by postgrey-1.27 at vger.kernel.org; Tue, 26 Nov 2019 22:52:59 EST
+Received: from pps.filterd (m0098780.ppops.net [127.0.0.1])
+        by mx0a-00010702.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAR3F1lO031150;
+        Tue, 26 Nov 2019 21:18:30 -0600
+Received: from ni.com (skprod2.natinst.com [130.164.80.23])
+        by mx0a-00010702.pphosted.com with ESMTP id 2whd020p47-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Nov 2019 21:18:30 -0600
+Received: from us-aus-exhub2.ni.corp.natinst.com (us-aus-exhub2.ni.corp.natinst.com [130.164.68.32])
+        by us-aus-skprod2.natinst.com (8.16.0.27/8.16.0.27) with ESMTPS id xAR3ITJ2021639
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 26 Nov 2019 21:18:29 -0600
+Received: from us-aus-exch3.ni.corp.natinst.com (130.164.68.13) by
+ us-aus-exhub2.ni.corp.natinst.com (130.164.68.32) with Microsoft SMTP Server
+ (TLS) id 15.0.1395.4; Tue, 26 Nov 2019 21:18:28 -0600
+Received: from us-aus-exhub1.ni.corp.natinst.com (130.164.68.41) by
+ us-aus-exch3.ni.corp.natinst.com (130.164.68.13) with Microsoft SMTP Server
+ (TLS) id 15.0.1395.4; Tue, 26 Nov 2019 21:18:28 -0600
+Received: from my-pen-rd9.apac.corp.natinst.com (172.18.68.32) by
+ us-aus-exhub1.ni.corp.natinst.com (130.164.68.41) with Microsoft SMTP Server
+ id 15.0.1395.4 via Frontend Transport; Tue, 26 Nov 2019 21:18:27 -0600
+From:   Je Yen Tam <je.yen.tam@ni.com>
+To:     <gregkh@linuxfoundation.org>
+CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Je Yen Tam <je.yen.tam@ni.com>
+Subject: [PATCH] Revert "serial/8250: Add support for NI-Serial PXI/PXIe+485 devices"
+Date:   Wed, 27 Nov 2019 11:17:51 +0800
+Message-ID: <20191127031751.9082-1-je.yen.tam@ni.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <5ddbfbec.1c69fb81.c6c96.3c18@mx.google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-SES-Outgoing: 2019.11.26-54.240.27.185
-Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-26_08:2019-11-26,2019-11-26 signatures=0
+X-Proofpoint-Spam-Reason: safe
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+This reverts commit fdc2de87124f5183a98ea7eced1f76dbdba22951 which is
+commit 225607f75454 ("serial/8250: Add support for NI-Serial PXI/PXIe+485 devices").
 
-On 11/25/2019 9:36 PM, Stephen Boyd wrote:
-> Quoting Akash Asthana (2019-11-25 07:08:50)
->> This patch is the continuation of below mentioned commits which adds wakeup
->> feature over the UART RX line.
->> 1)commit 3e4aaea7a039 ("tty: serial: qcom_geni_serial: IRQ cleanup")[v2]
->> 2)commit 8b7103f31950 ("tty: serial: qcom_geni_serial: Wakeup over UART
->>    RX")[v2]
->>
->> The following cleanup is done based on upstream comment received on
->> subsequent versions of the above-mentioned commits to simplifying the code.
->>   - Use devm_kasprintf API in place of scnprintf.
->>   - Use dev_pm_set_dedicated_wake_irq API that will take care of
->>     requesting and attaching wakeup irqs for devices. Also, it sets wakeirq
->>     status to WAKE_IRQ_DEDICATED_ALLOCATED as a result enabling/disabling of
->>     wake irq will be managed by suspend/resume framework. We can remove the
->>     code for enabling and disabling of wake irq from the this driver.
->>   - Use platform_get_irq_optional API to get optional wakeup IRQ for
->>     device.
->>   - Move ISR registration later in probe after uart port gets register with
->>     serial core.
->>
->> Patch link:
->>   - https://patchwork.kernel.org/patch/11189717/ (v3)
->>   - https://patchwork.kernel.org/patch/11227435/ (v4)
->>   - https://patchwork.kernel.org/patch/11241669/ (v5)
->>   - https://patchwork.kernel.org/patch/11258045/ (v6)
->>
->> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
->> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
->> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-> Ok sure.
->
->> ---
->> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
->> index ff63728..55b1d8b 100644
->> --- a/drivers/tty/serial/qcom_geni_serial.c
->> +++ b/drivers/tty/serial/qcom_geni_serial.c
->> @@ -1302,50 +1294,58 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
->>          port->rx_fifo_depth = DEF_FIFO_DEPTH_WORDS;
->>          port->tx_fifo_width = DEF_FIFO_WIDTH_BITS;
->>   
->> -       scnprintf(port->name, sizeof(port->name), "qcom_geni_serial_%s%d",
->> -               (uart_console(uport) ? "console" : "uart"), uport->line);
->> +       port->name = devm_kasprintf(uport->dev, GFP_KERNEL,
->> +                       "qcom_geni_serial_%s%d",
->> +                       uart_console(uport) ? "console" : "uart", uport->line);
->> +       if (!port->name)
->> +               return -ENOMEM;
->> +
->>          irq = platform_get_irq(pdev, 0);
->>          if (irq < 0)
->>                  return irq;
->>          uport->irq = irq;
->>   
->> +       if (!console)
->> +               port->wakeup_irq = platform_get_irq_optional(pdev, 1);
-> Is there a DT binding update for this? It would be nice if the GENI SE
-> binding was updated to by YAML.
-Yes, there is DT binding update for this. Ok I will update GENI SE 
-binding to YAML
->> +
->> +       uport->private_data = drv;
->> +       platform_set_drvdata(pdev, port);
->> +       port->handle_rx = console ? handle_rx_console : handle_rx_uart;
->> +       if (!console)
->> +               device_create_file(uport->dev, &dev_attr_loopback);
->> +
+The upstream introduced a breakage on NI-Serial PXI(e)-RS485 devices,
+RS-232 variants have no issue. The Linux system can enumerate the Serial
+PXI(e)-RS485 devices, but it broke the R/W operation on the ports.
 
+However, the implementation is working on the NI internal Linux RT kernel
+but it does not work in the Linux main tree kernel. This is only affecting
+NI products, specifically the RS-485 variants. Reverting the upstream
+until a proper implementation that can apply to both NI internal Linux
+kernel and Linux mainline kernel is figured out.
+
+Signed-off-by: Je Yen Tam <je.yen.tam@ni.com>
+---
+ drivers/tty/serial/8250/8250_pci.c | 292 +----------------------------
+ 1 file changed, 4 insertions(+), 288 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 6adbadd6a56a..8a01d034f9d1 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -745,16 +745,8 @@ static int pci_ni8430_init(struct pci_dev *dev)
+ }
+ 
+ /* UART Port Control Register */
+-#define NI16550_PCR_OFFSET	0x0f
+-#define NI16550_PCR_RS422	0x00
+-#define NI16550_PCR_ECHO_RS485	0x01
+-#define NI16550_PCR_DTR_RS485	0x02
+-#define NI16550_PCR_AUTO_RS485	0x03
+-#define NI16550_PCR_WIRE_MODE_MASK	0x03
+-#define NI16550_PCR_TXVR_ENABLE_BIT	BIT(3)
+-#define NI16550_PCR_RS485_TERMINATION_BIT	BIT(6)
+-#define NI16550_ACR_DTR_AUTO_DTR	(0x2 << 3)
+-#define NI16550_ACR_DTR_MANUAL_DTR	(0x0 << 3)
++#define NI8430_PORTCON	0x0f
++#define NI8430_PORTCON_TXVR_ENABLE	(1 << 3)
+ 
+ static int
+ pci_ni8430_setup(struct serial_private *priv,
+@@ -776,117 +768,14 @@ pci_ni8430_setup(struct serial_private *priv,
+ 		return -ENOMEM;
+ 
+ 	/* enable the transceiver */
+-	writeb(readb(p + offset + NI16550_PCR_OFFSET) | NI16550_PCR_TXVR_ENABLE_BIT,
+-	       p + offset + NI16550_PCR_OFFSET);
++	writeb(readb(p + offset + NI8430_PORTCON) | NI8430_PORTCON_TXVR_ENABLE,
++	       p + offset + NI8430_PORTCON);
+ 
+ 	iounmap(p);
+ 
+ 	return setup_port(priv, port, bar, offset, board->reg_shift);
+ }
+ 
+-static int pci_ni8431_config_rs485(struct uart_port *port,
+-	struct serial_rs485 *rs485)
+-{
+-	u8 pcr, acr;
+-	struct uart_8250_port *up;
+-
+-	up = container_of(port, struct uart_8250_port, port);
+-	acr = up->acr;
+-	pcr = port->serial_in(port, NI16550_PCR_OFFSET);
+-	pcr &= ~NI16550_PCR_WIRE_MODE_MASK;
+-
+-	if (rs485->flags & SER_RS485_ENABLED) {
+-		/* RS-485 */
+-		if ((rs485->flags & SER_RS485_RX_DURING_TX) &&
+-			(rs485->flags & SER_RS485_RTS_ON_SEND)) {
+-			dev_dbg(port->dev, "Invalid 2-wire mode\n");
+-			return -EINVAL;
+-		}
+-
+-		if (rs485->flags & SER_RS485_RX_DURING_TX) {
+-			/* Echo */
+-			dev_vdbg(port->dev, "2-wire DTR with echo\n");
+-			pcr |= NI16550_PCR_ECHO_RS485;
+-			acr |= NI16550_ACR_DTR_MANUAL_DTR;
+-		} else {
+-			/* Auto or DTR */
+-			if (rs485->flags & SER_RS485_RTS_ON_SEND) {
+-				/* Auto */
+-				dev_vdbg(port->dev, "2-wire Auto\n");
+-				pcr |= NI16550_PCR_AUTO_RS485;
+-				acr |= NI16550_ACR_DTR_AUTO_DTR;
+-			} else {
+-				/* DTR-controlled */
+-				/* No Echo */
+-				dev_vdbg(port->dev, "2-wire DTR no echo\n");
+-				pcr |= NI16550_PCR_DTR_RS485;
+-				acr |= NI16550_ACR_DTR_MANUAL_DTR;
+-			}
+-		}
+-	} else {
+-		/* RS-422 */
+-		dev_vdbg(port->dev, "4-wire\n");
+-		pcr |= NI16550_PCR_RS422;
+-		acr |= NI16550_ACR_DTR_MANUAL_DTR;
+-	}
+-
+-	dev_dbg(port->dev, "write pcr: 0x%08x\n", pcr);
+-	port->serial_out(port, NI16550_PCR_OFFSET, pcr);
+-
+-	up->acr = acr;
+-	port->serial_out(port, UART_SCR, UART_ACR);
+-	port->serial_out(port, UART_ICR, up->acr);
+-
+-	/* Update the cache. */
+-	port->rs485 = *rs485;
+-
+-	return 0;
+-}
+-
+-static int pci_ni8431_setup(struct serial_private *priv,
+-		 const struct pciserial_board *board,
+-		 struct uart_8250_port *uart, int idx)
+-{
+-	u8 pcr, acr;
+-	struct pci_dev *dev = priv->dev;
+-	void __iomem *addr;
+-	unsigned int bar, offset = board->first_offset;
+-
+-	if (idx >= board->num_ports)
+-		return 1;
+-
+-	bar = FL_GET_BASE(board->flags);
+-	offset += idx * board->uart_offset;
+-
+-	addr = pci_ioremap_bar(dev, bar);
+-	if (!addr)
+-		return -ENOMEM;
+-
+-	/* enable the transceiver */
+-	writeb(readb(addr + NI16550_PCR_OFFSET) | NI16550_PCR_TXVR_ENABLE_BIT,
+-		addr + NI16550_PCR_OFFSET);
+-
+-	pcr = readb(addr + NI16550_PCR_OFFSET);
+-	pcr &= ~NI16550_PCR_WIRE_MODE_MASK;
+-
+-	/* set wire mode to default RS-422 */
+-	pcr |= NI16550_PCR_RS422;
+-	acr = NI16550_ACR_DTR_MANUAL_DTR;
+-
+-	/* write port configuration to register */
+-	writeb(pcr, addr + NI16550_PCR_OFFSET);
+-
+-	/* access and write to UART acr register */
+-	writeb(UART_ACR, addr + UART_SCR);
+-	writeb(acr, addr + UART_ICR);
+-
+-	uart->port.rs485_config = &pci_ni8431_config_rs485;
+-
+-	iounmap(addr);
+-
+-	return setup_port(priv, uart, bar, offset, board->reg_shift);
+-}
+-
+ static int pci_netmos_9900_setup(struct serial_private *priv,
+ 				const struct pciserial_board *board,
+ 				struct uart_8250_port *port, int idx)
+@@ -2023,15 +1912,6 @@ pci_moxa_setup(struct serial_private *priv,
+ #define PCI_DEVICE_ID_ACCESIO_PCIE_COM_8SM	0x10E9
+ #define PCI_DEVICE_ID_ACCESIO_PCIE_ICM_4SM	0x11D8
+ 
+-#define PCIE_DEVICE_ID_NI_PXIE8430_2328	0x74C2
+-#define PCIE_DEVICE_ID_NI_PXIE8430_23216	0x74C1
+-#define PCI_DEVICE_ID_NI_PXI8431_4852	0x7081
+-#define PCI_DEVICE_ID_NI_PXI8431_4854	0x70DE
+-#define PCI_DEVICE_ID_NI_PXI8431_4858	0x70E3
+-#define PCI_DEVICE_ID_NI_PXI8433_4852	0x70E9
+-#define PCI_DEVICE_ID_NI_PXI8433_4854	0x70ED
+-#define PCIE_DEVICE_ID_NI_PXIE8431_4858	0x74C4
+-#define PCIE_DEVICE_ID_NI_PXIE8431_48516	0x74C3
+ 
+ #define	PCI_DEVICE_ID_MOXA_CP102E	0x1024
+ #define	PCI_DEVICE_ID_MOXA_CP102EL	0x1025
+@@ -2269,87 +2149,6 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
+ 		.setup		= pci_ni8430_setup,
+ 		.exit		= pci_ni8430_exit,
+ 	},
+-	{
+-		.vendor		= PCI_VENDOR_ID_NI,
+-		.device		= PCIE_DEVICE_ID_NI_PXIE8430_2328,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.init		= pci_ni8430_init,
+-		.setup		= pci_ni8430_setup,
+-		.exit		= pci_ni8430_exit,
+-	},
+-	{
+-		.vendor		= PCI_VENDOR_ID_NI,
+-		.device		= PCIE_DEVICE_ID_NI_PXIE8430_23216,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.init		= pci_ni8430_init,
+-		.setup		= pci_ni8430_setup,
+-		.exit		= pci_ni8430_exit,
+-	},
+-	{
+-		.vendor		= PCI_VENDOR_ID_NI,
+-		.device		= PCI_DEVICE_ID_NI_PXI8431_4852,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.init		= pci_ni8430_init,
+-		.setup		= pci_ni8431_setup,
+-		.exit		= pci_ni8430_exit,
+-	},
+-	{
+-		.vendor		= PCI_VENDOR_ID_NI,
+-		.device		= PCI_DEVICE_ID_NI_PXI8431_4854,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.init		= pci_ni8430_init,
+-		.setup		= pci_ni8431_setup,
+-		.exit		= pci_ni8430_exit,
+-	},
+-	{
+-		.vendor		= PCI_VENDOR_ID_NI,
+-		.device		= PCI_DEVICE_ID_NI_PXI8431_4858,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.init		= pci_ni8430_init,
+-		.setup		= pci_ni8431_setup,
+-		.exit		= pci_ni8430_exit,
+-	},
+-	{
+-		.vendor		= PCI_VENDOR_ID_NI,
+-		.device		= PCI_DEVICE_ID_NI_PXI8433_4852,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.init		= pci_ni8430_init,
+-		.setup		= pci_ni8431_setup,
+-		.exit		= pci_ni8430_exit,
+-	},
+-	{
+-		.vendor		= PCI_VENDOR_ID_NI,
+-		.device		= PCI_DEVICE_ID_NI_PXI8433_4854,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.init		= pci_ni8430_init,
+-		.setup		= pci_ni8431_setup,
+-		.exit		= pci_ni8430_exit,
+-	},
+-	{
+-		.vendor		= PCI_VENDOR_ID_NI,
+-		.device		= PCIE_DEVICE_ID_NI_PXIE8431_4858,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.init		= pci_ni8430_init,
+-		.setup		= pci_ni8431_setup,
+-		.exit		= pci_ni8430_exit,
+-	},
+-	{
+-		.vendor		= PCI_VENDOR_ID_NI,
+-		.device		= PCIE_DEVICE_ID_NI_PXIE8431_48516,
+-		.subvendor	= PCI_ANY_ID,
+-		.subdevice	= PCI_ANY_ID,
+-		.init		= pci_ni8430_init,
+-		.setup		= pci_ni8431_setup,
+-		.exit		= pci_ni8430_exit,
+-	},
+ 	/* Quatech */
+ 	{
+ 		.vendor		= PCI_VENDOR_ID_QUATECH,
+@@ -3106,13 +2905,6 @@ enum pci_board_num_t {
+ 	pbn_ni8430_4,
+ 	pbn_ni8430_8,
+ 	pbn_ni8430_16,
+-	pbn_ni8430_pxie_8,
+-	pbn_ni8430_pxie_16,
+-	pbn_ni8431_2,
+-	pbn_ni8431_4,
+-	pbn_ni8431_8,
+-	pbn_ni8431_pxie_8,
+-	pbn_ni8431_pxie_16,
+ 	pbn_ADDIDATA_PCIe_1_3906250,
+ 	pbn_ADDIDATA_PCIe_2_3906250,
+ 	pbn_ADDIDATA_PCIe_4_3906250,
+@@ -3765,55 +3557,6 @@ static struct pciserial_board pci_boards[] = {
+ 		.uart_offset	= 0x10,
+ 		.first_offset	= 0x800,
+ 	},
+-	[pbn_ni8430_pxie_16] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 16,
+-		.base_baud	= 3125000,
+-		.uart_offset	= 0x10,
+-		.first_offset	= 0x800,
+-	},
+-	[pbn_ni8430_pxie_8] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 8,
+-		.base_baud	= 3125000,
+-		.uart_offset	= 0x10,
+-		.first_offset	= 0x800,
+-	},
+-	[pbn_ni8431_8] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 8,
+-		.base_baud	= 3686400,
+-		.uart_offset	= 0x10,
+-		.first_offset	= 0x800,
+-	},
+-	[pbn_ni8431_4] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 4,
+-		.base_baud	= 3686400,
+-		.uart_offset	= 0x10,
+-		.first_offset	= 0x800,
+-	},
+-	[pbn_ni8431_2] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 2,
+-		.base_baud	= 3686400,
+-		.uart_offset	= 0x10,
+-		.first_offset	= 0x800,
+-	},
+-	[pbn_ni8431_pxie_16] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 16,
+-		.base_baud	= 3125000,
+-		.uart_offset	= 0x10,
+-		.first_offset	= 0x800,
+-	},
+-	[pbn_ni8431_pxie_8] = {
+-		.flags		= FL_BASE0,
+-		.num_ports	= 8,
+-		.base_baud	= 3125000,
+-		.uart_offset	= 0x10,
+-		.first_offset	= 0x800,
+-	},
+ 	/*
+ 	 * ADDI-DATA GmbH PCI-Express communication cards <info@addi-data.com>
+ 	 */
+@@ -5567,33 +5310,6 @@ static const struct pci_device_id serial_pci_tbl[] = {
+ 	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PCI8432_2324,
+ 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+ 		pbn_ni8430_4 },
+-	{	PCI_VENDOR_ID_NI, PCIE_DEVICE_ID_NI_PXIE8430_2328,
+-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+-		pbn_ni8430_pxie_8 },
+-	{	PCI_VENDOR_ID_NI, PCIE_DEVICE_ID_NI_PXIE8430_23216,
+-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+-		pbn_ni8430_pxie_16 },
+-	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8431_4852,
+-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+-		pbn_ni8431_2 },
+-	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8431_4854,
+-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+-		pbn_ni8431_4 },
+-	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8431_4858,
+-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+-		pbn_ni8431_8 },
+-	{	PCI_VENDOR_ID_NI, PCIE_DEVICE_ID_NI_PXIE8431_4858,
+-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+-		pbn_ni8431_pxie_8 },
+-	{	PCI_VENDOR_ID_NI, PCIE_DEVICE_ID_NI_PXIE8431_48516,
+-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+-		pbn_ni8431_pxie_16 },
+-	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8433_4852,
+-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+-		pbn_ni8431_2 },
+-	{	PCI_VENDOR_ID_NI, PCI_DEVICE_ID_NI_PXI8433_4854,
+-		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+-		pbn_ni8431_4 },
+ 
+ 	/*
+ 	 * MOXA
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+2.17.1
 
