@@ -1,234 +1,163 @@
-Return-Path: <SRS0=ezJB=ZU=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=9UXq=ZV=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB51FC432C3
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Nov 2019 14:59:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00CDDC432C0
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Nov 2019 15:39:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9B18B21774
-	for <linux-serial@archiver.kernel.org>; Thu, 28 Nov 2019 14:59:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C3984217BC
+	for <linux-serial@archiver.kernel.org>; Fri, 29 Nov 2019 15:39:41 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="Dwl4dqLd"
+	dkim=pass (2048-bit key) header.d=antmicro.com header.i=@antmicro.com header.b="b1IChhjA"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726733AbfK1O7O (ORCPT
+        id S1727070AbfK2Pjl (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 28 Nov 2019 09:59:14 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:44446 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727454AbfK1O5s (ORCPT
+        Fri, 29 Nov 2019 10:39:41 -0500
+Received: from mail-io1-f68.google.com ([209.85.166.68]:46377 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726925AbfK2Pjk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 28 Nov 2019 09:57:48 -0500
-Received: by mail-lj1-f194.google.com with SMTP id c19so1822064lji.11
-        for <linux-serial@vger.kernel.org>; Thu, 28 Nov 2019 06:57:45 -0800 (PST)
+        Fri, 29 Nov 2019 10:39:40 -0500
+Received: by mail-io1-f68.google.com with SMTP id i11so32817914iol.13
+        for <linux-serial@vger.kernel.org>; Fri, 29 Nov 2019 07:39:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=PS8hZ/FNZ5fnmFnMC7wpuYE5CME6gqxRCzSgU7yOKOk=;
-        b=Dwl4dqLdHHKnldphnAGAr1ToN610EqBZwSqoR/hgQSNxfsV/4wXOcOzAUM9uz6FotW
-         9qwt38QjaaeFHldetsUOgPoIM24I2pCcWdKTSDI7nv8y8op+zapWHlf8st+tVkHCz7P5
-         bh30cwYMxpmBmbI75/QPPKlSxYLuOhMWYJifE=
+        d=antmicro.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=GZ64dFx/b6xoVXXGFcVREkFmLBqmtyqbMTpiRv9D3vk=;
+        b=b1IChhjArK99MWA1YVOtlfL8+65h6lp14vSr6zaz6U/uJRX1NnqsinLYifo5jeI8QL
+         9NQqI1S+uP+PGNiVgwxZaSP1yEr699GBPQgTa6Kxh2KZRCo8kjWU6gyU6oXnAHBXHxm3
+         kKZNUp9hgsc4yPCyLbIbC8GpTx/9/en1oOVRoFnC6VE98XRs3rHb47JkrHJC94IOtQeB
+         i66Upa+3wY0VAI9TN3tHeEZHLaWFuZqdU/5nelGTlXkejXirbyXtWERnkMkfKQm+EgWO
+         WBNJuDj1LGuChGWfugCocwa7j5aYFC6mASJdftS5jEu3k3FjKMWHf2Aw2qU7gKJaz5Yb
+         RekQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=PS8hZ/FNZ5fnmFnMC7wpuYE5CME6gqxRCzSgU7yOKOk=;
-        b=iGVi+ELuKEdTrKyLQqS3hU0+RLpNymrfoNwSYGHuuiKFHdSwv17cOYLbBd3JCcLi0Z
-         HG1OssgZtImYQvKzdGd91MmZCmzAicTzmgFv0oreodTXlTQ/f63hdrq05DLeCU/3ZMPH
-         x1nfr8wpndfSNFR6UZ8RfDnvkS75SiHTpOCZRSGlWKEBDc0cbc80PshGxlTjsTRjXpLo
-         rhRi2W8cvbaPE8SOLt/ca59UO4oElerOV9bh2+7h5V5eaa5RS1p8Al8Kkg1JthA8d9D3
-         VKKmD7nKf3dxajD7DMJgYk82XqKUeBYcZSogKMQ4q5MKfCukLnnGzlzsWUYNcIheDqZh
-         5xkQ==
-X-Gm-Message-State: APjAAAWLAXTB3BEyPPCJ/gud8YghBq45pBqGnD1McnhtFCR70BIASTjG
-        D8gQfGyI7tu2HjbYPUNASnvHjw==
-X-Google-Smtp-Source: APXvYqxr+KXWNUM6J8K1e3cWke7H28D8dBWc6wxWxJZiGdbp/JimSWw2nVOwCFqjHzoiT5BiVmBGsA==
-X-Received: by 2002:a2e:3e08:: with SMTP id l8mr5147340lja.236.1574953064981;
-        Thu, 28 Nov 2019 06:57:44 -0800 (PST)
-Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id u2sm2456803lfl.18.2019.11.28.06.57.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Nov 2019 06:57:44 -0800 (PST)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
-        Christophe Leroy <christophe.leroy@c-s.fr>
-Cc:     linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Scott Wood <oss@buserror.net>, Timur Tabi <timur@kernel.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-serial@vger.kernel.org
-Subject: [PATCH v6 30/49] serial: ucc_uart: factor out soft_uart initialization
-Date:   Thu, 28 Nov 2019 15:55:35 +0100
-Message-Id: <20191128145554.1297-31-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191128145554.1297-1-linux@rasmusvillemoes.dk>
-References: <20191128145554.1297-1-linux@rasmusvillemoes.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=GZ64dFx/b6xoVXXGFcVREkFmLBqmtyqbMTpiRv9D3vk=;
+        b=g2lXzAIqAvNh7kBejqowC1JeX7pUE0D4FE9s+WCrsw1NyxWAngtbQWls5bMB9V699U
+         jNXShWBn+6JoJDELLrHn9fdsB40Q3oIf0VEwl296OkW/GPDmA2dmxfMKpZaW9avN6SHp
+         +rPeA0/rlOi72xk0P4uUs5skqeFaXnjOp3lLuU5q9hRbqXgX0NnGFPIUwts97TkQGrbi
+         63PERdamDjXOkfOXYkwQuWuuoptuiRexC3ENuxi3tGB+s3GlNMTsRYiH3kj9cRK+3frO
+         +T5tNHLOhW4EiU4WsHPMrQZS4vnkcLkVwZDJSMt2g8Lsht82WuFKe9ENXttd6hYXwPUk
+         k9fA==
+X-Gm-Message-State: APjAAAXIEzpqIaFKKhjyCPQOMJzHI6vLUBt2VtytOISQBDKdTZeFly/f
+        0QgBmwDWWF+ENMGD6fnWREq/XYsJ4/pVorl0INELxg==
+X-Google-Smtp-Source: APXvYqxXwIY3yJH7Gn9pZM6Hw5rVVw762bvoB4Gded6U8Sn+JmxOp/vhgIZapxUg9GwljvgJfYpXIkZys55MYqMsxDU=
+X-Received: by 2002:a02:a388:: with SMTP id y8mr10590059jak.70.1575041979840;
+ Fri, 29 Nov 2019 07:39:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20191023114634.13657-0-mholenko@antmicro.com> <20191023114634.13657-2-mholenko@antmicro.com>
+ <20191120192648.GA3087498@kroah.com> <CAPk366QgcOYPZJXM46o3Gn8ksFYYoNwJvnunUe7y0aLNgJuSRg@mail.gmail.com>
+ <20191126091926.GB1372654@kroah.com>
+In-Reply-To: <20191126091926.GB1372654@kroah.com>
+From:   Mateusz Holenko <mholenko@antmicro.com>
+Date:   Fri, 29 Nov 2019 16:39:28 +0100
+Message-ID: <CAPk366T-B_7ADCC4XhOT8QdQ5hxC3mNkvfcuY3diu1wnWBHkAg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/4] litex: add common LiteX header
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jiri Slaby <jslaby@suse.com>, devicetree@vger.kernel.org,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Stafford Horne <shorne@gmail.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Filip Kokosinski <fkokosinski@internships.antmicro.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The "soft uart" mechanism is a workaround for a silicon bug which (as
-far as I know) only affects some PPC-based SOCs.
+wt., 26 lis 2019 o 10:19 Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> napisa=C5=82(a):
+>
+> On Tue, Nov 26, 2019 at 10:02:18AM +0100, Mateusz Holenko wrote:
+> > =C5=9Br., 20 lis 2019 o 20:26 Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> napisa=C5=82(a):
+> > >
+> > > On Wed, Oct 23, 2019 at 11:47:04AM +0200, Mateusz Holenko wrote:
+> > > > +#ifdef __LITTLE_ENDIAN
+> > > > +# define LITEX_READ_REG(addr)                  ioread32(addr)
+> > > > +# define LITEX_READ_REG_OFF(addr, off)         ioread32(addr + off=
+)
+> > > > +# define LITEX_WRITE_REG(val, addr)            iowrite32(val, addr=
+)
+> > > > +# define LITEX_WRITE_REG_OFF(val, addr, off)   iowrite32(val, addr=
+ + off)
+> > > > +#else
+> > > > +# define LITEX_READ_REG(addr)                  ioread32be(addr)
+> > > > +# define LITEX_READ_REG_OFF(addr, off)         ioread32be(addr + o=
+ff)
+> > > > +# define LITEX_WRITE_REG(val, addr)            iowrite32be(val, ad=
+dr)
+> > > > +# define LITEX_WRITE_REG_OFF(val, addr, off)   iowrite32be(val, ad=
+dr + off)
+> > > > +#endif
+> > >
+> > > I just noticed this.
+> > >
+> > > Ick, this is not good.  You will run into problems in the future with
+> > > this, I can guarantee it.  What about systems where the CPU is one
+> > > endian and the hardware in the other?  It will happen trust us.
+> >
+> > As mentioned in the previous comment, LiteX CSRs are guaranteed to be
+> > always little-endian - this includes configurations with both
+> > big-endian and little-endian CPUs.
+>
+> What enforces that guarantee?
 
-The code that determines which microcode blob to request relies on
-some powerpc-specific bits (e.g. the mfspr(SPRN_SVR) and hence also
-the asm/reg.h header). This makes it a little awkward to allow this
-driver to be built for non-PPC based SOCs with a QE, even if they are
-not affected by that silicon bug and thus don't need any of the Soft
-UART logic.
+liteuart is na IP core that comes as a part of a design generated and
+configured by LiteX SoC builder
+(https://github.com/enjoy-digital/litex). Current implementation of
+LiteX generates systems in such a way that CSRs in peripherals are
+little-endian regardless of a softcore CPU used (available options
+cover both little-endian and big-endian CPU cores). Liteuart is a part
+of the LiteX project and is probably not usable outside of it.
 
-There's no way around guarding those bits with some ifdeffery, so to
-keep that isolated, factor out the
-do-we-need-soft-uart-and-if-so-handle-the-firmware to a separate
-function, which we can then easily stub out for non-PPC.
+I was digging through the code and documentation to verify that the
+always-little-endian-CSR behaviour is "guaranteed", but - to my
+surprise - couldn't find anything. It seems to be simply an
+implementation detail that might (maybe?) change in the future.
 
-Reviewed-by: Timur Tabi <timur@kernel.org>
-Acked-by: Timur Tabi <timur@kernel.org>
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- drivers/tty/serial/ucc_uart.c | 110 ++++++++++++++++++----------------
- 1 file changed, 58 insertions(+), 52 deletions(-)
+In this context your suggestion about probing things dynamically seems
+to be even more relevant.
 
-diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
-index 8a378ee5d34f..f286e91714cb 100644
---- a/drivers/tty/serial/ucc_uart.c
-+++ b/drivers/tty/serial/ucc_uart.c
-@@ -1183,70 +1183,76 @@ static void uart_firmware_cont(const struct firmware *fw, void *context)
- 	release_firmware(fw);
- }
- 
--static int ucc_uart_probe(struct platform_device *ofdev)
-+static int soft_uart_init(struct platform_device *ofdev)
- {
- 	struct device_node *np = ofdev->dev.of_node;
--	const unsigned int *iprop;      /* Integer OF properties */
--	const char *sprop;      /* String OF properties */
--	struct uart_qe_port *qe_port = NULL;
--	struct resource res;
-+	struct qe_firmware_info *qe_fw_info;
- 	int ret;
- 
--	/*
--	 * Determine if we need Soft-UART mode
--	 */
- 	if (of_find_property(np, "soft-uart", NULL)) {
- 		dev_dbg(&ofdev->dev, "using Soft-UART mode\n");
- 		soft_uart = 1;
-+	} else {
-+		return 0;
- 	}
- 
--	/*
--	 * If we are using Soft-UART, determine if we need to upload the
--	 * firmware, too.
--	 */
--	if (soft_uart) {
--		struct qe_firmware_info *qe_fw_info;
--
--		qe_fw_info = qe_get_firmware_info();
--
--		/* Check if the firmware has been uploaded. */
--		if (qe_fw_info && strstr(qe_fw_info->id, "Soft-UART")) {
--			firmware_loaded = 1;
--		} else {
--			char filename[32];
--			unsigned int soc;
--			unsigned int rev_h;
--			unsigned int rev_l;
--
--			soc = soc_info(&rev_h, &rev_l);
--			if (!soc) {
--				dev_err(&ofdev->dev, "unknown CPU model\n");
--				return -ENXIO;
--			}
--			sprintf(filename, "fsl_qe_ucode_uart_%u_%u%u.bin",
--				soc, rev_h, rev_l);
--
--			dev_info(&ofdev->dev, "waiting for firmware %s\n",
--				filename);
-+	qe_fw_info = qe_get_firmware_info();
- 
--			/*
--			 * We call request_firmware_nowait instead of
--			 * request_firmware so that the driver can load and
--			 * initialize the ports without holding up the rest of
--			 * the kernel.  If hotplug support is enabled in the
--			 * kernel, then we use it.
--			 */
--			ret = request_firmware_nowait(THIS_MODULE,
--				FW_ACTION_HOTPLUG, filename, &ofdev->dev,
--				GFP_KERNEL, &ofdev->dev, uart_firmware_cont);
--			if (ret) {
--				dev_err(&ofdev->dev,
--					"could not load firmware %s\n",
--					filename);
--				return ret;
--			}
-+	/* Check if the firmware has been uploaded. */
-+	if (qe_fw_info && strstr(qe_fw_info->id, "Soft-UART")) {
-+		firmware_loaded = 1;
-+	} else {
-+		char filename[32];
-+		unsigned int soc;
-+		unsigned int rev_h;
-+		unsigned int rev_l;
-+
-+		soc = soc_info(&rev_h, &rev_l);
-+		if (!soc) {
-+			dev_err(&ofdev->dev, "unknown CPU model\n");
-+			return -ENXIO;
-+		}
-+		sprintf(filename, "fsl_qe_ucode_uart_%u_%u%u.bin",
-+			soc, rev_h, rev_l);
-+
-+		dev_info(&ofdev->dev, "waiting for firmware %s\n",
-+			 filename);
-+
-+		/*
-+		 * We call request_firmware_nowait instead of
-+		 * request_firmware so that the driver can load and
-+		 * initialize the ports without holding up the rest of
-+		 * the kernel.  If hotplug support is enabled in the
-+		 * kernel, then we use it.
-+		 */
-+		ret = request_firmware_nowait(THIS_MODULE,
-+					      FW_ACTION_HOTPLUG, filename, &ofdev->dev,
-+					      GFP_KERNEL, &ofdev->dev, uart_firmware_cont);
-+		if (ret) {
-+			dev_err(&ofdev->dev,
-+				"could not load firmware %s\n",
-+				filename);
-+			return ret;
- 		}
- 	}
-+	return 0;
-+}
-+
-+static int ucc_uart_probe(struct platform_device *ofdev)
-+{
-+	struct device_node *np = ofdev->dev.of_node;
-+	const unsigned int *iprop;      /* Integer OF properties */
-+	const char *sprop;      /* String OF properties */
-+	struct uart_qe_port *qe_port = NULL;
-+	struct resource res;
-+	int ret;
-+
-+	/*
-+	 * Determine if we need Soft-UART mode
-+	 */
-+	ret = soft_uart_init(ofdev);
-+	if (ret)
-+		return ret;
- 
- 	qe_port = kzalloc(sizeof(struct uart_qe_port), GFP_KERNEL);
- 	if (!qe_port) {
--- 
-2.23.0
+> > The aim of including the ifdef section was exactly to target situation
+> > where endianness is different for CPU and devices. As such this
+> > approach *should* work.
+>
+> "should" :)
+>
+> We have seen it happen all the time that some hardware team hooks this
+> up backwards, no matter what the "spec" required.  So be careful here.
+>
+> good luck!
+>
+> greg k-h
 
+
+
+--=20
+Mateusz Holenko
+Antmicro Ltd | www.antmicro.com
+Roosevelta 22, 60-829 Poznan, Poland
