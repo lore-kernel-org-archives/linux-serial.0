@@ -1,163 +1,163 @@
-Return-Path: <SRS0=9UXq=ZV=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=fclf=ZX=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00CDDC432C0
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Nov 2019 15:39:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30515C432C0
+	for <linux-serial@archiver.kernel.org>; Sun,  1 Dec 2019 08:03:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C3984217BC
-	for <linux-serial@archiver.kernel.org>; Fri, 29 Nov 2019 15:39:41 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=antmicro.com header.i=@antmicro.com header.b="b1IChhjA"
+	by mail.kernel.org (Postfix) with ESMTP id EB0B62146E
+	for <linux-serial@archiver.kernel.org>; Sun,  1 Dec 2019 08:03:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1575187399;
+	bh=MlPW5xsoKivfncXytvbaABH9+yPexHTq/zpUsDjycWU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=c0kIrJXeMsPaw7ZokT2TtBgJUkZ18WJvye4gdjRxe61IoIsnIxCNKM8SIEfMsNbUx
+	 MIQgFiMvFjcDz+13fj/ZkZC1//E8Qx17eje5v6pwqKw688DOyTwx3eQzEilkOPFDNH
+	 fbUvQkV3kHe+Ktnu/RevSBZh06UmVhqRPeLA7cK0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727070AbfK2Pjl (ORCPT
+        id S1725908AbfLAIDS (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 29 Nov 2019 10:39:41 -0500
-Received: from mail-io1-f68.google.com ([209.85.166.68]:46377 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726925AbfK2Pjk (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 29 Nov 2019 10:39:40 -0500
-Received: by mail-io1-f68.google.com with SMTP id i11so32817914iol.13
-        for <linux-serial@vger.kernel.org>; Fri, 29 Nov 2019 07:39:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=antmicro.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=GZ64dFx/b6xoVXXGFcVREkFmLBqmtyqbMTpiRv9D3vk=;
-        b=b1IChhjArK99MWA1YVOtlfL8+65h6lp14vSr6zaz6U/uJRX1NnqsinLYifo5jeI8QL
-         9NQqI1S+uP+PGNiVgwxZaSP1yEr699GBPQgTa6Kxh2KZRCo8kjWU6gyU6oXnAHBXHxm3
-         kKZNUp9hgsc4yPCyLbIbC8GpTx/9/en1oOVRoFnC6VE98XRs3rHb47JkrHJC94IOtQeB
-         i66Upa+3wY0VAI9TN3tHeEZHLaWFuZqdU/5nelGTlXkejXirbyXtWERnkMkfKQm+EgWO
-         WBNJuDj1LGuChGWfugCocwa7j5aYFC6mASJdftS5jEu3k3FjKMWHf2Aw2qU7gKJaz5Yb
-         RekQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=GZ64dFx/b6xoVXXGFcVREkFmLBqmtyqbMTpiRv9D3vk=;
-        b=g2lXzAIqAvNh7kBejqowC1JeX7pUE0D4FE9s+WCrsw1NyxWAngtbQWls5bMB9V699U
-         jNXShWBn+6JoJDELLrHn9fdsB40Q3oIf0VEwl296OkW/GPDmA2dmxfMKpZaW9avN6SHp
-         +rPeA0/rlOi72xk0P4uUs5skqeFaXnjOp3lLuU5q9hRbqXgX0NnGFPIUwts97TkQGrbi
-         63PERdamDjXOkfOXYkwQuWuuoptuiRexC3ENuxi3tGB+s3GlNMTsRYiH3kj9cRK+3frO
-         +T5tNHLOhW4EiU4WsHPMrQZS4vnkcLkVwZDJSMt2g8Lsht82WuFKe9ENXttd6hYXwPUk
-         k9fA==
-X-Gm-Message-State: APjAAAXIEzpqIaFKKhjyCPQOMJzHI6vLUBt2VtytOISQBDKdTZeFly/f
-        0QgBmwDWWF+ENMGD6fnWREq/XYsJ4/pVorl0INELxg==
-X-Google-Smtp-Source: APXvYqxXwIY3yJH7Gn9pZM6Hw5rVVw762bvoB4Gded6U8Sn+JmxOp/vhgIZapxUg9GwljvgJfYpXIkZys55MYqMsxDU=
-X-Received: by 2002:a02:a388:: with SMTP id y8mr10590059jak.70.1575041979840;
- Fri, 29 Nov 2019 07:39:39 -0800 (PST)
+        Sun, 1 Dec 2019 03:03:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41360 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725866AbfLAIDS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 1 Dec 2019 03:03:18 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C6CBC20833;
+        Sun,  1 Dec 2019 08:03:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1575187397;
+        bh=MlPW5xsoKivfncXytvbaABH9+yPexHTq/zpUsDjycWU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZrWogk4TVGISA06finE1ARija1hJT117G2eJQrCg9j87YxQd4QN9nBc2lHMcUsoOx
+         dCLCU3BY6jTywuraPIOz8xF/Pj6uTTg9/f1i0SM6UKgAAx75Acf/sWCVHB6HVJmfSl
+         EY3nlhri269t2fNohwwRcaF/GU/kMQxG/awg7Wyw=
+Date:   Sun, 1 Dec 2019 09:03:14 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Hyunki Koo <kkoos00@naver.com>
+Cc:     jslaby@suse.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kkoos00@gmail.com,
+        Shinbeom Choi <sbeom.choi@samsung.com>,
+        Hyunki Koo <hyunki00.koo@samsung.com>
+Subject: Re: [PATCH] tty: serial: samsung: support driver modulization
+Message-ID: <20191201080314.GA3716559@kroah.com>
+References: <20191201075914.23512-1-kkoos00@naver.com>
 MIME-Version: 1.0
-References: <20191023114634.13657-0-mholenko@antmicro.com> <20191023114634.13657-2-mholenko@antmicro.com>
- <20191120192648.GA3087498@kroah.com> <CAPk366QgcOYPZJXM46o3Gn8ksFYYoNwJvnunUe7y0aLNgJuSRg@mail.gmail.com>
- <20191126091926.GB1372654@kroah.com>
-In-Reply-To: <20191126091926.GB1372654@kroah.com>
-From:   Mateusz Holenko <mholenko@antmicro.com>
-Date:   Fri, 29 Nov 2019 16:39:28 +0100
-Message-ID: <CAPk366T-B_7ADCC4XhOT8QdQ5hxC3mNkvfcuY3diu1wnWBHkAg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/4] litex: add common LiteX header
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jiri Slaby <jslaby@suse.com>, devicetree@vger.kernel.org,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Stafford Horne <shorne@gmail.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Filip Kokosinski <fkokosinski@internships.antmicro.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Icenowy Zheng <icenowy@aosc.io>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191201075914.23512-1-kkoos00@naver.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-wt., 26 lis 2019 o 10:19 Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> napisa=C5=82(a):
->
-> On Tue, Nov 26, 2019 at 10:02:18AM +0100, Mateusz Holenko wrote:
-> > =C5=9Br., 20 lis 2019 o 20:26 Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> napisa=C5=82(a):
-> > >
-> > > On Wed, Oct 23, 2019 at 11:47:04AM +0200, Mateusz Holenko wrote:
-> > > > +#ifdef __LITTLE_ENDIAN
-> > > > +# define LITEX_READ_REG(addr)                  ioread32(addr)
-> > > > +# define LITEX_READ_REG_OFF(addr, off)         ioread32(addr + off=
-)
-> > > > +# define LITEX_WRITE_REG(val, addr)            iowrite32(val, addr=
-)
-> > > > +# define LITEX_WRITE_REG_OFF(val, addr, off)   iowrite32(val, addr=
- + off)
-> > > > +#else
-> > > > +# define LITEX_READ_REG(addr)                  ioread32be(addr)
-> > > > +# define LITEX_READ_REG_OFF(addr, off)         ioread32be(addr + o=
-ff)
-> > > > +# define LITEX_WRITE_REG(val, addr)            iowrite32be(val, ad=
-dr)
-> > > > +# define LITEX_WRITE_REG_OFF(val, addr, off)   iowrite32be(val, ad=
-dr + off)
-> > > > +#endif
-> > >
-> > > I just noticed this.
-> > >
-> > > Ick, this is not good.  You will run into problems in the future with
-> > > this, I can guarantee it.  What about systems where the CPU is one
-> > > endian and the hardware in the other?  It will happen trust us.
-> >
-> > As mentioned in the previous comment, LiteX CSRs are guaranteed to be
-> > always little-endian - this includes configurations with both
-> > big-endian and little-endian CPUs.
->
-> What enforces that guarantee?
+On Sun, Dec 01, 2019 at 04:59:14PM +0900, Hyunki Koo wrote:
+> From: Shinbeom Choi <sbeom.choi@samsung.com>
+> 
+> This commit enables modulization of samsung uart driver.
+> 
+> There was no way to make use of this driver in other module,
+> because uart functions were static.
+> 
+> By exporting required functions, user can use this driver
+> in other module.
+> 
+> Signed-off-by: Shinbeom Choi <sbeom.choi@samsung.com>
+> Signed-off-by: Hyunki Koo <hyunki00.koo@samsung.com>
+> ---
+>  drivers/tty/serial/samsung.h     | 32 ++++++++++++
+>  drivers/tty/serial/samsung_tty.c | 85 +++++++++++++++-----------------
+>  2 files changed, 73 insertions(+), 44 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/samsung.h b/drivers/tty/serial/samsung.h
+> index f93022113f59..25be0962284d 100644
+> --- a/drivers/tty/serial/samsung.h
+> +++ b/drivers/tty/serial/samsung.h
+> @@ -144,4 +144,36 @@ static inline void s3c24xx_clear_bit(struct uart_port *port, int idx,
+>  	local_irq_restore(flags);
+>  }
+>  
+> +#if defined(CONFIG_ARCH_EXYNOS)
+> +#define EXYNOS_COMMON_SERIAL_DRV_DATA				\
+> +	.info = &(struct s3c24xx_uart_info) {			\
+> +		.name		= "Samsung Exynos UART",	\
+> +		.type		= PORT_S3C6400,			\
+> +		.has_divslot	= 1,				\
+> +		.rx_fifomask	= S5PV210_UFSTAT_RXMASK,	\
+> +		.rx_fifoshift	= S5PV210_UFSTAT_RXSHIFT,	\
+> +		.rx_fifofull	= S5PV210_UFSTAT_RXFULL,	\
+> +		.tx_fifofull	= S5PV210_UFSTAT_TXFULL,	\
+> +		.tx_fifomask	= S5PV210_UFSTAT_TXMASK,	\
+> +		.tx_fifoshift	= S5PV210_UFSTAT_TXSHIFT,	\
+> +		.def_clk_sel	= S3C2410_UCON_CLKSEL0,		\
+> +		.num_clks	= 1,				\
+> +		.clksel_mask	= 0,				\
+> +		.clksel_shift	= 0,				\
+> +	},							\
+> +	.def_cfg = &(struct s3c2410_uartcfg) {			\
+> +		.ucon		= S5PV210_UCON_DEFAULT,		\
+> +		.ufcon		= S5PV210_UFCON_DEFAULT,	\
+> +		.has_fracval	= 1,				\
+> +	}							\
+> +
+> +#endif
+> +
+> +int s3c24xx_serial_get_ports(struct s3c24xx_uart_port **ourport, int index);
+> +int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+> +				    struct platform_device *platdev);
+> +int s3c24xx_serial_unregister_port(struct platform_device *dev);
+> +int s3c24xx_serial_suspend(struct device *dev);
+> +int s3c24xx_serial_resume(struct device *dev);
+> +int s3c24xx_serial_resume_noirq(struct device *dev);
+>  #endif
+> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+> index 83fd51607741..15414ecd9008 100644
+> --- a/drivers/tty/serial/samsung_tty.c
+> +++ b/drivers/tty/serial/samsung_tty.c
+> @@ -1735,7 +1735,7 @@ static int s3c24xx_serial_enable_baudclk(struct s3c24xx_uart_port *ourport)
+>   * initialise a single serial port from the platform device given
+>   */
+>  
+> -static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+> +int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+>  				    struct platform_device *platdev)
+>  {
+>  	struct uart_port *port = &ourport->port;
+> @@ -1842,12 +1842,24 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+>  	/* reset the fifos (and setup the uart) */
+>  	s3c24xx_serial_resetport(port, cfg);
+>  
+> +	if (!s3c24xx_uart_drv.state) {
+> +		ret = uart_register_driver(&s3c24xx_uart_drv);
+> +		if (ret < 0) {
+> +			dev_err(port->dev, "Failed to register Samsung UART driver\n");
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	dbg("%s: adding port\n", __func__);
+> +	uart_add_one_port(&s3c24xx_uart_drv, &ourport->port);
+> +
+>  	return 0;
+>  
+>  err:
+>  	port->mapbase = 0;
+>  	return ret;
+>  }
+> +EXPORT_SYMBOL_GPL(s3c24xx_serial_init_port);
 
-liteuart is na IP core that comes as a part of a design generated and
-configured by LiteX SoC builder
-(https://github.com/enjoy-digital/litex). Current implementation of
-LiteX generates systems in such a way that CSRs in peripherals are
-little-endian regardless of a softcore CPU used (available options
-cover both little-endian and big-endian CPU cores). Liteuart is a part
-of the LiteX project and is probably not usable outside of it.
+Why are you exporting all of these functions?  What other code uses
+them?  Why are you converting them all to global functions I don't see
+any other in-kernel callers, so why are those changes needed here?
 
-I was digging through the code and documentation to verify that the
-always-little-endian-CSR behaviour is "guaranteed", but - to my
-surprise - couldn't find anything. It seems to be simply an
-implementation detail that might (maybe?) change in the future.
+totally confused,
 
-In this context your suggestion about probing things dynamically seems
-to be even more relevant.
-
-> > The aim of including the ifdef section was exactly to target situation
-> > where endianness is different for CPU and devices. As such this
-> > approach *should* work.
->
-> "should" :)
->
-> We have seen it happen all the time that some hardware team hooks this
-> up backwards, no matter what the "spec" required.  So be careful here.
->
-> good luck!
->
-> greg k-h
-
-
-
---=20
-Mateusz Holenko
-Antmicro Ltd | www.antmicro.com
-Roosevelta 22, 60-829 Poznan, Poland
+greg k-h
