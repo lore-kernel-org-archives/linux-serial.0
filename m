@@ -1,163 +1,139 @@
-Return-Path: <SRS0=fclf=ZX=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=tvMx=ZY=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30515C432C0
-	for <linux-serial@archiver.kernel.org>; Sun,  1 Dec 2019 08:03:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24039C432C3
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Dec 2019 04:14:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EB0B62146E
-	for <linux-serial@archiver.kernel.org>; Sun,  1 Dec 2019 08:03:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1575187399;
-	bh=MlPW5xsoKivfncXytvbaABH9+yPexHTq/zpUsDjycWU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=c0kIrJXeMsPaw7ZokT2TtBgJUkZ18WJvye4gdjRxe61IoIsnIxCNKM8SIEfMsNbUx
-	 MIQgFiMvFjcDz+13fj/ZkZC1//E8Qx17eje5v6pwqKw688DOyTwx3eQzEilkOPFDNH
-	 fbUvQkV3kHe+Ktnu/RevSBZh06UmVhqRPeLA7cK0=
+	by mail.kernel.org (Postfix) with ESMTP id EA44120725
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Dec 2019 04:14:49 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PyPB0suN"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725908AbfLAIDS (ORCPT
+        id S1727327AbfLBEOq (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 1 Dec 2019 03:03:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41360 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725866AbfLAIDS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 1 Dec 2019 03:03:18 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C6CBC20833;
-        Sun,  1 Dec 2019 08:03:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1575187397;
-        bh=MlPW5xsoKivfncXytvbaABH9+yPexHTq/zpUsDjycWU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZrWogk4TVGISA06finE1ARija1hJT117G2eJQrCg9j87YxQd4QN9nBc2lHMcUsoOx
-         dCLCU3BY6jTywuraPIOz8xF/Pj6uTTg9/f1i0SM6UKgAAx75Acf/sWCVHB6HVJmfSl
-         EY3nlhri269t2fNohwwRcaF/GU/kMQxG/awg7Wyw=
-Date:   Sun, 1 Dec 2019 09:03:14 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Hyunki Koo <kkoos00@naver.com>
-Cc:     jslaby@suse.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kkoos00@gmail.com,
-        Shinbeom Choi <sbeom.choi@samsung.com>,
-        Hyunki Koo <hyunki00.koo@samsung.com>
-Subject: Re: [PATCH] tty: serial: samsung: support driver modulization
-Message-ID: <20191201080314.GA3716559@kroah.com>
-References: <20191201075914.23512-1-kkoos00@naver.com>
+        Sun, 1 Dec 2019 23:14:46 -0500
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:41943 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727298AbfLBEOq (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 1 Dec 2019 23:14:46 -0500
+Received: by mail-oi1-f193.google.com with SMTP id e9so31203747oif.8;
+        Sun, 01 Dec 2019 20:14:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=f/5KDWwc/xKNxHsiDOtb26jMc/teIu2y72BKQlD6HUw=;
+        b=PyPB0suN3Ac/0YBN/GdG8mMtlpX+Q2k15I84EAq6fyg6P3jVxHJ+pL9vSwl/+B+8q4
+         PWU3EUC+3u7/7UkoBdF9NI8morrmDlADs397ZTs6x/CLy3KRHnBCSu7jf0NpWKJWbtK0
+         OS9SNvWEjeRkbN5l/YTF7NK1uWGN7UXFD0tmWlOH505dDMXvfWWIRgLCgbLFhkoFHcho
+         tRbUvog+kYJmqI9IQlg6//ZjWVpwEAUy674rkBNd4ySL5ywzMlA1ncNQk3XpJw/BIibJ
+         VVn1hTFhHjahdJyg/TDKWziZHhJvo6NBn2Nist5N+J2skFel2VqMuSZZ0jvw/GzuCTzZ
+         zmaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=f/5KDWwc/xKNxHsiDOtb26jMc/teIu2y72BKQlD6HUw=;
+        b=hVuPOt9diZ1HC6AjblSd9TeXYCdW7doIUYBduUhgRF4op3maFHU7EgAoa1vKPn2H1a
+         WNdLn9DzGbWFl1vleWiJn/FvmZ+pVcRShKLDIrmAHeW/dZ5Fp4DjzR3rrjmkZNreh3Qd
+         qL4roykSAmdIm3NzrmNxEXQAVDwmg1CTxaUc7CfmlPcQV1pozPIU7fJ9wtru3e0qMxbS
+         JW3M40up882bs+gkEy+/yP0+FEqGvZImp9fWdGRzqwFpqXMcBd5XwS/h9iidKS1G/FB5
+         +eX3vAKd+HTemF252PXFDpv9lwFRagyEwS7WR1x51FSZvVae2MVKOuBNQVqnWh/xF+Yo
+         9FeQ==
+X-Gm-Message-State: APjAAAX48oVcz1Xq6/iMFDl23WExDJuFuiHI7cnvKvZyFOQBp5KSq0/j
+        G9Y44OQ+o4RrWrSycwcL+yfpnOoT
+X-Google-Smtp-Source: APXvYqzsOVbpb/beefEZE/OzfdaH+fj4ZJmh7Tyh+FkhBzgVvyUJ1tZU7N7psT2RXkxa29/o1rZ46Q==
+X-Received: by 2002:aca:d4c1:: with SMTP id l184mr22524637oig.172.1575260083692;
+        Sun, 01 Dec 2019 20:14:43 -0800 (PST)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id y23sm10176414oih.17.2019.12.01.20.14.41
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 01 Dec 2019 20:14:42 -0800 (PST)
+Date:   Sun, 1 Dec 2019 20:14:40 -0800
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jiri Slaby <jslaby@suse.com>, linux-sh@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: Re: [PATCH v4 1/2] drivers: move the early platform device support
+ to arch/sh
+Message-ID: <20191202041440.GA1628@roeck-us.net>
+References: <20191003092913.10731-1-brgl@bgdev.pl>
+ <20191003092912.G3pupKBmyct1r9ScP5Skuw9D-_ALcMVSnfMfHAlwe0Y@z>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191201075914.23512-1-kkoos00@naver.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <20191003092912.G3pupKBmyct1r9ScP5Skuw9D-_ALcMVSnfMfHAlwe0Y@z>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Dec 01, 2019 at 04:59:14PM +0900, Hyunki Koo wrote:
-> From: Shinbeom Choi <sbeom.choi@samsung.com>
+On Thu, Oct 03, 2019 at 11:29:12AM +0200, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 > 
-> This commit enables modulization of samsung uart driver.
+> SuperH is the only user of the current implementation of early platform
+> device support. We want to introduce a more robust approach to early
+> probing. As the first step - move all the current early platform code
+> to arch/sh.
 > 
-> There was no way to make use of this driver in other module,
-> because uart functions were static.
+> In order not to export internal drivers/base functions to arch code for
+> this temporary solution - copy the two needed routines for driver
+> matching from drivers/base/platform.c to arch/sh/drivers/platform_early.c.
 > 
-> By exporting required functions, user can use this driver
-> in other module.
+> Also: call early_platform_cleanup() from subsys_initcall() so that it's
+> called after all early devices are probed.
 > 
-> Signed-off-by: Shinbeom Choi <sbeom.choi@samsung.com>
-> Signed-off-by: Hyunki Koo <hyunki00.koo@samsung.com>
-> ---
->  drivers/tty/serial/samsung.h     | 32 ++++++++++++
->  drivers/tty/serial/samsung_tty.c | 85 +++++++++++++++-----------------
->  2 files changed, 73 insertions(+), 44 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/samsung.h b/drivers/tty/serial/samsung.h
-> index f93022113f59..25be0962284d 100644
-> --- a/drivers/tty/serial/samsung.h
-> +++ b/drivers/tty/serial/samsung.h
-> @@ -144,4 +144,36 @@ static inline void s3c24xx_clear_bit(struct uart_port *port, int idx,
->  	local_irq_restore(flags);
->  }
->  
-> +#if defined(CONFIG_ARCH_EXYNOS)
-> +#define EXYNOS_COMMON_SERIAL_DRV_DATA				\
-> +	.info = &(struct s3c24xx_uart_info) {			\
-> +		.name		= "Samsung Exynos UART",	\
-> +		.type		= PORT_S3C6400,			\
-> +		.has_divslot	= 1,				\
-> +		.rx_fifomask	= S5PV210_UFSTAT_RXMASK,	\
-> +		.rx_fifoshift	= S5PV210_UFSTAT_RXSHIFT,	\
-> +		.rx_fifofull	= S5PV210_UFSTAT_RXFULL,	\
-> +		.tx_fifofull	= S5PV210_UFSTAT_TXFULL,	\
-> +		.tx_fifomask	= S5PV210_UFSTAT_TXMASK,	\
-> +		.tx_fifoshift	= S5PV210_UFSTAT_TXSHIFT,	\
-> +		.def_clk_sel	= S3C2410_UCON_CLKSEL0,		\
-> +		.num_clks	= 1,				\
-> +		.clksel_mask	= 0,				\
-> +		.clksel_shift	= 0,				\
-> +	},							\
-> +	.def_cfg = &(struct s3c2410_uartcfg) {			\
-> +		.ucon		= S5PV210_UCON_DEFAULT,		\
-> +		.ufcon		= S5PV210_UFCON_DEFAULT,	\
-> +		.has_fracval	= 1,				\
-> +	}							\
-> +
-> +#endif
-> +
-> +int s3c24xx_serial_get_ports(struct s3c24xx_uart_port **ourport, int index);
-> +int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
-> +				    struct platform_device *platdev);
-> +int s3c24xx_serial_unregister_port(struct platform_device *dev);
-> +int s3c24xx_serial_suspend(struct device *dev);
-> +int s3c24xx_serial_resume(struct device *dev);
-> +int s3c24xx_serial_resume_noirq(struct device *dev);
->  #endif
-> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> index 83fd51607741..15414ecd9008 100644
-> --- a/drivers/tty/serial/samsung_tty.c
-> +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -1735,7 +1735,7 @@ static int s3c24xx_serial_enable_baudclk(struct s3c24xx_uart_port *ourport)
->   * initialise a single serial port from the platform device given
->   */
->  
-> -static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
-> +int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
->  				    struct platform_device *platdev)
->  {
->  	struct uart_port *port = &ourport->port;
-> @@ -1842,12 +1842,24 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
->  	/* reset the fifos (and setup the uart) */
->  	s3c24xx_serial_resetport(port, cfg);
->  
-> +	if (!s3c24xx_uart_drv.state) {
-> +		ret = uart_register_driver(&s3c24xx_uart_drv);
-> +		if (ret < 0) {
-> +			dev_err(port->dev, "Failed to register Samsung UART driver\n");
-> +			return ret;
-> +		}
-> +	}
-> +
-> +	dbg("%s: adding port\n", __func__);
-> +	uart_add_one_port(&s3c24xx_uart_drv, &ourport->port);
-> +
->  	return 0;
->  
->  err:
->  	port->mapbase = 0;
->  	return ret;
->  }
-> +EXPORT_SYMBOL_GPL(s3c24xx_serial_init_port);
+> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-Why are you exporting all of these functions?  What other code uses
-them?  Why are you converting them all to global functions I don't see
-any other in-kernel callers, so why are those changes needed here?
+Wondering ... has anyone tested this patch on affected hardware ?
+All my qemu boot tests (both sh and sheb) fail because of it.
+Bisect log below.
 
-totally confused,
+Guenter
 
-greg k-h
+---
+# bad: [72c0870e3a05d9cd5466d08c3d2a3069ed0a2f9f] Merge branch 'for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/dtor/input
+# good: [89d57dddd7d319ded00415790a0bb3c954b7e386] Merge tag 'media/v5.5-1' of git://git.kernel.org/pub/scm/linux/kernel/git/mchehab/linux-media
+git bisect start 'HEAD' '89d57dddd7d3'
+# good: [0a6cad5df541108cfd3fbd79eef48eb824c89bdc] Merge branch 'vmwgfx-coherent' of git://people.freedesktop.org/~thomash/linux into drm-next
+git bisect good 0a6cad5df541108cfd3fbd79eef48eb824c89bdc
+# bad: [9a3d7fd275be4559277667228902824165153c80] Merge tag 'driver-core-5.5-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core
+git bisect bad 9a3d7fd275be4559277667228902824165153c80
+# good: [59274c7164807d27b24e6c068dfe734f7bea4623] Merge tag 'usb-5.5-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb
+git bisect good 59274c7164807d27b24e6c068dfe734f7bea4623
+# good: [e71903106721dc53923e90aa484d78bc86c039a9] staging: mt7621-dma: align to match open parenthesis
+git bisect good e71903106721dc53923e90aa484d78bc86c039a9
+# good: [8f56e4ebe05c26c30e167519273843476e39e244] Merge tag 'char-misc-5.5-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc
+git bisect good 8f56e4ebe05c26c30e167519273843476e39e244
+# good: [8bde9f3d2a217d1635a7c7bdf8ad4c25c9a34b50] Merge tag 'iio-for-5.5c' of https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-next
+git bisect good 8bde9f3d2a217d1635a7c7bdf8ad4c25c9a34b50
+# bad: [0628cda318df6baec439ca6e6e274007492f1ccd] mac80211: Use debugfs_create_xul() helper
+git bisect bad 0628cda318df6baec439ca6e6e274007492f1ccd
+# bad: [03324507e66c7664c754b1ef92c5c3be24c78aa2] driver core: Allow fwnode_operations.add_links to differentiate errors
+git bisect bad 03324507e66c7664c754b1ef92c5c3be24c78aa2
+# bad: [313f5dbba41d905d59c820bb2d91ee6c661aff99] debugfs: remove return value of debugfs_create_u16()
+git bisect bad 313f5dbba41d905d59c820bb2d91ee6c661aff99
+# good: [d4387cd117414ba80230f27a514be5ca4a09cfcc] of: property: Create device links for all child-supplier depencencies
+git bisect good d4387cd117414ba80230f27a514be5ca4a09cfcc
+# bad: [c31e73121f4c1ec45a3e523ac6ce3ce6dafdcec1] base: soc: Handle custom soc information sysfs entries
+git bisect bad c31e73121f4c1ec45a3e523ac6ce3ce6dafdcec1
+# bad: [201e91091b1d47047f55580b5474e1239f4d17aa] sh: add the sh_ prefix to early platform symbols
+git bisect bad 201e91091b1d47047f55580b5474e1239f4d17aa
+# bad: [507fd01d5333338753a1cc26322dfc9f856c109f] drivers: move the early platform device support to arch/sh
+git bisect bad 507fd01d5333338753a1cc26322dfc9f856c109f
+# first bad commit: [507fd01d5333338753a1cc26322dfc9f856c109f] drivers: move the early platform device support to arch/sh
