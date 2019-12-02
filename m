@@ -2,204 +2,194 @@ Return-Path: <SRS0=tvMx=ZY=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF44FC432C3
-	for <linux-serial@archiver.kernel.org>; Mon,  2 Dec 2019 16:41:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87DD3C432C3
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Dec 2019 17:18:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7CB2C20722
-	for <linux-serial@archiver.kernel.org>; Mon,  2 Dec 2019 16:41:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4AEED2084F
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Dec 2019 17:18:36 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bVNmOxsE"
+	dkim=pass (2048-bit key) header.d=baylibre-com.20150623.gappssmtp.com header.i=@baylibre-com.20150623.gappssmtp.com header.b="GuLOx2Zp"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727418AbfLBQlH (ORCPT
+        id S1727709AbfLBRSf (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 2 Dec 2019 11:41:07 -0500
-Received: from mail-il1-f194.google.com ([209.85.166.194]:34696 "EHLO
-        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727438AbfLBQlH (ORCPT
+        Mon, 2 Dec 2019 12:18:35 -0500
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:33999 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727671AbfLBRSf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 2 Dec 2019 11:41:07 -0500
-Received: by mail-il1-f194.google.com with SMTP id w13so272437ilo.1;
-        Mon, 02 Dec 2019 08:41:06 -0800 (PST)
+        Mon, 2 Dec 2019 12:18:35 -0500
+Received: by mail-ot1-f66.google.com with SMTP id a15so182448otf.1
+        for <linux-serial@vger.kernel.org>; Mon, 02 Dec 2019 09:18:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OOh+Bc1DWdItpbvyDVMetDcI62XQS3JiY37nnuo0X1o=;
-        b=bVNmOxsEVEp8YH+hiILRG3Pmj4Z+rGdDKJIJ8PbS5u/igb6I9ECpqn1bS+ZIHa29hD
-         Mb4f+KFlFF4W8dmbVbYMk9CWwRcX63uAn9ZRvbOA7pEIkPZVMrfIvTD2InoGmjsf6BpC
-         EPiGHHjnN/9CgI4G18iBQ2yJ56XZ6ZShTIs/qy9OEHiW+CjqmYjIN+cxns0GSWlZ78Cy
-         RcSrPdvf59w/6+V9gjGlqkW9zRZyj+VGYmQ8710JRt7GDe6GqPya7N6x5fLBM9AQvHTP
-         /W4Rtplt/vZgj8kDWyDgX6WpBJyRWbt+sVy+zkz7Le4l9rvmJ+ykCbVpoRhhPOeWkn3x
-         /ZLQ==
+         :cc:content-transfer-encoding;
+        bh=6m5GyYZgGjlReYT0UlQJpt9O1RSpFkhX7hTS5Y3rL8A=;
+        b=GuLOx2Zp3ZZ90Tm4v6pIsuMUqW5EKKBOtz2OFCipBoqw0100kj7xtHtEdX64q6lWAW
+         pD1itDn0zL2PH8BDTkq/ZohZNfnj1PJGqh8zFGjN6LrykJ2h4LZgAmf8MZ1t5+TODv/v
+         nFdRCYmdVHIe5MH+6D0JBBnuR/6ran/ta4wvvVj1qbn/vnpBfMCYB9N4HPu9CKJ0EgLc
+         A4cNfwiaZXvyHsmEp4cWUz/fOhPRLwI9IyHFzC5RqEH13/bDz709PU7fOxDW1c3cmkL8
+         ECKs2OH7phaSwsIdhN9kdCWDl7v5tH/tmmlMf7eO/tLnobqg2mlQHqIIIJo2Bv/bIMPY
+         MVrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OOh+Bc1DWdItpbvyDVMetDcI62XQS3JiY37nnuo0X1o=;
-        b=nXJLcqnt/ytj6mE3SZnpZ3mEiU9gyf2eCcD35MleMk2bYT5FVoAfbh8Kh1TzlHdyUY
-         T2rwjPzo2KHZAq8jgPBS9rresb9rZySwVfoXnCzeJSy/WZI0dOuXYAO07sgNcrvgHCnU
-         LpYA9F/40RnUZOv/FhTb+QbZX/WtnMfDuRgMYB7Vt6+Pu2T7feUqU2qNUI2bFqLaK9QA
-         /k5KRap0egqq+E3Lplb9yGDWU+J2dHFFwd9yd7VOFRySMf8DReG7VPgud8ZYgEwLVaPk
-         FgUEMDLmFhiw/ABwA1Qx0gt9qpWnYVR4hL/yP8JXJ1fLoLEHAryfOAxhGmrxM/kYzqMu
-         6FOw==
-X-Gm-Message-State: APjAAAUic774GJ+ImF+vIkcd1BJvZepjj266rcGDRnUaNzsFaF/0vlzF
-        bVgmbtYe6JkEQ1OaOSj1AW/Ij9Q01rfPsd1iTDM=
-X-Google-Smtp-Source: APXvYqzAaEwIforOBiTI0rbJEPuiD0fNLEyhsjIOukX/xgCyOfdwPSFCmlouh1JsqHdxv3qOTLI5g78cx1qUMuTHvjk=
-X-Received: by 2002:a92:b60e:: with SMTP id s14mr68371769ili.178.1575304866317;
- Mon, 02 Dec 2019 08:41:06 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=6m5GyYZgGjlReYT0UlQJpt9O1RSpFkhX7hTS5Y3rL8A=;
+        b=HGCDo+PcFq/FJU5wZ82fyYT1XJNonAjJFasEFBw+TYBfvDg6oSALcVzltAN7sqGugP
+         gIA99nLiqqrOVq2e2GJBlLRJ/NMyDzqX2Yw/rsnb4nLuhIfjCUAZwY788LQvN9tRDhMO
+         KyCLh71oCRYL65Kp5YW7B6VLyWH/TTP+TJsAwMVoY/hR0UYJHT+8NnFCtxoUQrOh7gZ+
+         jZzL+Ba7ia31mDOs0d+5m+hVEmn9WEFGsw8YU972dxfQpLQ5L6IH0P0YxHopKA3O5mNk
+         1sIYexMqMJO0YWB0Ko2AoP8S1A11S3CEE36G22NTx+LRTL4R1aP6hnJ1Cm82RwaxJaKG
+         7V0w==
+X-Gm-Message-State: APjAAAU7oxFM8HWvSFKH+VpnOFJUPF2mRDDcb8/Kx7N99FfcLlEXyJ8M
+        nZ9/vtsbjNo9pVal82YCk4MvnBX0upUiW9MYJSucxA==
+X-Google-Smtp-Source: APXvYqyYLXF9eAgv7IfmBg18I6YR52lazrz4VDRUHWzFpa7cmv7OeAl8w9FBa0bv0eN4jxBqQrkuqs5Bnn/pF8jwkaw=
+X-Received: by 2002:a9d:5d10:: with SMTP id b16mr95092oti.250.1575307113737;
+ Mon, 02 Dec 2019 09:18:33 -0800 (PST)
 MIME-Version: 1.0
-References: <20191127141544.4277-1-leo.yan@linaro.org> <20191127141544.4277-3-leo.yan@linaro.org>
-In-Reply-To: <20191127141544.4277-3-leo.yan@linaro.org>
-From:   Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-Date:   Mon, 2 Dec 2019 09:40:55 -0700
-Message-ID: <CAOCk7NqZmBYN4tY0_V8xzvBfWShDCP8gTa60Aoc78wK2tXx=6A@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] tty: serial: msm_serial: Fix deadlock caused by
- recursive output
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
+References: <20191003092913.10731-1-brgl@bgdev.pl> <20191003092912.G3pupKBmyct1r9ScP5Skuw9D-_ALcMVSnfMfHAlwe0Y@z>
+ <20191202041440.GA1628@roeck-us.net> <CAMpxmJW3i4zmJJ14Xg65+T27kF3sgR1WG0K3FUT6+jeKtiHx=Q@mail.gmail.com>
+ <3f8ffe03-98b8-423a-7cba-53961a5600cb@roeck-us.net>
+In-Reply-To: <3f8ffe03-98b8-423a-7cba-53961a5600cb@roeck-us.net>
+From:   Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Date:   Mon, 2 Dec 2019 18:18:22 +0100
+Message-ID: <CAMpxmJUmTF3FwacjvTrC+Vvzm8MscS9E=ZyWLbJV87LkQhqVow@mail.gmail.com>
+Subject: Re: [PATCH v4 1/2] drivers: move the early platform device support to arch/sh
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Nicolas Dechesne <nicolas.dechesne@linaro.org>,
-        MSM <linux-arm-msm@vger.kernel.org>,
-        linux-serial@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jiri Slaby <jslaby@suse.com>, linux-sh@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Nov 27, 2019 at 7:16 AM Leo Yan <leo.yan@linaro.org> wrote:
+pon., 2 gru 2019 o 14:03 Guenter Roeck <linux@roeck-us.net> napisa=C5=82(a)=
+:
 >
-> The uart driver might run into deadlock caused by recursive output; the
-> basic flow is after uart driver has acquired the port spinlock, then it
-> invokes some functions, e.g. dma engine operations and allocate dma
-> descriptor with kzalloc(), if the system has very less free memory, the
-> kernel will give out warning by printing logs, thus recursive output
-> will happen and at the second time the attempting to acquire lock will
-> cause deadlock.  The detailed flow is shown as below:
+> On 12/1/19 11:40 PM, Bartosz Golaszewski wrote:
+> > pon., 2 gru 2019 o 05:14 Guenter Roeck <linux@roeck-us.net> napisa=C5=
+=82(a):
+> >>
+> >> On Thu, Oct 03, 2019 at 11:29:12AM +0200, Bartosz Golaszewski wrote:
+> >>> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> >>>
+> >>> SuperH is the only user of the current implementation of early platfo=
+rm
+> >>> device support. We want to introduce a more robust approach to early
+> >>> probing. As the first step - move all the current early platform code
+> >>> to arch/sh.
+> >>>
+> >>> In order not to export internal drivers/base functions to arch code f=
+or
+> >>> this temporary solution - copy the two needed routines for driver
+> >>> matching from drivers/base/platform.c to arch/sh/drivers/platform_ear=
+ly.c.
+> >>>
+> >>> Also: call early_platform_cleanup() from subsys_initcall() so that it=
+'s
+> >>> called after all early devices are probed.
+> >>>
+> >>> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> >>
+> >> Wondering ... has anyone tested this patch on affected hardware ?
+> >> All my qemu boot tests (both sh and sheb) fail because of it.
+> >> Bisect log below.
+> >>
+> >> Guenter
+> >>
+> >> ---
+> >> # bad: [72c0870e3a05d9cd5466d08c3d2a3069ed0a2f9f] Merge branch 'for-li=
+nus' of git://git.kernel.org/pub/scm/linux/kernel/git/dtor/input
+> >> # good: [89d57dddd7d319ded00415790a0bb3c954b7e386] Merge tag 'media/v5=
+.5-1' of git://git.kernel.org/pub/scm/linux/kernel/git/mchehab/linux-media
+> >> git bisect start 'HEAD' '89d57dddd7d3'
+> >> # good: [0a6cad5df541108cfd3fbd79eef48eb824c89bdc] Merge branch 'vmwgf=
+x-coherent' of git://people.freedesktop.org/~thomash/linux into drm-next
+> >> git bisect good 0a6cad5df541108cfd3fbd79eef48eb824c89bdc
+> >> # bad: [9a3d7fd275be4559277667228902824165153c80] Merge tag 'driver-co=
+re-5.5-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-=
+core
+> >> git bisect bad 9a3d7fd275be4559277667228902824165153c80
+> >> # good: [59274c7164807d27b24e6c068dfe734f7bea4623] Merge tag 'usb-5.5-=
+rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb
+> >> git bisect good 59274c7164807d27b24e6c068dfe734f7bea4623
+> >> # good: [e71903106721dc53923e90aa484d78bc86c039a9] staging: mt7621-dma=
+: align to match open parenthesis
+> >> git bisect good e71903106721dc53923e90aa484d78bc86c039a9
+> >> # good: [8f56e4ebe05c26c30e167519273843476e39e244] Merge tag 'char-mis=
+c-5.5-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-mis=
+c
+> >> git bisect good 8f56e4ebe05c26c30e167519273843476e39e244
+> >> # good: [8bde9f3d2a217d1635a7c7bdf8ad4c25c9a34b50] Merge tag 'iio-for-=
+5.5c' of https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into sta=
+ging-next
+> >> git bisect good 8bde9f3d2a217d1635a7c7bdf8ad4c25c9a34b50
+> >> # bad: [0628cda318df6baec439ca6e6e274007492f1ccd] mac80211: Use debugf=
+s_create_xul() helper
+> >> git bisect bad 0628cda318df6baec439ca6e6e274007492f1ccd
+> >> # bad: [03324507e66c7664c754b1ef92c5c3be24c78aa2] driver core: Allow f=
+wnode_operations.add_links to differentiate errors
+> >> git bisect bad 03324507e66c7664c754b1ef92c5c3be24c78aa2
+> >> # bad: [313f5dbba41d905d59c820bb2d91ee6c661aff99] debugfs: remove retu=
+rn value of debugfs_create_u16()
+> >> git bisect bad 313f5dbba41d905d59c820bb2d91ee6c661aff99
+> >> # good: [d4387cd117414ba80230f27a514be5ca4a09cfcc] of: property: Creat=
+e device links for all child-supplier depencencies
+> >> git bisect good d4387cd117414ba80230f27a514be5ca4a09cfcc
+> >> # bad: [c31e73121f4c1ec45a3e523ac6ce3ce6dafdcec1] base: soc: Handle cu=
+stom soc information sysfs entries
+> >> git bisect bad c31e73121f4c1ec45a3e523ac6ce3ce6dafdcec1
+> >> # bad: [201e91091b1d47047f55580b5474e1239f4d17aa] sh: add the sh_ pref=
+ix to early platform symbols
+> >> git bisect bad 201e91091b1d47047f55580b5474e1239f4d17aa
+> >> # bad: [507fd01d5333338753a1cc26322dfc9f856c109f] drivers: move the ea=
+rly platform device support to arch/sh
+> >> git bisect bad 507fd01d5333338753a1cc26322dfc9f856c109f
+> >> # first bad commit: [507fd01d5333338753a1cc26322dfc9f856c109f] drivers=
+: move the early platform device support to arch/sh
+> >
+> > Hi Guenter,
+> >
+> > can you post some bootlogs? Is it the same problem everywhere?
+> >
 >
->   msm_uart_irq()
->     spin_lock_irqsave(&port->lock, flags)  => First time to acquire lock
->     msm_handle_tx(port)
->       msm_handle_tx_dma()
->         dmaengine_prep_slave_single()
->           bam_prep_slave_sg()
->             kzalloc()
->                __kmalloc()
->                  ___slab_alloc()
->                    alloc_pages_current()
->                      __alloc_pages_nodemask()
->                        warn_alloc()
->                          printk()
->                            msm_console_write()
->                              __msm_console_write()
->                                spin_lock(&port->lock) => Cause deadlock
+> I don't have any useful logs. The boot fails too early for that.
 >
-> This patch fixes the deadlock issue for recursive output; it adds a
-> variable 'curr_user' to indicate the uart port is used by which CPU, if
-> the CPU has acquired spinlock and wants to execute recursive output,
-> it will directly bail out.  Here we don't choose to avoid locking and
-> print out log, the reason is in this case we don't want to reset the
-> uart port with function msm_reset_dm_count(); otherwise it can introduce
-> confliction with other flows and results in uart port malfunction and
-> later cannot output anymore.
 
-Is this not fixable?  Sure, fixing the deadlock is an improvement, but
-dropping logs (particularly a memory warning like in your example)
-seems undesirable.
+Yeah, it touched "early" devices after all...
 
+> Sorry, I don't understand "everywhere". It fails in mainline and -next, i=
+f that is what you mean.
+
+I referred to "All my qemu boot tests" when saying everywhere.
+
+I don't have any relevant HW - the idea for this patch is to stop
+compiling for everyone a bunch of code that's only used by one largely
+irrelevant architecture and free the namespace for a generic early
+platform drivers implementation.
+
+How are you creating your SH qemu images? I'm seeing there's something
+in buildroot for superh - maybe I'll be able to build something
+useful.
+
+Bartosz
+
+> And, yes, it has failed in -next for a while, looking back at the log his=
+tory.
 >
-> Fixes: 99693945013a ("tty: serial: msm: Add RX DMA support")
-> Fixes: 3a878c430fd6 ("tty: serial: msm: Add TX DMA support")
-> Signed-off-by: Leo Yan <leo.yan@linaro.org>
-> ---
->  drivers/tty/serial/msm_serial.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
->
-> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-> index 889538182e83..06076cd2948f 100644
-> --- a/drivers/tty/serial/msm_serial.c
-> +++ b/drivers/tty/serial/msm_serial.c
-> @@ -182,6 +182,7 @@ struct msm_port {
->         bool                    break_detected;
->         struct msm_dma          tx_dma;
->         struct msm_dma          rx_dma;
-> +       struct cpumask          curr_user;
->  };
->
->  #define UART_TO_MSM(uart_port) container_of(uart_port, struct msm_port, uart)
-> @@ -436,6 +437,7 @@ static void msm_complete_tx_dma(void *args)
->         u32 val;
->
->         spin_lock_irqsave(&port->lock, flags);
-> +       cpumask_set_cpu(smp_processor_id(), &msm_port->curr_user);
->
->         /* Already stopped */
->         if (!dma->count)
-> @@ -470,6 +472,7 @@ static void msm_complete_tx_dma(void *args)
->
->         msm_handle_tx(port);
->  done:
-> +       cpumask_clear_cpu(smp_processor_id(), &msm_port->curr_user);
->         spin_unlock_irqrestore(&port->lock, flags);
->  }
->
-> @@ -544,6 +547,7 @@ static void msm_complete_rx_dma(void *args)
->         u32 val;
->
->         spin_lock_irqsave(&port->lock, flags);
-> +       cpumask_set_cpu(smp_processor_id(), &msm_port->curr_user);
->
->         /* Already stopped */
->         if (!dma->count)
-> @@ -590,6 +594,7 @@ static void msm_complete_rx_dma(void *args)
->
->         msm_start_rx_dma(msm_port);
->  done:
-> +       cpumask_clear_cpu(smp_processor_id(), &msm_port->curr_user);
->         spin_unlock_irqrestore(&port->lock, flags);
->
->         if (count)
-> @@ -931,6 +936,7 @@ static irqreturn_t msm_uart_irq(int irq, void *dev_id)
->         u32 val;
->
->         spin_lock_irqsave(&port->lock, flags);
-> +       cpumask_set_cpu(smp_processor_id(), &msm_port->curr_user);
->         misr = msm_read(port, UART_MISR);
->         msm_write(port, 0, UART_IMR); /* disable interrupt */
->
-> @@ -962,6 +968,7 @@ static irqreturn_t msm_uart_irq(int irq, void *dev_id)
->                 msm_handle_delta_cts(port);
->
->         msm_write(port, msm_port->imr, UART_IMR); /* restore interrupt */
-> +       cpumask_clear_cpu(smp_processor_id(), &msm_port->curr_user);
->         spin_unlock_irqrestore(&port->lock, flags);
->
->         return IRQ_HANDLED;
-> @@ -1572,6 +1579,7 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
->  static void __msm_console_write(struct uart_port *port, const char *s,
->                                 unsigned int count, bool is_uartdm)
->  {
-> +       struct msm_port *msm_port = UART_TO_MSM(port);
->         int i;
->         int num_newlines = 0;
->         bool replaced = false;
-> @@ -1593,6 +1601,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
->                 locked = 0;
->         else if (oops_in_progress)
->                 locked = spin_trylock(&port->lock);
-> +       else if (cpumask_test_cpu(smp_processor_id(), &msm_port->curr_user))
-> +               return;
->         else
->                 spin_lock(&port->lock);
->
-> --
-> 2.17.1
->
+> Guenter
