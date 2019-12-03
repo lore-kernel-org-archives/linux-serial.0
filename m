@@ -2,234 +2,258 @@ Return-Path: <SRS0=2gYx=ZZ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D7AC432C3
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Dec 2019 05:24:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96366C432C0
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Dec 2019 08:23:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 54C90206E0
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Dec 2019 05:24:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 592E12053B
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Dec 2019 08:23:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lx+7hcMo"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="X8aGvRl/"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726567AbfLCFYx (ORCPT
+        id S1726319AbfLCIXg (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Dec 2019 00:24:53 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:45833 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725907AbfLCFYx (ORCPT
+        Tue, 3 Dec 2019 03:23:36 -0500
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:44393 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726653AbfLCIXg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Dec 2019 00:24:53 -0500
-Received: by mail-pj1-f66.google.com with SMTP id r11so1014064pjp.12;
-        Mon, 02 Dec 2019 21:24:52 -0800 (PST)
+        Tue, 3 Dec 2019 03:23:36 -0500
+Received: by mail-oi1-f193.google.com with SMTP id d62so2448491oia.11
+        for <linux-serial@vger.kernel.org>; Tue, 03 Dec 2019 00:23:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LqMgpd5NfJZCD8fR3+lPbefg0WuLAcbEmN/6cSyenN4=;
-        b=lx+7hcMokNK2Y/O8i8XOJljZh5EMOWNaHgFz4/MehepfB8s7TNyVc/aioVGyys6KUs
-         OGo2MKTgySVOiAVlYLtCpX1b3h+M3oQgumDhOhieTDdkIDL9PNZbfbxvfmVVSu/c/a6Y
-         sQyOzDhTF/Ie8JtChcSwqcz58L6Tpw3iysigSihT5y2d7lVzlfrsmqr1x8d7yOheUKJe
-         dY7N8eQvi1hIy8q9Q4OYeQVctHruS1Hjcbfph8+c5sD7pJv5KgGNOzpSBotrM72sCZ2u
-         gNh4PEP6qVRu27XqVHtYMtjCg/NJl++FWzf709eeeiVeOKhHa9waMayoCJtjsRGUaYxn
-         N7+g==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Lzt0CorWBSFXLDqsCRfHsqkuwAx1CnMYNM6P0NKIKcg=;
+        b=X8aGvRl/4FxkFXiHdu9CRlUaAU3uYajjaW+NP95OAUNSgGL39UHAuxvmuoLrRgIZdC
+         VblkUBqHA5VpIze7eZxrD8vI8XsEyYMBwgzRvDTb4RUdASvdeDrbnmbpZsUqtW7VrTRn
+         yFWdnWNr1tSJPcCBCB20uKc//wniCL8sqELtxxVPAlOvmPh6wMjvn6lqEjxno7c4FYSW
+         6TxeYIjPfcLM80U+n6Ovqve5yEJynlEx3FA4OhvzW6bU+OJhfHZvfZIXILSSt2xNk5Or
+         6CIdR+uKaVpCEFD00/IFwjG914LlxaYWV9W0d7/gh1Z1q+Wv9CoVQ5/Y/xyhaRy348FH
+         sYWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=LqMgpd5NfJZCD8fR3+lPbefg0WuLAcbEmN/6cSyenN4=;
-        b=FJMsYimT/nkC4lc/ijVFc7rAQR/o6mwO2HFx/szKSiGqWshq1Ybv4bHJ/a2Ck2Qmzt
-         9PQXJh08+jSK0FU8VBl4wpWhMPCO4UdFW08oUoldV9+/lQ4Nmc+MrWIeEHBs+dd38rTN
-         7rrLonfzGSRmgVhlZlG+2b33Hfovb9rdRGN14SPbOzMwS176vNUzOxsaNB/b3SA3RTdg
-         vpgj+dPuHEY6AIBW47Jt5j9KuaXKBzcvbro/F+ipQDxnov0CckvZ9luLtjyJSY2ptCNW
-         P9ovsxWe7yLlMaX7hgGf/B8a6nMn8uB3ImlVoPA8I+jy3vvmvfv/9ps4f5P04RBfsxPT
-         6PQA==
-X-Gm-Message-State: APjAAAWVVLU1GwOyxHII4iwEOxPcNMrLg9tByXXVZ4oyRC7tPHjYNy15
-        zR+wXUrFYDmrEN1T0OEAzpF/V/9d
-X-Google-Smtp-Source: APXvYqww43bhq3gaITH9dOAPDzb5gj9wB9hB0DcrelqJBD8r137tcxz9aFx8v+yoLzcV21zThRopfA==
-X-Received: by 2002:a17:902:fe03:: with SMTP id g3mr3287678plj.1.1575350692123;
-        Mon, 02 Dec 2019 21:24:52 -0800 (PST)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id f132sm1430282pgc.50.2019.12.02.21.24.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Dec 2019 21:24:51 -0800 (PST)
-Subject: Re: [PATCH v4 1/2] drivers: move the early platform device support to
- arch/sh
-To:     Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Lzt0CorWBSFXLDqsCRfHsqkuwAx1CnMYNM6P0NKIKcg=;
+        b=RRqqo+/t/cEFHpNbj6fijgGK5IeP3Ld5AbCOpebeZZnc0BxK4DCoXvGZUJfAcyynTZ
+         bgU7vNerHypg5Hn1CwdcdnhBSJL6EsvyOmAH6XrGAuqAMyxrSReF9Vn5nXiseXwlDawx
+         4Ya/PnDgWp+WTQkqVaFpemlMV1sBtIrZC1o8TAd2KkC5Lff94RIu6F8oFfR2JVS9nI3U
+         Kd2ud9DaeaBiYA0/0xDraUdIbw2OqsySqpGSOmAUG1nZz4+RkzhRL/jQexyx73pufd6g
+         dlcYtiwuKoYu2rlEcHAhIuG/Rbtdwblo501SYjSSvpyP2RlFxmf5WlPcQKr5yh3Zp9gF
+         9URA==
+X-Gm-Message-State: APjAAAXSP8vxZgSTTCPdx2WesnbiKT8c8C7Xf80IHMjy7lgTRT07hIBB
+        oSeiyqnON1QawTdeLnz7sLcZHw==
+X-Google-Smtp-Source: APXvYqyE3aD0H99rNZKO8K9i1B0fjDlmhfnLelWJGBsr4nKoE6yuRKq7pJqafIHTqvRyTTfku16z9A==
+X-Received: by 2002:aca:dc04:: with SMTP id t4mr2563717oig.51.1575361413760;
+        Tue, 03 Dec 2019 00:23:33 -0800 (PST)
+Received: from leoy-ThinkPad-X240s (li1058-79.members.linode.com. [45.33.121.79])
+        by smtp.gmail.com with ESMTPSA id t61sm843935otb.21.2019.12.03.00.23.29
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 03 Dec 2019 00:23:33 -0800 (PST)
+Date:   Tue, 3 Dec 2019 16:23:25 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jiri Slaby <jslaby@suse.com>, linux-sh@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
-References: <20191003092913.10731-1-brgl@bgdev.pl>
- <20191003092912.G3pupKBmyct1r9ScP5Skuw9D-_ALcMVSnfMfHAlwe0Y@z>
- <20191202041440.GA1628@roeck-us.net>
- <CAMpxmJW3i4zmJJ14Xg65+T27kF3sgR1WG0K3FUT6+jeKtiHx=Q@mail.gmail.com>
- <3f8ffe03-98b8-423a-7cba-53961a5600cb@roeck-us.net>
- <CAMpxmJUmTF3FwacjvTrC+Vvzm8MscS9E=ZyWLbJV87LkQhqVow@mail.gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Message-ID: <5e7aafc9-deb9-9305-afea-2c86e310683f@roeck-us.net>
-Date:   Mon, 2 Dec 2019 21:24:49 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
+        Jiri Slaby <jslaby@suse.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Nicolas Dechesne <nicolas.dechesne@linaro.org>,
+        MSM <linux-arm-msm@vger.kernel.org>,
+        linux-serial@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 2/2] tty: serial: msm_serial: Fix deadlock caused by
+ recursive output
+Message-ID: <20191203082325.GC28241@leoy-ThinkPad-X240s>
+References: <20191127141544.4277-1-leo.yan@linaro.org>
+ <20191127141544.4277-3-leo.yan@linaro.org>
+ <CAOCk7NqZmBYN4tY0_V8xzvBfWShDCP8gTa60Aoc78wK2tXx=6A@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAMpxmJUmTF3FwacjvTrC+Vvzm8MscS9E=ZyWLbJV87LkQhqVow@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOCk7NqZmBYN4tY0_V8xzvBfWShDCP8gTa60Aoc78wK2tXx=6A@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 12/2/19 9:18 AM, Bartosz Golaszewski wrote:
-> pon., 2 gru 2019 o 14:03 Guenter Roeck <linux@roeck-us.net> napisał(a):
->>
->> On 12/1/19 11:40 PM, Bartosz Golaszewski wrote:
->>> pon., 2 gru 2019 o 05:14 Guenter Roeck <linux@roeck-us.net> napisał(a):
->>>>
->>>> On Thu, Oct 03, 2019 at 11:29:12AM +0200, Bartosz Golaszewski wrote:
->>>>> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
->>>>>
->>>>> SuperH is the only user of the current implementation of early platform
->>>>> device support. We want to introduce a more robust approach to early
->>>>> probing. As the first step - move all the current early platform code
->>>>> to arch/sh.
->>>>>
->>>>> In order not to export internal drivers/base functions to arch code for
->>>>> this temporary solution - copy the two needed routines for driver
->>>>> matching from drivers/base/platform.c to arch/sh/drivers/platform_early.c.
->>>>>
->>>>> Also: call early_platform_cleanup() from subsys_initcall() so that it's
->>>>> called after all early devices are probed.
->>>>>
->>>>> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
->>>>
->>>> Wondering ... has anyone tested this patch on affected hardware ?
->>>> All my qemu boot tests (both sh and sheb) fail because of it.
->>>> Bisect log below.
->>>>
->>>> Guenter
->>>>
->>>> ---
->>>> # bad: [72c0870e3a05d9cd5466d08c3d2a3069ed0a2f9f] Merge branch 'for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/dtor/input
->>>> # good: [89d57dddd7d319ded00415790a0bb3c954b7e386] Merge tag 'media/v5.5-1' of git://git.kernel.org/pub/scm/linux/kernel/git/mchehab/linux-media
->>>> git bisect start 'HEAD' '89d57dddd7d3'
->>>> # good: [0a6cad5df541108cfd3fbd79eef48eb824c89bdc] Merge branch 'vmwgfx-coherent' of git://people.freedesktop.org/~thomash/linux into drm-next
->>>> git bisect good 0a6cad5df541108cfd3fbd79eef48eb824c89bdc
->>>> # bad: [9a3d7fd275be4559277667228902824165153c80] Merge tag 'driver-core-5.5-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core
->>>> git bisect bad 9a3d7fd275be4559277667228902824165153c80
->>>> # good: [59274c7164807d27b24e6c068dfe734f7bea4623] Merge tag 'usb-5.5-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb
->>>> git bisect good 59274c7164807d27b24e6c068dfe734f7bea4623
->>>> # good: [e71903106721dc53923e90aa484d78bc86c039a9] staging: mt7621-dma: align to match open parenthesis
->>>> git bisect good e71903106721dc53923e90aa484d78bc86c039a9
->>>> # good: [8f56e4ebe05c26c30e167519273843476e39e244] Merge tag 'char-misc-5.5-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc
->>>> git bisect good 8f56e4ebe05c26c30e167519273843476e39e244
->>>> # good: [8bde9f3d2a217d1635a7c7bdf8ad4c25c9a34b50] Merge tag 'iio-for-5.5c' of https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-next
->>>> git bisect good 8bde9f3d2a217d1635a7c7bdf8ad4c25c9a34b50
->>>> # bad: [0628cda318df6baec439ca6e6e274007492f1ccd] mac80211: Use debugfs_create_xul() helper
->>>> git bisect bad 0628cda318df6baec439ca6e6e274007492f1ccd
->>>> # bad: [03324507e66c7664c754b1ef92c5c3be24c78aa2] driver core: Allow fwnode_operations.add_links to differentiate errors
->>>> git bisect bad 03324507e66c7664c754b1ef92c5c3be24c78aa2
->>>> # bad: [313f5dbba41d905d59c820bb2d91ee6c661aff99] debugfs: remove return value of debugfs_create_u16()
->>>> git bisect bad 313f5dbba41d905d59c820bb2d91ee6c661aff99
->>>> # good: [d4387cd117414ba80230f27a514be5ca4a09cfcc] of: property: Create device links for all child-supplier depencencies
->>>> git bisect good d4387cd117414ba80230f27a514be5ca4a09cfcc
->>>> # bad: [c31e73121f4c1ec45a3e523ac6ce3ce6dafdcec1] base: soc: Handle custom soc information sysfs entries
->>>> git bisect bad c31e73121f4c1ec45a3e523ac6ce3ce6dafdcec1
->>>> # bad: [201e91091b1d47047f55580b5474e1239f4d17aa] sh: add the sh_ prefix to early platform symbols
->>>> git bisect bad 201e91091b1d47047f55580b5474e1239f4d17aa
->>>> # bad: [507fd01d5333338753a1cc26322dfc9f856c109f] drivers: move the early platform device support to arch/sh
->>>> git bisect bad 507fd01d5333338753a1cc26322dfc9f856c109f
->>>> # first bad commit: [507fd01d5333338753a1cc26322dfc9f856c109f] drivers: move the early platform device support to arch/sh
->>>
->>> Hi Guenter,
->>>
->>> can you post some bootlogs? Is it the same problem everywhere?
->>>
->>
->> I don't have any useful logs. The boot fails too early for that.
->>
+On Mon, Dec 02, 2019 at 09:40:55AM -0700, Jeffrey Hugo wrote:
+> On Wed, Nov 27, 2019 at 7:16 AM Leo Yan <leo.yan@linaro.org> wrote:
+> >
+> > The uart driver might run into deadlock caused by recursive output; the
+> > basic flow is after uart driver has acquired the port spinlock, then it
+> > invokes some functions, e.g. dma engine operations and allocate dma
+> > descriptor with kzalloc(), if the system has very less free memory, the
+> > kernel will give out warning by printing logs, thus recursive output
+> > will happen and at the second time the attempting to acquire lock will
+> > cause deadlock.  The detailed flow is shown as below:
+> >
+> >   msm_uart_irq()
+> >     spin_lock_irqsave(&port->lock, flags)  => First time to acquire lock
+> >     msm_handle_tx(port)
+> >       msm_handle_tx_dma()
+> >         dmaengine_prep_slave_single()
+> >           bam_prep_slave_sg()
+> >             kzalloc()
+> >                __kmalloc()
+> >                  ___slab_alloc()
+> >                    alloc_pages_current()
+> >                      __alloc_pages_nodemask()
+> >                        warn_alloc()
+> >                          printk()
+> >                            msm_console_write()
+> >                              __msm_console_write()
+> >                                spin_lock(&port->lock) => Cause deadlock
+> >
+> > This patch fixes the deadlock issue for recursive output; it adds a
+> > variable 'curr_user' to indicate the uart port is used by which CPU, if
+> > the CPU has acquired spinlock and wants to execute recursive output,
+> > it will directly bail out.  Here we don't choose to avoid locking and
+> > print out log, the reason is in this case we don't want to reset the
+> > uart port with function msm_reset_dm_count(); otherwise it can introduce
+> > confliction with other flows and results in uart port malfunction and
+> > later cannot output anymore.
 > 
-> Yeah, it touched "early" devices after all...
-> 
->> Sorry, I don't understand "everywhere". It fails in mainline and -next, if that is what you mean.
-> 
-> I referred to "All my qemu boot tests" when saying everywhere.
-> 
-> I don't have any relevant HW - the idea for this patch is to stop
-> compiling for everyone a bunch of code that's only used by one largely
-> irrelevant architecture and free the namespace for a generic early
-> platform drivers implementation.
-> 
-> How are you creating your SH qemu images? I'm seeing there's something
-> in buildroot for superh - maybe I'll be able to bearly_platform_cleanupuild something
-> useful.
-> 
+> Is this not fixable?  Sure, fixing the deadlock is an improvement, but
+> dropping logs (particularly a memory warning like in your example)
+> seems undesirable.
 
-Below is a possible fix. As I had suspected, the call to early_platform_cleanup()
-is in the wrong place.
+Thanks a lot for your reviewing, Jeffrey.
 
-Guenter
+Agreed with you for the concern.
 
----
-  arch/sh/drivers/platform_early.c | 11 ++---------
-  drivers/base/platform.c          |  4 ++++
-  2 files changed, 6 insertions(+), 9 deletions(-)
+To be honest, I am not familiar with the msm uart driver, so have no
+confidence which is the best way for uart port operations.  I can
+think out one possible fixing is shown in below, if detects the lock
+is not acquired then it will force to reset UART port before exit the
+function __msm_console_write().
 
-diff --git a/arch/sh/drivers/platform_early.c b/arch/sh/drivers/platform_early.c
-index f6d148451dfc..16f33bffd8fc 100644
---- a/arch/sh/drivers/platform_early.c
-+++ b/arch/sh/drivers/platform_early.c
-@@ -325,9 +325,9 @@ int __init sh_early_platform_driver_probe(char *class_str,
-  }
+This approach is not tested yet and it looks too arbitrary; I will
+give a try for it.  At the meantime, welcome any insight suggestion
+with proper register operations.
 
-  /**
-- * sh_early_platform_cleanup - clean up early platform code
-+ * early_platform_cleanup - clean up early platform code
-   */
--static int __init sh_early_platform_cleanup(void)
-+void early_platform_cleanup(void)
-  {
-  	struct platform_device *pd, *pd2;
-
-@@ -337,11 +337,4 @@ static int __init sh_early_platform_cleanup(void)
-  		list_del(&pd->dev.devres_head);
-  		memset(&pd->dev.devres_head, 0, sizeof(pd->dev.devres_head));
-  	}
--
--	return 0;
-  }
--/*
-- * This must happen once after all early devices are probed but before probing
-- * real platform devices.
-- */
--subsys_initcall(sh_early_platform_cleanup);
-diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-index 7c532548b0a6..3ba153e356ee 100644
---- a/drivers/base/platform.c
-+++ b/drivers/base/platform.c
-@@ -1325,10 +1325,14 @@ struct device *platform_find_device_by_driver(struct device *start,
-  }
-  EXPORT_SYMBOL_GPL(platform_find_device_by_driver);
-
-+void __weak early_platform_cleanup(void) { }
+@@ -1572,6 +1579,7 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
+ static void __msm_console_write(struct uart_port *port, const char *s,
+                                unsigned int count, bool is_uartdm)
+ {
++       struct msm_port *msm_port = UART_TO_MSM(port);
+        int i;
+        int num_newlines = 0;
+        bool replaced = false;
+@@ -1593,6 +1601,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+                locked = 0;
+        else if (oops_in_progress)
+                locked = spin_trylock(&port->lock);
++       else if (cpumask_test_cpu(smp_processor_id(), &msm_port->curr_user))
++               return;
+        else
+                spin_lock(&port->lock);
+ 
+@@ -1632,6 +1642,9 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+                i += num_chars;
+        }
+ 
++       if (!locked && is_uartdm)
++               msm_reset(port);
 +
-  int __init platform_bus_init(void)
-  {
-  	int error;
+        if (locked)
+                spin_unlock(&port->lock);
+ }
 
-+	early_platform_cleanup();
-+
-  	error = device_register(&platform_bus);
-  	if (error) {
-  		put_device(&platform_bus);
+Thanks,
+Leo
 
+> >
+> > Fixes: 99693945013a ("tty: serial: msm: Add RX DMA support")
+> > Fixes: 3a878c430fd6 ("tty: serial: msm: Add TX DMA support")
+> > Signed-off-by: Leo Yan <leo.yan@linaro.org>
+> > ---
+> >  drivers/tty/serial/msm_serial.c | 10 ++++++++++
+> >  1 file changed, 10 insertions(+)
+> >
+> > diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+> > index 889538182e83..06076cd2948f 100644
+> > --- a/drivers/tty/serial/msm_serial.c
+> > +++ b/drivers/tty/serial/msm_serial.c
+> > @@ -182,6 +182,7 @@ struct msm_port {
+> >         bool                    break_detected;
+> >         struct msm_dma          tx_dma;
+> >         struct msm_dma          rx_dma;
+> > +       struct cpumask          curr_user;
+> >  };
+> >
+> >  #define UART_TO_MSM(uart_port) container_of(uart_port, struct msm_port, uart)
+> > @@ -436,6 +437,7 @@ static void msm_complete_tx_dma(void *args)
+> >         u32 val;
+> >
+> >         spin_lock_irqsave(&port->lock, flags);
+> > +       cpumask_set_cpu(smp_processor_id(), &msm_port->curr_user);
+> >
+> >         /* Already stopped */
+> >         if (!dma->count)
+> > @@ -470,6 +472,7 @@ static void msm_complete_tx_dma(void *args)
+> >
+> >         msm_handle_tx(port);
+> >  done:
+> > +       cpumask_clear_cpu(smp_processor_id(), &msm_port->curr_user);
+> >         spin_unlock_irqrestore(&port->lock, flags);
+> >  }
+> >
+> > @@ -544,6 +547,7 @@ static void msm_complete_rx_dma(void *args)
+> >         u32 val;
+> >
+> >         spin_lock_irqsave(&port->lock, flags);
+> > +       cpumask_set_cpu(smp_processor_id(), &msm_port->curr_user);
+> >
+> >         /* Already stopped */
+> >         if (!dma->count)
+> > @@ -590,6 +594,7 @@ static void msm_complete_rx_dma(void *args)
+> >
+> >         msm_start_rx_dma(msm_port);
+> >  done:
+> > +       cpumask_clear_cpu(smp_processor_id(), &msm_port->curr_user);
+> >         spin_unlock_irqrestore(&port->lock, flags);
+> >
+> >         if (count)
+> > @@ -931,6 +936,7 @@ static irqreturn_t msm_uart_irq(int irq, void *dev_id)
+> >         u32 val;
+> >
+> >         spin_lock_irqsave(&port->lock, flags);
+> > +       cpumask_set_cpu(smp_processor_id(), &msm_port->curr_user);
+> >         misr = msm_read(port, UART_MISR);
+> >         msm_write(port, 0, UART_IMR); /* disable interrupt */
+> >
+> > @@ -962,6 +968,7 @@ static irqreturn_t msm_uart_irq(int irq, void *dev_id)
+> >                 msm_handle_delta_cts(port);
+> >
+> >         msm_write(port, msm_port->imr, UART_IMR); /* restore interrupt */
+> > +       cpumask_clear_cpu(smp_processor_id(), &msm_port->curr_user);
+> >         spin_unlock_irqrestore(&port->lock, flags);
+> >
+> >         return IRQ_HANDLED;
+> > @@ -1572,6 +1579,7 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
+> >  static void __msm_console_write(struct uart_port *port, const char *s,
+> >                                 unsigned int count, bool is_uartdm)
+> >  {
+> > +       struct msm_port *msm_port = UART_TO_MSM(port);
+> >         int i;
+> >         int num_newlines = 0;
+> >         bool replaced = false;
+> > @@ -1593,6 +1601,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+> >                 locked = 0;
+> >         else if (oops_in_progress)
+> >                 locked = spin_trylock(&port->lock);
+> > +       else if (cpumask_test_cpu(smp_processor_id(), &msm_port->curr_user))
+> > +               return;
+> >         else
+> >                 spin_lock(&port->lock);
+> >
+> > --
+> > 2.17.1
+> >
