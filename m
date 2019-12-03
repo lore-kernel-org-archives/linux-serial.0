@@ -2,139 +2,271 @@ Return-Path: <SRS0=2gYx=ZZ=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89A15C432C0
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Dec 2019 15:27:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4A8FC432C0
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Dec 2019 20:29:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5D1432080A
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Dec 2019 15:27:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A715020833
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Dec 2019 20:29:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1575386855;
-	bh=M12IvIO4VV2YmcUBAdR7ScT9lvdtLVwKEAsicmX9ZRA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=eciyyLu0rCsc2JTN65tPkZevslULVfgXiljzdBvC7WlPKT5uTNFDpH8Wb7jyjnS2y
-	 f6neY+/rOVdWW3tF5UCs3B8Hffk1T1pAK1LqKNW/LEO+P21qWs0xQ6erM2C/rF1Sgs
-	 IKooAOvNUpP4jTI2YDdHJ4bEHHDV6FAwDlcidoss=
+	s=default; t=1575404990;
+	bh=2fgZfqcM0kGQexZnIO7eCk6K1w6S5q4plw3dGykL7Sk=;
+	h=Date:From:To:Cc:Subject:List-ID:From;
+	b=EJMNleHKXeSxOV1clhyQ5EisLJLL0HKEOklHrEx3np2t80rwc9yiTfm5hvfnRqj8C
+	 Tzk7QuLutIOEkSS4ENI30HKP1eEXk2yUOKPNnBUhAqVcRX7AGZ/c4M7AMYDSNxY9G5
+	 JLnLw65CqgKfGuIO783Mt4Fg4R36sNyYVBIskbzI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726991AbfLCP1e (ORCPT
+        id S1726990AbfLCU3u (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Dec 2019 10:27:34 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:39816 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726971AbfLCP1e (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Dec 2019 10:27:34 -0500
-Received: by mail-lj1-f194.google.com with SMTP id e10so4295738ljj.6
-        for <linux-serial@vger.kernel.org>; Tue, 03 Dec 2019 07:27:33 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7aZ/WPFP8IDZCDK+LQRVdRV/ok4L4matBfIvMXz8l7c=;
-        b=DpqbKSraafNBGh+ipynSyc6HYWzDsVj/JJ+FGs7kGyt/4lI7osdlrvQKB0ETvwIIB+
-         4ltVA04BhVyCuSWumyuDewaGJLbJ47bbBeNR9y6lKFTVuYNh1jfUlTewB+wlqcmVRU1z
-         7DnuSP2h+9c1hP78hcJPLobf/UdPvfOhu/XRFgu7K4i4na/Bf3QIQMOU2/HJxxkTfU+D
-         XMlgCuj8eycsT88aMwlcHUVlKqNf+GZLd8xvQbvIX2kX9qNkA6Fw82ovCg90vJiWSWZo
-         O6MyULU8ONkRAHBYTUXsQ0s7ZRxjsmfpcWj+ZwEDXOaz4sJrxO+UWPgwvTq3XRnARSVE
-         mE+w==
-X-Gm-Message-State: APjAAAWIHz7OJBGkHky1xZRD257bULxO7I7mo7PFOaHrbcSJbOrb7gYR
-        rYYXG5je58WnVjyuQ9RHIk8=
-X-Google-Smtp-Source: APXvYqyRZKc6+QATampjswt+VUbUyFGcTpF5GbiV6YDPlJN2+PwCJun1TfGErJcBai+1J38G9m0rPw==
-X-Received: by 2002:a2e:8518:: with SMTP id j24mr2648183lji.13.1575386852681;
-        Tue, 03 Dec 2019 07:27:32 -0800 (PST)
-Received: from xi.terra (c-14b8e655.07-184-6d6c6d4.bbcust.telenor.se. [85.230.184.20])
-        by smtp.gmail.com with ESMTPSA id z5sm1493910lji.32.2019.12.03.07.27.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Dec 2019 07:27:31 -0800 (PST)
-Received: from johan by xi.terra with local (Exim 4.92.3)
-        (envelope-from <johan@kernel.org>)
-        id 1icA5S-0000y5-VL; Tue, 03 Dec 2019 16:27:39 +0100
-Date:   Tue, 3 Dec 2019 16:27:38 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Michal Simek <michal.simek@xilinx.com>
-Cc:     Johan Hovold <johan@kernel.org>, shubhrajyoti.datta@gmail.com,
-        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jacmet@sunsite.dk, git@xilinx.com,
-        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Subject: Re: [PATCHv5] serial-uartlite: Remove ULITE_NR_PORTS macro
-Message-ID: <20191203152738.GF10631@localhost>
-References: <1573646408-392094-1-git-send-email-shubhrajyoti.datta@gmail.com>
- <20191113153846.GW11035@localhost>
- <fbfa424b-6730-fae9-14bf-bf666e93ad28@xilinx.com>
+        Tue, 3 Dec 2019 15:29:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54078 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726567AbfLCU3u (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 3 Dec 2019 15:29:50 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B448E20659;
+        Tue,  3 Dec 2019 20:29:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1575404988;
+        bh=2fgZfqcM0kGQexZnIO7eCk6K1w6S5q4plw3dGykL7Sk=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Xr5wD6F0m3BLh7BvpDsqNQ6pFMYBTy8rsOu5VGt+8+f/mAIQoWrCSSyUcscIIyxp6
+         wKPRDH2Qeue68OStQbr6whf/zAAskCLlHMRTkxCgPWYYwKoCHSvgTzXDMNp38E4TiD
+         kp4n5hKGDzTifCmoTIoZIrGZrVSgdYjOoAmTb7FA=
+Date:   Tue, 3 Dec 2019 21:29:46 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial patches for 5.5-rc1
+Message-ID: <20191203202946.GA3188593@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <fbfa424b-6730-fae9-14bf-bf666e93ad28@xilinx.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Nov 15, 2019 at 09:21:03AM +0100, Michal Simek wrote:
-> Hi Johan,
-> 
-> On 13. 11. 19 16:38, Johan Hovold wrote:
-> > On Wed, Nov 13, 2019 at 12:00:08PM +0000, shubhrajyoti.datta@gmail.com wrote:
-> >> From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-> >>
-> >> This patch is removing ULITE_NR_PORTS macro which limits number of
-> >> ports which can be used. Every instance is registering own struct
-> >> uart_driver with minor number which corresponds to alias ID (or 0 now).
-> >> and with 1 uart port. The same alias ID is saved to
-> >> tty_driver->name_base which is key field for creating ttyULX name.
-> >>
-> >> Because name_base and minor number are setup already there is no need to
-> >> setup any port->line number because 0 is the right value.
-> >>
-> >> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-> >> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> >> ---
-> >> v4: patch addition
-> >> v5: Merge the patch so that all the patches compile
-> > 
-> > Greg, 
-> > 
-> > Please do not merge this. This is a hack which really needs to be
-> > reconsidered as I've pointed before
-> > 
-> > 	 https://lkml.kernel.org/r/20190523091839.GC568@localhost
-> 
-> I think it is quite a good time to start to talk about it.
-> Over the time I am aware about only one issue related to one way how to
-> handle console which came recently. I was looking at it 2 weeks before
-> ELCE but I need to get back on this.
-> Anyway I am ready for discussion about it.
-> What was said so far is that we shouldn't add Kconfig option for number
-> of uarts. We could maybe hardcode any big number in the driver as is
-> done for pl011 but still it is limitation and wasting of space for
-> allocation structures which none will use.
-> Then I have done this concept and it was merged where struct uart_driver
-> is allocated for every instance separately and I really tried to get
-> feedback on this as we discussed some time ago.
-> 
-> Anyway we are where we are and if this needs to be fixed then please
-> tell me how you think that this should be solved.
+The following changes since commit d6d5df1db6e9d7f8f76d2911707f7d5877251b02:
 
-As I told you back in May, registering one uart driver per physical
-port is precisely what should not be done. Just register a fixed number
-of lines like every other tty driver. And if you're worried about
-statically allocated memory, you need to address that in the tty layer
-and/or serial core instead of hacking every single uart driver to
-pieces.
+  Linux 5.4-rc5 (2019-10-27 13:19:19 -0400)
 
-Specifically, you could move the uart state allocation to port
-registration so that all drivers would benefit from this.
+are available in the Git repository at:
 
-This is already causing way more trouble than it's worth, and the big
-number you mention above for pl011 is 14! In comparison, usb-serial
-currently supports 512 ports just fine by allocating state at
-registration.  
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.5-rc1
 
-Greg, I reread some of the mails reachable through the above link and
-was reminded that this hack also made it into xilinx_uartps. That would
-need to be fixed/reverted as well.
+for you to fetch changes up to 27ed14d0ecb38516b6f3c6fdcd62c25c9454f979:
 
-Johan
+  Revert "serial/8250: Add support for NI-Serial PXI/PXIe+485 devices" (2019-11-27 14:24:13 +0100)
+
+----------------------------------------------------------------
+TTY/Serial patches for 5.5-rc1
+
+Here is the "big" tty and serial driver patches for 5.5-rc1.  It's a bit
+later in the merge window than normal as I wanted to make sure some
+last-minute patches applied to it were all sane.  They seem to be :)
+
+There's a lot of little stuff in here, for the tty core, and for lots of
+serial drivers:
+	- reverts of uartlite serial driver patches that were wrong
+	- msm-serial driver fixes
+	- serial core updates and fixes
+	- tty core fixes
+	- serial driver dma mapping api changes
+	- lots of other tiny fixes and updates for serial drivers
+
+All of these have been in linux-next for a while with no reported
+issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Akash Asthana (2):
+      tty: serial: qcom_geni_serial: IRQ cleanup
+      tty: serial: qcom_geni_serial: Wakeup over UART RX
+
+Andrey Smirnov (1):
+      dt-bindings: serial: lpuart: Drop unsupported RS485 bindings
+
+Andy Shevchenko (3):
+      serial: 8250_dw: Use devm_clk_get_optional() to get the input clock
+      serial: 8250_exar: Move Exar pieces to custom ->startup()
+      serial: 8250_dw: Avoid double error messaging when IRQ absent
+
+Ben Dooks (1):
+      serial: sirf: make register info static
+
+Chuhong Yuan (2):
+      tty: serial: uartlite: use clk_disable_unprepare to match clk_prepare_enable
+      serial: ifx6x60: add missed pm_runtime_disable
+
+Dmitry Torokhov (1):
+      tty: vt: keyboard: reject invalid keycodes
+
+Fabrice Gasnier (1):
+      serial: stm32: fix clearing interrupt error flags
+
+Felipe Balbi (1):
+      serial: 8250_lpss: Switch over to MSI interrupts
+
+Frank Wunderlich (1):
+      serial: 8250-mtk: Use platform_get_irq_optional() for optional irq
+
+Geert Uytterhoeven (1):
+      dt-bindings: serial: sh-sci: Document r8a77961 bindings
+
+Greg Kroah-Hartman (9):
+      Merge 5.4-rc3 into tty-next
+      Merge 5.4-rc5 into tty-next
+      Revert "tty:n_gsm.c: destroy port by tty_port_destroy()"
+      Revert "serial-uartlite: Use allocated structure instead of static ones"
+      Revert "serial-uartlite: Change logic how console_port is setup"
+      Revert "serial-uartlite: Add runtime support"
+      Revert "serial-uartlite: Do not use static struct uart_driver out of probe()"
+      Revert "serial-uartlite: Add get serial id if not provided"
+      Revert "serial-uartlite: Move the uart register"
+
+Heiko Schocher (1):
+      tty: 8250_of: Use software emulated RS485 direction control
+
+Je Yen Tam (1):
+      Revert "serial/8250: Add support for NI-Serial PXI/PXIe+485 devices"
+
+Jeffrey Hugo (1):
+      tty: serial: msm_serial: Fix flow control
+
+Jiangfeng Xiao (1):
+      serial: serial_core: Perform NULL checks for break_ctl ops
+
+Jiri Slaby (1):
+      tty: don't crash in tty_init_dev when missing tty_port
+
+Krzysztof Kozlowski (2):
+      tty: Fix Kconfig indentation
+      tty: Fix Kconfig indentation, continued
+
+Lanqing Liu (1):
+      serial: sprd: Add polling IO support
+
+Maximilian Luz (1):
+      serdev: Add ACPI devices by ResourceSource field
+
+Michal Simek (3):
+      serial: core: Use cons->index for preferred console registration
+      hvc: dcc: Add earlycon support
+      Revert "serial: core: Use cons->index for preferred console registration"
+
+Nicolas Pitre (1):
+      vcs: prevent write access to vcsu devices
+
+Oskar Senft (3):
+      drivers/tty/serial/8250: Make Aspeed VUART SIRQ polarity configurable
+      dt-bindings: serial: 8250: Add aspeed,sirq-polarity-sense.
+      arm: dts: aspeed: Add vuart aspeed,sirq-polarity-sense to aspeed-g5.dtsi
+
+Pascal Terjan (1):
+      Remove every trace of SERIAL_MAGIC
+
+Pavel Machek (1):
+      tty_ldisc: simplify tty_ldisc_autoload initialization
+
+Peng Fan (3):
+      tty: serial: fsl_lpuart: use the sg count from dma_map_sg
+      tty: serial: imx: use the sg count from dma_map_sg
+      tty: serial: pch_uart: correct usage of dma_unmap_sg
+
+Peter Ujfalusi (3):
+      tty: serial: amba-pl011: Use dma_request_chan() directly for channel request
+      tty: serial: tegra: Use dma_request_chan() directly for channel request
+      tty: serial: msm_serial: Use dma_request_chan() directly for channel request
+
+Philipp Puschmann (1):
+      serial: imx: adapt rx buffer and dma periods
+
+Philippe Schenker (3):
+      tty: serial: lpuart: Remove unnecessary code from set_mctrl
+      tty: serial: lpuart: Use defines that correspond to correct register
+      tty: serial: lpuart: Add RS485 support for 32-bit uart flavour
+
+Qian Cai (1):
+      tty/amba-pl011: fix a -Wunused-function warning
+
+Shubhrajyoti Datta (2):
+      serial-uartlite: Change logic how console_port is setup
+      serial-uartlite: Use allocated structure instead of static ones
+
+Stefan-Gabriel Mirea (1):
+      serial: fsl_linflexuart: Be consistent with the name
+
+Sudip Mukherjee (3):
+      tty: rocket: reduce stack usage
+      {tty: serial, nand: onenand}: samsung: rename to fix build warning
+      tty: remove unused argument from tty_open_by_driver()
+
+Vincent Whitchurch (1):
+      serial: pl011: Fix DMA ->flush_buffer()
+
+Xiaoming Ni (1):
+      tty:n_gsm.c: destroy port by tty_port_destroy()
+
+ Documentation/ABI/stable/sysfs-driver-aspeed-vuart |  11 +-
+ Documentation/admin-guide/kernel-parameters.txt    |   2 +-
+ Documentation/devicetree/bindings/serial/8250.txt  |   5 +
+ .../devicetree/bindings/serial/fsl-lpuart.txt      |   3 +-
+ .../bindings/serial/renesas,sci-serial.txt         |   6 +-
+ Documentation/process/magic-number.rst             |   1 -
+ .../translations/it_IT/process/magic-number.rst    |   1 -
+ .../translations/zh_CN/process/magic-number.rst    |   1 -
+ arch/arm/boot/dts/aspeed-g5.dtsi                   |   1 +
+ drivers/mtd/nand/onenand/Makefile                  |   2 +-
+ .../mtd/nand/onenand/{samsung.c => samsung_mtd.c}  |   0
+ drivers/net/wan/z85230.h                           |   2 -
+ drivers/tty/Kconfig                                |  40 +--
+ drivers/tty/amiserial.c                            |  84 ------
+ drivers/tty/hvc/Kconfig                            |  28 +-
+ drivers/tty/hvc/hvc_dcc.c                          |  28 ++
+ drivers/tty/rocket.c                               |  32 ++-
+ drivers/tty/serdev/core.c                          | 111 +++++++-
+ drivers/tty/serial/8250/8250_aspeed_vuart.c        |  84 ++++++
+ drivers/tty/serial/8250/8250_dw.c                  |  83 +++---
+ drivers/tty/serial/8250/8250_exar.c                |  19 ++
+ drivers/tty/serial/8250/8250_lpss.c                |  21 +-
+ drivers/tty/serial/8250/8250_mtk.c                 |   2 +-
+ drivers/tty/serial/8250/8250_of.c                  |  31 +++
+ drivers/tty/serial/8250/8250_pci.c                 | 292 +--------------------
+ drivers/tty/serial/8250/8250_port.c                |  14 -
+ drivers/tty/serial/8250/Kconfig                    |   3 +-
+ drivers/tty/serial/Kconfig                         | 104 ++++----
+ drivers/tty/serial/Makefile                        |   2 +-
+ drivers/tty/serial/amba-pl011.c                    |  12 +-
+ drivers/tty/serial/fsl_linflexuart.c               |   4 +-
+ drivers/tty/serial/fsl_lpuart.c                    |  84 ++++--
+ drivers/tty/serial/ifx6x60.c                       |   3 +
+ drivers/tty/serial/imx.c                           |   7 +-
+ drivers/tty/serial/msm_serial.c                    |  10 +-
+ drivers/tty/serial/pch_uart.c                      |   5 +-
+ drivers/tty/serial/qcom_geni_serial.c              |  68 ++++-
+ drivers/tty/serial/{samsung.c => samsung_tty.c}    |   0
+ drivers/tty/serial/serial-tegra.c                  |   3 +-
+ drivers/tty/serial/serial_core.c                   |   2 +-
+ drivers/tty/serial/sirfsoc_uart.h                  |   5 +-
+ drivers/tty/serial/sprd_serial.c                   |  33 +++
+ drivers/tty/serial/stm32-usart.c                   |   6 +-
+ drivers/tty/serial/uartlite.c                      |  97 ++-----
+ drivers/tty/tty_io.c                               |  14 +-
+ drivers/tty/tty_ldisc.c                            |   7 +-
+ drivers/tty/vt/keyboard.c                          |   2 +-
+ drivers/tty/vt/vc_screen.c                         |   3 +
+ include/uapi/linux/serial_core.h                   |   2 +-
+ 49 files changed, 665 insertions(+), 715 deletions(-)
+ rename drivers/mtd/nand/onenand/{samsung.c => samsung_mtd.c} (100%)
+ rename drivers/tty/serial/{samsung.c => samsung_tty.c} (100%)
