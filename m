@@ -2,80 +2,93 @@ Return-Path: <SRS0=2LmE=Z3=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5916FC43603
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Dec 2019 12:16:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF21C43603
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Dec 2019 12:22:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 352C32245C
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Dec 2019 12:16:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C284A2464F
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Dec 2019 12:22:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1575548532;
+	bh=qgGNtF/l7uOobXAo/txHTzrih0m1E3AsFCzTZTO/ES4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=OF4pPQWg4bqsSTQp+csXXT0H+Br1V6k5zmp09u7uziTW9ex/CfBJefkNlzv/R/iOk
+	 jvSaFy/J9zOLGle8VqzjTp0PJSzcMUbVnOE2kq676xegN4teyS9S29HZsEjOyyWVwo
+	 lQoRZrmXriZ5Mqk29QMxQR7URg3btcJlFaj4Mk44=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729074AbfLEMQW (ORCPT
+        id S1729109AbfLEMWM (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Dec 2019 07:16:22 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7638 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729048AbfLEMQW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Dec 2019 07:16:22 -0500
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 2B4B95CFC33B79EDECFB;
-        Thu,  5 Dec 2019 20:16:18 +0800 (CST)
-Received: from linux-ibm.site (10.175.102.37) by
- DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 5 Dec 2019 20:16:08 +0800
-From:   Xiongfeng Wang <wangxiongfeng2@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <jslaby@suse.com>
-CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <huawei.libin@huawei.com>, <wangxiongfeng2@huawei.com>
-Subject: [PATCH] tty: serial: 8250: remove set but unused variable
-Date:   Thu, 5 Dec 2019 20:11:43 +0800
-Message-ID: <1575547903-52355-1-git-send-email-wangxiongfeng2@huawei.com>
-X-Mailer: git-send-email 1.7.12.4
+        Thu, 5 Dec 2019 07:22:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38700 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729099AbfLEMWM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 5 Dec 2019 07:22:12 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3EB8320707;
+        Thu,  5 Dec 2019 12:22:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1575548531;
+        bh=qgGNtF/l7uOobXAo/txHTzrih0m1E3AsFCzTZTO/ES4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wvT3NdlSMcDl6Rrb4U9G+zs8JaI+M3jRNj6qQJZSkFRLzUmnShicwh0sgML9Dyl1a
+         N6qE39Xep1w0X0CiDtm1ODPrxoFb7xNiP+ZL8a7bcc1GJ/7JEPxvlbBKi7VDLbKmD3
+         /iwctK45uF0Kr2EFObj1QV+dWqjnldQV4184A8P0=
+Date:   Thu, 5 Dec 2019 13:22:08 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Cc:     jslaby@suse.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, huawei.libin@huawei.com
+Subject: Re: [PATCH] tty: serial: 8250: remove set but unused variable
+Message-ID: <20191205122208.GB390369@kroah.com>
+References: <1575547903-52355-1-git-send-email-wangxiongfeng2@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.102.37]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1575547903-52355-1-git-send-email-wangxiongfeng2@huawei.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Fix the following warning:
-drivers/tty/serial/8250/serial_cs.c: In function multi_config:
-drivers/tty/serial/8250/serial_cs.c:562:7: warning: variable err set but not used [-Wunused-but-set-variable]
+On Thu, Dec 05, 2019 at 08:11:43PM +0800, Xiongfeng Wang wrote:
+> Fix the following warning:
+> drivers/tty/serial/8250/serial_cs.c: In function multi_config:
+> drivers/tty/serial/8250/serial_cs.c:562:7: warning: variable err set but not used [-Wunused-but-set-variable]
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+> ---
+>  drivers/tty/serial/8250/serial_cs.c | 9 +++------
+>  1 file changed, 3 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/serial_cs.c b/drivers/tty/serial/8250/serial_cs.c
+> index c8186a0..eeda6a0 100644
+> --- a/drivers/tty/serial/8250/serial_cs.c
+> +++ b/drivers/tty/serial/8250/serial_cs.c
+> @@ -559,16 +559,13 @@ static int multi_config(struct pcmcia_device *link)
+>  	 */
+>  	if (info->manfid == MANFID_OXSEMI || (info->manfid == MANFID_POSSIO &&
+>  				info->prodid == PRODID_POSSIO_GCC)) {
+> -		int err;
+> -
+>  		if (link->config_index == 1 ||
+>  		    link->config_index == 3) {
+> -			err = setup_serial(link, info, base2,
+> -					link->irq);
+> +			setup_serial(link, info, base2, link->irq);
+>  			base2 = link->resource[0]->start;
+>  		} else {
+> -			err = setup_serial(link, info, link->resource[0]->start,
+> -					link->irq);
+> +			setup_serial(link, info, link->resource[0]->start,
+> +				     link->irq);
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
----
- drivers/tty/serial/8250/serial_cs.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+Again, why ignore the error value?
 
-diff --git a/drivers/tty/serial/8250/serial_cs.c b/drivers/tty/serial/8250/serial_cs.c
-index c8186a0..eeda6a0 100644
---- a/drivers/tty/serial/8250/serial_cs.c
-+++ b/drivers/tty/serial/8250/serial_cs.c
-@@ -559,16 +559,13 @@ static int multi_config(struct pcmcia_device *link)
- 	 */
- 	if (info->manfid == MANFID_OXSEMI || (info->manfid == MANFID_POSSIO &&
- 				info->prodid == PRODID_POSSIO_GCC)) {
--		int err;
--
- 		if (link->config_index == 1 ||
- 		    link->config_index == 3) {
--			err = setup_serial(link, info, base2,
--					link->irq);
-+			setup_serial(link, info, base2, link->irq);
- 			base2 = link->resource[0]->start;
- 		} else {
--			err = setup_serial(link, info, link->resource[0]->start,
--					link->irq);
-+			setup_serial(link, info, link->resource[0]->start,
-+				     link->irq);
- 		}
- 		info->c950ctrl = base2;
- 
--- 
-1.7.12.4
-
+greg k-h
