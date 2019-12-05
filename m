@@ -2,161 +2,177 @@ Return-Path: <SRS0=2LmE=Z3=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E084C43603
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Dec 2019 12:40:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63F42C43603
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Dec 2019 15:37:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5913E24249
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Dec 2019 12:40:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 306AD24648
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Dec 2019 15:37:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1575560223;
+	bh=8g5WQaj4R8Z6JbCzii1HHDVdWvegq5C0/h5DPZauWrA=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
+	b=RCgE6SvaMonpMQ6gXXqYu39in8PsVHG6Mp/CeLPgQnB9bHpKec85/u06aVeNIvUwZ
+	 hCoPjVFkymqkM8Jj+7sOtL7H6UD8JLnrgUtJzBJvae5oU0AtWov42WulE21KMbcgFS
+	 gfJmtJrIcpTpX4Ket684K6x8oKfB1iWHMiPT+xtk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729109AbfLEMkE (ORCPT
+        id S1726257AbfLEPhC (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Dec 2019 07:40:04 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:34069 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729099AbfLEMkD (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Dec 2019 07:40:03 -0500
-Received: by mail-wm1-f68.google.com with SMTP id f4so7255663wmj.1;
-        Thu, 05 Dec 2019 04:40:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=zjegDBL9uNML7pU5DHM5JXJW0sbulltVKI/0+6AbtJY=;
-        b=ouXkjow64Gh5/AJaQs2Sbud7YMSMwVrUQdS1s8O/euPcyoTGnw8gerwUeNCyj41Eai
-         OOs50cD8d2xKVS9Y6qPIcusCxkDO/7yTRUQJwUJ4mBhdT2sQsvXJVpG/rm+qpvggkOfA
-         eolFWPExGnLpXPmeccQrNqLpB23fZSAJwibsgrdUg3QzcaEtzLQUkl3xmvo/istAjjNx
-         I6Pp1RoxxWwi7ctLyDFaQFop8B0+ncz4ybIj5LmIe3WbSVTu25H8GGoXh/u8POh2ehZt
-         83LOMLMG4CLIjdnl+qZPrrGQEjdr6xTdHvnu8M1I6wSS2v/9zxYXtDZHGWgILVVLb7Wt
-         DFWQ==
-X-Gm-Message-State: APjAAAUL/DFRf9GvWN8ilC6Ojymtb4NNvw9p7X4TA/II75auF+idwdsD
-        PpemB1yyw7Y3VOIOrCl2F4g=
-X-Google-Smtp-Source: APXvYqyUxaksjlImjVVyJXjJfFNuaVHMdZuzjbWiTbKi+ztiyXEuE9chSrwZPE/Md5LU5A05adUi/w==
-X-Received: by 2002:a1c:7f4e:: with SMTP id a75mr5199411wmd.128.1575549600435;
-        Thu, 05 Dec 2019 04:40:00 -0800 (PST)
-Received: from ?IPv6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id i5sm1953453wrv.34.2019.12.05.04.39.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 Dec 2019 04:39:59 -0800 (PST)
-Subject: Re: [PATCH] tty: omap-serial: remove set but unused variable
-To:     Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        huawei.libin@huawei.com, shubhrajyoti@ti.com,
-        "balbi@ti.com >> Felipe Balbi" <balbi@ti.com>
-References: <1575547476-51996-1-git-send-email-wangxiongfeng2@huawei.com>
- <20191205121310.GA389695@kroah.com>
- <64810841-5e07-c346-01f3-dfd40a3f2df0@huawei.com>
-From:   Jiri Slaby <jslaby@suse.com>
-Autocrypt: addr=jslaby@suse.com; prefer-encrypt=mutual; keydata=
- mQINBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
- rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
- rSD5CwQl19fm4AJCS6A9GJtOoiLpWn2/IbogPc71jQVrupZYYx51rAaHZ0D2KYK/uhfc6neJ
- i0WqPlbtIlIrpvWxckucNu6ZwXjFY0f3qIRg3Vqh5QxPkojGsq9tXVFVLEkSVz6FoqCHrUTx
- wr+aw6qqQVgvT/McQtsI0S66uIkQjzPUrgAEtWUv76rM4ekqL9stHyvTGw0Fjsualwb0Gwdx
- ReTZzMgheAyoy/umIOKrSEpWouVoBt5FFSZUyjuDdlPPYyPav+hpI6ggmCTld3u2hyiHji2H
- cDpcLM2LMhlHBipu80s9anNeZhCANDhbC5E+NZmuwgzHBcan8WC7xsPXPaiZSIm7TKaVoOcL
- 9tE5aN3jQmIlrT7ZUX52Ff/hSdx/JKDP3YMNtt4B0cH6ejIjtqTd+Ge8sSttsnNM0CQUkXps
- w98jwz+Lxw/bKMr3NSnnFpUZaxwji3BC9vYyxKMAwNelBCHEgS/OAa3EJoTfuYOK6wT6nadm
- YqYjwYbZE5V/SwzMbpWu7Jwlvuwyfo5mh7w5iMfnZE+vHFwp/wARAQABtBxKaXJpIFNsYWJ5
- IDxqc2xhYnlAc3VzZS5jb20+iQI4BBMBAgAiBQJOkujrAhsDBgsJCAcDAgYVCAIJCgsEFgID
- AQIeAQIXgAAKCRC9JbEEBrRwSc1VD/9CxnyCYkBrzTfbi/F3/tTstr3cYOuQlpmufoEjCIXx
- PNnBVzP7XWPaHIUpp5tcweG6HNmHgnaJScMHHyG83nNAoCEPihyZC2ANQjgyOcnzDOnW2Gzf
- 8v34FDQqj8CgHulD5noYBrzYRAss6K42yUxUGHOFI1Ky1602OCBRtyJrMihio0gNuC1lE4YZ
- juGZEU6MYO1jKn8QwGNpNKz/oBs7YboU7bxNTgKrxX61cSJuknhB+7rHOQJSXdY02Tt31R8G
- diot+1lO/SoB47Y0Bex7WGTXe13gZvSyJkhZa5llWI/2d/s1aq5pgrpMDpTisIpmxFx2OEkb
- jM95kLOs/J8bzostEoEJGDL4u8XxoLnOEjWyT82eKkAe4j7IGQlA9QQR2hCMsBdvZ/EoqTcd
- SqZSOto9eLQkjZLz0BmeYIL8SPkgnVAJ/FEK44NrHUGzjzdkE7a0jNvHt8ztw6S+gACVpysi
- QYo2OH8hZGaajtJ8mrgN2Lxg7CpQ0F6t/N1aa/+A2FwdRw5sHBqA4PH8s0Apqu66Q94YFzzu
- 8OWkSPLgTjtyZcez79EQt02u8xH8dikk7API/PYOY+462qqbahpRGaYdvloaw7tOQJ224pWJ
- 4xePwtGyj4raAeczOcBQbKKW6hSH9iz7E5XUdpJqO3iZ9psILk5XoyO53wwhsLgGcrkCDQRO
- kueGARAAz5wNYsv5a9z1wuEDY5dn+Aya7s1tgqN+2HVTI64F3l6Yg753hF8UzTZcVMi3gzHC
- ECvKGwpBBwDiJA2V2RvJ6+Jis8paMtONFdPlwPaWlbOv4nHuZfsidXkk7PVCr4/6clZggGNQ
- qEjTe7Hz2nnwJiKXbhmnKfYXlxftT6KdjyUkgHAs8Gdz1nQCf8NWdQ4P7TAhxhWdkAoOIhc4
- OQapODd+FnBtuL4oCG0c8UzZ8bDZVNR/rYgfNX54FKdqbM84FzVewlgpGjcUc14u5Lx/jBR7
- ttZv07ro88Ur9GR6o1fpqSQUF/1V+tnWtMQoDIna6p/UQjWiVicQ2Tj7TQgFr4Fq8ZDxRb10
- Zbeds+t+45XlRS9uexJDCPrulJ2sFCqKWvk3/kf3PtUINDR2G4k228NKVN/aJQUGqCTeyaWf
- fU9RiJU+sw/RXiNrSL2q079MHTWtN9PJdNG2rPneo7l0axiKWIk7lpSaHyzBWmi2Arj/nuHf
- Maxpc708aCecB2p4pUhNoVMtjUhKD4+1vgqiWKI6OsEyZBRIlW2RRcysIwJ648MYejvf1dzv
- mVweUa4zfIQH/+G0qPKmtst4t/XLjE/JN54XnOD/TO1Fk0pmJyASbHJQ0EcecEodDHPWP6bM
- fQeNlm1eMa7YosnXwbTurR+nPZk+TYPndbDf1U0j8n0AEQEAAYkCHwQYAQIACQUCTpLnhgIb
- DAAKCRC9JbEEBrRwSTe1EACA74MWlvIhrhGWd+lxbXsB+elmL1VHn7Ovj3qfaMf/WV3BE79L
- 5A1IDyp0AGoxv1YjgE1qgA2ByDQBLjb0yrS1ppYqQCOSQYBPuYPVDk+IuvTpj/4rN2v3R5RW
- d6ozZNRBBsr4qHsnCYZWtEY2pCsOT6BE28qcbAU15ORMq0nQ/yNh3s/WBlv0XCP1gvGOGf+x
- UiE2YQEsGgjs8v719sguok8eADBbfmumerh/8RhPKRuTWxrXdNq/pu0n7hA6Btx7NYjBnnD8
- lV8Qlb0lencEUBXNFDmdWussMAlnxjmKhZyb30m1IgjFfG30UloZzUGCyLkr/53JMovAswmC
- IHNtXHwb58Ikn1i2U049aFso+WtDz4BjnYBqCL1Y2F7pd8l2HmDqm2I4gubffSaRHiBbqcSB
- lXIjJOrd6Q66u5+1Yv32qk/nOL542syYtFDH2J5wM2AWvfjZH1tMOVvVMu5Fv7+0n3x/9shY
- ivRypCapDfcWBGGsbX5eaXpRfInaMTGaU7wmWO44Z5diHpmQgTLOrN9/MEtdkK6OVhAMVenI
- w1UnZnA+ZfaZYShi5oFTQk3vAz7/NaA5/bNHCES4PcDZw7Y/GiIh/JQR8H1JKZ99or9LjFeg
- HrC8YQ1nzkeDfsLtYM11oC3peHa5AiXLmCuSC9ammQ3LhkfET6N42xTu2A==
-Message-ID: <0d5c4085-a6dc-ae06-34f2-7d4221baa5e9@suse.com>
-Date:   Thu, 5 Dec 2019 13:39:58 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        Thu, 5 Dec 2019 10:37:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34390 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726028AbfLEPhC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 5 Dec 2019 10:37:02 -0500
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0D9E924648;
+        Thu,  5 Dec 2019 15:37:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1575560221;
+        bh=8g5WQaj4R8Z6JbCzii1HHDVdWvegq5C0/h5DPZauWrA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=afZoFyU8oAIo1hr36eD0VKgwP7ZPm6YNcHaBrsSzoxWdBW7+ijPvI72HvK4s3Y+2C
+         1HSl5VGvnN97CjaRiXNcZNNLrxXRF3AbRFZrhB20jOjHGiSjZNy6nPs5DkfRKM4/4P
+         Err56hIxQp/XVz+/IXOxdm3+Pe+4LFnDCPaKPAzk=
+Received: by mail-lf1-f41.google.com with SMTP id b15so2836027lfc.4;
+        Thu, 05 Dec 2019 07:37:00 -0800 (PST)
+X-Gm-Message-State: APjAAAXVd7WTaD38Dzxi2K0Q+xuvHf2L7F6j3WrY+e9zQQHOIJDBVMKb
+        KKF2/OQxELwAunei1MD7UE45xusJSAmuLaurNV8=
+X-Google-Smtp-Source: APXvYqwek8DVv/vM+L3oBCOoYeEJuHSeXNWUabOdTxLPiPQBiEfVcEbnen+l04q5P0K9l4MHNCylkIMnDfQSrCrZcno=
+X-Received: by 2002:a05:6512:1dd:: with SMTP id f29mr1692900lfp.106.1575560219202;
+ Thu, 05 Dec 2019 07:36:59 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <64810841-5e07-c346-01f3-dfd40a3f2df0@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20191201075914.23512-1-kkoos00@naver.com> <20191201080314.GA3716559@kroah.com>
+In-Reply-To: <20191201080314.GA3716559@kroah.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+Date:   Thu, 5 Dec 2019 16:36:48 +0100
+X-Gmail-Original-Message-ID: <CAJKOXPet=RyJ3nrcOooHdN0GSO33Ce82-9L_X0oYC2MjN7nOig@mail.gmail.com>
+Message-ID: <CAJKOXPet=RyJ3nrcOooHdN0GSO33Ce82-9L_X0oYC2MjN7nOig@mail.gmail.com>
+Subject: Re: [PATCH] tty: serial: samsung: support driver modulization
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Hyunki Koo <kkoos00@naver.com>, jslaby@suse.com,
+        linux-serial@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        kkoos00@gmail.com, Shinbeom Choi <sbeom.choi@samsung.com>,
+        Hyunki Koo <hyunki00.koo@samsung.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 05. 12. 19, 13:30, Xiongfeng Wang wrote:
-> 
-> 
-> On 2019/12/5 20:13, Greg KH wrote:
->> On Thu, Dec 05, 2019 at 08:04:36PM +0800, Xiongfeng Wang wrote:
->>> Fix the following warning:
->>> drivers/tty/serial/omap-serial.c: In function serial_omap_rlsi:
->>> drivers/tty/serial/omap-serial.c:496:16: warning: variable ch set but not used [-Wunused-but-set-variable]
->>>
->>> Reported-by: Hulk Robot <hulkci@huawei.com>
->>> Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
->>> ---
->>>  drivers/tty/serial/omap-serial.c | 3 +--
->>>  1 file changed, 1 insertion(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
->>> index 6420ae5..54ee3ae 100644
->>> --- a/drivers/tty/serial/omap-serial.c
->>> +++ b/drivers/tty/serial/omap-serial.c
->>> @@ -493,10 +493,9 @@ static unsigned int check_modem_status(struct uart_omap_port *up)
->>>  static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int lsr)
->>>  {
->>>  	unsigned int flag;
->>> -	unsigned char ch = 0;
->>>  
->>>  	if (likely(lsr & UART_LSR_DR))
->>> -		ch = serial_in(up, UART_RX);
->>> +		serial_in(up, UART_RX);
->>
->> Shouldn't you be doing something with 'ch'?
-> 
-> Sorry, my original thought is trying not to modify the existing logic.
-> I will look into the mechanism to see if I need to check 'ch'.
+On Sun, 1 Dec 2019 at 09:05, Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Sun, Dec 01, 2019 at 04:59:14PM +0900, Hyunki Koo wrote:
+> > From: Shinbeom Choi <sbeom.choi@samsung.com>
+> >
+> > This commit enables modulization of samsung uart driver.
+> >
+> > There was no way to make use of this driver in other module,
+> > because uart functions were static.
+> >
+> > By exporting required functions, user can use this driver
+> > in other module.
+> >
+> > Signed-off-by: Shinbeom Choi <sbeom.choi@samsung.com>
+> > Signed-off-by: Hyunki Koo <hyunki00.koo@samsung.com>
+> > ---
+> >  drivers/tty/serial/samsung.h     | 32 ++++++++++++
+> >  drivers/tty/serial/samsung_tty.c | 85 +++++++++++++++-----------------
+> >  2 files changed, 73 insertions(+), 44 deletions(-)
+> >
+> > diff --git a/drivers/tty/serial/samsung.h b/drivers/tty/serial/samsung.h
+> > index f93022113f59..25be0962284d 100644
+> > --- a/drivers/tty/serial/samsung.h
+> > +++ b/drivers/tty/serial/samsung.h
+> > @@ -144,4 +144,36 @@ static inline void s3c24xx_clear_bit(struct uart_port *port, int idx,
+> >       local_irq_restore(flags);
+> >  }
+> >
+> > +#if defined(CONFIG_ARCH_EXYNOS)
+> > +#define EXYNOS_COMMON_SERIAL_DRV_DATA                                \
+> > +     .info = &(struct s3c24xx_uart_info) {                   \
+> > +             .name           = "Samsung Exynos UART",        \
+> > +             .type           = PORT_S3C6400,                 \
+> > +             .has_divslot    = 1,                            \
+> > +             .rx_fifomask    = S5PV210_UFSTAT_RXMASK,        \
+> > +             .rx_fifoshift   = S5PV210_UFSTAT_RXSHIFT,       \
+> > +             .rx_fifofull    = S5PV210_UFSTAT_RXFULL,        \
+> > +             .tx_fifofull    = S5PV210_UFSTAT_TXFULL,        \
+> > +             .tx_fifomask    = S5PV210_UFSTAT_TXMASK,        \
+> > +             .tx_fifoshift   = S5PV210_UFSTAT_TXSHIFT,       \
+> > +             .def_clk_sel    = S3C2410_UCON_CLKSEL0,         \
+> > +             .num_clks       = 1,                            \
+> > +             .clksel_mask    = 0,                            \
+> > +             .clksel_shift   = 0,                            \
+> > +     },                                                      \
+> > +     .def_cfg = &(struct s3c2410_uartcfg) {                  \
+> > +             .ucon           = S5PV210_UCON_DEFAULT,         \
+> > +             .ufcon          = S5PV210_UFCON_DEFAULT,        \
+> > +             .has_fracval    = 1,                            \
+> > +     }                                                       \
+> > +
+> > +#endif
+> > +
+> > +int s3c24xx_serial_get_ports(struct s3c24xx_uart_port **ourport, int index);
+> > +int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+> > +                                 struct platform_device *platdev);
+> > +int s3c24xx_serial_unregister_port(struct platform_device *dev);
+> > +int s3c24xx_serial_suspend(struct device *dev);
+> > +int s3c24xx_serial_resume(struct device *dev);
+> > +int s3c24xx_serial_resume_noirq(struct device *dev);
+> >  #endif
+> > diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+> > index 83fd51607741..15414ecd9008 100644
+> > --- a/drivers/tty/serial/samsung_tty.c
+> > +++ b/drivers/tty/serial/samsung_tty.c
+> > @@ -1735,7 +1735,7 @@ static int s3c24xx_serial_enable_baudclk(struct s3c24xx_uart_port *ourport)
+> >   * initialise a single serial port from the platform device given
+> >   */
+> >
+> > -static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+> > +int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+> >                                   struct platform_device *platdev)
+> >  {
+> >       struct uart_port *port = &ourport->port;
+> > @@ -1842,12 +1842,24 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+> >       /* reset the fifos (and setup the uart) */
+> >       s3c24xx_serial_resetport(port, cfg);
+> >
+> > +     if (!s3c24xx_uart_drv.state) {
+> > +             ret = uart_register_driver(&s3c24xx_uart_drv);
+> > +             if (ret < 0) {
+> > +                     dev_err(port->dev, "Failed to register Samsung UART driver\n");
+> > +                     return ret;
+> > +             }
+> > +     }
+> > +
+> > +     dbg("%s: adding port\n", __func__);
+> > +     uart_add_one_port(&s3c24xx_uart_drv, &ourport->port);
+> > +
+> >       return 0;
+> >
+> >  err:
+> >       port->mapbase = 0;
+> >       return ret;
+> >  }
+> > +EXPORT_SYMBOL_GPL(s3c24xx_serial_init_port);
+>
+> Why are you exporting all of these functions?  What other code uses
+> them?  Why are you converting them all to global functions I don't see
+> any other in-kernel callers, so why are those changes needed here?
+>
+> totally confused,
 
-The change looks in fact correct, see:
-commit 9a12fcf8b1543c99ffcec3d61db86f0dea52dc9d
-Author: Shubhrajyoti D <shubhrajyoti@ti.com>
-Date:   Fri Sep 21 20:07:19 2012 +0530
+I cannot find the original email from Hyunki on mailing lists (neither
+LKML nor serial) so this was not even public till Greg replied.
 
-    serial: omap: fix the reciever line error case
+Anyway, probably this is for new Android and some out-of-tree usage...
+but it is wrong.
 
-It also says: "This is recommended in the interrupt reset method in the
-table 23-246 of the omap4 TRM."
-
-The character read is erroneous and should be apparently dropped. But
-you should add a comment about it, though.
-
-thanks,
--- 
-js
-suse labs
+Best regards,
+Krzysztof
