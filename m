@@ -2,93 +2,90 @@ Return-Path: <SRS0=2LmE=Z3=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF21C43603
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Dec 2019 12:22:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E248EC43603
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Dec 2019 12:30:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C284A2464F
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Dec 2019 12:22:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1575548532;
-	bh=qgGNtF/l7uOobXAo/txHTzrih0m1E3AsFCzTZTO/ES4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=OF4pPQWg4bqsSTQp+csXXT0H+Br1V6k5zmp09u7uziTW9ex/CfBJefkNlzv/R/iOk
-	 jvSaFy/J9zOLGle8VqzjTp0PJSzcMUbVnOE2kq676xegN4teyS9S29HZsEjOyyWVwo
-	 lQoRZrmXriZ5Mqk29QMxQR7URg3btcJlFaj4Mk44=
+	by mail.kernel.org (Postfix) with ESMTP id BE67124651
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Dec 2019 12:30:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729109AbfLEMWM (ORCPT
+        id S1729385AbfLEMai (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Dec 2019 07:22:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38700 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729099AbfLEMWM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Dec 2019 07:22:12 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3EB8320707;
-        Thu,  5 Dec 2019 12:22:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1575548531;
-        bh=qgGNtF/l7uOobXAo/txHTzrih0m1E3AsFCzTZTO/ES4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=wvT3NdlSMcDl6Rrb4U9G+zs8JaI+M3jRNj6qQJZSkFRLzUmnShicwh0sgML9Dyl1a
-         N6qE39Xep1w0X0CiDtm1ODPrxoFb7xNiP+ZL8a7bcc1GJ/7JEPxvlbBKi7VDLbKmD3
-         /iwctK45uF0Kr2EFObj1QV+dWqjnldQV4184A8P0=
-Date:   Thu, 5 Dec 2019 13:22:08 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Xiongfeng Wang <wangxiongfeng2@huawei.com>
-Cc:     jslaby@suse.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, huawei.libin@huawei.com
-Subject: Re: [PATCH] tty: serial: 8250: remove set but unused variable
-Message-ID: <20191205122208.GB390369@kroah.com>
-References: <1575547903-52355-1-git-send-email-wangxiongfeng2@huawei.com>
+        Thu, 5 Dec 2019 07:30:38 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:33278 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729117AbfLEMai (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 5 Dec 2019 07:30:38 -0500
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id DAA31F8FBE18B222A32A;
+        Thu,  5 Dec 2019 20:30:34 +0800 (CST)
+Received: from [127.0.0.1] (10.184.52.56) by DGGEMS403-HUB.china.huawei.com
+ (10.3.19.203) with Microsoft SMTP Server id 14.3.439.0; Thu, 5 Dec 2019
+ 20:30:26 +0800
+Subject: Re: [PATCH] tty: omap-serial: remove set but unused variable
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     <jslaby@suse.com>, <linux-serial@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <huawei.libin@huawei.com>
+References: <1575547476-51996-1-git-send-email-wangxiongfeng2@huawei.com>
+ <20191205121310.GA389695@kroah.com>
+From:   Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Message-ID: <64810841-5e07-c346-01f3-dfd40a3f2df0@huawei.com>
+Date:   Thu, 5 Dec 2019 20:30:25 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1575547903-52355-1-git-send-email-wangxiongfeng2@huawei.com>
+In-Reply-To: <20191205121310.GA389695@kroah.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.184.52.56]
+X-CFilter-Loop: Reflected
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 05, 2019 at 08:11:43PM +0800, Xiongfeng Wang wrote:
-> Fix the following warning:
-> drivers/tty/serial/8250/serial_cs.c: In function multi_config:
-> drivers/tty/serial/8250/serial_cs.c:562:7: warning: variable err set but not used [-Wunused-but-set-variable]
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-> ---
->  drivers/tty/serial/8250/serial_cs.c | 9 +++------
->  1 file changed, 3 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/serial_cs.c b/drivers/tty/serial/8250/serial_cs.c
-> index c8186a0..eeda6a0 100644
-> --- a/drivers/tty/serial/8250/serial_cs.c
-> +++ b/drivers/tty/serial/8250/serial_cs.c
-> @@ -559,16 +559,13 @@ static int multi_config(struct pcmcia_device *link)
->  	 */
->  	if (info->manfid == MANFID_OXSEMI || (info->manfid == MANFID_POSSIO &&
->  				info->prodid == PRODID_POSSIO_GCC)) {
-> -		int err;
-> -
->  		if (link->config_index == 1 ||
->  		    link->config_index == 3) {
-> -			err = setup_serial(link, info, base2,
-> -					link->irq);
-> +			setup_serial(link, info, base2, link->irq);
->  			base2 = link->resource[0]->start;
->  		} else {
-> -			err = setup_serial(link, info, link->resource[0]->start,
-> -					link->irq);
-> +			setup_serial(link, info, link->resource[0]->start,
-> +				     link->irq);
 
-Again, why ignore the error value?
 
-greg k-h
+On 2019/12/5 20:13, Greg KH wrote:
+> On Thu, Dec 05, 2019 at 08:04:36PM +0800, Xiongfeng Wang wrote:
+>> Fix the following warning:
+>> drivers/tty/serial/omap-serial.c: In function serial_omap_rlsi:
+>> drivers/tty/serial/omap-serial.c:496:16: warning: variable ch set but not used [-Wunused-but-set-variable]
+>>
+>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>> Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+>> ---
+>>  drivers/tty/serial/omap-serial.c | 3 +--
+>>  1 file changed, 1 insertion(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+>> index 6420ae5..54ee3ae 100644
+>> --- a/drivers/tty/serial/omap-serial.c
+>> +++ b/drivers/tty/serial/omap-serial.c
+>> @@ -493,10 +493,9 @@ static unsigned int check_modem_status(struct uart_omap_port *up)
+>>  static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int lsr)
+>>  {
+>>  	unsigned int flag;
+>> -	unsigned char ch = 0;
+>>  
+>>  	if (likely(lsr & UART_LSR_DR))
+>> -		ch = serial_in(up, UART_RX);
+>> +		serial_in(up, UART_RX);
+> 
+> Shouldn't you be doing something with 'ch'?
+
+Sorry, my original thought is trying not to modify the existing logic.
+I will look into the mechanism to see if I need to check 'ch'.
+
+Thanks,
+Xiongfeng
+
+> 
+> 
+> .
+> 
+
