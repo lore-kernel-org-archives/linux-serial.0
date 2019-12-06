@@ -2,94 +2,111 @@ Return-Path: <SRS0=3UWf=Z4=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F5BC43603
-	for <linux-serial@archiver.kernel.org>; Fri,  6 Dec 2019 06:40:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87082C43603
+	for <linux-serial@archiver.kernel.org>; Fri,  6 Dec 2019 07:11:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B142024680
-	for <linux-serial@archiver.kernel.org>; Fri,  6 Dec 2019 06:40:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1575614424;
-	bh=p+tIxBSz0bQmkPz89oUoLma0YvcFZrDr6uINE15sZsg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=LSyXckop+aMvH7nPVAR1GB1OYB/qWMrQkRfcCvh5KK6GHho2jY+cLY5OqZrEtEykq
-	 HhC8qZSUwdGL7B6OKPNBteF3eiLpHDkNX0GY+17kwYPMnEBJ/wj7XfvlfeZWXHzLbj
-	 JvB5oKO02XMQ5G+848cT6XARr31u7Ab3WO0ydhWM=
+	by mail.kernel.org (Postfix) with ESMTP id 5737724676
+	for <linux-serial@archiver.kernel.org>; Fri,  6 Dec 2019 07:11:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726183AbfLFGkY (ORCPT
+        id S1726312AbfLFHLX (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 6 Dec 2019 01:40:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41642 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726104AbfLFGkY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 6 Dec 2019 01:40:24 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1043D24679;
-        Fri,  6 Dec 2019 06:40:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1575614423;
-        bh=p+tIxBSz0bQmkPz89oUoLma0YvcFZrDr6uINE15sZsg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hml23TGZcwh3DGHy6YiUYyWCx3/yK8SjA6ahPmbeXXwggLNiZ9/h1aHnwkgL8Bhk6
-         IpTghxQznhBFiRqEG/yMkMpL2q7dSEryGMZc/DrJ0nkGg4ZNeLnvbGH8pWwOulXfgT
-         jcZzZNsyOhCoceEbDr4eMhNqplQVEMcntqyhRsAQ=
-Date:   Fri, 6 Dec 2019 07:40:20 +0100
-From:   'Greg KH' <gregkh@linuxfoundation.org>
-To:     =?utf-8?B?77+977+977+977+977+977+9L0hZVU4tS0k=?= KOO 
-        <hyunki00.koo@samsung.com>
-Cc:     'Krzysztof Kozlowski' <krzk@kernel.org>,
-        'Hyunki Koo' <kkoos00@naver.com>, jslaby@suse.com,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kkoos00@gmail.com, 'Shinbeom Choi' <sbeom.choi@samsung.com>
-Subject: Re: [PATCH] tty: serial: samsung: support driver modulization
-Message-ID: <20191206064020.GA1318959@kroah.com>
-References: <20191201075914.23512-1-kkoos00@naver.com>
- <20191201080314.GA3716559@kroah.com>
- <CAJKOXPet=RyJ3nrcOooHdN0GSO33Ce82-9L_X0oYC2MjN7nOig@mail.gmail.com>
- <CGME20191205160249epcas2p3c1dcb24aba71f6b4264e76ebea36348c@epcas2p3.samsung.com>
- <20191205160243.GA757198@kroah.com>
- <000001d5abd6$ae5a6b50$0b0f41f0$@samsung.com>
+        Fri, 6 Dec 2019 02:11:23 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:59762 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726283AbfLFHLW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 6 Dec 2019 02:11:22 -0500
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 322B63A77FAC6FC516EA;
+        Fri,  6 Dec 2019 15:11:21 +0800 (CST)
+Received: from [127.0.0.1] (10.184.52.56) by DGGEMS403-HUB.china.huawei.com
+ (10.3.19.203) with Microsoft SMTP Server id 14.3.439.0; Fri, 6 Dec 2019
+ 15:11:11 +0800
+Subject: Re: [PATCH] tty: omap-serial: remove set but unused variable
+To:     Jiri Slaby <jslaby@suse.com>, Greg KH <gregkh@linuxfoundation.org>
+CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <huawei.libin@huawei.com>, <shubhrajyoti@ti.com>,
+        "balbi@ti.com >> Felipe Balbi" <balbi@ti.com>
+References: <1575547476-51996-1-git-send-email-wangxiongfeng2@huawei.com>
+ <20191205121310.GA389695@kroah.com>
+ <64810841-5e07-c346-01f3-dfd40a3f2df0@huawei.com>
+ <0d5c4085-a6dc-ae06-34f2-7d4221baa5e9@suse.com>
+From:   Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Message-ID: <ad64f294-2d45-b65d-a861-f4c494909afe@huawei.com>
+Date:   Fri, 6 Dec 2019 15:11:10 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <000001d5abd6$ae5a6b50$0b0f41f0$@samsung.com>
+In-Reply-To: <0d5c4085-a6dc-ae06-34f2-7d4221baa5e9@suse.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.184.52.56]
+X-CFilter-Loop: Reflected
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
 
-A: No.
-Q: Should I include quotations after my reply?
+On 2019/12/5 20:39, Jiri Slaby wrote:
+> On 05. 12. 19, 13:30, Xiongfeng Wang wrote:
+>>
+>>
+>> On 2019/12/5 20:13, Greg KH wrote:
+>>> On Thu, Dec 05, 2019 at 08:04:36PM +0800, Xiongfeng Wang wrote:
+>>>> Fix the following warning:
+>>>> drivers/tty/serial/omap-serial.c: In function serial_omap_rlsi:
+>>>> drivers/tty/serial/omap-serial.c:496:16: warning: variable ch set but not used [-Wunused-but-set-variable]
+>>>>
+>>>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>>>> Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+>>>> ---
+>>>>  drivers/tty/serial/omap-serial.c | 3 +--
+>>>>  1 file changed, 1 insertion(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+>>>> index 6420ae5..54ee3ae 100644
+>>>> --- a/drivers/tty/serial/omap-serial.c
+>>>> +++ b/drivers/tty/serial/omap-serial.c
+>>>> @@ -493,10 +493,9 @@ static unsigned int check_modem_status(struct uart_omap_port *up)
+>>>>  static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int lsr)
+>>>>  {
+>>>>  	unsigned int flag;
+>>>> -	unsigned char ch = 0;
+>>>>  
+>>>>  	if (likely(lsr & UART_LSR_DR))
+>>>> -		ch = serial_in(up, UART_RX);
+>>>> +		serial_in(up, UART_RX);
+>>>
+>>> Shouldn't you be doing something with 'ch'?
+>>
+>> Sorry, my original thought is trying not to modify the existing logic.
+>> I will look into the mechanism to see if I need to check 'ch'.
+> 
+> The change looks in fact correct, see:
+> commit 9a12fcf8b1543c99ffcec3d61db86f0dea52dc9d
+> Author: Shubhrajyoti D <shubhrajyoti@ti.com>
+> Date:   Fri Sep 21 20:07:19 2012 +0530
+> 
+>     serial: omap: fix the reciever line error case
+> 
+> It also says: "This is recommended in the interrupt reset method in the
+> table 23-246 of the omap4 TRM."
+> 
+> The character read is erroneous and should be apparently dropped. But
+> you should add a comment about it, though.
 
-http://daringfireball.net/2007/07/on_top
+Thanks a lot. I will add it in the comment and send another version.
 
-On Fri, Dec 06, 2019 at 10:44:20AM +0900, ������/HYUN-KI KOO wrote:
-> To support module for Samsung serial driver,
-> I would like to split the file into 2 files.
+Thanks,
+Xiongfeng
 
-But you did not do that here in this patch, right?
+> 
+> thanks,
+> 
 
-> Because it cannot be supported in one file both early console and
-> module driver
-> Thus some function need to change to EXPORT_SYMBOL to use in module
-> driver file.
-> I'm not pushed yet for module driver.
-
-I do not understand, this patch feels wrong and incomplete as-is, right?
-Please fix it up to work properly.
-
-thanks,
-
-greg k-h
