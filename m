@@ -1,162 +1,117 @@
-Return-Path: <SRS0=6dH8=Z5=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=Yf3U=Z7=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.4 required=3.0 tests=FROM_LOCAL_HEX,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 759CDC43603
-	for <linux-serial@archiver.kernel.org>; Sat,  7 Dec 2019 06:25:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9954C43603
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Dec 2019 06:31:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3E8D12173E
-	for <linux-serial@archiver.kernel.org>; Sat,  7 Dec 2019 06:25:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8722F206D3
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Dec 2019 06:31:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725923AbfLGGZJ (ORCPT
+        id S1727061AbfLIGbK (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 7 Dec 2019 01:25:09 -0500
-Received: from mail-il1-f200.google.com ([209.85.166.200]:43981 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725869AbfLGGZJ (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 7 Dec 2019 01:25:09 -0500
-Received: by mail-il1-f200.google.com with SMTP id j17so7031227ilc.10
-        for <linux-serial@vger.kernel.org>; Fri, 06 Dec 2019 22:25:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=j9m3lrvCXCpzSxM+tW4QOf6zVSZBLzxbD4R9FIlfwe8=;
-        b=clTfx/coMYB8mywRfKfbp1aPzWH+T5lhfr1sDcOCybS6JhfdWhVIeyhBBAymHwKl1P
-         IHzvrmbZYtU8FS2y/7m1XFeyno5VomLTRAhigKAOr3r2GZT8n8pu26jFRRnnxfI8XAGg
-         AQtOqDnMMJjYKP2sVSjCTDFm7mdwKyaWl2yA8s6yqVWG+tjn25TN/MLyfyktISsGEsv5
-         0ibxwmWMrCqoEECSNSI0ucv3l3Asp0+MqqxsazKNaJPDnDNtjEvQmuodQAMo8yxoP2+y
-         SfaLax/WUpnBNg+zqTrgjtnOL3IoZYajQY+jL2MoWFt0QXc6gtf38tAkwgg8gq2M4VSR
-         ywJg==
-X-Gm-Message-State: APjAAAVukPrkV2HWD6WRiPJEsuxC0zSnQVVIK7auHTZBH3wzlFJ9Clfb
-        P1yAz2n61BdhW6I6FZItDKDtHV8SU8aclyIFmQPqm+XnNFPI
-X-Google-Smtp-Source: APXvYqzcbP1i5iXtWa0x3COTXPqct38u54GHio/056rYZdiiYwd85nUttqGVNSnG+wxuaygr4c8dTn2O91+AImlAt7jLwipkZ4GK
+        Mon, 9 Dec 2019 01:31:10 -0500
+Received: from mail-bn8nam12on2062.outbound.protection.outlook.com ([40.107.237.62]:6171
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727023AbfLIGbJ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 9 Dec 2019 01:31:09 -0500
+Received: from BYAPR02CA0019.namprd02.prod.outlook.com (2603:10b6:a02:ee::32)
+ by DM5PR02MB2459.namprd02.prod.outlook.com (2603:10b6:3:47::9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2516.14; Mon, 9 Dec 2019 06:31:07 +0000
+Received: from SN1NAM02FT041.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e44::204) by BYAPR02CA0019.outlook.office365.com
+ (2603:10b6:a02:ee::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2495.19 via Frontend
+ Transport; Mon, 9 Dec 2019 06:31:07 +0000
+Authentication-Results: spf=softfail (sender IP is 149.199.60.83)
+ smtp.mailfrom=gmail.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=fail action=none header.from=gmail.com;
+Received-SPF: SoftFail (protection.outlook.com: domain of transitioning
+ gmail.com discourages use of 149.199.60.83 as permitted sender)
+Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
+ SN1NAM02FT041.mail.protection.outlook.com (10.152.72.217) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2495.26
+ via Frontend Transport; Mon, 9 Dec 2019 06:31:07 +0000
+Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
+        (envelope-from <shubhrajyoti.datta@gmail.com>)
+        id 1ieCZV-0004ZV-EO; Sun, 08 Dec 2019 22:31:05 -0800
+Received: from localhost ([127.0.0.1] helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <shubhrajyoti.datta@gmail.com>)
+        id 1ieCZJ-0000sH-JD; Sun, 08 Dec 2019 22:30:53 -0800
+Received: from [10.140.6.59] (helo=xhdshubhraj40.xilinx.com)
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <shubhrajyoti.datta@gmail.com>)
+        id 1ieCZI-0000ot-KW; Sun, 08 Dec 2019 22:30:53 -0800
+From:   shubhrajyoti.datta@gmail.com
+To:     linux-serial@vger.kernel.org
+Cc:     gregkh@linuxfoundation.org, jacmet@sunsite.dk, git@xilinx.com,
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Subject: [PATCH] tty: pl011: Add suspend resume support
+Date:   Mon,  9 Dec 2019 12:00:48 +0530
+Message-Id: <1575873048-14313-1-git-send-email-shubhrajyoti.datta@gmail.com>
+X-Mailer: git-send-email 2.1.1
+X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
+X-TM-AS-Result: No--4.572-7.0-31-1
+X-imss-scan-details: No--4.572-7.0-31-1;No--4.572-5.0-31-1
+X-TM-AS-User-Approved-Sender: No;No
+X-TM-AS-Result-Xfilter: Match text exemption rules:No
+X-EOPAttributedMessage: 0
+X-Matching-Connectors: 132203466673271950;(f9e945fa-a09a-4caa-7158-08d2eb1d8c44);()
+X-Forefront-Antispam-Report: CIP:149.199.60.83;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(376002)(346002)(396003)(39860400002)(136003)(189003)(199004)(48376002)(50226002)(6916009)(50466002)(4326008)(107886003)(70206006)(26005)(36756003)(70586007)(9786002)(15650500001)(76482006)(336012)(6666004)(356004)(305945005)(73392003)(82202003)(5660300002)(4744005)(316002)(426003)(55446002)(81156014)(8676002)(81166006)(8936002)(2616005)(2906002)(86362001)(9686003)(51416003)(498600001);DIR:OUT;SFP:1101;SCL:1;SRVR:DM5PR02MB2459;H:xsj-pvapsmtpgw01;FPR:;SPF:SoftFail;LANG:en;PTR:unknown-60-83.xilinx.com;MX:1;A:1;
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:a2c:: with SMTP id 12mr17810458jao.60.1575699908609;
- Fri, 06 Dec 2019 22:25:08 -0800 (PST)
-Date:   Fri, 06 Dec 2019 22:25:08 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000053539a0599173973@google.com>
-Subject: BUG: unable to handle kernel NULL pointer dereference in mem_serial_out
-From:   syzbot <syzbot+f4f1e871965064ae689e@syzkaller.appspotmail.com>
-To:     andriy.shevchenko@linux.intel.com, asierra@xes-inc.com,
-        ext-kimmo.rautkoski@vaisala.com, gregkh@linuxfoundation.org,
-        jslaby@suse.com, kai.heng.feng@canonical.com,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        mika.westerberg@linux.intel.com, o.barta89@gmail.com,
-        paulburton@kernel.org, sr@denx.de, syzkaller-bugs@googlegroups.com,
-        yegorslists@googlemail.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ee6f00c4-6370-4135-11d1-08d77c715f92
+X-MS-TrafficTypeDiagnostic: DM5PR02MB2459:
+X-Microsoft-Antispam-PRVS: <DM5PR02MB2459E10C3D675C91347799AB87580@DM5PR02MB2459.namprd02.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:741;
+X-Forefront-PRVS: 02462830BE
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 3v6nF9Z104+SEYARp56rZdV/tvOINOWVFYIk9ezLPFz1Eh8Qtz50F/RYSjqPJ6vjo5t+2lzFQUCC+CwwHTDj+kiDwLgBzkLGZIl3GzwlXVCwoASv74gqsm06eSdgPeP279ErvgJeg3McvkzYk301f7dQon+1KjgltnYQVbvkO6cIKoHqHfpezlnOqp7uWyKckLz884+H+oU9gbMIVN2vHDlIYH9axTbPWMQLTqHIjG7aCplhcwbPGuVZ74SSZ7tQTv41ZAQVN3gi8yQmKNfqIPrkEhCZu5FnWqHVOxs/QRseJqitsuO7f1oxFpOQeH5efRGZW2NfWU+pa8u1sOdGKIAeg8LEBvTQUOcwoqNJTQz91WkdRJ5hRYQMe/x5hQFUoCazilA/pdzTuP+XdsI2CLZlt6So1SIMJZXcKJ0BHD6PMjukG3hha6lcpjArwsVd
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2019 06:31:07.1650
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ee6f00c4-6370-4135-11d1-08d77c715f92
+X-MS-Exchange-CrossTenant-Id: 5afe0b00-7697-4969-b663-5eab37d5f47e
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=5afe0b00-7697-4969-b663-5eab37d5f47e;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR02MB2459
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 
-syzbot found the following crash on:
+Add the suspend and resume handlers for the versal uart platform driver.
+Adds the suspend for sbsa driver.
+Sbsa is a subset of the pl011 driver.
 
-HEAD commit:    7ada90eb Merge tag 'drm-next-2019-12-06' of git://anongit...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=123ec282e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f07a23020fd7d21a
-dashboard link: https://syzkaller.appspot.com/bug?extid=f4f1e871965064ae689e
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17ab090ee00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17f127f2e00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+f4f1e871965064ae689e@syzkaller.appspotmail.com
-
-BUG: kernel NULL pointer dereference, address: 0000000000000002
-#PF: supervisor write access in kernel mode
-#PF: error_code(0x0002) - not-present page
-PGD 9764a067 P4D 9764a067 PUD 9f995067 PMD 0
-Oops: 0002 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 9687 Comm: syz-executor433 Not tainted 5.4.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-RIP: 0010:writeb arch/x86/include/asm/io.h:65 [inline]
-RIP: 0010:mem_serial_out+0x70/0x90 drivers/tty/serial/8250/8250_port.c:408
-Code: e9 00 00 00 49 8d 7c 24 40 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48  
-c1 ea 03 d3 e3 80 3c 02 00 75 19 48 63 db 49 03 5c 24 40 <44> 88 2b 5b 41  
-5c 41 5d 5d c3 e8 81 ed cf fd eb c0 e8 da ed cf fd
-RSP: 0018:ffffc90001de78e8 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: 0000000000000002 RCX: 0000000000000000
-RDX: 1ffffffff181f40e RSI: ffffffff83e28776 RDI: ffffffff8c0fa070
-RBP: ffffc90001de7900 R08: ffff8880919dc340 R09: ffffed10431ee1c6
-R10: ffffed10431ee1c5 R11: ffff888218f70e2b R12: ffffffff8c0fa030
-R13: 0000000000000001 R14: ffffc90001de7a40 R15: ffffffff8c0fa188
-FS:  0000000001060880(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000002 CR3: 000000009e6b8000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-  serial_out drivers/tty/serial/8250/8250.h:118 [inline]
-  serial8250_clear_fifos.part.0+0x3a/0xb0  
-drivers/tty/serial/8250/8250_port.c:557
-  serial8250_clear_fifos drivers/tty/serial/8250/8250_port.c:556 [inline]
-  serial8250_do_startup+0x426/0x1cf0 drivers/tty/serial/8250/8250_port.c:2121
-  serial8250_startup+0x62/0x80 drivers/tty/serial/8250/8250_port.c:2329
-  uart_port_startup drivers/tty/serial/serial_core.c:219 [inline]
-  uart_startup drivers/tty/serial/serial_core.c:258 [inline]
-  uart_startup+0x452/0x980 drivers/tty/serial/serial_core.c:249
-  uart_set_info drivers/tty/serial/serial_core.c:998 [inline]
-  uart_set_info_user+0x13b4/0x1cf0 drivers/tty/serial/serial_core.c:1023
-  tty_tiocsserial drivers/tty/tty_io.c:2506 [inline]
-  tty_ioctl+0xf60/0x14f0 drivers/tty/tty_io.c:2648
-  vfs_ioctl fs/ioctl.c:47 [inline]
-  file_ioctl fs/ioctl.c:545 [inline]
-  do_vfs_ioctl+0x977/0x14e0 fs/ioctl.c:732
-  ksys_ioctl+0xab/0xd0 fs/ioctl.c:749
-  __do_sys_ioctl fs/ioctl.c:756 [inline]
-  __se_sys_ioctl fs/ioctl.c:754 [inline]
-  __x64_sys_ioctl+0x73/0xb0 fs/ioctl.c:754
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x440219
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffced648c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 0000000000440219
-RDX: 0000000020000240 RSI: 000000000000541f RDI: 0000000000000003
-RBP: 00000000006ca018 R08: 0000000000000000 R09: 00000000004002c8
-R10: 0000000000401b30 R11: 0000000000000246 R12: 0000000000401aa0
-R13: 0000000000401b30 R14: 0000000000000000 R15: 0000000000000000
-Modules linked in:
-CR2: 0000000000000002
----[ end trace eaa11ffe82f3a763 ]---
-RIP: 0010:writeb arch/x86/include/asm/io.h:65 [inline]
-RIP: 0010:mem_serial_out+0x70/0x90 drivers/tty/serial/8250/8250_port.c:408
-Code: e9 00 00 00 49 8d 7c 24 40 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48  
-c1 ea 03 d3 e3 80 3c 02 00 75 19 48 63 db 49 03 5c 24 40 <44> 88 2b 5b 41  
-5c 41 5d 5d c3 e8 81 ed cf fd eb c0 e8 da ed cf fd
-RSP: 0018:ffffc90001de78e8 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: 0000000000000002 RCX: 0000000000000000
-RDX: 1ffffffff181f40e RSI: ffffffff83e28776 RDI: ffffffff8c0fa070
-RBP: ffffc90001de7900 R08: ffff8880919dc340 R09: ffffed10431ee1c6
-R10: ffffed10431ee1c5 R11: ffff888218f70e2b R12: ffffffff8c0fa030
-R13: 0000000000000001 R14: ffffc90001de7a40 R15: ffffffff8c0fa188
-FS:  0000000001060880(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000002 CR3: 000000009e6b8000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
+Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/tty/serial/amba-pl011.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 3a7d1a6..62141f32 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2775,6 +2775,7 @@ static struct platform_driver arm_sbsa_uart_platform_driver = {
+ 	.remove		= sbsa_uart_remove,
+ 	.driver	= {
+ 		.name	= "sbsa-uart",
++		.pm	= &pl011_dev_pm_ops,
+ 		.of_match_table = of_match_ptr(sbsa_uart_of_match),
+ 		.acpi_match_table = ACPI_PTR(sbsa_uart_acpi_match),
+ 		.suppress_bind_attrs = IS_BUILTIN(CONFIG_SERIAL_AMBA_PL011),
+-- 
+2.1.1
+
