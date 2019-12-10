@@ -4,41 +4,41 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3202C43603
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:37:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2299C43603
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:37:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 88FD420838
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:37:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 96CBB2077B
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:37:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1575988652;
-	bh=Jj+kqL3oDpAOi3xZ9oFO5W6Gd+sw+qlOruuOifJ0chM=;
+	s=default; t=1575988667;
+	bh=ZZu6g4CiDeZIBwN4xUg7j+IL9wGtec4FD9ThMJUWWyY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=JVDLpCMAZvr0S3lxvJ7/LfLmK9GYi8kqFKs7hXguFOyKWPOc5EwhpsmdGSbX5dLKL
-	 dzD32f0QMV/+KjwSjn7jsJNlYsOEa44ociDzzw3w4z8yH4LJfNuRj2XwZqRg9F3ZV0
-	 ScMe3tSmg1Vu0baLBXhEdKO/ENPBii/HrpQrRHuI=
+	b=gzN9VY3fdLDYHoYGOGcldoluEQ0lY76GXDVq8k5T3kLM/ksDHZHSI2RYvaUqIhxdR
+	 TC5u4llfsCPm8c8J5/soPJyg2RBj91pJ74IHbKTod4ldTD2gaoBJC6qG5U6WqPTDXU
+	 jJfkXPtrZ6D73d/hAYrmBzOV5DfThQJw+am3Xcc4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727617AbfLJOhb (ORCPT
+        id S1727440AbfLJOhm (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 10 Dec 2019 09:37:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52406 "EHLO mail.kernel.org"
+        Tue, 10 Dec 2019 09:37:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52712 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727345AbfLJOhb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 Dec 2019 09:37:31 -0500
+        id S1727681AbfLJOhk (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 10 Dec 2019 09:37:40 -0500
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5A87420637;
-        Tue, 10 Dec 2019 14:37:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 20FCB2077B;
+        Tue, 10 Dec 2019 14:37:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1575988649;
-        bh=Jj+kqL3oDpAOi3xZ9oFO5W6Gd+sw+qlOruuOifJ0chM=;
+        s=default; t=1575988659;
+        bh=ZZu6g4CiDeZIBwN4xUg7j+IL9wGtec4FD9ThMJUWWyY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tIGN0/mdbwR7DhlORTEopy1cIB7Yf1k+QLNhgfHWLjjqA0JJRGuDwRXbQstYIQDi/
-         ROhlY/yaEFiLm8BbJlg0dUB1Qjv24Xr/TK+vcwD43gTnhrBHpEqKVwZw32UIe3s/kv
-         O7KAD9/QbQTM1yHFzIIDnPIhPQESZw7rKatnKucs=
+        b=pyVsl2AwF+Rb+dIKagy9ZSrdqWe8rtMZlGi5PL+0o/xJIQXw9ft9eVi4Fu5yj6DvG
+         P47DJ8vavR+vbU3NaJwJRJK+9tkEodLUTSv9iSUzchyepYgHc3XEkKE/oAwh9evvHA
+         +CtUSn845z8GZ/5mJ8qti1oD1GYcDa9C061zVE+M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-serial@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -50,9 +50,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 06/10] tty: serial: samsung_tty: drop unneded dbg() calls
-Date:   Tue, 10 Dec 2019 15:37:02 +0100
-Message-Id: <20191210143706.3928480-6-gregkh@linuxfoundation.org>
+Subject: [PATCH 10/10] tty: serial: samsung_tty: fix blank line checkpatch warning
+Date:   Tue, 10 Dec 2019 15:37:06 +0100
+Message-Id: <20191210143706.3928480-10-gregkh@linuxfoundation.org>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191210143706.3928480-1-gregkh@linuxfoundation.org>
 References: <20191210143706.3928480-1-gregkh@linuxfoundation.org>
@@ -63,11 +63,9 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Now that the kernel has ftrace, any debugging calls that just do "made
-it to this function!" and "leaving this function!" can be removed.
-
-On the quest to move the samsung_tty driver over to use the standard
-kernel debugging functions, drop these unneeded calls.
+checkpatch is giving a bunch of:
+	WARNING: Missing a blank line after declarations
+messages on this file, so fix up all instances of that issue.
 
 Cc: Kukjin Kim <kgene@kernel.org>
 Cc: Krzysztof Kozlowski <krzk@kernel.org>
@@ -81,98 +79,37 @@ Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/samsung_tty.c | 22 ----------------------
- 1 file changed, 22 deletions(-)
+ drivers/tty/serial/samsung_tty.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 1a3bf5879344..37749f09066d 100644
+index 4aebed241068..d5c75d288498 100644
 --- a/drivers/tty/serial/samsung_tty.c
 +++ b/drivers/tty/serial/samsung_tty.c
-@@ -1136,9 +1136,6 @@ static int s3c24xx_serial_startup(struct uart_port *port)
- 	struct s3c24xx_uart_port *ourport = to_ourport(port);
- 	int ret;
- 
--	dbg("s3c24xx_serial_startup: port=%p (%08llx,%p)\n",
--	    port, (unsigned long long)port->mapbase, port->membase);
--
- 	rx_enabled(port) = 1;
- 
- 	ret = request_irq(ourport->rx_irq, s3c24xx_serial_rx_chars, 0,
-@@ -1165,8 +1162,6 @@ static int s3c24xx_serial_startup(struct uart_port *port)
- 
- 	ourport->tx_claimed = 1;
- 
--	dbg("s3c24xx_serial_startup ok\n");
--
- 	/* the port reset code should have done the correct
- 	 * register setup for the port controls */
- 
-@@ -1184,9 +1179,6 @@ static int s3c64xx_serial_startup(struct uart_port *port)
- 	unsigned int ufcon;
- 	int ret;
- 
--	dbg("s3c64xx_serial_startup: port=%p (%08llx,%p)\n",
--	    port, (unsigned long long)port->mapbase, port->membase);
--
- 	wr_regl(port, S3C64XX_UINTM, 0xf);
- 	if (ourport->dma) {
- 		ret = s3c24xx_serial_request_dma(ourport);
-@@ -1224,7 +1216,6 @@ static int s3c64xx_serial_startup(struct uart_port *port)
- 	/* Enable Rx Interrupt */
- 	s3c24xx_clear_bit(port, S3C64XX_UINTM_RXD, S3C64XX_UINTM);
- 
--	dbg("s3c64xx_serial_startup ok\n");
- 	return ret;
+@@ -1543,6 +1543,7 @@ static void s3c24xx_serial_release_port(struct uart_port *port)
+ static int s3c24xx_serial_request_port(struct uart_port *port)
+ {
+ 	const char *name = s3c24xx_serial_portname(port);
++
+ 	return request_mem_region(port->mapbase, MAP_SIZE, name) ? 0 : -EBUSY;
  }
  
-@@ -1870,8 +1861,6 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
- 	struct resource *res;
- 	int ret;
- 
--	dbg("s3c24xx_serial_init_port: port=%p, platdev=%p\n", port, platdev);
--
- 	if (platdev == NULL)
- 		return -ENODEV;
- 
-@@ -2011,8 +2000,6 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
- 			index = ret;
+@@ -1963,6 +1964,7 @@ static inline struct s3c24xx_serial_drv_data *s3c24xx_get_driver_data(
+ #ifdef CONFIG_OF
+ 	if (pdev->dev.of_node) {
+ 		const struct of_device_id *match;
++
+ 		match = of_match_node(s3c24xx_uart_dt_match, pdev->dev.of_node);
+ 		return (struct s3c24xx_serial_drv_data *)match->data;
  	}
- 
--	dbg("s3c24xx_serial_probe(%p) %d\n", pdev, index);
--
- 	if (index >= ARRAY_SIZE(s3c24xx_serial_ports)) {
- 		dev_err(&pdev->dev, "serial%d out of range\n", index);
- 		return -EINVAL;
-@@ -2273,10 +2260,6 @@ s3c24xx_serial_get_options(struct uart_port *port, int *baud,
- 	ucon   = rd_regl(port, S3C2410_UCON);
- 	ubrdiv = rd_regl(port, S3C2410_UBRDIV);
- 
--	dbg("s3c24xx_serial_get_options: port=%p\n"
--	    "registers: ulcon=%08x, ucon=%08x, ubdriv=%08x\n",
--	    port, ulcon, ucon, ubrdiv);
--
- 	if (s3c24xx_port_configured(ucon)) {
- 		switch (ulcon & S3C2410_LCON_CSMASK) {
- 		case S3C2410_LCON_CS5:
-@@ -2334,9 +2317,6 @@ s3c24xx_serial_console_setup(struct console *co, char *options)
- 	int parity = 'n';
- 	int flow = 'n';
- 
--	dbg("s3c24xx_serial_console_setup: co=%p (%d), %s\n",
--	    co, co->index, options);
--
- 	/* is this a valid port */
- 
- 	if (co->index == -1 || co->index >= CONFIG_SERIAL_SAMSUNG_UARTS)
-@@ -2351,8 +2331,6 @@ s3c24xx_serial_console_setup(struct console *co, char *options)
- 
- 	cons_uart = port;
- 
--	dbg("s3c24xx_serial_console_setup: port=%p (%d)\n", port, co->index);
--
- 	/*
- 	 * Check whether an invalid uart number has been specified, and
- 	 * if so, search for the first available port that does have
+@@ -2109,6 +2111,7 @@ static int s3c24xx_serial_resume_noirq(struct device *dev)
+ 		/* restore IRQ mask */
+ 		if (s3c24xx_serial_has_interrupt_mask(port)) {
+ 			unsigned int uintm = 0xf;
++
+ 			if (tx_enabled(port))
+ 				uintm &= ~S3C64XX_UINTM_TXD_MSK;
+ 			if (rx_enabled(port))
 -- 
 2.24.0
 
