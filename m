@@ -7,38 +7,38 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8175BC2D0C4
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9963DC2D0C5
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:37:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 585EB2077B
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:37:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 681B1214AF
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:37:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1575988670;
-	bh=5F9He/JTjS47XRoiu2ueFi9Y8ZrlEGSvSIqSGl6ur+o=;
+	s=default; t=1575988671;
+	bh=hiqG73s0FfgJlanKoxcRRqMIQC1jsCBN06gULizwK5s=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=zPtomEBHHYZMdzXd91K39/160THrUY1ipvidfaHp7bPrfjBWJeL1nj2o1PusG4+jy
-	 Wdmfn2RFRnNBBZo1Pbt7Rus9MNgYOafh0iTRNu7SoHixkH0jAkasq4m5aXOFAYMA19
-	 22w5DDzb1XX35oR2hvDj0NeXUxmY6Tq4YtQpKC1o=
+	b=AAPzWWi+EDX4uy3016NFvibdJQY9kL4niBFqAl/WDdcAH80SwzEPi/aFur7/vp93l
+	 UVtAr331wFg9gg267w+xvS928S0E29nO0DOCE8lgC+Gj4Mt/mLkq3tdIa5QJhYDJNx
+	 /h33DQWbhw/bcLgsdljZ6/qrsvqpUzAhJq4tJw7s=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727666AbfLJOhi (ORCPT
+        id S1727652AbfLJOhg (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 10 Dec 2019 09:37:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52656 "EHLO mail.kernel.org"
+        Tue, 10 Dec 2019 09:37:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52516 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727656AbfLJOhh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 Dec 2019 09:37:37 -0500
+        id S1727595AbfLJOhd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 10 Dec 2019 09:37:33 -0500
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 551EA20836;
-        Tue, 10 Dec 2019 14:37:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A87D12077B;
+        Tue, 10 Dec 2019 14:37:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1575988656;
-        bh=5F9He/JTjS47XRoiu2ueFi9Y8ZrlEGSvSIqSGl6ur+o=;
+        s=default; t=1575988652;
+        bh=hiqG73s0FfgJlanKoxcRRqMIQC1jsCBN06gULizwK5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Asj3mXXjQdygob6rd9S0uaev96tViCJSG8p4cN9zI4oMsQ1wB7nKWDAYyabUyFk7I
-         XVtgyQ+Ehm1I7KehZv7JqaqD3aqnuFHXt8iTy8vfD5VAVwar70lN7Zx+dej4dFMekh
-         16OUcNKotDz2Z4U4vyFgN3G5Ed8EaNzxNvNAa9ic=
+        b=bm7O0pOZrPlK5/U4l2nkbcPQbWieRX5703x1CFthL7hu5txzJQ0B162fX/3+vQv9X
+         42kzdL0HwxC4SItQ8Pa8MgUVRMeoAa9VMH2/T6qIbJJSOpCis1Xtg0hfxrCAxopClc
+         vOoSvg028GQxlu11EJVFfaYUr51oo1W8cbSNXQCQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-serial@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -50,9 +50,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 09/10] tty: serial: samsung_tty: fix up minor comment formatting
-Date:   Tue, 10 Dec 2019 15:37:05 +0100
-Message-Id: <20191210143706.3928480-9-gregkh@linuxfoundation.org>
+Subject: [PATCH 07/10] tty: serial: samsung_tty: use standard debugging macros
+Date:   Tue, 10 Dec 2019 15:37:03 +0100
+Message-Id: <20191210143706.3928480-7-gregkh@linuxfoundation.org>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191210143706.3928480-1-gregkh@linuxfoundation.org>
 References: <20191210143706.3928480-1-gregkh@linuxfoundation.org>
@@ -63,8 +63,10 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Fix up some minor formatting of comment blocks to make checkpatch
-happier and to make things look more uniform.
+The dbg() macro for the driver is not needed at all, all drivers should
+use the common dynamic debugging infrastructure, not roll their own.  So
+delete the custom macro and convert the driver to use dev_dbg() instead,
+providing a lot more information than the previous macro provided.
 
 Cc: Kukjin Kim <kgene@kernel.org>
 Cc: Krzysztof Kozlowski <krzk@kernel.org>
@@ -78,78 +80,209 @@ Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/samsung_tty.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ drivers/tty/serial/samsung_tty.c | 78 ++++++++++++--------------------
+ 1 file changed, 30 insertions(+), 48 deletions(-)
 
 diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 3dfb4f37ec69..4aebed241068 100644
+index 37749f09066d..12f6b2872076 100644
 --- a/drivers/tty/serial/samsung_tty.c
 +++ b/drivers/tty/serial/samsung_tty.c
-@@ -4,7 +4,7 @@
-  *
-  * Ben Dooks, Copyright (c) 2003-2008 Simtec Electronics
-  *	http://armlinux.simtec.co.uk/
--*/
-+ */
+@@ -46,28 +46,6 @@
+ #include <linux/of.h>
+ #include <asm/irq.h>
  
- /* Hote on 2410 error handling
-  *
-@@ -19,7 +19,7 @@
-  * and change the policy on BREAK
-  *
-  * BJD, 04-Nov-2004
--*/
-+ */
+-#if	defined(CONFIG_SERIAL_SAMSUNG_DEBUG) &&	\
+-	!defined(MODULE)
+-
+-extern void printascii(const char *);
+-
+-__printf(1, 2)
+-static void dbg(const char *fmt, ...)
+-{
+-	va_list va;
+-	char buff[256];
+-
+-	va_start(va, fmt);
+-	vscnprintf(buff, sizeof(buff), fmt, va);
+-	va_end(va);
+-
+-	printascii(buff);
+-}
+-
+-#else
+-#define dbg(fmt, ...) do { if (0) no_printk(fmt, ##__VA_ARGS__); } while (0)
+-#endif
+-
+ /* UART name and device definitions */
  
- #if defined(CONFIG_SERIAL_SAMSUNG_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
- #define SUPPORT_SYSRQ
-@@ -838,7 +838,7 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
+ #define S3C24XX_SERIAL_NAME	"ttySAC"
+@@ -517,7 +495,7 @@ static void s3c24xx_serial_stop_rx(struct uart_port *port)
+ 	unsigned int received;
  
- 	/* if there isn't anything more to transmit, or the uart is now
- 	 * stopped, disable the uart and exit
--	*/
-+	 */
+ 	if (rx_enabled(port)) {
+-		dbg("s3c24xx_serial_stop_rx: port=%p\n", port);
++		dev_dbg(port->dev, "stopping rx\n");
+ 		if (s3c24xx_serial_has_interrupt_mask(port))
+ 			s3c24xx_set_bit(port, S3C64XX_UINTM_RXD,
+ 					S3C64XX_UINTM);
+@@ -768,12 +746,13 @@ static void s3c24xx_serial_rx_drain_fifo(struct s3c24xx_uart_port *ourport)
+ 		port->icount.rx++;
  
- 	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
- 		s3c24xx_serial_stop_tx(port);
-@@ -1142,7 +1142,8 @@ static int s3c24xx_serial_startup(struct uart_port *port)
- 	ourport->tx_claimed = 1;
+ 		if (unlikely(uerstat & S3C2410_UERSTAT_ANY)) {
+-			dbg("rxerr: port ch=0x%02x, rxs=0x%08x\n",
+-			    ch, uerstat);
++			dev_dbg(port->dev,
++				"rxerr: port ch=0x%02x, rxs=0x%08x\n",
++				ch, uerstat);
  
- 	/* the port reset code should have done the correct
--	 * register setup for the port controls */
-+	 * register setup for the port controls
-+	 */
+ 			/* check for break */
+ 			if (uerstat & S3C2410_UERSTAT_BREAK) {
+-				dbg("break!\n");
++				dev_dbg(port->dev, "break!\n");
+ 				port->icount.brk++;
+ 				if (uart_handle_break(port))
+ 					continue; /* Ignore character */
+@@ -1148,7 +1127,7 @@ static int s3c24xx_serial_startup(struct uart_port *port)
  
- 	return ret;
+ 	ourport->rx_claimed = 1;
  
-@@ -1242,7 +1243,7 @@ static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
-  * baud clocks (and the resultant actual baud rates) and then tries to
-  * pick the closest one and select that.
-  *
--*/
-+ */
+-	dbg("requesting tx irq...\n");
++	dev_dbg(port->dev, "requesting tx irq...\n");
  
- #define MAX_CLK_NAME_LENGTH 15
+ 	tx_enabled(port) = 1;
  
-@@ -1683,7 +1684,7 @@ s3c24xx_serial_ports[CONFIG_SERIAL_SAMSUNG_UARTS] = {
- /* s3c24xx_serial_resetport
-  *
-  * reset the fifos and other the settings.
--*/
-+ */
+@@ -1433,29 +1412,30 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
  
- static void s3c24xx_serial_resetport(struct uart_port *port,
- 				   struct s3c2410_uartcfg *cfg)
-@@ -1737,7 +1738,8 @@ static int s3c24xx_serial_cpufreq_transition(struct notifier_block *nb,
+ 		if (cfg->has_fracval) {
+ 			udivslot = (div & 15);
+-			dbg("fracval = %04x\n", udivslot);
++			dev_dbg(port->dev, "fracval = %04x\n", udivslot);
+ 		} else {
+ 			udivslot = udivslot_table[div & 15];
+-			dbg("udivslot = %04x (div %d)\n", udivslot, div & 15);
++			dev_dbg(port->dev, "udivslot = %04x (div %d)\n",
++				udivslot, div & 15);
+ 		}
+ 	}
  
- 	if (val == CPUFREQ_PRECHANGE) {
- 		/* we should really shut the port down whilst the
--		 * frequency change is in progress. */
-+		 * frequency change is in progress.
-+		 */
+ 	switch (termios->c_cflag & CSIZE) {
+ 	case CS5:
+-		dbg("config: 5bits/char\n");
++		dev_dbg(port->dev, "config: 5bits/char\n");
+ 		ulcon = S3C2410_LCON_CS5;
+ 		break;
+ 	case CS6:
+-		dbg("config: 6bits/char\n");
++		dev_dbg(port->dev, "config: 6bits/char\n");
+ 		ulcon = S3C2410_LCON_CS6;
+ 		break;
+ 	case CS7:
+-		dbg("config: 7bits/char\n");
++		dev_dbg(port->dev, "config: 7bits/char\n");
+ 		ulcon = S3C2410_LCON_CS7;
+ 		break;
+ 	case CS8:
+ 	default:
+-		dbg("config: 8bits/char\n");
++		dev_dbg(port->dev, "config: 8bits/char\n");
+ 		ulcon = S3C2410_LCON_CS8;
+ 		break;
+ 	}
+@@ -1477,8 +1457,9 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
  
- 	} else if (val == CPUFREQ_POSTCHANGE) {
- 		struct ktermios *termios;
+ 	spin_lock_irqsave(&port->lock, flags);
+ 
+-	dbg("setting ulcon to %08x, brddiv to %d, udivslot %08x\n",
+-	    ulcon, quot, udivslot);
++	dev_dbg(port->dev,
++		"setting ulcon to %08x, brddiv to %d, udivslot %08x\n",
++		ulcon, quot, udivslot);
+ 
+ 	wr_regl(port, S3C2410_ULCON, ulcon);
+ 	wr_regl(port, S3C2410_UBRDIV, quot);
+@@ -1499,10 +1480,11 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
+ 	if (ourport->info->has_divslot)
+ 		wr_regl(port, S3C2443_DIVSLOT, udivslot);
+ 
+-	dbg("uart: ulcon = 0x%08x, ucon = 0x%08x, ufcon = 0x%08x\n",
+-	    rd_regl(port, S3C2410_ULCON),
+-	    rd_regl(port, S3C2410_UCON),
+-	    rd_regl(port, S3C2410_UFCON));
++	dev_dbg(port->dev,
++		"uart: ulcon = 0x%08x, ucon = 0x%08x, ufcon = 0x%08x\n",
++		rd_regl(port, S3C2410_ULCON),
++		rd_regl(port, S3C2410_UCON),
++		rd_regl(port, S3C2410_UFCON));
+ 
+ 	/*
+ 	 * Update the per-port timeout.
+@@ -1877,7 +1859,7 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+ 	port->uartclk = 1;
+ 
+ 	if (cfg->uart_flags & UPF_CONS_FLOW) {
+-		dbg("s3c24xx_serial_init_port: enabling flow control\n");
++		dev_dbg(port->dev, "enabling flow control\n");
+ 		port->flags |= UPF_CONS_FLOW;
+ 	}
+ 
+@@ -1889,7 +1871,7 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+ 		return -EINVAL;
+ 	}
+ 
+-	dbg("resource %pR)\n", res);
++	dev_dbg(port->dev, "resource %pR)\n", res);
+ 
+ 	port->membase = devm_ioremap(port->dev, res->start, resource_size(res));
+ 	if (!port->membase) {
+@@ -1951,9 +1933,9 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
+ 		wr_regl(port, S3C64XX_UINTSP, 0xf);
+ 	}
+ 
+-	dbg("port: map=%pa, mem=%p, irq=%d (%d,%d), clock=%u\n",
+-	    &port->mapbase, port->membase, port->irq,
+-	    ourport->rx_irq, ourport->tx_irq, port->uartclk);
++	dev_dbg(port->dev, "port: map=%pa, mem=%p, irq=%d (%d,%d), clock=%u\n",
++		&port->mapbase, port->membase, port->irq,
++		ourport->rx_irq, ourport->tx_irq, port->uartclk);
+ 
+ 	/* reset the fifos (and setup the uart) */
+ 	s3c24xx_serial_resetport(port, cfg);
+@@ -2034,7 +2016,7 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+ 	ourport->min_dma_size = max_t(int, ourport->port.fifosize,
+ 				    dma_get_cache_alignment());
+ 
+-	dbg("%s: initialising port %p...\n", __func__, ourport);
++	dev_dbg(&pdev->dev, "%s: initialising port %p...\n", __func__, ourport);
+ 
+ 	ret = s3c24xx_serial_init_port(ourport, pdev);
+ 	if (ret < 0)
+@@ -2048,7 +2030,7 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
+-	dbg("%s: adding port\n", __func__);
++	dev_dbg(&pdev->dev, "%s: adding port\n", __func__);
+ 	uart_add_one_port(&s3c24xx_uart_drv, &ourport->port);
+ 	platform_set_drvdata(pdev, &ourport->port);
+ 
+@@ -2303,7 +2285,7 @@ s3c24xx_serial_get_options(struct uart_port *port, int *baud,
+ 			rate = 1;
+ 
+ 		*baud = rate / (16 * (ubrdiv + 1));
+-		dbg("calculated baud %d\n", *baud);
++		dev_dbg(port->dev, "calculated baud %d\n", *baud);
+ 	}
+ 
+ }
+@@ -2341,7 +2323,7 @@ s3c24xx_serial_console_setup(struct console *co, char *options)
+ 	else
+ 		s3c24xx_serial_get_options(port, &baud, &parity, &bits);
+ 
+-	dbg("s3c24xx_serial_console_setup: baud %d\n", baud);
++	dev_dbg(port->dev, "baud %d\n", baud);
+ 
+ 	return uart_set_options(port, co, baud, parity, bits, flow);
+ }
 -- 
 2.24.0
 
