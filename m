@@ -2,85 +2,69 @@ Return-Path: <SRS0=Y54r=2A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4556C43603
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 15:11:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 255ABC43603
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 15:12:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AC10120836
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 15:11:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1575990665;
-	bh=e5IcAHdSxCVaQr71MDw/u4OSVbxGZ7HWDDux3wC+gVQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=SonfZCH8SzFLz5h6N09GYYajmc6fXAI/jwcbWfxRiiuEMfkLxahKg4X/TJypCaBQk
-	 pDWIP7rYgcKbrav1jnv+V2BwVLudJ2XLqGQ4GFEv+N72J1VePc33pVNyae9tHQsSHH
-	 FmP5kY0eY7DbhPchUvzHm50BXDQvV7mC5KKj+DOI=
+	by mail.kernel.org (Postfix) with ESMTP id 045142073B
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 15:12:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727441AbfLJPLC (ORCPT
+        id S1727223AbfLJPML (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 10 Dec 2019 10:11:02 -0500
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:42377 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727178AbfLJPLC (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 Dec 2019 10:11:02 -0500
-Received: by mail-ed1-f65.google.com with SMTP id e10so16247552edv.9;
-        Tue, 10 Dec 2019 07:11:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=e5IcAHdSxCVaQr71MDw/u4OSVbxGZ7HWDDux3wC+gVQ=;
-        b=qdA9GFosMcL8jVZusvCRyXhXejxqshpWIwt8LMMrH24Mf+cSy1g8p73QHvC33XrRWp
-         DqWq5LUQIi4wPSsyJYYnHT7ZmvQxqcLf/ozh8itv2cbliw/i1PSoFatBn7mftBH++mZt
-         bhurOrhe2EQ0SKokaTvai6qX09rv0kFPF0xecIFz7oStCazIbSnY5TpzObi07CAWNSrM
-         ZW2raEf2tE5sMTFxAKh2ecneNv+PBCJpSCh4uhvOKh9yF0SA7hODjmnagpJa2zqZEyVs
-         DnprZJ9FQK8vt+zfTaquM1/WWk9KaUvK0LqqI5BSZdkyT0YZRSKQK+bqU2ie/BZumy+1
-         WtSQ==
-X-Gm-Message-State: APjAAAWoV8H8eJNJZgeHAr57HbIP0SfiXk9+XUWhEDp2iBR+2IbZNYbQ
-        upZX3g/9PAMO383/t8p7194=
-X-Google-Smtp-Source: APXvYqw5jbPq4FswRVWVBj9g7UTnNhv9eRpXy/D1mfxGrUvwdSteqcL3i+CjwMzPw/KYvZxjGO+jRQ==
-X-Received: by 2002:a05:6402:305b:: with SMTP id bu27mr39330099edb.191.1575990660199;
-        Tue, 10 Dec 2019 07:11:00 -0800 (PST)
-Received: from pi3 ([194.230.155.234])
-        by smtp.googlemail.com with ESMTPSA id ck28sm85351edb.45.2019.12.10.07.10.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2019 07:10:59 -0800 (PST)
-Date:   Tue, 10 Dec 2019 16:10:57 +0100
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org, Kukjin Kim <kgene@kernel.org>,
-        Hyunki Koo <kkoos00@naver.com>,
-        HYUN-KI KOO <hyunki00.koo@samsung.com>,
-        Shinbeom Choi <sbeom.choi@samsung.com>,
-        Jiri Slaby <jslaby@suse.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+        Tue, 10 Dec 2019 10:12:11 -0500
+Received: from ns.iliad.fr ([212.27.33.1]:35636 "EHLO ns.iliad.fr"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727518AbfLJPMK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 10 Dec 2019 10:12:10 -0500
+Received: from ns.iliad.fr (localhost [127.0.0.1])
+        by ns.iliad.fr (Postfix) with ESMTP id 2CE1E20714;
+        Tue, 10 Dec 2019 16:12:08 +0100 (CET)
+Received: from [192.168.108.51] (freebox.vlq16.iliad.fr [213.36.7.13])
+        by ns.iliad.fr (Postfix) with ESMTP id 085FF20425;
+        Tue, 10 Dec 2019 16:12:08 +0100 (CET)
 Subject: Re: [PATCH 08/10] tty: serial: samsung_tty: use 'unsigned int' not
  'unsigned'
-Message-ID: <20191210151057.GG11222@pi3>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>
+Cc:     Jiri Slaby <jslaby@suse.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>
 References: <20191210143706.3928480-1-gregkh@linuxfoundation.org>
  <20191210143706.3928480-8-gregkh@linuxfoundation.org>
+From:   Marc Gonzalez <marc.w.gonzalez@free.fr>
+Message-ID: <eb3cf8f9-3606-c2d6-ad90-4388a52c320b@free.fr>
+Date:   Tue, 10 Dec 2019 16:12:07 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 In-Reply-To: <20191210143706.3928480-8-gregkh@linuxfoundation.org>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: ClamAV using ClamSMTP ; ns.iliad.fr ; Tue Dec 10 16:12:08 2019 +0100 (CET)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Dec 10, 2019 at 03:37:04PM +0100, Greg Kroah-Hartman wrote:
+[ Trim recipients list ]
+
+On 10/12/2019 15:37, Greg Kroah-Hartman wrote:
+
 > The function uart_console_write() expects an unsigned int, so use that
 > variable type, not 'unsigned', which is generally frowned apon in the
 > kernel now.
 
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+"frowned upon"
 
-Best regards,
-Krzysztof
+Wait, what?!
 
+'unsigned' and 'unsigned int' are the same type, if I remember my C
+lessons correctly.
+
+Is this a uniformization issue?
+
+Regards.
