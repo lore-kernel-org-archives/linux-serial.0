@@ -2,55 +2,55 @@ Return-Path: <SRS0=Y54r=2A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,UNWANTED_LANGUAGE_BODY,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9836C43603
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:52:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53AB7C2D0BF
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:53:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 730812077B
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:52:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 23F1F20828
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:53:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1575989527;
-	bh=dFAzoWFqZ3axImMuFtqVBpswlNQq1NMO/hoo1pIY4vI=;
+	s=default; t=1575989635;
+	bh=fYmnVBbptrRk0Q6DbseoOA+X1RrYmuA2dXRAN/nJm9Y=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=hqKP1yN2t11eLmVheREO0Y8zrlEKNe256jdOiLpnUCvyhnE8dYwd0zpQOO2D84/6t
-	 TW8VhTcSs1YhmtbUvyKNZ5tAdfSRDzJJrRuRzRr/GM+HqEWsh9Ti4ntNwSQyGHyPvC
-	 V+yS0yVYLvGIF2aX3s3tqs0ILyia6mpjlilOYQP0=
+	b=eq8NAm6lKPnLtZXB64iXVtJJxMci1nOXngjxCYkMEjNc7ZNXmSCqeknUP9jBSX3ZQ
+	 /xMRFVHLgFGE9SZLDlDex4sjapD8f/yJ+XO4trA1p/Mk9shmdQsMKJ6XUX3w0vKD3+
+	 KMVxfxeM0o16zNw01yPwSVguceqsqQOv4zlX5NfA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727272AbfLJOwH (ORCPT
+        id S1727345AbfLJOxv (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 10 Dec 2019 09:52:07 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:46710 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727159AbfLJOwH (ORCPT
+        Tue, 10 Dec 2019 09:53:51 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:42688 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727145AbfLJOxv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 Dec 2019 09:52:07 -0500
-Received: by mail-ed1-f66.google.com with SMTP id m8so16172641edi.13;
-        Tue, 10 Dec 2019 06:52:05 -0800 (PST)
+        Tue, 10 Dec 2019 09:53:51 -0500
+Received: by mail-ed1-f67.google.com with SMTP id e10so16193564edv.9;
+        Tue, 10 Dec 2019 06:53:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=vnMo0Q3LhdLOTfXftmwazBAlZMLfT/1Z0Eq6LrQUqdc=;
-        b=adoZTKddLqHvuYyIzQFY1Gx43lt3pjw3kYkZ1J+HKzPnj+gbYU4t1/G0d3c9PAIo51
-         gMSab1fBkpepKR0lfFBMC5ibUmOG7AAH1P9sMD+cUNuKrgV/CPBVFG/9FwQGldomW3ny
-         Ty9R7YIQPvfvYzVLIW7PvC8DYhe5ozbyLhZXnQZpxKltcQXthlXBS6jVg4tPtKk8eCqm
-         6OcOnBrqaSjtWxljxKyqbuMY5nf1/THInhPiDx66/0Rrsw+be/GmH2hsveiqV4+eAubi
-         sSQEd0g+JJGZgRl5mplU/9bKOgprc6R9ICTFCiwCsjNfkmah9XjCcHYtYXCqVSCrhzrF
-         vbRQ==
-X-Gm-Message-State: APjAAAViWlIpwNawOGoHXEtWnWdyaYHOP4upIxO1Hb9ZN8xls5YTcpEz
-        C7LUMpP3JDfrmjg0umA7DIQ=
-X-Google-Smtp-Source: APXvYqw8E22/mA1z+Pv20fl6fJbN59CqfIhZcA5CUD+tWG45/U1MB8pFtq/LQzK21g3Bfic01PlZWQ==
-X-Received: by 2002:a05:6402:17f2:: with SMTP id t18mr40260410edy.9.1575989524821;
-        Tue, 10 Dec 2019 06:52:04 -0800 (PST)
+        bh=J3ePAvbBtA2GFkH/GUkVyhurDlAL5lGAx4tH8RkORZ0=;
+        b=a+4rIlANegaZfGrr0z1EA3OyuVbIGEiukgPQV0Ht/N/UoF/Qv7Ivexz/eWkhOIJaFD
+         0zEGp3u40fxKxPInDEedaTY3Ci3IpcTXOIZ6ebmhB13bH0zdDrM12m00nXHwOvPmW/1h
+         AN9jY70gJ/X8JNrHiYLxINAIpO/u47STJM2tpR7iOkHw5jaWY/T460kwoFj3ZZWUslgr
+         xDkYfQqb3ZGf6VuvdldeYhzUt8pf3jbi0ycRo7zpP/FpoyM8c7wuM7Y0uLHrsyEKtPhy
+         WkOXbZJval9LobjRfyPV77NkiePTvpCPvNcSHq1Y70zNm+kFItRZlae+FvBeZTCjR3tK
+         ctVQ==
+X-Gm-Message-State: APjAAAW94IISfkdSLTGU8kqpY7dCpeTarHSPDPqj6FAmtauZN6Rg1VJ/
+        +W4qCRl0ytQ0eRQv0YogNnGHyT6v+z0=
+X-Google-Smtp-Source: APXvYqxqRciyed+2OJtA3xXe9pB4A4wCu/SQT8sBJWcQGqcqWcoGcOTuXxH4KgdXVL9C0KXUH+gJ5g==
+X-Received: by 2002:a17:906:3953:: with SMTP id g19mr3940761eje.227.1575989629067;
+        Tue, 10 Dec 2019 06:53:49 -0800 (PST)
 Received: from pi3 ([194.230.155.234])
-        by smtp.googlemail.com with ESMTPSA id m17sm76622edq.37.2019.12.10.06.52.03
+        by smtp.googlemail.com with ESMTPSA id x8sm81066eds.88.2019.12.10.06.53.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2019 06:52:04 -0800 (PST)
-Date:   Tue, 10 Dec 2019 15:52:02 +0100
+        Tue, 10 Dec 2019 06:53:48 -0800 (PST)
+Date:   Tue, 10 Dec 2019 15:53:46 +0100
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-serial@vger.kernel.org, Kukjin Kim <kgene@kernel.org>,
@@ -60,23 +60,26 @@ Cc:     linux-serial@vger.kernel.org, Kukjin Kim <kgene@kernel.org>,
         Jiri Slaby <jslaby@suse.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 05/10] tty: serial: samsung_tty: delete samsung.h
-Message-ID: <20191210145202.GD11222@pi3>
+Subject: Re: [PATCH 06/10] tty: serial: samsung_tty: drop unneded dbg() calls
+Message-ID: <20191210145346.GE11222@pi3>
 References: <20191210143706.3928480-1-gregkh@linuxfoundation.org>
- <20191210143706.3928480-5-gregkh@linuxfoundation.org>
+ <20191210143706.3928480-6-gregkh@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20191210143706.3928480-5-gregkh@linuxfoundation.org>
+In-Reply-To: <20191210143706.3928480-6-gregkh@linuxfoundation.org>
 User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Dec 10, 2019 at 03:37:01PM +0100, Greg Kroah-Hartman wrote:
-> There is no need for a .h file for a single .c file, so just move all of
-> the content of samsung.h into samsung_tty.c
+On Tue, Dec 10, 2019 at 03:37:02PM +0100, Greg Kroah-Hartman wrote:
+> Now that the kernel has ftrace, any debugging calls that just do "made
+> it to this function!" and "leaving this function!" can be removed.
+> 
+> On the quest to move the samsung_tty driver over to use the standard
+> kernel debugging functions, drop these unneeded calls.
 > 
 > Cc: Kukjin Kim <kgene@kernel.org>
 > Cc: Krzysztof Kozlowski <krzk@kernel.org>
@@ -90,10 +93,8 @@ On Tue, Dec 10, 2019 at 03:37:01PM +0100, Greg Kroah-Hartman wrote:
 > Cc: linux-kernel@vger.kernel.org
 > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > ---
->  drivers/tty/serial/samsung.h     | 144 -------------------------------
->  drivers/tty/serial/samsung_tty.c | 133 +++++++++++++++++++++++++++-
->  2 files changed, 130 insertions(+), 147 deletions(-)
->  delete mode 100644 drivers/tty/serial/samsung.h
+>  drivers/tty/serial/samsung_tty.c | 22 ----------------------
+>  1 file changed, 22 deletions(-)
 
 Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
 
