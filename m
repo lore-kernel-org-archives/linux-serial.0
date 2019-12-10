@@ -2,55 +2,54 @@ Return-Path: <SRS0=Y54r=2A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EF69C43603
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 15:12:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDD01C2D0BF
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 15:13:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 55F68207FF
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 15:12:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B79CE207FF
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 15:13:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1575990739;
-	bh=lxlHDiQcDr1linK8VJvnTov5ZH5ztK74eJN3eabE9cY=;
+	s=default; t=1575990831;
+	bh=aGvUfbdJAAGaGEa3eEsM+2Ah3ihhMKl45aQDqRkVHFQ=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=GvqJt/lolR1S21utKgYrALCz7i6QIOFUJNR2xFsWNTru2NccLZ4O54oL4he74inct
-	 VjHJ+NzdfF+7qHzFchGU94PxGFL9k5J2a16WP8SrsgIYEUaK/RXixLlVnb494e7Scy
-	 KYPwFA6bWNAKNyUwa9PWgApJ5u42WAbo7Xl8mllo=
+	b=vqH34bYiDos4r39YV8ogBczp965l2n9n5VHP/sxrBDdN18CHs7UukyyzAopX8RExH
+	 sWWvC5eKRQsgFabNE5SGESEnd7JqG0Z3r/WDdljHn1obbwuqNubV48h19GkWwITczZ
+	 aK+QCwxVBtFjovMh8pPb2WU9mFDbgEvZwenMcI08=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727522AbfLJPML (ORCPT
+        id S1727380AbfLJPNv (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 10 Dec 2019 10:12:11 -0500
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:42540 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727502AbfLJPMJ (ORCPT
+        Tue, 10 Dec 2019 10:13:51 -0500
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:34350 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727330AbfLJPNv (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 Dec 2019 10:12:09 -0500
-Received: by mail-ed1-f65.google.com with SMTP id e10so16250989edv.9;
-        Tue, 10 Dec 2019 07:12:08 -0800 (PST)
+        Tue, 10 Dec 2019 10:13:51 -0500
+Received: by mail-ed1-f68.google.com with SMTP id cx19so16314333edb.1;
+        Tue, 10 Dec 2019 07:13:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=sJaeGKsrAgF2COrnApNd92HDMsm8/A1cviivFQnAaJw=;
-        b=j2qOPrsw3wa7Mb+Z+tK3dtFbPo/Yzh38KMlM6OfzCqq7BzC6r7NX8TUNzUF5zFyw1W
-         S3hZePpWMQ/6odsfn/Areh/HZdzB9puwpf3H1mVUgadDXZieFHRUpLj56n+oCCJ9S7jS
-         ds7ovfL4wWGyhOJFrRrqxVoEEcAq/W6ZhI62jzfNSFTnbDV6RhsdKbUIZGRxdD7FLM2j
-         pPJ3LqBW4HEtVQqO+oDwuqv/4tuml3kAcOy61R1Q4/LZ9d5Ozu3TDr9feT53cJL6CwO/
-         dHgL4GuiJz1x/8CTC7vMq3ohL/fDE9auejLfW3l6v2hvI8zGkJlfG0rwjPbpJHfgxg9W
-         4K9Q==
-X-Gm-Message-State: APjAAAUNYhJEtfNZI1OLBnnsQ/yDKCw1CztOkCgVjnW1/D0PZU2/C9lq
-        8qKfN4Cmn4Oto0xcQUE+eI4cy9PMQB0=
-X-Google-Smtp-Source: APXvYqxujei1imzn332R8bQdgC3x3CynHzWuf7LdbAxNnqzLlR0w18cSud9VlWzURCVvIyZ4WjeMdQ==
-X-Received: by 2002:a50:fb96:: with SMTP id e22mr37840514edq.18.1575990727498;
-        Tue, 10 Dec 2019 07:12:07 -0800 (PST)
+        bh=+WKlQUPo72dT+6gRaE8wTfxIyY3yTGzZswBT0iRb62I=;
+        b=AtA0+9FtKwNy37TEJqJRheXr4kAtb1vFijuq7jqnbL2x9OXNpjP/6I7EvV6pvbfSn/
+         p/pvddkzNCRfGKdp6RAKAvBVo1Zazr0YqdlnPJq5KVEMuADPYrHudoZTgxCNKWR9PJta
+         amykV68QTo81gWEf/w4XgOoGfcvP5x8QZ6Adcm3WEHfKKCW2XAesTQ6x7ZdP0ieCNCsr
+         CCgQz3TKuRrknUcs6fIQQFwbFlS/VltzuF8Nuqug8DkpvxhEUN6T3IbF065M6Y3gdSVl
+         B1DLt/ooRJt1LpxpSitE0jjbORvWjqRMe7o9lUX34ChDlTbEL8QlNqJq8HFJ56kWA/f/
+         LHvQ==
+X-Gm-Message-State: APjAAAVpQCpaSQHSQcdjukReIaWyvmX6Bw0t/08+9ZFJyngI8Vy7XDiL
+        4wmfxQPKDNogMTkJbM5Wjjk=
+X-Google-Smtp-Source: APXvYqyHYKpKtamdeJS3QNFEyTBoL2rxQ9sXdvJZCyjpdDzv+arjgS3g0x4xyx8CWZsUYi2fp7VhMQ==
+X-Received: by 2002:aa7:d78b:: with SMTP id s11mr40051088edq.240.1575990828937;
+        Tue, 10 Dec 2019 07:13:48 -0800 (PST)
 Received: from pi3 ([194.230.155.234])
-        by smtp.googlemail.com with ESMTPSA id dh4sm87820edb.77.2019.12.10.07.12.06
+        by smtp.googlemail.com with ESMTPSA id y17sm70501edq.69.2019.12.10.07.13.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2019 07:12:06 -0800 (PST)
-Date:   Tue, 10 Dec 2019 16:12:04 +0100
+        Tue, 10 Dec 2019 07:13:48 -0800 (PST)
+Date:   Tue, 10 Dec 2019 16:13:45 +0100
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-serial@vger.kernel.org, Kukjin Kim <kgene@kernel.org>,
@@ -60,66 +59,29 @@ Cc:     linux-serial@vger.kernel.org, Kukjin Kim <kgene@kernel.org>,
         Jiri Slaby <jslaby@suse.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 03/10] tty: serial: samsung.h: fix up minor comment issues
-Message-ID: <20191210151204.GH11222@pi3>
+Subject: Re: [PATCH 10/10] tty: serial: samsung_tty: fix blank line
+ checkpatch warning
+Message-ID: <20191210151345.GI11222@pi3>
 References: <20191210143706.3928480-1-gregkh@linuxfoundation.org>
- <20191210143706.3928480-3-gregkh@linuxfoundation.org>
+ <20191210143706.3928480-10-gregkh@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20191210143706.3928480-3-gregkh@linuxfoundation.org>
+In-Reply-To: <20191210143706.3928480-10-gregkh@linuxfoundation.org>
 User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Dec 10, 2019 at 03:36:59PM +0100, Greg Kroah-Hartman wrote:
-> checkpatch found some minor issues with comments in samsung.h, so fix
-> that up.
->
+On Tue, Dec 10, 2019 at 03:37:06PM +0100, Greg Kroah-Hartman wrote:
+> checkpatch is giving a bunch of:
+> 	WARNING: Missing a blank line after declarations
+> messages on this file, so fix up all instances of that issue.
 
-No, you remove this header two patches later. No point to fix checkpatch
-issues here.
+I would prefer to squash it with previous. These are not bugs, just
+minor coding style violations so there is no point to split it per
+patch. Too much churn.
 
 Best regards,
 Krzysztof
-
-
-> Cc: Kukjin Kim <kgene@kernel.org>
-> Cc: Krzysztof Kozlowski <krzk@kernel.org>
-> Cc: Hyunki Koo <kkoos00@naver.com>
-> Cc: HYUN-KI KOO <hyunki00.koo@samsung.com>
-> Cc: Shinbeom Choi <sbeom.choi@samsung.com>
-> Cc: Jiri Slaby <jslaby@suse.com>
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-samsung-soc@vger.kernel.org
-> Cc: linux-serial@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->  drivers/tty/serial/samsung.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/samsung.h b/drivers/tty/serial/samsung.h
-> index f93022113f59..cdfd53acead3 100644
-> --- a/drivers/tty/serial/samsung.h
-> +++ b/drivers/tty/serial/samsung.h
-> @@ -1,4 +1,4 @@
-> -// SPDX-License-Identifier: GPL-2.0
-> +/* SPDX-License-Identifier: GPL-2.0 */
->  #ifndef __SAMSUNG_H
->  #define __SAMSUNG_H
->  
-> @@ -7,7 +7,7 @@
->   *
->   * Ben Dooks, Copyright (c) 2003-2008 Simtec Electronics
->   *	http://armlinux.simtec.co.uk/
-> -*/
-> + */
->  
->  #include <linux/dmaengine.h>
->  
-> -- 
-> 2.24.0
-> 
