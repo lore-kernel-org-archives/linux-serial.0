@@ -2,43 +2,43 @@ Return-Path: <SRS0=Y54r=2A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F1BDC2D0C4
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:37:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55405C43603
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:37:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6C97820828
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:37:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 21CB22077B
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:37:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1575988672;
-	bh=m0lB1KBJGzLu2Nv3nVszKTS5oGkAmP6KPGxbx0TkchY=;
+	s=default; t=1575988674;
+	bh=AfgQHmivDdTuEN8MKPB6tww4q8kLioJrSg5tZrRmIlU=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=wJNxb+ANFVjG2l7ahZWrh2ugt2pEYhFhXhcdvpFktBnt88akL8rRMDiC/k6twjJjV
-	 4ODnEIiH6Dk81Pkcv4Km9qVlkI/lXuo1gAlxJEbWtJkiSaasTA3exhMgkY6qRVeGkm
-	 IsMXm7RyoQc6prBQo1fRNa38X2gpWR67RnKmUecE=
+	b=IlSbHrMnuJx+IasiI4qQLqHHtTpucfhEw3ksUxqLZsXyrAk5V4zVQnDKCEnrmsY6F
+	 52rd3lEn6d6AEzJjsW8xR9uFhThUPah0ZnIsywxzCnb6sB7QhjdyF1HvOFBoQ+zdGL
+	 1mmmS1Pe5DUnbE9iteZxWvWXGbxp0PWwoxCPIUDU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727643AbfLJOhg (ORCPT
+        id S1727580AbfLJOh0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 10 Dec 2019 09:37:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52606 "EHLO mail.kernel.org"
+        Tue, 10 Dec 2019 09:37:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52276 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727345AbfLJOhf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 Dec 2019 09:37:35 -0500
+        id S1727345AbfLJOhZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 10 Dec 2019 09:37:25 -0500
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 06D2820637;
-        Tue, 10 Dec 2019 14:37:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B1FB320836;
+        Tue, 10 Dec 2019 14:37:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1575988654;
-        bh=m0lB1KBJGzLu2Nv3nVszKTS5oGkAmP6KPGxbx0TkchY=;
+        s=default; t=1575988645;
+        bh=AfgQHmivDdTuEN8MKPB6tww4q8kLioJrSg5tZrRmIlU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rpq0Zs/7e7NoILu4ColZzLYhfZzEd3sFr1/aWWHRgaH5ksnQdphGu+sua3vSTG7Rh
-         ypoO0EVmxl9grJgZR5qsY2Q4apTxJF2+2ZwM1IL/QtQfo2T65qW6RY7hhrlOge8zAR
-         uJ/IwUKnibVLAqcoREo4koHaQySPAUjr+sT7FXHg=
+        b=LvSG/BfevEmOGk8+22QtkwRVC/b6x1ybdF2TmDjSgck4tR/3XQkdm+HMOLObBriSR
+         1024ozY5z9k+hnveU/8won1uKLivOeipi8o/nuAYYmljmYO1O3HbXP4TRk6Vg2k/nL
+         y18O1vYYTA8mtfFJrMtIH5MytMS3ZnlPw+kEgYwY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-serial@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -50,9 +50,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 08/10] tty: serial: samsung_tty: use 'unsigned int' not 'unsigned'
-Date:   Tue, 10 Dec 2019 15:37:04 +0100
-Message-Id: <20191210143706.3928480-8-gregkh@linuxfoundation.org>
+Subject: [PATCH 04/10] tty: serial: samsung.h: remove reset_port callback from struct s3c24xx_uart_info
+Date:   Tue, 10 Dec 2019 15:37:00 +0100
+Message-Id: <20191210143706.3928480-4-gregkh@linuxfoundation.org>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191210143706.3928480-1-gregkh@linuxfoundation.org>
 References: <20191210143706.3928480-1-gregkh@linuxfoundation.org>
@@ -63,9 +63,8 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The function uart_console_write() expects an unsigned int, so use that
-variable type, not 'unsigned', which is generally frowned apon in the
-kernel now.
+The callback was never set, nor called, so remove the pointer entirely
+from struct s3c24xx_uart_info.
 
 Cc: Kukjin Kim <kgene@kernel.org>
 Cc: Krzysztof Kozlowski <krzk@kernel.org>
@@ -79,23 +78,23 @@ Cc: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/samsung_tty.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/serial/samsung.h | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 12f6b2872076..3dfb4f37ec69 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -2613,7 +2613,8 @@ static void samsung_early_putc(struct uart_port *port, int c)
- 	writeb(c, port->membase + S3C2410_UTXH);
- }
+diff --git a/drivers/tty/serial/samsung.h b/drivers/tty/serial/samsung.h
+index cdfd53acead3..7255ef287857 100644
+--- a/drivers/tty/serial/samsung.h
++++ b/drivers/tty/serial/samsung.h
+@@ -29,9 +29,6 @@ struct s3c24xx_uart_info {
+ 	/* uart port features */
  
--static void samsung_early_write(struct console *con, const char *s, unsigned n)
-+static void samsung_early_write(struct console *con, const char *s,
-+				unsigned int n)
- {
- 	struct earlycon_device *dev = con->data;
+ 	unsigned int		has_divslot:1;
+-
+-	/* uart controls */
+-	int (*reset_port)(struct uart_port *, struct s3c2410_uartcfg *);
+ };
  
+ struct s3c24xx_serial_drv_data {
 -- 
 2.24.0
 
