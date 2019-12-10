@@ -6,50 +6,50 @@ X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F0DBC3F68F
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:48:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D26C1C43603
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:50:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id ED3F320838
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:48:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9AE7020637
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Dec 2019 14:50:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1575989307;
-	bh=2yt/Wrf16n/sFPmsM45iBIgA3Yg7DHwv+gBrMNLCoTY=;
+	s=default; t=1575989439;
+	bh=K5Q8z1lZuFpZiVpIxPLlK/TX3uShRnvwUeaP79l8aCQ=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=xJqrpjMBqclmOsv26zpoXMB7qp2/zJN9ettHifm/YPsKQMRj/n57/nRHY+59se2OS
-	 MPeKgOqQQq+oLD2tenrdn5yRGJ6Gy7NvSJ29nFtNDxYDwMDPWyXsCGtq55g4EY8zIj
-	 tlJTvAaJ4CjAVx1FL/7oMy80tNxjUEwTr6ASdKiA=
+	b=wTk6vN2HgIMlhrra/9nEp+6kua37S3liskKdrsuDm2uHlZ97aOQB0IjrXXgaVVxbe
+	 JCyn2Tf6jTCO+6Gfhu28y6Lg2xoqvlv1t8/r3u+bfGywwHnIromwbWa18J1B0ENLG8
+	 Qp0iMokZD3i8ZS/2WsSDb2+NNsKaSOLVDePeWwCo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727272AbfLJOs0 (ORCPT
+        id S1727145AbfLJOuj (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 10 Dec 2019 09:48:26 -0500
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:43343 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727145AbfLJOs0 (ORCPT
+        Tue, 10 Dec 2019 09:50:39 -0500
+Received: from mail-ed1-f45.google.com ([209.85.208.45]:41450 "EHLO
+        mail-ed1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727426AbfLJOuj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 Dec 2019 09:48:26 -0500
-Received: by mail-ed1-f65.google.com with SMTP id dc19so16160735edb.10;
-        Tue, 10 Dec 2019 06:48:24 -0800 (PST)
+        Tue, 10 Dec 2019 09:50:39 -0500
+Received: by mail-ed1-f45.google.com with SMTP id c26so16195477eds.8;
+        Tue, 10 Dec 2019 06:50:38 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=0EAXVyH4ukLLoAvN9134a+PTWSnV2rVkKA3kz84w454=;
-        b=h5KeXgX2fo3TfT9n9FU16T6O+zty6qyQjrQ4oW305w3zt0Vy8Y/QCzj9r3ETcD1UVA
-         EucQjAUFKUxy5FEdgC8L1nIc3sQfVoQqM9pqJ8NJ98rC82hxytf6RrIO0k68+QilRLc1
-         TB8JSwS2dxDCE065Iu1CGVshIs7TJeqszMDt1xadcRFojiYilxrnipsJXO4v6KnBJVtV
-         D3bFU7SnIJiqq5xTTewoqPpAM3zdIuOIpZHMo0JhHt0hQez8la6rqpC/6pUj80DR7KSP
-         8lif7iRsy7aJqklvHqouLjXKqlGYe3SOTblEtWQf+Ub6vKS8KGGaQfm1Du9S/eXexCYR
-         4LOg==
-X-Gm-Message-State: APjAAAVpFTX88AAmaYhjR01orgcY+tOkt0lx6DUzomfU347ZaQf0E2H/
-        IDLbVvjjrOkwEk7PxbkFCZQ=
-X-Google-Smtp-Source: APXvYqzkz+9tUg97oDzo/5cpkoWY+HXY09yTxmkmj/tzpdgZ3zzzXDjzNsMv2ejroiWIPfLn7GLR2g==
-X-Received: by 2002:a17:906:4e96:: with SMTP id v22mr4076976eju.219.1575989304153;
-        Tue, 10 Dec 2019 06:48:24 -0800 (PST)
+        bh=K5Q8z1lZuFpZiVpIxPLlK/TX3uShRnvwUeaP79l8aCQ=;
+        b=pXDB9N2U+NF3eawcyFQGbcJo+HQjlckrI3gYejQdia9gHm26jndAATRMSX6wxt1Ob8
+         tKPhm8cm0omBfywCyhXD7AQfb/LmQJ3gjzpNUsyQ9iKWEce0Sp4w78sz38mwMbMRFqxB
+         m2dbNSZaH6Y98SKZzI0qaFScgesoJriWWFy7LKJ+UNCDFW5vYcFlaLQOtZImT5bJ9wJg
+         KniOTahFMWAcbQB3LvSrsdwW2UxLUMZyxW/rqaqw22K2ShPxXF4lOS/txuG+rdtgiH0q
+         GBQMmB88+ARRV+zJAdlhAzhTkASglImqXQfLE1H8R7n3Cr5xsmkrNMUx4lTZkMSiVPgG
+         w5cg==
+X-Gm-Message-State: APjAAAXD5EA4/j1PyU4tKGAEC2Cl21HI8vtRnvMMrM681QAKLnuhUuQl
+        VDGGQ9cMs1wKP5vtqYNBZRs=
+X-Google-Smtp-Source: APXvYqwuN01ZSvEFWiSad17awZBF1YnGwKo55xzlbJfwiNjZIBopYV+8aRQtqJcQFqLeXFumyKiHsg==
+X-Received: by 2002:a17:906:1354:: with SMTP id x20mr4101913ejb.279.1575989437156;
+        Tue, 10 Dec 2019 06:50:37 -0800 (PST)
 Received: from pi3 ([194.230.155.234])
-        by smtp.googlemail.com with ESMTPSA id s16sm82829edy.51.2019.12.10.06.48.22
+        by smtp.googlemail.com with ESMTPSA id dd17sm88984edb.9.2019.12.10.06.50.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2019 06:48:23 -0800 (PST)
-Date:   Tue, 10 Dec 2019 15:48:21 +0100
+        Tue, 10 Dec 2019 06:50:36 -0800 (PST)
+Date:   Tue, 10 Dec 2019 15:50:34 +0100
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-serial@vger.kernel.org, Kukjin Kim <kgene@kernel.org>,
@@ -59,23 +59,24 @@ Cc:     linux-serial@vger.kernel.org, Kukjin Kim <kgene@kernel.org>,
         Jiri Slaby <jslaby@suse.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 02/10] tty: serial: samsung_tty: fix build warning
-Message-ID: <20191210144821.GB11222@pi3>
+Subject: Re: [PATCH 04/10] tty: serial: samsung.h: remove reset_port callback
+ from struct s3c24xx_uart_info
+Message-ID: <20191210145034.GC11222@pi3>
 References: <20191210143706.3928480-1-gregkh@linuxfoundation.org>
- <20191210143706.3928480-2-gregkh@linuxfoundation.org>
+ <20191210143706.3928480-4-gregkh@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20191210143706.3928480-2-gregkh@linuxfoundation.org>
+In-Reply-To: <20191210143706.3928480-4-gregkh@linuxfoundation.org>
 User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Dec 10, 2019 at 03:36:58PM +0100, Greg Kroah-Hartman wrote:
-> Fix a build warning on systems that do not have CONFIG_OF enabled.
-> 
+On Tue, Dec 10, 2019 at 03:37:00PM +0100, Greg Kroah-Hartman wrote:
+> The callback was never set, nor called, so remove the pointer entirely
+> from struct s3c24xx_uart_info.
 
 Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
 
