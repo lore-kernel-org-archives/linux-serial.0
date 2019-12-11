@@ -2,89 +2,74 @@ Return-Path: <SRS0=h5S4=2B=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEE8AC43603
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Dec 2019 12:13:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 190F9C43603
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Dec 2019 16:39:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C5070214D8
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Dec 2019 12:13:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576066419;
-	bh=Xb2LGz2eTWzVl5uyo4dQX6iViMnhQ99Qr/UakTyz5ks=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=ZMPwBi+FcfkqyJVpkJYPBgqCY+8YFTcHfRWu/BDZ8xrJWhUOmTslzF9yNQcqqa95x
-	 /fjtabmbbcIpiJZxBmpQj7MaULo6eb+YX28Glq2kAI6slKawm8h2nZe285npUEtGPq
-	 WjNiDCArc1hHtqSe4AgNQLzkrjX6769TMddnIWGo=
+	by mail.kernel.org (Postfix) with ESMTP id DE1DE206A5
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Dec 2019 16:39:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729077AbfLKMNj (ORCPT
+        id S1729912AbfLKQj2 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Dec 2019 07:13:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60304 "EHLO mail.kernel.org"
+        Wed, 11 Dec 2019 11:39:28 -0500
+Received: from mail.sysgo.com ([176.9.12.79]:56120 "EHLO mail.sysgo.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727365AbfLKMNi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Dec 2019 07:13:38 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BBBE620836;
-        Wed, 11 Dec 2019 12:13:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576066418;
-        bh=Xb2LGz2eTWzVl5uyo4dQX6iViMnhQ99Qr/UakTyz5ks=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=wS6Hac2ka68LJuY+urNJ7+TrhlmTCBY5xL+AA+llIbqf2M33Ffqik8jPjVZn/54bF
-         hun7b58MV5IkBsHOBvcmhySsVO9QPQ7wGHH2x1+SlmfYSO2H16B+tUYcsIKZ/citOH
-         Rd+DoVV05ECek/dMk6YYOsdNJJCK6Of5FT1ClazU=
-Date:   Wed, 11 Dec 2019 13:13:35 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Enrico Weigelt, metux IT consult" <lkml@metux.net>
-Cc:     linux-serial@vger.kernel.org, Kukjin Kim <kgene@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Hyunki Koo <kkoos00@naver.com>,
-        HYUN-KI KOO <hyunki00.koo@samsung.com>,
-        Shinbeom Choi <sbeom.choi@samsung.com>,
-        Jiri Slaby <jslaby@suse.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 02/10] tty: serial: samsung_tty: fix build warning
-Message-ID: <20191211121335.GA513966@kroah.com>
-References: <20191210143706.3928480-1-gregkh@linuxfoundation.org>
- <20191210143706.3928480-2-gregkh@linuxfoundation.org>
- <181db297-2865-5b34-6ef1-e410babaf3bb@metux.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <181db297-2865-5b34-6ef1-e410babaf3bb@metux.net>
+        id S1729880AbfLKQj2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 11 Dec 2019 11:39:28 -0500
+X-Greylist: delayed 546 seconds by postgrey-1.27 at vger.kernel.org; Wed, 11 Dec 2019 11:39:27 EST
+From:   David Engraf <david.engraf@sysgo.com>
+To:     richard.genoud@gmail.com, gregkh@linuxfoundation.org,
+        jslaby@suse.com, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com, ludovic.desroches@microchip.com
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, David Engraf <david.engraf@sysgo.com>
+Subject: [PATCH] tty/serial: atmel: fix out of range clock divider handling
+Date:   Wed, 11 Dec 2019 17:29:54 +0100
+Message-Id: <20191211162954.8393-1-david.engraf@sysgo.com>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Dec 11, 2019 at 12:01:28PM +0100, Enrico Weigelt, metux IT consult wrote:
-> On 10.12.19 15:36, Greg Kroah-Hartman wrote:
-> 
-> Hi,
-> 
-> > diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> > index 83fd51607741..67c5a84d0a26 100644
-> > --- a/drivers/tty/serial/samsung_tty.c
-> > +++ b/drivers/tty/serial/samsung_tty.c
-> > @@ -1851,7 +1851,10 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
-> >  
-> >  /* Device driver serial port probe */
-> >  
-> > +#ifdef CONFIG_OF
-> >  static const struct of_device_id s3c24xx_uart_dt_match[];
-> > +#endif
-> > +
-> 
-> By the way: I've got some patch for conditionally declaring of match
-> tables (including MODULE_DEVICE_TABE() call), so such ifdef's aren't
-> needed anymore.
+Use MCK_DIV8 when the clock divider is > 65535. Unfortunately the mode
+register was already written thus the clock selection is ignored.
 
-That's not why this #ifdef is needed.
+Fix by writing the mode register after calculating the baudrate.
 
-greg k-h
+Signed-off-by: David Engraf <david.engraf@sysgo.com>
+---
+ drivers/tty/serial/atmel_serial.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index a8dc8af83f39..9983e2fabbac 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -2270,9 +2270,6 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		mode |= ATMEL_US_USMODE_NORMAL;
+ 	}
+ 
+-	/* set the mode, clock divisor, parity, stop bits and data size */
+-	atmel_uart_writel(port, ATMEL_US_MR, mode);
+-
+ 	/*
+ 	 * when switching the mode, set the RTS line state according to the
+ 	 * new mode, otherwise keep the former state
+@@ -2315,6 +2312,9 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	}
+ 	quot = cd | fp << ATMEL_US_FP_OFFSET;
+ 
++	/* set the mode, clock divisor, parity, stop bits and data size */
++	atmel_uart_writel(port, ATMEL_US_MR, mode);
++
+ 	if (!(port->iso7816.flags & SER_ISO7816_ENABLED))
+ 		atmel_uart_writel(port, ATMEL_US_BRGR, quot);
+ 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
+-- 
+2.17.1
+
