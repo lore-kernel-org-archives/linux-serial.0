@@ -6,79 +6,70 @@ X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD4DDC43603
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Dec 2019 10:57:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D29BC2D0C9
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Dec 2019 11:07:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 90A7522B48
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Dec 2019 10:57:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5ADF82173E
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Dec 2019 11:07:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576148277;
-	bh=efVjjQG6UNoj6c0lJ3KZywfrNSIcf/ci6H+eEgtsTEg=;
+	s=default; t=1576148822;
+	bh=Y0loDw+uKFeN7cf78aOvQigklGH6Ys0zQRFUm0ZVYuQ=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=GDDehbpAtaV+5IYDIG94sQyhF2IARH4cTGBOk1zPxzTtTEFrc4uk5tpIRcRlVCX1n
-	 X+3Zx+0ERzLw5diOmnJq5SHGYJ6paBf4e5ZDJ7JeX5oeEMZewBNCj1UPVHzRv5Vs8O
-	 plQbSs8pwqRUgopoSOfZeDAM5aV6ul+m5PftDA4c=
+	b=eti1PPpa/jka+ubLLoqX7Iz89A4XfUQg/tfS5SAO/IJMAyvBWEJUJR8Um2PfN8alZ
+	 LeHedauNrtzllQKmbcpgUD2jKjEmt4aswSSJvUqtlK5ZFF0D4rmqgpYfDbb19oBCcW
+	 Cj04MvtcAuQpLxN1xFC/Y7IKLHzJ0g6ayfZWywJ4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728919AbfLLK55 (ORCPT
+        id S1728802AbfLLLHB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Dec 2019 05:57:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49512 "EHLO mail.kernel.org"
+        Thu, 12 Dec 2019 06:07:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55124 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728784AbfLLK54 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Dec 2019 05:57:56 -0500
+        id S1728613AbfLLLHB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 12 Dec 2019 06:07:01 -0500
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A7ED9214D8;
-        Thu, 12 Dec 2019 10:57:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 58F3D2067C;
+        Thu, 12 Dec 2019 11:07:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576148276;
-        bh=efVjjQG6UNoj6c0lJ3KZywfrNSIcf/ci6H+eEgtsTEg=;
+        s=default; t=1576148820;
+        bh=Y0loDw+uKFeN7cf78aOvQigklGH6Ys0zQRFUm0ZVYuQ=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qIZUGbB5HlPD3M7fra6t0v3E4z6A2gSNs+Dumsk/xrse3/DeZY82vaPqiZhADE+dH
-         WC1Z5XodnJcXvvoBUdYmPO2tlMtHQKnw6ENXgegzU7YTy7Fm1bCxt4w1h++/yiz6VG
-         2MwBCnXujAaYG6EHQ8hxaIJ+LVuQ7fskCptM8H9Q=
-Date:   Thu, 12 Dec 2019 11:57:54 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     syzbot <syzbot+92f32d4e21fb246d31a2@syzkaller.appspotmail.com>
-Cc:     andriy.shevchenko@linux.intel.com, asierra@xes-inc.com,
-        corbet@lwn.net, ext-kimmo.rautkoski@vaisala.com, jslaby@suse.com,
-        kai.heng.feng@canonical.com, linux-api@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, mika.westerberg@linux.intel.com,
-        paulburton@kernel.org, peter@hurleysoftware.com, sr@denx.de,
-        syzkaller-bugs@googlegroups.com, yamada.masahiro@socionext.com,
-        yegorslists@googlemail.com
-Subject: Re: BUG: unable to handle kernel NULL pointer dereference in
- mem16_serial_out
-Message-ID: <20191212105754.GC1476206@kroah.com>
-References: <00000000000044a65205994a7e13@google.com>
- <00000000000003cc8505994f9036@google.com>
+        b=Tuv5lWkKG9kriUxqdbH5FxuUH9XO3guojzxKaKZd+KUI1T8MVOL6B7LBUfWoPhe8H
+         q84SwjIt4mJwXWZkE0CpFYt/x6lDVIea1uiurG7NAuwJ8Pu+KH2rKSMhpch/OAKHXg
+         wyJnS0ybv0P5RM2PSrgZnTk48ns+Ht87FPCFyNbU=
+Date:   Thu, 12 Dec 2019 12:06:58 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     linux-serial@vger.kernel.org, Kukjin Kim <kgene@kernel.org>,
+        Hyunki Koo <kkoos00@naver.com>,
+        HYUN-KI KOO <hyunki00.koo@samsung.com>,
+        Shinbeom Choi <sbeom.choi@samsung.com>,
+        Jiri Slaby <jslaby@suse.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 03/10] tty: serial: samsung.h: fix up minor comment issues
+Message-ID: <20191212110658.GA1490894@kroah.com>
+References: <20191210143706.3928480-1-gregkh@linuxfoundation.org>
+ <20191210143706.3928480-3-gregkh@linuxfoundation.org>
+ <20191210151204.GH11222@pi3>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <00000000000003cc8505994f9036@google.com>
+In-Reply-To: <20191210151204.GH11222@pi3>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Dec 09, 2019 at 05:38:01PM -0800, syzbot wrote:
-> syzbot has bisected this bug to:
+On Tue, Dec 10, 2019 at 04:12:04PM +0100, Krzysztof Kozlowski wrote:
+> On Tue, Dec 10, 2019 at 03:36:59PM +0100, Greg Kroah-Hartman wrote:
+> > checkpatch found some minor issues with comments in samsung.h, so fix
+> > that up.
+> >
 > 
-> commit bd94c4077a0b2ecc35562c294f80f3659ecd8499
-> Author: Masahiro Yamada <yamada.masahiro@socionext.com>
-> Date:   Wed Oct 28 03:46:05 2015 +0000
-> 
->     serial: support 16-bit register interface for console
+> No, you remove this header two patches later. No point to fix checkpatch
+> issues here.
 
-That would be because that is when this function was added to the kernel
-:)
+It's nice to delete "clean" files :)
 
-Again, you are asking the kernel to write to a bad place in memory, and
-then crash when that happens.  That sounds like the correct
-functionality to me...
-
-thanks,
-
-greg k-h
