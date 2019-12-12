@@ -1,75 +1,118 @@
-Return-Path: <SRS0=h5S4=2B=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=BzPo=2C=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 190F9C43603
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Dec 2019 16:39:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29C1FC43603
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Dec 2019 10:17:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DE1DE206A5
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Dec 2019 16:39:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 059A0206DA
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Dec 2019 10:17:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729912AbfLKQj2 (ORCPT
+        id S1728521AbfLLKQ7 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Dec 2019 11:39:28 -0500
-Received: from mail.sysgo.com ([176.9.12.79]:56120 "EHLO mail.sysgo.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729880AbfLKQj2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Dec 2019 11:39:28 -0500
-X-Greylist: delayed 546 seconds by postgrey-1.27 at vger.kernel.org; Wed, 11 Dec 2019 11:39:27 EST
-From:   David Engraf <david.engraf@sysgo.com>
-To:     richard.genoud@gmail.com, gregkh@linuxfoundation.org,
-        jslaby@suse.com, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, ludovic.desroches@microchip.com
-Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, David Engraf <david.engraf@sysgo.com>
-Subject: [PATCH] tty/serial: atmel: fix out of range clock divider handling
-Date:   Wed, 11 Dec 2019 17:29:54 +0100
-Message-Id: <20191211162954.8393-1-david.engraf@sysgo.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 12 Dec 2019 05:16:59 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:58685 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728435AbfLLKQ7 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 12 Dec 2019 05:16:59 -0500
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1ifLWi-0007bi-8o; Thu, 12 Dec 2019 11:16:56 +0100
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1ifLWg-00082u-UW; Thu, 12 Dec 2019 11:16:54 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: [PATCH 2/2] serdev: make use of printk extension %pe for better error messages
+Date:   Thu, 12 Dec 2019 11:16:49 +0100
+Message-Id: <20191212101649.18126-2-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.24.0
+In-Reply-To: <20191212101649.18126-1-u.kleine-koenig@pengutronix.de>
+References: <20191212101649.18126-1-u.kleine-koenig@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use MCK_DIV8 when the clock divider is > 65535. Unfortunately the mode
-register was already written thus the clock selection is ignored.
+With %pe the symbolic name is printed, so you get
 
-Fix by writing the mode register after calculating the baudrate.
+	failure adding device. status -EIO
 
-Signed-off-by: David Engraf <david.engraf@sysgo.com>
+which is more expressive than the current state
+
+	failure adding device. status -5
+
+.
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/tty/serial/atmel_serial.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/serdev/core.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index a8dc8af83f39..9983e2fabbac 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -2270,9 +2270,6 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
- 		mode |= ATMEL_US_USMODE_NORMAL;
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index 226adeec2aed..e50665425902 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -115,8 +115,8 @@ int serdev_device_add(struct serdev_device *serdev)
+ 
+ 	err = device_add(&serdev->dev);
+ 	if (err < 0) {
+-		dev_err(&serdev->dev, "Can't add %s, status %d\n",
+-			dev_name(&serdev->dev), err);
++		dev_err(&serdev->dev, "Can't add %s, status %pe\n",
++			dev_name(&serdev->dev), ERR_PTR(err));
+ 		goto err_clear_serdev;
  	}
  
--	/* set the mode, clock divisor, parity, stop bits and data size */
--	atmel_uart_writel(port, ATMEL_US_MR, mode);
--
- 	/*
- 	 * when switching the mode, set the RTS line state according to the
- 	 * new mode, otherwise keep the former state
-@@ -2315,6 +2312,9 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+@@ -540,7 +540,8 @@ static int of_serdev_register_devices(struct serdev_controller *ctrl)
+ 		err = serdev_device_add(serdev);
+ 		if (err) {
+ 			dev_err(&serdev->dev,
+-				"failure adding device. status %d\n", err);
++				"failure adding device. status %pe\n",
++				ERR_PTR(err));
+ 			serdev_device_put(serdev);
+ 		} else
+ 			found = true;
+@@ -656,7 +657,8 @@ static acpi_status acpi_serdev_register_device(struct serdev_controller *ctrl,
+ 	err = serdev_device_add(serdev);
+ 	if (err) {
+ 		dev_err(&serdev->dev,
+-			"failure adding ACPI serdev device. status %d\n", err);
++			"failure adding ACPI serdev device. status %pe\n",
++			ERR_PTR(err));
+ 		serdev_device_put(serdev);
  	}
- 	quot = cd | fp << ATMEL_US_FP_OFFSET;
  
-+	/* set the mode, clock divisor, parity, stop bits and data size */
-+	atmel_uart_writel(port, ATMEL_US_MR, mode);
-+
- 	if (!(port->iso7816.flags & SER_ISO7816_ENABLED))
- 		atmel_uart_writel(port, ATMEL_US_BRGR, quot);
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
+@@ -731,8 +733,8 @@ int serdev_controller_add(struct serdev_controller *ctrl)
+ 	ret_of = of_serdev_register_devices(ctrl);
+ 	ret_acpi = acpi_serdev_register_devices(ctrl);
+ 	if (ret_of && ret_acpi) {
+-		dev_dbg(&ctrl->dev, "no devices registered: of:%d acpi:%d\n",
+-			ret_of, ret_acpi);
++		dev_dbg(&ctrl->dev, "no devices registered: of:%pe acpi:%pe\n",
++			ERR_PTR(ret_of), ERR_PTR(ret_acpi));
+ 		ret = -ENODEV;
+ 		goto err_rpm_disable;
+ 	}
 -- 
-2.17.1
+2.24.0
 
