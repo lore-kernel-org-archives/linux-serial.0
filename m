@@ -7,55 +7,55 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF1FC2D0C9
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:11:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFEFBC2D0C9
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:11:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 30305206E2
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:11:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C455F2073B
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:11:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="XCdpRu57"
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="lf4Aej6+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731330AbfLMAHw (ORCPT
+        id S1731633AbfLMALO (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Dec 2019 19:07:52 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:34880 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731413AbfLMAHl (ORCPT
+        Thu, 12 Dec 2019 19:11:14 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:41956 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731540AbfLMAHu (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Dec 2019 19:07:41 -0500
-Received: by mail-pj1-f66.google.com with SMTP id w23so349227pjd.2
-        for <linux-serial@vger.kernel.org>; Thu, 12 Dec 2019 16:07:40 -0800 (PST)
+        Thu, 12 Dec 2019 19:07:50 -0500
+Received: by mail-pj1-f67.google.com with SMTP id ca19so336720pjb.8
+        for <linux-serial@vger.kernel.org>; Thu, 12 Dec 2019 16:07:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=googlenew;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=oOfw8DvGelk55VHYuQqtGjkzT+5DacD+SJoWHYJTR3I=;
-        b=XCdpRu57dNmoWnj2l4EG7ZDbsjFSrjIpki7aSV4S3h/YRY5z9QZKOes+9is2EyjqDi
-         Pggu8FM3/7QWvzeC21hsbCLhcGMQo4g+ugnC+0QPnM7fqEMVKKR/LOxJA4rFtuNZmFJ0
-         emjiYa/2Ns4Yv3HuAJhAI8IRO7/Gn2ljOKX+tfvBR207LOLY4JpQpr3XmBD6pMHFFdeK
-         +FFab1PlU1DCuACaqcrDYr+LhVt3ihA3qfjHHaEar1ILptYMg4ID3rVleAZoisR6GURI
-         6gMOPR4kRiTK0OV22sjNYFT3GWYlyH+dJHuhFM/9DiKyQtsss/VGLt/tXriatRoDRFqI
-         GabQ==
+        bh=90upK2rNWVbhL85i5hQP/jGsi5V6IZt+HmB20otgQwk=;
+        b=lf4Aej6+VViJsx13yqwSVC5yLuItQAkGF92kCEBpdJP6ImeRMq3ECDiOksOWoINZTA
+         oXBjj7bPK/FrXCa8PpEr+lbBwkNxflEOyl/Qdp5HwPcikT0eEjT2XFbAJ/zdWAu+mkx9
+         +l81TS3tdF/8QpB9Dp5fqaogRTafmNji+4KxzXMRGtkJBgXQ5eeN4brRbT85x8s9XSFw
+         m0Uq/V9lFhwua+8W6eAPzclzuUxH9QXcc+w1hZAEFwN3c/3VlFx9fA3cZLQw53ZSzFVt
+         f1iTldQs/7jJY4Kd/L9VuW8f2V8dpFkPJPHK3Ksf1z8h6ykCTQFc//+jWZHKyHmGJe/l
+         zIAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=oOfw8DvGelk55VHYuQqtGjkzT+5DacD+SJoWHYJTR3I=;
-        b=qOQSY4S2p1q1eh007B+uATiuyjuVWORApWtm2hFs6gJJ6sZtxiRxVICJsdte9piFDq
-         0Ra/L3hj2w7PfgauJGRRwelZzV/ilGfovtUqA4f39l6GoG4a6ZpflWSMtRICTFrcnGbA
-         iccy0lhvyPB+Jd3YtDsjQC4SaOdOzHqScrebo1KOWpcUJWsUHJZ6qf28v6Seozgu5Kp0
-         3B0AoUi4y0YRPw7SPmX38cyqqQFmpM55XFlYskgLzvuxq5XZOLxKiv7Je4xyEslnXFqB
-         K2aaPCFg4h5MIFrWDJ5/ABpRnNUN3eCVexwmvmB8dRX6d6g5Q1StB49CO6lAP8ngP/Q5
-         UCOw==
-X-Gm-Message-State: APjAAAXWw04EtVya/Nbs/X7qfzr1RBcNgHT6CelIrjK1fxqlkbFoT7CG
-        ZO53jgWMP9Y6bVmD4ep85LDiLg==
-X-Google-Smtp-Source: APXvYqwKzXaCGQEeoKJrUNZJQ9fKFxNSrrIEiT/fYpiiBnXVX3v8SPs8UTDHVRjx6kdnyz5cai2w1w==
-X-Received: by 2002:a17:902:b204:: with SMTP id t4mr12673801plr.137.1576195660500;
-        Thu, 12 Dec 2019 16:07:40 -0800 (PST)
+        bh=90upK2rNWVbhL85i5hQP/jGsi5V6IZt+HmB20otgQwk=;
+        b=OsYQiK/daIqrOXIXJfyNjFuwuJdF7WOsFsB+Kzl7So5b5oqXM/2KNZ4I3vCSzxYDcR
+         IQP3RbhS23pudCpSEynbfbnmTOY4TKGKo7zQoXgP7y+rW5eE8WWjFEnAI1/kfdynMtdb
+         f1SobEDKoa+qbYbYFvAYD5p8g+JacIy4zJ2YP8XMg5fe064RxzP3yHUXbP+o1KCu3l/H
+         5tFgdcJZ8YJCJ4/AWj7D8X8or8BGNPPIwAf4zG4WY3ctjlhXaaX54uriz3C9Gzw/Ebsb
+         5TZ/eYnEIoxBw9MAiio8MNVLjDucx8qN+bCai8VwkbfCRYkDLtdzRX9PM8X/Y9VPAFQi
+         Z3ZA==
+X-Gm-Message-State: APjAAAUTx/GnrcDc4qoIo+8+7JCBdrQUfRhf5uY5hi0QXDcBhGPpZ+XW
+        XaWekzW0uN0uOwslWc+m8xOqdQ==
+X-Google-Smtp-Source: APXvYqyok9Kicleir7Xd8YV5SWVEkQodaxMdZkamceeJ64Z0/AdH1eoy7toZYsJlUIwn6MPBrJuoPA==
+X-Received: by 2002:a17:90a:1b6b:: with SMTP id q98mr13390438pjq.106.1576195669296;
+        Thu, 12 Dec 2019 16:07:49 -0800 (PST)
 Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id j38sm8317647pgj.27.2019.12.12.16.07.37
+        by smtp.gmail.com with ESMTPSA id j38sm8317647pgj.27.2019.12.12.16.07.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 16:07:39 -0800 (PST)
+        Thu, 12 Dec 2019 16:07:48 -0800 (PST)
 From:   Dmitry Safonov <dima@arista.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
@@ -63,10 +63,14 @@ Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
         Vasiliy Khoruzhick <vasilykh@arista.com>,
-        linux-serial@vger.kernel.org, Russell King <linux@armlinux.org.uk>
-Subject: [PATCH 09/58] tty/serial: Migrate amba-pl01* to use has_sysrq
-Date:   Fri, 13 Dec 2019 00:06:08 +0000
-Message-Id: <20191213000657.931618-10-dima@arista.com>
+        linux-serial@vger.kernel.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 12/58] tty/serial: Migrate atmel_serial to use has_sysrq
+Date:   Fri, 13 Dec 2019 00:06:11 +0000
+Message-Id: <20191213000657.931618-13-dima@arista.com>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191213000657.931618-1-dima@arista.com>
 References: <20191213000657.931618-1-dima@arista.com>
@@ -86,60 +90,53 @@ The SUPPORT_SYSRQ ifdeffery is not nice as:
 In order to remove SUPPORT_SYSRQ, has_sysrq variable has been added.
 Initialise it in driver's probe and remove ifdeffery.
 
-Cc: Russell King <linux@armlinux.org.uk>
+While at it, remove forward-declaration of atmel_console - it wasn't
+needed even at the moment the driver was first time introduced:
+commit 1e6c9c2878c9 ("[ARM] 3242/2: AT91RM9200 support for 2.6 (Serial)")
+
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc: Ludovic Desroches <ludovic.desroches@microchip.com>
+Cc: Richard Genoud <richard.genoud@gmail.com>
+Cc: linux-arm-kernel@lists.infradead.org
 Signed-off-by: Dmitry Safonov <dima@arista.com>
 ---
- drivers/tty/serial/amba-pl010.c | 5 +----
- drivers/tty/serial/amba-pl011.c | 6 +-----
- 2 files changed, 2 insertions(+), 9 deletions(-)
+ drivers/tty/serial/atmel_serial.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
-index 2c37d11726ab..3284f34e9dfe 100644
---- a/drivers/tty/serial/amba-pl010.c
-+++ b/drivers/tty/serial/amba-pl010.c
-@@ -15,10 +15,6 @@
-  * and hooked into this driver.
-  */
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index a8dc8af83f39..4020fc8ceb49 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -51,10 +51,6 @@
+ #define ATMEL_RTS_HIGH_OFFSET	16
+ #define ATMEL_RTS_LOW_OFFSET	20
  
--#if defined(CONFIG_SERIAL_AMBA_PL010_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
+-#if defined(CONFIG_SERIAL_ATMEL_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
 -#define SUPPORT_SYSRQ
 -#endif
 -
- #include <linux/module.h>
- #include <linux/ioport.h>
- #include <linux/init.h>
-@@ -728,6 +724,7 @@ static int pl010_probe(struct amba_device *dev, const struct amba_id *id)
- 	uap->port.iotype = UPIO_MEM;
- 	uap->port.irq = dev->irq[0];
- 	uap->port.fifosize = 16;
-+	uap->port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_AMBA_PL010_CONSOLE);
- 	uap->port.ops = &amba_pl010_pops;
- 	uap->port.flags = UPF_BOOT_AUTOCONF;
- 	uap->port.line = i;
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 4b28134d596a..952483ec8ea1 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -16,11 +16,6 @@
-  * and hooked into this driver.
-  */
+ #include <linux/serial_core.h>
  
--
--#if defined(CONFIG_SERIAL_AMBA_PL011_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
--#define SUPPORT_SYSRQ
+ #include "serial_mctrl_gpio.h"
+@@ -196,10 +192,6 @@ struct atmel_uart_port {
+ static struct atmel_uart_port atmel_ports[ATMEL_MAX_UART];
+ static DECLARE_BITMAP(atmel_ports_in_use, ATMEL_MAX_UART);
+ 
+-#ifdef SUPPORT_SYSRQ
+-static struct console atmel_console;
 -#endif
 -
- #include <linux/module.h>
- #include <linux/ioport.h>
- #include <linux/init.h>
-@@ -2579,6 +2574,7 @@ static int pl011_setup_port(struct device *dev, struct uart_amba_port *uap,
- 	uap->port.mapbase = mmiobase->start;
- 	uap->port.membase = base;
- 	uap->port.fifosize = uap->fifosize;
-+	uap->port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_AMBA_PL011_CONSOLE);
- 	uap->port.flags = UPF_BOOT_AUTOCONF;
- 	uap->port.line = index;
+ #if defined(CONFIG_OF)
+ static const struct of_device_id atmel_serial_dt_ids[] = {
+ 	{ .compatible = "atmel,at91rm9200-usart-serial" },
+@@ -2877,6 +2869,7 @@ static int atmel_serial_probe(struct platform_device *pdev)
+ 	atmel_port = &atmel_ports[ret];
+ 	atmel_port->backup_imr = 0;
+ 	atmel_port->uart.line = ret;
++	atmel_port->uart.has_sysrq = IS_ENABLED(CONFIG_SERIAL_ATMEL_CONSOLE);
+ 	atmel_serial_probe_fifos(atmel_port, pdev);
  
+ 	atomic_set(&atmel_port->tasklet_shutdown, 0);
 -- 
 2.24.0
 
