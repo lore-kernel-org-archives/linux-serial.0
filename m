@@ -7,55 +7,55 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E24C00454
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:08:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFB32C43603
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:08:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B9B642464B
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:08:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A481E227BF
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:08:59 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="NX0gv+nV"
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="gG+e7w/T"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731381AbfLMAI4 (ORCPT
+        id S1731407AbfLMAI6 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Dec 2019 19:08:56 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:45583 "EHLO
+        Thu, 12 Dec 2019 19:08:58 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:42449 "EHLO
         mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731752AbfLMAIz (ORCPT
+        with ESMTP id S1731758AbfLMAI6 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Dec 2019 19:08:55 -0500
-Received: by mail-pl1-f193.google.com with SMTP id bc8so373933plb.12
-        for <linux-serial@vger.kernel.org>; Thu, 12 Dec 2019 16:08:55 -0800 (PST)
+        Thu, 12 Dec 2019 19:08:58 -0500
+Received: by mail-pl1-f193.google.com with SMTP id x13so379360plr.9
+        for <linux-serial@vger.kernel.org>; Thu, 12 Dec 2019 16:08:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=googlenew;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=YJ/K67n2T5JKCf35S1BcGc2M+5ycQJ72kMRDMo/lBe4=;
-        b=NX0gv+nVHqjcOgV/2F+Ya/vhafp0KyetvAVn6TzCw7SMvq0/u4RLiLESz4QUOmHh3A
-         EVmV2RNWYSowwhMlisVrMGgBp28oC5Z/xp1GfeA3KD3PrL10tmSk0PYSsYbVSYtc8+Hq
-         TIZ8mCLritKRQOgi35ODpufNBlOjZcPiCBmn2z1juJZdlrO/hTM9rXpJapf7KTLz6kJq
-         KlLi36WcjYreAqRWg3RKp1geiDE2EvIWuif8gb64BEjWQEICvNfRYhvQYTHpkokEj3Kw
-         4z6H0GJey83qOqMeRLbOpy2/zfgVzinlaLJnHbm29q9lfr6ZAfk2uUC+h1EFABhzwt4O
-         gNQw==
+        bh=pf5ob1U+UmoKzgDEzAnzQgACPOvLCz33gyddDWcn/3Q=;
+        b=gG+e7w/TGyyz+ZaD86YvhLiM8336JsknsKMNUHmpJax11tUtppv6QhFeVOS1Fdwcq2
+         d9lq9ZvjabgLZa44cfOBp6ytNjsU9ABE4+6q3kA0Lz6WoGjOJgtEYBfZRX7ms9KVk0uV
+         Rb0g/8Km+YNXdbqkjrnByC5oIkZipi1aC73gbqropB+icwL8aCMKTsOnkzMVr1Sr3QuI
+         3ULYFXs9p+O8J4XEKCp9lFINfoMiLayVAGcKilgWQPs1W87lNfVV81ZYGQymCUJZeE19
+         aBEX469mRgpMsghnIScJnurtL1MYj2Jl3onYn9yOpvLYgdktbB/ds6ew9MYzx6aS28xU
+         TXvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=YJ/K67n2T5JKCf35S1BcGc2M+5ycQJ72kMRDMo/lBe4=;
-        b=UcPxU3E4uu8cMu+W4Sq+vIq2K6ETutllzMtxayzb73/Z0ubosDYjieZIGbf5iD540D
-         N/JLA6iUjPgWLrhTdoyLz0TioGrbP8GqMMaFMR9ACOLHO/u1NOFqxjYIV7MFPbIW0Tnn
-         0NYvRuCbIaDhb+qPndTqMG3ACLL59NrqrTCLp2x7jLfN5Ciif8l86aLMjYIGhQfSg0TC
-         0pae0nsPB8fIoZ8S5rK/e4Fd7DSRIdM/KUIb9+LicFIwbugjnNC9evo2fgocaMtn9T6w
-         vS8kLvcbxf9CqPzt0ZE69Cr2wbReMcJNtsGXFtzvycckS7UO297zvpu+b5wXqhKxSh2l
-         7ZRw==
-X-Gm-Message-State: APjAAAUeLESw0c9bP4+dSHYgRHQNe4LYwZ53eQKgenwRsGL0Q3XdzQ7r
-        omSKumTd6LiiT0v0RsgMfC4dRQ==
-X-Google-Smtp-Source: APXvYqxBiIWzDGmJW2EGWJGBn1iFjkHGX2XegbsBDBpEz+UVnAGvV4Tdgr4/zKm03jglZxdYW08fOg==
-X-Received: by 2002:a17:902:bd0a:: with SMTP id p10mr5081948pls.65.1576195734438;
-        Thu, 12 Dec 2019 16:08:54 -0800 (PST)
+        bh=pf5ob1U+UmoKzgDEzAnzQgACPOvLCz33gyddDWcn/3Q=;
+        b=CBjpDO9MHy39bM9SVgfpiRVtNyVvrku4cTkh5modezIYkjCOumWlJktA4ayernatfY
+         6RAJ84D313LW7PPO2eQjbbajvoQArvcUe5G0zbDBGaTXMigbMliLHec4A+w47yh0ibCG
+         F/NdKoui4Y22UJ+0ZIZ7+3bJxTwV5I7qBEfWL3Qt4I0h/pSkVHRlJ5xRkziKWwXnGsul
+         +ubaJGLMab1J1qSnnGwz2OZx579VBz5MP33TnYUIMo+VMeUcHw3OK+UPnNIoSw14oYIK
+         dlDtnY4Hek76NEC2hOQh9cuP6KmAXsoW0258x84p+3blIGCRyGOKNvtRahwY1ygktE2k
+         oWkg==
+X-Gm-Message-State: APjAAAVrab0ekkNc9+BCyWIJE6Vu/EqiIjxp5HsfJ50bjljaBWEr28Hi
+        y8B9Edb9Us3N7KOfWIcys8Xakw==
+X-Google-Smtp-Source: APXvYqyHTbGmqYibkbM8oEcdOzkAtnmMdHELW1D7VRNlqC9GC/KqxwN8jSmAVTbEvEKQQQEfAyNnzA==
+X-Received: by 2002:a17:90b:f06:: with SMTP id br6mr13014258pjb.125.1576195737771;
+        Thu, 12 Dec 2019 16:08:57 -0800 (PST)
 Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id j38sm8317647pgj.27.2019.12.12.16.08.52
+        by smtp.gmail.com with ESMTPSA id j38sm8317647pgj.27.2019.12.12.16.08.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 16:08:53 -0800 (PST)
+        Thu, 12 Dec 2019 16:08:57 -0800 (PST)
 From:   Dmitry Safonov <dima@arista.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
@@ -63,10 +63,12 @@ Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
         Vasiliy Khoruzhick <vasilykh@arista.com>,
-        linux-serial@vger.kernel.org
-Subject: [PATCH 34/58] tty/serial: Migrate pxa to use has_sysrq
-Date:   Fri, 13 Dec 2019 00:06:33 +0000
-Message-Id: <20191213000657.931618-35-dima@arista.com>
+        linux-serial@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH 35/58] tty/serial: Migrate qcom_geni_serial to use has_sysrq
+Date:   Fri, 13 Dec 2019 00:06:34 +0000
+Message-Id: <20191213000657.931618-36-dima@arista.com>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191213000657.931618-1-dima@arista.com>
 References: <20191213000657.931618-1-dima@arista.com>
@@ -86,34 +88,37 @@ The SUPPORT_SYSRQ ifdeffery is not nice as:
 In order to remove SUPPORT_SYSRQ, has_sysrq variable has been added.
 Initialise it in driver's probe and remove ifdeffery.
 
+Cc: Andy Gross <agross@kernel.org>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: linux-arm-msm@vger.kernel.org
 Signed-off-by: Dmitry Safonov <dima@arista.com>
 ---
- drivers/tty/serial/pxa.c | 5 +----
+ drivers/tty/serial/qcom_geni_serial.c | 5 +----
  1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
-index 4932b674f7ef..41319ef96fa6 100644
---- a/drivers/tty/serial/pxa.c
-+++ b/drivers/tty/serial/pxa.c
-@@ -19,10 +19,6 @@
-  */
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index ff63728a95f4..c41c766d6c7c 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1,10 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0
+ // Copyright (c) 2017-2018, The Linux foundation. All rights reserved.
  
- 
--#if defined(CONFIG_SERIAL_PXA_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
--#define SUPPORT_SYSRQ
+-#if defined(CONFIG_SERIAL_QCOM_GENI_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
+-# define SUPPORT_SYSRQ
 -#endif
 -
- #include <linux/ioport.h>
- #include <linux/init.h>
+ #include <linux/clk.h>
  #include <linux/console.h>
-@@ -879,6 +875,7 @@ static int serial_pxa_probe(struct platform_device *dev)
- 	sport->port.dev = &dev->dev;
- 	sport->port.flags = UPF_IOREMAP | UPF_BOOT_AUTOCONF;
- 	sport->port.uartclk = clk_get_rate(sport->clk);
-+	sport->port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_PXA_CONSOLE);
+ #include <linux/io.h>
+@@ -1308,6 +1304,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+ 	if (irq < 0)
+ 		return irq;
+ 	uport->irq = irq;
++	uport->has_sysrq = IS_ENABLED(CONFIG_SERIAL_QCOM_GENI_CONSOLE);
  
- 	ret = serial_pxa_probe_dt(dev, sport);
- 	if (ret > 0)
+ 	irq_set_status_flags(uport->irq, IRQ_NOAUTOEN);
+ 	ret = devm_request_irq(uport->dev, uport->irq, qcom_geni_serial_isr,
 -- 
 2.24.0
 
