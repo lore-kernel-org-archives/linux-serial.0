@@ -5,57 +5,57 @@ X-Spam-Level:
 X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD47C00454
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:10:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E6C9C43603
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:10:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 412592173E
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:10:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 40DCA2173E
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:10:46 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="EajhwHVd"
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="fj8c5kjR"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731746AbfLMAIy (ORCPT
+        id S1731546AbfLMAKp (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Dec 2019 19:08:54 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:44134 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731405AbfLMAIr (ORCPT
+        Thu, 12 Dec 2019 19:10:45 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:43548 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731356AbfLMAIw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Dec 2019 19:08:47 -0500
-Received: by mail-pl1-f196.google.com with SMTP id az3so374163plb.11
-        for <linux-serial@vger.kernel.org>; Thu, 12 Dec 2019 16:08:46 -0800 (PST)
+        Thu, 12 Dec 2019 19:08:52 -0500
+Received: by mail-pj1-f67.google.com with SMTP id g4so335719pjs.10
+        for <linux-serial@vger.kernel.org>; Thu, 12 Dec 2019 16:08:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=googlenew;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=oFqw+HPsj+UvL3ErVQQmLmN+s/+CgB/NwHLHlutjOiw=;
-        b=EajhwHVdE3viF6OTqFPMh/mMhJda3aVHtZVSvDfWNRga5xkSjsM3jyQK1O7FKTOWKp
-         FA9x5OeKeLVn7IZoFwXwdis4MujSaLsdJFTb4AIJD23KP+5XJC2e3yD1aqBCz0iP9Pix
-         3ziyudM3CqRn6mEK9owgMvbHihbvnA8MwB331cPepfB1KWUAkq/5dflShGPRrQUAUb0W
-         FWWV8Bq8N6vgVXZCkMJrET3VPLaG5o/goCy9AMbnVa6bpGtq0IHlQw0W1ByEHiqG749V
-         W0E5uCm68XlrEo4WAWw77o8nYomafrEjUNyszlsN7japK9WeUqT4aHzWeauSRydNtSRT
-         p/Hg==
+        bh=x9C/3UrPTi7iWbqFHcoS3+5nMQuy/bFwKoTaGYkl7Pc=;
+        b=fj8c5kjR5cQi7kvYtuHXNEflr3zJJhBuVt+yDwYGADRWyd4nLQd6Iey2KC6DMXr2u/
+         P5s1SgjVhwKZ+eVE521RCNRLfpI23t3U3bSsqM2e08YiQolIfBpvvNrC0Nl8HjiJ1D4z
+         L9me0nHaFw5Hihl6CnCysR/DNsQ5EbJFUEGLJUALy2T1rmZijtdr+9BkQeSERcbTvbq1
+         HlhzZ78/vfEU8F7w+5+eKYFi1m1eo2i4vKaAiv8HMe2gGIps7fTxW0q3s1AjgUgfwXjK
+         o/FS4iSbrcJynjDMCMiP+VXs1cpVT6TVegRSuzqkc761riXnSyvaITbgGwtu3Rnhh8Ek
+         4nTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=oFqw+HPsj+UvL3ErVQQmLmN+s/+CgB/NwHLHlutjOiw=;
-        b=mDYa9VKdTVFz06qFJHQ4MguJcrwG4uv6ei/MRsoTEVesHTzJraNSpfHn2/Aqp/wdlZ
-         L4Lw/nJy8vf/5V4rRynQJJpc36P3aCtZEbJd/spe8b4/mwbDondaKfmSynwt638rNJFC
-         zUFZt9rJJxgm0EEG+8jqMdVbKZbB933v6gkE8mqr3OTyNiNgfxoprWFAjPoSkdsJuSqZ
-         PKXjGYKC5Bze0EUKqcX7d5lY3PR+d5Kdlb5zECZ+UdVlvDO9Yp7bIrNhry7PK5LtJaBk
-         X64nmtAPCskPM5JKZsilehVbkHrOKgGs2EmO1myxAjdOAG86hUcx6Tyh0BZnV2KXeKjs
-         YzmQ==
-X-Gm-Message-State: APjAAAWuVNIdI9Rg2F9CMxisPWKx2KIK66ep7MRNwy/zmRrK5hTLJirX
-        wek6DYN66hRLcMYcPoz3CZvDEg==
-X-Google-Smtp-Source: APXvYqyF6KmCyw2+4DGZMs1GewyAV9nRslaYtpLZSwxmJE8Eo7U1bhbKpvG5tJ/6K6I51waBc+InfQ==
-X-Received: by 2002:a17:90a:2223:: with SMTP id c32mr13646956pje.15.1576195726336;
-        Thu, 12 Dec 2019 16:08:46 -0800 (PST)
+        bh=x9C/3UrPTi7iWbqFHcoS3+5nMQuy/bFwKoTaGYkl7Pc=;
+        b=BPd6pGx8sqCN0HCHpeAIh010O5M+HTg7YPjrlUvieIwtlZgEw1ymPRf2DMGWZt44Hk
+         /z/moBsXs//TwJvKUo99pfd6zeyTouRPydr43O3Cb3j730/LEDyt1CX+Rb1vjIxwb6FH
+         U0GorGJAkC7U+FD5WSVKquIVmkRRM3GV+ojtZ97JMMfQHwnmsUYi7SzEvyveVaevFARB
+         f8pArehJH/PeQtkD24XBZOTKEV5W2/3cSjh/bX47wW9cg13PvsHWHMggWYfQIhTx6qGn
+         Cg5N/SnEKaZD7JpNJY0xnBh5ewi3qVTYxSHcj7xSwCoXVX2lrv+cGkm80wNfyRw3/FrF
+         fTcw==
+X-Gm-Message-State: APjAAAU+BkIcKxfgF5Is30L30eVKxc8aZENyCg7+AaT+EZQpM9Z2bV+c
+        dBDL4B36BPVSp2KzbdQv7muM6g==
+X-Google-Smtp-Source: APXvYqw5EvpKrjLM/n0OZgyqzg51LIAhf3gM/x9WZPkfP/ebRwRM7cpxOFJzmsRmfzBwk8rq4TB+Aw==
+X-Received: by 2002:a17:902:a986:: with SMTP id bh6mr11969222plb.165.1576195731770;
+        Thu, 12 Dec 2019 16:08:51 -0800 (PST)
 Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id j38sm8317647pgj.27.2019.12.12.16.08.43
+        by smtp.gmail.com with ESMTPSA id j38sm8317647pgj.27.2019.12.12.16.08.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 16:08:45 -0800 (PST)
+        Thu, 12 Dec 2019 16:08:50 -0800 (PST)
 From:   Dmitry Safonov <dima@arista.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
@@ -63,14 +63,10 @@ Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
         Vasiliy Khoruzhick <vasilykh@arista.com>,
-        linux-serial@vger.kernel.org,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH 31/58] tty/serial: Migrate pmac_zilog to use has_sysrq
-Date:   Fri, 13 Dec 2019 00:06:30 +0000
-Message-Id: <20191213000657.931618-32-dima@arista.com>
+        linux-serial@vger.kernel.org
+Subject: [PATCH 33/58] serial/f81534: Don't check port->sysrq
+Date:   Fri, 13 Dec 2019 00:06:32 +0000
+Message-Id: <20191213000657.931618-34-dima@arista.com>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191213000657.931618-1-dima@arista.com>
 References: <20191213000657.931618-1-dima@arista.com>
@@ -81,47 +77,30 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The SUPPORT_SYSRQ ifdeffery is not nice as:
-- May create misunderstanding about sizeof(struct uart_port) between
-  different objects
-- Prevents moving functions from serial_core.h
-- Reduces readability (well, it's ifdeffery - it's hard to follow)
+usb_serial_handle_sysrq_char() already checks it.
 
-In order to remove SUPPORT_SYSRQ, has_sysrq variable has been added.
-Initialise it in driver's probe and remove ifdeffery.
-
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: linuxppc-dev@lists.ozlabs.org
 Signed-off-by: Dmitry Safonov <dima@arista.com>
 ---
- drivers/tty/serial/pmac_zilog.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/usb/serial/f81534.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
-index bcb5bf70534e..ba65a3bbd72a 100644
---- a/drivers/tty/serial/pmac_zilog.c
-+++ b/drivers/tty/serial/pmac_zilog.c
-@@ -61,10 +61,6 @@
- #define of_machine_is_compatible(x) (0)
- #endif
+diff --git a/drivers/usb/serial/f81534.c b/drivers/usb/serial/f81534.c
+index 2b39bda035c7..67a8e343eba1 100644
+--- a/drivers/usb/serial/f81534.c
++++ b/drivers/usb/serial/f81534.c
+@@ -1238,10 +1238,8 @@ static void f81534_process_per_serial_block(struct usb_serial_port *port,
+ 			schedule_work(&port_priv->lsr_work);
+ 		}
  
--#if defined (CONFIG_SERIAL_PMACZILOG_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
--#define SUPPORT_SYSRQ
--#endif
--
- #include <linux/serial.h>
- #include <linux/serial_core.h>
+-		if (port->port.console && port->sysrq) {
+-			if (usb_serial_handle_sysrq_char(port, data[i]))
+-				continue;
+-		}
++		if (usb_serial_handle_sysrq_char(port, data[i]))
++			continue;
  
-@@ -1721,6 +1717,7 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
- 	uap->control_reg   = uap->port.membase;
- 	uap->data_reg      = uap->control_reg + 4;
- 	uap->port_type     = 0;
-+	uap->port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_PMACZILOG_CONSOLE);
- 
- 	pmz_convert_to_zs(uap, CS8, 0, 9600);
- 
+ 		tty_insert_flip_char(&port->port, data[i], tty_flag);
+ 	}
 -- 
 2.24.0
 
