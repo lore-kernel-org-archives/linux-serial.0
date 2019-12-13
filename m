@@ -2,44 +2,44 @@ Return-Path: <SRS0=T9rn=2D=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA8B6C43603
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 07:17:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62558C43603
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 07:18:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 88CA72253D
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 07:17:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 33BDD2253D
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 07:18:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576221474;
-	bh=TcV73ux/rT14foW4JR+jEOy6K1C56V5DPpX3f3yf/2E=;
+	s=default; t=1576221531;
+	bh=SNoGhGHQqlnJ0YqCuKB0MMwQfW1ylbS1THlpD4JTQrg=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=IdbVtjbVo0fczyNmfeSHcU3+mLwUNjaZQeRDdvi6ac06iyCDyWNMOAW7kiQt34GMw
-	 /4GZawuMKrGpc0LRZlE3PaRxR49oU0vsItrJrm4TpZ0udZVr4sQUNafRetZaO1Joa4
-	 u0k/W/pG1iiTIq4whwudRbqYS1hl8Qsd2TvyifmE=
+	b=PiD17gErU5d3BWiCtiFOZnZwriPZyVJi35gHW3JKr35vcoZ6pKEQUSINDfjjvVVAb
+	 zIRMTwyIocyEahZvUiZqGuusl8LeKCRUAIb9I0DgsHYnUG5haHT7ZqEfYD+041aL11
+	 UeNcgX4QOXaUgM/TtaO9cGPkMWn9ox85pTrqi6IE=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725799AbfLMHRy (ORCPT
+        id S1725799AbfLMHSu (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 Dec 2019 02:17:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52988 "EHLO mail.kernel.org"
+        Fri, 13 Dec 2019 02:18:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53344 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725497AbfLMHRx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 Dec 2019 02:17:53 -0500
+        id S1725793AbfLMHSu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 13 Dec 2019 02:18:50 -0500
 Received: from localhost (unknown [84.241.199.142])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 535B222527;
-        Fri, 13 Dec 2019 07:17:52 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 27F2022527;
+        Fri, 13 Dec 2019 07:18:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576221472;
-        bh=TcV73ux/rT14foW4JR+jEOy6K1C56V5DPpX3f3yf/2E=;
+        s=default; t=1576221530;
+        bh=SNoGhGHQqlnJ0YqCuKB0MMwQfW1ylbS1THlpD4JTQrg=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Z/c2byN9k7PIZtxcbGAj8x46Fc78ertWq5pFnimXr01IT8VqnHLIyLTvD7LQ2dvPr
-         NsjS4XTTlB2ZOwrx/i4cd1LJeyB4xS3E1WoOiQtaO2ggCkrFNKv4lrI11mAt2S68Fl
-         sIL3UFagZmJMKcxf/KVRspd4bPGfNRtkwdfwo7jI=
-Date:   Fri, 13 Dec 2019 08:17:49 +0100
+        b=ElDQf2nsGZl1rXjXDt50YCK2t3pOTND7sCLAPa0rkryOROHjT1WeZWoRBVdHMGpWA
+         lBSF6XH72LoimogbB8DjD0BQ6Cl1P2/u6d7wPKvZjhI5E36XKmri3CVnkuRlrWcnkw
+         M7a913AxoslxlFo5KNHKa/NYaOTKB10tQ1w1oXXk=
+Date:   Fri, 13 Dec 2019 08:18:45 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     Dmitry Safonov <dima@arista.com>
 Cc:     linux-kernel@vger.kernel.org,
@@ -47,83 +47,36 @@ Cc:     linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.com>,
         Vasiliy Khoruzhick <vasilykh@arista.com>,
         linux-serial@vger.kernel.org
-Subject: Re: [PATCH 02/58] serial: Move sysrq members above
-Message-ID: <20191213071749.GA1750354@kroah.com>
+Subject: Re: [PATCH 03/58] serial_core: Un-ifdef sysrq SUPPORT_SYSRQ
+Message-ID: <20191213071845.GB1750354@kroah.com>
 References: <20191213000657.931618-1-dima@arista.com>
- <20191213000657.931618-3-dima@arista.com>
+ <20191213000657.931618-4-dima@arista.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191213000657.931618-3-dima@arista.com>
+In-Reply-To: <20191213000657.931618-4-dima@arista.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Dec 13, 2019 at 12:06:01AM +0000, Dmitry Safonov wrote:
-> At the current place members those follow are:
-> :	upf_t			flags;
-> :	upstat_t		status;
-> :	int			hw_stopped;
-> :	unsigned int		mctrl;
-> :	unsigned int		timeout;
-> :	unsigned int		type;
-> :	const struct uart_ops	*ops;
+On Fri, Dec 13, 2019 at 12:06:02AM +0000, Dmitry Safonov wrote:
+> The SUPPORT_SYSRQ is messy: every .c source should define it before
+> including "serial_core.h" if sysrq is supported or struct uart_port will
+> differ in sizes. Also this prevents moving to serial_core.c functions:
+> uart_handle_sysrq_char(), uart_prepare_sysrq_char(),
+> uart_unlock_and_check_sysrq().
 > 
-> Together, they give (*ops) 8-byte align on 64-bit platforms.
-> And `sysrq_ch` introduces 4-byte padding.
+> It doesn't save many bytes in the structure, and a better way to reduce
+> it's size would be making rs485 and iso7816 pointers.
 > 
-> On the other side, above:
-> :	struct device		*dev;
-> :	unsigned char		hub6;
-> :	unsigned char		suspended;
-> :	unsigned char		unused[2];
-> :	const char		*name;
-> 
-> Adds another 4-byte padding.
-> 
-> Moving sysrq members just before `hub6` allows to save 8 bytes
-> per-uart_port on 64-bit platforms:
-> On my gcc, x86_64 sizeof(struct uart_port) goes from 528 to 520.
+> Introduce `has_sysrq` member to be used by serial line drivers further.
 > 
 > Signed-off-by: Dmitry Safonov <dima@arista.com>
-> ---
->  include/linux/serial_core.h | 11 ++++++-----
->  1 file changed, 6 insertions(+), 5 deletions(-)
-> 
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index 2b78cc734719..bbbe57bf5163 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -161,11 +161,6 @@ struct uart_port {
->  	struct uart_icount	icount;			/* statistics */
->  
->  	struct console		*cons;			/* struct console, if any */
-> -#if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(SUPPORT_SYSRQ)
-> -	unsigned long		sysrq;			/* sysrq timeout */
-> -	unsigned int		sysrq_ch;		/* char for sysrq */
-> -#endif
-> -
->  	/* flags must be updated while holding port mutex */
->  	upf_t			flags;
->  
-> @@ -244,6 +239,12 @@ struct uart_port {
->  	resource_size_t		mapbase;		/* for ioremap */
->  	resource_size_t		mapsize;
->  	struct device		*dev;			/* parent device */
-> +
-> +#if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(SUPPORT_SYSRQ)
-> +	unsigned long		sysrq;			/* sysrq timeout */
-> +	unsigned int		sysrq_ch;		/* char for sysrq */
-> +#endif
 
-Let's just always have these 2 fields in the structure, no need for a
-#ifdef at all, right?  There is no real "savings" from removing them (8
-bytes for a structure that is maybe created 2-4 times per machine?)
+Ah, you did what I asked here in patch 3.  Nevermind on my comments on
+patch 2 :)
 
-That way it would keep any of this mess of if the SUPPORT_SYSRQ is
-enabled or not to keep everything in sync.
-
-thanks,
+looks good, thanks!
 
 greg k-h
