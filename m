@@ -7,55 +7,55 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04737C2D0CB
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62EB5C2D0CA
 	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:07:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CB17D214D8
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:07:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2D9B422B48
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:07:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="dgyveXe+"
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="jEsgZRum"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731275AbfLMAH1 (ORCPT
+        id S1731372AbfLMAHW (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Dec 2019 19:07:27 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:37168 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731160AbfLMAH1 (ORCPT
+        Thu, 12 Dec 2019 19:07:22 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:37599 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731128AbfLMAHU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Dec 2019 19:07:27 -0500
-Received: by mail-pj1-f66.google.com with SMTP id ep17so344186pjb.4
-        for <linux-serial@vger.kernel.org>; Thu, 12 Dec 2019 16:07:26 -0800 (PST)
+        Thu, 12 Dec 2019 19:07:20 -0500
+Received: by mail-pg1-f196.google.com with SMTP id q127so542622pga.4
+        for <linux-serial@vger.kernel.org>; Thu, 12 Dec 2019 16:07:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=googlenew;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6mNnjO8v1tpl9yqVUOmaWfH9cLoEm7aFdIH5BtFh2r4=;
-        b=dgyveXe++pvbZzQRfBmAF/BV57WQgKW8tFS6uvjxmvo976OQWCi2hyt+Xte32scieT
-         fDYObp4UGB+chOn+KLJ0V3caJWWZMV+4OUuk9iELuQHxkso4dEwadxwKIK27SZOY7JEv
-         rOIDZhb3i4lGeATobG9gOF0HbRsMf67n1t0XAnXWUyKmK9dni9LrbMJUrTfBe/Pa8HAT
-         qr9EeeafSMpWp11LvOPlgnBKi5xlBn19dQ/Y8qRyf6rxUZfQzjrPeKf5g13cbNqB6Y57
-         5VxBUNfl4MMdR/wZwE7VQLsab5VacSajatAHncx5Cx9LWx+yROBw3gs8rN8bUc1xMmwz
-         Zuqg==
+        bh=+c98ZzOoZa6r4oh0WHvCTRmQQ3Z1F+2HIMc70hjB/hU=;
+        b=jEsgZRumRQgH2VTgb7IeNELwg6EsCFbkQ6k+lMA5NcFyPPxcLIoX7AL6uyea78KEc8
+         49DZo0LWs9eTr1cRpFmpLqmCdvRvtFYienwXJTiQrmOmxbusdeCx8hyOPVooq8w+WGun
+         Y+8vzZciN1QI0taHL4RSf5PS/UkXz6lAKeCiZOaEjaDw3kf6h+r3GeYmiUiTNSXbBcxt
+         595481evp0kvUEWPNYWY6JNHier+4Qf16k+Mca5m6hx8M9RMp9/CRtplGm7N6PLSgdTI
+         EsEy+U9K4k1wz2p9HbwRXTQ4E9KZ8DOZN/EcvYVAZoqpxkeHPZ6IHbKvTFg7vPdO1M5l
+         yLKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6mNnjO8v1tpl9yqVUOmaWfH9cLoEm7aFdIH5BtFh2r4=;
-        b=sUgG6sCOLoQGJ9h94hhji+6GIOEuXU1VIjMf6BFxk4AmKWUiGhL965onwyOEyZ51Rd
-         uCD/XqWPQy4gDxiNOTIqBsagrwXF85CV3d4rAcUluJYjwikb3dKJWmXWyUBHojIa23Rd
-         FhO1RRzCT4Zv0etTGzbx4VosMEYo0NWz5qHdrfb/UqMtOa8XGIs2u0IK4repJ7yC3inW
-         MvUkUbQMVIChquZqHmQ2WN0W5aXwEF3MUGYnVtmWUnNOajZFtAauRTdRs/q9Ox1piAPg
-         jrt2lBLE1q8idrxJgTtyXCk8yz74uUZwn6DYO1SND6w67zXfe2gxBu711qiVY/Nm6l0F
-         S/uA==
-X-Gm-Message-State: APjAAAXSaJR7jwEkANZzyTbNLM/iwpmOfZiA/VgpRSD6dTvlfkyoxda6
-        ktxpz42YTjObSGwWiosbt1Zr1g==
-X-Google-Smtp-Source: APXvYqy/yq33aCSkTVokTTb3YtsIWtq/9olFkGeixr9RtIQxE27PiPzHCSj/k0+5f3lTD5yC44fofw==
-X-Received: by 2002:a17:90a:b010:: with SMTP id x16mr13564458pjq.130.1576195646097;
-        Thu, 12 Dec 2019 16:07:26 -0800 (PST)
+        bh=+c98ZzOoZa6r4oh0WHvCTRmQQ3Z1F+2HIMc70hjB/hU=;
+        b=dpPZ5Gh5h5iGc6oknWyOtqvP4sA1lKHGfi34Se4hCWeY99MLgPreMxV2KGS2IZHoNU
+         crMo9RmeEK6Hl9tWpcMMFK8K9eM7Ji2//7FVsRKkboMf/12axIl5HSQrseVAP/iYTwC/
+         4qzZvKndD/kpouF6zI+yjH/ydFhb7vYliAyICkdfTdF6d92JMF38LprVnZXJCLc1hRsB
+         rhk3LWlUf0gScin2114V0gAD3aldEOEXdNLOWpWpKiA3e1a1PsvY3+ismlXlN9ZP396Z
+         4ib3d2KMLswcW+AliLUIPcVchvy4v67MM/WwseDBXbfL4EALlJ/S0s7EDUPUzdnn7NyE
+         R5vA==
+X-Gm-Message-State: APjAAAUZo4gEZezC6lF/hK9lV6gIVBvnAaRfrMz7wjryUJv/aDV6ZTZV
+        qAF4JsaY/fRQbKrpfgoD2ZbCGQ==
+X-Google-Smtp-Source: APXvYqz5fQ+7DouCDoyrPelCmS/wHA9WAdlujQLAMlQCjfldKxAtxyGpHXYSKFLtaHn0VOlC0r4y2Q==
+X-Received: by 2002:a63:5a64:: with SMTP id k36mr13933148pgm.323.1576195639965;
+        Thu, 12 Dec 2019 16:07:19 -0800 (PST)
 Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id j38sm8317647pgj.27.2019.12.12.16.07.22
+        by smtp.gmail.com with ESMTPSA id j38sm8317647pgj.27.2019.12.12.16.07.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 16:07:25 -0800 (PST)
+        Thu, 12 Dec 2019 16:07:19 -0800 (PST)
 From:   Dmitry Safonov <dima@arista.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
@@ -63,12 +63,10 @@ Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
         Vasiliy Khoruzhick <vasilykh@arista.com>,
-        linux-serial@vger.kernel.org, Andrew Jeffery <andrew@aj.id.au>,
-        Joel Stanley <joel@jms.id.au>,
-        linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org
-Subject: [PATCH 04/58] tty/serial: Migrate aspeed_vuart to use has_sysrq
-Date:   Fri, 13 Dec 2019 00:06:03 +0000
-Message-Id: <20191213000657.931618-5-dima@arista.com>
+        linux-serial@vger.kernel.org
+Subject: [PATCH 02/58] serial: Move sysrq members above
+Date:   Fri, 13 Dec 2019 00:06:01 +0000
+Message-Id: <20191213000657.931618-3-dima@arista.com>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191213000657.931618-1-dima@arista.com>
 References: <20191213000657.931618-1-dima@arista.com>
@@ -79,47 +77,65 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The SUPPORT_SYSRQ ifdeffery is not nice as:
-- May create misunderstanding about sizeof(struct uart_port) between
-  different objects
-- Prevents moving functions from serial_core.h
-- Reduces readability (well, it's ifdeffery - it's hard to follow)
+At the current place members those follow are:
+:	upf_t			flags;
+:	upstat_t		status;
+:	int			hw_stopped;
+:	unsigned int		mctrl;
+:	unsigned int		timeout;
+:	unsigned int		type;
+:	const struct uart_ops	*ops;
 
-In order to remove SUPPORT_SYSRQ, has_sysrq variable has been added.
-Initialise it in driver's probe and remove ifdeffery.
+Together, they give (*ops) 8-byte align on 64-bit platforms.
+And `sysrq_ch` introduces 4-byte padding.
 
-Cc: Andrew Jeffery <andrew@aj.id.au>
-Cc: Joel Stanley <joel@jms.id.au>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-aspeed@lists.ozlabs.org
+On the other side, above:
+:	struct device		*dev;
+:	unsigned char		hub6;
+:	unsigned char		suspended;
+:	unsigned char		unused[2];
+:	const char		*name;
+
+Adds another 4-byte padding.
+
+Moving sysrq members just before `hub6` allows to save 8 bytes
+per-uart_port on 64-bit platforms:
+On my gcc, x86_64 sizeof(struct uart_port) goes from 528 to 520.
+
 Signed-off-by: Dmitry Safonov <dima@arista.com>
 ---
- drivers/tty/serial/8250/8250_aspeed_vuart.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ include/linux/serial_core.h | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-index 6e67fd89445a..d657aa14c3e4 100644
---- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
-+++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-@@ -5,10 +5,6 @@
-  *    Copyright (C) 2016 Jeremy Kerr <jk@ozlabs.org>, IBM Corp.
-  *    Copyright (C) 2006 Arnd Bergmann <arnd@arndb.de>, IBM Corp.
-  */
--#if defined(CONFIG_SERIAL_8250_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
--#define SUPPORT_SYSRQ
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 2b78cc734719..bbbe57bf5163 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -161,11 +161,6 @@ struct uart_port {
+ 	struct uart_icount	icount;			/* statistics */
+ 
+ 	struct console		*cons;			/* struct console, if any */
+-#if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(SUPPORT_SYSRQ)
+-	unsigned long		sysrq;			/* sysrq timeout */
+-	unsigned int		sysrq_ch;		/* char for sysrq */
 -#endif
 -
- #include <linux/device.h>
- #include <linux/module.h>
- #include <linux/of_address.h>
-@@ -406,6 +402,7 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
- 	port.port.unthrottle = aspeed_vuart_unthrottle;
- 	port.port.status = UPSTAT_SYNC_FIFO;
- 	port.port.dev = &pdev->dev;
-+	port.port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
+ 	/* flags must be updated while holding port mutex */
+ 	upf_t			flags;
  
- 	rc = sysfs_create_group(&vuart->dev->kobj, &aspeed_vuart_attr_group);
- 	if (rc < 0)
+@@ -244,6 +239,12 @@ struct uart_port {
+ 	resource_size_t		mapbase;		/* for ioremap */
+ 	resource_size_t		mapsize;
+ 	struct device		*dev;			/* parent device */
++
++#if defined(CONFIG_SERIAL_CORE_CONSOLE) || defined(SUPPORT_SYSRQ)
++	unsigned long		sysrq;			/* sysrq timeout */
++	unsigned int		sysrq_ch;		/* char for sysrq */
++#endif
++
+ 	unsigned char		hub6;			/* this should be in the 8250 driver */
+ 	unsigned char		suspended;
+ 	unsigned char		unused[2];
 -- 
 2.24.0
 
