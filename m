@@ -7,55 +7,55 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2531C43603
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:11:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B06AAC00454
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:11:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 76B5A2253D
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:11:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 85EC32173E
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:11:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="i7uxmhA2"
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="Dpn+ZOU0"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731670AbfLMAK7 (ORCPT
+        id S1731710AbfLMALB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Dec 2019 19:10:59 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:46268 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731648AbfLMAIU (ORCPT
+        Thu, 12 Dec 2019 19:11:01 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:37241 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731508AbfLMAIO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Dec 2019 19:08:20 -0500
-Received: by mail-pg1-f195.google.com with SMTP id z124so508854pgb.13
-        for <linux-serial@vger.kernel.org>; Thu, 12 Dec 2019 16:08:19 -0800 (PST)
+        Thu, 12 Dec 2019 19:08:14 -0500
+Received: by mail-pj1-f66.google.com with SMTP id ep17so345854pjb.4
+        for <linux-serial@vger.kernel.org>; Thu, 12 Dec 2019 16:08:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=googlenew;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=eIG2+4JbwVOuLRSDX8JZZBINCAprxXq9FQQrJM6v5lY=;
-        b=i7uxmhA2rgEx5xz5lwkNok1PJSSUXiIGLw2LYAurwbY25ER+4Kn2iIb8xZJpupl8eS
-         GMFaqOnsR9Xk0kkTXTORWl3OApnz1zkV1b/5Mri63yr4/t8LAS1GyUvkfTEE6tefzRCj
-         rX4xYsqGGQSy4VgL1nBXyIQBhvqGppe6wqJHq3vHjYNphpNhgVFXvCh6XQ1dNo5+qVfu
-         OB00i/RNOVpg8mpuej5sR0lEhGxiZNujzNOZKOoPlfNGQtBeD+//SlBunakQJ4wnMZfw
-         s8vtkYZgemCVG5uJwv8zCQqzgKCtPJMxAtXm8aaPngpieBNmwV9Fz3WlZ9yiuy5P33SE
-         e+hg==
+        bh=yRzUJUqTBi61FgnBxTRYOYQVNLiXFzlJgvmZ3LoxYGs=;
+        b=Dpn+ZOU0VJ1jnmCCWPCi/cpydH77Rk9jQpBS8bdiYXyA5X8coGnaEAioo4sksukaBG
+         x3+tHKUQWEPfpsMcgNlBLHRWhuHw7g7z0SSxRGnhoLbk9GPARFz+H2ZbepQmj+4ZimP/
+         NhyovAMvEy7PzZl/Qzm0efHVhOC35advDRpTaZ5CUjqKREUHqJirfD4KXp6ebs6XhWgV
+         8OcaI2qrGksloZnHn8U7csI4UJpm1d9gdKzQt0TRSeXe8HQVQlE/ca25zim1jE8Wacde
+         lk8TBHWWYExjp6C1yV3slGlbf2fPUkoEb/jvWW+1nzroffysMOC5uYu/R7d1aASB3378
+         Shrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=eIG2+4JbwVOuLRSDX8JZZBINCAprxXq9FQQrJM6v5lY=;
-        b=jLceYrSF8fdvNFaT7jKb7JksCdjwlj09QMGuPByYb8q+wNpzlNrLZMfqrfQpkw7D7G
-         Ns8SnROkaN/itmeR791bHF+f/ugv6OUcjysVD7FzuBJhbXcd1xFDoFuGdMtd33ZdKHeO
-         2axlThHcVFNVVzD6fjRh2NjJu+IIOxsB6sfYv41Q74DKNDjVw32eWoqGQtwxZ6Gd0/2K
-         g2Cjzkuqw9n2wWJli2z7s62fuIYMeh2lgaOrYP0/Xu5uIuNo6eTc7xjDXZgEz4nrVjVu
-         IPbdFLwXv9FINDdnPDz1NFPq/V6jAW7kgbt7Ptu+yQvHd360LzfnCiZw8LfMNfCrM3+2
-         aJgw==
-X-Gm-Message-State: APjAAAX9pID2qwi51KAiWlKNNzT5IwFJ9LsHzX2xfSiJGeLmH0JA3w23
-        DWIgu5tv6WBfGQK0ecefdz+jQA==
-X-Google-Smtp-Source: APXvYqw5ht+uJN4C/OeK2k0lFtlvIG3dJAym/DzMXBsu1g2/2ovtqrVHmV9EmTuPxecmvGJGcMfDqA==
-X-Received: by 2002:a62:53c3:: with SMTP id h186mr5433700pfb.118.1576195699313;
-        Thu, 12 Dec 2019 16:08:19 -0800 (PST)
+        bh=yRzUJUqTBi61FgnBxTRYOYQVNLiXFzlJgvmZ3LoxYGs=;
+        b=M/X9EDkU2wyEcaEg/pbvO+ME7o3C9y4DNgIsibGlMAjy/epeRCL+++aV4a3dxO8/o2
+         m84WaiSZfQWUjN2ec9WRgXpBO6wbDIP0g027iwXi67AcWk549VmYpmlAttenozSj8D7s
+         ucZ/xb/754LoyHzvMn8NN1uLmyWPQErppkbCFv+Squ+RMzW6YFWuZCx3cWHioEog/+Oo
+         uHukiQUbJiomrb9Wbj9oX/9C+aJ7gH8PBBw58QB5LGY3F60XHqqNGnBgCoHArFTHM6Jx
+         K3lCN8Uaj8oiXi7TRyZGbOimuYu/GQ88zi3YBOC9SIDNQ2BjDPw5MML9ea919hqsbM6w
+         wmjw==
+X-Gm-Message-State: APjAAAWSHNZ1K6tbkNXfZju+t3ljE9xBM40LGrOCIhXGjwEBd3M0KYsF
+        U4za11fNVkPfmUAtISnQ1KNBYw==
+X-Google-Smtp-Source: APXvYqydrnGvxnCreiqWq4Cu8QG9hWPQ0YlL+rT7Psz+HwhqPQ+hAc6pPfFavOQ/L+0ndjseZAjUBQ==
+X-Received: by 2002:a17:902:bd0a:: with SMTP id p10mr5078883pls.65.1576195693231;
+        Thu, 12 Dec 2019 16:08:13 -0800 (PST)
 Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id j38sm8317647pgj.27.2019.12.12.16.08.16
+        by smtp.gmail.com with ESMTPSA id j38sm8317647pgj.27.2019.12.12.16.08.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 16:08:18 -0800 (PST)
+        Thu, 12 Dec 2019 16:08:12 -0800 (PST)
 From:   Dmitry Safonov <dima@arista.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
@@ -64,9 +64,9 @@ Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
         Jiri Slaby <jslaby@suse.com>,
         Vasiliy Khoruzhick <vasilykh@arista.com>,
         linux-serial@vger.kernel.org
-Subject: [PATCH 22/58] tty/serial: Migrate milbeaut_usio to use has_sysrq
-Date:   Fri, 13 Dec 2019 00:06:21 +0000
-Message-Id: <20191213000657.931618-23-dima@arista.com>
+Subject: [PATCH 20/58] tty/serial: Migrate ip22zilog to use has_sysrq
+Date:   Fri, 13 Dec 2019 00:06:19 +0000
+Message-Id: <20191213000657.931618-21-dima@arista.com>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191213000657.931618-1-dima@arista.com>
 References: <20191213000657.931618-1-dima@arista.com>
@@ -88,32 +88,48 @@ Initialise it in driver's probe and remove ifdeffery.
 
 Signed-off-by: Dmitry Safonov <dima@arista.com>
 ---
- drivers/tty/serial/milbeaut_usio.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/tty/serial/ip22zilog.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/milbeaut_usio.c b/drivers/tty/serial/milbeaut_usio.c
-index 949ab7efc4fc..8f2cab7f66ad 100644
---- a/drivers/tty/serial/milbeaut_usio.c
-+++ b/drivers/tty/serial/milbeaut_usio.c
-@@ -3,10 +3,6 @@
-  * Copyright (C) 2018 Socionext Inc.
-  */
+diff --git a/drivers/tty/serial/ip22zilog.c b/drivers/tty/serial/ip22zilog.c
+index 8c810733df3d..86fff69d7e7c 100644
+--- a/drivers/tty/serial/ip22zilog.c
++++ b/drivers/tty/serial/ip22zilog.c
+@@ -38,10 +38,6 @@
+ #include <asm/sgi/hpc3.h>
+ #include <asm/sgi/ip22.h>
  
--#if defined(CONFIG_SERIAL_MILBEAUT_USIO_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
+-#if defined(CONFIG_SERIAL_IP22_ZILOG_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
 -#define SUPPORT_SYSRQ
 -#endif
 -
- #include <linux/clk.h>
- #include <linux/console.h>
- #include <linux/module.h>
-@@ -537,6 +533,7 @@ static int mlb_usio_probe(struct platform_device *pdev)
- 	port->irq = mlb_usio_irq[index][RX];
- 	port->uartclk = clk_get_rate(clk);
- 	port->fifosize = 128;
-+	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_MILBEAUT_USIO_CONSOLE);
- 	port->iotype = UPIO_MEM32;
- 	port->flags = UPF_BOOT_AUTOCONF | UPF_SPD_VHI;
- 	port->line = index;
+ #include <linux/serial_core.h>
+ 
+ #include "ip22zilog.h"
+@@ -1080,6 +1076,7 @@ static struct uart_driver ip22zilog_reg = {
+ 
+ static void __init ip22zilog_prepare(void)
+ {
++	unsigned char sysrq_on = IS_ENABLED(CONFIG_SERIAL_IP22_ZILOG_CONSOLE);
+ 	struct uart_ip22zilog_port *up;
+ 	struct zilog_layout *rp;
+ 	int channel, chip;
+@@ -1115,6 +1112,7 @@ static void __init ip22zilog_prepare(void)
+ 		up[(chip * 2) + 0].port.irq = zilog_irq;
+ 		up[(chip * 2) + 0].port.uartclk = ZS_CLOCK;
+ 		up[(chip * 2) + 0].port.fifosize = 1;
++		up[(chip * 2) + 0].port.has_sysrq = sysrq_on;
+ 		up[(chip * 2) + 0].port.ops = &ip22zilog_pops;
+ 		up[(chip * 2) + 0].port.type = PORT_IP22ZILOG;
+ 		up[(chip * 2) + 0].port.flags = 0;
+@@ -1126,6 +1124,7 @@ static void __init ip22zilog_prepare(void)
+ 		up[(chip * 2) + 1].port.irq = zilog_irq;
+ 		up[(chip * 2) + 1].port.uartclk = ZS_CLOCK;
+ 		up[(chip * 2) + 1].port.fifosize = 1;
++		up[(chip * 2) + 1].port.has_sysrq = sysrq_on;
+ 		up[(chip * 2) + 1].port.ops = &ip22zilog_pops;
+ 		up[(chip * 2) + 1].port.type = PORT_IP22ZILOG;
+ 		up[(chip * 2) + 1].port.line = (chip * 2) + 1;
 -- 
 2.24.0
 
