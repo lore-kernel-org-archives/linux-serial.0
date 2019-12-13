@@ -7,55 +7,55 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8FC0C2D0C9
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:09:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0268DC43603
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:09:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8C586206E2
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:09:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CA3D1206E2
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:09:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="MwyEdNtF"
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="P8Xa9IyO"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731529AbfLMAJZ (ORCPT
+        id S1731483AbfLMAJ3 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Dec 2019 19:09:25 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:34102 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731840AbfLMAJZ (ORCPT
+        Thu, 12 Dec 2019 19:09:29 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:40141 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731841AbfLMAJ2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Dec 2019 19:09:25 -0500
-Received: by mail-pj1-f68.google.com with SMTP id j11so355236pjs.1
-        for <linux-serial@vger.kernel.org>; Thu, 12 Dec 2019 16:09:25 -0800 (PST)
+        Thu, 12 Dec 2019 19:09:28 -0500
+Received: by mail-pl1-f193.google.com with SMTP id g6so383415plp.7
+        for <linux-serial@vger.kernel.org>; Thu, 12 Dec 2019 16:09:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=googlenew;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=k2sVyEICGfKf72nEjPqSRaSmfvJt+VQfuvvM6oc7m9s=;
-        b=MwyEdNtFfmjQZoB27Q0dIhnKa/eRsscBYXgN6mThQHZ0xuN2ZLNKi6ckLFpOQcPk+I
-         NEzKUZY20I58iWtE45s2LmQvI8w3hNRVu//WpT5ZtNqDzUOxrG64HmkEASgMeCHQTYsF
-         BERyiqKnSCv+Ntjq+29FADDKOnA7VRMDTnxpTxarc8+nLThS9SCFZDQDKEgOxRraWxtc
-         mDUv5ABTRatRqAX5ufBfjct3CXHzkTHAAHIy1M6tlMHU59duHo5mn7JSUfcm8cmLplf2
-         wmacPO5wGfnv2SXChdmY0aR2WF1f1/LIscRo2PIXHQtebaWsP6SCeTlACqAjfLxoowH2
-         7pmg==
+        bh=l5WLqTQP9VT3Wj9H/IDghikmP99MJJRtTWNwh4knJ1g=;
+        b=P8Xa9IyOFvUhnq1qV0qnqNFEDzFCnyBVvEhf15NcXH/cTRxIvFsnDeJh431tEL7Bho
+         vdUjPUjtRf7DXpmoLJ4OgEeMus6y8d+uGvBU3rBIastCi+YaDl7eBBH1PPp+J8z/8v1b
+         OAK7+gFw8kV3SQdJZu0ik5pf6c4aVoyS+z5NAOJ0ENZ7s40qEPP7yAuuSHjBLl9qHISY
+         pzuxIWw/vGVhkuP91JKD4QoZjBzpnqxee8Xfx92EgK55JdIiTx0rg3wcqTMThvBtjYJs
+         d/3tWF946bZdAjgsjrIflpPX6sGopVBo1A3BGFh0K4Sdr/Z+A6g0ZWtd4/unAg8p8CnU
+         TBjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=k2sVyEICGfKf72nEjPqSRaSmfvJt+VQfuvvM6oc7m9s=;
-        b=AstslU+czebR0BY/08WOiwCx89UUG82d1O1fKCA8SDNxwSq6eIoKEONeOGSuCUxmLS
-         zry/jN7cOoxoRrNwEcRxIFTVXtnuwEeSyHkeR271mC/Ib7E8njNOxFY/m9ishYVsxkmt
-         ZqA1/kQgmWS8NsXGjjrRpdJ09AdIVs3hfhLFkMb3Wg0s8krC1Xk0962ihaGRfwtlIjmy
-         C9N4lyIRJs8RZU++2Vu2MSuLs/NkeZsJp6oGmwnii+1hug/PrNI7cg+hkR8K7j6xBFem
-         7/jEQDivPCiErtdwtNSDXXM06WdtkekaVukLlTAGrgfSXnwtu/Xi5+huvr/raPlfX7kU
-         HV7Q==
-X-Gm-Message-State: APjAAAWyX2L7vhatVLakO3dHLXm/a/viEXY9Z1nDuRJYhSAIpzW/Wma9
-        1ZkH52bj5iPv8/5yAbCgEomJLsIq2I4=
-X-Google-Smtp-Source: APXvYqyKleyWMddswHphitVEN0hVZKzYGZZEyMMWwvlQN495NyB0mhwoFp63U+7Ic280YNH9xNzNyQ==
-X-Received: by 2002:a17:90a:e291:: with SMTP id d17mr13557645pjz.116.1576195764822;
-        Thu, 12 Dec 2019 16:09:24 -0800 (PST)
+        bh=l5WLqTQP9VT3Wj9H/IDghikmP99MJJRtTWNwh4knJ1g=;
+        b=e4M8ftcY3MeSBtN20/nGFpY82yaGnih2DK3ocgu3oBvCWtod13JePoI7ldEDmKA/A3
+         b4+emJD5rtink/sA8iIpb7rZnK4RjmjxjjZ22iU2QrWaTz02JGEpQpB2fcmOpClk5we6
+         CP2LPw71Lx36AA5dn+UvZvcU32W9wMW0gRMZPsxK7BgEOLJksH0dc4b8fiIn3wuk5c0x
+         IlEKbs2qvFSfL26HgD/fRlV9j2b4Yl/2WCl+41Yba+l9zijvQbqzzcK8aqrzE6rIKATA
+         b9wBOE23FN0Sxr6g7ZfP013S5QZKkZEVLGW+Bli49jTPeh5x+w9wxy2PyA3b7kPUCLjz
+         yejA==
+X-Gm-Message-State: APjAAAXyDebAN2gEADfnjZD7AVRIeqmVmpu7zS3qxTUG7swrr41q2zLW
+        4NbDyRtPS3p+jksACbBRNOpm9Q==
+X-Google-Smtp-Source: APXvYqy3wIN8nnc/UL9s/cxQrhBLjGU7KJitO7vCE6oaWq78Eq4QrQYcUGPCAaWotsrH9/5FfOuNkg==
+X-Received: by 2002:a17:902:6b45:: with SMTP id g5mr12477341plt.159.1576195767792;
+        Thu, 12 Dec 2019 16:09:27 -0800 (PST)
 Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id j38sm8317647pgj.27.2019.12.12.16.09.21
+        by smtp.gmail.com with ESMTPSA id j38sm8317647pgj.27.2019.12.12.16.09.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 16:09:23 -0800 (PST)
+        Thu, 12 Dec 2019 16:09:27 -0800 (PST)
 From:   Dmitry Safonov <dima@arista.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
@@ -64,13 +64,10 @@ Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
         Jiri Slaby <jslaby@suse.com>,
         Vasiliy Khoruzhick <vasilykh@arista.com>,
         linux-serial@vger.kernel.org,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: [PATCH 44/58] tty/serial: Migrate stm32-usart to use has_sysrq
-Date:   Fri, 13 Dec 2019 00:06:43 +0000
-Message-Id: <20191213000657.931618-45-dima@arista.com>
+        "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org
+Subject: [PATCH 45/58] tty/serial: Migrate sunhv to use has_sysrq
+Date:   Fri, 13 Dec 2019 00:06:44 +0000
+Message-Id: <20191213000657.931618-46-dima@arista.com>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191213000657.931618-1-dima@arista.com>
 References: <20191213000657.931618-1-dima@arista.com>
@@ -90,38 +87,36 @@ The SUPPORT_SYSRQ ifdeffery is not nice as:
 In order to remove SUPPORT_SYSRQ, has_sysrq variable has been added.
 Initialise it in driver's probe and remove ifdeffery.
 
-Cc: Alexandre Torgue <alexandre.torgue@st.com>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: sparclinux@vger.kernel.org
 Signed-off-by: Dmitry Safonov <dima@arista.com>
 ---
- drivers/tty/serial/stm32-usart.c | 5 +----
+ drivers/tty/serial/sunhv.c | 5 +----
  1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 2f72514d63ed..5e93e8d40f59 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -8,10 +8,6 @@
-  * Inspired by st-asc.c from STMicroelectronics (c)
-  */
+diff --git a/drivers/tty/serial/sunhv.c b/drivers/tty/serial/sunhv.c
+index f8503f8fc44e..eafada8fb6fa 100644
+--- a/drivers/tty/serial/sunhv.c
++++ b/drivers/tty/serial/sunhv.c
+@@ -25,10 +25,6 @@
+ #include <asm/irq.h>
+ #include <asm/setup.h>
  
--#if defined(CONFIG_SERIAL_STM32_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
+-#if defined(CONFIG_MAGIC_SYSRQ)
 -#define SUPPORT_SYSRQ
 -#endif
 -
- #include <linux/clk.h>
- #include <linux/console.h>
- #include <linux/delay.h>
-@@ -926,6 +922,7 @@ static int stm32_init_port(struct stm32_port *stm32port,
- 	port->ops	= &stm32_uart_ops;
- 	port->dev	= &pdev->dev;
- 	port->fifosize	= stm32port->info->cfg.fifosize;
-+	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_STM32_CONSOLE);
+ #include <linux/serial_core.h>
+ #include <linux/sunserialcore.h>
  
- 	ret = platform_get_irq(pdev, 0);
- 	if (ret <= 0)
+@@ -552,6 +548,7 @@ static int hv_probe(struct platform_device *op)
+ 
+ 	sunhv_port = port;
+ 
++	port->has_sysrq = 1;
+ 	port->line = 0;
+ 	port->ops = &sunhv_pops;
+ 	port->type = PORT_SUNHV;
 -- 
 2.24.0
 
