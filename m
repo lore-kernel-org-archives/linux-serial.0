@@ -7,55 +7,55 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E92AC2D0C9
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:10:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD47C00454
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:10:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 416E02173E
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:10:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 412592173E
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:10:45 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="N44hjPgU"
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="EajhwHVd"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731778AbfLMAJE (ORCPT
+        id S1731746AbfLMAIy (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Dec 2019 19:09:04 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:40735 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731759AbfLMAJE (ORCPT
+        Thu, 12 Dec 2019 19:08:54 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:44134 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731405AbfLMAIr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Dec 2019 19:09:04 -0500
-Received: by mail-pj1-f67.google.com with SMTP id s35so340235pjb.7
-        for <linux-serial@vger.kernel.org>; Thu, 12 Dec 2019 16:09:03 -0800 (PST)
+        Thu, 12 Dec 2019 19:08:47 -0500
+Received: by mail-pl1-f196.google.com with SMTP id az3so374163plb.11
+        for <linux-serial@vger.kernel.org>; Thu, 12 Dec 2019 16:08:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=googlenew;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0AvuSAjkIKauhY++c7YWp6c3q12AUyVxjR83OEuWwPU=;
-        b=N44hjPgUKP1rna4pDgr1TI6pgfXmWzNYqT2os27E2x9CgNvOq4XfY2uvZg3QbDL4q8
-         lC2uzw05PZALhHdfZOv00DF4DpIBbBiXA5k9+3/l8Go8fBWKLx0KNKMDxH7lsbo1ZYEF
-         QNGRGBDlsm1A5d+/s31tS1Eirnkr5aZfaRGP3QM+eD3CVaZ1++8VCJxOmoc/n4bNNa8k
-         wvVJzYhEIKOStfkx7/jI7JW+1eS53I77LUvwumVzjIJf9Vu1T+gi29abhbiOlFuq+5oZ
-         MMODig9sZun8DmyfjTS/+mELafP9hPHcMY44LTbnyeWo9KguTxA4KnALSwzn1jcrCX/L
-         rpYg==
+        bh=oFqw+HPsj+UvL3ErVQQmLmN+s/+CgB/NwHLHlutjOiw=;
+        b=EajhwHVdE3viF6OTqFPMh/mMhJda3aVHtZVSvDfWNRga5xkSjsM3jyQK1O7FKTOWKp
+         FA9x5OeKeLVn7IZoFwXwdis4MujSaLsdJFTb4AIJD23KP+5XJC2e3yD1aqBCz0iP9Pix
+         3ziyudM3CqRn6mEK9owgMvbHihbvnA8MwB331cPepfB1KWUAkq/5dflShGPRrQUAUb0W
+         FWWV8Bq8N6vgVXZCkMJrET3VPLaG5o/goCy9AMbnVa6bpGtq0IHlQw0W1ByEHiqG749V
+         W0E5uCm68XlrEo4WAWw77o8nYomafrEjUNyszlsN7japK9WeUqT4aHzWeauSRydNtSRT
+         p/Hg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0AvuSAjkIKauhY++c7YWp6c3q12AUyVxjR83OEuWwPU=;
-        b=L5Lr6n1xCe8Zwb3AeaAddCrK/VQ1X+LuWWZhMOhu40jEEEStu3dvMMgOu0pKbJMS1M
-         Bhs0RyKiUkF9Tq7LBnxCEGDbxRSXs50my9RZxGXZB+yLqE2NIUXZqN0hcgSM4qrXnGDo
-         ToAb2FGQeijvn2FasKWcCPxov72fN+0qq2WR6e8hCvhTU/D/LNdpHB2vk0aNW/y3tjbd
-         SOJcVX4nYO32bpkDn9FMCbGFXpflElwE8+G513f88LUGq4OelyfKmKhZZeVd7+ZBR8WJ
-         caKCW0ulOPf1WHjtu1ob59IaTajaE5xCogI3NS+vN4l8OiioRvtmOLxs729XCnQiPJNN
-         G3gA==
-X-Gm-Message-State: APjAAAUu3ORrmA8JmYHah3jgo16RhLT6bRpYJ9xZlqEwX3c6e1Yj1UU/
-        1uQJT8iaX1SNGjQJjGc9W6NyFA==
-X-Google-Smtp-Source: APXvYqwYRTF3MnCYATLiJ+ZqcgT9/DArauisQ+e4UKASVqEwmtFvSwNn2galsFLV/dQmuwgAPCREJA==
-X-Received: by 2002:a17:90a:a386:: with SMTP id x6mr13586682pjp.116.1576195743090;
-        Thu, 12 Dec 2019 16:09:03 -0800 (PST)
+        bh=oFqw+HPsj+UvL3ErVQQmLmN+s/+CgB/NwHLHlutjOiw=;
+        b=mDYa9VKdTVFz06qFJHQ4MguJcrwG4uv6ei/MRsoTEVesHTzJraNSpfHn2/Aqp/wdlZ
+         L4Lw/nJy8vf/5V4rRynQJJpc36P3aCtZEbJd/spe8b4/mwbDondaKfmSynwt638rNJFC
+         zUFZt9rJJxgm0EEG+8jqMdVbKZbB933v6gkE8mqr3OTyNiNgfxoprWFAjPoSkdsJuSqZ
+         PKXjGYKC5Bze0EUKqcX7d5lY3PR+d5Kdlb5zECZ+UdVlvDO9Yp7bIrNhry7PK5LtJaBk
+         X64nmtAPCskPM5JKZsilehVbkHrOKgGs2EmO1myxAjdOAG86hUcx6Tyh0BZnV2KXeKjs
+         YzmQ==
+X-Gm-Message-State: APjAAAWuVNIdI9Rg2F9CMxisPWKx2KIK66ep7MRNwy/zmRrK5hTLJirX
+        wek6DYN66hRLcMYcPoz3CZvDEg==
+X-Google-Smtp-Source: APXvYqyF6KmCyw2+4DGZMs1GewyAV9nRslaYtpLZSwxmJE8Eo7U1bhbKpvG5tJ/6K6I51waBc+InfQ==
+X-Received: by 2002:a17:90a:2223:: with SMTP id c32mr13646956pje.15.1576195726336;
+        Thu, 12 Dec 2019 16:08:46 -0800 (PST)
 Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id j38sm8317647pgj.27.2019.12.12.16.09.00
+        by smtp.gmail.com with ESMTPSA id j38sm8317647pgj.27.2019.12.12.16.08.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 16:09:02 -0800 (PST)
+        Thu, 12 Dec 2019 16:08:45 -0800 (PST)
 From:   Dmitry Safonov <dima@arista.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
@@ -63,10 +63,14 @@ Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
         Vasiliy Khoruzhick <vasilykh@arista.com>,
-        linux-serial@vger.kernel.org
-Subject: [PATCH 37/58] tty/serial: Migrate samsung_tty to use has_sysrq
-Date:   Fri, 13 Dec 2019 00:06:36 +0000
-Message-Id: <20191213000657.931618-38-dima@arista.com>
+        linux-serial@vger.kernel.org,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH 31/58] tty/serial: Migrate pmac_zilog to use has_sysrq
+Date:   Fri, 13 Dec 2019 00:06:30 +0000
+Message-Id: <20191213000657.931618-32-dima@arista.com>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191213000657.931618-1-dima@arista.com>
 References: <20191213000657.931618-1-dima@arista.com>
@@ -86,34 +90,38 @@ The SUPPORT_SYSRQ ifdeffery is not nice as:
 In order to remove SUPPORT_SYSRQ, has_sysrq variable has been added.
 Initialise it in driver's probe and remove ifdeffery.
 
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: linuxppc-dev@lists.ozlabs.org
 Signed-off-by: Dmitry Safonov <dima@arista.com>
 ---
- drivers/tty/serial/samsung_tty.c | 5 +----
+ drivers/tty/serial/pmac_zilog.c | 5 +----
  1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 83fd51607741..9770fe29ae86 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -21,10 +21,6 @@
-  * BJD, 04-Nov-2004
- */
+diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
+index bcb5bf70534e..ba65a3bbd72a 100644
+--- a/drivers/tty/serial/pmac_zilog.c
++++ b/drivers/tty/serial/pmac_zilog.c
+@@ -61,10 +61,6 @@
+ #define of_machine_is_compatible(x) (0)
+ #endif
  
--#if defined(CONFIG_SERIAL_SAMSUNG_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
+-#if defined (CONFIG_SERIAL_PMACZILOG_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
 -#define SUPPORT_SYSRQ
 -#endif
 -
- #include <linux/dmaengine.h>
- #include <linux/dma-mapping.h>
- #include <linux/slab.h>
-@@ -1909,6 +1905,7 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
- 		ourport->port.fifosize = ourport->drv_data->fifosize[index];
- 	else if (ourport->info->fifosize)
- 		ourport->port.fifosize = ourport->info->fifosize;
-+	ourport->port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_SAMSUNG_CONSOLE);
+ #include <linux/serial.h>
+ #include <linux/serial_core.h>
  
- 	/*
- 	 * DMA transfers must be aligned at least to cache line size,
+@@ -1721,6 +1717,7 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
+ 	uap->control_reg   = uap->port.membase;
+ 	uap->data_reg      = uap->control_reg + 4;
+ 	uap->port_type     = 0;
++	uap->port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_PMACZILOG_CONSOLE);
+ 
+ 	pmz_convert_to_zs(uap, CS8, 0, 9600);
+ 
 -- 
 2.24.0
 
