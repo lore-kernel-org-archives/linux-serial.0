@@ -2,191 +2,145 @@ Return-Path: <SRS0=T9rn=2D=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 966B9C43603
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 10:51:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6974C3496A
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 20:36:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 77E5221655
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 10:51:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 32B1E2472C
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 20:36:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725747AbfLMKvD (ORCPT
+        id S1727184AbfLMMm6 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 Dec 2019 05:51:03 -0500
-Received: from mga14.intel.com ([192.55.52.115]:19120 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725948AbfLMKvD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 Dec 2019 05:51:03 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Dec 2019 02:50:37 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,309,1571727600"; 
-   d="scan'208";a="296894634"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga001.jf.intel.com with ESMTP; 13 Dec 2019 02:50:34 -0800
-Received: from andy by smile with local (Exim 4.93-RC7)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ifiWn-0007Os-SN; Fri, 13 Dec 2019 12:50:33 +0200
-Date:   Fri, 13 Dec 2019 12:50:33 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     chengang@emindsoft.com.cn
-Cc:     gregkh@linuxfoundation.org, jslaby@suse.com, sr@denx.de,
-        mika.westerberg@linux.intel.com, yegorslists@googlemail.com,
-        yuehaibing@huawei.com, haolee.swjtu@gmail.com, dsterba@suse.com,
-        mojha@codeaurora.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lv Li-song <lvlisong@emindsoft.com.cn>
-Subject: Re: [PATCH] drivers: tty: serial: 8250: fintek: Can enable or
- disable irq sharing based on isa or pci bus
-Message-ID: <20191213105033.GT32742@smile.fi.intel.com>
-References: <20191213051717.2058-1-chengang@emindsoft.com.cn>
+        Fri, 13 Dec 2019 07:42:58 -0500
+Received: from mx2.suse.de ([195.135.220.15]:42696 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727052AbfLMMm5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 13 Dec 2019 07:42:57 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id C368AB089;
+        Fri, 13 Dec 2019 12:42:54 +0000 (UTC)
+From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
+To:     Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paulburton@kernel.org>,
+        James Hogan <jhogan@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH v11 net-next 0/2] Use MFD framework for SGI IOC3 drivers
+Date:   Fri, 13 Dec 2019 13:42:18 +0100
+Message-Id: <20191213124221.25775-1-tbogendoerfer@suse.de>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191213051717.2058-1-chengang@emindsoft.com.cn>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Dec 13, 2019 at 01:17:17PM +0800, chengang@emindsoft.com.cn wrote:
-> From: Chen Gang <chengang@emindsoft.com.cn>
+SGI IOC3 ASIC includes support for ethernet, PS2 keyboard/mouse,
+NIC (number in a can), GPIO and a byte  bus. By attaching a
+SuperIO chip to it, it also supports serial lines and a parallel
+port. The chip is used on a variety of SGI systems with different
+configurations. This patchset moves code out of the network driver,
+which doesn't belong there, into its new place a MFD driver and
+specific platform drivers for the different subfunctions.
 
-Thanks for the patch, my comments below.
+Changes in v11:
+ - dropped accepted patches out of the series
+ - moved byte swapping patch first in series
+ - added ip30 system board support
 
-> Sorry for this patch being too late, which is for linux-next 20151127 (
-> about linux 4.4-rc2).  After 4 years, much things have been changed. But
-> I think it might be still valuable for some old versions. Welcome anyone
-> to refact this patch for their own.
+Changes in v10:
+ - generation of fake subdevice ID had vendor and device ID swapped
 
-This part should go after '---' line below.
+Changes in v9:
+ - remove generated MFD devices, when driver is removed or in case
+   of a mfd device setup error
+ - remove irq domain, if setup of mfd devices failed
+ - pci_iounmap on exit/error cases
+ - added irq domain unmap function
 
-> Fintek serial ports can share irq, but they need be enabled firstly, so
-> enable or disable irq sharing based on isa or pci bus. From kconfig, it
+Changes in v8:
+ - Re-worked comments in drivers/mfd/ioc3.c
+ - Added select CRC16 to ioc3-eth.c
+ - Patches 1 and 2 are already taken to mips-next, but
+   for completeness of the series they are still included.
+   What's missing to get the remaining 3 patches via the MIPS
+   tree is an ack from a network maintainer
 
-irq -> IRQ
-isa -> ISA
-pci -> PCI
-kconfig -> Kconfig
+Changes in v7:
+ - added patch to enable ethernet phy for Origin 200 systems
+ - depend on 64bit for ioc3 mfd driver
 
-> can be configured.
-> 
-> For integrated 8250 drivers, kernel always calls pnp driver, which will
-> not use integrated fintek driver for ever. So let pnp driver try the
+Changes in v6:
+ - dropped patches accepted for v5.4-rc1
+ - moved serio patch to ip30 patch series
+ - adapted nvmem patch
 
-fintek -> Fintek or Fintek 8250
+Changes in v5:
+ - requested by Jakub I've splited ioc3 ethernet driver changes into
+   more steps to make the transition more visible; on the way there 
+   I've "checkpatched" the driver and reduced code reorderings
+ - dropped all uint16_t and uint32_t
+ - added nvmem API extension to the documenation file
+ - changed to use request_irq/free_irq in serio driver
+ - removed wrong kfree() in serio error path
 
-> other drivers firstly (e.g. fintek), if fail, try pnp driver its own.
+Changes in v4:
+ - added w1 drivers to the series after merge in 5.3 failed because
+   of no response from maintainer and other parts of this series
+   won't work without that drivers
+ - moved ip30 systemboard support to the ip30 series, which will
+   deal with rtc oddity Lee found
+ - converted to use devm_platform_ioremap_resource
+ - use PLATFORM_DEVID_AUTO for serial, ethernet and serio in mfd driver
+ - fixed reverse christmas order in ioc3-eth.c
+ - formating issue found by Lee
+ - re-worked irq request/free in serio driver to avoid crashes during
+   probe/remove
 
-Ditto.
+Changes in v3:
+ - use 1-wire subsystem for handling proms
+ - pci-xtalk driver uses prom information to create PCI subsystem
+   ids for use in MFD driver
+ - changed MFD driver to only use static declared mfd_cells
+ - added IP30 system board setup to MFD driver
+ - mac address is now read from ioc3-eth driver with nvmem framework
 
-...
+Changes in v2:
+ - fixed issue in ioc3kbd.c reported by Dmitry Torokhov
+ - merged IP27 RTC removal and 8250 serial driver addition into
+   main MFD patch to keep patches bisectable
 
-> --- a/drivers/tty/serial/8250/8250.h
-> +++ b/drivers/tty/serial/8250/8250.h
-> @@ -14,6 +14,7 @@
->  #include <linux/serial_8250.h>
->  #include <linux/serial_reg.h>
->  #include <linux/dmaengine.h>
+Thomas Bogendoerfer (2):
+  MIPS: SGI-IP27: fix readb/writeb addressing
+  mfd: ioc3: Add driver for SGI IOC3 chip
 
-> +#include <linux/pnp.h>
-
-The changes below doesn't require a header.
-Pointers are known to the compiler. Names of data structures can be forward
-declared. Moreover, these declarations may go inside respective #ifdef.
-
-...
-
-> +#if IS_ENABLED(CONFIG_SERIAL_8250_FINTEK_IRQ_SHARING)
-> +
-> +static void set_icsr(u16 base_port, u8 index)
-> +{
-> +	uint8_t icsr = 0;
-> +
-> +	outb(LDN, base_port + ADDR_PORT);
-> +	outb(index, base_port + DATA_PORT);
-> +	outb(ICSR, base_port + ADDR_PORT);
-> +	icsr = inb(base_port + DATA_PORT);
-> +
-
-> +	if (icsr != 0xff) {
-
-	if (icsr == 0xff)
-		return;
-
-?
-
-> +		icsr |= IRQ_SHARING_MOD;
-> +#if IS_ENABLED(CONFIG_SERIAL_8250_FINTEK_IRQ_SHARING_ISA)
-> +		icsr |= ISA_IRQ_SHARING;
-> +#else
-> +		icsr |= PCI_IRQ_SHARING;
-> +#endif
-> +		outb(ICSR, base_port + ADDR_PORT);
-> +		outb(icsr, base_port + DATA_PORT);
-> +	}
-> +}
-> +
-> +#endif
-
-...
-
->  				aux |= inb(addr[i] + DATA_PORT) << 8;
->  				if (aux != io_address)
->  					continue;
-
-> -
-
-What the point?
-
-> +#if IS_ENABLED(CONFIG_SERIAL_8250_FINTEK_IRQ_SHARING)
-> +				set_icsr(addr[i], k);
-> +#endif
->  				fintek_8250_exit_key(addr[i]);
->  				*key = keys[j];
->  				*index = k;
-> @@ -179,53 +212,6 @@ static int fintek_8250_base_port(u16 io_address, u8 *key, u8 *index)
->  	return -ENODEV;
->  }
->  
-> -static int
-> -fintek_8250_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
-
-Why did you move this function?
-It's now not only hard to follow what has been changed, and to review.
-
-> --- a/drivers/tty/serial/8250/8250_pnp.c
-> +++ b/drivers/tty/serial/8250/8250_pnp.c
-> @@ -438,8 +438,13 @@ static int
->  serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
->  {
->  	struct uart_8250_port uart, *port;
-> -	int ret, line, flags = dev_id->driver_data;
-> +	int ret, line, flags;
->  
-
-> +#if IS_BUILTIN(CONFIG_SERIAL_8250_FINTEK)
-> +	if (!fintek_8250_probe(dev, dev_id))
-> +		return 0;
-> +#endif
-> +	flags = dev_id->driver_data;
-
-Oh, I don't like this.
-It needs a bit more refactoring done first.
-
-The idea that we are not going to pollute generic driver(s) with quirks anymore
-(only when it's really unavoidable).
-
+ arch/mips/include/asm/mach-ip27/mangle-port.h |   4 +-
+ arch/mips/include/asm/sn/ioc3.h               |  38 +-
+ arch/mips/sgi-ip27/ip27-timer.c               |  20 -
+ drivers/mfd/Kconfig                           |  13 +
+ drivers/mfd/Makefile                          |   1 +
+ drivers/mfd/ioc3.c                            | 700 ++++++++++++++++++
+ drivers/net/ethernet/sgi/Kconfig              |   5 +-
+ drivers/net/ethernet/sgi/ioc3-eth.c           | 544 +++-----------
+ drivers/rtc/rtc-m48t35.c                      |  11 +
+ drivers/tty/serial/8250/8250_ioc3.c           |  98 +++
+ drivers/tty/serial/8250/Kconfig               |  11 +
+ drivers/tty/serial/8250/Makefile              |   1 +
+ 12 files changed, 956 insertions(+), 490 deletions(-)
+ create mode 100644 drivers/mfd/ioc3.c
+ create mode 100644 drivers/tty/serial/8250/8250_ioc3.c
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.24.0
 
