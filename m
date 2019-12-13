@@ -2,60 +2,60 @@ Return-Path: <SRS0=T9rn=2D=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 883C4C2D0C9
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:08:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD0BC00454
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:08:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 588BC24654
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:08:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 33286227BF
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:08:53 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="pBO83T+3"
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="mVJCppHB"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731731AbfLMAIo (ORCPT
+        id S1731742AbfLMAIu (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Dec 2019 19:08:44 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:38536 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731729AbfLMAIn (ORCPT
+        Thu, 12 Dec 2019 19:08:50 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:46735 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731739AbfLMAIt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Dec 2019 19:08:43 -0500
-Received: by mail-pl1-f193.google.com with SMTP id a17so387469pls.5
-        for <linux-serial@vger.kernel.org>; Thu, 12 Dec 2019 16:08:43 -0800 (PST)
+        Thu, 12 Dec 2019 19:08:49 -0500
+Received: by mail-pl1-f195.google.com with SMTP id k20so370428pll.13
+        for <linux-serial@vger.kernel.org>; Thu, 12 Dec 2019 16:08:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=googlenew;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Er5nAZa0dzjPGmbpRmr/URcdpkFHKxX1ZKta5byo+BA=;
-        b=pBO83T+3pLGQIG/lo6bFoz3CUjfvRFotL/CE9Az3B2XbEMhTbp5PLKYjAfoPEB59vG
-         2O/Zb2NN55/9N+nZmWeNlYp6Oe8nfM6fsSMmX8PTAhDYuqlPfhNP4mKs72qMKmPPrbIx
-         FroUhUeinf4yNuUDSVTwcyDaHsbQsmcKQHadhavR4Q/K4Ythj3VCPcDC2t/lX+djVWGb
-         FJvI5rWb9ge9+7O5dOjCdbau4XrTsCJqZhcPniOAiTcyOXRklo0qM2XUVtqr7yEl2jwF
-         e0oa/s10DoYmA7d/8PvJ4sP5ApdnsU35p4NUC4vRnyOX5JMGGyKH9dHSmHZjr6QvqiaG
-         2VBA==
+        bh=0o1BCAC6sUMX6rLNiGutpYWhmm9iWXFvl6JHodeKbf0=;
+        b=mVJCppHBnfhDhhFyiyvo2t7C3ASY6Kvq3kiHtC5crXo6VCk36Nny62w+pjb8/fJjMV
+         G8ZU54ssfXVATGkwG65+fj737ltfAPyB3Byi/Mol4WMq/7VSyuH9akqKQDR6spCd1hBe
+         qBMoGH0/BKBCRDfXu+sTG9iGM6W2TQiC4GbIXE6r/UmBVxVQ5N4bWv8GFuGRVSeVow+c
+         ky0VQtruLlYGsqBH2fjOblzQSl9JnXOn/R4xKZFNM4mS/ftMKc/fhOge5E+HF32OHwyO
+         U8FuZ/ZSUxJr0x8uz/3dxacpAU8unVU+AlzEz4rNc/OxnldE6m8xLG5+DHe/QpnsVKTm
+         Ui3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Er5nAZa0dzjPGmbpRmr/URcdpkFHKxX1ZKta5byo+BA=;
-        b=CqAVjYUSgySPGOEMC9L4dPe2RzXGM4Is0v/YEIJHbJDDLirt8dTSmfsLLAE4tDrm+H
-         jB99tArPmLvn2Qpg1cYj26Kcit16Oyt6Odpslu7y/X9+HeQ/Tm88eE9mPyQkog2EUf2r
-         qv34O2fQIktkeYe44jhYfEhTo138YDSkYfjAK0bIRlVvSYITFefyVObvvjErXPkGgv4v
-         7XPgP5kOtobYYTU4nLs9BSipck32GSU5zhhcUz4G97omctaEiVDUO95fLmNjhSsHpucF
-         huJAYsjk4farYWqdUi+D2WnkNBq9ffVfw2qXbpzeecr5iW+u3vxDBJCGnBDIMDfz9Hkp
-         DuxA==
-X-Gm-Message-State: APjAAAVpqhNhBHh1KAki+SiEj7NpWJPIn7Ap15ViShCTWI8gLZCjqS9c
-        /KsiwH/jPUxi1QHC5GxWa+ZPBg==
-X-Google-Smtp-Source: APXvYqwB3D0kINS7nIHxvaSLTZkj+rB5xcPZkkmxepOINemcjk0j3BsedcI0tT2o8OES5EGFzhUJVw==
-X-Received: by 2002:a17:90a:8989:: with SMTP id v9mr13191061pjn.119.1576195723176;
-        Thu, 12 Dec 2019 16:08:43 -0800 (PST)
+        bh=0o1BCAC6sUMX6rLNiGutpYWhmm9iWXFvl6JHodeKbf0=;
+        b=laCSp4J9H5mkXXaHIOT+PU1JJzug5yfPUFNSOeMPtljucMBPQ3efp+kyjwvMzvB5hd
+         IJ4Oohx3pvBeon3kbQdfSxY4816p8nQAD4W7kogq1xhg8EQFzmOcdtlhRTlNmiy1CHUe
+         WVEm6d55vIRUjY6JgGLb0owfuEqOF9U1WMvg9Le6v7leNB7GZj+MYE3Sjfx/9Oz36spc
+         sR4of8GbR+00wX047TpegZ6hZvy4BLA3xX3mmkdQu542ReQQY6pf+1aJgTRU8ORlHUCa
+         pQSLErWwKkZEyCppgtPCPFWiikrn0g//gVbJAHfdPTfHz4i/oBB4fm/D4sGxTLmpAVSl
+         kTqw==
+X-Gm-Message-State: APjAAAWGpmjccsbMm96zQGOTaGlDBvOXlc/SSihDAKHFxjKdZhg9acOm
+        1zWFOoMAZxRUHtSkEAhsiCjJdQ==
+X-Google-Smtp-Source: APXvYqxx4jy7f4yj7AOp63lFXnBcqOv4IagCnBHox7INS4rOAac7dktUFIzlL4AahBUWl41qsOO5qg==
+X-Received: by 2002:a17:90a:7144:: with SMTP id g4mr13287852pjs.32.1576195728995;
+        Thu, 12 Dec 2019 16:08:48 -0800 (PST)
 Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id j38sm8317647pgj.27.2019.12.12.16.08.40
+        by smtp.gmail.com with ESMTPSA id j38sm8317647pgj.27.2019.12.12.16.08.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 16:08:42 -0800 (PST)
+        Thu, 12 Dec 2019 16:08:48 -0800 (PST)
 From:   Dmitry Safonov <dima@arista.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
@@ -64,9 +64,9 @@ Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
         Jiri Slaby <jslaby@suse.com>,
         Vasiliy Khoruzhick <vasilykh@arista.com>,
         linux-serial@vger.kernel.org
-Subject: [PATCH 30/58] tty/serial: Don't check port->sysrq
-Date:   Fri, 13 Dec 2019 00:06:29 +0000
-Message-Id: <20191213000657.931618-31-dima@arista.com>
+Subject: [PATCH 32/58] tty/serial: Migrate pnx8xxx_uart to use has_sysrq
+Date:   Fri, 13 Dec 2019 00:06:31 +0000
+Message-Id: <20191213000657.931618-33-dima@arista.com>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191213000657.931618-1-dima@arista.com>
 References: <20191213000657.931618-1-dima@arista.com>
@@ -77,30 +77,53 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-uart_handle_sysrq_char() already handles it.
+The SUPPORT_SYSRQ ifdeffery is not nice as:
+- May create misunderstanding about sizeof(struct uart_port) between
+  different objects
+- Prevents moving functions from serial_core.h
+- Reduces readability (well, it's ifdeffery - it's hard to follow)
+
+In order to remove SUPPORT_SYSRQ, has_sysrq variable has been added.
+Initialise it in driver's probe and remove ifdeffery.
 
 Signed-off-by: Dmitry Safonov <dima@arista.com>
 ---
- drivers/tty/serial/pch_uart.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/tty/serial/pnx8xxx_uart.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index c625bf7b8a92..0a96217dba67 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -584,10 +584,8 @@ static int pch_uart_hal_read(struct eg20t_port *priv, unsigned char *buf,
- 			if (uart_handle_break(port))
- 				continue;
- 		}
--		if (port->sysrq) {
--			if (uart_handle_sysrq_char(port, rbr))
--				continue;
--		}
-+		if (uart_handle_sysrq_char(port, rbr))
-+			continue;
+diff --git a/drivers/tty/serial/pnx8xxx_uart.c b/drivers/tty/serial/pnx8xxx_uart.c
+index 223a9499104e..972d94e8d32b 100644
+--- a/drivers/tty/serial/pnx8xxx_uart.c
++++ b/drivers/tty/serial/pnx8xxx_uart.c
+@@ -10,10 +10,6 @@
+  * Copyright (C) 2000 Deep Blue Solutions Ltd.
+  */
  
- 		buf[i++] = rbr;
- 	}
+-#if defined(CONFIG_SERIAL_PNX8XXX_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
+-#define SUPPORT_SYSRQ
+-#endif
+-
+ #include <linux/module.h>
+ #include <linux/ioport.h>
+ #include <linux/init.h>
+@@ -220,9 +216,7 @@ static void pnx8xxx_rx_chars(struct pnx8xxx_port *sport)
+ 			else if (status & FIFO_TO_SM(PNX8XXX_UART_FIFO_RXFE))
+ 				flg = TTY_FRAME;
+ 
+-#ifdef SUPPORT_SYSRQ
+ 			sport->port.sysrq = 0;
+-#endif
+ 		}
+ 
+ 		if (uart_handle_sysrq_char(&sport->port, ch))
+@@ -800,6 +794,7 @@ static int pnx8xxx_serial_probe(struct platform_device *pdev)
+ 			if (pnx8xxx_ports[i].port.mapbase != res->start)
+ 				continue;
+ 
++			pnx8xxx_ports[i].port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_PNX8XXX_CONSOLE);
+ 			pnx8xxx_ports[i].port.dev = &pdev->dev;
+ 			uart_add_one_port(&pnx8xxx_reg, &pnx8xxx_ports[i].port);
+ 			platform_set_drvdata(pdev, &pnx8xxx_ports[i]);
 -- 
 2.24.0
 
