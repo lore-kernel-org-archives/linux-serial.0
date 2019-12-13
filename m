@@ -7,55 +7,55 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F874C43603
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:10:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B746C2D0C9
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:10:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 22E2C2173E
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:10:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0E6DC227BF
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Dec 2019 00:10:58 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="QdO6faUQ"
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="Dn0EjSQV"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731716AbfLMAIj (ORCPT
+        id S1731679AbfLMAI0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Dec 2019 19:08:39 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:39245 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731712AbfLMAIi (ORCPT
+        Thu, 12 Dec 2019 19:08:26 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:40984 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731674AbfLMAIZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Dec 2019 19:08:38 -0500
-Received: by mail-pj1-f65.google.com with SMTP id v93so341714pjb.6
-        for <linux-serial@vger.kernel.org>; Thu, 12 Dec 2019 16:08:38 -0800 (PST)
+        Thu, 12 Dec 2019 19:08:25 -0500
+Received: by mail-pj1-f68.google.com with SMTP id ca19so337875pjb.8
+        for <linux-serial@vger.kernel.org>; Thu, 12 Dec 2019 16:08:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=googlenew;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XEE0LGDV1J/8PNdfM5R+G2BENKuEh6gWNO7Fuw2PlT8=;
-        b=QdO6faUQ9IU/Iu3hc9HssBIFSyYwL1wjx6YLW1AGrFNfD1NEqfQWLvBbb7cncEUgM4
-         kQNSs1EkyzWRVaSAXzHHvTGkZAPoKwhyDXu97A+VZwti2nj1I5pWHpnFM9QWA/lxoZ13
-         VrknhWKh1KzguA6nOSPPffDORtX3W7EhuGtzagBADUGjmlbzM7Q2UqoXF5G8fEDSrm2A
-         svAskRSke+8ffBqi9jrnIhsH4v8M/CIzFCAlcXKFmeVGJQARdG2tS0Gk8GQrUY4fyGJu
-         jQ00/4sNwNy20ADchZObQ4QB5SV3L17th2C9opjauWqVn7y0oaboxFBUdzXe2K6GG6wn
-         1L7g==
+        bh=w7pZ7oO5cTd5jJHwXLM3afh3aM9gIcDEQ2gb9GDo3I4=;
+        b=Dn0EjSQVnNf9x71ZhWZNtbHBchagWSgfo6KrF9WwWS7N+/3iyq9ryQIUE8bGa+Tc4N
+         xCUS4gudBd1JMrtDhL7EI+qQamrfjVvjNcxovLxsSnU81NqkeYCGV7iEVMz6nBb60IKn
+         DOI6O2Bg1SdaK++MAjgoHHYaDTVsqdfayBZ7jr7C+qkKrXUoiAbPYeE75isPI+yFvFEu
+         dCEqy80NqK13alVnG54vSe9lH4/PGMaLB3QvAPtRjjQjj/jn9oczdk9Fnew9Q5nsdsXX
+         cLgHI8uMhnDCuaYPrqI3I28zdTYL8LaJ/rGQVbQhvx7TJ1+30GawvpVTTeytKlFlEi/t
+         89KA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XEE0LGDV1J/8PNdfM5R+G2BENKuEh6gWNO7Fuw2PlT8=;
-        b=QDt+2nOsWFCp2+i2rOEEw1xPtYOjp5f+7XoK8sfZYh6gbIIHd+eKSDuWsBgqZzGVDE
-         a4qkKzjE2xwwOsc2VStv0LRTR8WZhPez0jI61vD9E1mSM/r8Y3+XMNvuE9LEOPnHW8gP
-         r6prd3fvrKAVV8DBmRv7i8tX+cYM/hdZuR+OQJ6t9LpnBudytmcOcNJOkGL2mi5vQAcl
-         nd1uqyZ/XSwO76N6unKxIKIQ94OoP0U3UGIOZqqyr6iCu8SQT3bLzw/QiYa8W1MWKinz
-         dSXsqW3EPIbaYGqi+J2cQkhKOIrcqd+J8IL/HonGn8IWsawAmhuzNrca+rbg02sfTlM7
-         Gglg==
-X-Gm-Message-State: APjAAAWWEktQLCsdivZfxgbXvqev8OYO1qdL2OAN9wU4RXv9qpkV8buH
-        diF1ZnY7YFXiEnCWGumUm6aeJQ==
-X-Google-Smtp-Source: APXvYqzcYT0DHwWe/kfTwr+RdnsOlzCzNojd3O1sghIDf52D2BkxpgOg5Y3f2CLhLhsf0d2pnd8l+w==
-X-Received: by 2002:a17:90b:4391:: with SMTP id in17mr13218028pjb.33.1576195717651;
-        Thu, 12 Dec 2019 16:08:37 -0800 (PST)
+        bh=w7pZ7oO5cTd5jJHwXLM3afh3aM9gIcDEQ2gb9GDo3I4=;
+        b=i6Cza3eL15V8o0hIqxKzKg9HKhYur68ujPvCMLAGrglZUL9E57J43HMRoM25QoXTx8
+         2q0DN0Tj9Gz0SFWd8mejNyQAJNfJpIutB1UqP+22YdteFIDtiV0VfB10kqawh9cru/i8
+         vktvPvKd984H0X84ufiynQTHkTU+iuRKneviv+SMUhY9kpRTebv20Dc+h/8DvTld1Zzg
+         X4HtiaZ0wDAhbCdozZ0Q5e2UGN0OY7AJi7BYrCtWpbxWHW8CCFdKszmFr5pD0A/vFGnL
+         Vwo/wynyh9AcQNLYuoiPm9YVzsFH2SnB9Pua5oG5f/hQXQUdmU+uAVfrgW3PlW120hFm
+         1X7w==
+X-Gm-Message-State: APjAAAVSaCa/lwMqvREpv44l794lo5lXgfNuj97hSPzb84VM5ZE4F6LU
+        26GUtE/KeN1VwvqSpvolQAhDXQ==
+X-Google-Smtp-Source: APXvYqzA+oagxH5ZgfTkITXn7ZGmdQEu2sG7wvhevc9As1nHQkVrubK1G02SUzcHYwcMYYup4yADIw==
+X-Received: by 2002:a17:902:7884:: with SMTP id q4mr12814553pll.285.1576195704882;
+        Thu, 12 Dec 2019 16:08:24 -0800 (PST)
 Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id j38sm8317647pgj.27.2019.12.12.16.08.35
+        by smtp.gmail.com with ESMTPSA id j38sm8317647pgj.27.2019.12.12.16.08.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 16:08:36 -0800 (PST)
+        Thu, 12 Dec 2019 16:08:24 -0800 (PST)
 From:   Dmitry Safonov <dima@arista.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
@@ -64,9 +64,9 @@ Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
         Jiri Slaby <jslaby@suse.com>,
         Vasiliy Khoruzhick <vasilykh@arista.com>,
         linux-serial@vger.kernel.org
-Subject: [PATCH 28/58] tty/serial: Migrate omap-serial to use has_sysrq
-Date:   Fri, 13 Dec 2019 00:06:27 +0000
-Message-Id: <20191213000657.931618-29-dima@arista.com>
+Subject: [PATCH 24/58] tty/serial: Don't zero port->sysrq
+Date:   Fri, 13 Dec 2019 00:06:23 +0000
+Message-Id: <20191213000657.931618-25-dima@arista.com>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191213000657.931618-1-dima@arista.com>
 References: <20191213000657.931618-1-dima@arista.com>
@@ -77,43 +77,29 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The SUPPORT_SYSRQ ifdeffery is not nice as:
-- May create misunderstanding about sizeof(struct uart_port) between
-  different objects
-- Prevents moving functions from serial_core.h
-- Reduces readability (well, it's ifdeffery - it's hard to follow)
-
-In order to remove SUPPORT_SYSRQ, has_sysrq variable has been added.
-Initialise it in driver's probe and remove ifdeffery.
+uart_handle_sysrq_char() already does it.
 
 Signed-off-by: Dmitry Safonov <dima@arista.com>
 ---
- drivers/tty/serial/omap-serial.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/tty/serial/mpc52xx_uart.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 6420ae581a80..53b38a226f26 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -16,10 +16,6 @@
-  * this driver as required for the omap-platform.
-  */
+diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
+index ba1fddb6801c..af1700445251 100644
+--- a/drivers/tty/serial/mpc52xx_uart.c
++++ b/drivers/tty/serial/mpc52xx_uart.c
+@@ -1378,10 +1378,8 @@ mpc52xx_uart_int_rx_chars(struct uart_port *port)
+ 		ch = psc_ops->read_char(port);
  
--#if defined(CONFIG_SERIAL_OMAP_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
--#define SUPPORT_SYSRQ
--#endif
--
- #include <linux/module.h>
- #include <linux/init.h>
- #include <linux/console.h>
-@@ -1680,6 +1676,7 @@ static int serial_omap_probe(struct platform_device *pdev)
- 	up->port.regshift = 2;
- 	up->port.fifosize = 64;
- 	up->port.ops = &serial_omap_pops;
-+	up->port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_OMAP_CONSOLE);
+ 		/* Handle sysreq char */
+-		if (uart_handle_sysrq_char(port, ch)) {
+-			port->sysrq = 0;
++		if (uart_handle_sysrq_char(port, ch))
+ 			continue;
+-		}
  
- 	if (pdev->dev.of_node)
- 		ret = of_alias_get_id(pdev->dev.of_node, "serial");
+ 		/* Store it */
+ 
 -- 
 2.24.0
 
