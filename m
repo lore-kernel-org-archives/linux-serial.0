@@ -2,177 +2,168 @@ Return-Path: <SRS0=ZD/M=2G=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B553C2D0BF
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Dec 2019 09:51:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87AE4C43603
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Dec 2019 10:03:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0C7A82075A
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Dec 2019 09:51:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 556C220725
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Dec 2019 10:03:36 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kfJP01Gu"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727145AbfLPJvZ (ORCPT
+        id S1727137AbfLPKDg (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Dec 2019 04:51:25 -0500
-Received: from mga06.intel.com ([134.134.136.31]:4935 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727185AbfLPJvY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Dec 2019 04:51:24 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 Dec 2019 01:51:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,321,1571727600"; 
-   d="scan'208";a="416382548"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga006.fm.intel.com with ESMTP; 16 Dec 2019 01:51:20 -0800
-Received: from andy by smile with local (Exim 4.93-RC7)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ign28-0003JT-8d; Mon, 16 Dec 2019 11:51:20 +0200
-Date:   Mon, 16 Dec 2019 11:51:20 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Chen Gang <chengang@emindsoft.com.cn>
-Cc:     gregkh@linuxfoundation.org, jslaby@suse.com, sr@denx.de,
-        mika.westerberg@linux.intel.com, yegorslists@googlemail.com,
-        yuehaibing@huawei.com, haolee.swjtu@gmail.com, dsterba@suse.com,
-        mojha@codeaurora.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lv Li-song <lvlisong@emindsoft.com.cn>
-Subject: Re: [PATCH] drivers: tty: serial: 8250: fintek: Can enable or
- disable irq sharing based on isa or pci bus
-Message-ID: <20191216095120.GN32742@smile.fi.intel.com>
-References: <20191213051717.2058-1-chengang@emindsoft.com.cn>
- <20191213105033.GT32742@smile.fi.intel.com>
- <758a0ca9-8f81-1a10-d9e1-11f86fac3de1@emindsoft.com.cn>
+        Mon, 16 Dec 2019 05:03:36 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:50863 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727132AbfLPKDf (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 16 Dec 2019 05:03:35 -0500
+Received: by mail-wm1-f66.google.com with SMTP id a5so6044930wmb.0;
+        Mon, 16 Dec 2019 02:03:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=9P8jBTs9zw6Ol4dKdAPb/e2sHj445qXLj5Iw9i7C4Ps=;
+        b=kfJP01GuFEZfr3N8JkWq0PmRACeIh6NhoqIAjnMoLtFOIlgzLjYt2RY2dfyY/LxBhV
+         zzYy1qinUM3g/R+F1GCgcWcU0RDzR+9l9g7Sfvy2jxG45J4BsbJqPKyHoCwQE6+35ls4
+         vbfRxvyMbZO2jSQPpSZtiVaBJajgqcveIMz8IGVn+Y6yKHhBCN+h4GcucUOHt+tQgLjc
+         dcdAGf6GnkqJ1qZ0WMQwbUG4NyATltTiUarhQtHvLKmH/BmthkT1JssFzQojt3ImC3vn
+         2C1fYUyywVcj6F54LhfBBZaFLJxFBt8d1nu5St8thR2zQE6s6ehmKb7kvE7U/hYq+c15
+         ZhLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=9P8jBTs9zw6Ol4dKdAPb/e2sHj445qXLj5Iw9i7C4Ps=;
+        b=W9rHe1pv9J5tra2jzZNDInvX+7a3syY11UW/ce+UaYTKOeG1LPexp/d0JrFnXwYuZU
+         XXZkPKGEDazmyiotTo+pJ4JUdf/xAff85qtddW4u7ixw2MKC1wAd2DOh9voSknyUDGsi
+         9YCir029if6hIlUYV4ubtZX3XQR313WtR77Vj0xXWZoR95wmPNkuaOhm1lPaOqpMsFPB
+         e46f7myivIwAt/mFzU3JHGFYzcC/eQ3wtNose5R3/yEGKDLECQgqVgIxwzFOEVClZGyi
+         h8YqCS4RUbKv523VAUJUVwXqldjmf2el3GryIQuK0Kk15ldfoPbI/iMv66AashsSqfoL
+         ldGw==
+X-Gm-Message-State: APjAAAXyJI7fauBF5NMku5yhxCQV3n0UIvggWqzQuLGKy5nexTCIdjUo
+        77xtOuDCQcTl9wpWSTXy9rik1kKK
+X-Google-Smtp-Source: APXvYqwyyDlQJPuXpWd8PbXbRW62iyLDQsoAuPqc+9/ik9zLPdkwowIE1iaVHJr+B7Pq3O0ku0ZENA==
+X-Received: by 2002:a05:600c:224a:: with SMTP id a10mr30059955wmm.143.1576490613116;
+        Mon, 16 Dec 2019 02:03:33 -0800 (PST)
+Received: from [192.168.2.41] ([46.227.18.67])
+        by smtp.gmail.com with ESMTPSA id x132sm22257813wmg.0.2019.12.16.02.03.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 Dec 2019 02:03:32 -0800 (PST)
+Subject: Re: [PATCH v3] tty/serial: atmel: fix out of range clock divider
+ handling
+To:     David Engraf <david.engraf@sysgo.com>, gregkh@linuxfoundation.org,
+        jslaby@suse.com, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com, ludovic.desroches@microchip.com
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <39e4d1c7-20b0-a024-3a46-e4d4369eed8e@sysgo.com>
+ <20191216085403.17050-1-david.engraf@sysgo.com>
+From:   Richard Genoud <richard.genoud@gmail.com>
+Message-ID: <035748de-1265-b2ba-9832-898782bcccf3@gmail.com>
+Date:   Mon, 16 Dec 2019 11:03:27 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
+In-Reply-To: <20191216085403.17050-1-david.engraf@sysgo.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <758a0ca9-8f81-1a10-d9e1-11f86fac3de1@emindsoft.com.cn>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Dec 16, 2019 at 10:27:23AM +0800, Chen Gang wrote:
-> Thank you for your reply.
+Le 16/12/2019 à 09:54, David Engraf a écrit :
+> Use MCK_DIV8 when the clock divider is > 65535. Unfortunately the mode
+> register was already written thus the clock selection is ignored.
 > 
-> I guess, this patch has to be refactored to match the related linux
-> versions. And excuse me, my orignal hardware environments has been gone,
-> so I can not give the new refactored patch additional test.
+> Fix by doing the baud rate calulation before setting the mode.
 > 
-> It is necessary to continue discussing and reviewing this patch to let
-> it be known completely, but I guess I am not the suitable persion to
-> refactor the patch.
+> Fixes: 5bf5635ac170 ("tty/serial: atmel: add fractional baud rate support")
+> Signed-off-by: David Engraf <david.engraf@sysgo.com>
 
-Yeah, you may refactor it, but please mention in the comment (the text going
-after '---' line) that you are not able to test it. At least for maintainer it
-may be a crucial point either to take your change or not.
+Acked-by: Richard Genoud <richard.genoud@gmail.com>
 
-> After finish discussing and reviewing, if anyone still wants me to
-> refactor the patch, please let me know, I shall try.
+
+> ---
+> Changes since v1: 
+>  - moves set baud rate block before setting the mode register because
+>    ATMEL_US_RTSDIS and ATMEL_US_RTSEN depend on ATMEL_US_MR.mode
 > 
-> The contents below are my reply, pelease check, thanks.
-
-My reply below.
-
-> On 2019/12/13 下午6:50, Andy Shevchenko wrote:
-> > On Fri, Dec 13, 2019 at 01:17:17PM +0800, chengang@emindsoft.com.cn wrote:
-
-> >>  				aux |= inb(addr[i] + DATA_PORT) << 8;
-> >>  				if (aux != io_address)
-> >>  					continue;
-> > 
-> >> -
-> > 
-> > What the point?
-
-(1)
-
-> >> +#if IS_ENABLED(CONFIG_SERIAL_8250_FINTEK_IRQ_SHARING)
-> >> +				set_icsr(addr[i], k);
-> >> +#endif
-> >>  				fintek_8250_exit_key(addr[i]);
-> >>  				*key = keys[j];
-> >>  				*index = k;
-> >> @@ -179,53 +212,6 @@ static int fintek_8250_base_port(u16 io_address, u8 *key, u8 *index)
-> >>  	return -ENODEV;
-> >>  }
-> >>  
+> ---
+>  drivers/tty/serial/atmel_serial.c | 43 ++++++++++++++++---------------
+>  1 file changed, 22 insertions(+), 21 deletions(-)
 > 
-> In my case at that time, for fintex irq sharing, it needed additional
-> initinalization, or it could not work well. I wrote the related code
-> based on the fintek data-sheet which was downloaded from internet.
-
-I guess it's an answer to the (1). Though in (1) I simple meant the removal
-of blank line (see, I emphasized the excerpt I'm commenting with blank lines
-before and after).
-
-> >> -static int
-> >> -fintek_8250_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
-> > 
-> > Why did you move this function?
-> > It's now not only hard to follow what has been changed, and to review.
-> > 
-> >> --- a/drivers/tty/serial/8250/8250_pnp.c
-> >> +++ b/drivers/tty/serial/8250/8250_pnp.c
-> >> @@ -438,8 +438,13 @@ static int
-> >>  serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
-> >>  {
-> >>  	struct uart_8250_port uart, *port;
-> >> -	int ret, line, flags = dev_id->driver_data;
-> >> +	int ret, line, flags;
-> >>  
-> > 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index a8dc8af83f39..1ba9bc667e13 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -2270,27 +2270,6 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+>  		mode |= ATMEL_US_USMODE_NORMAL;
+>  	}
+>  
+> -	/* set the mode, clock divisor, parity, stop bits and data size */
+> -	atmel_uart_writel(port, ATMEL_US_MR, mode);
+> -
+> -	/*
+> -	 * when switching the mode, set the RTS line state according to the
+> -	 * new mode, otherwise keep the former state
+> -	 */
+> -	if ((old_mode & ATMEL_US_USMODE) != (mode & ATMEL_US_USMODE)) {
+> -		unsigned int rts_state;
+> -
+> -		if ((mode & ATMEL_US_USMODE) == ATMEL_US_USMODE_HWHS) {
+> -			/* let the hardware control the RTS line */
+> -			rts_state = ATMEL_US_RTSDIS;
+> -		} else {
+> -			/* force RTS line to low level */
+> -			rts_state = ATMEL_US_RTSEN;
+> -		}
+> -
+> -		atmel_uart_writel(port, ATMEL_US_CR, rts_state);
+> -	}
+> -
+>  	/*
+>  	 * Set the baud rate:
+>  	 * Fractional baudrate allows to setup output frequency more
+> @@ -2317,6 +2296,28 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+>  
+>  	if (!(port->iso7816.flags & SER_ISO7816_ENABLED))
+>  		atmel_uart_writel(port, ATMEL_US_BRGR, quot);
+> +
+> +	/* set the mode, clock divisor, parity, stop bits and data size */
+> +	atmel_uart_writel(port, ATMEL_US_MR, mode);
+> +
+> +	/*
+> +	 * when switching the mode, set the RTS line state according to the
+> +	 * new mode, otherwise keep the former state
+> +	 */
+> +	if ((old_mode & ATMEL_US_USMODE) != (mode & ATMEL_US_USMODE)) {
+> +		unsigned int rts_state;
+> +
+> +		if ((mode & ATMEL_US_USMODE) == ATMEL_US_USMODE_HWHS) {
+> +			/* let the hardware control the RTS line */
+> +			rts_state = ATMEL_US_RTSDIS;
+> +		} else {
+> +			/* force RTS line to low level */
+> +			rts_state = ATMEL_US_RTSEN;
+> +		}
+> +
+> +		atmel_uart_writel(port, ATMEL_US_CR, rts_state);
+> +	}
+> +
+>  	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
+>  	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
+>  	atmel_port->tx_stopped = false;
 > 
-> I thought locating the main probe function at the end of the source file
-> was better for normal code reading (maybe it need be a seperate patch).
 
-Yes, it needs to be in a separated (preparatory) patch.
-
-> But if we don't mind, we can still remain its orignal position.
-
-I do mind, sorry. The rule of thumb is one logical change per patch.
-
-> >> +#if IS_BUILTIN(CONFIG_SERIAL_8250_FINTEK)
-> >> +	if (!fintek_8250_probe(dev, dev_id))
-> >> +		return 0;
-> >> +#endif
-> >> +	flags = dev_id->driver_data;
-> > 
-> > Oh, I don't like this.
-> > It needs a bit more refactoring done first.
-> > 
-> > The idea that we are not going to pollute generic driver(s) with quirks anymore
-> > (only when it's really unavoidable).
-> > 
-> 
-> At that time, for me, I could not get any new better ways in a short
-> time, and the issue had to be fixed in time, so the code was not good
-> engough.
-
-It's not an excuse to put hacks in the code that will make maintenance hard.
-The usual case is such situations is that author of the fix do:
-
-- provide a fix (perhaps ugly one)
-- refactor and clean up the code
-
-So at the result we have keep maintainable piece in kernel.
-This is by the way my main motivation to NAK this change.
-
-> At present, Linux version has been changed much, welcome any one to
-> refactor it for current linux version or another related old linux
-> versions if this patch is valuable more or less.
-
-Then it's no go for this patch, sorry.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Thanks !
