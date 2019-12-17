@@ -2,128 +2,255 @@ Return-Path: <SRS0=CLdZ=2H=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 082F0C43603
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 08:03:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C70EC43603
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 08:17:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C918221775
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 08:03:03 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="sneGlw/w"
+	by mail.kernel.org (Postfix) with ESMTP id 7BEC6206A5
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 08:17:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726705AbfLQIDD (ORCPT
+        id S1726620AbfLQIRy (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Dec 2019 03:03:03 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:53106 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726382AbfLQIDD (ORCPT
+        Tue, 17 Dec 2019 03:17:54 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:35003 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726559AbfLQIRx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Dec 2019 03:03:03 -0500
-Received: by mail-wm1-f65.google.com with SMTP id p9so1903851wmc.2
-        for <linux-serial@vger.kernel.org>; Tue, 17 Dec 2019 00:03:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=GxAFSM9qrfBqACDVyobZG3sgGdlMNsybGzr6qpdZuFY=;
-        b=sneGlw/w17D4z5M6a5bR6Y0d/z3VSpK4ImjvIeXZaztzsV4sKewPmhnDCtmQYaTmlV
-         YEqBwbCUZFtj5uIFQsJ21OzjN/E//jv2SfHJwUy/0NR42KPymWIdC/xmAgzf+8A++Yn4
-         eEVZOAYagbwnNN9NzZKIXw3wbBs8XCEwEdOFXZ/gi5Rl4atj3f719kXLCGWPV9c7Sacg
-         NG3EKXamr8YyxcBkbngr9KLoE066VzOQNwr8QGF5kFyuwBtD9zqKm9xslgq0mwKFt3L3
-         gkHo2nde5j/rsRY0YIN9JVN/ebNuqhinr5Ltkp3zVYpUw/SxUBGq1K36V3C2++3LFK2I
-         BJMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=GxAFSM9qrfBqACDVyobZG3sgGdlMNsybGzr6qpdZuFY=;
-        b=L7JBroEwQ4HaPaEWmwKAYD2Gtp+V2BnNdJ/mXQr4g/4BMa/kR+wTXV9CQCbLJq4c4b
-         Qxlz7s8PDj0WpNo26CAwSjzFGj+auKvvbpHjDcOVJ/3HoWNyPhhl18kC+8fWnWx0I+F0
-         irv+SbAIi4iCdN3p8vc4GHqDx2yP+TwnbdJh5YTQt/OGTALagEmCtt0fckOXlhSiYOl3
-         Nc9nvuU/bztqYjmTMD6CeOhJCiQNUgCpiOKnXnfHunrmhAk49CkWvgJgxMknGEZ3zdKS
-         5GFiVmzksuHZZ0APIptfFqIs2v48VmleT9ht9rojWu/2vBjlFr2zARGyO+/GuNG8vvMf
-         OeuQ==
-X-Gm-Message-State: APjAAAVKt4b3iUxCDUVTEIUuVqYfdf+FgBXlH+xVq/t+v7qaporPBXER
-        JpHHRuO5D6/FSL4fOz/owqUdYQ==
-X-Google-Smtp-Source: APXvYqzMTCBlFqbqARJevmlw9QY8QwE36fi/Ore5Eu5RwK95seTip0NwxVQTJa/pqHoFIqktYKfywA==
-X-Received: by 2002:a05:600c:d7:: with SMTP id u23mr3568868wmm.145.1576569781740;
-        Tue, 17 Dec 2019 00:03:01 -0800 (PST)
-Received: from dell (h185-20-99-142.host.redstation.co.uk. [185.20.99.142])
-        by smtp.gmail.com with ESMTPSA id c9sm2020290wmc.47.2019.12.17.00.02.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Dec 2019 00:03:00 -0800 (PST)
-Date:   Tue, 17 Dec 2019 08:02:55 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paulburton@kernel.org>,
-        James Hogan <jhogan@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Tue, 17 Dec 2019 03:17:53 -0500
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1ih839-0000yJ-68; Tue, 17 Dec 2019 09:17:47 +0100
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1ih838-0002Ib-Cu; Tue, 17 Dec 2019 09:17:46 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v11 net-next 2/2] mfd: ioc3: Add driver for SGI IOC3 chip
-Message-ID: <20191217080255.GF18955@dell>
-References: <20191213124221.25775-1-tbogendoerfer@suse.de>
- <20191213124221.25775-3-tbogendoerfer@suse.de>
- <20191215122745.219fa951@cakuba.netronome.com>
- <20191216170005.afdbbb3845a87dc835165250@suse.de>
+        Jiri Slaby <jslaby@suse.com>
+Cc:     linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-serial@vger.kernel.org, kernel@pengutronix.de
+Subject: [PATCH v2 3/3] leds: trigger: implement a tty trigger
+Date:   Tue, 17 Dec 2019 09:17:18 +0100
+Message-Id: <20191217081718.23807-4-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.24.0
+In-Reply-To: <20191217081718.23807-1-u.kleine-koenig@pengutronix.de>
+References: <20191217081718.23807-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191216170005.afdbbb3845a87dc835165250@suse.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, 16 Dec 2019, Thomas Bogendoerfer wrote:
+Usage is as follows:
 
-> On Sun, 15 Dec 2019 12:27:45 -0800
-> Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
-> 
-> > On Fri, 13 Dec 2019 13:42:20 +0100, Thomas Bogendoerfer wrote:
-> > > SGI IOC3 chip has integrated ethernet, keyboard and mouse interface.
-> > > It also supports connecting a SuperIO chip for serial and parallel
-> > > interfaces. IOC3 is used inside various SGI systemboards and add-on
-> > > cards with different equipped external interfaces.
-> > > 
-> > > Support for ethernet and serial interfaces were implemented inside
-> > > the network driver. This patchset moves out the not network related
-> > > parts to a new MFD driver, which takes care of card detection,
-> > > setup of platform devices and interrupt distribution for the subdevices.
-> > > 
-> > > Serial portion: Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
-> > > 
-> > > Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-> > 
-> > For networking:
-> > 
-> > Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> > 
-> > I think you wanted this to go via the MIPS tree, so consider this an
-> > ack.
-> 
-> well, it can go to net-next as well. Paul, what's your preference ?
+	myled=ledname
+	tty=ttyS0
 
-Whomever takes it should send out a pull-request to an immutable
-branch for everyone else to pull from (if they so desire).
+	echo tty > /sys/class/led/$myled/trigger
+	cat /sys/class/tty/$tty/dev > /sys/class/led/$myled/dev
 
+. When this new trigger is active it periodically checks the tty's
+statistics and when it changed since the last check the led is flashed
+once.
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/leds/trigger/Kconfig       |   7 ++
+ drivers/leds/trigger/Makefile      |   1 +
+ drivers/leds/trigger/ledtrig-tty.c | 146 +++++++++++++++++++++++++++++
+ 3 files changed, 154 insertions(+)
+ create mode 100644 drivers/leds/trigger/ledtrig-tty.c
+
+diff --git a/drivers/leds/trigger/Kconfig b/drivers/leds/trigger/Kconfig
+index ce9429ca6dde..40ff08c93f56 100644
+--- a/drivers/leds/trigger/Kconfig
++++ b/drivers/leds/trigger/Kconfig
+@@ -144,4 +144,11 @@ config LEDS_TRIGGER_AUDIO
+ 	  the audio mute and mic-mute changes.
+ 	  If unsure, say N
+ 
++config LEDS_TRIGGER_TTY
++	tristate "LED Trigger for TTY devices"
++	depends on TTY
++	help
++	  This allows LEDs to be controlled by activity on ttys which includes
++	  serial devices like /dev/ttyS0.
++
+ endif # LEDS_TRIGGERS
+diff --git a/drivers/leds/trigger/Makefile b/drivers/leds/trigger/Makefile
+index 733a83e2a718..25c4db97cdd4 100644
+--- a/drivers/leds/trigger/Makefile
++++ b/drivers/leds/trigger/Makefile
+@@ -15,3 +15,4 @@ obj-$(CONFIG_LEDS_TRIGGER_PANIC)	+= ledtrig-panic.o
+ obj-$(CONFIG_LEDS_TRIGGER_NETDEV)	+= ledtrig-netdev.o
+ obj-$(CONFIG_LEDS_TRIGGER_PATTERN)	+= ledtrig-pattern.o
+ obj-$(CONFIG_LEDS_TRIGGER_AUDIO)	+= ledtrig-audio.o
++obj-$(CONFIG_LEDS_TRIGGER_TTY)		+= ledtrig-tty.o
+diff --git a/drivers/leds/trigger/ledtrig-tty.c b/drivers/leds/trigger/ledtrig-tty.c
+new file mode 100644
+index 000000000000..3f3197366700
+--- /dev/null
++++ b/drivers/leds/trigger/ledtrig-tty.c
+@@ -0,0 +1,146 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <linux/leds.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/tty.h>
++#include <uapi/linux/serial.h>
++
++struct ledtrig_tty_data {
++	struct led_classdev *led_cdev;
++	struct delayed_work dwork;
++	struct tty_struct *tty;
++	dev_t device;
++	struct serial_icounter_struct icount;
++};
++
++static void ledtrig_tty_halt(struct ledtrig_tty_data *trigger_data)
++{
++	cancel_delayed_work_sync(&trigger_data->dwork);
++}
++
++static void ledtrig_tty_restart(struct ledtrig_tty_data *trigger_data)
++{
++	if (!trigger_data->tty)
++		return;
++
++	schedule_delayed_work(&trigger_data->dwork, 0);
++}
++
++static ssize_t dev_show(struct device *dev,
++			struct device_attribute *attr, char *buf)
++{
++	struct ledtrig_tty_data *trigger_data = led_trigger_get_drvdata(dev);
++	ssize_t len = 0;
++
++	if (trigger_data->tty)
++		len = sprintf(buf, "%u\n", trigger_data->device);
++
++	return len;
++}
++
++static ssize_t dev_store(struct device *dev,
++			 struct device_attribute *attr, const char *buf,
++			 size_t size)
++{
++	struct ledtrig_tty_data *trigger_data = led_trigger_get_drvdata(dev);
++	struct tty_struct *tty;
++	unsigned major, minor;
++	int ret;
++
++	if (size == 0 || (size == 1 && buf[0] == '\n')) {
++		tty = NULL;
++	} else {
++		ret = sscanf(buf, "%u:%u", &major, &minor);
++		if (ret < 2) {
++			dev_err(dev, "invalid value\n");
++			return -EINVAL;
++		}
++
++		tty = tty_kopen_shared(MKDEV(major, minor));
++		if (IS_ERR(tty)) {
++			dev_err(dev, "failed to open tty: %pe\n", tty);
++			return PTR_ERR(tty);
++		}
++	}
++
++	ledtrig_tty_halt(trigger_data);
++
++	tty_kref_put(trigger_data->tty);
++	trigger_data->tty = tty;
++	trigger_data->device = MKDEV(major, minor);
++
++	ledtrig_tty_restart(trigger_data);
++
++	return size;
++}
++static DEVICE_ATTR_RW(dev);
++
++static void ledtrig_tty_work(struct work_struct *work)
++{
++	struct ledtrig_tty_data *trigger_data =
++		container_of(work, struct ledtrig_tty_data, dwork.work);
++	struct serial_icounter_struct icount;
++	int ret;
++
++	if (!trigger_data->tty) {
++		led_set_brightness(trigger_data->led_cdev, LED_OFF);
++		return;
++	}
++
++	ret = tty_get_icount(trigger_data->tty, &icount);
++	if (icount.rx > trigger_data->icount.rx ||
++	    icount.tx > trigger_data->icount.tx) {
++		unsigned long delay_on = 100, delay_off = 100;
++
++		led_blink_set_oneshot(trigger_data->led_cdev,
++				      &delay_on, &delay_off, 0);
++
++		trigger_data->icount = icount;
++	}
++
++	schedule_delayed_work(&trigger_data->dwork, msecs_to_jiffies(100));
++}
++
++static struct attribute *ledtrig_tty_attrs[] = {
++	&dev_attr_dev.attr,
++	NULL
++};
++ATTRIBUTE_GROUPS(ledtrig_tty);
++
++static int ledtrig_tty_activate(struct led_classdev *led_cdev)
++{
++	struct ledtrig_tty_data *trigger_data;
++
++	trigger_data = kzalloc(sizeof(*trigger_data), GFP_KERNEL);
++	if (!trigger_data)
++		return -ENOMEM;
++
++	led_set_trigger_data(led_cdev, trigger_data);
++
++	INIT_DELAYED_WORK(&trigger_data->dwork, ledtrig_tty_work);
++	trigger_data->led_cdev = led_cdev;
++
++	return 0;
++}
++
++static void ledtrig_tty_deactivate(struct led_classdev *led_cdev)
++{
++	struct ledtrig_tty_data *trigger_data = led_get_trigger_data(led_cdev);
++
++	cancel_delayed_work_sync(&trigger_data->dwork);
++
++	kfree(trigger_data);
++}
++
++struct led_trigger ledtrig_tty = {
++	.name = "tty",
++	.activate = ledtrig_tty_activate,
++	.deactivate = ledtrig_tty_deactivate,
++	.groups = ledtrig_tty_groups,
++};
++module_led_trigger(ledtrig_tty);
++
++MODULE_AUTHOR("Uwe Kleine-König <u.kleine-koenig@pengutronix.de>");
++MODULE_DESCRIPTION("UART LED trigger");
++MODULE_LICENSE("GPL v2");
 -- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.24.0
+
