@@ -2,108 +2,209 @@ Return-Path: <SRS0=CLdZ=2H=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E297EC2D0CD
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 15:56:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 993D5C2D0BF
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 16:23:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B817E2465E
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 15:56:46 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="mne8nhxl"
+	by mail.kernel.org (Postfix) with ESMTP id 7923521582
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 16:23:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726858AbfLQP4p (ORCPT
+        id S1728188AbfLQQXX (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Dec 2019 10:56:45 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:47008 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727473AbfLQP4p (ORCPT
+        Tue, 17 Dec 2019 11:23:23 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:50603 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728380AbfLQQXW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Dec 2019 10:56:45 -0500
-Received: by mail-wr1-f68.google.com with SMTP id z7so11827241wrl.13
-        for <linux-serial@vger.kernel.org>; Tue, 17 Dec 2019 07:56:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=googlenew;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Kru/p1qE5H/BCcW43apBsFqD+qqTgGNhKSFSdhalhZw=;
-        b=mne8nhxlUm5JUVJvci8lY6PyqcJV58bkC/8MDX3fLFmKigBiUT2/qYAVumFGxcCQKH
-         Lj2xkBkFvl4p3SnIPI1/tosatcIg9yz7/xCw01e/oYKvCYJTGjYLkiRt7lZXEkzTMDDi
-         koiy7XLiHNLTtPsPdvJn0F4aRm0UoxyPXhCqjPgTanpJCHs1G08oXGcl9VrZE3+2FnBH
-         VUxQHqYUdNGqdIfRAT1LOa1iiVP2JU7kEE5qzDFfdB66qbMWKkf7SdLY36Z+gFcATrCZ
-         rqUX0MU6tbLJkV6Gp+ZZVn06QNbK0OBpr48hKvsnsHJejoFCmclwuyq0Vb1/l+pSWMxh
-         XNxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Kru/p1qE5H/BCcW43apBsFqD+qqTgGNhKSFSdhalhZw=;
-        b=dWK/H3TfP297Q0s8Z6twASGzcN8VTHJHLkg/Ufr/TBDr1q/rAKuHFMxRnKsrt++mwH
-         cDMFysebXf9FEVX1YTtVv/ajJtb8GrFJq2CIwmLx2SiUFBNni9TqBHKcDI8rT9EJStz0
-         TzMRIALTqfLQU2zfikrN3dvYUdOOwzGHG8JHCE2ikJotDRIYq84+jeDZer2VjkdlxPqn
-         ZWRzarqBsE1BTc4rqMgdBhliwcIf75SQtUmMaM4RCRSE0jBFRNZTywDRosoMABNQZ+hy
-         vxECYTkYy37AIyu8dE/gnWW9e10iziGX5S+9RsLeEQWp9wdNdUG/y+6u5XoWEkQKrscB
-         YBIw==
-X-Gm-Message-State: APjAAAV6UpY/kkSI/9kmYm4RifpfgobTkb9N/i5m32DX8lFspmXiDvT5
-        lPbbls9cmeNZJHJu21LjwVJEBw==
-X-Google-Smtp-Source: APXvYqyNMAVe3i3HHStXWaTydu4DNl69XCzW5OGGXtdFookbpapo5jksY/g3ZK42dfA5bT/chPKB5Q==
-X-Received: by 2002:a5d:56ca:: with SMTP id m10mr36759405wrw.313.1576598202967;
-        Tue, 17 Dec 2019 07:56:42 -0800 (PST)
-Received: from [10.83.36.153] ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id x16sm3455140wmk.35.2019.12.17.07.56.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Dec 2019 07:56:42 -0800 (PST)
-Subject: Re: [PATCH] tty: serial: samsung_tty: do not abuse the struct
- uart_port unused fields
+        Tue, 17 Dec 2019 11:23:22 -0500
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1ihFcw-0008Ua-NX; Tue, 17 Dec 2019 17:23:14 +0100
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1ihFcv-0000T1-8r; Tue, 17 Dec 2019 17:23:13 +0100
+Date:   Tue, 17 Dec 2019 17:23:13 +0100
+From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Kukjin Kim <kgene@kernel.org>, Hyunki Koo <kkoos00@naver.com>,
-        HYUN-KI KOO <hyunki00.koo@samsung.com>,
-        Shinbeom Choi <sbeom.choi@samsung.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20191217140232.GA3489190@kroah.com>
- <e0fbb679-54fb-25c6-0e88-012d0490e291@arista.com>
- <20191217155219.GA3754999@kroah.com>
-From:   Dmitry Safonov <dima@arista.com>
-Message-ID: <c0b28ccc-7a0e-f6e7-ac6f-f310094acc03@arista.com>
-Date:   Tue, 17 Dec 2019 15:56:40 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+Cc:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
+        Jiri Slaby <jslaby@suse.com>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3 3/3] leds: trigger: implement a tty trigger
+Message-ID: <20191217162313.5n3v7va5nw5lxloh@pengutronix.de>
+References: <20191217150736.1479-1-u.kleine-koenig@pengutronix.de>
+ <20191217150736.1479-4-u.kleine-koenig@pengutronix.de>
+ <20191217152724.GA3667595@kroah.com>
 MIME-Version: 1.0
-In-Reply-To: <20191217155219.GA3754999@kroah.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191217152724.GA3667595@kroah.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 12/17/19 3:52 PM, Greg Kroah-Hartman wrote:
-> On Tue, Dec 17, 2019 at 03:47:34PM +0000, Dmitry Safonov wrote:
->> On 12/17/19 2:02 PM, Greg Kroah-Hartman wrote:
->>> The samsung_tty driver was trying to abuse the struct uart_port by using
->>> two "empty" bytes for its own use.  That's not ok, and was found by
->>> removing those fields from the structure.
->>>
->>> Move the variables into the port-specific structure, which is where
->>> everything else for this port already is.  There is no space wasted here
->>> as there was an empty "hole" in the structure already for these bytes.
->>
->> Thanks!
->> Sorry for not noticing this myself.
+On Tue, Dec 17, 2019 at 04:27:24PM +0100, Greg Kroah-Hartman wrote:
+> On Tue, Dec 17, 2019 at 04:07:36PM +0100, Uwe Kleine-König wrote:
+> > Usage is as follows:
+> > 
+> > 	myled=ledname
+> > 	tty=ttyS0
+> > 
+> > 	echo tty > /sys/class/leds/$myled/trigger
+> > 	cat /sys/class/tty/$tty/dev > /sys/class/leds/$myled/dev
 > 
-> You wouldn't have noticed this unless you build for that platform. I
-> just recently made it buildable for other ones.
+> Is this the correct instructions?  Aren't you looking for a major/minor
+> number instead in your sysfs file?
 
-Ah, I was running CONFIG_COMPILE_TEST and thought that it should trigger
-anything (and fixed an issue before sending). Probably, managed not to
-enable samsung driver's option.
+This is correct, yes, at least it works as intended on my machine.
 
-Thanks,
-          Dmitry
+/sys/class/tty/$tty/dev produces $major:$minor and that's what the
+led-trigger consumes.
+
+> > . When this new trigger is active it periodically checks the tty's
+> > statistics and when it changed since the last check the led is flashed
+> > once.
+> > 
+> > Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> > ---
+> >  drivers/leds/trigger/Kconfig       |   7 ++
+> >  drivers/leds/trigger/Makefile      |   1 +
+> >  drivers/leds/trigger/ledtrig-tty.c | 159 +++++++++++++++++++++++++++++
+> >  3 files changed, 167 insertions(+)
+> >  create mode 100644 drivers/leds/trigger/ledtrig-tty.c
+> > 
+> > diff --git a/drivers/leds/trigger/Kconfig b/drivers/leds/trigger/Kconfig
+> > index ce9429ca6dde..40ff08c93f56 100644
+> > --- a/drivers/leds/trigger/Kconfig
+> > +++ b/drivers/leds/trigger/Kconfig
+> > @@ -144,4 +144,11 @@ config LEDS_TRIGGER_AUDIO
+> >  	  the audio mute and mic-mute changes.
+> >  	  If unsure, say N
+> >  
+> > +config LEDS_TRIGGER_TTY
+> > +	tristate "LED Trigger for TTY devices"
+> > +	depends on TTY
+> > +	help
+> > +	  This allows LEDs to be controlled by activity on ttys which includes
+> > +	  serial devices like /dev/ttyS0.
+> > +
+> >  endif # LEDS_TRIGGERS
+> > diff --git a/drivers/leds/trigger/Makefile b/drivers/leds/trigger/Makefile
+> > index 733a83e2a718..25c4db97cdd4 100644
+> > --- a/drivers/leds/trigger/Makefile
+> > +++ b/drivers/leds/trigger/Makefile
+> > @@ -15,3 +15,4 @@ obj-$(CONFIG_LEDS_TRIGGER_PANIC)	+= ledtrig-panic.o
+> >  obj-$(CONFIG_LEDS_TRIGGER_NETDEV)	+= ledtrig-netdev.o
+> >  obj-$(CONFIG_LEDS_TRIGGER_PATTERN)	+= ledtrig-pattern.o
+> >  obj-$(CONFIG_LEDS_TRIGGER_AUDIO)	+= ledtrig-audio.o
+> > +obj-$(CONFIG_LEDS_TRIGGER_TTY)		+= ledtrig-tty.o
+> > diff --git a/drivers/leds/trigger/ledtrig-tty.c b/drivers/leds/trigger/ledtrig-tty.c
+> > new file mode 100644
+> > index 000000000000..0157aa0b2ce3
+> > --- /dev/null
+> > +++ b/drivers/leds/trigger/ledtrig-tty.c
+> > @@ -0,0 +1,159 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +
+> > +#include <linux/leds.h>
+> > +#include <linux/module.h>
+> > +#include <linux/slab.h>
+> > +#include <linux/tty.h>
+> > +#include <uapi/linux/serial.h>
+> > +
+> > +struct ledtrig_tty_data {
+> > +	struct led_classdev *led_cdev;
+> > +	struct delayed_work dwork;
+> > +	struct tty_struct *tty;
+> > +	dev_t device;
+> > +	int rx, tx;
+> > +};
+> > +
+> > +static void ledtrig_tty_halt(struct ledtrig_tty_data *trigger_data)
+> > +{
+> > +	cancel_delayed_work_sync(&trigger_data->dwork);
+> > +}
+> > +
+> > +static void ledtrig_tty_restart(struct ledtrig_tty_data *trigger_data)
+> > +{
+> > +	if (!trigger_data->tty)
+> > +		return;
+> > +
+> > +	schedule_delayed_work(&trigger_data->dwork, 0);
+> > +}
+> > +
+> > +static ssize_t dev_show(struct device *dev,
+> > +			struct device_attribute *attr, char *buf)
+> > +{
+> > +	struct ledtrig_tty_data *trigger_data = led_trigger_get_drvdata(dev);
+> > +	ssize_t len = 0;
+> > +
+> > +	if (trigger_data->tty)
+> > +		len = sprintf(buf, "%u\n", trigger_data->device);
+> 
+> Will that print a dev_t in a format that userspace can make sense of it?
+> Should you split it up with MAJOR:MINOR instead?
+
+Ah, yes, this needs fixing to match the format that is used in .store.
+
+> > +
+> > +	return len;
+> > +}
+> > +
+> > +static ssize_t dev_store(struct device *dev,
+> > +			 struct device_attribute *attr, const char *buf,
+> > +			 size_t size)
+> > +{
+> > +	struct ledtrig_tty_data *trigger_data = led_trigger_get_drvdata(dev);
+> > +	struct tty_struct *tty;
+> > +	unsigned major, minor;
+> > +	int ret;
+> > +
+> > +	if (size == 0 || (size == 1 && buf[0] == '\n')) {
+> > +		tty = NULL;
+> > +	} else {
+> > +		ret = sscanf(buf, "%u:%u", &major, &minor);
+> > +		if (ret < 2) {
+> > +			dev_err(dev, "invalid value\n");
+> 
+> Can I DoS the syslog with this?  :)
+
+Only if you can write to the sysfs file in which case you can DoS the
+syslog anyhow :-)
+
+> > +			return -EINVAL;
+> > +		}
+> > +
+> > +		tty = tty_kopen_shared(MKDEV(major, minor));
+> > +		if (IS_ERR(tty)) {
+> > +			dev_err(dev, "failed to open tty: %pe\n", tty);
+> 
+> Same here, dev_dbg() perhaps?
+> 
+> Other than these minor things, looks good to me.
+> 
+> Your tty changes are fine, if I can get an ack from the led maintainers
+> about a working patch 3, I'll be glad to take all 3 in my tree.
+
+You'll get a v4 in a moment. Thanks for your prompt reviews.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
