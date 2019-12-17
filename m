@@ -1,261 +1,199 @@
-Return-Path: <SRS0=ZD/M=2G=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=CLdZ=2H=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4117C2D0CD
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Dec 2019 18:50:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1161AC43603
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 01:22:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7295F2082E
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Dec 2019 18:50:48 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XHIt33Sb"
+	by mail.kernel.org (Postfix) with ESMTP id CD99C20717
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 01:22:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727006AbfLPSur (ORCPT
+        id S1726191AbfLQBWd (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Dec 2019 13:50:47 -0500
-Received: from mail-il1-f195.google.com ([209.85.166.195]:33814 "EHLO
-        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726683AbfLPSuo (ORCPT
+        Mon, 16 Dec 2019 20:22:33 -0500
+Received: from regular1.263xmail.com ([211.150.70.195]:47750 "EHLO
+        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725805AbfLQBWd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Dec 2019 13:50:44 -0500
-Received: by mail-il1-f195.google.com with SMTP id s15so3187943iln.1;
-        Mon, 16 Dec 2019 10:50:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=w0GqAeMADEza9fllh4bzbMMhhnGfJ6Bsr92tmvmU29Q=;
-        b=XHIt33Sbu/oJ/7qVpTvsAHtZHBwLg9SQwva5srVojJiAus8eZEtoJILNZgBk+Se82t
-         FRYS1X4R8m6hzUP68lIRVFnVJD+hI2lRDTA5ixyOhVYqgDo4ZWJP+8ZBuNG4SVR9q8wO
-         f48dO6lyFE0ERpv55rIk8bc2mzlOH2eOg4FzQMLBjr1P719Q1rxCOLJCHh+Fdf8QS7L9
-         325JLqgl73XAM4ATbXKycmRDjnBp3U579bTfSala8hC8MwADZ81HZldZSuRCnMP4ay1S
-         GqpQ/CxGIuGVM3SqiNlNZKiYiP2Y1tyoFZIa1p1bDMx69MXIamsR6tRHFKv0ESL/sFKj
-         1MJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=w0GqAeMADEza9fllh4bzbMMhhnGfJ6Bsr92tmvmU29Q=;
-        b=YF+BszQPLOW67TAcYK10XVO/xSV4M03gISSMLmWSIsZ8iK8tktABDMYsqFD4CV0nii
-         V8rgwZPTThHUIhjrxgWgW4mMfPLBVhCf8zaOYe+LPPRKah/5RTz7DDZOEhFICEMwc9zC
-         DmiXESZs65d2VdOBrbZKsXua0WYHVo97AgCHvWTVRcg9T8NO4eve4klVauFetXRPsG7y
-         9tZRA7f1zDPFMjZQZLvxwLVd8zTKcO7kaBpJPh3P9FeZCQMtZto3AWL1gKdeaZQtsTt3
-         YIcFJC+wbFNAYmpoWV99mFWnFu205xMcpvWJivOkOpIJ12BZMTyNaNn8K5eqxR3M9+8m
-         ILqw==
-X-Gm-Message-State: APjAAAXMt2qKOhLex1z3EwQ5zaFufBPIjzxbWqAHKuPWOsqbQzyNMCb1
-        roZhGwj2bHR6cf3FeGRCKGZbuh5wbl7LTiCXRhU=
-X-Google-Smtp-Source: APXvYqypJW7zX7JyFKFt7HBQ8IFzxMx8ab/QOfg5OvPPeZw6Wz/pWUWEXSfeBLH2Zai8aIypXtN8r03Gms7377jgnkw=
-X-Received: by 2002:a92:d308:: with SMTP id x8mr13709006ila.42.1576522243125;
- Mon, 16 Dec 2019 10:50:43 -0800 (PST)
+        Mon, 16 Dec 2019 20:22:33 -0500
+Received: from localhost (unknown [192.168.167.32])
+        by regular1.263xmail.com (Postfix) with ESMTP id 0BC1ABC6;
+        Tue, 17 Dec 2019 09:22:23 +0800 (CST)
+X-MAIL-GRAY: 0
+X-MAIL-DELIVERY: 1
+X-ADDR-CHECKED4: 1
+X-ANTISPAM-LEVEL: 2
+X-SKE-CHECKED: 1
+X-ABS-CHECKED: 1
+Received: from [192.168.30.14] (42.17.110.36.static.bjtelecom.net [36.110.17.42])
+        by smtp.263.net (postfix) whith ESMTP id P20510T140147972622080S1576545740921042_;
+        Tue, 17 Dec 2019 09:22:22 +0800 (CST)
+X-IP-DOMAINF: 1
+X-UNIQUE-TAG: <f54d02cd2c5f8334c6d5cfe055826e0c>
+X-RL-SENDER: chengang@emindsoft.com.cn
+X-SENDER: chengang@emindsoft.com.cn
+X-LOGIN-NAME: chengang@emindsoft.com.cn
+X-FST-TO: lvlisong@emindsoft.com.cn
+X-SENDER-IP: 36.110.17.42
+X-ATTACHMENT-NUM: 0
+X-DNS-TYPE: 5
+Subject: Re: [PATCH] drivers: tty: serial: 8250: fintek: Can enable or disable
+ irq sharing based on isa or pci bus
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     gregkh@linuxfoundation.org, jslaby@suse.com, sr@denx.de,
+        mika.westerberg@linux.intel.com, yegorslists@googlemail.com,
+        yuehaibing@huawei.com, haolee.swjtu@gmail.com, dsterba@suse.com,
+        mojha@codeaurora.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Lv Li-song <lvlisong@emindsoft.com.cn>
+References: <20191213051717.2058-1-chengang@emindsoft.com.cn>
+ <20191213105033.GT32742@smile.fi.intel.com>
+ <758a0ca9-8f81-1a10-d9e1-11f86fac3de1@emindsoft.com.cn>
+ <20191216095120.GN32742@smile.fi.intel.com>
+From:   Chen Gang <chengang@emindsoft.com.cn>
+Message-ID: <2c4cba36-5833-ca08-4153-2061edf33186@emindsoft.com.cn>
+Date:   Tue, 17 Dec 2019 09:22:20 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <20191127141544.4277-1-leo.yan@linaro.org> <20191127141544.4277-3-leo.yan@linaro.org>
- <CAOCk7NqZmBYN4tY0_V8xzvBfWShDCP8gTa60Aoc78wK2tXx=6A@mail.gmail.com>
- <20191203082325.GC28241@leoy-ThinkPad-X240s> <CAOCk7NpYt_OVYB7yZz+U9OE7jdtdm4sKG9wzKY7_YvKKx2Q4fg@mail.gmail.com>
- <20191204161330.GA28567@leoy-ThinkPad-X240s> <CAD9cdQ6ROYf6B2PkQYJds_80-0dA=Jcew=TCNCSB=r+WEUNvdQ@mail.gmail.com>
-In-Reply-To: <CAD9cdQ6ROYf6B2PkQYJds_80-0dA=Jcew=TCNCSB=r+WEUNvdQ@mail.gmail.com>
-From:   Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-Date:   Mon, 16 Dec 2019 11:50:31 -0700
-Message-ID: <CAOCk7Np3DCYmeq1n3aemuLRK=krjOYp88rj_mdrwG2_vg0Gn_w@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] tty: serial: msm_serial: Fix deadlock caused by
- recursive output
-To:     Rainer Sickinger <rainersickinger.official@gmail.com>
-Cc:     Leo Yan <leo.yan@linaro.org>, Andy Gross <agross@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Nicolas Dechesne <nicolas.dechesne@linaro.org>,
-        MSM <linux-arm-msm@vger.kernel.org>,
-        linux-serial@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191216095120.GN32742@smile.fi.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Dec 4, 2019 at 9:21 AM Rainer Sickinger
-<rainersickinger.official@gmail.com> wrote:
->
-> Can't you just exit with System.exit()?
+On 2019/12/16 下午5:51, Andy Shevchenko wrote:
+> On Mon, Dec 16, 2019 at 10:27:23AM +0800, Chen Gang wrote:
+>> Thank you for your reply.
+>>
+>> I guess, this patch has to be refactored to match the related linux
+>> versions. And excuse me, my orignal hardware environments has been gone,
+>> so I can not give the new refactored patch additional test.
+>>
+>> It is necessary to continue discussing and reviewing this patch to let
+>> it be known completely, but I guess I am not the suitable persion to
+>> refactor the patch.
+> 
+> Yeah, you may refactor it, but please mention in the comment (the text going
+> after '---' line) that you are not able to test it. At least for maintainer it
+> may be a crucial point either to take your change or not.
+> 
 
-Isn't System.exit() a Java thing, and we are in a C environment?
+OK, I shall try to refactor the patch within this weekend in the latest
+linux-next tree.
 
->
-> Am Mi., 4. Dez. 2019 um 17:14 Uhr schrieb Leo Yan <leo.yan@linaro.org>:
+I should abey the GPL license, so it is my duty to send my modification
+to upstream and try my best to let the patch OK. If the patch can not be
+merged, I can understand (especially, the patch is too late).
+
+>> On 2019/12/13 下午6:50, Andy Shevchenko wrote:
+>>> On Fri, Dec 13, 2019 at 01:17:17PM +0800, chengang@emindsoft.com.cn wrote:
+> 
+>>>>  				aux |= inb(addr[i] + DATA_PORT) << 8;
+>>>>  				if (aux != io_address)
+>>>>  					continue;
+>>>
+>>>> -
+>>>
+>>> What the point?
+> 
+> (1)
+> 
+>>>> +#if IS_ENABLED(CONFIG_SERIAL_8250_FINTEK_IRQ_SHARING)
+>>>> +				set_icsr(addr[i], k);
+>>>> +#endif
+>>>>  				fintek_8250_exit_key(addr[i]);
+>>>>  				*key = keys[j];
+>>>>  				*index = k;
+>>>> @@ -179,53 +212,6 @@ static int fintek_8250_base_port(u16 io_address, u8 *key, u8 *index)
+>>>>  	return -ENODEV;
+>>>>  }
+>>>>  
 >>
->> On Tue, Dec 03, 2019 at 03:42:31PM -0700, Jeffrey Hugo wrote:
+>> In my case at that time, for fintex irq sharing, it needed additional
+>> initinalization, or it could not work well. I wrote the related code
+>> based on the fintek data-sheet which was downloaded from internet.
+> 
+> I guess it's an answer to the (1). Though in (1) I simple meant the removal
+> of blank line (see, I emphasized the excerpt I'm commenting with blank lines
+> before and after).
+> 
+
+Oh, sorry, I missunderstood. For me, reserving the original blank line
+is OK.
+
+>>>> -static int
+>>>> -fintek_8250_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
+>>>
+>>> Why did you move this function?
+>>> It's now not only hard to follow what has been changed, and to review.
+>>>
+>>>> --- a/drivers/tty/serial/8250/8250_pnp.c
+>>>> +++ b/drivers/tty/serial/8250/8250_pnp.c
+>>>> @@ -438,8 +438,13 @@ static int
+>>>>  serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
+>>>>  {
+>>>>  	struct uart_8250_port uart, *port;
+>>>> -	int ret, line, flags = dev_id->driver_data;
+>>>> +	int ret, line, flags;
+>>>>  
+>>>
 >>
->> [...]
+>> I thought locating the main probe function at the end of the source file
+>> was better for normal code reading (maybe it need be a seperate patch).
+> 
+> Yes, it needs to be in a separated (preparatory) patch.
+> 
+>> But if we don't mind, we can still remain its orignal position.
+> 
+> I do mind, sorry. The rule of thumb is one logical change per patch.
+> 
+
+OK, in the latest linux tree, if necessary, I will send 2 patches.
+
+>>>> +#if IS_BUILTIN(CONFIG_SERIAL_8250_FINTEK)
+>>>> +	if (!fintek_8250_probe(dev, dev_id))
+>>>> +		return 0;
+>>>> +#endif
+>>>> +	flags = dev_id->driver_data;
+>>>
+>>> Oh, I don't like this.
+>>> It needs a bit more refactoring done first.
+>>>
+>>> The idea that we are not going to pollute generic driver(s) with quirks anymore
+>>> (only when it's really unavoidable).
+>>>
 >>
->> > > > > This patch fixes the deadlock issue for recursive output; it adds a
->> > > > > variable 'curr_user' to indicate the uart port is used by which CPU, if
->> > > > > the CPU has acquired spinlock and wants to execute recursive output,
->> > > > > it will directly bail out.  Here we don't choose to avoid locking and
->> > > > > print out log, the reason is in this case we don't want to reset the
->> > > > > uart port with function msm_reset_dm_count(); otherwise it can introduce
->> > > > > confliction with other flows and results in uart port malfunction and
->> > > > > later cannot output anymore.
->> > > >
->> > > > Is this not fixable?  Sure, fixing the deadlock is an improvement, but
->> > > > dropping logs (particularly a memory warning like in your example)
->> > > > seems undesirable.
->> > >
->> > > Thanks a lot for your reviewing, Jeffrey.
->> > >
->> > > Agreed with you for the concern.
->> > >
->> > > To be honest, I am not familiar with the msm uart driver, so have no
->> > > confidence which is the best way for uart port operations.  I can
->> > > think out one possible fixing is shown in below, if detects the lock
->> > > is not acquired then it will force to reset UART port before exit the
->> > > function __msm_console_write().
->> > >
->> > > This approach is not tested yet and it looks too arbitrary; I will
->> > > give a try for it.  At the meantime, welcome any insight suggestion
->> > > with proper register operations.
->> >
->> > According to the documentation, NCF_TX is only needed for SW transmit
->> > mode, where software is directly puttting characters in the fifo.  Its
->> > not needed for BAM mode.  According to your example, recursive console
->> > printing will only happen in BAM mode, and not in SW mode.  Perhaps if
->> > we put the NCF_TX uses to just the SW mode, we avoid the issue and can
->> > allow recursive printing?
->>
->> Thanks for the suggestion!  But based on the suggestion, I tried to
->> change code as below, the console even cannot work when boot the
->> kernel:
->>
->>  static void msm_reset_dm_count(struct uart_port *port, int count)
->>  {
->> +       u32 val;
->> +
->>         msm_wait_for_xmitr(port);
->> -       msm_write(port, count, UARTDM_NCF_TX);
->> -       msm_read(port, UARTDM_NCF_TX);
->> +
->> +       val = msm_read(port, UARTDM_DMEN);
->> +
->> +       /*
->> +        * NCF is only enabled for SW transmit mode and is
->> +        * skipped for BAM mode.
->> +        */
->> +       if (!(val & UARTDM_DMEN_TX_BAM_ENABLE) &&
->> +           !(val & UARTDM_DMEN_RX_BAM_ENABLE)) {
->> +               msm_write(port, count, UARTDM_NCF_TX);
->> +               msm_read(port, UARTDM_NCF_TX);
->> +       }
->>  }
->>
->>
->> Alternatively, when exit from __msm_console_write() and if detect the
->> case for without acquiring spinlock, invoke msm_wait_for_xmitr() to wait
->> for transmit completion looks a good candidate solution. The updated
->> patch is as below.  Please let me know if this is doable?
->>
->> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
->> index 1db79ee8a886..aa6a494c898d 100644
->> --- a/drivers/tty/serial/msm_serial.c
->> +++ b/drivers/tty/serial/msm_serial.c
->> @@ -190,6 +190,7 @@ struct msm_port {
->>         bool                    break_detected;
->>         struct msm_dma          tx_dma;
->>         struct msm_dma          rx_dma;
->> +       struct cpumask          curr_user;
->>  };
->>
->>  #define UART_TO_MSM(uart_port) container_of(uart_port, struct msm_port, uart)
->> @@ -440,6 +441,7 @@ static void msm_complete_tx_dma(void *args)
->>         u32 val;
->>
->>         spin_lock_irqsave(&port->lock, flags);
->> +       cpumask_set_cpu(smp_processor_id(), &msm_port->curr_user);
->>
->>         /* Already stopped */
->>         if (!dma->count)
->> @@ -474,6 +476,7 @@ static void msm_complete_tx_dma(void *args)
->>
->>         msm_handle_tx(port);
->>  done:
->> +       cpumask_clear_cpu(smp_processor_id(), &msm_port->curr_user);
->>         spin_unlock_irqrestore(&port->lock, flags);
->>  }
->>
->> @@ -548,6 +551,7 @@ static void msm_complete_rx_dma(void *args)
->>         u32 val;
->>
->>         spin_lock_irqsave(&port->lock, flags);
->> +       cpumask_set_cpu(smp_processor_id(), &msm_port->curr_user);
->>
->>         /* Already stopped */
->>         if (!dma->count)
->> @@ -594,6 +598,7 @@ static void msm_complete_rx_dma(void *args)
->>
->>         msm_start_rx_dma(msm_port);
->>  done:
->> +       cpumask_clear_cpu(smp_processor_id(), &msm_port->curr_user);
->>         spin_unlock_irqrestore(&port->lock, flags);
->>
->>         if (count)
->> @@ -932,6 +937,7 @@ static irqreturn_t msm_uart_irq(int irq, void *dev_id)
->>         u32 val;
->>
->>         spin_lock_irqsave(&port->lock, flags);
->> +       cpumask_set_cpu(smp_processor_id(), &msm_port->curr_user);
->>         misr = msm_read(port, UART_MISR);
->>         msm_write(port, 0, UART_IMR); /* disable interrupt */
->>
->> @@ -963,6 +969,7 @@ static irqreturn_t msm_uart_irq(int irq, void *dev_id)
->>                 msm_handle_delta_cts(port);
->>
->>         msm_write(port, msm_port->imr, UART_IMR); /* restore interrupt */
->> +       cpumask_clear_cpu(smp_processor_id(), &msm_port->curr_user);
->>         spin_unlock_irqrestore(&port->lock, flags);
->>
->>         return IRQ_HANDLED;
->> @@ -1573,10 +1580,12 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
->>  static void __msm_console_write(struct uart_port *port, const char *s,
->>                                 unsigned int count, bool is_uartdm)
->>  {
->> +       struct msm_port *msm_port = UART_TO_MSM(port);
->>         int i;
->>         int num_newlines = 0;
->>         bool replaced = false;
->>         void __iomem *tf;
->> +       int locked = 1;
->>
->>         if (is_uartdm)
->>                 tf = port->membase + UARTDM_TF;
->> @@ -1589,7 +1598,15 @@ static void __msm_console_write(struct uart_port *port, const char *s,
->>                         num_newlines++;
->>         count += num_newlines;
->>
->> -       spin_lock(&port->lock);
->> +       if (port->sysrq)
->> +               locked = 0;
->> +       else if (oops_in_progress)
->> +               locked = spin_trylock(&port->lock);
->> +       else if (cpumask_test_cpu(smp_processor_id(), &msm_port->curr_user))
->> +               locked = 0;
->> +       else
->> +               spin_lock(&port->lock);
->> +
->>         if (is_uartdm)
->>                 msm_reset_dm_count(port, count);
->>
->> @@ -1625,7 +1642,12 @@ static void __msm_console_write(struct uart_port *port, const char *s,
->>                 iowrite32_rep(tf, buf, 1);
->>                 i += num_chars;
->>         }
->> -       spin_unlock(&port->lock);
->> +
->> +       if (!locked)
->> +               msm_wait_for_xmitr(port);
->> +
->> +       if (locked)
->> +               spin_unlock(&port->lock);
->>  }
+>> At that time, for me, I could not get any new better ways in a short
+>> time, and the issue had to be fixed in time, so the code was not good
+>> engough.
+> 
+> It's not an excuse to put hacks in the code that will make maintenance hard.
+> The usual case is such situations is that author of the fix do:
+> 
+> - provide a fix (perhaps ugly one)
+> - refactor and clean up the code
+> 
+> So at the result we have keep maintainable piece in kernel.
+> This is by the way my main motivation to NAK this change.
+> 
+>> At present, Linux version has been changed much, welcome any one to
+>> refactor it for current linux version or another related old linux
+>> versions if this patch is valuable more or less.
+> 
+> Then it's no go for this patch, sorry.
+> 
+
+Yes, refactoring and cleaning up the code is the patch sender's
+resposibility.
+
+And thank you for reviewing the patch.
+
+
