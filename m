@@ -6,108 +6,71 @@ X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8BBCC2D0CD
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 11:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A62D2C43603
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 13:48:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BF1922176D
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 11:07:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 83D3221739
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 13:48:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576580866;
-	bh=AirzzB8xv/znj29XGEFdRULSYNsGeW8KUz8c+5pRPEI=;
+	s=default; t=1576590488;
+	bh=eY2JDvh9DQSdJcjfXuqdLa0Y6RIPsa/5Pz+nLs347KE=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=N5CJmuMRRcCj0oaK67WTA6q5pzZI8fSxGr5hYIT+lNum8TBJYPkC1zuGcD8b9anB1
-	 lZFOE9KZsMkIWpkaP5AfHxtowTO8qlmgIObdKLKClGAVex3HfPlKjBB8LNXGmG+iSj
-	 WkgCeKvOb337nrXEJG3WuUnDrNQhAPMmjYrfv/N8=
+	b=pOyGbdnWWgToL8G1uEbG83i/LrmoaPZi8qhRt3jiJwbuaonejUBukLQUrfL3QTyiP
+	 APOCHVCZkGtKKofhLlA0uxOhe80+4vG2T83mkfXNbIwevy7mvw9JAG0jssoHcG1Xfz
+	 1nY5u8qglynyjpup7qrXWLyghjcsWjDapL/aipNk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726383AbfLQLHq (ORCPT
+        id S1728309AbfLQNsI (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Dec 2019 06:07:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43040 "EHLO mail.kernel.org"
+        Tue, 17 Dec 2019 08:48:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41830 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726487AbfLQLHq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Dec 2019 06:07:46 -0500
+        id S1726164AbfLQNsI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 17 Dec 2019 08:48:08 -0500
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F17D820716;
-        Tue, 17 Dec 2019 11:07:44 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 00DE920733;
+        Tue, 17 Dec 2019 13:48:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576580865;
-        bh=AirzzB8xv/znj29XGEFdRULSYNsGeW8KUz8c+5pRPEI=;
+        s=default; t=1576590487;
+        bh=eY2JDvh9DQSdJcjfXuqdLa0Y6RIPsa/5Pz+nLs347KE=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=o/GSFQfBGqIOQQllfLXWRvnLIosb1kpmBhxLE5b06FAhKJzkVkAew971CbGrQDQHl
-         SSFKtwuJTaO6s8UirjcquNCI7zhL7WXVD6cS/MVUpA6um9ae0fpVFooUEEjXn8cBRY
-         uTMehj3NvZNhq/DaLxrUfGcCOflWRkd/wwXexDqU=
-Date:   Tue, 17 Dec 2019 12:07:43 +0100
+        b=XSp2Kw/cBN6UAOCyOoP/uZofMa2nndRF04BapDMjUajQHSusZ9ckvvSZTragaaEJT
+         pUIpWf9k02ReUVVsCxsba0M5Rq4bmmSieYH/3ulzTSLfMVa3wr/VLDqeM9KA7KO0t0
+         2soqMMlIGvjw40679T+O1pabNHMp0zgkNCrekHWA=
+Date:   Tue, 17 Dec 2019 14:48:05 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
-        Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-serial@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: Re: [PATCH v2 3/3] leds: trigger: implement a tty trigger
-Message-ID: <20191217110743.GB3055718@kroah.com>
-References: <20191217081718.23807-1-u.kleine-koenig@pengutronix.de>
- <20191217081718.23807-4-u.kleine-koenig@pengutronix.de>
- <20191217083211.GC2672708@kroah.com>
- <20191217105826.6d2odt4k5b4qknjk@pengutronix.de>
+To:     Dmitry Safonov <dima@arista.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Jiri Slaby <jslaby@suse.com>,
+        Vasiliy Khoruzhick <vasilykh@arista.com>,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH 03/58] serial_core: Un-ifdef sysrq SUPPORT_SYSRQ
+Message-ID: <20191217134805.GA3386022@kroah.com>
+References: <20191213000657.931618-1-dima@arista.com>
+ <20191213000657.931618-4-dima@arista.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191217105826.6d2odt4k5b4qknjk@pengutronix.de>
+In-Reply-To: <20191213000657.931618-4-dima@arista.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Dec 17, 2019 at 11:58:26AM +0100, Uwe Kleine-König wrote:
-> Hello Greg,
+On Fri, Dec 13, 2019 at 12:06:02AM +0000, Dmitry Safonov wrote:
+> The SUPPORT_SYSRQ is messy: every .c source should define it before
+> including "serial_core.h" if sysrq is supported or struct uart_port will
+> differ in sizes. Also this prevents moving to serial_core.c functions:
+> uart_handle_sysrq_char(), uart_prepare_sysrq_char(),
+> uart_unlock_and_check_sysrq().
 > 
-> On Tue, Dec 17, 2019 at 09:32:11AM +0100, Greg Kroah-Hartman wrote:
-> > On Tue, Dec 17, 2019 at 09:17:18AM +0100, Uwe Kleine-König wrote:
-> > > +	ret = tty_get_icount(trigger_data->tty, &icount);
-> > > +	if (icount.rx > trigger_data->icount.rx ||
-> > > +	    icount.tx > trigger_data->icount.tx) {
-> > 
-> > What happens when icount.rx and/or icount.tx wraps?  It's "only" an int.
-> 
-> Good catch. I wonder why this is not an unsigned quantity. Just grepping
-> through drivers/tty/serial most drivers just increment these counters
-> and don't care for overflow (which is undefined for ints) either. :-\
+> It doesn't save many bytes in the structure, and a better way to reduce
+> it's size would be making rs485 and iso7816 pointers.
 
-It is not undefined for the kernel, I'm pretty sure we tell the compiler
-to be sane for this type of thing.  It should "just wrap".  Oh wait
-"int" is "signed int" here, hah, that's funny.  Surely someone has
-noticed that in 20+ years by now?
-
-> ..ooOO(Where is the can maintainer? --- We found a can of worms :-)
-
-:)
-
-> 
-> > > +		unsigned long delay_on = 100, delay_off = 100;
-> > > +
-> > > +		led_blink_set_oneshot(trigger_data->led_cdev,
-> > > +				      &delay_on, &delay_off, 0);
-> > > +
-> > > +		trigger_data->icount = icount;
-> > 
-> > Implicit memcpy of a structure?  Ick.
-> 
-> I'd call that elegant ;-)
-> 
-> > All you care about are the two integers, why not just track them instead
-> > of the whole thing?
-> 
-> For now I only care about tx and rx, but I intend to add some bells and
-> whistles to trigger on other events. (But I don't care much, can add
-> that once I implement this support.)
-
-Start small and add more as-needed, you can always move back to the full
-structure later on if you really need it.
+Yes, the whole thing needs some work with the tool 'pahole' to fix it
+up.
 
 thanks,
 
