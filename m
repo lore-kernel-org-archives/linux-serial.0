@@ -2,198 +2,128 @@ Return-Path: <SRS0=CLdZ=2H=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1161AC43603
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 01:22:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 082F0C43603
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 08:03:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CD99C20717
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 01:22:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C918221775
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 08:03:03 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="sneGlw/w"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726191AbfLQBWd (ORCPT
+        id S1726705AbfLQIDD (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Dec 2019 20:22:33 -0500
-Received: from regular1.263xmail.com ([211.150.70.195]:47750 "EHLO
-        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725805AbfLQBWd (ORCPT
+        Tue, 17 Dec 2019 03:03:03 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:53106 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726382AbfLQIDD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Dec 2019 20:22:33 -0500
-Received: from localhost (unknown [192.168.167.32])
-        by regular1.263xmail.com (Postfix) with ESMTP id 0BC1ABC6;
-        Tue, 17 Dec 2019 09:22:23 +0800 (CST)
-X-MAIL-GRAY: 0
-X-MAIL-DELIVERY: 1
-X-ADDR-CHECKED4: 1
-X-ANTISPAM-LEVEL: 2
-X-SKE-CHECKED: 1
-X-ABS-CHECKED: 1
-Received: from [192.168.30.14] (42.17.110.36.static.bjtelecom.net [36.110.17.42])
-        by smtp.263.net (postfix) whith ESMTP id P20510T140147972622080S1576545740921042_;
-        Tue, 17 Dec 2019 09:22:22 +0800 (CST)
-X-IP-DOMAINF: 1
-X-UNIQUE-TAG: <f54d02cd2c5f8334c6d5cfe055826e0c>
-X-RL-SENDER: chengang@emindsoft.com.cn
-X-SENDER: chengang@emindsoft.com.cn
-X-LOGIN-NAME: chengang@emindsoft.com.cn
-X-FST-TO: lvlisong@emindsoft.com.cn
-X-SENDER-IP: 36.110.17.42
-X-ATTACHMENT-NUM: 0
-X-DNS-TYPE: 5
-Subject: Re: [PATCH] drivers: tty: serial: 8250: fintek: Can enable or disable
- irq sharing based on isa or pci bus
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     gregkh@linuxfoundation.org, jslaby@suse.com, sr@denx.de,
-        mika.westerberg@linux.intel.com, yegorslists@googlemail.com,
-        yuehaibing@huawei.com, haolee.swjtu@gmail.com, dsterba@suse.com,
-        mojha@codeaurora.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lv Li-song <lvlisong@emindsoft.com.cn>
-References: <20191213051717.2058-1-chengang@emindsoft.com.cn>
- <20191213105033.GT32742@smile.fi.intel.com>
- <758a0ca9-8f81-1a10-d9e1-11f86fac3de1@emindsoft.com.cn>
- <20191216095120.GN32742@smile.fi.intel.com>
-From:   Chen Gang <chengang@emindsoft.com.cn>
-Message-ID: <2c4cba36-5833-ca08-4153-2061edf33186@emindsoft.com.cn>
-Date:   Tue, 17 Dec 2019 09:22:20 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Tue, 17 Dec 2019 03:03:03 -0500
+Received: by mail-wm1-f65.google.com with SMTP id p9so1903851wmc.2
+        for <linux-serial@vger.kernel.org>; Tue, 17 Dec 2019 00:03:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=GxAFSM9qrfBqACDVyobZG3sgGdlMNsybGzr6qpdZuFY=;
+        b=sneGlw/w17D4z5M6a5bR6Y0d/z3VSpK4ImjvIeXZaztzsV4sKewPmhnDCtmQYaTmlV
+         YEqBwbCUZFtj5uIFQsJ21OzjN/E//jv2SfHJwUy/0NR42KPymWIdC/xmAgzf+8A++Yn4
+         eEVZOAYagbwnNN9NzZKIXw3wbBs8XCEwEdOFXZ/gi5Rl4atj3f719kXLCGWPV9c7Sacg
+         NG3EKXamr8YyxcBkbngr9KLoE066VzOQNwr8QGF5kFyuwBtD9zqKm9xslgq0mwKFt3L3
+         gkHo2nde5j/rsRY0YIN9JVN/ebNuqhinr5Ltkp3zVYpUw/SxUBGq1K36V3C2++3LFK2I
+         BJMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=GxAFSM9qrfBqACDVyobZG3sgGdlMNsybGzr6qpdZuFY=;
+        b=L7JBroEwQ4HaPaEWmwKAYD2Gtp+V2BnNdJ/mXQr4g/4BMa/kR+wTXV9CQCbLJq4c4b
+         Qxlz7s8PDj0WpNo26CAwSjzFGj+auKvvbpHjDcOVJ/3HoWNyPhhl18kC+8fWnWx0I+F0
+         irv+SbAIi4iCdN3p8vc4GHqDx2yP+TwnbdJh5YTQt/OGTALagEmCtt0fckOXlhSiYOl3
+         Nc9nvuU/bztqYjmTMD6CeOhJCiQNUgCpiOKnXnfHunrmhAk49CkWvgJgxMknGEZ3zdKS
+         5GFiVmzksuHZZ0APIptfFqIs2v48VmleT9ht9rojWu/2vBjlFr2zARGyO+/GuNG8vvMf
+         OeuQ==
+X-Gm-Message-State: APjAAAVKt4b3iUxCDUVTEIUuVqYfdf+FgBXlH+xVq/t+v7qaporPBXER
+        JpHHRuO5D6/FSL4fOz/owqUdYQ==
+X-Google-Smtp-Source: APXvYqzMTCBlFqbqARJevmlw9QY8QwE36fi/Ore5Eu5RwK95seTip0NwxVQTJa/pqHoFIqktYKfywA==
+X-Received: by 2002:a05:600c:d7:: with SMTP id u23mr3568868wmm.145.1576569781740;
+        Tue, 17 Dec 2019 00:03:01 -0800 (PST)
+Received: from dell (h185-20-99-142.host.redstation.co.uk. [185.20.99.142])
+        by smtp.gmail.com with ESMTPSA id c9sm2020290wmc.47.2019.12.17.00.02.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Dec 2019 00:03:00 -0800 (PST)
+Date:   Tue, 17 Dec 2019 08:02:55 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paulburton@kernel.org>,
+        James Hogan <jhogan@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v11 net-next 2/2] mfd: ioc3: Add driver for SGI IOC3 chip
+Message-ID: <20191217080255.GF18955@dell>
+References: <20191213124221.25775-1-tbogendoerfer@suse.de>
+ <20191213124221.25775-3-tbogendoerfer@suse.de>
+ <20191215122745.219fa951@cakuba.netronome.com>
+ <20191216170005.afdbbb3845a87dc835165250@suse.de>
 MIME-Version: 1.0
-In-Reply-To: <20191216095120.GN32742@smile.fi.intel.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191216170005.afdbbb3845a87dc835165250@suse.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2019/12/16 下午5:51, Andy Shevchenko wrote:
-> On Mon, Dec 16, 2019 at 10:27:23AM +0800, Chen Gang wrote:
->> Thank you for your reply.
->>
->> I guess, this patch has to be refactored to match the related linux
->> versions. And excuse me, my orignal hardware environments has been gone,
->> so I can not give the new refactored patch additional test.
->>
->> It is necessary to continue discussing and reviewing this patch to let
->> it be known completely, but I guess I am not the suitable persion to
->> refactor the patch.
-> 
-> Yeah, you may refactor it, but please mention in the comment (the text going
-> after '---' line) that you are not able to test it. At least for maintainer it
-> may be a crucial point either to take your change or not.
-> 
+On Mon, 16 Dec 2019, Thomas Bogendoerfer wrote:
 
-OK, I shall try to refactor the patch within this weekend in the latest
-linux-next tree.
+> On Sun, 15 Dec 2019 12:27:45 -0800
+> Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
+> 
+> > On Fri, 13 Dec 2019 13:42:20 +0100, Thomas Bogendoerfer wrote:
+> > > SGI IOC3 chip has integrated ethernet, keyboard and mouse interface.
+> > > It also supports connecting a SuperIO chip for serial and parallel
+> > > interfaces. IOC3 is used inside various SGI systemboards and add-on
+> > > cards with different equipped external interfaces.
+> > > 
+> > > Support for ethernet and serial interfaces were implemented inside
+> > > the network driver. This patchset moves out the not network related
+> > > parts to a new MFD driver, which takes care of card detection,
+> > > setup of platform devices and interrupt distribution for the subdevices.
+> > > 
+> > > Serial portion: Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+> > > 
+> > > Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> > 
+> > For networking:
+> > 
+> > Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> > 
+> > I think you wanted this to go via the MIPS tree, so consider this an
+> > ack.
+> 
+> well, it can go to net-next as well. Paul, what's your preference ?
 
-I should abey the GPL license, so it is my duty to send my modification
-to upstream and try my best to let the patch OK. If the patch can not be
-merged, I can understand (especially, the patch is too late).
+Whomever takes it should send out a pull-request to an immutable
+branch for everyone else to pull from (if they so desire).
 
->> On 2019/12/13 下午6:50, Andy Shevchenko wrote:
->>> On Fri, Dec 13, 2019 at 01:17:17PM +0800, chengang@emindsoft.com.cn wrote:
-> 
->>>>  				aux |= inb(addr[i] + DATA_PORT) << 8;
->>>>  				if (aux != io_address)
->>>>  					continue;
->>>
->>>> -
->>>
->>> What the point?
-> 
-> (1)
-> 
->>>> +#if IS_ENABLED(CONFIG_SERIAL_8250_FINTEK_IRQ_SHARING)
->>>> +				set_icsr(addr[i], k);
->>>> +#endif
->>>>  				fintek_8250_exit_key(addr[i]);
->>>>  				*key = keys[j];
->>>>  				*index = k;
->>>> @@ -179,53 +212,6 @@ static int fintek_8250_base_port(u16 io_address, u8 *key, u8 *index)
->>>>  	return -ENODEV;
->>>>  }
->>>>  
->>
->> In my case at that time, for fintex irq sharing, it needed additional
->> initinalization, or it could not work well. I wrote the related code
->> based on the fintek data-sheet which was downloaded from internet.
-> 
-> I guess it's an answer to the (1). Though in (1) I simple meant the removal
-> of blank line (see, I emphasized the excerpt I'm commenting with blank lines
-> before and after).
-> 
-
-Oh, sorry, I missunderstood. For me, reserving the original blank line
-is OK.
-
->>>> -static int
->>>> -fintek_8250_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
->>>
->>> Why did you move this function?
->>> It's now not only hard to follow what has been changed, and to review.
->>>
->>>> --- a/drivers/tty/serial/8250/8250_pnp.c
->>>> +++ b/drivers/tty/serial/8250/8250_pnp.c
->>>> @@ -438,8 +438,13 @@ static int
->>>>  serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
->>>>  {
->>>>  	struct uart_8250_port uart, *port;
->>>> -	int ret, line, flags = dev_id->driver_data;
->>>> +	int ret, line, flags;
->>>>  
->>>
->>
->> I thought locating the main probe function at the end of the source file
->> was better for normal code reading (maybe it need be a seperate patch).
-> 
-> Yes, it needs to be in a separated (preparatory) patch.
-> 
->> But if we don't mind, we can still remain its orignal position.
-> 
-> I do mind, sorry. The rule of thumb is one logical change per patch.
-> 
-
-OK, in the latest linux tree, if necessary, I will send 2 patches.
-
->>>> +#if IS_BUILTIN(CONFIG_SERIAL_8250_FINTEK)
->>>> +	if (!fintek_8250_probe(dev, dev_id))
->>>> +		return 0;
->>>> +#endif
->>>> +	flags = dev_id->driver_data;
->>>
->>> Oh, I don't like this.
->>> It needs a bit more refactoring done first.
->>>
->>> The idea that we are not going to pollute generic driver(s) with quirks anymore
->>> (only when it's really unavoidable).
->>>
->>
->> At that time, for me, I could not get any new better ways in a short
->> time, and the issue had to be fixed in time, so the code was not good
->> engough.
-> 
-> It's not an excuse to put hacks in the code that will make maintenance hard.
-> The usual case is such situations is that author of the fix do:
-> 
-> - provide a fix (perhaps ugly one)
-> - refactor and clean up the code
-> 
-> So at the result we have keep maintainable piece in kernel.
-> This is by the way my main motivation to NAK this change.
-> 
->> At present, Linux version has been changed much, welcome any one to
->> refactor it for current linux version or another related old linux
->> versions if this patch is valuable more or less.
-> 
-> Then it's no go for this patch, sorry.
-> 
-
-Yes, refactoring and cleaning up the code is the patch sender's
-resposibility.
-
-And thank you for reviewing the patch.
-
-
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
