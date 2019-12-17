@@ -2,78 +2,81 @@ Return-Path: <SRS0=CLdZ=2H=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30B0BC43603
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 14:27:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8179EC2D0CD
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 15:07:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0541921D7D
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 14:27:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576592856;
-	bh=iZjkgq9/QmKBzabYzEZ/ruigHyZa9DwU98Twta3Vnrs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=DBwKMt/8RauF44LW+JgXWd34UaJmmRqoaPXrk1Guj5y5GAAmfXhs49hn0+wCsSaZG
-	 nzJ2x7ZkFhrxekNTDDm8b0pyrzeLPyJYFTr7AnJa5XvmXdaYyuxD5RN8lnYM+1IZ0n
-	 uh4AKNBCroZMLrNnyY0Dd9L6ovLBG9qkDKy4G2j0=
+	by mail.kernel.org (Postfix) with ESMTP id 62D262146E
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 15:07:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728994AbfLQO1f (ORCPT
+        id S1727497AbfLQPHt (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Dec 2019 09:27:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59228 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728903AbfLQO1f (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Dec 2019 09:27:35 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6D8EC2176D;
-        Tue, 17 Dec 2019 14:27:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576592854;
-        bh=iZjkgq9/QmKBzabYzEZ/ruigHyZa9DwU98Twta3Vnrs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XK8NM9wu1K1zy/gtOgOZY3rLP5S2GkedSGfmoOogGp6rfywsQMjNsPKggRlzAY87K
-         CLSLm8eqe7Xb4oMnOJnx3oWs8vWB9/LY8GEW+Rc5VCYZp487Vt5p1YN+xAEzfXr7mt
-         TS+2v8MVPb7OLiQNfxYNlWEqeBtZziLpm5AIvw+4=
-Date:   Tue, 17 Dec 2019 15:27:32 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Dmitry Safonov <dima@arista.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Jiri Slaby <jslaby@suse.com>,
-        Vasiliy Khoruzhick <vasilykh@arista.com>,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH 54/58] serial_core: Remove SUPPORT_SYSRQ ifdeffery
-Message-ID: <20191217142732.GA3623513@kroah.com>
-References: <20191213000657.931618-1-dima@arista.com>
- <20191213000657.931618-55-dima@arista.com>
+        Tue, 17 Dec 2019 10:07:49 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:51275 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727642AbfLQPHr (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 17 Dec 2019 10:07:47 -0500
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1ihERp-0008EA-9l; Tue, 17 Dec 2019 16:07:41 +0100
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1ihERn-0000VM-24; Tue, 17 Dec 2019 16:07:39 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>
+Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH v3 0/3] tty/leds: implement a trigger for ttys
+Date:   Tue, 17 Dec 2019 16:07:33 +0100
+Message-Id: <20191217150736.1479-1-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191213000657.931618-55-dima@arista.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Dec 13, 2019 at 12:06:53AM +0000, Dmitry Safonov wrote:
-> No one defines it anymore.
-> 
-> Signed-off-by: Dmitry Safonov <dima@arista.com>
-> ---
->  include/linux/serial_core.h | 14 ++++----------
->  1 file changed, 4 insertions(+), 10 deletions(-)
+Hello,
 
-I've applied this series up to here, skipping the usb-serial driver
-patch that Johan called out.
+next iteration of the tty-led-trigger series. This addresses the review
+comments I got from Greg.
 
-Can you rebase your series and resend the remaining based on my tty-next
-tree, after these patches move there (give them 24 hours to get through
-0-day testing.)
+This depends on patch "tty: drop useless variable initialisation in
+tty_kopen()" which is already on tty-testing.
 
-thanks,
+Best regards
+Uwe
 
-greg k-h
+Uwe Kleine-König (3):
+  tty: rename tty_kopen() and add new function tty_kopen_shared()
+  tty: new helper function tty_get_icount()
+  leds: trigger: implement a tty trigger
+
+ drivers/leds/trigger/Kconfig        |   7 ++
+ drivers/leds/trigger/Makefile       |   1 +
+ drivers/leds/trigger/ledtrig-tty.c  | 159 ++++++++++++++++++++++++++++
+ drivers/staging/speakup/spk_ttyio.c |   2 +-
+ drivers/tty/tty_io.c                |  87 +++++++++++----
+ include/linux/tty.h                 |   7 +-
+ 6 files changed, 238 insertions(+), 25 deletions(-)
+ create mode 100644 drivers/leds/trigger/ledtrig-tty.c
+
+-- 
+2.24.0
+
