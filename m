@@ -2,96 +2,108 @@ Return-Path: <SRS0=CLdZ=2H=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72196C43603
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 15:52:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E297EC2D0CD
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 15:56:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 38A582465E
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 15:52:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576597943;
-	bh=V5+Sh7PgM5ICNdJTZk6XqRi35Wh2myELF/Wv/B5/e+s=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=LhJ/iXGYz0HjhzYT/mG+aan60TpmhNMzddciB6Si/KCzwHMtSlB7jw09Q/wiKgIYF
-	 D2TZTEdu6YIv+hvE4edsPExk7lKGqMUHJwkYEtQokYKURORCxsFfdr0LXadQNEZnsH
-	 R5zC7VbT0Eh5ZT+8JF+KEygGmCVAm+3H5zy2hZg8=
+	by mail.kernel.org (Postfix) with ESMTP id B817E2465E
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 15:56:46 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="mne8nhxl"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726933AbfLQPwW (ORCPT
+        id S1726858AbfLQP4p (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Dec 2019 10:52:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38750 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727202AbfLQPwW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Dec 2019 10:52:22 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 909992146E;
-        Tue, 17 Dec 2019 15:52:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576597942;
-        bh=V5+Sh7PgM5ICNdJTZk6XqRi35Wh2myELF/Wv/B5/e+s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PQkVBAIH7jGcRnjZN5ngOC31sywwyOt+Tuf+3tFEhL4KNqExiI3y8kYIn1xM3ceHp
-         mXOC0ijONbiZWkofH0f3WsjQvESUWE07fsnh4lulzIcVwRrwHrYlvKoEuIwxI7rHfQ
-         NjgRU+xWLIMq7lUOJf8pbqj/gDa5KfbtZ4UA0ZPs=
-Date:   Tue, 17 Dec 2019 16:52:19 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Dmitry Safonov <dima@arista.com>
+        Tue, 17 Dec 2019 10:56:45 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:47008 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727473AbfLQP4p (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 17 Dec 2019 10:56:45 -0500
+Received: by mail-wr1-f68.google.com with SMTP id z7so11827241wrl.13
+        for <linux-serial@vger.kernel.org>; Tue, 17 Dec 2019 07:56:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=googlenew;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Kru/p1qE5H/BCcW43apBsFqD+qqTgGNhKSFSdhalhZw=;
+        b=mne8nhxlUm5JUVJvci8lY6PyqcJV58bkC/8MDX3fLFmKigBiUT2/qYAVumFGxcCQKH
+         Lj2xkBkFvl4p3SnIPI1/tosatcIg9yz7/xCw01e/oYKvCYJTGjYLkiRt7lZXEkzTMDDi
+         koiy7XLiHNLTtPsPdvJn0F4aRm0UoxyPXhCqjPgTanpJCHs1G08oXGcl9VrZE3+2FnBH
+         VUxQHqYUdNGqdIfRAT1LOa1iiVP2JU7kEE5qzDFfdB66qbMWKkf7SdLY36Z+gFcATrCZ
+         rqUX0MU6tbLJkV6Gp+ZZVn06QNbK0OBpr48hKvsnsHJejoFCmclwuyq0Vb1/l+pSWMxh
+         XNxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Kru/p1qE5H/BCcW43apBsFqD+qqTgGNhKSFSdhalhZw=;
+        b=dWK/H3TfP297Q0s8Z6twASGzcN8VTHJHLkg/Ufr/TBDr1q/rAKuHFMxRnKsrt++mwH
+         cDMFysebXf9FEVX1YTtVv/ajJtb8GrFJq2CIwmLx2SiUFBNni9TqBHKcDI8rT9EJStz0
+         TzMRIALTqfLQU2zfikrN3dvYUdOOwzGHG8JHCE2ikJotDRIYq84+jeDZer2VjkdlxPqn
+         ZWRzarqBsE1BTc4rqMgdBhliwcIf75SQtUmMaM4RCRSE0jBFRNZTywDRosoMABNQZ+hy
+         vxECYTkYy37AIyu8dE/gnWW9e10iziGX5S+9RsLeEQWp9wdNdUG/y+6u5XoWEkQKrscB
+         YBIw==
+X-Gm-Message-State: APjAAAV6UpY/kkSI/9kmYm4RifpfgobTkb9N/i5m32DX8lFspmXiDvT5
+        lPbbls9cmeNZJHJu21LjwVJEBw==
+X-Google-Smtp-Source: APXvYqyNMAVe3i3HHStXWaTydu4DNl69XCzW5OGGXtdFookbpapo5jksY/g3ZK42dfA5bT/chPKB5Q==
+X-Received: by 2002:a5d:56ca:: with SMTP id m10mr36759405wrw.313.1576598202967;
+        Tue, 17 Dec 2019 07:56:42 -0800 (PST)
+Received: from [10.83.36.153] ([217.173.96.166])
+        by smtp.gmail.com with ESMTPSA id x16sm3455140wmk.35.2019.12.17.07.56.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 Dec 2019 07:56:42 -0800 (PST)
+Subject: Re: [PATCH] tty: serial: samsung_tty: do not abuse the struct
+ uart_port unused fields
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Kukjin Kim <kgene@kernel.org>, Hyunki Koo <kkoos00@naver.com>,
         HYUN-KI KOO <hyunki00.koo@samsung.com>,
         Shinbeom Choi <sbeom.choi@samsung.com>,
         Krzysztof Kozlowski <krzk@kernel.org>,
         Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tty: serial: samsung_tty: do not abuse the struct
- uart_port unused fields
-Message-ID: <20191217155219.GA3754999@kroah.com>
 References: <20191217140232.GA3489190@kroah.com>
  <e0fbb679-54fb-25c6-0e88-012d0490e291@arista.com>
+ <20191217155219.GA3754999@kroah.com>
+From:   Dmitry Safonov <dima@arista.com>
+Message-ID: <c0b28ccc-7a0e-f6e7-ac6f-f310094acc03@arista.com>
+Date:   Tue, 17 Dec 2019 15:56:40 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e0fbb679-54fb-25c6-0e88-012d0490e291@arista.com>
+In-Reply-To: <20191217155219.GA3754999@kroah.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Dec 17, 2019 at 03:47:34PM +0000, Dmitry Safonov wrote:
-> On 12/17/19 2:02 PM, Greg Kroah-Hartman wrote:
-> > The samsung_tty driver was trying to abuse the struct uart_port by using
-> > two "empty" bytes for its own use.  That's not ok, and was found by
-> > removing those fields from the structure.
-> > 
-> > Move the variables into the port-specific structure, which is where
-> > everything else for this port already is.  There is no space wasted here
-> > as there was an empty "hole" in the structure already for these bytes.
+On 12/17/19 3:52 PM, Greg Kroah-Hartman wrote:
+> On Tue, Dec 17, 2019 at 03:47:34PM +0000, Dmitry Safonov wrote:
+>> On 12/17/19 2:02 PM, Greg Kroah-Hartman wrote:
+>>> The samsung_tty driver was trying to abuse the struct uart_port by using
+>>> two "empty" bytes for its own use.  That's not ok, and was found by
+>>> removing those fields from the structure.
+>>>
+>>> Move the variables into the port-specific structure, which is where
+>>> everything else for this port already is.  There is no space wasted here
+>>> as there was an empty "hole" in the structure already for these bytes.
+>>
+>> Thanks!
+>> Sorry for not noticing this myself.
 > 
-> Thanks!
-> Sorry for not noticing this myself.
+> You wouldn't have noticed this unless you build for that platform. I
+> just recently made it buildable for other ones.
 
-You wouldn't have noticed this unless you build for that platform. I
-just recently made it buildable for other ones.
+Ah, I was running CONFIG_COMPILE_TEST and thought that it should trigger
+anything (and fixed an issue before sending). Probably, managed not to
+enable samsung driver's option.
 
-> 
-> > Cc: Kukjin Kim <kgene@kernel.org>
-> > Cc: Hyunki Koo <kkoos00@naver.com>
-> > Cc: HYUN-KI KOO <hyunki00.koo@samsung.com>
-> > Cc: Shinbeom Choi <sbeom.choi@samsung.com>
-> > Cc: Krzysztof Kozlowski <krzk@kernel.org>
-> > Cc: Dmitry Safonov <dima@arista.com>
-> > Cc: Jiri Slaby <jslaby@suse.com>
-> > Cc: linux-serial@vger.kernel.org
-> > Cc: linux-kernel@vger.kernel.org
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> 
-> I see you already applied it to your tree, but in case it helps anything:
-> Reviewed-by: Dmitry Safonov <dima@arista.com>
-
-The review helps, thanks :)
-
-greg k-h
+Thanks,
+          Dmitry
