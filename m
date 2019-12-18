@@ -1,117 +1,130 @@
-Return-Path: <SRS0=CLdZ=2H=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=1HLL=2I=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Level: **
+X-Spam-Status: No, score=2.4 required=3.0 tests=CHARSET_FARAWAY_HEADER,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3104BC43603
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 21:08:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79720C2D0CD
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Dec 2019 00:56:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0889C206E0
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Dec 2019 21:08:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 595F42146E
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Dec 2019 00:56:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726992AbfLQVIZ (ORCPT
+        id S1726670AbfLRA4s (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Dec 2019 16:08:25 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:60217 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726874AbfLQVIZ (ORCPT
+        Tue, 17 Dec 2019 19:56:48 -0500
+Received: from www262.sakura.ne.jp ([202.181.97.72]:61358 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726205AbfLRA4r (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Dec 2019 16:08:25 -0500
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1ihK4q-0005qM-2e; Tue, 17 Dec 2019 22:08:20 +0100
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1ihK4o-0006Wv-It; Tue, 17 Dec 2019 22:08:18 +0100
-Date:   Tue, 17 Dec 2019 22:08:18 +0100
-From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Jacek Anaszewski <jacek.anaszewski@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Pavel Machek <pavel@ucw.cz>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Dan Murphy <dmurphy@ti.com>,
-        kernel@pengutronix.de, Jiri Slaby <jslaby@suse.com>,
-        linux-leds@vger.kernel.org
-Subject: Re: [PATCH v3 3/3] leds: trigger: implement a tty trigger
-Message-ID: <20191217210818.rbwmrz3fsnobo7nj@pengutronix.de>
-References: <20191217150736.1479-1-u.kleine-koenig@pengutronix.de>
- <20191217150736.1479-4-u.kleine-koenig@pengutronix.de>
- <20191217152724.GA3667595@kroah.com>
- <20191217162313.5n3v7va5nw5lxloh@pengutronix.de>
- <20191217172102.GB3829986@kroah.com>
- <b2844f63-d580-ddc2-b4ed-817eaa89a2c6@gmail.com>
+        Tue, 17 Dec 2019 19:56:47 -0500
+Received: from fsav104.sakura.ne.jp (fsav104.sakura.ne.jp [27.133.134.231])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id xBI0txmv079214;
+        Wed, 18 Dec 2019 09:55:59 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav104.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav104.sakura.ne.jp);
+ Wed, 18 Dec 2019 09:55:59 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav104.sakura.ne.jp)
+Received: from www262.sakura.ne.jp (localhost [127.0.0.1])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id xBI0tx9E079208;
+        Wed, 18 Dec 2019 09:55:59 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Received: (from i-love@localhost)
+        by www262.sakura.ne.jp (8.15.2/8.15.2/Submit) id xBI0txro079201;
+        Wed, 18 Dec 2019 09:55:59 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Message-Id: <201912180055.xBI0txro079201@www262.sakura.ne.jp>
+X-Authentication-Warning: www262.sakura.ne.jp: i-love set sender to penguin-kernel@i-love.sakura.ne.jp using -f
+Subject: Re: BUG: unable to handle kernel NULL pointer dereference in
+ =?ISO-2022-JP?B?bWVtX3NlcmlhbF9vdXQ=?=
+From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        syzbot <syzbot+f4f1e871965064ae689e@syzkaller.appspotmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        asierra@xes-inc.com, ext-kimmo.rautkoski@vaisala.com,
+        Jiri Slaby <jslaby@suse.com>,
+        kai heng feng <kai.heng.feng@canonical.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        mika.westerberg@linux.intel.com, o.barta89@gmail.com,
+        paulburton@kernel.org, sr@denx.de,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        yegorslists@googlemail.com
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <b2844f63-d580-ddc2-b4ed-817eaa89a2c6@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Date:   Wed, 18 Dec 2019 09:55:59 +0900
+References: <20191213093357.GB2135612@kroah.com> <CACT4Y+beoeY9XwbQX7nDY_5EPMQwK+j3JZ9E-k6vhiZudEA1LA@mail.gmail.com>
+In-Reply-To: <CACT4Y+beoeY9XwbQX7nDY_5EPMQwK+j3JZ9E-k6vhiZudEA1LA@mail.gmail.com>
+Content-Type: text/plain; charset="ISO-2022-JP"
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Dec 17, 2019 at 09:27:13PM +0100, Jacek Anaszewski wrote:
-> On 12/17/19 6:21 PM, Greg Kroah-Hartman wrote:
-> > On Tue, Dec 17, 2019 at 05:23:13PM +0100, Uwe Kleine-König wrote:
-> >> On Tue, Dec 17, 2019 at 04:27:24PM +0100, Greg Kroah-Hartman wrote:
-> >>> On Tue, Dec 17, 2019 at 04:07:36PM +0100, Uwe Kleine-König wrote:
-> >>>> Usage is as follows:
-> >>>>
-> >>>> 	myled=ledname
-> >>>> 	tty=ttyS0
-> >>>>
-> >>>> 	echo tty > /sys/class/leds/$myled/trigger
-> >>>> 	cat /sys/class/tty/$tty/dev > /sys/class/leds/$myled/dev
-> >>>
-> >>> Is this the correct instructions?  Aren't you looking for a major/minor
-> >>> number instead in your sysfs file?
-> >>
-> >> This is correct, yes, at least it works as intended on my machine.
-> >>
-> >> /sys/class/tty/$tty/dev produces $major:$minor and that's what the
-> >> led-trigger consumes.
-> > 
-> > Ugh, nevermind, I totally read that wrong, I was thinking "echo" instead
-> > of cat.  My fault, what you wrote is correct.  Should that be documented
-> > somewhere in a Documentation/ABI/ file so that people know how to use
-> > this new sysfs file?  How are led triggers documented?
-> 
-> LED triggers have their corresponding entries in Documentation/ABI.
-> 
-> Uwe, you already did that for netdev trigger:
-> 
-> Documentation/ABI/testing/sysfs-class-led-trigger-netdev
-> 
-> It would be nice to have one for this too.
-> 
-> There are also less formal docs in Documentation/leds, e.g.:
-> 
-> Documentation/leds/ledtrig-usbport.rst
+Hmm, this is a surprising bug. syzbot provided a C reproducer, but the definition
+of "struct serial_struct" used in that reproducer is wrong. As a result, syzbot was
+reporting crash caused by passing wrong arguments. ;-)
 
-I'd put into Documentation/ABI/testing/sysfs-class-led-trigger-tty:
+close_delay field used in the C reproducer is sizeof(unsigned int) bytes rather than
+sizeof(unsigned short) bytes, thus fields after close_delay field are incorrectly
+interpreted.
 
-	What:           /sys/class/leds/<led>/dev
-	Date:           Dec 2019
-	KernelVersion:  5.6
-	Contact:        linux-leds@vger.kernel.org
-	Description:
-			Specifies $major:$minor of the triggering tty
+----------------------------------------
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/serial.h>
 
-Does this look reasonable?
+struct bad_serial_struct {
+        int     type;
+        int     line;
+        unsigned int    port;
+        int     irq;
+        int     flags;
+        int     xmit_fifo_size;
+        int     custom_divisor;
+        int     baud_base;
+        unsigned int    close_delay; /* Correct type is "unsigned short". */
+        char    io_type;
+        char    reserved_char[1];
+        int     hub6;
+        unsigned short  closing_wait;
+        unsigned short  closing_wait2;
+        unsigned char   *iomem_base;
+        unsigned short  iomem_reg_shift;
+        unsigned int    port_high;
+        unsigned long   iomap_base;
+};
 
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+int main(int argc, char *argv[])
+{
+        struct bad_serial_struct ss = { };
+        int fd = open("/dev/ttyS3", O_RDONLY);
+        ss.type = 0xa;
+        ss.line = 0x400000;
+        ss.port = 0x100;
+        ss.irq = 0;
+        ss.flags = 0x400000;
+        ss.xmit_fifo_size = 0;
+        ss.custom_divisor = 0;
+        ss.baud_base = 0x80000;
+        ss.close_delay = 0x200ff;
+        ss.io_type = 0;
+        ss.reserved_char[0] = 0x41;
+        ss.hub6 = 3;
+        ss.closing_wait = 0;
+        ss.closing_wait2 = 0x7c5;
+        ss.iomem_base = NULL;
+        ss.iomem_reg_shift = 0;
+        ss.port_high = 0;
+        ss.iomap_base = 0;
+        ioctl(fd, TIOCSSERIAL, &ss);
+        return 0;
+}
+----------------------------------------
