@@ -2,170 +2,153 @@ Return-Path: <SRS0=1HLL=2I=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A01FDC43603
-	for <linux-serial@archiver.kernel.org>; Wed, 18 Dec 2019 10:05:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D0CEC2D0CD
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Dec 2019 12:26:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 673902072B
-	for <linux-serial@archiver.kernel.org>; Wed, 18 Dec 2019 10:05:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3972521582
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Dec 2019 12:26:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="edu11RGn"
+	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="mtLFue7z"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725930AbfLRKFq (ORCPT
+        id S1726912AbfLRM0N (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 18 Dec 2019 05:05:46 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:45583 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725799AbfLRKFp (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 18 Dec 2019 05:05:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576663545;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FSkrFpm1DW1Y7i6HiHHtFhN9Nhr2jT7JhuCbqt9yG0o=;
-        b=edu11RGnoPKs0hoROEGujvU+jIRyisxuqOgSGqbu8W8n7Ndqo17SnRUn5ADWMV8fz2maKC
-        JPDkMeMJfPczJEIaE4O7y3MjXOVI7ma7wwPw7q5sMpZIJuLmyHtxvnsUo4OtqjBcoD6Dur
-        RBXjFsR4YMdo/SEGv83Qo0+gJGl4xgU=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-401-TBBothMrNE-88KafvOPhDQ-1; Wed, 18 Dec 2019 05:05:43 -0500
-Received: by mail-wr1-f71.google.com with SMTP id z10so649046wrt.21
-        for <linux-serial@vger.kernel.org>; Wed, 18 Dec 2019 02:05:43 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=FSkrFpm1DW1Y7i6HiHHtFhN9Nhr2jT7JhuCbqt9yG0o=;
-        b=S81OcEQrTYcQ019TWEbqPROrumhnB6/U+Det8pyIfSUNbQNZNAT+cnvufdEsKm9Cu8
-         w+tKGDPqqfefzmM/aFWuLLXXK8TMTxcg/flhNB4AWJj2m4pVcCDrVhlwgXSkL7x3yTn3
-         pbvnrY3jRLg7v1WbB6ALZDfzamZyO7inoC4P6qeTFa6XiFIHl/RsrUqvWR5FEqTxL+Ty
-         xcbEYcxQjXiGairuWz7SDVbuBXWJa9uYTVNNpg5uQJlKy802UW9cV6wbslDvu2JH3tMs
-         Es80Kiy+q/cj9005j5YtEmAJeLfMFOwdV8OYJbS3gMfhyA6D1UDw4kvcWV4QoFjfjW2K
-         pxwA==
-X-Gm-Message-State: APjAAAUZHrxKpmm5jK5JXnQsN1kWWcmJezGXz7BOnE9cOiAiV8tiaBPR
-        TSb+Ag8XqeMjKBpHQOp27GibtHOxEIngjqcdB+Gq/Zm2bewFudZaci3JqWNSk4gHeqmS/RGHmft
-        RaYt35KqpZ+GgLhPbYLvfZjpA
-X-Received: by 2002:adf:f54d:: with SMTP id j13mr499110wrp.19.1576663542540;
-        Wed, 18 Dec 2019 02:05:42 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxX6RhlxdEWJs66pu6RNx9WXgk/AjvVABJfgEXDOjUWKh9KkobAdo1xitp5e/cWXJ63qptzmA==
-X-Received: by 2002:adf:f54d:: with SMTP id j13mr499080wrp.19.1576663542320;
-        Wed, 18 Dec 2019 02:05:42 -0800 (PST)
-Received: from shalem.localdomain (2001-1c00-0c0c-fe00-7e79-4dac-39d0-9c14.cable.dynamic.v6.ziggo.nl. [2001:1c00:c0c:fe00:7e79:4dac:39d0:9c14])
-        by smtp.gmail.com with ESMTPSA id 5sm2130892wrh.5.2019.12.18.02.05.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Dec 2019 02:05:41 -0800 (PST)
-Subject: Re: [PATCH] serdev: Don't claim unsupported serial devices
-To:     Punit Agrawal <punit1.agrawal@toshiba.co.jp>,
-        linux-serial@vger.kernel.org
-Cc:     linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        nobuhiro1.iwamatsu@toshiba.co.jp, shrirang.bagul@canonical.com,
-        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johan Hovold <johan@kernel.org>
-References: <20191218065646.817493-1-punit1.agrawal@toshiba.co.jp>
-From:   Hans de Goede <hdegoede@redhat.com>
-Message-ID: <096046b6-324a-8496-8599-ed7e5ffc6e3c@redhat.com>
-Date:   Wed, 18 Dec 2019 11:05:40 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <20191218065646.817493-1-punit1.agrawal@toshiba.co.jp>
+        Wed, 18 Dec 2019 07:26:13 -0500
+Received: from mail-eopbgr20045.outbound.protection.outlook.com ([40.107.2.45]:6400
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726846AbfLRM0N (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 18 Dec 2019 07:26:13 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mlIGKJG3MjCW27qNdw2OfAtLTGi9R41j4/ufrvwUndb/GLbAP5apgxo0Jx7f1iq7dJ/gQc9x5qfGWXEZe9CEUNByb4wSePD6Pi3ZJHvVCvKDrb+Fyj/HRnzkWjPPGJ/M/Ardqu7jNiHQWzb75D2OFQPw+UMerbmRGcCjLFxxKYbTQbp8Kh4PTtJ8aSCNjyTAUdDN8GB0GhQNLUMYBy1lHgQvq9jaobEdEFHIxWp5tyHhhqyTK/0czu1TOH0qMYDtGRCg9IhuLq2xFCH4nspYSs98S17MkRdyHgvuLm2DC2MGdDtapl4/PsbinarbtDhoM7LdFMjg+VAPo2x9gBKpYQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nLvUbKN7N4wJzh0HYEMFRu1WTegTh5b3RqUq3BqhskE=;
+ b=hln9h68vdyHRyY+ETGVv3uuE5F/k32kNaFc6FoU1Lh7c+KJ3AGnLLogeyjvIDPhXH1UlnvtUxxCfh/HTWbew/tNTJp/KxoWewGW2SOYulS6gwdGfmwX7gxnNxS9lLjQeEcsZjcTexKVp/4z4sgsWctjqYTGm1o1wEGSF/8Ufl8f51/PTGCpuvl2+uMC1XVIN+54dIaeP1LpNPGXxxeDi14ujDGwkY0niaPaeTcsgPCibciY1iA8xCqHGxwlsOJRT2kO4UgmZRzlrECwoZewVQVEoqa+O37g1FxxdY+OYiLWoUone7wh7/NzgODChx/xG89fJzblkK4O6zIAiIq1MuQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nLvUbKN7N4wJzh0HYEMFRu1WTegTh5b3RqUq3BqhskE=;
+ b=mtLFue7zNlz18AADXyUEDYX2UcVQ9Qa4cwdocvoR9IALYVXe6dE1axCBDEARFPZ1E3EK6Yz6M7FNxiHqgD/oD9BESD0usBzGTZdA7y2mhqNHDzCp9xGJV7Qb7f81C7uKhqO5RTGq0kqgjcom0pKwz2mlhHX3hLscnd0bA0d571w=
+Received: from AM0PR04MB4481.eurprd04.prod.outlook.com (52.135.147.15) by
+ AM0PR04MB4339.eurprd04.prod.outlook.com (52.134.126.158) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.18; Wed, 18 Dec 2019 12:26:09 +0000
+Received: from AM0PR04MB4481.eurprd04.prod.outlook.com
+ ([fe80::505:87e7:6b49:3d29]) by AM0PR04MB4481.eurprd04.prod.outlook.com
+ ([fe80::505:87e7:6b49:3d29%7]) with mapi id 15.20.2559.012; Wed, 18 Dec 2019
+ 12:26:09 +0000
+From:   Peng Fan <peng.fan@nxp.com>
+To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "jslaby@suse.com" <jslaby@suse.com>
+CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>, Alice Guo <alice.guo@nxp.com>
+Subject: RE: [PATCH 2/3] tty: serial: lpuart: support UPIO_MEM32 for lpuart32
+Thread-Topic: [PATCH 2/3] tty: serial: lpuart: support UPIO_MEM32 for lpuart32
+Thread-Index: AQHVtU7MbgMKpyTk5UKlUKdGm+4doae/0R6g
+Date:   Wed, 18 Dec 2019 12:26:09 +0000
+Message-ID: <AM0PR04MB4481D6C5CD27F410359F53A788530@AM0PR04MB4481.eurprd04.prod.outlook.com>
+References: <1576637626-19317-1-git-send-email-peng.fan@nxp.com>
+ <1576637626-19317-4-git-send-email-peng.fan@nxp.com>
+In-Reply-To: <1576637626-19317-4-git-send-email-peng.fan@nxp.com>
+Accept-Language: en-US
 Content-Language: en-US
-X-MC-Unique: TBBothMrNE-88KafvOPhDQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=peng.fan@nxp.com; 
+x-originating-ip: [119.31.174.68]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: f20afbdc-ebab-40e0-198e-08d783b576aa
+x-ms-traffictypediagnostic: AM0PR04MB4339:|AM0PR04MB4339:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR04MB4339E7B14B0B32128080AC4288530@AM0PR04MB4339.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 0255DF69B9
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(366004)(136003)(346002)(39860400002)(376002)(189003)(199004)(5660300002)(6506007)(7696005)(54906003)(186003)(316002)(110136005)(2906002)(4326008)(86362001)(64756008)(26005)(81166006)(81156014)(8676002)(8936002)(52536014)(55016002)(66476007)(66556008)(71200400001)(76116006)(9686003)(44832011)(478600001)(33656002)(66946007)(66446008);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR04MB4339;H:AM0PR04MB4481.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: dae1DvmSm0TfgvCGAjakeAlOV4UHcrRSj7q1PUqlf+dLPxtnkRKVr0ktTiZgvaYuftoi/Z/B9fjzECDNr/ufgXll4Igik7puYeJtxMU8fEo9nhy1/ALPoaMWJh5vfYPWsGQyCCzUjwKBhQVx9r/RXCEss2PXn0AkR1/0PkSvB9jBh1FWbT1nHqXyvr2d85cQzMzZBqHFrIOOX5UXrABj3LuFCR6aC5GhDT3nEjg5bE6FqWDTgfHCam361TwnSfEGURfa7eTm3E6I9DXwJlkZ/8/sAEFiqttJtr8rSmSPalXVi7+mLSaMBIP/xAQvVI5VO4I/HXSbmpS6+cFwcBkPUdmMLvxBS8b5fiooplFI/dVrbUNxhg3f0P5oGK+QQvecIqjxQvIFopBsw5sHfVsW9HJnJX75IV90IkGJ54Z0HEGruZU/9kCT8omXdjaE75Fs
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f20afbdc-ebab-40e0-198e-08d783b576aa
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Dec 2019 12:26:09.6944
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: LD6HJ10KWbJIFufQfkuMUKdMwzd6eJZF7f7LxtuqJwGfhoDVvfV9Q2IUcOhmM5m9v+znG8p3eubMd/bOMpm0kQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4339
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+Hi Greg,
 
-On 18-12-2019 07:56, Punit Agrawal wrote:
-> Serdev sub-system claims all serial devices that are not already
-> enumerated. As a result, no device node is created for serial port on
-> certain boards such as the Apollo Lake based UP2. This has the
-> unintended consequence of not being able to raise the login prompt via
-> serial connection.
-> 
-> Introduce a blacklist to reject devices that should not be treated as
-> a serdev device. Add the Intel HS UART peripheral ids to the blacklist
-> to bring back serial port on SoCs carrying them.
-> 
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Punit Agrawal <punit1.agrawal@toshiba.co.jp>
-> Cc: Rob Herring <robh@kernel.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Johan Hovold <johan@kernel.org>
-> Cc: Hans de Goede <hdegoede@redhat.com>
+> Subject: [PATCH 2/3] tty: serial: lpuart: support UPIO_MEM32 for lpuart32
 
-Thank you for addressing this long standing issue.
+This patch was sent out wrongly. Not affect the other three patches which
+belongs the whole patch set described in cover-letter.
 
-The basic approach here looks good to me, once the minor
-comments from other reviewers are addressed you can add my:
+Should I sent out v2? Or you are fine if the other 3 patches are ok?
 
-Acked-by: Hans de Goede <hdegoede@redhat.com>
+Thanks,
+Peng.
 
-to the next version.
-
-Regards,
-
-Hans
-
-
-
+>=20
+> From: Peng Fan <peng.fan@nxp.com>
+>=20
+> "earlycon" no need to specify the value string since it uses stdout-path
+> parameters. However when earlycon and normal console are not using the
+> same uart port, we need specify value string to earlycon, this is what we=
+ need
+> to do when support dual linux using jailhouse hypervisor. The 2nd linux w=
+ill
+> use the uart of the 1st linux as earlycon.
+>=20
+> earlycon=3Dlpuart32,mmio32,0x5a060010,115200 not work for i.MX8QXP.
+> It is because lpuart32_early_console_setup not support little endian.
+>=20
+> Since the original code is to support UPIO_MEM32BE, so if not UPIO_MEM32,
+> we still take it as UPIO_MEM32BE
+>=20
+> Acked-by: Fugang Duan <fugang.duan@nxp.com>
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
 > ---
-> 
-> Hi,
-> 
-> The patch has been updated based on feedback recieved on the RFC[0].
-> 
-> Please consider merging if there are no objections.
-> 
-> Thanks,
-> Punit
-> 
-> [0] https://www.spinics.net/lists/linux-serial/msg36646.html
-> 
->   drivers/tty/serdev/core.c | 10 ++++++++++
->   1 file changed, 10 insertions(+)
-> 
-> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> index 226adeec2aed..0d64fb7d4f36 100644
-> --- a/drivers/tty/serdev/core.c
-> +++ b/drivers/tty/serdev/core.c
-> @@ -663,6 +663,12 @@ static acpi_status acpi_serdev_register_device(struct serdev_controller *ctrl,
->   	return AE_OK;
->   }
->   
-> +static const struct acpi_device_id serdev_blacklist_devices[] = {
-> +	{"INT3511", 0},
-> +	{"INT3512", 0},
-> +	{ },
-> +};
+>  drivers/tty/serial/fsl_lpuart.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpu=
+art.c index
+> 54c7735406f8..6ad0af073e62 100644
+> --- a/drivers/tty/serial/fsl_lpuart.c
+> +++ b/drivers/tty/serial/fsl_lpuart.c
+> @@ -2376,7 +2376,9 @@ static int __init
+> lpuart32_early_console_setup(struct earlycon_device *device,
+>  	if (!device->port.membase)
+>  		return -ENODEV;
+>=20
+> -	device->port.iotype =3D UPIO_MEM32BE;
+> +	if (device->port.iotype !=3D UPIO_MEM32)
+> +		device->port.iotype =3D UPIO_MEM32BE;
 > +
->   static acpi_status acpi_serdev_add_device(acpi_handle handle, u32 level,
->   					  void *data, void **return_value)
->   {
-> @@ -675,6 +681,10 @@ static acpi_status acpi_serdev_add_device(acpi_handle handle, u32 level,
->   	if (acpi_device_enumerated(adev))
->   		return AE_OK;
->   
-> +	/* Skip if black listed */
-> +	if (!acpi_match_device_ids(adev, serdev_blacklist_devices))
-> +		return AE_OK;
-> +
->   	if (acpi_serdev_check_resources(ctrl, adev))
->   		return AE_OK;
->   
-> 
+>  	device->con->write =3D lpuart32_early_write;
+>  	return 0;
+>  }
+> --
+> 2.16.4
 
