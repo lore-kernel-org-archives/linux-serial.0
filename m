@@ -4,47 +4,47 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72FEEC43603
-	for <linux-serial@archiver.kernel.org>; Wed, 18 Dec 2019 02:57:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F6C1C2D0D1
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Dec 2019 02:57:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3EDD2206D8
-	for <linux-serial@archiver.kernel.org>; Wed, 18 Dec 2019 02:57:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 04528206D8
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Dec 2019 02:57:07 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="g0fLgO1V"
+	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="OZ370daF"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726695AbfLRC5A (ORCPT
+        id S1726622AbfLRC4y (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Dec 2019 21:57:00 -0500
-Received: from mail-eopbgr10061.outbound.protection.outlook.com ([40.107.1.61]:24480
+        Tue, 17 Dec 2019 21:56:54 -0500
+Received: from mail-eopbgr10047.outbound.protection.outlook.com ([40.107.1.47]:24705
         "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726692AbfLRC5A (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Dec 2019 21:57:00 -0500
+        id S1726587AbfLRC4x (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 17 Dec 2019 21:56:53 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=m6Ns/OJpYxZ8UnzDg/18EJjWfd/4pz9ELPjD4Zrvv1wSVVsSV7Egdy1dt0mmxQPKKSGi3d5qR0T/WxGAjWs7GcxzTdzHz4eEP3+OEhmsx3027i9vwKw/kVzHKz0AdyTgCfNbIl2q9a+a9QRP09mplIJwM78+AwSDgaULNbXxlgMV1F5/65BBR1X2UY0pnqBvRJJVfIPygyJ1JoaUvY0TWmSGxGWibSOBDMCltSoYuCQFz0u3KPnjwElt719tKuukrCkRvTIFLJUcHUTmln6DJugoMUsr78FHrHIilaaMHc0IXnhDMGCnLR34GaWNj6Qlz63/4WW/cunVZ/RJui38CA==
+ b=B+N8sPPNFal0l0zF3wiMZ3k4MOClCc/PmlurA+A2Ne6Q/U3+Wbi5ljYEu3ZeCTSODb9FWnz29GOpD8zp1cPmrbSyivxxi3OQFL+dRfeW3hMMF3ejOZ9uMXmeGqWFkl6U0uVz7iAeOl/Lnyd9vR8ZouP9ZvRkubQ723MN212oNDNq3Is8WoRvlQSlDkME7k1Tn00hqcTbXRnZ9TU2znVyEUWW6dzuxMhl+THge3e0XyMGSgxE68oeXbfzu2Pu8dreGOhtKS4l4REoPYpaKqlxIhY7E67arjiAETnlfmkPP+9tRztjCxPebOvK4DBX/2Us9y02TGWLWocxSvwAvDvK8g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O5p2VusnXK40CMyc4GtZRup+0926cc6bW/dyjLs9kp0=;
- b=n/JSPnqd8b7Nv9r9/irLapFKj2YW/Hl4W7Wr61Sm1wvrYV8LIAX8CjhlRljFfCeQlO9m9CztpB4gujvUHGgXpGvfmO2dVSKi5/H2j5MH7B/aOQWxQCOKY9P4DRCKvP0Lbl1lAyay6FXeOqJh2NmfY60ZZvV8MBPdTuVjKuaI+3RIk3MMVlF6w/tSggEQifoMO0RYbPMIqCjaDdjgc56ViZTez++de63sz88ohLMQ9+49nq2wyjwKIbspbkPLbqvuOFoDK3nud5ilvwGrrF205jayj0CpND13wY0Gu+IPm0FPTIlxbg+udFA1o5sA91hJo6bVoYXgZ03xqlt4mYZLyw==
+ bh=qdDZuXIFMizBqFt2pPoTZPsYd8mBPP2ZSCynFg9GG3U=;
+ b=aXLhYQTR0EbhDDtNNiyLrjwgBT1PemXcP8MngwQZbJ36ac2kBrfwKZIzz/6/+Lx4+lpHAmxlLt880vUgZxssz+bFwCURggwYQZdbmtjAgWeDIQDjk+sN/Ph8QZ5S/KrBnCIixU6pGoUfj2s8Xx4jw8PGCxb4xph4GchaN8UkWq4cJMrKOURsbuuVFM5RySekNU70Yi0mUVtZoAllfqUX8OQ3fGqtkyXCsNaEFttqz5pPdSfBL+rlSWPHpPPfbohe3oaK8FY4PNmBRi04T+jD2rvK2juRBHfd23cyeDjGLO0/uigYs85y3ccjzzLyKgzuxLCklS328ibthkLi+mIlTQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O5p2VusnXK40CMyc4GtZRup+0926cc6bW/dyjLs9kp0=;
- b=g0fLgO1VUbR1GONX0oH2UvRRF8HezbQN+jpdccl2aGWg8mFev9oBYBXYZV3HauzZb8krl75moN0AnXoV9WBhLqbSjhdKs0oNshjnI50jXZSFn682snN+77NYieqWofsWja7f1mqkCoMqcSqpY8EpsDV5sXhnZeD5b7FEz9vxG1U=
+ bh=qdDZuXIFMizBqFt2pPoTZPsYd8mBPP2ZSCynFg9GG3U=;
+ b=OZ370daF0w1oLO4HNpKEvaK0uMdIuo5RFHvqcObbiDE2yBXT6S8JxnrRX5Xw+r9tLhzjWnRehsoP0E02FDpl/TsrvCY+5f5gEog3g+jTi37MJmdz3xKMmu/AfKUMw+TmA7HX9AjWfV410yftrXBjwNf9CjyWLqBtS1fWoQ6cGQ8=
 Received: from AM0PR04MB4481.eurprd04.prod.outlook.com (52.135.147.15) by
  AM0PR04MB5715.eurprd04.prod.outlook.com (20.178.117.90) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.15; Wed, 18 Dec 2019 02:56:56 +0000
+ 15.20.2538.15; Wed, 18 Dec 2019 02:56:49 +0000
 Received: from AM0PR04MB4481.eurprd04.prod.outlook.com
  ([fe80::505:87e7:6b49:3d29]) by AM0PR04MB4481.eurprd04.prod.outlook.com
  ([fe80::505:87e7:6b49:3d29%7]) with mapi id 15.20.2559.012; Wed, 18 Dec 2019
- 02:56:56 +0000
+ 02:56:49 +0000
 From:   Peng Fan <peng.fan@nxp.com>
 To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
         "jslaby@suse.com" <jslaby@suse.com>
@@ -52,12 +52,12 @@ CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         dl-linux-imx <linux-imx@nxp.com>, Alice Guo <alice.guo@nxp.com>,
         Peng Fan <peng.fan@nxp.com>
-Subject: [PATCH 3/3] tty: serial: fsl_lpuart: drop earlycon entry for i.MX8QXP
-Thread-Topic: [PATCH 3/3] tty: serial: fsl_lpuart: drop earlycon entry for
- i.MX8QXP
-Thread-Index: AQHVtU7O/Pw5Mf6Bq0uOwGYlxwXgIw==
-Date:   Wed, 18 Dec 2019 02:56:55 +0000
-Message-ID: <1576637626-19317-5-git-send-email-peng.fan@nxp.com>
+Subject: [PATCH 2/3] tty: serial: fsl_lpuart: support UPIO_MEM32 for lpuart32
+Thread-Topic: [PATCH 2/3] tty: serial: fsl_lpuart: support UPIO_MEM32 for
+ lpuart32
+Thread-Index: AQHVtU7LiuHFnFngAk26kRoZ/hfTHg==
+Date:   Wed, 18 Dec 2019 02:56:49 +0000
+Message-ID: <1576637626-19317-3-git-send-email-peng.fan@nxp.com>
 References: <1576637626-19317-1-git-send-email-peng.fan@nxp.com>
 In-Reply-To: <1576637626-19317-1-git-send-email-peng.fan@nxp.com>
 Accept-Language: en-US
@@ -74,29 +74,29 @@ x-ms-exchange-messagesentrepresentingtype: 1
 x-originating-ip: [119.31.174.67]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: d1bc45a5-2243-4ac5-9b74-08d78365f0da
+x-ms-office365-filtering-correlation-id: 486deeee-3b8c-4bee-826b-08d78365ed53
 x-ms-traffictypediagnostic: AM0PR04MB5715:|AM0PR04MB5715:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR04MB5715693FC1FA69C25B8CE3A288530@AM0PR04MB5715.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:372;
+x-microsoft-antispam-prvs: <AM0PR04MB5715ECF7B9A65214DF7BFFEB88530@AM0PR04MB5715.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
 x-forefront-prvs: 0255DF69B9
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(396003)(376002)(346002)(136003)(366004)(189003)(199004)(110136005)(54906003)(316002)(71200400001)(5660300002)(26005)(186003)(66476007)(86362001)(66946007)(64756008)(66446008)(6506007)(52116002)(66556008)(8936002)(81156014)(81166006)(4326008)(2906002)(478600001)(36756003)(44832011)(2616005)(6512007)(4744005)(6486002)(8676002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR04MB5715;H:AM0PR04MB4481.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(396003)(376002)(346002)(136003)(366004)(189003)(199004)(110136005)(54906003)(316002)(71200400001)(5660300002)(26005)(186003)(66476007)(86362001)(66946007)(64756008)(66446008)(6506007)(52116002)(66556008)(8936002)(81156014)(81166006)(4326008)(2906002)(478600001)(36756003)(44832011)(2616005)(6512007)(6486002)(8676002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR04MB5715;H:AM0PR04MB4481.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: nxp.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: x4AdkUriB6lIYEH/pdiR53ao2Z9msYOqf8HftMHE+ZVCjCXfWquH0424gXjH0vTLZOV/NcNzQtqGUrCdoc0Io1LW5dzHwvxITcDOUKvAoGzIqoqrB4pqxarvzRDQVP1eFXDAMciUB6xV3ma/vI8KAe5kKMjXG53SukHXMMRzKwoDddYynJLh+++EWXsFrzGUQyprWcUhmO3bpN6fhXkLfDsVNvV0SqcV0vXE1CH5WABEUkIvkLNfY+mGVuRMHVixDjoYRzmp2SmL3d8P6KKxSrX+3KN/EI61twCYyjuaj1IfwAiIZ+D/zR9HNy5CzF0YIUZ+NXFlExIWh54jVNQ/9q/d+s3DyzCoJ40OJVKMIOl1RBDDI+4Dteg3CP/I53CnPUNnpC5q9AoXU6yZi5Fxu9cY1RbDd4cnh+nDY+xvCbQIYKchXf08t/t7Yr8yv40m
+x-microsoft-antispam-message-info: 0WiNHKeT+PMaHXHJfooGSB/KibK568b5zMFhK2p8rxYZUfTvYR0kZZnxMaSCBRoN/2ogB11EzK0VUhHgrahG29LJtWlokZivkBtpoqGBBgTXV9qyP+oI9zHLH2NWUIC6hNaavwc3d9wQzt2ZIm1BIE+LwsmEwPIg2ewdziejwqxex468yKUKjyvwHZ9vCL2Qwtmo2rKSssILPvgVsBjLMFnzVeQJxF2MVrHUPvtaicIjrScwJPVfdoKBCSAmapofDnyD1SkhXX6OmWR+pb6snwgXFd45NBcTF3T6WpdibbuBCzEhLj3JivuVRphLv5fRVn21kgVJ0ctoSi9iGjmEoEv5zpNESDD0RoMkGw5ldrOx6JSrfI8f565eUrfPXMzyU6OczYKuG0UnYMSZ/rYqAitmuE0c/39vu3bK3N1mYx76glTGy0/gQch4VHdvxAQP
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d1bc45a5-2243-4ac5-9b74-08d78365f0da
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Dec 2019 02:56:56.2962
+X-MS-Exchange-CrossTenant-Network-Message-Id: 486deeee-3b8c-4bee-826b-08d78365ed53
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Dec 2019 02:56:49.6700
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NJmsq/CjiZwpz/MlfUxf4LhhAJ9zG2f4Av+HZw779bYcGJy89LEj6K9eyshRTOqG792P3o0qA/g6H6qXTyPZlw==
+X-MS-Exchange-CrossTenant-userprincipalname: KIpXBSsXVkVjb7eZFZIaVsmnZ1n5xLTJjISUFPsswJvXW/vpomhBquoo6MPxz1164sA5paYoSl6SeAEuNGNSVQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5715
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
@@ -105,32 +105,42 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Peng Fan <peng.fan@nxp.com>
 
-i.MX8QXP lpuart is compatible with i.MX7ULP, so no need
-an extra  entry for i.MX8QXP.
+"earlycon" no need to specify the value string since it uses
+stdout-path parameters. However when earlycon and normal console
+are not using the same uart port, we need specify value string
+to earlycon, this is what we need to do when support dual linux
+using jailhouse hypervisor. The 2nd linux will use the uart
+of the 1st linux as earlycon.
 
+earlycon=3Dlpuart32,mmio32,0x5a060010,115200 not work for i.MX8QXP.
+It is because lpuart32_early_console_setup not support little endian.
+
+Since the original code is to support UPIO_MEM32BE, so if not
+UPIO_MEM32, we still take it as UPIO_MEM32BE
+
+Acked-by: Fugang Duan <fugang.duan@nxp.com>
 Signed-off-by: Peng Fan <peng.fan@nxp.com>
 ---
- drivers/tty/serial/fsl_lpuart.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/tty/serial/fsl_lpuart.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuar=
 t.c
-index 6ad0af073e62..00cf72e9e9e8 100644
+index 54c7735406f8..6ad0af073e62 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -2398,7 +2398,6 @@ static int __init lpuart32_imx_early_console_setup(st=
-ruct earlycon_device *devic
- OF_EARLYCON_DECLARE(lpuart, "fsl,vf610-lpuart", lpuart_early_console_setup=
-);
- OF_EARLYCON_DECLARE(lpuart32, "fsl,ls1021a-lpuart", lpuart32_early_console=
-_setup);
- OF_EARLYCON_DECLARE(lpuart32, "fsl,imx7ulp-lpuart", lpuart32_imx_early_con=
-sole_setup);
--OF_EARLYCON_DECLARE(lpuart32, "fsl,imx8qxp-lpuart", lpuart32_imx_early_con=
-sole_setup);
+@@ -2376,7 +2376,9 @@ static int __init lpuart32_early_console_setup(struct=
+ earlycon_device *device,
+ 	if (!device->port.membase)
+ 		return -ENODEV;
 =20
- #define LPUART_CONSOLE	(&lpuart_console)
- #define LPUART32_CONSOLE	(&lpuart32_console)
+-	device->port.iotype =3D UPIO_MEM32BE;
++	if (device->port.iotype !=3D UPIO_MEM32)
++		device->port.iotype =3D UPIO_MEM32BE;
++
+ 	device->con->write =3D lpuart32_early_write;
+ 	return 0;
+ }
 --=20
 2.16.4
 
