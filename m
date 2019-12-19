@@ -2,121 +2,74 @@ Return-Path: <SRS0=071p=2J=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E94E1C3F68F
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 08:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E9BCC2D0C1
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 09:25:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C93702465E
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 08:57:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D82BD2465E
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 09:25:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726620AbfLSI5h (ORCPT
+        id S1726620AbfLSJZH (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Dec 2019 03:57:37 -0500
-Received: from mo-csw1515.securemx.jp ([210.130.202.154]:42438 "EHLO
-        mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726591AbfLSI5h (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Dec 2019 03:57:37 -0500
-Received: by mo-csw.securemx.jp (mx-mo-csw1515) id xBJ8vJro018437; Thu, 19 Dec 2019 17:57:19 +0900
-X-Iguazu-Qid: 34tKThYsqI7CuVd7ye
-X-Iguazu-QSIG: v=2; s=0; t=1576745839; q=34tKThYsqI7CuVd7ye; m=O3BnQ2bs5DsNfd7TZPZJZDHDPfXbewPgW32ALy13FeM=
-Received: from imx12.toshiba.co.jp (imx12.toshiba.co.jp [61.202.160.132])
-        by relay.securemx.jp (mx-mr1511) id xBJ8vHQN019037;
-        Thu, 19 Dec 2019 17:57:18 +0900
-Received: from enc02.toshiba.co.jp ([61.202.160.51])
-        by imx12.toshiba.co.jp  with ESMTP id xBJ8vHvf001484;
-        Thu, 19 Dec 2019 17:57:17 +0900 (JST)
-Received: from hop101.toshiba.co.jp ([133.199.85.107])
-        by enc02.toshiba.co.jp  with ESMTP id xBJ8vH2O017194;
-        Thu, 19 Dec 2019 17:57:17 +0900
-From:   Punit Agrawal <punit1.agrawal@toshiba.co.jp>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        <linux-serial@vger.kernel.org>,
-        "ACPI Devel Maling List" <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        <nobuhiro1.iwamatsu@toshiba.co.jp>, <shrirang.bagul@canonical.com>,
-        Stable <stable@vger.kernel.org>, Rob Herring <robh@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Hans de Goede" <hdegoede@redhat.com>
-Subject: Re: [PATCH] serdev: Don't claim unsupported serial devices
-References: <20191218065646.817493-1-punit1.agrawal@toshiba.co.jp>
-        <20191218085648.GI22665@localhost>
-        <CAJZ5v0h-bhg4+kwTci5_wZhn9rYN=YXoCbSTVs4vPRzRFOjU8A@mail.gmail.com>
-        <20191219085114.GQ22665@localhost>
-Date:   Thu, 19 Dec 2019 17:58:08 +0900
-In-Reply-To: <20191219085114.GQ22665@localhost> (Johan Hovold's message of
-        "Thu, 19 Dec 2019 09:51:14 +0100")
-X-TSB-HOP: ON
-Message-ID: <875zicofof.fsf@kokedama.swc.toshiba.co.jp>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Thu, 19 Dec 2019 04:25:07 -0500
+Received: from ns.iliad.fr ([212.27.33.1]:38030 "EHLO ns.iliad.fr"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726599AbfLSJZH (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 19 Dec 2019 04:25:07 -0500
+Received: from ns.iliad.fr (localhost [127.0.0.1])
+        by ns.iliad.fr (Postfix) with ESMTP id ABD7D20404;
+        Thu, 19 Dec 2019 10:25:05 +0100 (CET)
+Received: from [192.168.108.51] (freebox.vlq16.iliad.fr [213.36.7.13])
+        by ns.iliad.fr (Postfix) with ESMTP id 966352040A;
+        Thu, 19 Dec 2019 10:25:05 +0100 (CET)
+Subject: Re: [PATCH 08/10] tty: serial: samsung_tty: use 'unsigned int' not
+ 'unsigned'
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Christoph Hellwig <hch@infradead.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jslaby@suse.com>
+References: <20191210143706.3928480-1-gregkh@linuxfoundation.org>
+ <20191210143706.3928480-8-gregkh@linuxfoundation.org>
+ <eb3cf8f9-3606-c2d6-ad90-4388a52c320b@free.fr>
+ <20191212110834.GB1490894@kroah.com> <20191212160949.GA10815@infradead.org>
+ <20191212161234.GA1673430@kroah.com>
+From:   Marc Gonzalez <marc.w.gonzalez@free.fr>
+Message-ID: <9339baa1-4a4b-ad12-e7e5-ba7b80d18031@free.fr>
+Date:   Thu, 19 Dec 2019 10:25:05 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20191212161234.GA1673430@kroah.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: ClamAV using ClamSMTP ; ns.iliad.fr ; Thu Dec 19 10:25:05 2019 +0100 (CET)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Johan Hovold <johan@kernel.org> writes:
+On 12/12/2019 17:12, Greg Kroah-Hartman wrote:
 
-> On Thu, Dec 19, 2019 at 09:39:57AM +0100, Rafael J. Wysocki wrote:
->> On Wed, Dec 18, 2019 at 9:56 AM Johan Hovold <johan@kernel.org> wrote:
->> >
->> > On Wed, Dec 18, 2019 at 03:56:46PM +0900, Punit Agrawal wrote:
->> > > Serdev sub-system claims all serial devices that are not already
->> > > enumerated. As a result, no device node is created for serial port on
->> > > certain boards such as the Apollo Lake based UP2. This has the
->> > > unintended consequence of not being able to raise the login prompt via
->> > > serial connection.
->> > >
->> > > Introduce a blacklist to reject devices that should not be treated as
->> > > a serdev device. Add the Intel HS UART peripheral ids to the blacklist
->> > > to bring back serial port on SoCs carrying them.
->> > >
->> > > Cc: stable@vger.kernel.org
->> > > Signed-off-by: Punit Agrawal <punit1.agrawal@toshiba.co.jp>
->> > > Cc: Rob Herring <robh@kernel.org>
->> > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->> > > Cc: Johan Hovold <johan@kernel.org>
->> > > Cc: Hans de Goede <hdegoede@redhat.com>
->> > > ---
->> > >
->> > > Hi,
->> > >
->> > > The patch has been updated based on feedback recieved on the RFC[0].
->> > >
->> > > Please consider merging if there are no objections.
->> >
->> > Rafael, I vaguely remember you arguing for a white list when we
->> > discussed this at some conference. Do you have any objections to the
->> > blacklist approach taken here?
->> 
->> As a rule, I prefer whitelisting, because it only enables the feature
->> for systems where it has been tested and confirmed to work.
->> 
->> However, if you are convinced that in this particular case the feature
->> should work on the vast majority of systems with a few possible
->> exceptions, blacklisting is fine too.
->> 
->> It all depends on what the majority is, at least in principle.
+> On Thu, Dec 12, 2019 at 08:09:49AM -0800, Christoph Hellwig wrote:
 >
-> Ok, thanks. I don't have a preference either way in this case simply
-> because I don't know the distribution you refer to.
->
-> But if Hans thinks blacklisting is the way to go then let's do that. We
-> haven't had that many reports about this, but if that were to change
-> down the line, I guess we can always switch to whitelisting.
->
-> Punit, feel free to add my
->
-> Acked-by: Johan Hovold <johan@kernel.org>
->
-> after addressing the review comments you've gotten so far.
+>> On Thu, Dec 12, 2019 at 12:08:34PM +0100, Greg Kroah-Hartman wrote:
+>>
+>>> Yes.  It's a long-time checkpatch warning, it's good to be explicit for
+>>> this type of thing.
+>>
+>> There is literally no practical benefit going either way.  It is
+>> just checkpatch forcing one personal opinion on people.
+> 
+> Fair enough, but, I was trying to align up the variables to be the same
+> type that was then used in a function call.  That's the only reason I
+> made this change.
 
-Thanks Johan.
+Do you type 'long long unsigned int' for an ULL?
 
-I will post a new version with the updates and acks.
+Regards.
