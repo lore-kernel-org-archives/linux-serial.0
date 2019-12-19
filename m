@@ -2,83 +2,193 @@ Return-Path: <SRS0=071p=2J=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BFE8C43603
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 09:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE9DBC2D0C0
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 09:40:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E182C24685
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 09:36:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9EB0224679
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 09:40:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726652AbfLSJg0 (ORCPT
+        id S1726867AbfLSJkD (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Dec 2019 04:36:26 -0500
-Received: from regular1.263xmail.com ([211.150.70.195]:49736 "EHLO
-        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726620AbfLSJg0 (ORCPT
+        Thu, 19 Dec 2019 04:40:03 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:39269 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726801AbfLSJkD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Dec 2019 04:36:26 -0500
-Received: from localhost (unknown [192.168.167.172])
-        by regular1.263xmail.com (Postfix) with ESMTP id D8A67BC9;
-        Thu, 19 Dec 2019 17:36:01 +0800 (CST)
-X-MAIL-GRAY: 0
-X-MAIL-DELIVERY: 1
-X-ADDR-CHECKED4: 1
-X-ANTISPAM-LEVEL: 2
-X-SKE-CHECKED: 1
-X-ABS-CHECKED: 1
-Received: from [192.168.30.14] (42.17.110.36.static.bjtelecom.net [36.110.17.42])
-        by smtp.263.net (postfix) whith ESMTP id P31486T140079980852992S1576748159913946_;
-        Thu, 19 Dec 2019 17:36:01 +0800 (CST)
-X-IP-DOMAINF: 1
-X-UNIQUE-TAG: <8333cc4fcc79c2999bf3f5f41739d6d9>
-X-RL-SENDER: chengang@emindsoft.com.cn
-X-SENDER: chengang@emindsoft.com.cn
-X-LOGIN-NAME: chengang@emindsoft.com.cn
-X-FST-TO: lvlisong@emindsoft.com.cn
-X-SENDER-IP: 36.110.17.42
-X-ATTACHMENT-NUM: 0
-X-DNS-TYPE: 5
-Subject: Re: [PATCH] drivers: tty: serial: 8250: fintek: Can enable or disable
- irq sharing based on isa or pci bus
-From:   Chen Gang <chengang@emindsoft.com.cn>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     gregkh@linuxfoundation.org, jslaby@suse.com, sr@denx.de,
-        mika.westerberg@linux.intel.com, yegorslists@googlemail.com,
-        yuehaibing@huawei.com, haolee.swjtu@gmail.com, dsterba@suse.com,
-        mojha@codeaurora.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lv Li-song <lvlisong@emindsoft.com.cn>
-References: <20191213051717.2058-1-chengang@emindsoft.com.cn>
- <20191213105033.GT32742@smile.fi.intel.com>
- <758a0ca9-8f81-1a10-d9e1-11f86fac3de1@emindsoft.com.cn>
- <20191216095120.GN32742@smile.fi.intel.com>
- <2c4cba36-5833-ca08-4153-2061edf33186@emindsoft.com.cn>
-Message-ID: <1d0dae5a-cf47-1682-de62-468f60fc621a@emindsoft.com.cn>
-Date:   Thu, 19 Dec 2019 17:35:59 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Thu, 19 Dec 2019 04:40:03 -0500
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1ihsHi-0004Ld-Nl; Thu, 19 Dec 2019 10:39:54 +0100
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1ihsHg-0004Av-Tu; Thu, 19 Dec 2019 10:39:52 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>
+Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH v5 1/3] tty: rename tty_kopen() and add new function tty_kopen_shared()
+Date:   Thu, 19 Dec 2019 10:39:45 +0100
+Message-Id: <20191219093947.15502-2-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.24.0
+In-Reply-To: <20191219093947.15502-1-u.kleine-koenig@pengutronix.de>
+References: <20191219093947.15502-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <2c4cba36-5833-ca08-4153-2061edf33186@emindsoft.com.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-After check the linux-next tree, the core content is already fixed by
-the patch "4da22f1418cb serial: 8250_fintek: fix the mismatched IRQ
-mode" (it was applied on 2016-05-27).
+Introduce a new function tty_kopen_shared() that yields a struct
+tty_struct. The semantic difference to tty_kopen() is that the tty is
+expected to be used already. So rename tty_kopen() to
+tty_kopen_exclusive() for clearness, adapt the single user and put the
+common code in a new static helper function.
 
-And it looks my original modification for 8250_pnp.c is unnecessary, I
-guess originally I only wanted to make sure it should work well, but did
-not cleanup the code.
+tty_kopen_shared is to be used to implement an LED trigger for tty
+devices in one of the next patches.
 
-So this patch is useless, sorry to bother you. And again, thank you for
-reviewing the code.
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/staging/speakup/spk_ttyio.c |  2 +-
+ drivers/tty/tty_io.c                | 58 ++++++++++++++++++++---------
+ include/linux/tty.h                 |  5 ++-
+ 3 files changed, 44 insertions(+), 21 deletions(-)
 
+diff --git a/drivers/staging/speakup/spk_ttyio.c b/drivers/staging/speakup/spk_ttyio.c
+index 5a9eff08cb96..e9db06eae875 100644
+--- a/drivers/staging/speakup/spk_ttyio.c
++++ b/drivers/staging/speakup/spk_ttyio.c
+@@ -147,7 +147,7 @@ static int spk_ttyio_initialise_ldisc(struct spk_synth *synth)
+ 	if (ret)
+ 		return ret;
+ 
+-	tty = tty_kopen(dev);
++	tty = tty_kopen_exclusive(dev);
+ 	if (IS_ERR(tty))
+ 		return PTR_ERR(tty);
+ 
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index a1453fe10862..b718666ce73c 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -1875,22 +1875,7 @@ static struct tty_driver *tty_lookup_driver(dev_t device, struct file *filp,
+ 	return driver;
+ }
+ 
+-/**
+- *	tty_kopen	-	open a tty device for kernel
+- *	@device: dev_t of device to open
+- *
+- *	Opens tty exclusively for kernel. Performs the driver lookup,
+- *	makes sure it's not already opened and performs the first-time
+- *	tty initialization.
+- *
+- *	Returns the locked initialized &tty_struct
+- *
+- *	Claims the global tty_mutex to serialize:
+- *	  - concurrent first-time tty initialization
+- *	  - concurrent tty driver removal w/ lookup
+- *	  - concurrent tty removal from driver table
+- */
+-struct tty_struct *tty_kopen(dev_t device)
++static struct tty_struct *tty_kopen(dev_t device, int shared)
+ {
+ 	struct tty_struct *tty;
+ 	struct tty_driver *driver;
+@@ -1905,7 +1890,7 @@ struct tty_struct *tty_kopen(dev_t device)
+ 
+ 	/* check whether we're reopening an existing tty */
+ 	tty = tty_driver_lookup_tty(driver, NULL, index);
+-	if (IS_ERR(tty))
++	if (IS_ERR(tty) || shared)
+ 		goto out;
+ 
+ 	if (tty) {
+@@ -1923,7 +1908,44 @@ struct tty_struct *tty_kopen(dev_t device)
+ 	tty_driver_kref_put(driver);
+ 	return tty;
+ }
+-EXPORT_SYMBOL_GPL(tty_kopen);
++
++/**
++ *	tty_kopen_exclusive	-	open a tty device for kernel
++ *	@device: dev_t of device to open
++ *
++ *	Opens tty exclusively for kernel. Performs the driver lookup,
++ *	makes sure it's not already opened and performs the first-time
++ *	tty initialization.
++ *
++ *	Returns the locked initialized &tty_struct
++ *
++ *	Claims the global tty_mutex to serialize:
++ *	  - concurrent first-time tty initialization
++ *	  - concurrent tty driver removal w/ lookup
++ *	  - concurrent tty removal from driver table
++ */
++struct tty_struct *tty_kopen_exclusive(dev_t device)
++{
++	return tty_kopen(device, 0);
++}
++EXPORT_SYMBOL_GPL(tty_kopen_exclusive);
++
++/**
++ *	tty_kopen_shared	-	open a tty device for shared in-kernel use
++ *	@device: dev_t of device to open
++ *
++ *	Opens an already existing tty
++ *	rnel. Performs the driver lookup,
++ *	makes sure it's not already opened and performs the first-time
++ *	tty initialization.
++ *
++ *	Locking is identical to tty_kopen() above.
++ */
++struct tty_struct *tty_kopen_shared(dev_t device)
++{
++	return tty_kopen(device, 1);
++}
++EXPORT_SYMBOL_GPL(tty_kopen_shared);
+ 
+ /**
+  *	tty_open_by_driver	-	open a tty device
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index bfa4e2ee94a9..d0bcf3226fb2 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -411,7 +411,8 @@ extern struct tty_struct *get_current_tty(void);
+ /* tty_io.c */
+ extern int __init tty_init(void);
+ extern const char *tty_name(const struct tty_struct *tty);
+-extern struct tty_struct *tty_kopen(dev_t device);
++extern struct tty_struct *tty_kopen_exclusive(dev_t device);
++extern struct tty_struct *tty_kopen_shared(dev_t device);
+ extern void tty_kclose(struct tty_struct *tty);
+ extern int tty_dev_name_to_number(const char *name, dev_t *number);
+ extern int tty_ldisc_lock(struct tty_struct *tty, unsigned long timeout);
+@@ -436,7 +437,7 @@ static inline int __init tty_init(void)
+ { return 0; }
+ static inline const char *tty_name(const struct tty_struct *tty)
+ { return "(none)"; }
+-static inline struct tty_struct *tty_kopen(dev_t device)
++static inline struct tty_struct *tty_kopen_exclusive(dev_t device)
+ { return ERR_PTR(-ENODEV); }
+ static inline void tty_kclose(struct tty_struct *tty)
+ { }
+-- 
+2.24.0
 
