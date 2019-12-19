@@ -2,93 +2,178 @@ Return-Path: <SRS0=071p=2J=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 592BFC43603
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 07:34:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8652CC43603
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 08:20:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2C892206D7
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 07:34:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4F0472465E
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 08:20:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576740860;
-	bh=YUYFcOfbg1jPV/4vhcRgtLTZCNFMFJDQ7aMO+SQ3VKg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=h3rpVv5LfZn8Wr9StM+AB6LTeCTNu/xMdD80YEf+svSIYr4/nyqjS5ZSf7eECzRQo
-	 EqT3XDv7p0xGuaAaX4POtnrDpxBvZyU5NoqWvdmW0Kc7mdyoX7iIa419hKL611qzI8
-	 Ei746HQllyi90Rdi7vaXvVcpkHJ0bDPJTYQPtIrY=
+	s=default; t=1576743611;
+	bh=ep6dfch26/sju6OYnNCOEEdN1gdMsvc07IzfLFpfFE0=;
+	h=Date:From:To:Cc:Subject:List-ID:From;
+	b=Hewt+cS/BHtH1e+aKmAbLbPRhyGPEW14hxTanS1jeYYOAJnYdQMQji6f871LjX087
+	 qXv9gLx0p+Zb55w4u7gI6LowI6/sGHc1SorcagJyegBqVV8bJVh03OfzBpqIe9XvI6
+	 //C1cxrBGiYRBLSLAUBzoLK4jCco7NMBAk2QY8tc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726591AbfLSHeT (ORCPT
+        id S1726463AbfLSIUK (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Dec 2019 02:34:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44466 "EHLO mail.kernel.org"
+        Thu, 19 Dec 2019 03:20:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34784 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726582AbfLSHeT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Dec 2019 02:34:19 -0500
+        id S1726439AbfLSIUK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 19 Dec 2019 03:20:10 -0500
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9A1D4206D7;
-        Thu, 19 Dec 2019 07:34:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 18A4D227BF;
+        Thu, 19 Dec 2019 08:20:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576740859;
-        bh=YUYFcOfbg1jPV/4vhcRgtLTZCNFMFJDQ7aMO+SQ3VKg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xst2hQwWkpPAmcrd/XM4MHKdbWCSXEksYobsx2DWGZMu7Cvm5Qym5BeWj+Qp3XC6J
-         362xZWuo/Hf2jBK8DcjZRUFMNeJtFU1EZK6wQA5PwQKX+J+9HjGd9okhf4RDUfSW97
-         vNWTmK3dtM9wn2Zra/mKXk0V752Ng3NkhbPqzbCo=
-Date:   Thu, 19 Dec 2019 08:34:16 +0100
+        s=default; t=1576743609;
+        bh=ep6dfch26/sju6OYnNCOEEdN1gdMsvc07IzfLFpfFE0=;
+        h=Date:From:To:Cc:Subject:From;
+        b=zvvebl13loZZzfUrtPdbyzYc03Rrn5bAspkQpza+mt3yHza7Xgc6rsCqyvukJ3e8m
+         wn90fwt7X7/A9UceN/T0eJywb50n0s/2iVa8C2qI//28HzUEkgCNZmrkQ02Ho0h7eI
+         3Jx1yVdR9ZFotii7WsD6TjyRJSYYxpVjZ0flNk4M=
+Date:   Thu, 19 Dec 2019 09:20:06 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     kbuild test robot <lkp@intel.com>
-Cc:     Dmitry Safonov <dima@arista.com>, kbuild-all@lists.01.org,
+To:     Dmitry Safonov <dima@arista.com>,
+        Russell King <linux@armlinux.org.uk>,
         linux-serial@vger.kernel.org
-Subject: Re: [tty:tty-testing 23/75] drivers/tty/serial/21285.c:44:41: error:
- subscripted value is neither array nor pointer nor vector
-Message-ID: <20191219073416.GA961893@kroah.com>
-References: <201912191529.6kIYPFPw%lkp@intel.com>
+Cc:     Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org,
+        kbuild test robot <lkp@intel.com>
+Subject: [PATCH] tty: serial: 21285: stop using the unused[] variable from
+ struct uart_port
+Message-ID: <20191219082006.GA1001454@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <201912191529.6kIYPFPw%lkp@intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 03:24:01PM +0800, kbuild test robot wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-> head:   82cfd2e62b354840af6a045e084f6e9e7c49584d
-> commit: 1997e9dfdc84c8f73d6fc318355cf9e313aba183 [23/75] serial_core: Un-ifdef sysrq SUPPORT_SYSRQ
-> config: arm-randconfig-a001-20191219 (attached as .config)
-> compiler: arm-linux-gnueabi-gcc (GCC) 7.5.0
-> reproduce:
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         git checkout 1997e9dfdc84c8f73d6fc318355cf9e313aba183
->         # save the attached .config to linux build tree
->         GCC_VERSION=7.5.0 make.cross ARCH=arm 
-> 
-> If you fix the issue, kindly add following tag
-> Reported-by: kbuild test robot <lkp@intel.com>
-> 
-> All error/warnings (new ones prefixed by >>):
-> 
->    In file included from include/linux/kernel.h:11:0,
->                     from include/linux/list.h:9,
->                     from include/linux/module.h:12,
->                     from drivers/tty/serial/21285.c:7:
->    drivers/tty/serial/21285.c: In function 'serial21285_stop_tx':
-> >> drivers/tty/serial/21285.c:44:41: error: subscripted value is neither array nor pointer nor vector
->     #define tx_enabled(port) ((port)->unused[0])
->                                             ^
+Much like the samsung_tty driver (now I know where they copied the idea
+from), the 21285 uart driver uses 2 bytes from the "unused" array of
+struct uart_port to keep tx/rx enabled/disabled state.  Those fields are
+going away (they were never really needed in the first place), so fix up
+the 21285 driver by another horrible hack.
 
-Ugh, this driver did the same hack the samsung_tty driver did!  That's
-where samsung got the idea.
+Instead of creating a whole structure for just 2 bytes, just use two
+bits from the private_data pointer instead, as that pointer is never
+used.  The two bits reflect if tx/rx is now enabled/disabled.
 
-I'll go fix this up as well...
+Astute readers will note that once rx is disabled, nothing ever seems to
+turn it back on, making one wonder if anyone has ever done this.
 
-thanks,
+Reported-by: kbuild test robot <lkp@intel.com>
+Cc: Dmitry Safonov <dima@arista.com>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/serial/21285.c | 55 +++++++++++++++++++++++++++++++-------
+ 1 file changed, 45 insertions(+), 10 deletions(-)
 
-greg k-h
+diff --git a/drivers/tty/serial/21285.c b/drivers/tty/serial/21285.c
+index 32b3acf8150a..b1615cd78182 100644
+--- a/drivers/tty/serial/21285.c
++++ b/drivers/tty/serial/21285.c
+@@ -41,8 +41,43 @@
+ 
+ static const char serial21285_name[] = "Footbridge UART";
+ 
+-#define tx_enabled(port)	((port)->unused[0])
+-#define rx_enabled(port)	((port)->unused[1])
++/*
++ * We only need 2 bits of data, so instead of creating a whole structure for
++ * this, use bits of the private_data pointer of the uart port structure.
++ */
++#define tx_enabled_bit	0
++#define rx_enabled_bit	1
++
++static bool is_enabled(struct uart_port *port, int bit)
++{
++	unsigned long private_data = (unsigned long)port->private_data;
++
++	if (test_bit(bit, &private_data))
++		return true;
++	return false;
++}
++
++static void enable(struct uart_port *port, int bit)
++{
++	unsigned long private_data = (unsigned long)port->private_data;
++
++	set_bit(bit, &private_data);
++}
++
++static void disable(struct uart_port *port, int bit)
++{
++	unsigned long private_data = (unsigned long)port->private_data;
++
++	set_bit(bit, &private_data);
++}
++
++#define is_tx_enabled(port)	is_enabled(port, tx_enabled_bit)
++#define tx_enable(port)		enable(port, tx_enabled_bit)
++#define tx_disable(port)	disable(port, tx_enabled_bit)
++
++#define is_rx_enabled(port)	is_enabled(port, rx_enabled_bit)
++#define rx_enable(port)		enable(port, rx_enabled_bit)
++#define rx_disable(port)	disable(port, rx_enabled_bit)
+ 
+ /*
+  * The documented expression for selecting the divisor is:
+@@ -57,25 +92,25 @@ static const char serial21285_name[] = "Footbridge UART";
+ 
+ static void serial21285_stop_tx(struct uart_port *port)
+ {
+-	if (tx_enabled(port)) {
++	if (is_tx_enabled(port)) {
+ 		disable_irq_nosync(IRQ_CONTX);
+-		tx_enabled(port) = 0;
++		tx_disable(port);
+ 	}
+ }
+ 
+ static void serial21285_start_tx(struct uart_port *port)
+ {
+-	if (!tx_enabled(port)) {
++	if (!is_tx_enabled(port)) {
+ 		enable_irq(IRQ_CONTX);
+-		tx_enabled(port) = 1;
++		tx_enable(port);
+ 	}
+ }
+ 
+ static void serial21285_stop_rx(struct uart_port *port)
+ {
+-	if (rx_enabled(port)) {
++	if (is_rx_enabled(port)) {
+ 		disable_irq_nosync(IRQ_CONRX);
+-		rx_enabled(port) = 0;
++		rx_disable(port);
+ 	}
+ }
+ 
+@@ -185,8 +220,8 @@ static int serial21285_startup(struct uart_port *port)
+ {
+ 	int ret;
+ 
+-	tx_enabled(port) = 1;
+-	rx_enabled(port) = 1;
++	tx_enable(port);
++	rx_enable(port);
+ 
+ 	ret = request_irq(IRQ_CONRX, serial21285_rx_chars, 0,
+ 			  serial21285_name, port);
+-- 
+2.24.1
+
