@@ -2,94 +2,83 @@ Return-Path: <SRS0=071p=2J=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF7AFC2D0C1
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 09:35:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BFE8C43603
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 09:36:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BEE602467F
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 09:35:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E182C24685
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 09:36:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726725AbfLSJfO convert rfc822-to-8bit (ORCPT
+        id S1726652AbfLSJg0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Dec 2019 04:35:14 -0500
-Received: from mx2.suse.de ([195.135.220.15]:37362 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726618AbfLSJfO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Dec 2019 04:35:14 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 92CC7AF8C;
-        Thu, 19 Dec 2019 09:35:11 +0000 (UTC)
-Date:   Thu, 19 Dec 2019 10:35:10 +0100
-From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paulburton@kernel.org>,
-        James Hogan <jhogan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, linux-rtc@vger.kernel.org,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v11 net-next 2/2] mfd: ioc3: Add driver for SGI IOC3
- chip
-Message-Id: <20191219103510.9f6e41b3a9339533e245ea53@suse.de>
-In-Reply-To: <CACRpkdY+2Z90n6zNZbQpmGCWYAH4PzEOv8puOkwbrcxCk_Eq2A@mail.gmail.com>
-References: <20191213124221.25775-1-tbogendoerfer@suse.de>
-        <20191213124221.25775-3-tbogendoerfer@suse.de>
-        <CACRpkdY+2Z90n6zNZbQpmGCWYAH4PzEOv8puOkwbrcxCk_Eq2A@mail.gmail.com>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8BIT
+        Thu, 19 Dec 2019 04:36:26 -0500
+Received: from regular1.263xmail.com ([211.150.70.195]:49736 "EHLO
+        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726620AbfLSJg0 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 19 Dec 2019 04:36:26 -0500
+Received: from localhost (unknown [192.168.167.172])
+        by regular1.263xmail.com (Postfix) with ESMTP id D8A67BC9;
+        Thu, 19 Dec 2019 17:36:01 +0800 (CST)
+X-MAIL-GRAY: 0
+X-MAIL-DELIVERY: 1
+X-ADDR-CHECKED4: 1
+X-ANTISPAM-LEVEL: 2
+X-SKE-CHECKED: 1
+X-ABS-CHECKED: 1
+Received: from [192.168.30.14] (42.17.110.36.static.bjtelecom.net [36.110.17.42])
+        by smtp.263.net (postfix) whith ESMTP id P31486T140079980852992S1576748159913946_;
+        Thu, 19 Dec 2019 17:36:01 +0800 (CST)
+X-IP-DOMAINF: 1
+X-UNIQUE-TAG: <8333cc4fcc79c2999bf3f5f41739d6d9>
+X-RL-SENDER: chengang@emindsoft.com.cn
+X-SENDER: chengang@emindsoft.com.cn
+X-LOGIN-NAME: chengang@emindsoft.com.cn
+X-FST-TO: lvlisong@emindsoft.com.cn
+X-SENDER-IP: 36.110.17.42
+X-ATTACHMENT-NUM: 0
+X-DNS-TYPE: 5
+Subject: Re: [PATCH] drivers: tty: serial: 8250: fintek: Can enable or disable
+ irq sharing based on isa or pci bus
+From:   Chen Gang <chengang@emindsoft.com.cn>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     gregkh@linuxfoundation.org, jslaby@suse.com, sr@denx.de,
+        mika.westerberg@linux.intel.com, yegorslists@googlemail.com,
+        yuehaibing@huawei.com, haolee.swjtu@gmail.com, dsterba@suse.com,
+        mojha@codeaurora.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Lv Li-song <lvlisong@emindsoft.com.cn>
+References: <20191213051717.2058-1-chengang@emindsoft.com.cn>
+ <20191213105033.GT32742@smile.fi.intel.com>
+ <758a0ca9-8f81-1a10-d9e1-11f86fac3de1@emindsoft.com.cn>
+ <20191216095120.GN32742@smile.fi.intel.com>
+ <2c4cba36-5833-ca08-4153-2061edf33186@emindsoft.com.cn>
+Message-ID: <1d0dae5a-cf47-1682-de62-468f60fc621a@emindsoft.com.cn>
+Date:   Thu, 19 Dec 2019 17:35:59 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <2c4cba36-5833-ca08-4153-2061edf33186@emindsoft.com.cn>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 19 Dec 2019 09:28:42 +0100
-Linus Walleij <linus.walleij@linaro.org> wrote:
+After check the linux-next tree, the core content is already fixed by
+the patch "4da22f1418cb serial: 8250_fintek: fix the mismatched IRQ
+mode" (it was applied on 2016-05-27).
 
-> On Fri, Dec 13, 2019 at 1:43 PM Thomas Bogendoerfer
-> <tbogendoerfer@suse.de> wrote:
-> 
-> > SGI IOC3 chip has integrated ethernet, keyboard and mouse interface.
-> > It also supports connecting a SuperIO chip for serial and parallel
-> > interfaces. IOC3 is used inside various SGI systemboards and add-on
-> > cards with different equipped external interfaces.
-> >
-> > Support for ethernet and serial interfaces were implemented inside
-> > the network driver. This patchset moves out the not network related
-> > parts to a new MFD driver, which takes care of card detection,
-> > setup of platform devices and interrupt distribution for the subdevices.
-> >
-> > Serial portion: Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
-> >
-> > Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-> 
-> This makes the kernel a better place:
-> Acked-by: Linus Walleij <linus.walleij@linaro.org>
+And it looks my original modification for 8250_pnp.c is unnecessary, I
+guess originally I only wanted to make sure it should work well, but did
+not cleanup the code.
 
-Thank you.
+So this patch is useless, sorry to bother you. And again, thank you for
+reviewing the code.
 
-> Will there be a GPIO driver arriving later?
 
-as far as I found out, GPIOs are used as reset line for the ethernet phy
-and for two leds in the SGI Octanes. So far I've never needed the phy reset
-and since there are exclusive registers per GPIO I'm using these registers
-directly in the coming LED driver.
-
-Thomas.
-
--- 
-SUSE Software Solutions Germany GmbH
-HRB 36809 (AG Nürnberg)
-Geschäftsführer: Felix Imendörffer
