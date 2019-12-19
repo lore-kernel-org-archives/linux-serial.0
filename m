@@ -2,178 +2,103 @@ Return-Path: <SRS0=071p=2J=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8652CC43603
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 08:20:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8249AC2D0C1
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 08:28:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4F0472465E
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 08:20:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576743611;
-	bh=ep6dfch26/sju6OYnNCOEEdN1gdMsvc07IzfLFpfFE0=;
-	h=Date:From:To:Cc:Subject:List-ID:From;
-	b=Hewt+cS/BHtH1e+aKmAbLbPRhyGPEW14hxTanS1jeYYOAJnYdQMQji6f871LjX087
-	 qXv9gLx0p+Zb55w4u7gI6LowI6/sGHc1SorcagJyegBqVV8bJVh03OfzBpqIe9XvI6
-	 //C1cxrBGiYRBLSLAUBzoLK4jCco7NMBAk2QY8tc=
+	by mail.kernel.org (Postfix) with ESMTP id 573042465E
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Dec 2019 08:28:56 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="MJZ/DNtF"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726463AbfLSIUK (ORCPT
+        id S1726751AbfLSI24 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Dec 2019 03:20:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34784 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726439AbfLSIUK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Dec 2019 03:20:10 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 18A4D227BF;
-        Thu, 19 Dec 2019 08:20:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576743609;
-        bh=ep6dfch26/sju6OYnNCOEEdN1gdMsvc07IzfLFpfFE0=;
-        h=Date:From:To:Cc:Subject:From;
-        b=zvvebl13loZZzfUrtPdbyzYc03Rrn5bAspkQpza+mt3yHza7Xgc6rsCqyvukJ3e8m
-         wn90fwt7X7/A9UceN/T0eJywb50n0s/2iVa8C2qI//28HzUEkgCNZmrkQ02Ho0h7eI
-         3Jx1yVdR9ZFotii7WsD6TjyRJSYYxpVjZ0flNk4M=
-Date:   Thu, 19 Dec 2019 09:20:06 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Dmitry Safonov <dima@arista.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-serial@vger.kernel.org
-Cc:     Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org,
-        kbuild test robot <lkp@intel.com>
-Subject: [PATCH] tty: serial: 21285: stop using the unused[] variable from
- struct uart_port
-Message-ID: <20191219082006.GA1001454@kroah.com>
+        Thu, 19 Dec 2019 03:28:56 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:34477 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726695AbfLSI2z (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 19 Dec 2019 03:28:55 -0500
+Received: by mail-lf1-f67.google.com with SMTP id l18so3724996lfc.1
+        for <linux-serial@vger.kernel.org>; Thu, 19 Dec 2019 00:28:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EYVpTAvfKwHHKmlAPuGRsZ3iezpd785NjyR9OVcUj6E=;
+        b=MJZ/DNtFXAxxKUZKDxH+hao28YTyE5NOXtuQ0Z3/ibWy8zpn9idcT5fZSA3qlJswY1
+         Yijm5VvGd/xFqGL1v6NZGRxBXBKHV016m5JvvGWQlY0M4LINXT2A+VMv/c7K+z0FglYN
+         FkcONe7Byj4YXGeofGkBJBC9L9BYhWz0U/7T5uj+m7cWbGsUIxhMxvZYjxq9RmDbTAeo
+         5FOeLkOvfmFeFbQ9FneVOLbyy+1qTeqa2lenupHqbbfkraaI8ywbs0EUp3VJNPMnGg4z
+         8lysTRj1vQ/4vBUWcuSX068OiI8cXcTJLEVHZYJzOCkkKrvNMEEtnJ4J5TdoqJk3xzfJ
+         RFyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EYVpTAvfKwHHKmlAPuGRsZ3iezpd785NjyR9OVcUj6E=;
+        b=IgwPqDBYtk9M2wVlrN2Q/0xLfArC0ONlUPS7tDvBMV+MP21WgD/Wy76dfr1COTKTuQ
+         +Ghr5L9gXOvByJcyqnj/b+FUjSIS14SmExNQyJNuLkfywDUIJuLrMzrhcCRoeCtbz0e3
+         e7dNqSMSMtVG7WqPC7rouFwITcRqu/q7WC3iIXPJ9MUxGV6JTCLBslOdxTSG9ccwVXtG
+         UK+ngaIYDsE7W4QdPLUqDFkng3eASaK/03cMT328BTjFAbO6B4VMr8ghLK6O9b1fPflz
+         HU2Oa2P+1h8NRuTXBD4/eZHX7pirRJVV4i/liIBXXb7A9xifeBK25a9BHrbl5O18y/h+
+         cgLQ==
+X-Gm-Message-State: APjAAAVck7NMNc0YctEYuMRiOOQ/J0wXCSRSMJZAr1Rw9gqBicCCqUt8
+        42GJJdopfXkfuvoEH3+/YicgRd7T9q8in7cNBF/0Ow==
+X-Google-Smtp-Source: APXvYqynTJm9GoZtkT/ox5Ee2KtmtUCBm2Ol3fEci7a1RBI4FjyF3QqGMde1dsSwXQ7lWCCv/YG69H6YPlbklmRCDWQ=
+X-Received: by 2002:a19:8a41:: with SMTP id m62mr4543898lfd.5.1576744133697;
+ Thu, 19 Dec 2019 00:28:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20191213124221.25775-1-tbogendoerfer@suse.de> <20191213124221.25775-3-tbogendoerfer@suse.de>
+In-Reply-To: <20191213124221.25775-3-tbogendoerfer@suse.de>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Thu, 19 Dec 2019 09:28:42 +0100
+Message-ID: <CACRpkdY+2Z90n6zNZbQpmGCWYAH4PzEOv8puOkwbrcxCk_Eq2A@mail.gmail.com>
+Subject: Re: [PATCH v11 net-next 2/2] mfd: ioc3: Add driver for SGI IOC3 chip
+To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc:     Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paulburton@kernel.org>,
+        James Hogan <jhogan@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, linux-rtc@vger.kernel.org,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Much like the samsung_tty driver (now I know where they copied the idea
-from), the 21285 uart driver uses 2 bytes from the "unused" array of
-struct uart_port to keep tx/rx enabled/disabled state.  Those fields are
-going away (they were never really needed in the first place), so fix up
-the 21285 driver by another horrible hack.
+On Fri, Dec 13, 2019 at 1:43 PM Thomas Bogendoerfer
+<tbogendoerfer@suse.de> wrote:
 
-Instead of creating a whole structure for just 2 bytes, just use two
-bits from the private_data pointer instead, as that pointer is never
-used.  The two bits reflect if tx/rx is now enabled/disabled.
+> SGI IOC3 chip has integrated ethernet, keyboard and mouse interface.
+> It also supports connecting a SuperIO chip for serial and parallel
+> interfaces. IOC3 is used inside various SGI systemboards and add-on
+> cards with different equipped external interfaces.
+>
+> Support for ethernet and serial interfaces were implemented inside
+> the network driver. This patchset moves out the not network related
+> parts to a new MFD driver, which takes care of card detection,
+> setup of platform devices and interrupt distribution for the subdevices.
+>
+> Serial portion: Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+>
+> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
 
-Astute readers will note that once rx is disabled, nothing ever seems to
-turn it back on, making one wonder if anyone has ever done this.
+This makes the kernel a better place:
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 
-Reported-by: kbuild test robot <lkp@intel.com>
-Cc: Dmitry Safonov <dima@arista.com>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: linux-serial@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/serial/21285.c | 55 +++++++++++++++++++++++++++++++-------
- 1 file changed, 45 insertions(+), 10 deletions(-)
+Will there be a GPIO driver arriving later?
 
-diff --git a/drivers/tty/serial/21285.c b/drivers/tty/serial/21285.c
-index 32b3acf8150a..b1615cd78182 100644
---- a/drivers/tty/serial/21285.c
-+++ b/drivers/tty/serial/21285.c
-@@ -41,8 +41,43 @@
- 
- static const char serial21285_name[] = "Footbridge UART";
- 
--#define tx_enabled(port)	((port)->unused[0])
--#define rx_enabled(port)	((port)->unused[1])
-+/*
-+ * We only need 2 bits of data, so instead of creating a whole structure for
-+ * this, use bits of the private_data pointer of the uart port structure.
-+ */
-+#define tx_enabled_bit	0
-+#define rx_enabled_bit	1
-+
-+static bool is_enabled(struct uart_port *port, int bit)
-+{
-+	unsigned long private_data = (unsigned long)port->private_data;
-+
-+	if (test_bit(bit, &private_data))
-+		return true;
-+	return false;
-+}
-+
-+static void enable(struct uart_port *port, int bit)
-+{
-+	unsigned long private_data = (unsigned long)port->private_data;
-+
-+	set_bit(bit, &private_data);
-+}
-+
-+static void disable(struct uart_port *port, int bit)
-+{
-+	unsigned long private_data = (unsigned long)port->private_data;
-+
-+	set_bit(bit, &private_data);
-+}
-+
-+#define is_tx_enabled(port)	is_enabled(port, tx_enabled_bit)
-+#define tx_enable(port)		enable(port, tx_enabled_bit)
-+#define tx_disable(port)	disable(port, tx_enabled_bit)
-+
-+#define is_rx_enabled(port)	is_enabled(port, rx_enabled_bit)
-+#define rx_enable(port)		enable(port, rx_enabled_bit)
-+#define rx_disable(port)	disable(port, rx_enabled_bit)
- 
- /*
-  * The documented expression for selecting the divisor is:
-@@ -57,25 +92,25 @@ static const char serial21285_name[] = "Footbridge UART";
- 
- static void serial21285_stop_tx(struct uart_port *port)
- {
--	if (tx_enabled(port)) {
-+	if (is_tx_enabled(port)) {
- 		disable_irq_nosync(IRQ_CONTX);
--		tx_enabled(port) = 0;
-+		tx_disable(port);
- 	}
- }
- 
- static void serial21285_start_tx(struct uart_port *port)
- {
--	if (!tx_enabled(port)) {
-+	if (!is_tx_enabled(port)) {
- 		enable_irq(IRQ_CONTX);
--		tx_enabled(port) = 1;
-+		tx_enable(port);
- 	}
- }
- 
- static void serial21285_stop_rx(struct uart_port *port)
- {
--	if (rx_enabled(port)) {
-+	if (is_rx_enabled(port)) {
- 		disable_irq_nosync(IRQ_CONRX);
--		rx_enabled(port) = 0;
-+		rx_disable(port);
- 	}
- }
- 
-@@ -185,8 +220,8 @@ static int serial21285_startup(struct uart_port *port)
- {
- 	int ret;
- 
--	tx_enabled(port) = 1;
--	rx_enabled(port) = 1;
-+	tx_enable(port);
-+	rx_enable(port);
- 
- 	ret = request_irq(IRQ_CONRX, serial21285_rx_chars, 0,
- 			  serial21285_name, port);
--- 
-2.24.1
-
+Yours,
+Linus Walleij
