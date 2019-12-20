@@ -2,107 +2,75 @@ Return-Path: <SRS0=hqmf=2K=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F66C43603
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Dec 2019 07:07:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4C8C43603
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Dec 2019 14:20:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C307424680
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Dec 2019 07:07:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3FBBD2467F
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Dec 2019 14:20:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576825671;
-	bh=aFS+0PHvMZNXAX3LB7Kp3RPtki0Ke/sDgUiUCMTGwZI=;
-	h=Date:From:To:Cc:Subject:List-ID:From;
-	b=feQ9uq34/+heboNwO/vRTCJDs3baL9gvPUQfxtO71ZPU0/3Tza2ouMRYsk8wLpH7C
-	 k4v7u5K9IqhqlmW7f2f8qMnxBJMAPO/248IC6IdwZWhKXvVVvH5u4YMQAUxUlVR8VY
-	 AUcaMum1EVLsi7GNQpWP1se1IpsWYXx9oDeK8wcA=
+	s=default; t=1576851629;
+	bh=TjXYv2XWlJjKvxWvTY76Dq/6W8AtNpr91zwOv2hzrn8=;
+	h=Subject:To:Cc:References:From:Date:In-Reply-To:List-ID:From;
+	b=aswYyexkKRl/+tZunlKRrHtKBxbgTOFGwgI5OXVnY2SAL8Owi9fXJiawyzQ9mbtwV
+	 dkxhWqxckIxkwpnatpCT4vaGNbzyoN3IeJcWAY/tCCUfyrJfJu8EdzSr5QUDTxlibK
+	 /5N0JHVY7h8jjiRkAzrlx+9AroBkevXiTblh+7NU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727381AbfLTHHv (ORCPT
+        id S1727411AbfLTOU2 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Dec 2019 02:07:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57814 "EHLO mail.kernel.org"
+        Fri, 20 Dec 2019 09:20:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59352 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727298AbfLTHHv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Dec 2019 02:07:51 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727347AbfLTOU2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 20 Dec 2019 09:20:28 -0500
+Received: from [192.168.1.20] (cpe-24-28-70-126.austin.res.rr.com [24.28.70.126])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ABC0924679;
-        Fri, 20 Dec 2019 07:07:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3952F222C2;
+        Fri, 20 Dec 2019 14:20:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576825670;
-        bh=aFS+0PHvMZNXAX3LB7Kp3RPtki0Ke/sDgUiUCMTGwZI=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Q3Y2keQ49oszEdE4a0IZ/6aCYd8yrN7KFE5Mp2DmIi7GMcrBy+08qveB6Tak9EIhl
-         Srj32iHOgWL2psLvCA8lJSt0dOG8W7KAq53p+n9jiQUCH56MW3v4hayBc4I5H/djwv
-         +wqfswrzQ40eoKesa0aun78ZA9sQi6Tx/rogkrfo=
-Date:   Fri, 20 Dec 2019 08:07:47 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY/Serial driver fixes for 5.5-rc3
-Message-ID: <20191220070747.GA2190169@kroah.com>
+        s=default; t=1576851628;
+        bh=TjXYv2XWlJjKvxWvTY76Dq/6W8AtNpr91zwOv2hzrn8=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=HVgwDkknfsEJq1Jwdr16JSdjPKuq8dR5FzcrGG4wEyc1QsRDmCk+byUT1vMoYusFi
+         dlmBL3x3MJrmhNKgt3/O6+TGkRKdsdcxDuXXTzHYoXAqR3PUapJSHTtRrrCBo9/Mho
+         JWKw1Q3iIyVqELQHUHEzJpiOf47vJvbaugS9fMAc=
+Subject: Re: [PATCH] serial: ucc_uart: remove redundant assignment to pointer
+ bdp
+To:     Colin King <colin.king@canonical.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linuxppc-dev@lists.ozlabs.org,
+        linux-serial@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20191220001000.39859-1-colin.king@canonical.com>
+From:   Timur Tabi <timur@kernel.org>
+Message-ID: <2714d205-245a-a4e1-8335-53405608a286@kernel.org>
+Date:   Fri, 20 Dec 2019 08:20:24 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:60.0)
+ Gecko/20100101 Thunderbird/60.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <20191220001000.39859-1-colin.king@canonical.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The following changes since commit e42617b825f8073569da76dc4510bfa019b1c35a:
+On 12/19/19 6:10 PM, Colin King wrote:
+> From: Colin Ian King<colin.king@canonical.com>
+> 
+> The variable bdp is being initialized with a value that is never
+> read and it is being updated later with a new value. The initialization
+> is redundant and can be removed.
+> 
+> Addresses-Coverity: ("Unused value")
+> Signed-off-by: Colin Ian King<colin.king@canonical.com>
 
-  Linux 5.5-rc1 (2019-12-08 14:57:55 -0800)
+Acked-by: Timur Tabi <timur@kernel.org>
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.5-rc3
-
-for you to fetch changes up to cb47b9f8630ae3fa3f5fbd0c7003faba7abdf711:
-
-  tty/serial: atmel: fix out of range clock divider handling (2019-12-17 14:17:32 +0100)
-
-----------------------------------------------------------------
-TTY/Serial fixes for 5.5-rc3
-
-Here are some small tty and serial driver fixes for 5.5-rc3.
-
-Only 4 small patches here:
-  - atmel serial driver fix
-  - msm_serial driver fix
-  - sprd serial driver fix
-  - tty core port fix
-
-The last tty core fix should resolve a long-standing bug with a race
-at port creation time that some people would see, and Sudip finally
-tracked down.
-
-All of these have been in linux-next with no reported issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-David Engraf (1):
-      tty/serial: atmel: fix out of range clock divider handling
-
-Leo Yan (1):
-      tty: serial: msm_serial: Fix lockup for sysrq and oops
-
-Sudip Mukherjee (1):
-      tty: link tty and port before configuring it as console
-
-Yonghan Ye (1):
-      serial: sprd: Add clearing break interrupt operation
-
- drivers/tty/serial/atmel_serial.c | 43 ++++++++++++++++++++-------------------
- drivers/tty/serial/msm_serial.c   | 13 ++++++++++--
- drivers/tty/serial/serial_core.c  |  1 +
- drivers/tty/serial/sprd_serial.c  |  3 +++
- drivers/tty/tty_port.c            |  3 ++-
- 5 files changed, 39 insertions(+), 24 deletions(-)
+Looks like this bug has been there since day 1.
