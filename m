@@ -2,75 +2,103 @@ Return-Path: <SRS0=hqmf=2K=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4C8C43603
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Dec 2019 14:20:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C279C2D0D2
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Dec 2019 18:08:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3FBBD2467F
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Dec 2019 14:20:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4511B2082E
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Dec 2019 18:08:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576851629;
-	bh=TjXYv2XWlJjKvxWvTY76Dq/6W8AtNpr91zwOv2hzrn8=;
-	h=Subject:To:Cc:References:From:Date:In-Reply-To:List-ID:From;
-	b=aswYyexkKRl/+tZunlKRrHtKBxbgTOFGwgI5OXVnY2SAL8Owi9fXJiawyzQ9mbtwV
-	 dkxhWqxckIxkwpnatpCT4vaGNbzyoN3IeJcWAY/tCCUfyrJfJu8EdzSr5QUDTxlibK
-	 /5N0JHVY7h8jjiRkAzrlx+9AroBkevXiTblh+7NU=
+	s=default; t=1576865308;
+	bh=+XL7ZInXX1HHmOCI5izumvXTe4GPIdZh/XmifK4Czh4=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
+	b=OPLXxlnEBVXFInb3dheQURJDTczElywDCA1v4ffEsvcKbqSaNSqfElp1/iYKD2jnu
+	 e2rqOH7B2aRy0cCo4IidrkK9yyaQpSDGOL44GI7hjTkKtHs4rVP9FjcTz0UANJUDom
+	 xhXjp/6ndzHiUUCnlo7CF8wDYJa3dOX1nkvw4OtI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727411AbfLTOU2 (ORCPT
+        id S1727390AbfLTSI1 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Dec 2019 09:20:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59352 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727347AbfLTOU2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Dec 2019 09:20:28 -0500
-Received: from [192.168.1.20] (cpe-24-28-70-126.austin.res.rr.com [24.28.70.126])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3952F222C2;
-        Fri, 20 Dec 2019 14:20:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576851628;
-        bh=TjXYv2XWlJjKvxWvTY76Dq/6W8AtNpr91zwOv2hzrn8=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=HVgwDkknfsEJq1Jwdr16JSdjPKuq8dR5FzcrGG4wEyc1QsRDmCk+byUT1vMoYusFi
-         dlmBL3x3MJrmhNKgt3/O6+TGkRKdsdcxDuXXTzHYoXAqR3PUapJSHTtRrrCBo9/Mho
-         JWKw1Q3iIyVqELQHUHEzJpiOf47vJvbaugS9fMAc=
-Subject: Re: [PATCH] serial: ucc_uart: remove redundant assignment to pointer
- bdp
-To:     Colin King <colin.king@canonical.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linuxppc-dev@lists.ozlabs.org,
-        linux-serial@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20191220001000.39859-1-colin.king@canonical.com>
-From:   Timur Tabi <timur@kernel.org>
-Message-ID: <2714d205-245a-a4e1-8335-53405608a286@kernel.org>
-Date:   Fri, 20 Dec 2019 08:20:24 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:60.0)
- Gecko/20100101 Thunderbird/60.9.1
+        Fri, 20 Dec 2019 13:08:27 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:39866 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727524AbfLTSIY (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 20 Dec 2019 13:08:24 -0500
+Received: by mail-lf1-f65.google.com with SMTP id y1so7702116lfb.6
+        for <linux-serial@vger.kernel.org>; Fri, 20 Dec 2019 10:08:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DXVFal7Vfx9p/0v6Lfo4AszqTDh48OL14YxtwAoozRw=;
+        b=S8tRDL7EKj2cfmNGSzq9/Y7J88woUCjBT1gnU/MsJm+oNAd2FtQMXWc8JR9T4yMk6Z
+         W/xJKyur9rwEu0sOZYuzVaJXfvy7UqJxeCkSdc9eWrH/bJ+gd7vrM+qCYygBZmCZWcfC
+         QiCG2fO9+1AooB6euumc03SFYpbbHQeUB6w1I=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DXVFal7Vfx9p/0v6Lfo4AszqTDh48OL14YxtwAoozRw=;
+        b=krvCXmViAnX95wmM3EIdnJqRLHO0aeoAC0n6/eJpcl1brzUYl40KVj9qanFCugH6+T
+         QH3nxdgRV3mv/a2Pee5ATTYWYmjDGLySZ+pTdHbZwE7s+L4jKGeFSiVuv6j+yNepQ/uO
+         IlR8JMUEWoF8NtGV+kp8YX0ApdOi/17Z0SSrvMKMsvi4qHT1hU84fLwIcxTBprkUyggl
+         kbm4aY96mrD9FLByQ9PR3feEPBWs6sk+jayCVjnTv+0S/QSraryxBpNu5OA23dEww386
+         ts5GZ7BY1gW6dbTRcsmD+C9hR2r13DyN+v+GQzYxxGLueBBBSCvj3OMKPRy8v1rGT5VM
+         CxFQ==
+X-Gm-Message-State: APjAAAWC2eWgIKbSQoNzD0MZl3bKxk+sr3fCRlpoZLafTxaT9AH+LBlC
+        aVISeAtiHzxq5Qad7FeCQERq8tUj2Oo=
+X-Google-Smtp-Source: APXvYqyJ0jBb30dBUCVeLiol0p8IjFHpG5whRjqaqQxbvrpihV69zNxkuXrXTuheAApb9HMC/uaw0Q==
+X-Received: by 2002:a19:be93:: with SMTP id o141mr10372628lff.181.1576865300956;
+        Fri, 20 Dec 2019 10:08:20 -0800 (PST)
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com. [209.85.208.182])
+        by smtp.gmail.com with ESMTPSA id h81sm4366379lfd.83.2019.12.20.10.08.19
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 Dec 2019 10:08:19 -0800 (PST)
+Received: by mail-lj1-f182.google.com with SMTP id a13so10890506ljm.10
+        for <linux-serial@vger.kernel.org>; Fri, 20 Dec 2019 10:08:19 -0800 (PST)
+X-Received: by 2002:a05:651c:239:: with SMTP id z25mr10813815ljn.48.1576865299304;
+ Fri, 20 Dec 2019 10:08:19 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191220001000.39859-1-colin.king@canonical.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20191220070747.GA2190169@kroah.com>
+In-Reply-To: <20191220070747.GA2190169@kroah.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 20 Dec 2019 10:08:03 -0800
+X-Gmail-Original-Message-ID: <CAHk-=whcLH7EXVZbD0g1Bw7McrofQ-7vwiL2GAeMn=z9PP4VEQ@mail.gmail.com>
+Message-ID: <CAHk-=whcLH7EXVZbD0g1Bw7McrofQ-7vwiL2GAeMn=z9PP4VEQ@mail.gmail.com>
+Subject: Re: [GIT PULL] TTY/Serial driver fixes for 5.5-rc3
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 12/19/19 6:10 PM, Colin King wrote:
-> From: Colin Ian King<colin.king@canonical.com>
-> 
-> The variable bdp is being initialized with a value that is never
-> read and it is being updated later with a new value. The initialization
-> is redundant and can be removed.
-> 
-> Addresses-Coverity: ("Unused value")
-> Signed-off-by: Colin Ian King<colin.king@canonical.com>
+On Thu, Dec 19, 2019 at 11:07 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> The last tty core fix should resolve a long-standing bug with a race
+> at port creation time that some people would see, and Sudip finally
+> tracked down.
 
-Acked-by: Timur Tabi <timur@kernel.org>
+Hmm, looks good. But it makes me wonder if we should now try to remove
+the second call to tty_port_link_device()?
 
-Looks like this bug has been there since day 1.
+Now we have a number of helpers that do that tty_port_link_device()
+call for the driver (eg tty_port_register_device_attr_serdev(),
+tty_port_register_device_attr(), and the just added
+uart_add_one_port()).
+
+But we also have drivers doing it by hand, and presumably we now have
+drivers that do it through multiple paths? I guess it's harmless, but
+it feels a bit odd. No?
+
+            Linus
