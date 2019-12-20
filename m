@@ -2,136 +2,107 @@ Return-Path: <SRS0=hqmf=2K=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D815C43603
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Dec 2019 06:13:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F66C43603
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Dec 2019 07:07:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0291D2467F
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Dec 2019 06:13:53 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="qcudVcou"
+	by mail.kernel.org (Postfix) with ESMTP id C307424680
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Dec 2019 07:07:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1576825671;
+	bh=aFS+0PHvMZNXAX3LB7Kp3RPtki0Ke/sDgUiUCMTGwZI=;
+	h=Date:From:To:Cc:Subject:List-ID:From;
+	b=feQ9uq34/+heboNwO/vRTCJDs3baL9gvPUQfxtO71ZPU0/3Tza2ouMRYsk8wLpH7C
+	 k4v7u5K9IqhqlmW7f2f8qMnxBJMAPO/248IC6IdwZWhKXvVVvH5u4YMQAUxUlVR8VY
+	 AUcaMum1EVLsi7GNQpWP1se1IpsWYXx9oDeK8wcA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727252AbfLTGNw (ORCPT
+        id S1727381AbfLTHHv (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Dec 2019 01:13:52 -0500
-Received: from mail-eopbgr130072.outbound.protection.outlook.com ([40.107.13.72]:29146
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725853AbfLTGNv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Dec 2019 01:13:51 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H7kG08V2jHkX/a0Y9RwQskn1uK9B/ZZWw2RMY5GTbPNuwQqBn5Z6vkraOoFmQ9zTHJXdovXZksAKLbG09wuRr0tc15l/UwUXCiJfD3HZb+92/jRRbHPfuQTAZaGzU7XgqGCJQyp41ST6XZidd/i73p5TjugWNgsSOasN0nF8THJTOWEfbSWUCb+9daw1W9jPGGIKNv8nwMQLTD/wHDzC0x3K1WGM9Vbh07cDd8vlM2nW+YyZR7Wt+uz59NqxrhNTNAQoum9YPtUbke24bzrkEpRn957Ix8ihf6rSTXBJv8thBZwEBtOMP90YEGFG42vJn84lPHmy/JnEObYh6grtSg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O5p2VusnXK40CMyc4GtZRup+0926cc6bW/dyjLs9kp0=;
- b=FTh7qCo5oSw0hfPEHjBeffG+/mXnpv2dw+g4HXHnYkWew0IVw094lqvaob5vjLdjwyF9VNu4bgF1S0Vj5O5n8+Q3O2DQv9YlOjkfhKr8oT1xFWwkfscXco/4no4+qW9kU2YlHSMxjLeZYbpwjIaVdNMLkIfNhiDN/Qr9YBy8e0+y+SaF+SeBxgSH1huFdCbcZI3WDBcnuJfi4bAVn5212YDvzDnqd1tpMEZrEOTarSa+qQAH7Gn1pIxRI8SaV2HLkUq8hi+l+1oDLPf+x2FPClzz3NNQs8hGy4222TqRhKSXkcT1kk8+WM5SKfqXRjU69Ef4H8NNyn4L0Q4mccvT4g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O5p2VusnXK40CMyc4GtZRup+0926cc6bW/dyjLs9kp0=;
- b=qcudVcouO2J3Cy2kCOJAEt9DYgCCgX8d20v/5b78RJhr5rqLpM+sr3gHxKkhsLflgOsjEW4zyTlB5q3v+6oNWFe2R/ry47L6OyOWmKDimkVBs0CuAC7Ry9P4K1IB4vWd8gP6m82VcHiDwOBp68nuD832fjKJf2MzABzWiUv8vlc=
-Received: from AM0PR04MB4481.eurprd04.prod.outlook.com (52.135.147.15) by
- AM0PR04MB4801.eurprd04.prod.outlook.com (20.177.41.155) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.18; Fri, 20 Dec 2019 06:13:41 +0000
-Received: from AM0PR04MB4481.eurprd04.prod.outlook.com
- ([fe80::505:87e7:6b49:3d29]) by AM0PR04MB4481.eurprd04.prod.outlook.com
- ([fe80::505:87e7:6b49:3d29%7]) with mapi id 15.20.2559.015; Fri, 20 Dec 2019
- 06:13:41 +0000
-From:   Peng Fan <peng.fan@nxp.com>
-To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jslaby@suse.com" <jslaby@suse.com>
-CC:     "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>, Alice Guo <alice.guo@nxp.com>,
-        Peng Fan <peng.fan@nxp.com>
-Subject: [PATCH V2 3/3] tty: serial: fsl_lpuart: drop earlycon entry for
- i.MX8QXP
-Thread-Topic: [PATCH V2 3/3] tty: serial: fsl_lpuart: drop earlycon entry for
- i.MX8QXP
-Thread-Index: AQHVtvye564AYsYVGUyQSgBRz3Y7Qw==
-Date:   Fri, 20 Dec 2019 06:13:39 +0000
-Message-ID: <1576822230-23125-4-git-send-email-peng.fan@nxp.com>
-References: <1576822230-23125-1-git-send-email-peng.fan@nxp.com>
-In-Reply-To: <1576822230-23125-1-git-send-email-peng.fan@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.7.4
-x-clientproxiedby: HK2PR03CA0056.apcprd03.prod.outlook.com
- (2603:1096:202:17::26) To AM0PR04MB4481.eurprd04.prod.outlook.com
- (2603:10a6:208:70::15)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=peng.fan@nxp.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [119.31.174.67]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 077db54a-823d-49f0-eaed-08d78513c120
-x-ms-traffictypediagnostic: AM0PR04MB4801:|AM0PR04MB4801:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR04MB4801B83704CCE957B54BD035882D0@AM0PR04MB4801.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:372;
-x-forefront-prvs: 025796F161
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(376002)(346002)(366004)(39860400002)(189003)(199004)(316002)(110136005)(66476007)(66556008)(5660300002)(64756008)(66446008)(26005)(81166006)(81156014)(71200400001)(36756003)(6486002)(4326008)(6512007)(186003)(2906002)(86362001)(54906003)(478600001)(66946007)(8676002)(2616005)(8936002)(52116002)(4744005)(6506007)(44832011);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR04MB4801;H:AM0PR04MB4481.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: qOeAqXHrSe1ux1rTaa3nx1kTWyoniT8fEPeVwDn0Eli0t/84GAJejyUMxMLW7VV8A02vuvY4JM9Y8hrRLxl71jhjzNs/emxWZGS1XRXu8LoVD6a8JXmWdsQa/bQV8igW3l148OIlVucoyIrnbjTBpABr74lx+iRylX+Y/PAW4HUjm6VBtDCxT01N9iIHqPBIrSmuA3G1xan/s1zC07mS1jgkyB/SH4o0lGMeAtZxlrpu0FV+A0c+qlW3yUoLF2xo6cJyHiFz5WpD+sFA9uhStIsGxwk+Gf2YZyTKspTSux9G/Cv7pCJN09m5q7/Fbp1r5/esScvzD+UBL9UI+GyoOLoZtQ27N4hl9l3CFGuemVcL1/RPWjYy40tf8eSG9TZqpgf/MN5LAl7BZaPudmOqnAoEUkvhUv9OvHw5FHrRlgHCX2F5elMO0nwpp1Lvct/t
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        Fri, 20 Dec 2019 02:07:51 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57814 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727298AbfLTHHv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 20 Dec 2019 02:07:51 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id ABC0924679;
+        Fri, 20 Dec 2019 07:07:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1576825670;
+        bh=aFS+0PHvMZNXAX3LB7Kp3RPtki0Ke/sDgUiUCMTGwZI=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Q3Y2keQ49oszEdE4a0IZ/6aCYd8yrN7KFE5Mp2DmIi7GMcrBy+08qveB6Tak9EIhl
+         Srj32iHOgWL2psLvCA8lJSt0dOG8W7KAq53p+n9jiQUCH56MW3v4hayBc4I5H/djwv
+         +wqfswrzQ40eoKesa0aun78ZA9sQi6Tx/rogkrfo=
+Date:   Fri, 20 Dec 2019 08:07:47 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver fixes for 5.5-rc3
+Message-ID: <20191220070747.GA2190169@kroah.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 077db54a-823d-49f0-eaed-08d78513c120
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Dec 2019 06:13:39.1504
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gQ72NAk2o0fCcOOUBhrhnEPm9ihGSNdole75/VT7HBXakzpgGPSGwC87EsAha2XMqTO1ioC546Q8Go7Vo9ay3w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4801
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+The following changes since commit e42617b825f8073569da76dc4510bfa019b1c35a:
 
-i.MX8QXP lpuart is compatible with i.MX7ULP, so no need
-an extra  entry for i.MX8QXP.
+  Linux 5.5-rc1 (2019-12-08 14:57:55 -0800)
 
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
----
- drivers/tty/serial/fsl_lpuart.c | 1 -
- 1 file changed, 1 deletion(-)
+are available in the Git repository at:
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuar=
-t.c
-index 6ad0af073e62..00cf72e9e9e8 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -2398,7 +2398,6 @@ static int __init lpuart32_imx_early_console_setup(st=
-ruct earlycon_device *devic
- OF_EARLYCON_DECLARE(lpuart, "fsl,vf610-lpuart", lpuart_early_console_setup=
-);
- OF_EARLYCON_DECLARE(lpuart32, "fsl,ls1021a-lpuart", lpuart32_early_console=
-_setup);
- OF_EARLYCON_DECLARE(lpuart32, "fsl,imx7ulp-lpuart", lpuart32_imx_early_con=
-sole_setup);
--OF_EARLYCON_DECLARE(lpuart32, "fsl,imx8qxp-lpuart", lpuart32_imx_early_con=
-sole_setup);
-=20
- #define LPUART_CONSOLE	(&lpuart_console)
- #define LPUART32_CONSOLE	(&lpuart32_console)
---=20
-2.16.4
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.5-rc3
 
+for you to fetch changes up to cb47b9f8630ae3fa3f5fbd0c7003faba7abdf711:
+
+  tty/serial: atmel: fix out of range clock divider handling (2019-12-17 14:17:32 +0100)
+
+----------------------------------------------------------------
+TTY/Serial fixes for 5.5-rc3
+
+Here are some small tty and serial driver fixes for 5.5-rc3.
+
+Only 4 small patches here:
+  - atmel serial driver fix
+  - msm_serial driver fix
+  - sprd serial driver fix
+  - tty core port fix
+
+The last tty core fix should resolve a long-standing bug with a race
+at port creation time that some people would see, and Sudip finally
+tracked down.
+
+All of these have been in linux-next with no reported issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+David Engraf (1):
+      tty/serial: atmel: fix out of range clock divider handling
+
+Leo Yan (1):
+      tty: serial: msm_serial: Fix lockup for sysrq and oops
+
+Sudip Mukherjee (1):
+      tty: link tty and port before configuring it as console
+
+Yonghan Ye (1):
+      serial: sprd: Add clearing break interrupt operation
+
+ drivers/tty/serial/atmel_serial.c | 43 ++++++++++++++++++++-------------------
+ drivers/tty/serial/msm_serial.c   | 13 ++++++++++--
+ drivers/tty/serial/serial_core.c  |  1 +
+ drivers/tty/serial/sprd_serial.c  |  3 +++
+ drivers/tty/tty_port.c            |  3 ++-
+ 5 files changed, 39 insertions(+), 24 deletions(-)
