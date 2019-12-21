@@ -1,72 +1,98 @@
-Return-Path: <SRS0=hqmf=2K=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=/m3G=2L=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY autolearn=unavailable
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A985BC43603
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Dec 2019 18:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FC7EC2D0D3
+	for <linux-serial@archiver.kernel.org>; Sat, 21 Dec 2019 18:36:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7F98A21655
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Dec 2019 18:15:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576865725;
-	bh=23AzVZm23NrI25LQM7jLV8s1KMGZBy6PExwIUbBJdfA=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:List-ID:From;
-	b=Z/QvyYDU3Dey8FXra1GZb8KrjDjjQX0XxIriEl4Oy1lrtPRGWc32dEUZvvPgmdr71
-	 BYB5dzvHm1dWWsEuU7LyjAPhdcsiRGHKQ4fd7mJULAQIYz/1f1LMJI7rmNNg7ZHb3u
-	 XzUGVlIVxSkH+OeVdK6RtkfuUcZdMZV2+KZapnZs=
+	by mail.kernel.org (Postfix) with ESMTP id 016D820700
+	for <linux-serial@archiver.kernel.org>; Sat, 21 Dec 2019 18:36:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727626AbfLTSPS (ORCPT
+        id S1726846AbfLUSgO (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Dec 2019 13:15:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35522 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727574AbfLTSPM (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Dec 2019 13:15:12 -0500
-Subject: Re: [GIT PULL] TTY/Serial driver fixes for 5.5-rc3
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576865711;
-        bh=23AzVZm23NrI25LQM7jLV8s1KMGZBy6PExwIUbBJdfA=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=XSnjcgKtxLUXYfFSDyB6/2VRc7nH8WRSHDFpdePkR+jnhYLPFAu9hRmzFqy9aEQVP
-         QIGkHInskNX+PEQFEL9yOcnJ3XT/xr2P6aEZvsURO8Oaml2DOz0TbHoImCUbcdU9+F
-         t3QSN2sDBuNjH5Z02pSJ/L03IjKsU8K/RxtvROuY=
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20191220070747.GA2190169@kroah.com>
-References: <20191220070747.GA2190169@kroah.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20191220070747.GA2190169@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.5-rc3
-X-PR-Tracked-Commit-Id: cb47b9f8630ae3fa3f5fbd0c7003faba7abdf711
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 1a4ee8673a775faf4164e66e03b2bcb0cc915d5d
-Message-Id: <157686571148.29164.8923185745210031796.pr-tracker-bot@kernel.org>
-Date:   Fri, 20 Dec 2019 18:15:11 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        Sat, 21 Dec 2019 13:36:14 -0500
+Received: from jabberwock.ucw.cz ([46.255.230.98]:39482 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726107AbfLUSgO (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 21 Dec 2019 13:36:14 -0500
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 3B8E01C24DF; Sat, 21 Dec 2019 19:36:12 +0100 (CET)
+Date:   Sat, 21 Dec 2019 19:36:11 +0100
+From:   Pavel Machek <pavel@denx.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Dan Murphy <dmurphy@ti.com>, Jiri Slaby <jslaby@suse.com>,
+        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v4 0/3] tty/leds: implement a trigger for ttys
+Message-ID: <20191221183611.GB32732@amd>
+References: <20191217165816.19324-1-u.kleine-koenig@pengutronix.de>
+ <20191217172232.GC3829986@kroah.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="eJnRUKwClWJh1Khz"
+Content-Disposition: inline
+In-Reply-To: <20191217172232.GC3829986@kroah.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The pull request you sent on Fri, 20 Dec 2019 08:07:47 +0100:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.5-rc3
+--eJnRUKwClWJh1Khz
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/1a4ee8673a775faf4164e66e03b2bcb0cc915d5d
+On Tue 2019-12-17 18:22:32, Greg Kroah-Hartman wrote:
+> On Tue, Dec 17, 2019 at 05:58:13PM +0100, Uwe Kleine-K=F6nig wrote:
+> > Hello,
+> >=20
+> > v3 of this series was sent earlier today starting with Message-Id:
+> > 20191217150736.1479-1-u.kleine-koenig@pengutronix.de.
+> >=20
+> > v4 only changes patch 3 dropping a few printks, fixing the show callback
+> > for the dev attribute to match its store function. And I moved
+> > ledtrig_tty_restart() into the already existing if (tty) {...} block in
+> > dev_store and dropped the same check from the former function.
+> >=20
+>=20
+> All looks good to me, so if the LED developers give their ack, I can
+> take it in my tty tree.
 
-Thank you!
+Nothing obviously wrong in 1 and 2 of the series. Feel free to take
+them.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+I fear conflicts if you take 3/ through your tree, so perhaps I can
+take it through the LEDs?
+
+But I'll have some comments there.
+
+Best regards,
+									Pavel
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
+
+--eJnRUKwClWJh1Khz
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAl3+ZhsACgkQMOfwapXb+vLQmgCeN4Dl711bxMSjllrFTouPrdDS
+JLQAn19dkCkBWTbK/6Zlh26xzy2x8fng
+=KokU
+-----END PGP SIGNATURE-----
+
+--eJnRUKwClWJh1Khz--
