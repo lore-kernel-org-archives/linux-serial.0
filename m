@@ -1,87 +1,106 @@
-Return-Path: <SRS0=5zPr=2N=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=eXeq=2P=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F3E1C2D0C0
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Dec 2019 12:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1AD6C2D0DA
+	for <linux-serial@archiver.kernel.org>; Wed, 25 Dec 2019 12:53:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 098A12073A
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Dec 2019 12:06:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1577102814;
-	bh=UJGipIs3R0eAFs/+vxP9hO/yM5VYdXO2adysSDweAhc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=dKnD6h6b80HWzPvaRPiXZ5LtYnj5V4H0UsKr+rhTA0MIANEablVk2jjofADghM4v7
-	 ZAppTT6yeg78FS6maN8c7igT5jmi4rZIJCVKgBuAYlVyF/Bncr/CUgngKj87Hzqui6
-	 JtRIj8uf7tqGqmsSw8DFAYEEJieOYpMQ1hs6SJM8=
+	by mail.kernel.org (Postfix) with ESMTP id A69202072A
+	for <linux-serial@archiver.kernel.org>; Wed, 25 Dec 2019 12:53:12 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Sc2pcOF3"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726663AbfLWMGx (ORCPT
+        id S1726185AbfLYMxL (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 Dec 2019 07:06:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37958 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726798AbfLWMGx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 Dec 2019 07:06:53 -0500
-Received: from localhost (50-198-241-253-static.hfc.comcastbusiness.net [50.198.241.253])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 963112063A;
-        Mon, 23 Dec 2019 12:06:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577102812;
-        bh=UJGipIs3R0eAFs/+vxP9hO/yM5VYdXO2adysSDweAhc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Fz2yc8cDetWe4VFTEb9zU418nJ8+h2ixEHwK4M1+tCvv5q0EELvft/sEOBf9OgdBR
-         g0fKDmEZbkFl2tFeMH9BQ1G7px1JKNKQDztlyAmvqszPwo/LkD3g/nqrzqTVfXE/rK
-         hrYisPKy4oJF9GfEm80pUeULbSfvMr+fxK55XIWY=
-Date:   Mon, 23 Dec 2019 07:06:51 -0500
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Wed, 25 Dec 2019 07:53:11 -0500
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:46801 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726106AbfLYMxL (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 25 Dec 2019 07:53:11 -0500
+Received: by mail-ot1-f68.google.com with SMTP id k8so12108879otl.13;
+        Wed, 25 Dec 2019 04:53:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vFjlEPTID7+wvGwi4O8XdLzo/j62NZIF2USQQuU9w9M=;
+        b=Sc2pcOF3376eDsOqdpUZbNhwMHJsdgAMfozUlSuD6ku9yG13IU7vB9T4F17TxAr+jU
+         sM4c1XJutX/HfdzNb6hZngn6BUv8N6t0MbC4zZDYBWHicMXSh0t3H2Us2M584PKQ6KYz
+         Ihjky+LaFbgI1PoXYsmAC2EIcuTefPzWuqtKroZkgxf5qyyb6YwRgjVAsKxywY5frAW1
+         DoYhEgrx1U6FkRHwrLqR5/rAGnL6tj7FwqS465r6uczIeLbn++cqF/XOCYiiZcUa4afI
+         JzDd88jutE7hMVOtNV7dvd1KrDdk0gsQ/IEqCLQhaFSnweFG2IqR63DiBOGWgRNvjL2z
+         yHng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vFjlEPTID7+wvGwi4O8XdLzo/j62NZIF2USQQuU9w9M=;
+        b=Lj9UMKbUriqrEo2D2x8Gt0LF1zzf+8r1QKScknlLMOAHKLVbhA9zzKbnY5kDkILYJU
+         narKR/S/1cLp0nX2B3TWHkkzkzucbCi1Et4zFM6aaA71R5ubwE8HbE2C7Ue8WZMgiAOO
+         Xw0VKRvCItgtR+bwNOy09/30RNj+bWbOS+uM9dCYyM27At1It+LFstSDG+xAaMXibj9R
+         e/UK8has4/Rk40lMNzdlmJ68ZVztUYCbPEhkJpOg5kREEjcWZMjsMCU847WUNO7UOoUL
+         0eTSzP++HahkayHmH21iiU40Wy2F1PIh2LWyNu7qBW9Vmv+f1tJcJ8SSwLXTYbfxB2S8
+         Bgxw==
+X-Gm-Message-State: APjAAAXn64TUUWAShcdt1+wKX8KfJliFLEwRAmpfjpFg3TH9bRtltwQ/
+        zHDuEXzTXZ8sQvcNjZQLXAA88J6ljvXhIYSteyA1wXRA6II=
+X-Google-Smtp-Source: APXvYqz835znKdLdeEWba5fSr4HZoY649al6kisLYRQz09swIr5xk2ZSY1c0KFjwM7tIWRyIihSVPBSspeBWhs6w2oE=
+X-Received: by 2002:a9d:3f61:: with SMTP id m88mr28771702otc.56.1577278390716;
+ Wed, 25 Dec 2019 04:53:10 -0800 (PST)
+MIME-Version: 1.0
+References: <20191220070747.GA2190169@kroah.com> <CAHk-=whcLH7EXVZbD0g1Bw7McrofQ-7vwiL2GAeMn=z9PP4VEQ@mail.gmail.com>
+ <20191223120651.GC114474@kroah.com>
+In-Reply-To: <20191223120651.GC114474@kroah.com>
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Date:   Wed, 25 Dec 2019 12:52:34 +0000
+Message-ID: <CADVatmPA-eYzzTQoOkgVSyi0D0PQo78oQjWJFmWMuMJ4HeU_qg@mail.gmail.com>
+Subject: Re: [GIT PULL] TTY/Serial driver fixes for 5.5-rc3
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
         Jiri Slaby <jslaby@suse.cz>,
         Stephen Rothwell <sfr@canb.auug.org.au>,
         Andrew Morton <akpm@linux-foundation.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         linux-serial@vger.kernel.org
-Subject: Re: [GIT PULL] TTY/Serial driver fixes for 5.5-rc3
-Message-ID: <20191223120651.GC114474@kroah.com>
-References: <20191220070747.GA2190169@kroah.com>
- <CAHk-=whcLH7EXVZbD0g1Bw7McrofQ-7vwiL2GAeMn=z9PP4VEQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=whcLH7EXVZbD0g1Bw7McrofQ-7vwiL2GAeMn=z9PP4VEQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Dec 20, 2019 at 10:08:03AM -0800, Linus Torvalds wrote:
-> On Thu, Dec 19, 2019 at 11:07 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+On Mon, Dec 23, 2019 at 12:06 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Fri, Dec 20, 2019 at 10:08:03AM -0800, Linus Torvalds wrote:
+> > On Thu, Dec 19, 2019 at 11:07 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > The last tty core fix should resolve a long-standing bug with a race
+> > > at port creation time that some people would see, and Sudip finally
+> > > tracked down.
 > >
-> > The last tty core fix should resolve a long-standing bug with a race
-> > at port creation time that some people would see, and Sudip finally
-> > tracked down.
-> 
-> Hmm, looks good. But it makes me wonder if we should now try to remove
-> the second call to tty_port_link_device()?
-> 
-> Now we have a number of helpers that do that tty_port_link_device()
-> call for the driver (eg tty_port_register_device_attr_serdev(),
-> tty_port_register_device_attr(), and the just added
-> uart_add_one_port()).
-> 
-> But we also have drivers doing it by hand, and presumably we now have
-> drivers that do it through multiple paths? I guess it's harmless, but
-> it feels a bit odd. No?
+> > Hmm, looks good. But it makes me wonder if we should now try to remove
+> > the second call to tty_port_link_device()?
+> >
+> > Now we have a number of helpers that do that tty_port_link_device()
+> > call for the driver (eg tty_port_register_device_attr_serdev(),
+> > tty_port_register_device_attr(), and the just added
+> > uart_add_one_port()).
+> >
+> > But we also have drivers doing it by hand, and presumably we now have
+> > drivers that do it through multiple paths? I guess it's harmless, but
+> > it feels a bit odd. No?
+>
+> It does.  I'll try to look at this after the holidays unless Sudip beats
+> me to it.
 
-It does.  I'll try to look at this after the holidays unless Sudip beats
-me to it.
+A regression reported by Kenny for this change. I have sent him a patch to test.
+I think that has to go in rc4. Will remove the second call after he has tested.
 
-thanks,
 
-greg k-h
+--
+Regards
+Sudip
