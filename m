@@ -7,38 +7,38 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5943CC2D0C6
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Dec 2019 17:54:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54053C2D0C6
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Dec 2019 18:06:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 35E92206CB
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Dec 2019 17:54:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2FF672176D
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Dec 2019 18:06:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1577469257;
-	bh=Hf4CZu8uzHRFEMDCzaCNvR32Pby0EsPeIx1M1K2odA8=;
+	s=default; t=1577469963;
+	bh=LaSY8/f8rjl7AmIwdoczWmQ10HHYjsW/aaIre+kdXeM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=PfOhTf53FDUgcKLdYeNoxL8jnxc2YAbShuQBj2GKXYB8xZH9HgsNYkVyVfsf3MVhh
-	 Cv0YBwI4/EXhq16rAeaDQ2Ril60Z5mYU2l6jM1BeHCYCchWxUYWmEyiZ1c8wjxPFrj
-	 JckYW5m0WDOfQDt+MCL1YUGqaBPDh1Uv9L/UOhMs=
+	b=pA4RtXPqAzg3hCiUkOohsrfxX/SscAmref6zwLRa6njq04/LH0uyhLQAO2iqLt4Mm
+	 /bkE/YZL9IAWenIKhh6YhhyiP9YTsHWeKH7pxmFL/mYk+ykYjQgLhhwfnweiew+UTV
+	 L06jaiyXCkpfdHsXHJpJvWehPj667K/OYe536lhQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727927AbfL0Rmj (ORCPT
+        id S1727743AbfL0SFz (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 Dec 2019 12:42:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39654 "EHLO mail.kernel.org"
+        Fri, 27 Dec 2019 13:05:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59974 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727910AbfL0Rmi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 27 Dec 2019 12:42:38 -0500
+        id S1728338AbfL0SC4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 27 Dec 2019 13:02:56 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8067320740;
-        Fri, 27 Dec 2019 17:42:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CC8A320CC7;
+        Fri, 27 Dec 2019 18:02:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577468558;
-        bh=Hf4CZu8uzHRFEMDCzaCNvR32Pby0EsPeIx1M1K2odA8=;
+        s=default; t=1577469775;
+        bh=LaSY8/f8rjl7AmIwdoczWmQ10HHYjsW/aaIre+kdXeM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MRFypKvKGkm+MBoA1sU/gVrkzAZ8XV+KcpecHmtZrIix29fNUESdnlTJO/4zLf/GF
-         Nb4j02rWZRG6pMFoAD8hM5K4TMnw04bwWGxuAW3LlL1/rfJ+FAtHw0OPODCXZonvXW
-         /82XzxFXoioqbHebjOF51Z3+CZrUOKnR+M6hl/ew=
+        b=bdVC+YSTivx5hUBh8xBHMf0Io/XCMI6+mjsRMy8WjoR7o/Q3/dVRbdaitzuuNJyWh
+         QEetzybWuxobzTebczKJfKD03kRAcvhFLmC8+xIT2e6XcuG7W/geFo6Nvlhxfu8OpJ
+         RECayJRQG9ux0vmHiQN6BUxX6/ILp1eOYcnA5vj8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Leo Yan <leo.yan@linaro.org>,
@@ -46,12 +46,12 @@ Cc:     Leo Yan <leo.yan@linaro.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-arm-msm@vger.kernel.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 084/187] tty: serial: msm_serial: Fix lockup for sysrq and oops
-Date:   Fri, 27 Dec 2019 12:39:12 -0500
-Message-Id: <20191227174055.4923-84-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 26/57] tty: serial: msm_serial: Fix lockup for sysrq and oops
+Date:   Fri, 27 Dec 2019 13:01:51 -0500
+Message-Id: <20191227180222.7076-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191227174055.4923-1-sashal@kernel.org>
-References: <20191227174055.4923-1-sashal@kernel.org>
+In-Reply-To: <20191227180222.7076-1-sashal@kernel.org>
+References: <20191227180222.7076-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -88,10 +88,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 11 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 00964b6e4ac1..e0718ee5d42a 100644
+index e937fb189034..77a1f00fe843 100644
 --- a/drivers/tty/serial/msm_serial.c
 +++ b/drivers/tty/serial/msm_serial.c
-@@ -1580,6 +1580,7 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+@@ -1588,6 +1588,7 @@ static void __msm_console_write(struct uart_port *port, const char *s,
  	int num_newlines = 0;
  	bool replaced = false;
  	void __iomem *tf;
@@ -99,7 +99,7 @@ index 00964b6e4ac1..e0718ee5d42a 100644
  
  	if (is_uartdm)
  		tf = port->membase + UARTDM_TF;
-@@ -1592,7 +1593,13 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+@@ -1600,7 +1601,13 @@ static void __msm_console_write(struct uart_port *port, const char *s,
  			num_newlines++;
  	count += num_newlines;
  
@@ -114,7 +114,7 @@ index 00964b6e4ac1..e0718ee5d42a 100644
  	if (is_uartdm)
  		msm_reset_dm_count(port, count);
  
-@@ -1628,7 +1635,9 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+@@ -1636,7 +1643,9 @@ static void __msm_console_write(struct uart_port *port, const char *s,
  		iowrite32_rep(tf, buf, 1);
  		i += num_chars;
  	}
