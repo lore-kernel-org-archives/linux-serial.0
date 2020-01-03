@@ -1,181 +1,111 @@
-Return-Path: <SRS0=Y/rj=2R=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=1aHY=2Y=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-8.2 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 353F7C2D0C6
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Dec 2019 18:30:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 590B8C3276C
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Jan 2020 01:20:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E0B4F2053B
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Dec 2019 18:30:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 291702085B
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Jan 2020 01:20:56 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jyLe1gIx"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jXRjaTQw"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726495AbfL0SaS (ORCPT
+        id S1726148AbgACBUz (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 Dec 2019 13:30:18 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:53065 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726379AbfL0SaS (ORCPT
+        Thu, 2 Jan 2020 20:20:55 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:39964 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726121AbgACBUz (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 27 Dec 2019 13:30:18 -0500
-Received: by mail-wm1-f66.google.com with SMTP id p9so8717202wmc.2;
-        Fri, 27 Dec 2019 10:30:15 -0800 (PST)
+        Thu, 2 Jan 2020 20:20:55 -0500
+Received: by mail-pf1-f193.google.com with SMTP id q8so22833317pfh.7;
+        Thu, 02 Jan 2020 17:20:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=tt4Pc7HYKEhSHSLFHDqLZhfbyrh0xZPyn1XrmozpGLQ=;
-        b=jyLe1gIxAD2xLDv7qkfoxrW8Ii++LkqCIwoU2AfFd3JqScNSPUbahZjsjcAaAt6mLZ
-         NNoGbZH/U9CVCHfPGaC04/ulwPJbunmU4Or3dUDAyGPDuvI/CpX5L2e2FuBgABX9+tEn
-         we5kVyVP6I34DSDVepNHiUOdaW+o8gDdOwpdKHh5NpUQT66lCB9O2XCtJLPjs/quFa3f
-         gW7dNtEXaxls4IIOlHuUpobUhlkEyot3QPhTy0xVSjHqJVEdsA8Nq9ULctpcVMPgRL1d
-         abVYxA6lFgLUownk6mwDWeKOluMQPTFi178P/gs7nyBbUpEDfEi4G5Vv5TPlx78njjHu
-         yRGw==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=iPY8DonFEvaslZITm1PPK8VeIN05fhFDyPqLfWySPpI=;
+        b=jXRjaTQwgRDYEVu8ADx9goMMyad9kCOAIf4eUg61yAVUcLwjnjGNBDBdK/eFHOy4qH
+         hJov6B6ndqk+qNScsR9poV+FXGN8zh5L2yxQJIfB0fpLo5VRxBADw0AwpIZ5fnT+Hz38
+         wvIOWK8aqUCCdh6jNg449gb7xfJv0ppdbP32xULiMZ9ymmdhlQAYH6pzm/yp1JItJye/
+         1Rk+rR2aUB2o4OEMF9UYNrY2zZckoB2LMZZALfHWJJNvu6362qKLWC5Blq4lWOqncJOO
+         4erFENLSObRkafLTaS5EcQf+WEsPdmNH0Eki6WDL3ygsI42KeF0N9IGp/MpAozHtIUfz
+         RR/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=tt4Pc7HYKEhSHSLFHDqLZhfbyrh0xZPyn1XrmozpGLQ=;
-        b=OWh/XKFC1IpkT0fjSz5BT7G9qbL/vk8SPSpYW1kxBavagYltRN0cR4ijPr8RaXONIR
-         6K6BWt9RKJ9Vf2DfHjo644rSrDxlt+qBqEIMGFayw4RQtgUk+b2Zr5CmKr02ghuCydMW
-         j6djybIiuX2Easb2nkcHAZtB9CWTa1ac7A1P6NqAvLsEDBvs0R7LLNkpxAuL/UBcwl0i
-         JtELIJGW4ieGJOTNLp+XDLnXKFfFNquo7KnAGpVgsqGGUWXFqpwknn7n4ntdVrqXvCE9
-         w7YB4aZ/jtQ2xoPerNtFio6UZPb0UFfOCwGpl88+f0oAEdFBhRStUHMJ75/g6CrX00tX
-         y46w==
-X-Gm-Message-State: APjAAAWMmQ+N85YC2+E6krkfGWH1sAqKct3+AeRKxsblgpDCiDDkHM/V
-        3muix3cMPdrbv8t9v/jxbeNl0dDGTHg=
-X-Google-Smtp-Source: APXvYqzVFvda+uLl5sPwotnxNMETPYN/BZEdwY9h+ZAw2FopdG6mb6Sh6h6A5oULdI6kb8xactcwKg==
-X-Received: by 2002:a05:600c:251:: with SMTP id 17mr19425167wmj.88.1577471415166;
-        Fri, 27 Dec 2019 10:30:15 -0800 (PST)
-Received: from debian (host-78-144-219-162.as13285.net. [78.144.219.162])
-        by smtp.gmail.com with ESMTPSA id v83sm12033947wmg.16.2019.12.27.10.30.13
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 27 Dec 2019 10:30:13 -0800 (PST)
-Date:   Fri, 27 Dec 2019 18:30:11 +0000
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-serial@vger.kernel.org
-Subject: Re: [GIT PULL] TTY/Serial driver fixes for 5.5-rc3
-Message-ID: <20191227183011.ij5wcawu6kpf52fb@debian>
-References: <20191220070747.GA2190169@kroah.com>
- <CAHk-=whcLH7EXVZbD0g1Bw7McrofQ-7vwiL2GAeMn=z9PP4VEQ@mail.gmail.com>
- <20191223120651.GC114474@kroah.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=iPY8DonFEvaslZITm1PPK8VeIN05fhFDyPqLfWySPpI=;
+        b=ChUICEPsBFrG4k1aSHmUMUWVFOwGu6xo9ycJ3GNKFY6TanjFZTdTOE5d5ylSUdbHSD
+         SFRQdjgmuzXl0M/C2Or2ncgvSAd99DuwVjkEqZNaTs1FbcJ+/H7vq70zAq99TbHcC7zJ
+         ESLIA+x7QuOqq0cpsA4CV3NVBgogWPtJIRYVGMM5IFPzL4vaT2j21XN99Q8GH0G5v2Yz
+         yz+Ikcvv8X9NWj2cccwNdVoigsMpcts7EoIl9v+Qr38SyEVoPlcaTtjX8xwC5xBbf0ks
+         7BdtjDRGIx16buWEXrDmyZY+C3fJHtA4g+D06DlDw5r01V3rDmK3If8hQrjKvlIuO3lO
+         zY+w==
+X-Gm-Message-State: APjAAAUsBoQkad3oGF0UiKbKWqh2ntd30sGe2RrajdUZCeiIga+a/XQw
+        JUYTeqeKNrfUNRP7qnNlyEA=
+X-Google-Smtp-Source: APXvYqxd6ZxVhx9DaLcQylwATIY8jZP4Z3jP43AFyDvRtje352jdjg8y/Sjwo4w70QrE7otE6EFQ1w==
+X-Received: by 2002:a65:6794:: with SMTP id e20mr92694645pgr.152.1578014454937;
+        Thu, 02 Jan 2020 17:20:54 -0800 (PST)
+Received: from dtor-ws ([2620:15c:202:201:3adc:b08c:7acc:b325])
+        by smtp.gmail.com with ESMTPSA id r37sm12215963pjb.7.2020.01.02.17.20.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jan 2020 17:20:54 -0800 (PST)
+Date:   Thu, 2 Jan 2020 17:20:53 -0800
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Patrice Chotard <patrice.chotard@st.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] tty: st-asc: switch to using devm_fwnode_gpiod_get()
+Message-ID: <20200103012053.GA1968@dtor-ws>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="spmmowioe5m7hsux"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191223120651.GC114474@kroah.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+devm_fwnode_get_gpiod_from_child() is going away as the name is too
+unwieldy, let's switch to using the new devm_fwnode_gpiod_get().
 
---spmmowioe5m7hsux
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+---
+ drivers/tty/serial/st-asc.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-On Mon, Dec 23, 2019 at 07:06:51AM -0500, Greg KH wrote:
-> On Fri, Dec 20, 2019 at 10:08:03AM -0800, Linus Torvalds wrote:
-> > On Thu, Dec 19, 2019 at 11:07 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > The last tty core fix should resolve a long-standing bug with a race
-> > > at port creation time that some people would see, and Sudip finally
-> > > tracked down.
-> > 
-> > Hmm, looks good. But it makes me wonder if we should now try to remove
-> > the second call to tty_port_link_device()?
-> > 
-> > Now we have a number of helpers that do that tty_port_link_device()
-> > call for the driver (eg tty_port_register_device_attr_serdev(),
-> > tty_port_register_device_attr(), and the just added
-> > uart_add_one_port()).
-> > 
-> > But we also have drivers doing it by hand, and presumably we now have
-> > drivers that do it through multiple paths? I guess it's harmless, but
-> > it feels a bit odd. No?
-> 
-> It does.  I'll try to look at this after the holidays unless Sudip beats
-> me to it.
-
-The second call to tty_port_link_device() is in
-tty_port_register_device_attr_serdev() and tty_port_register_device_attr()
-is being called from many other places apart from uart_add_one_port().
-The attached patch should be safe. I will test and send it properly unless
-someone objects to it.
-
---
-Regards
-Sudip
-
---spmmowioe5m7hsux
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename=patch
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 7c2782785736..09df885442ae 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2858,7 +2858,8 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
- 	 * setserial to be used to alter this port's parameters.
- 	 */
- 	tty_dev = tty_port_register_device_attr_serdev(port, drv->tty_driver,
--			uport->line, uport->dev, port, uport->tty_groups);
-+			uport->line, uport->dev, port, uport->tty_groups,
-+			false);
- 	if (!IS_ERR(tty_dev)) {
- 		device_set_wakeup_capable(tty_dev, 1);
- 	} else {
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 5023c85ebc6e..dc66543fa2c3 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -152,11 +152,12 @@ EXPORT_SYMBOL_GPL(tty_port_register_device_attr);
- struct device *tty_port_register_device_attr_serdev(struct tty_port *port,
- 		struct tty_driver *driver, unsigned index,
- 		struct device *device, void *drvdata,
--		const struct attribute_group **attr_grp)
-+		const struct attribute_group **attr_grp, bool link)
- {
- 	struct device *dev;
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index fb6bbb5e22344..3a533a0f172bd 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -566,11 +566,11 @@ static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
+ 			pinctrl_select_state(ascport->pinctrl,
+ 					     ascport->states[NO_HW_FLOWCTRL]);
  
--	tty_port_link_device(port, driver, index);
-+	if (link)
-+		tty_port_link_device(port, driver, index);
- 
- 	dev = serdev_tty_port_register(port, device, driver, index);
- 	if (PTR_ERR(dev) != -ENODEV) {
-@@ -184,7 +185,7 @@ struct device *tty_port_register_device_serdev(struct tty_port *port,
- 		struct device *device)
- {
- 	return tty_port_register_device_attr_serdev(port, driver, index,
--			device, NULL, NULL);
-+			device, NULL, NULL, true);
- }
- EXPORT_SYMBOL_GPL(tty_port_register_device_serdev);
- 
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index bfa4e2ee94a9..7f2ad47ecf88 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -587,7 +587,7 @@ extern struct device *tty_port_register_device_serdev(struct tty_port *port,
- extern struct device *tty_port_register_device_attr_serdev(struct tty_port *port,
- 		struct tty_driver *driver, unsigned index,
- 		struct device *device, void *drvdata,
--		const struct attribute_group **attr_grp);
-+		const struct attribute_group **attr_grp, bool link);
- extern void tty_port_unregister_device(struct tty_port *port,
- 		struct tty_driver *driver, unsigned index);
- extern int tty_port_alloc_xmit_buf(struct tty_port *port);
+-			gpiod = devm_fwnode_get_gpiod_from_child(port->dev,
+-								 "rts",
+-								 &np->fwnode,
+-								 GPIOD_OUT_LOW,
+-								 np->name);
++			gpiod = devm_fwnode_gpiod_get(port->dev,
++						      of_fwhandle_node(np),
++						      "rts",
++						      GPIOD_OUT_LOW,
++						      np->name);
+ 			if (!IS_ERR(gpiod))
+ 				ascport->rts = gpiod;
+ 		}
+-- 
+2.24.1.735.g03f4e72817-goog
 
---spmmowioe5m7hsux--
+
+-- 
+Dmitry
