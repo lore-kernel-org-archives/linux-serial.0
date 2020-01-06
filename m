@@ -2,115 +2,78 @@ Return-Path: <SRS0=9FNa=23=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 008B3C32771
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jan 2020 08:09:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA9C6C33C9E
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jan 2020 14:45:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CF04A20848
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jan 2020 08:09:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 868602075A
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jan 2020 14:45:32 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="DQ/P4EnV"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725843AbgAFIJN (ORCPT
+        id S1726448AbgAFOpc (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Jan 2020 03:09:13 -0500
-Received: from mo-csw1116.securemx.jp ([210.130.202.158]:57884 "EHLO
-        mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725446AbgAFIJN (ORCPT
+        Mon, 6 Jan 2020 09:45:32 -0500
+Received: from mail25.static.mailgun.info ([104.130.122.25]:50655 "EHLO
+        mail25.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726303AbgAFOpc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Jan 2020 03:09:13 -0500
-Received: by mo-csw.securemx.jp (mx-mo-csw1116) id 006895dt010192; Mon, 6 Jan 2020 17:09:05 +0900
-X-Iguazu-Qid: 2wHHRLdPLmlO4ZZEmL
-X-Iguazu-QSIG: v=2; s=0; t=1578298144; q=2wHHRLdPLmlO4ZZEmL; m=na7Qt1q5QT+sQHFFGMvgay8Mnd4k6nbEiyuYSfioJ2o=
-Received: from imx12.toshiba.co.jp (imx12.toshiba.co.jp [61.202.160.132])
-        by relay.securemx.jp (mx-mr1111) id 0068944t029769;
-        Mon, 6 Jan 2020 17:09:04 +0900
-Received: from enc02.toshiba.co.jp ([61.202.160.51])
-        by imx12.toshiba.co.jp  with ESMTP id 006894g3026034;
-        Mon, 6 Jan 2020 17:09:04 +0900 (JST)
-Received: from hop101.toshiba.co.jp ([133.199.85.107])
-        by enc02.toshiba.co.jp  with ESMTP id 006893QK011403;
-        Mon, 6 Jan 2020 17:09:03 +0900
-From:   Punit Agrawal <punit1.agrawal@toshiba.co.jp>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     <linux-serial@vger.kernel.org>, <stable@vger.kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serdev: Don't claim unsupported ACPI serial devices
-References: <20191219100345.911093-1-punit1.agrawal@toshiba.co.jp>
-        <20191225235531.D7BB320882@mail.kernel.org>
-Date:   Mon, 06 Jan 2020 17:10:15 +0900
-In-Reply-To: <20191225235531.D7BB320882@mail.kernel.org> (Sasha Levin's
-        message of "Wed, 25 Dec 2019 23:55:31 +0000")
-X-TSB-HOP: ON
-Message-ID: <87o8vhatug.fsf@kokedama.swc.toshiba.co.jp>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain
+        Mon, 6 Jan 2020 09:45:32 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1578321931; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=x8gONy2C4+fbyz/VyW30XZNbdmrWofZ8pKSWlob8XCQ=; b=DQ/P4EnVCQCtzdJW+mo9g/Ud8xbtQUktzCnwHv+ioPmmAwUtLGozh7VeMjPRzkxu/KZWynAb
+ 7NS848SfsSv5UgJAtyTe5q2cxCTXZA5raMIHsHg3+wRt6HZxa2NGZFnmJsCgrjtzLeUA0WM8
+ 7lzkIbJUNN0RkLXZtL/Tx6QRcOg=
+X-Mailgun-Sending-Ip: 104.130.122.25
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e134806.7f5f2625d1b8-smtp-out-n03;
+ Mon, 06 Jan 2020 14:45:26 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 1FB85C447AA; Mon,  6 Jan 2020 14:45:26 +0000 (UTC)
+Received: from akashast-linux.qualcomm.com (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id BC507C447A1;
+        Mon,  6 Jan 2020 14:45:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org BC507C447A1
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+From:   Akash Asthana <akashast@codeaurora.org>
+To:     gregkh@linuxfoundation.org
+Cc:     swboyd@chromium.org, mgautam@codeaurora.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        Akash Asthana <akashast@codeaurora.org>
+Subject: [PATCH V8 0/2] Cleanup wakeup IRQ and move loopback to TIOCM_LOOP
+Date:   Mon,  6 Jan 2020 20:15:03 +0530
+Message-Id: <1578321905-25843-1-git-send-email-akashast@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Sasha Levin <sashal@kernel.org> writes:
+Changes in v8:
+ - Resending v7 patches after rebasing it to tty-next tip.
 
-> Hi,
->
-> [This is an automated email]
->
-> This commit has been processed because it contains a -stable tag.
-> The stable tag indicates that it's relevant for the following trees: all
->
-> The bot has tested the following trees: v5.4.5, v5.3.18, v4.19.90, v4.14.159, v4.9.206, v4.4.206.
->
-> v5.4.5: Failed to apply! Possible dependencies:
->     33364d63c75d ("serdev: Add ACPI devices by ResourceSource field")
->
-> v5.3.18: Failed to apply! Possible dependencies:
->     33364d63c75d ("serdev: Add ACPI devices by ResourceSource field")
->
-> v4.19.90: Failed to apply! Possible dependencies:
->     33364d63c75d ("serdev: Add ACPI devices by ResourceSource field")
->
-> v4.14.159: Failed to apply! Possible dependencies:
->     33364d63c75d ("serdev: Add ACPI devices by ResourceSource field")
->     53c7626356c7 ("serdev: Add ACPI support")
->
-> v4.9.206: Failed to apply! Possible dependencies:
->     0634c2958927 ("of: Add function for generating a DT modalias with a newline")
->     0a847634849c ("[media] lirc_serial: use precision ktime rather than guessing")
->     53c7626356c7 ("serdev: Add ACPI support")
->     a6f6ad4173b3 ("lirc_serial: make checkpatch happy")
->     b66db53f8d85 ("[media] lirc_serial: port to rc-core")
->     cd6484e1830b ("serdev: Introduce new bus for serial attached devices")
->     fa5dc29c1fcc ("[media] lirc_serial: move out of staging and rename to serial_ir")
->
-> v4.4.206: Failed to apply! Possible dependencies:
->     0634c2958927 ("of: Add function for generating a DT modalias with a newline")
->     0a847634849c ("[media] lirc_serial: use precision ktime rather than guessing")
->     49fc9361db78 ("[media] add maintainer for stih-cec driver")
->     53c7626356c7 ("serdev: Add ACPI support")
->     8459503295d9 ("[media] staging: media: lirc: Replace timeval with ktime_t in lirc_serial.c")
->     a6f6ad4173b3 ("lirc_serial: make checkpatch happy")
->     b66db53f8d85 ("[media] lirc_serial: port to rc-core")
->     cd6484e1830b ("serdev: Introduce new bus for serial attached devices")
->     fa5dc29c1fcc ("[media] lirc_serial: move out of staging and rename to serial_ir")
->
->
-> NOTE: The patch will not be queued to stable trees until it is upstream.
->
-> How should we proceed with this patch?
+Changes in v7:
+ - Updates cover letter subject.
+ - As per stephen's comment fix wakeup patches that are already merged to
+   tty-next instead on reverting them.
 
-The patch only makes sense in kernels that have ACPI support enabled for
-serdev devices, i.e., v4.15+. In the applicable kernels, it has a
-dependency on 33364d63c75d ("serdev: Add ACPI devices by ResourceSource
-field") as detected by the bot.
+Patch v6 link:
+ - https://patchwork.kernel.org/cover/11258043/
 
-The patch does not need to be backported any further back.
+Akash Asthana (2):
+  tty: serial: qcom_geni_serial: Wakeup IRQ cleanup
+  tty: serial: qcom_geni_serial: Move loopback support to TIOCM_LOOP
 
-Likely due to the holidays, Greg's not yet picked up the patch for
-upstream. I'll nudge him for feedback.
+ drivers/tty/serial/qcom_geni_serial.c | 123 ++++++++++++++--------------------
+ 1 file changed, 50 insertions(+), 73 deletions(-)
 
-Thanks,
-Punit
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
