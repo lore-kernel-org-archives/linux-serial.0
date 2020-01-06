@@ -2,79 +2,158 @@ Return-Path: <SRS0=9FNa=23=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 639E4C33C8C
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jan 2020 18:58:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9368C33C8C
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jan 2020 18:59:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2D9BA2072C
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jan 2020 18:58:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8BF4D2072C
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jan 2020 18:59:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1578337100;
-	bh=JqFB7SxHrWcyOP4N5DEnQmENuaUMIVm+HFB3PT0FOAk=;
+	s=default; t=1578337163;
+	bh=v9d35TVrIgudq/ZtG6CwFsc6NUWvH2KVrcE15fX6q9E=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=WeLxM9RQm3FvFayhSuZW9KnxPI/uxmBwcKjwZslMy4XMTVQPr8TiraJDYNs6RUtfn
-	 hb2MJhJgbYhx84bNSUrBiDWWX0ORqxTd2TpNsrcaUcpUVsMcHjY/twg7wqjNSKUnXM
-	 vlLxfW5XOlSQ8/s5PFSCKuLr1Ll1tH+czBAPcM8g=
+	b=LmfZyEsPmXtZiXIvSO2voL0y6H/v+LJAAMkl/FoARv6jBIIom/hHJzcECLxdgK7E7
+	 K8bFLJwWm7wTn6Nt8wef30gIYUXmaIDLinmozz9dLy8rrtcxAqzGMOlQ9WrPRGkJ/H
+	 vQDoW2tkZlfGN6g0EIc9uF6/MnlCj6b7PRMz2bO0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726683AbgAFS6T (ORCPT
+        id S1727170AbgAFS7V (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Jan 2020 13:58:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44146 "EHLO mail.kernel.org"
+        Mon, 6 Jan 2020 13:59:21 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45584 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726657AbgAFS6T (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Jan 2020 13:58:19 -0500
+        id S1727074AbgAFS7V (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 6 Jan 2020 13:59:21 -0500
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B150E2072A;
-        Mon,  6 Jan 2020 18:58:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E88B12072A;
+        Mon,  6 Jan 2020 18:59:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578337099;
-        bh=JqFB7SxHrWcyOP4N5DEnQmENuaUMIVm+HFB3PT0FOAk=;
+        s=default; t=1578337160;
+        bh=v9d35TVrIgudq/ZtG6CwFsc6NUWvH2KVrcE15fX6q9E=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rVqz9/iIhSuobLqKYxE3K2Q8yDobIT1SpgZ5vcfEmmZK+hiiFdi9Ju9xE1iGOEjSI
-         3FHHSBVr3f30wbOoOqvsBbA2V6yHLdKXFpM9d61vw81/okq03pJyxwn/dVfFdEbE8L
-         ShwxkmNHzrCNt2fXelnDXpO3BXOy1E/BI2fIKpiU=
-Date:   Mon, 6 Jan 2020 19:58:16 +0100
+        b=Cny6ABu/mU+myEV7taYl6RIQey4gbUi1362mYgSCcKsnwVDJRHWTqZlndb2yhRS4H
+         br5CM49+v3rUvzbUgtfNnyuYnenSm00XYxTCv2jOqkiGybzgBIW4jdyNv1psvYM0Hj
+         jIQCZNXoyQsXQ59oSCY6VsAQNTvsdQYZh7UVtfLY=
+Date:   Mon, 6 Jan 2020 19:59:18 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Patrice Chotard <patrice.chotard@st.com>,
-        Jiri Slaby <jslaby@suse.com>,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tty: st-asc: switch to using devm_gpiod_get()
-Message-ID: <20200106185816.GA597279@kroah.com>
-References: <20200104202314.GA13591@dtor-ws>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Pavel Machek <pavel@denx.de>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Dan Murphy <dmurphy@ti.com>, Jiri Slaby <jslaby@suse.com>,
+        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v5 3/3] leds: trigger: implement a tty trigger
+Message-ID: <20200106185918.GB597279@kroah.com>
+References: <20191219093947.15502-1-u.kleine-koenig@pengutronix.de>
+ <20191219093947.15502-4-u.kleine-koenig@pengutronix.de>
+ <20191221184047.GC32732@amd>
+ <20191223100828.bqtda4zilc74fqfk@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20200104202314.GA13591@dtor-ws>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191223100828.bqtda4zilc74fqfk@pengutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Jan 04, 2020 at 12:23:14PM -0800, Dmitry Torokhov wrote:
-> The node pointer in question is not a child node, but the node assigned
-> to the port device itself, so we should not be using
-> devm_fwnode_get_gpiod_from_child() [that is going away], but standard
-> devm_gpiod_get().
+On Mon, Dec 23, 2019 at 11:08:28AM +0100, Uwe Kleine-König wrote:
+> Hello Pavel,
 > 
-> To maintain the previous labeling we use gpiod_set_consumer_name() after
-> we acquire the GPIO.
+> On Sat, Dec 21, 2019 at 07:40:47PM +0100, Pavel Machek wrote:
+> > > +++ b/Documentation/ABI/testing/sysfs-class-led-trigger-tty
+> > > @@ -0,0 +1,6 @@
+> > > +What:		/sys/class/leds/<led>/dev
+> > > +Date:		Dec 2019
+> > > +KernelVersion:	5.6
+> > > +Contact:	linux-leds@vger.kernel.org
+> > > +Description:
+> > > +		Specifies $major:$minor of the triggering tty
+> > 
+> > Ok, sounds reasonable.
+> > 
+> > > +static ssize_t dev_store(struct device *dev,
+> > > +			 struct device_attribute *attr, const char *buf,
+> > > +			 size_t size)
+> > > +{
+> > > +	struct ledtrig_tty_data *trigger_data = led_trigger_get_drvdata(dev);
+> > > +	struct tty_struct *tty;
+> > > +	unsigned major, minor;
+> > > +	int ret;
+> > > +
+> > > +	if (size == 0 || (size == 1 && buf[0] == '\n')) {
+> > > +		tty = NULL;
+> > > +	} else {
+> > > +		ret = sscanf(buf, "%u:%u", &major, &minor);
+> > > +		if (ret < 2)
+> > > +			return -EINVAL;
+> > 
+> > If user writes 1:2:badparsingofdata into the file, it will pass, right?
 > 
-> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> ---
->  drivers/tty/serial/st-asc.c | 12 +++++-------
->  1 file changed, 5 insertions(+), 7 deletions(-)
+> Yes, and it will have the same effect as writing 1:2. I wonder if this
+> is bad.
+> 
+> > > +		tty = tty_kopen_shared(MKDEV(major, minor));
+> > > +		if (IS_ERR(tty))
+> > > +			return PTR_ERR(tty);
+> > > +	}
+> > 
+> > Do you need to do some kind of tty_kclose()? What happens if the
+> > device disappears, for example because the USB modem is unplugged?
+> 
+> Only tty_kref_put is needed to close.
+> 
+> > > +static void ledtrig_tty_work(struct work_struct *work)
+> > > +{
+> > > +	struct ledtrig_tty_data *trigger_data =
+> > > +		container_of(work, struct ledtrig_tty_data, dwork.work);
+> > > +	struct serial_icounter_struct icount;
+> > > +	int ret;
+> > > +
+> > > +	if (!trigger_data->tty) {
+> > > +		led_set_brightness(trigger_data->led_cdev, LED_OFF);
+> > > +		return;
+> > > +	}
+> > > +
+> > > +	ret = tty_get_icount(trigger_data->tty, &icount);
+> > > +	if (ret)
+> > > +		return;
+> > > +
+> > > +	if (icount.rx != trigger_data->rx ||
+> > > +	    icount.tx != trigger_data->tx) {
+> > > +		unsigned long delay_on = 100, delay_off = 100;
+> > > +
+> > > +		led_blink_set_oneshot(trigger_data->led_cdev,
+> > > +				      &delay_on, &delay_off, 0);
+> > > +
+> > > +		trigger_data->rx = icount.rx;
+> > > +		trigger_data->tx = icount.tx;
+> > > +	}
+> > 
+> > Since you are polling this, anyway, can you just manipulate brightness
+> > directly instead of using _oneshot()? _oneshot() will likely invoke
+> > another set of workqueues.
+> 
+> I copied that from the netdev trigger. I failed to find a suitable
+> helper function, did I miss that or does it need creating?
+>  
+> > LED triggers were meant to operate directly from the events, not based
+> > on statistics like this.
+> 
+> Ditto; just copied from the netdev trigger. I tried to find a suitable
+> place to add a trigger in the core, but this is hard without having to
+> modify all drivers; additionally this is in thier hot path. So I
+> considered using statistics a good idea. Greg also liked it and someone
+> before us for the network trigger, too ...
 
-What changed from v1 of this patch?  Please put that below the --- line
-and versino your patches.
-
-v3?
+This still looks ok to me, any objections to me merging it in my tty
+tree?
 
 thanks,
 
