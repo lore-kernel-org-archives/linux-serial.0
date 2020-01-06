@@ -2,111 +2,115 @@ Return-Path: <SRS0=9FNa=23=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD175C33C9C
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jan 2020 07:22:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 008B3C32771
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jan 2020 08:09:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B247D218AC
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jan 2020 07:22:41 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="tBJzqMqv"
+	by mail.kernel.org (Postfix) with ESMTP id CF04A20848
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jan 2020 08:09:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726793AbgAFHWk (ORCPT
+        id S1725843AbgAFIJN (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Jan 2020 02:22:40 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:39478 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726668AbgAFHWk (ORCPT
+        Mon, 6 Jan 2020 03:09:13 -0500
+Received: from mo-csw1116.securemx.jp ([210.130.202.158]:57884 "EHLO
+        mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725446AbgAFIJN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Jan 2020 02:22:40 -0500
-Received: by mail-pg1-f193.google.com with SMTP id b137so26463548pga.6;
-        Sun, 05 Jan 2020 23:22:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :in-reply-to:references;
-        bh=8KLFzxRxYExyH52H7UNZCg0hoUieXXMXkUll3VBkONU=;
-        b=tBJzqMqvW81xzhhOY++dmJPsO+C2SCdvVTWOLS2R81B/WZbgk1QEEwUwAm7sG31F3W
-         Vyj9Ib8lVv8qrtILE/9otdMrke7M1xwFzCRG6H8SJJdc46zoxjTw4UyL/ORab3qQMNOa
-         oQbbC+ppEUVorJj3P7wKtGKQ95M7HBa4p+oa5StqAvnk93jff0uk98siIsQHaHCxJ6lI
-         DRD84Xblo+u0R/y/etC0Px9bcVr1JSEVW+D0XfM7PHRzXlQQDL5qV5230cPcrf7g8B6M
-         RircBhj3uQOI8Y/AwlByaL8fOmsRhyrrG8NR2V9qmGwT9hPT1T9iMVPTsrnqN0TWDkWO
-         Llew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:in-reply-to:references;
-        bh=8KLFzxRxYExyH52H7UNZCg0hoUieXXMXkUll3VBkONU=;
-        b=BM572G86IhE1VYzAUSsM0iokec+Ff6knKd37xCUTKL5qCuZ1r/+c93+4ezFcOkh1yz
-         6SwGwUVLSUBy0ovhNVeDLBDB60HEcQYAppl9CoAyCZX+l8fZZmwBwGSb/OLav5p4MkO0
-         Tjk6hzqvmdCkHSSCLhZGM8LGUlBK324ZnmN1tiWNpHBuoeRSJPcTSHiEKO9RICjJs9px
-         UDtQss8SqU0gcoZ1EwCBv4ow3bwWlUUrqjulstfolGpY2Xl9HpTLM5ABxA0xg4MZj+Hp
-         zAG4plYS1xaUPeVGZ0ak3dkwm0ncpT8X+VPnZcnwcefVhh+VsGob6aQjVHV3eQCkXfpF
-         acqw==
-X-Gm-Message-State: APjAAAV9wrFu/hQ+53bJhiJktYGaR3fiix2JjySLt0t9KLGNG2XYhMfs
-        X7dXnD7A0BKb1drUUlJbmkg=
-X-Google-Smtp-Source: APXvYqxGI0VqXHfMLjgwAZ7JrhQE+GkLaOoQF2ExXhEiq632t3uetPaHYvplKcMmbeH+wE17YIGkOg==
-X-Received: by 2002:a63:3750:: with SMTP id g16mr110918924pgn.413.1578295359855;
-        Sun, 05 Jan 2020 23:22:39 -0800 (PST)
-Received: from localhost.localdomain ([49.207.56.131])
-        by smtp.gmail.com with ESMTPSA id q8sm72968137pgg.92.2020.01.05.23.22.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sun, 05 Jan 2020 23:22:39 -0800 (PST)
-From:   Rishi Gupta <gupt21@gmail.com>
-To:     gregkh@linuxfoundation.org, robh+dt@kernel.org
-Cc:     jslaby@suse.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Rishi Gupta <gupt21@gmail.com>
-Subject: [PATCH v1 3/3] tty: documentation: abi: add ttyvs null modem driver sysfs nodes
-Date:   Mon,  6 Jan 2020 12:51:55 +0530
-Message-Id: <7d7c949890c4bdb12ecc9f8b15a5c0a69b7604a8.1578235515.git.gupt21@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1578235515.git.gupt21@gmail.com>
-References: <cover.1578235515.git.gupt21@gmail.com>
-In-Reply-To: <cover.1578235515.git.gupt21@gmail.com>
-References: <cover.1578235515.git.gupt21@gmail.com>
+        Mon, 6 Jan 2020 03:09:13 -0500
+Received: by mo-csw.securemx.jp (mx-mo-csw1116) id 006895dt010192; Mon, 6 Jan 2020 17:09:05 +0900
+X-Iguazu-Qid: 2wHHRLdPLmlO4ZZEmL
+X-Iguazu-QSIG: v=2; s=0; t=1578298144; q=2wHHRLdPLmlO4ZZEmL; m=na7Qt1q5QT+sQHFFGMvgay8Mnd4k6nbEiyuYSfioJ2o=
+Received: from imx12.toshiba.co.jp (imx12.toshiba.co.jp [61.202.160.132])
+        by relay.securemx.jp (mx-mr1111) id 0068944t029769;
+        Mon, 6 Jan 2020 17:09:04 +0900
+Received: from enc02.toshiba.co.jp ([61.202.160.51])
+        by imx12.toshiba.co.jp  with ESMTP id 006894g3026034;
+        Mon, 6 Jan 2020 17:09:04 +0900 (JST)
+Received: from hop101.toshiba.co.jp ([133.199.85.107])
+        by enc02.toshiba.co.jp  with ESMTP id 006893QK011403;
+        Mon, 6 Jan 2020 17:09:03 +0900
+From:   Punit Agrawal <punit1.agrawal@toshiba.co.jp>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     <linux-serial@vger.kernel.org>, <stable@vger.kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] serdev: Don't claim unsupported ACPI serial devices
+References: <20191219100345.911093-1-punit1.agrawal@toshiba.co.jp>
+        <20191225235531.D7BB320882@mail.kernel.org>
+Date:   Mon, 06 Jan 2020 17:10:15 +0900
+In-Reply-To: <20191225235531.D7BB320882@mail.kernel.org> (Sasha Levin's
+        message of "Wed, 25 Dec 2019 23:55:31 +0000")
+X-TSB-HOP: ON
+Message-ID: <87o8vhatug.fsf@kokedama.swc.toshiba.co.jp>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The ttyvs driver exposes sysfs files to emulate various serial
-port events. This commit document these files.
+Sasha Levin <sashal@kernel.org> writes:
 
-Signed-off-by: Rishi Gupta <gupt21@gmail.com>
----
- .../ABI/testing/sysfs-devices-virtual-tty_ttyvs        | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-devices-virtual-tty_ttyvs
+> Hi,
+>
+> [This is an automated email]
+>
+> This commit has been processed because it contains a -stable tag.
+> The stable tag indicates that it's relevant for the following trees: all
+>
+> The bot has tested the following trees: v5.4.5, v5.3.18, v4.19.90, v4.14.159, v4.9.206, v4.4.206.
+>
+> v5.4.5: Failed to apply! Possible dependencies:
+>     33364d63c75d ("serdev: Add ACPI devices by ResourceSource field")
+>
+> v5.3.18: Failed to apply! Possible dependencies:
+>     33364d63c75d ("serdev: Add ACPI devices by ResourceSource field")
+>
+> v4.19.90: Failed to apply! Possible dependencies:
+>     33364d63c75d ("serdev: Add ACPI devices by ResourceSource field")
+>
+> v4.14.159: Failed to apply! Possible dependencies:
+>     33364d63c75d ("serdev: Add ACPI devices by ResourceSource field")
+>     53c7626356c7 ("serdev: Add ACPI support")
+>
+> v4.9.206: Failed to apply! Possible dependencies:
+>     0634c2958927 ("of: Add function for generating a DT modalias with a newline")
+>     0a847634849c ("[media] lirc_serial: use precision ktime rather than guessing")
+>     53c7626356c7 ("serdev: Add ACPI support")
+>     a6f6ad4173b3 ("lirc_serial: make checkpatch happy")
+>     b66db53f8d85 ("[media] lirc_serial: port to rc-core")
+>     cd6484e1830b ("serdev: Introduce new bus for serial attached devices")
+>     fa5dc29c1fcc ("[media] lirc_serial: move out of staging and rename to serial_ir")
+>
+> v4.4.206: Failed to apply! Possible dependencies:
+>     0634c2958927 ("of: Add function for generating a DT modalias with a newline")
+>     0a847634849c ("[media] lirc_serial: use precision ktime rather than guessing")
+>     49fc9361db78 ("[media] add maintainer for stih-cec driver")
+>     53c7626356c7 ("serdev: Add ACPI support")
+>     8459503295d9 ("[media] staging: media: lirc: Replace timeval with ktime_t in lirc_serial.c")
+>     a6f6ad4173b3 ("lirc_serial: make checkpatch happy")
+>     b66db53f8d85 ("[media] lirc_serial: port to rc-core")
+>     cd6484e1830b ("serdev: Introduce new bus for serial attached devices")
+>     fa5dc29c1fcc ("[media] lirc_serial: move out of staging and rename to serial_ir")
+>
+>
+> NOTE: The patch will not be queued to stable trees until it is upstream.
+>
+> How should we proceed with this patch?
 
-diff --git a/Documentation/ABI/testing/sysfs-devices-virtual-tty_ttyvs b/Documentation/ABI/testing/sysfs-devices-virtual-tty_ttyvs
-new file mode 100644
-index 0000000..69b04e0
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-devices-virtual-tty_ttyvs
-@@ -0,0 +1,18 @@
-+What:		/sys/devices/virtual/tty/ttyvsN/event
-+Date:		January 2020
-+Contact:	Rishi Gupta <gupt21@gmail.com>
-+KernelVersion:	5.5
-+Description:
-+		The ttyvs driver will emulate serial port event; parity error,
-+		framing error, overrun error, asserting or de-asserting break
-+		conditions and ring indication when user space application
-+		writes an event code on this sysfs file.
-+
-+What:		/sys/devices/virtual/tty/ttyvsN/faultycable
-+Date:		January 2020
-+Contact:	Rishi Gupta <gupt21@gmail.com>
-+KernelVersion:	5.5
-+Description:
-+		The ttyvs driver will emulate as if the cable is faulty; i.e.
-+		data sent will not be received when user space application
-+		writes 1 on this file. Write 0 to disable this emulation.
--- 
-2.7.4
+The patch only makes sense in kernels that have ACPI support enabled for
+serdev devices, i.e., v4.15+. In the applicable kernels, it has a
+dependency on 33364d63c75d ("serdev: Add ACPI devices by ResourceSource
+field") as detected by the bot.
 
+The patch does not need to be backported any further back.
+
+Likely due to the holidays, Greg's not yet picked up the patch for
+upstream. I'll nudge him for feedback.
+
+Thanks,
+Punit
