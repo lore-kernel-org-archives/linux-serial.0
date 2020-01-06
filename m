@@ -2,146 +2,80 @@ Return-Path: <SRS0=9FNa=23=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D752DC33C8C
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jan 2020 14:46:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 639E4C33C8C
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jan 2020 18:58:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A3FCF20731
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jan 2020 14:46:11 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="o3gDH6Q/"
+	by mail.kernel.org (Postfix) with ESMTP id 2D9BA2072C
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Jan 2020 18:58:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1578337100;
+	bh=JqFB7SxHrWcyOP4N5DEnQmENuaUMIVm+HFB3PT0FOAk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=WeLxM9RQm3FvFayhSuZW9KnxPI/uxmBwcKjwZslMy4XMTVQPr8TiraJDYNs6RUtfn
+	 hb2MJhJgbYhx84bNSUrBiDWWX0ORqxTd2TpNsrcaUcpUVsMcHjY/twg7wqjNSKUnXM
+	 vlLxfW5XOlSQ8/s5PFSCKuLr1Ll1tH+czBAPcM8g=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726526AbgAFOqL (ORCPT
+        id S1726683AbgAFS6T (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Jan 2020 09:46:11 -0500
-Received: from mail25.static.mailgun.info ([104.130.122.25]:14166 "EHLO
-        mail25.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726303AbgAFOqL (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Jan 2020 09:46:11 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1578321970; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=A3hBI0OKb+/8Qr9SLPtCgNy19KR7Y5raIsHNdjSJdm8=; b=o3gDH6Q/OBaqEUFrSbNpqzCWJVRw8hgK2y5CtqSj2gbtNWxAdoOXFfs2jmEsCN02pzieXKL+
- dGgOmCVSJWEllf7xGDDtRFBgA1n4qIyhuCCvllULnu99LxUL3Gxw6HdCXqUh2JCFMmqzroqY
- UKO1n+Dgzg27KcgqIkiWQwLoBto=
-X-Mailgun-Sending-Ip: 104.130.122.25
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e13482b.7f267695e378-smtp-out-n03;
- Mon, 06 Jan 2020 14:46:03 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id A356FC433CB; Mon,  6 Jan 2020 14:46:03 +0000 (UTC)
-Received: from akashast-linux.qualcomm.com (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        Mon, 6 Jan 2020 13:58:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44146 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726657AbgAFS6T (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 6 Jan 2020 13:58:19 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 57EF4C433A2;
-        Mon,  6 Jan 2020 14:46:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 57EF4C433A2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-From:   Akash Asthana <akashast@codeaurora.org>
-To:     gregkh@linuxfoundation.org
-Cc:     swboyd@chromium.org, mgautam@codeaurora.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        Akash Asthana <akashast@codeaurora.org>
-Subject: [PATCH V8 2/2] tty: serial: qcom_geni_serial: Move loopback support to TIOCM_LOOP
-Date:   Mon,  6 Jan 2020 20:15:05 +0530
-Message-Id: <1578321905-25843-3-git-send-email-akashast@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1578321905-25843-1-git-send-email-akashast@codeaurora.org>
-References: <1578321905-25843-1-git-send-email-akashast@codeaurora.org>
+        by mail.kernel.org (Postfix) with ESMTPSA id B150E2072A;
+        Mon,  6 Jan 2020 18:58:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578337099;
+        bh=JqFB7SxHrWcyOP4N5DEnQmENuaUMIVm+HFB3PT0FOAk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rVqz9/iIhSuobLqKYxE3K2Q8yDobIT1SpgZ5vcfEmmZK+hiiFdi9Ju9xE1iGOEjSI
+         3FHHSBVr3f30wbOoOqvsBbA2V6yHLdKXFpM9d61vw81/okq03pJyxwn/dVfFdEbE8L
+         ShwxkmNHzrCNt2fXelnDXpO3BXOy1E/BI2fIKpiU=
+Date:   Mon, 6 Jan 2020 19:58:16 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Patrice Chotard <patrice.chotard@st.com>,
+        Jiri Slaby <jslaby@suse.com>,
+        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] tty: st-asc: switch to using devm_gpiod_get()
+Message-ID: <20200106185816.GA597279@kroah.com>
+References: <20200104202314.GA13591@dtor-ws>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200104202314.GA13591@dtor-ws>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Remove code from the driver that create and maintain loopback sysfs node.
-Instead use the ioctl TIOCMSET with TIOCM_LOOP argument to set HW to
-loopback mode.
+On Sat, Jan 04, 2020 at 12:23:14PM -0800, Dmitry Torokhov wrote:
+> The node pointer in question is not a child node, but the node assigned
+> to the port device itself, so we should not be using
+> devm_fwnode_get_gpiod_from_child() [that is going away], but standard
+> devm_gpiod_get().
+> 
+> To maintain the previous labeling we use gpiod_set_consumer_name() after
+> we acquire the GPIO.
+> 
+> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> ---
+>  drivers/tty/serial/st-asc.c | 12 +++++-------
+>  1 file changed, 5 insertions(+), 7 deletions(-)
 
-Signed-off-by: Akash Asthana <akashast@codeaurora.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
----
- drivers/tty/serial/qcom_geni_serial.c | 36 +++++++++--------------------------
- 1 file changed, 9 insertions(+), 27 deletions(-)
+What changed from v1 of this patch?  Please put that below the --- line
+and versino your patches.
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 1e16483..191abb1 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -89,7 +89,11 @@
- #define DEF_TX_WM		2
- #define DEF_FIFO_WIDTH_BITS	32
- #define UART_RX_WM		2
--#define MAX_LOOPBACK_CFG	3
-+
-+/* SE_UART_LOOPBACK_CFG */
-+#define RX_TX_SORTED	BIT(0)
-+#define CTS_RTS_SORTED	BIT(1)
-+#define RX_TX_CTS_RTS_SORTED	(RX_TX_SORTED | CTS_RTS_SORTED)
- 
- #ifdef CONFIG_CONSOLE_POLL
- #define CONSOLE_RX_BYTES_PW 1
-@@ -161,30 +165,6 @@ static struct qcom_geni_serial_port qcom_geni_uart_ports[GENI_UART_PORTS] = {
- 	},
- };
- 
--static ssize_t loopback_show(struct device *dev,
--				struct device_attribute *attr, char *buf)
--{
--	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
--
--	return snprintf(buf, sizeof(u32), "%d\n", port->loopback);
--}
--
--static ssize_t loopback_store(struct device *dev,
--				struct device_attribute *attr, const char *buf,
--				size_t size)
--{
--	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
--	u32 loopback;
--
--	if (kstrtoint(buf, 0, &loopback) || loopback > MAX_LOOPBACK_CFG) {
--		dev_err(dev, "Invalid input\n");
--		return -EINVAL;
--	}
--	port->loopback = loopback;
--	return size;
--}
--static DEVICE_ATTR_RW(loopback);
--
- static struct qcom_geni_serial_port qcom_geni_console_port = {
- 	.uport = {
- 		.iotype = UPIO_MEM,
-@@ -234,10 +214,14 @@ static void qcom_geni_serial_set_mctrl(struct uart_port *uport,
- 							unsigned int mctrl)
- {
- 	u32 uart_manual_rfr = 0;
-+	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
- 
- 	if (uart_console(uport))
- 		return;
- 
-+	if (mctrl & TIOCM_LOOP)
-+		port->loopback = RX_TX_CTS_RTS_SORTED;
-+
- 	if (!(mctrl & TIOCM_RTS))
- 		uart_manual_rfr = UART_MANUAL_RFR_EN | UART_RFR_NOT_READY;
- 	writel(uart_manual_rfr, uport->membase + SE_UART_MANUAL_RFR);
-@@ -1308,8 +1292,6 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	uport->private_data = drv;
- 	platform_set_drvdata(pdev, port);
- 	port->handle_rx = console ? handle_rx_console : handle_rx_uart;
--	if (!console)
--		device_create_file(uport->dev, &dev_attr_loopback);
- 
- 	ret = uart_add_one_port(drv, uport);
- 	if (ret)
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+v3?
+
+thanks,
+
+greg k-h
