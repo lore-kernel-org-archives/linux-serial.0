@@ -1,110 +1,108 @@
-Return-Path: <SRS0=9FNa=23=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=kbyA=24=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88FB1C33C8C
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jan 2020 22:38:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33378C32771
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jan 2020 01:03:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5C6B6214D8
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Jan 2020 22:38:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 076622075A
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Jan 2020 01:03:23 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sP0b+kqI"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Nab+MQum"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726735AbgAFWit (ORCPT
+        id S1727434AbgAGBDT (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Jan 2020 17:38:49 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:35160 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726721AbgAFWit (ORCPT
+        Mon, 6 Jan 2020 20:03:19 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:37841 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727412AbgAGBDT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Jan 2020 17:38:49 -0500
-Received: by mail-pg1-f194.google.com with SMTP id l24so27524988pgk.2;
-        Mon, 06 Jan 2020 14:38:49 -0800 (PST)
+        Mon, 6 Jan 2020 20:03:19 -0500
+Received: by mail-pl1-f193.google.com with SMTP id c23so22501110plz.4
+        for <linux-serial@vger.kernel.org>; Mon, 06 Jan 2020 17:03:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=S1FEEE6cCiUhglrJpwPJZH4zxshLjsGK5hYscNFBnAI=;
-        b=sP0b+kqIgs0Wa01Ipe9vAxhjDci+QsIELt4Jxx3GKyj3kkoogjMroLTcTLoZGuzM06
-         mcW7i8waLEOVEIet/Ye76nn5octXd9nntk0g25HRxSNdHGDW1tnZ81JNY415TaFdos2D
-         MCOZQJikcAznKooB1G+TpbIcS9Z3ly1lH8XjbpetKzLOxgmrQUxlJvp3oeKbRkD2mvmW
-         oxQH7yi7x+Hs254uljZlC1GiLQ7ZmgeChjbceYlBRG2BP+qdI7p8836mThhJT3yqS0Vu
-         Q4MZ1yyewwbfkq37wEuYjld1cm824RztHw9m3lh+uwzu7tFa8g0DYsDV397O4TmdAs/k
-         5CbA==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=0W4z4C6dC01RLTeCcayXEvOAD5WKMfV6HC+a5WAWxQg=;
+        b=Nab+MQumZjbQUj+anv/iG37LLvYcp3/1rDrEncHE8box4TpfBUgmhsmMuEyWYyRM7g
+         2nIInJi4m4tpnYHmVFT2sXc810xWcAgZjxhAZ/+QIoWvbDX2e04+0Tl4aQ4vp8LY51pV
+         ubA0n0x8n89rZGpU+dvilRo8QTunJ4x6GBPbhdHGiE2WR6M0rmO9hvZTHmhW3mjtwyFj
+         fP9ImT7gsquimN0EfcS2e2Iu0myDSQXTNLqjBygSZWRvTVAVuQegC1hnTbYSkSzTkayO
+         5e3bkyZWGNRhWTqcm/OxQc3QP3UCbRJfqMXxKQHmVevGi/HpcbQwcI3BJUjC9PCKDhCL
+         T6tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=S1FEEE6cCiUhglrJpwPJZH4zxshLjsGK5hYscNFBnAI=;
-        b=mI9jZzP3VXwe9O8d6GzL+SQtfsnfGA2UTpHLYyeRr1/FSVLVqGZAz84AMdZvPadLfx
-         UMZG2RMTRdj1wLg787DxatNjsxzQgUkSKxMdvxtcLcIMG8q9xvBKkgcSaOffE05MRRVX
-         uUPDqzRQlGSAMLe88toTZh4RuF3wYFRHHSA39mN0STHNXO/NeycWZGbt+s6RYcZChPVs
-         gieSOL63Bd9knAde7rTq7sOZOQN7s49mO5RIEM7Vg/uOik9iPQZ7XpykdAXnROhSC31d
-         x/Xockk32kcaFWh/dLtitUkNiZu0JSr3ezG/FSM9NkTwpCG20d3nYBvsFsSmPTJAMwrk
-         soSQ==
-X-Gm-Message-State: APjAAAVNIA6Ajm5w82rfv0EoJox0y6Zwsp+UB+oF3Z93Uy6cTHlhQZ80
-        EhxVOHQlqqsKrlYAg7Gs0y4FiVUp
-X-Google-Smtp-Source: APXvYqyYMmJhcA1k5o0TuMxSxjZ9wt+SVCos6N/y/ApdDFDvdAdsTi6M/W6N+SOmLCd5twlY4rfB9Q==
-X-Received: by 2002:a63:a508:: with SMTP id n8mr109588547pgf.278.1578350328970;
-        Mon, 06 Jan 2020 14:38:48 -0800 (PST)
-Received: from dtor-ws ([2620:15c:202:201:3adc:b08c:7acc:b325])
-        by smtp.gmail.com with ESMTPSA id v8sm77416353pff.151.2020.01.06.14.38.48
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=0W4z4C6dC01RLTeCcayXEvOAD5WKMfV6HC+a5WAWxQg=;
+        b=Lxd/kCyLZb6vvEXvXPIpjPm0LSJydivGEX1KtnxLeRtZ6p0aZanGuQWfYU/6GI39jo
+         nycdjSjpB7tOK4YCtceY6jc1D8xFH8s4EjD3FTU+QZrw03KcRNHUSbPlvjAR/k+VHe8H
+         DuB7BFov0NG1gdbUG1t8QkzItlCJ/U6uE1JlE4btoU15ahnXL20dN2dfxxCRaCP4+6tB
+         leo940zKcjmFfmnz9sF9i10El0h8bch5SuXOkhJaIRWAYX60CMCZQ+GQBgiUgTtHDc6x
+         w6h6vzNxOdWe4/R23G9bx2Bwt3fUXlBvnao/hhhAcQYWsy47/EvT/7A6irPbVVIGCB/4
+         bLdQ==
+X-Gm-Message-State: APjAAAVXC91XAOy2dd+lUh9t1J1jaUstMYMz4lUFOM1tlTvbJprrazqD
+        75bfB3CKgPvpZ5FvI2HZnDA82A==
+X-Google-Smtp-Source: APXvYqyv2jfqnyRBmzuLap2gU2hC5StQSLd4QLLs3VCxIscY4eumvb3CdwrH/fQwpJpUdQTzK/kqZw==
+X-Received: by 2002:a17:902:9043:: with SMTP id w3mr107498255plz.8.1578358998329;
+        Mon, 06 Jan 2020 17:03:18 -0800 (PST)
+Received: from localhost.localdomain ([2601:1c2:680:1319:692:26ff:feda:3a81])
+        by smtp.gmail.com with ESMTPSA id d21sm25361304pjs.25.2020.01.06.17.03.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jan 2020 14:38:48 -0800 (PST)
-Date:   Mon, 6 Jan 2020 14:38:46 -0800
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Patrice Chotard <patrice.chotard@st.com>,
-        Jiri Slaby <jslaby@suse.com>,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tty: st-asc: switch to using devm_gpiod_get()
-Message-ID: <20200106223846.GH8314@dtor-ws>
-References: <20200104202314.GA13591@dtor-ws>
- <20200106185816.GA597279@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200106185816.GA597279@kroah.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Mon, 06 Jan 2020 17:03:17 -0800 (PST)
+From:   John Stultz <john.stultz@linaro.org>
+To:     lkml <linux-kernel@vger.kernel.org>
+Cc:     John Stultz <john.stultz@linaro.org>, Todd Kjos <tkjos@google.com>,
+        Alistair Delva <adelva@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Amit Pundir <amit.pundir@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+Subject: [PATCH 2/2] tty: serial: Kconfig: Allow SERIAL_QCOM_GENI_CONSOLE to be enabled if SERIAL_QCOM_GENI is a module
+Date:   Tue,  7 Jan 2020 01:03:11 +0000
+Message-Id: <20200107010311.58584-2-john.stultz@linaro.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200107010311.58584-1-john.stultz@linaro.org>
+References: <20200107010311.58584-1-john.stultz@linaro.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jan 06, 2020 at 07:58:16PM +0100, Greg Kroah-Hartman wrote:
-> On Sat, Jan 04, 2020 at 12:23:14PM -0800, Dmitry Torokhov wrote:
-> > The node pointer in question is not a child node, but the node assigned
-> > to the port device itself, so we should not be using
-> > devm_fwnode_get_gpiod_from_child() [that is going away], but standard
-> > devm_gpiod_get().
-> > 
-> > To maintain the previous labeling we use gpiod_set_consumer_name() after
-> > we acquire the GPIO.
-> > 
-> > Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> > ---
-> >  drivers/tty/serial/st-asc.c | 12 +++++-------
-> >  1 file changed, 5 insertions(+), 7 deletions(-)
-> 
-> What changed from v1 of this patch?  Please put that below the --- line
-> and versino your patches.
+In order to support having SERIAL_QCOM_GENI as a module while
+also still preserving serial console support, tweak the
+Kconfig requirements to not require =y
 
-I did not add a version or changelog because I believe this is
-essentially a different patch, with different justification and
-different API that is being used.
+Cc: Todd Kjos <tkjos@google.com>
+Cc: Alistair Delva <adelva@google.com>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Amit Pundir <amit.pundir@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: linux-serial@vger.kernel.org
+Signed-off-by: John Stultz <john.stultz@linaro.org>
+---
+ drivers/tty/serial/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The first one was a simple switch to devm_fwnode_gpiod_get(), the new
-one is abandoning the use of explicit node reference, and instead uses
-standard devm_gpiod_get() to get a GPIO assigned to a device +
-gpiod_set_consumer_name() to maintain the naming.
-
-Thanks.
-
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 99f5da3bf913..4ca799198e88 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -975,7 +975,7 @@ config SERIAL_QCOM_GENI
+ 
+ config SERIAL_QCOM_GENI_CONSOLE
+ 	bool "QCOM GENI Serial Console support"
+-	depends on SERIAL_QCOM_GENI=y
++	depends on SERIAL_QCOM_GENI
+ 	select SERIAL_CORE_CONSOLE
+ 	select SERIAL_EARLYCON
+ 	help
 -- 
-Dmitry
+2.17.1
+
