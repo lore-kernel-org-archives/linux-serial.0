@@ -2,222 +2,100 @@ Return-Path: <SRS0=YWaF=26=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A528C282DD
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Jan 2020 21:55:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B371FC282DD
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Jan 2020 23:53:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D85E52077B
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Jan 2020 21:55:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7DF98206A1
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Jan 2020 23:53:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="mHJoCq0I"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="jhAriIhF"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728974AbgAIVzQ (ORCPT
+        id S1729158AbgAIXxQ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Jan 2020 16:55:16 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:32851 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729032AbgAIVzP (ORCPT
+        Thu, 9 Jan 2020 18:53:16 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:57566 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729591AbgAIXxQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Jan 2020 16:55:15 -0500
-Received: by mail-pl1-f194.google.com with SMTP id ay11so14267plb.0
-        for <linux-serial@vger.kernel.org>; Thu, 09 Jan 2020 13:55:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=googlenew;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0t7GY6iSUUJjTNq+571aHFfJqJAb8s1IuRDcFTf/E44=;
-        b=mHJoCq0IIBFpUNEH5TNsxx2Mdg9Kp9foE409HrV8dHsT/E4UFq2VGrpwkcBaMNfwAG
-         FPCN6CE701wFATLa9eCoWonTQVXQKKsm8v1PHLkhl7JtUvyhBVoeeX+nNEXNV+jD9fVP
-         A6/etzJFI1ZdSjp2bd8DchmM7T+hqznrY5Qw6piob5vdk6Utqb6a4nGBHUbIH8nDV1xO
-         jEwkacqEFHo5dPZ6cnktqnFZCmajRaLCsQz8ykyWwlL0SnEQMeKvGM9g6xHtkV8KNGWI
-         KqWQIk8sdTrhoiITCbToQqw7/vuLVRLXpeOpMuRsQzNqSffXaTxrVE9SBPuIXCMzq0ZH
-         9Mgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0t7GY6iSUUJjTNq+571aHFfJqJAb8s1IuRDcFTf/E44=;
-        b=cQ8qUpPtIgzTXISS0fWD7Uxl2/dD9tb7jmShzGWt8BLHEqJ6wuybDY5+gv8kWwPSAU
-         bAIZM35gbgSkb4HZN+UXrZNHtyzYzfRhBupr7aBX/vgYN1E9aZA3ui7EgYnJ8JcmMvzY
-         uTQ+ics+wurVvZJnr3u9VZMMQlfU/G1J2Vj68WBSFiX8Gzs3RUtGWx9j1FYgVssFPWeL
-         KhBgVjHD1kX464q+7GxcPujJnQ+TLqzK7lMiuS6Kt6If/Rx+lFRc3qp53WsZOQhyGUEY
-         HRQDQ1M00L8wpDcGvKydGHE3z8Kd6B/NFIzAtZY5OyU5JJE8OqUtMSVAvS6K67+Fq8Mr
-         GZ2w==
-X-Gm-Message-State: APjAAAVEGuKoqqrF0UXzNkTs5JMbMA8ImuZ781h0ShQ1Q4jJSr9NEEAw
-        MeJTn7hF78Iyy1zqFBEvitNJKw==
-X-Google-Smtp-Source: APXvYqwE8mz5Ea5w1E08qFqHvPBY8vLXirpMFLgZXzw8CUgYKwU1ONgqf4eVhGrAwj8q/Y8ewVaVHg==
-X-Received: by 2002:a17:902:8497:: with SMTP id c23mr141511plo.59.1578606914837;
-        Thu, 09 Jan 2020 13:55:14 -0800 (PST)
-Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id r20sm8711536pgu.89.2020.01.09.13.55.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jan 2020 13:55:14 -0800 (PST)
-From:   Dmitry Safonov <dima@arista.com>
-To:     linux-kernel@vger.kernel.org
+        Thu, 9 Jan 2020 18:53:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
+        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=MlF5dQoK0dle1ZtWDZdBf2+ZpHH+83Dr5WwoqzcG/Ug=; b=jhAriIhFGALIxRRRCqZHcRAxO
+        bf4QTy+4gxMC39a/tlgJyZemUmAPzGWDjdYo3FHiNCnYh8JuaJUOUAqTcnkrixja9wAfclkGZmZtZ
+        OiGYE3YLWVzXSN7R3Vf+GYLfFMDkJgubsYVgRPn1DL9zPq2/5vdltjhWxA0qgJ6h0DLzBaHWqmeWI
+        HOIXJlomwE073znZL/WcTeVayoFFFIjuYZfMH/47g17s7JvjFwiHqnoOefTdRbJjnANQOgy68NXNA
+        CBi9tnvH+bvoAl54/o9oGGG/HslohH6KEl7s/DCI+6/8jUsdX9veYo9gyCunxXFQ5VPrcsWtaI4wO
+        C5UPITnAQ==;
+Received: from [2601:1c0:6280:3f0::ed68]
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1iphc3-0000H5-40; Thu, 09 Jan 2020 23:53:15 +0000
+Subject: Re: [PATCH-next 3/3] serial/sysrq: Add MAGIC_SYSRQ_SERIAL_SEQUENCE
+To:     Dmitry Safonov <dima@arista.com>, linux-kernel@vger.kernel.org
 Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
-        Dmitry Safonov <dima@arista.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
         Vasiliy Khoruzhick <vasilykh@arista.com>,
         linux-serial@vger.kernel.org
-Subject: [PATCH-next 3/3] serial/sysrq: Add MAGIC_SYSRQ_SERIAL_SEQUENCE
-Date:   Thu,  9 Jan 2020 21:54:44 +0000
-Message-Id: <20200109215444.95995-4-dima@arista.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200109215444.95995-1-dima@arista.com>
 References: <20200109215444.95995-1-dima@arista.com>
+ <20200109215444.95995-4-dima@arista.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <9e622d11-0eb7-274e-8f0a-132d296420fe@infradead.org>
+Date:   Thu, 9 Jan 2020 15:53:14 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200109215444.95995-4-dima@arista.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Many embedded boards have a disconnected TTL level serial which can
-generate some garbage that can lead to spurious false sysrq detects.
+Hi,
 
-Currently, sysrq can be either completely disabled for serial console
-or always disabled (with CONFIG_MAGIC_SYSRQ_SERIAL), since
-commit 732dbf3a6104 ("serial: do not accept sysrq characters via serial port")
+On 1/9/20 1:54 PM, Dmitry Safonov wrote:
+> 
+> Based-on-patch-by: Vasiliy Khoruzhick <vasilykh@arista.com>
+> Signed-off-by: Dmitry Safonov <dima@arista.com>
+> ---
+>  drivers/tty/serial/serial_core.c | 52 ++++++++++++++++++++++++++++----
+>  include/linux/serial_core.h      |  2 +-
+>  lib/Kconfig.debug                |  8 +++++
+>  3 files changed, 55 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 6ac9dfed3423..f70eba032d0b 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -3081,6 +3081,38 @@ void uart_insert_char(struct uart_port *port, unsigned int status,
+>  }
+>  EXPORT_SYMBOL_GPL(uart_insert_char);
+>  
+> +const char sysrq_toggle_seq[] = CONFIG_MAGIC_SYSRQ_SERIAL_SEQUENCE;
+> +
+> +static void uart_sysrq_on(struct work_struct *w)
+> +{
+> +	sysrq_toggle_support(1);
+> +	pr_info("SysRq is enabled by magic sequience on serial\n");
 
-At Arista, we have such boards that can generate BREAK and random
-garbage. While disabling sysrq for serial console would solve
-the problem with spurious false sysrq triggers, it's also desirable
-to have a way to enable sysrq back.
+typo:	                                   sequence
 
-As a measure of balance between on and off options, add
-MAGIC_SYSRQ_SERIAL_SEQUENCE which is a string sequence that can enable
-sysrq if it follows BREAK on a serial line. The longer the string - the
-less likely it may be in the garbage.
+> +}
+> +static DECLARE_WORK(sysrq_enable_work, uart_sysrq_on);
 
-Having the way to enable sysrq was beneficial to debug lockups with
-a manual investigation in field and on the other side preventing false
-sysrq detections.
 
-Based-on-patch-by: Vasiliy Khoruzhick <vasilykh@arista.com>
-Signed-off-by: Dmitry Safonov <dima@arista.com>
----
- drivers/tty/serial/serial_core.c | 52 ++++++++++++++++++++++++++++----
- include/linux/serial_core.h      |  2 +-
- lib/Kconfig.debug                |  8 +++++
- 3 files changed, 55 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 6ac9dfed3423..f70eba032d0b 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -3081,6 +3081,38 @@ void uart_insert_char(struct uart_port *port, unsigned int status,
- }
- EXPORT_SYMBOL_GPL(uart_insert_char);
- 
-+const char sysrq_toggle_seq[] = CONFIG_MAGIC_SYSRQ_SERIAL_SEQUENCE;
-+
-+static void uart_sysrq_on(struct work_struct *w)
-+{
-+	sysrq_toggle_support(1);
-+	pr_info("SysRq is enabled by magic sequience on serial\n");
-+}
-+static DECLARE_WORK(sysrq_enable_work, uart_sysrq_on);
-+
-+static int uart_try_toggle_sysrq(struct uart_port *port, unsigned int ch)
-+{
-+	if (sysrq_toggle_seq[0] == '\0')
-+		return 0;
-+
-+	BUILD_BUG_ON(ARRAY_SIZE(sysrq_toggle_seq) >= sizeof(port->sysrq_seq)*U8_MAX);
-+	if (sysrq_toggle_seq[port->sysrq_seq] != ch) {
-+		port->sysrq_seq = 0;
-+		return 0;
-+	}
-+
-+	/* Without the last \0 */
-+	if (++port->sysrq_seq < (ARRAY_SIZE(sysrq_toggle_seq) - 1)) {
-+		port->sysrq = jiffies + HZ*5;
-+		return 1;
-+	}
-+
-+	schedule_work(&sysrq_enable_work);
-+
-+	port->sysrq = 0;
-+	return 1;
-+}
-+
- int uart_handle_sysrq_char(struct uart_port *port, unsigned int ch)
- {
- 	if (!IS_ENABLED(CONFIG_MAGIC_SYSRQ_SERIAL))
-@@ -3090,9 +3122,13 @@ int uart_handle_sysrq_char(struct uart_port *port, unsigned int ch)
- 		return 0;
- 
- 	if (ch && time_before(jiffies, port->sysrq)) {
--		handle_sysrq(ch);
--		port->sysrq = 0;
--		return 1;
-+		if (sysrq_get_mask()) {
-+			handle_sysrq(ch);
-+			port->sysrq = 0;
-+			return 1;
-+		}
-+		if (uart_try_toggle_sysrq(port, ch))
-+			return 1;
- 	}
- 	port->sysrq = 0;
- 
-@@ -3109,9 +3145,13 @@ int uart_prepare_sysrq_char(struct uart_port *port, unsigned int ch)
- 		return 0;
- 
- 	if (ch && time_before(jiffies, port->sysrq)) {
--		port->sysrq_ch = ch;
--		port->sysrq = 0;
--		return 1;
-+		if (sysrq_get_mask()) {
-+			port->sysrq_ch = ch;
-+			port->sysrq = 0;
-+			return 1;
-+		}
-+		if (uart_try_toggle_sysrq(port, ch))
-+			return 1;
- 	}
- 	port->sysrq = 0;
- 
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 255e86a474e9..1f4443db5474 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -243,10 +243,10 @@ struct uart_port {
- 	unsigned long		sysrq;			/* sysrq timeout */
- 	unsigned int		sysrq_ch;		/* char for sysrq */
- 	unsigned char		has_sysrq;
-+	unsigned char		sysrq_seq;		/* index in sysrq_toggle_seq */
- 
- 	unsigned char		hub6;			/* this should be in the 8250 driver */
- 	unsigned char		suspended;
--	unsigned char		unused;
- 	const char		*name;			/* port name */
- 	struct attribute_group	*attr_group;		/* port specific attributes */
- 	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 330909c600b1..f6f3e82fee25 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -431,6 +431,14 @@ config MAGIC_SYSRQ_SERIAL
- 	  This option allows you to decide whether you want to enable the
- 	  magic SysRq key.
- 
-+config MAGIC_SYSRQ_SERIAL_SEQUENCE
-+	string "Char sequence that enables magic SysRq over serial"
-+	depends on MAGIC_SYSRQ_SERIAL
-+	default ""
-+	help
-+	  Specifies a sequence of characters that can follow BREAK to enable
-+	  SysRq on a serial console.
-+
- config DEBUG_FS
- 	bool "Debug Filesystem"
- 	help
 -- 
-2.24.1
+~Randy
 
