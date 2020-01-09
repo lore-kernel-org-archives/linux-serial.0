@@ -2,60 +2,60 @@ Return-Path: <SRS0=YWaF=26=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA96AC33CA2
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Jan 2020 21:55:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02065C282DD
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Jan 2020 21:55:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BFB2520656
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Jan 2020 21:55:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C09582075D
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Jan 2020 21:55:07 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="o37iHXGp"
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="NACYKqJU"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728983AbgAIVzD (ORCPT
+        id S1729146AbgAIVzH (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Jan 2020 16:55:03 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:35326 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725919AbgAIVzC (ORCPT
+        Thu, 9 Jan 2020 16:55:07 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:55362 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728831AbgAIVzG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Jan 2020 16:55:02 -0500
-Received: by mail-pl1-f195.google.com with SMTP id g6so10461plt.2
-        for <linux-serial@vger.kernel.org>; Thu, 09 Jan 2020 13:55:02 -0800 (PST)
+        Thu, 9 Jan 2020 16:55:06 -0500
+Received: by mail-pj1-f68.google.com with SMTP id d5so64395pjz.5
+        for <linux-serial@vger.kernel.org>; Thu, 09 Jan 2020 13:55:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=googlenew;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=N7GVSKV4F6bNHQbtnn1xWNA8+a7ZmcRqqi6Z4aNgeGA=;
-        b=o37iHXGp65Rk0F0pK1xFqFPpnQd/WKN5KY466a+wyzlHSoLBCsdZxrfPvUUQSLOlT8
-         rHhH3A+iDPu6V11/cmz+hyZ8RRAChafIntBfQm7i0/fNDXHeGI98GV+O2S93KYmpCDrG
-         N4gJf3oYaJlKnwlSb7UsfkgcXGoK/W4wx/Pyn7uLtj00Ms5Foa4pGAqa9nJfg1kVwApW
-         qPA49nyCy8y05IRz2dMCAelP4+0HTNB2qykTRdVa8tzMf6tQDMYeKYAfsp/m4wKqUX95
-         LFxXoOV4qxPkXN5Mvn16Qq2zeVY4wc87USuITxzTan5jrZrwZrd9z3Nvgb4JmEXRoGw9
-         V2TQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=PzduO3ezdq2YxbApEf/p7n8rWrnulpFMg5X7ZAYRvh4=;
+        b=NACYKqJUKlrtSZDdGRKTweW0ZYhfwtIpUyehrAlSEABjHgI3DuvSm1Wh6eObC3hI6U
+         4aarbHexpqYc3gVdpOJOyIuRhuV9FsqQgY90zrJy8nj76iIy7xi6uRRYrl6Qfs5dWzzn
+         Q3R8gdNHixCz2Mf4yP3wDRJDiRB8zFiDt8Og0SVdu4KaG1mxOpTrp7w5KuwLrS8f317u
+         +sOLTcUyIKBH0T9zVnALwzEjl/W4xnDAl4u3qXwzpa50ONEh3l4BUJtnVEhxc4asOSgD
+         QnJzrubWX5jDv/8HVnbEyGIWG03VGzXqx5AN4qtyUEISRQFeNsJJBexhjAT2SyloQSV1
+         L6ZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=N7GVSKV4F6bNHQbtnn1xWNA8+a7ZmcRqqi6Z4aNgeGA=;
-        b=lHbFvbicyelCaUGYWsxFhM8Fs7sX1dJ+wxrXTqtulppcT2ArbTWUwgHdwwJLotNE5T
-         BWYR8s1Jw7HkUr8H+eHbItmrAaBrXyNWzQw54m9IOInJ8um+XP51MZvEJsgi/Aj+FUOh
-         27vGR0gcV7qQcYhEHT1GpDXpIdwnTQNXhn4bROWG8tKro2+t9+rnxMtY2TExT3EsxPRf
-         Mds/hyc8kj0ZKxzYl+kaw9mOOU2sSD1o7zfs0J5L19GV1L5e7c962pr6jmJsBMnQ6koe
-         5E03i0zqo5rzBFRBCQjWNlQcT1BSMnYaxPPzGCsN+sIKn4EdiVd7hJ+2Zgg7ta7x3avh
-         7/jg==
-X-Gm-Message-State: APjAAAU+DEU5Vj0gvpAx7LFPj3dfsBAFZhMeJW5oTOIM/m6NB5N6Ur8K
-        u9HVtGWf/fiiomFSdfX9hdvDkg==
-X-Google-Smtp-Source: APXvYqzay0u4UiA0c3NMCDCn2cO+dnn7O2PaiaVMcZodtNNHJIDvBJOVl2BTM9pOsCj6E9bkX3PJEw==
-X-Received: by 2002:a17:902:7102:: with SMTP id a2mr99621pll.301.1578606901747;
-        Thu, 09 Jan 2020 13:55:01 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PzduO3ezdq2YxbApEf/p7n8rWrnulpFMg5X7ZAYRvh4=;
+        b=ggXqe4uvK04+7B1czKvc4p8cOC49TOe9iPOw3iuWibt/hATSACV9E/dn5bvLH00cBF
+         7+jufheCx33AGnR5zl4pLq5sjXcTigWXrYaevaFHRI3MV1yX+oVXeKWQzhoS9SylrwTI
+         83JccRywsVLUM6DvuCFz/9s17HVetOO18V97WE6XYSUk80MstyLdHzdKEzpPdEINVQAV
+         4CpgcYk/3axa7H6wMcL3TuWsk3QUpVVCTlcCjztWHUyLgbHRVno+IyZA579bNZ5h1xCV
+         +I4/pi3BIChYDoRm5VVJVDW7w0ONJEBeOG4+m861fZMwl6RFld82VAe35EcHL38UkwyJ
+         XlzQ==
+X-Gm-Message-State: APjAAAWdcNmoQR1nedXYwGSBDckwycag7P97Q8ivR+ugNbZcdnyYg3Tc
+        OxJYGLQcvHiNI3px3LPcWYyyWg==
+X-Google-Smtp-Source: APXvYqyuhalmHNEKi9rgUlX1W2D500mU/5hrB2Skd8Ar7XDjSAlhUXV0PYnZH6LApctxTDXOELTgYA==
+X-Received: by 2002:a17:90a:1b66:: with SMTP id q93mr320993pjq.102.1578606906076;
+        Thu, 09 Jan 2020 13:55:06 -0800 (PST)
 Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id r20sm8711536pgu.89.2020.01.09.13.54.56
+        by smtp.gmail.com with ESMTPSA id r20sm8711536pgu.89.2020.01.09.13.55.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jan 2020 13:55:00 -0800 (PST)
+        Thu, 09 Jan 2020 13:55:05 -0800 (PST)
 From:   Dmitry Safonov <dima@arista.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
@@ -63,14 +63,13 @@ Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
         Vasiliy Khoruzhick <vasilykh@arista.com>,
-        linux-serial@vger.kernel.org, Iurii Zaikin <yzaikin@google.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        linux-fsdevel@vger.kernel.org
-Subject: [PATCH-next 0/3] serial/sysrq: Add MAGIC_SYSRQ_SERIAL_SEQUENCE
-Date:   Thu,  9 Jan 2020 21:54:41 +0000
-Message-Id: <20200109215444.95995-1-dima@arista.com>
+        linux-serial@vger.kernel.org
+Subject: [PATCH-next 1/3] serial_core: Move sysrq functions from header file
+Date:   Thu,  9 Jan 2020 21:54:42 +0000
+Message-Id: <20200109215444.95995-2-dima@arista.com>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200109215444.95995-1-dima@arista.com>
+References: <20200109215444.95995-1-dima@arista.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
@@ -78,46 +77,204 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Magic sysrq has proven for Arista usecases to be useful for debugging
-issues in field, over serial line when the switch is in such bad state
-that it can't accept network connections anymore.
+It's not worth to have them in every serial driver and I'm about to add
+another helper function.
 
-Unfortunately, having sysrq always enabled doesn't work for some
-embedded boards that tend to generate garbage on serial line (including
-BREAKs). Since commit 732dbf3a6104 ("serial: do not accept sysrq
-characters via serial port"), it's possible to keep sysrq enabled, but
-over serial line.
+Signed-off-by: Dmitry Safonov <dima@arista.com>
+---
+ drivers/tty/serial/serial_core.c | 83 +++++++++++++++++++++++++++++++
+ include/linux/serial_core.h      | 84 ++------------------------------
+ 2 files changed, 88 insertions(+), 79 deletions(-)
 
-Add a way to enable sysrq on a uart, where currently it can be
-constantly either on or off (CONFIG_MAGIC_SYSRQ_SERIAL).
-While doing so, cleanup __sysrq_enabled and serial_core header file.
-
-Sending against -next tree as it's based on removing SUPPORT_SYSRQ
-ifdeffery [1].
-
-[1]: https://lkml.kernel.org/r/20191213000657.931618-1-dima@arista.com
-
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Vasiliy Khoruzhick <vasilykh@arista.com>
-Cc: linux-serial@vger.kernel.org
-
-Thanks,
-             Dmitry
-
-Dmitry Safonov (3):
-  serial_core: Move sysrq functions from header file
-  sysctl/sysrq: Remove __sysrq_enabled copy
-  serial/sysrq: Add MAGIC_SYSRQ_SERIAL_SEQUENCE
-
- drivers/tty/serial/serial_core.c | 123 +++++++++++++++++++++++++++++++
- drivers/tty/sysrq.c              |   7 ++
- include/linux/serial_core.h      |  86 ++-------------------
- include/linux/sysrq.h            |   1 +
- kernel/sysctl.c                  |  41 ++++++-----
- lib/Kconfig.debug                |   8 ++
- 6 files changed, 167 insertions(+), 99 deletions(-)
-
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 7c2782785736..6ac9dfed3423 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -3081,6 +3081,89 @@ void uart_insert_char(struct uart_port *port, unsigned int status,
+ }
+ EXPORT_SYMBOL_GPL(uart_insert_char);
+ 
++int uart_handle_sysrq_char(struct uart_port *port, unsigned int ch)
++{
++	if (!IS_ENABLED(CONFIG_MAGIC_SYSRQ_SERIAL))
++		return 0;
++
++	if (!port->has_sysrq || !port->sysrq)
++		return 0;
++
++	if (ch && time_before(jiffies, port->sysrq)) {
++		handle_sysrq(ch);
++		port->sysrq = 0;
++		return 1;
++	}
++	port->sysrq = 0;
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(uart_handle_sysrq_char);
++
++int uart_prepare_sysrq_char(struct uart_port *port, unsigned int ch)
++{
++	if (!IS_ENABLED(CONFIG_MAGIC_SYSRQ_SERIAL))
++		return 0;
++
++	if (!port->has_sysrq || !port->sysrq)
++		return 0;
++
++	if (ch && time_before(jiffies, port->sysrq)) {
++		port->sysrq_ch = ch;
++		port->sysrq = 0;
++		return 1;
++	}
++	port->sysrq = 0;
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(uart_prepare_sysrq_char);
++
++void uart_unlock_and_check_sysrq(struct uart_port *port, unsigned long irqflags)
++{
++	int sysrq_ch;
++
++	if (!port->has_sysrq) {
++		spin_unlock_irqrestore(&port->lock, irqflags);
++		return;
++	}
++
++	sysrq_ch = port->sysrq_ch;
++	port->sysrq_ch = 0;
++
++	spin_unlock_irqrestore(&port->lock, irqflags);
++
++	if (sysrq_ch)
++		handle_sysrq(sysrq_ch);
++}
++EXPORT_SYMBOL_GPL(uart_unlock_and_check_sysrq);
++
++/*
++ * We do the SysRQ and SAK checking like this...
++ */
++int uart_handle_break(struct uart_port *port)
++{
++	struct uart_state *state = port->state;
++
++	if (port->handle_break)
++		port->handle_break(port);
++
++	if (port->has_sysrq) {
++		if (port->cons && port->cons->index == port->line) {
++			if (!port->sysrq) {
++				port->sysrq = jiffies + HZ*5;
++				return 1;
++			}
++			port->sysrq = 0;
++		}
++	}
++
++	if (port->flags & UPF_SAK)
++		do_SAK(state->port.tty);
++	return 0;
++}
++EXPORT_SYMBOL_GPL(uart_handle_break);
++
+ EXPORT_SYMBOL(uart_write_wakeup);
+ EXPORT_SYMBOL(uart_register_driver);
+ EXPORT_SYMBOL(uart_unregister_driver);
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 9cf1682dc580..255e86a474e9 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -460,85 +460,11 @@ extern void uart_handle_cts_change(struct uart_port *uport,
+ extern void uart_insert_char(struct uart_port *port, unsigned int status,
+ 		 unsigned int overrun, unsigned int ch, unsigned int flag);
+ 
+-static inline int
+-uart_handle_sysrq_char(struct uart_port *port, unsigned int ch)
+-{
+-	if (!IS_ENABLED(CONFIG_MAGIC_SYSRQ_SERIAL))
+-		return 0;
+-
+-	if (!port->has_sysrq || !port->sysrq)
+-		return 0;
+-
+-	if (ch && time_before(jiffies, port->sysrq)) {
+-		handle_sysrq(ch);
+-		port->sysrq = 0;
+-		return 1;
+-	}
+-	port->sysrq = 0;
+-
+-	return 0;
+-}
+-static inline int
+-uart_prepare_sysrq_char(struct uart_port *port, unsigned int ch)
+-{
+-	if (!IS_ENABLED(CONFIG_MAGIC_SYSRQ_SERIAL))
+-		return 0;
+-
+-	if (!port->has_sysrq || !port->sysrq)
+-		return 0;
+-
+-	if (ch && time_before(jiffies, port->sysrq)) {
+-		port->sysrq_ch = ch;
+-		port->sysrq = 0;
+-		return 1;
+-	}
+-	port->sysrq = 0;
+-
+-	return 0;
+-}
+-static inline void
+-uart_unlock_and_check_sysrq(struct uart_port *port, unsigned long irqflags)
+-{
+-	int sysrq_ch;
+-
+-	if (!port->has_sysrq) {
+-		spin_unlock_irqrestore(&port->lock, irqflags);
+-		return;
+-	}
+-
+-	sysrq_ch = port->sysrq_ch;
+-	port->sysrq_ch = 0;
+-
+-	spin_unlock_irqrestore(&port->lock, irqflags);
+-
+-	if (sysrq_ch)
+-		handle_sysrq(sysrq_ch);
+-}
+-
+-/*
+- * We do the SysRQ and SAK checking like this...
+- */
+-static inline int uart_handle_break(struct uart_port *port)
+-{
+-	struct uart_state *state = port->state;
+-
+-	if (port->handle_break)
+-		port->handle_break(port);
+-
+-	if (port->has_sysrq) {
+-		if (port->cons && port->cons->index == port->line) {
+-			if (!port->sysrq) {
+-				port->sysrq = jiffies + HZ*5;
+-				return 1;
+-			}
+-			port->sysrq = 0;
+-		}
+-	}
+-
+-	if (port->flags & UPF_SAK)
+-		do_SAK(state->port.tty);
+-	return 0;
+-}
++extern int uart_handle_sysrq_char(struct uart_port *port, unsigned int ch);
++extern int uart_prepare_sysrq_char(struct uart_port *port, unsigned int ch);
++extern void uart_unlock_and_check_sysrq(struct uart_port *port,
++					unsigned long irqflags);
++extern int uart_handle_break(struct uart_port *port);
+ 
+ /*
+  *	UART_ENABLE_MS - determine if port should enable modem status irqs
 -- 
 2.24.1
 
