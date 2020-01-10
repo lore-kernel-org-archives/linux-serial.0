@@ -2,128 +2,116 @@ Return-Path: <SRS0=sEmL=27=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A848C33CA3
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Jan 2020 08:55:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C6AEC33CA2
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Jan 2020 10:37:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E5AC82080D
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Jan 2020 08:55:02 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="G82gUwhT"
+	by mail.kernel.org (Postfix) with ESMTP id 6C3452072E
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Jan 2020 10:37:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1578652665;
+	bh=L/ylI2tq0m4AakHfsFEdMxuJF2BHSZ/xQvxYDm11loo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=NZiBeDmpjIQRDLVbAJnINSyP8Uxw2UXJCLUyynId1ahTK7OvZEoH3/4CuHLis2tOX
+	 7af+hJwzdxlYJOKhuNVWuoq5XdEYA8tBiFX0b0yj311/irI3Zzn4b8LYUqwHjV6uY9
+	 aEHU0reEXPlImqKYZjAn3lK3yHGa4DF1NjVsrZCo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727193AbgAJIzC (ORCPT
+        id S1727491AbgAJKhp (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Jan 2020 03:55:02 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:43126 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727160AbgAJIzB (ORCPT
+        Fri, 10 Jan 2020 05:37:45 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:33712 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727366AbgAJKho (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Jan 2020 03:55:01 -0500
-Received: by mail-wr1-f67.google.com with SMTP id d16so964828wre.10
-        for <linux-serial@vger.kernel.org>; Fri, 10 Jan 2020 00:55:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=gQ4Bh3OAeTWN28U6JwH3zankqm8sxWRvOJ7E4HiVe+g=;
-        b=G82gUwhTtj1zZaM/e7lAPzQ3PiIWy84krBkHb9nfTI/0UER0fLEqlVLfaOiAZnigzD
-         vfgzR6Jo15tHHJb9xkhgQBsD/KgnYgbYChBMtglOiybGxcXPJtoYFQNM7TgCaocYP/D3
-         okST4yC8zJ7/26bbwyC6R+s3RWzuB7N7JmvW54rNjEt0cMV1FX5VqO3WwNWkWXyrnkpw
-         f35v05ZcZKli/BMwv2az8FOnIzOkYak94K1jV/FHPamgkTRX+ANuVfEZWVvHRSXo4ocB
-         SnHsOrAd6xRhrwvamfRfKeJ4xqAgYhsngGvnX7Cg4pBCEFbdBU6xDb19CI4UVH3ZhkjO
-         EIAA==
+        Fri, 10 Jan 2020 05:37:44 -0500
+Received: by mail-lj1-f193.google.com with SMTP id y6so1654190lji.0;
+        Fri, 10 Jan 2020 02:37:43 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=gQ4Bh3OAeTWN28U6JwH3zankqm8sxWRvOJ7E4HiVe+g=;
-        b=g+2g4Tc7gmZpC+rVdn5MQTXVJ8sioQmIDAyJbnJPApkR5QlGLvVD9Yh73DCYgs7lEr
-         0Fr/zd3OVQHVKTGxmyX5ekXRTiMbJuUQ8GJdUj/wAKpImrtMe6fQQMOBNb2iYgb1JZ4d
-         Q2OmwA835+YrplvGVO6z9WOGc8+uGciQ2iCINxP8uWOjVg9kavCVky3WZuRtnMSoZx3K
-         0ebe3ab6oCamZ7yRIo2JX6iA37IleNlfbzkUcmR06XRc9ZLlw4aaAcuRAXx/j+/jD7aw
-         lkA8XCquQehxVuI0gdUQB+ps/2fP1dc9QwdwbVVKpvniNRN5Y8ZINNWmmNjfM+6y4H9d
-         qLfQ==
-X-Gm-Message-State: APjAAAX1/+R62AJey/z+/Grrxc+gRmjoMjUOjT0Z/paFYBoc/6rR4TGM
-        F08WqtcmqaE99mOnEeBN51Fm5w==
-X-Google-Smtp-Source: APXvYqyFDjHlr9Och5EICF0yTwr5/lsSf7fWGIB9VNb3wt9ego2i13MHHUDNPtKl7mEbfFuSpDTM6A==
-X-Received: by 2002:adf:dfc9:: with SMTP id q9mr2360244wrn.219.1578646499713;
-        Fri, 10 Jan 2020 00:54:59 -0800 (PST)
-Received: from localhost.localdomain (amontpellier-651-1-327-221.w92-133.abo.wanadoo.fr. [92.133.126.221])
-        by smtp.gmail.com with ESMTPSA id a184sm1453539wmf.29.2020.01.10.00.54.58
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 10 Jan 2020 00:54:59 -0800 (PST)
-From:   Loic Poulain <loic.poulain@linaro.org>
-To:     agross@kernel.org, bjorn.andersson@linaro.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        Loic Poulain <loic.poulain@linaro.org>
-Subject: [PATCH] tty: serial: msm_serial: RX SW/FIFO mode fallback
-Date:   Fri, 10 Jan 2020 09:58:04 +0100
-Message-Id: <1578646684-17379-1-git-send-email-loic.poulain@linaro.org>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JRe8rmTF1UxDJkj3I8/Vucrz4EL5UQD/SNLC8vy+9mg=;
+        b=FDig+8akZMD/99eGY95u9IEN/DWqdGPEtYCtZyI+IFYlHrQI1i8qaS3RqOj5KHWSrK
+         +lytTBZwakLu67jlmktghxT8TSa7RDJOU7/bDCgIYg7DIsz+mJ2PB5NVlbQzxFEPE+gm
+         BeFWaKrXStWm4vRiJuuEiOxBK3f33KJjxYPo7xei9vPe7Kqh/AZG+gKAfb4MpXnYIfvl
+         LXaBZybiE66Zu1Mrcd7sP2k6v9ABsctYXohKFwKDuGVODkKYGEvirq62LgD1ITtCTFHn
+         Sbzb6H7NKxpZ1yrjtI8BZfoTDx4ljHbBz9t2ofMOSm1WewqVg0uqd6nTb74AHf7H2syO
+         t4sg==
+X-Gm-Message-State: APjAAAWj7WIlBXQ2eQvh2tEqCojqfSFhTruep6TJSg1l3MJfhllUr9Yl
+        lRAfaip4bi4pz0IOOm8nbej+DeMQ
+X-Google-Smtp-Source: APXvYqyJ/3cb5+PxJjjNZK4MQBZrnjDNRpLC4oIWboKPba/6ZGnvIRlsru/xoOXB59UyVlq22hlD1Q==
+X-Received: by 2002:a2e:9806:: with SMTP id a6mr2147975ljj.178.1578652662773;
+        Fri, 10 Jan 2020 02:37:42 -0800 (PST)
+Received: from xi.terra (c-14b8e655.07-184-6d6c6d4.bbcust.telenor.se. [85.230.184.20])
+        by smtp.gmail.com with ESMTPSA id e9sm764261ljp.75.2020.01.10.02.37.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jan 2020 02:37:41 -0800 (PST)
+Received: from johan by xi.terra with local (Exim 4.92.3)
+        (envelope-from <johan@kernel.org>)
+        id 1iprfs-0001LI-Rk; Fri, 10 Jan 2020 11:37:52 +0100
+Date:   Fri, 10 Jan 2020 11:37:52 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-serial@vger.kernel.org
+Subject: Re: [GIT PULL] TTY/Serial driver fixes for 5.5-rc3
+Message-ID: <20200110103752.GB4273@localhost>
+References: <20191220070747.GA2190169@kroah.com>
+ <CAHk-=whcLH7EXVZbD0g1Bw7McrofQ-7vwiL2GAeMn=z9PP4VEQ@mail.gmail.com>
+ <20191223120651.GC114474@kroah.com>
+ <20191227183011.ij5wcawu6kpf52fb@debian>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191227183011.ij5wcawu6kpf52fb@debian>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-During db410c stress test and when the system is low on memory,
-the UART/console becomes unresponsive and never recover back.
-This has been narrowed down to the msm_start_rx_dma which does
-not manage error cases correctly (e.g. dma mapping failure),
-indeed, when an error happens, dma transfer is simply discarded
-and so never completed, leading to unconfigured RX path.
+On Fri, Dec 27, 2019 at 06:30:11PM +0000, Sudip Mukherjee wrote:
+> On Mon, Dec 23, 2019 at 07:06:51AM -0500, Greg KH wrote:
+> > On Fri, Dec 20, 2019 at 10:08:03AM -0800, Linus Torvalds wrote:
+> > > On Thu, Dec 19, 2019 at 11:07 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> > > >
+> > > > The last tty core fix should resolve a long-standing bug with a race
+> > > > at port creation time that some people would see, and Sudip finally
+> > > > tracked down.
+> > > 
+> > > Hmm, looks good. But it makes me wonder if we should now try to remove
+> > > the second call to tty_port_link_device()?
+> > > 
+> > > Now we have a number of helpers that do that tty_port_link_device()
+> > > call for the driver (eg tty_port_register_device_attr_serdev(),
+> > > tty_port_register_device_attr(), and the just added
+> > > uart_add_one_port()).
+> > > 
+> > > But we also have drivers doing it by hand, and presumably we now have
+> > > drivers that do it through multiple paths? I guess it's harmless, but
+> > > it feels a bit odd. No?
+> > 
+> > It does.  I'll try to look at this after the holidays unless Sudip beats
+> > me to it.
+> 
+> The second call to tty_port_link_device() is in
+> tty_port_register_device_attr_serdev() and tty_port_register_device_attr()
+> is being called from many other places apart from uart_add_one_port().
+> The attached patch should be safe. I will test and send it properly unless
+> someone objects to it.
 
-This patch fixes this issue by switching to SW/FIFO mode in case
-of DMA issue. This mainly consists in resetting the receiver to
-apply RX BAM/DMA disabling change and re-enabling the RX level
-and stale interrupts (previously disabled for DMA transfers).
+No, this is horrid. There's certainly room for some clean up here but we
+shouldn't make things worse. ;)
 
-The DMA will be re-enabled once memory is available since the
-SW/FIFO read function (msm_handle_rx_dm) retries to start dma
-on completion.
+Why not look into registering the console only after the port has been
+set up and registered and revert fb2b90014d78 ("tty: link tty and port
+before configuring it as console") completely instead?
 
-Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
----
- drivers/tty/serial/msm_serial.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 1cbae07..a63b703 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -610,7 +610,7 @@ static void msm_start_rx_dma(struct msm_port *msm_port)
- 				   UARTDM_RX_SIZE, dma->dir);
- 	ret = dma_mapping_error(uart->dev, dma->phys);
- 	if (ret)
--		return;
-+		goto sw_mode;
- 
- 	dma->desc = dmaengine_prep_slave_single(dma->chan, dma->phys,
- 						UARTDM_RX_SIZE, DMA_DEV_TO_MEM,
-@@ -661,6 +661,22 @@ static void msm_start_rx_dma(struct msm_port *msm_port)
- 	return;
- unmap:
- 	dma_unmap_single(uart->dev, dma->phys, UARTDM_RX_SIZE, dma->dir);
-+
-+sw_mode:
-+	/*
-+	 * Switch from DMA to SW/FIFO mode. After clearing Rx BAM (UARTDM_DMEN),
-+	 * receiver must be reset.
-+	 */
-+	msm_write(uart, UART_CR_CMD_RESET_RX, UART_CR);
-+	msm_write(uart, UART_CR_RX_ENABLE, UART_CR);
-+
-+	msm_write(uart, UART_CR_CMD_RESET_STALE_INT, UART_CR);
-+	msm_write(uart, 0xFFFFFF, UARTDM_DMRX);
-+	msm_write(uart, UART_CR_CMD_STALE_EVENT_ENABLE, UART_CR);
-+
-+	/* Re-enable RX interrupts */
-+	msm_port->imr |= (UART_IMR_RXLEV | UART_IMR_RXSTALE);
-+	msm_write(uart, msm_port->imr, UART_IMR);
- }
- 
- static void msm_stop_rx(struct uart_port *port)
--- 
-2.7.4
-
+Johan
