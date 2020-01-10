@@ -1,101 +1,85 @@
-Return-Path: <SRS0=YWaF=26=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=sEmL=27=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-8.4 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B371FC282DD
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Jan 2020 23:53:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 824BDC3F68F
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Jan 2020 03:19:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7DF98206A1
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Jan 2020 23:53:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4ED4820721
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Jan 2020 03:19:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="jhAriIhF"
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="rF/TJsn0"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729158AbgAIXxQ (ORCPT
+        id S1731013AbgAJDTl (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Jan 2020 18:53:16 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:57566 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729591AbgAIXxQ (ORCPT
+        Thu, 9 Jan 2020 22:19:41 -0500
+Received: from mail-qv1-f46.google.com ([209.85.219.46]:45122 "EHLO
+        mail-qv1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730968AbgAJDTl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Jan 2020 18:53:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=MlF5dQoK0dle1ZtWDZdBf2+ZpHH+83Dr5WwoqzcG/Ug=; b=jhAriIhFGALIxRRRCqZHcRAxO
-        bf4QTy+4gxMC39a/tlgJyZemUmAPzGWDjdYo3FHiNCnYh8JuaJUOUAqTcnkrixja9wAfclkGZmZtZ
-        OiGYE3YLWVzXSN7R3Vf+GYLfFMDkJgubsYVgRPn1DL9zPq2/5vdltjhWxA0qgJ6h0DLzBaHWqmeWI
-        HOIXJlomwE073znZL/WcTeVayoFFFIjuYZfMH/47g17s7JvjFwiHqnoOefTdRbJjnANQOgy68NXNA
-        CBi9tnvH+bvoAl54/o9oGGG/HslohH6KEl7s/DCI+6/8jUsdX9veYo9gyCunxXFQ5VPrcsWtaI4wO
-        C5UPITnAQ==;
-Received: from [2601:1c0:6280:3f0::ed68]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1iphc3-0000H5-40; Thu, 09 Jan 2020 23:53:15 +0000
-Subject: Re: [PATCH-next 3/3] serial/sysrq: Add MAGIC_SYSRQ_SERIAL_SEQUENCE
-To:     Dmitry Safonov <dima@arista.com>, linux-kernel@vger.kernel.org
-Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        Thu, 9 Jan 2020 22:19:41 -0500
+Received: by mail-qv1-f46.google.com with SMTP id l14so156787qvu.12
+        for <linux-serial@vger.kernel.org>; Thu, 09 Jan 2020 19:19:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WFfGhG9FXYFUnx3j3LlD5tdXXW7QcBTE9Rh6RB9Fn9A=;
+        b=rF/TJsn0WhwuZCLQvzJIm3JYucQcKiHDGzlIdnHPmN1I/5qqBn24qTpjI8IyaIXF3c
+         DxRhgs5oO99VZb4gTMZ+7uaJbe1RRlMPU+zH7LinK+i0UojQyodvEa848WxnFtnzm0e2
+         +nqWVSgcMentYXW0uQqXFQxJWwOsZ4UFEd8HNRfl/PTr95PHy3ZW9iM8/a3rWnJFz3eQ
+         YLXzW5fwz1sY2Vupbe/AFoAI3mNtX8Mm6oapbGSrue+msdHN5XcAqU4TotSgHkBk4lmc
+         5PGfz3DgX/+7ruQJ1YWalingDRWuNjUxWfEzFTt/HXJQoMvmGiedVnELa2QBXj8eb3Iw
+         l5xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WFfGhG9FXYFUnx3j3LlD5tdXXW7QcBTE9Rh6RB9Fn9A=;
+        b=SFFianE/P9qcrvBnzIy2mJp6EeXwPuk/J9mO5cUC8RnK4oxG9tVHsTxK/hTzwVBm+E
+         EyBa+2Iu9TrxS2GAw/VNxFuJJkqK7ujUbGHAJWjv9jutjgcwW5dOMXRDmcFCj5HJ7jH3
+         90HHOvQA+3B7Fh/Eaw0U0Gd4HakeQYIsAxOBso4XBRULKCoFdGBjEyf1W4Kx8xMF+l6m
+         8iK/lsR7FXfFQIMf7BV2MYptJ7wKK70fDKYebsLFwHkpOVn//6V/rlzlL40K0doGsgrk
+         94hEMU/bSuDdHSW96ughHjTq3DYtWz5arCLYAmcp+TeTpuEvi6yoG8g8Jpge6i7zS07o
+         l/sg==
+X-Gm-Message-State: APjAAAXodlhLjMJzhtGRXDdMgOswI+jqENJbeNVii56MLUwsmVZpP6Gl
+        DlC81nMlVgCmdjYBPY219+sgKjJx8DLj+hgYv5Nj
+X-Google-Smtp-Source: APXvYqwpzrYY11OpDZbAJer1PQrW1cQQ8ndOMkCZMNtUev4PhkUEDwofAXy3YrRjF11wFlDQx6BS4LDmGwg/cAnn4JY=
+X-Received: by 2002:a05:6214:11ab:: with SMTP id u11mr690224qvv.193.1578626379744;
+ Thu, 09 Jan 2020 19:19:39 -0800 (PST)
+MIME-Version: 1.0
+References: <20200109215444.95995-1-dima@arista.com> <20200109215444.95995-3-dima@arista.com>
+In-Reply-To: <20200109215444.95995-3-dima@arista.com>
+From:   Iurii Zaikin <yzaikin@google.com>
+Date:   Thu, 9 Jan 2020 19:19:03 -0800
+Message-ID: <CAAXuY3rENaHb9yAgdaKRi4A8qQ5QNX8z6WBJRsNM0EVuReL8Qw@mail.gmail.com>
+Subject: Re: [PATCH-next 2/3] sysctl/sysrq: Remove __sysrq_enabled copy
+To:     Dmitry Safonov <dima@arista.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
         Vasiliy Khoruzhick <vasilykh@arista.com>,
-        linux-serial@vger.kernel.org
-References: <20200109215444.95995-1-dima@arista.com>
- <20200109215444.95995-4-dima@arista.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <9e622d11-0eb7-274e-8f0a-132d296420fe@infradead.org>
-Date:   Thu, 9 Jan 2020 15:53:14 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
-MIME-Version: 1.0
-In-Reply-To: <20200109215444.95995-4-dima@arista.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        linux-serial@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Linus FS Devel Mailing List <linux-fsdevel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+> Furthermore, the private copy isn't correct already in case
+> sysrq_always_enabled is true. So, remove __sysrq_enabled and use a
+> getter-helper for sysrq enabled status.
+Since the old way was known to be unreliable, the new way looks like a
+great candidate for a KUnit test.
 
-On 1/9/20 1:54 PM, Dmitry Safonov wrote:
-> 
-> Based-on-patch-by: Vasiliy Khoruzhick <vasilykh@arista.com>
-> Signed-off-by: Dmitry Safonov <dima@arista.com>
-> ---
->  drivers/tty/serial/serial_core.c | 52 ++++++++++++++++++++++++++++----
->  include/linux/serial_core.h      |  2 +-
->  lib/Kconfig.debug                |  8 +++++
->  3 files changed, 55 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 6ac9dfed3423..f70eba032d0b 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -3081,6 +3081,38 @@ void uart_insert_char(struct uart_port *port, unsigned int status,
->  }
->  EXPORT_SYMBOL_GPL(uart_insert_char);
->  
-> +const char sysrq_toggle_seq[] = CONFIG_MAGIC_SYSRQ_SERIAL_SEQUENCE;
-> +
-> +static void uart_sysrq_on(struct work_struct *w)
-> +{
-> +	sysrq_toggle_support(1);
-> +	pr_info("SysRq is enabled by magic sequience on serial\n");
-
-typo:	                                   sequence
-
-> +}
-> +static DECLARE_WORK(sysrq_enable_work, uart_sysrq_on);
-
-
-
--- 
-~Randy
-
+Off topic: I wonder if Magic Sysrq could be extended with reasonable
+effort to be triggered by a sequence of keystrokes which would be less
+likely to be generated by a noisy serial.
