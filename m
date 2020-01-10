@@ -2,92 +2,132 @@ Return-Path: <SRS0=sEmL=27=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D42A1C282DD
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Jan 2020 21:08:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2AC8C282DD
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Jan 2020 21:45:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A7CC520838
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Jan 2020 21:08:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1578690518;
-	bh=7k/3WJi+NYzL/NKLuCvvykW0NIV1US+apZoWCLsOrVk=;
-	h=Date:From:To:Cc:Subject:List-ID:From;
-	b=T6qNa6wFwDm1TF95Y5A2MhFlgOZnsXA21eHfwiW/Q2CCdRY9R+0bv4N8cFZMdUaza
-	 ZLKU6HQpCXTd+5vLoiHiqaSHgfysbTl/ggXUxq6Tz0azx+AdSjfGhJr71xdELFQMxy
-	 shMIY60D5t7jXr5c7ikN/PHfhf7mX2xIjFpEB49Q=
+	by mail.kernel.org (Postfix) with ESMTP id 9A88320842
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Jan 2020 21:45:45 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="fFk+ijjG"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726842AbgAJVIi (ORCPT
+        id S1726962AbgAJVpp (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Jan 2020 16:08:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37890 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726836AbgAJVIh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Jan 2020 16:08:37 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F3B9C205F4;
-        Fri, 10 Jan 2020 21:08:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578690517;
-        bh=7k/3WJi+NYzL/NKLuCvvykW0NIV1US+apZoWCLsOrVk=;
-        h=Date:From:To:Cc:Subject:From;
-        b=OOHUodEHEzp9BAGomUZgt3So4I0FWHJhHYYFBaZdz+40MoqlfiCPt5RdAHWDPd+Du
-         PqjEGb6hwz27qzccdy7HyX8NGoX5k/W7J4DBXByiUdps361EaWgCkuzDv3uZKl3JiX
-         yB0wxKBFW47hpSnzjT+j2nzhrNy9mp622Pmfb/zs=
-Date:   Fri, 10 Jan 2020 22:08:35 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY/Serial driver fixes for 5.5-rc6
-Message-ID: <20200110210835.GA1871048@kroah.com>
+        Fri, 10 Jan 2020 16:45:45 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:32928 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726952AbgAJVpo (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 10 Jan 2020 16:45:44 -0500
+Received: by mail-pg1-f195.google.com with SMTP id 6so1607179pgk.0
+        for <linux-serial@vger.kernel.org>; Fri, 10 Jan 2020 13:45:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=googlenew;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=85uBcaKJVYynn+Km3yZLrt2LABn/ujp4kH1tchf72pQ=;
+        b=fFk+ijjG8oQy7LHiL7KQwoSUrPKToO3xGIfQktv7xCVRr50sD04tjZDR0VioAFl3mE
+         2UvNLpoV/EQaPK8Tw6WgOPZbbBU89HmvvmmGkCkPrVtcWA6ZlnkyO2lFqW4vmq367U49
+         kNrRqygH2oUX4SawAcIrPySvrA8TbliPHsgcBw0tIChmiwryBDq+EqZ4BKclRoSrYDhH
+         +oYPiQ/6TmgYTA3EAP1+7vjvNkhj2k5F5bx4v9ReVyJJnqNmdIZzoZAl4QL4YT/mdanr
+         Jwc9lwCptjwNXWa9qP3KOLSOq8QrEUAWTrbcKwny7SgVvmx2avkQt5RnZBI3zg/i+dEf
+         UPhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=85uBcaKJVYynn+Km3yZLrt2LABn/ujp4kH1tchf72pQ=;
+        b=fqcTkCQg1PUAT/SZl/S7qCW5Z8OfTCkys1OIuylKDPmvCg+F/3ExzqzBpIYnOM7/3J
+         8uU+I3llxC9wraOZnb+EFjp/xSjFw8VMsAvhDS6hDTLHbwDROZzWjpdmqLM0gitpv8Lf
+         wZjadwQ33CcLkjGXLpIxfLd2wrrevkq6vPMAes+tS5RVCVemLNtXHHiSv3xvpUFElHQZ
+         9GDkNjoDpfYNy/PNMu6aB5mp3LxfdX3fzGa00E//humVtK00YORDS5D1s0DfFqWkqKjx
+         bHM20o3gvPQLVVLeM993tFotgQqslh+mPwPR3ofhXuohlZ/d/491MliC8yNiLk2DUdEG
+         TC3Q==
+X-Gm-Message-State: APjAAAU00ru7KEoGoUWV9zw1fGdVbK1WDLUxZGOoTFWfuIV7K7SG3k38
+        F8QTwhOQfCZlZoVLfuvDHhx9fw==
+X-Google-Smtp-Source: APXvYqxgE7a0uaAsLuTGuMgpdPUQxw+3dqFpxr4k4kTVVg1Wowt51riMR900Qq1pwViSA3TKwYiZVg==
+X-Received: by 2002:a63:1101:: with SMTP id g1mr6656701pgl.435.1578692743701;
+        Fri, 10 Jan 2020 13:45:43 -0800 (PST)
+Received: from [10.83.36.153] ([217.173.96.166])
+        by smtp.gmail.com with ESMTPSA id j2sm4059514pfi.22.2020.01.10.13.45.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Jan 2020 13:45:42 -0800 (PST)
+Subject: Re: [PATCH-next 2/3] sysctl/sysrq: Remove __sysrq_enabled copy
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Jiri Slaby <jslaby@suse.com>,
+        Vasiliy Khoruzhick <vasilykh@arista.com>,
+        linux-serial@vger.kernel.org, Iurii Zaikin <yzaikin@google.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        linux-fsdevel@vger.kernel.org
+References: <20200109215444.95995-1-dima@arista.com>
+ <20200109215444.95995-3-dima@arista.com> <20200110164035.GA1822445@kroah.com>
+From:   Dmitry Safonov <dima@arista.com>
+Message-ID: <04436968-5e89-0286-81e5-61acbe583f73@arista.com>
+Date:   Fri, 10 Jan 2020 21:45:30 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <20200110164035.GA1822445@kroah.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The following changes since commit 46cf053efec6a3a5f343fead837777efe8252a46:
+Hi Greg,
 
-  Linux 5.5-rc3 (2019-12-22 17:02:23 -0800)
+On 1/10/20 4:40 PM, Greg Kroah-Hartman wrote:
+> On Thu, Jan 09, 2020 at 09:54:43PM +0000, Dmitry Safonov wrote:
+[..]
+>> @@ -2844,6 +2827,26 @@ static int proc_dostring_coredump(struct ctl_table *table, int write,
+>>  }
+>>  #endif
+>>  
+>> +#ifdef CONFIG_MAGIC_SYSRQ
+>> +static int sysrq_sysctl_handler(struct ctl_table *table, int write,
+>> +				void __user *buffer, size_t *lenp, loff_t *ppos)
+>> +{
+>> +	int tmp, ret;
+>> +
+>> +	tmp = sysrq_get_mask();
+>> +
+>> +	ret = __do_proc_dointvec(&tmp, table, write, buffer,
+>> +			       lenp, ppos, NULL, NULL);
+>> +	if (ret || !write)
+>> +		return ret;
+>> +
+>> +	if (write)
+>> +		sysrq_toggle_support(tmp);
+>> +
+>> +	return 0;
+>> +}
+>> +#endif
+> 
+> Why did you move this function down here?  Can't it stay where it is and
+> you can just fix the logic there?  Now you have two different #ifdef
+> blocks intead of just one :(
 
-are available in the Git repository at:
+Yeah, well __do_proc_dointvec() made me do it.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.5-rc6
+sysrq_sysctl_handler() declaration should be before ctl_table array of
+sysctls, so I couldn't remove the forward-declaration.
 
-for you to fetch changes up to c5ee0b3104e0b292d353e63fd31cb8c692645d8c:
+So, I could forward-declare __do_proc_dointvec() instead, but looking at
+the neighborhood, I decided to follow the file-style (there is a couple
+of forward-declarations before the sysctl array, some under ifdefs).
 
-  serdev: Don't claim unsupported ACPI serial devices (2020-01-06 20:00:44 +0100)
+I admit that the result is imperfect and can put __do_proc_dointvec()
+definition before instead, no hard feelings.
 
-----------------------------------------------------------------
-TTY/Serial fixes for 5.5-rc6
-
-Here are two tty/serial driver fixes for 5.5-rc6.
-
-The first fixes a much much reported issue with a previous tty port link
-patch that is in your tree, and the second fixes a problem where the
-serdev driver would claim ACPI devices that it shouldn't be claiming.
-
-Both have been in linux-next for a while with no reported issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Punit Agrawal (1):
-      serdev: Don't claim unsupported ACPI serial devices
-
-Sudip Mukherjee (1):
-      tty: always relink the port
-
- drivers/tty/serdev/core.c | 10 ++++++++++
- drivers/tty/tty_port.c    |  3 +--
- 2 files changed, 11 insertions(+), 2 deletions(-)
+Thanks,
+          Dmitry
