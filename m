@@ -2,100 +2,115 @@ Return-Path: <SRS0=sEmL=27=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDB91C282DD
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Jan 2020 21:49:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 006FDC282DD
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Jan 2020 22:01:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9C86620673
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Jan 2020 21:49:13 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="fKt6naZQ"
+	by mail.kernel.org (Postfix) with ESMTP id BD1E320838
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Jan 2020 22:01:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1578693701;
+	bh=y78F7EkDKzvyrK1oupSN61NtpNTuyNmqqSBPHBi1g3w=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=WZnoVxS48kOZBq3vbX0yRgFPGoaHav9yX9EUF3vpsQzTCxt2czNhE24z2WaHg9QNv
+	 UHQoyy2JkYbkC2oizv5NjJSHoRBy+3AXXQ++x049BoA/wN+01SIpZHcgddOJ6kXlyD
+	 VhDziwb8mYD0CoTq+pptcHL38sBLRrXGHR2QKh90=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727095AbgAJVtN (ORCPT
+        id S1727229AbgAJWBl (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Jan 2020 16:49:13 -0500
-Received: from mail-pj1-f49.google.com ([209.85.216.49]:40789 "EHLO
-        mail-pj1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726948AbgAJVtN (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Jan 2020 16:49:13 -0500
-Received: by mail-pj1-f49.google.com with SMTP id bg7so1535954pjb.5
-        for <linux-serial@vger.kernel.org>; Fri, 10 Jan 2020 13:49:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=googlenew;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=EotSuVC8x//6WTz5AWaS7rsTrdlhebSai/ftb1+E4dE=;
-        b=fKt6naZQW/i9MFnHyjX9n+cMX+BtPuQ15JIY49Lo5XG3ArYZnRKVndhMOvZUsPFsL7
-         oW4ZIWE1UL25OmBc2pVmcVbHDSHyOLkloQGKjEDdAvaFQ5Ky/88HFbJQkjZXbvUKH62z
-         Qjk/RpYqzaPVVqgVFQG4MIv9vC6BK0Q/Px/qla8lfUTsYQult063a0PPGT8DRuCxRODV
-         dDh5qAt3YEHWQU1N6UsL2gyR0eu2K1BubJzcDd1XvHeUwiWOMh/ID34i44htTR3J/o0b
-         FL9RHX7aEGle2QbQStPWiqBXXVUVzeQ4qg87Mk2Hi1S0elpTa/bAbEXpw4ezcQ85S3F1
-         4wKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=EotSuVC8x//6WTz5AWaS7rsTrdlhebSai/ftb1+E4dE=;
-        b=mrtoyxNrkfMerj6xpa9MDpblNrR7PJFdVgJCIVvta92EgeNMlAZucDlBhZfUd9Sfok
-         T0Hw0yv3hbFBjNvYF32PVrlEY2nciYaMc2wzt7qgObIIE+RJTrpakJ/4Gw6TCs+S1JfM
-         D1xAzKOqiglob3uON/DHoiVnpSNKt83eSC00ReQGJXXtStqT5vlWPgUkqIpAm9vSDCEi
-         RqQYJ42LmmSqnPBgllGcJ31WPNyc/3FrCH1kbijmbYOtwsRS2WC/irQ2eAXnZouH6FIB
-         EpWLLSePT6btnppGkzFBxKkEdhPYjOwzMXpFD2TTo+6dAQ03irV4zLMu7pU9vW9nPfsj
-         GvCA==
-X-Gm-Message-State: APjAAAWoExYoBQLbJd4mk6Y04GlgVFXoylKumvwfRwRBX/cy7qk8e8UK
-        51vqJ9RNXl65Te8AtbQqhfbNBw==
-X-Google-Smtp-Source: APXvYqwRu265Y3X0hs9bzTfjAnTlPhZVFYgk8do4sgggN/Ov+FCjgdLdT0ymGoEG3OhqL/pp3neC+Q==
-X-Received: by 2002:a17:902:8642:: with SMTP id y2mr6720859plt.306.1578692952197;
-        Fri, 10 Jan 2020 13:49:12 -0800 (PST)
-Received: from [10.83.36.153] ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id 3sm4128337pfi.13.2020.01.10.13.49.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Jan 2020 13:49:11 -0800 (PST)
-Subject: Re: [PATCH-next 2/3] sysctl/sysrq: Remove __sysrq_enabled copy
-To:     Iurii Zaikin <yzaikin@google.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Fri, 10 Jan 2020 17:01:41 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46962 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727227AbgAJWBl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 10 Jan 2020 17:01:41 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 19B632082E;
+        Fri, 10 Jan 2020 22:01:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578693700;
+        bh=y78F7EkDKzvyrK1oupSN61NtpNTuyNmqqSBPHBi1g3w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZPNE2zb4PFZ3Oz35DFjfUZHw66krtBSRqkiXSrtRCySb4LNDj7j1hCiI1xArS2IAh
+         WPzWViMtDrZTMRInb2MLD9dROprtUUmI1YyOwkT5npDNQZ+xv+r54p95aHDozjPpg7
+         j5fVEpiM88yQKvc5Drcc19e80+XtryFrjqV+mCFg=
+Date:   Fri, 10 Jan 2020 23:01:37 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Dmitry Safonov <dima@arista.com>
+Cc:     linux-kernel@vger.kernel.org,
         Dmitry Safonov <0x7f454c46@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
         Vasiliy Khoruzhick <vasilykh@arista.com>,
-        linux-serial@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
+        linux-serial@vger.kernel.org, Iurii Zaikin <yzaikin@google.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
         Kees Cook <keescook@chromium.org>,
-        Linus FS Devel Mailing List <linux-fsdevel@vger.kernel.org>
+        linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH-next 2/3] sysctl/sysrq: Remove __sysrq_enabled copy
+Message-ID: <20200110220137.GA9387@kroah.com>
 References: <20200109215444.95995-1-dima@arista.com>
  <20200109215444.95995-3-dima@arista.com>
- <CAAXuY3rENaHb9yAgdaKRi4A8qQ5QNX8z6WBJRsNM0EVuReL8Qw@mail.gmail.com>
-From:   Dmitry Safonov <dima@arista.com>
-Message-ID: <f2a2a255-a078-68fc-9e5b-91b4ecc749ba@arista.com>
-Date:   Fri, 10 Jan 2020 21:48:57 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+ <20200110164035.GA1822445@kroah.com>
+ <04436968-5e89-0286-81e5-61acbe583f73@arista.com>
 MIME-Version: 1.0
-In-Reply-To: <CAAXuY3rENaHb9yAgdaKRi4A8qQ5QNX8z6WBJRsNM0EVuReL8Qw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <04436968-5e89-0286-81e5-61acbe583f73@arista.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Iurii,
+On Fri, Jan 10, 2020 at 09:45:30PM +0000, Dmitry Safonov wrote:
+> Hi Greg,
+> 
+> On 1/10/20 4:40 PM, Greg Kroah-Hartman wrote:
+> > On Thu, Jan 09, 2020 at 09:54:43PM +0000, Dmitry Safonov wrote:
+> [..]
+> >> @@ -2844,6 +2827,26 @@ static int proc_dostring_coredump(struct ctl_table *table, int write,
+> >>  }
+> >>  #endif
+> >>  
+> >> +#ifdef CONFIG_MAGIC_SYSRQ
+> >> +static int sysrq_sysctl_handler(struct ctl_table *table, int write,
+> >> +				void __user *buffer, size_t *lenp, loff_t *ppos)
+> >> +{
+> >> +	int tmp, ret;
+> >> +
+> >> +	tmp = sysrq_get_mask();
+> >> +
+> >> +	ret = __do_proc_dointvec(&tmp, table, write, buffer,
+> >> +			       lenp, ppos, NULL, NULL);
+> >> +	if (ret || !write)
+> >> +		return ret;
+> >> +
+> >> +	if (write)
+> >> +		sysrq_toggle_support(tmp);
+> >> +
+> >> +	return 0;
+> >> +}
+> >> +#endif
+> > 
+> > Why did you move this function down here?  Can't it stay where it is and
+> > you can just fix the logic there?  Now you have two different #ifdef
+> > blocks intead of just one :(
+> 
+> Yeah, well __do_proc_dointvec() made me do it.
+> 
+> sysrq_sysctl_handler() declaration should be before ctl_table array of
+> sysctls, so I couldn't remove the forward-declaration.
+> 
+> So, I could forward-declare __do_proc_dointvec() instead, but looking at
+> the neighborhood, I decided to follow the file-style (there is a couple
+> of forward-declarations before the sysctl array, some under ifdefs).
+> 
+> I admit that the result is imperfect and can put __do_proc_dointvec()
+> definition before instead, no hard feelings.
 
-On 1/10/20 3:19 AM, Iurii Zaikin wrote:
-> Off topic: I wonder if Magic Sysrq could be extended with reasonable
-> effort to be triggered by a sequence of keystrokes which would be less
-> likely to be generated by a noisy serial.
+Ah, no, nevermind, I missed that reason, sorry about that.  Moving it is
+fine.
 
-That's what I do in 3/3 patch from the series:
-https://lkml.kernel.org/r/20200109215444.95995-4-dima@arista.com
-
-Or do you mean something else?
-
-Thanks,
-          Dmitry
+greg k-h
