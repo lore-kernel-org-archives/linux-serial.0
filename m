@@ -2,77 +2,70 @@ Return-Path: <SRS0=GYIK=3A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C68C282DD
-	for <linux-serial@archiver.kernel.org>; Sat, 11 Jan 2020 14:09:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43FBEC282DD
+	for <linux-serial@archiver.kernel.org>; Sat, 11 Jan 2020 14:45:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3178620842
-	for <linux-serial@archiver.kernel.org>; Sat, 11 Jan 2020 14:09:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 163B620842
+	for <linux-serial@archiver.kernel.org>; Sat, 11 Jan 2020 14:45:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1578753935;
+	bh=tcWWBa8JAIlJo0eqgfrqcM9l4c/KaWN5zRdwvnRbBH8=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:List-ID:From;
+	b=vBn3jULyb3+yVOQECh3Ya3uUSYoEwNwIGDDZAgdPVh4c/XiO8I0Mkt2nQMk7RsoD2
+	 XRBXbBmGj2eDdZBQ3enir/OAqkCBDKJrDLlvFL/nRAO0tLnFZW2gH+cKRrxl/zQHe7
+	 wv49ZQX9+O7lb1fMNGFW0fH/fve+9rFZmoZzsObs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729672AbgAKOJy (ORCPT
+        id S1730048AbgAKOp1 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 11 Jan 2020 09:09:54 -0500
-Received: from smtprelay0215.hostedemail.com ([216.40.44.215]:46564 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729630AbgAKOJy (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 11 Jan 2020 09:09:54 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 2E45A181D3417;
-        Sat, 11 Jan 2020 14:09:53 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-HE-Tag: spot67_733f2d71df901
-X-Filterd-Recvd-Size: 1566
-Received: from XPS-9350.home (unknown [47.151.135.224])
-        (Authenticated sender: joe@perches.com)
-        by omf20.hostedemail.com (Postfix) with ESMTPA;
-        Sat, 11 Jan 2020 14:09:51 +0000 (UTC)
-Message-ID: <f0e313b585cd8fa30e85ee86d6612af4a860a50a.camel@perches.com>
-Subject: Re: [PATCH-next 3/3] serial/sysrq: Add MAGIC_SYSRQ_SERIAL_SEQUENCE
-From:   Joe Perches <joe@perches.com>
-To:     Dmitry Safonov <dima@arista.com>, linux-kernel@vger.kernel.org
-Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Vasiliy Khoruzhick <vasilykh@arista.com>,
-        linux-serial@vger.kernel.org
-Date:   Sat, 11 Jan 2020 06:08:58 -0800
-In-Reply-To: <056bff50-f67e-f00f-c98f-ccb427344691@arista.com>
-References: <20200109215444.95995-1-dima@arista.com>
-         <20200109215444.95995-4-dima@arista.com>
-         <5293a7cb1ccb16275ddb36c7f26fb9e83f4fac9b.camel@perches.com>
-         <056bff50-f67e-f00f-c98f-ccb427344691@arista.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.34.1-2 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        Sat, 11 Jan 2020 09:45:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36206 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729910AbgAKOpI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 11 Jan 2020 09:45:08 -0500
+Subject: Re: [GIT PULL] TTY/Serial driver fixes for 5.5-rc6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578753907;
+        bh=tcWWBa8JAIlJo0eqgfrqcM9l4c/KaWN5zRdwvnRbBH8=;
+        h=From:In-Reply-To:References:Date:To:Cc:From;
+        b=dXnbUi+5YZMW6XxrqXUgpoaXM4jERQqY+6sTIPOCPJFj7+KFaMBoLYqbGCYh2o/Ki
+         mmM0Am1eKMGBAC3rQX8UX9G8yV5bduwQnbevXbJx2fWmeHYY6nyf2LBW9taGkDy1Sj
+         9ESKUpP8wapGgKZz8Y1dbqOkxDs3bsR+hqH1r4Ug=
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20200110210835.GA1871048@kroah.com>
+References: <20200110210835.GA1871048@kroah.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20200110210835.GA1871048@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.5-rc6
+X-PR-Tracked-Commit-Id: c5ee0b3104e0b292d353e63fd31cb8c692645d8c
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 5a96c0bbff8690afb3a2fcfc80208cd6590f6e88
+Message-Id: <157875390768.30634.11870665450842288025.pr-tracker-bot@kernel.org>
+Date:   Sat, 11 Jan 2020 14:45:07 +0000
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 2020-01-10 at 22:10 +0000, Dmitry Safonov wrote:
-> Hi Joe,
+The pull request you sent on Fri, 10 Jan 2020 22:08:35 +0100:
 
-Hi Dmitry.
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.5-rc6
 
-> I'm not aware of a way to put the max string length in Kconfig,
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/5a96c0bbff8690afb3a2fcfc80208cd6590f6e88
 
-Nor am I.
+Thank you!
 
-
->  so I did
-> in the patch:
-> BUILD_BUG_ON(ARRAY_SIZE(sysrq_toggle_seq) >=
-> sizeof(port->sysrq_seq)*U8_MAX);
-> 
-> Do you have something more elegant in your mind?
-
-No, I didn't notice this and think this is fine
-so thanks for that.
-
-It's be nice to have something like BUILD_BUG_ON_MSG.
-
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.wiki.kernel.org/userdoc/prtracker
