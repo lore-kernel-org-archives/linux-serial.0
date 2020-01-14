@@ -7,79 +7,73 @@ X-Spam-Status: No, score=-5.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E967CC33C9E
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jan 2020 18:43:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16520C33C9E
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jan 2020 19:10:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BD3CD24658
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jan 2020 18:43:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B7242222C4
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jan 2020 19:10:53 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="dPsIjRXH"
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="KfMcqSca"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726839AbgANSnz (ORCPT
+        id S1728633AbgANTKx (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Jan 2020 13:43:55 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:40568 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726053AbgANSnz (ORCPT
+        Tue, 14 Jan 2020 14:10:53 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:37966 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727102AbgANTKw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Jan 2020 13:43:55 -0500
-Received: by mail-pg1-f194.google.com with SMTP id k25so6789010pgt.7
-        for <linux-serial@vger.kernel.org>; Tue, 14 Jan 2020 10:43:54 -0800 (PST)
+        Tue, 14 Jan 2020 14:10:52 -0500
+Received: by mail-pg1-f196.google.com with SMTP id a33so6824309pgm.5
+        for <linux-serial@vger.kernel.org>; Tue, 14 Jan 2020 11:10:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=googlenew;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=EDQt/cQPOA137MrPt5eSVBozZBl/+1BwFFxlqLBKbOc=;
-        b=dPsIjRXHMSHLSJgKJS6IlOKG45mt4OickHQCbNPv2Y1az5i+Fjoa4XnxpannAjAkYW
-         u3iX4BtqDbExD+jyJgMJZtLHTZJO0pEhs9jcOKFy0Nyxk1u4WdkB8/gyXT58mE2ggi8D
-         GCetuAvTy3lEWf0Untzov4pQKK740ZJwW+7LkknNJMG74pEludMT7DGpv2Em8WqVMxx6
-         7BlgJKaPxg3EBeNXsQIpV4/NVGhDk7cGGaX3BJb/qfh6B2bYknfH75XF0c7L9rF8Wonn
-         N0lW9/A8H+VHpCCYStdaEKz79PMeqztbdDLG1txXjSeteK3wiFNNEx2qTgG9f23XLk45
-         ZK2w==
+        bh=Jh4MVY28TLmOvtnKjMwqmE9PCs0MNoKAOnUNKma/4Ys=;
+        b=KfMcqScafpLXwRh02Sj7gQrwWIejqGLu3q1y31aNIF+59v/iI+I5sw3GcTfwXDJXWH
+         2pV0Q0rkADPn5yhaIlLrgmbE4IbFaPCdu2PCN+M0SaFfUXxdKYYSFH2o/53yzovJ1zs5
+         mvQ9aKhOHHRhc32FHcEjcf0C56od2hW1+ksC8mw4Skeejz2qgVgYdp0dQqiX2TEWeYis
+         aOC7s5urnDeJ9wFCMVEP1RVHR6UXpDCl5cUxt6Qa+Jv5C9fxuqeZfZTq5Fb8Jorl8392
+         vwzKtf0AoIKGYQM7GyKaqw/LALBj/x+SO7Bnz8kKudchYOIXeWFoOmLzPSUKKWXdpEEK
+         GiwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=EDQt/cQPOA137MrPt5eSVBozZBl/+1BwFFxlqLBKbOc=;
-        b=JE50419e4zxStbTXlcGosUdCrafLS/04aobJNgKjCaK3JY5hckTIw9wgq45u6Ftcic
-         EXjqSchszxKtL1iOPpW/Z4VA0NBINXvWO9Zxm8iEZf5vnXRSyVXCZCcHq1Zm/Ne4aydy
-         xhRcNRzswCz6R7S4EvjVH+jcZ65dd6owdM8U3eS3yUa6L3cUcmV+ssANFbScW2LmOISF
-         san2z0vmSxAe+bFd9zn7aOBPL2sS4XCQ8sBJWnXDnI6KvliPctZr1HbBaIoPnNGKrWUN
-         1+2JAjenqU4RejVr28EiXmdBaH/JkQ0L4TqyhlFqQopoOhE62+9XhoU7TDZBiAwDz95C
-         3ssg==
-X-Gm-Message-State: APjAAAXL/No84AhSoCKf/VUysJmRQvkr6UwcEalcXp4GXQcslmREZoSj
-        Jrfo49kATiWj7LTupKuyeShFjQ==
-X-Google-Smtp-Source: APXvYqzWPbLeu1M7MD0gjc1MsfdtZch9eGBK94JXAMePruRkq0w/DODcH78ZkVC/dqzIm/evPe3WsA==
-X-Received: by 2002:a63:181a:: with SMTP id y26mr29235053pgl.423.1579027434446;
-        Tue, 14 Jan 2020 10:43:54 -0800 (PST)
+        bh=Jh4MVY28TLmOvtnKjMwqmE9PCs0MNoKAOnUNKma/4Ys=;
+        b=g4O4WhzClXjlFmcInuVV5sLtLcPL4AgafW3qT028rgNwsHChshC1/IcTErT/v9UrBb
+         5yGTRLbn5g8aYQ940CTqz8OXGGc66rqJUSPJ0tn8XEebpjLgqAdqzk1JJBBnDM4r26Pc
+         d/M8H+XKCw7NAZFz6AAWtUllx0gMFQIB77sT2+UMU+M67q4VuHTlhvny5RJ886/6FTK7
+         ZZTbnXrUJwuo5he4h1aNEMc8vnAP5P03wtSz1N4L4Yts9UgwgxM39xIAeABbIsaY2enA
+         3ynkDXxoP0jsujRtv5x3mgyIKTzhXzueA0ejjn38UBUGLNTlv9EcGwrBVqkM4WVfGnqx
+         vdcg==
+X-Gm-Message-State: APjAAAVXvSLcjVVYPMSe+zIyjr0uYUNziCvoemI6s1mdlK2RkDlmRyZs
+        w1IEpNfxqquxwGDUCPk3QAGQiQ==
+X-Google-Smtp-Source: APXvYqyCMudVIu/tZb/LWHyQ/ln+ti2nF0ZnV1cD1dFatM2ksK89jpS5Ad0uvf1N0JK4hRJC5YGrLw==
+X-Received: by 2002:a63:2fc4:: with SMTP id v187mr28115896pgv.55.1579029051987;
+        Tue, 14 Jan 2020 11:10:51 -0800 (PST)
 Received: from [10.83.36.153] ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id w20sm18920336pfi.86.2020.01.14.10.43.51
+        by smtp.gmail.com with ESMTPSA id o134sm19598426pfg.137.2020.01.14.11.10.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jan 2020 10:43:53 -0800 (PST)
-Subject: Re: [PATCHv2-next 3/3] serial_core: Remove unused member in uart_port
-To:     Joe Perches <joe@perches.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        Tue, 14 Jan 2020 11:10:51 -0800 (PST)
+Subject: Re: [PATCH-next 3/3] serial/sysrq: Add MAGIC_SYSRQ_SERIAL_SEQUENCE
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-kernel@vger.kernel.org,
         Dmitry Safonov <0x7f454c46@gmail.com>,
-        Iurii Zaikin <yzaikin@google.com>,
         Jiri Slaby <jslaby@suse.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
         Vasiliy Khoruzhick <vasilykh@arista.com>,
         linux-serial@vger.kernel.org
-References: <20200114171912.261787-1-dima@arista.com>
- <20200114171912.261787-4-dima@arista.com>
- <e1b3cccb0814ba4b0c99592715776ed48f343795.camel@perches.com>
- <8f11e2fa-495d-fe25-f5e4-52c9580240d7@arista.com>
- <20200114175647.GA2055173@kroah.com>
- <805e5dbb1f28e8f8b8f2599adb56294d3225c2d0.camel@perches.com>
+References: <20200109215444.95995-1-dima@arista.com>
+ <20200109215444.95995-4-dima@arista.com> <20200110164643.GB1822445@kroah.com>
+ <a6a3ee46-9537-c287-b366-797c787c28b6@arista.com>
 From:   Dmitry Safonov <dima@arista.com>
-Message-ID: <4290527b-0d67-1b92-3820-2fd519099e6d@arista.com>
-Date:   Tue, 14 Jan 2020 18:43:44 +0000
+Message-ID: <41435a7b-48a2-438c-998a-14481fbc3a1a@arista.com>
+Date:   Tue, 14 Jan 2020 19:10:47 +0000
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.0
 MIME-Version: 1.0
-In-Reply-To: <805e5dbb1f28e8f8b8f2599adb56294d3225c2d0.camel@perches.com>
+In-Reply-To: <a6a3ee46-9537-c287-b366-797c787c28b6@arista.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -88,43 +82,43 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 1/14/20 6:32 PM, Joe Perches wrote:
-> On Tue, 2020-01-14 at 18:56 +0100, Greg Kroah-Hartman wrote:
->> On Tue, Jan 14, 2020 at 05:47:33PM +0000, Dmitry Safonov wrote:
->>> On 1/14/20 5:36 PM, Joe Perches wrote:
->>>> On Tue, 2020-01-14 at 17:19 +0000, Dmitry Safonov wrote:
->>>>> It should remove the align-padding before @name.
->>>> []
->>>>> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
->>>> []
->>>>> @@ -247,7 +247,6 @@ struct uart_port {
->>>>>  
->>>>>  	unsigned char		hub6;			/* this should be in the 8250 driver */
->>>>>  	unsigned char		suspended;
->>>>> -	unsigned char		unused;
->>>>
->>>> I suggest this not be applied as this is just to let
->>>> readers know that there is an unused 1 byte alignment
->>>> hole here that could be used for something else.
->>>
->>> Heh, 2/3 adds another `unsigned char`, so the neighbours look like:
->>>
->>> : unsigned long sysrq;		/* sysrq timeout */
->>> : unsigned int	sysrq_ch;	/* char for sysrq */
->>> : unsigned char	has_sysrq;
->>> : unsigned char	sysrq_seq;	/* index in sysrq_toggle_seq */
->>> :
->>> : unsigned char	hub6;		/* this should be in the 8250 driver */
->>> : unsigned char	suspended;
->>> : unsigned char	unused;
->>> : const char	*name;		/* port name */
->>>
->>> So the hole became 4 bytes on 64-bit.
+On 1/10/20 10:32 PM, Dmitry Safonov wrote:
+> On 1/10/20 4:46 PM, Greg Kroah-Hartman wrote:
+> [..]
+>>> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+>>> index 6ac9dfed3423..f70eba032d0b 100644
+>>> --- a/drivers/tty/serial/serial_core.c
+>>> +++ b/drivers/tty/serial/serial_core.c
+>>> @@ -3081,6 +3081,38 @@ void uart_insert_char(struct uart_port *port, unsigned int status,
+>>>  }
+>>>  EXPORT_SYMBOL_GPL(uart_insert_char);
+>>>  
+>>> +const char sysrq_toggle_seq[] = CONFIG_MAGIC_SYSRQ_SERIAL_SEQUENCE;
+>>> +
+>>> +static void uart_sysrq_on(struct work_struct *w)
+>>> +{
+>>> +	sysrq_toggle_support(1);
+>>> +	pr_info("SysRq is enabled by magic sequience on serial\n");
+>>
+>> Do we want to say what serial port it is enabled on?
 > 
-> Ah, perhaps the commit message could state that
-> there is no longer an alignment hole instead.
+> Makes sense, will add.
 
-Fair enough, slowly improving in my commit message skills :-)
+Ah, I've managed to forget to mention that I didn't add the port name
+into the message in v2. I experimented a bit - it's getting a bit
+complicated how-to protect (char *name) for just this message.
+Like, SysRq can be theoretically enabled on two serials at the same
+moment - so some locking is needed to make the printed name sane.
+
+As sysrq_toggle_support() is a global-enable knob for sysrq (also can be
+switched in /proc/sys/kernel/sysrq) I'm not sure if it's worth to
+complicate code to print through which serial console SysRq has been
+enabled.
+
+I can still do it in v3 if you insist.
+
+And sorry about forgetting to mention this - thought I'll write reply
+after I send v2 and somehow it slipped my mind.
 
 Thanks,
-          Dmitry
+           Dmitry
