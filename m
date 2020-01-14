@@ -2,238 +2,162 @@ Return-Path: <SRS0=zL5S=3D=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1055BC33CB2
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jan 2020 12:34:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3B53C33C9E
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jan 2020 15:50:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DBA262467C
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jan 2020 12:34:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 964422072B
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jan 2020 15:50:39 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="0Lncu1ef"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kPXEn3PZ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726106AbgANMeD (ORCPT
+        id S1728731AbgANPuj (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Jan 2020 07:34:03 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:35992 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727044AbgANMd7 (ORCPT
+        Tue, 14 Jan 2020 10:50:39 -0500
+Received: from mail-io1-f68.google.com ([209.85.166.68]:38896 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726365AbgANPuj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Jan 2020 07:33:59 -0500
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00ECWbZi023934;
-        Tue, 14 Jan 2020 13:33:39 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=STMicroelectronics;
- bh=4Zw+r/mcuIQdGav3Gfbbdj8AtLqPaIWXCkURYNpxfY4=;
- b=0Lncu1efiEmSixKOeiOFmG4NByddmwwfZngVxnuNYqWjU7aPH7j0P1iCQpdDpYsbqdNj
- je/J2b1vm99dJ5ug1ZBQUETdhFe8abMWibYKr/zXL5DPdgRpBky41NGh/p8ZzBDIRMD9
- N2Ds3/0YRoPrAYYrWS/A6ebAYp4CgjitvWEpqnUcNRg44oJz+9nxRFJH28blG8dNLjaw
- mtnXzT4KQIBYU1GfVM9ngo3dFHFQhs4mCH9RSlpJEAoz/EE8Y7/jsdEdi9S3xEWouGWp
- NQCQSvWgsV8XTCVqA/1AE4ySCYbmwM+2buLLr4v52k6EYzlclFL/rg4z8KMQut8Ttj3C aQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 2xf7jpddg4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Jan 2020 13:33:39 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 9A8B010003B;
-        Tue, 14 Jan 2020 13:33:34 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag3node3.st.com [10.75.127.9])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 8D7292AD9EB;
-        Tue, 14 Jan 2020 13:33:34 +0100 (CET)
-Received: from localhost (10.75.127.44) by SFHDAG3NODE3.st.com (10.75.127.9)
- with Microsoft SMTP Server (TLS) id 15.0.1347.2; Tue, 14 Jan 2020 13:33:34
- +0100
-From:   Benjamin Gaignard <benjamin.gaignard@st.com>
-To:     <gregkh@linuxfoundation.org>, <robh+dt@kernel.org>,
-        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@st.com>
-CC:     <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>, <fabrice.gasnier@st.com>,
-        <erwan.leray@st.com>, Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: [PATCH 2/2] dt-bindings: serial: Convert STM32 UART to json-schema
-Date:   Tue, 14 Jan 2020 13:33:29 +0100
-Message-ID: <20200114123329.3792-3-benjamin.gaignard@st.com>
-X-Mailer: git-send-email 2.15.0
-In-Reply-To: <20200114123329.3792-1-benjamin.gaignard@st.com>
-References: <20200114123329.3792-1-benjamin.gaignard@st.com>
+        Tue, 14 Jan 2020 10:50:39 -0500
+Received: by mail-io1-f68.google.com with SMTP id i7so5908837ioo.5;
+        Tue, 14 Jan 2020 07:50:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rI5lJN6/79ZPLgE/0LMECL73PZbPngS/ckfgAshohJg=;
+        b=kPXEn3PZnAK8MnGou9j8Md3CiPm60AY+9VVvJjREEbaFgdy9BtwCNnqaxHnilhv2u2
+         l/Vr2o76I7z5SSYo3w3KTbkLbtNzqIPfqmmNirkHJQYeXGXjV/7zdHt1SAUrdigI3Wlu
+         W1GbIVGgd+aTegNsfrPuB2l8L98CApW/Qb/HLYn/6V2BDsP74E7mhWe7Yggwx/Jr+JGV
+         yaifa2Gu05EeTpI/k4XdsRF6DftQ/Ma/Z2aa/BAE3WPaJHxNiUV+vzHzF7OVmVlrX2lr
+         /fyAeZJ/eBIuFoFT41gsAFpzoxbB0sxmhjwM1XbmBP8y7MO9nVs0hOcktAVi+iUiG+MT
+         CF5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rI5lJN6/79ZPLgE/0LMECL73PZbPngS/ckfgAshohJg=;
+        b=oKklUPw05LeGisaHpw9hu6Jh9ALhBJtAe6AcdyWgiAICfk88r7d0BklDMCei+ufdDa
+         hJcykeqeSJwGYo/YrC4bYyzA33kq7XGC0TbXQeSJP3Ct0nYl9st+RytMG+hnrER+3RP5
+         W5YavePqEUP9KgVaOaVTqC8Lkv3OtMfEykzIZ8kG+bRgnWuJ8OhL8cwW4a19E0hZ+hO8
+         NP1iqQqkjjcIORn9HBgG0nOCRLm7S4j2Xwjhn45cGlSAXkAKRy7MaLSX3epEuwbb7geU
+         /S/oxo0Db34gjXZ+jFZbi08WodYbUlw2vVpjeUSQQ746paPi8W3vPJu9tOPaSLnQwZM7
+         qYzg==
+X-Gm-Message-State: APjAAAVdc7urdbREofv+p1ZaUG4yA+oU5Yegt9uC6SSIT/uor3Xkc0T3
+        IyB51GdUJrho6WPJm5j5UzNqApZVCriTm8xQkXeFYw==
+X-Google-Smtp-Source: APXvYqwGR3PKKsZrHoRPMMgc6XZlAt8YbcWMGOsClm4vNCdDiziFEEZvIfh+g4Xq4YQWBU44kBcsCmcqPirtkjNbDU8=
+X-Received: by 2002:a6b:148c:: with SMTP id 134mr17687642iou.178.1579017038380;
+ Tue, 14 Jan 2020 07:50:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.44]
-X-ClientProxiedBy: SFHDAG8NODE2.st.com (10.75.127.23) To SFHDAG3NODE3.st.com
- (10.75.127.9)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-14_03:2020-01-13,2020-01-14 signatures=0
+References: <1578646684-17379-1-git-send-email-loic.poulain@linaro.org>
+ <CAOCk7NrSkaY5xUdA+Q3tCoDv01fVDYpakWmk-RnOuuBKsNN8Jg@mail.gmail.com> <CAMZdPi8ih2LukVsGvG_w2HOSZL9DSbYDmD_U=PTnk96vbE=u8g@mail.gmail.com>
+In-Reply-To: <CAMZdPi8ih2LukVsGvG_w2HOSZL9DSbYDmD_U=PTnk96vbE=u8g@mail.gmail.com>
+From:   Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Date:   Tue, 14 Jan 2020 08:50:27 -0700
+Message-ID: <CAOCk7Nq721M3HZ0+gtasnQkzq_+b33z5hGkyE6YAa+GJzTyBuQ@mail.gmail.com>
+Subject: Re: [PATCH] tty: serial: msm_serial: RX SW/FIFO mode fallback
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        MSM <linux-arm-msm@vger.kernel.org>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Convert STM32 UART bindings to json-schema.
+On Tue, Jan 14, 2020 at 12:52 AM Loic Poulain <loic.poulain@linaro.org> wrote:
+>
+> On Mon, 13 Jan 2020 at 20:53, Jeffrey Hugo <jeffrey.l.hugo@gmail.com> wrote:
+> >
+> > On Fri, Jan 10, 2020 at 1:55 AM Loic Poulain <loic.poulain@linaro.org> wrote:
+> > >
+> > > During db410c stress test and when the system is low on memory,
+> > > the UART/console becomes unresponsive and never recover back.
+> > > This has been narrowed down to the msm_start_rx_dma which does
+> > > not manage error cases correctly (e.g. dma mapping failure),
+> > > indeed, when an error happens, dma transfer is simply discarded
+> > > and so never completed, leading to unconfigured RX path.
+> > >
+> > > This patch fixes this issue by switching to SW/FIFO mode in case
+> > > of DMA issue. This mainly consists in resetting the receiver to
+> > > apply RX BAM/DMA disabling change and re-enabling the RX level
+> > > and stale interrupts (previously disabled for DMA transfers).
+> > >
+> > > The DMA will be re-enabled once memory is available since the
+> > > SW/FIFO read function (msm_handle_rx_dm) retries to start dma
+> > > on completion.
+> >
+> > Is there a risk of the same thing occurring in the TX path?
+>
+> Yes, but the TX case is already handled. If msm_handle_tx_dma fails,
+> msm_handle_tx_pio is used to directly write the FIFO.
+>
+> >
+> > >
+> > > Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+> > > ---
+> > >  drivers/tty/serial/msm_serial.c | 18 +++++++++++++++++-
+> > >  1 file changed, 17 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+> > > index 1cbae07..a63b703 100644
+> > > --- a/drivers/tty/serial/msm_serial.c
+> > > +++ b/drivers/tty/serial/msm_serial.c
+> > > @@ -610,7 +610,7 @@ static void msm_start_rx_dma(struct msm_port *msm_port)
+> > >                                    UARTDM_RX_SIZE, dma->dir);
+> > >         ret = dma_mapping_error(uart->dev, dma->phys);
+> > >         if (ret)
+> > > -               return;
+> > > +               goto sw_mode;
+> > >
+> > >         dma->desc = dmaengine_prep_slave_single(dma->chan, dma->phys,
+> > >                                                 UARTDM_RX_SIZE, DMA_DEV_TO_MEM,
+> > > @@ -661,6 +661,22 @@ static void msm_start_rx_dma(struct msm_port *msm_port)
+> > >         return;
+> > >  unmap:
+> > >         dma_unmap_single(uart->dev, dma->phys, UARTDM_RX_SIZE, dma->dir);
+> > > +
+> > > +sw_mode:
+> > > +       /*
+> > > +        * Switch from DMA to SW/FIFO mode. After clearing Rx BAM (UARTDM_DMEN),
+> >
+> > Where does this clear of UARTDM_DMEN occur?
+>
+> The DMEN clear occurs on DMA RX completion (msm_complete_tx_dma()) and
+> set on DMA
+> restart (msm_start_rx_dma). In our case, since DMA start fails, we
+> just reset the RX path to
+> effectively apply the SW/FIFO mode.
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
----
- .../devicetree/bindings/serial/st,stm32-uart.yaml  | 80 ++++++++++++++++++++++
- .../devicetree/bindings/serial/st,stm32-usart.txt  | 57 ---------------
- 2 files changed, 80 insertions(+), 57 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
- delete mode 100644 Documentation/devicetree/bindings/serial/st,stm32-usart.txt
+Oh, now I see the entire flow.  Not bad.
 
-diff --git a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
-new file mode 100644
-index 000000000000..238c44192d31
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
-@@ -0,0 +1,80 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/serial/st,stm32-uart.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+maintainers:
-+  - Erwan Le Ray <erwan.leray@st.com>
-+
-+title: STMicroelectronics STM32 USART bindings
-+
-+allOf:
-+  - $ref: rs485.yaml
-+
-+properties:
-+  compatible:
-+    enum:
-+      - st,stm32-uart
-+      - st,stm32f7-uart
-+      - st,stm32h7-uart
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+  label:
-+    description: label associated with this uart
-+
-+  st,hw-flow-ctrl:
-+    description: enable hardware flow control
-+    $ref: /schemas/types.yaml#/definitions/flag
-+
-+  dmas:
-+    minItems: 1
-+    maxItems: 2
-+
-+  dma-names:
-+    items:
-+      enum: [ rx, tx ]
-+    minItems: 1
-+    maxItems: 2
-+
-+  wakeup-source: true
-+
-+  rs485-rts-delay: true
-+  rs485-rts-active-low: true
-+  linux,rs485-enabled-at-boot-time: true
-+  rs485-rx-during-tx: true
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/stm32mp1-clks.h>
-+    usart1: serial@40011000 {
-+      compatible = "st,stm32-uart";
-+      reg = <0x40011000 0x400>;
-+      interrupts = <37>;
-+      clocks = <&rcc 0 164>;
-+      dmas = <&dma2 2 4 0x414 0x0>,
-+             <&dma2 7 4 0x414 0x0>;
-+      dma-names = "rx", "tx";
-+      rs485-rts-active-low;
-+    };
-+
-+...
-diff --git a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
-deleted file mode 100644
-index 8620f7fcbd50..000000000000
---- a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
-+++ /dev/null
-@@ -1,57 +0,0 @@
--* STMicroelectronics STM32 USART
--
--Required properties:
--- compatible: can be either:
--  - "st,stm32-uart",
--  - "st,stm32f7-uart",
--  - "st,stm32h7-uart".
--  depending is compatible with stm32(f4), stm32f7 or stm32h7.
--- reg: The address and length of the peripheral registers space
--- interrupts:
--  - The interrupt line for the USART instance,
--  - An optional wake-up interrupt.
--- clocks: The input clock of the USART instance
--
--Optional properties:
--- resets: Must contain the phandle to the reset controller.
--- pinctrl: The reference on the pins configuration
--- st,hw-flow-ctrl: bool flag to enable hardware flow control.
--- rs485-rts-delay, rs485-rx-during-tx, rs485-rts-active-low,
--  linux,rs485-enabled-at-boot-time: see rs485.txt.
--- dmas: phandle(s) to DMA controller node(s). Refer to stm32-dma.txt
--- dma-names: "rx" and/or "tx"
--- wakeup-source: bool flag to indicate this device has wakeup capabilities
--- interrupt-names, if optional wake-up interrupt is used, should be:
--  - "event": the name for the interrupt line of the USART instance
--  - "wakeup" the name for the optional wake-up interrupt
--
--
--Examples:
--usart4: serial@40004c00 {
--	compatible = "st,stm32-uart";
--	reg = <0x40004c00 0x400>;
--	interrupts = <52>;
--	clocks = <&clk_pclk1>;
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_usart4>;
--};
--
--usart2: serial@40004400 {
--	compatible = "st,stm32-uart";
--	reg = <0x40004400 0x400>;
--	interrupts = <38>;
--	clocks = <&clk_pclk1>;
--	st,hw-flow-ctrl;
--	pinctrl-names = "default";
--	pinctrl-0 = <&pinctrl_usart2 &pinctrl_usart2_rtscts>;
--};
--
--usart1: serial@40011000 {
--	compatible = "st,stm32-uart";
--	reg = <0x40011000 0x400>;
--	interrupts = <37>;
--	clocks = <&rcc 0 164>;
--	dmas = <&dma2 2 4 0x414 0x0>,
--	       <&dma2 7 4 0x414 0x0>;
--	dma-names = "rx", "tx";
--};
--- 
-2.15.0
+Seems sane to me from reviewing the code.
 
+>
+> >
+> > > +        * receiver must be reset.
+> > > +        */
+> > > +       msm_write(uart, UART_CR_CMD_RESET_RX, UART_CR);
+> > > +       msm_write(uart, UART_CR_RX_ENABLE, UART_CR);
+> > > +
+> > > +       msm_write(uart, UART_CR_CMD_RESET_STALE_INT, UART_CR);
+> > > +       msm_write(uart, 0xFFFFFF, UARTDM_DMRX);
+> > > +       msm_write(uart, UART_CR_CMD_STALE_EVENT_ENABLE, UART_CR);
+> > > +
+> > > +       /* Re-enable RX interrupts */
+> > > +       msm_port->imr |= (UART_IMR_RXLEV | UART_IMR_RXSTALE);
+> > > +       msm_write(uart, msm_port->imr, UART_IMR);
+> > >  }
+> > >
+> > >  static void msm_stop_rx(struct uart_port *port)
+> > > --
+> > > 2.7.4
+> > >
+>
+> Regards,
+> Loic
