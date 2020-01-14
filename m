@@ -2,162 +2,135 @@ Return-Path: <SRS0=zL5S=3D=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3B53C33C9E
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jan 2020 15:50:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 125CFC33CB3
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jan 2020 17:19:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 964422072B
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jan 2020 15:50:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D153024672
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jan 2020 17:19:28 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kPXEn3PZ"
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="Vjx3E4Jw"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728731AbgANPuj (ORCPT
+        id S1726270AbgANRTY (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Jan 2020 10:50:39 -0500
-Received: from mail-io1-f68.google.com ([209.85.166.68]:38896 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726365AbgANPuj (ORCPT
+        Tue, 14 Jan 2020 12:19:24 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:45524 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728558AbgANRTY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Jan 2020 10:50:39 -0500
-Received: by mail-io1-f68.google.com with SMTP id i7so5908837ioo.5;
-        Tue, 14 Jan 2020 07:50:38 -0800 (PST)
+        Tue, 14 Jan 2020 12:19:24 -0500
+Received: by mail-pf1-f195.google.com with SMTP id 2so6875083pfg.12
+        for <linux-serial@vger.kernel.org>; Tue, 14 Jan 2020 09:19:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rI5lJN6/79ZPLgE/0LMECL73PZbPngS/ckfgAshohJg=;
-        b=kPXEn3PZnAK8MnGou9j8Md3CiPm60AY+9VVvJjREEbaFgdy9BtwCNnqaxHnilhv2u2
-         l/Vr2o76I7z5SSYo3w3KTbkLbtNzqIPfqmmNirkHJQYeXGXjV/7zdHt1SAUrdigI3Wlu
-         W1GbIVGgd+aTegNsfrPuB2l8L98CApW/Qb/HLYn/6V2BDsP74E7mhWe7Yggwx/Jr+JGV
-         yaifa2Gu05EeTpI/k4XdsRF6DftQ/Ma/Z2aa/BAE3WPaJHxNiUV+vzHzF7OVmVlrX2lr
-         /fyAeZJ/eBIuFoFT41gsAFpzoxbB0sxmhjwM1XbmBP8y7MO9nVs0hOcktAVi+iUiG+MT
-         CF5Q==
+        d=arista.com; s=googlenew;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hq/EvgiMsTwoOsHfLL6j/V5911tAUEbQwTvWzcMkXl4=;
+        b=Vjx3E4JwkKqeNef514E2ovt3+pcGt0kgEQ2W5bbWBdVQnRwAEXmmROtG5wMEX8qGaJ
+         OAcGsk/n6T0N+lr8edoCWdlX7fU2cDxx2agWzou93FwA4WvcmvqIXNY+CIFMPttVakmp
+         E3RL/FnLpgQ+zvA0ycAW2ybiZ3ScTlfsJ8RjpvhmPVBoT7zJQel5X6dCgYDtsgpryKa6
+         FC2jceLuGy3UlXNaQAezZ26/sudduCi3K932H9PkeugRA7FWOiJEMKmfjwdi4WUSvple
+         U3Goq3AbiBs2mOSV6a+wGt45TFoXEFuadEYX3yxQCb/SNIQ+vTDlp3bqvJjS/LCSWTLx
+         6YkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rI5lJN6/79ZPLgE/0LMECL73PZbPngS/ckfgAshohJg=;
-        b=oKklUPw05LeGisaHpw9hu6Jh9ALhBJtAe6AcdyWgiAICfk88r7d0BklDMCei+ufdDa
-         hJcykeqeSJwGYo/YrC4bYyzA33kq7XGC0TbXQeSJP3Ct0nYl9st+RytMG+hnrER+3RP5
-         W5YavePqEUP9KgVaOaVTqC8Lkv3OtMfEykzIZ8kG+bRgnWuJ8OhL8cwW4a19E0hZ+hO8
-         NP1iqQqkjjcIORn9HBgG0nOCRLm7S4j2Xwjhn45cGlSAXkAKRy7MaLSX3epEuwbb7geU
-         /S/oxo0Db34gjXZ+jFZbi08WodYbUlw2vVpjeUSQQ746paPi8W3vPJu9tOPaSLnQwZM7
-         qYzg==
-X-Gm-Message-State: APjAAAVdc7urdbREofv+p1ZaUG4yA+oU5Yegt9uC6SSIT/uor3Xkc0T3
-        IyB51GdUJrho6WPJm5j5UzNqApZVCriTm8xQkXeFYw==
-X-Google-Smtp-Source: APXvYqwGR3PKKsZrHoRPMMgc6XZlAt8YbcWMGOsClm4vNCdDiziFEEZvIfh+g4Xq4YQWBU44kBcsCmcqPirtkjNbDU8=
-X-Received: by 2002:a6b:148c:: with SMTP id 134mr17687642iou.178.1579017038380;
- Tue, 14 Jan 2020 07:50:38 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hq/EvgiMsTwoOsHfLL6j/V5911tAUEbQwTvWzcMkXl4=;
+        b=NrEWwYpD3H7yVJj3pCJj92kMRTmVkZ1o5zL/bCv8k2YDl8FJHFGRgaKuDC/UdDIkmV
+         C3ZC+3uVfwfwAQ5vDUsgtMtf07gSziK0mPy871PKfAJQSeU5Jyk3I/TndDB1H0yMf8bo
+         YqQOZWj5j/Cvw8CXjL82aP8b44qNV/VWz6CGe01jVhJBK5WPDe+Ld8PYwWP2JKs0IV1K
+         EivGMGWqIbVfZsYxR00Dq4Dae0Wpg2w6HjRyr7NAgi0Igm0f6hQ1QnI/yPONc5U3kNFZ
+         fauV3g+LBNuTqu3kJmw95GBEJYuTwbK8oZIQ2r3z85XhViElHtOP9X762Z380eat8RcD
+         bJew==
+X-Gm-Message-State: APjAAAVFweQSHoyFZmr368L0oQfvGgevmQ0MZ3mDV7bfjlZWWNTwBJD4
+        6DN+kmnJdG/om+ds2URfXcVOng==
+X-Google-Smtp-Source: APXvYqw4cQ24d4qqEj9mv//Q3oGEq2B5gjJCmq88gtdREVehBYurFyG1jZyK0xA8XfyHNIbJT7usmw==
+X-Received: by 2002:a63:6fca:: with SMTP id k193mr29045745pgc.416.1579022363280;
+        Tue, 14 Jan 2020 09:19:23 -0800 (PST)
+Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
+        by smtp.gmail.com with ESMTPSA id m128sm18965687pfm.183.2020.01.14.09.19.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jan 2020 09:19:22 -0800 (PST)
+From:   Dmitry Safonov <dima@arista.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        Dmitry Safonov <dima@arista.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        Jiri Slaby <jslaby@suse.com>, Joe Perches <joe@perches.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Vasiliy Khoruzhick <vasilykh@arista.com>,
+        linux-serial@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        linux-fsdevel@vger.kernel.org
+Subject: [PATCHv2-next 0/3] serial/sysrq: Add MAGIC_SYSRQ_SERIAL_SEQUENCE
+Date:   Tue, 14 Jan 2020 17:19:09 +0000
+Message-Id: <20200114171912.261787-1-dima@arista.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <1578646684-17379-1-git-send-email-loic.poulain@linaro.org>
- <CAOCk7NrSkaY5xUdA+Q3tCoDv01fVDYpakWmk-RnOuuBKsNN8Jg@mail.gmail.com> <CAMZdPi8ih2LukVsGvG_w2HOSZL9DSbYDmD_U=PTnk96vbE=u8g@mail.gmail.com>
-In-Reply-To: <CAMZdPi8ih2LukVsGvG_w2HOSZL9DSbYDmD_U=PTnk96vbE=u8g@mail.gmail.com>
-From:   Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-Date:   Tue, 14 Jan 2020 08:50:27 -0700
-Message-ID: <CAOCk7Nq721M3HZ0+gtasnQkzq_+b33z5hGkyE6YAa+GJzTyBuQ@mail.gmail.com>
-Subject: Re: [PATCH] tty: serial: msm_serial: RX SW/FIFO mode fallback
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        MSM <linux-arm-msm@vger.kernel.org>, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jan 14, 2020 at 12:52 AM Loic Poulain <loic.poulain@linaro.org> wrote:
->
-> On Mon, 13 Jan 2020 at 20:53, Jeffrey Hugo <jeffrey.l.hugo@gmail.com> wrote:
-> >
-> > On Fri, Jan 10, 2020 at 1:55 AM Loic Poulain <loic.poulain@linaro.org> wrote:
-> > >
-> > > During db410c stress test and when the system is low on memory,
-> > > the UART/console becomes unresponsive and never recover back.
-> > > This has been narrowed down to the msm_start_rx_dma which does
-> > > not manage error cases correctly (e.g. dma mapping failure),
-> > > indeed, when an error happens, dma transfer is simply discarded
-> > > and so never completed, leading to unconfigured RX path.
-> > >
-> > > This patch fixes this issue by switching to SW/FIFO mode in case
-> > > of DMA issue. This mainly consists in resetting the receiver to
-> > > apply RX BAM/DMA disabling change and re-enabling the RX level
-> > > and stale interrupts (previously disabled for DMA transfers).
-> > >
-> > > The DMA will be re-enabled once memory is available since the
-> > > SW/FIFO read function (msm_handle_rx_dm) retries to start dma
-> > > on completion.
-> >
-> > Is there a risk of the same thing occurring in the TX path?
->
-> Yes, but the TX case is already handled. If msm_handle_tx_dma fails,
-> msm_handle_tx_pio is used to directly write the FIFO.
->
-> >
-> > >
-> > > Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-> > > ---
-> > >  drivers/tty/serial/msm_serial.c | 18 +++++++++++++++++-
-> > >  1 file changed, 17 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-> > > index 1cbae07..a63b703 100644
-> > > --- a/drivers/tty/serial/msm_serial.c
-> > > +++ b/drivers/tty/serial/msm_serial.c
-> > > @@ -610,7 +610,7 @@ static void msm_start_rx_dma(struct msm_port *msm_port)
-> > >                                    UARTDM_RX_SIZE, dma->dir);
-> > >         ret = dma_mapping_error(uart->dev, dma->phys);
-> > >         if (ret)
-> > > -               return;
-> > > +               goto sw_mode;
-> > >
-> > >         dma->desc = dmaengine_prep_slave_single(dma->chan, dma->phys,
-> > >                                                 UARTDM_RX_SIZE, DMA_DEV_TO_MEM,
-> > > @@ -661,6 +661,22 @@ static void msm_start_rx_dma(struct msm_port *msm_port)
-> > >         return;
-> > >  unmap:
-> > >         dma_unmap_single(uart->dev, dma->phys, UARTDM_RX_SIZE, dma->dir);
-> > > +
-> > > +sw_mode:
-> > > +       /*
-> > > +        * Switch from DMA to SW/FIFO mode. After clearing Rx BAM (UARTDM_DMEN),
-> >
-> > Where does this clear of UARTDM_DMEN occur?
->
-> The DMEN clear occurs on DMA RX completion (msm_complete_tx_dma()) and
-> set on DMA
-> restart (msm_start_rx_dma). In our case, since DMA start fails, we
-> just reset the RX path to
-> effectively apply the SW/FIFO mode.
+Magic sysrq has proven for Arista usecases to be useful for debugging issues in field, over serial line when the switch is in such bad state
+that it can't accept network connections anymore.
 
-Oh, now I see the entire flow.  Not bad.
+Unfortunately, having sysrq always enabled doesn't work for some
+embedded boards that tend to generate garbage on serial line (including
+BREAKs). Since commit 732dbf3a6104 ("serial: do not accept sysrq
+characters via serial port"), it's possible to keep sysrq enabled, but
+over serial line.
 
-Seems sane to me from reviewing the code.
+Add a way to enable sysrq on a uart, where currently it can be
+constantly either on or off (CONFIG_MAGIC_SYSRQ_SERIAL).
+While doing so, cleanup __sysrq_enabled and serial_core header file.
 
->
-> >
-> > > +        * receiver must be reset.
-> > > +        */
-> > > +       msm_write(uart, UART_CR_CMD_RESET_RX, UART_CR);
-> > > +       msm_write(uart, UART_CR_RX_ENABLE, UART_CR);
-> > > +
-> > > +       msm_write(uart, UART_CR_CMD_RESET_STALE_INT, UART_CR);
-> > > +       msm_write(uart, 0xFFFFFF, UARTDM_DMRX);
-> > > +       msm_write(uart, UART_CR_CMD_STALE_EVENT_ENABLE, UART_CR);
-> > > +
-> > > +       /* Re-enable RX interrupts */
-> > > +       msm_port->imr |= (UART_IMR_RXLEV | UART_IMR_RXSTALE);
-> > > +       msm_write(uart, msm_port->imr, UART_IMR);
-> > >  }
-> > >
-> > >  static void msm_stop_rx(struct uart_port *port)
-> > > --
-> > > 2.7.4
-> > >
->
-> Regards,
-> Loic
+Sending against -next tree as it's based on removing SUPPORT_SYSRQ
+ifdeffery [1].
+
+Changes since v1 [2]:
+- Fix typo in pr_info() message (noticed by Randy Dunlap, thanks)
+- Add SYSRQ_TIMEOUT define for timeout after BREAK and separate removing
+  @unused member of uart_port into cleanup patch (by Greg's review, thanks)
+- Add const qualifier, make uart_try_toggle_sysrq() bool function
+  (Joe Perches, thanks)
+- Fix !CONFIG_SYSRQ and CONFIG_MAGIC_SYSRQ_SERIAL_SEQUENCE=""
+  build failures (kudos to kbuild test robot)
+
+[1]: https://lkml.kernel.org/r/20191213000657.931618-1-dima@arista.com
+[2]: https://lkml.kernel.org/r/20200109215444.95995-1-dima@arista.com
+
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Iurii Zaikin <yzaikin@google.com>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Joe Perches <joe@perches.com>
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: Vasiliy Khoruzhick <vasilykh@arista.com>
+Cc: linux-serial@vger.kernel.org
+
+Thanks,
+             Dmitry
+
+Dmitry Safonov (3):
+  sysctl/sysrq: Remove __sysrq_enabled copy
+  serial/sysrq: Add MAGIC_SYSRQ_SERIAL_SEQUENCE
+  serial_core: Remove unused member in uart_port
+
+ drivers/tty/serial/serial_core.c | 75 +++++++++++++++++++++++++++++---
+ drivers/tty/sysrq.c              |  7 +++
+ include/linux/serial_core.h      |  2 +-
+ include/linux/sysrq.h            |  7 +++
+ kernel/sysctl.c                  | 41 +++++++++--------
+ lib/Kconfig.debug                |  8 ++++
+ 6 files changed, 113 insertions(+), 27 deletions(-)
+
+-- 
+2.24.1
+
