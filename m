@@ -2,80 +2,58 @@ Return-Path: <SRS0=zL5S=3D=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90558C33C9E
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jan 2020 17:47:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F43EC33C9E
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jan 2020 17:51:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5114824672
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Jan 2020 17:47:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D47432465A
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Jan 2020 17:51:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="TKUHo+Aj"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Ws8m8W0V"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728708AbgANRrp (ORCPT
+        id S1727083AbgANRvs (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Jan 2020 12:47:45 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:33483 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726450AbgANRro (ORCPT
+        Tue, 14 Jan 2020 12:51:48 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:32814 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726053AbgANRvs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Jan 2020 12:47:44 -0500
-Received: by mail-pg1-f196.google.com with SMTP id 6so6741031pgk.0
-        for <linux-serial@vger.kernel.org>; Tue, 14 Jan 2020 09:47:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=googlenew;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=z9aCEz62eIPqWkYEPAzhYqTb9kjUCL1iJhBD8cNYmdQ=;
-        b=TKUHo+Aj+kjlb0uBHNvMRHf96HpPIqHIz1NEDF6qdrcFrQpab8pKYemOjkp7TDEg4r
-         bhRcb2VIyazAzu91LL2ZXAsDfHqKJIH6uEH+pEZmIe+CPLagKF9sT0MFv5Xiq9etS718
-         Ix4PuSdqA+XARcCW+Ltu8W5IwF15C601fs5w0Yn5cjAC33IVyD4RugQDCEatuFz/XqKK
-         qdwy5o32UB42RYMHTYOa+a5U7kLKdpizAaTHJsFt9gYyOi71GmImsusXBEylF9YNaUnJ
-         c//8GsFVK31Sy9zMCUc413rEcn1+7CqWMEAwCEtu6pLF0+4gWFi4Mc61bu8UJbjer+4p
-         KvqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=z9aCEz62eIPqWkYEPAzhYqTb9kjUCL1iJhBD8cNYmdQ=;
-        b=p9/mxLKkB5fYC/CO+7mcjCa0dHipI4rDmT1IxDXVvteMqg0eH+tYb6rAJIyyBBDh9B
-         /y3MqtLwdYTUSWzgMrbUh/NYKHF9mHQsISSaPQ8n7ezc3Iq6eEdfx63ZrTz0h71TESpt
-         zhrEZyrHLoHlgFIzFVAgJIufEu3kEbAB7mymJQK1JXirhUzAhP0Ga432GK7IECTnRPnL
-         d7lyEh52+iSOjgTbecM3gYFSM+0vneIiO6LvD7+ghQzqCQb1SxABAzqKxbjikTjvn3dX
-         HX5d7Z7fNTTrSD8N2DZJv4uHCBRlzVgQsMHHA0p7zsSl9frb9COOIR1JQb02BzN0pxb9
-         OxUg==
-X-Gm-Message-State: APjAAAWTVT6ky0Z/51n8HoWGb998TbsfJR9LxpY6R/NmpyszdRI7ec+z
-        smSgKD+BKp0o0HvzyhaVUsF0pg==
-X-Google-Smtp-Source: APXvYqwnchpKqWx5Af5jtLb3j7AjRAMRcr8Fe+OyyZ4zNhY7wOSoZMhRY/MAJG4BvswFYaXVQSLMbg==
-X-Received: by 2002:aa7:9ab6:: with SMTP id x22mr26088212pfi.260.1579024064093;
-        Tue, 14 Jan 2020 09:47:44 -0800 (PST)
-Received: from [10.83.36.153] ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id a185sm18511401pge.15.2020.01.14.09.47.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jan 2020 09:47:43 -0800 (PST)
-Subject: Re: [PATCHv2-next 3/3] serial_core: Remove unused member in uart_port
-To:     Joe Perches <joe@perches.com>, linux-kernel@vger.kernel.org
+        Tue, 14 Jan 2020 12:51:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
+        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=sc1Nx+HAQZISsrmd3+gnlnxtvqsFDI0QD633bhln+Vw=; b=Ws8m8W0VdPB5r8ceyEL0CggzY
+        pip6/AhQ9Mj/yUu4KR2E5bvi+rhUSqsDYpUZyDsrUpvAT4gBTB09jojYdwktpoQmIBOC3jVgAkiGX
+        p38uVHu1Oxdwds2Thne/H1ZHyWI+1c3rJHThx/j1R+sN68n2qn3bMgCdQzkCvNISRlZwb/+3aqPZf
+        OD+jIzeHMniQjm9uRnuXcxyUpVXfxg6+s038vsuTSawmf42QTeSsouYJZFzj2+Pb5DCWinRfu1Ius
+        LBCdgchHvlDQ70mSpq0QF3c240Z80izr53BpNnYn+nyP47qep5kPb/mgnarDpCwXaXdM4kU2t3Q12
+        lIWW+L0Sg==;
+Received: from [2601:1c0:6280:3f0::ed68]
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1irQLz-0000tX-Cs; Tue, 14 Jan 2020 17:51:47 +0000
+Subject: Re: [PATCHv2-next 2/3] serial/sysrq: Add MAGIC_SYSRQ_SERIAL_SEQUENCE
+To:     Dmitry Safonov <dima@arista.com>, linux-kernel@vger.kernel.org
 Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Iurii Zaikin <yzaikin@google.com>,
-        Jiri Slaby <jslaby@suse.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
+        Jiri Slaby <jslaby@suse.com>, Joe Perches <joe@perches.com>,
         Vasiliy Khoruzhick <vasilykh@arista.com>,
         linux-serial@vger.kernel.org
 References: <20200114171912.261787-1-dima@arista.com>
- <20200114171912.261787-4-dima@arista.com>
- <e1b3cccb0814ba4b0c99592715776ed48f343795.camel@perches.com>
-From:   Dmitry Safonov <dima@arista.com>
-Message-ID: <8f11e2fa-495d-fe25-f5e4-52c9580240d7@arista.com>
-Date:   Tue, 14 Jan 2020 17:47:33 +0000
+ <20200114171912.261787-3-dima@arista.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <7a1ba665-fc32-8dd9-ffa1-de71209d0153@infradead.org>
+Date:   Tue, 14 Jan 2020 09:51:46 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.0
 MIME-Version: 1.0
-In-Reply-To: <e1b3cccb0814ba4b0c99592715776ed48f343795.camel@perches.com>
+In-Reply-To: <20200114171912.261787-3-dima@arista.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -84,41 +62,24 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 1/14/20 5:36 PM, Joe Perches wrote:
-> On Tue, 2020-01-14 at 17:19 +0000, Dmitry Safonov wrote:
->> It should remove the align-padding before @name.
-> []
->> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> []
->> @@ -247,7 +247,6 @@ struct uart_port {
->>  
->>  	unsigned char		hub6;			/* this should be in the 8250 driver */
->>  	unsigned char		suspended;
->> -	unsigned char		unused;
-> 
-> I suggest this not be applied as this is just to let
-> readers know that there is an unused 1 byte alignment
-> hole here that could be used for something else.
+On 1/14/20 9:19 AM, Dmitry Safonov wrote:
+> +static bool uart_try_toggle_sysrq(struct uart_port *port, unsigned int ch)
+> +{
+> +	if (ARRAY_SIZE(sysrq_toggle_seq) <= 1)
+> +		return 0;
+> +
+> +	BUILD_BUG_ON(ARRAY_SIZE(sysrq_toggle_seq) >= sizeof(port->sysrq_seq)*U8_MAX);
 
-Heh, 2/3 adds another `unsigned char`, so the neighbours look like:
+That sizeof(...) is confusing (to me).  I would just write:
 
-: unsigned long sysrq;		/* sysrq timeout */
-: unsigned int	sysrq_ch;	/* char for sysrq */
-: unsigned char	has_sysrq;
-: unsigned char	sysrq_seq;	/* index in sysrq_toggle_seq */
-:
-: unsigned char	hub6;		/* this should be in the 8250 driver */
-: unsigned char	suspended;
-: unsigned char	unused;
-: const char	*name;		/* port name */
++	BUILD_BUG_ON(ARRAY_SIZE(sysrq_toggle_seq) >= U8_MAX);
 
-So the hole became 4 bytes on 64-bit.
+> +	if (sysrq_toggle_seq[port->sysrq_seq] != ch) {
+> +		port->sysrq_seq = 0;
+> +		return 0;
+> +	}
 
-I can make it unused[4], but..
+cheers.
+-- 
+~Randy
 
-Separated the patch per Greg's review and I think it makes sense to have
-it separately from 2/3 because last time I've touched it, it actually
-was in use by drivers (regardless the name).
-
-Thanks,
-          Dmitry
