@@ -4,53 +4,54 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF41AC33CB1
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 16:53:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 362EAC33CB7
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 17:15:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B96C121D56
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 16:53:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0BD25246C8
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 17:15:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1579193600;
-	bh=wSffEsO+b1vvjUW27LhIwKxK2Fejp0AGQVP9VscghFE=;
+	s=default; t=1579194925;
+	bh=rrhEdS2kNqQJmlV3Thq14xN8wxbM2iGtBl9NJUCf7u4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=1LDYKNoYKgZIZCv17SIXlCMdjhvK0VXixzrEWMYGDwSGAFOiQuaxGES/5X1+2Tk4j
-	 9Tf591JRmfKkUqQAyiBPF5JuMl/lHOWd4KvcH1m8XQsh5KPZdyS+c2lTSOG9GuZ+f9
-	 jxwcvctAFrnIIT7v9p8AhQ7L15EYcI3A+7lThQ2w=
+	b=zvr/EZW7BTxipKTJVYrhJZrgfstdG2k+DzmNCD2AptrE6L06g7A1Wgg6wIYzRg03K
+	 6mFTNzooLmXlEtv6F+ZBz6MZSFF029aEZNNyDxX45Pyy8kJJpG7BTZQ3pD8W0SHD3g
+	 MORa5je0a6GPExP2eP2aFmxy77l4VJN3eU2Xwzew=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726994AbgAPQxU (ORCPT
+        id S2391072AbgAPROm (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Jan 2020 11:53:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37166 "EHLO mail.kernel.org"
+        Thu, 16 Jan 2020 12:14:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34382 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730749AbgAPQxU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Jan 2020 11:53:20 -0500
+        id S2391067AbgAPROm (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:14:42 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DB2AD22464;
-        Thu, 16 Jan 2020 16:53:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E58BA24690;
+        Thu, 16 Jan 2020 17:14:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579193599;
-        bh=wSffEsO+b1vvjUW27LhIwKxK2Fejp0AGQVP9VscghFE=;
+        s=default; t=1579194881;
+        bh=rrhEdS2kNqQJmlV3Thq14xN8wxbM2iGtBl9NJUCf7u4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HO2STl7H1/4MGm13LHw4gDcMoS6rKdPieQosykdS0ONXW8dpxMZdHvINxcwfGVFj9
-         Fl42Fjc8AncmEevIrio5EX7oBbVygrjC1FZJpPweaQtPmxgfKDHl8wtTDiUQuUZaF8
-         4+mT/itf9TDQxLQhODkIbrXKK1ytvDSVnBVGxSBM=
+        b=h0zos+81pQSw5ZbCtZwpHeusU6qIwyRJLsNImJLc70bLNQoZV209RcQHhpOMU5PXi
+         paeIGCYrgbsfAaZU0tHjoATPFmcsZ9cxno08b25PeuieE6DHxDUay1WnZvlqz2Dugs
+         /VGSlzQg7qb7yMvRXVtg53UHlZBHN93Op2k/CEDg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peng Fan <peng.fan@nxp.com>,
+Cc:     Fabrice Gasnier <fabrice.gasnier@st.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 138/205] tty: serial: imx: use the sg count from dma_map_sg
-Date:   Thu, 16 Jan 2020 11:41:53 -0500
-Message-Id: <20200116164300.6705-138-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 670/671] serial: stm32: fix clearing interrupt error flags
+Date:   Thu, 16 Jan 2020 12:05:08 -0500
+Message-Id: <20200116170509.12787-407-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200116164300.6705-1-sashal@kernel.org>
-References: <20200116164300.6705-1-sashal@kernel.org>
+In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
+References: <20200116170509.12787-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -60,36 +61,50 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
 
-[ Upstream commit 596fd8dffb745afcebc0ec6968e17fe29f02044c ]
+[ Upstream commit 1250ed7114a977cdc2a67a0c09d6cdda63970eb9 ]
 
-The dmaengine_prep_slave_sg needs to use sg count returned
-by dma_map_sg, not use sport->dma_tx_nents, because the return
-value of dma_map_sg is not always same with "nents".
+The interrupt clear flag register is a "write 1 to clear" register.
+So, only writing ones allows to clear flags:
+- Replace buggy stm32_clr_bits() by a simple write to clear error flags
+- Replace useless read/modify/write stm32_set_bits() routine by a
+  simple write to clear TC (transfer complete) flag.
 
-Fixes: b4cdc8f61beb ("serial: imx: add DMA support for imx6q")
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
-Link: https://lore.kernel.org/r/1573108875-26530-1-git-send-email-peng.fan@nxp.com
+Fixes: 4f01d833fdcd ("serial: stm32: fix rx error handling")
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/1574323849-1909-1-git-send-email-fabrice.gasnier@st.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/imx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/stm32-usart.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 5e08f2657b90..34f602c3a882 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -619,7 +619,7 @@ static void imx_uart_dma_tx(struct imx_port *sport)
- 		dev_err(dev, "DMA mapping error for TX.\n");
- 		return;
- 	}
--	desc = dmaengine_prep_slave_sg(chan, sgl, sport->dma_tx_nents,
-+	desc = dmaengine_prep_slave_sg(chan, sgl, ret,
- 					DMA_MEM_TO_DEV, DMA_PREP_INTERRUPT);
- 	if (!desc) {
- 		dma_unmap_sg(dev, sgl, sport->dma_tx_nents,
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index d096e552176c..bce4ac1787ad 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -239,8 +239,8 @@ static void stm32_receive_chars(struct uart_port *port, bool threaded)
+ 		 * cleared by the sequence [read SR - read DR].
+ 		 */
+ 		if ((sr & USART_SR_ERR_MASK) && ofs->icr != UNDEF_REG)
+-			stm32_clr_bits(port, ofs->icr, USART_ICR_ORECF |
+-				       USART_ICR_PECF | USART_ICR_FECF);
++			writel_relaxed(sr & USART_SR_ERR_MASK,
++				       port->membase + ofs->icr);
+ 
+ 		c = stm32_get_char(port, &sr, &stm32_port->last_res);
+ 		port->icount.rx++;
+@@ -409,7 +409,7 @@ static void stm32_transmit_chars(struct uart_port *port)
+ 	if (ofs->icr == UNDEF_REG)
+ 		stm32_clr_bits(port, ofs->isr, USART_SR_TC);
+ 	else
+-		stm32_set_bits(port, ofs->icr, USART_ICR_TCCF);
++		writel_relaxed(USART_ICR_TCCF, port->membase + ofs->icr);
+ 
+ 	if (stm32_port->tx_ch)
+ 		stm32_transmit_chars_dma(port);
 -- 
 2.20.1
 
