@@ -2,205 +2,102 @@ Return-Path: <SRS0=9Zku=3F=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8AF2C33CB6
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 18:48:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD8F2C33CB6
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 18:52:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9055D2064C
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 18:48:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7F7C320663
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 18:52:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1579200767;
+	bh=FD8ZedaDnpHepCcE3/KmJTfI3S/G7ueYrQti2ixlsvw=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=2c0XtLbMnWPs3/NjxjNzuImE6fp3CwGjrcPuUHxt1YN7YaWu3XFvUODBsQmqOgpMN
+	 jjFBiHLRkAQ2+VelH9AMM/QKDbxKPlJoe3/Q6FNNMsIV1YeNDea1cHyA2rVaj1O+Wn
+	 Tk7tUZDOYrnX8jxoHPwnIdzG1srgyE1H22G1FK9w=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390675AbgAPSsn (ORCPT
+        id S2389424AbgAPSwf (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Jan 2020 13:48:43 -0500
-Received: from mga17.intel.com ([192.55.52.151]:61617 "EHLO mga17.intel.com"
+        Thu, 16 Jan 2020 13:52:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42128 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389419AbgAPRJl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:09:41 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 Jan 2020 09:09:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,327,1574150400"; 
-   d="scan'208";a="373386958"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 16 Jan 2020 09:09:32 -0800
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1is8eB-000IAT-Jj; Fri, 17 Jan 2020 01:09:31 +0800
-Date:   Fri, 17 Jan 2020 01:08:37 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 7788f549ed8cfbecd75c10e1a1988812adba49d8
-Message-ID: <5e209895.bCkwDPTlvAfQHxOB%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S1729151AbgAPRI1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:08:27 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3629C206D9;
+        Thu, 16 Jan 2020 17:08:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1579194507;
+        bh=FD8ZedaDnpHepCcE3/KmJTfI3S/G7ueYrQti2ixlsvw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=LcsTXLbvAAnLNTVe6sXeVOOAM1U72oE23z5jLm+ewsuT6ilf4tP3FtJmIV699ZJyK
+         acHVuK2KUaRbQCkwGdZO/OAfZ2Kg186h+e1ikvuQJwIcbViZzs1l9QZp8BaHhJgIG0
+         MPQDCjUoC156p0Rk2LgnNKL7H929CFX18xGs6glU=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Borut Seljak <borut.seljak@t-2.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.19 402/671] serial: stm32: fix a recursive locking in stm32_config_rs485
+Date:   Thu, 16 Jan 2020 12:00:40 -0500
+Message-Id: <20200116170509.12787-139-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
+References: <20200116170509.12787-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
-branch HEAD: 7788f549ed8cfbecd75c10e1a1988812adba49d8  serial_core: Remove unused member in uart_port
+From: Borut Seljak <borut.seljak@t-2.net>
 
-elapsed time: 575m
+[ Upstream commit 707aeea13a9c85520262e11899d86df3c4b48262 ]
 
-configs tested: 142
-configs skipped: 0
+Remove spin_lock_irqsave in stm32_config_rs485, it cause recursive locking.
+Already locked in uart_set_rs485_config.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-sh                               allmodconfig
-sh                                allnoconfig
-sh                          rsk7269_defconfig
-sh                  sh7785lcr_32bit_defconfig
-sh                            titan_defconfig
-um                                  defconfig
-um                             i386_defconfig
-um                           x86_64_defconfig
-alpha                               defconfig
-csky                                defconfig
-nds32                             allnoconfig
-nds32                               defconfig
-x86_64               randconfig-c001-20200116
-x86_64               randconfig-c002-20200116
-x86_64               randconfig-c003-20200116
-i386                 randconfig-c001-20200116
-i386                 randconfig-c002-20200116
-i386                 randconfig-c003-20200116
-mips                           32r2_defconfig
-mips                         64r6el_defconfig
-mips                             allmodconfig
-mips                              allnoconfig
-mips                             allyesconfig
-mips                      fuloong2e_defconfig
-mips                      malta_kvm_defconfig
-sparc                            allyesconfig
-sparc                               defconfig
-sparc64                          allmodconfig
-sparc64                           allnoconfig
-sparc64                          allyesconfig
-sparc64                             defconfig
-h8300                     edosk2674_defconfig
-h8300                    h8300h-sim_defconfig
-h8300                       h8s-sim_defconfig
-m68k                             allmodconfig
-m68k                       m5475evb_defconfig
-m68k                          multi_defconfig
-m68k                           sun3_defconfig
-alpha                randconfig-a001-20200116
-m68k                 randconfig-a001-20200116
-mips                 randconfig-a001-20200116
-nds32                randconfig-a001-20200116
-parisc               randconfig-a001-20200116
-riscv                randconfig-a001-20200116
-c6x                              allyesconfig
-c6x                        evmc6678_defconfig
-nios2                         10m50_defconfig
-nios2                         3c120_defconfig
-openrisc                    or1ksim_defconfig
-openrisc                 simple_smp_defconfig
-xtensa                       common_defconfig
-xtensa                          iss_defconfig
-arc                              allyesconfig
-arc                                 defconfig
-microblaze                      mmu_defconfig
-microblaze                    nommu_defconfig
-powerpc                           allnoconfig
-powerpc                             defconfig
-powerpc                       ppc64_defconfig
-powerpc                          rhel-kconfig
-parisc                            allnoconfig
-parisc                            allyesonfig
-parisc                         b180_defconfig
-parisc                        c3000_defconfig
-parisc                              defconfig
-x86_64                              fedora-25
-x86_64                                  kexec
-x86_64                                    lkp
-x86_64                                   rhel
-x86_64                               rhel-7.6
-i386                             alldefconfig
-i386                              allnoconfig
-i386                             allyesconfig
-i386                                defconfig
-riscv                            allmodconfig
-riscv                             allnoconfig
-riscv                            allyesconfig
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-s390                             alldefconfig
-s390                             allmodconfig
-s390                              allnoconfig
-s390                             allyesconfig
-s390                          debug_defconfig
-s390                                defconfig
-s390                       zfcpdump_defconfig
-x86_64               randconfig-d001-20200116
-x86_64               randconfig-d002-20200116
-x86_64               randconfig-d003-20200116
-i386                 randconfig-d001-20200116
-i386                 randconfig-d002-20200116
-i386                 randconfig-d003-20200116
-ia64                             alldefconfig
-ia64                             allmodconfig
-ia64                              allnoconfig
-ia64                             allyesconfig
-ia64                                defconfig
-x86_64               randconfig-a001-20200116
-x86_64               randconfig-a002-20200116
-x86_64               randconfig-a003-20200116
-i386                 randconfig-a001-20200116
-i386                 randconfig-a002-20200116
-i386                 randconfig-a003-20200116
-arc                  randconfig-a001-20200116
-arm                  randconfig-a001-20200116
-arm64                randconfig-a001-20200116
-ia64                 randconfig-a001-20200116
-powerpc              randconfig-a001-20200116
-sparc                randconfig-a001-20200116
-arc                  randconfig-a001-20200117
-arm                  randconfig-a001-20200117
-arm64                randconfig-a001-20200117
-ia64                 randconfig-a001-20200117
-powerpc              randconfig-a001-20200117
-sparc                randconfig-a001-20200117
-arm                              allmodconfig
-arm                               allnoconfig
-arm                              allyesconfig
-arm                         at91_dt_defconfig
-arm                           efm32_defconfig
-arm                          exynos_defconfig
-arm                        multi_v5_defconfig
-arm                        multi_v7_defconfig
-arm                        shmobile_defconfig
-arm                           sunxi_defconfig
-arm64                            allmodconfig
-arm64                             allnoconfig
-arm64                            allyesconfig
-arm64                               defconfig
-x86_64               randconfig-b001-20200116
-x86_64               randconfig-b002-20200116
-x86_64               randconfig-b003-20200116
-i386                 randconfig-b001-20200116
-i386                 randconfig-b002-20200116
-i386                 randconfig-b003-20200116
-x86_64               randconfig-e001-20200116
-x86_64               randconfig-e002-20200116
-x86_64               randconfig-e003-20200116
-i386                 randconfig-e001-20200116
-i386                 randconfig-e002-20200116
-i386                 randconfig-e003-20200116
-
+Fixes: 1bcda09d291081 ("serial: stm32: add support for RS485 hardware control mode")
+Signed-off-by: Borut Seljak <borut.seljak@t-2.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-0-DAY kernel test infrastructure                 Open Source Technology Center
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
+ drivers/tty/serial/stm32-usart.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index 1334e4293977..d096e552176c 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -105,9 +105,7 @@ static int stm32_config_rs485(struct uart_port *port,
+ 	struct stm32_usart_config *cfg = &stm32_port->info->cfg;
+ 	u32 usartdiv, baud, cr1, cr3;
+ 	bool over8;
+-	unsigned long flags;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
+ 	stm32_clr_bits(port, ofs->cr1, BIT(cfg->uart_enable_bit));
+ 
+ 	port->rs485 = *rs485conf;
+@@ -147,7 +145,6 @@ static int stm32_config_rs485(struct uart_port *port,
+ 	}
+ 
+ 	stm32_set_bits(port, ofs->cr1, BIT(cfg->uart_enable_bit));
+-	spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 	return 0;
+ }
+-- 
+2.20.1
+
