@@ -6,31 +6,31 @@ X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ED8DC33CB1
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 12:58:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10A53C33CB1
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 12:58:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 61F942073A
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 12:58:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C484F2073A
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 12:58:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726084AbgAPM6g (ORCPT
+        id S1726160AbgAPM6m (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Jan 2020 07:58:36 -0500
-Received: from mx2.suse.de ([195.135.220.15]:57834 "EHLO mx2.suse.de"
+        Thu, 16 Jan 2020 07:58:42 -0500
+Received: from mx2.suse.de ([195.135.220.15]:58406 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726018AbgAPM6f (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Jan 2020 07:58:35 -0500
+        id S1726018AbgAPM6m (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Jan 2020 07:58:42 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id D7BA0B18C;
-        Thu, 16 Jan 2020 12:58:32 +0000 (UTC)
-Subject: Re: [PATCH 2/6] serial: 8250_bcm2835aux: Suppress clk_get error on
- -EPROBE_DEFER
+        by mx2.suse.de (Postfix) with ESMTP id 1BA46B514;
+        Thu, 16 Jan 2020 12:58:39 +0000 (UTC)
+Subject: Re: [PATCH 3/6] serial: 8250_bcm2835aux: Suppress register_port error
+ on -EPROBE_DEFER
 To:     Lukas Wunner <lukas@wunner.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-rpi-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
         Jiri Slaby <jslaby@suse.com>
 References: <cover.1579175223.git.lukas@wunner.de>
- <deafc13cdfd7a31c6a81b0db95adcd3599accc26.1579175223.git.lukas@wunner.de>
+ <6aea0eacf3bfa73fe2d81082cc723265413410c8.1579175223.git.lukas@wunner.de>
 From:   Matthias Brugger <mbrugger@suse.com>
 Autocrypt: addr=mbrugger@suse.com; prefer-encrypt=mutual; keydata=
  mQINBFP1zgUBEAC21D6hk7//0kOmsUrE3eZ55kjc9DmFPKIz6l4NggqwQjBNRHIMh04BbCMY
@@ -106,12 +106,12 @@ Autocrypt: addr=mbrugger@suse.com; prefer-encrypt=mutual; keydata=
  UHUEIsTwPWs2Q87k7vjYyrcyAOarX2X5pvMQvpAMADGf2Z3wrCsDdG25w2HztweUNd9QEprt
  JG8GNNzMOD4cQ82Ta7eGvPWPeXauWJDLVR9jHtWT9Ot3BQgmApLxACvwvD1a69jaFKov28SP
  HxUCQ9Y1Y/Ct
-Message-ID: <b9e74d68-6ee7-7687-0786-ca0ff9f9268d@suse.com>
-Date:   Thu, 16 Jan 2020 13:58:31 +0100
+Message-ID: <2c4eb91b-cf1d-b89a-90dc-2ef10d60e40d@suse.com>
+Date:   Thu, 16 Jan 2020 13:58:38 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.0
 MIME-Version: 1.0
-In-Reply-To: <deafc13cdfd7a31c6a81b0db95adcd3599accc26.1579175223.git.lukas@wunner.de>
+In-Reply-To: <6aea0eacf3bfa73fe2d81082cc723265413410c8.1579175223.git.lukas@wunner.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,33 +123,31 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 
 On 16/01/2020 13:14, Lukas Wunner wrote:
-> From: Phil Elwell <phil@raspberrypi.org>
+> Suppress a gratuitous error message if serial8250_register_8250_port()
+> returns -EPROBE_DEFER.
 > 
-> Suppress a gratuitous error message if devm_clk_get() returns
-> -EPROBE_DEFER.
-> 
-> Signed-off-by: Phil Elwell <phil@raspberrypi.org>
-> [lukas: extend commit message]
 > Signed-off-by: Lukas Wunner <lukas@wunner.de>
 
 Reviewed-by: Matthias Brugger <mbrugger@suse.com>
 
 > ---
->  drivers/tty/serial/8250/8250_bcm2835aux.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>  drivers/tty/serial/8250/8250_bcm2835aux.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 > 
 > diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
-> index 4997c519ebb3..33da68341c3a 100644
+> index 33da68341c3a..fb850d0ad643 100644
 > --- a/drivers/tty/serial/8250/8250_bcm2835aux.c
 > +++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
-> @@ -50,7 +50,8 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
->  	data->clk = devm_clk_get(&pdev->dev, NULL);
->  	ret = PTR_ERR_OR_ZERO(data->clk);
->  	if (ret) {
-> -		dev_err(&pdev->dev, "could not get clk: %d\n", ret);
+> @@ -95,8 +95,9 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
+>  	/* register the port */
+>  	ret = serial8250_register_8250_port(&data->uart);
+>  	if (ret < 0) {
+> -		dev_err(&pdev->dev, "unable to register 8250 port - %d\n",
+> -			ret);
 > +		if (ret != -EPROBE_DEFER)
-> +			dev_err(&pdev->dev, "could not get clk: %d\n", ret);
->  		return ret;
+> +			dev_err(&pdev->dev,
+> +				"unable to register 8250 port - %d\n", ret);
+>  		goto dis_clk;
 >  	}
->  
+>  	data->line = ret;
 > 
