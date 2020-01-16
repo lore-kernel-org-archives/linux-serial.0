@@ -2,109 +2,100 @@ Return-Path: <SRS0=9Zku=3F=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8FD8C33CB1
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 13:38:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2969C33CB1
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 16:11:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B533820730
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 13:38:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CC1BE207E0
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 16:11:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726329AbgAPNiS (ORCPT
+        id S1726689AbgAPQLp (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Jan 2020 08:38:18 -0500
-Received: from bmailout3.hostsharing.net ([176.9.242.62]:38819 "EHLO
-        bmailout3.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727040AbgAPNiS (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Jan 2020 08:38:18 -0500
-X-Greylist: delayed 501 seconds by postgrey-1.27 at vger.kernel.org; Thu, 16 Jan 2020 08:38:17 EST
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 040CA100BE781;
-        Thu, 16 Jan 2020 14:29:55 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 99C9DDFE15; Thu, 16 Jan 2020 14:29:54 +0100 (CET)
-Date:   Thu, 16 Jan 2020 14:29:54 +0100
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Ivan Sistik <sistik@3ksolutions.sk>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Eric Anholt <eric@anholt.net>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Subject: Re: [PATCH] tty: serial: amba-pl011: added RS485 support
-Message-ID: <20200116132954.5tcxmezs5qhseiem@wunner.de>
-References: <20200106235203.27256-1-sistik@3ksolutions.sk>
+        Thu, 16 Jan 2020 11:11:45 -0500
+Received: from mx2.suse.de ([195.135.220.15]:50310 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726552AbgAPQLp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Jan 2020 11:11:45 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 62A39B2827;
+        Thu, 16 Jan 2020 16:11:43 +0000 (UTC)
+Message-ID: <592d369511388cba21eb7b42e83a2cd061bb6748.camel@suse.de>
+Subject: Re: [PATCH 0/6] Raspberry Pi auxiliary UART fixes & cleanups
+From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To:     Lukas Wunner <lukas@wunner.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        Martin Sperl <kernel@martin.sperl.org>,
+        Phil Elwell <phil@raspberrypi.org>
+Date:   Thu, 16 Jan 2020 17:11:40 +0100
+In-Reply-To: <cover.1579175223.git.lukas@wunner.de>
+References: <cover.1579175223.git.lukas@wunner.de>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-Dc5Q7Sa/zn13S52AvJ8s"
+User-Agent: Evolution 3.34.3 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200106235203.27256-1-sistik@3ksolutions.sk>
-User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jan 07, 2020 at 12:52:03AM +0100, Ivan Sistik wrote:
-> AMBA PL011 do not have hardware support for RS485. This implementation is
-> for drive enable signal (DE), which switch direction of RS485 driver chip.
 
-So I've implemented rs485 support for amba-pl011.c two years ago
-but the patches need a little more polishing before they can be
-upstreamed and I haven't gotten around to that yet.  I apologize
-that it meant you had to reinvent the wheel.
+--=-Dc5Q7Sa/zn13S52AvJ8s
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-You can find my implementation on this branch:
-https://github.com/RevolutionPi/linux/commits/revpi-4.19
+Hi Lukas,
 
-Specifically this commit:
-https://github.com/RevolutionPi/linux/commit/0099313962a5
+On Thu, 2020-01-16 at 13:14 +0100, Lukas Wunner wrote:
+> Here's a collection of fixes & cleanups for the Raspberry Pi auxiliary UA=
+RT
+> to prepare for upcoming feature work on the driver.
+>=20
+> With compliments from Revolution Pi labs (https://revolution.kunbus.com/)=
+.
+>=20
+> Lukas Wunner (5):
+>   serial: 8250_bcm2835aux: Fix line mismatch on driver unbind
+>   serial: 8250_bcm2835aux: Suppress register_port error on -EPROBE_DEFER
+>   serial: 8250_bcm2835aux: Allocate uart_8250_port on stack
+>   serial: 8250_bcm2835aux: Use generic remapping code
+>   serial: 8250_bcm2835aux: Document struct bcm2835aux_data
+>=20
+> Phil Elwell (1):
+>   serial: 8250_bcm2835aux: Suppress clk_get error on -EPROBE_DEFER
+>=20
+>  drivers/tty/serial/8250/8250_bcm2835aux.c | 50 ++++++++++++-----------
+>  1 file changed, 26 insertions(+), 24 deletions(-)
+>=20
 
-You've used hrtimers in case delays are necessary after assertion
-or before deassertion of RTS.  Note that 8250_port.c already contains
-code for that.  If one wants to go that route, it would probably be
-best to move that code into serial_core.c to make it available to
-non-8250 ports.
+Reviewed-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Tested-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 
-I took a completely different approach:  I converted amba-pl011.c
-to threaded interrupt handling using two kthreads, one for sending,
-one for receiving.  This allows simultaneous writing to and reading
-from the FIFO.  The driver keeps track of the FIFO fill level,
-which allows writing to the FIFO blindly.  The hardirq handler
-updates the fill level counter and wakes either of the IRQ threads.
-
-Once the driver was converted to threaded interrupts, it became
-possible to sleep in the IRQ handler, so I just used msleep()
-for the RTS delays.
-
-The above-linked branch also has rs485 console support for amba-pl011.c
-as well as for the auxiliary UART on the Raspberry Pi.
+Thanks!
+Nicolas
 
 
-> There is missing FIFO empty interrupt in PL011. It is replaced by second
-> hrtimer which is started if there are no more data in port transmit buffer.
+--=-Dc5Q7Sa/zn13S52AvJ8s
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
 
-The tty layer lets you know when there's nothing more to transmit by
-calling the ->stop_tx() hook.  Then you just busy-wait for the FIFO
-to empty before you deassert RTS.
+-----BEGIN PGP SIGNATURE-----
 
-Another idea would be to set TXIFLSEL (TX interrupt FIFO level select)
-in the UARTIFLS register to the lowest possible setting.  Then you'll
-get an interrupt when the TX FIFO only contains 2 bytes (on a PL011
-with 16 byte FIFOs), thus minimizing the busy-wait duration.
+iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl4gizwACgkQlfZmHno8
+x/44TQf+JL0dYjkhVX8F3E4WC2qq+QSapjZBL7Aduww2Of5ey+40V3RtPULmBDLW
+celwER+kH/drcggmYKTD1HY+fj5V8m7kBJDP4kTFgV+634J2hup6MhkXfAcl/XdG
+PEmAzlfkG2P7qflgIFHaEE4wnRSNN+MYL/V5nKXnBWGkUU7fH9cSVtA1njuMCNfg
+ywvHDsj4rqBMU+A4IfAS60ONagDkfQDFmlEICzlT42Irv78NDHJazYwGTl2X0YIZ
+fWCMErJNCkb2NLFp6ShrdyZgPFhs7IWGrqwsuWG1yLTPcSU2bXWeBlG3ORCvwj5f
+TpnVeP2l3iIL5jb60UfQO01z9fq+Rw==
+=iamB
+-----END PGP SIGNATURE-----
 
-Thanks,
+--=-Dc5Q7Sa/zn13S52AvJ8s--
 
-Lukas
