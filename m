@@ -7,48 +7,46 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4927EC33CAF
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 17:31:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74EE6C33CAF
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 17:32:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1DD4E246A3
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 17:31:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4D1F6246A9
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Jan 2020 17:32:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1579195891;
-	bh=rNEdYtx4AyblOlb0zrQkR8wIdxh7NLZf6zh2ptUtJ2E=;
+	s=default; t=1579195961;
+	bh=iKQjfciae3e4C24v33TY+FKm72RIgc+iNVg6JFmP5dI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=AMTbqRJnd0OCWdYNqeKUg7BA/HZeECOLaxafHKrg1/nImIRqbdXfBGeRexuu3jOzk
-	 npVKuD0K+yn68bHAtKpxWp+SBONL2II0s52lAx1wY/geLCVnL5gerOI06SjR51dAf6
-	 h0nXI2d2k768kDXyV8DBAXDS67o7h610AhNTh61I=
+	b=WbBrbFS+4KcadgVr4Fn/ZOEi4J1VbJ24Tl45RlO+c9cXeJpUsUC9QIOdR71w/VpZb
+	 yCiDBstWI06cH6JiEwMUBqcZBrcrEnMiRNjsGTqsDzh8md3bpBe1m/aKcWyEmMrvIg
+	 Ktb8BtCKUguETTZ2isDxrABWamNwak2JH11cPtZA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404745AbgAPRbU (ORCPT
+        id S2404649AbgAPRch (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Jan 2020 12:31:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44472 "EHLO mail.kernel.org"
+        Thu, 16 Jan 2020 12:32:37 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43730 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404713AbgAPRbT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:31:19 -0500
+        id S2404559AbgAPRax (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Jan 2020 12:30:53 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C64FC246CC;
-        Thu, 16 Jan 2020 17:31:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1137824690;
+        Thu, 16 Jan 2020 17:30:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579195878;
-        bh=rNEdYtx4AyblOlb0zrQkR8wIdxh7NLZf6zh2ptUtJ2E=;
+        s=default; t=1579195852;
+        bh=iKQjfciae3e4C24v33TY+FKm72RIgc+iNVg6JFmP5dI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xsW8TlTIiezsK3Zkn0iXsaLfL4kOnc7io+STR0hFNuU3JWwPEjWyB6hqSxCmsxmuC
-         +BDHtiuuNvUglHOp0oNAOlASL5g4KvKyJIG0Lf8BFv3zoS3gvCOk+yTnvDPW9zKoAk
-         vW9RXcizy7lm46ydgFwdenp4kEMepYiAWU0Fv0Mc=
+        b=BpuW5uJQr4Ke+jEWf33HyiUQLw5ylyKs1uUu0+/57fHLI5f6fQ+cehBMxJ3lNQCp8
+         W1E96wAxZ8D6EApzzOaot7mffmaUaTczbEwXf1tUl2ierXa2CCxUZ9ZlcNTKMVawMP
+         IY7I+XCeSdtTFD4iuqejFnplVoYmgJd6M6zNfKBg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Fabrice Gasnier <fabrice.gasnier@st.com>,
+Cc:     Peng Fan <peng.fan@nxp.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.14 371/371] serial: stm32: fix clearing interrupt error flags
-Date:   Thu, 16 Jan 2020 12:24:03 -0500
-Message-Id: <20200116172403.18149-314-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 352/371] tty: serial: pch_uart: correct usage of dma_unmap_sg
+Date:   Thu, 16 Jan 2020 12:23:44 -0500
+Message-Id: <20200116172403.18149-295-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
 References: <20200116172403.18149-1-sashal@kernel.org>
@@ -61,50 +59,68 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
+From: Peng Fan <peng.fan@nxp.com>
 
-[ Upstream commit 1250ed7114a977cdc2a67a0c09d6cdda63970eb9 ]
+[ Upstream commit 74887542fdcc92ad06a48c0cca17cdf09fc8aa00 ]
 
-The interrupt clear flag register is a "write 1 to clear" register.
-So, only writing ones allows to clear flags:
-- Replace buggy stm32_clr_bits() by a simple write to clear error flags
-- Replace useless read/modify/write stm32_set_bits() routine by a
-  simple write to clear TC (transfer complete) flag.
+Per Documentation/DMA-API-HOWTO.txt,
+To unmap a scatterlist, just call:
+	dma_unmap_sg(dev, sglist, nents, direction);
 
-Fixes: 4f01d833fdcd ("serial: stm32: fix rx error handling")
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: stable <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/1574323849-1909-1-git-send-email-fabrice.gasnier@st.com
+.. note::
+
+	The 'nents' argument to the dma_unmap_sg call must be
+	the _same_ one you passed into the dma_map_sg call,
+	it should _NOT_ be the 'count' value _returned_ from the
+	dma_map_sg call.
+
+However in the driver, priv->nent is directly assigned with value
+returned from dma_map_sg, and dma_unmap_sg use priv->nent for unmap,
+this breaks the API usage.
+
+So introduce a new entry orig_nent to remember 'nents'.
+
+Fixes: da3564ee027e ("pch_uart: add multi-scatter processing")
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+Link: https://lore.kernel.org/r/1573623259-6339-1-git-send-email-peng.fan@nxp.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/stm32-usart.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/serial/pch_uart.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index f8f3f8fafd9f..1e854e1851fb 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -132,8 +132,8 @@ static void stm32_receive_chars(struct uart_port *port, bool threaded)
- 		 * cleared by the sequence [read SR - read DR].
- 		 */
- 		if ((sr & USART_SR_ERR_MASK) && ofs->icr != UNDEF_REG)
--			stm32_clr_bits(port, ofs->icr, USART_ICR_ORECF |
--				       USART_ICR_PECF | USART_ICR_FECF);
-+			writel_relaxed(sr & USART_SR_ERR_MASK,
-+				       port->membase + ofs->icr);
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index d9123f995705..15ddcbd1f9d2 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -247,6 +247,7 @@ struct eg20t_port {
+ 	struct dma_chan			*chan_rx;
+ 	struct scatterlist		*sg_tx_p;
+ 	int				nent;
++	int				orig_nent;
+ 	struct scatterlist		sg_rx;
+ 	int				tx_dma_use;
+ 	void				*rx_buf_virt;
+@@ -801,9 +802,10 @@ static void pch_dma_tx_complete(void *arg)
+ 	}
+ 	xmit->tail &= UART_XMIT_SIZE - 1;
+ 	async_tx_ack(priv->desc_tx);
+-	dma_unmap_sg(port->dev, sg, priv->nent, DMA_TO_DEVICE);
++	dma_unmap_sg(port->dev, sg, priv->orig_nent, DMA_TO_DEVICE);
+ 	priv->tx_dma_use = 0;
+ 	priv->nent = 0;
++	priv->orig_nent = 0;
+ 	kfree(priv->sg_tx_p);
+ 	pch_uart_hal_enable_interrupt(priv, PCH_UART_HAL_TX_INT);
+ }
+@@ -1027,6 +1029,7 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
+ 		dev_err(priv->port.dev, "%s:dma_map_sg Failed\n", __func__);
+ 		return 0;
+ 	}
++	priv->orig_nent = num;
+ 	priv->nent = nent;
  
- 		c = stm32_get_char(port, &sr, &stm32_port->last_res);
- 		port->icount.rx++;
-@@ -302,7 +302,7 @@ static void stm32_transmit_chars(struct uart_port *port)
- 	if (ofs->icr == UNDEF_REG)
- 		stm32_clr_bits(port, ofs->isr, USART_SR_TC);
- 	else
--		stm32_set_bits(port, ofs->icr, USART_ICR_TCCF);
-+		writel_relaxed(USART_ICR_TCCF, port->membase + ofs->icr);
- 
- 	if (stm32_port->tx_ch)
- 		stm32_transmit_chars_dma(port);
+ 	for (i = 0; i < nent; i++, sg++) {
 -- 
 2.20.1
 
