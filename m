@@ -2,149 +2,113 @@ Return-Path: <SRS0=tu6m=3G=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BBA2C33CAF
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Jan 2020 00:59:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EC3AC33CB1
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Jan 2020 05:29:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E2E272072E
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Jan 2020 00:58:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D0FFC2072E
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Jan 2020 05:29:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=3ksolutions.sk header.i=@3ksolutions.sk header.b="tD0DF0Jw"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TQqWLK8C"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732387AbgAQA67 (ORCPT
+        id S1725834AbgAQF3i (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Jan 2020 19:58:59 -0500
-Received: from mail.prewas.sk ([212.5.209.170]:65480 "EHLO mail.prewas.sk"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730151AbgAQA67 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Jan 2020 19:58:59 -0500
-dkim-signature: v=1; a=rsa-sha256; d=3ksolutions.sk; s=mail.prewas.sk;
-        c=relaxed/relaxed; q=dns/txt; h=From:Subject:Date:Message-ID:To:CC:MIME-Version:Content-Type:Content-Transfer-Encoding:In-Reply-To:References;
-        bh=joY66v7Mt3fGNDLPvMmR7lEkVuZrgs2jMtaE6jZ8mCk=;
-        b=tD0DF0Jw9lF5zWH+nIiIBYGVDFfn8ar+Kk2PyWQlWUE8+7+Uq3gvSum4Ko11j+v2lyLbrj71grDti0uH52ncIFVT99KNPOA/T66BQpPk7nw71mhow4kFDlB4M9yuXrfiWXXslIHFDQdFkRLaZ9yW5nqy83Fw5qEq8AntrQXjNzeEJNcpq+t5LC5bYTvLyQGNwNQow+4I1O1v6NK7DTpot8zUYtOqAsRtoaLUg256TKywQrhUsmO4IVgcw4
-        cUbVnyB7BKU5xGsTjaM8ou4lS/MIAqbnonWvr2wFKBkXYq8jwLl1BO2kXyvHWralWU/3r+tcqttv/PKmlBXJ0rQjjLjw==
-Received: from [10.0.1.61] (pcfilo.vital.sk [10.0.1.61])
-        by mail.prewas.sk with ESMTPSA
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128)
-        ; Fri, 17 Jan 2020 01:58:57 +0100
-From:   =?UTF-8?B?SXZhbiDFoGnFoXTDrWsgLSAzSyBTb2x1dGlvbnMsIHMuIHIuIG8u?= 
-        <sistik@3ksolutions.sk>
-Subject: Re: [PATCH] tty: serial: amba-pl011: added RS485 support
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Eric Anholt <eric@anholt.net>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-References: <20200106235203.27256-1-sistik@3ksolutions.sk>
- <20200116132954.5tcxmezs5qhseiem@wunner.de>
-Message-ID: <4e082c29-9a47-accc-425b-8d1854fb6ac6@3ksolutions.sk>
-Date:   Fri, 17 Jan 2020 01:58:57 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        Fri, 17 Jan 2020 00:29:38 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:33100 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725813AbgAQF3i (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 17 Jan 2020 00:29:38 -0500
+Received: by mail-lj1-f195.google.com with SMTP id y6so25182844lji.0;
+        Thu, 16 Jan 2020 21:29:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:user-agent:mime-version;
+        bh=u2ShXKy2k7kn6Z4PvqU+3uG8mylbjCNEvUcCrTSLmls=;
+        b=TQqWLK8Cc6iaeyBH1scBvbFDtlYg42Cb7phaV2BVFQXqvwbvwkryR7ZbDpvfRr53tq
+         vO+fXctNG4FvcDYeHZZdx2qq71ErHCPEeDOKNqE7+CIb50ZIfamdUOJjvDZsSPZkcTFV
+         tj5YP6R+ZgN+3YmptTYaf1DFDuK30n06RCiKWePqaJ+hFzFOT8Ic9iSA3akbGVss3jlR
+         +XzmB6JUlEDtLwoqxZ1rSJvn7WQ/YsKzPEfF6bJE+E/pexGQdm2KMZMxI2nmVrxuqPk8
+         3BnVorZ1e3Z8V62Ju9DyS+8SuQxMg4DXb9yBu+WdGDDVzwBlmisnA4RnKTpS91+u3rAc
+         HIbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:user-agent
+         :mime-version;
+        bh=u2ShXKy2k7kn6Z4PvqU+3uG8mylbjCNEvUcCrTSLmls=;
+        b=erO+KBMCyjf8AwdwOYGM4wrJoeKi4J4vuydLY/fckpFErJGpurIuk+Pk1DCe9Sj7IH
+         afHXx8GOl85VBkDJtXJeeHaXRYLMg72k5wj+FDEnpCjyv0aZOrJTGULWssEke/x9Y9aV
+         VDaP974QHFWi2SSER7Drs8GmRciXg0TpvBlQNmJUx5Oe8dll3muklk+SHHqojpiBk2uA
+         0wqw+4ko+u1mnL9JG53BWbH2AJRUznJIA8qoH+nAi43aHuKLWaPNMT1x0ullPqANgbwM
+         i6moCx5yt7fozAJSFSz4ypUkLDxcceJkPlftWg1USM2926wnKDnCA+VST0zMYpT1P8dY
+         pLNA==
+X-Gm-Message-State: APjAAAVfatBPNj+zuuxNpCjwhQPhO1kmND2e+nm0WJ3cTpPA4TAjf/JI
+        ap2xVAJryraI0WCRgMDRero=
+X-Google-Smtp-Source: APXvYqxA5uYD4sYpItoBgbNFyociuqkAECSQWyzhlWPFkgrSZ0cqkqzWXbUYREpwQssy8/98MEbuOw==
+X-Received: by 2002:a2e:8804:: with SMTP id x4mr4590317ljh.187.1579238975166;
+        Thu, 16 Jan 2020 21:29:35 -0800 (PST)
+Received: from osv.localdomain ([89.175.180.246])
+        by smtp.gmail.com with ESMTPSA id b22sm14345507lji.99.2020.01.16.21.29.33
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 16 Jan 2020 21:29:34 -0800 (PST)
+From:   Sergey Organov <sorganov@gmail.com>
+To:     linux-usb@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        =?utf-8?Q?Micha=C5=82_Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        linux-serial@vger.kernel.org, Sergey Organov <sorganov@gmail.com>
+Subject: [PATCH] usb: gadget: serial: fix Tx stall after buffer overflow
+Date:   Fri, 17 Jan 2020 08:29:33 +0300
+Message-ID: <87pnfi8xc2.fsf@osv.gnss.ru>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.4 (gnu/linux)
 MIME-Version: 1.0
-In-Reply-To: <20200116132954.5tcxmezs5qhseiem@wunner.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 16. 1. 2020 at 14:29 Lukas Wunner wrote:
 
-> So I've implemented rs485 support for amba-pl011.c two years ago
-> but the patches need a little more polishing before they can be
-> upstreamed and I haven't gotten around to that yet.  I apologize
-> that it meant you had to reinvent the wheel.
-> You can find my implementation on this branch:
-> https://github.com/RevolutionPi/linux/commits/revpi-4.19
-> 
-> Specifically this commit:
-> https://github.com/RevolutionPi/linux/commit/0099313962a5
+Symptom: application opens /dev/ttyGS0 and starts sending (writing) to
+it while either USB cable is not connected, or nobody listens on the
+other side of the cable. If driver circular buffer overflows before
+connection is established, no data will be written to the USB layer
+until/unless /dev/ttyGS0 is closed and re-opened again by the
+application (the latter besides having no means of being notified about
+the event of establishing of the connection.)
 
-The wheel with octagonal shape is still not perfect. I made it more
-smoother. Your implementation in recommended commit use an active
-waiting (pl011_rs485_tx_start, pl011_rs485_tx_stop) and that could
-cause lots of problems in upper layers of tty driver or application.
-I think you forgot to implement possibility to start TX during
-"delay after send", too.
+Fix: on open and/or connect, kick Tx to flush circular buffer data to
+USB layer.
 
+NOTE: current version of the driver leaks data from one connection to
+another through its internal circular buffer. It might be a good idea
+to clear the buffer on open/close/connect/disconnect, in which case
+the problem this patch solves would have been fixed in a different
+manner. However, not only that's a more dramatic change, but to do it
+right TTY-layer buffers are to be considered as well.
 
-> You've used hrtimers in case delays are necessary after assertion
-> or before deassertion of RTS.  Note that 8250_port.c already contains
-> code for that.  If one wants to go that route, it would probably be
-> best to move that code into serial_core.c to make it available to
-> non-8250 ports.
+Signed-off-by: Sergey Organov <sorganov@gmail.com>
+---
 
-The 8250_port.c use DMA. Do you thin that it shoud be moved to
-serial_core.c? If there will be default implementation of handling
-RTS by serial_core.c using timers, than I will refactor this driver
-to use it.
+ drivers/usb/gadget/function/u_serial.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-
-> I took a completely different approach:  I converted amba-pl011.c
-> to threaded interrupt handling using two kthreads, one for sending,
-> one for receiving.  This allows simultaneous writing to and reading
-> from the FIFO.  The driver keeps track of the FIFO fill level,
-> which allows writing to the FIFO blindly.  The hardirq handler
-> updates the fill level counter and wakes either of the IRQ threads.
-
-I do not see any used thread in link:
-https://github.com/RevolutionPi/linux/commit/0099313962a5
-I am not kernel thread expert but I think that thread is not as
-lightweight as hrtimer. According to my knowledge the hrtimer use some
-kind of interrupt. Compare to this the kthread is created as thread
-with all its scheduling structures. Did you implemented proper thread
-shutdown? Has the thread right priority? There are many questions
-like this...
-
-
-> Once the driver was converted to threaded interrupts, it became
-> possible to sleep in the IRQ handler, so I just used msleep()
-> for the RTS delays.
-
-I think that thread with main purpose to wait is waist of resources.
-This kind of task should be handled by timers. I saw this passion for
-threads in Windows CE 6 drivers. Did you read some of them?
-
-
-> The tty layer lets you know when there's nothing more to transmit by
-> calling the ->stop_tx() hook.  Then you just busy-wait for the FIFO
-> to empty before you deassert RTS.
-
-This would be wasting of CPU time and as I mentioned above it can cause
-problems in above layers. Busy-wait in any method require deep
-knowledge of "caller".
-
-
-> Another idea would be to set TXIFLSEL (TX interrupt FIFO level select)
-> in the UARTIFLS register to the lowest possible setting.  Then you'll
-> get an interrupt when the TX FIFO only contains 2 bytes (on a PL011
-> with 16 byte FIFOs), thus minimizing the busy-wait duration.
-
-TX interrupt is used by other parts of driver. I would not recommend to
-change this behavior without complete analysis of buffer refill timing.
-There can be some devices which can be "IDLE" sensitive. This devices
-would not work properly on higher baud rates.
-I do not use busy-wait in timer tick. If there is data in FIFO I do not
-stop timer and let it tick one more time.
-
-
-Thanks,
-
-Ivan
-
+diff --git a/drivers/usb/gadget/function/u_serial.c b/drivers/usb/gadget/function/u_serial.c
+index f986e5c..d333cda 100644
+--- a/drivers/usb/gadget/function/u_serial.c
++++ b/drivers/usb/gadget/function/u_serial.c
+@@ -563,6 +563,8 @@ static int gs_start_io(struct gs_port *port)
+ 
+        /* unblock any pending writes into our circular buffer */
+        if (started) {
++               pr_debug("gs_start_tx: ttyGS%d\n", port->port_num);
++               gs_start_tx(port);
+                tty_wakeup(port->port.tty);
+        } else {
+                gs_free_requests(ep, head, &port->read_allocated);
+-- 
+2.10.0.1.g57b01a3
