@@ -2,243 +2,139 @@ Return-Path: <SRS0=xhGe=3J=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77B9BC32771
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Jan 2020 21:12:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE5B6C32771
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Jan 2020 23:05:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4A0E722527
-	for <linux-serial@archiver.kernel.org>; Mon, 20 Jan 2020 21:12:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8EF7A22522
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Jan 2020 23:05:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726586AbgATVMp (ORCPT
+        id S1726843AbgATXFe (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 20 Jan 2020 16:12:45 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:39765 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726607AbgATVMp (ORCPT
+        Mon, 20 Jan 2020 18:05:34 -0500
+Received: from smtp1.de.adit-jv.com ([93.241.18.167]:57058 "EHLO
+        smtp1.de.adit-jv.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726752AbgATXFe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 20 Jan 2020 16:12:45 -0500
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1iteLh-0006um-7f; Mon, 20 Jan 2020 22:12:41 +0100
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1iteLc-0002MJ-EP; Mon, 20 Jan 2020 22:12:36 +0100
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andre Renaud <arenaud@designa-electronics.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Andy Duan <fugang.duan@nxp.com>
-Cc:     linux-imx@nxp.com, kernel@pengutronix.de,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: [PATCH] serial: imx: fix a race condition in receive path
-Date:   Mon, 20 Jan 2020 22:12:32 +0100
-Message-Id: <20200120211232.21329-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.24.0
+        Mon, 20 Jan 2020 18:05:34 -0500
+Received: from localhost (smtp1.de.adit-jv.com [127.0.0.1])
+        by smtp1.de.adit-jv.com (Postfix) with ESMTP id 87A943C04C1;
+        Tue, 21 Jan 2020 00:05:31 +0100 (CET)
+Received: from smtp1.de.adit-jv.com ([127.0.0.1])
+        by localhost (smtp1.de.adit-jv.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 2kw2xE_nrUve; Tue, 21 Jan 2020 00:05:26 +0100 (CET)
+Received: from HI2EXCH01.adit-jv.com (hi2exch01.adit-jv.com [10.72.92.24])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtp1.de.adit-jv.com (Postfix) with ESMTPS id 4B12F3C00C5;
+        Tue, 21 Jan 2020 00:05:26 +0100 (CET)
+Received: from lxhi-065.adit-jv.com (10.72.93.66) by HI2EXCH01.adit-jv.com
+ (10.72.92.24) with Microsoft SMTP Server (TLS) id 14.3.468.0; Tue, 21 Jan
+ 2020 00:05:25 +0100
+Date:   Tue, 21 Jan 2020 00:05:22 +0100
+From:   Eugeniu Rosca <erosca@de.adit-jv.com>
+To:     John Ogness <john.ogness@linutronix.de>
+CC:     <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Sanjeev Chugh <sanjeev_chugh@mentor.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Daniel Wang <wonderfly@google.com>,
+        Dean Jenkins <dean_jenkins@mentor.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dirk Behme <dirk.behme@de.bosch.com>,
+        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
+        Jiri Slaby <jslaby@suse.com>,
+        Peter Feiner <pfeiner@google.com>,
+        <linux-serial@vger.kernel.org>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Eugeniu Rosca <erosca@de.adit-jv.com>,
+        Eugeniu Rosca <roscaeugeniu@gmail.com>
+Subject: Re: [RFC PATCH v1 00/25] printk: new implementation
+Message-ID: <20200120230522.GA23636@lxhi-065.adit-jv.com>
+References: <20190212143003.48446-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20190212143003.48446-1-john.ogness@linutronix.de>
+X-Originating-IP: [10.72.93.66]
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The main irq handler function starts by first masking disabled
-interrupts in the status register values to ensure to only handle
-enabled interrupts. This is important as when the RX path in the
-hardware is disabled reading the RX fifo results in an external abort.
+Hello John, all,
 
-This checking must be done under the port lock, otherwise the following
-can happen:
+Cc: Geert, Morimoto-san,
 
-     CPU1                            | CPU2
-                                     |
-     irq triggers as there are chars |
-     in the RX fifo                  |
-				     | grab port lock
-     imx_uart_int finds RRDY enabled |
-     and calls imx_uart_rxint which  |
-     has to wait for port lock       |
-                                     | disable RX (e.g. because we're
-                                     | using RS485 with !RX_DURING_TX)
-                                     |
-                                     | release port lock
-     read from RX fifo with RX       |
-     disabled => exception           |
+On Tue, Feb 12, 2019 at 03:29:38PM +0100, John Ogness wrote:
+> Hello,
+> 
+> As probably many of you are aware, the current printk implementation
+> has some issues. This series (against 5.0-rc6) makes some fundamental
+> changes in an attempt to address these issues. The particular issues I
+> am referring to:
+> 
+> 1. The printk buffer is protected by a global raw spinlock for readers
+>    and writers. This restricts the contexts that are allowed to
+>    access the buffer.
+> 
+> 2. Because of #1, NMI and recursive contexts are handled by deferring
+>    logging/printing to a spinlock-safe context. This means that
+>    messages will not be visible if (for example) the kernel dies in
+>    NMI context and the irq_work mechanism does not survive.
+> 
+> 3. Because of #1, when *not* using features such as PREEMPT_RT, large
+>    latencies exist when printing to slow consoles.
 
-So take the port lock only once in imx_uart_int() instead of in the
-functions called from there.
+This [1] is a fairly old thread, but I only recently stumbled upon it,
+while co-investigating below audio distortions [2] on R-Car3 ARM64
+boards, which can be reproduced by stressing [3] the serial console.
 
-Reported-by: Andre Renaud <arenaud@designa-electronics.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
-Hello,
+The investigation started a few months ago, when users reported
+audio drops during the first seconds of system startup. Only after
+a few weeks it became clear (thanks to some people in Cc) that the
+distortions were contributed by the above-average serial console load
+during the early boot. Once understood, we were able to come up with
+a synthetic test [2-3].
 
-this problem type was addressed already in commits
+I thought it would be interesting to share below reproduction matrix,
+in order to contrast vanilla to linux-rt-devel [4], as well as to
+compare various preemption models.
+ 
+                           | Ser.console  Ser.console
+                           | stressed     at rest or disabled
+      --------------------------------------------
+      v5.5-rc6 (PREEMPT=y) | distorted    clean
+    v5.4.5-rt3 (PREEMPT=y) | distorted    clean
+ v5.4.5-rt3 (PREEMPT_RT=y) | clean        clean
 
-	437768962f75 ("serial: imx: Only handle irqs that are actually enabled")
-	76821e222c18 ("serial: imx: ensure that RX irqs are off if RX is off")
+My feeling is that the results probably do not surprise linux-rt people.
 
-that entered 4.17-rc1. Backporting to older versions would require to
-backport these two, too. I didn't try that, but I think this gets messy,
-so I'd recommend to only backport to 4.19.x and 5.4.x (and 5.5.x
-assuming this patch won't make it into 5.5).
+My first question is, should there be any improvement in the case of
+v5.4.5-rt3 (PREEMPT=y), which I do not sense? I would expect so, based
+on the cover letter of this series (pointing out the advantages of the
+redesigned printk mechanism).
 
-Andre Renaud tested this patch and confirmed it to fix the problem, he
-didn't provide a Tested-by tag, so I didn't add that here.
+And the other question is, how would you, generally speaking, tackle
+the problem, given that backporting the linux-rt patches is *not* an
+option and enabling serial console is a must?
 
-Best regards
-Uwe
+[1] https://lore.kernel.org/lkml/20190212143003.48446-1-john.ogness@linutronix.de/
+[2] H3ULCB> speaker-test -f24_LE -c2 -t wav -Dplughw:rcarsound -b 4000
+    https://vocaroo.com/9NV98mMgdjX
+[3] https://github.com/erosca/linux/tree/stress-serial
+[4] https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git/
 
- drivers/tty/serial/imx.c | 52 ++++++++++++++++++++++++++++++----------
- 1 file changed, 39 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index a9e20e6c63ad..679b2de27c4d 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -700,22 +700,33 @@ static void imx_uart_start_tx(struct uart_port *port)
- 	}
- }
- 
--static irqreturn_t imx_uart_rtsint(int irq, void *dev_id)
-+static irqreturn_t __imx_uart_rtsint(int irq, void *dev_id)
- {
- 	struct imx_port *sport = dev_id;
- 	u32 usr1;
- 
--	spin_lock(&sport->port.lock);
--
- 	imx_uart_writel(sport, USR1_RTSD, USR1);
- 	usr1 = imx_uart_readl(sport, USR1) & USR1_RTSS;
- 	uart_handle_cts_change(&sport->port, !!usr1);
- 	wake_up_interruptible(&sport->port.state->port.delta_msr_wait);
- 
--	spin_unlock(&sport->port.lock);
- 	return IRQ_HANDLED;
- }
- 
-+static irqreturn_t imx_uart_rtsint(int irq, void *dev_id)
-+{
-+	struct imx_port *sport = dev_id;
-+	irqreturn_t ret;
-+
-+	spin_lock(&sport->port.lock);
-+
-+	ret = __imx_uart_rtsint(irq, dev_id);
-+
-+	spin_unlock(&sport->port.lock);
-+
-+	return ret;
-+}
-+
- static irqreturn_t imx_uart_txint(int irq, void *dev_id)
- {
- 	struct imx_port *sport = dev_id;
-@@ -726,14 +737,12 @@ static irqreturn_t imx_uart_txint(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
--static irqreturn_t imx_uart_rxint(int irq, void *dev_id)
-+static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
- {
- 	struct imx_port *sport = dev_id;
- 	unsigned int rx, flg, ignored = 0;
- 	struct tty_port *port = &sport->port.state->port;
- 
--	spin_lock(&sport->port.lock);
--
- 	while (imx_uart_readl(sport, USR2) & USR2_RDR) {
- 		u32 usr2;
- 
-@@ -792,11 +801,26 @@ static irqreturn_t imx_uart_rxint(int irq, void *dev_id)
- 	}
- 
- out:
--	spin_unlock(&sport->port.lock);
- 	tty_flip_buffer_push(port);
-+
- 	return IRQ_HANDLED;
- }
- 
-+static irqreturn_t imx_uart_rxint(int irq, void *dev_id)
-+{
-+	struct imx_port *sport = dev_id;
-+	struct tty_port *port = &sport->port.state->port;
-+	irqreturn_t ret;
-+
-+	spin_lock(&sport->port.lock);
-+
-+	ret = __imx_uart_rxint(irq, dev_id);
-+
-+	spin_unlock(&sport->port.lock);
-+
-+	return ret;
-+}
-+
- static void imx_uart_clear_rx_errors(struct imx_port *sport);
- 
- /*
-@@ -855,6 +879,8 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
- 	unsigned int usr1, usr2, ucr1, ucr2, ucr3, ucr4;
- 	irqreturn_t ret = IRQ_NONE;
- 
-+	spin_lock(&sport->port.lock);
-+
- 	usr1 = imx_uart_readl(sport, USR1);
- 	usr2 = imx_uart_readl(sport, USR2);
- 	ucr1 = imx_uart_readl(sport, UCR1);
-@@ -888,27 +914,25 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
- 		usr2 &= ~USR2_ORE;
- 
- 	if (usr1 & (USR1_RRDY | USR1_AGTIM)) {
--		imx_uart_rxint(irq, dev_id);
-+		__imx_uart_rxint(irq, dev_id);
- 		ret = IRQ_HANDLED;
- 	}
- 
- 	if ((usr1 & USR1_TRDY) || (usr2 & USR2_TXDC)) {
--		imx_uart_txint(irq, dev_id);
-+		imx_uart_transmit_buffer(sport);
- 		ret = IRQ_HANDLED;
- 	}
- 
- 	if (usr1 & USR1_DTRD) {
- 		imx_uart_writel(sport, USR1_DTRD, USR1);
- 
--		spin_lock(&sport->port.lock);
- 		imx_uart_mctrl_check(sport);
--		spin_unlock(&sport->port.lock);
- 
- 		ret = IRQ_HANDLED;
- 	}
- 
- 	if (usr1 & USR1_RTSD) {
--		imx_uart_rtsint(irq, dev_id);
-+		__imx_uart_rtsint(irq, dev_id);
- 		ret = IRQ_HANDLED;
- 	}
- 
-@@ -923,6 +947,8 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
- 		ret = IRQ_HANDLED;
- 	}
- 
-+	spin_unlock(&sport->port.lock);
-+
- 	return ret;
- }
- 
 -- 
-2.24.0
-
+Best Regards,
+Eugeniu
