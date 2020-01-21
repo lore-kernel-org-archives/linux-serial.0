@@ -2,57 +2,57 @@ Return-Path: <SRS0=m7Km=3K=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBCA7C2D0CE
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jan 2020 22:20:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B99FAC2D0CE
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Jan 2020 22:22:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BDD85217F4
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jan 2020 22:20:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8EE2924655
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Jan 2020 22:22:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1579645210;
-	bh=3uzcw75p8PScJ1WChjuOQmCS2ZpxerDxdL48GCpXnp0=;
+	s=default; t=1579645345;
+	bh=d97/IBZtg9IT3MppVd9usNpNw3epuKqXkUTb86TDSD4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=uCka/y18gWUDToR/8zdBH1OY1jiVwWTlt3J+DonkpxvrsGYHjCL6keB4/lOgcTjbp
-	 57CplJKewEXqXVoqw/YegeLsqQQHiGnAeQrG5e5lw6K6C7vRFrtNoYBYbO0Lstbtc/
-	 vzCkyURu0ofAUeI4WuYPfpCgZBCwyNy9JGiFcv/Q=
+	b=F5Ug74ImVv3f2JolbCuTlx08Lue2hw+B1J39Ru7dSPzVv8JzEXICQFaWzvsnqU2rg
+	 /y5fli1bzs/7fc78rjL3MvX3NZkyK4GkoiSIr4VdUIMsPKAZAO5SNNvkyKFgGq24w5
+	 zbsna2KyZrrNNvgsUM+8MFQzl3odRYmbeHymxbPU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729031AbgAUWUK (ORCPT
+        id S1728767AbgAUWWV (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Jan 2020 17:20:10 -0500
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:39590 "EHLO
+        Tue, 21 Jan 2020 17:22:21 -0500
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:34747 "EHLO
         mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728760AbgAUWUK (ORCPT
+        with ESMTP id S1728139AbgAUWWV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Jan 2020 17:20:10 -0500
-Received: by mail-oi1-f195.google.com with SMTP id z2so4206589oih.6;
-        Tue, 21 Jan 2020 14:20:09 -0800 (PST)
+        Tue, 21 Jan 2020 17:22:21 -0500
+Received: by mail-oi1-f195.google.com with SMTP id l136so4229441oig.1;
+        Tue, 21 Jan 2020 14:22:20 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=JYjL5Dj4sHium7MXkG5wUfXThgHrFk9aKNPtUfH5UZc=;
-        b=LuxAJOSCVwPh9i2HOnCZn3xqV3Yt7+t5+U5WeARTAVgEXTkTJGsdLJubR03kpvyKnK
-         Op9kdntraDRJO1nEeC1Ae/XbWPqwXN5Bbm11MKsx600vlwLxFzgJ8zDGywzFxHApWMxJ
-         6V8pGLqG7+aE6gVvlsOJO2zC/phOg3uvMkdp8bd4/aplnKl1A05QpuOI+hjQIO38BL+F
-         n8B9cT1KH7TLo/rHoxoOFPjrdcJ1Fc4KMJF5sDnSHFlIRoNyqu3F6fSoSQB7Hqx5a+3D
-         NNeunCl61djJoq3Cb17Q3S+Ph9aRxe7YkCp8oUHVLb9X7+FjAHlYsUNvPpfJ0VaNBa5n
-         jWYw==
-X-Gm-Message-State: APjAAAWLAVXMzruSKEKtGBIWlVh/8IknN23L8F82o6qJXfN44fKBV/Oj
-        Jj3mJ6D5g5rCeNiQX8f4bw==
-X-Google-Smtp-Source: APXvYqyA0cFBVl5WxqRWUAajmwQG24um1yPraaZ5cnlqeSKW61xBpYW8L1xuloSvzFgFL8RaFKDW6w==
-X-Received: by 2002:aca:5588:: with SMTP id j130mr4595173oib.122.1579645208961;
-        Tue, 21 Jan 2020 14:20:08 -0800 (PST)
+        bh=qQ3ESJiwe24A1xRRFdOQ68BgNu0jHa+2w0EJEUQi0CQ=;
+        b=eEpHeoG0e8ktLhNa1jtFubcJGrUpTDQDhtJZLV26rOaTa0kEEjuigzqAgHhO0AS4RP
+         Ai9AhDYgaeyeljOfRD3QXXOVYvgRpRNiitPYF0Lml1avoxJvz2aEYutnbG9rsXid37Uq
+         nRMEXTUhDdjHAcG3dhE9DRYxj8cUo2r0TjH+lM3SWkaadPfTkRlciHV+fxROhshFHQrW
+         HBKT7z87ALcqghsbRJPRO9awsbA4fIwCu6nnRSuy+H+kyO1+xmdB4E3gbQjmzzMME9Ik
+         sikglUHgT9Bhm69TPL/3pVfnHnPKxI2ynPm2IH5uZRGbxEtboayieJ9jjIuZe6lCEyDF
+         y9Hg==
+X-Gm-Message-State: APjAAAVC0KLq8ZyEgM37WGvVVfawf0Wy92df9t7uXbsrRcccYM1f/Xtr
+        dTE/hU7bwI/MeELYZBDpJg==
+X-Google-Smtp-Source: APXvYqxtTBp1m0NoVYXgYISnqaA0oCc25esO/7iHUU9wqcKpSAWyGjQXwz90q4B5a30iOmY5CpuOCw==
+X-Received: by 2002:a05:6808:1c6:: with SMTP id x6mr4687242oic.49.1579645340281;
+        Tue, 21 Jan 2020 14:22:20 -0800 (PST)
 Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id d7sm12406255oic.46.2020.01.21.14.20.07
+        by smtp.gmail.com with ESMTPSA id m185sm12426354oia.26.2020.01.21.14.22.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jan 2020 14:20:08 -0800 (PST)
-Received: (nullmailer pid 8896 invoked by uid 1000);
-        Tue, 21 Jan 2020 22:20:07 -0000
-Date:   Tue, 21 Jan 2020 16:20:07 -0600
+        Tue, 21 Jan 2020 14:22:19 -0800 (PST)
+Received: (nullmailer pid 11864 invoked by uid 1000);
+        Tue, 21 Jan 2020 22:22:18 -0000
+Date:   Tue, 21 Jan 2020 16:22:18 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Benjamin Gaignard <benjamin.gaignard@st.com>
 Cc:     gregkh@linuxfoundation.org, mark.rutland@arm.com,
@@ -62,125 +62,32 @@ Cc:     gregkh@linuxfoundation.org, mark.rutland@arm.com,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, fabrice.gasnier@st.com,
         erwan.leray@st.com
-Subject: Re: [PATCH 1/2] dt-bindings: serial: Convert rs485 bindings to
+Subject: Re: [PATCH 2/2] dt-bindings: serial: Convert STM32 UART to
  json-schema
-Message-ID: <20200121222007.GA1686@bogus>
+Message-ID: <20200121222218.GA9196@bogus>
 References: <20200114123329.3792-1-benjamin.gaignard@st.com>
- <20200114123329.3792-2-benjamin.gaignard@st.com>
+ <20200114123329.3792-3-benjamin.gaignard@st.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200114123329.3792-2-benjamin.gaignard@st.com>
+In-Reply-To: <20200114123329.3792-3-benjamin.gaignard@st.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Jan 14, 2020 at 01:33:28PM +0100, Benjamin Gaignard wrote:
-> Convert rs485 binding to yaml style file.
+On Tue, Jan 14, 2020 at 01:33:29PM +0100, Benjamin Gaignard wrote:
+> Convert STM32 UART bindings to json-schema.
 > 
 > Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
 > ---
->  Documentation/devicetree/bindings/serial/rs485.txt | 32 +--------------
->  .../devicetree/bindings/serial/rs485.yaml          | 45 ++++++++++++++++++++++
->  2 files changed, 46 insertions(+), 31 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/serial/rs485.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/rs485.txt b/Documentation/devicetree/bindings/serial/rs485.txt
-> index b92592dff6dd..a7fe93efc4a5 100644
-> --- a/Documentation/devicetree/bindings/serial/rs485.txt
-> +++ b/Documentation/devicetree/bindings/serial/rs485.txt
-> @@ -1,31 +1 @@
-> -* RS485 serial communications
-> -
-> -The RTS signal is capable of automatically controlling line direction for
-> -the built-in half-duplex mode.
-> -The properties described hereafter shall be given to a half-duplex capable
-> -UART node.
-> -
-> -Optional properties:
-> -- rs485-rts-delay: prop-encoded-array <a b> where:
-> -  * a is the delay between rts signal and beginning of data sent in milliseconds.
-> -      it corresponds to the delay before sending data.
-> -  * b is the delay between end of data sent and rts signal in milliseconds
-> -      it corresponds to the delay after sending data and actual release of the line.
-> -  If this property is not specified, <0 0> is assumed.
-> -- rs485-rts-active-low: drive RTS low when sending (default is high).
-> -- linux,rs485-enabled-at-boot-time: empty property telling to enable the rs485
-> -  feature at boot time. It can be disabled later with proper ioctl.
-> -- rs485-rx-during-tx: empty property that enables the receiving of data even
-> -  while sending data.
-> -
-> -RS485 example for Atmel USART:
-> -	usart0: serial@fff8c000 {
-> -		compatible = "atmel,at91sam9260-usart";
-> -		reg = <0xfff8c000 0x4000>;
-> -		interrupts = <7>;
-> -		atmel,use-dma-rx;
-> -		atmel,use-dma-tx;
-> -		linux,rs485-enabled-at-boot-time;
-> -		rs485-rts-delay = <0 200>;		// in milliseconds
-> -	};
-> -
-> +See rs485.yaml
-> diff --git a/Documentation/devicetree/bindings/serial/rs485.yaml b/Documentation/devicetree/bindings/serial/rs485.yaml
-> new file mode 100644
-> index 000000000000..65c6a98969a8
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/rs485.yaml
-> @@ -0,0 +1,45 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/rs485.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: RS485 serial communications Bindings
-> +
-> +description: The RTS signal is capable of automatically controlling
-> +             line direction for the built-in half-duplex mode.
-> +             The properties described hereafter shall be given to a
-> +             half-duplex capable UART node.
-> +
-> +maintainers:
-> +  -  Rob Herring <robh@kernel.org>
-> +
-> +properties:
-> +  rs485-rts-delay:
-> +    description: prop-encoded-array <a b>
-> +    allOf:
-> +      - $ref: /schemas/types.yaml#/definitions/uint32-matrix
-> +      - items:
-> +          items:
-> +            - description:
-> +                Delay between rts signal and beginning of data sent in milliseconds.
-> +                It corresponds to the delay before sending data.
-> +              $ref: "/schemas/types.yaml#/definitions/uint32"
+>  .../devicetree/bindings/serial/st,stm32-uart.yaml  | 80 ++++++++++++++++++++++
+>  .../devicetree/bindings/serial/st,stm32-usart.txt  | 57 ---------------
+>  2 files changed, 80 insertions(+), 57 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/serial/st,stm32-usart.txt
 
-This is not correct. The types only apply to whole properties.
+Looks fine. Will pick up when you respin patch 1.
 
-Is there a maximum? Seems like 1 sec would be more than anyone would 
-ever want?
-
-> +              default: 0
-> +            - description:
-> +                Delay between end of data sent and rts signal in milliseconds.
-> +                It corresponds to the delay after sending data and actual release of the line.
-> +              $ref: "/schemas/types.yaml#/definitions/uint32"
-> +              default: 0
-> +
-> +  rs485-rts-active-low:
-> +    description: drive RTS low when sending (default is high).
-> +    $ref: /schemas/types.yaml#/definitions/flag
-> +
-> +  linux,rs485-enabled-at-boot-time:
-> +    description: enables the rs485 feature at boot time. It can be disabled later with proper ioctl.
-> +    $ref: /schemas/types.yaml#/definitions/flag
-> +
-> +  rs485-rx-during-tx:
-> +   description: enables the receiving of data even while sending data.
-> +   $ref: /schemas/types.yaml#/definitions/flag
-> -- 
-> 2.15.0
-> 
+Rob
