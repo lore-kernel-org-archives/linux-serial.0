@@ -2,232 +2,134 @@ Return-Path: <SRS0=m7Km=3K=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3115C33CAA
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jan 2020 07:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6575C2D0CE
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Jan 2020 09:00:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CFF8422522
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jan 2020 07:17:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8F214217F4
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Jan 2020 09:00:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728741AbgAUHRW (ORCPT
+        id S1727360AbgAUJAD (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Jan 2020 02:17:22 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:59923 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbgAUHRW (ORCPT
+        Tue, 21 Jan 2020 04:00:03 -0500
+Received: from bmailout2.hostsharing.net ([83.223.78.240]:33871 "EHLO
+        bmailout2.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725789AbgAUJAD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Jan 2020 02:17:22 -0500
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1itnmm-0000az-78; Tue, 21 Jan 2020 08:17:16 +0100
-Received: from ukl by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1itnmk-0005Fy-Au; Tue, 21 Jan 2020 08:17:14 +0100
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andre Renaud <arenaud@designa-electronics.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Andy Duan <fugang.duan@nxp.com>
-Cc:     linux-imx@nxp.com, kernel@pengutronix.de,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: [PATCH v2] serial: imx: fix a race condition in receive path
-Date:   Tue, 21 Jan 2020 08:17:02 +0100
-Message-Id: <20200121071702.20150-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200120211232.21329-1-u.kleine-koenig@pengutronix.de>
-References: <20200120211232.21329-1-u.kleine-koenig@pengutronix.de>
+        Tue, 21 Jan 2020 04:00:03 -0500
+X-Greylist: delayed 611 seconds by postgrey-1.27 at vger.kernel.org; Tue, 21 Jan 2020 04:00:01 EST
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
+        by bmailout2.hostsharing.net (Postfix) with ESMTPS id 9A15028005389;
+        Tue, 21 Jan 2020 09:49:48 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 6406035EEC; Tue, 21 Jan 2020 09:49:48 +0100 (CET)
+Date:   Tue, 21 Jan 2020 09:49:48 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Ivan
+         =?iso-8859-15?B?pmmodO1rIC0gM0sgU29sdXRpb25zLCBzLiByLiBvLg==?= 
+        <sistik@3ksolutions.sk>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Eric Anholt <eric@anholt.net>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rpi-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Subject: Re: [PATCH] tty: serial: amba-pl011: added RS485 support
+Message-ID: <20200121084948.7d6om2fgaa7ikmof@wunner.de>
+References: <20200106235203.27256-1-sistik@3ksolutions.sk>
+ <20200116132954.5tcxmezs5qhseiem@wunner.de>
+ <4e082c29-9a47-accc-425b-8d1854fb6ac6@3ksolutions.sk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+In-Reply-To: <4e082c29-9a47-accc-425b-8d1854fb6ac6@3ksolutions.sk>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The main irq handler function starts by first masking disabled
-interrupts in the status register values to ensure to only handle
-enabled interrupts. This is important as when the RX path in the
-hardware is disabled reading the RX fifo results in an external abort.
+On Fri, Jan 17, 2020 at 01:58:57AM +0100, Ivan ¦i¨tík - 3K Solutions, s. r. o. wrote:
+> On 16. 1. 2020 at 14:29 Lukas Wunner wrote:
+> > So I've implemented rs485 support for amba-pl011.c two years ago
+> > but the patches need a little more polishing before they can be
+> > upstreamed and I haven't gotten around to that yet.  I apologize
+> > that it meant you had to reinvent the wheel.
+> > You can find my implementation on this branch:
+> > https://github.com/RevolutionPi/linux/commits/revpi-4.19
+> > 
+> > Specifically this commit:
+> > https://github.com/RevolutionPi/linux/commit/0099313962a5
+> 
+> The wheel with octagonal shape is still not perfect. I made it more
+> smoother. Your implementation in recommended commit use an active
+> waiting (pl011_rs485_tx_start, pl011_rs485_tx_stop) and that could
+> cause lots of problems in upper layers of tty driver or application.
+> I think you forgot to implement possibility to start TX during
+> "delay after send", too.
 
-This checking must be done under the port lock, otherwise the following
-can happen:
+Are these delays ever set to a value > 0 in practice?  struct serial_rs485
+supports millisecond delays, but all RS485 transceivers I know of only
+require delays in the microsecond or nanosecond range.  It was likely
+a mistake that the delays were originally declared as millisecond values.
+However we can't easily change that now because it's ABI and thus set in
+stone.
 
-     CPU1                            | CPU2
-                                     |
-     irq triggers as there are chars |
-     in the RX fifo                  |
-				     | grab port lock
-     imx_uart_int finds RRDY enabled |
-     and calls imx_uart_rxint which  |
-     has to wait for port lock       |
-                                     | disable RX (e.g. because we're
-                                     | using RS485 with !RX_DURING_TX)
-                                     |
-                                     | release port lock
-     read from RX fifo with RX       |
-     disabled => exception           |
+E.g. the MAXM22510 has a "Driver Enable to Output" delay of 2.540 usec.
+In practice no delay is necessary at all because the MMIO operations
+performed by the driver take longer:
 
-So take the port lock only once in imx_uart_int() instead of in the
-functions called from there.
+https://datasheets.maximintegrated.com/en/ds/MAXM22510-MAXM22511.pdf
 
-Reported-by: Andre Renaud <arenaud@designa-electronics.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Uwe Kleine-KÃ¶nig <u.kleine-koenig@pengutronix.de>
----
-Changes since v1, sent with
-Message-Id: <20200120211232.21329-1-u.kleine-koenig@pengutronix.de>:
 
- - Fix
-	drivers/tty/serial/imx.c:812:19: warning: unused variable 'port' [-Wunused-variable]
+> > I took a completely different approach:  I converted amba-pl011.c
+> > to threaded interrupt handling using two kthreads, one for sending,
+> > one for receiving.  This allows simultaneous writing to and reading
+> > from the FIFO.  The driver keeps track of the FIFO fill level,
+> > which allows writing to the FIFO blindly.  The hardirq handler
+> > updates the fill level counter and wakes either of the IRQ threads.
+> 
+> I do not see any used thread in link:
+> https://github.com/RevolutionPi/linux/commit/0099313962a5
+> I am not kernel thread expert but I think that thread is not as
+> lightweight as hrtimer. According to my knowledge the hrtimer use some
+> kind of interrupt. Compare to this the kthread is created as thread
+> with all its scheduling structures. Did you implemented proper thread
+> shutdown? Has the thread right priority? There are many questions
+> like this...
 
- drivers/tty/serial/imx.c | 51 ++++++++++++++++++++++++++++++----------
- 1 file changed, 38 insertions(+), 13 deletions(-)
+You're not seeing the conversion to threaded IRQ handling because it's
+in separate commits on the above-linked branch, e.g.
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index a9e20e6c63ad..dd3120c5db2b 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -700,22 +700,33 @@ static void imx_uart_start_tx(struct uart_port *port)
- 	}
- }
- 
--static irqreturn_t imx_uart_rtsint(int irq, void *dev_id)
-+static irqreturn_t __imx_uart_rtsint(int irq, void *dev_id)
- {
- 	struct imx_port *sport = dev_id;
- 	u32 usr1;
- 
--	spin_lock(&sport->port.lock);
--
- 	imx_uart_writel(sport, USR1_RTSD, USR1);
- 	usr1 = imx_uart_readl(sport, USR1) & USR1_RTSS;
- 	uart_handle_cts_change(&sport->port, !!usr1);
- 	wake_up_interruptible(&sport->port.state->port.delta_msr_wait);
- 
--	spin_unlock(&sport->port.lock);
- 	return IRQ_HANDLED;
- }
- 
-+static irqreturn_t imx_uart_rtsint(int irq, void *dev_id)
-+{
-+	struct imx_port *sport = dev_id;
-+	irqreturn_t ret;
-+
-+	spin_lock(&sport->port.lock);
-+
-+	ret = __imx_uart_rtsint(irq, dev_id);
-+
-+	spin_unlock(&sport->port.lock);
-+
-+	return ret;
-+}
-+
- static irqreturn_t imx_uart_txint(int irq, void *dev_id)
- {
- 	struct imx_port *sport = dev_id;
-@@ -726,14 +737,12 @@ static irqreturn_t imx_uart_txint(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
--static irqreturn_t imx_uart_rxint(int irq, void *dev_id)
-+static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
- {
- 	struct imx_port *sport = dev_id;
- 	unsigned int rx, flg, ignored = 0;
- 	struct tty_port *port = &sport->port.state->port;
- 
--	spin_lock(&sport->port.lock);
--
- 	while (imx_uart_readl(sport, USR2) & USR2_RDR) {
- 		u32 usr2;
- 
-@@ -792,11 +801,25 @@ static irqreturn_t imx_uart_rxint(int irq, void *dev_id)
- 	}
- 
- out:
--	spin_unlock(&sport->port.lock);
- 	tty_flip_buffer_push(port);
-+
- 	return IRQ_HANDLED;
- }
- 
-+static irqreturn_t imx_uart_rxint(int irq, void *dev_id)
-+{
-+	struct imx_port *sport = dev_id;
-+	irqreturn_t ret;
-+
-+	spin_lock(&sport->port.lock);
-+
-+	ret = __imx_uart_rxint(irq, dev_id);
-+
-+	spin_unlock(&sport->port.lock);
-+
-+	return ret;
-+}
-+
- static void imx_uart_clear_rx_errors(struct imx_port *sport);
- 
- /*
-@@ -855,6 +878,8 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
- 	unsigned int usr1, usr2, ucr1, ucr2, ucr3, ucr4;
- 	irqreturn_t ret = IRQ_NONE;
- 
-+	spin_lock(&sport->port.lock);
-+
- 	usr1 = imx_uart_readl(sport, USR1);
- 	usr2 = imx_uart_readl(sport, USR2);
- 	ucr1 = imx_uart_readl(sport, UCR1);
-@@ -888,27 +913,25 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
- 		usr2 &= ~USR2_ORE;
- 
- 	if (usr1 & (USR1_RRDY | USR1_AGTIM)) {
--		imx_uart_rxint(irq, dev_id);
-+		__imx_uart_rxint(irq, dev_id);
- 		ret = IRQ_HANDLED;
- 	}
- 
- 	if ((usr1 & USR1_TRDY) || (usr2 & USR2_TXDC)) {
--		imx_uart_txint(irq, dev_id);
-+		imx_uart_transmit_buffer(sport);
- 		ret = IRQ_HANDLED;
- 	}
- 
- 	if (usr1 & USR1_DTRD) {
- 		imx_uart_writel(sport, USR1_DTRD, USR1);
- 
--		spin_lock(&sport->port.lock);
- 		imx_uart_mctrl_check(sport);
--		spin_unlock(&sport->port.lock);
- 
- 		ret = IRQ_HANDLED;
- 	}
- 
- 	if (usr1 & USR1_RTSD) {
--		imx_uart_rtsint(irq, dev_id);
-+		__imx_uart_rtsint(irq, dev_id);
- 		ret = IRQ_HANDLED;
- 	}
- 
-@@ -923,6 +946,8 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
- 		ret = IRQ_HANDLED;
- 	}
- 
-+	spin_unlock(&sport->port.lock);
-+
- 	return ret;
- }
- 
--- 
-2.25.0
+serial: pl011: Use threaded interrupt for RX
+https://github.com/RevolutionPi/linux/commit/4f3a6e9ea335
 
+serial: pl011: Use threaded interrupt for TX
+https://github.com/RevolutionPi/linux/commit/fae65b5a2c5b
+
+I implemented threaded IRQ handling to maximize TX throughput
+and minimize RX FIFO overruns at high baudrates.  Additionally,
+threaded IRQ handling integrates more nicely with the realtime
+patch set.  So the ability to simply use msleep() for rs485 delays
+is merely a by-product.
+
+The IRQ threads run at RT priority -50 with SCHED_FIFO policy just
+as any other IRQ thread and user space may adjust that with chrt(1)
+if desired.
+
+Thanks,
+
+Lukas
