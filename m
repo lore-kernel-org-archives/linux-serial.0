@@ -2,79 +2,99 @@ Return-Path: <SRS0=m7Km=3K=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0851C2D0CE
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jan 2020 15:41:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CE79C2D0CE
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Jan 2020 15:46:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B613622314
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Jan 2020 15:41:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1579621290;
-	bh=xtAA8JLKZxKLNCT5HJ4l/7Is0LVHRkLVFznF3Lm6c6g=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=sWUBIHdc57NK4znDKnFMQDRuIfY7ofvDWFKFQuXJnbvL10WXjhxhQ8sgNtyWnWZSw
-	 1v0/XR5kF32qIM9E1Psd9Wu2foybkL3GYW5RtkHs1NliPa6rypiL+8zZ4iTSprek0X
-	 4DKEKpDZgqgYb7R1GU+N0AiPoLVDVMhzPA81Ditk=
+	by mail.kernel.org (Postfix) with ESMTP id 6E2E422314
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Jan 2020 15:46:29 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="he4bJsl5"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729164AbgAUPlF (ORCPT
+        id S1729165AbgAUPq3 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Jan 2020 10:41:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34022 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729134AbgAUPlE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Jan 2020 10:41:04 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EED8622314;
-        Tue, 21 Jan 2020 15:41:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579621264;
-        bh=xtAA8JLKZxKLNCT5HJ4l/7Is0LVHRkLVFznF3Lm6c6g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MsLcjvNrhNneHT6h/NsGU0L2bu3iTSaeR2GK+srNwZAjTe/vmdzu9A7c3b8P+zOwA
-         Pkj67J2Wj+3qXsvKNFRpqLY/uNAx6z1akEv13ooAGf2jxjwt7uJbVyvzllB/TlEDBd
-         wQV+BKE5xihmFONQS0o/BaYy1qMNZeJLiQrngu2s=
-Date:   Tue, 21 Jan 2020 16:41:02 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jon Hunter <jonathanh@nvidia.com>
-Cc:     Jiri Slaby <jslaby@suse.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-tegra@vger.kernel.org, Jeff Brasen <jbrasen@nvidia.com>
+        Tue, 21 Jan 2020 10:46:29 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:1511 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729121AbgAUPq2 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 21 Jan 2020 10:46:28 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5e271cc50001>; Tue, 21 Jan 2020 07:46:13 -0800
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Tue, 21 Jan 2020 07:46:27 -0800
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Tue, 21 Jan 2020 07:46:27 -0800
+Received: from [10.21.133.51] (172.20.13.39) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 21 Jan
+ 2020 15:46:24 +0000
 Subject: Re: [PATCH] serial: 8250_tegra: Create Tegra specific 8250 driver
-Message-ID: <20200121154102.GA588392@kroah.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Jiri Slaby <jslaby@suse.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>, Jeff Brasen <jbrasen@nvidia.com>
 References: <20200120160149.29072-1-jonathanh@nvidia.com>
+ <20200121154102.GA588392@kroah.com>
+From:   Jon Hunter <jonathanh@nvidia.com>
+Message-ID: <398367ec-be5b-417f-ce31-bfbe7c17c139@nvidia.com>
+Date:   Tue, 21 Jan 2020 15:46:22 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200120160149.29072-1-jonathanh@nvidia.com>
+In-Reply-To: <20200121154102.GA588392@kroah.com>
+X-Originating-IP: [172.20.13.39]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1579621573; bh=xQc1yW+0hwVpxw6u5G9+5S5OnHKxE1E8Y0k/M6DCpvE=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
+         User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
+         X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=he4bJsl54h7R2eIQhBSYgYCbmS2kgneqB+75CJg9ipC1AegZ2LwXqoyC2vEShGkJ0
+         n9iWPJzsVQpbVI2zABca4/R0cC9rq0KOnOguVEG+iO9hsHg1P8OJDEZc84dvyfw+bq
+         AHyjWy3Ed+yiNdKsojT4iYbPeYNw/fHTnbY2+XkV/q59uiPo9FdZfJjbVqMcrcEk/J
+         YKRXBszpXSoGZINsW2TW2xSRfaLLWDqnyfaRUwvuoEHpInS8xlr2JgFELWgRORVzID
+         OOMhhNN1A6kLOfC+LWFck3GxTFbAjcNDxcV4/l9JhfQU3KklWCMxTykTDgg6gYFDqQ
+         G2tD7Gy35kaAw==
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Jan 20, 2020 at 04:01:49PM +0000, Jon Hunter wrote:
-> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-> index f16824bbb573..432b47647677 100644
-> --- a/drivers/tty/serial/8250/Kconfig
-> +++ b/drivers/tty/serial/8250/Kconfig
-> @@ -500,6 +500,15 @@ config SERIAL_8250_PXA
->  	  applicable to both devicetree and legacy boards, and early console is
->  	  part of its support.
->  
-> +config SERIAL_8250_TEGRA
-> +	tristate "8250 support for Tegra serial ports"
-> +	default SERIAL_8250
-> +	depends on SERIAL_8250
-> +	depends on ARCH_TEGRA
 
-No COMPILE_TEST support so we can make sure we don't break the thing
-somehow?
+On 21/01/2020 15:41, Greg Kroah-Hartman wrote:
+> On Mon, Jan 20, 2020 at 04:01:49PM +0000, Jon Hunter wrote:
+>> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+>> index f16824bbb573..432b47647677 100644
+>> --- a/drivers/tty/serial/8250/Kconfig
+>> +++ b/drivers/tty/serial/8250/Kconfig
+>> @@ -500,6 +500,15 @@ config SERIAL_8250_PXA
+>>  	  applicable to both devicetree and legacy boards, and early console is
+>>  	  part of its support.
+>>  
+>> +config SERIAL_8250_TEGRA
+>> +	tristate "8250 support for Tegra serial ports"
+>> +	default SERIAL_8250
+>> +	depends on SERIAL_8250
+>> +	depends on ARCH_TEGRA
+> 
+> No COMPILE_TEST support so we can make sure we don't break the thing
+> somehow?
 
-thanks,
+Good point. Will add.
 
-greg k-h
+Thanks
+Jon
+
+-- 
+nvpublic
