@@ -2,84 +2,90 @@ Return-Path: <SRS0=uJPQ=3M=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17215C33CB6
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jan 2020 16:08:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B81EAC2D0DB
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jan 2020 17:32:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E2D3E21835
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jan 2020 16:08:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8D53C21D7D
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jan 2020 17:32:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="lM+qRMYp"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="R/b7Clp2"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729140AbgAWQIo (ORCPT
+        id S1727453AbgAWRcy (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Jan 2020 11:08:44 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:42596 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729008AbgAWQIn (ORCPT
+        Thu, 23 Jan 2020 12:32:54 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:44338 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728797AbgAWRcx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Jan 2020 11:08:43 -0500
-Received: by mail-pg1-f196.google.com with SMTP id s64so1586898pgb.9
-        for <linux-serial@vger.kernel.org>; Thu, 23 Jan 2020 08:08:43 -0800 (PST)
+        Thu, 23 Jan 2020 12:32:53 -0500
+Received: by mail-pl1-f193.google.com with SMTP id d9so1620377plo.11
+        for <linux-serial@vger.kernel.org>; Thu, 23 Jan 2020 09:32:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=chromium.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=td46G8H/xG3KwKZVoWzOjjmv0BfVbkqqajOdOX1P7gY=;
-        b=lM+qRMYpFmvxGN+/4LhnZq4sqRW6FLBBMnhUm0cU5iKquVddBZxPgV/elfaSzzEO77
-         vj3MsgXT9yuc/fP9pFOrTf+q0gQHGhRPHkoxFOhYkHqF6sCKpolIG+LqdkLSXFxQCh1c
-         uLBvwDYe69yYr5Ab8NL9YcTU4dIQjwq7ctGUR/RKZ8jvjJddtbHpZFaK9eGVsAF+AsXR
-         ZUOoCLEmDSHw6KuwivGzgSEpCB0BUXPv8GON4AkN/4lDqw2T8ObUpfi+vM5qE9uACjGh
-         i7BKwexFGTKGtAhOgr6n6x6fd81CcOhuUpv+RrLuEz/wUcmxPEbQciYeMCw5jyTgIA5p
-         ZFrQ==
+         :content-disposition:in-reply-to:user-agent;
+        bh=Cn2kDStsAggWDVeBBXF5FEcvF6C1Xy8Sn1IsJbRSZpQ=;
+        b=R/b7Clp2J+T/A56VYmhp5pO07BPp9f4ap3hcckjzvXsFPBAnt5kOIkdHpR4Tjhsan+
+         IIMulA4tlWvPMdz9A8iFJ+UjsaC3m7/PTQfviOI1rIKbydKZbM9QJJN+WjQMBrYQU35d
+         L38ojc0zwdcey5hY1awXwvGNgnskBm0LxNRoE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=td46G8H/xG3KwKZVoWzOjjmv0BfVbkqqajOdOX1P7gY=;
-        b=ZSq81vKdi8Qhn0NIV9cQX/qBDVGE6EL37YYjhE8t+lTYZPrI3OqlaaT1DSjgyViC2e
-         0eyGIZepJVr6KqEYgZq6B1oZjoMSnV3+YXaGtORqLeGpJdJ1r9zxilOrs8DXBtbtOdb+
-         9RbMh7v9X94xQz8kpZ7NCeYJS3ZtpR5EaiSMWmIcuPsZvgjsBbBre0UxjZsvx6sCRpDV
-         ndbrPDHjsJukRCdQDFGnb+fxRs1P4qCfzwrZLE9whG8AO1rdxp50JzxrJW7WZsVU8okO
-         +TyXhTQfCiuUJzToGaUddpll+Hx/hrekG28EwWcUQfLmjcYftn0FdZO4fcwdc9pii6ZN
-         hlPg==
-X-Gm-Message-State: APjAAAWDadkA+vwyjDiR1+ZLP0J8tc5EIUsseTYIDNQAVzjkW7PuIiE0
-        4VmBrjoCNLKrT8tnGbWW2u1TAg==
-X-Google-Smtp-Source: APXvYqyWFE/06GhooYKazl6pIep62Iz/i5wyCJpTVPsFAFVDTHngEfFdHOY7P3gqOAl2IQhW45vjSw==
-X-Received: by 2002:a63:4006:: with SMTP id n6mr4591570pga.139.1579795722829;
-        Thu, 23 Jan 2020 08:08:42 -0800 (PST)
-Received: from tuxbook-pro (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
-        by smtp.gmail.com with ESMTPSA id u12sm3214680pfm.165.2020.01.23.08.08.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jan 2020 08:08:42 -0800 (PST)
-Date:   Thu, 23 Jan 2020 08:08:39 -0800
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Cn2kDStsAggWDVeBBXF5FEcvF6C1Xy8Sn1IsJbRSZpQ=;
+        b=gcKhvLBxnIjlTkjXDdwmDVI7yYxky2TrbKb3oAgLzZRjIlvN66Yg0hFaYIJmt2mbvx
+         4pmZmXwRDWXMd0fBOw1bebQe2naXAeqhnGRwlPSFQIiKbu64yPUf+qEFY23DZn4UXmjT
+         yVaa0yz6ziAhAl2zbfDQyTlTvqAyCFjAbJvu5TNgIXTHxhHdgqd72DDcM5Ivw/mmt7Ht
+         L+HFf/00UhRmXFzm8+j9HzbqOLqleywLRUIVRKXR+KkXN5timnPldMpHhp16IKQBjjeu
+         cacCylzTm1B+L3DO71TLRVTHdUE7s0dMOWs/7ZSXXCRxlOFmqLvAnSkfiQMXdhhctmKG
+         R+1g==
+X-Gm-Message-State: APjAAAXOfKrXQwJMDIUK84+AvMYvsrLUIGpi96xMn0YEP8xJzfHQ4Rgi
+        o0Tz5fvW2PaBNPPs+nj5Ri0Azg==
+X-Google-Smtp-Source: APXvYqzQTSHmkg4ULZgug15BPjQThRPOX+QNUcDexASCQIbIXIYZLBu+6TAU8pQlmQZrNjTotZlMlQ==
+X-Received: by 2002:a17:90a:eb14:: with SMTP id j20mr5678665pjz.95.1579800773170;
+        Thu, 23 Jan 2020 09:32:53 -0800 (PST)
+Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
+        by smtp.gmail.com with ESMTPSA id x18sm3504185pfr.26.2020.01.23.09.32.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Jan 2020 09:32:52 -0800 (PST)
+Date:   Thu, 23 Jan 2020 09:32:50 -0800
+From:   Matthias Kaehlcke <mka@chromium.org>
 To:     Roja Rani Yarubandi <rojay@codeaurora.org>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         akashast@codeaurora.org, msavaliy@qti.qualcomm.com,
         mgautam@codeaurora.org, skakit@codeaurora.org,
-        Andy Gross <agross@kernel.org>, Jiri Slaby <jslaby@suse.com>,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>
 Subject: Re: [PATCH v2 1/1] tty: serial: qcom_geni_serial: Configure
  UART_IO_MACRO_CTRL register
-Message-ID: <20200123160839.GB3888@tuxbook-pro>
+Message-ID: <20200123173250.GX89495@google.com>
 References: <20200123124802.24862-1-rojay@codeaurora.org>
  <20200123124802.24862-2-rojay@codeaurora.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 In-Reply-To: <20200123124802.24862-2-rojay@codeaurora.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu 23 Jan 04:48 PST 2020, Roja Rani Yarubandi wrote:
+Hi Roja,
+
+On Thu, Jan 23, 2020 at 06:18:02PM +0530, Roja Rani Yarubandi wrote:
+
+> subject: tty: serial: qcom_geni_serial: Configure UART_IO_MACRO_CTRL register
+
+Something like 'Support pin swapping' would be more useful.
 
 > Configure UART_IO_MACRO_CTRL register if UART lines are swapped.
 > 
@@ -113,23 +119,12 @@ On Thu 23 Jan 04:48 PST 2020, Roja Rani Yarubandi wrote:
 >  	uport->irq = irq;
 >  
 > +	ret = of_property_read_u32(pdev->dev.of_node, "qcom,pin_inverse", &val);
-
-This needs to be documented in the DT binding document. And I assume
-it's better suited as a bool property to be read using
-of_property_read_bool().
-
-Also avoid '_' in property names and make it a '-'.
-
-Regards,
-Bjorn
-
 > +	if (!ret)
 > +		writel(val, uport->membase + SE_UART_IO_MACRO_CTRL);
 > +
->  	irq_set_status_flags(uport->irq, IRQ_NOAUTOEN);
->  	ret = devm_request_irq(uport->dev, uport->irq, qcom_geni_serial_isr,
->  			IRQF_TRIGGER_HIGH, port->name, uport);
-> -- 
-> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-> of the Code Aurora Forum, hosted by The Linux Foundation
-> 
+
+Which pins are/can be inversed only RX/TX or also CTS/RTS? If both pairs can be
+inversed individually it would be nice to support that.
+
+As Bjorn commented, it's probably better to have boolean properties and keep the
+magic values in the driver.
