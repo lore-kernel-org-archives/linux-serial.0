@@ -7,52 +7,52 @@ X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BEF4C33CB6
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jan 2020 14:42:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64F47C2D0DB
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jan 2020 14:43:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 32DAD214AF
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jan 2020 14:42:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 31F4020704
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jan 2020 14:43:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1579790550;
-	bh=1Dn+fl/jr2XOrPxCAJFsmb+RFAJag/5bwntu5/Ek0MU=;
+	s=default; t=1579790613;
+	bh=JcgtoUqsESmD3A/2bsSCDPMCrO/wp97Z1NQPgshb+po=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=d9Bl5nahCAFO9xBWjCkPaEXqi4AZCn17Km5Nrsbw9FgEmGlAG7wDcd2fodQtSka5H
-	 U6/klakCJArC6Uz/NCYQC/Wv3jgGywZ1kCQN2FyQqIBiOuZt9K1MSkhwMfzJD3O593
-	 g/ozcS455cYPl0n0demkl6FnaB9zktVRHmwnpy24=
+	b=LSIdC/yYqw/s/JCh0EmWnZanMy3up12/2oEjjSAO/2sQMexct5YuAb0sw+/By5vEo
+	 Z0KTXee43W0pdUejXv19LHwuY+iMHHMwnbGwszP2AJJ5rM/V6hY9FI9nmhEABeIXUN
+	 JSCJ0x9vxjMlmKOk4Znri0uKoesPWYtFjSoYlus4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727141AbgAWOm0 (ORCPT
+        id S1726761AbgAWOn2 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Jan 2020 09:42:26 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:38600 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726771AbgAWOm0 (ORCPT
+        Thu, 23 Jan 2020 09:43:28 -0500
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:42844 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726232AbgAWOn2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Jan 2020 09:42:26 -0500
-Received: by mail-ot1-f68.google.com with SMTP id z9so2931793oth.5;
-        Thu, 23 Jan 2020 06:42:26 -0800 (PST)
+        Thu, 23 Jan 2020 09:43:28 -0500
+Received: by mail-oi1-f194.google.com with SMTP id 18so3072570oin.9;
+        Thu, 23 Jan 2020 06:43:28 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=VojjtS7akMpAwcay/UmymGiR2hr9tFaDHzEASOXUD8w=;
-        b=qInmoVWZHV918nepi6SS8coqrotGCF1BScJvQq49sl+vNDm3mvSXN5eHsP43sw20M/
-         4oxI9rnGW65vUQkl1fJKc6R8iKCEYnELAK73T31p892W0GHs2IE/FnRWHmVJ46dFKwvk
-         ORsP5OHmCb438u5OHaPKAxK7FDCdz9g+TJDFyJ9sRVAWQBIrwAb8M9phs80fHnsKMExa
-         9Rd4f9SFWlLPgm/NAmbq0Footirgr/UINAMpf57W+pZC10eYCxqmVVSEqL2a3AqknhOb
-         ET0+QBl+EEnIK6/UloBZPO1oNC/KG4gznTuSOZfBKqDN2tmNdNwe2H4aaFNceoVXz9VN
-         1Ccw==
-X-Gm-Message-State: APjAAAVQ8y0zbEjJYwjfyxhsK2Uxe0eWc1Z6SQEOMzc6tR4SxnsKd96s
-        k2K5jlmhHk6S8lmvNNMyXzLNDmk=
-X-Google-Smtp-Source: APXvYqxykG4E/5TrCk67dHt8GjjUfo7u0vBc/K5VrQHFHH+0sZpSZGqLdxDBl66PpWm84FUIUxD2uw==
-X-Received: by 2002:a9d:3e16:: with SMTP id a22mr12080775otd.259.1579790545677;
-        Thu, 23 Jan 2020 06:42:25 -0800 (PST)
+        bh=7SayZJgIXHjCdU3TAFI8Ocs5cvmGh8wgxSjfDXiqUmU=;
+        b=cxSDvpbUKLOtBOI3fGsin6p2Q1mBdA9arjtDLfwIuwW3GiBSM+SDY4OwZvljpg5H8n
+         QuuKr24wIPsoqYa0t5sX+gVoonfx0slv1/6bWbbu2ktRh+BznRTyx6PLan0BaTReLvS8
+         +pjgOgzHaflBREHkRQKtI2FP70hF18tj2esYrIRam9KNyU5DOlXqZTxJy10pXSqhYTlo
+         g05JsHpg7srKGRoQua+mhC8VcuagSmXtBJUPcDFltTwKIQfSKZ5QD8U/nx2A7XOXxLJp
+         dUPgiHaRWNf1Z7B7dCeV0pG5/QV44Fsm+KNHZzKNJZ9d9iWLevSHS51Lh1n0tUsSeWIs
+         Of9w==
+X-Gm-Message-State: APjAAAWF44DtPLu43ev6DdfGEQfoUzFIi/fodDW0cZFdOvyEpDqh6Go9
+        Th7EWnqonW48lLVmvEJKLw==
+X-Google-Smtp-Source: APXvYqzGbdY9oCHH7SiwtERsp5ylmchXaof2S8Eo3kpOm01m82P1WOVc0ecY+Jf3C0L3OyPvAH5Kzg==
+X-Received: by 2002:aca:1c1a:: with SMTP id c26mr10845348oic.75.1579790607604;
+        Thu, 23 Jan 2020 06:43:27 -0800 (PST)
 Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id n16sm845782otk.25.2020.01.23.06.42.24
+        by smtp.gmail.com with ESMTPSA id s6sm849207otd.72.2020.01.23.06.43.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jan 2020 06:42:25 -0800 (PST)
-Received: (nullmailer pid 9469 invoked by uid 1000);
-        Thu, 23 Jan 2020 14:42:24 -0000
-Date:   Thu, 23 Jan 2020 08:42:24 -0600
+        Thu, 23 Jan 2020 06:43:26 -0800 (PST)
+Received: (nullmailer pid 12444 invoked by uid 1000);
+        Thu, 23 Jan 2020 14:43:26 -0000
+Date:   Thu, 23 Jan 2020 08:43:26 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Benjamin Gaignard <benjamin.gaignard@st.com>
 Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
@@ -62,34 +62,31 @@ Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, fabrice.gasnier@st.com,
         erwan.leray@st.com, Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: serial: Convert rs485 bindings to
+Subject: Re: [PATCH v2 2/2] dt-bindings: serial: Convert STM32 UART to
  json-schema
-Message-ID: <20200123144224.GA9094@bogus>
+Message-ID: <20200123144326.GA12392@bogus>
 References: <20200122095558.22553-1-benjamin.gaignard@st.com>
- <20200122095558.22553-2-benjamin.gaignard@st.com>
+ <20200122095558.22553-3-benjamin.gaignard@st.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200122095558.22553-2-benjamin.gaignard@st.com>
+In-Reply-To: <20200122095558.22553-3-benjamin.gaignard@st.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 22 Jan 2020 10:55:57 +0100, Benjamin Gaignard wrote:
-> Convert rs485 binding to yaml style file.
+On Wed, 22 Jan 2020 10:55:58 +0100, Benjamin Gaignard wrote:
+> Convert STM32 UART bindings to json-schema.
 > 
 > Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
 > ---
-> version 2:
-> - remove types inside rs485-rts-delay property and add a maximum for delay
->   values
-> 
->  Documentation/devicetree/bindings/serial/rs485.txt | 32 +--------------
->  .../devicetree/bindings/serial/rs485.yaml          | 45 ++++++++++++++++++++++
->  2 files changed, 46 insertions(+), 31 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/serial/rs485.yaml
+>  .../devicetree/bindings/serial/st,stm32-uart.yaml  | 80 ++++++++++++++++++++++
+>  .../devicetree/bindings/serial/st,stm32-usart.txt  | 57 ---------------
+>  2 files changed, 80 insertions(+), 57 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/serial/st,stm32-usart.txt
 > 
 
 Applied, thanks.
