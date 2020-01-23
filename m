@@ -2,73 +2,59 @@ Return-Path: <SRS0=uJPQ=3M=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B303CC2D0DB
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jan 2020 09:30:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 404D4C3F68F
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jan 2020 12:42:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8328E22522
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jan 2020 09:30:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1579771809;
-	bh=bU5bEDnTWQOxSbS2VYnlANt2Wc9KyEohEB+1xPddu8A=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=P7rzQ97FDA37Hcqz9KH5s72T2dmPXmUmPpW6DZAQrRVSJFGfoy7Qjo0qQcNkFsLy9
-	 7n30Gi5YXgvAFzLegcTuU6/B5wIByeDy2bYK9JyOXQWRtGtxQK1+UzthdAs1KSE01l
-	 dVydvhKGSJCfWh8YXl3xB+SclJ921NczW2ktLMk4=
+	by mail.kernel.org (Postfix) with ESMTP id 1CEBB24673
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jan 2020 12:42:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726167AbgAWJaJ (ORCPT
+        id S1726911AbgAWMmy (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Jan 2020 04:30:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43948 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725785AbgAWJaI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Jan 2020 04:30:08 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B64BD217F4;
-        Thu, 23 Jan 2020 09:30:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579771808;
-        bh=bU5bEDnTWQOxSbS2VYnlANt2Wc9KyEohEB+1xPddu8A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=r3PVCaof0a197NRyo9BYx4kCzz8EvXFGSldAfs90Fbbdb9xa+J0tI+p4gpe6NEOl5
-         fz/0UlEAgIZrV/PBOd/Cn7bp5NOXVi3ft9UnOam6iD+Ur7WHEt33eGaA1ldQYBg0KE
-         nNpOK8r8Rtelq/sJiNOJL/AtAcTA0fyKWMwWKCpg=
-Date:   Thu, 23 Jan 2020 10:30:06 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Roja Rani Yarubandi <rojay@codeaurora.org>
+        Thu, 23 Jan 2020 07:42:54 -0500
+Received: from alexa-out-blr-01.qualcomm.com ([103.229.18.197]:27165 "EHLO
+        alexa-out-blr-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726871AbgAWMmx (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 23 Jan 2020 07:42:53 -0500
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by alexa-out-blr-01.qualcomm.com with ESMTP/TLS/AES256-SHA; 23 Jan 2020 18:12:15 +0530
+Received: from c-rojay-linux.qualcomm.com ([10.206.21.80])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 23 Jan 2020 18:11:52 +0530
+Received: by c-rojay-linux.qualcomm.com (Postfix, from userid 88981)
+        id F37A026EB; Thu, 23 Jan 2020 18:11:51 +0530 (IST)
+From:   Roja Rani Yarubandi <rojay@codeaurora.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     akashast@codeaurora.org, msavaliy@qti.qualcomm.com,
-        mgautam@codeaurora.org, Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
+        mgautam@codeaurora.org, skakit@codeaurora.org,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Jiri Slaby <jslaby@suse.com>, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH 1/1] tty: serial: qcom_geni_serial: Configure
- UART_IO_MACRO_CTRL register
-Message-ID: <20200123093006.GB586919@kroah.com>
-References: <20200123084132.11802-1-rojay@codeaurora.org>
- <20200123084132.11802-2-rojay@codeaurora.org>
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Roja Rani Yarubandi <rojay@codeaurora.org>
+Subject: [PATCH 0/1] tty: serial: qcom_geni_serial: Configure UART_IO_MACRO_CTRL register
+Date:   Thu, 23 Jan 2020 18:11:49 +0530
+Message-Id: <20200123124150.19176-1-rojay@codeaurora.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200123084132.11802-2-rojay@codeaurora.org>
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jan 23, 2020 at 02:11:32PM +0530, Roja Rani Yarubandi wrote:
-> Configure UART_IO_MACRO_CTRL register if UART lines are swapped.
-> 
-> Change-Id: I8e82c2395bf4cdc51b3677c3c54f5be3f390a888
-> Signed-off-by: Roja Rani Yarubandi <rojay@codeaurora.org>
+Configure UART_IO_MACRO_CTRL register if UART lines are swapped.
 
-Always run checkpatch.pl on your patches so you do not get a grumpy
-maintainer asking you to run checkpatc.pl on your patches.
+Roja Rani Yarubandi (1):
+  tty: serial: qcom_geni_serial: Configure UART_IO_MACRO_CTRL register
 
-:)
+ drivers/tty/serial/qcom_geni_serial.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of the Code Aurora Forum, hosted by The Linux Foundation
+
