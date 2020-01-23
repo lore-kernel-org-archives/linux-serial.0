@@ -4,28 +4,28 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68917C2D0DB
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jan 2020 12:42:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16E6CC2D0DB
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jan 2020 12:49:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3B6C224655
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Jan 2020 12:42:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DA2A424655
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Jan 2020 12:49:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726219AbgAWMmv (ORCPT
+        id S1726191AbgAWMtT (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Jan 2020 07:42:51 -0500
-Received: from alexa-out-blr-01.qualcomm.com ([103.229.18.197]:27165 "EHLO
-        alexa-out-blr-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726170AbgAWMmv (ORCPT
+        Thu, 23 Jan 2020 07:49:19 -0500
+Received: from alexa-out-blr-02.qualcomm.com ([103.229.18.198]:18623 "EHLO
+        alexa-out-blr-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726026AbgAWMtT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Jan 2020 07:42:51 -0500
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by alexa-out-blr-01.qualcomm.com with ESMTP/TLS/AES256-SHA; 23 Jan 2020 18:12:15 +0530
+        Thu, 23 Jan 2020 07:49:19 -0500
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by alexa-out-blr-02.qualcomm.com with ESMTP/TLS/AES256-SHA; 23 Jan 2020 18:18:28 +0530
 Received: from c-rojay-linux.qualcomm.com ([10.206.21.80])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 23 Jan 2020 18:11:54 +0530
+  by ironmsg02-blr.qualcomm.com with ESMTP; 23 Jan 2020 18:18:07 +0530
 Received: by c-rojay-linux.qualcomm.com (Postfix, from userid 88981)
-        id C230A26EB; Thu, 23 Jan 2020 18:11:53 +0530 (IST)
+        id 92D1226EB; Thu, 23 Jan 2020 18:18:05 +0530 (IST)
 From:   Roja Rani Yarubandi <rojay@codeaurora.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     akashast@codeaurora.org, msavaliy@qti.qualcomm.com,
@@ -35,12 +35,12 @@ Cc:     akashast@codeaurora.org, msavaliy@qti.qualcomm.com,
         Jiri Slaby <jslaby@suse.com>, linux-arm-msm@vger.kernel.org,
         linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Roja Rani Yarubandi <rojay@codeaurora.org>
-Subject: [PATCH 1/1] tty: serial: qcom_geni_serial: Configure UART_IO_MACRO_CTRL register
-Date:   Thu, 23 Jan 2020 18:11:50 +0530
-Message-Id: <20200123124150.19176-2-rojay@codeaurora.org>
+Subject: [PATCH v2 1/1] tty: serial: qcom_geni_serial: Configure UART_IO_MACRO_CTRL register
+Date:   Thu, 23 Jan 2020 18:18:02 +0530
+Message-Id: <20200123124802.24862-2-rojay@codeaurora.org>
 X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200123124150.19176-1-rojay@codeaurora.org>
-References: <20200123124150.19176-1-rojay@codeaurora.org>
+In-Reply-To: <20200123124802.24862-1-rojay@codeaurora.org>
+References: <20200123124802.24862-1-rojay@codeaurora.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
@@ -56,14 +56,14 @@ Signed-off-by: Roja Rani Yarubandi <rojay@codeaurora.org>
  1 file changed, 6 insertions(+)
 
 diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index ff63728a95f4..68b11b6ad3be 100644
+index ff63728a95f4..24b862937c1e 100644
 --- a/drivers/tty/serial/qcom_geni_serial.c
 +++ b/drivers/tty/serial/qcom_geni_serial.c
 @@ -24,6 +24,7 @@
  
  /* UART specific GENI registers */
  #define SE_UART_LOOPBACK_CFG		0x22c
-+#define SE_UART_IO_MACRO_CTRL           0x240
++#define SE_UART_IO_MACRO_CTRL		0x240
  #define SE_UART_TX_TRANS_CFG		0x25c
  #define SE_UART_TX_WORD_LEN		0x268
  #define SE_UART_TX_STOP_BIT_LEN		0x26c
