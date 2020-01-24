@@ -7,38 +7,38 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C00AC47409
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Jan 2020 10:04:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3028DC2D0DB
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Jan 2020 11:31:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D78E4222C2
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Jan 2020 10:04:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 07483214AF
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Jan 2020 11:31:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1579860250;
-	bh=j+Y92j0iG36XYDwtysxpn9Ltp7mzSAQjl+RWp6Q/iRA=;
+	s=default; t=1579865496;
+	bh=HFwQb0O34aT0aoLhTP4YW3fAfKwbOI+s08VarianbpU=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=KAyLu4PdcSylhonEh6oe/mEQsIsUvIwmSLLGXhcumOTkamMNpMarYyDaD6O1gSWKf
-	 dmdkjWLrRjQ3m5QYjYTuqGNMmFJbSs0hNnKIedUdBUHKrHFANE6t9i3tF+NP/sqzQY
-	 XwqpFkV6kn9noCRESmVjY5rZLk3EnGV4En9frHWs=
+	b=cxPUf9BtlkQf5tk82DpRlehkSlKVJuIyObUmbX4NYq2vIkmxt5Z7nR+8iAAZiQOm9
+	 gh8757t0xi873FOgR17oy/CwSd9BuMzOR5imlGe3nDU/Ws3ti7dh2SGgLgZk1A87Gx
+	 MM388j6wk3x6KVIjFapbXjTSJb0ZFqL015djGk4I=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389089AbgAXKEG (ORCPT
+        id S2391870AbgAXLbZ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 24 Jan 2020 05:04:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40194 "EHLO mail.kernel.org"
+        Fri, 24 Jan 2020 06:31:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49732 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727215AbgAXKEF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 24 Jan 2020 05:04:05 -0500
-Received: from localhost (unknown [145.15.244.15])
+        id S2391865AbgAXLbY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 24 Jan 2020 06:31:24 -0500
+Received: from localhost (ip-213-127-102-57.ip.prioritytelecom.net [213.127.102.57])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AFC9520709;
-        Fri, 24 Jan 2020 10:04:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B5FA8206D4;
+        Fri, 24 Jan 2020 11:31:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579860245;
-        bh=j+Y92j0iG36XYDwtysxpn9Ltp7mzSAQjl+RWp6Q/iRA=;
+        s=default; t=1579865483;
+        bh=HFwQb0O34aT0aoLhTP4YW3fAfKwbOI+s08VarianbpU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ovdf78X5Tr0OuTysTe324Cv/JbGpIO72G6mdGWjtdK7DQeYsqEEi5nRzx+YjGxYfx
-         A60Bxt3MFDAjLgRXMmN9G/QOmi+fnRiSzl/NjpKUXZb8qrzuTzpEJfL2e+otvzbiqD
-         j1+TCALQ0h6maWyNKMVn617HSjK0h+S816wHrI08=
+        b=BhJCykNg4/QnTvQ0ZXmEPDFshtzdAf+po94pStpnh1SPbiIkE9VjZab0HDnDCKrEM
+         N7ElcrBtoe1B7JKHHE0b0mbwFd3iBnRArQRioJWGm0eePeSTVCfn93atIWiMHTgjD7
+         jGmaLY0+y/nzOYv0IJAjcWecWuQ0TKpnZw61Qs7M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -50,12 +50,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Lucas Stach <l.stach@pengutronix.de>,
         Jiri Slaby <jslaby@suse.com>, linux-imx@nxp.com,
         linux-serial@vger.kernel.org, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 293/343] tty: serial: fsl_lpuart: Use appropriate lpuart32_* I/O funcs
+Subject: [PATCH 4.19 541/639] tty: serial: fsl_lpuart: Use appropriate lpuart32_* I/O funcs
 Date:   Fri, 24 Jan 2020 10:31:51 +0100
-Message-Id: <20200124092958.516712402@linuxfoundation.org>
+Message-Id: <20200124093156.779825916@linuxfoundation.org>
 X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200124092919.490687572@linuxfoundation.org>
-References: <20200124092919.490687572@linuxfoundation.org>
+In-Reply-To: <20200124093047.008739095@linuxfoundation.org>
+References: <20200124093047.008739095@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -94,10 +94,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 14 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index fb2dcb3f85911..16422987ab0f3 100644
+index ee8a5cb61a5f1..2daccb10ae2f3 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -532,26 +532,26 @@ static int lpuart32_poll_init(struct uart_port *port)
+@@ -528,26 +528,26 @@ static int lpuart32_poll_init(struct uart_port *port)
  	spin_lock_irqsave(&sport->port.lock, flags);
  
  	/* Disable Rx & Tx */
@@ -134,7 +134,7 @@ index fb2dcb3f85911..16422987ab0f3 100644
  	spin_unlock_irqrestore(&sport->port.lock, flags);
  
  	return 0;
-@@ -559,18 +559,18 @@ static int lpuart32_poll_init(struct uart_port *port)
+@@ -555,18 +555,18 @@ static int lpuart32_poll_init(struct uart_port *port)
  
  static void lpuart32_poll_put_char(struct uart_port *port, unsigned char c)
  {
