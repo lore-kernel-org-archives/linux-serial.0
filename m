@@ -2,102 +2,70 @@ Return-Path: <SRS0=su8x=3S=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62FC2C2D0DB
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Jan 2020 16:20:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8B02C2D0DB
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Jan 2020 19:00:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 443C620720
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Jan 2020 16:20:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A3FD72082E
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Jan 2020 19:00:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1580324409;
+	bh=zdIi9qbq49yLTacNNV0GW8oZspiKmsOdTO0j9aGqCoc=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:List-ID:From;
+	b=2BaWkjzf1nK5rTHpA8sXBfCrxGxj0gEI5cOLPsmN0bmaaRIXGI9O+Dk9nMZqY8fbk
+	 tQX5HN6/Rld65CuVw331Q3MZUlZY4YnANpm17YWhLSYYDXDw+Mis53g+1QV9WS/4nP
+	 28oGHLnWIWgybL4+kBguAUKhK3Ju96U3Ha8L5IHA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726647AbgA2QUs (ORCPT
+        id S1727936AbgA2TAJ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Jan 2020 11:20:48 -0500
-Received: from smtp1.de.adit-jv.com ([93.241.18.167]:52933 "EHLO
-        smtp1.de.adit-jv.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726645AbgA2QUs (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Jan 2020 11:20:48 -0500
-Received: from localhost (smtp1.de.adit-jv.com [127.0.0.1])
-        by smtp1.de.adit-jv.com (Postfix) with ESMTP id 074393C0579;
-        Wed, 29 Jan 2020 17:20:46 +0100 (CET)
-Received: from smtp1.de.adit-jv.com ([127.0.0.1])
-        by localhost (smtp1.de.adit-jv.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Azz6qmwHLR9N; Wed, 29 Jan 2020 17:20:40 +0100 (CET)
-Received: from HI2EXCH01.adit-jv.com (hi2exch01.adit-jv.com [10.72.92.24])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtp1.de.adit-jv.com (Postfix) with ESMTPS id 12EE53C009E;
-        Wed, 29 Jan 2020 17:20:40 +0100 (CET)
-Received: from lxhi-065.adit-jv.com (10.72.93.66) by HI2EXCH01.adit-jv.com
- (10.72.92.24) with Microsoft SMTP Server (TLS) id 14.3.468.0; Wed, 29 Jan
- 2020 17:20:39 +0100
-From:   Eugeniu Rosca <erosca@de.adit-jv.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        <linux-serial@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>
-CC:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        "George G . Davis" <george_davis@mentor.com>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Jiada Wang <jiada_wang@mentor.com>,
-        Yuichi Kusakabe <yuichi.kusakabe@denso-ten.com>,
-        Yasushi Asano <yasano@jp.adit-jv.com>,
-        <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Fukui Yohhei <yohhei.fukui@denso-ten.com>,
-        Torii Kenichi <torii.ken1@jp.fujitsu.com>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>
-Subject: [PATCH] serial: sh-sci: Support custom speed setting
-Date:   Wed, 29 Jan 2020 17:19:55 +0100
-Message-ID: <20200129161955.30562-1-erosca@de.adit-jv.com>
-X-Mailer: git-send-email 2.25.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.72.93.66]
+        Wed, 29 Jan 2020 14:00:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54290 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727875AbgA2TAI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 29 Jan 2020 14:00:08 -0500
+Subject: Re: [GIT PULL] TTY/Serial driver patches for 5.6-rc1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1580324408;
+        bh=zdIi9qbq49yLTacNNV0GW8oZspiKmsOdTO0j9aGqCoc=;
+        h=From:In-Reply-To:References:Date:To:Cc:From;
+        b=uIQXCt6Dy9+TGQOWQJgImK0ObAeabItJMk8125GSntAHoVBUL9gL3r3OdfXlgawJj
+         rZU3pqZEtVmBKOmwnYIJo836+n0bHKBs8gZFD7vg74VyojfsOEyk6328sur6vaB8iD
+         L4YP33JacyLjiD07oxh2xWDZSLPOsz3M1FU25TXA=
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20200129101420.GA3858344@kroah.com>
+References: <20200129101420.GA3858344@kroah.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20200129101420.GA3858344@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.6-rc1
+X-PR-Tracked-Commit-Id: 85f4c95172d606dd66f7ee1fa50c45a245535ffd
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: ca9b5b6283984f67434cee810f3b08e19630226d
+Message-Id: <158032440840.15518.11492001728736110702.pr-tracker-bot@kernel.org>
+Date:   Wed, 29 Jan 2020 19:00:08 +0000
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Torii Kenichi <torii.ken1@jp.fujitsu.com>
+The pull request you sent on Wed, 29 Jan 2020 11:14:20 +0100:
 
-This patch is necessary to use BT module and XM module with DENSO TEN
-development board.
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.6-rc1
 
-This patch supports ASYNC_SPD_CUST flag by ioctl(TIOCSSERIAL), enables
-custom speed setting with setserial(1).
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/ca9b5b6283984f67434cee810f3b08e19630226d
 
-The custom speed is calculated from uartclk and custom_divisor.
-If custom_divisor is zero, custom speed setting is invalid.
+Thank you!
 
-Signed-off-by: Torii Kenichi <torii.ken1@jp.fujitsu.com>
-[erosca: rebase against v5.5]
-Signed-off-by: Eugeniu Rosca <erosca@de.adit-jv.com>
----
- drivers/tty/serial/sh-sci.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 87ca6294de0e..dd468909b2c4 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2405,6 +2405,10 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if (!baud)
- 		goto done;
- 
-+	if (baud == 38400 && (port->flags & UPF_SPD_MASK) == UPF_SPD_CUST &&
-+	    port->custom_divisor)
-+		baud = port->uartclk / port->custom_divisor;
-+
- 	/*
- 	 * There can be multiple sources for the sampling clock.  Find the one
- 	 * that gives us the smallest deviation from the desired baud rate.
 -- 
-2.25.0
-
+Deet-doot-dot, I am a bot.
+https://korg.wiki.kernel.org/userdoc/prtracker
