@@ -2,126 +2,391 @@ Return-Path: <SRS0=su8x=3S=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C87EDC33CB2
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Jan 2020 11:21:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD21C2D0DB
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Jan 2020 13:28:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9D3142071E
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Jan 2020 11:21:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C1C6A2070E
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Jan 2020 13:28:24 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lo3mryy3"
+	dkim=pass (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="lgr6vu5h"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726069AbgA2LVu (ORCPT
+        id S1726140AbgA2N2Y (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Jan 2020 06:21:50 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:33083 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726067AbgA2LVu (ORCPT
+        Wed, 29 Jan 2020 08:28:24 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:3674 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726069AbgA2N2Y (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Jan 2020 06:21:50 -0500
-Received: by mail-lj1-f194.google.com with SMTP id y6so18069606lji.0;
-        Wed, 29 Jan 2020 03:21:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=NPCUdLAYmbEspRBF05xZGb8x0Dpqva/T+gPsfhkFeOA=;
-        b=lo3mryy3EPGV3wjla57jjaGExvmgGbLwskoGo2f4aETMXTnZY4n8y3V4MVs5q8uuVn
-         0g33CDZIii/tmXcz40l8nSLVuHtSey5IcN88fgqai2D3Of2cf7pCNbb+thaEFxBB8CQf
-         4ktOVU2JIMVE9X2pEogqYMGScv63jddu2RiRv0hR5iPB7HI8EZY8tXTHHwO+sr8z0e3z
-         lBbv+KwyISNeEuOHs/oRvt3ynNR2+cnw+Yac7MqxruZH5vFi9wXHbLTZRKhYTZ5ai+Dq
-         OWktIQQvL2ywRr9jTZ4WnC2ZT5bwZPPYH2rROmp+ngU219FDIS2873/x4Fu+a+xFQV0r
-         Z0Xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version:content-transfer-encoding;
-        bh=NPCUdLAYmbEspRBF05xZGb8x0Dpqva/T+gPsfhkFeOA=;
-        b=N6u64a4aLyKDduxLyCxpMrgK4kjHpQ0uKd+ThXLp3Wh6QVPD2CdfQSevlJeElvfjMu
-         p+MuACZRWVFVH+5lMkuey0zufTVIlbATZKbiZUD74KFUPjeDO1kvluNottLb9/DBy7yz
-         Lk457QDzUSKvdiZVutQpiMUgiGv22iVVjSq9oILpLM6WGX1rGBvPB9Prb+zv88sCju2I
-         T6whYgBCq6BbwNP/rNEN0E6gVR607Eqr1sYybEZ1LDqo9fg9BJhIAM/zzOlTo+QqjOjd
-         4lAajKOyy/QtsW/UGqiO4edD36yL7CGSEjB+KyuV7EhqzhhMBoiUKEVI2zZq4XzvxJW7
-         JmhA==
-X-Gm-Message-State: APjAAAW1Pc2zsK8DTeCUI+gn1VJP4CQZADOAbH4/q45M7UBYF6eo6XfE
-        Gg3sli+FoSYwp9eChbSp/a6jAEwc
-X-Google-Smtp-Source: APXvYqxNVehRNwku/wPhP1/6tlzSibCQ47vVcHhXNMgzbVJn6j32BloCUTvoaCwPYWpa+82n49fcJg==
-X-Received: by 2002:a2e:844e:: with SMTP id u14mr3111213ljh.183.1580296907910;
-        Wed, 29 Jan 2020 03:21:47 -0800 (PST)
-Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id z7sm764137lji.30.2020.01.29.03.21.46
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 29 Jan 2020 03:21:47 -0800 (PST)
-From:   Sergey Organov <sorganov@gmail.com>
-To:     linux-usb@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        =?utf-8?Q?Micha=C5=82_Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        linux-serial@vger.kernel.org
-Subject: [PATCH v3] usb: gadget: serial: fix Tx stall after buffer overflow
-References: <87pnfi8xc2.fsf@osv.gnss.ru>
-Date:   Wed, 29 Jan 2020 14:21:46 +0300
-In-Reply-To: <87pnfi8xc2.fsf@osv.gnss.ru> (Sergey Organov's message of "Fri,
-        17 Jan 2020 08:29:33 +0300")
-Message-ID: <87sgjyzewl.fsf@osv.gnss.ru>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.4 (gnu/linux)
+        Wed, 29 Jan 2020 08:28:24 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5e3188630000>; Wed, 29 Jan 2020 05:28:03 -0800
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Wed, 29 Jan 2020 05:28:23 -0800
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Wed, 29 Jan 2020 05:28:23 -0800
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 29 Jan
+ 2020 13:28:22 +0000
+Received: from rnnvemgw01.nvidia.com (10.128.109.123) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
+ Transport; Wed, 29 Jan 2020 13:28:22 +0000
+Received: from localhost.localdomain (Not Verified[10.21.133.51]) by rnnvemgw01.nvidia.com with Trustwave SEG (v7,5,8,10121)
+        id <B5e3188740004>; Wed, 29 Jan 2020 05:28:21 -0800
+From:   Jon Hunter <jonathanh@nvidia.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Thierry Reding <thierry.reding@gmail.com>
+CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>, Jeff Brasen <jbrasen@nvidia.com>,
+        Jon Hunter <jonathanh@nvidia.com>
+Subject: [PATCH V3] serial: 8250_tegra: Create Tegra specific 8250 driver
+Date:   Wed, 29 Jan 2020 13:28:17 +0000
+Message-ID: <20200129132817.26343-1-jonathanh@nvidia.com>
+X-Mailer: git-send-email 2.17.1
+X-NVConfidentiality: public
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1580304483; bh=HoJs+kXsFZvSMy4ts1p9lRICvn55qhYk7d+0r26WND4=;
+        h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
+         X-NVConfidentiality:MIME-Version:Content-Type;
+        b=lgr6vu5h+VXLi0/YMPdPOZmrFcPymQL2RMQS/Y94oEs9qjQBfvOy9RYiQ5bsghpNO
+         9U3OavbzFTAgW3KVZK8/mx1JJMjbFph68zpRKJEwBkblJHozmOkNlYLdz/cMpg5F3z
+         XIdzGIouM94Y4Hf/z/PboeRmHIBT/2El0aEgzPdP9pt7VwjIlXvaaQs07AQ8RQFHaL
+         NV3bpUNN5YnloRF8XZ4upFOBRw06fcNAkTS9bwSFXWyFX19F+pUyKwKLaMIsmytQ8Q
+         1tMqHbNUdh2yi1PLb34dnWezFZmhfrhFsKrmWnbZA/QAcB+HuvRmUMtZmIE+K4sa1B
+         dhsJcFUWXmJbQ==
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Symptom: application opens /dev/ttyGS0 and starts sending (writing) to
-it while either USB cable is not connected, or nobody listens on the
-other side of the cable. If driver circular buffer overflows before
-connection is established, no data will be written to the USB layer
-until/unless /dev/ttyGS0 is closed and re-opened again by the
-application (the latter besides having no means of being notified about
-the event of establishing of the connection.)
+From: Jeff Brasen <jbrasen@nvidia.com>
 
-Fix: on open and/or connect, kick Tx to flush circular buffer data to
-USB layer.
+To support booting NVIDIA Tegra platforms with either Device-Tree or
+ACPI, create a Tegra specific 8250 serial driver that supports both
+firmware types. Another benefit from doing this, is that the Tegra
+specific codec in the generic Open Firmware 8250 driver can now be
+removed.
 
-Signed-off-by: Sergey Organov <sorganov@gmail.com>
-Reviewed-by: Michał Mirosław <mirq-linux@rere.qmqm.pl>
+Signed-off-by: Jeff Brasen <jbrasen@nvidia.com>
+Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
 ---
 
-Changes in v3:
+Changes since V2:
+- Added missing header for devm_ioremap (reported by kbuild test robot)
+Changes since V1:
+- Added support for COMPILE_TEST
 
-- Add Reviewed-by: Michał Mirosław <mirq-linux@rere.qmqm.pl>
+ drivers/tty/serial/8250/8250_of.c    |  28 ----
+ drivers/tty/serial/8250/8250_tegra.c | 198 +++++++++++++++++++++++++++
+ drivers/tty/serial/8250/Kconfig      |   9 ++
+ drivers/tty/serial/8250/Makefile     |   1 +
+ 4 files changed, 208 insertions(+), 28 deletions(-)
+ create mode 100644 drivers/tty/serial/8250/8250_tegra.c
 
-Changes in v2:
-
-- Add comment to document why tty_wakeup() is kept in place
-- Don't add debug print
-- Remove NOTE from description
-
- drivers/usb/gadget/function/u_serial.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/usb/gadget/function/u_serial.c b/drivers/usb/gadget/function/u_serial.c
-index f986e5c..8167d37 100644
---- a/drivers/usb/gadget/function/u_serial.c
-+++ b/drivers/usb/gadget/function/u_serial.c
-@@ -561,8 +561,10 @@ static int gs_start_io(struct gs_port *port)
- 	port->n_read = 0;
- 	started = gs_start_rx(port);
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index 531ad67395e0..5e45cf8dbc6e 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -7,7 +7,6 @@
+ #include <linux/console.h>
+ #include <linux/module.h>
+ #include <linux/slab.h>
+-#include <linux/delay.h>
+ #include <linux/serial_core.h>
+ #include <linux/serial_reg.h>
+ #include <linux/of_address.h>
+@@ -26,28 +25,6 @@ struct of_serial_info {
+ 	int line;
+ };
  
--	/* unblock any pending writes into our circular buffer */
- 	if (started) {
-+		gs_start_tx(port);
-+		/* Unblock any pending writes into our circular buffer, in case
-+		 * we didn't in gs_start_tx() */
- 		tty_wakeup(port->port.tty);
- 	} else {
- 		gs_free_requests(ep, head, &port->read_allocated);
+-#ifdef CONFIG_ARCH_TEGRA
+-static void tegra_serial_handle_break(struct uart_port *p)
+-{
+-	unsigned int status, tmout = 10000;
+-
+-	do {
+-		status = p->serial_in(p, UART_LSR);
+-		if (status & (UART_LSR_FIFOE | UART_LSR_BRK_ERROR_BITS))
+-			status = p->serial_in(p, UART_RX);
+-		else
+-			break;
+-		if (--tmout == 0)
+-			break;
+-		udelay(1);
+-	} while (1);
+-}
+-#else
+-static inline void tegra_serial_handle_break(struct uart_port *port)
+-{
+-}
+-#endif
+-
+ static int of_8250_rs485_config(struct uart_port *port,
+ 				  struct serial_rs485 *rs485)
+ {
+@@ -211,10 +188,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 	port->rs485_config = of_8250_rs485_config;
+ 
+ 	switch (type) {
+-	case PORT_TEGRA:
+-		port->handle_break = tegra_serial_handle_break;
+-		break;
+-
+ 	case PORT_RT2880:
+ 		port->iotype = UPIO_AU;
+ 		break;
+@@ -359,7 +332,6 @@ static const struct of_device_id of_platform_serial_table[] = {
+ 	{ .compatible = "ns16550",  .data = (void *)PORT_16550, },
+ 	{ .compatible = "ns16750",  .data = (void *)PORT_16750, },
+ 	{ .compatible = "ns16850",  .data = (void *)PORT_16850, },
+-	{ .compatible = "nvidia,tegra20-uart", .data = (void *)PORT_TEGRA, },
+ 	{ .compatible = "nxp,lpc3220-uart", .data = (void *)PORT_LPC3220, },
+ 	{ .compatible = "ralink,rt2880-uart", .data = (void *)PORT_RT2880, },
+ 	{ .compatible = "intel,xscale-uart", .data = (void *)PORT_XSCALE, },
+diff --git a/drivers/tty/serial/8250/8250_tegra.c b/drivers/tty/serial/8250/8250_tegra.c
+new file mode 100644
+index 000000000000..c0ffad1572c6
+--- /dev/null
++++ b/drivers/tty/serial/8250/8250_tegra.c
+@@ -0,0 +1,198 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ *  Serial Port driver for Tegra devices
++ *
++ *  Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
++ */
++
++#include <linux/acpi.h>
++#include <linux/clk.h>
++#include <linux/console.h>
++#include <linux/delay.h>
++#include <linux/io.h>
++#include <linux/module.h>
++#include <linux/reset.h>
++#include <linux/slab.h>
++
++#include "8250.h"
++
++struct tegra_uart {
++	struct clk *clk;
++	struct reset_control *rst;
++	int line;
++};
++
++static void tegra_uart_handle_break(struct uart_port *p)
++{
++	unsigned int status, tmout = 10000;
++
++	do {
++		status = p->serial_in(p, UART_LSR);
++		if (status & (UART_LSR_FIFOE | UART_LSR_BRK_ERROR_BITS))
++			status = p->serial_in(p, UART_RX);
++		else
++			break;
++		if (--tmout == 0)
++			break;
++		udelay(1);
++	} while (1);
++}
++
++static int tegra_uart_probe(struct platform_device *pdev)
++{
++	struct uart_8250_port port8250;
++	struct tegra_uart *uart;
++	struct uart_port *port;
++	struct resource *res;
++	int ret;
++
++	uart = devm_kzalloc(&pdev->dev, sizeof(*uart), GFP_KERNEL);
++	if (!uart)
++		return -ENOMEM;
++
++	memset(&port8250, 0, sizeof(port8250));
++
++	port = &port8250.port;
++	spin_lock_init(&port->lock);
++
++	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_FIXED_PORT |
++		      UPF_FIXED_TYPE;
++	port->iotype = UPIO_MEM32;
++	port->regshift = 2;
++	port->type = PORT_TEGRA;
++	port->irqflags |= IRQF_SHARED;
++	port->dev = &pdev->dev;
++	port->handle_break = tegra_uart_handle_break;
++
++	ret = of_alias_get_id(pdev->dev.of_node, "serial");
++	if (ret >= 0)
++		port->line = ret;
++
++	ret = platform_get_irq(pdev, 0);
++	if (ret < 0)
++		return ret;
++
++	port->irq = ret;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -ENODEV;
++
++	port->membase = devm_ioremap(&pdev->dev, res->start,
++				     resource_size(res));
++	if (!port->membase)
++		return -ENOMEM;
++
++	port->mapbase = res->start;
++	port->mapsize = resource_size(res);
++
++	uart->rst = devm_reset_control_get_optional_shared(&pdev->dev, NULL);
++	if (IS_ERR(uart->rst))
++		return PTR_ERR(uart->rst);
++
++	if (device_property_read_u32(&pdev->dev, "clock-frequency",
++				     &port->uartclk)) {
++		uart->clk = devm_clk_get(&pdev->dev, NULL);
++		if (IS_ERR(uart->clk)) {
++			dev_err(&pdev->dev, "failed to get clock!\n");
++			return -ENODEV;
++		}
++
++		ret = clk_prepare_enable(uart->clk);
++		if (ret < 0)
++			return ret;
++
++		port->uartclk = clk_get_rate(uart->clk);
++	}
++
++	ret = reset_control_deassert(uart->rst);
++	if (ret)
++		goto err_clkdisable;
++
++	ret = serial8250_register_8250_port(&port8250);
++	if (ret < 0)
++		goto err_clkdisable;
++
++	platform_set_drvdata(pdev, uart);
++	uart->line = ret;
++
++	return 0;
++
++err_clkdisable:
++	clk_disable_unprepare(uart->clk);
++
++	return ret;
++}
++
++static int tegra_uart_remove(struct platform_device *pdev)
++{
++	struct tegra_uart *uart = platform_get_drvdata(pdev);
++
++	serial8250_unregister_port(uart->line);
++	reset_control_assert(uart->rst);
++	clk_disable_unprepare(uart->clk);
++
++	return 0;
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int tegra_uart_suspend(struct device *dev)
++{
++	struct tegra_uart *uart = dev_get_drvdata(dev);
++	struct uart_8250_port *port8250 = serial8250_get_port(uart->line);
++	struct uart_port *port = &port8250->port;
++
++	serial8250_suspend_port(uart->line);
++
++	if (!uart_console(port) || console_suspend_enabled)
++		clk_disable_unprepare(uart->clk);
++
++	return 0;
++}
++
++static int tegra_uart_resume(struct device *dev)
++{
++	struct tegra_uart *uart = dev_get_drvdata(dev);
++	struct uart_8250_port *port8250 = serial8250_get_port(uart->line);
++	struct uart_port *port = &port8250->port;
++
++	if (!uart_console(port) || console_suspend_enabled)
++		clk_prepare_enable(uart->clk);
++
++	serial8250_resume_port(uart->line);
++
++	return 0;
++}
++#endif
++
++static SIMPLE_DEV_PM_OPS(tegra_uart_pm_ops, tegra_uart_suspend,
++			 tegra_uart_resume);
++
++static const struct of_device_id tegra_uart_of_match[] = {
++	{ .compatible = "nvidia,tegra20-uart", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, tegra_uart_of_match);
++
++static const struct acpi_device_id tegra_uart_acpi_match[] = {
++	{ "NVDA0100", 0 },
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, tegra_uart_acpi_match);
++
++static struct platform_driver tegra_uart_driver = {
++	.driver = {
++		.name = "tegra-uart",
++		.pm = &tegra_uart_pm_ops,
++		.of_match_table = tegra_uart_of_match,
++		.acpi_match_table = ACPI_PTR(tegra_uart_acpi_match),
++	},
++	.probe = tegra_uart_probe,
++	.remove = tegra_uart_remove,
++};
++
++module_platform_driver(tegra_uart_driver);
++
++MODULE_AUTHOR("Jeff Brasen <jbrasen@nvidia.com>");
++MODULE_DESCRIPTION("NVIDIA Tegra 8250 Driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index f16824bbb573..af0688156dd0 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -500,6 +500,15 @@ config SERIAL_8250_PXA
+ 	  applicable to both devicetree and legacy boards, and early console is
+ 	  part of its support.
+ 
++config SERIAL_8250_TEGRA
++	tristate "8250 support for Tegra serial ports"
++	default SERIAL_8250
++	depends on SERIAL_8250
++	depends on ARCH_TEGRA || COMPILE_TEST
++	help
++	  Select this option if you have machine with an NVIDIA Tegra SoC and
++	  wish to enable 8250 serial driver for the Tegra serial interfaces.
++
+ config SERIAL_OF_PLATFORM
+ 	tristate "Devicetree based probing for 8250 ports"
+ 	depends on SERIAL_8250 && OF
+diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
+index 51a6079d3f1f..a8bfb654d490 100644
+--- a/drivers/tty/serial/8250/Makefile
++++ b/drivers/tty/serial/8250/Makefile
+@@ -37,6 +37,7 @@ obj-$(CONFIG_SERIAL_8250_INGENIC)	+= 8250_ingenic.o
+ obj-$(CONFIG_SERIAL_8250_LPSS)		+= 8250_lpss.o
+ obj-$(CONFIG_SERIAL_8250_MID)		+= 8250_mid.o
+ obj-$(CONFIG_SERIAL_8250_PXA)		+= 8250_pxa.o
++obj-$(CONFIG_SERIAL_8250_TEGRA)		+= 8250_tegra.o
+ obj-$(CONFIG_SERIAL_OF_PLATFORM)	+= 8250_of.o
+ 
+ CFLAGS_8250_ingenic.o += -I$(srctree)/scripts/dtc/libfdt
 -- 
-2.10.0.1.g57b01a3
+2.17.1
+
