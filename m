@@ -2,90 +2,93 @@ Return-Path: <SRS0=+uUE=36=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2818C35254
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 18:39:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10128C35254
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 19:30:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C762920715
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 18:39:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A96A020661
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 19:30:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=kopismobile-com.20150623.gappssmtp.com header.i=@kopismobile-com.20150623.gappssmtp.com header.b="f41NLCMZ"
+	dkim=pass (2048-bit key) header.d=kopismobile-com.20150623.gappssmtp.com header.i=@kopismobile-com.20150623.gappssmtp.com header.b="1AtFHHgH"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727609AbgBJSjO (ORCPT
+        id S1727433AbgBJTaK (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 10 Feb 2020 13:39:14 -0500
-Received: from mail-vs1-f66.google.com ([209.85.217.66]:36242 "EHLO
-        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727056AbgBJSjO (ORCPT
+        Mon, 10 Feb 2020 14:30:10 -0500
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:37573 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727029AbgBJTaK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 10 Feb 2020 13:39:14 -0500
-Received: by mail-vs1-f66.google.com with SMTP id a2so4838834vso.3
-        for <linux-serial@vger.kernel.org>; Mon, 10 Feb 2020 10:39:10 -0800 (PST)
+        Mon, 10 Feb 2020 14:30:10 -0500
+Received: by mail-ot1-f65.google.com with SMTP id d3so7575089otp.4
+        for <linux-serial@vger.kernel.org>; Mon, 10 Feb 2020 11:30:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kopismobile-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=kkofZ98GV9LrfTaHrQ4QXlvW8pxoiPCKhSeZwyB4myE=;
-        b=f41NLCMZXey4Ys9A7uP5rM9ZV2mSGKtW4NtWxbjNETiTUOUdIJNqz8nbHeSOvyv2wh
-         61gNGEMmqTXeEtKWvlalwKkev2VYjDsl9ytHugeSN4WTO9AdMo8NsrVQIb9bcy3iyxs6
-         da1077AlGkSdO+VrqL3xsuHnOs2DV+kaKX+o8WWTCRQGgiLatxztTE++MOfAyBcS5+uT
-         0A6uBB6NM+HS1/0iM0aVAzcb3KA1SwMB7LGd3d+z3H5NehWluDsDk/0f6qh4hFMTTdzw
-         Hm2JQ/XucerYluY1Fpi7W6WHWcV99glkrmsZZxhdQmcc1G5c+QFXR/VqAlEKkjt1b231
-         df/g==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ttAcZsliGUSH7WXcVjhAV/BjixYVK4XpgsWIL/Hit7c=;
+        b=1AtFHHgHTS8qKJtFng0Lcn4Jx4ytAEVwvCUlERa4Y3S5RvhtlfDYKcw5tJIrzxyEG4
+         IqCK0NQ0KONUD9HDQ/TbOjpSiCQ7mFNUUyB5+8lBhVAojD7115tcyNDvWJA/lmEcE/rl
+         f9/7FDFVGPinXDYg4h+Qf3+x3mR23lFwQe9mxbJaTinUkaULX4UI5bChPyjB8gM6OfbT
+         qgC+ZklVkry+/NA01RoouDRmlKAXwJqr8TtKARNMw/ognzPg3BHKWjLnX8H83Z/Cl7Ji
+         3kq+Rs9oMPR6eFOsTdtROvxibm9ytUX3TNFHBns5fj5vqN/j9MmWjCBjOXQH/1rW/pGv
+         PsUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=kkofZ98GV9LrfTaHrQ4QXlvW8pxoiPCKhSeZwyB4myE=;
-        b=gkv1yG8LUHjp7W396vdp69tTZdPstzqwRc4eoGE2XhHlw2uWYO2BvgkJlOxP/Pycqw
-         H6sHcgy49wgpnjSBQ9A9RikdTRmmQfcEMKRXuBaw77m/XXfLGnNKHpf1MH48LbQWb8eB
-         m2PJHrQturHMGXVaZQCxB5Skc2yt3zSJr7S3tTeeHlTxJar8mmr5UWQ9YfZUalH9wtfO
-         edZLcfEta9C9VB0yWxo/hHrckpBafBpx2Vqj9Yg17cYuMbcIJAT/PRl3eQ3tjBK3ogcl
-         puq6LmyCEUNQFoppLQSDuMYTQ/w0UI0AdE1blTg+Hg576sWCWCUT3Z3siz+PZZoGQWQ4
-         gGOw==
-X-Gm-Message-State: APjAAAWWygm+JNkjQQH+fCbWE6wEuR+FxqxSe9vsj6rFFF5PUvJHoZ36
-        23L0Qf9qrjI13xealWuizfv9GM4jdeCdFrLWxetyoQ==
-X-Google-Smtp-Source: APXvYqylS31EeYY2TQEyhA2fZwtOWVmw0I810y+f36CA662rAeY9S7L2kcOPcBQ2w32A7f/Jm9+pPA3P3wkATxmK+F8=
-X-Received: by 2002:a05:6102:22e7:: with SMTP id b7mr7433450vsh.57.1581359950389;
- Mon, 10 Feb 2020 10:39:10 -0800 (PST)
-MIME-Version: 1.0
-References: <20200210174942.14182-1-ghilliard@kopismobile.com>
- <20200210174942.14182-3-ghilliard@kopismobile.com> <20200210181156.fbq66yazb5j5quvn@pengutronix.de>
-In-Reply-To: <20200210181156.fbq66yazb5j5quvn@pengutronix.de>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ttAcZsliGUSH7WXcVjhAV/BjixYVK4XpgsWIL/Hit7c=;
+        b=VtpLdJ+TQEa0YSnzdPnZKe9Zhbl/f/XhRYXzQNYGVpvIvKo/Vufo/GXDgz9ybPJmdN
+         nQVSkA8AfxC0g73K+2hopkBGPzM105lMYpCMC7DoT245BNl8+CH8p7DaQm8ax+RXq8eX
+         yyP+5NLyvxVphIbnviQlwTKSHHkrgWQ2rJWWPRyxftPljxzzOx7QSOWB//vqUAwkGRI8
+         C4FCaOlBjfDNKpHj9dX+XMzsqJ25aY6WYDQUdXTKT5IX6i9p0JFxpN4BtAVsxlPH+7aM
+         +rcw4zzKoMo9r/EDlhDyhiT//ygp9sFu65OhndFShwC/O/X8IZetoNhRzb1elFrOuVlW
+         y0Og==
+X-Gm-Message-State: APjAAAXas0Jmxfdjp95ycMuu+8eblLVZcv5kfEpR6TaJalZ4DrEeLjnJ
+        MSTcvbu5EpZd8UbFXD+YngXBRg==
+X-Google-Smtp-Source: APXvYqxwMvwLJXzmeZp/mbXuPai64iNGbAETuUWWzd3ig2H/OVUaeJjjRbpJC27IHP+Q3FkjW1CeJg==
+X-Received: by 2002:a9d:1ca3:: with SMTP id l35mr798534ota.271.1581363009457;
+        Mon, 10 Feb 2020 11:30:09 -0800 (PST)
+Received: from farregard-ubuntu.kopismobile.org (c-73-177-17-21.hsd1.ms.comcast.net. [73.177.17.21])
+        by smtp.gmail.com with ESMTPSA id n22sm412163otj.36.2020.02.10.11.30.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Feb 2020 11:30:08 -0800 (PST)
 From:   George Hilliard <ghilliard@kopismobile.com>
-Date:   Mon, 10 Feb 2020 12:38:59 -0600
-Message-ID: <CALM8J=f1HV8BucyLVAz8cje392F98uOPoYdOMTSL0970eJnAcw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] tty: imx serial: Implement support for reversing TX
- and RX polarity
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     George Hilliard <ghilliard@kopismobile.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
         linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        kernel@pengutronix.de, NXP Linux Team <linux-imx@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        kernel@pengutronix.de
+Subject: [PATCH v2 0/2] Implement support for inverted serial TX/RX on i.MX
+Date:   Mon, 10 Feb 2020 13:29:47 -0600
+Message-Id: <20200210192949.7338-1-ghilliard@kopismobile.com>
+X-Mailer: git-send-email 2.25.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Feb 10, 2020 at 12:11 PM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
-> On Mon, Feb 10, 2020 at 11:49:42AM -0600, George Hilliard wrote:
-> > (confidentiality spam)
->
-> Hmm, sad, I would have had some review feedback that should be addressed
-> before application of the patch. As I only noticed the footer after
-> looking at the patch, it was already too late to stop me reviewing it.
-> As I don't have an expressed permission I will at least not share it
-> (and I expect that Greg will also refuse to apply a patch with such a
-> footer).
->
-This is fixed now. Apologies - added without my knowledge. Should I
-simply resend a v2 without the notice?  Happy to CC everyone else you
-included.
+This peripheral has dedicated control bits that flip input/output
+signals before handing them off to the OS.  This is useful on my
+hardware because the UART is connected to an RS-422 transceiver with the
++/- pins hooked up backward.  Instead of a hack flipping all the bits
+before sending them, the hardware can do it for free.
 
-George
+Functionally unchanged from v1, but the confidentiality notice has been
+removed.  I also CC'd other lists that Uwe suggested.
+
+George Hilliard (2):
+  dt-bindings: serial: document fsl,inverted-tx and -rx options
+  tty: imx serial: Implement support for reversing TX and RX polarity
+
+ .../bindings/serial/fsl-imx-uart.txt          |  4 ++++
+ drivers/tty/serial/imx.c                      | 22 +++++++++++++------
+ 2 files changed, 19 insertions(+), 7 deletions(-)
+
+-- 
+2.25.0
+
