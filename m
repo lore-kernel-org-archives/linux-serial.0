@@ -2,178 +2,179 @@ Return-Path: <SRS0=+uUE=36=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,FUZZY_XPILL,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB4E9C352A3
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 14:58:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6871C352A3
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 15:14:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 98F5520658
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 14:58:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1581346685;
-	bh=ILNZunFctp9ZR2TIDAUMx96l+C8K2uX99y6uDPjx39Y=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=rzLmQfqSdE08artME3miwjsHAZXu5PVz/QjFUyXUCCfqA4qfV7jHFPxax/tLywRWR
-	 SjGLX9HX7SOcnH6f4nRiSmMLnDhqzY2rIFCOKfWL/J0V2tIJ2GXIUsjtAq8By8/2Ig
-	 a2U4IGa/BIDYBAnm9/xawqO2wU3LlxoTBrmfguLI=
+	by mail.kernel.org (Postfix) with ESMTP id 8320B206ED
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 15:14:44 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="W0zzzlSK"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727347AbgBJO6F (ORCPT
+        id S1727732AbgBJPOo (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 10 Feb 2020 09:58:05 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:34544 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726627AbgBJO6E (ORCPT
+        Mon, 10 Feb 2020 10:14:44 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:40695 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727008AbgBJPOn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 10 Feb 2020 09:58:04 -0500
-Received: by mail-lj1-f196.google.com with SMTP id x7so7535898ljc.1;
-        Mon, 10 Feb 2020 06:58:03 -0800 (PST)
+        Mon, 10 Feb 2020 10:14:43 -0500
+Received: by mail-qt1-f193.google.com with SMTP id v25so5346953qto.7;
+        Mon, 10 Feb 2020 07:14:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9sEfE+Vg+QGs9dNdzDI7cFYNk7IQi+zT8aKliaK6oAA=;
+        b=W0zzzlSKPizTOZA3AoLmgXs9P80alKlMSWILYdjLb2VujxB7IgjBvJnAbUaEkRpxxz
+         r3Jtyw4W0ykU6hkVvF6j77H1yuwYhM/ek+3CYVtWvYOR3e/WHGHoCfTHzEAqrXH1s3nq
+         EOq3dr6YesINrQ5SpV31YikeR9Pn6fLCjJrUv5Zyyv4PTFD7W5H6D2ToWrqdP9UHfd6j
+         mmabWSsbUOQ9tGe1W0U9jWaT4tLxxUnvyIcfgNZY6Oq9IqQFa0BxNSZG8IG798AwxU6B
+         jfFEEG7zz6A85IKQWrsDMUWWWKcm5HqlNQUMPlQELC+JttE+qxRm0k0sBLl9LzuJvAxf
+         KzoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mrCHhZ8MNx0wh/bp6TQHAl22F+AoIYKl11PNltzOCI8=;
-        b=hPZbeejjaOZddG1jEPneCRMuGZxSJzpP/g6CovsssQLmMv+91Rwc03dwJcf069wJbT
-         02q2lGfSX2KVWn9IMcDZhHgN+phPAXuNWkKtoL4NSOpcXV3TSztnhzeqnVWmB1BhRtOJ
-         8tePOBizb5ourl+q20XZec5xezWjjp2AN0XAg5+5YCmHcDno0o0v5qZuNQ5ZvGpsJPx5
-         E+7rswD59D8IflVkG83J6+1pHL3Sfeeat3/237pvkTGGV4BEfcQXN7VNP5ndemgypoP/
-         jE5cvK9n7Pl6LTOUWZTTtv9JiGjT4SpVphqgO2CPiraVMjXMjXTJKvp3CBcBTL7NCZzj
-         AF/g==
-X-Gm-Message-State: APjAAAXgM5BEsTTqA8UKtdTH9OCBZ/YC/m79vGVgP1eE3bOFbpkY3p6V
-        GTp9PjlXG1jEpJAjaTHBnmw=
-X-Google-Smtp-Source: APXvYqx1W7ntHSFcf0z4cvNBSXsjgnFe1zGAZILNamB6D3zYwsd0zRbMqB89xZv9nCIYGTtok2r0JA==
-X-Received: by 2002:a05:651c:327:: with SMTP id b7mr1103012ljp.22.1581346682318;
-        Mon, 10 Feb 2020 06:58:02 -0800 (PST)
-Received: from xi.terra (c-12aae455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.170.18])
-        by smtp.gmail.com with ESMTPSA id g15sm445291ljk.8.2020.02.10.06.58.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Feb 2020 06:58:01 -0800 (PST)
-Received: from johan by xi.terra with local (Exim 4.92.3)
-        (envelope-from <johan@xi.terra>)
-        id 1j1AVd-0005vt-09; Mon, 10 Feb 2020 15:58:01 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        stable <stable@vger.kernel.org>,
-        Loic Poulain <loic.poulain@linaro.org>
-Subject: [PATCH] serdev: ttyport: restore client ops on deregistration
-Date:   Mon, 10 Feb 2020 15:57:30 +0100
-Message-Id: <20200210145730.22762-1-johan@kernel.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200210145445.GA22240@localhost>
-References: <20200210145445.GA22240@localhost>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9sEfE+Vg+QGs9dNdzDI7cFYNk7IQi+zT8aKliaK6oAA=;
+        b=CtRkc3IJmc84I54icPzB5lbQAi18uir8IjhOWXr5j4XBIHLlTBK2/QupxbkZpq/6kD
+         gd9x8mz4X4XKv/MyEMjjNgPNOfkhnmRyI4pfYLgi8UX2sVMLqwHWw/XRJknjkh32n6m5
+         wdtM+N6V5enQSdCPghWMOSOaoovFXaiH2MSIRX5Fo0aa68wzIys2WAW5zOggzNOUy4Mk
+         GKe61bHDzO34e0Xqd6vwF897WlO9f0Ep2F3QNuEAAOMSmV/fyhOIp/Nl/kz9Qs1kQsqP
+         H724VLvCEKsIrrjRS94GbFyzRVfQmEaTPsfcWz8x+TJbTZSgCpNR8MpvLMimAV3URiLv
+         BlFw==
+X-Gm-Message-State: APjAAAWautjClJu+2sj7aq5vjLIkBE5yQxsYh9KF1zsENpa0tLGuvNJE
+        y3PArR5MclcyHUnZq8RN7Gs4dHjFdV16XUGqyvo=
+X-Google-Smtp-Source: APXvYqwSUaRPH0ZzeOKVW3XJ6821qKmS7Zo6QHsDR/qDZHmMmRI86qM/YCEl5KNCx3eavnZ2Dh/RvPffO3gCPzBW/sw=
+X-Received: by 2002:ac8:65d4:: with SMTP id t20mr10426164qto.6.1581347682504;
+ Mon, 10 Feb 2020 07:14:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1578235515.git.gupt21@gmail.com> <9fcb02fafd5fc9b31f3fe358b8e62b8a40ae132a.1578235515.git.gupt21@gmail.com>
+ <20200106193500.GC754821@kroah.com> <CALUj-gsaecfZ9HN_JVAnvJijYCHK-A5qeztDLbDOSOAjTVfTeg@mail.gmail.com>
+ <20200110072051.GA124387@kroah.com>
+In-Reply-To: <20200110072051.GA124387@kroah.com>
+From:   rishi gupta <gupt21@gmail.com>
+Date:   Mon, 10 Feb 2020 20:44:31 +0530
+Message-ID: <CALUj-gvf5vcwdj=-8Sh9BjecKwGYFJciZ7caHxbzve3XNmE-xg@mail.gmail.com>
+Subject: Re: [PATCH v1 2/3] tty/serial: ttvys: add null modem driver emulating
+ serial port
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     robh+dt@kernel.org, jslaby@suse.com, linux-serial@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The serdev tty-port controller driver should reset the tty-port client
-operations also on deregistration to avoid a NULL-pointer dereference in
-case the port is later re-registered as a normal tty device.
+Tried dev_groups approach, doesn't fit here. Please see inline.
 
-Note that this can only happen with tty drivers such as 8250 which have
-statically allocated port structures that can end up being reused and
-where a later registration would not register a serdev controller (e.g.
-due to registration errors or if the devicetree has been changed in
-between).
+On Fri, Jan 10, 2020 at 12:50 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Thu, Jan 09, 2020 at 02:59:59PM +0530, rishi gupta wrote:
+> > > > +/* UART frame structure definitions */
+> > > > +#define VS_CRTSCTS       0x0001
+> > > > +#define VS_XON           0x0002
+> > > > +#define VS_NONE          0X0004
+> > > > +#define VS_DATA_5        0X0008
+> > > > +#define VS_DATA_6        0X0010
+> > > > +#define VS_DATA_7        0X0020
+> > > > +#define VS_DATA_8        0X0040
+> > >
+> > > Why the "X"?
+> > Sorry I did not understand, do you mean why VS_XON.
+>
+> No, I mean why the "0X0040" instead of "0x0040" like all other hex
+> digits in your list of defines.
+>
+> > > > +static int vs_alloc_reg_one_dev(int oidx, int pidx, int rtsmap,
+> > > > +                     int dtrmap, int dtropn)
+> > > > +{
+> > > > +     int ret;
+> > > > +     struct vs_dev *vsdev;
+> > > > +     struct device *dev;
+> > > > +
+> > > > +     /* Allocate and init virtual tty device private data */
+> > > > +     vsdev = kcalloc(1, sizeof(struct vs_dev), GFP_KERNEL);
+> > > > +     if (!vsdev)
+> > > > +             return -ENOMEM;
+> > > > +
+> > > > +     vsdev->own_tty = NULL;
+> > > > +     vsdev->peer_tty = NULL;
+> > > > +     vsdev->own_index = oidx;
+> > > > +     vsdev->peer_index =  pidx;
+> > > > +     vsdev->rts_mappings = rtsmap;
+> > > > +     vsdev->dtr_mappings = dtrmap;
+> > > > +     vsdev->set_odtr_at_open = dtropn;
+> > > > +     vsdev->msr_reg = 0;
+> > > > +     vsdev->mcr_reg = 0;
+> > > > +     vsdev->waiting_msr_chg = 0;
+> > > > +     vsdev->tx_paused = 0;
+> > > > +     vsdev->faulty_cable = 0;
+> > > > +     mutex_init(&vsdev->lock);
+> > > > +
+> > > > +     /* Register with tty core with specific minor number */
+> > > > +     dev = tty_register_device(ttyvs_driver, oidx, NULL);
+> > > > +     if (!dev) {
+> > > > +             ret = -ENOMEM;
+> > > > +             goto fail;
+> > > > +     }
+> > > > +
+> > > > +     vsdev->device = dev;
+> > > > +     dev_set_drvdata(dev, vsdev);
+> > > > +
+> > > > +     /* Create custom sysfs files for this device for events */
+> > > > +     ret = sysfs_create_group(&dev->kobj, &vs_info_attr_grp);
+> > >
+> > > Please no.  You just raced with userspace and lost (i.e. userspace has
+> > > no idea these files are present.)
+> > >
+> > > Please use the correct apis for this, if you _REALLY_ want special sysfs
+> > > files for a tty device.
+> > Any specific API would you like to suggest. I am unable to progress on
+> > how to address this one.
+>
+> Now that you have moved things to configfs, maybe you do not need the
+> sysfs files anymore?
+>
+> Ah your "control" sysfs files, ok, you need to set the driver's
+> dev_groups variable to point to your sysfs attributes, and then the
+> driver core will properly set up these files.
+>
+> hope this helps,
+>
+> greg k-h
 
-Specifically, this can be an issue for any statically defined ports that
-would be registered by 8250 core when an 8250 driver is being unbound.
+Everything done except using dev_groups approach (full driver after
+all changes https://github.com/test209/t/blob/master/ttyvs.c#L1957).
 
-Fixes: bed35c6dfa6a ("serdev: add a tty port controller driver")
-Cc: stable <stable@vger.kernel.org>     # 4.11
-Reported-by: Loic Poulain <loic.poulain@linaro.org>
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/tty/serdev/serdev-ttyport.c | 6 ++----
- drivers/tty/tty_port.c              | 5 +++--
- include/linux/tty.h                 | 2 ++
- 3 files changed, 7 insertions(+), 6 deletions(-)
+Currently to emulate parity error (or any event), user writes to a
+device specific node (0 is device number):
+echo "2" > /sys/devices/virtual/tty/ttyvs0/event
 
-diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
-index d1cdd2ab8b4c..d367803e2044 100644
---- a/drivers/tty/serdev/serdev-ttyport.c
-+++ b/drivers/tty/serdev/serdev-ttyport.c
-@@ -265,7 +265,6 @@ struct device *serdev_tty_port_register(struct tty_port *port,
- 					struct device *parent,
- 					struct tty_driver *drv, int idx)
- {
--	const struct tty_port_client_operations *old_ops;
- 	struct serdev_controller *ctrl;
- 	struct serport *serport;
- 	int ret;
-@@ -284,7 +283,6 @@ struct device *serdev_tty_port_register(struct tty_port *port,
- 
- 	ctrl->ops = &ctrl_ops;
- 
--	old_ops = port->client_ops;
- 	port->client_ops = &client_ops;
- 	port->client_data = ctrl;
- 
-@@ -297,7 +295,7 @@ struct device *serdev_tty_port_register(struct tty_port *port,
- 
- err_reset_data:
- 	port->client_data = NULL;
--	port->client_ops = old_ops;
-+	port->client_ops = &tty_port_default_client_ops;
- 	serdev_controller_put(ctrl);
- 
- 	return ERR_PTR(ret);
-@@ -312,8 +310,8 @@ int serdev_tty_port_unregister(struct tty_port *port)
- 		return -ENODEV;
- 
- 	serdev_controller_remove(ctrl);
--	port->client_ops = NULL;
- 	port->client_data = NULL;
-+	port->client_ops = &tty_port_default_client_ops;
- 	serdev_controller_put(ctrl);
- 
- 	return 0;
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 044c3cbdcfa4..ea80bf872f54 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -52,10 +52,11 @@ static void tty_port_default_wakeup(struct tty_port *port)
- 	}
- }
- 
--static const struct tty_port_client_operations default_client_ops = {
-+const struct tty_port_client_operations tty_port_default_client_ops = {
- 	.receive_buf = tty_port_default_receive_buf,
- 	.write_wakeup = tty_port_default_wakeup,
- };
-+EXPORT_SYMBOL_GPL(tty_port_default_client_ops);
- 
- void tty_port_init(struct tty_port *port)
- {
-@@ -68,7 +69,7 @@ void tty_port_init(struct tty_port *port)
- 	spin_lock_init(&port->lock);
- 	port->close_delay = (50 * HZ) / 100;
- 	port->closing_wait = (3000 * HZ) / 100;
--	port->client_ops = &default_client_ops;
-+	port->client_ops = &tty_port_default_client_ops;
- 	kref_init(&port->kref);
- }
- EXPORT_SYMBOL(tty_port_init);
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index bfa4e2ee94a9..bd5fe0e907e8 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -225,6 +225,8 @@ struct tty_port_client_operations {
- 	void (*write_wakeup)(struct tty_port *port);
- };
- 
-+extern const struct tty_port_client_operations tty_port_default_client_ops;
-+
- struct tty_port {
- 	struct tty_bufhead	buf;		/* Locked internally */
- 	struct tty_struct	*tty;		/* Back pointer */
--- 
-2.24.1
+With dev_groups, sysfs is created (1) for driver not for devices (2)
+for platform devices only
 
+Due to (1), parsing based approach will be needed, for ex (0 is device number);
+echo "0-2" > /sys/devices/platform/ttyvs-card@0/event
+or
+echo "0-parity" > /sys/devices/platform/ttyvs-card@0/event
+
+Due to (2), event file will not exist on desktop systems as there will
+be no device tree node; no platform device.
+
+Original problem was user space doesn't know when
+"/sys/devices/virtual/tty/ttyvs0/event" will exist.
+User space gets a uevent when a device is registered with tty core.
+Application must access only after this.
+Is this okay in case of this particular driver.
+
+Only after open(/dev/ttyvs0) succeeds, application should access
+"/sys/devices/virtual/tty/ttyvs0/event".
+
+Regards,
+Rishi
