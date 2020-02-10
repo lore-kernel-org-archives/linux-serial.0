@@ -2,116 +2,86 @@ Return-Path: <SRS0=+uUE=36=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC97BC3B186
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 20:57:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2250C352A4
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 21:16:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8EAC820838
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 20:57:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1581368257;
-	bh=8EBwQnnayyWkzJqyeB1opWjOW6s4LsL74lZDs1gbMSk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=iKbT/+zVKA5pTs01Q0RwQCV0IDD6j342icgFQnbT+QA0GVPC24uSGZ6UXhnm5mUX7
-	 t7o6wRXEdtPUxV65JVsR4ZzQNatT4VaxrwXm0PNy48Kq0yAUijEvxz0U7rMQuL2x2i
-	 I1/Gay5t7XSBA2lZ9HnaulvgUObGI1hSaAsgciFY=
+	by mail.kernel.org (Postfix) with ESMTP id 8728D2070A
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 21:16:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727120AbgBJU5h (ORCPT
+        id S1727434AbgBJVQz (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 10 Feb 2020 15:57:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45344 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727003AbgBJU5h (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 10 Feb 2020 15:57:37 -0500
-Received: from localhost (unknown [104.132.1.111])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5876F20715;
-        Mon, 10 Feb 2020 20:57:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581368256;
-        bh=8EBwQnnayyWkzJqyeB1opWjOW6s4LsL74lZDs1gbMSk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Q+K0NWEc4WuLeQcS12L0g8smg3uR2/TjI/YFp1Goe4vKDAJgrAzjLT/h3XcCvlZnH
-         mbcYT3lfOd/3IEsiQEAh6LfffzHPnpV1q7PKrsbILzrceiMjbxZP3jKZ7sdufCi6T2
-         mJVPiefKlgOQfMtx7phL4DPLoUxUwZy6OvoIL7Mw=
-Date:   Mon, 10 Feb 2020 12:57:35 -0800
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Eugeniu Rosca <erosca@de.adit-jv.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        "George G . Davis" <george_davis@mentor.com>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Jiada Wang <jiada_wang@mentor.com>,
-        Yuichi Kusakabe <yuichi.kusakabe@denso-ten.com>,
-        Yasushi Asano <yasano@jp.adit-jv.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Fukui Yohhei <yohhei.fukui@denso-ten.com>,
-        Torii Kenichi <torii.ken1@jp.fujitsu.com>,
-        Magnus Damm <magnus.damm@gmail.com>
-Subject: Re: [PATCH] serial: sh-sci: Support custom speed setting
-Message-ID: <20200210205735.GB1347752@kroah.com>
-References: <20200129161955.30562-1-erosca@de.adit-jv.com>
- <CAMuHMdWV0kkKq6sKOHsdz+FFGNHphzq_q7rvmYAL=U4fH2H3wQ@mail.gmail.com>
+        Mon, 10 Feb 2020 16:16:55 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:50289 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727003AbgBJVQy (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 10 Feb 2020 16:16:54 -0500
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1j1GQG-0000YA-EO; Mon, 10 Feb 2020 22:16:52 +0100
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1j1GQF-0003sB-Jm; Mon, 10 Feb 2020 22:16:51 +0100
+Date:   Mon, 10 Feb 2020 22:16:51 +0100
+From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     George Hilliard <ghilliard@kopismobile.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        kernel@pengutronix.de, NXP Linux Team <linux-imx@nxp.com>
+Subject: Re: [PATCH 2/2] tty: imx serial: Implement support for reversing TX
+ and RX polarity
+Message-ID: <20200210211651.5jys7ytgdm72hh6f@pengutronix.de>
+References: <20200210174942.14182-1-ghilliard@kopismobile.com>
+ <20200210174942.14182-3-ghilliard@kopismobile.com>
+ <20200210181156.fbq66yazb5j5quvn@pengutronix.de>
+ <CALM8J=f1HV8BucyLVAz8cje392F98uOPoYdOMTSL0970eJnAcw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <CAMuHMdWV0kkKq6sKOHsdz+FFGNHphzq_q7rvmYAL=U4fH2H3wQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CALM8J=f1HV8BucyLVAz8cje392F98uOPoYdOMTSL0970eJnAcw@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Jan 30, 2020 at 01:32:50PM +0100, Geert Uytterhoeven wrote:
-> Hi Eugeniu,
-> 
-> On Wed, Jan 29, 2020 at 5:20 PM Eugeniu Rosca <erosca@de.adit-jv.com> wrote:
-> > From: Torii Kenichi <torii.ken1@jp.fujitsu.com>
-> >
-> > This patch is necessary to use BT module and XM module with DENSO TEN
-> > development board.
-> >
-> > This patch supports ASYNC_SPD_CUST flag by ioctl(TIOCSSERIAL), enables
-> > custom speed setting with setserial(1).
-> >
-> > The custom speed is calculated from uartclk and custom_divisor.
-> > If custom_divisor is zero, custom speed setting is invalid.
-> >
-> > Signed-off-by: Torii Kenichi <torii.ken1@jp.fujitsu.com>
-> > [erosca: rebase against v5.5]
-> > Signed-off-by: Eugeniu Rosca <erosca@de.adit-jv.com>
-> 
-> Thanks for your patch!
-> 
-> While this seems to work fine[*], I have a few comments/questions:
->   1. This feature seems to be deprecated:
-> 
->          sh-sci e6e68000.serial: setserial sets custom speed on
-> ttySC1. This is deprecated.
-> 
->   2. As the wanted speed is specified as a divider, the resulting speed
->      may be off, cfr. the example for 57600 below.
->      Note that the SCIF device has multiple clock inputs, and can do
->      57600 perfectly if the right crystal has been fitted.
-> 
->  3. What to do with "[PATCH/RFC] serial: sh-sci: Update uartclk based
->      on selected clock" (https://patchwork.kernel.org/patch/11103703/)?
->      Combined with this, things become pretty complicated and
->      unpredictable, as uartclk now always reflect the frequency of the
->      last used base clock, which was the optimal one for the previously
->      used speed....
-> 
-> I think it would be easier if we just had an API to specify a raw speed.
-> Perhaps that already exists?
+Hi George,
 
-Yes, see:
-	http://www.panix.com/~grante/arbitrary-baud.c
+On Mon, Feb 10, 2020 at 12:38:59PM -0600, George Hilliard wrote:
+> On Mon, Feb 10, 2020 at 12:11 PM Uwe Kleine-König
+> <u.kleine-koenig@pengutronix.de> wrote:
+> > On Mon, Feb 10, 2020 at 11:49:42AM -0600, George Hilliard wrote:
+> > > (confidentiality spam)
+> >
+> > Hmm, sad, I would have had some review feedback that should be addressed
+> > before application of the patch. As I only noticed the footer after
+> > looking at the patch, it was already too late to stop me reviewing it.
+> > As I don't have an expressed permission I will at least not share it
+> > (and I expect that Greg will also refuse to apply a patch with such a
+> > footer).
+>
+> This is fixed now. Apologies - added without my knowledge. Should I
+> simply resend a v2 without the notice?  Happy to CC everyone else you
+> included.
 
+You did it right. (i.e. yes, resend without the notice is the right
+thing.)
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
