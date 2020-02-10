@@ -2,105 +2,166 @@ Return-Path: <SRS0=+uUE=36=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37014C352A3
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 15:21:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76248C352A4
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 17:50:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 14040206ED
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 15:21:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4C87320838
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 17:50:40 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=kopismobile-com.20150623.gappssmtp.com header.i=@kopismobile-com.20150623.gappssmtp.com header.b="rMGK+ZC8"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727881AbgBJPU7 (ORCPT
+        id S1727549AbgBJRuj (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 10 Feb 2020 10:20:59 -0500
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:7354 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728779AbgBJPU7 (ORCPT
+        Mon, 10 Feb 2020 12:50:39 -0500
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:42184 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727507AbgBJRuj (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 10 Feb 2020 10:20:59 -0500
-Received-SPF: Pass (esa2.microchip.iphmx.com: domain of
-  Nicolas.Ferre@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
-  envelope-from="Nicolas.Ferre@microchip.com";
-  x-sender="Nicolas.Ferre@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
-  include:servers.mcsv.net include:mktomail.com
-  include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa2.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
-  envelope-from="Nicolas.Ferre@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa2.microchip.iphmx.com; spf=Pass smtp.mailfrom=Nicolas.Ferre@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: L7BX/6oEt6gKL1m2Oy6RMwXq4ngWrcO4DRk/+LGzLoQu5R0PM66CboAOgPYrdaKgquHdoHCwRc
- oqawS8diV6MJjhb5j3a+jAHmzNinCtT2vC7FgYLgzsEpUvtmC26KjKOlHMWOKkt0R9mIQMq0dO
- SICv9OCg24cpxElgs6eMRL3DdB48Dqwrfccuc5FPYOTQ4Y0VrLPFN57bsa3sIUgUdYYjz3yXDz
- SS2tVNf31A6vGKgyhYA3tZBofrfEBFJv4sXZ9b+WnFqmltALmgBuN6cJADM0iZilOI+NUykkr3
- 9dI=
-X-IronPort-AV: E=Sophos;i="5.70,425,1574146800"; 
-   d="scan'208";a="65398876"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Feb 2020 08:20:58 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 10 Feb 2020 08:20:56 -0700
-Received: from tenerife.corp.atmel.com (10.10.85.251) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.1713.5 via Frontend Transport; Mon, 10 Feb 2020 08:20:54 -0700
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+        Mon, 10 Feb 2020 12:50:39 -0500
+Received: by mail-oi1-f194.google.com with SMTP id j132so9995209oih.9
+        for <linux-serial@vger.kernel.org>; Mon, 10 Feb 2020 09:50:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kopismobile-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=UR6KsR5ai8ITr9vad8IVGuhSVbCvQzuGaWtLQyEdrZE=;
+        b=rMGK+ZC8vmj66nSqOE601u3oxggsvF/jyBGM9LKLnHSArSFEU3sjUnwOCgbPBofaV0
+         BQCwp86ljbDzUzZRBCPs0m+aBaPpWowW9nCdBddUZJanyqkGl/mnxVNjNogDitUn6Pp0
+         1JnG6rF5tZmXmHeSDGM/dBisMBa3ELRwNmWMxy7e+xfU1UlKCzKcKebUa4AxlGe1mmeh
+         dkoBp+Ec6uT14F3rGykSttPftRh72RLC7RNP6jmZ5kSoBSiYU9/qPN3NuxZgc/qbRtqf
+         Kg7MsOARx8Kr8z8Rp+mMzSK1kXJtl0M7lkfpgcWqzp4FhUjJTQGxx5GeZWhV0wl0pQij
+         69oA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=UR6KsR5ai8ITr9vad8IVGuhSVbCvQzuGaWtLQyEdrZE=;
+        b=AZnr0GUicSTpBV/irjvcAfO3I1UPsl0IJh/apV6I9LggY2iTc8da2YPBYihW6M3slF
+         RMkVtObKNRVwi+yQVgGesw0m5SmbCVWj4FHW5JXHwvcOHb55tPWHUDM+rWiBHNdCGirO
+         zbWtYDyZgcor+NBIW6EWismzJLrSg6bDV65ljsYFk8jSg5QwdAmBo70nVF5cZKUYCanb
+         bQcV6OhvXIoPOSE7pXQz4H2Q4OmJTN21JvvIsY4+IJNVCGSF9MzWCgz0+MYmHK9uuyDu
+         whw6rvPoxb/CHp0ChBS/fEofSvXyxfRXgcWnGpqlvQQWBtMPcTb8HLDB63J56S26PlxQ
+         vxuQ==
+X-Gm-Message-State: APjAAAUCGwd6k+LWtmU8uRLbdHToXIyiIy0yGoKB9BScQZnDb38TiQS5
+        0pLf1Oj/MB5ylywDuEgskv+L92z0m2HaBZf9OcxYmi5ngTA44hMXlPkXjlhuEgyJsXEr4vGFBkM
+        f/MLixCqd6Taai+SrXA==
+X-Google-Smtp-Source: APXvYqxIcseXoWFIBslU5E0Ll1yT9IHCFkl+MIt3RNqkleIwJ2uxpA63e1+bg03SEBzSkpj18PuN9w==
+X-Received: by 2002:aca:d484:: with SMTP id l126mr151998oig.114.1581357037932;
+        Mon, 10 Feb 2020 09:50:37 -0800 (PST)
+Received: from farregard-ubuntu.kopismobile.org (c-73-177-17-21.hsd1.ms.comcast.net. [73.177.17.21])
+        by smtp.gmail.com with ESMTPSA id r205sm293189oih.54.2020.02.10.09.50.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Feb 2020 09:50:37 -0800 (PST)
+From:   George Hilliard <ghilliard@kopismobile.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        <linux-serial@vger.kernel.org>
-CC:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: [PATCH] tty/serial: atmel: manage shutdown in case of RS485 or ISO7816 mode
-Date:   Mon, 10 Feb 2020 16:20:53 +0100
-Message-ID: <20200210152053.8289-1-nicolas.ferre@microchip.com>
-X-Mailer: git-send-email 2.17.1
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     George Hilliard <ghilliard@kopismobile.com>
+Subject: [PATCH 2/2] tty: imx serial: Implement support for reversing TX and RX polarity
+Date:   Mon, 10 Feb 2020 11:49:42 -0600
+Message-Id: <20200210174942.14182-3-ghilliard@kopismobile.com>
+X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20200210174942.14182-1-ghilliard@kopismobile.com>
+References: <20200210174942.14182-1-ghilliard@kopismobile.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="US-ASCII"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-In atmel_shutdown() we call atmel_stop_rx() and atmel_stop_tx() functions.
-Prevent the rx restart that is implemented in RS485 or ISO7816 modes when
-calling atmel_stop_tx() by using the atomic information tasklet_shutdown
-that is already in place for this purpose.
+The peripheral has support for inverting its input and/or output
+signals.  This is useful if the hardware flips polarity of the
+peripheral's signal, such as swapped +/- pins on an RS-422 transceiver,
+or an inverting level shifter.  Add support for these control registers
+via the device tree binding.
 
-Fixes: 98f2082c3ac4 ("tty/serial: atmel: enforce tasklet init and termination sequences")
-Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Signed-off-by: George Hilliard <ghilliard@kopismobile.com>
 ---
- drivers/tty/serial/atmel_serial.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/serial/imx.c | 22 +++++++++++++++-------
+ 1 file changed, 15 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index c15c398c88a9..a39c87a7c2e1 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -570,7 +570,8 @@ static void atmel_stop_tx(struct uart_port *port)
- 	atmel_uart_writel(port, ATMEL_US_IDR, atmel_port->tx_done_mask);
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 0c6c63166250..467e78794997 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -195,6 +195,8 @@ struct imx_port {
+ 	unsigned int		have_rtscts:1;
+ 	unsigned int		have_rtsgpio:1;
+ 	unsigned int		dte_mode:1;
++	unsigned int		inverted_tx:1;
++	unsigned int		inverted_rx:1;
+ 	struct clk		*clk_ipg;
+ 	struct clk		*clk_per;
+ 	const struct imx_uart_data *devdata;
+@@ -1335,7 +1337,7 @@ static int imx_uart_startup(struct uart_port *port)
+ 	int retval, i;
+ 	unsigned long flags;
+ 	int dma_is_inited = 0;
+-	u32 ucr1, ucr2, ucr4;
++	u32 ucr1, ucr2, ucr3, ucr4;
  
- 	if (atmel_uart_is_half_duplex(port))
--		atmel_start_rx(port);
-+		if (!atomic_read(&atmel_port->tasklet_shutdown))
-+			atmel_start_rx(port);
+ 	retval = clk_prepare_enable(sport->clk_per);
+ 	if (retval)
+@@ -1390,6 +1392,8 @@ static int imx_uart_startup(struct uart_port *port)
+ 	ucr4 = imx_uart_readl(sport, UCR4) & ~UCR4_OREN;
+ 	if (!sport->dma_is_enabled)
+ 		ucr4 |= UCR4_OREN;
++	if (sport->inverted_rx)
++		ucr4 |= UCR4_INVR;
+ 	imx_uart_writel(sport, ucr4, UCR4);
  
+ 	ucr2 = imx_uart_readl(sport, UCR2) & ~UCR2_ATEN;
+@@ -1404,19 +1408,17 @@ static int imx_uart_startup(struct uart_port *port)
+ 		ucr2 &= ~UCR2_RTSEN;
+ 	imx_uart_writel(sport, ucr2, UCR2);
+ 
++	ucr3 = imx_uart_readl(sport, UCR3);
++	if (sport->inverted_tx)
++		ucr3 |= UCR3_INVT;
+ 	if (!imx_uart_is_imx1(sport)) {
+-		u32 ucr3;
+-
+-		ucr3 = imx_uart_readl(sport, UCR3);
+-
+ 		ucr3 |= UCR3_DTRDEN | UCR3_RI | UCR3_DCD;
+ 
+ 		if (sport->dte_mode)
+ 			/* disable broken interrupts */
+ 			ucr3 &= ~(UCR3_RI | UCR3_DCD);
+-
+-		imx_uart_writel(sport, ucr3, UCR3);
+ 	}
++	imx_uart_writel(sport, ucr3, UCR3);
+ 
+ 	/*
+ 	 * Enable modem status interrupts
+@@ -2184,6 +2186,12 @@ static int imx_uart_probe_dt(struct imx_port *sport,
+ 	if (of_get_property(np, "rts-gpios", NULL))
+ 		sport->have_rtsgpio = 1;
+ 
++	if (of_get_property(np, "fsl,inverted-tx", NULL))
++		sport->inverted_tx = 1;
++
++	if (of_get_property(np, "fsl,inverted-rx", NULL))
++		sport->inverted_rx = 1;
++
+ 	return 0;
  }
- 
+ #else
 -- 
-2.17.1
+2.25.0
 
+
+-- 
+CONFIDENTIALITY NOTICE: This email and any attachments are for the sole use 
+of the intended recipient and may contain material that is proprietary, 
+confidential, privileged or otherwise legally protected or restricted under 
+applicable government laws. Any review, disclosure, distributing or other 
+use without expressed permission of the sender is strictly prohibited. If 
+you are not the intended recipient, please contact the sender and delete 
+all copies without reading, printing, or saving.
