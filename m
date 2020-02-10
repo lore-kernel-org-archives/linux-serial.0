@@ -2,95 +2,203 @@ Return-Path: <SRS0=+uUE=36=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=CHARSET_FARAWAY_HEADER,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5FDDC352A3
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 10:09:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C1CFC352A5
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 13:11:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8924820842
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 10:09:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E269220715
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 13:11:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727061AbgBJKJp (ORCPT
+        id S1729893AbgBJNLB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 10 Feb 2020 05:09:45 -0500
-Received: from mga09.intel.com ([134.134.136.24]:44107 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727045AbgBJKJo (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 10 Feb 2020 05:09:44 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Feb 2020 02:09:44 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,424,1574150400"; 
-   d="scan'208";a="221504846"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga007.jf.intel.com with ESMTP; 10 Feb 2020 02:09:42 -0800
-Received: from andy by smile with local (Exim 4.93)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1j160d-000XHT-RW; Mon, 10 Feb 2020 12:09:43 +0200
-Date:   Mon, 10 Feb 2020 12:09:43 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Li RongQing <lirongqing@baidu.com>
-Cc:     gregkh@linuxfoundation.org, jslaby@suse.com,
-        haolee.swjtu@gmail.com, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_pnp: pass IRQ shared flag to UART ports
-Message-ID: <20200210100943.GR10400@smile.fi.intel.com>
+        Mon, 10 Feb 2020 08:11:01 -0500
+Received: from mx20.baidu.com ([111.202.115.85]:49476 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729375AbgBJNK6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 10 Feb 2020 08:10:58 -0500
+X-Greylist: delayed 964 seconds by postgrey-1.27 at vger.kernel.org; Mon, 10 Feb 2020 08:10:55 EST
+Received: from BC-Mail-Ex30.internal.baidu.com (unknown [172.31.51.24])
+        by Forcepoint Email with ESMTPS id 0F7CED0AEAFE1459C021;
+        Mon, 10 Feb 2020 20:54:48 +0800 (CST)
+Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
+ BC-Mail-Ex30.internal.baidu.com (172.31.51.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1713.5; Mon, 10 Feb 2020 20:54:47 +0800
+Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
+ BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
+ 15.01.1713.004; Mon, 10 Feb 2020 20:54:47 +0800
+From:   "Li,Rongqing" <lirongqing@baidu.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+CC:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "jslaby@suse.com" <jslaby@suse.com>,
+        "haolee.swjtu@gmail.com" <haolee.swjtu@gmail.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Subject: =?gb2312?B?tPC4tDogW1BBVENIXSBzZXJpYWw6IDgyNTBfcG5wOiBwYXNzIElSUSBzaGFy?=
+ =?gb2312?Q?ed_flag_to_UART_ports?=
+Thread-Topic: [PATCH] serial: 8250_pnp: pass IRQ shared flag to UART ports
+Thread-Index: AQHV3/o2+TStuHZfwEiSlMA6t1yQR6gUYSUQ
+Date:   Mon, 10 Feb 2020 12:54:47 +0000
+Message-ID: <09a4fa15c8ae4a7391787e4b4af30399@baidu.com>
 References: <1581223347-31534-1-git-send-email-lirongqing@baidu.com>
+ <20200210100943.GR10400@smile.fi.intel.com>
+In-Reply-To: <20200210100943.GR10400@smile.fi.intel.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.21.156.126]
+x-baidu-bdmsfe-datecheck: 1_BC-Mail-Ex30_2020-02-10 20:54:47:954
+x-baidu-bdmsfe-viruscheck: BC-Mail-Ex30_GRAY_Inside_WithoutAtta_2020-02-10
+ 20:54:47:939
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1581223347-31534-1-git-send-email-lirongqing@baidu.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Feb 09, 2020 at 12:42:27PM +0800, Li RongQing wrote:
-> On some systems IRQ lines might be shared between multiple devices.
-> If so, the irqflags have to be configured accordingly. The reason is:
-> The 8250 port startup code performs IRQ tests *before* the IRQ handler
-> for that particular port is registered.
-
-Thanks for the report.
-
-Before we proceed with it, can we have more information about the device in question?
-How is it enumerated? What is in resources (ACPI / or ...?) for this device?
-Also how IPMI is being involved to all this and why?
-
-> This commit fixed the below issue:
-> [  973.782131] 8250 request irq 00000000f5a0e2ae 00000000f5a0e2ae 0
-> [  973.785414] genirq: Flags mismatch irq 16. 00000004 (ttyS0) vs. 00000084 (ipmi_si)
-> [  973.788741] CPU: 0 PID: 1 Comm: systemd Tainted: G            E     4.19.0-1.0.0.1.rc2 #5
-> [  973.792112] Hardware name: Huawei TaiShan 2280 V2/BC82AMDDA, BIOS 0.18 06/10/2019
-> [  973.795577] Call trace:
-> [  973.799018]  dump_backtrace+0x0/0x198
-> [  973.802493]  show_stack+0x24/0x30
-> [  973.805965]  dump_stack+0x9c/0xbc
-> [  973.809357]  __setup_irq+0x150/0x6c0
-> [  973.812663]  request_threaded_irq+0xe8/0x180
-> [  973.815891]  univ8250_setup_irq+0x278/0x2a0
-> [  973.819007]  serial8250_do_startup+0x468/0x818
-> [  973.822060]  serial8250_startup+0x38/0x48
-
-Nit: no need to put entire stack for this.
-
-> --- a/drivers/tty/serial/8250/8250_pnp.c
-> +++ b/drivers/tty/serial/8250/8250_pnp.c
-> @@ -476,6 +476,7 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
->  		uart.port.flags |= UPF_SHARE_IRQ;
->  	uart.port.uartclk = 1843200;
->  	uart.port.dev = &dev->dev;
-> +	uart.port.irqflags |= IRQF_SHARED;
-
-Why not to use UPF_SHARE_IRQ flags instead?
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+DQoNCj4gLS0tLS3Tyrz+1K28/i0tLS0tDQo+ILeivP7IyzogQW5keSBTaGV2Y2hlbmtvIFttYWls
+dG86YW5kcml5LnNoZXZjaGVua29AbGludXguaW50ZWwuY29tXQ0KPiC3osvNyrG85DogMjAyMMTq
+MtTCMTDI1SAxODoxMA0KPiDK1bz+yMs6IExpLFJvbmdxaW5nIDxsaXJvbmdxaW5nQGJhaWR1LmNv
+bT4NCj4gs63LzTogZ3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc7IGpzbGFieUBzdXNlLmNvbTsN
+Cj4gaGFvbGVlLnN3anR1QGdtYWlsLmNvbTsgbGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZw0K
+PiDW98ziOiBSZTogW1BBVENIXSBzZXJpYWw6IDgyNTBfcG5wOiBwYXNzIElSUSBzaGFyZWQgZmxh
+ZyB0byBVQVJUIHBvcnRzDQo+IA0KPiBPbiBTdW4sIEZlYiAwOSwgMjAyMCBhdCAxMjo0MjoyN1BN
+ICswODAwLCBMaSBSb25nUWluZyB3cm90ZToNCj4gPiBPbiBzb21lIHN5c3RlbXMgSVJRIGxpbmVz
+IG1pZ2h0IGJlIHNoYXJlZCBiZXR3ZWVuIG11bHRpcGxlIGRldmljZXMuDQo+ID4gSWYgc28sIHRo
+ZSBpcnFmbGFncyBoYXZlIHRvIGJlIGNvbmZpZ3VyZWQgYWNjb3JkaW5nbHkuIFRoZSByZWFzb24g
+aXM6DQo+ID4gVGhlIDgyNTAgcG9ydCBzdGFydHVwIGNvZGUgcGVyZm9ybXMgSVJRIHRlc3RzICpi
+ZWZvcmUqIHRoZSBJUlEgaGFuZGxlcg0KPiA+IGZvciB0aGF0IHBhcnRpY3VsYXIgcG9ydCBpcyBy
+ZWdpc3RlcmVkLg0KPiANCj4gVGhhbmtzIGZvciB0aGUgcmVwb3J0Lg0KPiANCj4gQmVmb3JlIHdl
+IHByb2NlZWQgd2l0aCBpdCwgY2FuIHdlIGhhdmUgbW9yZSBpbmZvcm1hdGlvbiBhYm91dCB0aGUg
+ZGV2aWNlIGluDQo+IHF1ZXN0aW9uPw0KPiBIb3cgaXMgaXQgZW51bWVyYXRlZD8gV2hhdCBpcyBp
+biByZXNvdXJjZXMgKEFDUEkgLyBvciAuLi4/KSBmb3IgdGhpcyBkZXZpY2U/DQo+IEFsc28gaG93
+IElQTUkgaXMgYmVpbmcgaW52b2x2ZWQgdG8gYWxsIHRoaXMgYW5kIHdoeT8NCj4gDQoNClRoaXMg
+aXMgYXJtIHNlcnZlciwgcmVzb3VyY2UgaXMgZnJvbSBkc2R0LCBhbmQgZGV0YWlsIGlzDQoNCg0K
+DQogICAgICA4ICAgICB7DQogICAgICA3ICAgICAgICAgRGV2aWNlIChVQVJUKQ0KICAgICAgNiAg
+ICAgICAgIHsNCiAgICAgIDUgICAgICAgICAgICAgTmFtZSAoX0hJRCwgIlBOUDA1MDEiIC8qIDE2
+NTUwQS1jb21wYXRpYmxlIENPTSBTZXJpYWwgUG9ydCAqLykgIC8vIF9ISUQ6IEhhcmR3YXJlIElE
+DQogICAgICA0ICAgICAgICAgICAgIE5hbWUgKF9VSUQsIFplcm8pICAvLyBfVUlEOiBVbmlxdWUg
+SUQNCiAgICAgIDMgICAgICAgICAgICAgTmFtZSAoX0NDQSwgT25lKSAgLy8gX0NDQTogQ2FjaGUg
+Q29oZXJlbmN5IEF0dHJpYnV0ZQ0KICAgICAgMiAgICAgICAgICAgICBOYW1lIChfRFNELCBQYWNr
+YWdlICgweDAyKSAgLy8gX0RTRDogRGV2aWNlLVNwZWNpZmljIERhdGENCiAgICAgIDEgICAgICAg
+ICAgICAgew0KNzc0OCAgICAgICAgICAgICAgICAgICAgVG9VVUlEICgiZGFmZmQ4MTQtNmViYS00
+ZDhjLThhOTEtYmM5YmJmNGFhMzAxIikgLyogRGV2aWNlIFByb3BlcnRpZXMgZm9yIF9EU0QgKi8s
+DQogICAgICAxICAgICAgICAgICAgICAgICBQYWNrYWdlICgweDAxKQ0KICAgICAgMiAgICAgICAg
+ICAgICAgICAgew0KICAgICAgMyAgICAgICAgICAgICAgICAgICAgIFBhY2thZ2UgKDB4MDIpDQog
+ICAgICA0ICAgICAgICAgICAgICAgICAgICAgew0KICAgICAgNSAgICAgICAgICAgICAgICAgICAg
+ICAgICAiY2xvY2stZnJlcXVlbmN5IiwNCiAgICAgIDYgICAgICAgICAgICAgICAgICAgICAgICAg
+MHgwMDFDMjAwMA0KICAgICAgNyAgICAgICAgICAgICAgICAgICAgIH0NCiAgICAgIDggICAgICAg
+ICAgICAgICAgIH0NCiAgICAgIDkgICAgICAgICAgICAgfSkNCiAgICAgMTAgICAgICAgICAgICAg
+TmFtZSAoX0NSUywgUmVzb3VyY2VUZW1wbGF0ZSAoKSAgLy8gX0NSUzogQ3VycmVudCBSZXNvdXJj
+ZSBTZXR0aW5ncw0KICAgICAxMSAgICAgICAgICAgICB7DQogICAgIDEyICAgICAgICAgICAgICAg
+ICBRV29yZE1lbW9yeSAoUmVzb3VyY2VDb25zdW1lciwgUG9zRGVjb2RlLCBNaW5GaXhlZCwgTWF4
+Rml4ZWQsIE5vbkNhY2hlYWJsZSwgUmVhZFdyaXRlLA0KICAgICAxMyAgICAgICAgICAgICAgICAg
+ICAgIDB4MDAwMDAwMDAwMDAwMDAwMCwgLy8gR3JhbnVsYXJpdHkNCiAgICAgMTQgICAgICAgICAg
+ICAgICAgICAgICAweDAwMDAwMDAzRjAwMDAyRjgsIC8vIFJhbmdlIE1pbmltdW0NCiAgICAgMTUg
+ICAgICAgICAgICAgICAgICAgICAweDAwMDAwMDAzRjAwMDAyRkYsIC8vIFJhbmdlIE1heGltdW0N
+CiAgICAgMTYgICAgICAgICAgICAgICAgICAgICAweDAwMDAwMDAwMDAwMDAwMDAsIC8vIFRyYW5z
+bGF0aW9uIE9mZnNldA0KICAgICAxNyAgICAgICAgICAgICAgICAgICAgIDB4MDAwMDAwMDAwMDAw
+MDAwOCwgLy8gTGVuZ3RoDQogICAgIDE4ICAgICAgICAgICAgICAgICAgICAgLCwgLCBBZGRyZXNz
+UmFuZ2VNZW1vcnksIFR5cGVTdGF0aWMpDQogICAgIDE5ICAgICAgICAgICAgICAgICBJbnRlcnJ1
+cHQgKFJlc291cmNlQ29uc3VtZXIsIExldmVsLCBBY3RpdmVIaWdoLCBTaGFyZWQsICwsICkNCiAg
+ICAgMjAgICAgICAgICAgICAgICAgIHsNCiAgICAgMjEgICAgICAgICAgICAgICAgICAgICAweDAw
+MDAwMUU0LA0KICAgICAyMiAgICAgICAgICAgICAgICAgfQ0KICAgICAyMyAgICAgICAgICAgICB9
+KQ0KICAgICAyNCAgICAgICAgIH0NCiAgICAgMjUgICAgIH0NCiAgICAgMjYNCiANCiANCiAgICAg
+IDkgICAgIFNjb3BlIChfU0IpDQogICAgICA4ICAgICB7DQogICAgICA3ICAgICAgICAgRGV2aWNl
+IChJUEkwKQ0KICAgICAgNiAgICAgICAgIHsNCiAgICAgIDUgICAgICAgICAgICAgTmFtZSAoX0hJ
+RCwgIklQSTAwMDEiKSAgLy8gX0hJRDogSGFyZHdhcmUgSUQNCiAgICAgIDQgICAgICAgICAgICAg
+TWV0aG9kIChfSUZULCAwLCBOb3RTZXJpYWxpemVkKSAgLy8gX0lGVDogSVBNSSBJbnRlcmZhY2Ug
+VHlwZQ0KICAgICAgMyAgICAgICAgICAgICB7DQogICAgICAyICAgICAgICAgICAgICAgICBSZXR1
+cm4gKDB4MDMpDQogICAgICAxICAgICAgICAgICAgIH0NCjEwNjU5ICANCiAgICAgIDEgICAgICAg
+ICAgICAgTmFtZSAoX0NSUywgUmVzb3VyY2VUZW1wbGF0ZSAoKSAgLy8gX0NSUzogQ3VycmVudCBS
+ZXNvdXJjZSBTZXR0aW5ncw0KICAgICAgMiAgICAgICAgICAgICB7DQogICAgICAzICAgICAgICAg
+ICAgICAgICBRV29yZE1lbW9yeSAoUmVzb3VyY2VDb25zdW1lciwgUG9zRGVjb2RlLCBNaW5GaXhl
+ZCwgTWF4Rml4ZWQsIENhY2hlYWJsZSwgUmVhZFdyaXRlLA0KICAgICAgNCAgICAgICAgICAgICAg
+ICAgICAgIDB4MDAwMDAwMDAwMDAwMDAwMCwgLy8gR3JhbnVsYXJpdHkNCiAgICAgIDUgICAgICAg
+ICAgICAgICAgICAgICAweDAwMDAwMDAzRjAwMDAwRTQsIC8vIFJhbmdlIE1pbmltdW0NCiAgICAg
+IDYgICAgICAgICAgICAgICAgICAgICAweDAwMDAwMDAzRjAwMDAwRTcsIC8vIFJhbmdlIE1heGlt
+dW0NCiAgICAgIDcgICAgICAgICAgICAgICAgICAgICAweDAwMDAwMDAwMDAwMDAwMDAsIC8vIFRy
+YW5zbGF0aW9uIE9mZnNldA0KICAgICAgOCAgICAgICAgICAgICAgICAgICAgIDB4MDAwMDAwMDAw
+MDAwMDAwNCwgLy8gTGVuZ3RoDQogICAgICA5ICAgICAgICAgICAgICAgICAgICAgLCwgLCBBZGRy
+ZXNzUmFuZ2VNZW1vcnksIFR5cGVTdGF0aWMpDQogICAgIDEwICAgICAgICAgICAgICAgICBJbnRl
+cnJ1cHQgKFJlc291cmNlQ29uc3VtZXIsIExldmVsLCBBY3RpdmVIaWdoLCBTaGFyZWQsICwsICkN
+CiAgICAgMTEgICAgICAgICAgICAgICAgIHsNCiAgICAgMTIgICAgICAgICAgICAgICAgICAgICAw
+eDAwMDAwMUU0LA0KICAgICAxMyAgICAgICAgICAgICAgICAgfQ0KICAgICAxNCAgICAgICAgICAg
+ICB9KQ0KICAgICAxNSAgICAgICAgIH0NCiAgICAgMTYgICAgIH0NCg0KDQoNCj4gPiBUaGlzIGNv
+bW1pdCBmaXhlZCB0aGUgYmVsb3cgaXNzdWU6DQo+ID4gWyAgOTczLjc4MjEzMV0gODI1MCByZXF1
+ZXN0IGlycSAwMDAwMDAwMGY1YTBlMmFlIDAwMDAwMDAwZjVhMGUyYWUgMCBbDQo+ID4gOTczLjc4
+NTQxNF0gZ2VuaXJxOiBGbGFncyBtaXNtYXRjaCBpcnEgMTYuIDAwMDAwMDA0ICh0dHlTMCkgdnMu
+IDAwMDAwMDg0DQo+IChpcG1pX3NpKQ0KPiA+IFsgIDk3My43ODg3NDFdIENQVTogMCBQSUQ6IDEg
+Q29tbTogc3lzdGVtZCBUYWludGVkOiBHICAgICAgICAgICAgRQ0KPiA0LjE5LjAtMS4wLjAuMS5y
+YzIgIzUNCj4gPiBbICA5NzMuNzkyMTEyXSBIYXJkd2FyZSBuYW1lOiBIdWF3ZWkgVGFpU2hhbiAy
+MjgwIFYyL0JDODJBTUREQSwNCj4gQklPUw0KPiA+IDAuMTggMDYvMTAvMjAxOSBbICA5NzMuNzk1
+NTc3XSBDYWxsIHRyYWNlOg0KPiA+IFsgIDk3My43OTkwMThdICBkdW1wX2JhY2t0cmFjZSsweDAv
+MHgxOTggWyAgOTczLjgwMjQ5M10NCj4gPiBzaG93X3N0YWNrKzB4MjQvMHgzMCBbICA5NzMuODA1
+OTY1XSAgZHVtcF9zdGFjaysweDljLzB4YmMgWw0KPiA+IDk3My44MDkzNTddICBfX3NldHVwX2ly
+cSsweDE1MC8weDZjMCBbICA5NzMuODEyNjYzXQ0KPiA+IHJlcXVlc3RfdGhyZWFkZWRfaXJxKzB4
+ZTgvMHgxODAgWyAgOTczLjgxNTg5MV0NCj4gPiB1bml2ODI1MF9zZXR1cF9pcnErMHgyNzgvMHgy
+YTAgWyAgOTczLjgxOTAwN10NCj4gPiBzZXJpYWw4MjUwX2RvX3N0YXJ0dXArMHg0NjgvMHg4MTgg
+WyAgOTczLjgyMjA2MF0NCj4gPiBzZXJpYWw4MjUwX3N0YXJ0dXArMHgzOC8weDQ4DQo+IA0KPiBO
+aXQ6IG5vIG5lZWQgdG8gcHV0IGVudGlyZSBzdGFjayBmb3IgdGhpcy4NCj4gDQo+ID4gLS0tIGEv
+ZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9wbnAuYw0KPiA+ICsrKyBiL2RyaXZlcnMvdHR5
+L3NlcmlhbC84MjUwLzgyNTBfcG5wLmMNCj4gPiBAQCAtNDc2LDYgKzQ3Niw3IEBAIHNlcmlhbF9w
+bnBfcHJvYmUoc3RydWN0IHBucF9kZXYgKmRldiwgY29uc3Qgc3RydWN0DQo+IHBucF9kZXZpY2Vf
+aWQgKmRldl9pZCkNCj4gPiAgCQl1YXJ0LnBvcnQuZmxhZ3MgfD0gVVBGX1NIQVJFX0lSUTsNCj4g
+PiAgCXVhcnQucG9ydC51YXJ0Y2xrID0gMTg0MzIwMDsNCj4gPiAgCXVhcnQucG9ydC5kZXYgPSAm
+ZGV2LT5kZXY7DQo+ID4gKwl1YXJ0LnBvcnQuaXJxZmxhZ3MgfD0gSVJRRl9TSEFSRUQ7DQo+IA0K
+PiBXaHkgbm90IHRvIHVzZSBVUEZfU0hBUkVfSVJRIGZsYWdzIGluc3RlYWQ/DQo+IGNvbW1pdCA1
+NGU1M2IyZTgwODFlOWVhYmE4NjVlNzQ1Y2E2MWRlOWE4ZWNjYjE4DQoNCkFuZCBJIHRoaW5rIHdl
+IGhhcyB0aGUgc2FtZSBpc3N1ZS4NCg0KQXV0aG9yOiBLdXJ0IEthbnplbmJhY2ggPGt1cnRAbGlu
+dXRyb25peC5kZT4NCkRhdGU6ICAgRnJpIE1hciAxNiAxMjozMTo1OCAyMDE4ICswMTAwDQoNCiAg
+ICB0dHk6IHNlcmlhbDogODI1MDogcGFzcyBJUlEgc2hhcmVkIGZsYWcgdG8gVUFSVCBwb3J0cw0K
+ICAgIA0KICAgIE9uIHNvbWUgc3lzdGVtcyBJUlEgbGluZXMgYmV0d2VlbiBtdWx0aXBsZSBVQVJU
+cyBtaWdodCBiZSBzaGFyZWQuIElmIHNvLCB0aGUNCiAgICBpcnFmbGFncyBoYXZlIHRvIGJlIGNv
+bmZpZ3VyZWQgYWNjb3JkaW5nbHkuIFRoZSByZWFzb24gaXM6IFRoZSA4MjUwIHBvcnQgc3RhcnR1
+cA0KICAgIGNvZGUgcGVyZm9ybXMgSVJRIHRlc3RzICpiZWZvcmUqIHRoZSBJUlEgaGFuZGxlciBm
+b3IgdGhhdCBwYXJ0aWN1bGFyIHBvcnQgaXMNCiAgICByZWdpc3RlcmVkLiBUaGlzIGlzIHBlcmZv
+cm1lZCBpbiBzZXJpYWw4MjUwX2RvX3N0YXJ0dXAoKS4gVGhpcyBmdW5jdGlvbiBjaGVja3MNCiAg
+ICB3aGV0aGVyIElSUUZfU0hBUkVEIGlzIGNvbmZpZ3VyZWQgYW5kIG9ubHkgdGhlbiBkaXNhYmxl
+cyB0aGUgSVJRIGxpbmUgd2hpbGUNCiAgICB0ZXN0aW5nLg0KICAgIA0KICAgIFRoaXMgdGVzdCBp
+cyBwZXJmb3JtZWQgdXBvbiBlYWNoIG9wZW4oKSBvZiB0aGUgVUFSVCBkZXZpY2UuIEltYWdpbmUg
+dHdvIFVBUlRzDQogICAgc2hhcmUgdGhlIHNhbWUgSVJRIGxpbmU6IE9uIGlzIGFscmVhZHkgb3Bl
+bmVkIGFuZCB0aGUgSVJRIGlzIGFjdGl2ZS4gV2hlbiB0aGUNCiAgICBzZWNvbmQgVUFSVCBpcyBv
+cGVuZWQsIHRoZSBJUlEgbGluZSBoYXMgdG8gYmUgZGlzYWJsZWQgd2hpbGUgcGVyZm9ybWluZyBJ
+UlENCiAgICB0ZXN0cy4gT3RoZXJ3aXNlIGFuIElSUSBtaWdodCBoYW5kbGVyIG1pZ2h0IGJlIGlu
+dm9rZWQsIGJ1dCB0aGUgdGhlIElSUSBpdHNlbGYNCiAgICBjYW5ub3QgYmUgaGFuZGxlZCwgYmVj
+YXVzZSB0aGUgY29ycmVzcG9uZGluZyBoYW5kbGVyIGlzbid0IHJlZ2lzdGVyZWQsDQogICAgeWV0
+LiBUaGF0J3MgYmVjYXVzZSB0aGUgODI1MCBjb2RlIHVzZXMgYSBjaGFpbi1oYW5kbGVyIGFuZCBp
+bnZva2VzIHRoZQ0KICAgIGNvcnJlc3BvbmRpbmcgcG9ydCdzIElSUSBoYW5kbGluZyByb3VudGlu
+ZXMgaGltc2VsZi4NCiAgICANCiAgICBVbmZvcnR1bmF0ZWx5IHRoaXMgSVJRRl9TSEFSRUQgZmxh
+ZyBpc24ndCBjb25maWd1cmVkIGZvciBVQVJUcyBwcm9iZWQgdmlhIGRldmljZQ0KICAgIHRyZWUg
+ZXZlbiBpZiB0aGUgSVJRcyBhcmUgc2hhcmVkLiBUaGlzIHdheSwgdGhlIGFjdHVhbCBhbmQgc2hh
+cmVkIElSUSBsaW5lIGlzbid0DQogICAgZGlzYWJsZWQgd2hpbGUgcGVyZm9ybWluZyB0ZXN0cyBh
+bmQgdGhlIGtlcm5lbCBjb3JyZWN0bHkgZGV0ZWN0cyBhIHNwdXJpb3VzDQogICAgSVJRLiBTbywg
+YWRkaW5nIHRoaXMgZmxhZyB0byB0aGUgRFQgcHJvYmUgc29sdmVzIHRoZSBpc3N1ZS4NCiAgICAN
+CiAgICBOb3RlOiBUaGUgVVBGX1NIQVJFX0lSUSBmbGFnIGlzIGNvbmZpZ3VyZWQgdW5jb25kaXRp
+b25hbGx5LiBUaGVyZWZvcmUsIHRoZQ0KICAgIElSUUZfU0hBUkVEIGZsYWcgY2FuIGJlIHNldCB1
+bmNvbmRpdGlvbmFsbHkgYXMgd2VsbC4NCiAgICANCiAgICBFeGFtcGxlIHN0YWNrdHJhY2UgYnkg
+cGVyZm9ybWluZyBlY2hvIDEgPiAvZGV2L3R0eVMyIG9uIGEgbm9uLXBhdGNoZWQgc3lzdGVtOg0K
+ICAgIA0KICAgIHxpcnEgODU6IG5vYm9keSBjYXJlZCAodHJ5IGJvb3Rpbmcgd2l0aCB0aGUgImly
+cXBvbGwiIG9wdGlvbikNCiAgICB8IFsuLi5dDQogICAgfGhhbmRsZXJzOg0KICAgIHxbPGZmZmYw
+MDAwMDgwZmM2Mjg+XSBpcnFfZGVmYXVsdF9wcmltYXJ5X2hhbmRsZXIgdGhyZWFkZWQgWzxmZmZm
+MDAwMDA4NTVmYmI4Pl0gc2VyaWFsODI1MF9pbnRlcnJ1cHQNCiAgICB8RGlzYWJsaW5nIElSUSAj
+ODUNCiAgICANCiAgICBTaWduZWQtb2ZmLWJ5OiBLdXJ0IEthbnplbmJhY2ggPGt1cnRAbGludXRy
+b25peC5kZT4NCiAgICBTaWduZWQtb2ZmLWJ5OiBHcmVnIEtyb2FoLUhhcnRtYW4gPGdyZWdraEBs
+aW51eGZvdW5kYXRpb24ub3JnPg0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsLzgy
+NTAvODI1MF9vZi5jIGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9vZi5jDQppbmRleCA5
+ODM1YjFjMWNiZTEuLjNkZThkNmE0MTI0NiAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvdHR5L3Nlcmlh
+bC84MjUwLzgyNTBfb2YuYw0KKysrIGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9vZi5j
+DQpAQCAtMTQ5LDYgKzE0OSw3IEBAIHN0YXRpYyBpbnQgb2ZfcGxhdGZvcm1fc2VyaWFsX3NldHVw
+KHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKm9mZGV2LA0KICAgICAgICBwb3J0LT51YXJ0Y2xrID0g
+Y2xrOw0KICAgICAgICBwb3J0LT5mbGFncyA9IFVQRl9TSEFSRV9JUlEgfCBVUEZfQk9PVF9BVVRP
+Q09ORiB8IFVQRl9JT1JFTUFQDQogICAgICAgICAgICAgICAgfCBVUEZfRklYRURfUE9SVCB8IFVQ
+Rl9GSVhFRF9UWVBFOw0KKyAgICAgICBwb3J0LT5pcnFmbGFncyB8PSBJUlFGX1NIQVJFRDsNCiAN
+CiAgICAgICAgaWYgKG9mX3Byb3BlcnR5X3JlYWRfYm9vbChucCwgIm5vLWxvb3BiYWNrLXRlc3Qi
+KSkNCiAgICAgICAgICAgICAgICBwb3J0LT5mbGFncyB8PSBVUEZfU0tJUF9URVNUOw0KDQoNCi1M
+aQ0KDQo+IC0tDQo+IFdpdGggQmVzdCBSZWdhcmRzLA0KPiBBbmR5IFNoZXZjaGVua28NCj4gDQoN
+Cg==
