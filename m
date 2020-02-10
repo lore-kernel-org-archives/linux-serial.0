@@ -2,203 +2,178 @@ Return-Path: <SRS0=+uUE=36=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=CHARSET_FARAWAY_HEADER,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C1CFC352A5
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 13:11:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB4E9C352A3
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 14:58:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E269220715
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 13:11:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 98F5520658
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 14:58:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1581346685;
+	bh=ILNZunFctp9ZR2TIDAUMx96l+C8K2uX99y6uDPjx39Y=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=rzLmQfqSdE08artME3miwjsHAZXu5PVz/QjFUyXUCCfqA4qfV7jHFPxax/tLywRWR
+	 SjGLX9HX7SOcnH6f4nRiSmMLnDhqzY2rIFCOKfWL/J0V2tIJ2GXIUsjtAq8By8/2Ig
+	 a2U4IGa/BIDYBAnm9/xawqO2wU3LlxoTBrmfguLI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729893AbgBJNLB (ORCPT
+        id S1727347AbgBJO6F (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 10 Feb 2020 08:11:01 -0500
-Received: from mx20.baidu.com ([111.202.115.85]:49476 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729375AbgBJNK6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 10 Feb 2020 08:10:58 -0500
-X-Greylist: delayed 964 seconds by postgrey-1.27 at vger.kernel.org; Mon, 10 Feb 2020 08:10:55 EST
-Received: from BC-Mail-Ex30.internal.baidu.com (unknown [172.31.51.24])
-        by Forcepoint Email with ESMTPS id 0F7CED0AEAFE1459C021;
-        Mon, 10 Feb 2020 20:54:48 +0800 (CST)
-Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
- BC-Mail-Ex30.internal.baidu.com (172.31.51.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1713.5; Mon, 10 Feb 2020 20:54:47 +0800
-Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
- BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
- 15.01.1713.004; Mon, 10 Feb 2020 20:54:47 +0800
-From:   "Li,Rongqing" <lirongqing@baidu.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jslaby@suse.com" <jslaby@suse.com>,
-        "haolee.swjtu@gmail.com" <haolee.swjtu@gmail.com>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Subject: =?gb2312?B?tPC4tDogW1BBVENIXSBzZXJpYWw6IDgyNTBfcG5wOiBwYXNzIElSUSBzaGFy?=
- =?gb2312?Q?ed_flag_to_UART_ports?=
-Thread-Topic: [PATCH] serial: 8250_pnp: pass IRQ shared flag to UART ports
-Thread-Index: AQHV3/o2+TStuHZfwEiSlMA6t1yQR6gUYSUQ
-Date:   Mon, 10 Feb 2020 12:54:47 +0000
-Message-ID: <09a4fa15c8ae4a7391787e4b4af30399@baidu.com>
-References: <1581223347-31534-1-git-send-email-lirongqing@baidu.com>
- <20200210100943.GR10400@smile.fi.intel.com>
-In-Reply-To: <20200210100943.GR10400@smile.fi.intel.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.21.156.126]
-x-baidu-bdmsfe-datecheck: 1_BC-Mail-Ex30_2020-02-10 20:54:47:954
-x-baidu-bdmsfe-viruscheck: BC-Mail-Ex30_GRAY_Inside_WithoutAtta_2020-02-10
- 20:54:47:939
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        Mon, 10 Feb 2020 09:58:05 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:34544 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726627AbgBJO6E (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 10 Feb 2020 09:58:04 -0500
+Received: by mail-lj1-f196.google.com with SMTP id x7so7535898ljc.1;
+        Mon, 10 Feb 2020 06:58:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=mrCHhZ8MNx0wh/bp6TQHAl22F+AoIYKl11PNltzOCI8=;
+        b=hPZbeejjaOZddG1jEPneCRMuGZxSJzpP/g6CovsssQLmMv+91Rwc03dwJcf069wJbT
+         02q2lGfSX2KVWn9IMcDZhHgN+phPAXuNWkKtoL4NSOpcXV3TSztnhzeqnVWmB1BhRtOJ
+         8tePOBizb5ourl+q20XZec5xezWjjp2AN0XAg5+5YCmHcDno0o0v5qZuNQ5ZvGpsJPx5
+         E+7rswD59D8IflVkG83J6+1pHL3Sfeeat3/237pvkTGGV4BEfcQXN7VNP5ndemgypoP/
+         jE5cvK9n7Pl6LTOUWZTTtv9JiGjT4SpVphqgO2CPiraVMjXMjXTJKvp3CBcBTL7NCZzj
+         AF/g==
+X-Gm-Message-State: APjAAAXgM5BEsTTqA8UKtdTH9OCBZ/YC/m79vGVgP1eE3bOFbpkY3p6V
+        GTp9PjlXG1jEpJAjaTHBnmw=
+X-Google-Smtp-Source: APXvYqx1W7ntHSFcf0z4cvNBSXsjgnFe1zGAZILNamB6D3zYwsd0zRbMqB89xZv9nCIYGTtok2r0JA==
+X-Received: by 2002:a05:651c:327:: with SMTP id b7mr1103012ljp.22.1581346682318;
+        Mon, 10 Feb 2020 06:58:02 -0800 (PST)
+Received: from xi.terra (c-12aae455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.170.18])
+        by smtp.gmail.com with ESMTPSA id g15sm445291ljk.8.2020.02.10.06.58.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Feb 2020 06:58:01 -0800 (PST)
+Received: from johan by xi.terra with local (Exim 4.92.3)
+        (envelope-from <johan@xi.terra>)
+        id 1j1AVd-0005vt-09; Mon, 10 Feb 2020 15:58:01 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        stable <stable@vger.kernel.org>,
+        Loic Poulain <loic.poulain@linaro.org>
+Subject: [PATCH] serdev: ttyport: restore client ops on deregistration
+Date:   Mon, 10 Feb 2020 15:57:30 +0100
+Message-Id: <20200210145730.22762-1-johan@kernel.org>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200210145445.GA22240@localhost>
+References: <20200210145445.GA22240@localhost>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-DQoNCj4gLS0tLS3Tyrz+1K28/i0tLS0tDQo+ILeivP7IyzogQW5keSBTaGV2Y2hlbmtvIFttYWls
-dG86YW5kcml5LnNoZXZjaGVua29AbGludXguaW50ZWwuY29tXQ0KPiC3osvNyrG85DogMjAyMMTq
-MtTCMTDI1SAxODoxMA0KPiDK1bz+yMs6IExpLFJvbmdxaW5nIDxsaXJvbmdxaW5nQGJhaWR1LmNv
-bT4NCj4gs63LzTogZ3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc7IGpzbGFieUBzdXNlLmNvbTsN
-Cj4gaGFvbGVlLnN3anR1QGdtYWlsLmNvbTsgbGludXgtc2VyaWFsQHZnZXIua2VybmVsLm9yZw0K
-PiDW98ziOiBSZTogW1BBVENIXSBzZXJpYWw6IDgyNTBfcG5wOiBwYXNzIElSUSBzaGFyZWQgZmxh
-ZyB0byBVQVJUIHBvcnRzDQo+IA0KPiBPbiBTdW4sIEZlYiAwOSwgMjAyMCBhdCAxMjo0MjoyN1BN
-ICswODAwLCBMaSBSb25nUWluZyB3cm90ZToNCj4gPiBPbiBzb21lIHN5c3RlbXMgSVJRIGxpbmVz
-IG1pZ2h0IGJlIHNoYXJlZCBiZXR3ZWVuIG11bHRpcGxlIGRldmljZXMuDQo+ID4gSWYgc28sIHRo
-ZSBpcnFmbGFncyBoYXZlIHRvIGJlIGNvbmZpZ3VyZWQgYWNjb3JkaW5nbHkuIFRoZSByZWFzb24g
-aXM6DQo+ID4gVGhlIDgyNTAgcG9ydCBzdGFydHVwIGNvZGUgcGVyZm9ybXMgSVJRIHRlc3RzICpi
-ZWZvcmUqIHRoZSBJUlEgaGFuZGxlcg0KPiA+IGZvciB0aGF0IHBhcnRpY3VsYXIgcG9ydCBpcyBy
-ZWdpc3RlcmVkLg0KPiANCj4gVGhhbmtzIGZvciB0aGUgcmVwb3J0Lg0KPiANCj4gQmVmb3JlIHdl
-IHByb2NlZWQgd2l0aCBpdCwgY2FuIHdlIGhhdmUgbW9yZSBpbmZvcm1hdGlvbiBhYm91dCB0aGUg
-ZGV2aWNlIGluDQo+IHF1ZXN0aW9uPw0KPiBIb3cgaXMgaXQgZW51bWVyYXRlZD8gV2hhdCBpcyBp
-biByZXNvdXJjZXMgKEFDUEkgLyBvciAuLi4/KSBmb3IgdGhpcyBkZXZpY2U/DQo+IEFsc28gaG93
-IElQTUkgaXMgYmVpbmcgaW52b2x2ZWQgdG8gYWxsIHRoaXMgYW5kIHdoeT8NCj4gDQoNClRoaXMg
-aXMgYXJtIHNlcnZlciwgcmVzb3VyY2UgaXMgZnJvbSBkc2R0LCBhbmQgZGV0YWlsIGlzDQoNCg0K
-DQogICAgICA4ICAgICB7DQogICAgICA3ICAgICAgICAgRGV2aWNlIChVQVJUKQ0KICAgICAgNiAg
-ICAgICAgIHsNCiAgICAgIDUgICAgICAgICAgICAgTmFtZSAoX0hJRCwgIlBOUDA1MDEiIC8qIDE2
-NTUwQS1jb21wYXRpYmxlIENPTSBTZXJpYWwgUG9ydCAqLykgIC8vIF9ISUQ6IEhhcmR3YXJlIElE
-DQogICAgICA0ICAgICAgICAgICAgIE5hbWUgKF9VSUQsIFplcm8pICAvLyBfVUlEOiBVbmlxdWUg
-SUQNCiAgICAgIDMgICAgICAgICAgICAgTmFtZSAoX0NDQSwgT25lKSAgLy8gX0NDQTogQ2FjaGUg
-Q29oZXJlbmN5IEF0dHJpYnV0ZQ0KICAgICAgMiAgICAgICAgICAgICBOYW1lIChfRFNELCBQYWNr
-YWdlICgweDAyKSAgLy8gX0RTRDogRGV2aWNlLVNwZWNpZmljIERhdGENCiAgICAgIDEgICAgICAg
-ICAgICAgew0KNzc0OCAgICAgICAgICAgICAgICAgICAgVG9VVUlEICgiZGFmZmQ4MTQtNmViYS00
-ZDhjLThhOTEtYmM5YmJmNGFhMzAxIikgLyogRGV2aWNlIFByb3BlcnRpZXMgZm9yIF9EU0QgKi8s
-DQogICAgICAxICAgICAgICAgICAgICAgICBQYWNrYWdlICgweDAxKQ0KICAgICAgMiAgICAgICAg
-ICAgICAgICAgew0KICAgICAgMyAgICAgICAgICAgICAgICAgICAgIFBhY2thZ2UgKDB4MDIpDQog
-ICAgICA0ICAgICAgICAgICAgICAgICAgICAgew0KICAgICAgNSAgICAgICAgICAgICAgICAgICAg
-ICAgICAiY2xvY2stZnJlcXVlbmN5IiwNCiAgICAgIDYgICAgICAgICAgICAgICAgICAgICAgICAg
-MHgwMDFDMjAwMA0KICAgICAgNyAgICAgICAgICAgICAgICAgICAgIH0NCiAgICAgIDggICAgICAg
-ICAgICAgICAgIH0NCiAgICAgIDkgICAgICAgICAgICAgfSkNCiAgICAgMTAgICAgICAgICAgICAg
-TmFtZSAoX0NSUywgUmVzb3VyY2VUZW1wbGF0ZSAoKSAgLy8gX0NSUzogQ3VycmVudCBSZXNvdXJj
-ZSBTZXR0aW5ncw0KICAgICAxMSAgICAgICAgICAgICB7DQogICAgIDEyICAgICAgICAgICAgICAg
-ICBRV29yZE1lbW9yeSAoUmVzb3VyY2VDb25zdW1lciwgUG9zRGVjb2RlLCBNaW5GaXhlZCwgTWF4
-Rml4ZWQsIE5vbkNhY2hlYWJsZSwgUmVhZFdyaXRlLA0KICAgICAxMyAgICAgICAgICAgICAgICAg
-ICAgIDB4MDAwMDAwMDAwMDAwMDAwMCwgLy8gR3JhbnVsYXJpdHkNCiAgICAgMTQgICAgICAgICAg
-ICAgICAgICAgICAweDAwMDAwMDAzRjAwMDAyRjgsIC8vIFJhbmdlIE1pbmltdW0NCiAgICAgMTUg
-ICAgICAgICAgICAgICAgICAgICAweDAwMDAwMDAzRjAwMDAyRkYsIC8vIFJhbmdlIE1heGltdW0N
-CiAgICAgMTYgICAgICAgICAgICAgICAgICAgICAweDAwMDAwMDAwMDAwMDAwMDAsIC8vIFRyYW5z
-bGF0aW9uIE9mZnNldA0KICAgICAxNyAgICAgICAgICAgICAgICAgICAgIDB4MDAwMDAwMDAwMDAw
-MDAwOCwgLy8gTGVuZ3RoDQogICAgIDE4ICAgICAgICAgICAgICAgICAgICAgLCwgLCBBZGRyZXNz
-UmFuZ2VNZW1vcnksIFR5cGVTdGF0aWMpDQogICAgIDE5ICAgICAgICAgICAgICAgICBJbnRlcnJ1
-cHQgKFJlc291cmNlQ29uc3VtZXIsIExldmVsLCBBY3RpdmVIaWdoLCBTaGFyZWQsICwsICkNCiAg
-ICAgMjAgICAgICAgICAgICAgICAgIHsNCiAgICAgMjEgICAgICAgICAgICAgICAgICAgICAweDAw
-MDAwMUU0LA0KICAgICAyMiAgICAgICAgICAgICAgICAgfQ0KICAgICAyMyAgICAgICAgICAgICB9
-KQ0KICAgICAyNCAgICAgICAgIH0NCiAgICAgMjUgICAgIH0NCiAgICAgMjYNCiANCiANCiAgICAg
-IDkgICAgIFNjb3BlIChfU0IpDQogICAgICA4ICAgICB7DQogICAgICA3ICAgICAgICAgRGV2aWNl
-IChJUEkwKQ0KICAgICAgNiAgICAgICAgIHsNCiAgICAgIDUgICAgICAgICAgICAgTmFtZSAoX0hJ
-RCwgIklQSTAwMDEiKSAgLy8gX0hJRDogSGFyZHdhcmUgSUQNCiAgICAgIDQgICAgICAgICAgICAg
-TWV0aG9kIChfSUZULCAwLCBOb3RTZXJpYWxpemVkKSAgLy8gX0lGVDogSVBNSSBJbnRlcmZhY2Ug
-VHlwZQ0KICAgICAgMyAgICAgICAgICAgICB7DQogICAgICAyICAgICAgICAgICAgICAgICBSZXR1
-cm4gKDB4MDMpDQogICAgICAxICAgICAgICAgICAgIH0NCjEwNjU5ICANCiAgICAgIDEgICAgICAg
-ICAgICAgTmFtZSAoX0NSUywgUmVzb3VyY2VUZW1wbGF0ZSAoKSAgLy8gX0NSUzogQ3VycmVudCBS
-ZXNvdXJjZSBTZXR0aW5ncw0KICAgICAgMiAgICAgICAgICAgICB7DQogICAgICAzICAgICAgICAg
-ICAgICAgICBRV29yZE1lbW9yeSAoUmVzb3VyY2VDb25zdW1lciwgUG9zRGVjb2RlLCBNaW5GaXhl
-ZCwgTWF4Rml4ZWQsIENhY2hlYWJsZSwgUmVhZFdyaXRlLA0KICAgICAgNCAgICAgICAgICAgICAg
-ICAgICAgIDB4MDAwMDAwMDAwMDAwMDAwMCwgLy8gR3JhbnVsYXJpdHkNCiAgICAgIDUgICAgICAg
-ICAgICAgICAgICAgICAweDAwMDAwMDAzRjAwMDAwRTQsIC8vIFJhbmdlIE1pbmltdW0NCiAgICAg
-IDYgICAgICAgICAgICAgICAgICAgICAweDAwMDAwMDAzRjAwMDAwRTcsIC8vIFJhbmdlIE1heGlt
-dW0NCiAgICAgIDcgICAgICAgICAgICAgICAgICAgICAweDAwMDAwMDAwMDAwMDAwMDAsIC8vIFRy
-YW5zbGF0aW9uIE9mZnNldA0KICAgICAgOCAgICAgICAgICAgICAgICAgICAgIDB4MDAwMDAwMDAw
-MDAwMDAwNCwgLy8gTGVuZ3RoDQogICAgICA5ICAgICAgICAgICAgICAgICAgICAgLCwgLCBBZGRy
-ZXNzUmFuZ2VNZW1vcnksIFR5cGVTdGF0aWMpDQogICAgIDEwICAgICAgICAgICAgICAgICBJbnRl
-cnJ1cHQgKFJlc291cmNlQ29uc3VtZXIsIExldmVsLCBBY3RpdmVIaWdoLCBTaGFyZWQsICwsICkN
-CiAgICAgMTEgICAgICAgICAgICAgICAgIHsNCiAgICAgMTIgICAgICAgICAgICAgICAgICAgICAw
-eDAwMDAwMUU0LA0KICAgICAxMyAgICAgICAgICAgICAgICAgfQ0KICAgICAxNCAgICAgICAgICAg
-ICB9KQ0KICAgICAxNSAgICAgICAgIH0NCiAgICAgMTYgICAgIH0NCg0KDQoNCj4gPiBUaGlzIGNv
-bW1pdCBmaXhlZCB0aGUgYmVsb3cgaXNzdWU6DQo+ID4gWyAgOTczLjc4MjEzMV0gODI1MCByZXF1
-ZXN0IGlycSAwMDAwMDAwMGY1YTBlMmFlIDAwMDAwMDAwZjVhMGUyYWUgMCBbDQo+ID4gOTczLjc4
-NTQxNF0gZ2VuaXJxOiBGbGFncyBtaXNtYXRjaCBpcnEgMTYuIDAwMDAwMDA0ICh0dHlTMCkgdnMu
-IDAwMDAwMDg0DQo+IChpcG1pX3NpKQ0KPiA+IFsgIDk3My43ODg3NDFdIENQVTogMCBQSUQ6IDEg
-Q29tbTogc3lzdGVtZCBUYWludGVkOiBHICAgICAgICAgICAgRQ0KPiA0LjE5LjAtMS4wLjAuMS5y
-YzIgIzUNCj4gPiBbICA5NzMuNzkyMTEyXSBIYXJkd2FyZSBuYW1lOiBIdWF3ZWkgVGFpU2hhbiAy
-MjgwIFYyL0JDODJBTUREQSwNCj4gQklPUw0KPiA+IDAuMTggMDYvMTAvMjAxOSBbICA5NzMuNzk1
-NTc3XSBDYWxsIHRyYWNlOg0KPiA+IFsgIDk3My43OTkwMThdICBkdW1wX2JhY2t0cmFjZSsweDAv
-MHgxOTggWyAgOTczLjgwMjQ5M10NCj4gPiBzaG93X3N0YWNrKzB4MjQvMHgzMCBbICA5NzMuODA1
-OTY1XSAgZHVtcF9zdGFjaysweDljLzB4YmMgWw0KPiA+IDk3My44MDkzNTddICBfX3NldHVwX2ly
-cSsweDE1MC8weDZjMCBbICA5NzMuODEyNjYzXQ0KPiA+IHJlcXVlc3RfdGhyZWFkZWRfaXJxKzB4
-ZTgvMHgxODAgWyAgOTczLjgxNTg5MV0NCj4gPiB1bml2ODI1MF9zZXR1cF9pcnErMHgyNzgvMHgy
-YTAgWyAgOTczLjgxOTAwN10NCj4gPiBzZXJpYWw4MjUwX2RvX3N0YXJ0dXArMHg0NjgvMHg4MTgg
-WyAgOTczLjgyMjA2MF0NCj4gPiBzZXJpYWw4MjUwX3N0YXJ0dXArMHgzOC8weDQ4DQo+IA0KPiBO
-aXQ6IG5vIG5lZWQgdG8gcHV0IGVudGlyZSBzdGFjayBmb3IgdGhpcy4NCj4gDQo+ID4gLS0tIGEv
-ZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9wbnAuYw0KPiA+ICsrKyBiL2RyaXZlcnMvdHR5
-L3NlcmlhbC84MjUwLzgyNTBfcG5wLmMNCj4gPiBAQCAtNDc2LDYgKzQ3Niw3IEBAIHNlcmlhbF9w
-bnBfcHJvYmUoc3RydWN0IHBucF9kZXYgKmRldiwgY29uc3Qgc3RydWN0DQo+IHBucF9kZXZpY2Vf
-aWQgKmRldl9pZCkNCj4gPiAgCQl1YXJ0LnBvcnQuZmxhZ3MgfD0gVVBGX1NIQVJFX0lSUTsNCj4g
-PiAgCXVhcnQucG9ydC51YXJ0Y2xrID0gMTg0MzIwMDsNCj4gPiAgCXVhcnQucG9ydC5kZXYgPSAm
-ZGV2LT5kZXY7DQo+ID4gKwl1YXJ0LnBvcnQuaXJxZmxhZ3MgfD0gSVJRRl9TSEFSRUQ7DQo+IA0K
-PiBXaHkgbm90IHRvIHVzZSBVUEZfU0hBUkVfSVJRIGZsYWdzIGluc3RlYWQ/DQo+IGNvbW1pdCA1
-NGU1M2IyZTgwODFlOWVhYmE4NjVlNzQ1Y2E2MWRlOWE4ZWNjYjE4DQoNCkFuZCBJIHRoaW5rIHdl
-IGhhcyB0aGUgc2FtZSBpc3N1ZS4NCg0KQXV0aG9yOiBLdXJ0IEthbnplbmJhY2ggPGt1cnRAbGlu
-dXRyb25peC5kZT4NCkRhdGU6ICAgRnJpIE1hciAxNiAxMjozMTo1OCAyMDE4ICswMTAwDQoNCiAg
-ICB0dHk6IHNlcmlhbDogODI1MDogcGFzcyBJUlEgc2hhcmVkIGZsYWcgdG8gVUFSVCBwb3J0cw0K
-ICAgIA0KICAgIE9uIHNvbWUgc3lzdGVtcyBJUlEgbGluZXMgYmV0d2VlbiBtdWx0aXBsZSBVQVJU
-cyBtaWdodCBiZSBzaGFyZWQuIElmIHNvLCB0aGUNCiAgICBpcnFmbGFncyBoYXZlIHRvIGJlIGNv
-bmZpZ3VyZWQgYWNjb3JkaW5nbHkuIFRoZSByZWFzb24gaXM6IFRoZSA4MjUwIHBvcnQgc3RhcnR1
-cA0KICAgIGNvZGUgcGVyZm9ybXMgSVJRIHRlc3RzICpiZWZvcmUqIHRoZSBJUlEgaGFuZGxlciBm
-b3IgdGhhdCBwYXJ0aWN1bGFyIHBvcnQgaXMNCiAgICByZWdpc3RlcmVkLiBUaGlzIGlzIHBlcmZv
-cm1lZCBpbiBzZXJpYWw4MjUwX2RvX3N0YXJ0dXAoKS4gVGhpcyBmdW5jdGlvbiBjaGVja3MNCiAg
-ICB3aGV0aGVyIElSUUZfU0hBUkVEIGlzIGNvbmZpZ3VyZWQgYW5kIG9ubHkgdGhlbiBkaXNhYmxl
-cyB0aGUgSVJRIGxpbmUgd2hpbGUNCiAgICB0ZXN0aW5nLg0KICAgIA0KICAgIFRoaXMgdGVzdCBp
-cyBwZXJmb3JtZWQgdXBvbiBlYWNoIG9wZW4oKSBvZiB0aGUgVUFSVCBkZXZpY2UuIEltYWdpbmUg
-dHdvIFVBUlRzDQogICAgc2hhcmUgdGhlIHNhbWUgSVJRIGxpbmU6IE9uIGlzIGFscmVhZHkgb3Bl
-bmVkIGFuZCB0aGUgSVJRIGlzIGFjdGl2ZS4gV2hlbiB0aGUNCiAgICBzZWNvbmQgVUFSVCBpcyBv
-cGVuZWQsIHRoZSBJUlEgbGluZSBoYXMgdG8gYmUgZGlzYWJsZWQgd2hpbGUgcGVyZm9ybWluZyBJ
-UlENCiAgICB0ZXN0cy4gT3RoZXJ3aXNlIGFuIElSUSBtaWdodCBoYW5kbGVyIG1pZ2h0IGJlIGlu
-dm9rZWQsIGJ1dCB0aGUgdGhlIElSUSBpdHNlbGYNCiAgICBjYW5ub3QgYmUgaGFuZGxlZCwgYmVj
-YXVzZSB0aGUgY29ycmVzcG9uZGluZyBoYW5kbGVyIGlzbid0IHJlZ2lzdGVyZWQsDQogICAgeWV0
-LiBUaGF0J3MgYmVjYXVzZSB0aGUgODI1MCBjb2RlIHVzZXMgYSBjaGFpbi1oYW5kbGVyIGFuZCBp
-bnZva2VzIHRoZQ0KICAgIGNvcnJlc3BvbmRpbmcgcG9ydCdzIElSUSBoYW5kbGluZyByb3VudGlu
-ZXMgaGltc2VsZi4NCiAgICANCiAgICBVbmZvcnR1bmF0ZWx5IHRoaXMgSVJRRl9TSEFSRUQgZmxh
-ZyBpc24ndCBjb25maWd1cmVkIGZvciBVQVJUcyBwcm9iZWQgdmlhIGRldmljZQ0KICAgIHRyZWUg
-ZXZlbiBpZiB0aGUgSVJRcyBhcmUgc2hhcmVkLiBUaGlzIHdheSwgdGhlIGFjdHVhbCBhbmQgc2hh
-cmVkIElSUSBsaW5lIGlzbid0DQogICAgZGlzYWJsZWQgd2hpbGUgcGVyZm9ybWluZyB0ZXN0cyBh
-bmQgdGhlIGtlcm5lbCBjb3JyZWN0bHkgZGV0ZWN0cyBhIHNwdXJpb3VzDQogICAgSVJRLiBTbywg
-YWRkaW5nIHRoaXMgZmxhZyB0byB0aGUgRFQgcHJvYmUgc29sdmVzIHRoZSBpc3N1ZS4NCiAgICAN
-CiAgICBOb3RlOiBUaGUgVVBGX1NIQVJFX0lSUSBmbGFnIGlzIGNvbmZpZ3VyZWQgdW5jb25kaXRp
-b25hbGx5LiBUaGVyZWZvcmUsIHRoZQ0KICAgIElSUUZfU0hBUkVEIGZsYWcgY2FuIGJlIHNldCB1
-bmNvbmRpdGlvbmFsbHkgYXMgd2VsbC4NCiAgICANCiAgICBFeGFtcGxlIHN0YWNrdHJhY2UgYnkg
-cGVyZm9ybWluZyBlY2hvIDEgPiAvZGV2L3R0eVMyIG9uIGEgbm9uLXBhdGNoZWQgc3lzdGVtOg0K
-ICAgIA0KICAgIHxpcnEgODU6IG5vYm9keSBjYXJlZCAodHJ5IGJvb3Rpbmcgd2l0aCB0aGUgImly
-cXBvbGwiIG9wdGlvbikNCiAgICB8IFsuLi5dDQogICAgfGhhbmRsZXJzOg0KICAgIHxbPGZmZmYw
-MDAwMDgwZmM2Mjg+XSBpcnFfZGVmYXVsdF9wcmltYXJ5X2hhbmRsZXIgdGhyZWFkZWQgWzxmZmZm
-MDAwMDA4NTVmYmI4Pl0gc2VyaWFsODI1MF9pbnRlcnJ1cHQNCiAgICB8RGlzYWJsaW5nIElSUSAj
-ODUNCiAgICANCiAgICBTaWduZWQtb2ZmLWJ5OiBLdXJ0IEthbnplbmJhY2ggPGt1cnRAbGludXRy
-b25peC5kZT4NCiAgICBTaWduZWQtb2ZmLWJ5OiBHcmVnIEtyb2FoLUhhcnRtYW4gPGdyZWdraEBs
-aW51eGZvdW5kYXRpb24ub3JnPg0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsLzgy
-NTAvODI1MF9vZi5jIGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9vZi5jDQppbmRleCA5
-ODM1YjFjMWNiZTEuLjNkZThkNmE0MTI0NiAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvdHR5L3Nlcmlh
-bC84MjUwLzgyNTBfb2YuYw0KKysrIGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9vZi5j
-DQpAQCAtMTQ5LDYgKzE0OSw3IEBAIHN0YXRpYyBpbnQgb2ZfcGxhdGZvcm1fc2VyaWFsX3NldHVw
-KHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKm9mZGV2LA0KICAgICAgICBwb3J0LT51YXJ0Y2xrID0g
-Y2xrOw0KICAgICAgICBwb3J0LT5mbGFncyA9IFVQRl9TSEFSRV9JUlEgfCBVUEZfQk9PVF9BVVRP
-Q09ORiB8IFVQRl9JT1JFTUFQDQogICAgICAgICAgICAgICAgfCBVUEZfRklYRURfUE9SVCB8IFVQ
-Rl9GSVhFRF9UWVBFOw0KKyAgICAgICBwb3J0LT5pcnFmbGFncyB8PSBJUlFGX1NIQVJFRDsNCiAN
-CiAgICAgICAgaWYgKG9mX3Byb3BlcnR5X3JlYWRfYm9vbChucCwgIm5vLWxvb3BiYWNrLXRlc3Qi
-KSkNCiAgICAgICAgICAgICAgICBwb3J0LT5mbGFncyB8PSBVUEZfU0tJUF9URVNUOw0KDQoNCi1M
-aQ0KDQo+IC0tDQo+IFdpdGggQmVzdCBSZWdhcmRzLA0KPiBBbmR5IFNoZXZjaGVua28NCj4gDQoN
-Cg==
+The serdev tty-port controller driver should reset the tty-port client
+operations also on deregistration to avoid a NULL-pointer dereference in
+case the port is later re-registered as a normal tty device.
+
+Note that this can only happen with tty drivers such as 8250 which have
+statically allocated port structures that can end up being reused and
+where a later registration would not register a serdev controller (e.g.
+due to registration errors or if the devicetree has been changed in
+between).
+
+Specifically, this can be an issue for any statically defined ports that
+would be registered by 8250 core when an 8250 driver is being unbound.
+
+Fixes: bed35c6dfa6a ("serdev: add a tty port controller driver")
+Cc: stable <stable@vger.kernel.org>     # 4.11
+Reported-by: Loic Poulain <loic.poulain@linaro.org>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/tty/serdev/serdev-ttyport.c | 6 ++----
+ drivers/tty/tty_port.c              | 5 +++--
+ include/linux/tty.h                 | 2 ++
+ 3 files changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+index d1cdd2ab8b4c..d367803e2044 100644
+--- a/drivers/tty/serdev/serdev-ttyport.c
++++ b/drivers/tty/serdev/serdev-ttyport.c
+@@ -265,7 +265,6 @@ struct device *serdev_tty_port_register(struct tty_port *port,
+ 					struct device *parent,
+ 					struct tty_driver *drv, int idx)
+ {
+-	const struct tty_port_client_operations *old_ops;
+ 	struct serdev_controller *ctrl;
+ 	struct serport *serport;
+ 	int ret;
+@@ -284,7 +283,6 @@ struct device *serdev_tty_port_register(struct tty_port *port,
+ 
+ 	ctrl->ops = &ctrl_ops;
+ 
+-	old_ops = port->client_ops;
+ 	port->client_ops = &client_ops;
+ 	port->client_data = ctrl;
+ 
+@@ -297,7 +295,7 @@ struct device *serdev_tty_port_register(struct tty_port *port,
+ 
+ err_reset_data:
+ 	port->client_data = NULL;
+-	port->client_ops = old_ops;
++	port->client_ops = &tty_port_default_client_ops;
+ 	serdev_controller_put(ctrl);
+ 
+ 	return ERR_PTR(ret);
+@@ -312,8 +310,8 @@ int serdev_tty_port_unregister(struct tty_port *port)
+ 		return -ENODEV;
+ 
+ 	serdev_controller_remove(ctrl);
+-	port->client_ops = NULL;
+ 	port->client_data = NULL;
++	port->client_ops = &tty_port_default_client_ops;
+ 	serdev_controller_put(ctrl);
+ 
+ 	return 0;
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index 044c3cbdcfa4..ea80bf872f54 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -52,10 +52,11 @@ static void tty_port_default_wakeup(struct tty_port *port)
+ 	}
+ }
+ 
+-static const struct tty_port_client_operations default_client_ops = {
++const struct tty_port_client_operations tty_port_default_client_ops = {
+ 	.receive_buf = tty_port_default_receive_buf,
+ 	.write_wakeup = tty_port_default_wakeup,
+ };
++EXPORT_SYMBOL_GPL(tty_port_default_client_ops);
+ 
+ void tty_port_init(struct tty_port *port)
+ {
+@@ -68,7 +69,7 @@ void tty_port_init(struct tty_port *port)
+ 	spin_lock_init(&port->lock);
+ 	port->close_delay = (50 * HZ) / 100;
+ 	port->closing_wait = (3000 * HZ) / 100;
+-	port->client_ops = &default_client_ops;
++	port->client_ops = &tty_port_default_client_ops;
+ 	kref_init(&port->kref);
+ }
+ EXPORT_SYMBOL(tty_port_init);
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index bfa4e2ee94a9..bd5fe0e907e8 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -225,6 +225,8 @@ struct tty_port_client_operations {
+ 	void (*write_wakeup)(struct tty_port *port);
+ };
+ 
++extern const struct tty_port_client_operations tty_port_default_client_ops;
++
+ struct tty_port {
+ 	struct tty_bufhead	buf;		/* Locked internally */
+ 	struct tty_struct	*tty;		/* Back pointer */
+-- 
+2.24.1
+
