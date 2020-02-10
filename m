@@ -2,128 +2,113 @@ Return-Path: <SRS0=+uUE=36=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CCFBC352A4
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 21:45:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B100C352A4
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 23:03:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 56F5720733
-	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 21:45:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5C79120715
+	for <linux-serial@archiver.kernel.org>; Mon, 10 Feb 2020 23:03:27 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=kopismobile-com.20150623.gappssmtp.com header.i=@kopismobile-com.20150623.gappssmtp.com header.b="D7vSbXJx"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727556AbgBJVpH (ORCPT
+        id S1727422AbgBJXD0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 10 Feb 2020 16:45:07 -0500
-Received: from smtp1.de.adit-jv.com ([93.241.18.167]:38312 "EHLO
-        smtp1.de.adit-jv.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727003AbgBJVpH (ORCPT
+        Mon, 10 Feb 2020 18:03:26 -0500
+Received: from mail-ua1-f65.google.com ([209.85.222.65]:37826 "EHLO
+        mail-ua1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727116AbgBJXD0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 10 Feb 2020 16:45:07 -0500
-Received: from localhost (smtp1.de.adit-jv.com [127.0.0.1])
-        by smtp1.de.adit-jv.com (Postfix) with ESMTP id 133413C057F;
-        Mon, 10 Feb 2020 22:45:03 +0100 (CET)
-Received: from smtp1.de.adit-jv.com ([127.0.0.1])
-        by localhost (smtp1.de.adit-jv.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id QURNWDN5PY02; Mon, 10 Feb 2020 22:44:54 +0100 (CET)
-Received: from HI2EXCH01.adit-jv.com (hi2exch01.adit-jv.com [10.72.92.24])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtp1.de.adit-jv.com (Postfix) with ESMTPS id D36383C0012;
-        Mon, 10 Feb 2020 22:44:54 +0100 (CET)
-Received: from lxhi-065.adit-jv.com (10.72.93.66) by HI2EXCH01.adit-jv.com
- (10.72.92.24) with Microsoft SMTP Server (TLS) id 14.3.468.0; Mon, 10 Feb
- 2020 22:44:54 +0100
-Date:   Mon, 10 Feb 2020 22:44:51 +0100
-From:   Eugeniu Rosca <erosca@de.adit-jv.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-CC:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        "George G . Davis" <george_davis@mentor.com>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Jiada Wang <jiada_wang@mentor.com>,
-        Yuichi Kusakabe <yuichi.kusakabe@denso-ten.com>,
-        Yasushi Asano <yasano@jp.adit-jv.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Fukui Yohhei <yohhei.fukui@denso-ten.com>,
-        Torii Kenichi <torii.ken1@jp.fujitsu.com>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Eugeniu Rosca <roscaeugeniu@gmail.com>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>
-Subject: Re: [PATCH] serial: sh-sci: Support custom speed setting
-Message-ID: <20200210214451.GA6104@lxhi-065.adit-jv.com>
-References: <20200129161955.30562-1-erosca@de.adit-jv.com>
- <CAMuHMdWV0kkKq6sKOHsdz+FFGNHphzq_q7rvmYAL=U4fH2H3wQ@mail.gmail.com>
- <20200210205735.GB1347752@kroah.com>
+        Mon, 10 Feb 2020 18:03:26 -0500
+Received: by mail-ua1-f65.google.com with SMTP id h32so3229083uah.4
+        for <linux-serial@vger.kernel.org>; Mon, 10 Feb 2020 15:03:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kopismobile-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=C5GirwcztmRlUAA0zFH9GkeX/YNV47Vk7xovWQjcsTY=;
+        b=D7vSbXJxmKpoKBCAAK55xYF8eqhBrw3wAteKEisjIrQkuumQVXm46U5FQoTIP8m8sJ
+         maC5ZLvIq+hHU6qbmJGiZay/kSprgTDYblgyFEYE51dM4TI30gJbdTq0chKAld1iNdUc
+         a/jMcz7MxDhJWsd3h/ZRfOznhs+62V/LuU3k5Gj0Oo66AHTJlLckUw6gyykOBNk3ERY+
+         qdRnZFHn6iQcFWhb51+haHsaeu2nQ12NJJRBoOsm8dhqL583CjPXkw14hVyVKt1H9n7s
+         TsQeffn1ldnNKqSlLAugEV1foFJyKWdgLmXU+OhQOlMEZxhz2gUc5mDQnomIBvq7+R01
+         SsQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=C5GirwcztmRlUAA0zFH9GkeX/YNV47Vk7xovWQjcsTY=;
+        b=FsK6Y4bNYISxjPokP+TXXLdZJ198arTcvIDQnTqEqY0DMbbto//WjOOUz5BXZpI6fR
+         vZ7lDuv1vBV5Q7kF9qNnackyUN5BpJ3IGcizhFIfFHslMfjjwCA5s3o7Zy1v5I6bdfq6
+         URKfMc2al7WHnkmcK7iPTjBxYbPI6dvvDjJrSejAM7S1aZJL3BNxLkg7Pmmvh2IhyG9N
+         beseWt37RErpbfB72B1rwa6FY5ercjr93hEumwLvaFn9Jm6BAkydd7KBLlUGd+2j03Mw
+         wYKQUnsNn4kgegGjQkK7IhOeuUnTgXBQzN4Z6lXEhcMyuWTLsDGrEECwd3q+iGqd+HmL
+         UqJg==
+X-Gm-Message-State: APjAAAWURq1jF9YuihMBiPsxYDIBTxN9WKuis7T0NGH11UEsPfpva9F4
+        oif+dfaz4sJBp1RQpuASrVD1VtHfXZqhMfP7PBCD0w==
+X-Google-Smtp-Source: APXvYqz8+e2ip6ZtrEun+w0dwbFruG/3SV4gKsgrTeTbWL9Cev9v+ynnw9Kx2crTWX4m8j/kdmt0RgrTYXdipLo/dTo=
+X-Received: by 2002:ab0:21cc:: with SMTP id u12mr31230uan.55.1581375805214;
+ Mon, 10 Feb 2020 15:03:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200210205735.GB1347752@kroah.com>
-X-Originating-IP: [10.72.93.66]
+References: <20200210192949.7338-1-ghilliard@kopismobile.com>
+ <20200210192949.7338-3-ghilliard@kopismobile.com> <20200210205003.x7xduj3avwjhimjm@pengutronix.de>
+In-Reply-To: <20200210205003.x7xduj3avwjhimjm@pengutronix.de>
+From:   George Hilliard <ghilliard@kopismobile.com>
+Date:   Mon, 10 Feb 2020 17:03:14 -0600
+Message-ID: <CALM8J=dZjK9C+-yMOC_DKp+6m2MaKJsNXaz_+enDVtkgj32U+A@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] tty: imx serial: Implement support for reversing
+ TX and RX polarity
+To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kernel@pengutronix.de, devicetree@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Dear Geert and Greg,
+On Mon, Feb 10, 2020 at 2:50 PM Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
+>
+> Hello George,
+>
+> On Mon, Feb 10, 2020 at 01:29:49PM -0600, George Hilliard wrote:
+> > @@ -1390,6 +1392,8 @@ static int imx_uart_startup(struct uart_port *por=
+t)
+> >       ucr4 =3D imx_uart_readl(sport, UCR4) & ~UCR4_OREN;
+> >       if (!sport->dma_is_enabled)
+> >               ucr4 |=3D UCR4_OREN;
+> > +     if (sport->inverted_rx)
+> > +             ucr4 |=3D UCR4_INVR;
+>
+> You fail to clear this bit if .inverted_rx is false.
 
-On Mon, Feb 10, 2020 at 12:57:35PM -0800, Greg Kroah-Hartman wrote:
-> On Thu, Jan 30, 2020 at 01:32:50PM +0100, Geert Uytterhoeven wrote:
-> > Hi Eugeniu,
-> > 
-> > On Wed, Jan 29, 2020 at 5:20 PM Eugeniu Rosca <erosca@de.adit-jv.com> wrote:
-> > > From: Torii Kenichi <torii.ken1@jp.fujitsu.com>
-> > >
-> > > This patch is necessary to use BT module and XM module with DENSO TEN
-> > > development board.
-> > >
-> > > This patch supports ASYNC_SPD_CUST flag by ioctl(TIOCSSERIAL), enables
-> > > custom speed setting with setserial(1).
-> > >
-> > > The custom speed is calculated from uartclk and custom_divisor.
-> > > If custom_divisor is zero, custom speed setting is invalid.
-> > >
-> > > Signed-off-by: Torii Kenichi <torii.ken1@jp.fujitsu.com>
-> > > [erosca: rebase against v5.5]
-> > > Signed-off-by: Eugeniu Rosca <erosca@de.adit-jv.com>
-> > 
-> > Thanks for your patch!
-> > 
-> > While this seems to work fine[*], I have a few comments/questions:
-> >   1. This feature seems to be deprecated:
-> > 
-> >          sh-sci e6e68000.serial: setserial sets custom speed on
-> > ttySC1. This is deprecated.
-> > 
-> >   2. As the wanted speed is specified as a divider, the resulting speed
-> >      may be off, cfr. the example for 57600 below.
-> >      Note that the SCIF device has multiple clock inputs, and can do
-> >      57600 perfectly if the right crystal has been fitted.
-> > 
-> >  3. What to do with "[PATCH/RFC] serial: sh-sci: Update uartclk based
-> >      on selected clock" (https://patchwork.kernel.org/patch/11103703/)?
-> >      Combined with this, things become pretty complicated and
-> >      unpredictable, as uartclk now always reflect the frequency of the
-> >      last used base clock, which was the optimal one for the previously
-> >      used speed....
-> > 
-> > I think it would be easier if we just had an API to specify a raw speed.
-> > Perhaps that already exists?
-> 
-> Yes, see:
-> 	http://www.panix.com/~grante/arbitrary-baud.c
+I believe this is taken care of by the SRST asserted slightly above
+this - UCR* is reset by this. I see that this reset is also done in the
+imx_uart_flush_buffer() implementation, but as I understand it, this
+is a cleanup method that doesn't reconfigure much of the peripheral.
 
-This looks like a compelling piece of evidence users should stay away
-from implementing and using the kludge (38400 baud) mechanism?
+> >       imx_uart_writel(sport, ucr4, UCR4);
+> >
+> >       ucr2 =3D imx_uart_readl(sport, UCR2) & ~UCR2_ATEN;
+> > @@ -1404,19 +1408,17 @@ static int imx_uart_startup(struct uart_port *p=
+ort)
+> >               ucr2 &=3D ~UCR2_RTSEN;
+> >       imx_uart_writel(sport, ucr2, UCR2);
+> >
+> > +     ucr3 =3D imx_uart_readl(sport, UCR3);
+> > +     if (sport->inverted_tx)
+> > +             ucr3 |=3D UCR3_INVT;
+>
+> Also I think setting this bit here is a bit late because UCR2_TXEN was
+> already set so changing UCR3_INVT probably results in a spike?!
 
-Unless the author and the users of this patch (CC-ed in this thread)
-have a different opinion, I consider this topic closed. Thanks!
+Good point here; this should indeed be done before TX start.
 
--- 
-Best Regards
-Eugeniu Rosca
+George
