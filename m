@@ -2,137 +2,102 @@ Return-Path: <SRS0=2Nu8=37=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A611C3B187
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Feb 2020 08:15:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E5A5C352A3
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Feb 2020 10:13:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5E4B020675
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Feb 2020 08:15:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7D04A20848
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Feb 2020 10:13:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727879AbgBKIPO (ORCPT
+        id S1728019AbgBKKNV (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 11 Feb 2020 03:15:14 -0500
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:38902 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727688AbgBKIPO (ORCPT
+        Tue, 11 Feb 2020 05:13:21 -0500
+Received: from alexa-out-blr-01.qualcomm.com ([103.229.18.197]:49315 "EHLO
+        alexa-out-blr-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727561AbgBKKNV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 11 Feb 2020 03:15:14 -0500
-Received: by mail-ot1-f65.google.com with SMTP id z9so9232613oth.5;
-        Tue, 11 Feb 2020 00:15:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KmW0O3LnLsxSEx5mSsn3yBdnjLfYpE0MC8ooH4ZjjKw=;
-        b=L8Et7rpBPKlE8yhxdqUNJNgm41Kz2j5U49UXgA4ooWFrH0e4reqfa4mIxQOl8Wyy/j
-         NJhfC6TxM7aUO8gCQCoQNNdg9wrgYIa4IAfxFHdGm0DXcVWQfDK9d64IOeqjZCScVsBL
-         HDsrvR2IxCA0kalACn4x9ISGvSFyGv+COG/fS8WJhm2J81bze5Be43asCGKnWw4bcj51
-         XiNez53G/ArftMEDlxXvX5uCmiybWAs9FhG742e2ztZTXUJpMb0YOCruhVpnEUJeT0RW
-         CSS9Ob+kCr45BB82kWx7bXQBRpysHGJs1mXd2gLPE4+uLwGUQI0ncpFTCrjtszJERH6x
-         rnNg==
-X-Gm-Message-State: APjAAAXEdEmktm41ecgO2QsXiimDFLFnt+crmfYridHhKDzRGfiJIOKK
-        muyFlrED9q5X7/aB6y2liDmYszLSOz9F7JhYgDQ=
-X-Google-Smtp-Source: APXvYqwEcmEoNoNDBhoPpH3rDf95d6TYZ5IMsE/ydiUKbXXZLt6L0DPS+W4L0t7jNT1AbdX/CoQwZFbMvimTLVDaeII=
-X-Received: by 2002:a9d:7984:: with SMTP id h4mr4357532otm.297.1581408913600;
- Tue, 11 Feb 2020 00:15:13 -0800 (PST)
-MIME-Version: 1.0
-References: <20200129161955.30562-1-erosca@de.adit-jv.com> <CAMuHMdWV0kkKq6sKOHsdz+FFGNHphzq_q7rvmYAL=U4fH2H3wQ@mail.gmail.com>
- <20200210205735.GB1347752@kroah.com>
-In-Reply-To: <20200210205735.GB1347752@kroah.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 11 Feb 2020 09:15:02 +0100
-Message-ID: <CAMuHMdUa0fUHZF03QCLsgvS8LSN_rGUQ1gPtotQ3uNGEHkCm6g@mail.gmail.com>
-Subject: Re: [PATCH] serial: sh-sci: Support custom speed setting
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Eugeniu Rosca <erosca@de.adit-jv.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        "George G . Davis" <george_davis@mentor.com>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Jiada Wang <jiada_wang@mentor.com>,
-        Yuichi Kusakabe <yuichi.kusakabe@denso-ten.com>,
-        Yasushi Asano <yasano@jp.adit-jv.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Fukui Yohhei <yohhei.fukui@denso-ten.com>,
-        Torii Kenichi <torii.ken1@jp.fujitsu.com>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        "Michael Kerrisk (man-pages)" <mtk.manpages@gmail.com>,
-        linux-man@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 11 Feb 2020 05:13:21 -0500
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by alexa-out-blr-01.qualcomm.com with ESMTP/TLS/AES256-SHA; 11 Feb 2020 15:43:18 +0530
+Received: from c-skakit-linux.qualcomm.com ([10.242.50.210])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 11 Feb 2020 15:43:05 +0530
+Received: by c-skakit-linux.qualcomm.com (Postfix, from userid 2344709)
+        id 58D592294; Tue, 11 Feb 2020 15:43:04 +0530 (IST)
+From:   satya priya <skakit@codeaurora.org>
+To:     gregkh@linuxfoundation.org
+Cc:     swboyd@chromium.org, mgautam@codeaurora.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        akashast@codeaurora.org, satya priya <skakit@codeaurora.org>
+Subject: [PATCH] tty: serial: qcom_geni_serial: Fix RX cancel command failure
+Date:   Tue, 11 Feb 2020 15:43:02 +0530
+Message-Id: <1581415982-8793-1-git-send-email-skakit@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Greg,
+RX cancel command fails when BT is switched on and off multiple times.
 
-CC man
+To handle this, poll for the cancel bit in SE_GENI_S_IRQ_STATUS register
+instead of SE_GENI_S_CMD_CTRL_REG.
 
-On Mon, Feb 10, 2020 at 9:57 PM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
-> On Thu, Jan 30, 2020 at 01:32:50PM +0100, Geert Uytterhoeven wrote:
-> > On Wed, Jan 29, 2020 at 5:20 PM Eugeniu Rosca <erosca@de.adit-jv.com> wrote:
-> > > From: Torii Kenichi <torii.ken1@jp.fujitsu.com>
-> > >
-> > > This patch is necessary to use BT module and XM module with DENSO TEN
-> > > development board.
-> > >
-> > > This patch supports ASYNC_SPD_CUST flag by ioctl(TIOCSSERIAL), enables
-> > > custom speed setting with setserial(1).
-> > >
-> > > The custom speed is calculated from uartclk and custom_divisor.
-> > > If custom_divisor is zero, custom speed setting is invalid.
-> > >
-> > > Signed-off-by: Torii Kenichi <torii.ken1@jp.fujitsu.com>
-> > > [erosca: rebase against v5.5]
-> > > Signed-off-by: Eugeniu Rosca <erosca@de.adit-jv.com>
-> >
-> > Thanks for your patch!
-> >
-> > While this seems to work fine[*], I have a few comments/questions:
-> >   1. This feature seems to be deprecated:
-> >
-> >          sh-sci e6e68000.serial: setserial sets custom speed on
-> > ttySC1. This is deprecated.
-> >
-> >   2. As the wanted speed is specified as a divider, the resulting speed
-> >      may be off, cfr. the example for 57600 below.
-> >      Note that the SCIF device has multiple clock inputs, and can do
-> >      57600 perfectly if the right crystal has been fitted.
-> >
-> >  3. What to do with "[PATCH/RFC] serial: sh-sci: Update uartclk based
-> >      on selected clock" (https://patchwork.kernel.org/patch/11103703/)?
-> >      Combined with this, things become pretty complicated and
-> >      unpredictable, as uartclk now always reflect the frequency of the
-> >      last used base clock, which was the optimal one for the previously
-> >      used speed....
-> >
-> > I think it would be easier if we just had an API to specify a raw speed.
-> > Perhaps that already exists?
->
-> Yes, see:
->         http://www.panix.com/~grante/arbitrary-baud.c
+As per the HPG update, handle the RX last bit after cancel command
+and flush out the RX FIFO buffer.
 
-Thanks a lot!!
-This must be one of the most guarded secrets of serial port programming ;-)
+Signed-off-by: satya priya <skakit@codeaurora.org>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
-Implemented since 2006, commit edc6afc5496875a6 ("[PATCH] tty: switch to
-ktermios and new framework"), not documented in today's man-pages.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 191abb1..0bd1684 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -129,6 +129,7 @@ static int handle_rx_console(struct uart_port *uport, u32 bytes, bool drop);
+ static int handle_rx_uart(struct uart_port *uport, u32 bytes, bool drop);
+ static unsigned int qcom_geni_serial_tx_empty(struct uart_port *port);
+ static void qcom_geni_serial_stop_rx(struct uart_port *uport);
++static void qcom_geni_serial_handle_rx(struct uart_port *uport, bool drop);
+ 
+ static const unsigned long root_freq[] = {7372800, 14745600, 19200000, 29491200,
+ 					32000000, 48000000, 64000000, 80000000,
+@@ -599,7 +600,7 @@ static void qcom_geni_serial_stop_rx(struct uart_port *uport)
+ 	u32 irq_en;
+ 	u32 status;
+ 	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
+-	u32 irq_clear = S_CMD_DONE_EN;
++	u32 s_irq_status;
+ 
+ 	irq_en = readl(uport->membase + SE_GENI_S_IRQ_EN);
+ 	irq_en &= ~(S_RX_FIFO_WATERMARK_EN | S_RX_FIFO_LAST_EN);
+@@ -615,10 +616,19 @@ static void qcom_geni_serial_stop_rx(struct uart_port *uport)
+ 		return;
+ 
+ 	geni_se_cancel_s_cmd(&port->se);
+-	qcom_geni_serial_poll_bit(uport, SE_GENI_S_CMD_CTRL_REG,
+-					S_GENI_CMD_CANCEL, false);
++	qcom_geni_serial_poll_bit(uport, SE_GENI_S_IRQ_STATUS,
++					S_CMD_CANCEL_EN, true);
++	/*
++	 * If timeout occurs secondary engine remains active
++	 * and Abort sequence is executed.
++	 */
++	s_irq_status = readl(uport->membase + SE_GENI_S_IRQ_STATUS);
++	/* Flush the Rx buffer */
++	if (s_irq_status & S_RX_FIFO_LAST_EN)
++		qcom_geni_serial_handle_rx(uport, true);
++	writel(s_irq_status, uport->membase + SE_GENI_S_IRQ_CLEAR);
++
+ 	status = readl(uport->membase + SE_GENI_STATUS);
+-	writel(irq_clear, uport->membase + SE_GENI_S_IRQ_CLEAR);
+ 	if (status & S_GENI_CMD_ACTIVE)
+ 		qcom_geni_serial_abort_rx(uport);
+ }
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
+of Code Aurora Forum, hosted by The Linux Foundation
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
