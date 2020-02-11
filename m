@@ -2,96 +2,137 @@ Return-Path: <SRS0=2Nu8=37=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 945D1C352A3
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Feb 2020 07:38:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A611C3B187
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Feb 2020 08:15:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7868E206D7
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Feb 2020 07:38:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5E4B020675
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Feb 2020 08:15:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727561AbgBKHik (ORCPT
+        id S1727879AbgBKIPO (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 11 Feb 2020 02:38:40 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:37213 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727056AbgBKHij (ORCPT
+        Tue, 11 Feb 2020 03:15:14 -0500
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:38902 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727688AbgBKIPO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 11 Feb 2020 02:38:39 -0500
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1j1Q7v-00074b-2a; Tue, 11 Feb 2020 08:38:35 +0100
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1j1Q7u-0004Zn-42; Tue, 11 Feb 2020 08:38:34 +0100
-Date:   Tue, 11 Feb 2020 08:38:34 +0100
-From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     George Hilliard <ghilliard@kopismobile.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kernel@pengutronix.de, devicetree@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] tty: imx serial: Implement support for reversing
- TX and RX polarity
-Message-ID: <20200211073834.ndtusa7vvmvsydz4@pengutronix.de>
-References: <20200210192949.7338-1-ghilliard@kopismobile.com>
- <20200210192949.7338-3-ghilliard@kopismobile.com>
- <20200210205003.x7xduj3avwjhimjm@pengutronix.de>
- <CALM8J=dZjK9C+-yMOC_DKp+6m2MaKJsNXaz_+enDVtkgj32U+A@mail.gmail.com>
+        Tue, 11 Feb 2020 03:15:14 -0500
+Received: by mail-ot1-f65.google.com with SMTP id z9so9232613oth.5;
+        Tue, 11 Feb 2020 00:15:14 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KmW0O3LnLsxSEx5mSsn3yBdnjLfYpE0MC8ooH4ZjjKw=;
+        b=L8Et7rpBPKlE8yhxdqUNJNgm41Kz2j5U49UXgA4ooWFrH0e4reqfa4mIxQOl8Wyy/j
+         NJhfC6TxM7aUO8gCQCoQNNdg9wrgYIa4IAfxFHdGm0DXcVWQfDK9d64IOeqjZCScVsBL
+         HDsrvR2IxCA0kalACn4x9ISGvSFyGv+COG/fS8WJhm2J81bze5Be43asCGKnWw4bcj51
+         XiNez53G/ArftMEDlxXvX5uCmiybWAs9FhG742e2ztZTXUJpMb0YOCruhVpnEUJeT0RW
+         CSS9Ob+kCr45BB82kWx7bXQBRpysHGJs1mXd2gLPE4+uLwGUQI0ncpFTCrjtszJERH6x
+         rnNg==
+X-Gm-Message-State: APjAAAXEdEmktm41ecgO2QsXiimDFLFnt+crmfYridHhKDzRGfiJIOKK
+        muyFlrED9q5X7/aB6y2liDmYszLSOz9F7JhYgDQ=
+X-Google-Smtp-Source: APXvYqwEcmEoNoNDBhoPpH3rDf95d6TYZ5IMsE/ydiUKbXXZLt6L0DPS+W4L0t7jNT1AbdX/CoQwZFbMvimTLVDaeII=
+X-Received: by 2002:a9d:7984:: with SMTP id h4mr4357532otm.297.1581408913600;
+ Tue, 11 Feb 2020 00:15:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CALM8J=dZjK9C+-yMOC_DKp+6m2MaKJsNXaz_+enDVtkgj32U+A@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+References: <20200129161955.30562-1-erosca@de.adit-jv.com> <CAMuHMdWV0kkKq6sKOHsdz+FFGNHphzq_q7rvmYAL=U4fH2H3wQ@mail.gmail.com>
+ <20200210205735.GB1347752@kroah.com>
+In-Reply-To: <20200210205735.GB1347752@kroah.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 11 Feb 2020 09:15:02 +0100
+Message-ID: <CAMuHMdUa0fUHZF03QCLsgvS8LSN_rGUQ1gPtotQ3uNGEHkCm6g@mail.gmail.com>
+Subject: Re: [PATCH] serial: sh-sci: Support custom speed setting
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Eugeniu Rosca <erosca@de.adit-jv.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Ulrich Hecht <uli+renesas@fpond.eu>,
+        "George G . Davis" <george_davis@mentor.com>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Jiada Wang <jiada_wang@mentor.com>,
+        Yuichi Kusakabe <yuichi.kusakabe@denso-ten.com>,
+        Yasushi Asano <yasano@jp.adit-jv.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Fukui Yohhei <yohhei.fukui@denso-ten.com>,
+        Torii Kenichi <torii.ken1@jp.fujitsu.com>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        "Michael Kerrisk (man-pages)" <mtk.manpages@gmail.com>,
+        linux-man@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello George,
+Hi Greg,
 
-On Mon, Feb 10, 2020 at 05:03:14PM -0600, George Hilliard wrote:
-> On Mon, Feb 10, 2020 at 2:50 PM Uwe Kleine-König
-> <u.kleine-koenig@pengutronix.de> wrote:
-> > On Mon, Feb 10, 2020 at 01:29:49PM -0600, George Hilliard wrote:
-> > > @@ -1390,6 +1392,8 @@ static int imx_uart_startup(struct uart_port *port)
-> > >       ucr4 = imx_uart_readl(sport, UCR4) & ~UCR4_OREN;
-> > >       if (!sport->dma_is_enabled)
-> > >               ucr4 |= UCR4_OREN;
-> > > +     if (sport->inverted_rx)
-> > > +             ucr4 |= UCR4_INVR;
+CC man
+
+On Mon, Feb 10, 2020 at 9:57 PM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+> On Thu, Jan 30, 2020 at 01:32:50PM +0100, Geert Uytterhoeven wrote:
+> > On Wed, Jan 29, 2020 at 5:20 PM Eugeniu Rosca <erosca@de.adit-jv.com> wrote:
+> > > From: Torii Kenichi <torii.ken1@jp.fujitsu.com>
+> > >
+> > > This patch is necessary to use BT module and XM module with DENSO TEN
+> > > development board.
+> > >
+> > > This patch supports ASYNC_SPD_CUST flag by ioctl(TIOCSSERIAL), enables
+> > > custom speed setting with setserial(1).
+> > >
+> > > The custom speed is calculated from uartclk and custom_divisor.
+> > > If custom_divisor is zero, custom speed setting is invalid.
+> > >
+> > > Signed-off-by: Torii Kenichi <torii.ken1@jp.fujitsu.com>
+> > > [erosca: rebase against v5.5]
+> > > Signed-off-by: Eugeniu Rosca <erosca@de.adit-jv.com>
 > >
-> > You fail to clear this bit if .inverted_rx is false.
-> 
-> I believe this is taken care of by the SRST asserted slightly above
-> this - UCR* is reset by this.
+> > Thanks for your patch!
+> >
+> > While this seems to work fine[*], I have a few comments/questions:
+> >   1. This feature seems to be deprecated:
+> >
+> >          sh-sci e6e68000.serial: setserial sets custom speed on
+> > ttySC1. This is deprecated.
+> >
+> >   2. As the wanted speed is specified as a divider, the resulting speed
+> >      may be off, cfr. the example for 57600 below.
+> >      Note that the SCIF device has multiple clock inputs, and can do
+> >      57600 perfectly if the right crystal has been fitted.
+> >
+> >  3. What to do with "[PATCH/RFC] serial: sh-sci: Update uartclk based
+> >      on selected clock" (https://patchwork.kernel.org/patch/11103703/)?
+> >      Combined with this, things become pretty complicated and
+> >      unpredictable, as uartclk now always reflect the frequency of the
+> >      last used base clock, which was the optimal one for the previously
+> >      used speed....
+> >
+> > I think it would be easier if we just had an API to specify a raw speed.
+> > Perhaps that already exists?
+>
+> Yes, see:
+>         http://www.panix.com/~grante/arbitrary-baud.c
 
-The i.MX6 manual states: Reset the transmit and receive state machines,
-all FIFOs and register USR1, USR2, UBIR, UBMR, UBRC, URXD, UTXD and
-UTS[6-3]. UCR* isn't mentioned here. So please at least confirm your
-belief experimentally.
+Thanks a lot!!
+This must be one of the most guarded secrets of serial port programming ;-)
 
-> I see that this reset is also done in the imx_uart_flush_buffer()
-> implementation, but as I understand it, this is a cleanup method that
-> doesn't reconfigure much of the peripheral.
+Implemented since 2006, commit edc6afc5496875a6 ("[PATCH] tty: switch to
+ktermios and new framework"), not documented in today's man-pages.
 
-The comment there even has the above list of registers. If the
-experiment I suggested above should confirm your believe IMHO this
-function needs fixing anyhow.
- 
-Best regards
-Uwe
+Gr{oetje,eeting}s,
+
+                        Geert
 
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
