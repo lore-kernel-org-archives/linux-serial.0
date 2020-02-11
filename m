@@ -2,141 +2,101 @@ Return-Path: <SRS0=2Nu8=37=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA8D0C352A3
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Feb 2020 12:30:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A1A7C352A3
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Feb 2020 13:47:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 81C0B20842
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Feb 2020 12:30:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1581424213;
-	bh=UOl+tQ/zZd+KwI4FO4cTDXiLUcocDiU1LoF+UqO99S4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=qd8RH5cHGQenYjHaYFax0N3G5qKRgZFhLMYMeDSYf1knIB3B1H3awGLmeBxl6zhh3
-	 e+w64ukbf/gFqWMndzg44nWfIvaUVbtVGkP1/0NLrit7mUrlqSiIH7xKJpqx6OvzEH
-	 imQD4OxNnd2bMlw9trN7qoCCnsLSgF1rLSxXEeeQ=
+	by mail.kernel.org (Postfix) with ESMTP id 4A36F20714
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Feb 2020 13:47:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728795AbgBKMaK (ORCPT
+        id S1728924AbgBKNrc (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 11 Feb 2020 07:30:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51908 "EHLO mail.kernel.org"
+        Tue, 11 Feb 2020 08:47:32 -0500
+Received: from mga07.intel.com ([134.134.136.100]:35531 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728467AbgBKMaK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 11 Feb 2020 07:30:10 -0500
-Received: from localhost (unknown [209.37.97.194])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8CD5820714;
-        Tue, 11 Feb 2020 12:30:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581424209;
-        bh=UOl+tQ/zZd+KwI4FO4cTDXiLUcocDiU1LoF+UqO99S4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TyAGYzmBk647Xic8+Af5jY50tMRYt9H5bHtn6wsE10WXBTvj6piI1yGy8Z6MCj+ZS
-         ansTqCI6m6WsvLaA3okd2k0EYZxvvCWq6Iq7nJE8mUUSf4uxk4FoLXexYzdDYJU1te
-         3efECLAoHJQaFnkycH7+U+jvYJPstPYkJ8I0fcYI=
-Date:   Tue, 11 Feb 2020 04:30:09 -0800
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Eugeniu Rosca <erosca@de.adit-jv.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        "George G . Davis" <george_davis@mentor.com>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Jiada Wang <jiada_wang@mentor.com>,
-        Yuichi Kusakabe <yuichi.kusakabe@denso-ten.com>,
-        Yasushi Asano <yasano@jp.adit-jv.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Fukui Yohhei <yohhei.fukui@denso-ten.com>,
-        Torii Kenichi <torii.ken1@jp.fujitsu.com>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        "Michael Kerrisk (man-pages)" <mtk.manpages@gmail.com>,
-        linux-man@vger.kernel.org
-Subject: Re: [PATCH] serial: sh-sci: Support custom speed setting
-Message-ID: <20200211123009.GB1858119@kroah.com>
-References: <20200129161955.30562-1-erosca@de.adit-jv.com>
- <CAMuHMdWV0kkKq6sKOHsdz+FFGNHphzq_q7rvmYAL=U4fH2H3wQ@mail.gmail.com>
- <20200210205735.GB1347752@kroah.com>
- <CAMuHMdUa0fUHZF03QCLsgvS8LSN_rGUQ1gPtotQ3uNGEHkCm6g@mail.gmail.com>
+        id S1727887AbgBKNrc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 11 Feb 2020 08:47:32 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Feb 2020 05:47:31 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,428,1574150400"; 
+   d="scan'208";a="433683707"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by fmsmga006.fm.intel.com with ESMTP; 11 Feb 2020 05:47:30 -0800
+Received: from andy by smile with local (Exim 4.93)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1j1Vsy-000kvm-36; Tue, 11 Feb 2020 15:47:32 +0200
+Date:   Tue, 11 Feb 2020 15:47:32 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     "Li,Rongqing" <lirongqing@baidu.com>
+Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "jslaby@suse.com" <jslaby@suse.com>,
+        "haolee.swjtu@gmail.com" <haolee.swjtu@gmail.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Subject: Re: =?utf-8?B?562U5aSNOiBbUEFUQ0g=?= =?utf-8?Q?=5D?= serial:
+ 8250_pnp: pass IRQ shared flag to UART ports
+Message-ID: <20200211134732.GC10400@smile.fi.intel.com>
+References: <1581223347-31534-1-git-send-email-lirongqing@baidu.com>
+ <20200210100943.GR10400@smile.fi.intel.com>
+ <09a4fa15c8ae4a7391787e4b4af30399@baidu.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAMuHMdUa0fUHZF03QCLsgvS8LSN_rGUQ1gPtotQ3uNGEHkCm6g@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <09a4fa15c8ae4a7391787e4b4af30399@baidu.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Feb 11, 2020 at 09:15:02AM +0100, Geert Uytterhoeven wrote:
-> Hi Greg,
+On Mon, Feb 10, 2020 at 12:54:47PM +0000, Li,Rongqing wrote:
+> > -----邮件原件-----
+> > 发件人: Andy Shevchenko [mailto:andriy.shevchenko@linux.intel.com]
+> > 发送时间: 2020年2月10日 18:10
+> > 收件人: Li,Rongqing <lirongqing@baidu.com>
+> > 抄送: gregkh@linuxfoundation.org; jslaby@suse.com;
+> > haolee.swjtu@gmail.com; linux-serial@vger.kernel.org
+> > 主题: Re: [PATCH] serial: 8250_pnp: pass IRQ shared flag to UART ports
+> > On Sun, Feb 09, 2020 at 12:42:27PM +0800, Li RongQing wrote:
+> > > On some systems IRQ lines might be shared between multiple devices.
+> > > If so, the irqflags have to be configured accordingly. The reason is:
+> > > The 8250 port startup code performs IRQ tests *before* the IRQ handler
+> > > for that particular port is registered.
+> > 
+> > Thanks for the report.
+> > 
+> > Before we proceed with it, can we have more information about the device in
+> > question?
+> > How is it enumerated? What is in resources (ACPI / or ...?) for this device?
+> > Also how IPMI is being involved to all this and why?
+> > 
 > 
-> CC man
+> This is arm server, resource is from dsdt, and detail is
+
+> And I think we has the same issue.
 > 
-> On Mon, Feb 10, 2020 at 9:57 PM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> > On Thu, Jan 30, 2020 at 01:32:50PM +0100, Geert Uytterhoeven wrote:
-> > > On Wed, Jan 29, 2020 at 5:20 PM Eugeniu Rosca <erosca@de.adit-jv.com> wrote:
-> > > > From: Torii Kenichi <torii.ken1@jp.fujitsu.com>
-> > > >
-> > > > This patch is necessary to use BT module and XM module with DENSO TEN
-> > > > development board.
-> > > >
-> > > > This patch supports ASYNC_SPD_CUST flag by ioctl(TIOCSSERIAL), enables
-> > > > custom speed setting with setserial(1).
-> > > >
-> > > > The custom speed is calculated from uartclk and custom_divisor.
-> > > > If custom_divisor is zero, custom speed setting is invalid.
-> > > >
-> > > > Signed-off-by: Torii Kenichi <torii.ken1@jp.fujitsu.com>
-> > > > [erosca: rebase against v5.5]
-> > > > Signed-off-by: Eugeniu Rosca <erosca@de.adit-jv.com>
-> > >
-> > > Thanks for your patch!
-> > >
-> > > While this seems to work fine[*], I have a few comments/questions:
-> > >   1. This feature seems to be deprecated:
-> > >
-> > >          sh-sci e6e68000.serial: setserial sets custom speed on
-> > > ttySC1. This is deprecated.
-> > >
-> > >   2. As the wanted speed is specified as a divider, the resulting speed
-> > >      may be off, cfr. the example for 57600 below.
-> > >      Note that the SCIF device has multiple clock inputs, and can do
-> > >      57600 perfectly if the right crystal has been fitted.
-> > >
-> > >  3. What to do with "[PATCH/RFC] serial: sh-sci: Update uartclk based
-> > >      on selected clock" (https://patchwork.kernel.org/patch/11103703/)?
-> > >      Combined with this, things become pretty complicated and
-> > >      unpredictable, as uartclk now always reflect the frequency of the
-> > >      last used base clock, which was the optimal one for the previously
-> > >      used speed....
-> > >
-> > > I think it would be easier if we just had an API to specify a raw speed.
-> > > Perhaps that already exists?
-> >
-> > Yes, see:
-> >         http://www.panix.com/~grante/arbitrary-baud.c
+> Author: Kurt Kanzenbach <kurt@linutronix.de>
+> Date:   Fri Mar 16 12:31:58 2018 +0100
 > 
-> Thanks a lot!!
-> This must be one of the most guarded secrets of serial port programming ;-)
+>     tty: serial: 8250: pass IRQ shared flag to UART ports
 
-It really is, I have to look it up each time it comes up :(
+Thanks for sharing additional information.
 
-> Implemented since 2006, commit edc6afc5496875a6 ("[PATCH] tty: switch to
-> ktermios and new framework"), not documented in today's man-pages.
+Funny that the mentioned commit describes everything and had done a symptomatic
+healing instead of fixing it properly.
 
-yeah, serial port control really needs to be documented better, there's
-all sorts of nice ways of controlling them that people don't seem to
-know about.  I used to have a link to a bunch of online examples, but
-can't seem to find that anymore either.  Ugh, another thing for the long
-TODO file...
+So, I will send a patch later Cc'ing you. I would like to be informed if it
+helps (in form of Tested-by tag).
 
-greg k-h
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
