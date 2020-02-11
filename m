@@ -2,130 +2,110 @@ Return-Path: <SRS0=2Nu8=37=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F07E7C352A3
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Feb 2020 16:44:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2499C35242
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Feb 2020 19:55:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D33D320714
-	for <linux-serial@archiver.kernel.org>; Tue, 11 Feb 2020 16:44:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C299920848
+	for <linux-serial@archiver.kernel.org>; Tue, 11 Feb 2020 19:55:12 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=innovation.ch header.i=@innovation.ch header.b="l/8+zDje"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728912AbgBKQoS (ORCPT
+        id S1730858AbgBKTzK (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 11 Feb 2020 11:44:18 -0500
-Received: from muru.com ([72.249.23.125]:54706 "EHLO muru.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728202AbgBKQoS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 11 Feb 2020 11:44:18 -0500
-Received: from atomide.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 5564E80D4;
-        Tue, 11 Feb 2020 16:45:00 +0000 (UTC)
-Date:   Tue, 11 Feb 2020 08:44:13 -0800
-From:   Tony Lindgren <tony@atomide.com>
-To:     Lee Jones <lee.jones@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Jiri Slaby <jslaby@suse.cz>,
-        Johan Hovold <johan@kernel.org>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        Pavel Machek <pavel@ucw.cz>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Rob Herring <robh@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] mfd: motmdm: Add Motorola TS 27.010 serdev modem
- driver for droid4
-Message-ID: <20200211164413.GG64767@atomide.com>
-References: <20200210040107.10306-1-tony@atomide.com>
- <20200210040107.10306-3-tony@atomide.com>
+        Tue, 11 Feb 2020 14:55:10 -0500
+Received: from chill.innovation.ch ([216.218.245.220]:53738 "EHLO
+        chill.innovation.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730021AbgBKTzJ (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 11 Feb 2020 14:55:09 -0500
+X-Greylist: delayed 448 seconds by postgrey-1.27 at vger.kernel.org; Tue, 11 Feb 2020 14:55:09 EST
+Received: from localhost (localhost [127.0.0.1])
+        by chill.innovation.ch (Postfix) with ESMTP id DB6556412AE;
+        Tue, 11 Feb 2020 11:47:35 -0800 (PST)
+X-Virus-Scanned: amavisd-new at 
+Received: from chill.innovation.ch ([127.0.0.1])
+        by localhost (chill.innovation.ch [127.0.0.1]) (amavisd-new, port 10024)
+        with LMTP id Yt8Xyz8cUtTD; Tue, 11 Feb 2020 11:47:29 -0800 (PST)
+From:   =?UTF-8?q?Ronald=20Tschal=C3=A4r?= <ronald@innovation.ch>
+DKIM-Filter: OpenDKIM Filter v2.10.3 chill.innovation.ch 0617D64012B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=innovation.ch;
+        s=default; t=1581450449;
+        bh=pKyDgEF01POMD1o+SCeOkRD2KX+9ORpUNRhOfljEE+0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=l/8+zDjee0rYEua1qQlF3fSjIbLgjPn0NgFtJMojTap23v8RAHOGYXrnm+FtZ2mvv
+         uOCYbXQJGj4nePDyrz3k2Wh+ENIPX5UHIMo8522dI/n39cm28++TI8WrPPMGSMJtWO
+         PwJ+LYuUzZx35AWGHkYMfWb/F+GThXBG4nRF9MYNMa7TMxqHsrG31n1ZG7WPPNjE+u
+         ZnruWK2T+tuB5lToiSsJnavxSQahY+shWsbjklUvi4wL2vRKeUr295OKXosxvphcxC
+         gXR225rqTAaFaZUZYIzw08ucNyFhckoNmoKRlJJU/k1YuZLaCzDxQ+9OrX8Z8XfmqW
+         lBE10xCUJXO/Q==
+To:     Rob Herring <robh@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Maximilian Luz <luzmaximilian@gmail.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: [PATCH] serdev: Fix detection of UART devices on Apple machines.
+Date:   Tue, 11 Feb 2020 11:47:23 -0800
+Message-Id: <20200211194723.486217-1-ronald@innovation.ch>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200210040107.10306-3-tony@atomide.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Tony Lindgren <tony@atomide.com> [200210 04:02]:
-> --- /dev/null
-> +++ b/drivers/mfd/motorola-mdm.c
-...
-> +struct motmdm_dlci {
-> +	struct gsm_serdev_dlci gsm_dlci;
-> +	struct list_head node;
-> +	wait_queue_head_t read_queue;
-> +	struct kfifo read_fifo;
-> +	int line;
-> +	u16 id;
-> +	int (*send_command)(struct device *dev, struct motmdm_dlci *mot_dlci,
-> +			    unsigned long timeout_ms, const unsigned char *cmd,
-> +			    size_t cmdlen,
-> +			    unsigned char *rsp, size_t rsplen);
+On Apple devices the _CRS method returns an empty resource template, and
+the resource settings are instead provided by the _DSM method. But
+commit 33364d63c75d6182fa369cea80315cf1bb0ee38e (serdev: Add ACPI
+devices by ResourceSource field) changed the search for serdev devices
+to require valid, non-empty resource template, thereby breaking Apple
+devices and causing bluetooth devices to not be found.
 
-Looks like the send_command above is now useless and can be
-left out, incremental patch below for reference.
+This expands the check so that if we don't find a valid template, and
+we're on an Apple machine, then just check for the device being an
+immediate child of the controller and having a "baud" property.
 
-I'll be sending out v3 series of patches after waiting few days
-for comments.
+Cc: <stable@vger.kernel.org> # 5.5
+Signed-off-by: Ronald Tschalär <ronald@innovation.ch>
+---
+ drivers/tty/serdev/core.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Regards,
-
-Tony
-
-8< ------------------
-diff --git a/drivers/mfd/motorola-mdm.c b/drivers/mfd/motorola-mdm.c
---- a/drivers/mfd/motorola-mdm.c
-+++ b/drivers/mfd/motorola-mdm.c
-@@ -92,10 +92,6 @@ struct motmdm_dlci {
- 	struct kfifo read_fifo;
- 	int line;
- 	u16 id;
--	int (*send_command)(struct device *dev, struct motmdm_dlci *mot_dlci,
--			    unsigned long timeout_ms, const unsigned char *cmd,
--			    size_t cmdlen,
--			    unsigned char *rsp, size_t rsplen);
- 	struct list_head list;
- 	void *privdata;		/* Do not use, internal data */
- 	void *drvdata;		/* Available for consumer drivers */
-@@ -419,11 +415,11 @@ static int motmdm_write(struct device *dev, struct motmdm_dlci *mot_dlci,
-  * Helper for child device drivers to send a command to a DLCI and wait
-  * for result with a matching packet ID.
-  */
--static int motmdm_dlci_send_command(struct device *dev,
--				    struct motmdm_dlci *mot_dlci,
--				    unsigned long timeout_ms,
--				    const unsigned char *cmd, size_t cmdlen,
--				    unsigned char *rsp, size_t rsplen)
-+static int motmdm_send_command(struct device *dev,
-+			       struct motmdm_dlci *mot_dlci,
-+			       unsigned long timeout_ms,
-+			       const unsigned char *cmd, size_t cmdlen,
-+			       unsigned char *rsp, size_t rsplen)
- {
- 	struct motmdm_response *resp, *tmp;
- 	struct list_head *pos, *q;
-@@ -502,7 +498,6 @@ static int motmdm_register_dlci(struct device *dev,
- 	ddata = gsm_serdev_get_drvdata(dev);
- 	gsd = &ddata->gsd;
- 	gsm_dlci = &mot_dlci->gsm_dlci;
--	mot_dlci->send_command = motmdm_dlci_send_command;
- 	INIT_LIST_HEAD(&mot_dlci->list);
- 	init_waitqueue_head(&mot_dlci->read_queue);
- 	gsm_dlci->line = mot_dlci->line;
-@@ -929,9 +924,8 @@ static int motmdm_check_revision(struct device *dev)
- 		goto free_buf;
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index ce5309d00280..0f64a10ba51f 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -18,6 +18,7 @@
+ #include <linux/sched.h>
+ #include <linux/serdev.h>
+ #include <linux/slab.h>
++#include <linux/platform_data/x86/apple.h>
  
- 	while (retries--) {
--		err = motmdm_dlci_send_command(dev, mot_dlci, 1000,
--					       cmd, strlen(cmd),
--					       buf, PAGE_SIZE);
-+		err = motmdm_send_command(dev, mot_dlci, 1000, cmd, strlen(cmd),
-+					  buf, PAGE_SIZE);
- 		if (err >= 0) {
- 			msleep(100);
- 			break;
+ static bool is_registered;
+ static DEFINE_IDA(ctrl_ida);
+@@ -630,6 +631,15 @@ static int acpi_serdev_check_resources(struct serdev_controller *ctrl,
+ 	if (ret)
+ 		return ret;
+ 
++	/*
++	 * Apple machines provide an empty resource template, so on those
++	 * machines just look for immediate children with a "baud" property
++	 * (from the _DSM method) instead.
++	 */
++	if (!lookup.controller_handle && x86_apple_machine &&
++	    !acpi_dev_get_property(adev, "baud", ACPI_TYPE_BUFFER, NULL))
++		acpi_get_parent(adev->handle, &lookup.controller_handle);
++
+ 	/* Make sure controller and ResourceSource handle match */
+ 	if (ACPI_HANDLE(ctrl->dev.parent) != lookup.controller_handle)
+ 		return -ENODEV;
 -- 
-2.25.0
+2.24.1
+
