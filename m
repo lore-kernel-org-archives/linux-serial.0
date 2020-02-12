@@ -2,189 +2,142 @@ Return-Path: <SRS0=7071=4A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.7 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,FUZZY_XPILL,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 573D4C352A4
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Feb 2020 20:02:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A411C3B187
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Feb 2020 20:47:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2C602217F4
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Feb 2020 20:02:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1581537741;
-	bh=QYX8ibf0AXGLzT1RdbhTP1ma4R2d/2xVyVlPC4y383c=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=UWUJuz8dpFEUOmEBiFj8WzLMdY5qcT9MO+O75O8gsK2h+T4/XKBqys+2b+Lri/C5t
-	 YVjrymaJrNBT37cp+XqnT4gx/Faso1VKqh3Y6XhfECymgLmz7bvSId12g+ofXD1pAb
-	 o0gVHji7qRSOxES4s2S98fY6KqeFHHqaWOPmTzSA=
+	by mail.kernel.org (Postfix) with ESMTP id 7264021739
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Feb 2020 20:47:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729039AbgBLUCU (ORCPT
+        id S1727111AbgBLUro (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Feb 2020 15:02:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34102 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729017AbgBLUCU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Feb 2020 15:02:20 -0500
-Received: from localhost (unknown [104.132.1.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1767D21739;
-        Wed, 12 Feb 2020 20:02:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581537739;
-        bh=QYX8ibf0AXGLzT1RdbhTP1ma4R2d/2xVyVlPC4y383c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oWxrb4iuibmarQYTGtaqUYNe3ZMlM7tKFJcxezJeAOzf05ail3SIAt05bBcW68pN/
-         asyqdMa2tCQ7PouXOrfLg6laRbbjD2HwMyuA9P/tXGoDeR+4cjN24NzvhVfKbR6Nly
-         vxww9mum38HLVEyRt8RRoXJKIr6Pmtt4Efprr1/o=
-Date:   Wed, 12 Feb 2020 12:02:18 -0800
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     rishi gupta <gupt21@gmail.com>
-Cc:     robh+dt@kernel.org, jslaby@suse.com, linux-serial@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 2/3] tty/serial: ttvys: add null modem driver
- emulating serial port
-Message-ID: <20200212200218.GA2081271@kroah.com>
-References: <cover.1578235515.git.gupt21@gmail.com>
- <9fcb02fafd5fc9b31f3fe358b8e62b8a40ae132a.1578235515.git.gupt21@gmail.com>
- <20200106193500.GC754821@kroah.com>
- <CALUj-gsaecfZ9HN_JVAnvJijYCHK-A5qeztDLbDOSOAjTVfTeg@mail.gmail.com>
- <20200110072051.GA124387@kroah.com>
- <CALUj-gvf5vcwdj=-8Sh9BjecKwGYFJciZ7caHxbzve3XNmE-xg@mail.gmail.com>
+        Wed, 12 Feb 2020 15:47:44 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:46791 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727692AbgBLUro (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 12 Feb 2020 15:47:44 -0500
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1j1yv7-0003Ry-OM; Wed, 12 Feb 2020 21:47:41 +0100
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1j1yv7-00051K-1O; Wed, 12 Feb 2020 21:47:41 +0100
+Date:   Wed, 12 Feb 2020 21:47:40 +0100
+From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     George Hilliard <ghilliard@kopismobile.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>, kernel@pengutronix.de
+Subject: Re: [PATCH v3 2/2] tty: imx serial: Implement support for reversing
+ TX and RX polarity
+Message-ID: <20200212204740.wc4pibfajxgi5tfp@pengutronix.de>
+References: <20200212163538.3006-1-ghilliard@kopismobile.com>
+ <20200212163538.3006-3-ghilliard@kopismobile.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <CALUj-gvf5vcwdj=-8Sh9BjecKwGYFJciZ7caHxbzve3XNmE-xg@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200212163538.3006-3-ghilliard@kopismobile.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Feb 10, 2020 at 08:44:31PM +0530, rishi gupta wrote:
-> Tried dev_groups approach, doesn't fit here. Please see inline.
+On Wed, Feb 12, 2020 at 10:35:38AM -0600, George Hilliard wrote:
+> The peripheral has support for inverting its input and/or output
+> signals.  This is useful if the hardware flips polarity of the
+> peripheral's signal, such as swapped +/- pins on an RS-422 transceiver,
+> or an inverting level shifter.  Add support for these control registers
+> via the device tree binding.
 > 
-> On Fri, Jan 10, 2020 at 12:50 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Thu, Jan 09, 2020 at 02:59:59PM +0530, rishi gupta wrote:
-> > > > > +/* UART frame structure definitions */
-> > > > > +#define VS_CRTSCTS       0x0001
-> > > > > +#define VS_XON           0x0002
-> > > > > +#define VS_NONE          0X0004
-> > > > > +#define VS_DATA_5        0X0008
-> > > > > +#define VS_DATA_6        0X0010
-> > > > > +#define VS_DATA_7        0X0020
-> > > > > +#define VS_DATA_8        0X0040
-> > > >
-> > > > Why the "X"?
-> > > Sorry I did not understand, do you mean why VS_XON.
-> >
-> > No, I mean why the "0X0040" instead of "0x0040" like all other hex
-> > digits in your list of defines.
-> >
-> > > > > +static int vs_alloc_reg_one_dev(int oidx, int pidx, int rtsmap,
-> > > > > +                     int dtrmap, int dtropn)
-> > > > > +{
-> > > > > +     int ret;
-> > > > > +     struct vs_dev *vsdev;
-> > > > > +     struct device *dev;
-> > > > > +
-> > > > > +     /* Allocate and init virtual tty device private data */
-> > > > > +     vsdev = kcalloc(1, sizeof(struct vs_dev), GFP_KERNEL);
-> > > > > +     if (!vsdev)
-> > > > > +             return -ENOMEM;
-> > > > > +
-> > > > > +     vsdev->own_tty = NULL;
-> > > > > +     vsdev->peer_tty = NULL;
-> > > > > +     vsdev->own_index = oidx;
-> > > > > +     vsdev->peer_index =  pidx;
-> > > > > +     vsdev->rts_mappings = rtsmap;
-> > > > > +     vsdev->dtr_mappings = dtrmap;
-> > > > > +     vsdev->set_odtr_at_open = dtropn;
-> > > > > +     vsdev->msr_reg = 0;
-> > > > > +     vsdev->mcr_reg = 0;
-> > > > > +     vsdev->waiting_msr_chg = 0;
-> > > > > +     vsdev->tx_paused = 0;
-> > > > > +     vsdev->faulty_cable = 0;
-> > > > > +     mutex_init(&vsdev->lock);
-> > > > > +
-> > > > > +     /* Register with tty core with specific minor number */
-> > > > > +     dev = tty_register_device(ttyvs_driver, oidx, NULL);
-> > > > > +     if (!dev) {
-> > > > > +             ret = -ENOMEM;
-> > > > > +             goto fail;
-> > > > > +     }
-> > > > > +
-> > > > > +     vsdev->device = dev;
-> > > > > +     dev_set_drvdata(dev, vsdev);
-> > > > > +
-> > > > > +     /* Create custom sysfs files for this device for events */
-> > > > > +     ret = sysfs_create_group(&dev->kobj, &vs_info_attr_grp);
-> > > >
-> > > > Please no.  You just raced with userspace and lost (i.e. userspace has
-> > > > no idea these files are present.)
-> > > >
-> > > > Please use the correct apis for this, if you _REALLY_ want special sysfs
-> > > > files for a tty device.
-> > > Any specific API would you like to suggest. I am unable to progress on
-> > > how to address this one.
-> >
-> > Now that you have moved things to configfs, maybe you do not need the
-> > sysfs files anymore?
-> >
-> > Ah your "control" sysfs files, ok, you need to set the driver's
-> > dev_groups variable to point to your sysfs attributes, and then the
-> > driver core will properly set up these files.
-> >
-> > hope this helps,
-> >
-> > greg k-h
+> Signed-off-by: George Hilliard <ghilliard@kopismobile.com>
+> ---
+> v1..v2: Remove confidentiality spam
+> v2..v3: Set *and* clear register, and do it before TX enable
 > 
-> Everything done except using dev_groups approach (full driver after
-> all changes https://github.com/test209/t/blob/master/ttyvs.c#L1957).
+>  drivers/tty/serial/imx.c | 28 +++++++++++++++++++++++-----
+>  1 file changed, 23 insertions(+), 5 deletions(-)
 > 
-> Currently to emulate parity error (or any event), user writes to a
-> device specific node (0 is device number):
-> echo "2" > /sys/devices/virtual/tty/ttyvs0/event
-> 
-> With dev_groups, sysfs is created (1) for driver not for devices
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 0c6c63166250..205627bcad66 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -195,6 +195,8 @@ struct imx_port {
+>  	unsigned int		have_rtscts:1;
+>  	unsigned int		have_rtsgpio:1;
+>  	unsigned int		dte_mode:1;
+> +	unsigned int		inverted_tx:1;
+> +	unsigned int		inverted_rx:1;
+>  	struct clk		*clk_ipg;
+>  	struct clk		*clk_per;
+>  	const struct imx_uart_data *devdata;
+> @@ -1335,7 +1337,7 @@ static int imx_uart_startup(struct uart_port *port)
+>  	int retval, i;
+>  	unsigned long flags;
+>  	int dma_is_inited = 0;
+> -	u32 ucr1, ucr2, ucr4;
+> +	u32 ucr1, ucr2, ucr3, ucr4;
+>  
+>  	retval = clk_prepare_enable(sport->clk_per);
+>  	if (retval)
+> @@ -1390,8 +1392,22 @@ static int imx_uart_startup(struct uart_port *port)
+>  	ucr4 = imx_uart_readl(sport, UCR4) & ~UCR4_OREN;
+>  	if (!sport->dma_is_enabled)
+>  		ucr4 |= UCR4_OREN;
+> +	if (sport->inverted_rx)
+> +		ucr4 |= UCR4_INVR;
+> +	else
+> +		ucr4 &= ~UCR4_INVR;
 
-Huh?  It's there for devices.
+Maybe clear UCR4_INVR in the same way as UCR4_OREN is cleared just
+above?
 
-> (2) for platform devices only
+>  	imx_uart_writel(sport, ucr4, UCR4);
+>  
+> +	/*
+> +	 * configure tx polarity before enabling tx
+> +	 */
+> +	ucr3 = imx_uart_readl(sport, UCR3);
+> +	if (sport->inverted_tx)
+> +		ucr3 |= UCR3_INVT;
+> +	else
+> +		ucr3 &= ~UCR3_INVT;
+> +	imx_uart_writel(sport, ucr3, UCR3);
+> +
+>  	ucr2 = imx_uart_readl(sport, UCR2) & ~UCR2_ATEN;
+>  	ucr2 |= (UCR2_RXEN | UCR2_TXEN);
+>  	if (!sport->have_rtscts)
+> @@ -1405,10 +1421,6 @@ static int imx_uart_startup(struct uart_port *port)
+>  	imx_uart_writel(sport, ucr2, UCR2);
+>  
+>  	if (!imx_uart_is_imx1(sport)) {
 
-No, should work for any device type, as the logic is in the driver core.
+If this complete if block would be moved up, you only need to write this
+register once.
 
-> Due to (1), parsing based approach will be needed, for ex (0 is device number);
-> echo "0-2" > /sys/devices/platform/ttyvs-card@0/event
-> or
-> echo "0-parity" > /sys/devices/platform/ttyvs-card@0/event
+> -		u32 ucr3;
+> -
+> -		ucr3 = imx_uart_readl(sport, UCR3);
+> -
+>  		ucr3 |= UCR3_DTRDEN | UCR3_RI | UCR3_DCD;
+>  
+>  		if (sport->dte_mode)
 
-No, the 0- should not be needed, it should be a device-specific file.
+Best regards
+Uwe
 
-> Due to (2), event file will not exist on desktop systems as there will
-> be no device tree node; no platform device.
-
-I don't understand, this file belongs in the tty device that you have
-created, not in any other device.
-
-> Original problem was user space doesn't know when
-> "/sys/devices/virtual/tty/ttyvs0/event" will exist.
-
-And if you set the devices group up properly, the sysfs file will be
-created when the device is created.
-
-> User space gets a uevent when a device is registered with tty core.
-> Application must access only after this.
-
-Yes, but you will race in creation of your file with userspace unless
-you tell the core to do this properly.
-
-> Is this okay in case of this particular driver.
-
-No.
-
-thanks,
-
-greg k-h
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
