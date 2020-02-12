@@ -2,166 +2,115 @@ Return-Path: <SRS0=7071=4A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D38FC2BA83
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Feb 2020 10:35:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F12C2BA83
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Feb 2020 11:19:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1B4182168B
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Feb 2020 10:35:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1581503742;
-	bh=Sl+/cipXsrq+sS8JYDf2ZOugjHi27lTSrmo0pjYIbMs=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=SjoRmUDE2R2gxiJbDlKNgWvF9cTH3lDRxoW5fxH1KY6X/Icna0ewueBBlq1hU20tl
-	 RdlvPoAa87uM4/qO78tEGnq1z83M0wMUIQrY2TJFi/ckAkwPdvmrvIG8sjAgKnJNGc
-	 rZ1ogkA9ubtbZKAPSrdPtzRXIgEK1n8//HDlBK9g=
+	by mail.kernel.org (Postfix) with ESMTP id 987532073C
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Feb 2020 11:19:37 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="asC2bVXd"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727429AbgBLKfj (ORCPT
+        id S1727347AbgBLLTh (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Feb 2020 05:35:39 -0500
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:35740 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727361AbgBLKfi (ORCPT
+        Wed, 12 Feb 2020 06:19:37 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:51797 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727007AbgBLLTh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Feb 2020 05:35:38 -0500
-Received: by mail-oi1-f196.google.com with SMTP id b18so1567037oie.2;
-        Wed, 12 Feb 2020 02:35:36 -0800 (PST)
+        Wed, 12 Feb 2020 06:19:37 -0500
+Received: by mail-wm1-f65.google.com with SMTP id t23so1753498wmi.1;
+        Wed, 12 Feb 2020 03:19:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=HTAbsiExrv4QW5/STpGu+6w7JGxPZpOjJdCEoGEBulE=;
+        b=asC2bVXdzvBx2cv631MWiOZTxgICbuneQqKi8jfIo5dqiZz0iQBe81K/qJOaxhm6Rs
+         3Zw+GgWiVagyFqB07np+5rwwcH598FjsDyOChfSCPUsoC8IlWL5MusYCKHfZ+NSBG0Uy
+         8Ypisw0s6+NJL73FtztJHvi84kXMdy+QLlq48H69RO5NeSFhgGpfv3uJY8ogDRPNQPl0
+         CICVXNayohk4XXsQiP59rNGzOnXzIXcGr2JAf3fuQyj9ke8nBLUgWXwgY+v5u3RU9BD6
+         Cp15qkrpgkjyEf4QKF83kFQBXnlnKZzzQk/0jaTeWhf+Pp/kzC1qCCWs9MZhScTZaWel
+         KMoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NnnbDSzoop0s0gj0miT73Peda0TDZhvlDkQKNkLxkbs=;
-        b=LOyIbD3I3b5JwiL+mGbgzmuh3mR/H8dkgkps/koXX6WCvPSSHPdeGxhFcPIXh6PnG3
-         SPfhexHgQaAB1m029SjjqGXPRh1FP89Ml6a5c6CUuxJjXmUlEtqsBliZHsUjv8k47CN+
-         bgwc/kddOwkRb9Q6EnQuIGnoEbUEOFpoITuuG27D9qg5mUk7xes+liNC+QuMDln+QcCW
-         SdaJPo2C88L72iBTClz755t3MZM49u8HBXGI35InZW5wfdtqLpWDtZSCVTHDN9vTY70M
-         SqXmsd3V/J2rdAXJbta+/d9g9rcMkMvjaot9/pLhGRErTGNQjTPDZPco1gJmUrDP6JfR
-         /EKA==
-X-Gm-Message-State: APjAAAVnTC/d362cp49tGDSvfQmJOJKO1rp1T+5rp8ByqCKF6MDvB5/U
-        VSmizxSLNaPBS1Fi+Al9Rgf3DYsv4OQg7bJgkWimchiR
-X-Google-Smtp-Source: APXvYqx/wHUIDKIKoZeysuin0Zjc/oUAVs+aOzddBBu1ZdL8iabUtwLtopMZOgBPOMdlL9Sajxk811bKA7gbDfAMaTc=
-X-Received: by 2002:a54:4e96:: with SMTP id c22mr5929326oiy.110.1581503736425;
- Wed, 12 Feb 2020 02:35:36 -0800 (PST)
-MIME-Version: 1.0
-References: <1654227.8mz0SueHsU@kreacher> <2339403.frKpfgBVMR@kreacher>
-In-Reply-To: <2339403.frKpfgBVMR@kreacher>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 12 Feb 2020 11:35:25 +0100
-Message-ID: <CAJZ5v0itHeg2nb40ZFRxzoZG-33UqypE1F-wGucHdyAD8BSH9A@mail.gmail.com>
-Subject: Re: [PATCH 22/28] drivers: tty: Call cpu_latency_qos_*() instead of pm_qos_*()
-To:     linux-serial@vger.kernel.org
-Cc:     Linux PM <linux-pm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Amit Kucheria <amit.kucheria@linaro.org>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=HTAbsiExrv4QW5/STpGu+6w7JGxPZpOjJdCEoGEBulE=;
+        b=qDxEhOcnuCD6GF9rF4fa20WIQ0xb8+nKVllb8VTR5OHQTUw/uuN4ed6v/uEzU3xWTe
+         BxtmRzrMxjKAmvkxh7zr/IVaY9ps/KSIrFclkrEOrdJ/vxkxw27LewIxS1mmbSwrrYPK
+         5M5fadGYnEd7ZoxsY0MoK8UwY/kL0JloyQ666Usj64znv+c5G9yXMSzDo1O8DGwXHhAO
+         e75qm4GnwRvji4rAAqoa2tUGj1BoArQdO5T3+aPggTAyzWJOiyVP54YaTu2ILwsItfQg
+         esT3UVitLnPsJBRrB+iBcL1bJS6JI+zeY/kushlrAaitHP0/gkFNg36jakDt94OcQY61
+         6YXw==
+X-Gm-Message-State: APjAAAUr/V6nkLzVAy9qH7b2akyAPSDI1tU6GU/gfGrl3pUr9MUpAcZq
+        k0nUf/NGXs3U0E5CcdVJEcg=
+X-Google-Smtp-Source: APXvYqwkFBJvPdmgKxekMrEjI+4BX8KddY4MNX3CmIouqTPCRhht4uH4TzYx/UcbXZMVAfkKZRPdog==
+X-Received: by 2002:a7b:c216:: with SMTP id x22mr12685206wmi.51.1581506375637;
+        Wed, 12 Feb 2020 03:19:35 -0800 (PST)
+Received: from [192.168.2.41] ([46.227.18.67])
+        by smtp.gmail.com with ESMTPSA id m21sm300439wmi.27.2020.02.12.03.19.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Feb 2020 03:19:34 -0800 (PST)
+Subject: Re: [PATCH] tty/serial: atmel: manage shutdown in case of RS485 or
+ ISO7816 mode
+To:     Nicolas Ferre <nicolas.ferre@microchip.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Content-Type: text/plain; charset="UTF-8"
+        linux-serial@vger.kernel.org
+Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+References: <20200210152053.8289-1-nicolas.ferre@microchip.com>
+From:   Richard Genoud <richard.genoud@gmail.com>
+Message-ID: <f40181d1-3781-2cd9-11b3-420ef0d29ce7@gmail.com>
+Date:   Wed, 12 Feb 2020 12:19:18 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+MIME-Version: 1.0
+In-Reply-To: <20200210152053.8289-1-nicolas.ferre@microchip.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Feb 12, 2020 at 12:40 AM Rafael J. Wysocki <rjw@rjwysocki.net> wrote:
->
-> From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
->
-> Call cpu_latency_qos_add/update/remove_request() instead of
-> pm_qos_add/update/remove_request(), respectively, because the
-> latter are going to be dropped.
->
-> No intentional functional impact.
->
-> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Le 10/02/2020 à 16:20, Nicolas Ferre a écrit :
+> In atmel_shutdown() we call atmel_stop_rx() and atmel_stop_tx() functions.
+> Prevent the rx restart that is implemented in RS485 or ISO7816 modes when
+> calling atmel_stop_tx() by using the atomic information tasklet_shutdown
+> that is already in place for this purpose.
+> 
+> Fixes: 98f2082c3ac4 ("tty/serial: atmel: enforce tasklet init and termination sequences")
+> Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-Please note that the whole series is available here:
-
-https://lore.kernel.org/linux-pm/1654227.8mz0SueHsU@kreacher/
+Acked-by: Richard Genoud <richard.genoud@gmail.com>
 
 > ---
->  drivers/tty/serial/8250/8250_omap.c | 7 +++----
->  drivers/tty/serial/omap-serial.c    | 9 ++++-----
->  2 files changed, 7 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> index 19f8d2f9e7ba..76fe72bfb8bb 100644
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -569,7 +569,7 @@ static void omap8250_uart_qos_work(struct work_struct *work)
->         struct omap8250_priv *priv;
->
->         priv = container_of(work, struct omap8250_priv, qos_work);
-> -       pm_qos_update_request(&priv->pm_qos_request, priv->latency);
-> +       cpu_latency_qos_update_request(&priv->pm_qos_request, priv->latency);
+>  drivers/tty/serial/atmel_serial.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index c15c398c88a9..a39c87a7c2e1 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -570,7 +570,8 @@ static void atmel_stop_tx(struct uart_port *port)
+>  	atmel_uart_writel(port, ATMEL_US_IDR, atmel_port->tx_done_mask);
+>  
+>  	if (atmel_uart_is_half_duplex(port))
+> -		atmel_start_rx(port);
+> +		if (!atomic_read(&atmel_port->tasklet_shutdown))
+> +			atmel_start_rx(port);
+>  
 >  }
->
->  #ifdef CONFIG_SERIAL_8250_DMA
-> @@ -1224,8 +1224,7 @@ static int omap8250_probe(struct platform_device *pdev)
->
->         priv->latency = PM_QOS_CPU_LATENCY_DEFAULT_VALUE;
->         priv->calc_latency = PM_QOS_CPU_LATENCY_DEFAULT_VALUE;
-> -       pm_qos_add_request(&priv->pm_qos_request, PM_QOS_CPU_DMA_LATENCY,
-> -                          priv->latency);
-> +       cpu_latency_qos_add_request(&priv->pm_qos_request, priv->latency);
->         INIT_WORK(&priv->qos_work, omap8250_uart_qos_work);
->
->         spin_lock_init(&priv->rx_dma_lock);
-> @@ -1295,7 +1294,7 @@ static int omap8250_remove(struct platform_device *pdev)
->         pm_runtime_put_sync(&pdev->dev);
->         pm_runtime_disable(&pdev->dev);
->         serial8250_unregister_port(priv->line);
-> -       pm_qos_remove_request(&priv->pm_qos_request);
-> +       cpu_latency_qos_remove_request(&priv->pm_qos_request);
->         device_init_wakeup(&pdev->dev, false);
->         return 0;
->  }
-> diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-> index ce2558767eee..e0b720ac754b 100644
-> --- a/drivers/tty/serial/omap-serial.c
-> +++ b/drivers/tty/serial/omap-serial.c
-> @@ -831,7 +831,7 @@ static void serial_omap_uart_qos_work(struct work_struct *work)
->         struct uart_omap_port *up = container_of(work, struct uart_omap_port,
->                                                 qos_work);
->
-> -       pm_qos_update_request(&up->pm_qos_request, up->latency);
-> +       cpu_latency_qos_update_request(&up->pm_qos_request, up->latency);
->  }
->
->  static void
-> @@ -1724,8 +1724,7 @@ static int serial_omap_probe(struct platform_device *pdev)
->
->         up->latency = PM_QOS_CPU_LATENCY_DEFAULT_VALUE;
->         up->calc_latency = PM_QOS_CPU_LATENCY_DEFAULT_VALUE;
-> -       pm_qos_add_request(&up->pm_qos_request,
-> -               PM_QOS_CPU_DMA_LATENCY, up->latency);
-> +       cpu_latency_qos_add_request(&up->pm_qos_request, up->latency);
->         INIT_WORK(&up->qos_work, serial_omap_uart_qos_work);
->
->         platform_set_drvdata(pdev, up);
-> @@ -1759,7 +1758,7 @@ static int serial_omap_probe(struct platform_device *pdev)
->         pm_runtime_dont_use_autosuspend(&pdev->dev);
->         pm_runtime_put_sync(&pdev->dev);
->         pm_runtime_disable(&pdev->dev);
-> -       pm_qos_remove_request(&up->pm_qos_request);
-> +       cpu_latency_qos_remove_request(&up->pm_qos_request);
->         device_init_wakeup(up->dev, false);
->  err_rs485:
->  err_port_line:
-> @@ -1777,7 +1776,7 @@ static int serial_omap_remove(struct platform_device *dev)
->         pm_runtime_dont_use_autosuspend(up->dev);
->         pm_runtime_put_sync(up->dev);
->         pm_runtime_disable(up->dev);
-> -       pm_qos_remove_request(&up->pm_qos_request);
-> +       cpu_latency_qos_remove_request(&up->pm_qos_request);
->         device_init_wakeup(&dev->dev, false);
->
->         return 0;
-> --
-> 2.16.4
->
->
->
->
->
+>  
+> 
+
