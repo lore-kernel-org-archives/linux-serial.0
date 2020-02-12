@@ -2,142 +2,208 @@ Return-Path: <SRS0=7071=4A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A411C3B187
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Feb 2020 20:47:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 084E1C3B187
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Feb 2020 22:49:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7264021739
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Feb 2020 20:47:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D0F332168B
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Feb 2020 22:49:20 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="H5/REBRi"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727111AbgBLUro (ORCPT
+        id S1729132AbgBLWtU (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Feb 2020 15:47:44 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:46791 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727692AbgBLUro (ORCPT
+        Wed, 12 Feb 2020 17:49:20 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:35032 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728603AbgBLWtU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Feb 2020 15:47:44 -0500
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1j1yv7-0003Ry-OM; Wed, 12 Feb 2020 21:47:41 +0100
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1j1yv7-00051K-1O; Wed, 12 Feb 2020 21:47:41 +0100
-Date:   Wed, 12 Feb 2020 21:47:40 +0100
-From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     George Hilliard <ghilliard@kopismobile.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>, kernel@pengutronix.de
-Subject: Re: [PATCH v3 2/2] tty: imx serial: Implement support for reversing
- TX and RX polarity
-Message-ID: <20200212204740.wc4pibfajxgi5tfp@pengutronix.de>
-References: <20200212163538.3006-1-ghilliard@kopismobile.com>
- <20200212163538.3006-3-ghilliard@kopismobile.com>
+        Wed, 12 Feb 2020 17:49:20 -0500
+Received: by mail-pf1-f196.google.com with SMTP id y73so1971804pfg.2
+        for <linux-serial@vger.kernel.org>; Wed, 12 Feb 2020 14:49:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:content-transfer-encoding:in-reply-to:references
+         :subject:from:cc:to:date:message-id:user-agent;
+        bh=5VbKLkfPH8db+tDfl0W96JCz90PyOtNfa4s5IUcV6hU=;
+        b=H5/REBRi+xtWl6KzofHGWgs5eR99ee6i83fXwQbNMKs5ecrgZyeNfol5UOcCMQYfyS
+         vEOpqkKsCcLfnFuRIgsXLo3MpT1e4bgURtblOcwXug7AUd9761XQG78SokGCtM2FRXKn
+         Xb4xkl0KB35yOxioPJCMZKqfBF9+lMHL4EmZE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:content-transfer-encoding
+         :in-reply-to:references:subject:from:cc:to:date:message-id
+         :user-agent;
+        bh=5VbKLkfPH8db+tDfl0W96JCz90PyOtNfa4s5IUcV6hU=;
+        b=TTF/b6KFbMWpQSac+ixnevPbCi5ukqSSWvlSz0uWil5Is6Of7l+BMhDNNuy6I8CSCn
+         AGB0MApwNqFgB8TXg3IgPwyNFPE/Ixv9MzqARV9C0vkSHuZWx4l1mpjk1IbMFmizjwhb
+         PH4SLKUp61aKdif2q2gHSEpkrkjbdbZOhQfvFduKdqVWflDt+0Juv2yhaEH+2uaqFWYr
+         NljbKueqiqaCgXuQbiusqs7UF9N/6LJy0NFPN52RfwN50xZqL/zb+H1ihXXzyt2gHvbt
+         abDKwCxc1RdzGaMpa2bE5dPE8Z0tVMAq4J41hAu4Y2vIpLnBW4EJGppKE58nBmZnxz7w
+         kGgg==
+X-Gm-Message-State: APjAAAUF+GfjKOG/6nhgwzDWLVeo2KbAwy3Kj7+r+hjfv3vvwETWgV6n
+        S61RT1+5/uSGmBV1QxbwR0u5hQ==
+X-Google-Smtp-Source: APXvYqxnqZasF+34DXy2Y+08uc5Z4EWTHHYp5kxcBO45Y4J1xFA0uE+4kkJ82AjYqoz84TVVDS4Big==
+X-Received: by 2002:a63:2309:: with SMTP id j9mr14746259pgj.54.1581547757785;
+        Wed, 12 Feb 2020 14:49:17 -0800 (PST)
+Received: from chromium.org ([2620:15c:202:1:fa53:7765:582b:82b9])
+        by smtp.gmail.com with ESMTPSA id b12sm282204pfr.26.2020.02.12.14.49.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Feb 2020 14:49:17 -0800 (PST)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200212163538.3006-3-ghilliard@kopismobile.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1581415982-8793-1-git-send-email-skakit@codeaurora.org>
+References: <1581415982-8793-1-git-send-email-skakit@codeaurora.org>
+Subject: Re: [PATCH] tty: serial: qcom_geni_serial: Fix RX cancel command failure
+From:   Stephen Boyd <swboyd@chromium.org>
+Cc:     mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, akashast@codeaurora.org,
+        satya priya <skakit@codeaurora.org>
+To:     gregkh@linuxfoundation.org, satya priya <skakit@codeaurora.org>
+Date:   Wed, 12 Feb 2020 14:49:16 -0800
+Message-ID: <158154775640.184098.13898240474253130921@swboyd.mtv.corp.google.com>
+User-Agent: alot/0.9
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Feb 12, 2020 at 10:35:38AM -0600, George Hilliard wrote:
-> The peripheral has support for inverting its input and/or output
-> signals.  This is useful if the hardware flips polarity of the
-> peripheral's signal, such as swapped +/- pins on an RS-422 transceiver,
-> or an inverting level shifter.  Add support for these control registers
-> via the device tree binding.
-> 
-> Signed-off-by: George Hilliard <ghilliard@kopismobile.com>
+Quoting satya priya (2020-02-11 02:13:02)
+> RX cancel command fails when BT is switched on and off multiple times.
+>=20
+> To handle this, poll for the cancel bit in SE_GENI_S_IRQ_STATUS register
+> instead of SE_GENI_S_CMD_CTRL_REG.
+>=20
+> As per the HPG update, handle the RX last bit after cancel command
+> and flush out the RX FIFO buffer.
+>=20
+> Signed-off-by: satya priya <skakit@codeaurora.org>
 > ---
-> v1..v2: Remove confidentiality spam
-> v2..v3: Set *and* clear register, and do it before TX enable
-> 
->  drivers/tty/serial/imx.c | 28 +++++++++++++++++++++++-----
->  1 file changed, 23 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 0c6c63166250..205627bcad66 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -195,6 +195,8 @@ struct imx_port {
->  	unsigned int		have_rtscts:1;
->  	unsigned int		have_rtsgpio:1;
->  	unsigned int		dte_mode:1;
-> +	unsigned int		inverted_tx:1;
-> +	unsigned int		inverted_rx:1;
->  	struct clk		*clk_ipg;
->  	struct clk		*clk_per;
->  	const struct imx_uart_data *devdata;
-> @@ -1335,7 +1337,7 @@ static int imx_uart_startup(struct uart_port *port)
->  	int retval, i;
->  	unsigned long flags;
->  	int dma_is_inited = 0;
-> -	u32 ucr1, ucr2, ucr4;
-> +	u32 ucr1, ucr2, ucr3, ucr4;
->  
->  	retval = clk_prepare_enable(sport->clk_per);
->  	if (retval)
-> @@ -1390,8 +1392,22 @@ static int imx_uart_startup(struct uart_port *port)
->  	ucr4 = imx_uart_readl(sport, UCR4) & ~UCR4_OREN;
->  	if (!sport->dma_is_enabled)
->  		ucr4 |= UCR4_OREN;
-> +	if (sport->inverted_rx)
-> +		ucr4 |= UCR4_INVR;
-> +	else
-> +		ucr4 &= ~UCR4_INVR;
 
-Maybe clear UCR4_INVR in the same way as UCR4_OREN is cleared just
-above?
+I'm pretty sure I saw an oops with this patch.
 
->  	imx_uart_writel(sport, ucr4, UCR4);
->  
-> +	/*
-> +	 * configure tx polarity before enabling tx
-> +	 */
-> +	ucr3 = imx_uart_readl(sport, UCR3);
-> +	if (sport->inverted_tx)
-> +		ucr3 |= UCR3_INVT;
-> +	else
-> +		ucr3 &= ~UCR3_INVT;
-> +	imx_uart_writel(sport, ucr3, UCR3);
+   Unable to handle kernel NULL pointer dereference at virtual address 0000=
+000000000000
+   Mem abort info:
+     ESR =3D 0x96000046
+     EC =3D 0x25: DABT (current EL), IL =3D 32 bits
+   Bluetooth: hci_ldisc.c:hci_uart_register_proto() HCI UART protocol QCA r=
+egistered
+     SET =3D 0, FnV =3D 0
+     EA =3D 0, S1PTW =3D 0
+   Data abort info:
+     ISV =3D 0, ISS =3D 0x00000046
+     CM =3D 0, WnR =3D 1
+   user pgtable: 4k pages, 39-bit VAs, pgdp=3D00000001b4645000
+   [0000000000000000] pgd=3D00000001ac579003, pud=3D00000001ac579003, pmd=
+=3D0000000000000000
+   Internal error: Oops: 96000046 [#1] PREEMPT SMP
+   Modules linked in: hci_uart(+) qcom_spmi_temp_alarm btqca qcom_spmi_adc5=
+ qcom_vadc_common bluetooth ecdh_generic ecc venus_core v4l2_mem2mem videob=
+uf2_v4l2 videobuf2_common ipa qcom_q6v5_mss qcom_q6v5_ipa_notify qcom_commo=
+n qcom_q6v5 xt_MASQUERADE fuse rmtfs_mem iio_trig_sysfs cros_ec_sensors_rin=
+g cros_ec_sensors cros_ec_sensors_core industrialio_triggered_buffer kfifo_=
+buf cros_ec_sensorsupport ath10k_snoc qmi_helpers ath10k_core ath lzo_rle l=
+zo_compress mac80211 zram cfg80211 joydev
+   CPU: 7 PID: 258 Comm: kworker/u16:3 Tainted: G S      W         5.4.17 #=
+19
+   Workqueue: events_unbound async_run_entry_fn
+   pstate: 60c00009 (nZCv daif +PAN +UAO)
+   pc : handle_rx_uart+0x64/0x278
+   lr : qcom_geni_serial_handle_rx+0x84/0x90
+   sp : ffffff814348f960
+   x29: ffffff814348f960 x28: ffffffd01ac24288
+   x27: 0000000000000018 x26: 0000000000000002
+   x25: 0000000000000001 x24: ffffff8146341348
+   x23: ffffff8146341000 x22: ffffffd01accc978
+   x21: ffffff8146341000 x20: 0000000000000001
+   x19: 0000000000000001 x18: ffffffd01b22d000
+   x17: 0000000000008000 x16: 00000000000000b0
+   x15: ffffffd01afdbdd0 x14: ffffffd01b3edde0
+   x13: ffffffd01b7fb000 x12: 0000000000000001
+   x11: 0000000000000000 x10: 0000000000000000
+   x9 : ffffffd010344780 x8 : 0000000000000000
+   x7 : ffffffd019d8e768 x6 : 0000000000000000
+   x5 : ffffffd01adbb000 x4 : 0000000000008004
+   x3 : 0000000000000001 x2 : 0000000000000001
+   x1 : 0000000000000001 x0 : ffffffd01accc978
+   Call trace:
+    handle_rx_uart+0x64/0x278
+    qcom_geni_serial_handle_rx+0x84/0x90
+    qcom_geni_serial_stop_rx+0x110/0x180
+    qcom_geni_serial_port_setup+0x68/0x1b0
+    qcom_geni_serial_startup+0x24/0x70
+    uart_startup+0x164/0x28c
+    uart_port_activate+0x6c/0xbc
+    tty_port_open+0xa8/0x114
+    uart_open+0x28/0x38
+    ttyport_open+0x7c/0x164
+    serdev_device_open+0x38/0xe4
+    hci_uart_register_device+0x54/0x2e8 [hci_uart]
+    qca_serdev_probe+0x1c4/0x374 [hci_uart]
+    serdev_drv_probe+0x3c/0x64
+    really_probe+0x144/0x3f8
+    driver_probe_device+0x70/0x140
+    __driver_attach_async_helper+0x7c/0xa8
+    async_run_entry_fn+0x60/0x178
+    process_one_work+0x33c/0x640
+    worker_thread+0x2a0/0x470
+    kthread+0x128/0x138
+    ret_from_fork+0x10/0x18
+   Code: 1aca096a 911e0129 b940012b 7100054a (b800450b)
+
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/q=
+com_geni_serial.c
+> index 191abb1..0bd1684 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -599,7 +600,7 @@ static void qcom_geni_serial_stop_rx(struct uart_port=
+ *uport)
+>         u32 irq_en;
+>         u32 status;
+>         struct qcom_geni_serial_port *port =3D to_dev_port(uport, uport);
+> -       u32 irq_clear =3D S_CMD_DONE_EN;
+> +       u32 s_irq_status;
+> =20
+>         irq_en =3D readl(uport->membase + SE_GENI_S_IRQ_EN);
+>         irq_en &=3D ~(S_RX_FIFO_WATERMARK_EN | S_RX_FIFO_LAST_EN);
+> @@ -615,10 +616,19 @@ static void qcom_geni_serial_stop_rx(struct uart_po=
+rt *uport)
+>                 return;
+> =20
+>         geni_se_cancel_s_cmd(&port->se);
+> -       qcom_geni_serial_poll_bit(uport, SE_GENI_S_CMD_CTRL_REG,
+> -                                       S_GENI_CMD_CANCEL, false);
+> +       qcom_geni_serial_poll_bit(uport, SE_GENI_S_IRQ_STATUS,
+> +                                       S_CMD_CANCEL_EN, true);
+> +       /*
+> +        * If timeout occurs secondary engine remains active
+> +        * and Abort sequence is executed.
+> +        */
+> +       s_irq_status =3D readl(uport->membase + SE_GENI_S_IRQ_STATUS);
+> +       /* Flush the Rx buffer */
+> +       if (s_irq_status & S_RX_FIFO_LAST_EN)
+> +               qcom_geni_serial_handle_rx(uport, true);
+
+This seems to be the problematic line. We didn't call handle_rx() from
+the stop_rx() path before. And this qcom_geni_serial_stop_rx() function
+is called from qcom_geni_serial_startup(), but most importantly, we call
+into this function from startup before we allocate memory for the
+port->rx_fifo member (see the devm_kcalloc() later in
+qcom_geni_serial_port_setup() and see how it's after we stop rx).
+
+Why do we need to flush the rx buffer by reading it into the software
+buffer? Can't we simply ack any outstanding RX interrupts in the
+hardware when we're stopping receive?
+
+> +       writel(s_irq_status, uport->membase + SE_GENI_S_IRQ_CLEAR);
 > +
->  	ucr2 = imx_uart_readl(sport, UCR2) & ~UCR2_ATEN;
->  	ucr2 |= (UCR2_RXEN | UCR2_TXEN);
->  	if (!sport->have_rtscts)
-> @@ -1405,10 +1421,6 @@ static int imx_uart_startup(struct uart_port *port)
->  	imx_uart_writel(sport, ucr2, UCR2);
->  
->  	if (!imx_uart_is_imx1(sport)) {
-
-If this complete if block would be moved up, you only need to write this
-register once.
-
-> -		u32 ucr3;
-> -
-> -		ucr3 = imx_uart_readl(sport, UCR3);
-> -
->  		ucr3 |= UCR3_DTRDEN | UCR3_RI | UCR3_DCD;
->  
->  		if (sport->dte_mode)
-
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+>         status =3D readl(uport->membase + SE_GENI_STATUS);
+> -       writel(irq_clear, uport->membase + SE_GENI_S_IRQ_CLEAR);
+>         if (status & S_GENI_CMD_ACTIVE)
+>                 qcom_geni_serial_abort_rx(uport);
