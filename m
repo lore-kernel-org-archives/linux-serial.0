@@ -2,115 +2,86 @@ Return-Path: <SRS0=7071=4A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F12C2BA83
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Feb 2020 11:19:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6622BC2BA83
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Feb 2020 13:28:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 987532073C
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Feb 2020 11:19:37 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="asC2bVXd"
+	by mail.kernel.org (Postfix) with ESMTP id 389C220661
+	for <linux-serial@archiver.kernel.org>; Wed, 12 Feb 2020 13:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727347AbgBLLTh (ORCPT
+        id S1727662AbgBLN2g (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Feb 2020 06:19:37 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:51797 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727007AbgBLLTh (ORCPT
+        Wed, 12 Feb 2020 08:28:36 -0500
+Received: from bmailout1.hostsharing.net ([83.223.95.100]:57467 "EHLO
+        bmailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725887AbgBLN2g (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Feb 2020 06:19:37 -0500
-Received: by mail-wm1-f65.google.com with SMTP id t23so1753498wmi.1;
-        Wed, 12 Feb 2020 03:19:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=HTAbsiExrv4QW5/STpGu+6w7JGxPZpOjJdCEoGEBulE=;
-        b=asC2bVXdzvBx2cv631MWiOZTxgICbuneQqKi8jfIo5dqiZz0iQBe81K/qJOaxhm6Rs
-         3Zw+GgWiVagyFqB07np+5rwwcH598FjsDyOChfSCPUsoC8IlWL5MusYCKHfZ+NSBG0Uy
-         8Ypisw0s6+NJL73FtztJHvi84kXMdy+QLlq48H69RO5NeSFhgGpfv3uJY8ogDRPNQPl0
-         CICVXNayohk4XXsQiP59rNGzOnXzIXcGr2JAf3fuQyj9ke8nBLUgWXwgY+v5u3RU9BD6
-         Cp15qkrpgkjyEf4QKF83kFQBXnlnKZzzQk/0jaTeWhf+Pp/kzC1qCCWs9MZhScTZaWel
-         KMoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=HTAbsiExrv4QW5/STpGu+6w7JGxPZpOjJdCEoGEBulE=;
-        b=qDxEhOcnuCD6GF9rF4fa20WIQ0xb8+nKVllb8VTR5OHQTUw/uuN4ed6v/uEzU3xWTe
-         BxtmRzrMxjKAmvkxh7zr/IVaY9ps/KSIrFclkrEOrdJ/vxkxw27LewIxS1mmbSwrrYPK
-         5M5fadGYnEd7ZoxsY0MoK8UwY/kL0JloyQ666Usj64znv+c5G9yXMSzDo1O8DGwXHhAO
-         e75qm4GnwRvji4rAAqoa2tUGj1BoArQdO5T3+aPggTAyzWJOiyVP54YaTu2ILwsItfQg
-         esT3UVitLnPsJBRrB+iBcL1bJS6JI+zeY/kushlrAaitHP0/gkFNg36jakDt94OcQY61
-         6YXw==
-X-Gm-Message-State: APjAAAUr/V6nkLzVAy9qH7b2akyAPSDI1tU6GU/gfGrl3pUr9MUpAcZq
-        k0nUf/NGXs3U0E5CcdVJEcg=
-X-Google-Smtp-Source: APXvYqwkFBJvPdmgKxekMrEjI+4BX8KddY4MNX3CmIouqTPCRhht4uH4TzYx/UcbXZMVAfkKZRPdog==
-X-Received: by 2002:a7b:c216:: with SMTP id x22mr12685206wmi.51.1581506375637;
-        Wed, 12 Feb 2020 03:19:35 -0800 (PST)
-Received: from [192.168.2.41] ([46.227.18.67])
-        by smtp.gmail.com with ESMTPSA id m21sm300439wmi.27.2020.02.12.03.19.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Feb 2020 03:19:34 -0800 (PST)
-Subject: Re: [PATCH] tty/serial: atmel: manage shutdown in case of RS485 or
- ISO7816 mode
-To:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-References: <20200210152053.8289-1-nicolas.ferre@microchip.com>
-From:   Richard Genoud <richard.genoud@gmail.com>
-Message-ID: <f40181d1-3781-2cd9-11b3-420ef0d29ce7@gmail.com>
-Date:   Wed, 12 Feb 2020 12:19:18 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        Wed, 12 Feb 2020 08:28:36 -0500
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
+        by bmailout1.hostsharing.net (Postfix) with ESMTPS id 6F31430008F11;
+        Wed, 12 Feb 2020 14:28:34 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 43BB3154292; Wed, 12 Feb 2020 14:28:34 +0100 (CET)
+Date:   Wed, 12 Feb 2020 14:28:34 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>, matthias.bgg@kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Matthias Brugger <mbrugger@suse.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        Ray Jui <rjui@broadcom.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        jslaby@suse.com
+Subject: Re: [PATCH] serial: 8250_early: Add earlycon for BCM2835 aux uart
+Message-ID: <20200212132834.c63354wynhmrg6hz@wunner.de>
+References: <20200128141958.vwbxoqglt5gw4xj5@wunner.de>
+ <C099APQHQAHB.3Q9UVYJYT98TN@linux-9qgx>
+ <20200131152414.73tgwsfhzgu4apkx@wunner.de>
+ <dfbe2c94dd52a31826be751f8dd9afc4ed08ec6d.camel@suse.de>
 MIME-Version: 1.0
-In-Reply-To: <20200210152053.8289-1-nicolas.ferre@microchip.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dfbe2c94dd52a31826be751f8dd9afc4ed08ec6d.camel@suse.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Le 10/02/2020 à 16:20, Nicolas Ferre a écrit :
-> In atmel_shutdown() we call atmel_stop_rx() and atmel_stop_tx() functions.
-> Prevent the rx restart that is implemented in RS485 or ISO7816 modes when
-> calling atmel_stop_tx() by using the atomic information tasklet_shutdown
-> that is already in place for this purpose.
+On Mon, Feb 03, 2020 at 08:10:21PM +0100, Nicolas Saenz Julienne wrote:
+> On Fri, 2020-01-31 at 16:24 +0100, Lukas Wunner wrote:
+> > On Thu, Jan 30, 2020 at 05:11:55PM +0100, Nicolas Saenz Julienne wrote:
+> > > BTW did you had the oportunity to have a go at the patch?
+> > 
+> > I've just performed a quick test and it doesn't work for me.
+> > If I add stdout-path = "serial1:115200n8"; to the chosen node,
+> > I only get a regular console with this patch, not an earlycon.
 > 
-> Fixes: 98f2082c3ac4 ("tty/serial: atmel: enforce tasklet init and termination sequences")
-> Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+> That's surprising, you're using u-boot isn't it? and the upstream device tree?
 
-Acked-by: Richard Genoud <richard.genoud@gmail.com>
+My apologies for the delay.
 
-> ---
->  drivers/tty/serial/atmel_serial.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index c15c398c88a9..a39c87a7c2e1 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -570,7 +570,8 @@ static void atmel_stop_tx(struct uart_port *port)
->  	atmel_uart_writel(port, ATMEL_US_IDR, atmel_port->tx_done_mask);
->  
->  	if (atmel_uart_is_half_duplex(port))
-> -		atmel_start_rx(port);
-> +		if (!atomic_read(&atmel_port->tasklet_shutdown))
-> +			atmel_start_rx(port);
->  
->  }
->  
-> 
+We boot the kernel directly from the Foundation's bootloader without
+U-Boot as intermediary, and we use the downstream DT and kernel
+(with RT & custom patches).
 
+As far as I could see, the 8250_bcm2835aux UART wasn't even found
+when the kernel searched for available earlycons.  The compatible
+string in the DT does match the one in Matthias' patch.
+
+I notice that Greg has already applied the patch to tty/next.
+I'm currently stretched a little thin but I'll debug this further
+once the dust has settled here.
+
+Thanks,
+
+Lukas
