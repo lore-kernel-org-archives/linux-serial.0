@@ -1,209 +1,133 @@
-Return-Path: <SRS0=7071=4A=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=oIqV=4B=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 084E1C3B187
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Feb 2020 22:49:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E5A8C352A4
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Feb 2020 01:07:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D0F332168B
-	for <linux-serial@archiver.kernel.org>; Wed, 12 Feb 2020 22:49:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 57453206B6
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Feb 2020 01:07:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="H5/REBRi"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b="jiL7Ay02"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729132AbgBLWtU (ORCPT
+        id S1729190AbgBMBHU (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Feb 2020 17:49:20 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:35032 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728603AbgBLWtU (ORCPT
+        Wed, 12 Feb 2020 20:07:20 -0500
+Received: from gateway22.websitewelcome.com ([192.185.46.224]:48538 "EHLO
+        gateway22.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729185AbgBMBHT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Feb 2020 17:49:20 -0500
-Received: by mail-pf1-f196.google.com with SMTP id y73so1971804pfg.2
-        for <linux-serial@vger.kernel.org>; Wed, 12 Feb 2020 14:49:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:content-transfer-encoding:in-reply-to:references
-         :subject:from:cc:to:date:message-id:user-agent;
-        bh=5VbKLkfPH8db+tDfl0W96JCz90PyOtNfa4s5IUcV6hU=;
-        b=H5/REBRi+xtWl6KzofHGWgs5eR99ee6i83fXwQbNMKs5ecrgZyeNfol5UOcCMQYfyS
-         vEOpqkKsCcLfnFuRIgsXLo3MpT1e4bgURtblOcwXug7AUd9761XQG78SokGCtM2FRXKn
-         Xb4xkl0KB35yOxioPJCMZKqfBF9+lMHL4EmZE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:content-transfer-encoding
-         :in-reply-to:references:subject:from:cc:to:date:message-id
-         :user-agent;
-        bh=5VbKLkfPH8db+tDfl0W96JCz90PyOtNfa4s5IUcV6hU=;
-        b=TTF/b6KFbMWpQSac+ixnevPbCi5ukqSSWvlSz0uWil5Is6Of7l+BMhDNNuy6I8CSCn
-         AGB0MApwNqFgB8TXg3IgPwyNFPE/Ixv9MzqARV9C0vkSHuZWx4l1mpjk1IbMFmizjwhb
-         PH4SLKUp61aKdif2q2gHSEpkrkjbdbZOhQfvFduKdqVWflDt+0Juv2yhaEH+2uaqFWYr
-         NljbKueqiqaCgXuQbiusqs7UF9N/6LJy0NFPN52RfwN50xZqL/zb+H1ihXXzyt2gHvbt
-         abDKwCxc1RdzGaMpa2bE5dPE8Z0tVMAq4J41hAu4Y2vIpLnBW4EJGppKE58nBmZnxz7w
-         kGgg==
-X-Gm-Message-State: APjAAAUF+GfjKOG/6nhgwzDWLVeo2KbAwy3Kj7+r+hjfv3vvwETWgV6n
-        S61RT1+5/uSGmBV1QxbwR0u5hQ==
-X-Google-Smtp-Source: APXvYqxnqZasF+34DXy2Y+08uc5Z4EWTHHYp5kxcBO45Y4J1xFA0uE+4kkJ82AjYqoz84TVVDS4Big==
-X-Received: by 2002:a63:2309:: with SMTP id j9mr14746259pgj.54.1581547757785;
-        Wed, 12 Feb 2020 14:49:17 -0800 (PST)
-Received: from chromium.org ([2620:15c:202:1:fa53:7765:582b:82b9])
-        by smtp.gmail.com with ESMTPSA id b12sm282204pfr.26.2020.02.12.14.49.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Feb 2020 14:49:17 -0800 (PST)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 12 Feb 2020 20:07:19 -0500
+X-Greylist: delayed 1368 seconds by postgrey-1.27 at vger.kernel.org; Wed, 12 Feb 2020 20:07:18 EST
+Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
+        by gateway22.websitewelcome.com (Postfix) with ESMTP id 8215C128B
+        for <linux-serial@vger.kernel.org>; Wed, 12 Feb 2020 18:44:30 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 22cIj78LUvBMd22cIj5kYT; Wed, 12 Feb 2020 18:44:30 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=nAVrME3jdk2U+h1Uo0cXDIxJq+JDl6p8marnSwhWtzU=; b=jiL7Ay02nwKzHTQ+GYESXgdNC8
+        y42tmFVVv2EFr8Rdaqwm/y7XoNgVl3P8KKj8J+hOtTs3/jwPCDRJrk7lfKq9Tk38ct7kAL057Q2+V
+        daN2eajzGtkMQrQuNp3gKd0sQd6019iRF7DqqP1KUFhzuN2Q4tkJHqLYPtATQomnCp1Kv1BRI0lXX
+        f+9DaOo8TJf8gIMuY+cLXVx+pLAbbjgnwKRkLqetf73DsJ2iL1hyoTzrjfGjq9I1aRyhrVtRYoQxo
+        CZRGm4Mb376ere/O+dYwUzaIWBiYYg0sqxzx4lqc06EKgWaV8f1S4gQsiO6FhPkSynHj7tYZDPqM0
+        iV6in4hA==;
+Received: from [200.68.141.42] (port=1177 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1j22cG-003j8p-Kx; Wed, 12 Feb 2020 18:44:29 -0600
+Date:   Wed, 12 Feb 2020 18:44:26 -0600
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH] serial: 8250_pci: Replace zero-length array with
+ flexible-array member
+Message-ID: <20200213004426.GA7886@embeddedor.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <1581415982-8793-1-git-send-email-skakit@codeaurora.org>
-References: <1581415982-8793-1-git-send-email-skakit@codeaurora.org>
-Subject: Re: [PATCH] tty: serial: qcom_geni_serial: Fix RX cancel command failure
-From:   Stephen Boyd <swboyd@chromium.org>
-Cc:     mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, akashast@codeaurora.org,
-        satya priya <skakit@codeaurora.org>
-To:     gregkh@linuxfoundation.org, satya priya <skakit@codeaurora.org>
-Date:   Wed, 12 Feb 2020 14:49:16 -0800
-Message-ID: <158154775640.184098.13898240474253130921@swboyd.mtv.corp.google.com>
-User-Agent: alot/0.9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 200.68.141.42
+X-Source-L: No
+X-Exim-ID: 1j22cG-003j8p-Kx
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [200.68.141.42]:1177
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 58
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Quoting satya priya (2020-02-11 02:13:02)
-> RX cancel command fails when BT is switched on and off multiple times.
->=20
-> To handle this, poll for the cancel bit in SE_GENI_S_IRQ_STATUS register
-> instead of SE_GENI_S_CMD_CTRL_REG.
->=20
-> As per the HPG update, handle the RX last bit after cancel command
-> and flush out the RX FIFO buffer.
->=20
-> Signed-off-by: satya priya <skakit@codeaurora.org>
-> ---
+The current codebase makes use of the zero-length array language
+extension to the C90 standard, but the preferred mechanism to declare
+variable-length types such as these ones is a flexible array member[1][2],
+introduced in C99:
 
-I'm pretty sure I saw an oops with this patch.
+struct foo {
+        int stuff;
+        struct boo array[];
+};
 
-   Unable to handle kernel NULL pointer dereference at virtual address 0000=
-000000000000
-   Mem abort info:
-     ESR =3D 0x96000046
-     EC =3D 0x25: DABT (current EL), IL =3D 32 bits
-   Bluetooth: hci_ldisc.c:hci_uart_register_proto() HCI UART protocol QCA r=
-egistered
-     SET =3D 0, FnV =3D 0
-     EA =3D 0, S1PTW =3D 0
-   Data abort info:
-     ISV =3D 0, ISS =3D 0x00000046
-     CM =3D 0, WnR =3D 1
-   user pgtable: 4k pages, 39-bit VAs, pgdp=3D00000001b4645000
-   [0000000000000000] pgd=3D00000001ac579003, pud=3D00000001ac579003, pmd=
-=3D0000000000000000
-   Internal error: Oops: 96000046 [#1] PREEMPT SMP
-   Modules linked in: hci_uart(+) qcom_spmi_temp_alarm btqca qcom_spmi_adc5=
- qcom_vadc_common bluetooth ecdh_generic ecc venus_core v4l2_mem2mem videob=
-uf2_v4l2 videobuf2_common ipa qcom_q6v5_mss qcom_q6v5_ipa_notify qcom_commo=
-n qcom_q6v5 xt_MASQUERADE fuse rmtfs_mem iio_trig_sysfs cros_ec_sensors_rin=
-g cros_ec_sensors cros_ec_sensors_core industrialio_triggered_buffer kfifo_=
-buf cros_ec_sensorsupport ath10k_snoc qmi_helpers ath10k_core ath lzo_rle l=
-zo_compress mac80211 zram cfg80211 joydev
-   CPU: 7 PID: 258 Comm: kworker/u16:3 Tainted: G S      W         5.4.17 #=
-19
-   Workqueue: events_unbound async_run_entry_fn
-   pstate: 60c00009 (nZCv daif +PAN +UAO)
-   pc : handle_rx_uart+0x64/0x278
-   lr : qcom_geni_serial_handle_rx+0x84/0x90
-   sp : ffffff814348f960
-   x29: ffffff814348f960 x28: ffffffd01ac24288
-   x27: 0000000000000018 x26: 0000000000000002
-   x25: 0000000000000001 x24: ffffff8146341348
-   x23: ffffff8146341000 x22: ffffffd01accc978
-   x21: ffffff8146341000 x20: 0000000000000001
-   x19: 0000000000000001 x18: ffffffd01b22d000
-   x17: 0000000000008000 x16: 00000000000000b0
-   x15: ffffffd01afdbdd0 x14: ffffffd01b3edde0
-   x13: ffffffd01b7fb000 x12: 0000000000000001
-   x11: 0000000000000000 x10: 0000000000000000
-   x9 : ffffffd010344780 x8 : 0000000000000000
-   x7 : ffffffd019d8e768 x6 : 0000000000000000
-   x5 : ffffffd01adbb000 x4 : 0000000000008004
-   x3 : 0000000000000001 x2 : 0000000000000001
-   x1 : 0000000000000001 x0 : ffffffd01accc978
-   Call trace:
-    handle_rx_uart+0x64/0x278
-    qcom_geni_serial_handle_rx+0x84/0x90
-    qcom_geni_serial_stop_rx+0x110/0x180
-    qcom_geni_serial_port_setup+0x68/0x1b0
-    qcom_geni_serial_startup+0x24/0x70
-    uart_startup+0x164/0x28c
-    uart_port_activate+0x6c/0xbc
-    tty_port_open+0xa8/0x114
-    uart_open+0x28/0x38
-    ttyport_open+0x7c/0x164
-    serdev_device_open+0x38/0xe4
-    hci_uart_register_device+0x54/0x2e8 [hci_uart]
-    qca_serdev_probe+0x1c4/0x374 [hci_uart]
-    serdev_drv_probe+0x3c/0x64
-    really_probe+0x144/0x3f8
-    driver_probe_device+0x70/0x140
-    __driver_attach_async_helper+0x7c/0xa8
-    async_run_entry_fn+0x60/0x178
-    process_one_work+0x33c/0x640
-    worker_thread+0x2a0/0x470
-    kthread+0x128/0x138
-    ret_from_fork+0x10/0x18
-   Code: 1aca096a 911e0129 b940012b 7100054a (b800450b)
+By making use of the mechanism above, we will get a compiler warning
+in case the flexible array does not occur last in the structure, which
+will help us prevent some kind of undefined behavior bugs from being
+inadvertently introduced[3] to the codebase from now on.
 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/q=
-com_geni_serial.c
-> index 191abb1..0bd1684 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -599,7 +600,7 @@ static void qcom_geni_serial_stop_rx(struct uart_port=
- *uport)
->         u32 irq_en;
->         u32 status;
->         struct qcom_geni_serial_port *port =3D to_dev_port(uport, uport);
-> -       u32 irq_clear =3D S_CMD_DONE_EN;
-> +       u32 s_irq_status;
-> =20
->         irq_en =3D readl(uport->membase + SE_GENI_S_IRQ_EN);
->         irq_en &=3D ~(S_RX_FIFO_WATERMARK_EN | S_RX_FIFO_LAST_EN);
-> @@ -615,10 +616,19 @@ static void qcom_geni_serial_stop_rx(struct uart_po=
-rt *uport)
->                 return;
-> =20
->         geni_se_cancel_s_cmd(&port->se);
-> -       qcom_geni_serial_poll_bit(uport, SE_GENI_S_CMD_CTRL_REG,
-> -                                       S_GENI_CMD_CANCEL, false);
-> +       qcom_geni_serial_poll_bit(uport, SE_GENI_S_IRQ_STATUS,
-> +                                       S_CMD_CANCEL_EN, true);
-> +       /*
-> +        * If timeout occurs secondary engine remains active
-> +        * and Abort sequence is executed.
-> +        */
-> +       s_irq_status =3D readl(uport->membase + SE_GENI_S_IRQ_STATUS);
-> +       /* Flush the Rx buffer */
-> +       if (s_irq_status & S_RX_FIFO_LAST_EN)
-> +               qcom_geni_serial_handle_rx(uport, true);
+Also, notice that, dynamic memory allocations won't be affected by
+this change:
 
-This seems to be the problematic line. We didn't call handle_rx() from
-the stop_rx() path before. And this qcom_geni_serial_stop_rx() function
-is called from qcom_geni_serial_startup(), but most importantly, we call
-into this function from startup before we allocate memory for the
-port->rx_fifo member (see the devm_kcalloc() later in
-qcom_geni_serial_port_setup() and see how it's after we stop rx).
+"Flexible array members have incomplete type, and so the sizeof operator
+may not be applied. As a quirk of the original implementation of
+zero-length arrays, sizeof evaluates to zero."[1]
 
-Why do we need to flush the rx buffer by reading it into the software
-buffer? Can't we simply ack any outstanding RX interrupts in the
-hardware when we're stopping receive?
+This issue was found with the help of Coccinelle.
 
-> +       writel(s_irq_status, uport->membase + SE_GENI_S_IRQ_CLEAR);
-> +
->         status =3D readl(uport->membase + SE_GENI_STATUS);
-> -       writel(irq_clear, uport->membase + SE_GENI_S_IRQ_CLEAR);
->         if (status & S_GENI_CMD_ACTIVE)
->                 qcom_geni_serial_abort_rx(uport);
+[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+[2] https://github.com/KSPP/linux/issues/21
+[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ drivers/tty/serial/8250/8250_pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 939685fed396..0804469ff052 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -53,7 +53,7 @@ struct serial_private {
+ 	unsigned int		nr;
+ 	struct pci_serial_quirk	*quirk;
+ 	const struct pciserial_board *board;
+-	int			line[0];
++	int			line[];
+ };
+ 
+ static const struct pci_device_id pci_use_msi[] = {
+-- 
+2.23.0
+
