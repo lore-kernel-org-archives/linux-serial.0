@@ -2,152 +2,115 @@ Return-Path: <SRS0=oIqV=4B=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 209F2C2BA83
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Feb 2020 09:25:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82D05C3B189
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Feb 2020 11:43:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F416C2173E
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Feb 2020 09:25:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3C909217F4
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Feb 2020 11:43:54 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="DS3zpTry"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729759AbgBMJZA (ORCPT
+        id S1729888AbgBMLnx (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 13 Feb 2020 04:25:00 -0500
-Received: from antares.kleine-koenig.org ([94.130.110.236]:43806 "EHLO
-        antares.kleine-koenig.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729632AbgBMJZA (ORCPT
+        Thu, 13 Feb 2020 06:43:53 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:46785 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729772AbgBMLnw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 13 Feb 2020 04:25:00 -0500
-X-Greylist: delayed 529 seconds by postgrey-1.27 at vger.kernel.org; Thu, 13 Feb 2020 04:24:59 EST
-Received: by antares.kleine-koenig.org (Postfix, from userid 1000)
-        id BC96790832B; Thu, 13 Feb 2020 10:16:08 +0100 (CET)
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
-To:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>
-Cc:     linux-leds@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, linux-serial@vger.kernel.org
-Subject: [PATCH v6 1/4] lib: new helper kstrtodev_t()
-Date:   Thu, 13 Feb 2020 10:15:57 +0100
-Message-Id: <20200213091600.554-2-uwe@kleine-koenig.org>
-X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20200213091600.554-1-uwe@kleine-koenig.org>
-References: <20200213091600.554-1-uwe@kleine-koenig.org>
+        Thu, 13 Feb 2020 06:43:52 -0500
+Received: by mail-lj1-f194.google.com with SMTP id x14so6184605ljd.13
+        for <linux-serial@vger.kernel.org>; Thu, 13 Feb 2020 03:43:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=i6T8aX1QwpqyjQv/4hfG4t4Fh7mCih0byLL8inV4cnE=;
+        b=DS3zpTryUgnzBtAdqVV7n63dtHxdb6Au6w9LFVVa1fjwRigYHtRhKD4An3wUxMW5+b
+         gpv2S14ouzj7WK0Qh+ae0v0Y4ADDEjpvu6vSyGDwTy9y3o+Xo2Wnm79I5SW4WGtzmyTm
+         a5a7AcPPNP2avTOI9njhZ4ikyfRy4p+V6V7Ws=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=i6T8aX1QwpqyjQv/4hfG4t4Fh7mCih0byLL8inV4cnE=;
+        b=gH7tKm5zcJcgobltd0fnv92QVQmG9wQNlWMdv4A2pdLqIa2zlzZJ0+ri5qcv+Ioary
+         D6LE5VZwXMhQ0u5SpMjCHHeCgUxymgnGQIjUOu5XDHQYPLNG+ZwdUFvVePp39LLpEAaP
+         y3B+nDEIOK++hH5k4LELyoh8/ot5Zd5g9DWA4d01GEv4xBlmDeXrnztdRWdnaVGkmPiZ
+         Zv/yp1dSeB12QZn6mRwMcWofFH7kJ5PvA49uqFA4YAQLpWgMmqJXPtBYSU6EJg5DpOIL
+         YAFeF7LbLleuVtzw8L50TQNXw7mnqcKi947rjoXfFjO8pgZhSp/OyJhhPo+cy1tzZmbI
+         tbjw==
+X-Gm-Message-State: APjAAAXncDdQHQUMu6otQ57+m5jJy61v7RhuV6SJFNPkP54d655osEvT
+        k7F6HAPnsEjsPkCWuZwqjKSfUw==
+X-Google-Smtp-Source: APXvYqzihrRuQYzokfC8tH0BWwAQtZxAEN1Rf+GsEvokD8opRwS5tRNLeqUyWw/2APcjeVRtq7ZRiw==
+X-Received: by 2002:a2e:9052:: with SMTP id n18mr10774826ljg.251.1581594229111;
+        Thu, 13 Feb 2020 03:43:49 -0800 (PST)
+Received: from prevas-ravi.prevas.se ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id q13sm1603535ljj.63.2020.02.13.03.43.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Feb 2020 03:43:48 -0800 (PST)
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, Timur Tabi <timur@kernel.org>,
+        Li Yang <leoyang.li@nxp.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     Qiang Zhao <qiang.zhao@nxp.com>, linuxppc-dev@lists.ozlabs.org,
+        Scott Wood <oss@buserror.net>,
+        Christophe Leroy <christophe.leroy@c-s.fr>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: cpm_uart: call cpm_muram_init before registering console
+Date:   Thu, 13 Feb 2020 12:43:42 +0100
+Message-Id: <20200213114342.21712-1-linux@rasmusvillemoes.dk>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This function is in the same spirit as the other kstrto* functions and
-uses the same calling convention. It expects the input string to be in
-the format %u:%u and implements stricter parsing than sscanf as it
-returns an error on trailing data (other than the usual \n).
+Christophe reports that powerpc 8xx silently fails to 5.6-rc1. It turns
+out I was wrong about nobody relying on the lazy initialization of the
+cpm/qe muram in commit b6231ea2b3c6 (soc: fsl: qe: drop broken lazy
+call of cpm_muram_init()).
 
-Signed-off-by: Uwe Kleine-König <uwe@kleine-koenig.org>
+Rather than reinstating the somewhat dubious lazy call (initializing a
+currently held spinlock, and implicitly doing a GFP_KERNEL under that
+spinlock), make sure that cpm_muram_init() is called early enough - I
+thought the calls from the subsys_initcalls were good enough, but when
+used by console drivers, that's obviously not the
+case. cpm_muram_init() is safe to call twice (there's an early return
+if it is already initialized), so keep the call from cpm_init() - in
+case SERIAL_CPM_CONSOLE=n.
+
+Reported-by: Christophe Leroy <christophe.leroy@c-s.fr>
+Fixes: b6231ea2b3c6 (soc: fsl: qe: drop broken lazy call of cpm_muram_init())
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 ---
- include/linux/kdev_t.h |  2 ++
- include/linux/kernel.h |  1 +
- lib/kstrtox.c          | 46 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 49 insertions(+)
 
-diff --git a/include/linux/kdev_t.h b/include/linux/kdev_t.h
-index 85b5151911cf..3a5c24bd8fa4 100644
---- a/include/linux/kdev_t.h
-+++ b/include/linux/kdev_t.h
-@@ -4,8 +4,10 @@
+Christophe, can I get you to add a formal Tested-by?
+
+I'm not sure which tree this should go through.
+
+ drivers/tty/serial/cpm_uart/cpm_uart_core.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+index 19d5a4cf29a6..d4b81b06e0cb 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+@@ -1373,6 +1373,7 @@ static struct console cpm_scc_uart_console = {
  
- #include <uapi/linux/kdev_t.h>
- 
-+/* dev_t is 32 bit wide, 20 bits are used for MINOR, 12 for major */
- #define MINORBITS	20
- #define MINORMASK	((1U << MINORBITS) - 1)
-+#define MAJORBITS	12
- 
- #define MAJOR(dev)	((unsigned int) ((dev) >> MINORBITS))
- #define MINOR(dev)	((unsigned int) ((dev) & MINORMASK))
-diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 0d9db2a14f44..9cf694c5d2c3 100644
---- a/include/linux/kernel.h
-+++ b/include/linux/kernel.h
-@@ -410,6 +410,7 @@ int __must_check kstrtos16(const char *s, unsigned int base, s16 *res);
- int __must_check kstrtou8(const char *s, unsigned int base, u8 *res);
- int __must_check kstrtos8(const char *s, unsigned int base, s8 *res);
- int __must_check kstrtobool(const char *s, bool *res);
-+int __must_check kstrtodev_t(const char *s, dev_t *res);
- 
- int __must_check kstrtoull_from_user(const char __user *s, size_t count, unsigned int base, unsigned long long *res);
- int __must_check kstrtoll_from_user(const char __user *s, size_t count, unsigned int base, long long *res);
-diff --git a/lib/kstrtox.c b/lib/kstrtox.c
-index 1006bf70bf74..e1b896635c6a 100644
---- a/lib/kstrtox.c
-+++ b/lib/kstrtox.c
-@@ -19,6 +19,7 @@
- #include <linux/export.h>
- #include <linux/types.h>
- #include <linux/uaccess.h>
-+#include <linux/kdev_t.h>
- #include "kstrtox.h"
- 
- const char *_parse_integer_fixup_radix(const char *s, unsigned int *base)
-@@ -367,6 +368,51 @@ int kstrtobool(const char *s, bool *res)
+ static int __init cpm_uart_console_init(void)
+ {
++	cpm_muram_init();
+ 	register_console(&cpm_scc_uart_console);
+ 	return 0;
  }
- EXPORT_SYMBOL(kstrtobool);
- 
-+/**
-+ * kstrtodev_t - convert a string in format %u:%u to a dev_t
-+ * @s: input string
-+ * @res: result
-+ *
-+ * This is the reverse of print_dev_t. The first number is interpreted as major,
-+ * the second as minor.
-+ */
-+int kstrtodev_t(const char *s, dev_t *res)
-+{
-+	unsigned long long _res;
-+	unsigned int ma, mi;
-+	int rv;
-+
-+	rv = _parse_integer(s, 10, &_res);
-+	if (rv < 0)
-+		return rv;
-+	if (rv & KSTRTOX_OVERFLOW || _res >= (1U << MAJORBITS))
-+		return -ERANGE;
-+	ma = _res;
-+
-+	s += rv;
-+
-+	if (*s++ != ':')
-+		return -EINVAL;
-+
-+	rv = _parse_integer(s, 10, &_res);
-+	if (rv < 0)
-+		return rv;
-+	if (rv & KSTRTOX_OVERFLOW || _res >= (1U << MINORBITS))
-+		return -ERANGE;
-+	mi = _res;
-+
-+	s += rv;
-+
-+	if (*s == '\n')
-+		s++;
-+	if (*s)
-+		return -EINVAL;
-+
-+	*res = MKDEV(ma, mi);
-+	return 0;
-+}
-+EXPORT_SYMBOL(kstrtodev_t);
-+
- /*
-  * Since "base" would be a nonsense argument, this open-codes the
-  * _from_user helper instead of using the helper macro below.
 -- 
-2.24.0
+2.23.0
 
