@@ -7,28 +7,28 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 786ADC2BA83
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Feb 2020 09:16:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C611C3B189
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Feb 2020 09:16:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5A171217F4
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Feb 2020 09:16:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 73EA721734
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Feb 2020 09:16:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729781AbgBMJQQ (ORCPT
+        id S1729736AbgBMJQS (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 13 Feb 2020 04:16:16 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:36009 "EHLO
+        Thu, 13 Feb 2020 04:16:18 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:42501 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729747AbgBMJQQ (ORCPT
+        with ESMTP id S1729640AbgBMJQR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 13 Feb 2020 04:16:16 -0500
+        Thu, 13 Feb 2020 04:16:17 -0500
 Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
         by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1j2AbR-00080R-9Y; Thu, 13 Feb 2020 10:16:09 +0100
+        id 1j2AbR-00080i-Oa; Thu, 13 Feb 2020 10:16:09 +0100
 Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
         (envelope-from <ukl@pengutronix.de>)
-        id 1j2AbQ-0005r0-Ud; Thu, 13 Feb 2020 10:16:08 +0100
+        id 1j2AbR-0005r8-Ei; Thu, 13 Feb 2020 10:16:09 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
 To:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
         Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
@@ -38,9 +38,9 @@ Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
         <u.kleine-koenig@pengutronix.de>, linux-leds@vger.kernel.org,
         linux-kernel@vger.kernel.org, kernel@pengutronix.de,
         linux-serial@vger.kernel.org
-Subject: [PATCH v6 2/4] tty: rename tty_kopen() and add new function tty_kopen_shared()
-Date:   Thu, 13 Feb 2020 10:15:58 +0100
-Message-Id: <20200213091600.554-3-uwe@kleine-koenig.org>
+Subject: [PATCH v6 4/4] leds: trigger: implement a tty trigger
+Date:   Thu, 13 Feb 2020 10:16:00 +0100
+Message-Id: <20200213091600.554-5-uwe@kleine-koenig.org>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20200213091600.554-1-uwe@kleine-koenig.org>
 References: <20200213091600.554-1-uwe@kleine-koenig.org>
@@ -58,141 +58,230 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-Introduce a new function tty_kopen_shared() that yields a struct
-tty_struct. The semantic difference to tty_kopen() is that the tty is
-expected to be used already. So rename tty_kopen() to
-tty_kopen_exclusive() for clearness, adapt the single user and put the
-common code in a new static helper function.
+Usage is as follows:
 
-tty_kopen_shared is to be used to implement an LED trigger for tty
-devices in one of the next patches.
+	myled=ledname
+	tty=ttyS0
+
+	echo tty > /sys/class/leds/$myled/trigger
+	cat /sys/class/tty/$tty/dev > /sys/class/leds/$myled/dev
+
+. When this new trigger is active it periodically checks the tty's
+statistics and when it changed since the last check the led is flashed
+once.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/staging/speakup/spk_ttyio.c |  2 +-
- drivers/tty/tty_io.c                | 58 ++++++++++++++++++++---------
- include/linux/tty.h                 |  5 ++-
- 3 files changed, 44 insertions(+), 21 deletions(-)
+ .../ABI/testing/sysfs-class-led-trigger-tty   |   6 +
+ drivers/leds/trigger/Kconfig                  |   7 +
+ drivers/leds/trigger/Makefile                 |   1 +
+ drivers/leds/trigger/ledtrig-tty.c            | 159 ++++++++++++++++++
+ 4 files changed, 173 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-class-led-trigger-tty
+ create mode 100644 drivers/leds/trigger/ledtrig-tty.c
 
-diff --git a/drivers/staging/speakup/spk_ttyio.c b/drivers/staging/speakup/spk_ttyio.c
-index 5a9eff08cb96..e9db06eae875 100644
---- a/drivers/staging/speakup/spk_ttyio.c
-+++ b/drivers/staging/speakup/spk_ttyio.c
-@@ -147,7 +147,7 @@ static int spk_ttyio_initialise_ldisc(struct spk_synth *synth)
- 	if (ret)
- 		return ret;
+diff --git a/Documentation/ABI/testing/sysfs-class-led-trigger-tty b/Documentation/ABI/testing/sysfs-class-led-trigger-tty
+new file mode 100644
+index 000000000000..f56f9721c317
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-class-led-trigger-tty
+@@ -0,0 +1,6 @@
++What:		/sys/class/leds/<led>/dev
++Date:		Dec 2019
++KernelVersion:	5.6
++Contact:	linux-leds@vger.kernel.org
++Description:
++		Specifies $major:$minor of the triggering tty
+diff --git a/drivers/leds/trigger/Kconfig b/drivers/leds/trigger/Kconfig
+index ce9429ca6dde..40ff08c93f56 100644
+--- a/drivers/leds/trigger/Kconfig
++++ b/drivers/leds/trigger/Kconfig
+@@ -144,4 +144,11 @@ config LEDS_TRIGGER_AUDIO
+ 	  the audio mute and mic-mute changes.
+ 	  If unsure, say N
  
--	tty = tty_kopen(dev);
-+	tty = tty_kopen_exclusive(dev);
- 	if (IS_ERR(tty))
- 		return PTR_ERR(tty);
- 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index a1453fe10862..b718666ce73c 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -1875,22 +1875,7 @@ static struct tty_driver *tty_lookup_driver(dev_t device, struct file *filp,
- 	return driver;
- }
- 
--/**
-- *	tty_kopen	-	open a tty device for kernel
-- *	@device: dev_t of device to open
-- *
-- *	Opens tty exclusively for kernel. Performs the driver lookup,
-- *	makes sure it's not already opened and performs the first-time
-- *	tty initialization.
-- *
-- *	Returns the locked initialized &tty_struct
-- *
-- *	Claims the global tty_mutex to serialize:
-- *	  - concurrent first-time tty initialization
-- *	  - concurrent tty driver removal w/ lookup
-- *	  - concurrent tty removal from driver table
-- */
--struct tty_struct *tty_kopen(dev_t device)
-+static struct tty_struct *tty_kopen(dev_t device, int shared)
- {
- 	struct tty_struct *tty;
- 	struct tty_driver *driver;
-@@ -1905,7 +1890,7 @@ struct tty_struct *tty_kopen(dev_t device)
- 
- 	/* check whether we're reopening an existing tty */
- 	tty = tty_driver_lookup_tty(driver, NULL, index);
--	if (IS_ERR(tty))
-+	if (IS_ERR(tty) || shared)
- 		goto out;
- 
- 	if (tty) {
-@@ -1923,7 +1908,44 @@ struct tty_struct *tty_kopen(dev_t device)
- 	tty_driver_kref_put(driver);
- 	return tty;
- }
--EXPORT_SYMBOL_GPL(tty_kopen);
++config LEDS_TRIGGER_TTY
++	tristate "LED Trigger for TTY devices"
++	depends on TTY
++	help
++	  This allows LEDs to be controlled by activity on ttys which includes
++	  serial devices like /dev/ttyS0.
 +
-+/**
-+ *	tty_kopen_exclusive	-	open a tty device for kernel
-+ *	@device: dev_t of device to open
-+ *
-+ *	Opens tty exclusively for kernel. Performs the driver lookup,
-+ *	makes sure it's not already opened and performs the first-time
-+ *	tty initialization.
-+ *
-+ *	Returns the locked initialized &tty_struct
-+ *
-+ *	Claims the global tty_mutex to serialize:
-+ *	  - concurrent first-time tty initialization
-+ *	  - concurrent tty driver removal w/ lookup
-+ *	  - concurrent tty removal from driver table
-+ */
-+struct tty_struct *tty_kopen_exclusive(dev_t device)
-+{
-+	return tty_kopen(device, 0);
-+}
-+EXPORT_SYMBOL_GPL(tty_kopen_exclusive);
+ endif # LEDS_TRIGGERS
+diff --git a/drivers/leds/trigger/Makefile b/drivers/leds/trigger/Makefile
+index 733a83e2a718..25c4db97cdd4 100644
+--- a/drivers/leds/trigger/Makefile
++++ b/drivers/leds/trigger/Makefile
+@@ -15,3 +15,4 @@ obj-$(CONFIG_LEDS_TRIGGER_PANIC)	+= ledtrig-panic.o
+ obj-$(CONFIG_LEDS_TRIGGER_NETDEV)	+= ledtrig-netdev.o
+ obj-$(CONFIG_LEDS_TRIGGER_PATTERN)	+= ledtrig-pattern.o
+ obj-$(CONFIG_LEDS_TRIGGER_AUDIO)	+= ledtrig-audio.o
++obj-$(CONFIG_LEDS_TRIGGER_TTY)		+= ledtrig-tty.o
+diff --git a/drivers/leds/trigger/ledtrig-tty.c b/drivers/leds/trigger/ledtrig-tty.c
+new file mode 100644
+index 000000000000..e1be93c3026f
+--- /dev/null
++++ b/drivers/leds/trigger/ledtrig-tty.c
+@@ -0,0 +1,159 @@
++// SPDX-License-Identifier: GPL-2.0
 +
-+/**
-+ *	tty_kopen_shared	-	open a tty device for shared in-kernel use
-+ *	@device: dev_t of device to open
-+ *
-+ *	Opens an already existing tty
-+ *	rnel. Performs the driver lookup,
-+ *	makes sure it's not already opened and performs the first-time
-+ *	tty initialization.
-+ *
-+ *	Locking is identical to tty_kopen() above.
-+ */
-+struct tty_struct *tty_kopen_shared(dev_t device)
++#include <linux/delay.h>
++#include <linux/leds.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/tty.h>
++#include <uapi/linux/serial.h>
++
++struct ledtrig_tty_data {
++	struct led_classdev *led_cdev;
++	struct delayed_work dwork;
++	struct tty_struct *tty;
++	dev_t device;
++	int rx, tx;
++};
++
++static void ledtrig_tty_halt(struct ledtrig_tty_data *trigger_data)
 +{
-+	return tty_kopen(device, 1);
++	cancel_delayed_work_sync(&trigger_data->dwork);
 +}
-+EXPORT_SYMBOL_GPL(tty_kopen_shared);
- 
- /**
-  *	tty_open_by_driver	-	open a tty device
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index bfa4e2ee94a9..d0bcf3226fb2 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -411,7 +411,8 @@ extern struct tty_struct *get_current_tty(void);
- /* tty_io.c */
- extern int __init tty_init(void);
- extern const char *tty_name(const struct tty_struct *tty);
--extern struct tty_struct *tty_kopen(dev_t device);
-+extern struct tty_struct *tty_kopen_exclusive(dev_t device);
-+extern struct tty_struct *tty_kopen_shared(dev_t device);
- extern void tty_kclose(struct tty_struct *tty);
- extern int tty_dev_name_to_number(const char *name, dev_t *number);
- extern int tty_ldisc_lock(struct tty_struct *tty, unsigned long timeout);
-@@ -436,7 +437,7 @@ static inline int __init tty_init(void)
- { return 0; }
- static inline const char *tty_name(const struct tty_struct *tty)
- { return "(none)"; }
--static inline struct tty_struct *tty_kopen(dev_t device)
-+static inline struct tty_struct *tty_kopen_exclusive(dev_t device)
- { return ERR_PTR(-ENODEV); }
- static inline void tty_kclose(struct tty_struct *tty)
- { }
++
++static void ledtrig_tty_restart(struct ledtrig_tty_data *trigger_data)
++{
++	schedule_delayed_work(&trigger_data->dwork, 0);
++}
++
++static ssize_t dev_show(struct device *dev,
++			struct device_attribute *attr, char *buf)
++{
++	struct ledtrig_tty_data *trigger_data = led_trigger_get_drvdata(dev);
++	ssize_t len = 0;
++
++	if (trigger_data->tty)
++		len = sprintf(buf, "%d:%d\n", MAJOR(trigger_data->device),
++			      MINOR(trigger_data->device));
++
++	return len;
++}
++
++static ssize_t dev_store(struct device *dev,
++			 struct device_attribute *attr, const char *buf,
++			 size_t size)
++{
++	struct ledtrig_tty_data *trigger_data = led_trigger_get_drvdata(dev);
++	struct tty_struct *tty;
++	dev_t d;
++	int ret;
++
++	if (size == 0 || (size == 1 && buf[0] == '\n')) {
++		tty = NULL;
++	} else {
++		ret = kstrtodev_t(buf, &d);
++		if (ret < 0)
++			return ret;
++
++		tty = tty_kopen_shared(d);
++		if (IS_ERR(tty))
++			return PTR_ERR(tty);
++	}
++
++	ledtrig_tty_halt(trigger_data);
++
++	tty_kref_put(trigger_data->tty);
++	trigger_data->tty = tty;
++	trigger_data->device = d;
++
++	if (tty) {
++		struct serial_icounter_struct icount;
++		ret = tty_get_icount(trigger_data->tty, &icount);
++		if (!ret) {
++			trigger_data->tx = icount.tx;
++			trigger_data->rx = icount.rx;
++		}
++
++		ledtrig_tty_restart(trigger_data);
++	}
++
++	return size;
++}
++static DEVICE_ATTR_RW(dev);
++
++static void ledtrig_tty_work(struct work_struct *work)
++{
++	struct ledtrig_tty_data *trigger_data =
++		container_of(work, struct ledtrig_tty_data, dwork.work);
++	struct serial_icounter_struct icount;
++	int ret;
++
++	if (!trigger_data->tty) {
++		led_set_brightness(trigger_data->led_cdev, LED_OFF);
++		return;
++	}
++
++	ret = tty_get_icount(trigger_data->tty, &icount);
++	if (ret)
++		return;
++
++	while (icount.rx != trigger_data->rx ||
++	       icount.tx != trigger_data->tx) {
++		led_set_brightness(trigger_data->led_cdev, LED_ON);
++
++		msleep(100);
++
++		led_set_brightness(trigger_data->led_cdev, LED_OFF);
++
++		trigger_data->rx = icount.rx;
++		trigger_data->tx = icount.tx;
++
++		ret = tty_get_icount(trigger_data->tty, &icount);
++		if (ret)
++			return;
++	}
++
++	schedule_delayed_work(&trigger_data->dwork, msecs_to_jiffies(100));
++}
++
++static struct attribute *ledtrig_tty_attrs[] = {
++	&dev_attr_dev.attr,
++	NULL
++};
++ATTRIBUTE_GROUPS(ledtrig_tty);
++
++static int ledtrig_tty_activate(struct led_classdev *led_cdev)
++{
++	struct ledtrig_tty_data *trigger_data;
++
++	trigger_data = kzalloc(sizeof(*trigger_data), GFP_KERNEL);
++	if (!trigger_data)
++		return -ENOMEM;
++
++	led_set_trigger_data(led_cdev, trigger_data);
++
++	INIT_DELAYED_WORK(&trigger_data->dwork, ledtrig_tty_work);
++	trigger_data->led_cdev = led_cdev;
++
++	return 0;
++}
++
++static void ledtrig_tty_deactivate(struct led_classdev *led_cdev)
++{
++	struct ledtrig_tty_data *trigger_data = led_get_trigger_data(led_cdev);
++
++	cancel_delayed_work_sync(&trigger_data->dwork);
++
++	kfree(trigger_data);
++}
++
++struct led_trigger ledtrig_tty = {
++	.name = "tty",
++	.activate = ledtrig_tty_activate,
++	.deactivate = ledtrig_tty_deactivate,
++	.groups = ledtrig_tty_groups,
++};
++module_led_trigger(ledtrig_tty);
++
++MODULE_AUTHOR("Uwe Kleine-König <u.kleine-koenig@pengutronix.de>");
++MODULE_DESCRIPTION("UART LED trigger");
++MODULE_LICENSE("GPL v2");
 -- 
 2.24.0
 
