@@ -7,29 +7,29 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E5A8C352A4
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Feb 2020 01:07:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA228C352A4
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Feb 2020 01:10:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 57453206B6
-	for <linux-serial@archiver.kernel.org>; Thu, 13 Feb 2020 01:07:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9CA9C206B6
+	for <linux-serial@archiver.kernel.org>; Thu, 13 Feb 2020 01:10:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b="jiL7Ay02"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b="yIfGe0d+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729190AbgBMBHU (ORCPT
+        id S1729190AbgBMBKa (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 12 Feb 2020 20:07:20 -0500
-Received: from gateway22.websitewelcome.com ([192.185.46.224]:48538 "EHLO
-        gateway22.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729185AbgBMBHT (ORCPT
+        Wed, 12 Feb 2020 20:10:30 -0500
+Received: from gateway23.websitewelcome.com ([192.185.49.177]:21363 "EHLO
+        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729185AbgBMBKa (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 12 Feb 2020 20:07:19 -0500
-X-Greylist: delayed 1368 seconds by postgrey-1.27 at vger.kernel.org; Wed, 12 Feb 2020 20:07:18 EST
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway22.websitewelcome.com (Postfix) with ESMTP id 8215C128B
-        for <linux-serial@vger.kernel.org>; Wed, 12 Feb 2020 18:44:30 -0600 (CST)
+        Wed, 12 Feb 2020 20:10:30 -0500
+X-Greylist: delayed 1454 seconds by postgrey-1.27 at vger.kernel.org; Wed, 12 Feb 2020 20:10:29 EST
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway23.websitewelcome.com (Postfix) with ESMTP id 16F7F2E5D
+        for <linux-serial@vger.kernel.org>; Wed, 12 Feb 2020 18:46:15 -0600 (CST)
 Received: from gator4166.hostgator.com ([108.167.133.22])
         by cmsmtp with SMTP
-        id 22cIj78LUvBMd22cIj5kYT; Wed, 12 Feb 2020 18:44:30 -0600
+        id 22dzj6eEgRP4z22dzjYEk4; Wed, 12 Feb 2020 18:46:15 -0600
 X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
@@ -37,25 +37,25 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=nAVrME3jdk2U+h1Uo0cXDIxJq+JDl6p8marnSwhWtzU=; b=jiL7Ay02nwKzHTQ+GYESXgdNC8
-        y42tmFVVv2EFr8Rdaqwm/y7XoNgVl3P8KKj8J+hOtTs3/jwPCDRJrk7lfKq9Tk38ct7kAL057Q2+V
-        daN2eajzGtkMQrQuNp3gKd0sQd6019iRF7DqqP1KUFhzuN2Q4tkJHqLYPtATQomnCp1Kv1BRI0lXX
-        f+9DaOo8TJf8gIMuY+cLXVx+pLAbbjgnwKRkLqetf73DsJ2iL1hyoTzrjfGjq9I1aRyhrVtRYoQxo
-        CZRGm4Mb376ere/O+dYwUzaIWBiYYg0sqxzx4lqc06EKgWaV8f1S4gQsiO6FhPkSynHj7tYZDPqM0
-        iV6in4hA==;
-Received: from [200.68.141.42] (port=1177 helo=embeddedor)
+        bh=2k/Xb8a2fDrkoyzsGwiAIoqGmPNbrHA6FyZhs9nImKY=; b=yIfGe0d+wONjzMqxZcAmrcWG1p
+        kZqRkAK8B+OX1goUjWqyQ6BexEa9IbHT7yBdX2ijLrZ/dONn4o/+hJZRpDMJMn5/1LN25rUkmG0yv
+        7/48BWJbrPKMzyWGh75+G8gFa5r+KbOxRLwNP+WLnoxagfFIRuTqWQFTpXoUuYDnhs6E9cqSU2K8M
+        OEQNFB7vMS2MFy+cXVLOo/g83xId5QucKym6K+wJaJ+h0q5xEshrNT/h/LY0rF9diDNoem5zBUhTe
+        hi9zQDiO1Bd4YeCAh25GmLzWTXPxQjoEK/LjYbphNHh16sXBzhO/3jMAap/7r1nxFc6+LrqNhVM/c
+        KenBMlPw==;
+Received: from [200.68.141.42] (port=5279 helo=embeddedor)
         by gator4166.hostgator.com with esmtpa (Exim 4.92)
         (envelope-from <gustavo@embeddedor.com>)
-        id 1j22cG-003j8p-Kx; Wed, 12 Feb 2020 18:44:29 -0600
-Date:   Wed, 12 Feb 2020 18:44:26 -0600
+        id 1j22dx-003jrm-7s; Wed, 12 Feb 2020 18:46:13 -0600
+Date:   Wed, 12 Feb 2020 18:46:11 -0600
 From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH] serial: 8250_pci: Replace zero-length array with
+Subject: [PATCH] serial: sc16is7xx: Replace zero-length array with
  flexible-array member
-Message-ID: <20200213004426.GA7886@embeddedor.com>
+Message-ID: <20200213004611.GA8748@embeddedor.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -68,13 +68,13 @@ X-AntiAbuse: Sender Address Domain - embeddedor.com
 X-BWhitelist: no
 X-Source-IP: 200.68.141.42
 X-Source-L: No
-X-Exim-ID: 1j22cG-003j8p-Kx
+X-Exim-ID: 1j22dx-003jrm-7s
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: (embeddedor) [200.68.141.42]:1177
+X-Source-Sender: (embeddedor) [200.68.141.42]:5279
 X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 58
+X-Email-Count: 62
 X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
 X-Local-Domain: yes
 Sender: linux-serial-owner@vger.kernel.org
@@ -112,22 +112,22 @@ This issue was found with the help of Coccinelle.
 
 Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- drivers/tty/serial/8250/8250_pci.c | 2 +-
+ drivers/tty/serial/sc16is7xx.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 939685fed396..0804469ff052 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -53,7 +53,7 @@ struct serial_private {
- 	unsigned int		nr;
- 	struct pci_serial_quirk	*quirk;
- 	const struct pciserial_board *board;
--	int			line[0];
-+	int			line[];
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 7d3ae31cc720..06e8071d5601 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -329,7 +329,7 @@ struct sc16is7xx_port {
+ 	struct task_struct		*kworker_task;
+ 	struct kthread_work		irq_work;
+ 	struct mutex			efr_lock;
+-	struct sc16is7xx_one		p[0];
++	struct sc16is7xx_one		p[];
  };
  
- static const struct pci_device_id pci_use_msi[] = {
+ static unsigned long sc16is7xx_lines;
 -- 
 2.23.0
 
