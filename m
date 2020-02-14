@@ -4,53 +4,54 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C979CC3B1A2
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 16:34:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E652C3B1A1
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 16:41:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 98D8424696
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 16:34:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D8D2824680
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 16:41:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1581698061;
-	bh=azyiPdDBdQLKWqvIW8+yA4aTJcpbSiRnzzlzZGQROnA=;
+	s=default; t=1581698482;
+	bh=nBg3B4SGh9ImBA80puCaQjptdsSOnQ4qH+lPv9TJtHk=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=SobOeyhAOJYSX3ibgdLVFUY+DGFrJRNOpxIKhzvsOPywzTQu34UfOVBy0bzPLjreq
-	 e8YzUgQmWVWflz8AbUsQMElgV1nJJhyf3cQmR5ycpuzSm2X3bs1L2Dm7+9a8BYQvKz
-	 P8nJl0z6JlGcBYISmiVL+Bw5GcEowuCJWkGeVgq8=
+	b=wWmBjAGMtz3Gf6xNFJ0FtghSYk3hkEBZmFI4PepbaMXWsEbrQYih+o3UpcbC8Bhj2
+	 LQBuI/QTMl3xswxvGv9qcIRPVsiHRPFvAT36MRRKVrF5Sw0QWgvr0H2GVITPtKsCZT
+	 Qzl+hWHZfvRwnE+YkmlyDLP46DQvBMQ81qEa2FhM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393597AbgBNQeU (ORCPT
+        id S2390724AbgBNQlT (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Feb 2020 11:34:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34482 "EHLO mail.kernel.org"
+        Fri, 14 Feb 2020 11:41:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58406 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2393370AbgBNQZN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:25:13 -0500
+        id S2405101AbgBNQWj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 14 Feb 2020 11:22:39 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B2DC0247A5;
-        Fri, 14 Feb 2020 16:25:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 07BA3246B0;
+        Fri, 14 Feb 2020 16:22:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581697512;
-        bh=azyiPdDBdQLKWqvIW8+yA4aTJcpbSiRnzzlzZGQROnA=;
+        s=default; t=1581697358;
+        bh=nBg3B4SGh9ImBA80puCaQjptdsSOnQ4qH+lPv9TJtHk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DE0FSaFuESsXyrCukxgkJKeWVya3IiBQp0f8hxaVncY9kXouj7veu32AUBgKkRSRG
-         r9bcnOhiISbqn0cKXKX4Mwa9yz8XPWDF2+mJQgivhPnHVfnS/ELi6ca/a7JLjqEQVC
-         R49/KdARho1Mlak1fAGQVzCFCJx5z9Kln8pKskZY=
+        b=LYQq+k9xUifjacSiM+WgG+99MoW7jhPeHwot5cGoNXawGyCXQwaUWeM3T2AHtu8Qg
+         RE5BjTHVwPGWVWR/cxV5ZI1gKdh6pS1XPRNvSq9R9ixz2R15ghbJThVzlAMkWypZO3
+         snyvI58iQxgVeNX1JqJmqtjM8EP1AQtsztKcINWc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        Hulk Robot <hulkci@huawei.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 038/100] tty: omap-serial: remove set but unused variable
-Date:   Fri, 14 Feb 2020 11:23:22 -0500
-Message-Id: <20200214162425.21071-38-sashal@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Engraf <david.engraf@sysgo.com>,
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.9 060/141] Revert "tty/serial: atmel: fix out of range clock divider handling"
+Date:   Fri, 14 Feb 2020 11:20:00 -0500
+Message-Id: <20200214162122.19794-60-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200214162425.21071-1-sashal@kernel.org>
-References: <20200214162425.21071-1-sashal@kernel.org>
+In-Reply-To: <20200214162122.19794-1-sashal@kernel.org>
+References: <20200214162122.19794-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -60,46 +61,37 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-[ Upstream commit e83c6587c47caa2278aa3bd603b5a85eddc4cec9 ]
+[ Upstream commit 6dbd54e4154dfe386b3333687de15be239576617 ]
 
-Fix the following warning:
-drivers/tty/serial/omap-serial.c: In function serial_omap_rlsi:
-drivers/tty/serial/omap-serial.c:496:16: warning: variable ch set but not used [-Wunused-but-set-variable]
+This reverts commit 751d0017334db9c4d68a8909c59f662a6ecbcec6.
 
-The character read is useless according to the table 23-246 of the omap4
-TRM. So we can drop it.
+The wrong commit got added to the tty-next tree, the correct one is in
+the tty-linus branch.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-Link: https://lore.kernel.org/r/1575617863-32484-1-git-send-email-wangxiongfeng2@huawei.com
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: David Engraf <david.engraf@sysgo.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/omap-serial.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/tty/serial/atmel_serial.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 21fc9b3a27cfa..debd2c93ca3c9 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -497,10 +497,13 @@ static unsigned int check_modem_status(struct uart_omap_port *up)
- static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int lsr)
- {
- 	unsigned int flag;
--	unsigned char ch = 0;
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 325f9db2da86c..255be61b4073a 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -2200,6 +2200,9 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		mode |= ATMEL_US_USMODE_NORMAL;
+ 	}
  
-+	/*
-+	 * Read one data character out to avoid stalling the receiver according
-+	 * to the table 23-246 of the omap4 TRM.
-+	 */
- 	if (likely(lsr & UART_LSR_DR))
--		ch = serial_in(up, UART_RX);
-+		serial_in(up, UART_RX);
- 
- 	up->port.icount.rx++;
- 	flag = TTY_NORMAL;
++	/* set the mode, clock divisor, parity, stop bits and data size */
++	atmel_uart_writel(port, ATMEL_US_MR, mode);
++
+ 	/*
+ 	 * Set the baud rate:
+ 	 * Fractional baudrate allows to setup output frequency more
 -- 
 2.20.1
 
