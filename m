@@ -7,47 +7,47 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F846C3B1A1
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 16:41:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00C57C2BA83
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 16:41:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3F87B2467D
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 16:41:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C517924684
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 16:41:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1581698504;
-	bh=S9glgjZI6VlDqaayBfQyTvToeDmW9qugXDZfdQCbYp8=;
+	s=default; t=1581698514;
+	bh=E9yzJ9xEnrurxjDq55BYfHYZDK7JbakG3pVhSB2GwaQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=BvPFqyGVcv6Stf5A7hCYjhPvnsQ9OFv0mrxlkwwtVKXdovui6wtQuWBzV1Cj3c47m
-	 uLo/tz89Hodmd6pRyJotck6A3CV1MNgmAKBHKbJQlRKHOY0ofVoQafb00BHwEbtuub
-	 lelQeBEp1Ixs5KcsqZF5Qq/SzTe0gOD1kSk2Jps4=
+	b=PTHVUCd5s0/xKd4a6QXdj47WpacVg9GIKW0hHUeersUIX0K/oPlMgwuCWFxonlnof
+	 2GpOurVd4TlAWIYHn9fdGwNfCGhKBILRG/LSfoPt1CFMLoZkqXL0A6P/+2GjJDIWdA
+	 BPtV8Y2Gw59vdikaWf2H9fiE9vEKusGu0PqyWDQw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405478AbgBNQWd (ORCPT
+        id S2405672AbgBNQlq (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Feb 2020 11:22:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58152 "EHLO mail.kernel.org"
+        Fri, 14 Feb 2020 11:41:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58042 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405473AbgBNQWd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:22:33 -0500
+        id S2405462AbgBNQWa (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 14 Feb 2020 11:22:30 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B0B532475A;
-        Fri, 14 Feb 2020 16:22:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C5A332474B;
+        Fri, 14 Feb 2020 16:22:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581697352;
-        bh=S9glgjZI6VlDqaayBfQyTvToeDmW9qugXDZfdQCbYp8=;
+        s=default; t=1581697349;
+        bh=E9yzJ9xEnrurxjDq55BYfHYZDK7JbakG3pVhSB2GwaQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B7ZdEAOuleYDA/iD/17nYRU9M28nB+G/NWQvtuZoiPn+iEONxL/1O3Xyq7QOg8vMR
-         OiU27uCKgBci8xgcbGfs0TnkcoukeUTPg7T3zqkrorzfWriIRtHYqU+bNjQ/9PyfJ/
-         G2LlrWLb8JrOqs2R2BUlIX0t6jToRWunotuXthAg=
+        b=nKJqAedraWvM8aue0Wzi3b4yVhz0apk2HQc3VskVTKPEHnE9TuF/Y94bvWnBGbdJl
+         mzhlsIZzfGaHECNYq+TDEs5/6joicKYdGoFHpPeVyctWP4HmqDj3jUALldAwgxQSwR
+         7TiuFhACx0BsBy9icRY5DJFSU6s0Zay4vZ8jeHJc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Xiongfeng Wang <wangxiongfeng2@huawei.com>,
         Hulk Robot <hulkci@huawei.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 055/141] tty: serial: amba-pl011: remove set but unused variable
-Date:   Fri, 14 Feb 2020 11:19:55 -0500
-Message-Id: <20200214162122.19794-55-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 053/141] tty: omap-serial: remove set but unused variable
+Date:   Fri, 14 Feb 2020 11:19:53 -0500
+Message-Id: <20200214162122.19794-53-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214162122.19794-1-sashal@kernel.org>
 References: <20200214162122.19794-1-sashal@kernel.org>
@@ -62,47 +62,44 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
 
-[ Upstream commit 94345aee285334e9e12fc70572e3d9380791a64e ]
+[ Upstream commit e83c6587c47caa2278aa3bd603b5a85eddc4cec9 ]
 
 Fix the following warning:
-drivers/tty/serial/amba-pl011.c: In function check_apply_cts_event_workaround:
-drivers/tty/serial/amba-pl011.c:1461:15: warning: variable dummy_read set but not used [-Wunused-but-set-variable]
+drivers/tty/serial/omap-serial.c: In function serial_omap_rlsi:
+drivers/tty/serial/omap-serial.c:496:16: warning: variable ch set but not used [-Wunused-but-set-variable]
 
-The data read is useless and can be dropped.
+The character read is useless according to the table 23-246 of the omap4
+TRM. So we can drop it.
 
 Reported-by: Hulk Robot <hulkci@huawei.com>
 Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-Link: https://lore.kernel.org/r/1575619526-34482-1-git-send-email-wangxiongfeng2@huawei.com
+Link: https://lore.kernel.org/r/1575617863-32484-1-git-send-email-wangxiongfeng2@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/amba-pl011.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/tty/serial/omap-serial.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index f6586a8681b9b..8781a4fa64907 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1456,8 +1456,6 @@ static void pl011_modem_status(struct uart_amba_port *uap)
- 
- static void check_apply_cts_event_workaround(struct uart_amba_port *uap)
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 472ba3c813c1a..6045ffcb4f6d0 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -497,10 +497,13 @@ static unsigned int check_modem_status(struct uart_omap_port *up)
+ static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int lsr)
  {
--	unsigned int dummy_read;
--
- 	if (!uap->vendor->cts_event_workaround)
- 		return;
+ 	unsigned int flag;
+-	unsigned char ch = 0;
  
-@@ -1469,8 +1467,8 @@ static void check_apply_cts_event_workaround(struct uart_amba_port *uap)
- 	 * single apb access will incur 2 pclk(133.12Mhz) delay,
- 	 * so add 2 dummy reads
- 	 */
--	dummy_read = pl011_read(uap, REG_ICR);
--	dummy_read = pl011_read(uap, REG_ICR);
-+	pl011_read(uap, REG_ICR);
-+	pl011_read(uap, REG_ICR);
- }
++	/*
++	 * Read one data character out to avoid stalling the receiver according
++	 * to the table 23-246 of the omap4 TRM.
++	 */
+ 	if (likely(lsr & UART_LSR_DR))
+-		ch = serial_in(up, UART_RX);
++		serial_in(up, UART_RX);
  
- static irqreturn_t pl011_int(int irq, void *dev_id)
+ 	up->port.icount.rx++;
+ 	flag = TTY_NORMAL;
 -- 
 2.20.1
 
