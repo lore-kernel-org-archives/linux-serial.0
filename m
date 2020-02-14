@@ -2,104 +2,100 @@ Return-Path: <SRS0=POds=4C=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28147C3B1AF
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 17:36:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08F68C2BA83
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 18:09:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F133A22314
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 17:36:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1581701802;
-	bh=TAJQ3d5LQOTkR0u/zgFlmI/5rfKu3+mGs9qTStlSToU=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=bpbJGcD7tWA2UEHg8KcECR0BS25jHeMwHOEsVUHP9CCdmtRYfM1TVahZyQ3UVKhMe
-	 PSbxCSxLJrRa/thwVnoMUYxO+jSw92HQzWzkTatb6AW/RajNujoEBlTrM36TCb6Q02
-	 HrFxWTDqu+hjO9le31uMPLkp0opmr60xBFSowbN0=
+	by mail.kernel.org (Postfix) with ESMTP id D90012187F
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 18:09:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390166AbgBNQF0 (ORCPT
+        id S2389430AbgBNSJh (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Feb 2020 11:05:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55142 "EHLO mail.kernel.org"
+        Fri, 14 Feb 2020 13:09:37 -0500
+Received: from mga11.intel.com ([192.55.52.93]:58327 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389812AbgBNQFZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:05:25 -0500
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 05BE824691;
-        Fri, 14 Feb 2020 16:05:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581696324;
-        bh=TAJQ3d5LQOTkR0u/zgFlmI/5rfKu3+mGs9qTStlSToU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yp19qlj3I+ksef0w8gHDkr14DZcN+w52/+17VGwSrIQf/fTbWRVD8wXq/wFEVsWBc
-         Rf7oiM22LOUGGU/7ncMnsbnj3ieaESHMKv0ktoFlAdUaAQ500KuLdeMiF4MNlVbyeo
-         wWURtSmmXT8BJvMNPFPGAa/QPT6NyQrdejxURBUQ=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        Hulk Robot <hulkci@huawei.com>,
+        id S2389420AbgBNSJg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 14 Feb 2020 13:09:36 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Feb 2020 10:09:35 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,441,1574150400"; 
+   d="scan'208";a="227445807"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by fmsmga007.fm.intel.com with ESMTP; 14 Feb 2020 10:09:33 -0800
+Received: from andy by smile with local (Exim 4.93)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1j2fPD-001Qi1-Hn; Fri, 14 Feb 2020 20:09:35 +0200
+Date:   Fri, 14 Feb 2020 20:09:35 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 164/459] tty: omap-serial: remove set but unused variable
-Date:   Fri, 14 Feb 2020 10:56:54 -0500
-Message-Id: <20200214160149.11681-164-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200214160149.11681-1-sashal@kernel.org>
-References: <20200214160149.11681-1-sashal@kernel.org>
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH v2 5/8] serial: 8250_port: Don't use power management for
+ kernel console
+Message-ID: <20200214180935.GP10400@smile.fi.intel.com>
+References: <20200214114339.53897-1-andriy.shevchenko@linux.intel.com>
+ <20200214114339.53897-6-andriy.shevchenko@linux.intel.com>
+ <20200214133918.GP25745@shell.armlinux.org.uk>
+ <20200214171348.GP16391@atomide.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200214171348.GP16391@atomide.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+On Fri, Feb 14, 2020 at 09:13:48AM -0800, Tony Lindgren wrote:
+> * Russell King - ARM Linux admin <linux@armlinux.org.uk> [200214 13:40]:
+> > On Fri, Feb 14, 2020 at 01:43:36PM +0200, Andy Shevchenko wrote:
+> > > Doing any kind of power management for kernel console is really bad idea.
+> > > 
+> > > First of all, it runs in poll and atomic mode. This fact attaches a limitation
+> > > on the functions that might be called. For example, pm_runtime_get_sync() might
+> > > sleep and thus can't be used. This call needs, for example, to bring the device
+> > > to powered on state on the system, where the power on sequence may require
+> > > on-atomic operations, such as Intel Cherrytrail with ACPI enumerated UARTs.
+> > > That said, on ACPI enabled platforms it might even call firmware for a job.
+> > > 
+> > > On the other hand pm_runtime_get() doesn't guarantee that device will become
+> > > powered on fast enough.
+> > > 
+> > > Besides that, imagine the case when console is about to print a kernel Oops and
+> > > it's powered off. In such an emergency case calling the complex functions is
+> > > not the best what we can do, taking into consideration that user wants to see
+> > > at least something of the last kernel word before it passes away.
+> > > 
+> > > Here we modify the 8250 console code to prevent runtime power management.
+> > 
+> > It's probably also worth noting (and documenting) that this will likely
+> > cause a PM regression for OMAP platforms since the serial port will no
+> > longer be idled, and therefore the power domains will not hit retention
+> > state.  Please wait for Tony to confirm.
+> 
+> Well with patch 4 in this series we can now attach and detach the serial
+> console as we've discussed earlier.
+> 
+> This should remove the need for PM during serial console use hopefully :)
+> 
+> I'll try to test this series ASAP.
 
-[ Upstream commit e83c6587c47caa2278aa3bd603b5a85eddc4cec9 ]
+Tony, I have realized that last patch (two patches) makes a regression. So,
+I'll drop them in next version, please do not include them in your testing
+bucket.
 
-Fix the following warning:
-drivers/tty/serial/omap-serial.c: In function serial_omap_rlsi:
-drivers/tty/serial/omap-serial.c:496:16: warning: variable ch set but not used [-Wunused-but-set-variable]
-
-The character read is useless according to the table 23-246 of the omap4
-TRM. So we can drop it.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-Link: https://lore.kernel.org/r/1575617863-32484-1-git-send-email-wangxiongfeng2@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/omap-serial.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
-index 6420ae581a802..5f808d8dfcd5c 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -493,10 +493,13 @@ static unsigned int check_modem_status(struct uart_omap_port *up)
- static void serial_omap_rlsi(struct uart_omap_port *up, unsigned int lsr)
- {
- 	unsigned int flag;
--	unsigned char ch = 0;
- 
-+	/*
-+	 * Read one data character out to avoid stalling the receiver according
-+	 * to the table 23-246 of the omap4 TRM.
-+	 */
- 	if (likely(lsr & UART_LSR_DR))
--		ch = serial_in(up, UART_RX);
-+		serial_in(up, UART_RX);
- 
- 	up->port.icount.rx++;
- 	flag = TTY_NORMAL;
 -- 
-2.20.1
+With Best Regards,
+Andy Shevchenko
+
 
