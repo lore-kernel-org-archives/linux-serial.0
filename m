@@ -2,100 +2,96 @@ Return-Path: <SRS0=POds=4C=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08F68C2BA83
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 18:09:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5408C2BA83
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 18:10:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D90012187F
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 18:09:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A0E7424650
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 18:10:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1581703832;
+	bh=8ZM05lNKpU6kdaPrhIh/NDaUPwNaVKRoptZj+HHqS/A=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=BOZxD8Hwl34zI7eItSmtgwPbHiriLbUQTCAwTwtLoRRnEDBKzXE9DtorvPQERRVSu
+	 j5QFbSaN050KMl15mUybxXGGmAUEFT0+SseeupOyDKBFWnUCMMhn2IVjS+YE0zxhWC
+	 I1grI+Ehm382qJUmb8ofQUQQ+Pj8FQkbTD99ALz4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389430AbgBNSJh (ORCPT
+        id S2389461AbgBNSKa (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Feb 2020 13:09:37 -0500
-Received: from mga11.intel.com ([192.55.52.93]:58327 "EHLO mga11.intel.com"
+        Fri, 14 Feb 2020 13:10:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33112 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389420AbgBNSJg (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Feb 2020 13:09:36 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Feb 2020 10:09:35 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,441,1574150400"; 
-   d="scan'208";a="227445807"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga007.fm.intel.com with ESMTP; 14 Feb 2020 10:09:33 -0800
-Received: from andy by smile with local (Exim 4.93)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1j2fPD-001Qi1-Hn; Fri, 14 Feb 2020 20:09:35 +0200
-Date:   Fri, 14 Feb 2020 20:09:35 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH v2 5/8] serial: 8250_port: Don't use power management for
- kernel console
-Message-ID: <20200214180935.GP10400@smile.fi.intel.com>
-References: <20200214114339.53897-1-andriy.shevchenko@linux.intel.com>
- <20200214114339.53897-6-andriy.shevchenko@linux.intel.com>
- <20200214133918.GP25745@shell.armlinux.org.uk>
- <20200214171348.GP16391@atomide.com>
+        id S1730069AbgBNPxn (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 14 Feb 2020 10:53:43 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 98BB824682;
+        Fri, 14 Feb 2020 15:53:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1581695623;
+        bh=8ZM05lNKpU6kdaPrhIh/NDaUPwNaVKRoptZj+HHqS/A=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=0X82fS4vqMCW82aYrM5qCPh1XoL5ECdTqViJON/O8jcCMiXlRtt+Fi5WJmcjZB2/A
+         oe1CyNnvExiLp0Lv5C5BD0zBtiBQdU9YrjGobf21lH7MdxJJku11QVlf5uzXrp9ueV
+         jyyqCFjuhgtRYEdtSgpN16k0nfROoGcdH52pwRIw=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Engraf <david.engraf@sysgo.com>,
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.5 222/542] Revert "tty/serial: atmel: fix out of range clock divider handling"
+Date:   Fri, 14 Feb 2020 10:43:34 -0500
+Message-Id: <20200214154854.6746-222-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200214154854.6746-1-sashal@kernel.org>
+References: <20200214154854.6746-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200214171348.GP16391@atomide.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Feb 14, 2020 at 09:13:48AM -0800, Tony Lindgren wrote:
-> * Russell King - ARM Linux admin <linux@armlinux.org.uk> [200214 13:40]:
-> > On Fri, Feb 14, 2020 at 01:43:36PM +0200, Andy Shevchenko wrote:
-> > > Doing any kind of power management for kernel console is really bad idea.
-> > > 
-> > > First of all, it runs in poll and atomic mode. This fact attaches a limitation
-> > > on the functions that might be called. For example, pm_runtime_get_sync() might
-> > > sleep and thus can't be used. This call needs, for example, to bring the device
-> > > to powered on state on the system, where the power on sequence may require
-> > > on-atomic operations, such as Intel Cherrytrail with ACPI enumerated UARTs.
-> > > That said, on ACPI enabled platforms it might even call firmware for a job.
-> > > 
-> > > On the other hand pm_runtime_get() doesn't guarantee that device will become
-> > > powered on fast enough.
-> > > 
-> > > Besides that, imagine the case when console is about to print a kernel Oops and
-> > > it's powered off. In such an emergency case calling the complex functions is
-> > > not the best what we can do, taking into consideration that user wants to see
-> > > at least something of the last kernel word before it passes away.
-> > > 
-> > > Here we modify the 8250 console code to prevent runtime power management.
-> > 
-> > It's probably also worth noting (and documenting) that this will likely
-> > cause a PM regression for OMAP platforms since the serial port will no
-> > longer be idled, and therefore the power domains will not hit retention
-> > state.  Please wait for Tony to confirm.
-> 
-> Well with patch 4 in this series we can now attach and detach the serial
-> console as we've discussed earlier.
-> 
-> This should remove the need for PM during serial console use hopefully :)
-> 
-> I'll try to test this series ASAP.
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Tony, I have realized that last patch (two patches) makes a regression. So,
-I'll drop them in next version, please do not include them in your testing
-bucket.
+[ Upstream commit 6dbd54e4154dfe386b3333687de15be239576617 ]
 
+This reverts commit 751d0017334db9c4d68a8909c59f662a6ecbcec6.
+
+The wrong commit got added to the tty-next tree, the correct one is in
+the tty-linus branch.
+
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: David Engraf <david.engraf@sysgo.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/atmel_serial.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 1ba9bc667e136..ab4d4a0b36497 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -2270,6 +2270,9 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		mode |= ATMEL_US_USMODE_NORMAL;
+ 	}
+ 
++	/* set the mode, clock divisor, parity, stop bits and data size */
++	atmel_uart_writel(port, ATMEL_US_MR, mode);
++
+ 	/*
+ 	 * Set the baud rate:
+ 	 * Fractional baudrate allows to setup output frequency more
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.20.1
 
