@@ -2,107 +2,91 @@ Return-Path: <SRS0=POds=4C=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E608EC3B1B7
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 18:12:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E2B8C2BA83
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 18:14:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B179224654
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 18:12:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1581703931;
-	bh=35UpzJrgDYDePnmNfsBeRvzVmSHI48ScrZd/iZ6mBEQ=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=KNL2yj1iV8A5+g/ypU8wF8LPgKQc+7T6HLCIJUKfDHTIb6/Lha1ZdXoMdE/ehjVW0
-	 vkG0d2qrcxDaoyaVD3TaYL4nSj+IE81U5rKTnlmltgMVzUEVBDeslPkrqsxpfnImMv
-	 EZvN8rAZS1n+2TI+IejxQE0O3nCxN+2r2IkbqvbY=
+	by mail.kernel.org (Postfix) with ESMTP id 697852187F
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 18:14:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393166AbgBNSMI (ORCPT
+        id S2393295AbgBNSOP (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Feb 2020 13:12:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60640 "EHLO mail.kernel.org"
+        Fri, 14 Feb 2020 13:14:15 -0500
+Received: from muru.com ([72.249.23.125]:55322 "EHLO muru.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731185AbgBNPxP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Feb 2020 10:53:15 -0500
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 03AED24649;
-        Fri, 14 Feb 2020 15:53:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581695594;
-        bh=35UpzJrgDYDePnmNfsBeRvzVmSHI48ScrZd/iZ6mBEQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HY28/nr41Rgd2i33WIaFuUdrw1T/LS27qJJELwrfe4dEcJxNFYdDVOD5dE2a9LPfv
-         MlhQSCGGZpN5ED0qh3GO8IWQqgpbxd6Xtc49CXoRB4I3YA4vDQhJ/Y5xMh08ci00x1
-         zvJaune7+HZKfNylfVzrhH5pV3yqfmszFoWpVduM=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        Hulk Robot <hulkci@huawei.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 200/542] tty: serial: amba-pl011: remove set but unused variable
-Date:   Fri, 14 Feb 2020 10:43:12 -0500
-Message-Id: <20200214154854.6746-200-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200214154854.6746-1-sashal@kernel.org>
-References: <20200214154854.6746-1-sashal@kernel.org>
+        id S2389895AbgBNSOL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 14 Feb 2020 13:14:11 -0500
+Received: from atomide.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 10E1880E7;
+        Fri, 14 Feb 2020 18:14:54 +0000 (UTC)
+Date:   Fri, 14 Feb 2020 10:14:07 -0800
+From:   Tony Lindgren <tony@atomide.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Subject: Re: [PATCH v2 5/8] serial: 8250_port: Don't use power management for
+ kernel console
+Message-ID: <20200214181407.GQ16391@atomide.com>
+References: <20200214114339.53897-1-andriy.shevchenko@linux.intel.com>
+ <20200214114339.53897-6-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200214114339.53897-6-andriy.shevchenko@linux.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+* Andy Shevchenko <andriy.shevchenko@linux.intel.com> [200214 11:44]:
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -608,6 +608,14 @@ static int univ8250_console_setup(struct console *co, char *options)
+>  	return retval;
+>  }
+>  
+> +static int univ8250_console_exit(struct console *co)
+> +{
+> +	struct uart_port *port;
+> +
+> +	port = &serial8250_ports[co->index].port;
+> +	return serial8250_console_exit(port);
+> +}
+> +
+>  /**
+>   *	univ8250_console_match - non-standard console matching
+>   *	@co:	  registering console
+> @@ -666,6 +674,7 @@ static struct console univ8250_console = {
+>  	.write		= univ8250_console_write,
+>  	.device		= uart_console_device,
+>  	.setup		= univ8250_console_setup,
+> +	.exit		= univ8250_console_exit,
+>  	.match		= univ8250_console_match,
+>  	.flags		= CON_PRINTBUFFER | CON_ANYTIME,
+>  	.index		= -1,
 
-[ Upstream commit 94345aee285334e9e12fc70572e3d9380791a64e ]
+You're missing adding exit to struct console or these patches
+are based on some tree I don't have. I had to add the following
+change to compile for you to fold into this patch.
 
-Fix the following warning:
-drivers/tty/serial/amba-pl011.c: In function check_apply_cts_event_workaround:
-drivers/tty/serial/amba-pl011.c:1461:15: warning: variable dummy_read set but not used [-Wunused-but-set-variable]
+Regards,
 
-The data read is useless and can be dropped.
+Tony
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-Link: https://lore.kernel.org/r/1575619526-34482-1-git-send-email-wangxiongfeng2@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/amba-pl011.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 4b28134d596a9..c5e9475feb47a 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1452,8 +1452,6 @@ static void pl011_modem_status(struct uart_amba_port *uap)
- 
- static void check_apply_cts_event_workaround(struct uart_amba_port *uap)
- {
--	unsigned int dummy_read;
--
- 	if (!uap->vendor->cts_event_workaround)
- 		return;
- 
-@@ -1465,8 +1463,8 @@ static void check_apply_cts_event_workaround(struct uart_amba_port *uap)
- 	 * single apb access will incur 2 pclk(133.12Mhz) delay,
- 	 * so add 2 dummy reads
- 	 */
--	dummy_read = pl011_read(uap, REG_ICR);
--	dummy_read = pl011_read(uap, REG_ICR);
-+	pl011_read(uap, REG_ICR);
-+	pl011_read(uap, REG_ICR);
- }
- 
- static irqreturn_t pl011_int(int irq, void *dev_id)
--- 
-2.20.1
-
+8< -------------------
+diff --git a/include/linux/console.h b/include/linux/console.h
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -148,6 +148,7 @@ struct console {
+ 	struct tty_driver *(*device)(struct console *, int *);
+ 	void	(*unblank)(void);
+ 	int	(*setup)(struct console *, char *);
++	int	(*exit)(struct console *);
+ 	int	(*match)(struct console *, char *name, int idx, char *options);
+ 	short	flags;
+ 	short	index;
