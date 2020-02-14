@@ -7,48 +7,47 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E652C3B1A1
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 16:41:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F846C3B1A1
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 16:41:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D8D2824680
-	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 16:41:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3F87B2467D
+	for <linux-serial@archiver.kernel.org>; Fri, 14 Feb 2020 16:41:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1581698482;
-	bh=nBg3B4SGh9ImBA80puCaQjptdsSOnQ4qH+lPv9TJtHk=;
+	s=default; t=1581698504;
+	bh=S9glgjZI6VlDqaayBfQyTvToeDmW9qugXDZfdQCbYp8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=wWmBjAGMtz3Gf6xNFJ0FtghSYk3hkEBZmFI4PepbaMXWsEbrQYih+o3UpcbC8Bhj2
-	 LQBuI/QTMl3xswxvGv9qcIRPVsiHRPFvAT36MRRKVrF5Sw0QWgvr0H2GVITPtKsCZT
-	 Qzl+hWHZfvRwnE+YkmlyDLP46DQvBMQ81qEa2FhM=
+	b=BvPFqyGVcv6Stf5A7hCYjhPvnsQ9OFv0mrxlkwwtVKXdovui6wtQuWBzV1Cj3c47m
+	 uLo/tz89Hodmd6pRyJotck6A3CV1MNgmAKBHKbJQlRKHOY0ofVoQafb00BHwEbtuub
+	 lelQeBEp1Ixs5KcsqZF5Qq/SzTe0gOD1kSk2Jps4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390724AbgBNQlT (ORCPT
+        id S2405478AbgBNQWd (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 14 Feb 2020 11:41:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58406 "EHLO mail.kernel.org"
+        Fri, 14 Feb 2020 11:22:33 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58152 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405101AbgBNQWj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 14 Feb 2020 11:22:39 -0500
+        id S2405473AbgBNQWd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 14 Feb 2020 11:22:33 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 07BA3246B0;
-        Fri, 14 Feb 2020 16:22:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B0B532475A;
+        Fri, 14 Feb 2020 16:22:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581697358;
-        bh=nBg3B4SGh9ImBA80puCaQjptdsSOnQ4qH+lPv9TJtHk=;
+        s=default; t=1581697352;
+        bh=S9glgjZI6VlDqaayBfQyTvToeDmW9qugXDZfdQCbYp8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LYQq+k9xUifjacSiM+WgG+99MoW7jhPeHwot5cGoNXawGyCXQwaUWeM3T2AHtu8Qg
-         RE5BjTHVwPGWVWR/cxV5ZI1gKdh6pS1XPRNvSq9R9ixz2R15ghbJThVzlAMkWypZO3
-         snyvI58iQxgVeNX1JqJmqtjM8EP1AQtsztKcINWc=
+        b=B7ZdEAOuleYDA/iD/17nYRU9M28nB+G/NWQvtuZoiPn+iEONxL/1O3Xyq7QOg8vMR
+         OiU27uCKgBci8xgcbGfs0TnkcoukeUTPg7T3zqkrorzfWriIRtHYqU+bNjQ/9PyfJ/
+         G2LlrWLb8JrOqs2R2BUlIX0t6jToRWunotuXthAg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Engraf <david.engraf@sysgo.com>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.9 060/141] Revert "tty/serial: atmel: fix out of range clock divider handling"
-Date:   Fri, 14 Feb 2020 11:20:00 -0500
-Message-Id: <20200214162122.19794-60-sashal@kernel.org>
+Cc:     Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+        Hulk Robot <hulkci@huawei.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 055/141] tty: serial: amba-pl011: remove set but unused variable
+Date:   Fri, 14 Feb 2020 11:19:55 -0500
+Message-Id: <20200214162122.19794-55-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214162122.19794-1-sashal@kernel.org>
 References: <20200214162122.19794-1-sashal@kernel.org>
@@ -61,37 +60,49 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
 
-[ Upstream commit 6dbd54e4154dfe386b3333687de15be239576617 ]
+[ Upstream commit 94345aee285334e9e12fc70572e3d9380791a64e ]
 
-This reverts commit 751d0017334db9c4d68a8909c59f662a6ecbcec6.
+Fix the following warning:
+drivers/tty/serial/amba-pl011.c: In function check_apply_cts_event_workaround:
+drivers/tty/serial/amba-pl011.c:1461:15: warning: variable dummy_read set but not used [-Wunused-but-set-variable]
 
-The wrong commit got added to the tty-next tree, the correct one is in
-the tty-linus branch.
+The data read is useless and can be dropped.
 
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: David Engraf <david.engraf@sysgo.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Link: https://lore.kernel.org/r/1575619526-34482-1-git-send-email-wangxiongfeng2@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/atmel_serial.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/serial/amba-pl011.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 325f9db2da86c..255be61b4073a 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -2200,6 +2200,9 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
- 		mode |= ATMEL_US_USMODE_NORMAL;
- 	}
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index f6586a8681b9b..8781a4fa64907 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1456,8 +1456,6 @@ static void pl011_modem_status(struct uart_amba_port *uap)
  
-+	/* set the mode, clock divisor, parity, stop bits and data size */
-+	atmel_uart_writel(port, ATMEL_US_MR, mode);
-+
- 	/*
- 	 * Set the baud rate:
- 	 * Fractional baudrate allows to setup output frequency more
+ static void check_apply_cts_event_workaround(struct uart_amba_port *uap)
+ {
+-	unsigned int dummy_read;
+-
+ 	if (!uap->vendor->cts_event_workaround)
+ 		return;
+ 
+@@ -1469,8 +1467,8 @@ static void check_apply_cts_event_workaround(struct uart_amba_port *uap)
+ 	 * single apb access will incur 2 pclk(133.12Mhz) delay,
+ 	 * so add 2 dummy reads
+ 	 */
+-	dummy_read = pl011_read(uap, REG_ICR);
+-	dummy_read = pl011_read(uap, REG_ICR);
++	pl011_read(uap, REG_ICR);
++	pl011_read(uap, REG_ICR);
+ }
+ 
+ static irqreturn_t pl011_int(int irq, void *dev_id)
 -- 
 2.20.1
 
