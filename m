@@ -2,95 +2,84 @@ Return-Path: <SRS0=lWnk=4F=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03B05C34021
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 16:35:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AB91C34022
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 22:51:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C4B1E24654
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 16:35:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1581957319;
-	bh=C/gHO45DyrMSmotWluGDSngCfiAIBIpKJQ2Qh0UZRGw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=RkN7wda2uGtgpQBfSSNZgtnQTyMa4v7wBpec3t4dvQCBd+nsKnb/MljQO7ulI+ADh
-	 H4Vc2j81w0dl0okkQ2hm4SgtPTWtvLxbmDsZs2RZdwmSdlJmZwDc4nhOEewaC1KEPQ
-	 uXGBlJ0zxO8CEol9HO6Z+xoAi7mOLltqssA13ZIM=
+	by mail.kernel.org (Postfix) with ESMTP id 1D48C2072C
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 22:51:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729361AbgBQQfT (ORCPT
+        id S1725927AbgBQWvh (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Feb 2020 11:35:19 -0500
-Received: from foss.arm.com ([217.140.110.172]:38312 "EHLO foss.arm.com"
+        Mon, 17 Feb 2020 17:51:37 -0500
+Received: from muru.com ([72.249.23.125]:55714 "EHLO muru.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728540AbgBQQfS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Feb 2020 11:35:18 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2CF86328;
-        Mon, 17 Feb 2020 08:35:18 -0800 (PST)
-Received: from localhost (unknown [10.37.6.21])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A27B73F68F;
-        Mon, 17 Feb 2020 08:35:17 -0800 (PST)
-Date:   Mon, 17 Feb 2020 16:35:16 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Akash Asthana <akashast@codeaurora.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de,
-        mark.rutland@arm.com, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, mka@chromium.org,
-        dianders@chromium.org
-Subject: Re: [PATCH 5/6] spi: spi-qcom-qspi: Add interconnect support
-Message-ID: <20200217163516.GR9304@sirena.org.uk>
-References: <1581946205-27189-1-git-send-email-akashast@codeaurora.org>
- <1581946205-27189-6-git-send-email-akashast@codeaurora.org>
+        id S1725867AbgBQWvh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 17 Feb 2020 17:51:37 -0500
+Received: from atomide.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 7722D8087;
+        Mon, 17 Feb 2020 22:52:21 +0000 (UTC)
+Date:   Mon, 17 Feb 2020 14:51:34 -0800
+From:   Tony Lindgren <tony@atomide.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH v3 0/6] serial: Disable DMA and PM on kernel console
+Message-ID: <20200217225134.GQ16391@atomide.com>
+References: <20200217114016.49856-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="7L9kolmstoDTZ4pm"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1581946205-27189-6-git-send-email-akashast@codeaurora.org>
-X-Cookie: There was a phone call for you.
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200217114016.49856-1-andriy.shevchenko@linux.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+* Andy Shevchenko <andriy.shevchenko@linux.intel.com> [200217 11:41]:
+> This is third version to get rid of problematic DMA and PM calls in
+> the serial kernel console code.
+> 
+> Patches 1, 3 and 4 are preparatory ones.
+> 
+> After previous discussion Tony suggested to add a possibility to detach
+> and attach back kernel console from user space. It's done in the patch 2.
+> 
+> Kernel console is sensitive to any kind of complex work needed to print
+> out anything on it. One such case is emergency print during Oops.
+> 
+> More details on topic are in the commit messages of the patches 5 and 6.
+> 
+> The series has been tested on few Intel platforms.
+> 
+> Note, it depends to recently submitted and applied patches in
+> the core console code [2, 3]. Petr, may you confirm that [3] is
+> immutable or even send Greg KH a PR?
+> 
+> Greg, see above note before applying, thanks!
+> 
+> [1]: https://lore.kernel.org/patchwork/cover/905632/
+> [2]: https://lore.kernel.org/lkml/20200203133130.11591-1-andriy.shevchenko@linux.intel.com/
+> [3]: https://git.kernel.org/pub/scm/linux/kernel/git/pmladek/printk.git/log/?h=for-5.7-console-exit
+> 
+> Cc: Russell King <rmk+kernel@armlinux.org.uk>
+> Cc: Petr Mladek <pmladek@suse.com>
+> 
+> Changelog v3:
+> - dropped applied patches
+> - dropped "cleanup" DMA patches, that they were not tested and actually are regressions
+> - added DEVICE_ATTR_RO/_RW conversion patches (Greg)
+> - added pr_*() to dev_*() conversion patch (Greg)
+> - updated commit message to note OMAP behaviour change (Russell)
+> - replace run-time PM callbacks to be _sync() (Tony)
 
---7L9kolmstoDTZ4pm
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Nice, works for my test cases now! Please feel free to add:
 
-On Mon, Feb 17, 2020 at 07:00:04PM +0530, Akash Asthana wrote:
-> Get the interconnect paths for QSPI device and vote according to the
-> current bus speed of the driver.
-
-Acked-by: Mark Brown <broonie@kernel.org>
-
-> +	/* Set BW quota for CPU as driver supports FIFO mode only */
-> +	ctrl->avg_bw_cpu = Bps_to_icc(speed_hz);
-> +	ctrl->peak_bw_cpu = Bps_to_icc(2 * speed_hz);
-
-These peak numbers seem like you're just guessing and should perhaps be
-handled more gracefully by the core (eg, assuming twice the average if
-no explicit peak is provided).
-
---7L9kolmstoDTZ4pm
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl5KwMMACgkQJNaLcl1U
-h9BYdwf9Hw50ELkLWJ2LbQDxFVRGURfX2RoGEMty2qsXnVdvgKQXlcZbSHBe+PfX
-NEA5WNsaeDwLlEpZF6AoaylbTSoooNOqTuyDcMgsBCjfPR/DdWuyRURjhNaJtOHr
-PauHaxThkjOihnc3zuFds8TSzCdcOya7BzWJIwW3SxYwjo3reYSjb9j1Lq3x20/T
-PjrqpFbyn+R2lIja7tpkI6tAE+O4U0KjX+RQLqqTuwjVF6VZRMKncWaHR1d7mR4g
-dQkuKAuB8MXYUrSnHpQ7l+XzvxtmayVECYnE18PXy8qfifJ0GOTc2hgPy5EqoPjU
-KCzWIif4ie3eJS/Ofimq2SLzfdKhQg==
-=lNdK
------END PGP SIGNATURE-----
-
---7L9kolmstoDTZ4pm--
+Reviewed-by: Tony Lindgren <tony@atomide.com>
+Tested-by: Tony Lindgren <tony@atomide.com>
