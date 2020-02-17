@@ -7,42 +7,42 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 172F6C33FE0
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 13:31:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D5EC34020
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 13:31:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E044624654
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 13:31:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 583EC2070B
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 13:31:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="furoN4XF"
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="dixno9dS"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728874AbgBQNbP (ORCPT
+        id S1728881AbgBQNbZ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Feb 2020 08:31:15 -0500
-Received: from mail27.static.mailgun.info ([104.130.122.27]:58801 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728881AbgBQNbO (ORCPT
+        Mon, 17 Feb 2020 08:31:25 -0500
+Received: from mail26.static.mailgun.info ([104.130.122.26]:48175 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728671AbgBQNbY (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Feb 2020 08:31:14 -0500
+        Mon, 17 Feb 2020 08:31:24 -0500
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1581946274; h=References: In-Reply-To: Message-Id: Date:
+ s=smtp; t=1581946284; h=References: In-Reply-To: Message-Id: Date:
  Subject: Cc: To: From: Sender;
- bh=eAVniZlN5XgduD/08xREXVlmt0saWmRHmsOAnRbaQ/M=; b=furoN4XFKzfQxTxrVrnq4VcvZzWAv9LBx7DMV+BARLODVp+7nYXjOkVkOT4AJN4y/VDm/9Uk
- j2lF64mintN1lf1MozaBi2tn2oBXOZBTO1hkTSX9iACkg0XsxTTn+dJBDDEgs7aIq87rzyTd
- f8swOwZ3qnEmkoIJWhA2cI+Lh7E=
-X-Mailgun-Sending-Ip: 104.130.122.27
+ bh=FM1wfGw0ofSjtxHnraoQ21SP5WNmgAeJRJEUp6jm44I=; b=dixno9dSwcjSJ1JBy1ukPaYrDiWj7dGQJJgTAXvKcJ5EhU2zO9Jlk+I9rUiYX9MD6zq5lETj
+ YfRt05gFWx5woR9MiSe0WqVFgovleROYz7Cy0VVN8kv2pUF5GGJe0pXVERoNjhB6xJfyX1ot
+ Szjjoiu+cvX7SMGJOAkgc4AJG4w=
+X-Mailgun-Sending-Ip: 104.130.122.26
 X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e4a9594.7f6e3393bb90-smtp-out-n01;
- Mon, 17 Feb 2020 13:31:00 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5e4a95a4.7f0e06af9148-smtp-out-n03;
+ Mon, 17 Feb 2020 13:31:16 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 97FB0C447A9; Mon, 17 Feb 2020 13:30:59 +0000 (UTC)
+        id A237BC447AD; Mon, 17 Feb 2020 13:31:16 +0000 (UTC)
 Received: from akashast-linux.qualcomm.com (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 55501C4479F;
-        Mon, 17 Feb 2020 13:30:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 55501C4479F
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id F1BF2C4479F;
+        Mon, 17 Feb 2020 13:31:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org F1BF2C4479F
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
 From:   Akash Asthana <akashast@codeaurora.org>
@@ -54,9 +54,9 @@ Cc:     linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
         mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
         linux-serial@vger.kernel.org, mka@chromium.org,
         dianders@chromium.org, Akash Asthana <akashast@codeaurora.org>
-Subject: [PATCH 3/6] i2c: i2c-qcom-geni: Add interconnect support
-Date:   Mon, 17 Feb 2020 19:00:02 +0530
-Message-Id: <1581946205-27189-4-git-send-email-akashast@codeaurora.org>
+Subject: [PATCH 5/6] spi: spi-qcom-qspi: Add interconnect support
+Date:   Mon, 17 Feb 2020 19:00:04 +0530
+Message-Id: <1581946205-27189-6-git-send-email-akashast@codeaurora.org>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1581946205-27189-1-git-send-email-akashast@codeaurora.org>
 References: <1581946205-27189-1-git-send-email-akashast@codeaurora.org>
@@ -65,165 +65,122 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Get the interconnect paths for I2C based Serial Engine device
-and vote according to the bus speed of the driver.
+Get the interconnect paths for QSPI device and vote according to the
+current bus speed of the driver.
 
 Signed-off-by: Akash Asthana <akashast@codeaurora.org>
 ---
- drivers/i2c/busses/i2c-qcom-geni.c | 84 ++++++++++++++++++++++++++++++++++++--
- 1 file changed, 80 insertions(+), 4 deletions(-)
+ drivers/spi/spi-qcom-qspi.c | 38 +++++++++++++++++++++++++++++++++++---
+ 1 file changed, 35 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-qcom-geni.c b/drivers/i2c/busses/i2c-qcom-geni.c
-index 17abf60c..5de10a1 100644
---- a/drivers/i2c/busses/i2c-qcom-geni.c
-+++ b/drivers/i2c/busses/i2c-qcom-geni.c
-@@ -163,6 +163,44 @@ static void qcom_geni_i2c_conf(struct geni_i2c_dev *gi2c)
- 	writel_relaxed(val, gi2c->se.base + SE_I2C_SCL_COUNTERS);
- }
+diff --git a/drivers/spi/spi-qcom-qspi.c b/drivers/spi/spi-qcom-qspi.c
+index 3c4f83b..3636438 100644
+--- a/drivers/spi/spi-qcom-qspi.c
++++ b/drivers/spi/spi-qcom-qspi.c
+@@ -2,6 +2,7 @@
+ // Copyright (c) 2017-2018, The Linux foundation. All rights reserved.
  
-+static int geni_i2c_icc_get(struct geni_se *se)
-+{
-+	if (!se)
-+		return -EINVAL;
+ #include <linux/clk.h>
++#include <linux/interconnect.h>
+ #include <linux/interrupt.h>
+ #include <linux/io.h>
+ #include <linux/module.h>
+@@ -134,12 +135,19 @@ enum qspi_clocks {
+ 	QSPI_NUM_CLKS
+ };
+ 
++enum qspi_icc_path {
++	CPU_TO_QSPI
++};
 +
-+	se->icc_path[GENI_TO_CORE] = of_icc_get(se->dev, "qup-core");
-+	if (IS_ERR(se->icc_path[GENI_TO_CORE]))
-+		return PTR_ERR(se->icc_path[GENI_TO_CORE]);
-+
-+	se->icc_path[CPU_TO_GENI] = of_icc_get(se->dev, "qup-config");
-+	if (IS_ERR(se->icc_path[CPU_TO_GENI])) {
-+		icc_put(se->icc_path[GENI_TO_CORE]);
-+		se->icc_path[GENI_TO_CORE] = NULL;
-+		return PTR_ERR(se->icc_path[CPU_TO_GENI]);
-+	}
-+
-+	se->icc_path[GENI_TO_DDR] = of_icc_get(se->dev, "qup-memory");
-+	if (IS_ERR(se->icc_path[GENI_TO_DDR])) {
-+		icc_put(se->icc_path[GENI_TO_CORE]);
-+		se->icc_path[GENI_TO_CORE] = NULL;
-+		icc_put(se->icc_path[CPU_TO_GENI]);
-+		se->icc_path[CPU_TO_GENI] = NULL;
-+		return PTR_ERR(se->icc_path[GENI_TO_DDR]);
-+	}
-+
-+	return 0;
-+}
-+
-+void geni_i2c_icc_put(struct geni_se *se)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(se->icc_path); i++) {
-+		icc_put(se->icc_path[i]);
-+		se->icc_path[i] = NULL;
-+	}
-+}
-+
- static void geni_i2c_err_misc(struct geni_i2c_dev *gi2c)
- {
- 	u32 m_cmd = readl_relaxed(gi2c->se.base + SE_GENI_M_CMD0);
-@@ -563,17 +601,34 @@ static int geni_i2c_probe(struct platform_device *pdev)
- 	gi2c->adap.dev.of_node = pdev->dev.of_node;
- 	strlcpy(gi2c->adap.name, "Geni-I2C", sizeof(gi2c->adap.name));
+ struct qcom_qspi {
+ 	void __iomem *base;
+ 	struct device *dev;
+ 	struct clk_bulk_data *clks;
+ 	struct qspi_xfer xfer;
+-	/* Lock to protect xfer and IRQ accessed registers */
++	struct icc_path *icc_path[2];
++	unsigned int avg_bw_cpu;
++	unsigned int peak_bw_cpu;
++	/* Lock to protect data accessed by IRQs */
+ 	spinlock_t lock;
+ };
  
-+	ret = geni_i2c_icc_get(&gi2c->se);
-+	if (ret)
-+		return ret;
-+	/* Set the bus quota to a reasonable value */
-+	gi2c->se.avg_bw_core = Bps_to_icc(1000);
-+	gi2c->se.peak_bw_core = Bps_to_icc(CORE_2X_100_MHZ);
-+	gi2c->se.avg_bw_cpu = Bps_to_icc(1000);
-+	gi2c->se.peak_bw_cpu = Bps_to_icc(1000);
-+	gi2c->se.avg_bw_ddr = Bps_to_icc(gi2c->clk_freq_out);
-+	gi2c->se.peak_bw_ddr = Bps_to_icc(2 * gi2c->clk_freq_out);
-+
-+	/* Vote for core clocks and CPU for register access */
-+	icc_set_bw(gi2c->se.icc_path[GENI_TO_CORE], gi2c->se.avg_bw_core,
-+				gi2c->se.peak_bw_core);
-+	icc_set_bw(gi2c->se.icc_path[CPU_TO_GENI], gi2c->se.avg_bw_cpu,
-+				gi2c->se.peak_bw_cpu);
- 	ret = geni_se_resources_on(&gi2c->se);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Error turning on resources %d\n", ret);
--		return ret;
-+		goto geni_i2c_put_icc;
- 	}
- 	proto = geni_se_read_proto(&gi2c->se);
- 	tx_depth = geni_se_get_tx_fifo_depth(&gi2c->se);
- 	if (proto != GENI_SE_I2C) {
- 		dev_err(&pdev->dev, "Invalid proto %d\n", proto);
- 		geni_se_resources_off(&gi2c->se);
--		return -ENXIO;
-+		ret = -ENXIO;
-+		goto geni_i2c_put_icc;
- 	}
- 	gi2c->tx_wm = tx_depth - 1;
- 	geni_se_init(&gi2c->se, gi2c->tx_wm, tx_depth);
-@@ -582,8 +637,11 @@ static int geni_i2c_probe(struct platform_device *pdev)
- 	ret = geni_se_resources_off(&gi2c->se);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Error turning off resources %d\n", ret);
--		return ret;
-+		goto geni_i2c_put_icc;
- 	}
-+	/* Remove vote from core clocks and CPU */
-+	icc_set_bw(gi2c->se.icc_path[GENI_TO_CORE], 0, 0);
-+	icc_set_bw(gi2c->se.icc_path[CPU_TO_GENI], 0, 0);
- 
- 	dev_dbg(&pdev->dev, "i2c fifo/se-dma mode. fifo depth:%d\n", tx_depth);
- 
-@@ -597,12 +655,16 @@ static int geni_i2c_probe(struct platform_device *pdev)
- 	if (ret) {
- 		dev_err(&pdev->dev, "Error adding i2c adapter %d\n", ret);
- 		pm_runtime_disable(gi2c->se.dev);
--		return ret;
-+		goto geni_i2c_put_icc;
- 	}
- 
- 	dev_dbg(&pdev->dev, "Geni-I2C adaptor successfully added\n");
- 
- 	return 0;
-+
-+geni_i2c_put_icc:
-+	geni_i2c_icc_put(&gi2c->se);
-+	return ret;
- }
- 
- static int geni_i2c_remove(struct platform_device *pdev)
-@@ -611,6 +673,7 @@ static int geni_i2c_remove(struct platform_device *pdev)
- 
- 	i2c_del_adapter(&gi2c->adap);
- 	pm_runtime_disable(gi2c->se.dev);
-+	geni_i2c_icc_put(&gi2c->se);
- 	return 0;
- }
- 
-@@ -629,6 +692,11 @@ static int __maybe_unused geni_i2c_runtime_suspend(struct device *dev)
- 		gi2c->suspended = 1;
- 	}
- 
-+	/* Remove BW votes */
-+	icc_set_bw(gi2c->se.icc_path[GENI_TO_CORE], 0, 0);
-+	icc_set_bw(gi2c->se.icc_path[CPU_TO_GENI], 0, 0);
-+	icc_set_bw(gi2c->se.icc_path[GENI_TO_DDR], 0, 0);
-+
- 	return 0;
- }
- 
-@@ -637,6 +705,14 @@ static int __maybe_unused geni_i2c_runtime_resume(struct device *dev)
- 	int ret;
- 	struct geni_i2c_dev *gi2c = dev_get_drvdata(dev);
- 
-+	/* Vote on Core, DDR and CPU path respectively */
-+	icc_set_bw(gi2c->se.icc_path[GENI_TO_CORE], gi2c->se.avg_bw_core,
-+		gi2c->se.peak_bw_core);
-+	icc_set_bw(gi2c->se.icc_path[CPU_TO_GENI], gi2c->se.avg_bw_cpu,
-+		gi2c->se.peak_bw_cpu);
-+	icc_set_bw(gi2c->se.icc_path[GENI_TO_DDR], gi2c->se.avg_bw_ddr,
-+		gi2c->se.peak_bw_ddr);
-+
- 	ret = geni_se_resources_on(&gi2c->se);
- 	if (ret)
+@@ -241,6 +249,11 @@ static int qcom_qspi_transfer_one(struct spi_master *master,
  		return ret;
+ 	}
+ 
++	/* Set BW quota for CPU as driver supports FIFO mode only */
++	ctrl->avg_bw_cpu = Bps_to_icc(speed_hz);
++	ctrl->peak_bw_cpu = Bps_to_icc(2 * speed_hz);
++	icc_set_bw(ctrl->icc_path[CPU_TO_QSPI], ctrl->avg_bw_cpu, ctrl->peak_bw_cpu);
++
+ 	spin_lock_irqsave(&ctrl->lock, flags);
+ 
+ 	/* We are half duplex, so either rx or tx will be set */
+@@ -458,14 +471,23 @@ static int qcom_qspi_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto exit_probe_master_put;
+ 
++	ctrl->icc_path[CPU_TO_QSPI] = of_icc_get(dev, "qspi-config");
++	if (IS_ERR(ctrl->icc_path[CPU_TO_QSPI])) {
++		ret = PTR_ERR(ctrl->icc_path[CPU_TO_QSPI]);
++		goto exit_probe_master_put;
++	}
++	/* Put BW vote on CPU path for register access */
++	ctrl->avg_bw_cpu = Bps_to_icc(1000);
++	ctrl->peak_bw_cpu = Bps_to_icc(1000);
++
+ 	ret = platform_get_irq(pdev, 0);
+ 	if (ret < 0)
+-		goto exit_probe_master_put;
++		goto exit_probe_icc_put;
+ 	ret = devm_request_irq(dev, ret, qcom_qspi_irq,
+ 			IRQF_TRIGGER_HIGH, dev_name(dev), ctrl);
+ 	if (ret) {
+ 		dev_err(dev, "Failed to request irq %d\n", ret);
+-		goto exit_probe_master_put;
++		goto exit_probe_icc_put;
+ 	}
+ 
+ 	master->max_speed_hz = 300000000;
+@@ -489,6 +511,8 @@ static int qcom_qspi_probe(struct platform_device *pdev)
+ 
+ 	pm_runtime_disable(dev);
+ 
++exit_probe_icc_put:
++	icc_put(ctrl->icc_path[CPU_TO_QSPI]);
+ exit_probe_master_put:
+ 	spi_master_put(master);
+ 
+@@ -498,6 +522,9 @@ static int qcom_qspi_probe(struct platform_device *pdev)
+ static int qcom_qspi_remove(struct platform_device *pdev)
+ {
+ 	struct spi_master *master = platform_get_drvdata(pdev);
++	struct qcom_qspi *ctrl = spi_master_get_devdata(master);
++
++	icc_put(ctrl->icc_path[CPU_TO_QSPI]);
+ 
+ 	/* Unregister _before_ disabling pm_runtime() so we stop transfers */
+ 	spi_unregister_master(master);
+@@ -514,6 +541,8 @@ static int __maybe_unused qcom_qspi_runtime_suspend(struct device *dev)
+ 
+ 	clk_bulk_disable_unprepare(QSPI_NUM_CLKS, ctrl->clks);
+ 
++	icc_set_bw(ctrl->icc_path[CPU_TO_QSPI], 0, 0);
++
+ 	return 0;
+ }
+ 
+@@ -522,6 +551,9 @@ static int __maybe_unused qcom_qspi_runtime_resume(struct device *dev)
+ 	struct spi_master *master = dev_get_drvdata(dev);
+ 	struct qcom_qspi *ctrl = spi_master_get_devdata(master);
+ 
++	icc_set_bw(ctrl->icc_path[CPU_TO_QSPI], ctrl->avg_bw_cpu,
++		ctrl->peak_bw_cpu);
++
+ 	return clk_bulk_prepare_enable(QSPI_NUM_CLKS, ctrl->clks);
+ }
+ 
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
