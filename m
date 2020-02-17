@@ -2,513 +2,220 @@ Return-Path: <SRS0=lWnk=4F=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCD03C34020
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 13:31:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3CC5C34021
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 14:08:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 959CA214D8
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 13:31:30 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="tKbRu3tc"
+	by mail.kernel.org (Postfix) with ESMTP id 7D754206F4
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 14:08:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728757AbgBQNba (ORCPT
+        id S1728182AbgBQOIS (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Feb 2020 08:31:30 -0500
-Received: from mail26.static.mailgun.info ([104.130.122.26]:46144 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728999AbgBQNba (ORCPT
+        Mon, 17 Feb 2020 09:08:18 -0500
+Received: from skedge03.snt-world.com ([91.208.41.68]:51052 "EHLO
+        skedge03.snt-world.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728149AbgBQOIS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Feb 2020 08:31:30 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1581946289; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=1SF+JKNHjBSLpkQS/BL6Lx2jwga5rk/ZXdZtsg+RFMg=; b=tKbRu3tcBK5gTeBVHIStC8unyUdp0liOX+3Woc/4YCNt5vAbaZObFes20Q8l4Y2Y6dymsN5W
- g3og6Ziz5IDuEe6JsvdJCsL5G3Mif7lUhtqUPz8grBI+y8E2M/ATog0KO07XUie7SD1RfXZs
- WHRqPCuws8WUSgOsy8hCRUusGaI=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e4a95ac.7fafa1934650-smtp-out-n01;
- Mon, 17 Feb 2020 13:31:24 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 39E87C4479F; Mon, 17 Feb 2020 13:31:24 +0000 (UTC)
-Received: from akashast-linux.qualcomm.com (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        Mon, 17 Feb 2020 09:08:18 -0500
+Received: from sntmail14r.snt-is.com (unknown [10.203.32.184])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 5B1E3C447A5;
-        Mon, 17 Feb 2020 13:31:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 5B1E3C447A5
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-From:   Akash Asthana <akashast@codeaurora.org>
-To:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org
-Cc:     linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, mka@chromium.org,
-        dianders@chromium.org, Akash Asthana <akashast@codeaurora.org>
-Subject: [PATCH 6/6] arm64: dts: sc7180: Add interconnect for QUP and QSPI
-Date:   Mon, 17 Feb 2020 19:00:05 +0530
-Message-Id: <1581946205-27189-7-git-send-email-akashast@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1581946205-27189-1-git-send-email-akashast@codeaurora.org>
-References: <1581946205-27189-1-git-send-email-akashast@codeaurora.org>
+        by skedge03.snt-world.com (Postfix) with ESMTPS id 2291767A6FC;
+        Mon, 17 Feb 2020 15:08:02 +0100 (CET)
+Received: from sntmail12r.snt-is.com (10.203.32.182) by sntmail14r.snt-is.com
+ (10.203.32.184) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Mon, 17 Feb
+ 2020 15:08:01 +0100
+Received: from sntmail12r.snt-is.com ([fe80::e551:8750:7bba:3305]) by
+ sntmail12r.snt-is.com ([fe80::e551:8750:7bba:3305%3]) with mapi id
+ 15.01.1913.005; Mon, 17 Feb 2020 15:08:01 +0100
+From:   Schrempf Frieder <frieder.schrempf@kontron.de>
+To:     "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+CC:     "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        Schrempf Frieder <frieder.schrempf@kontron.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Subject: [PATCH 1/2] serial: imx: ensure that RX irqs are off if RX is off
+Thread-Topic: [PATCH 1/2] serial: imx: ensure that RX irqs are off if RX is
+ off
+Thread-Index: AQHV5ZupbG6XU+TGIECZ5G6IYA4w9w==
+Date:   Mon, 17 Feb 2020 14:08:01 +0000
+Message-ID: <20200217140740.29743-2-frieder.schrempf@kontron.de>
+References: <20200217140740.29743-1-frieder.schrempf@kontron.de>
+In-Reply-To: <20200217140740.29743-1-frieder.schrempf@kontron.de>
+Accept-Language: de-DE, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.17.1
+x-originating-ip: [172.25.9.193]
+x-c2processedorg: 51b406b7-48a2-4d03-b652-521f56ac89f3
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <962D7E096387974EBA22C0DAD7FFBA16@snt-world.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-SnT-MailScanner-Information: Please contact the ISP for more information
+X-SnT-MailScanner-ID: 2291767A6FC.AF8F0
+X-SnT-MailScanner: Not scanned: please contact your Internet E-Mail Service Provider for details
+X-SnT-MailScanner-SpamCheck: 
+X-SnT-MailScanner-From: frieder.schrempf@kontron.de
+X-SnT-MailScanner-To: gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        shawnguo@kernel.org, stable@vger.kernel.org,
+        u.kleine-koenig@pengutronix.de
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add interconnect ports for GENI QUPs and QSPI to set bus capabilities.
-
-Signed-off-by: Akash Asthana <akashast@codeaurora.org>
----
-Note:
- - This patch depends on series https://patchwork.kernel.org/cover/11313817/
-   [Add SC7180 interconnect provider driver]. It won't compile without that.
-
- arch/arm64/boot/dts/qcom/sc7180.dtsi | 199 +++++++++++++++++++++++++++++++++++
- 1 file changed, 199 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-index cc5a94f..04569c9 100644
---- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-@@ -352,6 +352,14 @@
- 				interrupts = <GIC_SPI 601 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_0
-+						&qup_virt SLAVE_QUP_CORE_0>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_0>,
-+						<&aggre1_noc MASTER_QUP_0
-+						&mc_virt SLAVE_EBI1>;
-+				interconnect-names = "qup-core", "qup-config",
-+							"qup-memory";
- 				status = "disabled";
- 			};
- 
-@@ -365,6 +373,11 @@
- 				interrupts = <GIC_SPI 601 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_0
-+						&qup_virt SLAVE_QUP_CORE_0>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_0>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 
-@@ -376,6 +389,11 @@
- 				pinctrl-names = "default";
- 				pinctrl-0 = <&qup_uart0_default>;
- 				interrupts = <GIC_SPI 601 IRQ_TYPE_LEVEL_HIGH>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_0
-+						&qup_virt SLAVE_QUP_CORE_0>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_0>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 
-@@ -389,6 +407,14 @@
- 				interrupts = <GIC_SPI 602 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_0
-+						&qup_virt SLAVE_QUP_CORE_0>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_0>,
-+						<&aggre1_noc MASTER_QUP_0
-+						&mc_virt SLAVE_EBI1>;
-+				interconnect-names = "qup-core", "qup-config",
-+							"qup-memory";
- 				status = "disabled";
- 			};
- 
-@@ -402,6 +428,11 @@
- 				interrupts = <GIC_SPI 602 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_0
-+						&qup_virt SLAVE_QUP_CORE_0>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_0>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 
-@@ -413,6 +444,11 @@
- 				pinctrl-names = "default";
- 				pinctrl-0 = <&qup_uart1_default>;
- 				interrupts = <GIC_SPI 602 IRQ_TYPE_LEVEL_HIGH>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_0
-+						&qup_virt SLAVE_QUP_CORE_0>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_0>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 
-@@ -426,6 +462,14 @@
- 				interrupts = <GIC_SPI 603 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_0
-+						&qup_virt SLAVE_QUP_CORE_0>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_0>,
-+						<&aggre1_noc MASTER_QUP_0
-+						&mc_virt SLAVE_EBI1>;
-+				interconnect-names = "qup-core", "qup-config",
-+							"qup-memory";
- 				status = "disabled";
- 			};
- 
-@@ -437,6 +481,11 @@
- 				pinctrl-names = "default";
- 				pinctrl-0 = <&qup_uart2_default>;
- 				interrupts = <GIC_SPI 603 IRQ_TYPE_LEVEL_HIGH>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_0
-+						&qup_virt SLAVE_QUP_CORE_0>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_0>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 
-@@ -450,6 +499,14 @@
- 				interrupts = <GIC_SPI 604 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_0
-+						&qup_virt SLAVE_QUP_CORE_0>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_0>,
-+						<&aggre1_noc MASTER_QUP_0
-+						&mc_virt SLAVE_EBI1>;
-+				interconnect-names = "qup-core", "qup-config",
-+							"qup-memory";
- 				status = "disabled";
- 			};
- 
-@@ -463,6 +520,11 @@
- 				interrupts = <GIC_SPI 604 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_0
-+						&qup_virt SLAVE_QUP_CORE_0>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_0>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 
-@@ -474,6 +536,11 @@
- 				pinctrl-names = "default";
- 				pinctrl-0 = <&qup_uart3_default>;
- 				interrupts = <GIC_SPI 604 IRQ_TYPE_LEVEL_HIGH>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_0
-+						&qup_virt SLAVE_QUP_CORE_0>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_0>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 
-@@ -487,6 +554,14 @@
- 				interrupts = <GIC_SPI 605 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_0
-+						&qup_virt SLAVE_QUP_CORE_0>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_0>,
-+						<&aggre1_noc MASTER_QUP_0
-+						&mc_virt SLAVE_EBI1>;
-+				interconnect-names = "qup-core", "qup-config",
-+							"qup-memory";
- 				status = "disabled";
- 			};
- 
-@@ -498,6 +573,11 @@
- 				pinctrl-names = "default";
- 				pinctrl-0 = <&qup_uart4_default>;
- 				interrupts = <GIC_SPI 605 IRQ_TYPE_LEVEL_HIGH>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_0
-+						&qup_virt SLAVE_QUP_CORE_0>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_0>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 
-@@ -511,6 +591,14 @@
- 				interrupts = <GIC_SPI 606 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_0
-+						&qup_virt SLAVE_QUP_CORE_0>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_0>,
-+						<&aggre1_noc MASTER_QUP_0
-+						&mc_virt SLAVE_EBI1>;
-+				interconnect-names = "qup-core", "qup-config",
-+							"qup-memory";
- 				status = "disabled";
- 			};
- 
-@@ -524,6 +612,11 @@
- 				interrupts = <GIC_SPI 606 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_0
-+						&qup_virt SLAVE_QUP_CORE_0>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_0>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 
-@@ -535,6 +628,11 @@
- 				pinctrl-names = "default";
- 				pinctrl-0 = <&qup_uart5_default>;
- 				interrupts = <GIC_SPI 606 IRQ_TYPE_LEVEL_HIGH>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_0
-+						&qup_virt SLAVE_QUP_CORE_0>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_0>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 		};
-@@ -561,6 +659,14 @@
- 				interrupts = <GIC_SPI 353 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_1
-+						&qup_virt SLAVE_QUP_CORE_1>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_1>,
-+						<&aggre2_noc MASTER_QUP_1
-+						&mc_virt SLAVE_EBI1>;
-+				interconnect-names = "qup-core", "qup-config",
-+							"qup-memory";
- 				status = "disabled";
- 			};
- 
-@@ -574,6 +680,11 @@
- 				interrupts = <GIC_SPI 353 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_1
-+						&qup_virt SLAVE_QUP_CORE_1>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_1>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 
-@@ -585,6 +696,11 @@
- 				pinctrl-names = "default";
- 				pinctrl-0 = <&qup_uart6_default>;
- 				interrupts = <GIC_SPI 353 IRQ_TYPE_LEVEL_HIGH>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_1
-+						&qup_virt SLAVE_QUP_CORE_1>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_1>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 
-@@ -598,6 +714,14 @@
- 				interrupts = <GIC_SPI 354 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_1
-+						&qup_virt SLAVE_QUP_CORE_1>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_1>,
-+						<&aggre2_noc MASTER_QUP_1
-+						&mc_virt SLAVE_EBI1>;
-+				interconnect-names = "qup-core", "qup-config",
-+							"qup-memory";
- 				status = "disabled";
- 			};
- 
-@@ -609,6 +733,11 @@
- 				pinctrl-names = "default";
- 				pinctrl-0 = <&qup_uart7_default>;
- 				interrupts = <GIC_SPI 354 IRQ_TYPE_LEVEL_HIGH>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_1
-+						&qup_virt SLAVE_QUP_CORE_1>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_1>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 
-@@ -622,6 +751,14 @@
- 				interrupts = <GIC_SPI 355 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_1
-+						&qup_virt SLAVE_QUP_CORE_1>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_1>,
-+						<&aggre2_noc MASTER_QUP_1
-+						&mc_virt SLAVE_EBI1>;
-+				interconnect-names = "qup-core", "qup-config",
-+							"qup-memory";
- 				status = "disabled";
- 			};
- 
-@@ -635,6 +772,11 @@
- 				interrupts = <GIC_SPI 355 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_1
-+						&qup_virt SLAVE_QUP_CORE_1>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_1>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 
-@@ -646,6 +788,11 @@
- 				pinctrl-names = "default";
- 				pinctrl-0 = <&qup_uart8_default>;
- 				interrupts = <GIC_SPI 355 IRQ_TYPE_LEVEL_HIGH>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_1
-+						&qup_virt SLAVE_QUP_CORE_1>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_1>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 
-@@ -659,6 +806,14 @@
- 				interrupts = <GIC_SPI 356 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_1
-+						&qup_virt SLAVE_QUP_CORE_1>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_1>,
-+						<&aggre2_noc MASTER_QUP_1
-+						&mc_virt SLAVE_EBI1>;
-+				interconnect-names = "qup-core", "qup-config",
-+							"qup-memory";
- 				status = "disabled";
- 			};
- 
-@@ -670,6 +825,11 @@
- 				pinctrl-names = "default";
- 				pinctrl-0 = <&qup_uart9_default>;
- 				interrupts = <GIC_SPI 356 IRQ_TYPE_LEVEL_HIGH>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_1
-+						&qup_virt SLAVE_QUP_CORE_1>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_1>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 
-@@ -683,6 +843,14 @@
- 				interrupts = <GIC_SPI 357 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_1
-+						&qup_virt SLAVE_QUP_CORE_1>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_1>,
-+						<&aggre2_noc MASTER_QUP_1
-+						&mc_virt SLAVE_EBI1>;
-+				interconnect-names = "qup-core", "qup-config",
-+							"qup-memory";
- 				status = "disabled";
- 			};
- 
-@@ -696,6 +864,11 @@
- 				interrupts = <GIC_SPI 357 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_1
-+						&qup_virt SLAVE_QUP_CORE_1>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_1>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 
-@@ -707,6 +880,11 @@
- 				pinctrl-names = "default";
- 				pinctrl-0 = <&qup_uart10_default>;
- 				interrupts = <GIC_SPI 357 IRQ_TYPE_LEVEL_HIGH>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_1
-+						&qup_virt SLAVE_QUP_CORE_1>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_1>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 
-@@ -720,6 +898,14 @@
- 				interrupts = <GIC_SPI 358 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_1
-+						&qup_virt SLAVE_QUP_CORE_1>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_1>,
-+						<&aggre2_noc MASTER_QUP_1
-+						&mc_virt SLAVE_EBI1>;
-+				interconnect-names = "qup-core", "qup-config",
-+							"qup-memory";
- 				status = "disabled";
- 			};
- 
-@@ -733,6 +919,11 @@
- 				interrupts = <GIC_SPI 358 IRQ_TYPE_LEVEL_HIGH>;
- 				#address-cells = <1>;
- 				#size-cells = <0>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_1
-+						&qup_virt SLAVE_QUP_CORE_1>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_1>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 
-@@ -744,6 +935,11 @@
- 				pinctrl-names = "default";
- 				pinctrl-0 = <&qup_uart11_default>;
- 				interrupts = <GIC_SPI 358 IRQ_TYPE_LEVEL_HIGH>;
-+				interconnects = <&qup_virt MASTER_QUP_CORE_1
-+						&qup_virt SLAVE_QUP_CORE_1>,
-+						<&gem_noc MASTER_APPSS_PROC
-+						&config_noc SLAVE_QUP_1>;
-+				interconnect-names = "qup-core", "qup-config";
- 				status = "disabled";
- 			};
- 		};
-@@ -1051,6 +1247,9 @@
- 			clocks = <&gcc GCC_QSPI_CNOC_PERIPH_AHB_CLK>,
- 				 <&gcc GCC_QSPI_CORE_CLK>;
- 			clock-names = "iface", "core";
-+			interconnects = <&gem_noc MASTER_APPSS_PROC
-+					&config_noc SLAVE_QSPI_0>;
-+			interconnect-names = "qspi-config";
- 			status = "disabled";
- 		};
- 
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+RnJvbTogVXdlIEtsZWluZS1Lw7ZuaWcgPHUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZT4N
+Cg0KY29tbWl0IDc2ODIxZTIyMmMxODliODFkNTUzYjg1NWVlNzA1NDM0MDYwN2ViNDYgdXBzdHJl
+YW0NCg0KTWFrZSBzdXJlIHRoYXQgVUNSMS5SWERNQUVOIGFuZCBVQ1IxLkFURE1BRU4gKGZvciB0
+aGUgRE1BIGNhc2UpIGFuZA0KVUNSMS5SUkRZRU4gKGZvciB0aGUgUElPIGNhc2UpIGFyZSBvZmYg
+aWZmIFVDUjEuUlhFTiBpcyBkaXNhYmxlZC4gVGhpcw0KZW5zdXJlcyB0aGF0IHRoZSBmaWZvIGlz
+bid0IHJlYWQgd2l0aCBSWCBkaXNhYmxlZCB3aGljaCByZXN1bHRzIGluIGFuDQpleGNlcHRpb24u
+DQoNCkNjOiA8c3RhYmxlQHZnZXIua2VybmVsLm9yZz4gIyB2NC4xNC54DQpTaWduZWQtb2ZmLWJ5
+OiBVd2UgS2xlaW5lLUvDtm5pZyA8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRlPg0KU2ln
+bmVkLW9mZi1ieTogR3JlZyBLcm9haC1IYXJ0bWFuIDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9y
+Zz4NCltCYWNrcG9ydCB0byB2NC4xNF0NClNpZ25lZC1vZmYtYnk6IEZyaWVkZXIgU2NocmVtcGYg
+PGZyaWVkZXIuc2NocmVtcGZAa29udHJvbi5kZT4NCi0tLQ0KIGRyaXZlcnMvdHR5L3NlcmlhbC9p
+bXguYyB8IDExNiArKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0NCiAxIGZp
+bGUgY2hhbmdlZCwgNzggaW5zZXJ0aW9ucygrKSwgMzggZGVsZXRpb25zKC0pDQoNCmRpZmYgLS1n
+aXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMgYi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMN
+CmluZGV4IGE4MWE1YmUwY2Y3YS4uMzFlMWUzMmM2MmM5IDEwMDY0NA0KLS0tIGEvZHJpdmVycy90
+dHkvc2VyaWFsL2lteC5jDQorKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMNCkBAIC04MCw3
+ICs4MCw3IEBADQogI2RlZmluZSBVQ1IxX0lERU4JKDE8PDEyKSAvKiBJZGxlIGNvbmRpdGlvbiBp
+bnRlcnJ1cHQgKi8NCiAjZGVmaW5lIFVDUjFfSUNEX1JFRyh4KSAoKCh4KSAmIDMpIDw8IDEwKSAv
+KiBpZGxlIGNvbmRpdGlvbiBkZXRlY3QgKi8NCiAjZGVmaW5lIFVDUjFfUlJEWUVOCSgxPDw5KQkv
+KiBSZWN2IHJlYWR5IGludGVycnVwdCBlbmFibGUgKi8NCi0jZGVmaW5lIFVDUjFfUkRNQUVOCSgx
+PDw4KQkvKiBSZWN2IHJlYWR5IERNQSBlbmFibGUgKi8NCisjZGVmaW5lIFVDUjFfUlhETUFFTgko
+MTw8OCkJLyogUmVjdiByZWFkeSBETUEgZW5hYmxlICovDQogI2RlZmluZSBVQ1IxX0lSRU4JKDE8
+PDcpCS8qIEluZnJhcmVkIGludGVyZmFjZSBlbmFibGUgKi8NCiAjZGVmaW5lIFVDUjFfVFhNUFRZ
+RU4JKDE8PDYpCS8qIFRyYW5zaW1pdHRlciBlbXB0eSBpbnRlcnJ1cHQgZW5hYmxlICovDQogI2Rl
+ZmluZSBVQ1IxX1JUU0RFTgkoMTw8NSkJLyogUlRTIGRlbHRhIGludGVycnVwdCBlbmFibGUgKi8N
+CkBAIC0zNTIsNiArMzUyLDMwIEBAIHN0YXRpYyB2b2lkIGlteF9wb3J0X3J0c19hdXRvKHN0cnVj
+dCBpbXhfcG9ydCAqc3BvcnQsIHVuc2lnbmVkIGxvbmcgKnVjcjIpDQogCSp1Y3IyIHw9IFVDUjJf
+Q1RTQzsNCiB9DQogDQorLyoNCisgKiBpbnRlcnJ1cHRzIGRpc2FibGVkIG9uIGVudHJ5DQorICov
+DQorc3RhdGljIHZvaWQgaW14X3N0YXJ0X3J4KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpDQorew0K
+KwlzdHJ1Y3QgaW14X3BvcnQgKnNwb3J0ID0gKHN0cnVjdCBpbXhfcG9ydCAqKXBvcnQ7DQorCXVu
+c2lnbmVkIGludCB1Y3IxLCB1Y3IyOw0KKw0KKwl1Y3IxID0gcmVhZGwocG9ydC0+bWVtYmFzZSAr
+IFVDUjEpOw0KKwl1Y3IyID0gcmVhZGwocG9ydC0+bWVtYmFzZSArIFVDUjIpOw0KKw0KKwl1Y3Iy
+IHw9IFVDUjJfUlhFTjsNCisNCisJaWYgKHNwb3J0LT5kbWFfaXNfZW5hYmxlZCkgew0KKwkJdWNy
+MSB8PSBVQ1IxX1JYRE1BRU4gfCBVQ1IxX0FURE1BRU47DQorCX0gZWxzZSB7DQorCQl1Y3IxIHw9
+IFVDUjFfUlJEWUVOOw0KKwl9DQorDQorCS8qIFdyaXRlIFVDUjIgZmlyc3QgYXMgaXQgaW5jbHVk
+ZXMgUlhFTiAqLw0KKwl3cml0ZWwodWNyMiwgcG9ydC0+bWVtYmFzZSArIFVDUjIpOw0KKwl3cml0
+ZWwodWNyMSwgcG9ydC0+bWVtYmFzZSArIFVDUjEpOw0KK30NCisNCiAvKg0KICAqIGludGVycnVw
+dHMgZGlzYWJsZWQgb24gZW50cnkNCiAgKi8NCkBAIC0zNzgsOSArNDAyLDEwIEBAIHN0YXRpYyB2
+b2lkIGlteF9zdG9wX3R4KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpDQogCQkJaW14X3BvcnRfcnRz
+X2FjdGl2ZShzcG9ydCwgJnRlbXApOw0KIAkJZWxzZQ0KIAkJCWlteF9wb3J0X3J0c19pbmFjdGl2
+ZShzcG9ydCwgJnRlbXApOw0KLQkJdGVtcCB8PSBVQ1IyX1JYRU47DQogCQl3cml0ZWwodGVtcCwg
+cG9ydC0+bWVtYmFzZSArIFVDUjIpOw0KIA0KKwkJaW14X3N0YXJ0X3J4KHBvcnQpOw0KKw0KIAkJ
+dGVtcCA9IHJlYWRsKHBvcnQtPm1lbWJhc2UgKyBVQ1I0KTsNCiAJCXRlbXAgJj0gflVDUjRfVENF
+TjsNCiAJCXdyaXRlbCh0ZW1wLCBwb3J0LT5tZW1iYXNlICsgVUNSNCk7DQpAQCAtMzkzLDcgKzQx
+OCw3IEBAIHN0YXRpYyB2b2lkIGlteF9zdG9wX3R4KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpDQog
+c3RhdGljIHZvaWQgaW14X3N0b3Bfcngoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkNCiB7DQogCXN0
+cnVjdCBpbXhfcG9ydCAqc3BvcnQgPSAoc3RydWN0IGlteF9wb3J0ICopcG9ydDsNCi0JdW5zaWdu
+ZWQgbG9uZyB0ZW1wOw0KKwl1bnNpZ25lZCBsb25nIHVjcjEsIHVjcjI7DQogDQogCWlmIChzcG9y
+dC0+ZG1hX2lzX2VuYWJsZWQgJiYgc3BvcnQtPmRtYV9pc19yeGluZykgew0KIAkJaWYgKHNwb3J0
+LT5wb3J0LnN1c3BlbmRlZCkgew0KQEAgLTQwNCwxMiArNDI5LDE4IEBAIHN0YXRpYyB2b2lkIGlt
+eF9zdG9wX3J4KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpDQogCQl9DQogCX0NCiANCi0JdGVtcCA9
+IHJlYWRsKHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQ1IyKTsNCi0Jd3JpdGVsKHRlbXAgJiB+VUNS
+Ml9SWEVOLCBzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUNSMik7DQorCXVjcjEgPSByZWFkbChzcG9y
+dC0+cG9ydC5tZW1iYXNlICsgVUNSMSk7DQorCXVjcjIgPSByZWFkbChzcG9ydC0+cG9ydC5tZW1i
+YXNlICsgVUNSMik7DQogDQotCS8qIGRpc2FibGUgdGhlIGBSZWNlaXZlciBSZWFkeSBJbnRlcnJy
+dXB0YCAqLw0KLQl0ZW1wID0gcmVhZGwoc3BvcnQtPnBvcnQubWVtYmFzZSArIFVDUjEpOw0KLQl3
+cml0ZWwodGVtcCAmIH5VQ1IxX1JSRFlFTiwgc3BvcnQtPnBvcnQubWVtYmFzZSArIFVDUjEpOw0K
+KwlpZiAoc3BvcnQtPmRtYV9pc19lbmFibGVkKSB7DQorCQl1Y3IxICY9IH4oVUNSMV9SWERNQUVO
+IHwgVUNSMV9BVERNQUVOKTsNCisJfSBlbHNlIHsNCisJCXVjcjEgJj0gflVDUjFfUlJEWUVOOw0K
+Kwl9DQorCXdyaXRlbCh1Y3IxLCBwb3J0LT5tZW1iYXNlICsgVUNSMSk7DQorDQorCXVjcjIgJj0g
+flVDUjJfUlhFTjsNCisJd3JpdGVsKHVjcjIsIHBvcnQtPm1lbWJhc2UgKyBVQ1IyKTsNCiB9DQog
+DQogLyoNCkBAIC01ODEsMTAgKzYxMiwxMSBAQCBzdGF0aWMgdm9pZCBpbXhfc3RhcnRfdHgoc3Ry
+dWN0IHVhcnRfcG9ydCAqcG9ydCkNCiAJCQlpbXhfcG9ydF9ydHNfYWN0aXZlKHNwb3J0LCAmdGVt
+cCk7DQogCQllbHNlDQogCQkJaW14X3BvcnRfcnRzX2luYWN0aXZlKHNwb3J0LCAmdGVtcCk7DQot
+CQlpZiAoIShwb3J0LT5yczQ4NS5mbGFncyAmIFNFUl9SUzQ4NV9SWF9EVVJJTkdfVFgpKQ0KLQkJ
+CXRlbXAgJj0gflVDUjJfUlhFTjsNCiAJCXdyaXRlbCh0ZW1wLCBwb3J0LT5tZW1iYXNlICsgVUNS
+Mik7DQogDQorCQlpZiAoIShwb3J0LT5yczQ4NS5mbGFncyAmIFNFUl9SUzQ4NV9SWF9EVVJJTkdf
+VFgpKQ0KKwkJCWlteF9zdG9wX3J4KHBvcnQpOw0KKw0KIAkJLyogZW5hYmxlIHRyYW5zbWl0dGVy
+IGFuZCBzaGlmdGVyIGVtcHR5IGlycSAqLw0KIAkJdGVtcCA9IHJlYWRsKHBvcnQtPm1lbWJhc2Ug
+KyBVQ1I0KTsNCiAJCXRlbXAgfD0gVUNSNF9UQ0VOOw0KQEAgLTEyMDYsNyArMTIzOCw3IEBAIHN0
+YXRpYyB2b2lkIGlteF9lbmFibGVfZG1hKHN0cnVjdCBpbXhfcG9ydCAqc3BvcnQpDQogDQogCS8q
+IHNldCBVQ1IxICovDQogCXRlbXAgPSByZWFkbChzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUNSMSk7
+DQotCXRlbXAgfD0gVUNSMV9SRE1BRU4gfCBVQ1IxX1RETUFFTiB8IFVDUjFfQVRETUFFTjsNCisJ
+dGVtcCB8PSBVQ1IxX1JYRE1BRU4gfCBVQ1IxX1RETUFFTiB8IFVDUjFfQVRETUFFTjsNCiAJd3Jp
+dGVsKHRlbXAsIHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQ1IxKTsNCiANCiAJdGVtcCA9IHJlYWRs
+KHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQ1IyKTsNCkBAIC0xMjI0LDcgKzEyNTYsNyBAQCBzdGF0
+aWMgdm9pZCBpbXhfZGlzYWJsZV9kbWEoc3RydWN0IGlteF9wb3J0ICpzcG9ydCkNCiANCiAJLyog
+Y2xlYXIgVUNSMSAqLw0KIAl0ZW1wID0gcmVhZGwoc3BvcnQtPnBvcnQubWVtYmFzZSArIFVDUjEp
+Ow0KLQl0ZW1wICY9IH4oVUNSMV9SRE1BRU4gfCBVQ1IxX1RETUFFTiB8IFVDUjFfQVRETUFFTik7
+DQorCXRlbXAgJj0gfihVQ1IxX1JYRE1BRU4gfCBVQ1IxX1RETUFFTiB8IFVDUjFfQVRETUFFTik7
+DQogCXdyaXRlbCh0ZW1wLCBzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUNSMSk7DQogDQogCS8qIGNs
+ZWFyIFVDUjIgKi8NCkBAIC0xMjg5LDExICsxMzIxLDkgQEAgc3RhdGljIGludCBpbXhfc3RhcnR1
+cChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQ0KIAl3cml0ZWwoVVNSMV9SVFNEIHwgVVNSMV9EVFJE
+LCBzcG9ydC0+cG9ydC5tZW1iYXNlICsgVVNSMSk7DQogCXdyaXRlbChVU1IyX09SRSwgc3BvcnQt
+PnBvcnQubWVtYmFzZSArIFVTUjIpOw0KIA0KLQlpZiAoc3BvcnQtPmRtYV9pc19pbml0ZWQgJiYg
+IXNwb3J0LT5kbWFfaXNfZW5hYmxlZCkNCi0JCWlteF9lbmFibGVfZG1hKHNwb3J0KTsNCi0NCiAJ
+dGVtcCA9IHJlYWRsKHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQ1IxKTsNCi0JdGVtcCB8PSBVQ1Ix
+X1JSRFlFTiB8IFVDUjFfVUFSVEVOOw0KKwl0ZW1wICY9IH5VQ1IxX1JSRFlFTjsNCisJdGVtcCB8
+PSBVQ1IxX1VBUlRFTjsNCiAJaWYgKHNwb3J0LT5oYXZlX3J0c2N0cykNCiAJCQl0ZW1wIHw9IFVD
+UjFfUlRTREVOOw0KIA0KQEAgLTEzMzIsMTQgKzEzNjIsMTMgQEAgc3RhdGljIGludCBpbXhfc3Rh
+cnR1cChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQ0KIAkgKi8NCiAJaW14X2VuYWJsZV9tcygmc3Bv
+cnQtPnBvcnQpOw0KIA0KLQkvKg0KLQkgKiBTdGFydCBSWCBETUEgaW1tZWRpYXRlbHkgaW5zdGVh
+ZCBvZiB3YWl0aW5nIGZvciBSWCBGSUZPIGludGVycnVwdHMuDQotCSAqIEluIG91ciBpTVg1MyB0
+aGUgYXZlcmFnZSBkZWxheSBmb3IgdGhlIGZpcnN0IHJlY2VwdGlvbiBkcm9wcGVkIGZyb20NCi0J
+ICogYXBwcm94aW1hdGVseSAzNTAwMCBtaWNyb3NlY29uZHMgdG8gMTAwMCBtaWNyb3NlY29uZHMu
+DQotCSAqLw0KLQlpZiAoc3BvcnQtPmRtYV9pc19lbmFibGVkKSB7DQotCQlpbXhfZGlzYWJsZV9y
+eF9pbnQoc3BvcnQpOw0KKwlpZiAoc3BvcnQtPmRtYV9pc19pbml0ZWQpIHsNCisJCWlteF9lbmFi
+bGVfZG1hKHNwb3J0KTsNCiAJCXN0YXJ0X3J4X2RtYShzcG9ydCk7DQorCX0gZWxzZSB7DQorCQl0
+ZW1wID0gcmVhZGwoc3BvcnQtPnBvcnQubWVtYmFzZSArIFVDUjEpOw0KKwkJdGVtcCB8PSBVQ1Ix
+X1JSRFlFTjsNCisJCXdyaXRlbCh0ZW1wLCBzcG9ydC0+cG9ydC5tZW1iYXNlICsgVUNSMSk7DQog
+CX0NCiANCiAJc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmc3BvcnQtPnBvcnQubG9jaywgZmxhZ3Mp
+Ow0KQEAgLTEzODYsNyArMTQxNSw4IEBAIHN0YXRpYyB2b2lkIGlteF9zaHV0ZG93bihzdHJ1Y3Qg
+dWFydF9wb3J0ICpwb3J0KQ0KIA0KIAlzcGluX2xvY2tfaXJxc2F2ZSgmc3BvcnQtPnBvcnQubG9j
+aywgZmxhZ3MpOw0KIAl0ZW1wID0gcmVhZGwoc3BvcnQtPnBvcnQubWVtYmFzZSArIFVDUjEpOw0K
+LQl0ZW1wICY9IH4oVUNSMV9UWE1QVFlFTiB8IFVDUjFfUlJEWUVOIHwgVUNSMV9SVFNERU4gfCBV
+Q1IxX1VBUlRFTik7DQorCXRlbXAgJj0gfihVQ1IxX1RYTVBUWUVOIHwgVUNSMV9SUkRZRU4gfCBV
+Q1IxX1JUU0RFTiB8IFVDUjFfVUFSVEVOIHwNCisJCSAgVUNSMV9SWERNQUVOIHwgVUNSMV9BVERN
+QUVOKTsNCiANCiAJd3JpdGVsKHRlbXAsIHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQ1IxKTsNCiAJ
+c3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmc3BvcnQtPnBvcnQubG9jaywgZmxhZ3MpOw0KQEAgLTE2
+NTksNyArMTY4OSw3IEBAIHN0YXRpYyBpbnQgaW14X3BvbGxfaW5pdChzdHJ1Y3QgdWFydF9wb3J0
+ICpwb3J0KQ0KIHsNCiAJc3RydWN0IGlteF9wb3J0ICpzcG9ydCA9IChzdHJ1Y3QgaW14X3BvcnQg
+Kilwb3J0Ow0KIAl1bnNpZ25lZCBsb25nIGZsYWdzOw0KLQl1bnNpZ25lZCBsb25nIHRlbXA7DQor
+CXVuc2lnbmVkIGxvbmcgdWNyMSwgdWNyMjsNCiAJaW50IHJldHZhbDsNCiANCiAJcmV0dmFsID0g
+Y2xrX3ByZXBhcmVfZW5hYmxlKHNwb3J0LT5jbGtfaXBnKTsNCkBAIC0xNjczLDE2ICsxNzAzLDI5
+IEBAIHN0YXRpYyBpbnQgaW14X3BvbGxfaW5pdChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQ0KIA0K
+IAlzcGluX2xvY2tfaXJxc2F2ZSgmc3BvcnQtPnBvcnQubG9jaywgZmxhZ3MpOw0KIA0KLQl0ZW1w
+ID0gcmVhZGwoc3BvcnQtPnBvcnQubWVtYmFzZSArIFVDUjEpOw0KKwkvKg0KKwkgKiBCZSBjYXJl
+ZnVsIGFib3V0IHRoZSBvcmRlciBvZiBlbmFibGluZyBiaXRzIGhlcmUuIEZpcnN0IGVuYWJsZSB0
+aGUNCisJICogcmVjZWl2ZXIgKFVBUlRFTiArIFJYRU4pIGFuZCBvbmx5IHRoZW4gdGhlIGNvcnJl
+c3BvbmRpbmcgaXJxcy4NCisJICogVGhpcyBwcmV2ZW50cyB0aGF0IGEgY2hhcmFjdGVyIHRoYXQg
+YWxyZWFkeSBzaXRzIGluIHRoZSBSWCBmaWZvIGlzDQorCSAqIHRyaWdnZXJpbmcgYW4gaXJxIGJ1
+dCB0aGUgdHJ5IHRvIGZldGNoIGl0IGZyb20gdGhlcmUgcmVzdWx0cyBpbiBhbg0KKwkgKiBleGNl
+cHRpb24gYmVjYXVzZSBVQVJURU4gb3IgUlhFTiBpcyBzdGlsbCBvZmYuDQorCSAqLw0KKwl1Y3Ix
+ID0gcmVhZGwocG9ydC0+bWVtYmFzZSArIFVDUjEpOw0KKwl1Y3IyID0gcmVhZGwocG9ydC0+bWVt
+YmFzZSArIFVDUjIpOw0KKw0KIAlpZiAoaXNfaW14MV91YXJ0KHNwb3J0KSkNCi0JCXRlbXAgfD0g
+SU1YMV9VQ1IxX1VBUlRDTEtFTjsNCi0JdGVtcCB8PSBVQ1IxX1VBUlRFTiB8IFVDUjFfUlJEWUVO
+Ow0KLQl0ZW1wICY9IH4oVUNSMV9UWE1QVFlFTiB8IFVDUjFfUlRTREVOKTsNCi0Jd3JpdGVsKHRl
+bXAsIHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQ1IxKTsNCisJCXVjcjEgfD0gSU1YMV9VQ1IxX1VB
+UlRDTEtFTjsNCiANCi0JdGVtcCA9IHJlYWRsKHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQ1IyKTsN
+Ci0JdGVtcCB8PSBVQ1IyX1JYRU47DQotCXdyaXRlbCh0ZW1wLCBzcG9ydC0+cG9ydC5tZW1iYXNl
+ICsgVUNSMik7DQorCXVjcjEgfD0gVUNSMV9VQVJURU47DQorCXVjcjEgJj0gfihVQ1IxX1RYTVBU
+WUVOIHwgVUNSMV9SVFNERU4gfCBVQ1IxX1JSRFlFTik7DQorDQorCXVjcjIgfD0gVUNSMl9SWEVO
+Ow0KKw0KKwl3cml0ZWwodWNyMSwgc3BvcnQtPnBvcnQubWVtYmFzZSArIFVDUjEpOw0KKwl3cml0
+ZWwodWNyMiwgc3BvcnQtPnBvcnQubWVtYmFzZSArIFVDUjIpOw0KKw0KKwkvKiBub3cgZW5hYmxl
+IGlycXMgKi8NCisJd3JpdGVsKHVjcjEgfCBVQ1IxX1JSRFlFTiwgc3BvcnQtPnBvcnQubWVtYmFz
+ZSArIFVDUjEpOw0KIA0KIAlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZzcG9ydC0+cG9ydC5sb2Nr
+LCBmbGFncyk7DQogDQpAQCAtMTc0MiwxMSArMTc4NSw4IEBAIHN0YXRpYyBpbnQgaW14X3JzNDg1
+X2NvbmZpZyhzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0LA0KIA0KIAkvKiBNYWtlIHN1cmUgUnggaXMg
+ZW5hYmxlZCBpbiBjYXNlIFR4IGlzIGFjdGl2ZSB3aXRoIFJ4IGRpc2FibGVkICovDQogCWlmICgh
+KHJzNDg1Y29uZi0+ZmxhZ3MgJiBTRVJfUlM0ODVfRU5BQkxFRCkgfHwNCi0JICAgIHJzNDg1Y29u
+Zi0+ZmxhZ3MgJiBTRVJfUlM0ODVfUlhfRFVSSU5HX1RYKSB7DQotCQl0ZW1wID0gcmVhZGwoc3Bv
+cnQtPnBvcnQubWVtYmFzZSArIFVDUjIpOw0KLQkJdGVtcCB8PSBVQ1IyX1JYRU47DQotCQl3cml0
+ZWwodGVtcCwgc3BvcnQtPnBvcnQubWVtYmFzZSArIFVDUjIpOw0KLQl9DQorCSAgICByczQ4NWNv
+bmYtPmZsYWdzICYgU0VSX1JTNDg1X1JYX0RVUklOR19UWCkNCisJCWlteF9zdGFydF9yeChwb3J0
+KTsNCiANCiAJcG9ydC0+cnM0ODUgPSAqcnM0ODVjb25mOw0KIA0KLS0gDQoyLjE3LjENCg==
