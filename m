@@ -2,187 +2,146 @@ Return-Path: <SRS0=lWnk=4F=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFB0DC33FE0
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 11:40:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A343C34021
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 13:30:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D3E09208C4
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 11:40:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3338E208C4
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 13:30:47 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="jPdF7j9A"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728901AbgBQLkW (ORCPT
+        id S1728688AbgBQNaq (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Feb 2020 06:40:22 -0500
-Received: from mga11.intel.com ([192.55.52.93]:11231 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728917AbgBQLkW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Feb 2020 06:40:22 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 17 Feb 2020 03:40:22 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,452,1574150400"; 
-   d="scan'208";a="407753485"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga005.jf.intel.com with ESMTP; 17 Feb 2020 03:40:20 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id CCCD25E2; Mon, 17 Feb 2020 13:40:16 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Tony Lindgren <tony@atomide.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH v3 5/6] serial: 8250_port: Don't use power management for kernel console
-Date:   Mon, 17 Feb 2020 13:40:15 +0200
-Message-Id: <20200217114016.49856-6-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200217114016.49856-1-andriy.shevchenko@linux.intel.com>
-References: <20200217114016.49856-1-andriy.shevchenko@linux.intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 17 Feb 2020 08:30:46 -0500
+Received: from mail27.static.mailgun.info ([104.130.122.27]:58801 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728692AbgBQNaq (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 17 Feb 2020 08:30:46 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1581946246; h=References: In-Reply-To: Message-Id: Date:
+ Subject: Cc: To: From: Sender;
+ bh=+WGApTuKqfOHM6DOZbs0hjT7LC6Y7rCmZikPNioYhqE=; b=jPdF7j9AgPBC65nPK3drV6ydUOVfQTdUCTXd5sZlfi8/BZGIjvXcTx54xeQid6d7/YuEuQAw
+ zaMGO7SkgcuAbtGzHlO7enjoPeu++eY2ClkGJR7Yzq5dZVLn8Es41h5G4mrebS9prFabYWsE
+ Ofpu97tga55VnwYs3mB6RQO6CRs=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e4a9585.7f138d7c14c8-smtp-out-n03;
+ Mon, 17 Feb 2020 13:30:45 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id AA409C4479C; Mon, 17 Feb 2020 13:30:43 +0000 (UTC)
+Received: from akashast-linux.qualcomm.com (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id E8FF0C43383;
+        Mon, 17 Feb 2020 13:30:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E8FF0C43383
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+From:   Akash Asthana <akashast@codeaurora.org>
+To:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
+        mark.rutland@arm.com, robh+dt@kernel.org
+Cc:     linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, mka@chromium.org,
+        dianders@chromium.org, Akash Asthana <akashast@codeaurora.org>
+Subject: [PATCH 1/6] soc: qcom: geni: Support for ICC voting
+Date:   Mon, 17 Feb 2020 19:00:00 +0530
+Message-Id: <1581946205-27189-2-git-send-email-akashast@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1581946205-27189-1-git-send-email-akashast@codeaurora.org>
+References: <1581946205-27189-1-git-send-email-akashast@codeaurora.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Doing any kind of power management for kernel console is really bad idea.
+Add necessary enums, macros and structure variables to support ICC BW
+voting from individual SE drivers.
 
-First of all, it runs in poll and atomic mode. This fact attaches a limitation
-on the functions that might be called. For example, pm_runtime_get_sync() might
-sleep and thus can't be used. This call needs, for example, to bring the device
-to powered on state on the system, where the power on sequence may require
-on-atomic operations, such as Intel Cherrytrail with ACPI enumerated UARTs.
-That said, on ACPI enabled platforms it might even call firmware for a job.
-
-On the other hand pm_runtime_get() doesn't guarantee that device will become
-powered on fast enough.
-
-Besides that, imagine the case when console is about to print a kernel Oops and
-it's powered off. In such an emergency case calling the complex functions is
-not the best what we can do, taking into consideration that user wants to see
-at least something of the last kernel word before it passes away.
-
-Here we modify the 8250 console code to prevent runtime power management.
-
-Note, there is a behaviour change for OMAP boards. It will require to detach
-kernel console to become idle.
-
-Link: https://lists.openwall.net/linux-kernel/2018/09/29/65
-Suggested-by: Russell King <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Akash Asthana <akashast@codeaurora.org>
 ---
- drivers/tty/serial/8250/8250_core.c |  9 +++++++++
- drivers/tty/serial/8250/8250_port.c | 24 ++++++++++++++++++++----
- include/linux/serial_8250.h         |  1 +
- 3 files changed, 30 insertions(+), 4 deletions(-)
+ include/linux/qcom-geni-se.h | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index f2a33c9082a6..006d40853509 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -608,6 +608,14 @@ static int univ8250_console_setup(struct console *co, char *options)
- 	return retval;
- }
+diff --git a/include/linux/qcom-geni-se.h b/include/linux/qcom-geni-se.h
+index dd46494..b0adbfb 100644
+--- a/include/linux/qcom-geni-se.h
++++ b/include/linux/qcom-geni-se.h
+@@ -6,6 +6,8 @@
+ #ifndef _LINUX_QCOM_GENI_SE
+ #define _LINUX_QCOM_GENI_SE
  
-+static int univ8250_console_exit(struct console *co)
-+{
-+	struct uart_port *port;
++#include <linux/interconnect.h>
 +
-+	port = &serial8250_ports[co->index].port;
-+	return serial8250_console_exit(port);
-+}
+ /* Transfer mode supported by GENI Serial Engines */
+ enum geni_se_xfer_mode {
+ 	GENI_SE_INVALID,
+@@ -22,6 +24,13 @@ enum geni_se_protocol_type {
+ 	GENI_SE_I3C,
+ };
+ 
++/* Interconnect paths for GENI */
++enum geni_se_icc_path {
++	GENI_TO_CORE,
++	CPU_TO_GENI,
++	GENI_TO_DDR
++};
 +
- /**
-  *	univ8250_console_match - non-standard console matching
-  *	@co:	  registering console
-@@ -666,6 +674,7 @@ static struct console univ8250_console = {
- 	.write		= univ8250_console_write,
- 	.device		= uart_console_device,
- 	.setup		= univ8250_console_setup,
-+	.exit		= univ8250_console_exit,
- 	.match		= univ8250_console_match,
- 	.flags		= CON_PRINTBUFFER | CON_ANYTIME,
- 	.index		= -1,
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index f398f162a1fd..f8a85244a6f1 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -3122,6 +3122,9 @@ static void serial8250_console_restore(struct uart_8250_port *up)
-  *	any possible real use of the port...
-  *
-  *	The console_lock must be held when we get here.
-+ *
-+ *	Doing runtime PM is really a bad idea for the kernel console.
-+ *	Thus, we assume the function is called when device is powered up.
+ struct geni_wrapper;
+ struct clk;
+ 
+@@ -33,6 +42,13 @@ struct clk;
+  * @clk:		Handle to the core serial engine clock
+  * @num_clk_levels:	Number of valid clock levels in clk_perf_tbl
+  * @clk_perf_tbl:	Table of clock frequency input to serial engine clock
++ * @icc_path:		Array of interconnect path handles
++ * @avg_bw_core:	Average bus bandwidth value for QUP core 2x clock
++ * @peak_bw_core:	Peak bus bandwidth value for QUP core 2x clock
++ * @avg_bw_cpu:		Average bus bandwidth value for CPU
++ * @peak_bw_cpu:	Peak bus bandwidth value for CPU
++ * @avg_bw_ddr:		Average bus bandwidth value for DDR
++ * @peak_bw_ddr:	Peak bus bandwidth value for DDR
   */
- void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 			      unsigned int count)
-@@ -3133,8 +3136,6 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+ struct geni_se {
+ 	void __iomem *base;
+@@ -41,6 +57,13 @@ struct geni_se {
+ 	struct clk *clk;
+ 	unsigned int num_clk_levels;
+ 	unsigned long *clk_perf_tbl;
++	struct icc_path *icc_path[3];
++	unsigned int avg_bw_core;
++	unsigned int peak_bw_core;
++	unsigned int avg_bw_cpu;
++	unsigned int peak_bw_cpu;
++	unsigned int avg_bw_ddr;
++	unsigned int peak_bw_ddr;
+ };
  
- 	touch_nmi_watchdog();
+ /* Common SE registers */
+@@ -229,6 +252,14 @@ struct geni_se {
+ #define GENI_SE_VERSION_MINOR(ver) ((ver & HW_VER_MINOR_MASK) >> HW_VER_MINOR_SHFT)
+ #define GENI_SE_VERSION_STEP(ver) (ver & HW_VER_STEP_MASK)
  
--	serial8250_rpm_get(up);
--
- 	if (oops_in_progress)
- 		locked = spin_trylock_irqsave(&port->lock, flags);
- 	else
-@@ -3177,7 +3178,6 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 
- 	if (locked)
- 		spin_unlock_irqrestore(&port->lock, flags);
--	serial8250_rpm_put(up);
- }
- 
- static unsigned int probe_baud(struct uart_port *port)
-@@ -3201,6 +3201,7 @@ int serial8250_console_setup(struct uart_port *port, char *options, bool probe)
- 	int bits = 8;
- 	int parity = 'n';
- 	int flow = 'n';
-+	int ret;
- 
- 	if (!port->iobase && !port->membase)
- 		return -ENODEV;
-@@ -3210,7 +3211,22 @@ int serial8250_console_setup(struct uart_port *port, char *options, bool probe)
- 	else if (probe)
- 		baud = probe_baud(port);
- 
--	return uart_set_options(port, port->cons, baud, parity, bits, flow);
-+	ret = uart_set_options(port, port->cons, baud, parity, bits, flow);
-+	if (ret)
-+		return ret;
++/* Core 2X clock frequency to BCM threshold mapping */
++#define CORE_2X_19_2_MHZ		960
++#define CORE_2X_50_MHZ			2500
++#define CORE_2X_100_MHZ			5000
++#define CORE_2X_150_MHZ			7500
++#define CORE_2X_200_MHZ			10000
++#define CORE_2X_236_MHZ			16383
 +
-+	if (port->dev)
-+		pm_runtime_get_sync(port->dev);
-+
-+	return 0;
-+}
-+
-+int serial8250_console_exit(struct uart_port *port)
-+{
-+	if (port->dev)
-+		pm_runtime_put_sync(port->dev);
-+
-+	return 0;
- }
+ #if IS_ENABLED(CONFIG_QCOM_GENI_SE)
  
- #endif /* CONFIG_SERIAL_8250_CONSOLE */
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index 6a8e8c48c882..8c7b16df7b09 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -176,6 +176,7 @@ void serial8250_set_defaults(struct uart_8250_port *up);
- void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 			      unsigned int count);
- int serial8250_console_setup(struct uart_port *port, char *options, bool probe);
-+int serial8250_console_exit(struct uart_port *port);
- 
- extern void serial8250_set_isa_configurator(void (*v)
- 					(int port, struct uart_port *up,
+ u32 geni_se_get_qup_hw_version(struct geni_se *se);
 -- 
-2.25.0
-
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
