@@ -2,73 +2,107 @@ Return-Path: <SRS0=lWnk=4F=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE912C3B185
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 10:23:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50327C35254
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 11:40:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AD22520702
-	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 10:23:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2F93020836
+	for <linux-serial@archiver.kernel.org>; Mon, 17 Feb 2020 11:40:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729102AbgBQKXr (ORCPT
+        id S1728883AbgBQLkT (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 17 Feb 2020 05:23:47 -0500
-Received: from mga01.intel.com ([192.55.52.88]:48374 "EHLO mga01.intel.com"
+        Mon, 17 Feb 2020 06:40:19 -0500
+Received: from mga11.intel.com ([192.55.52.93]:11231 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729100AbgBQKXr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 17 Feb 2020 05:23:47 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
+        id S1728504AbgBQLkT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 17 Feb 2020 06:40:19 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 17 Feb 2020 02:23:45 -0800
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 17 Feb 2020 03:40:19 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,452,1574150400"; 
-   d="scan'208";a="235193865"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga003.jf.intel.com with ESMTP; 17 Feb 2020 02:23:44 -0800
-Received: from andy by smile with local (Exim 4.93)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1j3dZ3-002b5V-WE; Mon, 17 Feb 2020 12:23:46 +0200
-Date:   Mon, 17 Feb 2020 12:23:45 +0200
+   d="scan'208";a="229172390"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga008.fm.intel.com with ESMTP; 17 Feb 2020 03:40:17 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id BDF19554; Mon, 17 Feb 2020 13:40:16 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH v2 4/8] serial: core: Allow detach and attach serial
- device for console
-Message-ID: <20200217102345.GZ10400@smile.fi.intel.com>
-References: <20200214114339.53897-1-andriy.shevchenko@linux.intel.com>
- <20200214114339.53897-5-andriy.shevchenko@linux.intel.com>
- <20200214162847.GB3987177@kroah.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 3/6] serial: 8250_port: Switch to use DEVICE_ATTR_RW()
+Date:   Mon, 17 Feb 2020 13:40:13 +0200
+Message-Id: <20200217114016.49856-4-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20200217114016.49856-1-andriy.shevchenko@linux.intel.com>
+References: <20200217114016.49856-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200214162847.GB3987177@kroah.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Feb 14, 2020 at 08:28:47AM -0800, Greg Kroah-Hartman wrote:
-> On Fri, Feb 14, 2020 at 01:43:35PM +0200, Andy Shevchenko wrote:
+Move device attributes to DEVICE_ATTR_RW() as that would make things
+a lot more "obvious" what is happening here.
 
-...
+Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_port.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-> >  static DEVICE_ATTR(iomem_base, 0440, uart_get_attr_iomem_base, NULL);
-> >  static DEVICE_ATTR(iomem_reg_shift, 0440, uart_get_attr_iomem_reg_shift, NULL);
-> > +static DEVICE_ATTR(console, 0640, uart_get_attr_console, uart_set_attr_console);
-> 
-> Again, DEVICE_ATTR_RW() in the future?
-
-Fixed for next version, thanks!
-
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 0325f2e53b74..4f5d4cce4c8e 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2880,7 +2880,7 @@ static int do_serial8250_get_rxtrig(struct tty_port *port)
+ 	return rxtrig_bytes;
+ }
+ 
+-static ssize_t serial8250_get_attr_rx_trig_bytes(struct device *dev,
++static ssize_t rx_trig_bytes_show(struct device *dev,
+ 	struct device_attribute *attr, char *buf)
+ {
+ 	struct tty_port *port = dev_get_drvdata(dev);
+@@ -2926,7 +2926,7 @@ static int do_serial8250_set_rxtrig(struct tty_port *port, unsigned char bytes)
+ 	return ret;
+ }
+ 
+-static ssize_t serial8250_set_attr_rx_trig_bytes(struct device *dev,
++static ssize_t rx_trig_bytes_store(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t count)
+ {
+ 	struct tty_port *port = dev_get_drvdata(dev);
+@@ -2947,18 +2947,16 @@ static ssize_t serial8250_set_attr_rx_trig_bytes(struct device *dev,
+ 	return count;
+ }
+ 
+-static DEVICE_ATTR(rx_trig_bytes, S_IRUSR | S_IWUSR | S_IRGRP,
+-		   serial8250_get_attr_rx_trig_bytes,
+-		   serial8250_set_attr_rx_trig_bytes);
++static DEVICE_ATTR_RW(rx_trig_bytes);
+ 
+ static struct attribute *serial8250_dev_attrs[] = {
+ 	&dev_attr_rx_trig_bytes.attr,
+-	NULL,
+-	};
++	NULL
++};
+ 
+ static struct attribute_group serial8250_dev_attr_group = {
+ 	.attrs = serial8250_dev_attrs,
+-	};
++};
+ 
+ static void register_dev_spec_attr_grp(struct uart_8250_port *up)
+ {
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.0
 
