@@ -2,175 +2,88 @@ Return-Path: <SRS0=X3gT=4G=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0883C3404C
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Feb 2020 22:47:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AC11C34031
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Feb 2020 23:07:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6F29C24654
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Feb 2020 22:47:12 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="F54FGwb9"
+	by mail.kernel.org (Postfix) with ESMTP id E813824125
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Feb 2020 23:07:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1582067227;
+	bh=6Tcysc0n2Jz+loc1BqpqJbQmT3IfZbzN8vC7ugvLwpA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=OiNCHwuKC3bSYNZwHwMnusPn69rojcDoT3DVTgmk8zJfcdAkd2eTNCCzVf5oxFVvc
+	 jQ0CrerH9KG/TrdmXXzXhuiNV26p7mMSr/yZOIcPh+JIMDCwlmKQCXp6fjfMqyjGTb
+	 Ax++h102zDBHtCDFGfJu1GUtMif9eG5rlwU7iAic=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726641AbgBRWrL (ORCPT
+        id S1727462AbgBRXHG (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Feb 2020 17:47:11 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:53265 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726556AbgBRWrL (ORCPT
+        Tue, 18 Feb 2020 18:07:06 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:44747 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726820AbgBRXHG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Feb 2020 17:47:11 -0500
-Received: by mail-pj1-f67.google.com with SMTP id n96so1680189pjc.3
-        for <linux-serial@vger.kernel.org>; Tue, 18 Feb 2020 14:47:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=focsb7O7M7LZXv1BjQxj6gFRUP9YP36BqaMZFS6X++s=;
-        b=F54FGwb9xvr3THcPcYljDLalOKVE0LMxiJ8ZkI9zFOpfZxJn0u9PfFddllc5OXOTDT
-         sNc8UtfvLCT/boM7yzmGeTKmJ95XSPri/VPN4SK6O80CNp4OvwsO7qrr2YdqyEpIxbPH
-         vi9BrwpSI0UKidHfCxCiuQTuYYw1wsM1ImhK0=
+        Tue, 18 Feb 2020 18:07:06 -0500
+Received: by mail-ot1-f67.google.com with SMTP id h9so21232631otj.11;
+        Tue, 18 Feb 2020 15:07:05 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=focsb7O7M7LZXv1BjQxj6gFRUP9YP36BqaMZFS6X++s=;
-        b=Kmgj6ZdRgfJXlhJEKG2zWfCd2EK7CP5ak0zHE9XuO/LP7mpiZVgC08SpDRjjPVWj7O
-         JMgsESbDzsUhUK+3bYlUcMPPcPPO2Bmf8r5WOR1NjZYFzSfqEh9/BTak3sC3HKjMo+2a
-         ezeO9d1l/QYcdnpOkZ5sSgSZHNZLR9hQgVT8Ect+VOdLE1pxTHeScw6GepTEXqVVanaH
-         6Dc0B1mh9SVvKttdXmSfMP48CExi5M8GmTEYdrTZY9O0CI5G1oEzpSEx0jLZ8UoQ1B4u
-         L2sNXtwdGV/R8IORFiBfpLuJjQ0/F4zQ7K4mfDQKhAryCjL2/RikB3ofCOpWht7mahQo
-         BbgA==
-X-Gm-Message-State: APjAAAVv2QW5G1blzBJW0Se6jZd+GmYQoi1irhNjjvkfIz0F3to81umg
-        Zttbsky9kXCs/T/wMmxfoBSdDA==
-X-Google-Smtp-Source: APXvYqzqLkaYLCnozHjZ+EA1d3mHYozNsxvPd2mLKnFoZLI4SdFV/xWMMXE1mzXjLDf+X/H8vWNXnQ==
-X-Received: by 2002:a17:90a:3ae5:: with SMTP id b92mr5150415pjc.26.1582066030963;
-        Tue, 18 Feb 2020 14:47:10 -0800 (PST)
-Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
-        by smtp.gmail.com with ESMTPSA id t65sm24994pfd.178.2020.02.18.14.47.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Feb 2020 14:47:10 -0800 (PST)
-Date:   Tue, 18 Feb 2020 14:47:09 -0800
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Akash Asthana <akashast@codeaurora.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, dianders@chromium.org
-Subject: Re: [PATCH 3/6] i2c: i2c-qcom-geni: Add interconnect support
-Message-ID: <20200218224709.GF15781@google.com>
-References: <1581946205-27189-1-git-send-email-akashast@codeaurora.org>
- <1581946205-27189-4-git-send-email-akashast@codeaurora.org>
+        bh=oQ6HXMPbNstVZuD1oSRD2QgxoQ585LC4t0FY+ch2UdQ=;
+        b=sLrAn+SdvZUK+3Ho9ScthnH6nCvhU5U203brIOvYMXLDvEqnvMwOerAvPA+Dul8f2Q
+         ljPvblJ0w6mRUa+9QgUJp1R+6/jmxzjm5inIFKCqBciC8oZoMLZF6Auy4iRIePEtx6Cc
+         a8XOCE4vk9VneGpnXkdpM3yZaAYMGtNTcxxdd33N+k6h6YPwXKaEGmeh5rO37BimQxMr
+         q1l6cc5CRgE7rUnRhHGOysxQsKj/KIKXcSglfKXiqtF7eIJIvJHD9GBCQkPBFceGys+S
+         1btDqXcH7caK5DDFSL17XZyaATEjGHLpH4K9NrpMyO5DCV7AlK2sRM4TuwyNPknel7co
+         qKMA==
+X-Gm-Message-State: APjAAAWBOoO2o6N8JalYHZfqGIezX5no1KfXG7AJwxASJhOGZH29c5O1
+        bpR1xNPxPKblww6OXw2Vxw==
+X-Google-Smtp-Source: APXvYqwTxpV4kU3tx4nRPN+zr0+mHQXxJJeyx9lcbPQZBLTy5xUUG/tMPRzXr3oe6dw4/n0WRnn4yA==
+X-Received: by 2002:a05:6830:1251:: with SMTP id s17mr15204599otp.108.1582067225496;
+        Tue, 18 Feb 2020 15:07:05 -0800 (PST)
+Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id p24sm1820339otq.64.2020.02.18.15.07.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Feb 2020 15:07:04 -0800 (PST)
+Received: (nullmailer pid 16645 invoked by uid 1000);
+        Tue, 18 Feb 2020 23:07:04 -0000
+Date:   Tue, 18 Feb 2020 17:07:04 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     George Hilliard <ghilliard@kopismobile.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        George Hilliard <ghilliard@kopismobile.com>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>, kernel@pengutronix.de
+Subject: Re: [PATCH v3 1/2] dt-bindings: serial: document fsl,inverted-tx and
+ -rx options
+Message-ID: <20200218230704.GA16589@bogus>
+References: <20200212163538.3006-1-ghilliard@kopismobile.com>
+ <20200212163538.3006-2-ghilliard@kopismobile.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1581946205-27189-4-git-send-email-akashast@codeaurora.org>
+In-Reply-To: <20200212163538.3006-2-ghilliard@kopismobile.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Feb 17, 2020 at 07:00:02PM +0530, Akash Asthana wrote:
-> Get the interconnect paths for I2C based Serial Engine device
-> and vote according to the bus speed of the driver.
+On Wed, 12 Feb 2020 10:35:37 -0600, George Hilliard wrote:
+> Add a description for the new fsl,inverted-tx and fsl,inverted-rx
+> options for the i.MX UART peripheral.
 > 
-> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+> Signed-off-by: George Hilliard <ghilliard@kopismobile.com>
 > ---
->  drivers/i2c/busses/i2c-qcom-geni.c | 84 ++++++++++++++++++++++++++++++++++++--
->  1 file changed, 80 insertions(+), 4 deletions(-)
+> v1..v2: Removed confidentiality spam
 > 
-> diff --git a/drivers/i2c/busses/i2c-qcom-geni.c b/drivers/i2c/busses/i2c-qcom-geni.c
-> index 17abf60c..5de10a1 100644
-> --- a/drivers/i2c/busses/i2c-qcom-geni.c
-> +++ b/drivers/i2c/busses/i2c-qcom-geni.c
-> @@ -163,6 +163,44 @@ static void qcom_geni_i2c_conf(struct geni_i2c_dev *gi2c)
->  	writel_relaxed(val, gi2c->se.base + SE_I2C_SCL_COUNTERS);
->  }
->  
-> +static int geni_i2c_icc_get(struct geni_se *se)
-> +{
-> +	if (!se)
-> +		return -EINVAL;
+>  Documentation/devicetree/bindings/serial/fsl-imx-uart.txt | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
 
-check is not needed
-
-> +
-> +	se->icc_path[GENI_TO_CORE] = of_icc_get(se->dev, "qup-core");
-> +	if (IS_ERR(se->icc_path[GENI_TO_CORE]))
-> +		return PTR_ERR(se->icc_path[GENI_TO_CORE]);
-> +
-> +	se->icc_path[CPU_TO_GENI] = of_icc_get(se->dev, "qup-config");
-> +	if (IS_ERR(se->icc_path[CPU_TO_GENI])) {
-> +		icc_put(se->icc_path[GENI_TO_CORE]);
-> +		se->icc_path[GENI_TO_CORE] = NULL;
-
-echoing Bjorn's comments on 'tty: serial: qcom_geni_serial: Add
-interconnect support', resetting is not needed since _probe() will
-fail.
-
-> +		return PTR_ERR(se->icc_path[CPU_TO_GENI]);
-> +	}
-> +
-> +	se->icc_path[GENI_TO_DDR] = of_icc_get(se->dev, "qup-memory");
-> +	if (IS_ERR(se->icc_path[GENI_TO_DDR])) {
-> +		icc_put(se->icc_path[GENI_TO_CORE]);
-> +		se->icc_path[GENI_TO_CORE] = NULL;
-
-ditto
-
-> +		icc_put(se->icc_path[CPU_TO_GENI]);
-> +		se->icc_path[CPU_TO_GENI] = NULL;
-
-ditto
-
-> +		return PTR_ERR(se->icc_path[GENI_TO_DDR]);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +void geni_i2c_icc_put(struct geni_se *se)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(se->icc_path); i++) {
-> +		icc_put(se->icc_path[i]);
-> +		se->icc_path[i] = NULL;
-
-not needed
-
-> +	}
-> +}
-> +
->  static void geni_i2c_err_misc(struct geni_i2c_dev *gi2c)
->  {
->  	u32 m_cmd = readl_relaxed(gi2c->se.base + SE_GENI_M_CMD0);
-> @@ -563,17 +601,34 @@ static int geni_i2c_probe(struct platform_device *pdev)
->  	gi2c->adap.dev.of_node = pdev->dev.of_node;
->  	strlcpy(gi2c->adap.name, "Geni-I2C", sizeof(gi2c->adap.name));
->  
-> +	ret = geni_i2c_icc_get(&gi2c->se);
-> +	if (ret)
-> +		return ret;
-> +	/* Set the bus quota to a reasonable value */
-> +	gi2c->se.avg_bw_core = Bps_to_icc(1000);
-> +	gi2c->se.peak_bw_core = Bps_to_icc(CORE_2X_100_MHZ);
-> +	gi2c->se.avg_bw_cpu = Bps_to_icc(1000);
-> +	gi2c->se.peak_bw_cpu = Bps_to_icc(1000);
-> +	gi2c->se.avg_bw_ddr = Bps_to_icc(gi2c->clk_freq_out);
-> +	gi2c->se.peak_bw_ddr = Bps_to_icc(2 * gi2c->clk_freq_out);
-> +
-> +	/* Vote for core clocks and CPU for register access */
-> +	icc_set_bw(gi2c->se.icc_path[GENI_TO_CORE], gi2c->se.avg_bw_core,
-> +				gi2c->se.peak_bw_core);
-> +	icc_set_bw(gi2c->se.icc_path[CPU_TO_GENI], gi2c->se.avg_bw_cpu,
-> +				gi2c->se.peak_bw_cpu);
-
-error handling needed?
+Reviewed-by: Rob Herring <robh@kernel.org>
