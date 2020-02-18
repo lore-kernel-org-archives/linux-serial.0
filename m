@@ -2,110 +2,182 @@ Return-Path: <SRS0=X3gT=4G=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	UNWANTED_LANGUAGE_BODY,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF000C34026
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Feb 2020 09:44:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0822C34031
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Feb 2020 22:34:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C36082070B
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Feb 2020 09:44:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A12EC24656
+	for <linux-serial@archiver.kernel.org>; Tue, 18 Feb 2020 22:34:56 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="UdvCc28G"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726281AbgBRJot (ORCPT
+        id S1726415AbgBRWez (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Feb 2020 04:44:49 -0500
-Received: from skedge04.snt-world.com ([91.208.41.69]:35304 "EHLO
-        skedge04.snt-world.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726199AbgBRJot (ORCPT
+        Tue, 18 Feb 2020 17:34:55 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:53650 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726427AbgBRWex (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Feb 2020 04:44:49 -0500
-Received: from sntmail10s.snt-is.com (unknown [10.203.32.183])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by skedge04.snt-world.com (Postfix) with ESMTPS id D0C3967A8C4;
-        Tue, 18 Feb 2020 10:44:46 +0100 (CET)
-Received: from sntmail12r.snt-is.com (10.203.32.182) by sntmail10s.snt-is.com
- (10.203.32.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Tue, 18 Feb
- 2020 10:44:46 +0100
-Received: from sntmail12r.snt-is.com ([fe80::e551:8750:7bba:3305]) by
- sntmail12r.snt-is.com ([fe80::e551:8750:7bba:3305%3]) with mapi id
- 15.01.1913.005; Tue, 18 Feb 2020 10:44:46 +0100
-From:   Schrempf Frieder <frieder.schrempf@kontron.de>
-To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= 
-        <u.kleine-koenig@pengutronix.de>
-CC:     "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH 0/2] serial: imx: Backport fixes for irq handling to v4.14
-Thread-Topic: [PATCH 0/2] serial: imx: Backport fixes for irq handling to
- v4.14
-Thread-Index: AQHV5ZuphrtwteBzhkWCeOYI46C5s6ggUc4AgAAlLACAAAQRAIAAKRSA
-Date:   Tue, 18 Feb 2020 09:44:46 +0000
-Message-ID: <e71d11c4-b2e6-d923-337e-1378e1cf64c5@kontron.de>
-References: <20200217140740.29743-1-frieder.schrempf@kontron.de>
- <20200218045008.GA2049358@kroah.com>
- <20200218070310.ibv2m2f7ihfaevrp@pengutronix.de>
- <20200218071744.GA2087281@kroah.com>
-In-Reply-To: <20200218071744.GA2087281@kroah.com>
-Accept-Language: de-DE, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.25.9.193]
-x-c2processedorg: 51b406b7-48a2-4d03-b652-521f56ac89f3
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <00443668C1DDC642A055DA2A7D544E78@snt-world.com>
-Content-Transfer-Encoding: base64
+        Tue, 18 Feb 2020 17:34:53 -0500
+Received: by mail-pj1-f65.google.com with SMTP id n96so1666866pjc.3
+        for <linux-serial@vger.kernel.org>; Tue, 18 Feb 2020 14:34:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=2eKXLdS2SZDwMdln7XhHDX3a3+819OaM4/wB+easctg=;
+        b=UdvCc28GYQs6m40ZXxJ3q6FDb0m33BsrjUc/CPdR1o9n5xyA+FAgsxOGOBAWTUdDWe
+         n1SFmNeodzj4qU3RuxrvUWvAtj7oAtKcOS59IHI4M9ySisy3rZtLt4NkRXSjv7NoBYRJ
+         moTU3/iM4xOtiA8zT8vT/PoO19KfiXP/2iKGI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=2eKXLdS2SZDwMdln7XhHDX3a3+819OaM4/wB+easctg=;
+        b=GV8DNwBHp2LyKDZRFBpuEmZ/2CR7U5jo4sYUVl33BDLCSp7RGO7sXg9vo9LKkK3/8G
+         lMbPc5V0ZhUOOgev1e5zacTtStviWQlFb6D7m9eXdbGqaVdeHYBQB8wtTISch3OOxWO4
+         KVPmpEkxAzKnhhPJX5Q9RBP6Ed3Y87UV7dZ+4pDlTlryRHwJf4qkNbB1QaP78IsoaZ0a
+         clTOpz1S86JXmXvtGdVDn8WH1N1N0C8kieeqevUhvPeSHmMHbREgB6+ZM+q1m18Q9r47
+         W50ik5mjnKOzKmLAf0WNMJO6QtcOghSsGymX6UhLvdYs9PCTGUahFl2LlWrSfC/LGabz
+         HprQ==
+X-Gm-Message-State: APjAAAW2+jxfj4wKxpO4aQz+Vxv5Vw+coqhfi9CMvOAqewY2cui9p+Wj
+        a/rlTaBNfEJJjQtF7uwBO14n8A==
+X-Google-Smtp-Source: APXvYqzber3G1fDzSXxp/hMZGp+hlW3bIrQzQO+2dgbacLrctSydXRQwbTAiQI7JCjGq8z+fCcnjDQ==
+X-Received: by 2002:a17:90a:d807:: with SMTP id a7mr5507545pjv.15.1582065292004;
+        Tue, 18 Feb 2020 14:34:52 -0800 (PST)
+Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
+        by smtp.gmail.com with ESMTPSA id f3sm5781941pga.38.2020.02.18.14.34.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 18 Feb 2020 14:34:51 -0800 (PST)
+Date:   Tue, 18 Feb 2020 14:34:50 -0800
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Akash Asthana <akashast@codeaurora.org>
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
+        mark.rutland@arm.com, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, dianders@chromium.org
+Subject: Re: [PATCH 2/6] tty: serial: qcom_geni_serial: Add interconnect
+ support
+Message-ID: <20200218223450.GE15781@google.com>
+References: <1581946205-27189-1-git-send-email-akashast@codeaurora.org>
+ <1581946205-27189-3-git-send-email-akashast@codeaurora.org>
 MIME-Version: 1.0
-X-SnT-MailScanner-Information: Please contact the ISP for more information
-X-SnT-MailScanner-ID: D0C3967A8C4.AF249
-X-SnT-MailScanner: Not scanned: please contact your Internet E-Mail Service Provider for details
-X-SnT-MailScanner-SpamCheck: 
-X-SnT-MailScanner-From: frieder.schrempf@kontron.de
-X-SnT-MailScanner-To: gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        shawnguo@kernel.org, stable@vger.kernel.org,
-        u.kleine-koenig@pengutronix.de
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1581946205-27189-3-git-send-email-akashast@codeaurora.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-T24gMTguMDIuMjAgMDg6MTcsIGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnIHdyb3RlOg0KPiBP
-biBUdWUsIEZlYiAxOCwgMjAyMCBhdCAwODowMzoxMEFNICswMTAwLCBVd2UgS2xlaW5lLUvDtm5p
-ZyB3cm90ZToNCj4+IE9uIFR1ZSwgRmViIDE4LCAyMDIwIGF0IDA1OjUwOjA4QU0gKzAxMDAsIGdy
-ZWdraEBsaW51eGZvdW5kYXRpb24ub3JnIHdyb3RlOg0KPj4+IE9uIE1vbiwgRmViIDE3LCAyMDIw
-IGF0IDAyOjA4OjAwUE0gKzAwMDAsIFNjaHJlbXBmIEZyaWVkZXIgd3JvdGU6DQo+Pj4+IEZyb206
-IEZyaWVkZXIgU2NocmVtcGYgPGZyaWVkZXIuc2NocmVtcGZAa29udHJvbi5kZT4NCj4+Pj4NCj4+
-Pj4gQSBjdXN0b21lciBvZiBvdXJzIGhhcyBwcm9ibGVtcyB3aXRoIFJTNDg1IG9uIGkuTVg2VUwg
-d2l0aCB0aGUgbGF0ZXN0IHY0LjE0DQo+Pj4+IGtlcm5lbC4gVGhleSBnZXQgYW4gZXhjZXB0aW9u
-IGxpa2UgYmVsb3cgZnJvbSB0aW1lIHRvIHRpbWUgKHRoZSB0cmFjZSBpcw0KPj4+PiBmcm9tIGFu
-IG9sZGVyIGtlcm5lbCwgYnV0IHRoZSBwcm9ibGVtIGFsc28gZXhpc3RzIGluIHY0LjE0LjE3MCku
-DQo+Pj4+DQo+Pj4+IEFzIHRoZSBjcHVpZGxlIHN0YXRlIDIgY2F1c2VzIGxhcmdlIGRlbGF5cyBm
-b3IgdGhlIGludGVycnVwdCB0aGF0IGNvbnRyb2xzIHRoZQ0KPj4+PiBSUzQ4NSBSVFMgc2lnbmFs
-ICh3aGljaCBjYW4gbGVhZCB0byBjb2xsaXNpb25zIG9uIHRoZSBidXMpLCBjcHVpZGxlIHN0YXRl
-IDIgd2FzDQo+Pj4+IGRpc2FibGVkIG9uIHRoaXMgc3lzdGVtLiBUaGlzIGFzcGVjdCBtaWdodCBj
-YXVzZSB0aGUgZXhjZXB0aW9uIGhhcHBlbmluZyBtb3JlDQo+Pj4+IG9mdGVuIG9uIHRoaXMgc3lz
-dGVtIHRoYW4gb24gb3RoZXIgc3lzdGVtcyB3aXRoIGRlZmF1bHQgY3B1aWRsZSBzZXR0aW5ncy4N
-Cj4+Pj4NCj4+Pj4gTG9va2luZyBmb3Igc29sdXRpb25zIEkgZm91bmQgVXdlJ3MgcGF0Y2hlcyB0
-aGF0IHdlcmUgYXBwbGllZCBpbiB2NC4xNyBiZWluZw0KPj4+PiBtZW50aW9uZWQgaGVyZSBbMV0g
-YW5kIGhlcmUgWzJdLiBJbiBbMV0gVXdlIG5vdGVzIHRoYXQgYmFja3BvcnRpbmcgdGhlc2UgZml4
-ZXMNCj4+Pj4gdG8gdjQuMTQgbWlnaHQgbm90IGJlIHRyaXZpYWwsIGJ1dCBJIHRyaWVkIGFuZCBp
-biBteSBvcGluaW9uIGZvdW5kIGl0IG5vdCB0byBiZQ0KPj4+PiB0b28gcHJvYmxlbWF0aWMgZWl0
-aGVyLg0KPj4+Pg0KPj4+PiBXaXRoIHRoZSBiYWNrcG9ydGVkIHBhdGNoZXMgYXBwbGllZCwgb3Vy
-IGN1c3RvbWVyIHJlcG9ydHMgdGhhdCB0aGUgZXhjZXB0aW9ucw0KPj4+PiBzdG9wcGVkIG9jY3Vy
-aW5nLiBHaXZlbiB0aGlzIGFuZCB0aGUgZmFjdCB0aGF0IHRoZSBwcm9ibGVtIHNlZW1zIHRvIGJl
-IGtub3duDQo+Pj4+IGFuZCBxdWl0ZSBjb21tb24sIGl0IHdvdWxkIGJlIG5pY2UgdG8gZ2V0IHRo
-aXMgaW50byB0aGUgdjQuMTQgc3RhYmxlIHRyZWUuDQo+Pj4NCj4+PiBUaGFua3MgZm9yIHRoZSBi
-YWNrcG9ydHMsIGJvdGggbm93IHF1ZXVlZCB1cC4NCj4+DQo+PiBUbyBjb21wbGV0ZSB0aGVzZSBm
-aXhlcyB5b3UgYWxzbyB3YW50IHRvIGJhY2twb3J0DQo+Pg0KPj4gCTEwMWFhNDZiZDIyMSBzZXJp
-YWw6IGlteDogZml4IGEgcmFjZSBjb25kaXRpb24gaW4gcmVjZWl2ZSBwYXRoDQo+IA0KPiBJZiBz
-bywgaXQgbmVlZHMgdG8gYWxzbyBnbyB0byA0LjE5LnksIGFuZCBzb21lb25lIG5lZWRzIHRvIHBy
-b3ZpZGUgYQ0KPiB3b3JraW5nIGJhY2twb3J0IGZvciBib3RoIHBsYWNlcyA6KQ0KDQpJIGNhbiB0
-cnkgdG8gY29tZSB1cCB3aXRoIHNvbWV0aGluZy4gQnV0IEkgZG9uJ3QgaGF2ZSBhIHN5c3RlbSB0
-aGF0IGlzIA0KYWZmZWN0ZWQgYnkgdGhpcyAob25seSBzaW5nbGUgY29yZSkgdG8gdGVzdC4NCg0K
-QmVzdCByZWdhcmRzLA0KRnJpZWRlcg==
+On Mon, Feb 17, 2020 at 07:00:01PM +0530, Akash Asthana wrote:
+> Get the interconnect paths for Uart based Serial Engine device
+> and vote according to the baud rate requirement of the driver.
+> 
+> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+> ---
+>  drivers/tty/serial/qcom_geni_serial.c | 84 ++++++++++++++++++++++++++++++-----
+>  1 file changed, 74 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 191abb1..a8fb2b7 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -174,6 +174,35 @@ static struct qcom_geni_serial_port qcom_geni_console_port = {
+>  	},
+>  };
+>  
+> +static int geni_serial_icc_get(struct geni_se *se)
+> +{
+> +	if (!se)
+> +		return -EINVAL;
+> +
+> +	se->icc_path[GENI_TO_CORE] = of_icc_get(se->dev, "qup-core");
+> +	if (IS_ERR(se->icc_path[GENI_TO_CORE]))
+> +		return PTR_ERR(se->icc_path[GENI_TO_CORE]);
+> +
+> +	se->icc_path[CPU_TO_GENI] = of_icc_get(se->dev, "qup-config");
+> +	if (IS_ERR(se->icc_path[CPU_TO_GENI])) {
+> +		icc_put(se->icc_path[GENI_TO_CORE]);
+> +		se->icc_path[GENI_TO_CORE] = NULL;
+> +		return PTR_ERR(se->icc_path[CPU_TO_GENI]);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +void geni_serial_icc_put(struct geni_se *se)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(se->icc_path); i++) {
+> +		icc_put(se->icc_path[i]);
+> +		se->icc_path[i] = NULL;
+> +	}
+> +}
+> +
+>  static int qcom_geni_serial_request_port(struct uart_port *uport)
+>  {
+>  	struct platform_device *pdev = to_platform_device(uport->dev);
+> @@ -949,6 +978,12 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+>  	ser_clk_cfg = SER_CLK_EN;
+>  	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
+>  
+> +	/* Put BW vote only on CPU path as driver supports FIFO mode only */
+> +	port->se.avg_bw_cpu = Bps_to_icc(baud);
+> +	port->se.peak_bw_cpu = Bps_to_icc(2 * baud);
+> +	icc_set_bw(port->se.icc_path[CPU_TO_GENI], port->se.avg_bw_cpu,
+> +			port->se.peak_bw_cpu);
+> +
+>  	/* parity */
+>  	tx_trans_cfg = readl(uport->membase + SE_UART_TX_TRANS_CFG);
+>  	tx_parity_cfg = readl(uport->membase + SE_UART_TX_PARITY_CFG);
+> @@ -1179,11 +1214,20 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
+>  	if (old_state == UART_PM_STATE_UNDEFINED)
+>  		old_state = UART_PM_STATE_OFF;
+>  
+> -	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
+> +	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF) {
+> +		/* Put BW vote for core clocks and CPU */
+> +		icc_set_bw(port->se.icc_path[GENI_TO_CORE],
+> +			port->se.avg_bw_core, port->se.peak_bw_core);
+> +		icc_set_bw(port->se.icc_path[CPU_TO_GENI], port->se.avg_bw_cpu,
+> +			port->se.peak_bw_cpu);
+>  		geni_se_resources_on(&port->se);
+> -	else if (new_state == UART_PM_STATE_OFF &&
+> -			old_state == UART_PM_STATE_ON)
+> +	} else if (new_state == UART_PM_STATE_OFF &&
+> +			old_state == UART_PM_STATE_ON) {
+>  		geni_se_resources_off(&port->se);
+> +		/* Remove BW vote from core clocks and CPU */
+> +		icc_set_bw(port->se.icc_path[GENI_TO_CORE], 0, 0);
+> +		icc_set_bw(port->se.icc_path[CPU_TO_GENI], 0, 0);
+> +	}
+>  }
+>  
+>  static const struct uart_ops qcom_geni_console_pops = {
+> @@ -1274,15 +1318,30 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+>  	port->rx_fifo_depth = DEF_FIFO_DEPTH_WORDS;
+>  	port->tx_fifo_width = DEF_FIFO_WIDTH_BITS;
+>  
+> +	ret = geni_serial_icc_get(&port->se);
+> +	if (ret)
+> +		return ret;
+> +	/* Set the bus quota to a reasonable value */
+> +	port->se.avg_bw_core = console ? Bps_to_icc(1000) :
+> +		Bps_to_icc(CORE_2X_50_MHZ);
+> +	port->se.peak_bw_core = console ? Bps_to_icc(1000) :
+> +		Bps_to_icc(CORE_2X_100_MHZ);
+> +	port->se.avg_bw_cpu = Bps_to_icc(1000);
+> +	port->se.avg_bw_cpu = Bps_to_icc(1000);
+
+I guess you mean 'peak_bw_cpu'?
