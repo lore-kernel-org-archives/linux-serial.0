@@ -4,32 +4,33 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 028BAC3404D
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 08:42:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEA87C3404D
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 08:42:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D608B21D56
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 08:42:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B16122465D
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 08:42:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727460AbgBSImU (ORCPT
+        id S1726518AbgBSImT (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Feb 2020 03:42:20 -0500
-Received: from mx2.suse.de ([195.135.220.15]:44280 "EHLO mx2.suse.de"
+        Wed, 19 Feb 2020 03:42:19 -0500
+Received: from mx2.suse.de ([195.135.220.15]:44278 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726715AbgBSIlZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S1726723AbgBSIlZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Wed, 19 Feb 2020 03:41:25 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 9ACC1AEAC;
+        by mx2.suse.de (Postfix) with ESMTP id 00C32AED8;
         Wed, 19 Feb 2020 08:41:23 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 14/24] n_hdlc: remove checking of n_hdlc
-Date:   Wed, 19 Feb 2020 09:41:08 +0100
-Message-Id: <20200219084118.26491-14-jslaby@suse.cz>
+Subject: [PATCH 15/24] n_hdlc: add helper for buffers allocation
+Date:   Wed, 19 Feb 2020 09:41:09 +0100
+Message-Id: <20200219084118.26491-15-jslaby@suse.cz>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20200219084118.26491-1-jslaby@suse.cz>
 References: <20200219084118.26491-1-jslaby@suse.cz>
@@ -40,111 +41,82 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-We got rid of backup_tty recently. Also, the tty layer ensures not to
-call other ldisc hooks after ldisc close. That means, all those tests
-are superfluous now so remove them.
-
-Note that we remove the magic check in write after schedule too. The tty
-cannot change during schedule.
+Given both rx and tx allocations do the same, add a new helper
+(n_hdlc_alloc_buf) and use it for both of them. This cleans up
+n_hdlc_alloc slightly.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/n_hdlc.c | 32 +++-----------------------------
- 1 file changed, 3 insertions(+), 29 deletions(-)
+ drivers/tty/n_hdlc.c | 42 ++++++++++++++++++++----------------------
+ 1 file changed, 20 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/tty/n_hdlc.c b/drivers/tty/n_hdlc.c
-index 2ac702974b57..2709d18364eb 100644
+index 2709d18364eb..4276931fd071 100644
 --- a/drivers/tty/n_hdlc.c
 +++ b/drivers/tty/n_hdlc.c
-@@ -227,9 +227,6 @@ static void n_hdlc_tty_close(struct tty_struct *tty)
- {
- 	struct n_hdlc *n_hdlc = tty->disc_data;
+@@ -699,6 +699,23 @@ static __poll_t n_hdlc_tty_poll(struct tty_struct *tty, struct file *filp,
+ 	return mask;
+ }	/* end of n_hdlc_tty_poll() */
  
--	if (!n_hdlc)
--		return;
--
- 	if (n_hdlc->magic != HDLC_MAGIC) {
- 		printk(KERN_WARNING "n_hdlc: trying to close unopened tty!\n");
- 		return;
-@@ -383,11 +380,7 @@ static void n_hdlc_tty_wakeup(struct tty_struct *tty)
- {
- 	struct n_hdlc *n_hdlc = tty->disc_data;
- 
--	if (!n_hdlc)
--		return;
--
- 	n_hdlc_send_frames (n_hdlc, tty);
--		
- }	/* end of n_hdlc_tty_wakeup() */
- 
- /**
-@@ -409,10 +402,6 @@ static void n_hdlc_tty_receive(struct tty_struct *tty, const __u8 *data,
- 	pr_debug("%s(%d)%s() called count=%d\n",
- 			__FILE__, __LINE__, __func__, count);
- 
--	/* This can happen if stuff comes in on the backup tty */
--	if (!n_hdlc)
--		return;
--		
- 	/* verify line is using HDLC discipline */
- 	if (n_hdlc->magic != HDLC_MAGIC) {
- 		printk("%s(%d) line not using HDLC discipline\n",
-@@ -473,10 +462,6 @@ static ssize_t n_hdlc_tty_read(struct tty_struct *tty, struct file *file,
- 	struct n_hdlc_buf *rbuf;
- 	DECLARE_WAITQUEUE(wait, current);
- 
--	/* Validate the pointers */
--	if (!n_hdlc)
--		return -EIO;
--
- 	/* verify user access to buffer */
- 	if (!access_ok(buf, nr)) {
- 		printk(KERN_WARNING "%s(%d) n_hdlc_tty_read() can't verify user "
-@@ -558,10 +543,6 @@ static ssize_t n_hdlc_tty_write(struct tty_struct *tty, struct file *file,
- 	pr_debug("%s(%d)%s() called count=%zd\n", __FILE__, __LINE__, __func__,
- 			count);
- 
--	/* Verify pointers */
--	if (!n_hdlc)
--		return -EIO;
--
- 	if (n_hdlc->magic != HDLC_MAGIC)
- 		return -EIO;
- 
-@@ -586,14 +567,7 @@ static ssize_t n_hdlc_tty_write(struct tty_struct *tty, struct file *file,
- 			break;
- 		}
- 		schedule();
--			
--		n_hdlc = tty->disc_data;
--		if (!n_hdlc || n_hdlc->magic != HDLC_MAGIC) {
--			printk("n_hdlc_tty_write: %p invalid after wait!\n", n_hdlc);
--			error = -EIO;
--			break;
--		}
--			
++static void n_hdlc_alloc_buf(struct n_hdlc_buf_list *list, unsigned int count,
++		const char *name)
++{
++	struct n_hdlc_buf *buf;
++	unsigned int i;
 +
- 		if (signal_pending(current)) {
- 			error = -EINTR;
- 			break;
-@@ -638,7 +612,7 @@ static int n_hdlc_tty_ioctl(struct tty_struct *tty, struct file *file,
- 	pr_debug("%s(%d)%s() called %d\n", __FILE__, __LINE__, __func__, cmd);
++	for (i = 0; i < count; i++) {
++		buf = kmalloc(struct_size(buf, buf, maxframe), GFP_KERNEL);
++		if (!buf) {
++			pr_debug("%s(%d)%s(), kmalloc() failed for %s buffer %u\n",
++					__FILE__, __LINE__, __func__, name, i);
++			return;
++		}
++		n_hdlc_buf_put(list, buf);
++	}
++}
++
+ /**
+  * n_hdlc_alloc - allocate an n_hdlc instance data structure
+  *
+@@ -706,8 +723,6 @@ static __poll_t n_hdlc_tty_poll(struct tty_struct *tty, struct file *filp,
+  */
+ static struct n_hdlc *n_hdlc_alloc(void)
+ {
+-	struct n_hdlc_buf *buf;
+-	int i;
+ 	struct n_hdlc *n_hdlc = kzalloc(sizeof(*n_hdlc), GFP_KERNEL);
  
- 	/* Verify the status of the device */
--	if (!n_hdlc || n_hdlc->magic != HDLC_MAGIC)
-+	if (n_hdlc->magic != HDLC_MAGIC)
- 		return -EBADF;
+ 	if (!n_hdlc)
+@@ -723,26 +738,9 @@ static struct n_hdlc *n_hdlc_alloc(void)
+ 	INIT_LIST_HEAD(&n_hdlc->rx_buf_list.list);
+ 	INIT_LIST_HEAD(&n_hdlc->tx_buf_list.list);
  
- 	switch (cmd) {
-@@ -701,7 +675,7 @@ static __poll_t n_hdlc_tty_poll(struct tty_struct *tty, struct file *filp,
- 	struct n_hdlc *n_hdlc = tty->disc_data;
- 	__poll_t mask = 0;
+-	/* allocate free rx buffer list */
+-	for(i=0;i<DEFAULT_RX_BUF_COUNT;i++) {
+-		buf = kmalloc(struct_size(buf, buf, maxframe), GFP_KERNEL);
+-		if (buf)
+-			n_hdlc_buf_put(&n_hdlc->rx_free_buf_list,buf);
+-		else
+-			pr_debug("%s(%d)%s(), kmalloc() failed for rx buffer %d\n",
+-					__FILE__, __LINE__, __func__, i);
+-	}
+-	
+-	/* allocate free tx buffer list */
+-	for(i=0;i<DEFAULT_TX_BUF_COUNT;i++) {
+-		buf = kmalloc(struct_size(buf, buf, maxframe), GFP_KERNEL);
+-		if (buf)
+-			n_hdlc_buf_put(&n_hdlc->tx_free_buf_list,buf);
+-		else
+-			pr_debug("%s(%d)%s(), kmalloc() failed for tx buffer %d\n",
+-					__FILE__, __LINE__, __func__, i);
+-	}
+-	
++	n_hdlc_alloc_buf(&n_hdlc->rx_free_buf_list, DEFAULT_RX_BUF_COUNT, "rx");
++	n_hdlc_alloc_buf(&n_hdlc->tx_free_buf_list, DEFAULT_TX_BUF_COUNT, "tx");
++
+ 	/* Initialize the control block */
+ 	n_hdlc->magic  = HDLC_MAGIC;
  
--	if (!n_hdlc || n_hdlc->magic != HDLC_MAGIC)
-+	if (n_hdlc->magic != HDLC_MAGIC)
- 		return 0;
- 
- 	/*
 -- 
 2.25.0
 
