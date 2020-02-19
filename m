@@ -2,106 +2,143 @@ Return-Path: <SRS0=V5ud=4H=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0DC9C34056
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 19:51:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45AAEC5ACC4
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 22:13:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B08B2208E4
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 19:51:06 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kYk0BubJ"
+	by mail.kernel.org (Postfix) with ESMTP id 148C3206EF
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 22:13:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1582150394;
+	bh=ddoyKRwVDKIYIprPOKhr/kDrCRRWlvXxVqPXPWAljWo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=tqPkTi2r3XHhxZIS3C+Z7QDAIaSJlyaGGPRrtpl2oNRWeQz1duJ1tdtUiwE7NTZiM
+	 nKxlHmMMmyKUXMrmMM+B33Sfa/WneKGhY7s8+fK8Q+nfm4fL/g3sCynGQKTUU/CYGi
+	 xorXwVGLkCJeKh6Z1kevv+HwKKgHj/1+pTtsOzkY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726793AbgBSTvG (ORCPT
+        id S1727429AbgBSWNN (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Feb 2020 14:51:06 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:43014 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726645AbgBSTvG (ORCPT
+        Wed, 19 Feb 2020 17:13:13 -0500
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:41685 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727232AbgBSWNN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Feb 2020 14:51:06 -0500
-Received: by mail-pl1-f193.google.com with SMTP id p11so489878plq.10;
-        Wed, 19 Feb 2020 11:51:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=M4zKKP2Q/R2OqgXmQC7JNNxIqu37zs1Y9dnrMmNhKok=;
-        b=kYk0BubJtysEMvnnNMFVM2IeGCr/Ru/1kfwbbHPBOBzi4yZrxwxByDP6WsdcN/Vx+O
-         L+WCpjbRy+2EKKAygOeHsRw/f6pdNP/RIvO3BeCvi+bP2TjPUZ7+GeMXjAvXQlICZoy/
-         OevfqzKOx6/eAovyMtu7G/oDqXc2UWTZb1mlsBNgTlTfPOM8udclGqbaVeXqeR6KhAyC
-         m8M5f5wPFgloka5Xu0Qop9wSSZtctnLXyxEFZXECtLslg9qYcj8dJuY2ghZZc+Fc2ay5
-         kChYlnafdEFyX0ptn61peDksV2Xh+QgWDN+z0XWbhmcfmbDJ+Eglc+yfSLJZxj4wa+nK
-         prNQ==
+        Wed, 19 Feb 2020 17:13:13 -0500
+Received: by mail-oi1-f196.google.com with SMTP id i1so25433925oie.8;
+        Wed, 19 Feb 2020 14:13:12 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=M4zKKP2Q/R2OqgXmQC7JNNxIqu37zs1Y9dnrMmNhKok=;
-        b=ow4Juqku5Xss4S8WiM/Jp5zg98FmJ/POirhNGYsjMeU81HvawVZcbcJr6lqzftV9qH
-         k0V7xuEuh/gB1vpFul8YDe0nDGRznjPCXDVxKoFgoUL1yURyLljnNI2kTdkmts6oZW2m
-         LdBlM1JD5GWGOpUIWAjbsC93Y/wRRXVngmvhLtIl/QU5XReDeHtuPl+u9Gk2arASKW+3
-         py81aPg1yoNjeh60S0MKlHgOVquBuJWB6kjcqqcNjlH1E9jYYGyjNg2QV7b+fKbpMXP4
-         F59bxJU7efbRWWvYcLFYzOGxLCZ0n4ktwWDswpqZtgX5EMAWBgoK2jRWzhXRoHGsp8Fg
-         9RJg==
-X-Gm-Message-State: APjAAAUaC6eZ1qn/p1lFhuFzjP6TfmyFR2ezF9ezsoF07hmpMmOUBAwZ
-        xWJQhCPVgJxRrmUqO4n5MTol9c7aUUHxq1vT5Hg=
-X-Google-Smtp-Source: APXvYqzWKZoMXWkNrbnA1iDHd6g69T2x4VPoAwG/SDYVlx1df4kBzSZPdGZCwUj1t8upq1pqlBurbpQO9aN3F7v2m8U=
-X-Received: by 2002:a17:90a:b10b:: with SMTP id z11mr11000285pjq.132.1582141865462;
- Wed, 19 Feb 2020 11:51:05 -0800 (PST)
-MIME-Version: 1.0
-References: <20200213091600.554-1-uwe@kleine-koenig.org> <20200213091600.554-2-uwe@kleine-koenig.org>
-In-Reply-To: <20200213091600.554-2-uwe@kleine-koenig.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 19 Feb 2020 21:50:54 +0200
-Message-ID: <CAHp75VcStj5sE3f0uK2deOWC=ojfx-z1fbrh6Lu6jAor9F9PgA@mail.gmail.com>
-Subject: Re: [PATCH v6 1/4] lib: new helper kstrtodev_t()
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <uwe@kleine-koenig.org>
-Cc:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=QCDRXvFi+gR1oNSsjcXCHacRJtQD8q7DV4e37/61Byk=;
+        b=smef+T69eC9WkkzH2P5wIDQyYMnCrd3sj13Bweli4qiH0kH0xJEvbFt2kY7g6YFfcF
+         e6ffo4ZltG871JHoSK64NHJR2YhAqmCKiQK3yJVkYmhSRIlM3XJZYcATerpeZQ1Ea08k
+         8N5eSLFXDLeP2xbxllwPU5kujZCiW95MdLCJKJjLTivatwtPyP/43YuJv/3Xb++9+5a6
+         AWZps9F+1Z0kMgxQ5gBk4jJZNFcK6iAt8qYxWTlj87F5Ad82D57L/YFSw2m0yHoRRzKX
+         CfXFoZgbNWfIt5ro6XTTX0UTr5oWR3ifPv4r6CBY5OJ35wkVeAdD/HeMTVjsjODWPPil
+         SeiQ==
+X-Gm-Message-State: APjAAAUxDvzQ6b4kd9o/5QTIJJCkNAJnbR1O6wZ3xlJpGfZU5oZk0kL5
+        64k3PAVgLRA+hMfPoNS6wg==
+X-Google-Smtp-Source: APXvYqwLFvsnaggZIZ/FphpHVECAI3EPZlrYh7AiYB66zYzCl73IpPqpn2LPQw1Q8GLsGZZvQeYS7w==
+X-Received: by 2002:aca:4306:: with SMTP id q6mr6190796oia.54.1582150392520;
+        Wed, 19 Feb 2020 14:13:12 -0800 (PST)
+Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id n25sm418938oic.6.2020.02.19.14.13.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Feb 2020 14:13:11 -0800 (PST)
+Received: (nullmailer pid 30690 invoked by uid 1000);
+        Wed, 19 Feb 2020 22:13:10 -0000
+Date:   Wed, 19 Feb 2020 16:13:10 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
+        Jiri Slaby <jslaby@suse.cz>, Johan Hovold <johan@kernel.org>,
+        Merlijn Wajer <merlijn@wizzup.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/4] dt-bindings: mfd: motmdm: Add binding for
+ motorola-mdm
+Message-ID: <20200219221310.GA26624@bogus>
+References: <20200210040107.10306-1-tony@atomide.com>
+ <20200210040107.10306-4-tony@atomide.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200210040107.10306-4-tony@atomide.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Feb 13, 2020 at 11:27 AM Uwe Kleine-K=C3=B6nig <uwe@kleine-koenig.o=
-rg> wrote:
->
-> This function is in the same spirit as the other kstrto* functions and
-> uses the same calling convention. It expects the input string to be in
-> the format %u:%u and implements stricter parsing than sscanf as it
-> returns an error on trailing data (other than the usual \n).
+On Sun, Feb 09, 2020 at 08:01:05PM -0800, Tony Lindgren wrote:
+> Add a binding document for Motorola modems controllable by
+> TS 27.010 UART line discipline using serdev drivers.
+> 
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> ---
+>  .../mfd/motorola,mapphone-mdm6600.yaml        | 37 +++++++++++++++++++
+>  1 file changed, 37 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/mfd/motorola,mapphone-mdm6600.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/mfd/motorola,mapphone-mdm6600.yaml b/Documentation/devicetree/bindings/mfd/motorola,mapphone-mdm6600.yaml
+> new file mode 100644
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/mfd/motorola,mapphone-mdm6600.yaml
+> @@ -0,0 +1,37 @@
+> +# SPDX-License-Identifier: GPL-2.0
 
-Can we first split the kstrotox* (and simple_strto*) to the separate
-header first?
+Dual license new bindings please:
 
-On top of that, why kstrtodev_t is so important? How many users are
-already in the kernel to get an advantage out of it?
-What to do with all other possible variants ("%d:%d", "%dx%d" and its
-%u variant, etc)?
+(GPL-2.0-only OR BSD-2-Clause)
 
-Why simple_strto*() can't be used?
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/mfd/motorola,mapphone-mdm6600.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Motorola Mapphone MDM6600 Modem
+> +
+> +maintainers:
+> +  - Tony Lindgren <tony@atomide.com>
+> +
+> +allOf:
+> +  - $ref: "motorola,mapphone-mdm6600.yaml#"
 
->  #include <linux/export.h>
->  #include <linux/types.h>
->  #include <linux/uaccess.h>
+Huh? A recursive include? I'm not sure how that didn't blow up.
 
-> +#include <linux/kdev_t.h>
-
-Perhaps preserve order? (It's for the future, since I doubt we will
-get this in upstream anyway).
-
---=20
-With Best Regards,
-Andy Shevchenko
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - const: motorola,mapphone-mdm6600-serial
+> +
+> +  phys:
+> +    maxItems: 1
+> +
+> +  phy-names:
+> +    const: usb
+> +
+> +required:
+> +  - compatible
+> +  - phys
+> +  - phy-names
+> +
+> +examples:
+> +  - |
+> +    modem {
+> +        compatible = "motorola,mapphone-mdm6600-serial";
+> +        phys = <&fsusb1_phy>;
+> +        phy-names = "usb";
+> +    };
+> -- 
+> 2.25.0
