@@ -6,30 +6,30 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5686C34022
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 08:42:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61789C3404D
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 08:42:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C9005222D9
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 08:42:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 44A7C208E4
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 08:42:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726593AbgBSImF (ORCPT
+        id S1727274AbgBSImF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
         Wed, 19 Feb 2020 03:42:05 -0500
-Received: from mx2.suse.de ([195.135.220.15]:44320 "EHLO mx2.suse.de"
+Received: from mx2.suse.de ([195.135.220.15]:44310 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726787AbgBSIl1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Feb 2020 03:41:27 -0500
+        id S1726767AbgBSIl0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 19 Feb 2020 03:41:26 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 00008AEAC;
-        Wed, 19 Feb 2020 08:41:25 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id ED0E4AD88;
+        Wed, 19 Feb 2020 08:41:24 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 21/24] n_hdlc: remove spaces between function name and (
-Date:   Wed, 19 Feb 2020 09:41:15 +0100
-Message-Id: <20200219084118.26491-21-jslaby@suse.cz>
+Subject: [PATCH 18/24] n_hdlc: remove unneeded ifdef
+Date:   Wed, 19 Feb 2020 09:41:12 +0100
+Message-Id: <20200219084118.26491-18-jslaby@suse.cz>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20200219084118.26491-1-jslaby@suse.cz>
 References: <20200219084118.26491-1-jslaby@suse.cz>
@@ -40,51 +40,29 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+TTY_NO_WRITE_SPLIT is (always) defined in linux/tty.h, so no need to
+check for it.
+
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/n_hdlc.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/n_hdlc.c | 2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/drivers/tty/n_hdlc.c b/drivers/tty/n_hdlc.c
-index ee27573b0624..d52bcfa7f8e4 100644
+index c4fe09124185..cf8485beaccd 100644
 --- a/drivers/tty/n_hdlc.c
 +++ b/drivers/tty/n_hdlc.c
-@@ -152,7 +152,7 @@ static struct n_hdlc_buf *n_hdlc_buf_get(struct n_hdlc_buf_list *list);
- 
- /* Local functions */
- 
--static struct n_hdlc *n_hdlc_alloc (void);
-+static struct n_hdlc *n_hdlc_alloc(void);
- 
- /* max frame size for memory allocations */
- static int maxframe = 4096;
-@@ -222,7 +222,7 @@ static void n_hdlc_tty_close(struct tty_struct *tty)
-  *
-  * Returns 0 if success, otherwise error code
-  */
--static int n_hdlc_tty_open (struct tty_struct *tty)
-+static int n_hdlc_tty_open(struct tty_struct *tty)
- {
- 	struct n_hdlc *n_hdlc = tty->disc_data;
- 
-@@ -347,7 +347,7 @@ static void n_hdlc_tty_wakeup(struct tty_struct *tty)
- {
- 	struct n_hdlc *n_hdlc = tty->disc_data;
- 
--	n_hdlc_send_frames (n_hdlc, tty);
-+	n_hdlc_send_frames(n_hdlc, tty);
- }	/* end of n_hdlc_tty_wakeup() */
- 
- /**
-@@ -406,7 +406,7 @@ static void n_hdlc_tty_receive(struct tty_struct *tty, const __u8 *data,
- 	n_hdlc_buf_put(&n_hdlc->rx_buf_list, buf);
- 
- 	/* wake up any blocked reads and perform async signalling */
--	wake_up_interruptible (&tty->read_wait);
-+	wake_up_interruptible(&tty->read_wait);
- 	if (tty->fasync != NULL)
- 		kill_fasync(&tty->fasync, SIGIO, POLL_IN);
- 
+@@ -244,10 +244,8 @@ static int n_hdlc_tty_open (struct tty_struct *tty)
+ 	tty->disc_data = n_hdlc;
+ 	tty->receive_room = 65536;
+ 	
+-#if defined(TTY_NO_WRITE_SPLIT)
+ 	/* change tty_io write() to not split large writes into 8K chunks */
+ 	set_bit(TTY_NO_WRITE_SPLIT,&tty->flags);
+-#endif
+ 	
+ 	/* flush receive data from driver */
+ 	tty_driver_flush_buffer(tty);
 -- 
 2.25.0
 
