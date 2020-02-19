@@ -7,30 +7,30 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69012C34050
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 08:42:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3060FC34051
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 08:42:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3F912208E4
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 08:42:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 08C45208E4
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 08:42:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726803AbgBSIl1 (ORCPT
+        id S1726793AbgBSIl0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Feb 2020 03:41:27 -0500
-Received: from mx2.suse.de ([195.135.220.15]:44328 "EHLO mx2.suse.de"
+        Wed, 19 Feb 2020 03:41:26 -0500
+Received: from mx2.suse.de ([195.135.220.15]:44302 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726773AbgBSIl0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        id S1726760AbgBSIl0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
         Wed, 19 Feb 2020 03:41:26 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 467EEB03B;
-        Wed, 19 Feb 2020 08:41:25 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 9EE78B031;
+        Wed, 19 Feb 2020 08:41:24 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 19/24] n_hdlc: use __func__ and pr_ print helpers
-Date:   Wed, 19 Feb 2020 09:41:13 +0100
-Message-Id: <20200219084118.26491-19-jslaby@suse.cz>
+Subject: [PATCH 17/24] n_hdlc: switch tbusy and woke_up to bools
+Date:   Wed, 19 Feb 2020 09:41:11 +0100
+Message-Id: <20200219084118.26491-17-jslaby@suse.cz>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20200219084118.26491-1-jslaby@suse.cz>
 References: <20200219084118.26491-1-jslaby@suse.cz>
@@ -41,66 +41,64 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* we mark the message in n_hdlc_tty_receive as error
-* we use __func__ instead of explicit function name
-* we switch the remaining prints to pr_* helpers
+They are in fact bools, so save some bytes (8B on x86_64). Also describe
+@woke_up as we know what it is.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/n_hdlc.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/tty/n_hdlc.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/tty/n_hdlc.c b/drivers/tty/n_hdlc.c
-index cf8485beaccd..048e5a155bea 100644
+index 615abe582cac..c4fe09124185 100644
 --- a/drivers/tty/n_hdlc.c
 +++ b/drivers/tty/n_hdlc.c
-@@ -197,7 +197,7 @@ static void n_hdlc_tty_close(struct tty_struct *tty)
- 	struct n_hdlc *n_hdlc = tty->disc_data;
- 
- 	if (n_hdlc->magic != HDLC_MAGIC) {
--		printk(KERN_WARNING "n_hdlc: trying to close unopened tty!\n");
-+		pr_warn("n_hdlc: trying to close unopened tty!\n");
- 		return;
- 	}
- #if defined(TTY_NO_WRITE_SPLIT)
-@@ -231,13 +231,13 @@ static int n_hdlc_tty_open (struct tty_struct *tty)
- 
- 	/* There should not be an existing table for this slot. */
- 	if (n_hdlc) {
--		printk (KERN_ERR"n_hdlc_tty_open:tty already associated!\n" );
-+		pr_err("%s: tty already associated!\n", __func__);
- 		return -EEXIST;
- 	}
- 	
- 	n_hdlc = n_hdlc_alloc();
- 	if (!n_hdlc) {
--		printk (KERN_ERR "n_hdlc_alloc failed\n");
-+		pr_err("%s: n_hdlc_alloc failed\n", __func__);
- 		return -ENFILE;
- 	}
+@@ -125,7 +125,7 @@ struct n_hdlc_buf_list {
+  * struct n_hdlc - per device instance data structure
+  * @magic - magic value for structure
+  * @tbusy - reentrancy flag for tx wakeup code
+- * @woke_up - FIXME: describe this field
++ * @woke_up - tx wakeup needs to be run again as it was called while @tbusy
+  * @tx_buf_list - list of pending transmit frame buffers
+  * @rx_buf_list - list of received frame buffers
+  * @tx_free_buf_list - list unused transmit frame buffers
+@@ -133,8 +133,8 @@ struct n_hdlc_buf_list {
+  */
+ struct n_hdlc {
+ 	int			magic;
+-	int			tbusy;
+-	int			woke_up;
++	bool			tbusy;
++	bool			woke_up;
+ 	struct n_hdlc_buf_list	tx_buf_list;
+ 	struct n_hdlc_buf_list	rx_buf_list;
+ 	struct n_hdlc_buf_list	tx_free_buf_list;
+@@ -275,12 +275,12 @@ static void n_hdlc_send_frames(struct n_hdlc *n_hdlc, struct tty_struct *tty)
  		
-@@ -371,8 +371,8 @@ static void n_hdlc_tty_receive(struct tty_struct *tty, const __u8 *data,
- 
- 	/* verify line is using HDLC discipline */
- 	if (n_hdlc->magic != HDLC_MAGIC) {
--		printk("%s(%d) line not using HDLC discipline\n",
--			__FILE__,__LINE__);
-+		pr_err("%s(%d) line not using HDLC discipline\n",
-+				__FILE__, __LINE__);
+  	spin_lock_irqsave(&n_hdlc->tx_buf_list.spinlock, flags);
+ 	if (n_hdlc->tbusy) {
+-		n_hdlc->woke_up = 1;
+- 		spin_unlock_irqrestore(&n_hdlc->tx_buf_list.spinlock, flags);
++		n_hdlc->woke_up = true;
++		spin_unlock_irqrestore(&n_hdlc->tx_buf_list.spinlock, flags);
  		return;
  	}
+-	n_hdlc->tbusy = 1;
+-	n_hdlc->woke_up = 0;
++	n_hdlc->tbusy = true;
++	n_hdlc->woke_up = false;
+ 	spin_unlock_irqrestore(&n_hdlc->tx_buf_list.spinlock, flags);
+ 
+ 	tbuf = n_hdlc_buf_get(&n_hdlc->tx_buf_list);
+@@ -332,7 +332,7 @@ static void n_hdlc_send_frames(struct n_hdlc *n_hdlc, struct tty_struct *tty)
  	
-@@ -431,8 +431,8 @@ static ssize_t n_hdlc_tty_read(struct tty_struct *tty, struct file *file,
- 
- 	/* verify user access to buffer */
- 	if (!access_ok(buf, nr)) {
--		printk(KERN_WARNING "%s(%d) n_hdlc_tty_read() can't verify user "
--		"buffer\n", __FILE__, __LINE__);
-+		pr_warn("%s(%d) %s() can't verify user buffer\n",
-+				__FILE__, __LINE__, __func__);
- 		return -EFAULT;
- 	}
- 
+ 	/* Clear the re-entry flag */
+ 	spin_lock_irqsave(&n_hdlc->tx_buf_list.spinlock, flags);
+-	n_hdlc->tbusy = 0;
++	n_hdlc->tbusy = false;
+ 	spin_unlock_irqrestore(&n_hdlc->tx_buf_list.spinlock, flags); 
+ 	
+         if (n_hdlc->woke_up)
 -- 
 2.25.0
 
