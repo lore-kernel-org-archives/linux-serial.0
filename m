@@ -2,102 +2,293 @@ Return-Path: <SRS0=V5ud=4H=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E3CC3404D
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 12:49:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76FEDC34047
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 13:21:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 500702465D
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 12:49:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1582116548;
-	bh=58bXY9q6mlP2sQSs8i7U387PVjegj463Lo2cND9YXOM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=ui4KRZpJD2Rxf+p0ri/qSCUtDy+f8OxFI0VKzjrsuq5daFXLRPEQp3CLOaysxeNQn
-	 F2uF66fId/lSslsp+nK8IYqq1I04M4IZD/f9TJMBhVFZYpUlzzXPrvnHA8/zDAqh38
-	 FtTw7J4KoIjDWoGwhZo3tf/HnhishJEhFFf4QuyU=
+	by mail.kernel.org (Postfix) with ESMTP id 4A4A421D56
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 13:21:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727103AbgBSMtI (ORCPT
+        id S1726788AbgBSNVQ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Feb 2020 07:49:08 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:39937 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726491AbgBSMtH (ORCPT
+        Wed, 19 Feb 2020 08:21:16 -0500
+Received: from fudo.makrotopia.org ([185.142.180.71]:44768 "EHLO
+        fudo.makrotopia.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726551AbgBSNVP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Feb 2020 07:49:07 -0500
-Received: by mail-lf1-f67.google.com with SMTP id c23so17347623lfi.7;
-        Wed, 19 Feb 2020 04:49:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=c4IZGpTAiNI/MqpzST2+IXgvoSC5bM5KD7bSza2xjkg=;
-        b=NAICxQe2DIF/hLG5UTYxHPxbC+XLDC4ccO4b+4UZ5aY58C/SnY3tYe/oSHMxgdv/CU
-         s69En5N61+WCGdSL9YrcIBsMHoMBJB4Q/THE7jd9JARwgsYXvUXA/TRmQqEvh5n5/j4Y
-         5IJdHI2/rgNghRyMvSrlrhOU2U97jlknXvaoYlwgJbP1tCqgzUYlT1T6avrboFZpiWJW
-         qq0C7k12iiI8X1AKSfigmXd5Y/i10B9lw8c3uEw1ufHhLsC2ZVzNlJnQWuQUc3oaeMEj
-         Pmlv0CfcDeUOXLpaSC9UzoVMKJh5BLYt35SgjoPciS3GcXyTWK1aaLt8puRPmILmg3PR
-         L7PQ==
-X-Gm-Message-State: APjAAAXUwW1FxSW7abEzkdhEqwyP79WRcTuHwZmQ9zLHl12xXERulYLi
-        LXBRLkFmpQD5ThMbt05tgnw=
-X-Google-Smtp-Source: APXvYqx7jMm3SXNV5f1xhHX5oxfd9Wq+q/tT0PPzUs29Vkrs1MRxvQ83Ykbc8URnUGMar9i54Q/j0w==
-X-Received: by 2002:a19:f519:: with SMTP id j25mr13281499lfb.41.1582116544565;
-        Wed, 19 Feb 2020 04:49:04 -0800 (PST)
-Received: from xi.terra (c-12aae455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.170.18])
-        by smtp.gmail.com with ESMTPSA id o188sm1235568lfa.50.2020.02.19.04.49.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Feb 2020 04:49:03 -0800 (PST)
-Received: from johan by xi.terra with local (Exim 4.92.3)
-        (envelope-from <johan@kernel.org>)
-        id 1j4Omh-00021O-RY; Wed, 19 Feb 2020 13:48:59 +0100
-Date:   Wed, 19 Feb 2020 13:48:59 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Johan Hovold <johan@kernel.org>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-leds@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v6 4/4] leds: trigger: implement a tty trigger
-Message-ID: <20200219124859.GC32540@localhost>
-References: <20200213091600.554-1-uwe@kleine-koenig.org>
- <20200213091600.554-5-uwe@kleine-koenig.org>
- <20200219105239.GA32540@localhost>
- <20200219110306.k5jndutalll64esu@pengutronix.de>
- <20200219111913.GB32540@localhost>
+        Wed, 19 Feb 2020 08:21:15 -0500
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.92.2)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1j4PHo-0007Te-GO; Wed, 19 Feb 2020 14:21:09 +0100
+Date:   Wed, 19 Feb 2020 14:20:55 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>,
+        Chuanhong Guo <gch981213@gmail.com>,
+        Piotr Dymacz <pepe2k@gmail.com>,
+        Eitan Cohen <eitan@neot-semadar.com>,
+        Ori Gofen <origofen@gmail.com>
+Subject: [PATCH] serial: ar933x_uart: add RS485 support
+Message-ID: <20200219132055.GA31144@makrotopia.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200219111913.GB32540@localhost>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Feb 19, 2020 at 12:19:13PM +0100, Johan Hovold wrote:
-> On Wed, Feb 19, 2020 at 12:03:06PM +0100, Uwe Kleine-König wrote:
-> > On Wed, Feb 19, 2020 at 11:52:39AM +0100, Johan Hovold wrote:
+Emulate half-duplex operations and use mctrl_gpio to add support for
+RS485 tranceiver with transmit/receive switch hooked to RTS GPIO line.
 
-> > If I understand correctly calling tty_kopen_shared() doesn't open the
-> > device, just keep it referenced which prevents it to disappear. Unless I
-> > miss something it doesn't result in the tty's .open() being called.
-> 
-> So tty_kopen_shared() is something you added. Judging from a quick look
-> it seems you can only attach a trigger to an already open port, but the
-> trigger will then keep the port open (again, consider modem control,
-> power).
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+---
+ drivers/tty/serial/Kconfig       |   1 +
+ drivers/tty/serial/ar933x_uart.c | 111 +++++++++++++++++++++++++++++--
+ 2 files changed, 106 insertions(+), 6 deletions(-)
 
-Sorry, my bad; this reference shouldn't prevent the port from being
-closed.
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 52eaac21ff9f..b675924138e0 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1279,6 +1279,7 @@ config SERIAL_AR933X
+ 	tristate "AR933X serial port support"
+ 	depends on HAVE_CLK && ATH79
+ 	select SERIAL_CORE
++	select SERIAL_MCTRL_GPIO if GPIOLIB
+ 	help
+ 	  If you have an Atheros AR933X SOC based board and want to use the
+ 	  built-in UART of the SoC, say Y to this option.
+diff --git a/drivers/tty/serial/ar933x_uart.c b/drivers/tty/serial/ar933x_uart.c
+index ea12f10610b6..01d362ca3923 100644
+--- a/drivers/tty/serial/ar933x_uart.c
++++ b/drivers/tty/serial/ar933x_uart.c
+@@ -13,6 +13,7 @@
+ #include <linux/console.h>
+ #include <linux/sysrq.h>
+ #include <linux/delay.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/platform_device.h>
+ #include <linux/of.h>
+ #include <linux/of_platform.h>
+@@ -29,6 +30,8 @@
+ 
+ #include <asm/mach-ath79/ar933x_uart.h>
+ 
++#include "serial_mctrl_gpio.h"
++
+ #define DRIVER_NAME "ar933x-uart"
+ 
+ #define AR933X_UART_MAX_SCALE	0xff
+@@ -47,6 +50,8 @@ struct ar933x_uart_port {
+ 	unsigned int		min_baud;
+ 	unsigned int		max_baud;
+ 	struct clk		*clk;
++	struct mctrl_gpios	*gpios;
++	struct gpio_desc	*rts_gpiod;
+ };
+ 
+ static inline unsigned int ar933x_uart_read(struct ar933x_uart_port *up,
+@@ -100,6 +105,18 @@ static inline void ar933x_uart_stop_tx_interrupt(struct ar933x_uart_port *up)
+ 	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, up->ier);
+ }
+ 
++static inline void ar933x_uart_start_rx_interrupt(struct ar933x_uart_port *up)
++{
++	up->ier |= AR933X_UART_INT_RX_VALID;
++	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, up->ier);
++}
++
++static inline void ar933x_uart_stop_rx_interrupt(struct ar933x_uart_port *up)
++{
++	up->ier &= ~AR933X_UART_INT_RX_VALID;
++	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, up->ier);
++}
++
+ static inline void ar933x_uart_putc(struct ar933x_uart_port *up, int ch)
+ {
+ 	unsigned int rdata;
+@@ -125,11 +142,21 @@ static unsigned int ar933x_uart_tx_empty(struct uart_port *port)
+ 
+ static unsigned int ar933x_uart_get_mctrl(struct uart_port *port)
+ {
+-	return TIOCM_CAR;
++	struct ar933x_uart_port *up =
++		container_of(port, struct ar933x_uart_port, port);
++	int ret = TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
++
++	mctrl_gpio_get(up->gpios, &ret);
++
++	return ret;
+ }
+ 
+ static void ar933x_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
++	struct ar933x_uart_port *up =
++		container_of(port, struct ar933x_uart_port, port);
++
++	mctrl_gpio_set(up->gpios, mctrl);
+ }
+ 
+ static void ar933x_uart_start_tx(struct uart_port *port)
+@@ -140,6 +167,37 @@ static void ar933x_uart_start_tx(struct uart_port *port)
+ 	ar933x_uart_start_tx_interrupt(up);
+ }
+ 
++static void ar933x_uart_wait_tx_complete(struct ar933x_uart_port *up)
++{
++	unsigned int status;
++	unsigned int timeout = 60000;
++
++	/* Wait up to 60ms for the character(s) to be sent. */
++	do {
++		status = ar933x_uart_read(up, AR933X_UART_CS_REG);
++		if (--timeout == 0)
++			break;
++		udelay(1);
++	} while (status & AR933X_UART_CS_TX_BUSY);
++
++	if (timeout == 0)
++		dev_err(up->port.dev, "waiting for TX timed out\n");
++}
++
++static void ar933x_uart_rx_flush(struct ar933x_uart_port *up)
++{
++	unsigned int status;
++
++	/* clear RX_VALID interrupt */
++	ar933x_uart_write(up, AR933X_UART_INT_REG, AR933X_UART_INT_RX_VALID);
++
++	/* remove characters from the RX FIFO */
++	do {
++		ar933x_uart_write(up, AR933X_UART_DATA_REG, AR933X_UART_DATA_RX_CSR);
++		status = ar933x_uart_read(up, AR933X_UART_DATA_REG);
++	} while (status & AR933X_UART_DATA_RX_CSR);
++}
++
+ static void ar933x_uart_stop_tx(struct uart_port *port)
+ {
+ 	struct ar933x_uart_port *up =
+@@ -153,8 +211,7 @@ static void ar933x_uart_stop_rx(struct uart_port *port)
+ 	struct ar933x_uart_port *up =
+ 		container_of(port, struct ar933x_uart_port, port);
+ 
+-	up->ier &= ~AR933X_UART_INT_RX_VALID;
+-	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, up->ier);
++	ar933x_uart_stop_rx_interrupt(up);
+ }
+ 
+ static void ar933x_uart_break_ctl(struct uart_port *port, int break_state)
+@@ -336,11 +393,18 @@ static void ar933x_uart_rx_chars(struct ar933x_uart_port *up)
+ static void ar933x_uart_tx_chars(struct ar933x_uart_port *up)
+ {
+ 	struct circ_buf *xmit = &up->port.state->xmit;
++	struct serial_rs485 *rs485conf = &up->port.rs485;
+ 	int count;
+ 
+ 	if (uart_tx_stopped(&up->port))
+ 		return;
+ 
++	if ((rs485conf->flags & SER_RS485_ENABLED) &&
++	    (up->port.x_char || !uart_circ_empty(xmit))) {
++		ar933x_uart_stop_rx_interrupt(up);
++		gpiod_set_value(up->rts_gpiod, !!(rs485conf->flags & SER_RS485_RTS_ON_SEND));
++	}
++
+ 	count = up->port.fifosize;
+ 	do {
+ 		unsigned int rdata;
+@@ -368,8 +432,14 @@ static void ar933x_uart_tx_chars(struct ar933x_uart_port *up)
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(&up->port);
+ 
+-	if (!uart_circ_empty(xmit))
++	if (!uart_circ_empty(xmit)) {
+ 		ar933x_uart_start_tx_interrupt(up);
++	} else if (rs485conf->flags & SER_RS485_ENABLED) {
++		ar933x_uart_wait_tx_complete(up);
++		ar933x_uart_rx_flush(up);
++		ar933x_uart_start_rx_interrupt(up);
++		gpiod_set_value(up->rts_gpiod, !!(rs485conf->flags & SER_RS485_RTS_AFTER_SEND));
++	}
+ }
+ 
+ static irqreturn_t ar933x_uart_interrupt(int irq, void *dev_id)
+@@ -427,8 +497,7 @@ static int ar933x_uart_startup(struct uart_port *port)
+ 		AR933X_UART_CS_TX_READY_ORIDE | AR933X_UART_CS_RX_READY_ORIDE);
+ 
+ 	/* Enable RX interrupts */
+-	up->ier = AR933X_UART_INT_RX_VALID;
+-	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, up->ier);
++	ar933x_uart_start_rx_interrupt(up);
+ 
+ 	spin_unlock_irqrestore(&up->port.lock, flags);
+ 
+@@ -511,6 +580,21 @@ static const struct uart_ops ar933x_uart_ops = {
+ 	.verify_port	= ar933x_uart_verify_port,
+ };
+ 
++static int ar933x_config_rs485(struct uart_port *port,
++				struct serial_rs485 *rs485conf)
++{
++	struct ar933x_uart_port *up =
++		container_of(port, struct ar933x_uart_port, port);
++
++	if ((rs485conf->flags & SER_RS485_ENABLED) &&
++	    !up->rts_gpiod) {
++		dev_err(port->dev, "RS485 needs rts-gpio\n");
++		return 1;
++	}
++	port->rs485 = *rs485conf;
++	return 0;
++}
++
+ #ifdef CONFIG_SERIAL_AR933X_CONSOLE
+ static struct ar933x_uart_port *
+ ar933x_console_ports[CONFIG_SERIAL_AR933X_NR_UARTS];
+@@ -680,6 +764,8 @@ static int ar933x_uart_probe(struct platform_device *pdev)
+ 		goto err_disable_clk;
+ 	}
+ 
++	uart_get_rs485_mode(&pdev->dev, &port->rs485);
++
+ 	port->mapbase = mem_res->start;
+ 	port->line = id;
+ 	port->irq = irq_res->start;
+@@ -690,6 +776,7 @@ static int ar933x_uart_probe(struct platform_device *pdev)
+ 	port->regshift = 2;
+ 	port->fifosize = AR933X_UART_FIFO_SIZE;
+ 	port->ops = &ar933x_uart_ops;
++	port->rs485_config = ar933x_config_rs485;
+ 
+ 	baud = ar933x_uart_get_baud(port->uartclk, AR933X_UART_MAX_SCALE, 1);
+ 	up->min_baud = max_t(unsigned int, baud, AR933X_UART_MIN_BAUD);
+@@ -697,6 +784,18 @@ static int ar933x_uart_probe(struct platform_device *pdev)
+ 	baud = ar933x_uart_get_baud(port->uartclk, 0, AR933X_UART_MAX_STEP);
+ 	up->max_baud = min_t(unsigned int, baud, AR933X_UART_MAX_BAUD);
+ 
++	up->gpios = mctrl_gpio_init(port, 0);
++	if (IS_ERR(up->gpios) && PTR_ERR(up->gpios) != -ENOSYS)
++		return PTR_ERR(up->gpios);
++
++	up->rts_gpiod = mctrl_gpio_to_gpiod(up->gpios, UART_GPIO_RTS);
++
++	if ((port->rs485.flags & SER_RS485_ENABLED) &&
++	    !up->rts_gpiod) {
++		dev_err(&pdev->dev, "lacking rts-gpio, disabling RS485\n");
++		port->rs485.flags &= ~SER_RS485_ENABLED;
++	}
++
+ #ifdef CONFIG_SERIAL_AR933X_CONSOLE
+ 	ar933x_console_ports[up->port.line] = up;
+ #endif
+-- 
+2.25.1
 
-The fact that you need the port to be open before you can attach a
-trigger does sound like a problem though (e.g. consider udev rules).
-
-Johan
