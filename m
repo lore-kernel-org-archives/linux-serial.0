@@ -2,146 +2,87 @@ Return-Path: <SRS0=V5ud=4H=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B2FC3404D
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 08:50:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83CE6C34047
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 10:40:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1813A222D9
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 08:50:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4C08124671
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 10:40:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1582108816;
+	bh=8JYFzGZHQl9Mlj4BlcdpdXsjdg+HCV5duko0Ww+/3ts=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=hKfhfD1priu8HgjAs41gPIka+GxjMJ+sV+U+tRBa/C5MefBJuOGGX1Pi0AzxCMEGi
+	 rMHj3ZSgirjeTEL0agxwjD8CiXz5/P6sB4KJJqVBKFYTMWlXz6Ur35qaf94PMHu9Pr
+	 Fnu7YPhkB3TQNSc3Hi+05fENsgRUYmq07k6Z46ko=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726202AbgBSIub (ORCPT
+        id S1726514AbgBSKkP (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Feb 2020 03:50:31 -0500
-Received: from mx2.suse.de ([195.135.220.15]:49712 "EHLO mx2.suse.de"
+        Wed, 19 Feb 2020 05:40:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51188 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726496AbgBSItw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Feb 2020 03:49:52 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 886EAAC69;
-        Wed, 19 Feb 2020 08:49:50 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 01/10] n_gsm: drop unneeded gsm_dlci->fifo field
-Date:   Wed, 19 Feb 2020 09:49:40 +0100
-Message-Id: <20200219084949.28074-1-jslaby@suse.cz>
-X-Mailer: git-send-email 2.25.0
+        id S1726270AbgBSKkP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 19 Feb 2020 05:40:15 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A68B321D56;
+        Wed, 19 Feb 2020 10:40:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1582108815;
+        bh=8JYFzGZHQl9Mlj4BlcdpdXsjdg+HCV5duko0Ww+/3ts=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=D+fmuPcnBwAiKMYnQrNvzuGYOjb2KTjyX5HfTG0lNs3In6g0cemEDq808Ew9cEW4k
+         ByqighL55iGXWuJat2cl6WrbwVQJ4wOiXP5/u8Ea8AeB8aaWFB+0M3WKQGb9X8jAcN
+         TQS56FeVzpSYqk586vJhfvbluu0CEb7qtB2yhsas=
+Date:   Wed, 19 Feb 2020 11:40:12 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>
+Cc:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
+        Jiri Slaby <jslaby@suse.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, linux-leds@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v6 0/4] leds: trigger: implement a tty trigger
+Message-ID: <20200219104012.GA2814125@kroah.com>
+References: <20200213091600.554-1-uwe@kleine-koenig.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200213091600.554-1-uwe@kleine-koenig.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-gsm_dlci->fifo always points to gsm_dlci->_fifo. So drop the pointer and
-rename _fifo to fifo. And update all the users (add & to them).
+On Thu, Feb 13, 2020 at 10:15:56AM +0100, Uwe Kleine-König wrote:
+> From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> 
+> Hello,
+> 
+> This is v6 of my quest to introduce ledtriggers for UARTs. The previous
+> series is available at
+> 
+> 	http://lore.kernel.org/r/20191219093947.15502-1-u.kleine-koenig@pengutronix.de
+> 
+> The changes compared to that are that parsing of the dev parameter is
+> more strict and that I set brightness directly from the kworker instead
+> of using led_blink_set_oneshot which makes use of another kworker. (Both
+> requested by Pavel Machek.)
+> 
+> For the former I introduced a new helper kstrtodev_t() in the spirit of
+> kstrtoul() to implement the stricter parsing (instead of the lax one
+> using plain sscanf() in v5).
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- drivers/tty/n_gsm.c | 22 ++++++++++------------
- 1 file changed, 10 insertions(+), 12 deletions(-)
+Looks good to me, Pavel, any objection to me merging this through the
+tty tree?
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 5f8c30f0538e..828c0c7babdd 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -129,8 +129,7 @@ struct gsm_dlci {
- 	int retries;
- 	/* Uplink tty if active */
- 	struct tty_port port;	/* The tty bound to this DLCI if there is one */
--	struct kfifo *fifo;	/* Queue fifo for the DLCI */
--	struct kfifo _fifo;	/* For new fifo API porting only */
-+	struct kfifo fifo;	/* Queue fifo for the DLCI */
- 	int adaption;		/* Adaption layer in use */
- 	int prev_adaption;
- 	u32 modem_rx;		/* Our incoming virtual modem lines */
-@@ -796,7 +795,7 @@ static int gsm_dlci_data_output(struct gsm_mux *gsm, struct gsm_dlci *dlci)
- 
- 	total_size = 0;
- 	while (1) {
--		len = kfifo_len(dlci->fifo);
-+		len = kfifo_len(&dlci->fifo);
- 		if (len == 0)
- 			return total_size;
- 
-@@ -820,7 +819,7 @@ static int gsm_dlci_data_output(struct gsm_mux *gsm, struct gsm_dlci *dlci)
- 			*dp++ = gsm_encode_modem(dlci);
- 			break;
- 		}
--		WARN_ON(kfifo_out_locked(dlci->fifo, dp , len, &dlci->lock) != len);
-+		WARN_ON(kfifo_out_locked(&dlci->fifo, dp , len, &dlci->lock) != len);
- 		__gsm_data_queue(dlci, msg);
- 		total_size += size;
- 	}
-@@ -1424,7 +1423,7 @@ static void gsm_dlci_close(struct gsm_dlci *dlci)
- 	dlci->state = DLCI_CLOSED;
- 	if (dlci->addr != 0) {
- 		tty_port_tty_hangup(&dlci->port, false);
--		kfifo_reset(dlci->fifo);
-+		kfifo_reset(&dlci->fifo);
- 	} else
- 		dlci->gsm->dead = 1;
- 	wake_up(&dlci->gsm->event);
-@@ -1645,8 +1644,7 @@ static struct gsm_dlci *gsm_dlci_alloc(struct gsm_mux *gsm, int addr)
- 		return NULL;
- 	spin_lock_init(&dlci->lock);
- 	mutex_init(&dlci->mutex);
--	dlci->fifo = &dlci->_fifo;
--	if (kfifo_alloc(&dlci->_fifo, 4096, GFP_KERNEL) < 0) {
-+	if (kfifo_alloc(&dlci->fifo, 4096, GFP_KERNEL) < 0) {
- 		kfree(dlci);
- 		return NULL;
- 	}
-@@ -1681,7 +1679,7 @@ static void gsm_dlci_free(struct tty_port *port)
- 
- 	del_timer_sync(&dlci->t1);
- 	dlci->gsm->dlci[dlci->addr] = NULL;
--	kfifo_free(dlci->fifo);
-+	kfifo_free(&dlci->fifo);
- 	while ((dlci->skb = skb_dequeue(&dlci->skb_list)))
- 		dev_kfree_skb(dlci->skb);
- 	kfree(dlci);
-@@ -3030,7 +3028,7 @@ static int gsmtty_write(struct tty_struct *tty, const unsigned char *buf,
- 	if (dlci->state == DLCI_CLOSED)
- 		return -EINVAL;
- 	/* Stuff the bytes into the fifo queue */
--	sent = kfifo_in_locked(dlci->fifo, buf, len, &dlci->lock);
-+	sent = kfifo_in_locked(&dlci->fifo, buf, len, &dlci->lock);
- 	/* Need to kick the channel */
- 	gsm_dlci_data_kick(dlci);
- 	return sent;
-@@ -3041,7 +3039,7 @@ static int gsmtty_write_room(struct tty_struct *tty)
- 	struct gsm_dlci *dlci = tty->driver_data;
- 	if (dlci->state == DLCI_CLOSED)
- 		return -EINVAL;
--	return TX_SIZE - kfifo_len(dlci->fifo);
-+	return TX_SIZE - kfifo_len(&dlci->fifo);
- }
- 
- static int gsmtty_chars_in_buffer(struct tty_struct *tty)
-@@ -3049,7 +3047,7 @@ static int gsmtty_chars_in_buffer(struct tty_struct *tty)
- 	struct gsm_dlci *dlci = tty->driver_data;
- 	if (dlci->state == DLCI_CLOSED)
- 		return -EINVAL;
--	return kfifo_len(dlci->fifo);
-+	return kfifo_len(&dlci->fifo);
- }
- 
- static void gsmtty_flush_buffer(struct tty_struct *tty)
-@@ -3061,7 +3059,7 @@ static void gsmtty_flush_buffer(struct tty_struct *tty)
- 	   then the data being transmitted can't simply be junked once
- 	   it has first hit the stack. Until then we can just blow it
- 	   away */
--	kfifo_reset(dlci->fifo);
-+	kfifo_reset(&dlci->fifo);
- 	/* Need to unhook this DLCI from the transmit queue logic */
- }
- 
--- 
-2.25.0
+thanks,
 
+greg k-h
