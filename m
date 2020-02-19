@@ -2,96 +2,136 @@ Return-Path: <SRS0=V5ud=4H=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6413AC34047
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 11:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF61C34047
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 11:19:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1CE8424658
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 11:15:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 376C6206E2
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 11:19:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1582110925;
-	bh=AvRb/PmmipD49Co7Ex6q8IW7ShT2DIm81mwAMV5K3Vk=;
+	s=default; t=1582111163;
+	bh=bw7tkXaiDl+bnrBfZ2KC0VD9hye+RUOVzPXLGIA9hPo=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=PfY6rEdbtdWnrj8vyKRxbbQmQhugrExU5a/drWvOBNDUf3TF8QhGYYKZzNCaygky9
-	 bpKFV7FjDyxxHPJYCKp0TF9AsLczdq5qhkcyyHd48mnSnBg5VItELg2hqdo+1GKdu0
-	 SeNJwCGja7oRehSNsqQ4WZ/KKj2DXtAVYYf8JcJU=
+	b=073WqLLh78Wr+noXlR4uqQVmsJ9o1G5AqF7UxtJR1cei4EbNryNRnMgEzc6J3oBM6
+	 OAwSYcxkNm8wXLLE9WWcBL4dYlBwu7FD/FzZMwYoWLscmaPIY89CjtkxFRMzRU51Kl
+	 RvpgJ1eoI4+A3uvCEGmuXvzT+HtTNLicubBzZ2A8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726786AbgBSLPY (ORCPT
+        id S1726497AbgBSLTU (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Feb 2020 06:15:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60436 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726636AbgBSLPY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Feb 2020 06:15:24 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E426F2067D;
-        Wed, 19 Feb 2020 11:15:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582110922;
-        bh=AvRb/PmmipD49Co7Ex6q8IW7ShT2DIm81mwAMV5K3Vk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zYg3iJ4Nsu4lS0v5lCBYbeVo3c3VnvtlQBXZrkqILUQz08qlbItCwafIkdGN77Uwt
-         541+KEAyYkxvX3GadCpLYKBG9UFMjmv8/4BlvDHmQsEa17cQaJgYViDmhgEp0mHNWg
-         CTXu4V4Izi3NZDTk+01HlRSLq26BmYrDCA2fnyok=
-Date:   Wed, 19 Feb 2020 12:15:19 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Ronald =?iso-8859-1?Q?Tschal=E4r?= <ronald@innovation.ch>
-Cc:     Rob Herring <robh@kernel.org>, Jiri Slaby <jslaby@suse.com>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] serdev: Fix detection of UART devices on Apple machines.
-Message-ID: <20200219111519.GB2814125@kroah.com>
-References: <20200211194723.486217-1-ronald@innovation.ch>
+        Wed, 19 Feb 2020 06:19:20 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:34659 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726469AbgBSLTU (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 19 Feb 2020 06:19:20 -0500
+Received: by mail-lj1-f193.google.com with SMTP id x7so26626327ljc.1;
+        Wed, 19 Feb 2020 03:19:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=YMrisIju2xkaYMsmg7qHjv2/R/a5abS9W6nC/unzPBU=;
+        b=ehnJdxh+u1EGVGVOMvpYrAh00iOMtXGjaAfkAtbyLjCtGSAJclGf5fTwgowg0xJpuu
+         hxJCknqOR0ZM3goUkZSPbTck8sz1uwP2D/KQEagt0hO+sr5BIIw4hAmnJ2nZbXt2YZrI
+         R7VCH9B8n8G7SZ6KNvP70X5wh4PJTlLu4rx56LB1BT5QPj2JIi4390imQU4lh+ZvtTJ+
+         AwzxcVRnAshzwrLzBwuU06zi9xDqfGcyCOXGbpmlX+bQKD2vvKULb/fxRFI+P/Y8ztlu
+         tR7R2FdmYpxX8/+zajirWyiDLaCmh2XNcWhQNpsDS+qZGflgn62AKeOCmcuYrj6b+flU
+         3I/g==
+X-Gm-Message-State: APjAAAWOoBfzbw88LXfty8wK5Xd2mt8kHce1uCJfWiSFAr5qQLdNQbaz
+        zX6z7aib8qMS9Cp2xhMQT1I=
+X-Google-Smtp-Source: APXvYqyhI2csZSzCeIjjdIdhkC51zzAlpSMWZLNoe2xCIua51ifm1VcbOYzx/0tQGr0cT3kjZGExCQ==
+X-Received: by 2002:a2e:b04b:: with SMTP id d11mr16004699ljl.248.1582111157513;
+        Wed, 19 Feb 2020 03:19:17 -0800 (PST)
+Received: from xi.terra (c-12aae455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.170.18])
+        by smtp.gmail.com with ESMTPSA id 11sm1032702lju.103.2020.02.19.03.19.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Feb 2020 03:19:16 -0800 (PST)
+Received: from johan by xi.terra with local (Exim 4.92.3)
+        (envelope-from <johan@kernel.org>)
+        id 1j4NNp-0000wX-R8; Wed, 19 Feb 2020 12:19:13 +0100
+Date:   Wed, 19 Feb 2020 12:19:13 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Johan Hovold <johan@kernel.org>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-leds@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v6 4/4] leds: trigger: implement a tty trigger
+Message-ID: <20200219111913.GB32540@localhost>
+References: <20200213091600.554-1-uwe@kleine-koenig.org>
+ <20200213091600.554-5-uwe@kleine-koenig.org>
+ <20200219105239.GA32540@localhost>
+ <20200219110306.k5jndutalll64esu@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200211194723.486217-1-ronald@innovation.ch>
+In-Reply-To: <20200219110306.k5jndutalll64esu@pengutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Feb 11, 2020 at 11:47:23AM -0800, Ronald Tschalär wrote:
-> On Apple devices the _CRS method returns an empty resource template, and
-> the resource settings are instead provided by the _DSM method. But
-> commit 33364d63c75d6182fa369cea80315cf1bb0ee38e (serdev: Add ACPI
-> devices by ResourceSource field) changed the search for serdev devices
-> to require valid, non-empty resource template, thereby breaking Apple
-> devices and causing bluetooth devices to not be found.
+On Wed, Feb 19, 2020 at 12:03:06PM +0100, Uwe Kleine-König wrote:
+> On Wed, Feb 19, 2020 at 11:52:39AM +0100, Johan Hovold wrote:
+> > On Thu, Feb 13, 2020 at 10:16:00AM +0100, Uwe Kleine-König wrote:
+> > > From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> > > 
+> > > Usage is as follows:
+> > > 
+> > > 	myled=ledname
+> > > 	tty=ttyS0
+> > > 
+> > > 	echo tty > /sys/class/leds/$myled/trigger
+> > > 	cat /sys/class/tty/$tty/dev > /sys/class/leds/$myled/dev
+> > > 
+> > > . When this new trigger is active it periodically checks the tty's
+> > > statistics and when it changed since the last check the led is flashed
+> > > once.
+> > > 
+> > > Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> > > ---
+> > 
+> > > +static ssize_t dev_store(struct device *dev,
+> > > +			 struct device_attribute *attr, const char *buf,
+> > > +			 size_t size)
+> > > +{
+> > > +	struct ledtrig_tty_data *trigger_data = led_trigger_get_drvdata(dev);
+> > > +	struct tty_struct *tty;
+> > > +	dev_t d;
+> > > +	int ret;
+> > > +
+> > > +	if (size == 0 || (size == 1 && buf[0] == '\n')) {
+> > > +		tty = NULL;
+> > > +	} else {
+> > > +		ret = kstrtodev_t(buf, &d);
+> > > +		if (ret < 0)
+> > > +			return ret;
+> > > +
+> > > +		tty = tty_kopen_shared(d);
+> > 
+> > I really don't have time to look at this, but having the led-trigger
+> > keep the port open looks fundamentally broken (consider modem-control
+> > signals, power, etc).
 > 
-> This expands the check so that if we don't find a valid template, and
-> we're on an Apple machine, then just check for the device being an
-> immediate child of the controller and having a "baud" property.
-> 
-> Cc: <stable@vger.kernel.org> # 5.5
-> Signed-off-by: Ronald Tschalär <ronald@innovation.ch>
-> ---
->  drivers/tty/serdev/core.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> index ce5309d00280..0f64a10ba51f 100644
-> --- a/drivers/tty/serdev/core.c
-> +++ b/drivers/tty/serdev/core.c
-> @@ -18,6 +18,7 @@
->  #include <linux/sched.h>
->  #include <linux/serdev.h>
->  #include <linux/slab.h>
-> +#include <linux/platform_data/x86/apple.h>
+> If I understand correctly calling tty_kopen_shared() doesn't open the
+> device, just keep it referenced which prevents it to disappear. Unless I
+> miss something it doesn't result in the tty's .open() being called.
 
-Why is this needed?  Just for the x86_apple_machine variable?
+So tty_kopen_shared() is something you added. Judging from a quick look
+it seems you can only attach a trigger to an already open port, but the
+trigger will then keep the port open (again, consider modem control,
+power).
 
-Why do we still have platform_data for new systems anymore?  Can't this
-go into a much more generic location?  Like as an inline function?
+I'm sorry I don't have time to review this myself, but this probably
+needs some more eyes on it before being merged.
 
-thanks,
-
-greg k-h
+Johan
