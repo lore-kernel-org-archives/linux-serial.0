@@ -2,127 +2,122 @@ Return-Path: <SRS0=V5ud=4H=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46C00C34056
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 17:50:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97752C18DF4
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 18:09:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F301220801
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 17:50:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 73D152465D
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 18:09:53 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="fOhn+mov"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="gNqxcpBy"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726582AbgBSRuW (ORCPT
+        id S1726663AbgBSSJw (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Feb 2020 12:50:22 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:35687 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726605AbgBSRuW (ORCPT
+        Wed, 19 Feb 2020 13:09:52 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:38139 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726609AbgBSSJw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Feb 2020 12:50:22 -0500
-Received: by mail-pj1-f67.google.com with SMTP id q39so381183pjc.0
-        for <linux-serial@vger.kernel.org>; Wed, 19 Feb 2020 09:50:22 -0800 (PST)
+        Wed, 19 Feb 2020 13:09:52 -0500
+Received: by mail-pf1-f196.google.com with SMTP id x185so455157pfc.5
+        for <linux-serial@vger.kernel.org>; Wed, 19 Feb 2020 10:09:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=mime-version:content-transfer-encoding:in-reply-to:references
-         :subject:from:cc:to:date:message-id:user-agent;
-        bh=Z7a7oA5rHpxM92NoMV2XbtQ4b8rn3jd4JC722SrafmQ=;
-        b=fOhn+mov0gBaTRqLZ28SsD4CaCbe4sYywxzU+0IQdXyYqPRfDWIHD0a6QUaOAOvzcO
-         +twk639IUbq5BbbwJlBgLtSPQl3/KPAompTFw5Vek33dwfaGACR7YQMl/X0TM7bcrb45
-         J+EeoyrNddqMnQYwbeNYcnQyugCFOVIR3Lthg=
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=DT9b2JqUNcas1GieQOO1UADd6ZveitNnuHA65yQ4esE=;
+        b=gNqxcpByNWRFu0kl0YvLf68XNvjty9vaYNkQyj4UDT0CK1Ig4GRS+PwQznc7FIMoK6
+         TgXzwabcsTBPFnXM77EN8+5Zku0ln7/W1A8zwCJHQiwcJA/d9ndPnODOU14PDRDcC6ai
+         7moER/4RsiWjejAX48uDiH3/nQWS4BpmwI9qA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:content-transfer-encoding
-         :in-reply-to:references:subject:from:cc:to:date:message-id
-         :user-agent;
-        bh=Z7a7oA5rHpxM92NoMV2XbtQ4b8rn3jd4JC722SrafmQ=;
-        b=J8/tNUwzQ9yJpfJOVB1hVwAgmgZ7UguiQmMLFlTiCIuMkssziR2pb/eaqK47UiePuG
-         CvEbvyx6uJlpL3GTPO6INRuMLRGIBNM8LkCS7b0K2lgJxdTgTuwsSS4Ptzdt7wAzxF4V
-         d6LPcACeQWP0OKbE1mQvzxdzNlM0v3GV1oLXgw76Qxainph2uZDG1+BwgXXCgsCn+ceN
-         glSAm/z6TpJveavh5gkWKU2+nWZVlrWgxxQFdgg0qmzgW+2PyFh8QBSFDLithpwOSSw6
-         WrVXw/NUcHPrb8sNBV4ImyDnJh5FCDCj6TJsfc0+6saqfTBwOz0fbUIEoJezsm7mfr3o
-         nYiw==
-X-Gm-Message-State: APjAAAWlUl5JqNPoGWddVGaeh22BqRF11uXtprDBauE4d4wu97GRjUwV
-        DMf25lGpm0Ui+Z293GVy+WPDxyR+22w=
-X-Google-Smtp-Source: APXvYqx2fiqjZ6AKNyrvLHc9HhmGOYJRsA7+KslntBNJvlRCCgTz4zgI0jq4BtqJ1jnmFpB76/+gpA==
-X-Received: by 2002:a17:902:d898:: with SMTP id b24mr27181684plz.133.1582134621518;
-        Wed, 19 Feb 2020 09:50:21 -0800 (PST)
-Received: from chromium.org ([2620:15c:202:1:fa53:7765:582b:82b9])
-        by smtp.gmail.com with ESMTPSA id q7sm321684pgk.62.2020.02.19.09.50.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Feb 2020 09:50:20 -0800 (PST)
-Content-Type: text/plain; charset="utf-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=DT9b2JqUNcas1GieQOO1UADd6ZveitNnuHA65yQ4esE=;
+        b=ubc1yUUh3jetiXiqIfMMJ/giHX/wo3vNhqtdsB5UV8b1H79m75oLkHu20mejPZxXAT
+         cOkIsZJ0NqzHJ0/dUZZvqgbAFyD0JDLI4zStlojCS2FeI+AWX3E25S0VYVouFnpCuOuN
+         sv4IX01YTq94wNj6KD9ycgFbw7zWC5XgLXogwkNy1ybjaAsM7T3Z6Jq6pHXVVFHFsYzl
+         XAmjGLx6G0IO8+C9nThbFaOHhY8m+UHeYIC7eULSvrmNPo3xDzK4LHOSCjy7yeuAx+2J
+         Wkzz1nu2ClH6kI+aNPycnBr2Y/cp1w8bWtkoj09WHJVvp1z1QECp049P8kqwmTPKy/03
+         O6NQ==
+X-Gm-Message-State: APjAAAXjaGq6mERA/2efMEkShxjt/CqgLYsU7h8gf+loiglB9yc0YXVz
+        yU4/R3zx+V7vK/G91isGCeW7Yw==
+X-Google-Smtp-Source: APXvYqyBuOdfaFMKcgQz2InWVMXt9wu5jkvAcdKhlsUWQ2aZek1+MLFnc2VNa4KJ8eoMdzeMh4L0gg==
+X-Received: by 2002:aa7:96b6:: with SMTP id g22mr27963352pfk.206.1582135791976;
+        Wed, 19 Feb 2020 10:09:51 -0800 (PST)
+Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
+        by smtp.gmail.com with ESMTPSA id q21sm281382pff.105.2020.02.19.10.09.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Feb 2020 10:09:51 -0800 (PST)
+Date:   Wed, 19 Feb 2020 10:09:50 -0800
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Akash Asthana <akashast@codeaurora.org>
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
+        mark.rutland@arm.com, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, dianders@chromium.org
+Subject: Re: [PATCH 4/6] spi: spi-geni-qcom: Add interconnect support
+Message-ID: <20200219180950.GA24720@google.com>
+References: <1581946205-27189-1-git-send-email-akashast@codeaurora.org>
+ <1581946205-27189-5-git-send-email-akashast@codeaurora.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <254d7b003fdcd6f5fc0c45ab75b4b5f2@codeaurora.org>
-References: <1581415982-8793-1-git-send-email-skakit@codeaurora.org> <158154775640.184098.13898240474253130921@swboyd.mtv.corp.google.com> <254d7b003fdcd6f5fc0c45ab75b4b5f2@codeaurora.org>
-Subject: Re: [PATCH] tty: serial: qcom_geni_serial: Fix RX cancel command failure
-From:   Stephen Boyd <swboyd@chromium.org>
-Cc:     gregkh@linuxfoundation.org, mgautam@codeaurora.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        akashast@codeaurora.org, rojay@codeaurora.org
-To:     skakit@codeaurora.org
-Date:   Wed, 19 Feb 2020 09:50:19 -0800
-Message-ID: <158213461988.184098.7165493520823815160@swboyd.mtv.corp.google.com>
-User-Agent: alot/0.9
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1581946205-27189-5-git-send-email-akashast@codeaurora.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Quoting skakit@codeaurora.org (2020-02-14 05:17:01)
-> On 2020-02-13 04:19, Stephen Boyd wrote:
-> >     driver_probe_device+0x70/0x140
-> >     __driver_attach_async_helper+0x7c/0xa8
-> >     async_run_entry_fn+0x60/0x178
-> >     process_one_work+0x33c/0x640
-> >     worker_thread+0x2a0/0x470
-> >     kthread+0x128/0x138
-> >     ret_from_fork+0x10/0x18
-> >    Code: 1aca096a 911e0129 b940012b 7100054a (b800450b)
-> I think the most probable explanation of the crash is, set_termios call=20
-> is starting RX engine and RX engine is sampling some garbage data from=20
-> line, and by the time startup is called, we have few data to read.
-> How frequently you are able to see this crash? because internally we are =
+On Mon, Feb 17, 2020 at 07:00:03PM +0530, Akash Asthana wrote:
+> Get the interconnect paths for SPI based Serial Engine device
+> and vote according to the current bus speed of the driver.
+> 
+> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+> ---
+>  drivers/spi/spi-geni-qcom.c | 65 ++++++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 62 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/spi/spi-geni-qcom.c b/drivers/spi/spi-geni-qcom.c
+> index c397242..a066ef26 100644
+> --- a/drivers/spi/spi-geni-qcom.c
+> +++ b/drivers/spi/spi-geni-qcom.c
+> @@ -608,16 +653,25 @@ static int spi_geni_remove(struct platform_device *pdev)
+>  	spi_unregister_master(spi);
+>  
+>  	free_irq(mas->irq, spi);
+> +	geni_spi_icc_put(&mas->se);
+>  	pm_runtime_disable(&pdev->dev);
+>  	return 0;
+>  }
+>  
+>  static int __maybe_unused spi_geni_runtime_suspend(struct device *dev)
+>  {
+> +	int ret;
+>  	struct spi_master *spi = dev_get_drvdata(dev);
+>  	struct spi_geni_master *mas = spi_master_get_devdata(spi);
+>  
+> -	return geni_se_resources_off(&mas->se);
+> +	ret = geni_se_resources_off(&mas->se);
+> +	if (ret)
+> +		return ret;
+> +
+> +	icc_set_bw(mas->se.icc_path[GENI_TO_CORE], 0, 0);
 
-> unable to reproduce it.
+This causes my SC7180 system to reset at boot time:
 
-How is set_termios involved? Is that starting the RX side before
-uart_startup() is called? Sorry I haven't looked into the code flow very
-deeply here.
+[    3.509652] qcom-qmp-phy 88e9000.phy-wrapper: Registered Qcom-QMP phy
+[    3.516956] qcom-qusb2-phy 88e3000.phy: Registered Qcom-QUSB2 phy
+[    3.524450] geni_se_qup 8c0000.geniqup: Adding to iommu group 4
+[    3.533896] spi_master spi0: will run message pump with realtime priority
+<reset>
 
-It seems to happen when the bluetooth driver probes so maybe constantly
-adding and removing the hci_uart module will cause this to happen for
-you? I also run the kernel with many debug options enabled, so maybe try
-enabling all the debug stuff? I see it randomly right now so I'm not
-sure.
-
-> >=20
-> >=20
-> > This seems to be the problematic line. We didn't call handle_rx() from
-> > the stop_rx() path before. And this qcom_geni_serial_stop_rx() function
-> > is called from qcom_geni_serial_startup(), but most importantly, we=20
-> > call
-> > into this function from startup before we allocate memory for the
-> > port->rx_fifo member (see the devm_kcalloc() later in
-> > qcom_geni_serial_port_setup() and see how it's after we stop rx).
-> >=20
-> > Why do we need to flush the rx buffer by reading it into the software
-> > buffer? Can't we simply ack any outstanding RX interrupts in the
-> > hardware when we're stopping receive?
-> We can't simply ack RX_LAST interrupt, there is a sticky bit that get=20
-> set on HW level(not exposed to SW) with RX last interrupt. The only way=20
-> to clear it is flush out RX FIFO HW buffer. The sticky bit can create=20
-> problem for future transfers if remained uncleared.
-> How about we allocate buffer to port->rx_fifo in probe itself?
-
-Ok. If we have to read the rx fifo to flush the buffer then perhaps
-write another function that qcom_geni_serial_stop_rx() can use to
-indicate that it wants to throw away whatever is in the rx fifo? Or
-adjust handle_rx() to check for a NULL fifo pointer and throw it away in
-that case? When we're setting up this device I don't understand why we
-would want to read anything out of the rx fifo that was there before the
-driver started.
+The system does not reset when passing 'Bps_to_icc(1000)' (=> 1) instead of 0.
