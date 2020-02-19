@@ -1,89 +1,140 @@
-Return-Path: <SRS0=X3gT=4G=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=V5ud=4H=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AC11C34031
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Feb 2020 23:07:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B544BC34022
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 07:39:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E813824125
-	for <linux-serial@archiver.kernel.org>; Tue, 18 Feb 2020 23:07:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1582067227;
-	bh=6Tcysc0n2Jz+loc1BqpqJbQmT3IfZbzN8vC7ugvLwpA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=OiNCHwuKC3bSYNZwHwMnusPn69rojcDoT3DVTgmk8zJfcdAkd2eTNCCzVf5oxFVvc
-	 jQ0CrerH9KG/TrdmXXzXhuiNV26p7mMSr/yZOIcPh+JIMDCwlmKQCXp6fjfMqyjGTb
-	 Ax++h102zDBHtCDFGfJu1GUtMif9eG5rlwU7iAic=
+	by mail.kernel.org (Postfix) with ESMTP id 8ED12208E4
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 07:39:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727462AbgBRXHG (ORCPT
+        id S1726786AbgBSHjx (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 18 Feb 2020 18:07:06 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:44747 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726820AbgBRXHG (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 18 Feb 2020 18:07:06 -0500
-Received: by mail-ot1-f67.google.com with SMTP id h9so21232631otj.11;
-        Tue, 18 Feb 2020 15:07:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=oQ6HXMPbNstVZuD1oSRD2QgxoQ585LC4t0FY+ch2UdQ=;
-        b=sLrAn+SdvZUK+3Ho9ScthnH6nCvhU5U203brIOvYMXLDvEqnvMwOerAvPA+Dul8f2Q
-         ljPvblJ0w6mRUa+9QgUJp1R+6/jmxzjm5inIFKCqBciC8oZoMLZF6Auy4iRIePEtx6Cc
-         a8XOCE4vk9VneGpnXkdpM3yZaAYMGtNTcxxdd33N+k6h6YPwXKaEGmeh5rO37BimQxMr
-         q1l6cc5CRgE7rUnRhHGOysxQsKj/KIKXcSglfKXiqtF7eIJIvJHD9GBCQkPBFceGys+S
-         1btDqXcH7caK5DDFSL17XZyaATEjGHLpH4K9NrpMyO5DCV7AlK2sRM4TuwyNPknel7co
-         qKMA==
-X-Gm-Message-State: APjAAAWBOoO2o6N8JalYHZfqGIezX5no1KfXG7AJwxASJhOGZH29c5O1
-        bpR1xNPxPKblww6OXw2Vxw==
-X-Google-Smtp-Source: APXvYqwTxpV4kU3tx4nRPN+zr0+mHQXxJJeyx9lcbPQZBLTy5xUUG/tMPRzXr3oe6dw4/n0WRnn4yA==
-X-Received: by 2002:a05:6830:1251:: with SMTP id s17mr15204599otp.108.1582067225496;
-        Tue, 18 Feb 2020 15:07:05 -0800 (PST)
-Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id p24sm1820339otq.64.2020.02.18.15.07.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Feb 2020 15:07:04 -0800 (PST)
-Received: (nullmailer pid 16645 invoked by uid 1000);
-        Tue, 18 Feb 2020 23:07:04 -0000
-Date:   Tue, 18 Feb 2020 17:07:04 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     George Hilliard <ghilliard@kopismobile.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        George Hilliard <ghilliard@kopismobile.com>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>, kernel@pengutronix.de
-Subject: Re: [PATCH v3 1/2] dt-bindings: serial: document fsl,inverted-tx and
- -rx options
-Message-ID: <20200218230704.GA16589@bogus>
-References: <20200212163538.3006-1-ghilliard@kopismobile.com>
- <20200212163538.3006-2-ghilliard@kopismobile.com>
+        Wed, 19 Feb 2020 02:39:53 -0500
+Received: from mx2.suse.de ([195.135.220.15]:41510 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726163AbgBSHjx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 19 Feb 2020 02:39:53 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id DA94EAE9E;
+        Wed, 19 Feb 2020 07:39:51 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 1/9] vt: selection, introduce vc_is_sel
+Date:   Wed, 19 Feb 2020 08:39:43 +0100
+Message-Id: <20200219073951.16151-1-jslaby@suse.cz>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200212163538.3006-2-ghilliard@kopismobile.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 12 Feb 2020 10:35:37 -0600, George Hilliard wrote:
-> Add a description for the new fsl,inverted-tx and fsl,inverted-rx
-> options for the i.MX UART peripheral.
-> 
-> Signed-off-by: George Hilliard <ghilliard@kopismobile.com>
-> ---
-> v1..v2: Removed confidentiality spam
-> 
->  Documentation/devicetree/bindings/serial/fsl-imx-uart.txt | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
+Avoid global variables (namely sel_cons) by introducing vc_is_sel. It
+checks whether the parameter is the current selection console. This will
+help putting sel_cons to a struct later.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
+ drivers/tty/vt/selection.c | 5 +++++
+ drivers/tty/vt/vt.c        | 7 ++++---
+ drivers/tty/vt/vt_ioctl.c  | 2 +-
+ include/linux/selection.h  | 4 +++-
+ 4 files changed, 13 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
+index 0c50d7410b31..714992693974 100644
+--- a/drivers/tty/vt/selection.c
++++ b/drivers/tty/vt/selection.c
+@@ -88,6 +88,11 @@ void clear_selection(void)
+ }
+ EXPORT_SYMBOL_GPL(clear_selection);
+ 
++bool vc_is_sel(struct vc_data *vc)
++{
++	return vc == sel_cons;
++}
++
+ /*
+  * User settable table: what characters are to be considered alphabetic?
+  * 128 bits. Locked by the console lock.
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index 0cfbb7182b5a..8fa059ec6cc8 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -890,8 +890,9 @@ static void hide_softcursor(struct vc_data *vc)
+ 
+ static void hide_cursor(struct vc_data *vc)
+ {
+-	if (vc == sel_cons)
++	if (vc_is_sel(vc))
+ 		clear_selection();
++
+ 	vc->vc_sw->con_cursor(vc, CM_ERASE);
+ 	hide_softcursor(vc);
+ }
+@@ -901,7 +902,7 @@ static void set_cursor(struct vc_data *vc)
+ 	if (!con_is_fg(vc) || console_blanked || vc->vc_mode == KD_GRAPHICS)
+ 		return;
+ 	if (vc->vc_deccm) {
+-		if (vc == sel_cons)
++		if (vc_is_sel(vc))
+ 			clear_selection();
+ 		add_softcursor(vc);
+ 		if ((vc->vc_cursor_type & 0x0f) != 1)
+@@ -1207,7 +1208,7 @@ static int vc_do_resize(struct tty_struct *tty, struct vc_data *vc,
+ 		}
+ 	}
+ 
+-	if (vc == sel_cons)
++	if (vc_is_sel(vc))
+ 		clear_selection();
+ 
+ 	old_rows = vc->vc_rows;
+diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
+index ee6c91ef1f6c..bf4daa0c7930 100644
+--- a/drivers/tty/vt/vt_ioctl.c
++++ b/drivers/tty/vt/vt_ioctl.c
+@@ -43,7 +43,7 @@ char vt_dont_switch;
+ extern struct tty_driver *console_driver;
+ 
+ #define VT_IS_IN_USE(i)	(console_driver->ttys[i] && console_driver->ttys[i]->count)
+-#define VT_BUSY(i)	(VT_IS_IN_USE(i) || i == fg_console || vc_cons[i].d == sel_cons)
++#define VT_BUSY(i)	(VT_IS_IN_USE(i) || i == fg_console || vc_is_sel(vc_cons[i].d))
+ 
+ /*
+  * Console (vt and kd) routines, as defined by USL SVR4 manual, and by
+diff --git a/include/linux/selection.h b/include/linux/selection.h
+index e2c1f96bf059..5b890ef5b59f 100644
+--- a/include/linux/selection.h
++++ b/include/linux/selection.h
+@@ -11,8 +11,8 @@
+ #include <linux/tiocl.h>
+ #include <linux/vt_buffer.h>
+ 
+-extern struct vc_data *sel_cons;
+ struct tty_struct;
++struct vc_data;
+ 
+ extern void clear_selection(void);
+ extern int set_selection_user(const struct tiocl_selection __user *sel,
+@@ -24,6 +24,8 @@ extern int sel_loadlut(char __user *p);
+ extern int mouse_reporting(void);
+ extern void mouse_report(struct tty_struct * tty, int butt, int mrx, int mry);
+ 
++bool vc_is_sel(struct vc_data *vc);
++
+ extern int console_blanked;
+ 
+ extern const unsigned char color_table[];
+-- 
+2.25.0
+
