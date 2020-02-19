@@ -7,30 +7,30 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C6D3C3404D
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 07:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88CDDC3404D
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 07:40:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 24820208E4
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 07:40:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6D1CC2465D
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 07:40:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726829AbgBSHjy (ORCPT
+        id S1726927AbgBSHkP (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Feb 2020 02:39:54 -0500
-Received: from mx2.suse.de ([195.135.220.15]:41528 "EHLO mx2.suse.de"
+        Wed, 19 Feb 2020 02:40:15 -0500
+Received: from mx2.suse.de ([195.135.220.15]:41518 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726783AbgBSHjx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Feb 2020 02:39:53 -0500
+        id S1726779AbgBSHjy (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 19 Feb 2020 02:39:54 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 7EC1FAF3D;
+        by mx2.suse.de (Postfix) with ESMTP id 30456AEA8;
         Wed, 19 Feb 2020 07:39:52 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 3/9] vt: selection, remove 2 local variables from set_selection_kernel
-Date:   Wed, 19 Feb 2020 08:39:45 +0100
-Message-Id: <20200219073951.16151-3-jslaby@suse.cz>
+Subject: [PATCH 2/9] vt: ioctl, switch VT_IS_IN_USE and VT_BUSY to inlines
+Date:   Wed, 19 Feb 2020 08:39:44 +0100
+Message-Id: <20200219073951.16151-2-jslaby@suse.cz>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20200219073951.16151-1-jslaby@suse.cz>
 References: <20200219073951.16151-1-jslaby@suse.cz>
@@ -41,61 +41,83 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-multiplier and mode are not actually needed:
-* multiplier is used only in kmalloc_array, so use "use_unicode ? 4 : 1"
-  directly
-* mode is used only to assign a bool in this manner:
-  if (cond)
-    x = true;
-  else
-    x = false;
-  So do "x = cond" directly.
+These two were macros. Switch them to static inlines, so that it's more
+understandable what they are doing.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/selection.c | 14 +++++---------
- 1 file changed, 5 insertions(+), 9 deletions(-)
+ drivers/tty/vt/vt_ioctl.c | 29 ++++++++++++++++++++++-------
+ 1 file changed, 22 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
-index 714992693974..6541c09d8bba 100644
---- a/drivers/tty/vt/selection.c
-+++ b/drivers/tty/vt/selection.c
-@@ -191,9 +191,9 @@ int set_selection_kernel(struct tiocl_selection *v, struct tty_struct *tty)
- 	struct vc_data *vc = vc_cons[fg_console].d;
- 	int new_sel_start, new_sel_end, spc;
- 	char *bp, *obp;
--	int i, ps, pe, multiplier;
-+	int i, ps, pe;
- 	u32 c;
--	int mode, ret = 0;
-+	int ret = 0;
+diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
+index bf4daa0c7930..693d9d7ffb68 100644
+--- a/drivers/tty/vt/vt_ioctl.c
++++ b/drivers/tty/vt/vt_ioctl.c
+@@ -40,10 +40,25 @@
+ #include <linux/selection.h>
  
- 	poke_blanked_console();
+ char vt_dont_switch;
+-extern struct tty_driver *console_driver;
  
-@@ -224,11 +224,7 @@ int set_selection_kernel(struct tiocl_selection *v, struct tty_struct *tty)
- 		clear_selection();
- 		sel_cons = vc_cons[fg_console].d;
- 	}
--	mode = vt_do_kdgkbmode(fg_console);
--	if (mode == K_UNICODE)
--		use_unicode = 1;
--	else
--		use_unicode = 0;
-+	use_unicode = vt_do_kdgkbmode(fg_console) == K_UNICODE;
+-#define VT_IS_IN_USE(i)	(console_driver->ttys[i] && console_driver->ttys[i]->count)
+-#define VT_BUSY(i)	(VT_IS_IN_USE(i) || i == fg_console || vc_is_sel(vc_cons[i].d))
++static inline bool vt_in_use(unsigned int i)
++{
++	extern struct tty_driver *console_driver;
++
++	return console_driver->ttys[i] && console_driver->ttys[i]->count;
++}
++
++static inline bool vt_busy(int i)
++{
++	if (vt_in_use(i))
++		return true;
++	if (i == fg_console)
++		return true;
++	if (vc_is_sel(vc_cons[i].d))
++		return true;
++
++	return false;
++}
  
- 	switch (v->sel_mode)
- 	{
-@@ -312,8 +308,8 @@ int set_selection_kernel(struct tiocl_selection *v, struct tty_struct *tty)
- 	sel_end = new_sel_end;
+ /*
+  * Console (vt and kd) routines, as defined by USL SVR4 manual, and by
+@@ -289,7 +304,7 @@ static int vt_disallocate(unsigned int vc_num)
+ 	int ret = 0;
  
- 	/* Allocate a new buffer before freeing the old one ... */
--	multiplier = use_unicode ? 4 : 1;  /* chars can take up to 4 bytes */
--	bp = kmalloc_array((sel_end - sel_start) / 2 + 1, multiplier,
-+	/* chars can take up to 4 bytes with unicode */
-+	bp = kmalloc_array((sel_end - sel_start) / 2 + 1, use_unicode ? 4 : 1,
- 			   GFP_KERNEL);
- 	if (!bp) {
- 		printk(KERN_WARNING "selection: kmalloc() failed\n");
+ 	console_lock();
+-	if (VT_BUSY(vc_num))
++	if (vt_busy(vc_num))
+ 		ret = -EBUSY;
+ 	else if (vc_num)
+ 		vc = vc_deallocate(vc_num);
+@@ -311,7 +326,7 @@ static void vt_disallocate_all(void)
+ 
+ 	console_lock();
+ 	for (i = 1; i < MAX_NR_CONSOLES; i++)
+-		if (!VT_BUSY(i))
++		if (!vt_busy(i))
+ 			vc[i] = vc_deallocate(i);
+ 		else
+ 			vc[i] = NULL;
+@@ -648,7 +663,7 @@ int vt_ioctl(struct tty_struct *tty,
+ 			state = 1;	/* /dev/tty0 is always open */
+ 			for (i = 0, mask = 2; i < MAX_NR_CONSOLES && mask;
+ 							++i, mask <<= 1)
+-				if (VT_IS_IN_USE(i))
++				if (vt_in_use(i))
+ 					state |= mask;
+ 			ret = put_user(state, &vtstat->v_state);
+ 		}
+@@ -661,7 +676,7 @@ int vt_ioctl(struct tty_struct *tty,
+ 	case VT_OPENQRY:
+ 		/* FIXME: locking ? - but then this is a stupid API */
+ 		for (i = 0; i < MAX_NR_CONSOLES; ++i)
+-			if (! VT_IS_IN_USE(i))
++			if (!vt_in_use(i))
+ 				break;
+ 		uival = i < MAX_NR_CONSOLES ? (i+1) : -1;
+ 		goto setint;		 
 -- 
 2.25.0
 
