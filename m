@@ -2,140 +2,127 @@ Return-Path: <SRS0=V5ud=4H=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCC9AC34056
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 17:18:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46C00C34056
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 17:50:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B74632465D
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 17:18:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1582132685;
-	bh=Lwos0NapstCzYp5htZVkGyszVmu1Rmhyxs3LpIQ5A+k=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=QD4S/7tbedqujUrR7zVxHW2P9OMFTaAul7xDkfPGSSPt4Jg2YdFGZxnYgu5+T3xD8
-	 DBtCcw33+jFmaagV/yLGWFxHIE4ZGzl3hqfCIg6R1LqM774zQNzJz7VLYcAoA67XXX
-	 hyVik0wQx6kXNRy+lF6FvCeNxEMn0yNDZAKB36vk=
+	by mail.kernel.org (Postfix) with ESMTP id F301220801
+	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 17:50:22 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="fOhn+mov"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726667AbgBSRSF (ORCPT
+        id S1726582AbgBSRuW (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Feb 2020 12:18:05 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:33317 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726539AbgBSRSF (ORCPT
+        Wed, 19 Feb 2020 12:50:22 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:35687 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726605AbgBSRuW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Feb 2020 12:18:05 -0500
-Received: by mail-lj1-f193.google.com with SMTP id y6so1217886lji.0;
-        Wed, 19 Feb 2020 09:18:03 -0800 (PST)
+        Wed, 19 Feb 2020 12:50:22 -0500
+Received: by mail-pj1-f67.google.com with SMTP id q39so381183pjc.0
+        for <linux-serial@vger.kernel.org>; Wed, 19 Feb 2020 09:50:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:content-transfer-encoding:in-reply-to:references
+         :subject:from:cc:to:date:message-id:user-agent;
+        bh=Z7a7oA5rHpxM92NoMV2XbtQ4b8rn3jd4JC722SrafmQ=;
+        b=fOhn+mov0gBaTRqLZ28SsD4CaCbe4sYywxzU+0IQdXyYqPRfDWIHD0a6QUaOAOvzcO
+         +twk639IUbq5BbbwJlBgLtSPQl3/KPAompTFw5Vek33dwfaGACR7YQMl/X0TM7bcrb45
+         J+EeoyrNddqMnQYwbeNYcnQyugCFOVIR3Lthg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=RofHi9gYU0MfSmZMufurAFlHepEM01ZEtiwTgi9BGrA=;
-        b=LZOh66VA37oObxEP7Ty5P7kX6pRSh/kdOQ7xpWeqAUCmucbf0VP/c0eKCd4ReTTppo
-         JZqjvTRaroW0x4nvkBmbgs8UyJwRmmycGXxLCDU6kuFCnZGxaMeU3eAkvMXItwSz18/5
-         adR/Hf+QDmlLeKUOL/pMR8AwqhCMeKaXhEocy0Vp6qYCUWSdcdHDBBiTfaw1lPiw9C/k
-         0ALoif7cWH+6mhiFqG8wHhyLVjE+Dv/twYKLNjpDpPRYNFx/Gv1WAxXNn25phx4WBj1V
-         HFmxmDzTEZGG14UrtRfLUI+RdmmupuWfy8TkCUB0or8VJrZWQL6ipj1hTRMfVS2yTZQJ
-         zd6A==
-X-Gm-Message-State: APjAAAW3hY995mX7NBwmDfCLWScEHms7jWlODXn7asNmInJOb0FqKK5b
-        vM96TkV/nao1HeOG/FfCLfk=
-X-Google-Smtp-Source: APXvYqx8WEW5DwJYqFalOQFg6QSc95CJr9EXAk5YvFEl1v88/LWr6FJofLuta2Vnn9pg+0MFg7u5zQ==
-X-Received: by 2002:a05:651c:40c:: with SMTP id 12mr16592063lja.147.1582132682705;
-        Wed, 19 Feb 2020 09:18:02 -0800 (PST)
-Received: from xi.terra (c-12aae455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.170.18])
-        by smtp.gmail.com with ESMTPSA id b30sm116917lfc.39.2020.02.19.09.18.01
+        h=x-gm-message-state:mime-version:content-transfer-encoding
+         :in-reply-to:references:subject:from:cc:to:date:message-id
+         :user-agent;
+        bh=Z7a7oA5rHpxM92NoMV2XbtQ4b8rn3jd4JC722SrafmQ=;
+        b=J8/tNUwzQ9yJpfJOVB1hVwAgmgZ7UguiQmMLFlTiCIuMkssziR2pb/eaqK47UiePuG
+         CvEbvyx6uJlpL3GTPO6INRuMLRGIBNM8LkCS7b0K2lgJxdTgTuwsSS4Ptzdt7wAzxF4V
+         d6LPcACeQWP0OKbE1mQvzxdzNlM0v3GV1oLXgw76Qxainph2uZDG1+BwgXXCgsCn+ceN
+         glSAm/z6TpJveavh5gkWKU2+nWZVlrWgxxQFdgg0qmzgW+2PyFh8QBSFDLithpwOSSw6
+         WrVXw/NUcHPrb8sNBV4ImyDnJh5FCDCj6TJsfc0+6saqfTBwOz0fbUIEoJezsm7mfr3o
+         nYiw==
+X-Gm-Message-State: APjAAAWlUl5JqNPoGWddVGaeh22BqRF11uXtprDBauE4d4wu97GRjUwV
+        DMf25lGpm0Ui+Z293GVy+WPDxyR+22w=
+X-Google-Smtp-Source: APXvYqx2fiqjZ6AKNyrvLHc9HhmGOYJRsA7+KslntBNJvlRCCgTz4zgI0jq4BtqJ1jnmFpB76/+gpA==
+X-Received: by 2002:a17:902:d898:: with SMTP id b24mr27181684plz.133.1582134621518;
+        Wed, 19 Feb 2020 09:50:21 -0800 (PST)
+Received: from chromium.org ([2620:15c:202:1:fa53:7765:582b:82b9])
+        by smtp.gmail.com with ESMTPSA id q7sm321684pgk.62.2020.02.19.09.50.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Feb 2020 09:18:01 -0800 (PST)
-Received: from johan by xi.terra with local (Exim 4.92.3)
-        (envelope-from <johan@kernel.org>)
-        id 1j4Sz1-0003WC-KQ; Wed, 19 Feb 2020 18:17:59 +0100
-Date:   Wed, 19 Feb 2020 18:17:59 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Johan Hovold <johan@kernel.org>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-leds@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v6 2/4] tty: rename tty_kopen() and add new function
- tty_kopen_shared()
-Message-ID: <20200219171759.GE32540@localhost>
-References: <20200213091600.554-1-uwe@kleine-koenig.org>
- <20200213091600.554-3-uwe@kleine-koenig.org>
- <20200219132113.GD32540@localhost>
- <20200219163758.5rypsol4n6ucost4@pengutronix.de>
+        Wed, 19 Feb 2020 09:50:20 -0800 (PST)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200219163758.5rypsol4n6ucost4@pengutronix.de>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <254d7b003fdcd6f5fc0c45ab75b4b5f2@codeaurora.org>
+References: <1581415982-8793-1-git-send-email-skakit@codeaurora.org> <158154775640.184098.13898240474253130921@swboyd.mtv.corp.google.com> <254d7b003fdcd6f5fc0c45ab75b4b5f2@codeaurora.org>
+Subject: Re: [PATCH] tty: serial: qcom_geni_serial: Fix RX cancel command failure
+From:   Stephen Boyd <swboyd@chromium.org>
+Cc:     gregkh@linuxfoundation.org, mgautam@codeaurora.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        akashast@codeaurora.org, rojay@codeaurora.org
+To:     skakit@codeaurora.org
+Date:   Wed, 19 Feb 2020 09:50:19 -0800
+Message-ID: <158213461988.184098.7165493520823815160@swboyd.mtv.corp.google.com>
+User-Agent: alot/0.9
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Feb 19, 2020 at 05:37:58PM +0100, Uwe Kleine-König wrote:
-> On Wed, Feb 19, 2020 at 02:21:13PM +0100, Johan Hovold wrote:
-> > On Thu, Feb 13, 2020 at 10:15:58AM +0100, Uwe Kleine-König wrote:
-> > > From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> > > 
-> > > Introduce a new function tty_kopen_shared() that yields a struct
-> > > tty_struct. The semantic difference to tty_kopen() is that the tty is
-> > > expected to be used already. So rename tty_kopen() to
-> > > tty_kopen_exclusive() for clearness, adapt the single user and put the
-> > > common code in a new static helper function.
-> > > 
-> > > tty_kopen_shared is to be used to implement an LED trigger for tty
-> > > devices in one of the next patches.
-> > > 
-> > > Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> > > ---
-> >  
-> > > -/**
-> > > - *	tty_kopen	-	open a tty device for kernel
-> > > - *	@device: dev_t of device to open
-> > > - *
-> > > - *	Opens tty exclusively for kernel. Performs the driver lookup,
-> > > - *	makes sure it's not already opened and performs the first-time
-> > > - *	tty initialization.
-> > > - *
-> > > - *	Returns the locked initialized &tty_struct
-> > > - *
-> > > - *	Claims the global tty_mutex to serialize:
-> > > - *	  - concurrent first-time tty initialization
-> > > - *	  - concurrent tty driver removal w/ lookup
-> > > - *	  - concurrent tty removal from driver table
-> > > - */
-> > > -struct tty_struct *tty_kopen(dev_t device)
-> > > +static struct tty_struct *tty_kopen(dev_t device, int shared)
-> > >  {
-> > >  	struct tty_struct *tty;
-> > >  	struct tty_driver *driver;
-> > > @@ -1905,7 +1890,7 @@ struct tty_struct *tty_kopen(dev_t device)
-> > >  
-> > >  	/* check whether we're reopening an existing tty */
-> > >  	tty = tty_driver_lookup_tty(driver, NULL, index);
-> > > -	if (IS_ERR(tty))
-> > > +	if (IS_ERR(tty) || shared)
-> > 
-> > So here you skip initialisation and return NULL if the tty isn't already
-> > in use (e.g. is open) when shared is set.
-> 
-> Which is good, right? If I remember my tests correctly this even works
-> if the tty isn't opened but just "exists".
+Quoting skakit@codeaurora.org (2020-02-14 05:17:01)
+> On 2020-02-13 04:19, Stephen Boyd wrote:
+> >     driver_probe_device+0x70/0x140
+> >     __driver_attach_async_helper+0x7c/0xa8
+> >     async_run_entry_fn+0x60/0x178
+> >     process_one_work+0x33c/0x640
+> >     worker_thread+0x2a0/0x470
+> >     kthread+0x128/0x138
+> >     ret_from_fork+0x10/0x18
+> >    Code: 1aca096a 911e0129 b940012b 7100054a (b800450b)
+> I think the most probable explanation of the crash is, set_termios call=20
+> is starting RX engine and RX engine is sampling some garbage data from=20
+> line, and by the time startup is called, we have few data to read.
+> How frequently you are able to see this crash? because internally we are =
 
-No, this means that your trigger will never be installed unless the port
-is already open, yet the sysfs interface still returns success (see
-patch 4/4 dev_store()).
+> unable to reproduce it.
 
-Note that the struct tty doesn't exist until the port is opened; it's
-allocated in tty_init_dev() that you skip above when "shared" is set.
+How is set_termios involved? Is that starting the RX side before
+uart_startup() is called? Sorry I haven't looked into the code flow very
+deeply here.
 
-Johan
+It seems to happen when the bluetooth driver probes so maybe constantly
+adding and removing the hci_uart module will cause this to happen for
+you? I also run the kernel with many debug options enabled, so maybe try
+enabling all the debug stuff? I see it randomly right now so I'm not
+sure.
+
+> >=20
+> >=20
+> > This seems to be the problematic line. We didn't call handle_rx() from
+> > the stop_rx() path before. And this qcom_geni_serial_stop_rx() function
+> > is called from qcom_geni_serial_startup(), but most importantly, we=20
+> > call
+> > into this function from startup before we allocate memory for the
+> > port->rx_fifo member (see the devm_kcalloc() later in
+> > qcom_geni_serial_port_setup() and see how it's after we stop rx).
+> >=20
+> > Why do we need to flush the rx buffer by reading it into the software
+> > buffer? Can't we simply ack any outstanding RX interrupts in the
+> > hardware when we're stopping receive?
+> We can't simply ack RX_LAST interrupt, there is a sticky bit that get=20
+> set on HW level(not exposed to SW) with RX last interrupt. The only way=20
+> to clear it is flush out RX FIFO HW buffer. The sticky bit can create=20
+> problem for future transfers if remained uncleared.
+> How about we allocate buffer to port->rx_fifo in probe itself?
+
+Ok. If we have to read the rx fifo to flush the buffer then perhaps
+write another function that qcom_geni_serial_stop_rx() can use to
+indicate that it wants to throw away whatever is in the rx fifo? Or
+adjust handle_rx() to check for a NULL fifo pointer and throw it away in
+that case? When we're setting up this device I don't understand why we
+would want to read anything out of the rx fifo that was there before the
+driver started.
