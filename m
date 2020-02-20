@@ -2,122 +2,175 @@ Return-Path: <SRS0=HSIU=4I=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A162C11D04
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 11:57:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86EDEC11D04
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 12:13:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D399324670
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 11:57:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3148F24673
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 12:13:36 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="t+NPOgYc"
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="sDy3vdnF"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727772AbgBTL5J (ORCPT
+        id S1727761AbgBTMNf (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 Feb 2020 06:57:09 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:37834 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727545AbgBTL5J (ORCPT
+        Thu, 20 Feb 2020 07:13:35 -0500
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:38121 "EHLO
+        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727649AbgBTMNf (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 20 Feb 2020 06:57:09 -0500
-Received: by mail-pj1-f65.google.com with SMTP id m13so802476pjb.2;
-        Thu, 20 Feb 2020 03:57:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=zyM10aVkzbQe75G/ZJhaQ8/QmMoTt48kSiKXx5MsLFY=;
-        b=t+NPOgYcqy+UyW8sYh55r1uJucl0R0ISFr1om7ivzNeBR80cnZTsLSQJjZedv8EDUY
-         mJkZ/Il8PA+a+XZIvFa9a6wCXBjYIE2+tYEL6g/jWB81xq+avNH28lqXLd6DLq0GA15B
-         jRoQ+H4ILyk3TLnkklRSMquZcU87U/D9CbI7mo2Q1gjJAIPQ0+eatMgpdXeOrfSLYVvr
-         N9f+SGN8L/XYj8mpwVHnpKBB2w31allwwIUjwgMYvBwcjVZIMjUdADBBcxw67BQaDXL8
-         UQkEsPepAez52j52P5JwVkXP12KuypSpoOPkxxP5slabflNDYkNtt49NE53cBy/+o7zQ
-         tnXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=zyM10aVkzbQe75G/ZJhaQ8/QmMoTt48kSiKXx5MsLFY=;
-        b=qBnoD3Ywf4gFf7Fgvyd+DFj2xlVJKtjYQT+1+F26sPiHM4R+8gdWvYnJA1J7UGKIuT
-         meoqgkKz9ij3BcUcLuL2WQUA1GsPpEPQ7nfijAhj+QBTw6ERlBluBSdGgvrAwzO++eSp
-         gxjGSHssTXqFkM3C0ZMcdQGkJpR1UFOVmi4/zX4nHR9IsCk537kI+J3DCN/d17vkkoLs
-         9YcpVhXEru4nhEvL7aVjNoeJLbwX/tVPW/xkDE5FoYHPl3xiZnUlWTFH8QSPNRPBfi4X
-         ZyDDkSumFMU0kcAswH0HcVlQgU7x8nhA+EHR2hiFgu1k60oXj4wohJ7PoHlBADQHrfT/
-         MIFA==
-X-Gm-Message-State: APjAAAVhCholNPbx6P+XVYgXbQCz+ElFNgVGnRl0uEdLX7NfZMfZ/xIE
-        z2C2/Cs4DLkCjJPBO+7TIOZjlJWGZvBa2Zu2CmU=
-X-Google-Smtp-Source: APXvYqx3BKH3fNOcUKacWCjX06eA80jdskWX4Vw3qpgkDiMclpjW06DHofZcFYaUnd5JuQR2vJfpGhbeg4ah0+FP34U=
-X-Received: by 2002:a17:902:54f:: with SMTP id 73mr30132442plf.255.1582199828503;
- Thu, 20 Feb 2020 03:57:08 -0800 (PST)
+        Thu, 20 Feb 2020 07:13:35 -0500
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20200220121333euoutp02e5a9865b885ea3ec050b9f65238afd0e~1G0HZ0Y1b0313103131euoutp020
+        for <linux-serial@vger.kernel.org>; Thu, 20 Feb 2020 12:13:33 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20200220121333euoutp02e5a9865b885ea3ec050b9f65238afd0e~1G0HZ0Y1b0313103131euoutp020
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1582200813;
+        bh=jbhbpKYjDeqrLPWjm1vmGVy9BoHZVLnyWdbkNfaXZTQ=;
+        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+        b=sDy3vdnFN6O56yjqBY3lNKFIfGglNvADaiRVy316f10kjiglzCbOHwgBIlqqfXk/M
+         DjBfHLEf/wfSE5mwFnBR8qiYKFw2QhZ2wmfHXogP2k2j8ord10iSPvUjFPyyBwpUJK
+         XJUjT6RFpnWKM8s3wp2lTSRZ/QnW/tky0vQh5fG4=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20200220121333eucas1p25d43d5adcb67438871c86131e9ca8baa~1G0HONc_g1263412634eucas1p26;
+        Thu, 20 Feb 2020 12:13:33 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges1new.samsung.com (EUCPMTA) with SMTP id E9.41.61286.DE77E4E5; Thu, 20
+        Feb 2020 12:13:33 +0000 (GMT)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20200220121333eucas1p26befa95831b44a793822b4f07b37d2cc~1G0Gu2tl91263412634eucas1p25;
+        Thu, 20 Feb 2020 12:13:33 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20200220121332eusmtrp17e6497b117259e170fe6f21a26e02f62~1G0GuF32d1809718097eusmtrp18;
+        Thu, 20 Feb 2020 12:13:32 +0000 (GMT)
+X-AuditID: cbfec7f2-f0bff7000001ef66-c7-5e4e77ed90e4
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id 2D.A1.07950.CE77E4E5; Thu, 20
+        Feb 2020 12:13:32 +0000 (GMT)
+Received: from [106.120.51.71] (unknown [106.120.51.71]) by
+        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20200220121332eusmtip1c0fffcda8ed75f7501a0d9eaa212ecd5~1G0GIKYLq2023820238eusmtip1p;
+        Thu, 20 Feb 2020 12:13:32 +0000 (GMT)
+Subject: Re: [PATCH 1/2] tty: serial: samsung_tty: build it for any platform
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org, Kukjin Kim <kgene@kernel.org>,
+        Donghoon Yu <hoony.yu@samsung.com>,
+        Hyunki Koo <kkoos00@naver.com>,
+        HYUN-KI KOO <hyunki00.koo@samsung.com>,
+        Shinbeom Choi <sbeom.choi@samsung.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+From:   Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Message-ID: <b04ad319-9986-c357-ad37-937bbb06bc02@samsung.com>
+Date:   Thu, 20 Feb 2020 13:13:30 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+        Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <20200213091600.554-1-uwe@kleine-koenig.org> <20200213091600.554-2-uwe@kleine-koenig.org>
- <CAHp75VcStj5sE3f0uK2deOWC=ojfx-z1fbrh6Lu6jAor9F9PgA@mail.gmail.com>
- <20200220074901.ohcrisjgd26555ya@pengutronix.de> <CAHp75VcxXWputX1y90t8f-c0a3dw2CHU6=ebQ+o6e8Z1GymiDw@mail.gmail.com>
- <20200220105718.eoevd3kb63zzrotu@pengutronix.de> <CAHp75Vd3KN81qxOWJQ7v=GimSLtVymur_iPsf91pka1STc1nfA@mail.gmail.com>
-In-Reply-To: <CAHp75Vd3KN81qxOWJQ7v=GimSLtVymur_iPsf91pka1STc1nfA@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 20 Feb 2020 13:57:00 +0200
-Message-ID: <CAHp75VcC2adjcPUiWaZhXZgocWDPoUJZwGMYNfJWSqyqDAY1Dg@mail.gmail.com>
-Subject: Re: [PATCH v6 1/4] lib: new helper kstrtodev_t()
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Sascha Hauer <kernel@pengutronix.de>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>, Jiri Slaby <jslaby@suse.com>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        Dan Murphy <dmurphy@ti.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200220102628.3371996-1-gregkh@linuxfoundation.org>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrLKsWRmVeSWpSXmKPExsWy7djPc7pvy/3iDA4+lbJoXryezeL42tes
+        FquW3mC2mLLhA5NF/+PXzBadO6+yWpw/v4HdYtPja6wWl3fNYbOYcX4fk8WZxb3sFm39Dxgd
+        eDw2repk89g/dw27x+Yl9R590xoYPfq2rGL0WL/lKovH501yAexRXDYpqTmZZalF+nYJXBn/
+        OpuZCjbzVbzbupOtgfEfdxcjJ4eEgInEuufHGLsYuTiEBFYwShzrvcsO4XxhlHiz+y2U85lR
+        4t+hhewwLddmNjKB2EICyxkljh/ihyh6yygx9+AmsISwgI/EtGe32EBsEQFjif6zs8AmMQt0
+        Mkuc/viLESTBJmAlMbF9FZjNK2An0XKwAWwDi4CqREPvRFYQW1QgQuLTg8OsEDWCEidnPmHp
+        YuTg4BRwkrhxVBokzCwgLnHryXwmCFteYvvbOcwguyQEXrJLTHx/hAniaheJRV82sEHYwhKv
+        jm+B+kZG4vTkHhaIhnWMEn87XkB1b2eUWD75H1SHtcSdc7/YQDYzC2hKrN+lDxF2lNi27zRY
+        WEKAT+LGW0GII/gkJm2bzgwR5pXoaBOCqFaT2LAM5gQZia6dK5knMCrNQvLZLCTvzELyziyE
+        vQsYWVYxiqeWFuempxYb5qWW6xUn5haX5qXrJefnbmIEJrLT/45/2sH49VLSIUYBDkYlHt4P
+        6r5xQqyJZcWVuYcYJTiYlUR41Xj84oR4UxIrq1KL8uOLSnNSiw8xSnOwKInzGi96GSskkJ5Y
+        kpqdmlqQWgSTZeLglGpg7OM0chY4teWwvKXnC/GlpYxaege+Tyy/M9FUaCuji8qe0EyndzXC
+        m818nrPzBmc0fbu5X9bg6MeTk47cX8p80mLfdRuxecW/as5+dPU8FO/ewPdnvdM5vsbb375f
+        9eu5/ZBjfrLT3qhT28qynq26HH8zi0/3/+y8u1xdGyN+3Vp8UvX/0sXiwkosxRmJhlrMRcWJ
+        AG00gb1gAwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrLIsWRmVeSWpSXmKPExsVy+t/xu7pvyv3iDI59sbRoXryezeL42tes
+        FquW3mC2mLLhA5NF/+PXzBadO6+yWpw/v4HdYtPja6wWl3fNYbOYcX4fk8WZxb3sFm39Dxgd
+        eDw2repk89g/dw27x+Yl9R590xoYPfq2rGL0WL/lKovH501yAexRejZF+aUlqQoZ+cUltkrR
+        hhZGeoaWFnpGJpZ6hsbmsVZGpkr6djYpqTmZZalF+nYJehn/OpuZCjbzVbzbupOtgfEfdxcj
+        J4eEgInEtZmNTF2MXBxCAksZJR43f2TpYuQASshIHF9fBlEjLPHnWhcbiC0k8JpRYv73NBBb
+        WMBHYtqzW2BxEQFjif6zs9hB5jALdDNL3Hx1ggWiwVFi98fDzCA2m4CVxMT2VYwgNq+AnUTL
+        wQZ2EJtFQFWioXciK4gtKhAhcXjHLKgaQYmTM5+A3cMp4CRx46g0SJhZQF3iz7xLzBC2uMSt
+        J/OZIGx5ie1v5zBPYBSahaR7FpKWWUhaZiFpWcDIsopRJLW0ODc9t9hIrzgxt7g0L10vOT93
+        EyMwarcd+7llB2PXu+BDjAIcjEo8vDNUfeOEWBPLiitzDzFKcDArifCq8fjFCfGmJFZWpRbl
+        xxeV5qQWH2I0BfptIrOUaHI+MKHklcQbmhqaW1gamhubG5tZKInzdggcjBESSE8sSc1OTS1I
+        LYLpY+LglGpgLI+ctuBH5Xo5PmcHfcm27HjuhD9TrzR+tuFn0VtxYBKr36K+9VcZjVaVB89/
+        qXs4oKS/2+DfU4eWePeE+R4hSaJFU7KDXxde2Fi8WdkyuXhzGe+nF9nCN7X78rI3ypSy+dl+
+        6V2RJNbPbM5z3K5Poe/2lttfX9o/WuduyJoRmXTzl0eM0iMlluKMREMt5qLiRAAQf94G8AIA
+        AA==
+X-CMS-MailID: 20200220121333eucas1p26befa95831b44a793822b4f07b37d2cc
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20200220121333eucas1p26befa95831b44a793822b4f07b37d2cc
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20200220121333eucas1p26befa95831b44a793822b4f07b37d2cc
+References: <20200220102628.3371996-1-gregkh@linuxfoundation.org>
+        <CGME20200220121333eucas1p26befa95831b44a793822b4f07b37d2cc@eucas1p2.samsung.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Feb 20, 2020 at 1:46 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Thu, Feb 20, 2020 at 12:57 PM Uwe Kleine-K=C3=B6nig
-> <u.kleine-koenig@pengutronix.de> wrote:
-> > On Thu, Feb 20, 2020 at 12:22:36PM +0200, Andy Shevchenko wrote:
 
-...
+Hi Greg,
 
-> > Also I don't understand yet, what you want me to do.
->
-> I have issues with kstrto() not playing with simple numbers (boolean
+On 2/20/20 11:26 AM, Greg Kroah-Hartman wrote:
+> There is no need to tie this driver to only a specific SoC, or compile
+> test, so remove that dependancy from the Kconfig rules.
 
-s/simple/simple and single/
+samsung_tty driver is hardware specific driver so why should we
+build it for any platform?
 
-> is a special case, but still a number at the end).
-> I also don't feel good with too narrow usage of the newly introduced help=
-er
->
-> > Assume I'd be
-> > willing to use simple_strtoul, I'd still want to have a function that
-> > gives me a dev_t from a given string. Should I put this directly in my
-> > led-trigger driver?
->
-> I see the following possibilities:
+This change seems to defeat the whole purpose behind COMPILE_TEST
+config option (which allows us to build hardware-specific drivers
+without needlessly presenting the user with tons of non-relevant
+config options).
 
-(above doesn't imply the necessity of simple_strto*() use)
+Please explain this change some more, are you planing to remove
+COMPILE_TEST config option?
 
-> a) put it inside the caller and forget about generic helper
-> b) do a generic helper, but 1/ in string_*() namespace, 2/ with a
-> delimiter parameter and 3/ possibility to take negative numbers
->
-> In b) case, add to the commit message how many potential _existing_
-> users may be converted to this.
-> Also it would be good to have two versions strict (only \n at the end
-> is allowed) and non-strict (based on the amount of users for each
-> group).
+Best regards,
+--
+Bartlomiej Zolnierkiewicz
+Samsung R&D Institute Poland
+Samsung Electronics
 
-And don't forget to extend lib/test_string.c accordingly.
-
---=20
-With Best Regards,
-Andy Shevchenko
+> Cc: Kukjin Kim <kgene@kernel.org>
+> Cc: Donghoon Yu <hoony.yu@samsung.com>
+> Cc: Hyunki Koo <kkoos00@naver.com>
+> Cc: HYUN-KI KOO <hyunki00.koo@samsung.com>
+> Cc: Shinbeom Choi <sbeom.choi@samsung.com>
+> Cc: Krzysztof Kozlowski <krzk@kernel.org>
+> Cc: Jiri Slaby <jslaby@suse.com>
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-samsung-soc@vger.kernel.org
+> Cc: linux-serial@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>  drivers/tty/serial/Kconfig | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index 52eaac21ff9f..a310bd22f1e2 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -237,7 +237,6 @@ config SERIAL_CLPS711X_CONSOLE
+>  
+>  config SERIAL_SAMSUNG
+>  	tristate "Samsung SoC serial support"
+> -	depends on PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST
+>  	select SERIAL_CORE
+>  	help
+>  	  Support for the on-chip UARTs on the Samsung S3C24XX series CPUs,
+> 
+> base-commit: 11a48a5a18c63fd7621bb050228cebf13566e4d8
