@@ -7,39 +7,38 @@ X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8421C11D15
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 17:53:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ECD5C11D19
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 17:53:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B648D20722
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 17:53:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5AB4124673
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 17:53:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=walle.cc header.i=@walle.cc header.b="vueBheQg"
+	dkim=pass (1024-bit key) header.d=walle.cc header.i=@walle.cc header.b="cDCt7jnC"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728812AbgBTRxn (ORCPT
+        id S1728940AbgBTRxo (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 Feb 2020 12:53:43 -0500
-Received: from ssl.serverraum.org ([176.9.125.105]:47069 "EHLO
+        Thu, 20 Feb 2020 12:53:44 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:34963 "EHLO
         ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728354AbgBTRxn (ORCPT
+        with ESMTP id S1728555AbgBTRxn (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Thu, 20 Feb 2020 12:53:43 -0500
-X-Greylist: delayed 590 seconds by postgrey-1.27 at vger.kernel.org; Thu, 20 Feb 2020 12:53:42 EST
 Received: from mwalle01.sab.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 55A3D23E59;
-        Thu, 20 Feb 2020 18:43:54 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 94A8E23E21;
+        Thu, 20 Feb 2020 18:43:51 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1582220634;
+        t=1582220631;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=YHLtwMRu0PRuLRywNXxx+73saKhgeS5z/r5jOFf8BV4=;
-        b=vueBheQgHOiGjTI4A6UQrmPon7HdOaPeaKM9kB7c4+bVY+y0bNyy4z80PpDVDACIXHRidE
-        L5lDNWwYsvqwZOi03CdGAish8L19WeYlFakhLZK3fgNYEWkfpsTPtTe4aMc+t1oPwwCfpR
-        Upqx/X4AfRzUz+nrTd4tXcxulGxTulU=
+        bh=VX93nZn2AbWIOGGDfDdsClKAztru9C3qnY5D3he52bw=;
+        b=cDCt7jnC4VKlq9HGutGVibkiup/IUCb8KB/wnuxDrXB30Jw3H00si0tX67se4NzuV0Z49w
+        KDJhPXTqsDqCm6/uJ9Nmk2QWnZRfhyopcMxgBefPINOf0lc4O26E+d+vi7dpcThSV+q3uW
+        oUHhg4fU7Dgi770ylP07Ke00Wu4Ge50=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
@@ -51,9 +50,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Yuan Yao <yao.yuan@nxp.com>,
         Vabhav Sharma <vabhav.sharma@nxp.com>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH 6/7] tty: serial: fsl_lpuart: add LS1028A earlycon support
-Date:   Thu, 20 Feb 2020 18:43:33 +0100
-Message-Id: <20200220174334.23322-6-michael@walle.cc>
+Subject: [PATCH 2/7] tty: serial: fsl_lpuart: free IDs allocated by IDA
+Date:   Thu, 20 Feb 2020 18:43:29 +0100
+Message-Id: <20200220174334.23322-2-michael@walle.cc>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200220174334.23322-1-michael@walle.cc>
 References: <20200220174334.23322-1-michael@walle.cc>
@@ -61,7 +60,7 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spamd-Bar: ++++++
 X-Rspamd-Server: web
-X-Rspamd-Queue-Id: 55A3D23E59
+X-Rspamd-Queue-Id: 94A8E23E21
 X-Spamd-Result: default: False [6.40 / 15.00];
          FROM_HAS_DN(0.00)[];
          TO_DN_SOME(0.00)[];
@@ -70,7 +69,7 @@ X-Spamd-Result: default: False [6.40 / 15.00];
          TAGGED_RCPT(0.00)[dt];
          MIME_GOOD(-0.10)[text/plain];
          BROKEN_CONTENT_TYPE(1.50)[];
-         NEURAL_SPAM(0.00)[0.471];
+         NEURAL_SPAM(0.00)[0.462];
          DKIM_SIGNED(0.00)[];
          RCPT_COUNT_TWELVE(0.00)[14];
          MID_CONTAINS_FROM(1.00)[];
@@ -85,114 +84,103 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Add a early_console_setup() for the LS1028A SoC with 32bit, little
-endian access. If the bootloader does a fixup of the clock-frequency
-node the baudrate divisor register will automatically be set.
+Since commit 3bc3206e1c0f ("serial: fsl_lpuart: Remove the alias node
+dependence") the port line number can also be allocated by IDA, but in
+case of an error the ID will no be removed again. More importantly, any
+ID will be freed in remove(), even if it wasn't allocated but instead
+fetched by of_alias_get_id(). If it was not allocated by IDA there will
+be a warning:
+  WARN(1, "ida_free called for id=%d which is not allocated.\n", id);
 
+Move the ID allocation more to the end of the probe() so that we still
+can use plain return in the first error cases.
+
+Fixes: 3bc3206e1c0f ("serial: fsl_lpuart: Remove the alias node dependence")
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/tty/serial/fsl_lpuart.c | 51 +++++++++++++++++++++++++++------
- 1 file changed, 43 insertions(+), 8 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 39 ++++++++++++++++++++-------------
+ 1 file changed, 24 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 6953eea166dc..4386ffdfe275 100644
+index 27fdc131c352..c31b8f3db6bf 100644
 --- a/drivers/tty/serial/fsl_lpuart.c
 +++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1834,11 +1834,12 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
+@@ -264,6 +264,7 @@ struct lpuart_port {
+ 	int			rx_dma_rng_buf_len;
+ 	unsigned int		dma_tx_nents;
+ 	wait_queue_head_t	dma_wait;
++	bool			id_allocated;
+ };
+ 
+ struct lpuart_soc_data {
+@@ -2422,19 +2423,6 @@ static int lpuart_probe(struct platform_device *pdev)
+ 	if (!sport)
+ 		return -ENOMEM;
+ 
+-	ret = of_alias_get_id(np, "serial");
+-	if (ret < 0) {
+-		ret = ida_simple_get(&fsl_lpuart_ida, 0, UART_NR, GFP_KERNEL);
+-		if (ret < 0) {
+-			dev_err(&pdev->dev, "port line is full, add device failed\n");
+-			return ret;
+-		}
+-	}
+-	if (ret >= ARRAY_SIZE(lpuart_ports)) {
+-		dev_err(&pdev->dev, "serial%d out of range\n", ret);
+-		return -EINVAL;
+-	}
+-	sport->port.line = ret;
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	sport->port.membase = devm_ioremap_resource(&pdev->dev, res);
+ 	if (IS_ERR(sport->port.membase))
+@@ -2479,9 +2467,25 @@ static int lpuart_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
++	ret = of_alias_get_id(np, "serial");
++	if (ret < 0) {
++		ret = ida_simple_get(&fsl_lpuart_ida, 0, UART_NR, GFP_KERNEL);
++		if (ret < 0) {
++			dev_err(&pdev->dev, "port line is full, add device failed\n");
++			return ret;
++		}
++		sport->id_allocated = true;
++	}
++	if (ret >= ARRAY_SIZE(lpuart_ports)) {
++		dev_err(&pdev->dev, "serial%d out of range\n", ret);
++		ret = -EINVAL;
++		goto failed_out_of_range;
++	}
++	sport->port.line = ret;
++
+ 	ret = lpuart_enable_clks(sport);
+ 	if (ret)
+-		return ret;
++		goto failed_clock_enable;
+ 	sport->port.uartclk = lpuart_get_baud_clk_rate(sport);
+ 
+ 	lpuart_ports[sport->port.line] = sport;
+@@ -2531,6 +2535,10 @@ static int lpuart_probe(struct platform_device *pdev)
+ failed_attach_port:
+ failed_irq_request:
+ 	lpuart_disable_clks(sport);
++failed_clock_enable:
++failed_out_of_range:
++	if (sport->id_allocated)
++		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
+ 	return ret;
  }
  
--static void
--lpuart32_serial_setbrg(struct lpuart_port *sport, unsigned int baudrate)
-+static void __lpuart32_serial_setbrg(struct uart_port *port,
-+				     unsigned int baudrate, bool use_rx_dma,
-+				     bool use_tx_dma)
- {
- 	u32 sbr, osr, baud_diff, tmp_osr, tmp_sbr, tmp_diff, tmp;
--	u32 clk = sport->port.uartclk;
-+	u32 clk = port->uartclk;
+@@ -2540,7 +2548,8 @@ static int lpuart_remove(struct platform_device *pdev)
  
- 	/*
- 	 * The idea is to use the best OSR (over-sampling rate) possible.
-@@ -1884,10 +1885,10 @@ lpuart32_serial_setbrg(struct lpuart_port *sport, unsigned int baudrate)
+ 	uart_remove_one_port(&lpuart_reg, &sport->port);
  
- 	/* handle buadrate outside acceptable rate */
- 	if (baud_diff > ((baudrate / 100) * 3))
--		dev_warn(sport->port.dev,
-+		dev_warn(port->dev,
- 			 "unacceptable baud rate difference of more than 3%%\n");
+-	ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
++	if (sport->id_allocated)
++		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
  
--	tmp = lpuart32_read(&sport->port, UARTBAUD);
-+	tmp = lpuart32_read(port, UARTBAUD);
+ 	lpuart_disable_clks(sport);
  
- 	if ((osr > 3) && (osr < 8))
- 		tmp |= UARTBAUD_BOTHEDGE;
-@@ -1898,14 +1899,23 @@ lpuart32_serial_setbrg(struct lpuart_port *sport, unsigned int baudrate)
- 	tmp &= ~UARTBAUD_SBR_MASK;
- 	tmp |= sbr & UARTBAUD_SBR_MASK;
- 
--	if (!sport->lpuart_dma_rx_use)
-+	if (!use_rx_dma)
- 		tmp &= ~UARTBAUD_RDMAE;
--	if (!sport->lpuart_dma_tx_use)
-+	if (!use_tx_dma)
- 		tmp &= ~UARTBAUD_TDMAE;
- 
--	lpuart32_write(&sport->port, tmp, UARTBAUD);
-+	lpuart32_write(port, tmp, UARTBAUD);
-+}
-+
-+static void lpuart32_serial_setbrg(struct lpuart_port *sport,
-+				   unsigned int baudrate)
-+{
-+	__lpuart32_serial_setbrg(&sport->port, baudrate,
-+				 sport->lpuart_dma_rx_use,
-+				 sport->lpuart_dma_tx_use);
- }
- 
-+
- static void
- lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
- 		   struct ktermios *old)
-@@ -2399,6 +2409,30 @@ static int __init lpuart32_early_console_setup(struct earlycon_device *device,
- 	return 0;
- }
- 
-+static int __init ls1028a_early_console_setup(struct earlycon_device *device,
-+					      const char *opt)
-+{
-+	u32 cr;
-+
-+	if (!device->port.membase)
-+		return -ENODEV;
-+
-+	device->port.iotype = UPIO_MEM32;
-+	device->con->write = lpuart32_early_write;
-+
-+	/* set the baudrate */
-+	if (device->port.uartclk && device->baud)
-+		__lpuart32_serial_setbrg(&device->port, device->baud,
-+					 false, false);
-+
-+	/* enable transmitter */
-+	cr = lpuart32_read(&device->port, UARTCTRL);
-+	cr |= UARTCTRL_TE;
-+	lpuart32_write(&device->port, cr, UARTCTRL);
-+
-+	return 0;
-+}
-+
- static int __init lpuart32_imx_early_console_setup(struct earlycon_device *device,
- 						   const char *opt)
- {
-@@ -2413,6 +2447,7 @@ static int __init lpuart32_imx_early_console_setup(struct earlycon_device *devic
- }
- OF_EARLYCON_DECLARE(lpuart, "fsl,vf610-lpuart", lpuart_early_console_setup);
- OF_EARLYCON_DECLARE(lpuart32, "fsl,ls1021a-lpuart", lpuart32_early_console_setup);
-+OF_EARLYCON_DECLARE(lpuart32, "fsl,ls1028a-lpuart", ls1028a_early_console_setup);
- OF_EARLYCON_DECLARE(lpuart32, "fsl,imx7ulp-lpuart", lpuart32_imx_early_console_setup);
- EARLYCON_DECLARE(lpuart, lpuart_early_console_setup);
- EARLYCON_DECLARE(lpuart32, lpuart32_early_console_setup);
 -- 
 2.20.1
 
