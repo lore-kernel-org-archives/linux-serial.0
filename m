@@ -2,127 +2,119 @@ Return-Path: <SRS0=HSIU=4I=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 255B2C34031
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 06:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F35AC11D02
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 07:49:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EB0EA2465D
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 06:47:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1582181249;
-	bh=av3gIAphexoZk/hwtUUlr6b+78+ltOT73zXzEY7fbv4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=OWes7I+AZzACcq8m4S4moVyDmR0NZeUyXtSJukn8fKyRtnnWVHunVACuN8Vmw+ziQ
-	 AvhdsDWS6sRj96PnOe2RU/q6MboSsS++1ZuBoCNNPbs/K8hIXpPUBeQAbam+oWkdgk
-	 XoDcxTuYbC41KzrjsghdzqIsjo06L/zDEOVvfS7g=
+	by mail.kernel.org (Postfix) with ESMTP id 050AC208C4
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 07:49:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726248AbgBTGr2 (ORCPT
+        id S1726885AbgBTHtL (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 Feb 2020 01:47:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40322 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725962AbgBTGr2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 20 Feb 2020 01:47:28 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 16AA224654;
-        Thu, 20 Feb 2020 06:47:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582181247;
-        bh=av3gIAphexoZk/hwtUUlr6b+78+ltOT73zXzEY7fbv4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Wukfz8PZklykfRGRH5H3VnHu7/SarJxu56QORmejA5L1XWzJHNormmDIf7Qr4R4zr
-         yl/TdMRBtUjjoxWlcFgfgUW1XgnRrtsimMxgOXYLa0Fc8PoDdqo+ODHfT0Fd+peFIM
-         QgwtsI74IubuLTOgp+YaykqFZLlzQhxFOR0scQEw=
-Date:   Thu, 20 Feb 2020 07:47:23 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Life is hard, and then you die" <ronald@innovation.ch>
-Cc:     Rob Herring <robh@kernel.org>, Jiri Slaby <jslaby@suse.com>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] serdev: Fix detection of UART devices on Apple machines.
-Message-ID: <20200220064723.GA3192090@kroah.com>
-References: <20200211194723.486217-1-ronald@innovation.ch>
- <20200219111519.GB2814125@kroah.com>
- <20200220063335.GA9421@innovation.ch>
+        Thu, 20 Feb 2020 02:49:11 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:42377 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726501AbgBTHtK (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 20 Feb 2020 02:49:10 -0500
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1j4gZy-00076I-W3; Thu, 20 Feb 2020 08:49:03 +0100
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1j4gZx-0007Au-66; Thu, 20 Feb 2020 08:49:01 +0100
+Date:   Thu, 20 Feb 2020 08:49:01 +0100
+From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH v6 1/4] lib: new helper kstrtodev_t()
+Message-ID: <20200220074901.ohcrisjgd26555ya@pengutronix.de>
+References: <20200213091600.554-1-uwe@kleine-koenig.org>
+ <20200213091600.554-2-uwe@kleine-koenig.org>
+ <CAHp75VcStj5sE3f0uK2deOWC=ojfx-z1fbrh6Lu6jAor9F9PgA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200220063335.GA9421@innovation.ch>
+In-Reply-To: <CAHp75VcStj5sE3f0uK2deOWC=ojfx-z1fbrh6Lu6jAor9F9PgA@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Feb 19, 2020 at 10:33:35PM -0800, Life is hard, and then you die wrote:
+On Wed, Feb 19, 2020 at 09:50:54PM +0200, Andy Shevchenko wrote:
+> On Thu, Feb 13, 2020 at 11:27 AM Uwe Kleine-König <uwe@kleine-koenig.org> wrote:
+> >
+> > This function is in the same spirit as the other kstrto* functions and
+> > uses the same calling convention. It expects the input string to be in
+> > the format %u:%u and implements stricter parsing than sscanf as it
+> > returns an error on trailing data (other than the usual \n).
 > 
-> On Wed, Feb 19, 2020 at 12:15:19PM +0100, Greg Kroah-Hartman wrote:
-> > On Tue, Feb 11, 2020 at 11:47:23AM -0800, Ronald Tschalär wrote:
-> > > On Apple devices the _CRS method returns an empty resource template, and
-> > > the resource settings are instead provided by the _DSM method. But
-> > > commit 33364d63c75d6182fa369cea80315cf1bb0ee38e (serdev: Add ACPI
-> > > devices by ResourceSource field) changed the search for serdev devices
-> > > to require valid, non-empty resource template, thereby breaking Apple
-> > > devices and causing bluetooth devices to not be found.
-> > > 
-> > > This expands the check so that if we don't find a valid template, and
-> > > we're on an Apple machine, then just check for the device being an
-> > > immediate child of the controller and having a "baud" property.
-> > > 
-> > > Cc: <stable@vger.kernel.org> # 5.5
-> > > Signed-off-by: Ronald Tschalär <ronald@innovation.ch>
-> > > ---
-> > >  drivers/tty/serdev/core.c | 10 ++++++++++
-> > >  1 file changed, 10 insertions(+)
-> > > 
-> > > diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> > > index ce5309d00280..0f64a10ba51f 100644
-> > > --- a/drivers/tty/serdev/core.c
-> > > +++ b/drivers/tty/serdev/core.c
-> > > @@ -18,6 +18,7 @@
-> > >  #include <linux/sched.h>
-> > >  #include <linux/serdev.h>
-> > >  #include <linux/slab.h>
-> > > +#include <linux/platform_data/x86/apple.h>
-> > 
-> > Why is this needed?  Just for the x86_apple_machine variable?
+> Can we first split the kstrotox* (and simple_strto*) to the separate
+> header first?
+
+I don't feel strong here what is right. But I hesitate to create another
+pre-condition for this patch set.
+
+> On top of that, why kstrtodev_t is so important? How many users are
+> already in the kernel to get an advantage out of it?
+
+Does it need to be important? It matches the other kstrto* functions and
+so it seemed more natural to me to put it near the other functions. I'm
+not aware of other potential users and surprised you seem to suggest
+this as a requirement.
+
+> What to do with all other possible variants ("%d:%d", "%dx%d" and its
+> %u variant, etc)?
+
+I don't see how %d:%d is relevant, major and minor cannot be negative
+can they? I never saw 'x' as separator between major and minor. I
+considered shortly parsing %u, but given that (I think) this is an
+internal representation only I chose to not make it more visible than it
+already is.
+
+> Why simple_strto*() can't be used?
+
+I didn't really consider it, but looking in more detail I don't like it
+much. Without having tried it I think simple_strtoull accepts
+"1000000000000000000000000000000000000000000" returning some arbitrary
+value without an error indication. And given that I was asked for strict
+parsing (i.e. not accepting 2:4:something) I'd say using simple_strto*
+is a step backwards. Also simple_strtoul() has "This function is obsolete.
+Please use kstrtoul instead." in its docstring which seems to apply to
+the other simple_strto*() functions, too.
+
+> >  #include <linux/export.h>
+> >  #include <linux/types.h>
+> >  #include <linux/uaccess.h>
 > 
-> Yes.
+> > +#include <linux/kdev_t.h>
 > 
-> > Why do we still have platform_data for new systems anymore?  Can't this
-> > go into a much more generic location?  Like as an inline function?
-> 
-> I'm not sure I follow you. What exactly would you like to see in the
-> function? The check that sets this variable? Note that this was
-> originally pulled out into a variable that is set once for performance
-> reasons - see commit 630b3aff8a51c.
+> Perhaps preserve order?
 
-That's fine, but what I am objecting to is platform-specific include
-files being added to random common kernel code.  There's no real reason
-for this other than one specific hardware platform has a quirk.  Are we
-supposed to keep this pattern up by doing tons of:
-	#include <linux/platform_data/x86/vendor_X>
-	#include <linux/platform_data/x86/vendor_Y>
-	#include <linux/platform_data/x86/vendor_Z>
-all through the kernel?
+Can do.
 
-That's a serious regression to the "bad old days" of platform specific
-crud being required in each and every driver subsystem.
+Best regards
+Uwe
 
-Now I know it's not your fault this is needed for your one change, but
-can you work on a patch series to fix this all up so that it is not
-needed?  I'm sure the x86 maintainers don't want to see this spread
-around.
-
-Heck, ARM doesn't even need this kind of mess :)
-
-thanks,
-
-greg k-h
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
