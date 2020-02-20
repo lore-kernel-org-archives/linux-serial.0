@@ -2,92 +2,200 @@ Return-Path: <SRS0=HSIU=4I=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89D21C11D05
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 11:09:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 875B9C11D05
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 11:46:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 489F62465D
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 11:09:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1582196979;
-	bh=5jznYIffxvU6eZSgRtNjQDXxHiq8x9que/YSIcqNoO4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=wmEtyTZiNJmYQXeUGoKqExXB14XnttmPWq3ZQ8yJ3NmgFoge93Vb0Jb7itg7JpQv1
-	 npYOWK3VUgz7hGF0hc2pXoLp/AQyyvRLL7gTiyj1oOCywBmqr0W9oDrYQV9ZbmyHb+
-	 qP22UmftfWUkZaC56ZWQJeZ/5nMxi7999oWt6BuE=
+	by mail.kernel.org (Postfix) with ESMTP id 548F620722
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 11:46:10 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LDhfKtrk"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726825AbgBTLJi (ORCPT
+        id S1726921AbgBTLqJ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 Feb 2020 06:09:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48878 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726501AbgBTLJi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 20 Feb 2020 06:09:38 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C722024654;
-        Thu, 20 Feb 2020 11:09:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582196977;
-        bh=5jznYIffxvU6eZSgRtNjQDXxHiq8x9que/YSIcqNoO4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HnQATuvonnFZRK8jNgZHTiyoH2pbNcWyCMPwZlxxY0d+PlUlNftiRhrnDM8c/m3he
-         bA+vX8Z+3LGvDvrnOgBIw0C9VyjpbpqYkPJ+sUJCrEJFapbygLBeuS4cf/jgYeeJ2W
-         Hzom6XFfHM6e+Qt2Szygw+IeF9/RooxD5rwKLWm0=
-Date:   Thu, 20 Feb 2020 12:09:34 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     linux-serial@vger.kernel.org, Kukjin Kim <kgene@kernel.org>,
-        Donghoon Yu <hoony.yu@samsung.com>,
-        Hyunki Koo <kkoos00@naver.com>,
-        HYUN-KI KOO <hyunki00.koo@samsung.com>,
-        Shinbeom Choi <sbeom.choi@samsung.com>,
-        Jiri Slaby <jslaby@suse.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] tty: serial: samsung_tty: remove SERIAL_SAMSUNG_DEBUG
-Message-ID: <20200220110934.GA3374196@kroah.com>
-References: <20200220102628.3371996-1-gregkh@linuxfoundation.org>
- <20200220102628.3371996-2-gregkh@linuxfoundation.org>
- <20200220105541.GB24587@pi3>
+        Thu, 20 Feb 2020 06:46:09 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:41770 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726885AbgBTLqJ (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 20 Feb 2020 06:46:09 -0500
+Received: by mail-pf1-f196.google.com with SMTP id j9so1807815pfa.8;
+        Thu, 20 Feb 2020 03:46:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=2ScI7oGFkcWQzSBzvwVnk7UzPOpiqHho6PPj3rXuDXc=;
+        b=LDhfKtrkj9tmgu2iER+QpZJUvjogpOY/ilUl8z7OR71Q+0ExlTaZhUzinF1uvUTwfq
+         leZILaNuBMF2X63WCvIktQ/srWsMxqBzbpSKeyjsF7OClP/04vNlwbLkwQnLZe9mXsSq
+         bwYax4flNBORXW8Gfx0ilZB8RBZPck7WMU7/UjiF8YImKsOImT0THFKMTIBIUeQ9MdVh
+         tx+sWJO5zgWdztbM5R1M0pW1iZcN4vuR28xeyFsP1vNLQb+cleLjz3QAVhZ0BgVps3Z8
+         SSCzCpf0vE+zbqkmBSehzwwNc/td8FS6WNl4bhgJDv7AtehI3kiWK7KwdVRUFvuDSkoP
+         J2rQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=2ScI7oGFkcWQzSBzvwVnk7UzPOpiqHho6PPj3rXuDXc=;
+        b=UMvkRQL9JLDOCaE/yRe4zmMujjoaNsh3worfZygfqyG8gePp2eWQnPV7Qc8nsfEryA
+         X6WFr3h3qyMfLnZ8YMlANhQm6gPmB1grgJnPtx/ni81jPVps6TQeD+xL2P3932PW2aCL
+         UosP/oVRAQ1cpFm8p7atB6oj54+VJDywntUEVsd9h1IZVP9NGduTjUNn6M/wykpm+Fio
+         VGnQnCrtlS4xkh2WpboLfNhg2NEn7qvPRYvYtBBchpHiL6GziZUCVl+XkMlhkX4sYxcJ
+         dcVIK0y4IrnJKaY0owmtIvswmUdzPYvduyY5UyaGP16eiOWZQSkpEA4iH9pH/+iFlj0X
+         uS/A==
+X-Gm-Message-State: APjAAAU5uCJRUa/F5USOzkudUjiI12aNPrv06//ujCaVDuPUbil8JaBx
+        S5mmb41WUDwzJ9v3l0syV7zn1vwjSvTIzp24r1pqWTsiWXT9dQ==
+X-Google-Smtp-Source: APXvYqxsTk9oJoLc/7GdvMn3HPkMU1PrEL/2nl48ZgALnv5Th9PONrxOU3zB7COnGuPFs2nnzlF6kWd4Wh/ZlBlWTfA=
+X-Received: by 2002:a62:52d0:: with SMTP id g199mr30825151pfb.241.1582199168430;
+ Thu, 20 Feb 2020 03:46:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200220105541.GB24587@pi3>
+References: <20200213091600.554-1-uwe@kleine-koenig.org> <20200213091600.554-2-uwe@kleine-koenig.org>
+ <CAHp75VcStj5sE3f0uK2deOWC=ojfx-z1fbrh6Lu6jAor9F9PgA@mail.gmail.com>
+ <20200220074901.ohcrisjgd26555ya@pengutronix.de> <CAHp75VcxXWputX1y90t8f-c0a3dw2CHU6=ebQ+o6e8Z1GymiDw@mail.gmail.com>
+ <20200220105718.eoevd3kb63zzrotu@pengutronix.de>
+In-Reply-To: <20200220105718.eoevd3kb63zzrotu@pengutronix.de>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 20 Feb 2020 13:46:00 +0200
+Message-ID: <CAHp75Vd3KN81qxOWJQ7v=GimSLtVymur_iPsf91pka1STc1nfA@mail.gmail.com>
+Subject: Re: [PATCH v6 1/4] lib: new helper kstrtodev_t()
+To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Sascha Hauer <kernel@pengutronix.de>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Jiri Slaby <jslaby@suse.com>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        Dan Murphy <dmurphy@ti.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Feb 20, 2020 at 11:55:41AM +0100, Krzysztof Kozlowski wrote:
-> On Thu, Feb 20, 2020 at 11:26:28AM +0100, Greg Kroah-Hartman wrote:
-> > Since a05025d0ce72 ("tty: serial: samsung_tty: use standard debugging
-> > macros") this configuration option is not used at all, so remove it from
-> > the Kconfig file.
-> > 
-> > Cc: Kukjin Kim <kgene@kernel.org>
-> > Cc: Donghoon Yu <hoony.yu@samsung.com>
-> > Cc: Hyunki Koo <kkoos00@naver.com>
-> > Cc: HYUN-KI KOO <hyunki00.koo@samsung.com>
-> > Cc: Shinbeom Choi <sbeom.choi@samsung.com>
-> > Cc: Krzysztof Kozlowski <krzk@kernel.org>
-> > Cc: Jiri Slaby <jslaby@suse.com>
-> > Cc: linux-arm-kernel@lists.infradead.org
-> > Cc: linux-samsung-soc@vger.kernel.org
-> > Cc: linux-serial@vger.kernel.org
-> > Cc: linux-kernel@vger.kernel.org
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > ---
-> >  drivers/tty/serial/Kconfig | 9 ---------
-> >  1 file changed, 9 deletions(-)
-> 
-> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+On Thu, Feb 20, 2020 at 12:57 PM Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
+> On Thu, Feb 20, 2020 at 12:22:36PM +0200, Andy Shevchenko wrote:
+> > On Thu, Feb 20, 2020 at 9:49 AM Uwe Kleine-K=C3=B6nig
+> > <u.kleine-koenig@pengutronix.de> wrote:
+> > > On Wed, Feb 19, 2020 at 09:50:54PM +0200, Andy Shevchenko wrote:
+> > > > On Thu, Feb 13, 2020 at 11:27 AM Uwe Kleine-K=C3=B6nig <uwe@kleine-=
+koenig.org> wrote:
+> > > > >
+> > > > > This function is in the same spirit as the other kstrto* function=
+s and
+> > > > > uses the same calling convention. It expects the input string to =
+be in
+> > > > > the format %u:%u and implements stricter parsing than sscanf as i=
+t
+> > > > > returns an error on trailing data (other than the usual \n).
+> >
+> > ...
+> >
+> > > > On top of that, why kstrtodev_t is so important? How many users are
+> > > > already in the kernel to get an advantage out of it?
+> > >
+> > > Does it need to be important? It matches the other kstrto* functions =
+and
+> > > so it seemed more natural to me to put it near the other functions. I=
+'m
+> > > not aware of other potential users and surprised you seem to suggest
+> > > this as a requirement.
+> >
+> > Yes it does. The kstrtox() are quite generic, what you are proposing
+> > is rather one particular case with blurry understanding how many users
+> > will be out of it.
+>
+> In my understanding one user is a hard requirement.
 
-Thanks for the quick review of both of these!
+Yes. But looking at the LOCs you introduce to entire kernel in such
+generic area (I wouldn't tell you anything if, for instance, you
+introduced a support for hypothetical S2P bus with one host controller
+driver) like lib/.
 
-greg k-h
+> > If you had told "look, we have 1234 users which may benefit out of
+> > it", I would have given no comment against.
+>
+> Sure, having >1000 potential users would be a good argument pro this
+> function. But having only one isn't a good contra IMHO.
+
+For lib/ is a good argument in my opinion.
+
+> > > > What to do with all other possible variants ("%d:%d", "%dx%d" and i=
+ts
+> > > > %u variant, etc)?
+> > >
+> > > I don't see how %d:%d is relevant, major and minor cannot be negative
+> > > can they? I never saw 'x' as separator between major and minor. I
+> > > considered shortly parsing %u, but given that (I think) this is an
+> > > internal representation only I chose to not make it more visible than=
+ it
+> > > already is.
+> >
+> > See above, if we are going to make it generic, perhaps better to cover
+> > more possible users, right?
+> > Otherwise your change provokes pile of (replaced)
+> > kstrto_resolution() /* %ux:%u */
+> > kstrto_range() /* %d:%d */
+> > kstrto_you_name_it()
+>
+> Given there are respective types that this can be stored to, I don't
+> object more functions of this type and don't see a good reason to not
+> add such a function. And in my eyes I prefer to have such a function in
+> a visible place (i.e. where all the other kstrto* functions are) to
+> prevent code duplication.
+
+You can easily satisfy above by adding a function parameter 'char
+*delim', right?
+
+> Also I don't understand yet, what you want me to do.
+
+I have issues with kstrto() not playing with simple numbers (boolean
+is a special case, but still a number at the end).
+I also don't feel good with too narrow usage of the newly introduced helper
+
+> Assume I'd be
+> willing to use simple_strtoul, I'd still want to have a function that
+> gives me a dev_t from a given string. Should I put this directly in my
+> led-trigger driver?
+
+I see the following possibilities:
+a) put it inside the caller and forget about generic helper
+b) do a generic helper, but 1/ in string_*() namespace, 2/ with a
+delimiter parameter and 3/ possibility to take negative numbers
+
+In b) case, add to the commit message how many potential _existing_
+users may be converted to this.
+Also it would be good to have two versions strict (only \n at the end
+is allowed) and non-strict (based on the amount of users for each
+group).
+
+> > > And given that I was asked for strict
+> > > parsing (i.e. not accepting 2:4:something) I'd say using simple_strto=
+*
+> > > is a step backwards. Also simple_strtoul() has "This function is obso=
+lete.
+> > > Please use kstrtoul instead." in its docstring which seems to apply t=
+o
+> > > the other simple_strto*() functions, too.
+> >
+> > I specifically fixed a doc string to approve its use in the precisely
+> > cases you have here.
+>
+> Can you please be a bit more constructive here and point to the change
+> you talk about? I didn't find a commit in next.
+
+https://elixir.bootlin.com/linux/v5.6-rc2/source/include/linux/kernel.h#L44=
+6
+
+Note, there is no more word 'obsolete' there.
+
+--=20
+With Best Regards,
+Andy Shevchenko
