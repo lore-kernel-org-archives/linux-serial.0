@@ -1,144 +1,105 @@
-Return-Path: <SRS0=V5ud=4H=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=HSIU=4I=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45AAEC5ACC4
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 22:13:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33816C34031
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 06:33:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 148C3206EF
-	for <linux-serial@archiver.kernel.org>; Wed, 19 Feb 2020 22:13:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1582150394;
-	bh=ddoyKRwVDKIYIprPOKhr/kDrCRRWlvXxVqPXPWAljWo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=tqPkTi2r3XHhxZIS3C+Z7QDAIaSJlyaGGPRrtpl2oNRWeQz1duJ1tdtUiwE7NTZiM
-	 nKxlHmMMmyKUXMrmMM+B33Sfa/WneKGhY7s8+fK8Q+nfm4fL/g3sCynGQKTUU/CYGi
-	 xorXwVGLkCJeKh6Z1kevv+HwKKgHj/1+pTtsOzkY=
+	by mail.kernel.org (Postfix) with ESMTP id AA9A024656
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 06:33:36 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=innovation.ch header.i=@innovation.ch header.b="fLH5IrYz"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727429AbgBSWNN (ORCPT
+        id S1726198AbgBTGdg (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 19 Feb 2020 17:13:13 -0500
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:41685 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727232AbgBSWNN (ORCPT
+        Thu, 20 Feb 2020 01:33:36 -0500
+Received: from chill.innovation.ch ([216.218.245.220]:40544 "EHLO
+        chill.innovation.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725962AbgBTGdg (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 19 Feb 2020 17:13:13 -0500
-Received: by mail-oi1-f196.google.com with SMTP id i1so25433925oie.8;
-        Wed, 19 Feb 2020 14:13:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=QCDRXvFi+gR1oNSsjcXCHacRJtQD8q7DV4e37/61Byk=;
-        b=smef+T69eC9WkkzH2P5wIDQyYMnCrd3sj13Bweli4qiH0kH0xJEvbFt2kY7g6YFfcF
-         e6ffo4ZltG871JHoSK64NHJR2YhAqmCKiQK3yJVkYmhSRIlM3XJZYcATerpeZQ1Ea08k
-         8N5eSLFXDLeP2xbxllwPU5kujZCiW95MdLCJKJjLTivatwtPyP/43YuJv/3Xb++9+5a6
-         AWZps9F+1Z0kMgxQ5gBk4jJZNFcK6iAt8qYxWTlj87F5Ad82D57L/YFSw2m0yHoRRzKX
-         CfXFoZgbNWfIt5ro6XTTX0UTr5oWR3ifPv4r6CBY5OJ35wkVeAdD/HeMTVjsjODWPPil
-         SeiQ==
-X-Gm-Message-State: APjAAAUxDvzQ6b4kd9o/5QTIJJCkNAJnbR1O6wZ3xlJpGfZU5oZk0kL5
-        64k3PAVgLRA+hMfPoNS6wg==
-X-Google-Smtp-Source: APXvYqwLFvsnaggZIZ/FphpHVECAI3EPZlrYh7AiYB66zYzCl73IpPqpn2LPQw1Q8GLsGZZvQeYS7w==
-X-Received: by 2002:aca:4306:: with SMTP id q6mr6190796oia.54.1582150392520;
-        Wed, 19 Feb 2020 14:13:12 -0800 (PST)
-Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id n25sm418938oic.6.2020.02.19.14.13.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Feb 2020 14:13:11 -0800 (PST)
-Received: (nullmailer pid 30690 invoked by uid 1000);
-        Wed, 19 Feb 2020 22:13:10 -0000
-Date:   Wed, 19 Feb 2020 16:13:10 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
-        Jiri Slaby <jslaby@suse.cz>, Johan Hovold <johan@kernel.org>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        Pavel Machek <pavel@ucw.cz>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/4] dt-bindings: mfd: motmdm: Add binding for
- motorola-mdm
-Message-ID: <20200219221310.GA26624@bogus>
-References: <20200210040107.10306-1-tony@atomide.com>
- <20200210040107.10306-4-tony@atomide.com>
+        Thu, 20 Feb 2020 01:33:36 -0500
+Date:   Wed, 19 Feb 2020 22:33:35 -0800
+DKIM-Filter: OpenDKIM Filter v2.10.3 chill.innovation.ch 542756412C7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=innovation.ch;
+        s=default; t=1582180415;
+        bh=vhZWh+2Ztj0g9xXmISjjSlOG2XuQ/opDLS+2Tm7NtT8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fLH5IrYzS0EdMc1N/kj00Tub4ak+6tCwmXHiPFqLdxUZbWsIVAnbLAU1JPXwtXDbk
+         Ifv0uXnKrK01hHrLJn2xEwuAJYXk42kdKJ07HfyaoSWUn9tH0aonajEPOF0NvRlyVp
+         jzFfdliaDxUJV/a1+mNUFRXw7xM7hiWjcTLFfY28veVyXxrmCcxmvXJb3TMMGEQQnr
+         hTAvLHPRyueeegtBGah99+fgGBDLRTisUeSr1r5O2Gv8trIfmzxq1NWHXKqVZyV9go
+         uY5wh58pVFBBZzduOXCCSaatN+YRhwct+dQ5/gIZ4cwaU9GtbGpfMYd/Zf1B04w27k
+         pEbxHdB+gpmFQ==
+From:   "Life is hard, and then you die" <ronald@innovation.ch>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Rob Herring <robh@kernel.org>, Jiri Slaby <jslaby@suse.com>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] serdev: Fix detection of UART devices on Apple machines.
+Message-ID: <20200220063335.GA9421@innovation.ch>
+References: <20200211194723.486217-1-ronald@innovation.ch>
+ <20200219111519.GB2814125@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20200210040107.10306-4-tony@atomide.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200219111519.GB2814125@kroah.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Feb 09, 2020 at 08:01:05PM -0800, Tony Lindgren wrote:
-> Add a binding document for Motorola modems controllable by
-> TS 27.010 UART line discipline using serdev drivers.
+
+On Wed, Feb 19, 2020 at 12:15:19PM +0100, Greg Kroah-Hartman wrote:
+> On Tue, Feb 11, 2020 at 11:47:23AM -0800, Ronald Tschalär wrote:
+> > On Apple devices the _CRS method returns an empty resource template, and
+> > the resource settings are instead provided by the _DSM method. But
+> > commit 33364d63c75d6182fa369cea80315cf1bb0ee38e (serdev: Add ACPI
+> > devices by ResourceSource field) changed the search for serdev devices
+> > to require valid, non-empty resource template, thereby breaking Apple
+> > devices and causing bluetooth devices to not be found.
+> > 
+> > This expands the check so that if we don't find a valid template, and
+> > we're on an Apple machine, then just check for the device being an
+> > immediate child of the controller and having a "baud" property.
+> > 
+> > Cc: <stable@vger.kernel.org> # 5.5
+> > Signed-off-by: Ronald Tschalär <ronald@innovation.ch>
+> > ---
+> >  drivers/tty/serdev/core.c | 10 ++++++++++
+> >  1 file changed, 10 insertions(+)
+> > 
+> > diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> > index ce5309d00280..0f64a10ba51f 100644
+> > --- a/drivers/tty/serdev/core.c
+> > +++ b/drivers/tty/serdev/core.c
+> > @@ -18,6 +18,7 @@
+> >  #include <linux/sched.h>
+> >  #include <linux/serdev.h>
+> >  #include <linux/slab.h>
+> > +#include <linux/platform_data/x86/apple.h>
 > 
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-> ---
->  .../mfd/motorola,mapphone-mdm6600.yaml        | 37 +++++++++++++++++++
->  1 file changed, 37 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/motorola,mapphone-mdm6600.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/mfd/motorola,mapphone-mdm6600.yaml b/Documentation/devicetree/bindings/mfd/motorola,mapphone-mdm6600.yaml
-> new file mode 100644
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mfd/motorola,mapphone-mdm6600.yaml
-> @@ -0,0 +1,37 @@
-> +# SPDX-License-Identifier: GPL-2.0
+> Why is this needed?  Just for the x86_apple_machine variable?
 
-Dual license new bindings please:
+Yes.
 
-(GPL-2.0-only OR BSD-2-Clause)
+> Why do we still have platform_data for new systems anymore?  Can't this
+> go into a much more generic location?  Like as an inline function?
 
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/mfd/motorola,mapphone-mdm6600.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Motorola Mapphone MDM6600 Modem
-> +
-> +maintainers:
-> +  - Tony Lindgren <tony@atomide.com>
-> +
-> +allOf:
-> +  - $ref: "motorola,mapphone-mdm6600.yaml#"
+I'm not sure I follow you. What exactly would you like to see in the
+function? The check that sets this variable? Note that this was
+originally pulled out into a variable that is set once for performance
+reasons - see commit 630b3aff8a51c.
 
-Huh? A recursive include? I'm not sure how that didn't blow up.
 
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - const: motorola,mapphone-mdm6600-serial
-> +
-> +  phys:
-> +    maxItems: 1
-> +
-> +  phy-names:
-> +    const: usb
-> +
-> +required:
-> +  - compatible
-> +  - phys
-> +  - phy-names
-> +
-> +examples:
-> +  - |
-> +    modem {
-> +        compatible = "motorola,mapphone-mdm6600-serial";
-> +        phys = <&fsusb1_phy>;
-> +        phy-names = "usb";
-> +    };
-> -- 
-> 2.25.0
+  Cheers,
+
+  Ronald
+
