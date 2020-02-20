@@ -6,50 +6,50 @@ X-Spam-Status: No, score=-1.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
 	SPF_PASS,UNWANTED_LANGUAGE_BODY autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8209FC11D04
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 10:54:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3781C11D07
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 10:55:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4CC0524656
-	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 10:54:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 843AF2467A
+	for <linux-serial@archiver.kernel.org>; Thu, 20 Feb 2020 10:55:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1582196078;
-	bh=UiHuWG/84b4BcAYnbS6gS+cvQbWHyVLoZb33/v76w8k=;
+	s=default; t=1582196146;
+	bh=Bhb5LRnwS7YgwDxN7dUuDX9Fvm/FplN0eLSm0hQ19yE=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=fuvanC00o+kOB963v+ke1mkbOCN9LIi1yjRgarpfvtmrhMXJFY7URnG7X+hv1dh35
-	 wbpSd5iYXGFVsTAmvCvQNipAVTw2C9Ueg/wxd0Bl4xxDf5ztpHhnEK0s7nkcuRo1uz
-	 ank/kfY373RCdWxQhR0JX4vU5Ybv4iVTCms6tqiM=
+	b=L0Pjz/oRENJC4txWrxZC3sE9l1xKDzFZOcIUTn/gOzyDmzxi/enrBVZEuhKRoL76Q
+	 7tHH75oSFjlh5i9ozpIx45FmwWst2mE3wFix5RTc2uy1eX5G0q+15VYyOiyk8G95k/
+	 1iGLmFbbh9pH23QPj4owW4pW+5hCL43v2Jz32r1w=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726700AbgBTKyi (ORCPT
+        id S1726871AbgBTKzq (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 20 Feb 2020 05:54:38 -0500
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:42464 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726501AbgBTKyh (ORCPT
+        Thu, 20 Feb 2020 05:55:46 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:38879 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726501AbgBTKzp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 20 Feb 2020 05:54:37 -0500
-Received: by mail-ed1-f68.google.com with SMTP id e10so33144120edv.9;
-        Thu, 20 Feb 2020 02:54:36 -0800 (PST)
+        Thu, 20 Feb 2020 05:55:45 -0500
+Received: by mail-ed1-f66.google.com with SMTP id p23so33159067edr.5;
+        Thu, 20 Feb 2020 02:55:44 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=OlJB8KVjaJu4V3iCSe/8/XtMjoIEyaojr8gxPkxkMGA=;
-        b=YmLSGpyqQuMziwODSpiwznHIecMt8xlGtrE6mNRoF0DPVpAAQkDzrFC6456P8JYVGl
-         Pr9MdWMYhnH9VFIvaM6K60sPA4YvF1i5zSN9Ylm6lCp1rFvQ1vhrKmwpheJtIj7wRod3
-         JFcuSInrVe8e+Qzgh4qLoi/zpp0TkqVtQnC0BJbYh2ylA9JJVjGWTfaZt7/PEr3+ngee
-         /HRBBHiZnSkaGWpx1tjd5SwhExz7xLR7Mdr3SHryLqzKsl9B5XiyFevh+0cU62VKEdOb
-         wfxUcr+lvVyb2qAak3+SBTLfjkcBwF7WjboFPsCBG5Hn2mg8A5hcpzWd2MsfN1BsmQga
-         a/8w==
-X-Gm-Message-State: APjAAAVome3DkTQ+F70X1Og+pXmaZMs+5pHZ8/+1WxqhKvyO0WrqXmIh
-        V7r68nEQYKbY1JIamT0eS1E=
-X-Google-Smtp-Source: APXvYqwyUudb+r8CvxVMqeA7AYv9LWCba2g0beLumjzze2LHmRQY3XC4lygmlBj+6JSDEmDo5t0KbQ==
-X-Received: by 2002:a17:906:20c5:: with SMTP id c5mr28401732ejc.330.1582196075658;
-        Thu, 20 Feb 2020 02:54:35 -0800 (PST)
+        bh=HxC4605+KVWJsNCk5tm1pp2NBu/lLGZBF0ln8nNCRHI=;
+        b=RUdAChxRR6JCADu4AxQT9usfuHUJxQuZ+gwXMMpYPBjS3lVZJDfUXwuny/Ln+7wSyf
+         OEuLGH+SQSoVtLjGeOB9F4SVVsgRuvC51DbxwJM+msOrRFucqAzuX8bL69qqIu+8obOA
+         C0K5zm66MpuuEPe/KEZJXYqpaoHwzPB0FZbTnSOc2wClcWr6ZUFtfeLf3PJYMfZ9eAiR
+         j2Y431SYLjNPbDhI7aLQ8cGLFrrBqlQVKsbD7Ix6n9Z+7ybZjJhXjiXqQV5J8s03B3RU
+         pMr4LF1KesQMr3CeJRQtPXkw9aThugHJPq+d5Rlw/1m/roK4bMonn4eO8jASAifCGtua
+         ZECQ==
+X-Gm-Message-State: APjAAAVeRpNaz9iBkUVZXKScaUZDKjdqXRWcmgGvRDIOD0fGv2LP5hi3
+        W50yvirnRHSci5VdKGs9uuQ=
+X-Google-Smtp-Source: APXvYqzTLPh931RWB799Q6pryHxossHIt8rBOWsQX0wPKNGao+iaWcMDnUGW9wCQFJALFke4UzixDQ==
+X-Received: by 2002:a17:906:4089:: with SMTP id u9mr29314401ejj.184.1582196143675;
+        Thu, 20 Feb 2020 02:55:43 -0800 (PST)
 Received: from pi3 ([194.230.155.125])
-        by smtp.googlemail.com with ESMTPSA id a10sm76892edt.50.2020.02.20.02.54.33
+        by smtp.googlemail.com with ESMTPSA id cb20sm84735edb.1.2020.02.20.02.55.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Feb 2020 02:54:34 -0800 (PST)
-Date:   Thu, 20 Feb 2020 11:54:32 +0100
+        Thu, 20 Feb 2020 02:55:43 -0800 (PST)
+Date:   Thu, 20 Feb 2020 11:55:41 +0100
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-serial@vger.kernel.org, Kukjin Kim <kgene@kernel.org>,
@@ -60,21 +60,23 @@ Cc:     linux-serial@vger.kernel.org, Kukjin Kim <kgene@kernel.org>,
         Jiri Slaby <jslaby@suse.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] tty: serial: samsung_tty: build it for any platform
-Message-ID: <20200220105432.GA24587@pi3>
+Subject: Re: [PATCH 2/2] tty: serial: samsung_tty: remove SERIAL_SAMSUNG_DEBUG
+Message-ID: <20200220105541.GB24587@pi3>
 References: <20200220102628.3371996-1-gregkh@linuxfoundation.org>
+ <20200220102628.3371996-2-gregkh@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200220102628.3371996-1-gregkh@linuxfoundation.org>
+In-Reply-To: <20200220102628.3371996-2-gregkh@linuxfoundation.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Feb 20, 2020 at 11:26:27AM +0100, Greg Kroah-Hartman wrote:
-> There is no need to tie this driver to only a specific SoC, or compile
-> test, so remove that dependancy from the Kconfig rules.
+On Thu, Feb 20, 2020 at 11:26:28AM +0100, Greg Kroah-Hartman wrote:
+> Since a05025d0ce72 ("tty: serial: samsung_tty: use standard debugging
+> macros") this configuration option is not used at all, so remove it from
+> the Kconfig file.
 > 
 > Cc: Kukjin Kim <kgene@kernel.org>
 > Cc: Donghoon Yu <hoony.yu@samsung.com>
@@ -89,8 +91,8 @@ On Thu, Feb 20, 2020 at 11:26:27AM +0100, Greg Kroah-Hartman wrote:
 > Cc: linux-kernel@vger.kernel.org
 > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > ---
->  drivers/tty/serial/Kconfig | 1 -
->  1 file changed, 1 deletion(-)
+>  drivers/tty/serial/Kconfig | 9 ---------
+>  1 file changed, 9 deletions(-)
 
 Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
 
