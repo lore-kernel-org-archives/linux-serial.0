@@ -2,139 +2,281 @@ Return-Path: <SRS0=iYMu=4J=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6DD6C35640
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Feb 2020 08:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45CD1C35642
+	for <linux-serial@archiver.kernel.org>; Fri, 21 Feb 2020 08:42:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C58EC20637
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Feb 2020 08:30:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 10D4A222C4
+	for <linux-serial@archiver.kernel.org>; Fri, 21 Feb 2020 08:42:44 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S9Bznbui"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732839AbgBUIaU (ORCPT
+        id S1729067AbgBUImj (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 21 Feb 2020 03:30:20 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:33112 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387477AbgBUIQI (ORCPT
+        Fri, 21 Feb 2020 03:42:39 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:37423 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727934AbgBUImi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 21 Feb 2020 03:16:08 -0500
-Received: by mail-wm1-f68.google.com with SMTP id m10so4587861wmc.0;
-        Fri, 21 Feb 2020 00:16:07 -0800 (PST)
+        Fri, 21 Feb 2020 03:42:38 -0500
+Received: by mail-pf1-f194.google.com with SMTP id p14so841675pfn.4;
+        Fri, 21 Feb 2020 00:42:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=i0j3HxQ470HdIWxAMoUka3U8AZHwcMDdR6BO6TowNX8=;
+        b=S9BznbuiB7CZsRilNYHcvxrAQnetlx6nUYiludsv40niivFJ350vJbnhnnT0ttG1nu
+         HTRfYvmy5pcjGjFl1xqDu6ElpXc7SUaVX2CZL10QamBW/nb/vbBYiRYmiotRXDrk9gFg
+         PP9rORoTEL2+EPlgzQfyG7SvbSJNNta8l6mWyY644SdNTv5yMapp4OY72k+fT7FLJUc5
+         KkLOwFLUR/JQkfe4JJBUqw5lHn+k8NftdPycBOvwpTCAvKx76NmGxq4t8FSZIPMWPCNj
+         khU4IwOfIQsVr0r9b2dUlu1J7LSVcE8vD/vIEsD/o4I9eNNLDc8FoZOR3gWfzONGvTio
+         BPKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=+1THt+IQYItC43nkA6uEMA3TL4OZQRC2HipyCW3vLnA=;
-        b=shmZdcwqDftWAQLjUOjRjRNAVhKigZ7kBBYNB7sIi+ZtU80J7g6WYskcy4R18B4zkH
-         yUVEvQKotYyhtPTAqb+dkm6z0AQXWYFUjyks/6PCC0ZrQNWA9Dr+o5noJeWCjV0rastk
-         Ere1g//26zFZqokJj1j9QGivadRaXK/D6xNcDN/49tMH1KuxjgmffWjxzHL9rNfkOg3T
-         rYEMt6BU+Q0bNEtryXAkXv46V1J30AqNbiXFRrj4FlKJ58yjYOjIwg0BQJiT8AoBxMAh
-         j/UFKREL4QdUaWZ5qPnomPeX4uaiKdyRxDrW8hw6dCL+xqX2yUttBNkKZwzzxdap4T+c
-         tWSQ==
-X-Gm-Message-State: APjAAAXH/dDAbXbh7prJIC3xvVQAKtGSl5D+dl5mQrJsR/37Uo6WBJkq
-        mGmkI7A5aHbuVZNZmiyOzcP3iZoXyKwVOQ==
-X-Google-Smtp-Source: APXvYqz9tYUSyCSz1aGkzB1BXY4p0Ixp0DiLA4SjwE6Qyp9LNoLJrKdTUryxOKdKgKK0KRYqSiBe1w==
-X-Received: by 2002:a1c:4857:: with SMTP id v84mr2243868wma.8.1582272964437;
-        Fri, 21 Feb 2020 00:16:04 -0800 (PST)
-Received: from ?IPv6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id r7sm742279wmh.45.2020.02.21.00.16.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 21 Feb 2020 00:16:03 -0800 (PST)
-Subject: Re: [PATCH 03/24] n_hdlc: convert debuglevel use to pr_debug
-To:     Joe Perches <joe@perches.com>, gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200219084118.26491-1-jslaby@suse.cz>
- <20200219084118.26491-3-jslaby@suse.cz>
- <f3bac52dffc9e5402eb6c6106256dffaf550ee90.camel@perches.com>
-From:   Jiri Slaby <jslaby@suse.cz>
-Autocrypt: addr=jslaby@suse.cz; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <c0b9a410-c3db-a7ac-729c-fd204d7bd20d@suse.cz>
-Date:   Fri, 21 Feb 2020 09:16:02 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=i0j3HxQ470HdIWxAMoUka3U8AZHwcMDdR6BO6TowNX8=;
+        b=tjqdAL18fsiNoE6QwNs/7bgF2n/3oJdkzTcjTPQtcigFkIJ2cYuCwPZFwEqMDz3pxX
+         Kz8dAsBuW3GC2hd+lY2B3GS8ujrPDH7WCZuAFb5r7GgWeVkinlinUlOxFzb3Yd6V/3z2
+         tSdOcobIgKQB4WAUgFzCjYvUhik9PEv9lwLhMyTIgjOc5xy8WcnMmOR/JCvqbDAEbb8J
+         2xfrmiDpMJCEcc6T/2VZAx42g92wSea5ZwT0zTXwgafJDHxaT+G3jSD4l0aMiX4uSFK+
+         dwY/yNF029TsXMg6J21+11Cvta3qVZpZJ42IqO7ZQgT7VgaL6zAJTC9O6LIue0m+YmVH
+         swQQ==
+X-Gm-Message-State: APjAAAU5TEHB+6QWNIquo0cOzbMTvO/9wALItIlgwGf6dSxYbzvaRfyv
+        HVRA7GMfU/Z4JqBuhgLFWp5jMCKqyAOe3DxzcfE=
+X-Google-Smtp-Source: APXvYqzr723bAPUr915pjFyXAHuVlB4FwzaNx+DToKigYTUcjbunnfJIG1Jb5ag1LVGlqNDMtFhnoQ74+d9KO9OQRDA=
+X-Received: by 2002:a62:1944:: with SMTP id 65mr37651381pfz.151.1582274557809;
+ Fri, 21 Feb 2020 00:42:37 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <f3bac52dffc9e5402eb6c6106256dffaf550ee90.camel@perches.com>
-Content-Type: text/plain; charset=iso-8859-2
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200213091600.554-1-uwe@kleine-koenig.org> <20200213091600.554-2-uwe@kleine-koenig.org>
+ <CAHp75VcStj5sE3f0uK2deOWC=ojfx-z1fbrh6Lu6jAor9F9PgA@mail.gmail.com>
+ <20200220074901.ohcrisjgd26555ya@pengutronix.de> <CAHp75VcxXWputX1y90t8f-c0a3dw2CHU6=ebQ+o6e8Z1GymiDw@mail.gmail.com>
+ <20200220105718.eoevd3kb63zzrotu@pengutronix.de> <CAHp75Vd3KN81qxOWJQ7v=GimSLtVymur_iPsf91pka1STc1nfA@mail.gmail.com>
+ <20200220140101.frlxklnv6x3uhzow@pengutronix.de>
+In-Reply-To: <20200220140101.frlxklnv6x3uhzow@pengutronix.de>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 21 Feb 2020 10:42:29 +0200
+Message-ID: <CAHp75VdD5rJMBqH-YwGKuM5EHUXxeGAon6TfPwq_YxWGzkdrtQ@mail.gmail.com>
+Subject: Re: [PATCH v6 1/4] lib: new helper kstrtodev_t()
+To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Jiri Slaby <jslaby@suse.com>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        Dan Murphy <dmurphy@ti.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 19. 02. 20, 13:20, Joe Perches wrote:
-> On Wed, 2020-02-19 at 09:40 +0100, Jiri Slaby wrote:
->> With pr_debug we have a fine-grained control about debugging prints. So
->> convert the use of global debuglevel variable and tests to a commonly
->> used pr_debug. And drop debuglevel completely.
->>
->> This also implicitly adds a loglevel to the messages (KERN_DEBUG) as it
->> was missing on most of them.
-> []
->> diff --git a/drivers/tty/n_hdlc.c b/drivers/tty/n_hdlc.c
-> []
->> @@ -310,11 +306,9 @@ static int n_hdlc_tty_open (struct tty_struct *tty)
->>  {
->>  	struct n_hdlc *n_hdlc = tty2n_hdlc (tty);
->>  
->> -	if (debuglevel >= DEBUG_LEVEL_INFO)	
->> -		printk("%s(%d)n_hdlc_tty_open() called (device=%s)\n",
->> -		__FILE__,__LINE__,
->> -		tty->name);
->> -		
->> +	pr_debug("%s(%d)%s() called (device=%s)\n",
->> +			__FILE__, __LINE__, __func__, tty->name);
-> 
-> Perhaps remove all the __FILE__ and __LINE__ arguments as
-> dynamic debug could emit module and __LINE__ when necessary.
+On Thu, Feb 20, 2020 at 4:01 PM Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
+> On Thu, Feb 20, 2020 at 01:46:00PM +0200, Andy Shevchenko wrote (with
+> the additions written in a later mail inserted as if he said them
+> already then):
+> > On Thu, Feb 20, 2020 at 12:57 PM Uwe Kleine-K=C3=B6nig
+> > <u.kleine-koenig@pengutronix.de> wrote:
+> > > On Thu, Feb 20, 2020 at 12:22:36PM +0200, Andy Shevchenko wrote:
+> > > > On Thu, Feb 20, 2020 at 9:49 AM Uwe Kleine-K=C3=B6nig
+> > > > <u.kleine-koenig@pengutronix.de> wrote:
 
-Noted for later.
+...
 
-thanks,
--- 
-js
-suse labs
+> > Yes. But looking at the LOCs you introduce to entire kernel in such
+> > generic area (I wouldn't tell you anything if, for instance, you
+> > introduced a support for hypothetical S2P bus with one host controller
+> > driver) like lib/.
+>
+> Why are added LOCs bad? Increased compile time? Increased binary size?
+
+Both.
+
+> More memory usage when the file is opened in an editor?
+
+Probably in some cases. :-)
+
+> > > > If you had told "look, we have 1234 users which may benefit out of
+> > > > it", I would have given no comment against.
+> > >
+> > > Sure, having >1000 potential users would be a good argument pro this
+> > > function. But having only one isn't a good contra IMHO.
+> >
+> > For lib/ is a good argument in my opinion.
+>
+> So while I agree (as I wrote) that many users would be great, not having
+> many users isn't bad enough to justify putting this function somewhere
+> separated from the other kstrto*() functions. I assume we won't be able
+> to sort out this difference of opinion.
+
+If you put this like: okay, this is a new helper and new user, but we
+have 100500 similar cases in the kernel which may benefit out of this,
+it's one story, it you put it like: okay, let's do one helper per each
+very particular case, it's another story.
+You see the difference? I'm completely against the latter one.
+
+...
+
+> > > > See above, if we are going to make it generic, perhaps better to co=
+ver
+> > > > more possible users, right?
+> > > > Otherwise your change provokes pile of (replaced)
+> > > > kstrto_resolution() /* %ux:%u */
+> > > > kstrto_range() /* %d:%d */
+> > > > kstrto_you_name_it()
+> > >
+> > > Given there are respective types that this can be stored to, I don't
+> > > object more functions of this type and don't see a good reason to not
+> > > add such a function. And in my eyes I prefer to have such a function =
+in
+> > > a visible place (i.e. where all the other kstrto* functions are) to
+> > > prevent code duplication.
+> >
+> > You can easily satisfy above by adding a function parameter 'char
+> > *delim', right?
+>
+> Well, not completely as major and minor have a different domain range
+> compared to unsigned ints (or any other integer type).
+
+Yes, it's also can be adjusted. You provide a better helper and then
+you may do something like
+
+static inline ... string_parse_dev_t(...)
+{
+  ret =3D string_parse_two_numbers(..., );
+  if (ret)
+    return ret;
+
+  if (x or y is not in range)
+    return -EOVERFLOW;
+  ...
+}
+
+> > > Also I don't understand yet, what you want me to do.
+> >
+> > I have issues with kstrto() not playing with simple and single numbers
+> > (boolean is a special case, but still a number at the end).
+>
+> A dev_t is also a number in the end.
+
+My point (when I added single) is 1:1 map. dev_t is not.
+
+> > I also don't feel good with too narrow usage of the newly introduced he=
+lper
+>
+> I don't see how a helper that should provide a valid dev_t and other
+> types use a generic function. The specification for parsing a dev_t is:
+> "A non-negative number that fits in 20 bits, followed by a colon,
+> followed by a non-negative number that fits in 12 bits." So even if we
+> had a generic function that could parse (in scanf-semantics) "%u:%u",
+> we'd still need a more specialized helper that ensures the range of the
+> two integers. (And I suggest to call this helper kstrtodev_t. :-)
+
+See above: 1/ provide a generic helper, 2/ provide its use with
+certain dev_t validation.
+
+> > > Assume I'd be
+> > > willing to use simple_strtoul, I'd still want to have a function that
+> > > gives me a dev_t from a given string. Should I put this directly in m=
+y
+> > > led-trigger driver?
+> >
+> > I see the following possibilities:
+> > a) put it inside the caller and forget about generic helper
+> > b) do a generic helper, but 1/ in string_*() namespace, 2/ with a
+> > delimiter parameter and 3/ possibility to take negative numbers
+>
+> I wonder about 1/. Are there already other (and similar) functions in
+> the string_* namespace?
+
+Not exactly. There is a printing in human-readable format for sizes
+and escape/unescape.
+
+> IMHO kstrto* is fine. These all take a string
+> and provide a value of a given type with strict parsing. As pointed out
+> above, 2/ isn't enough. I don't care much about 3/.
+
+See above, I really don't see how this fits kstrtox(), to me it's
+obvious layer violation.
+
+> > In b) case, add to the commit message how many potential _existing_
+> > users may be converted to this.
+>
+> <sarcasm>Will use 9f6158946987a5ce3f16da097d18f240a89db417 as a good
+> example how to do that.</sarcasm>
+
+I didn't get it. There are _existing_ users in the kernel for that
+functionality, At least two are using it right now.
+Funny that the original code has been rewritten to get rid of int_pow() cal=
+l.
+You may do the same, i.e. rewrite your code to get rid of whatever_dev_t() =
+use.
+
+> > Also it would be good to have two versions strict (only \n at the end
+> > is allowed) and non-strict (based on the amount of users for each
+> > group). And don't forget to extend lib/test_string.c accordingly.
+> >
+> > > > > And given that I was asked for strict
+> > > > > parsing (i.e. not accepting 2:4:something) I'd say using simple_s=
+trto*
+> > > > > is a step backwards. Also simple_strtoul() has "This function is =
+obsolete.
+> > > > > Please use kstrtoul instead." in its docstring which seems to app=
+ly to
+> > > > > the other simple_strto*() functions, too.
+> > > >
+> > > > I specifically fixed a doc string to approve its use in the precise=
+ly
+> > > > cases you have here.
+> > >
+> > > Can you please be a bit more constructive here and point to the chang=
+e
+> > > you talk about? I didn't find a commit in next.
+> >
+> > https://elixir.bootlin.com/linux/v5.6-rc2/source/include/linux/kernel.h=
+#L446
+> >
+> > Note, there is no more word 'obsolete' there.
+>
+> I talked about
+>
+> https://elixir.bootlin.com/linux/v5.6-rc2/source/lib/vsprintf.c#L61
+>
+> which still tells to not use it.
+
+I see. Thanks for report, I'll soon send a patch to fix it as well.
+
+> I think what is needed here to satisfy us both is a set of functions like=
+:
+>
+>         int buftoul(const char *buf, char **endp, unsigned long *result)
+>
+> which does proper range checking (by not consuming chars that are too
+> much) and still provides an endp pointer that allows to make use of this
+> function to parse types that are represented by more than a plain
+> integer.
+
+Yeah, https://xkcd.com/927/.
+
+> Currently this functionality is provided by _parse_integer
+> (with a different API and slightly different semantic). For my purpose
+> _parse_integer is good enough, so I'd like to leave introduction and
+> identification plus conversion of already existing potential users to
+> you.
+
+Nothing prevents you to use it from your parser which will be located
+in string_*() namespace.
+
+--
+With Best Regards,
+Andy Shevchenko
