@@ -2,70 +2,297 @@ Return-Path: <SRS0=iYMu=4J=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D0BAC35666
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Feb 2020 21:10:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47C34C35669
+	for <linux-serial@archiver.kernel.org>; Fri, 21 Feb 2020 21:23:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 23E4924650
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Feb 2020 21:10:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1582319422;
-	bh=NYHgWOMgL8iR3nH6bjOS8kfZDfOrQgikwUAgXRIfFGA=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:List-ID:From;
-	b=NuTyX6DhgoxZkXu9ITkBF0r99WnuPBh2V4g4FM7Sfzcidfmx4JaDKJMARKERytoPu
-	 mnwIXwkSy1op4nWWrGGoBgc+cJJb1Z+boJ3g0+bJ/qUZ1NUZ/w7UPmI538WuJ+2rJB
-	 Ocagf7C6+NaUo6mLRpX1JwPZeN28TNGqUGzfWo4k=
+	by mail.kernel.org (Postfix) with ESMTP id 1D386206EF
+	for <linux-serial@archiver.kernel.org>; Fri, 21 Feb 2020 21:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729679AbgBUVKV (ORCPT
+        id S1727421AbgBUVXt (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 21 Feb 2020 16:10:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35836 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729666AbgBUVKU (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 21 Feb 2020 16:10:20 -0500
-Subject: Re: [GIT PULL] TTY/Serial driver fixes for 5.6-rc3
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582319420;
-        bh=NYHgWOMgL8iR3nH6bjOS8kfZDfOrQgikwUAgXRIfFGA=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=CmldGhkvwoBBhXgy/HjF6Rtsv8e4/d9BuN6GBZLiIyds2UpbYy1EIQwLRnrIXalaC
-         CTHxHdNZ5/PO9vn2QiTWH0NTzfm8eer0hLkgXXrQFENGcirBZyIXu8OhutUH9E8S22
-         KvU5tape3APdcbbHUa/WbU2QeJ4zMvJ4ShtXFESo=
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20200221113929.GA114227@kroah.com>
-References: <20200221113929.GA114227@kroah.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20200221113929.GA114227@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.6-rc3
-X-PR-Tracked-Commit-Id: 07e6124a1a46b4b5a9b3cacc0c306b50da87abf5
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: ef11f1b76a59833cfadbe88a9513ca01b14a2b88
-Message-Id: <158231942013.18249.13521960133083126053.pr-tracker-bot@kernel.org>
-Date:   Fri, 21 Feb 2020 21:10:20 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        Fri, 21 Feb 2020 16:23:49 -0500
+Received: from fudo.makrotopia.org ([185.142.180.71]:37556 "EHLO
+        fudo.makrotopia.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726707AbgBUVXt (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 21 Feb 2020 16:23:49 -0500
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.92.2)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1j5Flv-0004JZ-8B; Fri, 21 Feb 2020 22:23:43 +0100
+Date:   Fri, 21 Feb 2020 22:23:31 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>,
+        Chuanhong Guo <gch981213@gmail.com>,
+        Piotr Dymacz <pepe2k@gmail.com>
+Subject: [PATCH v2] serial: ar933x_uart: add RS485 support
+Message-ID: <20200221212331.GA21467@makrotopia.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The pull request you sent on Fri, 21 Feb 2020 12:39:29 +0100:
+Emulate half-duplex operation and use mctrl_gpio to add support for
+RS485 tranceiver with transmit/receive switch hooked to RTS GPIO line.
+This is needed to make use of the RS485 port found on Teltonika RUT955.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.6-rc3
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+---
+v2: use bool to indicate ongoing half-duplex send, use it afterwards
+    to decide whether we've just been in a send operation.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/ef11f1b76a59833cfadbe88a9513ca01b14a2b88
+ drivers/tty/serial/Kconfig       |   1 +
+ drivers/tty/serial/ar933x_uart.c | 113 +++++++++++++++++++++++++++++--
+ 2 files changed, 108 insertions(+), 6 deletions(-)
 
-Thank you!
-
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 52eaac21ff9f..b675924138e0 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1279,6 +1279,7 @@ config SERIAL_AR933X
+ 	tristate "AR933X serial port support"
+ 	depends on HAVE_CLK && ATH79
+ 	select SERIAL_CORE
++	select SERIAL_MCTRL_GPIO if GPIOLIB
+ 	help
+ 	  If you have an Atheros AR933X SOC based board and want to use the
+ 	  built-in UART of the SoC, say Y to this option.
+diff --git a/drivers/tty/serial/ar933x_uart.c b/drivers/tty/serial/ar933x_uart.c
+index ea12f10610b6..7e7f1398019f 100644
+--- a/drivers/tty/serial/ar933x_uart.c
++++ b/drivers/tty/serial/ar933x_uart.c
+@@ -13,6 +13,7 @@
+ #include <linux/console.h>
+ #include <linux/sysrq.h>
+ #include <linux/delay.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/platform_device.h>
+ #include <linux/of.h>
+ #include <linux/of_platform.h>
+@@ -29,6 +30,8 @@
+ 
+ #include <asm/mach-ath79/ar933x_uart.h>
+ 
++#include "serial_mctrl_gpio.h"
++
+ #define DRIVER_NAME "ar933x-uart"
+ 
+ #define AR933X_UART_MAX_SCALE	0xff
+@@ -47,6 +50,8 @@ struct ar933x_uart_port {
+ 	unsigned int		min_baud;
+ 	unsigned int		max_baud;
+ 	struct clk		*clk;
++	struct mctrl_gpios	*gpios;
++	struct gpio_desc	*rts_gpiod;
+ };
+ 
+ static inline unsigned int ar933x_uart_read(struct ar933x_uart_port *up,
+@@ -100,6 +105,18 @@ static inline void ar933x_uart_stop_tx_interrupt(struct ar933x_uart_port *up)
+ 	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, up->ier);
+ }
+ 
++static inline void ar933x_uart_start_rx_interrupt(struct ar933x_uart_port *up)
++{
++	up->ier |= AR933X_UART_INT_RX_VALID;
++	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, up->ier);
++}
++
++static inline void ar933x_uart_stop_rx_interrupt(struct ar933x_uart_port *up)
++{
++	up->ier &= ~AR933X_UART_INT_RX_VALID;
++	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, up->ier);
++}
++
+ static inline void ar933x_uart_putc(struct ar933x_uart_port *up, int ch)
+ {
+ 	unsigned int rdata;
+@@ -125,11 +142,21 @@ static unsigned int ar933x_uart_tx_empty(struct uart_port *port)
+ 
+ static unsigned int ar933x_uart_get_mctrl(struct uart_port *port)
+ {
+-	return TIOCM_CAR;
++	struct ar933x_uart_port *up =
++		container_of(port, struct ar933x_uart_port, port);
++	int ret = TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
++
++	mctrl_gpio_get(up->gpios, &ret);
++
++	return ret;
+ }
+ 
+ static void ar933x_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ {
++	struct ar933x_uart_port *up =
++		container_of(port, struct ar933x_uart_port, port);
++
++	mctrl_gpio_set(up->gpios, mctrl);
+ }
+ 
+ static void ar933x_uart_start_tx(struct uart_port *port)
+@@ -140,6 +167,37 @@ static void ar933x_uart_start_tx(struct uart_port *port)
+ 	ar933x_uart_start_tx_interrupt(up);
+ }
+ 
++static void ar933x_uart_wait_tx_complete(struct ar933x_uart_port *up)
++{
++	unsigned int status;
++	unsigned int timeout = 60000;
++
++	/* Wait up to 60ms for the character(s) to be sent. */
++	do {
++		status = ar933x_uart_read(up, AR933X_UART_CS_REG);
++		if (--timeout == 0)
++			break;
++		udelay(1);
++	} while (status & AR933X_UART_CS_TX_BUSY);
++
++	if (timeout == 0)
++		dev_err(up->port.dev, "waiting for TX timed out\n");
++}
++
++static void ar933x_uart_rx_flush(struct ar933x_uart_port *up)
++{
++	unsigned int status;
++
++	/* clear RX_VALID interrupt */
++	ar933x_uart_write(up, AR933X_UART_INT_REG, AR933X_UART_INT_RX_VALID);
++
++	/* remove characters from the RX FIFO */
++	do {
++		ar933x_uart_write(up, AR933X_UART_DATA_REG, AR933X_UART_DATA_RX_CSR);
++		status = ar933x_uart_read(up, AR933X_UART_DATA_REG);
++	} while (status & AR933X_UART_DATA_RX_CSR);
++}
++
+ static void ar933x_uart_stop_tx(struct uart_port *port)
+ {
+ 	struct ar933x_uart_port *up =
+@@ -153,8 +211,7 @@ static void ar933x_uart_stop_rx(struct uart_port *port)
+ 	struct ar933x_uart_port *up =
+ 		container_of(port, struct ar933x_uart_port, port);
+ 
+-	up->ier &= ~AR933X_UART_INT_RX_VALID;
+-	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, up->ier);
++	ar933x_uart_stop_rx_interrupt(up);
+ }
+ 
+ static void ar933x_uart_break_ctl(struct uart_port *port, int break_state)
+@@ -336,11 +393,20 @@ static void ar933x_uart_rx_chars(struct ar933x_uart_port *up)
+ static void ar933x_uart_tx_chars(struct ar933x_uart_port *up)
+ {
+ 	struct circ_buf *xmit = &up->port.state->xmit;
++	struct serial_rs485 *rs485conf = &up->port.rs485;
+ 	int count;
++	bool half_duplex_send = false;
+ 
+ 	if (uart_tx_stopped(&up->port))
+ 		return;
+ 
++	if ((rs485conf->flags & SER_RS485_ENABLED) &&
++	    (up->port.x_char || !uart_circ_empty(xmit))) {
++		ar933x_uart_stop_rx_interrupt(up);
++		gpiod_set_value(up->rts_gpiod, !!(rs485conf->flags & SER_RS485_RTS_ON_SEND));
++		half_duplex_send = true;
++	}
++
+ 	count = up->port.fifosize;
+ 	do {
+ 		unsigned int rdata;
+@@ -368,8 +434,14 @@ static void ar933x_uart_tx_chars(struct ar933x_uart_port *up)
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(&up->port);
+ 
+-	if (!uart_circ_empty(xmit))
++	if (!uart_circ_empty(xmit)) {
+ 		ar933x_uart_start_tx_interrupt(up);
++	} else if (half_duplex_send) {
++		ar933x_uart_wait_tx_complete(up);
++		ar933x_uart_rx_flush(up);
++		ar933x_uart_start_rx_interrupt(up);
++		gpiod_set_value(up->rts_gpiod, !!(rs485conf->flags & SER_RS485_RTS_AFTER_SEND));
++	}
+ }
+ 
+ static irqreturn_t ar933x_uart_interrupt(int irq, void *dev_id)
+@@ -427,8 +499,7 @@ static int ar933x_uart_startup(struct uart_port *port)
+ 		AR933X_UART_CS_TX_READY_ORIDE | AR933X_UART_CS_RX_READY_ORIDE);
+ 
+ 	/* Enable RX interrupts */
+-	up->ier = AR933X_UART_INT_RX_VALID;
+-	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, up->ier);
++	ar933x_uart_start_rx_interrupt(up);
+ 
+ 	spin_unlock_irqrestore(&up->port.lock, flags);
+ 
+@@ -511,6 +582,21 @@ static const struct uart_ops ar933x_uart_ops = {
+ 	.verify_port	= ar933x_uart_verify_port,
+ };
+ 
++static int ar933x_config_rs485(struct uart_port *port,
++				struct serial_rs485 *rs485conf)
++{
++	struct ar933x_uart_port *up =
++		container_of(port, struct ar933x_uart_port, port);
++
++	if ((rs485conf->flags & SER_RS485_ENABLED) &&
++	    !up->rts_gpiod) {
++		dev_err(port->dev, "RS485 needs rts-gpio\n");
++		return 1;
++	}
++	port->rs485 = *rs485conf;
++	return 0;
++}
++
+ #ifdef CONFIG_SERIAL_AR933X_CONSOLE
+ static struct ar933x_uart_port *
+ ar933x_console_ports[CONFIG_SERIAL_AR933X_NR_UARTS];
+@@ -680,6 +766,8 @@ static int ar933x_uart_probe(struct platform_device *pdev)
+ 		goto err_disable_clk;
+ 	}
+ 
++	uart_get_rs485_mode(&pdev->dev, &port->rs485);
++
+ 	port->mapbase = mem_res->start;
+ 	port->line = id;
+ 	port->irq = irq_res->start;
+@@ -690,6 +778,7 @@ static int ar933x_uart_probe(struct platform_device *pdev)
+ 	port->regshift = 2;
+ 	port->fifosize = AR933X_UART_FIFO_SIZE;
+ 	port->ops = &ar933x_uart_ops;
++	port->rs485_config = ar933x_config_rs485;
+ 
+ 	baud = ar933x_uart_get_baud(port->uartclk, AR933X_UART_MAX_SCALE, 1);
+ 	up->min_baud = max_t(unsigned int, baud, AR933X_UART_MIN_BAUD);
+@@ -697,6 +786,18 @@ static int ar933x_uart_probe(struct platform_device *pdev)
+ 	baud = ar933x_uart_get_baud(port->uartclk, 0, AR933X_UART_MAX_STEP);
+ 	up->max_baud = min_t(unsigned int, baud, AR933X_UART_MAX_BAUD);
+ 
++	up->gpios = mctrl_gpio_init(port, 0);
++	if (IS_ERR(up->gpios) && PTR_ERR(up->gpios) != -ENOSYS)
++		return PTR_ERR(up->gpios);
++
++	up->rts_gpiod = mctrl_gpio_to_gpiod(up->gpios, UART_GPIO_RTS);
++
++	if ((port->rs485.flags & SER_RS485_ENABLED) &&
++	    !up->rts_gpiod) {
++		dev_err(&pdev->dev, "lacking rts-gpio, disabling RS485\n");
++		port->rs485.flags &= ~SER_RS485_ENABLED;
++	}
++
+ #ifdef CONFIG_SERIAL_AR933X_CONSOLE
+ 	ar933x_console_ports[up->port.line] = up;
+ #endif
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+2.25.1
+
