@@ -5,40 +5,40 @@ X-Spam-Level:
 X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DD91C35646
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Feb 2020 17:48:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32B71C3565A
+	for <linux-serial@archiver.kernel.org>; Fri, 21 Feb 2020 17:48:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 55060206E2
-	for <linux-serial@archiver.kernel.org>; Fri, 21 Feb 2020 17:48:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 08446206E2
+	for <linux-serial@archiver.kernel.org>; Fri, 21 Feb 2020 17:48:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=walle.cc header.i=@walle.cc header.b="ePdASEdV"
+	dkim=pass (1024-bit key) header.d=walle.cc header.i=@walle.cc header.b="K5MFbWPq"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728522AbgBURsl (ORCPT
+        id S1725995AbgBURsq (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 21 Feb 2020 12:48:41 -0500
-Received: from ssl.serverraum.org ([176.9.125.105]:46815 "EHLO
+        Fri, 21 Feb 2020 12:48:46 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:35105 "EHLO
         ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725995AbgBURsR (ORCPT
+        with ESMTP id S1727655AbgBURsQ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 21 Feb 2020 12:48:17 -0500
+        Fri, 21 Feb 2020 12:48:16 -0500
 Received: from mwalle01.sab.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 399D023E57;
-        Fri, 21 Feb 2020 18:48:14 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 6CD1323E3C;
+        Fri, 21 Feb 2020 18:48:13 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1582307294;
+        t=1582307293;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=7epvypZ2s71nMBOYV3M0piGfVsKm24bt5XMXPEjLATY=;
-        b=ePdASEdVx7RT8SUrAfzRVsUL4SWQftHO44P5F6B1K2JNUyYhYPE43MADr5eycvsHDtqsKz
-        4X1gp7bPhqkIT4TRPf8V+hYKcyOddDUnJ66NY6111EzjkM24MX83K4fP5XSGRZ9LmvKMmZ
-        npbmJsnqWctGlVYT3eojBuRfVn3wjH8=
+        bh=VX93nZn2AbWIOGGDfDdsClKAztru9C3qnY5D3he52bw=;
+        b=K5MFbWPqYogN2gHFyMWanN3ujAiUQSkvMv6yf+L0550J/8y1MIjTq5KBlMVAbx82XLZ1Hs
+        nV/tcMcgliQVfp/Qu/T9kxpE3RGmsj7KH0FR1kpK6xKwbpza1ky98OEL1+kAvb5eGpxkaj
+        obmSAd3tay2qX5r77xueCaMS7XSY22M=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
@@ -49,9 +49,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>, Peng Fan <peng.fan@nxp.com>,
         Vabhav Sharma <vabhav.sharma@nxp.com>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH v2 5/9] dt-bindings: serial: lpuart: add ls1028a compatibility
-Date:   Fri, 21 Feb 2020 18:47:50 +0100
-Message-Id: <20200221174754.5295-6-michael@walle.cc>
+Subject: [PATCH v2 2/9] tty: serial: fsl_lpuart: free IDs allocated by IDA
+Date:   Fri, 21 Feb 2020 18:47:47 +0100
+Message-Id: <20200221174754.5295-3-michael@walle.cc>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200221174754.5295-1-michael@walle.cc>
 References: <20200221174754.5295-1-michael@walle.cc>
@@ -59,7 +59,7 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spamd-Bar: ++++++
 X-Rspamd-Server: web
-X-Rspamd-Queue-Id: 399D023E57
+X-Rspamd-Queue-Id: 6CD1323E3C
 X-Spamd-Result: default: False [6.40 / 15.00];
          FROM_HAS_DN(0.00)[];
          TO_DN_SOME(0.00)[];
@@ -68,7 +68,7 @@ X-Spamd-Result: default: False [6.40 / 15.00];
          TAGGED_RCPT(0.00)[dt];
          MIME_GOOD(-0.10)[text/plain];
          BROKEN_CONTENT_TYPE(1.50)[];
-         NEURAL_SPAM(0.00)[0.773];
+         NEURAL_SPAM(0.00)[0.770];
          DKIM_SIGNED(0.00)[];
          RCPT_COUNT_TWELVE(0.00)[13];
          MID_CONTAINS_FROM(1.00)[];
@@ -83,39 +83,103 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Since commit 3bc3206e1c0f ("serial: fsl_lpuart: Remove the alias node
+dependence") the port line number can also be allocated by IDA, but in
+case of an error the ID will no be removed again. More importantly, any
+ID will be freed in remove(), even if it wasn't allocated but instead
+fetched by of_alias_get_id(). If it was not allocated by IDA there will
+be a warning:
+  WARN(1, "ida_free called for id=%d which is not allocated.\n", id);
+
+Move the ID allocation more to the end of the probe() so that we still
+can use plain return in the first error cases.
+
+Fixes: 3bc3206e1c0f ("serial: fsl_lpuart: Remove the alias node dependence")
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- .../devicetree/bindings/serial/fsl-lpuart.txt          | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 39 ++++++++++++++++++++-------------
+ 1 file changed, 24 insertions(+), 15 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
-index c904e2e68332..e7448b92dd9d 100644
---- a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
-+++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
-@@ -6,6 +6,8 @@ Required properties:
-     on Vybrid vf610 SoC with 8-bit register organization
-   - "fsl,ls1021a-lpuart" for lpuart compatible with the one integrated
-     on LS1021A SoC with 32-bit big-endian register organization
-+  - "fsl,ls1028a-lpuart" for lpuart compatible with the one integrated
-+    on LS1028A SoC with 32-bit little-endian register organization
-   - "fsl,imx7ulp-lpuart" for lpuart compatible with the one integrated
-     on i.MX7ULP SoC with 32-bit little-endian register organization
-   - "fsl,imx8qxp-lpuart" for lpuart compatible with the one integrated
-@@ -15,10 +17,10 @@ Required properties:
- - reg : Address and length of the register set for the device
- - interrupts : Should contain uart interrupt
- - clocks : phandle + clock specifier pairs, one for each entry in clock-names
--- clock-names : For vf610/ls1021a/imx7ulp, "ipg" clock is for uart bus/baud
--  clock. For imx8qxp lpuart, "ipg" clock is bus clock that is used to access
--  lpuart controller registers, it also requires "baud" clock for module to
--  receive/transmit data.
-+- clock-names : For vf610/ls1021a/ls1028a/imx7ulp, "ipg" clock is for uart
-+  bus/baud clock. For imx8qxp lpuart, "ipg" clock is bus clock that is used
-+  to access lpuart controller registers, it also requires "baud" clock for
-+  module to receive/transmit data.
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 27fdc131c352..c31b8f3db6bf 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -264,6 +264,7 @@ struct lpuart_port {
+ 	int			rx_dma_rng_buf_len;
+ 	unsigned int		dma_tx_nents;
+ 	wait_queue_head_t	dma_wait;
++	bool			id_allocated;
+ };
  
- Optional properties:
- - dmas: A list of two dma specifiers, one for each entry in dma-names.
+ struct lpuart_soc_data {
+@@ -2422,19 +2423,6 @@ static int lpuart_probe(struct platform_device *pdev)
+ 	if (!sport)
+ 		return -ENOMEM;
+ 
+-	ret = of_alias_get_id(np, "serial");
+-	if (ret < 0) {
+-		ret = ida_simple_get(&fsl_lpuart_ida, 0, UART_NR, GFP_KERNEL);
+-		if (ret < 0) {
+-			dev_err(&pdev->dev, "port line is full, add device failed\n");
+-			return ret;
+-		}
+-	}
+-	if (ret >= ARRAY_SIZE(lpuart_ports)) {
+-		dev_err(&pdev->dev, "serial%d out of range\n", ret);
+-		return -EINVAL;
+-	}
+-	sport->port.line = ret;
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	sport->port.membase = devm_ioremap_resource(&pdev->dev, res);
+ 	if (IS_ERR(sport->port.membase))
+@@ -2479,9 +2467,25 @@ static int lpuart_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
++	ret = of_alias_get_id(np, "serial");
++	if (ret < 0) {
++		ret = ida_simple_get(&fsl_lpuart_ida, 0, UART_NR, GFP_KERNEL);
++		if (ret < 0) {
++			dev_err(&pdev->dev, "port line is full, add device failed\n");
++			return ret;
++		}
++		sport->id_allocated = true;
++	}
++	if (ret >= ARRAY_SIZE(lpuart_ports)) {
++		dev_err(&pdev->dev, "serial%d out of range\n", ret);
++		ret = -EINVAL;
++		goto failed_out_of_range;
++	}
++	sport->port.line = ret;
++
+ 	ret = lpuart_enable_clks(sport);
+ 	if (ret)
+-		return ret;
++		goto failed_clock_enable;
+ 	sport->port.uartclk = lpuart_get_baud_clk_rate(sport);
+ 
+ 	lpuart_ports[sport->port.line] = sport;
+@@ -2531,6 +2535,10 @@ static int lpuart_probe(struct platform_device *pdev)
+ failed_attach_port:
+ failed_irq_request:
+ 	lpuart_disable_clks(sport);
++failed_clock_enable:
++failed_out_of_range:
++	if (sport->id_allocated)
++		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
+ 	return ret;
+ }
+ 
+@@ -2540,7 +2548,8 @@ static int lpuart_remove(struct platform_device *pdev)
+ 
+ 	uart_remove_one_port(&lpuart_reg, &sport->port);
+ 
+-	ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
++	if (sport->id_allocated)
++		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
+ 
+ 	lpuart_disable_clks(sport);
+ 
 -- 
 2.20.1
 
