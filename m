@@ -2,90 +2,123 @@ Return-Path: <SRS0=K9fp=4L=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9D19C35670
-	for <linux-serial@archiver.kernel.org>; Sun, 23 Feb 2020 08:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33637C35666
+	for <linux-serial@archiver.kernel.org>; Sun, 23 Feb 2020 12:08:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8031C206ED
-	for <linux-serial@archiver.kernel.org>; Sun, 23 Feb 2020 08:22:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DAF3C20656
+	for <linux-serial@archiver.kernel.org>; Sun, 23 Feb 2020 12:08:27 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="T3WFs3xj"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726208AbgBWIWE (ORCPT
+        id S1726236AbgBWMI1 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 23 Feb 2020 03:22:04 -0500
-Received: from bmailout3.hostsharing.net ([176.9.242.62]:39751 "EHLO
-        bmailout3.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725980AbgBWIWE (ORCPT
+        Sun, 23 Feb 2020 07:08:27 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:40818 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725980AbgBWMI1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 23 Feb 2020 03:22:04 -0500
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 8B29C1003D015;
-        Sun, 23 Feb 2020 09:22:01 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 4117A47F54; Sun, 23 Feb 2020 09:22:01 +0100 (CET)
-Date:   Sun, 23 Feb 2020 09:22:01 +0100
-From:   Lukas Wunner <lukas@wunner.de>
+        Sun, 23 Feb 2020 07:08:27 -0500
+Received: by mail-ed1-f66.google.com with SMTP id p3so8422247edx.7
+        for <linux-serial@vger.kernel.org>; Sun, 23 Feb 2020 04:08:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=googlenew;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=+3bMOmlbRvA7zJn3vOuEZuAwgejpM69Egt00+fb0xdY=;
+        b=T3WFs3xjFny16290cyxTqgKXSvQHbyNny7C93fqZTGkJV8r9xn+3gn9X+ShN8Mk0WM
+         dO0l0LX9EOCikb28IY0VakansjrkDIATf093GmwLD2K0sZ6+9P42gmWllYYzTLFdUz/n
+         66IsUkOKkACqO/c2vI1XM9kgtJO9yB1uvVtGzF+m33sJ86nWvS4jN6kzUeBQWjM+i9un
+         X9r6zms2nXiyWypxNyjOWJkkynQXOMpYW0OIGduqUoMm2tX5dS+/2kQHKMddBuzoBuAm
+         yXltxT8j4g2hIbHmDrlZobCI42zciSKk7RekRZ58PWk1EMYh12RnI3kMC2wdgYb/lrBR
+         hK8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+3bMOmlbRvA7zJn3vOuEZuAwgejpM69Egt00+fb0xdY=;
+        b=Iak0FsnZ3AKhl3b3zYh2lZSnJLJEGPJTjULsOZMJSVwhMQ0xnS2eiChc395k+KMqRm
+         AByWDPPqDKGOlMoq8LZK1IS5oZFKN6MkvC87bv8XtH/3PH23rxym75DG7gTsC6rXylSt
+         v97n52VW8ZL9NsgTwDiYFuTK7UHhMqTBdYQWpPynDmKzYUKTZqFGJqvsn0Dh1zFepZ3R
+         BZE7q6drbOuwaG1r7tC0iWHzAk8iwKCHQa4xxtqbHoSD3taIPtUnu6+NH4fRe4w7NlMX
+         Y7tMdYFzCcuBSSNAfUKQ2nGum3ucPE6etb5/MZChOMT5QRawiddOa8KiMoeQB3raPNqM
+         WQpA==
+X-Gm-Message-State: APjAAAVwQNMJBNqSnC7C0LBYfaQDu1WwJkIQF3k2Y57knHkhfOi4TdcK
+        SV5yPecOwxjlSspT2p/uUexDbg==
+X-Google-Smtp-Source: APXvYqwujUALm/F4AQXpMk5SgonEseoix+lVm+NIaBFLz/7op3ah/12Xz9FIQF4VlGK8UsYQdVv84Q==
+X-Received: by 2002:a17:906:1956:: with SMTP id b22mr42774186eje.276.1582459705235;
+        Sun, 23 Feb 2020 04:08:25 -0800 (PST)
+Received: from ?IPv6:2a02:8084:e84:2480:228:f8ff:fe6f:83a8? ([2a02:8084:e84:2480:228:f8ff:fe6f:83a8])
+        by smtp.gmail.com with ESMTPSA id d13sm778142edk.0.2020.02.23.04.08.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 23 Feb 2020 04:08:24 -0800 (PST)
+Subject: Re: [PATCHv2-next 1/3] sysctl/sysrq: Remove __sysrq_enabled copy
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Ronald =?iso-8859-1?Q?Tschal=E4r?= <ronald@innovation.ch>,
-        Rob Herring <robh@kernel.org>, Jiri Slaby <jslaby@suse.com>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH] serdev: Fix detection of UART devices on Apple machines.
-Message-ID: <20200223082201.urcwwykmggxsmkoo@wunner.de>
-References: <20200211194723.486217-1-ronald@innovation.ch>
- <20200219111519.GB2814125@kroah.com>
- <20200220063335.GA9421@innovation.ch>
- <20200220064723.GA3192090@kroah.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Iurii Zaikin <yzaikin@google.com>,
+        Jiri Slaby <jslaby@suse.com>, Joe Perches <joe@perches.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Vasiliy Khoruzhick <vasilykh@arista.com>,
+        linux-serial@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        linux-fsdevel@vger.kernel.org
+References: <20200114171912.261787-1-dima@arista.com>
+ <20200114171912.261787-2-dima@arista.com>
+ <20200115123601.GA3461986@kroah.com>
+From:   Dmitry Safonov <dima@arista.com>
+Message-ID: <eef8e82a-c254-9391-506b-c9de8e52ee0f@arista.com>
+Date:   Sun, 23 Feb 2020 12:08:23 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200220064723.GA3192090@kroah.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20200115123601.GA3461986@kroah.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Feb 20, 2020 at 07:47:23AM +0100, Greg Kroah-Hartman wrote:
-> On Wed, Feb 19, 2020 at 10:33:35PM -0800, Ronald Tschalär wrote:
-> > On Wed, Feb 19, 2020 at 12:15:19PM +0100, Greg Kroah-Hartman wrote:
-> > > On Tue, Feb 11, 2020 at 11:47:23AM -0800, Ronald Tschalär wrote:
-> > > > +#include <linux/platform_data/x86/apple.h>
-> > > 
-> > > Why is this needed?  Just for the x86_apple_machine variable?
+
+On 1/15/20 12:36 PM, Greg Kroah-Hartman wrote:
+> On Tue, Jan 14, 2020 at 05:19:10PM +0000, Dmitry Safonov wrote:
+[..]
+>> +int sysrq_get_mask(void)
+>> +{
+>> +	if (sysrq_always_enabled)
+>> +		return 1;
+>> +	return sysrq_enabled;
+>> +}
 > 
-> That's fine, but what I am objecting to is platform-specific include
-> files being added to random common kernel code.  There's no real reason
-> for this other than one specific hardware platform has a quirk.  Are we
-> supposed to keep this pattern up by doing tons of:
-> 	#include <linux/platform_data/x86/vendor_X>
-> 	#include <linux/platform_data/x86/vendor_Y>
-> 	#include <linux/platform_data/x86/vendor_Z>
-> all through the kernel?
+> Naming is hard.  And this name is really hard to understand.
+
+Agree.
+
+
+> Traditionally get/put are used for incrementing reference counts.  You
+> don't have a sysrq_put_mask() call, right?  :)
+
+Yes, fair point
+
+
+> I think what you want this function to do is, "is sysrq enabled right
+> now" (hint, it's a global function, add kernel-doc to it so we know what
+> it does...).  If so, it should maybe be something like:
 > 
-> That's a serious regression to the "bad old days" of platform specific
-> crud being required in each and every driver subsystem.
+> 	bool sysrq_is_enabled(void);
 > 
-> Now I know it's not your fault this is needed for your one change, but
-> can you work on a patch series to fix this all up so that it is not
-> needed?  I'm sure the x86 maintainers don't want to see this spread
-> around.
+> which to me makes more sense.
 
-Andy (+cc) submitted a patch for the change you're requesting in January:
-
-https://lore.kernel.org/lkml/20200122112306.64598-2-andriy.shevchenko@linux.intel.com/
-
-The x86 maintainers haven't picked it up yet.
-
-Ronald's patch fixes a regression.  Please apply it at your earliest
-convenience.
+Err, not exactly: there is a function for that which is sysrq_on().
+But for sysctl the value of the mask (or 1 for always_enabled) is
+actually needed to show a proper value back to the userspace reader.
 
 Thanks,
-
-Lukas
+          Dmitry
