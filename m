@@ -2,141 +2,233 @@ Return-Path: <SRS0=FrDw=4M=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21538C11D2F
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Feb 2020 14:47:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15660C38BE0
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Feb 2020 19:03:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E4C1120873
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Feb 2020 14:47:37 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="LmZEzAra"
+	by mail.kernel.org (Postfix) with ESMTP id DD2002080D
+	for <linux-serial@archiver.kernel.org>; Mon, 24 Feb 2020 19:03:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727181AbgBXOrh (ORCPT
+        id S1725860AbgBXTDu (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Feb 2020 09:47:37 -0500
-Received: from mail26.static.mailgun.info ([104.130.122.26]:30891 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727448AbgBXOrh (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Feb 2020 09:47:37 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1582555656; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=/uUgbLeJp/+Bkvmc2w1qGweaYram/0ZSk0nPcq6znjg=;
- b=LmZEzAraexxjKaqK3mL9bYTR+JvahEBw0+0JjIxL13qHIRKNTC1yhbb4CFW39kSXN2MjiR9n
- JuV6lpAo2pD0o/KCH6QRdKlZbX30nopOC2tU2r91VtlxitND/jLuP5g9hw4mmbwjY1mDQk4K
- ErCnKo749a8F3r3ye2YfRjJtlMU=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e53e1fc.7fb0a5e84688-smtp-out-n03;
- Mon, 24 Feb 2020 14:47:24 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id C86B1C4479D; Mon, 24 Feb 2020 14:47:23 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: skakit)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1D293C43383;
-        Mon, 24 Feb 2020 14:47:23 +0000 (UTC)
+        Mon, 24 Feb 2020 14:03:50 -0500
+Received: from mga18.intel.com ([134.134.136.126]:4093 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726452AbgBXTDu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 24 Feb 2020 14:03:50 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Feb 2020 11:03:47 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,481,1574150400"; 
+   d="scan'208";a="284436545"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 24 Feb 2020 11:03:45 -0800
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1j6J17-0002Vx-RX; Tue, 25 Feb 2020 03:03:45 +0800
+Date:   Tue, 25 Feb 2020 03:02:35 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ ba08cf452f3493e96793c9fec4ebb45e7101a0c0
+Message-ID: <5e541dcb.9civieKIb3z98PJ8%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Date:   Mon, 24 Feb 2020 20:17:23 +0530
-From:   skakit@codeaurora.org
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     gregkh@linuxfoundation.org, mgautam@codeaurora.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        akashast@codeaurora.org, rojay@codeaurora.org,
-        msavaliy@qti.qualcomm.com
-Subject: Re: [PATCH] tty: serial: qcom_geni_serial: Fix RX cancel command
- failure
-In-Reply-To: <158213461988.184098.7165493520823815160@swboyd.mtv.corp.google.com>
-References: <1581415982-8793-1-git-send-email-skakit@codeaurora.org>
- <158154775640.184098.13898240474253130921@swboyd.mtv.corp.google.com>
- <254d7b003fdcd6f5fc0c45ab75b4b5f2@codeaurora.org>
- <158213461988.184098.7165493520823815160@swboyd.mtv.corp.google.com>
-Message-ID: <52dda56a636e96014b0705a2dcdbbf50@codeaurora.org>
-X-Sender: skakit@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2020-02-19 23:20, Stephen Boyd wrote:
-> Quoting skakit@codeaurora.org (2020-02-14 05:17:01)
->> On 2020-02-13 04:19, Stephen Boyd wrote:
->> >     driver_probe_device+0x70/0x140
->> >     __driver_attach_async_helper+0x7c/0xa8
->> >     async_run_entry_fn+0x60/0x178
->> >     process_one_work+0x33c/0x640
->> >     worker_thread+0x2a0/0x470
->> >     kthread+0x128/0x138
->> >     ret_from_fork+0x10/0x18
->> >    Code: 1aca096a 911e0129 b940012b 7100054a (b800450b)
->> I think the most probable explanation of the crash is, set_termios 
->> call
->> is starting RX engine and RX engine is sampling some garbage data from
->> line, and by the time startup is called, we have few data to read.
->> How frequently you are able to see this crash? because internally we 
->> are
->> unable to reproduce it.
-> 
-> How is set_termios involved? Is that starting the RX side before
-> uart_startup() is called? Sorry I haven't looked into the code flow 
-> very
-> deeply here.
-> 
-> It seems to happen when the bluetooth driver probes so maybe constantly
-> adding and removing the hci_uart module will cause this to happen for
-> you? I also run the kernel with many debug options enabled, so maybe 
-> try
-> enabling all the debug stuff? I see it randomly right now so I'm not
-> sure.
-> 
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
+branch HEAD: ba08cf452f3493e96793c9fec4ebb45e7101a0c0  Merge 5.6-rc3 into tty-next
 
-In general uart_startup() is called before set_termios() ,but as per the 
-crash logs shared, it seems RX engine is active(which can only happen 
-from set_termios) before startup() is called.
+elapsed time: 481m
 
->> >
->> >
->> > This seems to be the problematic line. We didn't call handle_rx() from
->> > the stop_rx() path before. And this qcom_geni_serial_stop_rx() function
->> > is called from qcom_geni_serial_startup(), but most importantly, we
->> > call
->> > into this function from startup before we allocate memory for the
->> > port->rx_fifo member (see the devm_kcalloc() later in
->> > qcom_geni_serial_port_setup() and see how it's after we stop rx).
->> >
->> > Why do we need to flush the rx buffer by reading it into the software
->> > buffer? Can't we simply ack any outstanding RX interrupts in the
->> > hardware when we're stopping receive?
->> We can't simply ack RX_LAST interrupt, there is a sticky bit that get
->> set on HW level(not exposed to SW) with RX last interrupt. The only 
->> way
->> to clear it is flush out RX FIFO HW buffer. The sticky bit can create
->> problem for future transfers if remained uncleared.
->> How about we allocate buffer to port->rx_fifo in probe itself?
-> 
-> Ok. If we have to read the rx fifo to flush the buffer then perhaps
-> write another function that qcom_geni_serial_stop_rx() can use to
-> indicate that it wants to throw away whatever is in the rx fifo? Or
-> adjust handle_rx() to check for a NULL fifo pointer and throw it away 
-> in
-> that case? When we're setting up this device I don't understand why we
-> would want to read anything out of the rx fifo that was there before 
-> the
-> driver started.
+configs tested: 170
+configs skipped: 0
 
-We cannot adjust handle_rx() to check for a NULL fifo pointer as reading 
-from RX FIFO is mandatory to clear the sticky bit set.  We are passing 
-"true" to handle_rx function so it will read and discard whatever data 
-present in RX FIFO, it won't send to upper layers. We are planning to 
-post a patch which has rx_fifo buffer allocated in probe itself, in 
-order to avoid the NULL dereference.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+arm                              allmodconfig
+arm                               allnoconfig
+arm                              allyesconfig
+arm64                            allmodconfig
+arm64                             allnoconfig
+arm64                            allyesconfig
+arm                         at91_dt_defconfig
+arm                           efm32_defconfig
+arm                          exynos_defconfig
+arm                        multi_v5_defconfig
+arm                        multi_v7_defconfig
+arm                        shmobile_defconfig
+arm                           sunxi_defconfig
+arm64                               defconfig
+sparc                            allyesconfig
+ia64                                defconfig
+parisc                generic-32bit_defconfig
+nios2                         3c120_defconfig
+parisc                generic-64bit_defconfig
+powerpc                       ppc64_defconfig
+mips                      fuloong2e_defconfig
+riscv                    nommu_virt_defconfig
+mips                             allmodconfig
+arc                                 defconfig
+s390                          debug_defconfig
+h8300                    h8300h-sim_defconfig
+s390                             allmodconfig
+i386                              allnoconfig
+i386                             alldefconfig
+i386                             allyesconfig
+i386                                defconfig
+ia64                             alldefconfig
+ia64                             allmodconfig
+ia64                              allnoconfig
+ia64                             allyesconfig
+c6x                              allyesconfig
+c6x                        evmc6678_defconfig
+nios2                         10m50_defconfig
+openrisc                    or1ksim_defconfig
+openrisc                 simple_smp_defconfig
+xtensa                       common_defconfig
+xtensa                          iss_defconfig
+alpha                               defconfig
+csky                                defconfig
+nds32                             allnoconfig
+nds32                               defconfig
+h8300                     edosk2674_defconfig
+h8300                       h8s-sim_defconfig
+m68k                             allmodconfig
+m68k                       m5475evb_defconfig
+m68k                          multi_defconfig
+m68k                           sun3_defconfig
+arc                              allyesconfig
+microblaze                      mmu_defconfig
+microblaze                    nommu_defconfig
+powerpc                           allnoconfig
+powerpc                             defconfig
+powerpc                          rhel-kconfig
+mips                           32r2_defconfig
+mips                         64r6el_defconfig
+mips                              allnoconfig
+mips                             allyesconfig
+mips                      malta_kvm_defconfig
+parisc                            allnoconfig
+parisc                           allyesconfig
+x86_64               randconfig-a001-20200224
+x86_64               randconfig-a002-20200224
+x86_64               randconfig-a003-20200224
+i386                 randconfig-a001-20200224
+i386                 randconfig-a002-20200224
+i386                 randconfig-a003-20200224
+alpha                randconfig-a001-20200224
+m68k                 randconfig-a001-20200224
+mips                 randconfig-a001-20200224
+nds32                randconfig-a001-20200224
+parisc               randconfig-a001-20200224
+riscv                randconfig-a001-20200224
+c6x                  randconfig-a001-20200224
+h8300                randconfig-a001-20200224
+microblaze           randconfig-a001-20200224
+nios2                randconfig-a001-20200224
+sparc64              randconfig-a001-20200224
+csky                 randconfig-a001-20200224
+openrisc             randconfig-a001-20200224
+s390                 randconfig-a001-20200224
+sh                   randconfig-a001-20200224
+xtensa               randconfig-a001-20200224
+x86_64               randconfig-b001-20200224
+x86_64               randconfig-b002-20200224
+x86_64               randconfig-b003-20200224
+i386                 randconfig-b001-20200224
+i386                 randconfig-b002-20200224
+i386                 randconfig-b003-20200224
+x86_64               randconfig-c001-20200224
+x86_64               randconfig-c002-20200224
+x86_64               randconfig-c003-20200224
+i386                 randconfig-c001-20200224
+i386                 randconfig-c002-20200224
+i386                 randconfig-c003-20200224
+x86_64               randconfig-d001-20200224
+x86_64               randconfig-d002-20200224
+x86_64               randconfig-d003-20200224
+i386                 randconfig-d001-20200224
+i386                 randconfig-d002-20200224
+i386                 randconfig-d003-20200224
+x86_64               randconfig-e001-20200224
+x86_64               randconfig-e002-20200224
+x86_64               randconfig-e003-20200224
+i386                 randconfig-e001-20200224
+i386                 randconfig-e002-20200224
+i386                 randconfig-e003-20200224
+x86_64               randconfig-f001-20200224
+x86_64               randconfig-f002-20200224
+x86_64               randconfig-f003-20200224
+i386                 randconfig-f001-20200224
+i386                 randconfig-f002-20200224
+i386                 randconfig-f003-20200224
+x86_64               randconfig-g001-20200224
+x86_64               randconfig-g002-20200224
+x86_64               randconfig-g003-20200224
+i386                 randconfig-g001-20200224
+i386                 randconfig-g002-20200224
+i386                 randconfig-g003-20200224
+x86_64               randconfig-g001-20200223
+x86_64               randconfig-g002-20200223
+x86_64               randconfig-g003-20200223
+i386                 randconfig-g001-20200223
+i386                 randconfig-g002-20200223
+i386                 randconfig-g003-20200223
+x86_64               randconfig-h001-20200224
+x86_64               randconfig-h002-20200224
+x86_64               randconfig-h003-20200224
+i386                 randconfig-h001-20200224
+i386                 randconfig-h002-20200224
+i386                 randconfig-h003-20200224
+arc                  randconfig-a001-20200224
+arm                  randconfig-a001-20200224
+arm64                randconfig-a001-20200224
+ia64                 randconfig-a001-20200224
+powerpc              randconfig-a001-20200224
+sparc                randconfig-a001-20200224
+riscv                            allmodconfig
+riscv                             allnoconfig
+riscv                            allyesconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+s390                             alldefconfig
+s390                              allnoconfig
+s390                             allyesconfig
+s390                                defconfig
+s390                       zfcpdump_defconfig
+sh                               allmodconfig
+sh                                allnoconfig
+sh                          rsk7269_defconfig
+sh                  sh7785lcr_32bit_defconfig
+sh                            titan_defconfig
+sparc                               defconfig
+sparc64                          allmodconfig
+sparc64                           allnoconfig
+sparc64                          allyesconfig
+sparc64                             defconfig
+um                             i386_defconfig
+um                                  defconfig
+um                           x86_64_defconfig
+x86_64                              fedora-25
+x86_64                                  kexec
+x86_64                                    lkp
+x86_64                                   rhel
+x86_64                         rhel-7.2-clear
+x86_64                               rhel-7.6
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
