@@ -1,234 +1,147 @@
-Return-Path: <SRS0=FrDw=4M=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=8zSm=4N=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15660C38BE0
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Feb 2020 19:03:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E74CBC35DF5
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Feb 2020 08:46:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DD2002080D
-	for <linux-serial@archiver.kernel.org>; Mon, 24 Feb 2020 19:03:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B53CC222C2
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Feb 2020 08:46:25 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=antmicro.com header.i=@antmicro.com header.b="JkRNezg1"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725860AbgBXTDu (ORCPT
+        id S1729555AbgBYIqZ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 24 Feb 2020 14:03:50 -0500
-Received: from mga18.intel.com ([134.134.136.126]:4093 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726452AbgBXTDu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 24 Feb 2020 14:03:50 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Feb 2020 11:03:47 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,481,1574150400"; 
-   d="scan'208";a="284436545"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 24 Feb 2020 11:03:45 -0800
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1j6J17-0002Vx-RX; Tue, 25 Feb 2020 03:03:45 +0800
-Date:   Tue, 25 Feb 2020 03:02:35 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- ba08cf452f3493e96793c9fec4ebb45e7101a0c0
-Message-ID: <5e541dcb.9civieKIb3z98PJ8%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 25 Feb 2020 03:46:25 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:46870 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726039AbgBYIqZ (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 25 Feb 2020 03:46:25 -0500
+Received: by mail-lf1-f66.google.com with SMTP id u2so6416687lfk.13
+        for <linux-serial@vger.kernel.org>; Tue, 25 Feb 2020 00:46:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=antmicro.com; s=google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=z1Qahvm7KnmiXYASqq9Hf+eApJtHkcbwnGtdfFCR58I=;
+        b=JkRNezg1xTJbkzROqNPOSM7N/KDneMzf5fQc37XnkxK6A7mvmUCD8yCzb0FcbcAYdn
+         h1gK7sDUGueciXFuXPXj+pm+S+9wWeN7p7Uy2Lrml34l54S8shvQe8jh1v73UljsECco
+         AYGiNRWphBxpBmtLFW0lzTz2OXczZJ8G5JMzc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=z1Qahvm7KnmiXYASqq9Hf+eApJtHkcbwnGtdfFCR58I=;
+        b=eCGdN2pIvxfWjvmgysyeA6xuSwyYrSlj+qXLSqe4g0aTI3mrRUl51DzrvnwzCYuspK
+         j+Yi/eT9cTVeM6DYOhyP2Fmj5AGYH6Y91jt5OSaIeXfwsEvJpgJLLYtIaoeaYJUh7Kz2
+         wnJlgio8sFed7BjUx4A8LFITnkBhGU8GHEn/ZhiSWKqWjOzZ4BKtg6LMSXaY8pHnUSo/
+         LJQEXT2dHimcOJFBoPb887I5dG4QXtYIeAYmbYlgKBYYkOSliYAYIhu7TnUQYXuI0z6Z
+         DWlye9ve9DU/4lWyKv4AqVN2uyTiwdnlumtuuu8imacnpKasXP2sdgALe1aiTw96s+9g
+         jynw==
+X-Gm-Message-State: APjAAAVeTaa7WJtpWOMGLCL+HP4fj2+ILHUEHB676iXR4JJnBjfe5QfW
+        2pNy5RxjKkpyh9UfR+f1Qz152w==
+X-Google-Smtp-Source: APXvYqzyNxgyrjZV6JMCkLoX1qWII/B9Gu5Yg1+FK+C9qDt9KG3oE7u+XjroFjv1fnlh1zl/mb5EQQ==
+X-Received: by 2002:a19:6e0f:: with SMTP id j15mr3693486lfc.76.1582620383320;
+        Tue, 25 Feb 2020 00:46:23 -0800 (PST)
+Received: from localhost.localdomain (d79-196.icpnet.pl. [77.65.79.196])
+        by smtp.gmail.com with ESMTPSA id n15sm8343233lfe.54.2020.02.25.00.46.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Feb 2020 00:46:22 -0800 (PST)
+Date:   Tue, 25 Feb 2020 09:46:18 +0100
+From:   Mateusz Holenko <mholenko@antmicro.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Cc:     Stafford Horne <shorne@gmail.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Filip Kokosinski <fkokosinski@antmicro.com>,
+        Pawel Czarnecki <pczarnecki@internships.antmicro.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/5] LiteX SoC controller and LiteUART serial driver
+Message-ID: <20200225094437.4170502-0-mholenko@antmicro.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
-branch HEAD: ba08cf452f3493e96793c9fec4ebb45e7101a0c0  Merge 5.6-rc3 into tty-next
+This patchset introduces support for LiteX SoC Controller
+and LiteUART - serial device from LiteX SoC builder
+(https://github.com/enjoy-digital/litex).
 
-elapsed time: 481m
+In the following patchset I will add
+a new mor1kx-based (OpenRISC) platform that
+uses this device.
 
-configs tested: 170
-configs skipped: 0
+Later I plan to extend this platform by
+adding support for more devices from LiteX suite.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Changes in v3:
+- added Acked-by and Reviewed-by tags
+- introduced LiteX SoC Controller driver
+- removed endianness detection (handled now by LiteX SoC Controller driver)
+- modified litex.h header
+- DTS aliases for LiteUART made optional
+- renamed SERIAL_LITEUART_NR_PORTS to SERIAL_LITEUART_MAX_PORTS
+- changed PORT_LITEUART from 122 to 123
 
-arm                              allmodconfig
-arm                               allnoconfig
-arm                              allyesconfig
-arm64                            allmodconfig
-arm64                             allnoconfig
-arm64                            allyesconfig
-arm                         at91_dt_defconfig
-arm                           efm32_defconfig
-arm                          exynos_defconfig
-arm                        multi_v5_defconfig
-arm                        multi_v7_defconfig
-arm                        shmobile_defconfig
-arm                           sunxi_defconfig
-arm64                               defconfig
-sparc                            allyesconfig
-ia64                                defconfig
-parisc                generic-32bit_defconfig
-nios2                         3c120_defconfig
-parisc                generic-64bit_defconfig
-powerpc                       ppc64_defconfig
-mips                      fuloong2e_defconfig
-riscv                    nommu_virt_defconfig
-mips                             allmodconfig
-arc                                 defconfig
-s390                          debug_defconfig
-h8300                    h8300h-sim_defconfig
-s390                             allmodconfig
-i386                              allnoconfig
-i386                             alldefconfig
-i386                             allyesconfig
-i386                                defconfig
-ia64                             alldefconfig
-ia64                             allmodconfig
-ia64                              allnoconfig
-ia64                             allyesconfig
-c6x                              allyesconfig
-c6x                        evmc6678_defconfig
-nios2                         10m50_defconfig
-openrisc                    or1ksim_defconfig
-openrisc                 simple_smp_defconfig
-xtensa                       common_defconfig
-xtensa                          iss_defconfig
-alpha                               defconfig
-csky                                defconfig
-nds32                             allnoconfig
-nds32                               defconfig
-h8300                     edosk2674_defconfig
-h8300                       h8s-sim_defconfig
-m68k                             allmodconfig
-m68k                       m5475evb_defconfig
-m68k                          multi_defconfig
-m68k                           sun3_defconfig
-arc                              allyesconfig
-microblaze                      mmu_defconfig
-microblaze                    nommu_defconfig
-powerpc                           allnoconfig
-powerpc                             defconfig
-powerpc                          rhel-kconfig
-mips                           32r2_defconfig
-mips                         64r6el_defconfig
-mips                              allnoconfig
-mips                             allyesconfig
-mips                      malta_kvm_defconfig
-parisc                            allnoconfig
-parisc                           allyesconfig
-x86_64               randconfig-a001-20200224
-x86_64               randconfig-a002-20200224
-x86_64               randconfig-a003-20200224
-i386                 randconfig-a001-20200224
-i386                 randconfig-a002-20200224
-i386                 randconfig-a003-20200224
-alpha                randconfig-a001-20200224
-m68k                 randconfig-a001-20200224
-mips                 randconfig-a001-20200224
-nds32                randconfig-a001-20200224
-parisc               randconfig-a001-20200224
-riscv                randconfig-a001-20200224
-c6x                  randconfig-a001-20200224
-h8300                randconfig-a001-20200224
-microblaze           randconfig-a001-20200224
-nios2                randconfig-a001-20200224
-sparc64              randconfig-a001-20200224
-csky                 randconfig-a001-20200224
-openrisc             randconfig-a001-20200224
-s390                 randconfig-a001-20200224
-sh                   randconfig-a001-20200224
-xtensa               randconfig-a001-20200224
-x86_64               randconfig-b001-20200224
-x86_64               randconfig-b002-20200224
-x86_64               randconfig-b003-20200224
-i386                 randconfig-b001-20200224
-i386                 randconfig-b002-20200224
-i386                 randconfig-b003-20200224
-x86_64               randconfig-c001-20200224
-x86_64               randconfig-c002-20200224
-x86_64               randconfig-c003-20200224
-i386                 randconfig-c001-20200224
-i386                 randconfig-c002-20200224
-i386                 randconfig-c003-20200224
-x86_64               randconfig-d001-20200224
-x86_64               randconfig-d002-20200224
-x86_64               randconfig-d003-20200224
-i386                 randconfig-d001-20200224
-i386                 randconfig-d002-20200224
-i386                 randconfig-d003-20200224
-x86_64               randconfig-e001-20200224
-x86_64               randconfig-e002-20200224
-x86_64               randconfig-e003-20200224
-i386                 randconfig-e001-20200224
-i386                 randconfig-e002-20200224
-i386                 randconfig-e003-20200224
-x86_64               randconfig-f001-20200224
-x86_64               randconfig-f002-20200224
-x86_64               randconfig-f003-20200224
-i386                 randconfig-f001-20200224
-i386                 randconfig-f002-20200224
-i386                 randconfig-f003-20200224
-x86_64               randconfig-g001-20200224
-x86_64               randconfig-g002-20200224
-x86_64               randconfig-g003-20200224
-i386                 randconfig-g001-20200224
-i386                 randconfig-g002-20200224
-i386                 randconfig-g003-20200224
-x86_64               randconfig-g001-20200223
-x86_64               randconfig-g002-20200223
-x86_64               randconfig-g003-20200223
-i386                 randconfig-g001-20200223
-i386                 randconfig-g002-20200223
-i386                 randconfig-g003-20200223
-x86_64               randconfig-h001-20200224
-x86_64               randconfig-h002-20200224
-x86_64               randconfig-h003-20200224
-i386                 randconfig-h001-20200224
-i386                 randconfig-h002-20200224
-i386                 randconfig-h003-20200224
-arc                  randconfig-a001-20200224
-arm                  randconfig-a001-20200224
-arm64                randconfig-a001-20200224
-ia64                 randconfig-a001-20200224
-powerpc              randconfig-a001-20200224
-sparc                randconfig-a001-20200224
-riscv                            allmodconfig
-riscv                             allnoconfig
-riscv                            allyesconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-s390                             alldefconfig
-s390                              allnoconfig
-s390                             allyesconfig
-s390                                defconfig
-s390                       zfcpdump_defconfig
-sh                               allmodconfig
-sh                                allnoconfig
-sh                          rsk7269_defconfig
-sh                  sh7785lcr_32bit_defconfig
-sh                            titan_defconfig
-sparc                               defconfig
-sparc64                          allmodconfig
-sparc64                           allnoconfig
-sparc64                          allyesconfig
-sparc64                             defconfig
-um                             i386_defconfig
-um                                  defconfig
-um                           x86_64_defconfig
-x86_64                              fedora-25
-x86_64                                  kexec
-x86_64                                    lkp
-x86_64                                   rhel
-x86_64                         rhel-7.2-clear
-x86_64                               rhel-7.6
+Changes in v2:
+- binding description rewritten to a yaml schema file
+- added litex.h header with common register access functions
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Filip Kokosinski (3):
+  dt-bindings: vendor: add vendor prefix for LiteX
+  dt-bindings: serial: document LiteUART bindings
+  drivers/tty/serial: add LiteUART driver
+
+Pawel Czarnecki (2):
+  dt-bindings: soc: document LiteX SoC Controller bindings
+  drivers/soc/litex: add LiteX SoC Controller driver
+
+ .../bindings/serial/litex,liteuart.yaml       |  38 ++
+ .../soc/litex/litex,soc_controller.yaml       |  46 ++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ MAINTAINERS                                   |   9 +
+ drivers/soc/Kconfig                           |   1 +
+ drivers/soc/Makefile                          |   1 +
+ drivers/soc/litex/Kconfig                     |  14 +
+ drivers/soc/litex/Makefile                    |   3 +
+ drivers/soc/litex/litex_soc_ctrl.c            | 233 ++++++++++
+ drivers/tty/serial/Kconfig                    |  32 +-
+ drivers/tty/serial/Makefile                   |   1 +
+ drivers/tty/serial/liteuart.c                 | 411 ++++++++++++++++++
+ include/linux/litex.h                         |  45 ++
+ include/uapi/linux/serial_core.h              |   3 +
+ 14 files changed, 838 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/litex,liteuart.yaml
+ create mode 100644 Documentation/devicetree/bindings/soc/litex/litex,soc_controller.yaml
+ create mode 100644 drivers/soc/litex/Kconfig
+ create mode 100644 drivers/soc/litex/Makefile
+ create mode 100644 drivers/soc/litex/litex_soc_ctrl.c
+ create mode 100644 drivers/tty/serial/liteuart.c
+ create mode 100644 include/linux/litex.h
+
+-- 
+2.25.0
+
