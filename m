@@ -2,111 +2,164 @@ Return-Path: <SRS0=8zSm=4N=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D762EC35DFC
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Feb 2020 08:52:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55CD2C35DFF
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Feb 2020 08:55:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B73AD24656
-	for <linux-serial@archiver.kernel.org>; Tue, 25 Feb 2020 08:52:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2C47B222C2
+	for <linux-serial@archiver.kernel.org>; Tue, 25 Feb 2020 08:55:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1582620915;
+	bh=cCjerUBEoOdSPAX18y0/3wM0FoUJDAbdaV0Fc2GmBYU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=XMyetCgOzxC9cKJ4SZSRCIQSvzmMbQlYuDZaPgN17j6x6yIrAsJHt3v2+2SDTSRxc
+	 L/4DnrXB0AeP82bKGFvafmXlIsi6gQQFfHbHoePKDLNTHc8wbyRJRtQd5EiqzKHPAx
+	 d+m5SwmoacRcxT9Ni4p9cngsNTdeL2XHEteYaiFs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729973AbgBYIwx (ORCPT
+        id S1729873AbgBYIzL (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 25 Feb 2020 03:52:53 -0500
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:33943 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726916AbgBYIwu (ORCPT
+        Tue, 25 Feb 2020 03:55:11 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:43370 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729313AbgBYIzK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 25 Feb 2020 03:52:50 -0500
-Received: by mail-oi1-f193.google.com with SMTP id l136so11815544oig.1;
-        Tue, 25 Feb 2020 00:52:49 -0800 (PST)
+        Tue, 25 Feb 2020 03:55:10 -0500
+Received: by mail-lf1-f65.google.com with SMTP id s23so9123401lfs.10;
+        Tue, 25 Feb 2020 00:55:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NCcXPgvLR7piGFPRQkQUMaxV6B+dhlZh7qpZmokhosQ=;
-        b=WWLYOKo6b6/sElVaLhoomClIWzW2SQkNPXSxN1oHRYPdoivfgL4ax4weSL8/KmD/Hi
-         D5lICtQqOeQEXCJjJumqkqPgoBOOOWvrw/ReXODG5RwT3vZHPMHOj7p7uMRKmEhtApCd
-         9J/0RUDL0SruV1JKuvtBOKEciggN9aoY0N/FiOgY0gMQmVjaPpNeU8TNiWqfSRZs19bu
-         cj5AMqRoe0ZT08POHggndekY0bpXPgZVGwx3Qf5DB33hkckld25EAw2pZQfxjuxu+etV
-         408g/dhk0gS4AgRBv1kvH5G3f56VtUqzbPfM2pMK7V5F4N2GtfjqLU8MfQtk20YFbpoC
-         Yb8Q==
-X-Gm-Message-State: APjAAAUVqAnF0c9NnkoxQbtqSR7dTwjHFU4Q8XsiqtlCbmBwm6lszGth
-        8OEfRrPEDJBBmhCzvOiSOeJfuNpxaoKxVTeueh9+1g==
-X-Google-Smtp-Source: APXvYqz7lmhUeSfLmWKkIYk5sXq/O3b4LGrwEfCtT6NjjC+E5sVm0CRMbzawuf071lueIUP7GDqOPvgv08/U/Hcn99E=
-X-Received: by 2002:aca:52d0:: with SMTP id g199mr2443241oib.153.1582620769070;
- Tue, 25 Feb 2020 00:52:49 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Qj/oiN9n+I7E1wS+ld94elXXQ3PzY9hQTBW7ib6/UU8=;
+        b=RdpRpUu6K1gQcXAtfSnzQqsg4lySg3IXyOxTo8pis3csdfPa5/qEYV4baRd7yoeVMR
+         VUF8rxzC4UBaAkIGCoeoP8aUZmRUQs70nXocrn3pIEkgPGgdjAt266DkpRYxB6dylFnJ
+         TLqtaDCL+l6zADHor08uKY2rL9CEdUguXmbGI0VKYxSW90LFJOELU2dgujJ5VHSX2r6x
+         jLCPIWi9hbB8dxtos6BVGNtjWr84X94QCdmfEu7TpRZ6C+Ze2s2bpWy69PPpuDhknaIQ
+         X238j5YBSFYavMjkyJk65GsexMsLC4jZbgdgDrxhCdvNn4CBkqOpz4ZEqmZp/nar47Bh
+         yhDg==
+X-Gm-Message-State: APjAAAXkkZ5wlAuX3QNwZnXy7T0KJgzhLDMgDIfad5B/PQUuNOnOUe+i
+        j35xT3G3ety32tK0u0//408=
+X-Google-Smtp-Source: APXvYqw7VZ1CsxPqcRSp8EqTTUf/XxMCZvxabPWIaaKkzOrgGvBqlnIOA4B28M5WHvdItwoHSNAJGQ==
+X-Received: by 2002:a19:ed0b:: with SMTP id y11mr10821978lfy.77.1582620908168;
+        Tue, 25 Feb 2020 00:55:08 -0800 (PST)
+Received: from xi.terra (c-12aae455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.170.18])
+        by smtp.gmail.com with ESMTPSA id s15sm7370227ljs.58.2020.02.25.00.55.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Feb 2020 00:55:07 -0800 (PST)
+Received: from johan by xi.terra with local (Exim 4.92.3)
+        (envelope-from <johan@kernel.org>)
+        id 1j6Vzb-0004Qj-AL; Tue, 25 Feb 2020 09:55:03 +0100
+Date:   Tue, 25 Feb 2020 09:55:03 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Johan Hovold <johan@kernel.org>, kernel@pengutronix.de,
+        linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, Dan Murphy <dmurphy@ti.com>,
+        Pavel Machek <pavel@ucw.cz>, Jiri Slaby <jslaby@suse.com>,
+        linux-leds@vger.kernel.org,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>
+Subject: Re: [PATCH v6 2/4] tty: rename tty_kopen() and add new function
+ tty_kopen_shared()
+Message-ID: <20200225085503.GP32540@localhost>
+References: <20200213091600.554-1-uwe@kleine-koenig.org>
+ <20200213091600.554-3-uwe@kleine-koenig.org>
+ <20200219132113.GD32540@localhost>
+ <20200219163758.5rypsol4n6ucost4@pengutronix.de>
+ <20200219171759.GE32540@localhost>
+ <20200220110427.e6jgzvdhh3ysql3n@pengutronix.de>
 MIME-Version: 1.0
-References: <CGME20200220121333eucas1p26befa95831b44a793822b4f07b37d2cc@eucas1p2.samsung.com>
- <20200220102628.3371996-1-gregkh@linuxfoundation.org> <b04ad319-9986-c357-ad37-937bbb06bc02@samsung.com>
-In-Reply-To: <b04ad319-9986-c357-ad37-937bbb06bc02@samsung.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 25 Feb 2020 09:52:38 +0100
-Message-ID: <CAMuHMdXzPPNqQom82frY1B6LMre+VD9fPAf98BZ3eo2DhgwoYg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] tty: serial: samsung_tty: build it for any platform
-To:     Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Donghoon Yu <hoony.yu@samsung.com>,
-        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Shinbeom Choi <sbeom.choi@samsung.com>,
-        Hyunki Koo <kkoos00@naver.com>, Kukjin Kim <kgene@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        HYUN-KI KOO <hyunki00.koo@samsung.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200220110427.e6jgzvdhh3ysql3n@pengutronix.de>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Feb 20, 2020 at 1:13 PM Bartlomiej Zolnierkiewicz
-<b.zolnierkie@samsung.com> wrote:
-> On 2/20/20 11:26 AM, Greg Kroah-Hartman wrote:
-> > There is no need to tie this driver to only a specific SoC, or compile
-> > test, so remove that dependancy from the Kconfig rules.
->
-> samsung_tty driver is hardware specific driver so why should we
-> build it for any platform?
->
-> This change seems to defeat the whole purpose behind COMPILE_TEST
-> config option (which allows us to build hardware-specific drivers
-> without needlessly presenting the user with tons of non-relevant
-> config options).
->
-> Please explain this change some more, are you planing to remove
-> COMPILE_TEST config option?
+On Thu, Feb 20, 2020 at 12:04:27PM +0100, Uwe Kleine-König wrote:
+> On Wed, Feb 19, 2020 at 06:17:59PM +0100, Johan Hovold wrote:
+> > On Wed, Feb 19, 2020 at 05:37:58PM +0100, Uwe Kleine-König wrote:
+> > > On Wed, Feb 19, 2020 at 02:21:13PM +0100, Johan Hovold wrote:
+> > > > On Thu, Feb 13, 2020 at 10:15:58AM +0100, Uwe Kleine-König wrote:
+> > > > > From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> > > > > 
+> > > > > Introduce a new function tty_kopen_shared() that yields a struct
+> > > > > tty_struct. The semantic difference to tty_kopen() is that the tty is
+> > > > > expected to be used already. So rename tty_kopen() to
+> > > > > tty_kopen_exclusive() for clearness, adapt the single user and put the
+> > > > > common code in a new static helper function.
+> > > > > 
+> > > > > tty_kopen_shared is to be used to implement an LED trigger for tty
+> > > > > devices in one of the next patches.
+> > > > > 
+> > > > > Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> > > > > ---
+> > > >  
+> > > > > -/**
+> > > > > - *	tty_kopen	-	open a tty device for kernel
+> > > > > - *	@device: dev_t of device to open
+> > > > > - *
+> > > > > - *	Opens tty exclusively for kernel. Performs the driver lookup,
+> > > > > - *	makes sure it's not already opened and performs the first-time
+> > > > > - *	tty initialization.
+> > > > > - *
+> > > > > - *	Returns the locked initialized &tty_struct
+> > > > > - *
+> > > > > - *	Claims the global tty_mutex to serialize:
+> > > > > - *	  - concurrent first-time tty initialization
+> > > > > - *	  - concurrent tty driver removal w/ lookup
+> > > > > - *	  - concurrent tty removal from driver table
+> > > > > - */
+> > > > > -struct tty_struct *tty_kopen(dev_t device)
+> > > > > +static struct tty_struct *tty_kopen(dev_t device, int shared)
+> > > > >  {
+> > > > >  	struct tty_struct *tty;
+> > > > >  	struct tty_driver *driver;
+> > > > > @@ -1905,7 +1890,7 @@ struct tty_struct *tty_kopen(dev_t device)
+> > > > >  
+> > > > >  	/* check whether we're reopening an existing tty */
+> > > > >  	tty = tty_driver_lookup_tty(driver, NULL, index);
+> > > > > -	if (IS_ERR(tty))
+> > > > > +	if (IS_ERR(tty) || shared)
+> > > > 
+> > > > So here you skip initialisation and return NULL if the tty isn't already
+> > > > in use (e.g. is open) when shared is set.
+> > > 
+> > > Which is good, right? If I remember my tests correctly this even works
+> > > if the tty isn't opened but just "exists".
+> > 
+> > No, this means that your trigger will never be installed unless the port
+> > is already open, yet the sysfs interface still returns success (see
+> > patch 4/4 dev_store()).
+> 
+> Ah I think I see. tty_driver_lookup_tty() might return NULL which for
+> the trigger driver indicates that tty_kopen_shared should be retried,
+> right?
 
-+1
+I'm not sure how best to handle this, but yes, your trigger can only be
+enabled while the port is open currently. And no error is returned to a
+user trying to enable the trigger before it has been opened.
 
-I was just going to send a revert...
+But regardless of the error reporting, I don't think failing when the
+port isn't open is the right thing to do as as this makes the interface
+rather useless since you cannot enable a trigger from for example a udev
+rule.
 
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+If this approach is to be used at all, it seems you may need to allocate
+the struct tty when the trigger is enabled. And make sure you don't mess
+up some other assumption in tty core...
+ 
+> > Note that the struct tty doesn't exist until the port is opened; it's
+> > allocated in tty_init_dev() that you skip above when "shared" is set.
+> 
+> That needs fixing. I will try to resolve the dialog with Andy before
+> addressing that in the next iteration.
 
-> > --- a/drivers/tty/serial/Kconfig
-> > +++ b/drivers/tty/serial/Kconfig
-> > @@ -237,7 +237,6 @@ config SERIAL_CLPS711X_CONSOLE
-> >
-> >  config SERIAL_SAMSUNG
-> >       tristate "Samsung SoC serial support"
-> > -     depends on PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST
-> >       select SERIAL_CORE
-> >       help
-> >         Support for the on-chip UARTs on the Samsung S3C24XX series CPUs,
-> >
-> > base-commit: 11a48a5a18c63fd7621bb050228cebf13566e4d8
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Johan
