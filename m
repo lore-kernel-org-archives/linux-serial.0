@@ -2,101 +2,92 @@ Return-Path: <SRS0=ccOi=4O=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B977EC4BA12
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 14:43:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C24FFC4BA18
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 16:43:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9BAD024683
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 14:43:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9A7DA2467B
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 16:43:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1582735380;
+	bh=SNhpkmwpPzdNx6pHbNYuQSm52rtYQ/VqzBwVUvf8a9U=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=l5J6R7riVtUQdTy2abuOrGY6KJ7L7A0Q146a9NXpCnnwYWpWKkVB/7gSENbowBvgQ
+	 DFYtQviZ8Iu68wZqNUg3ADbKd3x1AFDBKdfAch1kUPF8vDwSmKIv4YEtsLGSxbEk/l
+	 qlxlliKkcpGYmAO1ltZb2IARfwjHMHhoI2NeCDrc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727860AbgBZOnO (ORCPT
+        id S1727250AbgBZQm4 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Feb 2020 09:43:14 -0500
-Received: from muru.com ([72.249.23.125]:57640 "EHLO muru.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727362AbgBZOnO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Feb 2020 09:43:14 -0500
-Received: from atomide.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id CB6A28022;
-        Wed, 26 Feb 2020 14:43:56 +0000 (UTC)
-Date:   Wed, 26 Feb 2020 06:43:08 -0800
-From:   Tony Lindgren <tony@atomide.com>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wed, 26 Feb 2020 11:42:56 -0500
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:41198 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726748AbgBZQm4 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 26 Feb 2020 11:42:56 -0500
+Received: by mail-oi1-f195.google.com with SMTP id i1so115742oie.8;
+        Wed, 26 Feb 2020 08:42:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=eY/fUT/C6oQ+QC1Pf/KsMcbEMs5cnwFzzHJNeLH63I8=;
+        b=W8QTrGfRrgmgENYs9NHw4vwjUacGv6J04ylPQGffTtUki17JwjpaSypJU6truuhQ7l
+         O+qNIEIXFkG5xJscTPkgqfWWA2LM3kKB8pFoieakar4zU/MOl/de+ZHnMTBozUd7goc0
+         LN2PvVK4FUTDYlPeK16li19Kh7xBq/TGXqUrEYrUAcQI6be39kGDiwOBbz0uwoue8UfW
+         e6dMgf65Zgvk9s/8MjAtjLXV3K2DNo+2r6bKefnjyb38R9LTCrV5xn5YKGfRmpWLA01C
+         W+cNU7/NYxxnAoJo4x33w3BLnZETO+UtPNLx1IG27CDR4y2Y2+IvaWI/eW/bokvIcyis
+         9EXQ==
+X-Gm-Message-State: APjAAAVJfhIt/albPuRSyLfnbLWwECIAzFPTSz6urtDZOTboUrHJTQzn
+        Yg2HRN6wMlpkFjwC1tCtCLMl5jfhLg==
+X-Google-Smtp-Source: APXvYqwuFuJGSLcpUl13Q/1bN0T2897C4B8RcNWIhS7t01d1JzVHOG6PYlE8aPe2Vxsf6j+6u0q5vQ==
+X-Received: by 2002:aca:3354:: with SMTP id z81mr3882297oiz.129.1582735375610;
+        Wed, 26 Feb 2020 08:42:55 -0800 (PST)
+Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id f1sm946487otq.4.2020.02.26.08.42.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Feb 2020 08:42:54 -0800 (PST)
+Received: (nullmailer pid 11570 invoked by uid 1000);
+        Wed, 26 Feb 2020 16:42:54 -0000
+Date:   Wed, 26 Feb 2020 10:42:54 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
         Jiri Slaby <jslaby@suse.cz>, Johan Hovold <johan@kernel.org>,
         Merlijn Wajer <merlijn@wizzup.org>,
         Pavel Machek <pavel@ucw.cz>,
         Peter Hurley <peter@hurleysoftware.com>,
-        Rob Herring <robh@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
         linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] mfd: motmdm: Add Motorola TS 27.010 serdev modem
- driver for droid4
-Message-ID: <20200226144308.GM37466@atomide.com>
+Subject: Re: [PATCH 3/4] dt-bindings: mfd: motmdm: Add binding for
+ motorola-mdm
+Message-ID: <20200226164254.GA11512@bogus>
 References: <20200220195943.15314-1-tony@atomide.com>
- <20200220195943.15314-3-tony@atomide.com>
- <20200226115548.GO3494@dell>
+ <20200220195943.15314-4-tony@atomide.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200226115548.GO3494@dell>
+In-Reply-To: <20200220195943.15314-4-tony@atomide.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Lee Jones <lee.jones@linaro.org> [200226 11:56]:
-> On Thu, 20 Feb 2020, Tony Lindgren wrote:
+On Thu, 20 Feb 2020 11:59:42 -0800, Tony Lindgren wrote:
+> Add a binding document for Motorola modems controllable by
+> TS 27.010 UART line discipline using serdev drivers.
 > 
-> > Many Motorola phones are controlling the modem using a custom variant
-> > of TS 27.010 serial line discipline. Devices on these modems have a
-> > dedicated TS 27.010 channel for features like audio mixer, GNSS, voice
-> > modem, SIM card reader and so on.
-> > 
-> > This driver allows using various devices on the modem. In order to do
-> > that, we need to take care of the following three things:
-> > 
-> > 1. Provide /dev/motmdm* character devices for apps to use for talking
-> >    to the various devices on the modem
-> > 
-> > 2. Handle Motorola custom protocol over TS 27.010 to make the channels
-> >    usable for userspace
-> > 
-> > 3. Coordinate PM runtime with the USB PHY because of shared GPIO pins
-> >    with the USB PHY
-...
-> > ---
-> >  drivers/mfd/Kconfig        |    9 +
-> >  drivers/mfd/Makefile       |    1 +
-> >  drivers/mfd/motorola-mdm.c | 1200 ++++++++++++++++++++++++++++++++++++
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> ---
+>  .../mfd/motorola,mapphone-mdm6600.yaml        | 34 +++++++++++++++++++
+>  1 file changed, 34 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/mfd/motorola,mapphone-mdm6600.yaml
 > 
-> I'm not even going to start reviewing this as I can see, without even
-> looking at the code, that this has too much functionality (stuff that
-> does stuff) contained.
-> 
-> Please move as much functionality out into the subsystems as
-> possible.  Ideally, MFDs should be responsible for obtaining and
-> registering shared resources and registering child devices.  Anything
-> else should be shifted out to an appropriate subsystem.
-> 
-> MFD is not Misc.
 
-OK good point. So this is a serdev consumer driver that eventually will
-also provide serdev style access to few device drivers too for the
-device within the modem after decoding the Motorola specific protocol.
-No special need for this driver to be under drivers/mfd though.
-
-How about we add drivers/tty/serdev/protocol or similar directory for
-drivers like this?
-
-Naturally the all consumer device drivers should be in their subsystems
-like ALSA ASoC, GNSS and so on.
-
-Regards,
-
-Tony
+Reviewed-by: Rob Herring <robh@kernel.org>
