@@ -2,196 +2,147 @@ Return-Path: <SRS0=ccOi=4O=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8D91C4BA0B
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 10:11:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2104AC4BA0B
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 11:55:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 838E924673
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 10:11:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id ECBE124689
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 11:55:19 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="C83CGgBB"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Jd4SW1ME"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727362AbgBZKLR (ORCPT
+        id S1726752AbgBZLzT (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Feb 2020 05:11:17 -0500
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:54324 "EHLO
-        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726494AbgBZKLQ (ORCPT
+        Wed, 26 Feb 2020 06:55:19 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:36581 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726536AbgBZLzT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Feb 2020 05:11:16 -0500
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20200226101115euoutp016cd73c2dd169353f3d723bcd7b4e768d~27BC18xDl1674816748euoutp01K
-        for <linux-serial@vger.kernel.org>; Wed, 26 Feb 2020 10:11:15 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20200226101115euoutp016cd73c2dd169353f3d723bcd7b4e768d~27BC18xDl1674816748euoutp01K
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1582711875;
-        bh=gJhnzsw0e9znN518tPHvOvIr8D8V2pYAjMrH4fvkSss=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=C83CGgBBbBslijXht8QmjAr2ieCOP7r4OcEvZLfVBxuePgdDtLqcCUdRkCw/TaTpP
-         EUcZ1KGUS+0OWo9/IQI/ByFzWyAconmGs+w0ORDLXy2zt2BX5qtUXA0vY/nY+7Dai2
-         xg26Q5TPe2zud99/3U9Uc318iMMPf9wbUuR1fphU=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20200226101115eucas1p14a15708f7142aa1208dcd9f1695b6d59~27BCgYM6b2612826128eucas1p1V;
-        Wed, 26 Feb 2020 10:11:15 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges2new.samsung.com (EUCPMTA) with SMTP id 6E.54.60679.344465E5; Wed, 26
-        Feb 2020 10:11:15 +0000 (GMT)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20200226101114eucas1p1bd227050f8f004d4e5ce7831745f8beb~27BCPtpT42618026180eucas1p1G;
-        Wed, 26 Feb 2020 10:11:14 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20200226101114eusmtrp27bef11dfca2a03f74c8cd9bc2013b7f2~27BCO9hYY0431004310eusmtrp21;
-        Wed, 26 Feb 2020 10:11:14 +0000 (GMT)
-X-AuditID: cbfec7f4-0e5ff7000001ed07-f4-5e56444339b0
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id 1D.4C.08375.244465E5; Wed, 26
-        Feb 2020 10:11:14 +0000 (GMT)
-Received: from [106.120.51.71] (unknown [106.120.51.71]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20200226101114eusmtip2dab8a6be1167c9591e699b4302436f04~27BBrYRqp2968429684eusmtip2y;
-        Wed, 26 Feb 2020 10:11:14 +0000 (GMT)
-Subject: Re: [PATCH 1/2] tty: serial: samsung_tty: build it for any platform
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Donghoon Yu <hoony.yu@samsung.com>,
-        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Shinbeom Choi <sbeom.choi@samsung.com>,
-        Hyunki Koo <kkoos00@naver.com>, Kukjin Kim <kgene@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        HYUN-KI KOO <hyunki00.koo@samsung.com>
-From:   Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Message-ID: <27d4ec69-1744-4421-0d34-924d14b3c1e6@samsung.com>
-Date:   Wed, 26 Feb 2020 11:11:11 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-        Thunderbird/60.8.0
+        Wed, 26 Feb 2020 06:55:19 -0500
+Received: by mail-wr1-f66.google.com with SMTP id z3so2658264wru.3
+        for <linux-serial@vger.kernel.org>; Wed, 26 Feb 2020 03:55:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=N/HLqG1dDlxTZQOlF1kclM4FtV82gw6thx5C0eMWXL8=;
+        b=Jd4SW1MEdw3BSr+tOW0A+g5GDh/5NIN6p8HFxfdQD0AG53vvR26K+JTeoHXcVpncYU
+         a8ox8IpPTfE458plItqoaoD3it0krStsnGcVmXcAklK5U6tbeyxghsAfi+0JQds6MRF/
+         2M2uvLQC1wDniPmj7PvaeskE8u3HmsBuwWKViakuKMA9X3mHlF0GybGYFWvaPTp+RFiJ
+         GWMujk4YauLTNAMp6OaNsAaS6uVegu0B12PlP2CqTUh1pyeYiIT8NwP7ubtvFXjjZSht
+         Vz8kK1NRahOs3HqSl3LBnVDdoMtetjDvR8Z8trL0j5PY/mvwR07KlLeIxKKjyh08uD/F
+         qf5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=N/HLqG1dDlxTZQOlF1kclM4FtV82gw6thx5C0eMWXL8=;
+        b=E0bXk9rkKketBb6xHjgVK/IdE9z1JjtCsGIEf72HB8zBJNTqkosVv5EjVJVyb1vZCD
+         Ckor9Tsi4AB2ZSJyXqKTj1xKSglYb9icvXcMcPeScPZ/9Az9wx205v1j1g7xvfr0GauS
+         EjNyZ5YwRd3y5Rs0wM9MNW/olkMBRs2myC2ghiJgMe8dUbr3xgUoM63CmX2CgTC//VyA
+         fne7bbpDLYCeVUU5XeMYb7iAe33o4jT97V25gi8Juh/JCwJ7MFj7exEjqifS45JDgLY5
+         gGeE+Hzp7S0bkymhvyf2M9FIEnjwk2RrtfA1GUZapS8I0wQIaimdbPHJ3RKQkjZmBhGg
+         fX2Q==
+X-Gm-Message-State: APjAAAU5r2k41EHX0EgiARX30HFdTDyW6E2G8zAhuk7EPtxoi9CEP7fV
+        qNiBYe4wZGfw3v5v34Xe3+UGPw==
+X-Google-Smtp-Source: APXvYqyOyu7h7SWranUtz1CxDuJHk1JwDhHHx449iyciKg+Pc/m9qo1aavmL3kb/JkZa8Oq7/4G7iA==
+X-Received: by 2002:adf:df0c:: with SMTP id y12mr5159445wrl.257.1582718117234;
+        Wed, 26 Feb 2020 03:55:17 -0800 (PST)
+Received: from dell ([2.31.163.122])
+        by smtp.gmail.com with ESMTPSA id a13sm2820475wrt.55.2020.02.26.03.55.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Feb 2020 03:55:16 -0800 (PST)
+Date:   Wed, 26 Feb 2020 11:55:48 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
+        Jiri Slaby <jslaby@suse.cz>, Johan Hovold <johan@kernel.org>,
+        Merlijn Wajer <merlijn@wizzup.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Rob Herring <robh@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/4] mfd: motmdm: Add Motorola TS 27.010 serdev modem
+ driver for droid4
+Message-ID: <20200226115548.GO3494@dell>
+References: <20200220195943.15314-1-tony@atomide.com>
+ <20200220195943.15314-3-tony@atomide.com>
 MIME-Version: 1.0
-In-Reply-To: <CAMuHMdVrVe37JyUNFSf9KRZTcndrvDaZvrVoBxzm_7J2nhg1kg@mail.gmail.com>
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Sa0hTYRjHeXe2szNp9joVH8wSVkkWaReJQze6fTgf+lCYpVLmytPmbcrm
-        NaIMo7zg3TTNu6Y5LNc0zYFWW2qltLAsb5ClDMtGlopYdnE7Sn77vf/n/+f/PPBShOS9wJUK
-        VcawKqUsQkra8Vu65k1bDx85GbRtViuizUPtPDq5upGku+9NCmjNnQGCztdO8eissUmCTm3r
-        F9Amk1ZI68beCeg3+hKSvmXq4NG91RlC+nrWKDogZnSaVJIxGFMQ87i0Qcg01VxhMguSEJPZ
-        rEFMY3M/n5nWrTtGBdrtDWEjQuNYlff+YDuFcapMGD3slGCuzBAkoS6chkQUYB/4nNSJrCzB
-        dxEY5w+mIbtFnkFgSalB3GMawcPSKt5yor/7Np8b1CHoSO4luIcFgen2R5vLER+FAvMQaWUn
-        HAy18zd5VhOBzQS8bntOWAck3g05NzS2cjHeD4Xf62w6H2+EnM5ZoZWdsT/8GDUKOI8DvCga
-        X6ymKBE+Dr/qbV0EdoGh8fIldodWS4ltIcCzQkjPThNwax+Bt5W/SY4d4Ut3s5BjN/jbVs7j
-        AvcR/E6ZWEq3IqjL+7OU2AMjr36S1mYCe0Kj3puTD0JLR49NBmwPAxYHbgl7yG0pJDhZDCnX
-        JZzbA7S1WnK5Nq2tnshG0uIVlxWvOKd4xTnF/3srEF+DXNhYdaScVe9QsvFealmkOlYp9zof
-        FalDi9+t50/3zCOkXzhnQJhC0lXiCZFfkEQgi1MnRhoQUITUSfxgdlESh8gSL7KqqLOq2AhW
-        bUBrKL7URbyz6vMZCZbLYthwlo1mVctTHiVyTUKK2LWGqhPPKvwsiY1dTwNK2C2himstfemX
-        PhyWSnyY/Ln20azsSg0xdsj324z3qdULvqVfn7nNKTe4N3jkMZeHJ1+fKMr3DO8K6ktY3xDm
-        /Ov0SMKups1b+D7B8WGKDfLgEXrOHKhv0M2NyfeFP970cuHC4BNT5uCnXIer8gB/VCblqxWy
-        7ZsJlVr2D/R4oq9qAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrBIsWRmVeSWpSXmKPExsVy+t/xe7pOLmFxBn/OGls8u7WXyaJ58Xo2
-        i+NrX7NarFp6g9liyoYPTBb9j18zW3TuvMpqcf78BnaLTY+vsVpc3jWHzWLG+X1MFmcW97Jb
-        tPU/YHTg9di0qpPN49DhDkaP/XPXsHtsXlLv0TetgdGjb8sqRo/1W66yeHzeJBfAEaVnU5Rf
-        WpKqkJFfXGKrFG1oYaRnaGmhZ2RiqWdobB5rZWSqpG9nk5Kak1mWWqRvl6CXcfjDPPaC2yIV
-        zxb2sjYwHhPoYuTkkBAwkbh6fDZLFyMXh5DAUkaJk3NusHcxcgAlZCSOry+DqBGW+HOtiw2i
-        5jWjxJfevUwgCWEBH4lpz26xgdSLCCRI7L/qD1LDLPCCWWLDq1usEA1/mSRebb7KCNLAJmAl
-        MbF9FZjNK2AnMf3jcmYQm0VAVWLi0a/sILaoQITE4R2zoGoEJU7OfMICsoBTIFDi90qwvcwC
-        6hJ/5l1ihrDFJW49mQ8Vl5fY/nYO8wRGoVlIumchaZmFpGUWkpYFjCyrGEVSS4tz03OLDfWK
-        E3OLS/PS9ZLzczcxAmN527Gfm3cwXtoYfIhRgINRiYf3BWdonBBrYllxZe4hRgkOZiUR3o1f
-        gUK8KYmVValF+fFFpTmpxYcYTYF+m8gsJZqcD0wzeSXxhqaG5haWhubG5sZmFkrivB0CB2OE
-        BNITS1KzU1MLUotg+pg4OKUaGIXvdiy4fibsbobzM65PFSZXnFz1s+bH7CjxUdu4SP7mYalH
-        zImvOmoLm8z+cbw20H04PXiNyfv0Z6KtnB/LrdoXONg6aArs4c08MYMv3LbneKHMxzylE6fe
-        V/ruc+vZvDF4O+f9LVdV/qyN+N/PXjBFMmNFat3VekPunPVTenft3OrQ+zdPWImlOCPRUIu5
-        qDgRAFmaYNT7AgAA
-X-CMS-MailID: 20200226101114eucas1p1bd227050f8f004d4e5ce7831745f8beb
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20200220121333eucas1p26befa95831b44a793822b4f07b37d2cc
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20200220121333eucas1p26befa95831b44a793822b4f07b37d2cc
-References: <CGME20200220121333eucas1p26befa95831b44a793822b4f07b37d2cc@eucas1p2.samsung.com>
-        <20200220102628.3371996-1-gregkh@linuxfoundation.org>
-        <b04ad319-9986-c357-ad37-937bbb06bc02@samsung.com>
-        <CAMuHMdXzPPNqQom82frY1B6LMre+VD9fPAf98BZ3eo2DhgwoYg@mail.gmail.com>
-        <20200225204151.GA13254@kroah.com>
-        <CAMuHMdVrVe37JyUNFSf9KRZTcndrvDaZvrVoBxzm_7J2nhg1kg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200220195943.15314-3-tony@atomide.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Thu, 20 Feb 2020, Tony Lindgren wrote:
 
-On 2/25/20 10:22 PM, Geert Uytterhoeven wrote:
-> Hi Greg,
+> Many Motorola phones are controlling the modem using a custom variant
+> of TS 27.010 serial line discipline. Devices on these modems have a
+> dedicated TS 27.010 channel for features like audio mixer, GNSS, voice
+> modem, SIM card reader and so on.
 > 
-> On Tue, Feb 25, 2020 at 9:41 PM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
->> On Tue, Feb 25, 2020 at 09:52:38AM +0100, Geert Uytterhoeven wrote:
->>> On Thu, Feb 20, 2020 at 1:13 PM Bartlomiej Zolnierkiewicz
->>> <b.zolnierkie@samsung.com> wrote:
->>>> On 2/20/20 11:26 AM, Greg Kroah-Hartman wrote:
->>>>> There is no need to tie this driver to only a specific SoC, or compile
->>>>> test, so remove that dependancy from the Kconfig rules.
->>>>
->>>> samsung_tty driver is hardware specific driver so why should we
->>>> build it for any platform?
->>
->> Why not?
+> This driver allows using various devices on the modem. In order to do
+> that, we need to take care of the following three things:
 > 
-> Because this driver won't bind to a device anyway, when the kernel is
-> configured without Samsung SoC support.  It will just bloat the kernel,
-> and asking this question is a silly waste of time for anyone building a
-> (non-generic) kernel for a non-Samsung SoC.
+> 1. Provide /dev/motmdm* character devices for apps to use for talking
+>    to the various devices on the modem
 > 
->> Seriously, this "only this one specific SoC is allowed to build this
->> driver" is crazy.  It prevents anyone from building a generic kernel
->> with drivers as a module which are loaded as needed.
+> 2. Handle Motorola custom protocol over TS 27.010 to make the channels
+>    usable for userspace
 > 
-> A generic kernel will include Samsung SoC support, hence PLAT_SAMSUNG
-> or ARCH_EXYNOS will be enabled.
+> 3. Coordinate PM runtime with the USB PHY because of shared GPIO pins
+>    with the USB PHY
 > 
->> That needs to be fixed, and removing this unneeded dependancy on this
->> driver allows it to be build for any system and then only loaded when
->> needed.
+> With this patch, folks with droid4 can place a voice call with just:
 > 
-> It can only be loaded on a Samsung system, which requires PLAT_SAMSUNG
-> or ARCH_EXYNOS anyway.
-> It's not like a Samsung serial device can be plugged into your PC's PCI
-> bus or so, it only exists on Samsung SoCs.
+> $ printf "ATD%s,0\r" "${phone_number}" > /dev/motmdm1
+> D:OK
+> ~+CIEV=1,1,0
+> ...
+> $ printf "ATH\r" > /dev/motmdm1
+> H:OK
 > 
->>>> This change seems to defeat the whole purpose behind COMPILE_TEST
->>>> config option (which allows us to build hardware-specific drivers
->>>> without needlessly presenting the user with tons of non-relevant
->>>> config options).
->>>>
->>>> Please explain this change some more, are you planing to remove
->>>> COMPILE_TEST config option?
->>
->> I want to get rid of this:
+> Also SMS can be sent with this patch using /dev/motmdm3 for sending,
+> and /dev/motmdm9 for receiving messages.
 > 
-> IMHO we need _more_ of these dependencies, to avoid all these silly questions
-> when they don't make sense.
+> Note that the audio mixer needs additional patches though. I will be
+> sending those as a separate series of patches.
 > 
->>>>> -     depends on PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST
->>
->> We should not need PLAT_SAMSUNG or ARCH_EXYNOS at all, we should be able
->> to build an arm64 kernel for all platforms.
-> 
-> An arm64 kernel for all platforms will have ARCH_EXYNOS enabled.
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> ---
+>  drivers/mfd/Kconfig        |    9 +
+>  drivers/mfd/Makefile       |    1 +
+>  drivers/mfd/motorola-mdm.c | 1200 ++++++++++++++++++++++++++++++++++++
 
-+1 on all comments from Geert
+I'm not even going to start reviewing this as I can see, without even
+looking at the code, that this has too much functionality (stuff that
+does stuff) contained.
 
-IMHO this change should be reverted (it doesn't fix anything and
-only makes kernel configuration harder).
+Please move as much functionality out into the subsystems as
+possible.  Ideally, MFDs should be responsible for obtaining and
+registering shared resources and registering child devices.  Anything
+else should be shifted out to an appropriate subsystem.
 
-Best regards,
---
-Bartlomiej Zolnierkiewicz
-Samsung R&D Institute Poland
-Samsung Electronics
+MFD is not Misc.
+
+>  3 files changed, 1210 insertions(+)
+>  create mode 100644 drivers/mfd/motorola-mdm.c
+
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
