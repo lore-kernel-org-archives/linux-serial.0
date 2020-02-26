@@ -6,87 +6,81 @@ X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
 	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E02C4BA18
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 16:45:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0F35C4BA21
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 21:37:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EAD6024670
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 16:45:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A794524656
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 21:37:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1582735545;
-	bh=V/k0ng6IAEVfk87c9P4pVo9kgkJlUaXwKWw/NzV6XXc=;
+	s=default; t=1582753042;
+	bh=WGQ6NUV/Nq5CEhlta/6kB+OE4mCNdRqPyY/dZRNpOEo=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=ES8n0EdQHhwofeLQoptnT0H/EPCFwiHiyx5qP40NOjSZctPi7WB1biqZnuet6eXA2
-	 jMIgmI2zrOp4VjCQaE2l4BhTXKQ2eKw7QlRjwzmJPNpLsi7jybJLiLNrFqU1e9CWQc
-	 mOpLFhmkut+b8raPehGnk2ZKAAisoxE9CGBEtuxY=
+	b=hWoUBV99HeM+NrwmVhoSDgGGiZGPmKi54ITLQmC4+kQLlslneIXcq2ERoq2ivSEql
+	 OoxcNH+UwkA9tkKrfWXvpw1qqYXF0dGW8aQnzQ7J5mxV6A3jLE4v2eiLMREk1v9SOn
+	 7ORU6Ec2dehiXJNuEnap/VZ9V7/eey67BaX8Ni8Y=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726810AbgBZQpo (ORCPT
+        id S1727689AbgBZVhW (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Feb 2020 11:45:44 -0500
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:40025 "EHLO
+        Wed, 26 Feb 2020 16:37:22 -0500
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:41068 "EHLO
         mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726579AbgBZQpo (ORCPT
+        with ESMTP id S1727581AbgBZVhW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Feb 2020 11:45:44 -0500
-Received: by mail-ot1-f66.google.com with SMTP id i6so17910otr.7;
-        Wed, 26 Feb 2020 08:45:43 -0800 (PST)
+        Wed, 26 Feb 2020 16:37:22 -0500
+Received: by mail-ot1-f66.google.com with SMTP id v19so893729ote.8;
+        Wed, 26 Feb 2020 13:37:20 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=+jpf9V7GJci9zFA7xE/ne4mBwHPRwJxrYPbYAK7KP8s=;
-        b=Hfn0zTuUmMcPqBZPMWJX6WOltAdMtGAKoE/KOBAcGnuTaNC3ctMDjMBhKri4QePEub
-         h+aHAOR5LauMlGzwkyDWQybPlhkmfG8X/1EOaP0oiJ2GX77zYYBAXlfTII24YstDyoER
-         ltETp33iX7CA4323RYt4VwLXLdc2oMcT1EgwvZBRtUi1vOY1qpG42KZe5J9/bJQn/pKT
-         zRnb0i1tW4C+z5PUbrpcgUXGGijuXBp4wlQuNQbsLZx55or1/jhAzvIVbrqpUWyWCiRF
-         CW9qV4RdNon00XQ0h9UM3i990oNE2JgF8tdCj859YzsIqEigcDnFyH5dENsgYEtR/0Nr
-         /tkA==
-X-Gm-Message-State: APjAAAUdfKGCwuLqkCBrF/WWlb7+2PLpM666y+L2gitmNMx83Z76pg8U
-        n2U2TDAekwd6qTF5Eprs8g==
-X-Google-Smtp-Source: APXvYqyTEDvRxEo9nOKGqg12BjH4WR+4WGsY68JsuPWIkt4Xfv+GYGW8LItBxGawTREHNUpS0RlOhA==
-X-Received: by 2002:a9d:7f11:: with SMTP id j17mr4120984otq.281.1582735543458;
-        Wed, 26 Feb 2020 08:45:43 -0800 (PST)
+        bh=BUfZ3V0xBDGwOALHfUr9ZrS1JEBM9H8lpVzraU/a970=;
+        b=BTW9sNY+psCns7vZRgSILOpJBXpUKeT8ftQVSs9u/Bpvp6AAwXMGUmz+HI8YqsrYZ6
+         1ro+qVdvYpR6xx8v0DbwVXoeUGj0Onn+gTOu6b4LuhWm3lulI8jJcCehxF0DzD2LWdID
+         rcgq9/L88KUMyde3Z4eROHuN9OBTEVBd68NjGH2jyz6aeqmqXtWAJ4f9DAxWo10RDVzu
+         a/lWoMO1675sppjszh6v+EQpdEicuCUmxhKBs031NVqHB649IyFt2OO+lk84Y1o6zLuU
+         tVETxAtB1+XiNT8PiRDWBm+gsz0wAMxqU78+JpoFdDNomUOZeDis2pgY5yitwF+QrPPM
+         JXsg==
+X-Gm-Message-State: APjAAAVDnAxxricPubRG+Kih2BGQKLgau9Tk6WPmerjKjIUpSPDBf3+Z
+        9RwJphdNCHBZg8Z8z6fmyStkhqI=
+X-Google-Smtp-Source: APXvYqwVcJhepVheqsHg5PUb4PEPVIuEdNpHnqGYdfi/G+PyJBA9spLO6DGQPJWkCR7g20EWo5LDMQ==
+X-Received: by 2002:a9d:5885:: with SMTP id x5mr704064otg.132.1582753039707;
+        Wed, 26 Feb 2020 13:37:19 -0800 (PST)
 Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id 60sm957984otu.45.2020.02.26.08.45.42
+        by smtp.gmail.com with ESMTPSA id k18sm1209704oiw.44.2020.02.26.13.37.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Feb 2020 08:45:42 -0800 (PST)
-Received: (nullmailer pid 15869 invoked by uid 1000);
-        Wed, 26 Feb 2020 16:45:42 -0000
-Date:   Wed, 26 Feb 2020 10:45:42 -0600
+        Wed, 26 Feb 2020 13:37:19 -0800 (PST)
+Received: (nullmailer pid 2770 invoked by uid 1000);
+        Wed, 26 Feb 2020 21:37:18 -0000
+Date:   Wed, 26 Feb 2020 15:37:18 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc:     devicetree@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+To:     Michael Walle <michael@walle.cc>
+Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        linux-serial@vger.kernel.org,
-        Frank Rowand <frowand.list@gmail.com>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] dt-bindings: serial: Convert UniPhier UART to json-schema
-Message-ID: <20200226164541.GA15714@bogus>
-References: <20200221021137.19443-1-yamada.masahiro@socionext.com>
+        Li Yang <leoyang.li@nxp.com>, Jiri Slaby <jslaby@suse.com>,
+        Peng Fan <peng.fan@nxp.com>,
+        Vabhav Sharma <vabhav.sharma@nxp.com>,
+        Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH v2 5/9] dt-bindings: serial: lpuart: add ls1028a
+ compatibility
+Message-ID: <20200226213718.GA2712@bogus>
+References: <20200221174754.5295-1-michael@walle.cc>
+ <20200221174754.5295-6-michael@walle.cc>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200221021137.19443-1-yamada.masahiro@socionext.com>
+In-Reply-To: <20200221174754.5295-6-michael@walle.cc>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, 21 Feb 2020 11:11:36 +0900, Masahiro Yamada wrote:
-> Convert the UniPhier UART binding to DT schema format.
-> 
-> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+On Fri, 21 Feb 2020 18:47:50 +0100, Michael Walle wrote:
+> Signed-off-by: Michael Walle <michael@walle.cc>
 > ---
-> 
->  .../serial/socionext,uniphier-uart.yaml       | 46 +++++++++++++++++++
->  .../bindings/serial/uniphier-uart.txt         | 22 ---------
->  2 files changed, 46 insertions(+), 22 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/serial/socionext,uniphier-uart.yaml
->  delete mode 100644 Documentation/devicetree/bindings/serial/uniphier-uart.txt
+>  .../devicetree/bindings/serial/fsl-lpuart.txt          | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
 > 
 
-Applied, thanks.
-
-Rob
+Reviewed-by: Rob Herring <robh@kernel.org>
