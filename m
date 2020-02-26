@@ -2,101 +2,101 @@ Return-Path: <SRS0=ccOi=4O=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA37C4BA10
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 14:02:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B977EC4BA12
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 14:43:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 88E2024683
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 14:02:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9BAD024683
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 14:43:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726278AbgBZOCo (ORCPT
+        id S1727860AbgBZOnO (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Feb 2020 09:02:44 -0500
-Received: from jabberwock.ucw.cz ([46.255.230.98]:41342 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726151AbgBZOCo (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Feb 2020 09:02:44 -0500
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id CD3EA1C204C; Wed, 26 Feb 2020 15:02:41 +0100 (CET)
-Date:   Wed, 26 Feb 2020 15:02:41 +0100
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Dan Murphy <dmurphy@ti.com>, Jiri Slaby <jslaby@suse.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, linux-leds@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v6 0/4] leds: trigger: implement a tty trigger
-Message-ID: <20200226140241.GI4080@duo.ucw.cz>
-References: <20200213091600.554-1-uwe@kleine-koenig.org>
- <20200219104012.GA2814125@kroah.com>
+        Wed, 26 Feb 2020 09:43:14 -0500
+Received: from muru.com ([72.249.23.125]:57640 "EHLO muru.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727362AbgBZOnO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 26 Feb 2020 09:43:14 -0500
+Received: from atomide.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id CB6A28022;
+        Wed, 26 Feb 2020 14:43:56 +0000 (UTC)
+Date:   Wed, 26 Feb 2020 06:43:08 -0800
+From:   Tony Lindgren <tony@atomide.com>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
+        Jiri Slaby <jslaby@suse.cz>, Johan Hovold <johan@kernel.org>,
+        Merlijn Wajer <merlijn@wizzup.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Rob Herring <robh@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/4] mfd: motmdm: Add Motorola TS 27.010 serdev modem
+ driver for droid4
+Message-ID: <20200226144308.GM37466@atomide.com>
+References: <20200220195943.15314-1-tony@atomide.com>
+ <20200220195943.15314-3-tony@atomide.com>
+ <20200226115548.GO3494@dell>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="PWfwoUCx3AFJRUBq"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200219104012.GA2814125@kroah.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200226115548.GO3494@dell>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+* Lee Jones <lee.jones@linaro.org> [200226 11:56]:
+> On Thu, 20 Feb 2020, Tony Lindgren wrote:
+> 
+> > Many Motorola phones are controlling the modem using a custom variant
+> > of TS 27.010 serial line discipline. Devices on these modems have a
+> > dedicated TS 27.010 channel for features like audio mixer, GNSS, voice
+> > modem, SIM card reader and so on.
+> > 
+> > This driver allows using various devices on the modem. In order to do
+> > that, we need to take care of the following three things:
+> > 
+> > 1. Provide /dev/motmdm* character devices for apps to use for talking
+> >    to the various devices on the modem
+> > 
+> > 2. Handle Motorola custom protocol over TS 27.010 to make the channels
+> >    usable for userspace
+> > 
+> > 3. Coordinate PM runtime with the USB PHY because of shared GPIO pins
+> >    with the USB PHY
+...
+> > ---
+> >  drivers/mfd/Kconfig        |    9 +
+> >  drivers/mfd/Makefile       |    1 +
+> >  drivers/mfd/motorola-mdm.c | 1200 ++++++++++++++++++++++++++++++++++++
+> 
+> I'm not even going to start reviewing this as I can see, without even
+> looking at the code, that this has too much functionality (stuff that
+> does stuff) contained.
+> 
+> Please move as much functionality out into the subsystems as
+> possible.  Ideally, MFDs should be responsible for obtaining and
+> registering shared resources and registering child devices.  Anything
+> else should be shifted out to an appropriate subsystem.
+> 
+> MFD is not Misc.
 
---PWfwoUCx3AFJRUBq
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+OK good point. So this is a serdev consumer driver that eventually will
+also provide serdev style access to few device drivers too for the
+device within the modem after decoding the Motorola specific protocol.
+No special need for this driver to be under drivers/mfd though.
 
-On Wed 2020-02-19 11:40:12, Greg Kroah-Hartman wrote:
-> On Thu, Feb 13, 2020 at 10:15:56AM +0100, Uwe Kleine-K=F6nig wrote:
-> > From: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> >=20
-> > Hello,
-> >=20
-> > This is v6 of my quest to introduce ledtriggers for UARTs. The previous
-> > series is available at
-> >=20
-> > 	http://lore.kernel.org/r/20191219093947.15502-1-u.kleine-koenig@pengut=
-ronix.de
-> >=20
-> > The changes compared to that are that parsing of the dev parameter is
-> > more strict and that I set brightness directly from the kworker instead
-> > of using led_blink_set_oneshot which makes use of another kworker. (Both
-> > requested by Pavel Machek.)
-> >=20
-> > For the former I introduced a new helper kstrtodev_t() in the spirit of
-> > kstrtoul() to implement the stricter parsing (instead of the lax one
-> > using plain sscanf() in v5).
->=20
-> Looks good to me, Pavel, any objection to me merging this through the
-> tty tree?
+How about we add drivers/tty/serdev/protocol or similar directory for
+drivers like this?
 
-I see ton of comments on this one, seems like there will be one more
-version?
+Naturally the all consumer device drivers should be in their subsystems
+like ALSA ASoC, GNSS and so on.
 
-And I fear merge conflicts if you modify drivers/leds/Makefile...
+Regards,
 
-Best regards,
-									Pavel
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---PWfwoUCx3AFJRUBq
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCXlZ6gQAKCRAw5/Bqldv6
-8n1kAJ0eHl7DmssrmBA95ietDxnHxPLc3gCgnoJOhR7lBDQxmSrvzu5d+xnLKVA=
-=yHGr
------END PGP SIGNATURE-----
-
---PWfwoUCx3AFJRUBq--
+Tony
