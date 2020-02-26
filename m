@@ -2,147 +2,101 @@ Return-Path: <SRS0=ccOi=4O=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2104AC4BA0B
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 11:55:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA37C4BA10
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 14:02:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id ECBE124689
-	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 11:55:19 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Jd4SW1ME"
+	by mail.kernel.org (Postfix) with ESMTP id 88E2024683
+	for <linux-serial@archiver.kernel.org>; Wed, 26 Feb 2020 14:02:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726752AbgBZLzT (ORCPT
+        id S1726278AbgBZOCo (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 26 Feb 2020 06:55:19 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:36581 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726536AbgBZLzT (ORCPT
+        Wed, 26 Feb 2020 09:02:44 -0500
+Received: from jabberwock.ucw.cz ([46.255.230.98]:41342 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726151AbgBZOCo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 26 Feb 2020 06:55:19 -0500
-Received: by mail-wr1-f66.google.com with SMTP id z3so2658264wru.3
-        for <linux-serial@vger.kernel.org>; Wed, 26 Feb 2020 03:55:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=N/HLqG1dDlxTZQOlF1kclM4FtV82gw6thx5C0eMWXL8=;
-        b=Jd4SW1MEdw3BSr+tOW0A+g5GDh/5NIN6p8HFxfdQD0AG53vvR26K+JTeoHXcVpncYU
-         a8ox8IpPTfE458plItqoaoD3it0krStsnGcVmXcAklK5U6tbeyxghsAfi+0JQds6MRF/
-         2M2uvLQC1wDniPmj7PvaeskE8u3HmsBuwWKViakuKMA9X3mHlF0GybGYFWvaPTp+RFiJ
-         GWMujk4YauLTNAMp6OaNsAaS6uVegu0B12PlP2CqTUh1pyeYiIT8NwP7ubtvFXjjZSht
-         Vz8kK1NRahOs3HqSl3LBnVDdoMtetjDvR8Z8trL0j5PY/mvwR07KlLeIxKKjyh08uD/F
-         qf5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=N/HLqG1dDlxTZQOlF1kclM4FtV82gw6thx5C0eMWXL8=;
-        b=E0bXk9rkKketBb6xHjgVK/IdE9z1JjtCsGIEf72HB8zBJNTqkosVv5EjVJVyb1vZCD
-         Ckor9Tsi4AB2ZSJyXqKTj1xKSglYb9icvXcMcPeScPZ/9Az9wx205v1j1g7xvfr0GauS
-         EjNyZ5YwRd3y5Rs0wM9MNW/olkMBRs2myC2ghiJgMe8dUbr3xgUoM63CmX2CgTC//VyA
-         fne7bbpDLYCeVUU5XeMYb7iAe33o4jT97V25gi8Juh/JCwJ7MFj7exEjqifS45JDgLY5
-         gGeE+Hzp7S0bkymhvyf2M9FIEnjwk2RrtfA1GUZapS8I0wQIaimdbPHJ3RKQkjZmBhGg
-         fX2Q==
-X-Gm-Message-State: APjAAAU5r2k41EHX0EgiARX30HFdTDyW6E2G8zAhuk7EPtxoi9CEP7fV
-        qNiBYe4wZGfw3v5v34Xe3+UGPw==
-X-Google-Smtp-Source: APXvYqyOyu7h7SWranUtz1CxDuJHk1JwDhHHx449iyciKg+Pc/m9qo1aavmL3kb/JkZa8Oq7/4G7iA==
-X-Received: by 2002:adf:df0c:: with SMTP id y12mr5159445wrl.257.1582718117234;
-        Wed, 26 Feb 2020 03:55:17 -0800 (PST)
-Received: from dell ([2.31.163.122])
-        by smtp.gmail.com with ESMTPSA id a13sm2820475wrt.55.2020.02.26.03.55.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Feb 2020 03:55:16 -0800 (PST)
-Date:   Wed, 26 Feb 2020 11:55:48 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
-        Jiri Slaby <jslaby@suse.cz>, Johan Hovold <johan@kernel.org>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        Pavel Machek <pavel@ucw.cz>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Rob Herring <robh@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] mfd: motmdm: Add Motorola TS 27.010 serdev modem
- driver for droid4
-Message-ID: <20200226115548.GO3494@dell>
-References: <20200220195943.15314-1-tony@atomide.com>
- <20200220195943.15314-3-tony@atomide.com>
+        Wed, 26 Feb 2020 09:02:44 -0500
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id CD3EA1C204C; Wed, 26 Feb 2020 15:02:41 +0100 (CET)
+Date:   Wed, 26 Feb 2020 15:02:41 +0100
+From:   Pavel Machek <pavel@denx.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Dan Murphy <dmurphy@ti.com>, Jiri Slaby <jslaby@suse.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, linux-leds@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v6 0/4] leds: trigger: implement a tty trigger
+Message-ID: <20200226140241.GI4080@duo.ucw.cz>
+References: <20200213091600.554-1-uwe@kleine-koenig.org>
+ <20200219104012.GA2814125@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="PWfwoUCx3AFJRUBq"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200220195943.15314-3-tony@atomide.com>
+In-Reply-To: <20200219104012.GA2814125@kroah.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 20 Feb 2020, Tony Lindgren wrote:
 
-> Many Motorola phones are controlling the modem using a custom variant
-> of TS 27.010 serial line discipline. Devices on these modems have a
-> dedicated TS 27.010 channel for features like audio mixer, GNSS, voice
-> modem, SIM card reader and so on.
-> 
-> This driver allows using various devices on the modem. In order to do
-> that, we need to take care of the following three things:
-> 
-> 1. Provide /dev/motmdm* character devices for apps to use for talking
->    to the various devices on the modem
-> 
-> 2. Handle Motorola custom protocol over TS 27.010 to make the channels
->    usable for userspace
-> 
-> 3. Coordinate PM runtime with the USB PHY because of shared GPIO pins
->    with the USB PHY
-> 
-> With this patch, folks with droid4 can place a voice call with just:
-> 
-> $ printf "ATD%s,0\r" "${phone_number}" > /dev/motmdm1
-> D:OK
-> ~+CIEV=1,1,0
-> ...
-> $ printf "ATH\r" > /dev/motmdm1
-> H:OK
-> 
-> Also SMS can be sent with this patch using /dev/motmdm3 for sending,
-> and /dev/motmdm9 for receiving messages.
-> 
-> Note that the audio mixer needs additional patches though. I will be
-> sending those as a separate series of patches.
-> 
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-> ---
->  drivers/mfd/Kconfig        |    9 +
->  drivers/mfd/Makefile       |    1 +
->  drivers/mfd/motorola-mdm.c | 1200 ++++++++++++++++++++++++++++++++++++
+--PWfwoUCx3AFJRUBq
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I'm not even going to start reviewing this as I can see, without even
-looking at the code, that this has too much functionality (stuff that
-does stuff) contained.
+On Wed 2020-02-19 11:40:12, Greg Kroah-Hartman wrote:
+> On Thu, Feb 13, 2020 at 10:15:56AM +0100, Uwe Kleine-K=F6nig wrote:
+> > From: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> >=20
+> > Hello,
+> >=20
+> > This is v6 of my quest to introduce ledtriggers for UARTs. The previous
+> > series is available at
+> >=20
+> > 	http://lore.kernel.org/r/20191219093947.15502-1-u.kleine-koenig@pengut=
+ronix.de
+> >=20
+> > The changes compared to that are that parsing of the dev parameter is
+> > more strict and that I set brightness directly from the kworker instead
+> > of using led_blink_set_oneshot which makes use of another kworker. (Both
+> > requested by Pavel Machek.)
+> >=20
+> > For the former I introduced a new helper kstrtodev_t() in the spirit of
+> > kstrtoul() to implement the stricter parsing (instead of the lax one
+> > using plain sscanf() in v5).
+>=20
+> Looks good to me, Pavel, any objection to me merging this through the
+> tty tree?
 
-Please move as much functionality out into the subsystems as
-possible.  Ideally, MFDs should be responsible for obtaining and
-registering shared resources and registering child devices.  Anything
-else should be shifted out to an appropriate subsystem.
+I see ton of comments on this one, seems like there will be one more
+version?
 
-MFD is not Misc.
+And I fear merge conflicts if you modify drivers/leds/Makefile...
 
->  3 files changed, 1210 insertions(+)
->  create mode 100644 drivers/mfd/motorola-mdm.c
+Best regards,
+									Pavel
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
 
--- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+--PWfwoUCx3AFJRUBq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCXlZ6gQAKCRAw5/Bqldv6
+8n1kAJ0eHl7DmssrmBA95ietDxnHxPLc3gCgnoJOhR7lBDQxmSrvzu5d+xnLKVA=
+=yHGr
+-----END PGP SIGNATURE-----
+
+--PWfwoUCx3AFJRUBq--
