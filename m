@@ -6,37 +6,38 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 879A2C3F2D2
-	for <linux-serial@archiver.kernel.org>; Fri, 28 Feb 2020 13:44:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE89CC3F2CD
+	for <linux-serial@archiver.kernel.org>; Fri, 28 Feb 2020 13:46:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 673CF246AE
-	for <linux-serial@archiver.kernel.org>; Fri, 28 Feb 2020 13:44:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 99F6F246A8
+	for <linux-serial@archiver.kernel.org>; Fri, 28 Feb 2020 13:46:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726359AbgB1NoT (ORCPT
+        id S1726525AbgB1NqL (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 28 Feb 2020 08:44:19 -0500
-Received: from mailout1.hostsharing.net ([83.223.95.204]:59771 "EHLO
-        mailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726151AbgB1NoS (ORCPT
+        Fri, 28 Feb 2020 08:46:11 -0500
+Received: from mailout2.hostsharing.net ([83.223.78.233]:49307 "EHLO
+        mailout2.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726642AbgB1NqK (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 28 Feb 2020 08:44:18 -0500
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        Fri, 28 Feb 2020 08:46:10 -0500
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
-        by mailout1.hostsharing.net (Postfix) with ESMTPS id 3AC5D1003DBE8;
-        Fri, 28 Feb 2020 14:44:16 +0100 (CET)
+        by mailout2.hostsharing.net (Postfix) with ESMTPS id EE5AD1008CFF6;
+        Fri, 28 Feb 2020 14:46:08 +0100 (CET)
 Received: from localhost (unknown [87.130.102.138])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by h08.hostsharing.net (Postfix) with ESMTPSA id 07A9161249E8;
-        Fri, 28 Feb 2020 14:44:16 +0100 (CET)
-X-Mailbox-Line: From dd86460e20a8f979b7272a0bde73640312b902b1 Mon Sep 17 00:00:00 2001
-Message-Id: <dd86460e20a8f979b7272a0bde73640312b902b1.1582895077.git.lukas@wunner.de>
+        by h08.hostsharing.net (Postfix) with ESMTPSA id ACF8561249E8;
+        Fri, 28 Feb 2020 14:46:08 +0100 (CET)
+X-Mailbox-Line: From 65edffce4670a19e598015c03cbe46f1ffd93e43 Mon Sep 17 00:00:00 2001
+Message-Id: <65edffce4670a19e598015c03cbe46f1ffd93e43.1582895077.git.lukas@wunner.de>
 In-Reply-To: <cover.1582895077.git.lukas@wunner.de>
 References: <cover.1582895077.git.lukas@wunner.de>
 From:   Lukas Wunner <lukas@wunner.de>
-Date:   Fri, 28 Feb 2020 14:31:07 +0100
-Subject: [PATCH 7/8] serial: 8250_bcm2835aux: Support rs485 software emulation
+Date:   Fri, 28 Feb 2020 14:31:08 +0100
+Subject: [PATCH 8/8] serial: 8250: Support console on software emulated rs485
+ ports
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
         "Nicolas Saenz Julienne" <nsaenzjulienne@suse.de>
@@ -53,137 +54,76 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Amend 8250_bcm2835aux.c to support rs485 as introduced for 8250_omap.c
-by commit e490c9144cfa ("tty: Add software emulated RS485 support for
-8250").
+Commit e490c9144cfa ("tty: Add software emulated RS485 support for 8250")
+introduced support to use RTS as an rs485 Transmit Enable signal if data
+is transmitted through the tty layer.
 
-The bcm2835aux differs from omap chips by inverting the meaning of RTS
-in the MCR register:  If the bit is clear, RTS is high.  With omap, it's
-apparently the other way round.
+Console messages bypass the tty layer and instead are emitted via
+serial8250_console_write().  Amend that function to drive RTS as well,
+allowing for a console on rs485 ports.
 
-Moreover, omap achieves half-duplex mode by disabling the UART_IER_RDI
-interrupt and clearing the RX FIFO when TX stops.  This approach doesn't
-work on bcm2835aux because the UART_LSR_DR bit is set even when
-UART_IER_RDI is disabled.  Consequently, serial8250_handle_irq() invokes
-serial8250_rx_chars() to empty the FIFO and characters are received even
-though the user requested half-duplex.  Solve by disabling the receiver
-using the non-standard CNTL register.
+Note that serial8250_console_write() may be called concurrently to the
+tty layer accessing the port.  The two protect their accesses with the
+port lock, but serial8250_console_write() may find RTS still being
+asserted by the tty layer, in which case it shouldn't be deasserted
+after the console message has been printed.  Recognize such situations
+by checking the em485->tx_stopped flag.
 
-Cache that register in the driver's private data for performance.  Set
-the private data pointer before calling serial8250_register_8250_port()
-to prevent a null pointer deref in case one of the rs485 callbacks is
-invoked immediately after port registration.
+If a delay_rts_before_send or delay_rts_after_send has been specified,
+serial8250_console_write() busy-waits for its duration.  Optimizations
+for those wait times are conceivable:  E.g. if RTS is already asserted,
+we could check whether em485->start_tx_timer is active and wait only
+for the remaining expire time.  But this would require calling into
+the hrtimer infrastructure, which involves acquiring locks and
+potentially reprogramming timer hardware.  Such operations seem too
+risky in the context of console printout, which needs to work even when
+the kernel has crashed and emits a BUG splat.  So I've gone with a
+simplistic solution which just always waits for the full delay.
 
 Signed-off-by: Lukas Wunner <lukas@wunner.de>
 Cc: Matwey V. Kornilov <matwey@sai.msu.ru>
 ---
- drivers/tty/serial/8250/8250_bcm2835aux.c | 62 ++++++++++++++++++++++-
- 1 file changed, 60 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_port.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
-index 5cc03bf24f85..12d03e678295 100644
---- a/drivers/tty/serial/8250/8250_bcm2835aux.c
-+++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
-@@ -6,6 +6,10 @@
-  *
-  * Based on 8250_lpc18xx.c:
-  * Copyright (C) 2015 Joachim Eastwood <manabian@gmail.com>
-+ *
-+ * The bcm2835aux is capable of RTS auto flow-control, but this driver doesn't
-+ * take advantage of it yet.  When adding support, be sure not to enable it
-+ * simultaneously to rs485.
-  */
- 
- #include <linux/clk.h>
-@@ -16,16 +20,64 @@
- 
- #include "8250.h"
- 
-+#define BCM2835_AUX_UART_CNTL		8
-+#define BCM2835_AUX_UART_CNTL_RXEN	0x01 /* Receiver enable */
-+#define BCM2835_AUX_UART_CNTL_TXEN	0x02 /* Transmitter enable */
-+#define BCM2835_AUX_UART_CNTL_AUTORTS	0x04 /* RTS set by RX fill level */
-+#define BCM2835_AUX_UART_CNTL_AUTOCTS	0x08 /* CTS stops transmitter */
-+#define BCM2835_AUX_UART_CNTL_RTS3	0x00 /* RTS set until 3 chars left */
-+#define BCM2835_AUX_UART_CNTL_RTS2	0x10 /* RTS set until 2 chars left */
-+#define BCM2835_AUX_UART_CNTL_RTS1	0x20 /* RTS set until 1 chars left */
-+#define BCM2835_AUX_UART_CNTL_RTS4	0x30 /* RTS set until 4 chars left */
-+#define BCM2835_AUX_UART_CNTL_RTSINV	0x40 /* Invert auto RTS polarity */
-+#define BCM2835_AUX_UART_CNTL_CTSINV	0x80 /* Invert auto CTS polarity */
-+
- /**
-  * struct bcm2835aux_data - driver private data of BCM2835 auxiliary UART
-  * @clk: clock producer of the port's uartclk
-  * @line: index of the port's serial8250_ports[] entry
-+ * @cntl: cached copy of CNTL register
-  */
- struct bcm2835aux_data {
- 	struct clk *clk;
- 	int line;
-+	u32 cntl;
- };
- 
-+static void bcm2835aux_rs485_start_tx(struct uart_8250_port *up)
-+{
-+	if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX)) {
-+		struct bcm2835aux_data *data = dev_get_drvdata(up->port.dev);
-+
-+		data->cntl &= ~BCM2835_AUX_UART_CNTL_RXEN;
-+		serial_out(up, BCM2835_AUX_UART_CNTL, data->cntl);
-+	}
-+
-+	/*
-+	 * On the bcm2835aux, the MCR register contains no other
-+	 * flags besides RTS.  So no need for a read-modify-write.
-+	 */
-+	if (up->port.rs485.flags & SER_RS485_RTS_ON_SEND)
-+		serial8250_out_MCR(up, 0);
-+	else
-+		serial8250_out_MCR(up, UART_MCR_RTS);
-+}
-+
-+static void bcm2835aux_rs485_stop_tx(struct uart_8250_port *up)
-+{
-+	if (up->port.rs485.flags & SER_RS485_RTS_AFTER_SEND)
-+		serial8250_out_MCR(up, 0);
-+	else
-+		serial8250_out_MCR(up, UART_MCR_RTS);
-+
-+	if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX)) {
-+		struct bcm2835aux_data *data = dev_get_drvdata(up->port.dev);
-+
-+		data->cntl |= BCM2835_AUX_UART_CNTL_RXEN;
-+		serial_out(up, BCM2835_AUX_UART_CNTL, data->cntl);
-+	}
-+}
-+
- static int bcm2835aux_serial_probe(struct platform_device *pdev)
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 8e8cca690bf9..0879bb8855cf 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -3204,6 +3204,7 @@ static void serial8250_console_restore(struct uart_8250_port *up)
+ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+ 			      unsigned int count)
  {
- 	struct uart_8250_port up = { };
-@@ -47,6 +99,14 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
- 	up.port.fifosize = 8;
- 	up.port.flags = UPF_SHARE_IRQ | UPF_FIXED_PORT | UPF_FIXED_TYPE |
- 			UPF_SKIP_TEST | UPF_IOREMAP;
-+	up.port.rs485_config = serial8250_em485_config;
-+	up.rs485_start_tx = bcm2835aux_rs485_start_tx;
-+	up.rs485_stop_tx = bcm2835aux_rs485_stop_tx;
-+
-+	/* initialize cached copy with power-on reset value */
-+	data->cntl = BCM2835_AUX_UART_CNTL_RXEN | BCM2835_AUX_UART_CNTL_TXEN;
-+
-+	platform_set_drvdata(pdev, data);
- 
- 	/* get the clock - this also enables the HW */
- 	data->clk = devm_clk_get(&pdev->dev, NULL);
-@@ -102,8 +162,6 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
++	struct uart_8250_em485 *em485 = up->em485;
+ 	struct uart_port *port = &up->port;
+ 	unsigned long flags;
+ 	unsigned int ier;
+@@ -3234,6 +3235,12 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+ 		up->canary = 0;
  	}
- 	data->line = ret;
  
--	platform_set_drvdata(pdev, data);
--
- 	return 0;
++	if (em485) {
++		if (em485->tx_stopped)
++			up->rs485_start_tx(up);
++		mdelay(port->rs485.delay_rts_before_send);
++	}
++
+ 	uart_console_write(port, s, count, serial8250_console_putchar);
  
- dis_clk:
+ 	/*
+@@ -3243,6 +3250,12 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+ 	wait_for_xmitr(up, BOTH_EMPTY);
+ 	serial_port_out(port, UART_IER, ier);
+ 
++	if (em485) {
++		mdelay(port->rs485.delay_rts_before_send);
++		if (em485->tx_stopped)
++			up->rs485_stop_tx(up);
++	}
++
+ 	/*
+ 	 *	The receive handling will happen properly because the
+ 	 *	receive ready bit will still be set; it is not cleared
 -- 
 2.24.0
 
