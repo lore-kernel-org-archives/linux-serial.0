@@ -2,135 +2,115 @@ Return-Path: <SRS0=j4md=4Q=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7BADC3F2D2
-	for <linux-serial@archiver.kernel.org>; Fri, 28 Feb 2020 11:46:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D48E7C3F2D2
+	for <linux-serial@archiver.kernel.org>; Fri, 28 Feb 2020 11:54:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B9E33246AA
-	for <linux-serial@archiver.kernel.org>; Fri, 28 Feb 2020 11:46:12 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=walle.cc header.i=@walle.cc header.b="Kd02hTbE"
+	by mail.kernel.org (Postfix) with ESMTP id B5C57246AF
+	for <linux-serial@archiver.kernel.org>; Fri, 28 Feb 2020 11:54:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725730AbgB1LqI (ORCPT
+        id S1725827AbgB1LyJ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 28 Feb 2020 06:46:08 -0500
-Received: from ssl.serverraum.org ([176.9.125.105]:39989 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725536AbgB1LqI (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 28 Feb 2020 06:46:08 -0500
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 077EF23EC2;
-        Fri, 28 Feb 2020 12:46:01 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1582890365;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gSy0XB2/CLQYbsHikr4Odo8LY3KqR1/kjbGBzsGZ6ic=;
-        b=Kd02hTbELCQ1B3UuerkL4Fc7b2vovsKQPdSO+4+x6U6aQrJ160U9Cwu+LP/T0ECtCy7M8Z
-        efZDHvUU6S+hoLWqWkcaZxzDQu+dawGFfW0f7VuUOXoAYP8G6jIdloAu7B8slL0xdRyvXF
-        8Eje0iN6yqyS0otRzEpRo7ob+v+7o3M=
+        Fri, 28 Feb 2020 06:54:09 -0500
+Received: from mx2.suse.de ([195.135.220.15]:34700 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725877AbgB1LyJ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 28 Feb 2020 06:54:09 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 247C8AFF0;
+        Fri, 28 Feb 2020 11:54:07 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 1/2] vt: selection, push console lock down
+Date:   Fri, 28 Feb 2020 12:54:05 +0100
+Message-Id: <20200228115406.5735-1-jslaby@suse.cz>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Fri, 28 Feb 2020 12:46:01 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Li Yang <leoyang.li@nxp.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, linux-kernel@vger.kernel.org,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Shawn Guo <shawnguo@kernel.org>, Jiri Slaby <jslaby@suse.com>,
-        Peng Fan <peng.fan@nxp.com>,
-        Vabhav Sharma <vabhav.sharma@nxp.com>
-Subject: Re: [PATCH v2 3/9] tty: serial: fsl_lpuart: handle EPROBE_DEFER for
- DMA
-In-Reply-To: <CAL_JsqKMNFFG5H4gPQwRdcTpfHynqZWo2A2db-oL7EmvTNqNkQ@mail.gmail.com>
-References: <20200221174754.5295-1-michael@walle.cc>
- <20200221174754.5295-4-michael@walle.cc>
- <CAL_JsqL8QGKARtRAfjCMyk4Pp7EWhFMV8JQpveHoJ2OyH5kBPA@mail.gmail.com>
- <CADRPPNR1n1sviJnhq_zuUFJcMYqsVKy0O7NOF1pxF_4VH+dasg@mail.gmail.com>
- <CAL_JsqKMNFFG5H4gPQwRdcTpfHynqZWo2A2db-oL7EmvTNqNkQ@mail.gmail.com>
-Message-ID: <639a1df72fbeda77436b282a99f17995@walle.cc>
-X-Sender: michael@walle.cc
-User-Agent: Roundcube Webmail/1.3.10
-X-Spamd-Bar: +
-X-Rspamd-Server: web
-X-Rspamd-Queue-Id: 077EF23EC2
-X-Spamd-Result: default: False [1.40 / 15.00];
-         FROM_HAS_DN(0.00)[];
-         TO_DN_SOME(0.00)[];
-         TO_MATCH_ENVRCPT_ALL(0.00)[];
-         TAGGED_RCPT(0.00)[dt];
-         MIME_GOOD(-0.10)[text/plain];
-         DKIM_SIGNED(0.00)[];
-         RCPT_COUNT_TWELVE(0.00)[12];
-         RCVD_COUNT_ZERO(0.00)[0];
-         FROM_EQ_ENVFROM(0.00)[];
-         MIME_TRACE(0.00)[0:+];
-         MID_RHS_MATCH_FROM(0.00)[];
-         SUSPICIOUS_RECIPS(1.50)[]
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Rob, Hi Leo,
+We need to nest the console lock in sel_lock, so we have to push it down
+a bit. Fortunately, the callers of set_selection_* just lock the console
+lock around the function call. So moving it down is easy.
 
-Am 2020-02-28 00:03, schrieb Rob Herring:
-> On Thu, Feb 27, 2020 at 4:49 PM Li Yang <leoyang.li@nxp.com> wrote:
->> 
->> On Thu, Feb 27, 2020 at 4:35 PM Rob Herring <robh+dt@kernel.org> 
->> wrote:
->> >
->> > On Fri, Feb 21, 2020 at 11:48 AM Michael Walle <michael@walle.cc> wrote:
->> > >
->> > > The DMA channel might not be available at the first probe time. This is
->> > > esp. the case if the DMA controller has an IOMMU mapping.
->> > >
->> > > Use the new dma_request_chan() API and handle EPROBE_DEFER errors. Also
->> > > reorder the code a bit, so that we don't prepare the whole UART just to
->> > > determine that the DMA channel is not ready yet and we have to undo all
->> > > the stuff. Try to map the DMA channels earlier.
->> >
->> > Changing this means you never probe successfully if you boot a kernel
->> > with the DMA driver disabled (or it's IOMMU disabled). Some other
->> > drivers request DMA in open() and can work either way.
+In the next patch, we switch the order.
 
-Oh, I see.
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
+ drivers/staging/speakup/selection.c |  2 --
+ drivers/tty/vt/selection.c          | 13 ++++++++++++-
+ drivers/tty/vt/vt.c                 |  2 --
+ 3 files changed, 12 insertions(+), 5 deletions(-)
 
->> We got this exact issue previously with another driver.  When the
-
-What driver is it? I've been working on the i2c-mxs.c driver which has
-the same problem. Ie. its not working with DMA when the IOMMU is 
-enabled.
-Now that I've learned that dma_request_chan() will return EPROBE_DEFER
-if the actual DMA driver is not available, I don't think there is any
-trick like this there. There is no function which would be called late
-except you'd do something like on the first master_xfer() try to request
-the DMA channels. But I don't think that would be the way to go.
-
--michael
-
->> required DMA driver is disabled, the DMA framework cannot figure out
->> this situation and keeps returning EPROBE_DEFER.  I'm wondering if we
->> should update the DMA framework to use your deferred probe timeout
->> mechanism.  Is it still only used for debug purpose?
-> 
-> It's undergoing some rework ATM to not just be for debug. However,
-> it's not really going to help you if you care about the console
-> because waiting for the timeout will be too late to register the
-> console.
+diff --git a/drivers/staging/speakup/selection.c b/drivers/staging/speakup/selection.c
+index a8b4d0c5ab7e..032f3264fba1 100644
+--- a/drivers/staging/speakup/selection.c
++++ b/drivers/staging/speakup/selection.c
+@@ -51,9 +51,7 @@ static void __speakup_set_selection(struct work_struct *work)
+ 		goto unref;
+ 	}
+ 
+-	console_lock();
+ 	set_selection_kernel(&sel, tty);
+-	console_unlock();
+ 
+ unref:
+ 	tty_kref_put(tty);
+diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
+index 714992693974..5b0b897396eb 100644
+--- a/drivers/tty/vt/selection.c
++++ b/drivers/tty/vt/selection.c
+@@ -186,7 +186,7 @@ int set_selection_user(const struct tiocl_selection __user *sel,
+ 	return set_selection_kernel(&v, tty);
+ }
+ 
+-int set_selection_kernel(struct tiocl_selection *v, struct tty_struct *tty)
++static int __set_selection_kernel(struct tiocl_selection *v, struct tty_struct *tty)
+ {
+ 	struct vc_data *vc = vc_cons[fg_console].d;
+ 	int new_sel_start, new_sel_end, spc;
+@@ -348,6 +348,17 @@ int set_selection_kernel(struct tiocl_selection *v, struct tty_struct *tty)
+ 	mutex_unlock(&sel_lock);
+ 	return ret;
+ }
++
++int set_selection_kernel(struct tiocl_selection *v, struct tty_struct *tty)
++{
++	int ret;
++
++	console_lock();
++	ret = __set_selection_kernel(v, tty);
++	console_unlock();
++
++	return ret;
++}
+ EXPORT_SYMBOL_GPL(set_selection_kernel);
+ 
+ /* Insert the contents of the selection buffer into the
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index 8fa059ec6cc8..c4d75edde923 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -3047,10 +3047,8 @@ int tioclinux(struct tty_struct *tty, unsigned long arg)
+ 	switch (type)
+ 	{
+ 		case TIOCL_SETSEL:
+-			console_lock();
+ 			ret = set_selection_user((struct tiocl_selection
+ 						 __user *)(p+1), tty);
+-			console_unlock();
+ 			break;
+ 		case TIOCL_PASTESEL:
+ 			ret = paste_selection(tty);
+-- 
+2.25.1
 
