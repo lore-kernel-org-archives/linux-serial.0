@@ -2,115 +2,167 @@ Return-Path: <SRS0=j4md=4Q=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D7BC3F2CD
-	for <linux-serial@archiver.kernel.org>; Fri, 28 Feb 2020 21:54:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B90FC3F2D2
+	for <linux-serial@archiver.kernel.org>; Fri, 28 Feb 2020 22:55:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 08F0A2469F
-	for <linux-serial@archiver.kernel.org>; Fri, 28 Feb 2020 21:54:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2A2E1246A8
+	for <linux-serial@archiver.kernel.org>; Fri, 28 Feb 2020 22:55:00 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="oX7wRqcT"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726359AbgB1VyB (ORCPT
+        id S1726981AbgB1Wy7 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 28 Feb 2020 16:54:01 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:39130 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725957AbgB1VyB (ORCPT
+        Fri, 28 Feb 2020 17:54:59 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:42642 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726901AbgB1Wy7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 28 Feb 2020 16:54:01 -0500
-Received: by mail-ot1-f67.google.com with SMTP id x97so4013725ota.6;
-        Fri, 28 Feb 2020 13:54:00 -0800 (PST)
+        Fri, 28 Feb 2020 17:54:59 -0500
+Received: by mail-pl1-f195.google.com with SMTP id u3so1787557plr.9
+        for <linux-serial@vger.kernel.org>; Fri, 28 Feb 2020 14:54:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:content-transfer-encoding:in-reply-to:references
+         :subject:from:cc:to:date:message-id:user-agent;
+        bh=87BULeEYB2lL4TfocY5S2e+F/AYKqoHxEUVofvA6VhY=;
+        b=oX7wRqcTGMveG8JiINpHVRmb/6pf2xYLnk4uFEqgtKCI3Th1AT5Tv/DuM6BF5vT7qx
+         St6Dh2E5H08W0EO6cZ2NlLKemh+kF0dUNrWB7omHkQoRJQuS1J3i3cBAskmWyNitGLAj
+         TGr+1CEG8QI2iKx2Hlj5+RljTaGpUwzWf/Xr0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pDVNEc+emqEYhHMEI0BkQh8VuJ0zUAhAe+A2963SxX0=;
-        b=BhqHVZ2BqQuaGPgq01e0uENA0LzH4IW4LbLEg18hF44ZhNSsjptFlWRf7mdSTrv2B5
-         nyhE4QjOIO0Zi3bv7qvmF1y2mXU94UT2CkNn34mDw92FK1xO2hMc0OZYcrY/AvbuHF3O
-         ytYJh3L3r4Zi+tADmEkHsCAJLiJ3+t3FHLMACuv45BEgMNUqPJ84ELsgwcprDfbgw+BF
-         ZAjZFig4VPTAMbZf6PIp9O5gEYbnLHxo1iaxVJg7SbLxcGegBHLwE6PtwtxzMnRe9Goj
-         0edfYjMIOe9+FRJVdnER342QK7GU0SbCekf1vxlYsLn6GvpJuJe35hz9jr4pGS+/2iNl
-         gKdw==
-X-Gm-Message-State: APjAAAXsFRSHRklY3pV+F9u7njfYAh/ObPNHX+JG6RZffDRJ4yRx9BTn
-        N9cTgAT49QolC9W0Wbe82iUYtiYXITA=
-X-Google-Smtp-Source: APXvYqwcD8KegygDg2uXmfGc0b5s3g2iOWW8QB+yGdhZqZT2cbFUJgwyKh2XZap9Gmfhgkl0wuZRrg==
-X-Received: by 2002:a9d:7593:: with SMTP id s19mr4713096otk.219.1582926840159;
-        Fri, 28 Feb 2020 13:54:00 -0800 (PST)
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com. [209.85.210.51])
-        by smtp.gmail.com with ESMTPSA id 17sm2358741oth.7.2020.02.28.13.53.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Feb 2020 13:53:59 -0800 (PST)
-Received: by mail-ot1-f51.google.com with SMTP id x97so4013634ota.6;
-        Fri, 28 Feb 2020 13:53:59 -0800 (PST)
-X-Received: by 2002:a05:6830:1c8:: with SMTP id r8mr5033412ota.63.1582926839216;
- Fri, 28 Feb 2020 13:53:59 -0800 (PST)
+        h=x-gm-message-state:mime-version:content-transfer-encoding
+         :in-reply-to:references:subject:from:cc:to:date:message-id
+         :user-agent;
+        bh=87BULeEYB2lL4TfocY5S2e+F/AYKqoHxEUVofvA6VhY=;
+        b=QSst/qVM0ngS+Wnuu9uxuk7CDvrhhTjzCUOpfLQCyZOLZYik6yPRMDTM87/b7x9xSj
+         67v0oVCA6Ce6iuX3p2vjFmkdYuR4DAPGDF5dEL6HkOIb2PZYmECTioph7EfRghVktrlX
+         B0TJFQ4N/Uer09e+HMmbzBcxSJpsc1DwvJZLCRAx9qb9knSkdYjgg64H568UTXvnNdQo
+         fQZ9apXeRdoevWHMEo7LuRaJc6U26J6A+ecuoOtLw4bfr80cgOmhzHgVr/jssRiy8cIF
+         7v4/o3MqIOfZ0Sbt03ayZCb9VGbkG9U2QtWrrWKao6csuuLnwY1j3Q2rHdPsRMer74Jf
+         9SNQ==
+X-Gm-Message-State: APjAAAWFroQwq8kAHV88GPuaRXoB3kKxeJ7blQeUfVx9SGh3tn0TLn8p
+        91uc8QFB9negm/4IhPL5p55HqA==
+X-Google-Smtp-Source: APXvYqwvhiMPwe/ARw7z7n7R0uXS2yUcAI77gqX3lHGqS7sf4PydDhdUE+b/MxUF0uzPEyQ8qZGwcg==
+X-Received: by 2002:a17:902:aa81:: with SMTP id d1mr6463124plr.16.1582930498537;
+        Fri, 28 Feb 2020 14:54:58 -0800 (PST)
+Received: from chromium.org ([2620:15c:202:1:fa53:7765:582b:82b9])
+        by smtp.gmail.com with ESMTPSA id i11sm3491964pjg.0.2020.02.28.14.54.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Feb 2020 14:54:57 -0800 (PST)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20200221174754.5295-1-michael@walle.cc> <20200221174754.5295-4-michael@walle.cc>
- <CAL_JsqL8QGKARtRAfjCMyk4Pp7EWhFMV8JQpveHoJ2OyH5kBPA@mail.gmail.com>
- <CADRPPNR1n1sviJnhq_zuUFJcMYqsVKy0O7NOF1pxF_4VH+dasg@mail.gmail.com>
- <CAL_JsqKMNFFG5H4gPQwRdcTpfHynqZWo2A2db-oL7EmvTNqNkQ@mail.gmail.com>
- <639a1df72fbeda77436b282a99f17995@walle.cc> <24b9a657a65f75a4f4f10baa17561451@walle.cc>
-In-Reply-To: <24b9a657a65f75a4f4f10baa17561451@walle.cc>
-From:   Li Yang <leoyang.li@nxp.com>
-Date:   Fri, 28 Feb 2020 15:53:47 -0600
-X-Gmail-Original-Message-ID: <CADRPPNQong1bD83ncHTj1OHip9LEV9PFOnPN3Jo00aZT056eiw@mail.gmail.com>
-Message-ID: <CADRPPNQong1bD83ncHTj1OHip9LEV9PFOnPN3Jo00aZT056eiw@mail.gmail.com>
-Subject: Re: [PATCH v2 3/9] tty: serial: fsl_lpuart: handle EPROBE_DEFER for DMA
-To:     Michael Walle <michael@walle.cc>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Shawn Guo <shawnguo@kernel.org>, Jiri Slaby <jslaby@suse.com>,
-        Peng Fan <peng.fan@nxp.com>,
-        Vabhav Sharma <vabhav.sharma@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1582638862-9344-2-git-send-email-skakit@codeaurora.org>
+References: <1582638862-9344-1-git-send-email-skakit@codeaurora.org> <1582638862-9344-2-git-send-email-skakit@codeaurora.org>
+Subject: Re: [PATCH V2 1/2] tty: serial: qcom_geni_serial: Allocate port->rx_fifo buffer in probe
+From:   Stephen Boyd <swboyd@chromium.org>
+Cc:     mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, akashast@codeaurora.org,
+        rojay@codeaurora.org, msavaliy@qti.qualcomm.com,
+        satya priya <skakit@codeaurora.org>
+To:     gregkh@linuxfoundation.org, satya priya <skakit@codeaurora.org>
+Date:   Fri, 28 Feb 2020 14:54:56 -0800
+Message-ID: <158293049615.112031.13967218907878863371@swboyd.mtv.corp.google.com>
+User-Agent: alot/0.9
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Feb 28, 2020 at 3:51 PM Michael Walle <michael@walle.cc> wrote:
->
-> Am 2020-02-28 12:46, schrieb Michael Walle:
-> > Hi Rob, Hi Leo,
-> >
-> > Am 2020-02-28 00:03, schrieb Rob Herring:
-> >> On Thu, Feb 27, 2020 at 4:49 PM Li Yang <leoyang.li@nxp.com> wrote:
-> >>>
-> >>> On Thu, Feb 27, 2020 at 4:35 PM Rob Herring <robh+dt@kernel.org>
-> >>> wrote:
-> >>> >
-> >>> > On Fri, Feb 21, 2020 at 11:48 AM Michael Walle <michael@walle.cc> wrote:
-> >>> > >
-> >>> > > The DMA channel might not be available at the first probe time. This is
-> >>> > > esp. the case if the DMA controller has an IOMMU mapping.
-> >>> > >
-> >>> > > Use the new dma_request_chan() API and handle EPROBE_DEFER errors. Also
-> >>> > > reorder the code a bit, so that we don't prepare the whole UART just to
-> >>> > > determine that the DMA channel is not ready yet and we have to undo all
-> >>> > > the stuff. Try to map the DMA channels earlier.
-> >>> >
-> >>> > Changing this means you never probe successfully if you boot a kernel
-> >>> > with the DMA driver disabled (or it's IOMMU disabled). Some other
-> >>> > drivers request DMA in open() and can work either way.
-> >
-> > Oh, I see.
-> >
-> >>> We got this exact issue previously with another driver.  When the
-> >
-> > What driver is it? I've been working on the i2c-mxs.c driver which has
->
-> whoops, i2c-imx.c, not i2c-mxs.c
+Quoting satya priya (2020-02-25 05:54:21)
+> To fix the RX cancel command failure, rx_fifo buffer needs to be
+> flushed in stop_rx() by calling handle_rx().
+>=20
+> If set_termios is called before startup, by this time memory is not
+> allocated to port->rx_fifo buffer, which leads to a NULL pointer
+> dereference.
+>=20
+> To avoid this NULL pointer dereference allocate memory to port->rx_fifo
+> in probe itself.
+>=20
+> Signed-off-by: satya priya <skakit@codeaurora.org>
 
-Ya.  Same one.  I have added CONFIG_FSL_EDMA into the arm64/defconfig
-as a workaround.
+Please give me reported-by credit.
 
-Regards,
-Leo
+Reported-by: Stephen Boyd <swboyd@chromium.org>
+
+> ---
+>  drivers/tty/serial/qcom_geni_serial.c | 13 +++++++------
+>  1 file changed, 7 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/q=
+com_geni_serial.c
+> index 191abb1..d2a909c 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -858,12 +858,6 @@ static int qcom_geni_serial_port_setup(struct uart_p=
+ort *uport)
+>                                                 false, false, true);
+>         geni_se_init(&port->se, UART_RX_WM, port->rx_fifo_depth - 2);
+>         geni_se_select_mode(&port->se, GENI_SE_FIFO);
+> -       if (!uart_console(uport)) {
+> -               port->rx_fifo =3D devm_kcalloc(uport->dev,
+> -                       port->rx_fifo_depth, sizeof(u32), GFP_KERNEL);
+> -               if (!port->rx_fifo)
+> -                       return -ENOMEM;
+> -       }
+>         port->setup =3D true;
+> =20
+>         return 0;
+> @@ -1274,6 +1268,13 @@ static int qcom_geni_serial_probe(struct platform_=
+device *pdev)
+>         port->rx_fifo_depth =3D DEF_FIFO_DEPTH_WORDS;
+>         port->tx_fifo_width =3D DEF_FIFO_WIDTH_BITS;
+> =20
+> +       if (!console) {
+> +               port->rx_fifo =3D devm_kcalloc(uport->dev,
+> +                       port->rx_fifo_depth, sizeof(u32), GFP_KERNEL);
+> +               if (!port->rx_fifo)
+> +                       return -ENOMEM;
+> +       }
+
+Is there any reason the rx_fifo pointer is a u32 instead of a u8 or void
+pointer? ioread32_rep() doesn't care what the pointer is and then we
+have to cast it, so it seems like we should do something like below too.
+
+-----8<-----
+
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qco=
+m_geni_serial.c
+index 191abb18fc2a..b4875dfef6aa 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -113,7 +113,7 @@ struct qcom_geni_serial_port {
+ 	unsigned int baud;
+ 	unsigned int tx_bytes_pw;
+ 	unsigned int rx_bytes_pw;
+-	u32 *rx_fifo;
++	u8 *rx_fifo;
+ 	u32 loopback;
+ 	bool brk;
+=20
+@@ -504,7 +504,6 @@ static int handle_rx_console(struct uart_port *uport, u=
+32 bytes, bool drop)
+=20
+ static int handle_rx_uart(struct uart_port *uport, u32 bytes, bool drop)
+ {
+-	unsigned char *buf;
+ 	struct tty_port *tport;
+ 	struct qcom_geni_serial_port *port =3D to_dev_port(uport, uport);
+ 	u32 num_bytes_pw =3D port->tx_fifo_width / BITS_PER_BYTE;
+@@ -516,8 +515,7 @@ static int handle_rx_uart(struct uart_port *uport, u32 =
+bytes, bool drop)
+ 	if (drop)
+ 		return 0;
+=20
+-	buf =3D (unsigned char *)port->rx_fifo;
+-	ret =3D tty_insert_flip_string(tport, buf, bytes);
++	ret =3D tty_insert_flip_string(tport, port->rx_fifo, bytes);
+ 	if (ret !=3D bytes) {
+ 		dev_err(uport->dev, "%s:Unable to push data ret %d_bytes %d\n",
+ 				__func__, ret, bytes);
