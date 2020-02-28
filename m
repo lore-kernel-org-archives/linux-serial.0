@@ -2,128 +2,86 @@ Return-Path: <SRS0=j4md=4Q=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE89CC3F2CD
-	for <linux-serial@archiver.kernel.org>; Fri, 28 Feb 2020 13:46:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA14AC3F2CD
+	for <linux-serial@archiver.kernel.org>; Fri, 28 Feb 2020 16:37:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 99F6F246A8
-	for <linux-serial@archiver.kernel.org>; Fri, 28 Feb 2020 13:46:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7837F20732
+	for <linux-serial@archiver.kernel.org>; Fri, 28 Feb 2020 16:37:11 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="J3yZmrrV"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726525AbgB1NqL (ORCPT
+        id S1725886AbgB1QhL (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 28 Feb 2020 08:46:11 -0500
-Received: from mailout2.hostsharing.net ([83.223.78.233]:49307 "EHLO
-        mailout2.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726642AbgB1NqK (ORCPT
+        Fri, 28 Feb 2020 11:37:11 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:32942 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725827AbgB1QhL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 28 Feb 2020 08:46:10 -0500
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
-        by mailout2.hostsharing.net (Postfix) with ESMTPS id EE5AD1008CFF6;
-        Fri, 28 Feb 2020 14:46:08 +0100 (CET)
-Received: from localhost (unknown [87.130.102.138])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by h08.hostsharing.net (Postfix) with ESMTPSA id ACF8561249E8;
-        Fri, 28 Feb 2020 14:46:08 +0100 (CET)
-X-Mailbox-Line: From 65edffce4670a19e598015c03cbe46f1ffd93e43 Mon Sep 17 00:00:00 2001
-Message-Id: <65edffce4670a19e598015c03cbe46f1ffd93e43.1582895077.git.lukas@wunner.de>
-In-Reply-To: <cover.1582895077.git.lukas@wunner.de>
-References: <cover.1582895077.git.lukas@wunner.de>
-From:   Lukas Wunner <lukas@wunner.de>
-Date:   Fri, 28 Feb 2020 14:31:08 +0100
-Subject: [PATCH 8/8] serial: 8250: Support console on software emulated rs485
- ports
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        "Nicolas Saenz Julienne" <nsaenzjulienne@suse.de>
-Cc:     "Matwey V. Kornilov" <matwey@sai.msu.ru>,
-        Heiko Schocher <hs@denx.de>,
-        Giulio Benetti <giulio.benetti@micronovasrl.com>,
-        Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>,
-        Stefan Wahren <wahrenst@gmx.net>,
-        Matthias Brugger <mbrugger@suse.com>,
-        Martin Sperl <kernel@martin.sperl.org>,
-        linux-serial@vger.kernel.org, linux-rpi-kernel@lists.infradead.org
+        Fri, 28 Feb 2020 11:37:11 -0500
+Received: by mail-pl1-f193.google.com with SMTP id ay11so1455610plb.0
+        for <linux-serial@vger.kernel.org>; Fri, 28 Feb 2020 08:37:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:content-transfer-encoding:in-reply-to:references
+         :subject:from:cc:to:date:message-id:user-agent;
+        bh=/NFEg+xGYEe7/uJwrQbwOpUOv1hOItyafkcLvnfAmT0=;
+        b=J3yZmrrV3Yq1gwNk+dVNMYetlczt9oMqD4SHb1amr3kSZc/XwoiwOLXQzlyY/MXsby
+         /N+/ZcDG/Uqs0Tg+hSKcFaBbSKRNKHRUIcDKfSK21ozoIaRZ6WKb4mRL3+hCdG0/mQQH
+         4LYxnz97NwzMaCMuj3qYgTgWjSBji06ocb/qo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:content-transfer-encoding
+         :in-reply-to:references:subject:from:cc:to:date:message-id
+         :user-agent;
+        bh=/NFEg+xGYEe7/uJwrQbwOpUOv1hOItyafkcLvnfAmT0=;
+        b=byav1YlcDruS6oC2N8+CkpUytHhx66cniyBNrjWcyNUvMJEYWC3YntmapcMRy0c3KV
+         PCSjEKn4jT0kjsuhlQXVptoGp7iE3eOWdLUktV8K6+y5hPjOulowEzZiuK+VYXqNWD0E
+         UPxBaEvRrbnX0Z9CYEUe1NEwfgj3LtN7NmvkiDBGkV8e3KRAQlzv6qVJrIJxOSpAqQnl
+         M0BM0hKQDDTXq7mNP+7b+8ep+vx/SeU2eNYnmB7MUNREE6xmtjHVSbppuF/Ngsx/PPRN
+         gTSf6+cRX79SzhafKaIsOMK8SxG9oxjzFc49J/UXXUAFZE02478NsWCMSxfRjkpaDmZD
+         joRQ==
+X-Gm-Message-State: APjAAAU2TISEUff6PC/DnmjpEh+iSXoQ7Fmmx1yFTPsYDyoMfnOup3oX
+        zvTYY+crbLs+yBQ9FWFVbc+LxQ==
+X-Google-Smtp-Source: APXvYqyRZ6+r8SmVVFg3L/kcl5C/KHZlU9NEagz8JNIOMLLjgjEOWOnX/B92lp/J+hoQT9XmkDZg8w==
+X-Received: by 2002:a17:90a:cb96:: with SMTP id a22mr5583966pju.96.1582907829843;
+        Fri, 28 Feb 2020 08:37:09 -0800 (PST)
+Received: from chromium.org ([2620:15c:202:1:fa53:7765:582b:82b9])
+        by smtp.gmail.com with ESMTPSA id w25sm11402209pfi.106.2020.02.28.08.37.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Feb 2020 08:37:09 -0800 (PST)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200228124810.31543-1-rojay@codeaurora.org>
+References: <20200228124810.31543-1-rojay@codeaurora.org>
+Subject: Re: [PATCH V3] tty: serial: qcom_geni_serial: Support pin swapping
+From:   Stephen Boyd <swboyd@chromium.org>
+Cc:     mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, akashast@codeaurora.org,
+        skakit@codeaurora.org, msavaliy@qti.qualcomm.com,
+        Roja Rani Yarubandi <rojay@codeaurora.org>
+To:     Roja Rani Yarubandi <rojay@codeaurora.org>,
+        gregkh@linuxfoundation.org
+Date:   Fri, 28 Feb 2020 08:37:07 -0800
+Message-ID: <158290782779.4688.4351067333155148519@swboyd.mtv.corp.google.com>
+User-Agent: alot/0.9
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Commit e490c9144cfa ("tty: Add software emulated RS485 support for 8250")
-introduced support to use RTS as an rs485 Transmit Enable signal if data
-is transmitted through the tty layer.
+Quoting Roja Rani Yarubandi (2020-02-28 04:48:10)
+> Add capability to supoort RX-TX, CTS-RTS pins swap in HW.
+>=20
+> Configure UART_IO_MACRO_CTRL register accordingly if RX-TX pair
+> or CTS-RTS pair or both pairs swapped.
+>=20
+> Signed-off-by: Roja Rani Yarubandi <rojay@codeaurora.org>
+> ---
 
-Console messages bypass the tty layer and instead are emitted via
-serial8250_console_write().  Amend that function to drive RTS as well,
-allowing for a console on rs485 ports.
-
-Note that serial8250_console_write() may be called concurrently to the
-tty layer accessing the port.  The two protect their accesses with the
-port lock, but serial8250_console_write() may find RTS still being
-asserted by the tty layer, in which case it shouldn't be deasserted
-after the console message has been printed.  Recognize such situations
-by checking the em485->tx_stopped flag.
-
-If a delay_rts_before_send or delay_rts_after_send has been specified,
-serial8250_console_write() busy-waits for its duration.  Optimizations
-for those wait times are conceivable:  E.g. if RTS is already asserted,
-we could check whether em485->start_tx_timer is active and wait only
-for the remaining expire time.  But this would require calling into
-the hrtimer infrastructure, which involves acquiring locks and
-potentially reprogramming timer hardware.  Such operations seem too
-risky in the context of console printout, which needs to work even when
-the kernel has crashed and emits a BUG splat.  So I've gone with a
-simplistic solution which just always waits for the full delay.
-
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Cc: Matwey V. Kornilov <matwey@sai.msu.ru>
----
- drivers/tty/serial/8250/8250_port.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 8e8cca690bf9..0879bb8855cf 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -3204,6 +3204,7 @@ static void serial8250_console_restore(struct uart_8250_port *up)
- void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 			      unsigned int count)
- {
-+	struct uart_8250_em485 *em485 = up->em485;
- 	struct uart_port *port = &up->port;
- 	unsigned long flags;
- 	unsigned int ier;
-@@ -3234,6 +3235,12 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 		up->canary = 0;
- 	}
- 
-+	if (em485) {
-+		if (em485->tx_stopped)
-+			up->rs485_start_tx(up);
-+		mdelay(port->rs485.delay_rts_before_send);
-+	}
-+
- 	uart_console_write(port, s, count, serial8250_console_putchar);
- 
- 	/*
-@@ -3243,6 +3250,12 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 	wait_for_xmitr(up, BOTH_EMPTY);
- 	serial_port_out(port, UART_IER, ier);
- 
-+	if (em485) {
-+		mdelay(port->rs485.delay_rts_before_send);
-+		if (em485->tx_stopped)
-+			up->rs485_stop_tx(up);
-+	}
-+
- 	/*
- 	 *	The receive handling will happen properly because the
- 	 *	receive ready bit will still be set; it is not cleared
--- 
-2.24.0
-
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
