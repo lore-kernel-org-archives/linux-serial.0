@@ -1,180 +1,78 @@
-Return-Path: <SRS0=j4md=4Q=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=2m+P=4R=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96EC2C3F2D3
-	for <linux-serial@archiver.kernel.org>; Fri, 28 Feb 2020 23:33:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F3FAC3F2C6
+	for <linux-serial@archiver.kernel.org>; Sat, 29 Feb 2020 16:30:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6AC482469C
-	for <linux-serial@archiver.kernel.org>; Fri, 28 Feb 2020 23:33:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0A83B24699
+	for <linux-serial@archiver.kernel.org>; Sat, 29 Feb 2020 16:30:09 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="U2w15Sqi"
+	dkim=pass (1024-bit key) header.d=eaxlabs.cz header.i=@eaxlabs.cz header.b="U7FACzCG"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725957AbgB1XdE (ORCPT
+        id S1727291AbgB2QaF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 28 Feb 2020 18:33:04 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:35874 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726046AbgB1XdD (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 28 Feb 2020 18:33:03 -0500
-Received: by mail-pj1-f66.google.com with SMTP id gv17so1910963pjb.1
-        for <linux-serial@vger.kernel.org>; Fri, 28 Feb 2020 15:33:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=sn5GXMIGwl26J0A2bH2+Hj/TmmTI1dt3PT8+BN12Qxo=;
-        b=U2w15Sqi1qH+a7S8nZw4/e2p+gCc4zjYUDd4jOc/HPLwMtw84S907xCHmri8NFC5xu
-         QiIZ9MHbeNvAKizc8u1i/WjHnSjjHi1KkGuKaYwNr5neRxuNtFiNG6j9tuP5s7HwT1+N
-         nA+oDth3pH3yszaxls9HKLLlAQ2MXmapyP0vc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=sn5GXMIGwl26J0A2bH2+Hj/TmmTI1dt3PT8+BN12Qxo=;
-        b=kCZL3Ti9Ph/GOTI259eyr6koyU9/dmF42XKORUWMWfLuLZTS8UUBh/whu2VAEiOYcB
-         fnU1mZzrtpuYk7v3GiSYmFX675yZaPWaVTNO3Cpm6qriBlmKs8i7T9qmwDznLa6c+FOn
-         bSJPPStF5Dj3d5oV9VHtIK8QduKHj4udl3d2XAP4mbMsXFuFKMptuoa1xtUW/Y0uQxu/
-         DDb5fatJHe24mB3OTAF41ChMms+0QvKzg5u2KpGfKjDD9w4QnwwT1y4o0zSzTT9Rj0VC
-         NXDWbux3r0z3fpsd5d5uhUX+yz29ZR9aQrzTj43gvBzVh+QxZIlAD3COPDHeQlxvpXCI
-         O6aQ==
-X-Gm-Message-State: APjAAAXATUJP3q6xdXrPCgeFTSXphxdhDYwdgtgXhjrxnWuNqJ4yz1ZP
-        G+/Lcn/TGu6XXjFccEwNLe8i5w==
-X-Google-Smtp-Source: APXvYqzD0VVHoZHU8BvAHy/7+a/mWne3NJuZdgZCDcRMHEXt6xKMiMfEFDXHCuKZl3oTBviA6+Zg7A==
-X-Received: by 2002:a17:90b:3c9:: with SMTP id go9mr7170956pjb.7.1582932782453;
-        Fri, 28 Feb 2020 15:33:02 -0800 (PST)
-Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
-        by smtp.gmail.com with ESMTPSA id t189sm12356006pfd.168.2020.02.28.15.33.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Feb 2020 15:33:01 -0800 (PST)
-Date:   Fri, 28 Feb 2020 15:33:00 -0800
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Roja Rani Yarubandi <rojay@codeaurora.org>
-Cc:     gregkh@linuxfoundation.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, akashast@codeaurora.org,
-        skakit@codeaurora.org, msavaliy@qti.qualcomm.com
-Subject: Re: [PATCH V3] tty: serial: qcom_geni_serial: Support pin swapping
-Message-ID: <20200228233300.GO24720@google.com>
-References: <20200228124810.31543-1-rojay@codeaurora.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200228124810.31543-1-rojay@codeaurora.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Sat, 29 Feb 2020 11:30:05 -0500
+Received: from ms9.eaxlabs.cz ([147.135.177.209]:33612 "EHLO ms9.eaxlabs.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727119AbgB2QaF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 29 Feb 2020 11:30:05 -0500
+X-Greylist: delayed 1456 seconds by postgrey-1.27 at vger.kernel.org; Sat, 29 Feb 2020 11:30:04 EST
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=eaxlabs.cz; s=mail;
+        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From; bh=0sL7frbHX+9iov4VRw0n07dyNagmVgH6U/A+xu41NOk=;
+        b=U7FACzCGC/KpiyvYGzuV/ssi7fk91JfFx3sPnZIDuDGZDcVFCc5/dLoE37026ZTSmjgiwKDe1kC7W1Mw7wn1lkqRmS4lynTk0j80KGn67sWnqOgYfSiHTbnBbxunDOAwu4LipcXyTZf1a1qmFClCUKIDkVj2Tjrnilv4aiwc+zg=;
+Received: from [82.99.129.6] (helo=localhost.localdomain)
+        by ms9.eaxlabs.cz with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.84_2)
+        (envelope-from <devik@eaxlabs.cz>)
+        id 1j84ca-000150-MZ; Sat, 29 Feb 2020 17:05:46 +0100
+From:   Martin Devera <devik@eaxlabs.cz>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        linux-serial@vger.kernel.org (open list:SERIAL DRIVERS),
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS),
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM/STM32
+        ARCHITECTURE), linux-kernel@vger.kernel.org (open list)
+Cc:     Martin Devera <devik@eaxlabs.cz>
+Subject: [PATCH 2/2] dt-bindings: serial: Add st,swap to stm32-usart
+Date:   Sat, 29 Feb 2020 17:05:07 +0100
+Message-Id: <20200229160507.31309-2-devik@eaxlabs.cz>
+X-Mailer: git-send-email 2.11.0
+In-Reply-To: <20200229160507.31309-1-devik@eaxlabs.cz>
+References: <20200229160507.31309-1-devik@eaxlabs.cz>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Feb 28, 2020 at 06:18:10PM +0530, Roja Rani Yarubandi wrote:
-> Add capability to supoort RX-TX, CTS-RTS pins swap in HW.
-> 
-> Configure UART_IO_MACRO_CTRL register accordingly if RX-TX pair
-> or CTS-RTS pair or both pairs swapped.
-> 
-> Signed-off-by: Roja Rani Yarubandi <rojay@codeaurora.org>
-> ---
-> Changes in V2:
-> - As per Greg's comment removed the change id.
-> 
-> Changes in V3:
-> - As per Bjorn's comment using of_property_read_bool() to read dtsi entries.
-> - As per Matthias's comment add capability to support individual pairs swap,
->   that is, only RX-TX swap and only CTS-RTS swap cases.
-> 
-> Dt-bindings support for this is posted at
-> https://patchwork.kernel.org/patch/11385969/
-> 
->  drivers/tty/serial/qcom_geni_serial.c | 30 +++++++++++++++++++++++++++
->  1 file changed, 30 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 191abb18fc2a..2ad041cde4d7 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -21,6 +21,7 @@
->  
->  /* UART specific GENI registers */
->  #define SE_UART_LOOPBACK_CFG		0x22c
-> +#define SE_UART_IO_MACRO_CTRL		0x240
->  #define SE_UART_TX_TRANS_CFG		0x25c
->  #define SE_UART_TX_WORD_LEN		0x268
->  #define SE_UART_TX_STOP_BIT_LEN		0x26c
-> @@ -95,6 +96,12 @@
->  #define CTS_RTS_SORTED	BIT(1)
->  #define RX_TX_CTS_RTS_SORTED	(RX_TX_SORTED | CTS_RTS_SORTED)
->  
-> +/* UART pin swap value */
-> +#define DEFAULT_IO_MACRO_IO0_IO1_MASK		GENMASK(3, 0)
-> +#define IO_MACRO_IO0_SEL		GENMASK(1, 0)
+Add new st,swap property to allow for RX & TX pin swapping.
 
-not sure the use of GENMASK adds value here since it's not a mask, I
-rather find it obfuscating, IMO just 0x03 / 0x3 would be clearer.
+Signed-off-by: Martin Devera <devik@eaxlabs.cz>
+---
+ Documentation/devicetree/bindings/serial/st,stm32-usart.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-> +#define DEFAULT_IO_MACRO_IO2_IO3_MASK		GENMASK(15, 4)
-> +#define IO_MACRO_IO2_IO3_SWAP		0x4640
-> +
->  #ifdef CONFIG_CONSOLE_POLL
->  #define CONSOLE_RX_BYTES_PW 1
->  #else
-> @@ -119,6 +126,8 @@ struct qcom_geni_serial_port {
->  
->  	unsigned int tx_remaining;
->  	int wakeup_irq;
-> +	bool rx_tx_swap;
-> +	bool cts_rts_swap;
->  };
->  
->  static const struct uart_ops qcom_geni_console_pops;
-> @@ -826,6 +835,7 @@ static int qcom_geni_serial_port_setup(struct uart_port *uport)
->  	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
->  	u32 rxstale = DEFAULT_BITS_PER_CHAR * STALE_TIMEOUT;
->  	u32 proto;
-> +	u32 pin_swap;
->  
->  	if (uart_console(uport)) {
->  		port->tx_bytes_pw = 1;
-> @@ -846,6 +856,20 @@ static int qcom_geni_serial_port_setup(struct uart_port *uport)
->  	get_tx_fifo_size(port);
->  
->  	writel(rxstale, uport->membase + SE_UART_RX_STALE_CNT);
-> +
-> +	pin_swap = readl(uport->membase + SE_UART_IO_MACRO_CTRL);
-> +	if (port->rx_tx_swap) {
-> +		pin_swap &= ~DEFAULT_IO_MACRO_IO2_IO3_MASK;
-> +		pin_swap |= IO_MACRO_IO2_IO3_SWAP;
-> +	}
-> +	if (port->cts_rts_swap) {
-> +		pin_swap &= ~DEFAULT_IO_MACRO_IO0_IO1_MASK;
-> +		pin_swap |= IO_MACRO_IO0_SEL;
-> +	}
-> +	/* Configure this register if RX-TX, CTS-RTS pins are swapped */
-> +	if (port->rx_tx_swap || port->cts_rts_swap)
-> +		writel(pin_swap, uport->membase + SE_UART_IO_MACRO_CTRL);
-> +
->  	/*
->  	 * Make an unconditional cancel on the main sequencer to reset
->  	 * it else we could end up in data loss scenarios.
-> @@ -1289,6 +1313,12 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
->  	if (!console)
->  		port->wakeup_irq = platform_get_irq_optional(pdev, 1);
->  
-> +	if (of_property_read_bool(pdev->dev.of_node, "rx-tx-swap"))
-> +		port->rx_tx_swap = true;
-> +
-> +	if (of_property_read_bool(pdev->dev.of_node, "cts-rts-swap"))
-> +		port->cts_rts_swap = true;
-> +
->  	uport->private_data = drv;
->  	platform_set_drvdata(pdev, port);
->  	port->handle_rx = console ? handle_rx_console : handle_rx_uart;
+diff --git a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
+index 08b499045a38..cbfa1f9f4b17 100644
+--- a/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
++++ b/Documentation/devicetree/bindings/serial/st,stm32-usart.txt
+@@ -24,6 +24,7 @@ Optional properties:
+ - pinctrl-n: Phandle(s) pointing to pin configuration nodes.
+   For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
+ - st,hw-flow-ctrl: bool flag to enable hardware flow control.
++- st,swap: bool flag to swap RX and TX pins.
+ - rs485-rts-delay, rs485-rx-during-tx, rs485-rts-active-low,
+   linux,rs485-enabled-at-boot-time: see rs485.txt.
+ - dmas: phandle(s) to DMA controller node(s). Refer to stm32-dma.txt
+-- 
+2.11.0
 
-Tested-by: Matthias Kaehlcke <mka@chromium.org>
-(TX/RX swap)
