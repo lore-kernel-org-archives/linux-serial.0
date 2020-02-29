@@ -7,66 +7,64 @@ X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F2AC3F2CD
-	for <linux-serial@archiver.kernel.org>; Sat, 29 Feb 2020 21:25:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BB10C3F2CD
+	for <linux-serial@archiver.kernel.org>; Sat, 29 Feb 2020 22:11:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AEFCF21D7D
-	for <linux-serial@archiver.kernel.org>; Sat, 29 Feb 2020 21:25:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C529024650
+	for <linux-serial@archiver.kernel.org>; Sat, 29 Feb 2020 22:11:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="WZ1cGsOm"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Ld+GovSr"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727370AbgB2VZh (ORCPT
+        id S1726786AbgB2WLs (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 29 Feb 2020 16:25:37 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:44097 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727170AbgB2VZh (ORCPT
+        Sat, 29 Feb 2020 17:11:48 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:46527 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726722AbgB2WLs (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 29 Feb 2020 16:25:37 -0500
-Received: by mail-lf1-f67.google.com with SMTP id 7so4735221lfz.11
-        for <linux-serial@vger.kernel.org>; Sat, 29 Feb 2020 13:25:36 -0800 (PST)
+        Sat, 29 Feb 2020 17:11:48 -0500
+Received: by mail-lj1-f194.google.com with SMTP id h18so7267495ljl.13
+        for <linux-serial@vger.kernel.org>; Sat, 29 Feb 2020 14:11:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Kky8mfhPQ8KKnNkQyA3CeK4eo/7P5j0q3GN68omEw6s=;
-        b=WZ1cGsOmsZw91k0RVSwT/sBOUz5juQmU/1iilMzZyXAEdcK45K/oi6UWrcqAtTZ+Uy
-         YShmab1i0FIzCQBrnmLa6y6z2+bIk4K3UsbG2A/pQR+EF4Tm9Uwl6ztDGEqKB23luE08
-         vS17pN24Dh0KIWZsCBEjtIzhZBMrhrRqjr40858qljZ0AGhYoXXbYPTDeMAleDtNDQ5X
-         r2eQwa2sn8DFgKhofE+Vv1vth46NxkCDfokCx4fLcSWg74/KLmahw9dZ21U2Uv4SzPB8
-         2yF2m/GaqgF7LjE/+WQ/C1v8LDIor9wUwUxAin2y/3iMjVHhswdQk8gO6Q3m0SCHyBW9
-         QaGw==
+        bh=4jYudkg4Lts72seJhGTtJ1KA52Ck45no23derqeXMEo=;
+        b=Ld+GovSr38aKfcvguCkhX+UDmkCpvGzjuqEcogu8v/sORXEOaNltCmP1ndMx9jd0+T
+         2E95y+wu6p5VnOVjQBC6xIS5jGt1I6h5plskWU0kfgksSIm5dEWT5x93QaCknD2NI2NN
+         YKWO/eRsxyvRjWZjeoE15fIDnpR588+BixR8yYIZXRHBn4Rk/qN5HqU7FXY9a7VK2kdB
+         0ibJVISd/R5J7bC4yVn/0V9DH9BOiXHRfJ6k0i8+Oh4vYlJ0P/y3ET6etFTJtlUWTERa
+         SXhwdHm/xPM1lSOp8U+hKPIvTTBVuzWjULxlS6Qq3dkvV2mJpsBlpQMDzLuU1u3LSlfI
+         m09g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Kky8mfhPQ8KKnNkQyA3CeK4eo/7P5j0q3GN68omEw6s=;
-        b=ZJgXwWmuTiJdKRvjCnSIBM+k/RqBq7ZRKLu0P7Tpzx8b3p5raUW88UvS222RHMPwfT
-         mY1nR9YYNNCqJhMw1qLjKq1gk+pn2tsdd4drlYX30eF6xkciUYLu+lP/Q5Fwr7OYsOgN
-         7wFsoKMRDDnL54jbhacpt6/i1xd9xaEraUc1ezIQ6KjoEX6Gr680mxyqH3enS8HRjIRN
-         OuiMjI89P/7ud3n6I/h6RFmCkXkw+gOCKkaAhtG+EdlGzN1AVEKueDTxtligEK94g3jK
-         B9kCjDVnT6UtdheKcYj2cNtgs7tV8CxrWqYcoft+Q3G0Ew91TfPY2ruzNBpRRln81Qu3
-         Vgiw==
-X-Gm-Message-State: ANhLgQ3u1p72k+Bvc79nvLg/Gb5AE5gAjX+dGb2IUyeRs2DF54q4HdXD
-        wLOpecQmkX1VdTes9y3r6GG4KAeTx6M=
-X-Google-Smtp-Source: ADFU+vvI+UlnwM0gPuh9Jk+ov9u3vCu5fQSGi9QpDsw0+Kgl3JMGxS8smlJoXsQvDY3+k6wGG66+FQ==
-X-Received: by 2002:ac2:4c82:: with SMTP id d2mr4454926lfl.78.1583011535172;
-        Sat, 29 Feb 2020 13:25:35 -0800 (PST)
+        bh=4jYudkg4Lts72seJhGTtJ1KA52Ck45no23derqeXMEo=;
+        b=oQm0UY7xn8mWVt6Jud/xaDG3LChI9JwOML+pI3IroPCSp0QKZWdloXXCJbRRINtfch
+         nGU9WYvUvBBd4E14pagmMHaNoBwz73JqAM3Mrt1GIZSQVOeEtsn6H1La+cswLd7TFN5B
+         AP59htcS96r2Ca7crKrxz5+9kSyiRZsPHDm35ndUbkT76qbKWl/hmvTHxOSZvW5zRJYD
+         OQnLMa6jIN7cml5gZDXr+pgAWq7LLzhlDL5bUk0JLfkphJ3fhCeiJCPdJSGvqyKjrlKY
+         YEtlXPDcp2bzZuGOpYi+xXRRGOwBXhZTxQzU4kqeL4RTV7thzT5bhu+UEwxu8mPlBtyK
+         BaUg==
+X-Gm-Message-State: ANhLgQ2rpBq0bl3BRQO1OWFbTEaFpzVwoK30y9LX0tFxW4GwXGSfIuCc
+        w1ZDlCzkjCjfozHpb7V+KNFHR/XwTlQ=
+X-Google-Smtp-Source: ADFU+vuWtTANnum/S0E/vBTpzhOgXk9F77wDMWj3+VzM2m72H/BQE1F0DrE/4rLM9S0/3IzegeToiQ==
+X-Received: by 2002:a2e:9e4c:: with SMTP id g12mr6826934ljk.15.1583014306008;
+        Sat, 29 Feb 2020 14:11:46 -0800 (PST)
 Received: from localhost.localdomain (c-5ac9225c.014-348-6c756e10.bbcust.telenor.se. [92.34.201.90])
-        by smtp.gmail.com with ESMTPSA id r15sm8505465ljh.11.2020.02.29.13.25.34
+        by smtp.gmail.com with ESMTPSA id u26sm7266604lfq.91.2020.02.29.14.11.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Feb 2020 13:25:34 -0800 (PST)
+        Sat, 29 Feb 2020 14:11:45 -0800 (PST)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     linux-serial@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Rahul Tanwar <rahul.tanwar@linux.intel.com>,
-        Songjun Wu <songjun.wu@linux.intel.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        John Crispin <john@phrozen.org>
-Subject: [PATCH] tty: serial: lantiq: Drop GPIO include
-Date:   Sat, 29 Feb 2020 22:23:31 +0100
-Message-Id: <20200229212331.174946-1-linus.walleij@linaro.org>
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Razvan Stefanescu <razvan.stefanescu@microchip.com>
+Subject: [PATCH] tty: serial: atmel_serial: Drop GPIO includes
+Date:   Sat, 29 Feb 2020 23:09:41 +0100
+Message-Id: <20200229220941.205599-1-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -75,30 +73,37 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Nothing in this driver uses the symbols from <linux/gpio.h>
-so drop this include.
+Nothing in this driver uses the symbols from these GPIO
+includes so drop them. These are probably just historical
+artifacts from befor mctrl_gpio was used.
 
-Cc: Rahul Tanwar <rahul.tanwar@linux.intel.com>
-Cc: Songjun Wu <songjun.wu@linux.intel.com>
-Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc: John Crispin <john@phrozen.org>
+Cc: Ludovic Desroches <ludovic.desroches@microchip.com>
+Cc: Razvan Stefanescu <razvan.stefanescu@microchip.com>
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/tty/serial/lantiq.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/tty/serial/atmel_serial.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
-index f67226df30d4..c5e46ff972e4 100644
---- a/drivers/tty/serial/lantiq.c
-+++ b/drivers/tty/serial/lantiq.c
-@@ -11,7 +11,6 @@
- #include <linux/clk.h>
- #include <linux/console.h>
- #include <linux/device.h>
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index c15c398c88a9..801b998c87e7 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -20,15 +20,12 @@
+ #include <linux/platform_device.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+-#include <linux/of_gpio.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/dmaengine.h>
+ #include <linux/atmel_pdc.h>
+ #include <linux/uaccess.h>
+ #include <linux/platform_data/atmel.h>
+ #include <linux/timer.h>
 -#include <linux/gpio.h>
- #include <linux/init.h>
- #include <linux/io.h>
- #include <linux/ioport.h>
+-#include <linux/gpio/consumer.h>
+ #include <linux/err.h>
+ #include <linux/irq.h>
+ #include <linux/suspend.h>
 -- 
 2.24.1
 
