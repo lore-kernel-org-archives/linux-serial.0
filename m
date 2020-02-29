@@ -4,93 +4,101 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF58C3F2CD
-	for <linux-serial@archiver.kernel.org>; Sat, 29 Feb 2020 16:30:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F2AC3F2CD
+	for <linux-serial@archiver.kernel.org>; Sat, 29 Feb 2020 21:25:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 144C124697
-	for <linux-serial@archiver.kernel.org>; Sat, 29 Feb 2020 16:30:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AEFCF21D7D
+	for <linux-serial@archiver.kernel.org>; Sat, 29 Feb 2020 21:25:37 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=eaxlabs.cz header.i=@eaxlabs.cz header.b="NkxIiuTk"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="WZ1cGsOm"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727323AbgB2QaI (ORCPT
+        id S1727370AbgB2VZh (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 29 Feb 2020 11:30:08 -0500
-Received: from ms9.eaxlabs.cz ([147.135.177.209]:33614 "EHLO ms9.eaxlabs.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727119AbgB2QaI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 29 Feb 2020 11:30:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=eaxlabs.cz; s=mail;
-        h=Message-Id:Date:Subject:Cc:To:From; bh=Ckgfb+tZ4UayimR7ATmjnhS6EOieCUCK3o2mRGl5D0k=;
-        b=NkxIiuTkB7rHeUHTFzQ7/Guyj4/QwnLwBusq91zKwUl1NgwFnwEKxYW/yZ7r7f17urT6PP6bkyrUgqGcFcEssp0wR0gN49vFfEDPV+SP1orpR+bsrCORGoOchWPOT/CQ/8LM59e90KbPeBXjhNzNJoLzRgZ0HZ36scpn5WpNERw=;
-Received: from [82.99.129.6] (helo=localhost.localdomain)
-        by ms9.eaxlabs.cz with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.84_2)
-        (envelope-from <devik@eaxlabs.cz>)
-        id 1j84cV-000150-TL; Sat, 29 Feb 2020 17:05:42 +0100
-From:   Martin Devera <devik@eaxlabs.cz>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        linux-serial@vger.kernel.org (open list:SERIAL DRIVERS),
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/STM32
-        ARCHITECTURE), linux-kernel@vger.kernel.org (open list)
-Cc:     Martin Devera <devik@eaxlabs.cz>
-Subject: [PATCH 1/2] tty/serial: Add st,swap OF option to stm32-usart
-Date:   Sat, 29 Feb 2020 17:05:06 +0100
-Message-Id: <20200229160507.31309-1-devik@eaxlabs.cz>
-X-Mailer: git-send-email 2.11.0
+        Sat, 29 Feb 2020 16:25:37 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:44097 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727170AbgB2VZh (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 29 Feb 2020 16:25:37 -0500
+Received: by mail-lf1-f67.google.com with SMTP id 7so4735221lfz.11
+        for <linux-serial@vger.kernel.org>; Sat, 29 Feb 2020 13:25:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Kky8mfhPQ8KKnNkQyA3CeK4eo/7P5j0q3GN68omEw6s=;
+        b=WZ1cGsOmsZw91k0RVSwT/sBOUz5juQmU/1iilMzZyXAEdcK45K/oi6UWrcqAtTZ+Uy
+         YShmab1i0FIzCQBrnmLa6y6z2+bIk4K3UsbG2A/pQR+EF4Tm9Uwl6ztDGEqKB23luE08
+         vS17pN24Dh0KIWZsCBEjtIzhZBMrhrRqjr40858qljZ0AGhYoXXbYPTDeMAleDtNDQ5X
+         r2eQwa2sn8DFgKhofE+Vv1vth46NxkCDfokCx4fLcSWg74/KLmahw9dZ21U2Uv4SzPB8
+         2yF2m/GaqgF7LjE/+WQ/C1v8LDIor9wUwUxAin2y/3iMjVHhswdQk8gO6Q3m0SCHyBW9
+         QaGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Kky8mfhPQ8KKnNkQyA3CeK4eo/7P5j0q3GN68omEw6s=;
+        b=ZJgXwWmuTiJdKRvjCnSIBM+k/RqBq7ZRKLu0P7Tpzx8b3p5raUW88UvS222RHMPwfT
+         mY1nR9YYNNCqJhMw1qLjKq1gk+pn2tsdd4drlYX30eF6xkciUYLu+lP/Q5Fwr7OYsOgN
+         7wFsoKMRDDnL54jbhacpt6/i1xd9xaEraUc1ezIQ6KjoEX6Gr680mxyqH3enS8HRjIRN
+         OuiMjI89P/7ud3n6I/h6RFmCkXkw+gOCKkaAhtG+EdlGzN1AVEKueDTxtligEK94g3jK
+         B9kCjDVnT6UtdheKcYj2cNtgs7tV8CxrWqYcoft+Q3G0Ew91TfPY2ruzNBpRRln81Qu3
+         Vgiw==
+X-Gm-Message-State: ANhLgQ3u1p72k+Bvc79nvLg/Gb5AE5gAjX+dGb2IUyeRs2DF54q4HdXD
+        wLOpecQmkX1VdTes9y3r6GG4KAeTx6M=
+X-Google-Smtp-Source: ADFU+vvI+UlnwM0gPuh9Jk+ov9u3vCu5fQSGi9QpDsw0+Kgl3JMGxS8smlJoXsQvDY3+k6wGG66+FQ==
+X-Received: by 2002:ac2:4c82:: with SMTP id d2mr4454926lfl.78.1583011535172;
+        Sat, 29 Feb 2020 13:25:35 -0800 (PST)
+Received: from localhost.localdomain (c-5ac9225c.014-348-6c756e10.bbcust.telenor.se. [92.34.201.90])
+        by smtp.gmail.com with ESMTPSA id r15sm8505465ljh.11.2020.02.29.13.25.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 29 Feb 2020 13:25:34 -0800 (PST)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Rahul Tanwar <rahul.tanwar@linux.intel.com>,
+        Songjun Wu <songjun.wu@linux.intel.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        John Crispin <john@phrozen.org>
+Subject: [PATCH] tty: serial: lantiq: Drop GPIO include
+Date:   Sat, 29 Feb 2020 22:23:31 +0100
+Message-Id: <20200229212331.174946-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-STM32 F7/H7 usarts supports RX & TX pin swapping.
-Add option to turn it on.
-Tested on STM32MP157.
+Nothing in this driver uses the symbols from <linux/gpio.h>
+so drop this include.
 
-Signed-off-by: Martin Devera <devik@eaxlabs.cz>
+Cc: Rahul Tanwar <rahul.tanwar@linux.intel.com>
+Cc: Songjun Wu <songjun.wu@linux.intel.com>
+Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc: John Crispin <john@phrozen.org>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/tty/serial/stm32-usart.c | 3 ++-
- drivers/tty/serial/stm32-usart.h | 1 +
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ drivers/tty/serial/lantiq.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index fdcc2142aa79..8d25869a02eb 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -780,7 +780,7 @@ static void stm32_set_termios(struct uart_port *port, struct ktermios *termios,
- 	cr1 = USART_CR1_TE | USART_CR1_RE;
- 	if (stm32_port->fifoen)
- 		cr1 |= USART_CR1_FIFOEN;
--	cr2 = 0;
-+	cr2 = stm32_port->swap ? USART_CR2_SWAP : 0;
- 
- 	/* Tx and RX FIFO configuration */
- 	cr3 = readl_relaxed(port->membase + ofs->cr3);
-@@ -1097,6 +1097,7 @@ static struct stm32_port *stm32_of_get_stm32_port(struct platform_device *pdev)
- 
- 	stm32_ports[id].hw_flow_control = of_property_read_bool(np,
- 							"st,hw-flow-ctrl");
-+	stm32_ports[id].swap = of_property_read_bool(np, "st,swap");
- 	stm32_ports[id].port.line = id;
- 	stm32_ports[id].cr1_irq = USART_CR1_RXNEIE;
- 	stm32_ports[id].cr3_irq = 0;
-diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
-index 2a68bc48652e..2503a91b890c 100644
---- a/drivers/tty/serial/stm32-usart.h
-+++ b/drivers/tty/serial/stm32-usart.h
-@@ -275,6 +275,7 @@ struct stm32_port {
- 	enum dma_cb rx_dma_cb;	 /* dma rx callback status    */
- 	bool tx_dma_busy;	 /* dma tx busy               */
- 	bool hw_flow_control;
-+	bool swap;		 /* swap RX & TX pins */
- 	bool fifoen;
- 	int wakeirq;
- 	struct pinctrl_state *console_pins;
+diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
+index f67226df30d4..c5e46ff972e4 100644
+--- a/drivers/tty/serial/lantiq.c
++++ b/drivers/tty/serial/lantiq.c
+@@ -11,7 +11,6 @@
+ #include <linux/clk.h>
+ #include <linux/console.h>
+ #include <linux/device.h>
+-#include <linux/gpio.h>
+ #include <linux/init.h>
+ #include <linux/io.h>
+ #include <linux/ioport.h>
 -- 
-2.11.0
+2.24.1
 
