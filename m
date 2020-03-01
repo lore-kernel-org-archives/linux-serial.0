@@ -2,148 +2,235 @@ Return-Path: <SRS0=+ol5=4S=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.4 required=3.0 tests=FROM_LOCAL_HEX,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC367C3F2CD
-	for <linux-serial@archiver.kernel.org>; Sun,  1 Mar 2020 01:45:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 962A7C3F2CD
+	for <linux-serial@archiver.kernel.org>; Sun,  1 Mar 2020 20:45:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 79FC924649
-	for <linux-serial@archiver.kernel.org>; Sun,  1 Mar 2020 01:45:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 60010246C0
+	for <linux-serial@archiver.kernel.org>; Sun,  1 Mar 2020 20:45:34 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ED+21RTy"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727268AbgCABpM (ORCPT
+        id S1726146AbgCAUpd (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 29 Feb 2020 20:45:12 -0500
-Received: from mail-il1-f200.google.com ([209.85.166.200]:54062 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726786AbgCABpL (ORCPT
+        Sun, 1 Mar 2020 15:45:33 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:39867 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725895AbgCAUpd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 29 Feb 2020 20:45:11 -0500
-Received: by mail-il1-f200.google.com with SMTP id t11so7346137ill.20
-        for <linux-serial@vger.kernel.org>; Sat, 29 Feb 2020 17:45:11 -0800 (PST)
+        Sun, 1 Mar 2020 15:45:33 -0500
+Received: by mail-pj1-f66.google.com with SMTP id e9so3517711pjr.4;
+        Sun, 01 Mar 2020 12:45:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=rKTRr7gH/H3erxMOjX8RHhnD0WNXnZrb4KZ5NXj3rVs=;
+        b=ED+21RTy6uFrUbhqFAJUvVt0+8PRGDmN4LkSicuW7WxsAJ1k5PUH9cHXRzHlzUhLRe
+         UUryCb7SvyQ06BK3HRT6U4qc/rMWFHRxqAqQOoqXmW5gCKRQrqaqH2Se1t/uYts2G6wW
+         wQJw4WF16qD0t7P7nJbTPak36k7X6Rj8KHH5saMV9X+4WBEysjSNGxPF28Vn6U61l+Py
+         73M0xYa5eAUeOg+kJx4NgxnfVF8McUoG0nSZBghGgX1gH+60tZKM5aBihMesy01KEVs2
+         OaXq69FKFk6wGGuxFHeTGZutUEmr6jIusGIjZpE33U8U/gTvvL/vxrPdbhsG7O/jTwu9
+         yBrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=pHhCTce9EZRh6yMt1LKQF/1Li19vVI0eOId6Q1UjB0g=;
-        b=JbB2UJUZeGchxoJHcEgluLLxSIfjx04ytOBXVcDQD+frlNEmaB/ni6K7rNrqJeXfsO
-         8iC/30BzlSkQlfIWPT2qa3fF30xn/kyXvR2Tga4hmnG/ZO3MOrZGmGo3UNAfpcTwlo3E
-         AfneadF5hZgqft96HMBBQ8vf9oyaS+ljdBA3IUuXfosAea61vt9+IJVk5fco0sWCUuqT
-         nVAhCHIeIY8I7xZvc/V0LZMZcda3yEPQq6L2kgv60VXcyPec7/Rzv1kgAn81jZltvd4X
-         5Znga6AOwFfbz3WnxFlTc3Cunp4+CxSbpx2P486T3mV2J9q+0sHLQmbYHjD41PXeGvEC
-         DdBA==
-X-Gm-Message-State: APjAAAWdv2AKNg/JMn+3MCZOsovuXoZ4QKDdQ3PoMjsKDtx9Z+DkmiGq
-        snpcJqIoxVZg6A95imT8ZyQ5hlAzno1q3ZcpmXCRng1Oa3wd
-X-Google-Smtp-Source: APXvYqztGXptYaZPKRKIiQ4IqcFK2tvyq0LRUkl4LpHbJ5KjeCQe0bVqM9NJPy/8a+772bOFQTRuAwvnmpZm8XDDvxyJEQCnrs0N
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=rKTRr7gH/H3erxMOjX8RHhnD0WNXnZrb4KZ5NXj3rVs=;
+        b=Syj/r1JaIY0kx6CvNA3s/g0JUEsAx1MRzAeoFiOlxliZk36PTt4o3Q7dh2iZ6auTyw
+         RBtFKfr2+BX7AdhjiZ4zUH/ZHiPIblrAlcE90BaF563rLgE4wD1IL88T9O8nZVLC0Bzt
+         bxwed/Hdx31XPbEPIJ92kyd/5HXXGFJ8MXdOAjL/fAcZkMHzZ4q3KAIKmUPGXFlWED/l
+         wYi7th+NkXoay791OlX0Fc3uLNAu1yaDztdTbPEVQiFhYlyqHqy5oWJ/WikweUNfYTtq
+         RqBVt1I5xfWo/E9Y3DY01pe1WVehepEASMuW2xRwrKb/xjTcRHSErWEX9/Itl6jS6N9l
+         27lA==
+X-Gm-Message-State: APjAAAUIMu+74LzgMk2PJTL29CMNJ45lN/8AMQ2e3Gyi74r+3/BggDNJ
+        ci3gqfJB1z8NvQGylOGC8NQ=
+X-Google-Smtp-Source: APXvYqzTomvywQgBmsA0iDTcN1YhecACD1PW6HLIrDNCKUMpcYT/bZOHQr1NmKuRvn/iMLmXYazJ7A==
+X-Received: by 2002:a17:902:ab95:: with SMTP id f21mr13470060plr.188.1583095530670;
+        Sun, 01 Mar 2020 12:45:30 -0800 (PST)
+Received: from nishad ([106.51.232.103])
+        by smtp.gmail.com with ESMTPSA id h10sm18127494pfo.181.2020.03.01.12.45.25
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 01 Mar 2020 12:45:30 -0800 (PST)
+Date:   Mon, 2 Mar 2020 02:15:21 +0530
+From:   Nishad Kamdar <nishadkamdar@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Barry Song <baohua@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Joe Perches <joe@perches.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Subject: [PATCH] tty: serial: Use the correct style for SPDX License
+ Identifier
+Message-ID: <20200301204517.GA10368@nishad>
 MIME-Version: 1.0
-X-Received: by 2002:a5d:8952:: with SMTP id b18mr8705743iot.40.1583027111085;
- Sat, 29 Feb 2020 17:45:11 -0800 (PST)
-Date:   Sat, 29 Feb 2020 17:45:11 -0800
-In-Reply-To: <000000000000072c55059aa2033b@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a04b93059fc13804@google.com>
-Subject: Re: possible deadlock in uart_write
-From:   syzbot <syzbot+b0e376d3731cd5e82bb7@syzkaller.appspotmail.com>
-To:     gregkh@linuxfoundation.org, jslaby@suse.com,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
+This patch corrects the SPDX License Identifier style in
+header files related to tty serial drivers.
+For C header files Documentation/process/license-rules.rst
+mandates C-like comments (opposed to C source files where
+C++ style should be used).
 
-HEAD commit:    f8788d86 Linux 5.6-rc3
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1342fd29e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=9833e26bab355358
-dashboard link: https://syzkaller.appspot.com/bug?extid=b0e376d3731cd5e82bb7
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1587ee65e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11993d31e00000
+Changes made by using a script provided by Joe Perches here:
+https://lkml.org/lkml/2019/2/7/46.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+b0e376d3731cd5e82bb7@syzkaller.appspotmail.com
+Suggested-by: Joe Perches <joe@perches.com>
+Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
+---
+ drivers/tty/serial/8250/8250.h         | 2 +-
+ drivers/tty/serial/8250/8250_dwlib.h   | 2 +-
+ drivers/tty/serial/atmel_serial.h      | 2 +-
+ drivers/tty/serial/cpm_uart/cpm_uart.h | 2 +-
+ drivers/tty/serial/icom.h              | 2 +-
+ drivers/tty/serial/ifx6x60.h           | 2 +-
+ drivers/tty/serial/jsm/jsm.h           | 2 +-
+ drivers/tty/serial/pic32_uart.h        | 2 +-
+ drivers/tty/serial/serial_mctrl_gpio.h | 2 +-
+ drivers/tty/serial/sirfsoc_uart.h      | 2 +-
+ drivers/tty/serial/stm32-usart.h       | 2 +-
+ drivers/tty/serial/timbuart.h          | 2 +-
+ 12 files changed, 12 insertions(+), 12 deletions(-)
 
-============================================
-WARNING: possible recursive locking detected
-5.6.0-rc3-syzkaller #0 Not tainted
---------------------------------------------
-swapper/1/0 is trying to acquire lock:
-ffffffff8c353e10 (&port_lock_key){-.-.}, at: uart_write+0x1e1/0x6f0 drivers/tty/serial/serial_core.c:592
-
-but task is already holding lock:
-ffffffff8c353e10 (&port_lock_key){-.-.}, at: serial8250_handle_irq.part.0+0x24/0x2b0 drivers/tty/serial/8250/8250_port.c:1822
-
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(&port_lock_key);
-  lock(&port_lock_key);
-
- *** DEADLOCK ***
-
- May be due to missing lock nesting notation
-
-3 locks held by swapper/1/0:
- #0: ffff88809835ec30 (&(&i->lock)->rlock){-.-.}, at: spin_lock include/linux/spinlock.h:338 [inline]
- #0: ffff88809835ec30 (&(&i->lock)->rlock){-.-.}, at: serial8250_interrupt+0x2d/0x1a0 drivers/tty/serial/8250/8250_core.c:116
- #1: ffffffff8c353e10 (&port_lock_key){-.-.}, at: serial8250_handle_irq.part.0+0x24/0x2b0 drivers/tty/serial/8250/8250_port.c:1822
- #2: ffff8880a6ea6090 (&tty->ldisc_sem){++++}, at: tty_ldisc_ref+0x22/0x90 drivers/tty/tty_ldisc.c:288
-
-stack backtrace:
-CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.6.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x197/0x210 lib/dump_stack.c:118
- print_deadlock_bug kernel/locking/lockdep.c:2370 [inline]
- check_deadlock kernel/locking/lockdep.c:2411 [inline]
- validate_chain kernel/locking/lockdep.c:2954 [inline]
- __lock_acquire.cold+0x15d/0x385 kernel/locking/lockdep.c:3954
- lock_acquire+0x190/0x410 kernel/locking/lockdep.c:4484
- __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
- _raw_spin_lock_irqsave+0x95/0xcd kernel/locking/spinlock.c:159
- uart_write+0x1e1/0x6f0 drivers/tty/serial/serial_core.c:592
- n_hdlc_send_frames+0x29a/0x480 drivers/tty/n_hdlc.c:401
- n_hdlc_tty_wakeup+0xc0/0xe0 drivers/tty/n_hdlc.c:477
- tty_wakeup+0xe9/0x120 drivers/tty/tty_io.c:536
- tty_port_default_wakeup+0x2b/0x40 drivers/tty/tty_port.c:50
- tty_port_tty_wakeup+0x57/0x70 drivers/tty/tty_port.c:388
- uart_write_wakeup+0x46/0x70 drivers/tty/serial/serial_core.c:104
- serial8250_tx_chars+0x495/0xaf0 drivers/tty/serial/8250/8250_port.c:1760
- serial8250_handle_irq.part.0+0x261/0x2b0 drivers/tty/serial/8250/8250_port.c:1833
- serial8250_handle_irq drivers/tty/serial/8250/8250_port.c:1819 [inline]
- serial8250_default_handle_irq+0xc0/0x150 drivers/tty/serial/8250/8250_port.c:1849
- serial8250_interrupt+0xf1/0x1a0 drivers/tty/serial/8250/8250_core.c:126
- __handle_irq_event_percpu+0x15d/0x970 kernel/irq/handle.c:149
- handle_irq_event_percpu+0x74/0x160 kernel/irq/handle.c:189
- handle_irq_event+0xa7/0x134 kernel/irq/handle.c:206
- handle_edge_irq+0x25e/0x8d0 kernel/irq/chip.c:830
- generic_handle_irq_desc include/linux/irqdesc.h:156 [inline]
- do_IRQ+0xde/0x280 arch/x86/kernel/irq.c:250
- common_interrupt+0xf/0xf arch/x86/entry/entry_64.S:607
- </IRQ>
-RIP: 0010:native_safe_halt+0xe/0x10 arch/x86/include/asm/irqflags.h:61
-Code: c8 c3 c3 f9 eb 8a cc cc cc cc cc cc e9 07 00 00 00 0f 00 2d 94 14 58 00 f4 c3 66 90 e9 07 00 00 00 0f 00 2d 84 14 58 00 fb f4 <c3> cc 55 48 89 e5 41 57 41 56 41 55 41 54 53 e8 5e 83 72 f9 e8 29
-RSP: 0018:ffffc90000d3fd68 EFLAGS: 00000286 ORIG_RAX: ffffffffffffffda
-RAX: 1ffffffff1367622 RBX: ffff8880a99fc340 RCX: 0000000000000000
-RDX: dffffc0000000000 RSI: 0000000000000006 RDI: ffff8880a99fcbd4
-RBP: ffffc90000d3fd98 R08: ffff8880a99fc340 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: dffffc0000000000
-R13: ffffffff8aa5b3c0 R14: 0000000000000000 R15: 0000000000000001
- arch_cpu_idle+0xa/0x10 arch/x86/kernel/process.c:686
- default_idle_call+0x84/0xb0 kernel/sched/idle.c:94
- cpuidle_idle_call kernel/sched/idle.c:154 [inline]
- do_idle+0x3c8/0x6e0 kernel/sched/idle.c:269
- cpu_startup_entry+0x1b/0x20 kernel/sched/idle.c:361
- start_secondary+0x2f4/0x410 arch/x86/kernel/smpboot.c:264
- secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:242
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 33ad9d6de532..32881e21b0c8 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0+
++/* SPDX-License-Identifier: GPL-2.0+ */
+ /*
+  *  Driver for 8250/16550-type serial ports
+  *
+diff --git a/drivers/tty/serial/8250/8250_dwlib.h b/drivers/tty/serial/8250/8250_dwlib.h
+index 87a4db2a8aba..9a12953832d3 100644
+--- a/drivers/tty/serial/8250/8250_dwlib.h
++++ b/drivers/tty/serial/8250/8250_dwlib.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0+
++/* SPDX-License-Identifier: GPL-2.0+ */
+ /* Synopsys DesignWare 8250 library header file. */
+ 
+ #include <linux/types.h>
+diff --git a/drivers/tty/serial/atmel_serial.h b/drivers/tty/serial/atmel_serial.h
+index d811d4f2d0c0..0d8a0f9cc5c3 100644
+--- a/drivers/tty/serial/atmel_serial.h
++++ b/drivers/tty/serial/atmel_serial.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0+
++/* SPDX-License-Identifier: GPL-2.0+ */
+ /*
+  * include/linux/atmel_serial.h
+  *
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart.h b/drivers/tty/serial/cpm_uart/cpm_uart.h
+index 9f175a92fb5d..0de77c18c475 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart.h
++++ b/drivers/tty/serial/cpm_uart/cpm_uart.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++/* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  *  Driver for CPM (SCC/SMC) serial ports
+  *
+diff --git a/drivers/tty/serial/icom.h b/drivers/tty/serial/icom.h
+index 8a77e739b333..26e3aa7b01e2 100644
+--- a/drivers/tty/serial/icom.h
++++ b/drivers/tty/serial/icom.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0+
++/* SPDX-License-Identifier: GPL-2.0+ */
+ /*
+  * icom.h
+  *
+diff --git a/drivers/tty/serial/ifx6x60.h b/drivers/tty/serial/ifx6x60.h
+index c5a2514212ff..cacca5be7390 100644
+--- a/drivers/tty/serial/ifx6x60.h
++++ b/drivers/tty/serial/ifx6x60.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++/* SPDX-License-Identifier: GPL-2.0 */
+ /****************************************************************************
+  *
+  * Driver for the IFX spi modem.
+diff --git a/drivers/tty/serial/jsm/jsm.h b/drivers/tty/serial/jsm/jsm.h
+index 7a128aaa3a66..8489c07f4cd5 100644
+--- a/drivers/tty/serial/jsm/jsm.h
++++ b/drivers/tty/serial/jsm/jsm.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0+
++/* SPDX-License-Identifier: GPL-2.0+ */
+ /************************************************************************
+  * Copyright 2003 Digi International (www.digi.com)
+  *
+diff --git a/drivers/tty/serial/pic32_uart.h b/drivers/tty/serial/pic32_uart.h
+index 2f2b56927dc6..b15639cc336b 100644
+--- a/drivers/tty/serial/pic32_uart.h
++++ b/drivers/tty/serial/pic32_uart.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0+
++/* SPDX-License-Identifier: GPL-2.0+ */
+ /*
+  * PIC32 Integrated Serial Driver.
+  *
+diff --git a/drivers/tty/serial/serial_mctrl_gpio.h b/drivers/tty/serial/serial_mctrl_gpio.h
+index 1b2ff503b2c2..b134a0ffc894 100644
+--- a/drivers/tty/serial/serial_mctrl_gpio.h
++++ b/drivers/tty/serial/serial_mctrl_gpio.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0+
++/* SPDX-License-Identifier: GPL-2.0+ */
+ /*
+  * Helpers for controlling modem lines via GPIO
+  *
+diff --git a/drivers/tty/serial/sirfsoc_uart.h b/drivers/tty/serial/sirfsoc_uart.h
+index 637b09d3fe79..fb88ac565227 100644
+--- a/drivers/tty/serial/sirfsoc_uart.h
++++ b/drivers/tty/serial/sirfsoc_uart.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0+
++/* SPDX-License-Identifier: GPL-2.0+ */
+ /*
+  * Drivers for CSR SiRFprimaII onboard UARTs.
+  *
+diff --git a/drivers/tty/serial/stm32-usart.h b/drivers/tty/serial/stm32-usart.h
+index a175c1094dc8..db8bf0d4982d 100644
+--- a/drivers/tty/serial/stm32-usart.h
++++ b/drivers/tty/serial/stm32-usart.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++/* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  * Copyright (C) Maxime Coquelin 2015
+  * Copyright (C) STMicroelectronics SA 2017
+diff --git a/drivers/tty/serial/timbuart.h b/drivers/tty/serial/timbuart.h
+index fb00b172117d..007e59af636d 100644
+--- a/drivers/tty/serial/timbuart.h
++++ b/drivers/tty/serial/timbuart.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++/* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  * timbuart.c timberdale FPGA GPIO driver
+  * Copyright (c) 2009 Intel Corporation
+-- 
+2.17.1
 
