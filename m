@@ -2,176 +2,451 @@ Return-Path: <SRS0=YLjw=4T=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4915DC3F2D2
-	for <linux-serial@archiver.kernel.org>; Mon,  2 Mar 2020 06:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 230A6C3F2D1
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Mar 2020 10:13:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1D5952468E
-	for <linux-serial@archiver.kernel.org>; Mon,  2 Mar 2020 06:42:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D9C9B20870
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Mar 2020 10:13:26 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="wP99XoDH"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726263AbgCBGm4 (ORCPT
+        id S1726674AbgCBKN0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 2 Mar 2020 01:42:56 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:39608 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726052AbgCBGm4 (ORCPT
+        Mon, 2 Mar 2020 05:13:26 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:34015 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726654AbgCBKN0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 2 Mar 2020 01:42:56 -0500
-Received: by mail-wr1-f68.google.com with SMTP id y17so11020066wrn.6;
-        Sun, 01 Mar 2020 22:42:54 -0800 (PST)
+        Mon, 2 Mar 2020 05:13:26 -0500
+Received: by mail-lj1-f196.google.com with SMTP id x7so11098481ljc.1
+        for <linux-serial@vger.kernel.org>; Mon, 02 Mar 2020 02:13:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nTGMB+xcvCjEdez+jm/rVOsMdUHQPVmhl+u8v9A50hQ=;
+        b=wP99XoDHA4Ky2QXqkSTElJgjUXZsRLpFd0UV7Vhh8ui6MOZgi/G+asdPbdbSlCqb1A
+         8IGJrRL1Yx5YK1EvBuiKzqryTN/ApfWI2a5eXOpVBhtjawz1QjRyBApK/YFzgmFlvl0C
+         GNJsnKMVP1RpmhA2xGH0tWiSScVe5GjTJ8ilf/p8NioFlDpglKmi2E6rsLlsYm0Wc8Qc
+         a1byHdiZyAF8ZCQmQ4Se4zw5xee57krzfJEd2Puk1xlzWR8D55QZKmJol9WeQXvg0PLA
+         nwBXzLA6DjslTDJ/p9vDeLupm78QfLJtVDGjw6RpK7cBf5x/slAYEzbuP8b4BU1UB2zP
+         qulA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=DAG9cmWmVJzMYyOlx6UPKwvFKQax568BaQjSnLCNBOY=;
-        b=SDJqrimLVbCe8o9SjkQCpW0zvwUbNiiItq1mIr3dfCs/GyB+QknN2x4TJbdMRhwMOQ
-         ydLaxtQB0bJn3zKDMthulF/k6HPOaOHHfizvuY8emn6/GPRDwvQUQ2DFDbkUzRCKYrv/
-         lZM6i+Pu53AtpeVfFlHpG8tOcmootBXcAQve9N0PN6c0FdEI4r50SqYW5D61dz0fiG+V
-         VzvudrV5YbmxpXdvCV/fpBqB4vWghefvqp+7xmRosYes31/ZSDFHjqk8B1M0Z804/OLV
-         Aydft8nh1EAYFyeunMq0xEqRe8GxQ/WDUom9NIG/w+bGtXqUAFVRdnhNnLa5xoEX6fMx
-         Qp9w==
-X-Gm-Message-State: APjAAAWNHslLlBYUsZBXL/cp1D2aVXA0YkLVYBzXYPavorf199OesfG5
-        2tNW/mZc/dYAHJBLBTjJrW1sPLsFC1c=
-X-Google-Smtp-Source: APXvYqz4uK3JkmbLgd64jVtxXhhdNhDYl6H0WhWZekAovtV+rXkSl+fsAuTWSh5n8vLSv2frSILj+g==
-X-Received: by 2002:adf:b60f:: with SMTP id f15mr21451636wre.372.1583131373888;
-        Sun, 01 Mar 2020 22:42:53 -0800 (PST)
-Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id j5sm26902861wrw.24.2020.03.01.22.42.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 01 Mar 2020 22:42:52 -0800 (PST)
-From:   Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH] vt: fix CVE-2020-8647
-To:     Ye Bin <yebin10@huawei.com>, gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200302023553.44792-1-yebin10@huawei.com>
-Autocrypt: addr=jslaby@suse.cz; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <154cd686-f9fc-a709-7624-4565efc0a789@suse.cz>
-Date:   Mon, 2 Mar 2020 07:42:51 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nTGMB+xcvCjEdez+jm/rVOsMdUHQPVmhl+u8v9A50hQ=;
+        b=l44Ye3XEXxptQMdlhs50Zy07a5Iq463oYaM4Gsr0n3StqpqvNGHuk95KiE9EkEV9gV
+         g5jq5Sc1c0hgkA2QTDZksHJQqcZlcQa/hfhOyxMpH2eFOfTuXZQivDDQbp3MqrrjU6bl
+         zWb6J4skrYDNLVmqrX7t2p1tEfog6jjMdJxoEskLeEv0TAEAlXgVH+Mus1jZ8WwJTjYz
+         vtnqBYuBmqNxL9hYzHO0GgJ0m5ad1GjNFfypSqcZDK6s1Iko5OA1Dr+GEKXoZKl3jzv0
+         92FCTLFcMR2iQE0NJq+dV1reJh54Z8f1CoFvoKqDU21Y2gOIvLFjjFG/P7nx5rozhXlt
+         PSsw==
+X-Gm-Message-State: ANhLgQ21PKKxkeXpepmxrAk2ERjcwPE9iEH3wnY63aWJNPojTly3wRRW
+        9GgfI2Os92UUSm9Mbuw8CdK21j8q74Q=
+X-Google-Smtp-Source: ADFU+vvU2jQkCTOIdNdnxCHaiiqAFrSS7lxAkW+b5m9VaL9d+Ko7h9sYr+6zr4YRGN0jLTvOY+Bnuw==
+X-Received: by 2002:a05:651c:1183:: with SMTP id w3mr11414335ljo.232.1583144001855;
+        Mon, 02 Mar 2020 02:13:21 -0800 (PST)
+Received: from localhost.localdomain (c-5ac9225c.014-348-6c756e10.bbcust.telenor.se. [92.34.201.90])
+        by smtp.gmail.com with ESMTPSA id c203sm10239668lfg.28.2020.03.02.02.13.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Mar 2020 02:13:21 -0800 (PST)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Russ Gorby <russ.gorby@intel.com>
+Subject: [PATCH] tty: serial: ifx6x60: Convert to GPIO descriptors
+Date:   Mon,  2 Mar 2020 11:11:17 +0100
+Message-Id: <20200302101117.331005-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <20200302023553.44792-1-yebin10@huawei.com>
-Content-Type: text/plain; charset=iso-8859-2
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+This driver for the Intel MID never seems to have been properly
+integrated upstream: the platform data in <linux/spi/ifx_modem.h>
+is not used anywhere in the kernel and haven't been since it was
+merged into the kernel in 2010.
 
-you should use some better Subject. "vt: fix CVE-2020-8647" is not
-descriptive at all. Something like "vt: fix use after free in
-vc_resize". You can reference the CVE in the text if you want.
+There might be out-of-tree users, so I don't want to delete the
+driver, but I will refactor it to use GPIO descriptors, which
+means that out-of-tree users will need to adapt.
 
-On 02. 03. 20, 3:35, Ye Bin wrote:
-> We must calculate origin buffer end before update "old_origin", or it
-> will lead to access illegal memory.
+There are several examples in the kernel of how to provide the
+resources necessary for using GPIO descriptors to pass in the
+GPIO lines, for the MID platform in particular, it will suffice
+to inspect the code in files like:
+arch/x86/platform/intel-mid/device_libs/platform_bt.c
 
-You should explain why we must. I.e. how the bad access can happen.
+This refactoring transfers all GPIOs in the driver, including
+a hard-coded "PMU reset" in the driver to use GPIO descriptors
+instead.
 
-> BUG: KASan: use after free in vc_do_resize+0x49e/0xb30 at addr ffff88000016b9c0
-> Read of size 2 by task syz-executor.3/24164
+The following named GPIO descriptors need to be supplied:
+- reset
+- power
+- mrdy
+- srdy
+- rst_out
+- pmu_reset
 
-For sure, the report mentioned a Reported-by line you should add to the
-fix. Could you do so?
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Russ Gorby <russ.gorby@intel.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/tty/serial/ifx6x60.c  | 170 ++++++++++++----------------------
+ drivers/tty/serial/ifx6x60.h  |  13 ++-
+ include/linux/spi/ifx_modem.h |   5 -
+ 3 files changed, 65 insertions(+), 123 deletions(-)
 
-> page:ffffea0000005ac0 count:0 mapcount:0 mapping:          (null) index:0x0
-> page flags: 0xfffff00000000()
-> page dumped because: kasan: bad access detected
-> CPU: 0 PID: 24164 Comm: syz-executor.3 Not tainted 3.10.0-862.14.2.1.x86_64+ #2
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-> BIOS rel-1.9.3-0-ge2fc41e-prebuilt.qemu-project.org 04/01/2014
-> Call Trace:
->  [<ffffffffb059f309>] dump_stack+0x1e/0x20
->  [<ffffffffaf8af957>] kasan_report+0x577/0x950
->  [<ffffffffaf8ae652>] __asan_load2+0x62/0x80
->  [<ffffffffafe3728e>] vc_do_resize+0x49e/0xb30
->  [<ffffffffafe3795c>] vc_resize+0x3c/0x60
->  [<ffffffffafe1d80d>] vt_ioctl+0x16ed/0x2670
->  [<ffffffffafe0089a>] tty_ioctl+0x46a/0x1a10
->  [<ffffffffaf92db3d>] do_vfs_ioctl+0x5bd/0xc40
->  [<ffffffffaf92e2f2>] SyS_ioctl+0x132/0x170
->  [<ffffffffb05c9b1b>] system_call_fastpath+0x22/0x27
-> 
-> Signed-off-by: Ye Bin <yebin10@huawei.com>
-> ---
->  drivers/tty/vt/vt.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-> index 8fa059ec6cc8..1d7217bef678 100644
-> --- a/drivers/tty/vt/vt.c
-> +++ b/drivers/tty/vt/vt.c
-> @@ -1231,6 +1231,7 @@ static int vc_do_resize(struct tty_struct *tty, struct vc_data *vc,
->  	old_origin = vc->vc_origin;
->  	new_origin = (long) newscreen;
->  	new_scr_end = new_origin + new_screen_size;
-> +	end = old_origin + old_row_size * min(old_rows, new_rows);
->  
->  	if (vc->vc_y > new_rows) {
->  		if (old_rows - vc->vc_y < new_rows) {
-> @@ -1249,7 +1250,6 @@ static int vc_do_resize(struct tty_struct *tty, struct vc_data *vc,
->  		old_origin += first_copied_row * old_row_size;
->  	} else
->  		first_copied_row = 0;
-> -	end = old_origin + old_row_size * min(old_rows, new_rows);
->  
->  	vc_uniscr_copy_area(new_uniscr, new_cols, new_rows,
->  			    get_vc_uniscr(vc), rlth/2, first_copied_row,
-> 
-
-thanks,
+diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
+index 32a0ccef9339..7d16fe41932f 100644
+--- a/drivers/tty/serial/ifx6x60.c
++++ b/drivers/tty/serial/ifx6x60.c
+@@ -39,7 +39,7 @@
+ #include <linux/fs.h>
+ #include <linux/ip.h>
+ #include <linux/dmapool.h>
+-#include <linux/gpio.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/sched.h>
+ #include <linux/time.h>
+ #include <linux/wait.h>
+@@ -61,7 +61,6 @@
+ #define IFX_SPI_HEADER_F		(-2)
+ 
+ #define PO_POST_DELAY		200
+-#define IFX_MDM_RST_PMU	4
+ 
+ /* forward reference */
+ static void ifx_spi_handle_srdy(struct ifx_spi_device *ifx_dev);
+@@ -81,7 +80,7 @@ static struct notifier_block ifx_modem_reboot_notifier_block = {
+ 
+ static int ifx_modem_power_off(struct ifx_spi_device *ifx_dev)
+ {
+-	gpio_set_value(IFX_MDM_RST_PMU, 1);
++	gpiod_set_value(ifx_dev->gpio.pmu_reset, 1);
+ 	msleep(PO_POST_DELAY);
+ 
+ 	return 0;
+@@ -107,7 +106,7 @@ static int ifx_modem_reboot_callback(struct notifier_block *nfb,
+  */
+ static inline void mrdy_set_high(struct ifx_spi_device *ifx)
+ {
+-	gpio_set_value(ifx->gpio.mrdy, 1);
++	gpiod_set_value(ifx->gpio.mrdy, 1);
+ }
+ 
+ /**
+@@ -117,7 +116,7 @@ static inline void mrdy_set_high(struct ifx_spi_device *ifx)
+  */
+ static inline void mrdy_set_low(struct ifx_spi_device *ifx)
+ {
+-	gpio_set_value(ifx->gpio.mrdy, 0);
++	gpiod_set_value(ifx->gpio.mrdy, 0);
+ }
+ 
+ /**
+@@ -244,7 +243,7 @@ static inline void swap_buf_32(unsigned char *buf, int len, void *end)
+  */
+ static void mrdy_assert(struct ifx_spi_device *ifx_dev)
+ {
+-	int val = gpio_get_value(ifx_dev->gpio.srdy);
++	int val = gpiod_get_value(ifx_dev->gpio.srdy);
+ 	if (!val) {
+ 		if (!test_and_set_bit(IFX_SPI_STATE_TIMER_PENDING,
+ 				      &ifx_dev->flags)) {
+@@ -691,7 +690,7 @@ static void ifx_spi_complete(void *ctx)
+ 	clear_bit(IFX_SPI_STATE_IO_IN_PROGRESS, &(ifx_dev->flags));
+ 
+ 	queue_length = kfifo_len(&ifx_dev->tx_fifo);
+-	srdy = gpio_get_value(ifx_dev->gpio.srdy);
++	srdy = gpiod_get_value(ifx_dev->gpio.srdy);
+ 	if (!srdy)
+ 		ifx_spi_power_state_clear(ifx_dev, IFX_SPI_POWER_SRDY);
+ 
+@@ -898,7 +897,7 @@ static irqreturn_t ifx_spi_srdy_interrupt(int irq, void *dev)
+ static irqreturn_t ifx_spi_reset_interrupt(int irq, void *dev)
+ {
+ 	struct ifx_spi_device *ifx_dev = dev;
+-	int val = gpio_get_value(ifx_dev->gpio.reset_out);
++	int val = gpiod_get_value(ifx_dev->gpio.reset_out);
+ 	int solreset = test_bit(MR_START, &ifx_dev->mdm_reset_state);
+ 
+ 	if (val == 0) {
+@@ -954,14 +953,14 @@ static int ifx_spi_reset(struct ifx_spi_device *ifx_dev)
+ 	 * to reset properly
+ 	 */
+ 	set_bit(MR_START, &ifx_dev->mdm_reset_state);
+-	gpio_set_value(ifx_dev->gpio.po, 0);
+-	gpio_set_value(ifx_dev->gpio.reset, 0);
++	gpiod_set_value(ifx_dev->gpio.po, 0);
++	gpiod_set_value(ifx_dev->gpio.reset, 0);
+ 	msleep(25);
+-	gpio_set_value(ifx_dev->gpio.reset, 1);
++	gpiod_set_value(ifx_dev->gpio.reset, 1);
+ 	msleep(1);
+-	gpio_set_value(ifx_dev->gpio.po, 1);
++	gpiod_set_value(ifx_dev->gpio.po, 1);
+ 	msleep(1);
+-	gpio_set_value(ifx_dev->gpio.po, 0);
++	gpiod_set_value(ifx_dev->gpio.po, 0);
+ 	ret = wait_event_timeout(ifx_dev->mdm_reset_wait,
+ 				 test_bit(MR_COMPLETE,
+ 					  &ifx_dev->mdm_reset_state),
+@@ -1080,107 +1079,68 @@ static int ifx_spi_spi_probe(struct spi_device *spi)
+ 		goto error_ret;
+ 	}
+ 
+-	ifx_dev->gpio.reset = pl_data->rst_pmu;
+-	ifx_dev->gpio.po = pl_data->pwr_on;
+-	ifx_dev->gpio.mrdy = pl_data->mrdy;
+-	ifx_dev->gpio.srdy = pl_data->srdy;
+-	ifx_dev->gpio.reset_out = pl_data->rst_out;
+-
+-	dev_info(dev, "gpios %d, %d, %d, %d, %d",
+-		 ifx_dev->gpio.reset, ifx_dev->gpio.po, ifx_dev->gpio.mrdy,
+-		 ifx_dev->gpio.srdy, ifx_dev->gpio.reset_out);
+-
+-	/* Configure gpios */
+-	ret = gpio_request(ifx_dev->gpio.reset, "ifxModem");
+-	if (ret < 0) {
+-		dev_err(dev, "Unable to allocate GPIO%d (RESET)",
+-			ifx_dev->gpio.reset);
++	ifx_dev->gpio.reset = devm_gpiod_get(dev, "reset", GPIOD_OUT_LOW);
++	if (IS_ERR(ifx_dev->gpio.reset)) {
++		dev_err(dev, "could not obtain reset GPIO\n");
++		ret = PTR_ERR(ifx_dev->gpio.reset);
+ 		goto error_ret;
+ 	}
+-	ret += gpio_direction_output(ifx_dev->gpio.reset, 0);
+-	ret += gpio_export(ifx_dev->gpio.reset, 1);
+-	if (ret) {
+-		dev_err(dev, "Unable to configure GPIO%d (RESET)",
+-			ifx_dev->gpio.reset);
+-		ret = -EBUSY;
+-		goto error_ret2;
+-	}
+-
+-	ret = gpio_request(ifx_dev->gpio.po, "ifxModem");
+-	ret += gpio_direction_output(ifx_dev->gpio.po, 0);
+-	ret += gpio_export(ifx_dev->gpio.po, 1);
+-	if (ret) {
+-		dev_err(dev, "Unable to configure GPIO%d (ON)",
+-			ifx_dev->gpio.po);
+-		ret = -EBUSY;
+-		goto error_ret3;
+-	}
+-
+-	ret = gpio_request(ifx_dev->gpio.mrdy, "ifxModem");
+-	if (ret < 0) {
+-		dev_err(dev, "Unable to allocate GPIO%d (MRDY)",
+-			ifx_dev->gpio.mrdy);
+-		goto error_ret3;
+-	}
+-	ret += gpio_export(ifx_dev->gpio.mrdy, 1);
+-	ret += gpio_direction_output(ifx_dev->gpio.mrdy, 0);
+-	if (ret) {
+-		dev_err(dev, "Unable to configure GPIO%d (MRDY)",
+-			ifx_dev->gpio.mrdy);
+-		ret = -EBUSY;
+-		goto error_ret4;
++	gpiod_set_consumer_name(ifx_dev->gpio.reset, "ifxModem reset");
++	ifx_dev->gpio.po = devm_gpiod_get(dev, "power", GPIOD_OUT_LOW);
++	if (IS_ERR(ifx_dev->gpio.po)) {
++		dev_err(dev, "could not obtain power GPIO\n");
++		ret = PTR_ERR(ifx_dev->gpio.po);
++		goto error_ret;
+ 	}
+-
+-	ret = gpio_request(ifx_dev->gpio.srdy, "ifxModem");
+-	if (ret < 0) {
+-		dev_err(dev, "Unable to allocate GPIO%d (SRDY)",
+-			ifx_dev->gpio.srdy);
+-		ret = -EBUSY;
+-		goto error_ret4;
++	gpiod_set_consumer_name(ifx_dev->gpio.po, "ifxModem power");
++	ifx_dev->gpio.mrdy = devm_gpiod_get(dev, "mrdy", GPIOD_OUT_LOW);
++	if (IS_ERR(ifx_dev->gpio.mrdy)) {
++		dev_err(dev, "could not obtain mrdy GPIO\n");
++		ret = PTR_ERR(ifx_dev->gpio.mrdy);
++		goto error_ret;
+ 	}
+-	ret += gpio_export(ifx_dev->gpio.srdy, 1);
+-	ret += gpio_direction_input(ifx_dev->gpio.srdy);
+-	if (ret) {
+-		dev_err(dev, "Unable to configure GPIO%d (SRDY)",
+-			ifx_dev->gpio.srdy);
+-		ret = -EBUSY;
+-		goto error_ret5;
++	gpiod_set_consumer_name(ifx_dev->gpio.mrdy, "ifxModem mrdy");
++	ifx_dev->gpio.srdy = devm_gpiod_get(dev, "srdy", GPIOD_IN);
++	if (IS_ERR(ifx_dev->gpio.srdy)) {
++		dev_err(dev, "could not obtain srdy GPIO\n");
++		ret = PTR_ERR(ifx_dev->gpio.srdy);
++		goto error_ret;
+ 	}
+-
+-	ret = gpio_request(ifx_dev->gpio.reset_out, "ifxModem");
+-	if (ret < 0) {
+-		dev_err(dev, "Unable to allocate GPIO%d (RESET_OUT)",
+-			ifx_dev->gpio.reset_out);
+-		goto error_ret5;
++	gpiod_set_consumer_name(ifx_dev->gpio.srdy, "ifxModem srdy");
++	ifx_dev->gpio.reset_out = devm_gpiod_get(dev, "rst_out", GPIOD_IN);
++	if (IS_ERR(ifx_dev->gpio.reset_out)) {
++		dev_err(dev, "could not obtain rst_out GPIO\n");
++		ret = PTR_ERR(ifx_dev->gpio.reset_out);
++		goto error_ret;
+ 	}
+-	ret += gpio_export(ifx_dev->gpio.reset_out, 1);
+-	ret += gpio_direction_input(ifx_dev->gpio.reset_out);
+-	if (ret) {
+-		dev_err(dev, "Unable to configure GPIO%d (RESET_OUT)",
+-			ifx_dev->gpio.reset_out);
+-		ret = -EBUSY;
+-		goto error_ret6;
++	gpiod_set_consumer_name(ifx_dev->gpio.reset_out, "ifxModem reset out");
++	ifx_dev->gpio.pmu_reset = devm_gpiod_get(dev, "pmu_reset", GPIOD_ASIS);
++	if (IS_ERR(ifx_dev->gpio.pmu_reset)) {
++		dev_err(dev, "could not obtain pmu_reset GPIO\n");
++		ret = PTR_ERR(ifx_dev->gpio.pmu_reset);
++		goto error_ret;
+ 	}
++	gpiod_set_consumer_name(ifx_dev->gpio.pmu_reset, "ifxModem PMU reset");
+ 
+-	ret = request_irq(gpio_to_irq(ifx_dev->gpio.reset_out),
++	ret = request_irq(gpiod_to_irq(ifx_dev->gpio.reset_out),
+ 			  ifx_spi_reset_interrupt,
+ 			  IRQF_TRIGGER_RISING|IRQF_TRIGGER_FALLING, DRVNAME,
+ 			  ifx_dev);
+ 	if (ret) {
+ 		dev_err(dev, "Unable to get irq %x\n",
+-			gpio_to_irq(ifx_dev->gpio.reset_out));
+-		goto error_ret6;
++			gpiod_to_irq(ifx_dev->gpio.reset_out));
++		goto error_ret;
+ 	}
+ 
+ 	ret = ifx_spi_reset(ifx_dev);
+ 
+-	ret = request_irq(gpio_to_irq(ifx_dev->gpio.srdy),
++	ret = request_irq(gpiod_to_irq(ifx_dev->gpio.srdy),
+ 			  ifx_spi_srdy_interrupt, IRQF_TRIGGER_RISING, DRVNAME,
+ 			  ifx_dev);
+ 	if (ret) {
+ 		dev_err(dev, "Unable to get irq %x",
+-			gpio_to_irq(ifx_dev->gpio.srdy));
+-		goto error_ret7;
++			gpiod_to_irq(ifx_dev->gpio.srdy));
++		goto error_ret2;
+ 	}
+ 
+ 	/* set pm runtime power state and register with power system */
+@@ -1191,7 +1151,7 @@ static int ifx_spi_spi_probe(struct spi_device *spi)
+ 	/* no outgoing tty open at this point, this just satisfies the
+ 	 * modem's read and should reset communication properly
+ 	 */
+-	srdy = gpio_get_value(ifx_dev->gpio.srdy);
++	srdy = gpiod_get_value(ifx_dev->gpio.srdy);
+ 
+ 	if (srdy) {
+ 		mrdy_assert(ifx_dev);
+@@ -1200,18 +1160,8 @@ static int ifx_spi_spi_probe(struct spi_device *spi)
+ 		mrdy_set_low(ifx_dev);
+ 	return 0;
+ 
+-error_ret7:
+-	free_irq(gpio_to_irq(ifx_dev->gpio.reset_out), ifx_dev);
+-error_ret6:
+-	gpio_free(ifx_dev->gpio.srdy);
+-error_ret5:
+-	gpio_free(ifx_dev->gpio.mrdy);
+-error_ret4:
+-	gpio_free(ifx_dev->gpio.reset);
+-error_ret3:
+-	gpio_free(ifx_dev->gpio.po);
+ error_ret2:
+-	gpio_free(ifx_dev->gpio.reset_out);
++	free_irq(gpiod_to_irq(ifx_dev->gpio.reset_out), ifx_dev);
+ error_ret:
+ 	ifx_spi_free_device(ifx_dev);
+ 	saved_ifx_dev = NULL;
+@@ -1235,14 +1185,8 @@ static int ifx_spi_spi_remove(struct spi_device *spi)
+ 	pm_runtime_disable(&spi->dev);
+ 
+ 	/* free irq */
+-	free_irq(gpio_to_irq(ifx_dev->gpio.reset_out), ifx_dev);
+-	free_irq(gpio_to_irq(ifx_dev->gpio.srdy), ifx_dev);
+-
+-	gpio_free(ifx_dev->gpio.srdy);
+-	gpio_free(ifx_dev->gpio.mrdy);
+-	gpio_free(ifx_dev->gpio.reset);
+-	gpio_free(ifx_dev->gpio.po);
+-	gpio_free(ifx_dev->gpio.reset_out);
++	free_irq(gpiod_to_irq(ifx_dev->gpio.reset_out), ifx_dev);
++	free_irq(gpiod_to_irq(ifx_dev->gpio.srdy), ifx_dev);
+ 
+ 	/* free allocations */
+ 	ifx_spi_free_device(ifx_dev);
+diff --git a/drivers/tty/serial/ifx6x60.h b/drivers/tty/serial/ifx6x60.h
+index c5a2514212ff..f37e356af553 100644
+--- a/drivers/tty/serial/ifx6x60.h
++++ b/drivers/tty/serial/ifx6x60.h
+@@ -10,6 +10,8 @@
+ #ifndef _IFX6X60_H
+ #define _IFX6X60_H
+ 
++struct gpio_desc;
++
+ #define DRVNAME				"ifx6x60"
+ #define TTYNAME				"ttyIFX"
+ 
+@@ -94,11 +96,12 @@ struct ifx_spi_device {
+ 
+ 	struct {
+ 		/* gpio lines */
+-		unsigned short srdy;		/* slave-ready gpio */
+-		unsigned short mrdy;		/* master-ready gpio */
+-		unsigned short reset;		/* modem-reset gpio */
+-		unsigned short po;		/* modem-on gpio */
+-		unsigned short reset_out;	/* modem-in-reset gpio */
++		struct gpio_desc *srdy;		/* slave-ready gpio */
++		struct gpio_desc *mrdy;		/* master-ready gpio */
++		struct gpio_desc *reset;	/* modem-reset gpio */
++		struct gpio_desc *po;		/* modem-on gpio */
++		struct gpio_desc *reset_out;	/* modem-in-reset gpio */
++		struct gpio_desc *pmu_reset;	/* PMU reset gpio */
+ 		/* state/stats */
+ 		int unack_srdy_int_nb;
+ 	} gpio;
+diff --git a/include/linux/spi/ifx_modem.h b/include/linux/spi/ifx_modem.h
+index 694268c78d5d..6d19b09139d0 100644
+--- a/include/linux/spi/ifx_modem.h
++++ b/include/linux/spi/ifx_modem.h
+@@ -3,12 +3,7 @@
+ #define LINUX_IFX_MODEM_H
+ 
+ struct ifx_modem_platform_data {
+-	unsigned short rst_out;		/* modem reset out */
+-	unsigned short pwr_on;		/* power on */
+-	unsigned short rst_pmu;		/* reset modem */
+ 	unsigned short tx_pwr;		/* modem power threshold */
+-	unsigned short srdy;		/* SRDY */
+-	unsigned short mrdy;		/* MRDY */
+ 	unsigned char modem_type;	/* Modem type */
+ 	unsigned long max_hz;		/* max SPI frequency */
+ 	unsigned short use_dma:1;	/* spi protocol driver supplies
 -- 
-js
-suse labs
+2.24.1
 
--- 
-js
-suse labs
