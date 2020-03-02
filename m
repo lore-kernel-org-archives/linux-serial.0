@@ -2,60 +2,60 @@ Return-Path: <SRS0=YLjw=4T=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3F54C3F2D1
-	for <linux-serial@archiver.kernel.org>; Mon,  2 Mar 2020 17:51:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4239C3F2D1
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Mar 2020 17:51:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B03E42173E
-	for <linux-serial@archiver.kernel.org>; Mon,  2 Mar 2020 17:51:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 849DD2173E
+	for <linux-serial@archiver.kernel.org>; Mon,  2 Mar 2020 17:51:46 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="e5js09qm"
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="cY3FpIMe"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727329AbgCBRvo (ORCPT
+        id S1727366AbgCBRvq (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 2 Mar 2020 12:51:44 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:35149 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727196AbgCBRvn (ORCPT
+        Mon, 2 Mar 2020 12:51:46 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:39767 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727126AbgCBRvp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 2 Mar 2020 12:51:43 -0500
-Received: by mail-wm1-f66.google.com with SMTP id m3so2759wmi.0
-        for <linux-serial@vger.kernel.org>; Mon, 02 Mar 2020 09:51:42 -0800 (PST)
+        Mon, 2 Mar 2020 12:51:45 -0500
+Received: by mail-wm1-f67.google.com with SMTP id c24so205258wml.4
+        for <linux-serial@vger.kernel.org>; Mon, 02 Mar 2020 09:51:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=googlenew;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Pb95E00qJt13iWTog3FXOsgax75wf6WaIkcw28uyMlc=;
-        b=e5js09qmzuQmFNbwwvYJJXKYkaHmkTgpdchmTZ802ygwq6rWIhdMl+8nayrC1yUByS
-         5/Tb66nJiqisnU+KXFadjnIP9R57WNOruQG+ah4dmJynCD9HXBnYWYGEjV1ot9PLSJij
-         xSrNhp722oBcKeO9kSZbhDnvVK4uCWn7WJQFQ/ntYh0zkyaJ0QDuTHbvUN8MDDnVgZ+Y
-         kvAo6cj3DGcaYW5xYJ6do3dh7lW7R5OXgqOS1jopG5arCG+/z8hxOPRsYexPVmvK65NM
-         Klu8VDe5t19hoMzhUR7Sp8mfv3bBWL/K0/gVvYH2Wk2Mm/Hfw3zC91lhnzLxM7jRKyB2
-         C9VA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=6Kx8nmukttqpHZuRHsPDhtzyv3nWI/Y/L038RHlsnVE=;
+        b=cY3FpIMeyInIz2doBDLxFNAFHqc1qD0znP6ZLavRTpcOQcgXbOs42hRxp/v3oCNQTC
+         gNZMqt0kIvodHf6h1byZ/YfxeVdI9edWJH/rNJ/eiwnWkhz+WE7JsS/+QuczW+PrTEEb
+         C94HRXntlxPyf8uzT1p4+Lfr7XHukd6lFAJR/rsjNyAKcZ0IsnYXOBQeNuXiVlRf+AVA
+         wW4ydVDlTj89sbZMiF9VnmL2IBus+WHKWJ5p1UDZ2Ayixu/1FOoAwOxAFUaF4R0JuCKm
+         QnjRugMytS0vjHaljWCNKaJdIPUYkY+eFg1UxLq0EIj16qbO2eXh7HGtIUeu4FvsPGj3
+         /C/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Pb95E00qJt13iWTog3FXOsgax75wf6WaIkcw28uyMlc=;
-        b=L6TIbQooQ9g7InImjL4LCJ8+7IYHd4gXQJ2XrvQGngnJVTi1oVzYi360QgXMRtjza6
-         RyW0K484uSWllBeu2VVbRZ2zNhdjCouwjq1xYDlkFhl8kOl9nIozV73U4wxn66+za9PB
-         tVZ4hz6M3larHFbcOEqZ7qMp5iNBn299qs+S5YOmlq5Sp9kWi0yWXx+toB8VeGkJTob6
-         aZFjPxZ0OBjoPqQ/cmqRbyXNZnogMP8tMJyz7M5HQPNGrXo5wgM1ImrYNn6wvwxLYE91
-         /fdadp7TUOvS63dAl51IOMUL0EXbXImyld/rk5CnbLwx+cN0cPVQv7leX0f3O8q48eJF
-         8+jw==
-X-Gm-Message-State: ANhLgQ14QvzBKhyOP5ekcqdJoN7kRjzUt92KHkAUBOrvRQeMjifUS5yj
-        e1e1a3dG0PhPG4JYtBUv+qlwPyH5cWU=
-X-Google-Smtp-Source: ADFU+vsFr2KTv4/KKUSrBKY28s9eXDJo3L5bmZDOjL8AoWf2qi6HO/kr1bKia+ebeQ9aRe9mgw4NNA==
-X-Received: by 2002:a05:600c:118a:: with SMTP id i10mr230134wmf.142.1583171502083;
-        Mon, 02 Mar 2020 09:51:42 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=6Kx8nmukttqpHZuRHsPDhtzyv3nWI/Y/L038RHlsnVE=;
+        b=lu42qhLXfkBqb4INi17EcSr8G8GagMcJoESd+5ACWwhY+nEY9K/OcANWGQ6QT/4Ba9
+         TQdcX1MrWBWFhl+KWo0TJdEds7EcqvUMA6XEV2RPk92NLTSPhbYzg2HsFqOWgOmpVB9S
+         LNCG8cXc9osXygdde0Gq7SgozelVBmZvwEtIatEfzibY4ru/hIdMvsc27HeXIeaaLxEL
+         3H9yb4k8fHGM8KqMYqsPwZfzsiMoy1VaJGz508gZt5cK7WxhxLL5WTmNmxulykgG5oeF
+         RWB2XLP/Be/BTP1/zF5mPHMU0Ai/ORnQKCOlXuxA7k5Qrt6XfUm69SGijpfKdocvYezx
+         h+ag==
+X-Gm-Message-State: ANhLgQ0B2L8r353dlRv1UQElOO68ZfOVQ1+zKxgieOOW8ro7Idya76g/
+        bszAnnrt2bRBMUN1CtDwfo1rIA==
+X-Google-Smtp-Source: ADFU+vtgPa2Arj/pPLh1i+Bqz7hGA3XBaKwKSk813DrexkuAYMePD9J51tk5ngXW0YRa/3R5XgCfXg==
+X-Received: by 2002:a7b:cb46:: with SMTP id v6mr238182wmj.0.1583171503168;
+        Mon, 02 Mar 2020 09:51:43 -0800 (PST)
 Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id b10sm163234wmh.48.2020.03.02.09.51.41
+        by smtp.gmail.com with ESMTPSA id b10sm163234wmh.48.2020.03.02.09.51.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Mar 2020 09:51:41 -0800 (PST)
+        Mon, 02 Mar 2020 09:51:42 -0800 (PST)
 From:   Dmitry Safonov <dima@arista.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
@@ -68,10 +68,12 @@ Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
         linux-serial@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
         Kees Cook <keescook@chromium.org>,
         linux-fsdevel@vger.kernel.org
-Subject: [PATCHv3 0/2] serial/sysrq: Add MAGIC_SYSRQ_SERIAL_SEQUENCE
-Date:   Mon,  2 Mar 2020 17:51:33 +0000
-Message-Id: <20200302175135.269397-1-dima@arista.com>
+Subject: [PATCHv3 1/2] sysctl/sysrq: Remove __sysrq_enabled copy
+Date:   Mon,  2 Mar 2020 17:51:34 +0000
+Message-Id: <20200302175135.269397-2-dima@arista.com>
 X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20200302175135.269397-1-dima@arista.com>
+References: <20200302175135.269397-1-dima@arista.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
@@ -79,62 +81,157 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Magic sysrq has proven for Arista usecases to be useful for debugging issues
-in field, over serial line when the switch is in such bad state
-that it can't accept network connections anymore.
+Many embedded boards have a disconnected TTL level serial which can
+generate some garbage that can lead to spurious false sysrq detects.
 
-Unfortunately, having sysrq always enabled doesn't work for some
-embedded boards that tend to generate garbage on serial line (including
-BREAKs). Since commit 732dbf3a6104 ("serial: do not accept sysrq
-characters via serial port"), it's possible to keep sysrq enabled, but
-over serial line.
+Currently, sysrq can be either completely disabled for serial console
+or always disabled (with CONFIG_MAGIC_SYSRQ_SERIAL), since
+commit 732dbf3a6104 ("serial: do not accept sysrq characters via serial port")
 
-Add a way to enable sysrq on a uart, where currently it can be
-constantly either on or off (CONFIG_MAGIC_SYSRQ_SERIAL).
-While doing so, cleanup __sysrq_enabled and serial_core header file.
+At Arista, we have such boards that can generate BREAK and random
+garbage. While disabling sysrq for serial console would solve
+the problem with spurious false sysrq triggers, it's also desirable
+to have a way to enable sysrq back.
 
-Changes since v2 [2]:
-- sysrq_get_mask() renamed to sysrq_mask() as there isn't
-  sysrq_put_mask(); acquired kernel-doc (by Greg's review, thanks)
-- uart_try_toggle_sysrq() now returns true/false instead 1/0 as it's
-  a bool function (nits by Joe Perches, thanks!)
-- Dropped "sizeof(port->sysrq_seq)*U8_MAX" and used U8_MAX (Randy Dunlap)
+Having the way to enable sysrq was beneficial to debug lockups with
+a manual investigation in field and on the other side preventing false
+sysrq detections.
 
-Changes since v1 [1]:
-- Fix typo in pr_info() message (noticed by Randy Dunlap, thanks)
-- Add SYSRQ_TIMEOUT define for timeout after BREAK and separate removing
-  @unused member of uart_port into cleanup patch (by Greg's review, thanks)
-- Add const qualifier, make uart_try_toggle_sysrq() bool function
-  (Joe Perches, thanks)
-- Fix !CONFIG_SYSRQ and CONFIG_MAGIC_SYSRQ_SERIAL_SEQUENCE=""
-  build failures (kudos to kbuild test robot)
+As a preparation to add sysrq_toggle_support() call into uart,
+remove a private copy of sysrq_enabled from sysctl - it should reflect
+the actual status of sysrq.
 
-[1]: https://lkml.kernel.org/r/20200109215444.95995-1-dima@arista.com
-[2]: https://lkml.kernel.org/r/20200114171912.261787-1-dima@arista.com
+Furthermore, the private copy isn't correct already in case
+sysrq_always_enabled is true. So, remove __sysrq_enabled and use a
+getter-helper sysrq_mask() to check sysrq_key_op enabled status.
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Iurii Zaikin <yzaikin@google.com>
 Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Joe Perches <joe@perches.com>
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Cc: Vasiliy Khoruzhick <vasilykh@arista.com>
-Cc: linux-serial@vger.kernel.org
+Cc: Luis Chamberlain <mcgrof@kernel.org>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: linux-fsdevel@vger.kernel.org
+Signed-off-by: Dmitry Safonov <dima@arista.com>
+---
+ drivers/tty/sysrq.c   | 12 ++++++++++++
+ include/linux/sysrq.h |  7 +++++++
+ kernel/sysctl.c       | 41 ++++++++++++++++++++++-------------------
+ 3 files changed, 41 insertions(+), 19 deletions(-)
 
-Thanks,
-             Dmitry
-
-Dmitry Safonov (2):
-  sysctl/sysrq: Remove __sysrq_enabled copy
-  serial/sysrq: Add MAGIC_SYSRQ_SERIAL_SEQUENCE
-
- drivers/tty/serial/serial_core.c | 75 +++++++++++++++++++++++++++++---
- drivers/tty/sysrq.c              | 12 +++++
- include/linux/serial_core.h      |  1 +
- include/linux/sysrq.h            |  7 +++
- kernel/sysctl.c                  | 41 +++++++++--------
- lib/Kconfig.debug                |  8 ++++
- 6 files changed, 118 insertions(+), 26 deletions(-)
-
+diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+index f724962a5906..5e0d0813da55 100644
+--- a/drivers/tty/sysrq.c
++++ b/drivers/tty/sysrq.c
+@@ -63,6 +63,18 @@ static bool sysrq_on(void)
+ 	return sysrq_enabled || sysrq_always_enabled;
+ }
+ 
++/**
++ * sysrq_mask - Getter for sysrq_enabled mask.
++ *
++ * Return: 1 if sysrq is always enabled, enabled sysrq_key_op mask otherwise.
++ */
++int sysrq_mask(void)
++{
++	if (sysrq_always_enabled)
++		return 1;
++	return sysrq_enabled;
++}
++
+ /*
+  * A value of 1 means 'all', other nonzero values are an op mask:
+  */
+diff --git a/include/linux/sysrq.h b/include/linux/sysrq.h
+index 8c71874e8485..8e159e16850f 100644
+--- a/include/linux/sysrq.h
++++ b/include/linux/sysrq.h
+@@ -50,6 +50,7 @@ int unregister_sysrq_key(int key, struct sysrq_key_op *op);
+ struct sysrq_key_op *__sysrq_get_key_op(int key);
+ 
+ int sysrq_toggle_support(int enable_mask);
++int sysrq_mask(void);
+ 
+ #else
+ 
+@@ -71,6 +72,12 @@ static inline int unregister_sysrq_key(int key, struct sysrq_key_op *op)
+ 	return -EINVAL;
+ }
+ 
++static inline int sysrq_mask(void)
++{
++	/* Magic SysRq disabled mask */
++	return 0;
++}
++
+ #endif
+ 
+ #endif /* _LINUX_SYSRQ_H */
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index ad5b88a53c5a..94638f695e60 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -229,25 +229,8 @@ static int proc_dopipe_max_size(struct ctl_table *table, int write,
+ 		void __user *buffer, size_t *lenp, loff_t *ppos);
+ 
+ #ifdef CONFIG_MAGIC_SYSRQ
+-/* Note: sysrq code uses its own private copy */
+-static int __sysrq_enabled = CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE;
+-
+ static int sysrq_sysctl_handler(struct ctl_table *table, int write,
+-				void __user *buffer, size_t *lenp,
+-				loff_t *ppos)
+-{
+-	int error;
+-
+-	error = proc_dointvec(table, write, buffer, lenp, ppos);
+-	if (error)
+-		return error;
+-
+-	if (write)
+-		sysrq_toggle_support(__sysrq_enabled);
+-
+-	return 0;
+-}
+-
++			void __user *buffer, size_t *lenp, loff_t *ppos);
+ #endif
+ 
+ static struct ctl_table kern_table[];
+@@ -747,7 +730,7 @@ static struct ctl_table kern_table[] = {
+ #ifdef CONFIG_MAGIC_SYSRQ
+ 	{
+ 		.procname	= "sysrq",
+-		.data		= &__sysrq_enabled,
++		.data		= NULL,
+ 		.maxlen		= sizeof (int),
+ 		.mode		= 0644,
+ 		.proc_handler	= sysrq_sysctl_handler,
+@@ -2835,6 +2818,26 @@ static int proc_dostring_coredump(struct ctl_table *table, int write,
+ }
+ #endif
+ 
++#ifdef CONFIG_MAGIC_SYSRQ
++static int sysrq_sysctl_handler(struct ctl_table *table, int write,
++				void __user *buffer, size_t *lenp, loff_t *ppos)
++{
++	int tmp, ret;
++
++	tmp = sysrq_mask();
++
++	ret = __do_proc_dointvec(&tmp, table, write, buffer,
++			       lenp, ppos, NULL, NULL);
++	if (ret || !write)
++		return ret;
++
++	if (write)
++		sysrq_toggle_support(tmp);
++
++	return 0;
++}
++#endif
++
+ static int __do_proc_doulongvec_minmax(void *data, struct ctl_table *table, int write,
+ 				     void __user *buffer,
+ 				     size_t *lenp, loff_t *ppos,
 -- 
 2.25.0
 
