@@ -7,47 +7,47 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B46C3F2D7
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Mar 2020 02:51:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC393C3F2D7
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Mar 2020 02:52:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B9A8E217F4
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Mar 2020 02:51:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BF87E246D9
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Mar 2020 02:52:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1583203897;
-	bh=sOAGFuQmdWeLvsjXjqeTg71nvzmjKCDHQHCRceyd3eA=;
+	s=default; t=1583203943;
+	bh=mQi+kJKCA4XsCXfQOnNrS/gSe+ZGvNiadlAQOyB6ZBM=;
 	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=wUuax8d1s2JJRlRggMR3/EzOt6gQtlWmPXh99zzfOjfcLj/MTmgDwAIwolbeG0zv5
-	 8ncbTJhj6nrJVOmKGLnoUqRvo8T5Ya18Q1oJ74ZDvIbNZY36YCTNAOqyn92FSQg7OC
-	 rN2swrsabmDmRLWg0AVTdnBbjNfDU1YMKEceukJ8=
+	b=VmjfSgaDdsF2yWLt7elzjPs5AJFYbs1nwo6o80GXaZLLjoPmNwHeqZMwVQC70DnQ6
+	 ZiO0+XAGGDbLbAm5aiNXW8uRlUkTnpRhfW9oS3SKM8oUUaTdq7YD7m8695yvecPNGm
+	 AIGFg5BxfulamL+H3mvgwLLyJaNq7AV9Tm4cQeEA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729154AbgCCCuX (ORCPT
+        id S1728314AbgCCCwS (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 2 Mar 2020 21:50:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47222 "EHLO mail.kernel.org"
+        Mon, 2 Mar 2020 21:52:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46680 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729152AbgCCCuX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 2 Mar 2020 21:50:23 -0500
+        id S1729051AbgCCCuE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 2 Mar 2020 21:50:04 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 48827246E7;
-        Tue,  3 Mar 2020 02:50:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B238E246D5;
+        Tue,  3 Mar 2020 02:50:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583203823;
-        bh=sOAGFuQmdWeLvsjXjqeTg71nvzmjKCDHQHCRceyd3eA=;
+        s=default; t=1583203804;
+        bh=mQi+kJKCA4XsCXfQOnNrS/gSe+ZGvNiadlAQOyB6ZBM=;
         h=From:To:Cc:Subject:Date:From;
-        b=jz0ckZ9vLUlabOubgMhvIFGtOn5QIGAIs1KwDesnACf/NBQolSisQIIwL/DnRuvWE
-         O7BkPBzZPA8B05ksPxU17VkDWKLlOVk8+W4qzzgMWO7157LQxGWN7tDOfjtB/OfmRg
-         5V62PMS8gtvocm/5t1+Zy0dqaTejcakBvoW8bbPU=
+        b=zNVQ1QPdO4MZATr8RVADQWjstKYSxcP5jFsP+TiAg7sGnCSmX/XLRPB/MjE5fkWwt
+         wKLRaEUKwE6PHUGfPWs0plD34bDiwGG4KG9zUwuzRw+tgze5gR1dvy6+GV/bqpGXY8
+         L0Z2bXfM+gzWKBWKegmm94AjCp9Kk4tp1NWZ64Os=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Daniel Golle <daniel@makrotopia.org>,
         Chuanhong Guo <gch981213@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 01/11] serial: ar933x_uart: set UART_CS_{RX,TX}_READY_ORIDE
-Date:   Mon,  2 Mar 2020 21:50:11 -0500
-Message-Id: <20200303025021.10754-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 01/13] serial: ar933x_uart: set UART_CS_{RX,TX}_READY_ORIDE
+Date:   Mon,  2 Mar 2020 21:49:50 -0500
+Message-Id: <20200303025002.10600-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 X-stable: review
@@ -83,10 +83,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 8 insertions(+)
 
 diff --git a/drivers/tty/serial/ar933x_uart.c b/drivers/tty/serial/ar933x_uart.c
-index 1519d2ca7705f..40194791cde0b 100644
+index d4462512605b5..246f4aab74075 100644
 --- a/drivers/tty/serial/ar933x_uart.c
 +++ b/drivers/tty/serial/ar933x_uart.c
-@@ -294,6 +294,10 @@ static void ar933x_uart_set_termios(struct uart_port *port,
+@@ -289,6 +289,10 @@ static void ar933x_uart_set_termios(struct uart_port *port,
  	ar933x_uart_rmw_set(up, AR933X_UART_CS_REG,
  			    AR933X_UART_CS_HOST_INT_EN);
  
@@ -97,7 +97,7 @@ index 1519d2ca7705f..40194791cde0b 100644
  	/* reenable the UART */
  	ar933x_uart_rmw(up, AR933X_UART_CS_REG,
  			AR933X_UART_CS_IF_MODE_M << AR933X_UART_CS_IF_MODE_S,
-@@ -426,6 +430,10 @@ static int ar933x_uart_startup(struct uart_port *port)
+@@ -421,6 +425,10 @@ static int ar933x_uart_startup(struct uart_port *port)
  	ar933x_uart_rmw_set(up, AR933X_UART_CS_REG,
  			    AR933X_UART_CS_HOST_INT_EN);
  
