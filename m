@@ -2,43 +2,41 @@ Return-Path: <SRS0=YTEb=4U=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C2F4C3F2C6
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Mar 2020 17:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6265CC3F2D8
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Mar 2020 17:44:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 67B11208C3
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Mar 2020 17:43:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3C541214D8
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Mar 2020 17:44:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=walle.cc header.i=@walle.cc header.b="NR4qiscK"
+	dkim=pass (1024-bit key) header.d=walle.cc header.i=@walle.cc header.b="EMPB6VLy"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729707AbgCCRnz (ORCPT
+        id S1729752AbgCCRnW (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Mar 2020 12:43:55 -0500
-Received: from ssl.serverraum.org ([176.9.125.105]:55853 "EHLO
+        Tue, 3 Mar 2020 12:43:22 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:41849 "EHLO
         ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729748AbgCCRnX (ORCPT
+        with ESMTP id S1729463AbgCCRnW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Mar 2020 12:43:23 -0500
+        Tue, 3 Mar 2020 12:43:22 -0500
 Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id C4F5523E2C;
-        Tue,  3 Mar 2020 18:43:20 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id D7C1C231D9;
+        Tue,  3 Mar 2020 18:43:18 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1583257401;
+        t=1583257399;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VX93nZn2AbWIOGGDfDdsClKAztru9C3qnY5D3he52bw=;
-        b=NR4qiscKZUDwQDviE1N9ER57qxAxZX5tWQuROndkUU9z1oBkjiPm9gR0mfr3FasiSbucDq
-        xE7PELfGe9uxGXq755rO+y8/Onh65xmQeGslOwc8019olRW+JITn15ak0CjA6fheEawiey
-        s8U71K4vXEUAeFvrqQLNZrUcvAMdsv0=
+         content-transfer-encoding:content-transfer-encoding;
+        bh=/SS0Mpitdw47OknrMdnyVNGnPtzEQcsJ+qOlq2fN2jQ=;
+        b=EMPB6VLynHXmYFxKp/ONkM14baAzs5ZaCvqFD/iFs09cuXslOkpOh9Iw3zyk+Pt/xYIfXK
+        0fkrfGlazORExVvOcTQEwlC+8NmN3+DP/MFu53+G/CkM9/Zj+jA8EgeHYcN2D1fCR5681+
+        /6RGigOxmRBKGX4DyhS21DvMk2DCCc4=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
@@ -49,17 +47,15 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>, Peng Fan <peng.fan@nxp.com>,
         Vabhav Sharma <vabhav.sharma@nxp.com>,
         Yuan Yao <yao.yuan@nxp.com>, Michael Walle <michael@walle.cc>
-Subject: [PATCH v3 2/9] tty: serial: fsl_lpuart: free IDs allocated by IDA
-Date:   Tue,  3 Mar 2020 18:42:59 +0100
-Message-Id: <20200303174306.6015-3-michael@walle.cc>
+Subject: [PATCH v3 0/9] tty: serial: fsl_lpuart various fixes and LS1028A support
+Date:   Tue,  3 Mar 2020 18:42:57 +0100
+Message-Id: <20200303174306.6015-1-michael@walle.cc>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200303174306.6015-1-michael@walle.cc>
-References: <20200303174306.6015-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spamd-Bar: ++++++
 X-Rspamd-Server: web
-X-Rspamd-Queue-Id: C4F5523E2C
+X-Rspamd-Queue-Id: D7C1C231D9
 X-Spamd-Result: default: False [6.40 / 15.00];
          FROM_HAS_DN(0.00)[];
          TO_DN_SOME(0.00)[];
@@ -83,103 +79,47 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Since commit 3bc3206e1c0f ("serial: fsl_lpuart: Remove the alias node
-dependence") the port line number can also be allocated by IDA, but in
-case of an error the ID will no be removed again. More importantly, any
-ID will be freed in remove(), even if it wasn't allocated but instead
-fetched by of_alias_get_id(). If it was not allocated by IDA there will
-be a warning:
-  WARN(1, "ida_free called for id=%d which is not allocated.\n", id);
+These are various fixes for problems I found during development of the
+LS1028A support for the LPUART.
 
-Move the ID allocation more to the end of the probe() so that we still
-can use plain return in the first error cases.
+Also, I'm not sure if this series should be split between the "tty:
+serial: fsl_lpuart" patches and the devicetree patches. So unless
+someone tell me otherwise I keep them together to avoid mention any
+dependencies.
 
-Fixes: 3bc3206e1c0f ("serial: fsl_lpuart: Remove the alias node dependence")
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/tty/serial/fsl_lpuart.c | 39 ++++++++++++++++++++-------------
- 1 file changed, 24 insertions(+), 15 deletions(-)
+Changes since v2:
+Changed DMA channel request handling. Spotted by Rob Herring. Thanks.
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 27fdc131c352..c31b8f3db6bf 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -264,6 +264,7 @@ struct lpuart_port {
- 	int			rx_dma_rng_buf_len;
- 	unsigned int		dma_tx_nents;
- 	wait_queue_head_t	dma_wait;
-+	bool			id_allocated;
- };
- 
- struct lpuart_soc_data {
-@@ -2422,19 +2423,6 @@ static int lpuart_probe(struct platform_device *pdev)
- 	if (!sport)
- 		return -ENOMEM;
- 
--	ret = of_alias_get_id(np, "serial");
--	if (ret < 0) {
--		ret = ida_simple_get(&fsl_lpuart_ida, 0, UART_NR, GFP_KERNEL);
--		if (ret < 0) {
--			dev_err(&pdev->dev, "port line is full, add device failed\n");
--			return ret;
--		}
--	}
--	if (ret >= ARRAY_SIZE(lpuart_ports)) {
--		dev_err(&pdev->dev, "serial%d out of range\n", ret);
--		return -EINVAL;
--	}
--	sport->port.line = ret;
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	sport->port.membase = devm_ioremap_resource(&pdev->dev, res);
- 	if (IS_ERR(sport->port.membase))
-@@ -2479,9 +2467,25 @@ static int lpuart_probe(struct platform_device *pdev)
- 		}
- 	}
- 
-+	ret = of_alias_get_id(np, "serial");
-+	if (ret < 0) {
-+		ret = ida_simple_get(&fsl_lpuart_ida, 0, UART_NR, GFP_KERNEL);
-+		if (ret < 0) {
-+			dev_err(&pdev->dev, "port line is full, add device failed\n");
-+			return ret;
-+		}
-+		sport->id_allocated = true;
-+	}
-+	if (ret >= ARRAY_SIZE(lpuart_ports)) {
-+		dev_err(&pdev->dev, "serial%d out of range\n", ret);
-+		ret = -EINVAL;
-+		goto failed_out_of_range;
-+	}
-+	sport->port.line = ret;
-+
- 	ret = lpuart_enable_clks(sport);
- 	if (ret)
--		return ret;
-+		goto failed_clock_enable;
- 	sport->port.uartclk = lpuart_get_baud_clk_rate(sport);
- 
- 	lpuart_ports[sport->port.line] = sport;
-@@ -2531,6 +2535,10 @@ static int lpuart_probe(struct platform_device *pdev)
- failed_attach_port:
- failed_irq_request:
- 	lpuart_disable_clks(sport);
-+failed_clock_enable:
-+failed_out_of_range:
-+	if (sport->id_allocated)
-+		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
- 	return ret;
- }
- 
-@@ -2540,7 +2548,8 @@ static int lpuart_remove(struct platform_device *pdev)
- 
- 	uart_remove_one_port(&lpuart_reg, &sport->port);
- 
--	ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
-+	if (sport->id_allocated)
-+		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
- 
- 	lpuart_disable_clks(sport);
- 
+Modified patches:
+  tty: serial: fsl_lpuart: handle EPROBE_DEFER for DMA
+
+Changes since v1:
+DMA support fixes.
+
+New patches:
+  tty: serial: fsl_lpuart: fix DMA mapping
+  arm64: dts: ls1028a: add "fsl,vf610-edma" compatible
+
+Modified patches:
+  arm64: dts: ls1028a: add missing LPUART nodes
+   - add dma phandles
+
+Michael Walle (9):
+  Revert "tty: serial: fsl_lpuart: drop EARLYCON_DECLARE"
+  tty: serial: fsl_lpuart: free IDs allocated by IDA
+  tty: serial: fsl_lpuart: handle EPROBE_DEFER for DMA
+  tty: serial: fsl_lpuart: fix DMA mapping
+  dt-bindings: serial: lpuart: add ls1028a compatibility
+  tty: serial: fsl_lpuart: add LS1028A support
+  tty: serial: fsl_lpuart: add LS1028A earlycon support
+  arm64: dts: ls1028a: add "fsl,vf610-edma" compatible
+  arm64: dts: ls1028a: add missing LPUART nodes
+
+ .../devicetree/bindings/serial/fsl-lpuart.txt |  10 +-
+ .../arm64/boot/dts/freescale/fsl-ls1028a.dtsi |  75 +++++-
+ drivers/tty/serial/fsl_lpuart.c               | 251 ++++++++++++------
+ 3 files changed, 255 insertions(+), 81 deletions(-)
+
 -- 
 2.20.1
 
