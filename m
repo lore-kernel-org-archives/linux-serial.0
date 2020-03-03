@@ -2,115 +2,139 @@ Return-Path: <SRS0=YTEb=4U=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC199C3F2C6
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Mar 2020 07:42:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E831C3F2C6
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Mar 2020 07:57:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 87C09215A4
-	for <linux-serial@archiver.kernel.org>; Tue,  3 Mar 2020 07:42:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 818C7214D8
+	for <linux-serial@archiver.kernel.org>; Tue,  3 Mar 2020 07:57:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725818AbgCCHmg (ORCPT
+        id S1727738AbgCCH5d (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 3 Mar 2020 02:42:36 -0500
-Received: from esa5.microchip.iphmx.com ([216.71.150.166]:21020 "EHLO
-        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725440AbgCCHmg (ORCPT
+        Tue, 3 Mar 2020 02:57:33 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:36639 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725879AbgCCH5c (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 3 Mar 2020 02:42:36 -0500
-Received-SPF: Pass (esa5.microchip.iphmx.com: domain of
-  Ludovic.Desroches@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
-  envelope-from="Ludovic.Desroches@microchip.com";
-  x-sender="Ludovic.Desroches@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
-  include:servers.mcsv.net include:mktomail.com
-  include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa5.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
-  envelope-from="Ludovic.Desroches@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa5.microchip.iphmx.com; spf=Pass smtp.mailfrom=Ludovic.Desroches@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: O7nPWFUYAo46OKeqpq4DP6IKOpF+nVYiAdwnUMbQ8fSaiNzmXHwXqFm94BkNP5ugsipUD0DoDB
- LqKZRMZ0WwJeNfufsgA3sOkhn2nDpkYsSsS5Fjr46YgYGxAMBh/WOZ6dcdEjIrHZ47XC/xKoLv
- rczO22iCfEKatiVpHo7y3G3M0FG/KJfASDlRxjmC7G3+jPaS/fp8WwNqYmde2MzeZRbUf//txw
- TUWDd+HQsbES/zYXYhtyg9DqS4FJdGqB8TTk6QlReVJzHVyVb+ivmPDxyBhaNIk4KCwBSmElEw
- k8I=
-X-IronPort-AV: E=Sophos;i="5.70,510,1574146800"; 
-   d="scan'208";a="67426639"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Mar 2020 00:42:36 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 3 Mar 2020 00:42:35 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Tue, 3 Mar 2020 00:42:48 -0700
-Date:   Tue, 3 Mar 2020 08:41:52 +0100
-From:   Ludovic Desroches <ludovic.desroches@microchip.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-CC:     <linux-serial@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Razvan Stefanescu <razvan.stefanescu@microchip.com>
-Subject: Re: [PATCH] tty: serial: atmel_serial: Drop GPIO includes
-Message-ID: <20200303074152.eis2vtryfewujdbx@M43218.corp.atmel.com>
-References: <20200229220941.205599-1-linus.walleij@linaro.org>
+        Tue, 3 Mar 2020 02:57:32 -0500
+Received: by mail-wr1-f67.google.com with SMTP id j16so3090818wrt.3;
+        Mon, 02 Mar 2020 23:57:31 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=GIpTxxRTdtqR1dz04Vc7cfNzKbDxGM90ZB3jr6ZSAEY=;
+        b=W0Si6s8cP1mhaiKzmeEqo3DB/iAmGgP+VsIWaAbLHhg03p9TqIEaZFJOtw1hiHD2yt
+         IYGwwen2uI5ZhI1BgDqi50KEZk7VJPPvfGbaFirzYtq2LjNE6eZP4/wwi8rd8DQFcBkL
+         q2OGRqUd6SOBiqsE96FCIgqv4BykYHSpo5DOuBUdnm6ABx/krW3RlXfBJG9nY+Lrsy9u
+         8dY/sFjFloGi5leamhZMd2QNIK67G82FWL0qMm+Sn87M9LKJ+skW+NbXoBH3GSFhvvl8
+         6NUtBd5HOY8bw+3zvUQ7Pox8Y6Sw2APRWTCaRySj5F58x1RPqNs37dmK99x2AiacnjZv
+         zKNA==
+X-Gm-Message-State: ANhLgQ28EZ5zfjRe45NQ4Yg33mQJiUoiDiS3X6MV1g7edM5FGiFNe0Hd
+        U5i1blmqOba79zQCF0uKJszpdMYPDPA=
+X-Google-Smtp-Source: ADFU+vvHkSh56FMbU3/BkuhFPwSMZKfBKZVRcWRi0hdXpLnzJ4aJ4p6k99RgisKOlQwn0LUUXJ6xxA==
+X-Received: by 2002:a5d:63c7:: with SMTP id c7mr4283436wrw.115.1583222250356;
+        Mon, 02 Mar 2020 23:57:30 -0800 (PST)
+Received: from ?IPv6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id u25sm2442095wml.17.2020.03.02.23.57.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 Mar 2020 23:57:29 -0800 (PST)
+Subject: Re: [PATCH 2/2] tty:serial:mvebu-uart:fix a wrong return
+To:     tangbin <tangbin@cmss.chinamobile.com>, gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200303071309.17172-1-tangbin@cmss.chinamobile.com>
+From:   Jiri Slaby <jslaby@suse.cz>
+Autocrypt: addr=jslaby@suse.cz; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <22c8d64b-5360-6495-8f83-75b52e86ca08@suse.cz>
+Date:   Tue, 3 Mar 2020 08:57:28 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200229220941.205599-1-linus.walleij@linaro.org>
+In-Reply-To: <20200303071309.17172-1-tangbin@cmss.chinamobile.com>
+Content-Type: text/plain; charset=iso-8859-2
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Feb 29, 2020 at 11:09:41PM +0100, Linus Walleij wrote:
-> 
-> Nothing in this driver uses the symbols from these GPIO
-> includes so drop them. These are probably just historical
-> artifacts from befor mctrl_gpio was used.
-> 
-> Cc: Ludovic Desroches <ludovic.desroches@microchip.com>
-> Cc: Razvan Stefanescu <razvan.stefanescu@microchip.com>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+On 03. 03. 20, 8:13, tangbin wrote:
+> in this place,the right return should be
+> return PTR_ERR(),not return -PTR_ERR()
 
-Reviewed-by: Ludovic Desroches <ludovic.desroches@microchip.com>
+One because missing. Like ", because PTR_ERR already returns a negative
+error and the probe function is expected to return a negative value in
+case of error."
 
-Thanks.
+Acked-by: Jiri Slaby <jslaby@suse.cz>
 
+> Signed-off-by: tangbin <tangbin@cmss.chinamobile.com>
 > ---
->  drivers/tty/serial/atmel_serial.c | 3 ---
->  1 file changed, 3 deletions(-)
+>  drivers/tty/serial/mvebu-uart.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index c15c398c88a9..801b998c87e7 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -20,15 +20,12 @@
->  #include <linux/platform_device.h>
->  #include <linux/of.h>
->  #include <linux/of_device.h>
-> -#include <linux/of_gpio.h>
->  #include <linux/dma-mapping.h>
->  #include <linux/dmaengine.h>
->  #include <linux/atmel_pdc.h>
->  #include <linux/uaccess.h>
->  #include <linux/platform_data/atmel.h>
->  #include <linux/timer.h>
-> -#include <linux/gpio.h>
-> -#include <linux/gpio/consumer.h>
->  #include <linux/err.h>
->  #include <linux/irq.h>
->  #include <linux/suspend.h>
-> --
-> 2.24.1
+> diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+> index c12a12556..4e9a59071 100644
+> --- a/drivers/tty/serial/mvebu-uart.c
+> +++ b/drivers/tty/serial/mvebu-uart.c
+> @@ -851,7 +851,7 @@ static int mvebu_uart_probe(struct platform_device *pdev)
+>  
+>  	port->membase = devm_ioremap_resource(&pdev->dev, reg);
+>  	if (IS_ERR(port->membase))
+> -		return -PTR_ERR(port->membase);
+> +		return PTR_ERR(port->membase);
+>  
+>  	mvuart = devm_kzalloc(&pdev->dev, sizeof(struct mvebu_uart),
+>  			      GFP_KERNEL);
 > 
+
+
+-- 
+js
+suse labs
