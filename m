@@ -7,53 +7,53 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C44DC3F2CD
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Mar 2020 14:03:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8334FC3F2CD
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Mar 2020 14:44:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0F25720838
-	for <linux-serial@archiver.kernel.org>; Wed,  4 Mar 2020 14:03:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4F06320866
+	for <linux-serial@archiver.kernel.org>; Wed,  4 Mar 2020 14:44:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1583330609;
-	bh=c/7PbKWljRp0trpq1iIHJMt5H9ohH4AXeljh80TNni0=;
+	s=default; t=1583333067;
+	bh=uKiNLVFgpNoNxtlTI4l7WNRrAcGQ8h1y7f4ZG2yWftA=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=W3kov/va2bMH0IE18Ld5vXipYCM+TIBbpIXdhhQfu7hH3cHFF2otSmoeS8DsX2Sgi
-	 CNUG6JtHA61hdlPwjJXQkfhOlnLNceAK37C2QdpqPkpTTAWlLx6EQuW8HbrB4GR9/1
-	 6Q8LkMAWX4KhsNo+gDfQ80hfcLLkiufj+DPyX87w=
+	b=R04jiW54AUGPAtrMLYuES/zfGhk77zypGwBAAT0qoeaU9/c1VtWT1+R+HvCVXCjLa
+	 AQf1C0j9I/0RHmFDUfl62IcK+WM8VPWJxDtLra97PTV0BGr/3Y2ozqrRXL7C2pSILo
+	 +gXOJjwT2N001Z7uKrv5EZJ9Z+8JLG1fQB/0veNE=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726378AbgCDOD2 (ORCPT
+        id S1726661AbgCDOo0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 4 Mar 2020 09:03:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40318 "EHLO mail.kernel.org"
+        Wed, 4 Mar 2020 09:44:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46356 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725795AbgCDOD2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 4 Mar 2020 09:03:28 -0500
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
+        id S1726561AbgCDOo0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 4 Mar 2020 09:44:26 -0500
+Received: from mail-qk1-f177.google.com (mail-qk1-f177.google.com [209.85.222.177])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1B01120838;
-        Wed,  4 Mar 2020 14:03:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2DAD820838;
+        Wed,  4 Mar 2020 14:44:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583330607;
-        bh=c/7PbKWljRp0trpq1iIHJMt5H9ohH4AXeljh80TNni0=;
+        s=default; t=1583333065;
+        bh=uKiNLVFgpNoNxtlTI4l7WNRrAcGQ8h1y7f4ZG2yWftA=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=X2qaS1m0mn4bOQZcNPXvuutE1rY1DG0eK+e7r1ATiAFki2kUvFLIWISAnVJ1nQc85
-         l/LiUfu7HlJ3gvS5CdVk2vvQy/fU8LuFp1JFDqpd4c+1R/TuxPMxOCX9kzoC3ZWMvJ
-         CMJCycFiiGIIwvdA7E4mqk3/a2RE3+2aXvZ1Bwx8=
-Received: by mail-qt1-f175.google.com with SMTP id h16so1370632qtr.11;
-        Wed, 04 Mar 2020 06:03:27 -0800 (PST)
-X-Gm-Message-State: ANhLgQ1m1evlek1CRSxV1OELvvioxGNE5qzpk91CxpA4h3a3FiCKG/Bb
-        Ug+cUxowZGdvxPuK2RRTbbNZK+Am7w0+33IGwg==
-X-Google-Smtp-Source: ADFU+vvkXmsZ7+dChOIng8XdX7Ybtyzwvh/1OvNSw/vFtYgEGvGFLxsUZgfeBBWYmteauSXqvDObiftDHxbxhfhdKdA=
-X-Received: by 2002:aed:2344:: with SMTP id i4mr2563203qtc.136.1583330606186;
- Wed, 04 Mar 2020 06:03:26 -0800 (PST)
+        b=nJckBJpbRQtZMzZeaJd5QmQZ7oiEodMkvUBWz5Os6ddrqiyM0x8BnbY7S0N3WzduP
+         q77RTBF4uRaIN9OMHIhBr7Ahj2qLXBFvQheDd/6aPDH9XK2qNkbXnNUVDOlhZ72Kzi
+         E8BPm5mrA196q2PwdPFJj74Pn2fZ++abTITczgd0=
+Received: by mail-qk1-f177.google.com with SMTP id e11so1793208qkg.9;
+        Wed, 04 Mar 2020 06:44:25 -0800 (PST)
+X-Gm-Message-State: ANhLgQ28EiWT2G11Nx3j7eu11fqsurav8ATCrtz+rP64TISSEU2MrrKC
+        4+f8MxlfDjwnKo+7OP6X3oolevXZlEkKj8+4GQ==
+X-Google-Smtp-Source: ADFU+vu33UNp7iWZzTLTq5f0V0ldGIAyWHjMkXzB7UHEeMuowhUTqDVhlImIbXJ1QIz+xFMC6YKU9hGXrvWoCZ9XfpE=
+X-Received: by 2002:a37:2cc6:: with SMTP id s189mr1679888qkh.223.1583333064226;
+ Wed, 04 Mar 2020 06:44:24 -0800 (PST)
 MIME-Version: 1.0
-References: <20200303134351.22270-1-geert+renesas@glider.be> <20200303134351.22270-2-geert+renesas@glider.be>
-In-Reply-To: <20200303134351.22270-2-geert+renesas@glider.be>
+References: <20200303134351.22270-1-geert+renesas@glider.be> <20200303134351.22270-3-geert+renesas@glider.be>
+In-Reply-To: <20200303134351.22270-3-geert+renesas@glider.be>
 From:   Rob Herring <robh+dt@kernel.org>
-Date:   Wed, 4 Mar 2020 08:03:10 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqL7x-XevypLxUUksOCyezbn8=NpL9rMfo0rCQyYzrUxmw@mail.gmail.com>
-Message-ID: <CAL_JsqL7x-XevypLxUUksOCyezbn8=NpL9rMfo0rCQyYzrUxmw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: serial: Convert generic bindings to json-schema
+Date:   Wed, 4 Mar 2020 08:44:12 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJKpK-6Ud_MY6LqS5L0iq3ewBjdc+mJ15ig9jmYN6FuHA@mail.gmail.com>
+Message-ID: <CAL_JsqJKpK-6Ud_MY6LqS5L0iq3ewBjdc+mJ15ig9jmYN6FuHA@mail.gmail.com>
+Subject: Re: [PATCH 2/2] dt-bindings: serial: Convert slave-device bindings to json-schema
 To:     Geert Uytterhoeven <geert+renesas@glider.be>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
@@ -67,155 +67,171 @@ X-Mailing-List: linux-serial@vger.kernel.org
 On Tue, Mar 3, 2020 at 7:43 AM Geert Uytterhoeven
 <geert+renesas@glider.be> wrote:
 >
-> Convert the generic serial interface Device Tree binding documentation
-> to json-schema.
+> Convert the serial slave-device Device Tree binding documentation to
+> json-schema, and incorporate it into the generic serial bindings.
 >
 > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 > ---
->  .../devicetree/bindings/serial/serial.txt     | 56 -----------
->  .../devicetree/bindings/serial/serial.yaml    | 95 +++++++++++++++++++
->  2 files changed, 95 insertions(+), 56 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/serial/serial.txt
->  create mode 100644 Documentation/devicetree/bindings/serial/serial.yaml
-
+>  .../devicetree/bindings/serial/serial.yaml    | 53 +++++++++++++++++++
+>  .../bindings/serial/slave-device.txt          | 45 ----------------
+>  MAINTAINERS                                   |  2 +-
+>  3 files changed, 54 insertions(+), 46 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/serial/slave-device.txt
+>
 > diff --git a/Documentation/devicetree/bindings/serial/serial.yaml b/Documentation/devicetree/bindings/serial/serial.yaml
-> new file mode 100644
-> index 0000000000000000..d408335319f00215
-> --- /dev/null
+> index d408335319f00215..7381966449b62deb 100644
+> --- a/Documentation/devicetree/bindings/serial/serial.yaml
 > +++ b/Documentation/devicetree/bindings/serial/serial.yaml
-> @@ -0,0 +1,95 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/serial/serial.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: Serial Interface Generic DT Bindings
-> +
-> +maintainers:
-> +  - Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> +
-> +description:
-> +  This document lists a set of generic properties for describing UARTs in a
-> +  device tree.  Whether these properties apply to a particular device depends
-> +  on the DT bindings for the actual device.
-> +
-> +properties:
-> +  $nodename:
-> +    pattern: "^serial@[0-9a-f]+$"
+> @@ -7,6 +7,7 @@ $schema: "http://devicetree.org/meta-schemas/core.yaml#"
+>  title: Serial Interface Generic DT Bindings
+>
+>  maintainers:
+> +  - Rob Herring <robh@kernel.org>
+>    - Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>
+>  description:
+> @@ -59,6 +60,45 @@ properties:
+>        "rts-gpios" above, unless support is provided to switch between modes
+>        dynamically.
+>
+> +patternProperties:
+> +  "^(bluetooth|ethernet|gnss|nfc|wifi)$":
 
-',' is also possible in unit-address. Probably shouldn't be defining
-unit-address format at all here, so:
+A bit fragile, but okay. There's also some serial attached board
+control micro-controllers. See the Zodiac i.MX board "rave-sp" node.
 
-"^serial(@.*)?$"
+The only other way I've come up to handle this is:
 
+".*":
+  if:
+    type: object
+  then:
+    ...
+
+> +    type: object
 > +
-> +  cts-gpios:
 > +    description:
-> +      Must contain a GPIO specifier, referring to the GPIO pin to be used as
-> +      the UART's CTS line.
+> +      Serial attached devices shall be a child node of the host UART device the
+> +      slave device is attached to. It is expected that the attached device is
+> +      the only child node of the UART device. The slave device node name shall
+> +      reflect the generic type of device for the node.
+> +
+> +    properties:
+> +      compatible:
+> +        description:
+> +          Compatible of the device connnected to the serial port.
 
-These all need a 'maxItems: 1'.
+typo
 
 > +
-> +  dcd-gpios:
-> +    description:
-> +      Must contain a GPIO specifier, referring to the GPIO pin to be used as
-> +      the UART's DCD line.
+> +      max-speed:
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        description:
+> +          The maximum baud rate the device operates at. This should only be
+> +          present if the maximum is less than the slave device can support. For
+> +          example, a particular board has some signal quality issue or the host
+> +          processor can't support higher baud rates.
 > +
-> +  dsr-gpios:
-> +    description:
-> +      Must contain a GPIO specifier, referring to the GPIO pin to be used as
-> +      the UART's DSR line.
+> +      current-speed:
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        description: |
+> +          The current baud rate the device operates at. This should only be
+> +          present in case a driver has no chance to know the baud rate of the
+> +          slave device.
+> +          Examples:
+> +            * device supports auto-baud
+> +            * the rate is setup by a bootloader and there is no way to reset
+> +              the device
+> +            * device baud rate is configured by its firmware but there is no
+> +              way to request the actual settings
 > +
-> +  dtr-gpios:
-> +    description:
-> +      Must contain a GPIO specifier, referring to the GPIO pin to be used as
-> +      the UART's DTR line.
+> +    required:
+> +      - compatible
 > +
-> +  rng-gpios:
-> +    description:
-> +      Must contain a GPIO specifier, referring to the GPIO pin to be used as
-> +      the UART's RNG line.
-> +
-> +  rts-gpios:
-> +    description:
-> +      Must contain a GPIO specifier, referring to the GPIO pin to be used as
-> +      the UART's RTS line.
-> +
-> +  uart-has-rtscts:
-> +    $ref: /schemas/types.yaml#/definitions/flag
-> +    description:
-> +      The presence of this property indicates that the UART has dedicated lines
-> +      for RTS/CTS hardware flow control, and that they are available for use
-> +      (wired and enabled by pinmux configuration).  This depends on both the
-> +      UART hardware and the board wiring.
-> +      Note that this property is mutually-exclusive with "cts-gpios" and
-> +      "rts-gpios" above, unless support is provided to switch between modes
-> +      dynamically.
-
-This can be expressed as:
-
-oneOf:
-  - {} # None of the properties present
-  - required:
-      - uart-has-rtscts
-  - anyOf:
-      - required:
-          - cts-gpios
-      - required:
-          - rts-gpios
-
-Or probably more clearly:
-
-if:
-  required:
-    - uart-has-rtscts
-then:
-  properties:
-    rts-gpios: false
-    cts-gpios: false
-
-(Untested)
-
-> +
-> +examples:
-
-Personally, I'd just drop examples from schemas that aren't complete.
-
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +
-> +    serial@48022000 {
-> +            compatible = "ti,am3352-uart", "ti,omap3-uart";
-> +            ti,hwmods = "uart2";
-> +            clock-frequency = <48000000>;
-> +            reg = <0x48022000 0x2000>;
-> +            interrupts = <73>;
-> +            dmas = <&edma 28 0>, <&edma 29 0>;
-> +            dma-names = "tx", "rx";
-> +            dtr-gpios = <&gpio2 22 GPIO_ACTIVE_LOW>;
-> +            dsr-gpios = <&gpio2 23 GPIO_ACTIVE_LOW>;
-> +            dcd-gpios = <&gpio2 24 GPIO_ACTIVE_LOW>;
-> +            rng-gpios = <&gpio2 25 GPIO_ACTIVE_LOW>;
-> +            cts-gpios = <&gpio0 12 GPIO_ACTIVE_LOW>;
-> +            rts-gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
-> +    };
+>  examples:
+>    - |
+>      #include <dt-bindings/gpio/gpio.h>
+> @@ -93,3 +133,16 @@ examples:
+>              power-domains = <&pd_a3sp>;
+>              uart-has-rtscts;
+>      };
 > +
 > +  - |
-> +    #include <dt-bindings/clock/sh73a0-clock.h>
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    serial@1234 {
+> +            compatible = "ns16550a";
+> +            reg = <0x1234 0x20>;
+> +            interrupts = <1>;
 > +
-> +    serial@e6c80000 {
-> +            compatible = "renesas,scifa-sh73a0", "renesas,scifa";
-> +            reg = <0xe6c80000 0x100>;
-> +            interrupts = <GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>;
-> +            clocks = <&mstp2_clks SH73A0_CLK_SCIFA4>;
-> +            clock-names = "fck";
-> +            power-domains = <&pd_a3sp>;
-> +            uart-has-rtscts;
+> +            bluetooth {
+> +                    compatible = "brcm,bcm43341-bt";
+> +                    interrupt-parent = <&gpio>;
+> +                    interrupts = <10>;
+> +            };
 > +    };
+> diff --git a/Documentation/devicetree/bindings/serial/slave-device.txt b/Documentation/devicetree/bindings/serial/slave-device.txt
+> deleted file mode 100644
+> index 40110e0196209fde..0000000000000000
+> --- a/Documentation/devicetree/bindings/serial/slave-device.txt
+> +++ /dev/null
+> @@ -1,45 +0,0 @@
+> -Serial Slave Device DT binding
+> -
+> -This documents the binding structure and common properties for serial
+> -attached devices. Common examples include Bluetooth, WiFi, NFC and GPS
+> -devices.
+> -
+> -Serial attached devices shall be a child node of the host UART device the
+> -slave device is attached to. It is expected that the attached device is
+> -the only child node of the UART device. The slave device node name shall
+> -reflect the generic type of device for the node.
+> -
+> -Required Properties:
+> -
+> -- compatible   : A string reflecting the vendor and specific device the node
+> -                 represents.
+> -
+> -Optional Properties:
+> -
+> -- max-speed    : The maximum baud rate the device operates at. This should
+> -                 only be present if the maximum is less than the slave device
+> -                 can support. For example, a particular board has some signal
+> -                 quality issue or the host processor can't support higher
+> -                 baud rates.
+> -- current-speed        : The current baud rate the device operates at. This should
+> -                 only be present in case a driver has no chance to know
+> -                 the baud rate of the slave device.
+> -                 Examples:
+> -                   * device supports auto-baud
+> -                   * the rate is setup by a bootloader and there is no
+> -                     way to reset the device
+> -                   * device baud rate is configured by its firmware but
+> -                     there is no way to request the actual settings
+> -
+> -Example:
+> -
+> -serial@1234 {
+> -       compatible = "ns16550a";
+> -       interrupts = <1>;
+> -
+> -       bluetooth {
+> -               compatible = "brcm,bcm43341-bt";
+> -               interrupt-parent = <&gpio>;
+> -               interrupts = <10>;
+> -       };
+> -};
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 59c14ee9a917a794..5f5d074c7b3927a5 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -15034,7 +15034,7 @@ SERIAL DEVICE BUS
+>  M:     Rob Herring <robh@kernel.org>
+>  L:     linux-serial@vger.kernel.org
+>  S:     Maintained
+> -F:     Documentation/devicetree/bindings/serial/slave-device.txt
+> +F:     Documentation/devicetree/bindings/serial/serial.yaml
+>  F:     drivers/tty/serdev/
+>  F:     include/linux/serdev.h
+>
 > --
 > 2.17.1
 >
