@@ -6,37 +6,38 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B931AC3F2CD
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Mar 2020 12:31:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA602C3F2CD
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Mar 2020 13:08:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 93FBB2072A
-	for <linux-serial@archiver.kernel.org>; Thu,  5 Mar 2020 12:31:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7713420848
+	for <linux-serial@archiver.kernel.org>; Thu,  5 Mar 2020 13:08:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725990AbgCEMbL (ORCPT
+        id S1726036AbgCENI0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 5 Mar 2020 07:31:11 -0500
-Received: from mga04.intel.com ([192.55.52.120]:25222 "EHLO mga04.intel.com"
+        Thu, 5 Mar 2020 08:08:26 -0500
+Received: from mga03.intel.com ([134.134.136.65]:20090 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725912AbgCEMbL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 5 Mar 2020 07:31:11 -0500
+        id S1725880AbgCENI0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 5 Mar 2020 08:08:26 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Mar 2020 04:31:10 -0800
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Mar 2020 05:08:25 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,518,1574150400"; 
-   d="scan'208";a="387488685"
+   d="scan'208";a="352358897"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga004.jf.intel.com with ESMTP; 05 Mar 2020 04:31:09 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 05 Mar 2020 05:08:23 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 8AF7F107; Thu,  5 Mar 2020 14:31:08 +0200 (EET)
+        id 154BC107; Thu,  5 Mar 2020 15:08:22 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1] MAINTAINERS: Add missed files related to Synopsys DesignWare UART
-Date:   Thu,  5 Mar 2020 14:31:08 +0200
-Message-Id: <20200305123108.41320-1-andriy.shevchenko@linux.intel.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Raymond Tan <raymond.tan@intel.com>
+Subject: [PATCH v1] serial: 8250_lpss: Add ->setup() for Elkhart Lake ports
+Date:   Thu,  5 Mar 2020 15:08:22 +0200
+Message-Id: <20200305130822.36850-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -45,30 +46,42 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-8250_dw has been split to library part and the driver, the library
-is being used by 8250_lpss, which represents Synosys DesignWare UART
-(with optional Synopsys Designware DMA) enumerated by PCI.
+The ->setup() callback is mandatory for the devices.
+Provide it for Elkhart Lake UART ports.
 
-Add missed above mentioned files to the database record for review.
+Note, for time being it's empty, but in the future it might require
+an additional configuration such as DMA.
 
+Reported-by: Raymond Tan <raymond.tan@intel.com>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- MAINTAINERS | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/8250/8250_lpss.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 59ba0ab550b6..7b3fbc471bc3 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16163,6 +16163,8 @@ SYNOPSYS DESIGNWARE 8250 UART DRIVER
- R:	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- S:	Maintained
- F:	drivers/tty/serial/8250/8250_dw.c
-+F:	drivers/tty/serial/8250/8250_dwlib.*
-+F:	drivers/tty/serial/8250/8250_lpss.c
+diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+index 60eff3240c8a..4dee8a9e0c95 100644
+--- a/drivers/tty/serial/8250/8250_lpss.c
++++ b/drivers/tty/serial/8250/8250_lpss.c
+@@ -156,6 +156,11 @@ static int byt_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
+ 	return 0;
+ }
  
- SYNOPSYS DESIGNWARE APB GPIO DRIVER
- M:	Hoan Tran <hoan@os.amperecomputing.com>
++static int ehl_serial_setup(struct lpss8250 *lpss, struct uart_port *port)
++{
++	return 0;
++}
++
+ #ifdef CONFIG_SERIAL_8250_DMA
+ static const struct dw_dma_platform_data qrk_serial_dma_pdata = {
+ 	.nr_channels = 2,
+@@ -356,6 +361,7 @@ static const struct lpss8250_board byt_board = {
+ static const struct lpss8250_board ehl_board = {
+ 	.freq = 200000000,
+ 	.base_baud = 12500000,
++	.setup = ehl_serial_setup,
+ };
+ 
+ static const struct lpss8250_board qrk_board = {
 -- 
 2.25.1
 
