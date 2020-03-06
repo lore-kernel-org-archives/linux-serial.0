@@ -2,143 +2,179 @@ Return-Path: <SRS0=PCYV=4X=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64562C10DCE
-	for <linux-serial@archiver.kernel.org>; Fri,  6 Mar 2020 18:14:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B42D6C10F00
+	for <linux-serial@archiver.kernel.org>; Fri,  6 Mar 2020 20:57:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 21FC920578
-	for <linux-serial@archiver.kernel.org>; Fri,  6 Mar 2020 18:14:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8670C206CC
+	for <linux-serial@archiver.kernel.org>; Fri,  6 Mar 2020 20:57:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=dabbelt-com.20150623.gappssmtp.com header.i=@dabbelt-com.20150623.gappssmtp.com header.b="Lx0/Y/2X"
+	dkim=pass (1024-bit key) header.d=walle.cc header.i=@walle.cc header.b="Up+IQO/d"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726231AbgCFSN7 (ORCPT
+        id S1726633AbgCFU5S (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 6 Mar 2020 13:13:59 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:45449 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726194AbgCFSN7 (ORCPT
+        Fri, 6 Mar 2020 15:57:18 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:37907 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726485AbgCFU5R (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 6 Mar 2020 13:13:59 -0500
-Received: by mail-pf1-f194.google.com with SMTP id 2so1468304pfg.12
-        for <linux-serial@vger.kernel.org>; Fri, 06 Mar 2020 10:13:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20150623.gappssmtp.com; s=20150623;
-        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
-         :content-transfer-encoding;
-        bh=A5r22t8RnPQzcWCsNYP4RTrGIgpLaK+HmX8FXjmos5o=;
-        b=Lx0/Y/2XKX+4LtXUw0A4wEuvdCD+qugK+BGtJQx+9itY0fWPwP5PGJ72gD6ncOWLP4
-         JyQ83kBDrv9iq6Aj3JgTf9T4aMuyDPuuwclqMd4o/sefJ/3lPnw3MGaXKxDkIXdBsw6c
-         ZBwgxI7SbT5tGnCLEGhCusPeUMyS3mqymS5nDLWflMC57+tI0CcQlBJyzwOely5Mhbv0
-         eBAobp3LLa+KjUERm9aqPzAGEdnHrP+jP6yPDPjRhKhGpzOXwV3hS6GIiTTSpmhCxc7H
-         VObppcLeVc1011OEhvzhy8krjr1o5OT4kzBZNuC/muf7615oInfitSv7NHXNPVEgh0ML
-         iUVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
-         :mime-version:content-transfer-encoding;
-        bh=A5r22t8RnPQzcWCsNYP4RTrGIgpLaK+HmX8FXjmos5o=;
-        b=R1bEgkDkmVoHkdjAQlbMRnReQQcRrLRK/hlx0Zjyl70+KDrG7EfnqlJSslkGNQ0YzU
-         wLNiHlykZ9Bdt0t72xKOgRaVH9DpKrz6XhFKqbfKhjAR3J/bZSYvGU7qLjtgIqcazOJs
-         ROKDJUZVt4vbM2p2XBSm0hoW+ofXOjcCoKYBcSHPG9RTNMziaD6w8BJ4G2KJw6oSuT1h
-         bDpWMCaraNMtnqm4wv4KJvz+Ohau3eh3dQNo3FkRkDS+Y7oPMbrQWhug/nk3lnk8DOnv
-         5Q8oqCieFa7LZg4VwN0ogsyrU/hjiVHW4FQ9hckU8SGRIfKXWjk/ouHzzafvI5sfjoei
-         uNNQ==
-X-Gm-Message-State: ANhLgQ2HvJrSmH/9uwbC179/V3m4TBD4lesTv75C0X6DxMWSQU0N84WJ
-        wibTChdFA0BpdDON476u9YJFifYyx28=
-X-Google-Smtp-Source: ADFU+vtQNo1LEfG6NL1KkIdn1s/hz7jQfYK5hgLju3hox6x8NaKZkqXyn1/AZ5jC2+nAqOmDUEMMzg==
-X-Received: by 2002:aa7:96c7:: with SMTP id h7mr4809574pfq.211.1583518437534;
-        Fri, 06 Mar 2020 10:13:57 -0800 (PST)
-Received: from localhost ([2620:0:1000:2514:23a5:d584:6a92:3e3c])
-        by smtp.gmail.com with ESMTPSA id d10sm9821948pjc.34.2020.03.06.10.13.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Mar 2020 10:13:56 -0800 (PST)
-Date:   Fri, 06 Mar 2020 10:13:56 -0800 (PST)
-X-Google-Original-Date: Fri, 06 Mar 2020 10:13:55 PST (-0800)
-Subject:     Re: [PATCH] tty: serial: Add CONSOLE_POLL support to SiFive UART
-In-Reply-To: <1583224900-25824-1-git-send-email-vincent.chen@sifive.com>
-CC:     linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org,
-        vincent.chen@sifive.com
-From:   Palmer Dabbelt <palmer@dabbelt.com>
-To:     vincent.chen@sifive.com, Greg KH <gregkh@linuxfoundation.org>,
-        jslaby@suse.com, Paul Walmsley <paul.walmsley@sifive.com>
-Message-ID: <mhng-cf4b7d3b-9841-44a1-9ffd-ac7f4cdeb75d@palmerdabbelt-glaptop1>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
+        Fri, 6 Mar 2020 15:57:17 -0500
+Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 5CF4723E5E;
+        Fri,  6 Mar 2020 21:57:13 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1583528233;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EPJLmz2DVWGgqqk8cwT2mreLOHFxvMmL1XrOvX71qAI=;
+        b=Up+IQO/dIx5xfdGvrpdGA/47mOW93sr6WH4rbOilIZpVtl1u02kYUzCQf7aDWOkZzttYsc
+        K9LmX/wYkDwPBuL3FVUlGs09aqanIfRAuaVGJ4XH7M7CFpSsHtYEHOCPNZAPvt7AWdUiJi
+        rKFkR1cJ7/jAUJTvk/TNdbDfOlfpwAw=
+From:   Michael Walle <michael@walle.cc>
+To:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH 2/2] arm64: dts: ls1028a: add missing LPUART nodes
+Date:   Fri,  6 Mar 2020 21:57:03 +0100
+Message-Id: <20200306205703.30634-2-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200306205703.30634-1-michael@walle.cc>
+References: <20200306205703.30634-1-michael@walle.cc>
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Spamd-Bar: ++++++
+X-Rspamd-Server: web
+X-Rspamd-Queue-Id: 5CF4723E5E
+X-Spamd-Result: default: False [6.40 / 15.00];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         R_MISSING_CHARSET(2.50)[];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         TAGGED_RCPT(0.00)[dt];
+         MIME_GOOD(-0.10)[text/plain];
+         BROKEN_CONTENT_TYPE(1.50)[];
+         NEURAL_SPAM(0.00)[0.520];
+         DKIM_SIGNED(0.00)[];
+         DBL_PROHIBIT(0.00)[0.34.202.64:email,0.34.124.32:email,0.34.241.80:email,0.34.163.48:email];
+         RCPT_COUNT_SEVEN(0.00)[10];
+         MID_CONTAINS_FROM(1.00)[];
+         RCVD_COUNT_ZERO(0.00)[0];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         ASN(0.00)[asn:31334, ipnet:2a02:810c:8000::/33, country:DE];
+         SUSPICIOUS_RECIPS(1.50)[]
+X-Spam: Yes
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 03 Mar 2020 00:41:40 PST (-0800), vincent.chen@sifive.com wrote:
-> Add CONSOLE_POLL support for future KGDB porting.
->
-> Signed-off-by: Vincent Chen <vincent.chen@sifive.com>
-> ---
->  drivers/tty/serial/sifive.c | 27 +++++++++++++++++++++++++++
->  1 file changed, 27 insertions(+)
->
-> diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
-> index d5f81b98e4d7..acdbaca4de36 100644
-> --- a/drivers/tty/serial/sifive.c
-> +++ b/drivers/tty/serial/sifive.c
-> @@ -818,6 +818,29 @@ static int __init sifive_serial_console_setup(struct console *co, char *options)
->  	return uart_set_options(&ssp->port, co, baud, parity, bits, flow);
->  }
->
-> +#ifdef CONFIG_CONSOLE_POLL
-> +static int sifive_serial_poll_get_char(struct uart_port *port)
-> +{
-> +	struct sifive_serial_port *ssp = port_to_sifive_serial_port(port);
-> +	char is_empty, ch;
-> +
-> +	ch = __ssp_receive_char(ssp, &is_empty);
-> +	if (is_empty)
-> +		return NO_POLL_CHAR;
-> +
-> +	return ch;
-> +}
-> +
-> +static void sifive_serial_poll_put_char(struct uart_port *port,
-> +					unsigned char c)
-> +{
-> +	struct sifive_serial_port *ssp = port_to_sifive_serial_port(port);
-> +
-> +	sifive_serial_console_putchar(port, c);
-> +	__ssp_wait_for_xmitr(ssp);
+The LS1028A has six LPUART controllers. Add the nodes.
 
-So we still have that TX watermark bug in the SiFive UARTs.  If this function
-is supposed to wait until the word is actually out on the line then this isn't
-sufficient, but if it's just supposed to wait until the next write won't block
-then this is fine.
+This was tested on a custom board.
 
-I'm not really a serial person, so mabye someone else knows?  For those
-unfamiliar with the issue, there's a pretty good description in the patch to
-fix it
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ .../arm64/boot/dts/freescale/fsl-ls1028a.dtsi | 73 +++++++++++++++++++
+ 1 file changed, 73 insertions(+)
 
-    https://github.com/sifive/sifive-blocks/pull/90
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
+index 41c9633293fb..b152fa90cf5c 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
+@@ -372,6 +372,79 @@
+ 			status = "disabled";
+ 		};
+ 
++
++		lpuart0: serial@2260000 {
++			compatible = "fsl,ls1028a-lpuart";
++			reg = <0x0 0x2260000 0x0 0x1000>;
++			interrupts = <GIC_SPI 232 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&clockgen 4 1>;
++			clock-names = "ipg";
++			dma-names = "rx","tx";
++			dmas = <&edma0 1 32>,
++			       <&edma0 1 33>;
++			status = "disabled";
++		};
++
++		lpuart1: serial@2270000 {
++			compatible = "fsl,ls1028a-lpuart";
++			reg = <0x0 0x2270000 0x0 0x1000>;
++			interrupts = <GIC_SPI 233 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&clockgen 4 1>;
++			clock-names = "ipg";
++			dma-names = "rx","tx";
++			dmas = <&edma0 1 30>,
++			       <&edma0 1 31>;
++			status = "disabled";
++		};
++
++		lpuart2: serial@2280000 {
++			compatible = "fsl,ls1028a-lpuart";
++			reg = <0x0 0x2280000 0x0 0x1000>;
++			interrupts = <GIC_SPI 234 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&clockgen 4 1>;
++			clock-names = "ipg";
++			dma-names = "rx","tx";
++			dmas = <&edma0 1 28>,
++			       <&edma0 1 29>;
++			status = "disabled";
++		};
++
++		lpuart3: serial@2290000 {
++			compatible = "fsl,ls1028a-lpuart";
++			reg = <0x0 0x2290000 0x0 0x1000>;
++			interrupts = <GIC_SPI 235 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&clockgen 4 1>;
++			clock-names = "ipg";
++			dma-names = "rx","tx";
++			dmas = <&edma0 1 26>,
++			       <&edma0 1 27>;
++			status = "disabled";
++		};
++
++		lpuart4: serial@22a0000 {
++			compatible = "fsl,ls1028a-lpuart";
++			reg = <0x0 0x22a0000 0x0 0x1000>;
++			interrupts = <GIC_SPI 236 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&clockgen 4 1>;
++			clock-names = "ipg";
++			dma-names = "rx","tx";
++			dmas = <&edma0 1 24>,
++			       <&edma0 1 25>;
++			status = "disabled";
++		};
++
++		lpuart5: serial@22b0000 {
++			compatible = "fsl,ls1028a-lpuart";
++			reg = <0x0 0x22b0000 0x0 0x1000>;
++			interrupts = <GIC_SPI 237 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&clockgen 4 1>;
++			clock-names = "ipg";
++			dma-names = "rx","tx";
++			dmas = <&edma0 1 22>,
++			       <&edma0 1 23>;
++			status = "disabled";
++		};
++
+ 		edma0: dma-controller@22c0000 {
+ 			#dma-cells = <2>;
+ 			compatible = "fsl,ls1028a-edma";
+-- 
+2.20.1
 
-Poking around we don't have any PRE_RATE_CHANGE hook, so I'm going to take a
-whack at adding one -- not really related to this patch, though.
-
-> +}
-> +#endif /* CONFIG_CONSOLE_POLL */
-> +
->  static struct uart_driver sifive_serial_uart_driver;
->
->  static struct console sifive_serial_console = {
-> @@ -877,6 +900,10 @@ static const struct uart_ops sifive_serial_uops = {
->  	.request_port	= sifive_serial_request_port,
->  	.config_port	= sifive_serial_config_port,
->  	.verify_port	= sifive_serial_verify_port,
-> +#ifdef CONFIG_CONSOLE_POLL
-> +	.poll_get_char	= sifive_serial_poll_get_char,
-> +	.poll_put_char	= sifive_serial_poll_put_char,
-> +#endif
->  };
->
->  static struct uart_driver sifive_serial_uart_driver = {
