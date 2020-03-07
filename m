@@ -2,70 +2,122 @@ Return-Path: <SRS0=D0ei=4Y=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FEA8C10F00
-	for <linux-serial@archiver.kernel.org>; Sat,  7 Mar 2020 08:55:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE14AC10F00
+	for <linux-serial@archiver.kernel.org>; Sat,  7 Mar 2020 09:13:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id ECF482073C
-	for <linux-serial@archiver.kernel.org>; Sat,  7 Mar 2020 08:55:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1583571348;
-	bh=1u8UwniH8fZ2bwB27hJE5oeh1VxEwwuy2nb1KunbV3A=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=0YxSd8NK3cL+eTQDoY8aV9tduDg9ecZKeu+rQ7VtuW1czEm/1pUWPFfGLRGFSk06W
-	 G6MigdrAtanPrKZsKdbDi8pftA7AUPYKOHUuuRhSoZ5iNKkYsmmOfRdYH1C91uKcx2
-	 jOcktiMYa6RIokReOpNMW/DsJoate6IvqnqJhdiQ=
+	by mail.kernel.org (Postfix) with ESMTP id C2ABA206D5
+	for <linux-serial@archiver.kernel.org>; Sat,  7 Mar 2020 09:13:25 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=walle.cc header.i=@walle.cc header.b="gdS/SamM"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726193AbgCGIzr (ORCPT
+        id S1726114AbgCGJNZ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 7 Mar 2020 03:55:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44582 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726086AbgCGIzr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 7 Mar 2020 03:55:47 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Sat, 7 Mar 2020 04:13:25 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:51831 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726043AbgCGJNY (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 7 Mar 2020 04:13:24 -0500
+Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 639FC2070A;
-        Sat,  7 Mar 2020 08:55:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583571347;
-        bh=1u8UwniH8fZ2bwB27hJE5oeh1VxEwwuy2nb1KunbV3A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZAp2SksvWHujtLHO2DVTUH8NkpDeI26/Svk9pw3HtPXPJd4bqKAOIid0Tfn+G12Cz
-         S9dwpUyDg43FHf0FM6GFDEFIZ8C+8QT7B1cxp6/NE0Tv+Hx+dY21dYnoR8XMqPA449
-         yhek0zo/WQYI2xu6AwXh6RxoO8C/LzROYrvRwVmU=
-Date:   Sat, 7 Mar 2020 09:55:43 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Michael Walle <michael@walle.cc>
-Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 7141923EB4;
+        Sat,  7 Mar 2020 10:13:21 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1583572402;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=aQvWXFXM1KKL95QbKcc07473AJv43uHjCpM12hw17EU=;
+        b=gdS/SamMKlWk1FtIvy3xbj6EdrCJ6Et4Ll0kweAt/dxrCsb5GHM+0FGzQKKMlPw8gjZNyn
+        XpFfbabLXyDghlj1M9FcZIp8NW+Cxv0FsH9dqOTUWsXnbuTQ6LuF2JMeKrSdDUA4RSxf3f
+        BFuldIYKprhY5sHtcJwFrOa/BcQObtU=
+From:   Michael Walle <michael@walle.cc>
+To:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
         Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 1/2] dt-bindings: serial: lpuart: add ls1028a
- compatibility
-Message-ID: <20200307085543.GA3878741@kroah.com>
-References: <20200306205703.30634-1-michael@walle.cc>
+        Michael Walle <michael@walle.cc>, Rob Herring <robh@kernel.org>
+Subject: [PATCH v2 1/2] dt-bindings: serial: lpuart: add ls1028a compatibility
+Date:   Sat,  7 Mar 2020 10:13:01 +0100
+Message-Id: <20200307091302.14881-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200306205703.30634-1-michael@walle.cc>
+Content-Transfer-Encoding: 8bit
+X-Spamd-Bar: ++++++
+X-Rspamd-Server: web
+X-Rspamd-Queue-Id: 7141923EB4
+X-Spamd-Result: default: False [6.40 / 15.00];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         R_MISSING_CHARSET(2.50)[];
+         TAGGED_RCPT(0.00)[dt];
+         MIME_GOOD(-0.10)[text/plain];
+         BROKEN_CONTENT_TYPE(1.50)[];
+         NEURAL_SPAM(0.00)[0.536];
+         TO_MATCH_ENVRCPT_SOME(0.00)[];
+         DKIM_SIGNED(0.00)[];
+         RCPT_COUNT_SEVEN(0.00)[11];
+         MID_CONTAINS_FROM(1.00)[];
+         RCVD_COUNT_ZERO(0.00)[0];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         ASN(0.00)[asn:31334, ipnet:2a02:810c:8000::/33, country:DE];
+         SUSPICIOUS_RECIPS(1.50)[]
+X-Spam: Yes
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Mar 06, 2020 at 09:57:02PM +0100, Michael Walle wrote:
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> ---
->  .../devicetree/bindings/serial/fsl-lpuart.txt          | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
+Add the LS1028A SoC compatibility string to the lpuart devicetree
+bindings documentation.
 
-I can't take a patch without any changelog text, sorry.
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+changes since v1:
+ - add changelog text
+
+ .../devicetree/bindings/serial/fsl-lpuart.txt          | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+index c904e2e68332..e7448b92dd9d 100644
+--- a/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
++++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.txt
+@@ -6,6 +6,8 @@ Required properties:
+     on Vybrid vf610 SoC with 8-bit register organization
+   - "fsl,ls1021a-lpuart" for lpuart compatible with the one integrated
+     on LS1021A SoC with 32-bit big-endian register organization
++  - "fsl,ls1028a-lpuart" for lpuart compatible with the one integrated
++    on LS1028A SoC with 32-bit little-endian register organization
+   - "fsl,imx7ulp-lpuart" for lpuart compatible with the one integrated
+     on i.MX7ULP SoC with 32-bit little-endian register organization
+   - "fsl,imx8qxp-lpuart" for lpuart compatible with the one integrated
+@@ -15,10 +17,10 @@ Required properties:
+ - reg : Address and length of the register set for the device
+ - interrupts : Should contain uart interrupt
+ - clocks : phandle + clock specifier pairs, one for each entry in clock-names
+-- clock-names : For vf610/ls1021a/imx7ulp, "ipg" clock is for uart bus/baud
+-  clock. For imx8qxp lpuart, "ipg" clock is bus clock that is used to access
+-  lpuart controller registers, it also requires "baud" clock for module to
+-  receive/transmit data.
++- clock-names : For vf610/ls1021a/ls1028a/imx7ulp, "ipg" clock is for uart
++  bus/baud clock. For imx8qxp lpuart, "ipg" clock is bus clock that is used
++  to access lpuart controller registers, it also requires "baud" clock for
++  module to receive/transmit data.
+ 
+ Optional properties:
+ - dmas: A list of two dma specifiers, one for each entry in dma-names.
+-- 
+2.20.1
+
