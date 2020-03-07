@@ -1,223 +1,170 @@
-Return-Path: <SRS0=PCYV=4X=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=D0ei=4Y=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D06DBC10DCE
-	for <linux-serial@archiver.kernel.org>; Fri,  6 Mar 2020 21:44:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B6D1C10F00
+	for <linux-serial@archiver.kernel.org>; Sat,  7 Mar 2020 04:28:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A563720674
-	for <linux-serial@archiver.kernel.org>; Fri,  6 Mar 2020 21:44:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 21409206D7
+	for <linux-serial@archiver.kernel.org>; Sat,  7 Mar 2020 04:28:40 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=walle.cc header.i=@walle.cc header.b="K1hNFxD5"
+	dkim=pass (2048-bit key) header.d=dabbelt-com.20150623.gappssmtp.com header.i=@dabbelt-com.20150623.gappssmtp.com header.b="O08IJSgT"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726766AbgCFVot (ORCPT
+        id S1726676AbgCGE2j (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 6 Mar 2020 16:44:49 -0500
-Received: from ssl.serverraum.org ([176.9.125.105]:47705 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726245AbgCFVos (ORCPT
+        Fri, 6 Mar 2020 23:28:39 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:43962 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726674AbgCGE2j (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 6 Mar 2020 16:44:48 -0500
-Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id E7A4E23E5E;
-        Fri,  6 Mar 2020 22:44:44 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1583531085;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zDrhaYq/UNcUn/Q+Hgg1mvdyxWFl9Z/CgmEYwca7d3c=;
-        b=K1hNFxD5aGUO//wj6j2N8HFL/nmVXsGXvwwvsmjkXXhck5OmEK6x/t6MesgCMMbPzpzad9
-        dFZUdhBq/C7y//3zCZy8Qjd32hwVBYccde4CaqKFdSAt9q44MOhUo4WWgHesx7A7F9DK7L
-        RqHBdTxNFYE1mfVP2I/Gkv78aSNTI5g=
-From:   Michael Walle <michael@walle.cc>
-To:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH v4 1/4] tty: serial: fsl_lpuart: fix DMA operation when using IOMMU
-Date:   Fri,  6 Mar 2020 22:44:30 +0100
-Message-Id: <20200306214433.23215-2-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200306214433.23215-1-michael@walle.cc>
-References: <20200306214433.23215-1-michael@walle.cc>
+        Fri, 6 Mar 2020 23:28:39 -0500
+Received: by mail-pl1-f195.google.com with SMTP id f8so1685234plt.10
+        for <linux-serial@vger.kernel.org>; Fri, 06 Mar 2020 20:28:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dabbelt-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:date:message-id:mime-version:content-transfer-encoding:cc
+         :from:to;
+        bh=JqEEYRC8D7J1sqL+MKbRyD3O12DI0rJhBdywb3r67aQ=;
+        b=O08IJSgT9RRdq5UtU96pn7QHniy1dRZmoBOegNea4qVsuG7GW4BGZ1kf24iIzptTXj
+         n12w1q4o+KIEoHoIhFfdSgeBm5XuRuIxmHbXtULepqatTSsPw78lALhRAEgTBpyoIaHB
+         nKnb2PU1MabuA19gEBBI+cXC5+ri0TUQ6n+QlxLtFShaTABIHCgHCBS0koOv2cBd551h
+         7E/h3zaZ7x00dpfRzG59m56yMOrtuzyBH9W0rCYcafyls/igaqSl60l+KpdzA5ekQb1a
+         7SqiRqL31fJkJpkzGf5bPIhMM5x3CpqPoNM+XfOofd6TdIi/mvsLGTn5wTGO/L8rpIJ1
+         IjgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:date:message-id:mime-version
+         :content-transfer-encoding:cc:from:to;
+        bh=JqEEYRC8D7J1sqL+MKbRyD3O12DI0rJhBdywb3r67aQ=;
+        b=Zvv18ayAI/3nYrkWrEPKWZeXNo4IcGDVt27ig6jytwmU413wsAD/f9yKukF8anxmKR
+         9NolOTHj3aNG+m0sVo9rDOfnW09jLQ8hT68tLtVsCpqVGOiSdRBYLlPoBbaq5TYMX2yT
+         6crzgQqlzd3AnpKNf55tV2iHwJpgJ2txWUFfMZBGmCuiETMQ9BYjRCdnZe12FgSyS3eD
+         dfq/WTNP3ndU4fH83IubCAS3qgBDl0qXSihTBqn82RQlzrNNhQQqgXCRzb3pRhZXjfLa
+         cZCmh9pmm2DJt2ylSiW6pKK5FmTQfPcTy+prtVlgE6n7g5R7dzcTZJFYVElR7g1AIM5L
+         8eWg==
+X-Gm-Message-State: ANhLgQ0Q42825YOFmgY3rciVI5FjxK3FGgyHydLSjoidv2/VMF7PET/5
+        kJ33ci3UzIMKnisw8LEtQjv0QA==
+X-Google-Smtp-Source: ADFU+vsXktTJfbSIn4OTidMPzYwPYVCPRU5N0l5d8ObjtGHmgqRiAVuDkF3RXOj+/nOfBuMLYLNPAg==
+X-Received: by 2002:a17:90a:20b:: with SMTP id c11mr6965847pjc.53.1583555317388;
+        Fri, 06 Mar 2020 20:28:37 -0800 (PST)
+Received: from localhost (c-67-161-15-180.hsd1.ca.comcast.net. [67.161.15.180])
+        by smtp.gmail.com with ESMTPSA id h4sm32082934pgq.20.2020.03.06.20.28.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Mar 2020 20:28:36 -0800 (PST)
+Subject: [PATCH] tty: sifive: Finish transmission before changing the clock
+Date:   Fri,  6 Mar 2020 20:26:38 -0800
+Message-Id: <20200307042637.83728-1-palmer@dabbelt.com>
+X-Mailer: git-send-email 2.25.1.481.gfbce0eb801-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spamd-Bar: ++++++
-X-Rspamd-Server: web
-X-Rspamd-Queue-Id: E7A4E23E5E
-X-Spamd-Result: default: False [6.40 / 15.00];
-         FROM_HAS_DN(0.00)[];
-         TO_DN_SOME(0.00)[];
-         R_MISSING_CHARSET(2.50)[];
-         TO_MATCH_ENVRCPT_ALL(0.00)[];
-         TAGGED_RCPT(0.00)[dt];
-         MIME_GOOD(-0.10)[text/plain];
-         BROKEN_CONTENT_TYPE(1.50)[];
-         NEURAL_SPAM(0.00)[0.551];
-         DKIM_SIGNED(0.00)[];
-         RCPT_COUNT_SEVEN(0.00)[7];
-         MID_CONTAINS_FROM(1.00)[];
-         RCVD_COUNT_ZERO(0.00)[0];
-         FROM_EQ_ENVFROM(0.00)[];
-         MIME_TRACE(0.00)[0:+];
-         ASN(0.00)[asn:31334, ipnet:2a02:810c:8000::/33, country:DE];
-         SUSPICIOUS_RECIPS(1.50)[]
-X-Spam: Yes
+Cc:     Greg KH <gregkh@linuxfoundation.org>, jslaby@suse.com,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel-team@android.com,
+        Palmer Dabbelt <palmerdabbelt@google.com>,
+        kernel-team@android.com
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     Paul Walmsley <paul.walmsley@sifive.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The DMA channel might not be available at probe time. This is esp. the
-case if the DMA controller has an IOMMU mapping.
+From: Palmer Dabbelt <palmerdabbelt@google.com>
 
-There is also another caveat. If there is no DMA controller at all,
-dma_request_chan() will also return -EPROBE_DEFER. Thus we cannot test
-for -EPROBE_DEFER in probe(). Otherwise the lpuart driver will fail to
-probe if, for example, the DMA driver is not enabled in the kernel
-configuration.
+SiFive's UART has a software controller clock divider that produces the
+final baud rate clock.  Whenever the clock that drives the UART is
+changed this divider must be updated accordingly, and given that these
+two events are controlled by software they cannot be done atomically.
+During the period between updating the UART's driving clock and internal
+divider the UART will transmit a different baud rate than what the user
+has configured, which will probably result in a corrupted transmission
+stream.
 
-To workaround this, we request the DMA channel in _startup(). Other
-serial drivers do it the same way.
+The SiFive UART has a FIFO, but due to an issue with the programming
+interface there is no way to directly determine when the UART has
+finished transmitting.  We're essentially restricted to dead reckoning
+in order to figure that out: we can use the FIFO's TX busy register to
+figure out when the last frame has begun transmission and just delay for
+a long enough that the last frame is guaranteed to get out.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
+As far as the actual implementation goes: I've modified the existing
+existing clock notifier function to drain both the FIFO and the shift
+register in on PRE_RATE_CHANGE.  As far as I know there is no hardware
+flow control in this UART, so there's no good way to ask the other end
+to stop transmission while we can't receive (inserting software flow
+control messages seems like a bad idea here).
+
+Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
 ---
- drivers/tty/serial/fsl_lpuart.c | 88 +++++++++++++++++++++------------
- 1 file changed, 57 insertions(+), 31 deletions(-)
+I have not tested this, as I don't have any hardware.  I'm also not even
+remotely familiar with the serial subsystem, so I don't know if there's a
+better way of going about this.  I'm specifically worried about a udelay() that
+could be quite long.  Maybe some sort of "delay for short times, sleep for long
+times" approach would be better?
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index c31b8f3db6bf..33798df4d727 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -1493,36 +1493,67 @@ static void rx_dma_timer_init(struct lpuart_port *sport)
- static void lpuart_tx_dma_startup(struct lpuart_port *sport)
- {
- 	u32 uartbaud;
-+	int ret;
+I don't know if this manifests in practice on existing hardware when running
+real workloads, but I'd be willing to bet that it would be possible to trigger
+the bug on purpose as by my calculations there's about a 10k cycle window in
+which the clock can't change.  IIRC there's a lot of instability when changing
+the clock frequency on the HiFive Unleashed so I doubt people are going to
+stumble across the issue regularly in practice.
+
+ drivers/tty/serial/sifive.c | 28 ++++++++++++++++++++++++----
+ 1 file changed, 24 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
+index d5f81b98e4d7..d34031e842d0 100644
+--- a/drivers/tty/serial/sifive.c
++++ b/drivers/tty/serial/sifive.c
+@@ -618,10 +618,10 @@ static void sifive_serial_shutdown(struct uart_port *port)
+  *
+  * On the V0 SoC, the UART IP block is derived from the CPU clock source
+  * after a synchronous divide-by-two divider, so any CPU clock rate change
+- * requires the UART baud rate to be updated.  This presumably could corrupt any
+- * serial word currently being transmitted or received.  It would probably
+- * be better to stop receives and transmits, then complete the baud rate
+- * change, then re-enable them.
++ * requires the UART baud rate to be updated.  This presumably corrupts any
++ * serial word currently being transmitted or received.  In order to avoid
++ * corrupting the output data stream, we drain the transmit queue before
++ * allowing the clock's rate to be changed.
+  */
+ static int sifive_serial_clk_notifier(struct notifier_block *nb,
+ 				      unsigned long event, void *data)
+@@ -629,6 +629,26 @@ static int sifive_serial_clk_notifier(struct notifier_block *nb,
+ 	struct clk_notifier_data *cnd = data;
+ 	struct sifive_serial_port *ssp = notifier_to_sifive_serial_port(nb);
  
--	if (sport->dma_tx_chan && !lpuart_dma_tx_request(&sport->port)) {
--		init_waitqueue_head(&sport->dma_wait);
--		sport->lpuart_dma_tx_use = true;
--		if (lpuart_is_32(sport)) {
--			uartbaud = lpuart32_read(&sport->port, UARTBAUD);
--			lpuart32_write(&sport->port,
--				       uartbaud | UARTBAUD_TDMAE, UARTBAUD);
--		} else {
--			writeb(readb(sport->port.membase + UARTCR5) |
--				UARTCR5_TDMAS, sport->port.membase + UARTCR5);
--		}
-+	sport->dma_tx_chan = dma_request_chan(sport->port.dev, "tx");
-+	if (IS_ERR(sport->dma_tx_chan)) {
-+		dev_info_once(sport->port.dev,
-+			      "DMA tx channel request failed, operating without tx DMA (%ld)\n",
-+			      PTR_ERR(sport->dma_tx_chan));
-+		sport->dma_tx_chan = NULL;
-+		goto err;
++	if (event == PRE_RATE_CHANGE) {
++		/*
++		 * The TX watermark is always set to 1 by this driver, which
++		 * means that the TX busy bit will lower when there are 0 bytes
++		 * left in the TX queue -- in other words, when the TX FIFO is
++		 * empty.
++		 */
++		__ssp_wait_for_xmitr(ssp);
++		/*
++		 * On the cycle the TX FIFO goes empty there is still a full
++		 * UART frame left to be transmitted in the shift register.
++		 * The UART provides no way for software to directly determine
++		 * when that last frame has been transmitted, so we just sleep
++		 * here instead.  As we're not tracking the number of stop bits
++		 * they're just worst cased here.  The rest of the serial
++		 * framing parameters aren't configurable by software.
++		 */
++		udelay(DIV_ROUND_UP(12 * 1000 * 1000, ssp->baud_rate));
 +	}
 +
-+	ret = lpuart_dma_tx_request(&sport->port);
-+	if (!ret)
-+		goto err;
-+
-+	init_waitqueue_head(&sport->dma_wait);
-+	sport->lpuart_dma_tx_use = true;
-+	if (lpuart_is_32(sport)) {
-+		uartbaud = lpuart32_read(&sport->port, UARTBAUD);
-+		lpuart32_write(&sport->port,
-+			       uartbaud | UARTBAUD_TDMAE, UARTBAUD);
- 	} else {
--		sport->lpuart_dma_tx_use = false;
-+		writeb(readb(sport->port.membase + UARTCR5) |
-+		       UARTCR5_TDMAS, sport->port.membase + UARTCR5);
- 	}
-+
-+	return;
-+
-+err:
-+	sport->lpuart_dma_tx_use = false;
- }
- 
- static void lpuart_rx_dma_startup(struct lpuart_port *sport)
- {
--	if (sport->dma_rx_chan && !lpuart_start_rx_dma(sport)) {
--		/* set Rx DMA timeout */
--		sport->dma_rx_timeout = msecs_to_jiffies(DMA_RX_TIMEOUT);
--		if (!sport->dma_rx_timeout)
--			sport->dma_rx_timeout = 1;
-+	int ret;
- 
--		sport->lpuart_dma_rx_use = true;
--		rx_dma_timer_init(sport);
--	} else {
--		sport->lpuart_dma_rx_use = false;
-+	sport->dma_rx_chan = dma_request_chan(sport->port.dev, "rx");
-+	if (IS_ERR(sport->dma_rx_chan)) {
-+		dev_info_once(sport->port.dev,
-+			      "DMA rx channel request failed, operating without rx DMA (%ld)\n",
-+			      PTR_ERR(sport->dma_rx_chan));
-+		sport->dma_rx_chan = NULL;
-+		goto err;
- 	}
-+
-+	ret = lpuart_start_rx_dma(sport);
-+	if (ret)
-+		goto err;
-+
-+	/* set Rx DMA timeout */
-+	sport->dma_rx_timeout = msecs_to_jiffies(DMA_RX_TIMEOUT);
-+	if (!sport->dma_rx_timeout)
-+		sport->dma_rx_timeout = 1;
-+
-+	sport->lpuart_dma_rx_use = true;
-+	rx_dma_timer_init(sport);
-+
-+	return;
-+
-+err:
-+	sport->lpuart_dma_rx_use = false;
- }
- 
- static int lpuart_startup(struct uart_port *port)
-@@ -1615,6 +1646,11 @@ static void lpuart_dma_shutdown(struct lpuart_port *sport)
- 			dmaengine_terminate_all(sport->dma_tx_chan);
- 		}
- 	}
-+
-+	if (sport->dma_tx_chan)
-+		dma_release_channel(sport->dma_tx_chan);
-+	if (sport->dma_rx_chan)
-+		dma_release_channel(sport->dma_rx_chan);
- }
- 
- static void lpuart_shutdown(struct uart_port *port)
-@@ -2520,16 +2556,6 @@ static int lpuart_probe(struct platform_device *pdev)
- 
- 	sport->port.rs485_config(&sport->port, &sport->port.rs485);
- 
--	sport->dma_tx_chan = dma_request_slave_channel(sport->port.dev, "tx");
--	if (!sport->dma_tx_chan)
--		dev_info(sport->port.dev, "DMA tx channel request failed, "
--				"operating without tx DMA\n");
--
--	sport->dma_rx_chan = dma_request_slave_channel(sport->port.dev, "rx");
--	if (!sport->dma_rx_chan)
--		dev_info(sport->port.dev, "DMA rx channel request failed, "
--				"operating without rx DMA\n");
--
- 	return 0;
- 
- failed_attach_port:
+ 	if (event == POST_RATE_CHANGE && ssp->clkin_rate != cnd->new_rate) {
+ 		ssp->clkin_rate = cnd->new_rate;
+ 		__ssp_update_div(ssp);
 -- 
-2.20.1
+2.25.1.481.gfbce0eb801-goog
 
