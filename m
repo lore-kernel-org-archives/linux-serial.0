@@ -1,211 +1,119 @@
-Return-Path: <SRS0=D0ei=4Y=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=hEVs=4Z=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+X-Spam-Status: No, score=-13.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1571EC10F00
-	for <linux-serial@archiver.kernel.org>; Sat,  7 Mar 2020 16:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94534C10DCE
+	for <linux-serial@archiver.kernel.org>; Sun,  8 Mar 2020 09:52:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D72F6206D5
-	for <linux-serial@archiver.kernel.org>; Sat,  7 Mar 2020 16:59:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6A09B20838
+	for <linux-serial@archiver.kernel.org>; Sun,  8 Mar 2020 09:52:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1583661143;
+	bh=aClfJhRVUpo3PCuXqoqwX30Iyd3D3/80J4zgP7p2bRQ=;
+	h=Date:From:To:Cc:Subject:List-ID:From;
+	b=b/qg0BsqBJ2Pcptkn/83HD4K4ORR8BbKejUx/LqzUqJMugS3uXGt6XyStF6FRNTPB
+	 VgcntJah7InbzwGaUDoc8f+i1pNQmcVjoj+XfCYn2jURrmSKwj6oJJ4jnetDovzI2Q
+	 GtM4kQ/OjXgkbgTqul74tpR2jAufffLVI7EUKt2w=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726109AbgCGQ73 (ORCPT
+        id S1726038AbgCHJwX (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 7 Mar 2020 11:59:29 -0500
-Received: from mga03.intel.com ([134.134.136.65]:13116 "EHLO mga03.intel.com"
+        Sun, 8 Mar 2020 05:52:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36278 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726065AbgCGQ73 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 7 Mar 2020 11:59:29 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 07 Mar 2020 08:59:28 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,526,1574150400"; 
-   d="scan'208";a="235164024"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 07 Mar 2020 08:59:26 -0800
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1jAcnN-0002Fu-Sb; Sun, 08 Mar 2020 00:59:25 +0800
-Date:   Sun, 08 Mar 2020 00:58:43 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- d24e163af05c93e923aff76e01e6e30182cb38e3
-Message-ID: <5e63d2c3.bESc64Rb7SwdmV5o%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S1725306AbgCHJwW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 8 Mar 2020 05:52:22 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2608B20828;
+        Sun,  8 Mar 2020 09:52:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583661141;
+        bh=aClfJhRVUpo3PCuXqoqwX30Iyd3D3/80J4zgP7p2bRQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=AxPYUc5oWmiAeIxFcvKQOpf3UKx/Y9pvGjsEFi32u1/xRJeretZkEKBPxLJ4G9uLb
+         lsK3yEpSfiL8UlSURxWXX3a32XnwTO+7dqNPqTMd2HoTVcFRsWZFd8/hedHbimnKox
+         6CnTzKN9VjvYDfn81wx1M5RM5JXLa8U5WZHGwoYk=
+Date:   Sun, 8 Mar 2020 10:52:19 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver fixes for 5.6-rc5
+Message-ID: <20200308095219.GA4026988@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
-branch HEAD: d24e163af05c93e923aff76e01e6e30182cb38e3  tty: mips_ejtag_fdc: Mark expected switch fall-through
+The following changes since commit f8788d86ab28f61f7b46eb6be375f8a726783636:
 
-elapsed time: 483m
+  Linux 5.6-rc3 (2020-02-23 16:17:42 -0800)
 
-configs tested: 147
-configs skipped: 0
+are available in the Git repository at:
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.6-rc5
 
-arm                              allmodconfig
-arm                               allnoconfig
-arm                              allyesconfig
-arm64                            allmodconfig
-arm64                             allnoconfig
-arm64                            allyesconfig
-arm                         at91_dt_defconfig
-arm                           efm32_defconfig
-arm                          exynos_defconfig
-arm                        multi_v5_defconfig
-arm                        multi_v7_defconfig
-arm                        shmobile_defconfig
-arm                           sunxi_defconfig
-arm64                               defconfig
-m68k                           sun3_defconfig
-h8300                     edosk2674_defconfig
-c6x                              allyesconfig
-h8300                       h8s-sim_defconfig
-s390                              allnoconfig
-riscv                    nommu_virt_defconfig
-xtensa                          iss_defconfig
-powerpc                       ppc64_defconfig
-riscv                          rv32_defconfig
-sparc                               defconfig
-sh                                allnoconfig
-m68k                             allmodconfig
-alpha                               defconfig
-mips                              allnoconfig
-parisc                            allnoconfig
-riscv                             allnoconfig
-s390                       zfcpdump_defconfig
-i386                              allnoconfig
-i386                             alldefconfig
-i386                             allyesconfig
-i386                                defconfig
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                              allnoconfig
-ia64                             allyesconfig
-ia64                             alldefconfig
-c6x                        evmc6678_defconfig
-nios2                         10m50_defconfig
-nios2                         3c120_defconfig
-openrisc                    or1ksim_defconfig
-openrisc                 simple_smp_defconfig
-xtensa                       common_defconfig
-csky                                defconfig
-nds32                             allnoconfig
-nds32                               defconfig
-h8300                    h8300h-sim_defconfig
-m68k                       m5475evb_defconfig
-m68k                          multi_defconfig
-arc                              allyesconfig
-arc                                 defconfig
-microblaze                      mmu_defconfig
-microblaze                    nommu_defconfig
-powerpc                           allnoconfig
-powerpc                             defconfig
-powerpc                          rhel-kconfig
-mips                           32r2_defconfig
-mips                         64r6el_defconfig
-mips                             allmodconfig
-mips                             allyesconfig
-mips                      fuloong2e_defconfig
-mips                      malta_kvm_defconfig
-parisc                           allyesconfig
-parisc                generic-32bit_defconfig
-parisc                generic-64bit_defconfig
-x86_64               randconfig-a001-20200307
-x86_64               randconfig-a002-20200307
-x86_64               randconfig-a003-20200307
-i386                 randconfig-a001-20200307
-i386                 randconfig-a002-20200307
-i386                 randconfig-a003-20200307
-riscv                randconfig-a001-20200307
-alpha                randconfig-a001-20200307
-m68k                 randconfig-a001-20200307
-nds32                randconfig-a001-20200307
-mips                 randconfig-a001-20200307
-parisc               randconfig-a001-20200307
-csky                 randconfig-a001-20200307
-openrisc             randconfig-a001-20200307
-s390                 randconfig-a001-20200307
-sh                   randconfig-a001-20200307
-xtensa               randconfig-a001-20200307
-x86_64               randconfig-b002-20200307
-x86_64               randconfig-b001-20200307
-i386                 randconfig-b001-20200307
-i386                 randconfig-b003-20200307
-i386                 randconfig-b002-20200307
-x86_64               randconfig-b003-20200307
-x86_64               randconfig-c001-20200307
-x86_64               randconfig-c002-20200307
-x86_64               randconfig-c003-20200307
-i386                 randconfig-c001-20200307
-i386                 randconfig-c002-20200307
-i386                 randconfig-c003-20200307
-x86_64               randconfig-d001-20200307
-x86_64               randconfig-d002-20200307
-x86_64               randconfig-d003-20200307
-i386                 randconfig-d001-20200307
-i386                 randconfig-d002-20200307
-i386                 randconfig-d003-20200307
-x86_64               randconfig-e001-20200307
-x86_64               randconfig-e002-20200307
-x86_64               randconfig-e003-20200307
-i386                 randconfig-e001-20200307
-i386                 randconfig-e002-20200307
-i386                 randconfig-e003-20200307
-x86_64               randconfig-f001-20200307
-x86_64               randconfig-f002-20200307
-x86_64               randconfig-f003-20200307
-i386                 randconfig-f001-20200307
-i386                 randconfig-f002-20200307
-i386                 randconfig-f003-20200307
-arc                  randconfig-a001-20200307
-arm                  randconfig-a001-20200307
-arm64                randconfig-a001-20200307
-ia64                 randconfig-a001-20200307
-powerpc              randconfig-a001-20200307
-sparc                randconfig-a001-20200307
-riscv                            allmodconfig
-riscv                            allyesconfig
-riscv                               defconfig
-s390                             alldefconfig
-s390                             allmodconfig
-s390                             allyesconfig
-s390                          debug_defconfig
-s390                                defconfig
-sh                               allmodconfig
-sh                          rsk7269_defconfig
-sh                  sh7785lcr_32bit_defconfig
-sh                            titan_defconfig
-sparc                            allyesconfig
-sparc64                          allmodconfig
-sparc64                           allnoconfig
-sparc64                          allyesconfig
-sparc64                             defconfig
-um                                  defconfig
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                              fedora-25
-x86_64                                  kexec
-x86_64                                    lkp
-x86_64                                   rhel
-x86_64                         rhel-7.2-clear
-x86_64                               rhel-7.6
+for you to fetch changes up to 2b2e71fe657510a6f71aa16ef0309fa6bc20ab3d:
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+  tty: serial: fsl_lpuart: free IDs allocated by IDA (2020-03-06 14:10:44 +0100)
+
+----------------------------------------------------------------
+TTY/Serial fixes for 5.6-rc5
+
+Here are some small tty/serial fixes for 5.6-rc5
+
+Just some small serial driver fixes, and a vt core fixup, full details
+are:
+	- vt fixes for issues found by syzbot
+	- serdev fix for Apple boxes
+	- fsl_lpuart serial driver fixes
+	- MAINTAINER update for incorrect serial files
+	- new device ids for 8250_exar driver
+	- mvebu-uart fix
+
+All of these have been in linux-next with no reported issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Andy Shevchenko (1):
+      MAINTAINERS: Add missed files related to Synopsys DesignWare UART
+
+Jay Dolan (1):
+      serial: 8250_exar: add support for ACCES cards
+
+Jiri Slaby (2):
+      vt: selection, push console lock down
+      vt: selection, push sel_lock up
+
+Michael Walle (2):
+      Revert "tty: serial: fsl_lpuart: drop EARLYCON_DECLARE"
+      tty: serial: fsl_lpuart: free IDs allocated by IDA
+
+Ronald Tschalär (1):
+      serdev: Fix detection of UART devices on Apple machines.
+
+tangbin (1):
+      tty:serial:mvebu-uart:fix a wrong return
+
+ MAINTAINERS                         |  2 ++
+ drivers/staging/speakup/selection.c |  2 --
+ drivers/tty/serdev/core.c           | 10 +++++++++
+ drivers/tty/serial/8250/8250_exar.c | 33 +++++++++++++++++++++++++++++
+ drivers/tty/serial/fsl_lpuart.c     | 41 +++++++++++++++++++++++--------------
+ drivers/tty/serial/mvebu-uart.c     |  2 +-
+ drivers/tty/vt/selection.c          | 27 ++++++++++++++++--------
+ drivers/tty/vt/vt.c                 |  2 --
+ 8 files changed, 90 insertions(+), 29 deletions(-)
