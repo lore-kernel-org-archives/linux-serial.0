@@ -2,147 +2,206 @@ Return-Path: <SRS0=G73M=42=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46AC3C10F27
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Mar 2020 14:11:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B55BC3F2C6
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Mar 2020 16:23:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1FF5220727
-	for <linux-serial@archiver.kernel.org>; Mon,  9 Mar 2020 14:11:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1566320578
+	for <linux-serial@archiver.kernel.org>; Mon,  9 Mar 2020 16:23:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZYDWaVXI"
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="mMmigeNk"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726758AbgCIOLB (ORCPT
+        id S1726804AbgCIQXe (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 9 Mar 2020 10:11:01 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:34456 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726233AbgCIOLB (ORCPT
+        Mon, 9 Mar 2020 12:23:34 -0400
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:45025 "EHLO
+        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726758AbgCIQXe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 9 Mar 2020 10:11:01 -0400
-Received: by mail-lf1-f66.google.com with SMTP id i19so1889086lfl.1;
-        Mon, 09 Mar 2020 07:11:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1DONZyJhzIw61vc2b8VyfHEnmtSL8XmCoaWpkr0Q6yQ=;
-        b=ZYDWaVXI+O+RUpYxYfXm8ia4oOLkw/O+R89i+fHtsyE7gL+aPkvQ6/74KlAZ7upBOy
-         mVkW/vEl9ymGQtMH96WKfn9Hl9vP2enpx2WSUQVt5eNiOZcBSPMGvWaD1xhAx24j218x
-         TssPVDmyorIu6yhB4IZASsU3vvyEwVPLv2jnnokvy9Y5/c7QhkrdURMMpyYom7hAAf83
-         0+1LWvmFyikllT7rr9CQOxn7hYse57X0T2WNRzV76ixDvKlEOO/B3d2skZ4yPNRtbbPT
-         BMfcq/IX+sZXcbLGV2NFlvHPnT/i864dbduIhTa+QK+inCG7Vr8hhA627LXSrkzIyzMl
-         Pcsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1DONZyJhzIw61vc2b8VyfHEnmtSL8XmCoaWpkr0Q6yQ=;
-        b=IX+ZH8980MnJmLCrj/u0QfGrR/1yXcamX1onMf+PcogmqlX6c1P7k3qtyFEhDrEK2v
-         Cte+YEAK9oymvKWTagb0Qnzkw2O54zSDIkb8h1aUZINjia9XfW5KjfGS1vCWh4vml+no
-         cBMxLzCQ4Ty54y6Mtsy4JA8m4J7IAO8aLLPAWaLi2J+SIrbmnUXwMvH6FXd3lsQe975O
-         c79p+QgfX/XlPhM9u3NZ5w1N3uB7DEZwxw0i94+Tq5KBULL5E5qYfLK5UbOmOg68k/66
-         zkg/9l6QjhD4v7/Hyw65CtMMsJBixvuLk/u00XoCrsiUBWNx20yNktQrHdg7n97Sj0+m
-         5bZg==
-X-Gm-Message-State: ANhLgQ14T1ZLB6as7KimGcQkNAl9MJMW5G1nhlBFLbj8TlXWJr04/R2F
-        AxlSbpQ3mu4LQeulZ6z5YZYWVIqxw9wW5keuuBM=
-X-Google-Smtp-Source: ADFU+vvx9Zry9HVFrw2gJwvh8jIGcVMrga/iTAAcWL9fq/CZaQKdL1vmx4qaRTpNg/N7VZXOUKv1Ct6BP9Ehy3e7OIY=
-X-Received: by 2002:ac2:5328:: with SMTP id f8mr9426587lfh.47.1583763059624;
- Mon, 09 Mar 2020 07:10:59 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200305103228.9686-1-zhang.lyra@gmail.com> <20200305103228.9686-2-zhang.lyra@gmail.com>
- <CAMuHMdU-gAhupHotQTHAZfopkGF_jQc-VrVxb24caw_BfzWd6g@mail.gmail.com>
- <CAAfSe-sonfA=6x9uvQXaHniQaXR8hWZa4uOcWxoo+Z_XT9QNhw@mail.gmail.com> <CAMuHMdUBkS+pPyPid2K=40jaTOSnAE_L-vJP5knmyVr8Fr5_hg@mail.gmail.com>
-In-Reply-To: <CAMuHMdUBkS+pPyPid2K=40jaTOSnAE_L-vJP5knmyVr8Fr5_hg@mail.gmail.com>
-From:   Orson Zhai <orsonzhai@gmail.com>
-Date:   Mon, 9 Mar 2020 22:10:41 +0800
-Message-ID: <CA+H2tpFBDSGfwYT--G_FsaEceNJW_xBJjjiSMnhZDVhZamj_QQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] tty: serial: make SERIAL_SPRD not depend on ARCH_SPRD
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Chunyan Zhang <zhang.lyra@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Jiri Slaby <jslaby@suse.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Chunyan Zhang <chunyan.zhang@unisoc.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Baolin Wang <baolin.wang7@gmail.com>,
+        Mon, 9 Mar 2020 12:23:34 -0400
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20200309162332euoutp01a21308151026dcfe33fea6867a0ab5da~6r1hAsT2e2592825928euoutp01m
+        for <linux-serial@vger.kernel.org>; Mon,  9 Mar 2020 16:23:32 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20200309162332euoutp01a21308151026dcfe33fea6867a0ab5da~6r1hAsT2e2592825928euoutp01m
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1583771012;
+        bh=mVaSzErXXr6NkeK167F1lomH4Gm8JqQhQ+aVHg2/4o8=;
+        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+        b=mMmigeNknFMFtAV13UVky5lBOLNbmelucHrz+0NJhlJPELLZggyQssSJ8Xxbfjwhi
+         hjy7kTh/RXLEpWJA6F8XJOFd7g8toZtp30n+TIO1Rsz4gdf/DWH9NFwi+IyLP04CRx
+         z2/rnOBp4Gz6TlaCy6zMkYczNZ6RG7OY96OhIGw0=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20200309162332eucas1p2bae9eb1d7c08ded75beb0d3730f212d6~6r1gq3ZkH1251512515eucas1p2g;
+        Mon,  9 Mar 2020 16:23:32 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+        eusmges1new.samsung.com (EUCPMTA) with SMTP id DA.C2.61286.48D666E5; Mon,  9
+        Mar 2020 16:23:32 +0000 (GMT)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20200309162331eucas1p206c78f3ed49cccd2f401980b158654ab~6r1gW2pe-1255312553eucas1p2o;
+        Mon,  9 Mar 2020 16:23:31 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20200309162331eusmtrp2298c3dcb041eef344c24c03f4d890f10~6r1gWKkqI3143831438eusmtrp2I;
+        Mon,  9 Mar 2020 16:23:31 +0000 (GMT)
+X-AuditID: cbfec7f2-ef1ff7000001ef66-96-5e666d849f15
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id 51.FC.07950.38D666E5; Mon,  9
+        Mar 2020 16:23:31 +0000 (GMT)
+Received: from [106.120.51.71] (unknown [106.120.51.71]) by
+        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20200309162331eusmtip1e47cac4268bd201db6e9c36373ef8856~6r1f3cI341492714927eusmtip12;
+        Mon,  9 Mar 2020 16:23:31 +0000 (GMT)
+Subject: Re: [PATCH] Revert
+ "tty: serial: samsung_tty: build it for any platform"
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Jiri Slaby <jslaby@suse.com>, Kukjin Kim <kgene@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
         Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        kernel-team@android.com
-Content-Type: text/plain; charset="UTF-8"
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        Kevin Hilman <khilman@kernel.org>
+From:   Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Message-ID: <6ec29c9d-4a59-77fc-6cb4-38b86d62d22f@samsung.com>
+Date:   Mon, 9 Mar 2020 17:23:31 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+        Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <20200306130314.GA3778623@kroah.com>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA02SbUhTYRiGeXfOzjlai7dp+KRWMCIy0LSsDpVhILZ+GQQlZeqyk0puyo5a
+        +qPsA51CmlMpZ2a10mWlY4qmqdEmWvlVlhYmJPiBZiNTS3JpeTxK/rve+7lvnvuBlyHkbVJ3
+        JlaTyGk1qjgF5UzWtPzu8r6mPhvuO+Ag2Tl9C82O9DVK2KvGSorNN09I2JzBcYIdrhqUsF1d
+        Zpq1DPZK2VtdTRK23XidZt98nKICVykds3qktJRnUkqrTYeUL4qf0MqqB5eUH15dkSorq3tI
+        5ZRl4xHmhPP+M1xcbDKn3X4g0jmm3/GUSviy/kJFTlgaGnHNQk4MYH/ov5tGZyFnRo5NCEwv
+        66XiYxpBkSmTFFxyPIXgqnnzcmKks5gQTWUI5od1hGiyL5gmQgR2wUdBP2eTCOyKI6F52kgJ
+        AQLPSKCn5jMSBhTeC7kZ5Ysswwcge/TPwjaGIfFmqDZ5CfI6HAqTAzapaFkLrwuHFgs5YT+o
+        NFsWmcBu0DdUIhF5E9Taby+WAzxGQ07Ne0psHQQPa+tokV3ga2v1EnvC3zohLAQqEMzpRpfS
+        tQjK8uaX0vugv3OWEtoR2Asq67eL8kFoKPxNCzLgNfDJvlYssQb0NTcJUZaBLl0uureAudRM
+        La/NqntE3EAKw4rTDCvOMaw4x/B/711EliM3LolXR3O8n4Y778Or1HySJtonKl5tQQtfrG2+
+        dfIZ+tl92oowgxSrZTHeZ8PlUlUyn6K2ImAIhavs8raocLnsjColldPGR2iT4jjeijwYUuEm
+        23l/7JQcR6sSuXMcl8Bpl6cSxsk9DTWtM/fn9myKSJ9qCHwcUtbxw7+gPKyxMGB/tuMQb5zt
+        oNvHjaVlu96S777d6Z5pj325p+DkbcOE7vvuoDl9QLTNmuGZGpp43MnUYnqkmW4t8ShKe55i
+        ts00/DIG74joPfbL3nduQ2P3vaats0d0zXZL30Uu7ylUSPOD93k7ug/7Kkg+RuW3jdDyqn8P
+        Zu1sXgMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrDIsWRmVeSWpSXmKPExsVy+t/xu7rNuWlxBuvmGVr8nXSM3eLZrb1M
+        Fs2L17NZTNnwgcmi//FrZounmx8zWZw/v4HdYtPja6wWM87vY7I4s7iX3eLU9c9sDtwev39N
+        YvTYtKqTzePQ4Q5Gj/1z17B7bF5S73HlRBOrx/otV1k8Pm+SC+CI0rMpyi8tSVXIyC8usVWK
+        NrQw0jO0tNAzMrHUMzQ2j7UyMlXSt7NJSc3JLEst0rdL0Mu483stW8F9yYp1/TENjM9Euhg5
+        OSQETCSenZvL3MXIxSEksJRRYs7qN6xdjBxACRmJ4+vLIGqEJf5c62IDsYUEXjNKPPvKC1Ii
+        LBAsceaHFkhYRCBB4kbHVCaQMcwCP5kkFj6ewwo1k0li/Z/fYM1sAlYSE9tXMYLYvAJ2En0v
+        /rCADGIRUJHYskITJCwqECFxeMcsqBJBiZMzn7CA2JwChhLrN2wCs5kF1CX+zLvEDGGLS9x6
+        Mp8JwpaX2P52DvMERqFZSNpnIWmZhaRlFpKWBYwsqxhFUkuLc9Nzi430ihNzi0vz0vWS83M3
+        MQJjdtuxn1t2MHa9Cz7EKMDBqMTDK6CdFifEmlhWXJl7iFGCg1lJhLdRKzlOiDclsbIqtSg/
+        vqg0J7X4EKMp0G8TmaVEk/OB6SSvJN7Q1NDcwtLQ3Njc2MxCSZy3Q+BgjJBAemJJanZqakFq
+        EUwfEwenVAPjmj1O5tuMyx0Z5Hk29nyNSn0WsNbsYoDlhNqQI5wC8zgTlNnnqJYe9D20gMG1
+        jKHD2qJxXvjnSysOK9Xqv7a4vSj6xpWW/VdvnJ+xvP/QSZ45pSEdetWG/A/ik3Zv6oh5fdjg
+        oGzyjIXZmx++mHP85UUvSWbBCUnTVR/W3FjK/GXSH9kvv7rWKbEUZyQaajEXFScCAIf8/0fv
+        AgAA
+X-CMS-MailID: 20200309162331eucas1p206c78f3ed49cccd2f401980b158654ab
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20200306130320eucas1p18bda7b5cdf613e1a811bda6eb99a5847
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20200306130320eucas1p18bda7b5cdf613e1a811bda6eb99a5847
+References: <20200306102301.16870-1-geert+renesas@glider.be>
+        <20200306103652.GA3634389@kroah.com>
+        <CAMuHMdUy8RjkY+0gBv-=mpcuamNQgB=k4rvNsiaj2s4uUDc5UA@mail.gmail.com>
+        <CGME20200306130320eucas1p18bda7b5cdf613e1a811bda6eb99a5847@eucas1p1.samsung.com>
+        <20200306130314.GA3778623@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Geert,
 
+On 3/6/20 2:03 PM, Greg Kroah-Hartman wrote:
+> On Fri, Mar 06, 2020 at 01:53:01PM +0100, Geert Uytterhoeven wrote:
+>> Hi Greg,
+>>
+>> On Fri, Mar 6, 2020 at 1:29 PM Greg Kroah-Hartman
+>> <gregkh@linuxfoundation.org> wrote:
+>>> On Fri, Mar 06, 2020 at 11:23:01AM +0100, Geert Uytterhoeven wrote:
+>>>> This reverts commit 175b558d0efb8b4f33aa7bd2c1b5389b912d3019.
+>>>>
+>>>> When the user configures a kernel without support for Samsung SoCs, it
+>>>> makes no sense to ask the user about enabling "Samsung SoC serial
+>>>> support", as Samsung serial ports can only be found on Samsung SoCs.
+>>>>
+>>>> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>>>> ---
+>>>>  drivers/tty/serial/Kconfig | 1 +
+>>>>  1 file changed, 1 insertion(+)
+>>>>
+>>>> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+>>>> index 880b962015302dca..932ad51099deae7d 100644
+>>>> --- a/drivers/tty/serial/Kconfig
+>>>> +++ b/drivers/tty/serial/Kconfig
+>>>> @@ -237,6 +237,7 @@ config SERIAL_CLPS711X_CONSOLE
+>>>>
+>>>>  config SERIAL_SAMSUNG
+>>>>       tristate "Samsung SoC serial support"
+>>>> +     depends on PLAT_SAMSUNG || ARCH_EXYNOS || COMPILE_TEST
+>>>>       select SERIAL_CORE
+>>>>       help
+>>>>         Support for the on-chip UARTs on the Samsung S3C24XX series CPUs,
+>>>
+>>> {sigh}
 
-On Mon, Mar 9, 2020 at 4:01 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Chunyan,
->
-> On Mon, Mar 9, 2020 at 2:18 AM Chunyan Zhang <zhang.lyra@gmail.com> wrote:
-> > On Fri, 6 Mar 2020 at 20:41, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > > On Thu, Mar 5, 2020 at 11:33 AM Chunyan Zhang <zhang.lyra@gmail.com> wrote:
-> > > > From: Chunyan Zhang <chunyan.zhang@unisoc.com>
-> > > >
-> > > > Remove the dependency with ARCH_SPRD from sprd serial/console Kconfig-s,
-> > > > since we want them can be built-in when ARCH_SPRD is set as 'm'.
-> > >
-> > > Why would you want a serial driver for a specific platform to be builtin,
-> > > while all other platform support is modular?
-> >
-> > Oh, that's not this patch means.
-> >
-> > We just want serial driver can be builtin for any platform, so it
->
-> What would be the benefit of the user to be able to have the SPRD serial
-> driver built-in on any platform?  AFAIU, it supports only Spreadtrum
-> platforms.
->
-Assume there is a all-in-one common kernel binary image say arm64 for
-all SoC platform and all
-device drivers are built as modules from different vendors for each
-specific devices.
-But for serial driver it is too late to be initialized as a module if
-users want to check early console log.
-At this circumstance vendors prefer to set their serial driver to be
-built into that all-in-one image as easy
-as to only set one config instead of enabling whole platform then
-disabling many out of serial.
+[...]
 
--Orson
+>> Dropping those dependencies is similar to always having a simple PCI
+>> core without any host PCI bridges, dropping "depends on PCI" from all
+>> PCI drivers, and building an all*config kernel for your old i386 that
+>> predates PCI (you can replace PCI by ACPI to modernize the example).
+>>
+>> What am I missing?!?
+> 
+> "depends on PCI" describes the hardware bus that a driver depends on.
+> 
+> PLAT_FOO is just trying to somehow classify that this type of driver
+> only shows up on this vendor's devices.  It is not defining the hardware
+> at all.  We try to always describe functionality of hardware, not try to
+> declare specific vendor's hardware choices, right?
+> 
+> PLAT_FOO is interesting, but given that a specific driver is really not
+> tied to that platform logically, only by virtue that no one else might
+> not happen to have that hardware, it seems odd to have that.
 
-> > should not depend on a config which can be set as 'm' (i.e. ARCH_SPRD)
-> > , otherwise if the config was set as 'm', the serial driver can't be
-> > selected as 'y' then.
->
-> I ask about that as a reply to PATCH 1/2.
->
-> > That's what I mean.
->
-> > > > --- a/drivers/tty/serial/Kconfig
-> > > > +++ b/drivers/tty/serial/Kconfig
-> > > > @@ -1452,7 +1452,6 @@ config SERIAL_MEN_Z135
-> > > >
-> > > >  config SERIAL_SPRD
-> > > >         tristate "Support for Spreadtrum serial"
-> > > > -       depends on ARCH_SPRD
-> > > >         select SERIAL_CORE
-> > > >         help
-> > > >           This enables the driver for the Spreadtrum's serial.
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
+Your particular patch is not about removing PLAT_FOO dependency but
+about removing actual architecture/platform specific dependencies.
+
+Please look at your patch and note that in addition to removing
+PLAT_SAMSUNG dependency (even ignoring for a moment that it can be
+replaced by a few ARCH_* dependencies and PLAT_SAMSUNG was used only
+because it was shorter) has also removed ARCH_EXYNOS dependency.
+
+How do you explain this?
+
+> Yes, asking lots of questions is tough, but we passed that problem so
+> long ago.  Are we now trying to add PLAT_FOO entries to all hardware
+> drivers in order to make this type of selection easier?  I thought we
+
+We are not going to add anything because for the vast majority of
+the drivers the needed entries are already there:
+
+$ find drivers/ -name 'Kconfig*'|xargs cat|grep "depends on"|grep ARCH_|wc -l
+1310
+
+> were just doing that by providing defconfig files to make the initial
+> selection saner.
+
+Best regards,
+--
+Bartlomiej Zolnierkiewicz
+Samsung R&D Institute Poland
+Samsung Electronics
