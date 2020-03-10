@@ -6,107 +6,119 @@ X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E315EC10F27
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Mar 2020 09:52:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 209E0C18E5A
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Mar 2020 10:11:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C35AE24681
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Mar 2020 09:52:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F1E4720637
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Mar 2020 10:11:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726202AbgCJJwW (ORCPT
+        id S1726224AbgCJKLo (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 10 Mar 2020 05:52:22 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:41577 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726199AbgCJJwW (ORCPT
+        Tue, 10 Mar 2020 06:11:44 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:42121 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726202AbgCJKLo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 Mar 2020 05:52:22 -0400
-Received: by mail-ot1-f65.google.com with SMTP id s15so4292517otq.8;
-        Tue, 10 Mar 2020 02:52:22 -0700 (PDT)
+        Tue, 10 Mar 2020 06:11:44 -0400
+Received: by mail-ot1-f66.google.com with SMTP id 66so12546176otd.9;
+        Tue, 10 Mar 2020 03:11:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=D2V/UePASyU230tuKRbMCAGcZJI5X8GF+a664jH15CU=;
-        b=Tf/MH0EGmNz33HpbYHLdtiYZEha6NxQEiaSwZg5RvM9GbwAJsKziJBZwV9cOW9HHEI
-         WhQWu05mSDYxVG2RC6jykJKd6wPnL/nlJjQcQj5PlBpIWn/raUBRxozwBBQrirtu8+nB
-         smMa4qde/nxGnnGpDsK3SmHuCXuqHG5+J0ShB9yDg9Sn9aESLmNWHymkqlwor/NyKJuJ
-         nSkl4FU2+Qw2ShPlR1Fra9704UVc/3p/zXZnnwyBeVERj4B8Na6+y46xS3xPekGkTkLD
-         I16EpB9JpGxiIxzHkkQWuJJFlGWjrjqEuX1vZYxHtoJ4BrktqXlQzQq8EDy4odKQt3eu
-         nIPA==
-X-Gm-Message-State: ANhLgQ0UjllkEEeLuPfV/ETo7QEnQqmYpEK19xJDDW+iQLsmqkHkcb8C
-        W1vB0+5fCrHdLNELy+cO6N5ndLD+VPWh7nSJ6XJYJN8j
-X-Google-Smtp-Source: ADFU+vsj5UWJdrV7QmKDiwgSvDldXSei2pp+JGaKb/Y7ORMGEFfH2B3XQIlZ+H27C0XBvXY1wG4vDKm2MB7xCJwnqls=
-X-Received: by 2002:a9d:b89:: with SMTP id 9mr16432511oth.297.1583833941607;
- Tue, 10 Mar 2020 02:52:21 -0700 (PDT)
+        bh=jCYTtqKtRPChhEMP3SdFyK3zUQ497N5Se4SQbI0RklA=;
+        b=Vf27KfOZaPJN9fqG3b6SsYQMcuje0KATMB6Ws4w4IWeGZCEFLlPAcTinMWG8YJXWzf
+         kTUxtYQBqZKN/Ky0Lu0J/hL8d3dhXe6W0Dq06lASPOqig59+GtfEnaDiz6MCcjae+s3u
+         khdYtQ8QwKidbEBHnquTJGzGcb+gBUmeJePUBPtdVjpi7acyykGa+eFwxqQsNWkNYoq1
+         eHqzpYjsZ8eWjaXJ0CAQmDdiuoMV50v1jGEMTSNWywSyDiNcYzx3NBJ/tIBFSmXTMPts
+         81jHrFUjnfwJXYr6TTxpXvul+IiEphzGblpghARTwUP4pIyORB3rjxmMSD+bN8nKeIRx
+         ++4A==
+X-Gm-Message-State: ANhLgQ19O45IWZZzZnLUevyCafndwGtpZuSEe+c53WzPJajwo/ctwYi+
+        G3Pre1v5ZcbE/0SLMTawSJTYdLjXX+QyuXIrcQ0=
+X-Google-Smtp-Source: ADFU+vssgAzcj0QjNkwqKXMBxmZbVcV4/65kDwlBPN53wWEVCESi0Az4nNTiu33PAlepRYJQFKcqU7lq18xKx1kM570=
+X-Received: by 2002:a9d:b89:: with SMTP id 9mr16497345oth.297.1583835103460;
+ Tue, 10 Mar 2020 03:11:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200305103228.9686-1-zhang.lyra@gmail.com> <CAMuHMdVyy3v24zBxJFe5hYdnzdj80dvE2Z9GO4=AC1N8fD64pw@mail.gmail.com>
- <CAAfSe-spu2oNmfEYt+WQvRQy1bCC0e1MFjbUyBAFzghd5XNBfw@mail.gmail.com>
- <CAMuHMdV1qQZF-kAwbcxhHQZZ9hs0dG-OTZ2NcB25Jtra6ii5iA@mail.gmail.com> <CA+H2tpEzFAbfzMuUGMfW3BqCKv2+kk+cLL5gWpR-zJZFYwWKqw@mail.gmail.com>
-In-Reply-To: <CA+H2tpEzFAbfzMuUGMfW3BqCKv2+kk+cLL5gWpR-zJZFYwWKqw@mail.gmail.com>
+References: <20200306102301.16870-1-geert+renesas@glider.be> <CAJKOXPeknZDrA7cXbznvrcCoV4hFfaUAtd6mzHO+dbepkzueQw@mail.gmail.com>
+In-Reply-To: <CAJKOXPeknZDrA7cXbznvrcCoV4hFfaUAtd6mzHO+dbepkzueQw@mail.gmail.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 10 Mar 2020 10:52:10 +0100
-Message-ID: <CAMuHMdUKD5Ob_o4E3bH9wx=6r2PU+7U3RQ_GVRj7ZQc-e5Y4TA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] arm64: change ARCH_SPRD Kconfig to tristate
-To:     Orson Zhai <orsonzhai@gmail.com>
-Cc:     Chunyan Zhang <zhang.lyra@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Jiri Slaby <jslaby@suse.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Chunyan Zhang <chunyan.zhang@unisoc.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Baolin Wang <baolin.wang7@gmail.com>,
+Date:   Tue, 10 Mar 2020 11:11:32 +0100
+Message-ID: <CAMuHMdVhOECZPMno3vgw4x0fo9yX5j0G9rss1QvHFyi73RRXVQ@mail.gmail.com>
+Subject: Re: [PATCH] Revert "tty: serial: samsung_tty: build it for any platform"
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, Kukjin Kim <kgene@kernel.org>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
         Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Android Kernel Team <kernel-team@android.com>
+        "linux-samsung-soc@vger.kernel.org" 
+        <linux-samsung-soc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Orson,
+Hi Krzysztof,
 
-On Tue, Mar 10, 2020 at 10:41 AM Orson Zhai <orsonzhai@gmail.com> wrote:
-> On Mon, Mar 9, 2020 at 6:32 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > On Mon, Mar 9, 2020 at 9:32 AM Chunyan Zhang <zhang.lyra@gmail.com> wrote:
-> > > On Mon, 9 Mar 2020 at 16:03, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > > > On Thu, Mar 5, 2020 at 11:33 AM Chunyan Zhang <zhang.lyra@gmail.com> wrote:
-> > > > > From: Chunyan Zhang <chunyan.zhang@unisoc.com>
-> > > > >
-> > > > > The default value of Kconfig for almost all sprd drivers are the same with
-> > > > > ARCH_SPRD, making these drivers built as modules as default would be easier
-> > > > > if we can set ARCH_SPRD as 'm', so this patch change ARCH_SPRD to tristate.
-> > > > >
-> > > > > Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
-> > > >
-> > > > Can you actually boot a kernel on a Spreadtrum platform when all platform
-> > > > and driver support is modular?
-> > >
-> > > Yes, even if all drivers are modular.
+On Mon, Mar 9, 2020 at 7:09 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> .On Fri, 6 Mar 2020 at 11:23, Geert Uytterhoeven
+> <geert+renesas@glider.be> wrote:
+> > This reverts commit 175b558d0efb8b4f33aa7bd2c1b5389b912d3019.
 > >
-> > Cool. No hard dependencies on e.g. regulators that are turned off when
-> > unused?
+> > When the user configures a kernel without support for Samsung SoCs, it
+> > makes no sense to ask the user about enabling "Samsung SoC serial
+> > support", as Samsung serial ports can only be found on Samsung SoCs.
 > >
-> > > But I hope serial can be builtin, then I can have a console to see
-> > > kernel output before loading modules.
+> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > ---
+> >  drivers/tty/serial/Kconfig | 1 +
+> >  1 file changed, 1 insertion(+)
 > >
-> > No dependency on the clock driver?
-> > Oh, I see you have a hack in the serial driver, to assume default
-> > values when the serial port's parent clock is not found.  That may
-> > limit use of the other serial ports, depending on the actual serial
-> > hardware.
 >
-> There is an function named "sprd_uart_is_console()" in the driver
-> code. So the hack could be only applied when the
-> port is identified as console. And other ports might return
-> PROBE_DEFER until the clock is ready.
+> Discussion about removal and then re-adding of PLAT_SAMSUNG and
+> ARCH_EXYNOS dependencies remind me [1]: "[RFC] Input: tm2-touchkey -
+> add hardware dependency".
 >
-> Could it work out of the limitation?
+> In both cases the driver is clearly only for Samsung SoC or even for
+> particular device, although one could argue that touchscreen could be
+> reused while re-usage of serial IP of SoC is highly unlikely. My
+> understanding, maybe not correct, of "depends on" syntax is a kernel
+> source code, building or running dependency. I do not see it as a
+> hardware dependency. Although Samsung S3C/Exynos serial driver will
+> not exist outside of Samsung SoC, there is no kernel dependency.
+> Unless I missed something...
 
-Yes, that could work.  You also have only a single SPRD_DEFAULT_SOURCE_CLK,
-which makes it simple to handle.
-For other SoCs, there may be a variation of possible values, depending on
-SoC and/or board.
+The touchscreen is something different: I can easily mount that type of
+touchscreen on my own board, while I cannot integrate a Samsung serial
+port on my board, unless I'm using a Samsung SoC.
+
+> I understand and agree with concerns mentioned in [1] and in the
+> thread here, that removal of this "depends on" makes life of
+> distributions and generic users more difficult. To solve this problem
+> I was thinking about adding weaker type of dependency. A hint about
+> hardware dependency. Something like the "imply" is for "select". This
+> did not happen, therefore I still stand on my understanding of
+> "depends on" thus I gave positive feedback to Greg's patch.
+
+A weak dependency can be expressed using "|| COMPILE_TESTING".
+
+<(not so) wild idea>
+During the past few days, I've been giving this more thought.
+And I realized we might as well get rid of pci_driver, and just have
+platform_drivers that match against "pci<VendorID>,<DeviceID>" (yes,
+this is what real Open Firmware had in the compatible property, cfr.
+http://users.telenet.be/geertu/Linux/PPC/pci/ethernetAT4/).
+That way there would be no longer a build dependency on CONFIG_PCI, and
+we can drop all "depends on PCI" from driver Kconfig symbols.
+But would dropping that dependency be welcomed? Perhaps, as "everybody"
+uses PCI.
+
+Now repeat the exercise for Zorro, TURBOchannel, NuBus, Sbus, PCMCIA,
+..., and wait for the outcry from Linus suddenly seeing lots of
+questions about support for hardware he can't possibly have in his
+machine...
+</(not so) wild idea>
 
 Gr{oetje,eeting}s,
 
