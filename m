@@ -6,93 +6,80 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E288BC10F27
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Mar 2020 13:20:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6651DC18E7A
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Mar 2020 13:20:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BB405208E4
-	for <linux-serial@archiver.kernel.org>; Tue, 10 Mar 2020 13:20:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 39B38208E4
+	for <linux-serial@archiver.kernel.org>; Tue, 10 Mar 2020 13:20:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729148AbgCJNUL (ORCPT
+        id S1728821AbgCJNUL (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
         Tue, 10 Mar 2020 09:20:11 -0400
-Received: from mga12.intel.com ([192.55.52.136]:54416 "EHLO mga12.intel.com"
+Received: from mga03.intel.com ([134.134.136.65]:29022 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728821AbgCJNUK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 10 Mar 2020 09:20:10 -0400
+        id S1730074AbgCJNUJ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 10 Mar 2020 09:20:09 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Mar 2020 06:20:08 -0700
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Mar 2020 06:20:09 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,537,1574150400"; 
-   d="scan'208";a="289036350"
+   d="scan'208";a="234345235"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 10 Mar 2020 06:20:06 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 10 Mar 2020 06:20:06 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 86A8A193; Tue, 10 Mar 2020 15:20:05 +0200 (EET)
+        id A04BF211; Tue, 10 Mar 2020 15:20:05 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial@vger.kernel.org, Dmitry Safonov <0x7f454c46@gmail.com>
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/4] serial: core: Use string length for SysRq magic sequence
-Date:   Tue, 10 Mar 2020 15:20:01 +0200
-Message-Id: <20200310132004.86367-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 3/4] serial: core: Use uart_console() helper in SysRq code
+Date:   Tue, 10 Mar 2020 15:20:03 +0200
+Message-Id: <20200310132004.86367-3-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200310132004.86367-1-andriy.shevchenko@linux.intel.com>
+References: <20200310132004.86367-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Compiler is not happy about using ARRAY_SIZE() in comparison to smaller type:
+Use uart_console() helper in SysRq code instead of open coded variant.
+This eliminates the conditional entirely for SERIAL_CORE_CONSOLE=n case.
+While here, refactor the conditional to be more compact.
 
-  CC      drivers/tty/serial/serial_core.o
-.../serial_core.c: In function ‘uart_try_toggle_sysrq’:
-.../serial_core.c:3222:24: warning: comparison is always false due to limited range of data type [-Wtype-limits]
- 3222 |  if (++port->sysrq_seq < (ARRAY_SIZE(sysrq_toggle_seq) - 1)) {
-      |                        ^
-
-Looking at the code it appears that there is an additional weirdness,
-i.e. use ARRAY_SIZE() against simple string literal. Yes, the idea probably
-was to allow '\0' in the sequence, but it's impractical: kernel configuration
-won't accept it to begin with followed by a comment about '\0' before
-comparison in question.
-
-Drop all these by switching to strlen() and convert code accordingly.
-
-Fixes: 68af43173d3f ("serial/sysrq: Add MAGIC_SYSRQ_SERIAL_SEQUENCE")
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/serial_core.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/tty/serial/serial_core.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index aec98db45406..ec3b833e9f22 100644
+index e3f2afc15ad4..e3f8e641e3a7 100644
 --- a/drivers/tty/serial/serial_core.c
 +++ b/drivers/tty/serial/serial_core.c
-@@ -3209,7 +3209,9 @@ static DECLARE_WORK(sysrq_enable_work, uart_sysrq_on);
-  */
- static bool uart_try_toggle_sysrq(struct uart_port *port, unsigned int ch)
- {
--	if (ARRAY_SIZE(sysrq_toggle_seq) <= 1)
-+	int sysrq_toggle_seq_len = strlen(sysrq_toggle_seq);
-+
-+	if (!sysrq_toggle_seq_len)
- 		return false;
+@@ -3315,14 +3315,12 @@ int uart_handle_break(struct uart_port *port)
+ 	if (port->handle_break)
+ 		port->handle_break(port);
  
- 	BUILD_BUG_ON(ARRAY_SIZE(sysrq_toggle_seq) >= U8_MAX);
-@@ -3218,8 +3220,7 @@ static bool uart_try_toggle_sysrq(struct uart_port *port, unsigned int ch)
- 		return false;
+-	if (port->has_sysrq) {
+-		if (port->cons && port->cons->index == port->line) {
+-			if (!port->sysrq) {
+-				port->sysrq = jiffies + SYSRQ_TIMEOUT;
+-				return 1;
+-			}
+-			port->sysrq = 0;
++	if (port->has_sysrq && uart_console(port)) {
++		if (!port->sysrq) {
++			port->sysrq = jiffies + SYSRQ_TIMEOUT;
++			return 1;
+ 		}
++		port->sysrq = 0;
  	}
  
--	/* Without the last \0 */
--	if (++port->sysrq_seq < (ARRAY_SIZE(sysrq_toggle_seq) - 1)) {
-+	if (++port->sysrq_seq < sysrq_toggle_seq_len) {
- 		port->sysrq = jiffies + SYSRQ_TIMEOUT;
- 		return true;
- 	}
+ 	if (port->flags & UPF_SAK)
 -- 
 2.25.1
 
