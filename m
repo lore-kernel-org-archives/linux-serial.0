@@ -2,121 +2,72 @@ Return-Path: <SRS0=Gen4=44=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE43C18E5A
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Mar 2020 13:03:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9562EC10F27
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Mar 2020 14:32:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A1C0A2146E
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Mar 2020 13:03:02 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="OzyT8G5m"
+	by mail.kernel.org (Postfix) with ESMTP id A97D720575
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Mar 2020 14:32:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729370AbgCKNDC (ORCPT
+        id S1729838AbgCKOcx (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Mar 2020 09:03:02 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:12943 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729435AbgCKNDC (ORCPT
+        Wed, 11 Mar 2020 10:32:53 -0400
+Received: from smtprelay0134.hostedemail.com ([216.40.44.134]:57708 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729473AbgCKOcw (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Mar 2020 09:03:02 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1583931781; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=f7e0eWxDfW7nEaHlYSKRi90iftgXxefmOtrDot6oFE0=; b=OzyT8G5maR+SLIXpWDtc/taW8IjnZTtT+Nv8bvH2N3NpMZPVCP8V5EcfYSdOxCSBdzEivnwk
- X8I5aGLD7SDml3pAn6pGtAvOVo9Z2tpKccS2v27NPlzXM+eMB8EgoVNr7ZDBUdteITPAurps
- dMEp8MdBCCli2J2LbBPHAgl/aiY=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e68e184.7f6a583953e8-smtp-out-n02;
- Wed, 11 Mar 2020 13:03:00 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 8C30AC433CB; Wed, 11 Mar 2020 13:02:59 +0000 (UTC)
-Received: from [10.252.222.65] (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 28AAFC433D2;
-        Wed, 11 Mar 2020 13:02:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 28AAFC433D2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-Subject: Re: [PATCH 0/6] Add interconnect support to UART, I2C, SPI and QSPI
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, dianders@chromium.org,
-        evgreen@chromium.org
-References: <1581946205-27189-1-git-send-email-akashast@codeaurora.org>
- <20200309175954.GX24720@google.com>
-From:   Akash Asthana <akashast@codeaurora.org>
-Message-ID: <9e0afe90-5480-2db5-48fb-39cd8db6e8d1@codeaurora.org>
-Date:   Wed, 11 Mar 2020 18:32:44 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        Wed, 11 Mar 2020 10:32:52 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay01.hostedemail.com (Postfix) with ESMTP id CCB4710052861;
+        Wed, 11 Mar 2020 14:32:51 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-HE-Tag: sheet55_18d17c0d0ac3d
+X-Filterd-Recvd-Size: 1720
+Received: from XPS-9350.home (unknown [47.151.143.254])
+        (Authenticated sender: joe@perches.com)
+        by omf02.hostedemail.com (Postfix) with ESMTPA;
+        Wed, 11 Mar 2020 14:32:50 +0000 (UTC)
+Message-ID: <891a42ad8d8fd7beca911845108e1ded022ef3f7.camel@perches.com>
+Subject: Re: [PATCH -next 005/491] ARM/UNIPHIER ARCHITECTURE: Use
+ fallthrough;
+From:   Joe Perches <joe@perches.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Date:   Wed, 11 Mar 2020 07:31:07 -0700
+In-Reply-To: <CAK7LNAS7GAk9yXkPhbS3ByU+n9Gb-rk0PeLcXLCNwpW1B22aeg@mail.gmail.com>
+References: <cover.1583896344.git.joe@perches.com>
+         <dae0878058223a42c77d725b8d7c5845a7ef9dc0.1583896348.git.joe@perches.com>
+         <CAK7LNAS7GAk9yXkPhbS3ByU+n9Gb-rk0PeLcXLCNwpW1B22aeg@mail.gmail.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.34.1-2 
 MIME-Version: 1.0
-In-Reply-To: <20200309175954.GX24720@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On Wed, 2020-03-11 at 14:15 +0900, Masahiro Yamada wrote:
+> On Wed, Mar 11, 2020 at 2:07 PM Joe Perches <joe@perches.com> wrote:
+> > Convert the various uses of fallthrough comments to fallthrough;
+> > 
+> > Done via script
+> > Link: https://lore.kernel.org/lkml/b56602fcf79f849e733e7b521bb0e17895d390fa.1582230379.git.joe.com/
+> > 
+> > Signed-off-by: Joe Perches <joe@perches.com>
+> 
+> Acked-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+> 
+> 
+> But, I think the patch subject should be prefixed:
+> "serial: 8250_uniphier:"
 
-On 3/9/2020 11:29 PM, Matthias Kaehlcke wrote:
-> Hi Akash,
->
-> do you plan to re-spin this series in the near future?
->
-> Thanks
->
-> Matthias
+Yeah thanks, that's difficult to script though.
 
-Hi  Matthias,
 
-I will re-spin the series by 3/13.
-
-Regards,
-
-Akash
-
->
-> On Mon, Feb 17, 2020 at 06:59:59PM +0530, Akash Asthana wrote:
->> dt-binding patch for UART, I2C and SPI.
->>   - https://patchwork.kernel.org/patch/11385965/ [Convert QUP bindings
->> 	to YAML and add ICC, pin swap doc]
->>
->> dt-binding patch for QSPI.
->>   - https://patchwork.kernel.org/cover/11386003/ [Convert QSPI binding
->> 	to YAML and add interconnect doc]
->>
->> Akash Asthana (6):
->>    soc: qcom: geni: Support for ICC voting
->>    tty: serial: qcom_geni_serial: Add interconnect support
->>    i2c: i2c-qcom-geni: Add interconnect support
->>    spi: spi-geni-qcom: Add interconnect support
->>    spi: spi-qcom-qspi: Add interconnect support
->>    arm64: dts: sc7180: Add interconnect for QUP and QSPI
->>
->>   arch/arm64/boot/dts/qcom/sc7180.dtsi  | 199 ++++++++++++++++++++++++++++++++++
->>   drivers/i2c/busses/i2c-qcom-geni.c    |  84 +++++++++++++-
->>   drivers/spi/spi-geni-qcom.c           |  65 ++++++++++-
->>   drivers/spi/spi-qcom-qspi.c           |  38 ++++++-
->>   drivers/tty/serial/qcom_geni_serial.c |  84 ++++++++++++--
->>   include/linux/qcom-geni-se.h          |  31 ++++++
->>   6 files changed, 481 insertions(+), 20 deletions(-)
->>
->> -- 
->> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
