@@ -2,444 +2,260 @@ Return-Path: <SRS0=Gen4=44=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DA66C10F27
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Mar 2020 09:05:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E582C10F27
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Mar 2020 12:22:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6837920873
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Mar 2020 09:05:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4088821655
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Mar 2020 12:22:10 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=sifive.com header.i=@sifive.com header.b="Bw/ZDauF"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728255AbgCKJFM (ORCPT
+        id S1729180AbgCKMWJ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Mar 2020 05:05:12 -0400
-Received: from mga06.intel.com ([134.134.136.31]:60806 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726097AbgCKJFL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Mar 2020 05:05:11 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Mar 2020 02:04:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,540,1574150400"; 
-   d="scan'208";a="265923156"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga004.fm.intel.com with ESMTP; 11 Mar 2020 02:04:49 -0700
-Received: from andy by smile with local (Exim 4.93)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1jBxII-008h60-I7; Wed, 11 Mar 2020 11:04:50 +0200
-Date:   Wed, 11 Mar 2020 11:04:50 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Russ Gorby <russ.gorby@intel.com>
-Subject: Re: [PATCH 2/2 v2] tty: serial: ifx6x60: Convert to GPIO descriptors
-Message-ID: <20200311090450.GA1922688@smile.fi.intel.com>
-References: <20200311083131.693908-1-linus.walleij@linaro.org>
- <20200311083131.693908-2-linus.walleij@linaro.org>
+        Wed, 11 Mar 2020 08:22:09 -0400
+Received: from mail-dm6nam11on2085.outbound.protection.outlook.com ([40.107.223.85]:31496
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729095AbgCKMWJ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 11 Mar 2020 08:22:09 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cbqnRtdF6lsAVO8vMUDq+GKDWPid9LHY47HAIGrE2+0UB+SNzKG2To1xglgaJtU+mA44CjBe7N2r6slqHqgHM/reh0fqxo9s6yU3HI3toDEURs/y4axQ2Cuddh9/U76CijcLMDtaj8vZgOp4xfF1QiRl29NpS7Tij53mOJVhirwulgwOJfI1fubk8vuoVXTI3nlzj/q1RkL8oM9H9gU0SJ0QHrrkbmGjEmahjTxtQFIDNeLoEBoa5b/7CxmV4E/KvvVL0RPhG/ggE126YsCDGsWp/W/VbQOD+X1TtPXsFLhmGGjGeNi3BBCL6dpBbRn/L37XbylR/t12rrhoC7LItA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ERRAudjHVGjnDjF+mvJRryzoiMROt5zPxRgvGuUPDl4=;
+ b=ldWF6kjZYqQqw/jh4h14c4J+H5iSgqad5UXls/p3ViNmhucwShYmqZu5KF6FS7Mtwb5DUGuRH2nzYloZotnR957DkMjIeAmIzKVOJUdH46x3oVWixjJ/TALAciktQMp1H8SZDixb90cVqE86zZN6a+SsvCZgW7l9ZdB+BQHgPrPk2kkj9RFQg4KjEG7C95N3GoC+fI1etIhfL9ZyQnJUhyDxhEs0cJ98W8hhnSGaqq+usfC5E5Z4TvVikA8iIouyV4t39cm8d1RFDLsPgaxoLWuDYDHvOPbb1dVWbZqZSDsEJRJzWec3IdtjHRJ4ymm+Nb0cwntQXiZDwUfBFEUyrA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=sifive.com; dmarc=pass action=none header.from=sifive.com;
+ dkim=pass header.d=sifive.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sifive.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ERRAudjHVGjnDjF+mvJRryzoiMROt5zPxRgvGuUPDl4=;
+ b=Bw/ZDauFq0U0kg50j3SshhVyllH6E7c7imDNVbZx/K6aKf0/HvC5KUJB+gol1NTARQAWCRSMF5VHvhwmVS7Y+T0v95Yn4+AXvyzv0yVatJdRYo4Ccd0lIHtd8zLVql1quDFu3/zKOBkjvwLqflxM/Q6vijMRrMVmMiEFA/vnXxI=
+Received: from MN2PR13MB3552.namprd13.prod.outlook.com (2603:10b6:208:16f::22)
+ by MN2PR13MB2734.namprd13.prod.outlook.com (2603:10b6:208:f3::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.7; Wed, 11 Mar
+ 2020 12:22:04 +0000
+Received: from MN2PR13MB3552.namprd13.prod.outlook.com
+ ([fe80::c8a2:5e5e:9769:6a8a]) by MN2PR13MB3552.namprd13.prod.outlook.com
+ ([fe80::c8a2:5e5e:9769:6a8a%7]) with mapi id 15.20.2814.007; Wed, 11 Mar 2020
+ 12:22:04 +0000
+From:   Yash Shah <yash.shah@sifive.com>
+To:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>
+CC:     Palmer Dabbelt <palmerdabbelt@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "jslaby@suse.com" <jslaby@suse.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
+        "kernel-team@android.com" <kernel-team@android.com>,
+        Sachin Ghadi <sachin.ghadi@sifive.com>
+Subject: RE: [PATCH] tty: sifive: Finish transmission before changing the
+ clock
+Thread-Topic: [PATCH] tty: sifive: Finish transmission before changing the
+ clock
+Thread-Index: AQHV9DjmyxKWiUuFkUuyXFb+1DKKS6hDUOug
+Date:   Wed, 11 Mar 2020 12:22:04 +0000
+Message-ID: <MN2PR13MB3552C9E76C003A8A302540808CFC0@MN2PR13MB3552.namprd13.prod.outlook.com>
+References: <20200307042637.83728-1-palmer@dabbelt.com>
+In-Reply-To: <20200307042637.83728-1-palmer@dabbelt.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=yash.shah@sifive.com; 
+x-originating-ip: [120.138.124.57]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 364698b5-4faa-47d1-6285-08d7c5b6cf0c
+x-ms-traffictypediagnostic: MN2PR13MB2734:
+x-ld-processed: 22f88e9d-ae0d-4ed9-b984-cdc9be1529f1,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MN2PR13MB2734ACBC6B7E6D00D3176E818CFC0@MN2PR13MB2734.namprd13.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0339F89554
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(39850400004)(136003)(366004)(396003)(346002)(199004)(86362001)(81166006)(4326008)(53546011)(6506007)(478600001)(8676002)(33656002)(9686003)(55016002)(52536014)(5660300002)(64756008)(66946007)(107886003)(81156014)(66556008)(6636002)(66476007)(76116006)(66446008)(186003)(26005)(54906003)(316002)(7696005)(8936002)(110136005)(71200400001)(44832011)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR13MB2734;H:MN2PR13MB3552.namprd13.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+received-spf: None (protection.outlook.com: sifive.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: RZbUl1TiVKXNuR8olEEh38+m8w1uDJhzr3EeG2XUBJo4qbg9Gqgcdo73WKgcfmXz45WurETQCPLd4TYHLKl+UOqsSqbLS5UDhb9mXxOVr9jeWossfN7RRAv34nqdcw4KuW7gZu3eSSrRvLf/qn/A6sxdBEu9UZWyCBDawBblYPDiyWUpT3ieVnioMuzr66EHpjc06+RcDHn7AOMqcvLxJDBNdzKgBaxF8YtQ/HD3kwoqTY4e4pWWOgSYsGJWpynh41e+AP+j7pBDOChSvfafzPyAftBa08yPEF9o8Z7bNiQsABkQu3xEHA2u4kJnN/wyQXV3ZiYW+kNZK5jCgH7F/KOPTtUY9yCQ3V9D+caMfN3J4OKvsnAvsDvuk6DvYYktp13ALJfslprcOI91gPxICnF5Yn072kyR4njVDW8CIpo3p4F8gIAR1sRNI6D31y3q
+x-ms-exchange-antispam-messagedata: J+AvgJTPFJu9znJZTpHDJFQ1OffbVbXMxB42zlBeadWHnEwVcWjbytuq9jcP86ItYmVE4N8t0yALkxDvaR0+SozCSx3RnWgFSnUGb6nrgxlghnxMGvChJbvd7K0Dzc4ZwwKfz/YhkGjpwexu0psp9g==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200311083131.693908-2-linus.walleij@linaro.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-OriginatorOrg: sifive.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 364698b5-4faa-47d1-6285-08d7c5b6cf0c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Mar 2020 12:22:04.1671
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 22f88e9d-ae0d-4ed9-b984-cdc9be1529f1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: cagPcr2urqiWRqKNuuwhp/sm6z5rtW7KJtRhgCaAjKloLJbJXYYSXcfotfgWHD7RguwRHok/kHL4rz208bP4Jw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB2734
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Mar 11, 2020 at 09:31:31AM +0100, Linus Walleij wrote:
-> This driver for the Intel MID never seems to have been properly
-> integrated upstream: the platform data in <linux/spi/ifx_modem.h>
-> is not used anywhere in the kernel and haven't been since it was
-> merged into the kernel in 2010.
-> 
-> There might be out-of-tree users, so I don't want to delete the
-> driver, but I will refactor it to use GPIO descriptors, which
-> means that out-of-tree users will need to adapt.
-> 
-> There are several examples in the kernel of how to provide the
-> resources necessary for using GPIO descriptors to pass in the
-> GPIO lines, for the MID platform in particular, it will suffice
-> to inspect the code in files like:
-> arch/x86/platform/intel-mid/device_libs/platform_bt.c
-> 
-> This refactoring transfers all GPIOs in the driver, including
-> a hard-coded "PMU reset" in the driver to use GPIO descriptors
-> instead.
-> 
-> The following named GPIO descriptors need to be supplied:
-> - reset
-> - power
-> - mrdy
-> - srdy
-> - rst_out
-> - pmu_reset
-> 
-
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Cc: Russ Gorby <russ.gorby@intel.com>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> -----Original Message-----
+> From: linux-riscv <linux-riscv-bounces@lists.infradead.org> On Behalf Of
+> Palmer Dabbelt
+> Sent: 07 March 2020 09:57
+> To: Paul Walmsley <paul.walmsley@sifive.com>
+> Cc: Palmer Dabbelt <palmerdabbelt@google.com>; Greg KH
+> <gregkh@linuxfoundation.org>; jslaby@suse.com; linux-
+> kernel@vger.kernel.org; Palmer Dabbelt <palmer@dabbelt.com>; linux-
+> serial@vger.kernel.org; Paul Walmsley <paul.walmsley@sifive.com>; linux-
+> riscv@lists.infradead.org; kernel-team@android.com
+> Subject: [PATCH] tty: sifive: Finish transmission before changing the clo=
+ck
+>=20
+> From: Palmer Dabbelt <palmerdabbelt@google.com>
+>=20
+> SiFive's UART has a software controller clock divider that produces the f=
+inal
+> baud rate clock.  Whenever the clock that drives the UART is changed this
+> divider must be updated accordingly, and given that these two events are
+> controlled by software they cannot be done atomically.
+> During the period between updating the UART's driving clock and internal
+> divider the UART will transmit a different baud rate than what the user h=
+as
+> configured, which will probably result in a corrupted transmission stream=
+.
+>=20
+> The SiFive UART has a FIFO, but due to an issue with the programming
+> interface there is no way to directly determine when the UART has finishe=
+d
+> transmitting.  We're essentially restricted to dead reckoning in order to=
+ figure
+> that out: we can use the FIFO's TX busy register to figure out when the l=
+ast
+> frame has begun transmission and just delay for a long enough that the la=
+st
+> frame is guaranteed to get out.
+>=20
+> As far as the actual implementation goes: I've modified the existing exis=
+ting
+> clock notifier function to drain both the FIFO and the shift register in =
+on
+> PRE_RATE_CHANGE.  As far as I know there is no hardware flow control in
+> this UART, so there's no good way to ask the other end to stop transmissi=
+on
+> while we can't receive (inserting software flow control messages seems li=
+ke a
+> bad idea here).
+>=20
+> Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
 > ---
-> ChangeLog v1->v2:
-> - Resend with the preparation patch adding the local
->   dev variable.
-> ---
->  drivers/tty/serial/ifx6x60.c  | 170 ++++++++++++----------------------
->  drivers/tty/serial/ifx6x60.h  |  13 ++-
->  include/linux/spi/ifx_modem.h |   5 -
->  3 files changed, 65 insertions(+), 123 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/ifx6x60.c b/drivers/tty/serial/ifx6x60.c
-> index 32a0ccef9339..7d16fe41932f 100644
-> --- a/drivers/tty/serial/ifx6x60.c
-> +++ b/drivers/tty/serial/ifx6x60.c
-> @@ -39,7 +39,7 @@
->  #include <linux/fs.h>
->  #include <linux/ip.h>
->  #include <linux/dmapool.h>
-> -#include <linux/gpio.h>
-> +#include <linux/gpio/consumer.h>
->  #include <linux/sched.h>
->  #include <linux/time.h>
->  #include <linux/wait.h>
-> @@ -61,7 +61,6 @@
->  #define IFX_SPI_HEADER_F		(-2)
->  
->  #define PO_POST_DELAY		200
-> -#define IFX_MDM_RST_PMU	4
->  
->  /* forward reference */
->  static void ifx_spi_handle_srdy(struct ifx_spi_device *ifx_dev);
-> @@ -81,7 +80,7 @@ static struct notifier_block ifx_modem_reboot_notifier_block = {
->  
->  static int ifx_modem_power_off(struct ifx_spi_device *ifx_dev)
->  {
-> -	gpio_set_value(IFX_MDM_RST_PMU, 1);
-> +	gpiod_set_value(ifx_dev->gpio.pmu_reset, 1);
->  	msleep(PO_POST_DELAY);
->  
->  	return 0;
-> @@ -107,7 +106,7 @@ static int ifx_modem_reboot_callback(struct notifier_block *nfb,
+> I have not tested this, as I don't have any hardware.  I'm also not even
+> remotely familiar with the serial subsystem, so I don't know if there's a
+> better way of going about this.  I'm specifically worried about a udelay(=
+) that
+> could be quite long.  Maybe some sort of "delay for short times, sleep fo=
+r
+> long times" approach would be better?
+>=20
+> I don't know if this manifests in practice on existing hardware when runn=
+ing
+> real workloads, but I'd be willing to bet that it would be possible to tr=
+igger
+> the bug on purpose as by my calculations there's about a 10k cycle window=
+ in
+> which the clock can't change.  IIRC there's a lot of instability when cha=
+nging
+> the clock frequency on the HiFive Unleashed so I doubt people are going t=
+o
+> stumble across the issue regularly in practice.
+>=20
+>  drivers/tty/serial/sifive.c | 28 ++++++++++++++++++++++++----
+>  1 file changed, 24 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c in=
+dex
+> d5f81b98e4d7..d34031e842d0 100644
+> --- a/drivers/tty/serial/sifive.c
+> +++ b/drivers/tty/serial/sifive.c
+> @@ -618,10 +618,10 @@ static void sifive_serial_shutdown(struct uart_port
+> *port)
+>   *
+>   * On the V0 SoC, the UART IP block is derived from the CPU clock source
+>   * after a synchronous divide-by-two divider, so any CPU clock rate chan=
+ge
+> - * requires the UART baud rate to be updated.  This presumably could
+> corrupt any
+> - * serial word currently being transmitted or received.  It would probab=
+ly
+> - * be better to stop receives and transmits, then complete the baud rate
+> - * change, then re-enable them.
+> + * requires the UART baud rate to be updated.  This presumably corrupts
+> + any
+> + * serial word currently being transmitted or received.  In order to
+> + avoid
+> + * corrupting the output data stream, we drain the transmit queue
+> + before
+> + * allowing the clock's rate to be changed.
 >   */
->  static inline void mrdy_set_high(struct ifx_spi_device *ifx)
->  {
-> -	gpio_set_value(ifx->gpio.mrdy, 1);
-> +	gpiod_set_value(ifx->gpio.mrdy, 1);
->  }
->  
->  /**
-> @@ -117,7 +116,7 @@ static inline void mrdy_set_high(struct ifx_spi_device *ifx)
->   */
->  static inline void mrdy_set_low(struct ifx_spi_device *ifx)
->  {
-> -	gpio_set_value(ifx->gpio.mrdy, 0);
-> +	gpiod_set_value(ifx->gpio.mrdy, 0);
->  }
->  
->  /**
-> @@ -244,7 +243,7 @@ static inline void swap_buf_32(unsigned char *buf, int len, void *end)
->   */
->  static void mrdy_assert(struct ifx_spi_device *ifx_dev)
->  {
-> -	int val = gpio_get_value(ifx_dev->gpio.srdy);
-> +	int val = gpiod_get_value(ifx_dev->gpio.srdy);
->  	if (!val) {
->  		if (!test_and_set_bit(IFX_SPI_STATE_TIMER_PENDING,
->  				      &ifx_dev->flags)) {
-> @@ -691,7 +690,7 @@ static void ifx_spi_complete(void *ctx)
->  	clear_bit(IFX_SPI_STATE_IO_IN_PROGRESS, &(ifx_dev->flags));
->  
->  	queue_length = kfifo_len(&ifx_dev->tx_fifo);
-> -	srdy = gpio_get_value(ifx_dev->gpio.srdy);
-> +	srdy = gpiod_get_value(ifx_dev->gpio.srdy);
->  	if (!srdy)
->  		ifx_spi_power_state_clear(ifx_dev, IFX_SPI_POWER_SRDY);
->  
-> @@ -898,7 +897,7 @@ static irqreturn_t ifx_spi_srdy_interrupt(int irq, void *dev)
->  static irqreturn_t ifx_spi_reset_interrupt(int irq, void *dev)
->  {
->  	struct ifx_spi_device *ifx_dev = dev;
-> -	int val = gpio_get_value(ifx_dev->gpio.reset_out);
-> +	int val = gpiod_get_value(ifx_dev->gpio.reset_out);
->  	int solreset = test_bit(MR_START, &ifx_dev->mdm_reset_state);
->  
->  	if (val == 0) {
-> @@ -954,14 +953,14 @@ static int ifx_spi_reset(struct ifx_spi_device *ifx_dev)
->  	 * to reset properly
->  	 */
->  	set_bit(MR_START, &ifx_dev->mdm_reset_state);
-> -	gpio_set_value(ifx_dev->gpio.po, 0);
-> -	gpio_set_value(ifx_dev->gpio.reset, 0);
-> +	gpiod_set_value(ifx_dev->gpio.po, 0);
-> +	gpiod_set_value(ifx_dev->gpio.reset, 0);
->  	msleep(25);
-> -	gpio_set_value(ifx_dev->gpio.reset, 1);
-> +	gpiod_set_value(ifx_dev->gpio.reset, 1);
->  	msleep(1);
-> -	gpio_set_value(ifx_dev->gpio.po, 1);
-> +	gpiod_set_value(ifx_dev->gpio.po, 1);
->  	msleep(1);
-> -	gpio_set_value(ifx_dev->gpio.po, 0);
-> +	gpiod_set_value(ifx_dev->gpio.po, 0);
->  	ret = wait_event_timeout(ifx_dev->mdm_reset_wait,
->  				 test_bit(MR_COMPLETE,
->  					  &ifx_dev->mdm_reset_state),
-> @@ -1080,107 +1079,68 @@ static int ifx_spi_spi_probe(struct spi_device *spi)
->  		goto error_ret;
->  	}
->  
-> -	ifx_dev->gpio.reset = pl_data->rst_pmu;
-> -	ifx_dev->gpio.po = pl_data->pwr_on;
-> -	ifx_dev->gpio.mrdy = pl_data->mrdy;
-> -	ifx_dev->gpio.srdy = pl_data->srdy;
-> -	ifx_dev->gpio.reset_out = pl_data->rst_out;
-> -
-> -	dev_info(dev, "gpios %d, %d, %d, %d, %d",
-> -		 ifx_dev->gpio.reset, ifx_dev->gpio.po, ifx_dev->gpio.mrdy,
-> -		 ifx_dev->gpio.srdy, ifx_dev->gpio.reset_out);
-> -
-> -	/* Configure gpios */
-> -	ret = gpio_request(ifx_dev->gpio.reset, "ifxModem");
-> -	if (ret < 0) {
-> -		dev_err(dev, "Unable to allocate GPIO%d (RESET)",
-> -			ifx_dev->gpio.reset);
-> +	ifx_dev->gpio.reset = devm_gpiod_get(dev, "reset", GPIOD_OUT_LOW);
-> +	if (IS_ERR(ifx_dev->gpio.reset)) {
-> +		dev_err(dev, "could not obtain reset GPIO\n");
-> +		ret = PTR_ERR(ifx_dev->gpio.reset);
->  		goto error_ret;
->  	}
-> -	ret += gpio_direction_output(ifx_dev->gpio.reset, 0);
-> -	ret += gpio_export(ifx_dev->gpio.reset, 1);
-> -	if (ret) {
-> -		dev_err(dev, "Unable to configure GPIO%d (RESET)",
-> -			ifx_dev->gpio.reset);
-> -		ret = -EBUSY;
-> -		goto error_ret2;
-> -	}
-> -
-> -	ret = gpio_request(ifx_dev->gpio.po, "ifxModem");
-> -	ret += gpio_direction_output(ifx_dev->gpio.po, 0);
-> -	ret += gpio_export(ifx_dev->gpio.po, 1);
-> -	if (ret) {
-> -		dev_err(dev, "Unable to configure GPIO%d (ON)",
-> -			ifx_dev->gpio.po);
-> -		ret = -EBUSY;
-> -		goto error_ret3;
-> -	}
-> -
-> -	ret = gpio_request(ifx_dev->gpio.mrdy, "ifxModem");
-> -	if (ret < 0) {
-> -		dev_err(dev, "Unable to allocate GPIO%d (MRDY)",
-> -			ifx_dev->gpio.mrdy);
-> -		goto error_ret3;
-> -	}
-> -	ret += gpio_export(ifx_dev->gpio.mrdy, 1);
-> -	ret += gpio_direction_output(ifx_dev->gpio.mrdy, 0);
-> -	if (ret) {
-> -		dev_err(dev, "Unable to configure GPIO%d (MRDY)",
-> -			ifx_dev->gpio.mrdy);
-> -		ret = -EBUSY;
-> -		goto error_ret4;
-> +	gpiod_set_consumer_name(ifx_dev->gpio.reset, "ifxModem reset");
-> +	ifx_dev->gpio.po = devm_gpiod_get(dev, "power", GPIOD_OUT_LOW);
-> +	if (IS_ERR(ifx_dev->gpio.po)) {
-> +		dev_err(dev, "could not obtain power GPIO\n");
-> +		ret = PTR_ERR(ifx_dev->gpio.po);
-> +		goto error_ret;
->  	}
-> -
-> -	ret = gpio_request(ifx_dev->gpio.srdy, "ifxModem");
-> -	if (ret < 0) {
-> -		dev_err(dev, "Unable to allocate GPIO%d (SRDY)",
-> -			ifx_dev->gpio.srdy);
-> -		ret = -EBUSY;
-> -		goto error_ret4;
-> +	gpiod_set_consumer_name(ifx_dev->gpio.po, "ifxModem power");
-> +	ifx_dev->gpio.mrdy = devm_gpiod_get(dev, "mrdy", GPIOD_OUT_LOW);
-> +	if (IS_ERR(ifx_dev->gpio.mrdy)) {
-> +		dev_err(dev, "could not obtain mrdy GPIO\n");
-> +		ret = PTR_ERR(ifx_dev->gpio.mrdy);
-> +		goto error_ret;
->  	}
-> -	ret += gpio_export(ifx_dev->gpio.srdy, 1);
-> -	ret += gpio_direction_input(ifx_dev->gpio.srdy);
-> -	if (ret) {
-> -		dev_err(dev, "Unable to configure GPIO%d (SRDY)",
-> -			ifx_dev->gpio.srdy);
-> -		ret = -EBUSY;
-> -		goto error_ret5;
-> +	gpiod_set_consumer_name(ifx_dev->gpio.mrdy, "ifxModem mrdy");
-> +	ifx_dev->gpio.srdy = devm_gpiod_get(dev, "srdy", GPIOD_IN);
-> +	if (IS_ERR(ifx_dev->gpio.srdy)) {
-> +		dev_err(dev, "could not obtain srdy GPIO\n");
-> +		ret = PTR_ERR(ifx_dev->gpio.srdy);
-> +		goto error_ret;
->  	}
-> -
-> -	ret = gpio_request(ifx_dev->gpio.reset_out, "ifxModem");
-> -	if (ret < 0) {
-> -		dev_err(dev, "Unable to allocate GPIO%d (RESET_OUT)",
-> -			ifx_dev->gpio.reset_out);
-> -		goto error_ret5;
-> +	gpiod_set_consumer_name(ifx_dev->gpio.srdy, "ifxModem srdy");
-> +	ifx_dev->gpio.reset_out = devm_gpiod_get(dev, "rst_out", GPIOD_IN);
-> +	if (IS_ERR(ifx_dev->gpio.reset_out)) {
-> +		dev_err(dev, "could not obtain rst_out GPIO\n");
-> +		ret = PTR_ERR(ifx_dev->gpio.reset_out);
-> +		goto error_ret;
->  	}
-> -	ret += gpio_export(ifx_dev->gpio.reset_out, 1);
-> -	ret += gpio_direction_input(ifx_dev->gpio.reset_out);
-> -	if (ret) {
-> -		dev_err(dev, "Unable to configure GPIO%d (RESET_OUT)",
-> -			ifx_dev->gpio.reset_out);
-> -		ret = -EBUSY;
-> -		goto error_ret6;
-> +	gpiod_set_consumer_name(ifx_dev->gpio.reset_out, "ifxModem reset out");
-> +	ifx_dev->gpio.pmu_reset = devm_gpiod_get(dev, "pmu_reset", GPIOD_ASIS);
-> +	if (IS_ERR(ifx_dev->gpio.pmu_reset)) {
-> +		dev_err(dev, "could not obtain pmu_reset GPIO\n");
-> +		ret = PTR_ERR(ifx_dev->gpio.pmu_reset);
-> +		goto error_ret;
->  	}
-> +	gpiod_set_consumer_name(ifx_dev->gpio.pmu_reset, "ifxModem PMU reset");
->  
-> -	ret = request_irq(gpio_to_irq(ifx_dev->gpio.reset_out),
-> +	ret = request_irq(gpiod_to_irq(ifx_dev->gpio.reset_out),
->  			  ifx_spi_reset_interrupt,
->  			  IRQF_TRIGGER_RISING|IRQF_TRIGGER_FALLING, DRVNAME,
->  			  ifx_dev);
->  	if (ret) {
->  		dev_err(dev, "Unable to get irq %x\n",
-> -			gpio_to_irq(ifx_dev->gpio.reset_out));
-> -		goto error_ret6;
-> +			gpiod_to_irq(ifx_dev->gpio.reset_out));
-> +		goto error_ret;
->  	}
->  
->  	ret = ifx_spi_reset(ifx_dev);
->  
-> -	ret = request_irq(gpio_to_irq(ifx_dev->gpio.srdy),
-> +	ret = request_irq(gpiod_to_irq(ifx_dev->gpio.srdy),
->  			  ifx_spi_srdy_interrupt, IRQF_TRIGGER_RISING, DRVNAME,
->  			  ifx_dev);
->  	if (ret) {
->  		dev_err(dev, "Unable to get irq %x",
-> -			gpio_to_irq(ifx_dev->gpio.srdy));
-> -		goto error_ret7;
-> +			gpiod_to_irq(ifx_dev->gpio.srdy));
-> +		goto error_ret2;
->  	}
->  
->  	/* set pm runtime power state and register with power system */
-> @@ -1191,7 +1151,7 @@ static int ifx_spi_spi_probe(struct spi_device *spi)
->  	/* no outgoing tty open at this point, this just satisfies the
->  	 * modem's read and should reset communication properly
->  	 */
-> -	srdy = gpio_get_value(ifx_dev->gpio.srdy);
-> +	srdy = gpiod_get_value(ifx_dev->gpio.srdy);
->  
->  	if (srdy) {
->  		mrdy_assert(ifx_dev);
-> @@ -1200,18 +1160,8 @@ static int ifx_spi_spi_probe(struct spi_device *spi)
->  		mrdy_set_low(ifx_dev);
->  	return 0;
->  
-> -error_ret7:
-> -	free_irq(gpio_to_irq(ifx_dev->gpio.reset_out), ifx_dev);
-> -error_ret6:
-> -	gpio_free(ifx_dev->gpio.srdy);
-> -error_ret5:
-> -	gpio_free(ifx_dev->gpio.mrdy);
-> -error_ret4:
-> -	gpio_free(ifx_dev->gpio.reset);
-> -error_ret3:
-> -	gpio_free(ifx_dev->gpio.po);
->  error_ret2:
-> -	gpio_free(ifx_dev->gpio.reset_out);
-> +	free_irq(gpiod_to_irq(ifx_dev->gpio.reset_out), ifx_dev);
->  error_ret:
->  	ifx_spi_free_device(ifx_dev);
->  	saved_ifx_dev = NULL;
-> @@ -1235,14 +1185,8 @@ static int ifx_spi_spi_remove(struct spi_device *spi)
->  	pm_runtime_disable(&spi->dev);
->  
->  	/* free irq */
-> -	free_irq(gpio_to_irq(ifx_dev->gpio.reset_out), ifx_dev);
-> -	free_irq(gpio_to_irq(ifx_dev->gpio.srdy), ifx_dev);
-> -
-> -	gpio_free(ifx_dev->gpio.srdy);
-> -	gpio_free(ifx_dev->gpio.mrdy);
-> -	gpio_free(ifx_dev->gpio.reset);
-> -	gpio_free(ifx_dev->gpio.po);
-> -	gpio_free(ifx_dev->gpio.reset_out);
-> +	free_irq(gpiod_to_irq(ifx_dev->gpio.reset_out), ifx_dev);
-> +	free_irq(gpiod_to_irq(ifx_dev->gpio.srdy), ifx_dev);
->  
->  	/* free allocations */
->  	ifx_spi_free_device(ifx_dev);
-> diff --git a/drivers/tty/serial/ifx6x60.h b/drivers/tty/serial/ifx6x60.h
-> index cacca5be7390..ecb841d928a7 100644
-> --- a/drivers/tty/serial/ifx6x60.h
-> +++ b/drivers/tty/serial/ifx6x60.h
-> @@ -10,6 +10,8 @@
->  #ifndef _IFX6X60_H
->  #define _IFX6X60_H
->  
-> +struct gpio_desc;
+>  static int sifive_serial_clk_notifier(struct notifier_block *nb,
+>  				      unsigned long event, void *data) @@ -
+> 629,6 +629,26 @@ static int sifive_serial_clk_notifier(struct notifier_bl=
+ock
+> *nb,
+>  	struct clk_notifier_data *cnd =3D data;
+>  	struct sifive_serial_port *ssp =3D notifier_to_sifive_serial_port(nb);
+>=20
+> +	if (event =3D=3D PRE_RATE_CHANGE) {
+> +		/*
+> +		 * The TX watermark is always set to 1 by this driver, which
+> +		 * means that the TX busy bit will lower when there are 0
+> bytes
+> +		 * left in the TX queue -- in other words, when the TX FIFO is
+> +		 * empty.
+> +		 */
+> +		__ssp_wait_for_xmitr(ssp);
+> +		/*
+> +		 * On the cycle the TX FIFO goes empty there is still a full
+> +		 * UART frame left to be transmitted in the shift register.
+> +		 * The UART provides no way for software to directly
+> determine
+> +		 * when that last frame has been transmitted, so we just
+> sleep
+> +		 * here instead.  As we're not tracking the number of stop
+> bits
+> +		 * they're just worst cased here.  The rest of the serial
+> +		 * framing parameters aren't configurable by software.
+> +		 */
+> +		udelay(DIV_ROUND_UP(12 * 1000 * 1000, ssp->baud_rate));
+> +	}
 > +
->  #define DRVNAME				"ifx6x60"
->  #define TTYNAME				"ttyIFX"
->  
-> @@ -94,11 +96,12 @@ struct ifx_spi_device {
->  
->  	struct {
->  		/* gpio lines */
-> -		unsigned short srdy;		/* slave-ready gpio */
-> -		unsigned short mrdy;		/* master-ready gpio */
-> -		unsigned short reset;		/* modem-reset gpio */
-> -		unsigned short po;		/* modem-on gpio */
-> -		unsigned short reset_out;	/* modem-in-reset gpio */
-> +		struct gpio_desc *srdy;		/* slave-ready gpio */
-> +		struct gpio_desc *mrdy;		/* master-ready gpio */
-> +		struct gpio_desc *reset;	/* modem-reset gpio */
-> +		struct gpio_desc *po;		/* modem-on gpio */
-> +		struct gpio_desc *reset_out;	/* modem-in-reset gpio */
-> +		struct gpio_desc *pmu_reset;	/* PMU reset gpio */
->  		/* state/stats */
->  		int unack_srdy_int_nb;
->  	} gpio;
-> diff --git a/include/linux/spi/ifx_modem.h b/include/linux/spi/ifx_modem.h
-> index 694268c78d5d..6d19b09139d0 100644
-> --- a/include/linux/spi/ifx_modem.h
-> +++ b/include/linux/spi/ifx_modem.h
-> @@ -3,12 +3,7 @@
->  #define LINUX_IFX_MODEM_H
->  
->  struct ifx_modem_platform_data {
-> -	unsigned short rst_out;		/* modem reset out */
-> -	unsigned short pwr_on;		/* power on */
-> -	unsigned short rst_pmu;		/* reset modem */
->  	unsigned short tx_pwr;		/* modem power threshold */
-> -	unsigned short srdy;		/* SRDY */
-> -	unsigned short mrdy;		/* MRDY */
->  	unsigned char modem_type;	/* Modem type */
->  	unsigned long max_hz;		/* max SPI frequency */
->  	unsigned short use_dma:1;	/* spi protocol driver supplies
-> -- 
-> 2.24.1
-> 
+>  	if (event =3D=3D POST_RATE_CHANGE && ssp->clkin_rate !=3D cnd-
+> >new_rate) {
+>  		ssp->clkin_rate =3D cnd->new_rate;
+>  		__ssp_update_div(ssp);
+> --
+> 2.25.1.481.gfbce0eb801-goog
+>=20
 
--- 
-With Best Regards,
-Andy Shevchenko
+A quick test on HiFive Unleashed board showed some improvements.
+Prior to this patch, I have been observing some random corrupted characters=
+ on serial console when continuously changing the CPU clock rate.
+After applying this patch I don't see those corrupted characters anymore wh=
+ile changing the clock rate.
 
+Tested-by: Yash Shah <yash.shah@sifive.com>
+
+This observation is based on a quick initial test on HiFive Unleashed. I am=
+ planning to further test it by inducing the error on purpose. Will try to =
+update the result soon.
+
+- Yash
 
