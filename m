@@ -2,72 +2,62 @@ Return-Path: <SRS0=Gen4=44=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9562EC10F27
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Mar 2020 14:32:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93EB7C2BB1D
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Mar 2020 22:57:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A97D720575
-	for <linux-serial@archiver.kernel.org>; Wed, 11 Mar 2020 14:32:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8967A20750
+	for <linux-serial@archiver.kernel.org>; Wed, 11 Mar 2020 22:57:39 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="DChAntug"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729838AbgCKOcx (ORCPT
+        id S1731393AbgCKW5j (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Mar 2020 10:32:53 -0400
-Received: from smtprelay0134.hostedemail.com ([216.40.44.134]:57708 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729473AbgCKOcw (ORCPT
+        Wed, 11 Mar 2020 18:57:39 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:58242 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731168AbgCKW5i (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Mar 2020 10:32:52 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id CCB4710052861;
-        Wed, 11 Mar 2020 14:32:51 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-HE-Tag: sheet55_18d17c0d0ac3d
-X-Filterd-Recvd-Size: 1720
-Received: from XPS-9350.home (unknown [47.151.143.254])
-        (Authenticated sender: joe@perches.com)
-        by omf02.hostedemail.com (Postfix) with ESMTPA;
-        Wed, 11 Mar 2020 14:32:50 +0000 (UTC)
-Message-ID: <891a42ad8d8fd7beca911845108e1ded022ef3f7.camel@perches.com>
-Subject: Re: [PATCH -next 005/491] ARM/UNIPHIER ARCHITECTURE: Use
- fallthrough;
-From:   Joe Perches <joe@perches.com>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Date:   Wed, 11 Mar 2020 07:31:07 -0700
-In-Reply-To: <CAK7LNAS7GAk9yXkPhbS3ByU+n9Gb-rk0PeLcXLCNwpW1B22aeg@mail.gmail.com>
-References: <cover.1583896344.git.joe@perches.com>
-         <dae0878058223a42c77d725b8d7c5845a7ef9dc0.1583896348.git.joe@perches.com>
-         <CAK7LNAS7GAk9yXkPhbS3ByU+n9Gb-rk0PeLcXLCNwpW1B22aeg@mail.gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.34.1-2 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        Wed, 11 Mar 2020 18:57:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Message-Id:Date:Subject:Cc:To:From:
+        Sender:Reply-To:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=L55NNbRZrnFez8C39HrIWuvzlloT4S/Vj/OMB4/VKlI=; b=DChAntugS8Bhxk1vNc9e1B3pPd
+        MXEQYh95hTVEbyuiykq0eQj/QC/JEYzAR3LevIA7UTxyESzbybnBNsm/VZ5QNxtm9bNn+XL9MS9qP
+        8XzM8ETEBFEDstLkPSiVrOduTmyf/s7i7F6dPFcElhzx1gUogDcjuPk3rEXNv98y+MLNn4jQN3WYW
+        NxlofB0axAlOG3QU6MKg3m0vJxaddRY+i5S+knW8veM1Cf92QzgsoEj2ZIn8B9m4et0b0rugs7zq+
+        cA2XcM6YuqVCXvMwJJrjehcz7Hc0GdP6UB0X49hZIbs+66qYppYh+g+5JfKYjwL/P6XNXwk8fqJ4V
+        AFJ71oOQ==;
+Received: from [2601:1c0:6280:3f0::19c2] (helo=smtpauth.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jCAID-0001PR-WD; Wed, 11 Mar 2020 22:57:38 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+Subject: [PATCH 0/3 v2] char/tty: clean up menus
+Date:   Wed, 11 Mar 2020 15:57:33 -0700
+Message-Id: <20200311225736.32147-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.16.4
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 2020-03-11 at 14:15 +0900, Masahiro Yamada wrote:
-> On Wed, Mar 11, 2020 at 2:07 PM Joe Perches <joe@perches.com> wrote:
-> > Convert the various uses of fallthrough comments to fallthrough;
-> > 
-> > Done via script
-> > Link: https://lore.kernel.org/lkml/b56602fcf79f849e733e7b521bb0e17895d390fa.1582230379.git.joe.com/
-> > 
-> > Signed-off-by: Joe Perches <joe@perches.com>
-> 
-> Acked-by: Masahiro Yamada <yamada.masahiro@socionext.com>
-> 
-> 
-> But, I think the patch subject should be prefixed:
-> "serial: 8250_uniphier:"
+This patch series cleans up the Character devices & TTY menus.
 
-Yeah thanks, that's difficult to script though.
+[PATCH 1/3 v2] char: group dev configs togther
+[PATCH 2/3 v2] tty: source all tty Kconfig files in one place
+[PATCH 3/3 v2] tty: reorganize tty & serial menus
 
-
+ drivers/char/Kconfig       |  105 +++++++++-----------
+ drivers/tty/Kconfig        |  179 +++++++++++++++++------------------
+ drivers/tty/hvc/Kconfig    |    3 
+ drivers/tty/serial/Kconfig |    4 
+ 4 files changed, 142 insertions(+), 149 deletions(-)
