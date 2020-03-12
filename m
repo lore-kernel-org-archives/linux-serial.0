@@ -2,112 +2,142 @@ Return-Path: <SRS0=FKjJ=45=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1274BC10DCE
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 09:03:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30FCFC1975A
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 09:03:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E2B152071C
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 09:03:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1584003788;
-	bh=MTh3jM8oqw1W7hCQ3S0NIbmJXFwKR0gPlg51nsUyruY=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=s49+P2hSAXKfJoTNK5MrMKyzhJ9rYNZEuY9eimaG6V/wiV/tTIkpJ8AYHG3snkhql
-	 SC8l1IT+1RakL2NYoTOCUTp0sKRAgHlhGcs7nXv9baydRPB7J7xy4DvTH5983T9v4X
-	 wljpA0Fro7ulh3S+9CM1GioLh1pKqGVI5k1ORKAk=
+	by mail.kernel.org (Postfix) with ESMTP id 162102071C
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 09:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726194AbgCLJDH (ORCPT
+        id S1726387AbgCLJD0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Mar 2020 05:03:07 -0400
-Received: from conssluserg-03.nifty.com ([210.131.2.82]:48170 "EHLO
-        conssluserg-03.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725980AbgCLJDH (ORCPT
+        Thu, 12 Mar 2020 05:03:26 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:40967 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725980AbgCLJD0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Mar 2020 05:03:07 -0400
-Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com [209.85.222.51]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 02C92t11017789;
-        Thu, 12 Mar 2020 18:02:56 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 02C92t11017789
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1584003776;
-        bh=Ze66mSQ/66E2lEFTcWIDioNc3sfhaXsBfI/IJCaQiF8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=d5L24OgHRVwFOBGi6xGnPl0Z/D1On+Gu9Feb3LLGmWPc1rSDlcekOKc4JsCChNQ/V
-         v+grQoy6PrO5Bj7I+mHMi/vWvtPUbrYvDQXrbPadyg7ecpAODRYk0Kr3X3hlBb02l1
-         3LpkvTA8e8c6yEMZ+R5qp6DMvKB8TpGH1/kRYuMyM0sk2f29BB+OL29QvM3wlaIk3G
-         PYG5VZ9hsvvUpPHlWbyGebmRGk6JRBIWD6g3Dkjggq8f7TX+b+gVwOTiQ5cqFNtHDU
-         U/HYTfGNzCy2/x4StrdYRLR0SAywssKVcQoJHtkUpKoy2++DntLDl1UhHg2EKJpUn6
-         wj/r2Ud7jH0IQ==
-X-Nifty-SrcIP: [209.85.222.51]
-Received: by mail-ua1-f51.google.com with SMTP id i7so1497068uap.0;
-        Thu, 12 Mar 2020 02:02:56 -0700 (PDT)
-X-Gm-Message-State: ANhLgQ2b1mQztEbIdpLdDAGlK8rrgQIzXPfTJdDw6GWDhl5ppVUyYOMU
-        M9nc7JuV/GOoBaOkFfgBvuISGORrF5OnDhG+BqY=
-X-Google-Smtp-Source: ADFU+vvFC2wWLLojiSmCVABb2cx04S0no+WUO1vLaarHeweUtZ5Q4oyHvq2r/9Q3efqfrz7YFQ41Invz1cnhlanlbuA=
-X-Received: by 2002:ab0:28d8:: with SMTP id g24mr2907292uaq.121.1584003775380;
- Thu, 12 Mar 2020 02:02:55 -0700 (PDT)
+        Thu, 12 Mar 2020 05:03:26 -0400
+Received: by mail-ot1-f66.google.com with SMTP id s15so5304000otq.8;
+        Thu, 12 Mar 2020 02:03:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pcqqOkF47Er9rA3HRF63y15rDeiBnLWeD7fktteNLOs=;
+        b=kjHndIYH3dDb4ZAnrK7tnaOk44t/NSsm8rN/9dtFBzXPfHyZFfj7mqidpYUPIIGDaD
+         57S9aAlUDqOnf3iQG0fsfYlyMISoVktm8TsK1fZCODtxQAeA2idathLrHYlk3SHZaiUr
+         TzhK6BkHLAtBhaAvdhCh1GcgKjftIUydGPwMyUQuw4UsLeVF0yOFnlQTkYExXloLrojH
+         72fhpmhUUeQMp9dNBRUQVaLM/lnMGvvehDL5qqFs73Rslwmf23ed3QRrueyKHp/F1h6X
+         kct5Ricq+dDQ3NaNhtQsa4KPUACVICBf7gMQ7bO4PU/4GXiUUqof/6ZE4/OmufYqvn/T
+         l08g==
+X-Gm-Message-State: ANhLgQ0Cnn7JmHgvDoBI8LhggaTZ134KStdmpI2rGaqLn4xcXi86crz/
+        ShAdcbB1CzPz8HcRuYoFuS6WqvlTO/zcl08BECc=
+X-Google-Smtp-Source: ADFU+vuqRv/msI6FIPxofSR85RYexCgGBztJMSn0nVO9TKf0PXVAe6MlC96Q9T8bKTzZ7kmVzB3HK2f6BgUHFfRhLgk=
+X-Received: by 2002:a9d:1708:: with SMTP id i8mr5511068ota.250.1584003805625;
+ Thu, 12 Mar 2020 02:03:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1583896344.git.joe@perches.com> <dae0878058223a42c77d725b8d7c5845a7ef9dc0.1583896348.git.joe@perches.com>
- <CAK7LNAS7GAk9yXkPhbS3ByU+n9Gb-rk0PeLcXLCNwpW1B22aeg@mail.gmail.com>
- <891a42ad8d8fd7beca911845108e1ded022ef3f7.camel@perches.com> <20200312085606.GA154268@kroah.com>
-In-Reply-To: <20200312085606.GA154268@kroah.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 12 Mar 2020 18:02:19 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAS98yeCeFZpKgNRRKcFhXSKWQ7Ka4vP90YcY=ufScZRCw@mail.gmail.com>
-Message-ID: <CAK7LNAS98yeCeFZpKgNRRKcFhXSKWQ7Ka4vP90YcY=ufScZRCw@mail.gmail.com>
-Subject: Re: [PATCH -next 005/491] ARM/UNIPHIER ARCHITECTURE: Use fallthrough;
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Joe Perches <joe@perches.com>, Jiri Slaby <jslaby@suse.com>,
-        linux-serial@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20200129161955.30562-1-erosca@de.adit-jv.com> <CAMuHMdWV0kkKq6sKOHsdz+FFGNHphzq_q7rvmYAL=U4fH2H3wQ@mail.gmail.com>
+ <20200210205735.GB1347752@kroah.com> <OSBPR01MB29496E76BE5FD0C5BC56D0F0C1FD0@OSBPR01MB2949.jpnprd01.prod.outlook.com>
+In-Reply-To: <OSBPR01MB29496E76BE5FD0C5BC56D0F0C1FD0@OSBPR01MB2949.jpnprd01.prod.outlook.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 12 Mar 2020 10:03:13 +0100
+Message-ID: <CAMuHMdXYPG8t=vBn6c2B=8TwbWJfFCjW8peDLgHBwW_AxpH5Hw@mail.gmail.com>
+Subject: Re: [PATCH] serial: sh-sci: Support custom speed setting
+To:     "torii.ken1@fujitsu.com" <torii.ken1@fujitsu.com>
+Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "erosca@de.adit-jv.com" <erosca@de.adit-jv.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "wsa+renesas@sang-engineering.com" <wsa+renesas@sang-engineering.com>,
+        "yoshihiro.shimoda.uh@renesas.com" <yoshihiro.shimoda.uh@renesas.com>,
+        "uli+renesas@fpond.eu" <uli+renesas@fpond.eu>,
+        "george_davis@mentor.com" <george_davis@mentor.com>,
+        "andrew_gabbasov@mentor.com" <andrew_gabbasov@mentor.com>,
+        "jiada_wang@mentor.com" <jiada_wang@mentor.com>,
+        "yuichi.kusakabe@denso-ten.com" <yuichi.kusakabe@denso-ten.com>,
+        "yasano@jp.adit-jv.com" <yasano@jp.adit-jv.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jslaby@suse.com" <jslaby@suse.com>,
+        "yohhei.fukui@denso-ten.com" <yohhei.fukui@denso-ten.com>,
+        "ashiduka@fujitsu.com" <ashiduka@fujitsu.com>,
+        "magnus.damm@gmail.com" <magnus.damm@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 12, 2020 at 5:56 PM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Wed, Mar 11, 2020 at 07:31:07AM -0700, Joe Perches wrote:
-> > On Wed, 2020-03-11 at 14:15 +0900, Masahiro Yamada wrote:
-> > > On Wed, Mar 11, 2020 at 2:07 PM Joe Perches <joe@perches.com> wrote:
-> > > > Convert the various uses of fallthrough comments to fallthrough;
+Hi Torii-san,
+
+On Thu, Mar 12, 2020 at 6:10 AM torii.ken1@fujitsu.com
+<torii.ken1@fujitsu.com> wrote:
+> On Tue, 11 Feb 2020 05:57:35 +0900,
+> Greg Kroah-Hartman wrote:
+> > On Thu, Jan 30, 2020 at 01:32:50PM +0100, Geert Uytterhoeven wrote:
+> > > On Wed, Jan 29, 2020 at 5:20 PM Eugeniu Rosca <erosca@de.adit-jv.com> wrote:
+> > > > From: Torii Kenichi <torii.ken1@jp.fujitsu.com>
 > > > >
-> > > > Done via script
-> > > > Link: https://lore.kernel.org/lkml/b56602fcf79f849e733e7b521bb0e17895d390fa.1582230379.git.joe.com/
+> > > > This patch is necessary to use BT module and XM module with DENSO TEN
+> > > > development board.
 > > > >
-> > > > Signed-off-by: Joe Perches <joe@perches.com>
+> > > > This patch supports ASYNC_SPD_CUST flag by ioctl(TIOCSSERIAL), enables
+> > > > custom speed setting with setserial(1).
+> > > >
+> > > > The custom speed is calculated from uartclk and custom_divisor.
+> > > > If custom_divisor is zero, custom speed setting is invalid.
+> > > >
+> > > > Signed-off-by: Torii Kenichi <torii.ken1@jp.fujitsu.com>
+> > > > [erosca: rebase against v5.5]
+> > > > Signed-off-by: Eugeniu Rosca <erosca@de.adit-jv.com>
 > > >
-> > > Acked-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+> > > Thanks for your patch!
 > > >
+> > > While this seems to work fine[*], I have a few comments/questions:
+> > >   1. This feature seems to be deprecated:
 > > >
-> > > But, I think the patch subject should be prefixed:
-> > > "serial: 8250_uniphier:"
+> > >          sh-sci e6e68000.serial: setserial sets custom speed on
+> > > ttySC1. This is deprecated.
+> > >
+> > >   2. As the wanted speed is specified as a divider, the resulting speed
+> > >      may be off, cfr. the example for 57600 below.
+> > >      Note that the SCIF device has multiple clock inputs, and can do
+> > >      57600 perfectly if the right crystal has been fitted.
+> > >
+> > >  3. What to do with "[PATCH/RFC] serial: sh-sci: Update uartclk based
+> > >      on selected clock" (https://patchwork.kernel.org/patch/11103703/)?
+> > >      Combined with this, things become pretty complicated and
+> > >      unpredictable, as uartclk now always reflect the frequency of the
+> > >      last used base clock, which was the optimal one for the previously
+> > >      used speed....
+> > >
+> > > I think it would be easier if we just had an API to specify a raw speed.
+> > > Perhaps that already exists?
 > >
-> > Yeah thanks, that's difficult to script though.
-> >
-> >
+> > Yes, see:
+> >       http://www.panix.com/~grante/arbitrary-baud.c
 >
-> Kernel development is hard :)
+> I saw the code above, I thought I wouldn't write such code normally.
+>
+> >#include <linux/termios.h>
+> >
+> >int ioctl(int d, int request, ...);
+>
+> Do application programmers have to accept this bad code?
 
+I guess you mean the forward declaration of ioctrl()?
+No, they should include <sys/ioctl.h> instead.
 
-It is strange to process this per-platform
-and to send out a giant series that
-consists of 491 patches.
+Gr{oetje,eeting}s,
 
-This is very trivial conversion.
+                        Geert
 
-I think it is better to have a single patch
-to convert all files under drivers/tty/serial/,
-with the patch subject "serial:".
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-
-
--- 
-Best Regards
-Masahiro Yamada
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
