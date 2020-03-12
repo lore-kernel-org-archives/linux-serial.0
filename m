@@ -2,87 +2,139 @@ Return-Path: <SRS0=FKjJ=45=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA11CC10DCE
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 08:21:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B49A3C1975A
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 08:55:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CEF62206EB
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 08:21:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 91A4120650
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 08:55:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1584003305;
+	bh=z8tXGg7p43hiOHRBmKu5GF7cO2YBA7ZhkgmPMBmqgPk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=fOylQTu4Dkq07khmtJnb/SY3ThW8bNrfywo3hUCm/PiUVtBwVzs6WYe8mbLpQ6A8Y
+	 bvJs+yXyiEgIDUuZoglunY02MVNaEFQ+oDE3hExfg8+RplKQlwgtWJy++uVjEB+Giw
+	 AGJuo6y+HNbnlDbl9FSwL9SChSTY4ODl0SuE4blQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726099AbgCLIVq (ORCPT
+        id S1726044AbgCLIzF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Mar 2020 04:21:46 -0400
-Received: from mout.kundenserver.de ([217.72.192.73]:52263 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726000AbgCLIVq (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Mar 2020 04:21:46 -0400
-Received: from mail-qt1-f180.google.com ([209.85.160.180]) by
- mrelayeu.kundenserver.de (mreue106 [212.227.15.145]) with ESMTPSA (Nemesis)
- id 1MIxmm-1it05q2ztK-00KOMq; Thu, 12 Mar 2020 09:21:44 +0100
-Received: by mail-qt1-f180.google.com with SMTP id m33so3657984qtb.3;
-        Thu, 12 Mar 2020 01:21:44 -0700 (PDT)
-X-Gm-Message-State: ANhLgQ1A/IfHUyqD3GeB85kBOFDXJP9EBXp/bjL2OVWjwCovuNgYb+gV
-        pl2Z0oXc/SWU0ZH4Yx0LD3ad5+KrEpKqyBLdVQA=
-X-Google-Smtp-Source: ADFU+vtOQNPznjYe/Sy/lYyrfux9hY5ptAw2nqB8sEyYtJ/TLiMgVZg/2vWZibfn8pDuNY2sEmExUqnpy/rOO3Z723o=
-X-Received: by 2002:aed:3b4c:: with SMTP id q12mr6098643qte.18.1584001303366;
- Thu, 12 Mar 2020 01:21:43 -0700 (PDT)
+        Thu, 12 Mar 2020 04:55:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37636 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725980AbgCLIzE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 12 Mar 2020 04:55:04 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AFD3D20578;
+        Thu, 12 Mar 2020 08:55:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584003302;
+        bh=z8tXGg7p43hiOHRBmKu5GF7cO2YBA7ZhkgmPMBmqgPk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gOBxrQZxh2mD/SGoHfWSESAS9YFiZPhbQ0h1P8n7W3s7SWueI7qse9R9x7BSifXJf
+         4Uz36/r2WEGCXc9JM7Z066xHHYzTbE6Yp3yyTozzFwmgUh0RcJ/+4puma9vfR37/V3
+         CULiJLqoJQOTjMYJzkvC9Fbb5s+/5sOaqcbod0fo=
+Date:   Thu, 12 Mar 2020 09:55:00 +0100
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To:     "torii.ken1@fujitsu.com" <torii.ken1@fujitsu.com>
+Cc:     "geert@linux-m68k.org" <geert@linux-m68k.org>,
+        "erosca@de.adit-jv.com" <erosca@de.adit-jv.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "wsa+renesas@sang-engineering.com" <wsa+renesas@sang-engineering.com>,
+        "yoshihiro.shimoda.uh@renesas.com" <yoshihiro.shimoda.uh@renesas.com>,
+        "uli+renesas@fpond.eu" <uli+renesas@fpond.eu>,
+        "george_davis@mentor.com" <george_davis@mentor.com>,
+        "andrew_gabbasov@mentor.com" <andrew_gabbasov@mentor.com>,
+        "jiada_wang@mentor.com" <jiada_wang@mentor.com>,
+        "yuichi.kusakabe@denso-ten.com" <yuichi.kusakabe@denso-ten.com>,
+        "yasano@jp.adit-jv.com" <yasano@jp.adit-jv.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jslaby@suse.com" <jslaby@suse.com>,
+        "yohhei.fukui@denso-ten.com" <yohhei.fukui@denso-ten.com>,
+        "ashiduka@fujitsu.com" <ashiduka@fujitsu.com>,
+        "magnus.damm@gmail.com" <magnus.damm@gmail.com>
+Subject: Re: [PATCH] serial: sh-sci: Support custom speed setting
+Message-ID: <20200312085500.GA149342@kroah.com>
+References: <20200129161955.30562-1-erosca@de.adit-jv.com>
+ <CAMuHMdWV0kkKq6sKOHsdz+FFGNHphzq_q7rvmYAL=U4fH2H3wQ@mail.gmail.com>
+ <20200210205735.GB1347752@kroah.com>
+ <OSBPR01MB29496E76BE5FD0C5BC56D0F0C1FD0@OSBPR01MB2949.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
-References: <20200311225736.32147-1-rdunlap@infradead.org> <20200311225736.32147-4-rdunlap@infradead.org>
-In-Reply-To: <20200311225736.32147-4-rdunlap@infradead.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 12 Mar 2020 09:21:27 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a3RJ=6Gdz-GGGoqB9n9TRdhpuYwwiJO1mJ8500OguYpAg@mail.gmail.com>
-Message-ID: <CAK8P3a3RJ=6Gdz-GGGoqB9n9TRdhpuYwwiJO1mJ8500OguYpAg@mail.gmail.com>
-Subject: Re: [PATCH 3/3 v2] tty: reorganize tty & serial menus
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:krMIOC6iue83XsEuQ/nY9eWlQawjPX2hCkjC9gf+NWTIQRqwxPj
- ji5rVchQb1tloRlX90KtJBU8HhIUL6PUMv5Icb9vYEkuDICGa1YyTYZ3jRmGr3+2lv7UJ8l
- cAZ0Z9nubCNPdqNChGFIZT632CK5P8gxqmWair328X4SDi+EDM+nSXbURkOrPfoIcju2jY9
- prAuSXwOA3jpy6iKIcnew==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:jTxOpbX2+ek=:+1VQYEqz2i0UmlerZRJFqE
- rBmc11qY5a+A52yJIGsdHDfw/JT2cRUlnV2TATuRrxqVYzxtb2ZV1KvntbSBvaAElU+HR64fR
- 6AVdp2YlPxXQkcHD60ZP9o5oKLMmsgZqS2VnCP2xC7s38wUUDqqg9AGhdoXrHvKISOo8jdEF4
- +VL5j5ZXGpCp6ufpFvPn6JErwCHzwz6vFe7LEIZKwavch56BgcvGWeJ9pTv/Y+ILaJoZ63Psy
- Uh+rXp7QpFR9jcdG5yP5PjE5DTAwLmerZOEDVMsgogi0FwzoeZlv8lY6eDJoK1CaI7hngRmku
- Gza6jIb4an4cdk+h8sDluHFuSH5RO42SX+2x+PMOmpKjgiJcLLa1ihOv+L7tBJSY11fX8BEZL
- pm7jw0P/RWqv/015cQ1ReTs9n2hUdXAASgzgrdYaPsFkILing1xcKdDUoWtV4d64y9sAEcOH1
- R7iBlDFvUDREqVm908pTwQZJW0siDxmCJItpXxBft64Z+01vUKk2aAq+dMtMOeCarRxTxqkM6
- pkm6PBZHxK8sj7Gsq54OFK5iNRUfODCJYq+G4UdaeqpHolrvbJnteo9ws9oveUWUuMw0st5pj
- vlNOaeFrE3/GJVWhYYoqUtfrTKRmunktcHiJxXq936W70CEjqttAyQBjpFHjrdeL6rJQ4LeNB
- iEQVf5wP0gjmAHhX/t1au8yHvZDid68BQ/wtcOK01VSybDCV6rryD+KcoAWgFFBQViUan8wn7
- MRw3bWBn1eNPpGF8mWr1CYhKi5/4QC2VRSWBkuBORt3zzEvw8CeJ3bMAyk7J6ANncDeYIOSyB
- MP+LW5HFYoE75GzZND8rqyCjyv/2kdnvh2DoSu72qH8vJQjmkY=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <OSBPR01MB29496E76BE5FD0C5BC56D0F0C1FD0@OSBPR01MB2949.jpnprd01.prod.outlook.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Mar 11, 2020 at 11:57 PM Randy Dunlap <rdunlap@infradead.org> wrote:
->
-> Move LDISC_AUTOLOAD ahead of the Serial drivers menu.
->
-> Move the Serial drivers menu ahead of the Non-standard serial port
-> support menu.
->
-> Move NOZOMI out of the SERIAL_NONSTANDARD area since it does not
-> depend on SERIAL_NONSTANDARD and it breaks the SERIAL_NONSTANDARD
-> menu list.
->
-> Alphabetize the remaining drivers (in tty/Kconfig) by their prompt strings.
-> [The drivers in tty/hvc/Kconfig and tty/serial/Kconfig have not
-> been alphabetized.]
->
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.com>
+On Thu, Mar 12, 2020 at 05:10:05AM +0000, torii.ken1@fujitsu.com wrote:
+> Dear Greg,
+> 
+> On Tue, 11 Feb 2020 05:57:35 +0900,
+> Greg Kroah-Hartman wrote:
+> > 
+> > On Thu, Jan 30, 2020 at 01:32:50PM +0100, Geert Uytterhoeven wrote:
+> > > Hi Eugeniu,
+> > > 
+> > > On Wed, Jan 29, 2020 at 5:20 PM Eugeniu Rosca <erosca@de.adit-jv.com> wrote:
+> > > > From: Torii Kenichi <torii.ken1@jp.fujitsu.com>
+> > > >
+> > > > This patch is necessary to use BT module and XM module with DENSO TEN
+> > > > development board.
+> > > >
+> > > > This patch supports ASYNC_SPD_CUST flag by ioctl(TIOCSSERIAL), enables
+> > > > custom speed setting with setserial(1).
+> > > >
+> > > > The custom speed is calculated from uartclk and custom_divisor.
+> > > > If custom_divisor is zero, custom speed setting is invalid.
+> > > >
+> > > > Signed-off-by: Torii Kenichi <torii.ken1@jp.fujitsu.com>
+> > > > [erosca: rebase against v5.5]
+> > > > Signed-off-by: Eugeniu Rosca <erosca@de.adit-jv.com>
+> > > 
+> > > Thanks for your patch!
+> > > 
+> > > While this seems to work fine[*], I have a few comments/questions:
+> > >   1. This feature seems to be deprecated:
+> > > 
+> > >          sh-sci e6e68000.serial: setserial sets custom speed on
+> > > ttySC1. This is deprecated.
+> > > 
+> > >   2. As the wanted speed is specified as a divider, the resulting speed
+> > >      may be off, cfr. the example for 57600 below.
+> > >      Note that the SCIF device has multiple clock inputs, and can do
+> > >      57600 perfectly if the right crystal has been fitted.
+> > > 
+> > >  3. What to do with "[PATCH/RFC] serial: sh-sci: Update uartclk based
+> > >      on selected clock" (https://patchwork.kernel.org/patch/11103703/)?
+> > >      Combined with this, things become pretty complicated and
+> > >      unpredictable, as uartclk now always reflect the frequency of the
+> > >      last used base clock, which was the optimal one for the previously
+> > >      used speed....
+> > > 
+> > > I think it would be easier if we just had an API to specify a raw speed.
+> > > Perhaps that already exists?
+> > 
+> > Yes, see:
+> > 	http://www.panix.com/~grante/arbitrary-baud.c
+> 
+> I saw the code above, I thought I wouldn't write such code normally.
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+Why not?
+
+> >#include <linux/termios.h>
+> >
+> >int ioctl(int d, int request, ...);
+> 
+> Do application programmers have to accept this bad code?
+
+I do not understand what you are asking here.
+
+greg k-h
