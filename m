@@ -2,102 +2,223 @@ Return-Path: <SRS0=FKjJ=45=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2EC4C10DCE
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 14:17:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7EEEC10DCE
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 18:53:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B1EA720650
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 14:17:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B85DA20663
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 18:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727365AbgCLORJ (ORCPT
+        id S1726569AbgCLSxk (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Mar 2020 10:17:09 -0400
-Received: from smtprelay0072.hostedemail.com ([216.40.44.72]:45724 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727123AbgCLORJ (ORCPT
+        Thu, 12 Mar 2020 14:53:40 -0400
+Received: from mail.baikalelectronics.com ([87.245.175.226]:57758 "EHLO
+        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726362AbgCLSxk (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Mar 2020 10:17:09 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 51ABE8139;
-        Thu, 12 Mar 2020 14:17:08 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-HE-Tag: music20_5b3c53998c133
-X-Filterd-Recvd-Size: 2957
-Received: from XPS-9350.home (unknown [47.151.143.254])
-        (Authenticated sender: joe@perches.com)
-        by omf17.hostedemail.com (Postfix) with ESMTPA;
-        Thu, 12 Mar 2020 14:17:06 +0000 (UTC)
-Message-ID: <520264e86bcba45ba8cb721ca54b81e56e5df42e.camel@perches.com>
-Subject: Re: [PATCH -next 005/491] ARM/UNIPHIER ARCHITECTURE: Use
- fallthrough;
-From:   Joe Perches <joe@perches.com>
-To:     "Theodore Y. Ts'o" <tytso@mit.edu>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Thu, 12 Mar 2020 14:53:40 -0400
+X-Greylist: delayed 342 seconds by postgrey-1.27 at vger.kernel.org; Thu, 12 Mar 2020 14:53:37 EDT
+Received: from localhost (unknown [127.0.0.1])
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id 4EFA2803078C;
+        Thu, 12 Mar 2020 18:47:54 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at baikalelectronics.ru
+Received: from mail.baikalelectronics.ru ([127.0.0.1])
+        by localhost (mail.baikalelectronics.ru [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id TRWXaDjO4H-y; Thu, 12 Mar 2020 21:47:51 +0300 (MSK)
+Date:   Thu, 12 Mar 2020 21:47:02 +0300
+From:   Sergey Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+CC:     <linux-serial@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Date:   Thu, 12 Mar 2020 07:15:23 -0700
-In-Reply-To: <20200312134712.GE7159@mit.edu>
-References: <cover.1583896344.git.joe@perches.com>
-         <dae0878058223a42c77d725b8d7c5845a7ef9dc0.1583896348.git.joe@perches.com>
-         <CAK7LNAS7GAk9yXkPhbS3ByU+n9Gb-rk0PeLcXLCNwpW1B22aeg@mail.gmail.com>
-         <891a42ad8d8fd7beca911845108e1ded022ef3f7.camel@perches.com>
-         <20200312085606.GA154268@kroah.com>
-         <CAK7LNAS98yeCeFZpKgNRRKcFhXSKWQ7Ka4vP90YcY=ufScZRCw@mail.gmail.com>
-         <fa07756217b3c033c7e5af495a03ff5655947450.camel@perches.com>
-         <20200312134712.GE7159@mit.edu>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.34.1-2 
+        Jiri Slaby <jslaby@suse.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Maxim Kaurkin <Maxim.Kaurkin@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Ramil Zaripov <Ramil.Zaripov@baikalelectronics.ru>,
+        Ekaterina Skachko <Ekaterina.Skachko@baikalelectronics.ru>,
+        Vadim Vlasov <V.Vlasov@baikalelectronics.ru>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Paul Burton <paulburton@kernel.org>,
+        Ralf Baechle <ralf@linux-mips.org>
+Subject: Re: [PATCH] serial: 8250_dw: Fix common clocks usage race condition
+Message-ID: <20200312184450.co5o6zm6qniptfuv@ubsrv2.baikal.int>
+References: <20200306130231.05BBC8030795@mail.baikalelectronics.ru>
+ <20200306134049.86F8180307C2@mail.baikalelectronics.ru>
+ <20200310001444.B0F50803087C@mail.baikalelectronics.ru>
+ <20200310141715.7063280307CA@mail.baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200310141715.7063280307CA@mail.baikalelectronics.ru>
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 2020-03-12 at 09:47 -0400, Theodore Y. Ts'o wrote:
-> On Thu, Mar 12, 2020 at 02:37:31AM -0700, Joe Perches wrote:
-> > As I have suggested a few times, better still
-> > would be to have a mechanism for scripted patches
-> > applied possibly as single treewide patch.
+On Tue, Mar 10, 2020 at 04:17:08PM +0200, Andy Shevchenko wrote:
+> It's pity we are discussing this off-list.
+> Cc linux-serial@ now and leaving original writings as is.
+> 
+> On Tue, Mar 10, 2020 at 03:13:53AM +0300, Sergey Semin wrote:
+> > On Fri, Mar 06, 2020 at 03:40:44PM +0200, Andy Shevchenko wrote:
+> > > On Fri, Mar 06, 2020 at 04:02:20PM +0300, Sergey.Semin@baikalelectronics.ru wrote:
+> > > > From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > > > 
+> > > > There are races possible in the dw8250_set_termios() callback method
+> > > > and while the device is in PM suspend state. A race condition may
+> > > > happen if the baudrate clocks source device is shared with some other
+> > > > device (in our machine it's another DW UART port). In this case if that
+> > > > device changes the clocks rate while serial console is using it the
+> > > > DW 8250 UART port might not only end up with an invalid uartclk value
+> > > > saved, but might also experience a distorted output data since
+> > > > baud-clock might have been changed. In order to fix this lets enable
+> > > > an exclusive clocks rate access in case if "baudclk" device is
+> > > > specified and is successfully enabled.
+> > > > 
+> > > > So if some other device also acquires the rate exclusivity, then
+> > > > DW UART 8250 driver won't be able to alter the baud-clock. It shall
+> > > > just use the available clocks rate. Similarly another device also
+> > > > won't manage to change the rate. If nothing else have the exclusive
+> > > > rate access acquired except DW UART 8250 driver, then the driver
+> > > > will be able to alter the rate as much as needs to in accordance
+> > > > with the currently implemented logic.
+> > > 
+> > > Thank you for the patch.
+> > > 
+> > > I honestly consider that this is kinda bad hardware design. If two devices are
+> > > fighting for the best rate, there is a room to make the second one always miss.
+> > > 
+> > > (Imagine 1834200 UART clock and first asked for 115200, while second
+> > >  desperately tries for 4M).
+> > > 
+> > > I think that the clock driver of the corresponding platform should actually
+> > > keep track of the users and give the best for both.
+> > > 
 > > 
-> > Likely applied only at an -rc1.
+> > Hmm, this is discussable.
 > > 
-> > The stated negatives to a treewide mechanism
-> > have been difficulty to backport to -stable.
+> > While I do agree that two serial ports using a common reference clock
+> > was a bad hw design (it was nothing for the hw designers to add an
+> > extra clock divider), and do understand the concern you mentioned in the
+> > example I disagree that the hw clock driver should handle the clock usage
+> > races. There is a possible alternative but the current solution seemed
+> > to me most suitable and here is why.
+> > 
+> > First of all, if I implemented something like a users tracking algo in
+> > the hw clock driver, It would be similar to the already developed and
+> > suggested to be used in this patch clock exclusivity approach anyway,
+> > since there would be no way to change the clock rate behind the uart drivers
+> > back to adjust the clock frequency so making it suitable for both users.
+> > In this case we would have the same race condition you described in the
+> > parentheses.
+> > 
+> > Secondly why would we need to have the clk_rate_exlusive_{get,put}()
+> > interface exported from the clk subsystem anyway if not for the cases
+> > like described in this commit message? These functions were designed for
+> > devices, which require the exclusive rate lock at some point. As for me
+> > I would have added the clock rate exclusive lock to all the drivers
+> > handling devices (not only UARTs), which depend not only on a clock being
+> > enabled but also on it having a particular rate value. But this is too
+> > much work, which alas I don't have time for at the moment.
+> > 
+> > Thirdly. Much easier solution would be to pretend, that the actual clock
+> > device doesn't provide the rate change capability and work with a value
+> > pre-initialized in the clock divider register (this is necessary because
+> > on most of known to me Baikal-T1-based platforms one of these UARTs is
+> > always used as a system/boot serial console). But in this case we would
+> > have to artificially bind a different driver to the clock divider interface,
+> > which wouldn't reflect the actual clock capability.
+> > 
+> > Finally in my opinion the suggested in this patch solution is the most
+> > suitable. It solves the problem on the common clock interface usage
+> > by two independent UART ports. It also provides a portable solution for
+> > platforms, which have the similar problem. And it doesn't affect the
+> > devices lacking the described clock rate race condition.
+> > 
+> > By the way I came up with an upgrade, which would make the solution even
+> > better. Instead of using the clock exclusive rate lock/unlock in the
+> > probe()/remove() methods, we could be calling them from the UART-port
+> > startup()/shutdown() functions instead. In this case the clock rate would
+> > be fixed only if both ports are opened at the same time. This would
+> > lighten the limitations on the rates change conditions. What do you think
+> > of this?
 > 
-> Any time we do a massive, disruptive change to the code base, it's
-> going to cause problems to -stable.  It means that bug fix patches
-> won't necessarily auto-apply, and some will require manual fixups
-> afterwards
-
-That's mostly a tools problem than a real problem.
-
-> Given that this change doesn't really fix any bugs, I'd have to ask
-> the question --- is it *worth* it?  We really need to apply a certain
-> amount of cost/benefit analysis around this.
+> The use of clk_set_rate_exclusive()/clk_rate_exclusive_put() seems better.
+> But, while from our (Intel) perspective this looks like no-op, for others,
+> especially zillions of ARM boards using DesignWare UART it might be crucial.
 > 
-> If it were really important, the thing we could do is to apply a
-> single treewide patch at some point after the merge window.  I'd
-> suggest after -rc2, myself, but reasonable people can differ.  And
-> then, if it were *really* important we could run the same script on
-> the stable kernels.
+
+Using clk_set_rate_exclusive() isn't that appropriate at the port->startup()
+callback. Firstly because it may fail due to not being able to update the rate,
+then I would have to try to perform just clk_rate_exclusive_get(),
+retrieve currently set clock rate and update the port uartclk field. Secondly
+an attempt to update the rate will be performed in set_termios() anyway,
+so the calling of clk_set_rate() in the port->startup() is redundant. Thirdly
+I also can't use  clk_set_rate_exclusive() in set_termios(), because it doesn't
+have some antagonist like unset_termios() to perform the same number of
+clk_rate_exclusive_put() to appropriately free the exclusive lock of the clock.
+And I don't want to manually calculate the numbers of exclusive locking.
+
+So the easiest way would be to just lock the reference clock in the
+port->startup() method and update the port->uartclk field with current
+reference clock rate. Clock unlocking will be performed in the port-shutdown()
+callback. I'll send v2 patch with this solution. You'll see what it
+looks like.
+
+> I would suggest to Cc new version to some ARM people (homework: filter
+> MAINTAINERS along with `git log -- drivers/tty/serial/8250/8520_dw.c`
+> to see who may have relation to this driver).
 > 
-> But for changing "/* fallthrough */" to "fallthrough;"
+
+Nice homework. Although I'd prefer to utilize the get_maintainers.pl script
+for the same purpose. It has the --git argument for it, which also tunable
+for parameters like deepness of the git-history, number of signatures, number
+of maintainers, etc.
+
+> > > > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > > > Signed-off-by: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
+> > > 
+> > > Why second SoB is here, it's not the same as the submitter's (usually,
+> > > submitter's one goes last in the chain)? Commit message or another tags,
+> > > like Co-developed-by, doesn't shed a light either.
+> > 
+> > Alexey as being our team-leader was in these patches delivery path, which
+> > according to [1] permits to add the SoB tag with his address:
+> > 
+> > "The Signed-off-by: tag indicates that the signer was involved in the
+> > development of the patch, or that he/she was in the patch’s delivery path."
+> > 
+> > So the SoB signify that all the changes provided by the patches I've sent
+> > and will yet send have been passed through his revision and can be
+> > opened at the corresponding license.
+> > 
+> > [1] https://www.kernel.org/doc/html/v4.17/process/submitting-patches.html
 > 
-> Does this ***really*** matter?
+> Yes, and AFAIU the last person in a chain submits the work.
+> 
+> So, it should reflect how patch went thru people's trees. If you send from your
+> tree, where patches are created originally, there shouldn't be other SoBs (use
+> suitable Reviewed-by, etc). At least this is safest side. However, better to
+> ask maintainer (Greg KH in this case) and other senior developers.
+> 
 
-That depends a bit on whether clang is your
-compiler of choice.
+Ok. Last time I read the patches posting procedure document, it didn't
+have anything regarding the order. It does since commit in 2018.
 
-> Why are we tying ourselves up in knots
-> trying to do this all at once?
+Anyway I talked with Alexey regarding this issue. So I'll add his signature
+only to the patches/drivers in which actual development he was involved to
+with further Co-Developed-by tag supplied.
 
-Discretely or treewide, all at once or done over time,
-the impact problem to backports is the same.
+Regards,
+-Sergey
 
-
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
