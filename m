@@ -2,133 +2,184 @@ Return-Path: <SRS0=FKjJ=45=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F997C0044D
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 02:37:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE3CC1975A
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 05:17:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 96CD420734
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 02:37:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 56ABE20739
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 05:17:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="a+9TM53e"
+	dkim=pass (1024-bit key) header.d=fujitsu.onmicrosoft.com header.i=@fujitsu.onmicrosoft.com header.b="dFRqJWqi"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387590AbgCLCg7 (ORCPT
+        id S1727099AbgCLFR0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 11 Mar 2020 22:36:59 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:37134 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387501AbgCLCg7 (ORCPT
+        Thu, 12 Mar 2020 01:17:26 -0400
+Received: from esa13.fujitsucc.c3s2.iphmx.com ([68.232.156.96]:31846 "EHLO
+        esa13.fujitsucc.c3s2.iphmx.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725978AbgCLFR0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 11 Mar 2020 22:36:59 -0400
-Received: by mail-qt1-f196.google.com with SMTP id l20so3235283qtp.4
-        for <linux-serial@vger.kernel.org>; Wed, 11 Mar 2020 19:36:58 -0700 (PDT)
+        Thu, 12 Mar 2020 01:17:26 -0400
+X-Greylist: delayed 430 seconds by postgrey-1.27 at vger.kernel.org; Thu, 12 Mar 2020 01:17:23 EDT
+IronPort-SDR: Nxbn0XBEFsL2/Ls1Yba+N3rUTPCepqlVUQ7563MkwityXcYfm4lMOo/OVguwFtcPMduNTdquNv
+ Ux4JkBMmrEb+KPkYbLps66Cha7pTUH1rze1gHI9OmEc7Zcr0FNp7WbEo/t2EE6chHWbiy6+TkJ
+ +2NVsjMmXjllWcPTqX8WkjvqvXki7Fur/ucmZj6iW6Rk2B6SfNvfGRxTGXPRrG3dQ6Wq3rebyX
+ UoZjCxWJ/ae72LXqMnPRSBA7MDoz5c1ps1I+MbpFSsrEg4djD/uTki2XdFgIJAhnVfE5AV6tfj
+ SfY=
+X-IronPort-AV: E=McAfee;i="6000,8403,9557"; a="11005805"
+X-IronPort-AV: E=Sophos;i="5.70,543,1574089200"; 
+   d="scan'208";a="11005805"
+Received: from mail-os2jpn01lp2051.outbound.protection.outlook.com (HELO JPN01-OS2-obe.outbound.protection.outlook.com) ([104.47.92.51])
+  by ob1.fujitsucc.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2020 14:10:06 +0900
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SQo3W3O7nTlEJtncjZp87WY+tdNrWL1IdnZT0puYi1ZQvgs2/Q33pT3xVJGm/qgYqwwjyafpv/XdR2TZtTAgTZpjYmW6TKaZ3WroUG9kkPIbfUtlZ+7UsCkR5gMIfaUjzUq/xRvdpTMwrIk3BuHZ6ByKBYBUBPVB17tBhVr+hFLQE1W8UK5deyvOowjPAMYIe9egfqN9+QPt6T+3uZl+sqdh5+aeIbW4EJ5eCvRwdnyqEFN0eYdhOI5aNrTo4naUr7065pvPKF7dKG54F1kdsS2o2Xpmri+4WTJvF5Adxz2Gley8AfAKi2PASeFAeq8woCboOdUVcKxvfjSHQ2Lwog==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OQ/TB+2uyYBdznMjZR7uaTF+XF/nRvCaKau0aSxIlwk=;
+ b=JtGfluzzyft32LysHoabYnCKjhz7mTeTFem6FZglcoMZhnkVrfSNT0MhwEjKYEmxv6rJVctswFQE3+ByFT+3EduOYQem7aD7Kj3Cp1IbzLIrm098/UCBRThGHeta9rbsqGfuJ0zioD0/G4yxFmpVCeV1+gqk9BuaNqv47gq/vM57ss7a/t2LLLtSAX6apl4l2OWK31YK9TAp0X9lNOb0DLo1/a/xwgemD//o2VXF/+qqu1uSDTG/n7bDc3VTCUZ9WaT/ELsrU9mqKARBIcMKdEp7uN20VCbtJqol9YPmhZG56+hMsd3IB0sudzOEa89OlZf5Yj0GRFLSdjC03AuUhw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fujitsu.com; dmarc=pass action=none header.from=fujitsu.com;
+ dkim=pass header.d=fujitsu.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=faWpUg+LE2/N1Y0T5FmZCDAU16Eeu82lWgxkIXEoRSM=;
-        b=a+9TM53emBGV+ZoqvnaXKlCyI0G7M3o7DQci1N4S/xM3SqdIRyuXnhROgqIZALgZGN
-         WsyX12Q+kKapBCiQzBuFyJ1EHOsJt4cUIZ4FBen6X6lYZRjgn0R1qZkbzF0uIJd2QYK0
-         r31T7StlLu7FdOiADVU9GdgVbMFKp9OQLI7SRcwPeZcXv1KeM55IxFQ22vNCTSpbgncE
-         CdpRVO8k9pm7E4REwSOY0+NapxfEF4O9+aQ8jPY5/7VcMQ7S+8HKjUm+frFZHnm7Np5d
-         KhU27PPLVP7LCXyJONUYpdxOQzfV7H9/UUQxPnLdM+3E+KCONfev7npJP+bmLsa4vDQs
-         upww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=faWpUg+LE2/N1Y0T5FmZCDAU16Eeu82lWgxkIXEoRSM=;
-        b=HnO6CMhkpuzcE1+ek9um1WII1L1ZrnHPClXCQBQTynbOMEmkU8c5Plz5UoQoLXlTan
-         ZPf/YR5RdE1GSPicuJYXsa+dasVr87G4O7VXn/POTyuczQeUbrLsaScp2GVqoQw9UD3w
-         GmEYGatOCj1f1Dald78sxXzApYq60Hz15ku21K+HJ7FVe6SGi0lMDz/ShAF4fHph9GGS
-         btMRKhUNvVAOIduG2vW7dBnBfkSLUTZKXG9fCJxrtDbjBzZ2u57fSGlwHl3aYQTr4CAy
-         DDCJaz3l9TgjKwt+8x0KCeenMx0AGvWIkJCd74xFCIAgSRwcoI8GGJJmZmNFKxf/A5Ys
-         d5Og==
-X-Gm-Message-State: ANhLgQ3Si99dCNmBLn7vYoAlSg8AA63JaLkIm5272VG7hYDME+lb9ERe
-        5Wep3TvhGKykBov3Jiw1aXUbn8CTN1LZphce0dG+d5m4RdfrcQ==
-X-Google-Smtp-Source: ADFU+vu7D7I/KxqhTI33Btk5Vo27UwFDEur84H7SBerYlWEcjxh9uN0Uv2fDhZ8EPiPWuGJ3Y+pW9sN4NWNBpudPiaA=
-X-Received: by 2002:ac8:24db:: with SMTP id t27mr5452633qtt.49.1583980618106;
- Wed, 11 Mar 2020 19:36:58 -0700 (PDT)
+ d=fujitsu.onmicrosoft.com; s=selector2-fujitsu-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OQ/TB+2uyYBdznMjZR7uaTF+XF/nRvCaKau0aSxIlwk=;
+ b=dFRqJWqiHx0SCF2VUqyLpXBhYlf2xqZccforeKEv7myWQyaAmdh6QA3h0iibpHEhPga0bDjIADMpZrn1Yr1pLoHEj5Qj9XbZ0mhPTNoDmMuorLp+tF4/31mKt9OumtswKlqFLxGxn0FpcLzcBtPt7xrDqfeH8tP46rOevrjEIJA=
+Received: from OSBPR01MB2949.jpnprd01.prod.outlook.com (52.134.254.22) by
+ OSBPR01MB3271.jpnprd01.prod.outlook.com (52.134.255.73) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2793.14; Thu, 12 Mar 2020 05:10:05 +0000
+Received: from OSBPR01MB2949.jpnprd01.prod.outlook.com
+ ([fe80::c55c:c17c:b998:649]) by OSBPR01MB2949.jpnprd01.prod.outlook.com
+ ([fe80::c55c:c17c:b998:649%5]) with mapi id 15.20.2793.018; Thu, 12 Mar 2020
+ 05:10:05 +0000
+From:   "torii.ken1@fujitsu.com" <torii.ken1@fujitsu.com>
+To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     "geert@linux-m68k.org" <geert@linux-m68k.org>,
+        "erosca@de.adit-jv.com" <erosca@de.adit-jv.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "wsa+renesas@sang-engineering.com" <wsa+renesas@sang-engineering.com>,
+        "yoshihiro.shimoda.uh@renesas.com" <yoshihiro.shimoda.uh@renesas.com>,
+        "uli+renesas@fpond.eu" <uli+renesas@fpond.eu>,
+        "george_davis@mentor.com" <george_davis@mentor.com>,
+        "andrew_gabbasov@mentor.com" <andrew_gabbasov@mentor.com>,
+        "jiada_wang@mentor.com" <jiada_wang@mentor.com>,
+        "yuichi.kusakabe@denso-ten.com" <yuichi.kusakabe@denso-ten.com>,
+        "yasano@jp.adit-jv.com" <yasano@jp.adit-jv.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jslaby@suse.com" <jslaby@suse.com>,
+        "yohhei.fukui@denso-ten.com" <yohhei.fukui@denso-ten.com>,
+        "torii.ken1@fujitsu.com" <torii.ken1@fujitsu.com>,
+        "ashiduka@fujitsu.com" <ashiduka@fujitsu.com>,
+        "magnus.damm@gmail.com" <magnus.damm@gmail.com>
+Subject: Re: [PATCH] serial: sh-sci: Support custom speed setting
+Thread-Topic: [PATCH] serial: sh-sci: Support custom speed setting
+Thread-Index: AQHV1sAgPlnOtMWuIkKRz6OcOs9dRKgDJUQAgBHWrICAL6+KAA==
+Date:   Thu, 12 Mar 2020 05:10:05 +0000
+Message-ID: <OSBPR01MB29496E76BE5FD0C5BC56D0F0C1FD0@OSBPR01MB2949.jpnprd01.prod.outlook.com>
+References: <20200129161955.30562-1-erosca@de.adit-jv.com>
+        <CAMuHMdWV0kkKq6sKOHsdz+FFGNHphzq_q7rvmYAL=U4fH2H3wQ@mail.gmail.com>
+        <20200210205735.GB1347752@kroah.com>
+In-Reply-To: <20200210205735.GB1347752@kroah.com>
+Accept-Language: ja-JP, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=torii.ken1@fujitsu.com; 
+x-originating-ip: [180.43.167.188]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5bf52c28-f992-4160-c63f-08d7c643a07d
+x-ms-traffictypediagnostic: OSBPR01MB3271:|OSBPR01MB3271:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <OSBPR01MB32711575D8E2CCC7DD16DE87C1FD0@OSBPR01MB3271.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0340850FCD
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(39860400002)(366004)(376002)(136003)(396003)(199004)(66946007)(33656002)(66446008)(66556008)(85182001)(64756008)(66476007)(52536014)(26005)(76116006)(186003)(8936002)(91956017)(5660300002)(7416002)(2906002)(6506007)(7696005)(55016002)(53546011)(6916009)(316002)(478600001)(966005)(4326008)(81156014)(71200400001)(9686003)(81166006)(8676002)(86362001)(54906003)(777600001);DIR:OUT;SFP:1101;SCL:1;SRVR:OSBPR01MB3271;H:OSBPR01MB2949.jpnprd01.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: I/RpCA+obSv1uLLOPZjGDvHRFKsrTsqsEQlEI8bfl3fePIY13LO1BsdzDS+NyjYyjMyQkUHxFXRa+0NctjIN6XGZdWWhiqoT+YLG8pexhIWQNHM7zBNChSWENAkwjYKZNP+kvQT4d7KwWkNvjPBeVqUGJY5Y4O+Mpy6sEnMrc3Pa/+7vAcAJPxrWXm98bykOfKjCYa6f2KTQrf1vwMkllaaZgc0lSon4Mi5qLXInPSpu/VINOnZRDslm81phn6S7hxVWBm7OGtU2xfoaESJhgzjaDZ1O7U1SH/9aEFSaKD9T1UCXY+Jx87ROket2R+hwXcbf8BxuRCYl8nR484cLvM2nFv2Tjh/YeQTDAddTyEQ4n4lSM4ShLCQMSFAw1yVr2LfZ8ztd+ve/rYdc4o/tsOsYdMpQO8bPLi+YBW9bVgQCFm8htTXahi3h6T1tB/l1f1FAFhj4xB4ucciOKErkMaXa+zs2mcUwgTRiIzj+IhkqClN3hF/miXCZmLZrNwUYfLUeuzi5Pp687rFlov6rXHtuwwoHFUnOKZtQiMSpBHya/UpDa/Uw+UA5RKTL+Vb+
+x-ms-exchange-antispam-messagedata: osxHAQ22LEVkhRoe8Z1mTAmf9BjE5vXs98pRV3RZh742oGx7INh0T0Fi0fpCCTghNLUXHrRizUOOMC8RKJPgFvCU/ukMCi4A794+LspFu8F4DNoSM04PXM0GCeRzZZi9JF9gw/v9OhvZeVovmE8PDQ==
+Content-Type: text/plain; charset="iso-2022-jp"
+Content-ID: <E5048FDE2074214D9B8CA4893A0664D9@jpnprd01.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <1583224900-25824-1-git-send-email-vincent.chen@sifive.com>
- <mhng-cf4b7d3b-9841-44a1-9ffd-ac7f4cdeb75d@palmerdabbelt-glaptop1> <20200307085127.GA3878075@kroah.com>
-In-Reply-To: <20200307085127.GA3878075@kroah.com>
-From:   Vincent Chen <vincent.chen@sifive.com>
-Date:   Thu, 12 Mar 2020 10:36:46 +0800
-Message-ID: <CABvJ_xjXCX2WVxQrrYWmP2n-xp2fpwade9JBbna=j7UkYOkY2Q@mail.gmail.com>
-Subject: Re: [PATCH] tty: serial: Add CONSOLE_POLL support to SiFive UART
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>, jslaby@suse.com,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        linux-serial@vger.kernel.org,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: fujitsu.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5bf52c28-f992-4160-c63f-08d7c643a07d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Mar 2020 05:10:05.0242
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a19f121d-81e1-4858-a9d8-736e267fd4c7
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: CsE9UA3xm3W+PELlZmBUvexsMjDxb2XO0Bur/JmWjYkWizn/wgEbaMnrhAbuGP6zMPmHEl/aZdCDHTJgOKILID1VETToVmSCc0OXXf2kqww=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSBPR01MB3271
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Mar 7, 2020 at 4:51 PM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Fri, Mar 06, 2020 at 10:13:56AM -0800, Palmer Dabbelt wrote:
-> > On Tue, 03 Mar 2020 00:41:40 PST (-0800), vincent.chen@sifive.com wrote:
-> > > Add CONSOLE_POLL support for future KGDB porting.
-> > >
-> > > Signed-off-by: Vincent Chen <vincent.chen@sifive.com>
-> > > ---
-> > >  drivers/tty/serial/sifive.c | 27 +++++++++++++++++++++++++++
-> > >  1 file changed, 27 insertions(+)
-> > >
-> > > diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
-> > > index d5f81b98e4d7..acdbaca4de36 100644
-> > > --- a/drivers/tty/serial/sifive.c
-> > > +++ b/drivers/tty/serial/sifive.c
-> > > @@ -818,6 +818,29 @@ static int __init sifive_serial_console_setup(struct console *co, char *options)
-> > >     return uart_set_options(&ssp->port, co, baud, parity, bits, flow);
-> > >  }
-> > >
-> > > +#ifdef CONFIG_CONSOLE_POLL
-> > > +static int sifive_serial_poll_get_char(struct uart_port *port)
-> > > +{
-> > > +   struct sifive_serial_port *ssp = port_to_sifive_serial_port(port);
-> > > +   char is_empty, ch;
-> > > +
-> > > +   ch = __ssp_receive_char(ssp, &is_empty);
-> > > +   if (is_empty)
-> > > +           return NO_POLL_CHAR;
-> > > +
-> > > +   return ch;
-> > > +}
-> > > +
-> > > +static void sifive_serial_poll_put_char(struct uart_port *port,
-> > > +                                   unsigned char c)
-> > > +{
-> > > +   struct sifive_serial_port *ssp = port_to_sifive_serial_port(port);
-> > > +
-> > > +   sifive_serial_console_putchar(port, c);
-> > > +   __ssp_wait_for_xmitr(ssp);
-> >
-> > So we still have that TX watermark bug in the SiFive UARTs.  If this function
-> > is supposed to wait until the word is actually out on the line then this isn't
-> > sufficient, but if it's just supposed to wait until the next write won't block
-> > then this is fine.
-> >
-> > I'm not really a serial person, so mabye someone else knows?  For those
-> > unfamiliar with the issue, there's a pretty good description in the patch to
-> > fix it
-> >
-> >    https://github.com/sifive/sifive-blocks/pull/90
-> >
-> > Poking around we don't have any PRE_RATE_CHANGE hook, so I'm going to take a
-> > whack at adding one -- not really related to this patch, though.
->
-> I do have to drop this patch from my tree, as it breaks the build, so it
-> needs to be redone anyway :(
->
+Dear Greg,
 
-Thanks for the test to find out my mistake.
-I will fix it and resend the 2nd version patch.
-Thanks
+On Tue, 11 Feb 2020 05:57:35 +0900,
+Greg Kroah-Hartman wrote:
+>=20
+> On Thu, Jan 30, 2020 at 01:32:50PM +0100, Geert Uytterhoeven wrote:
+> > Hi Eugeniu,
+> >=20
+> > On Wed, Jan 29, 2020 at 5:20 PM Eugeniu Rosca <erosca@de.adit-jv.com> w=
+rote:
+> > > From: Torii Kenichi <torii.ken1@jp.fujitsu.com>
+> > >
+> > > This patch is necessary to use BT module and XM module with DENSO TEN
+> > > development board.
+> > >
+> > > This patch supports ASYNC_SPD_CUST flag by ioctl(TIOCSSERIAL), enable=
+s
+> > > custom speed setting with setserial(1).
+> > >
+> > > The custom speed is calculated from uartclk and custom_divisor.
+> > > If custom_divisor is zero, custom speed setting is invalid.
+> > >
+> > > Signed-off-by: Torii Kenichi <torii.ken1@jp.fujitsu.com>
+> > > [erosca: rebase against v5.5]
+> > > Signed-off-by: Eugeniu Rosca <erosca@de.adit-jv.com>
+> >=20
+> > Thanks for your patch!
+> >=20
+> > While this seems to work fine[*], I have a few comments/questions:
+> >   1. This feature seems to be deprecated:
+> >=20
+> >          sh-sci e6e68000.serial: setserial sets custom speed on
+> > ttySC1. This is deprecated.
+> >=20
+> >   2. As the wanted speed is specified as a divider, the resulting speed
+> >      may be off, cfr. the example for 57600 below.
+> >      Note that the SCIF device has multiple clock inputs, and can do
+> >      57600 perfectly if the right crystal has been fitted.
+> >=20
+> >  3. What to do with "[PATCH/RFC] serial: sh-sci: Update uartclk based
+> >      on selected clock" (https://patchwork.kernel.org/patch/11103703/)?
+> >      Combined with this, things become pretty complicated and
+> >      unpredictable, as uartclk now always reflect the frequency of the
+> >      last used base clock, which was the optimal one for the previously
+> >      used speed....
+> >=20
+> > I think it would be easier if we just had an API to specify a raw speed=
+.
+> > Perhaps that already exists?
+>=20
+> Yes, see:
+> 	http://www.panix.com/~grante/arbitrary-baud.c
+
+I saw the code above, I thought I wouldn't write such code normally.
+
+>#include <linux/termios.h>
+>
+>int ioctl(int d, int request, ...);
+
+Do application programmers have to accept this bad code?=
