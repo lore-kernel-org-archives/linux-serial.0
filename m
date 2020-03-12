@@ -6,138 +6,78 @@ X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30FCFC1975A
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 09:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39963C1975A
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 09:05:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 162102071C
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 09:03:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1442D206F1
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 09:05:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726387AbgCLJD0 (ORCPT
+        id S1725980AbgCLJFS (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Mar 2020 05:03:26 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:40967 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725980AbgCLJD0 (ORCPT
+        Thu, 12 Mar 2020 05:05:18 -0400
+Received: from smtprelay0063.hostedemail.com ([216.40.44.63]:59210 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725978AbgCLJFS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Mar 2020 05:03:26 -0400
-Received: by mail-ot1-f66.google.com with SMTP id s15so5304000otq.8;
-        Thu, 12 Mar 2020 02:03:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pcqqOkF47Er9rA3HRF63y15rDeiBnLWeD7fktteNLOs=;
-        b=kjHndIYH3dDb4ZAnrK7tnaOk44t/NSsm8rN/9dtFBzXPfHyZFfj7mqidpYUPIIGDaD
-         57S9aAlUDqOnf3iQG0fsfYlyMISoVktm8TsK1fZCODtxQAeA2idathLrHYlk3SHZaiUr
-         TzhK6BkHLAtBhaAvdhCh1GcgKjftIUydGPwMyUQuw4UsLeVF0yOFnlQTkYExXloLrojH
-         72fhpmhUUeQMp9dNBRUQVaLM/lnMGvvehDL5qqFs73Rslwmf23ed3QRrueyKHp/F1h6X
-         kct5Ricq+dDQ3NaNhtQsa4KPUACVICBf7gMQ7bO4PU/4GXiUUqof/6ZE4/OmufYqvn/T
-         l08g==
-X-Gm-Message-State: ANhLgQ0Cnn7JmHgvDoBI8LhggaTZ134KStdmpI2rGaqLn4xcXi86crz/
-        ShAdcbB1CzPz8HcRuYoFuS6WqvlTO/zcl08BECc=
-X-Google-Smtp-Source: ADFU+vuqRv/msI6FIPxofSR85RYexCgGBztJMSn0nVO9TKf0PXVAe6MlC96Q9T8bKTzZ7kmVzB3HK2f6BgUHFfRhLgk=
-X-Received: by 2002:a9d:1708:: with SMTP id i8mr5511068ota.250.1584003805625;
- Thu, 12 Mar 2020 02:03:25 -0700 (PDT)
+        Thu, 12 Mar 2020 05:05:18 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay03.hostedemail.com (Postfix) with ESMTP id 6D305837F27B;
+        Thu, 12 Mar 2020 09:05:17 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-HE-Tag: shape63_855ac344c041b
+X-Filterd-Recvd-Size: 2102
+Received: from XPS-9350.home (unknown [47.151.143.254])
+        (Authenticated sender: joe@perches.com)
+        by omf19.hostedemail.com (Postfix) with ESMTPA;
+        Thu, 12 Mar 2020 09:05:16 +0000 (UTC)
+Message-ID: <40896bca8a4418b8afe99767cad9a15967617ae1.camel@perches.com>
+Subject: Re: [PATCH -next 005/491] ARM/UNIPHIER ARCHITECTURE: Use
+ fallthrough;
+From:   Joe Perches <joe@perches.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Date:   Thu, 12 Mar 2020 02:03:33 -0700
+In-Reply-To: <20200312085606.GA154268@kroah.com>
+References: <cover.1583896344.git.joe@perches.com>
+         <dae0878058223a42c77d725b8d7c5845a7ef9dc0.1583896348.git.joe@perches.com>
+         <CAK7LNAS7GAk9yXkPhbS3ByU+n9Gb-rk0PeLcXLCNwpW1B22aeg@mail.gmail.com>
+         <891a42ad8d8fd7beca911845108e1ded022ef3f7.camel@perches.com>
+         <20200312085606.GA154268@kroah.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.34.1-2 
 MIME-Version: 1.0
-References: <20200129161955.30562-1-erosca@de.adit-jv.com> <CAMuHMdWV0kkKq6sKOHsdz+FFGNHphzq_q7rvmYAL=U4fH2H3wQ@mail.gmail.com>
- <20200210205735.GB1347752@kroah.com> <OSBPR01MB29496E76BE5FD0C5BC56D0F0C1FD0@OSBPR01MB2949.jpnprd01.prod.outlook.com>
-In-Reply-To: <OSBPR01MB29496E76BE5FD0C5BC56D0F0C1FD0@OSBPR01MB2949.jpnprd01.prod.outlook.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 12 Mar 2020 10:03:13 +0100
-Message-ID: <CAMuHMdXYPG8t=vBn6c2B=8TwbWJfFCjW8peDLgHBwW_AxpH5Hw@mail.gmail.com>
-Subject: Re: [PATCH] serial: sh-sci: Support custom speed setting
-To:     "torii.ken1@fujitsu.com" <torii.ken1@fujitsu.com>
-Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "erosca@de.adit-jv.com" <erosca@de.adit-jv.com>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "wsa+renesas@sang-engineering.com" <wsa+renesas@sang-engineering.com>,
-        "yoshihiro.shimoda.uh@renesas.com" <yoshihiro.shimoda.uh@renesas.com>,
-        "uli+renesas@fpond.eu" <uli+renesas@fpond.eu>,
-        "george_davis@mentor.com" <george_davis@mentor.com>,
-        "andrew_gabbasov@mentor.com" <andrew_gabbasov@mentor.com>,
-        "jiada_wang@mentor.com" <jiada_wang@mentor.com>,
-        "yuichi.kusakabe@denso-ten.com" <yuichi.kusakabe@denso-ten.com>,
-        "yasano@jp.adit-jv.com" <yasano@jp.adit-jv.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jslaby@suse.com" <jslaby@suse.com>,
-        "yohhei.fukui@denso-ten.com" <yohhei.fukui@denso-ten.com>,
-        "ashiduka@fujitsu.com" <ashiduka@fujitsu.com>,
-        "magnus.damm@gmail.com" <magnus.damm@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Torii-san,
+On Thu, 2020-03-12 at 09:56 +0100, Greg Kroah-Hartman wrote:
+> On Wed, Mar 11, 2020 at 07:31:07AM -0700, Joe Perches wrote:
+> > On Wed, 2020-03-11 at 14:15 +0900, Masahiro Yamada wrote:
+> > > On Wed, Mar 11, 2020 at 2:07 PM Joe Perches <joe@perches.com> wrote:
+> > > > Convert the various uses of fallthrough comments to fallthrough;
+> > > > 
+> > > > Done via script
+> > > > Link: https://lore.kernel.org/lkml/b56602fcf79f849e733e7b521bb0e17895d390fa.1582230379.git.joe.com/
+> > > > 
+> > > > Signed-off-by: Joe Perches <joe@perches.com>
+> > > 
+> > > Acked-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+> > > 
+> > > 
+> > > But, I think the patch subject should be prefixed:
+> > > "serial: 8250_uniphier:"
+> > 
+> > Yeah thanks, that's difficult to script though.
+> > 
+> > 
+> 
+> Kernel development is hard :)
 
-On Thu, Mar 12, 2020 at 6:10 AM torii.ken1@fujitsu.com
-<torii.ken1@fujitsu.com> wrote:
-> On Tue, 11 Feb 2020 05:57:35 +0900,
-> Greg Kroah-Hartman wrote:
-> > On Thu, Jan 30, 2020 at 01:32:50PM +0100, Geert Uytterhoeven wrote:
-> > > On Wed, Jan 29, 2020 at 5:20 PM Eugeniu Rosca <erosca@de.adit-jv.com> wrote:
-> > > > From: Torii Kenichi <torii.ken1@jp.fujitsu.com>
-> > > >
-> > > > This patch is necessary to use BT module and XM module with DENSO TEN
-> > > > development board.
-> > > >
-> > > > This patch supports ASYNC_SPD_CUST flag by ioctl(TIOCSSERIAL), enables
-> > > > custom speed setting with setserial(1).
-> > > >
-> > > > The custom speed is calculated from uartclk and custom_divisor.
-> > > > If custom_divisor is zero, custom speed setting is invalid.
-> > > >
-> > > > Signed-off-by: Torii Kenichi <torii.ken1@jp.fujitsu.com>
-> > > > [erosca: rebase against v5.5]
-> > > > Signed-off-by: Eugeniu Rosca <erosca@de.adit-jv.com>
-> > >
-> > > Thanks for your patch!
-> > >
-> > > While this seems to work fine[*], I have a few comments/questions:
-> > >   1. This feature seems to be deprecated:
-> > >
-> > >          sh-sci e6e68000.serial: setserial sets custom speed on
-> > > ttySC1. This is deprecated.
-> > >
-> > >   2. As the wanted speed is specified as a divider, the resulting speed
-> > >      may be off, cfr. the example for 57600 below.
-> > >      Note that the SCIF device has multiple clock inputs, and can do
-> > >      57600 perfectly if the right crystal has been fitted.
-> > >
-> > >  3. What to do with "[PATCH/RFC] serial: sh-sci: Update uartclk based
-> > >      on selected clock" (https://patchwork.kernel.org/patch/11103703/)?
-> > >      Combined with this, things become pretty complicated and
-> > >      unpredictable, as uartclk now always reflect the frequency of the
-> > >      last used base clock, which was the optimal one for the previously
-> > >      used speed....
-> > >
-> > > I think it would be easier if we just had an API to specify a raw speed.
-> > > Perhaps that already exists?
-> >
-> > Yes, see:
-> >       http://www.panix.com/~grante/arbitrary-baud.c
->
-> I saw the code above, I thought I wouldn't write such code normally.
->
-> >#include <linux/termios.h>
-> >
-> >int ioctl(int d, int request, ...);
->
-> Do application programmers have to accept this bad code?
+Not really, kernel development processes are pretty stupid sometimes.
 
-I guess you mean the forward declaration of ioctrl()?
-No, they should include <sys/ioctl.h> instead.
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
