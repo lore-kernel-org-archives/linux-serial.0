@@ -2,113 +2,85 @@ Return-Path: <SRS0=FKjJ=45=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_SANE_1 autolearn=no
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60101C5ACC0
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 08:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5313BC10DCE
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 08:18:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F3C2920650
-	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 08:01:43 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="J+7nxoNf"
+	by mail.kernel.org (Postfix) with ESMTP id 3064D206EB
+	for <linux-serial@archiver.kernel.org>; Thu, 12 Mar 2020 08:18:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388197AbgCLIBn (ORCPT
+        id S1726023AbgCLISX (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 12 Mar 2020 04:01:43 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:40292 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388186AbgCLIBm (ORCPT
+        Thu, 12 Mar 2020 04:18:23 -0400
+Received: from mout.kundenserver.de ([212.227.17.24]:53575 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725978AbgCLISX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 12 Mar 2020 04:01:42 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 02C7wjBS038372;
-        Thu, 12 Mar 2020 08:01:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=XvYHsboiG2BhzPT10Pu1PpnnzQA6MDBoslIAumrXS24=;
- b=J+7nxoNf5NV50ltobVn//4LULEce7+erMspIXzwzZY6Q7BG3Qj8h2muMk5HagaGa2/Qf
- pEP4tleqZkPHtHHcE5iRnovnUXvKkUtqCUyOGWHGPZls8FGaisnKi8bJxfCMhMNeckWN
- ZxGZpUvKYRu+aUL5gNO/5IV5txzoZdkorxp9Kys8ymiotTVf1D6CdLXSoKnoILFQvG4o
- Q0aalrUN9p2yJ4pAKpGjW1d7MADPW56yv18VgjJWj6e5tAP8wjlr/nkMDJz83UWVoh42
- OfCOw77BM5pUeGSLZ8YAVH174k3RiWR9SyPEQcLnW40TC/jsgVAbJtSJIXluC5BLWp7g xg== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2120.oracle.com with ESMTP id 2yp9v6b3nv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 12 Mar 2020 08:01:28 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 02C7w3lG179730;
-        Thu, 12 Mar 2020 08:01:27 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3020.oracle.com with ESMTP id 2yqgvc9nrg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 12 Mar 2020 08:01:27 +0000
-Received: from abhmp0007.oracle.com (abhmp0007.oracle.com [141.146.116.13])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 02C81NBC003458;
-        Thu, 12 Mar 2020 08:01:26 GMT
-Received: from mwanda (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 12 Mar 2020 01:01:22 -0700
-Date:   Thu, 12 Mar 2020 11:01:17 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     lanqing.liu@unisoc.com
-Cc:     linux-serial@vger.kernel.org
-Subject: [bug report] serial: sprd: Add DMA mode support
-Message-ID: <20200312080117.GA3881@mwanda>
+        Thu, 12 Mar 2020 04:18:23 -0400
+Received: from mail-qk1-f174.google.com ([209.85.222.174]) by
+ mrelayeu.kundenserver.de (mreue107 [212.227.15.145]) with ESMTPSA (Nemesis)
+ id 1MPGiR-1ixeyW1XrB-00PfGV; Thu, 12 Mar 2020 09:18:21 +0100
+Received: by mail-qk1-f174.google.com with SMTP id f198so4800468qke.11;
+        Thu, 12 Mar 2020 01:18:21 -0700 (PDT)
+X-Gm-Message-State: ANhLgQ1r8eylYx5ZZgyOYeaWDUr2YY6K/7mHqhZigjsuOFYPBL+rGaPb
+        18RFSsZ1o8s758nUVCgeVpU+Por0NG+K10uQ6/8=
+X-Google-Smtp-Source: ADFU+vsNBs5U8MSP0AIhbOTyNZM5zKZbj9kd12yMxihKBGNpLlSYTCDKKw9EkzMHsXQTWNCKK3QEcXCPnNyHrsJ3iYg=
+X-Received: by 2002:a37:a4d6:: with SMTP id n205mr6736993qke.352.1584001100024;
+ Thu, 12 Mar 2020 01:18:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9557 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 malwarescore=0 adultscore=0
- phishscore=0 bulkscore=0 mlxlogscore=978 suspectscore=3 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2001150001
- definitions=main-2003120042
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9557 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=3 spamscore=0 mlxscore=0
- priorityscore=1501 lowpriorityscore=0 bulkscore=0 mlxlogscore=999
- phishscore=0 adultscore=0 clxscore=1011 impostorscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2001150001
- definitions=main-2003120042
+References: <20200311225736.32147-1-rdunlap@infradead.org> <20200311225736.32147-2-rdunlap@infradead.org>
+In-Reply-To: <20200311225736.32147-2-rdunlap@infradead.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 12 Mar 2020 09:18:04 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a1ah3hJOJugJmYGcr48fN1SR6crSgAgGocZxqAgL5r0ew@mail.gmail.com>
+Message-ID: <CAK8P3a1ah3hJOJugJmYGcr48fN1SR6crSgAgGocZxqAgL5r0ew@mail.gmail.com>
+Subject: Re: [PATCH 1/3 v2] char: group dev configs togther
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:sPAakDjeihxQelG+jj4ZoHRdrd6ZRt0zJa1JTqtWPNmrThhOUmQ
+ xlZ+f1nOTUOX0o8JF+rW/IlEflQltQT//UV8V3tq/0i7xWt/nFi7/IgCLwuWPggDFc/UpQa
+ ScY7sRmOPoenjx2DCZmJFqejkcJSq0GXH6L01Y3Bu/E+CAdG3pGi/IWIljaY4pvZs6uWj6v
+ S/3xdcjbIH5lXXAx8FgVQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:2WA180O+chk=:kNlHsfIKuGyMDvxPtcylCJ
+ 23YGUee/0URwHDkLBQL2s4ckQVM1MWY2MB45pTXzbsMO1GGDfoSPVnkgW2RaQ12wohTesWQki
+ 2E70qCWXiwZL1js8K8WqliE6RyorNy7F19Tv0Uj9jAlwYyzTigGbv5gynS1my7XO9gapUVj5h
+ zxvobFzP6iQCSm16uTRpgPx2rDUPSuuDRiFpuhPabJhO6LLI2ktyi9MJztXbgqQuejf+1n1JM
+ bNVDbbV5iIsc3i0KcJ9EG27Lqp7b0O6Dm41C5KlSs0KdppAlT9qkYIFuM5v+FVWEKjeVql7x5
+ uiZi9ESqh62Ras2zRqJS1gAkhfQmljCo3W+dPGI5rFJLhXP+6Aq95l/h6YffV3CJ8EwoR+aeo
+ YnoPPxhKTubjjK/2WeSD0hArDU6/OFL2gDkM+2lSRsoM8P/FNp8qZiG1zECSove1llC4Cl3Mb
+ jheQkatWnTNgUeu/Br9chLmpQL+m2oaWGiIeKlDCwGRLkaWPgcl6mHIwf53OkZcArJzb+hNOI
+ j4hPsiV7rIlP+O9URXh/Bogcaz2OYCNO8VacncFFcdQJhqb6mCJ4GMJagpUpI9bJtYfiJp1T6
+ jOIX50RVhmxVRppZ8UvmD70bLbg0NVJXlZuu7odkwOUwnxIHooS13grn6X7f6k1eBAivDZe3S
+ bzaVGEvf0zcBXyMDRqZD7JpEf9i+oBoL0/H2guwstpUOCmphu+VJNP4z/t/cUveh21piQpIlS
+ K6jcvgnuzhmpT/oagt6U+hmr0Nu8mqF/lA+TbLxRmYzUZxsPXV3pzBR4C9K1cFGCrusSjXm4X
+ 657SpbMqORTQw3thky3B7tc7OBye00AaX4ZglfkCmiTwOhUc9Q=
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello Lanqing Liu,
+On Wed, Mar 11, 2020 at 11:57 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+>
+> Group /dev/{mem,kmem,nvram,raw,port} driver configs together.
+> This also means that tty configs are now grouped together instead
+> of being split up.
+>
+> This just moves Kconfig lines around. There are no other changes.
+>
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.com>
+> Cc: linux-serial@vger.kernel.org
 
-The patch f4487db58eb7: "serial: sprd: Add DMA mode support" from Mar
-4, 2019, leads to the following static checker warning:
+Looks good to me. /dev/raw might not fit into this list, but it's hard
+to come up with a clear definition anyway, and this is definitely
+better than before.
 
-	drivers/tty/serial/sprd_serial.c:1141 sprd_remove()
-	error: we previously assumed 'sup' could be null (see line 1132)
-
-drivers/tty/serial/sprd_serial.c
-  1128  static int sprd_remove(struct platform_device *dev)
-  1129  {
-  1130          struct sprd_uart_port *sup = platform_get_drvdata(dev);
-  1131  
-  1132          if (sup) {
-                    ^^^
-Check
-
-  1133                  uart_remove_one_port(&sprd_uart_driver, &sup->port);
-  1134                  sprd_port[sup->port.line] = NULL;
-  1135                  sprd_ports_num--;
-  1136          }
-  1137  
-  1138          if (!sprd_ports_num)
-  1139                  uart_unregister_driver(&sprd_uart_driver);
-  1140  
-  1141          sprd_rx_free_buf(sup);
-                                 ^^^
-Unchecked dereference inside function
-
-  1142  
-  1143          return 0;
-  1144  }
-
-regards,
-dan carpenter
+Acked-by: Arnd Bergmann <arnd@arndb.de>
