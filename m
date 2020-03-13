@@ -7,42 +7,42 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1434BC2BB1D
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:13:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 271B2C4CECE
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:13:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E04CA20724
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:13:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F1A0F2074A
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:13:28 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="D0A0W79R"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="ThCfPjPE"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726642AbgCMNNK (ORCPT
+        id S1726695AbgCMNN2 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 Mar 2020 09:13:10 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:27426 "EHLO
+        Fri, 13 Mar 2020 09:13:28 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:42852 "EHLO
         mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726594AbgCMNNK (ORCPT
+        by vger.kernel.org with ESMTP id S1726705AbgCMNN2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 Mar 2020 09:13:10 -0400
+        Fri, 13 Mar 2020 09:13:28 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1584105189; h=References: In-Reply-To: Message-Id: Date:
+ s=smtp; t=1584105207; h=References: In-Reply-To: Message-Id: Date:
  Subject: Cc: To: From: Sender;
- bh=IyOU3O6vZkvClFfdzNJ2tEJ6rtPVF6loCCxH7MpU/9I=; b=D0A0W79Rgv5MBb6JM/4tP7VeXhhQ8DWI2aHa0zo1mzb3TQFEBMwb0K6sw0A6zv88j0O7xTSJ
- lABg3Q93Ty/K38R4q9AvMEJ2raIei4a9DNgEZvwzy6pbZQ4Q7LFJ9CpTXfgguu7D0dulacH9
- Ew7lHl07yj+/3qZZH9aObUJQUg0=
+ bh=TMCjXiCd22oaTIvt1nqWA3krN7Avu7WdjmJ3LXbEBQU=; b=ThCfPjPE3BKDmAOkq6mjsOR6pPuwYhSgDV3DtAH8zKwDNJ23r2IPIirgS+C2tnjRMDJmpkob
+ 52cTqBC++yLzG15t6Z+83mFygp8PdC/igo53nMoa89b8cIW5TqngmuXRH2iSceW8S2I2D3Eb
+ J8rJHJriJSYxPmNHwyYj/NEyHY4=
 X-Mailgun-Sending-Ip: 104.130.122.26
 X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e6b86cd.7f69cf52f260-smtp-out-n01;
- Fri, 13 Mar 2020 13:12:45 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5e6b86f1.7f1981611c00-smtp-out-n01;
+ Fri, 13 Mar 2020 13:13:21 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 3F53FC433BA; Fri, 13 Mar 2020 13:12:44 +0000 (UTC)
+        id BF9F0C44793; Fri, 13 Mar 2020 13:13:21 +0000 (UTC)
 Received: from akashast-linux.qualcomm.com (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1EFFBC433D2;
-        Fri, 13 Mar 2020 13:12:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 1EFFBC433D2
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id D8E6BC44793;
+        Fri, 13 Mar 2020 13:13:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D8E6BC44793
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
 From:   Akash Asthana <akashast@codeaurora.org>
@@ -55,9 +55,9 @@ Cc:     linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
         linux-serial@vger.kernel.org, mka@chromium.org,
         dianders@chromium.org, evgreen@chromium.org,
         Akash Asthana <akashast@codeaurora.org>
-Subject: [PATCH V2 1/8] interconnect: Add devm_of_icc_get() as exported API for users
-Date:   Fri, 13 Mar 2020 18:42:07 +0530
-Message-Id: <1584105134-13583-2-git-send-email-akashast@codeaurora.org>
+Subject: [PATCH V2 5/8] i2c: i2c-qcom-geni: Add interconnect support
+Date:   Fri, 13 Mar 2020 18:42:11 +0530
+Message-Id: <1584105134-13583-6-git-send-email-akashast@codeaurora.org>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
 References: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
@@ -66,75 +66,169 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Users can use devm version of of_icc_get() to benefit from automatic
-resource release.
+Get the interconnect paths for I2C based Serial Engine device
+and vote according to the bus speed of the driver.
 
 Signed-off-by: Akash Asthana <akashast@codeaurora.org>
 ---
- drivers/interconnect/core.c  | 25 +++++++++++++++++++++++++
- include/linux/interconnect.h |  7 +++++++
- 2 files changed, 32 insertions(+)
+Changes in V2:
+ - As per Bjorn's comment, removed se == NULL check from geni_i2c_icc_get
+ - As per Bjorn's comment, removed code to set se->icc_path* to NULL in failure
+ - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
+   path handle
+ - As per Matthias comment, added error handling for icc_set_bw call
 
-diff --git a/drivers/interconnect/core.c b/drivers/interconnect/core.c
-index 2c6515e..f5699ed 100644
---- a/drivers/interconnect/core.c
-+++ b/drivers/interconnect/core.c
-@@ -350,6 +350,31 @@ static struct icc_node *of_icc_get_from_provider(struct of_phandle_args *spec)
- 	return node;
+ drivers/i2c/busses/i2c-qcom-geni.c | 110 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 110 insertions(+)
+
+diff --git a/drivers/i2c/busses/i2c-qcom-geni.c b/drivers/i2c/busses/i2c-qcom-geni.c
+index 17abf60c..33ab685 100644
+--- a/drivers/i2c/busses/i2c-qcom-geni.c
++++ b/drivers/i2c/busses/i2c-qcom-geni.c
+@@ -163,6 +163,23 @@ static void qcom_geni_i2c_conf(struct geni_i2c_dev *gi2c)
+ 	writel_relaxed(val, gi2c->se.base + SE_I2C_SCL_COUNTERS);
  }
  
-+static void devm_icc_release(struct device *dev, void *res)
++static int geni_i2c_icc_get(struct geni_se *se)
 +{
-+	icc_put(*(struct icc_path **)res);
++	se->icc_path_geni_to_core = devm_of_icc_get(se->dev, "qup-core");
++	if (IS_ERR(se->icc_path_geni_to_core))
++		return PTR_ERR(se->icc_path_geni_to_core);
++
++	se->icc_path_cpu_to_geni = devm_of_icc_get(se->dev, "qup-config");
++	if (IS_ERR(se->icc_path_cpu_to_geni))
++		return PTR_ERR(se->icc_path_cpu_to_geni);
++
++	se->icc_path_geni_to_ddr = devm_of_icc_get(se->dev, "qup-memory");
++	if (IS_ERR(se->icc_path_geni_to_ddr))
++		return PTR_ERR(se->icc_path_geni_to_ddr);
++
++	return 0;
 +}
 +
-+struct icc_path *devm_of_icc_get(struct device *dev, const char *name)
-+{
-+	struct icc_path **ptr, *path;
+ static void geni_i2c_err_misc(struct geni_i2c_dev *gi2c)
+ {
+ 	u32 m_cmd = readl_relaxed(gi2c->se.base + SE_GENI_M_CMD0);
+@@ -563,6 +580,39 @@ static int geni_i2c_probe(struct platform_device *pdev)
+ 	gi2c->adap.dev.of_node = pdev->dev.of_node;
+ 	strlcpy(gi2c->adap.name, "Geni-I2C", sizeof(gi2c->adap.name));
+ 
++	ret = geni_i2c_icc_get(&gi2c->se);
++	if (ret)
++		return ret;
++	/*
++	 * Set the bus quota for core and cpu to a reasonable value for
++	 * register access.
++	 * Set quota for DDR based on bus speed, assume peak requirement
++	 * as twice of avg bw.
++	 */
++	gi2c->se.avg_bw_core = Bps_to_icc(1000);
++	gi2c->se.peak_bw_core = Bps_to_icc(CORE_2X_100_MHZ);
++	gi2c->se.avg_bw_cpu = Bps_to_icc(1000);
++	gi2c->se.peak_bw_cpu = Bps_to_icc(1000);
++	gi2c->se.avg_bw_ddr = Bps_to_icc(gi2c->clk_freq_out);
++	gi2c->se.peak_bw_ddr = Bps_to_icc(2 * gi2c->clk_freq_out);
 +
-+	ptr = devres_alloc(devm_icc_release, sizeof(**ptr), GFP_KERNEL);
-+	if (!ptr)
-+		return ERR_PTR(-ENOMEM);
-+
-+	path = of_icc_get(dev, name);
-+	if (!IS_ERR(path)) {
-+		*ptr = path;
-+		devres_add(dev, ptr);
-+	} else {
-+		devres_free(ptr);
++	/* Vote for core clocks and CPU for register access */
++	ret = icc_set_bw(gi2c->se.icc_path_geni_to_core, gi2c->se.avg_bw_core,
++				gi2c->se.peak_bw_core);
++	if (ret) {
++		dev_err(&pdev->dev, "%s: ICC BW voting failed for core\n",
++			__func__);
++		return ret;
 +	}
 +
-+	return path;
-+}
-+EXPORT_SYMBOL_GPL(devm_of_icc_get);
++	ret = icc_set_bw(gi2c->se.icc_path_cpu_to_geni, gi2c->se.avg_bw_cpu,
++				gi2c->se.peak_bw_cpu);
++	if (ret) {
++		dev_err(&pdev->dev, "%s: ICC BW voting failed for cpu\n",
++			__func__);
++		return ret;
++	}
 +
- /**
-  * of_icc_get() - get a path handle from a DT node based on name
-  * @dev: device pointer for the consumer device
-diff --git a/include/linux/interconnect.h b/include/linux/interconnect.h
-index d70a914..7706924 100644
---- a/include/linux/interconnect.h
-+++ b/include/linux/interconnect.h
-@@ -28,6 +28,7 @@ struct device;
- struct icc_path *icc_get(struct device *dev, const int src_id,
- 			 const int dst_id);
- struct icc_path *of_icc_get(struct device *dev, const char *name);
-+struct icc_path *devm_of_icc_get(struct device *dev, const char *name);
- void icc_put(struct icc_path *path);
- int icc_set_bw(struct icc_path *path, u32 avg_bw, u32 peak_bw);
- void icc_set_tag(struct icc_path *path, u32 tag);
-@@ -46,6 +47,12 @@ static inline struct icc_path *of_icc_get(struct device *dev,
- 	return NULL;
+ 	ret = geni_se_resources_on(&gi2c->se);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Error turning on resources %d\n", ret);
+@@ -584,6 +634,19 @@ static int geni_i2c_probe(struct platform_device *pdev)
+ 		dev_err(&pdev->dev, "Error turning off resources %d\n", ret);
+ 		return ret;
+ 	}
++	/* Remove vote from core clocks and CPU */
++	ret = icc_set_bw(gi2c->se.icc_path_geni_to_core, 0, 0);
++	if (ret) {
++		dev_err(&pdev->dev, "%s: ICC BW remove failed for core\n",
++			__func__);
++		return ret;
++	}
++
++	ret = icc_set_bw(gi2c->se.icc_path_cpu_to_geni, 0, 0);
++	if (ret) {
++		dev_err(&pdev->dev, "%s: ICC BW remove failed for cpu\n",
++			__func__);
++	}
+ 
+ 	dev_dbg(&pdev->dev, "i2c fifo/se-dma mode. fifo depth:%d\n", tx_depth);
+ 
+@@ -629,6 +692,28 @@ static int __maybe_unused geni_i2c_runtime_suspend(struct device *dev)
+ 		gi2c->suspended = 1;
+ 	}
+ 
++	/* Remove BW votes */
++	ret = icc_set_bw(gi2c->se.icc_path_geni_to_core, 0, 0);
++	if (ret) {
++		dev_err_ratelimited(gi2c->se.dev, "%s: ICC BW remove failed for core\n",
++			__func__);
++		return ret;
++	}
++
++	ret = icc_set_bw(gi2c->se.icc_path_cpu_to_geni, 0, 0);
++	if (ret) {
++		dev_err_ratelimited(gi2c->se.dev, "%s: ICC BW remove failed for cpu\n",
++			__func__);
++		return ret;
++	}
++
++	ret = icc_set_bw(gi2c->se.icc_path_geni_to_ddr, 0, 0);
++	if (ret) {
++		dev_err_ratelimited(gi2c->se.dev, "%s: ICC BW remove failed for ddr\n",
++			__func__);
++		return ret;
++	}
++
+ 	return 0;
  }
  
-+static inline struct icc_path *devm_of_icc_get(struct device *dev,
-+						const char *name)
-+{
-+	return NULL;
-+}
+@@ -637,6 +722,31 @@ static int __maybe_unused geni_i2c_runtime_resume(struct device *dev)
+ 	int ret;
+ 	struct geni_i2c_dev *gi2c = dev_get_drvdata(dev);
+ 
++	/* Vote on Core, CPU and DDR path respectively */
++	ret = icc_set_bw(gi2c->se.icc_path_geni_to_core, gi2c->se.avg_bw_core,
++		gi2c->se.peak_bw_core);
++	if (ret) {
++		dev_err_ratelimited(gi2c->se.dev, "%s: ICC BW voting failed for core\n",
++			__func__);
++		return ret;
++	}
 +
- static inline void icc_put(struct icc_path *path)
- {
- }
++	ret = icc_set_bw(gi2c->se.icc_path_cpu_to_geni, gi2c->se.avg_bw_cpu,
++		gi2c->se.peak_bw_cpu);
++	if (ret) {
++		dev_err_ratelimited(gi2c->se.dev, "%s: ICC BW voting failed for cpu\n",
++			__func__);
++		return ret;
++	}
++
++	ret = icc_set_bw(gi2c->se.icc_path_geni_to_ddr, gi2c->se.avg_bw_ddr,
++		gi2c->se.peak_bw_ddr);
++	if (ret) {
++		dev_err_ratelimited(gi2c->se.dev, "%s: ICC BW voting failed for ddr\n",
++			__func__);
++		return ret;
++	}
++
+ 	ret = geni_se_resources_on(&gi2c->se);
+ 	if (ret)
+ 		return ret;
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
