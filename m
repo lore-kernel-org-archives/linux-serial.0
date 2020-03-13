@@ -2,90 +2,94 @@ Return-Path: <SRS0=O7Uh=46=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A4E8C10DCE
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:16:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ABEFC10DCE
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:54:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E90BC2073E
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:16:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1584105367;
-	bh=cYl8UilvI8TSR3Dr5f1EHPAAgkQktD/qtw/h/6dKS6A=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=yWOGUV6Z3VL1N5eHSVgzhpg4JWJ4/X/LeqAbyU+6brVPd64ngr9v25CnrT7NLjuH/
-	 xgMJ3b2SM7CcTlSVUsPVJkYQe2X5sruUSjLx7cMNP8rRTHzYa1jYcanjAh1q2EaxaB
-	 AKPz66fjCe/wAverP7OAskQ7et+R2owr8KuBehfc=
+	by mail.kernel.org (Postfix) with ESMTP id 6F37420724
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:54:08 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="g26ye7W7"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726620AbgCMNQG (ORCPT
+        id S1726652AbgCMNyI (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 Mar 2020 09:16:06 -0400
-Received: from foss.arm.com ([217.140.110.172]:55062 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726426AbgCMNQG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 Mar 2020 09:16:06 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C44EBFEC;
-        Fri, 13 Mar 2020 06:16:05 -0700 (PDT)
-Received: from localhost (unknown [10.37.6.21])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 044253F67D;
-        Fri, 13 Mar 2020 06:16:05 -0700 (PDT)
-Date:   Fri, 13 Mar 2020 13:16:03 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Akash Asthana <akashast@codeaurora.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de,
-        mark.rutland@arm.com, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, mka@chromium.org,
-        dianders@chromium.org, evgreen@chromium.org
-Subject: Re: [PATCH V2 6/8] spi: spi-geni-qcom: Add interconnect support
-Message-ID: <20200313131603.GG5528@sirena.org.uk>
-References: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
- <1584105134-13583-7-git-send-email-akashast@codeaurora.org>
+        Fri, 13 Mar 2020 09:54:08 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:20281 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726327AbgCMNyI (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 13 Mar 2020 09:54:08 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1584107647; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=r0kpkxMAplkgIWkkncsMJpp9/LkYkIEQT6DADZGppXU=;
+ b=g26ye7W7CgNI8npcM/k7ACYi3NYQ5AmIuw4S1ztTX4gEqv6pBfzmvKXrHqU7EW+CDdolb+mD
+ 7CcwxfWyFQQq3aDBuuYL37I6vLbveLjrO+/u+0gtLa7yyXSm/Cy3hqgWyfuK9LPVVF19ZZmG
+ xezv5yjYhk43k8bXUtzep3A61KM=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e6b9070.7f31a81b07d8-smtp-out-n02;
+ Fri, 13 Mar 2020 13:53:52 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 2A60AC43636; Fri, 13 Mar 2020 13:53:51 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: skakit)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id A30EBC433D2;
+        Fri, 13 Mar 2020 13:53:50 +0000 (UTC)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="yZnyZsPjQYjG7xG7"
-Content-Disposition: inline
-In-Reply-To: <1584105134-13583-7-git-send-email-akashast@codeaurora.org>
-X-Cookie: This page intentionally left blank.
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Fri, 13 Mar 2020 19:23:50 +0530
+From:   skakit@codeaurora.org
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     swboyd@chromium.org, mgautam@codeaurora.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        akashast@codeaurora.org, rojay@codeaurora.org,
+        msavaliy@qti.qualcomm.com
+Subject: Re: [PATCH V3 2/2] tty: serial: qcom_geni_serial: Fix RX cancel
+ command failure
+In-Reply-To: <20200312091041.GA198954@kroah.com>
+References: <1583477228-32231-1-git-send-email-skakit@codeaurora.org>
+ <1583477228-32231-3-git-send-email-skakit@codeaurora.org>
+ <20200312091041.GA198954@kroah.com>
+Message-ID: <436ae3cfb957b11b0d7aa3b1dbb0adf2@codeaurora.org>
+X-Sender: skakit@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+On 2020-03-12 14:40, Greg KH wrote:
+> On Fri, Mar 06, 2020 at 12:17:08PM +0530, satya priya wrote:
+>> RX cancel command fails when BT is switched on and off multiple times.
+>> 
+>> To handle this, poll for the cancel bit in SE_GENI_S_IRQ_STATUS 
+>> register
+>> instead of SE_GENI_S_CMD_CTRL_REG.
+>> 
+>> As per the HPG update, handle the RX last bit after cancel command
+>> and flush out the RX FIFO buffer.
+>> 
+>> Signed-off-by: satya priya <skakit@codeaurora.org>
+>> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+>> ---
+>>  drivers/tty/serial/qcom_geni_serial.c | 18 ++++++++++++++----
+>>  1 file changed, 14 insertions(+), 4 deletions(-)
+> 
+> This patch didn't apply :(
 
---yZnyZsPjQYjG7xG7
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Fri, Mar 13, 2020 at 06:42:12PM +0530, Akash Asthana wrote:
-
-> +	se->avg_bw_cpu = Bps_to_icc(mas->cur_speed_hz);
-> +	se->peak_bw_cpu = Bps_to_icc(2 * mas->cur_speed_hz);
-
-As I commented on the previous version to no reply there seem to be a
-lot of cases where the peak bandwidth is just set to double the normal
-bandwidth without obvious analysis.  Should this default be centralized?
-
---yZnyZsPjQYjG7xG7
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl5rh5IACgkQJNaLcl1U
-h9AtyAf/XGCSN/P2UBMgDB7zS2/kHyiB75d+zQ4/Y9kOYRRUEmraGjcBvlQ7hPn0
-8hDCOOdWQp+X3iY8ttBkizIjAaCUiZmBd2aG7POa4PTMB1+oS1TFXrmws+ay3y3k
-AGSiIcaVWMok+DPTsNcRAwnjI+qw+4kzyvvShiRE6Ph/T1EE5/UL96CFf6pW8phf
-x3ehV4YsJ+ZIhHFe1NAD+xKtlO6WrQxin6K3D9KxfjAp8qF7BobdNMxQZZh0kff1
-432vNAgsp/g/O+SHfSZWzUtsTiznj9IQ1WcQQVHQmhAsiOKd8xihsUYcsL+B8biv
-xaZIVqWrbN9/wiOrtAxMRsrXMJFJpg==
-=l0mj
------END PGP SIGNATURE-----
-
---yZnyZsPjQYjG7xG7--
+V1 of this patch is already picked in tty-next tree(commit id: 
+679aac5ead2f18d223554a52b543e1195e181811). There is no change in this 
+patch from V1 to V3[2/2].
+There is a crash reported by Stephen with V1, to resolve that we posted 
+next versions adding this patch 
+https://patchwork.kernel.org/patch/11423231/, that is, V3[1/2]. So now 
+only V3[1/2] needs to be picked.
