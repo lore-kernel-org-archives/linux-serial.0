@@ -4,45 +4,45 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A7BC4CECE
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:13:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E4D6C10DCE
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:13:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 06EEA20724
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:13:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3B9BB20724
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:13:58 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="v4dOiYhu"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="n7zLK7l6"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726715AbgCMNNh (ORCPT
+        id S1726734AbgCMNN6 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 Mar 2020 09:13:37 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:42852 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726709AbgCMNNh (ORCPT
+        Fri, 13 Mar 2020 09:13:58 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:22309 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726533AbgCMNN5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 Mar 2020 09:13:37 -0400
+        Fri, 13 Mar 2020 09:13:57 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1584105216; h=References: In-Reply-To: Message-Id: Date:
+ s=smtp; t=1584105236; h=References: In-Reply-To: Message-Id: Date:
  Subject: Cc: To: From: Sender;
- bh=PDamk0KvzLWAiSLzE0n+S9+f9b02q7m12Buk6cFGbog=; b=v4dOiYhugiq0tSuEyq9w2K6qaLBpN7+P2XFVThOUrKZDMVlz3Vf4u+97Bpp45RkZADLow21s
- 0XnZpbCYOHon8s5RQecLohelrHgGI+ZJDmLZ5tujDZA1DdJUnJhREwHrG8521x9cAwkIW1d8
- bNzfZMIX4aobMKO3rhOn3wpWm2Y=
-X-Mailgun-Sending-Ip: 104.130.122.26
+ bh=PPCykA8kNlURutu5YrmhR3D3xaJD8fJkAX3u1ZRULlQ=; b=n7zLK7l6i9NDDSxSPdTQDL+QAnoeC5dwV8rrOoR/rMZYvn466PnLinXd9JruDeTsUkHDRtZY
+ m1IUZcXEcr/M/7ICUabcbro8yTXOQgZcIo5INxCAUkmvgbPJnOk1xsvxXuyUvT4UWn/yM++o
+ MFx4RBpZWAXnNK5XiL6QDWUn/80=
+X-Mailgun-Sending-Ip: 104.130.122.27
 X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e6b86f8.7fb93bad4110-smtp-out-n02;
- Fri, 13 Mar 2020 13:13:28 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5e6b8709.7f8acac3b4c8-smtp-out-n01;
+ Fri, 13 Mar 2020 13:13:45 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 26367C43636; Fri, 13 Mar 2020 13:13:28 +0000 (UTC)
+        id 2B562C43637; Fri, 13 Mar 2020 13:13:44 +0000 (UTC)
 Received: from akashast-linux.qualcomm.com (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 57807C433D2;
-        Fri, 13 Mar 2020 13:13:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 57807C433D2
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id D0BC0C44798;
+        Fri, 13 Mar 2020 13:13:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D0BC0C44798
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
 From:   Akash Asthana <akashast@codeaurora.org>
@@ -55,9 +55,9 @@ Cc:     linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
         linux-serial@vger.kernel.org, mka@chromium.org,
         dianders@chromium.org, evgreen@chromium.org,
         Akash Asthana <akashast@codeaurora.org>
-Subject: [PATCH V2 6/8] spi: spi-geni-qcom: Add interconnect support
-Date:   Fri, 13 Mar 2020 18:42:12 +0530
-Message-Id: <1584105134-13583-7-git-send-email-akashast@codeaurora.org>
+Subject: [PATCH V2 8/8] arm64: dts: sc7180: Add interconnect for QUP and QSPI
+Date:   Fri, 13 Mar 2020 18:42:14 +0530
+Message-Id: <1584105134-13583-9-git-send-email-akashast@codeaurora.org>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
 References: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
@@ -66,132 +66,392 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Get the interconnect paths for SPI based Serial Engine device
-and vote according to the current bus speed of the driver.
+Add interconnect ports for GENI QUPs and QSPI to set bus capabilities.
 
 Signed-off-by: Akash Asthana <akashast@codeaurora.org>
 ---
- - As per Bjorn's comment, removed se == NULL check from geni_spi_icc_get
- - As per Bjorn's comment, removed code to set se->icc_path* to NULL in failure
- - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
-   path handle
- - As per Matthias comment, added error handling for icc_set_bw call
+Changes in V2:
+ - As per Bjorn's comment, ignoring 80 char limit in defining interconnects
+   paths.
 
- drivers/spi/spi-geni-qcom.c | 74 ++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 73 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/sc7180.dtsi | 127 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 127 insertions(+)
 
-diff --git a/drivers/spi/spi-geni-qcom.c b/drivers/spi/spi-geni-qcom.c
-index c397242..09c4709 100644
---- a/drivers/spi/spi-geni-qcom.c
-+++ b/drivers/spi/spi-geni-qcom.c
-@@ -118,6 +118,19 @@ static int get_spi_clk_cfg(unsigned int speed_hz,
- 	return ret;
- }
+diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+index 89ba012..5c0185c 100644
+--- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+@@ -427,6 +427,8 @@
+ 			#size-cells = <2>;
+ 			ranges;
+ 			iommus = <&apps_smmu 0x43 0x0>;
++			interconnects = <&qup_virt MASTER_QUP_CORE_0 &qup_virt SLAVE_QUP_CORE_0>;
++			interconnect-names = "qup-core";
+ 			status = "disabled";
  
-+static int geni_spi_icc_get(struct geni_se *se)
-+{
-+	se->icc_path_geni_to_core = devm_of_icc_get(se->dev, "qup-core");
-+	if (IS_ERR(se->icc_path_geni_to_core))
-+		return PTR_ERR(se->icc_path_geni_to_core);
-+
-+	se->icc_path_cpu_to_geni = devm_of_icc_get(se->dev, "qup-config");
-+	if (IS_ERR(se->icc_path_cpu_to_geni))
-+		return PTR_ERR(se->icc_path_cpu_to_geni);
-+
-+	return 0;
-+}
-+
- static void handle_fifo_timeout(struct spi_master *spi,
- 				struct spi_message *msg)
- {
-@@ -234,6 +247,20 @@ static int setup_fifo_params(struct spi_device *spi_slv,
- 		return ret;
- 	}
+ 			i2c0: i2c@880000 {
+@@ -439,6 +441,11 @@
+ 				interrupts = <GIC_SPI 601 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_0 &qup_virt SLAVE_QUP_CORE_0>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_0>,
++						<&aggre1_noc MASTER_QUP_0 &mc_virt SLAVE_EBI1>;
++				interconnect-names = "qup-core", "qup-config",
++							"qup-memory";
+ 				status = "disabled";
+ 			};
  
-+	/*
-+	 * Set BW quota for CPU as driver supports FIFO mode only.
-+	 * Assume peak bw as twice of avg bw.
-+	 */
-+	se->avg_bw_cpu = Bps_to_icc(mas->cur_speed_hz);
-+	se->peak_bw_cpu = Bps_to_icc(2 * mas->cur_speed_hz);
-+	ret = icc_set_bw(se->icc_path_cpu_to_geni, se->avg_bw_cpu,
-+			se->peak_bw_cpu);
-+	if (ret) {
-+		dev_err(mas->dev, "%s: ICC BW voting failed for cpu\n",
-+			__func__);
-+		return ret;
-+	}
-+
- 	clk_sel = idx & CLK_SEL_MSK;
- 	m_clk_cfg = (div << CLK_DIV_SHFT) | SER_CLK_EN;
- 	spi_setup_word_len(mas, spi_slv->mode, spi_slv->bits_per_word);
-@@ -578,6 +605,15 @@ static int spi_geni_probe(struct platform_device *pdev)
- 	spin_lock_init(&mas->lock);
- 	pm_runtime_enable(dev);
+@@ -452,6 +459,9 @@
+ 				interrupts = <GIC_SPI 601 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_0 &qup_virt SLAVE_QUP_CORE_0>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_0>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
  
-+	ret = geni_spi_icc_get(&mas->se);
-+	if (ret)
-+		goto spi_geni_probe_runtime_disable;
-+	/* Set the bus quota to a reasonable value for register access */
-+	mas->se.avg_bw_core = Bps_to_icc(CORE_2X_50_MHZ);
-+	mas->se.peak_bw_core = Bps_to_icc(CORE_2X_100_MHZ);
-+	mas->se.avg_bw_cpu = Bps_to_icc(1000);
-+	mas->se.peak_bw_cpu = Bps_to_icc(1000);
-+
- 	ret = spi_geni_init(mas);
- 	if (ret)
- 		goto spi_geni_probe_runtime_disable;
-@@ -616,14 +652,50 @@ static int __maybe_unused spi_geni_runtime_suspend(struct device *dev)
- {
- 	struct spi_master *spi = dev_get_drvdata(dev);
- 	struct spi_geni_master *mas = spi_master_get_devdata(spi);
-+	int ret;
-+
-+	ret = geni_se_resources_off(&mas->se);
-+	if (ret)
-+		return ret;
+@@ -463,6 +473,9 @@
+ 				pinctrl-names = "default";
+ 				pinctrl-0 = <&qup_uart0_default>;
+ 				interrupts = <GIC_SPI 601 IRQ_TYPE_LEVEL_HIGH>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_0 &qup_virt SLAVE_QUP_CORE_0>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_0>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
  
--	return geni_se_resources_off(&mas->se);
-+	ret = icc_set_bw(mas->se.icc_path_geni_to_core, 0, 0);
-+	if (ret) {
-+		dev_err_ratelimited(mas->dev, "%s: ICC BW remove failed for core\n",
-+			__func__);
-+		return ret;
-+	}
-+
-+	ret = icc_set_bw(mas->se.icc_path_cpu_to_geni, 0, 0);
-+	if (ret) {
-+		dev_err_ratelimited(mas->dev, "%s: ICC BW remove failed for cpu\n",
-+			__func__);
-+		return ret;
-+	}
-+
-+	return 0;
- }
+@@ -476,6 +489,11 @@
+ 				interrupts = <GIC_SPI 602 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_0 &qup_virt SLAVE_QUP_CORE_0>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_0>,
++						<&aggre1_noc MASTER_QUP_0 &mc_virt SLAVE_EBI1>;
++				interconnect-names = "qup-core", "qup-config",
++							"qup-memory";
+ 				status = "disabled";
+ 			};
  
- static int __maybe_unused spi_geni_runtime_resume(struct device *dev)
- {
- 	struct spi_master *spi = dev_get_drvdata(dev);
- 	struct spi_geni_master *mas = spi_master_get_devdata(spi);
-+	int ret;
-+
-+	ret = icc_set_bw(mas->se.icc_path_geni_to_core, mas->se.avg_bw_core,
-+		mas->se.peak_bw_core);
-+	if (ret) {
-+		dev_err_ratelimited(mas->dev, "%s: ICC BW voting failed for core\n",
-+			__func__);
-+		return ret;
-+	}
-+
-+	ret = icc_set_bw(mas->se.icc_path_cpu_to_geni, mas->se.avg_bw_cpu,
-+		mas->se.peak_bw_cpu);
-+	if (ret) {
-+		dev_err_ratelimited(mas->dev, "%s: ICC BW voting failed for cpu\n",
-+			__func__);
-+		return ret;
-+	}
+@@ -489,6 +507,9 @@
+ 				interrupts = <GIC_SPI 602 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_0 &qup_virt SLAVE_QUP_CORE_0>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_0>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
  
- 	return geni_se_resources_on(&mas->se);
- }
+@@ -500,6 +521,9 @@
+ 				pinctrl-names = "default";
+ 				pinctrl-0 = <&qup_uart1_default>;
+ 				interrupts = <GIC_SPI 602 IRQ_TYPE_LEVEL_HIGH>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_0 &qup_virt SLAVE_QUP_CORE_0>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_0>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
+ 
+@@ -513,6 +537,11 @@
+ 				interrupts = <GIC_SPI 603 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_0 &qup_virt SLAVE_QUP_CORE_0>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_0>,
++						<&aggre1_noc MASTER_QUP_0 &mc_virt SLAVE_EBI1>;
++				interconnect-names = "qup-core", "qup-config",
++							"qup-memory";
+ 				status = "disabled";
+ 			};
+ 
+@@ -524,6 +553,9 @@
+ 				pinctrl-names = "default";
+ 				pinctrl-0 = <&qup_uart2_default>;
+ 				interrupts = <GIC_SPI 603 IRQ_TYPE_LEVEL_HIGH>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_0 &qup_virt SLAVE_QUP_CORE_0>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_0>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
+ 
+@@ -537,6 +569,11 @@
+ 				interrupts = <GIC_SPI 604 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_0 &qup_virt SLAVE_QUP_CORE_0>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_0>,
++						<&aggre1_noc MASTER_QUP_0 &mc_virt SLAVE_EBI1>;
++				interconnect-names = "qup-core", "qup-config",
++							"qup-memory";
+ 				status = "disabled";
+ 			};
+ 
+@@ -550,6 +587,9 @@
+ 				interrupts = <GIC_SPI 604 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_0 &qup_virt SLAVE_QUP_CORE_0>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_0>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
+ 
+@@ -561,6 +601,9 @@
+ 				pinctrl-names = "default";
+ 				pinctrl-0 = <&qup_uart3_default>;
+ 				interrupts = <GIC_SPI 604 IRQ_TYPE_LEVEL_HIGH>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_0 &qup_virt SLAVE_QUP_CORE_0>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_0>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
+ 
+@@ -574,6 +617,11 @@
+ 				interrupts = <GIC_SPI 605 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_0 &qup_virt SLAVE_QUP_CORE_0>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_0>,
++						<&aggre1_noc MASTER_QUP_0 &mc_virt SLAVE_EBI1>;
++				interconnect-names = "qup-core", "qup-config",
++							"qup-memory";
+ 				status = "disabled";
+ 			};
+ 
+@@ -585,6 +633,9 @@
+ 				pinctrl-names = "default";
+ 				pinctrl-0 = <&qup_uart4_default>;
+ 				interrupts = <GIC_SPI 605 IRQ_TYPE_LEVEL_HIGH>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_0 &qup_virt SLAVE_QUP_CORE_0>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_0>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
+ 
+@@ -598,6 +649,11 @@
+ 				interrupts = <GIC_SPI 606 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_0 &qup_virt SLAVE_QUP_CORE_0>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_0>,
++						<&aggre1_noc MASTER_QUP_0 &mc_virt SLAVE_EBI1>;
++				interconnect-names = "qup-core", "qup-config",
++							"qup-memory";
+ 				status = "disabled";
+ 			};
+ 
+@@ -611,6 +667,9 @@
+ 				interrupts = <GIC_SPI 606 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_0 &qup_virt SLAVE_QUP_CORE_0>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_0>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
+ 
+@@ -622,6 +681,9 @@
+ 				pinctrl-names = "default";
+ 				pinctrl-0 = <&qup_uart5_default>;
+ 				interrupts = <GIC_SPI 606 IRQ_TYPE_LEVEL_HIGH>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_0 &qup_virt SLAVE_QUP_CORE_0>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_0>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
+ 		};
+@@ -636,6 +698,8 @@
+ 			#size-cells = <2>;
+ 			ranges;
+ 			iommus = <&apps_smmu 0x4c3 0x0>;
++			interconnects = <&qup_virt MASTER_QUP_CORE_1 &qup_virt SLAVE_QUP_CORE_1>;
++			interconnect-names = "qup-core";
+ 			status = "disabled";
+ 
+ 			i2c6: i2c@a80000 {
+@@ -648,6 +712,11 @@
+ 				interrupts = <GIC_SPI 353 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_1 &qup_virt SLAVE_QUP_CORE_1>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_1>,
++						<&aggre2_noc MASTER_QUP_1 &mc_virt SLAVE_EBI1>;
++				interconnect-names = "qup-core", "qup-config",
++							"qup-memory";
+ 				status = "disabled";
+ 			};
+ 
+@@ -661,6 +730,9 @@
+ 				interrupts = <GIC_SPI 353 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_1 &qup_virt SLAVE_QUP_CORE_1>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_1>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
+ 
+@@ -672,6 +744,9 @@
+ 				pinctrl-names = "default";
+ 				pinctrl-0 = <&qup_uart6_default>;
+ 				interrupts = <GIC_SPI 353 IRQ_TYPE_LEVEL_HIGH>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_1 &qup_virt SLAVE_QUP_CORE_1>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_1>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
+ 
+@@ -685,6 +760,11 @@
+ 				interrupts = <GIC_SPI 354 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_1 &qup_virt SLAVE_QUP_CORE_1>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_1>,
++						<&aggre2_noc MASTER_QUP_1 &mc_virt SLAVE_EBI1>;
++				interconnect-names = "qup-core", "qup-config",
++							"qup-memory";
+ 				status = "disabled";
+ 			};
+ 
+@@ -696,6 +776,9 @@
+ 				pinctrl-names = "default";
+ 				pinctrl-0 = <&qup_uart7_default>;
+ 				interrupts = <GIC_SPI 354 IRQ_TYPE_LEVEL_HIGH>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_1 &qup_virt SLAVE_QUP_CORE_1>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_1>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
+ 
+@@ -709,6 +792,11 @@
+ 				interrupts = <GIC_SPI 355 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_1 &qup_virt SLAVE_QUP_CORE_1>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_1>,
++						<&aggre2_noc MASTER_QUP_1 &mc_virt SLAVE_EBI1>;
++				interconnect-names = "qup-core", "qup-config",
++							"qup-memory";
+ 				status = "disabled";
+ 			};
+ 
+@@ -722,6 +810,9 @@
+ 				interrupts = <GIC_SPI 355 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_1 &qup_virt SLAVE_QUP_CORE_1>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_1>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
+ 
+@@ -733,6 +824,9 @@
+ 				pinctrl-names = "default";
+ 				pinctrl-0 = <&qup_uart8_default>;
+ 				interrupts = <GIC_SPI 355 IRQ_TYPE_LEVEL_HIGH>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_1 &qup_virt SLAVE_QUP_CORE_1>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_1>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
+ 
+@@ -746,6 +840,11 @@
+ 				interrupts = <GIC_SPI 356 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_1 &qup_virt SLAVE_QUP_CORE_1>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_1>,
++						<&aggre2_noc MASTER_QUP_1 &mc_virt SLAVE_EBI1>;
++				interconnect-names = "qup-core", "qup-config",
++							"qup-memory";
+ 				status = "disabled";
+ 			};
+ 
+@@ -757,6 +856,9 @@
+ 				pinctrl-names = "default";
+ 				pinctrl-0 = <&qup_uart9_default>;
+ 				interrupts = <GIC_SPI 356 IRQ_TYPE_LEVEL_HIGH>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_1 &qup_virt SLAVE_QUP_CORE_1>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_1>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
+ 
+@@ -770,6 +872,11 @@
+ 				interrupts = <GIC_SPI 357 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_1 &qup_virt SLAVE_QUP_CORE_1>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_1>,
++						<&aggre2_noc MASTER_QUP_1 &mc_virt SLAVE_EBI1>;
++				interconnect-names = "qup-core", "qup-config",
++							"qup-memory";
+ 				status = "disabled";
+ 			};
+ 
+@@ -783,6 +890,9 @@
+ 				interrupts = <GIC_SPI 357 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_1 &qup_virt SLAVE_QUP_CORE_1>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_1>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
+ 
+@@ -794,6 +904,9 @@
+ 				pinctrl-names = "default";
+ 				pinctrl-0 = <&qup_uart10_default>;
+ 				interrupts = <GIC_SPI 357 IRQ_TYPE_LEVEL_HIGH>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_1 &qup_virt SLAVE_QUP_CORE_1>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_1>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
+ 
+@@ -807,6 +920,11 @@
+ 				interrupts = <GIC_SPI 358 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_1 &qup_virt SLAVE_QUP_CORE_1>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_1>,
++						<&aggre2_noc MASTER_QUP_1 &mc_virt SLAVE_EBI1>;
++				interconnect-names = "qup-core", "qup-config",
++							"qup-memory";
+ 				status = "disabled";
+ 			};
+ 
+@@ -820,6 +938,9 @@
+ 				interrupts = <GIC_SPI 358 IRQ_TYPE_LEVEL_HIGH>;
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_1 &qup_virt SLAVE_QUP_CORE_1>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_1>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
+ 
+@@ -831,6 +952,9 @@
+ 				pinctrl-names = "default";
+ 				pinctrl-0 = <&qup_uart11_default>;
+ 				interrupts = <GIC_SPI 358 IRQ_TYPE_LEVEL_HIGH>;
++				interconnects = <&qup_virt MASTER_QUP_CORE_1 &qup_virt SLAVE_QUP_CORE_1>,
++						<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_QUP_1>;
++				interconnect-names = "qup-core", "qup-config";
+ 				status = "disabled";
+ 			};
+ 		};
+@@ -1336,6 +1460,9 @@
+ 			clocks = <&gcc GCC_QSPI_CNOC_PERIPH_AHB_CLK>,
+ 				 <&gcc GCC_QSPI_CORE_CLK>;
+ 			clock-names = "iface", "core";
++			interconnects = <&gem_noc MASTER_APPSS_PROC
++					&config_noc SLAVE_QSPI_0>;
++			interconnect-names = "qspi-config";
+ 			status = "disabled";
+ 		};
+ 
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
