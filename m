@@ -2,176 +2,90 @@ Return-Path: <SRS0=O7Uh=46=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88CDCC2BB1D
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:14:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A4E8C10DCE
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:16:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5AD6A20724
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:14:03 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="Bt7UfjG+"
+	by mail.kernel.org (Postfix) with ESMTP id E90BC2073E
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:16:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1584105367;
+	bh=cYl8UilvI8TSR3Dr5f1EHPAAgkQktD/qtw/h/6dKS6A=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=yWOGUV6Z3VL1N5eHSVgzhpg4JWJ4/X/LeqAbyU+6brVPd64ngr9v25CnrT7NLjuH/
+	 xgMJ3b2SM7CcTlSVUsPVJkYQe2X5sruUSjLx7cMNP8rRTHzYa1jYcanjAh1q2EaxaB
+	 AKPz66fjCe/wAverP7OAskQ7et+R2owr8KuBehfc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726554AbgCMNOC (ORCPT
+        id S1726620AbgCMNQG (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 Mar 2020 09:14:02 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:64044 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726659AbgCMNOC (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 Mar 2020 09:14:02 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1584105242; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=Hbs2mqQuJre9Ca3a/9mu15Sk4jZBWOzpZ6YsP3vGO2Y=; b=Bt7UfjG+4HkurHjQXSKLegAugIipmNdx0QXs50AiV6mbRxdd9w3sVp9fg9SGBPahcHUAHAU1
- DuWYf6hUP0utzwgrX7jK3JuPa5XGulj5XWX0unyzBiCY74eCGKZ4DE0oqxog0RRgfUVOuJOS
- gIHujlZ79PZwbb2CXY2jK3NrNL4=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e6b8702.7f3b515eadf8-smtp-out-n01;
- Fri, 13 Mar 2020 13:13:38 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 82845C44793; Fri, 13 Mar 2020 13:13:36 +0000 (UTC)
-Received: from akashast-linux.qualcomm.com (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 59B07C433D2;
-        Fri, 13 Mar 2020 13:13:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 59B07C433D2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-From:   Akash Asthana <akashast@codeaurora.org>
-To:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org
-Cc:     linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        Fri, 13 Mar 2020 09:16:06 -0400
+Received: from foss.arm.com ([217.140.110.172]:55062 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726426AbgCMNQG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 13 Mar 2020 09:16:06 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C44EBFEC;
+        Fri, 13 Mar 2020 06:16:05 -0700 (PDT)
+Received: from localhost (unknown [10.37.6.21])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 044253F67D;
+        Fri, 13 Mar 2020 06:16:05 -0700 (PDT)
+Date:   Fri, 13 Mar 2020 13:16:03 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Akash Asthana <akashast@codeaurora.org>
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de,
+        mark.rutland@arm.com, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
         devicetree@vger.kernel.org, swboyd@chromium.org,
         mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
         linux-serial@vger.kernel.org, mka@chromium.org,
-        dianders@chromium.org, evgreen@chromium.org,
-        Akash Asthana <akashast@codeaurora.org>
-Subject: [PATCH V2 7/8] spi: spi-qcom-qspi: Add interconnect support
-Date:   Fri, 13 Mar 2020 18:42:13 +0530
-Message-Id: <1584105134-13583-8-git-send-email-akashast@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
+        dianders@chromium.org, evgreen@chromium.org
+Subject: Re: [PATCH V2 6/8] spi: spi-geni-qcom: Add interconnect support
+Message-ID: <20200313131603.GG5528@sirena.org.uk>
 References: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
+ <1584105134-13583-7-git-send-email-akashast@codeaurora.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="yZnyZsPjQYjG7xG7"
+Content-Disposition: inline
+In-Reply-To: <1584105134-13583-7-git-send-email-akashast@codeaurora.org>
+X-Cookie: This page intentionally left blank.
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Get the interconnect paths for QSPI device and vote according to the
-current bus speed of the driver.
 
-Signed-off-by: Akash Asthana <akashast@codeaurora.org>
----
- - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
-   path handle
- - As per Matthias comment, added error handling for icc_set_bw call
+--yZnyZsPjQYjG7xG7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
- drivers/spi/spi-qcom-qspi.c | 46 ++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 45 insertions(+), 1 deletion(-)
+On Fri, Mar 13, 2020 at 06:42:12PM +0530, Akash Asthana wrote:
 
-diff --git a/drivers/spi/spi-qcom-qspi.c b/drivers/spi/spi-qcom-qspi.c
-index 3c4f83b..ad48f43 100644
---- a/drivers/spi/spi-qcom-qspi.c
-+++ b/drivers/spi/spi-qcom-qspi.c
-@@ -2,6 +2,7 @@
- // Copyright (c) 2017-2018, The Linux foundation. All rights reserved.
- 
- #include <linux/clk.h>
-+#include <linux/interconnect.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/module.h>
-@@ -139,7 +140,10 @@ struct qcom_qspi {
- 	struct device *dev;
- 	struct clk_bulk_data *clks;
- 	struct qspi_xfer xfer;
--	/* Lock to protect xfer and IRQ accessed registers */
-+	struct icc_path *icc_path_cpu_to_qspi;
-+	unsigned int avg_bw_cpu;
-+	unsigned int peak_bw_cpu;
-+	/* Lock to protect data accessed by IRQs */
- 	spinlock_t lock;
- };
- 
-@@ -241,6 +245,20 @@ static int qcom_qspi_transfer_one(struct spi_master *master,
- 		return ret;
- 	}
- 
-+	/*
-+	 * Set BW quota for CPU as driver supports FIFO mode only.
-+	 * Assume peak bw as twice of avg bw.
-+	 */
-+	ctrl->avg_bw_cpu = Bps_to_icc(speed_hz);
-+	ctrl->peak_bw_cpu = Bps_to_icc(2 * speed_hz);
-+	ret = icc_set_bw(ctrl->icc_path_cpu_to_qspi, ctrl->avg_bw_cpu,
-+		ctrl->peak_bw_cpu);
-+	if (ret) {
-+		dev_err(ctrl->dev, "%s: ICC BW voting failed for cpu\n",
-+			__func__);
-+		return ret;
-+	}
-+
- 	spin_lock_irqsave(&ctrl->lock, flags);
- 
- 	/* We are half duplex, so either rx or tx will be set */
-@@ -458,6 +476,15 @@ static int qcom_qspi_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto exit_probe_master_put;
- 
-+	ctrl->icc_path_cpu_to_qspi = devm_of_icc_get(dev, "qspi-config");
-+	if (IS_ERR(ctrl->icc_path_cpu_to_qspi)) {
-+		ret = PTR_ERR(ctrl->icc_path_cpu_to_qspi);
-+		goto exit_probe_master_put;
-+	}
-+	/* Put BW vote on CPU path for register access */
-+	ctrl->avg_bw_cpu = Bps_to_icc(1000);
-+	ctrl->peak_bw_cpu = Bps_to_icc(1000);
-+
- 	ret = platform_get_irq(pdev, 0);
- 	if (ret < 0)
- 		goto exit_probe_master_put;
-@@ -511,9 +538,17 @@ static int __maybe_unused qcom_qspi_runtime_suspend(struct device *dev)
- {
- 	struct spi_master *master = dev_get_drvdata(dev);
- 	struct qcom_qspi *ctrl = spi_master_get_devdata(master);
-+	int ret;
- 
- 	clk_bulk_disable_unprepare(QSPI_NUM_CLKS, ctrl->clks);
- 
-+	ret = icc_set_bw(ctrl->icc_path_cpu_to_qspi, 0, 0);
-+	if (ret) {
-+		dev_err_ratelimited(ctrl->dev, "%s: ICC BW remove failed for cpu\n",
-+			__func__);
-+		return ret;
-+	}
-+
- 	return 0;
- }
- 
-@@ -521,6 +556,15 @@ static int __maybe_unused qcom_qspi_runtime_resume(struct device *dev)
- {
- 	struct spi_master *master = dev_get_drvdata(dev);
- 	struct qcom_qspi *ctrl = spi_master_get_devdata(master);
-+	int ret;
-+
-+	ret = icc_set_bw(ctrl->icc_path_cpu_to_qspi, ctrl->avg_bw_cpu,
-+		ctrl->peak_bw_cpu);
-+	if (ret) {
-+		dev_err_ratelimited(ctrl->dev, "%s: ICC BW voting failed for cpu\n",
-+			__func__);
-+		return ret;
-+	}
- 
- 	return clk_bulk_prepare_enable(QSPI_NUM_CLKS, ctrl->clks);
- }
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+> +	se->avg_bw_cpu = Bps_to_icc(mas->cur_speed_hz);
+> +	se->peak_bw_cpu = Bps_to_icc(2 * mas->cur_speed_hz);
+
+As I commented on the previous version to no reply there seem to be a
+lot of cases where the peak bandwidth is just set to double the normal
+bandwidth without obvious analysis.  Should this default be centralized?
+
+--yZnyZsPjQYjG7xG7
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl5rh5IACgkQJNaLcl1U
+h9AtyAf/XGCSN/P2UBMgDB7zS2/kHyiB75d+zQ4/Y9kOYRRUEmraGjcBvlQ7hPn0
+8hDCOOdWQp+X3iY8ttBkizIjAaCUiZmBd2aG7POa4PTMB1+oS1TFXrmws+ay3y3k
+AGSiIcaVWMok+DPTsNcRAwnjI+qw+4kzyvvShiRE6Ph/T1EE5/UL96CFf6pW8phf
+x3ehV4YsJ+ZIhHFe1NAD+xKtlO6WrQxin6K3D9KxfjAp8qF7BobdNMxQZZh0kff1
+432vNAgsp/g/O+SHfSZWzUtsTiznj9IQ1WcQQVHQmhAsiOKd8xihsUYcsL+B8biv
+xaZIVqWrbN9/wiOrtAxMRsrXMJFJpg==
+=l0mj
+-----END PGP SIGNATURE-----
+
+--yZnyZsPjQYjG7xG7--
