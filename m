@@ -7,42 +7,42 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFAE4C10DCE
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:13:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A7BC4CECE
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:13:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8E44C20724
-	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:13:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 06EEA20724
+	for <linux-serial@archiver.kernel.org>; Fri, 13 Mar 2020 13:13:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="NJ616Dph"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="v4dOiYhu"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726535AbgCMNNb (ORCPT
+        id S1726715AbgCMNNh (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 Mar 2020 09:13:31 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:62431 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726702AbgCMNNb (ORCPT
+        Fri, 13 Mar 2020 09:13:37 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:42852 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726709AbgCMNNh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 Mar 2020 09:13:31 -0400
+        Fri, 13 Mar 2020 09:13:37 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1584105210; h=References: In-Reply-To: Message-Id: Date:
+ s=smtp; t=1584105216; h=References: In-Reply-To: Message-Id: Date:
  Subject: Cc: To: From: Sender;
- bh=Np4py6SMy6cMT5iS1ieP6hJGq7sWvtHg15kg9bsZHkc=; b=NJ616DphA0ucVcK/pfCbiUozDt/ROYEGBC0CJlyjo21xAWnmCui5FzoFombB9tQT1ymMVd8l
- X1w/VAHhuckUoqW2jmpnzan+KjPP+M1QykWdPnSXMYJSovMA5ja0opwdMCoRyZff+/PV/ORY
- nk2SIbDeSWpKl/3QAlwnpu3juoQ=
-X-Mailgun-Sending-Ip: 104.130.122.27
+ bh=PDamk0KvzLWAiSLzE0n+S9+f9b02q7m12Buk6cFGbog=; b=v4dOiYhugiq0tSuEyq9w2K6qaLBpN7+P2XFVThOUrKZDMVlz3Vf4u+97Bpp45RkZADLow21s
+ 0XnZpbCYOHon8s5RQecLohelrHgGI+ZJDmLZ5tujDZA1DdJUnJhREwHrG8521x9cAwkIW1d8
+ bNzfZMIX4aobMKO3rhOn3wpWm2Y=
+X-Mailgun-Sending-Ip: 104.130.122.26
 X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e6b86ea.7f4ba6337298-smtp-out-n01;
- Fri, 13 Mar 2020 13:13:14 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5e6b86f8.7fb93bad4110-smtp-out-n02;
+ Fri, 13 Mar 2020 13:13:28 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id EA234C433BA; Fri, 13 Mar 2020 13:13:13 +0000 (UTC)
+        id 26367C43636; Fri, 13 Mar 2020 13:13:28 +0000 (UTC)
 Received: from akashast-linux.qualcomm.com (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3297EC44788;
-        Fri, 13 Mar 2020 13:13:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 3297EC44788
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 57807C433D2;
+        Fri, 13 Mar 2020 13:13:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 57807C433D2
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
 From:   Akash Asthana <akashast@codeaurora.org>
@@ -55,9 +55,9 @@ Cc:     linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
         linux-serial@vger.kernel.org, mka@chromium.org,
         dianders@chromium.org, evgreen@chromium.org,
         Akash Asthana <akashast@codeaurora.org>
-Subject: [PATCH V2 4/8] tty: serial: qcom_geni_serial: Add interconnect support
-Date:   Fri, 13 Mar 2020 18:42:10 +0530
-Message-Id: <1584105134-13583-5-git-send-email-akashast@codeaurora.org>
+Subject: [PATCH V2 6/8] spi: spi-geni-qcom: Add interconnect support
+Date:   Fri, 13 Mar 2020 18:42:12 +0530
+Message-Id: <1584105134-13583-7-git-send-email-akashast@codeaurora.org>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
 References: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
@@ -66,30 +66,29 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Get the interconnect paths for Uart based Serial Engine device
-and vote according to the baud rate requirement of the driver.
+Get the interconnect paths for SPI based Serial Engine device
+and vote according to the current bus speed of the driver.
 
 Signed-off-by: Akash Asthana <akashast@codeaurora.org>
 ---
-Changes in V2:
- - As per Bjorn's comment, removed se == NULL check from geni_serial_icc_get
+ - As per Bjorn's comment, removed se == NULL check from geni_spi_icc_get
  - As per Bjorn's comment, removed code to set se->icc_path* to NULL in failure
  - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
    path handle
  - As per Matthias comment, added error handling for icc_set_bw call
 
- drivers/tty/serial/qcom_geni_serial.c | 69 +++++++++++++++++++++++++++++++++--
- 1 file changed, 65 insertions(+), 4 deletions(-)
+ drivers/spi/spi-geni-qcom.c | 74 ++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 73 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 272bae0..c8ad7e9 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -184,6 +184,19 @@ static struct qcom_geni_serial_port qcom_geni_console_port = {
- 	},
- };
+diff --git a/drivers/spi/spi-geni-qcom.c b/drivers/spi/spi-geni-qcom.c
+index c397242..09c4709 100644
+--- a/drivers/spi/spi-geni-qcom.c
++++ b/drivers/spi/spi-geni-qcom.c
+@@ -118,6 +118,19 @@ static int get_spi_clk_cfg(unsigned int speed_hz,
+ 	return ret;
+ }
  
-+static int geni_serial_icc_get(struct geni_se *se)
++static int geni_spi_icc_get(struct geni_se *se)
 +{
 +	se->icc_path_geni_to_core = devm_of_icc_get(se->dev, "qup-core");
 +	if (IS_ERR(se->icc_path_geni_to_core))
@@ -102,98 +101,97 @@ index 272bae0..c8ad7e9 100644
 +	return 0;
 +}
 +
- static int qcom_geni_serial_request_port(struct uart_port *uport)
+ static void handle_fifo_timeout(struct spi_master *spi,
+ 				struct spi_message *msg)
  {
- 	struct platform_device *pdev = to_platform_device(uport->dev);
-@@ -962,6 +975,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
- 	unsigned long clk_rate;
- 	u32 ver, sampling_rate;
-+	int ret;
- 
- 	qcom_geni_serial_stop_rx(uport);
- 	/* baud rate */
-@@ -983,6 +997,18 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 	ser_clk_cfg = SER_CLK_EN;
- 	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
+@@ -234,6 +247,20 @@ static int setup_fifo_params(struct spi_device *spi_slv,
+ 		return ret;
+ 	}
  
 +	/*
-+	 * Put BW vote only on CPU path as driver supports FIFO mode only.
-+	 * Assume peak_bw as twice of avg_bw.
++	 * Set BW quota for CPU as driver supports FIFO mode only.
++	 * Assume peak bw as twice of avg bw.
 +	 */
-+	port->se.avg_bw_cpu = Bps_to_icc(baud);
-+	port->se.peak_bw_cpu = Bps_to_icc(2 * baud);
-+	ret = icc_set_bw(port->se.icc_path_cpu_to_geni, port->se.avg_bw_cpu,
-+			port->se.peak_bw_cpu);
-+	if (ret)
-+		dev_err(uport->dev, "%s: ICC BW voting failed for cpu\n",
++	se->avg_bw_cpu = Bps_to_icc(mas->cur_speed_hz);
++	se->peak_bw_cpu = Bps_to_icc(2 * mas->cur_speed_hz);
++	ret = icc_set_bw(se->icc_path_cpu_to_geni, se->avg_bw_cpu,
++			se->peak_bw_cpu);
++	if (ret) {
++		dev_err(mas->dev, "%s: ICC BW voting failed for cpu\n",
 +			__func__);
-+
- 	/* parity */
- 	tx_trans_cfg = readl(uport->membase + SE_UART_TX_TRANS_CFG);
- 	tx_parity_cfg = readl(uport->membase + SE_UART_TX_PARITY_CFG);
-@@ -1208,16 +1234,40 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
- 		unsigned int new_state, unsigned int old_state)
- {
- 	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
--
-+	int ret;
- 	/* If we've never been called, treat it as off */
- 	if (old_state == UART_PM_STATE_UNDEFINED)
- 		old_state = UART_PM_STATE_OFF;
- 
--	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
-+	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF) {
-+		/* Put BW vote for core clocks and CPU */
-+		ret = icc_set_bw(port->se.icc_path_geni_to_core,
-+			port->se.avg_bw_core, port->se.peak_bw_core);
-+		if (ret)
-+			dev_err(uport->dev, "%s: ICC BW voting failed for core\n",
-+				__func__);
-+
-+		ret = icc_set_bw(port->se.icc_path_cpu_to_geni,
-+			port->se.avg_bw_cpu, port->se.peak_bw_cpu);
-+		if (ret)
-+			dev_err(uport->dev, "%s: ICC BW voting failed for cpu\n",
-+				__func__);
-+
- 		geni_se_resources_on(&port->se);
--	else if (new_state == UART_PM_STATE_OFF &&
--			old_state == UART_PM_STATE_ON)
-+	} else if (new_state == UART_PM_STATE_OFF &&
-+			old_state == UART_PM_STATE_ON) {
- 		geni_se_resources_off(&port->se);
-+		/* Remove BW vote from core clocks and CPU */
-+		ret = icc_set_bw(port->se.icc_path_geni_to_core, 0, 0);
-+		if (ret)
-+			dev_err(uport->dev, "%s: ICC BW remove failed for core\n",
-+				__func__);
-+
-+		ret = icc_set_bw(port->se.icc_path_cpu_to_geni, 0, 0);
-+		if (ret)
-+			dev_err(uport->dev, "%s: ICC BW remove failed for cpu\n",
-+				__func__);
++		return ret;
 +	}
- }
++
+ 	clk_sel = idx & CLK_SEL_MSK;
+ 	m_clk_cfg = (div << CLK_DIV_SHFT) | SER_CLK_EN;
+ 	spi_setup_word_len(mas, spi_slv->mode, spi_slv->bits_per_word);
+@@ -578,6 +605,15 @@ static int spi_geni_probe(struct platform_device *pdev)
+ 	spin_lock_init(&mas->lock);
+ 	pm_runtime_enable(dev);
  
- static const struct uart_ops qcom_geni_console_pops = {
-@@ -1308,6 +1358,17 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	port->rx_fifo_depth = DEF_FIFO_DEPTH_WORDS;
- 	port->tx_fifo_width = DEF_FIFO_WIDTH_BITS;
- 
-+	ret = geni_serial_icc_get(&port->se);
++	ret = geni_spi_icc_get(&mas->se);
++	if (ret)
++		goto spi_geni_probe_runtime_disable;
++	/* Set the bus quota to a reasonable value for register access */
++	mas->se.avg_bw_core = Bps_to_icc(CORE_2X_50_MHZ);
++	mas->se.peak_bw_core = Bps_to_icc(CORE_2X_100_MHZ);
++	mas->se.avg_bw_cpu = Bps_to_icc(1000);
++	mas->se.peak_bw_cpu = Bps_to_icc(1000);
++
+ 	ret = spi_geni_init(mas);
+ 	if (ret)
+ 		goto spi_geni_probe_runtime_disable;
+@@ -616,14 +652,50 @@ static int __maybe_unused spi_geni_runtime_suspend(struct device *dev)
+ {
+ 	struct spi_master *spi = dev_get_drvdata(dev);
+ 	struct spi_geni_master *mas = spi_master_get_devdata(spi);
++	int ret;
++
++	ret = geni_se_resources_off(&mas->se);
 +	if (ret)
 +		return ret;
-+	/* Set the bus quota to a reasonable value */
-+	port->se.avg_bw_core = console ? Bps_to_icc(1000) :
-+		Bps_to_icc(CORE_2X_50_MHZ);
-+	port->se.peak_bw_core = console ? Bps_to_icc(1000) :
-+		Bps_to_icc(CORE_2X_100_MHZ);
-+	port->se.avg_bw_cpu = Bps_to_icc(1000);
-+	port->se.peak_bw_cpu = Bps_to_icc(1000);
+ 
+-	return geni_se_resources_off(&mas->se);
++	ret = icc_set_bw(mas->se.icc_path_geni_to_core, 0, 0);
++	if (ret) {
++		dev_err_ratelimited(mas->dev, "%s: ICC BW remove failed for core\n",
++			__func__);
++		return ret;
++	}
 +
- 	port->name = devm_kasprintf(uport->dev, GFP_KERNEL,
- 			"qcom_geni_serial_%s%d",
- 			uart_console(uport) ? "console" : "uart", uport->line);
++	ret = icc_set_bw(mas->se.icc_path_cpu_to_geni, 0, 0);
++	if (ret) {
++		dev_err_ratelimited(mas->dev, "%s: ICC BW remove failed for cpu\n",
++			__func__);
++		return ret;
++	}
++
++	return 0;
+ }
+ 
+ static int __maybe_unused spi_geni_runtime_resume(struct device *dev)
+ {
+ 	struct spi_master *spi = dev_get_drvdata(dev);
+ 	struct spi_geni_master *mas = spi_master_get_devdata(spi);
++	int ret;
++
++	ret = icc_set_bw(mas->se.icc_path_geni_to_core, mas->se.avg_bw_core,
++		mas->se.peak_bw_core);
++	if (ret) {
++		dev_err_ratelimited(mas->dev, "%s: ICC BW voting failed for core\n",
++			__func__);
++		return ret;
++	}
++
++	ret = icc_set_bw(mas->se.icc_path_cpu_to_geni, mas->se.avg_bw_cpu,
++		mas->se.peak_bw_cpu);
++	if (ret) {
++		dev_err_ratelimited(mas->dev, "%s: ICC BW voting failed for cpu\n",
++			__func__);
++		return ret;
++	}
+ 
+ 	return geni_se_resources_on(&mas->se);
+ }
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
