@@ -1,128 +1,99 @@
-Return-Path: <SRS0=2LL9=47=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=jfP0=5A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E13BC2BB1D
-	for <linux-serial@archiver.kernel.org>; Sat, 14 Mar 2020 00:58:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68FBEC0044D
+	for <linux-serial@archiver.kernel.org>; Sun, 15 Mar 2020 02:24:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 57EC220767
-	for <linux-serial@archiver.kernel.org>; Sat, 14 Mar 2020 00:58:21 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="hIzbj4ti"
+	by mail.kernel.org (Postfix) with ESMTP id 368C2205C9
+	for <linux-serial@archiver.kernel.org>; Sun, 15 Mar 2020 02:24:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1584239088;
+	bh=UxRNdDswoc+aYFNAIDNEbP0gH8SJJcjUu+LoTnQeirI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=QM6ohBMMIw8Q5flF5PFQglZya3MFBcr0c7kYRojbVfhibiSODz9JHaryR2svvOEu+
+	 TJvmsWxXoToV5k43FYBlowwMUE2yK4ZV6B+rNDggYsidcQ4WV9da5VdOQunMIBzw7c
+	 Ios7NlZV8xYPuPnuIzeGRZgG6HYeQxR/zdzpjCD4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726637AbgCNA6U (ORCPT
+        id S1727952AbgCOCYO (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 13 Mar 2020 20:58:20 -0400
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:34939 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727705AbgCNA6U (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 13 Mar 2020 20:58:20 -0400
-Received: by mail-pj1-f68.google.com with SMTP id mq3so5269933pjb.0
-        for <linux-serial@vger.kernel.org>; Fri, 13 Mar 2020 17:58:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=XkYkz7olGuMoHjxIYMm5YyzLZkVPwk4ncu3nYGmC0LU=;
-        b=hIzbj4tiMzwa7yvFFtYnreJK3Hm4RFPdQYBxc9OLUkJkVaHnGWgdL2WW3Wa2p6TqQe
-         jPqXBfZXOQrxKtkIoobRZ7gq4psLmPnMjSSK5yt+utMMVDhdmcqeP6J3iYOn0MXXargV
-         wcDJ9Sv78r1FZg64Er4hfwhJixUr9L5uEOVsg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XkYkz7olGuMoHjxIYMm5YyzLZkVPwk4ncu3nYGmC0LU=;
-        b=Rb2lXS92kUqCVhR3eBOnh+R3Orcstbf0oe/pompVz3AURvCDrJoGE1b2tBRwFs/0Lv
-         Mr6Y61vEaUXLB3ycSDzdfRX4PofPuDBEql2EePhJlg4EDXDrTu4+uqpuXWcVgXfEZdFg
-         2+TUr2KMGFjmsMSSjhlcUmtnjj/kwjq5zwL9GRJG8MqR2szHkYe/U6hTAAsMw9yhjk8M
-         zmKpa77aY58tiJyHXUkiEHEoH/i1zhuJuRCFN10te7Q3/DcFj6dpNR2V3qE8VIijU/KC
-         Bf7IPd47Engn6csLDrIH0H79MS3cB/AEkWJwU/33W2MshFEyaoAuuMvoNJBq7/BdwmBu
-         zM+A==
-X-Gm-Message-State: ANhLgQ3upMoGuJ806g//fl45JhntBOnTLc68WB+9DX7INoN9pIvZ9/Do
-        HKjVjpqQ6KLcan42WROc1sM03A==
-X-Google-Smtp-Source: ADFU+vvhBGrL9Xnlfe5/hQ6M3VwsQ+6WfaCs3st09JIB8ufa3kMvrkB86gSREv5L7WsZ80wVjP2TnQ==
-X-Received: by 2002:a17:902:bf06:: with SMTP id bi6mr16374090plb.30.1584147499410;
-        Fri, 13 Mar 2020 17:58:19 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
-        by smtp.gmail.com with ESMTPSA id f19sm16696202pgn.42.2020.03.13.17.58.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Mar 2020 17:58:18 -0700 (PDT)
-Date:   Fri, 13 Mar 2020 17:58:17 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Akash Asthana <akashast@codeaurora.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, dianders@chromium.org,
-        evgreen@chromium.org
-Subject: Re: [PATCH V2 7/8] spi: spi-qcom-qspi: Add interconnect support
-Message-ID: <20200314005817.GN144492@google.com>
-References: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
- <1584105134-13583-8-git-send-email-akashast@codeaurora.org>
+        Sat, 14 Mar 2020 22:24:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39096 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727916AbgCOCYN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 14 Mar 2020 22:24:13 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C1D4620665;
+        Sat, 14 Mar 2020 08:18:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584173902;
+        bh=UxRNdDswoc+aYFNAIDNEbP0gH8SJJcjUu+LoTnQeirI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JQa6Y5NVSKrELT+Y7cEdvdggf5WFlqVXME9mu6Vc7SzTiy/bijWQK2zuQrNjdTPQh
+         96MB1sI64568Sw82CYaOe0lYUf55L6W59tFTnamAYWz04Zu+wmBmTD5q3YS3EKsl5e
+         0+JBu3wjWCsqS92+Nya4gSpTq5DOaYD8SpBj8Y5U=
+Date:   Sat, 14 Mar 2020 09:07:42 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     skakit@codeaurora.org
+Cc:     swboyd@chromium.org, mgautam@codeaurora.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        akashast@codeaurora.org, rojay@codeaurora.org,
+        msavaliy@qti.qualcomm.com
+Subject: Re: [PATCH V3 2/2] tty: serial: qcom_geni_serial: Fix RX cancel
+ command failure
+Message-ID: <20200314080742.GA6509@kroah.com>
+References: <1583477228-32231-1-git-send-email-skakit@codeaurora.org>
+ <1583477228-32231-3-git-send-email-skakit@codeaurora.org>
+ <20200312091041.GA198954@kroah.com>
+ <436ae3cfb957b11b0d7aa3b1dbb0adf2@codeaurora.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1584105134-13583-8-git-send-email-akashast@codeaurora.org>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <436ae3cfb957b11b0d7aa3b1dbb0adf2@codeaurora.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
-
-On Fri, Mar 13, 2020 at 06:42:13PM +0530, Akash Asthana wrote:
-> Get the interconnect paths for QSPI device and vote according to the
-> current bus speed of the driver.
+On Fri, Mar 13, 2020 at 07:23:50PM +0530, skakit@codeaurora.org wrote:
+> On 2020-03-12 14:40, Greg KH wrote:
+> > On Fri, Mar 06, 2020 at 12:17:08PM +0530, satya priya wrote:
+> > > RX cancel command fails when BT is switched on and off multiple times.
+> > > 
+> > > To handle this, poll for the cancel bit in SE_GENI_S_IRQ_STATUS
+> > > register
+> > > instead of SE_GENI_S_CMD_CTRL_REG.
+> > > 
+> > > As per the HPG update, handle the RX last bit after cancel command
+> > > and flush out the RX FIFO buffer.
+> > > 
+> > > Signed-off-by: satya priya <skakit@codeaurora.org>
+> > > Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> > > ---
+> > >  drivers/tty/serial/qcom_geni_serial.c | 18 ++++++++++++++----
+> > >  1 file changed, 14 insertions(+), 4 deletions(-)
+> > 
+> > This patch didn't apply :(
 > 
-> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
-> ---
->  - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
->    path handle
->  - As per Matthias comment, added error handling for icc_set_bw call
-> 
->  drivers/spi/spi-qcom-qspi.c | 46 ++++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 45 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/spi/spi-qcom-qspi.c b/drivers/spi/spi-qcom-qspi.c
-> index 3c4f83b..ad48f43 100644
-> --- a/drivers/spi/spi-qcom-qspi.c
-> +++ b/drivers/spi/spi-qcom-qspi.c
-> @@ -2,6 +2,7 @@
->  // Copyright (c) 2017-2018, The Linux foundation. All rights reserved.
->  
->  #include <linux/clk.h>
-> +#include <linux/interconnect.h>
->  #include <linux/interrupt.h>
->  #include <linux/io.h>
->  #include <linux/module.h>
-> @@ -139,7 +140,10 @@ struct qcom_qspi {
->  	struct device *dev;
->  	struct clk_bulk_data *clks;
->  	struct qspi_xfer xfer;
-> -	/* Lock to protect xfer and IRQ accessed registers */
-> +	struct icc_path *icc_path_cpu_to_qspi;
-> +	unsigned int avg_bw_cpu;
-> +	unsigned int peak_bw_cpu;
+> V1 of this patch is already picked in tty-next tree(commit id:
+> 679aac5ead2f18d223554a52b543e1195e181811). There is no change in this patch
+> from V1 to V3[2/2].
+> There is a crash reported by Stephen with V1, to resolve that we posted next
+> versions adding this patch https://patchwork.kernel.org/patch/11423231/,
+> that is, V3[1/2]. So now only V3[1/2] needs to be picked.
 
-This triplet is a recurring pattern, and is probably not limited to geni SE/QSPI.
-On https://patchwork.kernel.org/patch/11436889/#23221925 I suggested the creation
-of a geni SE specific struct, however adding a generic convenience struct to
-'linux/interconnect.h' might be the better solution:
+Ok, and I picked that up already, right?
 
-struct icc_client {
-	struct icc_path *path;
-	unsigned int avg_bw;
-	unsigned int peak_bw;
-};
+Please be kind to maintainers and make it obvious what you want them to
+do...
 
-I'm sure there are better names for it, but this would be the idea.
+thanks,
+
+greg k-h
