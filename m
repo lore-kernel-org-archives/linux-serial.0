@@ -6,31 +6,33 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 313F2C0044D
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Mar 2020 06:49:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7629C0044D
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Mar 2020 06:59:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0A2C520674
-	for <linux-serial@archiver.kernel.org>; Mon, 16 Mar 2020 06:49:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 88B7D20679
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Mar 2020 06:59:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729514AbgCPGtO (ORCPT
+        id S1729719AbgCPG7R (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 16 Mar 2020 02:49:14 -0400
-Received: from mx2.suse.de ([195.135.220.15]:60804 "EHLO mx2.suse.de"
+        Mon, 16 Mar 2020 02:59:17 -0400
+Received: from mx2.suse.de ([195.135.220.15]:34820 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729319AbgCPGtO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 16 Mar 2020 02:49:14 -0400
+        id S1729319AbgCPG7P (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 16 Mar 2020 02:59:15 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 71A6EAEA6;
-        Mon, 16 Mar 2020 06:49:11 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 5A6A9AF37;
+        Mon, 16 Mar 2020 06:59:13 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>, Joe Perches <joe@perches.com>
-Subject: [PATCH] tty: n_hdlc, remove FILE and LINE from pr_debug
-Date:   Mon, 16 Mar 2020 07:49:10 +0100
-Message-Id: <20200316064910.4941-1-jslaby@suse.cz>
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 3/3] vt: indent switch-case in setterm_command properly
+Date:   Mon, 16 Mar 2020 07:59:11 +0100
+Message-Id: <20200316065911.11024-3-jslaby@suse.cz>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200316065911.11024-1-jslaby@suse.cz>
+References: <20200316065911.11024-1-jslaby@suse.cz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
@@ -38,125 +40,145 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-As Joe suggests, dynamic debug can print module name and line number
-along with message. So remove __FILE__ and __LINE__ from all those
-pr_debug calls.
-
-Out of curiosity, I measured the savings, 200 bytes of code are gone.
+Shift cases one level left. This makes the code more readable and some
+lines need not wrap anymore.
 
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Suggested-by: Joe Perches <joe@perches.com>
 ---
- drivers/tty/n_hdlc.c | 33 ++++++++++++---------------------
- 1 file changed, 12 insertions(+), 21 deletions(-)
+ drivers/tty/vt/vt.c | 120 ++++++++++++++++++++++----------------------
+ 1 file changed, 59 insertions(+), 61 deletions(-)
 
-diff --git a/drivers/tty/n_hdlc.c b/drivers/tty/n_hdlc.c
-index cd1319d26c45..991f49ee4026 100644
---- a/drivers/tty/n_hdlc.c
-+++ b/drivers/tty/n_hdlc.c
-@@ -226,8 +226,7 @@ static int n_hdlc_tty_open(struct tty_struct *tty)
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index e0d2cb93f6cf..71378baf92d8 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -1902,67 +1902,65 @@ static void set_mode(struct vc_data *vc, int on_off)
+ /* console_lock is held */
+ static void setterm_command(struct vc_data *vc)
  {
- 	struct n_hdlc *n_hdlc = tty->disc_data;
- 
--	pr_debug("%s(%d)%s() called (device=%s)\n",
--			__FILE__, __LINE__, __func__, tty->name);
-+	pr_debug("%s() called (device=%s)\n", __func__, tty->name);
- 
- 	/* There should not be an existing table for this slot. */
- 	if (n_hdlc) {
-@@ -283,8 +282,7 @@ static void n_hdlc_send_frames(struct n_hdlc *n_hdlc, struct tty_struct *tty)
- 
- 	tbuf = n_hdlc_buf_get(&n_hdlc->tx_buf_list);
- 	while (tbuf) {
--		pr_debug("%s(%d)sending frame %p, count=%d\n",
--				__FILE__, __LINE__, tbuf, tbuf->count);
-+		pr_debug("sending frame %p, count=%d\n", tbuf, tbuf->count);
- 
- 		/* Send the next block of data to device */
- 		set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
-@@ -301,8 +299,7 @@ static void n_hdlc_send_frames(struct n_hdlc *n_hdlc, struct tty_struct *tty)
- 			actual = tbuf->count;
- 
- 		if (actual == tbuf->count) {
--			pr_debug("%s(%d)frame %p completed\n",
--					__FILE__, __LINE__, tbuf);
-+			pr_debug("frame %p completed\n", tbuf);
- 
- 			/* free current transmit buffer */
- 			n_hdlc_buf_put(&n_hdlc->tx_free_buf_list, tbuf);
-@@ -313,8 +310,7 @@ static void n_hdlc_send_frames(struct n_hdlc *n_hdlc, struct tty_struct *tty)
- 			/* get next pending transmit buffer */
- 			tbuf = n_hdlc_buf_get(&n_hdlc->tx_buf_list);
- 		} else {
--			pr_debug("%s(%d)frame %p pending\n",
--					__FILE__, __LINE__, tbuf);
-+			pr_debug("frame %p pending\n", tbuf);
- 
- 			/*
- 			 * the buffer was not accepted by driver,
-@@ -366,19 +362,16 @@ static void n_hdlc_tty_receive(struct tty_struct *tty, const __u8 *data,
- 	register struct n_hdlc *n_hdlc = tty->disc_data;
- 	register struct n_hdlc_buf *buf;
- 
--	pr_debug("%s(%d)%s() called count=%d\n",
--			__FILE__, __LINE__, __func__, count);
-+	pr_debug("%s() called count=%d\n", __func__, count);
- 
- 	/* verify line is using HDLC discipline */
- 	if (n_hdlc->magic != HDLC_MAGIC) {
--		pr_err("%s(%d) line not using HDLC discipline\n",
--				__FILE__, __LINE__);
-+		pr_err("line not using HDLC discipline\n");
- 		return;
+-	switch(vc->vc_par[0]) {
+-		case 1:	/* set color for underline mode */
+-			if (vc->vc_can_do_color &&
+-					vc->vc_par[1] < 16) {
+-				vc->vc_ulcolor = color_table[vc->vc_par[1]];
+-				if (vc->vc_underline)
+-					update_attr(vc);
+-			}
+-			break;
+-		case 2:	/* set color for half intensity mode */
+-			if (vc->vc_can_do_color &&
+-					vc->vc_par[1] < 16) {
+-				vc->vc_halfcolor = color_table[vc->vc_par[1]];
+-				if (vc->vc_intensity == 0)
+-					update_attr(vc);
+-			}
+-			break;
+-		case 8:	/* store colors as defaults */
+-			vc->vc_def_color = vc->vc_attr;
+-			if (vc->vc_hi_font_mask == 0x100)
+-				vc->vc_def_color >>= 1;
+-			default_attr(vc);
+-			update_attr(vc);
+-			break;
+-		case 9:	/* set blanking interval */
+-			blankinterval = min(vc->vc_par[1], 60U) * 60;
+-			poke_blanked_console();
+-			break;
+-		case 10: /* set bell frequency in Hz */
+-			if (vc->vc_npar >= 1)
+-				vc->vc_bell_pitch = vc->vc_par[1];
+-			else
+-				vc->vc_bell_pitch = DEFAULT_BELL_PITCH;
+-			break;
+-		case 11: /* set bell duration in msec */
+-			if (vc->vc_npar >= 1)
+-				vc->vc_bell_duration = (vc->vc_par[1] < 2000) ?
+-					msecs_to_jiffies(vc->vc_par[1]) : 0;
+-			else
+-				vc->vc_bell_duration = DEFAULT_BELL_DURATION;
+-			break;
+-		case 12: /* bring specified console to the front */
+-			if (vc->vc_par[1] >= 1 && vc_cons_allocated(vc->vc_par[1] - 1))
+-				set_console(vc->vc_par[1] - 1);
+-			break;
+-		case 13: /* unblank the screen */
+-			poke_blanked_console();
+-			break;
+-		case 14: /* set vesa powerdown interval */
+-			vesa_off_interval = min(vc->vc_par[1], 60U) * 60 * HZ;
+-			break;
+-		case 15: /* activate the previous console */
+-			set_console(last_console);
+-			break;
+-		case 16: /* set cursor blink duration in msec */
+-			if (vc->vc_npar >= 1 && vc->vc_par[1] >= 50 &&
+-					vc->vc_par[1] <= USHRT_MAX)
+-				vc->vc_cur_blink_ms = vc->vc_par[1];
+-			else
+-				vc->vc_cur_blink_ms = DEFAULT_CURSOR_BLINK_MS;
+-			break;
++	switch (vc->vc_par[0]) {
++	case 1:	/* set color for underline mode */
++		if (vc->vc_can_do_color && vc->vc_par[1] < 16) {
++			vc->vc_ulcolor = color_table[vc->vc_par[1]];
++			if (vc->vc_underline)
++				update_attr(vc);
++		}
++		break;
++	case 2:	/* set color for half intensity mode */
++		if (vc->vc_can_do_color && vc->vc_par[1] < 16) {
++			vc->vc_halfcolor = color_table[vc->vc_par[1]];
++			if (vc->vc_intensity == 0)
++				update_attr(vc);
++		}
++		break;
++	case 8:	/* store colors as defaults */
++		vc->vc_def_color = vc->vc_attr;
++		if (vc->vc_hi_font_mask == 0x100)
++			vc->vc_def_color >>= 1;
++		default_attr(vc);
++		update_attr(vc);
++		break;
++	case 9:	/* set blanking interval */
++		blankinterval = min(vc->vc_par[1], 60U) * 60;
++		poke_blanked_console();
++		break;
++	case 10: /* set bell frequency in Hz */
++		if (vc->vc_npar >= 1)
++			vc->vc_bell_pitch = vc->vc_par[1];
++		else
++			vc->vc_bell_pitch = DEFAULT_BELL_PITCH;
++		break;
++	case 11: /* set bell duration in msec */
++		if (vc->vc_npar >= 1)
++			vc->vc_bell_duration = (vc->vc_par[1] < 2000) ?
++				msecs_to_jiffies(vc->vc_par[1]) : 0;
++		else
++			vc->vc_bell_duration = DEFAULT_BELL_DURATION;
++		break;
++	case 12: /* bring specified console to the front */
++		if (vc->vc_par[1] >= 1 && vc_cons_allocated(vc->vc_par[1] - 1))
++			set_console(vc->vc_par[1] - 1);
++		break;
++	case 13: /* unblank the screen */
++		poke_blanked_console();
++		break;
++	case 14: /* set vesa powerdown interval */
++		vesa_off_interval = min(vc->vc_par[1], 60U) * 60 * HZ;
++		break;
++	case 15: /* activate the previous console */
++		set_console(last_console);
++		break;
++	case 16: /* set cursor blink duration in msec */
++		if (vc->vc_npar >= 1 && vc->vc_par[1] >= 50 &&
++				vc->vc_par[1] <= USHRT_MAX)
++			vc->vc_cur_blink_ms = vc->vc_par[1];
++		else
++			vc->vc_cur_blink_ms = DEFAULT_CURSOR_BLINK_MS;
++		break;
  	}
+ }
  
- 	if (count > maxframe) {
--		pr_debug("%s(%d) rx count>maxframesize, data discarded\n",
--				__FILE__, __LINE__);
-+		pr_debug("rx count>maxframesize, data discarded\n");
- 		return;
- 	}
- 
-@@ -395,8 +388,7 @@ static void n_hdlc_tty_receive(struct tty_struct *tty, const __u8 *data,
- 	}
- 
- 	if (!buf) {
--		pr_debug("%s(%d) no more rx buffers, data discarded\n",
--				__FILE__, __LINE__);
-+		pr_debug("no more rx buffers, data discarded\n");
- 		return;
- 	}
- 
-@@ -509,8 +501,7 @@ static ssize_t n_hdlc_tty_write(struct tty_struct *tty, struct file *file,
- 	DECLARE_WAITQUEUE(wait, current);
- 	struct n_hdlc_buf *tbuf;
- 
--	pr_debug("%s(%d)%s() called count=%zd\n", __FILE__, __LINE__, __func__,
--			count);
-+	pr_debug("%s() called count=%zd\n", __func__, count);
- 
- 	if (n_hdlc->magic != HDLC_MAGIC)
- 		return -EIO;
-@@ -578,7 +569,7 @@ static int n_hdlc_tty_ioctl(struct tty_struct *tty, struct file *file,
- 	unsigned long flags;
- 	struct n_hdlc_buf *buf = NULL;
- 
--	pr_debug("%s(%d)%s() called %d\n", __FILE__, __LINE__, __func__, cmd);
-+	pr_debug("%s() called %d\n", __func__, cmd);
- 
- 	/* Verify the status of the device */
- 	if (n_hdlc->magic != HDLC_MAGIC)
-@@ -677,8 +668,8 @@ static void n_hdlc_alloc_buf(struct n_hdlc_buf_list *list, unsigned int count,
- 	for (i = 0; i < count; i++) {
- 		buf = kmalloc(struct_size(buf, buf, maxframe), GFP_KERNEL);
- 		if (!buf) {
--			pr_debug("%s(%d)%s(), kmalloc() failed for %s buffer %u\n",
--					__FILE__, __LINE__, __func__, name, i);
-+			pr_debug("%s(), kmalloc() failed for %s buffer %u\n",
-+					__func__, name, i);
- 			return;
- 		}
- 		n_hdlc_buf_put(list, buf);
 -- 
 2.25.1
 
