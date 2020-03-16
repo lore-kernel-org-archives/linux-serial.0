@@ -1,99 +1,108 @@
-Return-Path: <SRS0=jfP0=5A=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=SyHF=5B=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68FBEC0044D
-	for <linux-serial@archiver.kernel.org>; Sun, 15 Mar 2020 02:24:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9040C18E5B
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Mar 2020 03:14:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 368C2205C9
-	for <linux-serial@archiver.kernel.org>; Sun, 15 Mar 2020 02:24:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1584239088;
-	bh=UxRNdDswoc+aYFNAIDNEbP0gH8SJJcjUu+LoTnQeirI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=QM6ohBMMIw8Q5flF5PFQglZya3MFBcr0c7kYRojbVfhibiSODz9JHaryR2svvOEu+
-	 TJvmsWxXoToV5k43FYBlowwMUE2yK4ZV6B+rNDggYsidcQ4WV9da5VdOQunMIBzw7c
-	 Ios7NlZV8xYPuPnuIzeGRZgG6HYeQxR/zdzpjCD4=
+	by mail.kernel.org (Postfix) with ESMTP id 7443520409
+	for <linux-serial@archiver.kernel.org>; Mon, 16 Mar 2020 03:14:01 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kn1rmJdj"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727952AbgCOCYO (ORCPT
+        id S1729544AbgCPDOB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 14 Mar 2020 22:24:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39096 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727916AbgCOCYN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 14 Mar 2020 22:24:13 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C1D4620665;
-        Sat, 14 Mar 2020 08:18:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584173902;
-        bh=UxRNdDswoc+aYFNAIDNEbP0gH8SJJcjUu+LoTnQeirI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JQa6Y5NVSKrELT+Y7cEdvdggf5WFlqVXME9mu6Vc7SzTiy/bijWQK2zuQrNjdTPQh
-         96MB1sI64568Sw82CYaOe0lYUf55L6W59tFTnamAYWz04Zu+wmBmTD5q3YS3EKsl5e
-         0+JBu3wjWCsqS92+Nya4gSpTq5DOaYD8SpBj8Y5U=
-Date:   Sat, 14 Mar 2020 09:07:42 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     skakit@codeaurora.org
-Cc:     swboyd@chromium.org, mgautam@codeaurora.org,
-        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-        akashast@codeaurora.org, rojay@codeaurora.org,
-        msavaliy@qti.qualcomm.com
-Subject: Re: [PATCH V3 2/2] tty: serial: qcom_geni_serial: Fix RX cancel
- command failure
-Message-ID: <20200314080742.GA6509@kroah.com>
-References: <1583477228-32231-1-git-send-email-skakit@codeaurora.org>
- <1583477228-32231-3-git-send-email-skakit@codeaurora.org>
- <20200312091041.GA198954@kroah.com>
- <436ae3cfb957b11b0d7aa3b1dbb0adf2@codeaurora.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <436ae3cfb957b11b0d7aa3b1dbb0adf2@codeaurora.org>
+        Sun, 15 Mar 2020 23:14:01 -0400
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:33728 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729632AbgCPDOB (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 15 Mar 2020 23:14:01 -0400
+Received: by mail-pj1-f66.google.com with SMTP id dw20so3502263pjb.0;
+        Sun, 15 Mar 2020 20:14:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=khBuxhsfLtwkJbdKTmDzOvFGTSeMlV30RfTjpZu731w=;
+        b=kn1rmJdjTdsBvzi0LDTmK5qUEfCtK9WakHtxi8Ap5Saruk4TTWNmKOmoPYgpPVoNRe
+         iIRKrkxEN2QDuUJG4CFdNmzkRQsyQzwPqKknfvHnuG+0eN3QHTzcbCwPJz+i2BxtYgUB
+         zOC4qwr3yAiRPQXOms9hObGNg6ADVyucZmWHM9UACsF2q56OzzyCr/gE9DoOEKBUbkWu
+         LgBWJDNLwqm4LvFFn7BhIB77ylx4VbE8y0IuvX580kYEzYZ24N2EYbUDK5jEldiGVhbi
+         H6bpFd5Dglggsk0HZJHwRu/Lk+Dlk0K28Obr/9sBfCjoPVUr57WAepWNmRHhibIep5nV
+         hCnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=khBuxhsfLtwkJbdKTmDzOvFGTSeMlV30RfTjpZu731w=;
+        b=MqAoleXMFtLa1CfWdi3AT+14pExXkfPXyuIzQWU4zexb74Pu3eNGn6QbPiWICPvpvc
+         q6Zj7Ihu36NSAl8mnrE3qcHMDNogpoc8TU837qVej9m83orqDyd8svq1VeM8WTH+334r
+         mO10MZ0xqN8CCTfzgsxwmltT9RwXd/Ae357ymS0M4NnNRcUJOO30d82RWbNJiIZ0lmDm
+         6wmvlcH37rriqrxMD2zoclKBUObkKWXNkqF0atkgWfkTEJ9xmhlZctN36g8wTEXszYsM
+         7z5vVNwlnoEAv1J/jgDb6JjaJjEwUEt1sLtZM/pEcIaGfkzcWhkV8gTRRl/hctpKeJYT
+         SpLg==
+X-Gm-Message-State: ANhLgQ3Oi6259ZPqCA/vNiMlTRKblblDhQrSy/+3WL13o14FkGKvQOjZ
+        dcsPKSFuglfP/U2C1joKKGaleZ50
+X-Google-Smtp-Source: ADFU+vv0iMVJ6y997gl0WDsAS6Y7kFlu0SMT8wzHsJdz8FAeQKpXwcBhpv7tTWGIevKbzy+hwlxqjA==
+X-Received: by 2002:a17:902:9886:: with SMTP id s6mr25001838plp.100.1584328440119;
+        Sun, 15 Mar 2020 20:14:00 -0700 (PDT)
+Received: from sh04182tmp293.spreadtrum.com ([117.18.48.82])
+        by smtp.gmail.com with ESMTPSA id e9sm5143392pjt.23.2020.03.15.20.13.57
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Sun, 15 Mar 2020 20:13:59 -0700 (PDT)
+From:   Lanqing Liu <liuhhome@gmail.com>
+To:     dan.carpenter@oracle.com, gregkh@linuxfoundation.org,
+        jslaby@suse.com
+Cc:     baolin.wang@linaro.org, lanqing.liu@unisoc.com,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        orsonzhai@gmail.com, zhang.lyra@gmail.com
+Subject: [PATCH] serial: sprd: Fix a dereference warning
+Date:   Mon, 16 Mar 2020 11:13:33 +0800
+Message-Id: <e2bd92691538e95b04a2c2a728f3292e1617018f.1584325957.git.liuhhome@gmail.com>
+X-Mailer: git-send-email 1.9.1
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Mar 13, 2020 at 07:23:50PM +0530, skakit@codeaurora.org wrote:
-> On 2020-03-12 14:40, Greg KH wrote:
-> > On Fri, Mar 06, 2020 at 12:17:08PM +0530, satya priya wrote:
-> > > RX cancel command fails when BT is switched on and off multiple times.
-> > > 
-> > > To handle this, poll for the cancel bit in SE_GENI_S_IRQ_STATUS
-> > > register
-> > > instead of SE_GENI_S_CMD_CTRL_REG.
-> > > 
-> > > As per the HPG update, handle the RX last bit after cancel command
-> > > and flush out the RX FIFO buffer.
-> > > 
-> > > Signed-off-by: satya priya <skakit@codeaurora.org>
-> > > Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-> > > ---
-> > >  drivers/tty/serial/qcom_geni_serial.c | 18 ++++++++++++++----
-> > >  1 file changed, 14 insertions(+), 4 deletions(-)
-> > 
-> > This patch didn't apply :(
-> 
-> V1 of this patch is already picked in tty-next tree(commit id:
-> 679aac5ead2f18d223554a52b543e1195e181811). There is no change in this patch
-> from V1 to V3[2/2].
-> There is a crash reported by Stephen with V1, to resolve that we posted next
-> versions adding this patch https://patchwork.kernel.org/patch/11423231/,
-> that is, V3[1/2]. So now only V3[1/2] needs to be picked.
+We should validate if the 'sup' is NULL or not before freeing DMA
+memory, to fix below warning.
 
-Ok, and I picked that up already, right?
+"drivers/tty/serial/sprd_serial.c:1141 sprd_remove()
+ error: we previously assumed 'sup' could be null (see line 1132)"
 
-Please be kind to maintainers and make it obvious what you want them to
-do...
+Fixes: f4487db58eb7 ("serial: sprd: Add DMA mode support")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Lanqing Liu <liuhhome@gmail.com>
+---
+ drivers/tty/serial/sprd_serial.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-thanks,
+diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
+index 3d3c706..a223e93 100644
+--- a/drivers/tty/serial/sprd_serial.c
++++ b/drivers/tty/serial/sprd_serial.c
+@@ -1132,14 +1132,13 @@ static int sprd_remove(struct platform_device *dev)
+ 	if (sup) {
+ 		uart_remove_one_port(&sprd_uart_driver, &sup->port);
+ 		sprd_port[sup->port.line] = NULL;
++		sprd_rx_free_buf(sup);
+ 		sprd_ports_num--;
+ 	}
+ 
+ 	if (!sprd_ports_num)
+ 		uart_unregister_driver(&sprd_uart_driver);
+ 
+-	sprd_rx_free_buf(sup);
+-
+ 	return 0;
+ }
+ 
+-- 
+1.9.1
 
-greg k-h
