@@ -4,48 +4,48 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42551C18E5B
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 11:51:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DA79C2BB1D
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 12:11:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0A35220658
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 11:51:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4C8B72073C
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 12:11:24 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="pbt3PRmM"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="dybtkPOr"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726678AbgCQLv2 (ORCPT
+        id S1726005AbgCQMLY (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Mar 2020 07:51:28 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:10983 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726541AbgCQLv2 (ORCPT
+        Tue, 17 Mar 2020 08:11:24 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:25778 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726410AbgCQMLX (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Mar 2020 07:51:28 -0400
+        Tue, 17 Mar 2020 08:11:23 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1584445887; h=Content-Transfer-Encoding: Content-Type:
+ s=smtp; t=1584447082; h=Content-Transfer-Encoding: Content-Type:
  In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=OhIhHpJNXmYJlk3J0ebg727mwoH4IUc/WtFx9hHJsEI=; b=pbt3PRmM69GtUc9UbIKI+2b94rT+anAgbOMYCOi/RxcHepM8bkFoEstffF03G9i79t0RsUmc
- w8Xp2jkk60nW6gNeCpWjqD+L/Mw5cr8dC0yXsQfXGeXtCBDvK6JbcJbUQJt5Lgb7IB0Xcz46
- GVxqyJEvXqX7O6iF271ECEygnq0=
-X-Mailgun-Sending-Ip: 104.130.122.27
+ Subject: Sender; bh=Sru+Cd4uA9JwbTwKdB95gAy2jutmuwcrBflueUnElmo=; b=dybtkPOrBRhrxzpgrCrRbSbUJa9TrQ5UKNqKl2cCzYflogaMTjWJ4IZ9Ishg0v+AZ2F1INyq
+ UFYPII0nWMzMS7P6nkSx3i/FtMyaXItVi/4zRc3C282NvYiSp5LyLQiQlSbF4oq4p6DX1nqN
+ L01xVlllFflmTyW9dhL6hCSnb30=
+X-Mailgun-Sending-Ip: 104.130.122.26
 X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e70b9b1.7f4613925848-smtp-out-n03;
- Tue, 17 Mar 2020 11:51:13 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5e70be68.7f4613935f10-smtp-out-n03;
+ Tue, 17 Mar 2020 12:11:20 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 329F9C433CB; Tue, 17 Mar 2020 11:51:13 +0000 (UTC)
+        id 2435EC4478C; Tue, 17 Mar 2020 12:11:20 +0000 (UTC)
 Received: from [192.168.0.8] (unknown [183.83.138.47])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7D424C433CB;
-        Tue, 17 Mar 2020 11:51:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7D424C433CB
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 57ACAC433CB;
+        Tue, 17 Mar 2020 12:11:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 57ACAC433CB
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-Subject: Re: [PATCH V2 5/8] i2c: i2c-qcom-geni: Add interconnect support
+Subject: Re: [PATCH V2 6/8] spi: spi-geni-qcom: Add interconnect support
 To:     Matthias Kaehlcke <mka@chromium.org>
 Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
         bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
@@ -56,15 +56,15 @@ Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
         linux-serial@vger.kernel.org, dianders@chromium.org,
         evgreen@chromium.org
 References: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
- <1584105134-13583-6-git-send-email-akashast@codeaurora.org>
- <20200314001728.GL144492@google.com>
+ <1584105134-13583-7-git-send-email-akashast@codeaurora.org>
+ <20200314004106.GM144492@google.com>
 From:   Akash Asthana <akashast@codeaurora.org>
-Message-ID: <e9ffd15b-5910-8b15-63cf-2e7fb157d53e@codeaurora.org>
-Date:   Tue, 17 Mar 2020 17:21:03 +0530
+Message-ID: <384d0184-e7cc-0ee9-75b3-3f1c84e6e99d@codeaurora.org>
+Date:   Tue, 17 Mar 2020 17:41:10 +0530
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200314001728.GL144492@google.com>
+In-Reply-To: <20200314004106.GM144492@google.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
@@ -75,34 +75,33 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 Hi Matthias,
 
-On 3/14/2020 5:47 AM, Matthias Kaehlcke wrote:
-> Hi,
+On 3/14/2020 6:11 AM, Matthias Kaehlcke wrote:
+> Hi Akash,
 >
-> On Fri, Mar 13, 2020 at 06:42:11PM +0530, Akash Asthana wrote:
->> Get the interconnect paths for I2C based Serial Engine device
->> and vote according to the bus speed of the driver.
+> On Fri, Mar 13, 2020 at 06:42:12PM +0530, Akash Asthana wrote:
+>> Get the interconnect paths for SPI based Serial Engine device
+>> and vote according to the current bus speed of the driver.
 >>
 >> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
 >> ---
->> Changes in V2:
->>   - As per Bjorn's comment, removed se == NULL check from geni_i2c_icc_get
+>>   - As per Bjorn's comment, removed se == NULL check from geni_spi_icc_get
 >>   - As per Bjorn's comment, removed code to set se->icc_path* to NULL in failure
 >>   - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
 >>     path handle
 >>   - As per Matthias comment, added error handling for icc_set_bw call
 >>
->>   drivers/i2c/busses/i2c-qcom-geni.c | 110 +++++++++++++++++++++++++++++++++++++
->>   1 file changed, 110 insertions(+)
+>>   drivers/spi/spi-geni-qcom.c | 74 ++++++++++++++++++++++++++++++++++++++++++++-
+>>   1 file changed, 73 insertions(+), 1 deletion(-)
 >>
->> diff --git a/drivers/i2c/busses/i2c-qcom-geni.c b/drivers/i2c/busses/i2c-qcom-geni.c
->> index 17abf60c..33ab685 100644
->> --- a/drivers/i2c/busses/i2c-qcom-geni.c
->> +++ b/drivers/i2c/busses/i2c-qcom-geni.c
->> @@ -163,6 +163,23 @@ static void qcom_geni_i2c_conf(struct geni_i2c_dev *gi2c)
->>   	writel_relaxed(val, gi2c->se.base + SE_I2C_SCL_COUNTERS);
+>> diff --git a/drivers/spi/spi-geni-qcom.c b/drivers/spi/spi-geni-qcom.c
+>> index c397242..09c4709 100644
+>> --- a/drivers/spi/spi-geni-qcom.c
+>> +++ b/drivers/spi/spi-geni-qcom.c
+>> @@ -118,6 +118,19 @@ static int get_spi_clk_cfg(unsigned int speed_hz,
+>>   	return ret;
 >>   }
 >>   
->> +static int geni_i2c_icc_get(struct geni_se *se)
+>> +static int geni_spi_icc_get(struct geni_se *se)
 >> +{
 >> +	se->icc_path_geni_to_core = devm_of_icc_get(se->dev, "qup-core");
 >> +	if (IS_ERR(se->icc_path_geni_to_core))
@@ -112,225 +111,134 @@ On 3/14/2020 5:47 AM, Matthias Kaehlcke wrote:
 >> +	if (IS_ERR(se->icc_path_cpu_to_geni))
 >> +		return PTR_ERR(se->icc_path_cpu_to_geni);
 >> +
->> +	se->icc_path_geni_to_ddr = devm_of_icc_get(se->dev, "qup-memory");
->> +	if (IS_ERR(se->icc_path_geni_to_ddr))
->> +		return PTR_ERR(se->icc_path_geni_to_ddr);
->> +
 >> +	return 0;
 >> +}
->> +
->>   static void geni_i2c_err_misc(struct geni_i2c_dev *gi2c)
->>   {
->>   	u32 m_cmd = readl_relaxed(gi2c->se.base + SE_GENI_M_CMD0);
->> @@ -563,6 +580,39 @@ static int geni_i2c_probe(struct platform_device *pdev)
->>   	gi2c->adap.dev.of_node = pdev->dev.of_node;
->>   	strlcpy(gi2c->adap.name, "Geni-I2C", sizeof(gi2c->adap.name));
->>   
->> +	ret = geni_i2c_icc_get(&gi2c->se);
->> +	if (ret)
->> +		return ret;
->> +	/*
->> +	 * Set the bus quota for core and cpu to a reasonable value for
->> +	 * register access.
->> +	 * Set quota for DDR based on bus speed, assume peak requirement
->> +	 * as twice of avg bw.
->> +	 */
->> +	gi2c->se.avg_bw_core = Bps_to_icc(1000);
-> as commented on the UART patch, you might want to consider adding a constant
-> for this recurring default value.
+> As per my comments on (https://patchwork.kernel.org/patch/11436895/#23222713),
+> the above function could be replaced by calling a 'geni_icc_get()' (or so, to
+> be created) provided by the geni SE driver.
+ok
 >
->> +	gi2c->se.peak_bw_core = Bps_to_icc(CORE_2X_100_MHZ);
->> +	gi2c->se.avg_bw_cpu = Bps_to_icc(1000);
->> +	gi2c->se.peak_bw_cpu = Bps_to_icc(1000);
->> +	gi2c->se.avg_bw_ddr = Bps_to_icc(gi2c->clk_freq_out);
->> +	gi2c->se.peak_bw_ddr = Bps_to_icc(2 * gi2c->clk_freq_out);
 >> +
->> +	/* Vote for core clocks and CPU for register access */
->> +	ret = icc_set_bw(gi2c->se.icc_path_geni_to_core, gi2c->se.avg_bw_core,
->> +				gi2c->se.peak_bw_core);
->> +	if (ret) {
->> +		dev_err(&pdev->dev, "%s: ICC BW voting failed for core\n",
->> +			__func__);
->> +		return ret;
->> +	}
->> +
->> +	ret = icc_set_bw(gi2c->se.icc_path_cpu_to_geni, gi2c->se.avg_bw_cpu,
->> +				gi2c->se.peak_bw_cpu);
->> +	if (ret) {
->> +		dev_err(&pdev->dev, "%s: ICC BW voting failed for cpu\n",
->> +			__func__);
->> +		return ret;
->> +	}
->> +
->>   	ret = geni_se_resources_on(&gi2c->se);
->>   	if (ret) {
->>   		dev_err(&pdev->dev, "Error turning on resources %d\n", ret);
->> @@ -584,6 +634,19 @@ static int geni_i2c_probe(struct platform_device *pdev)
->>   		dev_err(&pdev->dev, "Error turning off resources %d\n", ret);
+>>   static void handle_fifo_timeout(struct spi_master *spi,
+>>   				struct spi_message *msg)
+>>   {
+>> @@ -234,6 +247,20 @@ static int setup_fifo_params(struct spi_device *spi_slv,
 >>   		return ret;
 >>   	}
->> +	/* Remove vote from core clocks and CPU */
->> +	ret = icc_set_bw(gi2c->se.icc_path_geni_to_core, 0, 0);
->> +	if (ret) {
->> +		dev_err(&pdev->dev, "%s: ICC BW remove failed for core\n",
->> +			__func__);
->> +		return ret;
->> +	}
->> +
->> +	ret = icc_set_bw(gi2c->se.icc_path_cpu_to_geni, 0, 0);
->> +	if (ret) {
->> +		dev_err(&pdev->dev, "%s: ICC BW remove failed for cpu\n",
->> +			__func__);
-> Should this return an error as for the core clocks?
->
->> +	}
 >>   
->>   	dev_dbg(&pdev->dev, "i2c fifo/se-dma mode. fifo depth:%d\n", tx_depth);
+>> +	/*
+>> +	 * Set BW quota for CPU as driver supports FIFO mode only.
+>> +	 * Assume peak bw as twice of avg bw.
+>> +	 */
+>> +	se->avg_bw_cpu = Bps_to_icc(mas->cur_speed_hz);
+>> +	se->peak_bw_cpu = Bps_to_icc(2 * mas->cur_speed_hz);
+>> +	ret = icc_set_bw(se->icc_path_cpu_to_geni, se->avg_bw_cpu,
+>> +			se->peak_bw_cpu);
+>> +	if (ret) {
+>> +		dev_err(mas->dev, "%s: ICC BW voting failed for cpu\n",
+>> +			__func__);
+>> +		return ret;
+>> +	}
+>> +
+>>   	clk_sel = idx & CLK_SEL_MSK;
+>>   	m_clk_cfg = (div << CLK_DIV_SHFT) | SER_CLK_EN;
+>>   	spi_setup_word_len(mas, spi_slv->mode, spi_slv->bits_per_word);
+>> @@ -578,6 +605,15 @@ static int spi_geni_probe(struct platform_device *pdev)
+>>   	spin_lock_init(&mas->lock);
+>>   	pm_runtime_enable(dev);
 >>   
->> @@ -629,6 +692,28 @@ static int __maybe_unused geni_i2c_runtime_suspend(struct device *dev)
->>   		gi2c->suspended = 1;
->>   	}
+>> +	ret = geni_spi_icc_get(&mas->se);
+>> +	if (ret)
+>> +		goto spi_geni_probe_runtime_disable;
+>> +	/* Set the bus quota to a reasonable value for register access */
+>> +	mas->se.avg_bw_core = Bps_to_icc(CORE_2X_50_MHZ);
+>> +	mas->se.peak_bw_core = Bps_to_icc(CORE_2X_100_MHZ);
+>> +	mas->se.avg_bw_cpu = Bps_to_icc(1000);
+>> +	mas->se.peak_bw_cpu = Bps_to_icc(1000);
+>> +
+>>   	ret = spi_geni_init(mas);
+>>   	if (ret)
+>>   		goto spi_geni_probe_runtime_disable;
+>> @@ -616,14 +652,50 @@ static int __maybe_unused spi_geni_runtime_suspend(struct device *dev)
+>>   {
+>>   	struct spi_master *spi = dev_get_drvdata(dev);
+>>   	struct spi_geni_master *mas = spi_master_get_devdata(spi);
+>> +	int ret;
+>> +
+>> +	ret = geni_se_resources_off(&mas->se);
+>> +	if (ret)
+>> +		return ret;
 >>   
->> +	/* Remove BW votes */
->> +	ret = icc_set_bw(gi2c->se.icc_path_geni_to_core, 0, 0);
+>> -	return geni_se_resources_off(&mas->se);
+>> +	ret = icc_set_bw(mas->se.icc_path_geni_to_core, 0, 0);
 >> +	if (ret) {
->> +		dev_err_ratelimited(gi2c->se.dev, "%s: ICC BW remove failed for core\n",
+>> +		dev_err_ratelimited(mas->dev, "%s: ICC BW remove failed for core\n",
 >> +			__func__);
 >> +		return ret;
 >> +	}
 >> +
->> +	ret = icc_set_bw(gi2c->se.icc_path_cpu_to_geni, 0, 0);
+>> +	ret = icc_set_bw(mas->se.icc_path_cpu_to_geni, 0, 0);
 >> +	if (ret) {
->> +		dev_err_ratelimited(gi2c->se.dev, "%s: ICC BW remove failed for cpu\n",
+>> +		dev_err_ratelimited(mas->dev, "%s: ICC BW remove failed for cpu\n",
 >> +			__func__);
 >> +		return ret;
 >> +	}
->> +
->> +	ret = icc_set_bw(gi2c->se.icc_path_geni_to_ddr, 0, 0);
->> +	if (ret) {
->> +		dev_err_ratelimited(gi2c->se.dev, "%s: ICC BW remove failed for ddr\n",
->> +			__func__);
->> +		return ret;
->> +	}
-> you could consider putting this and the ICC voting in _runtime_resume() in
-> separate functions and call them from here and _probe(). The only difference
-> in _probe() is that it doesn't vote for the DDR bandwidth, but that slight
-> one-time overhead might be worth for consolidating the code.
+> the ICC stuff above would become:
 >
-> Actually all this looks very similar for UART, I2C, SPI and QSPI. It seems it
-> should be possible to consolidate this further by having functions like these
-> in the geni SE driver:
->
-> int geni_icc_get(struct geni_se *se, const char *icc_core, const char *icc_cpu,
-> 	const char *icc_ddr)
-> {
-> 	if (icc_core) {
-> 		se->icc_path_geni_to_core = devm_of_icc_get(se->dev, icc_core);
-> 		if (IS_ERR(se->icc_path_geni_to_core))
-> 			return PTR_ERR(se->icc_path_geni_to_core);
-> 	}
->
-> 	if (icc_cpu) {
->
-> 	...
-> }
->
-> int geni_icc_vote_on(struct geni_se *se)
-> {
-> 	if (gi2c->se.icc_path_geni_to_core) {
-> 		ret = icc_set_bw(gi2c->se.icc_path_geni_to_core, gi2c->se.avg_bw_core,
-> 			gi2c->se.peak_bw_core);
-> 		if (ret) {
-> 			dev_err_ratelimited(gi2c->se.dev, "%s: ICC BW voting failed for core\n",
-> 				__func__);
-> 			return ret;
-> 		}
-> 	}
->
-> 	/* or to reduce nesting:
-> 	if (!gi2c->se.icc_path_geni_to_core)
-> 		goto vote_cpu;
->
-> 	ret = icc_set_bw(gi2c->se.icc_path_geni_to_core, gi2c->se.avg_bw_core,
-> 			gi2c->se.peak_bw_core);
-> 	if (ret) {
-> 	...
->
-> vote_cpu:
-> 	*/
->
-> 	if (gi2c->se.icc_path_cpu_to_geni) {
->
-> 	...
-> }
->
-> int geni_icc_vote_off(struct geni_se *se)
-> {
-> 	if (gi2c->se.icc_path_geni_to_core) {
-> 		ret = icc_set_bw(gi2c->se.icc_path_geni_to_core, 0, 0);
-> 		if (ret) {
-> 			dev_err_ratelimited(gi2c->se.dev, "%s: ICC BW remove failed for core\n",
-> 				__func__);
-> 			return ret;
-> 		}
-> 	}
->
-> 	if (gi2c->se.icc_path_cpu_to_geni) {
->
-> 	...
-> }
->
-> optionally you could even reduce the code further by having an array of
-> 'struct geni_icc_path' (as suggested on https://patchwork.kernel.org/patch/11436889/#23221925)
-> and iterate over the array instead of spelling everything out for the 3
-> ICC paths.
-ok
->> +
->>   	return 0;
->>   }
->>   
->> @@ -637,6 +722,31 @@ static int __maybe_unused geni_i2c_runtime_resume(struct device *dev)
->>   	int ret;
->>   	struct geni_i2c_dev *gi2c = dev_get_drvdata(dev);
->>   
->> +	/* Vote on Core, CPU and DDR path respectively */
->> +	ret = icc_set_bw(gi2c->se.icc_path_geni_to_core, gi2c->se.avg_bw_core,
->> +		gi2c->se.peak_bw_core);
->> +	if (ret) {
->> +		dev_err_ratelimited(gi2c->se.dev, "%s: ICC BW voting failed for core\n",
->> +			__func__);
->> +		return ret;
->> +	}
->> +
->> +	ret = icc_set_bw(gi2c->se.icc_path_cpu_to_geni, gi2c->se.avg_bw_cpu,
->> +		gi2c->se.peak_bw_cpu);
->> +	if (ret) {
->> +		dev_err_ratelimited(gi2c->se.dev, "%s: ICC BW voting failed for cpu\n",
->> +			__func__);
->> +		return ret;
->> +	}
->> +
->> +	ret = icc_set_bw(gi2c->se.icc_path_geni_to_ddr, gi2c->se.avg_bw_ddr,
->> +		gi2c->se.peak_bw_ddr);
->> +	if (ret) {
->> +		dev_err_ratelimited(gi2c->se.dev, "%s: ICC BW voting failed for ddr\n",
->> +			__func__);
->> +		return ret;
->> +	}
->> +
-> as per above this would be just:
->
-> 	ret = geni_icc_vote_on(&gi2c->se);
+> 	ret = geni_icc_vote_off(&mas->se);
 > 	if (ret)
 > 		return ret;
 >
-> with the same benefit for the other 3 drivers.
+> with the consolidated code in geni SE.
+ok
+>
+>> +
+>> +	return 0;
+>>   }
+>>   
+>>   static int __maybe_unused spi_geni_runtime_resume(struct device *dev)
+>>   {
+>>   	struct spi_master *spi = dev_get_drvdata(dev);
+>>   	struct spi_geni_master *mas = spi_master_get_devdata(spi);
+>> +	int ret;
+>> +
+>> +	ret = icc_set_bw(mas->se.icc_path_geni_to_core, mas->se.avg_bw_core,
+>> +		mas->se.peak_bw_core);
+>> +	if (ret) {
+>> +		dev_err_ratelimited(mas->dev, "%s: ICC BW voting failed for core\n",
+>> +			__func__);
+>> +		return ret;
+>> +	}
+>> +
+>> +	ret = icc_set_bw(mas->se.icc_path_cpu_to_geni, mas->se.avg_bw_cpu,
+>> +		mas->se.peak_bw_cpu);
+>> +	if (ret) {
+>> +		dev_err_ratelimited(mas->dev, "%s: ICC BW voting failed for cpu\n",
+>> +			__func__);
+>> +		return ret;
+>> +	}
+> and this:
+>
+> 	ret = geni_icc_vote_on(&mas->se);
+> 	if (ret)
+> 		return ret;
+ok
+>>   	return geni_se_resources_on(&mas->se);
+> possibly you could even do the ICC voting from geni_se_resources_on/off()
+> it seems the two are always done together for UART, I2C and SPI.
 
-Yeah this would be better.
+I think we should expose geni_icc_vote_on/off API seperately and not 
+merge to resources_on/off.
 
-Thanks for reviewing.
+Because if we merge then it will appear that we are just doing 
+geni_icc_get() from individual SE driver probe not using any of ICC apis.
 
-regards,
+It looks somewhat asymmetry.
+
+
+Thanks for reviewing,
+
+Regards,
 
 Akash
 
