@@ -6,22 +6,22 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC52C5ACC2
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:41:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12CC5C5ACC0
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:42:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3951020736
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:41:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DCE4E20714
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:42:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727290AbgCQJlY (ORCPT
+        id S1727066AbgCQJkv (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Mar 2020 05:41:24 -0400
-Received: from v6.sk ([167.172.42.174]:50870 "EHLO v6.sk"
+        Tue, 17 Mar 2020 05:40:51 -0400
+Received: from v6.sk ([167.172.42.174]:50564 "EHLO v6.sk"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727266AbgCQJlW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Mar 2020 05:41:22 -0400
+        id S1727061AbgCQJks (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 17 Mar 2020 05:40:48 -0400
 Received: from localhost (v6.sk [IPv6:::1])
-        by v6.sk (Postfix) with ESMTP id 48B316109F;
-        Tue, 17 Mar 2020 09:41:19 +0000 (UTC)
+        by v6.sk (Postfix) with ESMTP id 5A14961092;
+        Tue, 17 Mar 2020 09:40:45 +0000 (UTC)
 From:   Lubomir Rintel <lkundrak@v3.sk>
 To:     Rob Herring <robh+dt@kernel.org>
 Cc:     Linus Walleij <linus.walleij@linaro.org>,
@@ -48,9 +48,9 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
         Lubomir Rintel <lkundrak@v3.sk>
-Subject: [PATCH 26/28] dt-bindings: spi: Convert spi-pxa2xx to json-schema
-Date:   Tue, 17 Mar 2020 10:39:20 +0100
-Message-Id: <20200317093922.20785-27-lkundrak@v3.sk>
+Subject: [PATCH 18/28] dt-bindings: mmc: Fix node name in an example
+Date:   Tue, 17 Mar 2020 10:39:12 +0100
+Message-Id: <20200317093922.20785-19-lkundrak@v3.sk>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200317093922.20785-1-lkundrak@v3.sk>
 References: <20200317093922.20785-1-lkundrak@v3.sk>
@@ -61,114 +61,27 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-A straightforward conversion of the the spi-pxa2xx binding to DT schema
-format using json-schema.
+The $nodename allows only "mmc@*" whereas the example node is named
+"sdhci".
 
 Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
 ---
- .../bindings/spi/marvell,mmp2-ssp.yaml        | 58 +++++++++++++++++++
- .../devicetree/bindings/spi/spi-pxa2xx.txt    | 27 ---------
- 2 files changed, 58 insertions(+), 27 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/spi/marvell,mmp2-ssp.yaml
- delete mode 100644 Documentation/devicetree/bindings/spi/spi-pxa2xx.txt
+ Documentation/devicetree/bindings/mmc/mmc-controller.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/spi/marvell,mmp2-ssp.yaml b/Documentation/devicetree/bindings/spi/marvell,mmp2-ssp.yaml
-new file mode 100644
-index 0000000000000..de6b6a53b70d8
---- /dev/null
-+++ b/Documentation/devicetree/bindings/spi/marvell,mmp2-ssp.yaml
-@@ -0,0 +1,58 @@
-+# SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
-+# Copyright 2019,2020 Lubomir Rintel <lkundrak@v3.sk>
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/spi/marvell,mmp2-ssp.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: PXA2xx SSP SPI Controller bindings
-+
-+maintainers:
-+  - Lubomir Rintel <lkundrak@v3.sk>
-+
-+allOf:
-+  - $ref: spi-controller.yaml#
-+
-+properties:
-+  compatible:
-+    const: marvell,mmp2-ssp
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  ready-gpios:
-+    description: |
-+      GPIO used to signal a SPI master that the FIFO is filled and we're
-+      ready to service a transfer. Only useful in slave mode.
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - '#address-cells'
-+  - '#size-cells'
-+
-+dependencies:
-+  ready-gpios: [ spi-slave ]
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/marvell,mmp2.h>
-+    spi@d4035000 {
-+        compatible = "marvell,mmp2-ssp";
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        reg = <0xd4035000 0x1000>;
-+        clocks = <&soc_clocks MMP2_CLK_SSP0>;
-+        interrupts = <0>;
-+    };
-+
-+...
-diff --git a/Documentation/devicetree/bindings/spi/spi-pxa2xx.txt b/Documentation/devicetree/bindings/spi/spi-pxa2xx.txt
-deleted file mode 100644
-index e30e0c2a4bce1..0000000000000
---- a/Documentation/devicetree/bindings/spi/spi-pxa2xx.txt
-+++ /dev/null
-@@ -1,27 +0,0 @@
--PXA2xx SSP SPI Controller
--
--Required properties:
--- compatible: Must be "marvell,mmp2-ssp".
--- reg: Offset and length of the device's register set.
--- interrupts: Should be the interrupt number.
--- clocks: Should contain a single entry describing the clock input.
--- #address-cells:  Number of cells required to define a chip select address.
--- #size-cells: Should be zero.
--
--Optional properties:
--- cs-gpios: list of GPIO chip selects. See the SPI bus bindings,
--  Documentation/devicetree/bindings/spi/spi-bus.txt
--- spi-slave: Empty property indicating the SPI controller is used in slave mode.
--- ready-gpios: GPIO used to signal a SPI master that the FIFO is filled
--  and we're ready to service a transfer. Only useful in slave mode.
--
--Child nodes represent devices on the SPI bus
--  See ../spi/spi-bus.txt
--
--Example:
--	ssp1: spi@d4035000 {
--		compatible = "marvell,mmp2-ssp";
--		reg = <0xd4035000 0x1000>;
--		clocks = <&soc_clocks MMP2_CLK_SSP0>;
--		interrupts = <0>;
--	};
+diff --git a/Documentation/devicetree/bindings/mmc/mmc-controller.yaml b/Documentation/devicetree/bindings/mmc/mmc-controller.yaml
+index c9384ed685b8f..c03fe268c29a0 100644
+--- a/Documentation/devicetree/bindings/mmc/mmc-controller.yaml
++++ b/Documentation/devicetree/bindings/mmc/mmc-controller.yaml
+@@ -351,7 +351,7 @@ dependencies:
+ 
+ examples:
+   - |
+-    sdhci@ab000000 {
++    mmc@ab000000 {
+         compatible = "sdhci";
+         reg = <0xab000000 0x200>;
+         interrupts = <23>;
 -- 
 2.25.1
 
