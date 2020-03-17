@@ -4,24 +4,24 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FD5FC10F29
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:40:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 289E5C18E5B
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:40:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DD9362073C
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:40:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F31CD2071C
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726863AbgCQJkZ (ORCPT
+        id S1726971AbgCQJkg (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Mar 2020 05:40:25 -0400
-Received: from v6.sk ([167.172.42.174]:50344 "EHLO v6.sk"
+        Tue, 17 Mar 2020 05:40:36 -0400
+Received: from v6.sk ([167.172.42.174]:50448 "EHLO v6.sk"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726852AbgCQJkX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Mar 2020 05:40:23 -0400
+        id S1726917AbgCQJkf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 17 Mar 2020 05:40:35 -0400
 Received: from localhost (v6.sk [IPv6:::1])
-        by v6.sk (Postfix) with ESMTP id 332816108C;
-        Tue, 17 Mar 2020 09:40:21 +0000 (UTC)
+        by v6.sk (Postfix) with ESMTP id 2B9D16108F;
+        Tue, 17 Mar 2020 09:40:33 +0000 (UTC)
 From:   Lubomir Rintel <lkundrak@v3.sk>
 To:     Rob Herring <robh+dt@kernel.org>
 Cc:     Linus Walleij <linus.walleij@linaro.org>,
@@ -48,9 +48,9 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
         Lubomir Rintel <lkundrak@v3.sk>
-Subject: [PATCH 12/28] spi: dt-bindings: spi-controller: Slaves have no address cells
-Date:   Tue, 17 Mar 2020 10:39:06 +0100
-Message-Id: <20200317093922.20785-13-lkundrak@v3.sk>
+Subject: [PATCH 15/28] dt-bindings: arm: mrvl: Add missing compatible strings
+Date:   Tue, 17 Mar 2020 10:39:09 +0100
+Message-Id: <20200317093922.20785-16-lkundrak@v3.sk>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200317093922.20785-1-lkundrak@v3.sk>
 References: <20200317093922.20785-1-lkundrak@v3.sk>
@@ -61,53 +61,34 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-SPI controllers in slave mode have a single child node that has no
-address. Enforce #address-cells of zero instead of one.
+Add compatible strings for the boards we have in tree. At the same time,
+fix the MMP3 compatible string: the preferred vendor name for Marvell is
+"marvell", not "mrvl", and indeed "marvell,mmp3" has been actively used,
+not "mrvl,mmp3".
 
-Fixes: 0a1b929356830 ("spi: Add YAML schemas for the generic SPI options")
+Fixes: 95aecb71b84e ("dt-bindings: arm: mrvl: Document MMP3 compatible string")
 Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
 ---
- .../bindings/spi/spi-controller.yaml          | 23 ++++++++++++++-----
- 1 file changed, 17 insertions(+), 6 deletions(-)
+ Documentation/devicetree/bindings/arm/mrvl/mrvl.yaml | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/spi/spi-controller.yaml b/Documentation/devicetree/bindings/spi/spi-controller.yaml
-index d8e5509a70816..30d774cf6cc95 100644
---- a/Documentation/devicetree/bindings/spi/spi-controller.yaml
-+++ b/Documentation/devicetree/bindings/spi/spi-controller.yaml
-@@ -15,16 +15,27 @@ description: |
-   controller may be described for use in SPI master mode or in SPI slave mode,
-   but not for both at the same time.
- 
-+allOf:
-+  - if:
-+      required:
-+        - spi-slave
-+    then:
-+      properties:
-+        "#address-cells":
-+          const: 0
-+        "#size-cells":
-+          const: 0
-+    else:
-+      properties:
-+        "#address-cells":
-+          const: 1
-+        "#size-cells":
-+          const: 0
-+
- properties:
-   $nodename:
-     pattern: "^spi(@.*|-[0-9a-f])*$"
- 
--  "#address-cells":
--    const: 1
--
--  "#size-cells":
--    const: 0
--
-   cs-gpios:
-     description: |
-       GPIOs used as chip selects.
+diff --git a/Documentation/devicetree/bindings/arm/mrvl/mrvl.yaml b/Documentation/devicetree/bindings/arm/mrvl/mrvl.yaml
+index 818dfe6de5120..3235ec9e9bad1 100644
+--- a/Documentation/devicetree/bindings/arm/mrvl/mrvl.yaml
++++ b/Documentation/devicetree/bindings/arm/mrvl/mrvl.yaml
+@@ -28,8 +28,11 @@ properties:
+         items:
+           - enum:
+               - mrvl,mmp2-brownstone
++              - olpc,xo-1.75
+           - const: mrvl,mmp2
+       - description: MMP3 based boards
+         items:
+-          - const: mrvl,mmp3
++          - enum:
++              - dell,wyse-ariel
++          - const: marvell,mmp3
+ ...
 -- 
 2.25.1
 
