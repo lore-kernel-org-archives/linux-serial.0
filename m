@@ -2,271 +2,112 @@ Return-Path: <SRS0=6uIZ=5C=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47E19C5ACD6
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 19:08:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E231C5ACD7
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 19:09:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1A4B820754
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 19:08:56 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="EVZ6onoc"
+	by mail.kernel.org (Postfix) with ESMTP id 0546F206EC
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 19:09:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726452AbgCQTIz (ORCPT
+        id S1726735AbgCQTJV (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Mar 2020 15:08:55 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:46598 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726541AbgCQTIz (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Mar 2020 15:08:55 -0400
-Received: by mail-lf1-f68.google.com with SMTP id a28so6372069lfr.13
-        for <linux-serial@vger.kernel.org>; Tue, 17 Mar 2020 12:08:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=N0pVG6jg37JbXDGZqNXU8YUjbzipX2Fsv4mJnUH+Gqc=;
-        b=EVZ6onocp1AKXkig4MYRrWS48pQUz/GXUgU3trR6RLyy2aDNysZ5AWmmlx14k36Rz9
-         F4G8ckytSImzjbTgfCanyhg8I1gSTsiKcgGs9cUHyu3+dHoATjA5Mk1b5riuDxhAEumh
-         DbK7l1Ux8rLZxqeEarOSx3QYk0LWS6Utc4c30=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=N0pVG6jg37JbXDGZqNXU8YUjbzipX2Fsv4mJnUH+Gqc=;
-        b=jqE1vReNqHJ24umGDeaCf64utm/vhSlkMzA9wMmdimGSMg+IJwVAF4gswDC6kgX4Nf
-         LSi2hmOSE+Ezl9ipD2hdUSTtneyxEgQOxUZT8HSb2l9hlknqgiW/+1ov9uzH4JDsD9+6
-         GDyFWZR/KFeuxsO2m/K5b2624g0d/mY5TyiqnGZZwBSrrUptzvqygyKCd7isFfyabpoo
-         54R3ZZNoIVlHfxZLBVkLlerrKWcsfN9EXveNMZwff1qn50pDqIvp/rQIDqKjzf7xNukA
-         a3q5mx9jD/9lh7lzMUGEC0PzAOk9B4HkAmyw/EPfANsqgGJPYBdosSslx3hiQme76QtG
-         7Ofw==
-X-Gm-Message-State: ANhLgQ1Eg9l28uQdnvg62e1/cgdAki9pYvHE09gKNl7eL2sgQBy7BRdb
-        8cK6aHDycDeM7Psz7NTT6sihxWHBYLY=
-X-Google-Smtp-Source: ADFU+vvfswDhpcCoYBtDhxoDfatUnVYABgcuwlyjaAc77JZxwTWwaFUwpp3MWJb+hBaS5nzehnQSzw==
-X-Received: by 2002:a19:c611:: with SMTP id w17mr510945lff.179.1584472131820;
-        Tue, 17 Mar 2020 12:08:51 -0700 (PDT)
-Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com. [209.85.208.180])
-        by smtp.gmail.com with ESMTPSA id v27sm3093639lfq.78.2020.03.17.12.08.50
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Mar 2020 12:08:51 -0700 (PDT)
-Received: by mail-lj1-f180.google.com with SMTP id s13so24233262ljm.1
-        for <linux-serial@vger.kernel.org>; Tue, 17 Mar 2020 12:08:50 -0700 (PDT)
-X-Received: by 2002:a2e:a318:: with SMTP id l24mr134231lje.41.1584472129958;
- Tue, 17 Mar 2020 12:08:49 -0700 (PDT)
-MIME-Version: 1.0
-References: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
- <1584105134-13583-4-git-send-email-akashast@codeaurora.org>
- <20200313204441.GJ144492@google.com> <1f86fdf0-df7c-4e4a-d4d8-8b0162e52cb4@codeaurora.org>
-In-Reply-To: <1f86fdf0-df7c-4e4a-d4d8-8b0162e52cb4@codeaurora.org>
-From:   Evan Green <evgreen@chromium.org>
-Date:   Tue, 17 Mar 2020 12:08:13 -0700
-X-Gmail-Original-Message-ID: <CAE=gft5GcOeQ5kh1bGen_P0J98g2XaAJ7NrDsxkirDoLtL4GWg@mail.gmail.com>
-Message-ID: <CAE=gft5GcOeQ5kh1bGen_P0J98g2XaAJ7NrDsxkirDoLtL4GWg@mail.gmail.com>
-Subject: Re: [PATCH V2 3/8] soc: qcom-geni-se: Add interconnect support to fix
- earlycon crash
-To:     Akash Asthana <akashast@codeaurora.org>
-Cc:     Matthias Kaehlcke <mka@chromium.org>,
+        Tue, 17 Mar 2020 15:09:21 -0400
+Received: from mail.v3.sk ([167.172.186.51]:46710 "EHLO shell.v3.sk"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726388AbgCQTJV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 17 Mar 2020 15:09:21 -0400
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by zimbra.v3.sk (Postfix) with ESMTP id 2340FE021B;
+        Tue, 17 Mar 2020 19:09:38 +0000 (UTC)
+Received: from shell.v3.sk ([127.0.0.1])
+        by localhost (zimbra.v3.sk [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id DLLls_Mq1N8K; Tue, 17 Mar 2020 19:09:36 +0000 (UTC)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by zimbra.v3.sk (Postfix) with ESMTP id 44473E0116;
+        Tue, 17 Mar 2020 19:09:36 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at zimbra.v3.sk
+Received: from shell.v3.sk ([127.0.0.1])
+        by localhost (zimbra.v3.sk [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id vjvflx8zMQmd; Tue, 17 Mar 2020 19:09:36 +0000 (UTC)
+Received: from localhost (unknown [109.183.109.54])
+        by zimbra.v3.sk (Postfix) with ESMTPSA id C22C4DFFBE;
+        Tue, 17 Mar 2020 19:09:35 +0000 (UTC)
+Date:   Tue, 17 Mar 2020 20:09:13 +0100
+From:   Lubomir Rintel <lkundrak@v3.sk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Marc Zyngier <maz@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        wsa@the-dreams.de, Mark Brown <broonie@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-i2c@vger.kernel.org,
-        linux-spi@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Stephen Boyd <swboyd@chromium.org>,
-        Manu Gautam <mgautam@codeaurora.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-serial@vger.kernel.org,
-        Doug Anderson <dianders@chromium.org>,
-        Georgi Djakov <georgi.djakov@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+        Mark Brown <broonie@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Daniel Mack <daniel@zonque.org>,
+        Haojian Zhuang <haojian.zhuang@gmail.com>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH 13/28] dt-bindings: serial: move Marvell compatible
+ string to 8250 binding doc
+Message-ID: <20200317190913.GA24359@furthur.local>
+References: <20200317093922.20785-1-lkundrak@v3.sk>
+ <20200317093922.20785-14-lkundrak@v3.sk>
+ <20200317134805.GO24270@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200317134805.GO24270@lunn.ch>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Mar 17, 2020 at 3:58 AM Akash Asthana <akashast@codeaurora.org> wrote:
->
-> Hi Matthias,
->
-> On 3/14/2020 2:14 AM, Matthias Kaehlcke wrote:
-> > Hi Akash,
-> >
-> > On Fri, Mar 13, 2020 at 06:42:09PM +0530, Akash Asthana wrote:
-> >> V1 patch@https://patchwork.kernel.org/patch/11386469/ caused SC7180 system
-> >> to reset at boot time.
-> > The v1 patch isn't relevant in the commit message, please just describe the
-> > problem. Also the crash only occurs when earlycon is used.
-> ok
-> >
-> >> As QUP core clock is shared among all the SE drivers present on particular
-> >> QUP wrapper, the reset seen is due to earlycon usage after QUP core clock
-> >> is put to 0 from other SE drivers before real console comes up.
-> >>
-> >> As earlycon can't vote for it's QUP core need, to fix this add ICC
-> >> support to common/QUP wrapper driver and put vote for QUP core from
-> >> probe on behalf of earlycon and remove vote during sys suspend.
-> > Only removing the vote on suspend isn't ideal, the system might never get
-> > suspended. That said I don't have a really good alternative suggestion.
-> >
-> > One thing you could possibly do is to launch a delayed work, check
-> > console_device() every second or so and remove the vote when it returns
-> > non-NULL. Not claiming this would be a great solution ...
-> >
-> > The cleanest solution might be a notifier when the early console is
-> > unregistered, it seems somewhat over-engineered though ... Then again
-> > other (future) uart drivers with interconnect support might run into
-> > the same problem.
->
-> We are hitting this problem because QUP core clocks are shared among all
-> the SE driver present in particular QUP wrapper, if other HW controllers
-> has similar architecture we will hit this issue.
->
-> How about if we expose an API from common driver(geni-se) for putting
-> QUP core BW vote to 0.
->
-> We call this from console probe just after uart_add_one_port call
-> (console resources are enabled as part of this call) to put core quota
-> to 0 on behalf of earlyconsole?
+On Tue, Mar 17, 2020 at 02:48:05PM +0100, Andrew Lunn wrote:
+> On Tue, Mar 17, 2020 at 10:39:07AM +0100, Lubomir Rintel wrote:
+> > These ports are compatible with NS8250 and handled by the same driver.
+> > Get rid of the extra document that fails to document the properties that
+> > are actually supported.
+> 
+> Hi Lubmir
+> 
+> This is needs a bit closer examination. By the PXA maintainers. It
+> appears there are two serial drivers, the 8250 and a PXA specific
+> driver.
 
-+Georgi
+Well, for "mrvl,mmp-uart", there are three: SERIAL_OF_PLATFORM,
+SERIAL_8250_PXA and SERIAL_PXA:
 
-Hm, these boot proxy votes are annoying, since the whole house of
-cards comes down if you replace these votes in the wrong order.
+  drivers/tty/serial/8250/8250_of.c:      { .compatible = "mrvl,mmp-uart",
+  drivers/tty/serial/8250/8250_pxa.c:     { .compatible = "mrvl,mmp-uart", },
+  drivers/tty/serial/pxa.c:       { .compatible = "mrvl,mmp-uart", },
 
-I believe consensus in the other patches was to consolidate most of
-the interconnect support into the common SE code, right? Would that
-help you with these boot proxy votes? What I'm thinking is something
-along the lines of:
- * SPI, I2C, UART all call into the new common geni_se_icc_on/off()
-(or whatever it's called)
- * If geni_se_icc_off() sees that console UART hasn't voted yet, save
-the votes but don't actually call icc_set(0) now.
- * Once uart votes for the first time, call icc_set() on all of SPI,
-I2C, UART to get things back in sync.
+For that matter, the hardware is also compatible with intel,xscale-uart
+and the mrvl,mmp-uart compatible string is perhaps entirely unnecessary.
 
-That's a sort of roll-your-own solution for GENI, but we do have this
-problem elsewhere as well. A more general solution would be to have
-the interconnect providers prop things up (ie ignore votes to lower
-bandwidth) until some "go" moment where we feel we've enumerated all
-devices. I was originally thinking to model this off of something like
-clk_disable_unused(), but after chatting with Stephen it's clear
-late_initcall's aren't really indicative of all devices having
-actually come up. So I'm not sure where the appropriate "go" moment
-is.
+I guess the story is somewhat similar for mrvl,pxa-uart; I can not
+verify though.
 
--Evan
+I suppose SERIAL_PXA is not really needed at this point and if support
+for mrvl,pxa-uart was added to SERIAL_OF_PLATFORM, then SERIAL_8250_PXA
+would only be useful for platforms that don't use DT and the DT bits
+could be stripped from it eventually. That is -- if PXA maintainers
+agree, of course.
 
+> 	Andrew
 
->
-> >
-> >> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
-> >> Reported-by: Matthias Kaehlcke <mka@chromium.org>
-> >> ---
-> >>   drivers/soc/qcom/qcom-geni-se.c | 41 +++++++++++++++++++++++++++++++++++++++++
-> >>   1 file changed, 41 insertions(+)
-> >>
-> >> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
-> >> index 7d622ea..d244dfc 100644
-> >> --- a/drivers/soc/qcom/qcom-geni-se.c
-> >> +++ b/drivers/soc/qcom/qcom-geni-se.c
-> >> @@ -90,6 +90,7 @@ struct geni_wrapper {
-> >>      struct device *dev;
-> >>      void __iomem *base;
-> >>      struct clk_bulk_data ahb_clks[NUM_AHB_CLKS];
-> >> +    struct icc_path *icc_path_geni_to_core;
-> >>   };
-> >>
-> >>   #define QUP_HW_VER_REG                     0x4
-> >> @@ -747,11 +748,50 @@ static int geni_se_probe(struct platform_device *pdev)
-> >>              }
-> >>      }
-> >>
-> >> +#ifdef CONFIG_SERIAL_EARLYCON
-> >> +    wrapper->icc_path_geni_to_core = devm_of_icc_get(dev, "qup-core");
-> >> +    if (IS_ERR(wrapper->icc_path_geni_to_core))
-> >> +            return PTR_ERR(wrapper->icc_path_geni_to_core);
-> >> +    /*
-> >> +     * Put minmal BW request on core clocks on behalf of early console.
-> >> +     * The vote will be removed in suspend call.
-> >> +     */
-> >> +    ret = icc_set_bw(wrapper->icc_path_geni_to_core, Bps_to_icc(1000),
-> >> +                    Bps_to_icc(1000));
-> >> +    if (ret) {
-> >> +            dev_err(&pdev->dev, "%s: ICC BW voting failed for core\n",
-> >> +                    __func__);
-> >> +            return ret;
-> >> +    }
-> > What is ugly about this is that it's done for every QUP, not only the one
-> > with the early console. Again, I don't have a good solution for it, maybe
-> > it's a limitation we have to live with :(
->
-> There is one more limitation from QUP core side. Core clocks for both
-> the QUP wrapper runs at same speed.
->
-> core2x_1 = core2x_2 = max(core2x_1, core2x_2);
->
-> So with above limitation and if we are removing early con vote from Core
-> when real console comes up. It doesn't matter whether it's done for
-> every QUP or the only with early console.
->
-> >
-> >> +#endif
-> >> +
-> >>      dev_set_drvdata(dev, wrapper);
-> >>      dev_dbg(dev, "GENI SE Driver probed\n");
-> >>      return devm_of_platform_populate(dev);
-> >>   }
-> >>
-> >> +static int __maybe_unused geni_se_sys_suspend(struct device *dev)
-> >> +{
-> >> +    struct geni_wrapper *wrapper = dev_get_drvdata(dev);
-> >> +    int ret;
-> >> +
-> >> +#ifdef CONFIG_SERIAL_EARLYCON
-> >> +    ret = icc_set_bw(wrapper->icc_path_geni_to_core, 0, 0);
-> > I think you only want to do this on the first suspend.
-> Ok, I can add that logic using global variable.
-> >
-> > Do we need to handle the case where no 'real' console is configured?
-> > In this case the early console would be active forever and setting
-> > the bandwidths to 0 might cause a similar crash than the one you are
-> > trying to fix. Not sure if that's a real world use case, but wanted to
-> > mention it. Maybe this is an argument of the notifier approach?
-> We can't support earlycon without real console.
->
-> As earlyconsole doesn't do any kind of resource enablement(SE clocks,
-> pinctrl, etc) it assumes that resources are already enabled from
-> previous stages.
->
-> So if real console doesn't come up no one will vote for that SE clock,
-> and it will be disabled from clk late_init call which will result into
-> un-clocked access.
->
->
-> >
-> >> +    if (ret) {
-> >> +            dev_err(dev, "%s: ICC BW remove failed for core\n",
-> >> +                    __func__);
-> >> +            return ret;
-> > Aborting suspend seems too harsh since the QUP should still be fully
-> > functional unless there is a general problem with the interconnects.
-> >
-> > I would suggest to change the log to dev_warn() and return 0.
->
-> Ok
->
-> Thanks for reviewing the patch.
->
-> regards,
->
-> Akash
->
-> --
-> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+Regards
+Lubo
