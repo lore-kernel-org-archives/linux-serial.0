@@ -6,22 +6,22 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7400DC10F29
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:42:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06920C18E5B
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:42:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4D6A620714
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:42:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D3FF520714
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726760AbgCQJmr (ORCPT
+        id S1726552AbgCQJjo (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Mar 2020 05:42:47 -0400
-Received: from v6.sk ([167.172.42.174]:50134 "EHLO v6.sk"
+        Tue, 17 Mar 2020 05:39:44 -0400
+Received: from v6.sk ([167.172.42.174]:50014 "EHLO v6.sk"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726628AbgCQJkA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Mar 2020 05:40:00 -0400
+        id S1725916AbgCQJjn (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 17 Mar 2020 05:39:43 -0400
 Received: from localhost (v6.sk [IPv6:::1])
-        by v6.sk (Postfix) with ESMTP id 6D10B60F22;
-        Tue, 17 Mar 2020 09:39:57 +0000 (UTC)
+        by v6.sk (Postfix) with ESMTP id 5548A60EED;
+        Tue, 17 Mar 2020 09:39:40 +0000 (UTC)
 From:   Lubomir Rintel <lkundrak@v3.sk>
 To:     Rob Herring <robh+dt@kernel.org>
 Cc:     Linus Walleij <linus.walleij@linaro.org>,
@@ -48,9 +48,9 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
         Lubomir Rintel <lkundrak@v3.sk>
-Subject: [PATCH 06/28] ARM: dts: pxa910: Fix the gpio interrupt cell number
-Date:   Tue, 17 Mar 2020 10:39:00 +0100
-Message-Id: <20200317093922.20785-7-lkundrak@v3.sk>
+Subject: [PATCH 02/28] ARM: dts: dove: Fix interrupt controller node name
+Date:   Tue, 17 Mar 2020 10:38:56 +0100
+Message-Id: <20200317093922.20785-3-lkundrak@v3.sk>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200317093922.20785-1-lkundrak@v3.sk>
 References: <20200317093922.20785-1-lkundrak@v3.sk>
@@ -61,27 +61,30 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-gpio-pxa uses two cell to encode the interrupt source: the pin number
-and the trigger type. Adjust the device node accordingly.
+The current ones makes validation unhappy:
+
+  dove-d3plug.dt.yaml: main-interrupt-ctrl@20200: $nodename:0:
+      'main-interrupt-ctrl@20200' does not match
+      '^interrupt-controller(@[0-9a-f,]+)*$'
 
 Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
 ---
- arch/arm/boot/dts/pxa910.dtsi | 2 +-
+ arch/arm/boot/dts/dove.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/pxa910.dtsi b/arch/arm/boot/dts/pxa910.dtsi
-index b3d6182d4de4a..5f8e208916b31 100644
---- a/arch/arm/boot/dts/pxa910.dtsi
-+++ b/arch/arm/boot/dts/pxa910.dtsi
-@@ -106,7 +106,7 @@ gpio@d4019000 {
- 				clocks = <&soc_clocks PXA910_CLK_GPIO>;
- 				resets = <&soc_clocks PXA910_CLK_GPIO>;
- 				interrupt-controller;
--				#interrupt-cells = <1>;
-+				#interrupt-cells = <2>;
- 				ranges;
+diff --git a/arch/arm/boot/dts/dove.dtsi b/arch/arm/boot/dts/dove.dtsi
+index 3081b04e8c08f..ddd4653f52811 100644
+--- a/arch/arm/boot/dts/dove.dtsi
++++ b/arch/arm/boot/dts/dove.dtsi
+@@ -248,7 +248,7 @@ bridge_intc: bridge-interrupt-ctrl@20110 {
+ 				marvell,#interrupts = <5>;
+ 			};
  
- 				gcb0: gpio@d4019000 {
+-			intc: main-interrupt-ctrl@20200 {
++			intc: interrupt-controller@20200 {
+ 				compatible = "marvell,orion-intc";
+ 				interrupt-controller;
+ 				#interrupt-cells = <1>;
 -- 
 2.25.1
 
