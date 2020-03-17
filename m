@@ -2,26 +2,26 @@ Return-Path: <SRS0=6uIZ=5C=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06920C18E5B
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A41AC5ACC1
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:42:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D3FF520714
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:42:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3692620714
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726552AbgCQJjo (ORCPT
+        id S1726019AbgCQJjf (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Mar 2020 05:39:44 -0400
-Received: from v6.sk ([167.172.42.174]:50014 "EHLO v6.sk"
+        Tue, 17 Mar 2020 05:39:35 -0400
+Received: from v6.sk ([167.172.42.174]:49946 "EHLO v6.sk"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725916AbgCQJjn (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Mar 2020 05:39:43 -0400
+        id S1725916AbgCQJjf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 17 Mar 2020 05:39:35 -0400
 Received: from localhost (v6.sk [IPv6:::1])
-        by v6.sk (Postfix) with ESMTP id 5548A60EED;
-        Tue, 17 Mar 2020 09:39:40 +0000 (UTC)
+        by v6.sk (Postfix) with ESMTP id D181F60EC2;
+        Tue, 17 Mar 2020 09:39:31 +0000 (UTC)
 From:   Lubomir Rintel <lkundrak@v3.sk>
 To:     Rob Herring <robh+dt@kernel.org>
 Cc:     Linus Walleij <linus.walleij@linaro.org>,
@@ -46,14 +46,11 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
         linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
         linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
-        Lubomir Rintel <lkundrak@v3.sk>
-Subject: [PATCH 02/28] ARM: dts: dove: Fix interrupt controller node name
-Date:   Tue, 17 Mar 2020 10:38:56 +0100
-Message-Id: <20200317093922.20785-3-lkundrak@v3.sk>
+        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: [PATCH 00/28] DT: Improve validation for Marvell SoCs
+Date:   Tue, 17 Mar 2020 10:38:54 +0100
+Message-Id: <20200317093922.20785-1-lkundrak@v3.sk>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200317093922.20785-1-lkundrak@v3.sk>
-References: <20200317093922.20785-1-lkundrak@v3.sk>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
@@ -61,30 +58,62 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The current ones makes validation unhappy:
+Hello World,
 
-  dove-d3plug.dt.yaml: main-interrupt-ctrl@20200: $nodename:0:
-      'main-interrupt-ctrl@20200' does not match
-      '^interrupt-controller(@[0-9a-f,]+)*$'
+chained to this message is a set of patches that improve coverage of Device
+Tree validation for devices typically found on Marvell SoCs. It converts most
+of the peripheral binding documentation to YAML and fixes up validation issues
+in the SoC device trees.
 
-Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
----
- arch/arm/boot/dts/dove.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+It starts with fixing the issues:
 
-diff --git a/arch/arm/boot/dts/dove.dtsi b/arch/arm/boot/dts/dove.dtsi
-index 3081b04e8c08f..ddd4653f52811 100644
---- a/arch/arm/boot/dts/dove.dtsi
-+++ b/arch/arm/boot/dts/dove.dtsi
-@@ -248,7 +248,7 @@ bridge_intc: bridge-interrupt-ctrl@20110 {
- 				marvell,#interrupts = <5>;
- 			};
- 
--			intc: main-interrupt-ctrl@20200 {
-+			intc: interrupt-controller@20200 {
- 				compatible = "marvell,orion-intc";
- 				interrupt-controller;
- 				#interrupt-cells = <1>;
--- 
-2.25.1
+  [PATCH 01/28] ARM: dts: kirkwood: Fix interrupt controller node name
+  [PATCH 02/28] ARM: dts: dove: Fix interrupt controller node name
+  [PATCH 03/28] ARM: dts: pxa168: Add missing address/size cells to i2c
+  [PATCH 04/28] ARM: dts: pxa168: Fix the gpio interrupt cell number
+  [PATCH 05/28] ARM: dts: pxa3xx: Fix up encoding of the /gpio
+  [PATCH 06/28] ARM: dts: pxa910: Fix the gpio interrupt cell number
+  [PATCH 07/28] ARM: dts: pxa*: Fix up encoding of the /rtc interrupts
+  [PATCH 08/28] ARM: dts: mmp*: Fix up encoding of the /rtc interrupts
+  [PATCH 09/28] ARM: dts: mmp3: fix L2 cache controller node name
+  [PATCH 10/28] ARM: dts: mmp3: fix USB & USB PHY node names
+  [PATCH 11/28] ARM: dts: berlin*: Fix up the SDHCI node names
+
+Then the binding fixes follow.
+
+When converting .txt binding files that were not written by myself,
+I didn't include the SPDX license tag and set the maintaners: to the
+devicetree@ list. The reason is that the original binding files don't
+contain the information and I didn't want to speak for anyone else and
+make it up.
+
+If this is not the correct thing to do, or the respective binding
+contributors want to clarify the licensing or be listed as maintainers,
+please respond and I'll send an updated patch set. I'm also happy to
+maintain any of these bindings.
+
+  [PATCH 12/28] spi: dt-bindings: spi-controller: Slaves have no
+  [PATCH 13/28] dt-bindings: serial: move Marvell compatible string to
+  [PATCH 14/28] dt-bindings: arm: l2x0: Tauros 3 is PL310 compatible
+  [PATCH 15/28] dt-bindings: arm: mrvl: Add missing compatible strings
+  [PATCH 16/28] dt-bindings: Add "mrvl", a legacy vendor prefix for
+  [PATCH 17/28] dt-bindings: mmc: Fix up clk-phase-sd-hs in an example
+  [PATCH 18/28] dt-bindings: mmc: Fix node name in an example
+  [PATCH 19/28] dt-bindings: mmc: Convert sdhci-pxa to json-schema
+  [PATCH 20/28] dt-bindings: phy: Convert phy-mmp3-usb to json-schema
+  [PATCH 21/28] dt-bindings: gpio: Convert mrvl-gpio to json-schema
+  [PATCH 22/28] dt-bindings: i2c: Convert i2c-pxa to json-schema
+  [PATCH 23/28] dt-bindings: interrupt-controller: Convert mrvl,intc to
+  [PATCH 24/28] dt-bindings: media: Convert marvell,mmp2-ccic to
+  [PATCH 25/28] dt-bindings: rtc: Convert sa1100-rtc to json-schema
+  [PATCH 26/28] dt-bindings: spi: Convert spi-pxa2xx to json-schema
+  [PATCH 27/28] dt-bindings: timer: Convert mrvl,mmp-timer to
+  [PATCH 28/28] dt-bindings: usb: Convert ehci-mv to json-schema
+
+None of the patches depends on any other and they can be applied in any
+order.
+
+Love,
+Lubo
+
 
