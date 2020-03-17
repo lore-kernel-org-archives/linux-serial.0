@@ -6,22 +6,22 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DDCEC5ACD6
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:40:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD4BEC2BB1D
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:40:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 348A62071C
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:40:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8A16A2071C
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 09:40:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726610AbgCQJjs (ORCPT
+        id S1726702AbgCQJkB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Mar 2020 05:39:48 -0400
-Received: from v6.sk ([167.172.42.174]:50044 "EHLO v6.sk"
+        Tue, 17 Mar 2020 05:40:01 -0400
+Received: from v6.sk ([167.172.42.174]:50108 "EHLO v6.sk"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725916AbgCQJjr (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Mar 2020 05:39:47 -0400
+        id S1726682AbgCQJjz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 17 Mar 2020 05:39:55 -0400
 Received: from localhost (v6.sk [IPv6:::1])
-        by v6.sk (Postfix) with ESMTP id 9E15460EEE;
-        Tue, 17 Mar 2020 09:39:44 +0000 (UTC)
+        by v6.sk (Postfix) with ESMTP id 6F8D960EF0;
+        Tue, 17 Mar 2020 09:39:53 +0000 (UTC)
 From:   Lubomir Rintel <lkundrak@v3.sk>
 To:     Rob Herring <robh+dt@kernel.org>
 Cc:     Linus Walleij <linus.walleij@linaro.org>,
@@ -48,9 +48,9 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
         Lubomir Rintel <lkundrak@v3.sk>
-Subject: [PATCH 03/28] ARM: dts: pxa168: Add missing address/size cells to i2c nodes
-Date:   Tue, 17 Mar 2020 10:38:57 +0100
-Message-Id: <20200317093922.20785-4-lkundrak@v3.sk>
+Subject: [PATCH 05/28] ARM: dts: pxa3xx: Fix up encoding of the /gpio interrupts property
+Date:   Tue, 17 Mar 2020 10:38:59 +0100
+Message-Id: <20200317093922.20785-6-lkundrak@v3.sk>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200317093922.20785-1-lkundrak@v3.sk>
 References: <20200317093922.20785-1-lkundrak@v3.sk>
@@ -61,36 +61,30 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This makes the nodes compatible with the generic i2c binding without the
-board DTS files having to supply the necessary properties themselves.
+This way the device tree validator learns that each cell of the property
+constitutes a separate item. Otherwise it gets unnecessairly upset:
+
+  pxa300-raumfeld-speaker-s.dt.yaml: gpio@40e00000: interrupts:
+      [[8, 9, 10]] is too short
 
 Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
 ---
- arch/arm/boot/dts/pxa168.dtsi | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm/boot/dts/pxa3xx.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/pxa168.dtsi b/arch/arm/boot/dts/pxa168.dtsi
-index 72f8cb60cb531..c39d00fe07982 100644
---- a/arch/arm/boot/dts/pxa168.dtsi
-+++ b/arch/arm/boot/dts/pxa168.dtsi
-@@ -116,6 +116,8 @@ gcb3: gpio@d4019100 {
- 
- 			twsi1: i2c@d4011000 {
- 				compatible = "mrvl,mmp-twsi";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
- 				reg = <0xd4011000 0x1000>;
- 				interrupts = <7>;
- 				clocks = <&soc_clocks PXA168_CLK_TWSI0>;
-@@ -126,6 +128,8 @@ twsi1: i2c@d4011000 {
- 
- 			twsi2: i2c@d4025000 {
- 				compatible = "mrvl,mmp-twsi";
-+				#address-cells = <1>;
-+				#size-cells = <0>;
- 				reg = <0xd4025000 0x1000>;
- 				interrupts = <58>;
- 				clocks = <&soc_clocks PXA168_CLK_TWSI1>;
+diff --git a/arch/arm/boot/dts/pxa3xx.dtsi b/arch/arm/boot/dts/pxa3xx.dtsi
+index c237a0e4b12ae..d19674812cd2d 100644
+--- a/arch/arm/boot/dts/pxa3xx.dtsi
++++ b/arch/arm/boot/dts/pxa3xx.dtsi
+@@ -170,7 +170,7 @@ gpio: gpio@40e00000 {
+ 			clocks = <&clks CLK_GPIO>;
+ 			gpio-ranges = <&pinctrl 0 0 128>;
+ 			interrupt-names = "gpio0", "gpio1", "gpio_mux";
+-			interrupts = <8 9 10>;
++			interrupts = <8>, <9>, <10>;
+ 			gpio-controller;
+ 			#gpio-cells = <0x2>;
+ 			interrupt-controller;
 -- 
 2.25.1
 
