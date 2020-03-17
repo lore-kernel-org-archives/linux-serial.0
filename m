@@ -6,34 +6,34 @@ X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBA75C2BB1D
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 13:46:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2C67C18E5B
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 13:48:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A91C820768
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 13:46:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BBBBB20757
+	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 13:48:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b="JqeY4afD"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b="Q5hrXgSw"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726650AbgCQNq1 (ORCPT
+        id S1726556AbgCQNsU (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Mar 2020 09:46:27 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:40678 "EHLO vps0.lunn.ch"
+        Tue, 17 Mar 2020 09:48:20 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:40706 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726130AbgCQNq0 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Mar 2020 09:46:26 -0400
+        id S1726016AbgCQNsT (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 17 Mar 2020 09:48:19 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=z9jbMjP794qbDPz7Th4w8ZRttzdlBXsYK76vOF75UR8=; b=JqeY4afDDIKk92QzWL6Lbn69t2
-        GCoFDnigAmsfYW/YuYECRVOs0mQNtoSgqM6SJJ6h2N7Ge2FGF8TadLsq5hI1qcjMl/c2N0nyBu82t
-        LcydMXmaTttpJZxs6+jhw7oDag8orKZF21yVf61BWyD8MVQ6ldFbLYwNQ6cfRpxFbx04=;
+        bh=bYlQFWOfFv95sQLXQr8vkUotMJgsK9c12/BhzhTTiG8=; b=Q5hrXgSw41E7plUSnoZHt2EQg1
+        Arv6YyudHnKqxSCDvgnG/1p+vDAyc5UWmGp5ZZSKNBNpnzeHnJXmApv2msv7x/CC6the2kvbBGgC8
+        acDMOqO+sJTRIxbjtTtowhoJ65ProLnwtJBGXoq3Ml2+ks8e7eOLbNUZyxGGVZ1qBlT8=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
         (envelope-from <andrew@lunn.ch>)
-        id 1jECXp-0006cC-PU; Tue, 17 Mar 2020 14:46:09 +0100
-Date:   Tue, 17 Mar 2020 14:46:09 +0100
+        id 1jECZh-0006cx-6s; Tue, 17 Mar 2020 14:48:05 +0100
+Date:   Tue, 17 Mar 2020 14:48:05 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Lubomir Rintel <lkundrak@v3.sk>
 Cc:     Rob Herring <robh+dt@kernel.org>,
@@ -59,28 +59,29 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
         linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-spi@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH 00/28] DT: Improve validation for Marvell SoCs
-Message-ID: <20200317134609.GN24270@lunn.ch>
+Subject: Re: [PATCH 13/28] dt-bindings: serial: move Marvell compatible
+ string to 8250 binding doc
+Message-ID: <20200317134805.GO24270@lunn.ch>
 References: <20200317093922.20785-1-lkundrak@v3.sk>
+ <20200317093922.20785-14-lkundrak@v3.sk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200317093922.20785-1-lkundrak@v3.sk>
+In-Reply-To: <20200317093922.20785-14-lkundrak@v3.sk>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Mar 17, 2020 at 10:38:54AM +0100, Lubomir Rintel wrote:
-> Hello World,
+On Tue, Mar 17, 2020 at 10:39:07AM +0100, Lubomir Rintel wrote:
+> These ports are compatible with NS8250 and handled by the same driver.
+> Get rid of the extra document that fails to document the properties that
+> are actually supported.
 
-Yah, that is an issue here. Marvell have a few different SoC families,
-each with there own maintainers. Gregory and I tend to look after
-'mvebu', aka orion5x, kirkwood, dove, berlin and a few others. All the
-others are 'Somebody elses' problem'.
+Hi Lubmir
 
-How do you think this patchset should get merged? Are we going to
-split it up, just nominate one maintainer to merge the lot, or go
-direct to arm-soc?
+This is needs a bit closer examination. By the PXA maintainers. It
+appears there are two serial drivers, the 8250 and a PXA specific
+driver.
 
-       Andrew
+	Andrew
