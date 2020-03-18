@@ -2,167 +2,97 @@ Return-Path: <SRS0=ll96=5D=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA3D6C5ACD7
-	for <linux-serial@archiver.kernel.org>; Wed, 18 Mar 2020 13:48:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DA97C10DCE
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Mar 2020 14:27:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B06C420724
-	for <linux-serial@archiver.kernel.org>; Wed, 18 Mar 2020 13:48:34 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="mgYBw/jl"
+	by mail.kernel.org (Postfix) with ESMTP id E835E20772
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Mar 2020 14:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726858AbgCRNse (ORCPT
+        id S1726893AbgCRO1B (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 18 Mar 2020 09:48:34 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:50983 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726893AbgCRNse (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 18 Mar 2020 09:48:34 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1584539313; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=e7D++PiZS2wNSyjtok+pyoNm2YTmDPQke/rQXBiRN5U=; b=mgYBw/jlC+571FLLsb3q5fQ2JCKTfFmjsuh2/rVjkOu94Itqs0j+RSQuXFrWdIJA3L/W/kJI
- iDxJFYkG02z0E3+GPgMhJRDG/m9Dkxsxb8WT5THI/FnobrUHXEuXLeA0N5egIf5cXEAjtCO2
- Syz8M39+jcjyuf9NsITd7aDr5lw=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e7226a2.7f4612e53730-smtp-out-n03;
- Wed, 18 Mar 2020 13:48:18 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 29F15C43636; Wed, 18 Mar 2020 13:48:18 +0000 (UTC)
-Received: from [192.168.0.8] (unknown [183.83.138.47])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id AB192C433CB;
-        Wed, 18 Mar 2020 13:48:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org AB192C433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-Subject: Re: [PATCH V2 7/8] spi: spi-qcom-qspi: Add interconnect support
-To:     Evan Green <evgreen@chromium.org>
-Cc:     Matthias Kaehlcke <mka@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        wsa@the-dreams.de, Mark Brown <broonie@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-i2c@vger.kernel.org,
-        linux-spi@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Stephen Boyd <swboyd@chromium.org>,
-        Manu Gautam <mgautam@codeaurora.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-serial@vger.kernel.org,
-        Doug Anderson <dianders@chromium.org>,
-        Georgi Djakov <georgi.djakov@linaro.org>
-References: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
- <1584105134-13583-8-git-send-email-akashast@codeaurora.org>
- <20200314005817.GN144492@google.com>
- <3aeb3083-2a31-b269-510d-eb608ff14ce5@codeaurora.org>
- <CAE=gft58QsgTCUHMHKJhcM9ZxAeMiY16CrbNv2HaTCRqwtmt7A@mail.gmail.com>
-From:   Akash Asthana <akashast@codeaurora.org>
-Message-ID: <e2ee1a60-a379-5c78-355a-64aad451a944@codeaurora.org>
-Date:   Wed, 18 Mar 2020 19:18:07 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        Wed, 18 Mar 2020 10:27:01 -0400
+Received: from gloria.sntech.de ([185.11.138.130]:37366 "EHLO gloria.sntech.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726973AbgCRO1B (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 18 Mar 2020 10:27:01 -0400
+Received: from [94.134.91.63] (helo=phil.fritz.box)
+        by gloria.sntech.de with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <heiko@sntech.de>)
+        id 1jEZep-0004YX-BN; Wed, 18 Mar 2020 15:26:55 +0100
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     gregkh@linuxfoundation.org
+Cc:     jslaby@suse.com, andriy.shevchenko@linux.intel.com,
+        matwey.kornilov@gmail.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, heiko@sntech.de,
+        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
+Subject: [PATCH 5/7] serial: 8250: handle DTR in rs485 emulation
+Date:   Wed, 18 Mar 2020 15:26:38 +0100
+Message-Id: <20200318142640.982763-6-heiko@sntech.de>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200318142640.982763-1-heiko@sntech.de>
+References: <20200318142640.982763-1-heiko@sntech.de>
 MIME-Version: 1.0
-In-Reply-To: <CAE=gft58QsgTCUHMHKJhcM9ZxAeMiY16CrbNv2HaTCRqwtmt7A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Evan,
+From: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
 
-On 3/18/2020 12:38 AM, Evan Green wrote:
-> On Tue, Mar 17, 2020 at 5:13 AM Akash Asthana <akashast@codeaurora.org> wrote:
->> Hi Matthias,
->>
->> On 3/14/2020 6:28 AM, Matthias Kaehlcke wrote:
->>> Hi,
->>>
->>> On Fri, Mar 13, 2020 at 06:42:13PM +0530, Akash Asthana wrote:
->>>> Get the interconnect paths for QSPI device and vote according to the
->>>> current bus speed of the driver.
->>>>
->>>> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
->>>> ---
->>>>    - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
->>>>      path handle
->>>>    - As per Matthias comment, added error handling for icc_set_bw call
->>>>
->>>>    drivers/spi/spi-qcom-qspi.c | 46 ++++++++++++++++++++++++++++++++++++++++++++-
->>>>    1 file changed, 45 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/spi/spi-qcom-qspi.c b/drivers/spi/spi-qcom-qspi.c
->>>> index 3c4f83b..ad48f43 100644
->>>> --- a/drivers/spi/spi-qcom-qspi.c
->>>> +++ b/drivers/spi/spi-qcom-qspi.c
->>>> @@ -2,6 +2,7 @@
->>>>    // Copyright (c) 2017-2018, The Linux foundation. All rights reserved.
->>>>
->>>>    #include <linux/clk.h>
->>>> +#include <linux/interconnect.h>
->>>>    #include <linux/interrupt.h>
->>>>    #include <linux/io.h>
->>>>    #include <linux/module.h>
->>>> @@ -139,7 +140,10 @@ struct qcom_qspi {
->>>>       struct device *dev;
->>>>       struct clk_bulk_data *clks;
->>>>       struct qspi_xfer xfer;
->>>> -    /* Lock to protect xfer and IRQ accessed registers */
->>>> +    struct icc_path *icc_path_cpu_to_qspi;
->>>> +    unsigned int avg_bw_cpu;
->>>> +    unsigned int peak_bw_cpu;
->>> This triplet is a recurring pattern, and is probably not limited to geni SE/QSPI.
->>> On https://patchwork.kernel.org/patch/11436889/#23221925 I suggested the creation
->>> of a geni SE specific struct, however adding a generic convenience struct to
->>> 'linux/interconnect.h' might be the better solution:
->>>
->>> struct icc_client {
->>>        struct icc_path *path;
->>>        unsigned int avg_bw;
->>>        unsigned int peak_bw;
->>> };
->>>
->>> I'm sure there are better names for it, but this would be the idea.
->> Yeah, I think introducing this to ICC header would be better solution.
-> +Georgi
->
-> I'm not as convinced this structure is generally useful and belongs in
-> the interconnect core. The thing that strikes me as weird with putting
-> it in the core is now we're saving these values both inside and
-> outside the interconnect core.
-IIUC, you meant to say struct icc_req(inside icc_path) will be saving 
-avg_bw and peak_bw so no need to save it outside icc_path?
->   In the GENI case here, we only really
-> need them to undo the 0 votes we cast during suspend. If "vote for 0
-> in suspend and whatever it was before at resume" is a recurring theme,
-> maybe the core should give us path_disable() and path_enable() calls
-> instead. I'm thinking out loud, maybe Georgi has some thoughts.
->
-> Akash, for now if you want to avoid wading into a larger discussion
-> maybe just refactor to a common structure local to GENI.
+While in a lot of cases only RTS is needed as DE signal, sometimes the
+RE signals is to be controlled separately, as DTR pin.
 
-Ok
+So add necessary control functions for it.
 
-Thanks,
+Signed-off-by: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
+---
+ drivers/tty/serial/8250/8250_port.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-Akash
-
->
->
-> -Evan
-
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 3d1d8490bc42..f8e5c096ed51 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -572,6 +572,10 @@ static inline void serial8250_em485_rts_after_send(struct uart_8250_port *p)
+ 		mcr &= ~UART_MCR_RTS;
+ 		p->port.mctrl &= ~TIOCM_RTS;
+ 	}
++
++	mcr |= UART_MCR_DTR;
++	p->port.mctrl |= TIOCM_DTR;
++
+ 	serial8250_out_MCR(p, mcr);
+ }
+ 
+@@ -1558,6 +1562,13 @@ static inline void start_tx_rs485(struct uart_port *port)
+ 	em485->active_timer = NULL;
+ 
+ 	mcr = serial8250_in_MCR(up);
++
++	/* in rx_during_tx mode keep DTR active, to receive data */
++	if (up->port.rs485.flags & SER_RS485_RX_DURING_TX)
++		mcr |= UART_MCR_DTR;
++	else
++		mcr &= ~UART_MCR_DTR;
++
+ 	if (!!(up->port.rs485.flags & SER_RS485_RTS_ON_SEND) !=
+ 	    !!(mcr & UART_MCR_RTS)) {
+ 		if (up->port.rs485.flags & SER_RS485_RTS_ON_SEND)
+@@ -1572,6 +1583,8 @@ static inline void start_tx_rs485(struct uart_port *port)
+ 					 up->port.rs485.delay_rts_before_send);
+ 			return;
+ 		}
++	} else {
++		serial8250_out_MCR(up, mcr);
+ 	}
+ 
+ 	__start_tx(port);
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+2.24.1
+
