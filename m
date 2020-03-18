@@ -1,237 +1,128 @@
-Return-Path: <SRS0=6uIZ=5C=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=ll96=5D=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 199BCC5ACD6
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 23:11:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12F80C5ACD7
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Mar 2020 00:40:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E1D37206EC
-	for <linux-serial@archiver.kernel.org>; Tue, 17 Mar 2020 23:11:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D978A20663
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Mar 2020 00:40:45 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="Q4i8AVJ9"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726761AbgCQXLF (ORCPT
+        id S1727426AbgCRAkp (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 17 Mar 2020 19:11:05 -0400
-Received: from mga12.intel.com ([192.55.52.136]:7139 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726564AbgCQXLF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 17 Mar 2020 19:11:05 -0400
-IronPort-SDR: lJQ8TKHBj4aOGrJuwV92lxMWDQvcaur/qxdrGAnrcLfD1HegbguQ99mhoQPwE93aHjoWTwmUjj
- GIr3QkHX/qnQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2020 16:11:04 -0700
-IronPort-SDR: Kj6wbEcSVAwrLABo93M94lxUs6Y5SRFCBgJNeK9usbALqamI05tyoQ4C1r3bI+cdqtJ59BESBx
- fKo6BQOny5mg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,565,1574150400"; 
-   d="scan'208";a="291138331"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 17 Mar 2020 16:11:03 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1jELMU-0006OX-TE; Wed, 18 Mar 2020 07:11:02 +0800
-Date:   Wed, 18 Mar 2020 07:10:23 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 089b6d36549160b535e109cd07ed6d578b81de46
-Message-ID: <5e7158df.on40TnaVz8Vq//v1%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+        Tue, 17 Mar 2020 20:40:45 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:46828 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727345AbgCRAko (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 17 Mar 2020 20:40:44 -0400
+Received: by mail-pl1-f196.google.com with SMTP id r3so2337334pls.13
+        for <linux-serial@vger.kernel.org>; Tue, 17 Mar 2020 17:40:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=jSbB96gkV6Tq9N4yd+/6U22oTUdE4djX3cq7LX6uJm8=;
+        b=Q4i8AVJ9A1SoTGlrYcj+L5E847pgBsUOZ6oAfz3D/2mHb3uNG0AJGoLwj+/REWBfaE
+         WJKyKvl2cBWGYH6iHg4KaiRCQIAAnKDsK4YS0PEG5EZRYaOXGsGRDbNAs9Nnb5nLRxom
+         UPW4qsXPzjZFrRd55LOK9MNwKghLSjMgTxZwMI8XJr+jWQo2lcPUGgJhaGzeR2Rh1Gmq
+         iiYP4lkpZdOtJFSXhhjN8hYvhM5jF082ITaKLam0V56MJWBDUrTBChH0pMLDuOFai6vz
+         TguUKzJsBq1CLucOJSGxjykf4yE0z8zxgY6IiEGVEPHBjUyIESf9e5aZ2JBn57oFpo2X
+         yYWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=jSbB96gkV6Tq9N4yd+/6U22oTUdE4djX3cq7LX6uJm8=;
+        b=I7D64Cln4VzMIcRmY9W5pLPWxNE918kyseHlP6kW+4EIzrvLrknSW6AaLNaWG5+6l6
+         9wkaexJ2OW/YFOsl+CaJngsCXPyulYhz2MAk9zO0tg1l/HhwgPa4oj9c2t5hEP5AuChp
+         RHRaD0BAjvJTK4o06/103wxYy37gxM4To6ytFtLgQIJ4JNWoktI0J2W6qgQfLlqbEPXl
+         4FmbVPnzU6zI0qTHErVjHZzYJ/7dmEVNXDKr8LCYD3z/9HHyRJgxLzVc6RncV4b78hO9
+         6wkTBrXO2AYjpY5MWus/4At1OvCN4LxQ6rkAOvmjS5NRUEd0zZeyfvmE7R9fM/YUQLq7
+         O5iA==
+X-Gm-Message-State: ANhLgQ3XAPDw/Lsdt9nxBYIPv7xpf8/GrDFXWAZNBo98lHaA09I+11oj
+        W5IVkP7k1W3XqPiKsXjq459zuQ==
+X-Google-Smtp-Source: ADFU+vtJN1cKuL2W6AG44CrmWFVctlDq2q9vTUlV18N6VWQ9U5rAT9b0PiF2pMIuFqLoXJuzpE377A==
+X-Received: by 2002:a17:90a:1d4:: with SMTP id 20mr1805533pjd.95.1584492042613;
+        Tue, 17 Mar 2020 17:40:42 -0700 (PDT)
+Received: from VincentChen-ThinkPad-T480s.internal.sifive.com (220-132-236-182.HINET-IP.hinet.net. [220.132.236.182])
+        by smtp.gmail.com with ESMTPSA id p4sm4258526pfg.163.2020.03.17.17.40.40
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 17 Mar 2020 17:40:42 -0700 (PDT)
+From:   Vincent Chen <vincent.chen@sifive.com>
+To:     gregkh@linuxfoundation.org, jslaby@suse.co, palmer@dabbelt.com,
+        paul.walmsley@sifive.com
+Cc:     linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org,
+        Vincent Chen <vincent.chen@sifive.com>
+Subject: [PATCH v2] tty: serial: Add CONSOLE_POLL support to SiFive UART
+Date:   Wed, 18 Mar 2020 08:40:27 +0800
+Message-Id: <1584492027-23236-1-git-send-email-vincent.chen@sifive.com>
+X-Mailer: git-send-email 2.7.4
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
-branch HEAD: 089b6d36549160b535e109cd07ed6d578b81de46  serial: 8250_port: Disable DMA operations for kernel console
+Add CONSOLE_POLL support for future KGDB porting.
 
-elapsed time: 485m
+Signed-off-by: Vincent Chen <vincent.chen@sifive.com>
 
-configs tested: 169
-configs skipped: 0
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-arm                              allmodconfig
-arm                               allnoconfig
-arm                              allyesconfig
-arm64                            allmodconfig
-arm64                             allnoconfig
-arm64                            allyesconfig
-arm                         at91_dt_defconfig
-arm                           efm32_defconfig
-arm                          exynos_defconfig
-arm                        multi_v5_defconfig
-arm                        multi_v7_defconfig
-arm                        shmobile_defconfig
-arm                           sunxi_defconfig
-arm64                               defconfig
-sparc                            allyesconfig
-sparc64                           allnoconfig
-s390                       zfcpdump_defconfig
-microblaze                      mmu_defconfig
-riscv                            allmodconfig
-i386                              allnoconfig
-i386                             alldefconfig
-i386                             allyesconfig
-i386                                defconfig
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                              allnoconfig
-ia64                             allyesconfig
-ia64                             alldefconfig
-nios2                         3c120_defconfig
-nios2                         10m50_defconfig
-c6x                        evmc6678_defconfig
-xtensa                          iss_defconfig
-c6x                              allyesconfig
-xtensa                       common_defconfig
-openrisc                 simple_smp_defconfig
-openrisc                    or1ksim_defconfig
-alpha                               defconfig
-csky                                defconfig
-nds32                             allnoconfig
-nds32                               defconfig
-h8300                     edosk2674_defconfig
-h8300                    h8300h-sim_defconfig
-h8300                       h8s-sim_defconfig
-m68k                             allmodconfig
-m68k                       m5475evb_defconfig
-m68k                          multi_defconfig
-m68k                           sun3_defconfig
-arc                                 defconfig
-arc                              allyesconfig
-powerpc                       ppc64_defconfig
-powerpc                          rhel-kconfig
-microblaze                    nommu_defconfig
-powerpc                           allnoconfig
-powerpc                             defconfig
-mips                           32r2_defconfig
-mips                         64r6el_defconfig
-mips                             allmodconfig
-mips                              allnoconfig
-mips                             allyesconfig
-mips                      fuloong2e_defconfig
-mips                      malta_kvm_defconfig
-parisc                            allnoconfig
-parisc                generic-64bit_defconfig
-parisc                generic-32bit_defconfig
-parisc                           allyesconfig
-x86_64               randconfig-a001-20200317
-x86_64               randconfig-a002-20200317
-x86_64               randconfig-a003-20200317
-i386                 randconfig-a001-20200317
-i386                 randconfig-a002-20200317
-i386                 randconfig-a003-20200317
-alpha                randconfig-a001-20200317
-m68k                 randconfig-a001-20200317
-mips                 randconfig-a001-20200317
-nds32                randconfig-a001-20200317
-parisc               randconfig-a001-20200317
-riscv                randconfig-a001-20200317
-h8300                randconfig-a001-20200317
-sparc64              randconfig-a001-20200317
-c6x                  randconfig-a001-20200317
-nios2                randconfig-a001-20200317
-microblaze           randconfig-a001-20200317
-csky                 randconfig-a001-20200317
-openrisc             randconfig-a001-20200317
-s390                 randconfig-a001-20200317
-sh                   randconfig-a001-20200317
-xtensa               randconfig-a001-20200317
-csky                 randconfig-a001-20200318
-openrisc             randconfig-a001-20200318
-s390                 randconfig-a001-20200318
-sh                   randconfig-a001-20200318
-xtensa               randconfig-a001-20200318
-x86_64               randconfig-b001-20200317
-x86_64               randconfig-b002-20200317
-x86_64               randconfig-b003-20200317
-i386                 randconfig-b001-20200317
-i386                 randconfig-b002-20200317
-i386                 randconfig-b003-20200317
-x86_64               randconfig-c001-20200317
-x86_64               randconfig-c002-20200317
-x86_64               randconfig-c003-20200317
-i386                 randconfig-c001-20200317
-i386                 randconfig-c002-20200317
-i386                 randconfig-c003-20200317
-x86_64               randconfig-d001-20200317
-x86_64               randconfig-d002-20200317
-x86_64               randconfig-d003-20200317
-i386                 randconfig-d001-20200317
-i386                 randconfig-d002-20200317
-i386                 randconfig-d003-20200317
-x86_64               randconfig-e001-20200317
-x86_64               randconfig-e002-20200317
-x86_64               randconfig-e003-20200317
-i386                 randconfig-e001-20200317
-i386                 randconfig-e002-20200317
-i386                 randconfig-e003-20200317
-x86_64               randconfig-f001-20200317
-x86_64               randconfig-f002-20200317
-x86_64               randconfig-f003-20200317
-i386                 randconfig-f001-20200317
-i386                 randconfig-f002-20200317
-i386                 randconfig-f003-20200317
-x86_64               randconfig-g001-20200317
-x86_64               randconfig-g002-20200317
-x86_64               randconfig-g003-20200317
-i386                 randconfig-g001-20200317
-i386                 randconfig-g002-20200317
-i386                 randconfig-g003-20200317
-x86_64               randconfig-h001-20200317
-x86_64               randconfig-h002-20200317
-x86_64               randconfig-h003-20200317
-i386                 randconfig-h001-20200317
-i386                 randconfig-h002-20200317
-i386                 randconfig-h003-20200317
-arc                  randconfig-a001-20200317
-arm                  randconfig-a001-20200317
-arm64                randconfig-a001-20200317
-ia64                 randconfig-a001-20200317
-powerpc              randconfig-a001-20200317
-sparc                randconfig-a001-20200317
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-s390                             alldefconfig
-s390                             allmodconfig
-s390                              allnoconfig
-s390                             allyesconfig
-s390                          debug_defconfig
-s390                                defconfig
-sh                          rsk7269_defconfig
-sh                               allmodconfig
-sh                            titan_defconfig
-sh                  sh7785lcr_32bit_defconfig
-sh                                allnoconfig
-sparc                               defconfig
-sparc64                             defconfig
-sparc64                          allyesconfig
-sparc64                          allmodconfig
-um                           x86_64_defconfig
-um                             i386_defconfig
-um                                  defconfig
-x86_64                              fedora-25
-x86_64                                  kexec
-x86_64                                    lkp
-x86_64                                   rhel
-x86_64                         rhel-7.2-clear
-x86_64                               rhel-7.6
-
+Changes since v1:
+1. Fix the compile error reported by kbuild test robot
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/tty/serial/sifive.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
+index d5f81b98e4d7..f46b5dba0661 100644
+--- a/drivers/tty/serial/sifive.c
++++ b/drivers/tty/serial/sifive.c
+@@ -709,6 +709,29 @@ static const char *sifive_serial_type(struct uart_port *port)
+ 	return port->type == PORT_SIFIVE_V0 ? "SiFive UART v0" : NULL;
+ }
+ 
++#ifdef CONFIG_CONSOLE_POLL
++static int sifive_serial_poll_get_char(struct uart_port *port)
++{
++	struct sifive_serial_port *ssp = port_to_sifive_serial_port(port);
++	char is_empty, ch;
++
++	ch = __ssp_receive_char(ssp, &is_empty);
++	if (is_empty)
++		return NO_POLL_CHAR;
++
++	return ch;
++}
++
++static void sifive_serial_poll_put_char(struct uart_port *port,
++					unsigned char c)
++{
++	struct sifive_serial_port *ssp = port_to_sifive_serial_port(port);
++
++	__ssp_wait_for_xmitr(ssp);
++	__ssp_transmit_char(ssp, c);
++}
++#endif /* CONFIG_CONSOLE_POLL */
++
+ /*
+  * Early console support
+  */
+@@ -877,6 +900,10 @@ static const struct uart_ops sifive_serial_uops = {
+ 	.request_port	= sifive_serial_request_port,
+ 	.config_port	= sifive_serial_config_port,
+ 	.verify_port	= sifive_serial_verify_port,
++#ifdef CONFIG_CONSOLE_POLL
++	.poll_get_char	= sifive_serial_poll_get_char,
++	.poll_put_char	= sifive_serial_poll_put_char,
++#endif
+ };
+ 
+ static struct uart_driver sifive_serial_uart_driver = {
+-- 
+2.7.4
+
