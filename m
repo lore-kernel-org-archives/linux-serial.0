@@ -2,152 +2,208 @@ Return-Path: <SRS0=ll96=5D=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14CECC10DCE
-	for <linux-serial@archiver.kernel.org>; Wed, 18 Mar 2020 11:01:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73976C10DCE
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Mar 2020 12:23:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D510B20770
-	for <linux-serial@archiver.kernel.org>; Wed, 18 Mar 2020 11:01:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3B39F20771
+	for <linux-serial@archiver.kernel.org>; Wed, 18 Mar 2020 12:23:50 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KZqcWwtp"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="UNjuiQeT"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727380AbgCRLBk (ORCPT
+        id S1726664AbgCRMXt (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 18 Mar 2020 07:01:40 -0400
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:40755 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726550AbgCRLBk (ORCPT
+        Wed, 18 Mar 2020 08:23:49 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:14854 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726530AbgCRMXt (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 18 Mar 2020 07:01:40 -0400
-Received: by mail-qv1-f68.google.com with SMTP id cy12so6695638qvb.7;
-        Wed, 18 Mar 2020 04:01:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=fwVQXjMQOWEROBwJKNT5Sf8XmtrFEffkUGQpg3Xo28E=;
-        b=KZqcWwtp21tv7K+S1cqSluGyVZQyMMkCBN42lfzC9nsEYgdr1ntTAjlHhYQxfDWOEN
-         E5F/sDlO5bOOAoQEUTyibZPb8yTdJaRZCsOEWlkzAv2Su1reHBNZ5/jwYcpErB6AgTU3
-         ORgtsU5y7r1/K66rPwKbTF9pxh1KEJxEja0hH5/621+1XnkHdML3hWCIWSwDt1hm+jdy
-         6akBnfXJ9NQ0aybeTXZ0sm2DV9k0BqFtsJriIzEvHEQenQQIEQIg4/nI7LYfYTuktx4j
-         QacTDjc+SOoOGCdr84wpXzrzfRD5xZDr4SGNJK4fMqQjZFC5i9ntF9+zCdbDsNvJqqhK
-         rLsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=fwVQXjMQOWEROBwJKNT5Sf8XmtrFEffkUGQpg3Xo28E=;
-        b=DFeP+gWEhFAh3pnC5dQa8HV91Q748lfNuF0rOoayo+wxLd3xLqIvDYGRz/UkIISViz
-         bsY+2Z8fy4EPfsNKMvCtdmYOxD/Ei8kLx1/2zO67PhViZWIopxs0Gb+JNiwrRaRX0O2T
-         AF2nYIM6wilDnOVnpdskTS7YG+fFUQras9ahA5SxYQq/d5aNDg20dCerp6V6air/y6M/
-         O7OPhJJ/Biogm5TSsQLrTHHi3FinbuqQNu8LdvhuWqR/rXngWJiCZejXSAn/6lqo++0A
-         TiHdAyhfWma5Ho9Z1xNAsNyysXbv8x0f3nDGYiFAuPtuLAR6uLYlXkoCTMtfCVxbS0ol
-         DLSg==
-X-Gm-Message-State: ANhLgQ2ZQ634yaUl67Ckog7eA26ZETZaA9SjtcUerRMD8k7gJQBA6aXI
-        XidF+js2q0MRiWars7WHUd3DDCSV8Donsn8EaD8=
-X-Google-Smtp-Source: ADFU+vtBdftzvEtGRnzi39UoAd+p2hWbkrUPUw22xt3qKbSn8y7HxYu2F7/peU7bT3P3ySjzI2Uewax9UR8kn9m/H84=
-X-Received: by 2002:a0c:9b95:: with SMTP id o21mr3592048qve.175.1584529298779;
- Wed, 18 Mar 2020 04:01:38 -0700 (PDT)
+        Wed, 18 Mar 2020 08:23:49 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1584534228; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=LsVQvCj2qxlzCdfRUTglOB75ZlVXuMcibToFB27s2ik=; b=UNjuiQeTv6xkJKKsNkBNo9EauIFiAkBKUeUFWkX3Wr6e4Iqt21WSR022qE2S5v2q/eQ6JxsL
+ v1umAXqHIZVtPb+91h7unq5lCQuIJZTvt++yrPPSe5J8CQgTkCe73Jf0zX4v5HhPUJTaVZoS
+ 58uxfNyneQqkx0Gq8nvH56LR6Ko=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e7212c6.7f25061a5998-smtp-out-n04;
+ Wed, 18 Mar 2020 12:23:34 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 77D09C433BA; Wed, 18 Mar 2020 12:23:33 +0000 (UTC)
+Received: from [192.168.0.8] (unknown [183.83.138.47])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 59EA9C433D2;
+        Wed, 18 Mar 2020 12:23:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 59EA9C433D2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+Subject: Re: [PATCH V2 4/8] tty: serial: qcom_geni_serial: Add interconnect
+ support
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
+        mark.rutland@arm.com, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, dianders@chromium.org,
+        evgreen@chromium.org
+References: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
+ <1584105134-13583-5-git-send-email-akashast@codeaurora.org>
+ <20200313212833.GK144492@google.com>
+ <e9293de6-004f-6005-8cb6-66f28c080ebe@codeaurora.org>
+ <20200317190804.GS144492@google.com>
+From:   Akash Asthana <akashast@codeaurora.org>
+Message-ID: <e95bd6e0-d1fd-9d13-47df-f7d08b443e37@codeaurora.org>
+Date:   Wed, 18 Mar 2020 17:53:22 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-References: <20200318083120.13805-1-zhang.lyra@gmail.com> <20200318083120.13805-2-zhang.lyra@gmail.com>
- <CADBw62rSE+MrQB_HSOwVNos_W=x-mHMEuVrZN=jU0Yt1KXFGvw@mail.gmail.com>
- <CADBw62pWhA8n5rAgX2Hud06k9cvF9b3KDfZmH7oX1HEz=MWzYA@mail.gmail.com>
- <20200318101340.GA2081481@kroah.com> <CAAfSe-t7e0Cd3Lm_x9u=OhuBBtTexx3+qyg-+F71LK=C1V5pNA@mail.gmail.com>
- <20200318104642.GA2304200@kroah.com>
-In-Reply-To: <20200318104642.GA2304200@kroah.com>
-From:   Chunyan Zhang <zhang.lyra@gmail.com>
-Date:   Wed, 18 Mar 2020 19:01:27 +0800
-Message-ID: <CABOV4+WDpp4hk5q_H-C0W_y+-jV3vn3AYpeqsuNU0UMKEqmXFw@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] serial: sprd: cleanup the sprd_port for error case
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Baolin Wang <baolin.wang7@gmail.com>, Jiri Slaby <jslaby@suse.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Chunyan Zhang <chunyan.zhang@unisoc.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200317190804.GS144492@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Mar 18, 2020 at 6:48 PM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+Hi Matthias,
+
+On 3/18/2020 12:38 AM, Matthias Kaehlcke wrote:
+> On Tue, Mar 17, 2020 at 05:18:34PM +0530, Akash Asthana wrote:
+>> Hi Matthias,
+>>
+>> On 3/14/2020 2:58 AM, Matthias Kaehlcke wrote:
+>>> Hi Akash,
+>>>
+>>> On Fri, Mar 13, 2020 at 06:42:10PM +0530, Akash Asthana wrote:
+>>>> Get the interconnect paths for Uart based Serial Engine device
+>>>> and vote according to the baud rate requirement of the driver.
+>>>>
+>>>> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+>>>> ---
+>>>> Changes in V2:
+>>>>    - As per Bjorn's comment, removed se == NULL check from geni_serial_icc_get
+>>>>    - As per Bjorn's comment, removed code to set se->icc_path* to NULL in failure
+>>>>    - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
+>>>>      path handle
+>>>>    - As per Matthias comment, added error handling for icc_set_bw call
+>>>>
+>>>>    drivers/tty/serial/qcom_geni_serial.c | 69 +++++++++++++++++++++++++++++++++--
+>>>>    1 file changed, 65 insertions(+), 4 deletions(-)
+>>>>
+>>>> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+>>>> index 272bae0..c8ad7e9 100644
+>>>> --- a/drivers/tty/serial/qcom_geni_serial.c
+>>>> +++ b/drivers/tty/serial/qcom_geni_serial.c
+>>>>
+>>>> ...
+>>>>
+>>>>    static int qcom_geni_serial_request_port(struct uart_port *uport)
+>>>>    {
+>>>>    	struct platform_device *pdev = to_platform_device(uport->dev);
+>>>> @@ -962,6 +975,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+>>>>    	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
+>>>>    	unsigned long clk_rate;
+>>>>    	u32 ver, sampling_rate;
+>>>> +	int ret;
+>>>>    	qcom_geni_serial_stop_rx(uport);
+>>>>    	/* baud rate */
+>>>> @@ -983,6 +997,18 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+>>>>    	ser_clk_cfg = SER_CLK_EN;
+>>>>    	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
+>>>> +	/*
+>>>> +	 * Put BW vote only on CPU path as driver supports FIFO mode only.
+>>>> +	 * Assume peak_bw as twice of avg_bw.
+>>>> +	 */
+>>>> +	port->se.avg_bw_cpu = Bps_to_icc(baud);
+>>>> +	port->se.peak_bw_cpu = Bps_to_icc(2 * baud);
+>>>> +	ret = icc_set_bw(port->se.icc_path_cpu_to_geni, port->se.avg_bw_cpu,
+>>>> +			port->se.peak_bw_cpu);
+>>>> +	if (ret)
+>>>> +		dev_err(uport->dev, "%s: ICC BW voting failed for cpu\n",
+>>>> +			__func__);
+>>> Should this return an error? The port might not operate properly if the ICC
+>>> bandwidth couldn't be configured
+>> This is void function we can't return error from here. I guess it would be
+>> somewhat okay if BW voting failed for CPU path but clk_set_rate failure is
+>> more serious which is called from this function, I don't think it can be
+>> move to somewhere else.
+> ok, I missed that _set_termios() is void.
 >
-> On Wed, Mar 18, 2020 at 06:16:43PM +0800, Chunyan Zhang wrote:
-> > On Wed, 18 Mar 2020 at 18:13, Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > On Wed, Mar 18, 2020 at 06:06:05PM +0800, Baolin Wang wrote:
-> > > > On Wed, Mar 18, 2020 at 5:16 PM Baolin Wang <baolin.wang7@gmail.com=
-> wrote:
-> > > > >
-> > > > > On Wed, Mar 18, 2020 at 4:31 PM Chunyan Zhang <zhang.lyra@gmail.c=
-om> wrote:
-> > > > > >
-> > > > > > From: Chunyan Zhang <chunyan.zhang@unisoc.com>
-> > > > > >
-> > > > > > It would be better to cleanup the sprd_port for the device befo=
-re
-> > > > > > return error.
-> > > > > >
-> > > > > > Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
-> > > > > > ---
-> > > > > >  drivers/tty/serial/sprd_serial.c | 4 +++-
-> > > > > >  1 file changed, 3 insertions(+), 1 deletion(-)
-> > > > > >
-> > > > > > diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/ser=
-ial/sprd_serial.c
-> > > > > > index 9f8c14ff6454..54477de9822f 100644
-> > > > > > --- a/drivers/tty/serial/sprd_serial.c
-> > > > > > +++ b/drivers/tty/serial/sprd_serial.c
-> > > > > > @@ -1204,8 +1204,10 @@ static int sprd_probe(struct platform_de=
-vice *pdev)
-> > > > > >         up->has_sysrq =3D IS_ENABLED(CONFIG_SERIAL_SPRD_CONSOLE=
-);
-> > > > > >
-> > > > > >         ret =3D sprd_clk_init(up);
-> > > > > > -       if (ret)
-> > > > > > +       if (ret) {
-> > > > > > +               sprd_port[index] =3D NULL;
-> > > > >
-> > > > > =E5=A6=82=E6=9E=9C=E6=88=91=E4=BB=AC=E5=BC=BA=E5=88=B6=E4=BD=BF=
-=E7=94=A8alias, =E5=88=99=E8=BF=99=E9=87=8C=E5=BA=94=E8=AF=A5=E4=B9=9F=E6=
-=97=A0=E9=9C=80=E6=B8=85=E9=99=A4=E4=BA=86=EF=BC=8C=E5=9B=A0=E4=B8=BA=E4=B8=
-=80=E8=BF=9Bprobe=E5=B0=B1=E4=BC=9A=E7=BB=99=E5=AE=83=E9=87=8D=E6=96=B0=E8=
-=B5=8B=E5=80=BC=E3=80=82 =E8=BF=98=E6=98=AF=E6=88=91=E6=BC=8F=E4=BA=86=E4=
-=BB=80=E4=B9=88=EF=BC=9F
-> > > >
-> > > > Sorry, please ignore my previsous comment. I made a stupid mistake
-> > > > when talking with Chunyan.
-> > > >
-> > > > So what I mean is we should not add this clean up, cause we will
-> > > > always get the correct index with aliases, and it will be overlappe=
-d
-> > > > when probing again.
-> > >
-> > > So ignore this patch and only take patch 1/2?  If so, can I get your
-> > > acked-by for it?
-> >
-> > Hi Greg,
-> >
-> > There's something I need to modify on 1/2 as well, I will send the
-> > whole patch-set later, please ignore these two patches.
-> >
-> > Sorry for the noise!
+>>>>    static const struct uart_ops qcom_geni_console_pops = {
+>>>> @@ -1308,6 +1358,17 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+>>>>    	port->rx_fifo_depth = DEF_FIFO_DEPTH_WORDS;
+>>>>    	port->tx_fifo_width = DEF_FIFO_WIDTH_BITS;
+>>>> +	ret = geni_serial_icc_get(&port->se);
+>>>> +	if (ret)
+>>>> +		return ret;
+>>>> +	/* Set the bus quota to a reasonable value */
+>>>> +	port->se.avg_bw_core = console ? Bps_to_icc(1000) :
+>>>> +		Bps_to_icc(CORE_2X_50_MHZ);
+>>> Why different settings for console vs. non-console?
+>> QUP FW runs on core clock. To support higher throughput we want FW to run at
+>> higher speed.
+>>
+>> Since Console operate at 115200bps and BT operate at 3.2Mbps baud. We are
+>> voting higher on core for BT usecase.
+>>
+>> These value are recommended from HW team.
+> IIUC none of the values you mention are set in stone. 115200bps seems to be a
+> 'standard' value for the serial console, but it could be a different baudrate.
+> I guess you are referring to Qualcomm Bluetooth controllers, which are only one
+> of many things that could be connected to the port. And what happens when a
+> QCA BT controller is connected to a non-geni/QCA port, which doesn't know about
+> its 'requirements'? The answer is that both the BT controller and the serial
+> console configure the baudrate they need, hence using different values in
+> _probe() is pointless.
+
+Are you refering other UART drivers(not based on geni HW) as 
+non-geni/QCA port?
+
+We are not scaling core BW request based on real time need like we are 
+doing for other paths(CPU/DDR) instead we are using some fail proof 
+value because, FW runs on core clock and core behaves a bit different 
+than other NOCs.
+
+We don't have any functional relation which maps actual throughput 
+requirement to core frequency need. In the past we faced few latency 
+issues because of core slowness (Although it was running much higher 
+than actual throughput requirement). To avoid such scenario we are using 
+recommend value from HW team. These fix value can support SE drivers 
+operating at their max possible speed(4Mbps in case of non-console).
+
+I agree that 115200bps seems to be a 'standard' value for the serial 
+console, but it could be a different baudrate.
+
+We are voting 1000 in case of console because it  has low power mode 
+use-case in android, where voting CORE_2X_50_MHZ can be reported as a 
+power issue.
+
+Actually we wanted to vote 960 for console but that is not possible with 
+current ICC design where the minimum value is 1000bps.  So any way core 
+is running at 50 MHz as 1000 crosses the threshold for 19.2 MHz (960)
+
+only with console.
+
+regards,
+
+Akash
+
+> Unsurprisingly one of the first things the QCA BT driver does is to configure
+> the baudrate. It typically starts with a lower ('init') speed, and then switches
+> to the higher ('operational') baudrate:
 >
-> Discussion about patches is _never_ noise, that's what this list/group
-> is for :)
+> https://elixir.bootlin.com/linux/v5.5.8/source/drivers/bluetooth/hci_qca.c#L1256
 
-Ok, thanks for your nice words, at least brought you some trouble,
-that's what I mean :)
-
-I've sent out a new version of patches just now.
-
-Thanks again,
-Chunyan
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
