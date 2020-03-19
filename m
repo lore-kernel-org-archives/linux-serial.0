@@ -2,106 +2,175 @@ Return-Path: <SRS0=NQQO=5E=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56628C43332
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Mar 2020 17:38:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 333A3C4332D
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Mar 2020 19:43:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2D2AF20754
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Mar 2020 17:38:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F1EB82072D
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Mar 2020 19:43:36 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="My59+S7C"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727269AbgCSRiB (ORCPT
+        id S1727505AbgCSTng (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Mar 2020 13:38:01 -0400
-Received: from muru.com ([72.249.23.125]:60920 "EHLO muru.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726867AbgCSRiB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Mar 2020 13:38:01 -0400
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 1278180A5;
-        Thu, 19 Mar 2020 17:38:44 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh@kernel.org>
-Cc:     Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
-        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
-        Johan Hovold <johan@kernel.org>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        Pavel Machek <pavel@ucw.cz>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
-Subject: [PATCHv5 0/4] n_gsm serdev support and protocol driver for droid4 modem
-Date:   Thu, 19 Mar 2020 10:37:51 -0700
-Message-Id: <20200319173755.65082-1-tony@atomide.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 19 Mar 2020 15:43:36 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:35457 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727235AbgCSTng (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 19 Mar 2020 15:43:36 -0400
+Received: by mail-pl1-f194.google.com with SMTP id g6so1500468plt.2
+        for <linux-serial@vger.kernel.org>; Thu, 19 Mar 2020 12:43:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=AUrpvm7nUie7dQ0qT11wsqJbElri6+aRNCl7JJRNBOA=;
+        b=My59+S7CI/GWdSKMy3K1BSkHqMaKH1SYAEBgY7D+oXZhLV3OuxRxwvtEk4EqOUQMHA
+         h8pn+KPzD+jnwDzdghZ6bxbO5SkEFbP+Eb2E34MFXJdXzrML9McGCbRCRE7jBBURPwRZ
+         3ODmgNveoAhbGTVSR2/N2Hcmd+r2KjUGphIU4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=AUrpvm7nUie7dQ0qT11wsqJbElri6+aRNCl7JJRNBOA=;
+        b=gk/P79ueF6VnT4GO6hFtAQXK4jlguQqry2V/klIGdN6MRZtpdWcJDaLZWl0xsCndg5
+         8i3F9eQxXP+ofj0ruCdQbgghIiJTu/9wQG6BqI4Spp64J91719czcoJeP9BfQhvfEJ8A
+         aH5JQsm62zBJNYKk/nEhX3cGro7a4m7vCimE1YoDy8VvXsYimpFlGqw8ZBNxNsnqxFXp
+         VSfMluWjuPEvyQliX/Mr5MV88x3pMCJagvy2BMU5BtQcxz5flcjKN4S0zhnU74b/J5mJ
+         iDVxxRU9QQBobUBmG3/TkKPkfvP94KO/KTn+fdSCvOupRyDhx4Wk+mxa6w7o8M85P1hA
+         ehVg==
+X-Gm-Message-State: ANhLgQ1zyevCNYXKQRsB0jX0EQ1iMeW0Typ7rLVX/9YeM7rkQZTj8cQj
+        BfS52uc4Fe2xFi21xRCRqIK04w==
+X-Google-Smtp-Source: ADFU+vtsdT3busfKz6fGAHHD3V1l9Ghnb9/WDphQ22G1N//OaqyPJ8sNLSJMAiYmie0cCo6/Rbt3xQ==
+X-Received: by 2002:a17:90a:9501:: with SMTP id t1mr5661674pjo.108.1584647014709;
+        Thu, 19 Mar 2020 12:43:34 -0700 (PDT)
+Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
+        by smtp.gmail.com with ESMTPSA id d17sm3145653pfo.148.2020.03.19.12.43.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Mar 2020 12:43:33 -0700 (PDT)
+Date:   Thu, 19 Mar 2020 12:43:32 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Akash Asthana <akashast@codeaurora.org>
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
+        mark.rutland@arm.com, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, dianders@chromium.org,
+        evgreen@chromium.org
+Subject: Re: [PATCH V2 3/8] soc: qcom-geni-se: Add interconnect support to
+ fix earlycon crash
+Message-ID: <20200319194332.GA60149@google.com>
+References: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
+ <1584105134-13583-4-git-send-email-akashast@codeaurora.org>
+ <20200313204441.GJ144492@google.com>
+ <1f86fdf0-df7c-4e4a-d4d8-8b0162e52cb4@codeaurora.org>
+ <20200317182910.GR144492@google.com>
+ <3831b33c-93ee-e5e0-fcfb-530b4738f930@codeaurora.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <3831b33c-93ee-e5e0-fcfb-530b4738f930@codeaurora.org>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi all,
+On Wed, Mar 18, 2020 at 02:24:35PM +0530, Akash Asthana wrote:
+> Hi Matthias,
+> 
+> On 3/17/2020 11:59 PM, Matthias Kaehlcke wrote:
+> > Hi Akash,
+> > 
+> > On Tue, Mar 17, 2020 at 04:27:47PM +0530, Akash Asthana wrote:
+> > > Hi Matthias,
+> > > 
+> > > On 3/14/2020 2:14 AM, Matthias Kaehlcke wrote:
+> > > > Hi Akash,
+> > > > 
+> > > > On Fri, Mar 13, 2020 at 06:42:09PM +0530, Akash Asthana wrote:
+> > > > > V1 patch@https://patchwork.kernel.org/patch/11386469/ caused SC7180 system
+> > > > > to reset at boot time.
+> > > > The v1 patch isn't relevant in the commit message, please just describe the
+> > > > problem. Also the crash only occurs when earlycon is used.
+> > > ok
+> > > > > As QUP core clock is shared among all the SE drivers present on particular
+> > > > > QUP wrapper, the reset seen is due to earlycon usage after QUP core clock
+> > > > > is put to 0 from other SE drivers before real console comes up.
+> > > > > 
+> > > > > As earlycon can't vote for it's QUP core need, to fix this add ICC
+> > > > > support to common/QUP wrapper driver and put vote for QUP core from
+> > > > > probe on behalf of earlycon and remove vote during sys suspend.
+> > > > Only removing the vote on suspend isn't ideal, the system might never get
+> > > > suspended. That said I don't have a really good alternative suggestion.
+> > > > 
+> > > > One thing you could possibly do is to launch a delayed work, check
+> > > > console_device() every second or so and remove the vote when it returns
+> > > > non-NULL. Not claiming this would be a great solution ...
+> > > > 
+> > > > The cleanest solution might be a notifier when the early console is
+> > > > unregistered, it seems somewhat over-engineered though ... Then again
+> > > > other (future) uart drivers with interconnect support might run into
+> > > > the same problem.
+> > > We are hitting this problem because QUP core clocks are shared among all the
+> > > SE driver present in particular QUP wrapper, if other HW controllers has
+> > > similar architecture we will hit this issue.
+> > > 
+> > > How about if we expose an API from common driver(geni-se) for putting QUP
+> > > core BW vote to 0.
+> > > 
+> > > We call this from console probe just after uart_add_one_port call (console
+> > > resources are enabled as part of this call) to put core quota to 0 on behalf
+> > > of earlyconsole?
+> >  From my notes from earlier debugging I have doubts this would work:
+> > 
+> >    There is a short window where the early console and the 'real' console coexist:
+> > 
+> >    [    3.858122] printk: console [ttyMSM0] enabled
+> >    [    3.875692] printk: bootconsole [qcom_geni0] disabled
+> > 
+> >    The reset probably occurs when the early console tries to write, but the ICC
+> >    is effectively disabled because ttyMSM0 and the other geni ports are runtime
+> >    suspended.
+> 
+> Code flow from console driver probe(qcom_geni_serial.c)
+> 
+> uart_add_one_port--->uart_configure_port--->{ 1) uart_change_pm(enable
+> console resources)  2)register_console(boot to real console switch happens
+> here)}
+> 
+> Console resources are not disabled from anywhere before the switch happens
+> completely. I meant to say until we saw below logs.
+> 
+> [    3.875692] printk: bootconsole [qcom_geni0] disabled
+> 
+> I think the board reset issue cannot occur during the window where early
+> console and 'real' console coexist.
 
-Here's v4 set of n_gsm serdev support patches, and the related protocol
-driver for the modem found on Motorola Mapphone phones and tablets
-like droid4.
+Thanks for the clarification! Indeed my notes were only a hypothesis, I
+don't see evidence that there is an actual downvote shortly after console
+registration.
 
-This series only adds basic character device support for the serdev
-driver. Other serdev consumer drivers for specific devices will be
-posted separately.
+> I have validated proposed solution by me, it is working fine.
+> 
+> Currently voting is done for every QUP and not only to which earlycon is
+> connect, with the above approach we can't remove vote from other QUPs.
+> 
+> However we can limit voting only to earlycon QUP by removing interconnect
+> from DT node of other QUPs.
+> 
+> I am not sure how clean is this solution.
 
-The patches are against v5.6-rc series.
-
-Regards,
-
-Tony
-
-Changes since v4:
-- Use drivers/tty/serdev/protocol directory for the driver instead of
-  drivers/mfd as discussed on the lists for v3 set of patches
-- Fix remove to call kfree only after removing device from the list
-
-Changes since v3:
-- Update list of folks in Cc, looks like I sent v3 only to Lee and lkml
-- Init privdata before motmdm_register_dlci calls gsm_serdev_register_dlci
-- Update binding based on Rob's comments for license and "allOf"
-
-Changes since v2:
-- Drop useless send_command indirection, use static motmdm_send_command
-
-Changes since v1:
-
-- Simplified usage and got rid of few pointless inline functions
-- Added consumer MFD driver, devicetree binding, and dts changes
-
-
-Tony Lindgren (4):
-  tty: n_gsm: Add support for serdev drivers
-  serdev: ngsm-motmdm: Add Motorola TS 27.010 serdev modem driver for
-    droid4
-  dt-bindings: mfd: motmdm: Add binding for motorola-mdm
-  ARM: dts: omap4-droid4: Enable basic modem support
-
- .../serdev/motorola,mapphone-mdm6600.yaml     |   34 +
- .../boot/dts/motorola-mapphone-common.dtsi    |    6 +
- drivers/tty/n_gsm.c                           |  372 +++++
- drivers/tty/serdev/Kconfig                    |    3 +
- drivers/tty/serdev/Makefile                   |    2 +
- drivers/tty/serdev/protocol/Kconfig           |   14 +
- drivers/tty/serdev/protocol/Makefile          |    3 +
- .../tty/serdev/protocol/serdev-ngsm-motmdm.c  | 1200 +++++++++++++++++
- include/linux/serdev-gsm.h                    |  168 +++
- 9 files changed, 1802 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/serdev/motorola,mapphone-mdm6600.yaml
- create mode 100644 drivers/tty/serdev/protocol/Kconfig
- create mode 100644 drivers/tty/serdev/protocol/Makefile
- create mode 100644 drivers/tty/serdev/protocol/serdev-ngsm-motmdm.c
- create mode 100644 include/linux/serdev-gsm.h
-
--- 
-2.25.1
+I'm more inclined towards a solution along the lines of what Evan
+proposed, i.e. delaying the votes (either in geni or ICC) until we
+are ready.
