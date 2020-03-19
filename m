@@ -2,64 +2,61 @@ Return-Path: <SRS0=NQQO=5E=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71697C4332E
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Mar 2020 11:03:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8620C43333
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Mar 2020 11:03:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4542820767
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Mar 2020 11:03:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 769DB20724
+	for <linux-serial@archiver.kernel.org>; Thu, 19 Mar 2020 11:03:45 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="TGXOF//6"
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="iwJJp6PI"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726663AbgCSLDV (ORCPT
+        id S1726892AbgCSLDU (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Mar 2020 07:03:21 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:60036 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726864AbgCSLDV (ORCPT
+        Thu, 19 Mar 2020 07:03:20 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:55636 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726663AbgCSLDU (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Mar 2020 07:03:21 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 02JB3HFE005868;
-        Thu, 19 Mar 2020 06:03:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1584615797;
-        bh=TzPLtt5WqyrBbw6WclxBt+J+dI+bB+YG8AEbcZSJwFU=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=TGXOF//6kHo03vd0rl/1d4Ctk8MgpInuF/Vjt9fQUiB7bxyTrBtZSptdKjeAf4LWh
-         x8TbJmwY4kKY1ykDadJBfPzFOgpl2ZNGtOwgcVUHGX5kra1ZkbrKUbq9QE5fGY1YoA
-         pGcNZ5G4yJqUBDmoDf789aQfOz1AdMitGC9Wenas=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 02JB3HYs010979
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 19 Mar 2020 06:03:17 -0500
-Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Thu, 19
- Mar 2020 06:03:17 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Thu, 19 Mar 2020 06:03:17 -0500
-Received: from a0132425.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02JB3C7m119908;
+        Thu, 19 Mar 2020 07:03:20 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 02JB3FlX032613;
         Thu, 19 Mar 2020 06:03:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1584615795;
+        bh=n8cOACPz24iLv+TXfntFcziSsLRS8NmLUcjVq/avlzY=;
+        h=From:To:CC:Subject:Date;
+        b=iwJJp6PIyhPtChWN5Sx5TQOCEnOKQ4gioUUBRDkEBVQ5ogwYjrIPwvw6yXmpz/SBJ
+         1b2OQlE8mM+p4jBcSyUOmzS8PbpZREytxBVl3mMKdUo7M7jEOdGF3+niosimmvifAV
+         BCWf/yFQ/br9OMSl8xjIiEK8hq8DZ0qvv3hxlbBE=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02JB3F2S038774;
+        Thu, 19 Mar 2020 06:03:15 -0500
+Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Thu, 19
+ Mar 2020 06:03:15 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Thu, 19 Mar 2020 06:03:14 -0500
+Received: from a0132425.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02JB3C7l119908;
+        Thu, 19 Mar 2020 06:03:13 -0500
 From:   Vignesh Raghavendra <vigneshr@ti.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>
 CC:     Vignesh Raghavendra <vigneshr@ti.com>,
         <linux-serial@vger.kernel.org>, <linux-omap@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/6] serial: 8250: 8250_omap: Terminate DMA before pushing data on RX timeout
-Date:   Thu, 19 Mar 2020 16:33:39 +0530
-Message-ID: <20200319110344.21348-2-vigneshr@ti.com>
+Subject: [PATCH 0/6] 8250_omap: Add DMA for AM654/J721e type UARTs
+Date:   Thu, 19 Mar 2020 16:33:38 +0530
+Message-ID: <20200319110344.21348-1-vigneshr@ti.com>
 X-Mailer: git-send-email 2.25.2
-In-Reply-To: <20200319110344.21348-1-vigneshr@ti.com>
-References: <20200319110344.21348-1-vigneshr@ti.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -69,43 +66,33 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Terminate and flush DMA internal buffers, before pushing RX data to
-higher layer. Otherwise, this will lead to data corruption, as driver
-would end up pushing stale buffer data to higher layer while actual data
-is still stuck inside DMA hardware and has yet not arrived at the
-memory.
-While at that, replace deprecated dmaengine_terminate_all() with
-dmaengine_terminate_async().
+This series add DMA support for UARTs on AM654 and J721e SoCs. These
+UARTs are modified version of older generation UARTs on OMAP SoCs.
 
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
----
- drivers/tty/serial/8250/8250_omap.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+With new version of IP, it is possible to support longer DMA bursts per
+request. There are also differences wrt DMA integration.
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index f04139923da0..65b6d165df67 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -755,7 +755,10 @@ static void __dma_rx_do_complete(struct uart_8250_port *p)
- 	dmaengine_tx_status(dma->rxchan, dma->rx_cookie, &state);
- 
- 	count = dma->rx_size - state.residue;
--
-+	if (count < dma->rx_size)
-+		dmaengine_terminate_async(dma->rxchan);
-+	if (!count)
-+		goto unlock;
- 	ret = tty_insert_flip_string(tty_port, dma->rx_buf, count);
- 
- 	p->port.icount.rx += ret;
-@@ -817,7 +820,6 @@ static void omap_8250_rx_dma_flush(struct uart_8250_port *p)
- 	spin_unlock_irqrestore(&priv->rx_dma_lock, flags);
- 
- 	__dma_rx_do_complete(p);
--	dmaengine_terminate_all(dma->rxchan);
- }
- 
- static int omap_8250_rx_dma(struct uart_8250_port *p)
+First 4 patches update driver to work with AM654 DMA differences. Patch
+5 implements errata workaround and Patch 6 adds the actual support for
+DMA.
+
+
+Peter Ujfalusi (1):
+  serial: 8250: 8250_omap: Move locking out from __dma_rx_do_complete()
+
+Vignesh Raghavendra (5):
+  serial: 8250: 8250_omap: Terminate DMA before pushing data on RX
+    timeout
+  serial: 8250: 8250_omap: Account for data in flight during DMA
+    teardown
+  serial: 8250: 8250_omap: Extend driver data to pass FIFO trigger info
+  serial: 8250: 8250_omap: Work around errata causing spurious IRQs with
+    DMA
+  serial: 8250: 8250_omap: Add DMA support for UARTs on K3 SoCs
+
+ drivers/tty/serial/8250/8250_omap.c | 222 ++++++++++++++++++++++------
+ 1 file changed, 176 insertions(+), 46 deletions(-)
+
 -- 
 2.25.2
 
