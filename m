@@ -6,22 +6,22 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50055C4332B
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 17:41:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EACC2C4332B
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 17:41:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3667720767
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 17:41:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CD3FE20767
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 17:41:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727190AbgCTRl0 (ORCPT
+        id S1727301AbgCTRlc (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Mar 2020 13:41:26 -0400
-Received: from v6.sk ([167.172.42.174]:51786 "EHLO v6.sk"
+        Fri, 20 Mar 2020 13:41:32 -0400
+Received: from v6.sk ([167.172.42.174]:51844 "EHLO v6.sk"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726814AbgCTRlZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Mar 2020 13:41:25 -0400
+        id S1727192AbgCTRlb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 20 Mar 2020 13:41:31 -0400
 Received: from localhost (v6.sk [IPv6:::1])
-        by v6.sk (Postfix) with ESMTP id D68E160F22;
-        Fri, 20 Mar 2020 17:41:23 +0000 (UTC)
+        by v6.sk (Postfix) with ESMTP id ADE0561008;
+        Fri, 20 Mar 2020 17:41:30 +0000 (UTC)
 From:   Lubomir Rintel <lkundrak@v3.sk>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Rob Herring <robh+dt@kernel.org>,
@@ -37,9 +37,9 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         Lubomir Rintel <lkundrak@v3.sk>
-Subject: [PATCH 03/10] ARM: dts: pxa*: Make the serial ports compatible with xscale-uart
-Date:   Fri, 20 Mar 2020 18:41:00 +0100
-Message-Id: <20200320174107.29406-4-lkundrak@v3.sk>
+Subject: [PATCH 05/10] ARM: dts: mmp*: Fix serial port names
+Date:   Fri, 20 Mar 2020 18:41:02 +0100
+Message-Id: <20200320174107.29406-6-lkundrak@v3.sk>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200320174107.29406-1-lkundrak@v3.sk>
 References: <20200320174107.29406-1-lkundrak@v3.sk>
@@ -50,92 +50,98 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Some drivers that claim to support mrvl,mmp-uart default to a reg-shift
-of two, some don't. Be explicit to be on a safe side.
+A preferred node name for serial ports is "serial":
 
-With that in place, a XScale serial port driver is perfectly capable of
-supporting the MMP serial port. Add a compatible string.
+  mmp2-olpc-xo-1-75.dt.yaml: uart@d4030000: $nodename:0: 'uart@d4030000'
+      does not match '^serial(@[0-9a-f,]+)*$'
+  ...
 
 Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
 ---
- arch/arm/boot/dts/pxa168.dtsi | 9 ++++++---
- arch/arm/boot/dts/pxa910.dtsi | 9 ++++++---
- 2 files changed, 12 insertions(+), 6 deletions(-)
+ arch/arm/boot/dts/mmp2.dtsi | 8 ++++----
+ arch/arm/boot/dts/mmp3.dtsi | 8 ++++----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm/boot/dts/pxa168.dtsi b/arch/arm/boot/dts/pxa168.dtsi
-index 41dc79c9f6320..9a9e38245e88c 100644
---- a/arch/arm/boot/dts/pxa168.dtsi
-+++ b/arch/arm/boot/dts/pxa168.dtsi
-@@ -56,8 +56,9 @@ timer0: timer@d4014000 {
+diff --git a/arch/arm/boot/dts/mmp2.dtsi b/arch/arm/boot/dts/mmp2.dtsi
+index 6a2f072c1d0a8..45372df0ec2ad 100644
+--- a/arch/arm/boot/dts/mmp2.dtsi
++++ b/arch/arm/boot/dts/mmp2.dtsi
+@@ -208,7 +208,7 @@ timer0: timer@d4014000 {
+ 				clocks = <&soc_clocks MMP2_CLK_TIMER>;
  			};
  
- 			uart1: serial@d4017000 {
--				compatible = "mrvl,mmp-uart";
-+				compatible = "mrvl,mmp-uart", "intel,xscale-uart";
- 				reg = <0xd4017000 0x1000>;
-+				reg-shift = <2>;
+-			uart1: uart@d4030000 {
++			uart1: serial@d4030000 {
+ 				compatible = "mrvl,mmp-uart";
+ 				reg = <0xd4030000 0x1000>;
  				interrupts = <27>;
- 				clocks = <&soc_clocks PXA168_CLK_UART0>;
- 				resets = <&soc_clocks PXA168_CLK_UART0>;
-@@ -65,8 +66,9 @@ uart1: serial@d4017000 {
+@@ -218,7 +218,7 @@ uart1: uart@d4030000 {
+ 				status = "disabled";
  			};
  
- 			uart2: serial@d4018000 {
--				compatible = "mrvl,mmp-uart";
-+				compatible = "mrvl,mmp-uart", "intel,xscale-uart";
- 				reg = <0xd4018000 0x1000>;
-+				reg-shift = <2>;
- 				interrupts = <28>;
- 				clocks = <&soc_clocks PXA168_CLK_UART1>;
- 				resets = <&soc_clocks PXA168_CLK_UART1>;
-@@ -74,8 +76,9 @@ uart2: serial@d4018000 {
- 			};
- 
- 			uart3: serial@d4026000 {
--				compatible = "mrvl,mmp-uart";
-+				compatible = "mrvl,mmp-uart", "intel,xscale-uart";
- 				reg = <0xd4026000 0x1000>;
-+				reg-shift = <2>;
- 				interrupts = <29>;
- 				clocks = <&soc_clocks PXA168_CLK_UART2>;
- 				resets = <&soc_clocks PXA168_CLK_UART2>;
-diff --git a/arch/arm/boot/dts/pxa910.dtsi b/arch/arm/boot/dts/pxa910.dtsi
-index 209b1f0ea67b2..587a5e7f0702f 100644
---- a/arch/arm/boot/dts/pxa910.dtsi
-+++ b/arch/arm/boot/dts/pxa910.dtsi
-@@ -68,8 +68,9 @@ timer1: timer@d4016000 {
- 			};
- 
- 			uart1: serial@d4017000 {
--				compatible = "mrvl,mmp-uart";
-+				compatible = "mrvl,mmp-uart", "intel,xscale-uart";
+-			uart2: uart@d4017000 {
++			uart2: serial@d4017000 {
+ 				compatible = "mrvl,mmp-uart";
  				reg = <0xd4017000 0x1000>;
-+				reg-shift = <2>;
- 				interrupts = <27>;
- 				clocks = <&soc_clocks PXA910_CLK_UART0>;
- 				resets = <&soc_clocks PXA910_CLK_UART0>;
-@@ -77,8 +78,9 @@ uart1: serial@d4017000 {
- 			};
- 
- 			uart2: serial@d4018000 {
--				compatible = "mrvl,mmp-uart";
-+				compatible = "mrvl,mmp-uart", "intel,xscale-uart";
- 				reg = <0xd4018000 0x1000>;
-+				reg-shift = <2>;
  				interrupts = <28>;
- 				clocks = <&soc_clocks PXA910_CLK_UART1>;
- 				resets = <&soc_clocks PXA910_CLK_UART1>;
-@@ -86,8 +88,9 @@ uart2: serial@d4018000 {
+@@ -228,7 +228,7 @@ uart2: uart@d4017000 {
+ 				status = "disabled";
  			};
  
- 			uart3: serial@d4036000 {
--				compatible = "mrvl,mmp-uart";
-+				compatible = "mrvl,mmp-uart", "intel,xscale-uart";
- 				reg = <0xd4036000 0x1000>;
-+				reg-shift = <2>;
- 				interrupts = <59>;
- 				clocks = <&soc_clocks PXA910_CLK_UART2>;
- 				resets = <&soc_clocks PXA910_CLK_UART2>;
+-			uart3: uart@d4018000 {
++			uart3: serial@d4018000 {
+ 				compatible = "mrvl,mmp-uart";
+ 				reg = <0xd4018000 0x1000>;
+ 				interrupts = <24>;
+@@ -238,7 +238,7 @@ uart3: uart@d4018000 {
+ 				status = "disabled";
+ 			};
+ 
+-			uart4: uart@d4016000 {
++			uart4: serial@d4016000 {
+ 				compatible = "mrvl,mmp-uart";
+ 				reg = <0xd4016000 0x1000>;
+ 				interrupts = <46>;
+diff --git a/arch/arm/boot/dts/mmp3.dtsi b/arch/arm/boot/dts/mmp3.dtsi
+index 59a108e49b41e..7a5b9962497e4 100644
+--- a/arch/arm/boot/dts/mmp3.dtsi
++++ b/arch/arm/boot/dts/mmp3.dtsi
+@@ -318,7 +318,7 @@ timer: timer@d4014000 {
+ 				clocks = <&soc_clocks MMP2_CLK_TIMER>;
+ 			};
+ 
+-			uart1: uart@d4030000 {
++			uart1: serial@d4030000 {
+ 				compatible = "mrvl,mmp-uart";
+ 				reg = <0xd4030000 0x1000>;
+ 				interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
+@@ -328,7 +328,7 @@ uart1: uart@d4030000 {
+ 				status = "disabled";
+ 			};
+ 
+-			uart2: uart@d4017000 {
++			uart2: serial@d4017000 {
+ 				compatible = "mrvl,mmp-uart";
+ 				reg = <0xd4017000 0x1000>;
+ 				interrupts = <GIC_SPI 28 IRQ_TYPE_LEVEL_HIGH>;
+@@ -338,7 +338,7 @@ uart2: uart@d4017000 {
+ 				status = "disabled";
+ 			};
+ 
+-			uart3: uart@d4018000 {
++			uart3: serial@d4018000 {
+ 				compatible = "mrvl,mmp-uart";
+ 				reg = <0xd4018000 0x1000>;
+ 				interrupts = <GIC_SPI 24 IRQ_TYPE_LEVEL_HIGH>;
+@@ -348,7 +348,7 @@ uart3: uart@d4018000 {
+ 				status = "disabled";
+ 			};
+ 
+-			uart4: uart@d4016000 {
++			uart4: serial@d4016000 {
+ 				compatible = "mrvl,mmp-uart";
+ 				reg = <0xd4016000 0x1000>;
+ 				interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>;
 -- 
 2.25.1
 
