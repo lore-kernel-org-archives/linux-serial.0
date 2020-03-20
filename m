@@ -2,89 +2,150 @@ Return-Path: <SRS0=zA/y=5F=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 489F7C4332B
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 18:06:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 043BBC4332B
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 19:34:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 11E0A20739
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 18:06:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C763B20781
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 19:34:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1584727569;
-	bh=yp6Fom7/yku8A2ZiuJodg4eNORs8y5P9+1DLpLiuzU8=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=0QoFQCJVdI2REMKG9QpJjJgNO60mD0CvF7LH8L6DLtWVto+0ZO0OKkzsypN4EKbpl
-	 QEYAGBIPixmPk06GqXy3HXdmqy+UQIq4CeRoINpES57P80BzaqgSGanDhDkL+woLg1
-	 1Oe50pBv7BGOVafjy6xLZbSDhmG7suXJRDtWDNMA=
+	s=default; t=1584732868;
+	bh=aEvsi6aPUPNwJ9dvXmrIO+AidW7tr3gfQQCtLkGp4ic=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=RpIGmEKrfYS5X+UrTQNFTTrRk6FhymFYoiDwE2wtAylMyCfch7StKEq2VK9Z+VHbq
+	 Pyd8hQJhdLy79fX2f4i1WSIZW87fuxsHNjUyfz2bk1flRvLREPigvnMlv+XyCJE+Ky
+	 Sctino73yISLO8CAMJjkZBKGrWFwaHmuugcsepnk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726666AbgCTSGI (ORCPT
+        id S1726829AbgCTTe2 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Mar 2020 14:06:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58632 "EHLO mail.kernel.org"
+        Fri, 20 Mar 2020 15:34:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32784 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725446AbgCTSGI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Mar 2020 14:06:08 -0400
-Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726783AbgCTTe2 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 20 Mar 2020 15:34:28 -0400
+Received: from sol.localdomain (c-107-3-166-239.hsd1.ca.comcast.net [107.3.166.239])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D983E20739;
-        Fri, 20 Mar 2020 18:06:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9BAE020777;
+        Fri, 20 Mar 2020 19:34:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584727568;
-        bh=yp6Fom7/yku8A2ZiuJodg4eNORs8y5P9+1DLpLiuzU8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=0t+YdURE3JanVJ6MrOTl2uJULL3rYmZJFZXo6r3CxueI9GjL9PUT3EkqqU8ut8Ri0
-         3Vdyvk5NYZFw64VfzX6XcP4lzURWmrPoD76h7yB++qk5TGdK2bjuOgU/gAr6guOYN4
-         W0CdiYp7c8ZIWpA071YXlbI/nsTvx5CSM2Uaey+8=
-Received: by mail-qv1-f54.google.com with SMTP id o18so3464812qvf.1;
-        Fri, 20 Mar 2020 11:06:07 -0700 (PDT)
-X-Gm-Message-State: ANhLgQ0ud2VlrQrOmmULMXUWYAW8pisBx/e3MtCkm7KcFAXTDWCokWPC
-        wHB7TKMdtIY027JQYQxmb00EzofNFG/fRwaTtg==
-X-Google-Smtp-Source: ADFU+vvYx1xhQtLz6A1KIug0vLHM4f1NO+sqNMOQFA87tKUVNVLKmGv10+EhK/AOJ+8fVdPqLc+hLhLeF/am0yONDGM=
-X-Received: by 2002:a05:6214:a6f:: with SMTP id ef15mr9213953qvb.79.1584727567033;
- Fri, 20 Mar 2020 11:06:07 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200229160507.31309-1-devik@eaxlabs.cz> <20200229160507.31309-2-devik@eaxlabs.cz>
- <20200310190054.GA2826@bogus>
-In-Reply-To: <20200310190054.GA2826@bogus>
-From:   Rob Herring <robh@kernel.org>
-Date:   Fri, 20 Mar 2020 12:05:53 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqK8+M=Vg0PiDXP2f1LrEp4hSVea6piAASMGu1H=pxme6Q@mail.gmail.com>
-Message-ID: <CAL_JsqK8+M=Vg0PiDXP2f1LrEp4hSVea6piAASMGu1H=pxme6Q@mail.gmail.com>
-Subject: Re: [PATCH 2/2] dt-bindings: serial: Add st,swap to stm32-usart
-To:     Martin Devera <devik@eaxlabs.cz>
+        s=default; t=1584732867;
+        bh=aEvsi6aPUPNwJ9dvXmrIO+AidW7tr3gfQQCtLkGp4ic=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=B204xgDCd/79pkFl0pZhrNAW/wtFHXPaj+3w1T2k9EkoOjStCtRapyXkiRH5LhwVz
+         TU/uDFvO+QYceG3GvRchskKMjYL6pmyctGfE8Q/rFkwD3nef2cFGtwUY2hOUGGJYHg
+         zv1oO+Zn9bAU8dExcZi3D3CYxOL/LJtEYqwJnOww=
+Date:   Fri, 20 Mar 2020 12:34:24 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Jiri Slaby <jslaby@suse.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "moderated list:ARM/STM32 ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        Eric Dumazet <edumazet@google.com>,
+        Nicolas Pitre <nico@fluxnic.net>
+Subject: Re: [PATCH v2 2/2] vt: vt_ioctl: fix use-after-free in vt_in_use()
+Message-ID: <20200320193424.GM851@sol.localdomain>
+References: <20200318222704.GC2334@sol.localdomain>
+ <20200318223810.162440-1-ebiggers@kernel.org>
+ <20200318223810.162440-3-ebiggers@kernel.org>
+ <e2846610-ae0b-8e50-0fc4-c2cad6b23e9a@suse.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e2846610-ae0b-8e50-0fc4-c2cad6b23e9a@suse.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Mar 10, 2020 at 1:00 PM Rob Herring <robh@kernel.org> wrote:
->
-> On Sat, 29 Feb 2020 17:05:07 +0100, Martin Devera wrote:
-> > Add new st,swap property to allow for RX & TX pin swapping.
-> >
-> > Signed-off-by: Martin Devera <devik@eaxlabs.cz>
-> > ---
-> >  Documentation/devicetree/bindings/serial/st,stm32-usart.txt | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
->
-> Acked-by: Rob Herring <robh@kernel.org>
+On Fri, Mar 20, 2020 at 02:42:12PM +0100, Jiri Slaby wrote:
+> On 18. 03. 20, 23:38, Eric Biggers wrote:
+> > --- a/drivers/tty/vt/vt_ioctl.c
+> > +++ b/drivers/tty/vt/vt_ioctl.c
+> > @@ -43,9 +43,11 @@ bool vt_dont_switch;
+> >  
+> >  static inline bool vt_in_use(unsigned int i)
+> >  {
+> > -	extern struct tty_driver *console_driver;
+> > +	const struct vc_data *vc = vc_cons[i].d;
+> >  
+> > -	return console_driver->ttys[i] && console_driver->ttys[i]->count;
+> > +	WARN_CONSOLE_UNLOCKED();
+> > +
+> > +	return vc && kref_read(&vc->port.kref) > 1;
+> >  }
+> >  
+> >  static inline bool vt_busy(int i)
+> > @@ -643,15 +645,16 @@ int vt_ioctl(struct tty_struct *tty,
+> >  		struct vt_stat __user *vtstat = up;
+> >  		unsigned short state, mask;
+> >  
+> > -		/* Review: FIXME: Console lock ? */
+> >  		if (put_user(fg_console + 1, &vtstat->v_active))
+> >  			ret = -EFAULT;
+> >  		else {
+> >  			state = 1;	/* /dev/tty0 is always open */
+> > +			console_lock();
+> 
+> Could you comment on this one and the lock below why you added it here?
+> 
+> To me, it seems, we should rather introduce a vt alloc/dealloc lock
+> protecting cases like this, not console lock. But not now, some time
+> later. So a comment would help when/once we/I get into it...
 
-I take this back as there's a 2nd binding (Qcom GENI) doing swapping.
-So can you use 'rx-tx-swap' instead.
+I think the locking I added to VT_GETSTATE and VT_OPENQRY is pretty
+self-explanatory: it's needed because they call vt_in_use() which now requires
+console_lock.  So I'm not sure what you'd like me to add there?
 
-Rob
+As for vt_in_use() itself, I already added WARN_CONSOLE_UNLOCKED() to it.
+But I can add a comment to it too if it would be useful, like:
+
+static inline bool vt_in_use(unsigned int i)
+{
+        const struct vc_data *vc = vc_cons[i].d;
+
+        /*
+         * console_lock must be held to prevent the vc from being deallocated
+         * while we're checking whether it's in-use.
+         */
+        WARN_CONSOLE_UNLOCKED();
+
+        return vc && kref_read(&vc->port.kref) > 1;
+}
+
+
+> The interface (ie. the ioctls) also look weird and racy. Both of them.
+> Like the "OK, I give you this number, but it might not be correct by
+> now." kind of thing.
+> 
+> This let me think, who could use this? The answer is many 8-/. openpt,
+> systemd, sysvinit, didn't check others.
+> 
+> Perhaps we should provide openvt -- analogy of openpty and deprecate
+> VT_OPENQRY?
+> 
+> With VT_GETSTATE, the situation is more complicated:
+> sysvinit uses VT_GETSTATE only if TIOCGDEV is not available, so
+> VT_GETSTATE is actually unneeded there.
+> 
+> systemd uses it to find the current console (vtstat->v_active) and
+> systemd-logind uses it for spawning autovt on free consoles. That sort
+> of makes sense...
+> 
+
+Yes, these are bad APIs.
+
+Once I did remove a buggy ioctl elsewhere in the kernel rather than fixing it.
+But you have to be very, very confident that nothing is using it.  That doesn't
+seem to be the case for VT_GETSTATE and VT_OPENQRY as it's not hard to find code
+using them.  E.g. here's another user of both of them:
+https://android.googlesource.com/platform/system/core/+/ccecf1425412beb2bc3bb38d470293fdc244d6f1/toolbox/setconsole.c
+
+So we're probably stuck with them for now.  If you'd like to explore adding a
+better API and trying to get all users to use it, you're certainly welcome to.
+But it would be orthogonal to fixing this bug.
+
+- Eric
