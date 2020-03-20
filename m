@@ -2,100 +2,127 @@ Return-Path: <SRS0=zA/y=5F=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B365C4332D
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 05:36:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F58C4332D
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 06:58:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6073720772
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 05:36:00 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="XNB4oAJK"
+	by mail.kernel.org (Postfix) with ESMTP id 5202B20773
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 06:58:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1584687483;
+	bh=PIsypC08bJWE4+6MHuQaFuvnG+0cWY+CmeuIGkWOgCY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=RhGbDzi0I/OLIYcv1exHd84eJ0w8R7SCbmdaBXtl+NaEf25zb9UgzfZ20K799zFW8
+	 e5lUpBb0w+JXFDBi9NM9hLPQDOUqM+8VgnNUlHtvhdwfTNvPfeQkxSuPADZ8/GPUwv
+	 2bzxBd5uPEN0k6iCLxWGLIku1iBoFILpvW99EB9w=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726030AbgCTFgA (ORCPT
+        id S1726602AbgCTG6C (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Mar 2020 01:36:00 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:38122 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726470AbgCTFf7 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Mar 2020 01:35:59 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1584682559; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=3o1RZ/6bELZAsXOfwev81T339te60gO/KqDzjUk4CZA=; b=XNB4oAJKVpJ8cfXinTQS2IRJMQ73mK259Znv/8G3c5eihSjOrAAJk3ZdMMMcyDGzsWBmi94n
- IxqotdLZ7xNDKNy3JmZmNPb6Eqb3VQDZX84Ihi4Xk4dByS+ixeEd9GRuaX3uecG1QObXi5p8
- RWlmrGWp02HePLCehqoR3mgGo0I=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e745637.7f9b3d093bc8-smtp-out-n03;
- Fri, 20 Mar 2020 05:35:51 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id D3BAAC44788; Fri, 20 Mar 2020 05:35:51 +0000 (UTC)
-Received: from [192.168.0.13] (unknown [183.83.138.47])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        Fri, 20 Mar 2020 02:58:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58828 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726232AbgCTG6C (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 20 Mar 2020 02:58:02 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A570FC433CB;
-        Fri, 20 Mar 2020 05:35:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A570FC433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-Subject: Re: [PATCH V2 7/8] spi: spi-qcom-qspi: Add interconnect support
-To:     Evan Green <evgreen@chromium.org>
-Cc:     Matthias Kaehlcke <mka@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        wsa@the-dreams.de, Mark Brown <broonie@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-i2c@vger.kernel.org,
-        linux-spi@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Stephen Boyd <swboyd@chromium.org>,
-        Manu Gautam <mgautam@codeaurora.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-serial@vger.kernel.org,
-        Doug Anderson <dianders@chromium.org>,
-        Georgi Djakov <georgi.djakov@linaro.org>
-References: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
- <1584105134-13583-8-git-send-email-akashast@codeaurora.org>
- <20200314005817.GN144492@google.com>
- <3aeb3083-2a31-b269-510d-eb608ff14ce5@codeaurora.org>
- <CAE=gft58QsgTCUHMHKJhcM9ZxAeMiY16CrbNv2HaTCRqwtmt7A@mail.gmail.com>
- <e2ee1a60-a379-5c78-355a-64aad451a944@codeaurora.org>
- <CAE=gft4xL9+GN2NrM9ewyPg0Fog3pnf_sLGjWRNOg7KynNh-Dg@mail.gmail.com>
-From:   Akash Asthana <akashast@codeaurora.org>
-Message-ID: <f8f7041b-c21e-2c2c-a6e7-b92e7cc3e90b@codeaurora.org>
-Date:   Fri, 20 Mar 2020 11:05:42 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        by mail.kernel.org (Postfix) with ESMTPSA id 39C7220724;
+        Fri, 20 Mar 2020 06:58:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584687481;
+        bh=PIsypC08bJWE4+6MHuQaFuvnG+0cWY+CmeuIGkWOgCY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HfVVJ8Ed99pmOAmwj9fvwyf8AtF0zak3Pa6CBMSeoWFfBk0ww+GnBdFynv9p6gm8O
+         Fy6/2pfT2jRwoq8pN4MIRj/m2k3sLMyEebmJqP+bRuxZPv5njZTlz5EozE9ZqNGK3T
+         TxJZ4rLXzGdZyLqjHDDtPz0cUacPKSBO+iZegXFY=
+Date:   Fri, 20 Mar 2020 07:57:59 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        Eric Dumazet <edumazet@google.com>,
+        Nicolas Pitre <nico@fluxnic.net>
+Subject: Re: [PATCH v2 1/2] vt: vt_ioctl: fix VT_DISALLOCATE freeing in-use
+ virtual console
+Message-ID: <20200320065759.GA307955@kroah.com>
+References: <20200318222704.GC2334@sol.localdomain>
+ <20200318223810.162440-1-ebiggers@kernel.org>
+ <20200318223810.162440-2-ebiggers@kernel.org>
+ <2f762aee-720b-9bec-620f-61129c724de6@suse.com>
+ <20200320051049.GA1315@sol.localdomain>
 MIME-Version: 1.0
-In-Reply-To: <CAE=gft4xL9+GN2NrM9ewyPg0Fog3pnf_sLGjWRNOg7KynNh-Dg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200320051049.GA1315@sol.localdomain>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Evan,
->> IIUC, you meant to say struct icc_req(inside icc_path) will be saving
->> avg_bw and peak_bw so no need to save it outside icc_path?
-> Correct, it seems silly to store the same set of values twice in the
-> framework, but with different semantics about who's watching it.
-> -Evan
+On Thu, Mar 19, 2020 at 10:10:49PM -0700, Eric Biggers wrote:
+> On Thu, Mar 19, 2020 at 08:36:28AM +0100, Jiri Slaby wrote:
+> > On 18. 03. 20, 23:38, Eric Biggers wrote:
+> > > --- a/drivers/tty/vt/vt.c
+> > > +++ b/drivers/tty/vt/vt.c
+> > > @@ -1102,6 +1102,9 @@ int vc_allocate(unsigned int currcons)	/* return 0 on success */
+> > >  	tty_port_init(&vc->port);
+> > >  	INIT_WORK(&vc_cons[currcons].SAK_work, vc_SAK);
+> > >  
+> > > +	/* if this wasn't the case, we'd have to implement port->ops.destruct */
+> > > +	BUILD_BUG_ON(offsetof(struct vc_data, port) != 0);
+> > > +
+> > 
+> > This is 3 lines, implementing destruct would be like 4-5 :)? Please
+> > implement destruct instead.
+> > 
+> > Otherwise looks good.
+> > 
+> 
+> Actually implementing destruct would be 12 lines, see below.  Remember there is
+> no tty_port_operations defined yet so we'd have to define it just for destruct.
+> 
+> Do you still prefer it?
+> 
+> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+> index ec34f1f5f3bb5..309a39197be0a 100644
+> --- a/drivers/tty/vt/vt.c
+> +++ b/drivers/tty/vt/vt.c
+> @@ -1075,6 +1075,17 @@ static void visual_deinit(struct vc_data *vc)
+>  	module_put(vc->vc_sw->owner);
+>  }
+>  
+> +static void vc_port_destruct(struct tty_port *port)
+> +{
+> +	struct vc_data *vc = container_of(port, struct vc_data, port);
+> +
+> +	kfree(vc);
+> +}
+> +
+> +static const struct tty_port_operations vc_port_ops = {
+> +	.destruct = vc_port_destruct,
+> +};
+> +
+>  int vc_allocate(unsigned int currcons)	/* return 0 on success */
+>  {
+>  	struct vt_notifier_param param;
+> @@ -1100,11 +1111,9 @@ int vc_allocate(unsigned int currcons)	/* return 0 on success */
+>  
+>  	vc_cons[currcons].d = vc;
+>  	tty_port_init(&vc->port);
+> +	vc->port.ops = &vc_port_ops;
+>  	INIT_WORK(&vc_cons[currcons].SAK_work, vc_SAK);
+>  
+> -	/* if this wasn't the case, we'd have to implement port->ops.destruct */
+> -	BUILD_BUG_ON(offsetof(struct vc_data, port) != 0);
+> -
+>  	visual_init(vc, currcons, 1);
+>  
+>  	if (!*vc->vc_uni_pagedir_loc)
 
-Thanks for clarification! Yeah make sense not to introduce the structure 
-in ICC framework
 
-Regards,
+Yes, this is good to have, thanks for doing this.
 
-Akash
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+greg k-h
