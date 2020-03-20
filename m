@@ -2,407 +2,89 @@ Return-Path: <SRS0=zA/y=5F=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E4B0C43332
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 17:41:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 489F7C4332B
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 18:06:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 47C3120722
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 17:41:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 11E0A20739
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 18:06:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1584727569;
+	bh=yp6Fom7/yku8A2ZiuJodg4eNORs8y5P9+1DLpLiuzU8=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
+	b=0QoFQCJVdI2REMKG9QpJjJgNO60mD0CvF7LH8L6DLtWVto+0ZO0OKkzsypN4EKbpl
+	 QEYAGBIPixmPk06GqXy3HXdmqy+UQIq4CeRoINpES57P80BzaqgSGanDhDkL+woLg1
+	 1Oe50pBv7BGOVafjy6xLZbSDhmG7suXJRDtWDNMA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727270AbgCTRla (ORCPT
+        id S1726666AbgCTSGI (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Mar 2020 13:41:30 -0400
-Received: from v6.sk ([167.172.42.174]:51822 "EHLO v6.sk"
+        Fri, 20 Mar 2020 14:06:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58632 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727268AbgCTRl3 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Mar 2020 13:41:29 -0400
-Received: from localhost (v6.sk [IPv6:::1])
-        by v6.sk (Postfix) with ESMTP id 5EEA760FF9;
-        Fri, 20 Mar 2020 17:41:27 +0000 (UTC)
-From:   Lubomir Rintel <lkundrak@v3.sk>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Marc Gonzalez <marc.w.gonzalez@free.fr>,
-        Mans Rullgard <mans@mansr.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Lubomir Rintel <lkundrak@v3.sk>
-Subject: [PATCH 04/10] ARM: dts: mmp2-brownstone: Don't redeclare phandle references
-Date:   Fri, 20 Mar 2020 18:41:01 +0100
-Message-Id: <20200320174107.29406-5-lkundrak@v3.sk>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200320174107.29406-1-lkundrak@v3.sk>
-References: <20200320174107.29406-1-lkundrak@v3.sk>
+        id S1725446AbgCTSGI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 20 Mar 2020 14:06:08 -0400
+Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D983E20739;
+        Fri, 20 Mar 2020 18:06:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584727568;
+        bh=yp6Fom7/yku8A2ZiuJodg4eNORs8y5P9+1DLpLiuzU8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=0t+YdURE3JanVJ6MrOTl2uJULL3rYmZJFZXo6r3CxueI9GjL9PUT3EkqqU8ut8Ri0
+         3Vdyvk5NYZFw64VfzX6XcP4lzURWmrPoD76h7yB++qk5TGdK2bjuOgU/gAr6guOYN4
+         W0CdiYp7c8ZIWpA071YXlbI/nsTvx5CSM2Uaey+8=
+Received: by mail-qv1-f54.google.com with SMTP id o18so3464812qvf.1;
+        Fri, 20 Mar 2020 11:06:07 -0700 (PDT)
+X-Gm-Message-State: ANhLgQ0ud2VlrQrOmmULMXUWYAW8pisBx/e3MtCkm7KcFAXTDWCokWPC
+        wHB7TKMdtIY027JQYQxmb00EzofNFG/fRwaTtg==
+X-Google-Smtp-Source: ADFU+vvYx1xhQtLz6A1KIug0vLHM4f1NO+sqNMOQFA87tKUVNVLKmGv10+EhK/AOJ+8fVdPqLc+hLhLeF/am0yONDGM=
+X-Received: by 2002:a05:6214:a6f:: with SMTP id ef15mr9213953qvb.79.1584727567033;
+ Fri, 20 Mar 2020 11:06:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200229160507.31309-1-devik@eaxlabs.cz> <20200229160507.31309-2-devik@eaxlabs.cz>
+ <20200310190054.GA2826@bogus>
+In-Reply-To: <20200310190054.GA2826@bogus>
+From:   Rob Herring <robh@kernel.org>
+Date:   Fri, 20 Mar 2020 12:05:53 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqK8+M=Vg0PiDXP2f1LrEp4hSVea6piAASMGu1H=pxme6Q@mail.gmail.com>
+Message-ID: <CAL_JsqK8+M=Vg0PiDXP2f1LrEp4hSVea6piAASMGu1H=pxme6Q@mail.gmail.com>
+Subject: Re: [PATCH 2/2] dt-bindings: serial: Add st,swap to stm32-usart
+To:     Martin Devera <devik@eaxlabs.cz>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "moderated list:ARM/STM32 ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Extend the nodes by their phandle references instead of recreating the
-tree and declaring references of the same names.
+On Tue, Mar 10, 2020 at 1:00 PM Rob Herring <robh@kernel.org> wrote:
+>
+> On Sat, 29 Feb 2020 17:05:07 +0100, Martin Devera wrote:
+> > Add new st,swap property to allow for RX & TX pin swapping.
+> >
+> > Signed-off-by: Martin Devera <devik@eaxlabs.cz>
+> > ---
+> >  Documentation/devicetree/bindings/serial/st,stm32-usart.txt | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+>
+> Acked-by: Rob Herring <robh@kernel.org>
 
-Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
----
- arch/arm/boot/dts/mmp2-brownstone.dts | 330 +++++++++++++-------------
- 1 file changed, 164 insertions(+), 166 deletions(-)
+I take this back as there's a 2nd binding (Qcom GENI) doing swapping.
+So can you use 'rx-tx-swap' instead.
 
-diff --git a/arch/arm/boot/dts/mmp2-brownstone.dts b/arch/arm/boot/dts/mmp2-brownstone.dts
-index aaedc4c742ea5..04f1ae1382e7a 100644
---- a/arch/arm/boot/dts/mmp2-brownstone.dts
-+++ b/arch/arm/boot/dts/mmp2-brownstone.dts
-@@ -19,176 +19,174 @@ memory {
- 		device_type = "memory";
- 		reg = <0x00000000 0x08000000>;
- 	};
-+};
- 
--	soc {
--		apb@d4000000 {
--			uart3: uart@d4018000 {
--				status = "okay";
--			};
--			twsi1: i2c@d4011000 {
--				status = "okay";
--				pmic: max8925@3c {
--					compatible = "maxium,max8925";
--					reg = <0x3c>;
--					interrupts = <1>;
--					interrupt-parent = <&intcmux4>;
--					interrupt-controller;
--					#interrupt-cells = <1>;
--					maxim,tsc-irq = <0>;
-+&uart3 {
-+	status = "okay";
-+};
- 
--					regulators {
--						SDV1 {
--							regulator-min-microvolt = <637500>;
--							regulator-max-microvolt = <1425000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						SDV2 {
--							regulator-min-microvolt = <650000>;
--							regulator-max-microvolt = <2225000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						SDV3 {
--							regulator-min-microvolt = <750000>;
--							regulator-max-microvolt = <3900000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO1 {
--							regulator-min-microvolt = <750000>;
--							regulator-max-microvolt = <3900000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO2 {
--							regulator-min-microvolt = <650000>;
--							regulator-max-microvolt = <2250000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO3 {
--							regulator-min-microvolt = <650000>;
--							regulator-max-microvolt = <2250000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO4 {
--							regulator-min-microvolt = <750000>;
--							regulator-max-microvolt = <3900000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO5 {
--							regulator-min-microvolt = <750000>;
--							regulator-max-microvolt = <3900000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO6 {
--							regulator-min-microvolt = <750000>;
--							regulator-max-microvolt = <3900000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO7 {
--							regulator-min-microvolt = <750000>;
--							regulator-max-microvolt = <3900000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO8 {
--							regulator-min-microvolt = <750000>;
--							regulator-max-microvolt = <3900000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO9 {
--							regulator-min-microvolt = <750000>;
--							regulator-max-microvolt = <3900000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO10 {
--							regulator-min-microvolt = <750000>;
--							regulator-max-microvolt = <3900000>;
--						};
--						LDO11 {
--							regulator-min-microvolt = <750000>;
--							regulator-max-microvolt = <3900000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO12 {
--							regulator-min-microvolt = <750000>;
--							regulator-max-microvolt = <3900000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO13 {
--							regulator-min-microvolt = <750000>;
--							regulator-max-microvolt = <3900000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO14 {
--							regulator-min-microvolt = <750000>;
--							regulator-max-microvolt = <3900000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO15 {
--							regulator-min-microvolt = <750000>;
--							regulator-max-microvolt = <3900000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO16 {
--							regulator-min-microvolt = <750000>;
--							regulator-max-microvolt = <3900000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO17 {
--							regulator-min-microvolt = <650000>;
--							regulator-max-microvolt = <2250000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO18 {
--							regulator-min-microvolt = <650000>;
--							regulator-max-microvolt = <2250000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO19 {
--							regulator-min-microvolt = <750000>;
--							regulator-max-microvolt = <3900000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--						LDO20 {
--							regulator-min-microvolt = <750000>;
--							regulator-max-microvolt = <3900000>;
--							regulator-boot-on;
--							regulator-always-on;
--						};
--					};
--					backlight {
--						maxim,max8925-dual-string = <0>;
--					};
--					charger {
--						batt-detect = <0>;
--						topoff-threshold = <1>;
--						fast-charge = <7>;
--						no-temp-support = <0>;
--						no-insert-detect = <0>;
--					};
--				};
-+&twsi1 {
-+	status = "okay";
-+	pmic: max8925@3c {
-+		compatible = "maxium,max8925";
-+		reg = <0x3c>;
-+		interrupts = <1>;
-+		interrupt-parent = <&intcmux4>;
-+		interrupt-controller;
-+		#interrupt-cells = <1>;
-+		maxim,tsc-irq = <0>;
-+
-+		regulators {
-+			SDV1 {
-+				regulator-min-microvolt = <637500>;
-+				regulator-max-microvolt = <1425000>;
-+				regulator-boot-on;
-+				regulator-always-on;
- 			};
--			rtc: rtc@d4010000 {
--				status = "okay";
-+			SDV2 {
-+				regulator-min-microvolt = <650000>;
-+				regulator-max-microvolt = <2225000>;
-+				regulator-boot-on;
-+				regulator-always-on;
- 			};
-+			SDV3 {
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <3900000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO1 {
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <3900000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO2 {
-+				regulator-min-microvolt = <650000>;
-+				regulator-max-microvolt = <2250000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO3 {
-+				regulator-min-microvolt = <650000>;
-+				regulator-max-microvolt = <2250000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO4 {
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <3900000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO5 {
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <3900000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO6 {
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <3900000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO7 {
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <3900000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO8 {
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <3900000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO9 {
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <3900000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO10 {
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <3900000>;
-+			};
-+			LDO11 {
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <3900000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO12 {
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <3900000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO13 {
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <3900000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO14 {
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <3900000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO15 {
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <3900000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO16 {
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <3900000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO17 {
-+				regulator-min-microvolt = <650000>;
-+				regulator-max-microvolt = <2250000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO18 {
-+				regulator-min-microvolt = <650000>;
-+				regulator-max-microvolt = <2250000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO19 {
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <3900000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+			LDO20 {
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <3900000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+		};
-+		backlight {
-+			maxim,max8925-dual-string = <0>;
-+		};
-+		charger {
-+			batt-detect = <0>;
-+			topoff-threshold = <1>;
-+			fast-charge = <7>;
-+			no-temp-support = <0>;
-+			no-insert-detect = <0>;
- 		};
- 	};
- };
-+
-+&rtc {
-+	status = "okay";
-+};
--- 
-2.25.1
-
+Rob
