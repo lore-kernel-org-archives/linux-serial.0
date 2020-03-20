@@ -2,26 +2,26 @@ Return-Path: <SRS0=zA/y=5F=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE64C4332D
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 17:41:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24EF3C4332B
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 17:41:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8E46F20773
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 17:41:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F03FE20722
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 17:41:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726935AbgCTRlP (ORCPT
+        id S1727118AbgCTRlT (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Mar 2020 13:41:15 -0400
-Received: from v6.sk ([167.172.42.174]:51674 "EHLO v6.sk"
+        Fri, 20 Mar 2020 13:41:19 -0400
+Received: from v6.sk ([167.172.42.174]:51716 "EHLO v6.sk"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726801AbgCTRlP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Mar 2020 13:41:15 -0400
+        id S1727070AbgCTRlS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 20 Mar 2020 13:41:18 -0400
 Received: from localhost (v6.sk [IPv6:::1])
-        by v6.sk (Postfix) with ESMTP id 09AE760EC2;
-        Fri, 20 Mar 2020 17:41:13 +0000 (UTC)
+        by v6.sk (Postfix) with ESMTP id 9D97B60EED;
+        Fri, 20 Mar 2020 17:41:16 +0000 (UTC)
 From:   Lubomir Rintel <lkundrak@v3.sk>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Rob Herring <robh+dt@kernel.org>,
@@ -35,11 +35,14 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         Paul Mackerras <paulus@samba.org>,
         Michael Ellerman <mpe@ellerman.id.au>,
         linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH 0/10] NS 8250 UART Device Tree improvements
-Date:   Fri, 20 Mar 2020 18:40:57 +0100
-Message-Id: <20200320174107.29406-1-lkundrak@v3.sk>
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Lubomir Rintel <lkundrak@v3.sk>
+Subject: [PATCH 01/10] ARM: dts: pxa*: Don't redeclare phandle references
+Date:   Fri, 20 Mar 2020 18:40:58 +0100
+Message-Id: <20200320174107.29406-2-lkundrak@v3.sk>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200320174107.29406-1-lkundrak@v3.sk>
+References: <20200320174107.29406-1-lkundrak@v3.sk>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
@@ -47,43 +50,353 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+Extend the nodes by their phandle references instead of recreating the
+tree and declaring references of the same names.
 
-this series aims to make it possible to validate NS 8250 compatible serial port 
-nodes in Device Tree. It ultimately ends up converting the 8250.txt binding
-specification to YAML for json-schema.
+Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
+---
+ arch/arm/boot/dts/pxa168-aspenite.dts |  26 ++-
+ arch/arm/boot/dts/pxa910-dkb.dts      | 288 +++++++++++++-------------
+ 2 files changed, 155 insertions(+), 159 deletions(-)
 
-It starts by fixing up a couple of issues that would fail validation of
-device trees for various boards. Note there might be validation issues in other
-boards -- I don't have computing power to run "make dtbs_check" with
-CONFIG_OF_ALL_DTBS=y at the moment. I'm happy to fix up issues if somebody
-runs the test output to me.
-
-Unless someone has a different idea, I'd like to submit this to arm-soc once
-I get the Acks from PXA and Tango maintainers as well as DT reviewers:
-
-  [PATCH 01/10] ARM: dts: pxa*: Don't redeclare phandle references
-  [PATCH 02/10] ARM: dts: pxa*: Fix serial port names
-  [PATCH 03/10] ARM: dts: pxa*: Make the serial ports compatible with
-  [PATCH 04/10] ARM: dts: mmp2-brownstone: Don't redeclare phandle
-  [PATCH 05/10] ARM: dts: mmp*: Fix serial port names
-  [PATCH 06/10] ARM: dts: mmp*: Make the serial ports compatible with
-  [PATCH 07/10] ARM: dts: tango4: Make /serial compatible with ns16550a
-
-What follows is a large yet straightforward fixup of similar nature for PowerPC.
-I'd be thankful if PowerPC maintainers could pick this patch up.
-
-  [PATCH 08/10] powerpc/fsl: Make serial ports compatible with ns16550a
-
-Then follows folding of mrvl-serial.txt into 8250.txt (the Marvell serial
-port is in fact an XScale UART, a variation of 8250) and the actual
-conversion. Perhaps the best route these patches could take via the tty
-tree.
-
-  [PATCH 09/10] dt-bindings: serial: Move Marvell compatible string to
-  [PATCH 10/10] dt-bindings: serial: Convert 8250 to json-schema
-
-Thanks,
-Lubo
-
+diff --git a/arch/arm/boot/dts/pxa168-aspenite.dts b/arch/arm/boot/dts/pxa168-aspenite.dts
+index 2ad40e373194c..8bade6bf395b3 100644
+--- a/arch/arm/boot/dts/pxa168-aspenite.dts
++++ b/arch/arm/boot/dts/pxa168-aspenite.dts
+@@ -18,18 +18,16 @@ chosen {
+ 	memory {
+ 		reg = <0x00000000 0x04000000>;
+ 	};
+-
+-	soc {
+-		apb@d4000000 {
+-			uart1: uart@d4017000 {
+-				status = "okay";
+-			};
+-			twsi1: i2c@d4011000 {
+-				status = "okay";
+-			};
+-			rtc: rtc@d4010000 {
+-				status = "okay";
+-			};
+-		};
+-	};
++};
++
++&uart1 {
++	status = "okay";
++};
++
++&twsi1 {
++	status = "okay";
++};
++
++&rtc {
++	status = "okay";
+ };
+diff --git a/arch/arm/boot/dts/pxa910-dkb.dts b/arch/arm/boot/dts/pxa910-dkb.dts
+index 0f899e672e824..ce76158867c7f 100644
+--- a/arch/arm/boot/dts/pxa910-dkb.dts
++++ b/arch/arm/boot/dts/pxa910-dkb.dts
+@@ -18,155 +18,153 @@ chosen {
+ 	memory {
+ 		reg = <0x00000000 0x10000000>;
+ 	};
++};
+ 
+-	soc {
+-		apb@d4000000 {
+-			uart1: uart@d4017000 {
+-				status = "okay";
++&uart1 {
++	status = "okay";
++};
++
++&twsi1 {
++	status = "okay";
++
++	pmic: 88pm860x@34 {
++		compatible = "marvell,88pm860x";
++		reg = <0x34>;
++		interrupts = <4>;
++		interrupt-parent = <&intc>;
++		interrupt-controller;
++		#interrupt-cells = <1>;
++
++		marvell,88pm860x-irq-read-clr;
++		marvell,88pm860x-slave-addr = <0x11>;
++
++		regulators {
++			BUCK1 {
++				regulator-min-microvolt = <1000000>;
++				regulator-max-microvolt = <1500000>;
++				regulator-boot-on;
++				regulator-always-on;
+ 			};
+-			twsi1: i2c@d4011000 {
+-				status = "okay";
+-
+-				pmic: 88pm860x@34 {
+-					compatible = "marvell,88pm860x";
+-					reg = <0x34>;
+-					interrupts = <4>;
+-					interrupt-parent = <&intc>;
+-					interrupt-controller;
+-					#interrupt-cells = <1>;
+-
+-					marvell,88pm860x-irq-read-clr;
+-					marvell,88pm860x-slave-addr = <0x11>;
+-
+-					regulators {
+-						BUCK1 {
+-							regulator-min-microvolt = <1000000>;
+-							regulator-max-microvolt = <1500000>;
+-							regulator-boot-on;
+-							regulator-always-on;
+-						};
+-						BUCK2 {
+-							regulator-min-microvolt = <1000000>;
+-							regulator-max-microvolt = <1500000>;
+-							regulator-boot-on;
+-							regulator-always-on;
+-						};
+-						BUCK3 {
+-							regulator-min-microvolt = <1000000>;
+-							regulator-max-microvolt = <3000000>;
+-							regulator-boot-on;
+-							regulator-always-on;
+-						};
+-						LDO1 {
+-							regulator-min-microvolt = <1200000>;
+-							regulator-max-microvolt = <2800000>;
+-							regulator-boot-on;
+-							regulator-always-on;
+-						};
+-						LDO2 {
+-							regulator-min-microvolt = <1800000>;
+-							regulator-max-microvolt = <3300000>;
+-							regulator-boot-on;
+-							regulator-always-on;
+-						};
+-						LDO3 {
+-							regulator-min-microvolt = <1800000>;
+-							regulator-max-microvolt = <3300000>;
+-							regulator-boot-on;
+-							regulator-always-on;
+-						};
+-						LDO4 {
+-							regulator-min-microvolt = <1800000>;
+-							regulator-max-microvolt = <3300000>;
+-							regulator-always-on;
+-						};
+-						LDO5 {
+-							regulator-min-microvolt = <2900000>;
+-							regulator-max-microvolt = <3300000>;
+-							regulator-boot-on;
+-							regulator-always-on;
+-						};
+-						LDO6 {
+-							regulator-min-microvolt = <1800000>;
+-							regulator-max-microvolt = <3300000>;
+-							regulator-boot-on;
+-							regulator-always-on;
+-						};
+-						LDO7 {
+-							regulator-min-microvolt = <1800000>;
+-							regulator-max-microvolt = <2900000>;
+-							regulator-boot-on;
+-							regulator-always-on;
+-						};
+-						LDO8 {
+-							regulator-min-microvolt = <1800000>;
+-							regulator-max-microvolt = <2900000>;
+-							regulator-boot-on;
+-							regulator-always-on;
+-						};
+-						LDO9 {
+-							regulator-min-microvolt = <1800000>;
+-							regulator-max-microvolt = <3300000>;
+-							regulator-boot-on;
+-							regulator-always-on;
+-						};
+-						LDO10 {
+-							regulator-min-microvolt = <1200000>;
+-							regulator-max-microvolt = <3300000>;
+-							regulator-boot-on;
+-							regulator-always-on;
+-						};
+-						LDO12 {
+-							regulator-min-microvolt = <1200000>;
+-							regulator-max-microvolt = <3300000>;
+-							regulator-always-on;
+-						};
+-						LDO13 {
+-							regulator-min-microvolt = <1200000>;
+-							regulator-max-microvolt = <3300000>;
+-							regulator-always-on;
+-						};
+-						LDO14 {
+-							regulator-min-microvolt = <1800000>;
+-							regulator-max-microvolt = <3300000>;
+-							regulator-always-on;
+-						};
+-					};
+-					rtc {
+-						marvell,88pm860x-vrtc = <1>;
+-					};
+-					touch {
+-						marvell,88pm860x-gpadc-prebias = <1>;
+-						marvell,88pm860x-gpadc-slot-cycle = <1>;
+-						marvell,88pm860x-tsi-prebias = <6>;
+-						marvell,88pm860x-pen-prebias = <16>;
+-						marvell,88pm860x-pen-prechg = <2>;
+-						marvell,88pm860x-resistor-X = <300>;
+-					};
+-					backlights {
+-						backlight-0 {
+-							marvell,88pm860x-iset = <4>;
+-							marvell,88pm860x-pwm = <3>;
+-						};
+-						backlight-2 {
+-						};
+-					};
+-					leds {
+-						led0-red {
+-							marvell,88pm860x-iset = <12>;
+-						};
+-						led0-green {
+-							marvell,88pm860x-iset = <12>;
+-						};
+-						led0-blue {
+-							marvell,88pm860x-iset = <12>;
+-						};
+-					};
+-				};
++			BUCK2 {
++				regulator-min-microvolt = <1000000>;
++				regulator-max-microvolt = <1500000>;
++				regulator-boot-on;
++				regulator-always-on;
+ 			};
+-			rtc: rtc@d4010000 {
+-				status = "okay";
++			BUCK3 {
++				regulator-min-microvolt = <1000000>;
++				regulator-max-microvolt = <3000000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++			LDO1 {
++				regulator-min-microvolt = <1200000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++			LDO2 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++			LDO3 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++			LDO4 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
++			LDO5 {
++				regulator-min-microvolt = <2900000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++			LDO6 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++			LDO7 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <2900000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++			LDO8 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <2900000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++			LDO9 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++			LDO10 {
++				regulator-min-microvolt = <1200000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++			LDO12 {
++				regulator-min-microvolt = <1200000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
++			LDO13 {
++				regulator-min-microvolt = <1200000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
++			LDO14 {
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-always-on;
++			};
++		};
++		rtc {
++			marvell,88pm860x-vrtc = <1>;
++		};
++		touch {
++			marvell,88pm860x-gpadc-prebias = <1>;
++			marvell,88pm860x-gpadc-slot-cycle = <1>;
++			marvell,88pm860x-tsi-prebias = <6>;
++			marvell,88pm860x-pen-prebias = <16>;
++			marvell,88pm860x-pen-prechg = <2>;
++			marvell,88pm860x-resistor-X = <300>;
++		};
++		backlights {
++			backlight-0 {
++				marvell,88pm860x-iset = <4>;
++				marvell,88pm860x-pwm = <3>;
++			};
++			backlight-2 {
++			};
++		};
++		leds {
++			led0-red {
++				marvell,88pm860x-iset = <12>;
++			};
++			led0-green {
++				marvell,88pm860x-iset = <12>;
++			};
++			led0-blue {
++				marvell,88pm860x-iset = <12>;
+ 			};
+ 		};
+ 	};
+ };
++
++&rtc {
++	status = "okay";
++};
+-- 
+2.25.1
 
