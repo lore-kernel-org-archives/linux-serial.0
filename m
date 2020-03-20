@@ -2,127 +2,108 @@ Return-Path: <SRS0=zA/y=5F=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F58C4332D
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 06:58:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58799C4332E
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 09:25:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5202B20773
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 06:58:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1584687483;
-	bh=PIsypC08bJWE4+6MHuQaFuvnG+0cWY+CmeuIGkWOgCY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=RhGbDzi0I/OLIYcv1exHd84eJ0w8R7SCbmdaBXtl+NaEf25zb9UgzfZ20K799zFW8
-	 e5lUpBb0w+JXFDBi9NM9hLPQDOUqM+8VgnNUlHtvhdwfTNvPfeQkxSuPADZ8/GPUwv
-	 2bzxBd5uPEN0k6iCLxWGLIku1iBoFILpvW99EB9w=
+	by mail.kernel.org (Postfix) with ESMTP id 3657C20739
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 09:25:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726602AbgCTG6C (ORCPT
+        id S1727027AbgCTJY7 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Mar 2020 02:58:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58828 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726232AbgCTG6C (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Mar 2020 02:58:02 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 39C7220724;
-        Fri, 20 Mar 2020 06:58:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584687481;
-        bh=PIsypC08bJWE4+6MHuQaFuvnG+0cWY+CmeuIGkWOgCY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HfVVJ8Ed99pmOAmwj9fvwyf8AtF0zak3Pa6CBMSeoWFfBk0ww+GnBdFynv9p6gm8O
-         Fy6/2pfT2jRwoq8pN4MIRj/m2k3sLMyEebmJqP+bRuxZPv5njZTlz5EozE9ZqNGK3T
-         TxJZ4rLXzGdZyLqjHDDtPz0cUacPKSBO+iZegXFY=
-Date:   Fri, 20 Mar 2020 07:57:59 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        Eric Dumazet <edumazet@google.com>,
-        Nicolas Pitre <nico@fluxnic.net>
-Subject: Re: [PATCH v2 1/2] vt: vt_ioctl: fix VT_DISALLOCATE freeing in-use
- virtual console
-Message-ID: <20200320065759.GA307955@kroah.com>
-References: <20200318222704.GC2334@sol.localdomain>
- <20200318223810.162440-1-ebiggers@kernel.org>
- <20200318223810.162440-2-ebiggers@kernel.org>
- <2f762aee-720b-9bec-620f-61129c724de6@suse.com>
- <20200320051049.GA1315@sol.localdomain>
+        Fri, 20 Mar 2020 05:24:59 -0400
+Received: from mail.v3.sk ([167.172.186.51]:37792 "EHLO shell.v3.sk"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727000AbgCTJY6 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 20 Mar 2020 05:24:58 -0400
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by zimbra.v3.sk (Postfix) with ESMTP id A9501DFC45;
+        Fri, 20 Mar 2020 09:25:15 +0000 (UTC)
+Received: from shell.v3.sk ([127.0.0.1])
+        by localhost (zimbra.v3.sk [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id CB3O09jGeY6v; Fri, 20 Mar 2020 09:25:15 +0000 (UTC)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by zimbra.v3.sk (Postfix) with ESMTP id D57D7E0028;
+        Fri, 20 Mar 2020 09:25:14 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at zimbra.v3.sk
+Received: from shell.v3.sk ([127.0.0.1])
+        by localhost (zimbra.v3.sk [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id vyhPJH_CqW6F; Fri, 20 Mar 2020 09:25:14 +0000 (UTC)
+Received: from localhost (unknown [109.183.109.54])
+        by zimbra.v3.sk (Postfix) with ESMTPSA id 6BB7CDFC45;
+        Fri, 20 Mar 2020 09:25:14 +0000 (UTC)
+Date:   Fri, 20 Mar 2020 10:24:52 +0100
+From:   Lubomir Rintel <lkundrak@v3.sk>
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Marc Zyngier <maz@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Daniel Mack <daniel@zonque.org>,
+        Haojian Zhuang <haojian.zhuang@gmail.com>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        "open list:REAL TIME CLOCK (RTC) SUBSYSTEM" 
+        <linux-rtc@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Linux USB List <linux-usb@vger.kernel.org>
+Subject: Re: [PATCH 13/28] dt-bindings: serial: move Marvell compatible
+ string to 8250 binding doc
+Message-ID: <20200320092452.GA24507@furthur.local>
+References: <20200317093922.20785-1-lkundrak@v3.sk>
+ <20200317093922.20785-14-lkundrak@v3.sk>
+ <CAL_Jsq+wG+DTZ8Vxcw=NR2isABGrkoDiBt-uG9+NF6qdWuU62Q@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200320051049.GA1315@sol.localdomain>
+In-Reply-To: <CAL_Jsq+wG+DTZ8Vxcw=NR2isABGrkoDiBt-uG9+NF6qdWuU62Q@mail.gmail.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 19, 2020 at 10:10:49PM -0700, Eric Biggers wrote:
-> On Thu, Mar 19, 2020 at 08:36:28AM +0100, Jiri Slaby wrote:
-> > On 18. 03. 20, 23:38, Eric Biggers wrote:
-> > > --- a/drivers/tty/vt/vt.c
-> > > +++ b/drivers/tty/vt/vt.c
-> > > @@ -1102,6 +1102,9 @@ int vc_allocate(unsigned int currcons)	/* return 0 on success */
-> > >  	tty_port_init(&vc->port);
-> > >  	INIT_WORK(&vc_cons[currcons].SAK_work, vc_SAK);
-> > >  
-> > > +	/* if this wasn't the case, we'd have to implement port->ops.destruct */
-> > > +	BUILD_BUG_ON(offsetof(struct vc_data, port) != 0);
-> > > +
-> > 
-> > This is 3 lines, implementing destruct would be like 4-5 :)? Please
-> > implement destruct instead.
-> > 
-> > Otherwise looks good.
-> > 
+On Thu, Mar 19, 2020 at 10:11:02AM -0600, Rob Herring wrote:
+> On Tue, Mar 17, 2020 at 3:40 AM Lubomir Rintel <lkundrak@v3.sk> wrote:
+> >
+> > These ports are compatible with NS8250 and handled by the same driver.
+> > Get rid of the extra document that fails to document the properties that
+> > are actually supported.
+> >
+> > Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
+> > ---
+> >  Documentation/devicetree/bindings/serial/8250.txt        | 2 ++
+> >  Documentation/devicetree/bindings/serial/mrvl-serial.txt | 4 ----
+> >  2 files changed, 2 insertions(+), 4 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/serial/mrvl-serial.txt
 > 
-> Actually implementing destruct would be 12 lines, see below.  Remember there is
-> no tty_port_operations defined yet so we'd have to define it just for destruct.
+> Reviewed-by: Rob Herring <robh@kernel.org>
 > 
-> Do you still prefer it?
-> 
-> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-> index ec34f1f5f3bb5..309a39197be0a 100644
-> --- a/drivers/tty/vt/vt.c
-> +++ b/drivers/tty/vt/vt.c
-> @@ -1075,6 +1075,17 @@ static void visual_deinit(struct vc_data *vc)
->  	module_put(vc->vc_sw->owner);
->  }
->  
-> +static void vc_port_destruct(struct tty_port *port)
-> +{
-> +	struct vc_data *vc = container_of(port, struct vc_data, port);
-> +
-> +	kfree(vc);
-> +}
-> +
-> +static const struct tty_port_operations vc_port_ops = {
-> +	.destruct = vc_port_destruct,
-> +};
-> +
->  int vc_allocate(unsigned int currcons)	/* return 0 on success */
->  {
->  	struct vt_notifier_param param;
-> @@ -1100,11 +1111,9 @@ int vc_allocate(unsigned int currcons)	/* return 0 on success */
->  
->  	vc_cons[currcons].d = vc;
->  	tty_port_init(&vc->port);
-> +	vc->port.ops = &vc_port_ops;
->  	INIT_WORK(&vc_cons[currcons].SAK_work, vc_SAK);
->  
-> -	/* if this wasn't the case, we'd have to implement port->ops.destruct */
-> -	BUILD_BUG_ON(offsetof(struct vc_data, port) != 0);
-> -
->  	visual_init(vc, currcons, 1);
->  
->  	if (!*vc->vc_uni_pagedir_loc)
+> I'd really like to see 8250.txt converted to schema.
 
+I'll follow up just with that.
 
-Yes, this is good to have, thanks for doing this.
+Thanks quarantine.
 
-greg k-h
+> Rob
+
+Lubo
