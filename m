@@ -2,87 +2,109 @@ Return-Path: <SRS0=zA/y=5F=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 075BDC4332D
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 14:27:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E959C4332D
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 15:15:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CEA232072D
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 14:27:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1584714440;
-	bh=7XWuZryHtfWvsLZhM76IcRNhObhLjJKgrixahU+eeQM=;
-	h=Date:From:To:Cc:Subject:List-ID:From;
-	b=pFEP32oBLapNWayb82h7E48Ww6UEei/Hh5J6McjxW+ganp+0rno2S/6ur0bsg62Gy
-	 QadxF1iREhxV5nK0/i2r5bslghX9J1ubAhIezJu6NRmZ0Y2ncAAajr9Qy47Vq4+7+/
-	 2rKdn2/dAby6ZGU468FCnLFDiJXEUMMKMnAN0V/0=
+	by mail.kernel.org (Postfix) with ESMTP id 0E3FE2072D
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 15:15:53 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bOzWhlDj"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727128AbgCTO1U (ORCPT
+        id S1726843AbgCTPPw (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Mar 2020 10:27:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51002 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726896AbgCTO1U (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Mar 2020 10:27:20 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7B4DF2070A;
-        Fri, 20 Mar 2020 14:27:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584714439;
-        bh=7XWuZryHtfWvsLZhM76IcRNhObhLjJKgrixahU+eeQM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=g4W1ECiUIITNnXksH9VzXhGLRRSP5/V9gZjmfQ7KfpoWYvZRZHike4FkBu3tgTPSl
-         y4zojU/zgWPyfgEOQ/rzAK/zKwhGovWSpBv2bjWT3/s5lu7/QnSS1n3VBIjpcb7RwS
-         luutaZRnJs8O0GqWlEnPn+L5C/ob24MYFs/+iq+o=
-Date:   Fri, 20 Mar 2020 15:27:15 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY driver fixes for 5.6-rc7
-Message-ID: <20200320142715.GA760292@kroah.com>
+        Fri, 20 Mar 2020 11:15:52 -0400
+Received: from mail-lj1-f179.google.com ([209.85.208.179]:33795 "EHLO
+        mail-lj1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726801AbgCTPPw (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 20 Mar 2020 11:15:52 -0400
+Received: by mail-lj1-f179.google.com with SMTP id s13so6820119ljm.1
+        for <linux-serial@vger.kernel.org>; Fri, 20 Mar 2020 08:15:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:subject:date:message-id:user-agent:mime-version;
+        bh=KfWFAUngwoUScWWxlij3hsoEi07IvFJ4HPy43v95Idk=;
+        b=bOzWhlDjCwh3RvmI15RDxpfTPskSLWKzFaukzxGwASBMn94CkwDnAH6r2EBxwC1NL6
+         EdA0IzXeTq2dVft0kJdjzulqvSQoyxEbiWRC3h3ui61+QTuYRyZTCJ3BT6CxCpHW7VeF
+         wLbeX1GPXZOX44HXNHaIWIX7I5GUqC/g3tckpTCTmdUkcVKir4ivSIBm47uRdBX6AERo
+         MofEAVqOb9TMo9AHQZb6G9j2ZoQMggSH4tzkvUecOX9xXW6ZSLhJQm8d+ISYDCrQ8QDN
+         js9N6RfsXDxvVZ8BxmzEbFHZXozN7HtQA75R4suESLPA1nPGmn+2SxviDIwTp/DJPlsu
+         RR9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:date:message-id:user-agent
+         :mime-version;
+        bh=KfWFAUngwoUScWWxlij3hsoEi07IvFJ4HPy43v95Idk=;
+        b=mUOX+1C8uZPoaXvQCMwv6KajVsgsHVF5pXprEvlWw3fT8USyc2lF6tRIrebjq+3x0m
+         lOF7HLULlUOKbo9FTswDWvPQ6cpdXHOyDN9vSKXyCIzjd8Kin4E/CknWXtiWLjBTCJUy
+         yuAGQ8t2lDSyCZGjdbirLI3I7R43qnfnO4zJbrkLBupv6PIqLVK7mhvONNqHdNJWRFCM
+         pWedde+n67Ah3BVOs0Yz2+Lt4WBuku7wiAgv5Av3V5Nyvt9M7BkLdQgswWU64Ufi1NZh
+         0mrbqMcOC5CR0m8J95wKCUxwmyD/fQkWWpAyktfR94iFstpor1CbrpWmC18r/QHQZRkN
+         wRiQ==
+X-Gm-Message-State: ANhLgQ02Iu9CevQgIlonYB6s4Et3/+GGtyEulN/WpTd5YL1AfWTU4U9Q
+        FYHOfRF9Tm6aPqhZVmch8SpdjbiM
+X-Google-Smtp-Source: ADFU+vuwM6GhJCXNWW00UAPYUmIBYhz8UvQWqaNpkRceKQxYIF03YtJDFwR8BrTwcA+uxXZrks5rSg==
+X-Received: by 2002:a2e:7a0d:: with SMTP id v13mr5548221ljc.173.1584717349981;
+        Fri, 20 Mar 2020 08:15:49 -0700 (PDT)
+Received: from osv.localdomain ([89.175.180.246])
+        by smtp.gmail.com with ESMTPSA id a10sm3460857ljb.23.2020.03.20.08.15.47
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Mar 2020 08:15:48 -0700 (PDT)
+From:   Sergey Organov <sorganov@gmail.com>
+To:     linux-serial@vger.kernel.org
+Subject: Serial console and interrupts latency.
+Date:   Fri, 20 Mar 2020 18:15:46 +0300
+Message-ID: <87k13ff465.fsf@osv.gnss.ru>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The following changes since commit 2c523b344dfa65a3738e7039832044aa133c75fb:
+Hello,
 
-  Linux 5.6-rc5 (2020-03-08 17:44:44 -0700)
+I was investigating random serial overruns on my embedded board and
+figured it strongly correlates with serial output (to another serial
+port) from kernel printk() calls, that forced me to dig into the kernel
+sources, and now I'm very confused.
 
-are available in the Git repository at:
+I'm reading drivers/tty/serial/8250/8250_port.c, and
+serial8250_console_write() function in particular (being on tty-next
+branch).
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.6-rc7
+What I see is that it locks interrupts
 
-for you to fetch changes up to 6e622cd8bd888c7fa3ee2b7dfb3514ab53b21570:
+3141:		spin_lock_irqsave(&port->lock, flags);
 
-  tty: fix compat TIOCGSERIAL checking wrong function ptr (2020-03-18 13:15:13 +0100)
+and then calls wait_for_xmitr() both indirectly here:
 
-----------------------------------------------------------------
-TTY fixes for 5.6-rc7
+3159:	uart_console_write(port, s, count, serial8250_console_putchar);
 
-Here are 3 small tty_io bugfixes for reported issues that Eric has
-resolved for 5.6-rc7
+and then directly as well:
 
-All of these have been in linux-next with no reported issues.
+3165:	wait_for_xmitr(up, BOTH_EMPTY);
 
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+before re-enabling interrupts at:
 
-----------------------------------------------------------------
-Eric Biggers (3):
-      tty: drop outdated comments about release_tty() locking
-      tty: fix compat TIOCGSERIAL leaking uninitialized memory
-      tty: fix compat TIOCGSERIAL checking wrong function ptr
+3179:		spin_unlock_irqrestore(&port->lock, flags);
 
- drivers/tty/tty_io.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+Now, wait_for_xmitr(), even according to comments, could busy-wait for
+up to 10+1000 milliseconds, and in this case this huge delay will happen
+at interrupts disabled?
+
+Does it mean any serial console output out of printk() could cause 10
+milliseconds or even 1 second interrupts latency? Somehow I can't
+believe it.
+
+What do I miss?
+
+Thanks,
+-- Sergey
