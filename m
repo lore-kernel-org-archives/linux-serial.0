@@ -2,100 +2,87 @@ Return-Path: <SRS0=zA/y=5F=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE553C4332B
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 13:52:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 075BDC4332D
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 14:27:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7DB1220722
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 13:52:28 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="qtr7JOY3"
+	by mail.kernel.org (Postfix) with ESMTP id CEA232072D
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 14:27:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1584714440;
+	bh=7XWuZryHtfWvsLZhM76IcRNhObhLjJKgrixahU+eeQM=;
+	h=Date:From:To:Cc:Subject:List-ID:From;
+	b=pFEP32oBLapNWayb82h7E48Ww6UEei/Hh5J6McjxW+ganp+0rno2S/6ur0bsg62Gy
+	 QadxF1iREhxV5nK0/i2r5bslghX9J1ubAhIezJu6NRmZ0Y2ncAAajr9Qy47Vq4+7+/
+	 2rKdn2/dAby6ZGU468FCnLFDiJXEUMMKMnAN0V/0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727054AbgCTNw2 (ORCPT
+        id S1727128AbgCTO1U (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Mar 2020 09:52:28 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:52390 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726778AbgCTNw2 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Mar 2020 09:52:28 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1584712347; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=asVXwuIl1gP5wCzIA2Kf9ocQuAN/2qFIJy7nJb+pgio=; b=qtr7JOY3ZkdQ2QKLjU1R59Rs+IHW55tjtIBgbhCzKa1REvC2AmUuVl60VS2kfNMo7BZw7LGU
- yHriz5egFby8cPBLmrmB9xhj1JAfwM1S8CMz678bRKZpM7DO2rjeSYfY8Ek7mX5MLzOOd6/B
- NfmUtINqbG+zgSZ6Al0DYuKCu0Q=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e74ca9a.7f6912d3a500-smtp-out-n05;
- Fri, 20 Mar 2020 13:52:26 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 71283C4478C; Fri, 20 Mar 2020 13:52:25 +0000 (UTC)
-Received: from [192.168.0.13] (unknown [183.83.138.47])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        Fri, 20 Mar 2020 10:27:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51002 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726896AbgCTO1U (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 20 Mar 2020 10:27:20 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 33635C433CB;
-        Fri, 20 Mar 2020 13:52:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 33635C433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-Subject: Re: [PATCH V2 6/8] spi: spi-geni-qcom: Add interconnect support
-To:     Mark Brown <broonie@kernel.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de,
-        mark.rutland@arm.com, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, mka@chromium.org,
-        dianders@chromium.org, evgreen@chromium.org
-References: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
- <1584105134-13583-7-git-send-email-akashast@codeaurora.org>
- <20200313131603.GG5528@sirena.org.uk>
- <aa197568-3bac-6962-d39d-3261f68c0514@codeaurora.org>
- <20200317130616.GE3971@sirena.org.uk>
-From:   Akash Asthana <akashast@codeaurora.org>
-Message-ID: <58116473-1d9e-d08a-8839-a39dd0ee32bf@codeaurora.org>
-Date:   Fri, 20 Mar 2020 19:22:17 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        by mail.kernel.org (Postfix) with ESMTPSA id 7B4DF2070A;
+        Fri, 20 Mar 2020 14:27:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584714439;
+        bh=7XWuZryHtfWvsLZhM76IcRNhObhLjJKgrixahU+eeQM=;
+        h=Date:From:To:Cc:Subject:From;
+        b=g4W1ECiUIITNnXksH9VzXhGLRRSP5/V9gZjmfQ7KfpoWYvZRZHike4FkBu3tgTPSl
+         y4zojU/zgWPyfgEOQ/rzAK/zKwhGovWSpBv2bjWT3/s5lu7/QnSS1n3VBIjpcb7RwS
+         luutaZRnJs8O0GqWlEnPn+L5C/ob24MYFs/+iq+o=
+Date:   Fri, 20 Mar 2020 15:27:15 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY driver fixes for 5.6-rc7
+Message-ID: <20200320142715.GA760292@kroah.com>
 MIME-Version: 1.0
-In-Reply-To: <20200317130616.GE3971@sirena.org.uk>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Mark,
+The following changes since commit 2c523b344dfa65a3738e7039832044aa133c75fb:
 
-On 3/17/2020 6:36 PM, Mark Brown wrote:
-> On Tue, Mar 17, 2020 at 03:05:21PM +0530, Akash Asthana wrote:
->
->> We are taking care of actual throughput requirement in avg_bw vote and the
->> intention of putting peak as twice of avg is to ensure that if high speed
->> peripherals(ex:USB) removes their votes, we shouldn't see any latency issue
->> because of other ICC client who don't vote for their BW requirement or
->> *actual* BW requirement. Factor of 2 is chosen randomly. Please
->> correct/improve me if this is not okay.
->> If this is okay, I will centralize this design for SPI QUP, I2C and UART
->> driver.
-> That seems reasonable to me, it was just the fact that every driver
-> seemed to be doing the same thing that I was noticing - what was being
-> done seemed OK.
+  Linux 5.6-rc5 (2020-03-08 17:44:44 -0700)
 
-Okay, thanks for confirming I will keep as is.
+are available in the Git repository at:
 
-Regards,
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.6-rc7
 
-Akash
+for you to fetch changes up to 6e622cd8bd888c7fa3ee2b7dfb3514ab53b21570:
 
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+  tty: fix compat TIOCGSERIAL checking wrong function ptr (2020-03-18 13:15:13 +0100)
+
+----------------------------------------------------------------
+TTY fixes for 5.6-rc7
+
+Here are 3 small tty_io bugfixes for reported issues that Eric has
+resolved for 5.6-rc7
+
+All of these have been in linux-next with no reported issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Eric Biggers (3):
+      tty: drop outdated comments about release_tty() locking
+      tty: fix compat TIOCGSERIAL leaking uninitialized memory
+      tty: fix compat TIOCGSERIAL checking wrong function ptr
+
+ drivers/tty/tty_io.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
