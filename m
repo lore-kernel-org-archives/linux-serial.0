@@ -1,215 +1,122 @@
-Return-Path: <SRS0=NQQO=5E=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=zA/y=5F=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F079C4332D
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Mar 2020 20:42:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 085AEC4332D
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 05:10:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 15D112072D
-	for <linux-serial@archiver.kernel.org>; Thu, 19 Mar 2020 20:42:53 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="VJ4BBYuX"
+	by mail.kernel.org (Postfix) with ESMTP id BEE9220739
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 05:10:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1584681052;
+	bh=bHqz/mmjyWz7y2CbYXKF3rlS2vNGxaJf7CYZ9FIl/Hc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=wVmsZKYQoY5r8RAbGgCO4QUmrtXA3gZ1aalFaGhGOoMnay6XxNSgg4ntT3Mw9QHN4
+	 n4l0eKcIGdOs3vCLzOAv6tOBwjJIF7qlcQ5uD+J6HSfT5M1rzp+QBz10ChwjW5BHhD
+	 vQkhDIbFEXTXtrsmUH97UEDAtvobUZ8+1aglFr6k=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725787AbgCSUmw (ORCPT
+        id S1726030AbgCTFKw (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 19 Mar 2020 16:42:52 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:38398 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726930AbgCSUmw (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 19 Mar 2020 16:42:52 -0400
-Received: by mail-pg1-f193.google.com with SMTP id x7so1901019pgh.5
-        for <linux-serial@vger.kernel.org>; Thu, 19 Mar 2020 13:42:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=2rYJOrDZR8Jywm7fFNsGJ9/btydHQG7C0ILwAA0KqB8=;
-        b=VJ4BBYuX5BMCKQXcXrJ6pyeHp/bgdw70Yx3XMAfg10hJ6yU97CaSNR0uGd0EBN+uSV
-         dPRmfSdveA0pv3DObi//lbusifw/wndiFAWqfPNyPJXr4rA/W64zYOzT4hlGWiGrzXz5
-         /rfv0Qc7kYE+8VC2ITk00ih5yTEJ2ODDX13gs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=2rYJOrDZR8Jywm7fFNsGJ9/btydHQG7C0ILwAA0KqB8=;
-        b=CQAAJamVYdiQy+ihgybBcfZcYDNRxOUBlR4/ymtcNRnZg8PnErhX+xX6z6SbUtvUxC
-         FcNWLKe6JHkxeJ3xdKr3SZl07qqhQEipBhWYv/KGg15XANszMrLdoD9kNYTK3+V3+yib
-         uD2XmHM8nF/JZ+pfXKoqmP0m5YHDx/Y5kXUC+6yPtTHjfooGtgLKu5UAUo6IeGQbVU4u
-         4h19ZY6Csv6Fq3Xk+utYahop6kh97B+qpVhfXgKBR35XBXYiyE3ZxKQArLF8rR7vCmn8
-         xAe581ueMmyxN+H2zoTTJ1FoPFjqPG+phPoO5VnjJzgMrRNQgDqK9tQGkdLI20ZxVGh1
-         gEKg==
-X-Gm-Message-State: ANhLgQ1pTmhmWa+0+z8Jtoh3r8o78hhNzYKpUyzmUzrRFj0IrE4zF8ZY
-        tFsY+CKxXXIx26jWpT0MiZb6nPpVO2k=
-X-Google-Smtp-Source: ADFU+vuyOQQ/KOlPm4VMZQMcAFnyT7DjFq9EJmVmvfrPDGwzH3OawaynbEzFR09k9HE7f+fBSc7hYQ==
-X-Received: by 2002:a62:1552:: with SMTP id 79mr5885102pfv.215.1584650570091;
-        Thu, 19 Mar 2020 13:42:50 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
-        by smtp.gmail.com with ESMTPSA id q13sm3109042pgh.30.2020.03.19.13.42.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Mar 2020 13:42:49 -0700 (PDT)
-Date:   Thu, 19 Mar 2020 13:42:48 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Akash Asthana <akashast@codeaurora.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, dianders@chromium.org,
-        evgreen@chromium.org
-Subject: Re: [PATCH V2 4/8] tty: serial: qcom_geni_serial: Add interconnect
- support
-Message-ID: <20200319204248.GA204494@google.com>
-References: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
- <1584105134-13583-5-git-send-email-akashast@codeaurora.org>
- <20200313212833.GK144492@google.com>
- <e9293de6-004f-6005-8cb6-66f28c080ebe@codeaurora.org>
- <20200317190804.GS144492@google.com>
- <e95bd6e0-d1fd-9d13-47df-f7d08b443e37@codeaurora.org>
+        Fri, 20 Mar 2020 01:10:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59420 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725883AbgCTFKw (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 20 Mar 2020 01:10:52 -0400
+Received: from sol.localdomain (c-107-3-166-239.hsd1.ca.comcast.net [107.3.166.239])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 05DE12072D;
+        Fri, 20 Mar 2020 05:10:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584681051;
+        bh=bHqz/mmjyWz7y2CbYXKF3rlS2vNGxaJf7CYZ9FIl/Hc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CS+AMu4Ldrf5EQrnN3qqOyzcwytupsd2xi8te7S9EclBM61mvUsK4Ty8Ax7mBMCL4
+         JrRgTSfUZMEg0PH+nsGHFpcp9255sLia17GXV7e0lwLANmIZg5fIe0HcAz1VnEFoNM
+         EZeQ0BASP2vftBfk6DI/UUBTAVFxJ3Wqo5/e0Rkg=
+Date:   Thu, 19 Mar 2020 22:10:49 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Jiri Slaby <jslaby@suse.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        Eric Dumazet <edumazet@google.com>,
+        Nicolas Pitre <nico@fluxnic.net>
+Subject: Re: [PATCH v2 1/2] vt: vt_ioctl: fix VT_DISALLOCATE freeing in-use
+ virtual console
+Message-ID: <20200320051049.GA1315@sol.localdomain>
+References: <20200318222704.GC2334@sol.localdomain>
+ <20200318223810.162440-1-ebiggers@kernel.org>
+ <20200318223810.162440-2-ebiggers@kernel.org>
+ <2f762aee-720b-9bec-620f-61129c724de6@suse.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e95bd6e0-d1fd-9d13-47df-f7d08b443e37@codeaurora.org>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <2f762aee-720b-9bec-620f-61129c724de6@suse.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Mar 18, 2020 at 05:53:22PM +0530, Akash Asthana wrote:
-> Hi Matthias,
+On Thu, Mar 19, 2020 at 08:36:28AM +0100, Jiri Slaby wrote:
+> On 18. 03. 20, 23:38, Eric Biggers wrote:
+> > --- a/drivers/tty/vt/vt.c
+> > +++ b/drivers/tty/vt/vt.c
+> > @@ -1102,6 +1102,9 @@ int vc_allocate(unsigned int currcons)	/* return 0 on success */
+> >  	tty_port_init(&vc->port);
+> >  	INIT_WORK(&vc_cons[currcons].SAK_work, vc_SAK);
+> >  
+> > +	/* if this wasn't the case, we'd have to implement port->ops.destruct */
+> > +	BUILD_BUG_ON(offsetof(struct vc_data, port) != 0);
+> > +
 > 
-> On 3/18/2020 12:38 AM, Matthias Kaehlcke wrote:
-> > On Tue, Mar 17, 2020 at 05:18:34PM +0530, Akash Asthana wrote:
-> > > Hi Matthias,
-> > > 
-> > > On 3/14/2020 2:58 AM, Matthias Kaehlcke wrote:
-> > > > Hi Akash,
-> > > > 
-> > > > On Fri, Mar 13, 2020 at 06:42:10PM +0530, Akash Asthana wrote:
-> > > > > Get the interconnect paths for Uart based Serial Engine device
-> > > > > and vote according to the baud rate requirement of the driver.
-> > > > > 
-> > > > > Signed-off-by: Akash Asthana <akashast@codeaurora.org>
-> > > > > ---
-> > > > > Changes in V2:
-> > > > >    - As per Bjorn's comment, removed se == NULL check from geni_serial_icc_get
-> > > > >    - As per Bjorn's comment, removed code to set se->icc_path* to NULL in failure
-> > > > >    - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
-> > > > >      path handle
-> > > > >    - As per Matthias comment, added error handling for icc_set_bw call
-> > > > > 
-> > > > >    drivers/tty/serial/qcom_geni_serial.c | 69 +++++++++++++++++++++++++++++++++--
-> > > > >    1 file changed, 65 insertions(+), 4 deletions(-)
-> > > > > 
-> > > > > diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> > > > > index 272bae0..c8ad7e9 100644
-> > > > > --- a/drivers/tty/serial/qcom_geni_serial.c
-> > > > > +++ b/drivers/tty/serial/qcom_geni_serial.c
-> > > > > 
-> > > > > ...
-> > > > > 
-> > > > >    static int qcom_geni_serial_request_port(struct uart_port *uport)
-> > > > >    {
-> > > > >    	struct platform_device *pdev = to_platform_device(uport->dev);
-> > > > > @@ -962,6 +975,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
-> > > > >    	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
-> > > > >    	unsigned long clk_rate;
-> > > > >    	u32 ver, sampling_rate;
-> > > > > +	int ret;
-> > > > >    	qcom_geni_serial_stop_rx(uport);
-> > > > >    	/* baud rate */
-> > > > > @@ -983,6 +997,18 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
-> > > > >    	ser_clk_cfg = SER_CLK_EN;
-> > > > >    	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
-> > > > > +	/*
-> > > > > +	 * Put BW vote only on CPU path as driver supports FIFO mode only.
-> > > > > +	 * Assume peak_bw as twice of avg_bw.
-> > > > > +	 */
-> > > > > +	port->se.avg_bw_cpu = Bps_to_icc(baud);
-> > > > > +	port->se.peak_bw_cpu = Bps_to_icc(2 * baud);
-> > > > > +	ret = icc_set_bw(port->se.icc_path_cpu_to_geni, port->se.avg_bw_cpu,
-> > > > > +			port->se.peak_bw_cpu);
-> > > > > +	if (ret)
-> > > > > +		dev_err(uport->dev, "%s: ICC BW voting failed for cpu\n",
-> > > > > +			__func__);
-> > > > Should this return an error? The port might not operate properly if the ICC
-> > > > bandwidth couldn't be configured
-> > > This is void function we can't return error from here. I guess it would be
-> > > somewhat okay if BW voting failed for CPU path but clk_set_rate failure is
-> > > more serious which is called from this function, I don't think it can be
-> > > move to somewhere else.
-> > ok, I missed that _set_termios() is void.
-> > 
-> > > > >    static const struct uart_ops qcom_geni_console_pops = {
-> > > > > @@ -1308,6 +1358,17 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
-> > > > >    	port->rx_fifo_depth = DEF_FIFO_DEPTH_WORDS;
-> > > > >    	port->tx_fifo_width = DEF_FIFO_WIDTH_BITS;
-> > > > > +	ret = geni_serial_icc_get(&port->se);
-> > > > > +	if (ret)
-> > > > > +		return ret;
-> > > > > +	/* Set the bus quota to a reasonable value */
-> > > > > +	port->se.avg_bw_core = console ? Bps_to_icc(1000) :
-> > > > > +		Bps_to_icc(CORE_2X_50_MHZ);
-> > > > Why different settings for console vs. non-console?
-> > > QUP FW runs on core clock. To support higher throughput we want FW to run at
-> > > higher speed.
-> > > 
-> > > Since Console operate at 115200bps and BT operate at 3.2Mbps baud. We are
-> > > voting higher on core for BT usecase.
-> > > 
-> > > These value are recommended from HW team.
-> > IIUC none of the values you mention are set in stone. 115200bps seems to be a
-> > 'standard' value for the serial console, but it could be a different baudrate.
-> > I guess you are referring to Qualcomm Bluetooth controllers, which are only one
-> > of many things that could be connected to the port. And what happens when a
-> > QCA BT controller is connected to a non-geni/QCA port, which doesn't know about
-> > its 'requirements'? The answer is that both the BT controller and the serial
-> > console configure the baudrate they need, hence using different values in
-> > _probe() is pointless.
+> This is 3 lines, implementing destruct would be like 4-5 :)? Please
+> implement destruct instead.
 > 
-> Are you refering other UART drivers(not based on geni HW) as non-geni/QCA
-> port?
+> Otherwise looks good.
 > 
-> We are not scaling core BW request based on real time need like we are doing
-> for other paths(CPU/DDR) instead we are using some fail proof value because,
-> FW runs on core clock and core behaves a bit different than other NOCs.
->
-> We don't have any functional relation which maps actual throughput
-> requirement to core frequency need. In the past we faced few latency issues
-> because of core slowness (Although it was running much higher than actual
-> throughput requirement). To avoid such scenario we are using recommend value
-> from HW team. These fix value can support SE drivers operating at their max
-> possible speed(4Mbps in case of non-console).
 
-ok, I missed that the core clocks aren't scaled based on the configured
-baudrate. Apparently experience shows that it is not practical due to the
-latency issues you mention.
+Actually implementing destruct would be 12 lines, see below.  Remember there is
+no tty_port_operations defined yet so we'd have to define it just for destruct.
 
-> I agree that 115200bps seems to be a 'standard' value for the serial
-> console, but it could be a different baudrate.
-> 
-> We are voting 1000 in case of console because it  has low power mode
-> use-case in android, where voting CORE_2X_50_MHZ can be reported as a power
-> issue.
-> 
-> Actually we wanted to vote 960 for console but that is not possible with
-> current ICC design where the minimum value is 1000bps.  So any way core is
-> running at 50 MHz as 1000 crosses the threshold for 19.2 MHz (960)
-> 
-> only with console.
+Do you still prefer it?
 
-Thanks for the clarification. So if a board wanted to use a higher baudrate
-for the console it (currently) shouldn't be a problem. While it would be nice
-to have uniform settings for all UARTs it's also not a big deal to have two
-values, just wanted to make sure it's needed
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index ec34f1f5f3bb5..309a39197be0a 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -1075,6 +1075,17 @@ static void visual_deinit(struct vc_data *vc)
+ 	module_put(vc->vc_sw->owner);
+ }
+ 
++static void vc_port_destruct(struct tty_port *port)
++{
++	struct vc_data *vc = container_of(port, struct vc_data, port);
++
++	kfree(vc);
++}
++
++static const struct tty_port_operations vc_port_ops = {
++	.destruct = vc_port_destruct,
++};
++
+ int vc_allocate(unsigned int currcons)	/* return 0 on success */
+ {
+ 	struct vt_notifier_param param;
+@@ -1100,11 +1111,9 @@ int vc_allocate(unsigned int currcons)	/* return 0 on success */
+ 
+ 	vc_cons[currcons].d = vc;
+ 	tty_port_init(&vc->port);
++	vc->port.ops = &vc_port_ops;
+ 	INIT_WORK(&vc_cons[currcons].SAK_work, vc_SAK);
+ 
+-	/* if this wasn't the case, we'd have to implement port->ops.destruct */
+-	BUILD_BUG_ON(offsetof(struct vc_data, port) != 0);
+-
+ 	visual_init(vc, currcons, 1);
+ 
+ 	if (!*vc->vc_uni_pagedir_loc)
