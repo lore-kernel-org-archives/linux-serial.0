@@ -2,216 +2,148 @@ Return-Path: <SRS0=zA/y=5F=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D889C4332D
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 10:35:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C58B4C4332B
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 12:52:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 11DCF2072D
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 10:35:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7DCE620739
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 12:52:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="tnJ2vt5O"
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="J0tHg/vI"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726726AbgCTKf2 (ORCPT
+        id S1726884AbgCTMwE (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Mar 2020 06:35:28 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:10673 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726892AbgCTKf2 (ORCPT
+        Fri, 20 Mar 2020 08:52:04 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:48628 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726814AbgCTMwE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Mar 2020 06:35:28 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1584700526; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=MCAHrRWNbzSLU10BfuTuGxSIA19JrHAmyPBXV01gh0I=; b=tnJ2vt5OGO+4nX8rq2tvAEErsn2jwOruy+eIWXvvDZLpXAzUQXdKOY4eVMTF/tRScoIRkNoo
- rhITnod/a8BoNlCUWY1h0xOk5dbboejLFIuFCZIN1T6FnlAWt3rh901pD4NRosWLP9j/sPn5
- JBVIixLtViRWOX7guIOAwvc+1I0=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e749c65.7fd88d397378-smtp-out-n04;
- Fri, 20 Mar 2020 10:35:17 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id A5057C432C2; Fri, 20 Mar 2020 10:35:15 +0000 (UTC)
-Received: from [192.168.0.13] (unknown [183.83.138.47])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id B5CCAC433D2;
-        Fri, 20 Mar 2020 10:35:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B5CCAC433D2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-Subject: Re: [PATCH V2 4/8] tty: serial: qcom_geni_serial: Add interconnect
- support
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, dianders@chromium.org,
-        evgreen@chromium.org
-References: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
- <1584105134-13583-5-git-send-email-akashast@codeaurora.org>
- <20200313212833.GK144492@google.com>
- <e9293de6-004f-6005-8cb6-66f28c080ebe@codeaurora.org>
- <20200317190804.GS144492@google.com>
- <e95bd6e0-d1fd-9d13-47df-f7d08b443e37@codeaurora.org>
- <20200319204248.GA204494@google.com>
-From:   Akash Asthana <akashast@codeaurora.org>
-Message-ID: <a886cbae-310c-a7d7-7cfc-a693422ce570@codeaurora.org>
-Date:   Fri, 20 Mar 2020 16:05:06 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        Fri, 20 Mar 2020 08:52:04 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 02KCpsvZ116690;
+        Fri, 20 Mar 2020 07:51:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1584708714;
+        bh=KOUeiPoRHoGPb/5jBL8TKLgULIFGDNl5+M3+te9LDzM=;
+        h=From:To:CC:Subject:Date;
+        b=J0tHg/vI5vvTH3sEYwrAdo8gXp5dqpn60EVb8N02m6iShHCAPtRSdMSDNHW61uvae
+         1xt8Pbu3xT4mdyoKVB7zefMsqr8l1WVbu8857ntSQRkYKcv+bJfFbNY3ne21THfmXB
+         2zGEvyDHaUJDusNFw0mZE2QHojYCLyypu1964BUI=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02KCps3P078768;
+        Fri, 20 Mar 2020 07:51:54 -0500
+Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 20
+ Mar 2020 07:51:53 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Fri, 20 Mar 2020 07:51:53 -0500
+Received: from feketebors.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02KCpoq7074768;
+        Fri, 20 Mar 2020 07:51:51 -0500
+From:   Peter Ujfalusi <peter.ujfalusi@ti.com>
+To:     <gregkh@linuxfoundation.org>, <vigneshr@ti.com>
+CC:     <nsekhar@ti.com>, <t-kristo@ti.com>, <tomi.valkeinen@ti.com>,
+        <tony@atomide.com>, <linux-serial@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH] serial: 8250_omap: Fix sleeping function called from invalid context during probe
+Date:   Fri, 20 Mar 2020 14:52:00 +0200
+Message-ID: <20200320125200.6772-1-peter.ujfalusi@ti.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20200319204248.GA204494@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Matthias,
+When booting j721e the following bug is printed:
 
-On 3/20/2020 2:12 AM, Matthias Kaehlcke wrote:
-> On Wed, Mar 18, 2020 at 05:53:22PM +0530, Akash Asthana wrote:
->> Hi Matthias,
->>
->> On 3/18/2020 12:38 AM, Matthias Kaehlcke wrote:
->>> On Tue, Mar 17, 2020 at 05:18:34PM +0530, Akash Asthana wrote:
->>>> Hi Matthias,
->>>>
->>>> On 3/14/2020 2:58 AM, Matthias Kaehlcke wrote:
->>>>> Hi Akash,
->>>>>
->>>>> On Fri, Mar 13, 2020 at 06:42:10PM +0530, Akash Asthana wrote:
->>>>>> Get the interconnect paths for Uart based Serial Engine device
->>>>>> and vote according to the baud rate requirement of the driver.
->>>>>>
->>>>>> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
->>>>>> ---
->>>>>> Changes in V2:
->>>>>>     - As per Bjorn's comment, removed se == NULL check from geni_serial_icc_get
->>>>>>     - As per Bjorn's comment, removed code to set se->icc_path* to NULL in failure
->>>>>>     - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
->>>>>>       path handle
->>>>>>     - As per Matthias comment, added error handling for icc_set_bw call
->>>>>>
->>>>>>     drivers/tty/serial/qcom_geni_serial.c | 69 +++++++++++++++++++++++++++++++++--
->>>>>>     1 file changed, 65 insertions(+), 4 deletions(-)
->>>>>>
->>>>>> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
->>>>>> index 272bae0..c8ad7e9 100644
->>>>>> --- a/drivers/tty/serial/qcom_geni_serial.c
->>>>>> +++ b/drivers/tty/serial/qcom_geni_serial.c
->>>>>>
->>>>>> ...
->>>>>>
->>>>>>     static int qcom_geni_serial_request_port(struct uart_port *uport)
->>>>>>     {
->>>>>>     	struct platform_device *pdev = to_platform_device(uport->dev);
->>>>>> @@ -962,6 +975,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
->>>>>>     	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
->>>>>>     	unsigned long clk_rate;
->>>>>>     	u32 ver, sampling_rate;
->>>>>> +	int ret;
->>>>>>     	qcom_geni_serial_stop_rx(uport);
->>>>>>     	/* baud rate */
->>>>>> @@ -983,6 +997,18 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
->>>>>>     	ser_clk_cfg = SER_CLK_EN;
->>>>>>     	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
->>>>>> +	/*
->>>>>> +	 * Put BW vote only on CPU path as driver supports FIFO mode only.
->>>>>> +	 * Assume peak_bw as twice of avg_bw.
->>>>>> +	 */
->>>>>> +	port->se.avg_bw_cpu = Bps_to_icc(baud);
->>>>>> +	port->se.peak_bw_cpu = Bps_to_icc(2 * baud);
->>>>>> +	ret = icc_set_bw(port->se.icc_path_cpu_to_geni, port->se.avg_bw_cpu,
->>>>>> +			port->se.peak_bw_cpu);
->>>>>> +	if (ret)
->>>>>> +		dev_err(uport->dev, "%s: ICC BW voting failed for cpu\n",
->>>>>> +			__func__);
->>>>> Should this return an error? The port might not operate properly if the ICC
->>>>> bandwidth couldn't be configured
->>>> This is void function we can't return error from here. I guess it would be
->>>> somewhat okay if BW voting failed for CPU path but clk_set_rate failure is
->>>> more serious which is called from this function, I don't think it can be
->>>> move to somewhere else.
->>> ok, I missed that _set_termios() is void.
->>>
->>>>>>     static const struct uart_ops qcom_geni_console_pops = {
->>>>>> @@ -1308,6 +1358,17 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
->>>>>>     	port->rx_fifo_depth = DEF_FIFO_DEPTH_WORDS;
->>>>>>     	port->tx_fifo_width = DEF_FIFO_WIDTH_BITS;
->>>>>> +	ret = geni_serial_icc_get(&port->se);
->>>>>> +	if (ret)
->>>>>> +		return ret;
->>>>>> +	/* Set the bus quota to a reasonable value */
->>>>>> +	port->se.avg_bw_core = console ? Bps_to_icc(1000) :
->>>>>> +		Bps_to_icc(CORE_2X_50_MHZ);
->>>>> Why different settings for console vs. non-console?
->>>> QUP FW runs on core clock. To support higher throughput we want FW to run at
->>>> higher speed.
->>>>
->>>> Since Console operate at 115200bps and BT operate at 3.2Mbps baud. We are
->>>> voting higher on core for BT usecase.
->>>>
->>>> These value are recommended from HW team.
->>> IIUC none of the values you mention are set in stone. 115200bps seems to be a
->>> 'standard' value for the serial console, but it could be a different baudrate.
->>> I guess you are referring to Qualcomm Bluetooth controllers, which are only one
->>> of many things that could be connected to the port. And what happens when a
->>> QCA BT controller is connected to a non-geni/QCA port, which doesn't know about
->>> its 'requirements'? The answer is that both the BT controller and the serial
->>> console configure the baudrate they need, hence using different values in
->>> _probe() is pointless.
->> Are you refering other UART drivers(not based on geni HW) as non-geni/QCA
->> port?
->>
->> We are not scaling core BW request based on real time need like we are doing
->> for other paths(CPU/DDR) instead we are using some fail proof value because,
->> FW runs on core clock and core behaves a bit different than other NOCs.
->>
->> We don't have any functional relation which maps actual throughput
->> requirement to core frequency need. In the past we faced few latency issues
->> because of core slowness (Although it was running much higher than actual
->> throughput requirement). To avoid such scenario we are using recommend value
->> from HW team. These fix value can support SE drivers operating at their max
->> possible speed(4Mbps in case of non-console).
-> ok, I missed that the core clocks aren't scaled based on the configured
-> baudrate. Apparently experience shows that it is not practical due to the
-> latency issues you mention.
-Yeah That is correct.
->> I agree that 115200bps seems to be a 'standard' value for the serial
->> console, but it could be a different baudrate.
->>
->> We are voting 1000 in case of console because it  has low power mode
->> use-case in android, where voting CORE_2X_50_MHZ can be reported as a power
->> issue.
->>
->> Actually we wanted to vote 960 for console but that is not possible with
->> current ICC design where the minimum value is 1000bps.  So any way core is
->> running at 50 MHz as 1000 crosses the threshold for 19.2 MHz (960)
->>
->> only with console.
-> Thanks for the clarification. So if a board wanted to use a higher baudrate
-> for the console it (currently) shouldn't be a problem. While it would be nice
-> to have uniform settings for all UARTs it's also not a big deal to have two
-> values, just wanted to make sure it's needed
+[    1.154821] BUG: sleeping function called from invalid context at kernel/sched/completion.c:99
+[    1.154827] in_atomic(): 0, irqs_disabled(): 128, non_block: 0, pid: 12, name: kworker/0:1
+[    1.154832] 3 locks held by kworker/0:1/12:
+[    1.154836]  #0: ffff000840030728 ((wq_completion)events){+.+.}, at: process_one_work+0x1d4/0x6e8
+[    1.154852]  #1: ffff80001214fdd8 (deferred_probe_work){+.+.}, at: process_one_work+0x1d4/0x6e8
+[    1.154860]  #2: ffff00084060b170 (&dev->mutex){....}, at: __device_attach+0x38/0x138
+[    1.154872] irq event stamp: 63096
+[    1.154881] hardirqs last  enabled at (63095): [<ffff800010b74318>] _raw_spin_unlock_irqrestore+0x70/0x78
+[    1.154887] hardirqs last disabled at (63096): [<ffff800010b740d8>] _raw_spin_lock_irqsave+0x28/0x80
+[    1.154893] softirqs last  enabled at (62254): [<ffff800010080c88>] _stext+0x488/0x564
+[    1.154899] softirqs last disabled at (62247): [<ffff8000100fdb3c>] irq_exit+0x114/0x140
+[    1.154906] CPU: 0 PID: 12 Comm: kworker/0:1 Not tainted 5.6.0-rc6-next-20200318-00094-g45e4089b0bd3 #221
+[    1.154911] Hardware name: Texas Instruments K3 J721E SoC (DT)
+[    1.154917] Workqueue: events deferred_probe_work_func
+[    1.154923] Call trace:
+[    1.154928]  dump_backtrace+0x0/0x190
+[    1.154933]  show_stack+0x14/0x20
+[    1.154940]  dump_stack+0xe0/0x148
+[    1.154946]  ___might_sleep+0x150/0x1f0
+[    1.154952]  __might_sleep+0x4c/0x80
+[    1.154957]  wait_for_completion_timeout+0x40/0x140
+[    1.154964]  ti_sci_set_device_state+0xa0/0x158
+[    1.154969]  ti_sci_cmd_get_device_exclusive+0x14/0x20
+[    1.154977]  ti_sci_dev_start+0x34/0x50
+[    1.154984]  genpd_runtime_resume+0x78/0x1f8
+[    1.154991]  __rpm_callback+0x3c/0x140
+[    1.154996]  rpm_callback+0x20/0x80
+[    1.155001]  rpm_resume+0x568/0x758
+[    1.155007]  __pm_runtime_resume+0x44/0xb0
+[    1.155013]  omap8250_probe+0x2b4/0x508
+[    1.155019]  platform_drv_probe+0x50/0xa0
+[    1.155023]  really_probe+0xd4/0x318
+[    1.155028]  driver_probe_device+0x54/0xe8
+[    1.155033]  __device_attach_driver+0x80/0xb8
+[    1.155039]  bus_for_each_drv+0x74/0xc0
+[    1.155044]  __device_attach+0xdc/0x138
+[    1.155049]  device_initial_probe+0x10/0x18
+[    1.155053]  bus_probe_device+0x98/0xa0
+[    1.155058]  deferred_probe_work_func+0x74/0xb0
+[    1.155063]  process_one_work+0x280/0x6e8
+[    1.155068]  worker_thread+0x48/0x430
+[    1.155073]  kthread+0x108/0x138
+[    1.155079]  ret_from_fork+0x10/0x18
 
-Okay, but I would like to keep as it is with above mentioned reason.
+To fix the bug we need to first call pm_runtime_enable() prior to any
+pm_runtime calls.
 
+Reported-by: Tomi Valkeinen <tomi.valkeinen@ti.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
+---
+ drivers/tty/serial/8250/8250_omap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-
-Akash
-
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index a2e5a4e77000..611e3002d68c 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1202,6 +1202,7 @@ static int omap8250_probe(struct platform_device *pdev)
+ 	spin_lock_init(&priv->rx_dma_lock);
+ 
+ 	device_init_wakeup(&pdev->dev, true);
++	pm_runtime_enable(&pdev->dev);
+ 	pm_runtime_use_autosuspend(&pdev->dev);
+ 
+ 	/*
+@@ -1215,7 +1216,6 @@ static int omap8250_probe(struct platform_device *pdev)
+ 		pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
+ 
+ 	pm_runtime_irq_safe(&pdev->dev);
+-	pm_runtime_enable(&pdev->dev);
+ 
+ 	pm_runtime_get_sync(&pdev->dev);
+ 
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+Peter
+
+Texas Instruments Finland Oy, Porkkalankatu 22, 00180 Helsinki.
+Y-tunnus/Business ID: 0615521-4. Kotipaikka/Domicile: Helsinki
+
