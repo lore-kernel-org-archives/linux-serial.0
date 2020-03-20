@@ -6,22 +6,22 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD228C43333
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 17:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22ABFC4332E
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 17:41:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BA35B20767
-	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 17:41:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 05B0320767
+	for <linux-serial@archiver.kernel.org>; Fri, 20 Mar 2020 17:41:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727360AbgCTRli (ORCPT
+        id S1727405AbgCTRls (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 20 Mar 2020 13:41:38 -0400
-Received: from v6.sk ([167.172.42.174]:51890 "EHLO v6.sk"
+        Fri, 20 Mar 2020 13:41:48 -0400
+Received: from v6.sk ([167.172.42.174]:51938 "EHLO v6.sk"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726866AbgCTRli (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 20 Mar 2020 13:41:38 -0400
+        id S1726866AbgCTRlp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 20 Mar 2020 13:41:45 -0400
 Received: from localhost (v6.sk [IPv6:::1])
-        by v6.sk (Postfix) with ESMTP id DFF306108E;
-        Fri, 20 Mar 2020 17:41:36 +0000 (UTC)
+        by v6.sk (Postfix) with ESMTP id CA86C61092;
+        Fri, 20 Mar 2020 17:41:43 +0000 (UTC)
 From:   Lubomir Rintel <lkundrak@v3.sk>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Rob Herring <robh+dt@kernel.org>,
@@ -37,9 +37,9 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         Lubomir Rintel <lkundrak@v3.sk>
-Subject: [PATCH 07/10] ARM: dts: tango4: Make /serial compatible with ns16550a
-Date:   Fri, 20 Mar 2020 18:41:04 +0100
-Message-Id: <20200320174107.29406-8-lkundrak@v3.sk>
+Subject: [PATCH 09/10] dt-bindings: serial: Move Marvell compatible string to 8250 binding doc
+Date:   Fri, 20 Mar 2020 18:41:06 +0100
+Message-Id: <20200320174107.29406-10-lkundrak@v3.sk>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200320174107.29406-1-lkundrak@v3.sk>
 References: <20200320174107.29406-1-lkundrak@v3.sk>
@@ -50,28 +50,40 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-ralink,rt2880-uart is compatible with ns16550a and all other
-instances of RT2880 UART nodes include it in the compatible property.
-Add it also here, to make the binding schema simpler.
+These ports are compatible with NS8250 and handled by the same driver.
+Get rid of the extra document that fails to document the properties that
+are actually supported.
 
 Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
 ---
- arch/arm/boot/dts/tango4-common.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/serial/8250.txt        | 2 ++
+ Documentation/devicetree/bindings/serial/mrvl-serial.txt | 4 ----
+ 2 files changed, 2 insertions(+), 4 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/mrvl-serial.txt
 
-diff --git a/arch/arm/boot/dts/tango4-common.dtsi b/arch/arm/boot/dts/tango4-common.dtsi
-index ff72a8efb73d0..54fd522badfc9 100644
---- a/arch/arm/boot/dts/tango4-common.dtsi
-+++ b/arch/arm/boot/dts/tango4-common.dtsi
-@@ -85,7 +85,7 @@ tick-counter@10048 {
- 		};
- 
- 		uart: serial@10700 {
--			compatible = "ralink,rt2880-uart";
-+			compatible = "ralink,rt2880-uart", "ns16550a";
- 			reg = <0x10700 0x30>;
- 			interrupts = <1 IRQ_TYPE_LEVEL_HIGH>;
- 			clock-frequency = <7372800>;
+diff --git a/Documentation/devicetree/bindings/serial/8250.txt b/Documentation/devicetree/bindings/serial/8250.txt
+index 55700f20f6ee8..a543702859e2f 100644
+--- a/Documentation/devicetree/bindings/serial/8250.txt
++++ b/Documentation/devicetree/bindings/serial/8250.txt
+@@ -26,6 +26,8 @@ Required properties:
+ 	- "aspeed,ast2400-vuart"
+ 	- "aspeed,ast2500-vuart"
+ 	- "nuvoton,npcm750-uart"
++	- "mrvl,mmp-uart"
++	- "mrvl,pxa-uart"
+ 	- "serial" if the port type is unknown.
+ - reg : offset and length of the register set for the device.
+ - interrupts : should contain uart interrupt.
+diff --git a/Documentation/devicetree/bindings/serial/mrvl-serial.txt b/Documentation/devicetree/bindings/serial/mrvl-serial.txt
+deleted file mode 100644
+index d744340de887c..0000000000000
+--- a/Documentation/devicetree/bindings/serial/mrvl-serial.txt
++++ /dev/null
+@@ -1,4 +0,0 @@
+-PXA UART controller
+-
+-Required properties:
+-- compatible : should be "mrvl,mmp-uart" or "mrvl,pxa-uart".
 -- 
 2.25.1
 
