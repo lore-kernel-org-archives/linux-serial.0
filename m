@@ -2,86 +2,64 @@ Return-Path: <SRS0=CtGi=5G=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A74DDC4332B
-	for <linux-serial@archiver.kernel.org>; Sat, 21 Mar 2020 11:21:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 626B2C4332B
+	for <linux-serial@archiver.kernel.org>; Sat, 21 Mar 2020 20:40:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7D56820776
-	for <linux-serial@archiver.kernel.org>; Sat, 21 Mar 2020 11:21:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3C3292072C
+	for <linux-serial@archiver.kernel.org>; Sat, 21 Mar 2020 20:40:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727028AbgCULVg convert rfc822-to-8bit (ORCPT
+        id S1727039AbgCUUki (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 21 Mar 2020 07:21:36 -0400
-Received: from unicorn.mansr.com ([81.2.72.234]:42252 "EHLO unicorn.mansr.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726192AbgCULVf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 21 Mar 2020 07:21:35 -0400
-X-Greylist: delayed 592 seconds by postgrey-1.27 at vger.kernel.org; Sat, 21 Mar 2020 07:21:35 EDT
-Received: by unicorn.mansr.com (Postfix, from userid 51770)
-        id 9E2B015605; Sat, 21 Mar 2020 11:11:41 +0000 (GMT)
-From:   =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
-To:     Lubomir Rintel <lkundrak@v3.sk>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Marc Gonzalez <marc.w.gonzalez@free.fr>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 07/10] ARM: dts: tango4: Make /serial compatible with ns16550a
-References: <20200320174107.29406-1-lkundrak@v3.sk>
-        <20200320174107.29406-8-lkundrak@v3.sk>
-Date:   Sat, 21 Mar 2020 11:11:41 +0000
-In-Reply-To: <20200320174107.29406-8-lkundrak@v3.sk> (Lubomir Rintel's message
-        of "Fri, 20 Mar 2020 18:41:04 +0100")
-Message-ID: <yw1xd096hsia.fsf@mansr.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/25.3 (gnu/linux)
+        Sat, 21 Mar 2020 16:40:38 -0400
+Received: from antares.kleine-koenig.org ([94.130.110.236]:58798 "EHLO
+        antares.kleine-koenig.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726366AbgCUUki (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 21 Mar 2020 16:40:38 -0400
+Received: by antares.kleine-koenig.org (Postfix, from userid 1000)
+        id 9BC37939DB7; Sat, 21 Mar 2020 21:40:36 +0100 (CET)
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [PATCH] serial: omap: drop unused dt-bindings header
+Date:   Sat, 21 Mar 2020 21:40:31 +0100
+Message-Id: <20200321204031.30369-1-uwe@kleine-koenig.org>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Lubomir Rintel <lkundrak@v3.sk> writes:
+The definitons in the dt-binding's gpio header only contains some
+constants to be used in device trees. It is not relevant for omap-serial
+(as the gpio API hides the details) and in fact unused so it can just be
+dropped.
 
-> ralink,rt2880-uart is compatible with ns16550a and all other
-> instances of RT2880 UART nodes include it in the compatible property.
-> Add it also here, to make the binding schema simpler.
->
-> Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
+Signed-off-by: Uwe Kleine-KÃ¶nig <uwe@kleine-koenig.org>
+---
+ drivers/tty/serial/omap-serial.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-Acked-by: Mans Rullgard <mans@mansr.com>
-
-> ---
->  arch/arm/boot/dts/tango4-common.dtsi | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/arch/arm/boot/dts/tango4-common.dtsi b/arch/arm/boot/dts/tango4-common.dtsi
-> index ff72a8efb73d0..54fd522badfc9 100644
-> --- a/arch/arm/boot/dts/tango4-common.dtsi
-> +++ b/arch/arm/boot/dts/tango4-common.dtsi
-> @@ -85,7 +85,7 @@ tick-counter@10048 {
->  		};
->
->  		uart: serial@10700 {
-> -			compatible = "ralink,rt2880-uart";
-> +			compatible = "ralink,rt2880-uart", "ns16550a";
->  			reg = <0x10700 0x30>;
->  			interrupts = <1 IRQ_TYPE_LEVEL_HIGH>;
->  			clock-frequency = <7372800>;
-> -- 
-> 2.25.1
->
-
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index 48017cec7f2f..80e5149d3182 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -37,8 +37,6 @@
+ #include <linux/of_gpio.h>
+ #include <linux/platform_data/serial-omap.h>
+ 
+-#include <dt-bindings/gpio/gpio.h>
+-
+ #define OMAP_MAX_HSUART_PORTS	10
+ 
+ #define UART_BUILD_REVISION(x, y)	(((x) << 8) | (y))
 -- 
-Måns Rullgård
+2.25.0
+
