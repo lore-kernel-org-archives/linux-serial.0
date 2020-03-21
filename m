@@ -2,85 +2,83 @@ Return-Path: <SRS0=CtGi=5G=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29924C43332
-	for <linux-serial@archiver.kernel.org>; Sat, 21 Mar 2020 07:36:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 237A3C4332B
+	for <linux-serial@archiver.kernel.org>; Sat, 21 Mar 2020 10:37:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E12BD20658
-	for <linux-serial@archiver.kernel.org>; Sat, 21 Mar 2020 07:36:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F283A2072C
+	for <linux-serial@archiver.kernel.org>; Sat, 21 Mar 2020 10:37:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728145AbgCUHga (ORCPT
+        id S1726933AbgCUKhp (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 21 Mar 2020 03:36:30 -0400
-Received: from smtp01.smtpout.orange.fr ([80.12.242.123]:43114 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728097AbgCUHga (ORCPT
+        Sat, 21 Mar 2020 06:37:45 -0400
+Received: from fieber.vanmierlo.com ([84.243.197.177]:50212 "EHLO
+        kerio9.vanmierlo.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726607AbgCUKhp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 21 Mar 2020 03:36:30 -0400
-Received: from belgarion ([86.210.245.36])
-        by mwinf5d77 with ME
-        id GvcB220040nqnCN03vcMek; Sat, 21 Mar 2020 08:36:28 +0100
-X-ME-Helo: belgarion
-X-ME-Auth: amFyem1pay5yb2JlcnRAb3JhbmdlLmZy
-X-ME-Date: Sat, 21 Mar 2020 08:36:28 +0100
-X-ME-IP: 86.210.245.36
-From:   Robert Jarzmik <robert.jarzmik@free.fr>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Lubomir Rintel <lkundrak@v3.sk>, Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Marc Zyngier <maz@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH 05/28] ARM: dts: pxa3xx: Fix up encoding of the /gpio interrupts property
-References: <20200317093922.20785-1-lkundrak@v3.sk>
-        <20200317093922.20785-6-lkundrak@v3.sk>
-        <20200317132854.GF24270@lunn.ch>
-X-URL:  http://belgarath.falguerolles.org/
-Date:   Sat, 21 Mar 2020 08:36:10 +0100
-In-Reply-To: <20200317132854.GF24270@lunn.ch> (Andrew Lunn's message of "Tue,
-        17 Mar 2020 14:28:54 +0100")
-Message-ID: <87y2rudus5.fsf@belgarion.home>
-User-Agent: Gnus/5.130008 (Ma Gnus v0.8) Emacs/26 (gnu/linux)
+        Sat, 21 Mar 2020 06:37:45 -0400
+X-Greylist: delayed 1811 seconds by postgrey-1.27 at vger.kernel.org; Sat, 21 Mar 2020 06:37:44 EDT
+X-Footer: dmFubWllcmxvLmNvbQ==
+Received: from roundcube.vanmierlo.com ([192.168.37.37])
+        (authenticated user m.brock@vanmierlo.com)
+        by kerio9.vanmierlo.com (Kerio Connect 9.2.11 beta 1) with ESMTPA;
+        Sat, 21 Mar 2020 11:07:11 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Sat, 21 Mar 2020 11:07:10 +0100
+From:   Maarten Brock <m.brock@vanmierlo.com>
+To:     Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        gregkh@linuxfoundation.org, michal.simek@xilinx.com,
+        Raviteja Narayanam <raviteja.narayanam@xilinx.com>,
+        linux-serial-owner@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] serial: uartps: Add TACTIVE check in
+ cdns_uart_tx_empty function
+In-Reply-To: <e2514818af5973be291cc117d07739f068b71639.1584610774.git.shubhrajyoti.datta@xilinx.com>
+References: <cover.1584610774.git.shubhrajyoti.datta@xilinx.com>
+ <e2514818af5973be291cc117d07739f068b71639.1584610774.git.shubhrajyoti.datta@xilinx.com>
+Message-ID: <afd6fd6bc3413692ee91123fc3028583@vanmierlo.com>
+X-Sender: m.brock@vanmierlo.com
+User-Agent: Roundcube Webmail/1.3.3
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Andrew Lunn <andrew@lunn.ch> writes:
+On 2020-03-19 10:44, Shubhrajyoti Datta wrote:
+> From: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
+> 
+> Make sure that all bytes are transmitted out of Uart by monitoring
+> CDNS_UART_SR_TACTIVE bit as well.
+> 
+> Signed-off-by: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
+> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+> ---
+>  drivers/tty/serial/xilinx_uartps.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/xilinx_uartps.c
+> b/drivers/tty/serial/xilinx_uartps.c
+> index 662b8ab..38cb76a9 100644
+> --- a/drivers/tty/serial/xilinx_uartps.c
+> +++ b/drivers/tty/serial/xilinx_uartps.c
+> @@ -663,8 +663,8 @@ static unsigned int cdns_uart_tx_empty(struct
+> uart_port *port)
+>  	unsigned int status;
+> 
+>  	status = readl(port->membase + CDNS_UART_SR) &
+> -				CDNS_UART_SR_TXEMPTY;
+> -	return status ? TIOCSER_TEMT : 0;
+> +		       (CDNS_UART_SR_TXEMPTY | CDNS_UART_SR_TACTIVE);
+> +	return (status == CDNS_UART_SR_TXEMPTY) ? TIOCSER_TEMT : 0;
+>  }
+> 
+>  /**
 
-> On Tue, Mar 17, 2020 at 10:38:59AM +0100, Lubomir Rintel wrote:
->> This way the device tree validator learns that each cell of the property
->> constitutes a separate item. Otherwise it gets unnecessairly upset:
->> 
->>   pxa300-raumfeld-speaker-s.dt.yaml: gpio@40e00000: interrupts:
->>       [[8, 9, 10]] is too short
->> 
->> Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
->
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Robert Jarzmik <robert.jarzmik@free.fr.>
+Acked-by: Maarten Brock <m.brock@vanmierlo.com>
 
--- 
-Robert
