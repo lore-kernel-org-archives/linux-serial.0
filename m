@@ -2,263 +2,208 @@ Return-Path: <SRS0=3mQv=5I=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 239B0C3F2CD
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Mar 2020 16:42:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABBD7C54EEB
+	for <linux-serial@archiver.kernel.org>; Mon, 23 Mar 2020 17:07:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DEFF120722
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Mar 2020 16:42:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1584981737;
-	bh=02Kf9WpideHAeaiUmNJrBUV6bHi5stRkRbsCThccRjY=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=CdFiBzYDxb2+y+cAx6LZ3UXT5JBvPTpmZwqJFpbg5cYw8UOQG4nB2P+Sw3poO59OP
-	 b+cBw6+ddFhGs5M4D6sftlgPH85FSGBUDgUHxsBJ07hM6V3H1dlXfxZWB+7sTXyHUT
-	 h8axaJHsMB1RqN9HdhXWvNRYcLGgl6hN6MFHRqmo=
+	by mail.kernel.org (Postfix) with ESMTP id 80C6520722
+	for <linux-serial@archiver.kernel.org>; Mon, 23 Mar 2020 17:07:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727458AbgCWQmQ (ORCPT
+        id S1727127AbgCWRHc (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 Mar 2020 12:42:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34812 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727357AbgCWQmQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 Mar 2020 12:42:16 -0400
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1913520753;
-        Mon, 23 Mar 2020 16:42:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584981735;
-        bh=02Kf9WpideHAeaiUmNJrBUV6bHi5stRkRbsCThccRjY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=xy/iuWM40CuwjgUhDnwM+XDKVxozGS0WmZMOgQxw9RqDiEqEqioIiXCYjZGKNcjk1
-         gK13WjTc25DhsJ79xjkIYPHLlsa5ZSSizfr6AWviYxM4yEysjYxrddozASa7JFHzNc
-         NSYhlsjcbNt0oseXfHSHdG+rg3CwXbaOPurqXKXc=
-Received: by mail-qt1-f174.google.com with SMTP id f20so12239371qtq.6;
-        Mon, 23 Mar 2020 09:42:15 -0700 (PDT)
-X-Gm-Message-State: ANhLgQ3aBxlfpoHQAHKnomoI+ngiWlX+V2SGOZuuCOzrsfPaRLLJoWDY
-        5zXbMX1+ZJYAhaSCj4jiwaWSgalqyg9tqIHLhA==
-X-Google-Smtp-Source: ADFU+vv7cTGvxC9hMAYxTeAIEH2A++JcPRe510U2M7ukQfSAPh0pK3/2XZwYvglTSrY49qlGUNpWYFGRxCL1cyLzmVU=
-X-Received: by 2002:aed:3461:: with SMTP id w88mr22287799qtd.143.1584981733920;
- Mon, 23 Mar 2020 09:42:13 -0700 (PDT)
+        Mon, 23 Mar 2020 13:07:32 -0400
+Received: from mail.baikalelectronics.com ([87.245.175.226]:37190 "EHLO
+        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727111AbgCWRHc (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 23 Mar 2020 13:07:32 -0400
+Received: from localhost (unknown [127.0.0.1])
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id 3FBFD803087C;
+        Mon, 23 Mar 2020 17:07:28 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at baikalelectronics.ru
+Received: from mail.baikalelectronics.ru ([127.0.0.1])
+        by localhost (mail.baikalelectronics.ru [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id kJbE8wblbHHU; Mon, 23 Mar 2020 20:07:26 +0300 (MSK)
+Date:   Mon, 23 Mar 2020 20:07:09 +0300
+From:   Sergey Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Maxim Kaurkin <Maxim.Kaurkin@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Ramil Zaripov <Ramil.Zaripov@baikalelectronics.ru>,
+        Ekaterina Skachko <Ekaterina.Skachko@baikalelectronics.ru>,
+        Vadim Vlasov <V.Vlasov@baikalelectronics.ru>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Paul Burton <paulburton@kernel.org>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>, Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Wei Xu <xuwei5@hisilicon.com>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Jisheng Zhang <Jisheng.Zhang@synaptics.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, <linux-clk@vger.kernel.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] serial: 8250_dw: Fix common clocks usage race
+ condition
+Message-ID: <20200323170709.izdecff3hfctzumv@ubsrv2.baikal.int>
+References: <20200306130231.05BBC8030795@mail.baikalelectronics.ru>
+ <20200323024611.16039-1-Sergey.Semin@baikalelectronics.ru>
+ <20200323092051.GB1922688@smile.fi.intel.com>
+ <20200323111149.73wqrd7qnkkiitbe@ubsrv2.baikal.int>
+ <20200323115225.GJ1922688@smile.fi.intel.com>
 MIME-Version: 1.0
-References: <20200306090720.9365-1-geert+renesas@glider.be>
- <20200312200523.GA17854@bogus> <CAMuHMdWoRSE7VQ5o575Ocjfh+y1yH-ciFE1BUqqPVO9oukwgNw@mail.gmail.com>
-In-Reply-To: <CAMuHMdWoRSE7VQ5o575Ocjfh+y1yH-ciFE1BUqqPVO9oukwgNw@mail.gmail.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Mon, 23 Mar 2020 10:41:59 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqL5CmL6M_njeHHYA21zs2jTQxENet+q=BJNVuz8K7Jubw@mail.gmail.com>
-Message-ID: <CAL_JsqL5CmL6M_njeHHYA21zs2jTQxENet+q=BJNVuz8K7Jubw@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: serial: sh-sci: Convert to json-schema
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        Chris Brandt <chris.brandt@renesas.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux-sh list <linux-sh@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20200323115225.GJ1922688@smile.fi.intel.com>
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Mar 23, 2020 at 8:38 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Rob,
->
-> Thanks a lot for your comments!
->
-> On Thu, Mar 12, 2020 at 9:05 PM Rob Herring <robh@kernel.org> wrote:
-> > On Fri, Mar 06, 2020 at 10:07:20AM +0100, Geert Uytterhoeven wrote:
-> > > Convert the Renesas Serial Communication Interface ((H)SCI(F)(A|B))
-> > > Device Tree binding documentation to json-schema.
-> > >
-> > > Split the bindings in 5 files, one per major type, to ease expressing
-> > > constraints.
-> > >
-> > > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
->
-> > > --- /dev/null
-> > > +++ b/Documentation/devicetree/bindings/serial/renesas,sci.yaml
->
-> > > +properties:
-> > > +  compatible:
-> > > +    oneOf:
-> > > +      - items:
-> > > +          - const: renesas,sci
-> >
-> > Do you plan to add to this? It can be simplified to just
->
-> Not really. I just used the same construct for consistency with the other
-> SCI variants.
->
-> > 'const: renesas,sci'.
->
-> OK.  I guess no other H8 and SuperH variants will pop up anytime soon.
-> Oops, RZ/A1 has SCI, and RZ/A2 has SCIg (they keep on inventing new
-> names, to be seen how compatible).
->
-> > > --- /dev/null
-> > > +++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> > > @@ -0,0 +1,168 @@
-> > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > > +%YAML 1.2
-> > > +---
-> > > +$id: "http://devicetree.org/schemas/serial/renesas,scif.yaml#"
-> > > +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> > > +
-> > > +title: Renesas Serial Communication Interface with FIFO (SCIF)
-> > > +
-> > > +maintainers:
-> > > +  - Geert Uytterhoeven <geert+renesas@glider.be>
-> > > +
-> > > +description:
-> > > +  Each enabled UART may have an optional "serialN" alias in the "aliases" node,
-> > > +  where N is the port number (non-negative decimal integer) as printed on the
-> > > +  label next to the physical port.
-> >
-> > That's every serial port...
->
-> So you suggest to just remove this paragraph from all files?
+On Mon, Mar 23, 2020 at 01:52:25PM +0200, Andy Shevchenko wrote:
+> On Mon, Mar 23, 2020 at 02:11:49PM +0300, Sergey Semin wrote:
+> > On Mon, Mar 23, 2020 at 11:20:51AM +0200, Andy Shevchenko wrote:
+> > > On Mon, Mar 23, 2020 at 05:46:09AM +0300, Sergey.Semin@baikalelectronics.ru wrote:
+> > > > From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > > 
+> > > The question to CLK framework maintainers, is it correct approach in general
+> > > for this case?
+> > 
+> > You should have been more specific then, if you wanted to see someone
+> > special.
+> 
+> I didn't get your comment here. Since you put the question under a pile of
+> words in the commit message, and actually in the changelog, not even in the
+> message, I repeated it clearly that clock maintainers can see it.
+> 
+> > > On Wed, Mar 18, 2020 at 05:19:53PM +0200, Andy Shevchenko wrote:
+> > >> Also it would be nice to see come clock framework guys' opinions...
+> > 
+> > Who can give a better comments regarding the clk API if not the
+> > subsystem maintainers?
+> 
+> You already got one from Maxime.
+> 
+> ...
+> 
+> > > > +	/*
+> > > > +	 * Some platforms may provide a reference clock shared between several
+> > > > +	 * devices. In this case before using the serial port first we have to
+> > > > +	 * make sure nothing will change the rate behind our back and second
+> > > > +	 * the tty/serial subsystem knows the actual reference clock rate of
+> > > > +	 * the port.
+> > > > +	 */
+> > > 
+> > > > +	if (clk_rate_exclusive_get(d->clk)) {
+> > > > +		dev_warn(p->dev, "Couldn't lock the clock rate\n");
+> > > 
+> > > So, if this fails, in ->shutdown you will disbalance reference count, or did I
+> > > miss something?
+> > > 
+> > 
+> > Hm, you are right. I didn't fully thought this through. The thing is
+> > that according to the clk_rate_exclusive_get() function code currently
+> > it never fails. Though this isn't excuse for introducing a prone to future
+> > bugs code.
+> > 
+> > Anyway if according to design a function may return an error we must take
+> > into account in the code using it. Due to this obligation and seeing we can't
+> > easily detect whether clk_rate_exclusive_get() has been failed while the
+> > driver is being executed in the shutdown method, the best approach would be
+> > to just return an error in startup method in case of the clock rate exclusivity
+> > acquisition failure. If you are ok with this, I'll have it fixed in v3
+> > patchset.
+> 
+> It needs to be carefully tested on other platforms than yours.
+> 
 
-Yes.
+Alas I don't have one. But it can be done by other kernel users at rc-s stage
+of the next kernel release.
 
-> Shall I add it to serial.yaml instead?
+> > > > +	} else if (d->clk) {
+> > > 
+> > > > +		p->uartclk = clk_get_rate(d->clk);
+> > > > +		if (!p->uartclk) {
+> > > > +			clk_rate_exclusive_put(d->clk);
+> > > > +			dev_err(p->dev, "Clock rate not defined\n");
+> > > > +			return -EINVAL;
+> > > > +		}
+> > > 
+> > > This operations I didn't get. If we have d->clk and suddenly get 0 as a rate
+> > > (and note, that we still update uartclk member!), we try to put (why?) the
+> > > exclusiveness of rate.
+> > > 
+> > 
+> > Here is what I had in my mind while implementing this code. If d->clk
+> > isn't NULL, then there is a "baudclk" clock handler and we can use it to
+> > alter/retrieve the baud clock rate. But the same clock could be used by
+> > some other driver and that driver could have changed the rate while we
+> > didn't have this tty port started up (opened). In this case that driver
+> > could also have the clock exclusively acquired. So instead of trying to
+> > set the current p->uartclk rate to the clock, check the return value,
+> > if it's an error, try to get the current clock rate, check the return
+> > value, and so on, I just get the current baud clock rate and make sure
+> > the value is not zero
+> 
+> > (clk_get_rate() returns a zero rate in case of
+> > internal errors).
+> 
+> Have you considered !CLK case?
+> 
 
-Sure. I'd really like to get to having a registry of alias names we can check.
+Yes. It's a case of optional clock. Have a look at how the clock API
+works. You are already using it here in this driver when calling
+clk_prepare_enable()/clk_disable_unprepare().
 
->
-> > > +  interrupts:
-> > > +    description: |
-> > > +      Must contain one or more interrupt-specifiers for the serial interface.
-> > > +      If a single interrupt is expressed, then all events are
-> > > +      multiplexed into this single interrupt.
-> > > +
-> > > +      If multiple interrupts are provided by the hardware, the order
-> > > +      in which the interrupts are listed must match order below. Note
-> > > +      that some HW interrupt events may be muxed together resulting
-> > > +      in duplicate entries.
-> > > +    minItems: 1
-> > > +    maxItems: 6
-> >
-> > This allows 2, 3, 4, or 5 interrupts. Is that valid? If not, then you
->
-> 1, 4, and 6 are valid.
->
-> > should do something like this:
-> >
-> > oneOf:
-> >   - items:
-> >       description: A combined interrupt
-> >   - items:
-> >       - description: Error interrupt
-> >       - ...
->
-> So I tried:
->
->   interrupts:
->     oneOf:
->       - items:
->           description: A combined interrupt
+> > At the same time dw8250_set_termios() will try to update
+> > the baud clock rate anyway (also by the serial core at the point of the port
+> > startup), so we don't need such complication in the DW 8250 port startup
+> > code.
+> > 
+> > > (and note, that we still update uartclk member!),
+> > 
+> > Yes, if we can't determine the current baud clock rate, then the there is
+> > a problem with the clock device, so we don't know at what rate it's
+> > currently working. Zero is the most appropriate value to be set in this case.
+> > 
+> > > we try to put (why?) the > exclusiveness of rate.
+> > 
+> > Yes, we put the exclusivity and return an error, because this if-branch has
+> > been taken only if the exclusivity has been successfully acquired.
+> 
+> So, this means that above code requires elaboration in the comments to explain
+> how it supposed to work.
+> 
 
-You're missing a '-' here.
+That's what I did by the comment: "... second the tty/serial subsystem knows
+the actual reference clock rate of the port." If you think, that checking a
+return value and undoing things in case of an error need elaboration in a
+comment I'll do it in v3.
 
->       - items:
->           - description: Error interrupt
->           - description: Receive buffer full interrupt
->           - description: Transmit buffer empty interrupt
->           - description: Transmit End interrupt
->       - items:
->           - description: Error interrupt
->           - description: Receive buffer full interrupt
->           - description: Transmit buffer empty interrupt
->           - description: Break interrupt
->           - description: Data Ready interrupt
->           - description: Transmit End interrupt
->
-> That fails for devices with 4 or 6 interrupts, e.g.:
->
->     arch/arm/boot/dts/r7s9210-rza2mevb.dt.yaml: serial@e8007000:
-> interrupts: [[0, 265, 4], [0, 266, 4], [0, 267, 4], [0, 265, 4], [0,
-> 268, 4], [0, 268, 4]] is valid under each of {'additionalItems':
-> False, 'items': [{}, {}, {}, {}, {}, {}], 'maxItems': 6, 'minItems':
-> 6, 'type': 'array'}, {'items': {}, 'type': 'array'}
->
-> Note that initially I forgot to cater for the 4-interrupt case used in
-> arch/arm/boot/dts/r7s72100.dtsi, and "make dtbs_check" did not complain.
->
-> > > +
-> > > +  interrupt-names:
-> > > +    minItems: 1
-> > > +    maxItems: 6
-> > > +    items:
-> > > +      enum:
-> > > +        - eri # Error
-> > > +        - rxi # Receive buffer full
-> > > +        - txi # Transmit buffer empty
-> > > +        - bri # Break
-> > > +        - dri # Data Ready
-> > > +        - tei # Transmit End
-> >
-> > Based on above, you probably want 'items' to be a list, not a
-> > dict(schema).
->
-> Like
->
->   interrupt-names:
->     oneOf:
->       - items:
->           - const: eri
->           - const: rxi
->           - const: txi
->           - const: tei
->       - items:
->           - const: eri
->           - const: rxi
->           - const: txi
->           - const: bri
->           - const: dri
->           - const: tei
->
-> ?
-> Seems to work, but needs the duplication as the 4-interrupt case is not
-> just the 4 first entries of the 6-interrupt case (tei is always last).
+-Regards,
+Sergey
 
-Yes, that looks right. No name for the single irq case?
-
->
-> > > +
-> > > +  clocks:
-> > > +    minItems: 1
-> > > +    maxItems: 4
-> > > +
-> > > +  clock-names:
-> > > +    minItems: 1
-> > > +    maxItems: 4
-> > > +    items:
-> > > +      enum:
-> > > +        - fck # UART functional clock
-> > > +        - sck # optional external clock input
-> > > +        - brg_int # optional internal clock source for BRG frequency divider
-> > > +        - scif_clk # optional external clock source for BRG frequency divider
-> >
-> > Same issue again...
->
-> The order is not fixed for the three optional clocks, as they may or
-> may not be wired (for sck and scif_clk), or the BRG may not be present.
-> Hence unlike for interrupts, I cannot drop the "enum", IIUIC?
-
-Well, you could list out every possible combination, but the above is
-fine I guess.
-
-Rob
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
