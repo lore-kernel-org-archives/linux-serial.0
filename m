@@ -2,110 +2,125 @@ Return-Path: <SRS0=3mQv=5I=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE220C4332E
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Mar 2020 19:32:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E167C54FD1
+	for <linux-serial@archiver.kernel.org>; Mon, 23 Mar 2020 19:50:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B31A020719
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Mar 2020 19:32:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4E7442073C
+	for <linux-serial@archiver.kernel.org>; Mon, 23 Mar 2020 19:50:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1584991958;
-	bh=2w2yYqtj1wTYNijyHaEdNTz4mjJMgi4sCq/s47qMEMc=;
+	s=default; t=1584993007;
+	bh=DBUGYNMli+b+uV3NamoWPc9K2HPz/ws+6gKUkNUTaS8=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=Y4zWcmuUIC0mcQMkclEyDaTgWtDbePUhVkHq77LkLMaKsOOGrKN5eR2dl4hDhd7Ce
-	 kev9abWHh9u49XJ0if5HFfmQJCtMc6pq6LknwL+R7Gpa0XV3iFdyTC2Y+6yhtvTbEL
-	 Rqa5dUWMjfK7ouqGV/stUbE7ZC7zDE5ovcum1dmI=
+	b=rh2RbtEf6KFiNUEV+Otkqxj0RvEnGtaPPLFW0WHHmeKhEEU0Y/bTAlxfOPxLIZ6Ef
+	 6vNm0BHP+heDEqnCGHkad6cgfhg0QWQnrWL3TL2+a2LpG9P1f7LI+qlImA52M3DDGx
+	 rLV8p6mery9Mrym+9SufYMBCtlg4ZoFLJhpvvhzU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727743AbgCWTci (ORCPT
+        id S1726037AbgCWTuE (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 Mar 2020 15:32:38 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:33467 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727753AbgCWTci (ORCPT
+        Mon, 23 Mar 2020 15:50:04 -0400
+Received: from mail-il1-f194.google.com ([209.85.166.194]:35541 "EHLO
+        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725776AbgCWTuE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 Mar 2020 15:32:38 -0400
-Received: by mail-io1-f67.google.com with SMTP id o127so15638718iof.0;
-        Mon, 23 Mar 2020 12:32:37 -0700 (PDT)
+        Mon, 23 Mar 2020 15:50:04 -0400
+Received: by mail-il1-f194.google.com with SMTP id 7so1128350ill.2;
+        Mon, 23 Mar 2020 12:50:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=tGWDTIGwqblQ9A69FHsnP/KkSp6PxYWf2FN7H7nd5IM=;
-        b=hDWlXtiAK5qi7St6qOBUEW5eRPfDANq7aPTQy1lGsTzbFQQg1uKDJMur2nhTJKy5zx
-         g1kEZS0fWlsKw6JJfC8d/dyHq9vS8S0EpCtXmAyMWHmH+R9Xgl/8UISri6Dodtt7O8kx
-         U7c5XOOaAVo6IwxEPH76wcvk41UxMptqakpOvfx0JZpDXScXt27e21Uk8JTPwbWvEzmY
-         hd197DoIa9ER7NEizagMgN2PkYoWlTG8xTOaXQGDNM7gfmFy0tk8AzQtjnzedIOINVAH
-         WNQLsUbtv2mOdPiKhX2O/G7kJWvLzkB0awbidISwUXSKZcnxlPQkwSX2eCsR9jw78Itg
-         hN/A==
-X-Gm-Message-State: ANhLgQ2I8Y7CN3WtyuRBx5eoyt7L+Xoo4BGjHznlvKydXk3Rnpc6+MH5
-        E3F7TsrnPjfuDpt4NWNmCg==
-X-Google-Smtp-Source: ADFU+vvsqraqDoMPKC97ZYwRS/aUG3mf9ci2H7tHa50R+nT9xxAnn3i+OZBrHisC/W9bBeKHPW+BAg==
-X-Received: by 2002:a02:cbb6:: with SMTP id v22mr11925348jap.78.1584991956045;
-        Mon, 23 Mar 2020 12:32:36 -0700 (PDT)
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=OjC6r2usuImBDLu/35CLd+c7UkFmIFG+06FkAS9qKVg=;
+        b=Zolz3XoqNSScFkogN6i1/SNo1bDXQUnOU67VOoSZpj1teQcbeKyrMVneeHOiEBOApH
+         0MqPucuWEpw1ncRJjqyAE3WGFtLI2n/pGkuzSzLV9X/TJ8+aXI90UPSwWmf9uBxk6x6F
+         ddJmNbJ4AXwvT8OuKpmboVrsKa45qKEmZTSXYhvULrRnCNXGMnG9eBpvSjDO+ZDu1dWZ
+         /xMz2Xf7VX1SuwRAouBGf+xrplcJYPL8aC1fb6Nwa0+GQlVTKwiSBta+H1drfV9cqh/7
+         DmT9HeW9DUTLkBsS/lquf0hsoK9Lt46QPzzX+7TBs8qLHCZhk5XLe+KzK7jhYwxj1NUc
+         4qSg==
+X-Gm-Message-State: ANhLgQ1NPxw+DrpjMI/bylzPYg7KrA5BQbK+PFQsCg/8G9vd4nAU4cC0
+        JWvv12CHP6/as9u1IQOk4Q==
+X-Google-Smtp-Source: ADFU+vu/MHCQinxeMPLh3FyJXqUbP8NrFB6mE2fqpJvLKhVTVJRcYgL95OftLKo2ne7u4RCE9iSYrw==
+X-Received: by 2002:a92:7b10:: with SMTP id w16mr22320500ilc.93.1584993003863;
+        Mon, 23 Mar 2020 12:50:03 -0700 (PDT)
 Received: from rob-hp-laptop ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id w3sm4616589ior.55.2020.03.23.12.32.34
+        by smtp.gmail.com with ESMTPSA id v24sm1199217iob.0.2020.03.23.12.50.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Mar 2020 12:32:35 -0700 (PDT)
-Received: (nullmailer pid 695 invoked by uid 1000);
-        Mon, 23 Mar 2020 19:32:34 -0000
-Date:   Mon, 23 Mar 2020 13:32:34 -0600
+        Mon, 23 Mar 2020 12:50:03 -0700 (PDT)
+Received: (nullmailer pid 29486 invoked by uid 1000);
+        Mon, 23 Mar 2020 19:50:02 -0000
+Date:   Mon, 23 Mar 2020 13:50:02 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johan Hovold <johan@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH v2 2/2] dt-bindings: serial: Convert slave-device
- bindings to json-schema
-Message-ID: <20200323193234.GB8470@bogus>
-References: <20200306090046.8890-1-geert+renesas@glider.be>
- <20200306090046.8890-3-geert+renesas@glider.be>
+To:     Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Wells Lu =?utf-8?B?5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>,
+        Dvorkin Dmitry <dvorkin@tibbo.com>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [RFC 05/11] dt-bindings: serial: Add Sunplus SP7021 UART
+Message-ID: <20200323195002.GA27190@bogus>
+References: <20200308163230.4002-1-afaerber@suse.de>
+ <20200308163230.4002-6-afaerber@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200306090046.8890-3-geert+renesas@glider.be>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200308163230.4002-6-afaerber@suse.de>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri,  6 Mar 2020 10:00:46 +0100, Geert Uytterhoeven wrote:
-> Convert the serial slave-device Device Tree binding documentation to
-> json-schema, and incorporate it into the generic serial bindings.
+On Sun, Mar 08, 2020 at 05:32:23PM +0100, Andreas Färber wrote:
+> The Sunplus Plus1 (aka Pentagram) SP7021 SoC has five UARTs.
 > 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Cc: Wells Lu 呂芳騰 <wells.lu@sunplus.com>
+> Signed-off-by: Andreas Färber <afaerber@suse.de>
 > ---
-> v2:
->   - Update references to slave-device.txt,
->   - Allow any child node names,
->   - Typo s/connnected/connected/.
-> ---
->  .../devicetree/bindings/gnss/gnss.txt         |  2 +-
->  .../bindings/net/broadcom-bluetooth.txt       |  2 +-
->  .../bindings/net/mediatek-bluetooth.txt       |  2 +-
->  .../devicetree/bindings/net/qca,qca7000.txt   |  2 +-
->  .../bindings/net/qualcomm-bluetooth.txt       |  2 +-
->  .../devicetree/bindings/net/ti-bluetooth.txt  |  3 +-
->  .../devicetree/bindings/serial/serial.yaml    | 56 +++++++++++++++++++
->  .../bindings/serial/slave-device.txt          | 45 ---------------
->  MAINTAINERS                                   |  2 +-
->  9 files changed, 63 insertions(+), 53 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/serial/slave-device.txt
+>  .../bindings/serial/sunplus,pentagram-uart.yaml    | 24 ++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/sunplus,pentagram-uart.yaml
 > 
+> diff --git a/Documentation/devicetree/bindings/serial/sunplus,pentagram-uart.yaml b/Documentation/devicetree/bindings/serial/sunplus,pentagram-uart.yaml
+> new file mode 100644
+> index 000000000000..9d1641232a4c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/sunplus,pentagram-uart.yaml
+> @@ -0,0 +1,24 @@
+> +# SPDX-License-Identifier: GPL-2.0-or-later OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/serial/sunplus,pentagram-uart.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Sunplus Pentagram SoC UART Serial Interface
+> +
+> +maintainers:
+> +  - Andreas Färber <afaerber@suse.de>
+> +
 
-Applied, thanks.
+Soon this will need to reference serial.yaml which is getting added to 
+5.7.
 
-I dropped qualcomm-bluetooth.txt change for now.
-
-Rob
+> +properties:
+> +  compatible:
+> +    const: sunplus,sp7021-uart
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +...
+> -- 
+> 2.16.4
+> 
