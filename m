@@ -2,246 +2,263 @@ Return-Path: <SRS0=3mQv=5I=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C01EAC3F2CD
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Mar 2020 15:10:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 239B0C3F2CD
+	for <linux-serial@archiver.kernel.org>; Mon, 23 Mar 2020 16:42:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8792D20714
-	for <linux-serial@archiver.kernel.org>; Mon, 23 Mar 2020 15:10:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DEFF120722
+	for <linux-serial@archiver.kernel.org>; Mon, 23 Mar 2020 16:42:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1584981737;
+	bh=02Kf9WpideHAeaiUmNJrBUV6bHi5stRkRbsCThccRjY=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
+	b=CdFiBzYDxb2+y+cAx6LZ3UXT5JBvPTpmZwqJFpbg5cYw8UOQG4nB2P+Sw3poO59OP
+	 b+cBw6+ddFhGs5M4D6sftlgPH85FSGBUDgUHxsBJ07hM6V3H1dlXfxZWB+7sTXyHUT
+	 h8axaJHsMB1RqN9HdhXWvNRYcLGgl6hN6MFHRqmo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727269AbgCWPKc (ORCPT
+        id S1727458AbgCWQmQ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 23 Mar 2020 11:10:32 -0400
-Received: from mga04.intel.com ([192.55.52.120]:29009 "EHLO mga04.intel.com"
+        Mon, 23 Mar 2020 12:42:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34812 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727265AbgCWPKb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 23 Mar 2020 11:10:31 -0400
-IronPort-SDR: 1DMRJuzAxiamPIsx7/f530hQdmFYT5GBi3UvLQuFHd+AmuvMVgzxx8wStIjX1IUewTSnOD6aPQ
- HcVald12XTmQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2020 08:10:31 -0700
-IronPort-SDR: 5wFksTlhR4nmLKBrvwbP15IYLfu6GtnaGeBtZxqN4RP5nZTv7VyT/w9zAH+AV9P93pCRsuoq52
- bHGSdAad9JTw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,296,1580803200"; 
-   d="scan'208";a="292598041"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 23 Mar 2020 08:10:25 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1jGOie-0009W9-O2; Mon, 23 Mar 2020 23:10:24 +0800
-Date:   Mon, 23 Mar 2020 23:09:40 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- cbf580ff093861f021b31b2f8d0f03173fb58520
-Message-ID: <5e78d134.x9MBmfIzUelrMbPc%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S1727357AbgCWQmQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 23 Mar 2020 12:42:16 -0400
+Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1913520753;
+        Mon, 23 Mar 2020 16:42:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584981735;
+        bh=02Kf9WpideHAeaiUmNJrBUV6bHi5stRkRbsCThccRjY=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=xy/iuWM40CuwjgUhDnwM+XDKVxozGS0WmZMOgQxw9RqDiEqEqioIiXCYjZGKNcjk1
+         gK13WjTc25DhsJ79xjkIYPHLlsa5ZSSizfr6AWviYxM4yEysjYxrddozASa7JFHzNc
+         NSYhlsjcbNt0oseXfHSHdG+rg3CwXbaOPurqXKXc=
+Received: by mail-qt1-f174.google.com with SMTP id f20so12239371qtq.6;
+        Mon, 23 Mar 2020 09:42:15 -0700 (PDT)
+X-Gm-Message-State: ANhLgQ3aBxlfpoHQAHKnomoI+ngiWlX+V2SGOZuuCOzrsfPaRLLJoWDY
+        5zXbMX1+ZJYAhaSCj4jiwaWSgalqyg9tqIHLhA==
+X-Google-Smtp-Source: ADFU+vv7cTGvxC9hMAYxTeAIEH2A++JcPRe510U2M7ukQfSAPh0pK3/2XZwYvglTSrY49qlGUNpWYFGRxCL1cyLzmVU=
+X-Received: by 2002:aed:3461:: with SMTP id w88mr22287799qtd.143.1584981733920;
+ Mon, 23 Mar 2020 09:42:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <20200306090720.9365-1-geert+renesas@glider.be>
+ <20200312200523.GA17854@bogus> <CAMuHMdWoRSE7VQ5o575Ocjfh+y1yH-ciFE1BUqqPVO9oukwgNw@mail.gmail.com>
+In-Reply-To: <CAMuHMdWoRSE7VQ5o575Ocjfh+y1yH-ciFE1BUqqPVO9oukwgNw@mail.gmail.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Mon, 23 Mar 2020 10:41:59 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqL5CmL6M_njeHHYA21zs2jTQxENet+q=BJNVuz8K7Jubw@mail.gmail.com>
+Message-ID: <CAL_JsqL5CmL6M_njeHHYA21zs2jTQxENet+q=BJNVuz8K7Jubw@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: serial: sh-sci: Convert to json-schema
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ulrich Hecht <uli+renesas@fpond.eu>,
+        Chris Brandt <chris.brandt@renesas.com>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
-branch HEAD: cbf580ff093861f021b31b2f8d0f03173fb58520  Merge 5.6-rc7 into tty-next
+On Mon, Mar 23, 2020 at 8:38 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>
+> Hi Rob,
+>
+> Thanks a lot for your comments!
+>
+> On Thu, Mar 12, 2020 at 9:05 PM Rob Herring <robh@kernel.org> wrote:
+> > On Fri, Mar 06, 2020 at 10:07:20AM +0100, Geert Uytterhoeven wrote:
+> > > Convert the Renesas Serial Communication Interface ((H)SCI(F)(A|B))
+> > > Device Tree binding documentation to json-schema.
+> > >
+> > > Split the bindings in 5 files, one per major type, to ease expressing
+> > > constraints.
+> > >
+> > > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/serial/renesas,sci.yaml
+>
+> > > +properties:
+> > > +  compatible:
+> > > +    oneOf:
+> > > +      - items:
+> > > +          - const: renesas,sci
+> >
+> > Do you plan to add to this? It can be simplified to just
+>
+> Not really. I just used the same construct for consistency with the other
+> SCI variants.
+>
+> > 'const: renesas,sci'.
+>
+> OK.  I guess no other H8 and SuperH variants will pop up anytime soon.
+> Oops, RZ/A1 has SCI, and RZ/A2 has SCIg (they keep on inventing new
+> names, to be seen how compatible).
+>
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+> > > @@ -0,0 +1,168 @@
+> > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > +%YAML 1.2
+> > > +---
+> > > +$id: "http://devicetree.org/schemas/serial/renesas,scif.yaml#"
+> > > +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> > > +
+> > > +title: Renesas Serial Communication Interface with FIFO (SCIF)
+> > > +
+> > > +maintainers:
+> > > +  - Geert Uytterhoeven <geert+renesas@glider.be>
+> > > +
+> > > +description:
+> > > +  Each enabled UART may have an optional "serialN" alias in the "aliases" node,
+> > > +  where N is the port number (non-negative decimal integer) as printed on the
+> > > +  label next to the physical port.
+> >
+> > That's every serial port...
+>
+> So you suggest to just remove this paragraph from all files?
 
-elapsed time: 483m
+Yes.
 
-configs tested: 179
-configs skipped: 0
+> Shall I add it to serial.yaml instead?
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Sure. I'd really like to get to having a registry of alias names we can check.
 
-arm64                            allyesconfig
-arm                              allyesconfig
-arm64                            allmodconfig
-arm                              allmodconfig
-arm64                             allnoconfig
-arm                               allnoconfig
-arm                         at91_dt_defconfig
-arm                           efm32_defconfig
-arm                          exynos_defconfig
-arm                        multi_v5_defconfig
-arm                        multi_v7_defconfig
-arm                        shmobile_defconfig
-arm                           sunxi_defconfig
-arm64                               defconfig
-sparc                            allyesconfig
-ia64                                defconfig
-powerpc                             defconfig
-h8300                     edosk2674_defconfig
-microblaze                    nommu_defconfig
-xtensa                          iss_defconfig
-h8300                       h8s-sim_defconfig
-i386                             allyesconfig
-m68k                       m5475evb_defconfig
-i386                             alldefconfig
-i386                              allnoconfig
-i386                                defconfig
-ia64                             alldefconfig
-ia64                             allmodconfig
-ia64                              allnoconfig
-ia64                             allyesconfig
-c6x                              allyesconfig
-c6x                        evmc6678_defconfig
-nios2                         10m50_defconfig
-nios2                         3c120_defconfig
-openrisc                    or1ksim_defconfig
-openrisc                 simple_smp_defconfig
-xtensa                       common_defconfig
-nds32                               defconfig
-nds32                             allnoconfig
-csky                                defconfig
-alpha                               defconfig
-m68k                             allmodconfig
-h8300                    h8300h-sim_defconfig
-m68k                           sun3_defconfig
-m68k                          multi_defconfig
-arc                                 defconfig
-arc                              allyesconfig
-microblaze                      mmu_defconfig
-powerpc                           allnoconfig
-mips                      fuloong2e_defconfig
-mips                      malta_kvm_defconfig
-mips                           32r2_defconfig
-mips                         64r6el_defconfig
-mips                             allmodconfig
-mips                              allnoconfig
-mips                             allyesconfig
-parisc                            allnoconfig
-parisc                           allyesconfig
-parisc                generic-32bit_defconfig
-parisc                generic-64bit_defconfig
-x86_64               randconfig-a001-20200323
-x86_64               randconfig-a002-20200323
-x86_64               randconfig-a003-20200323
-i386                 randconfig-a001-20200323
-i386                 randconfig-a002-20200323
-i386                 randconfig-a003-20200323
-x86_64               randconfig-a001-20200322
-x86_64               randconfig-a002-20200322
-x86_64               randconfig-a003-20200322
-i386                 randconfig-a001-20200322
-i386                 randconfig-a002-20200322
-i386                 randconfig-a003-20200322
-mips                 randconfig-a001-20200323
-nds32                randconfig-a001-20200323
-m68k                 randconfig-a001-20200323
-parisc               randconfig-a001-20200323
-alpha                randconfig-a001-20200323
-riscv                randconfig-a001-20200323
-c6x                  randconfig-a001-20200323
-h8300                randconfig-a001-20200323
-microblaze           randconfig-a001-20200323
-nios2                randconfig-a001-20200323
-sparc64              randconfig-a001-20200323
-c6x                  randconfig-a001-20200322
-h8300                randconfig-a001-20200322
-microblaze           randconfig-a001-20200322
-nios2                randconfig-a001-20200322
-sparc64              randconfig-a001-20200322
-csky                 randconfig-a001-20200323
-openrisc             randconfig-a001-20200323
-s390                 randconfig-a001-20200323
-sh                   randconfig-a001-20200323
-xtensa               randconfig-a001-20200323
-x86_64               randconfig-b001-20200323
-x86_64               randconfig-b002-20200323
-x86_64               randconfig-b003-20200323
-i386                 randconfig-b001-20200323
-i386                 randconfig-b002-20200323
-i386                 randconfig-b003-20200323
-x86_64               randconfig-c003-20200323
-x86_64               randconfig-c001-20200323
-i386                 randconfig-c002-20200323
-x86_64               randconfig-c002-20200323
-i386                 randconfig-c003-20200323
-i386                 randconfig-c001-20200323
-x86_64               randconfig-d001-20200323
-x86_64               randconfig-d002-20200323
-x86_64               randconfig-d003-20200323
-i386                 randconfig-d001-20200323
-i386                 randconfig-d002-20200323
-i386                 randconfig-d003-20200323
-x86_64               randconfig-e001-20200323
-x86_64               randconfig-e002-20200323
-x86_64               randconfig-e003-20200323
-i386                 randconfig-e001-20200323
-i386                 randconfig-e002-20200323
-i386                 randconfig-e003-20200323
-x86_64               randconfig-f001-20200322
-x86_64               randconfig-f002-20200322
-x86_64               randconfig-f003-20200322
-i386                 randconfig-f001-20200322
-i386                 randconfig-f002-20200322
-i386                 randconfig-f003-20200322
-x86_64               randconfig-f001-20200323
-x86_64               randconfig-f002-20200323
-x86_64               randconfig-f003-20200323
-i386                 randconfig-f001-20200323
-i386                 randconfig-f002-20200323
-i386                 randconfig-f003-20200323
-i386                 randconfig-g003-20200323
-i386                 randconfig-g001-20200323
-i386                 randconfig-g002-20200323
-x86_64               randconfig-g001-20200323
-x86_64               randconfig-g003-20200323
-x86_64               randconfig-g002-20200323
-x86_64               randconfig-h001-20200323
-x86_64               randconfig-h002-20200323
-x86_64               randconfig-h003-20200323
-i386                 randconfig-h001-20200323
-i386                 randconfig-h002-20200323
-i386                 randconfig-h003-20200323
-arm                  randconfig-a001-20200323
-powerpc              randconfig-a001-20200323
-arm64                randconfig-a001-20200323
-ia64                 randconfig-a001-20200323
-sparc                randconfig-a001-20200323
-arc                  randconfig-a001-20200323
-riscv                             allnoconfig
-riscv                            allyesconfig
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-s390                       zfcpdump_defconfig
-s390                          debug_defconfig
-s390                                defconfig
-s390                             alldefconfig
-s390                             allmodconfig
-s390                              allnoconfig
-s390                             allyesconfig
-sh                          rsk7269_defconfig
-sh                               allmodconfig
-sh                  sh7785lcr_32bit_defconfig
-sh                                allnoconfig
-sh                            titan_defconfig
-sparc                               defconfig
-sparc64                             defconfig
-sparc64                           allnoconfig
-sparc64                          allyesconfig
-sparc64                          allmodconfig
-um                           x86_64_defconfig
-um                             i386_defconfig
-um                                  defconfig
-x86_64                              fedora-25
-x86_64                                  kexec
-x86_64                                    lkp
-x86_64                                   rhel
-x86_64                         rhel-7.2-clear
-x86_64                               rhel-7.6
+>
+> > > +  interrupts:
+> > > +    description: |
+> > > +      Must contain one or more interrupt-specifiers for the serial interface.
+> > > +      If a single interrupt is expressed, then all events are
+> > > +      multiplexed into this single interrupt.
+> > > +
+> > > +      If multiple interrupts are provided by the hardware, the order
+> > > +      in which the interrupts are listed must match order below. Note
+> > > +      that some HW interrupt events may be muxed together resulting
+> > > +      in duplicate entries.
+> > > +    minItems: 1
+> > > +    maxItems: 6
+> >
+> > This allows 2, 3, 4, or 5 interrupts. Is that valid? If not, then you
+>
+> 1, 4, and 6 are valid.
+>
+> > should do something like this:
+> >
+> > oneOf:
+> >   - items:
+> >       description: A combined interrupt
+> >   - items:
+> >       - description: Error interrupt
+> >       - ...
+>
+> So I tried:
+>
+>   interrupts:
+>     oneOf:
+>       - items:
+>           description: A combined interrupt
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+You're missing a '-' here.
+
+>       - items:
+>           - description: Error interrupt
+>           - description: Receive buffer full interrupt
+>           - description: Transmit buffer empty interrupt
+>           - description: Transmit End interrupt
+>       - items:
+>           - description: Error interrupt
+>           - description: Receive buffer full interrupt
+>           - description: Transmit buffer empty interrupt
+>           - description: Break interrupt
+>           - description: Data Ready interrupt
+>           - description: Transmit End interrupt
+>
+> That fails for devices with 4 or 6 interrupts, e.g.:
+>
+>     arch/arm/boot/dts/r7s9210-rza2mevb.dt.yaml: serial@e8007000:
+> interrupts: [[0, 265, 4], [0, 266, 4], [0, 267, 4], [0, 265, 4], [0,
+> 268, 4], [0, 268, 4]] is valid under each of {'additionalItems':
+> False, 'items': [{}, {}, {}, {}, {}, {}], 'maxItems': 6, 'minItems':
+> 6, 'type': 'array'}, {'items': {}, 'type': 'array'}
+>
+> Note that initially I forgot to cater for the 4-interrupt case used in
+> arch/arm/boot/dts/r7s72100.dtsi, and "make dtbs_check" did not complain.
+>
+> > > +
+> > > +  interrupt-names:
+> > > +    minItems: 1
+> > > +    maxItems: 6
+> > > +    items:
+> > > +      enum:
+> > > +        - eri # Error
+> > > +        - rxi # Receive buffer full
+> > > +        - txi # Transmit buffer empty
+> > > +        - bri # Break
+> > > +        - dri # Data Ready
+> > > +        - tei # Transmit End
+> >
+> > Based on above, you probably want 'items' to be a list, not a
+> > dict(schema).
+>
+> Like
+>
+>   interrupt-names:
+>     oneOf:
+>       - items:
+>           - const: eri
+>           - const: rxi
+>           - const: txi
+>           - const: tei
+>       - items:
+>           - const: eri
+>           - const: rxi
+>           - const: txi
+>           - const: bri
+>           - const: dri
+>           - const: tei
+>
+> ?
+> Seems to work, but needs the duplication as the 4-interrupt case is not
+> just the 4 first entries of the 6-interrupt case (tei is always last).
+
+Yes, that looks right. No name for the single irq case?
+
+>
+> > > +
+> > > +  clocks:
+> > > +    minItems: 1
+> > > +    maxItems: 4
+> > > +
+> > > +  clock-names:
+> > > +    minItems: 1
+> > > +    maxItems: 4
+> > > +    items:
+> > > +      enum:
+> > > +        - fck # UART functional clock
+> > > +        - sck # optional external clock input
+> > > +        - brg_int # optional internal clock source for BRG frequency divider
+> > > +        - scif_clk # optional external clock source for BRG frequency divider
+> >
+> > Same issue again...
+>
+> The order is not fixed for the three optional clocks, as they may or
+> may not be wired (for sck and scif_clk), or the BRG may not be present.
+> Hence unlike for interrupts, I cannot drop the "enum", IIUIC?
+
+Well, you could list out every possible combination, but the above is
+fine I guess.
+
+Rob
