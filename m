@@ -2,113 +2,94 @@ Return-Path: <SRS0=BK0i=5J=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DB93C4332B
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Mar 2020 09:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E125C4332B
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Mar 2020 09:28:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 306ED2070A
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Mar 2020 09:04:06 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KDyAodiC"
+	by mail.kernel.org (Postfix) with ESMTP id EA35E208CA
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Mar 2020 09:28:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1585042136;
+	bh=jtNyRTRgsJmBEgvEJYDkKJ9vlP35PuAgLyeZsE6lJCQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=T2jwkUBGIkMB/bdqfGTGL2MVJ/zON5jy4+fXvCNbY7DHmcm1WYMwa4Md+6hdIGZnc
+	 +pDNxfj4JuCQLWhupYO6E9HGQ6+snem3IzoOtSJH8SaVKazIS9jGCGiN8twkYX3s8T
+	 Qv0Kjl1JGhB/7KDMWREMcCYcvoXBdXeaKlP7fIeg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726166AbgCXJEF (ORCPT
+        id S1727050AbgCXJ2z (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 Mar 2020 05:04:05 -0400
-Received: from mail-lf1-f43.google.com ([209.85.167.43]:44972 "EHLO
-        mail-lf1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726129AbgCXJEF (ORCPT
+        Tue, 24 Mar 2020 05:28:55 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:36042 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726944AbgCXJ2z (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 Mar 2020 05:04:05 -0400
-Received: by mail-lf1-f43.google.com with SMTP id j188so8681572lfj.11
-        for <linux-serial@vger.kernel.org>; Tue, 24 Mar 2020 02:04:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:lines:user-agent:date:message-id:mime-version;
-        bh=xQoLhNRAgfnd2RAKmenPsbPLyV2wUC5/TslRZvGkElI=;
-        b=KDyAodiCKb6sj7fPN42zcdwIo1RgUiIt1AK81Yy5sRoCLiP+glUEsrmLtD6IlYj9s7
-         QxGj3FvtxXLg5CWFYLzYUBp3t2Utdh4TUFkB1j6kYu4Hzu95yZOYZFWt35YJ/ZqKN+Wo
-         Tysl8x2mKx0gCaaSyVfugCCQJYiAboEigTqx+wKOyfxzD1TPy4k3UmJepivWiCRxTiaY
-         r26Kd6CtMETESMadaAWanBI205ju8yw2CSOTobBUJoI5K2zFXtfe/N4BukWkBkc0nkOX
-         MHh3z8iNk7xnNkH7i3LKd9IC9yvY/PG4/0txSN1qyjpa3C5LBJon6DrfmLL0dim8RWL0
-         X32w==
+        Tue, 24 Mar 2020 05:28:55 -0400
+Received: by mail-lf1-f66.google.com with SMTP id s1so12582231lfd.3
+        for <linux-serial@vger.kernel.org>; Tue, 24 Mar 2020 02:28:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:lines:user-agent:date
-         :message-id:mime-version;
-        bh=xQoLhNRAgfnd2RAKmenPsbPLyV2wUC5/TslRZvGkElI=;
-        b=qwC3lWBJ4EG8JB4kVY3tNbGeIKbAwGO3WjCsHNYQ5vYr0krCWiHOwwziI98+BPJPzD
-         t0hV5FLPMx4P2Focv4miB76WCKkC60r8NwkWAxWCJK7+GgQk0fJxtzCq6TeJmhTNCdOd
-         BcTEh2ZSPQkZdYGxmmrQGOoR7PtYgonMintU8boS79Ku4h2N0K0GDwkOOVd0Ic1RTF1m
-         5BiKzzbXgmpl9VEpDWUVrNeDC03PvcxcVf4quRxJQvhr7OxSSVKa0m1orsPXdE7QjblR
-         PX1oC5iCggl/nrFolhs8YVrlWsGVmZYg5ZSz7eNeyzgFY5dM1mD/4I3WbZ7MVUaG+Xmr
-         FIsQ==
-X-Gm-Message-State: ANhLgQ0PiU2wH5bLbrfLj77+S/sbad9AAoyjZHnh/50HVCyeJ+AfCvP4
-        R6/dZQofEBSdgXxAITxCL6kOAjJ0
-X-Google-Smtp-Source: ADFU+vt3GBeqgs4Eql6putP3hiZoI7/gSqTSDyXowaThLPpNUq/ybW0MRnbYkRV/SHSdhT3gxEJS5w==
-X-Received: by 2002:a19:cb8e:: with SMTP id b136mr879070lfg.67.1585040643559;
-        Tue, 24 Mar 2020 02:04:03 -0700 (PDT)
-Received: from osv.localdomain ([89.175.180.246])
-        by smtp.gmail.com with ESMTPSA id 24sm6223137ljv.105.2020.03.24.02.04.02
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=H9cgQBHwnun3QWnbmEHZGhQFhB4Fz93itqncOMUGIqM=;
+        b=U1k5NbSsZGDkdbSTx3l5rcwd3pGaRJ5wSFgNu9S5DZmOXhwcUNFmjUXTm6LoSxHzOP
+         dGBJ5OAuyqMHj2gch4Jp9+ho75w8lWUm+Rf3+qTbush39i5b92DeFiYNvaXY3zqywiIj
+         nuBWSvoMzs5G8tE2H8DFALfaYyUE8f6SjQg8k1iZ7KA6ab7muDrH5JMkm/voew8iWFD/
+         gYyBUHKp6Q2THpsgsOCCVStXUKn4Iru3M5oF9LHhUm6DvEHyWKpHabkgr4AkopQEO4i9
+         0LxqGfoljUlNNzlaFVQmWkDJzYCGgsB4R5R+7xpIp/Fa+0uOBC1xpqKhkoMPX5isHfi3
+         +pWQ==
+X-Gm-Message-State: ANhLgQ3WKssirmljPPDODxpXADSUmsEX9z3vNmti11bKbQRHQenNqpUp
+        CpaDQmk2LU4WTHheGb20R1fz1NTl
+X-Google-Smtp-Source: ADFU+vuh6pweXCcAzZUa1ZWFJJ++I4TEMPR6Xs0qg7puPp8xXHV1ZqJ2wCCO7zesdSRUGjwq25IfIw==
+X-Received: by 2002:ac2:4578:: with SMTP id k24mr3085156lfm.180.1585042131534;
+        Tue, 24 Mar 2020 02:28:51 -0700 (PDT)
+Received: from xi.terra (c-12aae455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.170.18])
+        by smtp.gmail.com with ESMTPSA id c4sm7840513lfm.37.2020.03.24.02.28.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Mar 2020 02:04:02 -0700 (PDT)
-From:   Sergey Organov <sorganov@gmail.com>
-To:     linux-serial@vger.kernel.org
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>
-Subject: Serial console and interrupts latency.
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
-Date:   Tue, 24 Mar 2020 12:04:01 +0300
-Message-ID: <87lfnq15vi.fsf@osv.gnss.ru>
+        Tue, 24 Mar 2020 02:28:50 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.92.3)
+        (envelope-from <johan@kernel.org>)
+        id 1jGfrT-0003nX-KY; Tue, 24 Mar 2020 10:28:39 +0100
+Date:   Tue, 24 Mar 2020 10:28:39 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Ryan Lovelett <ryan@lovelett.me>, linux-serial@vger.kernel.org
+Subject: Re: FT232H user space GPIO device
+Message-ID: <20200324092839.GC5810@localhost>
+References: <6267385dcb44b73f3b5b38070da602bbdb56d545.camel@lovelett.me>
+ <20200323065211.GD129571@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200323065211.GD129571@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello,
+On Mon, Mar 23, 2020 at 07:52:11AM +0100, Greg Kroah-Hartman wrote:
+> On Sun, Mar 22, 2020 at 03:40:33PM -0400, Ryan Lovelett wrote:
+> > I have been trying to find a way to get my Adafruit FT232H breakout
+> > board [1] to appear as a user space GPIO device so I can use it with
+> > libgpiod. As far as I can tell from reading table 3.5 from the
+> > datasheet [2] ACBUS5, ACBUS6, ACBUS8 and ACBUS9 should all be usable
+> > for this.
+> > 
+> > I found a patch that was submitted by Karoly Pados in 2018 [3] that
+> > seemes to add support for that (though maybe only for a specific chip).
+> > 
+> > Through a little bit of ftrace and printk I realized that the switch
+> > statement in ftdi_gpio_init was falling through to the default case for
+> > the FT232H [4].
+> 
+> So it sounds like you have the wrong device type.  Can you make sure you
+> use the latest kernel release (5.5) and if you have problems with this,
+> email the linux-usb mailing list as the driver maintainers for that
+> driver are there.
 
-[Extended CC list to try to get some attention]
+As Greg suggested you need to update your kernel as GPIO support for
+FT232H went into 5.4.
 
-I was investigating random serial overruns on my embedded board and
-figured it strongly correlates with serial output (to another serial
-port) from kernel printk() calls, that forced me to dig into the kernel
-sources, and now I'm very confused.
-
-I'm reading drivers/tty/serial/8250/8250_port.c, and
-serial8250_console_write() function in particular (being on tty-next
-branch).
-
-What I see is that it locks interrupts
-
-3141:		spin_lock_irqsave(&port->lock, flags);
-
-and then calls wait_for_xmitr() both indirectly here:
-
-3159:	uart_console_write(port, s, count, serial8250_console_putchar);
-
-and then directly as well:
-
-3165:	wait_for_xmitr(up, BOTH_EMPTY);
-
-before re-enabling interrupts at:
-
-3179:		spin_unlock_irqrestore(&port->lock, flags);
-
-Now, wait_for_xmitr(), even according to comments, could busy-wait for
-up to 10+1000 milliseconds, and in this case this huge delay will happen
-at interrupts disabled?
-
-Does it mean any serial console output out of printk() could cause 10
-milliseconds or even 1 second interrupts latency? Somehow I can't
-believe it.
-
-What do I miss?
-
-Thanks,
--- Sergey
+Johan
