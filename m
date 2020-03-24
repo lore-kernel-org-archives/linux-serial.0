@@ -2,71 +2,80 @@ Return-Path: <SRS0=BK0i=5J=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 591BCC54EEB
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Mar 2020 16:37:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E408C2BAEE
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Mar 2020 17:01:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3663220775
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Mar 2020 16:37:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6CE8D2076F
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Mar 2020 17:01:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727986AbgCXQhQ (ORCPT
+        id S1727383AbgCXRBP (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 Mar 2020 12:37:16 -0400
-Received: from muru.com ([72.249.23.125]:33086 "EHLO muru.com"
+        Tue, 24 Mar 2020 13:01:15 -0400
+Received: from muru.com ([72.249.23.125]:33112 "EHLO muru.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727768AbgCXQhP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 Mar 2020 12:37:15 -0400
+        id S1727314AbgCXRBP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 24 Mar 2020 13:01:15 -0400
 Received: from atomide.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 63E6C8198;
-        Tue, 24 Mar 2020 16:38:01 +0000 (UTC)
-Date:   Tue, 24 Mar 2020 09:37:11 -0700
+        by muru.com (Postfix) with ESMTPS id CE63E81CA;
+        Tue, 24 Mar 2020 17:02:00 +0000 (UTC)
+Date:   Tue, 24 Mar 2020 10:01:10 -0700
 From:   Tony Lindgren <tony@atomide.com>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh@kernel.org>,
-        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
-        Jiri Slaby <jslaby@suse.cz>, Johan Hovold <johan@kernel.org>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        Pavel Machek <pavel@ucw.cz>,
+To:     Pavel Machek <pavel@denx.de>
+Cc:     kernel list <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-omap@vger.kernel.org, sre@kernel.org, nekit1000@gmail.com,
+        mpartap@gmx.net, merlijn@wizzup.org, martin_rysavy@centrum.cz,
         Peter Hurley <peter@hurleysoftware.com>,
-        Sebastian Reichel <sre@kernel.org>,
         linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
-Subject: Re: [PATCH 3/4] dt-bindings: mfd: motmdm: Add binding for
- motorola-mdm
-Message-ID: <20200324163711.GA37466@atomide.com>
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: Droid 4 in -next -- still no backlight was Re: [PATCH 1/4] tty:
+ n_gsm: Add support for serdev drivers
+Message-ID: <20200324170110.GB37466@atomide.com>
 References: <20200319173755.65082-1-tony@atomide.com>
- <20200319173755.65082-4-tony@atomide.com>
- <20200324115852.GB442973@dell>
+ <20200319173755.65082-2-tony@atomide.com>
+ <20200322224230.GB28082@amd>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200324115852.GB442973@dell>
+In-Reply-To: <20200322224230.GB28082@amd>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Lee Jones <lee.jones@linaro.org> [200324 11:58]:
-> > Add a binding document for Motorola modems controllable by
-> > TS 27.010 UART line discipline using serdev drivers.
-> > 
-> > Reviewed-by: Rob Herring <robh@kernel.org>
-> > [tony@atomide.com: moved to live under bindings/serdev]
-> > Signed-off-by: Tony Lindgren <tony@atomide.com>
-> > ---
-> >  .../serdev/motorola,mapphone-mdm6600.yaml     | 34 +++++++++++++++++++
-> >  1 file changed, 34 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/serdev/motorola,mapphone-mdm6600.yaml
+* Pavel Machek <pavel@denx.de> [200322 22:43]:
+> Hi!
 > 
-> Nit: subject line is out of date.
+> > We can make use of serdev drivers to do simple device drivers for
+> > TS 27.010 chanels, and we can handle vendor specific protocols on top
+> > of TS 27.010 with serdev drivers.
+> 
+> I took all three series (
+> 
+> [PATCHv3 0/3] Lost key-up interrupt handling for omap4-keypa
+> [PATCH 1/3] Input: atmel_mxt_ts - use runtime PM instead of
+> [PATCHv5 0/4] n_gsm serdev support and protocol driver for d
+> 
+> ) and applied them on top of next-20200320.
+> 
+> Good news is that result boots. (So I did partial testing of the patches).
+> 
+> Bad news is that I still don't have working backlight. I do have LED
+> and there's backlight device connected to the LED, so I can't control
+> the LED directly, but the screen is black (and I don't see boot
+> messages either).
+> 
+> Before I start debugging, does screen work for you in -next, or do you
+> have some fixes I could try?
 
-Thanks for spotting that, will change it to use the following:
+Yes the backlight works for me now just fine with current v5.6-rc.
 
-dt-bindings: serdev: motmdm: Add binding for motorola-mdm
+But yeah, looks like LCD is again broken in current Linux next,
+maybe Laurent and Sebastian have some clues?
 
 Regards,
 
