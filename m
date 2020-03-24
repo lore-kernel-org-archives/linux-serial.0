@@ -2,154 +2,113 @@ Return-Path: <SRS0=BK0i=5J=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15D28C10DCE
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Mar 2020 08:11:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DB93C4332B
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Mar 2020 09:04:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E68D020775
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Mar 2020 08:11:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 306ED2070A
+	for <linux-serial@archiver.kernel.org>; Tue, 24 Mar 2020 09:04:06 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KDyAodiC"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726167AbgCXILB (ORCPT
+        id S1726166AbgCXJEF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 Mar 2020 04:11:01 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:39747 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726155AbgCXILB (ORCPT
+        Tue, 24 Mar 2020 05:04:05 -0400
+Received: from mail-lf1-f43.google.com ([209.85.167.43]:44972 "EHLO
+        mail-lf1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726129AbgCXJEF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 Mar 2020 04:11:01 -0400
-Received: by mail-ot1-f67.google.com with SMTP id x11so4095778otp.6;
-        Tue, 24 Mar 2020 01:11:00 -0700 (PDT)
+        Tue, 24 Mar 2020 05:04:05 -0400
+Received: by mail-lf1-f43.google.com with SMTP id j188so8681572lfj.11
+        for <linux-serial@vger.kernel.org>; Tue, 24 Mar 2020 02:04:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:lines:user-agent:date:message-id:mime-version;
+        bh=xQoLhNRAgfnd2RAKmenPsbPLyV2wUC5/TslRZvGkElI=;
+        b=KDyAodiCKb6sj7fPN42zcdwIo1RgUiIt1AK81Yy5sRoCLiP+glUEsrmLtD6IlYj9s7
+         QxGj3FvtxXLg5CWFYLzYUBp3t2Utdh4TUFkB1j6kYu4Hzu95yZOYZFWt35YJ/ZqKN+Wo
+         Tysl8x2mKx0gCaaSyVfugCCQJYiAboEigTqx+wKOyfxzD1TPy4k3UmJepivWiCRxTiaY
+         r26Kd6CtMETESMadaAWanBI205ju8yw2CSOTobBUJoI5K2zFXtfe/N4BukWkBkc0nkOX
+         MHh3z8iNk7xnNkH7i3LKd9IC9yvY/PG4/0txSN1qyjpa3C5LBJon6DrfmLL0dim8RWL0
+         X32w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GDNMdncUrveLnNCIuqkigHaNj5T9kUim+zbpHWBr6R8=;
-        b=L1vhi9oUSZpKohJ2P213dsi0YB/a/jKzOv2KaQMLzVYcplq011VCWqwtQZkZ36by8B
-         qAl7144xWUPSLbO6ycGwPeUswiLWBnMUyysovU53CXzBQwKx9oPBDe1/qkuAWXqZnP+N
-         yMVjknVW7R9qBOlNU4TMd0vaPP86SKFd6DHfICGI1X1I2KKAu4DpCuRj3DltH7T28s19
-         uj0qYLzNHDwxlzumosOx9JjVi+F8Vjkcv6+hAOFgeTGpzgIqlgsKJVNCM9n3RXB3PTZF
-         I1oh7nz5Zpk0hhFVetFDk+wQejPH7PsXdgsOD58XnNNRoMQXiueS4KGzmUGpX3zj+RKG
-         objg==
-X-Gm-Message-State: ANhLgQ2kjfhCOSzCqwh1TIqlMdzWwGTawRyi0abzrq3UioWljipOweeR
-        UZXw06zlH78z1dLKEE20Bd56YmsvD+7c/0qQDU4K2Q==
-X-Google-Smtp-Source: ADFU+vuBoXKVlPk0uv5lnR6f0/AvkW/pjUP3vcSJaQsFMeozW3lgjdaBEI6rir0p9fFrmZAPCnjLmq0YV8GUG4QVuKc=
-X-Received: by 2002:a05:6830:15c2:: with SMTP id j2mr346245otr.107.1585037460075;
- Tue, 24 Mar 2020 01:11:00 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:lines:user-agent:date
+         :message-id:mime-version;
+        bh=xQoLhNRAgfnd2RAKmenPsbPLyV2wUC5/TslRZvGkElI=;
+        b=qwC3lWBJ4EG8JB4kVY3tNbGeIKbAwGO3WjCsHNYQ5vYr0krCWiHOwwziI98+BPJPzD
+         t0hV5FLPMx4P2Focv4miB76WCKkC60r8NwkWAxWCJK7+GgQk0fJxtzCq6TeJmhTNCdOd
+         BcTEh2ZSPQkZdYGxmmrQGOoR7PtYgonMintU8boS79Ku4h2N0K0GDwkOOVd0Ic1RTF1m
+         5BiKzzbXgmpl9VEpDWUVrNeDC03PvcxcVf4quRxJQvhr7OxSSVKa0m1orsPXdE7QjblR
+         PX1oC5iCggl/nrFolhs8YVrlWsGVmZYg5ZSz7eNeyzgFY5dM1mD/4I3WbZ7MVUaG+Xmr
+         FIsQ==
+X-Gm-Message-State: ANhLgQ0PiU2wH5bLbrfLj77+S/sbad9AAoyjZHnh/50HVCyeJ+AfCvP4
+        R6/dZQofEBSdgXxAITxCL6kOAjJ0
+X-Google-Smtp-Source: ADFU+vt3GBeqgs4Eql6putP3hiZoI7/gSqTSDyXowaThLPpNUq/ybW0MRnbYkRV/SHSdhT3gxEJS5w==
+X-Received: by 2002:a19:cb8e:: with SMTP id b136mr879070lfg.67.1585040643559;
+        Tue, 24 Mar 2020 02:04:03 -0700 (PDT)
+Received: from osv.localdomain ([89.175.180.246])
+        by smtp.gmail.com with ESMTPSA id 24sm6223137ljv.105.2020.03.24.02.04.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Mar 2020 02:04:02 -0700 (PDT)
+From:   Sergey Organov <sorganov@gmail.com>
+To:     linux-serial@vger.kernel.org
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>
+Subject: Serial console and interrupts latency.
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
+Date:   Tue, 24 Mar 2020 12:04:01 +0300
+Message-ID: <87lfnq15vi.fsf@osv.gnss.ru>
 MIME-Version: 1.0
-References: <20200306090720.9365-1-geert+renesas@glider.be>
- <20200312200523.GA17854@bogus> <CAMuHMdWoRSE7VQ5o575Ocjfh+y1yH-ciFE1BUqqPVO9oukwgNw@mail.gmail.com>
- <CAL_JsqL5CmL6M_njeHHYA21zs2jTQxENet+q=BJNVuz8K7Jubw@mail.gmail.com>
-In-Reply-To: <CAL_JsqL5CmL6M_njeHHYA21zs2jTQxENet+q=BJNVuz8K7Jubw@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 24 Mar 2020 09:10:48 +0100
-Message-ID: <CAMuHMdWTf0ZkbQm-jgiNNTYhxnKfAbomK7mcvDhcMNfCbq8pEg@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: serial: sh-sci: Convert to json-schema
-To:     Rob Herring <robh@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        Chris Brandt <chris.brandt@renesas.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux-sh list <linux-sh@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Rob,
+Hello,
 
-On Mon, Mar 23, 2020 at 5:42 PM Rob Herring <robh@kernel.org> wrote:
-> On Mon, Mar 23, 2020 at 8:38 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > On Thu, Mar 12, 2020 at 9:05 PM Rob Herring <robh@kernel.org> wrote:
-> > > On Fri, Mar 06, 2020 at 10:07:20AM +0100, Geert Uytterhoeven wrote:
-> > > > Convert the Renesas Serial Communication Interface ((H)SCI(F)(A|B))
-> > > > Device Tree binding documentation to json-schema.
-> > > >
-> > > > Split the bindings in 5 files, one per major type, to ease expressing
-> > > > constraints.
-> > > >
-> > > > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+[Extended CC list to try to get some attention]
 
-> > > > +  interrupts:
-> > > > +    description: |
-> > > > +      Must contain one or more interrupt-specifiers for the serial interface.
-> > > > +      If a single interrupt is expressed, then all events are
-> > > > +      multiplexed into this single interrupt.
-> > > > +
-> > > > +      If multiple interrupts are provided by the hardware, the order
-> > > > +      in which the interrupts are listed must match order below. Note
-> > > > +      that some HW interrupt events may be muxed together resulting
-> > > > +      in duplicate entries.
-> > > > +    minItems: 1
-> > > > +    maxItems: 6
-> > >
-> > > This allows 2, 3, 4, or 5 interrupts. Is that valid? If not, then you
-> >
-> > 1, 4, and 6 are valid.
-> >
-> > > should do something like this:
-> > >
-> > > oneOf:
-> > >   - items:
-> > >       description: A combined interrupt
-> > >   - items:
-> > >       - description: Error interrupt
-> > >       - ...
-> >
-> > So I tried:
-> >
-> >   interrupts:
-> >     oneOf:
-> >       - items:
-> >           description: A combined interrupt
->
-> You're missing a '-' here.
+I was investigating random serial overruns on my embedded board and
+figured it strongly correlates with serial output (to another serial
+port) from kernel printk() calls, that forced me to dig into the kernel
+sources, and now I'm very confused.
 
-Thanks, that did the trick!
+I'm reading drivers/tty/serial/8250/8250_port.c, and
+serial8250_console_write() function in particular (being on tty-next
+branch).
 
-(Your example above also didn't have the '-', so I though it was special
- syntax for a single-entry ;-)
+What I see is that it locks interrupts
 
-> >   interrupt-names:
-> >     oneOf:
-> >       - items:
-> >           - const: eri
-> >           - const: rxi
-> >           - const: txi
-> >           - const: tei
-> >       - items:
-> >           - const: eri
-> >           - const: rxi
-> >           - const: txi
-> >           - const: bri
-> >           - const: dri
-> >           - const: tei
-> >
-> > ?
-> > Seems to work, but needs the duplication as the 4-interrupt case is not
-> > just the 4 first entries of the 6-interrupt case (tei is always last).
->
-> Yes, that looks right. No name for the single irq case?
+3141:		spin_lock_irqsave(&port->lock, flags);
 
-No, initially there were no interrupt-names at all, so interrupt-names is
-optional.  The single muxed interrupt variant was the first variant to be
-DTified.
+and then calls wait_for_xmitr() both indirectly here:
 
-Gr{oetje,eeting}s,
+3159:	uart_console_write(port, s, count, serial8250_console_putchar);
 
-                        Geert
+and then directly as well:
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+3165:	wait_for_xmitr(up, BOTH_EMPTY);
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+before re-enabling interrupts at:
+
+3179:		spin_unlock_irqrestore(&port->lock, flags);
+
+Now, wait_for_xmitr(), even according to comments, could busy-wait for
+up to 10+1000 milliseconds, and in this case this huge delay will happen
+at interrupts disabled?
+
+Does it mean any serial console output out of printk() could cause 10
+milliseconds or even 1 second interrupts latency? Somehow I can't
+believe it.
+
+What do I miss?
+
+Thanks,
+-- Sergey
