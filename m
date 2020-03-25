@@ -2,230 +2,180 @@ Return-Path: <SRS0=EpC2=5K=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A859C54FCF
-	for <linux-serial@archiver.kernel.org>; Wed, 25 Mar 2020 15:48:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54236C1975A
+	for <linux-serial@archiver.kernel.org>; Wed, 25 Mar 2020 17:11:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7672C20719
-	for <linux-serial@archiver.kernel.org>; Wed, 25 Mar 2020 15:48:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 300F720772
+	for <linux-serial@archiver.kernel.org>; Wed, 25 Mar 2020 17:11:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727940AbgCYPsb (ORCPT
+        id S1727452AbgCYRLY (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 25 Mar 2020 11:48:31 -0400
-Received: from mga02.intel.com ([134.134.136.20]:36044 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727691AbgCYPsb (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 25 Mar 2020 11:48:31 -0400
-IronPort-SDR: 3+mCrX2RofW7pXWauYpf+rxUIRd+DLlCOrC4RXhFhnVoqtcYabkDzTM33pJQaR+4oUAl9rjkSR
- WS1hdCp+sUdw==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2020 08:48:30 -0700
-IronPort-SDR: 156ReHbf2pIbYqPKhWjco+mS3rNUNlmzqUvBDaFA2qYpqm3vq1QYzn4aQGFuyF2gDlOdki9UO4
- 0moSmq/rM+wA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,304,1580803200"; 
-   d="scan'208";a="250445009"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 25 Mar 2020 08:48:28 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1jH8GZ-0002zU-S0; Wed, 25 Mar 2020 23:48:27 +0800
-Date:   Wed, 25 Mar 2020 23:47:41 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-next] BUILD SUCCESS
- a0c4adeeea84889890bb4c7a28dc58b7c764e4ad
-Message-ID: <5e7b7d1d.MbJLt2XbP4zLUKjx%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Wed, 25 Mar 2020 13:11:24 -0400
+Received: from mail.baikalelectronics.com ([87.245.175.226]:47610 "EHLO
+        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727236AbgCYRLY (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 25 Mar 2020 13:11:24 -0400
+Received: from localhost (unknown [127.0.0.1])
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id 0127F80307C2;
+        Wed, 25 Mar 2020 17:11:21 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at baikalelectronics.ru
+Received: from mail.baikalelectronics.ru ([127.0.0.1])
+        by localhost (mail.baikalelectronics.ru [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Vflws-kvy9oy; Wed, 25 Mar 2020 20:11:20 +0300 (MSK)
+Date:   Wed, 25 Mar 2020 20:11:09 +0300
+From:   Sergey Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+CC:     Maxime Ripard <maxime@cerno.tech>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Maxim Kaurkin <Maxim.Kaurkin@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Ramil Zaripov <Ramil.Zaripov@baikalelectronics.ru>,
+        Ekaterina Skachko <Ekaterina.Skachko@baikalelectronics.ru>,
+        Vadim Vlasov <V.Vlasov@baikalelectronics.ru>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Paul Burton <paulburton@kernel.org>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Chen-Yu Tsai <wens@csie.org>, Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Wei Xu <xuwei5@hisilicon.com>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Jisheng Zhang <Jisheng.Zhang@synaptics.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, <linux-clk@vger.kernel.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] serial: 8250_dw: Fix common clocks usage race
+ condition
+Message-ID: <20200325171109.cohnsw3s57ckaqud@ubsrv2.baikal.int>
+References: <20200306130231.05BBC8030795@mail.baikalelectronics.ru>
+ <20200323024611.16039-1-Sergey.Semin@baikalelectronics.ru>
+ <20200323100109.k2gckdyneyzo23fb@gilmour.lan>
+ <20200323135017.4vi5nwam2rlpepgn@ubsrv2.baikal.int>
+ <20200324101243.GG1922688@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20200324101243.GG1922688@smile.fi.intel.com>
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-next
-branch HEAD: a0c4adeeea84889890bb4c7a28dc58b7c764e4ad  ARM: dts: tango4: Make /serial compatible with ns16550a
+On Tue, Mar 24, 2020 at 12:12:43PM +0200, Andy Shevchenko wrote:
+> On Mon, Mar 23, 2020 at 04:50:17PM +0300, Sergey Semin wrote:
+> > On Mon, Mar 23, 2020 at 11:01:09AM +0100, Maxime Ripard wrote:
+> > > On Mon, Mar 23, 2020 at 05:46:09AM +0300, Sergey.Semin@baikalelectronics.ru wrote:
+> > > > From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > > >
+> > > > There are races possible in the dw8250_set_termios() callback method
+> > > > and while the device is in PM suspend state. A race condition may
+> > > > happen if the baudrate clock source device is shared with some other
+> > > > device (in our machine it's another DW UART port). In this case if that
+> > > > device changes the clock rate while serial console is using it the
+> > > > DW 8250 UART port might not only end up with an invalid uartclk value
+> > > > saved, but may also experience a distorted output data since baud-clock
+> > > > could have been changed. In order to fix this lets enable an exclusive
+> > > > reference clock rate access in case if "baudclk" device is specified.
+> > > >
+> > > > So if some other device also acquires the rate exclusivity during the
+> > > > time of a DW UART 8250 port being opened, then DW UART 8250 driver
+> > > > won't be able to alter the baud-clock. It shall just use the available
+> > > > clock rate. Similarly another device also won't manage to change the
+> > > > rate at that time. If nothing else have the exclusive rate access
+> > > > acquired except DW UART 8250 driver, then the driver will be able to
+> > > > alter the rate as much as it needs to in accordance with the currently
+> > > > implemented logic.
+> 
+> > > clk_rate_exclusive_get is pretty intrusive, and due to the usual
+> > > topology of clock trees, this will lock down 3-4 parent clocks to
+> > > their current rate as well. In the Allwinner SoCs case for example,
+> > > this will lock down the same PLL than the one used by the CPU,
+> > > preventing cpufreq from running.
+> > 
+> > Speaking about weak design of a SoC' clock tree. Our problems are nothing
+> > with respect to the Allwinner SoC, in which case of changing the
+> > CPU-frequency may cause the UART glitches subsequently causing data
+> > transfer artefacts.) Moreover as I can see the same issue may raise for
+> > I2C, QSPI, PWM devices there.
+> > 
+> > Anyway your concern does make sense.
+> > 
+> > > However, the 8250 has a pretty wide range of dividers and can adapt to
+> > > any reasonable parent clock rate, so we don't really need to lock the
+> > > rate either, we can simply react to a parent clock rate change using
+> > > the clock notifiers, just like the SiFive UART is doing.
+> > > 
+> > > I tried to do that, but given that I don't really have an extensive
+> > > knowledge of the 8250, I couldn't find a way to stop the TX of chars
+> > > while we change the clock rate. I'm not sure if this is a big deal or
+> > > not, the SiFive UART doesn't seem to care.
+> > 
+> > Yes, your solution is also possible, but even in case of stopping Tx/Rx it
+> > doesn't lack drawbacks. First of all AFAIK there is no easy way to just
+> > pause the transfers. We'd have to first wait for the current transfers
+> > to be completed, then somehow lock the port usage (both Tx and Rx
+> > traffic), permit the reference clock rate change, accordingly adjust the
+> > UART clock divider, and finally unlock the port. While if we don't mind
+> > to occasionally have UART data glitches, we can just adjust the UART ref
+> > divider synchronously with ref clock rate change as you and SiFive UART
+> > driver suggest.
+> > 
+> > So we are now at a zugzwang - a fork to three not that good solutions:
+> > 1) lock the whole clock branch and provide a glitchless interfaces. But
+> > by doing so we may (in case of Allwinner SoCs we will) lockup some very
+> > important functionality like CPU-frequency change while the UART port is
+> > started up. In this case we won't have the data glitches.
+> > 2) just adjust the UART clock divider in case of reference clock rate
+> > change (use the SiFive UART driver approach). In this case we may have the
+> > data corruption.
+> > 3) somehow implement the algo: wait for the transfers to be completed,
+> > lock UART interface (it's possible for Tx, but for Rx in case of no handshake
+> > enabled it's simply impossible), permit the ref clock rate change,
+> > adjust the UART divider, then unlock the UART interface. In this case the data
+> > glitches still may happen (if no modem control is available or
+> > handshakes are disabled).
+> > 
+> > As for the cases of Baikal-T1 UARTs the first solutions is the most suitable.
+> > We don't lock anything valuable, since a base PLL output isn't directly
+> > connected to any device and it's rate once setup isn't changed during the
+> > system running. On the other hand I don't mind to implement the second
+> > solution, even though it's prone to data glitches. Regarding the solution
+> > 3) I won't even try. It's too complicated, I don't have time and
+> > test-infrastructure for this.
+> > 
+> > So Andy what do you think?
+> 
+> From Intel HW perspective the first two are okay, but since Maxime is against
+> first, you have the only option from your list. Perhaps somebody may give
+> option 4) here...
+> 
 
-elapsed time: 1697m
+Ok then. I'll implement the option 2) in v3 if noone gives any alternatives
+before that.
 
-configs tested: 163
-configs skipped: 0
+Regards,
+-Sergey
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-arm                              allmodconfig
-arm                               allnoconfig
-arm                              allyesconfig
-arm64                            allmodconfig
-arm64                             allnoconfig
-arm64                            allyesconfig
-arm                           efm32_defconfig
-arm                         at91_dt_defconfig
-arm                        shmobile_defconfig
-arm64                               defconfig
-arm                          exynos_defconfig
-arm                        multi_v5_defconfig
-arm                           sunxi_defconfig
-arm                        multi_v7_defconfig
-sparc                            allyesconfig
-h8300                     edosk2674_defconfig
-mips                      malta_kvm_defconfig
-mips                             allmodconfig
-xtensa                       common_defconfig
-sh                                allnoconfig
-i386                             allyesconfig
-ia64                             allmodconfig
-microblaze                    nommu_defconfig
-sh                            titan_defconfig
-nios2                         3c120_defconfig
-m68k                       m5475evb_defconfig
-nds32                               defconfig
-powerpc                             defconfig
-microblaze                      mmu_defconfig
-alpha                               defconfig
-xtensa                          iss_defconfig
-s390                       zfcpdump_defconfig
-m68k                          multi_defconfig
-c6x                              allyesconfig
-nds32                             allnoconfig
-i386                              allnoconfig
-i386                             alldefconfig
-i386                                defconfig
-ia64                                defconfig
-ia64                              allnoconfig
-ia64                             allyesconfig
-ia64                             alldefconfig
-nios2                         10m50_defconfig
-c6x                        evmc6678_defconfig
-openrisc                 simple_smp_defconfig
-openrisc                    or1ksim_defconfig
-csky                                defconfig
-h8300                    h8300h-sim_defconfig
-h8300                       h8s-sim_defconfig
-m68k                             allmodconfig
-m68k                           sun3_defconfig
-arc                                 defconfig
-arc                              allyesconfig
-powerpc                       ppc64_defconfig
-powerpc                          rhel-kconfig
-powerpc                           allnoconfig
-mips                      fuloong2e_defconfig
-mips                             allyesconfig
-mips                         64r6el_defconfig
-mips                              allnoconfig
-mips                           32r2_defconfig
-parisc                            allnoconfig
-parisc                           allyesconfig
-parisc                generic-32bit_defconfig
-parisc                generic-64bit_defconfig
-x86_64               randconfig-a001-20200325
-x86_64               randconfig-a002-20200325
-x86_64               randconfig-a003-20200325
-i386                 randconfig-a001-20200325
-i386                 randconfig-a002-20200325
-i386                 randconfig-a003-20200325
-mips                 randconfig-a001-20200325
-nds32                randconfig-a001-20200325
-m68k                 randconfig-a001-20200325
-parisc               randconfig-a001-20200325
-alpha                randconfig-a001-20200325
-riscv                randconfig-a001-20200325
-h8300                randconfig-a001-20200324
-microblaze           randconfig-a001-20200324
-nios2                randconfig-a001-20200324
-c6x                  randconfig-a001-20200324
-sparc64              randconfig-a001-20200324
-c6x                  randconfig-a001-20200325
-h8300                randconfig-a001-20200325
-microblaze           randconfig-a001-20200325
-nios2                randconfig-a001-20200325
-sparc64              randconfig-a001-20200325
-csky                 randconfig-a001-20200325
-openrisc             randconfig-a001-20200325
-s390                 randconfig-a001-20200325
-sh                   randconfig-a001-20200325
-xtensa               randconfig-a001-20200325
-x86_64               randconfig-c001-20200325
-x86_64               randconfig-c002-20200325
-x86_64               randconfig-c003-20200325
-i386                 randconfig-c001-20200325
-i386                 randconfig-c002-20200325
-i386                 randconfig-c003-20200325
-x86_64               randconfig-d001-20200325
-x86_64               randconfig-d002-20200325
-x86_64               randconfig-d003-20200325
-i386                 randconfig-d001-20200325
-i386                 randconfig-d002-20200325
-i386                 randconfig-d003-20200325
-x86_64               randconfig-e001-20200325
-x86_64               randconfig-e002-20200325
-x86_64               randconfig-e003-20200325
-i386                 randconfig-e001-20200325
-i386                 randconfig-e002-20200325
-i386                 randconfig-e003-20200325
-x86_64               randconfig-f001-20200325
-x86_64               randconfig-f002-20200325
-x86_64               randconfig-f003-20200325
-i386                 randconfig-f001-20200325
-i386                 randconfig-f002-20200325
-i386                 randconfig-f003-20200325
-x86_64               randconfig-g001-20200325
-x86_64               randconfig-g002-20200325
-x86_64               randconfig-g003-20200325
-i386                 randconfig-g001-20200325
-i386                 randconfig-g002-20200325
-i386                 randconfig-g003-20200325
-x86_64               randconfig-h001-20200325
-x86_64               randconfig-h002-20200325
-x86_64               randconfig-h003-20200325
-i386                 randconfig-h001-20200325
-i386                 randconfig-h002-20200325
-i386                 randconfig-h003-20200325
-arm                  randconfig-a001-20200325
-arm64                randconfig-a001-20200325
-ia64                 randconfig-a001-20200325
-sparc                randconfig-a001-20200325
-arc                  randconfig-a001-20200325
-powerpc              randconfig-a001-20200325
-riscv                            allmodconfig
-riscv                             allnoconfig
-riscv                            allyesconfig
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-s390                             alldefconfig
-s390                             allmodconfig
-s390                              allnoconfig
-s390                             allyesconfig
-s390                          debug_defconfig
-s390                                defconfig
-sh                               allmodconfig
-sh                          rsk7269_defconfig
-sh                  sh7785lcr_32bit_defconfig
-sparc                               defconfig
-sparc64                          allmodconfig
-sparc64                           allnoconfig
-sparc64                          allyesconfig
-sparc64                             defconfig
-um                           x86_64_defconfig
-um                             i386_defconfig
-um                                  defconfig
-x86_64                                   rhel
-x86_64                               rhel-7.6
-x86_64                         rhel-7.2-clear
-x86_64                                    lkp
-x86_64                              fedora-25
-x86_64                                  kexec
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
