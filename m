@@ -2,126 +2,114 @@ Return-Path: <SRS0=EpC2=5K=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44A39C1975A
-	for <linux-serial@archiver.kernel.org>; Wed, 25 Mar 2020 07:40:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCA80C18E5B
+	for <linux-serial@archiver.kernel.org>; Wed, 25 Mar 2020 08:14:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0756E2051A
-	for <linux-serial@archiver.kernel.org>; Wed, 25 Mar 2020 07:40:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AE8E620663
+	for <linux-serial@archiver.kernel.org>; Wed, 25 Mar 2020 08:14:37 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="h8lwRTfX"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PWq3ZSNU"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726098AbgCYHkt (ORCPT
+        id S1726116AbgCYIOh (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 25 Mar 2020 03:40:49 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:51518 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725832AbgCYHkt (ORCPT
+        Wed, 25 Mar 2020 04:14:37 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:45821 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725903AbgCYIOh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 25 Mar 2020 03:40:49 -0400
-Received: by mail-wm1-f65.google.com with SMTP id c187so1215962wme.1;
-        Wed, 25 Mar 2020 00:40:48 -0700 (PDT)
+        Wed, 25 Mar 2020 04:14:37 -0400
+Received: by mail-pg1-f195.google.com with SMTP id o26so783583pgc.12;
+        Wed, 25 Mar 2020 01:14:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZcQgCOpSSyjnd65LhvyIe5bWwwVaaCzAPGBmKNF1bDQ=;
-        b=h8lwRTfXzV2oqe7qHp2URobi2R5ylKe2mWfL1uqQcm2g2Y10hh4e6X5chXMfdZlZwQ
-         SlSjlH2u13D2u/pJ5nHMKHmyg4OPYlu16Yw/TxrI9gBsIxdZCpm2GWAROMxV3voJ04Fy
-         qpCAjD5SCy1k1l47T+L3LGUK1p8lrVnqXXNIylAUF8ow1hmO8u8c1w4Gid+T1IuPeye+
-         20x8tQxzHXf2EkdErfX+nmmFfYA4whvFhHaez/I3/ihfoyaCC74IIxmtPdPN7xx2SPA0
-         AmQ6j4PPyVLbYBb/9luQzbtkYzQmtD8eDzu8S3adBue7XlQzsUkAzwQtEvxbjLAWIZ25
-         r46w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nHriMRRnBlnzmaQlY1pxbBcl5uot0p0Yl6mHzSeiY0w=;
+        b=PWq3ZSNUpvOaBMwo5MFqymaxHPGaAAVl+lDwGQhstHsVI8xm23z+XLs3izHJplQ6Ig
+         NjqQmiuzvvdp8iei98+wdxzNvu7YB4rTWnDGx12d+IUbbsWIs+YE6K+FCDSS5vUNMsK5
+         yqPKY9f98DvyXxEkWT9zg6ESd7NSGTptCxS2A+gcd2vRcBKav25VLx8uRd4dcAiiaCfh
+         5C2NfRodHPNxubNEcMhEIHxcBshk0Nj8Ivp+zOCmN164nW5tfzUclABzXTvLQvzOp7P+
+         xE8wndofldx/VmkoNDa7QL2Bzk9Rr7PQ0v9MRxAnJUXQD+5mAZMpnBXSu/A/wdt3c9vg
+         T9Ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZcQgCOpSSyjnd65LhvyIe5bWwwVaaCzAPGBmKNF1bDQ=;
-        b=AJXUojDXZTpQHWxzIArJ5UgdWvE+rU0zVL0BHEX+HoPJqCMnp8gqBt0Gvb5sH4B41p
-         xsU9bNC6wR5RFIq/WUce/nl/LZkxnpm59YBx4tQsnYWs8xKwiApzwtCBzuqsIwAOciF3
-         IfK0NPw4hA4h9v7Ka/CNs7TeLHwguy+hI4TadOgSPxkoLXtMYuk+9dkqj0qkYSaZKCAH
-         nOW93cU8lsLB1C+ALKF9mDhmKH6H+5UrXdSV2yzd1xvuSM5ssf3CPguD3lAcb9jYDpMP
-         DJfjxeQbuyMekmMJA9oXc8mtt8ctCDMOPjh1B3R4ol9ZnPvjX1LAHgS1piH8ebBnI2Vc
-         jfbQ==
-X-Gm-Message-State: ANhLgQ2Wvczj/+HVwcNSJdHcHGKKhEQ2WYy88ib4HzXsmRvHxnPhwx2s
-        dpxrnn737QZ8oamyqBJh1zqxjnlMEvqNc1FzlN0=
-X-Google-Smtp-Source: ADFU+vsNqnvE2a0viE+fnvE1KflPLYIGSA3wX2vTPxdCyoAJSZ7SdTXUQpK0j03qSW75lJcYBWCkKqx552CE4NWkxw8=
-X-Received: by 2002:a7b:cd02:: with SMTP id f2mr1999535wmj.97.1585122047718;
- Wed, 25 Mar 2020 00:40:47 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200324064949.23697-1-zhang.lyra@gmail.com> <20200324112115.GA10018@lakrids.cambridge.arm.com>
- <CAAfSe-u7SjWr7VK37OFrFDfm1o-6VwEoUMLctP61us+iQ1emTw@mail.gmail.com> <20200325070127.GA2960703@kroah.com>
-In-Reply-To: <20200325070127.GA2960703@kroah.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nHriMRRnBlnzmaQlY1pxbBcl5uot0p0Yl6mHzSeiY0w=;
+        b=UqpyatctPCi5Nzqgoj7LFgYfaDxllO0v3pgJwOeLv24C7L6UJxinPpOFayJ8k8gIC3
+         WhVnsdtt6p73yuHMpJzazWzuZRlKbtjD8VTiwrtbE+/w+TI0NPAeNLtm/K+X2wEP0bii
+         G73CQareVImAfXYGvzr7woFjBQIRwY6z4FyEJGc06xFmnmeYtV0ZqV/gXTBkQpboTqtC
+         DeD+WwC8pSFevhSWKrVYlq2SxxfvPTPlvMPaXZON7GQzPr5v8jI0pf5HxfiFVf7vNkYB
+         +ZU4QDU8UupbnjTo3JtJkNB81C2VteLZJTWiZ8nAPi3tnaAFn1BGTS/QfbzwyglG/0sx
+         /+Lw==
+X-Gm-Message-State: ANhLgQ2T4RFMs1H+dBbCmeY9qY0NZZGBVoDzd+IbiP3VdBLZD/XqKubq
+        uKhZ/e+NrlmjijTjCRYhh2Y=
+X-Google-Smtp-Source: ADFU+vsWjVwmho5mKXPOUHGggde/eZaV7TnENdUUVoDY3fxC/MWXMcRKVAxNhD0gw4fxe4DTGQVDAA==
+X-Received: by 2002:aa7:8685:: with SMTP id d5mr2221555pfo.3.1585124074438;
+        Wed, 25 Mar 2020 01:14:34 -0700 (PDT)
+Received: from ubt.spreadtrum.com ([117.18.48.82])
+        by smtp.gmail.com with ESMTPSA id 5sm17893766pfw.98.2020.03.25.01.14.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Mar 2020 01:14:33 -0700 (PDT)
 From:   Chunyan Zhang <zhang.lyra@gmail.com>
-Date:   Wed, 25 Mar 2020 15:40:11 +0800
-Message-ID: <CAAfSe-u8B387i5w0eFatGvJFE2c4TqjsAA=9mYvqiknQhBsUuQ@mail.gmail.com>
-Subject: Re: [PATCH] tty: serial: make SERIAL_SPRD depends on ARM or ARM64
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>, Jiri Slaby <jslaby@suse.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Orson Zhai <orsonzhai@gmail.com>,
         Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
         Chunyan Zhang <chunyan.zhang@unisoc.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: [PATCH v2] tty: serial: make SERIAL_SPRD depend on COMMON_CLK
+Date:   Wed, 25 Mar 2020 16:14:27 +0800
+Message-Id: <20200325081427.20312-1-zhang.lyra@gmail.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 25 Mar 2020 at 15:02, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Wed, Mar 25, 2020 at 09:37:00AM +0800, Chunyan Zhang wrote:
-> > Hi Mark, Greg,
-> >
-> > Pleas see my answer below.
-> >
-> > On Tue, 24 Mar 2020 at 19:21, Mark Rutland <mark.rutland@arm.com> wrote:
-> > >
-> > > On Tue, Mar 24, 2020 at 02:49:49PM +0800, Chunyan Zhang wrote:
-> > > > From: Chunyan Zhang <chunyan.zhang@unisoc.com>
-> > > >
-> > > > kbuild-test reported an error:
-> > > >
-> > > >   config: mips-randconfig-a001-20200321 ...
-> > > >   >> drivers/tty/serial/sprd_serial.c:1175: undefined reference
-> > > >   to `clk_set_parent'
-> > > >
-> > > > Because some mips Kconfig-s select CONFIG_HAVE_CLK but not CONFIG_COMMON_CLK,
-> > > > so it's probably that clk_set_parent is missed for those configs.
-> > > >
-> > > > To fix this error, this patch adds dependence on ARM || ARM64
-> > > > for SERIAL_SPRD.
-> > >
-> > > From the above, isn't the real dependency COMMON_CLOCK?
-> >
-> > Some arch can implement its own clock APIs, for example AR7 [1].
->
-> That's fine, then they can not select this option.
->
-> > The sprd serial driver is used on ARM and ARM64 platforms only for
-> > now, which uses clock functions provided by COMMON_CLK, but it has the
-> > possibility of being used on other architecture platforms, that was my
-> > thought.
-> >
-> > I should revise this commit message to:
-> > "
-> > Because some mips Kconfig-s select CONFIG_HAVE_CLK but not define
-> > clk_set_parent which is used by the sprd serial driver.
-> > ...
-> > "
-> >
-> > Does it make sense?
->
-> The arch is not the issue here, the clock framework is, so properly
-> depend on that, not an arbitrary CPU type.
+From: Chunyan Zhang <chunyan.zhang@unisoc.com>
 
-Ok, I will address it.
+kbuild-test reported an error:
 
-Thanks,
-Chunyan
+  config: mips-randconfig-a001-20200321 ...
+  >> drivers/tty/serial/sprd_serial.c:1175: undefined reference
+  to `clk_set_parent'
+
+Because some mips Kconfig selects HAVE_CLK but not COMMON_CLK and no
+clk_set_parent implemented, so the error was exposed. So adding
+dependence on COMMON_CLK can fix this issue.
+
+Fixes: 7ba87cfec71a ("tty: serial: make SERIAL_SPRD not depend on ARCH_SPRD")
+Reported-by: kbuild test robot <lkp@intel.com>
+Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
+---
+Changes from v1:
+* Change to depend on COMMON_CLK instead of ARM
+---
+ drivers/tty/serial/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index b43dce785a58..ff942ca95b66 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1444,6 +1444,7 @@ config SERIAL_MEN_Z135
+ config SERIAL_SPRD
+ 	tristate "Support for Spreadtrum serial"
+ 	select SERIAL_CORE
++	depends on COMMON_CLK
+ 	help
+ 	  This enables the driver for the Spreadtrum's serial.
+ 
+-- 
+2.20.1
+
