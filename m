@@ -1,232 +1,146 @@
-Return-Path: <SRS0=BK0i=5J=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=EpC2=5K=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA638C4332B
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Mar 2020 19:39:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 067CAC10DCE
+	for <linux-serial@archiver.kernel.org>; Wed, 25 Mar 2020 01:37:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8E02820714
-	for <linux-serial@archiver.kernel.org>; Tue, 24 Mar 2020 19:39:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C4DE22072E
+	for <linux-serial@archiver.kernel.org>; Wed, 25 Mar 2020 01:37:40 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HV7Lug93"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725877AbgCXTjQ (ORCPT
+        id S1727243AbgCYBhk (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 24 Mar 2020 15:39:16 -0400
-Received: from mga06.intel.com ([134.134.136.31]:52866 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725866AbgCXTjP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 24 Mar 2020 15:39:15 -0400
-IronPort-SDR: /jVgWf3HGJP+4eChOmGyIKE8QjUdyruJkEzy8DS2MvSjkDWDghxTplFgf2AuiKnEje7eKQex9t
- b2zJs6Cqinnw==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2020 12:39:15 -0700
-IronPort-SDR: o8JtBYkGlkn3KKNorHwVBdBQ2dBqP5bhEauKowUug/0CZmNYZujH4WGSuSSECDA7d0LpKX3EbJ
- +V8PNRx6GSow==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,301,1580803200"; 
-   d="scan'208";a="393395245"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 24 Mar 2020 12:39:13 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1jGpOL-000Ifo-5b; Wed, 25 Mar 2020 03:39:13 +0800
-Date:   Wed, 25 Mar 2020 03:38:24 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 313a7425f23320844169046d83d8996c98fd8b1d
-Message-ID: <5e7a61b0.WwaJYiBSjuV/IkeH%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 24 Mar 2020 21:37:40 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:35977 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727234AbgCYBhk (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 24 Mar 2020 21:37:40 -0400
+Received: by mail-wr1-f65.google.com with SMTP id 31so1014151wrs.3;
+        Tue, 24 Mar 2020 18:37:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=a9qWI6hMo401elWvdD41jj0JPGvsjes6z66C6PUVL+0=;
+        b=HV7Lug93LSMJB9brLeuKVPDy7YfrjtxPnsPyDJbJU+0MF9Zv/YanIDRGEJMNNsff6i
+         DuXp6sQlwrzakVY/2AGqO/fVO60ugEJK//y70qtVMnCVKodERWr+Pv2v1NuyRWHZty0l
+         6hfUyKqhmLZ5apBpMaxnHJigh7HWkKiYnIzplOxhC2WkkH+fXhz5U05r6sDqUdft2ZSb
+         jbaV1oOugFseJyil674hvq8h32+pXGRswqiAxul2umNKeTm0j6J8ICUP/A91XTO40Vz7
+         XJ1Dscn3pTkid0yat4aj3irgL2bgB/aAl8qoN0UR8eSwQOPSoCujvv74+KBB4tweLtVT
+         kjlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=a9qWI6hMo401elWvdD41jj0JPGvsjes6z66C6PUVL+0=;
+        b=Fa2CSWRNEwbrOF9RC6OifMGg/17aV0KZB6H8JDreSqAHzcu5tpXE+whvW5BnRbr1Sc
+         LOkAYK9U5itLf8l9HQmpLWiZCmzci2kow/SeKtk2/ZFbDduEasA7YI4SjdQr+eCYXpZQ
+         gFXokfvexM3G4F2g1gYmmQDJ/VQbz4IVi+S27ixhpEzjgOSNzAMuWar6MhDlA0JFNYDu
+         93mPyjwHa1a+EONUvkE49ylpJgun5PkQSGyCmecI/W266cRuGujDheS7VRICmCHzsVRd
+         I55xNcb5vuktLLyjbjMz+OIrAngq7hsbFYJQRtOBUVbSUhfkXzGitPB9w8uMAZVMv0N0
+         N0jA==
+X-Gm-Message-State: ANhLgQ2aRrMs8u32Tyqoz7ClpoEASMTBjZsuFIDx3FVd+rvuoI8+/0Da
+        aYSyK3XIbHgbkrZcBViReMmP3j2tTSQurpv/tTw=
+X-Google-Smtp-Source: ADFU+vsYEZcEDp8W81eFeo4cINGnisZQvoBT4h0/Ri9E1wbFb8bEQO8TQTtPBXc7r9nrxTimWU1T/sudDfU1VjyLzag=
+X-Received: by 2002:adf:efc2:: with SMTP id i2mr576666wrp.420.1585100256835;
+ Tue, 24 Mar 2020 18:37:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <20200324064949.23697-1-zhang.lyra@gmail.com> <20200324112115.GA10018@lakrids.cambridge.arm.com>
+In-Reply-To: <20200324112115.GA10018@lakrids.cambridge.arm.com>
+From:   Chunyan Zhang <zhang.lyra@gmail.com>
+Date:   Wed, 25 Mar 2020 09:37:00 +0800
+Message-ID: <CAAfSe-u7SjWr7VK37OFrFDfm1o-6VwEoUMLctP61us+iQ1emTw@mail.gmail.com>
+Subject: Re: [PATCH] tty: serial: make SERIAL_SPRD depends on ARM or ARM64
+To:     Mark Rutland <mark.rutland@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jslaby@suse.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <chunyan.zhang@unisoc.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
-branch HEAD: 313a7425f23320844169046d83d8996c98fd8b1d  vt: fix use after free in function "vc_do_resize"
+Hi Mark, Greg,
 
-elapsed time: 484m
+Pleas see my answer below.
 
-configs tested: 164
-configs skipped: 0
+On Tue, 24 Mar 2020 at 19:21, Mark Rutland <mark.rutland@arm.com> wrote:
+>
+> On Tue, Mar 24, 2020 at 02:49:49PM +0800, Chunyan Zhang wrote:
+> > From: Chunyan Zhang <chunyan.zhang@unisoc.com>
+> >
+> > kbuild-test reported an error:
+> >
+> >   config: mips-randconfig-a001-20200321 ...
+> >   >> drivers/tty/serial/sprd_serial.c:1175: undefined reference
+> >   to `clk_set_parent'
+> >
+> > Because some mips Kconfig-s select CONFIG_HAVE_CLK but not CONFIG_COMMON_CLK,
+> > so it's probably that clk_set_parent is missed for those configs.
+> >
+> > To fix this error, this patch adds dependence on ARM || ARM64
+> > for SERIAL_SPRD.
+>
+> From the above, isn't the real dependency COMMON_CLOCK?
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Some arch can implement its own clock APIs, for example AR7 [1].
 
-arm                              allmodconfig
-arm                               allnoconfig
-arm                              allyesconfig
-arm64                            allmodconfig
-arm64                             allnoconfig
-arm64                            allyesconfig
-arm                         at91_dt_defconfig
-arm                           efm32_defconfig
-arm                          exynos_defconfig
-arm                        multi_v5_defconfig
-arm                        multi_v7_defconfig
-arm                        shmobile_defconfig
-arm                           sunxi_defconfig
-arm64                               defconfig
-sparc                            allyesconfig
-ia64                                defconfig
-powerpc                             defconfig
-um                           x86_64_defconfig
-microblaze                      mmu_defconfig
-sh                                allnoconfig
-riscv                            allmodconfig
-riscv                             allnoconfig
-i386                             allyesconfig
-i386                             alldefconfig
-i386                                defconfig
-i386                              allnoconfig
-ia64                             alldefconfig
-ia64                             allmodconfig
-ia64                              allnoconfig
-ia64                             allyesconfig
-c6x                              allyesconfig
-c6x                        evmc6678_defconfig
-nios2                         10m50_defconfig
-nios2                         3c120_defconfig
-openrisc                    or1ksim_defconfig
-openrisc                 simple_smp_defconfig
-xtensa                       common_defconfig
-xtensa                          iss_defconfig
-alpha                               defconfig
-csky                                defconfig
-nds32                             allnoconfig
-nds32                               defconfig
-h8300                     edosk2674_defconfig
-h8300                    h8300h-sim_defconfig
-h8300                       h8s-sim_defconfig
-m68k                             allmodconfig
-m68k                       m5475evb_defconfig
-m68k                          multi_defconfig
-m68k                           sun3_defconfig
-arc                                 defconfig
-arc                              allyesconfig
-powerpc                       ppc64_defconfig
-powerpc                          rhel-kconfig
-microblaze                    nommu_defconfig
-powerpc                           allnoconfig
-mips                           32r2_defconfig
-mips                         64r6el_defconfig
-mips                             allmodconfig
-mips                              allnoconfig
-mips                             allyesconfig
-mips                      fuloong2e_defconfig
-mips                      malta_kvm_defconfig
-parisc                            allnoconfig
-parisc                           allyesconfig
-parisc                generic-32bit_defconfig
-parisc                generic-64bit_defconfig
-i386                 randconfig-a002-20200324
-x86_64               randconfig-a002-20200324
-i386                 randconfig-a001-20200324
-x86_64               randconfig-a001-20200324
-i386                 randconfig-a003-20200324
-x86_64               randconfig-a003-20200324
-mips                 randconfig-a001-20200324
-nds32                randconfig-a001-20200324
-m68k                 randconfig-a001-20200324
-parisc               randconfig-a001-20200324
-alpha                randconfig-a001-20200324
-riscv                randconfig-a001-20200324
-c6x                  randconfig-a001-20200324
-h8300                randconfig-a001-20200324
-microblaze           randconfig-a001-20200324
-nios2                randconfig-a001-20200324
-sparc64              randconfig-a001-20200324
-csky                 randconfig-a001-20200324
-openrisc             randconfig-a001-20200324
-s390                 randconfig-a001-20200324
-xtensa               randconfig-a001-20200324
-sh                   randconfig-a001-20200324
-x86_64               randconfig-b001-20200324
-x86_64               randconfig-b002-20200324
-x86_64               randconfig-b003-20200324
-i386                 randconfig-b001-20200324
-i386                 randconfig-b002-20200324
-i386                 randconfig-b003-20200324
-x86_64               randconfig-c001-20200324
-x86_64               randconfig-c002-20200324
-x86_64               randconfig-c003-20200324
-i386                 randconfig-c001-20200324
-i386                 randconfig-c002-20200324
-i386                 randconfig-c003-20200324
-x86_64               randconfig-d001-20200324
-x86_64               randconfig-d002-20200324
-x86_64               randconfig-d003-20200324
-i386                 randconfig-d001-20200324
-i386                 randconfig-d002-20200324
-i386                 randconfig-d003-20200324
-x86_64               randconfig-e001-20200324
-x86_64               randconfig-e002-20200324
-x86_64               randconfig-e003-20200324
-i386                 randconfig-e001-20200324
-i386                 randconfig-e002-20200324
-i386                 randconfig-e003-20200324
-x86_64               randconfig-f001-20200324
-x86_64               randconfig-f002-20200324
-x86_64               randconfig-f003-20200324
-i386                 randconfig-f001-20200324
-i386                 randconfig-f002-20200324
-i386                 randconfig-f003-20200324
-x86_64               randconfig-g001-20200324
-x86_64               randconfig-g002-20200324
-x86_64               randconfig-g003-20200324
-i386                 randconfig-g001-20200324
-i386                 randconfig-g002-20200324
-i386                 randconfig-g003-20200324
-x86_64               randconfig-h001-20200324
-x86_64               randconfig-h002-20200324
-x86_64               randconfig-h003-20200324
-i386                 randconfig-h001-20200324
-i386                 randconfig-h002-20200324
-i386                 randconfig-h003-20200324
-arm                  randconfig-a001-20200324
-arm64                randconfig-a001-20200324
-ia64                 randconfig-a001-20200324
-arc                  randconfig-a001-20200324
-sparc                randconfig-a001-20200324
-powerpc              randconfig-a001-20200324
-riscv                            allyesconfig
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-s390                             alldefconfig
-s390                             allmodconfig
-s390                              allnoconfig
-s390                             allyesconfig
-s390                          debug_defconfig
-s390                                defconfig
-s390                       zfcpdump_defconfig
-sh                            titan_defconfig
-sh                               allmodconfig
-sh                          rsk7269_defconfig
-sh                  sh7785lcr_32bit_defconfig
-sparc                               defconfig
-sparc64                          allmodconfig
-sparc64                           allnoconfig
-sparc64                          allyesconfig
-sparc64                             defconfig
-um                             i386_defconfig
-um                                  defconfig
-x86_64                              fedora-25
-x86_64                                  kexec
-x86_64                                    lkp
-x86_64                                   rhel
-x86_64                         rhel-7.2-clear
-x86_64                               rhel-7.6
+The sprd serial driver is used on ARM and ARM64 platforms only for
+now, which uses clock functions provided by COMMON_CLK, but it has the
+possibility of being used on other architecture platforms, that was my
+thought.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+I should revise this commit message to:
+"
+Because some mips Kconfig-s select CONFIG_HAVE_CLK but not define
+clk_set_parent which is used by the sprd serial driver.
+...
+"
+
+Does it make sense?
+
+Thanks,
+Chunyan
+
+[1] https://elixir.bootlin.com/linux/v5.5.11/source/arch/mips/ar7/clock.c#L475
+
+>
+> Mark.
+>
+> >
+> > Fixes: 7ba87cfec71a ("tty: serial: make SERIAL_SPRD not depend on ARCH_SPRD")
+> > Reported-by: kbuild test robot <lkp@intel.com>
+> > Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
+> > ---
+> >  drivers/tty/serial/Kconfig | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> > index b43dce785a58..417f7e45a3f8 100644
+> > --- a/drivers/tty/serial/Kconfig
+> > +++ b/drivers/tty/serial/Kconfig
+> > @@ -1444,6 +1444,7 @@ config SERIAL_MEN_Z135
+> >  config SERIAL_SPRD
+> >       tristate "Support for Spreadtrum serial"
+> >       select SERIAL_CORE
+> > +     depends on ARM || ARM64 || COMPILE_TEST
+> >       help
+> >         This enables the driver for the Spreadtrum's serial.
+> >
+> > --
+> > 2.20.1
+> >
