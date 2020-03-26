@@ -2,95 +2,80 @@ Return-Path: <SRS0=p7su=5L=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55040C43331
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Mar 2020 14:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E144FC2D0E8
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Mar 2020 14:40:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1F31420775
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Mar 2020 14:32:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AFC4F20714
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Mar 2020 14:40:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1585233161;
-	bh=2unZXsfXGiiwQhWbjl1kP114RQvv7sM/ehc4It/7EfI=;
+	s=default; t=1585233652;
+	bh=MOnEnYddK+XScumwwsKscvn2cN/H7Hri0z/LQ4SmDUI=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=QyM/uG5jqzyMPW5kyz6w8sKI/capzfrkpPpKmVglLt2GirT+XwTLrmuMExGU1kJDs
-	 rwbdvI/s5BWz7lafxc/keVAtDgLYdc+n/y0vvbg/6MXJZ8VRhf74OCgI/9mXgxR8x3
-	 TB3G30TOd5HtR1s1XMTLU2StQ4DItmJI3hEDKSHM=
+	b=eaglEch5sG1f9oXTFlvTzrJcgrEDJdDzjZVI+Mv3sdWENvKrzo9jlpDzmUGzKWL4U
+	 PLZL6jq5FBMApLKZAnQejsGAB36HDhDW4AGOxlwVnyM7G8zpvf5invyaWx0NYcoGlI
+	 sdGBHQA3I7EYDYsqr29fdYMhgkRMdE5Bdrd1KTn0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728331AbgCZOck (ORCPT
+        id S1727750AbgCZOkv (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 Mar 2020 10:32:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42630 "EHLO mail.kernel.org"
+        Thu, 26 Mar 2020 10:40:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47682 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727944AbgCZOck (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 Mar 2020 10:32:40 -0400
+        id S1726340AbgCZOkv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 26 Mar 2020 10:40:51 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5ED042073E;
-        Thu, 26 Mar 2020 14:32:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 49825206F8;
+        Thu, 26 Mar 2020 14:40:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585233158;
-        bh=2unZXsfXGiiwQhWbjl1kP114RQvv7sM/ehc4It/7EfI=;
+        s=default; t=1585233649;
+        bh=MOnEnYddK+XScumwwsKscvn2cN/H7Hri0z/LQ4SmDUI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iP1jZIWDDtdVjpcWzS6bxigS02fS6kEKL1j+a4h8tVzbngrPYZixeAIuDwj8ScSyO
-         vqYVzznYonRgx5V5CeExlKr2pgebxEgQ0Cg3Fkvdq2llY7UbFAM+DeMTax9nJadNOS
-         0doJMQqMbOhkJ3OeZ6TNH1yj0BxSStkdr8vFjLP0=
-Date:   Thu, 26 Mar 2020 15:32:36 +0100
+        b=JUgcZ6kDDtjb2Be2dPK4bYTKnDcnuMWd6gfZSGTt07lRtvaC5Iu4RgtpudCdSfs25
+         kq8+0xQWgKfkDNlVZrp5JUIycvDMfbPm5TnvJKisZ2OBlFMjKCN5bmIooBeWegEG/y
+         Q4wbQSy4tzMor1PH5rmcOyzjK9sQ0qyqQpwbRc+c=
+Date:   Thu, 26 Mar 2020 15:40:47 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Leonard Crestez <leonard.crestez@nxp.com>
-Cc:     Michael Walle <michael@walle.cc>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jiri Slaby <jslaby@suse.com>, Andy Duan <fugang.duan@nxp.com>
-Subject: Re: [PATCH v2 1/2] tty: serial: fsl_lpuart: move dma_request_chan()
-Message-ID: <20200326143236.GA1372760@kroah.com>
-References: <20200325090658.25967-1-michael@walle.cc>
- <VI1PR04MB69417B19A6FFF0AA22585884EECE0@VI1PR04MB6941.eurprd04.prod.outlook.com>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Jiri Slaby <jslaby@suse.com>,
+        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
+        Heiko Schocher <hs@denx.de>,
+        Giulio Benetti <giulio.benetti@micronovasrl.com>,
+        Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>,
+        Stefan Wahren <wahrenst@gmx.net>,
+        Martin Sperl <kernel@martin.sperl.org>,
+        Heiko Stuebner <heiko@sntech.de>, linux-serial@vger.kernel.org
+Subject: Re: [PATCH tty-next 1/2] serial: 8250: Fix rs485 delay after console
+ write
+Message-ID: <20200326144047.GA1403361@kroah.com>
+References: <b420d9c3b1c8b0492db55cc6f62076bfd9968b2f.1585224378.git.lukas@wunner.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <VI1PR04MB69417B19A6FFF0AA22585884EECE0@VI1PR04MB6941.eurprd04.prod.outlook.com>
+In-Reply-To: <b420d9c3b1c8b0492db55cc6f62076bfd9968b2f.1585224378.git.lukas@wunner.de>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Mar 25, 2020 at 06:05:16PM +0000, Leonard Crestez wrote:
-> On 2020-03-25 11:07 AM, Michael Walle wrote:
-> > Move dma_request_chan() out of the atomic context. First this call
-> > should not be in the atomic context at all and second the
-> > dev_info_once() may cause a hang because because the console takes this
-> > spinlock, too.
-> > 
-> > Fixes: 159381df1442f ("tty: serial: fsl_lpuart: fix DMA operation when using IOMMU")
-> > Reported-by: Leonard Crestez <leonard.crestez@nxp.com>
-> > Signed-off-by: Michael Walle <michael@walle.cc>
-> > ---
-> > changes since v1:
-> >   - instead of just moving the dev_info_once() out of the spinlock protected
-> >     section, move the whole dma_request_chan(). Thanks Andy!
-> > 
-> > I've tested this on my board. Andy, Leonard, can you double check it? For
-> > all which are not aware, this deadlock happens only if you have the kernel
-> > console output on the lpuart, so if someone wants to test it, make sure you
-> > have something like console=ttyLP0,115200.
-> > 
-> >   drivers/tty/serial/fsl_lpuart.c | 36 +++++++++++++++++++++------------
-> >   1 file changed, 23 insertions(+), 13 deletions(-)
+On Thu, Mar 26, 2020 at 01:20:15PM +0100, Lukas Wunner wrote:
+> Due to a silly copy-paste mistake, commit 6194c38fc20d ("serial: 8250:
+> Support console on software emulated rs485 ports") erroneously pauses
+> for the duration of delay_rts_before_send after writing to the console,
+> instead of delay_rts_after_send.  Mea culpa.
 > 
-> Tested-by: Leonard Crestez <leonard.crestez@nxp.com>
-> 
-> Since the original commit only made it into next it might make sense to 
-> squash the commits in the tty tree.
-> 
-> This way future bisections won't get stuck on a boot failure.
+> Fixes: 6194c38fc20d ("serial: 8250: Support console on software emulated rs485 ports")
 
-My tree does not rebase, sorry.  And neither should any other public git
-tree without really really good reasons.
+Where did this commit id come from?
+
+Don't you mean 7f9803072ff6 ("serial: 8250: Support console on software
+emulated rs485 ports")?
+
+If so, can you please fix this up and resend the series?
 
 thanks,
 
