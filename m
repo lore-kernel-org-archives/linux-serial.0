@@ -2,91 +2,126 @@ Return-Path: <SRS0=p7su=5L=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70102C43331
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Mar 2020 12:21:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0953C2D0E5
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Mar 2020 14:28:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4AA4F2070A
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Mar 2020 12:21:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 774EE2082D
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Mar 2020 14:28:57 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="d0Gbhldy"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727979AbgCZMVb (ORCPT
+        id S1728326AbgCZO25 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 Mar 2020 08:21:31 -0400
-Received: from mailout3.hostsharing.net ([176.9.242.54]:48467 "EHLO
-        mailout3.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727560AbgCZMVa (ORCPT
+        Thu, 26 Mar 2020 10:28:57 -0400
+Received: from mail-vs1-f65.google.com ([209.85.217.65]:34946 "EHLO
+        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728200AbgCZO2z (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 Mar 2020 08:21:30 -0400
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
-        by mailout3.hostsharing.net (Postfix) with ESMTPS id 7195C100AF9A3;
-        Thu, 26 Mar 2020 13:21:28 +0100 (CET)
-Received: from localhost (unknown [87.130.102.138])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by h08.hostsharing.net (Postfix) with ESMTPSA id E40CA60EB710;
-        Thu, 26 Mar 2020 13:21:27 +0100 (CET)
-X-Mailbox-Line: From 96f915a678051faf9e14c9391a069339e6c62bd6 Mon Sep 17 00:00:00 2001
-Message-Id: <96f915a678051faf9e14c9391a069339e6c62bd6.1585224378.git.lukas@wunner.de>
-In-Reply-To: <b420d9c3b1c8b0492db55cc6f62076bfd9968b2f.1585224378.git.lukas@wunner.de>
-References: <b420d9c3b1c8b0492db55cc6f62076bfd9968b2f.1585224378.git.lukas@wunner.de>
-From:   Lukas Wunner <lukas@wunner.de>
-Date:   Thu, 26 Mar 2020 13:20:16 +0100
-Subject: [PATCH tty-next 2/2] serial: 8250: Optimize irq enable after console
- write
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>
-Cc:     "Matwey V. Kornilov" <matwey@sai.msu.ru>,
-        Heiko Schocher <hs@denx.de>,
-        Giulio Benetti <giulio.benetti@micronovasrl.com>,
-        Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>,
-        Stefan Wahren <wahrenst@gmx.net>,
-        Martin Sperl <kernel@martin.sperl.org>,
-        Heiko Stuebner <heiko@sntech.de>, linux-serial@vger.kernel.org
+        Thu, 26 Mar 2020 10:28:55 -0400
+Received: by mail-vs1-f65.google.com with SMTP id u11so3975586vsg.2
+        for <linux-serial@vger.kernel.org>; Thu, 26 Mar 2020 07:28:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=m96cR6V03dd7lbjAOl6gquDvXkdRzHGRSDXkk0VydMg=;
+        b=d0GbhldybAe0gmG8ZlfyrlQwNBKzrfy5JDwFDaOsHBBgGdMkw0TJb3XjhMtRqSbv7U
+         raadlG2wUvxjwaK8JQEXjXpEDrxdok4PtGhzk8vlvcx6tqX50JoBJjW9oeCcSufljH6d
+         zXUOtYr9xOurSTFj6t0Jo5XxpR4v0b0dQlHfJkM50DxfClQkvWEwr0+ZVMW14u+Ih3zr
+         bXT7WivtSYOhdHJnSZYPl0aXpH0+RKcAZCDkMR+fTMFW7uZMY/N5YrpJM+980D1BsBA0
+         B429AUyrl4jmmVgGSaDLzpQR41VY8fCcxS1hN7EuVUp7OYsa1cZg42gDGUtJY7L1P3No
+         T3ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=m96cR6V03dd7lbjAOl6gquDvXkdRzHGRSDXkk0VydMg=;
+        b=jR3ugf4hj+Qh+G0oBibdOivIzQWclaQElxhTZNDjKqqayyyrnPhmRDOEeY+7MsoWTo
+         Y9/dCBaNeTbakKxsOELDvIWBaFIZrVDDY9Y/CdO3ypm8gRqoYgCWCDkzI1LOkuJVHCln
+         iPyT8dmKtboNya2wgYE2sur+fbTWX+fkNc6yDnZbVX0WucWyo+fUW5AfcdjQFs8vNgiZ
+         Tix5FFNEIM+hx5Bk8wc8s1G1Pua1jgRiJ+z+PJEZJYBY65cfYse8MQd+0405+jNy9psO
+         T42+fjku69aIsdVKNVBuxGdD99pg5WDOIy1nqLkwn8xuRBOW9nsgzqqrH37tBJ/lYHiY
+         6jWA==
+X-Gm-Message-State: ANhLgQ2/uQLkqHDJbstxsUk4yfPa8HO/mEBTRmHYw51+ZxQOCbeeIJsE
+        GVn6XZXEcCQ2yGua+s8RUZLIT55s2QXJtn2RKfRrCA==
+X-Google-Smtp-Source: ADFU+vuWH5zQui20lK3L0xhEESoh9O6oNICswpYudGihwgeVkXw9INd4a0Qcv2xNvGUAEUT8yqdnif+9yZAdCYPExLo=
+X-Received: by 2002:a67:646:: with SMTP id 67mr6606515vsg.34.1585232933632;
+ Thu, 26 Mar 2020 07:28:53 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200317093922.20785-1-lkundrak@v3.sk> <20200317093922.20785-19-lkundrak@v3.sk>
+In-Reply-To: <20200317093922.20785-19-lkundrak@v3.sk>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Thu, 26 Mar 2020 15:28:17 +0100
+Message-ID: <CAPDyKFrcrgMrd9Nv425XuzssBhd+GvSUu29hXoVShwS0GNyjtQ@mail.gmail.com>
+Subject: Re: [PATCH 18/28] dt-bindings: mmc: Fix node name in an example
+To:     Lubomir Rintel <lkundrak@v3.sk>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Marc Zyngier <maz@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Daniel Mack <daniel@zonque.org>,
+        Haojian Zhuang <haojian.zhuang@gmail.com>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-i2c@vger.kernel.org, linux-media@vger.kernel.org,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org,
+        Linux USB List <linux-usb@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Commit 6194c38fc20d ("serial: 8250: Support console on software emulated
-rs485 ports") amended serial8250_console_write() with rs485 support, but
-positioned the invocation of ->rs485_stop_tx() after re-enablement of
-interrupts.  The irq handler and ->console_write() are serialized with
-the port spinlock, so no problem there, but due to the rs485 delay, the
-irq handler may unnecessarily spin for a while.  Avoid that by moving
-->rs485_stop_tx() before re-enablement of interrupts, which also mirrors
-the order at the beginning of serial8250_console_write().
+On Tue, 17 Mar 2020 at 10:40, Lubomir Rintel <lkundrak@v3.sk> wrote:
+>
+> The $nodename allows only "mmc@*" whereas the example node is named
+> "sdhci".
+>
+> Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
 
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
----
- drivers/tty/serial/8250/8250_port.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Applied for next, thanks!
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index a1d3aef3c406..f77bf820b7a3 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -3268,7 +3268,6 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 	 *	and restore the IER
- 	 */
- 	wait_for_xmitr(up, BOTH_EMPTY);
--	serial_port_out(port, UART_IER, ier);
- 
- 	if (em485) {
- 		mdelay(port->rs485.delay_rts_after_send);
-@@ -3276,6 +3275,8 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 			up->rs485_stop_tx(up);
- 	}
- 
-+	serial_port_out(port, UART_IER, ier);
-+
- 	/*
- 	 *	The receive handling will happen properly because the
- 	 *	receive ready bit will still be set; it is not cleared
--- 
-2.25.0
+Kind regards
+Uffe
 
+
+> ---
+>  Documentation/devicetree/bindings/mmc/mmc-controller.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/Documentation/devicetree/bindings/mmc/mmc-controller.yaml b/Documentation/devicetree/bindings/mmc/mmc-controller.yaml
+> index c9384ed685b8f..c03fe268c29a0 100644
+> --- a/Documentation/devicetree/bindings/mmc/mmc-controller.yaml
+> +++ b/Documentation/devicetree/bindings/mmc/mmc-controller.yaml
+> @@ -351,7 +351,7 @@ dependencies:
+>
+>  examples:
+>    - |
+> -    sdhci@ab000000 {
+> +    mmc@ab000000 {
+>          compatible = "sdhci";
+>          reg = <0xab000000 0x200>;
+>          interrupts = <23>;
+> --
+> 2.25.1
+>
