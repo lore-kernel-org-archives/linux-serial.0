@@ -2,126 +2,96 @@ Return-Path: <SRS0=p7su=5L=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0953C2D0E5
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Mar 2020 14:28:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55040C43331
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Mar 2020 14:32:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 774EE2082D
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Mar 2020 14:28:57 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="d0Gbhldy"
+	by mail.kernel.org (Postfix) with ESMTP id 1F31420775
+	for <linux-serial@archiver.kernel.org>; Thu, 26 Mar 2020 14:32:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1585233161;
+	bh=2unZXsfXGiiwQhWbjl1kP114RQvv7sM/ehc4It/7EfI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=QyM/uG5jqzyMPW5kyz6w8sKI/capzfrkpPpKmVglLt2GirT+XwTLrmuMExGU1kJDs
+	 rwbdvI/s5BWz7lafxc/keVAtDgLYdc+n/y0vvbg/6MXJZ8VRhf74OCgI/9mXgxR8x3
+	 TB3G30TOd5HtR1s1XMTLU2StQ4DItmJI3hEDKSHM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728326AbgCZO25 (ORCPT
+        id S1728331AbgCZOck (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 Mar 2020 10:28:57 -0400
-Received: from mail-vs1-f65.google.com ([209.85.217.65]:34946 "EHLO
-        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728200AbgCZO2z (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 Mar 2020 10:28:55 -0400
-Received: by mail-vs1-f65.google.com with SMTP id u11so3975586vsg.2
-        for <linux-serial@vger.kernel.org>; Thu, 26 Mar 2020 07:28:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=m96cR6V03dd7lbjAOl6gquDvXkdRzHGRSDXkk0VydMg=;
-        b=d0GbhldybAe0gmG8ZlfyrlQwNBKzrfy5JDwFDaOsHBBgGdMkw0TJb3XjhMtRqSbv7U
-         raadlG2wUvxjwaK8JQEXjXpEDrxdok4PtGhzk8vlvcx6tqX50JoBJjW9oeCcSufljH6d
-         zXUOtYr9xOurSTFj6t0Jo5XxpR4v0b0dQlHfJkM50DxfClQkvWEwr0+ZVMW14u+Ih3zr
-         bXT7WivtSYOhdHJnSZYPl0aXpH0+RKcAZCDkMR+fTMFW7uZMY/N5YrpJM+980D1BsBA0
-         B429AUyrl4jmmVgGSaDLzpQR41VY8fCcxS1hN7EuVUp7OYsa1cZg42gDGUtJY7L1P3No
-         T3ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=m96cR6V03dd7lbjAOl6gquDvXkdRzHGRSDXkk0VydMg=;
-        b=jR3ugf4hj+Qh+G0oBibdOivIzQWclaQElxhTZNDjKqqayyyrnPhmRDOEeY+7MsoWTo
-         Y9/dCBaNeTbakKxsOELDvIWBaFIZrVDDY9Y/CdO3ypm8gRqoYgCWCDkzI1LOkuJVHCln
-         iPyT8dmKtboNya2wgYE2sur+fbTWX+fkNc6yDnZbVX0WucWyo+fUW5AfcdjQFs8vNgiZ
-         Tix5FFNEIM+hx5Bk8wc8s1G1Pua1jgRiJ+z+PJEZJYBY65cfYse8MQd+0405+jNy9psO
-         T42+fjku69aIsdVKNVBuxGdD99pg5WDOIy1nqLkwn8xuRBOW9nsgzqqrH37tBJ/lYHiY
-         6jWA==
-X-Gm-Message-State: ANhLgQ2/uQLkqHDJbstxsUk4yfPa8HO/mEBTRmHYw51+ZxQOCbeeIJsE
-        GVn6XZXEcCQ2yGua+s8RUZLIT55s2QXJtn2RKfRrCA==
-X-Google-Smtp-Source: ADFU+vuWH5zQui20lK3L0xhEESoh9O6oNICswpYudGihwgeVkXw9INd4a0Qcv2xNvGUAEUT8yqdnif+9yZAdCYPExLo=
-X-Received: by 2002:a67:646:: with SMTP id 67mr6606515vsg.34.1585232933632;
- Thu, 26 Mar 2020 07:28:53 -0700 (PDT)
+        Thu, 26 Mar 2020 10:32:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42630 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727944AbgCZOck (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 26 Mar 2020 10:32:40 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5ED042073E;
+        Thu, 26 Mar 2020 14:32:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585233158;
+        bh=2unZXsfXGiiwQhWbjl1kP114RQvv7sM/ehc4It/7EfI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iP1jZIWDDtdVjpcWzS6bxigS02fS6kEKL1j+a4h8tVzbngrPYZixeAIuDwj8ScSyO
+         vqYVzznYonRgx5V5CeExlKr2pgebxEgQ0Cg3Fkvdq2llY7UbFAM+DeMTax9nJadNOS
+         0doJMQqMbOhkJ3OeZ6TNH1yj0BxSStkdr8vFjLP0=
+Date:   Thu, 26 Mar 2020 15:32:36 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Leonard Crestez <leonard.crestez@nxp.com>
+Cc:     Michael Walle <michael@walle.cc>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jiri Slaby <jslaby@suse.com>, Andy Duan <fugang.duan@nxp.com>
+Subject: Re: [PATCH v2 1/2] tty: serial: fsl_lpuart: move dma_request_chan()
+Message-ID: <20200326143236.GA1372760@kroah.com>
+References: <20200325090658.25967-1-michael@walle.cc>
+ <VI1PR04MB69417B19A6FFF0AA22585884EECE0@VI1PR04MB6941.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-References: <20200317093922.20785-1-lkundrak@v3.sk> <20200317093922.20785-19-lkundrak@v3.sk>
-In-Reply-To: <20200317093922.20785-19-lkundrak@v3.sk>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Thu, 26 Mar 2020 15:28:17 +0100
-Message-ID: <CAPDyKFrcrgMrd9Nv425XuzssBhd+GvSUu29hXoVShwS0GNyjtQ@mail.gmail.com>
-Subject: Re: [PATCH 18/28] dt-bindings: mmc: Fix node name in an example
-To:     Lubomir Rintel <lkundrak@v3.sk>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Marc Zyngier <maz@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-i2c@vger.kernel.org, linux-media@vger.kernel.org,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org,
-        Linux USB List <linux-usb@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <VI1PR04MB69417B19A6FFF0AA22585884EECE0@VI1PR04MB6941.eurprd04.prod.outlook.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, 17 Mar 2020 at 10:40, Lubomir Rintel <lkundrak@v3.sk> wrote:
->
-> The $nodename allows only "mmc@*" whereas the example node is named
-> "sdhci".
->
-> Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
+On Wed, Mar 25, 2020 at 06:05:16PM +0000, Leonard Crestez wrote:
+> On 2020-03-25 11:07 AM, Michael Walle wrote:
+> > Move dma_request_chan() out of the atomic context. First this call
+> > should not be in the atomic context at all and second the
+> > dev_info_once() may cause a hang because because the console takes this
+> > spinlock, too.
+> > 
+> > Fixes: 159381df1442f ("tty: serial: fsl_lpuart: fix DMA operation when using IOMMU")
+> > Reported-by: Leonard Crestez <leonard.crestez@nxp.com>
+> > Signed-off-by: Michael Walle <michael@walle.cc>
+> > ---
+> > changes since v1:
+> >   - instead of just moving the dev_info_once() out of the spinlock protected
+> >     section, move the whole dma_request_chan(). Thanks Andy!
+> > 
+> > I've tested this on my board. Andy, Leonard, can you double check it? For
+> > all which are not aware, this deadlock happens only if you have the kernel
+> > console output on the lpuart, so if someone wants to test it, make sure you
+> > have something like console=ttyLP0,115200.
+> > 
+> >   drivers/tty/serial/fsl_lpuart.c | 36 +++++++++++++++++++++------------
+> >   1 file changed, 23 insertions(+), 13 deletions(-)
+> 
+> Tested-by: Leonard Crestez <leonard.crestez@nxp.com>
+> 
+> Since the original commit only made it into next it might make sense to 
+> squash the commits in the tty tree.
+> 
+> This way future bisections won't get stuck on a boot failure.
 
-Applied for next, thanks!
+My tree does not rebase, sorry.  And neither should any other public git
+tree without really really good reasons.
 
-Kind regards
-Uffe
+thanks,
 
-
-> ---
->  Documentation/devicetree/bindings/mmc/mmc-controller.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/Documentation/devicetree/bindings/mmc/mmc-controller.yaml b/Documentation/devicetree/bindings/mmc/mmc-controller.yaml
-> index c9384ed685b8f..c03fe268c29a0 100644
-> --- a/Documentation/devicetree/bindings/mmc/mmc-controller.yaml
-> +++ b/Documentation/devicetree/bindings/mmc/mmc-controller.yaml
-> @@ -351,7 +351,7 @@ dependencies:
->
->  examples:
->    - |
-> -    sdhci@ab000000 {
-> +    mmc@ab000000 {
->          compatible = "sdhci";
->          reg = <0xab000000 0x200>;
->          interrupts = <23>;
-> --
-> 2.25.1
->
+greg k-h
