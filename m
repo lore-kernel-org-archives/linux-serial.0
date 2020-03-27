@@ -2,162 +2,225 @@ Return-Path: <SRS0=8UUK=5M=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47210C2D0EF
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Mar 2020 23:02:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB17DC43331
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Mar 2020 23:10:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 118DB2074A
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Mar 2020 23:02:27 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="wDv27M1c"
+	by mail.kernel.org (Postfix) with ESMTP id 9919A2073B
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Mar 2020 23:10:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727708AbgC0XC0 (ORCPT
+        id S1727639AbgC0XKS (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 Mar 2020 19:02:26 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:44261 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727983AbgC0XC0 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 27 Mar 2020 19:02:26 -0400
-Received: by mail-pg1-f194.google.com with SMTP id 142so5289558pgf.11
-        for <linux-serial@vger.kernel.org>; Fri, 27 Mar 2020 16:02:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=pko9nAhDt6mwlgRfyc6XKtINQbmF/ebYK6c/ZMMljOI=;
-        b=wDv27M1cr1T04ee69Hy1SrhA+XbdaY3eDftXg2xB8lJQ8inMOhdeEXNJXrEo7q7t3t
-         6eB9zC8/Bv9mLJ2bOewXKTZ2FkwX64sHSQPnYtvFoLj3WC2vPLJHxv4pPOXi3nodaSqs
-         A94S3RD7J4kxfu7L3w+pl6x+HKDrV2M6vOWGZjfiXENOjFzAN/7ncjOC36Y72p99DEF7
-         QZXYRKrTMl7vlATbTTVdSjSNYb76CqTou39S/h0lGX8LIJGloZ4sglWuDm32ljv0HURf
-         IIVnTU0FzO+NSXPtkboaIM7yz80aPuDUQD424YANs9bLogatUBmIYjXG/XZ0fRlPvmfB
-         xRXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=pko9nAhDt6mwlgRfyc6XKtINQbmF/ebYK6c/ZMMljOI=;
-        b=eq/sbFjHpv43kAyLMeWF18+wZaCkwq0icfKSCaEXZY0mIeNc5gtM6c6EfgBeQ90mUE
-         fpZZRab4JdsO54DXkCf0QrhcSw33rFOIs+y/zuXWNUvEYIcWecpNOW97diZAYgmNheCC
-         WlGfupxgnZOUGFyXzf2sPyTgngUCQVUM7CAk/DhVIDRyivxr2f3J94aE4RCveWe3iGtB
-         +kQZ6JRMqC+4bAiLT98B+/6w8SDvZGBsnp9Cpk1Ol1wsJ0XknuTgc+3HrzxhyxaW3bc6
-         y6AcPybi4w03Hrp4lmoF6/BmqX2xbbOdMFx0jO4rA0kgVGEj1D03WhTUMGXV5/lF/wbh
-         G2TQ==
-X-Gm-Message-State: ANhLgQ2du/+Aw1TePikSZZKCzoXRsRHzLYyq9reXGeMKrSVrEObNtGmi
-        /gubfRtLz3y4O9EAzN1gwgj1qw==
-X-Google-Smtp-Source: ADFU+vsjmqswulmh3XPk28yPydYs/4jXf/b13hstJ4o6GS/qxxeJWxQ8s40fIIu+VnhFkLkIkKOoHg==
-X-Received: by 2002:a63:161e:: with SMTP id w30mr1655585pgl.110.1585350144395;
-        Fri, 27 Mar 2020 16:02:24 -0700 (PDT)
-Received: from builder (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
-        by smtp.gmail.com with ESMTPSA id y142sm4983301pfc.53.2020.03.27.16.02.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Mar 2020 16:02:23 -0700 (PDT)
-Date:   Fri, 27 Mar 2020 16:02:21 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Akash Asthana <akashast@codeaurora.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org, wsa@the-dreams.de,
-        broonie@kernel.org, mark.rutland@arm.com, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, mka@chromium.org,
-        dianders@chromium.org, evgreen@chromium.org
-Subject: Re: [PATCH V2 1/8] interconnect: Add devm_of_icc_get() as exported
- API for users
-Message-ID: <20200327230221.GK5063@builder>
-References: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
- <1584105134-13583-2-git-send-email-akashast@codeaurora.org>
+        Fri, 27 Mar 2020 19:10:18 -0400
+Received: from mga03.intel.com ([134.134.136.65]:17962 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726781AbgC0XKS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 27 Mar 2020 19:10:18 -0400
+IronPort-SDR: aResGCez7x/lBc50U5gb6rx/nU2BBGVcOINP1rcg8XzB/7AepNVn51pmQaieX+USp2NCWUdhDO
+ 9LRRNo+UIQRA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2020 16:10:17 -0700
+IronPort-SDR: ILojlfZ8UeLvTPL0j/F7J3EoNiB8OqpbTn1B2uc15QEPEwt/wZQb6HDB5/Yq3lGPh6oKD+xrYH
+ 5L59ZvPMgUIg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,314,1580803200"; 
+   d="scan'208";a="294057532"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 27 Mar 2020 16:10:14 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1jHy7D-0008WN-3F; Sat, 28 Mar 2020 07:10:15 +0800
+Date:   Sat, 28 Mar 2020 07:09:10 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 8d5b305484e8a3216eeb700ed6c6de870306adbd
+Message-ID: <5e7e8796.Mq3CUATLIgEmAbTR%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1584105134-13583-2-git-send-email-akashast@codeaurora.org>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri 13 Mar 06:12 PDT 2020, Akash Asthana wrote:
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
+branch HEAD: 8d5b305484e8a3216eeb700ed6c6de870306adbd  serial: 8250: Optimize irq enable after console write
 
-> Users can use devm version of of_icc_get() to benefit from automatic
-> resource release.
-> 
-> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+elapsed time: 482m
 
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+configs tested: 158
+configs skipped: 0
 
-Regards,
-Bjorn
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-> ---
->  drivers/interconnect/core.c  | 25 +++++++++++++++++++++++++
->  include/linux/interconnect.h |  7 +++++++
->  2 files changed, 32 insertions(+)
-> 
-> diff --git a/drivers/interconnect/core.c b/drivers/interconnect/core.c
-> index 2c6515e..f5699ed 100644
-> --- a/drivers/interconnect/core.c
-> +++ b/drivers/interconnect/core.c
-> @@ -350,6 +350,31 @@ static struct icc_node *of_icc_get_from_provider(struct of_phandle_args *spec)
->  	return node;
->  }
->  
-> +static void devm_icc_release(struct device *dev, void *res)
-> +{
-> +	icc_put(*(struct icc_path **)res);
-> +}
-> +
-> +struct icc_path *devm_of_icc_get(struct device *dev, const char *name)
-> +{
-> +	struct icc_path **ptr, *path;
-> +
-> +	ptr = devres_alloc(devm_icc_release, sizeof(**ptr), GFP_KERNEL);
-> +	if (!ptr)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	path = of_icc_get(dev, name);
-> +	if (!IS_ERR(path)) {
-> +		*ptr = path;
-> +		devres_add(dev, ptr);
-> +	} else {
-> +		devres_free(ptr);
-> +	}
-> +
-> +	return path;
-> +}
-> +EXPORT_SYMBOL_GPL(devm_of_icc_get);
-> +
->  /**
->   * of_icc_get() - get a path handle from a DT node based on name
->   * @dev: device pointer for the consumer device
-> diff --git a/include/linux/interconnect.h b/include/linux/interconnect.h
-> index d70a914..7706924 100644
-> --- a/include/linux/interconnect.h
-> +++ b/include/linux/interconnect.h
-> @@ -28,6 +28,7 @@ struct device;
->  struct icc_path *icc_get(struct device *dev, const int src_id,
->  			 const int dst_id);
->  struct icc_path *of_icc_get(struct device *dev, const char *name);
-> +struct icc_path *devm_of_icc_get(struct device *dev, const char *name);
->  void icc_put(struct icc_path *path);
->  int icc_set_bw(struct icc_path *path, u32 avg_bw, u32 peak_bw);
->  void icc_set_tag(struct icc_path *path, u32 tag);
-> @@ -46,6 +47,12 @@ static inline struct icc_path *of_icc_get(struct device *dev,
->  	return NULL;
->  }
->  
-> +static inline struct icc_path *devm_of_icc_get(struct device *dev,
-> +						const char *name)
-> +{
-> +	return NULL;
-> +}
-> +
->  static inline void icc_put(struct icc_path *path)
->  {
->  }
-> -- 
-> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+arm                              allmodconfig
+arm                               allnoconfig
+arm                              allyesconfig
+arm64                            allmodconfig
+arm64                             allnoconfig
+arm64                            allyesconfig
+arm                         at91_dt_defconfig
+arm                           efm32_defconfig
+arm                          exynos_defconfig
+arm                        multi_v5_defconfig
+arm                        multi_v7_defconfig
+arm                        shmobile_defconfig
+arm                           sunxi_defconfig
+arm64                               defconfig
+sparc                            allyesconfig
+sh                            titan_defconfig
+sh                               allmodconfig
+riscv                            allmodconfig
+riscv                             allnoconfig
+um                           x86_64_defconfig
+sparc64                          allyesconfig
+parisc                            allnoconfig
+microblaze                    nommu_defconfig
+i386                              allnoconfig
+i386                             alldefconfig
+i386                             allyesconfig
+i386                                defconfig
+ia64                             alldefconfig
+ia64                             allmodconfig
+ia64                              allnoconfig
+ia64                             allyesconfig
+ia64                                defconfig
+c6x                              allyesconfig
+c6x                        evmc6678_defconfig
+nios2                         10m50_defconfig
+nios2                         3c120_defconfig
+openrisc                    or1ksim_defconfig
+openrisc                 simple_smp_defconfig
+xtensa                       common_defconfig
+xtensa                          iss_defconfig
+alpha                               defconfig
+csky                                defconfig
+nds32                             allnoconfig
+nds32                               defconfig
+h8300                     edosk2674_defconfig
+h8300                    h8300h-sim_defconfig
+h8300                       h8s-sim_defconfig
+m68k                             allmodconfig
+m68k                       m5475evb_defconfig
+m68k                          multi_defconfig
+m68k                           sun3_defconfig
+arc                                 defconfig
+arc                              allyesconfig
+powerpc                             defconfig
+powerpc                       ppc64_defconfig
+powerpc                          rhel-kconfig
+microblaze                      mmu_defconfig
+powerpc                           allnoconfig
+mips                           32r2_defconfig
+mips                         64r6el_defconfig
+mips                             allmodconfig
+mips                              allnoconfig
+mips                             allyesconfig
+mips                      fuloong2e_defconfig
+mips                      malta_kvm_defconfig
+parisc                           allyesconfig
+parisc                generic-32bit_defconfig
+parisc                generic-64bit_defconfig
+x86_64               randconfig-a001-20200327
+x86_64               randconfig-a002-20200327
+x86_64               randconfig-a003-20200327
+i386                 randconfig-a001-20200327
+i386                 randconfig-a002-20200327
+i386                 randconfig-a003-20200327
+mips                 randconfig-a001-20200327
+nds32                randconfig-a001-20200327
+m68k                 randconfig-a001-20200327
+parisc               randconfig-a001-20200327
+alpha                randconfig-a001-20200327
+riscv                randconfig-a001-20200327
+c6x                  randconfig-a001-20200327
+h8300                randconfig-a001-20200327
+microblaze           randconfig-a001-20200327
+nios2                randconfig-a001-20200327
+sparc64              randconfig-a001-20200327
+s390                 randconfig-a001-20200327
+xtensa               randconfig-a001-20200327
+csky                 randconfig-a001-20200327
+openrisc             randconfig-a001-20200327
+sh                   randconfig-a001-20200327
+x86_64               randconfig-b001-20200327
+x86_64               randconfig-b002-20200327
+x86_64               randconfig-b003-20200327
+i386                 randconfig-b001-20200327
+i386                 randconfig-b002-20200327
+i386                 randconfig-b003-20200327
+x86_64               randconfig-c001-20200327
+x86_64               randconfig-c002-20200327
+x86_64               randconfig-c003-20200327
+i386                 randconfig-c001-20200327
+i386                 randconfig-c002-20200327
+i386                 randconfig-c003-20200327
+x86_64               randconfig-d001-20200327
+x86_64               randconfig-d002-20200327
+x86_64               randconfig-d003-20200327
+i386                 randconfig-d001-20200327
+i386                 randconfig-d002-20200327
+i386                 randconfig-d003-20200327
+x86_64               randconfig-e001-20200327
+x86_64               randconfig-e002-20200327
+x86_64               randconfig-e003-20200327
+i386                 randconfig-e001-20200327
+i386                 randconfig-e002-20200327
+i386                 randconfig-e003-20200327
+x86_64               randconfig-f001-20200327
+x86_64               randconfig-f002-20200327
+x86_64               randconfig-f003-20200327
+i386                 randconfig-f001-20200327
+i386                 randconfig-f002-20200327
+i386                 randconfig-f003-20200327
+x86_64               randconfig-h001-20200327
+x86_64               randconfig-h002-20200327
+x86_64               randconfig-h003-20200327
+i386                 randconfig-h001-20200327
+i386                 randconfig-h002-20200327
+i386                 randconfig-h003-20200327
+arm                  randconfig-a001-20200327
+arm64                randconfig-a001-20200327
+ia64                 randconfig-a001-20200327
+powerpc              randconfig-a001-20200327
+arc                  randconfig-a001-20200327
+sparc                randconfig-a001-20200327
+riscv                            allyesconfig
+riscv                               defconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+s390                             alldefconfig
+s390                             allmodconfig
+s390                              allnoconfig
+s390                             allyesconfig
+s390                          debug_defconfig
+s390                                defconfig
+s390                       zfcpdump_defconfig
+sh                          rsk7269_defconfig
+sh                  sh7785lcr_32bit_defconfig
+sh                                allnoconfig
+sparc                               defconfig
+sparc64                          allmodconfig
+sparc64                           allnoconfig
+sparc64                             defconfig
+um                                  defconfig
+um                             i386_defconfig
+x86_64                              fedora-25
+x86_64                                  kexec
+x86_64                                    lkp
+x86_64                                   rhel
+x86_64                         rhel-7.2-clear
+x86_64                               rhel-7.6
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
