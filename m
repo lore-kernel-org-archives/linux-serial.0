@@ -2,37 +2,32 @@ Return-Path: <SRS0=8UUK=5M=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03288C2D0E8
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Mar 2020 10:30:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F85C43331
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Mar 2020 13:13:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D392A208E0
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Mar 2020 10:30:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4A7A22082D
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Mar 2020 13:13:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726900AbgC0KaQ (ORCPT
+        id S1726758AbgC0NNQ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 Mar 2020 06:30:16 -0400
-Received: from mx2.suse.de ([195.135.220.15]:35526 "EHLO mx2.suse.de"
+        Fri, 27 Mar 2020 09:13:16 -0400
+Received: from mx2.suse.de ([195.135.220.15]:57430 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726698AbgC0KaQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 27 Mar 2020 06:30:16 -0400
+        id S1726540AbgC0NNP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 27 Mar 2020 09:13:15 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 2CDF6AE07;
-        Fri, 27 Mar 2020 10:30:13 +0000 (UTC)
-Subject: Re: [PATCH v3 2/2] vt: vt_ioctl: fix use-after-free in vt_in_use()
-To:     Eric Biggers <ebiggers@kernel.org>,
+        by mx2.suse.de (Postfix) with ESMTP id 915FAAC5F;
+        Fri, 27 Mar 2020 13:13:13 +0000 (UTC)
+Subject: Re: Serial console and interrupts latency.
+To:     Sergey Organov <sorganov@gmail.com>, linux-serial@vger.kernel.org
+Cc:     Russell King <linux@armlinux.org.uk>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        Eric Dumazet <edumazet@google.com>,
-        Nicolas Pitre <nico@fluxnic.net>
-References: <20200320193424.GM851@sol.localdomain>
- <20200322034305.210082-1-ebiggers@kernel.org>
- <20200322034305.210082-3-ebiggers@kernel.org>
+References: <87lfnq15vi.fsf@osv.gnss.ru>
 From:   Jiri Slaby <jslaby@suse.cz>
 Autocrypt: addr=jslaby@suse.cz; prefer-encrypt=mutual; keydata=
  mQINBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -76,12 +71,12 @@ Autocrypt: addr=jslaby@suse.cz; prefer-encrypt=mutual; keydata=
  9HKkJqkN9xYEYaxtfl5pelF8idoxMZpTvCZY7jhnl2IemZCBMs6s338wS12Qro5WEAxV6cjD
  VSdmcD5l9plhKGLmgVNCTe8DPv81oDn9s0cIRLg9wNnDtj8aIiH8lBHwfUkpn32iv0uMV6Ae
  sLxhDWfOR4N+wu1gzXWgLel4drkCJcuYK5IL1qaZDcuGR8RPo3jbFO7Y
-Message-ID: <38de9a73-9321-09ba-6ef8-023a64c3c023@suse.cz>
-Date:   Fri, 27 Mar 2020 11:30:12 +0100
+Message-ID: <aa0174f8-7cef-46c9-4164-605191393abd@suse.cz>
+Date:   Fri, 27 Mar 2020 14:13:12 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200322034305.210082-3-ebiggers@kernel.org>
+In-Reply-To: <87lfnq15vi.fsf@osv.gnss.ru>
 Content-Type: text/plain; charset=iso-8859-2
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -90,86 +85,61 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 22. 03. 20, 4:43, Eric Biggers wrote:
-> From: Eric Biggers <ebiggers@google.com>
+On 24. 03. 20, 10:04, Sergey Organov wrote:
+> Hello,
 > 
-> vt_in_use() dereferences console_driver->ttys[i] without proper locking.
-> This is broken because the tty can be closed and freed concurrently.
+> [Extended CC list to try to get some attention]
 > 
-> We could fix this by using 'READ_ONCE(console_driver->ttys[i]) != NULL'
-> and skipping the check of tty_struct::count.  But, looking at
-> console_driver->ttys[i] isn't really appropriate anyway because even if
-> it is NULL the tty can still be in the process of being closed.
+> I was investigating random serial overruns on my embedded board and
+> figured it strongly correlates with serial output (to another serial
+> port) from kernel printk() calls, that forced me to dig into the kernel
+> sources, and now I'm very confused.
 > 
-> Instead, fix it by making vt_in_use() require console_lock() and check
-> whether the vt is allocated and has port refcount > 1.  This works since
-> following the patch "vt: vt_ioctl: fix VT_DISALLOCATE freeing in-use
-> virtual console" the port refcount is incremented while the vt is open.
+> I'm reading drivers/tty/serial/8250/8250_port.c, and
+> serial8250_console_write() function in particular (being on tty-next
+> branch).
 > 
-> Reproducer (very unreliable, but it worked for me after a few minutes):
+> What I see is that it locks interrupts
 > 
-> 	#include <fcntl.h>
-> 	#include <linux/vt.h>
+> 3141:		spin_lock_irqsave(&port->lock, flags);
 > 
-> 	int main()
-> 	{
-> 		int fd, nproc;
-> 		struct vt_stat state;
-> 		char ttyname[16];
+> and then calls wait_for_xmitr() both indirectly here:
 > 
-> 		fd = open("/dev/tty10", O_RDONLY);
-> 		for (nproc = 1; nproc < 8; nproc *= 2)
-> 			fork();
-> 		for (;;) {
-> 			sprintf(ttyname, "/dev/tty%d", rand() % 8);
-> 			close(open(ttyname, O_RDONLY));
-> 			ioctl(fd, VT_GETSTATE, &state);
-> 		}
-> 	}
+> 3159:	uart_console_write(port, s, count, serial8250_console_putchar);
 > 
-> KASAN report:
+> and then directly as well:
 > 
-> 	BUG: KASAN: use-after-free in vt_in_use drivers/tty/vt/vt_ioctl.c:48 [inline]
-> 	BUG: KASAN: use-after-free in vt_ioctl+0x1ad3/0x1d70 drivers/tty/vt/vt_ioctl.c:657
-> 	Read of size 4 at addr ffff888065722468 by task syz-vt2/132
+> 3165:	wait_for_xmitr(up, BOTH_EMPTY);
 > 
-> 	CPU: 0 PID: 132 Comm: syz-vt2 Not tainted 5.6.0-rc5-00130-g089b6d3654916 #13
-> 	Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20191223_100556-anatol 04/01/2014
-> 	Call Trace:
-> 	 [...]
-> 	 vt_in_use drivers/tty/vt/vt_ioctl.c:48 [inline]
-> 	 vt_ioctl+0x1ad3/0x1d70 drivers/tty/vt/vt_ioctl.c:657
-> 	 tty_ioctl+0x9db/0x11b0 drivers/tty/tty_io.c:2660
-> 	 [...]
+> before re-enabling interrupts at:
 > 
-> 	Allocated by task 136:
-> 	 [...]
-> 	 kzalloc include/linux/slab.h:669 [inline]
-> 	 alloc_tty_struct+0x96/0x8a0 drivers/tty/tty_io.c:2982
-> 	 tty_init_dev+0x23/0x350 drivers/tty/tty_io.c:1334
-> 	 tty_open_by_driver drivers/tty/tty_io.c:1987 [inline]
-> 	 tty_open+0x3ca/0xb30 drivers/tty/tty_io.c:2035
-> 	 [...]
+> 3179:		spin_unlock_irqrestore(&port->lock, flags);
 > 
-> 	Freed by task 41:
-> 	 [...]
-> 	 kfree+0xbf/0x200 mm/slab.c:3757
-> 	 free_tty_struct+0x8d/0xb0 drivers/tty/tty_io.c:177
-> 	 release_one_tty+0x22d/0x2f0 drivers/tty/tty_io.c:1468
-> 	 process_one_work+0x7f1/0x14b0 kernel/workqueue.c:2264
-> 	 worker_thread+0x8b/0xc80 kernel/workqueue.c:2410
-> 	 [...]
+> Now, wait_for_xmitr(), even according to comments, could busy-wait for
+> up to 10+1000 milliseconds, and in this case this huge delay will happen
+> at interrupts disabled?
 > 
-> Fixes: 4001d7b7fc27 ("vt: push down the tty lock so we can see what is left to tackle")
-> Cc: <stable@vger.kernel.org> # v3.4+
-> Signed-off-by: Eric Biggers <ebiggers@google.com>
+> Does it mean any serial console output out of printk() could cause 10
+> milliseconds or even 1 second interrupts latency? Somehow I can't
+> believe it.
+> 
+> What do I miss?
 
-I cannot think of anything better with the current poor code state, so:
+1 second _timeout_ is for flow-control-enabled consoles.
 
-Acked-by: Jiri Slaby <jslaby@suse.cz>
+10 ms is _timeout_ for a character. With slow 9600 baud console, sending
+one character takes 0.8 ms. With 115200, it is 70 us.
+
+If you send one line (80 chars), it is really 66 and 5.5 ms, respectively.
+
+So yes, serial consoles can slow down the boot and add latency. Use
+faster speeds or faster devices for consoles, if you mind. And do not
+enable flow control. Serial is serial.
+
+You can also try to eliminate the interrupts disablement, but that would
+be a bit tough task, IMO.
 
 thanks,
--- 
 -- 
 js
 suse labs
