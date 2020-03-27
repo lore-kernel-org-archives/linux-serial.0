@@ -1,220 +1,208 @@
-Return-Path: <SRS0=p7su=5L=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=8UUK=5M=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 825D2C43331
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Mar 2020 22:51:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5A76C2D0E7
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Mar 2020 05:04:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5122020714
-	for <linux-serial@archiver.kernel.org>; Thu, 26 Mar 2020 22:51:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8D4EC20748
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Mar 2020 05:04:55 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="B4ufnI/5"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726296AbgCZWvJ (ORCPT
+        id S1725992AbgC0FEz (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 26 Mar 2020 18:51:09 -0400
-Received: from mga06.intel.com ([134.134.136.31]:28084 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726067AbgCZWvJ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 26 Mar 2020 18:51:09 -0400
-IronPort-SDR: QTPF2Kl3RpMTAfDORphr8W+ElT1b9v8Wi7aiVTALvGAviXbwmEw29/ULupk3dmFCxrntxS6Jjd
- alm0y3NpEG/g==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2020 15:51:08 -0700
-IronPort-SDR: HokxfNhlTXA9q+HDSGh+ZO+/opQ6FOT/qp8WP8ZpDIiX3Q9tM9qwz3lpSM2lsYg5AYSfhjEo4i
- lR54zzXBJWKA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,310,1580803200"; 
-   d="scan'208";a="250945798"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 26 Mar 2020 15:51:07 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1jHbL8-000GUb-K8; Fri, 27 Mar 2020 06:51:06 +0800
-Date:   Fri, 27 Mar 2020 06:50:16 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 3b9c55efb23ebc6edb8190d9afa78b311e49404f
-Message-ID: <5e7d31a8.S4vQf2pOCdn+JslR%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Fri, 27 Mar 2020 01:04:55 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:32162 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726071AbgC0FEy (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 27 Mar 2020 01:04:54 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1585285493; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=SG6WaenvHTcDY9BCxDftkj4em5j0Ob7ZRiq3kSRzIPs=; b=B4ufnI/5rBgojGW6LW2Ds0nDEfWX+DaCDswKzVEb09+NCHaB4pcn+kTWicvHylWXs6z+SQ5B
+ 80GJKkMdwKT4IodR1MwWrlQhqXZXarNT3PTvLeO1snodjmgKDM6wzpKuhUsbgA6kJk/sQVYn
+ JaXcM96x8iXn4yKx9Aqfw1bZZsQ=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e7d8975.7f655f3e0b58-smtp-out-n01;
+ Fri, 27 Mar 2020 05:04:53 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id F1C97C43636; Fri, 27 Mar 2020 05:04:52 +0000 (UTC)
+Received: from [192.168.0.13] (unknown [183.83.138.47])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id BD584C433F2;
+        Fri, 27 Mar 2020 05:04:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org BD584C433F2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+Subject: Re: [PATCH V2 3/8] soc: qcom-geni-se: Add interconnect support to fix
+ earlycon crash
+To:     Evan Green <evgreen@chromium.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        wsa@the-dreams.de, Mark Brown <broonie@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-i2c@vger.kernel.org,
+        linux-spi@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Stephen Boyd <swboyd@chromium.org>,
+        Manu Gautam <mgautam@codeaurora.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        linux-serial@vger.kernel.org, Doug Anderson <dianders@chromium.org>
+References: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
+ <1584105134-13583-4-git-send-email-akashast@codeaurora.org>
+ <20200313204441.GJ144492@google.com>
+ <1f86fdf0-df7c-4e4a-d4d8-8b0162e52cb4@codeaurora.org>
+ <20200317182910.GR144492@google.com>
+ <3831b33c-93ee-e5e0-fcfb-530b4738f930@codeaurora.org>
+ <20200319194332.GA60149@google.com>
+ <a7227a1f-00a1-0818-80f3-904fe264f864@codeaurora.org>
+ <CAE=gft6AGkcdUAkoyevZgmtBgaiEkoQzzJcg7sYjbpy5Kh2fyA@mail.gmail.com>
+From:   Akash Asthana <akashast@codeaurora.org>
+Message-ID: <08717de4-cfeb-4049-ebbf-aa2c1c6989c7@codeaurora.org>
+Date:   Fri, 27 Mar 2020 10:34:43 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <CAE=gft6AGkcdUAkoyevZgmtBgaiEkoQzzJcg7sYjbpy5Kh2fyA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
-branch HEAD: 3b9c55efb23ebc6edb8190d9afa78b311e49404f  tty: serial: make SERIAL_SPRD depend on COMMON_CLK
+Hi Evan,
 
-elapsed time: 485m
+On 3/20/2020 10:00 PM, Evan Green wrote:
+> On Fri, Mar 20, 2020 at 3:22 AM Akash Asthana <akashast@codeaurora.org> wrote:
+>> Hi Evan, Matthias,
+>>
+>> On 3/20/2020 1:13 AM, Matthias Kaehlcke wrote:
+>>> On Wed, Mar 18, 2020 at 02:24:35PM +0530, Akash Asthana wrote:
+>>>> Hi Matthias,
+>>>>
+>>>> On 3/17/2020 11:59 PM, Matthias Kaehlcke wrote:
+>>>>> Hi Akash,
+>>>>>
+>>>>> On Tue, Mar 17, 2020 at 04:27:47PM +0530, Akash Asthana wrote:
+>>>>>> Hi Matthias,
+>>>>>>
+>>>>>> On 3/14/2020 2:14 AM, Matthias Kaehlcke wrote:
+>>>>>>> Hi Akash,
+>>>>>>>
+>>>>>>> On Fri, Mar 13, 2020 at 06:42:09PM +0530, Akash Asthana wrote:
+>>>>>>>> V1 patch@https://patchwork.kernel.org/patch/11386469/ caused SC7180 system
+>>>>>>>> to reset at boot time.
+>>>>>>> The v1 patch isn't relevant in the commit message, please just describe the
+>>>>>>> problem. Also the crash only occurs when earlycon is used.
+>>>>>> ok
+>>>>>>>> As QUP core clock is shared among all the SE drivers present on particular
+>>>>>>>> QUP wrapper, the reset seen is due to earlycon usage after QUP core clock
+>>>>>>>> is put to 0 from other SE drivers before real console comes up.
+>>>>>>>>
+>>>>>>>> As earlycon can't vote for it's QUP core need, to fix this add ICC
+>>>>>>>> support to common/QUP wrapper driver and put vote for QUP core from
+>>>>>>>> probe on behalf of earlycon and remove vote during sys suspend.
+>>>>>>> Only removing the vote on suspend isn't ideal, the system might never get
+>>>>>>> suspended. That said I don't have a really good alternative suggestion.
+>>>>>>>
+>>>>>>> One thing you could possibly do is to launch a delayed work, check
+>>>>>>> console_device() every second or so and remove the vote when it returns
+>>>>>>> non-NULL. Not claiming this would be a great solution ...
+>>>>>>>
+>>>>>>> The cleanest solution might be a notifier when the early console is
+>>>>>>> unregistered, it seems somewhat over-engineered though ... Then again
+>>>>>>> other (future) uart drivers with interconnect support might run into
+>>>>>>> the same problem.
+>>>>>> We are hitting this problem because QUP core clocks are shared among all the
+>>>>>> SE driver present in particular QUP wrapper, if other HW controllers has
+>>>>>> similar architecture we will hit this issue.
+>>>>>>
+>>>>>> How about if we expose an API from common driver(geni-se) for putting QUP
+>>>>>> core BW vote to 0.
+>>>>>>
+>>>>>> We call this from console probe just after uart_add_one_port call (console
+>>>>>> resources are enabled as part of this call) to put core quota to 0 on behalf
+>>>>>> of earlyconsole?
+>>>>>    From my notes from earlier debugging I have doubts this would work:
+>>>>>
+>>>>>      There is a short window where the early console and the 'real' console coexist:
+>>>>>
+>>>>>      [    3.858122] printk: console [ttyMSM0] enabled
+>>>>>      [    3.875692] printk: bootconsole [qcom_geni0] disabled
+>>>>>
+>>>>>      The reset probably occurs when the early console tries to write, but the ICC
+>>>>>      is effectively disabled because ttyMSM0 and the other geni ports are runtime
+>>>>>      suspended.
+>>>> Code flow from console driver probe(qcom_geni_serial.c)
+>>>>
+>>>> uart_add_one_port--->uart_configure_port--->{ 1) uart_change_pm(enable
+>>>> console resources)  2)register_console(boot to real console switch happens
+>>>> here)}
+>>>>
+>>>> Console resources are not disabled from anywhere before the switch happens
+>>>> completely. I meant to say until we saw below logs.
+>>>>
+>>>> [    3.875692] printk: bootconsole [qcom_geni0] disabled
+>>>>
+>>>> I think the board reset issue cannot occur during the window where early
+>>>> console and 'real' console coexist.
+>>> Thanks for the clarification! Indeed my notes were only a hypothesis, I
+>>> don't see evidence that there is an actual downvote shortly after console
+>>> registration.
+>>>
+>>>> I have validated proposed solution by me, it is working fine.
+>>>>
+>>>> Currently voting is done for every QUP and not only to which earlycon is
+>>>> connect, with the above approach we can't remove vote from other QUPs.
+>>>>
+>>>> However we can limit voting only to earlycon QUP by removing interconnect
+>>>> from DT node of other QUPs.
+>>>>
+>>>> I am not sure how clean is this solution.
+>>> I'm more inclined towards a solution along the lines of what Evan
+>>> proposed, i.e. delaying the votes (either in geni or ICC) until we
+>>> are ready.
+>> Based on discussion I think the delayed solution is most suited if
+>> implemented in ICC core because other ICC client might face the similar
+>> problem.
+>>
+>> However for geni case I am more inclined towards below proposed solution.
+>>
+>> -----------------------------------------------------------------------------------------------------
+>>
+>> How about if we expose an API from common driver(geni-se) for putting QUP
+>> core BW vote to 0.
+>>
+>> We call this from console probe just after uart_add_one_port call (console
+>> resources are enabled as part of this call) to put core quota to 0 on behalf
+>> of earlyconsole?
+> This seems ok to me. Earlycon sets up a vote, and then real probe
+> tears it down. As long as in the shuffle of all of these things into
+> SE library helpers you still have a way of differentiating the
+> earlycon vote from the real vote. In other words, don't reuse this
+> early icc_path for the real UART vote. You should probably also
+> destroy the path once you've voted zero on it.
+> -Evan
 
-configs tested: 152
-configs skipped: 0
+Thanks for confirming, I will not use early icc_path for real console 
+and I will destroy it once voted to 0 from real console probe.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Regards,
 
-arm                              allmodconfig
-arm                               allnoconfig
-arm                              allyesconfig
-arm64                            allmodconfig
-arm64                             allnoconfig
-arm64                            allyesconfig
-arm                         at91_dt_defconfig
-arm                           efm32_defconfig
-arm                          exynos_defconfig
-arm                        multi_v5_defconfig
-arm                        multi_v7_defconfig
-arm                        shmobile_defconfig
-arm                           sunxi_defconfig
-arm64                               defconfig
-sparc                            allyesconfig
-alpha                               defconfig
-xtensa                       common_defconfig
-mips                             allmodconfig
-powerpc                       ppc64_defconfig
-s390                             alldefconfig
-i386                              allnoconfig
-i386                             alldefconfig
-i386                             allyesconfig
-i386                                defconfig
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                              allnoconfig
-ia64                             allyesconfig
-ia64                             alldefconfig
-c6x                              allyesconfig
-c6x                        evmc6678_defconfig
-nios2                         10m50_defconfig
-nios2                         3c120_defconfig
-openrisc                    or1ksim_defconfig
-openrisc                 simple_smp_defconfig
-xtensa                          iss_defconfig
-csky                                defconfig
-nds32                             allnoconfig
-nds32                               defconfig
-h8300                     edosk2674_defconfig
-h8300                    h8300h-sim_defconfig
-h8300                       h8s-sim_defconfig
-m68k                             allmodconfig
-m68k                       m5475evb_defconfig
-m68k                          multi_defconfig
-m68k                           sun3_defconfig
-arc                              allyesconfig
-arc                                 defconfig
-microblaze                      mmu_defconfig
-microblaze                    nommu_defconfig
-powerpc                           allnoconfig
-powerpc                             defconfig
-powerpc                          rhel-kconfig
-mips                           32r2_defconfig
-mips                         64r6el_defconfig
-mips                              allnoconfig
-mips                             allyesconfig
-mips                      fuloong2e_defconfig
-mips                      malta_kvm_defconfig
-parisc                            allnoconfig
-parisc                           allyesconfig
-parisc                generic-32bit_defconfig
-parisc                generic-64bit_defconfig
-x86_64               randconfig-a001-20200326
-x86_64               randconfig-a002-20200326
-x86_64               randconfig-a003-20200326
-i386                 randconfig-a001-20200326
-i386                 randconfig-a002-20200326
-i386                 randconfig-a003-20200326
-alpha                randconfig-a001-20200326
-m68k                 randconfig-a001-20200326
-mips                 randconfig-a001-20200326
-nds32                randconfig-a001-20200326
-parisc               randconfig-a001-20200326
-riscv                randconfig-a001-20200326
-c6x                  randconfig-a001-20200326
-h8300                randconfig-a001-20200326
-microblaze           randconfig-a001-20200326
-nios2                randconfig-a001-20200326
-sparc64              randconfig-a001-20200326
-csky                 randconfig-a001-20200326
-openrisc             randconfig-a001-20200326
-s390                 randconfig-a001-20200326
-sh                   randconfig-a001-20200326
-xtensa               randconfig-a001-20200326
-x86_64               randconfig-c001-20200326
-x86_64               randconfig-c002-20200326
-x86_64               randconfig-c003-20200326
-i386                 randconfig-c001-20200326
-i386                 randconfig-c002-20200326
-i386                 randconfig-c003-20200326
-x86_64               randconfig-e001-20200326
-x86_64               randconfig-e002-20200326
-x86_64               randconfig-e003-20200326
-i386                 randconfig-e001-20200326
-i386                 randconfig-e002-20200326
-i386                 randconfig-e003-20200326
-x86_64               randconfig-f001-20200326
-x86_64               randconfig-f002-20200326
-x86_64               randconfig-f003-20200326
-i386                 randconfig-f001-20200326
-i386                 randconfig-f002-20200326
-i386                 randconfig-f003-20200326
-x86_64               randconfig-g001-20200326
-x86_64               randconfig-g002-20200326
-x86_64               randconfig-g003-20200326
-i386                 randconfig-g001-20200326
-i386                 randconfig-g002-20200326
-i386                 randconfig-g003-20200326
-x86_64               randconfig-h001-20200326
-x86_64               randconfig-h002-20200326
-x86_64               randconfig-h003-20200326
-i386                 randconfig-h001-20200326
-i386                 randconfig-h002-20200326
-i386                 randconfig-h003-20200326
-arc                  randconfig-a001-20200326
-arm                  randconfig-a001-20200326
-arm64                randconfig-a001-20200326
-ia64                 randconfig-a001-20200326
-powerpc              randconfig-a001-20200326
-sparc                randconfig-a001-20200326
-riscv                             allnoconfig
-riscv                            allyesconfig
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-s390                             allmodconfig
-s390                              allnoconfig
-s390                             allyesconfig
-s390                          debug_defconfig
-s390                                defconfig
-s390                       zfcpdump_defconfig
-sh                          rsk7269_defconfig
-sh                               allmodconfig
-sh                            titan_defconfig
-sh                  sh7785lcr_32bit_defconfig
-sh                                allnoconfig
-sparc                               defconfig
-sparc64                          allmodconfig
-sparc64                           allnoconfig
-sparc64                          allyesconfig
-sparc64                             defconfig
-um                                  defconfig
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                              fedora-25
-x86_64                                  kexec
-x86_64                                    lkp
-x86_64                                   rhel
-x86_64                         rhel-7.2-clear
-x86_64                               rhel-7.6
+Akash
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
