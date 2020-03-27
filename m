@@ -2,228 +2,171 @@ Return-Path: <SRS0=8UUK=5M=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77369C43331
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Mar 2020 23:29:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F719C43331
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Mar 2020 23:34:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3DE5F2073B
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Mar 2020 23:29:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0C6E8206E6
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Mar 2020 23:34:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="AoOqU2Iw"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b="1sT98oYs"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726134AbgC0X3E (ORCPT
+        id S1726661AbgC0XeZ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 Mar 2020 19:29:04 -0400
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:45067 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726071AbgC0X3D (ORCPT
+        Fri, 27 Mar 2020 19:34:25 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:41366 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726518AbgC0XeZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 27 Mar 2020 19:29:03 -0400
-Received: by mail-qv1-f68.google.com with SMTP id g4so5797932qvo.12
-        for <linux-serial@vger.kernel.org>; Fri, 27 Mar 2020 16:29:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=O1GvI+xFM1FBiQL/lNsi04NXxyujijnrO0wFrw3iEaA=;
-        b=AoOqU2Iw5iNjiMKPZrMi6dHRRUePrxjxp+Qtr1vJ+IrlU9XiomgunWPNb48nax0B5q
-         S2s5VpjjKmpZ2vmRzwc7FYK8BGF+dsEOJrJpu8EsyvdA4WdeDwNSNfFJgaEhVaN7ikJ0
-         6/397mTiLc3gUu6I5ER1bxg7KTyf/IdJLee/Elk+o1C0xmQg668B0wMbsRxqhWdWoDyI
-         my8bhwZE9ueVvSl4AC1JpfZhb36Fvo9asb3J6zMLTRrqbFJgUOPNC+wm+9Hzf0Kymc8L
-         6Yc6Oxfkp2wuTsot7ErcvaiFvyWqjyC5SJTA1/Dvq8CWggN4fvgq0vfRxnn8N6fm54aS
-         a+Zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=O1GvI+xFM1FBiQL/lNsi04NXxyujijnrO0wFrw3iEaA=;
-        b=T8bxkxv1Kzu957/8RuRr2TWtg1gz/6a4GUZH63TwxMZe9K1eESeqyBtdmi6uBAJstA
-         kA0vvHfNLvMM3Mz/v1U0bTNizbzULoLrs0qaRAYFi2m4csFqMxrBGPAxVkbTjQ5NfM8x
-         yKhT+iThLvYwgU0k80zLxHrQcFZX7+t541NdpkMAsuer38vCCtWwIogv1fm+8PDXzpNm
-         s/Bsd6Bf5tV75SRhyWZamwtIs8J2m+ysV5We/HHCSwNUr/ta5nloM5No0jO+m/6KXMCL
-         ny3FBBgMVkJhECmZiPHa2nNKB67CyC6t98+PD2ZD4khWtNXiuR4wTGBqN+hioNqup8XT
-         9icQ==
-X-Gm-Message-State: ANhLgQ2A8HJ9LIWl/5l66ZtnmqNS7xPFgf+XjHe0trjJjSo9HWG2yVA6
-        cx22BRO2L6bso1xG9GAyRs8EWpMeYL8=
-X-Google-Smtp-Source: ADFU+vuoqh2rq3JlGCXgjP8/hQAqhr+Zh5UniIICv8++F9RDKUVsGBejmVNWlonpv7SUXCWSkRpL0g==
-X-Received: by 2002:a62:1dd3:: with SMTP id d202mr1654818pfd.47.1585351421886;
-        Fri, 27 Mar 2020 16:23:41 -0700 (PDT)
-Received: from builder (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
-        by smtp.gmail.com with ESMTPSA id m7sm426908pjb.7.2020.03.27.16.23.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Mar 2020 16:23:40 -0700 (PDT)
-Date:   Fri, 27 Mar 2020 16:23:38 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Evan Green <evgreen@chromium.org>
-Cc:     Akash Asthana <akashast@codeaurora.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Gross <agross@kernel.org>, wsa@the-dreams.de,
-        Mark Brown <broonie@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-i2c@vger.kernel.org,
-        linux-spi@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Stephen Boyd <swboyd@chromium.org>,
-        Manu Gautam <mgautam@codeaurora.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-serial@vger.kernel.org, Doug Anderson <dianders@chromium.org>
-Subject: Re: [PATCH V2 3/8] soc: qcom-geni-se: Add interconnect support to
- fix earlycon crash
-Message-ID: <20200327232338.GL5063@builder>
-References: <1584105134-13583-1-git-send-email-akashast@codeaurora.org>
- <1584105134-13583-4-git-send-email-akashast@codeaurora.org>
- <20200313204441.GJ144492@google.com>
- <1f86fdf0-df7c-4e4a-d4d8-8b0162e52cb4@codeaurora.org>
- <20200317182910.GR144492@google.com>
- <3831b33c-93ee-e5e0-fcfb-530b4738f930@codeaurora.org>
- <20200319194332.GA60149@google.com>
- <a7227a1f-00a1-0818-80f3-904fe264f864@codeaurora.org>
- <CAE=gft6AGkcdUAkoyevZgmtBgaiEkoQzzJcg7sYjbpy5Kh2fyA@mail.gmail.com>
+        Fri, 27 Mar 2020 19:34:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=UzwPS7G+drXDxv2tRrnhfE+UVek4Ph8f4KYDQCLpmjY=; b=1sT98oYsAC7juQRDmLPSPXXvH
+        PVdVDzXlIEGaP9VVZcRLKM5WcSEf6Yh6EcBMnS6aHuhyPG0l5WZr7qN95aPdjlRTQqBJdYCDm5K3C
+        +3BWOy0OrvmuSbMU8n2Tu1IUTUqcd6lcdTzAmfdjUTsyAGVw+iDGIBaNL3RLYJJ7BSJvPJIViaVwg
+        S3ij91RHY1/4CnqjoHOy/J0bsNLXvWOV9AFoXR7NCQtp+4eTX2dc35gk2Uio3jNjxmNFb/T7XlDXb
+        JRZxV25WA74tmSRy6plyuCCqtdcg/hCMzKaobPm1rDjXe9jlurFYF8iXh09kgUIEv/w+sLFnSTLkr
+        JfbmvUYxQ==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:38102)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jHyL0-0003s3-Ld; Fri, 27 Mar 2020 23:24:30 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jHyKy-0004dH-Mg; Fri, 27 Mar 2020 23:24:28 +0000
+Date:   Fri, 27 Mar 2020 23:24:28 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Sergey Organov <sorganov@gmail.com>
+Cc:     Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: Serial console and interrupts latency.
+Message-ID: <20200327232428.GT25745@shell.armlinux.org.uk>
+References: <87lfnq15vi.fsf@osv.gnss.ru>
+ <aa0174f8-7cef-46c9-4164-605191393abd@suse.cz>
+ <87ftdtzypi.fsf@osv.gnss.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAE=gft6AGkcdUAkoyevZgmtBgaiEkoQzzJcg7sYjbpy5Kh2fyA@mail.gmail.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <87ftdtzypi.fsf@osv.gnss.ru>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri 20 Mar 09:30 PDT 2020, Evan Green wrote:
-
-> On Fri, Mar 20, 2020 at 3:22 AM Akash Asthana <akashast@codeaurora.org> wrote:
-> >
-> > Hi Evan, Matthias,
-> >
-> > On 3/20/2020 1:13 AM, Matthias Kaehlcke wrote:
-> > > On Wed, Mar 18, 2020 at 02:24:35PM +0530, Akash Asthana wrote:
-> > >> Hi Matthias,
-> > >>
-> > >> On 3/17/2020 11:59 PM, Matthias Kaehlcke wrote:
-> > >>> Hi Akash,
-> > >>>
-> > >>> On Tue, Mar 17, 2020 at 04:27:47PM +0530, Akash Asthana wrote:
-> > >>>> Hi Matthias,
-> > >>>>
-> > >>>> On 3/14/2020 2:14 AM, Matthias Kaehlcke wrote:
-> > >>>>> Hi Akash,
-> > >>>>>
-> > >>>>> On Fri, Mar 13, 2020 at 06:42:09PM +0530, Akash Asthana wrote:
-> > >>>>>> V1 patch@https://patchwork.kernel.org/patch/11386469/ caused SC7180 system
-> > >>>>>> to reset at boot time.
-> > >>>>> The v1 patch isn't relevant in the commit message, please just describe the
-> > >>>>> problem. Also the crash only occurs when earlycon is used.
-> > >>>> ok
-> > >>>>>> As QUP core clock is shared among all the SE drivers present on particular
-> > >>>>>> QUP wrapper, the reset seen is due to earlycon usage after QUP core clock
-> > >>>>>> is put to 0 from other SE drivers before real console comes up.
-> > >>>>>>
-> > >>>>>> As earlycon can't vote for it's QUP core need, to fix this add ICC
-> > >>>>>> support to common/QUP wrapper driver and put vote for QUP core from
-> > >>>>>> probe on behalf of earlycon and remove vote during sys suspend.
-> > >>>>> Only removing the vote on suspend isn't ideal, the system might never get
-> > >>>>> suspended. That said I don't have a really good alternative suggestion.
-> > >>>>>
-> > >>>>> One thing you could possibly do is to launch a delayed work, check
-> > >>>>> console_device() every second or so and remove the vote when it returns
-> > >>>>> non-NULL. Not claiming this would be a great solution ...
-> > >>>>>
-> > >>>>> The cleanest solution might be a notifier when the early console is
-> > >>>>> unregistered, it seems somewhat over-engineered though ... Then again
-> > >>>>> other (future) uart drivers with interconnect support might run into
-> > >>>>> the same problem.
-> > >>>> We are hitting this problem because QUP core clocks are shared among all the
-> > >>>> SE driver present in particular QUP wrapper, if other HW controllers has
-> > >>>> similar architecture we will hit this issue.
-> > >>>>
-> > >>>> How about if we expose an API from common driver(geni-se) for putting QUP
-> > >>>> core BW vote to 0.
-> > >>>>
-> > >>>> We call this from console probe just after uart_add_one_port call (console
-> > >>>> resources are enabled as part of this call) to put core quota to 0 on behalf
-> > >>>> of earlyconsole?
-> > >>>   From my notes from earlier debugging I have doubts this would work:
-> > >>>
-> > >>>     There is a short window where the early console and the 'real' console coexist:
-> > >>>
-> > >>>     [    3.858122] printk: console [ttyMSM0] enabled
-> > >>>     [    3.875692] printk: bootconsole [qcom_geni0] disabled
-> > >>>
-> > >>>     The reset probably occurs when the early console tries to write, but the ICC
-> > >>>     is effectively disabled because ttyMSM0 and the other geni ports are runtime
-> > >>>     suspended.
-> > >> Code flow from console driver probe(qcom_geni_serial.c)
-> > >>
-> > >> uart_add_one_port--->uart_configure_port--->{ 1) uart_change_pm(enable
-> > >> console resources)  2)register_console(boot to real console switch happens
-> > >> here)}
-> > >>
-> > >> Console resources are not disabled from anywhere before the switch happens
-> > >> completely. I meant to say until we saw below logs.
-> > >>
-> > >> [    3.875692] printk: bootconsole [qcom_geni0] disabled
-> > >>
-> > >> I think the board reset issue cannot occur during the window where early
-> > >> console and 'real' console coexist.
-> > > Thanks for the clarification! Indeed my notes were only a hypothesis, I
-> > > don't see evidence that there is an actual downvote shortly after console
-> > > registration.
-> > >
-> > >> I have validated proposed solution by me, it is working fine.
-> > >>
-> > >> Currently voting is done for every QUP and not only to which earlycon is
-> > >> connect, with the above approach we can't remove vote from other QUPs.
-> > >>
-> > >> However we can limit voting only to earlycon QUP by removing interconnect
-> > >> from DT node of other QUPs.
-> > >>
-> > >> I am not sure how clean is this solution.
-> > > I'm more inclined towards a solution along the lines of what Evan
-> > > proposed, i.e. delaying the votes (either in geni or ICC) until we
-> > > are ready.
-> >
-> > Based on discussion I think the delayed solution is most suited if
-> > implemented in ICC core because other ICC client might face the similar
-> > problem.
-> >
-> > However for geni case I am more inclined towards below proposed solution.
-> >
-> > -----------------------------------------------------------------------------------------------------
-> >
-> > How about if we expose an API from common driver(geni-se) for putting QUP
-> > core BW vote to 0.
-> >
-> > We call this from console probe just after uart_add_one_port call (console
-> > resources are enabled as part of this call) to put core quota to 0 on behalf
-> > of earlyconsole?
+On Fri, Mar 27, 2020 at 04:58:33PM +0300, Sergey Organov wrote:
+> Jiri Slaby <jslaby@suse.cz> writes:
 > 
-> This seems ok to me. Earlycon sets up a vote, and then real probe
-> tears it down. As long as in the shuffle of all of these things into
-> SE library helpers you still have a way of differentiating the
-> earlycon vote from the real vote.
+> > On 24. 03. 20, 10:04, Sergey Organov wrote:
+> >> Hello,
+> >> 
+> >> [Extended CC list to try to get some attention]
+> >> 
+> >> I was investigating random serial overruns on my embedded board and
+> >> figured it strongly correlates with serial output (to another serial
+> >> port) from kernel printk() calls, that forced me to dig into the kernel
+> >> sources, and now I'm very confused.
+> >> 
+> >> I'm reading drivers/tty/serial/8250/8250_port.c, and
+> >> serial8250_console_write() function in particular (being on tty-next
+> >> branch).
+> >> 
+> >> What I see is that it locks interrupts
+> >> 
+> >> 3141:		spin_lock_irqsave(&port->lock, flags);
+> >> 
+> >> and then calls wait_for_xmitr() both indirectly here:
+> >> 
+> >> 3159:	uart_console_write(port, s, count, serial8250_console_putchar);
+> >> 
+> >> and then directly as well:
+> >> 
+> >> 3165:	wait_for_xmitr(up, BOTH_EMPTY);
+> >> 
+> >> before re-enabling interrupts at:
+> >> 
+> >> 3179:		spin_unlock_irqrestore(&port->lock, flags);
+> >> 
+> >> Now, wait_for_xmitr(), even according to comments, could busy-wait for
+> >> up to 10+1000 milliseconds, and in this case this huge delay will happen
+> >> at interrupts disabled?
+> >> 
+> >> Does it mean any serial console output out of printk() could cause 10
+> >> milliseconds or even 1 second interrupts latency? Somehow I can't
+> >> believe it.
+> >> 
+> >> What do I miss?
+> >
+> > 1 second _timeout_ is for flow-control-enabled consoles.
+> 
+> Yeah, sure. So it does mean interrupts could be disabled for up to 1
+> second, on already up and running system. Too bad.
+> 
+> Actually, I use 8250 only as a reference implementation, my actual
+> chip is handled by imx.c, and the latter even has no timeouts on this
+> path, so apparently may block (the entire kernel) indefinitely!
+> 
+> > 10 ms is _timeout_ for a character. With slow 9600 baud console, sending
+> > one character takes 0.8 ms. With 115200, it is 70 us.
+> 
+> 70us of disabled interrupts is a huge number, and for FIFO-enabled chips
+> the estimate should be multiplied by FIFO size (say, x16) that brings us
+> close to 1ms even on 115200, right?
+> 
+> Anyway, it must cause receiving overruns on another port running at
+> higher or the same baud rate and no DMA, sooner or later, as it does
+> for me.
 
-Note though that the boot console will outlive the real console when the
-kernel is booted with "keep_bootcon" on the command line (something I do
-from time to time).
+So, don't use serial console then, it's unsuitable for your use case.
 
-So rather than relying on "real probe" to signal when we can release the
-earlycon's icc vote I think we should specify dev->con->exit in
-qcom_geni_serial_earlycon_setup(), so that it will signal when the
-earlycon actually goes away - and until that point the clocks should
-just be on.
+> > If you send one line (80 chars), it is really 66 and 5.5 ms, respectively.
+> >
+> > So yes, serial consoles can slow down the boot and add latency. Use
+> > faster speeds or faster devices for consoles, if you mind. And do not
+> > enable flow control. Serial is serial.
+> 
+> I don't care about slowing-down boot. I care about huge interrupt
+> latency on up and running system, causing loss of characters  (overruns)
+> on other serial ports.
+> 
+> To be sure, it is this code that works on already running system as
+> well, not only on boot-time, right? Or is my system somehow
+> misconfigured?
+> 
+> I'm confused as this seems to be a major issue and nobody but me seems
+> to care or to suffer from it, and I can't figure why.
+> 
+> For reference, I figured this locking was introduced by:
+> 
+> commit d8a5a8d7cc32e4474326e0ecc1b959063490efc9
+> Author: Russell King <rmk@dyn-67.arm.linux.org.uk>
+> Date:   Tue May 2 16:04:29 2006 +0100
+> 
+>     [SERIAL] 8250: add locking to console write function
+>     
+>     x86 SMP breaks as a result of the previous change, we have no real
+>     option other than to add locking to the 8250 console write function.
+>     If an oops is in progress, try to acquire the lock.  If we fail to
+>     do so, continue anyway.
 
-> In other words, don't reuse this
-> early icc_path for the real UART vote. You should probably also
-> destroy the path once you've voted zero on it.
+Correct, and what I said back then still applies - and more.
 
-Maintaining the early and real votes completely separate sounds like a
-sure way to keep this sane; and there's no drawback on having multiple
-votes for the same thing and rely on the framework to keep track of the
-various users.
+> It seems like I need to, and yeah, it'd be a somewhat tough task indeed,
+> but then there is one simple question: why isn't console output handled
+> through usual buffer/ISR paths?
 
-Regards,
-Bjorn
+The "usual" paths may not be active, and, in the case of an oops, we
+want to see the output, which we wouldn't be able to if the oops
+occurred in interrupt context.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
