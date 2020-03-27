@@ -2,29 +2,28 @@ Return-Path: <SRS0=8UUK=5M=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65CACC43331
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Mar 2020 10:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03288C2D0E8
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Mar 2020 10:30:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3B33920705
-	for <linux-serial@archiver.kernel.org>; Fri, 27 Mar 2020 10:28:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D392A208E0
+	for <linux-serial@archiver.kernel.org>; Fri, 27 Mar 2020 10:30:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726379AbgC0K2P (ORCPT
+        id S1726900AbgC0KaQ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 27 Mar 2020 06:28:15 -0400
-Received: from mx2.suse.de ([195.135.220.15]:34224 "EHLO mx2.suse.de"
+        Fri, 27 Mar 2020 06:30:16 -0400
+Received: from mx2.suse.de ([195.135.220.15]:35526 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726266AbgC0K2P (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 27 Mar 2020 06:28:15 -0400
+        id S1726698AbgC0KaQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 27 Mar 2020 06:30:16 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id D5718AE07;
-        Fri, 27 Mar 2020 10:28:12 +0000 (UTC)
-Subject: Re: [PATCH v3 1/2] vt: vt_ioctl: fix VT_DISALLOCATE freeing in-use
- virtual console
+        by mx2.suse.de (Postfix) with ESMTP id 2CDF6AE07;
+        Fri, 27 Mar 2020 10:30:13 +0000 (UTC)
+Subject: Re: [PATCH v3 2/2] vt: vt_ioctl: fix use-after-free in vt_in_use()
 To:     Eric Biggers <ebiggers@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
@@ -33,7 +32,7 @@ Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
         Nicolas Pitre <nico@fluxnic.net>
 References: <20200320193424.GM851@sol.localdomain>
  <20200322034305.210082-1-ebiggers@kernel.org>
- <20200322034305.210082-2-ebiggers@kernel.org>
+ <20200322034305.210082-3-ebiggers@kernel.org>
 From:   Jiri Slaby <jslaby@suse.cz>
 Autocrypt: addr=jslaby@suse.cz; prefer-encrypt=mutual; keydata=
  mQINBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -77,12 +76,12 @@ Autocrypt: addr=jslaby@suse.cz; prefer-encrypt=mutual; keydata=
  9HKkJqkN9xYEYaxtfl5pelF8idoxMZpTvCZY7jhnl2IemZCBMs6s338wS12Qro5WEAxV6cjD
  VSdmcD5l9plhKGLmgVNCTe8DPv81oDn9s0cIRLg9wNnDtj8aIiH8lBHwfUkpn32iv0uMV6Ae
  sLxhDWfOR4N+wu1gzXWgLel4drkCJcuYK5IL1qaZDcuGR8RPo3jbFO7Y
-Message-ID: <5a6a80e8-cf7f-dcfd-9cf4-afd3ee502220@suse.cz>
-Date:   Fri, 27 Mar 2020 11:28:10 +0100
+Message-ID: <38de9a73-9321-09ba-6ef8-023a64c3c023@suse.cz>
+Date:   Fri, 27 Mar 2020 11:30:12 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200322034305.210082-2-ebiggers@kernel.org>
+In-Reply-To: <20200322034305.210082-3-ebiggers@kernel.org>
 Content-Type: text/plain; charset=iso-8859-2
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -94,178 +93,83 @@ X-Mailing-List: linux-serial@vger.kernel.org
 On 22. 03. 20, 4:43, Eric Biggers wrote:
 > From: Eric Biggers <ebiggers@google.com>
 > 
-> The VT_DISALLOCATE ioctl can free a virtual console while tty_release()
-> is still running, causing a use-after-free in con_shutdown().  This
-> occurs because VT_DISALLOCATE considers a virtual console's
-> 'struct vc_data' to be unused as soon as the corresponding tty's
-> refcount hits 0.  But actually it may be still being closed.
+> vt_in_use() dereferences console_driver->ttys[i] without proper locking.
+> This is broken because the tty can be closed and freed concurrently.
 > 
-> Fix this by making vc_data be reference-counted via the embedded
-> 'struct tty_port'.  A newly allocated virtual console has refcount 1.
-> Opening it for the first time increments the refcount to 2.  Closing it
-> for the last time decrements the refcount (in tty_operations::cleanup()
-> so that it happens late enough), as does VT_DISALLOCATE.
+> We could fix this by using 'READ_ONCE(console_driver->ttys[i]) != NULL'
+> and skipping the check of tty_struct::count.  But, looking at
+> console_driver->ttys[i] isn't really appropriate anyway because even if
+> it is NULL the tty can still be in the process of being closed.
 > 
-> Reproducer:
+> Instead, fix it by making vt_in_use() require console_lock() and check
+> whether the vt is allocated and has port refcount > 1.  This works since
+> following the patch "vt: vt_ioctl: fix VT_DISALLOCATE freeing in-use
+> virtual console" the port refcount is incremented while the vt is open.
+> 
+> Reproducer (very unreliable, but it worked for me after a few minutes):
+> 
 > 	#include <fcntl.h>
 > 	#include <linux/vt.h>
-> 	#include <sys/ioctl.h>
-> 	#include <unistd.h>
 > 
 > 	int main()
 > 	{
-> 		if (fork()) {
-> 			for (;;)
-> 				close(open("/dev/tty5", O_RDWR));
-> 		} else {
-> 			int fd = open("/dev/tty10", O_RDWR);
+> 		int fd, nproc;
+> 		struct vt_stat state;
+> 		char ttyname[16];
 > 
-> 			for (;;)
-> 				ioctl(fd, VT_DISALLOCATE, 5);
+> 		fd = open("/dev/tty10", O_RDONLY);
+> 		for (nproc = 1; nproc < 8; nproc *= 2)
+> 			fork();
+> 		for (;;) {
+> 			sprintf(ttyname, "/dev/tty%d", rand() % 8);
+> 			close(open(ttyname, O_RDONLY));
+> 			ioctl(fd, VT_GETSTATE, &state);
 > 		}
 > 	}
 > 
 > KASAN report:
-> 	BUG: KASAN: use-after-free in con_shutdown+0x76/0x80 drivers/tty/vt/vt.c:3278
-> 	Write of size 8 at addr ffff88806a4ec108 by task syz_vt/129
 > 
-> 	CPU: 0 PID: 129 Comm: syz_vt Not tainted 5.6.0-rc2 #11
+> 	BUG: KASAN: use-after-free in vt_in_use drivers/tty/vt/vt_ioctl.c:48 [inline]
+> 	BUG: KASAN: use-after-free in vt_ioctl+0x1ad3/0x1d70 drivers/tty/vt/vt_ioctl.c:657
+> 	Read of size 4 at addr ffff888065722468 by task syz-vt2/132
+> 
+> 	CPU: 0 PID: 132 Comm: syz-vt2 Not tainted 5.6.0-rc5-00130-g089b6d3654916 #13
 > 	Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20191223_100556-anatol 04/01/2014
 > 	Call Trace:
 > 	 [...]
-> 	 con_shutdown+0x76/0x80 drivers/tty/vt/vt.c:3278
-> 	 release_tty+0xa8/0x410 drivers/tty/tty_io.c:1514
-> 	 tty_release_struct+0x34/0x50 drivers/tty/tty_io.c:1629
-> 	 tty_release+0x984/0xed0 drivers/tty/tty_io.c:1789
+> 	 vt_in_use drivers/tty/vt/vt_ioctl.c:48 [inline]
+> 	 vt_ioctl+0x1ad3/0x1d70 drivers/tty/vt/vt_ioctl.c:657
+> 	 tty_ioctl+0x9db/0x11b0 drivers/tty/tty_io.c:2660
 > 	 [...]
 > 
-> 	Allocated by task 129:
+> 	Allocated by task 136:
 > 	 [...]
 > 	 kzalloc include/linux/slab.h:669 [inline]
-> 	 vc_allocate drivers/tty/vt/vt.c:1085 [inline]
-> 	 vc_allocate+0x1ac/0x680 drivers/tty/vt/vt.c:1066
-> 	 con_install+0x4d/0x3f0 drivers/tty/vt/vt.c:3229
-> 	 tty_driver_install_tty drivers/tty/tty_io.c:1228 [inline]
-> 	 tty_init_dev+0x94/0x350 drivers/tty/tty_io.c:1341
+> 	 alloc_tty_struct+0x96/0x8a0 drivers/tty/tty_io.c:2982
+> 	 tty_init_dev+0x23/0x350 drivers/tty/tty_io.c:1334
 > 	 tty_open_by_driver drivers/tty/tty_io.c:1987 [inline]
 > 	 tty_open+0x3ca/0xb30 drivers/tty/tty_io.c:2035
 > 	 [...]
 > 
-> 	Freed by task 130:
+> 	Freed by task 41:
 > 	 [...]
-> 	 kfree+0xbf/0x1e0 mm/slab.c:3757
-> 	 vt_disallocate drivers/tty/vt/vt_ioctl.c:300 [inline]
-> 	 vt_ioctl+0x16dc/0x1e30 drivers/tty/vt/vt_ioctl.c:818
-> 	 tty_ioctl+0x9db/0x11b0 drivers/tty/tty_io.c:2660
+> 	 kfree+0xbf/0x200 mm/slab.c:3757
+> 	 free_tty_struct+0x8d/0xb0 drivers/tty/tty_io.c:177
+> 	 release_one_tty+0x22d/0x2f0 drivers/tty/tty_io.c:1468
+> 	 process_one_work+0x7f1/0x14b0 kernel/workqueue.c:2264
+> 	 worker_thread+0x8b/0xc80 kernel/workqueue.c:2410
 > 	 [...]
 > 
 > Fixes: 4001d7b7fc27 ("vt: push down the tty lock so we can see what is left to tackle")
 > Cc: <stable@vger.kernel.org> # v3.4+
-> Reported-by: syzbot+522643ab5729b0421998@syzkaller.appspotmail.com
 > Signed-off-by: Eric Biggers <ebiggers@google.com>
+
+I cannot think of anything better with the current poor code state, so:
 
 Acked-by: Jiri Slaby <jslaby@suse.cz>
 
-> ---
->  drivers/tty/vt/vt.c       | 23 ++++++++++++++++++++++-
->  drivers/tty/vt/vt_ioctl.c | 12 ++++--------
->  2 files changed, 26 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-> index bbc26d73209a4..309a39197be0a 100644
-> --- a/drivers/tty/vt/vt.c
-> +++ b/drivers/tty/vt/vt.c
-> @@ -1075,6 +1075,17 @@ static void visual_deinit(struct vc_data *vc)
->  	module_put(vc->vc_sw->owner);
->  }
->  
-> +static void vc_port_destruct(struct tty_port *port)
-> +{
-> +	struct vc_data *vc = container_of(port, struct vc_data, port);
-> +
-> +	kfree(vc);
-> +}
-> +
-> +static const struct tty_port_operations vc_port_ops = {
-> +	.destruct = vc_port_destruct,
-> +};
-> +
->  int vc_allocate(unsigned int currcons)	/* return 0 on success */
->  {
->  	struct vt_notifier_param param;
-> @@ -1100,6 +1111,7 @@ int vc_allocate(unsigned int currcons)	/* return 0 on success */
->  
->  	vc_cons[currcons].d = vc;
->  	tty_port_init(&vc->port);
-> +	vc->port.ops = &vc_port_ops;
->  	INIT_WORK(&vc_cons[currcons].SAK_work, vc_SAK);
->  
->  	visual_init(vc, currcons, 1);
-> @@ -3250,6 +3262,7 @@ static int con_install(struct tty_driver *driver, struct tty_struct *tty)
->  
->  	tty->driver_data = vc;
->  	vc->port.tty = tty;
-> +	tty_port_get(&vc->port);
->  
->  	if (!tty->winsize.ws_row && !tty->winsize.ws_col) {
->  		tty->winsize.ws_row = vc_cons[currcons].d->vc_rows;
-> @@ -3285,6 +3298,13 @@ static void con_shutdown(struct tty_struct *tty)
->  	console_unlock();
->  }
->  
-> +static void con_cleanup(struct tty_struct *tty)
-> +{
-> +	struct vc_data *vc = tty->driver_data;
-> +
-> +	tty_port_put(&vc->port);
-> +}
-> +
->  static int default_color           = 7; /* white */
->  static int default_italic_color    = 2; // green (ASCII)
->  static int default_underline_color = 3; // cyan (ASCII)
-> @@ -3410,7 +3430,8 @@ static const struct tty_operations con_ops = {
->  	.throttle = con_throttle,
->  	.unthrottle = con_unthrottle,
->  	.resize = vt_resize,
-> -	.shutdown = con_shutdown
-> +	.shutdown = con_shutdown,
-> +	.cleanup = con_cleanup,
->  };
->  
->  static struct cdev vc0_cdev;
-> diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
-> index 7297997fcf04c..f62f498f63c05 100644
-> --- a/drivers/tty/vt/vt_ioctl.c
-> +++ b/drivers/tty/vt/vt_ioctl.c
-> @@ -310,10 +310,8 @@ static int vt_disallocate(unsigned int vc_num)
->  		vc = vc_deallocate(vc_num);
->  	console_unlock();
->  
-> -	if (vc && vc_num >= MIN_NR_CONSOLES) {
-> -		tty_port_destroy(&vc->port);
-> -		kfree(vc);
-> -	}
-> +	if (vc && vc_num >= MIN_NR_CONSOLES)
-> +		tty_port_put(&vc->port);
->  
->  	return ret;
->  }
-> @@ -333,10 +331,8 @@ static void vt_disallocate_all(void)
->  	console_unlock();
->  
->  	for (i = 1; i < MAX_NR_CONSOLES; i++) {
-> -		if (vc[i] && i >= MIN_NR_CONSOLES) {
-> -			tty_port_destroy(&vc[i]->port);
-> -			kfree(vc[i]);
-> -		}
-> +		if (vc[i] && i >= MIN_NR_CONSOLES)
-> +			tty_port_put(&vc[i]->port);
->  	}
->  }
->  
-> 
-
-
+thanks,
+-- 
 -- 
 js
 suse labs
