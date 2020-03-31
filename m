@@ -2,175 +2,188 @@ Return-Path: <SRS0=U7OZ=5Q=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5577C2D0EE
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Mar 2020 17:38:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E21DC2D0F2
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Mar 2020 17:52:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BAE0E212CC
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Mar 2020 17:38:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3FAE12145D
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Mar 2020 17:52:13 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="Y8M8ls/T"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726000AbgCaRiO (ORCPT
+        id S1726315AbgCaRwM (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 31 Mar 2020 13:38:14 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:43757 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725947AbgCaRiO (ORCPT
+        Tue, 31 Mar 2020 13:52:12 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:33670 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726194AbgCaRwM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 31 Mar 2020 13:38:14 -0400
-Received: by mail-ot1-f67.google.com with SMTP id a6so22884531otb.10;
-        Tue, 31 Mar 2020 10:38:11 -0700 (PDT)
+        Tue, 31 Mar 2020 13:52:12 -0400
+Received: by mail-pl1-f196.google.com with SMTP id g18so8410403plq.0
+        for <linux-serial@vger.kernel.org>; Tue, 31 Mar 2020 10:52:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=8b3WnZTTNBaPOMDMuIqGibWI1hhFOK4GHv2gbbqH4E4=;
+        b=Y8M8ls/Tz7mnjRLag509mDzeltvzbPfcMsTSXBMrI+rpRmUwjDK1+CkgdTXqyfEhYg
+         bZEmgXc4O3cx/xXKnPBfH/o2pWD2O/S4zuGQxn0PpL3D29pjVHIayEPExxJPcBvm/j+Y
+         ds26z93uo/7QI7TKsqvz0V98b+PNUYfX8DFiY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NatCpzsVL/Jub5SRdDWqKNOUn/yqrxXRqh08wwc8Rqc=;
-        b=q7WOvNdBMYWaaTTs44lIA0iZf3uY71uumDtOAzEwNRd4+ZIkKORBNaSe4YzBxhS/K8
-         nGThWuu7bA4saYUBkyaHHksD7en8BKTCP3Q5oRYU9cSBGGclIxdjumKmjtiyrQAAP16E
-         IxdCuMXO1m4FuoMTffpSu2pcfsJiLll3l+vOM0dYZ+8LIEG43ltGsEpVH63CDnTSn5N8
-         EwRYOAaY6PHkx1n3i3Mtc0yMNf4N/eAL4HHUj7KK/TJl1c29pWZP/bCTpBtaSvx/zEc0
-         VQGjmfKYbFoZ/IfvOpOLqcnH9f/8ArLaF35lWCWNwP30f2E1e8DrJsR/AzDMmttwLlaO
-         sPiw==
-X-Gm-Message-State: ANhLgQ0aYmtpiKooaBAu0kWWuUU8+uFq+rY/xhenDKbJnxqBeZh2odG3
-        ot8eS09B1P3NTy1efoY198n2ny4mZGanfEDzXfs=
-X-Google-Smtp-Source: ADFU+vspEF2v26kohoeQ7QCAm0+UjlxoiRqZx5TDaqKhKoeYsajATEeEwLC7UOQBIc2LLDWOeDRVBW69y/TRQm7lJ2M=
-X-Received: by 2002:a9d:7590:: with SMTP id s16mr13796162otk.250.1585676291361;
- Tue, 31 Mar 2020 10:38:11 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=8b3WnZTTNBaPOMDMuIqGibWI1hhFOK4GHv2gbbqH4E4=;
+        b=JHY1WVdo0A5kyeuMY/bg9lCYksGk9TmOxJT+rmAb6vgv+7E3G/vyv5a+IbIw6OrJZ2
+         4MRBCNsIrkwUhdVHwV2Ac0qBFwz1qdiY5etsrcpy9+JLcSnzdG3yF+VUFiHp31Zzk/c1
+         gdAm1jJm7n8lWAbYuj/I9xXrVRgPX1V+E3Kul+iY2aDycqyO+xhBn4Oj2KxyWBSPEDF9
+         IaW2dGWA2QZvNlfptQbwFTlL+lSCCjdWqOPaxdH+5zPLYtTd9Yvr1nl7tA6FHLJqxhot
+         u9VKodF3rXharHFC0vEIZIoxnmXbMXAra0N+Br/Grmq1ITk3s8L7m+MEAYvqQuGh1IbW
+         hRTg==
+X-Gm-Message-State: AGi0Puae5UH224Ppe9bgJ71XtmQ/ytItWQ28S/9WwdmzDab7BdwhGI6v
+        cygiDVFBB7dPzYcQ0PID7+VSVA==
+X-Google-Smtp-Source: APiQypLEDWt9naJrmZKRq7qNu/KyQtF3te2IOlxl2ISxISRKDGfkLLJ/GDPPR5qiBNFBaLE8bdDXAw==
+X-Received: by 2002:a17:90a:e398:: with SMTP id b24mr16072pjz.113.1585677129802;
+        Tue, 31 Mar 2020 10:52:09 -0700 (PDT)
+Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
+        by smtp.gmail.com with ESMTPSA id i187sm12910140pfg.33.2020.03.31.10.52.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Mar 2020 10:52:09 -0700 (PDT)
+Date:   Tue, 31 Mar 2020 10:52:07 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Akash Asthana <akashast@codeaurora.org>
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
+        mark.rutland@arm.com, robh+dt@kernel.org, georgi.djakov@linaro.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, dianders@chromium.org,
+        evgreen@chromium.org
+Subject: Re: [PATCH V3 2/8] soc: qcom: geni: Support for ICC voting
+Message-ID: <20200331175207.GG199755@google.com>
+References: <1585652976-17481-1-git-send-email-akashast@codeaurora.org>
+ <1585652976-17481-3-git-send-email-akashast@codeaurora.org>
 MIME-Version: 1.0
-References: <1585333048-31828-1-git-send-email-kazuhiro.fujita.jg@renesas.com>
- <CAMuHMdW+u5r6zyxFJsVzj21BYDrKCr=Q6Ojk5VeN+mkhvXX9Jw@mail.gmail.com> <OSBPR01MB3590E3D12546BC6711CEB542AAC80@OSBPR01MB3590.jpnprd01.prod.outlook.com>
-In-Reply-To: <OSBPR01MB3590E3D12546BC6711CEB542AAC80@OSBPR01MB3590.jpnprd01.prod.outlook.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 31 Mar 2020 19:38:00 +0200
-Message-ID: <CAMuHMdW+CACQXNa4RZwU4WgPY=Hw4w+o6vQ_c7=PemJOF+Ct6w@mail.gmail.com>
-Subject: Re: [PATCH] serial: sh-sci: Make sure status register SCxSR is read
- in correct sequence
-To:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Kazuhiro Fujita <kazuhiro.fujita.jg@renesas.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hao Bui <hao.bui.yg@renesas.com>,
-        KAZUMI HARADA <kazumi.harada.rh@renesas.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Chris Brandt <Chris.Brandt@renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1585652976-17481-3-git-send-email-akashast@codeaurora.org>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Prabhakar,
+Hi Akash,
 
-On Tue, Mar 31, 2020 at 5:58 PM Prabhakar Mahadev Lad
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> > -----Original Message-----
-> > From: Geert Uytterhoeven <geert@linux-m68k.org>
-> > Sent: 31 March 2020 16:18
-> > To: Kazuhiro Fujita <kazuhiro.fujita.jg@renesas.com>
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>; Jiri Slaby <jslaby@suse.com>; open list:SERIAL DRIVERS <linux-
-> > serial@vger.kernel.org>; Linux-Renesas <linux-renesas-soc@vger.kernel.org>; Prabhakar <prabhakar.csengg@gmail.com>; Linux Kernel
-> > Mailing List <linux-kernel@vger.kernel.org>; Hao Bui <hao.bui.yg@renesas.com>; KAZUMI HARADA <kazumi.harada.rh@renesas.com>;
-> > Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>; Sasha Levin <sashal@kernel.org>; Chris Brandt
-> > <Chris.Brandt@renesas.com>
-> > Subject: Re: [PATCH] serial: sh-sci: Make sure status register SCxSR is read in correct sequence
->> > On Fri, Mar 27, 2020 at 7:17 PM Kazuhiro Fujita
-> > <kazuhiro.fujita.jg@renesas.com> wrote:
-> > > For SCIF and HSCIF interfaces the SCxSR register holds the status of
-> > > data that is to be read next from SCxRDR register, But where as for
-> > > SCIFA and SCIFB interfaces SCxSR register holds status of data that is
-> > > previously read from SCxRDR register.
-> > >
-> > > This patch makes sure the status register is read depending on the port
-> > > types so that errors are caught accordingly.
-> > >
-> > > Cc: <stable@vger.kernel.org>
-> > > Signed-off-by: Kazuhiro Fujita <kazuhiro.fujita.jg@renesas.com>
-> > > Signed-off-by: Hao Bui <hao.bui.yg@renesas.com>
-> > > Signed-off-by: KAZUMI HARADA <kazumi.harada.rh@renesas.com>
-> > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> >
-> > Thanks for your patch!
-> >
-> > > --- a/drivers/tty/serial/sh-sci.c
-> > > +++ b/drivers/tty/serial/sh-sci.c
-> > > @@ -870,9 +870,16 @@ static void sci_receive_chars(struct uart_port *port)
-> > >                                 tty_insert_flip_char(tport, c, TTY_NORMAL);
-> > >                 } else {
-> > >                         for (i = 0; i < count; i++) {
-> > > -                               char c = serial_port_in(port, SCxRDR);
-> > > -
-> > > -                               status = serial_port_in(port, SCxSR);
-> > > +                               char c;
-> > > +
-> > > +                               if (port->type == PORT_SCIF ||
-> > > +                                   port->type == PORT_HSCIF) {
-> > > +                                       status = serial_port_in(port, SCxSR);
-> > > +                                       c = serial_port_in(port, SCxRDR);
-> > > +                               } else {
-> > > +                                       c = serial_port_in(port, SCxRDR);
-> > > +                                       status = serial_port_in(port, SCxSR);
-> > > +                               }
-> > >                                 if (uart_handle_sysrq_char(port, c)) {
-> > >                                         count--; i--;
-> > >                                         continue;
-> >
-> > I can confirm that the documentation for the Serial Status Register on
-> >   1. (H)SCIF on R-Car Gen1/2/3 says the framing/error flag applies to
-> >      the data that is "to be read next" from the FIFO., and that the
-> >      "Sample Flowchart for Serial Reception (2)" confirms this,
-> >   2. SCIF[AB] on R-Car Gen2, SH-Mobile AG5, R-Mobile A1 and APE6 says
-> >      the framing/error flag applies to the receive data that is "read"
-> >      from the FIFO, and that the "Example of Flow for Serial Reception
-> >      (2)" confirms this,
-> >   3. SCIF on RZ/A1H says something similar as for (H)SCIF above, using
-> >      slightly different wording, also confirmed by the "Sample Flowchart
-> >      for Receiving Serial Data (2)".
-> >
-> > However, the documentation for "SCIFA" on RZ/A2 (for which we use
-> > PORT_SCIF, not PORT_SCIFA, in the driver) has conflicting information:
-> >   1. Section 17.2.7 "Serial Status Register (FSR)" says:
-> >        - A receive framing/parity error occurred in the "next receive
-> >          data read" from the FIFO,
-> >        - Indicates whether there is a framing/parity error in the data
-> >          "read" from the FIFO.
-> >   2. Figure 17.8 "Sample Flowchart for Receiving Serial Data in
-> >      Asynchronous Mode (2)".
-> >        - Whether a framing error or parity error has occurred in the
-> >          received data that is "read" from the FIFO.
-> >
-> > So while the change looks OK for most Renesas ARM SoCs, the situation
-> > for RZ/A2 is unclear.
-> > Note that the above does not take into account variants used on SuperH
-> > SoCs.
-> >
-> I'll dig out some documentation wrt RZ/A2 & SuperH. Also H8300 needs to be considered.
+On Tue, Mar 31, 2020 at 04:39:30PM +0530, Akash Asthana wrote:
+> Add necessary macros and structure variables to support ICC BW
+> voting from individual SE drivers.
+> 
+> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+> ---
+> Changes in V2:
+>  - As per Bjorn's comment dropped enums for ICC paths, given the three
+>    paths individual members
+> 
+> Changes in V3:
+>  - Add geni_icc_get, geni_icc_vote_on and geni_icc_vote_off as helper API.
+>  - Add geni_icc_path structure in common header
+> 
+>  drivers/soc/qcom/qcom-geni-se.c | 98 +++++++++++++++++++++++++++++++++++++++++
+>  include/linux/qcom-geni-se.h    | 36 +++++++++++++++
+>  2 files changed, 134 insertions(+)
+> 
+> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
+> index 7d622ea..9344c14 100644
+> --- a/drivers/soc/qcom/qcom-geni-se.c
+> +++ b/drivers/soc/qcom/qcom-geni-se.c
+> @@ -720,6 +720,104 @@ void geni_se_rx_dma_unprep(struct geni_se *se, dma_addr_t iova, size_t len)
+>  }
+>  EXPORT_SYMBOL(geni_se_rx_dma_unprep);
+>  
+> +int geni_icc_get(struct geni_se *se, const char *icc_core, const char *icc_cpu,
+> +		const char *icc_ddr)
+> +{
+> +	if (icc_core) {
+> +		se->to_core.path = devm_of_icc_get(se->dev, "qup-core");
+> +		if (IS_ERR(se->to_core.path))
+> +			return PTR_ERR(se->to_core.path);
+> +	}
+> +
+> +	if (icc_cpu) {
+> +		se->from_cpu.path = devm_of_icc_get(se->dev, "qup-config");
+> +		if (IS_ERR(se->from_cpu.path))
+> +			return PTR_ERR(se->from_cpu.path);
+> +	}
+> +
+> +	if (icc_ddr) {
+> +		se->to_ddr.path = devm_of_icc_get(se->dev, "qup-memory");
+> +		if (IS_ERR(se->to_ddr.path))
+> +			return PTR_ERR(se->to_ddr.path);
+> +	}
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(geni_icc_get);
+> +
+> +int geni_icc_vote_on(struct geni_se *se)
+> +{
+> +	int ret;
+> +
+> +	if (se->to_core.path) {
+> +		ret = icc_set_bw(se->to_core.path, se->to_core.avg_bw,
+> +			se->to_core.peak_bw);
+> +		if (ret) {
+> +			dev_err_ratelimited(se->dev, "%s: ICC BW voting failed for core\n",
+> +						__func__);
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	if (se->from_cpu.path) {
+> +		ret = icc_set_bw(se->from_cpu.path, se->from_cpu.avg_bw,
+> +			se->from_cpu.peak_bw);
+> +		if (ret) {
+> +			dev_err_ratelimited(se->dev, "%s: ICC BW voting failed for cpu\n",
+> +						__func__);
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	if (se->to_ddr.path) {
+> +		ret = icc_set_bw(se->to_ddr.path, se->to_ddr.avg_bw,
+> +			se->to_ddr.peak_bw);
+> +		if (ret) {
+> +			dev_err_ratelimited(se->dev, "%s: ICC BW voting failed for ddr\n",
+> +						__func__);
+> +			return ret;
+> +		}
+> +	}
 
-AFAIK, H8/300 has SCI only, so is not affected.
 
-> By any chance do you have RZ/A2 to test .
+With an array of 'struct geni_icc_path' pointers the above could be
+reduced to:
 
-Actually I do.
+	for (i = 0; i < ARRAY_SIZE(se->icc_paths); i++) {
+		if (!se->icc_paths[i])
+			continue;
 
-> > Nevertheless, this patch will need some testing on various hardware.
-> > Do you have a test case to verify the broken/fixed behavior?
-> >
-> Agreed, its been tested on RZ/G2x & RZ/G1x  by doing a loopback test, configure one interface as CS8 mode(8-bits data, No parity) and other as CS7 mode (7-bits data, 1-bit Parity) and parity errors should be detected.
+		ret = icc_set_bw(se->icc_paths[i]->path, se->icc_paths[i]->avg_bw,
+			se->icc_paths[i]->peak_bw);
+		if (ret) {
+			dev_err_ratelimited(se->dev, "%s: ICC BW voting failed\n",
+						__func__);
+			return ret;
+		}
+	}
 
-Thanks, that's good to know!
+similar for geni_icc_vote_off()
 
-Gr{oetje,eeting}s,
+It's just a suggestion, looks also good to me as is.
 
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
