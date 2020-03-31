@@ -2,134 +2,172 @@ Return-Path: <SRS0=U7OZ=5Q=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55477C2D0EF
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Mar 2020 19:07:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBAC2C2D0EE
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Mar 2020 19:39:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3176A212CC
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Mar 2020 19:07:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B92872072E
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Mar 2020 19:39:53 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="TZZ9tlKu"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="FV0KFnXn"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727795AbgCaTHZ (ORCPT
+        id S1728493AbgCaTjx (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 31 Mar 2020 15:07:25 -0400
-Received: from mail-eopbgr1400132.outbound.protection.outlook.com ([40.107.140.132]:29728
-        "EHLO JPN01-TY1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726315AbgCaTHZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 31 Mar 2020 15:07:25 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BtulbrudrUi3EZxWeMcJLKH0bMACuM3j52T52G2UHBXSE+2+/aXZpv8CRgjeLMo6C+hbben7T57FQxhp18rQnepfwZYECKCSeFVFi/1L2rOxVT4K+0vYCoQ5BeXOqnvnCRlfOAizu93kIeDnEwP/CHhu+/y7qGl8YrQtVrf68Z6p2UQtBLu8n4zqD+AtxW4go3s8xCbmB1ObiANok55dRPmbxIVKxNOh42veBhPVxct9dG1uH7g5KyEZRtzONjmzRfclyEA6muzSVwKCWg4ZcnzohLxXMab2S7y1qlJxlv3s+Bf4PeMMQt9mwrrWFKnhJQGU8xceRi7FIm5LzJOkvA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0kEbQqCt4aTiNCEMnkH910syExpNJ1sXT584F6+R858=;
- b=J7qiKS0xiDj6wctN6mRvMss9CmNbEMVDMlZBcO3REma82blkyI9/LV+AxAcCnC6OMafpQEGZMx1ENwXSGmD+9eHJrxpt92iAbBDuH9GC9ej45qgr4p0/ZcxYHeZZ2z9vOKlkJo6iE+9hAqBP1NO8bK/LyGZE5q9zmrZRolP/YUlcQ1CoVyo/VrSksoHa5m3klG0f96MOZqDCtdSVXSc770GehQ+0sZ4vU6h1YcCHNAzr+dUiKQ2uwmZySBiOvOgZGcdCBTBNX50dPyj95iWGdPOMIkzHniUudrpCTe8ExEOx9vaJQAqjnzFtDx1Qct5svInNq5SUUrtSuhWIsDBcFw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
+        Tue, 31 Mar 2020 15:39:53 -0400
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:55963 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728187AbgCaTjx (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 31 Mar 2020 15:39:53 -0400
+Received: by mail-pj1-f68.google.com with SMTP id fh8so1535341pjb.5
+        for <linux-serial@vger.kernel.org>; Tue, 31 Mar 2020 12:39:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0kEbQqCt4aTiNCEMnkH910syExpNJ1sXT584F6+R858=;
- b=TZZ9tlKuw65FNtAhs1lyNr4SncqnkbjJvr4puApiZ9nNG2nqgOirYm6mbTor7vcHjV0iNztRUrpBwNF+1rhu3ZPHy/4oTbT9ZgkIcJ8shU2nXgbibpy0S82ADzLUAzGmDIOJB/pqK5waEMXDNa9e1Wh/as3yPv6tQhYvQD55WIY=
-Received: from TYXPR01MB1568.jpnprd01.prod.outlook.com (52.133.166.145) by
- TYXPR01MB1613.jpnprd01.prod.outlook.com (52.133.166.13) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2878.15; Tue, 31 Mar 2020 19:07:18 +0000
-Received: from TYXPR01MB1568.jpnprd01.prod.outlook.com
- ([fe80::e9ac:8933:9767:9c69]) by TYXPR01MB1568.jpnprd01.prod.outlook.com
- ([fe80::e9ac:8933:9767:9c69%2]) with mapi id 15.20.2856.019; Tue, 31 Mar 2020
- 19:07:18 +0000
-From:   Chris Brandt <Chris.Brandt@renesas.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Kazuhiro Fujita <kazuhiro.fujita.jg@renesas.com>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hao Bui <hao.bui.yg@renesas.com>,
-        KAZUMI HARADA <kazumi.harada.rh@renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: RE: [PATCH] serial: sh-sci: Make sure status register SCxSR is read
- in correct sequence
-Thread-Topic: [PATCH] serial: sh-sci: Make sure status register SCxSR is read
- in correct sequence
-Thread-Index: AQHWBGQGJbDUemPUNEWeRBL+Vpn8T6hi1j+AgAA+RsA=
-Date:   Tue, 31 Mar 2020 19:07:18 +0000
-Message-ID: <TYXPR01MB15688F7D17F54C908C562AE38AC80@TYXPR01MB1568.jpnprd01.prod.outlook.com>
-References: <1585333048-31828-1-git-send-email-kazuhiro.fujita.jg@renesas.com>
- <CAMuHMdW+u5r6zyxFJsVzj21BYDrKCr=Q6Ojk5VeN+mkhvXX9Jw@mail.gmail.com>
-In-Reply-To: <CAMuHMdW+u5r6zyxFJsVzj21BYDrKCr=Q6Ojk5VeN+mkhvXX9Jw@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-dg-ref: PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcY2JyYW5kdDAxXGFwcGRhdGFccm9hbWluZ1wwOWQ4NDliNi0zMmQzLTRhNDAtODVlZS02Yjg0YmEyOWUzNWJcbXNnc1xtc2ctZDU1MGM4MjEtNzM4Mi0xMWVhLWFhNjAtOTRlNmY3Njc5M2FlXGFtZS10ZXN0XGQ1NTBjODIzLTczODItMTFlYS1hYTYwLTk0ZTZmNzY3OTNhZWJvZHkudHh0IiBzej0iMTQzOSIgdD0iMTMyMzAxNTUyMzYwNDk4NjQwIiBoPSJrVmVmZkVBSEdMOHI3MllIVXdGT01sUDRDbXc9IiBpZD0iIiBibD0iMCIgYm89IjEiLz48L21ldGE+
-x-dg-rorf: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=Chris.Brandt@renesas.com; 
-x-originating-ip: [75.60.247.61]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 1e05e618-7049-4b1c-e836-08d7d5a6bbcf
-x-ms-traffictypediagnostic: TYXPR01MB1613:|TYXPR01MB1613:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <TYXPR01MB16133D716B16EA07257FD4278AC80@TYXPR01MB1613.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0359162B6D
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYXPR01MB1568.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10019020)(4636009)(396003)(39860400002)(346002)(136003)(376002)(366004)(110136005)(54906003)(76116006)(8676002)(4326008)(66556008)(64756008)(66446008)(478600001)(7696005)(86362001)(9686003)(2906002)(55016002)(33656002)(81156014)(81166006)(8936002)(6506007)(26005)(316002)(186003)(66946007)(6636002)(52536014)(71200400001)(66476007)(5660300002);DIR:OUT;SFP:1102;
-received-spf: None (protection.outlook.com: renesas.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: rqKvvyHwMgiti5deadlVXGpOvoB3fGfWuwENQ8Vr0RHYOI4J/vy34/SBEGFb4BCv7e89iA3B7YHDTdpAXbLw2YnTwouXu2qcN3CPXx5Pi9TdO3r120zimBUAKr0LtsuKG4H3pi41PdW4GgcCQN9ToPujp6hB/KJM6c8VkoJtIvmMrvTK9xuvQLJp6rnM05xIzcLz9z1v8VtVekI32S/BYH4l0Cr1ghar2VIT8dHQpZNjhxnR9YN6HVu9MSfgNH4erS6d8cISPwABAvb0J022RUeRNw8kl2boe42ytnTgXJepMXbLzKi+Flaxc+bYqSwDaKGw5PG5BV57oOkhYUzmEYpvL11GMLjX4ofCnpMWa1YykARIDWrz7u26dyrptYgK0zMiftimwqSBEISdtHAr0mNvKkYVxsuZGav2Mn8fz4Eyy2NsOUlX4kVWYdVljjuL
-x-ms-exchange-antispam-messagedata: Tp2mdY5wSFZkpPxqHdbLI7SnbT8mxZL5gqVDDQIIWryuwBQXKYaEEowC81r+a4qoj5tDHCa1yYAEEX5LMbT2LwTMn3OWVbM/U+A/Wh86H/rWdISTj72tgNZtitufhaYKxzzjSuWHDHJbjWRO3X4+Rg==
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=+SEBPmaKCwakluiOKH2/X9qd2KFCw5+klGBkFt7yBuA=;
+        b=FV0KFnXnWFV6SBFzOh8FP08ZqhKreHenI9vDUSgbxtfySfNkAdijq6e7XwFFxAvGRk
+         QOOtVE6scJLeC6rCVa9ZbNaR72ECMnRJCdJka0ewLjn4VPXY5u9YtSRw8uEBQMmPghng
+         3nQ+BVEvaDoDdBzpkRzcfkikbck06smg9Bo5g=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=+SEBPmaKCwakluiOKH2/X9qd2KFCw5+klGBkFt7yBuA=;
+        b=GjMG1ADFOaPE+/6TX/tXy2843TuyDUPcf5phnxrmplVdQdau25bz49T19MIC14i5xS
+         T5ZVHoryWiGkMKy8NwIQU5ckhYSK9Y7+PrKiUyg6TC+Yz8jMz7yJ9EqzB2wXagrt+Ax6
+         Brv75kzUFOqVWK5yAzFcmSLJhUsBngsgsSM6B7oiR1fXtoo1QdalfLTJEogN/tq0Ih1p
+         OcAgl6By0dBYSWFiu9NfMUuRVV09/A+AR+WU2cBAM+WZY13DuSLlqBMtxuGoPYgfB3AF
+         /kfTR0fAsgKmo6I0WylHw7z9My4ggW5iViBpIJgWVr4sc0UInebEj81GMMjsUOK6QRZz
+         iieg==
+X-Gm-Message-State: AGi0PuYhjbIhtNxwSb5EliNiBVOmfCgUUmnhpQ3VTYFk5SI91+Gvfid+
+        G659BVAKyResIhABfnkMEk2b/A==
+X-Google-Smtp-Source: APiQypITpWVqi8mhgij3s8U7rauYobkIxu0/d4+dAG6s7e92YB2WQe21W0C75Mqwdn2vf8vd6SNbAg==
+X-Received: by 2002:a17:90a:362a:: with SMTP id s39mr591368pjb.28.1585683591124;
+        Tue, 31 Mar 2020 12:39:51 -0700 (PDT)
+Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
+        by smtp.gmail.com with ESMTPSA id e184sm12989883pfh.219.2020.03.31.12.39.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Mar 2020 12:39:50 -0700 (PDT)
+Date:   Tue, 31 Mar 2020 12:39:49 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Akash Asthana <akashast@codeaurora.org>
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
+        mark.rutland@arm.com, robh+dt@kernel.org, georgi.djakov@linaro.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, dianders@chromium.org,
+        evgreen@chromium.org
+Subject: Re: [PATCH V3 6/8] tty: serial: qcom_geni_serial: Add interconnect
+ support
+Message-ID: <20200331193949.GK199755@google.com>
+References: <1585652976-17481-1-git-send-email-akashast@codeaurora.org>
+ <1585652976-17481-7-git-send-email-akashast@codeaurora.org>
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1e05e618-7049-4b1c-e836-08d7d5a6bbcf
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Mar 2020 19:07:18.6397
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ZGBgoSMXeqqx8HxqSt1ZCcedyu3Ip5fkXgU5+Lo/qF8FqOXHbP9LqxzwKhh+OAkxFpOIdB8NpWYs6ZaJZCQsFUMwT1hVSQBVLjSTcSETKrM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYXPR01MB1613
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1585652976-17481-7-git-send-email-akashast@codeaurora.org>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-SGkgR2VlcnQsDQoNCk9uIFR1ZSwgTWFyIDMxLCAyMDIwIDEsIEdlZXJ0IFV5dHRlcmhvZXZlbiB3
-cm90ZToNCj4gSG93ZXZlciwgdGhlIGRvY3VtZW50YXRpb24gZm9yICJTQ0lGQSIgb24gUlovQTIg
-KGZvciB3aGljaCB3ZSB1c2UNCj4gUE9SVF9TQ0lGLCBub3QgUE9SVF9TQ0lGQSwgaW4gdGhlIGRy
-aXZlcikgaGFzIGNvbmZsaWN0aW5nIGluZm9ybWF0aW9uOg0KPiAgIDEuIFNlY3Rpb24gMTcuMi43
-ICJTZXJpYWwgU3RhdHVzIFJlZ2lzdGVyIChGU1IpIiBzYXlzOg0KPiAgICAgICAgLSBBIHJlY2Vp
-dmUgZnJhbWluZy9wYXJpdHkgZXJyb3Igb2NjdXJyZWQgaW4gdGhlICJuZXh0IHJlY2VpdmUNCj4g
-ICAgICAgICAgZGF0YSByZWFkIiBmcm9tIHRoZSBGSUZPLA0KPiAgICAgICAgLSBJbmRpY2F0ZXMg
-d2hldGhlciB0aGVyZSBpcyBhIGZyYW1pbmcvcGFyaXR5IGVycm9yIGluIHRoZSBkYXRhDQo+ICAg
-ICAgICAgICJyZWFkIiBmcm9tIHRoZSBGSUZPLg0KPiAgIDIuIEZpZ3VyZSAxNy44ICJTYW1wbGUg
-Rmxvd2NoYXJ0IGZvciBSZWNlaXZpbmcgU2VyaWFsIERhdGEgaW4NCj4gICAgICBBc3luY2hyb25v
-dXMgTW9kZSAoMikiLg0KPiAgICAgICAgLSBXaGV0aGVyIGEgZnJhbWluZyBlcnJvciBvciBwYXJp
-dHkgZXJyb3IgaGFzIG9jY3VycmVkIGluIHRoZQ0KPiAgICAgICAgICByZWNlaXZlZCBkYXRhIHRo
-YXQgaXMgInJlYWQiIGZyb20gdGhlIEZJRk8uDQo+IA0KPiBTbyB3aGlsZSB0aGUgY2hhbmdlIGxv
-b2tzIE9LIGZvciBtb3N0IFJlbmVzYXMgQVJNIFNvQ3MsIHRoZSBzaXR1YXRpb24NCj4gZm9yIFJa
-L0EyIGlzIHVuY2xlYXIuDQo+IE5vdGUgdGhhdCB0aGUgYWJvdmUgZG9lcyBub3QgdGFrZSBpbnRv
-IGFjY291bnQgdmFyaWFudHMgdXNlZCBvbiBTdXBlckgNCj4gU29Dcy4NCg0KRm9yIHRoZSBSWi9B
-Mk0sIGl0IGlzIE5PVCBhICJTQ0lGQSIuLi5ldmVuIHRob3VnaCBpdCBzYXlzIHRoYXQgaW4gdGhl
-IA0KaGFyZHdhcmUgbWFudWFsLg0KDQpBbmQgaG9uZXN0bHksIEkgY291bGQgbm90IHRyYWNlIGJh
-Y2sgd2hlcmUgdGhhdCBJUCBjYW1lIGZyb20uIEl0IHdhcyANCmZyb20gc29tZXdoZXJlIGluIHRo
-ZSBNQ1UgZGVzaWduIHNlY3Rpb24gKG5vdCB0aGUgU29DIGRlc2lnbiBzZWN0aW9uKS4gDQpTb21l
-b25lIG1vZGlmaWVkIHRoZSBJUCBzbyB0aGV5IHB1dCBhbiAiQSIgYXQgdGhlIGVuZCB0byBzaG93
-IGl0IHdhcyANCmRpZmZlcmVudC4gUmVnYXJkbGVzcywgaXQgaGFzIGEgZGlmZmVyZW50IGhpc3Rv
-cnkgdGhhbiBhbGwgdGhlIG90aGVyIElQIA0Kc3VwcG9ydGVkIGJ5IHRoZSBTQ0kgZHJpdmVyLg0K
-DQpDaHJpcw0KDQo=
+Hi Akash,
+
+On Tue, Mar 31, 2020 at 04:39:34PM +0530, Akash Asthana wrote:
+> Get the interconnect paths for Uart based Serial Engine device
+> and vote according to the baud rate requirement of the driver.
+> 
+> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+> ---
+> Changes in V2:
+>  - As per Bjorn's comment, removed se == NULL check from geni_serial_icc_get
+>  - As per Bjorn's comment, removed code to set se->icc_path* to NULL in failure
+>  - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
+>    path handle
+>  - As per Matthias comment, added error handling for icc_set_bw call
+> 
+> Changes in V3:
+>  - As per Matthias comment, use common library APIs defined in geni-se
+>    driver for ICC functionality.
+> 
+>  drivers/tty/serial/qcom_geni_serial.c | 28 +++++++++++++++++++++++++---
+>  1 file changed, 25 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 8c5d97c..2befe72 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -965,6 +965,14 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+>  	ser_clk_cfg = SER_CLK_EN;
+>  	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
+>  
+> +	/*
+> +	 * Bump up BW vote on CPU path as driver supports FIFO mode only.
+> +	 * Assume peak_bw as twice of avg_bw.
+> +	 */
+> +	port->se.from_cpu.avg_bw = Bps_to_icc(baud);
+> +	port->se.from_cpu.peak_bw = Bps_to_icc(2 * baud);
+> +	geni_icc_vote_on(&port->se);
+> +
+>  	/* parity */
+>  	tx_trans_cfg = readl(uport->membase + SE_UART_TX_TRANS_CFG);
+>  	tx_parity_cfg = readl(uport->membase + SE_UART_TX_PARITY_CFG);
+> @@ -1202,11 +1210,14 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
+>  	if (old_state == UART_PM_STATE_UNDEFINED)
+>  		old_state = UART_PM_STATE_OFF;
+>  
+> -	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
+> +	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF) {
+> +		geni_icc_vote_on(&port->se);
+>  		geni_se_resources_on(&port->se);
+> -	else if (new_state == UART_PM_STATE_OFF &&
+> -			old_state == UART_PM_STATE_ON)
+> +	} else if (new_state == UART_PM_STATE_OFF &&
+> +			old_state == UART_PM_STATE_ON) {
+>  		geni_se_resources_off(&port->se);
+> +		geni_icc_vote_off(&port->se);
+> +	}
+>  }
+>  
+>  static const struct uart_ops qcom_geni_console_pops = {
+> @@ -1304,6 +1315,17 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+>  			return -ENOMEM;
+>  	}
+>  
+> +	ret = geni_icc_get(&port->se, "qup-core", "qup-config", NULL);
+> +	if (ret)
+> +		return ret;
+> +	/* Set the bus quota to a reasonable value */
+> +	port->se.to_core.avg_bw = console ? GENI_DEFAULT_BW :
+> +		Bps_to_icc(CORE_2X_50_MHZ);
+> +	port->se.to_core.peak_bw = console ? GENI_DEFAULT_BW :
+> +		Bps_to_icc(CORE_2X_100_MHZ);
+
+I'm still unconvinced about the setting of the core bandwidth based on
+whether the port is used as console or not. It could possibly break
+consoles working at speeds > 115kbs and reserve more bandwidth than
+necessary for ports with 'slow' devices.
+
+Why not scale the core bandwidth dynamically? You said earlier that there
+is no clear/linear translation of port speed to bandwidth, but you could
+use the same logic that is implicitly used here:
+
+	if (baudrate <= 115200) {
+		avg_bw = GENI_DEFAULT_BW;
+		peak_bw = GENI_DEFAULT_BW;
+	} else {
+		avg_bw = Bps_to_icc(CORE_2X_50_MHZ);
+		peak_bw = Bps_to_icc(CORE_2X_100_MHZ);
+	}
+
+This would be more robust, power efficient and future readers of the
+code don't have to wonder "why is the console special?" when our
+discussions on this will be long forgotten.
