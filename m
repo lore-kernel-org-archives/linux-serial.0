@@ -2,113 +2,319 @@ Return-Path: <SRS0=U7OZ=5Q=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EA13C2D0F0
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Mar 2020 21:29:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 781D8C2D0EE
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Mar 2020 23:32:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2F02E20838
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Mar 2020 21:29:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1585690143;
-	bh=zeQz3P5uINoHAu6wXSk1ziID+DNGC43vdWgwOPNsMBk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=Jhwo2q0/8VH3ocLqKI4o2IyLRRSQvt2gGvHucj4FgP+s+cSEzGojV7fO1GcjSSZFk
-	 sCDKDsk1Xy3Dy5cqkQISFgOovWvAOgY5nn19GG6WNumSvQhvWrrpJgDnYhlj4PLR2n
-	 pvZB7RqYW+bzapjggezaYZLxMDk4vPPi5JPMFVn8=
+	by mail.kernel.org (Postfix) with ESMTP id 441D1208FE
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Mar 2020 23:32:15 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="LJS0gu5N"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728428AbgCaV3C (ORCPT
+        id S1731331AbgCaXcO (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 31 Mar 2020 17:29:02 -0400
-Received: from mail-il1-f196.google.com ([209.85.166.196]:45430 "EHLO
-        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727852AbgCaV3C (ORCPT
+        Tue, 31 Mar 2020 19:32:14 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:40770 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731407AbgCaXcO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 31 Mar 2020 17:29:02 -0400
-Received: by mail-il1-f196.google.com with SMTP id x16so20981916ilp.12;
-        Tue, 31 Mar 2020 14:29:02 -0700 (PDT)
+        Tue, 31 Mar 2020 19:32:14 -0400
+Received: by mail-pf1-f196.google.com with SMTP id c20so8584342pfi.7
+        for <linux-serial@vger.kernel.org>; Tue, 31 Mar 2020 16:32:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1HVkfCZfA09hqCSwGr9pi3bCsfyBjCkprFJud88h6Eg=;
+        b=LJS0gu5NPnfkn+N8TfYnBTTyF+DE7VO9inN7xOWsdRJ2Yf/pBLhcc3ZWWw10EODhVi
+         g8rPT4+9brsADpP8MdC3CRFnnM/ozbwUqPaa1B9hGMfFsY3gyf80n3dSwiQs4+cLs93K
+         glHidqby5ckbHHxSaPVuKXjN7AMOhTzSLRhftPIRQK1oB0IL3yhoOS1X+bbIJCnuI3+3
+         L2TNkCrcGIB73wdVxAq0gJv5b9B/G3ZYlIR4WnOvfHXCQXCFQMdXHMNqv0u9tDSGbmS9
+         WFQ/RhsBa7yo9P06SNZHiqiwU+b5TL7WdLY0P2D2QMP/l/Z1jjENWM8LJH8ZGqAQpJ0K
+         Y0Tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=kkvlt8/Qu8L0FOjwQCAMUHyd9CkHdAVLhm7bVH6k0Os=;
-        b=FuosEFuDaIGv1JZ8vwuATRx2ma6Z8EpGSBeg7hzO+StfKLUI98+T6n4n47NMCsqj8i
-         c5qKHQ8ZUz/Xgr3lxk04B8IJvoTDwXpnrfyJ/xElr+KvwT8BT6O/MLzsFm3GmWXHsdZU
-         Un/rTWCeChuVH/csQqTp3Gy4XqKLjhsy80IIzglIz7USjigiqnmw0nkhSzV5jpL23UKw
-         ZSVdLothR24FIGHVtDimY58MqRAGwjyiktgJ56PtKdwqjEYEzmkLFkb6APNt9zlJ4inD
-         Ycii1P+D445hM13RD5lMFzRv69SebnQgBJo9aQf0fVWzU52ReRuN55p2Nw+u+IhabWrq
-         /e6g==
-X-Gm-Message-State: ANhLgQ0sSK7ZHoMfLEwDiWFjHHqiiAMHLE9Tb/pCguOxA5xgKTRL4Yx9
-        VTTTr+CCMmMgdpQGGyEurw==
-X-Google-Smtp-Source: ADFU+vs8rrwwBfgqZsedXMcfqhov0x+4IQyETdV1XOaXEzpLKlk5hqcbe40ixwQa4QeSisLTDzecaw==
-X-Received: by 2002:a92:8517:: with SMTP id f23mr19418072ilh.106.1585690141676;
-        Tue, 31 Mar 2020 14:29:01 -0700 (PDT)
-Received: from rob-hp-laptop ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id c28sm25422ilf.26.2020.03.31.14.28.59
+         :mime-version:content-disposition:in-reply-to;
+        bh=1HVkfCZfA09hqCSwGr9pi3bCsfyBjCkprFJud88h6Eg=;
+        b=PF5N37vZiP1+DJ7wft8FWCuOZZ42OUkXH8BFmiaMYSOE2OaRSbDnBYu7MS7T4rPGhc
+         Z4hrH3HIc2VOcn35X5rB7W66zF59wRLp5vM4Mu+d4y5ddXKsvS5Syk0MtlQM7RTHFOxo
+         OYOLrHeYq75pNB66Zl4D6qLHl9DrJwD6299hsuud05ooy5M2eoBOYbwj9Ju4vgG2SDuP
+         BhxSddLmR9YbG1UgREuG2HLwbM0I2fXZ5YBz6dIIjnTzSpIKXr0K/fAO6gX7hQyRbXwE
+         nQ0V1QKdmS6ohSo3jg0dmTVr2A8bkgbU2AYOAyPamNjUX0/CTtwEyXDA2eMwkX4Y+k9L
+         aGLA==
+X-Gm-Message-State: ANhLgQ1xR4O1puGiyncXJmRrcKShn4+LqKGfJHE1R7oURogabYTAG0kS
+        cokKIhXMbF/qE1tDHiCAxUXbFg==
+X-Google-Smtp-Source: ADFU+vvnkx2Csw/AMK/p49sBaVOWuY1loy/APpY6aE13XVgXhALJ7Zl0e6xhwPFi2IfS425Vh5SsQg==
+X-Received: by 2002:a62:30c6:: with SMTP id w189mr20952100pfw.257.1585697532480;
+        Tue, 31 Mar 2020 16:32:12 -0700 (PDT)
+Received: from minitux (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
+        by smtp.gmail.com with ESMTPSA id a8sm91544pgg.79.2020.03.31.16.32.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Mar 2020 14:29:00 -0700 (PDT)
-Received: (nullmailer pid 27765 invoked by uid 1000);
-        Tue, 31 Mar 2020 21:28:57 -0000
-Date:   Tue, 31 Mar 2020 15:28:57 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        Chris Brandt <chris.brandt@renesas.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-sh@vger.kernel.org, uclinux-h8-devel@lists.sourceforge.jp,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH v2] dt-bindings: serial: sh-sci: Convert to json-schema
-Message-ID: <20200331212857.GA27690@bogus>
-References: <20200325095721.11946-1-geert+renesas@glider.be>
+        Tue, 31 Mar 2020 16:32:11 -0700 (PDT)
+Date:   Tue, 31 Mar 2020 16:32:09 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Akash Asthana <akashast@codeaurora.org>
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org, wsa@the-dreams.de,
+        broonie@kernel.org, mark.rutland@arm.com, robh+dt@kernel.org,
+        georgi.djakov@linaro.org, linux-i2c@vger.kernel.org,
+        linux-spi@vger.kernel.org, devicetree@vger.kernel.org,
+        swboyd@chromium.org, mgautam@codeaurora.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        mka@chromium.org, dianders@chromium.org, evgreen@chromium.org
+Subject: Re: [PATCH V3 2/8] soc: qcom: geni: Support for ICC voting
+Message-ID: <20200331233209.GF254911@minitux>
+References: <1585652976-17481-1-git-send-email-akashast@codeaurora.org>
+ <1585652976-17481-3-git-send-email-akashast@codeaurora.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200325095721.11946-1-geert+renesas@glider.be>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1585652976-17481-3-git-send-email-akashast@codeaurora.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, 25 Mar 2020 10:57:21 +0100, Geert Uytterhoeven wrote:
-> Convert the Renesas Serial Communication Interface ((H)SCI(F)(A|B))
-> Device Tree binding documentation to json-schema.
-> 
-> Split the bindings in 5 files, one per major type, to ease expressing
-> constraints.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
-> v2:
->   - Drop paragraph about aliases,
->   - Fix power-domains and resets to maxItems 1,
->   - Use a single const compatible value for SCI,
->   - Use lists of descriptions and const values for interrupts resp.
->     interrupt-names for SCI and SCIF,
->   - Use multiple possible lists of descriptions and const values for
->     interrupts resp. interrupt-names for SCIF.
-> ---
->  .../bindings/serial/renesas,hscif.yaml        | 135 ++++++++++++++
->  .../bindings/serial/renesas,sci-serial.txt    | 150 ---------------
->  .../bindings/serial/renesas,sci.yaml          |  69 +++++++
->  .../bindings/serial/renesas,scif.yaml         | 172 ++++++++++++++++++
->  .../bindings/serial/renesas,scifa.yaml        | 107 +++++++++++
->  .../bindings/serial/renesas,scifb.yaml        |  98 ++++++++++
->  6 files changed, 581 insertions(+), 150 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/serial/renesas,hscif.yaml
->  delete mode 100644 Documentation/devicetree/bindings/serial/renesas,sci-serial.txt
->  create mode 100644 Documentation/devicetree/bindings/serial/renesas,sci.yaml
->  create mode 100644 Documentation/devicetree/bindings/serial/renesas,scif.yaml
->  create mode 100644 Documentation/devicetree/bindings/serial/renesas,scifa.yaml
->  create mode 100644 Documentation/devicetree/bindings/serial/renesas,scifb.yaml
-> 
+On Tue 31 Mar 04:09 PDT 2020, Akash Asthana wrote:
 
-Applied, thanks.
+> Add necessary macros and structure variables to support ICC BW
+> voting from individual SE drivers.
+> 
+> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+> ---
+> Changes in V2:
+>  - As per Bjorn's comment dropped enums for ICC paths, given the three
+>    paths individual members
+> 
+> Changes in V3:
+>  - Add geni_icc_get, geni_icc_vote_on and geni_icc_vote_off as helper API.
+>  - Add geni_icc_path structure in common header
+> 
+>  drivers/soc/qcom/qcom-geni-se.c | 98 +++++++++++++++++++++++++++++++++++++++++
+>  include/linux/qcom-geni-se.h    | 36 +++++++++++++++
+>  2 files changed, 134 insertions(+)
+> 
+> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
+> index 7d622ea..9344c14 100644
+> --- a/drivers/soc/qcom/qcom-geni-se.c
+> +++ b/drivers/soc/qcom/qcom-geni-se.c
+> @@ -720,6 +720,104 @@ void geni_se_rx_dma_unprep(struct geni_se *se, dma_addr_t iova, size_t len)
+>  }
+>  EXPORT_SYMBOL(geni_se_rx_dma_unprep);
+>  
+> +int geni_icc_get(struct geni_se *se, const char *icc_core, const char *icc_cpu,
+> +		const char *icc_ddr)
+> +{
+> +	if (icc_core) {
 
-Rob
+Afaict it's only this that might be passed as NULL, so please drop these
+conditionals (keep the last one).
+
+> +		se->to_core.path = devm_of_icc_get(se->dev, "qup-core");
+> +		if (IS_ERR(se->to_core.path))
+
+It would be useful to print an error message here (if PTR_ERR(path) !=
+-EPROBE_DEFER).
+
+> +			return PTR_ERR(se->to_core.path);
+> +	}
+> +
+> +	if (icc_cpu) {
+> +		se->from_cpu.path = devm_of_icc_get(se->dev, "qup-config");
+> +		if (IS_ERR(se->from_cpu.path))
+> +			return PTR_ERR(se->from_cpu.path);
+> +	}
+> +
+> +	if (icc_ddr) {
+> +		se->to_ddr.path = devm_of_icc_get(se->dev, "qup-memory");
+> +		if (IS_ERR(se->to_ddr.path))
+> +			return PTR_ERR(se->to_ddr.path);
+> +	}
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(geni_icc_get);
+> +
+> +int geni_icc_vote_on(struct geni_se *se)
+> +{
+> +	int ret;
+> +
+> +	if (se->to_core.path) {
+
+icc_set_bw(NULL, ...) is valid and will return 0, so these checks
+doesn't add any value.
+
+> +		ret = icc_set_bw(se->to_core.path, se->to_core.avg_bw,
+> +			se->to_core.peak_bw);
+> +		if (ret) {
+> +			dev_err_ratelimited(se->dev, "%s: ICC BW voting failed for core\n",
+> +						__func__);
+
+Please drop the __func__, the message is specific enough.
+
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	if (se->from_cpu.path) {
+> +		ret = icc_set_bw(se->from_cpu.path, se->from_cpu.avg_bw,
+> +			se->from_cpu.peak_bw);
+> +		if (ret) {
+> +			dev_err_ratelimited(se->dev, "%s: ICC BW voting failed for cpu\n",
+> +						__func__);
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	if (se->to_ddr.path) {
+> +		ret = icc_set_bw(se->to_ddr.path, se->to_ddr.avg_bw,
+> +			se->to_ddr.peak_bw);
+> +		if (ret) {
+> +			dev_err_ratelimited(se->dev, "%s: ICC BW voting failed for ddr\n",
+> +						__func__);
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(geni_icc_vote_on);
+> +
+> +int geni_icc_vote_off(struct geni_se *se)
+> +{
+> +	int ret;
+> +
+> +	if (se->to_core.path) {
+> +		ret = icc_set_bw(se->to_core.path, 0, 0);
+> +		if (ret) {
+> +			dev_err_ratelimited(se->dev, "%s: ICC BW remove failed for core\n",
+> +						__func__);
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	if (se->from_cpu.path) {
+> +		ret = icc_set_bw(se->from_cpu.path, 0, 0);
+> +		if (ret) {
+> +			dev_err_ratelimited(se->dev, "%s: ICC BW remove failed for cpu\n",
+> +						__func__);
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	if (se->to_ddr.path) {
+> +		ret = icc_set_bw(se->to_ddr.path, 0, 0);
+> +		if (ret) {
+> +			dev_err_ratelimited(se->dev, "%s: ICC BW remove failed for ddr\n",
+> +						__func__);
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(geni_icc_vote_off);
+
+Given that these two functions only switch the bandwidth request between
+some value and 0, I really think we should carry a "bool enabled" on the
+path and replace these two functions with
+icc_bulk_enable()/icc_bulk_disable().
+
+The added benefit of this would be that you call icc_set_bw() instead of
+changing the geni_icc_path->{avg_bw,peak_bw} and don't need to keep
+track of them here.
+
+Regards,
+Bjorn
+
+> +
+>  static int geni_se_probe(struct platform_device *pdev)
+>  {
+>  	struct device *dev = &pdev->dev;
+> diff --git a/include/linux/qcom-geni-se.h b/include/linux/qcom-geni-se.h
+> index dd46494..a83c86b 100644
+> --- a/include/linux/qcom-geni-se.h
+> +++ b/include/linux/qcom-geni-se.h
+> @@ -6,6 +6,8 @@
+>  #ifndef _LINUX_QCOM_GENI_SE
+>  #define _LINUX_QCOM_GENI_SE
+>  
+> +#include <linux/interconnect.h>
+> +
+>  /* Transfer mode supported by GENI Serial Engines */
+>  enum geni_se_xfer_mode {
+>  	GENI_SE_INVALID,
+> @@ -25,6 +27,12 @@ enum geni_se_protocol_type {
+>  struct geni_wrapper;
+>  struct clk;
+>  
+> +struct geni_icc_path {
+> +	struct icc_path *path;
+> +	unsigned int avg_bw;
+> +	unsigned int peak_bw;
+> +};
+> +
+>  /**
+>   * struct geni_se - GENI Serial Engine
+>   * @base:		Base Address of the Serial Engine's register block
+> @@ -33,6 +41,9 @@ struct clk;
+>   * @clk:		Handle to the core serial engine clock
+>   * @num_clk_levels:	Number of valid clock levels in clk_perf_tbl
+>   * @clk_perf_tbl:	Table of clock frequency input to serial engine clock
+> + * @to_core:	ICC path structure for geni to core
+> + * @from_cpu:	ICC path structure for cpu to geni
+> + * @to_ddr:	ICC path structure for geni to ddr
+>   */
+>  struct geni_se {
+>  	void __iomem *base;
+> @@ -41,6 +52,9 @@ struct geni_se {
+>  	struct clk *clk;
+>  	unsigned int num_clk_levels;
+>  	unsigned long *clk_perf_tbl;
+> +	struct geni_icc_path to_core;
+> +	struct geni_icc_path from_cpu;
+> +	struct geni_icc_path to_ddr;
+>  };
+>  
+>  /* Common SE registers */
+> @@ -229,6 +243,21 @@ struct geni_se {
+>  #define GENI_SE_VERSION_MINOR(ver) ((ver & HW_VER_MINOR_MASK) >> HW_VER_MINOR_SHFT)
+>  #define GENI_SE_VERSION_STEP(ver) (ver & HW_VER_STEP_MASK)
+>  
+> +/*
+> + * Define bandwidth thresholds that cause the underlying Core 2X interconnect
+> + * clock to run at the named frequency. These baseline values are recommended
+> + * by the hardware team, and are not dynamically scaled with GENI bandwidth
+> + * beyond basic on/off.
+> + */
+> +#define CORE_2X_19_2_MHZ		960
+> +#define CORE_2X_50_MHZ			2500
+> +#define CORE_2X_100_MHZ			5000
+> +#define CORE_2X_150_MHZ			7500
+> +#define CORE_2X_200_MHZ			10000
+> +#define CORE_2X_236_MHZ			16383
+> +
+> +#define GENI_DEFAULT_BW			Bps_to_icc(1000)
+> +
+>  #if IS_ENABLED(CONFIG_QCOM_GENI_SE)
+>  
+>  u32 geni_se_get_qup_hw_version(struct geni_se *se);
+> @@ -416,5 +445,12 @@ int geni_se_rx_dma_prep(struct geni_se *se, void *buf, size_t len,
+>  void geni_se_tx_dma_unprep(struct geni_se *se, dma_addr_t iova, size_t len);
+>  
+>  void geni_se_rx_dma_unprep(struct geni_se *se, dma_addr_t iova, size_t len);
+> +
+> +int geni_icc_get(struct geni_se *se, const char *icc_core, const char *icc_cpu,
+> +		const char *icc_ddr);
+> +
+> +int geni_icc_vote_on(struct geni_se *se);
+> +
+> +int geni_icc_vote_off(struct geni_se *se);
+>  #endif
+>  #endif
+> -- 
+> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
