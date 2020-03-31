@@ -2,167 +2,134 @@ Return-Path: <SRS0=U7OZ=5Q=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F6D8C2D0F2
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Mar 2020 19:02:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55477C2D0EF
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Mar 2020 19:07:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7A295208E0
-	for <linux-serial@archiver.kernel.org>; Tue, 31 Mar 2020 19:02:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3176A212CC
+	for <linux-serial@archiver.kernel.org>; Tue, 31 Mar 2020 19:07:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="PkgN2UpE"
+	dkim=pass (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="TZZ9tlKu"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728189AbgCaTCy (ORCPT
+        id S1727795AbgCaTHZ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 31 Mar 2020 15:02:54 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:33151 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728171AbgCaTCx (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 31 Mar 2020 15:02:53 -0400
-Received: by mail-pf1-f193.google.com with SMTP id c138so1124814pfc.0
-        for <linux-serial@vger.kernel.org>; Tue, 31 Mar 2020 12:02:51 -0700 (PDT)
+        Tue, 31 Mar 2020 15:07:25 -0400
+Received: from mail-eopbgr1400132.outbound.protection.outlook.com ([40.107.140.132]:29728
+        "EHLO JPN01-TY1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726315AbgCaTHZ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 31 Mar 2020 15:07:25 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BtulbrudrUi3EZxWeMcJLKH0bMACuM3j52T52G2UHBXSE+2+/aXZpv8CRgjeLMo6C+hbben7T57FQxhp18rQnepfwZYECKCSeFVFi/1L2rOxVT4K+0vYCoQ5BeXOqnvnCRlfOAizu93kIeDnEwP/CHhu+/y7qGl8YrQtVrf68Z6p2UQtBLu8n4zqD+AtxW4go3s8xCbmB1ObiANok55dRPmbxIVKxNOh42veBhPVxct9dG1uH7g5KyEZRtzONjmzRfclyEA6muzSVwKCWg4ZcnzohLxXMab2S7y1qlJxlv3s+Bf4PeMMQt9mwrrWFKnhJQGU8xceRi7FIm5LzJOkvA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0kEbQqCt4aTiNCEMnkH910syExpNJ1sXT584F6+R858=;
+ b=J7qiKS0xiDj6wctN6mRvMss9CmNbEMVDMlZBcO3REma82blkyI9/LV+AxAcCnC6OMafpQEGZMx1ENwXSGmD+9eHJrxpt92iAbBDuH9GC9ej45qgr4p0/ZcxYHeZZ2z9vOKlkJo6iE+9hAqBP1NO8bK/LyGZE5q9zmrZRolP/YUlcQ1CoVyo/VrSksoHa5m3klG0f96MOZqDCtdSVXSc770GehQ+0sZ4vU6h1YcCHNAzr+dUiKQ2uwmZySBiOvOgZGcdCBTBNX50dPyj95iWGdPOMIkzHniUudrpCTe8ExEOx9vaJQAqjnzFtDx1Qct5svInNq5SUUrtSuhWIsDBcFw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=d1LmGPhqBC+telzxxHCYYCJr0o/OklpDtR/S04mCOLk=;
-        b=PkgN2UpEF3TrcleSh7YdT45Okdxgiwr9ejjvJizmqTkOoNiwV4hWx5oZtkL68c5vH4
-         MErl6fXZJ82uBijd1OWx9HDM9AaMJr3Otq+OeSOMjWipR24tihd88qVQ9Fa/PIRFvApm
-         c2Y2C/COvPIK7AkF2DJDO3YmLFELKshrT2MdM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=d1LmGPhqBC+telzxxHCYYCJr0o/OklpDtR/S04mCOLk=;
-        b=Chp2VTUm1ugJNYHB81udKMoZ2P3Wy6LruuzNJyPBCWObXnmD6o8LFhGMNgEFCKCoN9
-         o0s9gSth9VUN568ueUnDS4wPyUatWLV+B0zTMfVFZPy5xvwcGldHK+t+32/KHnLy7sF5
-         VZtCRWZjDEJY4Ouh9YfULtowhC9yjNH6635pCvHE79anvwDpa/xqIgshpBZAXKaDQf7M
-         1luVsR7TFyGKQdGrZabY6LSwxDrG6KLp4xQcnDqYiWktJ7+wdGjhPwQ3YwDukqz49Q+j
-         ITVbqbVI9mrnp+DVfXxMtKxbSZ/bpakaYv/0aF+lHNONp24MEOUihoJtqjNfOFxQCZjY
-         J21Q==
-X-Gm-Message-State: ANhLgQ2secWSg0sx3T8uI7Cgi7ow5zRlBSWxepS/26+A0jIi4Zko7VSI
-        KuUVruj6RAhG6h5amJbG5TJCBg==
-X-Google-Smtp-Source: ADFU+vvmLRz4EHQPhZ0SlT09JrBh6GgqlFUFiuDkErP9QHjc3FTfQL92d4jawtd0w1WVvSgp7UZt2w==
-X-Received: by 2002:a63:b52:: with SMTP id a18mr19261293pgl.130.1585681371319;
-        Tue, 31 Mar 2020 12:02:51 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
-        by smtp.gmail.com with ESMTPSA id 1sm2606317pjc.32.2020.03.31.12.02.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 Mar 2020 12:02:50 -0700 (PDT)
-Date:   Tue, 31 Mar 2020 12:02:49 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Akash Asthana <akashast@codeaurora.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org, georgi.djakov@linaro.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, dianders@chromium.org,
-        evgreen@chromium.org
-Subject: Re: [PATCH V3 5/8] spi: spi-geni-qcom: Add interconnect support
-Message-ID: <20200331190249.GJ199755@google.com>
-References: <1585652976-17481-1-git-send-email-akashast@codeaurora.org>
- <1585652976-17481-6-git-send-email-akashast@codeaurora.org>
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0kEbQqCt4aTiNCEMnkH910syExpNJ1sXT584F6+R858=;
+ b=TZZ9tlKuw65FNtAhs1lyNr4SncqnkbjJvr4puApiZ9nNG2nqgOirYm6mbTor7vcHjV0iNztRUrpBwNF+1rhu3ZPHy/4oTbT9ZgkIcJ8shU2nXgbibpy0S82ADzLUAzGmDIOJB/pqK5waEMXDNa9e1Wh/as3yPv6tQhYvQD55WIY=
+Received: from TYXPR01MB1568.jpnprd01.prod.outlook.com (52.133.166.145) by
+ TYXPR01MB1613.jpnprd01.prod.outlook.com (52.133.166.13) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2878.15; Tue, 31 Mar 2020 19:07:18 +0000
+Received: from TYXPR01MB1568.jpnprd01.prod.outlook.com
+ ([fe80::e9ac:8933:9767:9c69]) by TYXPR01MB1568.jpnprd01.prod.outlook.com
+ ([fe80::e9ac:8933:9767:9c69%2]) with mapi id 15.20.2856.019; Tue, 31 Mar 2020
+ 19:07:18 +0000
+From:   Chris Brandt <Chris.Brandt@renesas.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Kazuhiro Fujita <kazuhiro.fujita.jg@renesas.com>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hao Bui <hao.bui.yg@renesas.com>,
+        KAZUMI HARADA <kazumi.harada.rh@renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: RE: [PATCH] serial: sh-sci: Make sure status register SCxSR is read
+ in correct sequence
+Thread-Topic: [PATCH] serial: sh-sci: Make sure status register SCxSR is read
+ in correct sequence
+Thread-Index: AQHWBGQGJbDUemPUNEWeRBL+Vpn8T6hi1j+AgAA+RsA=
+Date:   Tue, 31 Mar 2020 19:07:18 +0000
+Message-ID: <TYXPR01MB15688F7D17F54C908C562AE38AC80@TYXPR01MB1568.jpnprd01.prod.outlook.com>
+References: <1585333048-31828-1-git-send-email-kazuhiro.fujita.jg@renesas.com>
+ <CAMuHMdW+u5r6zyxFJsVzj21BYDrKCr=Q6Ojk5VeN+mkhvXX9Jw@mail.gmail.com>
+In-Reply-To: <CAMuHMdW+u5r6zyxFJsVzj21BYDrKCr=Q6Ojk5VeN+mkhvXX9Jw@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-dg-ref: PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcY2JyYW5kdDAxXGFwcGRhdGFccm9hbWluZ1wwOWQ4NDliNi0zMmQzLTRhNDAtODVlZS02Yjg0YmEyOWUzNWJcbXNnc1xtc2ctZDU1MGM4MjEtNzM4Mi0xMWVhLWFhNjAtOTRlNmY3Njc5M2FlXGFtZS10ZXN0XGQ1NTBjODIzLTczODItMTFlYS1hYTYwLTk0ZTZmNzY3OTNhZWJvZHkudHh0IiBzej0iMTQzOSIgdD0iMTMyMzAxNTUyMzYwNDk4NjQwIiBoPSJrVmVmZkVBSEdMOHI3MllIVXdGT01sUDRDbXc9IiBpZD0iIiBibD0iMCIgYm89IjEiLz48L21ldGE+
+x-dg-rorf: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Chris.Brandt@renesas.com; 
+x-originating-ip: [75.60.247.61]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 1e05e618-7049-4b1c-e836-08d7d5a6bbcf
+x-ms-traffictypediagnostic: TYXPR01MB1613:|TYXPR01MB1613:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <TYXPR01MB16133D716B16EA07257FD4278AC80@TYXPR01MB1613.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0359162B6D
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYXPR01MB1568.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10019020)(4636009)(396003)(39860400002)(346002)(136003)(376002)(366004)(110136005)(54906003)(76116006)(8676002)(4326008)(66556008)(64756008)(66446008)(478600001)(7696005)(86362001)(9686003)(2906002)(55016002)(33656002)(81156014)(81166006)(8936002)(6506007)(26005)(316002)(186003)(66946007)(6636002)(52536014)(71200400001)(66476007)(5660300002);DIR:OUT;SFP:1102;
+received-spf: None (protection.outlook.com: renesas.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: rqKvvyHwMgiti5deadlVXGpOvoB3fGfWuwENQ8Vr0RHYOI4J/vy34/SBEGFb4BCv7e89iA3B7YHDTdpAXbLw2YnTwouXu2qcN3CPXx5Pi9TdO3r120zimBUAKr0LtsuKG4H3pi41PdW4GgcCQN9ToPujp6hB/KJM6c8VkoJtIvmMrvTK9xuvQLJp6rnM05xIzcLz9z1v8VtVekI32S/BYH4l0Cr1ghar2VIT8dHQpZNjhxnR9YN6HVu9MSfgNH4erS6d8cISPwABAvb0J022RUeRNw8kl2boe42ytnTgXJepMXbLzKi+Flaxc+bYqSwDaKGw5PG5BV57oOkhYUzmEYpvL11GMLjX4ofCnpMWa1YykARIDWrz7u26dyrptYgK0zMiftimwqSBEISdtHAr0mNvKkYVxsuZGav2Mn8fz4Eyy2NsOUlX4kVWYdVljjuL
+x-ms-exchange-antispam-messagedata: Tp2mdY5wSFZkpPxqHdbLI7SnbT8mxZL5gqVDDQIIWryuwBQXKYaEEowC81r+a4qoj5tDHCa1yYAEEX5LMbT2LwTMn3OWVbM/U+A/Wh86H/rWdISTj72tgNZtitufhaYKxzzjSuWHDHJbjWRO3X4+Rg==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1585652976-17481-6-git-send-email-akashast@codeaurora.org>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1e05e618-7049-4b1c-e836-08d7d5a6bbcf
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Mar 2020 19:07:18.6397
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ZGBgoSMXeqqx8HxqSt1ZCcedyu3Ip5fkXgU5+Lo/qF8FqOXHbP9LqxzwKhh+OAkxFpOIdB8NpWYs6ZaJZCQsFUMwT1hVSQBVLjSTcSETKrM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYXPR01MB1613
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Mar 31, 2020 at 04:39:33PM +0530, Akash Asthana wrote:
-> Get the interconnect paths for SPI based Serial Engine device
-> and vote according to the current bus speed of the driver.
-> 
-> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
-> ---
-> Changes in V2:
->  - As per Bjorn's comment, removed se == NULL check from geni_spi_icc_get
->  - As per Bjorn's comment, removed code to set se->icc_path* to NULL in failure
->  - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
->    path handle
->  - As per Matthias comment, added error handling for icc_set_bw call
-> 
-> Changes in V3:
->  - As per Matthias's comment, use helper ICC function from geni-se driver.
-> 
->  drivers/spi/spi-geni-qcom.c | 31 ++++++++++++++++++++++++++++++-
->  1 file changed, 30 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/spi/spi-geni-qcom.c b/drivers/spi/spi-geni-qcom.c
-> index c397242..f1dae2d 100644
-> --- a/drivers/spi/spi-geni-qcom.c
-> +++ b/drivers/spi/spi-geni-qcom.c
-> @@ -234,6 +234,16 @@ static int setup_fifo_params(struct spi_device *spi_slv,
->  		return ret;
->  	}
->  
-> +	/*
-> +	 * Set BW quota for CPU as driver supports FIFO mode only.
-> +	 * Assume peak bw as twice of avg bw.
-> +	 */
-> +	se->from_cpu.avg_bw = Bps_to_icc(mas->cur_speed_hz);
-> +	se->from_cpu.peak_bw = Bps_to_icc(2 * mas->cur_speed_hz);
-> +	ret = geni_icc_vote_on(se);
-> +	if (ret)
-> +		return ret;
-> +
->  	clk_sel = idx & CLK_SEL_MSK;
->  	m_clk_cfg = (div << CLK_DIV_SHFT) | SER_CLK_EN;
->  	spi_setup_word_len(mas, spi_slv->mode, spi_slv->bits_per_word);
-> @@ -578,6 +588,15 @@ static int spi_geni_probe(struct platform_device *pdev)
->  	spin_lock_init(&mas->lock);
->  	pm_runtime_enable(dev);
->  
-> +	ret = geni_icc_get(&mas->se, "qup-core", "qup-config", NULL);
-> +	if (ret)
-> +		goto spi_geni_probe_runtime_disable;
-
-This fails without providing any hints why, besides the error code.
-It might be worth to add error logging to geni_icc_get().
-
-> +	/* Set the bus quota to a reasonable value for register access */
-> +	mas->se.to_core.avg_bw = Bps_to_icc(CORE_2X_50_MHZ);
-> +	mas->se.to_core.peak_bw = Bps_to_icc(CORE_2X_100_MHZ);
-> +	mas->se.from_cpu.avg_bw = GENI_DEFAULT_BW;
-> +	mas->se.from_cpu.peak_bw = GENI_DEFAULT_BW;
-> +
->  	ret = spi_geni_init(mas);
->  	if (ret)
->  		goto spi_geni_probe_runtime_disable;
-> @@ -616,14 +635,24 @@ static int __maybe_unused spi_geni_runtime_suspend(struct device *dev)
->  {
->  	struct spi_master *spi = dev_get_drvdata(dev);
->  	struct spi_geni_master *mas = spi_master_get_devdata(spi);
-> +	int ret;
-> +
-> +	ret = geni_se_resources_off(&mas->se);
-> +	if (ret)
-> +		return ret;
->  
-> -	return geni_se_resources_off(&mas->se);
-> +	return geni_icc_vote_off(&mas->se);
->  }
->  
->  static int __maybe_unused spi_geni_runtime_resume(struct device *dev)
->  {
->  	struct spi_master *spi = dev_get_drvdata(dev);
->  	struct spi_geni_master *mas = spi_master_get_devdata(spi);
-> +	int ret;
-> +
-> +	ret = geni_icc_vote_on(&mas->se);
-> +	if (ret)
-> +		return ret;
->  
->  	return geni_se_resources_on(&mas->se);
->  }
-
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+SGkgR2VlcnQsDQoNCk9uIFR1ZSwgTWFyIDMxLCAyMDIwIDEsIEdlZXJ0IFV5dHRlcmhvZXZlbiB3
+cm90ZToNCj4gSG93ZXZlciwgdGhlIGRvY3VtZW50YXRpb24gZm9yICJTQ0lGQSIgb24gUlovQTIg
+KGZvciB3aGljaCB3ZSB1c2UNCj4gUE9SVF9TQ0lGLCBub3QgUE9SVF9TQ0lGQSwgaW4gdGhlIGRy
+aXZlcikgaGFzIGNvbmZsaWN0aW5nIGluZm9ybWF0aW9uOg0KPiAgIDEuIFNlY3Rpb24gMTcuMi43
+ICJTZXJpYWwgU3RhdHVzIFJlZ2lzdGVyIChGU1IpIiBzYXlzOg0KPiAgICAgICAgLSBBIHJlY2Vp
+dmUgZnJhbWluZy9wYXJpdHkgZXJyb3Igb2NjdXJyZWQgaW4gdGhlICJuZXh0IHJlY2VpdmUNCj4g
+ICAgICAgICAgZGF0YSByZWFkIiBmcm9tIHRoZSBGSUZPLA0KPiAgICAgICAgLSBJbmRpY2F0ZXMg
+d2hldGhlciB0aGVyZSBpcyBhIGZyYW1pbmcvcGFyaXR5IGVycm9yIGluIHRoZSBkYXRhDQo+ICAg
+ICAgICAgICJyZWFkIiBmcm9tIHRoZSBGSUZPLg0KPiAgIDIuIEZpZ3VyZSAxNy44ICJTYW1wbGUg
+Rmxvd2NoYXJ0IGZvciBSZWNlaXZpbmcgU2VyaWFsIERhdGEgaW4NCj4gICAgICBBc3luY2hyb25v
+dXMgTW9kZSAoMikiLg0KPiAgICAgICAgLSBXaGV0aGVyIGEgZnJhbWluZyBlcnJvciBvciBwYXJp
+dHkgZXJyb3IgaGFzIG9jY3VycmVkIGluIHRoZQ0KPiAgICAgICAgICByZWNlaXZlZCBkYXRhIHRo
+YXQgaXMgInJlYWQiIGZyb20gdGhlIEZJRk8uDQo+IA0KPiBTbyB3aGlsZSB0aGUgY2hhbmdlIGxv
+b2tzIE9LIGZvciBtb3N0IFJlbmVzYXMgQVJNIFNvQ3MsIHRoZSBzaXR1YXRpb24NCj4gZm9yIFJa
+L0EyIGlzIHVuY2xlYXIuDQo+IE5vdGUgdGhhdCB0aGUgYWJvdmUgZG9lcyBub3QgdGFrZSBpbnRv
+IGFjY291bnQgdmFyaWFudHMgdXNlZCBvbiBTdXBlckgNCj4gU29Dcy4NCg0KRm9yIHRoZSBSWi9B
+Mk0sIGl0IGlzIE5PVCBhICJTQ0lGQSIuLi5ldmVuIHRob3VnaCBpdCBzYXlzIHRoYXQgaW4gdGhl
+IA0KaGFyZHdhcmUgbWFudWFsLg0KDQpBbmQgaG9uZXN0bHksIEkgY291bGQgbm90IHRyYWNlIGJh
+Y2sgd2hlcmUgdGhhdCBJUCBjYW1lIGZyb20uIEl0IHdhcyANCmZyb20gc29tZXdoZXJlIGluIHRo
+ZSBNQ1UgZGVzaWduIHNlY3Rpb24gKG5vdCB0aGUgU29DIGRlc2lnbiBzZWN0aW9uKS4gDQpTb21l
+b25lIG1vZGlmaWVkIHRoZSBJUCBzbyB0aGV5IHB1dCBhbiAiQSIgYXQgdGhlIGVuZCB0byBzaG93
+IGl0IHdhcyANCmRpZmZlcmVudC4gUmVnYXJkbGVzcywgaXQgaGFzIGEgZGlmZmVyZW50IGhpc3Rv
+cnkgdGhhbiBhbGwgdGhlIG90aGVyIElQIA0Kc3VwcG9ydGVkIGJ5IHRoZSBTQ0kgZHJpdmVyLg0K
+DQpDaHJpcw0KDQo=
