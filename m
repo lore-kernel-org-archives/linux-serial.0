@@ -2,110 +2,134 @@ Return-Path: <SRS0=XHY+=5R=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70DC2C43331
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Apr 2020 09:20:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BCD9C43331
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Apr 2020 12:22:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4728D208E0
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Apr 2020 09:20:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1585732802;
-	bh=bZgzelA3UaTi5U8XMpF6gpsu/Vu2uMmzpccgocPvsVI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=nWEgx1MtjSXBf63NNNHLOEFI+5pO+e7ONRJhVSct1apSidk3rRUPuHYA444vjdnMJ
-	 LsI6FufcccoM3205IohMrq1tT43TJ1iU+UAZixO/4WTuktKYr1Jqx0NVxwfK9/8Pdp
-	 HFStTVKu5Orz9urL/JwEgBkclbZYMBupO8fW2U7I=
+	by mail.kernel.org (Postfix) with ESMTP id 5A4CB20714
+	for <linux-serial@archiver.kernel.org>; Wed,  1 Apr 2020 12:22:44 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b="LwmS95WS"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727541AbgDAJT7 (ORCPT
+        id S1727661AbgDAMWn (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Apr 2020 05:19:59 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:38350 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726368AbgDAJT6 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Apr 2020 05:19:58 -0400
-Received: by mail-ed1-f65.google.com with SMTP id e5so28782225edq.5;
-        Wed, 01 Apr 2020 02:19:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=oiXWCfIsx4h3K5MebDggs1yLqhBWHjw9GlgqdZt4chM=;
-        b=EFspn04Dw6kDgs+6Fptn5RhSVJ5UlCnR+NZzW2BOEYJrOGUBa4wqM65ysM0LJWW+Bz
-         wIfUXZ2Tt7GYeZaKWg2ay8L5Co/NvKn/KSjokyCwJX1hsld0lXq7URHCiP2Y45/R2VQN
-         vDm1ECv7p7YPw3QL81VRagKwMxMs0oSlyoYmmv9KzsU5ksJjaXrZbHiY/DUx0lbccY6s
-         z3DYLMw+jXnIa8rWujKCLI3tW8KqtTwG9+/b2HaufWP0hdzo91zD83JvrhJA3UXaIKlI
-         8OPGlQuJlQOYNUwYY3WT9M/IFxBhFcuAEPQwfbF8PMoLsO/9PA4Ajxb8rUqUbTM4Fxmt
-         ckxg==
-X-Gm-Message-State: ANhLgQ2TDWxdFKcCEbNb0SdpsJabDVOQSdOt18Nm4UHTXHTCiAKJhq3F
-        JG8lSp1pZe/iaab8JAwHA20=
-X-Google-Smtp-Source: ADFU+vtXO8qJ6/LomWoqPFo16aC2m31U0bjGq/5iuPLC69+YRJjCpnuSsVEXZGXdraHuzjQo5VWJNg==
-X-Received: by 2002:a17:906:50e:: with SMTP id j14mr18523296eja.300.1585732794952;
-        Wed, 01 Apr 2020 02:19:54 -0700 (PDT)
-Received: from kozik-lap ([194.230.155.125])
-        by smtp.googlemail.com with ESMTPSA id w4sm393813ejz.44.2020.04.01.02.19.53
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 01 Apr 2020 02:19:54 -0700 (PDT)
-Date:   Wed, 1 Apr 2020 11:19:52 +0200
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Hyunki Koo <hyunki00.koo@samsung.com>, hyunki00.koo@gmail.com,
-        Kukjin Kim <kgene@kernel.org>, Jiri Slaby <jslaby@suse.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tty: samsung_tty: 32-bit access for TX/RX hold registers
-Message-ID: <20200401091952.GA14425@kozik-lap>
-References: <CGME20200401082749epcas2p2a774da515805bc3f761b6b5a8dc9e3d2@epcas2p2.samsung.com>
- <20200401082721.19431-1-hyunki00.koo@samsung.com>
- <20200401085548.GC2026666@kroah.com>
+        Wed, 1 Apr 2020 08:22:43 -0400
+Received: from ozlabs.org ([203.11.71.1]:50333 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726804AbgDAMWn (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 1 Apr 2020 08:22:43 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 48slhJ058Dz9sSM;
+        Wed,  1 Apr 2020 23:22:39 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
+        s=201909; t=1585743760;
+        bh=C2bThPqw3VWzR5WgmrlUX730CfrtDYdrXujURU2m0n4=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=LwmS95WSCrsWDudiX7CVG/u/OJu8Q1uGGKglglo0+ApYIqMrsYVdDQWwNE71xe4rf
+         vEKAISM6Mhlcms+SUBjjFrCHgToh1ua3ambtH9VzL41fRZCu/CTWQxJKsCNr2cHc6M
+         CKsQcfV7HTwfIMHZoABfvk6wSXpFWFpZRbL7/VcfdgmBtK21kP+F46t5zsNa68HDhr
+         sp7mcIsZhCOfKnvZAAIzPc/Modb516+EgNLGm7uriuLKeYNJyttYhv8LmsLgQlTUWo
+         nBZbbaGA8XtTxJKVczUiy/koKXLWwqSfu/vQvdjihP93AddKXzSqoTNSGY5n9lSCrD
+         BKdLODrxVoAPw==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Dmitry Safonov <dima@arista.com>, linux-kernel@vger.kernel.org
+Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        Dmitry Safonov <dima@arista.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        Jiri Slaby <jslaby@suse.com>, Joe Perches <joe@perches.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Vasiliy Khoruzhick <vasilykh@arista.com>,
+        linux-serial@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCHv3 1/2] sysctl/sysrq: Remove __sysrq_enabled copy
+In-Reply-To: <20200302175135.269397-2-dima@arista.com>
+References: <20200302175135.269397-1-dima@arista.com> <20200302175135.269397-2-dima@arista.com>
+Date:   Wed, 01 Apr 2020 23:22:46 +1100
+Message-ID: <87tv23tmy1.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200401085548.GC2026666@kroah.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Apr 01, 2020 at 10:55:48AM +0200, Greg Kroah-Hartman wrote:
-> On Wed, Apr 01, 2020 at 05:27:20PM +0900, Hyunki Koo wrote:
-> > -	if (np)
-> > +	if (np) {
-> >  		of_property_read_u32(np,
-> >  			"samsung,uart-fifosize", &ourport->port.fifosize);
-> >  
-> > +		if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
-> > +			switch (prop) {
-> > +			case 1:
-> > +				ourport->port.iotype = UPIO_MEM;
-> > +				break;
-> > +			case 4:
-> > +				ourport->port.iotype = UPIO_MEM32;
-> > +				break;
-> > +			default:
-> > +				dev_warn(&pdev->dev, "unsupported reg-io-width (%d)\n",
-> > +						prop);
-> > +				ret = -EINVAL;
-> > +				break;
-> > +			}
-> > +		}
-> > +	}
-> > +
-> 
-> Does this mean that reg-io-width is now a required property for all
-> samsung uarts?  Does this break older dts files?  Or should you
-> fall-back to the previous operation if the attribute is not there?
+Dmitry Safonov <dima@arista.com> writes:
+> Many embedded boards have a disconnected TTL level serial which can
+> generate some garbage that can lead to spurious false sysrq detects.
+>
+> Currently, sysrq can be either completely disabled for serial console
+> or always disabled (with CONFIG_MAGIC_SYSRQ_SERIAL), since
+> commit 732dbf3a6104 ("serial: do not accept sysrq characters via serial port")
+>
+> At Arista, we have such boards that can generate BREAK and random
+> garbage. While disabling sysrq for serial console would solve
+> the problem with spurious false sysrq triggers, it's also desirable
+> to have a way to enable sysrq back.
+>
+> Having the way to enable sysrq was beneficial to debug lockups with
+> a manual investigation in field and on the other side preventing false
+> sysrq detections.
+>
+> As a preparation to add sysrq_toggle_support() call into uart,
+> remove a private copy of sysrq_enabled from sysctl - it should reflect
+> the actual status of sysrq.
+>
+> Furthermore, the private copy isn't correct already in case
+> sysrq_always_enabled is true. So, remove __sysrq_enabled and use a
+> getter-helper sysrq_mask() to check sysrq_key_op enabled status.
+>
+> Cc: Iurii Zaikin <yzaikin@google.com>
+> Cc: Jiri Slaby <jslaby@suse.com>
+> Cc: Luis Chamberlain <mcgrof@kernel.org>
+> Cc: Kees Cook <keescook@chromium.org>
+> Cc: linux-fsdevel@vger.kernel.org
+> Signed-off-by: Dmitry Safonov <dima@arista.com>
+> ---
+>  drivers/tty/sysrq.c   | 12 ++++++++++++
+>  include/linux/sysrq.h |  7 +++++++
+>  kernel/sysctl.c       | 41 ++++++++++++++++++++++-------------------
+>  3 files changed, 41 insertions(+), 19 deletions(-)
+>
+> diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+> index f724962a5906..5e0d0813da55 100644
+> --- a/drivers/tty/sysrq.c
+> +++ b/drivers/tty/sysrq.c
+> @@ -63,6 +63,18 @@ static bool sysrq_on(void)
+>  	return sysrq_enabled || sysrq_always_enabled;
+>  }
+>  
+> +/**
+> + * sysrq_mask - Getter for sysrq_enabled mask.
+> + *
+> + * Return: 1 if sysrq is always enabled, enabled sysrq_key_op mask otherwise.
+> + */
+> +int sysrq_mask(void)
+> +{
+> +	if (sysrq_always_enabled)
+> +		return 1;
+> +	return sysrq_enabled;
+> +}
 
-Yes, it looks like silently breaking all boards.  Since
-of_property_read_u32() will return errno, the warning message won't be
-printed and all register reads will fail (return 0).
+This seems to have broken several configs, when serial_core is modular, with:
 
-This looks like not tested on real HW.
+  ERROR: modpost: "sysrq_mask" [drivers/tty/serial/serial_core.ko] undefined!
 
-Best regards,
-Krzysztof
+See:
+
+  http://kisskb.ellerman.id.au/kisskb/buildresult/14169386/
+
+It's also being reported by the kernelci bot:
+
+  https://lore.kernel.org/linux-next/5e677bd0.1c69fb81.c43fe.7f7d@mx.google.com/
+
+
+cheers
