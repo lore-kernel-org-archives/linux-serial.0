@@ -1,167 +1,152 @@
-Return-Path: <SRS0=XHY+=5R=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=sjTb=5S=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A260C2D0F0
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Apr 2020 19:46:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FAAFC43331
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Apr 2020 06:45:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4E4AC20787
-	for <linux-serial@archiver.kernel.org>; Wed,  1 Apr 2020 19:46:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 430882078B
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Apr 2020 06:45:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="fCc9uE+X"
+	dkim=pass (1024-bit key) header.d=antmicro.com header.i=@antmicro.com header.b="U25wmsLn"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732320AbgDATqw (ORCPT
+        id S1729033AbgDBGpe (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 1 Apr 2020 15:46:52 -0400
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:50420 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732737AbgDATqw (ORCPT
+        Thu, 2 Apr 2020 02:45:34 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:43429 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728628AbgDBGpe (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 1 Apr 2020 15:46:52 -0400
-Received: by mail-pj1-f65.google.com with SMTP id v13so533103pjb.0
-        for <linux-serial@vger.kernel.org>; Wed, 01 Apr 2020 12:46:51 -0700 (PDT)
+        Thu, 2 Apr 2020 02:45:34 -0400
+Received: by mail-lf1-f67.google.com with SMTP id n20so1736068lfl.10
+        for <linux-serial@vger.kernel.org>; Wed, 01 Apr 2020 23:45:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=/ce+l+iRZG0CueQLUqCcAm+FhjXwOeZQvrFD6a+Pdbk=;
-        b=fCc9uE+XYXB06N48E9h3rQ4SJNQfhzwC50G+TMXvj8kfPBe4kbDLR7b1/oJ+uEuxKc
-         /zyiOEwgGh1jAIInwlsgrzgiU0oI90VjnSLlLTNo58X3/wrlUbKCMZCG3LswFVAZjJin
-         LvE7ziv7OG52tAD9ohxETUiLgLpf2qYRWHzUU=
+        d=antmicro.com; s=google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=EZyuiVnozfn4q8862+HLJ5Fa1ZANzh/YxUt+8Dn90Cw=;
+        b=U25wmsLnITOsDRVSjieHY9ctvRnpEZfY0UMZLiLcHNxLqyYAprfEgdE24OBiZ4BjNn
+         ia4VyvVImgmkhtXBuu4KVGFh/OejLtg6ndEb9r6VoSxGrlzt8Y+DnH9tVOgYooW4ON/Z
+         WWXDh0JXA0RVMCb3u8lxA4wji7yt+Aq7/zTn4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=/ce+l+iRZG0CueQLUqCcAm+FhjXwOeZQvrFD6a+Pdbk=;
-        b=qwPYmfj2buugUOvqERdJvW+kSU3Z2HFm+G6J0PcuER9UZnpvDqlqwJ3z31gJ00HJBd
-         lbLw+2+BPN6fAHvte37DkpkFqW6pflALPjclLvIfaA697GFQfTUQrA9mFTsESHV/kdLi
-         Go0/TxRtC9Fed8rFutrXyzz2mQSxQN2ap+qCfEh1odlxKJ/W1KgmGyZpXm6CUWSHVBXG
-         74RgP+DA0suRPrSHpTwNrClDf401B7SDPL+GfCMLwrU287IF3ODCS+XGWgMXwj7zm0lB
-         8CBAJrlQC1G7/9XPc2OVDYl9VU3g/+RWU+NUxXvkvqjAR+Ip0YHlUOjL8MlGSmRr0hkc
-         NxFg==
-X-Gm-Message-State: ANhLgQ3tcgDM4yZNpE4Ru2YYVFzrZY/IPDjTOUMcGM8VJIaPjlZ9pR+I
-        fse6kWFDSWGrjcPr3kiQjsRjHQ==
-X-Google-Smtp-Source: ADFU+vt/xdibwjNhNGnnuYkq1gCZsQ2pLfGD9zsm2il2lY1sfEB8MLcew8RkcukpAiHbnqsuWeHD3Q==
-X-Received: by 2002:a17:902:9004:: with SMTP id a4mr21923981plp.275.1585770411176;
-        Wed, 01 Apr 2020 12:46:51 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
-        by smtp.gmail.com with ESMTPSA id 132sm2160604pfc.183.2020.04.01.12.46.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Apr 2020 12:46:50 -0700 (PDT)
-Date:   Wed, 1 Apr 2020 12:46:48 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Akash Asthana <akashast@codeaurora.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org, georgi.djakov@linaro.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, dianders@chromium.org,
-        evgreen@chromium.org
-Subject: Re: [PATCH V3 3/8] soc: qcom-geni-se: Add interconnect support to
- fix earlycon crash
-Message-ID: <20200401194648.GM199755@google.com>
-References: <1585652976-17481-1-git-send-email-akashast@codeaurora.org>
- <1585652976-17481-4-git-send-email-akashast@codeaurora.org>
- <20200331182457.GH199755@google.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=EZyuiVnozfn4q8862+HLJ5Fa1ZANzh/YxUt+8Dn90Cw=;
+        b=XZyI33Qs3GmLf+QsAXYRGAY5LcxUchLZkVeMS9akTO2ESe51KQJPGlokK9ZvI2/njh
+         sC1JlGk1phk2HaCd4v4SSCGUopxwDcuwtO/ZOF7OVjbbPXCsAM9Il297V0P7baQqapjI
+         H4TnDjQhpXfeu6oTY2MRjIuiUUtzCN5W1qeZTtpkceGl5QN1AChVpAgGkdXOhDXzbmem
+         705lCckdqUtm2VHQ3bcQM4H1WP+sw4+BHEQ3c2ALNDwvgITHWGdn1Oj4BBaxo5zKuVd1
+         6Um7T1Pemg6XQP0rELK2hVgVjccZUzIcXT95GsTd8W3LTRQtPBinPCxKIPUsWBB65Ivf
+         gwow==
+X-Gm-Message-State: AGi0PuYh5P6WUnAIVBzc3wCyrO/r93hDLSRBC0Lp4RE2rAMN9Deu+Bw0
+        U9g8qo08LGATDk22Ro45aXUTBw==
+X-Google-Smtp-Source: APiQypLVw29BfEQm2ylpYaYjCZ3N3s2Ld+g6aDIGQPJg9N768dBIDwpn94ed4SkR+xDdxF/ShVWhHw==
+X-Received: by 2002:a19:f017:: with SMTP id p23mr1178977lfc.150.1585809932026;
+        Wed, 01 Apr 2020 23:45:32 -0700 (PDT)
+Received: from localhost.localdomain (d79-196.icpnet.pl. [77.65.79.196])
+        by smtp.gmail.com with ESMTPSA id m12sm2530439lji.50.2020.04.01.23.45.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Apr 2020 23:45:31 -0700 (PDT)
+Date:   Thu, 2 Apr 2020 08:45:26 +0200
+From:   Mateusz Holenko <mholenko@antmicro.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Cc:     Stafford Horne <shorne@gmail.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Filip Kokosinski <fkokosinski@antmicro.com>,
+        Pawel Czarnecki <pczarnecki@internships.antmicro.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4 0/5] LiteX SoC controller and LiteUART serial driver
+Message-ID: <20200402084513.4173306-0-mholenko@antmicro.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200331182457.GH199755@google.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Mar 31, 2020 at 11:24:57AM -0700, Matthias Kaehlcke wrote:
-> Hi Akash,
-> 
-> On Tue, Mar 31, 2020 at 04:39:31PM +0530, Akash Asthana wrote:
-> > QUP core clock is shared among all the SE drivers present on particular
-> > QUP wrapper, the system will reset(unclocked access) if earlycon used after
-> > QUP core clock is put to 0 from other SE drivers before real console comes
-> > up.
-> > 
-> > As earlycon can't vote for it's QUP core need, to fix this add ICC
-> > support to common/QUP wrapper driver and put vote for QUP core from
-> > probe on behalf of earlycon and remove vote during earlycon exit call.
-> > 
-> > Signed-off-by: Akash Asthana <akashast@codeaurora.org>
-> > Reported-by: Matthias Kaehlcke <mka@chromium.org>
-> > ---
-> > Change is V3:
-> >  - Add geni_remove_earlycon_icc_vote API that will be used by earlycon
-> >    exit function to remove ICC vote for earlyconsole.
-> >  - Remove suspend/resume hook for geni-se driver as we are no longer
-> >    removing earlyconsole ICC vote from system suspend, we are removing
-> >    from earlycon exit.
-> > 
-> >  drivers/soc/qcom/qcom-geni-se.c       | 51 +++++++++++++++++++++++++++++++++++
-> >  drivers/tty/serial/qcom_geni_serial.c |  7 +++++
-> >  include/linux/qcom-geni-se.h          |  2 ++
-> >  3 files changed, 60 insertions(+)
-> > 
-> > diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
-> > index 9344c14..d30c282 100644
-> > --- a/drivers/soc/qcom/qcom-geni-se.c
-> > +++ b/drivers/soc/qcom/qcom-geni-se.c
-> > @@ -90,8 +90,11 @@ struct geni_wrapper {
-> >  	struct device *dev;
-> >  	void __iomem *base;
-> >  	struct clk_bulk_data ahb_clks[NUM_AHB_CLKS];
-> > +	struct geni_icc_path to_core;
-> >  };
-> >  
-> > +struct geni_wrapper *earlycon_wrapper;
-> 
-> should be static
-> 
-> > +
-> >  #define QUP_HW_VER_REG			0x4
-> >  
-> >  /* Common SE registers */
-> > @@ -818,6 +821,26 @@ int geni_icc_vote_off(struct geni_se *se)
-> >  }
-> >  EXPORT_SYMBOL(geni_icc_vote_off);
-> >  
-> > +void geni_remove_earlycon_icc_vote(void)
-> > +{
-> > +	struct geni_wrapper *wrapper = earlycon_wrapper;
-> > +	struct device_node *parent = of_get_next_parent(wrapper->dev->of_node);
-> > +	struct device_node *child;
-> > +
-> > +	for_each_child_of_node(parent, child) {
-> > +		if (of_device_is_compatible(child, "qcom,geni-se-qup")) {
-> > +			wrapper = platform_get_drvdata(of_find_device_by_node(
-> > +					child));
-> > +			icc_put(wrapper->to_core.path);
-> > +			wrapper->to_core.path = NULL;
-> > +		}
-> > +	}
-> > +	of_node_put(parent);
-> > +
-> > +	earlycon_wrapper = NULL;
-> > +}
-> > +EXPORT_SYMBOL(geni_remove_earlycon_icc_vote);
-> 
-> I didn't know that consoles have an exit handler, this is way nicer than
-> the miscellaneous triggers we discussed earlier :)
+This patchset introduces support for LiteX SoC Controller
+and LiteUART - serial device from LiteX SoC builder
+(https://github.com/enjoy-digital/litex).
 
-No wonder I 'missed' this when looking at the console code for possible
-triggers, it is brand new and as of now only exists in -next:
+In the following patchset I will add
+a new mor1kx-based (OpenRISC) platform that
+uses this device.
 
-commit ed31685c96e18f773ca11dd1a637974d62130673
-Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Date:   Mon Feb 3 15:31:30 2020 +0200
+Later I plan to extend this platform by
+adding support for more devices from LiteX suite.
 
-    console: Introduce ->exit() callback
+Changes in v4:
+    - fixed copyright headers
+    - fixed SoC Controller's yaml
+    - simplified SoC Controller's driver
 
+Changes in v3:
+    - added Acked-by and Reviewed-by tags
+    - introduced LiteX SoC Controller driver
+    - removed endianness detection (handled now by LiteX SoC Controller driver)
+    - modified litex.h header
+    - DTS aliases for LiteUART made optional
+    - renamed SERIAL_LITEUART_NR_PORTS to SERIAL_LITEUART_MAX_PORTS
+    - changed PORT_LITEUART from 122 to 123
 
-sharp timing!
+Changes in v2:
+    - binding description rewritten to a yaml schema file
+    - added litex.h header with common register access functions
+
+Filip Kokosinski (3):
+  dt-bindings: vendor: add vendor prefix for LiteX
+  dt-bindings: serial: document LiteUART bindings
+  drivers/tty/serial: add LiteUART driver
+
+Pawel Czarnecki (2):
+  dt-bindings: soc: document LiteX SoC Controller bindings
+  drivers/soc/litex: add LiteX SoC Controller driver
+
+ .../bindings/serial/litex,liteuart.yaml       |  38 ++
+ .../soc/litex/litex,soc-controller.yaml       |  39 ++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ MAINTAINERS                                   |   9 +
+ drivers/soc/Kconfig                           |   1 +
+ drivers/soc/Makefile                          |   1 +
+ drivers/soc/litex/Kconfig                     |  14 +
+ drivers/soc/litex/Makefile                    |   3 +
+ drivers/soc/litex/litex_soc_ctrl.c            | 217 +++++++++
+ drivers/tty/serial/Kconfig                    |  32 +-
+ drivers/tty/serial/Makefile                   |   1 +
+ drivers/tty/serial/liteuart.c                 | 411 ++++++++++++++++++
+ include/linux/litex.h                         |  45 ++
+ include/uapi/linux/serial_core.h              |   3 +
+ 14 files changed, 815 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/litex,liteuart.yaml
+ create mode 100644 Documentation/devicetree/bindings/soc/litex/litex,soc-controller.yaml
+ create mode 100644 drivers/soc/litex/Kconfig
+ create mode 100644 drivers/soc/litex/Makefile
+ create mode 100644 drivers/soc/litex/litex_soc_ctrl.c
+ create mode 100644 drivers/tty/serial/liteuart.c
+ create mode 100644 include/linux/litex.h
+
+-- 
+2.25.1
+
