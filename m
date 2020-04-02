@@ -2,321 +2,217 @@ Return-Path: <SRS0=sjTb=5S=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A981EC43331
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Apr 2020 13:50:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F0B7C43331
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Apr 2020 13:59:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6FFDA2073B
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Apr 2020 13:50:48 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=antmicro.com header.i=@antmicro.com header.b="TOQs9DQc"
+	by mail.kernel.org (Postfix) with ESMTP id 28D802074D
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Apr 2020 13:59:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1585835952;
+	bh=zLtl1hegVDZ3JX8jSfCefGzoiajaEZQuyWHnbec+81Y=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=w+eNI15Mc3eppehxAGU/Osiid59+pwsRQpsiF/hMOBfzKKScrkiXvBdbWiF5yQ367
+	 98tnPUDPK5PCQNzKsndTIdC9ZQ4ri6lgkj6t9FNQbXO6UomUaytcI97tiMrBsxf1Ri
+	 KL7vgxNH1ub5Ck1XmgvZtpDFgSuXagJtfMqT6bLQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732434AbgDBNus (ORCPT
+        id S1732310AbgDBN7I (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Apr 2020 09:50:48 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:46473 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732430AbgDBNur (ORCPT
+        Thu, 2 Apr 2020 09:59:08 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:43246 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726425AbgDBN7I (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Apr 2020 09:50:47 -0400
-Received: by mail-io1-f65.google.com with SMTP id i3so3582107ioo.13
-        for <linux-serial@vger.kernel.org>; Thu, 02 Apr 2020 06:50:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=antmicro.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/cBz5hkl7c5dEMdKpbLhwnxrBoxqXmCZ2qRoqWIGfXw=;
-        b=TOQs9DQcOzYglDoqsyjwITIxSkxfp6B83nGMgBfxD1hUaj5GEO9NFmDV3G78Pj8d1Y
-         PQvWnY7xMqBEQN9ZGWPrU8byIsMO9aaeFQKTep/CSQeZtnwX3EQmPxK5dw/dYvAhf0Ew
-         4zTOelzvZtbyDdbbkkjaaL6Pwe/Am/DKJRnfQ=
+        Thu, 2 Apr 2020 09:59:08 -0400
+Received: by mail-ed1-f68.google.com with SMTP id bd14so4194573edb.10;
+        Thu, 02 Apr 2020 06:59:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/cBz5hkl7c5dEMdKpbLhwnxrBoxqXmCZ2qRoqWIGfXw=;
-        b=ONFz464A5T9YepUS9PvHpwrgqm8QNH8T19SQPBdAwTduYHYyxQWXm7waWyYbBSvtU0
-         kky0NsqfpAbOGXkELbjUPqvAmT2WimC9q6RvKJYt2IKv/f5Yk4TNbBeYVGjj+QHdVW3z
-         8493CawwMuuG5PF00obZUtyPAYw8Lx6+M+VduMn/mwKclskM7Owxe+FNNk4AcfQtb0D8
-         oHTSEOduiHcY1sz9361BrS0cMsSSDNsSA58//4FLjS7xPZmBzKoaKQguQVtaLmVoJwOs
-         msAe739oOOIDiO9t2X/EbS8uiHgiy/oaEmuemnGJTFdlvkXYQODVXunFh2j8vLbi6Eri
-         G5yA==
-X-Gm-Message-State: AGi0PubXls+StM2grxODZ3AQecup2s9gUizeyvErfMp+z13ft55kpt1S
-        veFHihnMHnYb5is7S0x7XUMquFkYPw1laa+lr9Pf9Q==
-X-Google-Smtp-Source: APiQypLm9tJETNNKcGiWxK9FwSJGhdgVWdVf/91kroGdAcGjcoTAzBg3pzj9QNRzPYgRZAVp/4hE5voCGiqqSEoVzyI=
-X-Received: by 2002:a02:5ec7:: with SMTP id h190mr3466434jab.47.1585835445695;
- Thu, 02 Apr 2020 06:50:45 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200402084513.4173306-0-mholenko@antmicro.com>
- <20200402084513.4173306-3-mholenko@antmicro.com> <CAPk366QLHbR9cnLs244VbOXOLAg56yhG7O-DEAc1x1ZTvthiig@mail.gmail.com>
- <20200402074259.GC2755501@kroah.com>
-In-Reply-To: <20200402074259.GC2755501@kroah.com>
-From:   Mateusz Holenko <mholenko@antmicro.com>
-Date:   Thu, 2 Apr 2020 15:50:34 +0200
-Message-ID: <CAPk366Qm62TtwM7xNUSUT4L+7MwWDSPXyGCWXrXHYPjLeVf9OA@mail.gmail.com>
-Subject: Re: [PATCH v4 3/5] drivers/soc/litex: add LiteX SoC Controller driver
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jiri Slaby <jslaby@suse.com>, devicetree@vger.kernel.org,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Stafford Horne <shorne@gmail.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Filip Kokosinski <fkokosinski@antmicro.com>,
-        Pawel Czarnecki <pczarnecki@internships.antmicro.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Icenowy Zheng <icenowy@aosc.io>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=FG8YtufMkodYHyo0Cjo7XgVdXtJaBvxft8gScddvk0g=;
+        b=ThlE/KS6IKCoIdco9q/pUBh+wOA83+dJLOQs7W96QFXkvvgaCV6MVVnu4E+0VIkDRU
+         /gerC+nDONN2gzUAMaMfz6vt0h94oKwIzuw9Ltu56wx33WZtoIJ4tvMZTNFJXTOlqiiz
+         5FLS5x4Hqd9O2FgPv1RA6s0GI/wQKBHxeD9blyN8xTWU2J7Iqs5tJA1l/RPqhSwA+Xdq
+         hW0YZzzFPsMuwirBO4CMa0O1oBxzCq+oX06SeAfavVOvmhL98Kqvwq/Iy1y7jY+PerZU
+         4U+dxBAdc+XCkZPb9LkL8HQ/SQ7TKW8R03GTsG1LJEHQXAvGfa3PXp2LYDhmXqz6Ko/q
+         MRDA==
+X-Gm-Message-State: AGi0PuZ0B3VPW4ghvVSqnd7Tjw/rwY1uLZg4lwwLZ7OLGTxygWvVwgyO
+        sl26luubx9HqFEVCZPXKWVs=
+X-Google-Smtp-Source: APiQypJZiYA4+kO7+JETns8DlnM+JC+pL4k5yzrzry0SWjVI/A+wLBOeGJc99+87ubrsog7lCOCCkw==
+X-Received: by 2002:a50:af85:: with SMTP id h5mr3071705edd.300.1585835945843;
+        Thu, 02 Apr 2020 06:59:05 -0700 (PDT)
+Received: from kozik-lap ([194.230.155.125])
+        by smtp.googlemail.com with ESMTPSA id n18sm950462edv.93.2020.04.02.06.59.04
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 02 Apr 2020 06:59:05 -0700 (PDT)
+Date:   Thu, 2 Apr 2020 15:59:03 +0200
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Hyunki Koo <hyunki00.koo@samsung.com>
+Cc:     gregkh@linuxfoundation.org, Kukjin Kim <kgene@kernel.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH v2] tty: samsung_tty: 32-bit access for TX/RX hold
+ registers
+Message-ID: <20200402135903.GA14861@kozik-lap>
+References: <20200401082721.19431-1-hyunki00.koo@samsung.com>
+ <CGME20200402110609epcas2p4a5ec1fb3a5eaa3b12c20cfc2060162f3@epcas2p4.samsung.com>
+ <20200402110430.31156-1-hyunki00.koo@samsung.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200402110430.31156-1-hyunki00.koo@samsung.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Apr 2, 2020 at 9:43 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Thu, Apr 02, 2020 at 08:50:40AM +0200, Mateusz Holenko wrote:
-> > On Thu, Apr 2, 2020 at 8:46 AM Mateusz Holenko <mholenko@antmicro.com> wrote:
-> > >
-> > > From: Pawel Czarnecki <pczarnecki@internships.antmicro.com>
-> > >
-> > > This commit adds driver for the FPGA-based LiteX SoC
-> > > Controller from LiteX SoC builder.
-> > >
-> > > Co-developed-by: Mateusz Holenko <mholenko@antmicro.com>
-> > > Signed-off-by: Mateusz Holenko <mholenko@antmicro.com>
-> > > Signed-off-by: Pawel Czarnecki <pczarnecki@internships.antmicro.com>
-> > > ---
-> > >
-> > > Notes:
-> > >     Changes in v4:
-> > >     - fixed indent in Kconfig's help section
-> > >     - fixed copyright header
-> > >     - changed compatible to "litex,soc-controller"
-> > >     - simplified litex_soc_ctrl_probe
-> > >     - removed unnecessary litex_soc_ctrl_remove
-> > >
-> > >     This commit has been introduced in v3 of the patchset.
-> > >
-> > >     It includes a simplified version of common 'litex.h'
-> > >     header introduced in v2 of the patchset.
-> > >
-> > >  MAINTAINERS                        |   2 +
-> > >  drivers/soc/Kconfig                |   1 +
-> > >  drivers/soc/Makefile               |   1 +
-> > >  drivers/soc/litex/Kconfig          |  14 ++
-> > >  drivers/soc/litex/Makefile         |   3 +
-> > >  drivers/soc/litex/litex_soc_ctrl.c | 217 +++++++++++++++++++++++++++++
-> > >  include/linux/litex.h              |  45 ++++++
-> > >  7 files changed, 283 insertions(+)
-> > >  create mode 100644 drivers/soc/litex/Kconfig
-> > >  create mode 100644 drivers/soc/litex/Makefile
-> > >  create mode 100644 drivers/soc/litex/litex_soc_ctrl.c
-> > >  create mode 100644 include/linux/litex.h
-> > >
-> > > diff --git a/MAINTAINERS b/MAINTAINERS
-> > > index 2f5ede8a08aa..a35be1be90d5 100644
-> > > --- a/MAINTAINERS
-> > > +++ b/MAINTAINERS
-> > > @@ -9729,6 +9729,8 @@ M:        Karol Gugala <kgugala@antmicro.com>
-> > >  M:     Mateusz Holenko <mholenko@antmicro.com>
-> > >  S:     Maintained
-> > >  F:     Documentation/devicetree/bindings/*/litex,*.yaml
-> > > +F:     drivers/soc/litex/litex_soc_ctrl.c
-> > > +F:     include/linux/litex.h
-> > >
-> > >  LIVE PATCHING
-> > >  M:     Josh Poimboeuf <jpoimboe@redhat.com>
-> > > diff --git a/drivers/soc/Kconfig b/drivers/soc/Kconfig
-> > > index 1778f8c62861..78add2a163be 100644
-> > > --- a/drivers/soc/Kconfig
-> > > +++ b/drivers/soc/Kconfig
-> > > @@ -9,6 +9,7 @@ source "drivers/soc/bcm/Kconfig"
-> > >  source "drivers/soc/fsl/Kconfig"
-> > >  source "drivers/soc/imx/Kconfig"
-> > >  source "drivers/soc/ixp4xx/Kconfig"
-> > > +source "drivers/soc/litex/Kconfig"
-> > >  source "drivers/soc/mediatek/Kconfig"
-> > >  source "drivers/soc/qcom/Kconfig"
-> > >  source "drivers/soc/renesas/Kconfig"
-> > > diff --git a/drivers/soc/Makefile b/drivers/soc/Makefile
-> > > index 8b49d782a1ab..fd016b51cddd 100644
-> > > --- a/drivers/soc/Makefile
-> > > +++ b/drivers/soc/Makefile
-> > > @@ -14,6 +14,7 @@ obj-$(CONFIG_ARCH_GEMINI)     += gemini/
-> > >  obj-$(CONFIG_ARCH_MXC)         += imx/
-> > >  obj-$(CONFIG_ARCH_IXP4XX)      += ixp4xx/
-> > >  obj-$(CONFIG_SOC_XWAY)         += lantiq/
-> > > +obj-$(CONFIG_LITEX_SOC_CONTROLLER) += litex/
-> > >  obj-y                          += mediatek/
-> > >  obj-y                          += amlogic/
-> > >  obj-y                          += qcom/
-> > > diff --git a/drivers/soc/litex/Kconfig b/drivers/soc/litex/Kconfig
-> > > new file mode 100644
-> > > index 000000000000..71264c0e1d6c
-> > > --- /dev/null
-> > > +++ b/drivers/soc/litex/Kconfig
-> > > @@ -0,0 +1,14 @@
-> > > +# SPDX-License_Identifier: GPL-2.0
-> > > +
-> > > +menu "Enable LiteX SoC Builder specific drivers"
-> > > +
-> > > +config LITEX_SOC_CONTROLLER
-> > > +       tristate "Enable LiteX SoC Controller driver"
-> > > +       help
-> > > +         This option enables the SoC Controller Driver which verifies
-> > > +         LiteX CSR access and provides common litex_get_reg/litex_set_reg
-> > > +         accessors.
-> > > +         All drivers that use functions from litex.h must depend on
-> > > +         LITEX_SOC_CONTROLLER.
-> > > +
-> > > +endmenu
-> > > diff --git a/drivers/soc/litex/Makefile b/drivers/soc/litex/Makefile
-> > > new file mode 100644
-> > > index 000000000000..98ff7325b1c0
-> > > --- /dev/null
-> > > +++ b/drivers/soc/litex/Makefile
-> > > @@ -0,0 +1,3 @@
-> > > +# SPDX-License_Identifier: GPL-2.0
-> > > +
-> > > +obj-$(CONFIG_LITEX_SOC_CONTROLLER)     += litex_soc_ctrl.o
-> > > diff --git a/drivers/soc/litex/litex_soc_ctrl.c b/drivers/soc/litex/litex_soc_ctrl.c
-> > > new file mode 100644
-> > > index 000000000000..5defba000fd4
-> > > --- /dev/null
-> > > +++ b/drivers/soc/litex/litex_soc_ctrl.c
-> > > @@ -0,0 +1,217 @@
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > > +/*
-> > > + * LiteX SoC Controller Driver
-> > > + *
-> > > + * Copyright (C) 2020 Antmicro <www.antmicro.com>
-> > > + *
-> > > + */
-> > > +
-> > > +#include <linux/litex.h>
-> > > +#include <linux/device.h>
-> > > +#include <linux/errno.h>
-> > > +#include <linux/of.h>
-> > > +#include <linux/of_platform.h>
-> > > +#include <linux/platform_device.h>
-> > > +#include <linux/printk.h>
-> > > +#include <linux/module.h>
-> > > +#include <linux/errno.h>
-> > > +#include <linux/io.h>
-> > > +
-> > > +/*
-> > > + * The parameters below are true for LiteX SoC
-> > > + * configured for 8-bit CSR Bus, 32-bit aligned.
-> > > + *
-> > > + * Supporting other configurations will require
-> > > + * extending the logic in this header.
-> > > + */
-> > > +#define LITEX_REG_SIZE             0x4
-> > > +#define LITEX_SUBREG_SIZE          0x1
-> > > +#define LITEX_SUBREG_SIZE_BIT      (LITEX_SUBREG_SIZE * 8)
-> > > +
-> > > +static DEFINE_SPINLOCK(csr_lock);
-> > > +
-> > > +static inline unsigned long read_pointer_with_barrier(
-> > > +       const volatile void __iomem *addr)
-> > > +{
-> > > +       unsigned long val;
-> > > +
-> > > +       __io_br();
-> > > +       val = *(const volatile unsigned long __force *)addr;
-> > > +       __io_ar();
-> > > +       return val;
-> > > +}
-> > > +
-> > > +static inline void write_pointer_with_barrier(
-> > > +       volatile void __iomem *addr, unsigned long val)
-> > > +{
-> > > +       __io_br();
-> > > +       *(volatile unsigned long __force *)addr = val;
-> > > +       __io_ar();
-> > > +}
-> > > +
-> >
-> > I'm defining read_pointer_with_barrier/write_pointer_with_barrier in
-> > order to make sure that a series of reads/writes to a single CSR
-> > register will not be reordered by the compiler.
->
-> Please do not do this, there are core kernel calls for this, otherwise
-> this would be required by every individual driver, which would be crazy.
->
-> > Does __raw_readl/__raw_writel guarantee this property? If so, I could
-> > drop my functions and use the system ones instead.
->
-> Try it and see.
+On Thu, Apr 02, 2020 at 08:04:29PM +0900, Hyunki Koo wrote:
+> Support 32-bit access for the TX/RX hold registers UTXH and URXH.
+> 
+> This is required for some newer SoCs.
+> 
+> Signed-off-by: Hyunki Koo <hyunki00.koo@samsung.com>
+> ---
+>  drivers/tty/serial/samsung_tty.c | 78 +++++++++++++++++++++++++++++++++-------
+>  1 file changed, 66 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+> index 73f951d65b93..826d8c5846a6 100644
+> --- a/drivers/tty/serial/samsung_tty.c
+> +++ b/drivers/tty/serial/samsung_tty.c
+> @@ -154,12 +154,47 @@ struct s3c24xx_uart_port {
+>  #define portaddrl(port, reg) \
+>  	((unsigned long *)(unsigned long)((port)->membase + (reg)))
+>  
+> -#define rd_regb(port, reg) (readb_relaxed(portaddr(port, reg)))
+> +static unsigned int rd_reg(struct uart_port *port, int reg)
+> +{
+> +	switch (port->iotype) {
+> +	case UPIO_MEM:
+> +		return readb_relaxed(portaddr(port, reg));
+> +	case UPIO_MEM32:
+> +		return readl_relaxed(portaddr(port, reg));
+> +	default:
+> +		return 0;
+> +	}
+> +	return 0;
+> +}
+> +
+>  #define rd_regl(port, reg) (readl_relaxed(portaddr(port, reg)))
+>  
+> -#define wr_regb(port, reg, val) writeb_relaxed(val, portaddr(port, reg))
+> +static void wr_reg(struct uart_port *port, int reg, int val)
+> +{
+> +	switch (port->iotype) {
+> +	case UPIO_MEM:
+> +		writeb_relaxed(val, portaddr(port, reg));
+> +		break;
+> +	case UPIO_MEM32:
+> +		writel_relaxed(val, portaddr(port, reg));
+> +		break;
+> +	}
+> +}
+> +
+>  #define wr_regl(port, reg, val) writel_relaxed(val, portaddr(port, reg))
+>  
+> +static void write_buf(struct uart_port *port, int reg, int val)
+> +{
+> +	switch (port->iotype) {
+> +	case UPIO_MEM:
+> +		writeb(val, portaddr(port, reg));
+> +		break;
+> +	case UPIO_MEM32:
+> +		writel(val, portaddr(port, reg));
+> +		break;
+> +	}
+> +}
+> +
+>  /* Byte-order aware bit setting/clearing functions. */
+>  
+>  static inline void s3c24xx_set_bit(struct uart_port *port, int idx,
+> @@ -714,7 +749,7 @@ static void s3c24xx_serial_rx_drain_fifo(struct s3c24xx_uart_port *ourport)
+>  		fifocnt--;
+>  
+>  		uerstat = rd_regl(port, S3C2410_UERSTAT);
+> -		ch = rd_regb(port, S3C2410_URXH);
+> +		ch = rd_reg(port, S3C2410_URXH);
+>  
+>  		if (port->flags & UPF_CONS_FLOW) {
+>  			int txe = s3c24xx_serial_txempty_nofifo(port);
+> @@ -826,7 +861,7 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
+>  	}
+>  
+>  	if (port->x_char) {
+> -		wr_regb(port, S3C2410_UTXH, port->x_char);
+> +		wr_reg(port, S3C2410_UTXH, port->x_char);
+>  		port->icount.tx++;
+>  		port->x_char = 0;
+>  		goto out;
+> @@ -852,7 +887,7 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
+>  		if (rd_regl(port, S3C2410_UFSTAT) & ourport->info->tx_fifofull)
+>  			break;
+>  
+> -		wr_regb(port, S3C2410_UTXH, xmit->buf[xmit->tail]);
+> +		wr_reg(port, S3C2410_UTXH, xmit->buf[xmit->tail]);
+>  		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+>  		port->icount.tx++;
+>  		count--;
+> @@ -916,7 +951,7 @@ static unsigned int s3c24xx_serial_tx_empty(struct uart_port *port)
+>  /* no modem control lines */
+>  static unsigned int s3c24xx_serial_get_mctrl(struct uart_port *port)
+>  {
+> -	unsigned int umstat = rd_regb(port, S3C2410_UMSTAT);
+> +	unsigned int umstat = rd_reg(port, S3C2410_UMSTAT);
+>  
+>  	if (umstat & S3C2410_UMSTAT_CTS)
+>  		return TIOCM_CAR | TIOCM_DSR | TIOCM_CTS;
+> @@ -1974,7 +2009,7 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+>  	struct device_node *np = pdev->dev.of_node;
+>  	struct s3c24xx_uart_port *ourport;
+>  	int index = probe_index;
+> -	int ret;
+> +	int ret, prop = 0;
+>  
+>  	if (np) {
+>  		ret = of_alias_get_id(np, "serial");
+> @@ -2000,10 +2035,29 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+>  			dev_get_platdata(&pdev->dev) :
+>  			ourport->drv_data->def_cfg;
+>  
+> -	if (np)
+> +	if (np) {
+>  		of_property_read_u32(np,
+>  			"samsung,uart-fifosize", &ourport->port.fifosize);
+>  
+> +		if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
+> +			switch (prop) {
+> +			case 1:
+> +				ourport->port.iotype = UPIO_MEM;
+> +				break;
+> +			case 4:
+> +				ourport->port.iotype = UPIO_MEM32;
+> +				break;
+> +			default:
+> +				dev_warn(&pdev->dev, "unsupported reg-io-width (%d)\n",
+> +						prop);
+> +				ret = -EINVAL;
+> +				break;
+> +			}
+> +		} else {
+> +			ourport->port.iotype = UPIO_MEM;
+> +		}
+> +	}
 
-Since I want to avoid read/write reordering caused by the compiler
-optimizations I don't want to rely on a single manual test.
-What I mean is that even if it works now for me, it does not guarantee
-that it will in the future version of the compiler/using different
-compilation flags/etc, right?
+I think this still breaks all non-DT platforms (e.g. s3c).
 
-> What's wrong with the normal iomem read/write
-> functions?
+Best regards,
+Krzysztof
 
-What I want to achieve here is to access the register in the CPU
-"native" endianness and make sure that the value I see there is the
-same as a predefined pattern.
-
-LiteX is a soft SoC generator - it generates the logic of the whole
-SoC (CPU+peripherals) in a form that can be later synthesized and
-loaded onto the FPGA/turned into an ASIC/etc. Since it generates the
-system as a whole, it gives guarantees on how those elements are
-interconnected. It can generate CPUs of different architectures (some
-of them being little-, other big-endiann) and I want to have a single
-driver to target them all.
-
-In this driver I just want to verify that the interconnection between
-CPU and the peripheral is ok - I don't want to adjust dynamically
-(i.e., translate endianness in case a mismatch is detected). If what I
-see in the register is not what I expect it means that there is
-something wrong in the design and the generator should be fixed.
-
-I'm not using ioread32/iowrite32 functions as they reorder bytes
-depending on the CPU endianness so the returned value might not
-reflect the order of bytes read directly from the peripheral. I could
-use ifdefs checking the value of __LITTLE_ENDIAN (and that's in fact
-was what we started with), but
-(a) it was discouraged in the previous round of the review,
-(b) it requires more code - checking __LITTLE_ENDIAN and using
-ioread32/ioread32be accordingly.
-
-That's why I ended up with raw pointer access.
-
->
-> Also, just writing to a pointer like you did above is not how to do
-> this, please use the normal function calls, that way your driver will
-> work properly.
-
-Instead of accessing pointer directly I could call __raw_readl/__raw_writel
-- is that what you mean?
-
->
-> thanks,
->
-> greg k-h
-
-Thank you very much for the comments!
-
--- 
-Mateusz Holenko
-Antmicro Ltd | www.antmicro.com
-Roosevelta 22, 60-829 Poznan, Poland
