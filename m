@@ -2,217 +2,200 @@ Return-Path: <SRS0=sjTb=5S=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F0B7C43331
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Apr 2020 13:59:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C84B9C2D0F3
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Apr 2020 15:24:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 28D802074D
-	for <linux-serial@archiver.kernel.org>; Thu,  2 Apr 2020 13:59:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1585835952;
-	bh=zLtl1hegVDZ3JX8jSfCefGzoiajaEZQuyWHnbec+81Y=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=w+eNI15Mc3eppehxAGU/Osiid59+pwsRQpsiF/hMOBfzKKScrkiXvBdbWiF5yQ367
-	 98tnPUDPK5PCQNzKsndTIdC9ZQ4ri6lgkj6t9FNQbXO6UomUaytcI97tiMrBsxf1Ri
-	 KL7vgxNH1ub5Ck1XmgvZtpDFgSuXagJtfMqT6bLQ=
+	by mail.kernel.org (Postfix) with ESMTP id A955520675
+	for <linux-serial@archiver.kernel.org>; Thu,  2 Apr 2020 15:24:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732310AbgDBN7I (ORCPT
+        id S2388960AbgDBPYp (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 2 Apr 2020 09:59:08 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:43246 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726425AbgDBN7I (ORCPT
+        Thu, 2 Apr 2020 11:24:45 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:40937 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388234AbgDBPYo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 2 Apr 2020 09:59:08 -0400
-Received: by mail-ed1-f68.google.com with SMTP id bd14so4194573edb.10;
-        Thu, 02 Apr 2020 06:59:06 -0700 (PDT)
+        Thu, 2 Apr 2020 11:24:44 -0400
+Received: by mail-oi1-f196.google.com with SMTP id y71so3092208oia.7;
+        Thu, 02 Apr 2020 08:24:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=FG8YtufMkodYHyo0Cjo7XgVdXtJaBvxft8gScddvk0g=;
-        b=ThlE/KS6IKCoIdco9q/pUBh+wOA83+dJLOQs7W96QFXkvvgaCV6MVVnu4E+0VIkDRU
-         /gerC+nDONN2gzUAMaMfz6vt0h94oKwIzuw9Ltu56wx33WZtoIJ4tvMZTNFJXTOlqiiz
-         5FLS5x4Hqd9O2FgPv1RA6s0GI/wQKBHxeD9blyN8xTWU2J7Iqs5tJA1l/RPqhSwA+Xdq
-         hW0YZzzFPsMuwirBO4CMa0O1oBxzCq+oX06SeAfavVOvmhL98Kqvwq/Iy1y7jY+PerZU
-         4U+dxBAdc+XCkZPb9LkL8HQ/SQ7TKW8R03GTsG1LJEHQXAvGfa3PXp2LYDhmXqz6Ko/q
-         MRDA==
-X-Gm-Message-State: AGi0PuZ0B3VPW4ghvVSqnd7Tjw/rwY1uLZg4lwwLZ7OLGTxygWvVwgyO
-        sl26luubx9HqFEVCZPXKWVs=
-X-Google-Smtp-Source: APiQypJZiYA4+kO7+JETns8DlnM+JC+pL4k5yzrzry0SWjVI/A+wLBOeGJc99+87ubrsog7lCOCCkw==
-X-Received: by 2002:a50:af85:: with SMTP id h5mr3071705edd.300.1585835945843;
-        Thu, 02 Apr 2020 06:59:05 -0700 (PDT)
-Received: from kozik-lap ([194.230.155.125])
-        by smtp.googlemail.com with ESMTPSA id n18sm950462edv.93.2020.04.02.06.59.04
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 02 Apr 2020 06:59:05 -0700 (PDT)
-Date:   Thu, 2 Apr 2020 15:59:03 +0200
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Hyunki Koo <hyunki00.koo@samsung.com>
-Cc:     gregkh@linuxfoundation.org, Kukjin Kim <kgene@kernel.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] tty: samsung_tty: 32-bit access for TX/RX hold
- registers
-Message-ID: <20200402135903.GA14861@kozik-lap>
-References: <20200401082721.19431-1-hyunki00.koo@samsung.com>
- <CGME20200402110609epcas2p4a5ec1fb3a5eaa3b12c20cfc2060162f3@epcas2p4.samsung.com>
- <20200402110430.31156-1-hyunki00.koo@samsung.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zQv0tEEaOEwpKWMP6cGRSQ98944hkt2BkShYLbjg0cs=;
+        b=ag7QWpc3EU6c026BacuBaOOrMjXGni60GdIXQ8gPUqM65oA0qsjk2FLzfN7wZHOtPh
+         Ip1Z+aAccznt9zUk+qVh6FyHwzAaEo1voYe92SS6cU3oq02VfaBDH2Ky4JD4dwgadOzL
+         RRRZSyOTzL6LMEz0x4845M84fxDU8psMCrFji5eANXwGQxcCyU1LoV+9+Az/qPdT98XK
+         2UTe0B5Rc19hmI1CnO38Tog9yh3Z3uWwDz7yXwK9jHtJ6axQI/HmWNmUEioHiYR/NqwM
+         QnkdyY3+spEU2tKl271W/Y9iYU6LzG+gqJHIiuai+gXE0qgEWjO2hfwh80hoBzXNKoFC
+         I1fg==
+X-Gm-Message-State: AGi0PuZ4h6FUQ6K6GqCLiuEJtXwrTJH9fPsqfDbKmCqJw2iKAcVzwbEr
+        VXLd6y26lY+Ljy4rsulRDdPorTcd1AOHOwPA7corWdKc
+X-Google-Smtp-Source: APiQypJEZtWin1ZmfsPWq7swhsxnOwLe/GWmL+RQy8ppLnp440YDhSJaCZAuBKMBI97juGfUdGHw5Ju12Wj7WUksh6g=
+X-Received: by 2002:aca:cdd1:: with SMTP id d200mr2526518oig.153.1585841083482;
+ Thu, 02 Apr 2020 08:24:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200402110430.31156-1-hyunki00.koo@samsung.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <1585333048-31828-1-git-send-email-kazuhiro.fujita.jg@renesas.com>
+ <CAMuHMdW+u5r6zyxFJsVzj21BYDrKCr=Q6Ojk5VeN+mkhvXX9Jw@mail.gmail.com>
+ <OSBPR01MB3590E3D12546BC6711CEB542AAC80@OSBPR01MB3590.jpnprd01.prod.outlook.com>
+ <CAMuHMdXmfQ0x7mCZ-E7OPQFv2z-=mFDT20hJ2_JKax=OePB8eA@mail.gmail.com> <CA+V-a8vPn_z_j1Vwr_1F=dCw8H=g5UMWvWxgRqBeVR7dzHPz8Q@mail.gmail.com>
+In-Reply-To: <CA+V-a8vPn_z_j1Vwr_1F=dCw8H=g5UMWvWxgRqBeVR7dzHPz8Q@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 2 Apr 2020 17:24:31 +0200
+Message-ID: <CAMuHMdWc9q9NjQuAuy5M=v_x=i8XxVg5JZHswjvPsgNzhHfO0w@mail.gmail.com>
+Subject: Re: [PATCH] serial: sh-sci: Make sure status register SCxSR is read
+ in correct sequence
+To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Cc:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Kazuhiro Fujita <kazuhiro.fujita.jg@renesas.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hao Bui <hao.bui.yg@renesas.com>,
+        KAZUMI HARADA <kazumi.harada.rh@renesas.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Chris Brandt <Chris.Brandt@renesas.com>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        Rob Landley <rob@landley.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Apr 02, 2020 at 08:04:29PM +0900, Hyunki Koo wrote:
-> Support 32-bit access for the TX/RX hold registers UTXH and URXH.
-> 
-> This is required for some newer SoCs.
-> 
-> Signed-off-by: Hyunki Koo <hyunki00.koo@samsung.com>
-> ---
->  drivers/tty/serial/samsung_tty.c | 78 +++++++++++++++++++++++++++++++++-------
->  1 file changed, 66 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> index 73f951d65b93..826d8c5846a6 100644
-> --- a/drivers/tty/serial/samsung_tty.c
-> +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -154,12 +154,47 @@ struct s3c24xx_uart_port {
->  #define portaddrl(port, reg) \
->  	((unsigned long *)(unsigned long)((port)->membase + (reg)))
->  
-> -#define rd_regb(port, reg) (readb_relaxed(portaddr(port, reg)))
-> +static unsigned int rd_reg(struct uart_port *port, int reg)
-> +{
-> +	switch (port->iotype) {
-> +	case UPIO_MEM:
-> +		return readb_relaxed(portaddr(port, reg));
-> +	case UPIO_MEM32:
-> +		return readl_relaxed(portaddr(port, reg));
-> +	default:
-> +		return 0;
-> +	}
-> +	return 0;
-> +}
-> +
->  #define rd_regl(port, reg) (readl_relaxed(portaddr(port, reg)))
->  
-> -#define wr_regb(port, reg, val) writeb_relaxed(val, portaddr(port, reg))
-> +static void wr_reg(struct uart_port *port, int reg, int val)
-> +{
-> +	switch (port->iotype) {
-> +	case UPIO_MEM:
-> +		writeb_relaxed(val, portaddr(port, reg));
-> +		break;
-> +	case UPIO_MEM32:
-> +		writel_relaxed(val, portaddr(port, reg));
-> +		break;
-> +	}
-> +}
-> +
->  #define wr_regl(port, reg, val) writel_relaxed(val, portaddr(port, reg))
->  
-> +static void write_buf(struct uart_port *port, int reg, int val)
-> +{
-> +	switch (port->iotype) {
-> +	case UPIO_MEM:
-> +		writeb(val, portaddr(port, reg));
-> +		break;
-> +	case UPIO_MEM32:
-> +		writel(val, portaddr(port, reg));
-> +		break;
-> +	}
-> +}
-> +
->  /* Byte-order aware bit setting/clearing functions. */
->  
->  static inline void s3c24xx_set_bit(struct uart_port *port, int idx,
-> @@ -714,7 +749,7 @@ static void s3c24xx_serial_rx_drain_fifo(struct s3c24xx_uart_port *ourport)
->  		fifocnt--;
->  
->  		uerstat = rd_regl(port, S3C2410_UERSTAT);
-> -		ch = rd_regb(port, S3C2410_URXH);
-> +		ch = rd_reg(port, S3C2410_URXH);
->  
->  		if (port->flags & UPF_CONS_FLOW) {
->  			int txe = s3c24xx_serial_txempty_nofifo(port);
-> @@ -826,7 +861,7 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
->  	}
->  
->  	if (port->x_char) {
-> -		wr_regb(port, S3C2410_UTXH, port->x_char);
-> +		wr_reg(port, S3C2410_UTXH, port->x_char);
->  		port->icount.tx++;
->  		port->x_char = 0;
->  		goto out;
-> @@ -852,7 +887,7 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
->  		if (rd_regl(port, S3C2410_UFSTAT) & ourport->info->tx_fifofull)
->  			break;
->  
-> -		wr_regb(port, S3C2410_UTXH, xmit->buf[xmit->tail]);
-> +		wr_reg(port, S3C2410_UTXH, xmit->buf[xmit->tail]);
->  		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
->  		port->icount.tx++;
->  		count--;
-> @@ -916,7 +951,7 @@ static unsigned int s3c24xx_serial_tx_empty(struct uart_port *port)
->  /* no modem control lines */
->  static unsigned int s3c24xx_serial_get_mctrl(struct uart_port *port)
->  {
-> -	unsigned int umstat = rd_regb(port, S3C2410_UMSTAT);
-> +	unsigned int umstat = rd_reg(port, S3C2410_UMSTAT);
->  
->  	if (umstat & S3C2410_UMSTAT_CTS)
->  		return TIOCM_CAR | TIOCM_DSR | TIOCM_CTS;
-> @@ -1974,7 +2009,7 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
->  	struct device_node *np = pdev->dev.of_node;
->  	struct s3c24xx_uart_port *ourport;
->  	int index = probe_index;
-> -	int ret;
-> +	int ret, prop = 0;
->  
->  	if (np) {
->  		ret = of_alias_get_id(np, "serial");
-> @@ -2000,10 +2035,29 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
->  			dev_get_platdata(&pdev->dev) :
->  			ourport->drv_data->def_cfg;
->  
-> -	if (np)
-> +	if (np) {
->  		of_property_read_u32(np,
->  			"samsung,uart-fifosize", &ourport->port.fifosize);
->  
-> +		if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
-> +			switch (prop) {
-> +			case 1:
-> +				ourport->port.iotype = UPIO_MEM;
-> +				break;
-> +			case 4:
-> +				ourport->port.iotype = UPIO_MEM32;
-> +				break;
-> +			default:
-> +				dev_warn(&pdev->dev, "unsupported reg-io-width (%d)\n",
-> +						prop);
-> +				ret = -EINVAL;
-> +				break;
-> +			}
-> +		} else {
-> +			ourport->port.iotype = UPIO_MEM;
-> +		}
-> +	}
+Hi Prabhakar,
 
-I think this still breaks all non-DT platforms (e.g. s3c).
+On Thu, Apr 2, 2020 at 1:28 PM Lad, Prabhakar
+<prabhakar.csengg@gmail.com> wrote:
+> On Wed, Apr 1, 2020 at 1:43 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > On Tue, Mar 31, 2020 at 5:58 PM Prabhakar Mahadev Lad
+> > <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> > > > -----Original Message-----
+> > > > From: Geert Uytterhoeven <geert@linux-m68k.org>
+> > > > On Fri, Mar 27, 2020 at 7:17 PM Kazuhiro Fujita
+> > > > <kazuhiro.fujita.jg@renesas.com> wrote:
+> > > > > For SCIF and HSCIF interfaces the SCxSR register holds the status of
+> > > > > data that is to be read next from SCxRDR register, But where as for
+> > > > > SCIFA and SCIFB interfaces SCxSR register holds status of data that is
+> > > > > previously read from SCxRDR register.
+> > > > >
+> > > > > This patch makes sure the status register is read depending on the port
+> > > > > types so that errors are caught accordingly.
+> > > > >
+> > > > > Cc: <stable@vger.kernel.org>
+> > > > > Signed-off-by: Kazuhiro Fujita <kazuhiro.fujita.jg@renesas.com>
+> > > > > Signed-off-by: Hao Bui <hao.bui.yg@renesas.com>
+> > > > > Signed-off-by: KAZUMI HARADA <kazumi.harada.rh@renesas.com>
+> > > > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> >
+> > > > Nevertheless, this patch will need some testing on various hardware.
+> > > > Do you have a test case to verify the broken/fixed behavior?
+> > > >
+> > > Agreed, its been tested on RZ/G2x & RZ/G1x  by doing a loopback test, configure one interface as CS8 mode(8-bits data, No parity) and other as CS7 mode (7-bits data, 1-bit Parity) and parity errors should be detected.
+> >
+> > This can easily be tested on the console.  Basic testing can even be
+> > done with an unmodified kernel, as there is already a "parity error"
+> > notice message in the driver.
+> >
+> > Enable even parity on the console:
+> >
+> > $ stty evenp
+> >
+> > (use "oddp" for odd parity, and invert all below)
+> >
+> > Typing e.g. a single "p" should trigger a parity error.
+> > Typing "o" shouldn't.
+> > Without this patch, no parity error is detected on SCIF.
+> >
+> > Likewise, pasting a sequence of "p" characters should trigger a lot of
+> > parity errors, "o" shouldn't.
+> > Without this patch, parity errors are detected on SCIF, except for the
+> > first character.
+> >
+> > For more advanced testing, make the following change to the driver:
+> >
+> > - dev_notice(port->dev, "parity error\n");
+> > + dev_notice(port->dev, "parity error for char 0x%02x hweight %u\n",
+> > c, hweight8(c));
+> >
+> > Pasting an alternating sequence of "p" and "o" characters should trigger
+> > parity errors for the "p" characters.
+> > Without this patch, they are triggered for the "o" characters instead.
+> >
+> Thank you that makes life easier.
+>
+> > With this patch, the issues above are fixed on SCIF.
+> > This has been verified on:
+> >   1. SCIF on R-Car Gen 2,
+> >   2. SCIF on R-Car Gen3
+> >   3. SCIF on RZ/A1H,
+> >   4. SCIF on RZ/A2M.
+> >
+> Thank you for the testing.
+>
+> > However, I also tried this on HSCIF on R-Car Gen3, where I cannot
+> > trigger parity errors at all.
+> > Parabhakar: have you tried HSCIF on RZ/G1 and RZ/G2? Can you trigger
+> > parity errors on HSCIF?
+> >
+> I couldnt test this in RZ/Gx as the hscif interface is connected to
+> wifi, but I did manage to trigger this
+> on M3N following are the steps:
+> 1: Set console as ttySC1 in booatargs
+> 2: The login console will come up on both SC0&1
+> 3: Login through SC0
+> 4: Append securetty file: echo ttySC1 >> /etc/securetty
+> 5: Login through SC1 (CN26 on M3N)
+> 6:  And finally I repeated your steps using stty on SC1 (CN26) to
+> introduce parity error.
 
-Best regards,
-Krzysztof
+Interesting, as I decided to pick up an M3-N target, too ;-)
 
+Then I realized you used ttySC1 as the console, so DMA is disabled.
+I just used the existing getty I have running on the second serial port,
+which had DMA enabled, and no parity errors were triggered, as
+sci_receive_chars() is never called.
+If I disable DMA for HSCIF1 in the .dtsi, parity errors are detected
+as expected.
+
+Hence the driver does not support parity checking when DMA is enabled.
+I also think it's not easy to add support for that, if possible at all.
+
+> > I haven't tested it yet on:
+> >   1. SCIFB on SH/R-Mobile (needs wiring up),
+> >   2. SCIFA, SCIFB, and HSCIF on R-Car Gen2 (needs wiring up),
+> >   3. (H)SCIF on R-Car Gen1 (remote boards unaccessible at the moment),
+> >   4. SuperH (only remote Migo-R available, but unaccessible).
+> >
+> > I can test 1 and 2 (and perhaps 3 and 4) later, if needed.
+> probably testing this on SuperH is gonna be a pain due to lack of
+> hardware availability,
+> (it needs to be tested on 19 platforms)
+> how about #ifdef CONFIG_ARCH_RENESAS || CONFIG_H8300 and the fix ?
+
+I had a look at a few SuperH docs w.r.t. framing/parity error behavior:
+  - SCIF(A) on SH7724: similar to R-Car Gen2,
+  - H(SCIF) on SH7734: same as on R-Car Gen2,
+  - SCIF on SH7751: conflict between status register ("to be read next")
+    and flowchart ("read from").
+
+Let's wait a bit, we're in the middle of the merge window anyway.
+Probably we can get it tested on SuperH during the coming weeks.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
