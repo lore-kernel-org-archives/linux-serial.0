@@ -2,86 +2,162 @@ Return-Path: <SRS0=+zim=5T=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D27C43331
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Apr 2020 15:49:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3373DC43331
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Apr 2020 15:57:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5AE4B2073B
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Apr 2020 15:49:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F372520721
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Apr 2020 15:57:03 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=xilinx.onmicrosoft.com header.i=@xilinx.onmicrosoft.com header.b="YuszoxdT"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727927AbgDCPtP (ORCPT
+        id S1728188AbgDCP5D (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Apr 2020 11:49:15 -0400
-Received: from fieber.vanmierlo.com ([84.243.197.177]:48468 "EHLO
-        kerio9.vanmierlo.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728140AbgDCPtO (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Apr 2020 11:49:14 -0400
-X-Footer: dmFubWllcmxvLmNvbQ==
-Received: from roundcube.vanmierlo.com ([192.168.37.37])
-        (authenticated user m.brock@vanmierlo.com)
-        by kerio9.vanmierlo.com (Kerio Connect 9.2.11 beta 1) with ESMTPA;
-        Fri, 3 Apr 2020 17:48:42 +0200
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Fri, 03 Apr 2020 17:48:42 +0200
-From:   Maarten Brock <m.brock@vanmierlo.com>
-To:     Michal Simek <michal.simek@xilinx.com>
+        Fri, 3 Apr 2020 11:57:03 -0400
+Received: from mail-bn7nam10on2081.outbound.protection.outlook.com ([40.107.92.81]:51540
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727989AbgDCP5D (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 3 Apr 2020 11:57:03 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Q0EEs2ftM4Mlns3gX5WKcbXsL+jGHpMAYnok0SpPpO6PnWIWygKsIww/h7Kcz8vhag3YD7nD1x/GCeXMbLAFSomgw8eDxy5vsnMpvEp98UAYr3bNCiFNVsk/tASvQo4gml/YBQx5m65sdHgO1LrlqdQ1doZD82TrGMmygxOwzird8iO1jGGuHawiEyVv336pL6hpxdA8pCodmMt379DvzO33/opJ+acr5+3kfkfcyAtMwE/pwK93cq/xwyu6bNm9dexmBj67WEIeuyFDNhoHjQ73c40oiWtMMP3MRtnokEJQ5zdquFmJ5rkBfxpYZjHzZRlWV2PeGmSLg/pj5Ljo7g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GvyOMuTw77yIJheOplEKwK9UTv++WcbpV8gBsScfTZ8=;
+ b=m6aMiUbMED7YhqpmJwp5seq2qmEkVvNlC3IRtaJ8nieSv7nDOl4KP1gao8RddY4BHnLhI1g0Eg0X9wrm/F/kbx6UvfL5vQqytvU07hGj+MyhwH1ji7d6LgqyGpAacEbInpks5mfOM8RbsCHFcYJXd5j5Cd+J/9N7bqI5oFGq+3wUZaUXEL27er+dT5ebMc9ezM6WeTXpjP7UuPfKFOg4ELIDtM9T+wi+jOsu8wWHNAGDmI8LF5pdOfakDsgRXhxpJ8UGt5S/x74BIQO7ZKSu7ZzIuzo9BsGS6Gjr2LRH5oR9nU0nSB3v6P2Rw83rju/dooEbGlFoL9ggwLCiPlFmeQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.60.83) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
+ dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GvyOMuTw77yIJheOplEKwK9UTv++WcbpV8gBsScfTZ8=;
+ b=YuszoxdTx8v3SJizMU/HSitfWDAS8ApCjnfPwB7un674BcPixSQv4Tza25bFX5YjTjM403G1xDLthaKUo/OoQXxuNCGAo+/c/snIT2XbqS6z3q9QxmyVj9qBuMR4qMhCjKw92eGco3vZZT5Ldh/vp+aonorgIo30GUp+K7xZ2+8=
+Received: from BL0PR02CA0032.namprd02.prod.outlook.com (2603:10b6:207:3c::45)
+ by SN6PR02MB4141.namprd02.prod.outlook.com (2603:10b6:805:3a::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.20; Fri, 3 Apr
+ 2020 15:56:57 +0000
+Received: from BL2NAM02FT013.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:207:3c:cafe::69) by BL0PR02CA0032.outlook.office365.com
+ (2603:10b6:207:3c::45) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2878.15 via Frontend
+ Transport; Fri, 3 Apr 2020 15:56:57 +0000
+Authentication-Results: spf=pass (sender IP is 149.199.60.83)
+ smtp.mailfrom=xilinx.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=bestguesspass action=none
+ header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
+Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
+ BL2NAM02FT013.mail.protection.outlook.com (10.152.77.19) with Microsoft SMTP
+ Server id 15.20.2878.15 via Frontend Transport; Fri, 3 Apr 2020 15:56:57
+ +0000
+Received: from [149.199.38.66] (port=38686 helo=xsj-pvapsmtp01)
+        by xsj-pvapsmtpgw01 with esmtp (Exim 4.90)
+        (envelope-from <michal.simek@xilinx.com>)
+        id 1jKOga-0000h4-Dd; Fri, 03 Apr 2020 08:56:48 -0700
+Received: from [127.0.0.1] (helo=localhost)
+        by xsj-pvapsmtp01 with smtp (Exim 4.63)
+        (envelope-from <michal.simek@xilinx.com>)
+        id 1jKOgj-00009S-4X; Fri, 03 Apr 2020 08:56:57 -0700
+Received: from [172.30.17.108]
+        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
+        (envelope-from <michals@xilinx.com>)
+        id 1jKOge-00008l-AT; Fri, 03 Apr 2020 08:56:52 -0700
+Subject: Re: [PATCH 0/7] serial: uartps: Revert dynamic port allocation
+To:     Maarten Brock <m.brock@vanmierlo.com>,
+        Michal Simek <michal.simek@xilinx.com>
 Cc:     Greg KH <gregkh@linuxfoundation.org>, johan@kernel.org,
         linux-kernel@vger.kernel.org, monstr@monstr.eu, git@xilinx.com,
         Jiri Slaby <jslaby@suse.com>,
         linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
         linux-serial-owner@vger.kernel.org
-Subject: Re: [PATCH 0/7] serial: uartps: Revert dynamic port allocation
-In-Reply-To: <2983dbe2-16e6-4b7b-73a6-49d8c3d70510@xilinx.com>
 References: <cover.1585905873.git.michal.simek@xilinx.com>
  <20200403093216.GA3746303@kroah.com>
  <d9598635-a8ef-eff2-22e8-4fa37f8390b3@xilinx.com>
  <20200403094427.GA3754220@kroah.com>
  <2983dbe2-16e6-4b7b-73a6-49d8c3d70510@xilinx.com>
-Message-ID: <211f564d5594994fc677d3fea4222997@vanmierlo.com>
-X-Sender: m.brock@vanmierlo.com
-User-Agent: Roundcube Webmail/1.3.3
+ <211f564d5594994fc677d3fea4222997@vanmierlo.com>
+From:   Michal Simek <michal.simek@xilinx.com>
+Message-ID: <a582c754-8803-0fc9-7ab3-0b79837a74ac@xilinx.com>
+Date:   Fri, 3 Apr 2020 17:56:48 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+MIME-Version: 1.0
+In-Reply-To: <211f564d5594994fc677d3fea4222997@vanmierlo.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
+X-TM-AS-User-Approved-Sender: Yes;Yes
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:149.199.60.83;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapsmtpgw01;PTR:unknown-60-83.xilinx.com;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(39860400002)(346002)(376002)(396003)(136003)(46966005)(2616005)(356004)(110136005)(36756003)(8676002)(186003)(5660300002)(81156014)(4326008)(316002)(26005)(31686004)(47076004)(70586007)(6666004)(81166006)(426003)(54906003)(336012)(2906002)(44832011)(82740400003)(8936002)(31696002)(9786002)(478600001)(53546011)(70206006);DIR:OUT;SFP:1101;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 13a582d6-1725-4832-1947-08d7d7e7a36d
+X-MS-TrafficTypeDiagnostic: SN6PR02MB4141:
+X-LD-Processed: 657af505-d5df-48d0-8300-c31994686c5c,ExtAddr
+X-Microsoft-Antispam-PRVS: <SN6PR02MB41414C5B4988DCB204A3B3F9C6C70@SN6PR02MB4141.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 0362BF9FDB
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: nI0qrSHOX+mGqZ3KMZuDyvTR6K2Neb97ZTZdxV8ujD3LtTRTLITYaosEzTfnYiECT0hqHiZgtp0Z6dY18/GPFPCZOnFbUpEmwlAf0tFtZGcjsIpo41SPBYf+YtxhO764kbG4MhZcVn+bmPqHJctfl7xShchmErRi3z46iMhlBdDn5pRZ6W7xU2+edXH0Od598k59GwSSQszb/AbVEe173+41TL3wGMLPG8/r29q/kIGjae9e6iUGkk8ciRv/Z4mEl7SQukesi03HoDbvKJpIElKdpHMW+IeXATzbkErwVNMRBH+VJe9v+SeHHuI5Ppj6bAb2UBA50b6eDjYRz3+b96HCzrn6Piz2BaRul2sznsR+iWMk5ayljSqfWDOoyd3Qnc7bJo0bWRywWZUf5i3SH1IP1KaQYIA8VbH8EJ6NEfB55qv2Df1H4+bb1jqBONAHrbnbqfepNEDxZRHhat5uH6OjGuYz5WWqkMOuepoA2CkQoIJfP2i6omSxP9PIqCio/4l4VAxdtSVp6Mz0EwwQWg==
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Apr 2020 15:56:57.5217
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 13a582d6-1725-4832-1947-08d7d7e7a36d
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR02MB4141
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2020-04-03 11:51, Michal Simek wrote:
+On 03. 04. 20 17:48, Maarten Brock wrote:
+> On 2020-04-03 11:51, Michal Simek wrote:
+>>
+>> Thanks. I am definitely interested to hear more how this could be done
+>> differently because that hardcoded limits are painful.
+>> On FPGAs you can have a lot of uarts for whatever reason and users are
+>> using DT aliases to have consistent naming.
+>> Specifically on Xilinx devices we are using uartps which is ttyPS,
+>> uartlite which is ttyUL, ns16500 which is ttyS and also pl011 which is
+>> ttyAMA.
+>> Only ttyAMA or ttyPS on one chip are possible.
+>>
+>> And right now you can't have serial0 alias pointed ttyPS0 and another
+>> serial0 pointed to ttyUL0 or ttyS0. That's why others are shifted and we
+>> can reach that hardcoded NR_UART limit easily.
+>> And this was the reason why I have done these patches in past to remove
+>> any limit from these drivers and if user asks for serial100 alias you
+>> simply get ttyPS100 node.
 > 
-> Thanks. I am definitely interested to hear more how this could be done
-> differently because that hardcoded limits are painful.
-> On FPGAs you can have a lot of uarts for whatever reason and users are
-> using DT aliases to have consistent naming.
-> Specifically on Xilinx devices we are using uartps which is ttyPS,
-> uartlite which is ttyUL, ns16500 which is ttyS and also pl011 which is
-> ttyAMA.
-> Only ttyAMA or ttyPS on one chip are possible.
+> I would argue that the trouble originates from every uart driver using
+> its own naming scheme and thereby creating separate namespaces. If all
+> uarts would register as /dev/ttySnn then the serialN alias method would
+> work. These non-overlapping namespaces is something the linux kernel
+> driver community has allowed to happen.
 > 
-> And right now you can't have serial0 alias pointed ttyPS0 and another
-> serial0 pointed to ttyUL0 or ttyS0. That's why others are shifted and 
-> we
-> can reach that hardcoded NR_UART limit easily.
-> And this was the reason why I have done these patches in past to remove
-> any limit from these drivers and if user asks for serial100 alias you
-> simply get ttyPS100 node.
+> If the namespaces are not abandoned and disallowed, then the serialN
+> alias method must no longer be used for any driver that does not create
+> /dev/ttySnn devices. Every namespace will require its own alias base.
+> Or forget about deriving the number from an alias and set the number in
+> a property in the device tree node itself. The latter has my preference.
 
-I would argue that the trouble originates from every uart driver using
-its own naming scheme and thereby creating separate namespaces. If all
-uarts would register as /dev/ttySnn then the serialN alias method would
-work. These non-overlapping namespaces is something the linux kernel
-driver community has allowed to happen.
+Uartlite and as I see ucc_uart are only two driver which are using
+port-number property for this purpose.
+And IIRC this property was the part of any spec long time ago.
 
-If the namespaces are not abandoned and disallowed, then the serialN
-alias method must no longer be used for any driver that does not create
-/dev/ttySnn devices. Every namespace will require its own alias base.
-Or forget about deriving the number from an alias and set the number in
-a property in the device tree node itself. The latter has my preference.
-
-Maarten
-
+Thanks,
+Michal
