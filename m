@@ -2,175 +2,304 @@ Return-Path: <SRS0=+zim=5T=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA7FC43331
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Apr 2020 09:51:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E94DFC2D0E8
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Apr 2020 10:19:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 38A512073B
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Apr 2020 09:51:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AC6B02073B
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Apr 2020 10:19:37 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=xilinx.onmicrosoft.com header.i=@xilinx.onmicrosoft.com header.b="qaEaPaM5"
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="RT1gv5ga"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727882AbgDCJvn (ORCPT
+        id S1727835AbgDCKTh (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Apr 2020 05:51:43 -0400
-Received: from mail-dm6nam12on2078.outbound.protection.outlook.com ([40.107.243.78]:54624
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727835AbgDCJvn (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Apr 2020 05:51:43 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bV5jL+Stacgv8bqHquAYmQ64fuRLz6wnQxhYy8br+j5qwxo+Lj8MY280C15sFedi/yD40GxLLMhCDfpMezuhJPQJnJ5cItTUv10PR/pW6g/moMNZ6b8MIJA1zJXaSUZ1q552aDbDYQeHdiPfJM/Epv9PmNLwbWFaLWH9KPne9vjZWpECXkR4SggYXvMGKt2h80LPCyMyLW8fw2qEMm391DhVxsMqB9E9Iu5ozTsWvzs2MWE+fTbR+DAmVZSnmshtAvuCvcIk3L1y0/H6HIucdUYFPgd7euW1cXm9FnoB7lv3Ak5ajDdFgwL0Zn46vVyzKBPcLiBSqmxc3+aVRxfROQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O8CxC9CysvUax91ITEi83DhusciphVmW+/GOmc9TvWE=;
- b=Ec7/YzrFq32f/NFB/LaOC0T+rfzfNBMgwHPSZdd0LjBuhWMIAYpp43TdJ6x+7O3EzAsaylLTDmwVYnhVLVfSywpBKOettFW4ugSXEoMfa51uUlTuu8foner8IfL02Wx4evYmDnfoSOGi2j2WPIMCCCp5pluDWEa1HFfsvHng9rjqh5rtRfV95KXYxZuZO++6FMlc1vZf7tz8mceAk6XxV+6A8G6a4GAm+JquqLv1WZu68sw1G0H93gbHQBSjOAc/Gpv7VxupMbfY5UBATxSlwUpdpppCluzjOc71/fI7Wxqf3PwssrBIihACsK/K61ENOPhOV1jnH4YVZIGi1hD9Cw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.60.83) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
- dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
- not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O8CxC9CysvUax91ITEi83DhusciphVmW+/GOmc9TvWE=;
- b=qaEaPaM55RixSZqMrRaU/bphfnSHi884bZxBrRX3CMUVYqFGuobGsr5QoiUS9So7UE6cAYDy8HczYDS5h1SOfonYIhAFHeNHG67hqpm07XQVL+JYAP0jIzQZS6myTGrK5XTbY+HFu7ATjP0pu3VWBquXLs1chsm5YCEwYeSRX7E=
-Received: from CY4PR15CA0020.namprd15.prod.outlook.com (2603:10b6:910:14::30)
- by BN6PR02MB2529.namprd02.prod.outlook.com (2603:10b6:404:57::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2878.15; Fri, 3 Apr
- 2020 09:51:40 +0000
-Received: from CY1NAM02FT008.eop-nam02.prod.protection.outlook.com
- (2603:10b6:910:14:cafe::9a) by CY4PR15CA0020.outlook.office365.com
- (2603:10b6:910:14::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2878.15 via Frontend
- Transport; Fri, 3 Apr 2020 09:51:40 +0000
-Authentication-Results: spf=pass (sender IP is 149.199.60.83)
- smtp.mailfrom=xilinx.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=bestguesspass action=none
- header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
-Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
- CY1NAM02FT008.mail.protection.outlook.com (10.152.75.59) with Microsoft SMTP
- Server id 15.20.2878.15 via Frontend Transport; Fri, 3 Apr 2020 09:51:39
- +0000
-Received: from [149.199.38.66] (port=35329 helo=xsj-pvapsmtp01)
-        by xsj-pvapsmtpgw01 with esmtp (Exim 4.90)
-        (envelope-from <michal.simek@xilinx.com>)
-        id 1jKIz5-0005cn-FB; Fri, 03 Apr 2020 02:51:31 -0700
-Received: from [127.0.0.1] (helo=localhost)
-        by xsj-pvapsmtp01 with smtp (Exim 4.63)
-        (envelope-from <michal.simek@xilinx.com>)
-        id 1jKIzD-0004DE-F1; Fri, 03 Apr 2020 02:51:39 -0700
-Received: from [172.30.17.108]
-        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
-        (envelope-from <michals@xilinx.com>)
-        id 1jKIz8-000450-VY; Fri, 03 Apr 2020 02:51:35 -0700
-Subject: Re: [PATCH 0/7] serial: uartps: Revert dynamic port allocation
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Michal Simek <michal.simek@xilinx.com>
-Cc:     johan@kernel.org, linux-kernel@vger.kernel.org, monstr@monstr.eu,
-        git@xilinx.com, Jiri Slaby <jslaby@suse.com>,
-        linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
-References: <cover.1585905873.git.michal.simek@xilinx.com>
- <20200403093216.GA3746303@kroah.com>
- <d9598635-a8ef-eff2-22e8-4fa37f8390b3@xilinx.com>
- <20200403094427.GA3754220@kroah.com>
-From:   Michal Simek <michal.simek@xilinx.com>
-Message-ID: <2983dbe2-16e6-4b7b-73a6-49d8c3d70510@xilinx.com>
-Date:   Fri, 3 Apr 2020 11:51:32 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        Fri, 3 Apr 2020 06:19:37 -0400
+Received: from mailout1.samsung.com ([203.254.224.24]:13681 "EHLO
+        mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390597AbgDCKTg (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 3 Apr 2020 06:19:36 -0400
+Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20200403101934epoutp011371a102430e2eb779e2b4bf5d0f6cdb~CR-3FA3g82552925529epoutp01m
+        for <linux-serial@vger.kernel.org>; Fri,  3 Apr 2020 10:19:34 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20200403101934epoutp011371a102430e2eb779e2b4bf5d0f6cdb~CR-3FA3g82552925529epoutp01m
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1585909174;
+        bh=eTptNHCPGOilNHW1sYrUCropOS7u8CusvrQXpKeUFgs=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=RT1gv5gaSbsx+hM0wk8TllUqqVktkRRM/xfQ25ZGJ1bil3OcWyJevEKUGaJsbaeNM
+         3HNjX5j8IUSf1YmP2xAoMkhKI8tRwkyjwDlYuQHa3AoXuA4Qyy+0TTq1Yubyldavcv
+         5VtRHM7dgrb6Mqnr112/HKkjraKGjiVA2dcEF79k=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20200403101933epcas2p390c6ec32c7b8cb37ac0246c60be74f9f~CR-2qx-Ny1967219672epcas2p3f;
+        Fri,  3 Apr 2020 10:19:33 +0000 (GMT)
+Received: from epsmges2p1.samsung.com (unknown [182.195.40.190]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 48twsH4sBBzMqYkZ; Fri,  3 Apr
+        2020 10:19:31 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        BA.67.04598.3BD078E5; Fri,  3 Apr 2020 19:19:31 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
+        20200403101930epcas2p142837d679a3e7a9e3eb11c2c1ea9792c~CR-0ABDFf1040610406epcas2p1i;
+        Fri,  3 Apr 2020 10:19:30 +0000 (GMT)
+Received: from epsmgms1p2new.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20200403101930epsmtrp19a630bfad8e9ed97b8e02389b2a2e239~CR-z8j0M01547015470epsmtrp1b;
+        Fri,  3 Apr 2020 10:19:30 +0000 (GMT)
+X-AuditID: b6c32a45-eb9ff700000011f6-5d-5e870db3eda5
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        05.5B.04158.2BD078E5; Fri,  3 Apr 2020 19:19:30 +0900 (KST)
+Received: from KORCO004660 (unknown [12.36.165.196]) by epsmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20200403101930epsmtip2b09e3b4a12fd05e28b8e971f2148529f~CR-z0jih_1447814478epsmtip24;
+        Fri,  3 Apr 2020 10:19:30 +0000 (GMT)
+From:   "Hyunki Koo" <hyunki00.koo@samsung.com>
+To:     "'Krzysztof Kozlowski'" <krzk@kernel.org>
+Cc:     <gregkh@linuxfoundation.org>, "'Kukjin Kim'" <kgene@kernel.org>,
+        "'Jiri Slaby'" <jslaby@suse.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-samsung-soc@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+In-Reply-To: <20200403075122.GA9358@kozik-lap>
+Subject: RE: [PATCH v2] tty: samsung_tty: 32-bit access for TX/RX hold
+ registers
+Date:   Fri, 3 Apr 2020 19:19:30 +0900
+Message-ID: <005501d609a1$5cbbbb40$163331c0$@samsung.com>
 MIME-Version: 1.0
-In-Reply-To: <20200403094427.GA3754220@kroah.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
-X-TM-AS-User-Approved-Sender: Yes;Yes
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:149.199.60.83;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapsmtpgw01;PTR:unknown-60-83.xilinx.com;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(136003)(376002)(396003)(346002)(39860400002)(46966005)(47076004)(44832011)(31686004)(966005)(26005)(186003)(478600001)(81156014)(8936002)(426003)(2616005)(336012)(8676002)(5660300002)(6666004)(81166006)(82740400003)(9786002)(70206006)(70586007)(316002)(110136005)(31696002)(36756003)(356004)(4326008)(2906002);DIR:OUT;SFP:1101;
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b2505e8d-d011-4d54-2839-08d7d7b49b68
-X-MS-TrafficTypeDiagnostic: BN6PR02MB2529:
-X-LD-Processed: 657af505-d5df-48d0-8300-c31994686c5c,ExtAddr
-X-Microsoft-Antispam-PRVS: <BN6PR02MB2529BBF402084DE7DA248B71C6C70@BN6PR02MB2529.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-Forefront-PRVS: 0362BF9FDB
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9WlbnwymdSicHLFSRUgkXD23Y7EVSPPtzs0ok0HqXJFJPKrvXxCVQa8xoxdZF2ujwRNefBY6Zn0JAlBZEswv0OUnqomPN03paF1GdJUG+XSVEohm8ipry/E3lKVUWk54KPKcALqmhDVF0pKsF2pAS+EAXQNZgedQ92YdKZ8Fy2ROqTTEA0owGrRzW+g/DQL0+d8aOnxyFJRo1DojD/T+RxstbLpwE+lUwy9BKzrmBCJJZu/Pl7eABAF8KxK+zekSnlu6KzmfQe8hpOHuGnplAL1XD/d98FBrbkhPQUrBGk5C9GCdb1/EyLhlPb/hQPI/dg73F58W/U6hUmDsL1DlAlZ+zeKGhe6WbfAb1k2kB/p6w58r3gEJq2AxXsxMSWEEyB4PugEEvWDwA4Ff7iA6/VcBIDO2YxU+WN9pMnfD68WzQMooJPNtldI/6363x/XWgCWKisbIA5gykV79NfJggHkdH3thFeH4K3n/X4ZCLY9nLdfHC9sK8cJcN5rEsXt68A4Zo6JmAoC8/Ilr3Ud8ABTJb0HkIB+XdX5/q8LNCo6LR2xDIbkgLXOspkvPq1KPrrwa/Pd2q1jZefTB3B4Ryg==
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Apr 2020 09:51:39.7484
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b2505e8d-d011-4d54-2839-08d7d7b49b68
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR02MB2529
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQKEs4Y1dkf1SYeuuA/6Ie9wROds5QJJhiU1AnstEDsBfb5gtwEN9w2NAuyyasumt/H/gA==
+Content-Language: ko
+X-Brightmail-Tracker: H4sIAAAAAAAAA02SfUhTURjGO7vb3dVa3KbVy/paNzM0tF1rdi2NQotREVJUEOG66EFH+2p3
+        itofCtb8KCsrwZaBZRRJpKmZjdLUwD7EGWZoQWVqZIOyIlOhj7tdI//7nfd9Ht73OedQhLqG
+        1FAmqxM7rLyZIYPlTR0RXFSDqjBFN/E0jCuoriW583VjMu70kI/gvN46JVc/9FLB9XoqSa7C
+        2yLjuqpLlZspQ31NMWlovXRTaWi4mmeobeyTG77XL01WHDDHZ2A+DTu02JpqSzNZ0xOYHXuM
+        iUZ9rI6NYuO49YzWyltwApO0Mzlqm8ksrsJos3hzplhK5gWBWbMp3mHLdGJthk1wJjDYnma2
+        s6w9WuAtQqY1PTrVZtnA6nQxelF5yJxxrKeftH9ls0vybxD56O3KEhREAb0OvvW9IEtQMKWm
+        mxGc+vGGkA7fEPz4+R75VWp6HMEXz5F/Dq9rYtrxAMEJb5FCOowiOOcrDjhIOgp6q4dlfg4V
+        uaH/utIvIugJBC3j3Qp/I4iOhtI/dwKiEHo3uLsfE36W02Hw/GNdgFV0HNTcf09KPA+eXBiW
+        +5mgV8O1yz5CWkkLkyPXFNKwfeBtHpNJmlC4WOwK5AHaR0JBa5NSMiRBVblXLnEIfOpsnK5r
+        YPS0a5rzoMVVppTMJxFMjo0opMZacH8oFGNS4oQIqPWs8SPQK+DRq+nd5kJRxy+lVFZBkUst
+        GcPh1vhHmcSL4eaIR3kGMe4ZydwzkrlnJHD/n1WF5DVoAbYLlnQsxNjZma9djwL/NHJrM6ro
+        3tmOaAoxc1Sz2o6nqBV8lpBjaUdAEUyoakuFWFKl8Tm52GEzOjLNWGhHevHiywjN/FSb+Out
+        TiOrj4mN1cXpOX1sDMcsVDXMHjioptN5Jz6MsR07/vlkVJAmHy3n7BEDYVdSw4YIbkXh9rPO
+        FOPRVUvqZrdqsoe6bo/iqd5zPcOVo5bXbNJq3PSuPbika8Gq5Y/bHq4rKEyO85Uz+YOn8Oe8
+        5qDzuZd8S+f0/5m4uzl63r1Fvz2NsMtUxm+ZWrZXCF+035O9sUo2uPJZZ2PinhDacuaAehAb
+        TA/CGbmQwbORhEPg/wK2ZbDjvQMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprGIsWRmVeSWpSXmKPExsWy7bCSvO4m3vY4g03b1C2aF69ns5iy4QOT
+        Rf/j18wW589vYLfY9Pgaq8XlXXPYLGac38dkcWZxL7sDh8emVZ1sHvvnrmH32Lyk3mP9lqss
+        Hp83yQWwRnHZpKTmZJalFunbJXBl9M+4wVhwx6DiytIj7A2MR1S6GDk5JARMJM63/WDrYuTi
+        EBLYzSgxcVEXG0RCRmLCiyXMELawxP2WI6wQRc8ZJVb07GYCSbAJ6EpcXvwEzBYBsjffWM4O
+        UsQs8I9RovHnZKixW5gkdpxdCTaWU0BPovf/VrAOYYEAicnzd4LFWQRUJC6+2AC2jlfAUmLV
+        nkdsELagxMmZT1hAbGYBbYmnN5/C2csWvoY6T0Hi59NlrBBXhEmc3/GBCaJGRGJ2ZxvzBEbh
+        WUhGzUIyahaSUbOQtCxgZFnFKJlaUJybnltsWGCUl1quV5yYW1yal66XnJ+7iREcW1paOxhP
+        nIg/xCjAwajEw8twsDVOiDWxrLgy9xCjBAezkgiv4wygEG9KYmVValF+fFFpTmrxIUZpDhYl
+        cV75/GORQgLpiSWp2ampBalFMFkmDk6pBkaDJeefXjrnanjez2l3j42e9Pbj6o0CCkEcvnP0
+        TLleKPd87g12Xio8q/DPnmXbD/6d8CNkcu7MDvXnfutkrTYsvyue0uuUVdzy69Q5q9L2f/aH
+        3d8+M4lbxOt44ORHlQi3z26Cfxt3LpJ+cvh2gEpa+If07OfL3+wSVdh5Wa1unQ63VrubUr0S
+        S3FGoqEWc1FxIgB5MaCvqQIAAA==
+X-CMS-MailID: 20200403101930epcas2p142837d679a3e7a9e3eb11c2c1ea9792c
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20200402110609epcas2p4a5ec1fb3a5eaa3b12c20cfc2060162f3
+References: <20200401082721.19431-1-hyunki00.koo@samsung.com>
+        <CGME20200402110609epcas2p4a5ec1fb3a5eaa3b12c20cfc2060162f3@epcas2p4.samsung.com>
+        <20200402110430.31156-1-hyunki00.koo@samsung.com>
+        <20200402135903.GA14861@kozik-lap>
+        <004c01d60989$c5923030$50b69090$@samsung.com>
+        <20200403075122.GA9358@kozik-lap>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 03. 04. 20 11:44, Greg KH wrote:
-> On Fri, Apr 03, 2020 at 11:37:46AM +0200, Michal Simek wrote:
->> On 03. 04. 20 11:32, Greg KH wrote:
->>> On Fri, Apr 03, 2020 at 11:24:29AM +0200, Michal Simek wrote:
->>>> Hi,
->>>>
->>>> there were several changes done in past in uartps drivers which have been
->>>> also done in uartlite driver.
->>>> Here is the thread about it
->>>> https://lore.kernel.org/linux-serial/20191203152738.GF10631@localhost/
->>>>
->>>> This series reverts all patches which enabled dynamic port allocation and
->>>> returning driver to the previous state. There were added some features in
->>>> meantime which are not affected by this series.
->>>
->>> Should this go into 5.7-final as it's causing problems now, and
->>> backported as well?  Or can it wait until 5.8-rc1?
->>
->> These patches have been added to v4.20. It means all version from that
->> are affected.
->>
->> The issue I am aware of is when you setup stdout-path =
->> "serialX:115200n8" where X is not 0.
->>
->> But as was discussed the concept is based on Johan wrong that's why it
->> can be consider as bug fix.
-> 
-> Ok, I'll queue these up after 5.7-rc1 is out, for inclusion in
-> 5.7-final, and cc: for stable, as I agree, they should all be reverted.
-> Thanks for doing the work.
+On Thu, Apr 02, 2020 at 4:51:29PM +0900, Krzysztof Kozlowski
+> On Fri, Apr 03, 2020 at 04:30:38PM +0900, Hyunki Koo wrote:
+> > On Thu, Apr 02, 2020 at 10:59:29PM +0900, Krzysztof Kozlowski
+> > > On Thu, Apr 02, 2020 at 08:04:29PM +0900, Hyunki Koo wrote:
+> > > > Support 32-bit access for the TX/RX hold registers UTXH and URXH.
+> > > >
+> > > > This is required for some newer SoCs.
+> > > >
+> > > > Signed-off-by: Hyunki Koo <hyunki00.koo=40samsung.com>
+> > > > ---
+> > > >  drivers/tty/serial/samsung_tty.c =7C 78
+> > > > +++++++++++++++++++++++++++++++++-------
+> > > >  1 file changed, 66 insertions(+), 12 deletions(-)
+> > > >
+> > > > diff --git a/drivers/tty/serial/samsung_tty.c
+> > > > b/drivers/tty/serial/samsung_tty.c
+> > > > index 73f951d65b93..826d8c5846a6 100644
+> > > > --- a/drivers/tty/serial/samsung_tty.c
+> > > > +++ b/drivers/tty/serial/samsung_tty.c
+> > > > =40=40 -154,12 +154,47 =40=40 struct s3c24xx_uart_port =7B  =23defi=
+ne
+> > > > portaddrl(port, reg) =5C
+> > > >  	((unsigned long *)(unsigned long)((port)->membase + (reg)))
+> > > >
+> > > > -=23define rd_regb(port, reg) (readb_relaxed(portaddr(port, reg)))
+> > > > +static unsigned int rd_reg(struct uart_port *port, int reg) =7B
+> > > > +	switch (port->iotype) =7B
+> > > > +	case UPIO_MEM:
+> > > > +		return readb_relaxed(portaddr(port, reg));
+> > > > +	case UPIO_MEM32:
+> > > > +		return readl_relaxed(portaddr(port, reg));
+> > > > +	default:
+> > > > +		return 0;
+> > > > +	=7D
+> > > > +	return 0;
+> > > > +=7D
+> > > > +
+> > > >  =23define rd_regl(port, reg) (readl_relaxed(portaddr(port, reg)))
+> > > >
+> > > > -=23define wr_regb(port, reg, val) writeb_relaxed(val,
+> > > > portaddr(port,
+> > > > reg))
+> > > > +static void wr_reg(struct uart_port *port, int reg, int val) =7B
+> > > > +	switch (port->iotype) =7B
+> > > > +	case UPIO_MEM:
+> > > > +		writeb_relaxed(val, portaddr(port, reg));
+> > > > +		break;
+> > > > +	case UPIO_MEM32:
+> > > > +		writel_relaxed(val, portaddr(port, reg));
+> > > > +		break;
+> > > > +	=7D
+> > > > +=7D
+> > > > +
+> > > >  =23define wr_regl(port, reg, val) writel_relaxed(val,
+> > > > portaddr(port,
+> > > > reg))
+> > > >
+> > > > +static void write_buf(struct uart_port *port, int reg, int val) =
+=7B
+> > > > +	switch (port->iotype) =7B
+> > > > +	case UPIO_MEM:
+> > > > +		writeb(val, portaddr(port, reg));
+> > > > +		break;
+> > > > +	case UPIO_MEM32:
+> > > > +		writel(val, portaddr(port, reg));
+> > > > +		break;
+> > > > +	=7D
+> > > > +=7D
+> > > > +
+> > > >  /* Byte-order aware bit setting/clearing functions. */
+> > > >
+> > > >  static inline void s3c24xx_set_bit(struct uart_port *port, int
+> > > > idx, =40=40 -714,7 +749,7 =40=40 static void
+> > > > s3c24xx_serial_rx_drain_fifo(struct
+> > > s3c24xx_uart_port *ourport)
+> > > >  		fifocnt--;
+> > > >
+> > > >  		uerstat =3D rd_regl(port, S3C2410_UERSTAT);
+> > > > -		ch =3D rd_regb(port, S3C2410_URXH);
+> > > > +		ch =3D rd_reg(port, S3C2410_URXH);
+> > > >
+> > > >  		if (port->flags & UPF_CONS_FLOW) =7B
+> > > >  			int txe =3D s3c24xx_serial_txempty_nofifo(port);
+> > > > =40=40 -826,7 +861,7 =40=40 static irqreturn_t
+> s3c24xx_serial_tx_chars(int
+> > > irq, void *id)
+> > > >  	=7D
+> > > >
+> > > >  	if (port->x_char) =7B
+> > > > -		wr_regb(port, S3C2410_UTXH, port->x_char);
+> > > > +		wr_reg(port, S3C2410_UTXH, port->x_char);
+> > > >  		port->icount.tx++;
+> > > >  		port->x_char =3D 0;
+> > > >  		goto out;
+> > > > =40=40 -852,7 +887,7 =40=40 static irqreturn_t
+> s3c24xx_serial_tx_chars(int
+> > > irq, void *id)
+> > > >  		if (rd_regl(port, S3C2410_UFSTAT) & ourport->info-
+> > > >tx_fifofull)
+> > > >  			break;
+> > > >
+> > > > -		wr_regb(port, S3C2410_UTXH, xmit->buf=5Bxmit->tail=5D);
+> > > > +		wr_reg(port, S3C2410_UTXH, xmit->buf=5Bxmit->tail=5D);
+> > > >  		xmit->tail =3D (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+> > > >  		port->icount.tx++;
+> > > >  		count--;
+> > > > =40=40 -916,7 +951,7 =40=40 static unsigned int
+> > > s3c24xx_serial_tx_empty(struct
+> > > > uart_port *port)
+> > > >  /* no modem control lines */
+> > > >  static unsigned int s3c24xx_serial_get_mctrl(struct uart_port
+> > > > *port) =7B
+> > > > -	unsigned int umstat =3D rd_regb(port, S3C2410_UMSTAT);
+> > > > +	unsigned int umstat =3D rd_reg(port, S3C2410_UMSTAT);
+> > > >
+> > > >  	if (umstat & S3C2410_UMSTAT_CTS)
+> > > >  		return TIOCM_CAR =7C TIOCM_DSR =7C TIOCM_CTS; =40=40 -
+> > > 1974,7 +2009,7 =40=40
+> > > > static int s3c24xx_serial_probe(struct platform_device *pdev)
+> > > >  	struct device_node *np =3D pdev->dev.of_node;
+> > > >  	struct s3c24xx_uart_port *ourport;
+> > > >  	int index =3D probe_index;
+> > > > -	int ret;
+> > > > +	int ret, prop =3D 0;
+> > > >
+> > > >  	if (np) =7B
+> > > >  		ret =3D of_alias_get_id(np, =22serial=22); =40=40 -2000,10
+> > > +2035,29 =40=40 static
+> > > > int s3c24xx_serial_probe(struct platform_device *pdev)
+> > > >  			dev_get_platdata(&pdev->dev) :
+> > > >  			ourport->drv_data->def_cfg;
+> > > >
+> > > > -	if (np)
+> > > > +	if (np) =7B
+> > > >  		of_property_read_u32(np,
+> > > >  			=22samsung,uart-fifosize=22, &ourport->port.fifosize);
+> > > >
+> > > > +		if (of_property_read_u32(np, =22reg-io-width=22, &prop) =3D=3D
+> > > 0) =7B
+> > > > +			switch (prop) =7B
+> > > > +			case 1:
+> > > > +				ourport->port.iotype =3D UPIO_MEM;
+> > > > +				break;
+> > > > +			case 4:
+> > > > +				ourport->port.iotype =3D UPIO_MEM32;
+> > > > +				break;
+> > > > +			default:
+> > > > +				dev_warn(&pdev->dev, =22unsupported
+> > > reg-io-width (%d)=5Cn=22,
+> > > > +						prop);
+> > > > +				ret =3D -EINVAL;
+> > > > +				break;
+> > > > +			=7D
+> > > > +		=7D else =7B
+> > > > +			ourport->port.iotype =3D UPIO_MEM;
+> > > > +		=7D
+> > > > +	=7D
+> > >
+> > > I think this still breaks all non-DT platforms (e.g. s3c).
+> > >
+> > > Best regards,
+> > > Krzysztof
+> >
+> > Thank you for your comment.
+> > I  hope ourport->port.iotype  is initialized by below table for non-DT
+> > platforms
+>=20
+> Indeed, you're right. In this case, this else() you added is not needed.
+> The default value for non-DT and existing DT platforms will be the same
+> (UPIO_MEM).
+>=20
+> Best regards,
+> Krzysztof
 
-Thanks. I am definitely interested to hear more how this could be done
-differently because that hardcoded limits are painful.
-On FPGAs you can have a lot of uarts for whatever reason and users are
-using DT aliases to have consistent naming.
-Specifically on Xilinx devices we are using uartps which is ttyPS,
-uartlite which is ttyUL, ns16500 which is ttyS and also pl011 which is
-ttyAMA.
-Only ttyAMA or ttyPS on one chip are possible.
-
-And right now you can't have serial0 alias pointed ttyPS0 and another
-serial0 pointed to ttyUL0 or ttyS0. That's why others are shifted and we
-can reach that hardcoded NR_UART limit easily.
-And this was the reason why I have done these patches in past to remove
-any limit from these drivers and if user asks for serial100 alias you
-simply get ttyPS100 node.
-
-Johan mentioned any solution use in USB stack but I haven't really had a
-time to take a look at it how feasible it is to bring back to all drivers.
-
-Thanks,
-Michal
-
+Thank you  for your comment.
+I will remove  this line also in v3
++		=7D else =7B
++			ourport->port.iotype =3D UPIO_MEM;
 
