@@ -7,64 +7,64 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E086C2D0E8
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Apr 2020 09:24:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E91E3C43331
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Apr 2020 09:24:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CC399218AC
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Apr 2020 09:24:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BF63B206B8
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Apr 2020 09:24:57 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=monstr-eu.20150623.gappssmtp.com header.i=@monstr-eu.20150623.gappssmtp.com header.b="ut1nxyn5"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=monstr-eu.20150623.gappssmtp.com header.i=@monstr-eu.20150623.gappssmtp.com header.b="ipK8kZ11"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390621AbgDCJYy (ORCPT
+        id S2390625AbgDCJYz (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Apr 2020 05:24:54 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:37283 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390609AbgDCJYx (ORCPT
+        Fri, 3 Apr 2020 05:24:55 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:43538 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390538AbgDCJYy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Apr 2020 05:24:53 -0400
-Received: by mail-wr1-f68.google.com with SMTP id w10so7688627wrm.4
-        for <linux-serial@vger.kernel.org>; Fri, 03 Apr 2020 02:24:51 -0700 (PDT)
+        Fri, 3 Apr 2020 05:24:54 -0400
+Received: by mail-wr1-f67.google.com with SMTP id w15so1398259wrv.10
+        for <linux-serial@vger.kernel.org>; Fri, 03 Apr 2020 02:24:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=monstr-eu.20150623.gappssmtp.com; s=20150623;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=k7pHx0/EXbtoV5+rhsgFvftYW29NmU7J5D/NZ/j6E1w=;
-        b=ut1nxyn5/OcfY3fenkF9A1yKJWmdlxIuQ3wwOua8AWghDRLCEXazrkr4Wi5FuMVjh3
-         h3Oeeamlm8HEhHV6S34fiL5dmhjqqK8YgLo6UnapGtRhTCvZ8m6MhWVwyInnPySrZt2E
-         NupufDUxoqTmUKtKz5HJ8dEzLugE8JSNozVeyGY5T4x5J00WqwPPkazQMluKuDkHo4E4
-         i1iEfIZs3M1YeGACmMpXG1t03xSiT2YPJylzINfKR1kXkuH/Tla2TsBkRGXBcW1HwfZt
-         Vo9G4zenUhDhUDGaEy1DJMrgHWIC4KJMfaUSv93q9yI9mKvxZdH+rM9y8cD8FM1zCoap
-         FsLA==
+        bh=2x8p8ysEliFz5jE2Oqu/wItdod9o40YesvKMul9whhc=;
+        b=ipK8kZ11Xx861bXK7JKJBTZe7qceGcfI/+9Gtdg4R4Neyv7D0AvEK7w/VEJO2hKRgB
+         ba2ym/6HGK51Gfs3quEM6aLbEM/c9sbu+zG+/6jpBuI9fCu4D99oPMSYO5RNfDYn4lxE
+         7bLI5VpksTCvD4LbEHNpCLz2S3GM5dfaPLfAScvg4luLAIN8TauYYHURBViGAmg2FTer
+         eci+Fn83LeqsnGwgAQr4xahccldZanXV8znGtfk5Q3G8ZlW9q+gQnQEkSp+7A62jj0KB
+         ZeljPPMt6sjcwcbZ6vh5G4ACSx3gsfS3+d2nTxPWJkDcoddPXpwQb6uei6HFmp6Z8Ii1
+         o2kQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=k7pHx0/EXbtoV5+rhsgFvftYW29NmU7J5D/NZ/j6E1w=;
-        b=Ba7m5fW13oU8jltMVjzJOubGq9klbNP4ffQtCpIleZkQ1WOMUxCwwT0HUP6OWpk0mY
-         L0owF+121FEP6eHJDXMCNNgtGJ5XYghN+0s1Ni/U4iuNYDXkDWGKnYBmOYmFBkKrzAK5
-         FBjChoWEI9XdxDLnTbuCeIfZJ+DOXCDGV2gxkpgkk+1WQU/KtxcYpNjAx3jrr0lkEfLQ
-         UKYrjGnkzz+e93R/J4SaeSpBLvPTyNw1NBG8nOlJ8BFZNiWMdjndEntN6Vt3we7nHivz
-         60Q+GR6W1HkbRdqy9UxVF4Olo/+lxm1L1WWrb7+X7ytJk8a3SeqhGAq25yXiBp+QdSOj
-         r4tQ==
-X-Gm-Message-State: AGi0PuZ3ZAUCk0rrQHsDzVTIi+hMlRZbiPCATmxk43N7VZZAvKzavvLh
-        uLUpOpf2IeUBQVv6M7cXG36O6w==
-X-Google-Smtp-Source: APiQypItR+mPFkFOGIQ34VqT1/BW5ruIBYcNzjc5P8OWkqLo97sjt04dCvHuy4/kCfEUmuC5BRyXEg==
-X-Received: by 2002:adf:f6c8:: with SMTP id y8mr8560262wrp.403.1585905890415;
-        Fri, 03 Apr 2020 02:24:50 -0700 (PDT)
+        bh=2x8p8ysEliFz5jE2Oqu/wItdod9o40YesvKMul9whhc=;
+        b=YvO6rIxHf6ut6HC//jxI/d0EiMjxo1ljpUTh9Cxu3Y9UQinOVXMEqW0E24cYYDjOFO
+         KWy50h2cuZmcooLUmGroX39nT6i4Nv3WIf1aU7EQ5nmjdC73VRqzqBAqfzMpMT9HV0ov
+         4a72ENLaORe4C+hujNJiIwLUnXZ+lux5Ywhb7eJoy2H3xiPtT6ElCRfJGkBgm9c7/2t6
+         LuOSh7ZQWE5Xws0T7QKVlfNAy8dw2QV/smgJuApWxVsxU/0feO2Y44druA1IOykO+3sl
+         w9euFr7NTMvcUn+SXA+mwvV6fNU4Q4bMnY+JCqJqX3IimYBaOePya/KIJaSKz9biFLqJ
+         P+lg==
+X-Gm-Message-State: AGi0PuYJoSUWQ7kU4OhWICUz0Flmw+5Bo2j/Esn1oFdR+QHggZpWJ2Ml
+        mS94W1DJnUq5phf21YeOXkeVEw==
+X-Google-Smtp-Source: APiQypKw6HEIvok/WpHic3c7lXENKAg1I9ouayy+2Q+AEs1grm1dYRpDaYfMpwIxyHwr6UdX8ZkyQg==
+X-Received: by 2002:a5d:404a:: with SMTP id w10mr7932066wrp.295.1585905892040;
+        Fri, 03 Apr 2020 02:24:52 -0700 (PDT)
 Received: from localhost (nat-35.starnet.cz. [178.255.168.35])
-        by smtp.gmail.com with ESMTPSA id r14sm10907567wmg.0.2020.04.03.02.24.49
+        by smtp.gmail.com with ESMTPSA id t81sm10538068wmb.15.2020.04.03.02.24.51
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 03 Apr 2020 02:24:49 -0700 (PDT)
+        Fri, 03 Apr 2020 02:24:51 -0700 (PDT)
 From:   Michal Simek <michal.simek@xilinx.com>
 To:     johan@kernel.org, gregkh@linuxfoundation.org,
         linux-kernel@vger.kernel.org, monstr@monstr.eu,
         michal.simek@xilinx.com, git@xilinx.com
 Cc:     Jiri Slaby <jslaby@suse.com>, linux-arm-kernel@lists.infradead.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH 5/7] Revert "serial: uartps: Change uart ID port allocation"
-Date:   Fri,  3 Apr 2020 11:24:34 +0200
-Message-Id: <a94931b65ce0089f76fb1fe6b446a08731bff754.1585905873.git.michal.simek@xilinx.com>
+Subject: [PATCH 6/7] Revert "serial: uartps: Move Port ID to device data structure"
+Date:   Fri,  3 Apr 2020 11:24:35 +0200
+Message-Id: <eb0ec98fecdca9b79c1a3ac0c30c668b6973b193.1585905873.git.michal.simek@xilinx.com>
 X-Mailer: git-send-email 2.26.0
 In-Reply-To: <cover.1585905873.git.michal.simek@xilinx.com>
 References: <cover.1585905873.git.michal.simek@xilinx.com>
@@ -75,10 +75,7 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This reverts commit ae1cca3fa3478be92948dbbcd722390272032ade.
-
-With setting up NR_PORTS to 16 to be able to use serial2 and higher
-aliases and don't loose functionality which was intended by these changes.
+This reverts commit bed25ac0e2b6ab8f9aed2d20bc9c3a2037311800.
 
 As Johan says, this driver needs a lot more work and these changes are
 only going in the wrong direction:
@@ -88,171 +85,89 @@ Reported-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 ---
 
- drivers/tty/serial/xilinx_uartps.c | 111 ++++-------------------------
- 1 file changed, 13 insertions(+), 98 deletions(-)
+ drivers/tty/serial/xilinx_uartps.c | 20 +++++++++-----------
+ 1 file changed, 9 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index 9db3cd120057..58f0fa07ecdb 100644
+index 58f0fa07ecdb..41d9c2f188f0 100644
 --- a/drivers/tty/serial/xilinx_uartps.c
 +++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -27,6 +27,7 @@
- #define CDNS_UART_TTY_NAME	"ttyPS"
- #define CDNS_UART_NAME		"xuartps"
- #define CDNS_UART_MAJOR		0	/* use dynamic node allocation */
-+#define CDNS_UART_NR_PORTS	16
- #define CDNS_UART_FIFO_SIZE	64	/* FIFO size */
- #define CDNS_UART_REGISTER_SPACE	0x1000
- #define TX_TIMEOUT		500000
-@@ -1403,90 +1404,6 @@ static const struct of_device_id cdns_uart_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, cdns_uart_of_match);
- 
--/*
-- * Maximum number of instances without alias IDs but if there is alias
-- * which target "< MAX_UART_INSTANCES" range this ID can't be used.
-- */
--#define MAX_UART_INSTANCES	32
--
--/* Stores static aliases list */
--static DECLARE_BITMAP(alias_bitmap, MAX_UART_INSTANCES);
--static int alias_bitmap_initialized;
--
--/* Stores actual bitmap of allocated IDs with alias IDs together */
--static DECLARE_BITMAP(bitmap, MAX_UART_INSTANCES);
--/* Protect bitmap operations to have unique IDs */
--static DEFINE_MUTEX(bitmap_lock);
--
--static int cdns_get_id(struct platform_device *pdev)
--{
--	int id, ret;
--
--	mutex_lock(&bitmap_lock);
--
--	/* Alias list is stable that's why get alias bitmap only once */
--	if (!alias_bitmap_initialized) {
--		ret = of_alias_get_alias_list(cdns_uart_of_match, "serial",
--					      alias_bitmap, MAX_UART_INSTANCES);
--		if (ret && ret != -EOVERFLOW) {
--			mutex_unlock(&bitmap_lock);
--			return ret;
--		}
--
--		alias_bitmap_initialized++;
--	}
--
--	/* Make sure that alias ID is not taken by instance without alias */
--	bitmap_or(bitmap, bitmap, alias_bitmap, MAX_UART_INSTANCES);
--
--	dev_dbg(&pdev->dev, "Alias bitmap: %*pb\n",
--		MAX_UART_INSTANCES, bitmap);
--
--	/* Look for a serialN alias */
--	id = of_alias_get_id(pdev->dev.of_node, "serial");
--	if (id < 0) {
--		dev_warn(&pdev->dev,
--			 "No serial alias passed. Using the first free id\n");
--
--		/*
--		 * Start with id 0 and check if there is no serial0 alias
--		 * which points to device which is compatible with this driver.
--		 * If alias exists then try next free position.
--		 */
--		id = 0;
--
--		for (;;) {
--			dev_info(&pdev->dev, "Checking id %d\n", id);
--			id = find_next_zero_bit(bitmap, MAX_UART_INSTANCES, id);
--
--			/* No free empty instance */
--			if (id == MAX_UART_INSTANCES) {
--				dev_err(&pdev->dev, "No free ID\n");
--				mutex_unlock(&bitmap_lock);
--				return -EINVAL;
--			}
--
--			dev_dbg(&pdev->dev, "The empty id is %d\n", id);
--			/* Check if ID is empty */
--			if (!test_and_set_bit(id, bitmap)) {
--				/* Break the loop if bit is taken */
--				dev_dbg(&pdev->dev,
--					"Selected ID %d allocation passed\n",
--					id);
--				break;
--			}
--			dev_dbg(&pdev->dev,
--				"Selected ID %d allocation failed\n", id);
--			/* if taking bit fails then try next one */
--			id++;
--		}
--	}
--
--	mutex_unlock(&bitmap_lock);
--
--	return id;
--}
--
- /**
-  * cdns_uart_probe - Platform driver probe
-  * @pdev: Pointer to the platform device structure
-@@ -1520,17 +1437,21 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 	if (!cdns_uart_uart_driver)
+@@ -189,7 +189,6 @@ MODULE_PARM_DESC(rx_timeout, "Rx timeout, 1-255");
+  * @pclk:		APB clock
+  * @cdns_uart_driver:	Pointer to UART driver
+  * @baud:		Current baud rate
+- * @id:			Port ID
+  * @clk_rate_change_nb:	Notifier block for clock changes
+  * @quirks:		Flags for RXBS support.
+  */
+@@ -199,7 +198,6 @@ struct cdns_uart {
+ 	struct clk		*pclk;
+ 	struct uart_driver	*cdns_uart_driver;
+ 	unsigned int		baud;
+-	int			id;
+ 	struct notifier_block	clk_rate_change_nb;
+ 	u32			quirks;
+ 	bool cts_override;
+@@ -1412,7 +1410,7 @@ MODULE_DEVICE_TABLE(of, cdns_uart_of_match);
+  */
+ static int cdns_uart_probe(struct platform_device *pdev)
+ {
+-	int rc, irq;
++	int rc, id, irq;
+ 	struct uart_port *port;
+ 	struct resource *res;
+ 	struct cdns_uart *cdns_uart_data;
+@@ -1438,18 +1436,18 @@ static int cdns_uart_probe(struct platform_device *pdev)
  		return -ENOMEM;
  
--	cdns_uart_data->id = cdns_get_id(pdev);
-+	/* Look for a serialN alias */
-+	cdns_uart_data->id = of_alias_get_id(pdev->dev.of_node, "serial");
- 	if (cdns_uart_data->id < 0)
--		return cdns_uart_data->id;
-+		cdns_uart_data->id = 0;
-+
-+	if (cdns_uart_data->id >= CDNS_UART_NR_PORTS) {
-+		dev_err(&pdev->dev, "Cannot get uart_port structure\n");
-+		return -ENODEV;
-+	}
+ 	/* Look for a serialN alias */
+-	cdns_uart_data->id = of_alias_get_id(pdev->dev.of_node, "serial");
+-	if (cdns_uart_data->id < 0)
+-		cdns_uart_data->id = 0;
++	id = of_alias_get_id(pdev->dev.of_node, "serial");
++	if (id < 0)
++		id = 0;
+ 
+-	if (cdns_uart_data->id >= CDNS_UART_NR_PORTS) {
++	if (id >= CDNS_UART_NR_PORTS) {
+ 		dev_err(&pdev->dev, "Cannot get uart_port structure\n");
+ 		return -ENODEV;
+ 	}
  
  	/* There is a need to use unique driver name */
  	driver_name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "%s%d",
- 				     CDNS_UART_NAME, cdns_uart_data->id);
--	if (!driver_name) {
--		rc = -ENOMEM;
--		goto err_out_id;
--	}
-+	if (!driver_name)
-+		return -ENOMEM;
+-				     CDNS_UART_NAME, cdns_uart_data->id);
++				     CDNS_UART_NAME, id);
+ 	if (!driver_name)
+ 		return -ENOMEM;
  
- 	cdns_uart_uart_driver->owner = THIS_MODULE;
+@@ -1457,7 +1455,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
  	cdns_uart_uart_driver->driver_name = driver_name;
-@@ -1559,7 +1480,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 	rc = uart_register_driver(cdns_uart_uart_driver);
- 	if (rc < 0) {
- 		dev_err(&pdev->dev, "Failed to register driver\n");
--		goto err_out_id;
-+		return rc;
- 	}
+ 	cdns_uart_uart_driver->dev_name	= CDNS_UART_TTY_NAME;
+ 	cdns_uart_uart_driver->major = CDNS_UART_MAJOR;
+-	cdns_uart_uart_driver->minor = cdns_uart_data->id;
++	cdns_uart_uart_driver->minor = id;
+ 	cdns_uart_uart_driver->nr = 1;
  
- 	cdns_uart_data->cdns_uart_driver = cdns_uart_uart_driver;
-@@ -1710,10 +1631,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 	clk_disable_unprepare(cdns_uart_data->pclk);
- err_out_unregister_driver:
- 	uart_unregister_driver(cdns_uart_data->cdns_uart_driver);
--err_out_id:
--	mutex_lock(&bitmap_lock);
--	clear_bit(cdns_uart_data->id, bitmap);
--	mutex_unlock(&bitmap_lock);
-+
- 	return rc;
- }
+ #ifdef CONFIG_SERIAL_XILINX_PS_UART_CONSOLE
+@@ -1468,7 +1466,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
  
-@@ -1736,9 +1654,6 @@ static int cdns_uart_remove(struct platform_device *pdev)
- #endif
- 	rc = uart_remove_one_port(cdns_uart_data->cdns_uart_driver, port);
- 	port->mapbase = 0;
--	mutex_lock(&bitmap_lock);
--	clear_bit(cdns_uart_data->id, bitmap);
--	mutex_unlock(&bitmap_lock);
- 	clk_disable_unprepare(cdns_uart_data->uartclk);
- 	clk_disable_unprepare(cdns_uart_data->pclk);
- 	pm_runtime_disable(&pdev->dev);
+ 	strncpy(cdns_uart_console->name, CDNS_UART_TTY_NAME,
+ 		sizeof(cdns_uart_console->name));
+-	cdns_uart_console->index = cdns_uart_data->id;
++	cdns_uart_console->index = id;
+ 	cdns_uart_console->write = cdns_uart_console_write;
+ 	cdns_uart_console->device = uart_console_device;
+ 	cdns_uart_console->setup = cdns_uart_console_setup;
+@@ -1490,7 +1488,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
+ 	 * registration because tty_driver structure is not filled.
+ 	 * name_base is 0 by default.
+ 	 */
+-	cdns_uart_uart_driver->tty_driver->name_base = cdns_uart_data->id;
++	cdns_uart_uart_driver->tty_driver->name_base = id;
+ 
+ 	match = of_match_node(cdns_uart_of_match, pdev->dev.of_node);
+ 	if (match && match->data) {
 -- 
 2.26.0
 
