@@ -2,137 +2,211 @@ Return-Path: <SRS0=+zim=5T=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93608C43331
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Apr 2020 13:13:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21401C2BA12
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Apr 2020 13:35:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5F0812073B
-	for <linux-serial@archiver.kernel.org>; Fri,  3 Apr 2020 13:13:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D51262082F
+	for <linux-serial@archiver.kernel.org>; Fri,  3 Apr 2020 13:35:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1585920903;
+	bh=v/H/nnFY599+LAGe575izJw+9qKf9KYV7HNLqCyq+BA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=TabFcjY1pb4DTB7wFI/uxD5KCbMSrZMHTm/ssBLXODwui31VsNTmO4nJgTxiOIwq4
+	 QtosHsQO8GTo+uye9LYJYEp6gLNkkOl8vL9GsELYSNa7tvGHhNsSWxypKdsuap7hDc
+	 yHGi6+Pt77ub9nKumjszfA8PdxUOPtjisJONSt6E=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728143AbgDCNNK (ORCPT
+        id S1728154AbgDCNfD (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 3 Apr 2020 09:13:10 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:54263 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403795AbgDCNNJ (ORCPT
+        Fri, 3 Apr 2020 09:35:03 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:37999 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727431AbgDCNfD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 3 Apr 2020 09:13:09 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1jKM8B-0005KJ-Ir; Fri, 03 Apr 2020 13:13:07 +0000
-Subject: Re: tty: serial: fsl_lpuart: fix DMA mapping - static analysis bug
- report
-To:     Michael Walle <michael@walle.cc>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+        Fri, 3 Apr 2020 09:35:03 -0400
+Received: by mail-ed1-f66.google.com with SMTP id e5so9287801edq.5;
+        Fri, 03 Apr 2020 06:35:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=SHL8e7nL4/qUh9vws2n4KsOcApV4CgwG1tpyifMdKgI=;
+        b=OsZOCjSVPVn6kZZuNeIvq2Sn/7HIHnmCeRjDqtBYQHXFZZBIGU2cr+VEMqNIv3TJq2
+         YeVPyThuvvUKHrZhuJpESdqW+/WTH1JLx0nORdOXFuUftpN0hZFfsc8KxvXYJytYHznl
+         xGnqIHA8q+wliAodjwh4NZ4hVP49aSTXfMJAOJgb3fD3TUdRUTN9u5oFl/ISgSQ3xBPy
+         GLIU6GdHz0OHDwG2o02uZnI4LwkeBrlkxgHIYxbVzntGBFkSCEFz1QF4uP8DOwtUtBIV
+         A8ffeSmez6PlPahh+5peFy96i3sDQHymKO3UfhdGd+EWpAkO+UdV/IFvsaNWU72xLJeG
+         cbsQ==
+X-Gm-Message-State: AGi0Pub/KwkduFNRut+lHjR7Z0d01lcO25TUcWLJcypQn08UJPyMb7Pj
+        WhclL6ztzjtLbF95EEP284w=
+X-Google-Smtp-Source: APiQypKCOyi2XIrs/N1hDYUvQqvI+0UpEcP4/oumUA+xBaBS78CEyzsuqz1vPjIe44F7Nk4/dFXALg==
+X-Received: by 2002:a05:6402:1caa:: with SMTP id cz10mr7824357edb.4.1585920900471;
+        Fri, 03 Apr 2020 06:35:00 -0700 (PDT)
+Received: from kozik-lap ([194.230.155.125])
+        by smtp.googlemail.com with ESMTPSA id u13sm1402362edi.82.2020.04.03.06.34.59
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 03 Apr 2020 06:34:59 -0700 (PDT)
+Date:   Fri, 3 Apr 2020 15:34:57 +0200
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Hyunki Koo <hyunki00.koo@samsung.com>
+Cc:     gregkh@linuxfoundation.org, Kukjin Kim <kgene@kernel.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <9722c1bb-f09e-7332-6381-0b423168afc7@canonical.com>
- <ba294a2b336b3cde9f5fd2ddbf1fe490@walle.cc>
-From:   Colin Ian King <colin.king@canonical.com>
-Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <abbbbe20-95d5-e1b1-0538-68a4c7d0c8d6@canonical.com>
-Date:   Fri, 3 Apr 2020 14:13:05 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+Subject: Re: [PATCH v4] tty: samsung_tty: 32-bit access for TX/RX hold
+ registers
+Message-ID: <20200403133457.GA7561@kozik-lap>
+References: <20200401082721.19431-1-hyunki00.koo@samsung.com>
+ <CGME20200403111520epcas2p42ef81138693ffaaa281499c7a24e0e48@epcas2p4.samsung.com>
+ <20200403111511.10598-1-hyunki00.koo@samsung.com>
 MIME-Version: 1.0
-In-Reply-To: <ba294a2b336b3cde9f5fd2ddbf1fe490@walle.cc>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+In-Reply-To: <20200403111511.10598-1-hyunki00.koo@samsung.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 03/04/2020 14:05, Michael Walle wrote:
-> Am 2020-04-03 14:44, schrieb Colin Ian King:
->> Hi,
->>
->> Static analysis with Coverity has found an issue with the following
->> commit:
->>
->> From a092ab25fdaa445b821f5959e458350696fce44c Mon Sep 17 00:00:00 2001
->> From: Michael Walle <michael@walle.cc>
->> Date: Fri, 6 Mar 2020 22:44:31 +0100
->> Subject: [PATCH] tty: serial: fsl_lpuart: fix DMA mapping
->>
->> The analysis report is as follows for function lpuart_dma_rx_free in
->> source drivers/tty/serial/fsl_lpuart.c :
->>
->> var_compare_op: Comparing chan to null implies that chan might be null.
->>
->> 1234        if (chan)
->> 1235                dmaengine_terminate_all(chan);
->> 1236
->>
->> Dereference after null check (FORWARD_NULL)
->> var_deref_op: Dereferencing null pointer chan.
->>
->> 1237        dma_unmap_sg(chan->device->dev, &sport->rx_sgl, 1,
->> DMA_FROM_DEVICE);
->>
->> The check for chan being null implies it is may be null, however, the
->> call to dma_unmap_sg dereferences chan which leads to a null pointer
->> dereference issue.
+On Fri, Apr 03, 2020 at 08:15:10PM +0900, Hyunki Koo wrote:
+> Support 32-bit access for the TX/RX hold registers UTXH and URXH.
 > 
-> Technically, this is correct. But lpuart_dma_rx_free() is guarded by
-> lpuart_dma_rx_use which is only true if there is a dma channel, see
-> lpuart_rx_dma_startup(). In any way, this looks bogus.
+> This is required for some newer SoCs.
 > 
-> So actually, the "if (chan)" is superfluous. Could you double check that?
-> Then I'd make a patch which removes the if (chan) to make coverity happy.
-
-Yep, I've eyeballed the code and all the calls to the
-lpuart_dma_rx_free() check lpuart_dma_rx_use is true before the call, so
-it does appear the if (chan) check is superfluous.
-
-Colin
+> Signed-off-by: Hyunki Koo <hyunki00.koo@samsung.com>
+> ---
+> v2: 
+> line 954 : change rd_regl to rd_reg in for backward compatibility.
+> line 2031: Add init value for ourport->port.iotype  to UPIO_MEM 
+> v3:
+> line 2031: remove redundant init value  for ourport->port.iotype 
+> v4:
+> correct variable types and change misleading function name
+> ---
+>  drivers/tty/serial/samsung_tty.c | 76 +++++++++++++++++++++++++++++++++-------
+>  1 file changed, 64 insertions(+), 12 deletions(-)
 > 
-> -michael
+> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+> index 73f951d65b93..bdf1d4d12cb1 100644
+> --- a/drivers/tty/serial/samsung_tty.c
+> +++ b/drivers/tty/serial/samsung_tty.c
+> @@ -154,12 +154,47 @@ struct s3c24xx_uart_port {
+>  #define portaddrl(port, reg) \
+>  	((unsigned long *)(unsigned long)((port)->membase + (reg)))
+>  
+> -#define rd_regb(port, reg) (readb_relaxed(portaddr(port, reg)))
+> +static u32 rd_reg(struct uart_port *port, u32 reg)
+> +{
+> +	switch (port->iotype) {
+> +	case UPIO_MEM:
+> +		return readb_relaxed(portaddr(port, reg));
+> +	case UPIO_MEM32:
+> +		return readl_relaxed(portaddr(port, reg));
+> +	default:
+> +		return 0;
+> +	}
+> +	return 0;
+> +}
+> +
+>  #define rd_regl(port, reg) (readl_relaxed(portaddr(port, reg)))
+>  
+> -#define wr_regb(port, reg, val) writeb_relaxed(val, portaddr(port, reg))
+> +static void wr_reg(struct uart_port *port, u32 reg, u32 val)
+> +{
+> +	switch (port->iotype) {
+> +	case UPIO_MEM:
+> +		writeb_relaxed(val, portaddr(port, reg));
+> +		break;
+> +	case UPIO_MEM32:
+> +		writel_relaxed(val, portaddr(port, reg));
+> +		break;
+> +	}
+> +}
+> +
+>  #define wr_regl(port, reg, val) writel_relaxed(val, portaddr(port, reg))
+>  
+> +static void wr_reg_barrier(struct uart_port *port, u32 reg, u32 val)
+> +{
+> +	switch (port->iotype) {
+> +	case UPIO_MEM:
+> +		writeb(val, portaddr(port, reg));
+> +		break;
+> +	case UPIO_MEM32:
+> +		writel(val, portaddr(port, reg));
+> +		break;
+> +	}
+> +}
+> +
+>  /* Byte-order aware bit setting/clearing functions. */
+>  
+>  static inline void s3c24xx_set_bit(struct uart_port *port, int idx,
+> @@ -714,7 +749,7 @@ static void s3c24xx_serial_rx_drain_fifo(struct s3c24xx_uart_port *ourport)
+>  		fifocnt--;
+>  
+>  		uerstat = rd_regl(port, S3C2410_UERSTAT);
+> -		ch = rd_regb(port, S3C2410_URXH);
+> +		ch = rd_reg(port, S3C2410_URXH);
+>  
+>  		if (port->flags & UPF_CONS_FLOW) {
+>  			int txe = s3c24xx_serial_txempty_nofifo(port);
+> @@ -826,7 +861,7 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
+>  	}
+>  
+>  	if (port->x_char) {
+> -		wr_regb(port, S3C2410_UTXH, port->x_char);
+> +		wr_reg(port, S3C2410_UTXH, port->x_char);
+>  		port->icount.tx++;
+>  		port->x_char = 0;
+>  		goto out;
+> @@ -852,7 +887,7 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
+>  		if (rd_regl(port, S3C2410_UFSTAT) & ourport->info->tx_fifofull)
+>  			break;
+>  
+> -		wr_regb(port, S3C2410_UTXH, xmit->buf[xmit->tail]);
+> +		wr_reg(port, S3C2410_UTXH, xmit->buf[xmit->tail]);
+>  		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+>  		port->icount.tx++;
+>  		count--;
+> @@ -916,7 +951,7 @@ static unsigned int s3c24xx_serial_tx_empty(struct uart_port *port)
+>  /* no modem control lines */
+>  static unsigned int s3c24xx_serial_get_mctrl(struct uart_port *port)
+>  {
+> -	unsigned int umstat = rd_regb(port, S3C2410_UMSTAT);
+> +	unsigned int umstat = rd_reg(port, S3C2410_UMSTAT);
+>  
+>  	if (umstat & S3C2410_UMSTAT_CTS)
+>  		return TIOCM_CAR | TIOCM_DSR | TIOCM_CTS;
+> @@ -1974,7 +2009,7 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+>  	struct device_node *np = pdev->dev.of_node;
+>  	struct s3c24xx_uart_port *ourport;
+>  	int index = probe_index;
+> -	int ret;
+> +	int ret, prop = 0;
+>  
+>  	if (np) {
+>  		ret = of_alias_get_id(np, "serial");
+> @@ -2000,10 +2035,27 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+>  			dev_get_platdata(&pdev->dev) :
+>  			ourport->drv_data->def_cfg;
+>  
+> -	if (np)
+> +	if (np) {
+>  		of_property_read_u32(np,
+>  			"samsung,uart-fifosize", &ourport->port.fifosize);
+>  
+> +		if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
 
+I got more thoughts... where is the binding for it? It looked like
+standard DT property but it is not described in device tree spec.
+
+Also, where is the user (DTS) with it? I expect such changes go with the
+user itself... otherwise, next cleanup it will go away.
+
+Best regards,
+Krzysztof
