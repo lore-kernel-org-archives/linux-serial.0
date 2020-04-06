@@ -2,91 +2,86 @@ Return-Path: <SRS0=wTQQ=5W=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8BDCC2BA19
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Apr 2020 10:52:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA7FEC2BA1E
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Apr 2020 10:57:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A346C20678
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Apr 2020 10:52:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 889AA206F8
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Apr 2020 10:57:56 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rIDem+v1"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727121AbgDFKw1 (ORCPT
+        id S1727247AbgDFK5w (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Apr 2020 06:52:27 -0400
-Received: from mga14.intel.com ([192.55.52.115]:52283 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726841AbgDFKw1 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Apr 2020 06:52:27 -0400
-IronPort-SDR: mAgSOo+e6hQiR9xOIMlJyY1utSAaO0DSumuaiCdWMnZxbXItcjrN5Rh2rSNDQaJkleQnUlxgZg
- EJ+XtSR1skJQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2020 03:52:27 -0700
-IronPort-SDR: 3iO8vEClobRDdW9tOWuf47BYkZUXI19mvjxa1J8lgAFzmykLZlvxW9Plc1iPXPu3mRYpxosP6B
- uP4zeP3uNRkA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,350,1580803200"; 
-   d="scan'208";a="424316506"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga005.jf.intel.com with ESMTP; 06 Apr 2020 03:52:24 -0700
-Received: from andy by smile with local (Exim 4.93)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1jLPMh-00G9kw-A5; Mon, 06 Apr 2020 13:52:27 +0300
-Date:   Mon, 6 Apr 2020 13:52:27 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Anatoly Pugachev <matorola@gmail.com>
+        Mon, 6 Apr 2020 06:57:52 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:44607 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727131AbgDFK5w (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 6 Apr 2020 06:57:52 -0400
+Received: by mail-ed1-f66.google.com with SMTP id i16so18611704edy.11;
+        Mon, 06 Apr 2020 03:57:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CMfHof/TA0PWVnfgKpWlGDofI6slg4wF6Ylw4mLnCY0=;
+        b=rIDem+v1sd1TXsYWi0U9qUKax2Gli//LKJ0qF/7v13IDLGOXOissSC8j4pEOyb9Gtt
+         PIpiIH8V/tt5aUTO2Dz3q9TEl3ecSyyPoUFFx6capL8qnzNm34RxgXcbZURkIIwBXw4G
+         BwXAJLO0fEurH4h/04U6DxLSE+QMTquMTemFGdPqb+tRgwAr8pOyrmbfQxPmy3QeM+60
+         dTIxh26K9hdrs+U+z6GTtr30+MHlrRQta2rwPwaVLb8ntZd7L2Z/UqNtsioSwifNY9nU
+         qi9vku/uCoQxe69DixQA+7tpT9YkAR++5+C7rQXdIEES4ETWrQsURSOz3XNYS82w4jIS
+         WqkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CMfHof/TA0PWVnfgKpWlGDofI6slg4wF6Ylw4mLnCY0=;
+        b=p1hbGPmPiVPhVTHw9U2YodQlyeUsHASdAVStiKmeHKEcY1WnMl0wgtHjeYNC3hx1nz
+         LW7KE5Sz3PaksAcxK50bUFQiFWeeeB+MZ5gjF9namYieebJSaeW3lVzHhVDLPD2MeHWT
+         409RXVEYYTGds2OC7zr73CFOodGnghLOKaU7w9kYFRitrGwYTQCrk+JEAP3xXs/Psz/z
+         BqdiJpGKWPXoG31XWhTncjfu+lrddF/1N41ojBKdiEQhXkyofwOG19AjNDhRLbCJDWEf
+         wOTU9vKzlSDtEDT6cZj654DL3qy6aqBBEpyOe7XRhEr6dwYeMzS3pGnklQAXth1ftmzb
+         U0rw==
+X-Gm-Message-State: AGi0PubjqyHyUu65iSYTtG0sj9gNnEidOb4v6t5DXFjdKWY2TMtwnXhR
+        X94A/0jdzWokyGLcOopiTMxlKwE580BgnYBTHMikzg==
+X-Google-Smtp-Source: APiQypJmffUJ5UfCO5N0+TfKggr0kFNy8CWsTvRkTTZuGdrPcvcnED6Dr9zqyc0uivDYls8PrpfjQDt5MrZ7ihHSY4I=
+X-Received: by 2002:a17:907:1189:: with SMTP id uz9mr8519209ejb.143.1586170670443;
+ Mon, 06 Apr 2020 03:57:50 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200402172026.79478-1-andriy.shevchenko@linux.intel.com>
+ <CADxRZqzgenruphXAKE8MJM2zayR7u7yvc=-5YwPHkCN4gW2eNQ@mail.gmail.com> <20200406105227.GP3676135@smile.fi.intel.com>
+In-Reply-To: <20200406105227.GP3676135@smile.fi.intel.com>
+From:   Anatoly Pugachev <matorola@gmail.com>
+Date:   Mon, 6 Apr 2020 13:57:39 +0300
+Message-ID: <CADxRZqzVL0jgT-YimqbMn=rAnUnZUDKdWuTjSTOskvO4if+Czw@mail.gmail.com>
+Subject: Re: [PATCH v1] serial: sunhv: Initialize lock for non-registered console
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial@vger.kernel.org,
         Sparc kernel list <sparclinux@vger.kernel.org>,
         David Miller <davem@davemloft.net>
-Subject: Re: [PATCH v1] serial: sunhv: Initialize lock for non-registered
- console
-Message-ID: <20200406105227.GP3676135@smile.fi.intel.com>
-References: <20200402172026.79478-1-andriy.shevchenko@linux.intel.com>
- <CADxRZqzgenruphXAKE8MJM2zayR7u7yvc=-5YwPHkCN4gW2eNQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CADxRZqzgenruphXAKE8MJM2zayR7u7yvc=-5YwPHkCN4gW2eNQ@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Apr 04, 2020 at 08:50:56PM +0300, Anatoly Pugachev wrote:
-> On Thu, Apr 2, 2020 at 8:20 PM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
+On Mon, Apr 6, 2020 at 1:52 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
 > >
-> > The commit a3cb39d258ef
-> > ("serial: core: Allow detach and attach serial device for console")
-> > changed a bit logic behind lock initialization since for most of the console
-> > driver it's supposed to have lock already initialized even if console is not
-> > enabled. However, it's not the case for Sparc HV console.
-> >
-> > Initialize lock explicitly in the ->probe().
-> >
-> > Note, there is still an open question should or shouldn't not this driver
-> > register console properly.
-> >
-> > Fixes: a3cb39d258ef ("serial: core: Allow detach and attach serial device for console")
-> > Reported-by: Anatoly Pugachev <matorola@gmail.com>
-> > Cc: David Miller <davem@davemloft.net>
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > ---
-> >  drivers/tty/serial/sunhv.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> 
-> 
-> fixes issue for me, sorry for the late testing
+> > fixes issue for me, sorry for the late testing
+>
+> Thank you! Can you formally provide a Tested-by tag?
 
-Thank you! Can you formally provide a Tested-by tag?
+Andy,
 
--- 
-With Best Regards,
-Andy Shevchenko
+up to you actually to add needed tags. Thanks.
 
+But anyway,
 
+Tested-by: Anatoly Pugachev <matorola@gmail.com>
