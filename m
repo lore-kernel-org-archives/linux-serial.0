@@ -2,34 +2,34 @@ Return-Path: <SRS0=wTQQ=5W=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D967C2BA18
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Apr 2020 04:27:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB9D1C2BA1E
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Apr 2020 04:33:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7C2DD2074F
-	for <linux-serial@archiver.kernel.org>; Mon,  6 Apr 2020 04:27:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8AA9020753
+	for <linux-serial@archiver.kernel.org>; Mon,  6 Apr 2020 04:33:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726521AbgDFE15 (ORCPT
+        id S1726552AbgDFEdM (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 6 Apr 2020 00:27:57 -0400
-Received: from mx2.suse.de ([195.135.220.15]:42118 "EHLO mx2.suse.de"
+        Mon, 6 Apr 2020 00:33:12 -0400
+Received: from mx2.suse.de ([195.135.220.15]:42796 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726050AbgDFE15 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 6 Apr 2020 00:27:57 -0400
+        id S1726408AbgDFEdL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 6 Apr 2020 00:33:11 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id A7755AC24;
-        Mon,  6 Apr 2020 04:27:53 +0000 (UTC)
-Subject: Re: [PATCH] tty: serial: fsl_lpuart: make coverity happy
-To:     Michael Walle <michael@walle.cc>, linux-kernel@vger.kernel.org,
+        by mx2.suse.de (Postfix) with ESMTP id D3650ABAD;
+        Mon,  6 Apr 2020 04:33:09 +0000 (UTC)
+Subject: Re: [PATCH][V2] drivers/tty: remove redundant assignment to variable
+ i and rename it to ret
+To:     Colin King <colin.king@canonical.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Colin Ian King <colin.king@canonical.com>,
-        NXP Linux Team <linux-imx@nxp.com>
-References: <20200403174942.9594-1-michael@walle.cc>
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200405135423.383466-1-colin.king@canonical.com>
 From:   Jiri Slaby <jslaby@suse.cz>
 Autocrypt: addr=jslaby@suse.cz; prefer-encrypt=mutual; keydata=
  mQINBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -73,13 +73,13 @@ Autocrypt: addr=jslaby@suse.cz; prefer-encrypt=mutual; keydata=
  9HKkJqkN9xYEYaxtfl5pelF8idoxMZpTvCZY7jhnl2IemZCBMs6s338wS12Qro5WEAxV6cjD
  VSdmcD5l9plhKGLmgVNCTe8DPv81oDn9s0cIRLg9wNnDtj8aIiH8lBHwfUkpn32iv0uMV6Ae
  sLxhDWfOR4N+wu1gzXWgLel4drkCJcuYK5IL1qaZDcuGR8RPo3jbFO7Y
-Message-ID: <2971e87a-bf8e-f42e-cf8d-f90d9db9499f@suse.cz>
-Date:   Mon, 6 Apr 2020 06:27:52 +0200
+Message-ID: <c8b99419-856d-b557-9dd7-f61baea2fdb9@suse.cz>
+Date:   Mon, 6 Apr 2020 06:33:09 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200403174942.9594-1-michael@walle.cc>
-Content-Type: text/plain; charset=iso-8859-2
+In-Reply-To: <20200405135423.383466-1-colin.king@canonical.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
@@ -87,51 +87,52 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 03. 04. 20, 19:49, Michael Walle wrote:
-> Coverity reports the following:
+On 05. 04. 20, 15:54, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
 > 
->   var_compare_op: Comparing chan to null implies that chan might be null.
+> The variable i is being assigned a value that is never read
+> and it is being updated later with a new value. The assignment
+> is redundant and can be removed.  Also rename i to ret as this new
+> name makes makes more sense.
 > 
->   1234        if (chan)
->   1235                dmaengine_terminate_all(chan);
->   1236
+> Addresses-Coverity: ("Unused value")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
+> V2: fix typo in subject line
+> ---
+>  drivers/tty/serial/8250/serial_cs.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 > 
->   Dereference after null check (FORWARD_NULL)
->   var_deref_op: Dereferencing null pointer chan.
-> 
->   1237        dma_unmap_sg(chan->device->dev, &sport->rx_sgl, 1, DMA_FROM_DEVICE);
-> 
-> Technically, this is correct. But lpuart_dma_rx_free() is guarded by
-> lpuart_dma_rx_use which is only true if there is a dma channel, see
-> lpuart_rx_dma_startup(). In any way, this looks bogus. So remove
-> the superfluous "if (chan)" check and make coverity happy.
-> 
-> Fixes: a092ab25fdaa ("tty: serial: fsl_lpuart: fix DMA mapping")
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> Reported-by: Colin Ian King <colin.king@canonical.com>
+> diff --git a/drivers/tty/serial/8250/serial_cs.c b/drivers/tty/serial/8250/serial_cs.c
+> index c8186a05a453..e3d10794dbba 100644
+> --- a/drivers/tty/serial/8250/serial_cs.c
+> +++ b/drivers/tty/serial/8250/serial_cs.c
+> @@ -440,7 +440,7 @@ static int simple_config_check_notpicky(struct pcmcia_device *p_dev,
+>  static int simple_config(struct pcmcia_device *link)
+>  {
+>  	struct serial_info *info = link->priv;
+> -	int i = -ENODEV, try;
+> +	int ret, try;
+>  
+>  	/*
+>  	 * First pass: look for a config entry that looks normal.
+> @@ -472,8 +472,8 @@ static int simple_config(struct pcmcia_device *link)
+>  	if (info->quirk && info->quirk->config)
+>  		info->quirk->config(link);
+>  
+> -	i = pcmcia_enable_device(link);
+> -	if (i != 0)
+> +	ret = pcmcia_enable_device(link);
+> +	if (ret != 0)
+>  		return -1;
+>  	return setup_serial(link, info, link->resource[0]->start, link->irq);
+>  }
 
+LGTM, so
 Acked-by: Jiri Slaby <jslaby@suse.cz>
 
-> ---
->  drivers/tty/serial/fsl_lpuart.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-> index 4cb04d8bf034..83d803729d23 100644
-> --- a/drivers/tty/serial/fsl_lpuart.c
-> +++ b/drivers/tty/serial/fsl_lpuart.c
-> @@ -1210,9 +1210,7 @@ static void lpuart_dma_rx_free(struct uart_port *port)
->  					struct lpuart_port, port);
->  	struct dma_chan *chan = sport->dma_rx_chan;
->  
-> -	if (chan)
-> -		dmaengine_terminate_all(chan);
-> -
-> +	dmaengine_terminate_all(chan);
->  	dma_unmap_sg(chan->device->dev, &sport->rx_sgl, 1, DMA_FROM_DEVICE);
->  	kfree(sport->rx_ring.buf);
->  	sport->rx_ring.tail = 0;
-> 
+But it would be worth to change this function and its callers to accept
+and propagate real errors too. I.e. "return ret" here.
 
 thanks,
 -- 
