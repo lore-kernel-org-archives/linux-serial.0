@@ -2,32 +2,32 @@ Return-Path: <SRS0=8eBw=5X=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA157C2BB54
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Apr 2020 06:28:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E20CC2BA16
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Apr 2020 06:33:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 979C420748
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Apr 2020 06:28:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 487C02072A
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Apr 2020 06:33:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726769AbgDGG2x (ORCPT
+        id S1726725AbgDGGdB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Apr 2020 02:28:53 -0400
-Received: from mx2.suse.de ([195.135.220.15]:57348 "EHLO mx2.suse.de"
+        Tue, 7 Apr 2020 02:33:01 -0400
+Received: from mx2.suse.de ([195.135.220.15]:58154 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726232AbgDGG2x (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Apr 2020 02:28:53 -0400
+        id S1726448AbgDGGdA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 7 Apr 2020 02:33:00 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id F1AD8AD2C;
-        Tue,  7 Apr 2020 06:28:49 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 25EE7AD2C;
+        Tue,  7 Apr 2020 06:32:58 +0000 (UTC)
 Subject: Re: [PATCH v6 2/2] tty: samsung_tty: 32-bit access for TX/RX hold
  registers
-To:     Krzysztof Kozlowski <krzk@kernel.org>,
-        Hyunki Koo <hyunki00.koo@samsung.com>
-Cc:     gregkh@linuxfoundation.org, Rob Herring <robh+dt@kernel.org>,
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Hyunki Koo <hyunki00.koo@samsung.com>, gregkh@linuxfoundation.org,
+        Rob Herring <robh+dt@kernel.org>,
         Kukjin Kim <kgene@kernel.org>, linux-serial@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
@@ -35,7 +35,8 @@ Cc:     gregkh@linuxfoundation.org, Rob Herring <robh+dt@kernel.org>,
 References: <20200401082721.19431-1-hyunki00.koo@samsung.com>
  <CGME20200406230902epcas2p19a8df6805dac59968d664efb9bc9419b@epcas2p1.samsung.com>
  <20200406230855.13772-1-hyunki00.koo@samsung.com>
- <20200407062655.GC21995@kozik-lap>
+ <62a918df-b3ba-21f4-b3ad-9f638ad104ad@suse.com>
+ <20200407062439.GA21995@kozik-lap>
 From:   Jiri Slaby <jslaby@suse.cz>
 Autocrypt: addr=jslaby@suse.cz; prefer-encrypt=mutual; keydata=
  mQINBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -79,12 +80,12 @@ Autocrypt: addr=jslaby@suse.cz; prefer-encrypt=mutual; keydata=
  9HKkJqkN9xYEYaxtfl5pelF8idoxMZpTvCZY7jhnl2IemZCBMs6s338wS12Qro5WEAxV6cjD
  VSdmcD5l9plhKGLmgVNCTe8DPv81oDn9s0cIRLg9wNnDtj8aIiH8lBHwfUkpn32iv0uMV6Ae
  sLxhDWfOR4N+wu1gzXWgLel4drkCJcuYK5IL1qaZDcuGR8RPo3jbFO7Y
-Message-ID: <6479146a-2249-633d-b0a8-7d1d1e44fd99@suse.cz>
-Date:   Tue, 7 Apr 2020 08:28:48 +0200
+Message-ID: <257f278b-ce96-4cfb-85ff-53e123a076f5@suse.cz>
+Date:   Tue, 7 Apr 2020 08:32:56 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200407062655.GC21995@kozik-lap>
+In-Reply-To: <20200407062439.GA21995@kozik-lap>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -93,22 +94,52 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 07. 04. 20, 8:26, Krzysztof Kozlowski wrote:
-> On Tue, Apr 07, 2020 at 08:08:49AM +0900, Hyunki Koo wrote:
->> Support 32-bit access for the TX/RX hold registers UTXH and URXH.
+On 07. 04. 20, 8:24, Krzysztof Kozlowski wrote:
+> On Tue, Apr 07, 2020 at 06:49:29AM +0200, Jiri Slaby wrote:
+>> On 07. 04. 20, 1:08, Hyunki Koo wrote:
+>>> Support 32-bit access for the TX/RX hold registers UTXH and URXH.
+>>>
+>>> This is required for some newer SoCs.
+>>>
+>>> Signed-off-by: Hyunki Koo <hyunki00.koo@samsung.com>
+>> ...
+>>> ---
+>>>  drivers/tty/serial/samsung_tty.c | 76 +++++++++++++++++++++++++++++++++-------
+>>>  1 file changed, 64 insertions(+), 12 deletions(-)
+>>>
+>>> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+>>> index 73f951d65b93..bdf1d4d12cb1 100644
+>>> --- a/drivers/tty/serial/samsung_tty.c
+>>> +++ b/drivers/tty/serial/samsung_tty.c
+>>> @@ -154,12 +154,47 @@ struct s3c24xx_uart_port {
+>> ...
+>>> -#define wr_regb(port, reg, val) writeb_relaxed(val, portaddr(port, reg))
+>>> +static void wr_reg(struct uart_port *port, u32 reg, u32 val)
+>>> +{
+>>> +	switch (port->iotype) {
+>>> +	case UPIO_MEM:
+>>> +		writeb_relaxed(val, portaddr(port, reg));
+>>> +		break;
+>>> +	case UPIO_MEM32:
+>>> +		writel_relaxed(val, portaddr(port, reg));
+>>> +		break;
+>>> +	}
+>>> +}
+>>> +
+>>>  #define wr_regl(port, reg, val) writel_relaxed(val, portaddr(port, reg))
+>>>  
+>>> +static void wr_reg_barrier(struct uart_port *port, u32 reg, u32 val)
 >>
->> This is required for some newer SoCs.
->>
->> Signed-off-by: Hyunki Koo <hyunki00.koo@samsung.com>
->> ---
+>> You need to explain, why you need this _barrier variant now. This change
+>> should be done in a separate patch too.
 > 
-> Why I am adding these for the third time?
+> There is no functional change in regard of barrier.  The ordered IO was
+> used there before.
 
-I don't know as I don't care about your tags anyway.
+The patch changes one wr_reg to wr_reg_barrier without any explanation.
+This will hardly be accepted.
 
-> Tested-by: Krzysztof Kozlowski <krzk@kernel.org>
-> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
-
+thanks,
 -- 
 js
 suse labs
