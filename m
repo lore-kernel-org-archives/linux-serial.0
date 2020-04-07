@@ -2,92 +2,136 @@ Return-Path: <SRS0=8eBw=5X=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B2F7C2BA80
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Apr 2020 07:11:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E61D7C2BA80
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Apr 2020 07:22:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3DA7A2074F
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Apr 2020 07:11:44 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="fO6FXA6Y"
+	by mail.kernel.org (Postfix) with ESMTP id BCDE420747
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Apr 2020 07:22:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1586244155;
+	bh=Q27V+A2JX8XPv0ScoBfKnA5v3xkz+y1ZgJjp3nEk5SY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=hn7/wlr2lAhOahPYV/wlBore128phNPB0x0DOdDYJkbz1fqUlTHR1p/tmnSOZYs9q
+	 idKWfN605SsfUuJFAfLhQ81fRAT4Ur59uaOWcodUS7jMUUwCbn7cVj6gGdgjNARzC/
+	 INEH5L47TdQDzeg1s5us58yb3BgMQ0HPhrOLhbTI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726591AbgDGHLn (ORCPT
+        id S1727795AbgDGHW1 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Apr 2020 03:11:43 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:41161 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726393AbgDGHLn (ORCPT
+        Tue, 7 Apr 2020 03:22:27 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:37171 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727635AbgDGHW1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Apr 2020 03:11:43 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1586243502; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=E1R6nDQwxnv/zhYTF1086Nuhe2DWYwOBixad7z/PWBo=; b=fO6FXA6YPz7kE6iseC757rZWm+vYEukHF2PBTY+fZSmpnhA6zCHcKnrj2/MOM/FXxnsJVFUB
- M1+5LbUpLpQcxznM7BsmKP/kg8Pcff1KFg2llmOTjqxchefFQMzFO4ImPmEwEyC39kEddAM2
- WIZXYMx1zYfpaadfffasdgnZY+Q=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e8c27a7.7f94c6768688-smtp-out-n03;
- Tue, 07 Apr 2020 07:11:35 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 8739DC43636; Tue,  7 Apr 2020 07:11:34 +0000 (UTC)
-Received: from [192.168.0.6] (unknown [183.83.138.47])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1B410C433D2;
-        Tue,  7 Apr 2020 07:11:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 1B410C433D2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-Subject: Re: [PATCH V3 5/8] spi: spi-geni-qcom: Add interconnect support
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org, georgi.djakov@linaro.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, dianders@chromium.org,
-        evgreen@chromium.org
-References: <1585652976-17481-1-git-send-email-akashast@codeaurora.org>
- <1585652976-17481-6-git-send-email-akashast@codeaurora.org>
- <20200331190249.GJ199755@google.com>
-From:   Akash Asthana <akashast@codeaurora.org>
-Message-ID: <fd9bf941-16fa-2d66-31f4-e4e210097b00@codeaurora.org>
-Date:   Tue, 7 Apr 2020 12:41:19 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Tue, 7 Apr 2020 03:22:27 -0400
+Received: by mail-ed1-f65.google.com with SMTP id de14so2776356edb.4;
+        Tue, 07 Apr 2020 00:22:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=2R+3gjNy0SnBLUw5qWy9RI2DQvlFhSy+vrS7w50bWE4=;
+        b=m8+AAhZiJIL9VNZQZombf4JhXv8ni3nKHXgrxcFEKM31ImIKDSZXbPIM0bizOmwh1c
+         IZ7LNpGPGt6gX0+w+CS9Km3WDJSLymYlWDzfIDHvWmWqv1q0MbCC3RTt74xthYrYkMyZ
+         csIm0cd0QwZuyKLqckQzlkuDRTC7QINss+NeX2kQ0palKv6jagXuwvKzuSNJ3EvBxsug
+         g1h5Ck+S74owN1qpwENEaKbfwiuZn9IUeguOypRRvMWCwbb/Ly3QugamAzDxSvPwTl+S
+         OJWvceqU+HKdZ4NEX3gyNcQ3ds9GukfDjQr9cdmdohUCTLzBY/8fG1VLiWabAJKpkhc4
+         tupg==
+X-Gm-Message-State: AGi0PuY6STpJdp8e1MKVRje0egafGEesjYcrXPNzKc6Rjn72pa+uZEw8
+        jnClWoWJx0oz21tYyxLQm6o=
+X-Google-Smtp-Source: APiQypIAGwgfjaRfHihsJeJ737ZyX6DGCobU8BkZcdk7Gc5hUQmvmBkfIOK6sewJ+lnv4/IXbMKBwg==
+X-Received: by 2002:a50:9b58:: with SMTP id a24mr759017edj.353.1586244144485;
+        Tue, 07 Apr 2020 00:22:24 -0700 (PDT)
+Received: from kozik-lap ([194.230.155.125])
+        by smtp.googlemail.com with ESMTPSA id qu11sm230130ejb.12.2020.04.07.00.22.23
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 07 Apr 2020 00:22:23 -0700 (PDT)
+Date:   Tue, 7 Apr 2020 09:22:21 +0200
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     Hyunki Koo <hyunki00.koo@samsung.com>, gregkh@linuxfoundation.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+Subject: Re: [PATCH v6 2/2] tty: samsung_tty: 32-bit access for TX/RX hold
+ registers
+Message-ID: <20200407072221.GA18236@kozik-lap>
+References: <20200401082721.19431-1-hyunki00.koo@samsung.com>
+ <CGME20200406230902epcas2p19a8df6805dac59968d664efb9bc9419b@epcas2p1.samsung.com>
+ <20200406230855.13772-1-hyunki00.koo@samsung.com>
+ <62a918df-b3ba-21f4-b3ad-9f638ad104ad@suse.com>
+ <20200407062439.GA21995@kozik-lap>
+ <257f278b-ce96-4cfb-85ff-53e123a076f5@suse.cz>
 MIME-Version: 1.0
-In-Reply-To: <20200331190249.GJ199755@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <257f278b-ce96-4cfb-85ff-53e123a076f5@suse.cz>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Matthias,
+On Tue, Apr 07, 2020 at 08:32:56AM +0200, Jiri Slaby wrote:
+> On 07. 04. 20, 8:24, Krzysztof Kozlowski wrote:
+> > On Tue, Apr 07, 2020 at 06:49:29AM +0200, Jiri Slaby wrote:
+> >> On 07. 04. 20, 1:08, Hyunki Koo wrote:
+> >>> Support 32-bit access for the TX/RX hold registers UTXH and URXH.
+> >>>
+> >>> This is required for some newer SoCs.
+> >>>
+> >>> Signed-off-by: Hyunki Koo <hyunki00.koo@samsung.com>
+> >> ...
+> >>> ---
+> >>>  drivers/tty/serial/samsung_tty.c | 76 +++++++++++++++++++++++++++++++++-------
+> >>>  1 file changed, 64 insertions(+), 12 deletions(-)
+> >>>
+> >>> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+> >>> index 73f951d65b93..bdf1d4d12cb1 100644
+> >>> --- a/drivers/tty/serial/samsung_tty.c
+> >>> +++ b/drivers/tty/serial/samsung_tty.c
+> >>> @@ -154,12 +154,47 @@ struct s3c24xx_uart_port {
+> >> ...
+> >>> -#define wr_regb(port, reg, val) writeb_relaxed(val, portaddr(port, reg))
+> >>> +static void wr_reg(struct uart_port *port, u32 reg, u32 val)
+> >>> +{
+> >>> +	switch (port->iotype) {
+> >>> +	case UPIO_MEM:
+> >>> +		writeb_relaxed(val, portaddr(port, reg));
+> >>> +		break;
+> >>> +	case UPIO_MEM32:
+> >>> +		writel_relaxed(val, portaddr(port, reg));
+> >>> +		break;
+> >>> +	}
+> >>> +}
+> >>> +
+> >>>  #define wr_regl(port, reg, val) writel_relaxed(val, portaddr(port, reg))
+> >>>  
+> >>> +static void wr_reg_barrier(struct uart_port *port, u32 reg, u32 val)
+> >>
+> >> You need to explain, why you need this _barrier variant now. This change
+> >> should be done in a separate patch too.
+> > 
+> > There is no functional change in regard of barrier.  The ordered IO was
+> > used there before.
+> 
+> The patch changes one wr_reg to wr_reg_barrier without any explanation.
+> This will hardly be accepted.
 
->>   
->> +	ret = geni_icc_get(&mas->se, "qup-core", "qup-config", NULL);
->> +	if (ret)
->> +		goto spi_geni_probe_runtime_disable;
-> This fails without providing any hints why, besides the error code.
-> It might be worth to add error logging to geni_icc_get().
->
-As per Bjorn's comment, I will add error logs inside geni_icc_get API 
-incase it returns something other than -EPROBE_DEFER . 
-https://patchwork.kernel.org/patch/11467511/
+I cannot find such change... I see only:
 
-regards,
+@@ -2612,7 +2664,7 @@ static void samsung_early_putc(struct uart_port *port, int c)
+-       writeb(c, port->membase + S3C2410_UTXH);
++       wr_reg_barrier(port, S3C2410_UTXH, c);
 
-Akash
+which is the same except 'b' -> 'b/l'.
 
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+Best regards,
+Krzysztof
+
