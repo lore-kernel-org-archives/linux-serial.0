@@ -2,136 +2,112 @@ Return-Path: <SRS0=8eBw=5X=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E61D7C2BA80
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Apr 2020 07:22:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB980C2BA16
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Apr 2020 07:39:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BCDE420747
-	for <linux-serial@archiver.kernel.org>; Tue,  7 Apr 2020 07:22:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1586244155;
-	bh=Q27V+A2JX8XPv0ScoBfKnA5v3xkz+y1ZgJjp3nEk5SY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=hn7/wlr2lAhOahPYV/wlBore128phNPB0x0DOdDYJkbz1fqUlTHR1p/tmnSOZYs9q
-	 idKWfN605SsfUuJFAfLhQ81fRAT4Ur59uaOWcodUS7jMUUwCbn7cVj6gGdgjNARzC/
-	 INEH5L47TdQDzeg1s5us58yb3BgMQ0HPhrOLhbTI=
+	by mail.kernel.org (Postfix) with ESMTP id 9D874206F5
+	for <linux-serial@archiver.kernel.org>; Tue,  7 Apr 2020 07:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727795AbgDGHW1 (ORCPT
+        id S1726937AbgDGHjB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 7 Apr 2020 03:22:27 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:37171 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727635AbgDGHW1 (ORCPT
+        Tue, 7 Apr 2020 03:39:01 -0400
+Received: from submit-4.e-mind.com ([188.94.192.50]:45684 "EHLO
+        submit-4.e-mind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726591AbgDGHjB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 7 Apr 2020 03:22:27 -0400
-Received: by mail-ed1-f65.google.com with SMTP id de14so2776356edb.4;
-        Tue, 07 Apr 2020 00:22:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=2R+3gjNy0SnBLUw5qWy9RI2DQvlFhSy+vrS7w50bWE4=;
-        b=m8+AAhZiJIL9VNZQZombf4JhXv8ni3nKHXgrxcFEKM31ImIKDSZXbPIM0bizOmwh1c
-         IZ7LNpGPGt6gX0+w+CS9Km3WDJSLymYlWDzfIDHvWmWqv1q0MbCC3RTt74xthYrYkMyZ
-         csIm0cd0QwZuyKLqckQzlkuDRTC7QINss+NeX2kQ0palKv6jagXuwvKzuSNJ3EvBxsug
-         g1h5Ck+S74owN1qpwENEaKbfwiuZn9IUeguOypRRvMWCwbb/Ly3QugamAzDxSvPwTl+S
-         OJWvceqU+HKdZ4NEX3gyNcQ3ds9GukfDjQr9cdmdohUCTLzBY/8fG1VLiWabAJKpkhc4
-         tupg==
-X-Gm-Message-State: AGi0PuY6STpJdp8e1MKVRje0egafGEesjYcrXPNzKc6Rjn72pa+uZEw8
-        jnClWoWJx0oz21tYyxLQm6o=
-X-Google-Smtp-Source: APiQypIAGwgfjaRfHihsJeJ737ZyX6DGCobU8BkZcdk7Gc5hUQmvmBkfIOK6sewJ+lnv4/IXbMKBwg==
-X-Received: by 2002:a50:9b58:: with SMTP id a24mr759017edj.353.1586244144485;
-        Tue, 07 Apr 2020 00:22:24 -0700 (PDT)
-Received: from kozik-lap ([194.230.155.125])
-        by smtp.googlemail.com with ESMTPSA id qu11sm230130ejb.12.2020.04.07.00.22.23
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 07 Apr 2020 00:22:23 -0700 (PDT)
-Date:   Tue, 7 Apr 2020 09:22:21 +0200
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     Hyunki Koo <hyunki00.koo@samsung.com>, gregkh@linuxfoundation.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Kukjin Kim <kgene@kernel.org>, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Subject: Re: [PATCH v6 2/2] tty: samsung_tty: 32-bit access for TX/RX hold
- registers
-Message-ID: <20200407072221.GA18236@kozik-lap>
-References: <20200401082721.19431-1-hyunki00.koo@samsung.com>
- <CGME20200406230902epcas2p19a8df6805dac59968d664efb9bc9419b@epcas2p1.samsung.com>
- <20200406230855.13772-1-hyunki00.koo@samsung.com>
- <62a918df-b3ba-21f4-b3ad-9f638ad104ad@suse.com>
- <20200407062439.GA21995@kozik-lap>
- <257f278b-ce96-4cfb-85ff-53e123a076f5@suse.cz>
+        Tue, 7 Apr 2020 03:39:01 -0400
+X-Greylist: delayed 512 seconds by postgrey-1.27 at vger.kernel.org; Tue, 07 Apr 2020 03:39:00 EDT
+Received: from localhost (unknown [127.0.0.1])
+        by submit-4.e-mind.com (Postfix) with ESMTP id 7A032840AC4
+        for <linux-serial@vger.kernel.org>; Tue,  7 Apr 2020 07:30:26 +0000 (UTC)
+Received: from submit-4.e-mind.com ([127.0.0.1])
+        by localhost (submit-4.e-mind.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id m2tNJ87xH7yo for <linux-serial@vger.kernel.org>;
+        Tue,  7 Apr 2020 09:30:26 +0200 (CEST)
+Received: from qmail.e-mind.com (qmail34.e-mind.com [188.94.192.34])
+        by submit-4.e-mind.com (Postfix) with SMTP id 806F2840ACE
+        for <linux-serial@vger.kernel.org>; Tue,  7 Apr 2020 09:30:20 +0200 (CEST)
+Received: (qmail 3614 invoked by uid 0); 7 Apr 2020 07:30:20 -0000
+Received: from unknown (HELO ?192.168.143.6?) (185.53.252.165)
+  by 0 with SMTP; 7 Apr 2020 07:30:20 -0000
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jslaby@suse.com,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Gianluca Renzi <icjtqr@gmail.com>, dimka@embeddedalley.com,
+        linux@rempel-privat.de
+From:   gianluca <gianlucarenzi@eurek.it>
+Subject: Serial data loss
+Message-ID: <960c5054-48b0-fedc-4f3a-7246d84da832@eurek.it>
+Date:   Tue, 7 Apr 2020 09:30:21 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101
+ Thunderbird/45.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <257f278b-ce96-4cfb-85ff-53e123a076f5@suse.cz>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Apr 07, 2020 at 08:32:56AM +0200, Jiri Slaby wrote:
-> On 07. 04. 20, 8:24, Krzysztof Kozlowski wrote:
-> > On Tue, Apr 07, 2020 at 06:49:29AM +0200, Jiri Slaby wrote:
-> >> On 07. 04. 20, 1:08, Hyunki Koo wrote:
-> >>> Support 32-bit access for the TX/RX hold registers UTXH and URXH.
-> >>>
-> >>> This is required for some newer SoCs.
-> >>>
-> >>> Signed-off-by: Hyunki Koo <hyunki00.koo@samsung.com>
-> >> ...
-> >>> ---
-> >>>  drivers/tty/serial/samsung_tty.c | 76 +++++++++++++++++++++++++++++++++-------
-> >>>  1 file changed, 64 insertions(+), 12 deletions(-)
-> >>>
-> >>> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> >>> index 73f951d65b93..bdf1d4d12cb1 100644
-> >>> --- a/drivers/tty/serial/samsung_tty.c
-> >>> +++ b/drivers/tty/serial/samsung_tty.c
-> >>> @@ -154,12 +154,47 @@ struct s3c24xx_uart_port {
-> >> ...
-> >>> -#define wr_regb(port, reg, val) writeb_relaxed(val, portaddr(port, reg))
-> >>> +static void wr_reg(struct uart_port *port, u32 reg, u32 val)
-> >>> +{
-> >>> +	switch (port->iotype) {
-> >>> +	case UPIO_MEM:
-> >>> +		writeb_relaxed(val, portaddr(port, reg));
-> >>> +		break;
-> >>> +	case UPIO_MEM32:
-> >>> +		writel_relaxed(val, portaddr(port, reg));
-> >>> +		break;
-> >>> +	}
-> >>> +}
-> >>> +
-> >>>  #define wr_regl(port, reg, val) writel_relaxed(val, portaddr(port, reg))
-> >>>  
-> >>> +static void wr_reg_barrier(struct uart_port *port, u32 reg, u32 val)
-> >>
-> >> You need to explain, why you need this _barrier variant now. This change
-> >> should be done in a separate patch too.
-> > 
-> > There is no functional change in regard of barrier.  The ordered IO was
-> > used there before.
-> 
-> The patch changes one wr_reg to wr_reg_barrier without any explanation.
-> This will hardly be accepted.
+Hello everybody!
 
-I cannot find such change... I see only:
+I hope you are keeping safe against Covid-19 a.k.a. Coronavirus!
 
-@@ -2612,7 +2664,7 @@ static void samsung_early_putc(struct uart_port *port, int c)
--       writeb(c, port->membase + S3C2410_UTXH);
-+       wr_reg_barrier(port, S3C2410_UTXH, c);
+Now my issue:
 
-which is the same except 'b' -> 'b/l'.
+I have a BIG trouble having dataloss when using two internal serial 
+ports of my boards based on NXP/FreeScale iMX28 SoC ARMv5Te ARM920ej-s 
+architecture.
 
-Best regards,
-Krzysztof
+It runs at 454Mhz.
 
+Kernel used 4.9.x
+
+When using my test case unit software between two serial ports connect 
+each other by a null modem cable, it fails when the speed rate are 
+different, and dataloss is increasing higher the speed rate.
+
+I suppose to have overruns (now I am modifying my software to check them 
+too), but I think it is due the way the ISR is called and all data are 
+passed to the uart circular buffer within the interrupt routine.
+
+I am talking about the high latency from the IRQ up to the service 
+routine when flushing the FIFO and another IRQ is called by another uart 
+in the same time at different speed.
+
+The code I was looking is: drivers/tty/serial/mxs-auart.c __but__ all 
+other serial drivers are acting in the same way: they are reading one 
+character at time from the FIFO (if it exists) and put it into the 
+circular buffer so serial/tty driver can pass them to the user read routine.
+
+Each function call has some overhead and it is time-consuming, and if 
+another interrupt is invoked by the same UART Core but from another 
+serial port (different context) the continuos insertion done by hardware 
+UART into the FIFO cannot be served fast enough to have an overrun. I 
+think this can be applied __almost__ to every serial driver as they are 
+written in the same way.
+
+And it is __NOT__ an issue because of the CPU and its speed! Using two 
+serial converter (FTDI and Prolific PL2303 based) on each board, the 
+problem does not appear at all even after 24 hours running at more than 
+115200!!!
+
+It does work fine if I am using two different serial devices: one 
+internal uart (mxs-auart) and an external uart (ttyUSB).
+
+So I can say it is related on how the harwdare is managing the interrupt 
+context and the FIFO/buffer small size.
+
+Are those correct assuptions?
+
+Will a shared FIQ driver over the UART solve the issue?
+
+Regards,
+-- 
+Eurek s.r.l.                          |
+Electronic Engineering                | http://www.eurek.it
+via Celletta 8/B, 40026 Imola, Italy  | Phone: +39-(0)542-609120
+p.iva 00690621206 - c.f. 04020030377  | Fax:   +39-(0)542-609212
