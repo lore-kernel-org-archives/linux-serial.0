@@ -2,84 +2,141 @@ Return-Path: <SRS0=0Mhk=5Y=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 132F3C2D0EA
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Apr 2020 07:14:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97242C2D0EA
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Apr 2020 11:14:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DA9DF2074F
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Apr 2020 07:14:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6B78620780
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Apr 2020 11:14:07 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NYpEyhHH"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="ZnsyiF1i"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726475AbgDHHOE (ORCPT
+        id S1728396AbgDHLOH (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Apr 2020 03:14:04 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:41623 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725932AbgDHHOE (ORCPT
+        Wed, 8 Apr 2020 07:14:07 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:23177 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728394AbgDHLOG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Apr 2020 03:14:04 -0400
-Received: by mail-io1-f66.google.com with SMTP id b12so6070451ion.8;
-        Wed, 08 Apr 2020 00:14:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=n3pOLajiHp9QNgBFOxW5iWABG0gRZUq3fep3oI+pRP8=;
-        b=NYpEyhHH8YEEcu1QsXmXLw3y8kOTad+w3HVZnR+Y3hyVn62prunYKNT8T4GqQbQpBj
-         l/At2kUjKL8Th079SXupYhtk21aNK7hDaCSwh9agFmmKlcK1CdHlWB2UW04XWDI3jA3m
-         TuoQuBtCLW/G+i1HIPoZo0LfWs2GyJlsNd2SQuwD8vFG2NISI8HYiruCgp71XTTZj9A3
-         rNRMGli6GXwytqzWW+cq3bspNSs7051L9l1d7ACWQYfr6eoBzNYQ//d4wEEumxvFSkdo
-         gxYOGCqvk9aExhalhwO/oAaZIiEdBj0eswBvUf8O0FZrHL5YUJV6MatginpalN+p7TE4
-         h36A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=n3pOLajiHp9QNgBFOxW5iWABG0gRZUq3fep3oI+pRP8=;
-        b=MxjCUM5Kh/qViTQqnaR9dOI9lhLvFwjlZ9Bi1B4nfvVuFxvFm0tRd4IxjiGCPE8UjT
-         slNS5u1EUbGu9h4Yk6cSXnAzhREfrIAi3cUb3oi1k+aBPOP7ZsQIoaqgnLBbczP3kEB7
-         T4UZyVwAS82fQgN3HYLT0KGT9Yc4bYvLFiTC6Fkryt5nZ5MZ6RLAN0kAtLlEjgF/sY4I
-         UICyf7c7VEyia8uA0UrqMAhq5bjM6DChj7G0256SGoYTZYD/8McBAYa7yKb0f/OQJ5al
-         5x6X3KrPj9qEeDQImUEggMYPdqOpHZQvRkAxGTOgzQaMTwaiZgVXhRbeVLd0o93YHaRw
-         /KsQ==
-X-Gm-Message-State: AGi0PuZGG33cEexS+iYq6PilpH7alF8ERhpLfeijxUM++I0Ej86l3N91
-        JVET52dYZ70OYYL37hUtUknRI/ccuql6EHIa3F2YcQ==
-X-Google-Smtp-Source: APiQypLby6SoQX8sZccd/LcU0stSsoPaVtQSyNW6q8SgeNId9cCkGs4yVDFZWwGwe5zLBkGQZQA/9vedTzGxJz3dR7I=
-X-Received: by 2002:a5d:948e:: with SMTP id v14mr5715979ioj.112.1586330043053;
- Wed, 08 Apr 2020 00:14:03 -0700 (PDT)
+        Wed, 8 Apr 2020 07:14:06 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1586344446; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=dNLnnym4VtOUg1n6xG1Oo6xj/LOdUkzfToVq8XZ0xqo=; b=ZnsyiF1ivTO6PAvsQdI4dsrv1D3c4AtIBlqDinYtAn9NFgTQb0S/YuECik3TEQCFCbfdKcID
+ 4G+fdpGH3X5khls0RGkpxofGFPTjafeNlo0K9FUJ5WHOaTm70efOCXHs6QTjBRQvaWNjkWYX
+ YKMadafIE9azJXQD0aps/nwapag=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e8db1e6.7f04e41d63e8-smtp-out-n02;
+ Wed, 08 Apr 2020 11:13:42 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 572C3C44791; Wed,  8 Apr 2020 11:13:41 +0000 (UTC)
+Received: from [192.168.0.6] (unknown [183.83.138.47])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id E552BC433F2;
+        Wed,  8 Apr 2020 11:13:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E552BC433F2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+Subject: Re: [PATCH V3 2/8] soc: qcom: geni: Support for ICC voting
+To:     Georgi Djakov <georgi.djakov@linaro.org>,
+        Evan Green <evgreen@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Gross <agross@kernel.org>, wsa@the-dreams.de,
+        Mark Brown <broonie@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-i2c@vger.kernel.org,
+        linux-spi@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Stephen Boyd <swboyd@chromium.org>,
+        Manu Gautam <mgautam@codeaurora.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        linux-serial@vger.kernel.org, Matthias Kaehlcke <mka@chromium.org>,
+        Doug Anderson <dianders@chromium.org>
+References: <1585652976-17481-1-git-send-email-akashast@codeaurora.org>
+ <1585652976-17481-3-git-send-email-akashast@codeaurora.org>
+ <20200331233209.GF254911@minitux>
+ <CAE=gft6B2UCBVaKVCJXED8waFWci8WJ+sTM3CT+3e_eYS=-BDQ@mail.gmail.com>
+ <66da4cc6-3873-1d39-ecb7-e9866320c469@codeaurora.org>
+ <866a5cac-9f05-703e-8c3c-168d8f219c4d@linaro.org>
+From:   Akash Asthana <akashast@codeaurora.org>
+Message-ID: <6f738ea2-d50c-3524-798c-b60e982f2c25@codeaurora.org>
+Date:   Wed, 8 Apr 2020 16:43:30 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-References: <1586278391-9061-1-git-send-email-raviteja.narayanam@xilinx.com>
-In-Reply-To: <1586278391-9061-1-git-send-email-raviteja.narayanam@xilinx.com>
-From:   Shubhrajyoti Datta <shubhrajyoti.datta@gmail.com>
-Date:   Wed, 8 Apr 2020 12:43:51 +0530
-Message-ID: <CAKfKVtENc6R2c_h1Vr9AUywXJNGahctAaBz_05_kTY8vNNXeWg@mail.gmail.com>
-Subject: Re: [PATCH] serial: uartps: Wait for tx_empty in console setup
-To:     Raviteja Narayanam <raviteja.narayanam@xilinx.com>
-Cc:     linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        jslaby@suse.com, Michal Simek <michal.simek@xilinx.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>, git@xilinx.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <866a5cac-9f05-703e-8c3c-168d8f219c4d@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi ,
-On Tue, Apr 7, 2020 at 10:25 PM Raviteja Narayanam
-<raviteja.narayanam@xilinx.com> wrote:
+Hi Georgi, Bjorn, Evan,
+
+On 4/7/2020 3:28 PM, Georgi Djakov wrote:
+> Hi,
 >
-> On some platforms, the log is corrupted while console is being
-> registered. It is observed that when set_termios is called, there
-> are still some bytes in the FIFO to be transmitted.
+> On 4/7/20 09:46, Akash Asthana wrote:
+>> Hi Bjorn, Evan,
+>>
+>>>> Given that these two functions only switch the bandwidth request between
+>>>> some value and 0, I really think we should carry a "bool enabled" on the
+>>>> path and replace these two functions with
+>>>> icc_bulk_enable()/icc_bulk_disable().
+>> So, if above is implementation "bool enabled" on path can be used directly in
+>> aggregation of ICC votes on particular node without using icc_set_bw call, if
+>> yes then I am not aware how? or we'll be using icc_set_bw API indirectly inside
+>> icc_bulk APIs?
+> If there is a repeated pattern to switch between some bandwidth value and zero,
+> it really makes sense to introduce such functions in the framework core. I think
+> that this might be very useful especially for suspend and resume cases.
+> Something like icc_{enable,disable}(struct icc_path *path) functions and also
+> the bulk versions, that will flag the path as disabled, re-aggregate and do
+> icc_set_bw().
+
+This appears to be a non-trivial change to ICC core, as my understanding 
+of ICC core is limited as of now hence, I am not very clear of the 
+implementation of icc_bulk APIs.
+
+Will it be okay if I keep geni_icc_vote_on/off API as 
+is@https://patchwork.kernel.org/patch/11467511/ for now and later will 
+switch to icc_bulk once it's introduced in ICC core.
+
+Regards,
+
+Akash
+
+>>>> The added benefit of this would be that you call icc_set_bw() instead of
+>>>> changing the geni_icc_path->{avg_bw,peak_bw} and don't need to keep
+>>>> track of them here.
+>> Ok IIUC, we need to call icc_set_bw() from GENI driver only if we change (avg_bw
+>> | peak_bw)?
+> Yes, exactly.
 >
-> So, wait for tx_empty inside cdns_uart_console_setup before
-> calling set_termios.
+> Thanks,
+> Georgi
 >
-Reviewed-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+>> Regards,
+>>
+>> Akash
+>>
+>>> Yes yes! I had the same thought here [1].
+>>>
+>>> Georgi, what do you think?
+>>> -Evan
+>>>
+>>> [1]
+>>> https://lore.kernel.org/linux-arm-msm/CAE=gft58QsgTCUHMHKJhcM9ZxAeMiY16CrbNv2HaTCRqwtmt7A@mail.gmail.com/
+>>>
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
