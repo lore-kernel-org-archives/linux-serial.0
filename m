@@ -2,131 +2,185 @@ Return-Path: <SRS0=0Mhk=5Y=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2B6CC2BA80
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Apr 2020 12:17:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20470C2BA2B
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Apr 2020 13:47:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BA40F20787
-	for <linux-serial@archiver.kernel.org>; Wed,  8 Apr 2020 12:17:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EB7A420780
+	for <linux-serial@archiver.kernel.org>; Wed,  8 Apr 2020 13:47:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="UFNn/xH+"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="rJ3weaUI"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728207AbgDHMRf (ORCPT
+        id S1729217AbgDHNrU (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 8 Apr 2020 08:17:35 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:23420 "EHLO
+        Wed, 8 Apr 2020 09:47:20 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:54943 "EHLO
         mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727903AbgDHMRf (ORCPT
+        by vger.kernel.org with ESMTP id S1729207AbgDHNrT (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 8 Apr 2020 08:17:35 -0400
+        Wed, 8 Apr 2020 09:47:19 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1586348254; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=k3YztnopJljpDNhUQCDDNG8AGHekob6hja/cRl7AZTw=; b=UFNn/xH+D+wUgqGnBt1SftP8ZbOq6NO64OZ2QaJeWKKdbqRO8lCR3P68ouFuTRWGouAjjP0L
- vyJjog9Ma8aJPJ/QPAbe/k8BwOttkM4bzwNWLIir9IXpSqxNdduWK6/W90oGfPmF1IQdEkqN
- Q0emlana+hBQgIKoWD4N+jfiip4=
+ s=smtp; t=1586353638; h=References: In-Reply-To: Message-Id: Date:
+ Subject: Cc: To: From: Sender;
+ bh=iKkjkOaZz7edJymZbW0Z/el4gdP6KUIZXi4UPrphlE4=; b=rJ3weaUImSAAvAl5ofHtUw3BTCefj2Yak2HAjy4NvFFneq/weXKE2vYD4M404j+PQ9VxbnNh
+ ey9ddJ66zFTt3TzMlQmBHX8vysuyucgeO3snGPjWit5vpWefn0xcyhazAwXFeapznlO1zQRz
+ tSBStHs8WDxsnmHSgC8Zu52Vf4o=
 X-Mailgun-Sending-Ip: 104.130.122.26
 X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e8dc0de.7fb8db3359d0-smtp-out-n04;
- Wed, 08 Apr 2020 12:17:34 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5e8dd5e6.7f39881cdb90-smtp-out-n01;
+ Wed, 08 Apr 2020 13:47:18 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 11216C43636; Wed,  8 Apr 2020 12:17:34 +0000 (UTC)
-Received: from [192.168.0.6] (unknown [183.83.138.47])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id B995CC433D2; Wed,  8 Apr 2020 13:47:16 +0000 (UTC)
+Received: from blr-ubuntu-173.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (No client certificate requested)
-        (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7BE5AC433F2;
-        Wed,  8 Apr 2020 12:17:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7BE5AC433F2
+        (Authenticated sender: rnayak)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 32149C433F2;
+        Wed,  8 Apr 2020 13:47:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 32149C433F2
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-Subject: Re: [PATCH V3 7/8] spi: spi-qcom-qspi: Add interconnect support
-To:     Mark Brown <broonie@kernel.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de,
-        mark.rutland@arm.com, robh+dt@kernel.org, georgi.djakov@linaro.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, mka@chromium.org,
-        dianders@chromium.org, evgreen@chromium.org
-References: <1585652976-17481-1-git-send-email-akashast@codeaurora.org>
- <1585652976-17481-8-git-send-email-akashast@codeaurora.org>
- <20200331112352.GB4802@sirena.org.uk>
- <f896d6e4-cc86-db46-a9b9-d7c98071b524@codeaurora.org>
- <20200407105542.GA5247@sirena.org.uk>
-From:   Akash Asthana <akashast@codeaurora.org>
-Message-ID: <48c60fdf-03c6-650a-2671-b8f7cc1e5c82@codeaurora.org>
-Date:   Wed, 8 Apr 2020 17:47:25 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-In-Reply-To: <20200407105542.GA5247@sirena.org.uk>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=rnayak@codeaurora.org
+From:   Rajendra Nayak <rnayak@codeaurora.org>
+To:     viresh.kumar@linaro.org, sboyd@kernel.org,
+        bjorn.andersson@linaro.org, agross@kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        Akash Asthana <akashast@codeaurora.org>,
+        linux-serial@vger.kernel.org
+Subject: [PATCH 02/21] tty: serial: qcom_geni_serial: Use OPP API to set clk/perf state
+Date:   Wed,  8 Apr 2020 19:16:28 +0530
+Message-Id: <1586353607-32222-3-git-send-email-rnayak@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1586353607-32222-1-git-send-email-rnayak@codeaurora.org>
+References: <1586353607-32222-1-git-send-email-rnayak@codeaurora.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Mark, Evan, Georgi,
+geni serial needs to express a perforamnce state requirement on CX
+depending on the frequency of the clock rates. Use OPP table from
+DT to register with OPP framework and use dev_pm_opp_set_rate() to
+set the clk/perf state.
 
-On 4/7/2020 4:25 PM, Mark Brown wrote:
-> On Tue, Apr 07, 2020 at 03:24:42PM +0530, Akash Asthana wrote:
->> On 3/31/2020 4:53 PM, Mark Brown wrote:
->>>> +	ctrl->avg_bw_cpu = Bps_to_icc(speed_hz);
->>>> +	ctrl->peak_bw_cpu = Bps_to_icc(2 * speed_hz);
->>> I thought you were going to factor this best guess handling of peak
->>> bandwidth out into the core?
->> I can centralize this for SPI, I2C and UART  in Common driver(QUP wrapper)
->> but still for QSPI I have to keep this piece of code as is because It is not
->> child of QUP wrapper(it doesn't use common code).
-> Why not?
->
->> I am not sure whether I can move this " Assume peak_bw as twice of avg_bw if
->> nothing is mentioned explicitly" to ICC core because the factor of 2 is
->> chosen randomly by me.
-> That's the whole point - if this is just a random number then we may as
-> well at least be consistently random.
+Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
+Cc: Akash Asthana <akashast@codeaurora.org>
+Cc: linux-serial@vger.kernel.org
+---
+ drivers/tty/serial/qcom_geni_serial.c | 20 +++++++++++++++-----
+ include/linux/qcom-geni-se.h          |  2 ++
+ 2 files changed, 17 insertions(+), 5 deletions(-)
 
-Can we centralize below logic of peak_bw selection for all the clients 
-to ICC core?
-
-"Assume peak_bw requirement as twice of avg_bw, if it is not mentioned 
-explicitly"
-
-===========================================================================
-int icc_set_bw(struct icc_path *path, u32 avg_bw, u32 peak_bw)
-{
-         struct icc_node *node;
-         u32 old_avg, old_peak;
-         size_t i;
-         int ret;
-
-         if (!path)
-                 return 0;
-
-         if (WARN_ON(IS_ERR(path) || !path->num_nodes))
-                 return -EINVAL;
-
-+       /*
-+        * Assume peak_bw requirement as twice of avg_bw, if it is not
-+        * mentioned explicitly
-+        */
-+       peak_bw = peak_bw ? peak_bw : 2 * avg_bw;
-===========================================================================
-
-In case if some client really don't want to put peak requirement they 
-can pass avg_bw = peak_bw. As peak_bw <= avg_bw is kind of no-ops.
-
-Regards,
-
-Akash
-
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 6119090..754eaf6 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -9,6 +9,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
++#include <linux/pm_opp.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/pm_wakeirq.h>
+@@ -961,7 +962,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 		goto out_restart_rx;
+ 
+ 	uport->uartclk = clk_rate;
+-	clk_set_rate(port->se.clk, clk_rate);
++	dev_pm_opp_set_rate(uport->dev, clk_rate);
+ 	ser_clk_cfg = SER_CLK_EN;
+ 	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
+ 
+@@ -1198,8 +1199,10 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
+ 	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
+ 		geni_se_resources_on(&port->se);
+ 	else if (new_state == UART_PM_STATE_OFF &&
+-			old_state == UART_PM_STATE_ON)
++			old_state == UART_PM_STATE_ON) {
++		dev_pm_opp_set_rate(uport->dev, 0);
+ 		geni_se_resources_off(&port->se);
++	}
+ }
+ 
+ static const struct uart_ops qcom_geni_console_pops = {
+@@ -1318,13 +1321,16 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+ 	if (of_property_read_bool(pdev->dev.of_node, "cts-rts-swap"))
+ 		port->cts_rts_swap = true;
+ 
++	port->se.opp = dev_pm_opp_set_clkname(&pdev->dev, "se");
++	dev_pm_opp_of_add_table(&pdev->dev);
++
+ 	uport->private_data = drv;
+ 	platform_set_drvdata(pdev, port);
+ 	port->handle_rx = console ? handle_rx_console : handle_rx_uart;
+ 
+ 	ret = uart_add_one_port(drv, uport);
+ 	if (ret)
+-		return ret;
++		goto err;
+ 
+ 	irq_set_status_flags(uport->irq, IRQ_NOAUTOEN);
+ 	ret = devm_request_irq(uport->dev, uport->irq, qcom_geni_serial_isr,
+@@ -1332,7 +1338,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+ 	if (ret) {
+ 		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
+ 		uart_remove_one_port(drv, uport);
+-		return ret;
++		goto err;
+ 	}
+ 
+ 	/*
+@@ -1349,11 +1355,14 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+ 		if (ret) {
+ 			device_init_wakeup(&pdev->dev, false);
+ 			uart_remove_one_port(drv, uport);
+-			return ret;
++			goto err;
+ 		}
+ 	}
+ 
+ 	return 0;
++err:
++	dev_pm_opp_of_remove_table(&pdev->dev);
++	return ret;
+ }
+ 
+ static int qcom_geni_serial_remove(struct platform_device *pdev)
+@@ -1361,6 +1370,7 @@ static int qcom_geni_serial_remove(struct platform_device *pdev)
+ 	struct qcom_geni_serial_port *port = platform_get_drvdata(pdev);
+ 	struct uart_driver *drv = port->uport.private_data;
+ 
++	dev_pm_opp_of_remove_table(&pdev->dev);
+ 	dev_pm_clear_wake_irq(&pdev->dev);
+ 	device_init_wakeup(&pdev->dev, false);
+ 	uart_remove_one_port(drv, &port->uport);
+diff --git a/include/linux/qcom-geni-se.h b/include/linux/qcom-geni-se.h
+index dd46494..737e713 100644
+--- a/include/linux/qcom-geni-se.h
++++ b/include/linux/qcom-geni-se.h
+@@ -24,6 +24,7 @@ enum geni_se_protocol_type {
+ 
+ struct geni_wrapper;
+ struct clk;
++struct opp_table;
+ 
+ /**
+  * struct geni_se - GENI Serial Engine
+@@ -39,6 +40,7 @@ struct geni_se {
+ 	struct device *dev;
+ 	struct geni_wrapper *wrapper;
+ 	struct clk *clk;
++	struct opp_table *opp;
+ 	unsigned int num_clk_levels;
+ 	unsigned long *clk_perf_tbl;
+ };
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
