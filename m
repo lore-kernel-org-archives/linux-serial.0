@@ -2,33 +2,34 @@ Return-Path: <SRS0=pwFA=5Z=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA0D5C2BB1D
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Apr 2020 06:26:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E870FC2BB54
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Apr 2020 06:27:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 80E082072F
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Apr 2020 06:26:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B5CF92072F
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Apr 2020 06:27:06 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=xilinx.onmicrosoft.com header.i=@xilinx.onmicrosoft.com header.b="fSQJ2aeP"
+	dkim=pass (1024-bit key) header.d=xilinx.onmicrosoft.com header.i=@xilinx.onmicrosoft.com header.b="KeiGpunm"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725881AbgDIG00 (ORCPT
+        id S1725881AbgDIG1F (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Apr 2020 02:26:26 -0400
-Received: from mail-eopbgr750045.outbound.protection.outlook.com ([40.107.75.45]:17476
-        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
+        Thu, 9 Apr 2020 02:27:05 -0400
+Received: from mail-co1nam11on2048.outbound.protection.outlook.com ([40.107.220.48]:25249
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725283AbgDIG00 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Apr 2020 02:26:26 -0400
+        id S1725828AbgDIG1F (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 9 Apr 2020 02:27:05 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eR2xFY1fZXMWycJ5Gwd8lb1a/zsKmTG7vkI+aR5rJDn1xjgImZdNhFMtCZV52MOguzLP5PGiOS1SXVPIYeaTQZKVvKSql8E08eIhw62cdaOllRhYwG2e/DTTkTgSLfTYkXv/T/+ni55tG1vTvwVco7EmS6A3vUrCCoUZmH/qmLSc+bRTmjewi7qkUJJrcPQTSoqUPi6b7LRzOqhzTMrdO7i1qtB+VlbazjMsysmpRX3L+zymM2kvtYiMxWLUAyUrA6VfnOC4AgioxOJItMqDpImnwJT2K+nQ2vROmONqgekBvqYE8/tC4E7OiqmITFFzkEXRTU4v31JwEp9ZEdIbcA==
+ b=GbEmVxRo2uLPkOhFq4SeDWAcxvgXHp2xggZIuPKOeSf5uW3FNF+nYWYmSZuPlwSzWM/qOcUc7xEZBPre8YrcXwbLsJFO7taC0liAg+dN5oHC+mO/AIc1cPtloSpS9Vfh/x2m9M3yxW2BbgMifW3PZ6D6s6n0YdVxNfe3QnMKu+J519x05fAdNKBEBiGiE9K3Yi1AIvrhxPXE5u/SoqaaUg+ss0B4TfHhOcvcZtZZpqUXd6P8xJpRK/4XEQ4LC91RoYBhAPPIVNaHRI9qCI3vm/Fj7pHe+W9q29ebnJ/s2fjEvnfG89TPS9q34O6AL+2soSciTjSwRn13AU9GSdd3SA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fKuKpoe6hh1QX4TgtNYZISjBL0mlRHdI5azSZg5JJ+s=;
- b=XtSQgArLheu0cIcBbNdie1znG4jvbu5mMbyaPcl6z4r6c2ObCH39AOZve89UKeJHac23h8C7gS5HLYOIjyErg164RbdHkfsx9PrMUlUlZVRDmFqwOWjX6pLkJyacAcUpe4gDfki18eUn+KU+ZWuVQj7EkLMJ7DkTvwWRioIXaQsM4MsMpvd2HgfyOhRu3Kj4N/+EOCLFX+rK5y3Vjpej7acUiOib8a+KcriEJUy0ouviiQS4gIPiRpHV8IK9kitueJiHTNxV2yVkGh0TR1DFhmuXrZsCHfY/KGRH5ooy7rFsHcTbJj6aCa3Ae0mkVW8bXFQ6T1jXKE/NKscPGKu1oQ==
+ bh=fE4EPTUvwRkWpdok9e5fRR5hwdY6Vz7h0vKa9MyQC58=;
+ b=Sw8+ft9VEqIheSIxOnx+chx2MwS/jhyRPKHQUvKM95uAaaLlW23gMzv5V76HeA+S1gNDpKv4x/SkGIME64OKVTgknlZKOVR60vbjKx1Yb/QGQaz1bDpquuDf5lsgESYxSxJF6dZmbqG7MOFoZ+EFY1isiSWevH8ocOHR0F14KtArbnns34ColGQ8ftMMfWeAY2l+IQ1gPVnVvZqdVdOfk/dUeB+albPLnEkbOoigmNWF0tSme3HUitcFE2c4w1PfToNKn/9dAQDbHymJ4xm/rRqjD4x4ceZJML0BzUqkkfFNMaq++GArp7NgK7eBMHQURxlSK7sM3k8NJFHmMh6uag==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  149.199.60.83) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
  dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
@@ -36,18 +37,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fKuKpoe6hh1QX4TgtNYZISjBL0mlRHdI5azSZg5JJ+s=;
- b=fSQJ2aePXRN+WBj6YVBNHIOlOpJvpoJaULKXXTcjxvFu4b7DTn07pcdG+KxZ92QTwBWLBzpJJ1am5XzXPlzdnpU1y52sMPJxng7GcePdtUMLdT112IdrNG/UhTF0JWzPiIBTDemxJflFVEYd1UowGMBsZaR8di2VRb3D1uLW1W4=
-Received: from CY4PR22CA0064.namprd22.prod.outlook.com (2603:10b6:903:ae::26)
- by DM6PR02MB5546.namprd02.prod.outlook.com (2603:10b6:5:35::22) with
+ bh=fE4EPTUvwRkWpdok9e5fRR5hwdY6Vz7h0vKa9MyQC58=;
+ b=KeiGpunmN3w/EviQO3BE6kuhiHbcyV6kctJfwyacylv/gdfBgMQLAD/PzzzV/l02s/PJx5ZnYESiu3cVMHNd8zmGLB8mvf3DE9COObZC0xWIHhgGLa8uwv/jJB3tDjmSTWmHLh6+CxZbvVUqiltlzgmGdK2DE2uDAMBBhl+juEc=
+Received: from CY4PR08CA0035.namprd08.prod.outlook.com (2603:10b6:903:151::21)
+ by DM5PR02MB3321.namprd02.prod.outlook.com (2603:10b6:4:6a::31) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2878.15; Thu, 9 Apr
- 2020 06:26:23 +0000
-Received: from CY1NAM02FT024.eop-nam02.prod.protection.outlook.com
- (2603:10b6:903:ae:cafe::7e) by CY4PR22CA0064.outlook.office365.com
- (2603:10b6:903:ae::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2900.17 via Frontend
- Transport; Thu, 9 Apr 2020 06:26:23 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2878.20; Thu, 9 Apr
+ 2020 06:27:03 +0000
+Received: from CY1NAM02FT064.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:903:151:cafe::e0) by CY4PR08CA0035.outlook.office365.com
+ (2603:10b6:903:151::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2900.15 via Frontend
+ Transport; Thu, 9 Apr 2020 06:27:03 +0000
 Authentication-Results: spf=pass (sender IP is 149.199.60.83)
  smtp.mailfrom=xilinx.com; vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=bestguesspass action=none
@@ -56,80 +57,90 @@ Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
  149.199.60.83 as permitted sender) receiver=protection.outlook.com;
  client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
 Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
- CY1NAM02FT024.mail.protection.outlook.com (10.152.74.210) with Microsoft SMTP
- Server id 15.20.2900.15 via Frontend Transport; Thu, 9 Apr 2020 06:26:23
+ CY1NAM02FT064.mail.protection.outlook.com (10.152.74.64) with Microsoft SMTP
+ Server id 15.20.2900.15 via Frontend Transport; Thu, 9 Apr 2020 06:27:03
  +0000
-Received: from [149.199.38.66] (port=46429 helo=xsj-pvapsmtp01)
+Received: from [149.199.38.66] (port=46784 helo=xsj-pvapsmtp01)
         by xsj-pvapsmtpgw01 with esmtp (Exim 4.90)
         (envelope-from <raviteja.narayanam@xilinx.com>)
-        id 1jMQdR-00086K-Sn; Wed, 08 Apr 2020 23:25:57 -0700
+        id 1jMQe6-000876-7Z; Wed, 08 Apr 2020 23:26:38 -0700
 Received: from [127.0.0.1] (helo=localhost)
         by xsj-pvapsmtp01 with smtp (Exim 4.63)
         (envelope-from <raviteja.narayanam@xilinx.com>)
-        id 1jMQdq-0004Wo-QA; Wed, 08 Apr 2020 23:26:22 -0700
-Received: from xsj-pvapsmtp01 (xsj-smtp1.xilinx.com [149.199.38.66])
-        by xsj-smtp-dlp2.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id 0396QCGa027217;
-        Wed, 8 Apr 2020 23:26:13 -0700
+        id 1jMQeV-0004bN-4n; Wed, 08 Apr 2020 23:27:03 -0700
+Received: from xsj-pvapsmtp01 (mailman.xilinx.com [149.199.38.66])
+        by xsj-smtp-dlp2.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id 0396QqC8027519;
+        Wed, 8 Apr 2020 23:26:52 -0700
 Received: from [10.140.6.6] (helo=xhdappanad40.xilinx.com)
         by xsj-pvapsmtp01 with esmtp (Exim 4.63)
         (envelope-from <raviteja.narayanam@xilinx.com>)
-        id 1jMQdg-00046h-7C; Wed, 08 Apr 2020 23:26:12 -0700
+        id 1jMQeK-00046h-91; Wed, 08 Apr 2020 23:26:52 -0700
 From:   Raviteja Narayanam <raviteja.narayanam@xilinx.com>
 To:     linux-serial@vger.kernel.org
 Cc:     gregkh@linuxfoundation.org, jslaby@suse.com,
         michal.simek@xilinx.com, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, git@xilinx.com,
         Raviteja Narayanam <raviteja.narayanam@xilinx.com>
-Subject: [PATCH v2 0/2] serial: uartps: Add tx_empty checks
-Date:   Thu,  9 Apr 2020 11:56:01 +0530
-Message-Id: <1586413563-29125-1-git-send-email-raviteja.narayanam@xilinx.com>
+Subject: [PATCH v2 2/2] serial: uartps: Use cdns_uart_tx_empty in console_write
+Date:   Thu,  9 Apr 2020 11:56:03 +0530
+Message-Id: <1586413563-29125-3-git-send-email-raviteja.narayanam@xilinx.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1586413563-29125-1-git-send-email-raviteja.narayanam@xilinx.com>
+References: <1586413563-29125-1-git-send-email-raviteja.narayanam@xilinx.com>
 X-RCIS-Action: ALLOW
 X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
 X-TM-AS-User-Approved-Sender: Yes;Yes
 X-EOPAttributedMessage: 0
 X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:149.199.60.83;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapsmtpgw01;PTR:unknown-60-83.xilinx.com;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(136003)(396003)(39860400002)(376002)(346002)(46966005)(7696005)(6916009)(47076004)(8676002)(9786002)(107886003)(356004)(6666004)(26005)(81156014)(5660300002)(81166007)(70586007)(316002)(478600001)(4744005)(2616005)(426003)(82740400003)(70206006)(186003)(2906002)(36756003)(44832011)(8936002)(336012)(4326008);DIR:OUT;SFP:1101;
+X-Forefront-Antispam-Report: CIP:149.199.60.83;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapsmtpgw01;PTR:unknown-60-83.xilinx.com;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(346002)(396003)(136003)(39860400002)(376002)(46966005)(47076004)(70206006)(356004)(6666004)(8676002)(316002)(4326008)(36756003)(478600001)(44832011)(2906002)(186003)(107886003)(81166007)(81156014)(2616005)(5660300002)(82740400003)(4744005)(70586007)(336012)(9786002)(426003)(7696005)(6916009)(8936002)(26005);DIR:OUT;SFP:1101;
 MIME-Version: 1.0
 Content-Type: text/plain
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 567a3e74-a6a2-491c-b491-08d7dc4eec94
-X-MS-TrafficTypeDiagnostic: DM6PR02MB5546:
-X-Microsoft-Antispam-PRVS: <DM6PR02MB5546B66725C8C23346FB8B84CAC10@DM6PR02MB5546.namprd02.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: a18bb384-b73b-4a9e-1681-08d7dc4f049e
+X-MS-TrafficTypeDiagnostic: DM5PR02MB3321:
+X-Microsoft-Antispam-PRVS: <DM5PR02MB33213F2E3DFC01F4E59DBA0DCAC10@DM5PR02MB3321.namprd02.prod.outlook.com>
 X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-MS-Oob-TLC-OOBClassifiers: OLM:272;
 X-Forefront-PRVS: 0368E78B5B
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MWfAEwZKz9OLl8dSfhr2ALWUXGK9b9BLHRpUUyax/dHqUWp8twUqUd8Rw1ZjJerfmudRMMD/pQdgSsrV45RKWTrWWBVbz4edi/e5whcZ7jpzOGojYgtlePv865cGt2N8ZvXOG9L9ZDiak/94Z1Ks3SbbItiJOmAm1SoScb24sxmCO9ngRopD43IWgbfoCblnENqLZAj01sywIAOCXom+OTlF/3plIab/w2nrSYHo18a76ur/pD5ZuoXhyeFgrP9Kznp8Cez7ABBHR2ztPn2Fm2RA1VIXyf5280QCFa2d1/pduY9QxfTMqP3Zphouov0VFXRGGDdj/uwkV2ya04DY1lBljP6tRBWZvv82kI5DcMbgOVAzT7RaaOYRQ8w5IUCRHo66saQzutMSV8i4w0gnSqJWWSgkZWkpTT4rEf8QmgfayqiU3Y70VoaMQIPX/zAuw9bcP3+pLAaiuL0OepjlHj1P/nKwzYl1CBRgjuL+NQT61XE6WEPD53o+fW6aLzq+IP/vIcRTqinr40h0oJ5fxg==
+X-Microsoft-Antispam-Message-Info: F8UDQdxZL2mu7BeS+H+mul1PCbHGmSSVXPoc3R8Aeuq+Ei3/s+winiK4/61h0HKJNtjtTYcWtHsYAfxhrtzkfjvlycvofoNfsogOFPFeu7f+Zhb1E65oYru8rMDBZv7M5QkJz1FMyVl2/2EBgrIqdsyw+7O9PToyCBej79VgZ/j0japPeX1plUO6Ph1zvPLI/3Q8HaryM9tkrplerew5W3gYkxrzBGr4ucZ4wagUXFHEAU3ayp3SW/Ny1XYj0NdIcziYteJ8umr+Kk1uydH8IfPvrK2/YlorEtnkj/ftzWr4v8lRBNitKj26mPfTCv6VR6EsZVJOhmyplU+LRpxvJpo5QdSzqZ9U9ZZCVZh49TcwsZaFU9BAPKW4Zj+orYnjDHsWasKJJFYpj1aWTax1cxN8pKkJ3RKHDpA+uCTcxNJB+vmXLOirfGNFCEgrkTzZ7XzVTCa+78KwMoa1yIIhQKv/LOl8J0XKRnqtejuvqgekGJbfC9BNmQpnXH5pOyob+tMzGOr6Gn9rKZMlI4Slkw==
 X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Apr 2020 06:26:23.0862
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Apr 2020 06:27:03.4130
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 567a3e74-a6a2-491c-b491-08d7dc4eec94
+X-MS-Exchange-CrossTenant-Network-Message-Id: a18bb384-b73b-4a9e-1681-08d7dc4f049e
 X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB5546
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR02MB3321
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This patch series does the following:
-Use cdns_uart_tx_empty function in the driver.
-Wait for empty.
+Instead of accessing the registers and checking for tx_empty,
+use cdns_uart_tx_empty in cdns_uart_console_write function.
 
-v2:
-Modified the wait in console setup and used cdns_uart_tx_empty function
-in console_write as suggested by Maarten.
+Signed-off-by: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
+---
+ drivers/tty/serial/xilinx_uartps.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-Raviteja Narayanam (2):
-  serial: uartps: Wait for tx_empty in console setup
-  serial: uartps: Use cdns_uart_tx_empty in console_write
-
- drivers/tty/serial/xilinx_uartps.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
-
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 0bf946b..042aa6f 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -1233,9 +1233,7 @@ static void cdns_uart_console_write(struct console *co, const char *s,
+ 	writel(ctrl, port->membase + CDNS_UART_CR);
+ 
+ 	uart_console_write(port, s, count, cdns_uart_console_putchar);
+-	while ((readl(port->membase + CDNS_UART_SR) &
+-			(CDNS_UART_SR_TXEMPTY | CDNS_UART_SR_TACTIVE)) !=
+-			CDNS_UART_SR_TXEMPTY)
++	while (cdns_uart_tx_empty(port) != TIOCSER_TEMT)
+ 		cpu_relax();
+ 
+ 	/* restore interrupt state */
 -- 
 2.7.4
 
