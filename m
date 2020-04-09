@@ -2,112 +2,139 @@ Return-Path: <SRS0=pwFA=5Z=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A283DC2BB55
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Apr 2020 13:20:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41B96C2BB55
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Apr 2020 17:45:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 73BD1208FE
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Apr 2020 13:20:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1586438447;
-	bh=UJxB5TdF2s647VvncnacBnt2X8C/0hrZcMPL6ldFmiU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=qaE5516NAkEoVf0Zx5eE2et6ILXM7+WT4cQTqMsYjzfmXIsc3aJyS7q4Sw/409zc9
-	 P9FFgrVRrKnb88nCIAqS/k1DLmrT/NRrmj9/Oo2Bd6ebcs1TeWJsQ0ywDxCOYuVawE
-	 CR6V0AyYEF6cb5y5JAvKYbMvTebDh1AFPXeiaGP4=
+	by mail.kernel.org (Postfix) with ESMTP id 1CDCC20769
+	for <linux-serial@archiver.kernel.org>; Thu,  9 Apr 2020 17:45:17 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="EM/IsWR2"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726827AbgDINUq (ORCPT
+        id S1726620AbgDIRpO (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Apr 2020 09:20:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46462 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726621AbgDINUp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Apr 2020 09:20:45 -0400
-Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C15DD20857;
-        Thu,  9 Apr 2020 13:20:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586438445;
-        bh=UJxB5TdF2s647VvncnacBnt2X8C/0hrZcMPL6ldFmiU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BWF41pdVtvTXUhxJAJmumKrSZizBlL8HPNVuq9rwz+o/sm2uTvs/a/YjWSzMIMdS+
-         o7muK5fivLTzYG/1JcHsxSjA7MK2oT+HPUh9YbnlmpLe6dWk88i/nJepulMDa+zDLU
-         3Z87ik9Xs8GxCMg6Y+hXZ8BvJzzjovLppTz1uuE0=
-Date:   Thu, 9 Apr 2020 14:20:42 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Georgi Djakov <georgi.djakov@linaro.org>
-Cc:     Akash Asthana <akashast@codeaurora.org>,
-        gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de,
-        mark.rutland@arm.com, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, mka@chromium.org,
-        dianders@chromium.org, evgreen@chromium.org
-Subject: Re: [PATCH V3 7/8] spi: spi-qcom-qspi: Add interconnect support
-Message-ID: <20200409132042.GD5399@sirena.org.uk>
-References: <1585652976-17481-1-git-send-email-akashast@codeaurora.org>
- <1585652976-17481-8-git-send-email-akashast@codeaurora.org>
- <20200331112352.GB4802@sirena.org.uk>
- <f896d6e4-cc86-db46-a9b9-d7c98071b524@codeaurora.org>
- <20200407105542.GA5247@sirena.org.uk>
- <48c60fdf-03c6-650a-2671-b8f7cc1e5c82@codeaurora.org>
- <5644ef02-f984-0f5b-d745-eca3c9573726@linaro.org>
+        Thu, 9 Apr 2020 13:45:14 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:34491 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726523AbgDIRpO (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 9 Apr 2020 13:45:14 -0400
+Received: by mail-pf1-f193.google.com with SMTP id v23so5087050pfm.1
+        for <linux-serial@vger.kernel.org>; Thu, 09 Apr 2020 10:45:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=b+KIwr8FsoUEl5I61MG+GNUlmWOmQgoJsz4NKGh8sQE=;
+        b=EM/IsWR2Q4BGmlK6wbm+C7xuN2DSW8OQJW1orjgIBlgjy0CCTWo8wTZ6MClTNKQqLp
+         tVaDV8+7xResGkEmZtYgBgxI3CFN6b/lj3gI2CoS+tXf453fTunv3/JymQBHTVptNcCR
+         TAV/5tE6KonpppwiPpyriF0/79D39SGsi2PG0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=b+KIwr8FsoUEl5I61MG+GNUlmWOmQgoJsz4NKGh8sQE=;
+        b=oy56IWRay90Yi5G+u2ZdfewKUoBmJ3l03/SkwBoD7YnDa6F+gnND3uv16fQJNBCZSf
+         Q+qY/twTZkJSx48UdMd1LjvVdJo/REcGlg2+eOVNsPyN7gQQ3unyeBjwOneZKYqpdRiT
+         N2I+Sf3aYktKAlX57ek5dMT8bGALDFHEKuRzMzldEAdCDdZdGWBO1xf9pLaZF8KTBzOB
+         7BMp1wWHACl0JSzsjlMiFWBZjfAZNp2as6MfKDQXmG5Qg/zcxu74/GKlYD0a84dNR3yq
+         MhcmAxfDRhdYSLUzbvFjjgx8w3x2O9d09sc3mFC3vOs6SP8kUEevlK4YXPUKPjampjnQ
+         b9Vg==
+X-Gm-Message-State: AGi0PubPZbExzQciDm2jtCcPntm/CP5pJrTW3aHZ29apiMMOKKCR+pR9
+        RpPMfjGf7H09HDg14DJRISbdfw==
+X-Google-Smtp-Source: APiQypJAsRbKPh0K6LiNYiCgKXswiTofC5ZsRFTIpusxNBV1Bh4vrjByqBMUCjyy8FkeZllE6nnfkw==
+X-Received: by 2002:a62:2684:: with SMTP id m126mr650534pfm.153.1586454313469;
+        Thu, 09 Apr 2020 10:45:13 -0700 (PDT)
+Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
+        by smtp.gmail.com with ESMTPSA id k12sm6010790pgj.33.2020.04.09.10.45.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Apr 2020 10:45:12 -0700 (PDT)
+Date:   Thu, 9 Apr 2020 10:45:11 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Rajendra Nayak <rnayak@codeaurora.org>
+Cc:     viresh.kumar@linaro.org, sboyd@kernel.org,
+        bjorn.andersson@linaro.org, agross@kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Akash Asthana <akashast@codeaurora.org>,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH 02/21] tty: serial: qcom_geni_serial: Use OPP API to set
+ clk/perf state
+Message-ID: <20200409174511.GS199755@google.com>
+References: <1586353607-32222-1-git-send-email-rnayak@codeaurora.org>
+ <1586353607-32222-3-git-send-email-rnayak@codeaurora.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="76DTJ5CE0DCVQemd"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <5644ef02-f984-0f5b-d745-eca3c9573726@linaro.org>
-X-Cookie: HUGH BEAUMONT died in 1982!!
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1586353607-32222-3-git-send-email-rnayak@codeaurora.org>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Rajendra,
 
---76DTJ5CE0DCVQemd
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+On Wed, Apr 08, 2020 at 07:16:28PM +0530, Rajendra Nayak wrote:
+> geni serial needs to express a perforamnce state requirement on CX
+> depending on the frequency of the clock rates. Use OPP table from
+> DT to register with OPP framework and use dev_pm_opp_set_rate() to
+> set the clk/perf state.
+> 
+> Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
+> Cc: Akash Asthana <akashast@codeaurora.org>
+> Cc: linux-serial@vger.kernel.org
+> ---
+>  drivers/tty/serial/qcom_geni_serial.c | 20 +++++++++++++++-----
+>  include/linux/qcom-geni-se.h          |  2 ++
+>  2 files changed, 17 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 6119090..754eaf6 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -9,6 +9,7 @@
+>  #include <linux/module.h>
+>  #include <linux/of.h>
+>  #include <linux/of_device.h>
+> +#include <linux/pm_opp.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/pm_runtime.h>
+>  #include <linux/pm_wakeirq.h>
+> @@ -961,7 +962,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+>  		goto out_restart_rx;
+>  
+>  	uport->uartclk = clk_rate;
+> -	clk_set_rate(port->se.clk, clk_rate);
+> +	dev_pm_opp_set_rate(uport->dev, clk_rate);
+>  	ser_clk_cfg = SER_CLK_EN;
+>  	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
+>  
+> @@ -1198,8 +1199,10 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
+>  	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
+>  		geni_se_resources_on(&port->se);
+>  	else if (new_state == UART_PM_STATE_OFF &&
+> -			old_state == UART_PM_STATE_ON)
+> +			old_state == UART_PM_STATE_ON) {
+> +		dev_pm_opp_set_rate(uport->dev, 0);
+>  		geni_se_resources_off(&port->se);
+> +	}
+>  }
+>  
+>  static const struct uart_ops qcom_geni_console_pops = {
+> @@ -1318,13 +1321,16 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+>  	if (of_property_read_bool(pdev->dev.of_node, "cts-rts-swap"))
+>  		port->cts_rts_swap = true;
+>  
+> +	port->se.opp = dev_pm_opp_set_clkname(&pdev->dev, "se");
 
-On Thu, Apr 09, 2020 at 04:17:22PM +0300, Georgi Djakov wrote:
-> On 4/8/20 15:17, Akash Asthana wrote:
+dev_pm_opp_set_clkname() can fail for multiple reasons, it seems an error
+check would be warranted.
 
-> > Can we centralize below logic of peak_bw selection for all the clients to ICC core?
-
-> I don't think this is a good idea for now, because this is very hardware
-> specific. A scaling factor that works for one client might not work for another.
-
-AIUI a driver can always override the setting if it's got a better idea.
-
-> My questions here is how did you decide on this "multiply by two"? I can imagine
-> that the traffic can be bursty on some interfaces, but is the factor here really
-> a "random number" or is this based on some data patterns or performance
-> analysis?
-
-The reason I'm pushing for this to go into the core is that the numbers
-seem to be just made up and not device specific at all (or at least
-there's a lot of devices with the same values).
-
---76DTJ5CE0DCVQemd
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl6PISkACgkQJNaLcl1U
-h9AfQQf/WkrH/6r/MBWHMg4gEKrdNaUWCSjrjiNgPboT5O7nrK2lrL5Tkih16zTO
-RHH0nUMIhb9hvcC6Dc7AxkEUZ7ZlACm0W+841q2VsJWhVUo9YdOvGUdbk6krvm0a
-f8DthfuTFHVl1aAZodO+Tmpl1/pUtO8qlK2k536SUCJ02sNXjEJQ7KrWjIKmJacV
-5M4WhOQFSzyWtoAojcHqgZAe8BEeRPbDgFMBTdLs9fCoeZj9icoejc1qjosC2tu2
-9ZLyTxXGRWah3WrRmyhXYPJIQeg8D37X9j+Q8kjd9CbKKlLHEmfsWuvHky8wVooD
-CempVL6UyMnRyxl2LbEk0kUS2L6emA==
-=du6T
------END PGP SIGNATURE-----
-
---76DTJ5CE0DCVQemd--
+Is it actually necessary to save the OPP table in 'struct geni_se'? Both
+the serial and the SPI driver save the table, but don't use it later (nor
+does the SE driver).
