@@ -5,54 +5,54 @@ X-Spam-Level:
 X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30D4EC2BB55
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Apr 2020 22:18:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E912DC2BB85
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Apr 2020 22:18:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 075C52087E
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Apr 2020 22:18:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BF144214DB
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Apr 2020 22:18:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="k4p/J0Rk"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="A8zixFy3"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726582AbgDJWSb (ORCPT
+        id S1726834AbgDJWSb (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
         Fri, 10 Apr 2020 18:18:31 -0400
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:36781 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726834AbgDJWS2 (ORCPT
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:51102 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726829AbgDJWS2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Fri, 10 Apr 2020 18:18:28 -0400
-Received: by mail-pj1-f66.google.com with SMTP id nu11so1227250pjb.1
-        for <linux-serial@vger.kernel.org>; Fri, 10 Apr 2020 15:18:27 -0700 (PDT)
+Received: by mail-pj1-f67.google.com with SMTP id b7so1267344pju.0
+        for <linux-serial@vger.kernel.org>; Fri, 10 Apr 2020 15:18:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0Xvr0zLScn2nLCI1oJV5OmhbqIZY3/XDOPCMztpMIRU=;
-        b=k4p/J0RkQWbVJUKkTEJkmAlkTUHSGfQUMbPY5oEJl0LlPckFTu8/+Cq9PSIYVOTAMF
-         Cl7i8VarjWIpiZwgsCIXffNBCRoDzx5zRIs2DL/a1TP/GQCnX0rVVMXb+UubxNRsVGE/
-         H02eTDq2K8FVOWnJiLXE/ZsILItbjVpsEFQBc=
+        bh=7A6FUrEihYonXIpPhnCErlWl+4ZFT4mvYVljlFWGAP4=;
+        b=A8zixFy38mun90CDAXlagVbAIIVwh9/25A/e43Q9RCFDEn+rOp9ZVO0j0mSlXrQ8vT
+         YYiCKZpKJT2bIMJS9e7wnmEAtxwvF+vg9K8vHguKd7KWs8bmd0/ZXCQbNchlmGQ6f5id
+         QXT8w0UcQ7ThQOglUn/LWks0X9xwLGASWJRQM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0Xvr0zLScn2nLCI1oJV5OmhbqIZY3/XDOPCMztpMIRU=;
-        b=bxwA/KFAcaoaroLuIC43EVvhkM6h7GKAMQblKwUhuuEr/p30I8OUaMatQS+xhsz0tr
-         UW2ZUtBtHC00k9ZOW+FujqQ1yuxClJlN9X3up5tH77RIsMwDVWPHcCbs1dBGx2uvgOHx
-         7Q0z/5hEQSuZ8XGL41tG0s3cSFrX4b3SQzt9fg/EGWVRr/+URVV3vcCgjTNTbryw3op3
-         rH0L8J/W8JJyyFRN0bL5bsqkBqxMttJUkeXqV2DEX3GnIdj27IFtN3JvllKvYuVyLuB3
-         hU7JUf0N4ODV1ladP58acC7n3oFQXp0HMJXeAh8RBIDpEON6uKyTzgBum+c2c4B5tqTH
-         4LhA==
-X-Gm-Message-State: AGi0PuYcjaApJFDrZp3Uvy7uaxeYeUixZZ1yP8tWUS2QHvIbbx4gZczG
-        mHowOHeUCtPRfOm7vyrzUtWvKQ==
-X-Google-Smtp-Source: APiQypKJ94vBioTXZPIp0dI7ctcYkCPzkMjxyO4M1PLccd96ucK1TAvxhGD7obO0jnob1QYfSWfzmw==
-X-Received: by 2002:a17:902:8e8b:: with SMTP id bg11mr6257430plb.139.1586557107068;
-        Fri, 10 Apr 2020 15:18:27 -0700 (PDT)
+        bh=7A6FUrEihYonXIpPhnCErlWl+4ZFT4mvYVljlFWGAP4=;
+        b=p/IUz+tK1hM2LzFx8zfPhkQUG3mfDzxHaOe8rRLnKCbN/1cR9Gd0zTKcO9WOD268IS
+         ZCPu+2Gng8Yq3WQCus8kP/Ui5bbuqZJRswMAR2aGv7B6Pqt1UBQP7bNh2zMS1vpNHc25
+         GXgXxnaO2tVKeWE+MkJ2FpCI+CRcpB2XlqyMExCEzPrUplaR3nbe5PaXlBCifKe1nemu
+         mlgxtwoN1C6b05BJHfm7Wqbeatsrm4XBDShSQjSOAzuJoDRIMTvQXU7vaKvIEo2GP7WU
+         F2K8zP0yfBPeoslpuSkKlyHI6oQ4grreXCIZDMglhLw0pntm7/aS0DVKxbHHmzwj3/2t
+         E7Bw==
+X-Gm-Message-State: AGi0PuYZflzBwFdv02zM2rOXTEIptkfbc2iJB2xqmjfaR85FIguo1noj
+        iNJoK9tzPVkXN+iKR0kQlBCZKw==
+X-Google-Smtp-Source: APiQypJBkfxcG7ETfLq/uX0qKEMzrTaauzB9axhptLbpfS46Oj3ffr4yc5nX4ePFLIoum7gB6Llgbg==
+X-Received: by 2002:a17:90b:4902:: with SMTP id kr2mr5571773pjb.152.1586557108150;
+        Fri, 10 Apr 2020 15:18:28 -0700 (PDT)
 Received: from tictac2.mtv.corp.google.com ([2620:15c:202:1:24fa:e766:52c9:e3b2])
-        by smtp.gmail.com with ESMTPSA id x2sm2646600pfq.92.2020.04.10.15.18.26
+        by smtp.gmail.com with ESMTPSA id x2sm2646600pfq.92.2020.04.10.15.18.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Apr 2020 15:18:26 -0700 (PDT)
+        Fri, 10 Apr 2020 15:18:27 -0700 (PDT)
 From:   Douglas Anderson <dianders@chromium.org>
 To:     jason.wessel@windriver.com, daniel.thompson@linaro.org,
         gregkh@linuxfoundation.org
@@ -62,10 +62,10 @@ Cc:     hpa@zytor.com, kgdb-bugreport@lists.sourceforge.net,
         will@kernel.org, bjorn.andersson@linaro.org, agross@kernel.org,
         bp@alien8.de, catalin.marinas@arm.com,
         Douglas Anderson <dianders@chromium.org>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 6/7] serial: qcom_geni_serial: Support earlycon_kgdboc
-Date:   Fri, 10 Apr 2020 15:17:25 -0700
-Message-Id: <20200410151632.6.If2deff9679a62c1ce1b8f2558a8635dc837adf8c@changeid>
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 7/7] serial: 8250_early: Support earlycon_kgdboc
+Date:   Fri, 10 Apr 2020 15:17:26 -0700
+Message-Id: <20200410151632.7.I8f668556c244776523320a95b09373a86eda11b7@changeid>
 X-Mailer: git-send-email 2.26.0.110.g2183baf09c-goog
 In-Reply-To: <20200410221726.36442-1-dianders@chromium.org>
 References: <20200410221726.36442-1-dianders@chromium.org>
@@ -86,59 +86,50 @@ can't be enabled without that.
 Signed-off-by: Douglas Anderson <dianders@chromium.org>
 ---
 
- drivers/tty/serial/qcom_geni_serial.c | 32 +++++++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+ drivers/tty/serial/8250/8250_early.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 0bd1684cabb3..e3bb90404ab5 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1084,6 +1084,36 @@ static void qcom_geni_serial_earlycon_write(struct console *con,
- 	__qcom_geni_serial_console_write(&dev->port, s, n);
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index 5cd8c36c8fcc..70d7826788f5 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -109,6 +109,28 @@ static void early_serial8250_write(struct console *console,
+ 	uart_console_write(port, s, count, serial_putc);
  }
  
 +#ifdef CONFIG_CONSOLE_POLL
-+static int qcom_geni_serial_earlycon_read(struct console *con,
-+					  char *s, unsigned int n)
++static int early_serial8250_read(struct console *console,
++				 char *s, unsigned int count)
 +{
-+	struct earlycon_device *dev = con->data;
-+	struct uart_port *uport = &dev->port;
++	struct earlycon_device *device = console->data;
++	struct uart_port *port = &device->port;
++	unsigned int status;
 +	int num_read = 0;
-+	int ch;
 +
-+	while (num_read < n) {
-+		ch = qcom_geni_serial_get_char(uport);
-+		if (ch == NO_POLL_CHAR)
++	while (num_read < count) {
++		status = serial8250_early_in(port, UART_LSR);
++		if (!(status & UART_LSR_DR))
 +			break;
-+		s[num_read++] = ch;
++		s[num_read++] = serial8250_early_in(port, UART_RX);
 +	}
 +
 +	return num_read;
 +}
-+
-+static void __init qcom_geni_serial_enable_early_read(struct geni_se *se,
-+						      struct console *con)
-+{
-+	geni_se_setup_s_cmd(se, UART_START_READ, 0);
-+	con->read = qcom_geni_serial_earlycon_read;
-+}
 +#else
-+static inline void qcom_geni_serial_enable_early_read(struct geni_se *se,
-+						      struct console *con) { ; }
++#define early_serial8250_read NULL
 +#endif
 +
- static int __init qcom_geni_serial_earlycon_setup(struct earlycon_device *dev,
- 								const char *opt)
+ static void __init init_port(struct earlycon_device *device)
  {
-@@ -1130,6 +1160,8 @@ static int __init qcom_geni_serial_earlycon_setup(struct earlycon_device *dev,
+ 	struct uart_port *port = &device->port;
+@@ -149,6 +171,7 @@ int __init early_serial8250_setup(struct earlycon_device *device,
+ 		init_port(device);
  
- 	dev->con->write = qcom_geni_serial_earlycon_write;
- 	dev->con->setup = NULL;
-+	qcom_geni_serial_enable_early_read(&se, dev->con);
-+
+ 	device->con->write = early_serial8250_write;
++	device->con->read = early_serial8250_read;
  	return 0;
  }
- OF_EARLYCON_DECLARE(qcom_geni, "qcom,geni-debug-uart",
+ EARLYCON_DECLARE(uart8250, early_serial8250_setup);
 -- 
 2.26.0.110.g2183baf09c-goog
 
