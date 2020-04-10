@@ -1,105 +1,207 @@
-Return-Path: <SRS0=pwFA=5Z=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=bNnH=52=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1982C2BA19
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Apr 2020 23:10:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 935A7C2BA2B
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Apr 2020 06:56:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 63668206E9
-	for <linux-serial@archiver.kernel.org>; Thu,  9 Apr 2020 23:10:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1586473812;
-	bh=8OFgHrPretT2WAPVFApoTK3GfJPqI2wWEcDBoetTRKM=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=QQ5tINxntxLwgEDZC9FpRjUIoE32UTk5HKEaykj2FCDSrtZJWkB9ViAk4Vjg5IBZf
-	 tNPlqt86SxqU63bsZ3SEyuuvFgTTeGBzZEM1eK3b8P+Br6BNTwPT0qHpB/ojRdiKcM
-	 t5PSdxCzyiUo5nQOgdjDi+afNasOpn23Rm3+LeDA=
+	by mail.kernel.org (Postfix) with ESMTP id 5EA2820757
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Apr 2020 06:56:39 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="IoSCfIFZ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726779AbgDIXKL (ORCPT
+        id S1726650AbgDJG4i (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 9 Apr 2020 19:10:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39338 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726734AbgDIXKL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 9 Apr 2020 19:10:11 -0400
-Received: from mail-qk1-f177.google.com (mail-qk1-f177.google.com [209.85.222.177])
+        Fri, 10 Apr 2020 02:56:38 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:62985 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726646AbgDJG4h (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 10 Apr 2020 02:56:37 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1586501798; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=/7DOlq/mZIuFniPGwb6fsgLKfPBaw3AbbYqpvORj+k8=; b=IoSCfIFZ9wdUOtlUBQ4ZTWLxOE+QnOnGqmWpk3QtUZjkJxFTM9JA6hRm7anlgNaibFgVgDDE
+ J4PcU/eBL8/qyvfSVQ5ZEaD4s8yQAQe25KRTl0gPEdTAzK0OfbSjfoD5Y9U0EAz3+UyDFAG8
+ JAfWlct9vHgcyWGomNHhO008tnY=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e9018a5.7f5008108ea0-smtp-out-n02;
+ Fri, 10 Apr 2020 06:56:37 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 153FEC433BA; Fri, 10 Apr 2020 06:56:37 +0000 (UTC)
+Received: from [192.168.0.10] (unknown [183.83.138.47])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5CF0920857;
-        Thu,  9 Apr 2020 23:10:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586473811;
-        bh=8OFgHrPretT2WAPVFApoTK3GfJPqI2wWEcDBoetTRKM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=qrvkpzYWrPM0GNRn4cWlWkQNAAXJhlL0F+lb5xoOtWijOJc1Cyn15U7/Wo2wwXJV+
-         avyMw32F2J8HyiF73EpYvwWqnmzQhb5EwGX/aczZS6rGeGGYQvJt9ZyxffcMJwPUtE
-         T4mDYfLt/NVQ0ZzYNMC/2uGrxPkma0bweJ2ArSu0=
-Received: by mail-qk1-f177.google.com with SMTP id g74so498968qke.13;
-        Thu, 09 Apr 2020 16:10:11 -0700 (PDT)
-X-Gm-Message-State: AGi0Pua1PIXscWzU9I2DwX8QHQC9j0bjhfB4DTEQ8wRLc2C9Jj928HsW
-        92Y79AFds2wATvKCpLqFH/UoacmxvEycDFsH3Q==
-X-Google-Smtp-Source: APiQypK5c4bIIsJuf4gcSsePb84IEjbUIt1AQt3bj2eBJj23vvVEpjuXEmsZmuGVsntKTeSLS0Xv3p/Zrqdn/EirRIg=
-X-Received: by 2002:a37:c43:: with SMTP id 64mr1264128qkm.119.1586473810462;
- Thu, 09 Apr 2020 16:10:10 -0700 (PDT)
+        (Authenticated sender: akashast)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id D623CC433D2;
+        Fri, 10 Apr 2020 06:56:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D623CC433D2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+Subject: Re: [PATCH 02/21] tty: serial: qcom_geni_serial: Use OPP API to set
+ clk/perf state
+To:     Rajendra Nayak <rnayak@codeaurora.org>, viresh.kumar@linaro.org,
+        sboyd@kernel.org, bjorn.andersson@linaro.org, agross@kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <1586353607-32222-1-git-send-email-rnayak@codeaurora.org>
+ <1586353607-32222-3-git-send-email-rnayak@codeaurora.org>
+From:   Akash Asthana <akashast@codeaurora.org>
+Message-ID: <5eb6c05e-893a-ef8a-c53e-a775b2f837d1@codeaurora.org>
+Date:   Fri, 10 Apr 2020 12:26:18 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-References: <20200401082721.19431-1-hyunki00.koo@samsung.com>
- <CGME20200406230906epcas2p3f5703f7f9f00cd1cf7dbe5cfd304481f@epcas2p3.samsung.com>
- <20200406230855.13772-1-hyunki00.koo@samsung.com> <20200406230855.13772-2-hyunki00.koo@samsung.com>
-In-Reply-To: <20200406230855.13772-2-hyunki00.koo@samsung.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Thu, 9 Apr 2020 17:09:59 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+M__rmo1Ouh1swEnujibHGufXyHp1AEK3ZL+TkXq-MqA@mail.gmail.com>
-Message-ID: <CAL_Jsq+M__rmo1Ouh1swEnujibHGufXyHp1AEK3ZL+TkXq-MqA@mail.gmail.com>
-Subject: Re: [PATCH v6 1/2] dt-bindings: serial: Add reg-io-width compatible
-To:     Hyunki Koo <hyunki00.koo@samsung.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1586353607-32222-3-git-send-email-rnayak@codeaurora.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Apr 6, 2020 at 5:09 PM Hyunki Koo <hyunki00.koo@samsung.com> wrote:
+Hi Rajendra,
+
+On 4/8/2020 7:16 PM, Rajendra Nayak wrote:
+> geni serial needs to express a perforamnce state requirement on CX
+*performance
+> depending on the frequency of the clock rates. Use OPP table from
+> DT to register with OPP framework and use dev_pm_opp_set_rate() to
+> set the clk/perf state.
 >
-> Add a description for reg-io-width options for the samsung serial
-> UART peripheral.
->
-> Signed-off-by: Hyunki Koo <hyunki00.koo@samsung.com>
+> Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
+> Cc: Akash Asthana <akashast@codeaurora.org>
+> Cc: linux-serial@vger.kernel.org
 > ---
-> v5: first added in this series
-> v6: clean description of reg-io-width
-> ---
->  Documentation/devicetree/bindings/serial/samsung_uart.yaml | 6 ++++++
->  1 file changed, 6 insertions(+)
+>   drivers/tty/serial/qcom_geni_serial.c | 20 +++++++++++++++-----
+>   include/linux/qcom-geni-se.h          |  2 ++
+>   2 files changed, 17 insertions(+), 5 deletions(-)
 >
-> diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> index 9d2ce347875b..1a0bb7619e2e 100644
-> --- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> @@ -29,6 +29,12 @@ properties:
->    reg:
->      maxItems: 1
->
-> +  reg-io-width:
-> +    description:
-> +      The size (in bytes) of the IO accesses that should be performed
-> +      on the device. If omitted, default of 1 is used.
-> +      - enum: [ 1, 4 ]
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 6119090..754eaf6 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -9,6 +9,7 @@
+>   #include <linux/module.h>
+>   #include <linux/of.h>
+>   #include <linux/of_device.h>
+> +#include <linux/pm_opp.h>
+>   #include <linux/platform_device.h>
+>   #include <linux/pm_runtime.h>
+>   #include <linux/pm_wakeirq.h>
+> @@ -961,7 +962,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+>   		goto out_restart_rx;
+>   
+>   	uport->uartclk = clk_rate;
+> -	clk_set_rate(port->se.clk, clk_rate);
+> +	dev_pm_opp_set_rate(uport->dev, clk_rate);
 
-Can't this be implied by the compatible strings?
+Is this change not intended for backward compatibility? If I don't pick 
+DT change for Geni drivers,  dev_pm_opp_set_rate is failing and causing 
+functionality issues.
 
-This isn't actual json-schema either with the enum under the
-description. Run 'make dt_binding_check' before you send schemas.
+>   	ser_clk_cfg = SER_CLK_EN;
+>   	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
+>   
+> @@ -1198,8 +1199,10 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
+>   	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
+>   		geni_se_resources_on(&port->se);
+>   	else if (new_state == UART_PM_STATE_OFF &&
+> -			old_state == UART_PM_STATE_ON)
+> +			old_state == UART_PM_STATE_ON) {
+> +		dev_pm_opp_set_rate(uport->dev, 0);
+>   		geni_se_resources_off(&port->se);
+> +	}
+>   }
+>   
+>   static const struct uart_ops qcom_geni_console_pops = {
+> @@ -1318,13 +1321,16 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+>   	if (of_property_read_bool(pdev->dev.of_node, "cts-rts-swap"))
+>   		port->cts_rts_swap = true;
+>   
+> +	port->se.opp = dev_pm_opp_set_clkname(&pdev->dev, "se");
+> +	dev_pm_opp_of_add_table(&pdev->dev);
+> +
+>   	uport->private_data = drv;
+>   	platform_set_drvdata(pdev, port);
+>   	port->handle_rx = console ? handle_rx_console : handle_rx_uart;
+>   
+>   	ret = uart_add_one_port(drv, uport);
+>   	if (ret)
+> -		return ret;
+> +		goto err;
+>   
+>   	irq_set_status_flags(uport->irq, IRQ_NOAUTOEN);
+>   	ret = devm_request_irq(uport->dev, uport->irq, qcom_geni_serial_isr,
+> @@ -1332,7 +1338,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+>   	if (ret) {
+>   		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
+>   		uart_remove_one_port(drv, uport);
+> -		return ret;
+> +		goto err;
+>   	}
+>   
+>   	/*
+> @@ -1349,11 +1355,14 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+>   		if (ret) {
+>   			device_init_wakeup(&pdev->dev, false);
+>   			uart_remove_one_port(drv, uport);
+> -			return ret;
+> +			goto err;
+>   		}
+>   	}
+>   
+>   	return 0;
+> +err:
+> +	dev_pm_opp_of_remove_table(&pdev->dev);
+do we need to call "dev_pm_opp_put_clkname" here and in remove to 
+release clk resource grabbed by
 
-There's a keyword for expressing the default value too. Hint: It's 'default'.
+dev_pm_opp_set_clkname(&pdev->dev, "se");?
 
-Rob
+Regards,
+Akash
+
+> +	return ret;
+>   }
+>   
+>   static int qcom_geni_serial_remove(struct platform_device *pdev)
+> @@ -1361,6 +1370,7 @@ static int qcom_geni_serial_remove(struct platform_device *pdev)
+>   	struct qcom_geni_serial_port *port = platform_get_drvdata(pdev);
+>   	struct uart_driver *drv = port->uport.private_data;
+>   
+> +	dev_pm_opp_of_remove_table(&pdev->dev);
+>   	dev_pm_clear_wake_irq(&pdev->dev);
+>   	device_init_wakeup(&pdev->dev, false);
+>   	uart_remove_one_port(drv, &port->uport);
+> diff --git a/include/linux/qcom-geni-se.h b/include/linux/qcom-geni-se.h
+> index dd46494..737e713 100644
+> --- a/include/linux/qcom-geni-se.h
+> +++ b/include/linux/qcom-geni-se.h
+> @@ -24,6 +24,7 @@ enum geni_se_protocol_type {
+>   
+>   struct geni_wrapper;
+>   struct clk;
+> +struct opp_table;
+>   
+>   /**
+>    * struct geni_se - GENI Serial Engine
+> @@ -39,6 +40,7 @@ struct geni_se {
+>   	struct device *dev;
+>   	struct geni_wrapper *wrapper;
+>   	struct clk *clk;
+> +	struct opp_table *opp;
+>   	unsigned int num_clk_levels;
+>   	unsigned long *clk_perf_tbl;
+>   };
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
