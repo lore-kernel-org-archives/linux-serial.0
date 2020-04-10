@@ -2,97 +2,215 @@ Return-Path: <SRS0=bNnH=52=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 901B3C2BB55
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Apr 2020 08:36:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D00FC2BB86
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Apr 2020 12:52:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 65868206F7
-	for <linux-serial@archiver.kernel.org>; Fri, 10 Apr 2020 08:36:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D174520769
+	for <linux-serial@archiver.kernel.org>; Fri, 10 Apr 2020 12:52:36 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="RbaF5aX7"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="u0zd2s0a"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726143AbgDJIgR (ORCPT
+        id S1726598AbgDJMwf (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 10 Apr 2020 04:36:17 -0400
-Received: from mail-il1-f195.google.com ([209.85.166.195]:37695 "EHLO
-        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726009AbgDJIgQ (ORCPT
+        Fri, 10 Apr 2020 08:52:35 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:42271 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726080AbgDJMwd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 10 Apr 2020 04:36:16 -0400
-Received: by mail-il1-f195.google.com with SMTP id a6so1231221ilr.4
-        for <linux-serial@vger.kernel.org>; Fri, 10 Apr 2020 01:36:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=v3PdiAI8TBZ0N3tMXe+y1F2ge/27MztcbSpV/5KcvB8=;
-        b=RbaF5aX7JxR9ZrqKBrEjNGP11OAY8n8lRcyXjGJYm7/iO135dM0ZZVVQUgQ4efd0UG
-         sUTveU/iBU3bYQrld5SN01eadRlX6zBTO4mgbn3sqJzBE7c13XcjK6zjVL6UHYubPHky
-         kH1BFPZd30qg5hkCMx3PP8tp+a7FLB4TbRgRptXtai14kbWMgZdNJXJkdCcxvb+YIj9e
-         I29vqbUBgn4o8W9GBsE3HuLluyRlgkZdTg4kJLAL+fqbzet0cBc9cteAHC7J8xdK49Nr
-         gFEMPR+O9DQTqi6rW5vXPo3YtKTfaRPmJZy1+fsZomJGplw05mHBlq/GKzbR0J9BDZVe
-         ZdNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=v3PdiAI8TBZ0N3tMXe+y1F2ge/27MztcbSpV/5KcvB8=;
-        b=t6mnZlinLZj4h9bOI9jwNWr+ji2T/7WcaHeEBy+ZliwnVszUT+jf6NXzCM3Ynq5rZN
-         eFLkjM5kZsS0Snq2hIeI2Kl0GVGfm1XDn7q8xny8NRKKYQ/oI9y+pAlOzI99G7a3aEq4
-         NnUOc3ShDz2lSpAx6A20xwkQ70IZOiZitqz5tqfroB/3OXSAhA7NxdoRSX9kgOwUithN
-         3BftR1jSgprO5Y+awABxoj5C/9uF1oX/5S1WIhVZwQZX+YmaQLChfyJurM8c7XJkiKoq
-         99P+nnvXQRDGSQEX+/9Oh21dp7kbX92l84IzT2qD58GoriFabrr6KLlqbbfn0VtgkC4+
-         uVng==
-X-Gm-Message-State: AGi0PuZ4wCF6UE09/iVNuLNtDmQTB7VpPv8Bm7ncgy9q142qdBp6vsB/
-        /zA/rsXkEga4BYhrFTGbWLFf+zU2CheBylDWqoTUbg==
-X-Google-Smtp-Source: APiQypKo/YXFB9RUkEEYugAuxoS+/cv8vOu8Y+o5locNToNDbEQ0zbxLVsRMlxKzTR3j94zECtDsNT7afthdXDEjN94=
-X-Received: by 2002:a92:d402:: with SMTP id q2mr4101222ilm.172.1586507774870;
- Fri, 10 Apr 2020 01:36:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <1586353607-32222-1-git-send-email-rnayak@codeaurora.org>
- <1586353607-32222-3-git-send-email-rnayak@codeaurora.org> <20200409174511.GS199755@google.com>
-In-Reply-To: <20200409174511.GS199755@google.com>
-From:   Jun Nie <jun.nie@linaro.org>
-Date:   Fri, 10 Apr 2020 16:36:03 +0800
-Message-ID: <CABymUCNdX=K1vFuC0Rt-u0h-CRYcKtXogyOkAiGZpDfKSVAYqA@mail.gmail.com>
+        Fri, 10 Apr 2020 08:52:33 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1586523153; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: References: Cc: To: From:
+ Subject: Sender; bh=M6+dhOPemioJOqKTwLQya2KFKVQnF9Zhjj6/C0JA9QQ=; b=u0zd2s0akRV5Dmu1pkpf6Ynmj1jES7tKxEwzg3wBThIlq2atXirJdFzd6WN1EdmiJsu96EU5
+ 9788ie6aRrs7ybPrvLIdnD8C+VpaAdb/whTwpPjYYJGWDV28iGm1OMh49zsHaPu3bNkJ23iI
+ V+4hg//73gJTMJ7BEDU8XTJ6Iwo=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e906c0d.7fb1fd3b24c8-smtp-out-n05;
+ Fri, 10 Apr 2020 12:52:29 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id F2E9DC433BA; Fri, 10 Apr 2020 12:52:28 +0000 (UTC)
+Received: from [192.168.0.10] (unknown [183.83.138.47])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id E6E2EC433F2;
+        Fri, 10 Apr 2020 12:52:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E6E2EC433F2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
 Subject: Re: [PATCH 02/21] tty: serial: qcom_geni_serial: Use OPP API to set
  clk/perf state
-To:     Rajendra Nayak <rnayak@codeaurora.org>
-Cc:     Viresh Kumar <viresh.kumar@linaro.org>, sboyd@kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        agross@kernel.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Akash Asthana <akashast@codeaurora.org>,
-        linux-serial@vger.kernel.org, Matthias Kaehlcke <mka@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+From:   Akash Asthana <akashast@codeaurora.org>
+To:     Rajendra Nayak <rnayak@codeaurora.org>, viresh.kumar@linaro.org,
+        sboyd@kernel.org, bjorn.andersson@linaro.org, agross@kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <1586353607-32222-1-git-send-email-rnayak@codeaurora.org>
+ <1586353607-32222-3-git-send-email-rnayak@codeaurora.org>
+ <5eb6c05e-893a-ef8a-c53e-a775b2f837d1@codeaurora.org>
+Message-ID: <575b7c8f-6b77-3da2-824e-3f128efeb466@codeaurora.org>
+Date:   Fri, 10 Apr 2020 18:22:11 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
+MIME-Version: 1.0
+In-Reply-To: <5eb6c05e-893a-ef8a-c53e-a775b2f837d1@codeaurora.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-> > @@ -961,7 +962,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
-> >               goto out_restart_rx;
-> >
-> >       uport->uartclk = clk_rate;
-> > -     clk_set_rate(port->se.clk, clk_rate);
-> > +     dev_pm_opp_set_rate(uport->dev, clk_rate);
-
 Hi Rajendra,
 
-I see lowest rpmhpd_opp_low_svs opp is for 75MHz. It is a bit higher
-for a serial.
-I am just curious about this.
+On 4/10/2020 12:26 PM, Akash Asthana wrote:
+> Hi Rajendra,
+>
+> On 4/8/2020 7:16 PM, Rajendra Nayak wrote:
+>> geni serial needs to express a perforamnce state requirement on CX
+> *performance
+>> depending on the frequency of the clock rates. Use OPP table from
+>> DT to register with OPP framework and use dev_pm_opp_set_rate() to
+>> set the clk/perf state.
+>>
+>> Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
+>> Cc: Akash Asthana <akashast@codeaurora.org>
+>> Cc: linux-serial@vger.kernel.org
+>> ---
+>>   drivers/tty/serial/qcom_geni_serial.c | 20 +++++++++++++++-----
+>>   include/linux/qcom-geni-se.h          |  2 ++
+>>   2 files changed, 17 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/qcom_geni_serial.c 
+>> b/drivers/tty/serial/qcom_geni_serial.c
+>> index 6119090..754eaf6 100644
+>> --- a/drivers/tty/serial/qcom_geni_serial.c
+>> +++ b/drivers/tty/serial/qcom_geni_serial.c
+>> @@ -9,6 +9,7 @@
+>>   #include <linux/module.h>
+>>   #include <linux/of.h>
+>>   #include <linux/of_device.h>
+>> +#include <linux/pm_opp.h>
+>>   #include <linux/platform_device.h>
+>>   #include <linux/pm_runtime.h>
+>>   #include <linux/pm_wakeirq.h>
+>> @@ -961,7 +962,7 @@ static void qcom_geni_serial_set_termios(struct 
+>> uart_port *uport,
+>>           goto out_restart_rx;
+>>         uport->uartclk = clk_rate;
+>> -    clk_set_rate(port->se.clk, clk_rate);
+>> +    dev_pm_opp_set_rate(uport->dev, clk_rate);
+>
+> Is this change not intended for backward compatibility? If I don't 
+> pick DT change for Geni drivers,  dev_pm_opp_set_rate is failing and 
+> causing functionality issues.
 
-I also want to confirm that the rpmhpd_opp_low_svs voltage restriction
-is for serial
-controller, not for clock controller? Because I see there is similar
-restriction to clock
-controller on another platform, the restriction is for branch clock,
-not leaf clock that
-consumer device will get.
+oops Sorry, 1st patch is intended for backward compatibility. Which I 
+missed earlier.
 
-Jun
+Regards,
+
+Akash
+
+>
+>>       ser_clk_cfg = SER_CLK_EN;
+>>       ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
+>>   @@ -1198,8 +1199,10 @@ static void qcom_geni_serial_pm(struct 
+>> uart_port *uport,
+>>       if (new_state == UART_PM_STATE_ON && old_state == 
+>> UART_PM_STATE_OFF)
+>>           geni_se_resources_on(&port->se);
+>>       else if (new_state == UART_PM_STATE_OFF &&
+>> -            old_state == UART_PM_STATE_ON)
+>> +            old_state == UART_PM_STATE_ON) {
+>> +        dev_pm_opp_set_rate(uport->dev, 0);
+>>           geni_se_resources_off(&port->se);
+>> +    }
+>>   }
+>>     static const struct uart_ops qcom_geni_console_pops = {
+>> @@ -1318,13 +1321,16 @@ static int qcom_geni_serial_probe(struct 
+>> platform_device *pdev)
+>>       if (of_property_read_bool(pdev->dev.of_node, "cts-rts-swap"))
+>>           port->cts_rts_swap = true;
+>>   +    port->se.opp = dev_pm_opp_set_clkname(&pdev->dev, "se");
+>> +    dev_pm_opp_of_add_table(&pdev->dev);
+>> +
+>>       uport->private_data = drv;
+>>       platform_set_drvdata(pdev, port);
+>>       port->handle_rx = console ? handle_rx_console : handle_rx_uart;
+>>         ret = uart_add_one_port(drv, uport);
+>>       if (ret)
+>> -        return ret;
+>> +        goto err;
+>>         irq_set_status_flags(uport->irq, IRQ_NOAUTOEN);
+>>       ret = devm_request_irq(uport->dev, uport->irq, 
+>> qcom_geni_serial_isr,
+>> @@ -1332,7 +1338,7 @@ static int qcom_geni_serial_probe(struct 
+>> platform_device *pdev)
+>>       if (ret) {
+>>           dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
+>>           uart_remove_one_port(drv, uport);
+>> -        return ret;
+>> +        goto err;
+>>       }
+>>         /*
+>> @@ -1349,11 +1355,14 @@ static int qcom_geni_serial_probe(struct 
+>> platform_device *pdev)
+>>           if (ret) {
+>>               device_init_wakeup(&pdev->dev, false);
+>>               uart_remove_one_port(drv, uport);
+>> -            return ret;
+>> +            goto err;
+>>           }
+>>       }
+>>         return 0;
+>> +err:
+>> +    dev_pm_opp_of_remove_table(&pdev->dev);
+> do we need to call "dev_pm_opp_put_clkname" here and in remove to 
+> release clk resource grabbed by
+>
+> dev_pm_opp_set_clkname(&pdev->dev, "se");?
+>
+> Regards,
+> Akash
+>
+>> +    return ret;
+>>   }
+>>     static int qcom_geni_serial_remove(struct platform_device *pdev)
+>> @@ -1361,6 +1370,7 @@ static int qcom_geni_serial_remove(struct 
+>> platform_device *pdev)
+>>       struct qcom_geni_serial_port *port = platform_get_drvdata(pdev);
+>>       struct uart_driver *drv = port->uport.private_data;
+>>   +    dev_pm_opp_of_remove_table(&pdev->dev);
+>>       dev_pm_clear_wake_irq(&pdev->dev);
+>>       device_init_wakeup(&pdev->dev, false);
+>>       uart_remove_one_port(drv, &port->uport);
+>> diff --git a/include/linux/qcom-geni-se.h b/include/linux/qcom-geni-se.h
+>> index dd46494..737e713 100644
+>> --- a/include/linux/qcom-geni-se.h
+>> +++ b/include/linux/qcom-geni-se.h
+>> @@ -24,6 +24,7 @@ enum geni_se_protocol_type {
+>>     struct geni_wrapper;
+>>   struct clk;
+>> +struct opp_table;
+>>     /**
+>>    * struct geni_se - GENI Serial Engine
+>> @@ -39,6 +40,7 @@ struct geni_se {
+>>       struct device *dev;
+>>       struct geni_wrapper *wrapper;
+>>       struct clk *clk;
+>> +    struct opp_table *opp;
+>>       unsigned int num_clk_levels;
+>>       unsigned long *clk_perf_tbl;
+>>   };
+>
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
