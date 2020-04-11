@@ -4,53 +4,53 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63553C2BB86
-	for <linux-serial@archiver.kernel.org>; Sat, 11 Apr 2020 23:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A75AFC2BBFD
+	for <linux-serial@archiver.kernel.org>; Sat, 11 Apr 2020 23:14:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3283021D79
-	for <linux-serial@archiver.kernel.org>; Sat, 11 Apr 2020 23:13:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7C68820CC7
+	for <linux-serial@archiver.kernel.org>; Sat, 11 Apr 2020 23:14:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1586646817;
-	bh=+qGv5Q1VFQ4gBXlpmxKWjo47qbbWmBlB9TeCR6vZrVI=;
+	s=default; t=1586646894;
+	bh=9wRjtKjXDlNoxXDQBfztyD8MN5JnlfsPkQJPXVV889U=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=tLs+NoXFBiiSBHJhvNHz/o6b6RFHt6Wvs289jF9QyNHqu0EY32wGkVPb2Kq3ithOb
-	 8whmoWEFgJpiXzEZyA0LATVIVGTprwllBmkrAWqn775UpcGWhWzcTyNYZovaWiq22Y
-	 1KG5L84Fy85pgZ8KlQmqH6ALw1eUYIADuxSRCOY0=
+	b=FbxwXLvv8VdwOp9BI20DsNMbiKffKgSxqgc7eHng52OorHL5BJMDgCIFlPA82/Fnu
+	 RlRW2dPL/08bb4po8m7GqOOyo0255BiNpQO7U5l8OgoYF68flJO6FoLTIDqb7chK53
+	 OqmnXVnV0Hdr7s30QBsg2dDKJdGHYmAfH7mxn8D4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730475AbgDKXNe (ORCPT
+        id S1730882AbgDKXOw (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 11 Apr 2020 19:13:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54792 "EHLO mail.kernel.org"
+        Sat, 11 Apr 2020 19:14:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56854 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730461AbgDKXNe (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 11 Apr 2020 19:13:34 -0400
+        id S1730883AbgDKXOu (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 11 Apr 2020 19:14:50 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1CA3F20757;
-        Sat, 11 Apr 2020 23:13:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2B7DD216FD;
+        Sat, 11 Apr 2020 23:14:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586646813;
-        bh=+qGv5Q1VFQ4gBXlpmxKWjo47qbbWmBlB9TeCR6vZrVI=;
+        s=default; t=1586646889;
+        bh=9wRjtKjXDlNoxXDQBfztyD8MN5JnlfsPkQJPXVV889U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M8ehra4h8MOjBA5jYpuxNW9hP7TKvy2MS2g0naH2FpSCvC5WKHZkK3d85aZSjuo4e
-         k+aJzQvxNMQPxJ/8U8tj/COnQ+AVUhduaYyZi5kfzX4hWmMyDCN5a07QyQf6FLo4ds
-         u6r7j1c7fsuCh2CeTEbhaY+j9KAvudYmyxIbnx8A=
+        b=Wjr6/NH1lyT3l0eKBD44bs0ZSb5oj8ZQCgy/pHjUIjN1hfNR04whoMRWCuLKVI84/
+         YBDzMPTLppz/lRlSZJD0Rq+m6v8pmNVraMZ8DTLrG4hgh9WX6RnzDe4EAH1a0oCz1k
+         mRUrtgATbSKv9s7XU71wBZ7WVE6cC9RtcvoUGALk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Peter Ujfalusi <peter.ujfalusi@ti.com>,
         Tomi Valkeinen <tomi.valkeinen@ti.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 05/37] serial: 8250_omap: Fix sleeping function called from invalid context during probe
-Date:   Sat, 11 Apr 2020 19:12:54 -0400
-Message-Id: <20200411231327.26550-5-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 02/16] serial: 8250_omap: Fix sleeping function called from invalid context during probe
+Date:   Sat, 11 Apr 2020 19:14:32 -0400
+Message-Id: <20200411231447.27182-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200411231327.26550-1-sashal@kernel.org>
-References: <20200411231327.26550-1-sashal@kernel.org>
+In-Reply-To: <20200411231447.27182-1-sashal@kernel.org>
+References: <20200411231447.27182-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -123,10 +123,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index da04ba1ecf68a..33df33a9e646a 100644
+index c4383573cf668..0377b35d62b80 100644
 --- a/drivers/tty/serial/8250/8250_omap.c
 +++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -1216,11 +1216,11 @@ static int omap8250_probe(struct platform_device *pdev)
+@@ -1188,11 +1188,11 @@ static int omap8250_probe(struct platform_device *pdev)
  	spin_lock_init(&priv->rx_dma_lock);
  
  	device_init_wakeup(&pdev->dev, true);
