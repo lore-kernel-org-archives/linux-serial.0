@@ -1,4 +1,4 @@
-Return-Path: <SRS0=8TmY=53=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=Ld9p=54=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
@@ -7,141 +7,108 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C49AC2BBC7
-	for <linux-serial@archiver.kernel.org>; Sat, 11 Apr 2020 23:50:42 +0000 (UTC)
-Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D8C63206F7
-	for <linux-serial@archiver.kernel.org>; Sat, 11 Apr 2020 23:50:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1586649041;
-	bh=VGMX2JZdxn3VGh4KvPjOqmJObZXODeTcPwHj39y31io=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=ebHAb3XcubkJuTELPpqXcT8YY85x3sy2jsl8FBGmuJFvBNsbIML+kgQnlJtJatDgN
-	 uQq2ZzRSa1IhPhH+HZ+lz9R4VWmRV+sOs3IINxaYR1/yyHc02+dsYnYRjho96DN+vu
-	 x9FwI9S9VUeLyMNRzvTeb8BWb6/XgbdBq3IPdZEI=
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA8A4C2BA2B
+	for <linux-serial@archiver.kernel.org>; Sun, 12 Apr 2020 18:16:22 +0000 (UTC)
+X-Greylist: delayed 75 seconds by postgrey-1.34 at mail.kernel.org; Sun, 12 Apr 2020 18:16:22 UTC
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="tKZgTR5H"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ADC35206C3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-serial-owner@vger.kernel.org
+Received: from vger.kernel.org (unknown [209.132.180.67])
+	by mail.kernel.org (Postfix) with ESMTP id ADC35206C3
+	for <linux-serial@archiver.kernel.org>; Sun, 12 Apr 2020 18:16:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726973AbgDKXEB (ORCPT
+        id S1727489AbgDLSPG (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 11 Apr 2020 19:04:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36804 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726955AbgDKXEA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 11 Apr 2020 19:04:00 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        Sun, 12 Apr 2020 14:15:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.18]:41434 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727233AbgDLSPF (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 12 Apr 2020 14:15:05 -0400
+X-Greylist: delayed 313 seconds by postgrey-1.27 at vger.kernel.org; Sun, 12 Apr 2020 14:15:05 EDT
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C03DAC0A88B8;
+        Sun, 12 Apr 2020 11:09:58 -0700 (PDT)
+Received: from localhost.localdomain (unknown [157.50.0.25])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E82FF20787;
-        Sat, 11 Apr 2020 23:03:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E80E4206E9;
+        Sun, 12 Apr 2020 18:09:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586646239;
-        bh=VGMX2JZdxn3VGh4KvPjOqmJObZXODeTcPwHj39y31io=;
+        s=default; t=1586714998;
+        bh=BUxT5IqaNvB9TgDMR7VN/qHcX2xgt0z3BHmRoAVi8ac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YZGbHx6L+HA3K66lVoMZvPuuF16Gro/Olx4enF/P5P3gQgmrroNiSvjV9lXkeCtj8
-         c/WoxCt4gScrrQ0fws2WgfpaU42HvOdx43mcnfBxrbPDQr1uM7BiRJkBY64+NZi6AJ
-         lvLSbFHN+fZ52bNXKrnBtDUZ3qnTPljTZl72s2I8=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Ujfalusi <peter.ujfalusi@ti.com>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 009/149] serial: 8250_omap: Fix sleeping function called from invalid context during probe
-Date:   Sat, 11 Apr 2020 19:01:26 -0400
-Message-Id: <20200411230347.22371-9-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200411230347.22371-1-sashal@kernel.org>
-References: <20200411230347.22371-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+        b=tKZgTR5H9n/+i9uvei5y+H4cpl7/P9LBuQV/mbHcvLwYjnhiUvBzUgKziqmln0BMf
+         WMtSvMLCAXeyZryxOSU5YTztOHiOm75PVTsi6C8yxESQTxhFRuDVfYk9Uf0/68c/DM
+         B+ujRUPVFg89VKeOKHTM6wPiy+vAQohRPyOCk3b0=
+From:   mani@kernel.org
+To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com
+Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Manivannan Sadhasivam <mani@kernel.org>
+Subject: [PATCH 1/2] dt-bindings: serial: Add binding for software flow control in STM32 UART
+Date:   Sun, 12 Apr 2020 23:39:22 +0530
+Message-Id: <20200412180923.30774-2-mani@kernel.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200412180923.30774-1-mani@kernel.org>
+References: <20200412180923.30774-1-mani@kernel.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Peter Ujfalusi <peter.ujfalusi@ti.com>
+From: Manivannan Sadhasivam <mani@kernel.org>
 
-[ Upstream commit 4ce35a3617c0ac758c61122b2218b6c8c9ac9398 ]
+Add devicetree binding for software flow control in STM32 UART
+controller. While at it, let's also fix one schema error reported by
+`make dtbs_check`.
 
-When booting j721e the following bug is printed:
-
-[    1.154821] BUG: sleeping function called from invalid context at kernel/sched/completion.c:99
-[    1.154827] in_atomic(): 0, irqs_disabled(): 128, non_block: 0, pid: 12, name: kworker/0:1
-[    1.154832] 3 locks held by kworker/0:1/12:
-[    1.154836]  #0: ffff000840030728 ((wq_completion)events){+.+.}, at: process_one_work+0x1d4/0x6e8
-[    1.154852]  #1: ffff80001214fdd8 (deferred_probe_work){+.+.}, at: process_one_work+0x1d4/0x6e8
-[    1.154860]  #2: ffff00084060b170 (&dev->mutex){....}, at: __device_attach+0x38/0x138
-[    1.154872] irq event stamp: 63096
-[    1.154881] hardirqs last  enabled at (63095): [<ffff800010b74318>] _raw_spin_unlock_irqrestore+0x70/0x78
-[    1.154887] hardirqs last disabled at (63096): [<ffff800010b740d8>] _raw_spin_lock_irqsave+0x28/0x80
-[    1.154893] softirqs last  enabled at (62254): [<ffff800010080c88>] _stext+0x488/0x564
-[    1.154899] softirqs last disabled at (62247): [<ffff8000100fdb3c>] irq_exit+0x114/0x140
-[    1.154906] CPU: 0 PID: 12 Comm: kworker/0:1 Not tainted 5.6.0-rc6-next-20200318-00094-g45e4089b0bd3 #221
-[    1.154911] Hardware name: Texas Instruments K3 J721E SoC (DT)
-[    1.154917] Workqueue: events deferred_probe_work_func
-[    1.154923] Call trace:
-[    1.154928]  dump_backtrace+0x0/0x190
-[    1.154933]  show_stack+0x14/0x20
-[    1.154940]  dump_stack+0xe0/0x148
-[    1.154946]  ___might_sleep+0x150/0x1f0
-[    1.154952]  __might_sleep+0x4c/0x80
-[    1.154957]  wait_for_completion_timeout+0x40/0x140
-[    1.154964]  ti_sci_set_device_state+0xa0/0x158
-[    1.154969]  ti_sci_cmd_get_device_exclusive+0x14/0x20
-[    1.154977]  ti_sci_dev_start+0x34/0x50
-[    1.154984]  genpd_runtime_resume+0x78/0x1f8
-[    1.154991]  __rpm_callback+0x3c/0x140
-[    1.154996]  rpm_callback+0x20/0x80
-[    1.155001]  rpm_resume+0x568/0x758
-[    1.155007]  __pm_runtime_resume+0x44/0xb0
-[    1.155013]  omap8250_probe+0x2b4/0x508
-[    1.155019]  platform_drv_probe+0x50/0xa0
-[    1.155023]  really_probe+0xd4/0x318
-[    1.155028]  driver_probe_device+0x54/0xe8
-[    1.155033]  __device_attach_driver+0x80/0xb8
-[    1.155039]  bus_for_each_drv+0x74/0xc0
-[    1.155044]  __device_attach+0xdc/0x138
-[    1.155049]  device_initial_probe+0x10/0x18
-[    1.155053]  bus_probe_device+0x98/0xa0
-[    1.155058]  deferred_probe_work_func+0x74/0xb0
-[    1.155063]  process_one_work+0x280/0x6e8
-[    1.155068]  worker_thread+0x48/0x430
-[    1.155073]  kthread+0x108/0x138
-[    1.155079]  ret_from_fork+0x10/0x18
-
-To fix the bug we need to first call pm_runtime_enable() prior to any
-pm_runtime calls.
-
-Reported-by: Tomi Valkeinen <tomi.valkeinen@ti.com>
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
-Link: https://lore.kernel.org/r/20200320125200.6772-1-peter.ujfalusi@ti.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Manivannan Sadhasivam <mani@kernel.org>
 ---
- drivers/tty/serial/8250/8250_omap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 6f343ca08440f..c066cf37778f8 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -1231,6 +1231,7 @@ static int omap8250_probe(struct platform_device *pdev)
- 	spin_lock_init(&priv->rx_dma_lock);
+Rob: Still the `dtbs_check` validation fails. This is due to the
+`linux,rs485-enabled-at-boot-time` property. I don't have any idea on how
+to fix this.
+
+ .../devicetree/bindings/serial/st,stm32-uart.yaml | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
+index 238c44192d31..ea5797a1b403 100644
+--- a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
+@@ -38,13 +38,26 @@ properties:
+     description: enable hardware flow control
+     $ref: /schemas/types.yaml#/definitions/flag
  
- 	device_init_wakeup(&pdev->dev, true);
-+	pm_runtime_enable(&pdev->dev);
- 	pm_runtime_use_autosuspend(&pdev->dev);
++  st,sw-flow-ctrl:
++    description: enable software flow control
++    $ref: /schemas/types.yaml#/definitions/flag
++
++  rts-gpios:
++    description: RTS pin used if st,sw-flow-ctrl is true
++    maxItems: 1
++
++  cts-gpios:
++    description: CTS pin used if st,sw-flow-ctrl is true
++    maxItems: 1
++
+   dmas:
+     minItems: 1
+     maxItems: 2
  
- 	/*
-@@ -1244,7 +1245,6 @@ static int omap8250_probe(struct platform_device *pdev)
- 		pm_runtime_set_autosuspend_delay(&pdev->dev, -1);
- 
- 	pm_runtime_irq_safe(&pdev->dev);
--	pm_runtime_enable(&pdev->dev);
- 
- 	pm_runtime_get_sync(&pdev->dev);
+   dma-names:
+     items:
+-      enum: [ rx, tx ]
++      - const: rx
++      - const: tx
+     minItems: 1
+     maxItems: 2
  
 -- 
-2.20.1
+2.17.1
 
