@@ -2,150 +2,142 @@ Return-Path: <SRS0=NZaJ=55=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+X-Spam-Status: No, score=-5.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
 	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8616BC2BA2B
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Apr 2020 18:57:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72E48C2BA2B
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Apr 2020 22:07:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 66D5720732
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Apr 2020 18:57:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 44C8B20663
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Apr 2020 22:07:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="yuZ5KYO8"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="oYZb4MqS"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733138AbgDMS53 (ORCPT
+        id S1727889AbgDMWHq (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Apr 2020 14:57:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52700 "EHLO
+        Mon, 13 Apr 2020 18:07:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1733130AbgDMS50 (ORCPT
+        by vger.kernel.org with ESMTP id S1727851AbgDMWHp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Apr 2020 14:57:26 -0400
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D6FC0A3BDC
-        for <linux-serial@vger.kernel.org>; Mon, 13 Apr 2020 11:57:24 -0700 (PDT)
-Received: by mail-lf1-x141.google.com with SMTP id f8so7361149lfe.12
-        for <linux-serial@vger.kernel.org>; Mon, 13 Apr 2020 11:57:24 -0700 (PDT)
+        Mon, 13 Apr 2020 18:07:45 -0400
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF5DC0A3BDC
+        for <linux-serial@vger.kernel.org>; Mon, 13 Apr 2020 15:07:45 -0700 (PDT)
+Received: by mail-ot1-x342.google.com with SMTP id z17so3236856oto.4
+        for <linux-serial@vger.kernel.org>; Mon, 13 Apr 2020 15:07:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=nnFhaYdn8r144w8Y8HQM6rwFTDCQ2TRjM0zl6Xk6Hbs=;
-        b=yuZ5KYO8vk9sY0oppJp4fk/tUdUNLVbdp3hmeGyTprfOlJbFWhbbynnrM66UJJ56V2
-         Lc1PZ2+dFgQoAxrRphjf//X9FZmzv4LM8Qq0gkeouKl/S6KN3uZJNUvQfHfRunEJxNYj
-         v5sUTFrv8iOAHopDd+BHqDZfphZw0VeOjEIOJ1oi3RbdPdinTPvbsTowuWioIPtKUXsl
-         yD+8BlrQozryzTNEvyeWojrRr6bikU+Uk+qi86EclWtq0n5/ITyPNH2cmUaUGA8ALmX6
-         VCto1hUfqsfWu3OeJkD4ONBv+xKHCKoTyixraQrAx2RiBRvJuqfhYVEnLorg67EJuctM
-         nbxQ==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MVAxxHzDK/qARg7NchMjhRdvGGEcCTTmLqMEP50fxqk=;
+        b=oYZb4MqSZ8X2CE6Y/k0aOzKLtL53RMFv1ShrKS9kAZLiSxbTQ/wZMM0ryIYVQLFhhT
+         e+ZSddaE+zEhC3DF1QKsjRDUtNgJGnhRe9rM4lDBtjD6CloNjrA2WJk1gHzfbJum7MKL
+         lKs4zbUC+eR3iJV6Uc1ONNr9Jby+bhRhWhjIU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=nnFhaYdn8r144w8Y8HQM6rwFTDCQ2TRjM0zl6Xk6Hbs=;
-        b=ifNEUgKQHeSn/amyrgELEAOcH5mLwKCdyYraRpnQh/6yZWd+OTATIWIdX+oI5PpHha
-         AJMDM1+XgBezwPdCulQEo4tJI8ETxlktt/nzdnzKusF3PtHqPBrN9Nb2jIKunzhxxlP4
-         +j7jUrQieBaufXzAEyEFwC9d4ffckqDSHEcM69OWoe9zWivPsAEh4hqKwTHbdMc44efE
-         TgRrzTzu1/jJb+C+zCrbwyLsk5iaWlhp1NtFgoWON3PEGtEVeeqwwCQu73HcL7c+HP6R
-         z1qHJFFQ5vZcGB5Sxjam+GoJs18l/iyM+CGcZ3vvw4bnME9wkrAPhoeW02g8nubbBBoA
-         WRHQ==
-X-Gm-Message-State: AGi0PuYuw37K0D1L3PBThvJZj9I0tPgPo2DjD6rvIGLaply7IRz+yfOo
-        tmy+14r7k2BcRNrznoeCKltHQHw/5/bjvkecBwqd7Q==
-X-Google-Smtp-Source: APiQypIMkmyGlF3uCVpf3EjDwPW+WmpqbHG8XbB06TkJ1rIxipqbhKw8fK48Vz7k9u3QMh/yUAngrRulqJXAEhL6d+4=
-X-Received: by 2002:a05:6512:d1:: with SMTP id c17mr11465758lfp.167.1586804242634;
- Mon, 13 Apr 2020 11:57:22 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MVAxxHzDK/qARg7NchMjhRdvGGEcCTTmLqMEP50fxqk=;
+        b=dd/xe8lZVVwScdgSvOH4qHy2oLKB/c2AeHJSxYplwhfep2OwQdWeiij4pnuaLwx4XG
+         E5KpkWW7Ev4b5uRoXhf0ThWLO6bCw+Lz5CoRKVjPLyPNhLYXqV0obfXJDUZVGLziu4Uo
+         RMr+HFVBi+2WyylqBIIHUr64Zm0IoamW4q6a65GusymEpm4ghwsZXakv2ZUT6Oi8MA0e
+         EcS1mq9wP3MleQA+rnrL5uPOhDtp9uf1Tfml4xxRJ76uWSPaL6DjZVbdsXhCzA++Dsfx
+         T99N1t0RP6QCixzYtAc8sFVUv9DffyaiOc85ysFgA5ZOA13i7yyM1pCNXK1qBpBtUhK0
+         s3bg==
+X-Gm-Message-State: AGi0PubZ53O0DuiVriYc7UTHnHKWbHA/2/sdMEMv/F9wxhRueLWX8ao0
+        b1/OlSZcOVncOtxhUOueKd7EiDrJvPQ=
+X-Google-Smtp-Source: APiQypIDyCjzz9XA9ItBA4I0uuNIumPvMWCOVG6ELAAbluyJmuNrXbYZM/IkOxLiVGOQWjRwDYcp0A==
+X-Received: by 2002:a9d:1c8e:: with SMTP id l14mr15153169ota.0.1586815664921;
+        Mon, 13 Apr 2020 15:07:44 -0700 (PDT)
+Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com. [209.85.210.41])
+        by smtp.gmail.com with ESMTPSA id s23sm5622410ook.4.2020.04.13.15.07.44
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Apr 2020 15:07:44 -0700 (PDT)
+Received: by mail-ot1-f41.google.com with SMTP id g14so2556071otg.10
+        for <linux-serial@vger.kernel.org>; Mon, 13 Apr 2020 15:07:44 -0700 (PDT)
+X-Received: by 2002:a9f:27ca:: with SMTP id b68mr10592105uab.8.1586815210988;
+ Mon, 13 Apr 2020 15:00:10 -0700 (PDT)
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 14 Apr 2020 00:27:10 +0530
-Message-ID: <CA+G9fYsDgghO+4zMY-AF2RgUmAfjZyA+tjeg5m5F1rEgEtw5fg@mail.gmail.com>
-Subject: BUG: spinlock bad magic - lock: msm_uart_ports
-To:     linux-arm-msm@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-serial@vger.kernel.org
-Cc:     Rajendra Nayak <rnayak@codeaurora.org>,
-        Akash Asthana <akashast@codeaurora.org>,
-        Stephen Boyd <sboyd@kernel.org>,
+References: <20200410151632.4.I8fba5961bf452ab92350654aa61957f23ecf0100@changeid>
+ <202004110744.nPoRwmTD%lkp@intel.com>
+In-Reply-To: <202004110744.nPoRwmTD%lkp@intel.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 13 Apr 2020 14:59:59 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=UC-dKgmamNKFn_SEqcEisW1p4Z9iy8Nn8UqUxRsskZ3A@mail.gmail.com>
+Message-ID: <CAD=FV=UC-dKgmamNKFn_SEqcEisW1p4Z9iy8Nn8UqUxRsskZ3A@mail.gmail.com>
+Subject: Re: [PATCH 4/7] kgdboc: Add earlycon_kgdboc to support early kgdb
+ using boot consoles
+To:     Daniel Thompson <daniel.thompson@linaro.org>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     kbuild-all@lists.01.org, "H. Peter Anvin" <hpa@zytor.com>,
+        kgdb-bugreport@lists.sourceforge.net,
+        Jonathan Corbet <corbet@lwn.net>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
-        agross@kernel.org,
-        =?UTF-8?B?RGFuaWVsIETDrWF6?= <daniel.diaz@linaro.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        lkft-triage@lists.linaro.org,
-        Nicolas Dechesne <nicolas.dechesne@linaro.org>
+        Andy Gross <agross@kernel.org>, bp@alien8.de,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kbuild test robot <lkp@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The kernel BUG reported on arm64 Dragonboard 410c (APQ 8016 SBC)
-while booting Linux mainline kernel 5.6.0
+Hi,
 
-The kernel configs (with extra fragments) and full boot log links
-provided below.
+On Fri, Apr 10, 2020 at 4:56 PM kbuild test robot <lkp@intel.com> wrote:
+>
+> Hi Douglas,
+>
+> I love your patch! Yet something to improve:
+>
+> [auto build test ERROR on arm64/for-next/core]
+> [also build test ERROR on tty/tty-testing v5.6 next-20200410]
+> [cannot apply to kgdb/kgdb-next]
+> [if your patch is applied to the wrong git tree, please drop us a note to help
+> improve the system. BTW, we also suggest to use '--base' option to specify the
+> base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
+>
+> url:    https://github.com/0day-ci/linux/commits/Douglas-Anderson/kgdb-Support-late-serial-drivers-enable-early-debug-w-boot-consoles/20200411-062123
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/core
+> config: microblaze-mmu_defconfig (attached as .config)
+> compiler: microblaze-linux-gcc (GCC) 9.3.0
+> reproduce:
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # save the attached .config to linux build tree
+>         GCC_VERSION=9.3.0 make.cross ARCH=microblaze
+>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kbuild test robot <lkp@intel.com>
+>
+> All errors (new ones prefixed by >>):
+>
+>    drivers/misc/kgdbts.c: In function 'configure_kgdbts':
+> >> drivers/misc/kgdbts.c:1080:8: error: too few arguments to function 'kgdb_register_io_module'
+>     1080 |  err = kgdb_register_io_module(&kgdbts_io_ops);
 
-boot log:
------------
-[ 0.000000] Linux version 5.6.0 (oe-user@oe-host) (gcc version 7.3.0
-(GCC), GNU ld (GNU Binutils) 2.30.0.20180208) #1 SMP PREEMPT Sun Apr
-12 11:44:21 UTC 2020
-[ 0.000000] Machine model: Qualcomm Technologies, Inc. APQ 8016 SBC
-[ 0.000000] efi: UEFI not found.
-<>
-[    2.550066] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-[    2.564493] SuperH (H)SCI(F) driver initialized
-[    2.568321] msm_serial 78af000.serial: msm_serial: detected port #1
-[    2.568457] msm_serial 78af000.serial: uartclk = 19200000
-[    2.568724] 78af000.serial: ttyMSM1 at MMIO 0x78af000 (irq = 9,
-base_baud = 1200000) is a MSM
-[    2.572081] msm_serial 78b0000.serial: msm_serial: detected port #0
-[    2.572210] msm_serial 78b0000.serial: uartclk = 7372800
-[    2.572423] 78b0000.serial: ttyMSM0 at MMIO 0x78b0000 (irq = 10,
-base_baud = 460800) is a MSM
-[    2.572508] BUG: spinlock bad magic on CPU#3, swapper/0/1
-[    2.572534]  lock: msm_uart_ports+0x0/0x7e0, .magic: 00000000,
-.owner: <none>/-1, .owner_cpu: 0
-[    2.572552] CPU: 3 PID: 1 Comm: swapper/0 Not tainted 5.6.0 #1
-[    2.572565] Hardware name: Qualcomm Technologies, Inc. APQ 8016 SBC (DT)
-[    2.572578] Call trace:
-[    2.572594]  dump_backtrace+0x0/0x1e0
-[    2.572609]  show_stack+0x24/0x30
-[    2.572627]  dump_stack+0xe8/0x150
-[    2.572643]  spin_dump+0x84/0xb8
-[    2.572658]  do_raw_spin_lock+0xf8/0x120
-[    2.572675]  _raw_spin_lock_irqsave+0x68/0x80
-[    2.572692]  uart_add_one_port+0x3ac/0x4e8
-[    2.572709]  msm_serial_probe+0x168/0x208
-[    2.572725]  platform_drv_probe+0x58/0xa8
-[    2.572739]  really_probe+0x290/0x498
-[    2.572754]  driver_probe_device+0x12c/0x148
-[    2.572768]  device_driver_attach+0x74/0x98
-[    2.572782]  __driver_attach+0xc4/0x178
-[    2.572798]  bus_for_each_dev+0x84/0xd8
-[    2.572811]  driver_attach+0x30/0x40
-[    2.572827]  bus_add_driver+0x170/0x258
-[    2.572841]  driver_register+0x64/0x118
-[    2.572856]  __platform_driver_register+0x54/0x60
-[    2.572872]  msm_serial_init+0x40/0x70
-[    2.572887]  do_one_initcall+0x94/0x460
-[    2.572904]  kernel_init_freeable+0x274/0x2dc
-[    2.572920]  kernel_init+0x18/0x110
-[    2.572936]  ret_from_fork+0x10/0x18
-[    2.572966] msm_serial: console setup on port #0
-[    3.664259] printk: console [ttyMSM0] enabled
+Sigh, I knew I'd forget something stupid.  I have a fix for this and
+have confirmed that "kgdbts" continues to work after I fix it.
+Running it also found splats similar to what I fixed for "kgdboc" in
+commit 81eaadcae81b ("kgdboc: disable the console lock when in kgdb").
+I'll att a commit to my next version to move that fix into the kgdb
+core and then remove it from "kgdboc".
 
-Full test log,
-https://lkft.validation.linaro.org/scheduler/job/1361080#L3679
-https://lkft.validation.linaro.org/scheduler/job/1361079#L3730
+I'm not setup to use kgdb over EHCI so I'll just fix that so it
+compiles and trust that it continues to work.
 
-metadata:
-  git branch: master
-  git repo: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-  kernel-config:
-http://snapshots.linaro.org/openembedded/lkft/lkft/sumo/dragonboard-410c/lkft/linux-mainline/2607/config
-dtb:
-http://snapshots.linaro.org/openembedded/lkft/lkft/sumo/dragonboard-410c/lkft/linux-mainline/2607/Image.gz--5.6+git0+b753101a4a-r0-apq8016-sbc-20200412114028-2607.dtb
+For now I'll hold up on sending a new version to await feedback on v1.
+If I don't hear anything after a little while I'll send a v2 with just
+these fixes.
 
---
-Linaro LKFT
-https://lkft.linaro.org
+-Doug
