@@ -2,101 +2,155 @@ Return-Path: <SRS0=NZaJ=55=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38524C2BA19
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Apr 2020 10:09:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 845BEC2BA19
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Apr 2020 13:58:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 18D7C20732
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Apr 2020 10:09:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5D3832075E
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Apr 2020 13:58:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MQYKaPXn"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="GYder3mc"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728101AbgDMKJr (ORCPT
+        id S1730189AbgDMN6v (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Apr 2020 06:09:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43936 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728131AbgDMKJl (ORCPT
+        Mon, 13 Apr 2020 09:58:51 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:54732 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730185AbgDMN6u (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Apr 2020 06:09:41 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5299C00861B;
-        Mon, 13 Apr 2020 03:00:48 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id t11so8045311ils.1;
-        Mon, 13 Apr 2020 03:00:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5Fh+7I1nkl6E4OzdC/8Kb7+iYk/dpPtFFiLYTuSRlqc=;
-        b=MQYKaPXnXdR08uDLBNJFXCoLmScqfdF0zA5PJ9vcgwyZlaMidV2d5DvAgSLiECYamH
-         nqkzukGFfZb6nwSiKPltyngON8ChcHHxbDj1Xmc7z7ds2wQZmpjZaP300cu3Nt+NpLdo
-         8vNcURIBBdgW7+9gSpidTL1u5rGK/6vKS3PWj0yay+qJBt56MKoKhCWIOIUBleY1uBrP
-         WnIR/CHcM5Y4IJjWKhspbmT5FCj4eTwPYff8t9WecyA9q2i+sN+sniv1iu/Yyy0bYVGn
-         8T9AVS8OMSB3TLs6HTREIICo6XQf9AcB88xOE4sD6Oki4vx42Cov8M/Jr0W69DOJtscE
-         0rXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5Fh+7I1nkl6E4OzdC/8Kb7+iYk/dpPtFFiLYTuSRlqc=;
-        b=GfzacWdfGmxsXEj8WepKP9jQlWPAz/kFwdm56RmfHhzaH66C/jtUWd2ELKP3MX3I+U
-         JQE8j+NRSGz32faeyw3WsSiPSU2+BENSE+7orKQMnc0BPQwV2geruhIQIsDnmJY18WuA
-         ZY9mqIc9Gl3+fwz6//uyId/mgGDG9CQI+1aScwd77+sQzkqUahwK3bjGBY8eSZhAJseY
-         Rb4IAy+kQ/CsbwF+NklhvQn+ZFfghwiKJhgYx2k7e+YkFqiiHiYzKPLRkXnqlPy8cV7R
-         A5Ox06S9pnJWBRvgK2QK8RyLJt2f9Qlk3d59dBwqgwwoyhGnPCWl4/T9i/2F73hLz/Jf
-         IwOw==
-X-Gm-Message-State: AGi0PuaJD8mxuYARnwyL46MYtFZ/JET7t80ML4LMB2iKJxzh+eZB41Ja
-        G8fKY+RY2LLVTG3HuYrgPsrEcBjkPcuov88V1EkHs5i0
-X-Google-Smtp-Source: APiQypIA0oldmzxseP+rUre/aNgrThAcSTbX3lATEBnJG6MdpbCZKGbma9DopJXmarexktqodGEFAslUUE+SAesQ2MI=
-X-Received: by 2002:a92:a312:: with SMTP id a18mr16124853ili.249.1586772048130;
- Mon, 13 Apr 2020 03:00:48 -0700 (PDT)
+        Mon, 13 Apr 2020 09:58:50 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1586786328; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=Y/gdVVe6BVm6JgYV9eCeY9S+PgE2k5W+l+hDimM0Yso=; b=GYder3mcikefBVmagln+TyPRzgqLmSsfHM2gLXqWHg7l/prUvgf2lJHnJ1apHwqqX1u2knFZ
+ 7khhLCXACfS36n1kwlbbfkm/YGPvzFkTXY4UXN18e0HL6kOMnpnid+9KKQr6PCTxGqjDVl/D
+ XgHjGnC2FDaT32oHQ/FPxU728Ys=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e947017.7f6220e1cd18-smtp-out-n01;
+ Mon, 13 Apr 2020 13:58:47 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id BB972C433F2; Mon, 13 Apr 2020 13:58:47 +0000 (UTC)
+Received: from [10.111.193.245] (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: rnayak)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id EF2DFC433CB;
+        Mon, 13 Apr 2020 13:58:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org EF2DFC433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=rnayak@codeaurora.org
+Subject: Re: [PATCH 02/21] tty: serial: qcom_geni_serial: Use OPP API to set
+ clk/perf state
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     viresh.kumar@linaro.org, sboyd@kernel.org,
+        bjorn.andersson@linaro.org, agross@kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Akash Asthana <akashast@codeaurora.org>,
+        linux-serial@vger.kernel.org
+References: <1586353607-32222-1-git-send-email-rnayak@codeaurora.org>
+ <1586353607-32222-3-git-send-email-rnayak@codeaurora.org>
+ <20200409174511.GS199755@google.com>
+From:   Rajendra Nayak <rnayak@codeaurora.org>
+Message-ID: <e3aa9e6f-14f5-de51-7087-094b5089d16b@codeaurora.org>
+Date:   Mon, 13 Apr 2020 19:28:39 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-References: <1586413563-29125-1-git-send-email-raviteja.narayanam@xilinx.com>
-In-Reply-To: <1586413563-29125-1-git-send-email-raviteja.narayanam@xilinx.com>
-From:   Shubhrajyoti Datta <shubhrajyoti.datta@gmail.com>
-Date:   Mon, 13 Apr 2020 15:30:36 +0530
-Message-ID: <CAKfKVtFHhz-wD-2fiJVRMXxupe=YRZQ4SV-VU+u=Yxe3gfmvrg@mail.gmail.com>
-Subject: Re: [PATCH v2 0/2] serial: uartps: Add tx_empty checks
-To:     Raviteja Narayanam <raviteja.narayanam@xilinx.com>
-Cc:     linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        jslaby@suse.com, Michal Simek <michal.simek@xilinx.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>, git@xilinx.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200409174511.GS199755@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Raviteja,
-thanks for the patch.
+Hi Matthias,
 
-On Thu, Apr 9, 2020 at 11:59 AM Raviteja Narayanam
-<raviteja.narayanam@xilinx.com> wrote:
->
-> This patch series does the following:
-> Use cdns_uart_tx_empty function in the driver.
-> Wait for empty.
->
-> v2:
-> Modified the wait in console setup and used cdns_uart_tx_empty function
-> in console_write as suggested by Maarten.
->
-Reviewed-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+On 4/9/2020 11:15 PM, Matthias Kaehlcke wrote:
+> Hi Rajendra,
+> 
+> On Wed, Apr 08, 2020 at 07:16:28PM +0530, Rajendra Nayak wrote:
+>> geni serial needs to express a perforamnce state requirement on CX
+>> depending on the frequency of the clock rates. Use OPP table from
+>> DT to register with OPP framework and use dev_pm_opp_set_rate() to
+>> set the clk/perf state.
+>>
+>> Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
+>> Cc: Akash Asthana <akashast@codeaurora.org>
+>> Cc: linux-serial@vger.kernel.org
+>> ---
+>>   drivers/tty/serial/qcom_geni_serial.c | 20 +++++++++++++++-----
+>>   include/linux/qcom-geni-se.h          |  2 ++
+>>   2 files changed, 17 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+>> index 6119090..754eaf6 100644
+>> --- a/drivers/tty/serial/qcom_geni_serial.c
+>> +++ b/drivers/tty/serial/qcom_geni_serial.c
+>> @@ -9,6 +9,7 @@
+>>   #include <linux/module.h>
+>>   #include <linux/of.h>
+>>   #include <linux/of_device.h>
+>> +#include <linux/pm_opp.h>
+>>   #include <linux/platform_device.h>
+>>   #include <linux/pm_runtime.h>
+>>   #include <linux/pm_wakeirq.h>
+>> @@ -961,7 +962,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+>>   		goto out_restart_rx;
+>>   
+>>   	uport->uartclk = clk_rate;
+>> -	clk_set_rate(port->se.clk, clk_rate);
+>> +	dev_pm_opp_set_rate(uport->dev, clk_rate);
+>>   	ser_clk_cfg = SER_CLK_EN;
+>>   	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
+>>   
+>> @@ -1198,8 +1199,10 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
+>>   	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
+>>   		geni_se_resources_on(&port->se);
+>>   	else if (new_state == UART_PM_STATE_OFF &&
+>> -			old_state == UART_PM_STATE_ON)
+>> +			old_state == UART_PM_STATE_ON) {
+>> +		dev_pm_opp_set_rate(uport->dev, 0);
+>>   		geni_se_resources_off(&port->se);
+>> +	}
+>>   }
+>>   
+>>   static const struct uart_ops qcom_geni_console_pops = {
+>> @@ -1318,13 +1321,16 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+>>   	if (of_property_read_bool(pdev->dev.of_node, "cts-rts-swap"))
+>>   		port->cts_rts_swap = true;
+>>   
+>> +	port->se.opp = dev_pm_opp_set_clkname(&pdev->dev, "se");
+> 
+> dev_pm_opp_set_clkname() can fail for multiple reasons, it seems an error
+> check would be warranted.
 
-> Raviteja Narayanam (2):
->   serial: uartps: Wait for tx_empty in console setup
->   serial: uartps: Use cdns_uart_tx_empty in console_write
->
->  drivers/tty/serial/xilinx_uartps.c | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
->
-> --
-> 2.7.4
->
+right, looks like I should put some error check there
+
+> Is it actually necessary to save the OPP table in 'struct geni_se'? Both
+> the serial and the SPI driver save the table, but don't use it later (nor
+> does the SE driver).
+
+I think I did that initially because I wanted to use that to call into
+dev_pm_opp_put_clkname during cleanup. That however never worked since
+the way the clk_put is done in dev_pm_opp_put_clkname() and _opp_table_kref_release()
+seems buggy. I kind of forgot about fixing it up, I will figure our whats the right
+way to do it, and either not call dev_pm_opp_put_clkname() or not store the
+opp table returned by it.
+
+thanks for taking time to review.
+
+- Rajendra
+  
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
