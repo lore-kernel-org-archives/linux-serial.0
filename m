@@ -7,119 +7,96 @@ X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B5B6C2BB86
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Apr 2020 09:24:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38524C2BA19
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Apr 2020 10:09:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 37D3820731
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Apr 2020 09:24:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 18D7C20732
+	for <linux-serial@archiver.kernel.org>; Mon, 13 Apr 2020 10:09:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="uD88jc+H"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MQYKaPXn"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728281AbgDMJYx (ORCPT
+        id S1728101AbgDMKJr (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Apr 2020 05:24:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60474 "EHLO
+        Mon, 13 Apr 2020 06:09:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728234AbgDMJYn (ORCPT
+        by vger.kernel.org with ESMTP id S1728131AbgDMKJl (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Apr 2020 05:24:43 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41023C0A3BDC;
-        Mon, 13 Apr 2020 02:17:34 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id o1so2742367pjs.4;
-        Mon, 13 Apr 2020 02:17:34 -0700 (PDT)
+        Mon, 13 Apr 2020 06:09:41 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5299C00861B;
+        Mon, 13 Apr 2020 03:00:48 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id t11so8045311ils.1;
+        Mon, 13 Apr 2020 03:00:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=+Es/1kSX+2DTfIEl11xOgF+dKXSLyBYadIDMkf6JWRY=;
-        b=uD88jc+H5svxYWnFnmOVmZGhizFVGLAqr3CGeRWDO71LcsasJpC+gS6bTbGRjKJPM3
-         oZ9POJtkVxjLCFTbcL+p8nnQySxbLL31W4FoXcAJX3ZzjWVGDARV0SImqIOX2W/pEOon
-         VNWH55nNVoBjMsIDFb8wwRfiKr0nqmZqI1/dBsNbIj2R9CC6u/yGTisg10eG5ytX8cMI
-         EvG8HXr+df/G5G78N96KOfukqqYSuC0n4PXJR38NSI3N1XwImkZhSlFym87QkkP6mlcN
-         uuEiLWJ+0805c7VirFoRpj+kz8ZQJXGK5w90D5bDCpywG0dKP5HsHGALfFUSO/gVPw4l
-         oR6A==
+        bh=5Fh+7I1nkl6E4OzdC/8Kb7+iYk/dpPtFFiLYTuSRlqc=;
+        b=MQYKaPXnXdR08uDLBNJFXCoLmScqfdF0zA5PJ9vcgwyZlaMidV2d5DvAgSLiECYamH
+         nqkzukGFfZb6nwSiKPltyngON8ChcHHxbDj1Xmc7z7ds2wQZmpjZaP300cu3Nt+NpLdo
+         8vNcURIBBdgW7+9gSpidTL1u5rGK/6vKS3PWj0yay+qJBt56MKoKhCWIOIUBleY1uBrP
+         WnIR/CHcM5Y4IJjWKhspbmT5FCj4eTwPYff8t9WecyA9q2i+sN+sniv1iu/Yyy0bYVGn
+         8T9AVS8OMSB3TLs6HTREIICo6XQf9AcB88xOE4sD6Oki4vx42Cov8M/Jr0W69DOJtscE
+         0rXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=+Es/1kSX+2DTfIEl11xOgF+dKXSLyBYadIDMkf6JWRY=;
-        b=PboJL/GaMRxuS+S8dzjyhq521H20gI6TkBUiQMEji9oHiBj4QZpVYjzPnxXl8qlgv4
-         pqxbLhIMs4qFm2b25pN7s2HgCtsV0NWTDaihxesL08L+UvW4kVQ73Q7L3XneLwryOy1W
-         +4Ym2qLLxCwHCi4sZeMSL7GRErWrB/Xvxkmu9R+8WlNKg4TnDlU/e5yfHGLd1DURtNnv
-         uCsH9V62WouYdHsfpLZg04IqKP7/Q65MDm3T4Sw1Mwt8s7HrH4MtR4KTT4FLsv4sy3wq
-         0Quob7c2CmDPk+kj7V7dmeBYSB1bbqZF/ctLZPfeDDUmVBKWRnCeS2isnKDG0p3vJnVb
-         erZw==
-X-Gm-Message-State: AGi0PuYxMGyNCL9mX62yKq5PU84rOFXNbLT3ydVduh8gf4i2IWv+jzAb
-        AUSr5CfINISJ55BMDHzvmKPbYAkd27E19LNj5CY=
-X-Google-Smtp-Source: APiQypKrhwIBdb9K5xK6+BTvgkhgXaWgjvsbqf2WCnQLazfGOFLVhIlgZpBJQNARmhWX7ScRLGvI/AGMLB5ktOM49e0=
-X-Received: by 2002:a17:902:9306:: with SMTP id bc6mr16330033plb.255.1586769453549;
- Mon, 13 Apr 2020 02:17:33 -0700 (PDT)
+        bh=5Fh+7I1nkl6E4OzdC/8Kb7+iYk/dpPtFFiLYTuSRlqc=;
+        b=GfzacWdfGmxsXEj8WepKP9jQlWPAz/kFwdm56RmfHhzaH66C/jtUWd2ELKP3MX3I+U
+         JQE8j+NRSGz32faeyw3WsSiPSU2+BENSE+7orKQMnc0BPQwV2geruhIQIsDnmJY18WuA
+         ZY9mqIc9Gl3+fwz6//uyId/mgGDG9CQI+1aScwd77+sQzkqUahwK3bjGBY8eSZhAJseY
+         Rb4IAy+kQ/CsbwF+NklhvQn+ZFfghwiKJhgYx2k7e+YkFqiiHiYzKPLRkXnqlPy8cV7R
+         A5Ox06S9pnJWBRvgK2QK8RyLJt2f9Qlk3d59dBwqgwwoyhGnPCWl4/T9i/2F73hLz/Jf
+         IwOw==
+X-Gm-Message-State: AGi0PuaJD8mxuYARnwyL46MYtFZ/JET7t80ML4LMB2iKJxzh+eZB41Ja
+        G8fKY+RY2LLVTG3HuYrgPsrEcBjkPcuov88V1EkHs5i0
+X-Google-Smtp-Source: APiQypIA0oldmzxseP+rUre/aNgrThAcSTbX3lATEBnJG6MdpbCZKGbma9DopJXmarexktqodGEFAslUUE+SAesQ2MI=
+X-Received: by 2002:a92:a312:: with SMTP id a18mr16124853ili.249.1586772048130;
+ Mon, 13 Apr 2020 03:00:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200412180923.30774-1-mani@kernel.org>
-In-Reply-To: <20200412180923.30774-1-mani@kernel.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 13 Apr 2020 12:17:21 +0300
-Message-ID: <CAHp75VfDUoFMWg42OFHZtKQ972eoR3UDLVAs+BQjJm3h3-fOGw@mail.gmail.com>
-Subject: Re: [PATCH 0/2] Add software flow control support for STM32 UART
-To:     mani@kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre TORGUE <alexandre.torgue@st.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <1586413563-29125-1-git-send-email-raviteja.narayanam@xilinx.com>
+In-Reply-To: <1586413563-29125-1-git-send-email-raviteja.narayanam@xilinx.com>
+From:   Shubhrajyoti Datta <shubhrajyoti.datta@gmail.com>
+Date:   Mon, 13 Apr 2020 15:30:36 +0530
+Message-ID: <CAKfKVtFHhz-wD-2fiJVRMXxupe=YRZQ4SV-VU+u=Yxe3gfmvrg@mail.gmail.com>
+Subject: Re: [PATCH v2 0/2] serial: uartps: Add tx_empty checks
+To:     Raviteja Narayanam <raviteja.narayanam@xilinx.com>
+Cc:     linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        jslaby@suse.com, Michal Simek <michal.simek@xilinx.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>, git@xilinx.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, Apr 13, 2020 at 7:06 AM <mani@kernel.org> wrote:
->
-> From: Manivannan Sadhasivam <mani@kernel.org>
->
-> Hello,
->
-> This patchset adds software flow control support for STM32 UART controller.
-> This is necessary for the upcoming STM32MP1 based board called Stinger96
-> IoT-Box. On that board, a bluetooth chip is connected to one of the UART
-> controller but the CTS/RTS lines got swapped mistakenly. So in order to
-> workaround that hardware bug and also to support the usecase of using only
-> Tx/Rx pins, this patchset adds software flow control support.
->
-> This patchset has been validated w/ Stinger96 IoT-Box connected to Murata
-> WiFi-BT combo chip.
->
+Hi Raviteja,
+thanks for the patch.
 
-I think it's a mix of terminology or so. Looking into the patches I
-found that it's required to have GPIOs for SW flow control.
-No, SW flow control does not require any additional signals, except RxD/TxD.
-
-On top of that, it seems you adding mctrl-gpio functionality. Why
-can't you use that one? And thus no bindings needs to be updated.
-
-> Thanks,
-> Mani
+On Thu, Apr 9, 2020 at 11:59 AM Raviteja Narayanam
+<raviteja.narayanam@xilinx.com> wrote:
 >
-> Manivannan Sadhasivam (2):
->   dt-bindings: serial: Add binding for software flow control in STM32
->     UART
->   tty: serial: Add software flow control support for STM32 USART
+> This patch series does the following:
+> Use cdns_uart_tx_empty function in the driver.
+> Wait for empty.
 >
->  .../bindings/serial/st,stm32-uart.yaml        |  15 +-
->  drivers/tty/serial/stm32-usart.c              | 143 +++++++++++++++++-
->  drivers/tty/serial/stm32-usart.h              |   4 +
->  3 files changed, 155 insertions(+), 7 deletions(-)
+> v2:
+> Modified the wait in console setup and used cdns_uart_tx_empty function
+> in console_write as suggested by Maarten.
+>
+Reviewed-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+
+> Raviteja Narayanam (2):
+>   serial: uartps: Wait for tx_empty in console setup
+>   serial: uartps: Use cdns_uart_tx_empty in console_write
+>
+>  drivers/tty/serial/xilinx_uartps.c | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
 >
 > --
-> 2.17.1
+> 2.7.4
 >
-
-
--- 
-With Best Regards,
-Andy Shevchenko
