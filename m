@@ -2,140 +2,204 @@ Return-Path: <SRS0=CAPS=56=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDA9EC2BB1D
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Apr 2020 05:26:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E3DDC2BA19
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Apr 2020 09:51:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 94E5D206E9
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Apr 2020 05:26:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 77A282072D
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Apr 2020 09:51:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="IYW4YTrY"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KSpjTTrj"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405498AbgDNF0f (ORCPT
+        id S2437956AbgDNJvI (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Apr 2020 01:26:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38914 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2405495AbgDNF0e (ORCPT
+        Tue, 14 Apr 2020 05:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51670 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2437953AbgDNJvC (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Apr 2020 01:26:34 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52865C008748
-        for <linux-serial@vger.kernel.org>; Mon, 13 Apr 2020 22:26:34 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id i7so15378190edq.3
-        for <linux-serial@vger.kernel.org>; Mon, 13 Apr 2020 22:26:34 -0700 (PDT)
+        Tue, 14 Apr 2020 05:51:02 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4426C0613A7
+        for <linux-serial@vger.kernel.org>; Tue, 14 Apr 2020 02:51:01 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id w20so12561600iob.2
+        for <linux-serial@vger.kernel.org>; Tue, 14 Apr 2020 02:51:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=uuPdzsYrCELKJnGVxoANM1PIXJOyrUjt5nhJHbZTcKo=;
-        b=IYW4YTrYfy+kuwOU/lYSO3bgdbsS6ahDQGbWQz2pVXyf3gpqKiVGpSqAGXtloLGD2M
-         WA6XxacLcQak2MEzhhTV0X5U/dR3yiLyx5qEePcdC4cRvL0T7jdFdGi3CGg8DESOCPws
-         lsm3aaw0P2r+rWFW6Jf015OyCD5/EKke57c2kACRLYYaHvTXrpOJn8pSD0QXt63mP9H2
-         NunKHb4PkJIIeZPyu3B0BstWYB74PnnGOaUD6TXxgbVwrVMYLY1FJV/Hp2oxnAh234Zl
-         xFnItRaPtPJptW3rvZuQD06WVCaVjjK96ry+TXpdxrM5IgHrbsgb77anjgstT6SY1QLw
-         ZSug==
+         :cc;
+        bh=p0/CVvjOvFR04PMmD7/UbpajuikPHIdXr5m8H1Y8WLs=;
+        b=KSpjTTrjnVseZPIlEXjYAqRpg1coLZvRtiD3g3TsFK6h9O8+ldiaiwo+3PKMnSzjrs
+         E8lvHPamryKO9qWw6o94SHIrKh7AUlAEKwCC/VthwOtdIWTOIpUkgSesEhpJN9HbjCFO
+         FOe17BYOSYg3EZ3ZTW6gwT6X/4CD5C1YTAWBHPt79Je+WqoBsiAkKdgqB1rT2/HuHO7+
+         nQwHxIqQG1PTiY/arqp0FcWJ5GDKlleBpSyruf9RkY8EEoXoKk0/drNNyXzA5S57sHNP
+         Kwu6HC2ZB7cIif3S+Ht5dtUX/Nan1/TPhB1JymIJFfp2BnedC8CBG94QDv1fQ8+ZEVXs
+         94Jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=uuPdzsYrCELKJnGVxoANM1PIXJOyrUjt5nhJHbZTcKo=;
-        b=Bfoko25IlEpmc2WJmsux4QDi3ee8192uSVyIfCe5fe/L3Rol6Qtw/YDH3RibDcgh/g
-         oqXt9OMH1cKkQG9Sfo4VQhWAhS1SrX3hfG/7mX894i7L31BLMXz30bhKCW3yFSmC6mzG
-         HfZaF6EM2tm4HE82FcbRygTrnS0BmTlVOIp8hAkgVxzd2WGReSxakNSh5U5V2QEWUfsB
-         RRX4IpnPTEdWuPIonS0uOUqEwNFFMPOwh4uVd3WD/kDixXVmoVRCDdvjexVagomW03zf
-         NygLJnDGF4CY1/GbOFS+VZlJYdT5bUGSZ2E729ayiSOSTYLZ5JXnEy+tsAHii0ZJND5y
-         mHpw==
-X-Gm-Message-State: AGi0PuZdE44kRrb0teFED3Ow0n1qPnRwokA6InePuYHAJVe1RnQ4enqn
-        St+gNwbdcPgBozYBVQoL2yXguiEKLEsf2+/owM0BVg==
-X-Google-Smtp-Source: APiQypI+OHSx7I0zAFNl0j3kM4YuBCc2AJy2aRhhIsVV8UZqht0LfkdSl9kXkAtfkBw1fMhlpmo+n7+6X8Ap0UyfKBQ=
-X-Received: by 2002:a50:d71e:: with SMTP id t30mr969087edi.246.1586841992805;
- Mon, 13 Apr 2020 22:26:32 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=p0/CVvjOvFR04PMmD7/UbpajuikPHIdXr5m8H1Y8WLs=;
+        b=mT899HyttF5iKxPqQ4AkXlTF9+vS4dt818ysISXu7C7srHRZnFDZ1dU6JZd4xzyBPE
+         qEs8CoUlNA9dCyNaYowvZPuz+iEOGfTlBcd9S+uAiH4wHl5/GTPjlLzPt5iCuT72vQRy
+         I5unJZr8X9mOfi0KbmDeb0Xc/8RRHniomzDJVMCCXW5Lxw3CZRbEqPQjgW7L0HyZnfxy
+         9ATo/yuzRCeuoPKz1KaK9z+ZB9GyZs8WAxCcftXyprCWVLp7IdBWoclB/gPQXU1JQivF
+         B/DXXeGW+raQ299RnqjU2kfT3RHfzE5ogB16SLCOHi6aKjz9GowKbjLuUZOcTbkV9DM6
+         XsAQ==
+X-Gm-Message-State: AGi0PuYheV5I0Ab5iu3aZjKSeZJrc1QbZgSOzYN6aEWYhZAFd0L6UXSP
+        iZQh5TvU7rmkGY62GyuVB9KggJ50buHve0PtAyY9DQ==
+X-Google-Smtp-Source: APiQypIAzHAPsZm6/YjzgBKdLxVwZRuN20BIzmxcNpHujHGNUUVN1cMBYBN2MAoSZfOMDtKxrXTJAU7Sx+l2ahgTmcE=
+X-Received: by 2002:a6b:3989:: with SMTP id g131mr20437211ioa.202.1586857860947;
+ Tue, 14 Apr 2020 02:51:00 -0700 (PDT)
 MIME-Version: 1.0
-References: <1586353607-32222-1-git-send-email-rnayak@codeaurora.org>
- <1586353607-32222-3-git-send-email-rnayak@codeaurora.org> <20200409174511.GS199755@google.com>
- <CABymUCNdX=K1vFuC0Rt-u0h-CRYcKtXogyOkAiGZpDfKSVAYqA@mail.gmail.com> <13907000-e3b0-12d6-0768-fd8a7ab100d9@codeaurora.org>
-In-Reply-To: <13907000-e3b0-12d6-0768-fd8a7ab100d9@codeaurora.org>
-From:   Jun Nie <jun.nie@linaro.org>
-Date:   Tue, 14 Apr 2020 13:26:21 +0800
-Message-ID: <CABymUCM+WjSxKhhvqbBSxub_3wxvnJ8aOVgtWD9JOoxA3MuY2A@mail.gmail.com>
-Subject: Re: [PATCH 02/21] tty: serial: qcom_geni_serial: Use OPP API to set
- clk/perf state
-To:     Rajendra Nayak <rnayak@codeaurora.org>
-Cc:     Viresh Kumar <viresh.kumar@linaro.org>, sboyd@kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        agross@kernel.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Akash Asthana <akashast@codeaurora.org>,
-        linux-serial@vger.kernel.org, Matthias Kaehlcke <mka@chromium.org>
+References: <87lfnq15vi.fsf@osv.gnss.ru> <aa0174f8-7cef-46c9-4164-605191393abd@suse.cz>
+ <87ftdtzypi.fsf@osv.gnss.ru> <20200327232428.GT25745@shell.armlinux.org.uk>
+In-Reply-To: <20200327232428.GT25745@shell.armlinux.org.uk>
+From:   Sergey Organov <sorganov@gmail.com>
+Date:   Tue, 14 Apr 2020 12:50:49 +0300
+Message-ID: <CANp_pu1caHaGJbBR8sEoOER2SfMDO3eJKOVQz3K8jKKZACh7=w@mail.gmail.com>
+Subject: Re: Serial console and interrupts latency.
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Jiri Slaby <jslaby@suse.cz>, linux-serial@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Rajendra Nayak <rnayak@codeaurora.org> =E4=BA=8E2020=E5=B9=B44=E6=9C=8813=
-=E6=97=A5=E5=91=A8=E4=B8=80 =E4=B8=8B=E5=8D=8810:22=E5=86=99=E9=81=93=EF=BC=
-=9A
+Russell King - ARM Linux admin <linux@armlinux.org.uk>:
+
 >
->
->
-> On 4/10/2020 2:06 PM, Jun Nie wrote:
-> >>> @@ -961,7 +962,7 @@ static void qcom_geni_serial_set_termios(struct u=
-art_port *uport,
-> >>>                goto out_restart_rx;
-> >>>
-> >>>        uport->uartclk =3D clk_rate;
-> >>> -     clk_set_rate(port->se.clk, clk_rate);
-> >>> +     dev_pm_opp_set_rate(uport->dev, clk_rate);
+> On Fri, Mar 27, 2020 at 04:58:33PM +0300, Sergey Organov wrote:
+> > Jiri Slaby <jslaby@suse.cz> writes:
 > >
-> > Hi Rajendra,
+> > > On 24. 03. 20, 10:04, Sergey Organov wrote:
+> > >> Hello,
+> > >>
+> > >> [Extended CC list to try to get some attention]
+> > >>
+> > >> I was investigating random serial overruns on my embedded board and
+> > >> figured it strongly correlates with serial output (to another serial
+> > >> port) from kernel printk() calls, that forced me to dig into the kernel
+> > >> sources, and now I'm very confused.
+> > >>
+> > >> I'm reading drivers/tty/serial/8250/8250_port.c, and
+> > >> serial8250_console_write() function in particular (being on tty-next
+> > >> branch).
+> > >>
+> > >> What I see is that it locks interrupts
+> > >>
+> > >> 3141:              spin_lock_irqsave(&port->lock, flags);
+> > >>
+> > >> and then calls wait_for_xmitr() both indirectly here:
+> > >>
+> > >> 3159:      uart_console_write(port, s, count, serial8250_console_putchar);
+> > >>
+> > >> and then directly as well:
+> > >>
+> > >> 3165:      wait_for_xmitr(up, BOTH_EMPTY);
+> > >>
+> > >> before re-enabling interrupts at:
+> > >>
+> > >> 3179:              spin_unlock_irqrestore(&port->lock, flags);
+> > >>
+> > >> Now, wait_for_xmitr(), even according to comments, could busy-wait for
+> > >> up to 10+1000 milliseconds, and in this case this huge delay will happen
+> > >> at interrupts disabled?
+> > >>
+> > >> Does it mean any serial console output out of printk() could cause 10
+> > >> milliseconds or even 1 second interrupts latency? Somehow I can't
+> > >> believe it.
+> > >>
+> > >> What do I miss?
+> > >
+> > > 1 second _timeout_ is for flow-control-enabled consoles.
+> >
+> > Yeah, sure. So it does mean interrupts could be disabled for up to 1
+> > second, on already up and running system. Too bad.
+> >
+> > Actually, I use 8250 only as a reference implementation, my actual
+> > chip is handled by imx.c, and the latter even has no timeouts on this
+> > path, so apparently may block (the entire kernel) indefinitely!
+> >
+> > > 10 ms is _timeout_ for a character. With slow 9600 baud console, sending
+> > > one character takes 0.8 ms. With 115200, it is 70 us.
+> >
+> > 70us of disabled interrupts is a huge number, and for FIFO-enabled chips
+> > the estimate should be multiplied by FIFO size (say, x16) that brings us
+> > close to 1ms even on 115200, right?
+> >
+> > Anyway, it must cause receiving overruns on another port running at
+> > higher or the same baud rate and no DMA, sooner or later, as it does
+> > for me.
 >
-> Hi Jun,
->
-> > I see lowest rpmhpd_opp_low_svs opp is for 75MHz. It is a bit higher
-> > for a serial.
-> > I am just curious about this.
->
-> Well these OPP tables are technically what we call as fmax tables, which =
-means
-> you can get the clock to a max of 75MHz at that perf level. You need to g=
-o
-> to the next perf level if you want to go higher.
-> That however does not mean that serial cannot run at clocks lower than 75=
-Mhz.
->
-> > I also want to confirm that the rpmhpd_opp_low_svs voltage restriction
-> > is for serial
-> > controller, not for clock controller? Because I see there is similar
-> > restriction to clock
-> > controller on another platform, the restriction is for branch clock,
-> > not leaf clock that
-> > consumer device will get.
->
-> yes, its a serial controller restriction and not of the clock provider.
-> On your note on the branch clock vs leaf clock I am not sure I understand
-> the point you are making.
+> So, don't use serial console then, it's unsuitable for your use case.
 
-For the leaf clock, I mean the clock that consumer get with devm_clk_get().=
- The
-branch clock means it is not for consumer directly, and its child
-clock or grandchild
-clock is for consumer. In that case, the restriction has to be done in
-clock driver,
-not in clock consumer driver. Sorry for confusing you. I just want to
-know more about
-what function this patch set provide. Because I am working on the
-clock controller
-restriction of fmax/voltage. Thanks!
+Well, I'd rather fix it, as serial console is otherwise very suitable
+for my needs.
 
-Jun
+If nobody else interested, I'll simply disable the lock you've added
+for non-smp builds
+in my kernel version, rather than trying to fix the issue in general.
+
+That said, finding generic solution would be an interesting quest.
+
 >
-> --
-> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-> of Code Aurora Forum, hosted by The Linux Foundation
+> > > If you send one line (80 chars), it is really 66 and 5.5 ms, respectively.
+> > >
+> > > So yes, serial consoles can slow down the boot and add latency. Use
+> > > faster speeds or faster devices for consoles, if you mind. And do not
+> > > enable flow control. Serial is serial.
+> >
+> > I don't care about slowing-down boot. I care about huge interrupt
+> > latency on up and running system, causing loss of characters  (overruns)
+> > on other serial ports.
+> >
+> > To be sure, it is this code that works on already running system as
+> > well, not only on boot-time, right? Or is my system somehow
+> > misconfigured?
+> >
+> > I'm confused as this seems to be a major issue and nobody but me seems
+> > to care or to suffer from it, and I can't figure why.
+> >
+> > For reference, I figured this locking was introduced by:
+> >
+> > commit d8a5a8d7cc32e4474326e0ecc1b959063490efc9
+> > Author: Russell King <rmk@dyn-67.arm.linux.org.uk>
+> > Date:   Tue May 2 16:04:29 2006 +0100
+> >
+> >     [SERIAL] 8250: add locking to console write function
+> >
+> >     x86 SMP breaks as a result of the previous change, we have no real
+> >     option other than to add locking to the 8250 console write function.
+> >     If an oops is in progress, try to acquire the lock.  If we fail to
+> >     do so, continue anyway.
+>
+> Correct, and what I said back then still applies - and more.
+
+What bothers me is "we have no real option..." part of this, as it's rarely
+happens to be the case.
+
+>
+> > It seems like I need to, and yeah, it'd be a somewhat tough task indeed,
+> > but then there is one simple question: why isn't console output handled
+> > through usual buffer/ISR paths?
+>
+> The "usual" paths may not be active, and, in the case of an oops, we
+> want to see the output, which we wouldn't be able to if the oops
+> occurred in interrupt context.
+
+The oops part is already special-cased and could be left special-cased, one
+way or another. What is important is not to keep interrupts disabled for long
+during normal system operation.
+
+If it could be achieved at all, it probably should then be implemented at the
+upper level,  to save low-level drivers from these complexities.
+
+Thanks,
+-- Sergey
