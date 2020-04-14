@@ -1,143 +1,141 @@
-Return-Path: <SRS0=NZaJ=55=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=CAPS=56=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72E48C2BA2B
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Apr 2020 22:07:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDA9EC2BB1D
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Apr 2020 05:26:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 44C8B20663
-	for <linux-serial@archiver.kernel.org>; Mon, 13 Apr 2020 22:07:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 94E5D206E9
+	for <linux-serial@archiver.kernel.org>; Tue, 14 Apr 2020 05:26:36 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="oYZb4MqS"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="IYW4YTrY"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727889AbgDMWHq (ORCPT
+        id S2405498AbgDNF0f (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 13 Apr 2020 18:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54122 "EHLO
+        Tue, 14 Apr 2020 01:26:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727851AbgDMWHp (ORCPT
+        by vger.kernel.org with ESMTP id S2405495AbgDNF0e (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 13 Apr 2020 18:07:45 -0400
-Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF5DC0A3BDC
-        for <linux-serial@vger.kernel.org>; Mon, 13 Apr 2020 15:07:45 -0700 (PDT)
-Received: by mail-ot1-x342.google.com with SMTP id z17so3236856oto.4
-        for <linux-serial@vger.kernel.org>; Mon, 13 Apr 2020 15:07:45 -0700 (PDT)
+        Tue, 14 Apr 2020 01:26:34 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52865C008748
+        for <linux-serial@vger.kernel.org>; Mon, 13 Apr 2020 22:26:34 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id i7so15378190edq.3
+        for <linux-serial@vger.kernel.org>; Mon, 13 Apr 2020 22:26:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MVAxxHzDK/qARg7NchMjhRdvGGEcCTTmLqMEP50fxqk=;
-        b=oYZb4MqSZ8X2CE6Y/k0aOzKLtL53RMFv1ShrKS9kAZLiSxbTQ/wZMM0ryIYVQLFhhT
-         e+ZSddaE+zEhC3DF1QKsjRDUtNgJGnhRe9rM4lDBtjD6CloNjrA2WJk1gHzfbJum7MKL
-         lKs4zbUC+eR3iJV6Uc1ONNr9Jby+bhRhWhjIU=
+         :cc:content-transfer-encoding;
+        bh=uuPdzsYrCELKJnGVxoANM1PIXJOyrUjt5nhJHbZTcKo=;
+        b=IYW4YTrYfy+kuwOU/lYSO3bgdbsS6ahDQGbWQz2pVXyf3gpqKiVGpSqAGXtloLGD2M
+         WA6XxacLcQak2MEzhhTV0X5U/dR3yiLyx5qEePcdC4cRvL0T7jdFdGi3CGg8DESOCPws
+         lsm3aaw0P2r+rWFW6Jf015OyCD5/EKke57c2kACRLYYaHvTXrpOJn8pSD0QXt63mP9H2
+         NunKHb4PkJIIeZPyu3B0BstWYB74PnnGOaUD6TXxgbVwrVMYLY1FJV/Hp2oxnAh234Zl
+         xFnItRaPtPJptW3rvZuQD06WVCaVjjK96ry+TXpdxrM5IgHrbsgb77anjgstT6SY1QLw
+         ZSug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MVAxxHzDK/qARg7NchMjhRdvGGEcCTTmLqMEP50fxqk=;
-        b=dd/xe8lZVVwScdgSvOH4qHy2oLKB/c2AeHJSxYplwhfep2OwQdWeiij4pnuaLwx4XG
-         E5KpkWW7Ev4b5uRoXhf0ThWLO6bCw+Lz5CoRKVjPLyPNhLYXqV0obfXJDUZVGLziu4Uo
-         RMr+HFVBi+2WyylqBIIHUr64Zm0IoamW4q6a65GusymEpm4ghwsZXakv2ZUT6Oi8MA0e
-         EcS1mq9wP3MleQA+rnrL5uPOhDtp9uf1Tfml4xxRJ76uWSPaL6DjZVbdsXhCzA++Dsfx
-         T99N1t0RP6QCixzYtAc8sFVUv9DffyaiOc85ysFgA5ZOA13i7yyM1pCNXK1qBpBtUhK0
-         s3bg==
-X-Gm-Message-State: AGi0PubZ53O0DuiVriYc7UTHnHKWbHA/2/sdMEMv/F9wxhRueLWX8ao0
-        b1/OlSZcOVncOtxhUOueKd7EiDrJvPQ=
-X-Google-Smtp-Source: APiQypIDyCjzz9XA9ItBA4I0uuNIumPvMWCOVG6ELAAbluyJmuNrXbYZM/IkOxLiVGOQWjRwDYcp0A==
-X-Received: by 2002:a9d:1c8e:: with SMTP id l14mr15153169ota.0.1586815664921;
-        Mon, 13 Apr 2020 15:07:44 -0700 (PDT)
-Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com. [209.85.210.41])
-        by smtp.gmail.com with ESMTPSA id s23sm5622410ook.4.2020.04.13.15.07.44
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Apr 2020 15:07:44 -0700 (PDT)
-Received: by mail-ot1-f41.google.com with SMTP id g14so2556071otg.10
-        for <linux-serial@vger.kernel.org>; Mon, 13 Apr 2020 15:07:44 -0700 (PDT)
-X-Received: by 2002:a9f:27ca:: with SMTP id b68mr10592105uab.8.1586815210988;
- Mon, 13 Apr 2020 15:00:10 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=uuPdzsYrCELKJnGVxoANM1PIXJOyrUjt5nhJHbZTcKo=;
+        b=Bfoko25IlEpmc2WJmsux4QDi3ee8192uSVyIfCe5fe/L3Rol6Qtw/YDH3RibDcgh/g
+         oqXt9OMH1cKkQG9Sfo4VQhWAhS1SrX3hfG/7mX894i7L31BLMXz30bhKCW3yFSmC6mzG
+         HfZaF6EM2tm4HE82FcbRygTrnS0BmTlVOIp8hAkgVxzd2WGReSxakNSh5U5V2QEWUfsB
+         RRX4IpnPTEdWuPIonS0uOUqEwNFFMPOwh4uVd3WD/kDixXVmoVRCDdvjexVagomW03zf
+         NygLJnDGF4CY1/GbOFS+VZlJYdT5bUGSZ2E729ayiSOSTYLZ5JXnEy+tsAHii0ZJND5y
+         mHpw==
+X-Gm-Message-State: AGi0PuZdE44kRrb0teFED3Ow0n1qPnRwokA6InePuYHAJVe1RnQ4enqn
+        St+gNwbdcPgBozYBVQoL2yXguiEKLEsf2+/owM0BVg==
+X-Google-Smtp-Source: APiQypI+OHSx7I0zAFNl0j3kM4YuBCc2AJy2aRhhIsVV8UZqht0LfkdSl9kXkAtfkBw1fMhlpmo+n7+6X8Ap0UyfKBQ=
+X-Received: by 2002:a50:d71e:: with SMTP id t30mr969087edi.246.1586841992805;
+ Mon, 13 Apr 2020 22:26:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200410151632.4.I8fba5961bf452ab92350654aa61957f23ecf0100@changeid>
- <202004110744.nPoRwmTD%lkp@intel.com>
-In-Reply-To: <202004110744.nPoRwmTD%lkp@intel.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 13 Apr 2020 14:59:59 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UC-dKgmamNKFn_SEqcEisW1p4Z9iy8Nn8UqUxRsskZ3A@mail.gmail.com>
-Message-ID: <CAD=FV=UC-dKgmamNKFn_SEqcEisW1p4Z9iy8Nn8UqUxRsskZ3A@mail.gmail.com>
-Subject: Re: [PATCH 4/7] kgdboc: Add earlycon_kgdboc to support early kgdb
- using boot consoles
-To:     Daniel Thompson <daniel.thompson@linaro.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     kbuild-all@lists.01.org, "H. Peter Anvin" <hpa@zytor.com>,
-        kgdb-bugreport@lists.sourceforge.net,
-        Jonathan Corbet <corbet@lwn.net>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+References: <1586353607-32222-1-git-send-email-rnayak@codeaurora.org>
+ <1586353607-32222-3-git-send-email-rnayak@codeaurora.org> <20200409174511.GS199755@google.com>
+ <CABymUCNdX=K1vFuC0Rt-u0h-CRYcKtXogyOkAiGZpDfKSVAYqA@mail.gmail.com> <13907000-e3b0-12d6-0768-fd8a7ab100d9@codeaurora.org>
+In-Reply-To: <13907000-e3b0-12d6-0768-fd8a7ab100d9@codeaurora.org>
+From:   Jun Nie <jun.nie@linaro.org>
+Date:   Tue, 14 Apr 2020 13:26:21 +0800
+Message-ID: <CABymUCM+WjSxKhhvqbBSxub_3wxvnJ8aOVgtWD9JOoxA3MuY2A@mail.gmail.com>
+Subject: Re: [PATCH 02/21] tty: serial: qcom_geni_serial: Use OPP API to set
+ clk/perf state
+To:     Rajendra Nayak <rnayak@codeaurora.org>
+Cc:     Viresh Kumar <viresh.kumar@linaro.org>, sboyd@kernel.org,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>, bp@alien8.de,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kbuild test robot <lkp@intel.com>
+        agross@kernel.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Akash Asthana <akashast@codeaurora.org>,
+        linux-serial@vger.kernel.org, Matthias Kaehlcke <mka@chromium.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+Rajendra Nayak <rnayak@codeaurora.org> =E4=BA=8E2020=E5=B9=B44=E6=9C=8813=
+=E6=97=A5=E5=91=A8=E4=B8=80 =E4=B8=8B=E5=8D=8810:22=E5=86=99=E9=81=93=EF=BC=
+=9A
+>
+>
+>
+> On 4/10/2020 2:06 PM, Jun Nie wrote:
+> >>> @@ -961,7 +962,7 @@ static void qcom_geni_serial_set_termios(struct u=
+art_port *uport,
+> >>>                goto out_restart_rx;
+> >>>
+> >>>        uport->uartclk =3D clk_rate;
+> >>> -     clk_set_rate(port->se.clk, clk_rate);
+> >>> +     dev_pm_opp_set_rate(uport->dev, clk_rate);
+> >
+> > Hi Rajendra,
+>
+> Hi Jun,
+>
+> > I see lowest rpmhpd_opp_low_svs opp is for 75MHz. It is a bit higher
+> > for a serial.
+> > I am just curious about this.
+>
+> Well these OPP tables are technically what we call as fmax tables, which =
+means
+> you can get the clock to a max of 75MHz at that perf level. You need to g=
+o
+> to the next perf level if you want to go higher.
+> That however does not mean that serial cannot run at clocks lower than 75=
+Mhz.
+>
+> > I also want to confirm that the rpmhpd_opp_low_svs voltage restriction
+> > is for serial
+> > controller, not for clock controller? Because I see there is similar
+> > restriction to clock
+> > controller on another platform, the restriction is for branch clock,
+> > not leaf clock that
+> > consumer device will get.
+>
+> yes, its a serial controller restriction and not of the clock provider.
+> On your note on the branch clock vs leaf clock I am not sure I understand
+> the point you are making.
 
-On Fri, Apr 10, 2020 at 4:56 PM kbuild test robot <lkp@intel.com> wrote:
->
-> Hi Douglas,
->
-> I love your patch! Yet something to improve:
->
-> [auto build test ERROR on arm64/for-next/core]
-> [also build test ERROR on tty/tty-testing v5.6 next-20200410]
-> [cannot apply to kgdb/kgdb-next]
-> [if your patch is applied to the wrong git tree, please drop us a note to help
-> improve the system. BTW, we also suggest to use '--base' option to specify the
-> base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
->
-> url:    https://github.com/0day-ci/linux/commits/Douglas-Anderson/kgdb-Support-late-serial-drivers-enable-early-debug-w-boot-consoles/20200411-062123
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/core
-> config: microblaze-mmu_defconfig (attached as .config)
-> compiler: microblaze-linux-gcc (GCC) 9.3.0
-> reproduce:
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # save the attached .config to linux build tree
->         GCC_VERSION=9.3.0 make.cross ARCH=microblaze
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kbuild test robot <lkp@intel.com>
->
-> All errors (new ones prefixed by >>):
->
->    drivers/misc/kgdbts.c: In function 'configure_kgdbts':
-> >> drivers/misc/kgdbts.c:1080:8: error: too few arguments to function 'kgdb_register_io_module'
->     1080 |  err = kgdb_register_io_module(&kgdbts_io_ops);
+For the leaf clock, I mean the clock that consumer get with devm_clk_get().=
+ The
+branch clock means it is not for consumer directly, and its child
+clock or grandchild
+clock is for consumer. In that case, the restriction has to be done in
+clock driver,
+not in clock consumer driver. Sorry for confusing you. I just want to
+know more about
+what function this patch set provide. Because I am working on the
+clock controller
+restriction of fmax/voltage. Thanks!
 
-Sigh, I knew I'd forget something stupid.  I have a fix for this and
-have confirmed that "kgdbts" continues to work after I fix it.
-Running it also found splats similar to what I fixed for "kgdboc" in
-commit 81eaadcae81b ("kgdboc: disable the console lock when in kgdb").
-I'll att a commit to my next version to move that fix into the kgdb
-core and then remove it from "kgdboc".
-
-I'm not setup to use kgdb over EHCI so I'll just fix that so it
-compiles and trust that it continues to work.
-
-For now I'll hold up on sending a new version to await feedback on v1.
-If I don't hear anything after a little while I'll send a v2 with just
-these fixes.
-
--Doug
+Jun
+>
+> --
+> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+> of Code Aurora Forum, hosted by The Linux Foundation
