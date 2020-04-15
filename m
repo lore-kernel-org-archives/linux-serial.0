@@ -4,45 +4,45 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F148FC2BA19
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Apr 2020 10:37:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27F5DC2BA19
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Apr 2020 10:38:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CDDA3206D9
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Apr 2020 10:37:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 04E0020784
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Apr 2020 10:38:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="EsVtaNta"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="FcWxlx/C"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408655AbgDOKcE (ORCPT
+        id S2408661AbgDOKig (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Apr 2020 06:32:04 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:53933 "EHLO
+        Wed, 15 Apr 2020 06:38:36 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:55211 "EHLO
         mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2408581AbgDOKZF (ORCPT
+        by vger.kernel.org with ESMTP id S2408576AbgDOKY4 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Apr 2020 06:25:05 -0400
+        Wed, 15 Apr 2020 06:24:56 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1586946303; h=References: In-Reply-To: Message-Id: Date:
+ s=smtp; t=1586946295; h=References: In-Reply-To: Message-Id: Date:
  Subject: Cc: To: From: Sender;
- bh=00T/aXnBWfVjX59Ml3WGF4SVA3b/VdG+SQkMLaG/dbk=; b=EsVtaNtac3hIsDNik80HePjtZqcwQZEeXBTQPrk1dLzNPDgfrQKstmufz8y3sdtUGn3SQzo+
- hWHbyrWxT5qY00bdP+WUBRT+CA0NXYLLW/v3G6W9j2ra/AkwYjkJSU/Pgw/diMBt71hdnaDV
- P7CpalJs3Sd8Za3Xo8nBQoxJHBA=
+ bh=9nsMC90OsDmv2imJqmEZJh+LxnL0yMqc42PMWTwxJmY=; b=FcWxlx/CCu7LU15d7dl3gVG96ilaeQfg46VoFUoUtE7VjmjfvW7SuQ5xDa6mS6sV3ygoHxcs
+ oingpKhSiZCNXRrhjdk2k8EhJAfnmx82vz2ziVqo6fs0ql5nxKxfHwY1c+2CIxxrOnOr7F3v
+ MgF0MEsGwMnZ6SnayUUlDbyDCtA=
 X-Mailgun-Sending-Ip: 104.130.122.26
 X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e96e0f4.7f61c2f8f378-smtp-out-n01;
- Wed, 15 Apr 2020 10:24:52 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5e96e0ec.7f855cb44928-smtp-out-n03;
+ Wed, 15 Apr 2020 10:24:44 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 2421BC432C2; Wed, 15 Apr 2020 10:24:52 +0000 (UTC)
+        id 00A91C433BA; Wed, 15 Apr 2020 10:24:44 +0000 (UTC)
 Received: from akashast-linux.qualcomm.com (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 043F2C433BA;
-        Wed, 15 Apr 2020 10:24:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 043F2C433BA
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7D14AC432C2;
+        Wed, 15 Apr 2020 10:24:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7D14AC432C2
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
 From:   Akash Asthana <akashast@codeaurora.org>
@@ -55,9 +55,9 @@ Cc:     linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
         linux-serial@vger.kernel.org, mka@chromium.org,
         dianders@chromium.org, evgreen@chromium.org,
         Akash Asthana <akashast@codeaurora.org>
-Subject: [PATCH V4 7/9] tty: serial: qcom_geni_serial: Add interconnect support
-Date:   Wed, 15 Apr 2020 15:53:16 +0530
-Message-Id: <1586946198-13912-8-git-send-email-akashast@codeaurora.org>
+Subject: [PATCH V4 6/9] spi: spi-geni-qcom: Add interconnect support
+Date:   Wed, 15 Apr 2020 15:53:15 +0530
+Message-Id: <1586946198-13912-7-git-send-email-akashast@codeaurora.org>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1586946198-13912-1-git-send-email-akashast@codeaurora.org>
 References: <1586946198-13912-1-git-send-email-akashast@codeaurora.org>
@@ -66,82 +66,85 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Get the interconnect paths for Uart based Serial Engine device
-and vote according to the baud rate requirement of the driver.
+Get the interconnect paths for SPI based Serial Engine device
+and vote according to the current bus speed of the driver.
 
 Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 ---
 Changes in V2:
- - As per Bjorn's comment, removed se == NULL check from geni_serial_icc_get
+ - As per Bjorn's comment, removed se == NULL check from geni_spi_icc_get
  - As per Bjorn's comment, removed code to set se->icc_path* to NULL in failure
  - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
    path handle
  - As per Matthias comment, added error handling for icc_set_bw call
 
 Changes in V3:
- - As per Matthias comment, use common library APIs defined in geni-se
-   driver for ICC functionality.
+ - As per Matthias's comment, use helper ICC function from geni-se driver.
 
 Changes in V4:
- - As per Mark's comment move peak_bw guess as twice of avg_bw if
-   nothing mentioned explicitly to ICC core.
- - As per Matthias's comment select core clock BW based on baud rate.
-   If it's less than 115200 go for GENI_DEFAULT_BW else CORE_2X_50_MHZ
+ - Move peak_bw guess as twice of avg_bw if nothing mentioned explicitly
+   to ICC core.
 
- drivers/tty/serial/qcom_geni_serial.c | 25 ++++++++++++++++++++++---
- 1 file changed, 22 insertions(+), 3 deletions(-)
+ drivers/spi/spi-geni-qcom.c | 25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 8c5d97c..a5b2f1c 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -965,6 +965,15 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 	ser_clk_cfg = SER_CLK_EN;
- 	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
- 
-+	/*
-+	 * Bump up BW vote on CPU and CORE path as driver supports FIFO mode
-+	 * only.
-+	 */
-+	port->se.icc_paths[0].avg_bw = (baud > 115200) ?
-+				Bps_to_icc(CORE_2X_50_MHZ) : GENI_DEFAULT_BW;
-+	port->se.icc_paths[1].avg_bw = Bps_to_icc(baud);
-+	geni_icc_vote_on(&port->se);
-+
- 	/* parity */
- 	tx_trans_cfg = readl(uport->membase + SE_UART_TX_TRANS_CFG);
- 	tx_parity_cfg = readl(uport->membase + SE_UART_TX_PARITY_CFG);
-@@ -1202,11 +1211,14 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
- 	if (old_state == UART_PM_STATE_UNDEFINED)
- 		old_state = UART_PM_STATE_OFF;
- 
--	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
-+	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF) {
-+		geni_icc_vote_on(&port->se);
- 		geni_se_resources_on(&port->se);
--	else if (new_state == UART_PM_STATE_OFF &&
--			old_state == UART_PM_STATE_ON)
-+	} else if (new_state == UART_PM_STATE_OFF &&
-+			old_state == UART_PM_STATE_ON) {
- 		geni_se_resources_off(&port->se);
-+		geni_icc_vote_off(&port->se);
-+	}
- }
- 
- static const struct uart_ops qcom_geni_console_pops = {
-@@ -1304,6 +1316,13 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 			return -ENOMEM;
+diff --git a/drivers/spi/spi-geni-qcom.c b/drivers/spi/spi-geni-qcom.c
+index c397242..782d495 100644
+--- a/drivers/spi/spi-geni-qcom.c
++++ b/drivers/spi/spi-geni-qcom.c
+@@ -234,6 +234,12 @@ static int setup_fifo_params(struct spi_device *spi_slv,
+ 		return ret;
  	}
  
-+	ret = geni_icc_get(&port->se, NULL);
++	/* Set BW quota for CPU as driver supports FIFO mode only. */
++	se->icc_paths[1].avg_bw = Bps_to_icc(mas->cur_speed_hz);
++	ret = geni_icc_vote_on(se);
 +	if (ret)
 +		return ret;
-+	/* Set the bus quota to a reasonable value for register access */
-+	port->se.icc_paths[0].avg_bw = GENI_DEFAULT_BW;
-+	port->se.icc_paths[1].avg_bw = GENI_DEFAULT_BW;
 +
- 	port->name = devm_kasprintf(uport->dev, GFP_KERNEL,
- 			"qcom_geni_serial_%s%d",
- 			uart_console(uport) ? "console" : "uart", uport->line);
+ 	clk_sel = idx & CLK_SEL_MSK;
+ 	m_clk_cfg = (div << CLK_DIV_SHFT) | SER_CLK_EN;
+ 	spi_setup_word_len(mas, spi_slv->mode, spi_slv->bits_per_word);
+@@ -578,6 +584,13 @@ static int spi_geni_probe(struct platform_device *pdev)
+ 	spin_lock_init(&mas->lock);
+ 	pm_runtime_enable(dev);
+ 
++	ret = geni_icc_get(&mas->se, NULL);
++	if (ret)
++		goto spi_geni_probe_runtime_disable;
++	/* Set the bus quota to a reasonable value for register access */
++	mas->se.icc_paths[0].avg_bw = Bps_to_icc(CORE_2X_50_MHZ);
++	mas->se.icc_paths[1].avg_bw = GENI_DEFAULT_BW;
++
+ 	ret = spi_geni_init(mas);
+ 	if (ret)
+ 		goto spi_geni_probe_runtime_disable;
+@@ -616,14 +629,24 @@ static int __maybe_unused spi_geni_runtime_suspend(struct device *dev)
+ {
+ 	struct spi_master *spi = dev_get_drvdata(dev);
+ 	struct spi_geni_master *mas = spi_master_get_devdata(spi);
++	int ret;
+ 
+-	return geni_se_resources_off(&mas->se);
++	ret = geni_se_resources_off(&mas->se);
++	if (ret)
++		return ret;
++
++	return geni_icc_vote_off(&mas->se);
+ }
+ 
+ static int __maybe_unused spi_geni_runtime_resume(struct device *dev)
+ {
+ 	struct spi_master *spi = dev_get_drvdata(dev);
+ 	struct spi_geni_master *mas = spi_master_get_devdata(spi);
++	int ret;
++
++	ret = geni_icc_vote_on(&mas->se);
++	if (ret)
++		return ret;
+ 
+ 	return geni_se_resources_on(&mas->se);
+ }
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
