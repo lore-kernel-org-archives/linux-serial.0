@@ -1,117 +1,155 @@
-Return-Path: <SRS0=CAPS=56=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=rV5n=57=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2FCBC352BE
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Apr 2020 17:03:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8C69C2BA19
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Apr 2020 09:36:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8DEA520678
-	for <linux-serial@archiver.kernel.org>; Tue, 14 Apr 2020 17:03:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1586883831;
-	bh=hwHnQDgIoW19lCoLAnrpKBo69x4YnM2jX32aKx4IPd0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=T8b1aUj+DTXgE9ZcJYzdJd6IOAvOlqUAd3Q1I62WBymZ+scFvRYiivOvspRBJvS5c
-	 4dUmRy5vhRR6k7UzOrXncPox2we/rywZYHD0xoWFRyL3prSqxH70Jbz5Xdbwr2gyJE
-	 PiCIt3HO3JwlfzkuDw+cR9eK0dktWH/USQxdECE8=
+	by mail.kernel.org (Postfix) with ESMTP id 8D80220771
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Apr 2020 09:36:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388070AbgDNRDu (ORCPT
+        id S2895660AbgDOJgO (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 14 Apr 2020 13:03:50 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:46593 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728549AbgDNRDk (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 14 Apr 2020 13:03:40 -0400
-Received: by mail-ot1-f65.google.com with SMTP id w12so292990otm.13;
-        Tue, 14 Apr 2020 10:03:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=jaXxYQ2FYpSVQsJaEvJ0tlJfoyPl68Crc2WxdCdXIYU=;
-        b=T51wxXppjDfrn19kOTet2iKoIIax3Lvy7J2tfyYErQUs+ptzGw3teNlRyst2v6pCu2
-         xRsEtgeLzSLWq7us729b+lMu7DKfqneVydKzZNJ96VRTlMnhyadM5opWIQZCRYXYJAb/
-         ygMx6Su0biE/1qYB5sheh1yz9lENdKolmyKaMFiBfr31lMJfePOg6byZAEX0YYJJKPtH
-         rqNtfnbNAk25sIZwus5XlJSNVT4XFNKVXPafMZagkDn//7iupBy/EvtitKKvVOMjSSqc
-         OLk/xEep9pooENBWno03epvwwZBBYsPYddYQHQ6jmfgnMMfcLfl79ilTAJrLaYrLV2vD
-         Wy9A==
-X-Gm-Message-State: AGi0PuZftsD04c7TZ7DC4MxXzSw0cGntOhq/wfnBY7NFigEeR3zJAjVM
-        vww4MBKrHneK/FREPZJC3g==
-X-Google-Smtp-Source: APiQypJLVVe9ZYo0KcdXWrYnv+be8t6aET3lPXMMKhLrbG6rm1kd16c0H9/OvnOO9p4vB30IOLnDaw==
-X-Received: by 2002:a4a:c408:: with SMTP id y8mr19491246oop.42.1586883819021;
-        Tue, 14 Apr 2020 10:03:39 -0700 (PDT)
-Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id s73sm1275570oih.14.2020.04.14.10.03.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Apr 2020 10:03:37 -0700 (PDT)
-Received: (nullmailer pid 6695 invoked by uid 1000);
-        Tue, 14 Apr 2020 17:03:36 -0000
-Date:   Tue, 14 Apr 2020 12:03:36 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Mateusz Holenko <mholenko@antmicro.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, devicetree@vger.kernel.org,
-        linux-serial@vger.kernel.org, Stafford Horne <shorne@gmail.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Filip Kokosinski <fkokosinski@antmicro.com>,
-        Pawel Czarnecki <pczarnecki@internships.antmicro.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Icenowy Zheng <icenowy@aosc.io>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/5] dt-bindings: soc: document LiteX SoC Controller
-  bindings
-Message-ID: <20200414170336.GA6657@bogus>
-References: <20200402084513.4173306-0-mholenko@antmicro.com>
- <20200402084513.4173306-2-mholenko@antmicro.com>
+        Wed, 15 Apr 2020 05:36:14 -0400
+Received: from mx2.suse.de ([195.135.220.15]:52878 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2895655AbgDOJgN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 15 Apr 2020 05:36:13 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id DD059AE4B;
+        Wed, 15 Apr 2020 09:36:08 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 2/2] vt: extract selection chars storing from vc_do_selection
+Date:   Wed, 15 Apr 2020 11:36:08 +0200
+Message-Id: <20200415093608.10348-2-jslaby@suse.cz>
+X-Mailer: git-send-email 2.26.1
+In-Reply-To: <20200415093608.10348-1-jslaby@suse.cz>
+References: <20200415093608.10348-1-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200402084513.4173306-2-mholenko@antmicro.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 2 Apr 2020 08:45:54 +0200, Mateusz Holenko wrote:
-> From: Pawel Czarnecki <pczarnecki@internships.antmicro.com>
-> 
-> Add documentation for LiteX SoC Controller bindings.
-> 
-> Signed-off-by: Pawel Czarnecki <pczarnecki@internships.antmicro.com>
-> Signed-off-by: Mateusz Holenko <mholenko@antmicro.com>
-> ---
-> 
-> Notes:
->     Changes in v4:
->     - changes compatible to "litex,soc-controller"
->     - fixed yaml's header
->     - removed unnecessary sections from yaml
->     - fixed indentation in yaml
-> 
->     This commit has been introduced in v3 of the patchset.
-> 
->  .../soc/litex/litex,soc-controller.yaml       | 39 +++++++++++++++++++
->  MAINTAINERS                                   |  6 +++
->  2 files changed, 45 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/soc/litex/litex,soc-controller.yaml
-> 
+Let's put it to a separate function, named vc_selection_store_chars.
+Again, this makes vc_do_selection a bit shorter and more readable.
+Having 4 local variables instead of 12 (5.6-rc1) looks much better now.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
+ drivers/tty/vt/selection.c | 79 ++++++++++++++++++++------------------
+ 1 file changed, 42 insertions(+), 37 deletions(-)
+
+diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
+index a9693c0e8d04..31bb3647a99c 100644
+--- a/drivers/tty/vt/selection.c
++++ b/drivers/tty/vt/selection.c
+@@ -185,13 +185,51 @@ int set_selection_user(const struct tiocl_selection __user *sel,
+ 	return set_selection_kernel(&v, tty);
+ }
+ 
++static int vc_selection_store_chars(struct vc_data *vc, bool unicode)
++{
++	char *bp, *obp;
++	unsigned int i;
++
++	/* Allocate a new buffer before freeing the old one ... */
++	/* chars can take up to 4 bytes with unicode */
++	bp = kmalloc_array((vc_sel.end - vc_sel.start) / 2 + 1, unicode ? 4 : 1,
++			   GFP_KERNEL);
++	if (!bp) {
++		printk(KERN_WARNING "selection: kmalloc() failed\n");
++		clear_selection();
++		return -ENOMEM;
++	}
++	kfree(vc_sel.buffer);
++	vc_sel.buffer = bp;
++
++	obp = bp;
++	for (i = vc_sel.start; i <= vc_sel.end; i += 2) {
++		u32 c = sel_pos(i, unicode);
++		if (unicode)
++			bp += store_utf8(c, bp);
++		else
++			*bp++ = c;
++		if (!isspace(c))
++			obp = bp;
++		if (!((i + 2) % vc->vc_size_row)) {
++			/* strip trailing blanks from line and add newline,
++			   unless non-space at end of line. */
++			if (obp != bp) {
++				bp = obp;
++				*bp++ = '\r';
++			}
++			obp = bp;
++		}
++	}
++	vc_sel.buf_len = bp - vc_sel.buffer;
++
++	return 0;
++}
++
+ static int vc_do_selection(struct vc_data *vc, unsigned short mode, int ps,
+ 		int pe)
+ {
+ 	int new_sel_start, new_sel_end, spc;
+-	char *bp, *obp;
+-	u32 c;
+-	int i, ret = 0;
+ 	bool unicode = vt_do_kdgkbmode(fg_console) == K_UNICODE;
+ 
+ 	switch (mode) {
+@@ -272,40 +310,7 @@ static int vc_do_selection(struct vc_data *vc, unsigned short mode, int ps,
+ 	vc_sel.start = new_sel_start;
+ 	vc_sel.end = new_sel_end;
+ 
+-	/* Allocate a new buffer before freeing the old one ... */
+-	/* chars can take up to 4 bytes with unicode */
+-	bp = kmalloc_array((vc_sel.end - vc_sel.start) / 2 + 1, unicode ? 4 : 1,
+-			   GFP_KERNEL);
+-	if (!bp) {
+-		printk(KERN_WARNING "selection: kmalloc() failed\n");
+-		clear_selection();
+-		return -ENOMEM;
+-	}
+-	kfree(vc_sel.buffer);
+-	vc_sel.buffer = bp;
+-
+-	obp = bp;
+-	for (i = vc_sel.start; i <= vc_sel.end; i += 2) {
+-		c = sel_pos(i, unicode);
+-		if (unicode)
+-			bp += store_utf8(c, bp);
+-		else
+-			*bp++ = c;
+-		if (!isspace(c))
+-			obp = bp;
+-		if (! ((i + 2) % vc->vc_size_row)) {
+-			/* strip trailing blanks from line and add newline,
+-			   unless non-space at end of line. */
+-			if (obp != bp) {
+-				bp = obp;
+-				*bp++ = '\r';
+-			}
+-			obp = bp;
+-		}
+-	}
+-	vc_sel.buf_len = bp - vc_sel.buffer;
+-
+-	return ret;
++	return vc_selection_store_chars(vc, unicode);
+ }
+ 
+ static int vc_selection(struct vc_data *vc, struct tiocl_selection *v,
+-- 
+2.26.1
+
