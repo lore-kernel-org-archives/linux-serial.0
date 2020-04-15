@@ -2,170 +2,251 @@ Return-Path: <SRS0=rV5n=57=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56182C38A2B
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Apr 2020 09:36:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78930C2BA19
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Apr 2020 10:25:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 41B6120771
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Apr 2020 09:36:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 56B7C20787
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Apr 2020 10:25:33 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="CdT9vSQd"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2895654AbgDOJgO (ORCPT
+        id S2408563AbgDOKYm (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Apr 2020 05:36:14 -0400
-Received: from mx2.suse.de ([195.135.220.15]:52868 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2895653AbgDOJgL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Apr 2020 05:36:11 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 8EEC0AE48;
-        Wed, 15 Apr 2020 09:36:08 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 1/2] vt: selection, split __set_selection_kernel
-Date:   Wed, 15 Apr 2020 11:36:07 +0200
-Message-Id: <20200415093608.10348-1-jslaby@suse.cz>
-X-Mailer: git-send-email 2.26.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 15 Apr 2020 06:24:42 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:56622 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2408556AbgDOKYg (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 15 Apr 2020 06:24:36 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1586946276; h=References: In-Reply-To: Message-Id: Date:
+ Subject: Cc: To: From: Sender;
+ bh=8IOcqCvPwawXRKfWomlx42mzQjBnaGjZZ0xUUJGP2mQ=; b=CdT9vSQdHVBwB2l+F3WVnDDvUU2U3ZzegLMNAFPG6o7/9t/eGh7NVkc6C8yBOVVjDtEHyR8N
+ 29She4OTbYCn6nqjFSAzT3kLyMPRc6wniIHCFG1pmLdOQhGFf55jC25Flu+KaQx8HaY97nEA
+ GiDd+sQzAgrB1v3VTPi0CwLtm7w=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e96e0d3.7fe88b2c9ce0-smtp-out-n03;
+ Wed, 15 Apr 2020 10:24:19 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 9DCDBC433F2; Wed, 15 Apr 2020 10:24:18 +0000 (UTC)
+Received: from akashast-linux.qualcomm.com (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 30974C433CB;
+        Wed, 15 Apr 2020 10:24:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 30974C433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+From:   Akash Asthana <akashast@codeaurora.org>
+To:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
+        mark.rutland@arm.com, robh+dt@kernel.org, georgi.djakov@linaro.org
+Cc:     linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, mka@chromium.org,
+        dianders@chromium.org, evgreen@chromium.org,
+        Akash Asthana <akashast@codeaurora.org>
+Subject: [PATCH V4 3/9] soc: qcom: geni: Support for ICC voting
+Date:   Wed, 15 Apr 2020 15:53:12 +0530
+Message-Id: <1586946198-13912-4-git-send-email-akashast@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1586946198-13912-1-git-send-email-akashast@codeaurora.org>
+References: <1586946198-13912-1-git-send-email-akashast@codeaurora.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Handle these actions:
-* poking console
-* TIOCL_SELCLEAR
-* TIOCL_SELMOUSEREPORT
-* start/end precomputation
-* clear_selection if the console changed
-in a separate function, thus making __set_selection_kernel way shorter
-and more readable. The function still needs dissection, but we are
-approaching.
+Add necessary macros and structure variables to support ICC BW
+voting from individual SE drivers.
 
-This includes introduction of vc_selection and renaming
-__set_selection_kernel to vc_do_selection.
-
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Signed-off-by: Akash Asthana <akashast@codeaurora.org>
 ---
- drivers/tty/vt/selection.c | 80 ++++++++++++++++++++------------------
- 1 file changed, 43 insertions(+), 37 deletions(-)
+Changes in V2:
+ - As per Bjorn's comment dropped enums for ICC paths, given the three
+   paths individual members
 
-diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
-index d54a549c5892..a9693c0e8d04 100644
---- a/drivers/tty/vt/selection.c
-+++ b/drivers/tty/vt/selection.c
-@@ -185,47 +185,16 @@ int set_selection_user(const struct tiocl_selection __user *sel,
- 	return set_selection_kernel(&v, tty);
+Changes in V3:
+ - Add geni_icc_get, geni_icc_vote_on and geni_icc_vote_off as helper API.
+ - Add geni_icc_path structure in common header
+
+Changes in V4:
+ - As per Bjorn's comment print error message in geni_icc_get if return
+   value is not -EPROBE_DEFER.
+ - As per Bjorn's comment remove NULL on path before calling icc_set_bw
+   API.
+ - As per Bjorn's comment drop __func__ print.
+ - As per Matthias's comment, make ICC path a array instead of individual
+   member entry in geni_se struct.
+
+Note: I have ignored below check patch suggestion because it was throwing
+      compilation error as 'icc_ddr' is not compile time comstant.
+
+WARNING: char * array declaration might be better as static const
+ - FILE: drivers/soc/qcom/qcom-geni-se.c:726:
+ - const char *icc_names[] = {"qup-core", "qup-config", icc_ddr};
+
+
+ drivers/soc/qcom/qcom-geni-se.c | 61 +++++++++++++++++++++++++++++++++++++++++
+ include/linux/qcom-geni-se.h    | 31 +++++++++++++++++++++
+ 2 files changed, 92 insertions(+)
+
+diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
+index 7d622ea..1527bc4 100644
+--- a/drivers/soc/qcom/qcom-geni-se.c
++++ b/drivers/soc/qcom/qcom-geni-se.c
+@@ -720,6 +720,67 @@ void geni_se_rx_dma_unprep(struct geni_se *se, dma_addr_t iova, size_t len)
  }
+ EXPORT_SYMBOL(geni_se_rx_dma_unprep);
  
--static int __set_selection_kernel(struct tiocl_selection *v, struct tty_struct *tty)
-+static int vc_do_selection(struct vc_data *vc, unsigned short mode, int ps,
-+		int pe)
- {
--	struct vc_data *vc = vc_cons[fg_console].d;
- 	int new_sel_start, new_sel_end, spc;
- 	char *bp, *obp;
--	int i, ps, pe;
- 	u32 c;
--	int ret = 0;
--	bool unicode;
--
--	poke_blanked_console();
--
--	v->xs = min_t(u16, v->xs - 1, vc->vc_cols - 1);
--	v->ys = min_t(u16, v->ys - 1, vc->vc_rows - 1);
--	v->xe = min_t(u16, v->xe - 1, vc->vc_cols - 1);
--	v->ye = min_t(u16, v->ye - 1, vc->vc_rows - 1);
--	ps = v->ys * vc->vc_size_row + (v->xs << 1);
--	pe = v->ye * vc->vc_size_row + (v->xe << 1);
--
--	if (v->sel_mode == TIOCL_SELCLEAR) {
--		/* useful for screendump without selection highlights */
--		clear_selection();
--		return 0;
--	}
--
--	if (mouse_reporting() && (v->sel_mode & TIOCL_SELMOUSEREPORT)) {
--		mouse_report(tty, v->sel_mode & TIOCL_SELBUTTONMASK, v->xs,
--			     v->ys);
--		return 0;
--	}
-+	int i, ret = 0;
-+	bool unicode = vt_do_kdgkbmode(fg_console) == K_UNICODE;
- 
--	if (ps > pe)	/* make vc_sel.start <= vc_sel.end */
--		swap(ps, pe);
--
--	if (vc_sel.cons != vc_cons[fg_console].d) {
--		clear_selection();
--		vc_sel.cons = vc_cons[fg_console].d;
--	}
--	unicode = vt_do_kdgkbmode(fg_console) == K_UNICODE;
--
--	switch (v->sel_mode) {
-+	switch (mode) {
- 	case TIOCL_SELCHAR:	/* character-by-character selection */
- 		new_sel_start = ps;
- 		new_sel_end = pe;
-@@ -339,13 +308,50 @@ static int __set_selection_kernel(struct tiocl_selection *v, struct tty_struct *
- 	return ret;
- }
- 
-+static int vc_selection(struct vc_data *vc, struct tiocl_selection *v,
-+		struct tty_struct *tty)
++int geni_icc_get(struct geni_se *se, const char *icc_ddr)
 +{
-+	int ps, pe;
++	int i, icc_err;
++	const char *icc_names[] = {"qup-core", "qup-config", icc_ddr};
 +
-+	poke_blanked_console();
++	for (i = 0; i < ARRAY_SIZE(se->icc_paths); i++) {
++		if (!icc_names[i])
++			continue;
 +
-+	if (v->sel_mode == TIOCL_SELCLEAR) {
-+		/* useful for screendump without selection highlights */
-+		clear_selection();
-+		return 0;
++		se->icc_paths[i].path = devm_of_icc_get(se->dev, icc_names[i]);
++		if (IS_ERR(se->icc_paths[i].path))
++			goto icc_get_failure;
 +	}
 +
-+	v->xs = min_t(u16, v->xs - 1, vc->vc_cols - 1);
-+	v->ys = min_t(u16, v->ys - 1, vc->vc_rows - 1);
-+	v->xe = min_t(u16, v->xe - 1, vc->vc_cols - 1);
-+	v->ye = min_t(u16, v->ye - 1, vc->vc_rows - 1);
++	return 0;
 +
-+	if (mouse_reporting() && (v->sel_mode & TIOCL_SELMOUSEREPORT)) {
-+		mouse_report(tty, v->sel_mode & TIOCL_SELBUTTONMASK, v->xs,
-+			     v->ys);
-+		return 0;
-+	}
++icc_get_failure:
++	icc_err = PTR_ERR(se->icc_paths[i].path);
++	if (icc_err != -EPROBE_DEFER)
++		dev_err_ratelimited(se->dev, "Failed to get path:%d, ret:%d\n",
++					i, icc_err);
++	return icc_err;
 +
-+	ps = v->ys * vc->vc_size_row + (v->xs << 1);
-+	pe = v->ye * vc->vc_size_row + (v->xe << 1);
-+	if (ps > pe)	/* make vc_sel.start <= vc_sel.end */
-+		swap(ps, pe);
-+
-+	if (vc_sel.cons != vc) {
-+		clear_selection();
-+		vc_sel.cons = vc;
-+	}
-+
-+	return vc_do_selection(vc, v->sel_mode, ps, pe);
 +}
++EXPORT_SYMBOL(geni_icc_get);
 +
- int set_selection_kernel(struct tiocl_selection *v, struct tty_struct *tty)
++int geni_icc_vote_on(struct geni_se *se)
++{
++	int i, ret;
++
++	for (i = 0; i < ARRAY_SIZE(se->icc_paths); i++) {
++		ret = icc_set_bw(se->icc_paths[i].path,
++			se->icc_paths[i].avg_bw, se->icc_paths[i].peak_bw);
++		if (ret) {
++			dev_err_ratelimited(se->dev, "ICC BW voting failed on path:%d, ret:%d\n",
++					i, ret);
++			return ret;
++		}
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL(geni_icc_vote_on);
++
++int geni_icc_vote_off(struct geni_se *se)
++{
++	int i, ret;
++
++	for (i = 0; i < ARRAY_SIZE(se->icc_paths); i++) {
++		ret = icc_set_bw(se->icc_paths[i].path, 0, 0);
++		if (ret) {
++			dev_err_ratelimited(se->dev, "ICC BW remove failed on path:%d, ret:%d\n",
++					i, ret);
++			return ret;
++		}
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL(geni_icc_vote_off);
++
+ static int geni_se_probe(struct platform_device *pdev)
  {
- 	int ret;
+ 	struct device *dev = &pdev->dev;
+diff --git a/include/linux/qcom-geni-se.h b/include/linux/qcom-geni-se.h
+index dd46494..b5b9316 100644
+--- a/include/linux/qcom-geni-se.h
++++ b/include/linux/qcom-geni-se.h
+@@ -6,6 +6,8 @@
+ #ifndef _LINUX_QCOM_GENI_SE
+ #define _LINUX_QCOM_GENI_SE
  
- 	mutex_lock(&vc_sel.lock);
- 	console_lock();
--	ret = __set_selection_kernel(v, tty);
-+	ret = vc_selection(vc_cons[fg_console].d, v, tty);
- 	console_unlock();
- 	mutex_unlock(&vc_sel.lock);
++#include <linux/interconnect.h>
++
+ /* Transfer mode supported by GENI Serial Engines */
+ enum geni_se_xfer_mode {
+ 	GENI_SE_INVALID,
+@@ -25,6 +27,12 @@ enum geni_se_protocol_type {
+ struct geni_wrapper;
+ struct clk;
  
++struct geni_icc_path {
++	struct icc_path *path;
++	unsigned int avg_bw;
++	unsigned int peak_bw;
++};
++
+ /**
+  * struct geni_se - GENI Serial Engine
+  * @base:		Base Address of the Serial Engine's register block
+@@ -33,6 +41,7 @@ struct clk;
+  * @clk:		Handle to the core serial engine clock
+  * @num_clk_levels:	Number of valid clock levels in clk_perf_tbl
+  * @clk_perf_tbl:	Table of clock frequency input to serial engine clock
++ * @icc_paths:		Array of ICC paths for SE
+  */
+ struct geni_se {
+ 	void __iomem *base;
+@@ -41,6 +50,7 @@ struct geni_se {
+ 	struct clk *clk;
+ 	unsigned int num_clk_levels;
+ 	unsigned long *clk_perf_tbl;
++	struct geni_icc_path icc_paths[3];
+ };
+ 
+ /* Common SE registers */
+@@ -229,6 +239,21 @@ struct geni_se {
+ #define GENI_SE_VERSION_MINOR(ver) ((ver & HW_VER_MINOR_MASK) >> HW_VER_MINOR_SHFT)
+ #define GENI_SE_VERSION_STEP(ver) (ver & HW_VER_STEP_MASK)
+ 
++/*
++ * Define bandwidth thresholds that cause the underlying Core 2X interconnect
++ * clock to run at the named frequency. These baseline values are recommended
++ * by the hardware team, and are not dynamically scaled with GENI bandwidth
++ * beyond basic on/off.
++ */
++#define CORE_2X_19_2_MHZ		960
++#define CORE_2X_50_MHZ			2500
++#define CORE_2X_100_MHZ			5000
++#define CORE_2X_150_MHZ			7500
++#define CORE_2X_200_MHZ			10000
++#define CORE_2X_236_MHZ			16383
++
++#define GENI_DEFAULT_BW			Bps_to_icc(1000)
++
+ #if IS_ENABLED(CONFIG_QCOM_GENI_SE)
+ 
+ u32 geni_se_get_qup_hw_version(struct geni_se *se);
+@@ -416,5 +441,11 @@ int geni_se_rx_dma_prep(struct geni_se *se, void *buf, size_t len,
+ void geni_se_tx_dma_unprep(struct geni_se *se, dma_addr_t iova, size_t len);
+ 
+ void geni_se_rx_dma_unprep(struct geni_se *se, dma_addr_t iova, size_t len);
++
++int geni_icc_get(struct geni_se *se, const char *icc_ddr);
++
++int geni_icc_vote_on(struct geni_se *se);
++
++int geni_icc_vote_off(struct geni_se *se);
+ #endif
+ #endif
 -- 
-2.26.1
-
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
