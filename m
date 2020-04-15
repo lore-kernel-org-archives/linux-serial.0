@@ -2,128 +2,188 @@ Return-Path: <SRS0=rV5n=57=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85C96C2BA19
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Apr 2020 10:42:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A0EAC2BA19
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Apr 2020 10:54:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6389120737
-	for <linux-serial@archiver.kernel.org>; Wed, 15 Apr 2020 10:42:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 43A7D206E9
+	for <linux-serial@archiver.kernel.org>; Wed, 15 Apr 2020 10:54:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="HoIjTrJ3"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="vbJ7rOV0"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390783AbgDOKmH (ORCPT
+        id S2436537AbgDOKy0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 15 Apr 2020 06:42:07 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:15167 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2896484AbgDOKXw (ORCPT
+        Wed, 15 Apr 2020 06:54:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33632 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2441191AbgDOKyV (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 15 Apr 2020 06:23:52 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1586946225; h=Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=GGjz8tY0e6WxXggFY13xcuAUvyD7bnrpD+rtVLsk8QA=; b=HoIjTrJ3PoZVyYIpJQZy1peVQo4Jxhtv0CipP1n/fHqEgBBDPtv9Ui7wRMrawvvDlX+Iu4hV
- YfLkTOOI8EJ9m+Cn9DlJvX1vJCrKrNAfUXhFXc64D3DxJEUsWiRZoVk1g/KeEAgOA6bkolT+
- pLl8Y3JYxkBWxCoxDitS0LNF9c0=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e96e0ad.7ff68bc01dc0-smtp-out-n02;
- Wed, 15 Apr 2020 10:23:41 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id DF2A6C44792; Wed, 15 Apr 2020 10:23:39 +0000 (UTC)
-Received: from akashast-linux.qualcomm.com (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id AFA8EC433F2;
-        Wed, 15 Apr 2020 10:23:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org AFA8EC433F2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-From:   Akash Asthana <akashast@codeaurora.org>
-To:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org, georgi.djakov@linaro.org
-Cc:     linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        Wed, 15 Apr 2020 06:54:21 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04196C061A0F
+        for <linux-serial@vger.kernel.org>; Wed, 15 Apr 2020 03:54:19 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id u13so18077242wrp.3
+        for <linux-serial@vger.kernel.org>; Wed, 15 Apr 2020 03:54:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=N5achumHbyhd7pAEpLAvWmDnK4L9orFHPx3MDqdGic0=;
+        b=vbJ7rOV0wR/LUZcYwSBUqIAoh50IC66nIOBJIOymEnqWGZFxPAoxoL58zbrXjNZJP5
+         3jOa7Bk6zMW9j5w9AmwGnZ6Jpr9HXhF46KbxE58T5a2xTGCx+zxtqLPFE3QtUIaqCznm
+         /Ql9qYg/J5OnmNwi/Jub65h5MpHxHGYNAvOY3RSIXTLHQAVwvM7RoyHYNo+uSHmujtoc
+         ZYfzBeopVfidJT2oWkmAe7y2jiszM7R+nFAkwpEFTIYWmGfKTSUJIss4RjTgXxPU57qQ
+         r1/8yBMDRG7NZsSpPC89kvwVHXiG+TjDKxi9mbP2Gc6ENhHMF2ihWpSTHJwgRMrlG7hc
+         a/XQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=N5achumHbyhd7pAEpLAvWmDnK4L9orFHPx3MDqdGic0=;
+        b=SgGJaQT9ltntKnNPXzO81099tYMsib++R2fjidYTTnSjTcM+JEefY/VNireJfSEjKQ
+         Xs/QQIraG+6rgpNTULgE+r13eica38uCAWfdTtlwDGSiue5lSQgVrbdVUbApXg7bbc+t
+         NcGrWC7L91dF4qj7X0KcnHwuV2gfiXGaa7NLnOhMorkYt9LTwA8mHM9k/8Tone5Awve1
+         uL4L9RNOfAj85BMvf58v7XnSf4VeJvDVMU2G+ymrxx7rQ7S4kqFXd6YIPQTbgRQvr3cU
+         fpU2GWM04ylMZlP4DtgPAJ3Lfs2FWUcmwvQcxiqk29uxYF4+rfnC573fp+LNEaGOrymS
+         GMAg==
+X-Gm-Message-State: AGi0PuaUxyY840/DA9P0mWa35BvTnRPav0xKlaNxWnt89oRv9t586N+P
+        kT3+QgDORtWPigdERLR6zOfOXA==
+X-Google-Smtp-Source: APiQypJzWzAuH9J0oAP/CwcaigLX+6VY3cfSnNSog0Vu5MnQCvINZqLpelMLG0YDScc+sYv7sdMCcA==
+X-Received: by 2002:a5d:5189:: with SMTP id k9mr1072209wrv.3.1586948058564;
+        Wed, 15 Apr 2020 03:54:18 -0700 (PDT)
+Received: from [192.168.0.136] ([87.120.218.65])
+        by smtp.googlemail.com with ESMTPSA id k3sm13384202wru.90.2020.04.15.03.54.16
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 15 Apr 2020 03:54:17 -0700 (PDT)
+Subject: Re: [PATCH V3 7/8] spi: spi-qcom-qspi: Add interconnect support
+To:     Akash Asthana <akashast@codeaurora.org>,
+        Mark Brown <broonie@kernel.org>
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de,
+        mark.rutland@arm.com, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
         devicetree@vger.kernel.org, swboyd@chromium.org,
         mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
         linux-serial@vger.kernel.org, mka@chromium.org,
-        dianders@chromium.org, evgreen@chromium.org,
-        Akash Asthana <akashast@codeaurora.org>
-Subject: [PATCH V4 0/9] Add interconnect support to QSPI and QUP drivers
-Date:   Wed, 15 Apr 2020 15:53:09 +0530
-Message-Id: <1586946198-13912-1-git-send-email-akashast@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
+        dianders@chromium.org, evgreen@chromium.org
+References: <1585652976-17481-1-git-send-email-akashast@codeaurora.org>
+ <1585652976-17481-8-git-send-email-akashast@codeaurora.org>
+ <20200331112352.GB4802@sirena.org.uk>
+ <f896d6e4-cc86-db46-a9b9-d7c98071b524@codeaurora.org>
+ <20200407105542.GA5247@sirena.org.uk>
+ <48c60fdf-03c6-650a-2671-b8f7cc1e5c82@codeaurora.org>
+ <5644ef02-f984-0f5b-d745-eca3c9573726@linaro.org>
+ <eca0e6a7-effe-022c-e90e-c0672991251d@codeaurora.org>
+From:   Georgi Djakov <georgi.djakov@linaro.org>
+Openpgp: preference=signencrypt
+Autocrypt: addr=georgi.djakov@linaro.org; prefer-encrypt=mutual; keydata=
+ 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
+ KEmKjLDvB0pePJkdTw==
+Message-ID: <1354a27f-217b-c530-c093-d2a5d3df99b2@linaro.org>
+Date:   Wed, 15 Apr 2020 13:54:16 +0300
+MIME-Version: 1.0
+In-Reply-To: <eca0e6a7-effe-022c-e90e-c0672991251d@codeaurora.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-dt-binding patch for QUP drivers.
- - https://patchwork.kernel.org/patch/11436621/ [Convert QUP bindings
-        to YAML and add ICC, pin swap doc]
+Hi Akash,
 
-High level design:
- - QUP wrapper/common driver.
-   Vote for QUP core on behalf of earlycon from probe.
-   Remove BW vote during earlycon exit call
+On 4/10/20 10:31, Akash Asthana wrote:
+> Hi Georgi,
+> 
+> On 4/9/2020 6:47 PM, Georgi Djakov wrote:
+>> Hi Akash,
+>>
+>> On 4/8/20 15:17, Akash Asthana wrote:
+>>> Hi Mark, Evan, Georgi,
+>>>
+>>> On 4/7/2020 4:25 PM, Mark Brown wrote:
+>>>> On Tue, Apr 07, 2020 at 03:24:42PM +0530, Akash Asthana wrote:
+>>>>> On 3/31/2020 4:53 PM, Mark Brown wrote:
+>>>>>>> +    ctrl->avg_bw_cpu = Bps_to_icc(speed_hz);
+>>>>>>> +    ctrl->peak_bw_cpu = Bps_to_icc(2 * speed_hz);
+>>>>>> I thought you were going to factor this best guess handling of peak
+>>>>>> bandwidth out into the core?
+>>>>> I can centralize this for SPI, I2C and UART  in Common driver(QUP wrapper)
+>>>>> but still for QSPI I have to keep this piece of code as is because It is not
+>>>>> child of QUP wrapper(it doesn't use common code).
+>>>> Why not?
+>>>>
+>>>>> I am not sure whether I can move this " Assume peak_bw as twice of avg_bw if
+>>>>> nothing is mentioned explicitly" to ICC core because the factor of 2 is
+>>>>> chosen randomly by me.
+>>>> That's the whole point - if this is just a random number then we may as
+>>>> well at least be consistently random.
+>>> Can we centralize below logic of peak_bw selection for all the clients to ICC core?
+>> I don't think this is a good idea for now, because this is very hardware
+>> specific. A scaling factor that works for one client might not work for another.
+>>
+>> My questions here is how did you decide on this "multiply by two"? I can imagine
+>> that the traffic can be bursty on some interfaces, but is the factor here really
+>> a "random number" or is this based on some data patterns or performance
+>> analysis?
+> 
+> Factor of 2 is random number.
+> 
+> We are taking care of actual throughput requirement in avg_bw vote and
+> the intention of putting peak as twice of avg is to ensure that if high
+> speed peripherals(ex:USB) removes their votes, we shouldn't see any
+> latency issue because of other ICC client who don't vote for their BW
+> requirement or *actual* BW requirement.
 
- - SERIAL driver.
-   Vote only for CPU/CORE path because driver is in FIFO mode only
-   Vote/unvote from qcom_geni_serial_pm func.
-   Bump up the CPU vote from set_termios call based on real time need
+Thanks for clarifying, but is this latency a confirmed issue on real hardware?
+I guess voting for twice as average will work, but still wondering wouldn't
+it be more appropriate to handle it in the interconnect platform driver instead?
+Also why is the other client not voting, can we fix it?
 
- - I2C driver.
-   Vote for CORE/CPU/DDR path
-   Vote/unvote from runtime resume/suspend callback
-   As bus speed for I2C is fixed from probe itself no need for bump up.
-
- - SPI QUP driver.
-   Vote only for CPU/CORE path because driver is in FIFO mode only
-   Vote/unvote from runtime resume/suspend callback
-   Bump up CPU vote based on real time need per transfer.
-
- - QSPI driver.
-   Vote only for CPU path
-   Vote/unvote from runtime resume/suspend callback
-   Bump up CPU vote based on real time need per transfer.
-
-Changes in V2:
- - Add devm_of_icc_get() API interconnect core.
- - Add ICC support to common driver to fix earlyconsole crash.
-
-Changes in V3:
- - Define common ICC APIs in geni-se driver and use it across geni based
-   I2C,SPI and UART driver.
-
-Changes in V4:
- - Add a patch to ICC core to scale peak requirement
-   as twice of average if it is not mentioned explicilty.
-
-Akash Asthana (9):
-  interconnect: Add devm_of_icc_get() as exported API for users
-  interconnect: Set peak requirement as twice of average
-  soc: qcom: geni: Support for ICC voting
-  soc: qcom-geni-se: Add interconnect support to fix earlycon crash
-  i2c: i2c-qcom-geni: Add interconnect support
-  spi: spi-geni-qcom: Add interconnect support
-  tty: serial: qcom_geni_serial: Add interconnect support
-  spi: spi-qcom-qspi: Add interconnect support
-  arm64: dts: sc7180: Add interconnect for QUP and QSPI
-
- arch/arm64/boot/dts/qcom/sc7180.dtsi  | 127 ++++++++++++++++++++++++++++++++++
- drivers/i2c/busses/i2c-qcom-geni.c    |  26 ++++++-
- drivers/interconnect/core.c           |  35 ++++++++++
- drivers/soc/qcom/qcom-geni-se.c       | 111 +++++++++++++++++++++++++++++
- drivers/spi/spi-geni-qcom.c           |  25 ++++++-
- drivers/spi/spi-qcom-qspi.c           |  43 +++++++++++-
- drivers/tty/serial/qcom_geni_serial.c |  32 ++++++++-
- include/linux/interconnect.h          |   7 ++
- include/linux/qcom-geni-se.h          |  33 +++++++++
- 9 files changed, 433 insertions(+), 6 deletions(-)
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+Thanks,
+Georgi
