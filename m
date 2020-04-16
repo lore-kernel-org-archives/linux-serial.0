@@ -7,56 +7,56 @@ X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3719C3815B
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 17:10:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 494FFC352BE
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 17:17:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C3F232078E
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 17:10:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2A8222076D
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 17:17:49 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="IkpAFJhJ"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="SYFVPFdn"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387914AbgDPRKG (ORCPT
+        id S1732192AbgDPRRs (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Apr 2020 13:10:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34016 "EHLO
+        Thu, 16 Apr 2020 13:17:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731146AbgDPRKD (ORCPT
+        by vger.kernel.org with ESMTP id S1731998AbgDPRRr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Apr 2020 13:10:03 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B75C061A0F
-        for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2020 10:10:02 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id b8so1932702pfp.8
-        for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2020 10:10:02 -0700 (PDT)
+        Thu, 16 Apr 2020 13:17:47 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B81C061A0F
+        for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2020 10:17:46 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id d1so1965129pfh.1
+        for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2020 10:17:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=EcaUjKr60NABrTutbb9VaO0pRJf9+Gj4l3bz6prw+yE=;
-        b=IkpAFJhJdAWshYnm+xeetGdIIaIslGQ5tzURliBkEMMopJKW5GWMhOLteksRf1Z3tm
-         dYOlW+5enQJMQNLJIAfI1YjYJeErgTn3OZivjXXSf7f5bwKv+kKwo6QBG62kv+4764RI
-         2OTJc8tejHbGSLTt4LSOavpzPxlrEqucJWYAQ=
+        bh=lSVN9q3kewDOwkDaspBABCKY2/Z6ZVUcbqo9W3/29XA=;
+        b=SYFVPFdnR6QrLfSH3STBSVwNueZTK34xisDXvKIC5+mlnFhUXa8c34PTOM/+mKQx7Z
+         KjXBpOoU33j4Olj4UxNSXHm3YvVyNFeOfrx0oOVDpsKSUWQ+n/v+Mah/Nej0qD0CCRdI
+         jLErVM8oxVPYzEzmg4t/lPAm168YlMQQzs/HE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=EcaUjKr60NABrTutbb9VaO0pRJf9+Gj4l3bz6prw+yE=;
-        b=QDjnEeElWLfxHAqrhnMCbvCJEZ4whcOPwKNXOlK9BOH0nfbzwevR9RS2TNOuzLkZ5d
-         SZCYBzkoV4TD1jsmUhuzzh6l3ojyrb6mrkBDHZWbZDFlI8zeNmbA+rMn2giljFZGyo4z
-         rGeN/GVODPDfoO8cKP/2WnxKS+oQkPHFNZfCGTb5+alXo7Yiq+6f5ruNbLNCC7/oyHnS
-         j+vMtxSlWmg/OThTE81CuDoufZ1cflIcszM7JIEL28K1w5bPDXdQGPBIFXUwD4QUuQ1+
-         p0hNcXL3Avp1mmUkXsDB9vmGGl0SVrMSC4kODMl6Tcasf1uehbrvAcws1WqVp/PkW/WP
-         AIeA==
-X-Gm-Message-State: AGi0Pubu9sTOIEMYrDMnX5W8jckLweq5nHuQLiXvgWukYZk3P9TLxL84
-        Ttms/joR6UO/UMSoLX7016ov8g==
-X-Google-Smtp-Source: APiQypIT5kDHYuZg8YXZMEs+ue2sVRmKYbgBy+Kbwvsvc176USpnBUDGYgH/JpVw02EGzNimYbjGEQ==
-X-Received: by 2002:a63:1d4:: with SMTP id 203mr31268336pgb.74.1587057002469;
-        Thu, 16 Apr 2020 10:10:02 -0700 (PDT)
+        bh=lSVN9q3kewDOwkDaspBABCKY2/Z6ZVUcbqo9W3/29XA=;
+        b=PLmHek0Kqu/+2mglZnIz6/V7or8f2eYbz3iLiL+KJJbW+b1FWk0RAruZYQoY2T9cLl
+         K3gWUyqX5ME3JHhm5/Jp8pTYBvq14s+bIcBKD4vmh4ZNK5Q2JeuFWSt5C4irdLf8iEi+
+         EbRx5DJ4PlkL+ggL9TOF9+IgHx8yBwLQsfP9uBOzFLCqIXTPaNRjO6HIdxN/dTuYIbY5
+         AirBE+dgsDGe33aoNjaAbWNh3cPmPocuyn8rdBav+80HppJFNdgXB2zG65lvyUi6+VtD
+         O4BCvSe7bgIAcj3iucNCpuAbwsBmeLCBJa7pT4fvFu9fYp81+aFSB0T409ah7S7tAMl9
+         ViUg==
+X-Gm-Message-State: AGi0PuYJrok8+K+aUIytJ0av4u/W1BFXg3QgWMy3mhoN4BThJILef0mC
+        hN4I+A9WZbV8Owdplk2jpBz3IE/r/5c=
+X-Google-Smtp-Source: APiQypJJH5+xkeCHF0lQwkilT+l9hOfYH89U285tBYg1QODotEruJXQkNKm/uBf6ul/OpdGf5BgEhw==
+X-Received: by 2002:a63:b447:: with SMTP id n7mr31518295pgu.278.1587057465930;
+        Thu, 16 Apr 2020 10:17:45 -0700 (PDT)
 Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
-        by smtp.gmail.com with ESMTPSA id q2sm10446110pfl.174.2020.04.16.10.10.00
+        by smtp.gmail.com with ESMTPSA id f21sm3477755pfn.71.2020.04.16.10.17.44
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Apr 2020 10:10:00 -0700 (PDT)
-Date:   Thu, 16 Apr 2020 10:09:59 -0700
+        Thu, 16 Apr 2020 10:17:44 -0700 (PDT)
+Date:   Thu, 16 Apr 2020 10:17:43 -0700
 From:   Matthias Kaehlcke <mka@chromium.org>
 To:     Akash Asthana <akashast@codeaurora.org>
 Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
@@ -67,30 +67,29 @@ Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
         mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
         linux-serial@vger.kernel.org, dianders@chromium.org,
         evgreen@chromium.org
-Subject: Re: [PATCH V4 5/9] i2c: i2c-qcom-geni: Add interconnect support
-Message-ID: <20200416170959.GB199755@google.com>
+Subject: Re: [PATCH V4 7/9] tty: serial: qcom_geni_serial: Add interconnect
+ support
+Message-ID: <20200416171743.GC199755@google.com>
 References: <1586946198-13912-1-git-send-email-akashast@codeaurora.org>
- <1586946198-13912-6-git-send-email-akashast@codeaurora.org>
+ <1586946198-13912-8-git-send-email-akashast@codeaurora.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1586946198-13912-6-git-send-email-akashast@codeaurora.org>
+In-Reply-To: <1586946198-13912-8-git-send-email-akashast@codeaurora.org>
 User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Akash,
-
-On Wed, Apr 15, 2020 at 03:53:14PM +0530, Akash Asthana wrote:
-> Get the interconnect paths for I2C based Serial Engine device
-> and vote according to the bus speed of the driver.
+On Wed, Apr 15, 2020 at 03:53:16PM +0530, Akash Asthana wrote:
+> Get the interconnect paths for Uart based Serial Engine device
+> and vote according to the baud rate requirement of the driver.
 > 
 > Signed-off-by: Akash Asthana <akashast@codeaurora.org>
 > ---
 > Changes in V2:
->  - As per Bjorn's comment, removed se == NULL check from geni_i2c_icc_get
+>  - As per Bjorn's comment, removed se == NULL check from geni_serial_icc_get
 >  - As per Bjorn's comment, removed code to set se->icc_path* to NULL in failure
 >  - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
 >    path handle
@@ -101,31 +100,65 @@ On Wed, Apr 15, 2020 at 03:53:14PM +0530, Akash Asthana wrote:
 >    driver for ICC functionality.
 > 
 > Changes in V4:
->  - Move peak_bw guess as twice of avg_bw if nothing mentioned explicitly
->    to ICC core.
+>  - As per Mark's comment move peak_bw guess as twice of avg_bw if
+>    nothing mentioned explicitly to ICC core.
+>  - As per Matthias's comment select core clock BW based on baud rate.
+>    If it's less than 115200 go for GENI_DEFAULT_BW else CORE_2X_50_MHZ
 > 
->  drivers/i2c/busses/i2c-qcom-geni.c | 26 +++++++++++++++++++++++++-
->  1 file changed, 25 insertions(+), 1 deletion(-)
+>  drivers/tty/serial/qcom_geni_serial.c | 25 ++++++++++++++++++++++---
+>  1 file changed, 22 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/i2c/busses/i2c-qcom-geni.c b/drivers/i2c/busses/i2c-qcom-geni.c
-> index 18d1e4f..7bf830a 100644
-> --- a/drivers/i2c/busses/i2c-qcom-geni.c
-> +++ b/drivers/i2c/busses/i2c-qcom-geni.c
-> @@ -557,6 +557,22 @@ static int geni_i2c_probe(struct platform_device *pdev)
->  	gi2c->adap.dev.of_node = dev->of_node;
->  	strlcpy(gi2c->adap.name, "Geni-I2C", sizeof(gi2c->adap.name));
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 8c5d97c..a5b2f1c 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -965,6 +965,15 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+>  	ser_clk_cfg = SER_CLK_EN;
+>  	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
 >  
-> +	ret = geni_icc_get(&gi2c->se, "qup-memory");
+> +	/*
+> +	 * Bump up BW vote on CPU and CORE path as driver supports FIFO mode
+> +	 * only.
+> +	 */
+> +	port->se.icc_paths[0].avg_bw = (baud > 115200) ?
+> +				Bps_to_icc(CORE_2X_50_MHZ) : GENI_DEFAULT_BW;
+> +	port->se.icc_paths[1].avg_bw = Bps_to_icc(baud);
+
+use enums to index the paths
+
+> +	geni_icc_vote_on(&port->se);
+> +
+>  	/* parity */
+>  	tx_trans_cfg = readl(uport->membase + SE_UART_TX_TRANS_CFG);
+>  	tx_parity_cfg = readl(uport->membase + SE_UART_TX_PARITY_CFG);
+> @@ -1202,11 +1211,14 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
+>  	if (old_state == UART_PM_STATE_UNDEFINED)
+>  		old_state = UART_PM_STATE_OFF;
+>  
+> -	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
+> +	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF) {
+> +		geni_icc_vote_on(&port->se);
+>  		geni_se_resources_on(&port->se);
+> -	else if (new_state == UART_PM_STATE_OFF &&
+> -			old_state == UART_PM_STATE_ON)
+> +	} else if (new_state == UART_PM_STATE_OFF &&
+> +			old_state == UART_PM_STATE_ON) {
+>  		geni_se_resources_off(&port->se);
+> +		geni_icc_vote_off(&port->se);
+> +	}
+>  }
+>  
+>  static const struct uart_ops qcom_geni_console_pops = {
+> @@ -1304,6 +1316,13 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+>  			return -ENOMEM;
+>  	}
+>  
+> +	ret = geni_icc_get(&port->se, NULL);
 > +	if (ret)
 > +		return ret;
-> +	/*
-> +	 * Set the bus quota for core and cpu to a reasonable value for
-> +	 * register access.
-> +	 * Set quota for DDR based on bus speed.
-> +	 */
-> +	gi2c->se.icc_paths[0].avg_bw = GENI_DEFAULT_BW;
-> +	gi2c->se.icc_paths[1].avg_bw = GENI_DEFAULT_BW;
-> +	gi2c->se.icc_paths[2].avg_bw = Bps_to_icc(gi2c->clk_freq_out);
+> +	/* Set the bus quota to a reasonable value for register access */
+> +	port->se.icc_paths[0].avg_bw = GENI_DEFAULT_BW;
+> +	port->se.icc_paths[1].avg_bw = GENI_DEFAULT_BW;
 
-As commented on patch "soc: qcom: geni: Support for ICC voting" the use
-of literals to index the paths isn't very clear, please use enums.
+The comment isn't very useful, the use of GENI_DEFAULT_BW essentially
+implies "a reasonable value". I suggest to drop it.
