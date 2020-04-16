@@ -2,119 +2,259 @@ Return-Path: <SRS0=wizI=6A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 534C0C38A29
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 04:57:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90424C2D0EF
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 05:59:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 33C5220936
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 04:57:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6FFD920857
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 05:59:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OZznCU+S"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="JajKd4JF"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404984AbgDPE47 (ORCPT
+        id S2407080AbgDPF7D (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Apr 2020 00:56:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60616 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404858AbgDPE4k (ORCPT
+        Thu, 16 Apr 2020 01:59:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41966 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2407021AbgDPF7B (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Apr 2020 00:56:40 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE3BC061A0F;
-        Wed, 15 Apr 2020 21:56:40 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id w65so1110560pfc.12;
-        Wed, 15 Apr 2020 21:56:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=tnsPtbUAG8+OLZCkp5n0IoYKsiXqO3fcv50rNC7/i2M=;
-        b=OZznCU+SRBn2uhYNibIFqabynpAFL/VkKh8/8GgtCs3M3FFAaA+pcRNmYjldigU4To
-         AziU82I6lp1EYnd8/gnQqDq609EwfTlqvEICsOOSR0tm4gZmcZEcEL1lrl/ZW4SC+oEY
-         V1xgMZEO1+9NfWXcRekmJWx2BvEFeeNiQ6beKeXkPdqvbXTPsHyMIRughKN6rrELD1yo
-         9dfSZG1UtfKNprULb152Zi3D2DrVKaUJiYrMmZTn0KTn3D5ISW21E8UcAewGZ1SBa4Rl
-         Sxr7AVZMRSiyw20AyyI5SaqVCctC7szEoEs5HPIm5wHYhXxNnNHjqZ5fxS/ZAT1udHd4
-         NdWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=tnsPtbUAG8+OLZCkp5n0IoYKsiXqO3fcv50rNC7/i2M=;
-        b=S/eYydJYlDmRWetKnDg3NXyFcQZ6yF4XPZTTSlqgBIiofNbnC/ujvB8TMmno2t5qGY
-         A+et2eAPH/Yk57CDf2ago3cYWPtW9i12FjhhonipZOogyTCtMEhErYC0kRnEcHWqznft
-         Qb5WgU7jP1VnsQH0xthU/Z2v2ZOtpmgSPZWdR/ICeZJa0uEYIOIHXYxRtK/RfP2MTSWv
-         p7OEHfm7N4Nu8n5rmiZqRCBhNQFG3P8EpWqSlaoltVmD7nOobhSOlKYpDdK3Ln2K8dFv
-         foIDED0Ll1R6XyMaH/InNMhZZplx5QsQDnh4h0vbhB4u4QoIA2oKniRhqlWXWJJqKoe1
-         5ztQ==
-X-Gm-Message-State: AGi0PubtrXsk57zaCTwHEBcmc6FALIZFV2J0hjaWvu2xI/1nfyF5FmwO
-        Jp1ZJDKGz4YjJsLfz+X27B4=
-X-Google-Smtp-Source: APiQypIMZsvVzOrKvQjryqOOdns5smIKzC8/IUR6PDFhf4fV6xu469FkjndHCcf+7bGsKyk4sp7UZQ==
-X-Received: by 2002:a05:6a00:12:: with SMTP id h18mr12711857pfk.293.1587012999860;
-        Wed, 15 Apr 2020 21:56:39 -0700 (PDT)
-Received: from localhost.localdomain ([183.82.182.213])
-        by smtp.gmail.com with ESMTPSA id 3sm4749198pgh.75.2020.04.15.21.56.37
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 15 Apr 2020 21:56:39 -0700 (PDT)
-From:   Rishi Gupta <gupt21@gmail.com>
-To:     gregkh@linuxfoundation.org, jslaby@suse.com, robh+dt@kernel.org,
-        corbet@lwn.net, andriy.shevchenko@linux.intel.com
+        Thu, 16 Apr 2020 01:59:01 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A99FCC061A0C;
+        Wed, 15 Apr 2020 22:59:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
+        Subject:Sender:Reply-To:Content-ID:Content-Description;
+        bh=y8YseLI+ypx/GuXd2xC6IFiQ9Bn9G3aicBxjrVrERP8=; b=JajKd4JFYkO+jrP5Rl+SiLHFti
+        S4z+Gt4T7j5kRceZDxvypJYQYiqYDfpPN86Bmp6fiSP4zMsDZ0GBz68yaubrZRA+2h841auyAKIOx
+        0dNRu0n5uGDONEOv9Z3Nk5XJp6EsRKFXvDoqF28mYopKGz1WG4VFZrl7WIuzQcH7wZriu+KpkKwcX
+        j3RrpeoCjL+A17AGGhbLMFB29tzya0xAs+osTVAbnNkJ+L3BfkGLdjAn471lsTzHXUXC2Gly0t9Wr
+        8qzHAGF1ivnZcA7olZ2G9dUVaCHsHXtvOTsj8nnQMCTs2IkwvpHFJLQLoMhLMEdB4WlaiIfs7XNVq
+        wvDUjW9A==;
+Received: from [2601:1c0:6280:3f0::19c2]
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jOxYC-0002Yu-9w; Thu, 16 Apr 2020 05:59:00 +0000
+Subject: Re: [PATCH v3 4/4] tty: documentation: document how to use ttyvs
+ driver
+To:     Rishi Gupta <gupt21@gmail.com>, gregkh@linuxfoundation.org,
+        jslaby@suse.com, robh+dt@kernel.org, corbet@lwn.net,
+        andriy.shevchenko@linux.intel.com
 Cc:     devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        Rishi Gupta <gupt21@gmail.com>
-Subject: [PATCH v3 3/4] tty: documentation: abi: add ttyvs null modem driver sysfs nodes
-Date:   Thu, 16 Apr 2020 10:26:13 +0530
-Message-Id: <1587012974-21219-3-git-send-email-gupt21@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1587012974-21219-1-git-send-email-gupt21@gmail.com>
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
 References: <1587012974-21219-1-git-send-email-gupt21@gmail.com>
+ <1587012974-21219-4-git-send-email-gupt21@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <cccf1f76-b16a-600d-0a23-f10d77c524cb@infradead.org>
+Date:   Wed, 15 Apr 2020 22:58:57 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
+MIME-Version: 1.0
+In-Reply-To: <1587012974-21219-4-git-send-email-gupt21@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The ttyvs driver exposes sysfs file called event to emulate
-various serial port events. This commit document this file.
-User space application writes various codes to this file.
+Hi,
+A few changes for you to consider:
 
-Signed-off-by: Rishi Gupta <gupt21@gmail.com>
----
-Changes in v3:
-- Rebased on top of v5.7-rc1
 
-Changes in v2:
-- Updated path to /sys/class/tty/ttyvsN/event
-- Used Documentation/ABI/testing/sysfs-tty, previously new file was created
+On 4/15/20 9:56 PM, Rishi Gupta wrote:
+> The commit documents how to use ttyvs driver to create/delete
+> virtual tty devices, how to emulate various serial port events
+> through this driver etc.
+> 
+> Signed-off-by: Rishi Gupta <gupt21@gmail.com>
+> ---
+> Changes in v3:
+> - Rebased on top of v5.7-rc1
+> - Moved virtual-tty-ttyvs.rst from Documentation/virtual to Documentation/admin-guide
+> 
+> Changes in v2:
+> - Added this file from v2 only
+> 
+>  Documentation/admin-guide/index.rst             |   1 +
+>  Documentation/admin-guide/virtual-tty-ttyvs.rst | 142 ++++++++++++++++++++++++
+>  2 files changed, 143 insertions(+)
+>  create mode 100644 Documentation/admin-guide/virtual-tty-ttyvs.rst
 
- Documentation/ABI/testing/sysfs-tty | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-tty b/Documentation/ABI/testing/sysfs-tty
-index e157130..c17b49d 100644
---- a/Documentation/ABI/testing/sysfs-tty
-+++ b/Documentation/ABI/testing/sysfs-tty
-@@ -161,3 +161,18 @@ Contact:	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- Description:
- 		 Allows user to detach or attach back the given device as
- 		 kernel console. It shows and accepts a boolean variable.
-+
-+What:		/sys/class/tty/ttyvsN/event
-+Date:		February 2020
-+Contact:	Rishi Gupta <gupt21@gmail.com>
-+Description:
-+		The ttyvs driver will emulate serial port event; parity error,
-+		framing error, overrun error, asserting/de-asserting break
-+		condition and ring indication when user space application
-+		writes an event code on this sysfs file.
-+
-+		Write 1 to emulate framing error, write 2 for parity error,
-+		write 3 for overrun error, write 4 to set ring indication,
-+		write 5 to clear ring indication, write 6 to emulate a break
-+		condition detected, write 7 to emulate a faulty cable and
-+		write 8 to remove faulty cable condition.
+> diff --git a/Documentation/admin-guide/virtual-tty-ttyvs.rst b/Documentation/admin-guide/virtual-tty-ttyvs.rst
+> new file mode 100644
+> index 0000000..c30b768
+> --- /dev/null
+> +++ b/Documentation/admin-guide/virtual-tty-ttyvs.rst
+> @@ -0,0 +1,142 @@
+> +================================================
+> +Kernel driver for virtual tty null modem devices
+> +================================================
+> +
+> +Author: Rishi Gupta <gupt21@gmail.com>
+> +
+> +The ttyvs driver (drivers/tty/ttyvs.c) creates virtual tty devices
+> +that can be used with standard POSIX APIs for terminal devices.
+> +
+> +Applications can write to the sysfs file provided by this driver to
+> +emulate various serial port communication events and error conditions.
+> +
+> +This driver creates a virtual card which can have 0 to 65535 virtual
+> +tty devices.
+> +
+> +Use cases
+> +=========
+> +- Automated performance and scalability testing
+> +- Serial port redirector to any other subsystem like TCP/IP
+> +- Feeding data to GPS simulator
+> +- Segregating hardware issues from software bugs quickly
+> +- Serial port communication sniffer or test sniffer application itself
+> +- Application development when hardware is still not available
+> +- Testing user space drivers & corner case by injecting handcrafted data
+> +- Migrate binary only or legacy applications to new communication medium
+> +- Analyze and reverse-engineer serial protocols
+> +- Cases where socat utility does not meet requirements for unix-like OS
+> +- Cases where available physical serial ports don't meet requirements
+> +- Product demo where data from hardware needs to be sent to the GUI app
+> +- Stress and corner case testing of user space application
+> +
+> +How to create devices
+> +=====================
+> +There are two ways to create devices:
+> +
+> +1. Using device tree:
+> +The card is modelled as a node with zero or more child nodes each
+> +representing a virtual tty device. To create a device simply define
+> +a child node with the required device parameters. This is explained
+> +in detail in DT binding file:
+> +Documentation/devicetree/bindings/serial/ttyvs.yaml
+> +
+> +2. Using configfs:
+> +When ttyvs driver is loaded, it will create ttyvs directory inside
+> +configfs mount point. For ex; if configfs is mounted at /config, then
+
+                 either  For example,
+                 or      E.g.,
+
+> +/config/ttyvs directory will be created. To create a device, simply
+> +create directory inside this, write values to be used as device
+> +parameters and finally write 1 to create attribute. Defining ownidx
+> +and devtype is mandatory.
+> +
+> +Pin mappings are bit maps; set bit 0 to connect a pin to CTS pin,
+> +set bit 1 to connect to DCD pin, set bit 2 to connect to DSR and
+> +set bit 3 to connect to RI. Pin naming conventions are follows
+> +standard RS232 DB9 connector naming conventions.
+
+A table would be better here IMO.
+
+> +
+> +An example to create a loop-back device with device number as 0
+
+                          loopback
+
+> +(/dev/ttyvs0), RTS and DTR pins unconnected, no need to assert DTR
+> +when device is opened would be something like this:
+> +
+> +.. code-block:: sh
+> +
+> + mkdir /config/ttyvs/devlb-0
+> + echo 0 > /config/ttyvs/devlb-0/ownidx
+> + echo lb > /config/ttyvs/devlb-0/devtype
+> + echo 0 > /config/ttyvs/devlb-0/ortsmap
+> + echo 0 > /config/ttyvs/devlb-0/odtrmap
+> + echo 0 > /config/ttyvs/devlb-0/odtratopn
+> + echo 1 > /config/ttyvs/devlb-0/create
+> +
+> +An example to create a standard null modem pair with device numbers
+> +0 and 1 with pin numbers as per RS232 standards will be something
+> +like this:
+> +
+> +.. code-block:: sh
+> +
+> + /dev/ttyvs0        /dev/ttyvs1
+> +   TX  (3)   ---->    (2) RX
+> +   RX  (2)   <----    (3) TX
+> +   RTS (7)   ---->    (8) CTS
+> +   DTR (4)   --+->    (1) DCD
+> +               +->    (6) DSR
+> +   CTS (8)   <----    (7) RTS
+> +   DCD (1)   <-+--    (4) DTR
+> +   DSR (6)   <-+
+> +
+> + mkdir /config/ttyvs/devnm-0-1
+> + echo nm > /config/ttyvs/devnm-0-1/devtype
+> + echo 0 > /config/ttyvs/devnm-0-1/ownidx
+> + echo 1 > /config/ttyvs/devnm-0-1/ortsmap
+> + echo 6 > /config/ttyvs/devnm-0-1/odtrmap
+> + echo 0 > /config/ttyvs/devnm-0-1/odtratopn
+> + echo 1 > /config/ttyvs/devnm-0-1/peeridx
+> + echo 1 > /config/ttyvs/devnm-0-1/prtsmap
+> + echo 6 > /config/ttyvs/devnm-0-1/pdtrmap
+> + echo 0 > /config/ttyvs/devnm-0-1/pdtratopn
+> + echo 1 > /config/ttyvs/devnm-0-1/create
+> +
+> +Directory name devnm-0-1 can be user defined. We used this simple style
+> +as it is intuitive to understand that the device is null modem with
+> +numbers 0 and 1. Further, to use configfs based approach, kernel must
+> +be compiled with CONFIG_CONFIGFS_FS=y option.
+> +
+> +How to delete devices
+> +=====================
+> +To delete a device created by configfs simply delete the directory
+> +created in /config/ttyvs directory. If the device is part of a null
+> +modem pair, peer device will also be deleted automatically.
+> +
+> +How to emulate events
+> +=====================
+> +When a virtual tty device is created, an event sysfs file will also
+> +be created by the driver (/sys/class/tty/ttyvsN/event N is device
+> +number).
+> +
+> +1. Emulating framing error: the driver inserts -7 in data buffer as
+> +the byte that got corrupted due to framing error while receiving data.
+> +To emulate this write 1 to /sys/class/tty/ttyvsN/event file.
+> +
+> +2. Emulating parity error: the driver inserts -8 in data buffer as
+> +the byte that got corrupted due to parity error while receiving data.
+> +To emulate this write 2 to /sys/class/tty/ttyvsN/event file.
+> +
+> +3. Emulating overrun error: the driver reports to tty layer that an
+> +overrun has happened.To emulate this write 3 to /sys/class/tty/ttyvsN/event
+
+               happened. To
+
+> +file.
+> +
+> +4. Emulating ring indication: to emulate as if ring indication has been
+> +observed write 4 to the event file. To emulate as if ring indication has
+> +been removed write 5 to the event file.
+> +
+> +5. Emulate break received: to emulate as if break condition has been received
+> +write 6 to the /sys/class/tty/ttyvsN/event file.
+> +
+> +6. Emulate faulty cable: to emulate as if the cable is faulty write 7
+> +to the event file. In this case data sent from sender will not be received
+> +by the receiver end. To remove this condition write 8 to the event file.
+> +
+> +How to support more devices
+> +===========================
+> +By default ttyvs driver supports upto 64 devices. This can be
+
+                                    up to
+
+> +changed by passing module parameter max_num_vs_devs or by defining
+> +max-num-vs-devs device tree property.
+> 
+
+
+thanks.
 -- 
-2.7.4
+~Randy
 
