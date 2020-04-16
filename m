@@ -2,44 +2,44 @@ Return-Path: <SRS0=wizI=6A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 797ADC2BB85
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 09:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B12F8C2BB85
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 10:57:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5B0B120771
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 09:17:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8DC4A21973
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 10:57:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1587028634;
-	bh=6kwbxJH2RDveXqsZesbfmy1W3FzqE56YVY6CxJmBpFo=;
+	s=default; t=1587034673;
+	bh=u5fMQDNAUuXaPw+89dTTA0ZVG5dJuZz63WEnr/aWCsA=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=zJVHuDUD040KXXS+GcYIvwdwudZSJzNm/TmrkTuoSinRdHqYp2r+j+A021txSIZEx
-	 bzZqHvACGwrz721rY/IC2pa7zMq+qqRUhKKCVFzO3RQJn1zi5qjIVyGYSaGGxaQraB
-	 OF270R8vId+DPUOF282wn5+MVvvRh6p76QXEqzFA=
+	b=cUONQ4xHw57nmnUwmuoSo/w9aZonWCSrIpK/UyRWMO1QMf1AXCvT/JuUsmeegDL17
+	 JMcVh3QoeBVu81ubfjVq30EGZHaK/zQ+7V80Lp2ITJlfW0aVd6Qy8r38kdfYgp4VAt
+	 hrPaf0vII9H8oTWBeeBBezvyUEmo5iMwfyWZfiMs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503565AbgDPJQZ (ORCPT
+        id S2505792AbgDPK5p (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Apr 2020 05:16:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38254 "EHLO mail.kernel.org"
+        Thu, 16 Apr 2020 06:57:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52438 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2441116AbgDPIHP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Apr 2020 04:07:15 -0400
-Received: from localhost (unknown [223.235.195.235])
+        id S2505565AbgDPKtx (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Apr 2020 06:49:53 -0400
+Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 69F85206E9;
-        Thu, 16 Apr 2020 08:07:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C8860221E9;
+        Thu, 16 Apr 2020 10:41:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587024434;
-        bh=6kwbxJH2RDveXqsZesbfmy1W3FzqE56YVY6CxJmBpFo=;
+        s=default; t=1587033667;
+        bh=u5fMQDNAUuXaPw+89dTTA0ZVG5dJuZz63WEnr/aWCsA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=O1d6NWlKFfnyKMYlp3FSfoZyP6WL58llnMOPAcukWE4NK15IAgUmTc9Oy1CJfBrQJ
-         FzFh77ntmk81ok6QNhBa7Fsxt0mRWxySPBmmQLISyBFjZXKruM2zAQoNUgGwtCZMXr
-         hATzQxclu6p7VFesf/GI28sOVbjEiU4zdOe4G2WA=
-Date:   Thu, 16 Apr 2020 13:37:10 +0530
-From:   Vinod Koul <vkoul@kernel.org>
+        b=xp/KXtyBC+AW47+w/EThPewPKJno4LpErrb9k/MShW8CSZOjoH/eQie3gyamQtAPZ
+         7+2VNJeLRNNDDKaVoGmzb7acrQ3F10p7zOFoaEDwJaxmNypi234utwSFrQnjNbswMB
+         9dE8DImjkqaSZMR+teMounUi1jKOEIZOXIrffOdk=
+Date:   Thu, 16 Apr 2020 11:41:04 +0100
+From:   Mark Brown <broonie@kernel.org>
 To:     Rob Herring <robh@kernel.org>
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Krzysztof Kozlowski <krzk@kernel.org>,
@@ -47,7 +47,7 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Stephen Boyd <sboyd@kernel.org>,
         Alexandre Torgue <alexandre.torgue@st.com>,
         Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
+        Sam Ravnborg <sam@ravnborg.org>, Vinod Koul <vkoul@kernel.org>,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>,
         Guenter Roeck <linux@roeck-us.net>,
         Jonathan Cameron <jic23@kernel.org>,
@@ -61,7 +61,6 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Florian Fainelli <f.fainelli@gmail.com>,
         Linus Walleij <linus.walleij@linaro.org>,
         Fabio Estevam <festevam@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -78,53 +77,48 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-remoteproc@vger.kernel.org, linux-riscv@lists.infradead.org,
         linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
         alsa-devel@alsa-project.org, linux-spi@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: Clean-up schema indentation formatting
-Message-ID: <20200416080710.GI72691@vkoul-mobl>
+Subject: Re: [PATCH 2/2] dt-bindings: Remove cases of 'allOf' containing a
+ '$ref'
+Message-ID: <20200416104104.GE5354@sirena.org.uk>
 References: <20200416005549.9683-1-robh@kernel.org>
+ <20200416005549.9683-2-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="/2994txjAzEdQwm5"
 Content-Disposition: inline
-In-Reply-To: <20200416005549.9683-1-robh@kernel.org>
+In-Reply-To: <20200416005549.9683-2-robh@kernel.org>
+X-Cookie: Tempt me with a spoon!
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 15-04-20, 19:55, Rob Herring wrote:
-> Fix various inconsistencies in schema indentation. Most of these are
-> list indentation which should be 2 spaces more than the start of the
-> enclosing keyword. This doesn't matter functionally, but affects running
-> scripts which do transforms on the schema files.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  .../devicetree/bindings/arm/altera.yaml       |  6 +-
->  .../amlogic/amlogic,meson-gx-ao-secure.yaml   |  2 +-
->  .../devicetree/bindings/arm/bitmain.yaml      |  2 +-
->  .../devicetree/bindings/arm/nxp/lpc32xx.yaml  |  9 ++-
->  .../bindings/arm/socionext/uniphier.yaml      | 26 ++++----
->  .../bindings/arm/stm32/st,mlahb.yaml          |  2 +-
->  .../bindings/arm/stm32/st,stm32-syscon.yaml   |  6 +-
->  .../bindings/ata/faraday,ftide010.yaml        |  4 +-
->  .../bindings/bus/allwinner,sun8i-a23-rsb.yaml |  4 +-
->  .../clock/allwinner,sun4i-a10-gates-clk.yaml  |  8 +--
->  .../devicetree/bindings/clock/fsl,plldig.yaml | 17 +++--
->  .../devicetree/bindings/clock/qcom,mmcc.yaml  | 16 ++---
->  .../bindings/connector/usb-connector.yaml     |  6 +-
->  .../crypto/allwinner,sun4i-a10-crypto.yaml    | 14 ++--
->  .../bindings/crypto/allwinner,sun8i-ce.yaml   | 16 ++---
->  .../bindings/crypto/amlogic,gxl-crypto.yaml   |  2 +-
->  .../display/allwinner,sun4i-a10-hdmi.yaml     | 40 ++++++------
->  .../display/allwinner,sun4i-a10-tcon.yaml     | 58 ++++++++---------
->  .../display/allwinner,sun6i-a31-mipi-dsi.yaml | 28 ++++----
->  .../display/allwinner,sun8i-a83t-dw-hdmi.yaml | 10 +--
->  .../bindings/display/bridge/lvds-codec.yaml   | 18 +++---
->  .../display/panel/sony,acx424akp.yaml         |  2 +-
->  .../display/panel/xinpeng,xpp055c272.yaml     |  4 +-
->  .../bindings/display/renesas,cmm.yaml         | 16 ++---
->  .../devicetree/bindings/dma/ti/k3-udma.yaml   |  8 +--
 
-Acked-By: Vinod Koul <vkoul@kernel.org>
+--/2994txjAzEdQwm5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
--- 
-~Vinod
+On Wed, Apr 15, 2020 at 07:55:49PM -0500, Rob Herring wrote:
+> json-schema versions draft7 and earlier have a weird behavior in that
+> any keywords combined with a '$ref' are ignored (silently). The correct
+> form was to put a '$ref' under an 'allOf'. This behavior is now changed
+
+Acked-by: Mark Brown <broonie@kernel.org>
+
+--/2994txjAzEdQwm5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl6YNkAACgkQJNaLcl1U
+h9B9Tgf/e6Ex42p5b/rjUYhiAhK+0T+nvTbdLGjxGyRfopnnVMMaYPWXmkdGdh0H
+/nGE0rn04EUyWfBkjgCeKuclbzRWJCfQBSl+4dlYbMuX1LKrybV3nRANP03o7A9y
+sqPsDL3Qq01Rgb8waJiwmXqcHjxKBbCZd5bzU8ff82hg8jGKMIDVzJdnYrzGJJm7
+wLygPWU+Nj65KniavgesiRhfwSLfveuWwAR6SsWCCiOhJOWgl0/KbhceiFTRLJ4c
+pQQeBPzy+/C5VH2sYPCZB3/MEQ4/6+CC1AchkSDqGwOooj4KsPXXCjiJtj4YZB86
+9wfRx0ePvlfgBQgHYw4LX6341lhYUw==
+=Rw7L
+-----END PGP SIGNATURE-----
+
+--/2994txjAzEdQwm5--
