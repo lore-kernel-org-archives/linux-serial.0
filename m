@@ -2,122 +2,98 @@ Return-Path: <SRS0=wizI=6A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13802C2BB55
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 17:37:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E508C2BB55
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 17:58:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E1C9C2076D
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 17:37:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1688A20786
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 17:58:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1587058648;
-	bh=c6RjcLo9mHi0Qj+iI/ymrQ+8S7krFiwa/crVExYtMzc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=ARmKrx8cA+GMrqoH+0rJIjyRnCrU/N2WHlKJRrAMpK/A/Vku2NaYQToqYbxZsDM6Z
-	 lWik9gbCZdZrq27XuYo0RMrgbIXrSe8ZQAbNYSruUc8zzB+IbMNam+sgXfiMxLJAQS
-	 hgi3xU95SRkMqznEBobYug2Xhvacd/YNtQWEB7WM=
+	s=default; t=1587059906;
+	bh=uob6JmhQsIuVSxn6LknqVxhOVd73KK6UiP0jt6GPlzk=;
+	h=From:To:Cc:Subject:Date:List-ID:From;
+	b=ObggAcB1Ewz6yYJ9S9ovY05lVwzTOLsvzpZK2GKQYqxELLsB0PyeDCJFgkk2G8+/+
+	 pn2B3+J2izKfv5PnLeuXscjQ5Z3tWefji0aiziCpGe6UhDY5SMifoY9DJGmVTY+fhZ
+	 L8Woxh3IlXS0incAnbUpkscCl5JS/fmwAwLg0Fqw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729677AbgDPRhY (ORCPT
+        id S1728203AbgDPR6W (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Apr 2020 13:37:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57854 "EHLO mail.kernel.org"
+        Thu, 16 Apr 2020 13:58:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50818 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729673AbgDPRhW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Apr 2020 13:37:22 -0400
-Received: from Mani-XPS-13-9360 (unknown [157.50.106.138])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727794AbgDPR6U (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Apr 2020 13:58:20 -0400
+Received: from localhost.localdomain (unknown [157.50.106.138])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D183A2076D;
-        Thu, 16 Apr 2020 17:37:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 806A120786;
+        Thu, 16 Apr 2020 17:58:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587058642;
-        bh=c6RjcLo9mHi0Qj+iI/ymrQ+8S7krFiwa/crVExYtMzc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MPW/w2Hfnyk6tUbCwgA+epGBp7s9x8qUWJj1HiCBq+J9LTkOTM2QYZTP/j5uo/wrm
-         Zu7E5RQleCiRVXkZUgTILmP6u9Q5+x1hOTZEgCwX8xxgd1Ay9ngjsrcfWax9ah1H31
-         eWIhS2p6dEJvzP9lw8E2V62BIIK92l1CFStWvCOY=
-Date:   Thu, 16 Apr 2020 23:07:10 +0530
-From:   Manivannan Sadhasivam <mani@kernel.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre TORGUE <alexandre.torgue@st.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
+        s=default; t=1587059900;
+        bh=uob6JmhQsIuVSxn6LknqVxhOVd73KK6UiP0jt6GPlzk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=aNPdJIx5+vDQui9jyo5c0PQmu3LjohwVttopU8ZmKeKBHx8mi2M+Edq5DRSaNbXm5
+         n5/4lsaW/h65mCndQWun1ybG2cdAe33Ryq18d5sNBIei7V6QbUDHrj6dod5utxYXLQ
+         O9BSXR/p24p2y4RGMqv9laLGn3wUa0rlNVPbcNVw=
+From:   mani@kernel.org
+To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com
+Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 0/2] Add software flow control support for STM32 UART
-Message-ID: <20200416173710.GA4548@Mani-XPS-13-9360>
-References: <20200412180923.30774-1-mani@kernel.org>
- <CAHp75VfDUoFMWg42OFHZtKQ972eoR3UDLVAs+BQjJm3h3-fOGw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75VfDUoFMWg42OFHZtKQ972eoR3UDLVAs+BQjJm3h3-fOGw@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        fabrice.gasnier@st.com, andy.shevchenko@gmail.com,
+        Manivannan Sadhasivam <mani@kernel.org>
+Subject: [PATCH v2 0/2] Add CTS/RTS gpio support to STM32 UART
+Date:   Thu, 16 Apr 2020 23:27:27 +0530
+Message-Id: <20200416175729.5550-1-mani@kernel.org>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Andy,
+From: Manivannan Sadhasivam <mani@kernel.org>
 
-On Mon, Apr 13, 2020 at 12:17:21PM +0300, Andy Shevchenko wrote:
-> On Mon, Apr 13, 2020 at 7:06 AM <mani@kernel.org> wrote:
-> >
-> > From: Manivannan Sadhasivam <mani@kernel.org>
-> >
-> > Hello,
-> >
-> > This patchset adds software flow control support for STM32 UART controller.
-> > This is necessary for the upcoming STM32MP1 based board called Stinger96
-> > IoT-Box. On that board, a bluetooth chip is connected to one of the UART
-> > controller but the CTS/RTS lines got swapped mistakenly. So in order to
-> > workaround that hardware bug and also to support the usecase of using only
-> > Tx/Rx pins, this patchset adds software flow control support.
-> >
-> > This patchset has been validated w/ Stinger96 IoT-Box connected to Murata
-> > WiFi-BT combo chip.
-> >
-> 
-> I think it's a mix of terminology or so. Looking into the patches I
-> found that it's required to have GPIOs for SW flow control.
-> No, SW flow control does not require any additional signals, except RxD/TxD.
-> 
+Hello,
 
-Yikes. Yes I got it wrong. 'st,hw-flow-ctrl' property confused me :)
+This patchset adds CTS/RTS gpio support to STM32 UART controller.
+Eventhough the UART controller supports using dedicated CTS/RTS gpios,
+sometimes we need to use different set of gpios for flow control.
 
-> On top of that, it seems you adding mctrl-gpio functionality. Why
-> can't you use that one? And thus no bindings needs to be updated.
-> 
+This is necessary for the upcoming STM32MP1 based board called Stinger96
+IoT-Box. On that board, a bluetooth chip is connected to one of the UART
+controller but the CTS/RTS lines got swapped mistakenly. So this patchset
+serves as a workaround for that hardware bug and also supports the
+usecase of using any gpio for CTS/RTS functionality. As per the sugggestion
+provided by Andy for v1, I've now switched to mctrl_gpio driver.
 
-Sure. This looks feasible. Will submit a follow up patch.
+This patchset has been validated with Stinger96 IoT-Box connected to Murata
+WiFi-BT combo chip.
 
 Thanks,
 Mani
 
-> > Thanks,
-> > Mani
-> >
-> > Manivannan Sadhasivam (2):
-> >   dt-bindings: serial: Add binding for software flow control in STM32
-> >     UART
-> >   tty: serial: Add software flow control support for STM32 USART
-> >
-> >  .../bindings/serial/st,stm32-uart.yaml        |  15 +-
-> >  drivers/tty/serial/stm32-usart.c              | 143 +++++++++++++++++-
-> >  drivers/tty/serial/stm32-usart.h              |   4 +
-> >  3 files changed, 155 insertions(+), 7 deletions(-)
-> >
-> > --
-> > 2.17.1
-> >
-> 
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+Changes in v2:
+
+As per the review by Andy:
+
+* Switched to mctrl_gpio driver instead of using custom CTS/RTS
+  implementation
+* Removed the use of software flow control terminology.
+
+Manivannan Sadhasivam (2):
+  tty: serial: Add modem control gpio support for STM32 UART
+  dt-bindings: serial: Document CTS/RTS gpios in STM32 UART
+
+ .../bindings/serial/st,stm32-uart.yaml        | 14 ++++++
+ drivers/tty/serial/Kconfig                    |  1 +
+ drivers/tty/serial/stm32-usart.c              | 43 ++++++++++++++++++-
+ drivers/tty/serial/stm32-usart.h              |  1 +
+ 4 files changed, 58 insertions(+), 1 deletion(-)
+
+-- 
+2.17.1
+
