@@ -2,163 +2,122 @@ Return-Path: <SRS0=wizI=6A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 494FFC352BE
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 17:17:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13802C2BB55
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 17:37:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2A8222076D
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 17:17:49 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="SYFVPFdn"
+	by mail.kernel.org (Postfix) with ESMTP id E1C9C2076D
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 17:37:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1587058648;
+	bh=c6RjcLo9mHi0Qj+iI/ymrQ+8S7krFiwa/crVExYtMzc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=ARmKrx8cA+GMrqoH+0rJIjyRnCrU/N2WHlKJRrAMpK/A/Vku2NaYQToqYbxZsDM6Z
+	 lWik9gbCZdZrq27XuYo0RMrgbIXrSe8ZQAbNYSruUc8zzB+IbMNam+sgXfiMxLJAQS
+	 hgi3xU95SRkMqznEBobYug2Xhvacd/YNtQWEB7WM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732192AbgDPRRs (ORCPT
+        id S1729677AbgDPRhY (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Apr 2020 13:17:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35328 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731998AbgDPRRr (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Apr 2020 13:17:47 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B81C061A0F
-        for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2020 10:17:46 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id d1so1965129pfh.1
-        for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2020 10:17:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=lSVN9q3kewDOwkDaspBABCKY2/Z6ZVUcbqo9W3/29XA=;
-        b=SYFVPFdnR6QrLfSH3STBSVwNueZTK34xisDXvKIC5+mlnFhUXa8c34PTOM/+mKQx7Z
-         KjXBpOoU33j4Olj4UxNSXHm3YvVyNFeOfrx0oOVDpsKSUWQ+n/v+Mah/Nej0qD0CCRdI
-         jLErVM8oxVPYzEzmg4t/lPAm168YlMQQzs/HE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=lSVN9q3kewDOwkDaspBABCKY2/Z6ZVUcbqo9W3/29XA=;
-        b=PLmHek0Kqu/+2mglZnIz6/V7or8f2eYbz3iLiL+KJJbW+b1FWk0RAruZYQoY2T9cLl
-         K3gWUyqX5ME3JHhm5/Jp8pTYBvq14s+bIcBKD4vmh4ZNK5Q2JeuFWSt5C4irdLf8iEi+
-         EbRx5DJ4PlkL+ggL9TOF9+IgHx8yBwLQsfP9uBOzFLCqIXTPaNRjO6HIdxN/dTuYIbY5
-         AirBE+dgsDGe33aoNjaAbWNh3cPmPocuyn8rdBav+80HppJFNdgXB2zG65lvyUi6+VtD
-         O4BCvSe7bgIAcj3iucNCpuAbwsBmeLCBJa7pT4fvFu9fYp81+aFSB0T409ah7S7tAMl9
-         ViUg==
-X-Gm-Message-State: AGi0PuYJrok8+K+aUIytJ0av4u/W1BFXg3QgWMy3mhoN4BThJILef0mC
-        hN4I+A9WZbV8Owdplk2jpBz3IE/r/5c=
-X-Google-Smtp-Source: APiQypJJH5+xkeCHF0lQwkilT+l9hOfYH89U285tBYg1QODotEruJXQkNKm/uBf6ul/OpdGf5BgEhw==
-X-Received: by 2002:a63:b447:: with SMTP id n7mr31518295pgu.278.1587057465930;
-        Thu, 16 Apr 2020 10:17:45 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
-        by smtp.gmail.com with ESMTPSA id f21sm3477755pfn.71.2020.04.16.10.17.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Apr 2020 10:17:44 -0700 (PDT)
-Date:   Thu, 16 Apr 2020 10:17:43 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Akash Asthana <akashast@codeaurora.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org, georgi.djakov@linaro.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, dianders@chromium.org,
-        evgreen@chromium.org
-Subject: Re: [PATCH V4 7/9] tty: serial: qcom_geni_serial: Add interconnect
- support
-Message-ID: <20200416171743.GC199755@google.com>
-References: <1586946198-13912-1-git-send-email-akashast@codeaurora.org>
- <1586946198-13912-8-git-send-email-akashast@codeaurora.org>
+        Thu, 16 Apr 2020 13:37:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57854 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729673AbgDPRhW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Apr 2020 13:37:22 -0400
+Received: from Mani-XPS-13-9360 (unknown [157.50.106.138])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D183A2076D;
+        Thu, 16 Apr 2020 17:37:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587058642;
+        bh=c6RjcLo9mHi0Qj+iI/ymrQ+8S7krFiwa/crVExYtMzc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MPW/w2Hfnyk6tUbCwgA+epGBp7s9x8qUWJj1HiCBq+J9LTkOTM2QYZTP/j5uo/wrm
+         Zu7E5RQleCiRVXkZUgTILmP6u9Q5+x1hOTZEgCwX8xxgd1Ay9ngjsrcfWax9ah1H31
+         eWIhS2p6dEJvzP9lw8E2V62BIIK92l1CFStWvCOY=
+Date:   Thu, 16 Apr 2020 23:07:10 +0530
+From:   Manivannan Sadhasivam <mani@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre TORGUE <alexandre.torgue@st.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 0/2] Add software flow control support for STM32 UART
+Message-ID: <20200416173710.GA4548@Mani-XPS-13-9360>
+References: <20200412180923.30774-1-mani@kernel.org>
+ <CAHp75VfDUoFMWg42OFHZtKQ972eoR3UDLVAs+BQjJm3h3-fOGw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1586946198-13912-8-git-send-email-akashast@codeaurora.org>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <CAHp75VfDUoFMWg42OFHZtKQ972eoR3UDLVAs+BQjJm3h3-fOGw@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Apr 15, 2020 at 03:53:16PM +0530, Akash Asthana wrote:
-> Get the interconnect paths for Uart based Serial Engine device
-> and vote according to the baud rate requirement of the driver.
-> 
-> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
-> ---
-> Changes in V2:
->  - As per Bjorn's comment, removed se == NULL check from geni_serial_icc_get
->  - As per Bjorn's comment, removed code to set se->icc_path* to NULL in failure
->  - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
->    path handle
->  - As per Matthias comment, added error handling for icc_set_bw call
-> 
-> Changes in V3:
->  - As per Matthias comment, use common library APIs defined in geni-se
->    driver for ICC functionality.
-> 
-> Changes in V4:
->  - As per Mark's comment move peak_bw guess as twice of avg_bw if
->    nothing mentioned explicitly to ICC core.
->  - As per Matthias's comment select core clock BW based on baud rate.
->    If it's less than 115200 go for GENI_DEFAULT_BW else CORE_2X_50_MHZ
-> 
->  drivers/tty/serial/qcom_geni_serial.c | 25 ++++++++++++++++++++++---
->  1 file changed, 22 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 8c5d97c..a5b2f1c 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -965,6 +965,15 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
->  	ser_clk_cfg = SER_CLK_EN;
->  	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
->  
-> +	/*
-> +	 * Bump up BW vote on CPU and CORE path as driver supports FIFO mode
-> +	 * only.
-> +	 */
-> +	port->se.icc_paths[0].avg_bw = (baud > 115200) ?
-> +				Bps_to_icc(CORE_2X_50_MHZ) : GENI_DEFAULT_BW;
-> +	port->se.icc_paths[1].avg_bw = Bps_to_icc(baud);
+Hi Andy,
 
-use enums to index the paths
+On Mon, Apr 13, 2020 at 12:17:21PM +0300, Andy Shevchenko wrote:
+> On Mon, Apr 13, 2020 at 7:06 AM <mani@kernel.org> wrote:
+> >
+> > From: Manivannan Sadhasivam <mani@kernel.org>
+> >
+> > Hello,
+> >
+> > This patchset adds software flow control support for STM32 UART controller.
+> > This is necessary for the upcoming STM32MP1 based board called Stinger96
+> > IoT-Box. On that board, a bluetooth chip is connected to one of the UART
+> > controller but the CTS/RTS lines got swapped mistakenly. So in order to
+> > workaround that hardware bug and also to support the usecase of using only
+> > Tx/Rx pins, this patchset adds software flow control support.
+> >
+> > This patchset has been validated w/ Stinger96 IoT-Box connected to Murata
+> > WiFi-BT combo chip.
+> >
+> 
+> I think it's a mix of terminology or so. Looking into the patches I
+> found that it's required to have GPIOs for SW flow control.
+> No, SW flow control does not require any additional signals, except RxD/TxD.
+> 
 
-> +	geni_icc_vote_on(&port->se);
-> +
->  	/* parity */
->  	tx_trans_cfg = readl(uport->membase + SE_UART_TX_TRANS_CFG);
->  	tx_parity_cfg = readl(uport->membase + SE_UART_TX_PARITY_CFG);
-> @@ -1202,11 +1211,14 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
->  	if (old_state == UART_PM_STATE_UNDEFINED)
->  		old_state = UART_PM_STATE_OFF;
->  
-> -	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
-> +	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF) {
-> +		geni_icc_vote_on(&port->se);
->  		geni_se_resources_on(&port->se);
-> -	else if (new_state == UART_PM_STATE_OFF &&
-> -			old_state == UART_PM_STATE_ON)
-> +	} else if (new_state == UART_PM_STATE_OFF &&
-> +			old_state == UART_PM_STATE_ON) {
->  		geni_se_resources_off(&port->se);
-> +		geni_icc_vote_off(&port->se);
-> +	}
->  }
->  
->  static const struct uart_ops qcom_geni_console_pops = {
-> @@ -1304,6 +1316,13 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
->  			return -ENOMEM;
->  	}
->  
-> +	ret = geni_icc_get(&port->se, NULL);
-> +	if (ret)
-> +		return ret;
-> +	/* Set the bus quota to a reasonable value for register access */
-> +	port->se.icc_paths[0].avg_bw = GENI_DEFAULT_BW;
-> +	port->se.icc_paths[1].avg_bw = GENI_DEFAULT_BW;
+Yikes. Yes I got it wrong. 'st,hw-flow-ctrl' property confused me :)
 
-The comment isn't very useful, the use of GENI_DEFAULT_BW essentially
-implies "a reasonable value". I suggest to drop it.
+> On top of that, it seems you adding mctrl-gpio functionality. Why
+> can't you use that one? And thus no bindings needs to be updated.
+> 
+
+Sure. This looks feasible. Will submit a follow up patch.
+
+Thanks,
+Mani
+
+> > Thanks,
+> > Mani
+> >
+> > Manivannan Sadhasivam (2):
+> >   dt-bindings: serial: Add binding for software flow control in STM32
+> >     UART
+> >   tty: serial: Add software flow control support for STM32 USART
+> >
+> >  .../bindings/serial/st,stm32-uart.yaml        |  15 +-
+> >  drivers/tty/serial/stm32-usart.c              | 143 +++++++++++++++++-
+> >  drivers/tty/serial/stm32-usart.h              |   4 +
+> >  3 files changed, 155 insertions(+), 7 deletions(-)
+> >
+> > --
+> > 2.17.1
+> >
+> 
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
