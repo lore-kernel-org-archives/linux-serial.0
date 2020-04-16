@@ -2,78 +2,124 @@ Return-Path: <SRS0=wizI=6A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1712C2D0EF
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 08:12:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B81FFC352BE
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 08:31:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9DA3E206E9
-	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 08:12:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 97C9C20787
+	for <linux-serial@archiver.kernel.org>; Thu, 16 Apr 2020 08:31:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1587025865;
+	bh=+AtB2qrsVxt1QWCAagtuBV0iMzA+FqM4hoS9ArXVBXI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=oYQuEKGDK1kzRmqDfUUv1GrO/z2uTLaFt5m1ay5Cfs9v/CMGV9+Isw+JR0I0W31pG
+	 v8q5Zs+fcEAgNRjRVwRiRHd19Yjj1GmrJbfvTR/HN7c67ogn7E3LpV5+FQNI7o/uEM
+	 QpkavXTleo6FxGB1cCJ/aGY3Iv3joScIm8Rp51xs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2441202AbgDPIMl (ORCPT
+        id S2502125AbgDPIab (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 16 Apr 2020 04:12:41 -0400
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:41885 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2441173AbgDPIM2 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 16 Apr 2020 04:12:28 -0400
-Received: by mail-oi1-f193.google.com with SMTP id k9so15905952oia.8
-        for <linux-serial@vger.kernel.org>; Thu, 16 Apr 2020 01:12:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qlwy5aWFQ879NAIrHhpmadNN5aOkvkm2HgtfVxwSTgw=;
-        b=KsBNGmlLS22yollwkRgBzMmgQ9PyiB7Cws3HNI6UpXmrZ0tx/XqYrrwGE/QinoOXuM
-         Zg33pWAPQ4CzepShphfWsjdkdEg7B0kRR0yTlEy58pA32uhqs6We/ilSPctF+pHv4k5Q
-         ucIxgXdUnfFyT6AQY06GZYkCeMSyuDtB+Br14SoqXvZUW99/Y0wwr9Pkb8uwNdi6NF7L
-         2sJMOCeNLwRiC5z3TJlQaBlXZwUB9INBWXrWJbgnVb8YSZdzQzQ9H09h6YjJqvVhV2M8
-         nYBj/2aM25aPUJgZ5g6+hGagKwYsD/fIS6NS21pZbNRQR9aG+pqEnHrNk6khSS80i8un
-         F/Iw==
-X-Gm-Message-State: AGi0PuZxI9ViOuzLCKqXX/6d2Sx1LGPQsxbmV3Gz5+LIdP1ImBOlh4fH
-        OUpE1B5KGoCF2SQr0elj8hL5XH6a5uRmasBGilw=
-X-Google-Smtp-Source: APiQypJCKGe/79cdzasnQ5Qt2LHzQehL3IgzgeGi2eDPlB/pY3qSwHuZ17Ud9lH7YxXO8J3wxuw7C5qHaMmIPYp93bc=
-X-Received: by 2002:a05:6808:8cf:: with SMTP id k15mr2217403oij.54.1587024747536;
- Thu, 16 Apr 2020 01:12:27 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200415180250.221762-1-linus.walleij@linaro.org>
-In-Reply-To: <20200415180250.221762-1-linus.walleij@linaro.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 16 Apr 2020 10:12:15 +0200
-Message-ID: <CAMuHMdWPMBFX2NtZW+pdsn+g28q9WLP9y+jsRWLR_vOCh5h+vQ@mail.gmail.com>
-Subject: Re: [PATCH] serial: sh-sci: Drop unused include
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Thu, 16 Apr 2020 04:30:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38708 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2439552AbgDPILF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 16 Apr 2020 04:11:05 -0400
+Received: from localhost (unknown [223.235.195.235])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1D38A206B9;
+        Thu, 16 Apr 2020 08:07:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587024458;
+        bh=+AtB2qrsVxt1QWCAagtuBV0iMzA+FqM4hoS9ArXVBXI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=2SDVAHMhpWjl2KgmMtDeMa4mCSN5E7syFhtD6nl+7e+uOtdm92iHSJh7of/HWeSKy
+         HDPx9eDy3/ziMPBERearhYxolH1rzEwouN2J1vLT/RYfJAdCvbbfyQVciDd7LjXhj3
+         Rm7XEVuyXLSwCmFC9enIFNjzAhrkqZPWIGTVc9wk=
+Date:   Thu, 16 Apr 2020 13:37:34 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "George G . Davis" <george_davis@mentor.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Content-Type: text/plain; charset="UTF-8"
+        Amit Kucheria <amit.kucheria@linaro.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-i2c@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org
+Subject: Re: [PATCH 2/2] dt-bindings: Remove cases of 'allOf' containing a
+ '$ref'
+Message-ID: <20200416080734.GJ72691@vkoul-mobl>
+References: <20200416005549.9683-1-robh@kernel.org>
+ <20200416005549.9683-2-robh@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200416005549.9683-2-robh@kernel.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Apr 15, 2020 at 8:04 PM Linus Walleij <linus.walleij@linaro.org> wrote:
-> The sh-sci.h file includes the legacy <linux/gpio.h> header
-> but the driver is actually migrated to use the mctrl_gpio
-> library so this is not needed.
->
-> Cc: George G. Davis <george_davis@mentor.com>
-> Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+On 15-04-20, 19:55, Rob Herring wrote:
+> json-schema versions draft7 and earlier have a weird behavior in that
+> any keywords combined with a '$ref' are ignored (silently). The correct
+> form was to put a '$ref' under an 'allOf'. This behavior is now changed
+> in the 2019-09 json-schema spec and '$ref' can be mixed with other
+> keywords. The json-schema library doesn't yet support this, but the
+> tooling now does a fixup for this and either way works.
+> 
+> This has been a constant source of review comments, so let's change this
+> treewide so everyone copies the simpler syntax.
+> 
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../devicetree/bindings/arm/cpus.yaml         |  81 +++---
+>  .../devicetree/bindings/arm/l2c2x0.yaml       |  87 +++---
+>  .../devicetree/bindings/arm/psci.yaml         |  15 +-
+>  .../bindings/arm/samsung/exynos-chipid.yaml   |   5 +-
+>  .../bus/allwinner,sun50i-a64-de2.yaml         |   5 +-
+>  .../bindings/clock/fixed-factor-clock.yaml    |   5 +-
+>  .../bindings/connector/usb-connector.yaml     |  28 +-
+>  .../bindings/crypto/st,stm32-hash.yaml        |   9 +-
+>  .../allwinner,sun4i-a10-display-engine.yaml   |   7 +-
+>  .../display/allwinner,sun4i-a10-tcon.yaml     |   5 +-
+>  .../bindings/display/panel/panel-common.yaml  |   5 +-
+>  .../devicetree/bindings/dma/dma-common.yaml   |   3 +-
+>  .../devicetree/bindings/dma/ti/k3-udma.yaml   |  18 +-
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Gr{oetje,eeting}s,
-
-                        Geert
+Acked-By: Vinod Koul <vkoul@kernel.org>
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+~Vinod
