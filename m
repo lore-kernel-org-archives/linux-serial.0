@@ -2,204 +2,180 @@ Return-Path: <SRS0=oPkf=6B=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0867C38A2D
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Apr 2020 14:05:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 637E4C2D0EF
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Apr 2020 18:00:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BCE2721973
-	for <linux-serial@archiver.kernel.org>; Fri, 17 Apr 2020 14:05:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3DFF8221F7
+	for <linux-serial@archiver.kernel.org>; Fri, 17 Apr 2020 18:00:46 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="vEuMkWxw"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="OvckqUd4"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730788AbgDQOFT (ORCPT
+        id S1730312AbgDQSAp (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 17 Apr 2020 10:05:19 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:23788 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730865AbgDQOFS (ORCPT
+        Fri, 17 Apr 2020 14:00:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39934 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730033AbgDQSAp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 17 Apr 2020 10:05:18 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1587132317; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=0yvYjguOx84bHKDg7ORP2jVfhZBtiUmKbBffrVbFt34=; b=vEuMkWxwPkvOOAJEH4an+waqUmOA+7CCCc3qkmMIszcteOO0LSvz/GwQl4ckbgmpd++1xtTg
- 8aPeyztYvVvhDOJ39NxfJnfKi8B7FizRDt6DFcWyt2oa4gGnX8ZySaTZr5XBXFgWLQJ06k8d
- CEzv3gzWSzxWzZ6zAUUR5p/T7tk=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e99b79d.7f76c3c28a78-smtp-out-n05;
- Fri, 17 Apr 2020 14:05:17 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 80E0FC44795; Fri, 17 Apr 2020 14:05:15 +0000 (UTC)
-Received: from blr-ubuntu-173.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: rnayak)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A62C1C4478F;
-        Fri, 17 Apr 2020 14:05:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A62C1C4478F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=rnayak@codeaurora.org
-From:   Rajendra Nayak <rnayak@codeaurora.org>
-To:     viresh.kumar@linaro.org, sboyd@kernel.org,
-        bjorn.andersson@linaro.org, agross@kernel.org
-Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mka@chromium.org,
-        Rajendra Nayak <rnayak@codeaurora.org>,
+        Fri, 17 Apr 2020 14:00:45 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52960C061A0C
+        for <linux-serial@vger.kernel.org>; Fri, 17 Apr 2020 11:00:45 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id x3so1408579pfp.7
+        for <linux-serial@vger.kernel.org>; Fri, 17 Apr 2020 11:00:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=UOMj1CMTwdnMbS+z4qVkFuhDs1cGdfp1YT34y+yBusk=;
+        b=OvckqUd4ZmienArBUa8jPpxgm7tQccflIrBwirJ78gUp7uqVrx3mfTAwv0UxSmRrya
+         Lz37ElSMIolopvUjumNLuYbbvVA4PsZnQqyMCyd+rnrVNMnGSZf6nmpiwan6L7M+FLkl
+         4wJt5ZteoqCNiPJ+z8t2Nl9Y0ShW0V/x9H4ZI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=UOMj1CMTwdnMbS+z4qVkFuhDs1cGdfp1YT34y+yBusk=;
+        b=D+R2SuAi3GL4Kl8C2nLalfU6XwMqPez8CrAb+sIvCdSj2iCceLFlNxfn2FK/W8l2uo
+         uv7M4DkUhDnxZbWx08oM0aD2jyi6DBlM0ozCVx2O2yxm0mLdWcXcJSeUYcAAuMyxzPqu
+         oJwvS6bA7SfK+E2lUDwWBP8mDNFwPG6MShQQTsh4ku8UI0nrXr9ndSaY8MWW9RBNtG3l
+         ZmyUJC/oR20ev9rlNjSUJhRQin+ee0OPJh5qFgtFoN8/ZgS+dlqxBkPvmYcox3761k7O
+         kkFTg/fWeKMfs4BdxesNbsOMadm0oTv/JIP3ZyYrpaKZ3c0O6hjHvLtJpPl4p19nVJYX
+         eNrQ==
+X-Gm-Message-State: AGi0PuZ9xguX8GgA108g7qlQt1SmEFoPgRM4W/8G5wP6QzECFynxCb56
+        T0wRvWeRtZHoFlAgvjIYZ0oLknMJ/1o=
+X-Google-Smtp-Source: APiQypK9eg7Gq7tr1Oc+DzJ0VwRSWi/rb9t3MDel9BaZ7Cw8P2/BSa0rmeULMt3F00M6mVyVdqN1Dw==
+X-Received: by 2002:a62:1a54:: with SMTP id a81mr4490224pfa.122.1587146443888;
+        Fri, 17 Apr 2020 11:00:43 -0700 (PDT)
+Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
+        by smtp.gmail.com with ESMTPSA id w13sm5101109pfn.192.2020.04.17.11.00.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Apr 2020 11:00:42 -0700 (PDT)
+Date:   Fri, 17 Apr 2020 11:00:41 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Rajendra Nayak <rnayak@codeaurora.org>
+Cc:     viresh.kumar@linaro.org, sboyd@kernel.org,
+        bjorn.andersson@linaro.org, agross@kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Akash Asthana <akashast@codeaurora.org>,
         linux-serial@vger.kernel.org
-Subject: [PATCH v2 01/17] tty: serial: qcom_geni_serial: Use OPP API to set clk/perf state
-Date:   Fri, 17 Apr 2020 19:34:23 +0530
-Message-Id: <1587132279-27659-2-git-send-email-rnayak@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1587132279-27659-1-git-send-email-rnayak@codeaurora.org>
+Subject: Re: [PATCH v2 01/17] tty: serial: qcom_geni_serial: Use OPP API to
+ set clk/perf state
+Message-ID: <20200417180041.GD199755@google.com>
 References: <1587132279-27659-1-git-send-email-rnayak@codeaurora.org>
+ <1587132279-27659-2-git-send-email-rnayak@codeaurora.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1587132279-27659-2-git-send-email-rnayak@codeaurora.org>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-geni serial needs to express a perforamnce state requirement on CX
-powerdomain depending on the frequency of the clock rates.
-Use OPP table from DT to register with OPP framework and use
-dev_pm_opp_set_rate() to set the clk/perf state.
+Hi Rajendra,
 
-Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Akash Asthana <akashast@codeaurora.org>
-Cc: linux-serial@vger.kernel.org
----
- drivers/tty/serial/qcom_geni_serial.c | 30 +++++++++++++++++++++++++-----
- include/linux/qcom-geni-se.h          |  2 ++
- 2 files changed, 27 insertions(+), 5 deletions(-)
+On Fri, Apr 17, 2020 at 07:34:23PM +0530, Rajendra Nayak wrote:
+> geni serial needs to express a perforamnce state requirement on CX
+> powerdomain depending on the frequency of the clock rates.
+> Use OPP table from DT to register with OPP framework and use
+> dev_pm_opp_set_rate() to set the clk/perf state.
+> 
+> Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Akash Asthana <akashast@codeaurora.org>
+> Cc: linux-serial@vger.kernel.org
+> ---
+>  drivers/tty/serial/qcom_geni_serial.c | 30 +++++++++++++++++++++++++-----
+>  include/linux/qcom-geni-se.h          |  2 ++
+>  2 files changed, 27 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 6119090..151012c 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -9,6 +9,7 @@
+>  #include <linux/module.h>
+>  #include <linux/of.h>
+>  #include <linux/of_device.h>
+> +#include <linux/pm_opp.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/pm_runtime.h>
+>  #include <linux/pm_wakeirq.h>
+> @@ -128,6 +129,7 @@ struct qcom_geni_serial_port {
+>  	int wakeup_irq;
+>  	bool rx_tx_swap;
+>  	bool cts_rts_swap;
+> +	bool opp_table;
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 6119090..151012c 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -9,6 +9,7 @@
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/pm_opp.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/pm_wakeirq.h>
-@@ -128,6 +129,7 @@ struct qcom_geni_serial_port {
- 	int wakeup_irq;
- 	bool rx_tx_swap;
- 	bool cts_rts_swap;
-+	bool opp_table;
- };
- 
- static const struct uart_ops qcom_geni_console_pops;
-@@ -961,7 +963,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 		goto out_restart_rx;
- 
- 	uport->uartclk = clk_rate;
--	clk_set_rate(port->se.clk, clk_rate);
-+	dev_pm_opp_set_rate(uport->dev, clk_rate);
- 	ser_clk_cfg = SER_CLK_EN;
- 	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
- 
-@@ -1198,8 +1200,11 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
- 	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
- 		geni_se_resources_on(&port->se);
- 	else if (new_state == UART_PM_STATE_OFF &&
--			old_state == UART_PM_STATE_ON)
-+			old_state == UART_PM_STATE_ON) {
-+		/* Drop the performance state vote */
-+		dev_pm_opp_set_rate(uport->dev, 0);
- 		geni_se_resources_off(&port->se);
-+	}
- }
- 
- static const struct uart_ops qcom_geni_console_pops = {
-@@ -1318,13 +1323,20 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	if (of_property_read_bool(pdev->dev.of_node, "cts-rts-swap"))
- 		port->cts_rts_swap = true;
- 
-+	port->se.opp = dev_pm_opp_set_clkname(&pdev->dev, "se");
-+	if (IS_ERR(port->se.opp))
-+		return PTR_ERR(port->se.opp);
-+	/* OPP table is optional */
-+	if (!dev_pm_opp_of_add_table(&pdev->dev))
-+		port->opp_table = true;
-+
- 	uport->private_data = drv;
- 	platform_set_drvdata(pdev, port);
- 	port->handle_rx = console ? handle_rx_console : handle_rx_uart;
- 
- 	ret = uart_add_one_port(drv, uport);
- 	if (ret)
--		return ret;
-+		goto err;
- 
- 	irq_set_status_flags(uport->irq, IRQ_NOAUTOEN);
- 	ret = devm_request_irq(uport->dev, uport->irq, qcom_geni_serial_isr,
-@@ -1332,7 +1344,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	if (ret) {
- 		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
- 		uart_remove_one_port(drv, uport);
--		return ret;
-+		goto err;
- 	}
- 
- 	/*
-@@ -1349,11 +1361,16 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 		if (ret) {
- 			device_init_wakeup(&pdev->dev, false);
- 			uart_remove_one_port(drv, uport);
--			return ret;
-+			goto err;
- 		}
- 	}
- 
- 	return 0;
-+err:
-+	if (port->opp_table)
-+		dev_pm_opp_of_remove_table(&pdev->dev);
-+	dev_pm_opp_put_clkname(port->se.opp);
-+	return ret;
- }
- 
- static int qcom_geni_serial_remove(struct platform_device *pdev)
-@@ -1361,6 +1378,9 @@ static int qcom_geni_serial_remove(struct platform_device *pdev)
- 	struct qcom_geni_serial_port *port = platform_get_drvdata(pdev);
- 	struct uart_driver *drv = port->uport.private_data;
- 
-+	if (port->opp_table)
-+		dev_pm_opp_of_remove_table(&pdev->dev);
-+	dev_pm_opp_put_clkname(port->se.opp);
- 	dev_pm_clear_wake_irq(&pdev->dev);
- 	device_init_wakeup(&pdev->dev, false);
- 	uart_remove_one_port(drv, &port->uport);
-diff --git a/include/linux/qcom-geni-se.h b/include/linux/qcom-geni-se.h
-index dd46494..737e713 100644
---- a/include/linux/qcom-geni-se.h
-+++ b/include/linux/qcom-geni-se.h
-@@ -24,6 +24,7 @@ enum geni_se_protocol_type {
- 
- struct geni_wrapper;
- struct clk;
-+struct opp_table;
- 
- /**
-  * struct geni_se - GENI Serial Engine
-@@ -39,6 +40,7 @@ struct geni_se {
- 	struct device *dev;
- 	struct geni_wrapper *wrapper;
- 	struct clk *clk;
-+	struct opp_table *opp;
- 	unsigned int num_clk_levels;
- 	unsigned long *clk_perf_tbl;
- };
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+The name of the variable suggests that it holds a OPP table, something
+like 'has_opp_table' would be clearer.
+
+>  };
+>  
+>  static const struct uart_ops qcom_geni_console_pops;
+> @@ -961,7 +963,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+>  		goto out_restart_rx;
+>  
+>  	uport->uartclk = clk_rate;
+> -	clk_set_rate(port->se.clk, clk_rate);
+> +	dev_pm_opp_set_rate(uport->dev, clk_rate);
+>  	ser_clk_cfg = SER_CLK_EN;
+>  	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
+>  
+> @@ -1198,8 +1200,11 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
+>  	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
+>  		geni_se_resources_on(&port->se);
+>  	else if (new_state == UART_PM_STATE_OFF &&
+> -			old_state == UART_PM_STATE_ON)
+> +			old_state == UART_PM_STATE_ON) {
+> +		/* Drop the performance state vote */
+> +		dev_pm_opp_set_rate(uport->dev, 0);
+>  		geni_se_resources_off(&port->se);
+> +	}
+>  }
+>  
+>  static const struct uart_ops qcom_geni_console_pops = {
+> @@ -1318,13 +1323,20 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+>  	if (of_property_read_bool(pdev->dev.of_node, "cts-rts-swap"))
+>  		port->cts_rts_swap = true;
+>  
+> +	port->se.opp = dev_pm_opp_set_clkname(&pdev->dev, "se");
+> +	if (IS_ERR(port->se.opp))
+> +		return PTR_ERR(port->se.opp);
+> +	/* OPP table is optional */
+> +	if (!dev_pm_opp_of_add_table(&pdev->dev))
+
+Even if the OPP table is optional you probably want to fail if the error
+is anything other than -ENODEV ("'operating-points' property is not found
+or is invalid data in device node.").
+
+> diff --git a/include/linux/qcom-geni-se.h b/include/linux/qcom-geni-se.h
+> index dd46494..737e713 100644
+> --- a/include/linux/qcom-geni-se.h
+> +++ b/include/linux/qcom-geni-se.h
+> @@ -24,6 +24,7 @@ enum geni_se_protocol_type {
+>  
+>  struct geni_wrapper;
+>  struct clk;
+> +struct opp_table;
+>  
+>  /**
+>   * struct geni_se - GENI Serial Engine
+> @@ -39,6 +40,7 @@ struct geni_se {
+>  	struct device *dev;
+>  	struct geni_wrapper *wrapper;
+>  	struct clk *clk;
+> +	struct opp_table *opp;
+
+This name suggests that the variable holds a single OPP ('struct
+dev_pm_opp'). Most other code uses the name 'opp_table', which
+also seems a good candidate here.
