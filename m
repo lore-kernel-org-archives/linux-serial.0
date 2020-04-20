@@ -1,423 +1,143 @@
-Return-Path: <SRS0=g+Oc=6D=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=2nXW=6E=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A940C54F70
-	for <linux-serial@archiver.kernel.org>; Sun, 19 Apr 2020 20:19:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25884C54FC9
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Apr 2020 01:33:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 31F1E21744
-	for <linux-serial@archiver.kernel.org>; Sun, 19 Apr 2020 20:19:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DF79B20882
+	for <linux-serial@archiver.kernel.org>; Mon, 20 Apr 2020 01:33:33 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="Jz+akebx"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726036AbgDSUTm (ORCPT
+        id S1725949AbgDTBdd (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 19 Apr 2020 16:19:42 -0400
-Received: from v6.sk ([167.172.42.174]:45480 "EHLO v6.sk"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725848AbgDSUTl (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 19 Apr 2020 16:19:41 -0400
-Received: from localhost (v6.sk [IPv6:::1])
-        by v6.sk (Postfix) with ESMTP id 11361610D0;
-        Sun, 19 Apr 2020 20:19:08 +0000 (UTC)
-From:   Lubomir Rintel <lkundrak@v3.sk>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lubomir Rintel <lkundrak@v3.sk>
-Subject: [PATCH v2 2/2] dt-bindings: serial: Convert 8250 to json-schema
-Date:   Sun, 19 Apr 2020 22:17:16 +0200
-Message-Id: <20200419201716.679090-3-lkundrak@v3.sk>
-X-Mailer: git-send-email 2.26.0
-In-Reply-To: <20200419201716.679090-1-lkundrak@v3.sk>
-References: <20200419201716.679090-1-lkundrak@v3.sk>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Sun, 19 Apr 2020 21:33:33 -0400
+Received: from mailout1.samsung.com ([203.254.224.24]:52632 "EHLO
+        mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725959AbgDTBdc (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 19 Apr 2020 21:33:32 -0400
+Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20200420013329epoutp01b991bc10a2fd2cab29b763ed43ca0dc9~HYyY7x-bf2899028990epoutp01K
+        for <linux-serial@vger.kernel.org>; Mon, 20 Apr 2020 01:33:29 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20200420013329epoutp01b991bc10a2fd2cab29b763ed43ca0dc9~HYyY7x-bf2899028990epoutp01K
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1587346409;
+        bh=OnGzkKawmgNmEQLHo3fXe9Xbamb/f0idQAQPFcFTxIQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Jz+akebxfRoLmOYnOgEfBjs3zVUROSaQAIapVtDMOrgGD0+w9mzTE0WbMXfhOa7ak
+         VhcGwprV2tFsCEGqrhymfJ/DlvCFLMbBnDv4BIq9zi5zrgqoG73SUOYVhvZjy8Bny2
+         yCPSVVDDlJh3gZkwucJNhFQxJ3pHBl5RkPCPx9Is=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
+        20200420013329epcas2p289c162de878c738033ef1f2f5a2d3762~HYyYi2A6I1982219822epcas2p2F;
+        Mon, 20 Apr 2020 01:33:29 +0000 (GMT)
+Received: from epsmges2p2.samsung.com (unknown [182.195.40.188]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4958NR4ZFMzMqYkh; Mon, 20 Apr
+        2020 01:33:27 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        53.BE.04704.6EBFC9E5; Mon, 20 Apr 2020 10:33:26 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
+        20200420013325epcas2p13f65e6bc8ba68f89c805704830144870~HYyVjLZFM1887218872epcas2p1U;
+        Mon, 20 Apr 2020 01:33:25 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20200420013325epsmtrp2fa48cc1179d525f988a9a24db1389934~HYyViXjeZ0884408844epsmtrp2u;
+        Mon, 20 Apr 2020 01:33:25 +0000 (GMT)
+X-AuditID: b6c32a46-811ff70000001260-b7-5e9cfbe6100c
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        4B.2A.04024.5EBFC9E5; Mon, 20 Apr 2020 10:33:25 +0900 (KST)
+Received: from ishtar.dsn.sec.samsung.com (unknown [12.36.155.159]) by
+        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20200420013325epsmtip189419b8020c8cbae5db3e699cba44081~HYyVXlGxZ2205622056epsmtip1x;
+        Mon, 20 Apr 2020 01:33:25 +0000 (GMT)
+From:   Hyunki Koo <hyunki00.koo@samsung.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     hyunki00.koo@samsung.com
+Subject: [PATCH v8 2/3] dt-bindings: serial: Add reg-io-width compatible
+Date:   Mon, 20 Apr 2020 10:32:57 +0900
+Message-Id: <20200420013300.17249-2-hyunki00.koo@samsung.com>
+X-Mailer: git-send-email 2.15.0.rc1
+In-Reply-To: <20200420013300.17249-1-hyunki00.koo@samsung.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrPKsWRmVeSWpSXmKPExsWy7bCmhe6z33PiDF7OU7aYf+Qcq0Xz4vVs
+        FquW3mC2uLxrDpvFmcW97Bate4+wO7B5bFrVyeaxf+4ado++LasYPT5vkgtgicqxyUhNTEkt
+        UkjNS85PycxLt1XyDo53jjc1MzDUNbS0MFdSyEvMTbVVcvEJ0HXLzAFarqRQlphTChQKSCwu
+        VtK3synKLy1JVcjILy6xVUotSMkpMDQs0CtOzC0uzUvXS87PtTI0MDAyBapMyMlYt/Ule8Fs
+        9oqbjzezNDC+Ze1i5OSQEDCR6G+ezNjFyMUhJLCDUeLThdfMEM4nRomDJ3+xQzjfGCWW/bsO
+        VMYB1rJgox1EfC9Q0ZLzbBDOD0aJ41NmsYPMZRPQlnjzfSbYKBGBjYwSazc+YARJMAvISPzY
+        fo8JxBYW8JBY+fQeM4jNIqAqsendXxYQm1fAVuL03s9QBypLXHi3hBVkM6eAncT35WYgMyUE
+        prBJHD10mBmixkVi+ck7jBC2sMSr41vYIWwpic/v9rJB2PUS+9omskM09zBK/PzwFGqBscSs
+        Z+1grzELaEqs36UP8aWyxJFbLBAn80l0HP7LDhHmlehoE4JoVJNY9+0FE4QtI7Hm6S6oEg+J
+        mVf1IEEyERiiq9ewTGCUm4UwfwEj4ypGsdSC4tz01GKjAiPkCNvECE5cWm47GJec8znEKMDB
+        qMTDyzB7TpwQa2JZcWXuIUYJDmYlEd6DbjPjhHhTEiurUovy44tKc1KLDzGaAsNxIrOUaHI+
+        MKnmlcQbmhqZmRlYmlqYmhlZKInzbuK+GSMkkJ5YkpqdmlqQWgTTx8TBKdXAODngzJr/a7fF
+        Lqp721qqa/Z4YcSiWVM/lFx0dtNd1MJ+SiFqnknzsuKY2qfvnp5Y8bzFP3szJ+OmQFeuedIB
+        v2we6mzgidt/xfvy+Uqe2dyLnVgcz4Yve+4+a/WKmO3744/srVwy0ViqY4LXBI1DggxzXm4r
+        8v8U/6LrvaHmFpNZq5SDGhL2tCqxFGckGmoxFxUnAgAXHG0fcgMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprJLMWRmVeSWpSXmKPExsWy7bCSnO7T33PiDCZsMraYf+Qcq0Xz4vVs
+        FquW3mC2uLxrDpvFmcW97Bate4+wO7B5bFrVyeaxf+4ado++LasYPT5vkgtgieKySUnNySxL
+        LdK3S+DKWLf1JXvBbPaKm483szQwvmXtYuTgkBAwkViw0a6LkYtDSGA3o8TBg9cYuxg5geIy
+        EhNeLGGGsIUl7rccYYUo+sYo0dj8nwUkwSagLfHm+0xmkISIwFZGie33J7KCJJiBun9sv8cE
+        YgsLeEisfHoPbBKLgKrEpnd/wZp5BWwlTu/9zAqxQVniwrslYBdxCthJfF9uBhIWAiq5enoV
+        8wRGvgWMDKsYJVMLinPTc4sNCwzzUsv1ihNzi0vz0vWS83M3MYIDTEtzB+PlJfGHGAU4GJV4
+        eBlmz4kTYk0sK67MPcQowcGsJMJ70G1mnBBvSmJlVWpRfnxRaU5q8SFGaQ4WJXHep3nHIoUE
+        0hNLUrNTUwtSi2CyTBycUg2MetNSd1kZrvI8Kiy97dFv69SM8Et/+T+qTUvU7C3m/fpSKiJ0
+        xqtnN1ziRJTNHsiucFu5JHbOepfA234HdvnE2rs9y0lv2Wgb8Tlpb+iXbKZnR86ZzXvTf+Ww
+        4Mn2556fXl0/JOnaw8Qu6O3IeCQ+9rfvpwtnl23ZM5ep+vZ2rg55l+U/DBzLlViKMxINtZiL
+        ihMBb53XDCwCAAA=
+X-CMS-MailID: 20200420013325epcas2p13f65e6bc8ba68f89c805704830144870
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20200420013325epcas2p13f65e6bc8ba68f89c805704830144870
+References: <20200420013300.17249-1-hyunki00.koo@samsung.com>
+        <CGME20200420013325epcas2p13f65e6bc8ba68f89c805704830144870@epcas2p1.samsung.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Some fixes were done during the conversion:
+Add a description for reg-io-width options for the samsung serial
+UART peripheral.
 
-Slightly better examples. The original example was for an OMAP serial
-port, which is not even described by this binding, but by
-omap_serial.txt instead.
-
-Added compatible strings, that were used, byt not documented:
-andestech,uart16550, cavium,octeon-3860-uart, fsl,16550-FIFO64,
-nvidia,tegra186-uart, nvidia,tegra194-uart, nxp,lpc1850-uart,
-opencores,uart16550-rtlsvn105, ralink,mt7620a-uart, ralink,rt3052-uart,
-ralink,rt3883-uart and xlnx,xps-uart16550-2.00.b.
-
-Removed "serial" compatible string. It's redundant with the node name
-(which, in OFW, serves the same purpose as the compatible string).
-
-Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
-
+Signed-off-by: Hyunki Koo <hyunki00.koo@samsung.com>
 ---
-Changes since v1, addressing review from Rob Herring [1]:
-- Utilize anyOf: instead of allOf: to express mutual exclusivity of
-  clock-frequency and clocks.
-- Allow ns16550a where ns16550 is used but actually has a working FIFO;
-  add a comment about ns16550a being preferred
-- resets: specify maxItems based on actual use, drop description
-- current-speed: add type ref
-- used-by-rtas: add type
-- no-loopback-test: add type, fix a typo in description
-- fifo-size: add type ref
-- auto-flow-control: add type
-- tx-threshold: add type ref
-- {rts,cts,dtr,dsr,rng,dcd}-gpios: drop description, redundant to
-  serial.yaml
+ Documentation/devicetree/bindings/serial/samsung_uart.yaml | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-[1] https://lore.kernel.org/lkml/CAL_Jsq+GDnYviCdszhghhEVB55giPHk8N9w_KASPXG_=H+ZQig@mail.gmail.com/
-
- .../devicetree/bindings/serial/8250.txt       | 102 --------
- .../devicetree/bindings/serial/8250.yaml      | 223 ++++++++++++++++++
- 2 files changed, 223 insertions(+), 102 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/serial/8250.txt
- create mode 100644 Documentation/devicetree/bindings/serial/8250.yaml
-
-diff --git a/Documentation/devicetree/bindings/serial/8250.txt b/Documentation/devicetree/bindings/serial/8250.txt
-deleted file mode 100644
-index a543702859e2f..0000000000000
---- a/Documentation/devicetree/bindings/serial/8250.txt
-+++ /dev/null
-@@ -1,102 +0,0 @@
--* UART (Universal Asynchronous Receiver/Transmitter)
--
--Required properties:
--- compatible : one of:
--	- "ns8250"
--	- "ns16450"
--	- "ns16550a"
--	- "ns16550"
--	- "ns16750"
--	- "ns16850"
--	- For Tegra20, must contain "nvidia,tegra20-uart"
--	- For other Tegra, must contain '"nvidia,<chip>-uart",
--	  "nvidia,tegra20-uart"' where <chip> is tegra30, tegra114, tegra124,
--	  tegra132, or tegra210.
--	- "nxp,lpc3220-uart"
--	- "ralink,rt2880-uart"
--	- For MediaTek BTIF, must contain '"mediatek,<chip>-btif",
--	  "mediatek,mtk-btif"' where <chip> is mt7622, mt7623.
--	- "altr,16550-FIFO32"
--	- "altr,16550-FIFO64"
--	- "altr,16550-FIFO128"
--	- "fsl,16550-FIFO64"
--	- "fsl,ns16550"
--	- "intel,xscale-uart"
--	- "ti,da830-uart"
--	- "aspeed,ast2400-vuart"
--	- "aspeed,ast2500-vuart"
--	- "nuvoton,npcm750-uart"
--	- "mrvl,mmp-uart"
--	- "mrvl,pxa-uart"
--	- "serial" if the port type is unknown.
--- reg : offset and length of the register set for the device.
--- interrupts : should contain uart interrupt.
--- clock-frequency : the input clock frequency for the UART
--	 or
--  clocks phandle to refer to the clk used as per Documentation/devicetree
--  /bindings/clock/clock-bindings.txt
--
--Optional properties:
--- current-speed : the current active speed of the UART.
--- reg-offset : offset to apply to the mapbase from the start of the registers.
--- reg-shift : quantity to shift the register offsets by.
--- reg-io-width : the size (in bytes) of the IO accesses that should be
--  performed on the device.  There are some systems that require 32-bit
--  accesses to the UART (e.g. TI davinci).
--- used-by-rtas : set to indicate that the port is in use by the OpenFirmware
--  RTAS and should not be registered.
--- no-loopback-test: set to indicate that the port does not implements loopback
--  test mode
--- fifo-size: the fifo size of the UART.
--- auto-flow-control: one way to enable automatic flow control support. The
--  driver is allowed to detect support for the capability even without this
--  property.
--- tx-threshold: Specify the TX FIFO low water indication for parts with
--  programmable TX FIFO thresholds.
--- resets : phandle + reset specifier pairs
--- overrun-throttle-ms : how long to pause uart rx when input overrun is encountered.
--- {rts,cts,dtr,dsr,rng,dcd}-gpios: specify a GPIO for RTS/CTS/DTR/DSR/RI/DCD
--  line respectively. It will use specified GPIO instead of the peripheral
--  function pin for the UART feature. If unsure, don't specify this property.
--- aspeed,sirq-polarity-sense: Only applicable to aspeed,ast2500-vuart.
--  phandle to aspeed,ast2500-scu compatible syscon alongside register offset
--  and bit number to identify how the SIRQ polarity should be configured.
--  One possible data source is the LPC/eSPI mode bit.
--  Example: aspeed,sirq-polarity-sense = <&syscon 0x70 25>
--
--Note:
--* fsl,ns16550:
--  ------------
--  Freescale DUART is very similar to the PC16552D (and to a
--  pair of NS16550A), albeit with some nonstandard behavior such as
--  erratum A-004737 (relating to incorrect BRK handling).
--
--  Represents a single port that is compatible with the DUART found
--  on many Freescale chips (examples include mpc8349, mpc8548,
--  mpc8641d, p4080 and ls2085a).
--
--Example:
--
--	uart@80230000 {
--		compatible = "ns8250";
--		reg = <0x80230000 0x100>;
--		clock-frequency = <3686400>;
--		interrupts = <10>;
--		reg-shift = <2>;
--	};
--
--Example for OMAP UART using GPIO-based modem control signals:
--
--	uart4: serial@49042000 {
--		compatible = "ti,omap3-uart";
--		reg = <0x49042000 0x400>;
--		interrupts = <80>;
--		ti,hwmods = "uart4";
--		clock-frequency = <48000000>;
--		cts-gpios = <&gpio3 5 GPIO_ACTIVE_LOW>;
--		rts-gpios = <&gpio3 6 GPIO_ACTIVE_LOW>;
--		dtr-gpios = <&gpio1 12 GPIO_ACTIVE_LOW>;
--		dsr-gpios = <&gpio1 13 GPIO_ACTIVE_LOW>;
--		dcd-gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;
--		rng-gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
--	};
-diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
-new file mode 100644
-index 0000000000000..56a465d7e1199
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/8250.yaml
-@@ -0,0 +1,223 @@
-+# Copyright 2020 Lubomir Rintel <lkundrak@v3.sk>
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/serial/8250.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: UART (Universal Asynchronous Receiver/Transmitter) bindings
-+
-+maintainers:
-+  - devicetree@vger.kernel.org
-+
-+allOf:
-+  - $ref: /schemas/serial.yaml#
-+  - if:
-+      required:
-+        - aspeed,sirq-polarity-sense
-+    then:
-+      properties:
-+        compatible:
-+          const: aspeed,ast2500-vuart
-+  - if:
-+      properties:
-+        compatible:
-+          const: mrvl,mmp-uart
-+    then:
-+      properties:
-+        reg-shift:
-+          const: 2
-+      required:
-+        - reg-shift
-+
-+anyOf:
-+  - required: [ clock-frequency ]
-+  - required: [ clocks ]
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - const: ns8250
-+      - const: ns16450
-+      - const: ns16550
-+      - const: ns16550a
-+      - const: ns16850
-+      - const: aspeed,ast2400-vuart
-+      - const: aspeed,ast2500-vuart
-+      - const: intel,xscale-uart
-+      - const: mrvl,pxa-uart
-+      - const: nuvoton,npcm750-uart
-+      - const: nvidia,tegra20-uart
-+      - const: nxp,lpc3220-uart
-+      - items:
-+          - enum:
-+              - altr,16550-FIFO32
-+              - altr,16550-FIFO64
-+              - altr,16550-FIFO128
-+              - fsl,16550-FIFO64
-+              - fsl,ns16550
-+              - andestech,uart16550
-+              - nxp,lpc1850-uart
-+              - opencores,uart16550-rtlsvn105
-+              - ti,da830-uart
-+          - const: ns16550a
-+      - items:
-+          - enum:
-+              - ns16750
-+              - cavium,octeon-3860-uart
-+              - xlnx,xps-uart16550-2.00.b
-+              - ralink,rt2880-uart
-+          - enum:
-+              - ns16550 # Deprecated, unless the FIFO really is broken
-+              - ns16550a
-+      - items:
-+          - enum:
-+            - ralink,mt7620a-uart
-+            - ralink,rt3052-uart
-+            - ralink,rt3883-uart
-+          - const: ralink,rt2880-uart
-+          - enum:
-+              - ns16550 # Deprecated, unless the FIFO really is broken
-+              - ns16550a
-+      - items:
-+          - enum:
-+              - mediatek,mt7622-btif
-+              - mediatek,mt7623-btif
-+          - const: mediatek,mtk-btif
-+      - items:
-+          - enum:
-+              - mediatek,mt7622-btif
-+              - mediatek,mt7623-btif
-+          - const: mediatek,mtk-btif
-+      - items:
-+          - const: mrvl,mmp-uart
-+          - const: intel,xscale-uart
-+      - items:
-+          - enum:
-+              - nvidia,tegra30-uart
-+              - nvidia,tegra114-uart
-+              - nvidia,tegra124-uart
-+              - nvidia,tegra186-uart
-+              - nvidia,tegra194-uart
-+              - nvidia,tegra210-uart
-+          - const: nvidia,tegra20-uart
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clock-frequency: true
-+
-+  clocks:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+  current-speed:
-+    $ref: /schemas/types.yaml#definitions/uint32
-+    description: The current active speed of the UART.
-+
-+  reg-offset:
-+    description: |
-+      Offset to apply to the mapbase from the start of the registers.
-+
-+  reg-shift:
-+    description: Quantity to shift the register offsets by.
-+
+diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+index 9d2ce347875b..a57b1233c691 100644
+--- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
++++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+@@ -29,6 +29,14 @@ properties:
+   reg:
+     maxItems: 1
+ 
 +  reg-io-width:
 +    description: |
-+      The size (in bytes) of the IO accesses that should be performed on the
-+      device. There are some systems that require 32-bit accesses to the
-+      UART (e.g. TI davinci).
++      The size (in bytes) of the IO accesses that should be performed
++      on the device.
++    allOf:
++      - $ref: /schemas/types.yaml#/definitions/uint32
++      - enum: [ 1, 4 ]
 +
-+  used-by-rtas:
-+    type: boolean
-+    description: |
-+      Set to indicate that the port is in use by the OpenFirmware RTAS and
-+      should not be registered.
-+
-+  no-loopback-test:
-+    type: boolean
-+    description: |
-+      Set to indicate that the port does not implement loopback test mode.
-+
-+  fifo-size:
-+    $ref: /schemas/types.yaml#definitions/uint32
-+    description: The fifo size of the UART.
-+
-+  auto-flow-control:
-+    type: boolean
-+    description: |
-+      One way to enable automatic flow control support. The driver is
-+      allowed to detect support for the capability even without this
-+      property.
-+
-+  tx-threshold:
-+    $ref: /schemas/types.yaml#definitions/uint32
-+    description: |
-+      Specify the TX FIFO low water indication for parts with programmable
-+      TX FIFO thresholds.
-+
-+  overrun-throttle-ms:
-+    description: |
-+      How long to pause uart rx when input overrun is encountered.
-+
-+  rts-gpios: true
-+  cts-gpios: true
-+  dtr-gpios: true
-+  dsr-gpios: true
-+  rng-gpios: true
-+  dcd-gpios: true
-+
-+  aspeed,sirq-polarity-sense:
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    description: |
-+      Phandle to aspeed,ast2500-scu compatible syscon alongside register
-+      offset and bit number to identify how the SIRQ polarity should be
-+      configured. One possible data source is the LPC/eSPI mode bit. Only
-+      applicable to aspeed,ast2500-vuart.
-+
-+required:
-+  - reg
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    serial@80230000 {
-+        compatible = "ns8250";
-+        reg = <0x80230000 0x100>;
-+        interrupts = <10>;
-+        reg-shift = <2>;
-+        clock-frequency = <48000000>;
-+    };
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    serial@49042000 {
-+        compatible = "andestech,uart16550", "ns16550a";
-+        reg = <0x49042000 0x400>;
-+        interrupts = <80>;
-+        clock-frequency = <48000000>;
-+        cts-gpios = <&gpio3 5 GPIO_ACTIVE_LOW>;
-+        rts-gpios = <&gpio3 6 GPIO_ACTIVE_LOW>;
-+        dtr-gpios = <&gpio1 12 GPIO_ACTIVE_LOW>;
-+        dsr-gpios = <&gpio1 13 GPIO_ACTIVE_LOW>;
-+        dcd-gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;
-+        rng-gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
-+    };
-+  - |
-+    #include <dt-bindings/clock/aspeed-clock.h>
-+    serial@1e787000 {
-+        compatible = "aspeed,ast2500-vuart";
-+        reg = <0x1e787000 0x40>;
-+        reg-shift = <2>;
-+        interrupts = <8>;
-+        clocks = <&syscon ASPEED_CLK_APB>;
-+        no-loopback-test;
-+        aspeed,sirq-polarity-sense = <&syscon 0x70 25>;
-+    };
-+
-+...
+   clocks:
+     minItems: 2
+     maxItems: 5
 -- 
-2.26.0
+2.15.0.rc1
 
