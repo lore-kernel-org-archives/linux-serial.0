@@ -2,78 +2,86 @@ Return-Path: <SRS0=t3pX=6F=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C329C54FC9
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Apr 2020 12:25:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8BE2C54FC9
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Apr 2020 12:48:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0D18F2075E
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Apr 2020 12:25:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C049D20753
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Apr 2020 12:48:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1587473303;
+	bh=MX//OISkXMkefkAGS97bnGPUwUOdUgkMZrE4oSc7af0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=wNZCbpLuseuScZO9izLVDMR3H5WRK3z/ZF4f1gN0pFFKgbi2dZI2mw8TT33IxjrTy
+	 7MdUCQI8imRDcgqabvRHqg67+eCYaqoMau8Wv7lXvsqOKKY7sw9qJavF8mXN5iqi3n
+	 mJ+EKTjp9+F2vAeC9RZH2L0vewbthMIo57LeI1sY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728621AbgDUMZj (ORCPT
+        id S1728576AbgDUMsX (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Apr 2020 08:25:39 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:59244 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728576AbgDUMZj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Apr 2020 08:25:39 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id A1180CA88C4FE8DFBF7B;
-        Tue, 21 Apr 2020 20:25:36 +0800 (CST)
-Received: from linux-lmwb.huawei.com (10.175.103.112) by
- DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.487.0; Tue, 21 Apr 2020 20:25:26 +0800
-From:   Zou Wei <zou_wei@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <jslaby@suse.com>,
-        <f.fainelli@gmail.com>, <bcm-kernel-feedback-list@broadcom.com>,
-        <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Zou Wei <zou_wei@huawei.com>
-Subject: [PATCH -next] tty: serial: bcm63xx: fix missing clk_put() in bcm63xx_uart
-Date:   Tue, 21 Apr 2020 20:31:46 +0800
-Message-ID: <1587472306-105155-1-git-send-email-zou_wei@huawei.com>
-X-Mailer: git-send-email 2.6.2
+        Tue, 21 Apr 2020 08:48:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46862 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726691AbgDUMsX (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 21 Apr 2020 08:48:23 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5179D2076E;
+        Tue, 21 Apr 2020 12:48:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587473302;
+        bh=MX//OISkXMkefkAGS97bnGPUwUOdUgkMZrE4oSc7af0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=I61zNOARA45e29Y+vMJPmWFEfryzRhUTwFgUmghn5kTdgaT9VFPaYn7sYVK/88ZxU
+         skzz9Eb3OKBdZvBv4RCa0D1IvH80O7Nyir94yeG5lQk5ilxKf7TKqQCeRh5UEmWyMz
+         RAYA+9XeaKcFuXAhSdQel0SJ9Jsli7axPfagcNVQ=
+Date:   Tue, 21 Apr 2020 14:48:20 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Pavel Machek <pavel@denx.de>
+Cc:     Tony Lindgren <tony@atomide.com>, Rob Herring <robh@kernel.org>,
+        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
+        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
+        Johan Hovold <johan@kernel.org>,
+        Merlijn Wajer <merlijn@wizzup.org>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+Subject: Re: [PATCHv5 0/4] n_gsm serdev support and protocol driver for
+ droid4 modem
+Message-ID: <20200421124820.GB784065@kroah.com>
+References: <20200319173755.65082-1-tony@atomide.com>
+ <20200421115920.GA16890@amd>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.103.112]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200421115920.GA16890@amd>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This patch fixes below error reported by coccicheck
+On Tue, Apr 21, 2020 at 01:59:20PM +0200, Pavel Machek wrote:
+> Hi!
+> 
+> > Here's v4 set of n_gsm serdev support patches, and the related protocol
+> > driver for the modem found on Motorola Mapphone phones and tablets
+> > like droid4.
+> > 
+> > This series only adds basic character device support for the serdev
+> > driver. Other serdev consumer drivers for specific devices will be
+> > posted separately.
+> > 
+> > The patches are against v5.6-rc series.
+> 
+> And it would be good to get them into v5.7... pretty please :-).
 
-drivers/tty/serial/bcm63xx_uart.c:848:2-8: ERROR: missing clk_put;
-clk_get on line 842 and execution via conditional on line 846
+No, 5.7 is not ok for this, and i think it already needs a respin as
+this is not in my patch queue anymore.
 
-Fixes: ab4382d27412 ("tty: move drivers/serial/ to drivers/tty/serial/")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zou Wei <zou_wei@huawei.com>
----
- drivers/tty/serial/bcm63xx_uart.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+thanks,
 
-diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
-index 5674da2..ed0aa5c 100644
---- a/drivers/tty/serial/bcm63xx_uart.c
-+++ b/drivers/tty/serial/bcm63xx_uart.c
-@@ -843,8 +843,10 @@ static int bcm_uart_probe(struct platform_device *pdev)
- 	if (IS_ERR(clk) && pdev->dev.of_node)
- 		clk = of_clk_get(pdev->dev.of_node, 0);
- 
--	if (IS_ERR(clk))
-+	if (IS_ERR(clk)) {
-+		clk_put(clk);
- 		return -ENODEV;
-+	}
- 
- 	port->iotype = UPIO_MEM;
- 	port->irq = res_irq->start;
--- 
-2.6.2
-
+greg k-h
