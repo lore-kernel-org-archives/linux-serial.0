@@ -2,100 +2,78 @@ Return-Path: <SRS0=t3pX=6F=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D2BEC54FC9
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Apr 2020 11:59:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C329C54FC9
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Apr 2020 12:25:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 18A3A206D4
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Apr 2020 11:59:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0D18F2075E
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Apr 2020 12:25:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728479AbgDUL7X (ORCPT
+        id S1728621AbgDUMZj (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Apr 2020 07:59:23 -0400
-Received: from jabberwock.ucw.cz ([46.255.230.98]:34176 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726691AbgDUL7X (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Apr 2020 07:59:23 -0400
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 8B3BB1C013D; Tue, 21 Apr 2020 13:59:21 +0200 (CEST)
-Date:   Tue, 21 Apr 2020 13:59:20 +0200
-From:   Pavel Machek <pavel@denx.de>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh@kernel.org>,
-        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
-        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
-        Johan Hovold <johan@kernel.org>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
-Subject: Re: [PATCHv5 0/4] n_gsm serdev support and protocol driver for
- droid4 modem
-Message-ID: <20200421115920.GA16890@amd>
-References: <20200319173755.65082-1-tony@atomide.com>
+        Tue, 21 Apr 2020 08:25:39 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:59244 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728576AbgDUMZj (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 21 Apr 2020 08:25:39 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id A1180CA88C4FE8DFBF7B;
+        Tue, 21 Apr 2020 20:25:36 +0800 (CST)
+Received: from linux-lmwb.huawei.com (10.175.103.112) by
+ DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 21 Apr 2020 20:25:26 +0800
+From:   Zou Wei <zou_wei@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <jslaby@suse.com>,
+        <f.fainelli@gmail.com>, <bcm-kernel-feedback-list@broadcom.com>,
+        <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Zou Wei <zou_wei@huawei.com>
+Subject: [PATCH -next] tty: serial: bcm63xx: fix missing clk_put() in bcm63xx_uart
+Date:   Tue, 21 Apr 2020 20:31:46 +0800
+Message-ID: <1587472306-105155-1-git-send-email-zou_wei@huawei.com>
+X-Mailer: git-send-email 2.6.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="5mCyUwZo2JvN/JJP"
-Content-Disposition: inline
-In-Reply-To: <20200319173755.65082-1-tony@atomide.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain
+X-Originating-IP: [10.175.103.112]
+X-CFilter-Loop: Reflected
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+This patch fixes below error reported by coccicheck
 
---5mCyUwZo2JvN/JJP
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+drivers/tty/serial/bcm63xx_uart.c:848:2-8: ERROR: missing clk_put;
+clk_get on line 842 and execution via conditional on line 846
 
-Hi!
+Fixes: ab4382d27412 ("tty: move drivers/serial/ to drivers/tty/serial/")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zou Wei <zou_wei@huawei.com>
+---
+ drivers/tty/serial/bcm63xx_uart.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-> Here's v4 set of n_gsm serdev support patches, and the related protocol
-> driver for the modem found on Motorola Mapphone phones and tablets
-> like droid4.
->=20
-> This series only adds basic character device support for the serdev
-> driver. Other serdev consumer drivers for specific devices will be
-> posted separately.
->=20
-> The patches are against v5.6-rc series.
+diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
+index 5674da2..ed0aa5c 100644
+--- a/drivers/tty/serial/bcm63xx_uart.c
++++ b/drivers/tty/serial/bcm63xx_uart.c
+@@ -843,8 +843,10 @@ static int bcm_uart_probe(struct platform_device *pdev)
+ 	if (IS_ERR(clk) && pdev->dev.of_node)
+ 		clk = of_clk_get(pdev->dev.of_node, 0);
+ 
+-	if (IS_ERR(clk))
++	if (IS_ERR(clk)) {
++		clk_put(clk);
+ 		return -ENODEV;
++	}
+ 
+ 	port->iotype = UPIO_MEM;
+ 	port->irq = res_irq->start;
+-- 
+2.6.2
 
-And it would be good to get them into v5.7... pretty please :-).
-
-It seems to work for me... mostly. I checked out your ofono
-branch. Calls seem okay, but two smses arrived, but now phone does not
-seem to be logged into GSM network. Weird.
-
-Anyway, likely not a kernel problem.
-
-Tested-by: Pavel Machek <pavel@ucw.cz>
-
-
-								Pavel
-
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---5mCyUwZo2JvN/JJP
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAl6e4BgACgkQMOfwapXb+vI2pQCgwXs84UOlFBJO71p6HMLGCU/8
-DB0AoJemrL034OAs2wDMqp+PLkqaC/lf
-=8b3u
------END PGP SIGNATURE-----
-
---5mCyUwZo2JvN/JJP--
