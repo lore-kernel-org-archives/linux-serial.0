@@ -2,95 +2,42 @@ Return-Path: <SRS0=t3pX=6F=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1C07C55185
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Apr 2020 21:16:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0478C2BA19
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Apr 2020 23:28:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AB0F420736
-	for <linux-serial@archiver.kernel.org>; Tue, 21 Apr 2020 21:16:05 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="EhGKndkN"
+	by mail.kernel.org (Postfix) with ESMTP id B47DA206D5
+	for <linux-serial@archiver.kernel.org>; Tue, 21 Apr 2020 23:28:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726173AbgDUVPU (ORCPT
+        id S1726284AbgDUX2A (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 21 Apr 2020 17:15:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55126 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726012AbgDUVPT (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 21 Apr 2020 17:15:19 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE540C061BD3
-        for <linux-serial@vger.kernel.org>; Tue, 21 Apr 2020 14:15:18 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id z6so4119plk.10
-        for <linux-serial@vger.kernel.org>; Tue, 21 Apr 2020 14:15:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZVMZ4A2aUpVGf4Oc1yQl1xwOhbFiOotMi5P6czDpQa4=;
-        b=EhGKndkNNLMd8oIUr2bAwR6mWJIp8ph7ENARvnw3cdMbIf1ajkrFCKAv2OQAMTvbPR
-         kM8mHKCTnFzszTypxEH9ebQxkkMxL0VSHTY2whgFNuG/iXXcLYXDnthD2HacK9CXzYYL
-         FQsDuC9RLpIJg1u9xIWL7HeFAx+uq9dnNah1c=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZVMZ4A2aUpVGf4Oc1yQl1xwOhbFiOotMi5P6czDpQa4=;
-        b=TpuoMK1CoqL5ieGNq3EqgzKZh4fQsruSDM0X32AObQCpNXKRoc3UJoQEvm8RWVCINs
-         0Y9nKi/mxP1hnPPgyPZJCqqmVVUDgmuspAstOOa3yWOwwTrx2uuybnZtvdo3lZAYnB9h
-         EKC0seGFEyQcFU6iUvrnxrGhzjyGnAd5XtsGPmQTdsVkGleBYcQOJPkHM6fZsHxnWJry
-         QCSyraSbbQTjn7m0V8TS8xoZiVb9AOnZJPaK/ppG2Ik+mx1wpBHLXI2wkgrbQMgp8YmM
-         59/RfZvy67Ttp8nQSfdR84yYKMe/D1BkuuUCTRdMCMhppJHSqYSue2hl3PdKRQB3uvvo
-         q3dQ==
-X-Gm-Message-State: AGi0PuZjBC+JvKVFSbuoKj27MLMG6zrrjBAHULuRErq4XTYWtf1lDJTR
-        RDtgHJYuZhAeun5O0iGkx2XsCQ==
-X-Google-Smtp-Source: APiQypL/w37lt59/d7Bk0r82TDa4H/b8TqQLgMzL4SnVuX0nsHFVIhTdSVQrHB/00H7CAlZFO9jN9g==
-X-Received: by 2002:a17:902:ab90:: with SMTP id f16mr22835817plr.291.1587503718068;
-        Tue, 21 Apr 2020 14:15:18 -0700 (PDT)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:1:24fa:e766:52c9:e3b2])
-        by smtp.gmail.com with ESMTPSA id c1sm3287880pfo.152.2020.04.21.14.15.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Apr 2020 14:15:17 -0700 (PDT)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     jason.wessel@windriver.com, daniel.thompson@linaro.org,
-        gregkh@linuxfoundation.org
-Cc:     kgdb-bugreport@lists.sourceforge.net, mingo@redhat.com,
-        hpa@zytor.com, bp@alien8.de, linux-serial@vger.kernel.org,
-        agross@kernel.org, tglx@linutronix.de, frowand.list@gmail.com,
-        bjorn.andersson@linaro.org, jslaby@suse.com,
-        catalin.marinas@arm.com, corbet@lwn.net, will@kernel.org,
-        Douglas Anderson <dianders@chromium.org>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        Allison Randal <allison@lohutok.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@suse.de>,
-        Dave Martin <Dave.Martin@arm.com>,
-        Enrico Weigelt <info@metux.net>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        James Morse <james.morse@arm.com>,
-        Juergen Gross <jgross@suse.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Matt Mullins <mmullins@fb.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Nadav Amit <namit@vmware.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        jinho lim <jordan.lim@samsung.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        x86@kernel.org
-Subject: [PATCH v2 0/9] kgdb: Support late serial drivers; enable early debug w/ boot consoles
-Date:   Tue, 21 Apr 2020 14:14:38 -0700
-Message-Id: <20200421211447.193860-1-dianders@chromium.org>
-X-Mailer: git-send-email 2.26.1.301.g55bc3eb7cb9-goog
+        Tue, 21 Apr 2020 19:28:00 -0400
+Received: from muru.com ([72.249.23.125]:50810 "EHLO muru.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725850AbgDUX2A (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 21 Apr 2020 19:28:00 -0400
+Received: from hillo.muru.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTP id A6D8B8081;
+        Tue, 21 Apr 2020 23:28:45 +0000 (UTC)
+From:   Tony Lindgren <tony@atomide.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh@kernel.org>
+Cc:     Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
+        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
+        Johan Hovold <johan@kernel.org>,
+        Merlijn Wajer <merlijn@wizzup.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+Subject: [PATCHv6 0/4] n_gsm serdev support and protocol driver for droid4 modem
+Date:   Tue, 21 Apr 2020 16:27:48 -0700
+Message-Id: <20200421232752.3070-1-tony@atomide.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
@@ -98,126 +45,67 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This whole pile of patches was motivated by me trying to get kgdb to
-work properly on a platform where my serial driver ended up being hit
-by the -EPROBE_DEFER virus (it wasn't practicing social distancing
-from other drivers).  Specifically my serial driver's parent device
-depended on a resource that wasn't available when its probe was first
-called.  It returned -EPROBE_DEFER which meant that when "kgdboc"
-tried to run its setup the serial driver wasn't there.  Unfortunately
-"kgdboc" never tried again, so that meant that kgdb was disabled until
-I manually enalbed it via sysfs.
+Hi all,
 
-While I could try to figure out how to get around the -EPROBE_DEFER
-somehow, the above problems could happen to anyone and -EPROBE_DEFER
-is generally considered something you just have to live with.  In any
-case the current "kgdboc" setup is a bit of a race waiting to happen.
-I _think_ I saw during early testing that even adding a msleep() in
-the typical serial driver's probe() is enough to trigger similar
-issues.
+Here's v4 set of n_gsm serdev support patches, and the related protocol
+driver for the modem found on Motorola Mapphone phones and tablets
+like droid4.
 
-I decided that for the above race the best attitude to get kgdb to
-register at boot was probably "if you can't beat 'em, join 'em".
-Thus, "kgdboc" now jumps on the -EPROBE_DEFER bandwagon (now that my
-driver uses it it's no longer a virus).  It does so a little awkwardly
-because "kgdboc" hasn't normally had a "struct device" associated with
-it, but it's really not _that_ ugly to make a platform device and
-seems less ugly than alternatives.
+This series only adds basic character device support for the serdev
+driver. Other serdev consumer drivers for specific devices will be
+posted separately.
 
-Unfortunately now on my system the debugger is one of the last things
-to register at boot.  That's OK for debugging problems that show up
-significantly after boot, but isn't so hot for all the boot problems
-that I end up debugging.  This motivated me to try to get something
-working a little earlier.
+The patches are against v5.6-rc series.
 
-My first attempt was to try to get the existing "ekgdboc" to work
-earlier.  I tried that for a bit until I realized that it needed to
-work at the tty layer and I couldn't find any serial drivers that
-managed to register themselves to the tty layer super early at boot.
-The only documented use of "ekgdboc" is "ekgdboc=kbd" and that's a bit
-of a special snowflake.  Trying to get my serial driver and all its
-dependencies to probe normally and register the tty driver super early
-at boot seemed like a bad way to go.  In fact, all the complexity
-needed to do something like this is why the system already has a
-special concept of a "boot console" that lives only long enough to
-transition to the normal console.
+Regards,
 
-Leveraging the boot console seemed like a good way to go and that's
-what this series does.  I found that consoles could have a read()
-function, though I couldn't find anyone who implemented it.  I
-implemented it for two serial drivers for the devices I had easy
-access to, making the assumption that for boot consoles that we could
-assume read() and write() were polling-compatible (seems sane I
-think).
+Tony
 
-Now anyone who makes a small change to their serial driver can easily
-enable early kgdb debugging!
 
-The devices I had for testing were:
-- arm32: rk3288-veyron-jerry
-- arm64: rk3399-gru-kevin
-- arm64: qcom-sc7180-trogdor (not mainline yet)
+Changes since v5:
+- Cosmetic fixes for issues noted by Pavel
 
-These are the devices I tested this series on.  I tried to test
-various combinations of enabling/disabling various options and I
-hopefully caught the corner cases, but I'd appreciate any extra
-testing people can do.  Notably I didn't test on x86, but (I think) I
-didn't touch much there so I shouldn't have broken anything.
+Changes since v4:
+- Use drivers/tty/serdev/protocol directory for the driver instead of
+  drivers/mfd as discussed on the lists for v3 set of patches
+- Fix remove to call kfree only after removing device from the list
 
-When testing I found a few problems with actually dropping into the
-debugger super early on arm and arm64 devices.  Patches in this series
-should help with this.  For arm I just avoid dropping into the
-debugger until a little later and for arm64 I actually enable
-debugging super early.
+Changes since v3:
+- Update list of folks in Cc, looks like I sent v3 only to Lee and lkml
+- Init privdata before motmdm_register_dlci calls gsm_serdev_register_dlci
+- Update binding based on Rob's comments for license and "allOf"
 
-I realize that bits of this series might feel a little hacky, though
-I've tried to do things in the cleanest way I could without overly
-interferring with the rest of the kernel.  If you hate the way I
-solved a problem I would love it if you could provide guidance on how
-you think I could solve the problem better.
+Changes since v2:
+- Drop useless send_command indirection, use static motmdm_send_command
 
-This series (and my comments / documentation / commit messages) are
-now long enough that my eyes glaze over when I try to read it all over
-to double-check.  I've nontheless tried to double-check it, but I'm
-pretty sure I did something stupid.  Thank you ahead of time for
-pointing it out to me so I can fix it in v3.  If somehow I managed to
-not do anything stupid (really?) then thank you for double-checking me
-anyway.
+Changes since v1:
 
-Changes in v2:
-- ("kgdb: Disable WARN_CONSOLE_UNLOCKED for all kgdb") new for v2.
-- ("Revert "kgdboc: disable the console lock when in kgdb"") new for v2.
-- Assumes we have ("kgdb: Disable WARN_CONSOLE_UNLOCKED for all kgdb")
-- Fix kgdbts, tty/mips_ejtag_fdc, and usb/early/ehci-dbgp
+- Simplified usage and got rid of few pointless inline functions
+- Added consumer MFD driver, devicetree binding, and dts changes
 
-Douglas Anderson (9):
-  kgdb: Disable WARN_CONSOLE_UNLOCKED for all kgdb
-  Revert "kgdboc: disable the console lock when in kgdb"
-  kgdboc: Use a platform device to handle tty drivers showing up late
-  kgdb: Delay "kgdbwait" to dbg_late_init() by default
-  arm64: Add call_break_hook() to early_brk64() for early kgdb
-  kgdboc: Add earlycon_kgdboc to support early kgdb using boot consoles
-  Documentation: kgdboc: Document new earlycon_kgdboc parameter
-  serial: qcom_geni_serial: Support earlycon_kgdboc
-  serial: 8250_early: Support earlycon_kgdboc
 
- .../admin-guide/kernel-parameters.txt         |  20 ++
- Documentation/dev-tools/kgdb.rst              |  14 +
- arch/arm64/include/asm/debug-monitors.h       |   2 +
- arch/arm64/kernel/debug-monitors.c            |   2 +-
- arch/arm64/kernel/kgdb.c                      |   5 +
- arch/arm64/kernel/traps.c                     |   3 +
- arch/x86/kernel/kgdb.c                        |   5 +
- drivers/misc/kgdbts.c                         |   2 +-
- drivers/tty/mips_ejtag_fdc.c                  |   2 +-
- drivers/tty/serial/8250/8250_early.c          |  23 ++
- drivers/tty/serial/kgdboc.c                   | 262 ++++++++++++++++--
- drivers/tty/serial/qcom_geni_serial.c         |  32 +++
- drivers/usb/early/ehci-dbgp.c                 |   2 +-
- include/linux/kgdb.h                          |  25 +-
- kernel/debug/debug_core.c                     |  48 +++-
- 15 files changed, 400 insertions(+), 47 deletions(-)
+Tony Lindgren (4):
+  tty: n_gsm: Add support for serdev drivers
+  serdev: ngsm-motmdm: Add Motorola TS 27.010 serdev modem driver for
+    droid4
+  dt-bindings: serdev: motmdm: Add binding for motorola-mdm
+  ARM: dts: omap4-droid4: Enable basic modem support
+
+ .../serdev/motorola,mapphone-mdm6600.yaml     |   34 +
+ .../boot/dts/motorola-mapphone-common.dtsi    |    6 +
+ drivers/tty/n_gsm.c                           |  372 +++++
+ drivers/tty/serdev/Kconfig                    |    2 +
+ drivers/tty/serdev/Makefile                   |    2 +
+ drivers/tty/serdev/protocol/Kconfig           |   14 +
+ drivers/tty/serdev/protocol/Makefile          |    3 +
+ .../tty/serdev/protocol/serdev-ngsm-motmdm.c  | 1191 +++++++++++++++++
+ include/linux/serdev-gsm.h                    |  168 +++
+ 9 files changed, 1792 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serdev/motorola,mapphone-mdm6600.yaml
+ create mode 100644 drivers/tty/serdev/protocol/Kconfig
+ create mode 100644 drivers/tty/serdev/protocol/Makefile
+ create mode 100644 drivers/tty/serdev/protocol/serdev-ngsm-motmdm.c
+ create mode 100644 include/linux/serdev-gsm.h
 
 -- 
-2.26.1.301.g55bc3eb7cb9-goog
-
+2.26.2
