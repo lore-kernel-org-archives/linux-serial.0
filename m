@@ -2,158 +2,100 @@ Return-Path: <SRS0=HBWv=6H=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D496BC54FCB
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Apr 2020 15:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC898C54FCB
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Apr 2020 15:47:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B83E920767
-	for <linux-serial@archiver.kernel.org>; Thu, 23 Apr 2020 15:38:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 970CD2076C
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Apr 2020 15:47:03 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hrwao3Yw"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729204AbgDWPiC (ORCPT
+        id S1729310AbgDWPrD (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 23 Apr 2020 11:38:02 -0400
-Received: from muru.com ([72.249.23.125]:51076 "EHLO muru.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729201AbgDWPiC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 23 Apr 2020 11:38:02 -0400
-Received: from atomide.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id A080A8022;
-        Thu, 23 Apr 2020 15:38:47 +0000 (UTC)
-Date:   Thu, 23 Apr 2020 08:37:56 -0700
-From:   Tony Lindgren <tony@atomide.com>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh@kernel.org>,
-        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
-        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        Pavel Machek <pavel@ucw.cz>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
-Subject: Re: [PATCHv6 0/4] n_gsm serdev support and protocol driver for
- droid4 modem
-Message-ID: <20200423153756.GE37466@atomide.com>
-References: <20200421232752.3070-1-tony@atomide.com>
- <20200423114326.GQ18608@localhost>
+        Thu, 23 Apr 2020 11:47:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55970 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729176AbgDWPrD (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 23 Apr 2020 11:47:03 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706FCC09B040;
+        Thu, 23 Apr 2020 08:47:01 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id e26so6933625wmk.5;
+        Thu, 23 Apr 2020 08:47:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=gexsfzJrWQOn4i3Pq7SNyCJbao42w3cesdQKpJpl5r8=;
+        b=hrwao3YwPmfTB2ywD7Jch6LubuZqoTMsMePjZGu0bDegj53Uu4CilC25U98EjqH8Uq
+         f4+98L+bniHA0DwjGKutR6f3EqykCxgTLKmp1ve2FvOzJ9kr1JzFh4mXiabgJzCH46U4
+         3tz+5skehkyqQO+ZJ6HeiT3axwKotBq2ezejAlsTj1mr+sqTobtdiVyfyBPxoQzJ4ly3
+         2ZoVgQL/HUg4F6nPQDr8Ykv5IzZwZszZX9e2Rs4xLeaIn0+f7Itjk4kaPMR9VkpcBgWP
+         9N4AUDqO1Qhrlao0siWFf5xP8hLgzDxiJR9vQ5NYMaFxctPukkacxm6YpvrWXHc7FdU0
+         zbKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=gexsfzJrWQOn4i3Pq7SNyCJbao42w3cesdQKpJpl5r8=;
+        b=QbdwVYy3axavP4QuEsSqOaYsUIYEpgQJzbVzTpdnPT7H9WoPU8G5Tl5TkzdSFRC92b
+         eyvKOS+vlq2zFAm/B96rehGRLP6Hu2YEu9Ln4QlawaST/FJdf262sdWV16THV0SYrhOi
+         2oX3Fpuldk9seCAw/wuyzbh9tGGMx9XY8B4xt5AptAjG4Iap+3T8WrhwqWK22M/tOmZQ
+         kNOEmzYDPulSdxHAp00xxht2r6Ru6OZ+7XCCNeue5yuCmLsDerWjxNUGp8TrlpphIKxM
+         xlYqxd94XQcGgxEgygza0b38HDkO5h//LEDl9YZDFrTo2AI55gXT+HxtDTDiIulPPHC2
+         1VmQ==
+X-Gm-Message-State: AGi0Puap7o6mQC0tgcZEzYnrxXw5Gf0AaT+QimaYyoQyhEa3gUCa31+4
+        VEZQ6tJlx1SITRwcMJP08LbawiA2
+X-Google-Smtp-Source: APiQypJAhweB5DTJ9gVc3XAzKWIz4J2EmUXYFAeqSON8LkVyBJRSY8a4TlgTT3EAPufV9JrRElWatw==
+X-Received: by 2002:a1c:2d02:: with SMTP id t2mr4819878wmt.98.1587656819721;
+        Thu, 23 Apr 2020 08:46:59 -0700 (PDT)
+Received: from [10.230.188.26] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id a24sm4072415wmb.24.2020.04.23.08.46.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Apr 2020 08:46:57 -0700 (PDT)
+Subject: Re: [PATCH -next] tty: serial: bcm63xx: fix missing clk_put() in
+ bcm63xx_uart
+To:     Zou Wei <zou_wei@huawei.com>, gregkh@linuxfoundation.org,
+        jslaby@suse.com, f.fainelli@gmail.com,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <1587472306-105155-1-git-send-email-zou_wei@huawei.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <4d5b3f7c-e516-2a4e-3594-1f8f705c16ab@gmail.com>
+Date:   Thu, 23 Apr 2020 08:46:54 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200423114326.GQ18608@localhost>
+In-Reply-To: <1587472306-105155-1-git-send-email-zou_wei@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Johan Hovold <johan@kernel.org> [200423 11:44]:
-> Hi Tony,
+
+
+On 4/21/2020 5:31 AM, Zou Wei wrote:
+> This patch fixes below error reported by coccicheck
 > 
-> On Tue, Apr 21, 2020 at 04:27:48PM -0700, Tony Lindgren wrote:
-> > Hi all,
-> > 
-> > Here's v4 set of n_gsm serdev support patches, and the related protocol
-> > driver for the modem found on Motorola Mapphone phones and tablets
-> > like droid4.
-> > 
-> > This series only adds basic character device support for the serdev
-> > driver. Other serdev consumer drivers for specific devices will be
-> > posted separately.
+> drivers/tty/serial/bcm63xx_uart.c:848:2-8: ERROR: missing clk_put;
+> clk_get on line 842 and execution via conditional on line 846
 > 
-> I'm still missing an architectural (design) overview here -- reviewer
-> time is a scarce resource.
+> Fixes: ab4382d27412 ("tty: move drivers/serial/ to drivers/tty/serial/")
 
-OK, so for this series it would be roughly:
+The driver was doing that prior to being moved, and since this is an 
+error path, I am not sure the Fixes tag is really warranted.
 
-1. Allow serdev drivers configure and use n_gsm for TS 27.010
-
-2. Add support for a motorola modem with a custom protocol on
-   top of TS 27.010 with only chardev support initially
-
-3. Start adding TS 27.010 channel specific device drivers as
-   regular Linux device drivers later on
-
-> I also suggested earlier that you include, at least as an RFC, one or
-> more of your child-device drivers so that we can see how this ends up
-> being used in the end (including an example devicetree).
-
-Well I left that out intentionally to keep the series smaller. But yeah,
-I guess that part is really what people want. I'll add a basic GNSS
-driver for the next version.
-
-> Some high-level comments until then:
-> 
-> I'm not sure that a plain chardev interface for the mux channels is the
-> right interface. The n_gsm ldisc exposes tty devices and I think your
-> serdev adaptation should continue to do that.
-
-That's what I started with, but was not happy at all because of the
-custom motorola protocol layer on top of TS 27.010.
-
-A generic n_gsm serdev driver should work easily though. Roughly, the
-n_gsm serdev driver(s) wanting to use just the n_gsm tty devices would
-just call the n_gsm config functions only, and configure no custom
-callbacks. Maybe some flag is needed for n_gsm tty. This needs to
-be checked again though as I have not done that for a while.
-
-Then for the custom n_gsm serdev implementations, like this modem,
-we have packet data from n_gsm. I don't think stuffing the packet data
-back into tty devices helps for these cases.
-
-> On that note; you're not actually adding general TS 27.010 serdev
-> support, but rather some hooks and a custom driver and interface (mfd +
-> /dev/motmdmN) for one particular modem.
-
-A generic n_gsm serdev driver would just use a subset of these same
-functions.
-
-> I'd rather see a generic implementation which can be used with other
-> modems and that continues to expose a /dev/gsmttyN interface to which we
-> could attach serdev clients instead (and not create a motmdm serdev
-> replica of sorts).
-
-Yeah this should be doable quite easily actually without really any of
-the motorola driver code. It's a separate driver though, and not
-usable for this case because of the custom layer.
-
-> I know the location of this driver has been up for discussion already,
-> but drivers/tty/serdev/protocol still isn't right (e.g. we don't have an
-> drivers/i2c/protocol directory where we stuff random i2c client
-> drivers).
-
-Argh, the location of driver again.. So we do have the custom motorola
-layer to deal with on top of TS 27.010, but the custom handling is
-contained within the driver. So maybe just drivers/serial for the
-custom driver then.
-
-> It's an mfd + custom chardev driver for a modem and related to n_gsm
-> (even more if you add generic serdev support). Currently, drivers/mfd or
-> drivers/misc appear to be better choices. Otherwise, n_gsm lives in
-> drivers/tty since it's a line discipline, but it could be moved to a new
-> drivers/modem if needed (cf. the bluetooth hci ldisc).
-
-The n_gsm suport is not limited to modems only. Probably best to
-not move it. And I'd avoid drivers/modem until we actually have three
-similar use cases based on the late David "Mr.Bus" Brownell rule of
-thumb :)
-
-> Last, it seems you've based the serdev-ngsm-motmdm.c chardev
-> implementation on a more or less verbatim copy of drivers/gnss/core.c.
-> I'd appreciate if you could mention that in the file header and
-> reproduce the copyright notice if you end up keeping that interface.
-
-Oh yes indeed, thanks for pointing that out. I'll add it to the next
-version. The chardev code is for sure based on drivers/gnss.
-
-To explain my ignorance, I added the chardev support initially as an
-experiment to see if I can handle the motorola packet layer better
-that way compared to the n_gsm ttys and userspace handling. It ended
-up working quite nicely, so I kept it but then I accidentally left
-out references to the source. Sorry about that.
-
-Regards,
-
-Tony
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
