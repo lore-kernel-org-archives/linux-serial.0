@@ -1,172 +1,161 @@
-Return-Path: <SRS0=lyyL=6G=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=HBWv=6H=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92143C54FCB
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Apr 2020 19:20:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 665E3C55194
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Apr 2020 09:31:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 682A72137B
-	for <linux-serial@archiver.kernel.org>; Wed, 22 Apr 2020 19:20:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 438FD2098B
+	for <linux-serial@archiver.kernel.org>; Thu, 23 Apr 2020 09:31:18 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="uhT1tnQf"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="r2VXwUE9"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726377AbgDVTUq (ORCPT
+        id S1726648AbgDWJbR (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 22 Apr 2020 15:20:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34546 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725935AbgDVTUp (ORCPT
+        Thu, 23 Apr 2020 05:31:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53828 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726577AbgDWJbR (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 22 Apr 2020 15:20:45 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7AAC03C1A9;
-        Wed, 22 Apr 2020 12:20:45 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id w65so1593011pfc.12;
-        Wed, 22 Apr 2020 12:20:45 -0700 (PDT)
+        Thu, 23 Apr 2020 05:31:17 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1EEAC08E859
+        for <linux-serial@vger.kernel.org>; Thu, 23 Apr 2020 02:31:15 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id h2so5656568wmb.4
+        for <linux-serial@vger.kernel.org>; Thu, 23 Apr 2020 02:31:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KtmFmWbQrY8pc1EpVQXZVMz+o7YgDf3mMA7eDgpe41c=;
-        b=uhT1tnQfPSj/TjtZ3wZw+so7Z0Vt7cA+7T6xXaEseKDmfs5FBjyrvrTomdpZvQDiY2
-         2k5+TnTWWIoEE8Acv1BllsIWWxWBlBAcIqY4aYLDMMMYGCq2FM+9mKXgjzqBDTt8pqMC
-         oNbP3xVPWlH15/zlEZOQTawwTnBtbtNgjGJIxDlJlY0ETcRFB3H59NFbDMKKvi+PYdlF
-         P9XmiAm9GYIflk6+mwaBhQviWGrRoBjEM6x1PIPNbs5d04JFOQ4gfn6liDfD+LG8wOKn
-         3aFUdAl0kNG+iGbWf5QmqIkoszQHtXkfvo2qM3zaqtCD0YV82j+Q21XA6mhylE7eaIem
-         tXRg==
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=O26z6wOk23INqulcDtAkwlfLrc079plGrt7LpzYNlIM=;
+        b=r2VXwUE9Svk3QiEBGBKAWJ8Cm5d65tBjhNru6zO9YbS+FD8b1nlIRR1fG26t5GxpFk
+         FJ8QWdlgJVHqPw5m4NSaWw29OStIwP298O3wnZ+Y7YfDnmo7Wu0jwAHlrNsENex6RpKa
+         OG2iKzQnglKldPkctBNoK1foc0IdklQ/7f6Pe3AvoTCUEKQeR8HCJR+D/LVVB4eC//bC
+         HAwjmbpaoEBsuIi8mUfNEWYu/GQrNrb2TiUJWi/kaY+7OP0RL2GqQdnQKIYmjk3R6MzR
+         MMLRo4yNCT38fmrGxw5FQcMNbmBJN3e+y5sdszlEu/59Mpsu0cP0MRBFb2CkVSq1S1o2
+         0Ljg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KtmFmWbQrY8pc1EpVQXZVMz+o7YgDf3mMA7eDgpe41c=;
-        b=buLPIHExYGurUyi7e1kAUHlS4xKha2C56YltIRc8SBwUJJtrrAiwQbVEm0TqpISr4j
-         Cg3MTu1VWIcySbv/sv3rB0t3r8x1qsDBSfL7u6+DDj3RDDZaDbDLzPF+9wKgTti/V7HU
-         SkcHR5RumgJyIwdGBpl7Sm/UpXrAFBLzTzfWD4CiyspBGE6Xmjp76sdJbJLLsX5fFZ09
-         F1Ju7IAjKGKGpH0RuREUJpZ6VebI2g9GnwaFK5128KCaWB00hzWy0hMCUP65bGtYCKNa
-         azjz7dJgmYgqSacFUPAmZYVaKU7XbGjPha1Q6YMbR8U3q9Xs5Awsr6fEKLMaELVA7v6N
-         zltw==
-X-Gm-Message-State: AGi0PuYm4x12zcIpEov81Gtg+lxurEHxPJf2YlRDX7jmHfSM1spr07VK
-        3a45m/lqJRq+LUMQKpCqRmf/xISzk9XU1ll92Fg=
-X-Google-Smtp-Source: APiQypITCf2xMd3UMkVUBCj0ZbhYW1/aHWeFytRZabsdA3yMLAvCt9JL2QIHRkyc3NlzpGV3HtiJhypU95zkkNQfOWE=
-X-Received: by 2002:a63:5511:: with SMTP id j17mr576026pgb.4.1587583245100;
- Wed, 22 Apr 2020 12:20:45 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=O26z6wOk23INqulcDtAkwlfLrc079plGrt7LpzYNlIM=;
+        b=niKNAxcdQ4C3TCI6tH8mS+p21yqvjYbhV0gjFZKI1rCBgFz0un11S7Pe4AcRRd5nmv
+         Hhi3aP2f5ZKJTO4/7AomRzPT/Jk3VWGrqO1pbw/6yg0u9YIiaiZUUQvwBl+dSof6TW2U
+         Qv4QmpmGOjydD4LPTtfMRy/IFMx6GiWbIlzdiQ28FKX103DaZRUZ7rB1uZT20ZScEyZS
+         vh0DNQDvLugJa42fE4C/CHCzEaG4RrlgEW2ZXv7ko+GT09dh08+IoBTUQVo7h2JF7oPl
+         ZNFZCGqG4Zo0Sps1O/N5ZonPJCh9I8yLcdptCYctm97UeXNgr8jyxzTu9wJP9uvZrH+8
+         UDyA==
+X-Gm-Message-State: AGi0PuYd2ELIGAL7/om6njDwyHRJFPwsVfOhHZZmkQQH6Gq6Yk9aZPB7
+        GuD+ji/dYRDLAidqMlNtSFcy1w==
+X-Google-Smtp-Source: APiQypKq50R8cweRl+GxccEmBu6i9qOFRnn+sD3w+viq7DNxgjg+A6RewEEgPj/G9AjZ5NSRpoz1Sg==
+X-Received: by 2002:a1c:ac44:: with SMTP id v65mr3192173wme.33.1587634273995;
+        Thu, 23 Apr 2020 02:31:13 -0700 (PDT)
+Received: from [192.168.0.136] ([87.120.218.65])
+        by smtp.googlemail.com with ESMTPSA id o7sm2703512wmh.46.2020.04.23.02.31.12
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 23 Apr 2020 02:31:13 -0700 (PDT)
+Subject: Re: [PATCH V4 2/9] interconnect: Set peak requirement as twice of
+ average
+To:     Akash Asthana <akashast@codeaurora.org>, broonie@kernel.org
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de,
+        mark.rutland@arm.com, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, mka@chromium.org,
+        dianders@chromium.org, evgreen@chromium.org,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Mike Tipton <mdtipton@codeaurora.org>,
+        Sean Sweeney <seansw@qti.qualcomm.com>
+References: <1586946198-13912-1-git-send-email-akashast@codeaurora.org>
+ <1586946198-13912-3-git-send-email-akashast@codeaurora.org>
+From:   Georgi Djakov <georgi.djakov@linaro.org>
+Openpgp: preference=signencrypt
+Autocrypt: addr=georgi.djakov@linaro.org; prefer-encrypt=mutual; keydata=
+ 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
+ KEmKjLDvB0pePJkdTw==
+Message-ID: <58b91dc1-6ce3-49b8-88c8-259be9af1dbd@linaro.org>
+Date:   Thu, 23 Apr 2020 12:31:11 +0300
 MIME-Version: 1.0
-References: <cc41ea10be9ab96568f0371784e3b9f8d9f434b9.1587577548.git.sean.wang@mediatek.com>
-In-Reply-To: <cc41ea10be9ab96568f0371784e3b9f8d9f434b9.1587577548.git.sean.wang@mediatek.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 22 Apr 2020 22:20:33 +0300
-Message-ID: <CAHp75VdSvE9RPq3V8LTVX7OjaYs1PThVi2f1roh3p5EY_k0ANA@mail.gmail.com>
-Subject: Re: [PATCH v3] tty: serial: don't do termios for BTIF
-To:     Sean Wang <sean.wang@mediatek.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Stefan Roese <sr@denx.de>, Arnd Bergmann <arnd@arndb.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        tthayer <tthayer@opensource.altera.com>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Steven Liu <steven.liu@mediatek.com>,
-        Ryder Lee <ryder.lee@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1586946198-13912-3-git-send-email-akashast@codeaurora.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, Apr 22, 2020 at 9:05 PM <sean.wang@mediatek.com> wrote:
->
-> From: Sean Wang <sean.wang@mediatek.com>
->
-> Bluetooth Interface (BTIF) is designed dedicatedly for MediaTek SOC with
-> BT in order to be instead of the UART interface between BT module and Host
-> CPU, and not exported to user space to access.
->
-> As the UART design, BTIF will be an APB slave and can transmit or receive
-> data by MCU access, but doesn't provide termios function like baudrate and
-> flow control setup.
->
-> Even LCR on offset 0xC that is just a FAKELCR
-> a. If FAKELCR[7] is equaled to 1, RBR(0x00), THR(0x00), IER(0x04)
->    will not be readable/writable.
->
-> b. If FAKELCR is equaled to 0xBF, RBR(0x00), THR(0x00), IER(0x04),
->    IIR(0x08), and LSR(0x14) will not be readable/writable.
->
-> So adding a new capability 'UART_CAP_NTIO' for the unusual unsupported
-> case.
->
-> Fixes: 1c16ae65e250 ("serial: 8250: of: Add new port type for MediaTek BTIF controller on MT7622/23 SoC")
-> Cc: Steven Liu <steven.liu@mediatek.com>
+Hi Akash,
 
-> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+On 4/15/20 13:23, Akash Asthana wrote:
+> Lot of ICC clients are not aware of their actual peak requirement,
+> most commonly they tend to guess their peak requirement as
+> (some factor) * avg_bw.
+> 
+> Centralize random peak guess as twice of average, out into the core
+> to maintain consistency across the clients. Client can always
+> override this setting if they got a better idea.
 
-I didn't suggest this change. I only commented on the name of the macro.
+I am still not convinced that this is a good idea. If the factor is a random
+value, then i think that the default factor should be 1.
 
-> Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-> Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
->
-> --
-> v1->v2:
-> no change on termios->c_cflag and refine commit message
->
-> v2->v3:
-> change the naming from NMOD to NTIO as TIO is a well established prefix
-> for termios IOCTLs.
-> ---
->  drivers/tty/serial/8250/8250.h      | 1 +
->  drivers/tty/serial/8250/8250_port.c | 5 ++++-
->  2 files changed, 5 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-> index 33ad9d6de532..234d8db470c0 100644
-> --- a/drivers/tty/serial/8250/8250.h
-> +++ b/drivers/tty/serial/8250/8250.h
-> @@ -82,6 +82,7 @@ struct serial8250_config {
->  #define UART_CAP_MINI  (1 << 17)       /* Mini UART on BCM283X family lacks:
->                                          * STOP PARITY EPAR SPAR WLEN5 WLEN6
->                                          */
-> +#define UART_CAP_NTIO  (1 << 18)       /* UART doesn't do termios */
->
->  #define UART_BUG_QUOT  (1 << 0)        /* UART has buggy quot LSB */
->  #define UART_BUG_TXEN  (1 << 1)        /* UART has buggy TX IIR status */
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 0325f2e53b74..abc974b4113f 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -286,7 +286,7 @@ static const struct serial8250_config uart_config[] = {
->                 .tx_loadsz      = 16,
->                 .fcr            = UART_FCR_ENABLE_FIFO |
->                                   UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT,
-> -               .flags          = UART_CAP_FIFO,
-> +               .flags          = UART_CAP_FIFO | UART_CAP_NTIO,
->         },
->         [PORT_NPCM] = {
->                 .name           = "Nuvoton 16550",
-> @@ -2544,6 +2544,9 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
->         unsigned long flags;
->         unsigned int baud, quot, frac = 0;
->
-> +       if (up->capabilities & UART_CAP_NTIO)
-> +               return;
-> +
->         if (up->capabilities & UART_CAP_MINI) {
->                 termios->c_cflag &= ~(CSTOPB | PARENB | PARODD | CMSPAR);
->                 if ((termios->c_cflag & CSIZE) == CS5 ||
-> --
-> 2.25.1
+According to your previous reply, it seems that from geni we are requesting
+double peak bandwidth to compensate for other clients which are not requesting
+bandwidth for themselves. IMO, this is a bit hacky.
 
+Instead of requesting double peak bandwidth, IIUC the correct thing to do here
+is to request peak_bw = avg_bw for geni. And instead of trying to compensate for
+other clients "stealing" bandwidth, can't we make these clients vote for their
+own bandwidth? Or if they really can't, this should be handled elsewhere - maybe
+in the interconnect platform driver we can reserve some amount of minimum
+bandwidth for such cases?
 
-
--- 
-With Best Regards,
-Andy Shevchenko
+Thanks,
+Georgi
