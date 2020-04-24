@@ -2,139 +2,141 @@ Return-Path: <SRS0=qPbX=6I=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7063C2BA1A
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Apr 2020 05:37:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5077AC2BA1A
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Apr 2020 08:15:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C415920774
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Apr 2020 05:37:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1587706635;
-	bh=UpjdYfWzhaIBWwT8pfBeT5E2eAvIuj0KkNBR5ForkP8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=13yqZsXSewiqMQgA21r6Y5Ct//FOkwH7iQniJP9tVXA2BMHKvXDnhQdvm9/bpU6sC
-	 NdNOaNexUt7m2I1crfBxme5yc8DlgeO57QDQhP1O4T1BcMeJ2m/btbiTAk4PsEj8+a
-	 UccQYaoRIBAxxphTs9y1d5kv4HI3Y7I78uE7JBaU=
+	by mail.kernel.org (Postfix) with ESMTP id 2976920736
+	for <linux-serial@archiver.kernel.org>; Fri, 24 Apr 2020 08:15:00 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="U+zdC02v"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726625AbgDXFhP (ORCPT
+        id S1726489AbgDXIO7 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 24 Apr 2020 01:37:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48358 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725852AbgDXFhP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 24 Apr 2020 01:37:15 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C808D2075A;
-        Fri, 24 Apr 2020 05:37:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587706634;
-        bh=UpjdYfWzhaIBWwT8pfBeT5E2eAvIuj0KkNBR5ForkP8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xRAZIkUacZko7ajq7cHgKyFBma9mq+G+xqKbHfA9RNyQ85imZkOzVX+M8T8pPEBpX
-         HjMiJaSUqzGWbQVIFLn8NU2K1bIYEo3FgiiElxYqvGeI0GunAOkV+dFb52E7hqyOuZ
-         mGR5wIQ88ku15rmA65YXFz2L+nTo8+7OdvZoqyLQ=
-Date:   Fri, 24 Apr 2020 07:37:11 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Hyunki Koo <hyunki00.koo@samsung.com>
-Cc:     robh+dt@kernel.org, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 0/3] 32-bit access for TX/RX hold registers for
- samsung_tty driver
-Message-ID: <20200424053711.GB103562@kroah.com>
-References: <20200420013300.17249-1-hyunki00.koo@samsung.com>
- <CGME20200420233607epcas2p305dbd652ab73592a32c17773c1fce329@epcas2p3.samsung.com>
- <20200420233558.11879-1-hyunki00.koo@samsung.com>
- <000a01d619d0$ee167730$ca436590$@samsung.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <000a01d619d0$ee167730$ca436590$@samsung.com>
+        Fri, 24 Apr 2020 04:14:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40458 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726028AbgDXIO7 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 24 Apr 2020 04:14:59 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45017C09B045
+        for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2020 01:14:59 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id y6so3626355pjc.4
+        for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2020 01:14:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=mD/kfPP0LJg4RaHAfHE48TNR0vDMyG0NIvrIYBVARm4=;
+        b=U+zdC02vPpa+dW82b5konrmLSoLeQfS1bxJbZyxDYPtJKTL3/ZyaLfUT22Gh6Hb+yQ
+         vdpuVUFR5Mj1U4PSuIHGD9vUt25BRP+1dzf9tl3AD96LnDwcN6PcX2bO0PjuUsRDonzE
+         9d6O9Ud5RgNBiAloHqRMT9G9djQlKWVxNbQzxSkyu0cFFZIapMhibJhxYCmCumNEy2l0
+         RU4FIW+Ag6a1rTMYezFeBuu0zZiNE2Iakx8gDg2vyuxt8qajobywkK6QL1duo3J9Ai35
+         IqnNw40CcBuZ0757a4pwrHuhSXUQeHr+vz39ybQUYZ4+1/vvaVA5kjFpoC/7I/hYcvSs
+         Enig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=mD/kfPP0LJg4RaHAfHE48TNR0vDMyG0NIvrIYBVARm4=;
+        b=gvx7E0fzH9s70Yj7RJh8lM55vaqICqOE4+Tn/TE77iG0Hb0fUukZivie31coac7WxS
+         W7yKSPlHO/5Y+xF1swa1e21911UwNM+TZ3iE72KZ+KngnOrD47Mc4Ed8SIEfMw3hDRRy
+         IDFxvjwMaXA+DK87z/2Pbr+yU14ORVBjN2YhqXdBVGx0xa7tvAhQ3VrfXME7+vJ9dsFp
+         NHIS+7PDD+wlv6t+1hJxiZOnk/QC5K/FiZ9C59xVUYRDmHR1M/PBUkeX74tTyNgPnhPu
+         I8WZMHG6pB+npaf+0dDM88v2xSYaWO82DOQKz9LxMAT5X05DaM4VherwwyXAj1t8Be9a
+         sd/w==
+X-Gm-Message-State: AGi0Pub/YsRr8vyyT0Kq18xD22uIR8u5rBJhpjKJiSwcdsN+jw2pkT39
+        g+SxxltsmUjmDwMm37eQzrl4ag==
+X-Google-Smtp-Source: APiQypJghaVt/q6zmxXTjSbtQU6fVWfz/4mYcA8lUSSczTk75+y04uRfK5Ppid1rBINUIfxzC7tJRg==
+X-Received: by 2002:a17:902:7593:: with SMTP id j19mr8125373pll.62.1587716098746;
+        Fri, 24 Apr 2020 01:14:58 -0700 (PDT)
+Received: from localhost.localdomain ([117.252.71.186])
+        by smtp.gmail.com with ESMTPSA id q201sm5080005pfq.40.2020.04.24.01.14.52
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 24 Apr 2020 01:14:57 -0700 (PDT)
+From:   Sumit Garg <sumit.garg@linaro.org>
+To:     dianders@chromium.org, linux-serial@vger.kernel.org
+Cc:     linux@armlinux.org.uk, gregkh@linuxfoundation.org, jslaby@suse.com,
+        daniel.thompson@linaro.org, jason.wessel@windriver.com,
+        kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+        Sumit Garg <sumit.garg@linaro.org>
+Subject: [PATCH] serial: amba-pl011: Support earlycon_kgdboc
+Date:   Fri, 24 Apr 2020 13:43:51 +0530
+Message-Id: <1587716031-28199-1-git-send-email-sumit.garg@linaro.org>
+X-Mailer: git-send-email 2.7.4
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Apr 24, 2020 at 09:40:18AM +0900, Hyunki Koo wrote:
-> On Sat, April 21, 2020 at 08:36:00 AM +0900, Hyunki Koo wrote:
-> > 
-> > Change in v8:
-> > - spit into 3 patch
-> >   [1/3] create the new functions with no functional change to the code as-
-> > is.
-> >   Replace rd_regb/wr_regb with rd_reg/wr_reg for general usage.
-> >   [2/3] add the new binding reg-io-width in device tree
-> >   [3/3] add the new funtinality of rd_reg / wr_reg and wr_reg_barrier
-> >         to support 32-bit access for the TX/RX hold registers UTXH and URXH.
-> > 
-> > Change in v7:
-> > - [1/2] correct build error on running 'make dt_binding_check'
-> > Documentation/devicetree/bindings/serial/samsung_uart.yaml:  mapping
-> > values are not allowed in this context
-> >   in "<unicode string>", line 36, column 13
-> >   Documentation/devicetree/bindings/Makefile:12: recipe for target
-> > 'Documentation/devicetree/bindings/serial/samsung_uart.example.dts'
-> > failed
-> >   make[1]: ***
-> > [Documentation/devicetree/bindings/serial/samsung_uart.example.dts]
-> > Error 1
-> >   make[1]: *** Waiting for unfinished jobs....
-> >   Makefile:1262: recipe for target 'dt_binding_check' failed
-> >   make: *** [dt_binding_check] Error 2
-> > - [2/2] add commit message of reviewed by and tested by in commit
-> > message
-> >   Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
-> >   Tested on Odroid HC1 (Exynos5422):
-> >   Tested-by: Krzysztof Kozlowski <krzk@kernel.org>
-> > 
-> > Change in v6:
-> > - [2/2] clean description of reg-io-width
-> >   allOf is not needed. Just enum [1, 2] is enough.
-> > 
-> > Changes in v5:
-> > - spit into 2 patch, newly added patch for dt-binding
-> >   [1/2] newly added dt-binding and go as first patch in this series.
-> >   [2/2] go as second patch in this series.
-> > 
-> > Changes in v4:
-> > - correct variable types and change misleading function name
-> > 
-> > Changes in v3:
-> > - line 2031: remove redundant init value  for ourport->port.iotype
-> > 
-> > Changes in v2:
-> > - line 954 : change rd_regl to rd_reg in for backward compatibility.
-> > - line 2031: Add init value for ourport->port.iotype  to UPIO_MEM
-> > 
-> > 
-> > Hyunki Koo (3):
-> >   serial: samsung: Replace rd_regb/wr_regb with rd_reg/wr_reg
-> >   dt-bindings: serial: Add reg-io-width compatible
-> >   tty: samsung_tty: 32-bit access for TX/RX hold registers
-> > 
-> >  .../devicetree/bindings/serial/samsung_uart.yaml   |  8 +++
-> >  drivers/tty/serial/samsung_tty.c                   | 76 ++++++++++++++++++---
-> > -
-> >  2 files changed, 72 insertions(+), 12 deletions(-)
-> > 
-> > --
-> > 2.15.0.rc1
-> 
-> Hi Greg KH
-> 
-> Can I ask is this series patch are acceptable or not?
-> Do you think, I have to do any further action  for this patch?
-> 
+Implement the read() function in the early console driver. With
+recently added earlycon_kgdboc feature, this allows you to use kgdb
+to debug fairly early into the system boot.
 
-It's been 3 days, give us a chance please...
+We only bother implementing this if polling is enabled since kgdb can't
+be enabled without that.
 
-Also, I need to wait for the dt patch to be reviewed first before I can
-take any of this, so that's up to the DT maintainers.
+Signed-off-by: Sumit Garg <sumit.garg@linaro.org>
+---
 
-thanks,
+Depends on kgdb patch series: https://lkml.org/lkml/2020/4/21/1179
 
-greg k-h
+ drivers/tty/serial/amba-pl011.c | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 2296bb0..c010f63 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2435,6 +2435,37 @@ static void pl011_early_write(struct console *con, const char *s, unsigned n)
+ 	uart_console_write(&dev->port, s, n, pl011_putc);
+ }
+ 
++#ifdef CONFIG_CONSOLE_POLL
++static int pl011_getc(struct uart_port *port)
++{
++	if (readl(port->membase + UART01x_FR) & UART01x_FR_RXFE)
++		return NO_POLL_CHAR;
++
++	if (port->iotype == UPIO_MEM32)
++		return readl(port->membase + UART01x_DR);
++	else
++		return readb(port->membase + UART01x_DR);
++}
++
++static int pl011_early_read(struct console *con, char *s, unsigned int n)
++{
++	struct earlycon_device *dev = con->data;
++	int ch, num_read = 0;
++
++	while (num_read < n) {
++		ch = pl011_getc(&dev->port);
++		if (ch == NO_POLL_CHAR)
++			break;
++
++		s[num_read++] = ch;
++	}
++
++	return num_read;
++}
++#else
++#define pl011_early_read NULL
++#endif
++
+ /*
+  * On non-ACPI systems, earlycon is enabled by specifying
+  * "earlycon=pl011,<address>" on the kernel command line.
+@@ -2454,6 +2485,7 @@ static int __init pl011_early_console_setup(struct earlycon_device *device,
+ 		return -ENODEV;
+ 
+ 	device->con->write = pl011_early_write;
++	device->con->read = pl011_early_read;
+ 
+ 	return 0;
+ }
+-- 
+2.7.4
+
