@@ -1,101 +1,115 @@
-Return-Path: <SRS0=qPbX=6I=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=mx0D=6J=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB266C55194
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Apr 2020 22:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CD97C2BA19
+	for <linux-serial@archiver.kernel.org>; Sat, 25 Apr 2020 04:05:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 94E952166E
-	for <linux-serial@archiver.kernel.org>; Fri, 24 Apr 2020 22:15:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1B8942076C
+	for <linux-serial@archiver.kernel.org>; Sat, 25 Apr 2020 04:05:14 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="xsmyrmaP"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726027AbgDXWPW (ORCPT
+        id S1726107AbgDYEFG (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 24 Apr 2020 18:15:22 -0400
-Received: from muru.com ([72.249.23.125]:51336 "EHLO muru.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725874AbgDXWPV (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 24 Apr 2020 18:15:21 -0400
-Received: from atomide.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id D47FE80E7;
-        Fri, 24 Apr 2020 22:16:06 +0000 (UTC)
-Date:   Fri, 24 Apr 2020 15:15:15 -0700
-From:   Tony Lindgren <tony@atomide.com>
-To:     Pavel Machek <pavel@denx.de>
-Cc:     Johan Hovold <johan@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh@kernel.org>,
-        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
-        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
-Subject: Re: [PATCHv6 0/4] n_gsm serdev support and protocol driver for
- droid4 modem
-Message-ID: <20200424221515.GM37466@atomide.com>
-References: <20200421232752.3070-1-tony@atomide.com>
- <20200423114326.GQ18608@localhost>
- <20200424215040.GA14087@amd>
+        Sat, 25 Apr 2020 00:05:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57428 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725909AbgDYEFF (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sat, 25 Apr 2020 00:05:05 -0400
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E53AC09B049
+        for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2020 21:05:04 -0700 (PDT)
+Received: by mail-ot1-x342.google.com with SMTP id m18so16227301otq.9
+        for <linux-serial@vger.kernel.org>; Fri, 24 Apr 2020 21:05:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5Ky0eyr9lLThTQVUeFvCBClSKtV93JYH6d8kHWt9AbY=;
+        b=xsmyrmaPpckFzclp7L+uXkwIuEQPI0AkgTZpagovbHJzVpyzvl7xsdYmVYyYlEd4cE
+         AjiV8KyC6Ha79JNisdzpuGRwzhZDpJXvfgeFJuewUZPJkxFcXxCnpGtwPjwdxZGk/71c
+         MhbiUOkwdbLhYOuWso0i8s+l+VBZ14EpWPC0/99g+6smIEjGvGvR8os79N2J+lzBtGbR
+         s3WnThEwyPG/GrvoUiJvodTdyImCxcINnatR+Ccr/k0wy7rU+6t5f/3q5oiOM8dhPEt4
+         OvMoxj3DtqdxI5smzsaTPVQ34HTBrcqo0Qud1AjDjgTzOBI3qqofJIk5n977BDQ7JWP7
+         Ve9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5Ky0eyr9lLThTQVUeFvCBClSKtV93JYH6d8kHWt9AbY=;
+        b=LVbMVez8GRDfuSSuMiEzvHNGHcT2L5SpSD2EkL/6eGpDTWab6wAlkUYVRru8q++y5H
+         vRXP9U9CuhAStryy4q9aMfik50ra3kBuh51FteGXqVzw407gab+v+mVxMNgRV9leeyI9
+         /xOHnZFLLxxNuYNuu6RC9prTAvQASAvRiRSnvh0HnAtkGGOVhN01FDMmuwHjOVP7l1b5
+         wiD7CLvezoBuTmmDfp+nRuKYQwobMpoQOAT8/Tn+YVP6bYtjdc51nD6DHt4OcXSz7I6s
+         whAZQz3FHzOnkx4jAXfkXX/5ZQVggfOt8UqM5u1VwuOxAkVNygWBD+Xqnjq8ZYSacsCC
+         BuLg==
+X-Gm-Message-State: AGi0PuZmN+VEL4eKT+YmU/dVjJ74ARNxf9DufhIw17V5C1OvNEdDooEh
+        lXLSSRLY58GdH8MGpeH4t9V3HMpVwXyAC7Fh/9phbg==
+X-Google-Smtp-Source: APiQypJRrNuc6s4TK5Hy1LsXQFO4dVFdba3u8LGcLKEkJWGWHwnmvoiMEq4flU4dqofCtu9E0FvesLWDRf2qIs8Ff5g=
+X-Received: by 2002:aca:c311:: with SMTP id t17mr9055910oif.169.1587787503419;
+ Fri, 24 Apr 2020 21:05:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200424215040.GA14087@amd>
+References: <20200423220056.29450-1-john.stultz@linaro.org> <jhj1rodyeu1.mognet@arm.com>
+In-Reply-To: <jhj1rodyeu1.mognet@arm.com>
+From:   John Stultz <john.stultz@linaro.org>
+Date:   Fri, 24 Apr 2020 21:04:50 -0700
+Message-ID: <CALAqxLW+CBMxj_5gCF5yLcX8dhM7Fg6oOL-zot0ZZT6PW6R04g@mail.gmail.com>
+Subject: Re: [RFC][PATCH] serial: amba-pl011: Make sure we initialize the
+ port.lock spinlock
+To:     Valentin Schneider <valentin.schneider@arm.com>
+Cc:     lkml <linux-kernel@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-* Pavel Machek <pavel@denx.de> [200424 21:51]:
-> Hi!
-> 
-> > > Here's v4 set of n_gsm serdev support patches, and the related protocol
-> > > driver for the modem found on Motorola Mapphone phones and tablets
-> > > like droid4.
-> > > 
-> > > This series only adds basic character device support for the serdev
-> > > driver. Other serdev consumer drivers for specific devices will be
-> > > posted separately.
-> > 
-> > I'm still missing an architectural (design) overview here -- reviewer
-> > time is a scarce resource.
-> > 
-> > I also suggested earlier that you include, at least as an RFC, one or
-> > more of your child-device drivers so that we can see how this ends up
-> > being used in the end (including an example devicetree).
-> 
-> Note that this is useful on its own: we have ofonod running on the top
-> of this doing calls and SMSes.
+On Thu, Apr 23, 2020 at 4:14 PM Valentin Schneider
+<valentin.schneider@arm.com> wrote:
+> On 23/04/20 23:00, John Stultz wrote:
+> > Which seems to be due to the fact that after allocating the uap
+> > structure, the pl011 code doesn't initialize the spinlock.
+> >
+> > This patch fixes it by initializing the spinlock and the warning
+> > has gone away.
+> >
+>
+> Thanks for having a look. It does seem like the reasonable thing to do, and
+> I no longer get the warning on h960.
+>
+> That said, I got more curious as this doesn't show up on my Juno (same
+> Image). Digging into it I see that uart_add_one_port() has a call to
+> uart_port_spin_lock_init() a few lines before uart_configure_port() (in
+> which the above warning gets triggered). That thing says:
+>
+>  * Ensure that the serial console lock is initialised early.
+>  * If this port is a console, then the spinlock is already initialised.
+>
+> Which requires me to ask: are we doing the right thing here?
 
-Yup.
+So I got a little bit of time to look at this before I got pulled off
+to other things (and now its Friday night, so I figured I'd reply
+before I forget it on Monday).
 
-> Tony: I know you have drivers depending on this somewhere (audio
-> routing and GPS), but I can't find them. It is not droid4-pending-v5.6
-> AFAICT. Do you have a pointer / could you publish them somewhere?
+I did check and lockdep is tripping when we add ttyAMA6 which is the
+serial console on the board. I wasn't able to trace back to why we
+hadn't already called spin_lock_init() in the console code, but it
+seems we haven't.
 
-Hmm they should be there in droid4-pending-v5.6 branch [0]:
+Also I checked on HiKey as well, and there I'm seeing the same lockdep
+splat and this fix seems to resolve it. So more digging is needed. If
+anyone has a better idea of what might be awry or if the lock does
+need to be initialized in the driver (it's a bit inconsistent, I see
+some drivers do but others don't), let me know.
 
-$ git log --abbrev=12 --pretty=format:"%h (\"%s\")" \
-	v5.6..droid4-pending-v5.6 | grep -i -e gsm -e mot -e mdm
-e09590a260a4 ("mfd: motmdm: Fix oops on unload of motorola-mdm")
-f9252f9ff6bd ("mfd: motmdm: Revert bad list change")
-d733dcaf4416 ("mfd: motmdm: Fix issue with receiving data before ddata is set")
-452d2b5d4c95 ("n_gsm: Build fixes for make randconfig build")
-6882b27ea92a ("phy: mapphone-mdm6600: Fix write timeouts with shorter GPIO toggle interval")
-58ff58c4b520 ("mfd: motmdm: Add basic DTMF support")
-e92b6f30e5ae ("ASoC: audio-graph-card: Add audio mixer for motorold mdm6600")
-c2caea5767d5 ("gnss: mot-mdm6600: Add support for Motorola Mapphone MDM6600 modem")
-a5f73b7b06f6 ("mfd: motmdm: Add Motorola TS 27.010 serdev driver for devices like droid4")
-6c311d5aeb0a ("dt-bindings: mfd: motmdm: Add binding for motorola-mdm")
-cd02274b920e ("tty: n_gsm: Add support for serdev drivers")
-a73a48321c98 ("phy: mapphone-mdm6600: Fix timeouts by adding wake-up handling")
-
-Regards,
-
-Tony
-
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/tmlind/linux-omap.git/log/?h=droid4-pending-v5.6
+thanks
+-john
