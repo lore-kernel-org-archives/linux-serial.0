@@ -2,293 +2,129 @@ Return-Path: <SRS0=ZUfo=6K=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-13.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A8C8C2BA1A
-	for <linux-serial@archiver.kernel.org>; Sun, 26 Apr 2020 07:27:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09865C55199
+	for <linux-serial@archiver.kernel.org>; Sun, 26 Apr 2020 10:48:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 494502071C
-	for <linux-serial@archiver.kernel.org>; Sun, 26 Apr 2020 07:27:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D69C52071C
+	for <linux-serial@archiver.kernel.org>; Sun, 26 Apr 2020 10:48:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1587898125;
+	bh=V/k/v4aEozm/UfTFRAq6lXU0NttaDGGoCLBsiXSAQpQ=;
+	h=Date:From:To:Cc:Subject:List-ID:From;
+	b=khc1C+DVUBACKnlXSoDpp8Un+29FvmjFNRoBcXwjFGkrzAchwhBV9ac2+RJBcGUQ8
+	 5HCG9o48u6W8QDgyTj+V7vg+FkZVbqHmuT3Gdwh1aSKP5ukLHBA7tII+iSMmCshZ50
+	 F0BbZf8kvS1xjJLg7lpoA8KyItHNB011Bj2ymqj8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726171AbgDZH1R (ORCPT
+        id S1726149AbgDZKsp (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 26 Apr 2020 03:27:17 -0400
-Received: from jabberwock.ucw.cz ([46.255.230.98]:60866 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725847AbgDZH1R (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 26 Apr 2020 03:27:17 -0400
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 9699D1C0234; Sun, 26 Apr 2020 09:27:14 +0200 (CEST)
-Date:   Sun, 26 Apr 2020 09:27:13 +0200
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Johan Hovold <johan@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh@kernel.org>,
-        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
-        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
-Subject: Re: [PATCHv6 0/4] n_gsm serdev support and protocol driver for
- droid4 modem
-Message-ID: <20200426072713.GA31008@amd>
-References: <20200421232752.3070-1-tony@atomide.com>
- <20200423114326.GQ18608@localhost>
- <20200424215040.GA14087@amd>
- <20200424221515.GM37466@atomide.com>
+        Sun, 26 Apr 2020 06:48:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36394 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726141AbgDZKsp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 26 Apr 2020 06:48:45 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E44D6206BF;
+        Sun, 26 Apr 2020 10:48:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587898124;
+        bh=V/k/v4aEozm/UfTFRAq6lXU0NttaDGGoCLBsiXSAQpQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=B79o5DK7DQNJezJ9r2oNG2PXCiG7+lCua8Hl7j6XvHYISXeKko1TadRUoJWc8KxHY
+         //cXKef35fTwj4KSHRX4zzFaR0KbUcmi+oYEKXprl3MCwRfmlTcUk/UTUPwojdG6me
+         zSnb1TZyKMOVdejtROOso9GUhwDOMwQ1TBEijMi4=
+Date:   Sun, 26 Apr 2020 12:48:42 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jiri Slaby <jslaby@suse.cz>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY/Serial driver fixes for 5.7-rc3
+Message-ID: <20200426104842.GA2121011@kroah.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="jI8keyz6grp/JLjh"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200424221515.GM37466@atomide.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+The following changes since commit 8f3d9f354286745c751374f5f1fcafee6b3f3136:
 
---jI8keyz6grp/JLjh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+  Linux 5.7-rc1 (2020-04-12 12:35:55 -0700)
 
-Hi!
+are available in the Git repository at:
 
-> > > > Here's v4 set of n_gsm serdev support patches, and the related prot=
-ocol
-> > > > driver for the modem found on Motorola Mapphone phones and tablets
-> > > > like droid4.
-> > > >=20
-> > > > This series only adds basic character device support for the serdev
-> > > > driver. Other serdev consumer drivers for specific devices will be
-> > > > posted separately.
-> > >=20
-> > > I'm still missing an architectural (design) overview here -- reviewer
-> > > time is a scarce resource.
-> > >=20
-> > > I also suggested earlier that you include, at least as an RFC, one or
-> > > more of your child-device drivers so that we can see how this ends up
-> > > being used in the end (including an example devicetree).
-> >=20
-> > Note that this is useful on its own: we have ofonod running on the top
-> > of this doing calls and SMSes.
->=20
-> Yup.
->=20
-> > Tony: I know you have drivers depending on this somewhere (audio
-> > routing and GPS), but I can't find them. It is not droid4-pending-v5.6
-> > AFAICT. Do you have a pointer / could you publish them somewhere?
->=20
-> Hmm they should be there in droid4-pending-v5.6 branch [0]:
->=20
-> $ git log --abbrev=3D12 --pretty=3Dformat:"%h (\"%s\")" \
-> 	v5.6..droid4-pending-v5.6 | grep -i -e gsm -e mot -e mdm
-> e09590a260a4 ("mfd: motmdm: Fix oops on unload of motorola-mdm")
-> f9252f9ff6bd ("mfd: motmdm: Revert bad list change")
-> d733dcaf4416 ("mfd: motmdm: Fix issue with receiving data before ddata is=
- set")
-> 452d2b5d4c95 ("n_gsm: Build fixes for make randconfig build")
-> 6882b27ea92a ("phy: mapphone-mdm6600: Fix write timeouts with shorter GPI=
-O toggle interval")
-> 58ff58c4b520 ("mfd: motmdm: Add basic DTMF support")
-> e92b6f30e5ae ("ASoC: audio-graph-card: Add audio mixer for motorold mdm66=
-00")
-> c2caea5767d5 ("gnss: mot-mdm6600: Add support for Motorola Mapphone MDM66=
-00 modem")
-> a5f73b7b06f6 ("mfd: motmdm: Add Motorola TS 27.010 serdev driver for devi=
-ces like droid4")
-> 6c311d5aeb0a ("dt-bindings: mfd: motmdm: Add binding for motorola-mdm")
-> cd02274b920e ("tty: n_gsm: Add support for serdev drivers")
-> a73a48321c98 ("phy: mapphone-mdm6600: Fix timeouts by adding wake-up hand=
-ling")
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.7-rc3
 
-Thanks for pointers, I was lost in all the git trees. Port is not
-quite trivial :-(.
+for you to fetch changes up to 9a9fc42b86c06120744555fea43fdcabe297c656:
 
-    I tried to port GPS and codec support over to new version of base
-    patches, but I get oops when I try to open the GPS:
+  tty: hvc: fix buffer overflow during hvc_alloc(). (2020-04-23 16:02:07 +0200)
 
-Best regards,
-								Pavel
-   =20
-    [  182.877014] bfe0: 00000005 bed23af8 b6f279cf b6eb46f6 00070030
-    bed23ea7 00000000 00000000
-    [  182.901672] [<c06e7ba8>] (motmdm_gnss_open) from [<c06e71d4>]
-    (gnss_open+0x7c/0xb0)
-    [  182.901672] [<c06e71d4>] (gnss_open) from [<c0221fe0>]
-    (chrdev_open+0x9c/0x194)
-    [  182.901672] [<c0221fe0>] (chrdev_open) from [<c0219524>]
-    (do_dentry_open+0x21c/0x3e8)
-    [  182.901672] [<c0219524>] (do_dentry_open) from [<c022b424>]
-    (path_openat+0x8b0/0xc1c)
-    [  182.901672] [<c022b424>] (path_openat) from [<c022d0ac>]
-    (do_filp_open+0x60/0xb4)
-    [  182.940002] [<c022d0ac>] (do_filp_open) from [<c0219958>]
-    (do_sys_openat2+0x1f0/0x2f4)
-    [  182.940002] [<c0219958>] (do_sys_openat2) from [<c021ada8>]
-    (do_sys_open+0x98:
+----------------------------------------------------------------
+TTY/Serial fixes for 5.7-rc3
 
-diff --git a/drivers/gnss/Kconfig b/drivers/gnss/Kconfig
-index 960178dfad47..13b91034e3ea 100644
---- a/drivers/gnss/Kconfig
-+++ b/drivers/gnss/Kconfig
-@@ -15,7 +15,6 @@ if GNSS
-=20
- config GNSS_MOTMDM
- 	tristate "Motorola Modem TS 27.010 serdev GNSS receiver support"
--	depends on MFD_MOTMDM
- 	---help---
- 	  Say Y here if you have a Motorola modem using TS 27.010 line
- 	  discipline for GNSS such as a Motorola Mapphone series device
-diff --git a/drivers/tty/serdev/protocol/serdev-ngsm-motmdm.c b/drivers/tty=
-/serdev/protocol/serdev-ngsm-motmdm.c
-index 97eb349f5f13..f234a0cd2fb7 100644
---- a/drivers/tty/serdev/protocol/serdev-ngsm-motmdm.c
-+++ b/drivers/tty/serdev/protocol/serdev-ngsm-motmdm.c
-@@ -477,7 +477,7 @@ static int motmdm_send_command(struct device *dev,
- 	return err;
- }
-=20
--static int motmdm_register_dlci(struct device *dev,
-+int motmdm_register_dlci(struct device *dev,
- 				struct motmdm_dlci *mot_dlci)
- {
- 	struct motmdm *ddata;
-@@ -522,7 +522,7 @@ static int motmdm_register_dlci(struct device *dev,
- 	return err;
- }
-=20
--static void motmdm_unregister_dlci(struct device *dev,
-+void motmdm_unregister_dlci(struct device *dev,
- 				   struct motmdm_dlci *mot_dlci)
- {
- 	struct motmdm *ddata;
-diff --git a/include/linux/mfd/motorola-mdm.h b/include/linux/mfd/motorola-=
-mdm.h
-new file mode 100644
-index 000000000000..aae61050cd34
---- /dev/null
-+++ b/include/linux/mfd/motorola-mdm.h
-@@ -0,0 +1,84 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+struct gsm_serdev_dlci;
-+struct kfifo;
-+struct motmdm_response;
-+
-+enum motmdm_dlci_nr {
-+	MOTMDM_DLCI1 =3D 1,
-+	MOTMDM_DLCI2,
-+	MOTMDM_DLCI3,
-+	MOTMDM_DLCI4,
-+	MOTMDM_DLCI5,
-+	MOTMDM_DLCI6,
-+	MOTMDM_DLCI7,
-+	MOTMDM_DLCI8,
-+	MOTMDM_DLCI9,
-+	MOTMDM_DLCI10,
-+	MOTMDM_DLCI11,
-+	MOTMDM_DLCI12,
-+	MOTMDM_DLCI13,
-+	MOTMDM_DLCI14,
-+	MOTMDM_DLCI15,
-+};
-+
-+enum motmdm_state {
-+	MOTMDM_STATE_IDLE =3D 0,
-+	MOTMDM_STATE_DIAL =3D 1,
-+	MOTMDM_STATE_ANSWERING =3D 2,
-+	MOTMDM_STATE_CONNECTING =3D 3,
-+	MOTMDM_STATE_INCOMING =3D 4,
-+	MOTMDM_STATE_CONNECTED =3D 5,
-+	MOTMDM_STATE_HANGING_UP =3D 6,
-+	MOTMDM_STATE_DISCONNECTED =3D 7,
-+};
-+
-+struct motmdm_dlci {
-+	struct gsm_serdev_dlci gsm_dlci;
-+	struct list_head node;
-+	wait_queue_head_t read_queue;
-+	struct kfifo read_fifo;
-+	int line;
-+	u16 id;
-+	int (*send_command)(struct device *dev, struct motmdm_dlci *mot_dlci,
-+			    unsigned long timeout_ms, const unsigned char *cmd,
-+			    size_t cmdlen,
-+			    unsigned char *rsp, size_t rsplen);
-+	int (*handle_command)(struct motmdm_dlci *mot_dlci, int id,
-+			      const unsigned char *buf, size_t len);
-+	int (*receive_data)(struct motmdm_dlci *mot_dlci,
-+			    const unsigned char *buf,
-+			    size_t len);
-+	int (*write)(struct device *dev, struct motmdm_dlci *mot_dlci,
-+		     int cmdid, const unsigned char *buf, size_t count);
-+	int (*notify)(struct motmdm_dlci *mot_dlci, enum motmdm_state);
-+	struct list_head list;
-+	void *privdata;		/* Do not use, internal data */
-+	void *drvdata;		/* Available for consumer drivers */
-+};
-+
-+int motmdm_register_dlci(struct device *dev, struct motmdm_dlci *mot_dlci);
-+void motmdm_unregister_dlci(struct device *dev, struct motmdm_dlci *mot_dl=
-ci);
-+
-+static inline
-+int motmdm_send_command(struct device *dev, struct motmdm_dlci *mot_dlci,
-+			unsigned long timeout_ms, const unsigned char *cmd,
-+			size_t cmdlen, unsigned char *rsp, size_t rsplen)
-+{
-+	if (mot_dlci && mot_dlci->send_command)
-+		return mot_dlci->send_command(dev, mot_dlci,
-+					      timeout_ms, cmd, cmdlen,
-+					      rsp, rsplen);
-+	else
-+		return -EINVAL;
-+}
-+
-+static inline
-+int motmdm_write(struct device *dev, struct motmdm_dlci *mot_dlci,
-+		 const unsigned char *buf, size_t count)
-+{
-+	if (mot_dlci && mot_dlci->write)
-+		return mot_dlci->write(dev, mot_dlci, -1, buf, count);
-+	else
-+		return -EINVAL;
-+}
-diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
-index 3635fc0ab2a6..63d8d3e731ff 100644
---- a/sound/soc/codecs/Kconfig
-+++ b/sound/soc/codecs/Kconfig
-@@ -878,7 +878,6 @@ config SND_SOC_MAX9860
-=20
- config SND_SOC_MOTMDM
- 	tristate "Motorola Modem TS 27.010 Voice Call Codec"
--	depends on MFD_MOTMDM
- 	help
- 	  Enable support for Motorola TS 27.010 line discipline serdev
- 	  voice call codec driver for Motorola Mapphone series of devices
+Here are some tty and serial driver fixes for 5.7-rc3.
 
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+The "largest" in here are a number of reverts for previous changes to
+the uartps serial driver that turned out to not be a good idea at all.
 
---jI8keyz6grp/JLjh
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+The others are just small fixes found by people and tools.  Included in
+here is a much-reported symbol export needed by previous changes that
+happened in 5.7-rc1.  All of these have been in linux-next for a while
+with no reported issues.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-iEYEARECAAYFAl6lN9EACgkQMOfwapXb+vJBzwCbBNeJcHb6YJbgADLE7yQISiyd
-a9MAn1Gfn1F4otcHkw8/Pcb0VybG2SWD
-=W/So
------END PGP SIGNATURE-----
+----------------------------------------------------------------
+Amit Singh Tomar (1):
+      tty: serial: owl: add "much needed" clk_prepare_enable()
 
---jI8keyz6grp/JLjh--
+Andrew Melnychenko (1):
+      tty: hvc: fix buffer overflow during hvc_alloc().
+
+Andy Shevchenko (1):
+      serial: sunhv: Initialize lock for non-registered console
+
+Dmitry Safonov (1):
+      tty/sysrq: Export sysrq_mask(), sysrq_toggle_support()
+
+Jiri Slaby (1):
+      tty: rocket, avoid OOB access
+
+Kazuhiro Fujita (1):
+      serial: sh-sci: Make sure status register SCxSR is read in correct sequence
+
+Michal Simek (7):
+      Revert "serial: uartps: Fix uartps_major handling"
+      Revert "serial: uartps: Use the same dynamic major number for all ports"
+      Revert "serial: uartps: Fix error path when alloc failed"
+      Revert "serial: uartps: Do not allow use aliases >= MAX_UART_INSTANCES"
+      Revert "serial: uartps: Change uart ID port allocation"
+      Revert "serial: uartps: Move Port ID to device data structure"
+      Revert "serial: uartps: Register own uart console and driver structures"
+
+Nicolas Pitre (2):
+      vt: don't use kmalloc() for the unicode screen buffer
+      vt: don't hardcode the mem allocation upper bound
+
+Zou Wei (1):
+      tty: serial: bcm63xx: fix missing clk_put() in bcm63xx_uart
+
+ drivers/tty/hvc/hvc_console.c      |  23 ++--
+ drivers/tty/rocket.c               |  25 +++--
+ drivers/tty/serial/bcm63xx_uart.c  |   4 +-
+ drivers/tty/serial/owl-uart.c      |   7 ++
+ drivers/tty/serial/sh-sci.c        |  13 ++-
+ drivers/tty/serial/sunhv.c         |   3 +
+ drivers/tty/serial/xilinx_uartps.c | 211 +++++++++----------------------------
+ drivers/tty/sysrq.c                |   2 +
+ drivers/tty/vt/vt.c                |   7 +-
+ 9 files changed, 106 insertions(+), 189 deletions(-)
