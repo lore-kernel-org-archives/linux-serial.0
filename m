@@ -2,239 +2,344 @@ Return-Path: <SRS0=ZUfo=6K=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A5F8C55194
-	for <linux-serial@archiver.kernel.org>; Sun, 26 Apr 2020 19:00:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51410C55194
+	for <linux-serial@archiver.kernel.org>; Sun, 26 Apr 2020 20:07:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4B92B206BF
-	for <linux-serial@archiver.kernel.org>; Sun, 26 Apr 2020 19:00:11 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=crapouillou.net header.i=@crapouillou.net header.b="vSPLGrsl"
+	by mail.kernel.org (Postfix) with ESMTP id 3A7562070A
+	for <linux-serial@archiver.kernel.org>; Sun, 26 Apr 2020 20:07:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726502AbgDZTAI (ORCPT
+        id S1726304AbgDZUHX (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 26 Apr 2020 15:00:08 -0400
-Received: from outils.crapouillou.net ([89.234.176.41]:59100 "EHLO
-        crapouillou.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726296AbgDZTAH (ORCPT
+        Sun, 26 Apr 2020 16:07:23 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:58066 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726171AbgDZUHW (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 26 Apr 2020 15:00:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1587927554; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lozQm5cUkRzX/D1RhqthQ7AWiCa273YjHW3E+nR6jsg=;
-        b=vSPLGrslCbSH7fxxJOBgw8RSrDw5vKfyWZZT1Kmj2ygGh2g0ssvW60J8xqVN5HdVI31Uqd
-        HEw0PZ0VI2xNa8hOnYoljwGsrPfXVdDqqxq6NAVGayyep9litDT7N3YSWrhSbQULBktX6p
-        Y8t+pvrKjD7VKryZ5eF3cY5DY93rmIU=
-From:   Paul Cercueil <paul@crapouillou.net>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     od@zcrc.me,
-        =?UTF-8?q?=E5=91=A8=E7=90=B0=E6=9D=B0?= <zhouyanjie@wanyeetech.com>,
-        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-i2c@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-mips@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH 8/8] dt-bindings: display: Convert ingenic,lcd.txt to YAML
-Date:   Sun, 26 Apr 2020 20:58:56 +0200
-Message-Id: <20200426185856.38826-8-paul@crapouillou.net>
-In-Reply-To: <20200426185856.38826-1-paul@crapouillou.net>
-References: <20200426185856.38826-1-paul@crapouillou.net>
+        Sun, 26 Apr 2020 16:07:22 -0400
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id F01F11C0246; Sun, 26 Apr 2020 22:07:19 +0200 (CEST)
+Date:   Sun, 26 Apr 2020 22:07:18 +0200
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Pavel Machek <pavel@denx.de>, Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh@kernel.org>,
+        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
+        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
+        Merlijn Wajer <merlijn@wizzup.org>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+Subject: Re: [PATCHv6 0/4] n_gsm serdev support and protocol driver for
+ droid4 modem
+Message-ID: <20200426200718.GA22980@amd>
+References: <20200421232752.3070-1-tony@atomide.com>
+ <20200423114326.GQ18608@localhost>
+ <20200424215040.GA14087@amd>
+ <20200424221515.GM37466@atomide.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="a8Wt8u1KmwUX3Y2C"
+Content-Disposition: inline
+In-Reply-To: <20200424221515.GM37466@atomide.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Convert the ingenic,lcd.txt to a new ingenic,lcd.yaml file.
 
-In the process, the new ingenic,jz4780-lcd compatible string has been
-added.
+--a8Wt8u1KmwUX3Y2C
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
----
- .../bindings/display/ingenic,lcd.txt          |  45 -------
- .../bindings/display/ingenic,lcd.yaml         | 113 ++++++++++++++++++
- 2 files changed, 113 insertions(+), 45 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/display/ingenic,lcd.txt
- create mode 100644 Documentation/devicetree/bindings/display/ingenic,lcd.yaml
+Hi!
 
-diff --git a/Documentation/devicetree/bindings/display/ingenic,lcd.txt b/Documentation/devicetree/bindings/display/ingenic,lcd.txt
-deleted file mode 100644
-index 01e3261defb6..000000000000
---- a/Documentation/devicetree/bindings/display/ingenic,lcd.txt
-+++ /dev/null
-@@ -1,45 +0,0 @@
--Ingenic JZ47xx LCD driver
--
--Required properties:
--- compatible: one of:
--  * ingenic,jz4740-lcd
--  * ingenic,jz4725b-lcd
--  * ingenic,jz4770-lcd
--- reg: LCD registers location and length
--- clocks: LCD pixclock and device clock specifiers.
--	   The device clock is only required on the JZ4740.
--- clock-names: "lcd_pclk" and "lcd"
--- interrupts: Specifies the interrupt line the LCD controller is connected to.
--
--Example:
--
--panel {
--	compatible = "sharp,ls020b1dd01d";
--
--	backlight = <&backlight>;
--	power-supply = <&vcc>;
--
--	port {
--		panel_input: endpoint {
--			remote-endpoint = <&panel_output>;
--		};
--	};
+> > > > Here's v4 set of n_gsm serdev support patches, and the related prot=
+ocol
+> > > > driver for the modem found on Motorola Mapphone phones and tablets
+> > > > like droid4.
+> > > >=20
+> > > > This series only adds basic character device support for the serdev
+> > > > driver. Other serdev consumer drivers for specific devices will be
+> > > > posted separately.
+> > >=20
+> > > I'm still missing an architectural (design) overview here -- reviewer
+> > > time is a scarce resource.
+> > >=20
+> > > I also suggested earlier that you include, at least as an RFC, one or
+> > > more of your child-device drivers so that we can see how this ends up
+> > > being used in the end (including an example devicetree).
+> >=20
+> > Note that this is useful on its own: we have ofonod running on the top
+> > of this doing calls and SMSes.
+>=20
+> Yup.
+>=20
+> > Tony: I know you have drivers depending on this somewhere (audio
+> > routing and GPS), but I can't find them. It is not droid4-pending-v5.6
+> > AFAICT. Do you have a pointer / could you publish them somewhere?
+>=20
+> Hmm they should be there in droid4-pending-v5.6 branch [0]:
+>=20
+> $ git log --abbrev=3D12 --pretty=3Dformat:"%h (\"%s\")" \
+> 	v5.6..droid4-pending-v5.6 | grep -i -e gsm -e mot -e mdm
+> e09590a260a4 ("mfd: motmdm: Fix oops on unload of motorola-mdm")
+> f9252f9ff6bd ("mfd: motmdm: Revert bad list change")
+> d733dcaf4416 ("mfd: motmdm: Fix issue with receiving data before ddata is=
+ set")
+> 452d2b5d4c95 ("n_gsm: Build fixes for make randconfig build")
+> 6882b27ea92a ("phy: mapphone-mdm6600: Fix write timeouts with shorter GPI=
+O toggle interval")
+> 58ff58c4b520 ("mfd: motmdm: Add basic DTMF support")
+> e92b6f30e5ae ("ASoC: audio-graph-card: Add audio mixer for motorold mdm66=
+00")
+> c2caea5767d5 ("gnss: mot-mdm6600: Add support for Motorola Mapphone MDM66=
+00 modem")
+> a5f73b7b06f6 ("mfd: motmdm: Add Motorola TS 27.010 serdev driver for devi=
+ces like droid4")
+> 6c311d5aeb0a ("dt-bindings: mfd: motmdm: Add binding for motorola-mdm")
+> cd02274b920e ("tty: n_gsm: Add support for serdev drivers")
+> a73a48321c98 ("phy: mapphone-mdm6600: Fix timeouts by adding wake-up hand=
+ling")
+
+Here's better try at getting gnss to work on top of linux-next... but
+still no luck.
+
+diff --git a/drivers/gnss/Kconfig b/drivers/gnss/Kconfig
+index 960178dfad47..13b91034e3ea 100644
+--- a/drivers/gnss/Kconfig
++++ b/drivers/gnss/Kconfig
+@@ -15,7 +15,6 @@ if GNSS
+=20
+ config GNSS_MOTMDM
+ 	tristate "Motorola Modem TS 27.010 serdev GNSS receiver support"
+-	depends on MFD_MOTMDM
+ 	---help---
+ 	  Say Y here if you have a Motorola modem using TS 27.010 line
+ 	  discipline for GNSS such as a Motorola Mapphone series device
+diff --git a/drivers/gnss/motmdm.c b/drivers/gnss/motmdm.c
+index 5ec2fa25df6f..426e9da6bb12 100644
+--- a/drivers/gnss/motmdm.c
++++ b/drivers/gnss/motmdm.c
+@@ -21,6 +21,8 @@
+=20
+ #include <linux/mfd/motorola-mdm.h>
+=20
++#define DEBUG
++
+ #define MOTMDM_GNSS_TIMEOUT	1000
+ #define MOTMDM_GNSS_RATE	1000
+=20
+@@ -197,6 +199,8 @@ static int motmdm_gnss_receive_data(struct motmdm_dlci =
+*mot_dlci,
+ 	if (len <=3D MOTMDM_GNSS_MPD_LEN)
+ 		return 0;
+=20
++	printk("gnss: Have %d bytes of data\n", len);
++
+ 	switch (buf[MOTMDM_GNSS_MPD_LEN]) {
+ 	case 'N':	/* UNNNN~+MPDNMEA=3DNN, */
+ 		msg =3D buf + MOTMDM_GNSS_NMEA_LEN;
+diff --git a/drivers/tty/serdev/protocol/serdev-ngsm-motmdm.c b/drivers/tty=
+/serdev/protocol/serdev-ngsm-motmdm.c
+index 97eb349f5f13..15353e228b18 100644
+--- a/drivers/tty/serdev/protocol/serdev-ngsm-motmdm.c
++++ b/drivers/tty/serdev/protocol/serdev-ngsm-motmdm.c
+@@ -4,6 +4,7 @@
+  * Copyright (C) 2018 - 2020 Tony Lindgren <tony@atomide.com>
+  */
+=20
++#define DEBUG
+ #include <linux/cdev.h>
+ #include <linux/delay.h>
+ #include <linux/device.h>
+@@ -26,6 +27,8 @@
+ #include <linux/mfd/core.h>
+ #include <linux/phy/phy.h>
+=20
++#include <linux/mfd/motorola-mdm.h>
++
+ #include <uapi/linux/gsmmux.h>
+=20
+ #define MOTMDM_C_N2		3	/* TS27.010 default value */
+@@ -67,36 +70,6 @@ struct motmdm_response {
+ 	unsigned int handled:1;
+ };
+=20
+-enum motmdm_dlci_nr {
+-	MOTMDM_DLCI1 =3D 1,
+-	MOTMDM_DLCI2,
+-	MOTMDM_DLCI3,
+-	MOTMDM_DLCI4,
+-	MOTMDM_DLCI5,
+-	MOTMDM_DLCI6,
+-	MOTMDM_DLCI7,
+-	MOTMDM_DLCI8,
+-	MOTMDM_DLCI9,
+-	MOTMDM_DLCI10,
+-	MOTMDM_DLCI11,
+-	MOTMDM_DLCI12,
+-	MOTMDM_DLCI13,
+-	MOTMDM_DLCI14,
+-	MOTMDM_DLCI15,
 -};
 -
--
--lcd: lcd-controller@13050000 {
--	compatible = "ingenic,jz4725b-lcd";
--	reg = <0x13050000 0x1000>;
--
--	interrupt-parent = <&intc>;
--	interrupts = <31>;
--
--	clocks = <&cgu JZ4725B_CLK_LCD>;
--	clock-names = "lcd";
--
--	port {
--		panel_output: endpoint {
--			remote-endpoint = <&panel_input>;
--		};
--	};
+-struct motmdm_dlci {
+-	struct gsm_serdev_dlci gsm_dlci;
+-	struct list_head node;
+-	wait_queue_head_t read_queue;
+-	struct kfifo read_fifo;
+-	int line;
+-	u16 id;
+-	struct list_head list;
+-	void *privdata;		/* Do not use, internal data */
+-	void *drvdata;		/* Available for consumer drivers */
 -};
-diff --git a/Documentation/devicetree/bindings/display/ingenic,lcd.yaml b/Documentation/devicetree/bindings/display/ingenic,lcd.yaml
+-
+ struct motmdm_cdev {
+ 	struct motmdm *ddata;
+ 	struct list_head node;
+@@ -283,6 +256,10 @@ static int motmdm_dlci_handle_command(struct motmdm_dl=
+ci *mot_dlci, int id,
+ 			break;
+ 	}
+=20
++	if (mot_dlci->receive_data) {
++		return (*mot_dlci->receive_data)(mot_dlci, buf, len);
++	}
++
+ 	if (!resp || !resp->buf)
+ 		return -ENODEV;
+=20
+@@ -415,7 +392,7 @@ static int motmdm_write(struct device *dev, struct motm=
+dm_dlci *mot_dlci,
+  * Helper for child device drivers to send a command to a DLCI and wait
+  * for result with a matching packet ID.
+  */
+-static int motmdm_send_command(struct device *dev,
++int motmdm_send_command(struct device *dev,
+ 			       struct motmdm_dlci *mot_dlci,
+ 			       unsigned long timeout_ms,
+ 			       const unsigned char *cmd, size_t cmdlen,
+@@ -477,7 +454,7 @@ static int motmdm_send_command(struct device *dev,
+ 	return err;
+ }
+=20
+-static int motmdm_register_dlci(struct device *dev,
++int motmdm_register_dlci(struct device *dev,
+ 				struct motmdm_dlci *mot_dlci)
+ {
+ 	struct motmdm *ddata;
+@@ -522,7 +499,7 @@ static int motmdm_register_dlci(struct device *dev,
+ 	return err;
+ }
+=20
+-static void motmdm_unregister_dlci(struct device *dev,
++void motmdm_unregister_dlci(struct device *dev,
+ 				   struct motmdm_dlci *mot_dlci)
+ {
+ 	struct motmdm *ddata;
+diff --git a/include/linux/mfd/motorola-mdm.h b/include/linux/mfd/motorola-=
+mdm.h
 new file mode 100644
-index 000000000000..8e9c851dc7c5
+index 000000000000..70c52304ffff
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/display/ingenic,lcd.yaml
-@@ -0,0 +1,113 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/display/ingenic,lcd.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/include/linux/mfd/motorola-mdm.h
+@@ -0,0 +1,59 @@
++/* SPDX-License-Identifier: GPL-2.0 */
 +
-+title: Ingenic SoCs LCD controller devicetree bindings
++struct gsm_serdev_dlci;
++struct kfifo;
++struct motmdm_response;
 +
-+maintainers:
-+  - Paul Cercueil <paul@crapouillou.net>
++enum motmdm_dlci_nr {
++	MOTMDM_DLCI1 =3D 1,
++	MOTMDM_DLCI2,
++	MOTMDM_DLCI3,
++	MOTMDM_DLCI4,
++	MOTMDM_DLCI5,
++	MOTMDM_DLCI6,
++	MOTMDM_DLCI7,
++	MOTMDM_DLCI8,
++	MOTMDM_DLCI9,
++	MOTMDM_DLCI10,
++	MOTMDM_DLCI11,
++	MOTMDM_DLCI12,
++	MOTMDM_DLCI13,
++	MOTMDM_DLCI14,
++	MOTMDM_DLCI15,
++};
 +
-+properties:
-+  $nodename:
-+    pattern: "^lcd-controller@[0-9a-f]+$"
++enum motmdm_state {
++	MOTMDM_STATE_IDLE =3D 0,
++	MOTMDM_STATE_DIAL =3D 1,
++	MOTMDM_STATE_ANSWERING =3D 2,
++	MOTMDM_STATE_CONNECTING =3D 3,
++	MOTMDM_STATE_INCOMING =3D 4,
++	MOTMDM_STATE_CONNECTED =3D 5,
++	MOTMDM_STATE_HANGING_UP =3D 6,
++	MOTMDM_STATE_DISCONNECTED =3D 7,
++};
 +
-+  compatible:
-+    enum:
-+      - ingenic,jz4740-lcd
-+      - ingenic,jz4725b-lcd
-+      - ingenic,jz4770-lcd
-+      - ingenic,jz4780-lcd
++struct motmdm_dlci {
++	struct gsm_serdev_dlci gsm_dlci;
++	struct list_head node;
++	wait_queue_head_t read_queue;
++	struct kfifo read_fifo;
++	int line;
++	u16 id;
++	struct list_head list;
++	void *privdata;		/* Do not use, internal data */
++	void *drvdata;		/* Available for consumer drivers */
++=09
++	int (*receive_data)(struct motmdm_dlci *mot_dlci,
++			    const unsigned char *buf,
++			    size_t len);
++};
 +
-+  reg:
-+    maxItems: 1
++int motmdm_register_dlci(struct device *dev, struct motmdm_dlci *mot_dlci);
++void motmdm_unregister_dlci(struct device *dev, struct motmdm_dlci *mot_dl=
+ci);
 +
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    items:
-+      - description: Module clock
-+      - description: Pixel clock
-+    minItems: 1
-+
-+  clock-names:
-+    items:
-+      - const: lcd
-+      - const: lcd_pclk
-+    minItems: 1
-+
-+  port:
-+    type: object
-+    description:
-+      A port node with endpoint definitions as defined in
-+      Documentation/devicetree/bindings/media/video-interfaces.txt
-+
-+required:
-+    - compatible
-+    - reg
-+    - interrupts
-+    - clocks
-+    - clock-names
-+
-+if:
-+  properties:
-+    compatible:
-+      contains:
-+        enum:
-+          - ingenic,jz4740-lcd
-+          - ingenic,jz4780-lcd
-+then:
-+  properties:
-+    clocks:
-+      minItems: 2
-+    clock-names:
-+      minItems: 2
-+else:
-+  properties:
-+    clocks:
-+      maxItems: 1
-+    clock-names:
-+      maxItems: 1
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/jz4740-cgu.h>
-+    lcd-controller@13050000 {
-+      compatible = "ingenic,jz4740-lcd";
-+      reg = <0x13050000 0x1000>;
-+
-+      interrupt-parent = <&intc>;
-+      interrupts = <30>;
-+
-+      clocks = <&cgu JZ4740_CLK_LCD>, <&cgu JZ4740_CLK_LCD_PCLK>;
-+      clock-names = "lcd", "lcd_pclk";
-+
-+      port {
-+        endpoint {
-+          remote-endpoint = <&panel_input>;
-+        };
-+      };
-+    };
-+
-+  - |
-+    #include <dt-bindings/clock/jz4725b-cgu.h>
-+    lcd-controller@13050000 {
-+      compatible = "ingenic,jz4725b-lcd";
-+      reg = <0x13050000 0x1000>;
-+
-+      interrupt-parent = <&intc>;
-+      interrupts = <31>;
-+
-+      clocks = <&cgu JZ4725B_CLK_LCD>;
-+      clock-names = "lcd";
-+
-+      port {
-+        endpoint {
-+          remote-endpoint = <&panel_input>;
-+        };
-+      };
-+    };
--- 
-2.26.2
++extern int motmdm_send_command(struct device *dev,
++			       struct motmdm_dlci *mot_dlci,
++			       unsigned long timeout_ms,
++			       const unsigned char *cmd, size_t cmdlen,
++			       unsigned char *rsp, size_t rsplen);
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index 3635fc0ab2a6..63d8d3e731ff 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -878,7 +878,6 @@ config SND_SOC_MAX9860
+=20
+ config SND_SOC_MOTMDM
+ 	tristate "Motorola Modem TS 27.010 Voice Call Codec"
+-	depends on MFD_MOTMDM
+ 	help
+ 	  Enable support for Motorola TS 27.010 line discipline serdev
+ 	  voice call codec driver for Motorola Mapphone series of devices
 
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--a8Wt8u1KmwUX3Y2C
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAl6l6fYACgkQMOfwapXb+vK5OQCgloowj2nVOScbZ6teYh401qXu
+5M0AnAk/spI2NsxRVEUx/Fx2ABRQsDqg
+=0cCt
+-----END PGP SIGNATURE-----
+
+--a8Wt8u1KmwUX3Y2C--
