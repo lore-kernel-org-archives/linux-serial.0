@@ -2,126 +2,154 @@ Return-Path: <SRS0=JuT/=6L=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 189D1C5519A
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Apr 2020 06:19:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D8DC55199
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Apr 2020 09:02:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 001F0206B9
-	for <linux-serial@archiver.kernel.org>; Mon, 27 Apr 2020 06:19:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 546512087E
+	for <linux-serial@archiver.kernel.org>; Mon, 27 Apr 2020 09:02:39 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S9jfsLt2"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726557AbgD0GTh (ORCPT
+        id S1726537AbgD0JCi (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 27 Apr 2020 02:19:37 -0400
-Received: from mx2.suse.de ([195.135.220.15]:43924 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726339AbgD0GTh (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 27 Apr 2020 02:19:37 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 355C2ACC3;
-        Mon, 27 Apr 2020 06:19:34 +0000 (UTC)
-Subject: Re: [PATCH -next] tty: serial: bcm63xx: fix missing clk_put() in
- bcm63xx_uart
-To:     Zou Wei <zou_wei@huawei.com>, gregkh@linuxfoundation.org,
-        f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <1587472306-105155-1-git-send-email-zou_wei@huawei.com>
-From:   Jiri Slaby <jslaby@suse.cz>
-Autocrypt: addr=jslaby@suse.cz; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <4cd8f963-9292-faef-1e24-df90821274d6@suse.cz>
-Date:   Mon, 27 Apr 2020 08:19:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Mon, 27 Apr 2020 05:02:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39514 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726003AbgD0JCi (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 27 Apr 2020 05:02:38 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF4EC061A41;
+        Mon, 27 Apr 2020 02:02:38 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id d17so8433120pgo.0;
+        Mon, 27 Apr 2020 02:02:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=No3l3tVxMOYI0sBvPh0yz49YIT/rbemERKzXNkg42cM=;
+        b=S9jfsLt2b0vbA6WMBsREA7m6FlxSVBc3AMXqrbDArXxsA8rUUnJxJIRlxKInrpwWlp
+         lTlJL9PCHUkvCXneeeWDf1hQTWBvUtrBro/PDbKbsOsi43NNcuGxsClyz7dos/p2c64d
+         1o3oygCQlmNgD8D0lhNQiPMoEr+uCpLCTDS513OTOJ1wgZ/iNJksjU6PfSPGrWNXnWFs
+         8MHPpa9vpG1DH8nOcul/+7xQMs9uT1in+UJ0Uk/4oYsoulT7yRiHw3HVfdm0wvrS9tNd
+         gMzZ7vpDlx0gD1YMGHmcEkcHGgrLvNiYBMUxtr+hdMM1nkdBKgE40Uyoqd71BEG0u4F2
+         wmVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=No3l3tVxMOYI0sBvPh0yz49YIT/rbemERKzXNkg42cM=;
+        b=Qy6pbG8Zla65RNPpzsXOHV+28mimg9YB34w7/skunzoaPI9gj1MGn30AjipxCnWsHy
+         3B98Dk+brsawthE5qx6Wku0CNKOCx3S76pKLCMtW65Ir0L6ybWMC242ZwOJMqjZIiFI7
+         J2lJBqg1zZM0kElgfpTo+VNSwhlml3e0YFFB2bh/tfeBPN3l54sbA2RYTgiZTixTlmB1
+         SJnageh6U0jF1KzY5T3PmCwT/rYCuXef+JU2PdOPrYEYnJ3n/4+/DW/OsfEv8uNjs7qV
+         DIp7LDsZ2V0jy0zgPR58ETLSec+qAUBAk6hc4u7N/yyf609ndE8pb1YghdfflR8zIlhS
+         I7/Q==
+X-Gm-Message-State: AGi0PuaztzWuNj9PFfa2gfnaPzmOSB9sPqQwIZzZMeJcnStOzLyH535G
+        wfh3TqHAso91QxGiyczPAOfNmfHr26iYx+GmNRE=
+X-Google-Smtp-Source: APiQypJ+Jt4WQy9vMmOsUAtVuDSHxHzYtDKBigHQS2Y661NcJP6vx/MNPwb77T1Un8B+rTqcsUpaPObPtJOd/VetSz4=
+X-Received: by 2002:a62:5ec7:: with SMTP id s190mr22398681pfb.130.1587978158112;
+ Mon, 27 Apr 2020 02:02:38 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1587472306-105155-1-git-send-email-zou_wei@huawei.com>
-Content-Type: text/plain; charset=iso-8859-2
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200423220056.29450-1-john.stultz@linaro.org>
+ <jhj1rodyeu1.mognet@arm.com> <CALAqxLW+CBMxj_5gCF5yLcX8dhM7Fg6oOL-zot0ZZT6PW6R04g@mail.gmail.com>
+ <jhj1ro9bzhg.mognet@arm.com>
+In-Reply-To: <jhj1ro9bzhg.mognet@arm.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 27 Apr 2020 12:02:31 +0300
+Message-ID: <CAHp75VeE_J-GE9o6QVxBk6RJ2fjSwATfR1etaT0CXCgAiidjPQ@mail.gmail.com>
+Subject: Re: [RFC][PATCH] serial: amba-pl011: Make sure we initialize the
+ port.lock spinlock
+To:     Valentin Schneider <valentin.schneider@arm.com>
+Cc:     John Stultz <john.stultz@linaro.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 21. 04. 20, 14:31, Zou Wei wrote:
-> This patch fixes below error reported by coccicheck
-> 
-> drivers/tty/serial/bcm63xx_uart.c:848:2-8: ERROR: missing clk_put;
-> clk_get on line 842 and execution via conditional on line 846
-> 
-> Fixes: ab4382d27412 ("tty: move drivers/serial/ to drivers/tty/serial/")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Zou Wei <zou_wei@huawei.com>
-> ---
->  drivers/tty/serial/bcm63xx_uart.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
-> index 5674da2..ed0aa5c 100644
-> --- a/drivers/tty/serial/bcm63xx_uart.c
-> +++ b/drivers/tty/serial/bcm63xx_uart.c
-> @@ -843,8 +843,10 @@ static int bcm_uart_probe(struct platform_device *pdev)
->  	if (IS_ERR(clk) && pdev->dev.of_node)
->  		clk = of_clk_get(pdev->dev.of_node, 0);
->  
-> -	if (IS_ERR(clk))
-> +	if (IS_ERR(clk)) {
-> +		clk_put(clk);
+On Mon, Apr 27, 2020 at 2:29 AM Valentin Schneider
+<valentin.schneider@arm.com> wrote:
+>
+>
+> On 25/04/20 05:04, John Stultz wrote:
+> > On Thu, Apr 23, 2020 at 4:14 PM Valentin Schneider
+> > <valentin.schneider@arm.com> wrote:
+> >> On 23/04/20 23:00, John Stultz wrote:
+> >> > Which seems to be due to the fact that after allocating the uap
+> >> > structure, the pl011 code doesn't initialize the spinlock.
+> >> >
+> >> > This patch fixes it by initializing the spinlock and the warning
+> >> > has gone away.
+> >> >
+> >>
+> >> Thanks for having a look. It does seem like the reasonable thing to do, and
+> >> I no longer get the warning on h960.
+> >>
+> >> That said, I got more curious as this doesn't show up on my Juno (same
+> >> Image). Digging into it I see that uart_add_one_port() has a call to
+> >> uart_port_spin_lock_init() a few lines before uart_configure_port() (in
+> >> which the above warning gets triggered). That thing says:
+> >>
+> >>  * Ensure that the serial console lock is initialised early.
+> >>  * If this port is a console, then the spinlock is already initialised.
+> >>
+> >> Which requires me to ask: are we doing the right thing here?
+> >
+> > So I got a little bit of time to look at this before I got pulled off
+> > to other things (and now its Friday night, so I figured I'd reply
+> > before I forget it on Monday).
+> >
+> > I did check and lockdep is tripping when we add ttyAMA6 which is the
+> > serial console on the board. I wasn't able to trace back to why we
+> > hadn't already called spin_lock_init() in the console code, but it
+> > seems we haven't.
+> >
+>
+> So on the Juno (ttyAMA0), the first time I see us hitting
+> uart_port_spin_lock_init() is via:
+>
+>   uart_add_one_port() ->  uart_port_spin_lock_init()
+>
+> Since port->cons->(index, line) is (-1, 0) at this point in time,
+> uart_console(port) returns false and we init the spinlock. When then
+> happily trickle down to uart_configure_port() -> register_console()
+>
+>
+> On the Hikey960 (ttyAMA6) I see the same initial flow, but (index, line)
+> is (6, 6), so uart_console(port) returns true and we skip the
+> spin_lock_init(). When then hit the splat on the rest of the way down
+> uart_add_one_port().
+>
+>
+> I did a tiny bit of git spelunking; I found a commit that changed
+> uart_console_enabled() into uart_console() within
+> uart_port_spin_lock_init():
+>
+>   a3cb39d258ef ("serial: core: Allow detach and attach serial device for console")
+>
+> Reverting just that one change in uart_port_spin_lock_init() seems to go
+> fine on both Juno & HiKey960, but I think that doesn't play well with the
+> rest of the aforementioned commit. I think that this initial (index, line)
+> tuple is to blame, though I've added Andy in Cc just in case.
 
-Why would you want to put an erroneous clk?
+The above mentioned commit reveals the issue in the code which doesn't
+register console properly.
 
->  		return -ENODEV;
-> +	}
->  
->  	port->iotype = UPIO_MEM;
->  	port->irq = res_irq->start;
-> 
-
+See what I put in 0f87aa66e8c31 ("serial: sunhv: Initialize lock for
+non-registered console").
 
 -- 
-js
-suse labs
+With Best Regards,
+Andy Shevchenko
