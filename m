@@ -2,291 +2,147 @@ Return-Path: <SRS0=KIft=6M=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F30BC83000
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 15:50:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E005C83001
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 16:05:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 75DA4206C0
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 15:50:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 59AF421835
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 16:05:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nuPHn+2m"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="oZh07Ggo"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728158AbgD1Puj (ORCPT
+        id S1728307AbgD1QFB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Apr 2020 11:50:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46976 "EHLO
+        Tue, 28 Apr 2020 12:05:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728038AbgD1Pui (ORCPT
+        by vger.kernel.org with ESMTP id S1728273AbgD1QFA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Apr 2020 11:50:38 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC64CC03C1AB;
-        Tue, 28 Apr 2020 08:50:38 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id 18so9639450pfv.8;
-        Tue, 28 Apr 2020 08:50:38 -0700 (PDT)
+        Tue, 28 Apr 2020 12:05:00 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5232DC03C1AB
+        for <linux-serial@vger.kernel.org>; Tue, 28 Apr 2020 09:05:00 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id g13so25292195wrb.8
+        for <linux-serial@vger.kernel.org>; Tue, 28 Apr 2020 09:05:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=p8VMwMa/Gkvod0gDNKdqy2rSBkuhRwnt0zEU6jozbUM=;
-        b=nuPHn+2mMAiEvVJ6j92CR6g7NR1+0jHRX7usvqD0pxd4MPahlykOwRYxzBf5jKZqLg
-         H/x1jar3xR4sYXI9IWzYIXAgTbfUOigkOmAVFBc5Y6MwA71L2xMUHiuoGnpbxHfHliJI
-         gBSgGdJpIpkk2pt/SMZxANgCqIT1qsT6Pw6Qqayd1P0SYaylBFXCYOh+L+yl+rBCCPHb
-         /U5jhnuwknMC12F83TWA8FGvwPWWg0adhjLFlbDQvyUbq8lDfzPnNqIG2mYPLadukmvw
-         9g75oMXQX7agNQUody19LmvPGMOmgMbllPQbs6DyyYPhw99rS7iT72DmYNcNtWIVQE2D
-         +c1g==
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Ly3qwI+0y9oxwjserDT6tM7N3L1x1899PXU3tkelq/I=;
+        b=oZh07GgoDz13qsfDQ9O+AGgTyw5NZfvmaV0z/+pBF+6wH3B1PTaac+2kX5a7WHcf5S
+         4JvFAFlb7AKdvg6KUFSoSDlKapm9q+t2lq+JLTB/WcByZo703gl7gjC7M7u72FalBMa9
+         brk2RbG57ot+aHP8nFYURh7zNa7wtHgP+a2MNiEXwZo2cVVqO7s8+m+XMjMhvHnA5wxp
+         9eVV6TNEd5JiHskY0ys8QsQ0N2ewAR8uNLSIldnAYoM2LoS8e2GNqlT9Ki8p1qtuUeFT
+         FWutmsihVPS6cICths1wNX6qlXLA4XhPMcT5gMTRINUlMm7JWbKi1z3lTEdfiwbG6EZz
+         bwGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=p8VMwMa/Gkvod0gDNKdqy2rSBkuhRwnt0zEU6jozbUM=;
-        b=b5h3KWjnbARSqXYrprwY/P9n2AubxPEpEfVnprhIIpKpIKQ318Jug/X/csrXlxgbyS
-         mFgnjHq3fN0fCo8Pid7NBgK59hbUWRrmbXnZ/sqREXQb22zDYDmtK2IG06UDnTSR2EQC
-         HCPgSIm0G6pWsOAdqX76NRvu3Zq0TN43SQnFaF5qI9K9hboRcRj/yt3rntjIJphVYHad
-         NWp2CflQm/fxpkL2AvPsqabmxWXXJDdlTcX7FXfPrDTsWrXCe1i3W2eO4i0jqMmIZ9eG
-         nYu2H9M/uaoz2MxjMNTNlugalCPmLuEu/1UyzFjXSpTjUDD5Rf1butIFvSgmSlIfSCdV
-         I+oA==
-X-Gm-Message-State: AGi0PuaBEhluSXw6i8EcCxX98eVRQNrjwJyMo2qLl3SZgXcz1n0FwdHc
-        6HeXN9Lc4NHvphxm4haguVFKBkt6iD0SChlGBV6ViLraZRM=
-X-Google-Smtp-Source: APiQypJDFXuLdC+7TqGvLdnPTpMpPTC2g/mnXThg/pmw0fH1VkkEZurML7MrdyEpdOhV2yCbQP2yVyZzCI5uCuP3baA=
-X-Received: by 2002:a62:f908:: with SMTP id o8mr53813pfh.170.1588089038103;
- Tue, 28 Apr 2020 08:50:38 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Ly3qwI+0y9oxwjserDT6tM7N3L1x1899PXU3tkelq/I=;
+        b=FWvoh2caWCELYtRJHTJDCPpZPbTp/wjbSGyo3ua8Np+LNn93CgpIEmS/s/tGFTLc5f
+         KLrpCgJyoHA6I8YMGMS/IkokA7vuKCVtl4Q/ozw8z7xYoEAxcx0Yhte4iidY3X8puBlv
+         DrwAEO7kkvA5el+1Nx4G1MBL+kQ57eZxDrvGRfqO+7edyC7fJxZMbtGsIdxlfXILZDPt
+         HJX+otlkC+Dd68c3OGbOh9uJf59k4Cg3fSl8/DuaTUDjHoBKzsuLNrMyKufmHKUoAUkC
+         EwkkzlD4FvWC+/mp6EjdcZc60lJviiJzyvwoWdo+lMHkqi2QzI+1H0pgZJn7GLXMASm+
+         sblw==
+X-Gm-Message-State: AGi0PuYJvH9B1wIjxcSRr67S3FOjFY5bdcFCU6i61csctYgoH04v2OeF
+        JIQHsf6Eyx9fQj4VVUCit0NGFw==
+X-Google-Smtp-Source: APiQypKdYPNEuZ/XS4QnNVV03+UTEkigMqL4aSRmAYR9slx/dFNC24FTbjFcex9II3KPD3Q985FwuQ==
+X-Received: by 2002:adf:92c2:: with SMTP id 60mr32585664wrn.379.1588089899078;
+        Tue, 28 Apr 2020 09:04:59 -0700 (PDT)
+Received: from [192.168.0.136] ([87.120.218.65])
+        by smtp.googlemail.com with ESMTPSA id w6sm26860023wrm.86.2020.04.28.09.04.57
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 28 Apr 2020 09:04:58 -0700 (PDT)
+Subject: Re: [PATCH V4 1/9] interconnect: Add devm_of_icc_get() as exported
+ API for users
+To:     Akash Asthana <akashast@codeaurora.org>
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
+        mark.rutland@arm.com, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, mka@chromium.org,
+        dianders@chromium.org, evgreen@chromium.org
+References: <1586946198-13912-1-git-send-email-akashast@codeaurora.org>
+ <1586946198-13912-2-git-send-email-akashast@codeaurora.org>
+From:   Georgi Djakov <georgi.djakov@linaro.org>
+Openpgp: preference=signencrypt
+Autocrypt: addr=georgi.djakov@linaro.org; prefer-encrypt=mutual; keydata=
+ mQINBFjTuRcBEACyAOVzghvyN19Sa/Nit4LPBWkICi5W20p6bwiZvdjhtuh50H5q4ktyxJtp
+ 1+s8dMSa/j58hAWhrc2SNL3fttOCo+MM1bQWwe8uMBQJP4swgXf5ZUYkSssQlXxGKqBSbWLB
+ uFHOOBTzaQBaNgsdXo+mQ1h8UCgM0zQOmbs2ort8aHnH2i65oLs5/Xgv/Qivde/FcFtvEFaL
+ 0TZ7odM67u+M32VetH5nBVPESmnEDjRBPw/DOPhFBPXtal53ZFiiRr6Bm1qKVu3dOEYXHHDt
+ nF13gB+vBZ6x5pjl02NUEucSHQiuCc2Aaavo6xnuBc3lnd4z/xk6GLBqFP3P/eJ56eJv4d0B
+ 0LLgQ7c1T3fU4/5NDRRCnyk6HJ5+HSxD4KVuluj0jnXW4CKzFkKaTxOp7jE6ZD/9Sh74DM8v
+ etN8uwDjtYsM07I3Szlh/I+iThxe/4zVtUQsvgXjwuoOOBWWc4m4KKg+W4zm8bSCqrd1DUgL
+ f67WiEZgvN7tPXEzi84zT1PiUOM98dOnmREIamSpKOKFereIrKX2IcnZn8jyycE12zMkk+Sc
+ ASMfXhfywB0tXRNmzsywdxQFcJ6jblPNxscnGMh2VlY2rezmqJdcK4G4Lprkc0jOHotV/6oJ
+ mj9h95Ouvbq5TDHx+ERn8uytPygDBR67kNHs18LkvrEex/Z1cQARAQABtChHZW9yZ2kgRGph
+ a292IDxnZW9yZ2kuZGpha292QGxpbmFyby5vcmc+iQI+BBMBAgAoBQJY07kXAhsDBQkHhM4A
+ BgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRCyi/eZcnWWUuvsD/4miikUeAO6fU2Xy3fT
+ l7RUCeb2Uuh1/nxYoE1vtXcow6SyAvIVTD32kHXucJJfYy2zFzptWpvD6Sa0Sc58qe4iLY4j
+ M54ugOYK7XeRKkQHFqqR2T3g/toVG1BOLS2atooXEU+8OFbpLkBXbIdItqJ1M1SEw8YgKmmr
+ JlLAaKMq3hMb5bDQx9erq7PqEKOB/Va0nNu17IL58q+Q5Om7S1x54Oj6LiG/9kNOxQTklOQZ
+ t61oW1Ewjbl325fW0/Lk0QzmfLCrmGXXiedFEMRLCJbVImXVKdIt/Ubk6SAAUrA5dFVNBzm2
+ L8r+HxJcfDeEpdOZJzuwRyFnH96u1Xz+7X2V26zMU6Wl2+lhvr2Tj7spxjppR+nuFiybQq7k
+ MIwyEF0mb75RLhW33sdGStCZ/nBsXIGAUS7OBj+a5fm47vQKv6ekg60oRTHWysFSJm1mlRyq
+ exhI6GwUo5GM/vE36rIPSJFRRgkt6nynoba/1c4VXxfhok2rkP0x3CApJ5RimbvITTnINY0o
+ CU6f1ng1I0A1UTi2YcLjFq/gmCdOHExT4huywfu1DDf0p1xDyPA1FJaii/gJ32bBP3zK53hM
+ dj5S7miqN7F6ZpvGSGXgahQzkGyYpBR5pda0m0k8drV2IQn+0W8Qwh4XZ6/YdfI81+xyFlXc
+ CJjljqsMCJW6PdgEH7kCDQRY07kXARAAvupGd4Jdd8zRRiF+jMpv6ZGz8L55Di1fl1YRth6m
+ lIxYTLwGf0/p0oDLIRldKswena3fbWh5bbTMkJmRiOQ/hffhPSNSyyh+WQeLY2kzl6geiHxD
+ zbw37e2hd3rWAEfVFEXOLnmenaUeJFyhA3Wd8OLdRMuoV+RaLhNfeHctiEn1YGy2gLCq4VNb
+ 4Wj5hEzABGO7+LZ14hdw3hJIEGKtQC65Jh/vTayGD+qdwedhINnIqslk9tCQ33a+jPrCjXLW
+ X29rcgqigzsLHH7iVHWA9R5Aq7pCy5hSFsl4NBn1uV6UHlyOBUuiHBDVwTIAUnZ4S8EQiwgv
+ WQxEkXEWLM850V+G6R593yZndTr3yydPgYv0xEDACd6GcNLR/x8mawmHKzNmnRJoOh6Rkfw2
+ fSiVGesGo83+iYq0NZASrXHAjWgtZXO1YwjW9gCQ2jYu9RGuQM8zIPY1VDpQ6wJtjO/KaOLm
+ NehSR2R6tgBJK7XD9it79LdbPKDKoFSqxaAvXwWgXBj0Oz+Y0BqfClnAbxx3kYlSwfPHDFYc
+ R/ppSgnbR5j0Rjz/N6Lua3S42MDhQGoTlVkgAi1btbdV3qpFE6jglJsJUDlqnEnwf03EgjdJ
+ 6KEh0z57lyVcy5F/EUKfTAMZweBnkPo+BF2LBYn3Qd+CS6haZAWaG7vzVJu4W/mPQzsAEQEA
+ AYkCJQQYAQIADwUCWNO5FwIbDAUJB4TOAAAKCRCyi/eZcnWWUhlHD/0VE/2x6lKh2FGP+QHH
+ UTKmiiwtMurYKJsSJlQx0T+j/1f+zYkY3MDX+gXa0d0xb4eFv8WNlEjkcpSPFr+pQ7CiAI33
+ 99kAVMQEip/MwoTYvM9NXSMTpyRJ/asnLeqa0WU6l6Z9mQ41lLzPFBAJ21/ddT4xeBDv0dxM
+ GqaH2C6bSnJkhSfSja9OxBe+F6LIAZgCFzlogbmSWmUdLBg+sh3K6aiBDAdZPUMvGHzHK3fj
+ gHK4GqGCFK76bFrHQYgiBOrcR4GDklj4Gk9osIfdXIAkBvRGw8zg1zzUYwMYk+A6v40gBn00
+ OOB13qJe9zyKpReWMAhg7BYPBKIm/qSr82aIQc4+FlDX2Ot6T/4tGUDr9MAHaBKFtVyIqXBO
+ xOf0vQEokkUGRKWBE0uA3zFVRfLiT6NUjDQ0vdphTnsdA7h01MliZLQ2lLL2Mt5lsqU+6sup
+ Tfql1omgEpjnFsPsyFebzcKGbdEr6vySGa3Cof+miX06hQXKe99a5+eHNhtZJcMAIO89wZmj
+ 7ayYJIXFqjl/X0KBcCbiAl4vbdBw1bqFnO4zd1lMXKVoa29UHqby4MPbQhjWNVv9kqp8A39+
+ E9xw890l1xdERkjVKX6IEJu2hf7X3MMl9tOjBK6MvdOUxvh1bNNmXh7OlBL1MpJYY/ydIm3B
+ KEmKjLDvB0pePJkdTw==
+Message-ID: <1f2cb1e2-31da-00ab-7bd9-7f515c307288@linaro.org>
+Date:   Tue, 28 Apr 2020 19:04:56 +0300
 MIME-Version: 1.0
-References: <20200425133939.3508912-0-mholenko@antmicro.com> <20200425133939.3508912-5-mholenko@antmicro.com>
-In-Reply-To: <20200425133939.3508912-5-mholenko@antmicro.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 28 Apr 2020 18:50:31 +0300
-Message-ID: <CAHp75VfsiAaZez7nv7Z7E-5NL0_xObzi_LZsiWbms54jNcyv6A@mail.gmail.com>
-Subject: Re: [PATCH v5 5/5] drivers/tty/serial: add LiteUART driver
-To:     Mateusz Holenko <mholenko@antmicro.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Stafford Horne <shorne@gmail.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        Filip Kokosinski <fkokosinski@antmicro.com>,
-        Pawel Czarnecki <pczarnecki@internships.antmicro.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Icenowy Zheng <icenowy@aosc.io>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1586946198-13912-2-git-send-email-akashast@codeaurora.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sat, Apr 25, 2020 at 2:45 PM Mateusz Holenko <mholenko@antmicro.com> wrote:
->
-> From: Filip Kokosinski <fkokosinski@antmicro.com>
->
-> This commit adds driver for the FPGA-based LiteUART serial controller
-> from LiteX SoC builder.
->
-> The current implementation supports LiteUART configured
-> for 32 bit data width and 8 bit CSR bus width.
->
-> It does not support IRQ.
->
-> Signed-off-by: Filip Kokosinski <fkokosinski@antmicro.com>
-> Signed-off-by: Mateusz Holenko <mholenko@antmicro.com>
+Hi Akash,
 
-Co-developed-by?
+On 4/15/20 13:23, Akash Asthana wrote:
+> Users can use devm version of of_icc_get() to benefit from automatic
+> resource release.
+> 
+> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+> Reviewed by: Matthias Kaehlcke <mka@chromium.org>
+> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
 
-...
+Thank you for this patch! I am applying it, so there is no need to re-send it.
 
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -9731,6 +9731,7 @@ S:        Maintained
->  F:     Documentation/devicetree/bindings/*/litex,*.yaml
->  F:     drivers/soc/litex/litex_soc_ctrl.c
->  F:     include/linux/litex.h
-> +F:     drivers/tty/serial/liteuart.c
+BR,
+Georgi
 
-Ordering issue, run latest checkpatch.pl and parse-maintaners.pl to fix.
-
-...
-
-> +config SERIAL_LITEUART
-> +       tristate "LiteUART serial port support"
-> +       depends on HAS_IOMEM
-
-> +       depends on OF
-
-|| COMPILE_TEST ?
-
-> +       depends on LITEX_SOC_CONTROLLER
-> +       select SERIAL_CORE
-
-...
-
-> +/*
-> + * CSRs definitions
-> + * (base address offsets + width)
-> + *
-> + * The definitions below are true for
-> + * LiteX SoC configured for
-> + * 8-bit CSR Bus, 32-bit aligned.
-> + *
-> + * Supporting other configurations
-> + * might require new definitions
-> + * or a more generic way of indexing
-> + * the LiteX CSRs.
-> + *
-> + * For more details on how CSRs
-> + * are defined and handled in LiteX,
-> + * see comments in the LiteX SoC Driver:
-> + * drivers/soc/litex/litex_soc_ctrl.c
-> + */
-
-Can you use some like 76 characters per line?
-
-...
-
-> +#define OFF_RXTX       0x00
-> +#define SIZE_RXTX      1
-> +#define OFF_TXFULL     0x04
-> +#define SIZE_TXFULL    1
-> +#define OFF_RXEMPTY    0x08
-> +#define SIZE_RXEMPTY   1
-> +#define OFF_EV_STATUS  0x0c
-> +#define SIZE_EV_STATUS 1
-> +#define OFF_EV_PENDING 0x10
-> +#define SIZE_EV_PENDING        1
-> +#define OFF_EV_ENABLE  0x14
-> +#define SIZE_EV_ENABLE 1
-
-Why do you need all those SIZE_*?
-
-...
-
-> +static struct uart_driver liteuart_driver = {
-> +       .owner = THIS_MODULE,
-> +       .driver_name = DRIVER_NAME,
-> +       .dev_name = DEV_NAME,
-
-Much easier to see if any name collisions are happen by grepping
-similar struct definitions, but these macros are making life harder.
-
-> +       .major = DRIVER_MAJOR,
-> +       .minor = DRIVER_MINOR,
-
-Ditto.
-
-> +       .nr = CONFIG_SERIAL_LITEUART_MAX_PORTS,
-
-> +#ifdef CONFIG_SERIAL_LITEUART_CONSOLE
-> +       .cons = &liteuart_console,
-> +#endif
-
-> +};
-
-...
-
-> +static const char *liteuart_type(struct uart_port *port)
-> +{
-> +       return (port->type == PORT_LITEUART) ? DRIVER_NAME : NULL;
-> +}
-
-Do we need this check? Do we need a port type at all?
-
-...
-
-> +static int liteuart_probe(struct platform_device *pdev)
-> +{
-> +       struct device_node *np = pdev->dev.of_node;
-> +       struct liteuart_port *uart;
-> +       struct uart_port *port;
-> +       int dev_id;
-> +
-> +       if (!litex_check_accessors())
-> +               return -EPROBE_DEFER;
-> +
-
-> +       /* no device tree */
-> +       if (!np)
-> +               return -ENODEV;
-
-I guess it should go first, otherwise potentially you may end up with
-deferred module above.
-
-> +       /* look for aliases; auto-enumerate for free index if not found */
-> +       dev_id = of_alias_get_id(np, "serial");
-> +       if (dev_id < 0)
-> +               dev_id = find_first_zero_bit(liteuart_ports_in_use,
-> +                                            CONFIG_SERIAL_LITEUART_MAX_PORTS);
-
-Racy.
-
-> +       /* get {map,mem}base */
-> +       port->mapbase = platform_get_resource(pdev, IORESOURCE_MEM, 0)->start;
-> +       port->membase = of_iomap(np, 0);
-
-Can't you use devm_platform_get_and_ioremap_resource() ?
-
-> +       if (!port->membase)
-> +               return -ENXIO;
-
-> +}
-
-...
-
-> +static struct platform_driver liteuart_platform_driver = {
-> +       .probe = liteuart_probe,
-> +       .remove = liteuart_remove,
-> +       .driver = {
-> +               .name = DRIVER_NAME,
-
-> +               .of_match_table = of_match_ptr(liteuart_of_match),
-
-of_match_ptr() makes no sense (you have depends on OF).
-
-> +       },
-> +};
-
-...
-
-
-> +static int __init liteuart_console_init(void)
-> +{
-
-Missed spin lock initialization.
-
-> +       register_console(&liteuart_console);
-> +
-> +       return 0;
-> +}
-
-> +
-
-Extra blank line.
-
-> +console_initcall(liteuart_console_init);
-
-...
-
-> +/* LiteUART */
-> +#define PORT_LITEUART  123
-
-We have holes in the list, use them.
-
-And again why we need this?
-
--- 
-With Best Regards,
-Andy Shevchenko
