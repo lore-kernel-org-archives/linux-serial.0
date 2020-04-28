@@ -2,70 +2,125 @@ Return-Path: <SRS0=KIft=6M=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7026C83000
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 08:54:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DA62C83000
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 09:46:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CCB41206C0
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 08:54:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6B796206A1
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 09:46:37 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="JV1+Zdy0"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726847AbgD1Iyp (ORCPT
+        id S1727044AbgD1Jqh (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Apr 2020 04:54:45 -0400
-Received: from foss.arm.com ([217.140.110.172]:47924 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726271AbgD1Iyp (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Apr 2020 04:54:45 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BBD6D30E;
-        Tue, 28 Apr 2020 01:54:44 -0700 (PDT)
-Received: from e113632-lin (e113632-lin.cambridge.arm.com [10.1.194.46])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A07733F305;
-        Tue, 28 Apr 2020 01:54:43 -0700 (PDT)
-References: <20200423220056.29450-1-john.stultz@linaro.org> <jhj1rodyeu1.mognet@arm.com> <CALAqxLW+CBMxj_5gCF5yLcX8dhM7Fg6oOL-zot0ZZT6PW6R04g@mail.gmail.com> <jhj1ro9bzhg.mognet@arm.com> <CAHp75VeE_J-GE9o6QVxBk6RJ2fjSwATfR1etaT0CXCgAiidjPQ@mail.gmail.com>
-User-agent: mu4e 0.9.17; emacs 26.3
-From:   Valentin Schneider <valentin.schneider@arm.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     John Stultz <john.stultz@linaro.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        "open list\:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [RFC][PATCH] serial: amba-pl011: Make sure we initialize the port.lock spinlock
-In-reply-to: <CAHp75VeE_J-GE9o6QVxBk6RJ2fjSwATfR1etaT0CXCgAiidjPQ@mail.gmail.com>
-Date:   Tue, 28 Apr 2020 09:54:38 +0100
-Message-ID: <jhjimhkrnw1.mognet@arm.com>
+        Tue, 28 Apr 2020 05:46:37 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:48223 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727094AbgD1Jqg (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 28 Apr 2020 05:46:36 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1588067196; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=SYneJt2s6AGtNS7/rM4TXAHvpd3iuzSFax4dKDwNdEQ=; b=JV1+Zdy0TEygw5V/Mh2w9a3KIpLrKV/Iw9bNMqlsfcm83uEn/p8xEgR47fp5pEbm/EQRgpsO
+ EJA5Z2+B6saGVKN9eRAkb6xltyPWqFvYmJHI6PHkDCzW7DoWjo+/i3YpJWsKAG9bu9t1Nk2f
+ 60Jsvumfo3PlkPAXVtuMLjNXTaM=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5ea7fb7b.7fdbc1a78ce0-smtp-out-n03;
+ Tue, 28 Apr 2020 09:46:35 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id F3289C43637; Tue, 28 Apr 2020 09:46:34 +0000 (UTC)
+Received: from [192.168.43.98] (unknown [157.48.58.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id E83EBC433F2;
+        Tue, 28 Apr 2020 09:46:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E83EBC433F2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+Subject: Re: [PATCH V4 2/9] interconnect: Set peak requirement as twice of
+ average
+To:     Georgi Djakov <georgi.djakov@linaro.org>, broonie@kernel.org
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de,
+        mark.rutland@arm.com, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, mka@chromium.org,
+        dianders@chromium.org, evgreen@chromium.org,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Mike Tipton <mdtipton@codeaurora.org>,
+        Sean Sweeney <seansw@qti.qualcomm.com>
+References: <1586946198-13912-1-git-send-email-akashast@codeaurora.org>
+ <1586946198-13912-3-git-send-email-akashast@codeaurora.org>
+ <58b91dc1-6ce3-49b8-88c8-259be9af1dbd@linaro.org>
+From:   Akash Asthana <akashast@codeaurora.org>
+Message-ID: <7a79688c-3b9b-c7c1-2973-fca0c4b2c78b@codeaurora.org>
+Date:   Tue, 28 Apr 2020 15:16:16 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <58b91dc1-6ce3-49b8-88c8-259be9af1dbd@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Georgi,
 
-On 27/04/20 10:02, Andy Shevchenko wrote:
->> I did a tiny bit of git spelunking; I found a commit that changed
->> uart_console_enabled() into uart_console() within
->> uart_port_spin_lock_init():
->>
->>   a3cb39d258ef ("serial: core: Allow detach and attach serial device for console")
->>
->> Reverting just that one change in uart_port_spin_lock_init() seems to go
->> fine on both Juno & HiKey960, but I think that doesn't play well with the
->> rest of the aforementioned commit. I think that this initial (index, line)
->> tuple is to blame, though I've added Andy in Cc just in case.
+On 4/23/2020 3:01 PM, Georgi Djakov wrote:
+> Hi Akash,
 >
-> The above mentioned commit reveals the issue in the code which doesn't
-> register console properly.
+> On 4/15/20 13:23, Akash Asthana wrote:
+>> Lot of ICC clients are not aware of their actual peak requirement,
+>> most commonly they tend to guess their peak requirement as
+>> (some factor) * avg_bw.
+>>
+>> Centralize random peak guess as twice of average, out into the core
+>> to maintain consistency across the clients. Client can always
+>> override this setting if they got a better idea.
+> I am still not convinced that this is a good idea. If the factor is a random
+> value, then i think that the default factor should be 1.
 >
-> See what I put in 0f87aa66e8c31 ("serial: sunhv: Initialize lock for
-> non-registered console").
+> According to your previous reply, it seems that from geni we are requesting
+> double peak bandwidth to compensate for other clients which are not requesting
+> bandwidth for themselves. IMO, this is a bit hacky.
+>
+> Instead of requesting double peak bandwidth, IIUC the correct thing to do here
+> is to request peak_bw = avg_bw for geni. And instead of trying to compensate for
+> other clients "stealing" bandwidth, can't we make these clients vote for their
+> own bandwidth? Or if they really can't, this should be handled elsewhere - maybe
+> in the interconnect platform driver we can reserve some amount of minimum
+> bandwidth for such cases?
 
-Thanks for the pointer. I'm still a puzzled as to why it goes fine on one
-board and not on another, but at this point I don't have any better
-suggestion than the unconditional init.
+Okay, probably we can correct clients vote for their own bandwidth or 
+reserve some minimum BW from interconnect platform driver is case of any 
+latency issue observed.
+
+I will drop this change in next version.
+
+Will it create any difference if  peak_bw = 0 instead of peak_bw = 
+avg_bw? In my understanding peak_bw <= avg_bw is no-ops, it won't impact 
+the NOC speed.
+
+
+Regards,
+
+Akash
+
+>
+> Thanks,
+> Georgi
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
