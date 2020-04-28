@@ -2,208 +2,129 @@ Return-Path: <SRS0=KIft=6M=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 572AAC83000
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 21:40:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 949D8C83000
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 22:18:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 22F1D20730
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 21:40:02 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="Q164BEzQ"
+	by mail.kernel.org (Postfix) with ESMTP id 75A202072A
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 22:18:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726423AbgD1VkB (ORCPT
+        id S1726291AbgD1WST (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Apr 2020 17:40:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45158 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726256AbgD1VkB (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Apr 2020 17:40:01 -0400
-Received: from mail-ua1-x944.google.com (mail-ua1-x944.google.com [IPv6:2607:f8b0:4864:20::944])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1860EC03C1AC
-        for <linux-serial@vger.kernel.org>; Tue, 28 Apr 2020 14:40:00 -0700 (PDT)
-Received: by mail-ua1-x944.google.com with SMTP id u12so101434uau.10
-        for <linux-serial@vger.kernel.org>; Tue, 28 Apr 2020 14:40:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=De9un6BJ2p4x3KGWjUlROhvJ0MQt7eKKFJEAHbkYVKo=;
-        b=Q164BEzQpMCO+yXR5UTZKVBBSmsRxOmAyN/KrF3t7TxsTwMmrQgCsqsuZL+BeMJL03
-         XecUGYvDtMil6cTU9seGNu+kDsVffn8AP7rW5uFNrhocyNYZybOPErY5sXsUxUhf0DiW
-         9pUAv3ehkC7LHPm8Cfr3GXeTslc09VpGfVEKw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=De9un6BJ2p4x3KGWjUlROhvJ0MQt7eKKFJEAHbkYVKo=;
-        b=sBN0TvkwGZB+8VSwSp6urnCbagEpnM5FfaNiYzdTXZ/3SmlkXZ+wVEgsaYZ4vTNMAG
-         LIuphpkVrtvghpbMprcY8/+E8rXg1pocdCilQO+W1fUJdEXtfOERecA6WyYhuHs1ogcO
-         T8j3nX4GocP0nQaop7WsjOLdigaRJ+o2MTJqoeqSk3Ey7yUgr5OjbcNEEt3vdCLMS+a0
-         uiFMhdQtwovn0ChIh+b6p5ftN1aPhl93B7uhBWzCw+pQfWW7IYampQUmx7t6enDK6bJm
-         4KWcWfZH0tCM7hT+pe/bmoNeLj+qYHat/iFK5zZrEkb7KJtQLsFJHmbhAFt7F09n6lqg
-         U6rg==
-X-Gm-Message-State: AGi0PuZJLaQaw+GbSSGKn4uGG9ur9euyhFT/044vDBnPBy6eSB/D+8qB
-        mdBTbvAUr98gHSc87qqgrHSc3knGmJQ=
-X-Google-Smtp-Source: APiQypKmVc1wZ8whrjoDHD+Ag9agEZ37qrwcxXaej3JSLfa+RO4Qf3zdLe+tj4REUdXu7xP0/bhyCw==
-X-Received: by 2002:ab0:32d2:: with SMTP id f18mr21822103uao.141.1588109999037;
-        Tue, 28 Apr 2020 14:39:59 -0700 (PDT)
-Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com. [209.85.222.51])
-        by smtp.gmail.com with ESMTPSA id w2sm4622329vso.19.2020.04.28.14.39.58
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Apr 2020 14:39:58 -0700 (PDT)
-Received: by mail-ua1-f51.google.com with SMTP id i5so153820uaq.1
-        for <linux-serial@vger.kernel.org>; Tue, 28 Apr 2020 14:39:58 -0700 (PDT)
-X-Received: by 2002:a67:c40c:: with SMTP id c12mr23285523vsk.106.1588109589393;
- Tue, 28 Apr 2020 14:33:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200421211447.193860-1-dianders@chromium.org>
- <20200421141234.v2.7.I7d5eb42c6180c831d47aef1af44d0b8be3fac559@changeid> <20200427164619.kw4mihmoxmxzjk66@holly.lan>
-In-Reply-To: <20200427164619.kw4mihmoxmxzjk66@holly.lan>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Tue, 28 Apr 2020 14:32:57 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=W9nZKOB8powEuSecnwkDA01YR0c2uNY87+nV8+5jZZug@mail.gmail.com>
-Message-ID: <CAD=FV=W9nZKOB8powEuSecnwkDA01YR0c2uNY87+nV8+5jZZug@mail.gmail.com>
-Subject: Re: [PATCH v2 7/9] Documentation: kgdboc: Document new
- earlycon_kgdboc parameter
-To:     Daniel Thompson <daniel.thompson@linaro.org>
-Cc:     Jason Wessel <jason.wessel@windriver.com>,
+        Tue, 28 Apr 2020 18:18:19 -0400
+Received: from foss.arm.com ([217.140.110.172]:59982 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725934AbgD1WSS (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 28 Apr 2020 18:18:18 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0F1811FB;
+        Tue, 28 Apr 2020 15:18:18 -0700 (PDT)
+Received: from e113632-lin (e113632-lin.cambridge.arm.com [10.1.194.46])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0E8A73F305;
+        Tue, 28 Apr 2020 15:18:16 -0700 (PDT)
+References: <20200428184050.6501-1-john.stultz@linaro.org>
+User-agent: mu4e 0.9.17; emacs 26.3
+From:   Valentin Schneider <valentin.schneider@arm.com>
+To:     John Stultz <john.stultz@linaro.org>
+Cc:     lkml <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kgdb-bugreport@lists.sourceforge.net,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, bp@alien8.de,
-        linux-serial@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Will Deacon <will@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Borislav Petkov <bp@suse.de>, Juergen Gross <jgross@suse.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        linux-doc@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jiri Slaby <jslaby@suse.com>, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2] serial: amba-pl011: Make sure we initialize the port.lock spinlock
+In-reply-to: <20200428184050.6501-1-john.stultz@linaro.org>
+Date:   Tue, 28 Apr 2020 23:18:14 +0100
+Message-ID: <jhjd07rs195.mognet@arm.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
 
-On Mon, Apr 27, 2020 at 9:46 AM Daniel Thompson
-<daniel.thompson@linaro.org> wrote:
+On 28/04/20 19:40, John Stultz wrote:
+> Valentine reported seeing:
 >
-> On Tue, Apr 21, 2020 at 02:14:45PM -0700, Douglas Anderson wrote:
-> > The recent patch ("kgdboc: Add earlycon_kgdboc to support early kgdb
-> > using boot consoles") adds a new kernel command line parameter.
-> > Document it.
-> >
-> > Note that the patch adding the feature does some comparing/contrasting
-> > of "earlycon_kgdboc" vs. the existing "ekgdboc".  See that patch for
-> > more details, but briefly "ekgdboc" can be used _instead_ of "kgdboc"
-> > and just makes "kgdboc" do its normal initialization early (only works
-> > if your tty driver is already ready).  The new "earlycon_kgdboc" works
-> > in combination with "kgdboc" and is backed by boot consoles.
-> >
-> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> > ---
-> >
-> > Changes in v2: None
-> >
-> >  .../admin-guide/kernel-parameters.txt         | 20 +++++++++++++++++++
-> >  Documentation/dev-tools/kgdb.rst              | 14 +++++++++++++
-> >  2 files changed, 34 insertions(+)
-> >
-> > diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> > index f2a93c8679e8..588625ec2993 100644
-> > --- a/Documentation/admin-guide/kernel-parameters.txt
-> > +++ b/Documentation/admin-guide/kernel-parameters.txt
-> > @@ -1132,6 +1132,22 @@
-> >                       address must be provided, and the serial port must
-> >                       already be setup and configured.
-> >
-> > +     earlycon_kgdboc=        [KGDB,HW]
-> > +                     If the boot console provides the ability to read
-> > +                     characters and can work in polling mode, you can use
-> > +                     this parameter to tell kgdb to use it as a backend
-> > +                     until the normal console is registered. Intended to
-> > +                     be used together with the kgdboc parameter which
-> > +                     specifies the normal console to transition to.
-> > +
-> > +                     The the name of the early console should be specified
-> > +                     as the value of this parameter. Note that the name of
-> > +                     the early console might be different than the tty
-> > +                     name passed to kgdboc. If only one boot console with
-> > +                     a read() function is enabled it's OK to leave the
-> > +                     value blank and the first boot console that implements
-> > +                     read() will be picked.
+> [    3.626638] INFO: trying to register non-static key.
+> [    3.626639] the code is fine but needs lockdep annotation.
+> [    3.626640] turning off the locking correctness validator.
+> [    3.626644] CPU: 7 PID: 51 Comm: kworker/7:1 Not tainted 5.7.0-rc2-00115-g8c2e9790f196 #116
+> [    3.626646] Hardware name: HiKey960 (DT)
+> [    3.626656] Workqueue: events deferred_probe_work_func
+> [    3.632476] sd 0:0:0:0: [sda] Optimal transfer size 8192 bytes not a multiple of physical block size (16384 bytes)
+> [    3.640220] Call trace:
+> [    3.640225]  dump_backtrace+0x0/0x1b8
+> [    3.640227]  show_stack+0x20/0x30
+> [    3.640230]  dump_stack+0xec/0x158
+> [    3.640234]  register_lock_class+0x598/0x5c0
+> [    3.640235]  __lock_acquire+0x80/0x16c0
+> [    3.640236]  lock_acquire+0xf4/0x4a0
+> [    3.640241]  _raw_spin_lock_irqsave+0x70/0xa8
+> [    3.640245]  uart_add_one_port+0x388/0x4b8
+> [    3.640248]  pl011_register_port+0x70/0xf0
+> [    3.640250]  pl011_probe+0x184/0x1b8
+> [    3.640254]  amba_probe+0xdc/0x180
+> [    3.640256]  really_probe+0xe0/0x338
+> [    3.640257]  driver_probe_device+0x60/0xf8
+> [    3.640259]  __device_attach_driver+0x8c/0xd0
+> [    3.640260]  bus_for_each_drv+0x84/0xd8
+> [    3.640261]  __device_attach+0xe4/0x140
+> [    3.640263]  device_initial_probe+0x1c/0x28
+> [    3.640265]  bus_probe_device+0xa4/0xb0
+> [    3.640266]  deferred_probe_work_func+0x7c/0xb8
+> [    3.640269]  process_one_work+0x2c0/0x768
+> [    3.640271]  worker_thread+0x4c/0x498
+> [    3.640272]  kthread+0x14c/0x158
+> [    3.640275]  ret_from_fork+0x10/0x1c
 >
-> There's no need for the "If only one boot console with a read()
-> funcuiton is enabled" here,
+> Which seems to be due to the fact that after allocating the uap
+> structure, nothing initializes the spinlock.
 >
-> Seeing this in alphabetic order in this patch it also crosses my mind
-> that kgdboc_earlycon might be a better name so that is sorts closer
-> to the other kgdb options. This is a kgdboc feature that uses earlycon
-> not an earlycon feature that uses kgdboc.
-
-OK.  'git format-patch', sed, and 'git am' for the win.
-
-
-> > +
-> >       earlyprintk=    [X86,SH,ARM,M68k,S390]
-> >                       earlyprintk=vga
-> >                       earlyprintk=sclp
-> > @@ -1190,6 +1206,10 @@
-> >                       This is designed to be used in conjunction with
-> >                       the boot argument: earlyprintk=vga
-> >
-> > +                     This parameter works in place of the kgdboc parameter
-> > +                     but can only be used if the backing tty is available
-> > +                     very early in the boot process.
-> > +
+> Its a little confusing, as uart_port_spin_lock_init() is one
+> place where the lock is supposed to be initialized, but it has
+> an exception for the case where the port is a console.
 >
-> I wonder if pragmatic advice is more useful:
+> This makes it seem like a deeper fix is needed to properly
+> register the console, but I'm not sure what that entails, and
+> Andy suggested that this approach is less invasive.
 >
->   For early debugging via a serial port see earlycon_kgdboc instead.
-
-Done.
-
-
-> >       edd=            [EDD]
-> >                       Format: {"off" | "on" | "skip[mbr]"}
-> >
-> > diff --git a/Documentation/dev-tools/kgdb.rst b/Documentation/dev-tools/kgdb.rst
-> > index d38be58f872a..c0b321403d9a 100644
-> > --- a/Documentation/dev-tools/kgdb.rst
-> > +++ b/Documentation/dev-tools/kgdb.rst
-> > @@ -274,6 +274,20 @@ don't like this are to hack gdb to send the :kbd:`SysRq-G` for you as well as
-> >  on the initial connect, or to use a debugger proxy that allows an
-> >  unmodified gdb to do the debugging.
-> >
-> > +Kernel parameter: ``earlycon_kgdboc``
-> > +-------------------------------------
-> > +
-> > +If you specify the kernel parameter ``earlycon_kgdboc`` and your serial
-> > +driver registers a boot console that supports polling (doesn't need
-> > +interrupts and implements a nonblocking read() function) kgdb will attempt
-> > +to work using the boot console until it can transition to the regular
-> > +tty driver specified by the ``kgdboc`` parameter.
-> > +
-> > +Normally there is only one boot console (especially that implements the
-> > +read() function) so just adding ``earlycon_kgdboc`` on its own is
-> > +sufficient to make this work.  If you have more than one boot console you
-> > +can add the boot console's name to differentiate.
-> > +
+> Thus, this patch resolves the issue by initializing the spinlock
+> in the driver, and resolves the resulting warning.
 >
-> I think we need an example here. The example in the patch header for
-> the previous patch was useful (at least for me).
 
-Done.
+Agreed with all of the above!
+
+Reviewed-and-tested-by: Valentin Schneider <valentin.schneider@arm.com>
+
+Thanks to both of you, John & Andy.
+
+> Cc: Valentin Schneider <valentin.schneider@arm.com>
+> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Cc: Russell King <linux@armlinux.org.uk>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.com>
+> Cc: linux-serial@vger.kernel.org
+> Reported-by: Valentin Schneider <valentin.schneider@arm.com>
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Signed-off-by: John Stultz <john.stultz@linaro.org>
+> ---
+> v2: Added extra context in the commit message
+> ---
+>  drivers/tty/serial/amba-pl011.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+> index 2296bb0f9578..458fc3d9d48c 100644
+> --- a/drivers/tty/serial/amba-pl011.c
+> +++ b/drivers/tty/serial/amba-pl011.c
+> @@ -2575,6 +2575,7 @@ static int pl011_setup_port(struct device *dev, struct uart_amba_port *uap,
+>       uap->port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_AMBA_PL011_CONSOLE);
+>       uap->port.flags = UPF_BOOT_AUTOCONF;
+>       uap->port.line = index;
+> +	spin_lock_init(&uap->port.lock);
+>
+>       amba_ports[index] = uap;
