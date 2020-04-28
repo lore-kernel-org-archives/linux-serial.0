@@ -2,257 +2,128 @@ Return-Path: <SRS0=KIft=6M=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3325BC83008
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 09:48:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 314E2C83000
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 10:03:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 12BEE206E2
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 09:48:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0342D20663
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 10:03:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="MVMliwen"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nrCK7SnA"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727051AbgD1Js0 (ORCPT
+        id S1727051AbgD1KDh (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Apr 2020 05:48:26 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:10220 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727069AbgD1Js0 (ORCPT
+        Tue, 28 Apr 2020 06:03:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48792 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726932AbgD1KDh (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Apr 2020 05:48:26 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1588067305; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=Xw4ZVugAhdVxw4oBomLW5BANY7Myju4oY0KQjPwaKq8=; b=MVMliwenbn3MGii853PkAH8Vl8ygTd4YCp0ea7NBZVMpzTwnvag08lLcsSQMPkqhwKxm7VSh
- a08Ysti6PQ4AvnJORnAKsTcmCK8r5Hkosct5gkBz1hl/qbc4uxwxaPWaZ8EcvuEw2VF+ZXik
- i6gw7GW+D5E+yb7J/iqxyOjvtyY=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5ea7fbe8.7f38d42d0538-smtp-out-n01;
- Tue, 28 Apr 2020 09:48:24 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 943B6C433CB; Tue, 28 Apr 2020 09:48:23 +0000 (UTC)
-Received: from [192.168.43.98] (unknown [157.48.58.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 095C8C433D2;
-        Tue, 28 Apr 2020 09:48:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 095C8C433D2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-Subject: Re: [PATCH V4 3/9] soc: qcom: geni: Support for ICC voting
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org, georgi.djakov@linaro.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, dianders@chromium.org,
-        evgreen@chromium.org
-References: <1586946198-13912-1-git-send-email-akashast@codeaurora.org>
- <1586946198-13912-4-git-send-email-akashast@codeaurora.org>
- <20200415233603.GZ199755@google.com>
-From:   Akash Asthana <akashast@codeaurora.org>
-Message-ID: <d0170d64-cde6-896c-5165-9d4cae37a574@codeaurora.org>
-Date:   Tue, 28 Apr 2020 15:18:13 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Tue, 28 Apr 2020 06:03:37 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248C6C03C1A9;
+        Tue, 28 Apr 2020 03:03:37 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id t7so2250913plr.0;
+        Tue, 28 Apr 2020 03:03:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=B47MWor82gS9pbzIegeM3QuLFmWB3mDHdrQ9VL++afI=;
+        b=nrCK7SnAoBKnsW47PH6KdJVngh2wmddILURXMBln553biX696/xlswk8+NI/1huiq/
+         WAUd13XaNPT/agYm3VF4fXKbJDWG2CXvOKTe/7X6KnmC67lkkTGb6oO9b8PedRKHbEyT
+         RBYDscitMQ+Fim7G2Qx0nNTXy395hfXXdkDJx6rwMp82tLUu6EgmS42LAB2EFi6EUUJY
+         hZBaNewYyMTmdIQJi2G6WImQvKHZbwoMXlQ+JxOqT5KOB9VF2CDqhSf8SVh7O+vRfusT
+         nmVdC4HGEPmKO9VbnnAlKgKC+Z6lWj4eDnq4he3J0IkVJwyyP/1BmKICCYoD45iQ70WB
+         unTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=B47MWor82gS9pbzIegeM3QuLFmWB3mDHdrQ9VL++afI=;
+        b=tvo+MWeeBOE7cVHhTUdaX5IoTUirn4YIPMvmQlQ42hSubkdrAQITNX0guJvj6Z8aBD
+         wL4P5f7EtXTsCiliZrh7sTjyoaGkHcPPQUyrrzk6BKKgT7YXBJr1z0UODW/hdfikFxkY
+         xUEwkYFcRx1fIt9kVTV3ERrnbKdTdGb0OyTpbbLsw7g79i03xJvL5z73FKOCvKP0I+pa
+         lPot7i0K8nMUunWh344bH69737e8/FBQe7CIu7ilCpyBtqxC39db8bUobfoQMGtl/4qy
+         OBsirPKTi6RpGrQC/8WMDOAGs0TkWVT2dVBQUqhGQoxVGkcdVVDnwDo8Fh2wgMiLClTU
+         QJAg==
+X-Gm-Message-State: AGi0PuawYZpu+qHAbm9fOYwZmuGQWbM7sjjxdmeCqzrOB7ShB7hkJYRQ
+        vppuKjhyMXKHtf3mXDDTvu1AdKtswh0OZ1as8Oo=
+X-Google-Smtp-Source: APiQypI5K60dAdHo8M/GOcGL+EVrmv/aPEuWFNph9FWRnFIr9C0KmKwQlz6TD7ILooulyHou0b63fJIotf/Kz9lrtlo=
+X-Received: by 2002:a17:90a:224b:: with SMTP id c69mr4246982pje.8.1588068216432;
+ Tue, 28 Apr 2020 03:03:36 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200415233603.GZ199755@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+References: <20200423220056.29450-1-john.stultz@linaro.org>
+ <jhj1rodyeu1.mognet@arm.com> <CALAqxLW+CBMxj_5gCF5yLcX8dhM7Fg6oOL-zot0ZZT6PW6R04g@mail.gmail.com>
+ <jhj1ro9bzhg.mognet@arm.com> <CAHp75VeE_J-GE9o6QVxBk6RJ2fjSwATfR1etaT0CXCgAiidjPQ@mail.gmail.com>
+ <jhjimhkrnw1.mognet@arm.com>
+In-Reply-To: <jhjimhkrnw1.mognet@arm.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 28 Apr 2020 13:03:25 +0300
+Message-ID: <CAHp75VfJCVh0HRw4G8o0603XEJe6LdUnvrrugxgU0oyOWRCBPA@mail.gmail.com>
+Subject: Re: [RFC][PATCH] serial: amba-pl011: Make sure we initialize the
+ port.lock spinlock
+To:     Valentin Schneider <valentin.schneider@arm.com>
+Cc:     John Stultz <john.stultz@linaro.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Matthias,
+On Tue, Apr 28, 2020 at 11:54 AM Valentin Schneider
+<valentin.schneider@arm.com> wrote:
+>
+>
+> On 27/04/20 10:02, Andy Shevchenko wrote:
+> >> I did a tiny bit of git spelunking; I found a commit that changed
+> >> uart_console_enabled() into uart_console() within
+> >> uart_port_spin_lock_init():
+> >>
+> >>   a3cb39d258ef ("serial: core: Allow detach and attach serial device for console")
+> >>
+> >> Reverting just that one change in uart_port_spin_lock_init() seems to go
+> >> fine on both Juno & HiKey960, but I think that doesn't play well with the
+> >> rest of the aforementioned commit. I think that this initial (index, line)
+> >> tuple is to blame, though I've added Andy in Cc just in case.
+> >
+> > The above mentioned commit reveals the issue in the code which doesn't
+> > register console properly.
+> >
+> > See what I put in 0f87aa66e8c31 ("serial: sunhv: Initialize lock for
+> > non-registered console").
+>
+> Thanks for the pointer. I'm still a puzzled as to why it goes fine on one
+> board and not on another, but at this point I don't have any better
+> suggestion than the unconditional init.
 
-On 4/16/2020 5:06 AM, Matthias Kaehlcke wrote:
-> Hi Akash,
->
-> On Wed, Apr 15, 2020 at 03:53:12PM +0530, Akash Asthana wrote:
->> Add necessary macros and structure variables to support ICC BW
->> voting from individual SE drivers.
->>
->> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
->> ---
->> Changes in V2:
->>   - As per Bjorn's comment dropped enums for ICC paths, given the three
->>     paths individual members
->>
->> Changes in V3:
->>   - Add geni_icc_get, geni_icc_vote_on and geni_icc_vote_off as helper API.
->>   - Add geni_icc_path structure in common header
->>
->> Changes in V4:
->>   - As per Bjorn's comment print error message in geni_icc_get if return
->>     value is not -EPROBE_DEFER.
->>   - As per Bjorn's comment remove NULL on path before calling icc_set_bw
->>     API.
->>   - As per Bjorn's comment drop __func__ print.
->>   - As per Matthias's comment, make ICC path a array instead of individual
->>     member entry in geni_se struct.
->>
->> Note: I have ignored below check patch suggestion because it was throwing
->>        compilation error as 'icc_ddr' is not compile time comstant.
->>
->> WARNING: char * array declaration might be better as static const
->>   - FILE: drivers/soc/qcom/qcom-geni-se.c:726:
->>   - const char *icc_names[] = {"qup-core", "qup-config", icc_ddr};
->>
->>
->>   drivers/soc/qcom/qcom-geni-se.c | 61 +++++++++++++++++++++++++++++++++++++++++
->>   include/linux/qcom-geni-se.h    | 31 +++++++++++++++++++++
->>   2 files changed, 92 insertions(+)
->>
->> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
->> index 7d622ea..1527bc4 100644
->> --- a/drivers/soc/qcom/qcom-geni-se.c
->> +++ b/drivers/soc/qcom/qcom-geni-se.c
->> @@ -720,6 +720,67 @@ void geni_se_rx_dma_unprep(struct geni_se *se, dma_addr_t iova, size_t len)
->>   }
->>   EXPORT_SYMBOL(geni_se_rx_dma_unprep);
->>   
->> +int geni_icc_get(struct geni_se *se, const char *icc_ddr)
->> +{
->> +	int i, icc_err;
->> +	const char *icc_names[] = {"qup-core", "qup-config", icc_ddr};
->> +
->> +	for (i = 0; i < ARRAY_SIZE(se->icc_paths); i++) {
->> +		if (!icc_names[i])
->> +			continue;
->> +
->> +		se->icc_paths[i].path = devm_of_icc_get(se->dev, icc_names[i]);
->> +		if (IS_ERR(se->icc_paths[i].path))
->> +			goto icc_get_failure;
->> +	}
->> +
->> +	return 0;
->> +
->> +icc_get_failure:
->> +	icc_err = PTR_ERR(se->icc_paths[i].path);
->> +	if (icc_err != -EPROBE_DEFER)
->> +		dev_err_ratelimited(se->dev, "Failed to get path:%d, ret:%d\n",
-> Better be explicit that it's an ICC path and log icc_names[i] instead of i.
->
->> +					i, icc_err);
->> +	return icc_err;
->> +
->> +}
->> +EXPORT_SYMBOL(geni_icc_get);
->> +
->> +int geni_icc_vote_on(struct geni_se *se)
->> +{
->> +	int i, ret;
->> +
->> +	for (i = 0; i < ARRAY_SIZE(se->icc_paths); i++) {
->> +		ret = icc_set_bw(se->icc_paths[i].path,
->> +			se->icc_paths[i].avg_bw, se->icc_paths[i].peak_bw);
-> I'll leave it to others to decide whether it's ok to leave the
-> implementation of the icc_enable/disable() APIs suggested on
-> https://patchwork.kernel.org/patch/11467511/#23269555 for later.
->
->> +		if (ret) {
->> +			dev_err_ratelimited(se->dev, "ICC BW voting failed on path:%d, ret:%d\n",
->> +					i, ret);
-> Instead of logging the index, which isn't very expressive, you could have
-> a static string array of the path names ({"core", "config", "ddr"} or
-> similar) that is used when logging errors in _vote_on/off().
->
->> +			return ret;
->> +		}
->> +	}
->> +
->> +	return 0;
->> +}
->> +EXPORT_SYMBOL(geni_icc_vote_on);
->> +
->> +int geni_icc_vote_off(struct geni_se *se)
->> +{
->> +	int i, ret;
->> +
->> +	for (i = 0; i < ARRAY_SIZE(se->icc_paths); i++) {
->> +		ret = icc_set_bw(se->icc_paths[i].path, 0, 0);
->> +		if (ret) {
->> +			dev_err_ratelimited(se->dev, "ICC BW remove failed on path:%d, ret:%d\n",
->> +					i, ret);
->> +			return ret;
->> +		}
->> +	}
->> +
->> +	return 0;
->> +}
->> +EXPORT_SYMBOL(geni_icc_vote_off);
->> +
->>   static int geni_se_probe(struct platform_device *pdev)
->>   {
->>   	struct device *dev = &pdev->dev;
->> diff --git a/include/linux/qcom-geni-se.h b/include/linux/qcom-geni-se.h
->> index dd46494..b5b9316 100644
->> --- a/include/linux/qcom-geni-se.h
->> +++ b/include/linux/qcom-geni-se.h
->> @@ -6,6 +6,8 @@
->>   #ifndef _LINUX_QCOM_GENI_SE
->>   #define _LINUX_QCOM_GENI_SE
->>   
->> +#include <linux/interconnect.h>
->> +
->>   /* Transfer mode supported by GENI Serial Engines */
->>   enum geni_se_xfer_mode {
->>   	GENI_SE_INVALID,
->> @@ -25,6 +27,12 @@ enum geni_se_protocol_type {
->>   struct geni_wrapper;
->>   struct clk;
->>   
->> +struct geni_icc_path {
->> +	struct icc_path *path;
->> +	unsigned int avg_bw;
->> +	unsigned int peak_bw;
->> +};
->> +
->>   /**
->>    * struct geni_se - GENI Serial Engine
->>    * @base:		Base Address of the Serial Engine's register block
->> @@ -33,6 +41,7 @@ struct clk;
->>    * @clk:		Handle to the core serial engine clock
->>    * @num_clk_levels:	Number of valid clock levels in clk_perf_tbl
->>    * @clk_perf_tbl:	Table of clock frequency input to serial engine clock
->> + * @icc_paths:		Array of ICC paths for SE
->>    */
->>   struct geni_se {
->>   	void __iomem *base;
->> @@ -41,6 +50,7 @@ struct geni_se {
->>   	struct clk *clk;
->>   	unsigned int num_clk_levels;
->>   	unsigned long *clk_perf_tbl;
->> +	struct geni_icc_path icc_paths[3];
-> You also need enums for the paths, otherwise you end up with code like
-> this, which isn't really self-explanatory:
->
->    gi2c->se.icc_paths[0].avg_bw = GENI_DEFAULT_BW;
->    gi2c->se.icc_paths[1].avg_bw = GENI_DEFAULT_BW;
->    gi2c->se.icc_paths[2].avg_bw = Bps_to_icc(gi2c->clk_freq_out);
->
->    (from "[V4,5/9] i2c: i2c-qcom-geni: Add interconnect support")
->
-> I know Bjorn asked in v1 to remove the enums you had, however it was
-> a slightly different context. If we are sticking to use an array of
-> 'struct geni_icc_path' (which reduces redundant code) the enums are
-> 'needed'.
+My patch relied on the behaviour of 8250 [1] and that comment (near to
+spin lock initialization routine).
+It seems AMBA UART drivers unconditionally assign consoles ([2], [3])
+without registering it properly at console_initcall().
 
-Ok
+Least invasive fix is what John's patch does, but real fix is to do
+something like 8250 does.
 
-Regards,
+So, the rule of thumb is simple: if we assign console to the port we
+must initialize the lock even if we are not registering console.
+I dunno the history of different behaviours among drivers and what
+change(s) brought us to the messy spin lock initialization code in
+them.
 
-Akash
+[1]: https://elixir.bootlin.com/linux/v5.7-rc3/source/drivers/tty/serial/8250/8250_core.c#L684
+[2]: https://elixir.bootlin.com/linux/v5.7-rc3/source/drivers/tty/serial/amba-pl010.c#L691
+[3]: https://elixir.bootlin.com/linux/v5.7-rc3/source/drivers/tty/serial/amba-pl011.c#L2496
 
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+With Best Regards,
+Andy Shevchenko
