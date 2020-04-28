@@ -2,230 +2,238 @@ Return-Path: <SRS0=KIft=6M=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82EDDC83000
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 20:45:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABCAAC83000
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 21:14:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 67309206D9
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 20:45:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7AFFD20730
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 21:14:22 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="UNNXZ0gc"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726353AbgD1UpF (ORCPT
+        id S1726699AbgD1VOV (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Apr 2020 16:45:05 -0400
-Received: from mga17.intel.com ([192.55.52.151]:64161 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726291AbgD1UpF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Apr 2020 16:45:05 -0400
-IronPort-SDR: S4GwuPrhzr+WLuW0cmwmfAQTUqDHbTtDh0lqSbKc0y0oGsfrCFIVijsxPGzg5b2+RwDZCs1EeK
- 37CpnPKmbSaQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2020 13:45:03 -0700
-IronPort-SDR: NOLEiSZMCb+GbzzhpKgS9O1UutdhqKEYLJIrWHSxf2SQSWWOyxTrhARD0LMtn6hDVeubu8Rhk/
- Ldcpqn32iP3Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,328,1583222400"; 
-   d="scan'208";a="367610250"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 28 Apr 2020 13:45:01 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1jTX6D-0005Gd-2l; Wed, 29 Apr 2020 04:45:01 +0800
-Date:   Wed, 29 Apr 2020 04:44:56 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- e2bd1dcbe1aa34ff5570b3427c530e4332ecf0fe
-Message-ID: <5ea895c8.24JAl9MrWZhMluYu%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 28 Apr 2020 17:14:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41074 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726683AbgD1VOT (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 28 Apr 2020 17:14:19 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E1EC03C1AE
+        for <linux-serial@vger.kernel.org>; Tue, 28 Apr 2020 14:14:18 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id t16so9007121plo.7
+        for <linux-serial@vger.kernel.org>; Tue, 28 Apr 2020 14:14:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=blBX9PWhrLwlRC4CxObQ1qK+sOW74s4G2bfD1JGu8J0=;
+        b=UNNXZ0gcnR3k6hJj/LbVp66fJcTUI1AFvWnj3RHMoXFYmyCcp6PtCAYQY6fvgKQeJD
+         MNV2wxAxPwLdM2hLs+qKupu4j9AUnqtqg77PSykw/jl+HCbCHt+4x9VIpHELo/PYeprO
+         ilL6JtVgwda3tXbtK2W1ejaJ71UjYuT29uXvM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=blBX9PWhrLwlRC4CxObQ1qK+sOW74s4G2bfD1JGu8J0=;
+        b=lGcrH6wcpTPco23ORZD7RuO15YTwpdE3yUdITVFf1UCUbgWMWZR5o6QyqpycPQjTXF
+         k7aefHsL//dTK5ACvy9wl5n2rOR9dsr3sJtL3Q4NvJLwClyRPjDsrfHMApLIvAlM1HdS
+         xmqvpYwFbZr05jxQ70Jenztln6IaJly/gT0m9rCev9JyouAnboaCAW212gvNuhLMtTO0
+         XopXnjdNKpbZga41C1R+kY+JwbsHNLv39PhfjjtSzlpGnEud043ByKNiKJpHenn0lQhl
+         lpmcg9zzRmkazExpgIfnsJpjiMv2ZaRLU9J45Hw//SuTFq+Kc/rcwfmZsBkvBiF6vj4C
+         S8Hw==
+X-Gm-Message-State: AGi0PuaExtevbeINP4n02QbtwVxKuvvnTXfcOf8URgQ+k68qo1KfUfc7
+        CvaNnwkLGnkpq7ODLWLFZj3L0w==
+X-Google-Smtp-Source: APiQypLBYIwFGtYJq3pkWPIKkLwZi7SFfBVlMgfwE6B5z2rF+bbbLHTii8gKjfoQdnIZvUKuTl6BCA==
+X-Received: by 2002:a17:90a:718c:: with SMTP id i12mr7485056pjk.58.1588108458221;
+        Tue, 28 Apr 2020 14:14:18 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:1:24fa:e766:52c9:e3b2])
+        by smtp.gmail.com with ESMTPSA id 18sm2988202pjf.30.2020.04.28.14.14.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Apr 2020 14:14:17 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     jason.wessel@windriver.com, daniel.thompson@linaro.org,
+        gregkh@linuxfoundation.org
+Cc:     agross@kernel.org, kgdb-bugreport@lists.sourceforge.net,
+        catalin.marinas@arm.com, linux-serial@vger.kernel.org,
+        sumit.garg@linaro.org, corbet@lwn.net, mingo@redhat.com,
+        will@kernel.org, hpa@zytor.com, tglx@linutronix.de,
+        frowand.list@gmail.com, bp@alien8.de, bjorn.andersson@linaro.org,
+        jslaby@suse.com, Douglas Anderson <dianders@chromium.org>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        Allison Randal <allison@lohutok.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dave Martin <Dave.Martin@arm.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        James Morse <james.morse@arm.com>,
+        Juergen Gross <jgross@suse.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Russell King <linux@armlinux.org.uk>,
+        jinho lim <jordan.lim@samsung.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, x86@kernel.org
+Subject: [PATCH v3 00/11] kgdb: Support late serial drivers; enable early debug w/ boot consoles
+Date:   Tue, 28 Apr 2020 14:13:40 -0700
+Message-Id: <20200428211351.85055-1-dianders@chromium.org>
+X-Mailer: git-send-email 2.26.2.303.gf8c07b1a785-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
-branch HEAD: e2bd1dcbe1aa34ff5570b3427c530e4332ecf0fe  tty: hvc: Fix data abort due to race in hvc_open
+This whole pile of patches was motivated by me trying to get kgdb to
+work properly on a platform where my serial driver ended up being hit
+by the -EPROBE_DEFER virus (it wasn't practicing social distancing
+from other drivers).  Specifically my serial driver's parent device
+depended on a resource that wasn't available when its probe was first
+called.  It returned -EPROBE_DEFER which meant that when "kgdboc"
+tried to run its setup the serial driver wasn't there.  Unfortunately
+"kgdboc" never tried again, so that meant that kgdb was disabled until
+I manually enalbed it via sysfs.
 
-elapsed time: 480m
+While I could try to figure out how to get around the -EPROBE_DEFER
+somehow, the above problems could happen to anyone and -EPROBE_DEFER
+is generally considered something you just have to live with.  In any
+case the current "kgdboc" setup is a bit of a race waiting to happen.
+I _think_ I saw during early testing that even adding a msleep() in
+the typical serial driver's probe() is enough to trigger similar
+issues.
 
-configs tested: 163
-configs skipped: 0
+I decided that for the above race the best attitude to get kgdb to
+register at boot was probably "if you can't beat 'em, join 'em".
+Thus, "kgdboc" now jumps on the -EPROBE_DEFER bandwagon (now that my
+driver uses it it's no longer a virus).  It does so a little awkwardly
+because "kgdboc" hasn't normally had a "struct device" associated with
+it, but it's really not _that_ ugly to make a platform device and
+seems less ugly than alternatives.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Unfortunately now on my system the debugger is one of the last things
+to register at boot.  That's OK for debugging problems that show up
+significantly after boot, but isn't so hot for all the boot problems
+that I end up debugging.  This motivated me to try to get something
+working a little earlier.
 
-arm64                            allyesconfig
-arm                              allyesconfig
-arm64                            allmodconfig
-arm                              allmodconfig
-arm64                             allnoconfig
-arm                               allnoconfig
-arm                           efm32_defconfig
-arm                         at91_dt_defconfig
-arm                        shmobile_defconfig
-arm64                               defconfig
-arm                          exynos_defconfig
-arm                        multi_v5_defconfig
-arm                           sunxi_defconfig
-arm                        multi_v7_defconfig
-sparc                            allyesconfig
-csky                                defconfig
-sparc64                          allyesconfig
-um                             i386_defconfig
-m68k                             allmodconfig
-sparc64                          allmodconfig
-mips                         tb0287_defconfig
-microblaze                      mmu_defconfig
-i386                              allnoconfig
-i386                             allyesconfig
-i386                             alldefconfig
-i386                                defconfig
-i386                              debian-10.3
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                              allnoconfig
-ia64                        generic_defconfig
-ia64                          tiger_defconfig
-ia64                         bigsur_defconfig
-ia64                             allyesconfig
-ia64                             alldefconfig
-nios2                         3c120_defconfig
-nios2                         10m50_defconfig
-c6x                        evmc6678_defconfig
-xtensa                          iss_defconfig
-c6x                              allyesconfig
-xtensa                       common_defconfig
-openrisc                 simple_smp_defconfig
-openrisc                    or1ksim_defconfig
-nds32                               defconfig
-nds32                             allnoconfig
-alpha                               defconfig
-h8300                       h8s-sim_defconfig
-h8300                     edosk2674_defconfig
-m68k                       m5475evb_defconfig
-h8300                    h8300h-sim_defconfig
-m68k                           sun3_defconfig
-m68k                          multi_defconfig
-arc                                 defconfig
-arc                              allyesconfig
-powerpc                             defconfig
-powerpc                       ppc64_defconfig
-powerpc                          rhel-kconfig
-microblaze                    nommu_defconfig
-powerpc                           allnoconfig
-mips                      fuloong2e_defconfig
-mips                      malta_kvm_defconfig
-mips                            ar7_defconfig
-mips                             allyesconfig
-mips                         64r6el_defconfig
-mips                              allnoconfig
-mips                           32r2_defconfig
-mips                             allmodconfig
-mips                malta_kvm_guest_defconfig
-mips                       capcella_defconfig
-mips                           ip32_defconfig
-mips                  decstation_64_defconfig
-mips                      loongson3_defconfig
-mips                          ath79_defconfig
-mips                        bcm63xx_defconfig
-parisc                            allnoconfig
-parisc                generic-64bit_defconfig
-parisc                generic-32bit_defconfig
-parisc                           allyesconfig
-parisc                           allmodconfig
-parisc               randconfig-a001-20200428
-m68k                 randconfig-a001-20200428
-alpha                randconfig-a001-20200428
-nds32                randconfig-a001-20200428
-riscv                randconfig-a001-20200428
-nios2                randconfig-a001-20200428
-h8300                randconfig-a001-20200428
-c6x                  randconfig-a001-20200428
-sparc64              randconfig-a001-20200428
-microblaze           randconfig-a001-20200428
-sh                   randconfig-a001-20200428
-csky                 randconfig-a001-20200428
-s390                 randconfig-a001-20200428
-xtensa               randconfig-a001-20200428
-openrisc             randconfig-a001-20200428
-x86_64               randconfig-a001-20200428
-i386                 randconfig-a003-20200428
-x86_64               randconfig-a003-20200428
-i386                 randconfig-a002-20200428
-i386                 randconfig-a001-20200428
-x86_64               randconfig-a002-20200428
-i386                 randconfig-c002-20200428
-i386                 randconfig-c001-20200428
-x86_64               randconfig-c001-20200428
-i386                 randconfig-c003-20200428
-x86_64               randconfig-c003-20200428
-x86_64               randconfig-d001-20200428
-i386                 randconfig-d002-20200428
-i386                 randconfig-d001-20200428
-x86_64               randconfig-d003-20200428
-i386                 randconfig-d003-20200428
-x86_64               randconfig-f002-20200428
-i386                 randconfig-f002-20200428
-i386                 randconfig-f003-20200428
-x86_64               randconfig-f003-20200428
-i386                 randconfig-f001-20200428
-x86_64               randconfig-f001-20200428
-i386                 randconfig-g003-20200428
-x86_64               randconfig-g001-20200428
-i386                 randconfig-g001-20200428
-x86_64               randconfig-g002-20200428
-i386                 randconfig-g002-20200428
-x86_64               randconfig-g003-20200428
-x86_64               randconfig-h001-20200428
-i386                 randconfig-h003-20200428
-x86_64               randconfig-h003-20200428
-x86_64               randconfig-h002-20200428
-i386                 randconfig-h001-20200428
-i386                 randconfig-h002-20200428
-sparc                randconfig-a001-20200428
-ia64                 randconfig-a001-20200428
-powerpc              randconfig-a001-20200428
-arm64                randconfig-a001-20200428
-arc                  randconfig-a001-20200428
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-s390                       zfcpdump_defconfig
-s390                          debug_defconfig
-s390                             allyesconfig
-s390                              allnoconfig
-s390                             allmodconfig
-s390                             alldefconfig
-s390                                defconfig
-sh                          rsk7269_defconfig
-sh                               allmodconfig
-sh                            titan_defconfig
-sh                  sh7785lcr_32bit_defconfig
-sh                                allnoconfig
-sparc                               defconfig
-sparc64                             defconfig
-sparc64                           allnoconfig
-um                           x86_64_defconfig
-um                                  defconfig
-x86_64                                   rhel
-x86_64                               rhel-7.6
-x86_64                    rhel-7.6-kselftests
-x86_64                         rhel-7.2-clear
-x86_64                                    lkp
-x86_64                              fedora-25
-x86_64                                  kexec
+My first attempt was to try to get the existing "ekgdboc" to work
+earlier.  I tried that for a bit until I realized that it needed to
+work at the tty layer and I couldn't find any serial drivers that
+managed to register themselves to the tty layer super early at boot.
+The only documented use of "ekgdboc" is "ekgdboc=kbd" and that's a bit
+of a special snowflake.  Trying to get my serial driver and all its
+dependencies to probe normally and register the tty driver super early
+at boot seemed like a bad way to go.  In fact, all the complexity
+needed to do something like this is why the system already has a
+special concept of a "boot console" that lives only long enough to
+transition to the normal console.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Leveraging the boot console seemed like a good way to go and that's
+what this series does.  I found that consoles could have a read()
+function, though I couldn't find anyone who implemented it.  I
+implemented it for two serial drivers for the devices I had easy
+access to, making the assumption that for boot consoles that we could
+assume read() and write() were polling-compatible (seems sane I
+think).
+
+Now anyone who makes a small change to their serial driver can easily
+enable early kgdb debugging!
+
+The devices I had for testing were:
+- arm32: rk3288-veyron-jerry
+- arm64: rk3399-gru-kevin
+- arm64: qcom-sc7180-trogdor (not mainline yet)
+
+These are the devices I tested this series on.  I tried to test
+various combinations of enabling/disabling various options and I
+hopefully caught the corner cases, but I'd appreciate any extra
+testing people can do.  Notably I didn't test on x86, but (I think) I
+didn't touch much there so I shouldn't have broken anything.
+
+When testing I found a few problems with actually dropping into the
+debugger super early on arm and arm64 devices.  Patches in this series
+should help with this.  For arm I just avoid dropping into the
+debugger until a little later and for arm64 I actually enable
+debugging super early.
+
+I realize that bits of this series might feel a little hacky, though
+I've tried to do things in the cleanest way I could without overly
+interferring with the rest of the kernel.  If you hate the way I
+solved a problem I would love it if you could provide guidance on how
+you think I could solve the problem better.
+
+This series (and my comments / documentation / commit messages) are
+now long enough that my eyes glaze over when I try to read it all over
+to double-check.  I've nontheless tried to double-check it, but I'm
+pretty sure I did something stupid.  Thank you ahead of time for
+pointing it out to me so I can fix it in v4.  If somehow I managed to
+not do anything stupid (really?) then thank you for double-checking me
+anyway.
+
+NOTE: v3 of the patch series tacks on support for an extra serial
+driver from Sumit Garg.  I've piled it onto the end of my series at
+his request just to keep everything together.
+
+Changes in v3:
+- ("kgdb: Prevent infinite recursive entries to the debugger") new for v3.
+- ("serial: amba-pl011: Support kgdboc_earlycon") pulled into my v3.
+- Add deinit() to I/O ops to know a driver can be replaced.
+- Added example in kgdb.rst
+- Change boolean weak function to KConfig.
+- Don't just neuter input, panic if earlycon vanishes.
+- No extra param to kgdb_register_io_module().
+- Removed unneeded sentence in kerenel-parameters doc.
+- Renamed earlycon_kgdboc to kgdboc_earlycon.
+- Simplify earlycon_kgdb deinit by using the deinit() function.
+- Suggest people use kgdboc_earlycon instead of ekgdboc.
+- { ; } ==> { }
+
+Changes in v2:
+- ("Revert "kgdboc: disable the console lock when in kgdb"") new for v2.
+- ("kgdb: Disable WARN_CONSOLE_UNLOCKED for all kgdb") new for v2.
+- Assumes we have ("kgdb: Disable WARN_CONSOLE_UNLOCKED for all kgdb")
+- Fix kgdbts, tty/mips_ejtag_fdc, and usb/early/ehci-dbgp
+
+Douglas Anderson (10):
+  kgdb: Disable WARN_CONSOLE_UNLOCKED for all kgdb
+  Revert "kgdboc: disable the console lock when in kgdb"
+  kgdboc: Use a platform device to handle tty drivers showing up late
+  kgdb: Delay "kgdbwait" to dbg_late_init() by default
+  arm64: Add call_break_hook() to early_brk64() for early kgdb
+  kgdb: Prevent infinite recursive entries to the debugger
+  kgdboc: Add kgdboc_earlycon to support early kgdb using boot consoles
+  Documentation: kgdboc: Document new kgdboc_earlycon parameter
+  serial: qcom_geni_serial: Support kgdboc_earlycon
+  serial: 8250_early: Support kgdboc_earlycon
+
+Sumit Garg (1):
+  serial: amba-pl011: Support kgdboc_earlycon
+
+ .../admin-guide/kernel-parameters.txt         |  20 ++
+ Documentation/dev-tools/kgdb.rst              |  24 ++
+ arch/arm64/Kconfig                            |   1 +
+ arch/arm64/include/asm/debug-monitors.h       |   2 +
+ arch/arm64/kernel/debug-monitors.c            |   2 +-
+ arch/arm64/kernel/traps.c                     |   3 +
+ arch/x86/Kconfig                              |   1 +
+ drivers/tty/serial/8250/8250_early.c          |  23 ++
+ drivers/tty/serial/amba-pl011.c               |  32 +++
+ drivers/tty/serial/kgdboc.c                   | 266 ++++++++++++++++--
+ drivers/tty/serial/qcom_geni_serial.c         |  32 +++
+ include/linux/kgdb.h                          |   4 +
+ kernel/debug/debug_core.c                     |  53 +++-
+ lib/Kconfig.kgdb                              |  18 ++
+ 14 files changed, 437 insertions(+), 44 deletions(-)
+
+-- 
+2.26.2.303.gf8c07b1a785-goog
+
