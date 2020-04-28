@@ -2,147 +2,146 @@ Return-Path: <SRS0=KIft=6M=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E005C83001
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 16:05:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D48A5C83001
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 16:22:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 59AF421835
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 16:05:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B42C12054F
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 16:22:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="oZh07Ggo"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="qXhWPL5O"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728307AbgD1QFB (ORCPT
+        id S1728129AbgD1QWr (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Apr 2020 12:05:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49224 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728273AbgD1QFA (ORCPT
+        Tue, 28 Apr 2020 12:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51992 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728084AbgD1QWr (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Apr 2020 12:05:00 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5232DC03C1AB
-        for <linux-serial@vger.kernel.org>; Tue, 28 Apr 2020 09:05:00 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id g13so25292195wrb.8
-        for <linux-serial@vger.kernel.org>; Tue, 28 Apr 2020 09:05:00 -0700 (PDT)
+        Tue, 28 Apr 2020 12:22:47 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C52C03C1AB
+        for <linux-serial@vger.kernel.org>; Tue, 28 Apr 2020 09:22:46 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id x4so3488542wmj.1
+        for <linux-serial@vger.kernel.org>; Tue, 28 Apr 2020 09:22:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Ly3qwI+0y9oxwjserDT6tM7N3L1x1899PXU3tkelq/I=;
-        b=oZh07GgoDz13qsfDQ9O+AGgTyw5NZfvmaV0z/+pBF+6wH3B1PTaac+2kX5a7WHcf5S
-         4JvFAFlb7AKdvg6KUFSoSDlKapm9q+t2lq+JLTB/WcByZo703gl7gjC7M7u72FalBMa9
-         brk2RbG57ot+aHP8nFYURh7zNa7wtHgP+a2MNiEXwZo2cVVqO7s8+m+XMjMhvHnA5wxp
-         9eVV6TNEd5JiHskY0ys8QsQ0N2ewAR8uNLSIldnAYoM2LoS8e2GNqlT9Ki8p1qtuUeFT
-         FWutmsihVPS6cICths1wNX6qlXLA4XhPMcT5gMTRINUlMm7JWbKi1z3lTEdfiwbG6EZz
-         bwGA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QZ3V+kSzSOvh3yPLaUGq339r3FXngS2JfBwbre6zrhE=;
+        b=qXhWPL5O7QAlv2qAlEN7m7ou3SRfXay58XLzapUHPOrqFq57kRVrnAzyNaGqh0bdcT
+         uiUDpYM+PCcW+uNeiiV1PYYfD2ZfHjhEvIQhhoqqiJ0KeDHG3kZUjXl4MfKlTjAfVuIe
+         dkwhWQN/n2d7ZCrIC44jjhiVvc0O9z8yYk4Mspwztl1qzB4z2nK6zbYiijDhavRbx0ku
+         ah3ajFogcn4fC/aTM48Eiq4MLrUhzDADKX33b7Wj5M3a8WtYnbT8a/KxUGc0+mTstRoa
+         C1JbOFU2h0y1kg1tUKWJGCUF9Z1uYkdiDOykvYngQnHUHQjXICAXSV6IuWKcL7nvMnMv
+         eySw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Ly3qwI+0y9oxwjserDT6tM7N3L1x1899PXU3tkelq/I=;
-        b=FWvoh2caWCELYtRJHTJDCPpZPbTp/wjbSGyo3ua8Np+LNn93CgpIEmS/s/tGFTLc5f
-         KLrpCgJyoHA6I8YMGMS/IkokA7vuKCVtl4Q/ozw8z7xYoEAxcx0Yhte4iidY3X8puBlv
-         DrwAEO7kkvA5el+1Nx4G1MBL+kQ57eZxDrvGRfqO+7edyC7fJxZMbtGsIdxlfXILZDPt
-         HJX+otlkC+Dd68c3OGbOh9uJf59k4Cg3fSl8/DuaTUDjHoBKzsuLNrMyKufmHKUoAUkC
-         EwkkzlD4FvWC+/mp6EjdcZc60lJviiJzyvwoWdo+lMHkqi2QzI+1H0pgZJn7GLXMASm+
-         sblw==
-X-Gm-Message-State: AGi0PuYJvH9B1wIjxcSRr67S3FOjFY5bdcFCU6i61csctYgoH04v2OeF
-        JIQHsf6Eyx9fQj4VVUCit0NGFw==
-X-Google-Smtp-Source: APiQypKdYPNEuZ/XS4QnNVV03+UTEkigMqL4aSRmAYR9slx/dFNC24FTbjFcex9II3KPD3Q985FwuQ==
-X-Received: by 2002:adf:92c2:: with SMTP id 60mr32585664wrn.379.1588089899078;
-        Tue, 28 Apr 2020 09:04:59 -0700 (PDT)
-Received: from [192.168.0.136] ([87.120.218.65])
-        by smtp.googlemail.com with ESMTPSA id w6sm26860023wrm.86.2020.04.28.09.04.57
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 Apr 2020 09:04:58 -0700 (PDT)
-Subject: Re: [PATCH V4 1/9] interconnect: Add devm_of_icc_get() as exported
- API for users
-To:     Akash Asthana <akashast@codeaurora.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, mka@chromium.org,
-        dianders@chromium.org, evgreen@chromium.org
-References: <1586946198-13912-1-git-send-email-akashast@codeaurora.org>
- <1586946198-13912-2-git-send-email-akashast@codeaurora.org>
-From:   Georgi Djakov <georgi.djakov@linaro.org>
-Openpgp: preference=signencrypt
-Autocrypt: addr=georgi.djakov@linaro.org; prefer-encrypt=mutual; keydata=
- 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
- KEmKjLDvB0pePJkdTw==
-Message-ID: <1f2cb1e2-31da-00ab-7bd9-7f515c307288@linaro.org>
-Date:   Tue, 28 Apr 2020 19:04:56 +0300
+        bh=QZ3V+kSzSOvh3yPLaUGq339r3FXngS2JfBwbre6zrhE=;
+        b=EupWdnhtsmJy9f8D2fVYVVoHWFWrKCme5RhpfWaXlIbxn7LTr+UaXCszE5MTCg6PQA
+         yGX3pmaNryQ+IzgeAmVuAV+euxQOQh89CQB3YjQINu5aMZqinr+q7VJRJPsEop3CGp0v
+         v/pMQ6jzvEJbis23uuuX6mMYGU+EX2kv0c9xwyPoJ/8V+fWbse4MZhuEXsShxMr3B0/J
+         JkU+cq3TSNIX17rB2cpFSoJJb1mvZ3JEADNexNdVpcY36GvpcJue9r/OG9P9ke1PisQt
+         ZwGQHT64rzg1VRJstQpaUevH5N+zXFEZL+ic3E7m/ZKOloieLR63lt4CYi0szlPyVOEW
+         dF/A==
+X-Gm-Message-State: AGi0PuYb7IHXj/tSjEEYmGiUXvL2NSJdmeJ4yqAY5EyiET9++a2KH5K0
+        57I7aXTu0reoNlxmc1im0mS1MNFC1U6qrg==
+X-Google-Smtp-Source: APiQypL+DZ5U8Se/92OpfKlWfoY0M5q66E1XNeANbqXCYI9gMYeEmYEHp30ZLcpfBz/YNt7hw8TgYA==
+X-Received: by 2002:a1c:9a81:: with SMTP id c123mr5124445wme.115.1588090965173;
+        Tue, 28 Apr 2020 09:22:45 -0700 (PDT)
+Received: from wychelm.lan (cpc141214-aztw34-2-0-cust773.18-1.cable.virginm.net. [86.9.19.6])
+        by smtp.gmail.com with ESMTPSA id o6sm17736097wrw.63.2020.04.28.09.22.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Apr 2020 09:22:44 -0700 (PDT)
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        patches@linaro.org
+Subject: [PATCH] serial: earlycon: Allow earlier DT scan is acpi=off
+Date:   Tue, 28 Apr 2020 17:22:27 +0100
+Message-Id: <20200428162227.687978-1-daniel.thompson@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <1586946198-13912-2-git-send-email-akashast@codeaurora.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Akash,
+Currently if the kernel has support for ACPI SPCR parsing then earlycon
+without arguments is processed later than the full earlycon=...
+alternative.
 
-On 4/15/20 13:23, Akash Asthana wrote:
-> Users can use devm version of of_icc_get() to benefit from automatic
-> resource release.
-> 
-> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
-> Reviewed by: Matthias Kaehlcke <mka@chromium.org>
-> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
+If ACPI has been explicitly disabled on the kernel command line then
+there is not need to defer since the ACPI code (both x86 and arm64)
+will never actually run.
 
-Thank you for this patch! I am applying it, so there is no need to re-send it.
+Or, put another way it allows lazy people to throw "acpi=off earlycon"
+onto the command line of a DT systems and be confident the console will
+start as early as possible without them having to lookup the driver
+and address needed for a specific platform.
 
-BR,
-Georgi
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+---
+ drivers/tty/serial/earlycon.c | 28 +++++++++++++++++++++++++++-
+ 1 file changed, 27 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 2ae9190b64bb..ebb648aacb47 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -215,6 +215,31 @@ int __init setup_earlycon(char *buf)
+  */
+ bool earlycon_acpi_spcr_enable __initdata;
+
++/*
++ * This takes a sneaky peek at other boot arguments (which may not have
++ * been parsed at this point in the boot) to check whether ACPI has
++ * been explicitly disabled. If it is explicitly disabled then there is
++ * no reason to defer initialization of the early console.
++ */
++static bool earlycon_check_for_acpi_off(void)
++{
++	static const char token[] = "acpi=off";
++	const char *arg;
++	char before, after;
++
++	arg = strstr(boot_command_line, token);
++	while (arg) {
++		before = arg == boot_command_line ? ' ' : arg[-1];
++		after = arg[sizeof(token)-1];
++		if (isspace(before) && (isspace(after) || after == '\0'))
++			return true;
++
++		arg = strstr(arg+1, token);
++	}
++
++	return false;
++}
++
+ /* early_param wrapper for setup_earlycon() */
+ static int __init param_setup_earlycon(char *buf)
+ {
+@@ -222,7 +247,8 @@ static int __init param_setup_earlycon(char *buf)
+
+ 	/* Just 'earlycon' is a valid param for devicetree and ACPI SPCR. */
+ 	if (!buf || !buf[0]) {
+-		if (IS_ENABLED(CONFIG_ACPI_SPCR_TABLE)) {
++		if (IS_ENABLED(CONFIG_ACPI_SPCR_TABLE) &&
++		    !earlycon_check_for_acpi_off()) {
+ 			earlycon_acpi_spcr_enable = true;
+ 			return 0;
+ 		} else if (!buf) {
+--
+2.25.1
 
