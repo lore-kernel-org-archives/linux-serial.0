@@ -2,128 +2,276 @@ Return-Path: <SRS0=KIft=6M=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 314E2C83000
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 10:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2759C83008
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 10:22:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0342D20663
-	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 10:03:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 92EEB206D9
+	for <linux-serial@archiver.kernel.org>; Tue, 28 Apr 2020 10:22:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nrCK7SnA"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="jvnMpYc0"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727051AbgD1KDh (ORCPT
+        id S1727114AbgD1KWE (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 28 Apr 2020 06:03:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48792 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726932AbgD1KDh (ORCPT
+        Tue, 28 Apr 2020 06:22:04 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:13422 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727788AbgD1KWD (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 28 Apr 2020 06:03:37 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248C6C03C1A9;
-        Tue, 28 Apr 2020 03:03:37 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id t7so2250913plr.0;
-        Tue, 28 Apr 2020 03:03:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=B47MWor82gS9pbzIegeM3QuLFmWB3mDHdrQ9VL++afI=;
-        b=nrCK7SnAoBKnsW47PH6KdJVngh2wmddILURXMBln553biX696/xlswk8+NI/1huiq/
-         WAUd13XaNPT/agYm3VF4fXKbJDWG2CXvOKTe/7X6KnmC67lkkTGb6oO9b8PedRKHbEyT
-         RBYDscitMQ+Fim7G2Qx0nNTXy395hfXXdkDJx6rwMp82tLUu6EgmS42LAB2EFi6EUUJY
-         hZBaNewYyMTmdIQJi2G6WImQvKHZbwoMXlQ+JxOqT5KOB9VF2CDqhSf8SVh7O+vRfusT
-         nmVdC4HGEPmKO9VbnnAlKgKC+Z6lWj4eDnq4he3J0IkVJwyyP/1BmKICCYoD45iQ70WB
-         unTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=B47MWor82gS9pbzIegeM3QuLFmWB3mDHdrQ9VL++afI=;
-        b=tvo+MWeeBOE7cVHhTUdaX5IoTUirn4YIPMvmQlQ42hSubkdrAQITNX0guJvj6Z8aBD
-         wL4P5f7EtXTsCiliZrh7sTjyoaGkHcPPQUyrrzk6BKKgT7YXBJr1z0UODW/hdfikFxkY
-         xUEwkYFcRx1fIt9kVTV3ERrnbKdTdGb0OyTpbbLsw7g79i03xJvL5z73FKOCvKP0I+pa
-         lPot7i0K8nMUunWh344bH69737e8/FBQe7CIu7ilCpyBtqxC39db8bUobfoQMGtl/4qy
-         OBsirPKTi6RpGrQC/8WMDOAGs0TkWVT2dVBQUqhGQoxVGkcdVVDnwDo8Fh2wgMiLClTU
-         QJAg==
-X-Gm-Message-State: AGi0PuawYZpu+qHAbm9fOYwZmuGQWbM7sjjxdmeCqzrOB7ShB7hkJYRQ
-        vppuKjhyMXKHtf3mXDDTvu1AdKtswh0OZ1as8Oo=
-X-Google-Smtp-Source: APiQypI5K60dAdHo8M/GOcGL+EVrmv/aPEuWFNph9FWRnFIr9C0KmKwQlz6TD7ILooulyHou0b63fJIotf/Kz9lrtlo=
-X-Received: by 2002:a17:90a:224b:: with SMTP id c69mr4246982pje.8.1588068216432;
- Tue, 28 Apr 2020 03:03:36 -0700 (PDT)
+        Tue, 28 Apr 2020 06:22:03 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1588069322; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=EMcwWVpuTkQ0cpuqYpXFbzPZiEdvxpXwtQZJuGAwl6o=; b=jvnMpYc0CWdcporg9etlOx3/FZ6Fmccblpip1CfAv2uTktaA/4KsAqIRiL+SEzGvYsOXtSJH
+ HzlEfyqgPC49ta5897TnztMN/j8ZU7lFJkaa8cS8bR3dw6BLPhJLpxenBoe2q5OboEOPnwf2
+ zsGVajz3NFAua/AMrLvvYVdCnpY=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5ea803c9.7fbb858dddc0-smtp-out-n04;
+ Tue, 28 Apr 2020 10:22:01 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 519CBC432C2; Tue, 28 Apr 2020 10:22:01 +0000 (UTC)
+Received: from [192.168.43.98] (unknown [157.48.58.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 34FE7C433CB;
+        Tue, 28 Apr 2020 10:21:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 34FE7C433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+Subject: Re: [PATCH V4 4/9] soc: qcom-geni-se: Add interconnect support to fix
+ earlycon crash
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
+        mark.rutland@arm.com, robh+dt@kernel.org, georgi.djakov@linaro.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, dianders@chromium.org,
+        evgreen@chromium.org
+References: <1586946198-13912-1-git-send-email-akashast@codeaurora.org>
+ <1586946198-13912-5-git-send-email-akashast@codeaurora.org>
+ <20200416003112.GA199755@google.com>
+From:   Akash Asthana <akashast@codeaurora.org>
+Message-ID: <146cf8db-3c09-39a6-2886-bec0db289948@codeaurora.org>
+Date:   Tue, 28 Apr 2020 15:51:44 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-References: <20200423220056.29450-1-john.stultz@linaro.org>
- <jhj1rodyeu1.mognet@arm.com> <CALAqxLW+CBMxj_5gCF5yLcX8dhM7Fg6oOL-zot0ZZT6PW6R04g@mail.gmail.com>
- <jhj1ro9bzhg.mognet@arm.com> <CAHp75VeE_J-GE9o6QVxBk6RJ2fjSwATfR1etaT0CXCgAiidjPQ@mail.gmail.com>
- <jhjimhkrnw1.mognet@arm.com>
-In-Reply-To: <jhjimhkrnw1.mognet@arm.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 28 Apr 2020 13:03:25 +0300
-Message-ID: <CAHp75VfJCVh0HRw4G8o0603XEJe6LdUnvrrugxgU0oyOWRCBPA@mail.gmail.com>
-Subject: Re: [RFC][PATCH] serial: amba-pl011: Make sure we initialize the
- port.lock spinlock
-To:     Valentin Schneider <valentin.schneider@arm.com>
-Cc:     John Stultz <john.stultz@linaro.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200416003112.GA199755@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Apr 28, 2020 at 11:54 AM Valentin Schneider
-<valentin.schneider@arm.com> wrote:
+Hi Matthias,
+
+On 4/16/2020 6:01 AM, Matthias Kaehlcke wrote:
+> Hi Akash,
 >
+> On Wed, Apr 15, 2020 at 03:53:13PM +0530, Akash Asthana wrote:
+>> QUP core clock is shared among all the SE drivers present on particular
+>> QUP wrapper, the system will reset(unclocked access) if earlycon used after
+>> QUP core clock is put to 0 from other SE drivers before real console comes
+>> up.
+>>
+>> As earlycon can't vote for it's QUP core need, to fix this add ICC
+>> support to common/QUP wrapper driver and put vote for QUP core from
+>> probe on behalf of earlycon and remove vote during earlycon exit call.
+>>
+>> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+>> Reported-by: Matthias Kaehlcke <mka@chromium.org>
+>> ---
+>> Change in V3:
+>>   - Add geni_remove_earlycon_icc_vote API that will be used by earlycon
+>>     exit function to remove ICC vote for earlyconsole.
+>>   - Remove suspend/resume hook for geni-se driver as we are no longer
+>>     removing earlyconsole ICC vote from system suspend, we are removing
+>>     from earlycon exit.
+>>
+>> Change in V4:
+>>   - As per Matthias comment make 'earlycon_wrapper' as static structure.
+>>
+>>   drivers/soc/qcom/qcom-geni-se.c       | 50 +++++++++++++++++++++++++++++++++++
+>>   drivers/tty/serial/qcom_geni_serial.c |  7 +++++
+>>   include/linux/qcom-geni-se.h          |  2 ++
+>>   3 files changed, 59 insertions(+)
+>>
+>> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
+>> index 1527bc4..727ad2e 100644
+>> --- a/drivers/soc/qcom/qcom-geni-se.c
+>> +++ b/drivers/soc/qcom/qcom-geni-se.c
+>> @@ -90,8 +90,11 @@ struct geni_wrapper {
+>>   	struct device *dev;
+>>   	void __iomem *base;
+>>   	struct clk_bulk_data ahb_clks[NUM_AHB_CLKS];
+>> +	struct geni_icc_path to_core;
+>>   };
+>>   
+>> +static struct geni_wrapper *earlycon_wrapper;
+>> +
+>>   #define QUP_HW_VER_REG			0x4
+>>   
+>>   /* Common SE registers */
+>> @@ -781,6 +784,26 @@ int geni_icc_vote_off(struct geni_se *se)
+>>   }
+>>   EXPORT_SYMBOL(geni_icc_vote_off);
+>>   
+>> +void geni_remove_earlycon_icc_vote(void)
+>> +{
+>> +	struct geni_wrapper *wrapper = earlycon_wrapper;
+>> +	struct device_node *parent = of_get_next_parent(wrapper->dev->of_node);
+>> +	struct device_node *child;
+>> +
+>> +	for_each_child_of_node(parent, child) {
+>> +		if (of_device_is_compatible(child, "qcom,geni-se-qup")) {
+>> +			wrapper = platform_get_drvdata(of_find_device_by_node(
+>> +					child));
+>> +			icc_put(wrapper->to_core.path);
+>> +			wrapper->to_core.path = NULL;
+>> +		}
+>> +	}
+>> +	of_node_put(parent);
+>> +
+>> +	earlycon_wrapper = NULL;
+>> +}
+>> +EXPORT_SYMBOL(geni_remove_earlycon_icc_vote);
+>> +
+>>   static int geni_se_probe(struct platform_device *pdev)
+>>   {
+>>   	struct device *dev = &pdev->dev;
+>> @@ -808,6 +831,33 @@ static int geni_se_probe(struct platform_device *pdev)
+>>   		}
+>>   	}
+>>   
+>> +#ifdef CONFIG_SERIAL_EARLYCON
+>> +	wrapper->to_core.path = devm_of_icc_get(dev, "qup-core");
+>> +	if (IS_ERR(wrapper->to_core.path))
+>> +		return PTR_ERR(wrapper->to_core.path);
+>> +	/*
+>> +	 * Put minmal BW request on core clocks on behalf of early console.
+>> +	 * The vote will be removed earlycon exit function.
+>> +	 *
+>> +	 * Note: We are putting vote on each QUP wrapper instead only to which
+>> +	 * earlycon is connected because QUP core clock of different wrapper
+>> +	 * share same voltage domain. If core1 is put to 0, then core2 will
+>> +	 * also run at 0, if not voted. Default ICC vote will be removed ASA
+>> +	 * we touch any of the core clock.
+>> +	 * core1 = core2 = max(core1, core2)
+>> +	 */
+>> +	ret = icc_set_bw(wrapper->to_core.path, GENI_DEFAULT_BW, 0);
+>> +	if (ret) {
+>> +		dev_err(&pdev->dev, "%s: ICC BW voting failed for core\n",
+>> +			__func__);
+>> +		return ret;
+>> +	}
+>> +
+>> +	if (of_get_compatible_child(pdev->dev.of_node, "qcom,geni-debug-uart"))
+>> +		earlycon_wrapper = wrapper;
+>> +	of_node_put(pdev->dev.of_node);
+>> +#endif
+>> +
+>>   	dev_set_drvdata(dev, wrapper);
+>>   	dev_dbg(dev, "GENI SE Driver probed\n");
+>>   	return devm_of_platform_populate(dev);
+>> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+>> index 6119090..8c5d97c 100644
+>> --- a/drivers/tty/serial/qcom_geni_serial.c
+>> +++ b/drivers/tty/serial/qcom_geni_serial.c
+>> @@ -1090,6 +1090,12 @@ static void qcom_geni_serial_earlycon_write(struct console *con,
+>>   	__qcom_geni_serial_console_write(&dev->port, s, n);
+>>   }
+>>   
+>> +static int qcom_geni_serial_earlycon_exit(struct console *con)
+>> +{
+>> +	geni_remove_earlycon_icc_vote();
+>> +	return 0;
+>> +}
+>> +
+>>   static int __init qcom_geni_serial_earlycon_setup(struct earlycon_device *dev,
+>>   								const char *opt)
+>>   {
+>> @@ -1135,6 +1141,7 @@ static int __init qcom_geni_serial_earlycon_setup(struct earlycon_device *dev,
+>>   	writel(stop_bit_len, uport->membase + SE_UART_TX_STOP_BIT_LEN);
+>>   
+>>   	dev->con->write = qcom_geni_serial_earlycon_write;
+>> +	dev->con->exit = qcom_geni_serial_earlycon_exit;
+> The idea of using the exit handler of the early console to remove the
+> votes seemed appealing at first, however it has a drawback: the bandwidth
+> requests in geni_se_probe() are always made when CONFIG_SERIAL_EARLYCON=y,
+> also when the system doesn't actually use an early console. On such a
+> system the votes would never be removed.
 >
-> On 27/04/20 10:02, Andy Shevchenko wrote:
-> >> I did a tiny bit of git spelunking; I found a commit that changed
-> >> uart_console_enabled() into uart_console() within
-> >> uart_port_spin_lock_init():
-> >>
-> >>   a3cb39d258ef ("serial: core: Allow detach and attach serial device for console")
-> >>
-> >> Reverting just that one change in uart_port_spin_lock_init() seems to go
-> >> fine on both Juno & HiKey960, but I think that doesn't play well with the
-> >> rest of the aforementioned commit. I think that this initial (index, line)
-> >> tuple is to blame, though I've added Andy in Cc just in case.
-> >
-> > The above mentioned commit reveals the issue in the code which doesn't
-> > register console properly.
-> >
-> > See what I put in 0f87aa66e8c31 ("serial: sunhv: Initialize lock for
-> > non-registered console").
+> A possible alternative could seem to remove the vote at the end of
+> qcom_geni_serial_probe() of the 'normal' console, but it has a similar
+> problem: the system could not even have a normal console. One could
+> possibly argue that CONFIG_SERIAL_QCOM_GENI_CONSOLE shouldn't be set
+> on such a system, however it could be enabled to have a console for
+> development, and in production the same kernel config is used, but
+> with the console disabled through the device tree.
 >
-> Thanks for the pointer. I'm still a puzzled as to why it goes fine on one
-> board and not on another, but at this point I don't have any better
-> suggestion than the unconditional init.
+> I don't really have a good idea at this point, maybe we just need
+> something as ugly as a delayed work to remove the votes. Other
+> suggestions are welcome :)
 
-My patch relied on the behaviour of 8250 [1] and that comment (near to
-spin lock initialization routine).
-It seems AMBA UART drivers unconditionally assign consoles ([2], [3])
-without registering it properly at console_initcall().
+I think we can do something like below. Before voting we are checking 
+whether earlyconsole ("qcom_geni") exits or not.  The name is fixed from 
+earlycon declaration file@drivers/tty/serial/qcom_geni_serial.c
 
-Least invasive fix is what John's patch does, but real fix is to do
-something like 8250 does.
+OF_EARLYCON_DECLARE(qcom_geni, "qcom,geni-debug-uart",
+                                 qcom_geni_serial_earlycon_setup);
 
-So, the rule of thumb is simple: if we assign console to the port we
-must initialize the lock even if we are not registering console.
-I dunno the history of different behaviours among drivers and what
-change(s) brought us to the messy spin lock initialization code in
-them.
+====================================================================================
 
-[1]: https://elixir.bootlin.com/linux/v5.7-rc3/source/drivers/tty/serial/8250/8250_core.c#L684
-[2]: https://elixir.bootlin.com/linux/v5.7-rc3/source/drivers/tty/serial/amba-pl010.c#L691
-[3]: https://elixir.bootlin.com/linux/v5.7-rc3/source/drivers/tty/serial/amba-pl011.c#L2496
+@@ -809,6 +809,8 @@ static int geni_se_probe(struct platform_device *pdev)
+         struct device *dev = &pdev->dev;
+         struct resource *res;
+         struct geni_wrapper *wrapper;
++       struct console *bcon = NULL;
++       int earlycon_present = 0;
+         int ret;
+
+         wrapper = devm_kzalloc(dev, sizeof(*wrapper), GFP_KERNEL);
+@@ -832,6 +834,15 @@ static int geni_se_probe(struct platform_device *pdev)
+         }
+
+  #ifdef CONFIG_SERIAL_EARLYCON
++       if (console_drivers)
++               for_each_console(bcon)
++                       if (!strcmp(bcon->name, "qcom_geni")) {
++                               earlycon_present = 1;
++                               break;
++                       }
++       if(!earlycon_present)
++               goto exit;
++
+         wrapper->to_core.path = devm_of_icc_get(dev, "qup-core");
+         if (IS_ERR(wrapper->to_core.path))
+                 return PTR_ERR(wrapper->to_core.path);
+@@ -858,6 +869,7 @@ static int geni_se_probe(struct platform_device *pdev)
+         of_node_put(pdev->dev.of_node);
+  #endif
+
++exit:
+         dev_set_drvdata(dev, wrapper);
+         dev_dbg(dev, "GENI SE Driver probed\n");
+         return devm_of_platform_populate(dev);
+
+======================================================================================
+
+Regards,
+
+Akash
 
 -- 
-With Best Regards,
-Andy Shevchenko
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
