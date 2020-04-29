@@ -2,73 +2,58 @@ Return-Path: <SRS0=H8bb=6N=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 729E1C83000
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Apr 2020 17:08:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E822AC83000
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Apr 2020 17:20:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 42F2C2083B
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Apr 2020 17:08:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A891420787
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Apr 2020 17:20:00 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="mzGwcRnu"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="KUnz/M2r"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726858AbgD2RIQ (ORCPT
+        id S1726773AbgD2RUA (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Apr 2020 13:08:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58090 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726524AbgD2RIP (ORCPT
+        Wed, 29 Apr 2020 13:20:00 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:31888 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726580AbgD2RUA (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Apr 2020 13:08:15 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E32C03C1AE
-        for <linux-serial@vger.kernel.org>; Wed, 29 Apr 2020 10:08:15 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id x4so2889416wmj.1
-        for <linux-serial@vger.kernel.org>; Wed, 29 Apr 2020 10:08:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OmhWnXth/1A2zdJKsZMj2+vlFmsDfxZsIDA5SZ6zP3o=;
-        b=mzGwcRnuuGEc7QpRyskmYXkErO6T7vAvIGVnIg2n7qW04qEnZvx5oUzAJ5Gxh4vBjs
-         NorLXIbNm5dyb1Tfp8dSoFvfTHmmsLKQPPnx7WmFOpJ2SykBQwQcLZCWN3p9R1HZY4bz
-         8g3guOwAnkNKtPtK3s6xABdVtRK1RU4i2n5oin5JlOZ5bm4gsUJx/kJmtmgWmbbLCFos
-         xc+R1s1ojy9dIdQOU7wv/znqlefvErzD9jXK/7HCZa2uXGrHKUTktAt3li0+cJOqDFy4
-         vGTLaZ9beopEtHUxD7TS3jhipT5yYSD1nJo5COJn1l5HUTI9Pa8XJvwJFO3A+mVJ5JYT
-         ncbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OmhWnXth/1A2zdJKsZMj2+vlFmsDfxZsIDA5SZ6zP3o=;
-        b=TC1gDkJ8c2NtD+b01bPt6vjOMQ+N8btwIoPtjRQbuvalbgCK3+VawYLy7J7HE3uB0T
-         eCT3+1jyOYdwpL3PSwnvt86lB79wBBeA13cPCkmpvol/ktida9oJ7ug2Kd/urns63Bb5
-         SHzfwsoM9m8jyc+b0vstCJ05iimvMDwzzcV0HjE7DDSZ/N07gHjh/kkXq3gIBCNZ2CjN
-         uAqYTh0Q3Cs3dXqYEfdHNWLcoWPFdV9ZMevEAqAh+xyA5yzhlN280jaY5qkSF78yFMYx
-         LUEFGjlt7JyVAaLiVwcfIPHoFRnoFERwNdgfI5bidfmmJOI/AfeQ4VDrUWUCKpy/CMWG
-         pr3Q==
-X-Gm-Message-State: AGi0PuYbqoVatZw48mxySsI0u+GJPLM7F9q1A40L+ZJivzDN/TtnOuGq
-        bsetgMPhW9jy+S2d86xI6VVraAgwNHtUrQ==
-X-Google-Smtp-Source: APiQypJ6SJj9JFl0Ap0o8f53q6YJ5wKK2xElS/MI2R0BRSXQfNfPFjCqOYRypDRwwlXhYHQgp2OREw==
-X-Received: by 2002:a05:600c:2c47:: with SMTP id r7mr4272520wmg.50.1588180093830;
-        Wed, 29 Apr 2020 10:08:13 -0700 (PDT)
-Received: from wychelm.lan (cpc141214-aztw34-2-0-cust773.18-1.cable.virginm.net. [86.9.19.6])
-        by smtp.gmail.com with ESMTPSA id x18sm8502940wmi.29.2020.04.29.10.08.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Apr 2020 10:08:13 -0700 (PDT)
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Douglas Anderson <dianders@chromium.org>
-Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        patches@linaro.org
-Subject: [PATCH] serial: kgdboc: Allow earlycon initialization to be deferred
-Date:   Wed, 29 Apr 2020 18:08:04 +0100
-Message-Id: <20200429170804.880720-1-daniel.thompson@linaro.org>
-X-Mailer: git-send-email 2.25.1
+        Wed, 29 Apr 2020 13:20:00 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1588180798; h=Content-Transfer-Encoding: MIME-Version:
+ Message-Id: Date: Subject: Cc: To: From: Sender;
+ bh=qwvibT9siyBz6trrkX4r2/4gXBdW9yH51xU0Q8YRfi8=; b=KUnz/M2rth4EppFFmdNKN06JxyftyiAh1YGdQ++fO9B4NulWgN043erz2XzkT1lSuhKykSnE
+ jEyy/vygwc7Mj5toNNJxs/g7hVWHBuyDL6cbuEHdHc29sDIwjmU/AmKYn2F+EL7TkcKhxvY2
+ PLrWMPff46j9I29zXOC9S/SMWdo=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5ea9b73a.7f38d65b3a40-smtp-out-n01;
+ Wed, 29 Apr 2020 17:19:54 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 1C0DCC432C2; Wed, 29 Apr 2020 17:19:53 +0000 (UTC)
+Received: from msavaliy-linux.qualcomm.com (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: msavaliy)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id D57ACC433CB;
+        Wed, 29 Apr 2020 17:19:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D57ACC433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=msavaliy@codeaurora.org
+From:   "Mukesh, Savaliya" <msavaliy@codeaurora.org>
+To:     akashast@codeaurora.org, gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, saravanak@google.com,
+        sspatil@google.com, tkjos@google.com,
+        Mukesh Kumar Savaliya <msavaliy@codeaurora.org>
+Subject: [PATCH] serial: msm_geni_serial_console : Add Earlycon support
+Date:   Wed, 29 Apr 2020 22:49:34 +0530
+Message-Id: <20200429171934.17376-1-msavaliy@codeaurora.org>
+X-Mailer: git-send-email 2.26.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
@@ -76,145 +61,589 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-As described in the big comment in the patch, earlycon initialization
-can be deferred if, a) earlycon was supplied without arguments and, b)
-the ACPI SPCR table hasn't yet been parsed.
+From: Mukesh Kumar Savaliya <msavaliy@codeaurora.org>
 
-Unfortunately, if deferred, then the earlycon is not ready during early
-parameter parsing so kgdboc cannot use it. This patch mitigates the
-problem by giving kgdboc_earlycon a second chance during
-dbg_late_init(). Adding a special purpose interface slightly increase
-the intimacy between kgdboc and debug-core but this seems better than
-adding kgdb specific hooks into the arch code (and much, much better
-than faking non-intimacy with function pointers).
+This change enables earlyconsole support as static driver for geni
+based UART. Kernel space UART console driver will be generic for
+console and other usecases of UART.
 
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Mukesh Kumar Savaliya <msavaliy@codeaurora.org>
 ---
+ drivers/tty/serial/Kconfig                   |  15 +
+ drivers/tty/serial/Makefile                  |   1 +
+ drivers/tty/serial/msm_geni_serial_console.c | 525 +++++++++++++++++++
+ 3 files changed, 541 insertions(+)
+ create mode 100644 drivers/tty/serial/msm_geni_serial_console.c
 
-Notes:
-    Hi Doug,
-    
-    This patch extends your patch set to make it easier to deploy on ACPI
-    systems[1]:
-      earlycon kgdboc_earlycon kgdboc=ttyAMA0
-    
-    I have mixed feeling about it because it adds calls from debug-core
-    into kgdboc and I don't think there are other examples of this.
-    However earlycon auto-configuration is so awesome I'd like to
-    be able to keep using it and this is the best I have come up with
-    so far ;-).
-    
-    
-    Daniel.
-    
-    
-    [1] And also on DT based arm64 systems that have ACPI support
-        enabled at compile time because such systems don't decide
-        whether to adopt DT or ACPI until after early parameter
-        parsing.
-
- drivers/tty/serial/kgdboc.c | 26 +++++++++++++++++++++++++-
- include/linux/kgdb.h        |  2 ++
- kernel/debug/debug_core.c   |  4 ++++
- 3 files changed, 31 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-index 7aca0a67fc0b..a7a079ce2c5d 100644
---- a/drivers/tty/serial/kgdboc.c
-+++ b/drivers/tty/serial/kgdboc.c
-@@ -509,6 +509,8 @@ static struct kgdb_io kgdboc_earlycon_io_ops = {
- 	.is_console		= true,
- };
-
-+static bool kgdboc_earlycon_late_enable __initdata;
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 0aea76cd67ff..ded19d80e696 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -956,6 +956,21 @@ config SERIAL_MSM_CONSOLE
+ 	select SERIAL_CORE_CONSOLE
+ 	select SERIAL_EARLYCON
+ 
++config SERIAL_MSM_GENI_HALF_SAMPLING
++	bool "Changes clock divider which impacts sampling rate for QUP HW ver greater than 2.5.0"
++	help
++	  Clock divider value should be doubled for QUP hardware version
++	  greater than 2.5.0.
++	  As earlycon can't have HW version awareness, decision is taken
++	  based on the configuration.
 +
- static int __init kgdboc_earlycon_init(char *opt)
- {
- 	struct console *con;
-@@ -529,7 +531,23 @@ static int __init kgdboc_earlycon_init(char *opt)
- 	console_unlock();
-
- 	if (!con) {
--		pr_info("Couldn't find kgdb earlycon\n");
-+		/*
-+		 * If earlycon deferred its initialization then we also need to
-+		 * do that since there is no console at this point. We will
-+		 * only defer ourselves when kgdboc_earlycon has no arguments.
-+		 * This is because earlycon init is only deferred if there are
-+		 * no arguments to earlycon (we assume that a user who doesn't
-+		 * specify an earlycon driver won't know the right console name
-+		 * to put into kgdboc_earlycon and will let that auto-configure
-+		 * too).
-+		 */
-+		if (!kgdboc_earlycon_late_enable &&
-+		    earlycon_acpi_spcr_enable && (!opt || !opt[0])) {
-+			earlycon_kgdboc_late_enable = true;
-+			pr_info("No suitable earlycon yet, will try later\n");
-+		} else {
-+			pr_info("Couldn't find kgdb earlycon\n");
-+		}
- 		return 0;
- 	}
-
-@@ -545,6 +563,12 @@ static int __init kgdboc_earlycon_init(char *opt)
- }
-
- early_param("kgdboc_earlycon", kgdboc_earlycon_init);
++config SERIAL_MSM_GENI_EARLY_CONSOLE
++	bool "MSM on-chip GENI HW based early console support"
++	select SERIAL_MSM_GENI_HALF_SAMPLING
++	help
++	  Serial early console driver for Qualcomm Technologies Inc's GENI
++	  based QUP hardware.
 +
-+void __init kgdb_earlycon_late_init(void)
+ config SERIAL_QCOM_GENI
+ 	tristate "QCOM on-chip GENI based serial port support"
+ 	depends on ARCH_QCOM || COMPILE_TEST
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index d056ee6cca33..9790ef2d802c 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -55,6 +55,7 @@ obj-$(CONFIG_SERIAL_VR41XX) += vr41xx_siu.o
+ obj-$(CONFIG_SERIAL_ATMEL) += atmel_serial.o
+ obj-$(CONFIG_SERIAL_UARTLITE) += uartlite.o
+ obj-$(CONFIG_SERIAL_MSM) += msm_serial.o
++obj-$(SERIAL_MSM_GENI_EARLY_CONSOLE) += msm_geni_serial_console.o
+ obj-$(CONFIG_SERIAL_QCOM_GENI) += qcom_geni_serial.o
+ obj-$(CONFIG_SERIAL_OMAP) += omap-serial.o
+ obj-$(CONFIG_SERIAL_ALTERA_UART) += altera_uart.o
+diff --git a/drivers/tty/serial/msm_geni_serial_console.c b/drivers/tty/serial/msm_geni_serial_console.c
+new file mode 100644
+index 000000000000..3235611f7ef9
+--- /dev/null
++++ b/drivers/tty/serial/msm_geni_serial_console.c
+@@ -0,0 +1,525 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (c) 2020, The Linux Foundation. All rights reserved.
++ */
++#include <linux/console.h>
++#include <linux/delay.h>
++#include <linux/io.h>
++#include <linux/serial_core.h>
++
++#define SE_UART_TX_TRANS_CFG		(0x25C)
++#define SE_UART_TX_WORD_LEN		(0x268)
++#define SE_UART_TX_STOP_BIT_LEN		(0x26C)
++#define SE_UART_TX_TRANS_LEN		(0x270)
++#define SE_UART_TX_PARITY_CFG		(0x2A4)
++/* SE_UART_TRANS_CFG */
++#define UART_CTS_MASK		(BIT(1))
++/* UART M_CMD OP codes */
++#define UART_START_TX		(0x1)
++
++#define UART_OVERSAMPLING	(32)
++#define DEF_FIFO_DEPTH_WORDS	(16)
++#define DEF_TX_WM		(2)
++#define DEF_FIFO_WIDTH_BITS	(32)
++
++#define GENI_FORCE_DEFAULT_REG		(0x20)
++#define GENI_OUTPUT_CTRL		(0x24)
++#define GENI_CGC_CTRL			(0x28)
++#define GENI_SER_M_CLK_CFG		(0x48)
++#define GENI_FW_REVISION_RO		(0x68)
++
++#define SE_GENI_TX_PACKING_CFG0		(0x260)
++#define SE_GENI_TX_PACKING_CFG1		(0x264)
++#define SE_GENI_M_CMD0			(0x600)
++#define SE_GENI_M_CMD_CTRL_REG		(0x604)
++#define SE_GENI_M_IRQ_STATUS		(0x610)
++#define SE_GENI_M_IRQ_EN		(0x614)
++#define SE_GENI_M_IRQ_CLEAR		(0x618)
++#define SE_GENI_TX_FIFOn		(0x700)
++#define SE_GENI_TX_WATERMARK_REG	(0x80C)
++
++#define SE_IRQ_EN			(0xE1C)
++#define SE_HW_PARAM_0			(0xE24)
++#define SE_HW_PARAM_1			(0xE28)
++
++/* GENI_OUTPUT_CTRL fields */
++#define DEFAULT_IO_OUTPUT_CTRL_MSK	(GENMASK(6, 0))
++
++/* GENI_FORCE_DEFAULT_REG fields */
++#define FORCE_DEFAULT	(BIT(0))
++
++/* GENI_CGC_CTRL fields */
++#define CFG_AHB_CLK_CGC_ON		(BIT(0))
++#define CFG_AHB_WR_ACLK_CGC_ON		(BIT(1))
++#define DATA_AHB_CLK_CGC_ON		(BIT(2))
++#define SCLK_CGC_ON			(BIT(3))
++#define TX_CLK_CGC_ON			(BIT(4))
++#define RX_CLK_CGC_ON			(BIT(5))
++#define EXT_CLK_CGC_ON			(BIT(6))
++#define PROG_RAM_HCLK_OFF		(BIT(8))
++#define PROG_RAM_SCLK_OFF		(BIT(9))
++#define DEFAULT_CGC_EN			(GENMASK(6, 0))
++
++/* GENI_STATUS fields */
++#define M_GENI_CMD_ACTIVE		(BIT(0))
++
++/* GENI_SER_M_CLK_CFG/GENI_SER_S_CLK_CFG */
++#define SER_CLK_EN			(BIT(0))
++#define CLK_DIV_MSK			(GENMASK(15, 4))
++#define CLK_DIV_SHFT			(4)
++
++/* CLK_CTRL_RO fields */
++
++/* FIFO_IF_DISABLE_RO fields */
++#define FIFO_IF_DISABLE			(BIT(0))
++
++/* FW_REVISION_RO fields */
++#define FW_REV_PROTOCOL_MSK	(GENMASK(15, 8))
++#define FW_REV_PROTOCOL_SHFT	(8)
++#define FW_REV_VERSION_MSK	(GENMASK(7, 0))
++
++/* GENI_CLK_SEL fields */
++#define CLK_SEL_MSK		(GENMASK(2, 0))
++
++/* SE_GENI_DMA_MODE_EN */
++#define GENI_DMA_MODE_EN	(BIT(0))
++
++/* GENI_M_CMD0 fields */
++#define M_OPCODE_MSK		(GENMASK(31, 27))
++#define M_OPCODE_SHFT		(27)
++#define M_PARAMS_MSK		(GENMASK(26, 0))
++
++/* GENI_M_CMD_CTRL_REG */
++#define M_GENI_CMD_CANCEL	BIT(2)
++#define M_GENI_CMD_ABORT	BIT(1)
++#define M_GENI_DISABLE		BIT(0)
++
++/* GENI_M_IRQ_EN fields */
++#define M_CMD_DONE_EN		(BIT(0))
++#define M_CMD_OVERRUN_EN	(BIT(1))
++#define M_ILLEGAL_CMD_EN	(BIT(2))
++#define M_CMD_FAILURE_EN	(BIT(3))
++#define M_CMD_CANCEL_EN		(BIT(4))
++#define M_CMD_ABORT_EN		(BIT(5))
++#define M_TIMESTAMP_EN		(BIT(6))
++#define M_GP_SYNC_IRQ_0_EN	(BIT(8))
++#define M_IO_DATA_DEASSERT_EN	(BIT(22))
++#define M_IO_DATA_ASSERT_EN	(BIT(23))
++#define M_TX_FIFO_RD_ERR_EN	(BIT(28))
++#define M_TX_FIFO_WR_ERR_EN	(BIT(29))
++#define M_TX_FIFO_WATERMARK_EN	(BIT(30))
++#define M_SEC_IRQ_EN		(BIT(31))
++#define M_COMMON_GENI_M_IRQ_EN	(GENMASK(6, 1) | \
++				M_IO_DATA_DEASSERT_EN | \
++				M_IO_DATA_ASSERT_EN | M_TX_FIFO_RD_ERR_EN | \
++				M_TX_FIFO_WR_ERR_EN)
++
++
++/* GENI_TX_FIFO_STATUS fields */
++#define TX_FIFO_WC		(GENMASK(27, 0))
++
++/* SE_IRQ_EN fields */
++#define GENI_M_IRQ_EN		(BIT(2))
++
++#define UART_PROTOCOL	2
++#define GET_DEV_PORT(uport) \
++		container_of(uport, struct msm_geni_serial_earlycon_port, uport)
++
++static void geni_write_reg_earlycon(unsigned int value,
++						void __iomem *base, int offset)
 +{
-+	if (kgdboc_earlycon_late_enable)
-+		earlycon_kgdboc_init(NULL);
++	writel_relaxed(value, (base + offset));
 +}
- #endif /* CONFIG_KGDB_SERIAL_CONSOLE */
-
- module_init(init_kgdboc);
-diff --git a/include/linux/kgdb.h b/include/linux/kgdb.h
-index 77a3c519478a..02867a2f0eb4 100644
---- a/include/linux/kgdb.h
-+++ b/include/linux/kgdb.h
-@@ -227,6 +227,8 @@ extern int kgdb_arch_remove_breakpoint(struct kgdb_bkpt *bpt);
- extern void kgdb_arch_late(void);
-
-
-+extern void __init kgdb_earlycon_late_init(void);
 +
- /**
-  * struct kgdb_arch - Describe architecture specific values.
-  * @gdb_bpt_instr: The instruction to trigger a breakpoint.
-diff --git a/kernel/debug/debug_core.c b/kernel/debug/debug_core.c
-index 2d74dcbca477..f066ef2bc615 100644
---- a/kernel/debug/debug_core.c
-+++ b/kernel/debug/debug_core.c
-@@ -963,11 +963,15 @@ void __weak kgdb_arch_late(void)
- {
- }
-
-+void __init __weak kgdb_earlycon_late_init(void)
++static unsigned int geni_read_reg_earlycon(void __iomem *base, int offset)
++{
++	return readl_relaxed(base + offset);
++}
 +
- void __init dbg_late_init(void)
- {
- 	dbg_is_early = false;
- 	if (kgdb_io_module_registered)
- 		kgdb_arch_late();
-+	else
-+		kgdb_earlycon_late_init();
- 	kdb_init(KDB_INIT_FULL);
-
- 	if (kgdb_io_module_registered && kgdb_break_asap)
-
-base-commit: 6a8b55ed4056ea5559ebe4f6a4b247f627870d4c
-prerequisite-patch-id: cbaa70eb783f1f34aec7f5839d1fecbc7616a9f6
-prerequisite-patch-id: d7543cdd19fb194ded3361d52818970083efdb06
-prerequisite-patch-id: 2238d976451dac9e3ee1bf02a077d633e342aa0c
-prerequisite-patch-id: 9e4296261b608ee172060d04b3de431a5e370096
-prerequisite-patch-id: 2b008e0e14a212072874ecb483d9c6844d161b08
-prerequisite-patch-id: f5b692b89c997d828832e3ab27fffb8f770d7b6f
-prerequisite-patch-id: 851d6f4874aa24540db9d765275ae736e8b2955b
-prerequisite-patch-id: d3969c2fb7cd320eafebe63d7da270dac5a82fc9
-prerequisite-patch-id: e1fc1478b7f75094d263ffc64a9f3528151831cf
-prerequisite-patch-id: 45fb53996a9f5993e03673c10eebf2834c58307f
-prerequisite-patch-id: 50ac1ddb52c3cce8b712036f212fdd67d7493112
---
-2.25.1
-
++static int get_se_proto_earlycon(void __iomem *base)
++{
++	int proto;
++
++	proto = ((geni_read_reg_earlycon(base, GENI_FW_REVISION_RO)
++			& FW_REV_PROTOCOL_MSK) >> FW_REV_PROTOCOL_SHFT);
++	return proto;
++}
++
++static void se_get_packing_config_earlycon(int bpw, int pack_words,
++	bool msb_to_lsb, unsigned long *cfg0, unsigned long *cfg1)
++{
++	u32 cfg[4] = {0};
++	int len;
++	int temp_bpw = bpw;
++	int idx_start = (msb_to_lsb ? (bpw - 1) : 0);
++	int idx = idx_start;
++	int idx_delta = (msb_to_lsb ? -BITS_PER_BYTE : BITS_PER_BYTE);
++	int ceil_bpw = ((bpw & (BITS_PER_BYTE - 1)) ?
++			((bpw & ~(BITS_PER_BYTE - 1)) + BITS_PER_BYTE) : bpw);
++	int iter = (ceil_bpw * pack_words) >> 3;
++	int i;
++
++	if (unlikely(iter <= 0 || iter > 4)) {
++		*cfg0 = 0;
++		*cfg1 = 0;
++		return;
++	}
++
++	for (i = 0; i < iter; i++) {
++		len = (temp_bpw < BITS_PER_BYTE) ?
++				(temp_bpw - 1) : BITS_PER_BYTE - 1;
++		cfg[i] = ((idx << 5) | (msb_to_lsb << 4) | (len << 1));
++		idx = ((temp_bpw - BITS_PER_BYTE) <= 0) ?
++				((i + 1) * BITS_PER_BYTE) + idx_start :
++				idx + idx_delta;
++		temp_bpw = ((temp_bpw - BITS_PER_BYTE) <= 0) ?
++				bpw : (temp_bpw - BITS_PER_BYTE);
++	}
++	cfg[iter - 1] |= 1;
++	*cfg0 = cfg[0] | (cfg[1] << 10);
++	*cfg1 = cfg[2] | (cfg[3] << 10);
++}
++
++static void se_geni_irq_en_earlycon(void __iomem *base)
++{
++	unsigned int common_geni_m_irq_en;
++
++	common_geni_m_irq_en = geni_read_reg_earlycon(base,
++							SE_GENI_M_IRQ_EN);
++	common_geni_m_irq_en |= M_COMMON_GENI_M_IRQ_EN;
++	geni_write_reg_earlycon(common_geni_m_irq_en, base, SE_GENI_M_IRQ_EN);
++}
++
++static void se_io_set_mode_earlycon(void __iomem *base)
++{
++	unsigned int io_mode;
++
++	io_mode = geni_read_reg_earlycon(base, SE_IRQ_EN);
++	io_mode |= (GENI_M_IRQ_EN);
++	geni_write_reg_earlycon(io_mode, base, SE_IRQ_EN);
++}
++
++static void se_io_init_earlycon(void __iomem *base)
++{
++	unsigned int io_op_ctrl;
++	unsigned int geni_cgc_ctrl;
++
++	geni_cgc_ctrl = geni_read_reg_earlycon(base, GENI_CGC_CTRL);
++	geni_cgc_ctrl |= DEFAULT_CGC_EN;
++	io_op_ctrl = DEFAULT_IO_OUTPUT_CTRL_MSK;
++	geni_write_reg_earlycon(geni_cgc_ctrl, base, GENI_CGC_CTRL);
++
++	geni_write_reg_earlycon(io_op_ctrl, base, GENI_OUTPUT_CTRL);
++	geni_write_reg_earlycon(FORCE_DEFAULT, base,
++							GENI_FORCE_DEFAULT_REG);
++}
++
++static void geni_se_select_fifo_mode_earlycon(void __iomem *base)
++{
++	unsigned int common_geni_m_irq_en;
++
++	geni_write_reg_earlycon(0xFFFFFFFF, base, SE_GENI_M_IRQ_CLEAR);
++	geni_write_reg_earlycon(0xFFFFFFFF, base, SE_IRQ_EN);
++
++	common_geni_m_irq_en = geni_read_reg_earlycon(base,
++							SE_GENI_M_IRQ_EN);
++	geni_write_reg_earlycon(common_geni_m_irq_en, base,
++							SE_GENI_M_IRQ_EN);
++}
++
++struct msm_geni_serial_earlycon_port {
++	struct uart_port uport;
++	unsigned int tx_fifo_depth;
++	unsigned int tx_fifo_width;
++	unsigned int tx_wm;
++	unsigned int xmit_size;
++	unsigned int cur_baud;
++};
++
++static int get_clk_cfg(unsigned long clk_freq, unsigned long *ser_clk)
++{
++	unsigned long root_freq[] = {7372800, 14745600, 19200000, 29491200,
++		32000000, 48000000, 64000000, 80000000, 96000000, 100000000,
++		102400000, 112000000, 120000000, 128000000};
++	int i;
++	int match = -1;
++
++	for (i = 0; i < ARRAY_SIZE(root_freq); i++) {
++		if (clk_freq > root_freq[i])
++			continue;
++
++		if (!(root_freq[i] % clk_freq)) {
++			match = i;
++			break;
++		}
++	}
++	if (match != -1)
++		*ser_clk = root_freq[match];
++
++	return match;
++}
++
++
++static int get_clk_div_rate(unsigned int baud, unsigned long *desired_clk_rate)
++{
++	unsigned long ser_clk;
++	int dfs_index;
++	int clk_div = 0;
++
++	*desired_clk_rate = baud * UART_OVERSAMPLING;
++	dfs_index = get_clk_cfg(*desired_clk_rate, &ser_clk);
++	if (dfs_index < 0) {
++		clk_div = -EINVAL;
++		goto exit_get_clk_div_rate;
++	}
++
++	clk_div = ser_clk / *desired_clk_rate;
++	*desired_clk_rate = ser_clk;
++exit_get_clk_div_rate:
++	return clk_div;
++}
++
++
++static void msm_geni_serial_wr_char(struct uart_port *uport, int ch)
++{
++	geni_write_reg_earlycon(ch, uport->membase, SE_GENI_TX_FIFOn);
++	/*
++	 * Ensure FIFO write clear goes through before
++	 * next iteration.
++	 */
++	mb();
++
++}
++
++static int msm_geni_serial_poll_bit(struct uart_port *uport,
++				int offset, int bit_field, bool set)
++{
++	int iter = 0;
++	unsigned int reg;
++	bool met = false;
++	struct msm_geni_serial_earlycon_port *port = NULL;
++	bool cond = false;
++	unsigned int baud = 115200;
++	unsigned int fifo_bits = DEF_FIFO_DEPTH_WORDS * DEF_FIFO_WIDTH_BITS;
++	unsigned long total_iter = 1000;
++
++
++	if (uport->private_data && !uart_console(uport)) {
++		port = GET_DEV_PORT(uport);
++		baud = (port->cur_baud ? port->cur_baud : 115200);
++		fifo_bits = port->tx_fifo_depth * port->tx_fifo_width;
++		/*
++		 * Total polling iterations based on FIFO worth of bytes to be
++		 * sent at current baud .Add a little fluff to the wait.
++		 */
++		total_iter = ((fifo_bits * USEC_PER_SEC) / baud) / 10;
++		total_iter += 50;
++	}
++
++	while (iter < total_iter) {
++		reg = geni_read_reg_earlycon(uport->membase, offset);
++		cond = reg & bit_field;
++		if (cond == set) {
++			met = true;
++			break;
++		}
++		udelay(10);
++		iter++;
++	}
++	return met;
++}
++
++static void msm_geni_serial_poll_cancel_tx(struct uart_port *uport)
++{
++	int done = 0;
++	unsigned int irq_clear = M_CMD_DONE_EN;
++
++	done = msm_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
++						M_CMD_DONE_EN, true);
++	if (!done) {
++		geni_write_reg_earlycon(M_GENI_CMD_ABORT, uport->membase,
++					SE_GENI_M_CMD_CTRL_REG);
++		irq_clear |= M_CMD_ABORT_EN;
++		msm_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
++							M_CMD_ABORT_EN, true);
++	}
++	geni_write_reg_earlycon(irq_clear, uport->membase,
++				SE_GENI_M_IRQ_CLEAR);
++}
++
++static void msm_geni_serial_setup_tx(struct uart_port *uport,
++				unsigned int xmit_size)
++{
++	u32 m_cmd = 0;
++
++	geni_write_reg_earlycon(xmit_size, uport->membase,
++				SE_UART_TX_TRANS_LEN);
++	m_cmd |= (UART_START_TX << M_OPCODE_SHFT);
++	geni_write_reg_earlycon(m_cmd, uport->membase, SE_GENI_M_CMD0);
++	/*
++	 * Writes to enable the primary sequencer should go through before
++	 * exiting this function.
++	 */
++	mb();
++}
++
++
++static void
++__msm_geni_serial_console_write(struct uart_port *uport, const char *s,
++				unsigned int count)
++{
++	int new_line = 0;
++	int i;
++	int bytes_to_send = count;
++	int fifo_depth = DEF_FIFO_DEPTH_WORDS;
++	int tx_wm = DEF_TX_WM;
++
++	for (i = 0; i < count; i++) {
++		if (s[i] == '\n')
++			new_line++;
++	}
++
++	bytes_to_send += new_line;
++	geni_write_reg_earlycon(tx_wm, uport->membase,
++					SE_GENI_TX_WATERMARK_REG);
++	msm_geni_serial_setup_tx(uport, bytes_to_send);
++	i = 0;
++	while (i < count) {
++		u32 chars_to_write = 0;
++		u32 avail_fifo_bytes = (fifo_depth - tx_wm);
++		/*
++		 * If the WM bit never set, then the Tx state machine is not
++		 * in a valid state, so break, cancel/abort any existing
++		 * command. Unfortunately the current data being written is
++		 * lost.
++		 */
++		while (!msm_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
++						M_TX_FIFO_WATERMARK_EN, true))
++			break;
++		chars_to_write = min((unsigned int)(count - i),
++							avail_fifo_bytes);
++		if ((chars_to_write << 1) > avail_fifo_bytes)
++			chars_to_write = (avail_fifo_bytes >> 1);
++		uart_console_write(uport, (s + i), chars_to_write,
++					msm_geni_serial_wr_char);
++		geni_write_reg_earlycon(M_TX_FIFO_WATERMARK_EN,
++			uport->membase, SE_GENI_M_IRQ_CLEAR);
++		/* Ensure this goes through before polling for WM IRQ again.*/
++		mb();
++		i += chars_to_write;
++	}
++	msm_geni_serial_poll_cancel_tx(uport);
++}
++
++
++static void
++msm_geni_serial_early_console_write(struct console *con, const char *s,
++			unsigned int n)
++{
++	struct earlycon_device *dev = con->data;
++
++	__msm_geni_serial_console_write(&dev->port, s, n);
++}
++
++static int __init
++msm_geni_serial_earlycon_setup(struct earlycon_device *dev,
++		const char *opt)
++{
++	struct uart_port *uport = &dev->port;
++	int ret = 0;
++	u32 tx_trans_cfg = 0;
++	u32 tx_parity_cfg = 0;
++	u32 rx_trans_cfg = 0;
++	u32 rx_parity_cfg = 0;
++	u32 stop_bit = 0;
++	u32 rx_stale = 0;
++	u32 bits_per_char = 0;
++	u32 s_clk_cfg = 0;
++	u32 baud = 115200;
++	int clk_div;
++	unsigned long clk_rate;
++	unsigned long cfg0, cfg1;
++
++	if (!uport->membase) {
++		ret = -ENOMEM;
++		goto exit_geni_serial_earlyconsetup;
++	}
++
++	if (get_se_proto_earlycon(uport->membase) != UART_PROTOCOL) {
++		ret = -ENXIO;
++		goto exit_geni_serial_earlyconsetup;
++	}
++
++	/*
++	 * Ignore Flow control.
++	 * Disable Tx Parity.
++	 * Don't check Parity during Rx.
++	 * Disable Rx Parity.
++	 * n = 8.
++	 * Stop bit = 0.
++	 * Stale timeout in bit-time (3 chars worth).
++	 */
++	tx_trans_cfg |= UART_CTS_MASK;
++	tx_parity_cfg = 0;
++	rx_trans_cfg = 0;
++	rx_parity_cfg = 0;
++	bits_per_char = 0x8;
++	stop_bit = 0;
++	rx_stale = 0x18;
++	clk_div = get_clk_div_rate(baud, &clk_rate);
++	if (clk_div <= 0) {
++		ret = -EINVAL;
++		goto exit_geni_serial_earlyconsetup;
++	}
++
++	if (IS_ENABLED(CONFIG_SERIAL_MSM_GENI_HALF_SAMPLING))
++		clk_div *= 2;
++
++	s_clk_cfg |= SER_CLK_EN;
++	s_clk_cfg |= (clk_div << CLK_DIV_SHFT);
++
++	/*
++	 * Make an unconditional cancel on the main sequencer to reset
++	 * it else we could end up in data loss scenarios.
++	 */
++	geni_write_reg_earlycon(0x21, uport->membase, GENI_SER_M_CLK_CFG);
++	geni_read_reg_earlycon(uport->membase, GENI_SER_M_CLK_CFG);
++
++	msm_geni_serial_poll_cancel_tx(uport);
++
++	se_get_packing_config_earlycon(8, 1, false, &cfg0, &cfg1);
++
++	se_io_init_earlycon(uport->membase);
++	se_io_set_mode_earlycon(uport->membase);
++	se_geni_irq_en_earlycon(uport->membase);
++
++	geni_se_select_fifo_mode_earlycon(uport->membase);
++	geni_write_reg_earlycon(cfg0, uport->membase,
++				SE_GENI_TX_PACKING_CFG0);
++	geni_write_reg_earlycon(cfg1, uport->membase,
++				SE_GENI_TX_PACKING_CFG1);
++	geni_write_reg_earlycon(tx_trans_cfg, uport->membase,
++				SE_UART_TX_TRANS_CFG);
++	geni_write_reg_earlycon(tx_parity_cfg, uport->membase,
++				SE_UART_TX_PARITY_CFG);
++	geni_write_reg_earlycon(bits_per_char, uport->membase,
++				SE_UART_TX_WORD_LEN);
++	geni_write_reg_earlycon(stop_bit, uport->membase,
++				SE_UART_TX_STOP_BIT_LEN);
++	geni_write_reg_earlycon(s_clk_cfg, uport->membase,
++				GENI_SER_M_CLK_CFG);
++	geni_read_reg_earlycon(uport->membase,
++				GENI_SER_M_CLK_CFG);
++
++	dev->con->write = msm_geni_serial_early_console_write;
++	dev->con->setup = NULL;
++	/*
++	 * Ensure that the early console setup completes before
++	 * returning.
++	 */
++	mb();
++exit_geni_serial_earlyconsetup:
++	return ret;
++}
++OF_EARLYCON_DECLARE(msm_geni_serial, "qcom,msm-geni-console",
++		msm_geni_serial_earlycon_setup);
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
