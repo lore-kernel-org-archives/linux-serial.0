@@ -2,259 +2,219 @@ Return-Path: <SRS0=H8bb=6N=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=3.0 tests=DATE_IN_PAST_12_24,
-	DKIM_INVALID,DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77EC8C83007
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Apr 2020 12:21:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 729E1C83000
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Apr 2020 17:08:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 52B7E21BE5
-	for <linux-serial@archiver.kernel.org>; Wed, 29 Apr 2020 12:21:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 42F2C2083B
+	for <linux-serial@archiver.kernel.org>; Wed, 29 Apr 2020 17:08:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=crapouillou.net header.i=@crapouillou.net header.b="BJYD6VCv"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="mzGwcRnu"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726861AbgD2MVi (ORCPT
+        id S1726858AbgD2RIQ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 29 Apr 2020 08:21:38 -0400
-Received: from outils.crapouillou.net ([89.234.176.41]:34322 "EHLO
-        crapouillou.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726524AbgD2MVi (ORCPT
+        Wed, 29 Apr 2020 13:08:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58090 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726524AbgD2RIP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 29 Apr 2020 08:21:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1588162894; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FKkgFmxpN+MKyPoHJp2q8jKr/zPjuo5QgcSt5/FFYlM=;
-        b=BJYD6VCvJr5NwVsS7cOFPVRIp+PL1rfh/JKRMIwhc70MxSxy6RmNeVJyTjDxI2otmwhfoF
-        5QbtopHXuozSQsDjZN9F9OWwYTZd5UwfXQ0K+IvDlG+ysvlppxwmEpMfsvZG77b8cbJhN1
-        I+8+e8MCoetpBc/ro4H5h+TdvwLBKYA=
-Date:   Tue, 28 Apr 2020 16:12:21 +0200
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 8/8] dt-bindings: display: Convert ingenic,lcd.txt to YAML
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     od@zcrc.me, =?UTF-8?b?5ZGo55Cw5p2w?= <zhouyanjie@wanyeetech.com>,
-        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-i2c@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Message-Id: <LS4I9Q.A1ZGRSEVADNN1@crapouillou.net>
-In-Reply-To: <20200426185856.38826-8-paul@crapouillou.net>
-References: <20200426185856.38826-1-paul@crapouillou.net>
-        <20200426185856.38826-8-paul@crapouillou.net>
+        Wed, 29 Apr 2020 13:08:15 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E32C03C1AE
+        for <linux-serial@vger.kernel.org>; Wed, 29 Apr 2020 10:08:15 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id x4so2889416wmj.1
+        for <linux-serial@vger.kernel.org>; Wed, 29 Apr 2020 10:08:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OmhWnXth/1A2zdJKsZMj2+vlFmsDfxZsIDA5SZ6zP3o=;
+        b=mzGwcRnuuGEc7QpRyskmYXkErO6T7vAvIGVnIg2n7qW04qEnZvx5oUzAJ5Gxh4vBjs
+         NorLXIbNm5dyb1Tfp8dSoFvfTHmmsLKQPPnx7WmFOpJ2SykBQwQcLZCWN3p9R1HZY4bz
+         8g3guOwAnkNKtPtK3s6xABdVtRK1RU4i2n5oin5JlOZ5bm4gsUJx/kJmtmgWmbbLCFos
+         xc+R1s1ojy9dIdQOU7wv/znqlefvErzD9jXK/7HCZa2uXGrHKUTktAt3li0+cJOqDFy4
+         vGTLaZ9beopEtHUxD7TS3jhipT5yYSD1nJo5COJn1l5HUTI9Pa8XJvwJFO3A+mVJ5JYT
+         ncbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OmhWnXth/1A2zdJKsZMj2+vlFmsDfxZsIDA5SZ6zP3o=;
+        b=TC1gDkJ8c2NtD+b01bPt6vjOMQ+N8btwIoPtjRQbuvalbgCK3+VawYLy7J7HE3uB0T
+         eCT3+1jyOYdwpL3PSwnvt86lB79wBBeA13cPCkmpvol/ktida9oJ7ug2Kd/urns63Bb5
+         SHzfwsoM9m8jyc+b0vstCJ05iimvMDwzzcV0HjE7DDSZ/N07gHjh/kkXq3gIBCNZ2CjN
+         uAqYTh0Q3Cs3dXqYEfdHNWLcoWPFdV9ZMevEAqAh+xyA5yzhlN280jaY5qkSF78yFMYx
+         LUEFGjlt7JyVAaLiVwcfIPHoFRnoFERwNdgfI5bidfmmJOI/AfeQ4VDrUWUCKpy/CMWG
+         pr3Q==
+X-Gm-Message-State: AGi0PuYbqoVatZw48mxySsI0u+GJPLM7F9q1A40L+ZJivzDN/TtnOuGq
+        bsetgMPhW9jy+S2d86xI6VVraAgwNHtUrQ==
+X-Google-Smtp-Source: APiQypJ6SJj9JFl0Ap0o8f53q6YJ5wKK2xElS/MI2R0BRSXQfNfPFjCqOYRypDRwwlXhYHQgp2OREw==
+X-Received: by 2002:a05:600c:2c47:: with SMTP id r7mr4272520wmg.50.1588180093830;
+        Wed, 29 Apr 2020 10:08:13 -0700 (PDT)
+Received: from wychelm.lan (cpc141214-aztw34-2-0-cust773.18-1.cable.virginm.net. [86.9.19.6])
+        by smtp.gmail.com with ESMTPSA id x18sm8502940wmi.29.2020.04.29.10.08.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Apr 2020 10:08:13 -0700 (PDT)
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     Douglas Anderson <dianders@chromium.org>
+Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        patches@linaro.org
+Subject: [PATCH] serial: kgdboc: Allow earlycon initialization to be deferred
+Date:   Wed, 29 Apr 2020 18:08:04 +0100
+Message-Id: <20200429170804.880720-1-daniel.thompson@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This one patch will need a V2, I messed up with the clocks.
+As described in the big comment in the patch, earlycon initialization
+can be deferred if, a) earlycon was supplied without arguments and, b)
+the ACPI SPCR table hasn't yet been parsed.
 
--Paul
+Unfortunately, if deferred, then the earlycon is not ready during early
+parameter parsing so kgdboc cannot use it. This patch mitigates the
+problem by giving kgdboc_earlycon a second chance during
+dbg_late_init(). Adding a special purpose interface slightly increase
+the intimacy between kgdboc and debug-core but this seems better than
+adding kgdb specific hooks into the arch code (and much, much better
+than faking non-intimacy with function pointers).
+
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+---
+
+Notes:
+    Hi Doug,
+    
+    This patch extends your patch set to make it easier to deploy on ACPI
+    systems[1]:
+      earlycon kgdboc_earlycon kgdboc=ttyAMA0
+    
+    I have mixed feeling about it because it adds calls from debug-core
+    into kgdboc and I don't think there are other examples of this.
+    However earlycon auto-configuration is so awesome I'd like to
+    be able to keep using it and this is the best I have come up with
+    so far ;-).
+    
+    
+    Daniel.
+    
+    
+    [1] And also on DT based arm64 systems that have ACPI support
+        enabled at compile time because such systems don't decide
+        whether to adopt DT or ACPI until after early parameter
+        parsing.
+
+ drivers/tty/serial/kgdboc.c | 26 +++++++++++++++++++++++++-
+ include/linux/kgdb.h        |  2 ++
+ kernel/debug/debug_core.c   |  4 ++++
+ 3 files changed, 31 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+index 7aca0a67fc0b..a7a079ce2c5d 100644
+--- a/drivers/tty/serial/kgdboc.c
++++ b/drivers/tty/serial/kgdboc.c
+@@ -509,6 +509,8 @@ static struct kgdb_io kgdboc_earlycon_io_ops = {
+ 	.is_console		= true,
+ };
+
++static bool kgdboc_earlycon_late_enable __initdata;
++
+ static int __init kgdboc_earlycon_init(char *opt)
+ {
+ 	struct console *con;
+@@ -529,7 +531,23 @@ static int __init kgdboc_earlycon_init(char *opt)
+ 	console_unlock();
+
+ 	if (!con) {
+-		pr_info("Couldn't find kgdb earlycon\n");
++		/*
++		 * If earlycon deferred its initialization then we also need to
++		 * do that since there is no console at this point. We will
++		 * only defer ourselves when kgdboc_earlycon has no arguments.
++		 * This is because earlycon init is only deferred if there are
++		 * no arguments to earlycon (we assume that a user who doesn't
++		 * specify an earlycon driver won't know the right console name
++		 * to put into kgdboc_earlycon and will let that auto-configure
++		 * too).
++		 */
++		if (!kgdboc_earlycon_late_enable &&
++		    earlycon_acpi_spcr_enable && (!opt || !opt[0])) {
++			earlycon_kgdboc_late_enable = true;
++			pr_info("No suitable earlycon yet, will try later\n");
++		} else {
++			pr_info("Couldn't find kgdb earlycon\n");
++		}
+ 		return 0;
+ 	}
+
+@@ -545,6 +563,12 @@ static int __init kgdboc_earlycon_init(char *opt)
+ }
+
+ early_param("kgdboc_earlycon", kgdboc_earlycon_init);
++
++void __init kgdb_earlycon_late_init(void)
++{
++	if (kgdboc_earlycon_late_enable)
++		earlycon_kgdboc_init(NULL);
++}
+ #endif /* CONFIG_KGDB_SERIAL_CONSOLE */
+
+ module_init(init_kgdboc);
+diff --git a/include/linux/kgdb.h b/include/linux/kgdb.h
+index 77a3c519478a..02867a2f0eb4 100644
+--- a/include/linux/kgdb.h
++++ b/include/linux/kgdb.h
+@@ -227,6 +227,8 @@ extern int kgdb_arch_remove_breakpoint(struct kgdb_bkpt *bpt);
+ extern void kgdb_arch_late(void);
 
 
-Le dim. 26 avril 2020 =E0 20:58, Paul Cercueil <paul@crapouillou.net> a=20
-=E9crit :
-> Convert the ingenic,lcd.txt to a new ingenic,lcd.yaml file.
->=20
-> In the process, the new ingenic,jz4780-lcd compatible string has been
-> added.
->=20
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-> ---
->  .../bindings/display/ingenic,lcd.txt          |  45 -------
->  .../bindings/display/ingenic,lcd.yaml         | 113=20
-> ++++++++++++++++++
->  2 files changed, 113 insertions(+), 45 deletions(-)
->  delete mode 100644=20
-> Documentation/devicetree/bindings/display/ingenic,lcd.txt
->  create mode 100644=20
-> Documentation/devicetree/bindings/display/ingenic,lcd.yaml
->=20
-> diff --git=20
-> a/Documentation/devicetree/bindings/display/ingenic,lcd.txt=20
-> b/Documentation/devicetree/bindings/display/ingenic,lcd.txt
-> deleted file mode 100644
-> index 01e3261defb6..000000000000
-> --- a/Documentation/devicetree/bindings/display/ingenic,lcd.txt
-> +++ /dev/null
-> @@ -1,45 +0,0 @@
-> -Ingenic JZ47xx LCD driver
-> -
-> -Required properties:
-> -- compatible: one of:
-> -  * ingenic,jz4740-lcd
-> -  * ingenic,jz4725b-lcd
-> -  * ingenic,jz4770-lcd
-> -- reg: LCD registers location and length
-> -- clocks: LCD pixclock and device clock specifiers.
-> -	   The device clock is only required on the JZ4740.
-> -- clock-names: "lcd_pclk" and "lcd"
-> -- interrupts: Specifies the interrupt line the LCD controller is=20
-> connected to.
-> -
-> -Example:
-> -
-> -panel {
-> -	compatible =3D "sharp,ls020b1dd01d";
-> -
-> -	backlight =3D <&backlight>;
-> -	power-supply =3D <&vcc>;
-> -
-> -	port {
-> -		panel_input: endpoint {
-> -			remote-endpoint =3D <&panel_output>;
-> -		};
-> -	};
-> -};
-> -
-> -
-> -lcd: lcd-controller@13050000 {
-> -	compatible =3D "ingenic,jz4725b-lcd";
-> -	reg =3D <0x13050000 0x1000>;
-> -
-> -	interrupt-parent =3D <&intc>;
-> -	interrupts =3D <31>;
-> -
-> -	clocks =3D <&cgu JZ4725B_CLK_LCD>;
-> -	clock-names =3D "lcd";
-> -
-> -	port {
-> -		panel_output: endpoint {
-> -			remote-endpoint =3D <&panel_input>;
-> -		};
-> -	};
-> -};
-> diff --git=20
-> a/Documentation/devicetree/bindings/display/ingenic,lcd.yaml=20
-> b/Documentation/devicetree/bindings/display/ingenic,lcd.yaml
-> new file mode 100644
-> index 000000000000..8e9c851dc7c5
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/display/ingenic,lcd.yaml
-> @@ -0,0 +1,113 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/display/ingenic,lcd.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Ingenic SoCs LCD controller devicetree bindings
-> +
-> +maintainers:
-> +  - Paul Cercueil <paul@crapouillou.net>
-> +
-> +properties:
-> +  $nodename:
-> +    pattern: "^lcd-controller@[0-9a-f]+$"
-> +
-> +  compatible:
-> +    enum:
-> +      - ingenic,jz4740-lcd
-> +      - ingenic,jz4725b-lcd
-> +      - ingenic,jz4770-lcd
-> +      - ingenic,jz4780-lcd
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    items:
-> +      - description: Module clock
-> +      - description: Pixel clock
-> +    minItems: 1
-> +
-> +  clock-names:
-> +    items:
-> +      - const: lcd
-> +      - const: lcd_pclk
-> +    minItems: 1
-> +
-> +  port:
-> +    type: object
-> +    description:
-> +      A port node with endpoint definitions as defined in
-> +      Documentation/devicetree/bindings/media/video-interfaces.txt
-> +
-> +required:
-> +    - compatible
-> +    - reg
-> +    - interrupts
-> +    - clocks
-> +    - clock-names
-> +
-> +if:
-> +  properties:
-> +    compatible:
-> +      contains:
-> +        enum:
-> +          - ingenic,jz4740-lcd
-> +          - ingenic,jz4780-lcd
-> +then:
-> +  properties:
-> +    clocks:
-> +      minItems: 2
-> +    clock-names:
-> +      minItems: 2
-> +else:
-> +  properties:
-> +    clocks:
-> +      maxItems: 1
-> +    clock-names:
-> +      maxItems: 1
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/clock/jz4740-cgu.h>
-> +    lcd-controller@13050000 {
-> +      compatible =3D "ingenic,jz4740-lcd";
-> +      reg =3D <0x13050000 0x1000>;
-> +
-> +      interrupt-parent =3D <&intc>;
-> +      interrupts =3D <30>;
-> +
-> +      clocks =3D <&cgu JZ4740_CLK_LCD>, <&cgu JZ4740_CLK_LCD_PCLK>;
-> +      clock-names =3D "lcd", "lcd_pclk";
-> +
-> +      port {
-> +        endpoint {
-> +          remote-endpoint =3D <&panel_input>;
-> +        };
-> +      };
-> +    };
-> +
-> +  - |
-> +    #include <dt-bindings/clock/jz4725b-cgu.h>
-> +    lcd-controller@13050000 {
-> +      compatible =3D "ingenic,jz4725b-lcd";
-> +      reg =3D <0x13050000 0x1000>;
-> +
-> +      interrupt-parent =3D <&intc>;
-> +      interrupts =3D <31>;
-> +
-> +      clocks =3D <&cgu JZ4725B_CLK_LCD>;
-> +      clock-names =3D "lcd";
-> +
-> +      port {
-> +        endpoint {
-> +          remote-endpoint =3D <&panel_input>;
-> +        };
-> +      };
-> +    };
-> --
-> 2.26.2
->=20
++extern void __init kgdb_earlycon_late_init(void);
++
+ /**
+  * struct kgdb_arch - Describe architecture specific values.
+  * @gdb_bpt_instr: The instruction to trigger a breakpoint.
+diff --git a/kernel/debug/debug_core.c b/kernel/debug/debug_core.c
+index 2d74dcbca477..f066ef2bc615 100644
+--- a/kernel/debug/debug_core.c
++++ b/kernel/debug/debug_core.c
+@@ -963,11 +963,15 @@ void __weak kgdb_arch_late(void)
+ {
+ }
 
++void __init __weak kgdb_earlycon_late_init(void)
++
+ void __init dbg_late_init(void)
+ {
+ 	dbg_is_early = false;
+ 	if (kgdb_io_module_registered)
+ 		kgdb_arch_late();
++	else
++		kgdb_earlycon_late_init();
+ 	kdb_init(KDB_INIT_FULL);
+
+ 	if (kgdb_io_module_registered && kgdb_break_asap)
+
+base-commit: 6a8b55ed4056ea5559ebe4f6a4b247f627870d4c
+prerequisite-patch-id: cbaa70eb783f1f34aec7f5839d1fecbc7616a9f6
+prerequisite-patch-id: d7543cdd19fb194ded3361d52818970083efdb06
+prerequisite-patch-id: 2238d976451dac9e3ee1bf02a077d633e342aa0c
+prerequisite-patch-id: 9e4296261b608ee172060d04b3de431a5e370096
+prerequisite-patch-id: 2b008e0e14a212072874ecb483d9c6844d161b08
+prerequisite-patch-id: f5b692b89c997d828832e3ab27fffb8f770d7b6f
+prerequisite-patch-id: 851d6f4874aa24540db9d765275ae736e8b2955b
+prerequisite-patch-id: d3969c2fb7cd320eafebe63d7da270dac5a82fc9
+prerequisite-patch-id: e1fc1478b7f75094d263ffc64a9f3528151831cf
+prerequisite-patch-id: 45fb53996a9f5993e03673c10eebf2834c58307f
+prerequisite-patch-id: 50ac1ddb52c3cce8b712036f212fdd67d7493112
+--
+2.25.1
 
