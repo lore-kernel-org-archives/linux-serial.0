@@ -2,182 +2,156 @@ Return-Path: <SRS0=pdp3=6O=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0886CC47247
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 19:32:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C726C47257
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 22:26:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D1E01207DD
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 19:32:16 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DOWHisTW"
+	by mail.kernel.org (Postfix) with ESMTP id 4277C206D9
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 22:26:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726377AbgD3TcQ (ORCPT
+        id S1727077AbgD3W0I (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Apr 2020 15:32:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52144 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726338AbgD3TcP (ORCPT
+        Thu, 30 Apr 2020 18:26:08 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:38806 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726697AbgD3W0I (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Apr 2020 15:32:15 -0400
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE4EAC035494;
-        Thu, 30 Apr 2020 12:32:14 -0700 (PDT)
-Received: by mail-lf1-x141.google.com with SMTP id z22so2057832lfd.0;
-        Thu, 30 Apr 2020 12:32:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=IEqqDal1b2CMBBj1J/IhZlw32+Sg+2HPFFmYoJNFiUw=;
-        b=DOWHisTWeBeZBVUEitPME/auY93uAUAgxG6PVUvbHoOc73Sf/iGaOTv49ntHPEtDvD
-         N6Cx3OojCejqvLe4o6E9hTqAlmIXN9IKjCBGwAojzTGoRTxhPlEeaxB8hX+NCRBsbnjR
-         F+Cm7Ljm2cx7hQof0ILpa+VZV6AbpDx30VM1RD32IIjO2EyCvwZOTF2sLN0ftsLiqEeA
-         t3MdhNA3Wamo7wuambjqq5Ow2XfHfE0nzQhnxpOmuckaMZTMpOjWij1o6Eyvaty9gYqP
-         /vhzKP3kik+a1rjRP86OqQ6JSbtALthq0PHjWtic9Mz6H1I2kC/Hu6arE2bFmulALd+E
-         Q3bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=IEqqDal1b2CMBBj1J/IhZlw32+Sg+2HPFFmYoJNFiUw=;
-        b=mzpLgTpyW6G+hUE4GeuraTFulZMzTTMxmKmcyRMa+iHpDCTTyl1b8i3L7h+XtofOFT
-         3lySeRVp1iwA+Cs7xkww7IIAzMLssZFE+MBuy8aDfJ9ZxvlYEtC3e2TaLLHusp/6jcT2
-         Y9xy3OHxDEKsCAx0czAQIvyxara/61eYjKmSaDDxPAz6SlMFcoqluVHP2Uy33fE6GxfZ
-         Opk4dP49BokHa2FFdE0SoXRSzwAtnVpSFJJXHvcbH9scfbUQ5AIiJi9f/XZxrDszn8jN
-         +3nzCk0tyXPc8FSCH3ZGFIdqRE035k+RPicSnns2cyY4ZkqimHqS5rZFIbpZZ7h2Ruk4
-         g2jQ==
-X-Gm-Message-State: AGi0PubhnliPnIssgcfauEiKeUoywlIHs8LBRnxGfK/LihyXfQzGe5Ne
-        BLKyuzBPxwpfj/rlr+7y4nE=
-X-Google-Smtp-Source: APiQypJNFgSpmaFuLg/GY6Gie6VDzGSq5Rv1WOKs4ZofBix+8BkRN2sAbFhFcYeWgtk6CQXKyG8dyw==
-X-Received: by 2002:a19:d:: with SMTP id 13mr114417lfa.167.1588275132329;
-        Thu, 30 Apr 2020 12:32:12 -0700 (PDT)
-Received: from [192.168.0.74] ([178.233.178.9])
-        by smtp.gmail.com with ESMTPSA id i124sm429538lji.95.2020.04.30.12.32.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Apr 2020 12:32:11 -0700 (PDT)
-Subject: Re: [RFC PATCH v2 0/3] Prefer working VT console over SPCR and
- device-tree chosen stdout-path
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+        Thu, 30 Apr 2020 18:26:08 -0400
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 97FEC1C0208; Fri,  1 May 2020 00:26:05 +0200 (CEST)
+Date:   Fri, 1 May 2020 00:26:05 +0200
+From:   Pavel Machek <pavel@denx.de>
+To:     Tony Lindgren <tony@atomide.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        linux-serial@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Arvind Sankar <nivedita@alum.mit.edu>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Biggers <ebiggers@google.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Grzegorz Halat <ghalat@redhat.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Sam Ravnborg <sam@ravnborg.org>
-References: <20200430161438.17640-1-alpernebiyasak@gmail.com>
- <20200430164413.GV185537@smile.fi.intel.com>
-From:   Alper Nebi Yasak <alpernebiyasak@gmail.com>
-Message-ID: <f332a19b-e8d1-d2b0-37c8-08381563f41b@gmail.com>
-Date:   Thu, 30 Apr 2020 22:32:04 +0300
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Johan Hovold <johan@kernel.org>, Rob Herring <robh@kernel.org>,
+        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
+        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
+        Merlijn Wajer <merlijn@wizzup.org>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+Subject: Re: [PATCHv6 0/6] n_gsm serdev support and GNSS driver for droid4
+Message-ID: <20200430222605.GA10922@duo.ucw.cz>
+References: <20200430174615.41185-1-tony@atomide.com>
 MIME-Version: 1.0
-In-Reply-To: <20200430164413.GV185537@smile.fi.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="9jxsPFA5p3P2qPhR"
+Content-Disposition: inline
+In-Reply-To: <20200430174615.41185-1-tony@atomide.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 30/04/2020 19:44, Andy Shevchenko wrote:
-> First of all I see only cover letter and one out of 3 patches.
 
-Apologies, the tool I've used to send the patches (U-Boot's patman)
-Cc-ed the scripts/get_maintainer.pl output per-patch, instead of
-per-series as I had assumed it would. This was the first time I tried
-it, I'll keep that in mind.
+--9jxsPFA5p3P2qPhR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Here are links to all four emails:
 
-https://lore.kernel.org/linux-serial/20200430161438.17640-1-alpernebiyasak@gmail.com/
-https://lore.kernel.org/linux-serial/20200430161438.17640-2-alpernebiyasak@gmail.com/
-https://lore.kernel.org/linux-serial/20200430161438.17640-3-alpernebiyasak@gmail.com/
-https://lore.kernel.org/linux-serial/20200430161438.17640-4-alpernebiyasak@gmail.com/
+> My guess is that at least with the pending ofono patches, we just
+> want to use the raw interface for /dev/gsmtty* interface and stop
+> pretending we have a modem that is AT compatible.
 
-Or I can resend the last two patches to you, or resend all the parts to
-everyone again.
+I tried to get it to work... it was not fun and I did not get far.
 
->> eventually figured out that the kernel preferred the serial port
->> (inaccessible to me) over the built-in working display/keyboard and was
->> probably asking there.
-> 
-> "probably". Please, confirm that first.
-> Also, without command line it's hard to say what you have asked kernel to do.
+I pushed my results...
 
-I was trying to boot a Debian userspace with cryptsetup, with the kernel
-command line:
+user@devuan:/my/ofono$ git push
+Counting objects: 10, done.
+Delta compression using up to 2 threads.
+Compressing objects: 100% (10/10), done.
+Writing objects: 100% (10/10), 1.17 KiB | 0 bytes/s, done.
+Total 10 (delta 8), reused 0 (delta 0)
+remote: Resolving deltas: 100% (8/8), completed with 8 local objects.
+To github.com:pavelmachek/ofono.git
+   fd34ca20..9042014b  mux-v1.29-1 -> mux-v1.29-1
 
-	root=/dev/mapper/sda3_crypt quiet splash
+Best regards,
+								Pavel
 
-The Debian initramfs handles most of the work (the password prompt,
-device mounts, etc.).
+ofonod[12922]: drivers/atmodem/network-registration.c:at_netreg_probe() Pro=
+bing creg
+Have command of length 9 (AT+CREG=3D?)
+ or ^z=20
+ofonod[12922]: Voice: > U0000AT+FOO\r
+ofonod[12922]: InSMS: > U0000AT+FOO\r
+ofonod[12922]: OutSMS: > U0000AT+FOO\r
+ofonod[12922]: Voice: < U0000+FOO:ERROR=3D9\n
+new bytes 18
+Have line: U0000+FOO:ERROR=3D9
+Last character is 13
+command response: U0000+FOO:ERROR=3D9
+ofonod[12922]: plugins/motmdm.c:foo_cb()=20
+handle command response
+ofonod[12922]: Voice: > U0000AT+SCRN=3D0\r
+ofonod[12922]: OutSMS: < U0000+FOO:ERROR=3D9\n
+new bytes 18
+Have line: U0000+FOO:ERROR=3D9
+Last character is 13
+command response: U0000+FOO:ERROR=3D9
+ofonod[12922]: plugins/motmdm.c:foo_cb()=20
+handle command response
+ofonod[12922]: InSMS: < U0000+FOO:ERROR=3D9\n
+new bytes 18
+Have line: U0000+FOO:ERROR=3D9
+Last character is 13
+command response: U0000+FOO:ERROR=3D9
+ofonod[12922]: plugins/motmdm.c:foo_cb()=20
+ofonod[12922]: plugins/motmdm.c:foo_cb() All channels working
+handle command response
+ofonod[12922]: Voice: < U0000+SCRN:OK\n
+new bytes 14
+Have line: U0000+SCRN:OK
+Last character is 13
+command response: U0000+SCRN:OK
+ofonod[12922]: plugins/motmdm.c:scrn_cb()=20
+handle command response
+ofonod[12922]: Voice: > U0000AT+CFUN=3D1\r
+ofonod[12922]: Voice: < U0000+CFUN:OK\n
+new bytes 14
+Have line: U0000+CFUN:OK
+Last character is 13
+command response: U0000+CFUN:OK
+ofonod[12922]: plugins/motmdm.c:cfun_cb()=20
+handle command response
+ofonod[12922]: Voice: > U0000AT+CLIP=3D1\r
+ofonod[12922]: Voice: < U0000+CLIP:OK\n
+new bytes 14
+Have line: U0000+CLIP:OK
+Last character is 13
+command response: U0000+CLIP:OK
+handle command response
+ofonod[12922]: Voice: > U0000AT+CCWA=3D1\r
+ofonod[12922]: Voice: < U0000+CCWA:OK\n
+new bytes 14
+Have line: U0000+CCWA:OK
+Last character is 13
+command response: U0000+CCWA:OK
+ofonod[12922]: drivers/motorolamodem/voicecall.c:motorola_voicecall_initial=
+ized() voicecall_init: registering to notifications
 
-When I used the same kernel/initramfs/rootfs on a QEMU aarch64 VM, it
-only prompted on the serial console instead the framebuffer. I'm
-assuming the same thing happens on my hardware as well.
 
-I can also ask the Debian initramfs to launch a shell by adding "break"
-to the command line, which won't be printed on my device's screen unless
-I also add "console=tty0". That shell also only appears on the serial
-console on the QEMU aarch64 VM, unless I again add "console=tty0".
 
-This is my primary computer and I'd prefer not dismantling it, so my
-findings above are the best I believe I can do to confirm it now. I'm 
-hoping other people would be interested in this, and would test more 
-than I can.
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
 
->> Running plymouth in the initramfs solves that specific problem, but
-> 
-> What is plymouth?
+--9jxsPFA5p3P2qPhR
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Plymouth is a userspace program that's famous for showing a splash
-animation during boot, but in this context: it handles user-interaction
-that might need to happen while the initramfs is running, by printing
-messages and prompts and reading user input to/from all consoles.
+-----BEGIN PGP SIGNATURE-----
 
->>    ------------------+-----------------------+-----------------------+
->>    Chromebook Plus   | tty0     -WU (EC p  ) | tty0     -WU (EC p  ) |
->>    (w/o either)      |                       |                       |
->>    ------------------+-----------------------+-----------------------+
-> 
-> either == SPCR or stdout-path?
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCXqtQfQAKCRAw5/Bqldv6
+8l9jAJ9KvU0iNyw/Yt+4+ZYHCB1gEmP9+gCfReEBIYsa33Y8sy9hW9AUNr8xq7M=
+=MkB7
+-----END PGP SIGNATURE-----
 
-As in "When the device has no SPCR _and_ no chosen stdout-path".
-
->> This patchset tries to ensure that VT is preferred in those conditions
->> even in the presence of firmware-mandated serial consoles.
-> 
-> This sounds completely wrong. serial should be preferred over vt due to very
-> debugging on early stages and SPCR is exactly for that.
-
-I'm saying that from a userspace perspective, and the patches explicitly
-try to switch to the vt only after a real framebuffer is initialized. So
-if I did it right, it would still use SPCR/stdout-path's console during
-the early stages. (I admit I haven't adjusted to talking within a kernel 
-context yet).
-
-In all honesty, I'm not sure if this is even considered a kernel bug,
-let alone my patches a correct solution; hence the RFC PATCH as an
-attempt at demonstrating this can be "fixed" in kernel.
-
-> Maybe you should figure out the real root cause?
-
-Thanks for the reply. Any ideas on what else could be causing this 
-behaviour?
+--9jxsPFA5p3P2qPhR--
