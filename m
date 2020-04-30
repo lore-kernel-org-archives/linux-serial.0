@@ -2,50 +2,50 @@ Return-Path: <SRS0=pdp3=6O=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4239C28CBC
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 13:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FD08C28CBC
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 14:00:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C04FF2063A
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 13:59:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D6D54208DB
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 14:00:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729347AbgD3N7b (ORCPT
+        id S1729397AbgD3OA5 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Apr 2020 09:59:31 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:32982 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728977AbgD3Ny3 (ORCPT
+        Thu, 30 Apr 2020 10:00:57 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:40004 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728580AbgD3OAy (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Apr 2020 09:54:29 -0400
-Received: by mail-oi1-f195.google.com with SMTP id o24so5296725oic.0;
-        Thu, 30 Apr 2020 06:54:28 -0700 (PDT)
+        Thu, 30 Apr 2020 10:00:54 -0400
+Received: by mail-ot1-f68.google.com with SMTP id i27so4960605ota.7;
+        Thu, 30 Apr 2020 07:00:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Lq5yotINN5KYJUar62+nHe1UVAWw3VsyL3e2P7YS8BU=;
-        b=Fs+x95REPD9EfTrmtAphxUuSWdnK4AewafFukG28gjw6/cMXJ7SPw+K/JRXaEzDI+Q
-         xCxdviGuWsdNW5oaM6ZLrEja3DMcTLx0A0xIZiXgLz/DLhqIcJGVkRUXWEvxRNIeSEg2
-         TfitgjACuqffMU4eUtex6dZMOL2j4LyQs3zP4diaw7khFVR1wuugEk9/cPZpGKx/u3pa
-         yglXxryic2X+Y7Q7xaYhznG9EcQMB2g+wDsUwyZLo4IVmHeonmeAVY1HXPq47qqOO285
-         D61MdmfgHNdhBGk7ShmxPsM4xxThulaCyjlbwt3xbKr5muFXsUyPsRGHJBwJJJrUz9bb
-         i5Sw==
-X-Gm-Message-State: AGi0PubPicM6FM9kH8G6Eeu7uYJJpPynry7GYQ1lIHq/ZpyBkDd2fLwc
-        Mmh3CH/FwvwazzCeLcQlhgSPFQstOmPt5/x6OKE=
-X-Google-Smtp-Source: APiQypKSH2mk4TQbA0Ak5zrv/RbXfwp1aRhXDsLXfDfpPXjbsGxuhUfYCkid+vwSbm4NVFRKEn9DNNlyvrMRml/YzRI=
-X-Received: by 2002:aca:f541:: with SMTP id t62mr1735443oih.148.1588254868374;
- Thu, 30 Apr 2020 06:54:28 -0700 (PDT)
+        bh=56+hnJF7fvucpKqv2sY0gAy5FVHsLurCXmxr1aGtcTI=;
+        b=cturxDu5JIDIp5o6PGnU9/IzWxKh3SG1Vrn9xTJ36O1PR57ccgRdHGX9VSNxxXcf6N
+         IfEANJ6QMdLgpHFpP5ii7dlDqRAYhCofAxd/r6W9in++0ba4dVLEwALaj2q7GMh9u6XA
+         QGeegR+CPbfoGVQLJOlfK34nhbblkyRKS6vrivkYCpLe8tHe5kDihkW1h3h9++IuPDm5
+         v1DDUM0nC0pbWPQai6Sh+Z/weDYPa7xKOwH5fBiND1uQ8AbZbMiRNRBpBNUxMi6zZ3s2
+         c7xs0CQJvopjjJgPmqbe+TfRCREHpVWgT4mVIl2MmnP9ea4r6FWFJHLZaOM6s2bRR3MP
+         RkSw==
+X-Gm-Message-State: AGi0Pua1EDpOnM78uLp2Hp1YtmhIOahKlFlFU8iOM/SIbwRbH8kTHHE8
+        YPAZ6QON8LO888TOBSWYdrQNWpKuxEGyg1X2Ni0=
+X-Google-Smtp-Source: APiQypJ6KaeAGcTKjVOK3+7+brBeC98O0eTIIpFYmbi9JxFQKsEFhK22k9egoZvh71YGTW6h2ODRjWwTyt+WgWUnMsc=
+X-Received: by 2002:a9d:7990:: with SMTP id h16mr2561994otm.145.1588255253287;
+ Thu, 30 Apr 2020 07:00:53 -0700 (PDT)
 MIME-Version: 1.0
 References: <1588197415-13747-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1588197415-13747-10-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1588197415-13747-10-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1588197415-13747-12-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1588197415-13747-12-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 30 Apr 2020 15:54:16 +0200
-Message-ID: <CAMuHMdWUYU6-S+EhzTKE4JeS2ExLQcsg_Bpy7RKD+cwhg55M8g@mail.gmail.com>
-Subject: Re: [PATCH 09/18] ARM: dts: r8a7742: Add IRQC support
+Date:   Thu, 30 Apr 2020 16:00:42 +0200
+Message-ID: <CAMuHMdVn0j8fKD_LH7gKBadjA-g+eNE1=Ld5M+8=NM2VKt-HCA@mail.gmail.com>
+Subject: Re: [PATCH 11/18] ARM: dts: r8a7742: Add SYS-DMAC support
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Cc:     Magnus Damm <magnus.damm@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -74,7 +74,7 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 On Wed, Apr 29, 2020 at 11:58 PM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Describe the IRQC interrupt controller in the r8a7742 device tree.
+> Describe SYS-DMAC0/1 in the R8A7742 device tree.
 >
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
