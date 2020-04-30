@@ -2,63 +2,64 @@ Return-Path: <SRS0=pdp3=6O=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E9C3C4724C
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 16:16:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5AC9C47247
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 16:16:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7A2AD20661
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 16:16:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9F83320873
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 16:16:34 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ay5tSMlw"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sosUSrAu"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726482AbgD3QQ1 (ORCPT
+        id S1727113AbgD3QQe (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Apr 2020 12:16:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49328 "EHLO
+        Thu, 30 Apr 2020 12:16:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726405AbgD3QQ0 (ORCPT
+        by vger.kernel.org with ESMTP id S1726405AbgD3QQd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Apr 2020 12:16:26 -0400
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0303CC035494;
-        Thu, 30 Apr 2020 09:16:25 -0700 (PDT)
-Received: by mail-lf1-x141.google.com with SMTP id b20so1437430lff.2;
-        Thu, 30 Apr 2020 09:16:24 -0700 (PDT)
+        Thu, 30 Apr 2020 12:16:33 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF708C035494;
+        Thu, 30 Apr 2020 09:16:32 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id f18so7082335lja.13;
+        Thu, 30 Apr 2020 09:16:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vHCcWfIEICV286PlzrlDhon26egExA0EzSmCUey5zx8=;
-        b=ay5tSMlwbsTytMC7115ZGRlTIa6ajZl389PdP5rwRFjVdI2WdoqyVsj71qOrQeG4+3
-         UKYJyxd/cA0ur6rCIOqf1Ews+8L98JgIF6F+ljKM85bXDLpHp+CnOLJjuE3bBFLuyRnY
-         o/O3wePvR7bcNfq9OBC9q5xozmSaVSjKIlBgWdN5mX7JueVbkl63GNBkBR1NGUwfwGMM
-         g4ub0uMZ3dn7BqOxtEc7rOu5zDyTR2VThEy7nizswgYtakMsJQ4tP2QAPHFiUMLbw9aA
-         wTlUdDTBuWbEL4G2S75g8ppTLzaeLz5Uf3/9Nh/6mK2rkLJt7KevDilZvGEh3nYSuwNd
-         Mh4A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=dcawBkXikPYOd9gFykEVGPuWXUWfQrJeZCwUFjbXlT4=;
+        b=sosUSrAuUHwXK5OEpDrkqaJHrO0GGy0Ln5+fNdN+gN6s5xxybYMfk62DTRz82hFfDW
+         3WsUtL5mZtTtjasdrGDXuLX2ENo0nhL8CRdGd74HWHwz3Y/lLcmgVn8w01cgM9gIYSWy
+         1ClW/qZfGqJQKSpQZiLtz7DccWTt1sbgjnej1CuSydRY/DBLa+BQdaaVd4SgxYuTZAc+
+         2YgxHtxvdynliAeIBWW300Rq2M7JTEnyXdt/G4CdzegQM8ORS3/eBubBGzy2nENr9s66
+         tMOSZY6mY7hx0HwZufKzxtYA8dCj2iV167701I6iC3ADwXddcvMiFgS2X52N8DC6+Luj
+         21rA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vHCcWfIEICV286PlzrlDhon26egExA0EzSmCUey5zx8=;
-        b=RaVoHYHtIe4x/pDbYrAC43INUVHlLQ1ynZLoe1me9JNXS+UMcea6aE8bwQTFK9eYBB
-         xUV4dI7Cis8lx74sk2KPl239A3lKf8f1eFTptrWvO3mHL8wMVq3A4jjb6o0LerlAdZZC
-         qYfWtS4wNOMuk+xZat54d7CaXoAL4MFake34JA0Xs1b/tJ2aWZW8k+9nYiVyw8tIjw9o
-         tI/XSZl5q7e93QeVQO75taZjaoVY8TiBsyVD1n+bkGx0isfg7Nuz8mfV0BPlv1DYsMoM
-         HlOwOGDyIsdC2/2lE8ohSbg9fcXDIqaD1qfRHgq4iuMYTvQsqfux463QPRAnZ350VlZc
-         xs4g==
-X-Gm-Message-State: AGi0PuY41hKhUhI8A3RDN+21EXC/ErS1rX+1pQYLnXfbC8oUEXH+CJXF
-        zrPuaQHLuQf6ARxM1+a/YGQ=
-X-Google-Smtp-Source: APiQypI8ZN0KyOTXyMoykSTjnNSFhzlj/ggy7e3jSEAEM/HOQ9fxPmeQ5Yrj2uqnv4+yAUnZjlL2sg==
-X-Received: by 2002:ac2:489b:: with SMTP id x27mr2746373lfc.60.1588263383459;
-        Thu, 30 Apr 2020 09:16:23 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=dcawBkXikPYOd9gFykEVGPuWXUWfQrJeZCwUFjbXlT4=;
+        b=o08cn9zMoA4uM9+4lnDDW67hx5RyLW8+Tj8kRk0OuF2UnscoSKB3bLPXUKuviS3bpZ
+         maQYdMqt9s9Et2HVBR4ZhaPsgHVXkdeBsVwOGE5Aa6eL5D19jNQZWGW8CB1W4jVQwNFz
+         P0fzNYBs2EXMEyPdadM1mC0A2phOC1NqCZnCPDwobtGM45HLFYzn3Obfn6vLSxpZLZWj
+         bGaxgXs3QOS68uKdNgLgvjQnMoyPtuqZEzhgD9u22Qc8H001P7+cYW+eIhyX9QDMoKuq
+         Ihuafqjbqw9kKj+abPdH++fOwbPf3SBHLluVhotDI05NIVCB4r33IxbF6Xyrx2INMJzj
+         Alaw==
+X-Gm-Message-State: AGi0Puam89ACaSus3+r+ICNVx3h2XvxBGgecdDzotc5mwrnw2hA3O6Ls
+        3owdKH/bFjDC0aCc9nfYKPI=
+X-Google-Smtp-Source: APiQypJlHPjg7i2J2gTNDSPTCeeNvzQBhsBhfepNh86Pej0Lou55gA4cVl+9dZI3HWGt3Ys5ggHMhQ==
+X-Received: by 2002:a2e:b012:: with SMTP id y18mr44709ljk.238.1588263391301;
+        Thu, 30 Apr 2020 09:16:31 -0700 (PDT)
 Received: from localhost.localdomain ([178.233.178.9])
-        by smtp.gmail.com with ESMTPSA id k6sm60638lfm.91.2020.04.30.09.16.19
+        by smtp.gmail.com with ESMTPSA id k6sm60638lfm.91.2020.04.30.09.16.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Apr 2020 09:16:22 -0700 (PDT)
+        Thu, 30 Apr 2020 09:16:30 -0700 (PDT)
 From:   Alper Nebi Yasak <alpernebiyasak@gmail.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>, Petr Mladek <pmladek@suse.com>,
@@ -70,18 +71,14 @@ Cc:     linux-serial@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Arvind Sankar <nivedita@alum.mit.edu>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Biggers <ebiggers@google.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Grzegorz Halat <ghalat@redhat.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Sam Ravnborg <sam@ravnborg.org>
-Subject: [RFC PATCH v2 0/3] Prefer working VT console over SPCR and device-tree chosen stdout-path
-Date:   Thu, 30 Apr 2020 19:14:34 +0300
-Message-Id: <20200430161438.17640-1-alpernebiyasak@gmail.com>
+        Feng Tang <feng.tang@intel.com>
+Subject: [RFC PATCH v2 1/3] printk: Add function to set console to preferred console's driver
+Date:   Thu, 30 Apr 2020 19:14:35 +0300
+Message-Id: <20200430161438.17640-2-alpernebiyasak@gmail.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200430161438.17640-1-alpernebiyasak@gmail.com>
+References: <20200430161438.17640-1-alpernebiyasak@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
@@ -89,64 +86,142 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-I recently experienced some trouble with setting up an encrypted-root
-system, my Chromebook Plus (rk3399-gru-kevin, ARM64) would appear to
-hang where it should have asked for an encryption passphrase; and I
-eventually figured out that the kernel preferred the serial port
-(inaccessible to me) over the built-in working display/keyboard and was
-probably asking there.
+Currently, add_preferred_console sets a preferred console, but doesn't
+actually change /dev/console to match it. That part is handled within
+register_device, where a newly registered console driver will be set as
+/dev/console if it matches the preferred console.
 
-Running plymouth in the initramfs solves that specific problem, but
-both the documentation and tty-related kconfig descriptions imply that
-/dev/console should be tty0 if graphics are working, CONFIG_VT_CONSOLE
-is enabled and no explicit console argument is given in the kernel
-commandline.
+However, if the relevant driver is already registered, the only way to
+set it as /dev/console is by un-registering and re-registering it. An
+example is the xenfb_make_preferred_console() function:
 
-However, I'm seeing different behaviour on systems with SPCR (as in QEMU
-aarch64 virtual machines) and/or a device-tree chosen stdout-path node
-(as in most arm/arm64 devices). On these machines, depending on the
-console argument, the contents of the /proc/consoles file are:
+	console_lock();
+	for_each_console(c) {
+		if (!strcmp(c->name, "tty") && c->index == 0)
+			break;
+	}
+	console_unlock();
+	if (c) {
+		unregister_console(c);
+		c->flags |= CON_CONSDEV;
+		c->flags &= ~CON_PRINTBUFFER; /* don't print again */
+		register_console(c);
+	}
 
-                    |     "console=tty0"    |    (no console arg)   |
-  ------------------+-----------------------+-----------------------+
-  QEMU VM           | tty0     -WU (EC p  ) | ttyAMA0  -W- (EC   a) |
-  (w/ SPCR)         | ttyAMA0  -W- (E    a) |                       |
-  ------------------+-----------------------+-----------------------+
-  Chromebook Plus   | tty0     -WU (EC p  ) | ttyS2    -W- (EC p a) |
-  (w/ stdout-path)  |                       | tty0     -WU (E     ) |
-  ------------------+-----------------------+-----------------------+
-  Chromebook Plus   | tty0     -WU (EC p  ) | tty0     -WU (EC p  ) |
-  (w/o either)      |                       |                       |
-  ------------------+-----------------------+-----------------------+
+The code above was introduced in commit 9e124fe16ff2 ("xen: Enable
+console tty by default in domU if it's not a dummy"). In short, it's aim
+is to set VT as the preferred console only after a working framebuffer
+is registered and thus VT is not the dummy device.
 
-This patchset tries to ensure that VT is preferred in those conditions
-even in the presence of firmware-mandated serial consoles. These should
-cleanly apply onto next-20200430.
+This patch introduces an update_console_to_preferred function that
+handles the necessary /dev/console change. With this change, the example
+above can be replaced with:
 
-More discussion due to or about the console confusion on ARM64:
-- My Debian bug report about the initramfs prompts [0]
-- Fedora test issue arising from ARM64 QEMU machines having SPCR [1]
-- Debian-installer discussion on what to do with multiple consoles [2]
+	console_lock();
+	add_preferred_console("tty", 0, NULL);
+	update_console_to_preferred();
+	console_unlock();
 
-[0] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=952452
-[1] https://bugzilla.redhat.com/show_bug.cgi?id=1661288
-[2] https://lists.debian.org/debian-boot/2019/01/msg00184.html
+More importantly, these two calls can be moved to vt.c in order to bump
+its priority when a non-dummy backend for it is introduced, solving that
+problem in general.
+
+Signed-off-by: Alper Nebi Yasak <alpernebiyasak@gmail.com>
+
+---
 
 Changes in v2:
-- Fix #elif to #else (Reported-by: kbuild test robot <lkp@intel.com>)
-- Refresh dmesg outputs with/without earlycon for next-20200430
 - Use the correct format when referencing a commit
 
-Alper Nebi Yasak (3):
-  printk: Add function to set console to preferred console's driver
-  vt: Set as preferred console when a non-dummy backend is bound
-  printk: Preset tty0 as a pseudo-preferred console
-
- drivers/tty/vt/vt.c     |  7 +++++
  include/linux/console.h |  1 +
- kernel/printk/printk.c  | 68 +++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 76 insertions(+)
+ kernel/printk/printk.c  | 56 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 57 insertions(+)
 
+diff --git a/include/linux/console.h b/include/linux/console.h
+index 75dd20650fbe..4b3fa34be245 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -172,6 +172,7 @@ enum con_flush_mode {
+ };
+ 
+ extern int add_preferred_console(char *name, int idx, char *options);
++extern int update_console_to_preferred(void);
+ extern void register_console(struct console *);
+ extern int unregister_console(struct console *);
+ extern struct console *console_drivers;
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 6ede4a7222e6..efda422203e4 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2240,12 +2240,68 @@ __setup("console=", console_setup);
+  * be used by arch-specific code either to override the user or more
+  * commonly to provide a default console (ie from PROM variables) when
+  * the user has not supplied one.
++ *
++ * Preferences set by this function don't take effect until the next
++ * time a matching driver for the preferred console is registered. If a
++ * matching driver was already registered, @update_console_to_preferred
++ * function can be used to set that as the preferred console driver.
+  */
+ int add_preferred_console(char *name, int idx, char *options)
+ {
+ 	return __add_preferred_console(name, idx, options, NULL, false);
+ }
+ 
++/**
++ * update_console_to_preferred - set console to the preferred console's driver.
++ *
++ * Updates console_drivers and CON_CONSDEV flags so that an already
++ * registered and enabled console driver matching the preferred console
++ * is used as /dev/console.
++ *
++ * Must be called within console_lock();.
++ */
++int update_console_to_preferred(void)
++{
++	struct console_cmdline *c = NULL;
++	struct console *con = NULL;
++	struct console *tmp = NULL;
++
++	if (preferred_console >= 0)
++		c = &console_cmdline[preferred_console];
++
++	if (!c || !c->name[0])
++		return 0;
++
++	for_each_console(con) {
++		if (!con->next || !(con->next->flags & CON_ENABLED))
++			continue;
++		if (strcmp(c->name, con->next->name) != 0)
++			continue;
++		if (con->next->index >= 0 &&
++		    con->next->index != c->index)
++			continue;
++		break;
++	}
++
++	if (!con)
++		return -ENODEV;
++
++	pr_info("switching to console [%s%d]\n",
++		con->next->name, con->next->index);
++
++	tmp = con->next;
++	con->next = con->next->next;
++	tmp->next = console_drivers;
++	console_drivers = tmp;
++
++	if (console_drivers->next)
++		console_drivers->next->flags &= ~CON_CONSDEV;
++	console_drivers->flags |= CON_CONSDEV;
++	has_preferred_console = true;
++
++	return 0;
++}
++
+ bool console_suspend_enabled = true;
+ EXPORT_SYMBOL(console_suspend_enabled);
+ 
 -- 
 2.26.2
 
