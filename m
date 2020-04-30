@@ -2,152 +2,151 @@ Return-Path: <SRS0=pdp3=6O=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1EEC47247
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 15:49:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E9C3C4724C
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 16:16:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9635424955
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 15:49:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7A2AD20661
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 16:16:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="r2IC0BMd"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ay5tSMlw"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726781AbgD3Ptd (ORCPT
+        id S1726482AbgD3QQ1 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Apr 2020 11:49:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45080 "EHLO
+        Thu, 30 Apr 2020 12:16:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726350AbgD3Ptd (ORCPT
+        by vger.kernel.org with ESMTP id S1726405AbgD3QQ0 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Apr 2020 11:49:33 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B0CC035495
-        for <linux-serial@vger.kernel.org>; Thu, 30 Apr 2020 08:49:31 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id e16so2413311wra.7
-        for <linux-serial@vger.kernel.org>; Thu, 30 Apr 2020 08:49:31 -0700 (PDT)
+        Thu, 30 Apr 2020 12:16:26 -0400
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0303CC035494;
+        Thu, 30 Apr 2020 09:16:25 -0700 (PDT)
+Received: by mail-lf1-x141.google.com with SMTP id b20so1437430lff.2;
+        Thu, 30 Apr 2020 09:16:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=oHm4fy+ZLxCbZPoPq94eRdgDSA3Nknytuwe8uJsLdF4=;
-        b=r2IC0BMdrvMLmTNIhoRFaohj8rE6ROROD/SI++ZHKsfJR3Lu3kPJeMzseq5zrHq4zj
-         f1rTFV/TxBz1Hnd8sQ4SoPrU07rZLHYJsIpaYUBXeXHDED5MDd/dnq0i0vczTX4PvSkN
-         9QrzKN2h5+ay4/p64uU8reoTjvy1ylOJRU5S4uMLf0jY5zPEpCw+RpjMJCr0kCtH8Cvx
-         1krTbR8+gGMp0Rxl41DXFgmpBxQDOkJEGDiSHT5Q82OHkzMglPmCdJHdHc+IET5gukwU
-         cw+G7SOi3PiNrKInWUsfQjAN5cFB8ywZLgmseYzOC+PjLWLYM8z0FTtk9fKYnPXuLN5w
-         drqg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vHCcWfIEICV286PlzrlDhon26egExA0EzSmCUey5zx8=;
+        b=ay5tSMlwbsTytMC7115ZGRlTIa6ajZl389PdP5rwRFjVdI2WdoqyVsj71qOrQeG4+3
+         UKYJyxd/cA0ur6rCIOqf1Ews+8L98JgIF6F+ljKM85bXDLpHp+CnOLJjuE3bBFLuyRnY
+         o/O3wePvR7bcNfq9OBC9q5xozmSaVSjKIlBgWdN5mX7JueVbkl63GNBkBR1NGUwfwGMM
+         g4ub0uMZ3dn7BqOxtEc7rOu5zDyTR2VThEy7nizswgYtakMsJQ4tP2QAPHFiUMLbw9aA
+         wTlUdDTBuWbEL4G2S75g8ppTLzaeLz5Uf3/9Nh/6mK2rkLJt7KevDilZvGEh3nYSuwNd
+         Mh4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oHm4fy+ZLxCbZPoPq94eRdgDSA3Nknytuwe8uJsLdF4=;
-        b=HNq1pZKXY6ah+W10jQqoCBM9c5Va6PxlyGCcAWZmkwkMXj6cxfl7kBE2GStPCus/ym
-         g2pLNzzPzvu/9qSgfUdCE0w8UVmOzuMVj7qejRM90yG+FRVjNQzAUslz2jSi/KzD4FGM
-         7R2HovpqyLXtjq37rbsLhAQ6taUfMYfFHhAb6WA/YFZ2dB5KY8lp/fitI7Jnema5QS8s
-         3TsRHBVQ2B543FdHMZOSZr9wD5r0in16nZOMbuI5c1EGNoG5hrLtMpkT+/sQFkRVUPrn
-         MziODBGciYK1P+8l4Z2hECiw/NHsl2Y8FxSxknW7QQzg7uyuevD7902VeHWVfsbrvQnQ
-         QO7w==
-X-Gm-Message-State: AGi0PubOoxMYBa4kbxLN63uQFcbluc3FOC2Xf9xAH8nhh7V/GhZVVLT7
-        gAZilXH80VaZJwjooiUlwx23Zw==
-X-Google-Smtp-Source: APiQypJ6SlONxAl2VrCyPqK4l53N1/WMOfY1UxFBIXSI9NOt7yIOGJ1RUif8f1WEZ9tX9jts4JOv0Q==
-X-Received: by 2002:a5d:688f:: with SMTP id h15mr4706411wru.352.1588261770336;
-        Thu, 30 Apr 2020 08:49:30 -0700 (PDT)
-Received: from holly.lan (cpc141214-aztw34-2-0-cust773.18-1.cable.virginm.net. [86.9.19.6])
-        by smtp.gmail.com with ESMTPSA id f2sm177209wro.59.2020.04.30.08.49.28
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vHCcWfIEICV286PlzrlDhon26egExA0EzSmCUey5zx8=;
+        b=RaVoHYHtIe4x/pDbYrAC43INUVHlLQ1ynZLoe1me9JNXS+UMcea6aE8bwQTFK9eYBB
+         xUV4dI7Cis8lx74sk2KPl239A3lKf8f1eFTptrWvO3mHL8wMVq3A4jjb6o0LerlAdZZC
+         qYfWtS4wNOMuk+xZat54d7CaXoAL4MFake34JA0Xs1b/tJ2aWZW8k+9nYiVyw8tIjw9o
+         tI/XSZl5q7e93QeVQO75taZjaoVY8TiBsyVD1n+bkGx0isfg7Nuz8mfV0BPlv1DYsMoM
+         HlOwOGDyIsdC2/2lE8ohSbg9fcXDIqaD1qfRHgq4iuMYTvQsqfux463QPRAnZ350VlZc
+         xs4g==
+X-Gm-Message-State: AGi0PuY41hKhUhI8A3RDN+21EXC/ErS1rX+1pQYLnXfbC8oUEXH+CJXF
+        zrPuaQHLuQf6ARxM1+a/YGQ=
+X-Google-Smtp-Source: APiQypI8ZN0KyOTXyMoykSTjnNSFhzlj/ggy7e3jSEAEM/HOQ9fxPmeQ5Yrj2uqnv4+yAUnZjlL2sg==
+X-Received: by 2002:ac2:489b:: with SMTP id x27mr2746373lfc.60.1588263383459;
+        Thu, 30 Apr 2020 09:16:23 -0700 (PDT)
+Received: from localhost.localdomain ([178.233.178.9])
+        by smtp.gmail.com with ESMTPSA id k6sm60638lfm.91.2020.04.30.09.16.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Apr 2020 08:49:29 -0700 (PDT)
-Date:   Thu, 30 Apr 2020 16:49:27 +0100
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Douglas Anderson <dianders@chromium.org>
-Cc:     jason.wessel@windriver.com, gregkh@linuxfoundation.org,
-        agross@kernel.org, kgdb-bugreport@lists.sourceforge.net,
-        catalin.marinas@arm.com, linux-serial@vger.kernel.org,
-        sumit.garg@linaro.org, corbet@lwn.net, mingo@redhat.com,
-        will@kernel.org, hpa@zytor.com, tglx@linutronix.de,
-        frowand.list@gmail.com, bp@alien8.de, bjorn.andersson@linaro.org,
-        jslaby@suse.com, Andrew Morton <akpm@linux-foundation.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-kernel@vger.kernel.org, x86@kernel.org
-Subject: Re: [PATCH v3 04/11] kgdb: Delay "kgdbwait" to dbg_late_init() by
- default
-Message-ID: <20200430154927.vhkhoffqwirb2fmm@holly.lan>
-References: <20200428211351.85055-1-dianders@chromium.org>
- <20200428141218.v3.4.I3113aea1b08d8ce36dc3720209392ae8b815201b@changeid>
+        Thu, 30 Apr 2020 09:16:22 -0700 (PDT)
+From:   Alper Nebi Yasak <alpernebiyasak@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Cc:     linux-serial@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Alper Nebi Yasak <alpernebiyasak@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arvind Sankar <nivedita@alum.mit.edu>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Biggers <ebiggers@google.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Grzegorz Halat <ghalat@redhat.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Sam Ravnborg <sam@ravnborg.org>
+Subject: [RFC PATCH v2 0/3] Prefer working VT console over SPCR and device-tree chosen stdout-path
+Date:   Thu, 30 Apr 2020 19:14:34 +0300
+Message-Id: <20200430161438.17640-1-alpernebiyasak@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200428141218.v3.4.I3113aea1b08d8ce36dc3720209392ae8b815201b@changeid>
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, Apr 28, 2020 at 02:13:44PM -0700, Douglas Anderson wrote:
-> Using kgdb requires at least some level of architecture-level
-> initialization.  If nothing else, it relies on the architecture to
-> pass breakpoints / crashes onto kgdb.
-> 
-> On some architectures this all works super early, specifically it
-> starts working at some point in time before Linux parses
-> early_params's.  On other architectures it doesn't.  A survey of a few
-> platforms:
-> 
-> a) x86: Presumably it all works early since "ekgdboc" is documented to
->    work here.
-> b) arm64: Catching crashes works; with a simple patch breakpoints can
->    also be made to work.
-> c) arm: Nothing in kgdb works until
->    paging_init() -> devicemaps_init() -> early_trap_init()
-> 
-> Let's be conservative and, by default, process "kgdbwait" (which tells
-> the kernel to drop into the debugger ASAP at boot) a bit later at
-> dbg_late_init() time.  If an architecture has tested it and wants to
-> re-enable super early debugging, they can select the
-> ARCH_HAS_EARLY_DEBUG KConfig option.  We'll do this for x86 to start.
-> It should be noted that dbg_late_init() is still called quite early in
-> the system.
-> 
-> Note that this patch doesn't affect when kgdb runs its init.  If kgdb
-> is set to initialize early it will still initialize when parsing
-> early_param's.  This patch _only_ inhibits the initial breakpoint from
-> "kgdbwait".  This means:
-> 
-> * Without any extra patches arm64 platforms will at least catch
->   crashes after kgdb inits.
-> * arm platforms will catch crashes (and could handle a hardcoded
->   kgdb_breakpoint()) any time after early_trap_init() runs, even
->   before dbg_late_init().
-> 
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Cc: Borislav Petkov <bp@alien8.de>
-> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+I recently experienced some trouble with setting up an encrypted-root
+system, my Chromebook Plus (rk3399-gru-kevin, ARM64) would appear to
+hang where it should have asked for an encryption passphrase; and I
+eventually figured out that the kernel preferred the serial port
+(inaccessible to me) over the built-in working display/keyboard and was
+probably asking there.
 
-It looks like this patch is triggering some warnings from the existing
-defconfigs (both x86 and arm64). It looks like this:
+Running plymouth in the initramfs solves that specific problem, but
+both the documentation and tty-related kconfig descriptions imply that
+/dev/console should be tty0 if graphics are working, CONFIG_VT_CONSOLE
+is enabled and no explicit console argument is given in the kernel
+commandline.
 
----
-wychelm$ make defconfig
-  GEN     Makefile
-*** Default configuration is based on 'x86_64_defconfig'
+However, I'm seeing different behaviour on systems with SPCR (as in QEMU
+aarch64 virtual machines) and/or a device-tree chosen stdout-path node
+(as in most arm/arm64 devices). On these machines, depending on the
+console argument, the contents of the /proc/consoles file are:
 
-WARNING: unmet direct dependencies detected for ARCH_HAS_EARLY_DEBUG
-  Depends on [n]: KGDB [=n]
-  Selected by [y]:
-  - X86 [=y]
+                    |     "console=tty0"    |    (no console arg)   |
+  ------------------+-----------------------+-----------------------+
+  QEMU VM           | tty0     -WU (EC p  ) | ttyAMA0  -W- (EC   a) |
+  (w/ SPCR)         | ttyAMA0  -W- (E    a) |                       |
+  ------------------+-----------------------+-----------------------+
+  Chromebook Plus   | tty0     -WU (EC p  ) | ttyS2    -W- (EC p a) |
+  (w/ stdout-path)  |                       | tty0     -WU (E     ) |
+  ------------------+-----------------------+-----------------------+
+  Chromebook Plus   | tty0     -WU (EC p  ) | tty0     -WU (EC p  ) |
+  (w/o either)      |                       |                       |
+  ------------------+-----------------------+-----------------------+
 
-WARNING: unmet direct dependencies detected for ARCH_HAS_EARLY_DEBUG
-  Depends on [n]: KGDB [=n]
-  Selected by [y]:
-  - X86 [=y]
-#
-# No change to .config
-#
----
+This patchset tries to ensure that VT is preferred in those conditions
+even in the presence of firmware-mandated serial consoles. These should
+cleanly apply onto next-20200430.
 
+More discussion due to or about the console confusion on ARM64:
+- My Debian bug report about the initramfs prompts [0]
+- Fedora test issue arising from ARM64 QEMU machines having SPCR [1]
+- Debian-installer discussion on what to do with multiple consoles [2]
 
-Daniel.
+[0] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=952452
+[1] https://bugzilla.redhat.com/show_bug.cgi?id=1661288
+[2] https://lists.debian.org/debian-boot/2019/01/msg00184.html
+
+Changes in v2:
+- Fix #elif to #else (Reported-by: kbuild test robot <lkp@intel.com>)
+- Refresh dmesg outputs with/without earlycon for next-20200430
+- Use the correct format when referencing a commit
+
+Alper Nebi Yasak (3):
+  printk: Add function to set console to preferred console's driver
+  vt: Set as preferred console when a non-dummy backend is bound
+  printk: Preset tty0 as a pseudo-preferred console
+
+ drivers/tty/vt/vt.c     |  7 +++++
+ include/linux/console.h |  1 +
+ kernel/printk/printk.c  | 68 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 76 insertions(+)
+
+-- 
+2.26.2
+
