@@ -6,36 +6,36 @@ X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BD49C47247
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 16:44:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB0FC47247
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 16:46:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 345862070B
-	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 16:44:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 53E432070B
+	for <linux-serial@archiver.kernel.org>; Thu, 30 Apr 2020 16:46:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726346AbgD3QoR (ORCPT
+        id S1726318AbgD3Qqa (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Apr 2020 12:44:17 -0400
-Received: from mga09.intel.com ([134.134.136.24]:9480 "EHLO mga09.intel.com"
+        Thu, 30 Apr 2020 12:46:30 -0400
+Received: from mga01.intel.com ([192.55.52.88]:16091 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726897AbgD3QoR (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Apr 2020 12:44:17 -0400
-IronPort-SDR: rgiIKLwiPOpnf4LPEtiylAAHcMLOaX57HxRXFRw1JLFM6J96A3suPTWQNShQ9vX4kYm8AuFq3l
- 32c/wVDpcfAA==
+        id S1726309AbgD3Qqa (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 30 Apr 2020 12:46:30 -0400
+IronPort-SDR: njh/nMJkAHFXT4KukT+qaQtKv4LLNVSKpPVQfUulgt305F0JZjDaY1LHSxjTFF8vt5WhTXOqA9
+ LnSpsG+c7NzA==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2020 09:44:16 -0700
-IronPort-SDR: 9DyQWhpBuuB0EPtN+8MsdJdwmHdFmXWAlbcmymPWP7YQRJK7krA0SwkhvajSwkCXTgSY4jIRDT
- stT9S+135+ZA==
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2020 09:46:30 -0700
+IronPort-SDR: o/9FP73hLdrecg6plLPSE4BE260RONmdIVJjsa1Po+2BWeMaxxs+vdPEJruOsCeuYxZUbCf/5S
+ 4/zhGE4GywRw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,336,1583222400"; 
-   d="scan'208";a="276576064"
+   d="scan'208";a="368202826"
 Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga002.jf.intel.com with ESMTP; 30 Apr 2020 09:44:12 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 30 Apr 2020 09:46:27 -0700
 Received: from andy by smile with local (Exim 4.93)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1jUCIH-003x9f-Sx; Thu, 30 Apr 2020 19:44:13 +0300
-Date:   Thu, 30 Apr 2020 19:44:13 +0300
+        id 1jUCKT-003xBR-KK; Thu, 30 Apr 2020 19:46:29 +0300
+Date:   Thu, 30 Apr 2020 19:46:29 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Alper Nebi Yasak <alpernebiyasak@gmail.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -46,88 +46,70 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         Arvind Sankar <nivedita@alum.mit.edu>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Biggers <ebiggers@google.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Grzegorz Halat <ghalat@redhat.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Sam Ravnborg <sam@ravnborg.org>
-Subject: Re: [RFC PATCH v2 0/3] Prefer working VT console over SPCR and
- device-tree chosen stdout-path
-Message-ID: <20200430164413.GV185537@smile.fi.intel.com>
+        Feng Tang <feng.tang@intel.com>
+Subject: Re: [RFC PATCH v2 1/3] printk: Add function to set console to
+ preferred console's driver
+Message-ID: <20200430164629.GW185537@smile.fi.intel.com>
 References: <20200430161438.17640-1-alpernebiyasak@gmail.com>
+ <20200430161438.17640-2-alpernebiyasak@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200430161438.17640-1-alpernebiyasak@gmail.com>
+In-Reply-To: <20200430161438.17640-2-alpernebiyasak@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Apr 30, 2020 at 07:14:34PM +0300, Alper Nebi Yasak wrote:
-
-First of all I see only cover letter and one out of 3 patches.
-
-> I recently experienced some trouble with setting up an encrypted-root
-> system, my Chromebook Plus (rk3399-gru-kevin, ARM64) would appear to
-> hang where it should have asked for an encryption passphrase; and I
-> eventually figured out that the kernel preferred the serial port
-> (inaccessible to me) over the built-in working display/keyboard and was
-> probably asking there.
-
-"probably". Please, confirm that first.
-Also, without command line it's hard to say what you have asked kernel to do.
-
-> Running plymouth in the initramfs solves that specific problem, but
-> both the documentation and tty-related kconfig descriptions imply that
-> /dev/console should be tty0 if graphics are working, CONFIG_VT_CONSOLE
-> is enabled and no explicit console argument is given in the kernel
-> commandline.
-
-What is plymouth?
-
-> However, I'm seeing different behaviour on systems with SPCR (as in QEMU
-> aarch64 virtual machines) and/or a device-tree chosen stdout-path node
-> (as in most arm/arm64 devices). On these machines, depending on the
-> console argument, the contents of the /proc/consoles file are:
+On Thu, Apr 30, 2020 at 07:14:35PM +0300, Alper Nebi Yasak wrote:
+> Currently, add_preferred_console sets a preferred console, but doesn't
+> actually change /dev/console to match it. That part is handled within
+> register_device, where a newly registered console driver will be set as
+> /dev/console if it matches the preferred console.
 > 
->                     |     "console=tty0"    |    (no console arg)   |
->   ------------------+-----------------------+-----------------------+
->   QEMU VM           | tty0     -WU (EC p  ) | ttyAMA0  -W- (EC   a) |
->   (w/ SPCR)         | ttyAMA0  -W- (E    a) |                       |
->   ------------------+-----------------------+-----------------------+
->   Chromebook Plus   | tty0     -WU (EC p  ) | ttyS2    -W- (EC p a) |
->   (w/ stdout-path)  |                       | tty0     -WU (E     ) |
->   ------------------+-----------------------+-----------------------+
->   Chromebook Plus   | tty0     -WU (EC p  ) | tty0     -WU (EC p  ) |
->   (w/o either)      |                       |                       |
->   ------------------+-----------------------+-----------------------+
-
-either == SPCR or stdout-path?
-
-> This patchset tries to ensure that VT is preferred in those conditions
-> even in the presence of firmware-mandated serial consoles.
-
-This sounds completely wrong. serial should be preferred over vt due to very
-debugging on early stages and SPCR is exactly for that.
-
-> These should
-> cleanly apply onto next-20200430.
+> However, if the relevant driver is already registered, the only way to
+> set it as /dev/console is by un-registering and re-registering it. An
+> example is the xenfb_make_preferred_console() function:
 > 
-> More discussion due to or about the console confusion on ARM64:
-> - My Debian bug report about the initramfs prompts [0]
-> - Fedora test issue arising from ARM64 QEMU machines having SPCR [1]
-> - Debian-installer discussion on what to do with multiple consoles [2]
+> 	console_lock();
+> 	for_each_console(c) {
+> 		if (!strcmp(c->name, "tty") && c->index == 0)
+> 			break;
+> 	}
+> 	console_unlock();
+> 	if (c) {
+> 		unregister_console(c);
+> 		c->flags |= CON_CONSDEV;
+> 		c->flags &= ~CON_PRINTBUFFER; /* don't print again */
+> 		register_console(c);
+> 	}
+> 
+> The code above was introduced in commit 9e124fe16ff2 ("xen: Enable
+> console tty by default in domU if it's not a dummy"). In short, it's aim
+> is to set VT as the preferred console only after a working framebuffer
+> is registered and thus VT is not the dummy device.
+> 
+> This patch introduces an update_console_to_preferred function that
+> handles the necessary /dev/console change. With this change, the example
+> above can be replaced with:
+> 
+> 	console_lock();
+> 	add_preferred_console("tty", 0, NULL);
+> 	update_console_to_preferred();
+> 	console_unlock();
+> 
+> More importantly, these two calls can be moved to vt.c in order to bump
+> its priority when a non-dummy backend for it is introduced, solving that
+> problem in general.
 
-Maybe you should figure out the real root cause?
+Even w/o looking into the code I believe it breaks more platforms than fixes
+anything. It was not first time one tries to do something about preferred
+consoles and it appeared to break working configurations.
 
-> [0] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=952452
-> [1] https://bugzilla.redhat.com/show_bug.cgi?id=1661288
-> [2] https://lists.debian.org/debian-boot/2019/01/msg00184.html
+I would wait for PRINTK maintainers to tell, but to me it sounds like papering
+over the real issue which you don't understand (yet).
 
 -- 
 With Best Regards,
