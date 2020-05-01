@@ -2,154 +2,125 @@ Return-Path: <SRS0=20mg=6P=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D22EC47253
-	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 11:49:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3337C4724C
+	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 13:16:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E5B4C208CA
-	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 11:49:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9928D20757
+	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 13:16:46 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="HnpeYN4+"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GCmm1wMV"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728763AbgEALts (ORCPT
+        id S1728813AbgEANQq (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 1 May 2020 07:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34854 "EHLO
+        Fri, 1 May 2020 09:16:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728575AbgEALtr (ORCPT
+        by vger.kernel.org with ESMTP id S1728809AbgEANQp (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 1 May 2020 07:49:47 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1DFDC061A0C
-        for <linux-serial@vger.kernel.org>; Fri,  1 May 2020 04:49:46 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id x18so11273444wrq.2
-        for <linux-serial@vger.kernel.org>; Fri, 01 May 2020 04:49:46 -0700 (PDT)
+        Fri, 1 May 2020 09:16:45 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E30C061A0C;
+        Fri,  1 May 2020 06:16:45 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id l20so4538885pgb.11;
+        Fri, 01 May 2020 06:16:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wZe2OaPSCDY2afaaPs7tXOLu/QH16szPzOl/6fyIoCI=;
-        b=HnpeYN4+TYH+XayrvAH7rL5ulJldblF3Ng/1chwg39cdkkrQL4rmBVo1lNcCQe1ahE
-         9KyLRPrC6rq3s+1sin2kOHGQnkFiCQ9gC5CZlu2DX5cI9LmWo2Bi3miDdWZ5TKSWmET5
-         SRMRg6gqQqE+GiVQ2dzIBKRxknXFevRv3w7t057tmCY4b8/RA7CwMmmcB+Td7+fv+vAC
-         T6J8UT6bu3/6ANuZZahYPFDO/P/G43HlDBVLg+NiDmORssGZKuKq1ee1TMvhuli+ndt0
-         4Q4zLMmYK2y5Evkdloc6SaWjMe8wQFoWs7NOPa86ImWE9cAfy6Z+/Ep69b3oXMs4dP+J
-         BPog==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b2+/9XXY8Y1RxQllaPBwEstw2gB8BpLP9hF+BFGMRto=;
+        b=GCmm1wMVqYxnGfNpvKp1cw9fbv2U2gMWk1CMbTh48Hm7wPNMne/GbW31xoR7mD00S6
+         +uYXr4iDO7nSP6i6NtmbZ50/3IbLNNl4H21oYebEd34ccm62tuScRjfDRf1UWetYkb65
+         odnWO7yMmFF0syGwu/kMQNNJLwLW9Ij93HzkYPKmRli9xqzyC1VZ3EEehyJPysb8KWdz
+         T+7Umkferm/ayeT9tP5ghbICCAKDJv7XaRspMAl82ljUL/xT1Jwb2cPlduJ7JsQ0OhsH
+         Ld0vBtmY9g6MuytPotItD3U+UU2gcrdRAg8rKiiJr6QVPNe7h5eDislLZN2nuhtD84Cl
+         FNAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wZe2OaPSCDY2afaaPs7tXOLu/QH16szPzOl/6fyIoCI=;
-        b=kctNBREHVTkyD5R0BLVtUTfzF6uROOrejqFr8jNRnSxTl936ulhpquS7QR6DWVgDeM
-         EecpeDO+gvh6HbMOgwwtz205VLyOFQNkH/09AtmUUhnN3EQmhXx3W3IhC49HpIXGgbUl
-         R8CuK7iMVfkCINbYoCOv/cWqYvJRXSuXx9FCm29x4wETkU2PQ4IbW7jwybblHv1WshPh
-         Wv0hz8O0NEl6Oun0/kVHKEDPGgeR5GzY0LVUAVkrHctxA+UapqG+vo2zUlF4j7D4IWHc
-         17y4LdOG7boKZpdp8dg6IDsba2315Qf/XC5I+5vm2wsoLzRwNofMicliN1YQ9bJEQ1md
-         yF0g==
-X-Gm-Message-State: AGi0PuZwvp0uikERUg2nEhgFjqiNXRV7nQHCyBkOliYMlpf3v6vVLlW/
-        LScKUmZPO5md7KAzN7QFL6TXFw==
-X-Google-Smtp-Source: APiQypISgLF1uo9wNeadwVw7nKzKFWvl5TOTlq1H4Pk/72E9uiX1TgTiyZUcpV2jCxAiwy9I2F7tRQ==
-X-Received: by 2002:a5d:634a:: with SMTP id b10mr3866323wrw.263.1588333785560;
-        Fri, 01 May 2020 04:49:45 -0700 (PDT)
-Received: from holly.lan (cpc141214-aztw34-2-0-cust773.18-1.cable.virginm.net. [86.9.19.6])
-        by smtp.gmail.com with ESMTPSA id b12sm4578913wro.18.2020.05.01.04.49.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 May 2020 04:49:44 -0700 (PDT)
-Date:   Fri, 1 May 2020 12:49:43 +0100
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Douglas Anderson <dianders@chromium.org>
-Cc:     Jason Wessel <jason.wessel@windriver.com>, sumit.garg@linaro.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH] kgdboc: Be a bit more robust about handling earlycon
- leaving
-Message-ID: <20200501114943.ioetuxe24gi27bll@holly.lan>
-References: <20200430095819.1.Id37f71c69eb21747b9d9e2c7c242be130814b362@changeid>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b2+/9XXY8Y1RxQllaPBwEstw2gB8BpLP9hF+BFGMRto=;
+        b=rSy2Pt8N0sREFiUERz8cWRLX2mHTohJw2fT5eigFfXMfLUQzc3qHvHRue2jVjaGUI/
+         VR34jNs9etyCCfSGSFiQ+qru15W00f3vuCLK7Dy5lHPrV67ARCLJEpDu4GMTwt48PYUy
+         rhgKzlsOaUIEco1lUnS/3NXBr31UrN8Kzq9f5Z4iDDhWUlxhC6kKJdsUeG0hll77mVUb
+         4ttdvcAe/zcFtEnCMkRhsEBYFZZohH4wfI15vUaoWIGbofxpnWAHBVlcX8awxV1gkTtc
+         hbdVTdoO5RLzFb3mbvMCEW9fCPAeom8SJyy35wLST1h4A06vCwX3Uvu4vyU+CDIWjVVy
+         XvLw==
+X-Gm-Message-State: AGi0PuYoN+I/RNTF0N84qwVotjlKp2qxAS4946m9YtiyghtNcGfLi178
+        XYnxUFnlfFQDOpctkA1NRW2C8sMDGHBhH9mWShc=
+X-Google-Smtp-Source: APiQypKHDrDQjerRe+W1cA8mxnGSdNgtk0He587ZvD8AdxHMslTtV5DWvxC7LaTDqCSIrv6W6qI497cIXQBPbgQab8o=
+X-Received: by 2002:a62:f908:: with SMTP id o8mr4034258pfh.170.1588339005327;
+ Fri, 01 May 2020 06:16:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200430095819.1.Id37f71c69eb21747b9d9e2c7c242be130814b362@changeid>
+References: <20200430161438.17640-1-alpernebiyasak@gmail.com>
+ <20200501013044.GA288759@jagdpanzerIV.localdomain> <818ba356-ba35-68de-b7bf-f145a89280f1@gmail.com>
+In-Reply-To: <818ba356-ba35-68de-b7bf-f145a89280f1@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 1 May 2020 16:16:33 +0300
+Message-ID: <CAHp75VeZRwUp+CpOct4dCAQAfyJZBAY7=qSKwRQh935KEMWw+g@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 0/3] Prefer working VT console over SPCR and
+ device-tree chosen stdout-path
+To:     Alper Nebi Yasak <alpernebiyasak@gmail.com>
+Cc:     Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, Petr Mladek <pmladek@suse.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arvind Sankar <nivedita@alum.mit.edu>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Biggers <ebiggers@google.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Grzegorz Halat <ghalat@redhat.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Sam Ravnborg <sam@ravnborg.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Apr 30, 2020 at 09:59:09AM -0700, Douglas Anderson wrote:
-> The original implementation of kgdboc_earlycon included a comment
-> about how it was impossible to get notified about the boot console
-> going away without making changes to the Linux core.  Since folks
-> often don't want to change the Linux core for kgdb's purposes, the
-> kgdboc_earlycon implementation did a bit of polling to figure out when
-> the boot console went away.
-> 
-> It turns out, though, that it is possible to get notified about the
-> boot console going away.  The solution is either clever or a hack
-> depending on your viewpoint.  ...or, perhaps, a clever hack.  All we
-> need to do is head-patch the "exit" routine of the boot console.  We
-> know that "struct console" must be writable because it has a "next"
-> pointer in it, so we can just put our own exit routine in, do our
-> stuff, and then call back to the original.
+On Fri, May 1, 2020 at 2:11 PM Alper Nebi Yasak
+<alpernebiyasak@gmail.com> wrote:
+> On 01/05/2020 04:30, Sergey Senozhatsky wrote:
 
-I think I'm in the hack camp on this one!
+> I'm assuming "by default" here means "without console arguments"
+> regardless of firmware requests. This paragraph (with small changes) is
+> repeated on many other Kconfig descriptions (drivers/tty/serial/Kconfig,
+> drivers/tty/serial/8250/Kconfig, arch/sparc/Kconfig from grepping for
+> '/dev/tty0' on **/Kconfig).
+>
+> From Documentation/admin-guide/serial-console.rst:
+>
+> > You can specify multiple console= options on the kernel command line.
+> > [...]
+> > Note that you can only define one console per device type (serial, video).
+> >
+> > If no console device is specified, the first device found capable of
+> > acting as a system console will be used. At this time, the system
+> > first looks for a VGA card and then for a serial port. So if you don't
+> > have a VGA card in your system the first serial port will automatically
+> > become the console.
+>
+> and later on:
+>
+> > Note that if you boot without a ``console=`` option (or with
+> > ``console=/dev/tty0``), ``/dev/console`` is the same as ``/dev/tty0``.
+> > In that case everything will still work.
 
- 
-> This works great to get notified about the boot console going away.
-> The (slight) problem is that in the context of the boot console's exit
-> routine we can't call tty_find_polling_driver().
+I'm wondering if behaviour is changed if you put console=tty1 instead
+of console=tty0.
 
-I presume this is something to do with the tty_mutex?
-
-
-> We solve this by
-> kicking off some work on the system_wq when we get notified and this
-> works pretty well.
-
-There are some problems with the workqueue approach.
-
-Firstly, its runs too early on many systems (esp. those that register
-the console from a console initcall. kgdboc cannot find the tty, I think
-because the console is registered a long time before the corresponding
-tty comes up.
-
-Secondly I am seeing warnings related to the tty_mutex where the
-might_sleep() machinery ends up flushing the active workqueue.
-
-[   39.298332] ------------[ cut here ]------------                             
-[   39.298332] WARNING: CPU: 0 PID: 5 at kernel/workqueue.c:3033 __flush_work+00
-[   39.298332] Modules linked in:                                               
-[   39.298332] CPU: 0 PID: 5 Comm: kworker/0:0 Not tainted 5.7.0-rc3+ #47       
-[   39.298332] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-204
-[   39.298332] Workqueue: events kgdboc_earlycon_exit_work_fn           
-[   39.298332] RIP: 0010:__flush_work+0x19c/0x1c0                               
-[   39.298332] Code: 4c 8b 6d 20 e9 06 ff ff ff 41 c6 04 24 00 fb 45 31 f6 eb 8f
-[   39.298332] RSP: 0018:ffff993500033dd0 EFLAGS: 00010246                      
-[   39.298332] RAX: 0000000000000000 RBX: ffffffffadcd0720 RCX: 0000000000000001
-[   39.298332] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffffadcd0820
-[   39.298332] RBP: ffff8a633ec299c0 R08: 0000000000000000 R09: 0000000000000001
-[   39.298332] R10: 000000000000000a R11: f000000000000000 R12: 00000000ffffffed
-[   39.298332] R13: ffff8a633e408840 R14: 0000000000000000 R15: ffff8a633e408840
-[   39.298332] FS:  0000000000000000(0000) GS:ffff8a633ec00000(0000) knlGS:00000
-[   39.298332] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033                
-[   39.298332] CR2: ffff8a6333201000 CR3: 0000000032a0a000 CR4: 00000000000006f0
-[   39.298332] Call Trace:                                                      
-[   39.298332]  ? _cond_resched+0x10/0x20                                       
-[   39.298332]  ? mutex_lock+0x9/0x30                                           
-[   39.298332]  ? tty_find_polling_driver+0x134/0x1a0                      
-[   39.298332]  configure_kgdboc+0x12d/0x1c0                                    
-[   39.298332]  kgdboc_earlycon_exit_work_fn+0x1a/0x40                          
-[   39.298332]  process_one_work+0x1d3/0x380                                    
-[   39.298332]  worker_thread+0x45/0x3c0                                        
-[   39.298332]  kthread+0xf6/0x130                                              
-[   39.298332]  ? process_one_work+0x380/0x380                                  
-[   39.298332]  ? kthread_park+0x80/0x80                                        
-[   39.298332]  ret_from_fork+0x22/0x40                                         
-[   39.298332] ---[ end trace 1190f578d6e11204 ]---                             
-[   39.298338] KGDB: Unregistered I/O driver kgdboc_earlycon, debugger disabled 
-
-
-Daniel.
+-- 
+With Best Regards,
+Andy Shevchenko
