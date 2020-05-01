@@ -2,97 +2,154 @@ Return-Path: <SRS0=20mg=6P=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6CBC47259
-	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 08:21:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C282C47259
+	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 08:28:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DACD72184D
-	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 08:21:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0CB9520731
+	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 08:28:09 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kitVDdx/"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728470AbgEAIVS (ORCPT
+        id S1728422AbgEAI2G (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 1 May 2020 04:21:18 -0400
-Received: from jabberwock.ucw.cz ([46.255.230.98]:33806 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728334AbgEAIVO (ORCPT
+        Fri, 1 May 2020 04:28:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59954 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728325AbgEAI2F (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 1 May 2020 04:21:14 -0400
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 780AD1C020C; Fri,  1 May 2020 10:21:12 +0200 (CEST)
-Date:   Fri, 1 May 2020 10:21:11 +0200
-From:   Pavel Machek <pavel@denx.de>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johan Hovold <johan@kernel.org>, Rob Herring <robh@kernel.org>,
-        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
-        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
-Subject: Re: [PATCHv6 0/6] n_gsm serdev support and GNSS driver for droid4
-Message-ID: <20200501082111.GA7501@amd>
-References: <20200430174615.41185-1-tony@atomide.com>
+        Fri, 1 May 2020 04:28:05 -0400
+Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D38C035494;
+        Fri,  1 May 2020 01:28:05 -0700 (PDT)
+Received: by mail-oi1-x241.google.com with SMTP id t199so2139724oif.7;
+        Fri, 01 May 2020 01:28:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iIaRGYpAPupU8ap77mm0+hl9zSz1kLjaWyzfce1Qs3Y=;
+        b=kitVDdx/L3DP0PkMGe4nbAT/OeUb9rxLisr3H1naWl4uvidfeWv+LsXSQEgmmyc0X/
+         iLi76W4bs3UsILqhkHUgncUHqEUqeBZ807rF4XZtjj2UQ67sZ4mxfq8Rz5lTBq2RNN+v
+         9/S7EJEZh7aqpKGRbqGY8MNKVZ1kFzS8Qyhlb5ZJs4YPTpvsgZQEVgDc8FP/aj/kr24B
+         mD/lDEQb5IO+ZfE5flM5Fs50UniK7R/Y60Rs+7W7iMXftdnv38rWWXkWJdLnEIk81P8R
+         YBN1wqcVZHOU0FJbuDxdB/nALwtchR1n48YTjEaft/fGl60RWwSo7g9wzWS58jpzwAKS
+         vXIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iIaRGYpAPupU8ap77mm0+hl9zSz1kLjaWyzfce1Qs3Y=;
+        b=t7QM5ea78ctrTVc+To8N6dmev14LODMKeYrjA8lT9sGR0t/p1KeQdjMiWzsvjq1P7f
+         iqgpZhx8EwXkdoA6ljxWXeKCpBV1mZMKc800laWio8XpNC23FtdOt0R3oMZPZSVxGoqV
+         Ml5wAm5LJIkxtnxMWMLfO2kpuELD1KavEP2zrPMws4K23IUJV/EOeJxtZhOKksEzPqiS
+         3lHTfI5bw0B7wkJ2/il+L+eOsO7gSxLrgj4jAT2FWUZl3vCUdQ+5GdQTpeX7+TFizTfv
+         JobuwdBZbKboUsy5JYU81p1GK7OTle6b4TYbdO27V/IHxv3P+gwFy1NSi4c4su5u7Kmp
+         cKEA==
+X-Gm-Message-State: AGi0PubLcHCx9uT6L7kkjRMOvX/UpQgQ5RQvqObpoCY0t+fkrn6U8CLb
+        H46LWnsSN8N6ugroEQ80TkzRA3QWKyFNSQN8AdA=
+X-Google-Smtp-Source: APiQypK7F/qXasasin7MAQYiif3YYm7Zv+A3AA59LZg9zaayKtl+Wh4ZN+37kvvRqqUEkgvPlkOR6eZ2Unj/057MAYA=
+X-Received: by 2002:a05:6808:5c5:: with SMTP id d5mr2347754oij.8.1588321684000;
+ Fri, 01 May 2020 01:28:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="J/dobhs11T7y2rNN"
-Content-Disposition: inline
-In-Reply-To: <20200430174615.41185-1-tony@atomide.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <1588197415-13747-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1588197415-13747-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Fri, 1 May 2020 09:27:37 +0100
+Message-ID: <CA+V-a8sudn9kNs0QKQP9L_GL2wo1mifjRLcbA6sYjryD9cfZMw@mail.gmail.com>
+Subject: Re: [PATCH 00/18] Add R8A7742/RZG1H board support
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Marc Zyngier <maz@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Russell King <linux@armlinux.org.uk>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        dmaengine <dmaengine@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        LAK <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi Geert,
 
---J/dobhs11T7y2rNN
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Wed, Apr 29, 2020 at 10:57 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+>
+> Hi All,
+>
+> This patch set adds initial board support for R8A7742 SoC,
+> enabling R8A7742 arch in defconfigs with initial dtsi.
+>
+> Cheers,
+> --Prabhakar
+>
+> Lad Prabhakar (18):
+>   soc: renesas: Add Renesas R8A7742 config option
+>   ARM: shmobile: defconfig: Enable r8a7742 SoC
+>   ARM: multi_v7_defconfig: Enable r8a7742 SoC
+>   ARM: debug-ll: Add support for r8a7742
+>   dt-bindings: pinctrl: sh-pfc: Document r8a7742 PFC support
+>   pinctrl: sh-pfc: r8a7790: Add r8a7742 PFC support
+>   ARM: dts: r8a7742: Initial SoC device tree
+>   dt-bindings: irqchip: renesas-irqc: Document r8a7742 bindings
+>   ARM: dts: r8a7742: Add IRQC support
+>   dt-bindings: rcar-dmac: Document r8a7742 support
+>   ARM: dts: r8a7742: Add SYS-DMAC support
+>   dt-bindings: serial: renesas,scif: Document r8a7742 bindings
+>   dt-bindings: serial: renesas,scifa: Document r8a7742 bindings
+>   dt-bindings: serial: renesas,scifb: Document r8a7742 bindings
+>   dt-bindings: serial: renesas,hscif: Document r8a7742 bindings
+>   ARM: dts: r8a7742: Add [H]SCIF{A|B} support
+>   dt-bindings: gpio: rcar: Add r8a7742 (RZ/G1H) support
+>   ARM: dts: r8a7742: Add GPIO support
+>
+Thank you for the review.
 
-Hi!
+For v2 ill post patches from 6-18 fixing your review comments and
+including the Acks, as patches 1-5 have been queued.
 
-> Now without the chardev support, the /dev/gsmtty* using apps need
-> to use "U1234AT+CFUN?" format for the packets. The advantage is
-> less kernel code, and we keep the existing /dev/gsmtty* interface.
+Cheers,
+--Prabhakar
 
-Actually... yes, this works. But no, this is not "existing" tty
-interface.
-
-ttys work per character, and this interface definitely does not... it
-is "packet" based, write() syscalls need exactly right lengths. You
-can't just open minicom, and type "U1234...". You can't paste it,
-either (I tried). tty controls like start/stop bits and baud rate are
-useless here. CR/LF conversions are unwanted/dangerous because it is
-confusing hard to debug if you get them wrong.
-
-Now, I don't see reason why this could not be made to work, and it may
-be more important to have something in mainline and work with that. So
-if you can make this into -next, I'll not complain too loudly. But it
-is... still wrong and I liked motmdm* more :-).
-
-Best regards,
-
-									Pavel
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---J/dobhs11T7y2rNN
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAl6r2/cACgkQMOfwapXb+vJWVQCgmZWp4uW4WcDVtKcZ64vezhLQ
-cwAAn2QiA0rySRtYXW2XeiPwWH7txj3y
-=CjiR
------END PGP SIGNATURE-----
-
---J/dobhs11T7y2rNN--
+>  .../devicetree/bindings/dma/renesas,rcar-dmac.txt  |   1 +
+>  .../devicetree/bindings/gpio/renesas,gpio-rcar.txt |   1 +
+>  .../interrupt-controller/renesas,irqc.yaml         |   1 +
+>  .../bindings/pinctrl/renesas,pfc-pinctrl.txt       |   1 +
+>  .../devicetree/bindings/serial/renesas,hscif.yaml  |   1 +
+>  .../devicetree/bindings/serial/renesas,scif.yaml   |   1 +
+>  .../devicetree/bindings/serial/renesas,scifa.yaml  |   1 +
+>  .../devicetree/bindings/serial/renesas,scifb.yaml  |   1 +
+>  arch/arm/Kconfig.debug                             |  10 +
+>  arch/arm/boot/dts/r8a7742.dtsi                     | 939 +++++++++++++++++++++
+>  arch/arm/configs/multi_v7_defconfig                |   1 +
+>  arch/arm/configs/shmobile_defconfig                |   1 +
+>  drivers/pinctrl/sh-pfc/Kconfig                     |   4 +
+>  drivers/pinctrl/sh-pfc/Makefile                    |   1 +
+>  drivers/pinctrl/sh-pfc/core.c                      |   6 +
+>  drivers/pinctrl/sh-pfc/pfc-r8a7790.c               |  24 +
+>  drivers/pinctrl/sh-pfc/sh_pfc.h                    |   1 +
+>  drivers/soc/renesas/Kconfig                        |   7 +
+>  18 files changed, 1002 insertions(+)
+>  create mode 100644 arch/arm/boot/dts/r8a7742.dtsi
+>
+> --
+> 2.7.4
+>
