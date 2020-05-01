@@ -2,154 +2,177 @@ Return-Path: <SRS0=20mg=6P=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C282C47259
-	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 08:28:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 537EDC4724C
+	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 11:09:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0CB9520731
-	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 08:28:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 24F4B208C3
+	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 11:09:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kitVDdx/"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="U+7irlew"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728422AbgEAI2G (ORCPT
+        id S1728614AbgEALJJ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 1 May 2020 04:28:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59954 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728325AbgEAI2F (ORCPT
+        Fri, 1 May 2020 07:09:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56790 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728532AbgEALJJ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 1 May 2020 04:28:05 -0400
-Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D38C035494;
-        Fri,  1 May 2020 01:28:05 -0700 (PDT)
-Received: by mail-oi1-x241.google.com with SMTP id t199so2139724oif.7;
-        Fri, 01 May 2020 01:28:05 -0700 (PDT)
+        Fri, 1 May 2020 07:09:09 -0400
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F373C08E859;
+        Fri,  1 May 2020 04:09:07 -0700 (PDT)
+Received: by mail-lf1-x141.google.com with SMTP id f8so3613418lfe.12;
+        Fri, 01 May 2020 04:09:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iIaRGYpAPupU8ap77mm0+hl9zSz1kLjaWyzfce1Qs3Y=;
-        b=kitVDdx/L3DP0PkMGe4nbAT/OeUb9rxLisr3H1naWl4uvidfeWv+LsXSQEgmmyc0X/
-         iLi76W4bs3UsILqhkHUgncUHqEUqeBZ807rF4XZtjj2UQ67sZ4mxfq8Rz5lTBq2RNN+v
-         9/S7EJEZh7aqpKGRbqGY8MNKVZ1kFzS8Qyhlb5ZJs4YPTpvsgZQEVgDc8FP/aj/kr24B
-         mD/lDEQb5IO+ZfE5flM5Fs50UniK7R/Y60Rs+7W7iMXftdnv38rWWXkWJdLnEIk81P8R
-         YBN1wqcVZHOU0FJbuDxdB/nALwtchR1n48YTjEaft/fGl60RWwSo7g9wzWS58jpzwAKS
-         vXIQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=JbMZH52YEWSxdCQl8+jIQlPQEAuYbjyzNeqiNbuukKE=;
+        b=U+7irlew5ltgB9neJ2IUW9PFrMwsCCgcyWeEJKaaQtm1AN/QWS8zwTw5fMSCNsLDag
+         A4bQA4vEuetXw/3nPDcycMnRS0CZdgF10nDi8vKpNePilWT0vFCalcmGy6eyQSrpiCn9
+         GAdlJhJhJsJD7/sRBPHjcKe4F6G5b6I0SrFci4/YYke7JHMBqNuXaQVxZiv4C4OEY8ND
+         i1+mNIM2n+t7osIVAz+hwD3HG4cDIbDbec9CYYoO6OF5RjjFx2WNN3yghLU5XlLjOKWL
+         z71GvyadUkZIo/D5hP7/rpXHuTXrrOh0msvzT1rJCtDXKkgKFheJi4IDnmoBHlhI74DT
+         IKNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iIaRGYpAPupU8ap77mm0+hl9zSz1kLjaWyzfce1Qs3Y=;
-        b=t7QM5ea78ctrTVc+To8N6dmev14LODMKeYrjA8lT9sGR0t/p1KeQdjMiWzsvjq1P7f
-         iqgpZhx8EwXkdoA6ljxWXeKCpBV1mZMKc800laWio8XpNC23FtdOt0R3oMZPZSVxGoqV
-         Ml5wAm5LJIkxtnxMWMLfO2kpuELD1KavEP2zrPMws4K23IUJV/EOeJxtZhOKksEzPqiS
-         3lHTfI5bw0B7wkJ2/il+L+eOsO7gSxLrgj4jAT2FWUZl3vCUdQ+5GdQTpeX7+TFizTfv
-         JobuwdBZbKboUsy5JYU81p1GK7OTle6b4TYbdO27V/IHxv3P+gwFy1NSi4c4su5u7Kmp
-         cKEA==
-X-Gm-Message-State: AGi0PubLcHCx9uT6L7kkjRMOvX/UpQgQ5RQvqObpoCY0t+fkrn6U8CLb
-        H46LWnsSN8N6ugroEQ80TkzRA3QWKyFNSQN8AdA=
-X-Google-Smtp-Source: APiQypK7F/qXasasin7MAQYiif3YYm7Zv+A3AA59LZg9zaayKtl+Wh4ZN+37kvvRqqUEkgvPlkOR6eZ2Unj/057MAYA=
-X-Received: by 2002:a05:6808:5c5:: with SMTP id d5mr2347754oij.8.1588321684000;
- Fri, 01 May 2020 01:28:04 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=JbMZH52YEWSxdCQl8+jIQlPQEAuYbjyzNeqiNbuukKE=;
+        b=OGC957zT2vZHwZVtSFDpA4UD3Gg7Dy7SOHlToYUkrZScsK0LAn+3vZtW6zssw0dFqv
+         7y7RreQ2A3tyIHPuzuTNyyAElKUvspVSmJmPLlRMXIGLbYQTZdqdhaLH3gPNhj3gl41O
+         hIY2uCvg51meWNnWvz5cKy/2W/iGjNZjRn7ICVDsvgNTu5iU/1dgZWXxD+yZQ1b+LkwV
+         o9kDssRNsz0LfHUHAi2fd+hNgBUyWieh0rj3eOSAwk0wVp7R1XH12Z+vyfRht5r6TWKW
+         fpQ1f39qZQxcVFBcTW1sBO9cKZuRjGPoVeZn/OHOslbTcicdVMpuAs5UtqMi1PZX3+Mq
+         jApg==
+X-Gm-Message-State: AGi0Pua2sU1lmzJ1GdF2/XMGlYNp6quI8d7VHU27hac7hiNnPVO85vNH
+        vymqVYeb1MTJuHMm1RtOFfw=
+X-Google-Smtp-Source: APiQypIsazxBBI9m765GGp7qZdwhkRJkVk9sBcmxyN15Eo1/skHafCF+d9fBKRIPWxxi6ZBDSafi7Q==
+X-Received: by 2002:a05:6512:44d:: with SMTP id y13mr1940676lfk.118.1588331345952;
+        Fri, 01 May 2020 04:09:05 -0700 (PDT)
+Received: from [192.168.0.74] ([178.233.178.9])
+        by smtp.gmail.com with ESMTPSA id t16sm1755806ljg.41.2020.05.01.04.09.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 May 2020 04:09:05 -0700 (PDT)
+Subject: Re: [RFC PATCH v2 0/3] Prefer working VT console over SPCR and
+ device-tree chosen stdout-path
+To:     Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, Petr Mladek <pmladek@suse.com>,
+        linux-serial@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arvind Sankar <nivedita@alum.mit.edu>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Biggers <ebiggers@google.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Grzegorz Halat <ghalat@redhat.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Sam Ravnborg <sam@ravnborg.org>
+References: <20200430161438.17640-1-alpernebiyasak@gmail.com>
+ <20200501013044.GA288759@jagdpanzerIV.localdomain>
+From:   Alper Nebi Yasak <alpernebiyasak@gmail.com>
+Message-ID: <818ba356-ba35-68de-b7bf-f145a89280f1@gmail.com>
+Date:   Fri, 1 May 2020 14:08:56 +0300
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-References: <1588197415-13747-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1588197415-13747-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Fri, 1 May 2020 09:27:37 +0100
-Message-ID: <CA+V-a8sudn9kNs0QKQP9L_GL2wo1mifjRLcbA6sYjryD9cfZMw@mail.gmail.com>
-Subject: Re: [PATCH 00/18] Add R8A7742/RZG1H board support
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Marc Zyngier <maz@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        dmaengine <dmaengine@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LAK <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200501013044.GA288759@jagdpanzerIV.localdomain>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Geert,
+On 01/05/2020 04:30, Sergey Senozhatsky wrote:> Well, if there is a "mandated console", then why would we prefer
+> any other console?
 
-On Wed, Apr 29, 2020 at 10:57 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
->
-> Hi All,
->
-> This patch set adds initial board support for R8A7742 SoC,
-> enabling R8A7742 arch in defconfigs with initial dtsi.
->
-> Cheers,
-> --Prabhakar
->
-> Lad Prabhakar (18):
->   soc: renesas: Add Renesas R8A7742 config option
->   ARM: shmobile: defconfig: Enable r8a7742 SoC
->   ARM: multi_v7_defconfig: Enable r8a7742 SoC
->   ARM: debug-ll: Add support for r8a7742
->   dt-bindings: pinctrl: sh-pfc: Document r8a7742 PFC support
->   pinctrl: sh-pfc: r8a7790: Add r8a7742 PFC support
->   ARM: dts: r8a7742: Initial SoC device tree
->   dt-bindings: irqchip: renesas-irqc: Document r8a7742 bindings
->   ARM: dts: r8a7742: Add IRQC support
->   dt-bindings: rcar-dmac: Document r8a7742 support
->   ARM: dts: r8a7742: Add SYS-DMAC support
->   dt-bindings: serial: renesas,scif: Document r8a7742 bindings
->   dt-bindings: serial: renesas,scifa: Document r8a7742 bindings
->   dt-bindings: serial: renesas,scifb: Document r8a7742 bindings
->   dt-bindings: serial: renesas,hscif: Document r8a7742 bindings
->   ARM: dts: r8a7742: Add [H]SCIF{A|B} support
->   dt-bindings: gpio: rcar: Add r8a7742 (RZ/G1H) support
->   ARM: dts: r8a7742: Add GPIO support
->
-Thank you for the review.
+From what I understand, the firmware provides serial console settings to
+be used as the preferred _serial_ console (where it would be OK to
+switch to graphical consoles later on) and the kernel currently
+understands that such a console should be the preferred _system_ console
+(always preferred over even graphical ones). By "mandated" I'm referring
+to the kernel's current behavior, not to (in my understanding) the
+firmware's intentions.
 
-For v2 ill post patches from 6-18 fixing your review comments and
-including the Acks, as patches 1-5 have been queued.
+Even if the firmware/specifications is really asking the kernel to (tell
+userspace programs to) always use the serial console instead of the
+framebuffer console, while on e.g. a laptop-like device intended to be
+used with a keyboard and display -- is that the correct thing to do?
 
-Cheers,
---Prabhakar
+From the userspace, under the conditions:
 
->  .../devicetree/bindings/dma/renesas,rcar-dmac.txt  |   1 +
->  .../devicetree/bindings/gpio/renesas,gpio-rcar.txt |   1 +
->  .../interrupt-controller/renesas,irqc.yaml         |   1 +
->  .../bindings/pinctrl/renesas,pfc-pinctrl.txt       |   1 +
->  .../devicetree/bindings/serial/renesas,hscif.yaml  |   1 +
->  .../devicetree/bindings/serial/renesas,scif.yaml   |   1 +
->  .../devicetree/bindings/serial/renesas,scifa.yaml  |   1 +
->  .../devicetree/bindings/serial/renesas,scifb.yaml  |   1 +
->  arch/arm/Kconfig.debug                             |  10 +
->  arch/arm/boot/dts/r8a7742.dtsi                     | 939 +++++++++++++++++++++
->  arch/arm/configs/multi_v7_defconfig                |   1 +
->  arch/arm/configs/shmobile_defconfig                |   1 +
->  drivers/pinctrl/sh-pfc/Kconfig                     |   4 +
->  drivers/pinctrl/sh-pfc/Makefile                    |   1 +
->  drivers/pinctrl/sh-pfc/core.c                      |   6 +
->  drivers/pinctrl/sh-pfc/pfc-r8a7790.c               |  24 +
->  drivers/pinctrl/sh-pfc/sh_pfc.h                    |   1 +
->  drivers/soc/renesas/Kconfig                        |   7 +
->  18 files changed, 1002 insertions(+)
->  create mode 100644 arch/arm/boot/dts/r8a7742.dtsi
+- CONFIG_VT_CONSOLE is enabled
+- There is a working graphics adapter and a display
+- There is no console argument given in the kernel command line
+
+I expect that:
+
+- tty0 is included in the /proc/consoles list [1]
+- tty0 is the preferred console and /dev/console refers to it [2]
+
+With SPCR both are false, and with stdout-path only the second is false.
+Again, I'm OK with these being false during earlier stages until
+graphics start working, but I'm arguing they should be true after then.
+
+In the patches I tried to keep these serial consoles still enabled and
+preferred during early stages of boot, by trying to switch to vt only
+after a real working graphical backend for it is initialized.
+
+I mean, if my expectations are unreasonable and the current kernel
+behaviour is considered correct, these patches would be conceptually
+wrong; so please tell me if I got anything right/wrong in all this.
+
+
+[1] From the descripion of CONFIG_VT_CONSOLE:
+
+> [...] If you answer Y here, a virtual terminal (the device used to
+> interact with a physical terminal) can be used as system console.
+> [...] you should say Y here unless you want the kernel messages be
+> output only to a serial port [...]
+
+and by "as a prerequisite of [2]"
+
+
+[2] From the descripion of CONFIG_VT_CONSOLE:
+
+> If you do say Y here, by default the currently visible virtual
+> terminal (/dev/tty0) will be used as system console. You can change
+> that with a kernel command line option such as "console=tty3" which
+> would use the third virtual terminal as system console. [...]
+
+I'm assuming "by default" here means "without console arguments"
+regardless of firmware requests. This paragraph (with small changes) is
+repeated on many other Kconfig descriptions (drivers/tty/serial/Kconfig,
+drivers/tty/serial/8250/Kconfig, arch/sparc/Kconfig from grepping for
+'/dev/tty0' on **/Kconfig).
+
+From Documentation/admin-guide/serial-console.rst:
+
+> You can specify multiple console= options on the kernel command line.
+> [...]
+> Note that you can only define one console per device type (serial, video).
 >
-> --
-> 2.7.4
->
+> If no console device is specified, the first device found capable of
+> acting as a system console will be used. At this time, the system
+> first looks for a VGA card and then for a serial port. So if you don't
+> have a VGA card in your system the first serial port will automatically
+> become the console.
+
+and later on:
+
+> Note that if you boot without a ``console=`` option (or with
+> ``console=/dev/tty0``), ``/dev/console`` is the same as ``/dev/tty0``.
+> In that case everything will still work.
