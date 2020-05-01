@@ -2,137 +2,97 @@ Return-Path: <SRS0=20mg=6P=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7391CC4724C
-	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 08:20:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6CBC47259
+	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 08:21:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 534F620731
-	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 08:20:25 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="O5Bdg7qQ"
+	by mail.kernel.org (Postfix) with ESMTP id DACD72184D
+	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 08:21:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728415AbgEAIUX (ORCPT
+        id S1728470AbgEAIVS (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 1 May 2020 04:20:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58776 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728277AbgEAIUV (ORCPT
+        Fri, 1 May 2020 04:21:18 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:33806 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728334AbgEAIVO (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 1 May 2020 04:20:21 -0400
-Received: from mail-oo1-xc42.google.com (mail-oo1-xc42.google.com [IPv6:2607:f8b0:4864:20::c42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9BFBC035494;
-        Fri,  1 May 2020 01:20:21 -0700 (PDT)
-Received: by mail-oo1-xc42.google.com with SMTP id x16so560686oop.13;
-        Fri, 01 May 2020 01:20:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4xmDrknoIK7bXjgHNUmPbIHsbFNrCtpw+rgXposQwms=;
-        b=O5Bdg7qQzAnlPhD7xVJhnqshnj7xNmXBKRGbWbhp2T9vzzM1MpFW+E+RYCzOknKpj8
-         ky8+dFqN4sKrq5u57LLjx7VY+/3/WsZskllAALIAtybnzNJR5vjiggO1UpC+6aDbbu9t
-         kydHSvKLXU7sGWkz9y9RVKviHgYZWyYOdg2x61aI7Ws5OUMZX6mszoJOTXjCYgE1kCG3
-         YxX1fPKMUR1N/tfPH7XlGmuqZdaT3kJbh6CaQQU6+twLEmxTOFlPMFYj1ocjQyMHVXpF
-         B5EvjhnHPr8btv+Tyz5UgmMlUf682frU/Xa8+Ff2S6K0/HOvwKzJmdLj2aYf5auUrllc
-         1zXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4xmDrknoIK7bXjgHNUmPbIHsbFNrCtpw+rgXposQwms=;
-        b=hYWFBVCawSjWwMhj3q/lDfMxofxhjOEbIkJWVjFwEUC3insRhZQlVlRhYkGkLwlyku
-         TYFA93a1l4kwHrkLn1mZj5Y8v77RiURD6hILCtu/PXILTTzLzP6xYcuoC3N8xX0LqOv9
-         LKGC7lAwIPw/rlWIFWLPYNWHspWuLfqL/hgjDY+X3n+EECC7LoNjFoctbhNLhlPZ929u
-         bXQefpc3OyzoMNazJ0b/lr7QIlG30yOMVC0IASBdofqtVnduRrTxGjWHLb3+40hErQIe
-         BS0KkLFJZL88gjEPQ1RCGDcgjBW8ugTV2RkDoaBncQA4ixsGcbsdgivaZ7ampn5v1PJ4
-         AhOQ==
-X-Gm-Message-State: AGi0PuYl1v3NaMJ6XKl2nDoyJu7I3FGlF55ANp+dcz+b0xI8dQapIZY3
-        Uo8wyOeYhi1NST9m3fq106ZzpgIcwlknfJI/xhfLJMpQoZw=
-X-Google-Smtp-Source: APiQypKWRZyPptVG5tDacv48mYRSDp6n8y852TNesK+NocS5PxHwyt2eSwaWJhO2Yzy3GzH7tq6UeX5cCu+1f17mElg=
-X-Received: by 2002:a4a:a209:: with SMTP id m9mr2850194ool.62.1588321221043;
- Fri, 01 May 2020 01:20:21 -0700 (PDT)
+        Fri, 1 May 2020 04:21:14 -0400
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 780AD1C020C; Fri,  1 May 2020 10:21:12 +0200 (CEST)
+Date:   Fri, 1 May 2020 10:21:11 +0200
+From:   Pavel Machek <pavel@denx.de>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Johan Hovold <johan@kernel.org>, Rob Herring <robh@kernel.org>,
+        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
+        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
+        Merlijn Wajer <merlijn@wizzup.org>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+Subject: Re: [PATCHv6 0/6] n_gsm serdev support and GNSS driver for droid4
+Message-ID: <20200501082111.GA7501@amd>
+References: <20200430174615.41185-1-tony@atomide.com>
 MIME-Version: 1.0
-References: <1588197415-13747-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1588197415-13747-5-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdXEu0i8APM+g3TWbkfkLbYtCzi7uJABvMscS0a_j030tg@mail.gmail.com>
-In-Reply-To: <CAMuHMdXEu0i8APM+g3TWbkfkLbYtCzi7uJABvMscS0a_j030tg@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Fri, 1 May 2020 09:19:54 +0100
-Message-ID: <CA+V-a8u8r+zT-HSHqPQdRfCKOmx=-a_GrTTM1ZQueOwnvT8xeg@mail.gmail.com>
-Subject: Re: [PATCH 04/18] ARM: debug-ll: Add support for r8a7742
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Marc Zyngier <maz@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        dmaengine <dmaengine@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="J/dobhs11T7y2rNN"
+Content-Disposition: inline
+In-Reply-To: <20200430174615.41185-1-tony@atomide.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Geert,
 
-On Thu, Apr 30, 2020 at 2:03 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Prabhakar,
->
-> On Wed, Apr 29, 2020 at 11:58 PM Lad Prabhakar
-> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> > Enable low-level debugging support for RZ/G1H (R8A7742). RZ/G1H uses
-> > SCIFA2 for the debug console.
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
->
-> Thanks for your patch!
->
-> > --- a/arch/arm/Kconfig.debug
-> > +++ b/arch/arm/Kconfig.debug
-> > @@ -976,6 +976,13 @@ choice
-> >                   Say Y here if you want kernel low-level debugging support
-> >                   via SCIF4 on Renesas RZ/G1E (R8A7745).
-> >
-> > +       config DEBUG_RCAR_GEN2_SCIFA2
-> > +               bool "Kernel low-level debugging messages via SCIFA2 on ARCH_R8A7742"
->
-> R8A7742 (without "ARCH_"-prefix)
->
-> I can fix that (and the sorting issue) while applying, so
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> i.e. will queue in renesas-devel for v5.8.
->
-Thank you for taking care of that.
+--J/dobhs11T7y2rNN
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Cheers,
---Prabhakar
+Hi!
 
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
+> Now without the chardev support, the /dev/gsmtty* using apps need
+> to use "U1234AT+CFUN?" format for the packets. The advantage is
+> less kernel code, and we keep the existing /dev/gsmtty* interface.
+
+Actually... yes, this works. But no, this is not "existing" tty
+interface.
+
+ttys work per character, and this interface definitely does not... it
+is "packet" based, write() syscalls need exactly right lengths. You
+can't just open minicom, and type "U1234...". You can't paste it,
+either (I tried). tty controls like start/stop bits and baud rate are
+useless here. CR/LF conversions are unwanted/dangerous because it is
+confusing hard to debug if you get them wrong.
+
+Now, I don't see reason why this could not be made to work, and it may
+be more important to have something in mainline and work with that. So
+if you can make this into -next, I'll not complain too loudly. But it
+is... still wrong and I liked motmdm* more :-).
+
+Best regards,
+
+									Pavel
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
+
+--J/dobhs11T7y2rNN
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAl6r2/cACgkQMOfwapXb+vJWVQCgmZWp4uW4WcDVtKcZ64vezhLQ
+cwAAn2QiA0rySRtYXW2XeiPwWH7txj3y
+=CjiR
+-----END PGP SIGNATURE-----
+
+--J/dobhs11T7y2rNN--
