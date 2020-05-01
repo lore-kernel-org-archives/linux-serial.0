@@ -2,108 +2,132 @@ Return-Path: <SRS0=20mg=6P=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C522DC47247
-	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 01:39:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E8DBC47247
+	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 01:40:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9B1C720873
-	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 01:39:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EC4D820836
+	for <linux-serial@archiver.kernel.org>; Fri,  1 May 2020 01:40:28 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nv1QPz0V"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qOsxv6vE"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727924AbgEABjX (ORCPT
+        id S1727114AbgEABk2 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 30 Apr 2020 21:39:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53006 "EHLO
+        Thu, 30 Apr 2020 21:40:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726384AbgEABjW (ORCPT
+        by vger.kernel.org with ESMTP id S1726384AbgEABk2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 30 Apr 2020 21:39:22 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6537C035494;
-        Thu, 30 Apr 2020 18:39:22 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id x77so943236pfc.0;
-        Thu, 30 Apr 2020 18:39:22 -0700 (PDT)
+        Thu, 30 Apr 2020 21:40:28 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202E7C035494;
+        Thu, 30 Apr 2020 18:40:28 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id x15so945748pfa.1;
+        Thu, 30 Apr 2020 18:40:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=JPiPW3RsEi9O9rZXYt6ktq8vAB0cHXP2ySdxLOyO2kU=;
-        b=nv1QPz0V0Avjg8hbiC+MrN8KAVAL3B/mLx/JR8uOQzu3vqTWvkr3dzarnOH6sNnlV9
-         TM3H44n3O39Mh0SHL+tGqHf+rnZN9g1EfNP5L6OXJI3MA2y8OJQPfWY5BvSsVIyVAnX9
-         z1SCozgjnb+FkTy2IoVHXPN23/WeGVNyG1Mai1n68WkRw/NZV9gHRSUaxl2BShu3EL0J
-         3lt4+iHIj6ZEpYLOVMLtN5E2Tl0r11pxxOovD8D7NT1G2Hsk9saNYIWw9RBkBeemZm07
-         X6wryxVQokoatew78lbtWHVHTPBv4ts6huzZ6Afg5Igtco3oIhv6P9x7jVJFSS7wJhJF
-         v78g==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=mQqYrPQYFIDRJNtN/SAJy2t+xhyEUoAd2W8p48g17wQ=;
+        b=qOsxv6vEvbD4wGxk4LHlqwR83qbl5dodfHnuXOGhvA4bduTWwFKJL2ZL+Qy5brd1TH
+         LUjSN4TQgb2a1HhOCErAV6sbo+5OK5dTL25GYXh1RrCdrQmomW36pW9jlhh7dmVYb4Rb
+         Xuq2uqKfq71qhtgKEjCjqTdZAJPbCPWf9m946U6eOmBjDggUu4h+yIjI8Egg+K5ycJ3A
+         oOs5Lwqy19kTJohvRjttP13COYBFrMX4Fu5KVcTINGR4W5JKH88g3m7m9pU+eieV7yY5
+         YkeOu0vci/6NUb9qkD2f4Lvb8blVGeMkZY2c7NW6INSurKZZDuZeJAEpn3o47E3uYWVw
+         6m9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=JPiPW3RsEi9O9rZXYt6ktq8vAB0cHXP2ySdxLOyO2kU=;
-        b=G+dhPsp8accNjInfQLgV9iRuMAnukT4o8IYwmIDTBN+XhJGfkwpiydNNJJOpsbqhaL
-         igjhe29zyQR+VxwqFIDQM7XyoB4qvhjhEflgNsvGrxLwc2aqPcD/vdYhH0lnokMwMabU
-         cae8kUicH9jJ8hH1aZ0/0IMsIamm9XAsehB7I7pYlyMdwBUfg0YJuGeQaNabYqgCUA4y
-         ZR6MCaq0RNvV8XV6dHlWsu4AH8ShJdFnITW46yFuUXR3Jw24cAqBKveNhBwbj96CShs0
-         2YULduMve6P8orpyMzSeN+6iqGXCzd4wRsZ2/n7F9Sx6OeK75DRcqc0MB/8P/QPyA61L
-         4eQw==
-X-Gm-Message-State: AGi0Pua3gXgMiiVqg7aSihtBD8VKOxEP28uJ1OcbGPVnAjRu5FSQ9Vgh
-        GZn/EZCHm4cmrFeyYKDBd7sN7VnT
-X-Google-Smtp-Source: APiQypKaM2jRqDAUG7t5M2NNnM6fZh8ysX9uDUDBnpsP9Q2FDhmbjRBvl82TXDrN/H8023/V2EyCcw==
-X-Received: by 2002:a62:3812:: with SMTP id f18mr1705997pfa.173.1588297161564;
-        Thu, 30 Apr 2020 18:39:21 -0700 (PDT)
-Received: from localhost.localdomain (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id y8sm876836pfg.216.2020.04.30.18.39.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Apr 2020 18:39:20 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=mQqYrPQYFIDRJNtN/SAJy2t+xhyEUoAd2W8p48g17wQ=;
+        b=aTcmaGOacI3Lr9L1tE3QePivtiNPrcXpk0Cy61CoP4IeA8gZNx6yBQlGJeykkiA/OW
+         WmdAjq4y/0Eeo5/GTUt426EpMsm69foLceaApM2o0J2qidWGxWmLXKFuzsQROXsAz7R1
+         ODzVgdCk8/+p7WYIAuM9gDB9XrwJtKgeDvhI2illt36fUMkWvPerbdamxG1HJKRnnMiV
+         AI8gdK7rOfmUjhIhGzjRSd3m8nrgSLb2nXhNu5iavJZEwB1cpGZK7UpGWBbXZZF1FPA8
+         XfXRLIk7wJ93nrdSVkAEhX36tSzSUQYjX4pf1mGhAk/dYPiOfuSIb6c0XN6k/qY846C8
+         AdHg==
+X-Gm-Message-State: AGi0PuaHyA0lBt/LBvwX6HFDrQ1tGKrpLbRxDmxfa/Ak1Ua9JOgaXxQc
+        Dw9wIK1UISrlRNQ9wpgwGz1qKzdQ
+X-Google-Smtp-Source: APiQypJz7l4igwtJb1meMfrQsLaxqn5KYdCbRys7N0lK7x/6DU1RlFfxq8c0rVr+R8v+8Msb3+0V9A==
+X-Received: by 2002:a63:1d46:: with SMTP id d6mr1982542pgm.236.1588297227198;
+        Thu, 30 Apr 2020 18:40:27 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id f74sm2027363pje.3.2020.04.30.18.40.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Apr 2020 18:40:26 -0700 (PDT)
+Subject: Re: [PATCH -next] tty: serial: bcm63xx: fix missing clk_put() in
+ bcm63xx_uart
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Jiri Slaby <jslaby@suse.cz>, Zou Wei <zou_wei@huawei.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <1587472306-105155-1-git-send-email-zou_wei@huawei.com>
+ <4cd8f963-9292-faef-1e24-df90821274d6@suse.cz>
+ <73c4cebb-467b-e5d5-89bf-8a6fe29cf858@gmail.com>
+ <20200428111842.GA1159152@kroah.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     zou_wei@huawei.com, Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        bcm-kernel-feedback-list@broadcom.com (maintainer:BROADCOM BCM63XX ARM
-        ARCHITECTURE),
-        linux-serial@vger.kernel.org (open list:SERIAL DRIVERS),
-        linux-arm-kernel@lists.infradead.org (moderated list:BROADCOM BCM63XX
-        ARM ARCHITECTURE)
-Subject: [PATCH] Revert "tty: serial: bcm63xx: fix missing clk_put() in bcm63xx_uart"
-Date:   Thu, 30 Apr 2020 18:39:04 -0700
-Message-Id: <20200501013904.1394-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.17.1
+Message-ID: <589eda5a-296b-daa1-f40c-fd27056ac4b8@gmail.com>
+Date:   Thu, 30 Apr 2020 18:40:24 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <20200428111842.GA1159152@kroah.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-This reverts commit 580d952e44de5509c69c8f9346180ecaa78ebeec ("tty:
-serial: bcm63xx: fix missing clk_put() in bcm63xx_uart") because we
-should not be doing a clk_put() if we were not successful in getting a
-valid clock reference via clk_get() in the first place.
 
-Fixes: 580d952e44de ("tty: serial: bcm63xx: fix missing clk_put() in bcm63xx_uart")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/tty/serial/bcm63xx_uart.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
-index ed0aa5c0d9b7..5674da2b76f0 100644
---- a/drivers/tty/serial/bcm63xx_uart.c
-+++ b/drivers/tty/serial/bcm63xx_uart.c
-@@ -843,10 +843,8 @@ static int bcm_uart_probe(struct platform_device *pdev)
- 	if (IS_ERR(clk) && pdev->dev.of_node)
- 		clk = of_clk_get(pdev->dev.of_node, 0);
- 
--	if (IS_ERR(clk)) {
--		clk_put(clk);
-+	if (IS_ERR(clk))
- 		return -ENODEV;
--	}
- 
- 	port->iotype = UPIO_MEM;
- 	port->irq = res_irq->start;
+On 4/28/2020 4:18 AM, Greg KH wrote:
+> On Mon, Apr 27, 2020 at 10:29:58AM -0700, Florian Fainelli wrote:
+>>
+>>
+>> On 4/26/2020 11:19 PM, Jiri Slaby wrote:
+>>> On 21. 04. 20, 14:31, Zou Wei wrote:
+>>>> This patch fixes below error reported by coccicheck
+>>>>
+>>>> drivers/tty/serial/bcm63xx_uart.c:848:2-8: ERROR: missing clk_put;
+>>>> clk_get on line 842 and execution via conditional on line 846
+>>>>
+>>>> Fixes: ab4382d27412 ("tty: move drivers/serial/ to drivers/tty/serial/")
+>>>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>>>> Signed-off-by: Zou Wei <zou_wei@huawei.com>
+>>>> ---
+>>>>  drivers/tty/serial/bcm63xx_uart.c | 4 +++-
+>>>>  1 file changed, 3 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
+>>>> index 5674da2..ed0aa5c 100644
+>>>> --- a/drivers/tty/serial/bcm63xx_uart.c
+>>>> +++ b/drivers/tty/serial/bcm63xx_uart.c
+>>>> @@ -843,8 +843,10 @@ static int bcm_uart_probe(struct platform_device *pdev)
+>>>>  	if (IS_ERR(clk) && pdev->dev.of_node)
+>>>>  		clk = of_clk_get(pdev->dev.of_node, 0);
+>>>>  
+>>>> -	if (IS_ERR(clk))
+>>>> +	if (IS_ERR(clk)) {
+>>>> +		clk_put(clk);
+>>>
+>>> Why would you want to put an erroneous clk?
+>>
+>> Doh, somehow I completely missed, you are right this does not look legit.
+> 
+> Ugh, can you send a revert for this please?
+
+Yes, now done:
+
+https://lore.kernel.org/linux-arm-kernel/20200501013904.1394-1-f.fainelli@gmail.com/
 -- 
-2.17.1
-
+Florian
