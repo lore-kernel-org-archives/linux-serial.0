@@ -2,203 +2,106 @@ Return-Path: <SRS0=CAi2=6R=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F16C47258
-	for <linux-serial@archiver.kernel.org>; Sun,  3 May 2020 12:05:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAC75C47258
+	for <linux-serial@archiver.kernel.org>; Sun,  3 May 2020 21:47:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 45FBB2075B
-	for <linux-serial@archiver.kernel.org>; Sun,  3 May 2020 12:05:06 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="oRMtWY23"
+	by mail.kernel.org (Postfix) with ESMTP id D1D1520757
+	for <linux-serial@archiver.kernel.org>; Sun,  3 May 2020 21:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728238AbgECMFF (ORCPT
+        id S1729166AbgECVrM (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 3 May 2020 08:05:05 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:40233 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728188AbgECMFE (ORCPT
+        Sun, 3 May 2020 17:47:12 -0400
+Received: from relmlor2.renesas.com ([210.160.252.172]:8668 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729104AbgECVrL (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 3 May 2020 08:05:04 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1588507504; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=NG20ffLAYNgkhNmH6hkNAeWtZRpxuaZc5ESN8lbaByY=; b=oRMtWY23sXRGMhmIe5RiaW+sZx8GPc/2wWHEw4rOb2xfPtSn6vEbTgapgxIZIw8A6NM53UvY
- 6LidRidbPnP8n8ZwAw77cL7g6rqxIlSSznYqwQ6MCsLS4Wveihg90V4pzzdNyDkVHJNyrPmg
- 4W5zKzZ5KNVB2iq8L5VJPProFew=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5eaeb36c.7fa7bfae89d0-smtp-out-n03;
- Sun, 03 May 2020 12:05:00 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id E1E22C4478C; Sun,  3 May 2020 12:04:58 +0000 (UTC)
-Received: from blr-ubuntu-173.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: rnayak)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 32FE9C433F2;
-        Sun,  3 May 2020 12:04:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 32FE9C433F2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=rnayak@codeaurora.org
-From:   Rajendra Nayak <rnayak@codeaurora.org>
-To:     viresh.kumar@linaro.org, sboyd@kernel.org,
-        bjorn.andersson@linaro.org, agross@kernel.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mka@chromium.org, Rajendra Nayak <rnayak@codeaurora.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Akash Asthana <akashast@codeaurora.org>,
-        linux-serial@vger.kernel.org
-Subject: [PATCH v4 1/6] tty: serial: qcom_geni_serial: Use OPP API to set clk/perf state
-Date:   Sun,  3 May 2020 17:34:24 +0530
-Message-Id: <1588507469-31889-2-git-send-email-rnayak@codeaurora.org>
+        Sun, 3 May 2020 17:47:11 -0400
+X-IronPort-AV: E=Sophos;i="5.73,349,1583161200"; 
+   d="scan'208";a="46019240"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie6.idc.renesas.com with ESMTP; 04 May 2020 06:47:09 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 39AB94006DF9;
+        Mon,  4 May 2020 06:47:06 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v2 00/10] Add initial support for R8A7742/RZG1H SoC and iW-RainboW-G21D-Qseven development board support
+Date:   Sun,  3 May 2020 22:46:44 +0100
+Message-Id: <1588542414-14826-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1588507469-31889-1-git-send-email-rnayak@codeaurora.org>
-References: <1588507469-31889-1-git-send-email-rnayak@codeaurora.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-geni serial needs to express a perforamnce state requirement on CX
-powerdomain depending on the frequency of the clock rates.
-Use OPP table from DT to register with OPP framework and use
-dev_pm_opp_set_rate() to set the clk/perf state.
+Hi All,
 
-Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Akash Asthana <akashast@codeaurora.org>
-Cc: linux-serial@vger.kernel.org
----
- drivers/tty/serial/qcom_geni_serial.c | 34 +++++++++++++++++++++++++++++-----
- include/linux/qcom-geni-se.h          |  4 ++++
- 2 files changed, 33 insertions(+), 5 deletions(-)
+This patch set adds initial support for R8A7742 SoC and 
+iW-RainboW-G21D-Qseven development board.
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 6119090..dd3d1ba 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -9,6 +9,7 @@
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/pm_opp.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/pm_wakeirq.h>
-@@ -961,7 +962,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 		goto out_restart_rx;
- 
- 	uport->uartclk = clk_rate;
--	clk_set_rate(port->se.clk, clk_rate);
-+	dev_pm_opp_set_rate(uport->dev, clk_rate);
- 	ser_clk_cfg = SER_CLK_EN;
- 	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
- 
-@@ -1198,8 +1199,11 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
- 	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
- 		geni_se_resources_on(&port->se);
- 	else if (new_state == UART_PM_STATE_OFF &&
--			old_state == UART_PM_STATE_ON)
-+			old_state == UART_PM_STATE_ON) {
-+		/* Drop the performance state vote */
-+		dev_pm_opp_set_rate(uport->dev, 0);
- 		geni_se_resources_off(&port->se);
-+	}
- }
- 
- static const struct uart_ops qcom_geni_console_pops = {
-@@ -1318,13 +1322,25 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	if (of_property_read_bool(pdev->dev.of_node, "cts-rts-swap"))
- 		port->cts_rts_swap = true;
- 
-+	port->se.opp_table = dev_pm_opp_set_clkname(&pdev->dev, "se");
-+	if (IS_ERR(port->se.opp_table))
-+		return PTR_ERR(port->se.opp_table);
-+	/* OPP table is optional */
-+	ret = dev_pm_opp_of_add_table(&pdev->dev);
-+	if (!ret) {
-+		port->se.has_opp_table = true;
-+	} else if (ret != -ENODEV) {
-+		dev_err(&pdev->dev, "invalid OPP table in device tree\n");
-+		return ret;
-+	}
-+
- 	uport->private_data = drv;
- 	platform_set_drvdata(pdev, port);
- 	port->handle_rx = console ? handle_rx_console : handle_rx_uart;
- 
- 	ret = uart_add_one_port(drv, uport);
- 	if (ret)
--		return ret;
-+		goto err;
- 
- 	irq_set_status_flags(uport->irq, IRQ_NOAUTOEN);
- 	ret = devm_request_irq(uport->dev, uport->irq, qcom_geni_serial_isr,
-@@ -1332,7 +1348,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	if (ret) {
- 		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
- 		uart_remove_one_port(drv, uport);
--		return ret;
-+		goto err;
- 	}
- 
- 	/*
-@@ -1349,11 +1365,16 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 		if (ret) {
- 			device_init_wakeup(&pdev->dev, false);
- 			uart_remove_one_port(drv, uport);
--			return ret;
-+			goto err;
- 		}
- 	}
- 
- 	return 0;
-+err:
-+	if (port->se.has_opp_table)
-+		dev_pm_opp_of_remove_table(&pdev->dev);
-+	dev_pm_opp_put_clkname(port->se.opp_table);
-+	return ret;
- }
- 
- static int qcom_geni_serial_remove(struct platform_device *pdev)
-@@ -1361,6 +1382,9 @@ static int qcom_geni_serial_remove(struct platform_device *pdev)
- 	struct qcom_geni_serial_port *port = platform_get_drvdata(pdev);
- 	struct uart_driver *drv = port->uport.private_data;
- 
-+	if (port->se.has_opp_table)
-+		dev_pm_opp_of_remove_table(&pdev->dev);
-+	dev_pm_opp_put_clkname(port->se.opp_table);
- 	dev_pm_clear_wake_irq(&pdev->dev);
- 	device_init_wakeup(&pdev->dev, false);
- 	uart_remove_one_port(drv, &port->uport);
-diff --git a/include/linux/qcom-geni-se.h b/include/linux/qcom-geni-se.h
-index dd46494..6b78094 100644
---- a/include/linux/qcom-geni-se.h
-+++ b/include/linux/qcom-geni-se.h
-@@ -33,6 +33,8 @@ struct clk;
-  * @clk:		Handle to the core serial engine clock
-  * @num_clk_levels:	Number of valid clock levels in clk_perf_tbl
-  * @clk_perf_tbl:	Table of clock frequency input to serial engine clock
-+ * @opp_table:		Pointer to the OPP table
-+ * @has_opp_table:	Specifies if the SE has an OPP table
-  */
- struct geni_se {
- 	void __iomem *base;
-@@ -41,6 +43,8 @@ struct geni_se {
- 	struct clk *clk;
- 	unsigned int num_clk_levels;
- 	unsigned long *clk_perf_tbl;
-+	struct opp_table *opp_table;
-+	bool has_opp_table;
- };
- 
- /* Common SE registers */
+Cheers,
+--Prabhakar
+
+Changes for v2:
+* Dropped patches 1-5 from v1[1] as they have been already queued.
+* Split up the pfc for r8a7790 as common and automotive.
+* Enabled dmac and scifa2 as part of initial SoC dtsi so that by default
+  board can be booted from eMMC.
+* New patches 4, 7-10
+* Dropped patches 12, 14-18 from v1[1] and will be posted after acceptance
+  of this series.
+
+[1] https://patchwork.kernel.org/project/linux-renesas-soc/list/?series=279727
+
+Lad Prabhakar (10):
+  dt-bindings: pinctrl: sh-pfc: Document r8a7742 PFC support
+  pinctrl: sh-pfc: r8a7790: Add r8a7742 PFC support
+  dt-bindings: serial: renesas,scifa: Document r8a7742 bindings
+  dt-bindings: mmc: renesas,mmcif: Document r8a7742 DT bindings
+  dt-bindings: renesas,rcar-dmac: Document r8a7742 support
+  ARM: dts: r8a7742: Initial SoC device tree
+  dt-bindings: arm: Document iW-RainboW-G21M-Qseven-RZG1H system on
+    module
+  dt-bindings: arm: Document iW-RainboW-G21D-Qseven-RZG1H board
+  ARM: dts: r8a7742-iwg21m: Add iWave RZ/G1H Qseven SOM
+  ARM: dts: r8a7742-iwg21d-q7: Add support for iWave G21D-Q7 board based
+    on RZ/G1H
+
+ .../devicetree/bindings/arm/renesas.yaml      |  10 +
+ .../bindings/dma/renesas,rcar-dmac.yaml       |   1 +
+ .../devicetree/bindings/mmc/renesas,mmcif.txt |   1 +
+ .../bindings/pinctrl/renesas,pfc-pinctrl.txt  |   1 +
+ .../bindings/serial/renesas,scifa.yaml        |   1 +
+ arch/arm/boot/dts/Makefile                    |   1 +
+ arch/arm/boot/dts/r8a7742-iwg21d-q7.dts       |  37 +
+ arch/arm/boot/dts/r8a7742-iwg21m.dtsi         |  53 ++
+ arch/arm/boot/dts/r8a7742.dtsi                | 389 +++++++++
+ drivers/pinctrl/sh-pfc/Kconfig                |   4 +
+ drivers/pinctrl/sh-pfc/Makefile               |   1 +
+ drivers/pinctrl/sh-pfc/core.c                 |   6 +
+ drivers/pinctrl/sh-pfc/pfc-r8a7790.c          | 744 +++++++++---------
+ drivers/pinctrl/sh-pfc/sh_pfc.h               |   1 +
+ 14 files changed, 898 insertions(+), 352 deletions(-)
+ create mode 100644 arch/arm/boot/dts/r8a7742-iwg21d-q7.dts
+ create mode 100644 arch/arm/boot/dts/r8a7742-iwg21m.dtsi
+ create mode 100644 arch/arm/boot/dts/r8a7742.dtsi
+
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+2.17.1
+
