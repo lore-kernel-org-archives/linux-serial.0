@@ -2,70 +2,159 @@ Return-Path: <SRS0=QloM=6S=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D71C3A5A9
-	for <linux-serial@archiver.kernel.org>; Mon,  4 May 2020 08:03:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61444C47259
+	for <linux-serial@archiver.kernel.org>; Mon,  4 May 2020 10:20:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 42F1B20643
-	for <linux-serial@archiver.kernel.org>; Mon,  4 May 2020 08:03:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4635620757
+	for <linux-serial@archiver.kernel.org>; Mon,  4 May 2020 10:20:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727977AbgEDID4 (ORCPT
+        id S1728153AbgEDKUt (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 May 2020 04:03:56 -0400
-Received: from mga04.intel.com ([192.55.52.120]:14808 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727860AbgEDID4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 May 2020 04:03:56 -0400
-IronPort-SDR: 96dErIf2SM0VV2qg/lPcmpLHnjbeeftSVGIEFFw7pfrz4wz1WOR8+35rpFmHQAo2X8BIbnHn0t
- AeIPc7752TyQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2020 01:03:56 -0700
-IronPort-SDR: nZCtHP4Q2NHk4kV0pT8l85ac64rPdmA8lkuw0bhAOEL6f3kipt5VoTwUtn/PU9+hHrSvDvmtAc
- M2cuRZu1qIag==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,351,1583222400"; 
-   d="scan'208";a="369023110"
-Received: from sgsxdev001.isng.intel.com (HELO localhost) ([10.226.88.11])
-  by fmsmga001.fm.intel.com with ESMTP; 04 May 2020 01:03:55 -0700
-From:   Rahul Tanwar <rahul.tanwar@linux.intel.com>
-To:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, andriy.shevchenko@intel.com,
-        Rahul Tanwar <rahul.tanwar@linux.intel.com>
-Subject: [PATCH] serial: lantiq: Add x86 in Kconfig dependencies for Lantiq serial driver
-Date:   Mon,  4 May 2020 16:03:52 +0800
-Message-Id: <96fd193c0a8939d27641ff93573545c02313048f.1588577002.git.rahul.tanwar@linux.intel.com>
-X-Mailer: git-send-email 2.11.0
+        Mon, 4 May 2020 06:20:49 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:36177 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726445AbgEDKUs (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 4 May 2020 06:20:48 -0400
+Received: by mail-ot1-f67.google.com with SMTP id t3so4583219otp.3;
+        Mon, 04 May 2020 03:20:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aGRMnuTg/l5w0maHVGEcneYHQFdFGNPfiCYfIWkTR0o=;
+        b=JDi7a1+k4nDIQ2X2u7vfsWkL8tk/b85acH4ZTdmB1bwLUQNKhJfb//dPxIPNcgljhm
+         jOTigMo6x1Q5lEAD7ZYe8RvzVrD5gxmJVBT4HdxH2/GfjjOO7pdK2W7nxiSzaQy+FBN2
+         9npqFZe7t5nM4HsGGHyGb34zmXkN85egcixHyEtHSk4vnOEzAJEIjB5ZA9rYCijfGoGo
+         pfCHnTdi3gJZxDk64F0uW4fDZj0N9Zta0SjT0bzkKV4R817Fi21w0QWPWcqkYL4TSTlI
+         kJpuJQMc1HxwzuxCWoqjdKKwZ8ClEVc5HnnBnau4oEK2ZzAbDhuLvPLvVirzCvpn7Mz0
+         IQQw==
+X-Gm-Message-State: AGi0PubxR6DnC7gYGJtUCTCQGM/dXeVBj5JslidJOUZvwO/hrIYM7yr4
+        W23D8Z4SZGcHzxnb43AZySrW7wmi/hgiPJwwuWE=
+X-Google-Smtp-Source: APiQypKI/tnpEasz9c6NjgVI5Zv53OBORTXWD6v5yxAV42kvA/cHTjT9UpDrC7tAkI9k8UoXntXphLbQKxc99tQWof8=
+X-Received: by 2002:a9d:7d85:: with SMTP id j5mr12887666otn.107.1588587644541;
+ Mon, 04 May 2020 03:20:44 -0700 (PDT)
+MIME-Version: 1.0
+References: <1588542414-14826-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1588542414-14826-3-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1588542414-14826-3-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 4 May 2020 12:20:33 +0200
+Message-ID: <CAMuHMdXruqw2pb3pfXNfxNgtc24FmVA376DLBQgubEYSGO7LSA@mail.gmail.com>
+Subject: Re: [PATCH v2 02/10] pinctrl: sh-pfc: r8a7790: Add r8a7742 PFC support
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        dmaengine <dmaengine@vger.kernel.org>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Lantiq serial driver/IP is reused for a x86 based SoC as well.
-Update the Kconfig accordingly.
+Hi Prabhakar,
 
-Signed-off-by: Rahul Tanwar <rahul.tanwar@linux.intel.com>
----
- drivers/tty/serial/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks for the update!
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 0aea76cd67ff..4b0a7b98f8c7 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1035,7 +1035,7 @@ config SERIAL_SIFIVE_CONSOLE
- 
- config SERIAL_LANTIQ
- 	bool "Lantiq serial driver"
--	depends on LANTIQ
-+	depends on (LANTIQ || X86) || COMPILE_TEST
- 	select SERIAL_CORE
- 	select SERIAL_CORE_CONSOLE
- 	select SERIAL_EARLYCON
+On Sun, May 3, 2020 at 11:47 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> Renesas RZ/G1H (R8A7742) is pin compatible with R-Car H2 (R8A7790),
+> however it doesn't have several automotive specific peripherals. Add
+> a r8a7790 specific pin groups/functions along with common pin
+
+s/a r8a7790/automotive/?
+
+> groups/functions for supporting both r8a7790 and r8a7742 SoC.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+
+> --- a/drivers/pinctrl/sh-pfc/pfc-r8a7790.c
+> +++ b/drivers/pinctrl/sh-pfc/pfc-r8a7790.c
+
+> @@ -5736,6 +5750,7 @@ static const struct sh_pfc_soc_operations r8a7790_pinmux_ops = {
+>         .pin_to_pocctrl = r8a7790_pin_to_pocctrl,
+>  };
+>
+> +#ifdef CONFIG_PINCTRL_PFC_R8A7790
+>  const struct sh_pfc_soc_info r8a7790_pinmux_info = {
+>         .name = "r8a77900_pfc",
+>         .ops = &r8a7790_pinmux_ops,
+> @@ -5745,13 +5760,38 @@ const struct sh_pfc_soc_info r8a7790_pinmux_info = {
+>
+>         .pins = pinmux_pins,
+>         .nr_pins = ARRAY_SIZE(pinmux_pins),
+> -       .groups = pinmux_groups,
+> -       .nr_groups = ARRAY_SIZE(pinmux_groups),
+> -       .functions = pinmux_functions,
+> -       .nr_functions = ARRAY_SIZE(pinmux_functions),
+> +       .groups = pinmux_groups.common,
+> +       .nr_groups = ARRAY_SIZE(pinmux_groups.common) +
+> +               ARRAY_SIZE(pinmux_groups.automotive),
+> +       .functions = pinmux_functions.common,
+> +       .nr_functions = ARRAY_SIZE(pinmux_functions.common) +
+> +               ARRAY_SIZE(pinmux_functions.automotive),
+> +
+> +       .cfg_regs = pinmux_config_regs,
+> +
+> +       .pinmux_data = pinmux_data,
+> +       .pinmux_data_size = ARRAY_SIZE(pinmux_data),
+> +};
+> +#endif
+> +
+> +#ifdef CONFIG_PINCTRL_PFC_R8A7742
+> +const struct sh_pfc_soc_info r8a7742_pinmux_info = {
+> +       .name = "r8a77420_pfc",
+> +       .ops = &r8a7790_pinmux_ops,
+> +       .unlock_reg = 0xe6060000, /* PMMR */
+> +
+> +       .function = { PINMUX_FUNCTION_BEGIN, PINMUX_FUNCTION_END },
+> +
+> +       .pins = pinmux_pins,
+> +       .nr_pins = ARRAY_SIZE(pinmux_pins),
+> +       .groups = pinmux_groups.common,
+> +       .nr_groups = ARRAY_SIZE(pinmux_groups.common),
+> +       .functions = pinmux_functions.common,
+> +       .nr_functions = ARRAY_SIZE(pinmux_functions.common),
+>
+>         .cfg_regs = pinmux_config_regs,
+>
+>         .pinmux_data = pinmux_data,
+>         .pinmux_data_size = ARRAY_SIZE(pinmux_data),
+>  };
+> +#endif
+
+The r8a7742 section should be inserted before the r8a7790 section,
+to preserve sort order.
+
+No need to resend, will fix up while applying.
+
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in sh-pfc-for-v5.8.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.11.0
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
