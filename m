@@ -1,79 +1,71 @@
-Return-Path: <SRS0=CAi2=6R=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=QloM=6S=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A6BC28CBC
-	for <linux-serial@archiver.kernel.org>; Sun,  3 May 2020 21:48:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D71C3A5A9
+	for <linux-serial@archiver.kernel.org>; Mon,  4 May 2020 08:03:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E7B12206B9
-	for <linux-serial@archiver.kernel.org>; Sun,  3 May 2020 21:48:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 42F1B20643
+	for <linux-serial@archiver.kernel.org>; Mon,  4 May 2020 08:03:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729213AbgECVrY (ORCPT
+        id S1727977AbgEDID4 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 3 May 2020 17:47:24 -0400
-Received: from relmlor1.renesas.com ([210.160.252.171]:55952 "EHLO
-        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729204AbgECVrX (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 3 May 2020 17:47:23 -0400
-X-IronPort-AV: E=Sophos;i="5.73,349,1583161200"; 
-   d="scan'208";a="46232093"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 04 May 2020 06:47:21 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 537CC4006DF9;
-        Mon,  4 May 2020 06:47:18 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-serial@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH v2 03/10] dt-bindings: serial: renesas,scifa: Document r8a7742 bindings
-Date:   Sun,  3 May 2020 22:46:47 +0100
-Message-Id: <1588542414-14826-4-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1588542414-14826-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <1588542414-14826-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Mon, 4 May 2020 04:03:56 -0400
+Received: from mga04.intel.com ([192.55.52.120]:14808 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727860AbgEDID4 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 4 May 2020 04:03:56 -0400
+IronPort-SDR: 96dErIf2SM0VV2qg/lPcmpLHnjbeeftSVGIEFFw7pfrz4wz1WOR8+35rpFmHQAo2X8BIbnHn0t
+ AeIPc7752TyQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2020 01:03:56 -0700
+IronPort-SDR: nZCtHP4Q2NHk4kV0pT8l85ac64rPdmA8lkuw0bhAOEL6f3kipt5VoTwUtn/PU9+hHrSvDvmtAc
+ M2cuRZu1qIag==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,351,1583222400"; 
+   d="scan'208";a="369023110"
+Received: from sgsxdev001.isng.intel.com (HELO localhost) ([10.226.88.11])
+  by fmsmga001.fm.intel.com with ESMTP; 04 May 2020 01:03:55 -0700
+From:   Rahul Tanwar <rahul.tanwar@linux.intel.com>
+To:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, andriy.shevchenko@intel.com,
+        Rahul Tanwar <rahul.tanwar@linux.intel.com>
+Subject: [PATCH] serial: lantiq: Add x86 in Kconfig dependencies for Lantiq serial driver
+Date:   Mon,  4 May 2020 16:03:52 +0800
+Message-Id: <96fd193c0a8939d27641ff93573545c02313048f.1588577002.git.rahul.tanwar@linux.intel.com>
+X-Mailer: git-send-email 2.11.0
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-RZ/G1H (R8A7742) SoC also has the R-Car gen2 compatible SCIFA ports,
-so document the SoC specific bindings.
+Lantiq serial driver/IP is reused for a x86 based SoC as well.
+Update the Kconfig accordingly.
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Rahul Tanwar <rahul.tanwar@linux.intel.com>
 ---
- Documentation/devicetree/bindings/serial/renesas,scifa.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,scifa.yaml b/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
-index b28bcb268854..97ddd76d700f 100644
---- a/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
-@@ -24,6 +24,7 @@ properties:
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 0aea76cd67ff..4b0a7b98f8c7 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1035,7 +1035,7 @@ config SERIAL_SIFIVE_CONSOLE
  
-       - items:
-           - enum:
-+              - renesas,scifa-r8a7742      # R8A7742 RZ/G1H
-               - renesas,scifa-r8a7743      # R8A7743 RZ/G1M
-               - renesas,scifa-r8a7744      # R8A7744 RZ/G1N
-               - renesas,scifa-r8a7745      # R8A7745 RZ/G1E
+ config SERIAL_LANTIQ
+ 	bool "Lantiq serial driver"
+-	depends on LANTIQ
++	depends on (LANTIQ || X86) || COMPILE_TEST
+ 	select SERIAL_CORE
+ 	select SERIAL_CORE_CONSOLE
+ 	select SERIAL_EARLYCON
 -- 
-2.17.1
+2.11.0
 
