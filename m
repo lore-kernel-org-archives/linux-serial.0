@@ -2,287 +2,81 @@ Return-Path: <SRS0=jHyV=6T=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E93DCC47247
-	for <linux-serial@archiver.kernel.org>; Tue,  5 May 2020 03:42:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B0CEC47254
+	for <linux-serial@archiver.kernel.org>; Tue,  5 May 2020 11:10:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C6D3A206C0
-	for <linux-serial@archiver.kernel.org>; Tue,  5 May 2020 03:42:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 655102078C
+	for <linux-serial@archiver.kernel.org>; Tue,  5 May 2020 11:10:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1588677031;
+	bh=GczSjg2mY+zVUBwyK+x5JROwfYQz7w+f1HqDD4SgsRI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=fWQw0F6C1J5rWj0lXVRDL88wyJyOLqx/1rRgjxR1JCe3fCCDnCPBJArxNWChgdUTB
+	 NBcO8DZuVw8qOzQBu3oKhlhMhf4Vx5VCLuldArDruaHGz3jbWkVZ1V4BVIX/cS/EcI
+	 Ne00a4s9V+AbJT3Np+WQiXxDYEknWgAdkSP1sBOo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726531AbgEEDmW (ORCPT
+        id S1728497AbgEELKb (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 May 2020 23:42:22 -0400
-Received: from mga09.intel.com ([134.134.136.24]:41789 "EHLO mga09.intel.com"
+        Tue, 5 May 2020 07:10:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49826 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726516AbgEEDmW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 May 2020 23:42:22 -0400
-IronPort-SDR: N8eW7wYQYvgIOswbtszOqidLTyKxjitFUThVokTfdbCRkZVwZ1tF3XPH6VZdQCMkTgU6hy+biN
- RI4mAPLBORaA==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2020 20:42:20 -0700
-IronPort-SDR: H1w0J8UQ/EfhFtDZM70dZ6AGLkvzQtcAgVjuRupFuQylAOHFSNIuaMFEUIxf8ORVVfmLaRSNGE
- UG9YzQ3hwshQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,354,1583222400"; 
-   d="scan'208";a="369286189"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 04 May 2020 20:42:13 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1jVoTD-0002lQ-Jx; Tue, 05 May 2020 11:42:11 +0800
-Date:   Tue, 05 May 2020 11:41:33 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-linus] BUILD SUCCESS
- 2ae11c46d5fdc46cb396e35911c713d271056d35
-Message-ID: <5eb0e06d.57LK88Yf/q6LD9Hj%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        id S1727090AbgEELKa (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 5 May 2020 07:10:30 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1E3C0206D7;
+        Tue,  5 May 2020 11:10:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588677030;
+        bh=GczSjg2mY+zVUBwyK+x5JROwfYQz7w+f1HqDD4SgsRI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OCwki1USRAmdS8aGyCPfJLL9E0Xi+2JLTACEEI3+u+VJjiE0S1JA2cFDtoV+JBCFM
+         6aaBfjDN/9N1JrYxckDC1PQ9cxInamd/QsLMvCTI4Dp4PZTOy+JUXzMkDjcroWR8PE
+         F/61FnIJ3qm1kmp5PKmLOZtQccMbeD6Mk8Pxi2X4=
+Date:   Tue, 5 May 2020 13:10:28 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     sean.wang@mediatek.com
+Cc:     jslaby@suse.com, andriy.shevchenko@linux.intel.com,
+        mika.westerberg@linux.intel.com, sr@denx.de, arnd@arndb.de,
+        matthias.bgg@gmail.com, tthayer@opensource.altera.com,
+        linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Steven Liu <steven.liu@mediatek.com>,
+        Ryder Lee <ryder.lee@mediatek.com>
+Subject: Re: [PATCH v3] tty: serial: don't do termios for BTIF
+Message-ID: <20200505111028.GA114206@kroah.com>
+References: <cc41ea10be9ab96568f0371784e3b9f8d9f434b9.1587577548.git.sean.wang@mediatek.com>
+ <20200422180900.GA3454664@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <20200422180900.GA3454664@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-linus
-branch HEAD: 2ae11c46d5fdc46cb396e35911c713d271056d35  tty: xilinx_uartps: Fix missing id assignment to the console
+On Wed, Apr 22, 2020 at 08:09:00PM +0200, Greg KH wrote:
+> On Thu, Apr 23, 2020 at 02:02:08AM +0800, sean.wang@mediatek.com wrote:
+> > From: Sean Wang <sean.wang@mediatek.com>
+> > 
+> > Bluetooth Interface (BTIF) is designed dedicatedly for MediaTek SOC with
+> > BT in order to be instead of the UART interface between BT module and Host
+> > CPU, and not exported to user space to access.
+> > 
+> > As the UART design, BTIF will be an APB slave and can transmit or receive
+> > data by MCU access, but doesn't provide termios function like baudrate and
+> > flow control setup.
+> 
+> Why does it matter?  If the connection isn't exported to userspace, who
+> would run those termios functions on the port?
 
-elapsed time: 480m
+Dropping from my patch queues due to a lack of response, please address
+this question when you resend this.
 
-configs tested: 220
-configs skipped: 0
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-arm64                            allyesconfig
-arm                              allyesconfig
-arm64                            allmodconfig
-arm                              allmodconfig
-arm64                             allnoconfig
-arm                               allnoconfig
-arm                           efm32_defconfig
-arm                         at91_dt_defconfig
-arm                        shmobile_defconfig
-arm64                               defconfig
-arm                          exynos_defconfig
-arm                        multi_v5_defconfig
-arm                           sunxi_defconfig
-arm                        multi_v7_defconfig
-sparc                            allyesconfig
-riscv                             allnoconfig
-csky                                defconfig
-alpha                               defconfig
-i386                              allnoconfig
-i386                             allyesconfig
-i386                             alldefconfig
-i386                                defconfig
-i386                              debian-10.3
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                              allnoconfig
-ia64                        generic_defconfig
-ia64                          tiger_defconfig
-ia64                         bigsur_defconfig
-ia64                             allyesconfig
-ia64                             alldefconfig
-m68k                       m5475evb_defconfig
-m68k                             allmodconfig
-m68k                       bvme6000_defconfig
-m68k                           sun3_defconfig
-m68k                          multi_defconfig
-nios2                         3c120_defconfig
-nios2                         10m50_defconfig
-c6x                        evmc6678_defconfig
-c6x                              allyesconfig
-openrisc                 simple_smp_defconfig
-openrisc                    or1ksim_defconfig
-nds32                               defconfig
-nds32                             allnoconfig
-h8300                       h8s-sim_defconfig
-h8300                     edosk2674_defconfig
-xtensa                          iss_defconfig
-h8300                    h8300h-sim_defconfig
-xtensa                       common_defconfig
-arc                                 defconfig
-arc                              allyesconfig
-microblaze                      mmu_defconfig
-microblaze                    nommu_defconfig
-mips                      fuloong2e_defconfig
-mips                      malta_kvm_defconfig
-mips                            ar7_defconfig
-mips                             allyesconfig
-mips                         64r6el_defconfig
-mips                              allnoconfig
-mips                           32r2_defconfig
-mips                             allmodconfig
-mips                malta_kvm_guest_defconfig
-mips                         tb0287_defconfig
-mips                       capcella_defconfig
-mips                           ip32_defconfig
-mips                  decstation_64_defconfig
-mips                      loongson3_defconfig
-mips                          ath79_defconfig
-mips                        bcm63xx_defconfig
-parisc                            allnoconfig
-parisc                generic-64bit_defconfig
-parisc                generic-32bit_defconfig
-parisc                           allyesconfig
-parisc                           allmodconfig
-powerpc                      chrp32_defconfig
-powerpc                             defconfig
-powerpc                       holly_defconfig
-powerpc                       ppc64_defconfig
-powerpc                          rhel-kconfig
-powerpc                           allnoconfig
-powerpc                  mpc866_ads_defconfig
-powerpc                    amigaone_defconfig
-powerpc                    adder875_defconfig
-powerpc                     ep8248e_defconfig
-powerpc                          g5_defconfig
-powerpc                     mpc512x_defconfig
-m68k                 randconfig-a001-20200502
-mips                 randconfig-a001-20200502
-nds32                randconfig-a001-20200502
-alpha                randconfig-a001-20200502
-parisc               randconfig-a001-20200502
-riscv                randconfig-a001-20200502
-m68k                 randconfig-a001-20200505
-mips                 randconfig-a001-20200505
-nds32                randconfig-a001-20200505
-parisc               randconfig-a001-20200505
-alpha                randconfig-a001-20200505
-riscv                randconfig-a001-20200505
-h8300                randconfig-a001-20200503
-nios2                randconfig-a001-20200503
-microblaze           randconfig-a001-20200503
-c6x                  randconfig-a001-20200503
-sparc64              randconfig-a001-20200503
-s390                 randconfig-a001-20200505
-xtensa               randconfig-a001-20200505
-sh                   randconfig-a001-20200505
-openrisc             randconfig-a001-20200505
-csky                 randconfig-a001-20200505
-x86_64               randconfig-a003-20200505
-x86_64               randconfig-a001-20200505
-i386                 randconfig-a001-20200505
-i386                 randconfig-a003-20200505
-i386                 randconfig-a002-20200505
-i386                 randconfig-b003-20200503
-x86_64               randconfig-b002-20200503
-i386                 randconfig-b001-20200503
-x86_64               randconfig-b003-20200503
-x86_64               randconfig-b001-20200503
-i386                 randconfig-b002-20200503
-i386                 randconfig-b003-20200502
-i386                 randconfig-b001-20200502
-x86_64               randconfig-b003-20200502
-x86_64               randconfig-b001-20200502
-i386                 randconfig-b002-20200502
-x86_64               randconfig-c001-20200503
-x86_64               randconfig-c002-20200503
-i386                 randconfig-c002-20200503
-x86_64               randconfig-c003-20200503
-i386                 randconfig-c001-20200503
-i386                 randconfig-c003-20200503
-x86_64               randconfig-c002-20200505
-x86_64               randconfig-c001-20200505
-i386                 randconfig-c002-20200505
-i386                 randconfig-c003-20200505
-x86_64               randconfig-c003-20200505
-i386                 randconfig-c001-20200505
-x86_64               randconfig-d001-20200505
-i386                 randconfig-d003-20200505
-i386                 randconfig-d001-20200505
-x86_64               randconfig-d003-20200505
-x86_64               randconfig-d002-20200505
-i386                 randconfig-d002-20200505
-x86_64               randconfig-d001-20200503
-i386                 randconfig-d003-20200503
-x86_64               randconfig-d003-20200503
-i386                 randconfig-d001-20200503
-x86_64               randconfig-d002-20200503
-i386                 randconfig-d002-20200503
-i386                 randconfig-e003-20200505
-x86_64               randconfig-e002-20200505
-x86_64               randconfig-e003-20200505
-x86_64               randconfig-e001-20200505
-i386                 randconfig-e002-20200505
-i386                 randconfig-e001-20200505
-x86_64               randconfig-e003-20200503
-x86_64               randconfig-e002-20200503
-i386                 randconfig-e003-20200503
-x86_64               randconfig-e001-20200503
-i386                 randconfig-e002-20200503
-i386                 randconfig-e001-20200503
-i386                 randconfig-f003-20200503
-x86_64               randconfig-f002-20200503
-i386                 randconfig-f001-20200503
-i386                 randconfig-f002-20200503
-i386                 randconfig-f003-20200505
-x86_64               randconfig-f001-20200505
-x86_64               randconfig-f003-20200505
-i386                 randconfig-f001-20200505
-i386                 randconfig-f002-20200505
-x86_64               randconfig-g003-20200503
-i386                 randconfig-g003-20200503
-i386                 randconfig-g002-20200503
-x86_64               randconfig-g001-20200503
-i386                 randconfig-g001-20200503
-i386                 randconfig-g003-20200505
-i386                 randconfig-g002-20200505
-i386                 randconfig-g001-20200505
-x86_64               randconfig-g002-20200505
-i386                 randconfig-h002-20200505
-i386                 randconfig-h001-20200505
-i386                 randconfig-h003-20200505
-x86_64               randconfig-h003-20200505
-x86_64               randconfig-h001-20200505
-ia64                 randconfig-a001-20200503
-arm64                randconfig-a001-20200503
-arc                  randconfig-a001-20200503
-arm                  randconfig-a001-20200503
-sparc                randconfig-a001-20200503
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-s390                       zfcpdump_defconfig
-s390                          debug_defconfig
-s390                             allyesconfig
-s390                              allnoconfig
-s390                             allmodconfig
-s390                             alldefconfig
-s390                                defconfig
-sh                          rsk7269_defconfig
-sh                               allmodconfig
-sh                            titan_defconfig
-sh                  sh7785lcr_32bit_defconfig
-sh                                allnoconfig
-sparc                               defconfig
-sparc64                             defconfig
-sparc64                           allnoconfig
-sparc64                          allyesconfig
-sparc64                          allmodconfig
-um                           x86_64_defconfig
-um                             i386_defconfig
-um                                  defconfig
-x86_64                                   rhel
-x86_64                               rhel-7.6
-x86_64                    rhel-7.6-kselftests
-x86_64                         rhel-7.2-clear
-x86_64                                    lkp
-x86_64                              fedora-25
-x86_64                                  kexec
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+greg k-h
