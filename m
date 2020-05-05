@@ -1,175 +1,288 @@
-Return-Path: <SRS0=QloM=6S=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=jHyV=6T=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBE41C3A5A9
-	for <linux-serial@archiver.kernel.org>; Mon,  4 May 2020 14:43:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E93DCC47247
+	for <linux-serial@archiver.kernel.org>; Tue,  5 May 2020 03:42:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C21452078C
-	for <linux-serial@archiver.kernel.org>; Mon,  4 May 2020 14:43:11 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="xcitaMAX"
+	by mail.kernel.org (Postfix) with ESMTP id C6D3A206C0
+	for <linux-serial@archiver.kernel.org>; Tue,  5 May 2020 03:42:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729189AbgEDOnL (ORCPT
+        id S1726531AbgEEDmW (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 4 May 2020 10:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54260 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728581AbgEDOnK (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 4 May 2020 10:43:10 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F238C061A0E
-        for <linux-serial@vger.kernel.org>; Mon,  4 May 2020 07:43:10 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id x18so21290171wrq.2
-        for <linux-serial@vger.kernel.org>; Mon, 04 May 2020 07:43:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=IRCeHkqSilUjU3FHunFBHRyW1Y2SXfHm0MWEUqYs4/A=;
-        b=xcitaMAX9gw+29GendB+8mdnWfteLl6Rm11E72yMhQbVlvTkMInBBYhb4kQT/E0Ee2
-         RpgEOuBQ9xT8A4YL7gTNTKJ5zh+TWrGPNuLh64057pVrkt7H7DWcmVQrKFXjQeDH3Z1G
-         YCFsMQC8kQ9CMB/oF2OxkJCUhr8/5PDqbAhJ4ks+5YxBltonIWm/PSuzLJD4lbO5C8/X
-         IVOJFT4D78B16tVPI1OguBr0sC8OyIjijzRgZWEz0zkNTW/iglAwowEqku4oyIjAVbwL
-         ownV/fwyJUskK7lI4VXncd03/fUtqP6ly+MFZn69UW2qU+OO761P5e16fgXuwmKiQawd
-         5f1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=IRCeHkqSilUjU3FHunFBHRyW1Y2SXfHm0MWEUqYs4/A=;
-        b=JKa19iAs8C1m9yFcDEAfmpOqQaX0ci/ob4rUcnbO9ySE9GdX9IqOo+jjpF3ctRejJ+
-         ReG80rK9gkaaOJsfQ54KtzU9rV/fiEEUi4iY0UZ9D4Ygf6x3npAT+opTKpI5OATvv7Jn
-         s+iPAzU6oAaUDe07TAxLcOF7hRk2ch4baJpxV4bAd59xHOBe2mvEqkpY+IZf+e9OdIu9
-         Oi18M7ius3+4IHtHbVrvFkQmunzD0ELeNJ9w7/C/M1RKk644saSfZWR/xPJsTbts7d6s
-         bfMwb0k5ypKiJ+g79+D9I/xd/YedNccWOJ9VL2E9CE1eFDdNAXacyaUZXzuJnyYQQH09
-         Bflw==
-X-Gm-Message-State: AGi0PuaR4uhTYGICxNhZUrFk8MYA3DxSA/Wh+chbuikTPxrUn04J31HR
-        0qk/I7ZSrEnJ7UdDWpmmX1mqPQ==
-X-Google-Smtp-Source: APiQypI9FXPMW4DbDRyPEO7LTd72jUgL9qg/5tOovENDnJ/SlF3XQVeCCTh4GFIUY0luJFYiAVo+KA==
-X-Received: by 2002:a5d:658c:: with SMTP id q12mr21086345wru.128.1588603388730;
-        Mon, 04 May 2020 07:43:08 -0700 (PDT)
-Received: from holly.lan (cpc141214-aztw34-2-0-cust773.18-1.cable.virginm.net. [86.9.19.6])
-        by smtp.gmail.com with ESMTPSA id t17sm18896607wro.2.2020.05.04.07.43.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 May 2020 07:43:08 -0700 (PDT)
-Date:   Mon, 4 May 2020 15:43:06 +0100
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Doug Anderson <dianders@chromium.org>
-Cc:     x86@kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        kgdb-bugreport@lists.sourceforge.net,
-        Jason Wessel <jason.wessel@windriver.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>, bp@alien8.de,
-        linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>
-Subject: Re: [Kgdb-bugreport] [PATCH v3 04/11] kgdb: Delay "kgdbwait" to
- dbg_late_init() by default
-Message-ID: <20200504144306.zwac2jdlltvhekqm@holly.lan>
-References: <20200428211351.85055-1-dianders@chromium.org>
- <20200428141218.v3.4.I3113aea1b08d8ce36dc3720209392ae8b815201b@changeid>
- <20200430154927.vhkhoffqwirb2fmm@holly.lan>
- <CAD=FV=Ut7kHr+V_+Yyk=+NC5qBrKEQ+O6Ra4HRHs5XoAHFcWeA@mail.gmail.com>
+        Mon, 4 May 2020 23:42:22 -0400
+Received: from mga09.intel.com ([134.134.136.24]:41789 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726516AbgEEDmW (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 4 May 2020 23:42:22 -0400
+IronPort-SDR: N8eW7wYQYvgIOswbtszOqidLTyKxjitFUThVokTfdbCRkZVwZ1tF3XPH6VZdQCMkTgU6hy+biN
+ RI4mAPLBORaA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2020 20:42:20 -0700
+IronPort-SDR: H1w0J8UQ/EfhFtDZM70dZ6AGLkvzQtcAgVjuRupFuQylAOHFSNIuaMFEUIxf8ORVVfmLaRSNGE
+ UG9YzQ3hwshQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,354,1583222400"; 
+   d="scan'208";a="369286189"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 04 May 2020 20:42:13 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1jVoTD-0002lQ-Jx; Tue, 05 May 2020 11:42:11 +0800
+Date:   Tue, 05 May 2020 11:41:33 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-linus] BUILD SUCCESS
+ 2ae11c46d5fdc46cb396e35911c713d271056d35
+Message-ID: <5eb0e06d.57LK88Yf/q6LD9Hj%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAD=FV=Ut7kHr+V_+Yyk=+NC5qBrKEQ+O6Ra4HRHs5XoAHFcWeA@mail.gmail.com>
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Apr 30, 2020 at 09:35:30AM -0700, Doug Anderson wrote:
-> Hi,
-> 
-> On Thu, Apr 30, 2020 at 8:49 AM Daniel Thompson
-> <daniel.thompson@linaro.org> wrote:
-> >
-> > On Tue, Apr 28, 2020 at 02:13:44PM -0700, Douglas Anderson wrote:
-> > > Using kgdb requires at least some level of architecture-level
-> > > initialization.  If nothing else, it relies on the architecture to
-> > > pass breakpoints / crashes onto kgdb.
-> > >
-> > > On some architectures this all works super early, specifically it
-> > > starts working at some point in time before Linux parses
-> > > early_params's.  On other architectures it doesn't.  A survey of a few
-> > > platforms:
-> > >
-> > > a) x86: Presumably it all works early since "ekgdboc" is documented to
-> > >    work here.
-> > > b) arm64: Catching crashes works; with a simple patch breakpoints can
-> > >    also be made to work.
-> > > c) arm: Nothing in kgdb works until
-> > >    paging_init() -> devicemaps_init() -> early_trap_init()
-> > >
-> > > Let's be conservative and, by default, process "kgdbwait" (which tells
-> > > the kernel to drop into the debugger ASAP at boot) a bit later at
-> > > dbg_late_init() time.  If an architecture has tested it and wants to
-> > > re-enable super early debugging, they can select the
-> > > ARCH_HAS_EARLY_DEBUG KConfig option.  We'll do this for x86 to start.
-> > > It should be noted that dbg_late_init() is still called quite early in
-> > > the system.
-> > >
-> > > Note that this patch doesn't affect when kgdb runs its init.  If kgdb
-> > > is set to initialize early it will still initialize when parsing
-> > > early_param's.  This patch _only_ inhibits the initial breakpoint from
-> > > "kgdbwait".  This means:
-> > >
-> > > * Without any extra patches arm64 platforms will at least catch
-> > >   crashes after kgdb inits.
-> > > * arm platforms will catch crashes (and could handle a hardcoded
-> > >   kgdb_breakpoint()) any time after early_trap_init() runs, even
-> > >   before dbg_late_init().
-> > >
-> > > Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> > > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > > Cc: Ingo Molnar <mingo@redhat.com>
-> > > Cc: Borislav Petkov <bp@alien8.de>
-> > > Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> >
-> > It looks like this patch is triggering some warnings from the existing
-> > defconfigs (both x86 and arm64). It looks like this:
-> >
-> > ---
-> > wychelm$ make defconfig
-> >   GEN     Makefile
-> > *** Default configuration is based on 'x86_64_defconfig'
-> >
-> > WARNING: unmet direct dependencies detected for ARCH_HAS_EARLY_DEBUG
-> >   Depends on [n]: KGDB [=n]
-> >   Selected by [y]:
-> >   - X86 [=y]
-> >
-> > WARNING: unmet direct dependencies detected for ARCH_HAS_EARLY_DEBUG
-> >   Depends on [n]: KGDB [=n]
-> >   Selected by [y]:
-> >   - X86 [=y]
-> 
-> Ah, thanks!  I hadn't noticed those.  I think it'd be easy to just
-> change the relevant patches to just "select ARCH_HAS_EARLY_DEBUG if
-> KGDB".  If you agree that's a good fix and are willing, I'd be happy
-> if you just added it to the relevant patches when applying.  If not, I
-> can post a v4.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-linus
+branch HEAD: 2ae11c46d5fdc46cb396e35911c713d271056d35  tty: xilinx_uartps: Fix missing id assignment to the console
 
-Happy with the approach to fix this.
+elapsed time: 480m
 
-Given the follow on discussion from the end of last week I suspect there
-probably needs to be a v4 anyway so perhaps the last question is
-applying a fix up is moot at this point?
+configs tested: 220
+configs skipped: 0
 
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-Daniel.
+arm64                            allyesconfig
+arm                              allyesconfig
+arm64                            allmodconfig
+arm                              allmodconfig
+arm64                             allnoconfig
+arm                               allnoconfig
+arm                           efm32_defconfig
+arm                         at91_dt_defconfig
+arm                        shmobile_defconfig
+arm64                               defconfig
+arm                          exynos_defconfig
+arm                        multi_v5_defconfig
+arm                           sunxi_defconfig
+arm                        multi_v7_defconfig
+sparc                            allyesconfig
+riscv                             allnoconfig
+csky                                defconfig
+alpha                               defconfig
+i386                              allnoconfig
+i386                             allyesconfig
+i386                             alldefconfig
+i386                                defconfig
+i386                              debian-10.3
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                              allnoconfig
+ia64                        generic_defconfig
+ia64                          tiger_defconfig
+ia64                         bigsur_defconfig
+ia64                             allyesconfig
+ia64                             alldefconfig
+m68k                       m5475evb_defconfig
+m68k                             allmodconfig
+m68k                       bvme6000_defconfig
+m68k                           sun3_defconfig
+m68k                          multi_defconfig
+nios2                         3c120_defconfig
+nios2                         10m50_defconfig
+c6x                        evmc6678_defconfig
+c6x                              allyesconfig
+openrisc                 simple_smp_defconfig
+openrisc                    or1ksim_defconfig
+nds32                               defconfig
+nds32                             allnoconfig
+h8300                       h8s-sim_defconfig
+h8300                     edosk2674_defconfig
+xtensa                          iss_defconfig
+h8300                    h8300h-sim_defconfig
+xtensa                       common_defconfig
+arc                                 defconfig
+arc                              allyesconfig
+microblaze                      mmu_defconfig
+microblaze                    nommu_defconfig
+mips                      fuloong2e_defconfig
+mips                      malta_kvm_defconfig
+mips                            ar7_defconfig
+mips                             allyesconfig
+mips                         64r6el_defconfig
+mips                              allnoconfig
+mips                           32r2_defconfig
+mips                             allmodconfig
+mips                malta_kvm_guest_defconfig
+mips                         tb0287_defconfig
+mips                       capcella_defconfig
+mips                           ip32_defconfig
+mips                  decstation_64_defconfig
+mips                      loongson3_defconfig
+mips                          ath79_defconfig
+mips                        bcm63xx_defconfig
+parisc                            allnoconfig
+parisc                generic-64bit_defconfig
+parisc                generic-32bit_defconfig
+parisc                           allyesconfig
+parisc                           allmodconfig
+powerpc                      chrp32_defconfig
+powerpc                             defconfig
+powerpc                       holly_defconfig
+powerpc                       ppc64_defconfig
+powerpc                          rhel-kconfig
+powerpc                           allnoconfig
+powerpc                  mpc866_ads_defconfig
+powerpc                    amigaone_defconfig
+powerpc                    adder875_defconfig
+powerpc                     ep8248e_defconfig
+powerpc                          g5_defconfig
+powerpc                     mpc512x_defconfig
+m68k                 randconfig-a001-20200502
+mips                 randconfig-a001-20200502
+nds32                randconfig-a001-20200502
+alpha                randconfig-a001-20200502
+parisc               randconfig-a001-20200502
+riscv                randconfig-a001-20200502
+m68k                 randconfig-a001-20200505
+mips                 randconfig-a001-20200505
+nds32                randconfig-a001-20200505
+parisc               randconfig-a001-20200505
+alpha                randconfig-a001-20200505
+riscv                randconfig-a001-20200505
+h8300                randconfig-a001-20200503
+nios2                randconfig-a001-20200503
+microblaze           randconfig-a001-20200503
+c6x                  randconfig-a001-20200503
+sparc64              randconfig-a001-20200503
+s390                 randconfig-a001-20200505
+xtensa               randconfig-a001-20200505
+sh                   randconfig-a001-20200505
+openrisc             randconfig-a001-20200505
+csky                 randconfig-a001-20200505
+x86_64               randconfig-a003-20200505
+x86_64               randconfig-a001-20200505
+i386                 randconfig-a001-20200505
+i386                 randconfig-a003-20200505
+i386                 randconfig-a002-20200505
+i386                 randconfig-b003-20200503
+x86_64               randconfig-b002-20200503
+i386                 randconfig-b001-20200503
+x86_64               randconfig-b003-20200503
+x86_64               randconfig-b001-20200503
+i386                 randconfig-b002-20200503
+i386                 randconfig-b003-20200502
+i386                 randconfig-b001-20200502
+x86_64               randconfig-b003-20200502
+x86_64               randconfig-b001-20200502
+i386                 randconfig-b002-20200502
+x86_64               randconfig-c001-20200503
+x86_64               randconfig-c002-20200503
+i386                 randconfig-c002-20200503
+x86_64               randconfig-c003-20200503
+i386                 randconfig-c001-20200503
+i386                 randconfig-c003-20200503
+x86_64               randconfig-c002-20200505
+x86_64               randconfig-c001-20200505
+i386                 randconfig-c002-20200505
+i386                 randconfig-c003-20200505
+x86_64               randconfig-c003-20200505
+i386                 randconfig-c001-20200505
+x86_64               randconfig-d001-20200505
+i386                 randconfig-d003-20200505
+i386                 randconfig-d001-20200505
+x86_64               randconfig-d003-20200505
+x86_64               randconfig-d002-20200505
+i386                 randconfig-d002-20200505
+x86_64               randconfig-d001-20200503
+i386                 randconfig-d003-20200503
+x86_64               randconfig-d003-20200503
+i386                 randconfig-d001-20200503
+x86_64               randconfig-d002-20200503
+i386                 randconfig-d002-20200503
+i386                 randconfig-e003-20200505
+x86_64               randconfig-e002-20200505
+x86_64               randconfig-e003-20200505
+x86_64               randconfig-e001-20200505
+i386                 randconfig-e002-20200505
+i386                 randconfig-e001-20200505
+x86_64               randconfig-e003-20200503
+x86_64               randconfig-e002-20200503
+i386                 randconfig-e003-20200503
+x86_64               randconfig-e001-20200503
+i386                 randconfig-e002-20200503
+i386                 randconfig-e001-20200503
+i386                 randconfig-f003-20200503
+x86_64               randconfig-f002-20200503
+i386                 randconfig-f001-20200503
+i386                 randconfig-f002-20200503
+i386                 randconfig-f003-20200505
+x86_64               randconfig-f001-20200505
+x86_64               randconfig-f003-20200505
+i386                 randconfig-f001-20200505
+i386                 randconfig-f002-20200505
+x86_64               randconfig-g003-20200503
+i386                 randconfig-g003-20200503
+i386                 randconfig-g002-20200503
+x86_64               randconfig-g001-20200503
+i386                 randconfig-g001-20200503
+i386                 randconfig-g003-20200505
+i386                 randconfig-g002-20200505
+i386                 randconfig-g001-20200505
+x86_64               randconfig-g002-20200505
+i386                 randconfig-h002-20200505
+i386                 randconfig-h001-20200505
+i386                 randconfig-h003-20200505
+x86_64               randconfig-h003-20200505
+x86_64               randconfig-h001-20200505
+ia64                 randconfig-a001-20200503
+arm64                randconfig-a001-20200503
+arc                  randconfig-a001-20200503
+arm                  randconfig-a001-20200503
+sparc                randconfig-a001-20200503
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+s390                       zfcpdump_defconfig
+s390                          debug_defconfig
+s390                             allyesconfig
+s390                              allnoconfig
+s390                             allmodconfig
+s390                             alldefconfig
+s390                                defconfig
+sh                          rsk7269_defconfig
+sh                               allmodconfig
+sh                            titan_defconfig
+sh                  sh7785lcr_32bit_defconfig
+sh                                allnoconfig
+sparc                               defconfig
+sparc64                             defconfig
+sparc64                           allnoconfig
+sparc64                          allyesconfig
+sparc64                          allmodconfig
+um                           x86_64_defconfig
+um                             i386_defconfig
+um                                  defconfig
+x86_64                                   rhel
+x86_64                               rhel-7.6
+x86_64                    rhel-7.6-kselftests
+x86_64                         rhel-7.2-clear
+x86_64                                    lkp
+x86_64                              fedora-25
+x86_64                                  kexec
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
