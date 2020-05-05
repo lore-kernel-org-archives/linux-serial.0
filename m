@@ -6,146 +6,112 @@ X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D60F6C47247
-	for <linux-serial@archiver.kernel.org>; Tue,  5 May 2020 14:49:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50A5BC47254
+	for <linux-serial@archiver.kernel.org>; Tue,  5 May 2020 14:51:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B8373206B9
-	for <linux-serial@archiver.kernel.org>; Tue,  5 May 2020 14:49:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 385F3206B9
+	for <linux-serial@archiver.kernel.org>; Tue,  5 May 2020 14:51:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729194AbgEEOts (ORCPT
+        id S1729235AbgEEOvo (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 5 May 2020 10:49:48 -0400
-Received: from mailout3.hostsharing.net ([176.9.242.54]:45527 "EHLO
-        mailout3.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729060AbgEEOts (ORCPT
+        Tue, 5 May 2020 10:51:44 -0400
+Received: from mailout2.hostsharing.net ([83.223.78.233]:33885 "EHLO
+        mailout2.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729142AbgEEOvo (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 5 May 2020 10:49:48 -0400
+        Tue, 5 May 2020 10:51:44 -0400
+X-Greylist: delayed 387 seconds by postgrey-1.27 at vger.kernel.org; Tue, 05 May 2020 10:51:43 EDT
 Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
-        by mailout3.hostsharing.net (Postfix) with ESMTPS id A383B100A5F0F;
-        Tue,  5 May 2020 16:49:45 +0200 (CEST)
-Received: from localhost (unknown [87.130.102.138])
+        by mailout2.hostsharing.net (Postfix) with ESMTPS id A331F1008D00D;
+        Tue,  5 May 2020 16:45:13 +0200 (CEST)
+Received: from localhost (pd95be530.dip0.t-ipconnect.de [217.91.229.48])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by h08.hostsharing.net (Postfix) with ESMTPSA id 3114D610EE1A;
-        Tue,  5 May 2020 16:49:45 +0200 (CEST)
-X-Mailbox-Line: From a91b9392e8e7914cae16f59beb1ffe6b335f81c9 Mon Sep 17 00:00:00 2001
-Message-Id: <a91b9392e8e7914cae16f59beb1ffe6b335f81c9.1588505407.git.lukas@wunner.de>
+        by h08.hostsharing.net (Postfix) with ESMTPSA id 5732D610EE1A;
+        Tue,  5 May 2020 16:45:13 +0200 (CEST)
+X-Mailbox-Line: From b3fbbe8688d5e9d173168ae45295719ca4c9d35f Mon Sep 17 00:00:00 2001
+Message-Id: <b3fbbe8688d5e9d173168ae45295719ca4c9d35f.1588505407.git.lukas@wunner.de>
 In-Reply-To: <cover.1588505407.git.lukas@wunner.de>
 References: <cover.1588505407.git.lukas@wunner.de>
 From:   Lukas Wunner <lukas@wunner.de>
-Date:   Tue, 5 May 2020 16:42:04 +0200
-Subject: [PATCH 4/4] serial: 8250: Support rs485 bus termination GPIO
+Date:   Tue, 5 May 2020 16:42:01 +0200
+Subject: [PATCH 1/4] serial: 8250: Avoid error message on reprobe
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, Rob Herring <robh+dt@kernel.org>
+        Jiri Slaby <jslaby@suse.com>
 Cc:     "Matwey V. Kornilov" <matwey@sai.msu.ru>,
         Giulio Benetti <giulio.benetti@micronovasrl.com>,
         Heiko Stuebner <heiko@sntech.de>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Christoph Muellner <christoph.muellner@theobroma-systems.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        devicetree@vger.kernel.org, linux-serial@vger.kernel.org
+        linux-serial@vger.kernel.org
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Commit e8759ad17d41 ("serial: uapi: Add support for bus termination")
-introduced the ability to enable rs485 bus termination from user space.
-So far the feature is only used by a single driver, 8250_exar.c, using a
-hardcoded GPIO pin specific to Siemens IOT2040 products.
+If the call to uart_add_one_port() in serial8250_register_8250_port()
+fails, a half-initialized entry in the serial_8250ports[] array is left
+behind.
 
-Provide for a more generic solution by allowing specification of an
-rs485 bus termination GPIO pin in the device tree:  Amend the serial
-core to retrieve the GPIO from the device tree (or ACPI table) and amend
-the default ->rs485_config() callback for 8250 drivers to change the
-GPIO on request from user space.
+A subsequent reprobe of the same serial port causes that entry to be
+reused.  Because uart->port.dev is set, uart_remove_one_port() is called
+for the half-initialized entry and bails out with an error message:
+
+bcm2835-aux-uart 3f215040.serial: Removing wrong port: (null) != (ptrval)
+
+The same happens on failure of mctrl_gpio_init() since commit
+4a96895f74c9 ("tty/serial/8250: use mctrl_gpio helpers").
+
+Fix by zeroing the uart->port.dev pointer in the probe error path.
 
 Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Cc: stable@vger.kernel.org # v2.6.10+
 ---
- drivers/tty/serial/8250/8250_port.c |  4 ++++
- drivers/tty/serial/serial_core.c    | 24 ++++++++++++++++++++++++
- include/linux/serial_core.h         |  2 ++
- 3 files changed, 30 insertions(+)
+ drivers/tty/serial/8250/8250_core.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index f77bf820b7a3..b5b630d02110 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -681,6 +681,10 @@ int serial8250_em485_config(struct uart_port *port, struct serial_rs485 *rs485)
- 	memset(rs485->padding, 0, sizeof(rs485->padding));
- 	port->rs485 = *rs485;
- 
-+	if (port->rs485_term_gpio)
-+		gpiod_set_value(port->rs485_term_gpio,
-+				rs485->flags & SER_RS485_TERMINATE_BUS);
-+
- 	/*
- 	 * Both serial8250_em485_init() and serial8250_em485_destroy()
- 	 * are idempotent.
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 43b6682877d5..7c929aad066e 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -3317,6 +3317,7 @@ int uart_get_rs485_mode(struct uart_port *port)
- 	 * to get to a defined state with the following properties:
- 	 */
- 	rs485conf->flags &= ~(SER_RS485_RX_DURING_TX | SER_RS485_ENABLED |
-+			      SER_RS485_TERMINATE_BUS |
- 			      SER_RS485_RTS_AFTER_SEND);
- 	rs485conf->flags |= SER_RS485_RTS_ON_SEND;
- 
-@@ -3331,6 +3332,29 @@ int uart_get_rs485_mode(struct uart_port *port)
- 		rs485conf->flags |= SER_RS485_RTS_AFTER_SEND;
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 45d9117cab68..14abade589da 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -1040,7 +1040,7 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+ 			gpios = mctrl_gpio_init(&uart->port, 0);
+ 			if (IS_ERR(gpios)) {
+ 				ret = PTR_ERR(gpios);
+-				goto out_unlock;
++				goto err;
+ 			} else {
+ 				uart->gpios = gpios;
+ 			}
+@@ -1089,7 +1089,9 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+ 			serial8250_apply_quirks(uart);
+ 			ret = uart_add_one_port(&serial8250_reg,
+ 						&uart->port);
+-			if (ret == 0)
++			if (ret)
++				goto err;
++			else
+ 				ret = uart->port.line;
+ 		} else {
+ 			dev_info(uart->port.dev,
+@@ -1112,10 +1114,14 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
+ 		}
  	}
  
-+	if (port->rs485_term_gpio)
-+		devm_gpiod_put(dev, port->rs485_term_gpio);
+-out_unlock:
+ 	mutex_unlock(&serial_mutex);
+ 
+ 	return ret;
 +
-+	port->rs485_term_gpio = devm_gpiod_get_optional(dev, "rs485-term",
-+		GPIOD_FLAGS_BIT_DIR_SET | GPIOD_FLAGS_BIT_DIR_OUT);
-+	if (IS_ERR(port->rs485_term_gpio)) {
-+		ret = PTR_ERR(port->rs485_term_gpio);
-+		port->rs485_term_gpio = NULL;
-+		if (ret != -EPROBE_DEFER)
-+			dev_err(dev, "Cannot get rs485-term-gpios\n");
-+		return ret;
-+	}
-+
-+	if (port->rs485_term_gpio) {
-+		ret = gpiod_get_value(port->rs485_term_gpio);
-+		if (ret < 0) {
-+			dev_err(dev, "Cannot get rs485-term-gpios value\n");
-+			return ret;
-+		}
-+		if (ret)
-+			rs485conf->flags |= SER_RS485_TERMINATE_BUS;
-+	}
-+
- 	return 0;
++err:
++	uart->port.dev = NULL;
++	mutex_unlock(&serial_mutex);
++	return ret;
  }
- EXPORT_SYMBOL_GPL(uart_get_rs485_mode);
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index b649a2b894e7..9fd550e7946a 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -10,6 +10,7 @@
- #include <linux/bitops.h>
- #include <linux/compiler.h>
- #include <linux/console.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/interrupt.h>
- #include <linux/circ_buf.h>
- #include <linux/spinlock.h>
-@@ -251,6 +252,7 @@ struct uart_port {
- 	struct attribute_group	*attr_group;		/* port specific attributes */
- 	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
- 	struct serial_rs485     rs485;
-+	struct gpio_desc	*rs485_term_gpio;	/* enable RS485 bus termination */
- 	struct serial_iso7816   iso7816;
- 	void			*private_data;		/* generic platform data pointer */
- };
+ EXPORT_SYMBOL(serial8250_register_8250_port);
+ 
 -- 
 2.26.2
 
