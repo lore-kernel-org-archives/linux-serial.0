@@ -2,149 +2,119 @@ Return-Path: <SRS0=tlDI=6U=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B11B0C28CBC
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 08:08:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDF9FC28CBC
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 10:02:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8D75420661
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 08:08:04 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="jBCzyR16"
+	by mail.kernel.org (Postfix) with ESMTP id A4B8820753
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 10:02:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728511AbgEFIIC (ORCPT
+        id S1728314AbgEFKCB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 May 2020 04:08:02 -0400
-Received: from mailout2.samsung.com ([203.254.224.25]:13694 "EHLO
-        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728522AbgEFIIB (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 May 2020 04:08:01 -0400
-Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20200506080758epoutp02782b12b5925a1deb2c068ff1b1700120~MYfYd34Dr2119321193epoutp025
-        for <linux-serial@vger.kernel.org>; Wed,  6 May 2020 08:07:58 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20200506080758epoutp02782b12b5925a1deb2c068ff1b1700120~MYfYd34Dr2119321193epoutp025
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1588752478;
-        bh=dJ+lGakL3NnhgWqJ7Zs4VGKOinDZ9u2r6c1y7AICafc=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=jBCzyR16DkZ3LzfFBHPiynTstJEiOTrIiapb4tYb4vINNquAkDoHntyOl+a6PLK76
-         yYcHhGf8hy8LK6d/BOf2w2Cf2maM/PQt5WcXueh0/roB0o5F+m0ISLo6O3R+ugWp9A
-         g9nt5pQ77zyjXwyl9u4NsEAv/yAS5MLPe8b9w/jI=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
-        20200506080757epcas2p16878918b5b943ebb355d2bcb0fa34e7f~MYfYKR0uz3190931909epcas2p1G;
-        Wed,  6 May 2020 08:07:57 +0000 (GMT)
-Received: from epsmges2p3.samsung.com (unknown [182.195.40.189]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 49H8ND2gX1zMqYkv; Wed,  6 May
-        2020 08:07:56 +0000 (GMT)
-Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
-        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        26.41.04393.85072BE5; Wed,  6 May 2020 17:07:53 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
-        20200506080752epcas2p1e80cecb729dd7ccd6ef39d6b2d8bbdb9~MYfTTj0V43171431714epcas2p18;
-        Wed,  6 May 2020 08:07:52 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20200506080752epsmtrp22b80f01a987392a194db8e387e3402d1~MYfTSc8lI1944219442epsmtrp2j;
-        Wed,  6 May 2020 08:07:52 +0000 (GMT)
-X-AuditID: b6c32a47-67fff70000001129-a3-5eb27058e826
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        E2.3D.25866.85072BE5; Wed,  6 May 2020 17:07:52 +0900 (KST)
-Received: from KORCO004660 (unknown [12.36.155.199]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20200506080752epsmtip23c12373581a928cc417cad11630e97fd~MYfTFU-uw2843328433epsmtip2F;
-        Wed,  6 May 2020 08:07:52 +0000 (GMT)
-From:   "Hyunki Koo" <hyunki00.koo@samsung.com>
-To:     "'Greg Kroah-Hartman'" <gregkh@linuxfoundation.org>
-Cc:     "'Rob Herring'" <robh+dt@kernel.org>,
-        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-In-Reply-To: <20200506073253.GB2336830@kroah.com>
-Subject: RE: [PATCH v9 2/3] dt-bindings: serial: Add reg-io-width compatible
-Date:   Wed, 6 May 2020 17:07:52 +0900
-Message-ID: <007001d6237d$70aeb3f0$520c1bd0$@samsung.com>
+        Wed, 6 May 2020 06:02:01 -0400
+Received: from mga05.intel.com ([192.55.52.43]:46782 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726354AbgEFKCB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 6 May 2020 06:02:01 -0400
+IronPort-SDR: iNNoZ2sMzZuivEV1X+eQdy/f08q3zfFG5+LPf+s5KKNA84dFt0Cvn75T9gv8qG5isd+XCN9bYg
+ 50+qGPkqh+jA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2020 03:01:59 -0700
+IronPort-SDR: tTSKKRYqAjYlK2tILCjAMliZD/yQfbuPTqEh/yDDTQaskHYz2eBrvxURnkpPDSW61UTxf+gJtp
+ /fnmkbKMHx2A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,358,1583222400"; 
+   d="scan'208";a="248861939"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by orsmga007.jf.intel.com with ESMTP; 06 May 2020 03:01:54 -0700
+Received: from andy by smile with local (Exim 4.93)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1jWGsH-004zVW-Ds; Wed, 06 May 2020 13:01:57 +0300
+Date:   Wed, 6 May 2020 13:01:57 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
+        Giulio Benetti <giulio.benetti@micronovasrl.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Christoph Muellner <christoph.muellner@theobroma-systems.com>,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH 1/4] serial: 8250: Avoid error message on reprobe
+Message-ID: <20200506100157.GB185537@smile.fi.intel.com>
+References: <cover.1588505407.git.lukas@wunner.de>
+ <b3fbbe8688d5e9d173168ae45295719ca4c9d35f.1588505407.git.lukas@wunner.de>
+ <20200505160101.GV185537@smile.fi.intel.com>
+ <20200506060623.sf3kh3fwhoawawsd@wunner.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQLUZ2If+0iSeSXbGQNX+L7hdLFc3gKqIFw+AnRTUeUArj7eRKZvxX5Q
-Content-Language: ko
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Se0hTcRTH++1u914fi59z1UFK1k2CLN2mbV5DpUjSyGgU/pFFetHLlPZi
-        d1YalOWjaQkaITSzB4ZQmbYlMlYavoqshPKPWASVZOuB9pAki0Wb18r/Puf8zvd8z/n9fjSh
-        aCbj6DKLg7dbOBNDRkp7h9bpk/baPAc0Dbck7KXhMRlb3d5NsuO+CyT7uL2RYmv7hqnNslzP
-        9Xoy915bJ5U744k3EAWmjFKeK+HtKt5SbC0psxgzmR17CrcW6vQabZI2nU1jVBbOzGcy2XmG
-        pG1lppAlozrEmcpDKQMnCIw6K8NuLXfwqlKr4MhkeFuJyabV2pIFziyUW4zJxVbzJq1Gk6IL
-        VRaZSvvv9xM2P3nk5W11Fbota0ARNOCNcH7iNWpAkbQCexGMtDqlYvANwY2xKUoMZhB0PQ38
-        k4xOfVuQ+BAEPzWg8IECf0AwU7M7zCROgvH2t5IwK3EatL15MN+JwE4EN3tG5jtFYC38bjw3
-        XxSL82D8RgsRZilOgN4hHxlmOU6H+lm/ROQYeHj+rTTMBF4PHVc+EeJEKpib7JCJZtsg8OwV
-        EmuU0FpfR4SNAX+n4Gu7E4mCbGh9OE2KHAsfH/RQIsfBzHTfQv449Nc1U6L4DIK5L5ML+6eC
-        692pUCM65LAOun3qMAJeA8MvFmZbCs6hICWm5eCsU4jCtdA1+14i8kronPRRTYhxLdrMtWgz
-        16INXP+9LiPpdbSctwlmIy+k2FIXP7YHzX/HxBwv6h3LG0SYRky0XJPjPqCQcYeECvMgAppg
-        lPLoH6GUvISrqOTt1kJ7uYkXBpEudPHNRNyyYmvoc1schVpdil6vSdexOn0Ky6yQe6L8+xXY
-        yDn4gzxv4+1/dRI6Iq4K5atZ05bgaNRUdYcnOHGiTo3uwUmF9+yAZQO217QSXje6+vhOR8HY
-        z9WGd6Nup3MwqnJnMHn70104RulbUl+06sk1j6HGL3800XJU33Is1fiKeb7610RB2WHlEtfh
-        R7UJWQNkD1FsuHg3uK878Pq0X5NaoHQnB+im+Ln8zx8ZqVDKaRMJu8D9AT3KHi6kAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrPLMWRmVeSWpSXmKPExsWy7bCSvG5EwaY4g8Ndqhbzj5xjtWhevJ7N
-        4vKuOWwWZxb3slu07j3C7sDqsWlVJ5vH/rlr2D0+b5ILYI7isklJzcksSy3St0vgynj+cAVr
-        wRW2ivVT5jM2MK5h7WLk5JAQMJE49fYTYxcjF4eQwA5GiTfr+pghEjISE14sgbKFJe63HGGF
-        KHrOKPF87yEmkASbgK7E5cVPwGwRAXOJuQ+Ps4PYzAI9jBKfXyeC2EICzxglbj6oA7E5BQwl
-        /vVOAasXFvCRuLx6GtgCFgEViW2Hd7GB2LwClhKd324yQdiCEidnPmGBmKkt0fuwlRHGXrbw
-        NdRxChI/ny5jhbjBTeL5pftQNSISszvbmCcwCs9CMmoWklGzkIyahaRlASPLKkbJ1ILi3PTc
-        YsMCo7zUcr3ixNzi0rx0veT83E2M4DjR0trBuGfVB71DjEwcjIcYJTiYlUR4eX5sjBPiTUms
-        rEotyo8vKs1JLT7EKM3BoiTO+3XWwjghgfTEktTs1NSC1CKYLBMHp1QDE+v65+LzcxP1/90s
-        zBKTWLnl77OgvUe2i/zOPXN+8rk959LXLr+w8xP/jqqNV7n9fJ7KrJj+X6tqe/T3588n7JG4
-        UBg0X7zPbVqMReA+iZlhDxteZex8y+Hk9t2ddWflUbYU657pRS3tvuknU1X+lr85eNv2lsm+
-        tElXN69cuMBuaf5vf+NL0rdWGt2sk1ugJtCs2PSf4dpr+WM/r6qslWld7OSzaL1pcoPGK7Xd
-        Yj87TAoeHf/Ft8hE+k13WXE4m7L0LM/fz30Nn3T1Cq5xytzPc6DtcWE7Twqvc7XN7I83ZGXf
-        vf+mka7iYR98fffVI/lTFpz4xXbJ7/KRjgaTPXp3L6576dluF3Giq4anxlOJpTgj0VCLuag4
-        EQCH7h+FAgMAAA==
-X-CMS-MailID: 20200506080752epcas2p1e80cecb729dd7ccd6ef39d6b2d8bbdb9
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20200506070024epcas2p2868e11349d2fee83d340df7fa181f704
-References: <20200506070009.16809-1-hyunki00.koo@samsung.com>
-        <CGME20200506070024epcas2p2868e11349d2fee83d340df7fa181f704@epcas2p2.samsung.com>
-        <20200506070009.16809-2-hyunki00.koo@samsung.com>
-        <20200506073253.GB2336830@kroah.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200506060623.sf3kh3fwhoawawsd@wunner.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tuesday, May 5, 2020 at 2020 4:33:00 PM +0900, Greg Kroah-Hartman
-> On Wed, May 06, 2020 at 04:00:06PM +0900, Hyunki Koo wrote:
-> > Add a description for reg-io-width options for the samsung serial UART
-> > peripheral.
-> >
-> > Signed-off-by: Hyunki Koo <hyunki00.koo=40samsung.com>
-> > ---
-> >  Documentation/devicetree/bindings/serial/samsung_uart.yaml =7C 8
-> > ++++++++
-> >  1 file changed, 8 insertions(+)
->=20
-> You dropped the reviewed-by tag that Rob gave on the previous version
-> of this patch.
->=20
-> Please put that back and resend.
->=20
-> thanks,
->=20
-> greg k-h
+On Wed, May 06, 2020 at 08:06:23AM +0200, Lukas Wunner wrote:
+> On Tue, May 05, 2020 at 07:01:01PM +0300, Andy Shevchenko wrote:
+> > On Tue, May 05, 2020 at 04:42:01PM +0200, Lukas Wunner wrote:
+> > > If the call to uart_add_one_port() in serial8250_register_8250_port()
+> > > fails, a half-initialized entry in the serial_8250ports[] array is left
+> > > behind.
+> > > 
+> > > A subsequent reprobe of the same serial port causes that entry to be
+> > > reused.  Because uart->port.dev is set, uart_remove_one_port() is called
+> > > for the half-initialized entry and bails out with an error message:
+> > > 
+> > > bcm2835-aux-uart 3f215040.serial: Removing wrong port: (null) != (ptrval)
+> > > 
+> > > The same happens on failure of mctrl_gpio_init() since commit
+> > > 4a96895f74c9 ("tty/serial/8250: use mctrl_gpio helpers").
+> > > 
+> > > Fix by zeroing the uart->port.dev pointer in the probe error path.
+> > >  
+> > > Signed-off-by: Lukas Wunner <lukas@wunner.de>
+> > > Cc: stable@vger.kernel.org # v2.6.10+
+> > 
+> > Fixes tag?
+> 
+> The bug was introduced in the pre-git era, so I can't provide a Fixes tag:
+> 
+> https://git.kernel.org/tglx/history/c/befff6f5bf5f
+> 
+> This commit, which went into v2.6.10, added an unconditional
+> uart_remove_one_port() in serial8250_register_port().
 
-Thank you for your comment
-I add review tag by Krzysztof Kozlowski  in all other patches not only patc=
-h2/3
+We have history tree, but I heard you.
 
-Reviewed-by: Krzysztof Kozlowski <krzk=40kernel.org>
-Tested on Odroid HC1 (Exynos5422):
-Tested-by: Krzysztof Kozlowski <krzk=40kernel.org>
+> In 2012, commit 835d844d1a28 ("8250_pnp: do pnp probe before legacy probe")
+> made the call to uart_remove_one_port() conditional on uart->port.dev
+> being non-NULL and that allows me to fix the issue by setting that
+> pointer to NULL in the error path.  The commit went into v3.7, so it
+> should be possible to fix the problem going back to v3.7 with my patch.
+> And before that one needs to additionally make the call to
+> uart_remove_one_port() conditional.
+
+Perhaps it will be the best candidate.
+
+Fixes, AFAIU, helps scripts to find whatever trees it might been applied
+against. If somebody keeps private stable tree on unusual base it will be
+helpful for them as well (but I understand that there is little care of a
+such).
+
+> However, according to www.kernel.org the oldest LTS kernel is v3.16.
+> So I've given you the nitty-gritty details but it's all fairly
+> irrelevant and the Cc: stable tag I've put into the commit seems the
+> best I can do in this case.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
