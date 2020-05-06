@@ -2,98 +2,103 @@ Return-Path: <SRS0=tlDI=6U=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2774C28CBC
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 06:31:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A65D9C28CBC
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 06:41:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B447E206F9
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 06:31:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7A91B20721
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 06:41:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1588746671;
-	bh=MFpFVaI2hBqLIIEtg/NvItpJR0h+j14MNwgPOuWazmw=;
+	s=default; t=1588747311;
+	bh=sMde20sCLZTVyoVFeFYflyQXlmvS+Vk7+sZmMSvb7Vc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=NhgaeH0Sr4ha95wVxslMQm1yr46l43z+SHiuncdrj1fvC9Rw4AsjY+H2DrGxAxwlZ
-	 SlDaocfGuWfu/OP2pTruENRVSJ08V5WlW2WL0FzfXV/yrHUfftUCXQMSSprsxqvESl
-	 xWEyQY1uYBSmyqDdf1cDDpPXMjhBaYd7cAWhrjEI=
+	b=vkdPQZIvlAoHCtItegwI3qZP54cuR5dncJP/JsGR7/GygfdH89BNmA4zfH92b0NSI
+	 xPLvrD1A8gvT5WMmBRiBMXAajY5t2UeLOdHofqRHOdvFAAVZze/NN9witpVKmKRCYF
+	 M2sALGwqnN8FH0pQRh9UQsz0flpGGlq5LU9dwZjI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726942AbgEFGbI (ORCPT
+        id S1727834AbgEFGlv (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 May 2020 02:31:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51994 "EHLO mail.kernel.org"
+        Wed, 6 May 2020 02:41:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57118 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725882AbgEFGbI (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 May 2020 02:31:08 -0400
+        id S1727810AbgEFGlv (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 6 May 2020 02:41:51 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7FABC206E6;
-        Wed,  6 May 2020 06:31:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3053C206E6;
+        Wed,  6 May 2020 06:41:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588746668;
-        bh=MFpFVaI2hBqLIIEtg/NvItpJR0h+j14MNwgPOuWazmw=;
+        s=default; t=1588747310;
+        bh=sMde20sCLZTVyoVFeFYflyQXlmvS+Vk7+sZmMSvb7Vc=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EpM8LnS4QQfFuOoQTFa7n+QHGjWh3YEmilYrQugomeBUci0nAmOVSwBUCYpiqr60y
-         gkhA4deBwBb7/bnir48213vvxpxHX/VqDE/7fxQjxRhiEDCBKswqdfvM+McIIzbG5z
-         gUc+hqPi1yv77BCXNTrLlhzVnorh7IqsuBJjc0/E=
-Date:   Wed, 6 May 2020 08:31:05 +0200
-From:   'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>
-To:     Hyunki Koo <hyunki00.koo@samsung.com>
-Cc:     'Kukjin Kim' <kgene@kernel.org>,
-        'Krzysztof Kozlowski' <krzk@kernel.org>,
-        'Jiri Slaby' <jslaby@suse.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 1/3] serial: samsung: Replace rd_regb/wr_regb with
- rd_reg/wr_reg
-Message-ID: <20200506063105.GA2246050@kroah.com>
-References: <CGME20200420013322epcas2p263e72997dd4ebdaf00b095a83a6b6651@epcas2p2.samsung.com>
- <20200420013300.17249-1-hyunki00.koo@samsung.com>
- <20200505142325.GA816056@kroah.com>
- <000001d62335$33d03410$9b709c30$@samsung.com>
+        b=uChhstoiXnVKS6HT9i288ygX38FAY+ixJvXA6zPJ5Au7omKOIFzHDuzNsEkbNebNL
+         fDEZaP5gJQF2J5ZHiECmjhCVH8lNhJllKaiRRtAHUSB1xGozLBIvGyI0ocrTOqvQhf
+         zISbwX3e4kpu6Yw4mbs9BfeYG45KzXXoV5ISHkds=
+Date:   Wed, 6 May 2020 08:41:48 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Tanwar, Rahul" <rahul.tanwar@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        andriy.shevchenko@intel.com
+Subject: Re: [PATCH] serial: lantiq: Add x86 in Kconfig dependencies for
+ Lantiq serial driver
+Message-ID: <20200506064148.GA2266968@kroah.com>
+References: <96fd193c0a8939d27641ff93573545c02313048f.1588577002.git.rahul.tanwar@linux.intel.com>
+ <20200505142504.GA832370@kroah.com>
+ <3aa4aac0-a9d2-5ab2-e9c9-c7f3bd16da96@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <000001d62335$33d03410$9b709c30$@samsung.com>
+In-Reply-To: <3aa4aac0-a9d2-5ab2-e9c9-c7f3bd16da96@linux.intel.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, May 06, 2020 at 08:30:46AM +0900, Hyunki Koo wrote:
-> On Tuesday, May 5, 2020 at 2020 11:23:00 PM +0900, Greg Kroah-Hartman wrote:
-> > On Mon, Apr 20, 2020 at 10:32:56AM +0900, Hyunki Koo wrote:
-> > > This patch change the name of macro for general usage.
-> > >
-> > > Signed-off-by: Hyunki Koo <hyunki00.koo@samsung.com>
-> > 
-> > This patch series creates the following build error, which is not
-> > allowed:
-> > 
-> >   CC [M]  drivers/tty/serial/samsung_tty.o
-> > drivers/tty/serial/samsung_tty.c:186:13: warning: ‘wr_reg_barrier’
-> > defined but not used [-Wunused-function]
-> >   186 | static void wr_reg_barrier(struct uart_port *port, u32 reg, u32 val)
-> >       |             ^~~~~~~~~~~~~~
-> > 
-> > Please fix up and resend.  Always make sure you keep the reviewed-by
-> > tags from others as well.
-> > 
-> > greg k-h
+On Wed, May 06, 2020 at 12:49:57PM +0800, Tanwar, Rahul wrote:
 > 
-> I tested on latest kernel today one more time, there is no error and warning on my side, not only patch 1/3 and patch 3/3
-> Line 1735:   CC      drivers/tty/serial/samsung_tty.o
-> Line 343:   CC      drivers/tty/serial/samsung_tty.o
+> On 5/5/2020 10:25 pm, Greg KH wrote:
+> > On Mon, May 04, 2020 at 04:03:52PM +0800, Rahul Tanwar wrote:
+> >> Lantiq serial driver/IP is reused for a x86 based SoC as well.
+> >> Update the Kconfig accordingly.
+> >>
+> >> Signed-off-by: Rahul Tanwar <rahul.tanwar@linux.intel.com>
+> >> ---
+> >>  drivers/tty/serial/Kconfig | 2 +-
+> >>  1 file changed, 1 insertion(+), 1 deletion(-)
+> >>
+> >> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> >> index 0aea76cd67ff..4b0a7b98f8c7 100644
+> >> --- a/drivers/tty/serial/Kconfig
+> >> +++ b/drivers/tty/serial/Kconfig
+> >> @@ -1035,7 +1035,7 @@ config SERIAL_SIFIVE_CONSOLE
+> >>  
+> >>  config SERIAL_LANTIQ
+> >>  	bool "Lantiq serial driver"
+> >> -	depends on LANTIQ
+> >> +	depends on (LANTIQ || X86) || COMPILE_TEST
+> >>  	select SERIAL_CORE
+> >>  	select SERIAL_CORE_CONSOLE
+> >>  	select SERIAL_EARLYCON
+> >> -- 
+> >> 2.11.0
+> >>
+> > Any reason this can't also be a module?
 > 
-> wr_reg_barrier is not defined in patch 1/3, 
-> and wr_reg_barrier is define and used in patch3/3
-> it might be no warning.
+> Thanks a lot for accepting the patch. This driver is also used for
+> console during bootup so we always have it as built in.
 
-After I apply this series, I got the above build warning on my normal
-x86 system, so I can not take the patches.  Please fix up and resend.
+So no generic kernel images can ever be made for this driver?  That's
+not good, what about systems that have this serial port but does not
+care about the console?
+
+That's just ensuring that it will not be built into any distro kernel
+images, I suggest fixing this up please.
+
+thanks,
 
 greg k-h
