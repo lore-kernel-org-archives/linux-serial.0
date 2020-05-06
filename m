@@ -2,209 +2,91 @@ Return-Path: <SRS0=tlDI=6U=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3608AC47256
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 17:45:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66249C38A24
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 19:51:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1B21F208DB
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 17:45:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1588787133;
-	bh=FC+L2GLWiMbL2ccPvEDdx2mvX8qcAbf+wHlhBeXXESE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=J7TIBnDhk7B5VV1vNIlj7ZcnFNdN3wKz75q3OwPKa1FdLIFvuSd/9opcty2Ie+FGL
-	 N2c5ppMBKfSbh6tI86FU4l5c1qyhv5r9iv0a6kFwZT1X+/tokVYBEwv2UBp6RJrIGb
-	 ALSDWDnplg3N7FJuPjbp70UHscnuhpQ3u20BScxw=
+	by mail.kernel.org (Postfix) with ESMTP id 4CE9D2075E
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 19:51:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728834AbgEFRpc (ORCPT
+        id S1728759AbgEFTvw (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 May 2020 13:45:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36098 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728606AbgEFRpc (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 May 2020 13:45:32 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EA7082080D;
-        Wed,  6 May 2020 17:45:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588787131;
-        bh=FC+L2GLWiMbL2ccPvEDdx2mvX8qcAbf+wHlhBeXXESE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=G9PfYo2qyhQiS0/cDl48Ia5JNuGlSCvsbgwUsQrVyr5tTdE5sgsmoNcPZlYMgT66Q
-         lmw0XwpN6KDmsJKbvETgnm/iZ+1V78JsVIhCv3KI9CBlCvIfbi5XENDjA6B0sz49vP
-         yxY4j1sWMYJBXDgNhbK6Rp+cdcQM0yiYP8YZISBY=
-Date:   Wed, 6 May 2020 19:45:28 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Mikulas Patocka <mpatocka@redhat.com>
-Cc:     Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
-        Sinan Kaya <okaya@codeaurora.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org,
-        linux-rtc@vger.kernel.org
-Subject: Re: [PATCH 2/2 v3] alpha: add a delay before serial port read
-Message-ID: <20200506174528.GB3711921@kroah.com>
-References: <alpine.LRH.2.02.2005060721450.25338@file01.intranet.prod.int.rdu2.redhat.com>
- <20200506114711.GB3024358@kroah.com>
- <alpine.LRH.2.02.2005061122440.16395@file01.intranet.prod.int.rdu2.redhat.com>
- <20200506154938.GA3537174@kroah.com>
- <alpine.LRH.2.02.2005061152300.16395@file01.intranet.prod.int.rdu2.redhat.com>
- <20200506160823.GA3559699@kroah.com>
- <alpine.LRH.2.02.2005061245500.18599@file01.intranet.prod.int.rdu2.redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.LRH.2.02.2005061245500.18599@file01.intranet.prod.int.rdu2.redhat.com>
+        Wed, 6 May 2020 15:51:52 -0400
+Received: from relmlor1.renesas.com ([210.160.252.171]:51023 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725799AbgEFTvw (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 6 May 2020 15:51:52 -0400
+X-IronPort-AV: E=Sophos;i="5.73,360,1583161200"; 
+   d="scan'208";a="46431211"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 07 May 2020 04:51:50 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 6DF984003EC8;
+        Thu,  7 May 2020 04:51:46 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Marc Zyngier <maz@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v2 0/9] RZ/G1H describe IRQC, [H]SCIF{A|B} and GPIO nodes
+Date:   Wed,  6 May 2020 20:51:26 +0100
+Message-Id: <1588794695-27852-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.7.4
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, May 06, 2020 at 01:04:38PM -0400, Mikulas Patocka wrote:
-> 
-> 
-> On Wed, 6 May 2020, Greg Kroah-Hartman wrote:
-> 
-> > On Wed, May 06, 2020 at 11:57:08AM -0400, Mikulas Patocka wrote:
-> > > 
-> > > 
-> > > On Wed, 6 May 2020, Greg Kroah-Hartman wrote:
-> > > 
-> > > > On Wed, May 06, 2020 at 11:29:29AM -0400, Mikulas Patocka wrote:
-> > > > > 
-> > > > > @@ -490,6 +493,10 @@ static void univ8250_rsa_support(struct
-> > > > >  static inline void serial8250_apply_quirks(struct uart_8250_port *up)
-> > > > >  {
-> > > > >  	up->port.quirks |= skip_txen_test ? UPQ_NO_TXEN_TEST : 0;
-> > > > > +#if defined(CONFIG_ALPHA) && defined(CONFIG_PCI)
-> > > > > +	if (alpha_serial_port_needs_delay)
-> > > > > +		up->port.quirks |= UPQ_DELAY_BEFORE_READ;
-> > > > > +#endif
-> > > > 
-> > > > Why is a #define needed here?
-> > > > 
-> > > > You can do this same type of change without any #ifdefs in any .c files
-> > > > and that would be much nicer.
-> > > 
-> > > Because alpha_serial_port_needs_delay is defined only on Alpha - so we 
-> > > need to guard accesses to it with #ifdef CONFIG_ALPHA - otherwise the 
-> > > kernel wouldn't link on non-Alpha platforms.
-> > > 
-> > > Should I make it defined for all architectures?
-> > 
-> > Yes, it's not the first time we have had to do things like this :)
-> 
-> I've created this patch that adds a global macro/variable 
-> serial_port_needs_delay. I've also deleted UPQ_DELAY_BEFORE_READ and test 
-> serial_port_needs_delay directly in io_serial_in, so that the compiler 
-> will optimize it out on non-alpha architectures.
+Hi All,
 
-That's not good, what about systems with hundreds of serial ports?
+This patch series describes irqc, serial and gpio controllers on
+R8A7742 SoC.
 
-> > But, there is no other way to detect this based on hardware
-> > signatures/types instead?  That is usually the best way to do it, right?
-> 
-> It's hard to detect Alpha without using '#ifdef CONFIG_ALPHA' :) The ISA 
-> serial port hardware is simple, so I think that you can't distinguish it 
-> just based on its behavior.
+* Patch 1/9 is from series [1], which added initial basic support for
+  iW-RainboW-G21D-Qseven development board.
+* Patches 2-9 are from series [2] ("Add R8A7742/RZG1H board support")
 
-The ISA serial port hardware does not have a unique vendor/product id
-somewhere?  Some other sort of definition that we can use to determine
-exactly what type of system we are running on?
+Cheers,
+Prabhakar
 
+[1] https://lkml.org/lkml/2020/5/3/294
+[2] https://lkml.org/lkml/2020/4/29/1300
 
+Lad Prabhakar (9):
+  dt-bindings: mmc: renesas,mmcif: Document r8a7742 DT bindings
+  dt-bindings: irqchip: renesas-irqc: Document r8a7742 bindings
+  ARM: dts: r8a7742: Add IRQC support
+  dt-bindings: serial: renesas,scif: Document r8a7742 bindings
+  dt-bindings: serial: renesas,scifb: Document r8a7742 bindings
+  dt-bindings: serial: renesas,hscif: Document r8a7742 bindings
+  ARM: dts: r8a7742: Add [H]SCIF{A|B} support
+  dt-bindings: gpio: renesas,gpio-rcar: Add r8a7742 (RZ/G1H) support
+  ARM: dts: r8a7742: Add GPIO nodes
 
-> 
-> > thanks,
-> > 
-> > greg k-h
-> > 
-> 
-> 
-> From: Mikulas Patocka <mpatocka@redhat.com>
-> 
-> alpha: add a delay before serial port read
-> 
-> The patch 92d7223a74235054f2aa7227d207d9c57f84dca0 ("alpha: io: reorder
-> barriers to guarantee writeX() and iowriteX() ordering #2") broke boot on
-> the Alpha Avanti platform.
-> 
-> The patch changes timing between accesses to the ISA bus, in particular,
-> it reduces the time between "write" access and a subsequent "read" access.
-> 
-> This causes lock-up when accessing the real time clock and serial ports.
-> 
-> This patch fixes the serial ports by adding a small delay before the "inb"
-> instruction.
-> 
-> Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-> Fixes: 92d7223a7423 ("alpha: io: reorder barriers to guarantee writeX() and iowriteX() ordering #2")
-> Cc: stable@vger.kernel.org	# v4.17+
-> 
-> ---
->  arch/alpha/include/asm/pci.h        |    3 +++
->  arch/alpha/kernel/pci.c             |    4 ++++
->  drivers/tty/serial/8250/8250_port.c |    4 ++++
->  include/linux/pci.h                 |    4 ++++
->  4 files changed, 15 insertions(+)
-> 
-> Index: linux-stable/arch/alpha/include/asm/pci.h
-> ===================================================================
-> --- linux-stable.orig/arch/alpha/include/asm/pci.h	2020-05-06 18:54:24.000000000 +0200
-> +++ linux-stable/arch/alpha/include/asm/pci.h	2020-05-06 18:54:24.000000000 +0200
-> @@ -97,4 +97,7 @@ extern void pci_adjust_legacy_attr(struc
->  extern int pci_create_resource_files(struct pci_dev *dev);
->  extern void pci_remove_resource_files(struct pci_dev *dev);
->  
-> +extern int serial_port_needs_delay;
-> +#define serial_port_needs_delay	serial_port_needs_delay
-> +
->  #endif /* __ALPHA_PCI_H */
-> Index: linux-stable/arch/alpha/kernel/pci.c
-> ===================================================================
-> --- linux-stable.orig/arch/alpha/kernel/pci.c	2020-05-06 18:54:24.000000000 +0200
-> +++ linux-stable/arch/alpha/kernel/pci.c	2020-05-06 18:54:24.000000000 +0200
-> @@ -61,9 +61,13 @@ struct pci_controller *pci_isa_hose;
->   * Quirks.
->   */
->  
-> +int serial_port_needs_delay = 0;
-> +EXPORT_SYMBOL(serial_port_needs_delay);
-> +
->  static void quirk_isa_bridge(struct pci_dev *dev)
->  {
->  	dev->class = PCI_CLASS_BRIDGE_ISA << 8;
-> +	serial_port_needs_delay = 1;
->  }
->  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82378, quirk_isa_bridge);
->  
-> Index: linux-stable/drivers/tty/serial/8250/8250_port.c
-> ===================================================================
-> --- linux-stable.orig/drivers/tty/serial/8250/8250_port.c	2020-05-06 18:54:24.000000000 +0200
-> +++ linux-stable/drivers/tty/serial/8250/8250_port.c	2020-05-06 18:54:24.000000000 +0200
-> @@ -30,6 +30,7 @@
->  #include <linux/uaccess.h>
->  #include <linux/pm_runtime.h>
->  #include <linux/ktime.h>
-> +#include <linux/pci.h>
->  
->  #include <asm/io.h>
->  #include <asm/irq.h>
-> @@ -442,6 +443,9 @@ static unsigned int mem32be_serial_in(st
->  
->  static unsigned int io_serial_in(struct uart_port *p, int offset)
->  {
-> +	if (serial_port_needs_delay)
-> +		ndelay(300);
+ .../bindings/gpio/renesas,gpio-rcar.txt       |   1 +
+ .../interrupt-controller/renesas,irqc.yaml    |   1 +
+ .../devicetree/bindings/mmc/renesas,mmcif.txt |   5 +-
+ .../bindings/serial/renesas,hscif.yaml        |   1 +
+ .../bindings/serial/renesas,scif.yaml         |   1 +
+ .../bindings/serial/renesas,scifb.yaml        |   1 +
+ arch/arm/boot/dts/r8a7742.dtsi                | 259 ++++++++++++++++++
+ 7 files changed, 267 insertions(+), 2 deletions(-)
 
-Again, this should be a per-port thing, not all ports in the system are
-this broken, right?
+-- 
+2.17.1
 
-thanks,
-
-greg k-h
