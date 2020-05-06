@@ -2,152 +2,302 @@ Return-Path: <SRS0=tlDI=6U=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	LONGWORDS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B290AC28CBC
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 17:12:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D24AC28CBC
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 17:30:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8EFC72080D
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 17:12:27 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="d4pa3mkR"
+	by mail.kernel.org (Postfix) with ESMTP id 1048C206B8
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 17:30:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730340AbgEFRM0 (ORCPT
+        id S1728082AbgEFRal (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 May 2020 13:12:26 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:20976 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725799AbgEFRM0 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 May 2020 13:12:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588785144;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4NmFIV7QvCRRvqv1Eoet8VLqmfYT92cvTdnbMe/vaPw=;
-        b=d4pa3mkRRxiB0TN6bgxavmUopcUxs696jeKlAH5bQyw5gIDqhJL6uu9PRHmCYOqU+A4PqB
-        5p7+4Jjob5nb58QwTHxzuTWralbKY5Q2x1SmPG0Wn0VC+6dr4JJkUzb8VvrHjyg69BacAh
-        v+so9NH+3kefoZjZzuPQw7OKh+qJvQU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-206-VXfywLbPN1qcrLzMeGpspA-1; Wed, 06 May 2020 13:12:22 -0400
-X-MC-Unique: VXfywLbPN1qcrLzMeGpspA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 18AF91005510;
-        Wed,  6 May 2020 17:12:21 +0000 (UTC)
-Received: from file01.intranet.prod.int.rdu2.redhat.com (file01.intranet.prod.int.rdu2.redhat.com [10.11.5.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id D6393605F7;
-        Wed,  6 May 2020 17:12:20 +0000 (UTC)
-Received: from file01.intranet.prod.int.rdu2.redhat.com (localhost [127.0.0.1])
-        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4) with ESMTP id 046HCKoL024608;
-        Wed, 6 May 2020 13:12:20 -0400
-Received: from localhost (mpatocka@localhost)
-        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4/Submit) with ESMTP id 046HCKiE024604;
-        Wed, 6 May 2020 13:12:20 -0400
-X-Authentication-Warning: file01.intranet.prod.int.rdu2.redhat.com: mpatocka owned process doing -bs
-Date:   Wed, 6 May 2020 13:12:20 -0400 (EDT)
-From:   Mikulas Patocka <mpatocka@redhat.com>
-X-X-Sender: mpatocka@file01.intranet.prod.int.rdu2.redhat.com
-To:     Arnd Bergmann <arnd@arndb.de>
-cc:     Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        Sinan Kaya <okaya@codeaurora.org>,
-        linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
-Subject: [PATCH 1/2 v2] alpha: add a delay to inb_p, inb_w and inb_l
-In-Reply-To: <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com>
-Message-ID: <alpine.LRH.2.02.2005061308220.18599@file01.intranet.prod.int.rdu2.redhat.com>
-References: <alpine.LRH.2.02.2005060713390.25338@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com>
-User-Agent: Alpine 2.02 (LRH 1266 2009-07-14)
+        Wed, 6 May 2020 13:30:41 -0400
+Received: from mga03.intel.com ([134.134.136.65]:18292 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728049AbgEFRal (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 6 May 2020 13:30:41 -0400
+IronPort-SDR: V39iOV45hrhG+6i3PvSvfvUccKLsFYo23mpmWqbV8X7mcEmiSd+BqEWk+ekKYZvPb2AlpMLyBR
+ 5r2cB4RILbaw==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2020 10:30:37 -0700
+IronPort-SDR: ZN2ro8fsp50cDfPuG6PHoyVd5OlHFlsXiq7igQffwH+y/4bEi8WF8NCIw0FieH/IG0U5F1S+HF
+ m7Fdo2/ZOCww==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,360,1583222400"; 
+   d="scan'208";a="461834539"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 06 May 2020 10:30:29 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1jWNsK-000Cui-TP; Thu, 07 May 2020 01:30:28 +0800
+Date:   Thu, 07 May 2020 01:30:20 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-next] BUILD SUCCESS
+ 8508f4cba308f785b2fd4b8c38849c117b407297
+Message-ID: <5eb2f42c.v43K2YJbP/oa5RBP%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-next
+branch HEAD: 8508f4cba308f785b2fd4b8c38849c117b407297  serial: amba-pl011: Make sure we initialize the port.lock spinlock
 
+elapsed time: 1294m
 
-On Wed, 6 May 2020, Arnd Bergmann wrote:
+configs tested: 235
+configs skipped: 0
 
-> On Wed, May 6, 2020 at 1:21 PM Mikulas Patocka <mpatocka@redhat.com> wrote:
-> 
-> >  /*
-> >   * The yet supported machines all access the RTC index register via
-> >   * an ISA port access but the way to access the date register differs ...
-> > + *
-> > + * The ISA bus on Alpha Avanti doesn't like back-to-back accesses,
-> > + * we need to add a small delay.
-> >   */
-> >  #define CMOS_READ(addr) ({ \
-> >  outb_p((addr),RTC_PORT(0)); \
-> > +udelay(2); \
-> >  inb_p(RTC_PORT(1)); \
-> 
-> 
-> The inb_p() / outb_p() functions are meant to already have a delay in them,
-> maybe we should just add it there for alpha?
-> 
->      Arnd
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-Yes, that is possible too - it fixes the real time clock hang for me.
-
-
-
-From: Mikulas Patocka <mpatocka@redhat.com>
-
-The patch 92d7223a74235054f2aa7227d207d9c57f84dca0 ("alpha: io: reorder
-barriers to guarantee writeX() and iowriteX() ordering #2") broke boot on
-the Alpha Avanti platform.
-
-The patch changes timing between accesses to the ISA bus, in particular,
-it reduces the time between "write" access and a subsequent "read" access.
-
-This causes lock-up when accessing the real time clock and serial ports.
-
-This patch fixes the real time clock by adding a small delay to the inb_p,
-inw_p and inl_p macros.
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Fixes: 92d7223a7423 ("alpha: io: reorder barriers to guarantee writeX() and iowriteX() ordering #2")
-Cc: stable@vger.kernel.org	# v4.17+
+arm64                            allyesconfig
+arm64                            allmodconfig
+arm                              allmodconfig
+arm64                             allnoconfig
+arm                               allnoconfig
+arm                              allyesconfig
+sparc                            allyesconfig
+m68k                             allyesconfig
+parisc                            allnoconfig
+um                           x86_64_defconfig
+ia64                              allnoconfig
+um                               allyesconfig
+nds32                               defconfig
+ia64                             allmodconfig
+alpha                               defconfig
+microblaze                       allyesconfig
+m68k                                defconfig
+um                             i386_defconfig
+um                                  defconfig
+sparc64                          allmodconfig
+microblaze                        allnoconfig
+openrisc                            defconfig
+i386                                defconfig
+sparc                               defconfig
+sh                               allmodconfig
+s390                             allyesconfig
+i386                              allnoconfig
+i386                             allyesconfig
+i386                             alldefconfig
+i386                              debian-10.3
+ia64                                defconfig
+ia64                             allyesconfig
+ia64                             alldefconfig
+m68k                             allmodconfig
+m68k                           sun3_defconfig
+m68k                          multi_defconfig
+nios2                               defconfig
+nios2                            allyesconfig
+c6x                              allyesconfig
+c6x                               allnoconfig
+openrisc                         allyesconfig
+nds32                             allnoconfig
+csky                             allyesconfig
+csky                                defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+h8300                            allmodconfig
+xtensa                              defconfig
+arc                                 defconfig
+arc                              allyesconfig
+sh                                allnoconfig
+mips                             allyesconfig
+mips                         64r6el_defconfig
+mips                              allnoconfig
+mips                           32r2_defconfig
+mips                             allmodconfig
+parisc                           allyesconfig
+parisc                           allmodconfig
+powerpc                             defconfig
+powerpc                          allyesconfig
+powerpc                          alldefconfig
+powerpc                          rhel-kconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+m68k                 randconfig-a001-20200503
+mips                 randconfig-a001-20200503
+nds32                randconfig-a001-20200503
+alpha                randconfig-a001-20200503
+parisc               randconfig-a001-20200503
+riscv                randconfig-a001-20200503
+m68k                 randconfig-a001-20200506
+mips                 randconfig-a001-20200506
+nds32                randconfig-a001-20200506
+parisc               randconfig-a001-20200506
+alpha                randconfig-a001-20200506
+riscv                randconfig-a001-20200506
+m68k                 randconfig-a001-20200505
+mips                 randconfig-a001-20200505
+nds32                randconfig-a001-20200505
+parisc               randconfig-a001-20200505
+alpha                randconfig-a001-20200505
+riscv                randconfig-a001-20200505
+h8300                randconfig-a001-20200503
+nios2                randconfig-a001-20200503
+microblaze           randconfig-a001-20200503
+c6x                  randconfig-a001-20200503
+sparc64              randconfig-a001-20200503
+h8300                randconfig-a001-20200506
+nios2                randconfig-a001-20200506
+microblaze           randconfig-a001-20200506
+c6x                  randconfig-a001-20200506
+sparc64              randconfig-a001-20200506
+s390                 randconfig-a001-20200505
+xtensa               randconfig-a001-20200505
+sh                   randconfig-a001-20200505
+openrisc             randconfig-a001-20200505
+csky                 randconfig-a001-20200505
+xtensa               randconfig-a001-20200503
+openrisc             randconfig-a001-20200503
+csky                 randconfig-a001-20200503
+s390                 randconfig-a001-20200506
+xtensa               randconfig-a001-20200506
+sh                   randconfig-a001-20200506
+openrisc             randconfig-a001-20200506
+csky                 randconfig-a001-20200506
+i386                 randconfig-b003-20200506
+i386                 randconfig-b001-20200506
+x86_64               randconfig-b001-20200506
+x86_64               randconfig-b003-20200506
+i386                 randconfig-b002-20200506
+i386                 randconfig-b003-20200503
+x86_64               randconfig-b002-20200503
+i386                 randconfig-b001-20200503
+x86_64               randconfig-b003-20200503
+x86_64               randconfig-b001-20200503
+i386                 randconfig-b002-20200503
+i386                 randconfig-b003-20200505
+x86_64               randconfig-b002-20200505
+i386                 randconfig-b001-20200505
+x86_64               randconfig-b001-20200505
+x86_64               randconfig-b003-20200505
+i386                 randconfig-b002-20200505
+i386                 randconfig-b003-20200502
+i386                 randconfig-b001-20200502
+x86_64               randconfig-b003-20200502
+x86_64               randconfig-b001-20200502
+i386                 randconfig-b002-20200502
+x86_64               randconfig-a003-20200506
+x86_64               randconfig-a001-20200506
+x86_64               randconfig-a002-20200506
+i386                 randconfig-a001-20200506
+i386                 randconfig-a002-20200506
+i386                 randconfig-a003-20200506
+x86_64               randconfig-c001-20200503
+x86_64               randconfig-c002-20200503
+i386                 randconfig-c002-20200503
+x86_64               randconfig-c003-20200503
+i386                 randconfig-c001-20200503
+i386                 randconfig-c003-20200503
+x86_64               randconfig-d001-20200505
+i386                 randconfig-d003-20200505
+i386                 randconfig-d001-20200505
+x86_64               randconfig-d003-20200505
+x86_64               randconfig-d002-20200505
+i386                 randconfig-d002-20200505
+i386                 randconfig-d003-20200506
+i386                 randconfig-d001-20200506
+x86_64               randconfig-d002-20200506
+i386                 randconfig-d002-20200506
+x86_64               randconfig-d001-20200503
+i386                 randconfig-d003-20200503
+x86_64               randconfig-d003-20200503
+i386                 randconfig-d001-20200503
+x86_64               randconfig-d002-20200503
+i386                 randconfig-d002-20200503
+i386                 randconfig-e003-20200506
+x86_64               randconfig-e003-20200506
+x86_64               randconfig-e001-20200506
+i386                 randconfig-e002-20200506
+i386                 randconfig-e001-20200506
+x86_64               randconfig-e003-20200503
+x86_64               randconfig-e002-20200503
+i386                 randconfig-e003-20200503
+x86_64               randconfig-e001-20200503
+i386                 randconfig-e002-20200503
+i386                 randconfig-e001-20200503
+i386                 randconfig-f003-20200505
+x86_64               randconfig-f001-20200505
+x86_64               randconfig-f003-20200505
+i386                 randconfig-f001-20200505
+i386                 randconfig-f002-20200505
+i386                 randconfig-f003-20200503
+x86_64               randconfig-f002-20200503
+i386                 randconfig-f001-20200503
+i386                 randconfig-f002-20200503
+i386                 randconfig-f003-20200506
+x86_64               randconfig-f001-20200506
+x86_64               randconfig-f003-20200506
+x86_64               randconfig-f002-20200506
+i386                 randconfig-f001-20200506
+i386                 randconfig-f002-20200506
+x86_64               randconfig-a003-20200505
+x86_64               randconfig-a001-20200505
+i386                 randconfig-a001-20200505
+i386                 randconfig-a003-20200505
+i386                 randconfig-a002-20200505
+x86_64               randconfig-g003-20200506
+i386                 randconfig-g003-20200506
+i386                 randconfig-g002-20200506
+x86_64               randconfig-g001-20200506
+i386                 randconfig-g001-20200506
+x86_64               randconfig-g002-20200506
+i386                 randconfig-g003-20200505
+i386                 randconfig-g002-20200505
+i386                 randconfig-g001-20200505
+x86_64               randconfig-g002-20200505
+i386                 randconfig-h002-20200506
+i386                 randconfig-h001-20200506
+i386                 randconfig-h003-20200506
+x86_64               randconfig-h002-20200506
+x86_64               randconfig-h003-20200506
+x86_64               randconfig-h001-20200506
+x86_64               randconfig-a002-20200503
+i386                 randconfig-a002-20200503
+i386                 randconfig-a003-20200503
+i386                 randconfig-a001-20200503
+arm64                randconfig-a001-20200506
+arc                  randconfig-a001-20200506
+powerpc              randconfig-a001-20200506
+arm                  randconfig-a001-20200506
+sparc                randconfig-a001-20200506
+ia64                 randconfig-a001-20200505
+powerpc              randconfig-a001-20200505
+arm                  randconfig-a001-20200505
+ia64                 randconfig-a001-20200506
+riscv                            allyesconfig
+riscv                               defconfig
+riscv                            allmodconfig
+riscv                             allnoconfig
+s390                              allnoconfig
+s390                             allmodconfig
+s390                             alldefconfig
+s390                                defconfig
+sparc64                             defconfig
+sparc64                           allnoconfig
+sparc64                          allyesconfig
+um                               allmodconfig
+x86_64                                   rhel
+x86_64                               rhel-7.6
+x86_64                    rhel-7.6-kselftests
+x86_64                         rhel-7.2-clear
+x86_64                                    lkp
+x86_64                              fedora-25
+x86_64                                  kexec
 
 ---
- arch/alpha/include/asm/io.h |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-Index: linux-stable/arch/alpha/include/asm/io.h
-===================================================================
---- linux-stable.orig/arch/alpha/include/asm/io.h	2020-05-06 08:23:47.000000000 +0200
-+++ linux-stable/arch/alpha/include/asm/io.h	2020-05-06 18:33:47.000000000 +0200
-@@ -6,6 +6,7 @@
- 
- #include <linux/kernel.h>
- #include <linux/mm.h>
-+#include <linux/delay.h>
- #include <asm/compiler.h>
- #include <asm/pgtable.h>
- #include <asm/machvec.h>
-@@ -481,9 +482,9 @@ extern inline void writeq(u64 b, volatil
- #define iowrite16be(v,p) iowrite16(cpu_to_be16(v), (p))
- #define iowrite32be(v,p) iowrite32(cpu_to_be32(v), (p))
- 
--#define inb_p		inb
--#define inw_p		inw
--#define inl_p		inl
-+#define inb_p(x)	(ndelay(300), inb(x))
-+#define inw_p(x)	(ndelay(300), inw(x))
-+#define inl_p(x)	(ndelay(300), inl(x))
- #define outb_p		outb
- #define outw_p		outw
- #define outl_p		outl
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
