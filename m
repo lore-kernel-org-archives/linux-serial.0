@@ -2,89 +2,93 @@ Return-Path: <SRS0=tlDI=6U=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 161EDC47256
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 14:21:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED612C28CBC
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 15:28:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DB288206D5
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 14:20:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C50262068E
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 15:28:55 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ei0k57VL"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728784AbgEFOU7 (ORCPT
+        id S1729765AbgEFP2z (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 May 2020 10:20:59 -0400
-Received: from mout.kundenserver.de ([212.227.126.130]:43649 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726114AbgEFOU6 (ORCPT
+        Wed, 6 May 2020 11:28:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58888 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729639AbgEFPZx (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 May 2020 10:20:58 -0400
-Received: from mail-qk1-f173.google.com ([209.85.222.173]) by
- mrelayeu.kundenserver.de (mreue010 [212.227.15.129]) with ESMTPSA (Nemesis)
- id 1N7zW7-1j16Z13mx1-014z6D; Wed, 06 May 2020 16:20:57 +0200
-Received: by mail-qk1-f173.google.com with SMTP id f13so2080270qkh.2;
-        Wed, 06 May 2020 07:20:56 -0700 (PDT)
-X-Gm-Message-State: AGi0PuaFK71bYSa1gufG+QjdDPiYfBlm7+S53VcCoaPvswI424tQPZcp
-        tLVf91fdjNA/5e9Bs8ecmz5tCNsiB8TnP17ZcgQ=
-X-Google-Smtp-Source: APiQypKgaluquciflnBcztR1WN9teptLeSIWzng6zhGKuokJY8nJLdN0sgdbAFnBGd3XVoUkDA88FSzspEE+6sGwvLc=
-X-Received: by 2002:a05:620a:3c5:: with SMTP id r5mr9076074qkm.138.1588774855617;
- Wed, 06 May 2020 07:20:55 -0700 (PDT)
+        Wed, 6 May 2020 11:25:53 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2A54C061A0F;
+        Wed,  6 May 2020 08:25:53 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id e6so1032110pjt.4;
+        Wed, 06 May 2020 08:25:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uOcIBwBnUauldiWLndzVmwzZBKURfhS3mRHhqqKZPOs=;
+        b=Ei0k57VLk7N4E1tLvvZ/W7MHkb57jABqquZr5M0n8FHzv94us4sIsfRRTTjtwzJC3C
+         XZpXtiP/3hYpjwUSQyzP7ItePPVEhLJEFdi942IWT4mUMySrX+xg2Hl5R9txLGwkXqQm
+         /r+OvYPRXzuCALy7Rphp6MDbF2lYVmLEmiFiC7aLT2jhENPb2YSyi7A0hpWmZLMVDEBg
+         zf2ZdcRPeDbZ8JhtAI2YC8GjaVL9R45v/JCP1frBXL9Yz56FitLq8IqFvQiQ7HvhtubW
+         F9FxRsMODSAsct79wjZKuI+Nhp2PyaJLU9aXV8lhXbrBJEt+LVl1v8+QZA7HgV6laDK0
+         bYqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uOcIBwBnUauldiWLndzVmwzZBKURfhS3mRHhqqKZPOs=;
+        b=tS8b8qoG8xYBQXDaz/he1CcsuBn+uZE9qz9f8+GvYPothiZm/m0KOpkP2RJ4Bt8ypE
+         heEl4oJ4L9NEIVZERAkF3M/G7F2/gkiiK5fWiThGwuoPjQYsnCNMh9xtuf/mN1SS0lig
+         n79Y01NSCaZzkp9JkyhSuZFXX3Cb0lapUM81kXGk6ZSwmRGS0q7ezCHFGXlmRV23Xbf0
+         rysQr5YgHrJDq8qTyUsCrnly/xjRWGWDFa+7Uq7dztGs3fMZ0Kq1J2VEdQFYIEcqNskk
+         +LPy6oz8gBsVX0p25o0XYMJjFZ5/wmVtiQ9iHV9eWg42tPi9DCyZKGitzO4WU9B7ATD+
+         tDdA==
+X-Gm-Message-State: AGi0PuaXbp99uPURkuHY25NYl4CL+7VlCnvLGOph7y4vAkB2Qh3oTcBC
+        y+cPM4SNHLBLo+rtCSYiqMPC/a4jpTQlteAHiro=
+X-Google-Smtp-Source: APiQypL6R11GbtDukVgWq3NIFn7VvgbUZ3iiF6XhKRJwUfyY+0Iw+ZOcqDtJEjUYcXU7X5ra+HAqDCooSrMRgUlXWCY=
+X-Received: by 2002:a17:90a:fa81:: with SMTP id cu1mr10273546pjb.25.1588778753308;
+ Wed, 06 May 2020 08:25:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <alpine.LRH.2.02.2005060713390.25338@file01.intranet.prod.int.rdu2.redhat.com>
-In-Reply-To: <alpine.LRH.2.02.2005060713390.25338@file01.intranet.prod.int.rdu2.redhat.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 6 May 2020 16:20:39 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com>
-Message-ID: <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] alpha: add a delay between RTC port write and read
-To:     Mikulas Patocka <mpatocka@redhat.com>
-Cc:     Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        Sinan Kaya <okaya@codeaurora.org>,
-        linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
+References: <20200325231422.1502366-1-heiko@sntech.de> <20200325231422.1502366-8-heiko@sntech.de>
+In-Reply-To: <20200325231422.1502366-8-heiko@sntech.de>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 6 May 2020 18:25:45 +0300
+Message-ID: <CAHp75Vef2Gu3Kz97FK6gQRS8dnAhnFFdWK1sqjZuf8tarx3LAw@mail.gmail.com>
+Subject: Re: [PATCH v2 7/7] serial: 8250_dw: add em485 support
+To:     Heiko Stuebner <heiko@sntech.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Matwey V. Kornilov" <matwey.kornilov@gmail.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        christoph.muellner@theobroma-systems.com,
+        Giulio Benetti <giulio.benetti@micronovasrl.com>,
+        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:ODdZcuhx4O1OqlUVtvGTL+/T4HDL0HaWhlYX8QrlhAYTuPqcQen
- v3tE9VT698mp45ej1a5pC3uCKyhUPUrEqEiAsRXAd8kJdsiOI10q9KyrlRF3kbYKrZPlpOP
- /42VbPsVBD/3V0QcThzLG9y+uhHft/Yqiw2en80oIt5Bze5++4xIgNMAaKsqGBKeP1rfWnM
- KhBWlB1d67oBCY14BfGhQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:BQMkoMeXna0=:+EkJRWs27VHfOCbmAdw+uW
- 7EieW0z9uPcLy1V+z4cGJwACUycFb0iuEgfBSIa7H36SYKmDc6NSQb44ZvqbfDkd7oQEyUioW
- dSMVNmRVEJJ2hObCv/0UR5rDcZbQXsNqx8N+jcZUF9cQ9ODr0+Z144X9i32T+F7OR7KKWMNk7
- 0zQNsYrzUQBe8RrfOTyQHxY++KvXo9ysSgUzhkCh3JBmPXmuDVAFVVI2htA25sgNBpDMLmPKp
- esrRq9A8dju6TAYxBESZQVyF5VUlFPWpVo2xTW06EI8UlzUv49LdFPW3aDxpygjWWNTtwNd/R
- QYAY1AbO3sNHOpB/2U44sw5/+DwexzgRh/dwmywdvU6p1+HrGKDikY34cCFJ6yhCsdH9nJGFy
- cOi+xmj59CeJkofreqn1DfVHCdnTQr5twI3gmgmdVhDBFqyaJF+UTiZxPaE0TL3YUhapQJhos
- 6RC1I7/zG8m85kza48cu84XZKUU/Y03XNok7cIE0g24K5/XsWKnObiF+axxRhdsrlOiT9rZEx
- 9UdAqC0XGKnEQmYLfhZLpR7+K/3ovS+5l7/E4fKfHgojhug3ksY+gBHSSp9qrwcCt7enJwdqb
- gqbO+5AoDhtrJVfrektjAnAG2T64i9F1trO3ROwFRsRNx2bdWfwMqybTTRF9hiC2ZmcUkrVDu
- zqfWB/9dmd56HlJeKRM4iCs8sEOPYfurqyYNzQIzXhPF98TKXcAA8HiTrtMh+yS7rA1OfL+/X
- KJ7AqYPvkIcYio5RlF5vp6H2p1mF8cL5P0ZIVXTv5xj/84VgtUNpM54zWK9L06kex40C7OPIO
- lgKvviJ4Sndf+AFoVRUMH4jFWf5Nifx4W9e0zgFxfnJe62XyzI=
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, May 6, 2020 at 1:21 PM Mikulas Patocka <mpatocka@redhat.com> wrote:
+On Thu, Mar 26, 2020 at 1:17 AM Heiko Stuebner <heiko@sntech.de> wrote:
 
->  /*
->   * The yet supported machines all access the RTC index register via
->   * an ISA port access but the way to access the date register differs ...
-> + *
-> + * The ISA bus on Alpha Avanti doesn't like back-to-back accesses,
-> + * we need to add a small delay.
->   */
->  #define CMOS_READ(addr) ({ \
->  outb_p((addr),RTC_PORT(0)); \
-> +udelay(2); \
->  inb_p(RTC_PORT(1)); \
+If it's not covered by either yours or Lukas' series, perhaps worth to
+address as well.
 
+.../8250_port.c:1427: warning: Function parameter or member 'p
+' not described in 'serial8250_em485_stop_tx'
+.../8250_port.c:1427: warning: Excess function parameter 'up'
+description in 'serial8250_em485_stop_tx'
 
-The inb_p() / outb_p() functions are meant to already have a delay in them,
-maybe we should just add it there for alpha?
-
-     Arnd
+-- 
+With Best Regards,
+Andy Shevchenko
