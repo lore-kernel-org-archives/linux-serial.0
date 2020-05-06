@@ -2,93 +2,220 @@ Return-Path: <SRS0=tlDI=6U=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED612C28CBC
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 15:28:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6CF5C28CBC
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 15:29:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C50262068E
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 15:28:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9784420575
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 15:29:45 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ei0k57VL"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="E8F6KArE"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729765AbgEFP2z (ORCPT
+        id S1729771AbgEFP3p (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 May 2020 11:28:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58888 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729639AbgEFPZx (ORCPT
+        Wed, 6 May 2020 11:29:45 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:41410 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729573AbgEFP3o (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 May 2020 11:25:53 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2A54C061A0F;
-        Wed,  6 May 2020 08:25:53 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id e6so1032110pjt.4;
-        Wed, 06 May 2020 08:25:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uOcIBwBnUauldiWLndzVmwzZBKURfhS3mRHhqqKZPOs=;
-        b=Ei0k57VLk7N4E1tLvvZ/W7MHkb57jABqquZr5M0n8FHzv94us4sIsfRRTTjtwzJC3C
-         XZpXtiP/3hYpjwUSQyzP7ItePPVEhLJEFdi942IWT4mUMySrX+xg2Hl5R9txLGwkXqQm
-         /r+OvYPRXzuCALy7Rphp6MDbF2lYVmLEmiFiC7aLT2jhENPb2YSyi7A0hpWmZLMVDEBg
-         zf2ZdcRPeDbZ8JhtAI2YC8GjaVL9R45v/JCP1frBXL9Yz56FitLq8IqFvQiQ7HvhtubW
-         F9FxRsMODSAsct79wjZKuI+Nhp2PyaJLU9aXV8lhXbrBJEt+LVl1v8+QZA7HgV6laDK0
-         bYqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uOcIBwBnUauldiWLndzVmwzZBKURfhS3mRHhqqKZPOs=;
-        b=tS8b8qoG8xYBQXDaz/he1CcsuBn+uZE9qz9f8+GvYPothiZm/m0KOpkP2RJ4Bt8ypE
-         heEl4oJ4L9NEIVZERAkF3M/G7F2/gkiiK5fWiThGwuoPjQYsnCNMh9xtuf/mN1SS0lig
-         n79Y01NSCaZzkp9JkyhSuZFXX3Cb0lapUM81kXGk6ZSwmRGS0q7ezCHFGXlmRV23Xbf0
-         rysQr5YgHrJDq8qTyUsCrnly/xjRWGWDFa+7Uq7dztGs3fMZ0Kq1J2VEdQFYIEcqNskk
-         +LPy6oz8gBsVX0p25o0XYMJjFZ5/wmVtiQ9iHV9eWg42tPi9DCyZKGitzO4WU9B7ATD+
-         tDdA==
-X-Gm-Message-State: AGi0PuaXbp99uPURkuHY25NYl4CL+7VlCnvLGOph7y4vAkB2Qh3oTcBC
-        y+cPM4SNHLBLo+rtCSYiqMPC/a4jpTQlteAHiro=
-X-Google-Smtp-Source: APiQypL6R11GbtDukVgWq3NIFn7VvgbUZ3iiF6XhKRJwUfyY+0Iw+ZOcqDtJEjUYcXU7X5ra+HAqDCooSrMRgUlXWCY=
-X-Received: by 2002:a17:90a:fa81:: with SMTP id cu1mr10273546pjb.25.1588778753308;
- Wed, 06 May 2020 08:25:53 -0700 (PDT)
+        Wed, 6 May 2020 11:29:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588778982;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9VK2bwT1/tv3RtQTJg/KRhe8o13OTPTp5+7W2DtpmxU=;
+        b=E8F6KArEnZCATTIWviRvquZtbvs0yucwEivslIQj/oiPez59X1NyYh5P/xoSg0i1eeyXFC
+        fhSjOsUmyWVGX2mkbqG/Mn1PYJYx6HLsI2sfI3z4uJN/vHeoRG7rhQ0FTTSZoutRUh591d
+        pR02YU62vJNxRlZo6LwYdKGuc0cBi3w=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-392-Vd8GmeOLNIq77LXevHyuAw-1; Wed, 06 May 2020 11:29:39 -0400
+X-MC-Unique: Vd8GmeOLNIq77LXevHyuAw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 89D9086ABD9;
+        Wed,  6 May 2020 15:29:31 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (file01.intranet.prod.int.rdu2.redhat.com [10.11.5.7])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5D5D65D9C5;
+        Wed,  6 May 2020 15:29:31 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (localhost [127.0.0.1])
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4) with ESMTP id 046FTU8j016748;
+        Wed, 6 May 2020 11:29:30 -0400
+Received: from localhost (mpatocka@localhost)
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4/Submit) with ESMTP id 046FTTlA016744;
+        Wed, 6 May 2020 11:29:29 -0400
+X-Authentication-Warning: file01.intranet.prod.int.rdu2.redhat.com: mpatocka owned process doing -bs
+Date:   Wed, 6 May 2020 11:29:29 -0400 (EDT)
+From:   Mikulas Patocka <mpatocka@redhat.com>
+X-X-Sender: mpatocka@file01.intranet.prod.int.rdu2.redhat.com
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+cc:     Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
+        Sinan Kaya <okaya@codeaurora.org>,
+        Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org,
+        linux-rtc@vger.kernel.org
+Subject: [PATCH 2/2 v2] alpha: add a delay before serial port read
+In-Reply-To: <20200506114711.GB3024358@kroah.com>
+Message-ID: <alpine.LRH.2.02.2005061122440.16395@file01.intranet.prod.int.rdu2.redhat.com>
+References: <alpine.LRH.2.02.2005060721450.25338@file01.intranet.prod.int.rdu2.redhat.com> <20200506114711.GB3024358@kroah.com>
+User-Agent: Alpine 2.02 (LRH 1266 2009-07-14)
 MIME-Version: 1.0
-References: <20200325231422.1502366-1-heiko@sntech.de> <20200325231422.1502366-8-heiko@sntech.de>
-In-Reply-To: <20200325231422.1502366-8-heiko@sntech.de>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 6 May 2020 18:25:45 +0300
-Message-ID: <CAHp75Vef2Gu3Kz97FK6gQRS8dnAhnFFdWK1sqjZuf8tarx3LAw@mail.gmail.com>
-Subject: Re: [PATCH v2 7/7] serial: 8250_dw: add em485 support
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Matwey V. Kornilov" <matwey.kornilov@gmail.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Lukas Wunner <lukas@wunner.de>,
-        christoph.muellner@theobroma-systems.com,
-        Giulio Benetti <giulio.benetti@micronovasrl.com>,
-        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, Mar 26, 2020 at 1:17 AM Heiko Stuebner <heiko@sntech.de> wrote:
 
-If it's not covered by either yours or Lukas' series, perhaps worth to
-address as well.
 
-.../8250_port.c:1427: warning: Function parameter or member 'p
-' not described in 'serial8250_em485_stop_tx'
-.../8250_port.c:1427: warning: Excess function parameter 'up'
-description in 'serial8250_em485_stop_tx'
+On Wed, 6 May 2020, Greg Kroah-Hartman wrote:
 
--- 
-With Best Regards,
-Andy Shevchenko
+> > Index: linux-stable/drivers/tty/serial/8250/8250_port.c
+> > ===================================================================
+> > --- linux-stable.orig/drivers/tty/serial/8250/8250_port.c	2020-05-06 08:25:19.000000000 +0200
+> > +++ linux-stable/drivers/tty/serial/8250/8250_port.c	2020-05-06 09:04:17.000000000 +0200
+> > @@ -442,6 +442,10 @@ static unsigned int mem32be_serial_in(st
+> >  
+> >  static unsigned int io_serial_in(struct uart_port *p, int offset)
+> >  {
+> > +#ifdef CONFIG_ALPHA
+> > +/* we need a small delay, the Alpha Avanti chipset locks up with back-to-back accesses */
+> > +	ndelay(300);
+> > +#endif
+> 
+> We really do not like #ifdef in .c files, especially ones that cause a
+> coding style violation :)
+> 
+> Why can't you do this as a quirk for this specific chipset?  You should
+> tie it to the serial port hardware type, not to the CPU type.
+> 
+> thanks,
+> 
+> greg k-h
+
+Do you want this patch? It enables the delay based on the specific PCI-ISA 
+bridge.
+
+There is still "#if defined(CONFIG_ALPHA) && defined(CONFIG_PCI)" because 
+if we want to reference a variable defined by the PCI subsystem in the 
+arch/alpha tree, we must do it conditionally. If you want to get rid of 
+these #ifs, please describe how.
+
+Mikulas
+
+
+From: Mikulas Patocka <mpatocka@redhat.com>
+
+The patch 92d7223a74235054f2aa7227d207d9c57f84dca0 ("alpha: io: reorder
+barriers to guarantee writeX() and iowriteX() ordering #2") broke boot on
+the Alpha Avanti platform.
+
+The patch changes timing between accesses to the ISA bus, in particular,
+it reduces the time between "write" access and a subsequent "read" access.
+
+This causes lock-up when accessing the real time clock and serial ports.
+
+This patch fixes the serial ports by adding a small delay before the "inb"
+instruction.
+
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Fixes: 92d7223a7423 ("alpha: io: reorder barriers to guarantee writeX() and iowriteX() ordering #2")
+Cc: stable@vger.kernel.org	# v4.17+
+
+---
+ arch/alpha/include/asm/pci.h        |    2 ++
+ arch/alpha/kernel/pci.c             |    4 ++++
+ drivers/tty/serial/8250/8250_core.c |    7 +++++++
+ drivers/tty/serial/8250/8250_port.c |    3 +++
+ include/linux/serial_core.h         |    1 +
+ 5 files changed, 17 insertions(+)
+
+Index: linux-stable/include/linux/serial_core.h
+===================================================================
+--- linux-stable.orig/include/linux/serial_core.h	2020-05-06 17:16:28.000000000 +0200
++++ linux-stable/include/linux/serial_core.h	2020-05-06 17:16:28.000000000 +0200
+@@ -154,6 +154,7 @@ struct uart_port {
+ 
+ 	/* quirks must be updated while holding port mutex */
+ #define UPQ_NO_TXEN_TEST	BIT(0)
++#define UPQ_DELAY_BEFORE_READ	BIT(1)
+ 
+ 	unsigned int		read_status_mask;	/* driver specific */
+ 	unsigned int		ignore_status_mask;	/* driver specific */
+Index: linux-stable/drivers/tty/serial/8250/8250_core.c
+===================================================================
+--- linux-stable.orig/drivers/tty/serial/8250/8250_core.c	2020-05-06 17:16:28.000000000 +0200
++++ linux-stable/drivers/tty/serial/8250/8250_core.c	2020-05-06 17:16:28.000000000 +0200
+@@ -37,6 +37,9 @@
+ #ifdef CONFIG_SPARC
+ #include <linux/sunserialcore.h>
+ #endif
++#if defined(CONFIG_ALPHA) && defined(CONFIG_PCI)
++#include <linux/pci.h>
++#endif
+ 
+ #include <asm/irq.h>
+ 
+@@ -490,6 +493,10 @@ static void univ8250_rsa_support(struct
+ static inline void serial8250_apply_quirks(struct uart_8250_port *up)
+ {
+ 	up->port.quirks |= skip_txen_test ? UPQ_NO_TXEN_TEST : 0;
++#if defined(CONFIG_ALPHA) && defined(CONFIG_PCI)
++	if (alpha_serial_port_needs_delay)
++		up->port.quirks |= UPQ_DELAY_BEFORE_READ;
++#endif
+ }
+ 
+ static void __init serial8250_isa_init_ports(void)
+Index: linux-stable/arch/alpha/include/asm/pci.h
+===================================================================
+--- linux-stable.orig/arch/alpha/include/asm/pci.h	2020-05-06 17:16:28.000000000 +0200
++++ linux-stable/arch/alpha/include/asm/pci.h	2020-05-06 17:16:28.000000000 +0200
+@@ -97,4 +97,6 @@ extern void pci_adjust_legacy_attr(struc
+ extern int pci_create_resource_files(struct pci_dev *dev);
+ extern void pci_remove_resource_files(struct pci_dev *dev);
+ 
++extern int alpha_serial_port_needs_delay;
++
+ #endif /* __ALPHA_PCI_H */
+Index: linux-stable/arch/alpha/kernel/pci.c
+===================================================================
+--- linux-stable.orig/arch/alpha/kernel/pci.c	2020-05-06 17:16:28.000000000 +0200
++++ linux-stable/arch/alpha/kernel/pci.c	2020-05-06 17:16:28.000000000 +0200
+@@ -61,9 +61,13 @@ struct pci_controller *pci_isa_hose;
+  * Quirks.
+  */
+ 
++int alpha_serial_port_needs_delay = 0;
++EXPORT_SYMBOL(alpha_serial_port_needs_delay);
++
+ static void quirk_isa_bridge(struct pci_dev *dev)
+ {
+ 	dev->class = PCI_CLASS_BRIDGE_ISA << 8;
++	alpha_serial_port_needs_delay = 1;
+ }
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82378, quirk_isa_bridge);
+ 
+Index: linux-stable/drivers/tty/serial/8250/8250_port.c
+===================================================================
+--- linux-stable.orig/drivers/tty/serial/8250/8250_port.c	2020-05-06 17:16:28.000000000 +0200
++++ linux-stable/drivers/tty/serial/8250/8250_port.c	2020-05-06 17:16:32.000000000 +0200
+@@ -442,6 +442,9 @@ static unsigned int mem32be_serial_in(st
+ 
+ static unsigned int io_serial_in(struct uart_port *p, int offset)
+ {
++	if (unlikely(p->quirks & UPQ_DELAY_BEFORE_READ))
++		ndelay(300);
++
+ 	offset = offset << p->regshift;
+ 	return inb(p->iobase + offset);
+ }
+
