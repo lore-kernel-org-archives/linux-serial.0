@@ -2,140 +2,102 @@ Return-Path: <SRS0=tlDI=6U=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C5EC28CBC
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 11:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37337C38A2A
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 11:47:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D1F6620736
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 11:46:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0FA7520746
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 11:47:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1588765577;
-	bh=nMpVxHTQ1110Y/a2PQ4LV7iUJ4I+82nYm2QntxAeR0A=;
+	s=default; t=1588765635;
+	bh=TQtzKK1yWHnWVY5HHhmUp9cmIZd1E0pM/EFAAa1vPx0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=uX7DNIdLWXO/wAJPQXjn/TR+Q477BcmrQ8XR7fh+6+bsX4MxyOUk7LKF12nZ6PWQZ
-	 aWOa4FnaIBr3q2it9M/Zk98+Zhu6UJ4jMXr61Exwj3U+Zm5/nVsn4iOKnachlG9/Wk
-	 cvqPteJFTOPR+6tQj559dqFCalhIUCmFQs2lf1PU=
+	b=tYQH2DPh3jVpR3Kc3RbCgGY8to4maGHnOyP4MobZ9QryARhc5DJjzhNPTFERDxeta
+	 rLFKQ/a4IbomEUft5SDpA9QhQKYdvAA91+M4GLGC4A1gYoU2hHUjFjuW66voZHWduD
+	 a+eXSgOLW8WXjG7XlKs/i3RWhDKiRx8EJhs2t/yM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728000AbgEFLqR (ORCPT
+        id S1726974AbgEFLrO (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 May 2020 07:46:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54228 "EHLO mail.kernel.org"
+        Wed, 6 May 2020 07:47:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56938 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725887AbgEFLqP (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 May 2020 07:46:15 -0400
+        id S1725887AbgEFLrO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 6 May 2020 07:47:14 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3EA17206D5;
-        Wed,  6 May 2020 11:46:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5B816206D5;
+        Wed,  6 May 2020 11:47:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588765574;
-        bh=nMpVxHTQ1110Y/a2PQ4LV7iUJ4I+82nYm2QntxAeR0A=;
+        s=default; t=1588765633;
+        bh=TQtzKK1yWHnWVY5HHhmUp9cmIZd1E0pM/EFAAa1vPx0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=utap/Qy+zVICkyNxJ/zrD0hp/wpkLjoL3XAzrrJgtK5aFwdAkwHXIOF5XfHDLfsBo
-         A+grfxHi0v9nVgJ/X3mUlyy0qT7kOBJpAAzpmhODDYPPVbaiMTp+pUQHhyjcpm5bel
-         xGPlMsXYHzWK7/OCholjJGrzreM8HPOS1P5vbaho=
-Date:   Wed, 6 May 2020 13:46:12 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Mukesh, Savaliya" <msavaliy@codeaurora.org>
-Cc:     akashast@codeaurora.org, linux-serial@vger.kernel.org,
-        saravanak@google.com, sspatil@google.com, tkjos@google.com
-Subject: Re: [PATCH] serial: msm_geni_serial_console : Add Earlycon support
-Message-ID: <20200506114612.GA3024358@kroah.com>
-References: <20200429171934.17376-1-msavaliy@codeaurora.org>
- <20200429173826.GB2332435@kroah.com>
- <9dd11375-7f6e-8e3d-6243-89089a938f01@codeaurora.org>
+        b=ewVPNVR4P1MXTFhr7L5X7HKKiBSMwMW4DMbRW8smM2nQpdL+r5a6XYzx/WkHg6lFi
+         KrDTTCSSHgaYX28n1v/F88N6PlvsxNTGgfF+T2JO/iRzQyCIX+4EEef81v5EDoadto
+         +Ko6Phs97IoRZgrgDwdTYe1MNpbvXMpNqyndr8FU=
+Date:   Wed, 6 May 2020 13:47:11 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Mikulas Patocka <mpatocka@redhat.com>
+Cc:     Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
+        Sinan Kaya <okaya@codeaurora.org>,
+        Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org,
+        linux-rtc@vger.kernel.org
+Subject: Re: [PATCH 2/2] alpha: add a delay before serial port read
+Message-ID: <20200506114711.GB3024358@kroah.com>
+References: <alpine.LRH.2.02.2005060721450.25338@file01.intranet.prod.int.rdu2.redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9dd11375-7f6e-8e3d-6243-89089a938f01@codeaurora.org>
+In-Reply-To: <alpine.LRH.2.02.2005060721450.25338@file01.intranet.prod.int.rdu2.redhat.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, May 06, 2020 at 05:01:52PM +0530, Mukesh, Savaliya wrote:
+On Wed, May 06, 2020 at 07:23:31AM -0400, Mikulas Patocka wrote:
+> The patch 92d7223a74235054f2aa7227d207d9c57f84dca0 ("alpha: io: reorder
+> barriers to guarantee writeX() and iowriteX() ordering #2") broke boot on
+> the Alpha Avanti platform.
 > 
-> On 4/29/2020 11:08 PM, Greg KH wrote:
-> > On Wed, Apr 29, 2020 at 10:49:34PM +0530, Mukesh, Savaliya wrote:
-> > > From: Mukesh Kumar Savaliya <msavaliy@codeaurora.org>
-> > > 
-> > > This change enables earlyconsole support as static driver for geni
-> > > based UART. Kernel space UART console driver will be generic for
-> > > console and other usecases of UART.
-> > > 
-> > > Signed-off-by: Mukesh Kumar Savaliya <msavaliy@codeaurora.org>
-> > > ---
-> > >   drivers/tty/serial/Kconfig                   |  15 +
-> > >   drivers/tty/serial/Makefile                  |   1 +
-> > >   drivers/tty/serial/msm_geni_serial_console.c | 525 +++++++++++++++++++
-> > >   3 files changed, 541 insertions(+)
-> > >   create mode 100644 drivers/tty/serial/msm_geni_serial_console.c
-> > > 
-> > > diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> > > index 0aea76cd67ff..ded19d80e696 100644
-> > > --- a/drivers/tty/serial/Kconfig
-> > > +++ b/drivers/tty/serial/Kconfig
-> > > @@ -956,6 +956,21 @@ config SERIAL_MSM_CONSOLE
-> > >   	select SERIAL_CORE_CONSOLE
-> > >   	select SERIAL_EARLYCON
-> > > +config SERIAL_MSM_GENI_HALF_SAMPLING
-> > > +	bool "Changes clock divider which impacts sampling rate for QUP HW ver greater than 2.5.0"
-> > > +	help
-> > > +	  Clock divider value should be doubled for QUP hardware version
-> > > +	  greater than 2.5.0.
-> > How do we know this?  Can't this be dynamically determined at runtime?
-> > What about kernels that want to be built for both types of hardware at
-> > the same time?
+> The patch changes timing between accesses to the ISA bus, in particular,
+> it reduces the time between "write" access and a subsequent "read" access.
 > 
-> This will vary for different hardware only if QUP version is lower than
-> this.
+> This causes lock-up when accessing the real time clock and serial ports.
 > 
-> We can not determine this dynamically because register address space to read
-> QUP version is in QUP wrapper space and that also keep varying per target.
+> This patch fixes the serial ports by adding a small delay before the "inb"
+> instruction.
 > 
-> we only  get internal SE address base in cmdline arg.
-
-I don't understand.  So does this mean we can not build a single kernel
-image with support for both?
-
-Why can't you detect "version 2.5.0 or greater" at runtime?  How do you
-know this at kernel build time and not at runtime?
-
-We can't add options that prevent generic versions of the kernel from
-being able to be built, as that means you just broke kernels that did
-work, right?
-
-
-
+> Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+> Fixes: 92d7223a7423 ("alpha: io: reorder barriers to guarantee writeX() and iowriteX() ordering #2")
+> Cc: stable@vger.kernel.org	# v4.17+
 > 
-> > 
-> > > +	  As earlycon can't have HW version awareness, decision is taken
-> > > +	  based on the configuration.
-> > > +
-> > > +config SERIAL_MSM_GENI_EARLY_CONSOLE
-> > > +	bool "MSM on-chip GENI HW based early console support"
-> > > +	select SERIAL_MSM_GENI_HALF_SAMPLING
-> > > +	help
-> > > +	  Serial early console driver for Qualcomm Technologies Inc's GENI
-> > > +	  based QUP hardware.
-> > Why can't we have early console without SERIAL_MSM_GENI_HALF_SAMPLING?
-> > 
-> > Why are these tied directly to each other?  Do you really need 2
-> > options?
-> HALF_SAMPLING controlls the sampling rate of UART HW, if not then logs come
-> garbled due to wrong sampling.
+> ---
+>  drivers/tty/serial/8250/8250_port.c |    4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> Index: linux-stable/drivers/tty/serial/8250/8250_port.c
+> ===================================================================
+> --- linux-stable.orig/drivers/tty/serial/8250/8250_port.c	2020-05-06 08:25:19.000000000 +0200
+> +++ linux-stable/drivers/tty/serial/8250/8250_port.c	2020-05-06 09:04:17.000000000 +0200
+> @@ -442,6 +442,10 @@ static unsigned int mem32be_serial_in(st
+>  
+>  static unsigned int io_serial_in(struct uart_port *p, int offset)
+>  {
+> +#ifdef CONFIG_ALPHA
+> +/* we need a small delay, the Alpha Avanti chipset locks up with back-to-back accesses */
+> +	ndelay(300);
+> +#endif
 
-I do not understand what you mean here.  Again, why can this not be
-detected at runtime?
+We really do not like #ifdef in .c files, especially ones that cause a
+coding style violation :)
 
-Can you split this into two patches, one for the console driver, and one
-for the crazy new hardware for newer systems?
+Why can't you do this as a quirk for this specific chipset?  You should
+tie it to the serial port hardware type, not to the CPU type.
 
 thanks,
 
