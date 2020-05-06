@@ -2,108 +2,153 @@ Return-Path: <SRS0=tlDI=6U=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E7FC38A2A
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 11:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A832C28CBC
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 11:32:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EEE562070B
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 11:23:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 676EB206DD
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 11:32:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="CX/V9Gf8"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="W15lSHMs"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727099AbgEFLXg (ORCPT
+        id S1726356AbgEFLc0 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 May 2020 07:23:36 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:32219 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726480AbgEFLXg (ORCPT
+        Wed, 6 May 2020 07:32:26 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:40431 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725887AbgEFLcZ (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 May 2020 07:23:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588764215;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=sxASDUoH2mg/OWf8ncLB2g7lbzbXYW0W74S4Ym38kY4=;
-        b=CX/V9Gf8rBUdSEjs3woaysCV9eyMcAA/1b1Xz6EnPBh8Tyw6Lx5P19yZw7+EGACX07WsjV
-        MsuKNx5EkHhDSa0r0PjpRSoh8wwiHGRhx8xbnSVdxPlTx+o9qDUtRnUL3HN09hhtQpxVbN
-        lmBFgCgJaJ7KMYm+t7W2ChRmUn6Y78I=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-38-B0la5jEdOqShtYnvxui7Jg-1; Wed, 06 May 2020 07:23:33 -0400
-X-MC-Unique: B0la5jEdOqShtYnvxui7Jg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Wed, 6 May 2020 07:32:25 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1588764744; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=1Osez+41ks31AcBRTOjfPN3dF/fybakc5Vy4/PXfkdU=; b=W15lSHMs8nZQJuGstRD5X8obUxHlNfhbOGBm1KvbgPp6PIko4D+QqggqvbogXtITnIc8+XQN
+ McqepKjFkr1+SQPULFzicSpIjCAUrcwTmf8YJLAK5mk+mdMLdVVZem2aNAMqa6pu8mwTk/W3
+ G1/y5ymmPe1VkxfN0CLSOzW/tG0=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5eb2a038.7f9c7058d7a0-smtp-out-n05;
+ Wed, 06 May 2020 11:32:08 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 96876C433D2; Wed,  6 May 2020 11:32:07 +0000 (UTC)
+Received: from [192.168.0.4] (unknown [124.123.29.106])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DD14B800687;
-        Wed,  6 May 2020 11:23:31 +0000 (UTC)
-Received: from file01.intranet.prod.int.rdu2.redhat.com (file01.intranet.prod.int.rdu2.redhat.com [10.11.5.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B80645D9C5;
-        Wed,  6 May 2020 11:23:31 +0000 (UTC)
-Received: from file01.intranet.prod.int.rdu2.redhat.com (localhost [127.0.0.1])
-        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4) with ESMTP id 046BNVI0027401;
-        Wed, 6 May 2020 07:23:31 -0400
-Received: from localhost (mpatocka@localhost)
-        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4/Submit) with ESMTP id 046BNV9i027397;
-        Wed, 6 May 2020 07:23:31 -0400
-X-Authentication-Warning: file01.intranet.prod.int.rdu2.redhat.com: mpatocka owned process doing -bs
-Date:   Wed, 6 May 2020 07:23:31 -0400 (EDT)
-From:   Mikulas Patocka <mpatocka@redhat.com>
-X-X-Sender: mpatocka@file01.intranet.prod.int.rdu2.redhat.com
-To:     Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-cc:     linux-alpha@vger.kernel.org, Sinan Kaya <okaya@codeaurora.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org,
-        linux-rtc@vger.kernel.org
-Subject: [PATCH 2/2] alpha: add a delay before serial port read
-Message-ID: <alpine.LRH.2.02.2005060721450.25338@file01.intranet.prod.int.rdu2.redhat.com>
-User-Agent: Alpine 2.02 (LRH 1266 2009-07-14)
+        (Authenticated sender: msavaliy)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id C8EB4C433F2;
+        Wed,  6 May 2020 11:32:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C8EB4C433F2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=msavaliy@codeaurora.org
+Subject: Re: [PATCH] serial: msm_geni_serial_console : Add Earlycon support
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     akashast@codeaurora.org, linux-serial@vger.kernel.org,
+        saravanak@google.com, sspatil@google.com, tkjos@google.com
+References: <20200429171934.17376-1-msavaliy@codeaurora.org>
+ <20200429173826.GB2332435@kroah.com>
+From:   "Mukesh, Savaliya" <msavaliy@codeaurora.org>
+Message-ID: <9dd11375-7f6e-8e3d-6243-89089a938f01@codeaurora.org>
+Date:   Wed, 6 May 2020 17:01:52 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+In-Reply-To: <20200429173826.GB2332435@kroah.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The patch 92d7223a74235054f2aa7227d207d9c57f84dca0 ("alpha: io: reorder
-barriers to guarantee writeX() and iowriteX() ordering #2") broke boot on
-the Alpha Avanti platform.
 
-The patch changes timing between accesses to the ISA bus, in particular,
-it reduces the time between "write" access and a subsequent "read" access.
+On 4/29/2020 11:08 PM, Greg KH wrote:
+> On Wed, Apr 29, 2020 at 10:49:34PM +0530, Mukesh, Savaliya wrote:
+>> From: Mukesh Kumar Savaliya <msavaliy@codeaurora.org>
+>>
+>> This change enables earlyconsole support as static driver for geni
+>> based UART. Kernel space UART console driver will be generic for
+>> console and other usecases of UART.
+>>
+>> Signed-off-by: Mukesh Kumar Savaliya <msavaliy@codeaurora.org>
+>> ---
+>>   drivers/tty/serial/Kconfig                   |  15 +
+>>   drivers/tty/serial/Makefile                  |   1 +
+>>   drivers/tty/serial/msm_geni_serial_console.c | 525 +++++++++++++++++++
+>>   3 files changed, 541 insertions(+)
+>>   create mode 100644 drivers/tty/serial/msm_geni_serial_console.c
+>>
+>> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+>> index 0aea76cd67ff..ded19d80e696 100644
+>> --- a/drivers/tty/serial/Kconfig
+>> +++ b/drivers/tty/serial/Kconfig
+>> @@ -956,6 +956,21 @@ config SERIAL_MSM_CONSOLE
+>>   	select SERIAL_CORE_CONSOLE
+>>   	select SERIAL_EARLYCON
+>>   
+>> +config SERIAL_MSM_GENI_HALF_SAMPLING
+>> +	bool "Changes clock divider which impacts sampling rate for QUP HW ver greater than 2.5.0"
+>> +	help
+>> +	  Clock divider value should be doubled for QUP hardware version
+>> +	  greater than 2.5.0.
+> How do we know this?  Can't this be dynamically determined at runtime?
+> What about kernels that want to be built for both types of hardware at
+> the same time?
 
-This causes lock-up when accessing the real time clock and serial ports.
+This will vary for different hardware only if QUP version is lower than 
+this.
 
-This patch fixes the serial ports by adding a small delay before the "inb"
-instruction.
+We can not determine this dynamically because register address space to 
+read QUP version is in QUP wrapper space and that also keep varying per 
+target.
 
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Fixes: 92d7223a7423 ("alpha: io: reorder barriers to guarantee writeX() and iowriteX() ordering #2")
-Cc: stable@vger.kernel.org	# v4.17+
+we only  get internal SE address base in cmdline arg.
 
----
- drivers/tty/serial/8250/8250_port.c |    4 ++++
- 1 file changed, 4 insertions(+)
+>
+>> +	  As earlycon can't have HW version awareness, decision is taken
+>> +	  based on the configuration.
+>> +
+>> +config SERIAL_MSM_GENI_EARLY_CONSOLE
+>> +	bool "MSM on-chip GENI HW based early console support"
+>> +	select SERIAL_MSM_GENI_HALF_SAMPLING
+>> +	help
+>> +	  Serial early console driver for Qualcomm Technologies Inc's GENI
+>> +	  based QUP hardware.
+> Why can't we have early console without SERIAL_MSM_GENI_HALF_SAMPLING?
+>
+> Why are these tied directly to each other?  Do you really need 2
+> options?
+HALF_SAMPLING controlls the sampling rate of UART HW, if not then logs 
+come garbled due to wrong sampling.
+>
+>> +
+>>   config SERIAL_QCOM_GENI
+>>   	tristate "QCOM on-chip GENI based serial port support"
+>>   	depends on ARCH_QCOM || COMPILE_TEST
+>> diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+>> index d056ee6cca33..9790ef2d802c 100644
+>> --- a/drivers/tty/serial/Makefile
+>> +++ b/drivers/tty/serial/Makefile
+>> @@ -55,6 +55,7 @@ obj-$(CONFIG_SERIAL_VR41XX) += vr41xx_siu.o
+>>   obj-$(CONFIG_SERIAL_ATMEL) += atmel_serial.o
+>>   obj-$(CONFIG_SERIAL_UARTLITE) += uartlite.o
+>>   obj-$(CONFIG_SERIAL_MSM) += msm_serial.o
+>> +obj-$(SERIAL_MSM_GENI_EARLY_CONSOLE) += msm_geni_serial_console.o
+> I don't think you tested this at all :(
+>
+> I've stopped here in the review for this obvious reason...
 
-Index: linux-stable/drivers/tty/serial/8250/8250_port.c
-===================================================================
---- linux-stable.orig/drivers/tty/serial/8250/8250_port.c	2020-05-06 08:25:19.000000000 +0200
-+++ linux-stable/drivers/tty/serial/8250/8250_port.c	2020-05-06 09:04:17.000000000 +0200
-@@ -442,6 +442,10 @@ static unsigned int mem32be_serial_in(st
- 
- static unsigned int io_serial_in(struct uart_port *p, int offset)
- {
-+#ifdef CONFIG_ALPHA
-+/* we need a small delay, the Alpha Avanti chipset locks up with back-to-back accesses */
-+	ndelay(300);
-+#endif
- 	offset = offset << p->regshift;
- 	return inb(p->iobase + offset);
- }
+Done the changes. Sorry, i compiled with the static config but missed to 
+add back when compiled with  config change.
 
+Uploaded new change.
+
+>
+> thanks,
+>
+> greg k-h
