@@ -2,103 +2,97 @@ Return-Path: <SRS0=tlDI=6U=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37337C38A2A
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 11:47:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DED00C28CBC
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 11:54:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0FA7520746
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 11:47:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1588765635;
-	bh=TQtzKK1yWHnWVY5HHhmUp9cmIZd1E0pM/EFAAa1vPx0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=tYQH2DPh3jVpR3Kc3RbCgGY8to4maGHnOyP4MobZ9QryARhc5DJjzhNPTFERDxeta
-	 rLFKQ/a4IbomEUft5SDpA9QhQKYdvAA91+M4GLGC4A1gYoU2hHUjFjuW66voZHWduD
-	 a+eXSgOLW8WXjG7XlKs/i3RWhDKiRx8EJhs2t/yM=
+	by mail.kernel.org (Postfix) with ESMTP id BD1D420714
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 11:54:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726974AbgEFLrO (ORCPT
+        id S1727109AbgEFLyb (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 May 2020 07:47:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56938 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725887AbgEFLrO (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 May 2020 07:47:14 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        Wed, 6 May 2020 07:54:31 -0400
+Received: from bmailout3.hostsharing.net ([176.9.242.62]:54181 "EHLO
+        bmailout3.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726778AbgEFLyb (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 6 May 2020 07:54:31 -0400
+X-Greylist: delayed 20882 seconds by postgrey-1.27 at vger.kernel.org; Wed, 06 May 2020 07:54:30 EDT
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5B816206D5;
-        Wed,  6 May 2020 11:47:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588765633;
-        bh=TQtzKK1yWHnWVY5HHhmUp9cmIZd1E0pM/EFAAa1vPx0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ewVPNVR4P1MXTFhr7L5X7HKKiBSMwMW4DMbRW8smM2nQpdL+r5a6XYzx/WkHg6lFi
-         KrDTTCSSHgaYX28n1v/F88N6PlvsxNTGgfF+T2JO/iRzQyCIX+4EEef81v5EDoadto
-         +Ko6Phs97IoRZgrgDwdTYe1MNpbvXMpNqyndr8FU=
-Date:   Wed, 6 May 2020 13:47:11 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Mikulas Patocka <mpatocka@redhat.com>
-Cc:     Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
-        Sinan Kaya <okaya@codeaurora.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org,
-        linux-rtc@vger.kernel.org
-Subject: Re: [PATCH 2/2] alpha: add a delay before serial port read
-Message-ID: <20200506114711.GB3024358@kroah.com>
-References: <alpine.LRH.2.02.2005060721450.25338@file01.intranet.prod.int.rdu2.redhat.com>
+        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
+        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 3D6B5100AF93C;
+        Wed,  6 May 2020 13:54:29 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id A23BA5A487; Wed,  6 May 2020 13:54:28 +0200 (CEST)
+Date:   Wed, 6 May 2020 13:54:28 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
+        Giulio Benetti <giulio.benetti@micronovasrl.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Christoph Muellner <christoph.muellner@theobroma-systems.com>,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH 1/4] serial: 8250: Avoid error message on reprobe
+Message-ID: <20200506115428.rakbdkw7bqomefqi@wunner.de>
+References: <cover.1588505407.git.lukas@wunner.de>
+ <b3fbbe8688d5e9d173168ae45295719ca4c9d35f.1588505407.git.lukas@wunner.de>
+ <20200505160101.GV185537@smile.fi.intel.com>
+ <20200506060623.sf3kh3fwhoawawsd@wunner.de>
+ <20200506100157.GB185537@smile.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alpine.LRH.2.02.2005060721450.25338@file01.intranet.prod.int.rdu2.redhat.com>
+In-Reply-To: <20200506100157.GB185537@smile.fi.intel.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, May 06, 2020 at 07:23:31AM -0400, Mikulas Patocka wrote:
-> The patch 92d7223a74235054f2aa7227d207d9c57f84dca0 ("alpha: io: reorder
-> barriers to guarantee writeX() and iowriteX() ordering #2") broke boot on
-> the Alpha Avanti platform.
+On Wed, May 06, 2020 at 01:01:57PM +0300, Andy Shevchenko wrote:
+> On Wed, May 06, 2020 at 08:06:23AM +0200, Lukas Wunner wrote:
+> > On Tue, May 05, 2020 at 07:01:01PM +0300, Andy Shevchenko wrote:
+> > > On Tue, May 05, 2020 at 04:42:01PM +0200, Lukas Wunner wrote:
+> > > > Cc: stable@vger.kernel.org # v2.6.10+
+> > > 
+> > > Fixes tag?
+> > 
+> > The bug was introduced in the pre-git era, so I can't provide a Fixes tag:
+> > 
+> > https://git.kernel.org/tglx/history/c/befff6f5bf5f
+> > 
+> > This commit, which went into v2.6.10, added an unconditional
+> > uart_remove_one_port() in serial8250_register_port().
 > 
-> The patch changes timing between accesses to the ISA bus, in particular,
-> it reduces the time between "write" access and a subsequent "read" access.
+> We have history tree, but I heard you.
 > 
-> This causes lock-up when accessing the real time clock and serial ports.
+> > In 2012, commit 835d844d1a28 ("8250_pnp: do pnp probe before legacy probe")
+> > made the call to uart_remove_one_port() conditional on uart->port.dev
+> > being non-NULL and that allows me to fix the issue by setting that
+> > pointer to NULL in the error path.  The commit went into v3.7, so it
+> > should be possible to fix the problem going back to v3.7 with my patch.
+> > And before that one needs to additionally make the call to
+> > uart_remove_one_port() conditional.
 > 
-> This patch fixes the serial ports by adding a small delay before the "inb"
-> instruction.
-> 
-> Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-> Fixes: 92d7223a7423 ("alpha: io: reorder barriers to guarantee writeX() and iowriteX() ordering #2")
-> Cc: stable@vger.kernel.org	# v4.17+
-> 
-> ---
->  drivers/tty/serial/8250/8250_port.c |    4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> Index: linux-stable/drivers/tty/serial/8250/8250_port.c
-> ===================================================================
-> --- linux-stable.orig/drivers/tty/serial/8250/8250_port.c	2020-05-06 08:25:19.000000000 +0200
-> +++ linux-stable/drivers/tty/serial/8250/8250_port.c	2020-05-06 09:04:17.000000000 +0200
-> @@ -442,6 +442,10 @@ static unsigned int mem32be_serial_in(st
->  
->  static unsigned int io_serial_in(struct uart_port *p, int offset)
->  {
-> +#ifdef CONFIG_ALPHA
-> +/* we need a small delay, the Alpha Avanti chipset locks up with back-to-back accesses */
-> +	ndelay(300);
-> +#endif
+> Perhaps it will be the best candidate.
 
-We really do not like #ifdef in .c files, especially ones that cause a
-coding style violation :)
+There's a syntax to specify prerequisites which is documented in:
+Documentation/process/stable-kernel-rules.rst
 
-Why can't you do this as a quirk for this specific chipset?  You should
-tie it to the serial port hardware type, not to the CPU type.
+So I intend to do the following:
 
-thanks,
+Cc: stable@vger.kernel.org # v2.6.10
+Cc: stable@vger.kernel.org # v2.6.10: 835d844d1a28: 8250_pnp: do pnp probe before legacy
 
-greg k-h
+And it probably doesn't hurt to include the explanation above
+(which historic commit I'm fixing and so on) in the commit message.
+
+Thanks,
+
+Lukas
