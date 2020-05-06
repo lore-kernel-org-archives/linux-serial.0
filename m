@@ -2,44 +2,48 @@ Return-Path: <SRS0=tlDI=6U=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	TVD_PH_BODY_ACCOUNTS_PRE autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6500AC54E49
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F18C54E4B
 	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 23:39:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4AC7620735
+	by mail.kernel.org (Postfix) with ESMTP id 85DE420735
 	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 23:39:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728130AbgEFXje (ORCPT
+        id S1728126AbgEFXjf (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 May 2020 19:39:34 -0400
-Received: from mail.baikalelectronics.com ([87.245.175.226]:34710 "EHLO
+        Wed, 6 May 2020 19:39:35 -0400
+Received: from mail.baikalelectronics.com ([87.245.175.226]:34730 "EHLO
         mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728126AbgEFXje (ORCPT
+        with ESMTP id S1728137AbgEFXje (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Wed, 6 May 2020 19:39:34 -0400
-X-Greylist: delayed 461 seconds by postgrey-1.27 at vger.kernel.org; Wed, 06 May 2020 19:39:32 EDT
 Received: from localhost (unknown [127.0.0.1])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 70B2C8030808;
-        Wed,  6 May 2020 23:31:51 +0000 (UTC)
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id 8CC9C803080B;
+        Wed,  6 May 2020 23:31:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at baikalelectronics.ru
 Received: from mail.baikalelectronics.ru ([127.0.0.1])
         by localhost (mail.baikalelectronics.ru [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id MhBbxmp3w3vz; Thu,  7 May 2020 02:31:48 +0300 (MSK)
+        with ESMTP id ZPJCJBFg5i0k; Thu,  7 May 2020 02:31:46 +0300 (MSK)
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Long Cheng <long.cheng@mediatek.com>
+        Jiri Slaby <jslaby@suse.com>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Serge Semin <fancer.lancer@gmail.com>,
         Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Maxim Kaurkin <Maxim.Kaurkin@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Alexey Kolotnikov <Alexey.Kolotnikov@baikalelectronics.ru>,
+        Ramil Zaripov <Ramil.Zaripov@baikalelectronics.ru>,
+        Ekaterina Skachko <Ekaterina.Skachko@baikalelectronics.ru>,
+        Vadim Vlasov <V.Vlasov@baikalelectronics.ru>,
         Paul Burton <paulburton@kernel.org>,
         Ralf Baechle <ralf@linux-mips.org>,
         Arnd Bergmann <arnd@arndb.de>,
+        Long Cheng <long.cheng@mediatek.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Maxime Ripard <mripard@kernel.org>,
         Catalin Marinas <catalin.marinas@arm.com>,
@@ -48,17 +52,12 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         <linux-mips@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-mediatek@lists.infradead.org>,
-        Lukas Wunner <lukas@wunner.de>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Stefan Roese <sr@denx.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
         <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 1/4] serial: 8250: Fix max baud limit in generic 8250 port
-Date:   Thu, 7 May 2020 02:31:32 +0300
-Message-ID: <20200506233136.11842-2-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20200506233136.11842-1-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH v3 0/4] serial: 8250_dw: Fix ref clock usage
+Date:   Thu, 7 May 2020 02:31:31 +0300
+Message-ID: <20200506233136.11842-1-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20200323024611.16039-1-Sergey.Semin@baikalelectronics.ru>
 References: <20200323024611.16039-1-Sergey.Semin@baikalelectronics.ru>
- <20200506233136.11842-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -68,34 +67,47 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Standard 8250 UART ports are designed in a way so they can communicate
-with baud rates up to 1/16 of a reference frequency. It's expected from
-most of the currently supported UART controllers. That's why the former
-version of serial8250_get_baud_rate() method called uart_get_baud_rate()
-with min and max baud rates passed as (port->uartclk / 16 / UART_DIV_MAX)
-and ((port->uartclk + tolerance) / 16) respectively. Doing otherwise, like
-it was suggested in commit ("serial: 8250_mtk: support big baud rate."),
-caused acceptance of bauds, which was higher than the normal UART
-controllers actually supported. As a result if some user-space program
-requested to set a baud greater than (uartclk / 16) it would have been
-permitted without truncation, but then serial8250_get_divisor(baud)
-(which calls uart_get_divisor() to get the reference clock divisor) would
-have returned a zero divisor. Setting zero divisor will cause an
-unpredictable effect varying from chip to chip. In case of DW APB UART the
-communications just stop.
+It might be dangerous if an UART port reference clock rate is suddenly
+changed. In particular the 8250 port drivers (and AFAICS most of the tty
+drivers using common clock framework clocks) rely either on the
+exclusive reference clock utilization or on the ref clock rate being
+always constant. Needless to say that it turns out not true and if some
+other service suddenly changes the clock rate behind an UART port driver
+back it's no good. So the port might not only end up with an invalid
+uartclk value saved, but may also experience a distorted output/input
+data since such action will effectively update the programmed baud-clock.
+We discovered such problem on Baikal-T1 SoC where two DW 8250 ports have
+got a shared reference clock. Allwinner SoC is equipped with an UART,
+which clock is derived from the CPU PLL clock source, so the CPU frequency
+change might be propagated down up to the serial port reference clock.
+This patchset provides a way to fix the problem to the 8250 serial port
+controllers and mostly fixes it for the DW 8250-compatible UART. I say
+mostly because due to not having a facility to pause/stop and resume/
+restart on-going transfers we implemented the UART clock rate update
+procedure executed post factum of the actual reference clock rate change.
 
-Lets fix this problem by getting back the limitation of (uartclk +
-tolerance) / 16 maximum baud supported by the generic 8250 port. Mediatek
-8250 UART ports driver developer shouldn't have touched it in the first
-place  notably seeing he already provided a custom version of set_termios()
-callback in that glue-driver which took into account the extended baud
-rate values and accordingly updated the standard and vendor-specific
-divisor latch registers anyway.
+In addition the patchset includes a few fixes we discovered when were
+working the issue. First one concerns the maximum baud rate setting used
+to determine a serial port baud based on the current UART port clock rate.
+Another one simplifies the ref clock rate setting procedure a bit.
 
-Fixes: 81bb549fdf14 ("serial: 8250_mtk: support big baud rate.")
+This patchset is rebased and tested on the mainline Linux kernel 5.7-rc4:
+0e698dfa2822 ("Linux 5.7-rc4")
+tag: v5.7-rc4
+
+Changelog v3:
+- Refactor the original patch to adjust the UART port divisor instead of
+  requesting an exclusive ref clock utilization.
+
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: Maxim Kaurkin <Maxim.Kaurkin@baikalelectronics.ru>
+Cc: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+Cc: Alexey Kolotnikov <Alexey.Kolotnikov@baikalelectronics.ru>
+Cc: Ramil Zaripov <Ramil.Zaripov@baikalelectronics.ru>
+Cc: Ekaterina Skachko <Ekaterina.Skachko@baikalelectronics.ru>
+Cc: Vadim Vlasov <V.Vlasov@baikalelectronics.ru>
+Cc: Alexey Kolotnikov <Alexey.Kolotnikov@baikalelectronics.ru>
 Cc: Paul Burton <paulburton@kernel.org>
 Cc: Ralf Baechle <ralf@linux-mips.org>
 Cc: Arnd Bergmann <arnd@arndb.de>
@@ -108,32 +120,20 @@ Cc: Russell King <linux@armlinux.org.uk>
 Cc: linux-mips@vger.kernel.org
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-mediatek@lists.infradead.org
----
- drivers/tty/serial/8250/8250_port.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Cc: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index f77bf820b7a3..4d83c85a7389 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2615,6 +2615,8 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
- 					     struct ktermios *termios,
- 					     struct ktermios *old)
- {
-+	unsigned int tolerance = port->uartclk / 100;
-+
- 	/*
- 	 * Ask the core to calculate the divisor for us.
- 	 * Allow 1% tolerance at the upper limit so uart clks marginally
-@@ -2623,7 +2625,7 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
- 	 */
- 	return uart_get_baud_rate(port, termios, old,
- 				  port->uartclk / 16 / UART_DIV_MAX,
--				  port->uartclk);
-+				  (port->uartclk + tolerance) / 16);
- }
- 
- void
+Serge Semin (4):
+  serial: 8250: Fix max baud limit in generic 8250 port
+  serial: 8250: Add 8250 port clock update method
+  serial: 8250_dw: Simplify the ref clock rate setting procedure
+  serial: 8250_dw: Fix common clocks usage race condition
+
+ drivers/tty/serial/8250/8250_dw.c   | 125 +++++++++++++++++++++++++---
+ drivers/tty/serial/8250/8250_port.c |  42 +++++++++-
+ include/linux/serial_8250.h         |   2 +
+ 3 files changed, 156 insertions(+), 13 deletions(-)
+
 -- 
 2.25.1
 
