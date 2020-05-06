@@ -2,102 +2,89 @@ Return-Path: <SRS0=tlDI=6U=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4909BC28CBC
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 12:59:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 161EDC47256
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 14:21:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1527E206DD
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 12:59:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1588769948;
-	bh=VZ5wfbpaa65fQBz24+L9yq+Pz+Arql7THjHEU0/HkRE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=XnCCqa1NTOriyV8kwCTFIoom65RLUeAejE4mN2PCJp/O0hoE3GSNp9f2WjCTMEYie
-	 Yy9fYP8O+e7tBq2DlU0RwLVrWM51hcMl1//+zK1sLBb52GzEVibvgZgamEx2qbVItW
-	 mAaMccUYwH6OgqticdtbwZ8HeaGBrOOEHa2uKQtQ=
+	by mail.kernel.org (Postfix) with ESMTP id DB288206D5
+	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 14:20:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728173AbgEFM7H (ORCPT
+        id S1728784AbgEFOU7 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 May 2020 08:59:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42068 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728081AbgEFM7H (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 May 2020 08:59:07 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 76FE2206DB;
-        Wed,  6 May 2020 12:59:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588769946;
-        bh=VZ5wfbpaa65fQBz24+L9yq+Pz+Arql7THjHEU0/HkRE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TwPwoVwjo9aOtcg7CV3VMyFiXMl7UWvFnxdzl547INGsVtcJxF7jWZGEe8C0n4SRe
-         I6RNJsdiavAoQatx03dZ3Q2ffuvxB2H1AopxnOXL3ZvcigD0gyTBaVue3CQ2obaNot
-         eGNaPDSUkk1wb00exmC63kx91Y3VOVy+UbyKFnIQ=
-Date:   Wed, 6 May 2020 14:59:04 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Will Deacon <will@kernel.org>
-Cc:     "Mukesh, Savaliya" <msavaliy@codeaurora.org>,
-        akashast@codeaurora.org, linux-serial@vger.kernel.org,
-        saravanak@google.com, sspatil@google.com, tkjos@google.com
-Subject: Re: [PATCH V2] serial: msm_geni_serial_console : Add Earlycon support
-Message-ID: <20200506125904.GA3159967@kroah.com>
-References: <20200506113331.32562-1-msavaliy@codeaurora.org>
- <20200506120237.GA3047211@kroah.com>
- <20200506124845.GG8043@willie-the-truck>
+        Wed, 6 May 2020 10:20:59 -0400
+Received: from mout.kundenserver.de ([212.227.126.130]:43649 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726114AbgEFOU6 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 6 May 2020 10:20:58 -0400
+Received: from mail-qk1-f173.google.com ([209.85.222.173]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.129]) with ESMTPSA (Nemesis)
+ id 1N7zW7-1j16Z13mx1-014z6D; Wed, 06 May 2020 16:20:57 +0200
+Received: by mail-qk1-f173.google.com with SMTP id f13so2080270qkh.2;
+        Wed, 06 May 2020 07:20:56 -0700 (PDT)
+X-Gm-Message-State: AGi0PuaFK71bYSa1gufG+QjdDPiYfBlm7+S53VcCoaPvswI424tQPZcp
+        tLVf91fdjNA/5e9Bs8ecmz5tCNsiB8TnP17ZcgQ=
+X-Google-Smtp-Source: APiQypKgaluquciflnBcztR1WN9teptLeSIWzng6zhGKuokJY8nJLdN0sgdbAFnBGd3XVoUkDA88FSzspEE+6sGwvLc=
+X-Received: by 2002:a05:620a:3c5:: with SMTP id r5mr9076074qkm.138.1588774855617;
+ Wed, 06 May 2020 07:20:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200506124845.GG8043@willie-the-truck>
+References: <alpine.LRH.2.02.2005060713390.25338@file01.intranet.prod.int.rdu2.redhat.com>
+In-Reply-To: <alpine.LRH.2.02.2005060713390.25338@file01.intranet.prod.int.rdu2.redhat.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 6 May 2020 16:20:39 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com>
+Message-ID: <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] alpha: add a delay between RTC port write and read
+To:     Mikulas Patocka <mpatocka@redhat.com>
+Cc:     Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        Sinan Kaya <okaya@codeaurora.org>,
+        linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:ODdZcuhx4O1OqlUVtvGTL+/T4HDL0HaWhlYX8QrlhAYTuPqcQen
+ v3tE9VT698mp45ej1a5pC3uCKyhUPUrEqEiAsRXAd8kJdsiOI10q9KyrlRF3kbYKrZPlpOP
+ /42VbPsVBD/3V0QcThzLG9y+uhHft/Yqiw2en80oIt5Bze5++4xIgNMAaKsqGBKeP1rfWnM
+ KhBWlB1d67oBCY14BfGhQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:BQMkoMeXna0=:+EkJRWs27VHfOCbmAdw+uW
+ 7EieW0z9uPcLy1V+z4cGJwACUycFb0iuEgfBSIa7H36SYKmDc6NSQb44ZvqbfDkd7oQEyUioW
+ dSMVNmRVEJJ2hObCv/0UR5rDcZbQXsNqx8N+jcZUF9cQ9ODr0+Z144X9i32T+F7OR7KKWMNk7
+ 0zQNsYrzUQBe8RrfOTyQHxY++KvXo9ysSgUzhkCh3JBmPXmuDVAFVVI2htA25sgNBpDMLmPKp
+ esrRq9A8dju6TAYxBESZQVyF5VUlFPWpVo2xTW06EI8UlzUv49LdFPW3aDxpygjWWNTtwNd/R
+ QYAY1AbO3sNHOpB/2U44sw5/+DwexzgRh/dwmywdvU6p1+HrGKDikY34cCFJ6yhCsdH9nJGFy
+ cOi+xmj59CeJkofreqn1DfVHCdnTQr5twI3gmgmdVhDBFqyaJF+UTiZxPaE0TL3YUhapQJhos
+ 6RC1I7/zG8m85kza48cu84XZKUU/Y03XNok7cIE0g24K5/XsWKnObiF+axxRhdsrlOiT9rZEx
+ 9UdAqC0XGKnEQmYLfhZLpR7+K/3ovS+5l7/E4fKfHgojhug3ksY+gBHSSp9qrwcCt7enJwdqb
+ gqbO+5AoDhtrJVfrektjAnAG2T64i9F1trO3ROwFRsRNx2bdWfwMqybTTRF9hiC2ZmcUkrVDu
+ zqfWB/9dmd56HlJeKRM4iCs8sEOPYfurqyYNzQIzXhPF98TKXcAA8HiTrtMh+yS7rA1OfL+/X
+ KJ7AqYPvkIcYio5RlF5vp6H2p1mF8cL5P0ZIVXTv5xj/84VgtUNpM54zWK9L06kex40C7OPIO
+ lgKvviJ4Sndf+AFoVRUMH4jFWf5Nifx4W9e0zgFxfnJe62XyzI=
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed, May 06, 2020 at 01:48:45PM +0100, Will Deacon wrote:
-> On Wed, May 06, 2020 at 02:02:37PM +0200, Greg KH wrote:
-> > On Wed, May 06, 2020 at 05:03:31PM +0530, Mukesh, Savaliya wrote:
-> > > +static void msm_geni_serial_wr_char(struct uart_port *uport, int ch)
-> > > +{
-> > > +	writel_relaxed(ch, uport->membase+SE_GENI_TX_FIFOn);
-> > > +	/*
-> > > +	 * Ensure FIFO write clear goes through before
-> > > +	 * next iteration.
-> > > +	 */
-> > > +	mb();
-> > 
-> > Can't you just write the above two lines as:
-> > 	writel(ch, uport->membase+SE_GENI_TX_FIFOn);
-> > ?
-> > 
-> > Why put a mb() after a _relaxed() call?
-> 
-> writel() usually puts the barrier /before/ the I/O write, since it's
-> normally used to signal the readiness of a DMA buffer, e.g.:
-> 
-> 	ptr = dma_map(...);
-> 	ptr->data = tx_data;
-> 	writel(dev->ctrl_reg, SEND_DATA); // Device must see tx_data
-> 
-> but this driver looks like it only cares about PIO rather than DMA, in which
-> case there's no need for mb() or writel(); writel_relaxed() should do the
-> trick because we just need to ensure ordering of the writes hitting the
-> device. From memory-barriers.txt:
-> 
->   ... they [relaxed accesses] are still guaranteed to be ordered with
->   respect to other accesses from the same CPU thread to the same
->   peripheral when operating on __iomem pointers mapped with the default
->   I/O attributes.
+On Wed, May 6, 2020 at 1:21 PM Mikulas Patocka <mpatocka@redhat.com> wrote:
 
-Ok, that makes more sense, many thanks.
+>  /*
+>   * The yet supported machines all access the RTC index register via
+>   * an ISA port access but the way to access the date register differs ...
+> + *
+> + * The ISA bus on Alpha Avanti doesn't like back-to-back accesses,
+> + * we need to add a small delay.
+>   */
+>  #define CMOS_READ(addr) ({ \
+>  outb_p((addr),RTC_PORT(0)); \
+> +udelay(2); \
+>  inb_p(RTC_PORT(1)); \
 
-So, as writes are ordered here, Savaliya, I think all of the calls to
-mb() can be dropped from this driver, right?
 
-thanks,
+The inb_p() / outb_p() functions are meant to already have a delay in them,
+maybe we should just add it there for alpha?
 
-greg k-h
+     Arnd
