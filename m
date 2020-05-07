@@ -2,150 +2,158 @@ Return-Path: <SRS0=DW7M=6V=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C37EFC38A2A
-	for <linux-serial@archiver.kernel.org>; Thu,  7 May 2020 15:46:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAE91C38A2A
+	for <linux-serial@archiver.kernel.org>; Thu,  7 May 2020 18:29:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A4B5D207DD
-	for <linux-serial@archiver.kernel.org>; Thu,  7 May 2020 15:46:50 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="SDdUyUzN"
+	by mail.kernel.org (Postfix) with ESMTP id B073F20A8B
+	for <linux-serial@archiver.kernel.org>; Thu,  7 May 2020 18:29:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725914AbgEGPqu (ORCPT
+        id S1726367AbgEGS3L (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 May 2020 11:46:50 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:28368 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726451AbgEGPqu (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 7 May 2020 11:46:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588866408;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ovG7LSbK857eMfLA1eEikSEQHDDBc5uzP/qhys5SXfw=;
-        b=SDdUyUzNEOwggpSJeEe3+qNoTIqjzXYkfwRTFambQyjRj+KIClYJgfObanxEHjK2DvP2gC
-        js0xea7MrGDwNCxdF5zeCCUU2dZWYvLfbmjvSU3wwfMKvKPigIyT1qX3sEju6m/xt5xwVu
-        S94jMThkkfqbV9ZJvnBp4iZ5dYcTG7U=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-400-AY_bz46XOX-9_l9mIb0VeQ-1; Thu, 07 May 2020 11:46:46 -0400
-X-MC-Unique: AY_bz46XOX-9_l9mIb0VeQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CED888018A7;
-        Thu,  7 May 2020 15:46:44 +0000 (UTC)
-Received: from file01.intranet.prod.int.rdu2.redhat.com (file01.intranet.prod.int.rdu2.redhat.com [10.11.5.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id AAD7F9323;
-        Thu,  7 May 2020 15:46:44 +0000 (UTC)
-Received: from file01.intranet.prod.int.rdu2.redhat.com (localhost [127.0.0.1])
-        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4) with ESMTP id 047FkiZJ015714;
-        Thu, 7 May 2020 11:46:44 -0400
-Received: from localhost (mpatocka@localhost)
-        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4/Submit) with ESMTP id 047FkiMA015711;
-        Thu, 7 May 2020 11:46:44 -0400
-X-Authentication-Warning: file01.intranet.prod.int.rdu2.redhat.com: mpatocka owned process doing -bs
-Date:   Thu, 7 May 2020 11:46:44 -0400 (EDT)
-From:   Mikulas Patocka <mpatocka@redhat.com>
-X-X-Sender: mpatocka@file01.intranet.prod.int.rdu2.redhat.com
-To:     Arnd Bergmann <arnd@arndb.de>
-cc:     Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
+        Thu, 7 May 2020 14:29:11 -0400
+Received: from mga17.intel.com ([192.55.52.151]:25470 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726320AbgEGS3L (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 7 May 2020 14:29:11 -0400
+IronPort-SDR: ci8xYIijSYUjNrgjD8jz5lU5qf0vx/R0ftZUm48wNOnaFk07VcWZmnqhAFNuFp9XWGl9bxM/5B
+ UM4bUT6FC+xA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2020 11:29:10 -0700
+IronPort-SDR: wMCF1cDvnibopdXFyBYMTMWQUgrGoVywPKBnfFBshtu66Lml/9Uhcx1CeU2Dk+bYh/7TpE83ne
+ 9LAth0IHca1A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,364,1583222400"; 
+   d="scan'208";a="296619233"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by orsmga008.jf.intel.com with ESMTP; 07 May 2020 11:29:03 -0700
+Received: from andy by smile with local (Exim 4.93)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1jWlGc-005H6v-15; Thu, 07 May 2020 21:29:06 +0300
+Date:   Thu, 7 May 2020 21:29:06 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
-Subject: [PATCH v4] alpha: add a barrier after outb, outw and outl
-In-Reply-To: <CAK8P3a3UdCJL6C07_W7pkipT1Xmr_0G9hOy1S+YXbB4_tKt+gg@mail.gmail.com>
-Message-ID: <alpine.LRH.2.02.2005071145250.15191@file01.intranet.prod.int.rdu2.redhat.com>
-References: <alpine.LRH.2.02.2005060713390.25338@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com> <alpine.LRH.2.02.2005061308220.18599@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LRH.2.02.2005070404420.5006@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com> <alpine.LRH.2.02.2005070931280.1718@file01.intranet.prod.int.rdu2.redhat.com>
- <CAK8P3a3UdCJL6C07_W7pkipT1Xmr_0G9hOy1S+YXbB4_tKt+gg@mail.gmail.com>
-User-Agent: Alpine 2.02 (LRH 1266 2009-07-14)
+        Jiri Slaby <jslaby@suse.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Maxim Kaurkin <Maxim.Kaurkin@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Alexey Kolotnikov <Alexey.Kolotnikov@baikalelectronics.ru>,
+        Ramil Zaripov <Ramil.Zaripov@baikalelectronics.ru>,
+        Ekaterina Skachko <Ekaterina.Skachko@baikalelectronics.ru>,
+        Vadim Vlasov <V.Vlasov@baikalelectronics.ru>,
+        Paul Burton <paulburton@kernel.org>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Long Cheng <long.cheng@mediatek.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/4] serial: 8250_dw: Fix ref clock usage
+Message-ID: <20200507182906.GC185537@smile.fi.intel.com>
+References: <20200323024611.16039-1-Sergey.Semin@baikalelectronics.ru>
+ <20200506233136.11842-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200506233136.11842-1-Sergey.Semin@baikalelectronics.ru>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The patch 92d7223a74235054f2aa7227d207d9c57f84dca0 ("alpha: io: reorder
-barriers to guarantee writeX() and iowriteX() ordering #2") broke boot on
-the Alpha Avanti platform.
+On Thu, May 07, 2020 at 02:31:31AM +0300, Serge Semin wrote:
+> It might be dangerous if an UART port reference clock rate is suddenly
+> changed. In particular the 8250 port drivers (and AFAICS most of the tty
+> drivers using common clock framework clocks) rely either on the
+> exclusive reference clock utilization or on the ref clock rate being
+> always constant. Needless to say that it turns out not true and if some
+> other service suddenly changes the clock rate behind an UART port driver
+> back it's no good. So the port might not only end up with an invalid
+> uartclk value saved, but may also experience a distorted output/input
+> data since such action will effectively update the programmed baud-clock.
+> We discovered such problem on Baikal-T1 SoC where two DW 8250 ports have
+> got a shared reference clock. Allwinner SoC is equipped with an UART,
+> which clock is derived from the CPU PLL clock source, so the CPU frequency
+> change might be propagated down up to the serial port reference clock.
+> This patchset provides a way to fix the problem to the 8250 serial port
+> controllers and mostly fixes it for the DW 8250-compatible UART. I say
+> mostly because due to not having a facility to pause/stop and resume/
+> restart on-going transfers we implemented the UART clock rate update
+> procedure executed post factum of the actual reference clock rate change.
+> 
+> In addition the patchset includes a few fixes we discovered when were
+> working the issue. First one concerns the maximum baud rate setting used
+> to determine a serial port baud based on the current UART port clock rate.
+> Another one simplifies the ref clock rate setting procedure a bit.
+> 
+> This patchset is rebased and tested on the mainline Linux kernel 5.7-rc4:
+> 0e698dfa2822 ("Linux 5.7-rc4")
+> tag: v5.7-rc4
 
-The patch changes timing between accesses to the ISA bus, in particular,
-it reduces the time between "write" access and a subsequent "read" access.
+Thanks!
 
-This causes lock-up when accessing the real time clock and serial ports.
+I will look at them later, but first impression that the first approach narrowed
+to the certain SoC (by matching compatible string) looks better solution for
+time being.
 
-This patch fixes the bug by adding a memory barrier after the functions
-that access the ISA ports - outb, outw, outl. The barrier causes that
-there is some delay between the write to an IO port and a subsequent read.
+> Changelog v3:
+> - Refactor the original patch to adjust the UART port divisor instead of
+>   requesting an exclusive ref clock utilization.
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
+> Cc: Maxim Kaurkin <Maxim.Kaurkin@baikalelectronics.ru>
+> Cc: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+> Cc: Alexey Kolotnikov <Alexey.Kolotnikov@baikalelectronics.ru>
+> Cc: Ramil Zaripov <Ramil.Zaripov@baikalelectronics.ru>
+> Cc: Ekaterina Skachko <Ekaterina.Skachko@baikalelectronics.ru>
+> Cc: Vadim Vlasov <V.Vlasov@baikalelectronics.ru>
+> Cc: Alexey Kolotnikov <Alexey.Kolotnikov@baikalelectronics.ru>
+> Cc: Paul Burton <paulburton@kernel.org>
+> Cc: Ralf Baechle <ralf@linux-mips.org>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Long Cheng <long.cheng@mediatek.com>
+> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Cc: Maxime Ripard <mripard@kernel.org>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Russell King <linux@armlinux.org.uk>
+> Cc: linux-mips@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-mediatek@lists.infradead.org
+> Cc: linux-serial@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> 
+> Serge Semin (4):
+>   serial: 8250: Fix max baud limit in generic 8250 port
+>   serial: 8250: Add 8250 port clock update method
+>   serial: 8250_dw: Simplify the ref clock rate setting procedure
+>   serial: 8250_dw: Fix common clocks usage race condition
+> 
+>  drivers/tty/serial/8250/8250_dw.c   | 125 +++++++++++++++++++++++++---
+>  drivers/tty/serial/8250/8250_port.c |  42 +++++++++-
+>  include/linux/serial_8250.h         |   2 +
+>  3 files changed, 156 insertions(+), 13 deletions(-)
+> 
+> -- 
+> 2.25.1
+> 
 
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Fixes: 92d7223a7423 ("alpha: io: reorder barriers to guarantee writeX() and iowriteX() ordering #2")
-Cc: stable@vger.kernel.org	# v4.17+
+-- 
+With Best Regards,
+Andy Shevchenko
 
----
- arch/alpha/include/asm/io.h |    3 +++
- arch/alpha/kernel/io.c      |    3 +++
- 2 files changed, 6 insertions(+)
-
-Index: linux-stable/arch/alpha/include/asm/io.h
-===================================================================
---- linux-stable.orig/arch/alpha/include/asm/io.h	2020-05-07 17:36:58.000000000 +0200
-+++ linux-stable/arch/alpha/include/asm/io.h	2020-05-07 17:36:58.000000000 +0200
-@@ -347,11 +347,13 @@ extern inline u16 inw(unsigned long port
- extern inline void outb(u8 b, unsigned long port)
- {
- 	iowrite8(b, ioport_map(port, 1));
-+	mb();
- }
- 
- extern inline void outw(u16 b, unsigned long port)
- {
- 	iowrite16(b, ioport_map(port, 2));
-+	mb();
- }
- #endif
- 
-@@ -377,6 +379,7 @@ extern inline u32 inl(unsigned long port
- extern inline void outl(u32 b, unsigned long port)
- {
- 	iowrite32(b, ioport_map(port, 4));
-+	mb();
- }
- #endif
- 
-Index: linux-stable/arch/alpha/kernel/io.c
-===================================================================
---- linux-stable.orig/arch/alpha/kernel/io.c	2020-05-07 17:36:58.000000000 +0200
-+++ linux-stable/arch/alpha/kernel/io.c	2020-05-07 17:36:58.000000000 +0200
-@@ -78,16 +78,19 @@ u32 inl(unsigned long port)
- void outb(u8 b, unsigned long port)
- {
- 	iowrite8(b, ioport_map(port, 1));
-+	mb();
- }
- 
- void outw(u16 b, unsigned long port)
- {
- 	iowrite16(b, ioport_map(port, 2));
-+	mb();
- }
- 
- void outl(u32 b, unsigned long port)
- {
- 	iowrite32(b, ioport_map(port, 4));
-+	mb();
- }
- 
- EXPORT_SYMBOL(inb);
 
