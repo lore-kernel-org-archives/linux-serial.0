@@ -1,300 +1,216 @@
-Return-Path: <SRS0=tlDI=6U=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=DW7M=6V=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C4CEC38A2A
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 23:39:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD65BC47257
+	for <linux-serial@archiver.kernel.org>; Thu,  7 May 2020 07:36:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1779E20735
-	for <linux-serial@archiver.kernel.org>; Wed,  6 May 2020 23:39:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A6E572078C
+	for <linux-serial@archiver.kernel.org>; Thu,  7 May 2020 07:36:47 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=antmicro.com header.i=@antmicro.com header.b="c1QbtHwk"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728133AbgEFXje (ORCPT
+        id S1725819AbgEGHgr (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 6 May 2020 19:39:34 -0400
-Received: from mail.baikalelectronics.com ([87.245.175.226]:34716 "EHLO
-        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728130AbgEFXje (ORCPT
+        Thu, 7 May 2020 03:36:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40952 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725834AbgEGHgq (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 6 May 2020 19:39:34 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 90CC580307C7;
-        Wed,  6 May 2020 23:31:58 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at baikalelectronics.ru
-Received: from mail.baikalelectronics.ru ([127.0.0.1])
-        by localhost (mail.baikalelectronics.ru [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id wKfdVf1ADvRI; Thu,  7 May 2020 02:31:57 +0300 (MSK)
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Thu, 7 May 2020 03:36:46 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A0BDC0610D5
+        for <linux-serial@vger.kernel.org>; Thu,  7 May 2020 00:36:46 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id w4so166590ioc.6
+        for <linux-serial@vger.kernel.org>; Thu, 07 May 2020 00:36:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=antmicro.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=izaC0j97DaEKeWCVsCGRwOFQb7MeNG6AyPzpQh6sfPU=;
+        b=c1QbtHwkMQwm1lStyF86Ezx5rzlYQTI7Gd32BWAMTad1lET7RxRG96/ZyNAa0lWZgi
+         jAKxt+Z8dD53SeH0xJDt3n4hoiJfIdVzYLiumVXiPvdwhw4uRfCScA028Z8nmu+CgGAy
+         Qrl4Qy6OUmThArCylKm6AbYDL2ohS7DjGGSkY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=izaC0j97DaEKeWCVsCGRwOFQb7MeNG6AyPzpQh6sfPU=;
+        b=Lx1s6PU3MvKNS/h6UALbaB/2sgPWAyYsI1r/X6xJSldig+pRGuicqY+Jn0CtaAZM7A
+         D1tRsH5vCd0v4mz5JmkIWX4Fc9dBhV9So8rnfFLOAa2Kls4dnKNkuXtgoMpV/fqN+9jW
+         VNomfh6gnsf2JrhNkCWHaRCQUBdy0wEZIRo4X1mz4cj7Idly+Zl7VkHCj3epigz+0tcb
+         AzS2jW6TWAOkHm0jBcEKn2dmXjFJB2Q4PKrvv/VJ9ybdqJMs5zniqIcYTjNHiygeMn8p
+         guAyxHut5N8qoXiVue5d8wH1C0DAjeVyjOVnczIYMHXPeAmDvlCwFdK2QUd7sBGktx4g
+         vySw==
+X-Gm-Message-State: AGi0PuZPeX8TuT8ptFLSRt6v0r3X5nsnIOqsxLv8bsMa3NVAoQwMpJQ4
+        6p3O6wDOewayg+q3qTiMzonw70RDJ/xkgUfn/7H4zQ==
+X-Google-Smtp-Source: APiQypLpq8huNxkhKDsHKb6+tSygwEJaTcwboqexXdJmXAAKs6Kn4dvmnWL1eZ5wk46A23oHuVJmrRRiqSUQuHS+m9g=
+X-Received: by 2002:a02:6983:: with SMTP id e125mr12598539jac.47.1588837005803;
+ Thu, 07 May 2020 00:36:45 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200425133939.3508912-0-mholenko@antmicro.com>
+ <20200425133939.3508912-3-mholenko@antmicro.com> <aa7c915310753b042be35758893dee91d3651ffc.camel@kernel.crashing.org>
+In-Reply-To: <aa7c915310753b042be35758893dee91d3651ffc.camel@kernel.crashing.org>
+From:   Mateusz Holenko <mholenko@antmicro.com>
+Date:   Thu, 7 May 2020 09:36:34 +0200
+Message-ID: <CAPk366T3ACKrKX=RZwcN3D+Gy43-EGA+6vpwvOh5SKLXd1BM1Q@mail.gmail.com>
+Subject: Re: [PATCH v5 3/5] drivers/soc/litex: add LiteX SoC Controller driver
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Paul Burton <paulburton@kernel.org>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Long Cheng <long.cheng@mediatek.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Stafford Horne <shorne@gmail.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Filip Kokosinski <fkokosinski@antmicro.com>,
+        Pawel Czarnecki <pczarnecki@internships.antmicro.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Maxime Ripard <mripard@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        <linux-mips@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 4/4] serial: 8250_dw: Fix common clocks usage race condition
-Date:   Thu, 7 May 2020 02:31:35 +0300
-Message-ID: <20200506233136.11842-5-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20200506233136.11842-1-Sergey.Semin@baikalelectronics.ru>
-References: <20200323024611.16039-1-Sergey.Semin@baikalelectronics.ru>
- <20200506233136.11842-1-Sergey.Semin@baikalelectronics.ru>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+        Shawn Guo <shawnguo@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The race condition may happen if the UART reference clock is shared with
-some other device (on Baikal-T1 SoC it's another DW UART port). In this
-case if that device changes the clock rate while serial console is using
-it the DW 8250 UART port might not only end up with an invalid uartclk
-value saved, but may also experience a distorted output data since
-baud-clock could have been changed. In order to fix this lets at least
-try to adjust the 8250 port setting like UART clock rate in case if the
-reference clock rate change is discovered. The driver will call the new
-method to update 8250 UART port clock rate settings. It's done by means of
-the clock event notifier registered at the port startup and unregistered
-in the shutdown callback method.
+On Wed, Apr 29, 2020 at 5:12 AM Benjamin Herrenschmidt
+<benh@kernel.crashing.org> wrote:
+>
+> On Sat, 2020-04-25 at 13:42 +0200, Mateusz Holenko wrote:
+> > From: Pawel Czarnecki <pczarnecki@internships.antmicro.com>
+> >
+> > This commit adds driver for the FPGA-based LiteX SoC
+> > Controller from LiteX SoC builder.
+>
+> Sorry for jumping in late, Joel only just pointed me to this :)
+>
+> > + * The purpose of `litex_set_reg`/`litex_get_reg` is to implement
+> > + * the logic of writing to/reading from the LiteX CSR in a single
+> > + * place that can be then reused by all LiteX drivers.
+> > + */
+> > +void litex_set_reg(void __iomem *reg, unsigned long reg_size,
+> > +                 unsigned long val)
+> > +{
+> > +     unsigned long shifted_data, shift, i;
+> > +     unsigned long flags;
+> > +
+> > +     spin_lock_irqsave(&csr_lock, flags);
+> > +
+> > +     for (i = 0; i < reg_size; ++i) {
+> > +             shift = ((reg_size - i - 1) * LITEX_SUBREG_SIZE_BIT);
+> > +             shifted_data = val >> shift;
+> > +
+> > +             __raw_writel(shifted_data, reg + (LITEX_REG_SIZE * i));
+> > +     }
+> > +
+> > +     spin_unlock_irqrestore(&csr_lock, flags);
+> > +}
+> > +
+> > +unsigned long litex_get_reg(void __iomem *reg, unsigned long reg_size)
+> > +{
+> > +     unsigned long shifted_data, shift, i;
+> > +     unsigned long result = 0;
+> > +     unsigned long flags;
+> > +
+> > +     spin_lock_irqsave(&csr_lock, flags);
+> > +
+> > +     for (i = 0; i < reg_size; ++i) {
+> > +             shifted_data = __raw_readl(reg + (LITEX_REG_SIZE * i));
+> > +
+> > +             shift = ((reg_size - i - 1) * LITEX_SUBREG_SIZE_BIT);
+> > +             result |= (shifted_data << shift);
+> > +     }
+> > +
+> > +     spin_unlock_irqrestore(&csr_lock, flags);
+> > +
+> > +     return result;
+> > +}
+>
+> I really don't like the fact that the register sizes & sub sizes are
+> #defined. As your comment explains, this makes it harder to support
+> other configurations. This geometry should come from the device-tree
+> instead.
 
-Note 1. In order to avoid deadlocks we had to execute the UART port update
-method in a dedicated deferred work. This is due to (in my opinion
-redundant) the clock update implemented in the dw8250_set_termios()
-method.
-Note 2. Before the ref clock is manually changed by the custom
-set_termios() function we swap the port uartclk value with new rate
-adjusted to be suitable for the requested baud. It is necessary in
-order to effectively disable a functionality of the ref clock events
-handler for the current UART port, since uartclk update will be done
-a bit further in the generic serial8250_do_set_termios() function.
+This is a valid point - putting those parameters into DT would indeed allow
+for more flexibility. Currently we are focusing on supporting a single LiteX
+configuration (32-bit/8-bit bus) and that's why those parameters got fixed.
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Paul Burton <paulburton@kernel.org>
-Cc: Ralf Baechle <ralf@linux-mips.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Long Cheng <long.cheng@mediatek.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: linux-mips@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-mediatek@lists.infradead.org
+Adding support for other configurations however is not just changing those
+two parameters (which should be fairly easy by itself), but also
+handling different
+registers layout for a single peripheral (in different configurations
+CSRs offsets and sizes may differ).
 
----
+Since this adds another layer of complexity we want to start with a simpler
+version that can be extended in the future.
 
-Changelog v2:
-- Move exclusive ref clock lock/unlock precudures to the 8250 port
-  startup/shutdown methods.
-- The changelog message has also been slightly modified due to the
-  alteration.
-- Remove Alexey' SoB tag.
-- Cc someone from ARM who might be concerned regarding this change.
-- Cc someone from Clocks Framework to get their comments on this patch.
+> Also this while thing is rather gross (and the lock will not help
+> performance). Why can't CSRs be normally memory mapped always instead ?
 
-Changelog v3:
-- Refactor the original patch to adjust the UART port divisor instead of
-  requesting an exclusive ref clock utilization.
----
- drivers/tty/serial/8250/8250_dw.c | 114 +++++++++++++++++++++++++++++-
- 1 file changed, 111 insertions(+), 3 deletions(-)
+Using a different LiteX configuration 32-bit/32-bit bus would solve
+the problem -
+a single LiteX CSR would map nicely to a single 32-bit memory pointer and no
+loop/locks would be needed.
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 12866083731d..cf4de510ab1b 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -19,6 +19,8 @@
- #include <linux/of_irq.h>
- #include <linux/of_platform.h>
- #include <linux/platform_device.h>
-+#include <linux/workqueue.h>
-+#include <linux/notifier.h>
- #include <linux/slab.h>
- #include <linux/acpi.h>
- #include <linux/clk.h>
-@@ -43,6 +45,8 @@ struct dw8250_data {
- 	int			msr_mask_off;
- 	struct clk		*clk;
- 	struct clk		*pclk;
-+	struct notifier_block	clk_notifier;
-+	struct work_struct	clk_work;
- 	struct reset_control	*rst;
- 
- 	unsigned int		skip_autocfg:1;
-@@ -54,6 +58,16 @@ static inline struct dw8250_data *to_dw8250_data(struct dw8250_port_data *data)
- 	return container_of(data, struct dw8250_data, data);
- }
- 
-+static inline struct dw8250_data *clk_to_dw8250_data(struct notifier_block *nb)
-+{
-+	return container_of(nb, struct dw8250_data, clk_notifier);
-+}
-+
-+static inline struct dw8250_data *work_to_dw8250_data(struct work_struct *work)
-+{
-+	return container_of(work, struct dw8250_data, clk_work);
-+}
-+
- static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
- {
- 	struct dw8250_data *d = to_dw8250_data(p->private_data);
-@@ -260,6 +274,45 @@ static int dw8250_handle_irq(struct uart_port *p)
- 	return 0;
- }
- 
-+static void dw8250_clk_work_cb(struct work_struct *work)
-+{
-+	struct dw8250_data *d = work_to_dw8250_data(work);
-+	struct uart_8250_port *up;
-+	unsigned long rate;
-+
-+	rate = clk_get_rate(d->clk);
-+	if (rate) {
-+		up = serial8250_get_port(d->data.line);
-+
-+		serial8250_update_uartclk(&up->port, rate);
-+	}
-+}
-+
-+static int dw8250_clk_notifier_cb(struct notifier_block *nb,
-+				  unsigned long event, void *data)
-+{
-+	struct dw8250_data *d = clk_to_dw8250_data(nb);
-+
-+	/*
-+	 * We have no choice but to defer the uartclk update due to two
-+	 * deadlocks. First one is caused by a recursive mutex lock which
-+	 * happens when clk_set_rate() is called from dw8250_set_termios().
-+	 * Second deadlock is more tricky and is caused by an inverted order of
-+	 * the clk and tty-port mutexes lock. It happens if clock rate change
-+	 * is requested asynchronously while set_termios() is executed between
-+	 * tty-port mutex lock and clk_set_rate() function invocation and
-+	 * vise-versa. Anyway if we didn't have the reference clock alteration
-+	 * in the dw8250_set_termios() method we wouldn't have needed this
-+	 * deferred event handling complication.
-+	 */
-+	if (event == POST_RATE_CHANGE) {
-+		queue_work(system_unbound_wq, &d->clk_work);
-+		return NOTIFY_OK;
-+	}
-+
-+	return NOTIFY_DONE;
-+}
-+
- static void
- dw8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
- {
-@@ -283,9 +336,16 @@ static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
- 	clk_disable_unprepare(d->clk);
- 	rate = clk_round_rate(d->clk, baud * 16);
- 	if (rate > 0) {
--		ret = clk_set_rate(d->clk, rate);
--		if (!ret)
--			p->uartclk = rate;
-+		/*
-+		 * Premilinary set the uartclk to the new clock rate so the
-+		 * clock update event handler caused by the clk_set_rate()
-+		 * calling wouldn't actually update the UART divisor since
-+		 * we about to do this anyway.
-+		 */
-+		swap(p->uartclk, rate);
-+		ret = clk_set_rate(d->clk, p->uartclk);
-+		if (ret)
-+			swap(p->uartclk, rate);
- 	}
- 	clk_prepare_enable(d->clk);
- 
-@@ -312,6 +372,49 @@ static void dw8250_set_ldisc(struct uart_port *p, struct ktermios *termios)
- 	serial8250_do_set_ldisc(p, termios);
- }
- 
-+static int dw8250_startup(struct uart_port *p)
-+{
-+	struct dw8250_data *d = to_dw8250_data(p->private_data);
-+	int ret;
-+
-+	/*
-+	 * Some platforms may provide a reference clock shared between several
-+	 * devices. In this case before using the serial port first we have to
-+	 * make sure that any clock state change is known to the UART port at
-+	 * least post factum.
-+	 */
-+	if (d->clk) {
-+		ret = clk_notifier_register(d->clk, &d->clk_notifier);
-+		if (ret)
-+			dev_warn(p->dev, "Failed to set the clock notifier\n");
-+
-+		/*
-+		 * Get current reference clock rate to make sure the UART port
-+		 * is equipped with an up-to-date value before it's started up.
-+		 */
-+		p->uartclk = clk_get_rate(d->clk);
-+		if (!p->uartclk) {
-+			dev_err(p->dev, "Clock rate not defined\n");
-+			return -EINVAL;
-+		}
-+	}
-+
-+	return serial8250_do_startup(p);
-+}
-+
-+static void dw8250_shutdown(struct uart_port *p)
-+{
-+	struct dw8250_data *d = to_dw8250_data(p->private_data);
-+
-+	serial8250_do_shutdown(p);
-+
-+	if (d->clk) {
-+		clk_notifier_unregister(d->clk, &d->clk_notifier);
-+
-+		flush_work(&d->clk_work);
-+	}
-+}
-+
- /*
-  * dw8250_fallback_dma_filter will prevent the UART from getting just any free
-  * channel on platforms that have DMA engines, but don't have any channels
-@@ -407,6 +510,8 @@ static int dw8250_probe(struct platform_device *pdev)
- 	p->serial_out	= dw8250_serial_out;
- 	p->set_ldisc	= dw8250_set_ldisc;
- 	p->set_termios	= dw8250_set_termios;
-+	p->startup	= dw8250_startup;
-+	p->shutdown	= dw8250_shutdown;
- 
- 	p->membase = devm_ioremap(dev, regs->start, resource_size(regs));
- 	if (!p->membase)
-@@ -468,6 +573,9 @@ static int dw8250_probe(struct platform_device *pdev)
- 	if (IS_ERR(data->clk))
- 		return PTR_ERR(data->clk);
- 
-+	INIT_WORK(&data->clk_work, dw8250_clk_work_cb);
-+	data->clk_notifier.notifier_call = dw8250_clk_notifier_cb;
-+
- 	err = clk_prepare_enable(data->clk);
- 	if (err)
- 		dev_warn(dev, "could not enable optional baudclk: %d\n", err);
+In the default configuration (32-bit/8-bit bus) there are gaps between bytes
+(as Gabriel Somlo already explained in his mail) which need to be handled
+"manually".
+
+> Even when transporting them on a HW bus that's smaller, the HW bus
+> conversion should be able to do the break-down into a multi-breat
+> transfer rather than doing that in SW.
+>
+> Or at least have a fast-path if the register size is no larger than the
+> sub size, so you can use a normal ioread32/iowrite32.
+
+Again - this is possible, but using a non-default 32-bit/32-bit bus LiteX
+configuration.
+
+> Also I wonder ... last I played with LiteX, it would re-generate the
+> register layout (including the bit layout inside registers potentially)
+> rather enthousiastically, making it pretty hard to have a fixed
+> register layout for use by a kernel driver. Was this addressed ?
+
+TBH I never experienced bit layout inside a register to change by itself,
+but I agree that using different bus width configurations causes CSRs
+to be splitted into 4/2/1 32-bit registers (changing de facto the layout
+from the SW perspective) - that's why we provide helper functions
+in this file.
+
+It is possible to have different configurations of a peripheral
+in LiteX that e.g, turns features on/off - this might cause some CSRs
+to shift and result in incompatibilities. There are ways in LiteX
+to avoid such problems if the model is properly designed, though.
+
+Another aspect of LiteX is that the order in which separate peripherals
+(modules) are created results in a different memory map of the whole SoC.
+This, however, is easily addressed by using a dynamically generated DT
+and do not require the code of drivers to be altered in any way.
+
+> Cheers,
+> Ben.
+>
+>
+
+Thanks for your comments!
+
+
 -- 
-2.25.1
-
+Mateusz Holenko
+Antmicro Ltd | www.antmicro.com
+Roosevelta 22, 60-829 Poznan, Poland
