@@ -2,117 +2,148 @@ Return-Path: <SRS0=DW7M=6V=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4321C38A2A
-	for <linux-serial@archiver.kernel.org>; Thu,  7 May 2020 14:08:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0944C38A24
+	for <linux-serial@archiver.kernel.org>; Thu,  7 May 2020 14:09:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B26B4208DB
-	for <linux-serial@archiver.kernel.org>; Thu,  7 May 2020 14:08:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1588860486;
-	bh=up72YqQmbXKsh+0pM1oCFb1Y0z05K3pNe8Mi871M7kc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=RD7mGccz7lJAeQUEVvvG96V+igusWqU0GJIy5zuy3Zg91/I+o0j9c4zEdNcse0uDI
-	 SFq5VZ4UzT9xCPXMmBi5BN0DvONQ6ClKLHMan6ZmpAh8kYqMagX+cYuipaqtY1VZ9c
-	 67ueEV2yjkiPt0ZAO2hxF/fYoKqCfOm4cV0b8YaQ=
+	by mail.kernel.org (Postfix) with ESMTP id A18472082E
+	for <linux-serial@archiver.kernel.org>; Thu,  7 May 2020 14:09:42 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="EhaBCy5N"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726891AbgEGOH7 (ORCPT
+        id S1727954AbgEGOJl (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 May 2020 10:07:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60618 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726268AbgEGOH7 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 7 May 2020 10:07:59 -0400
-Received: from Mani-XPS-13-9360 (unknown [157.46.59.191])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 7 May 2020 10:09:41 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:49011 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727122AbgEGOJl (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 7 May 2020 10:09:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588860579;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fh07MPgVK9wN+Aq5G1NH1K8YQqzBKRp2vvUt+gQpC7Q=;
+        b=EhaBCy5NWtGXQBDD7OccBaxIP3gxsXRx3Isq0mJLng+kN9styp/qts8OkDgZNn/dkPM19i
+        dNt5R3o2khHe/E/ElZoLzYVqL/TnaqfQIrFdjX8gW0wvxK/zSzz7MPF+z+KxvsYxkor47i
+        1sPOXJE9jDRFrtDZUa0la14LTbZuBNY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-104-vZYag7oeN2SSaHBG5wU58Q-1; Thu, 07 May 2020 10:09:35 -0400
+X-MC-Unique: vZYag7oeN2SSaHBG5wU58Q-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F03462084D;
-        Thu,  7 May 2020 14:07:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588860478;
-        bh=up72YqQmbXKsh+0pM1oCFb1Y0z05K3pNe8Mi871M7kc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jsUyk3GojI51408CO+VP69Uj5RZ4eJkVtRwanijT5SOihR0odMv6AqV9EZzz+J4vR
-         T6Tr+k2nnIhLGKQQWLg10jhz8YQoFL9axsSFvzcb+NeN05rqb4r2Q3PvDv3Hw90MXl
-         7te6rl2Rr1MRb/oDmEb64s1lK3JiRdPHtZK4Ev5U=
-Date:   Thu, 7 May 2020 19:37:50 +0530
-From:   Manivannan Sadhasivam <mani@kernel.org>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        fabrice.gasnier@st.com, andy.shevchenko@gmail.com,
-        robh+dt@kernel.org, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@st.com
-Subject: Re: [PATCH v3 0/2] Add CTS/RTS gpio support to STM32 UART
-Message-ID: <20200507140750.GA2019@Mani-XPS-13-9360>
-References: <20200420170204.24541-1-mani@kernel.org>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2DEF0100A8F9;
+        Thu,  7 May 2020 14:09:34 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (file01.intranet.prod.int.rdu2.redhat.com [10.11.5.7])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 06FD22E045;
+        Thu,  7 May 2020 14:09:33 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (localhost [127.0.0.1])
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4) with ESMTP id 047E9XKj005448;
+        Thu, 7 May 2020 10:09:33 -0400
+Received: from localhost (mpatocka@localhost)
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4/Submit) with ESMTP id 047E9XVI005444;
+        Thu, 7 May 2020 10:09:33 -0400
+X-Authentication-Warning: file01.intranet.prod.int.rdu2.redhat.com: mpatocka owned process doing -bs
+Date:   Thu, 7 May 2020 10:09:33 -0400 (EDT)
+From:   Mikulas Patocka <mpatocka@redhat.com>
+X-X-Sender: mpatocka@file01.intranet.prod.int.rdu2.redhat.com
+To:     Arnd Bergmann <arnd@arndb.de>
+cc:     Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
+Subject: Re: [PATCH 1/2 v3] alpha: add a delay to inb_p, inb_w and inb_l
+In-Reply-To: <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com>
+Message-ID: <alpine.LRH.2.02.2005070931280.1718@file01.intranet.prod.int.rdu2.redhat.com>
+References: <alpine.LRH.2.02.2005060713390.25338@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com> <alpine.LRH.2.02.2005061308220.18599@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.02.2005070404420.5006@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com>
+User-Agent: Alpine 2.02 (LRH 1266 2009-07-14)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200420170204.24541-1-mani@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Greg,
 
-On Mon, Apr 20, 2020 at 10:32:02PM +0530, mani@kernel.org wrote:
-> From: Manivannan Sadhasivam <mani@kernel.org>
-> 
-> Hello,
-> 
-> This patchset adds CTS/RTS gpio support to STM32 UART controller.
-> Eventhough the UART controller supports using dedicated CTS/RTS gpios,
-> sometimes we need to use different set of gpios for flow control.
-> 
-> This is necessary for the upcoming STM32MP1 based board called Stinger96
-> IoT-Box. On that board, a bluetooth chip is connected to one of the UART
-> controller but the CTS/RTS lines got swapped mistakenly. So this patchset
-> serves as a workaround for that hardware bug and also supports the
-> usecase of using any gpio for CTS/RTS functionality. As per the sugggestion
-> provided by Andy for v1, I've now switched to mctrl_gpio driver.
-> 
-> This patchset has been validated with Stinger96 IoT-Box connected to Murata
-> WiFi-BT combo chip.
-> 
 
-Are you planning to take this series for 5.8?
+On Thu, 7 May 2020, Arnd Bergmann wrote:
 
-Thanks,
-Mani
+> On Thu, May 7, 2020 at 10:06 AM Mikulas Patocka <mpatocka@redhat.com> wrote:
+> > On Wed, 6 May 2020, Mikulas Patocka wrote:
+> > > On Wed, 6 May 2020, Arnd Bergmann wrote:
+> > > > On Wed, May 6, 2020 at 1:21 PM Mikulas Patocka <mpatocka@redhat.com> wrote:
+> > > >
+> > > > >  /*
+> > > > >   * The yet supported machines all access the RTC index register via
+> > > > >   * an ISA port access but the way to access the date register differs ...
+> > > > > + *
+> > > > > + * The ISA bus on Alpha Avanti doesn't like back-to-back accesses,
+> > > > > + * we need to add a small delay.
+> > > > >   */
+> > > > >  #define CMOS_READ(addr) ({ \
+> > > > >  outb_p((addr),RTC_PORT(0)); \
+> > > > > +udelay(2); \
+> > > > >  inb_p(RTC_PORT(1)); \
+> > > >
+> > > >
+> > > > The inb_p() / outb_p() functions are meant to already have a delay in them,
+> > > > maybe we should just add it there for alpha?
+> > > >
+> > > >      Arnd
+> > >
+> > > Yes, that is possible too - it fixes the real time clock hang for me.
+> > >
+> > >
+> > > -#define inb_p                inb
+> > > -#define inw_p                inw
+> > > -#define inl_p                inl
+> > > +#define inb_p(x)     (ndelay(300), inb(x))
+> > > +#define inw_p(x)     (ndelay(300), inw(x))
+> > > +#define inl_p(x)     (ndelay(300), inl(x))
+> > >  #define outb_p               outb
+> > >  #define outw_p               outw
+> > >  #define outl_p               outl
+> >
+> > 300ns was too low. We need at least 1400ns to fix the hang reliably.
+> 
+> Are you sure that it is in fact the timing that is important here and not
+> a barrier? I see that inb() is written in terms of readb(), but the
+> barrier requirements for I/O space are a bit different from those
+> on PCI memory space.
 
-> Thanks,
-> Mani
+The "in" and "out" instructions are serializing on x86. But alpha doesn't 
+have dedicated instructions for accessing ports.
+
+Do you think that all the "in[bwl]" and "out[bwl]" macros on alpha should 
+be protected by two memory barriers, to emulate the x86 behavior?
+
+> In the example you gave first, there is a an outb_p() followed by inb_p().
+> These are normally serialized by the bus, but I/O space also has the
+> requirement that an outb() completes before we get to the next
+> instruction (non-posted write), while writeb() is generally posted and
+> only needs a barrier before the write rather than both before and after
+> like outb.
 > 
-> Changes in v3:
-> 
-> * Added Andy's reviewed-by tag
-> * Fixed minor issues spotted by Fabrice
-> 
-> Changes in v2:
-> 
-> As per the review by Andy:
-> 
-> * Switched to mctrl_gpio driver instead of using custom CTS/RTS
->   implementation
-> * Removed the use of software flow control terminology.
-> 
-> Manivannan Sadhasivam (2):
->   dt-bindings: serial: Document CTS/RTS gpios in STM32 UART
->   tty: serial: Add modem control gpio support for STM32 UART
-> 
->  .../bindings/serial/st,stm32-uart.yaml        | 14 +++++
->  drivers/tty/serial/Kconfig                    |  1 +
->  drivers/tty/serial/stm32-usart.c              | 53 ++++++++++++++++++-
->  drivers/tty/serial/stm32-usart.h              |  1 +
->  4 files changed, 67 insertions(+), 2 deletions(-)
-> 
-> -- 
-> 2.17.1
-> 
+>     Arnd
+
+I think that the fact that "writeb" is posted is exactly the problem - it 
+gets posted, the processor goes on, sends "readb" and they arrive 
+back-to-back to the ISA bus. The ISA bus device doesn't like back-to-back 
+accesses and locks up.
+
+Anyway - you can change the "ndelay()" function in this patch to "mb()" - 
+"mb()" will provide long enough delay that it fixes this bug.
+
+Mikulas
+
