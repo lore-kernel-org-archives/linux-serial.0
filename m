@@ -6,154 +6,100 @@ X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAE91C38A2A
-	for <linux-serial@archiver.kernel.org>; Thu,  7 May 2020 18:29:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5905BC38A2A
+	for <linux-serial@archiver.kernel.org>; Thu,  7 May 2020 19:12:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B073F20A8B
-	for <linux-serial@archiver.kernel.org>; Thu,  7 May 2020 18:29:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 40C58208D6
+	for <linux-serial@archiver.kernel.org>; Thu,  7 May 2020 19:12:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726367AbgEGS3L (ORCPT
+        id S1728362AbgEGTMh (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 May 2020 14:29:11 -0400
-Received: from mga17.intel.com ([192.55.52.151]:25470 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726320AbgEGS3L (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 7 May 2020 14:29:11 -0400
-IronPort-SDR: ci8xYIijSYUjNrgjD8jz5lU5qf0vx/R0ftZUm48wNOnaFk07VcWZmnqhAFNuFp9XWGl9bxM/5B
- UM4bUT6FC+xA==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2020 11:29:10 -0700
-IronPort-SDR: wMCF1cDvnibopdXFyBYMTMWQUgrGoVywPKBnfFBshtu66Lml/9Uhcx1CeU2Dk+bYh/7TpE83ne
- 9LAth0IHca1A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,364,1583222400"; 
-   d="scan'208";a="296619233"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga008.jf.intel.com with ESMTP; 07 May 2020 11:29:03 -0700
-Received: from andy by smile with local (Exim 4.93)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1jWlGc-005H6v-15; Thu, 07 May 2020 21:29:06 +0300
-Date:   Thu, 7 May 2020 21:29:06 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Maxim Kaurkin <Maxim.Kaurkin@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Alexey Kolotnikov <Alexey.Kolotnikov@baikalelectronics.ru>,
-        Ramil Zaripov <Ramil.Zaripov@baikalelectronics.ru>,
-        Ekaterina Skachko <Ekaterina.Skachko@baikalelectronics.ru>,
-        Vadim Vlasov <V.Vlasov@baikalelectronics.ru>,
-        Paul Burton <paulburton@kernel.org>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Long Cheng <long.cheng@mediatek.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/4] serial: 8250_dw: Fix ref clock usage
-Message-ID: <20200507182906.GC185537@smile.fi.intel.com>
-References: <20200323024611.16039-1-Sergey.Semin@baikalelectronics.ru>
- <20200506233136.11842-1-Sergey.Semin@baikalelectronics.ru>
+        Thu, 7 May 2020 15:12:37 -0400
+Received: from mout.kundenserver.de ([212.227.126.133]:51939 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728212AbgEGTMg (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 7 May 2020 15:12:36 -0400
+Received: from mail-qv1-f46.google.com ([209.85.219.46]) by
+ mrelayeu.kundenserver.de (mreue010 [212.227.15.129]) with ESMTPSA (Nemesis)
+ id 1M72bv-1jUGiM3xHj-008eKn; Thu, 07 May 2020 21:12:34 +0200
+Received: by mail-qv1-f46.google.com with SMTP id w18so1219672qvs.3;
+        Thu, 07 May 2020 12:12:33 -0700 (PDT)
+X-Gm-Message-State: AGi0PuZ8xsWjKeWVzGhfRhL6Y/+0f9rELs2sUILaTLV6FH8u0ZwbBjoy
+        VH4XYT169W0H1sySu/MOgAbXVYioOZDrKc+obls=
+X-Google-Smtp-Source: APiQypJBWA4NqhyEiAO/PmDNDXWG/So6DgaAeR8G/KznQhUhlZMcKUy4Qpt3rd0XuX3CQ6hdo6V1+sr2fe/R+fUs+2Y=
+X-Received: by 2002:a0c:eb11:: with SMTP id j17mr14850526qvp.197.1588878752616;
+ Thu, 07 May 2020 12:12:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200506233136.11842-1-Sergey.Semin@baikalelectronics.ru>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <alpine.LRH.2.02.2005060713390.25338@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com>
+ <alpine.LRH.2.02.2005061308220.18599@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.02.2005070404420.5006@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com>
+ <alpine.LRH.2.02.2005070931280.1718@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAK8P3a3UdCJL6C07_W7pkipT1Xmr_0G9hOy1S+YXbB4_tKt+gg@mail.gmail.com> <alpine.LRH.2.02.2005071145250.15191@file01.intranet.prod.int.rdu2.redhat.com>
+In-Reply-To: <alpine.LRH.2.02.2005071145250.15191@file01.intranet.prod.int.rdu2.redhat.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 7 May 2020 21:12:16 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3SBg=w72KVgGUGAUcmU-6RxrQW=mnYf8vmFjBL5jbDpg@mail.gmail.com>
+Message-ID: <CAK8P3a3SBg=w72KVgGUGAUcmU-6RxrQW=mnYf8vmFjBL5jbDpg@mail.gmail.com>
+Subject: Re: [PATCH v4] alpha: add a barrier after outb, outw and outl
+To:     Mikulas Patocka <mpatocka@redhat.com>
+Cc:     Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:DTx3dDahidtuT3r6kP782M1M8Yn1Jrgk/RtA7xup2n0a3AHpx+u
+ 1KnkJYEJ2N4LBOJlEDL/7V1JJZT3Cmwtl3C4y01Be7KVdsl1h5k9EOIuVnLjX2KbaYljEye
+ Gf19OCjeDLyk7Hh+S71EZh1SXGLKu9Qh6Sm77rDFY3vdqxsAWWryUwwiQ34akTqBe9orepU
+ xCHFeluZ+0iD2I+AGcs6g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:mZpHi9qv03w=:N1PWpXGvvCLHZCZuV9yT3p
+ qBpSuFE30XZihSKirT/KlraOQb3HRYYP0M2kJPN54wB9k4lNInpraUR2ZOf6OiMcLRxur8Aol
+ iqXKqqu3wtqke4fIb7YIRyg/3UJk8zLv0qChcVFBHz+DasmyNnCZa3T7Kjq/wCh8q2vpKOvWn
+ gEfwADo7G9y9WRDP4DydPn5Va9krJNOCWOMMiCGGlpXCeVOBDBbOmvemTwgu6DsWlDzwdvz8d
+ 4WwrGF9Y0sEZ5MlKIi1YzHy7pt+T16uu0iiLyTBXvlNhCBKZeljUFqALqlDxwBfS++sqXjcj4
+ 0e3tHQ9WrKDieHJDPrwJSkE03C7JQpSaQQSWPpTKZaNeNmB56y0+oyaGhshj9XLgdtWDGtms1
+ BEZY5YLc9YRMVqA9BSGcUrczLF2PQ5Bs9F7G4VCYlJ/hGUwAaMy1LeYX2WX/YViGUqtLdWv+p
+ C+56XBfj5jkLzxMYMlyX7hxTSKGG94gWGJqTqwYbXcGnHwZDYOltejZHq28QEyb8gK13sJnnQ
+ o0aC0Em6hrWjK6u/TqHn0+OGdHBsKixlcBGMpFsoZtuXrdHhZTbjQptykxYLhLd3Yd2xVlTJn
+ AOz5ZoERXyxM+BzI6Byi/CJnZ6fFa89DV7HhyToBYGHRN9NtztZTfV7zDsCCayFR/aiOhEx0r
+ bZLmUwCTSK62hbaIctXxr7PGvLjmcuiCXPxbYtlgrSlILPkInagRrV0bcKqnFT5QtCOZMb2sT
+ 9iMU01Y9c6NVl4P1IV3jCNXnOlg0YxbWfe3GaBJlVcAh4u8UBxX/+OVw3tLQllRtGgSiRTS2l
+ sLY/NdLbcu7GIaMM1VLpGdUqWzZPXmpRQiSpbFT5XxTo8cKm38=
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, May 07, 2020 at 02:31:31AM +0300, Serge Semin wrote:
-> It might be dangerous if an UART port reference clock rate is suddenly
-> changed. In particular the 8250 port drivers (and AFAICS most of the tty
-> drivers using common clock framework clocks) rely either on the
-> exclusive reference clock utilization or on the ref clock rate being
-> always constant. Needless to say that it turns out not true and if some
-> other service suddenly changes the clock rate behind an UART port driver
-> back it's no good. So the port might not only end up with an invalid
-> uartclk value saved, but may also experience a distorted output/input
-> data since such action will effectively update the programmed baud-clock.
-> We discovered such problem on Baikal-T1 SoC where two DW 8250 ports have
-> got a shared reference clock. Allwinner SoC is equipped with an UART,
-> which clock is derived from the CPU PLL clock source, so the CPU frequency
-> change might be propagated down up to the serial port reference clock.
-> This patchset provides a way to fix the problem to the 8250 serial port
-> controllers and mostly fixes it for the DW 8250-compatible UART. I say
-> mostly because due to not having a facility to pause/stop and resume/
-> restart on-going transfers we implemented the UART clock rate update
-> procedure executed post factum of the actual reference clock rate change.
-> 
-> In addition the patchset includes a few fixes we discovered when were
-> working the issue. First one concerns the maximum baud rate setting used
-> to determine a serial port baud based on the current UART port clock rate.
-> Another one simplifies the ref clock rate setting procedure a bit.
-> 
-> This patchset is rebased and tested on the mainline Linux kernel 5.7-rc4:
-> 0e698dfa2822 ("Linux 5.7-rc4")
-> tag: v5.7-rc4
+On Thu, May 7, 2020 at 5:46 PM Mikulas Patocka <mpatocka@redhat.com> wrote:
+>
+> The patch 92d7223a74235054f2aa7227d207d9c57f84dca0 ("alpha: io: reorder
+> barriers to guarantee writeX() and iowriteX() ordering #2") broke boot on
+> the Alpha Avanti platform.
+>
+> The patch changes timing between accesses to the ISA bus, in particular,
+> it reduces the time between "write" access and a subsequent "read" access.
+>
+> This causes lock-up when accessing the real time clock and serial ports.
+>
+> This patch fixes the bug by adding a memory barrier after the functions
+> that access the ISA ports - outb, outw, outl. The barrier causes that
+> there is some delay between the write to an IO port and a subsequent read.
 
-Thanks!
+Based on your earlier explanations, I would mention here that the barrier
+avoids the back-to-back I/O instructions on the bus that seem to be causing
+the problem. As I understand it (having very little alpha specific knowledge),
+they should prevent them by design. However if you are sure it's just the
+added delay rather than any actual barrier effect, that would also be worth
+pointing out.
 
-I will look at them later, but first impression that the first approach narrowed
-to the certain SoC (by matching compatible string) looks better solution for
-time being.
+> Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+> Fixes: 92d7223a7423 ("alpha: io: reorder barriers to guarantee writeX() and iowriteX() ordering #2")
+> Cc: stable@vger.kernel.org      # v4.17+
 
-> Changelog v3:
-> - Refactor the original patch to adjust the UART port divisor instead of
->   requesting an exclusive ref clock utilization.
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
-> Cc: Maxim Kaurkin <Maxim.Kaurkin@baikalelectronics.ru>
-> Cc: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
-> Cc: Alexey Kolotnikov <Alexey.Kolotnikov@baikalelectronics.ru>
-> Cc: Ramil Zaripov <Ramil.Zaripov@baikalelectronics.ru>
-> Cc: Ekaterina Skachko <Ekaterina.Skachko@baikalelectronics.ru>
-> Cc: Vadim Vlasov <V.Vlasov@baikalelectronics.ru>
-> Cc: Alexey Kolotnikov <Alexey.Kolotnikov@baikalelectronics.ru>
-> Cc: Paul Burton <paulburton@kernel.org>
-> Cc: Ralf Baechle <ralf@linux-mips.org>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: Long Cheng <long.cheng@mediatek.com>
-> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Cc: Maxime Ripard <mripard@kernel.org>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Russell King <linux@armlinux.org.uk>
-> Cc: linux-mips@vger.kernel.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-mediatek@lists.infradead.org
-> Cc: linux-serial@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> 
-> Serge Semin (4):
->   serial: 8250: Fix max baud limit in generic 8250 port
->   serial: 8250: Add 8250 port clock update method
->   serial: 8250_dw: Simplify the ref clock rate setting procedure
->   serial: 8250_dw: Fix common clocks usage race condition
-> 
->  drivers/tty/serial/8250/8250_dw.c   | 125 +++++++++++++++++++++++++---
->  drivers/tty/serial/8250/8250_port.c |  42 +++++++++-
->  include/linux/serial_8250.h         |   2 +
->  3 files changed, 156 insertions(+), 13 deletions(-)
-> 
-> -- 
-> 2.25.1
-> 
+With or without any further clarification
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Acked-by: Arnd Bergmann <arnd@arndb.de>
