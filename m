@@ -2,137 +2,137 @@ Return-Path: <SRS0=DW7M=6V=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E88BC38A24
-	for <linux-serial@archiver.kernel.org>; Thu,  7 May 2020 08:52:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7E1FC54E4A
+	for <linux-serial@archiver.kernel.org>; Thu,  7 May 2020 09:29:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6EB9D2084D
-	for <linux-serial@archiver.kernel.org>; Thu,  7 May 2020 08:52:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1588841525;
-	bh=5hAkM6lcDiWiYAX0JYFT1ZvhiB6Q7ZILZYrICV3hyO8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=cnPmtDvbo2z65qzMav4+KJpkdM9eWuLltqMzZ2l7/lxt+ZV9ESMbRmYdRV1pyVWIy
-	 nruCKMlo6qoDh74JlGPY5E468nf9SXeEPE4dHS9YW08bJ8J4V1KqjSSQ6MpGUu0eN5
-	 1PhK0ahO0MArQRt+lSKrmiewGVDY3Vj6eWc5TN0E=
+	by mail.kernel.org (Postfix) with ESMTP id 9763220A8B
+	for <linux-serial@archiver.kernel.org>; Thu,  7 May 2020 09:29:55 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="st0dcCb/"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725900AbgEGIwF (ORCPT
+        id S1726743AbgEGJ3v (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 7 May 2020 04:52:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51906 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725802AbgEGIwE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 7 May 2020 04:52:04 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6F59F2073A;
-        Thu,  7 May 2020 08:52:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588841523;
-        bh=5hAkM6lcDiWiYAX0JYFT1ZvhiB6Q7ZILZYrICV3hyO8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nFelzp4BBbqSIoPSjX0FfSvPb0NM2nuSDtG6Jx46W7ihh6ifBJvY1IBbOFoxaAE/r
-         J6vuz201vOW99hGdcvt3oeCZSiskcVJPHD62BkkMpbj4oEyKj/T/VSO0p4TqwBJuuA
-         DbgUJm4Uo+pddDqcOv9X7cnpR3cuuZxAeyoMEiWs=
-Date:   Thu, 7 May 2020 10:52:01 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Mikulas Patocka <mpatocka@redhat.com>
-Cc:     Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org,
-        linux-rtc@vger.kernel.org
-Subject: Re: [PATCH 2/2 v4] alpha: add a delay before serial port read
-Message-ID: <20200507085201.GA1097552@kroah.com>
-References: <alpine.LRH.2.02.2005060721450.25338@file01.intranet.prod.int.rdu2.redhat.com>
- <20200506114711.GB3024358@kroah.com>
- <alpine.LRH.2.02.2005061122440.16395@file01.intranet.prod.int.rdu2.redhat.com>
- <20200506154938.GA3537174@kroah.com>
- <alpine.LRH.2.02.2005061152300.16395@file01.intranet.prod.int.rdu2.redhat.com>
- <20200506160823.GA3559699@kroah.com>
- <alpine.LRH.2.02.2005061245500.18599@file01.intranet.prod.int.rdu2.redhat.com>
- <20200506174528.GB3711921@kroah.com>
- <alpine.LRH.2.02.2005070407010.5006@file01.intranet.prod.int.rdu2.redhat.com>
+        Thu, 7 May 2020 05:29:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58628 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726690AbgEGJ3u (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 7 May 2020 05:29:50 -0400
+Received: from mail-vk1-xa42.google.com (mail-vk1-xa42.google.com [IPv6:2607:f8b0:4864:20::a42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7D8DC0610D5
+        for <linux-serial@vger.kernel.org>; Thu,  7 May 2020 02:29:50 -0700 (PDT)
+Received: by mail-vk1-xa42.google.com with SMTP id s85so1041987vks.11
+        for <linux-serial@vger.kernel.org>; Thu, 07 May 2020 02:29:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XDi3h98mQHCtREHS90wezcyoS3twXkQG1OpaJtTR05E=;
+        b=st0dcCb/GQYY2YzJ505z0YNbJa0O2n9TD/OBObEDwuO91e5Dqud7HBZ1Of4ZDhoV+0
+         lIxgMlmG62LkJSvLmXNmoJHl1jA6vWNvMxRTftDCA3t8hwi462pIxtVJ0L1zbtoEUb+A
+         gXcTn6kJSsXxoWcSV/SQW/z2/RcZKhq/7QopyXPV6grYDsiEhT3SMr5reMRIvx+sgc+n
+         O7ihWY2o7HxZiiO1TJv/ZTWFLbN1RYBnNPxYsGtbuvh7VzKFiH4kXFtIxsmQidWImbfr
+         5cxjx+JliMqvCpAd9cMFhphvVJdUAFr0BrM46Ux7UTROSQk62YrwoLkwwBfPupREPdMc
+         sTzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XDi3h98mQHCtREHS90wezcyoS3twXkQG1OpaJtTR05E=;
+        b=H+oInpIjoba43ERbNJk/B4D8VSdd+3uxpkjUIUH5kJVO5fb/VeiWwDpgCUVIOGOyKx
+         P79xEwm2ZW+DpPqrArGIdNO0TxlNYQ9IEsnTvMifvNQHNA7uLQRk5uqNaAurzN6rHQgd
+         rEDTuKnBHQiH5nhtrrQ6pBz9RK1dgjlA18kfRAjG76v73m7Qz5HRvhdyK6PapvXIq6ih
+         2tEFWtP74M3bdd1ilCWynmpbfKW+9I8mYj6+4FPGLw/XMwEKvQMovWdgJTT++154ojf9
+         ABC85QheLk/NLJZKQZFzroOPBkmChd2Vj8B58bmJ3eya8DeIa57tY8FKqb2TIBa5haRI
+         OVRw==
+X-Gm-Message-State: AGi0PuZERyIm1QoMSrKJ/XEl0U6vSU9kDVvf9LjA97A+WRlMBJO/m/cB
+        KMeplrQicpAzP3rGd/8iCqbtP1UTGKCGCzgqDkQurg==
+X-Google-Smtp-Source: APiQypKzFsKczdnWmdHQPnQ/h/SiYxQvsKKkhjZlHf0YbkAdYsLFFbQCIl2a1NGtqXQJsnmCxojtIUrNwBPLgVGo12Q=
+X-Received: by 2002:a1f:31cf:: with SMTP id x198mr10672278vkx.101.1588843789884;
+ Thu, 07 May 2020 02:29:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.LRH.2.02.2005070407010.5006@file01.intranet.prod.int.rdu2.redhat.com>
+References: <1588794695-27852-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1588794695-27852-2-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1588794695-27852-2-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Thu, 7 May 2020 11:29:13 +0200
+Message-ID: <CAPDyKFrP_W0xAESF+pN9-=Jw8FWbRWEPnZwtMijbSvYjrTYxZg@mail.gmail.com>
+Subject: Re: [PATCH v2 1/9] dt-bindings: mmc: renesas,mmcif: Document r8a7742
+ DT bindings
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Marc Zyngier <maz@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-serial@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, May 07, 2020 at 04:18:49AM -0400, Mikulas Patocka wrote:
-> 
-> 
-> On Wed, 6 May 2020, Greg Kroah-Hartman wrote:
-> 
-> > On Wed, May 06, 2020 at 01:04:38PM -0400, Mikulas Patocka wrote:
-> > > 
-> > > I've created this patch that adds a global macro/variable 
-> > > serial_port_needs_delay. I've also deleted UPQ_DELAY_BEFORE_READ and test 
-> > > serial_port_needs_delay directly in io_serial_in, so that the compiler 
-> > > will optimize it out on non-alpha architectures.
-> > 
-> > That's not good, what about systems with hundreds of serial ports?
-> 
-> I doubt that someone will conect hundreds of serial ports to such an old 
-> alpha machine :)
+On Wed, 6 May 2020 at 21:51, Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+>
+> Add support for r8a7742 SoC. Renesas RZ/G1H (R8A7742) MMCIF is identical
+> to the R-Car Gen2 family.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Applied for next, thanks!
+
+Kind regards
+Uffe
 
 
-
-> 
-> > > > But, there is no other way to detect this based on hardware
-> > > > signatures/types instead?  That is usually the best way to do it, right?
-> > > 
-> > > It's hard to detect Alpha without using '#ifdef CONFIG_ALPHA' :) The ISA 
-> > > serial port hardware is simple, so I think that you can't distinguish it 
-> > > just based on its behavior.
-> > 
-> > The ISA serial port hardware does not have a unique vendor/product id
-> > somewhere?  Some other sort of definition that we can use to determine
-> > exactly what type of system we are running on?
-> 
-> AFAIK it doesn't. You can only distinguish 8250, 16550 and 16550A - but 
-> not the vendor.
-> 
-> > > Index: linux-stable/drivers/tty/serial/8250/8250_port.c
-> > > ===================================================================
-> > > --- linux-stable.orig/drivers/tty/serial/8250/8250_port.c	2020-05-06 18:54:24.000000000 +0200
-> > > +++ linux-stable/drivers/tty/serial/8250/8250_port.c	2020-05-06 18:54:24.000000000 +0200
-> > > @@ -30,6 +30,7 @@
-> > >  #include <linux/uaccess.h>
-> > >  #include <linux/pm_runtime.h>
-> > >  #include <linux/ktime.h>
-> > > +#include <linux/pci.h>
-> > >  
-> > >  #include <asm/io.h>
-> > >  #include <asm/irq.h>
-> > > @@ -442,6 +443,9 @@ static unsigned int mem32be_serial_in(st
-> > >  
-> > >  static unsigned int io_serial_in(struct uart_port *p, int offset)
-> > >  {
-> > > +	if (serial_port_needs_delay)
-> > > +		ndelay(300);
-> > 
-> > Again, this should be a per-port thing, not all ports in the system are
-> > this broken, right?
-> > 
-> > thanks,
-> > 
-> > greg k-h
-> 
-> Here is the patch that uses per-port flag UPQ_DELAY_BEFORE_READ. The flag 
-> is activated if we have the specific PCI-ISA bridge and if the serial port 
-> is an ISA port.
-
-
-Better, care to submit this in a format that it can be applied in?
-
-thanks,
-
-greg k-h
+> ---
+> v1->v2:
+> * Updated interrupts table to include r8a7742
+> ---
+>  Documentation/devicetree/bindings/mmc/renesas,mmcif.txt | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/mmc/renesas,mmcif.txt b/Documentation/devicetree/bindings/mmc/renesas,mmcif.txt
+> index c064af5838aa..291532ac0446 100644
+> --- a/Documentation/devicetree/bindings/mmc/renesas,mmcif.txt
+> +++ b/Documentation/devicetree/bindings/mmc/renesas,mmcif.txt
+> @@ -11,6 +11,7 @@ Required properties:
+>         - "renesas,mmcif-r7s72100" for the MMCIF found in r7s72100 SoCs
+>         - "renesas,mmcif-r8a73a4" for the MMCIF found in r8a73a4 SoCs
+>         - "renesas,mmcif-r8a7740" for the MMCIF found in r8a7740 SoCs
+> +       - "renesas,mmcif-r8a7742" for the MMCIF found in r8a7742 SoCs
+>         - "renesas,mmcif-r8a7743" for the MMCIF found in r8a7743 SoCs
+>         - "renesas,mmcif-r8a7744" for the MMCIF found in r8a7744 SoCs
+>         - "renesas,mmcif-r8a7745" for the MMCIF found in r8a7745 SoCs
+> @@ -24,8 +25,8 @@ Required properties:
+>  - interrupts: Some SoCs have only 1 shared interrupt, while others have either
+>    2 or 3 individual interrupts (error, int, card detect). Below is the number
+>    of interrupts for each SoC:
+> -    1: r8a73a4, r8a7743, r8a7744, r8a7745, r8a7778, r8a7790, r8a7791, r8a7793,
+> -       r8a7794
+> +    1: r8a73a4, r8a7742, r8a7743, r8a7744, r8a7745, r8a7778, r8a7790, r8a7791,
+> +       r8a7793, r8a7794
+>      2: r8a7740, sh73a0
+>      3: r7s72100
+>
+> --
+> 2.17.1
+>
