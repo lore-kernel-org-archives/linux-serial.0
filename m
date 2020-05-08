@@ -5,58 +5,58 @@ X-Spam-Level:
 X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AC16C54E49
-	for <linux-serial@archiver.kernel.org>; Fri,  8 May 2020 18:53:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9156FC38A2A
+	for <linux-serial@archiver.kernel.org>; Fri,  8 May 2020 19:03:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2F9012496A
-	for <linux-serial@archiver.kernel.org>; Fri,  8 May 2020 18:53:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 68BF32173E
+	for <linux-serial@archiver.kernel.org>; Fri,  8 May 2020 19:03:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="aVLs5Fmu"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="Z5/sCkA2"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727093AbgEHSxN (ORCPT
+        id S1726811AbgEHTDF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 May 2020 14:53:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32836 "EHLO
+        Fri, 8 May 2020 15:03:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727105AbgEHSxN (ORCPT
+        by vger.kernel.org with ESMTP id S1726767AbgEHTDE (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 May 2020 14:53:13 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD2E2C05BD0B
-        for <linux-serial@vger.kernel.org>; Fri,  8 May 2020 11:53:12 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id j21so1261697pgb.7
-        for <linux-serial@vger.kernel.org>; Fri, 08 May 2020 11:53:12 -0700 (PDT)
+        Fri, 8 May 2020 15:03:04 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67F87C05BD09
+        for <linux-serial@vger.kernel.org>; Fri,  8 May 2020 12:03:04 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id a7so4696775pju.2
+        for <linux-serial@vger.kernel.org>; Fri, 08 May 2020 12:03:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=i7cajeOI7t/O4BieeA4MfIrn4RGmhWaaIwirB4vXuQc=;
-        b=aVLs5Fmu4qrpOaBYOgocdVnjGjVZbzjtw2eD0B09bZ2TwTqFF3YBdASmRvE2O6pXoI
-         crpCPiiSVN9Yy1cl+mXSGnsyl/dPDHazS/n56/2bF5m3cBfNFEf+enwAl4YI/W6ZPiXO
-         XNr/SnHsyQWRzBHlaJi4Is529BaSjn7Vekl0I=
+        bh=HmDf2i2KESXfyfZqBgVUXuoXosgZ5LwL/gvkhTXF/E0=;
+        b=Z5/sCkA2lUpsmU6DwE23/ZwZRvYhJmLY4VGnuxXnJZawTDmiLvcUxWDdhG/EpvsI7+
+         PwqJ/+ucUsoEc4B/IMoIJmxnSXsDqOhqEhdNlMGOy21HJ/9MVwh8FhSLMH2QPkEbmpZN
+         ftshZB0IQCA9YS7AkxmtbLfyyYu0ZpeQ7k+TI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=i7cajeOI7t/O4BieeA4MfIrn4RGmhWaaIwirB4vXuQc=;
-        b=J/LPFm+iy2ny/AzL2G36+JIjk0xczdkD0s+A5bj+3SL+U8c2ZoouW9IMs5gZ5TzzzQ
-         cQ+RMn9gnw1kxC+YbQNv7T8Yuk5XEmKXI8SLNCx1Pj6umnXDd2MNrwp2tmI/l8q98UKB
-         wHNeDT632goXF3OJ67Tl18lhu1GfzGI2rlbgkB0RahNMGO8A79y0gA25tPj6OlsErtvU
-         hSYiCqOZr3J/oPPKkcxrwO5gtzRsesEqLfFZSmMvnwkjvXcS3e+0hxQcDlqCN6KgcuIW
-         5qH6enWh5PinwyvlP/IVJpkl6dCY/XiLvmNkU8mw2AqqltA90qBNUx5bw2H3wXiapD+H
-         iyQA==
-X-Gm-Message-State: AGi0PuZ5aM2w5sy2mXnZbdRhFSEUENlFXtfDgxXeRQWEaSeUH0CwUalu
-        4u8AxI4CBfgI2jiKnSGOk7v3Fw==
-X-Google-Smtp-Source: APiQypKROAa/6+J17up8ZlBL6maJRsHFmxy82YxcjouGV6Krao/qBNGx9il4jK0PDfZp+LoO+4NjlQ==
-X-Received: by 2002:a65:460f:: with SMTP id v15mr3259783pgq.24.1588963992211;
-        Fri, 08 May 2020 11:53:12 -0700 (PDT)
+        bh=HmDf2i2KESXfyfZqBgVUXuoXosgZ5LwL/gvkhTXF/E0=;
+        b=odj0Z2BEIoEIXlomn50DLc5c21mjv+q1NkeLvAnTmcz4PFKdUhtknlhaIIyObh+gbG
+         B151pE53wtm59SIun23AOA7QEu2MwciCl2vpIrei4vOEYkJJ7F/hwnLzIN0k0dw02T9J
+         a1IfQIyygJNQ/0+ES6OsbYIyH3D1rFgfTWm6eqHvhi7VVcNtnecd3EwpT6Q/WFi9UD2/
+         SP8quzoalGokmC/nQQuLuJTRa0LpXte3Nh8IdssXkJRsL5Ag90F9AGtNcM8Toc358Xpk
+         jPDUwt5VU/T9gGayuCXOKlsha1oZj0UY17o6j1Sjcs2oHlV+5ZVj2B3OMPZYnmf4e4ar
+         dhsg==
+X-Gm-Message-State: AGi0PuYBmTu4HH2FEDMZEb9qF74WL4yagI7lh0wJrmg+4gJyeeDCP4rb
+        7i5boiL1tilNqx0Ko/1uwYo6gQ==
+X-Google-Smtp-Source: APiQypI1Y+6v8efVKW8oF8O0/yGro6rJKbF0OoidUbBbVucSIFNWrHNPt96+oWAD/806sC8HvwUvVQ==
+X-Received: by 2002:a17:90a:ba84:: with SMTP id t4mr6965747pjr.81.1588964583825;
+        Fri, 08 May 2020 12:03:03 -0700 (PDT)
 Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
-        by smtp.gmail.com with ESMTPSA id h15sm2498074pfr.161.2020.05.08.11.53.11
+        by smtp.gmail.com with ESMTPSA id h64sm2631168pfe.42.2020.05.08.12.03.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 May 2020 11:53:11 -0700 (PDT)
-Date:   Fri, 8 May 2020 11:53:10 -0700
+        Fri, 08 May 2020 12:03:03 -0700 (PDT)
+Date:   Fri, 8 May 2020 12:03:01 -0700
 From:   Matthias Kaehlcke <mka@chromium.org>
 To:     Akash Asthana <akashast@codeaurora.org>
 Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
@@ -67,163 +67,117 @@ Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
         mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
         linux-serial@vger.kernel.org, dianders@chromium.org,
         evgreen@chromium.org, georgi.djakov@linaro.org
-Subject: Re: [PATCH V5 6/7] spi: spi-qcom-qspi: Add interconnect support
-Message-ID: <20200508185310.GF4525@google.com>
+Subject: Re: [PATCH V5 1/7] soc: qcom: geni: Support for ICC voting
+Message-ID: <20200508190301.GG4525@google.com>
 References: <1588919619-21355-1-git-send-email-akashast@codeaurora.org>
- <1588919619-21355-7-git-send-email-akashast@codeaurora.org>
+ <1588919619-21355-2-git-send-email-akashast@codeaurora.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1588919619-21355-7-git-send-email-akashast@codeaurora.org>
+In-Reply-To: <1588919619-21355-2-git-send-email-akashast@codeaurora.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, May 08, 2020 at 12:03:38PM +0530, Akash Asthana wrote:
-> Get the interconnect paths for QSPI device and vote according to the
-> current bus speed of the driver.
+On Fri, May 08, 2020 at 12:03:33PM +0530, Akash Asthana wrote:
+> Add necessary macros and structure variables to support ICC BW
+> voting from individual SE drivers.
 > 
 > Signed-off-by: Akash Asthana <akashast@codeaurora.org>
 > ---
 > Changes in V2:
->  - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
->    path handle
->  - As per Matthias comment, added error handling for icc_set_bw call
+>  - As per Bjorn's comment dropped enums for ICC paths, given the three
+>    paths individual members
 > 
 > Changes in V3:
->  - No Change.
+>  - Add geni_icc_get, geni_icc_vote_on and geni_icc_vote_off as helper API.
+>  - Add geni_icc_path structure in common header
 > 
 > Changes in V4:
->  - As per Mark's comment move peak_bw guess as twice of avg_bw if
->    nothing mentioned explicitly to ICC core.
+>  - As per Bjorn's comment print error message in geni_icc_get if return
+>    value is not -EPROBE_DEFER.
+>  - As per Bjorn's comment remove NULL on path before calling icc_set_bw
+>    API.
+>  - As per Bjorn's comment drop __func__ print.
+>  - As per Matthias's comment, make ICC path a array instead of individual
+>    member entry in geni_se struct.
+> 
+> Note: I have ignored below check patch suggestion because it was throwing
+>       compilation error as 'icc_ddr' is not compile time comstant.
+> 
+> WARNING: char * array declaration might be better as static const
+>  - FILE: drivers/soc/qcom/qcom-geni-se.c:726:
+>  - const char *icc_names[] = {"qup-core", "qup-config", icc_ddr};
 > 
 > Changes in V5:
->  - Add icc_enable/disable to power on/off call.
->  - Save some non-zero avg/peak value to ICC core by calling geni_icc_set_bw
->    from probe so that when resume/icc_enable is called NOC are running at
->    some non-zero value.
+>  - As per Matthias's comment defined enums for ICC paths.
+>  - Integrate icc_enable/disable with power on/off call for driver.
+>  - As per Matthias's comment added icc_path_names array to print icc path name
+>    in failure case.
+>  - As per Georgi's suggestion assume peak_bw = avg_bw if not mentioned.
 > 
->  drivers/spi/spi-qcom-qspi.c | 59 ++++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 58 insertions(+), 1 deletion(-)
+>  drivers/soc/qcom/qcom-geni-se.c | 92 +++++++++++++++++++++++++++++++++++++++++
+>  include/linux/qcom-geni-se.h    | 42 +++++++++++++++++++
+>  2 files changed, 134 insertions(+)
 > 
-> diff --git a/drivers/spi/spi-qcom-qspi.c b/drivers/spi/spi-qcom-qspi.c
-> index 3c4f83b..6e299f4 100644
-> --- a/drivers/spi/spi-qcom-qspi.c
-> +++ b/drivers/spi/spi-qcom-qspi.c
-> @@ -2,6 +2,7 @@
->  // Copyright (c) 2017-2018, The Linux foundation. All rights reserved.
->  
->  #include <linux/clk.h>
-> +#include <linux/interconnect.h>
->  #include <linux/interrupt.h>
->  #include <linux/io.h>
->  #include <linux/module.h>
-> @@ -139,7 +140,10 @@ struct qcom_qspi {
->  	struct device *dev;
->  	struct clk_bulk_data *clks;
->  	struct qspi_xfer xfer;
-> -	/* Lock to protect xfer and IRQ accessed registers */
-> +	struct icc_path *icc_path_cpu_to_qspi;
-> +	unsigned int avg_bw_cpu;
-> +	unsigned int peak_bw_cpu;
-
-There is no point in having two fields, 'peak_bw_cpu' is always assigned
-to 'avg_bw_cpu' and passed to icc_set_bw(). Just make it a single field
-'icc_bw_cpu'.
-
-> +	/* Lock to protect data accessed by IRQs */
->  	spinlock_t lock;
+> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
+> index 7d622ea..63403bf 100644
+> --- a/drivers/soc/qcom/qcom-geni-se.c
+> +++ b/drivers/soc/qcom/qcom-geni-se.c
+> @@ -92,6 +92,9 @@ struct geni_wrapper {
+>  	struct clk_bulk_data ahb_clks[NUM_AHB_CLKS];
 >  };
 >  
-> @@ -241,6 +245,20 @@ static int qcom_qspi_transfer_one(struct spi_master *master,
->  		return ret;
->  	}
->  
-> +	/*
-> +	 * Set BW quota for CPU as driver supports FIFO mode only.
-> +	 * We don't have explicit peak requirement so keep it equal to avg_bw.
-> +	 */
-> +	ctrl->avg_bw_cpu = Bps_to_icc(speed_hz);
-> +	ctrl->peak_bw_cpu = ctrl->avg_bw_cpu;
-> +	ret = icc_set_bw(ctrl->icc_path_cpu_to_qspi, ctrl->avg_bw_cpu,
-> +		ctrl->peak_bw_cpu);
-> +	if (ret) {
-> +		dev_err(ctrl->dev, "%s: ICC BW voting failed for cpu\n",
-> +			__func__);
-
-the logging in this patch is inconsistent. Here the error is not printed,
-at all, in other cases it's "<error>, ret:-42" or "<error> ret:-42".
-Please stick to a common format (unless there is no error). My
-suggestion would be "<error>: -42", in my perception "ret:" just adds
-noise.
-
-> +		return ret;
-> +	}
+> +static const char * const icc_path_names[] = {"qup-core", "qup-config",
+> +								"qup-memory"};
 > +
->  	spin_lock_irqsave(&ctrl->lock, flags);
+>  #define QUP_HW_VER_REG			0x4
 >  
->  	/* We are half duplex, so either rx or tx will be set */
-> @@ -458,6 +476,29 @@ static int qcom_qspi_probe(struct platform_device *pdev)
->  	if (ret)
->  		goto exit_probe_master_put;
->  
-> +	ctrl->icc_path_cpu_to_qspi = devm_of_icc_get(dev, "qspi-config");
-> +	if (IS_ERR(ctrl->icc_path_cpu_to_qspi)) {
-> +		ret = PTR_ERR(ctrl->icc_path_cpu_to_qspi);
-> +		if (ret != -EPROBE_DEFER)
-> +			dev_err(dev, "Failed to get cpu path, ret:%d\n", ret);
-> +		goto exit_probe_master_put;
-> +	}
-> +	/* Set BW vote for register access */
-> +	ret = icc_set_bw(ctrl->icc_path_cpu_to_qspi, Bps_to_icc(1000),
-> +				Bps_to_icc(1000));
-> +	if (ret) {
-> +		dev_err(ctrl->dev, "%s: ICC BW voting failed for cpu ret:%d\n",
-> +				__func__, ret);
-> +		goto exit_probe_master_put;
-> +	}
-> +
-> +	ret = icc_disable(ctrl->icc_path_cpu_to_qspi);
-> +	if (ret) {
-> +		dev_err(ctrl->dev, "%s: ICC disable failed for cpu ret:%d\n",
-> +				__func__, ret);
-> +		goto exit_probe_master_put;
-> +	}
-> +
->  	ret = platform_get_irq(pdev, 0);
->  	if (ret < 0)
->  		goto exit_probe_master_put;
-> @@ -511,9 +552,17 @@ static int __maybe_unused qcom_qspi_runtime_suspend(struct device *dev)
->  {
->  	struct spi_master *master = dev_get_drvdata(dev);
->  	struct qcom_qspi *ctrl = spi_master_get_devdata(master);
-> +	int ret;
->  
->  	clk_bulk_disable_unprepare(QSPI_NUM_CLKS, ctrl->clks);
->  
-> +	ret = icc_disable(ctrl->icc_path_cpu_to_qspi);
-> +	if (ret) {
-> +		dev_err_ratelimited(ctrl->dev, "%s: ICC disable failed for cpu ret:%d\n",
-> +			__func__, ret);
-> +		return ret;
-> +	}
-> +
->  	return 0;
+>  /* Common SE registers */
+> @@ -720,6 +723,95 @@ void geni_se_rx_dma_unprep(struct geni_se *se, dma_addr_t iova, size_t len)
 >  }
+>  EXPORT_SYMBOL(geni_se_rx_dma_unprep);
 >  
-> @@ -521,6 +570,14 @@ static int __maybe_unused qcom_qspi_runtime_resume(struct device *dev)
->  {
->  	struct spi_master *master = dev_get_drvdata(dev);
->  	struct qcom_qspi *ctrl = spi_master_get_devdata(master);
-> +	int ret;
+> +int geni_icc_get(struct geni_se *se, const char *icc_ddr)
+> +{
+> +	int i, icc_err;
+> +	const char *icc_names[] = {"qup-core", "qup-config", icc_ddr};
 > +
-> +	ret = icc_enable(ctrl->icc_path_cpu_to_qspi);
-> +	if (ret) {
-> +		dev_err_ratelimited(ctrl->dev, "%s: ICC enable failed for cpu ret:%d\n",
-> +			__func__, ret);
-> +		return ret;
+> +	for (i = 0; i < ARRAY_SIZE(se->icc_paths); i++) {
+> +		if (!icc_names[i])
+> +			continue;
+> +
+> +		se->icc_paths[i].path = devm_of_icc_get(se->dev, icc_names[i]);
+> +		if (IS_ERR(se->icc_paths[i].path))
+> +			goto icc_get_failure;
 > +	}
->  
->  	return clk_bulk_prepare_enable(QSPI_NUM_CLKS, ctrl->clks);
->  }
+> +
+> +	return 0;
+> +
+> +icc_get_failure:
+> +	icc_err = PTR_ERR(se->icc_paths[i].path);
+> +	if (icc_err != -EPROBE_DEFER)
+> +		dev_err_ratelimited(se->dev, "Failed to get ICC path:%s, ret:%d\n",
+> +					icc_names[i], icc_err);
+> +	return icc_err;
+> +
+> +}
+> +EXPORT_SYMBOL(geni_icc_get);
+> +
+> +void geni_icc_bw_init(struct geni_icc_path *icc_paths, unsigned int avg_bw,
+> +			unsigned int peak_bw)
+
+I noticed that all callers of geni_icc_bw_init() pass 0 as
+'peak_pw' (aka peak == avg). Unless there are plans to use other
+values for the peak bandwidth in the future it is pointless to
+track the bandwidth(s) in two variables. And if the bandwidth is
+tracked in a single variable this function is not needed.
+
+> +{
+> +	if (!peak_bw)
+> +		peak_bw = avg_bw;
+> +	icc_paths->avg_bw = avg_bw;
+> +	icc_paths->peak_bw = peak_bw;
+> +}
+> +EXPORT_SYMBOL(geni_icc_bw_init);
