@@ -5,58 +5,58 @@ X-Spam-Level:
 X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9156FC38A2A
-	for <linux-serial@archiver.kernel.org>; Fri,  8 May 2020 19:03:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20318C38A2A
+	for <linux-serial@archiver.kernel.org>; Fri,  8 May 2020 19:14:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 68BF32173E
-	for <linux-serial@archiver.kernel.org>; Fri,  8 May 2020 19:03:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F3235218AC
+	for <linux-serial@archiver.kernel.org>; Fri,  8 May 2020 19:14:57 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="Z5/sCkA2"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="LjzDUAM/"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726811AbgEHTDF (ORCPT
+        id S1726817AbgEHTO5 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 May 2020 15:03:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34366 "EHLO
+        Fri, 8 May 2020 15:14:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726767AbgEHTDE (ORCPT
+        by vger.kernel.org with ESMTP id S1726797AbgEHTO5 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 May 2020 15:03:04 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67F87C05BD09
-        for <linux-serial@vger.kernel.org>; Fri,  8 May 2020 12:03:04 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id a7so4696775pju.2
-        for <linux-serial@vger.kernel.org>; Fri, 08 May 2020 12:03:04 -0700 (PDT)
+        Fri, 8 May 2020 15:14:57 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E5EC05BD43
+        for <linux-serial@vger.kernel.org>; Fri,  8 May 2020 12:14:56 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id l25so1290780pgc.5
+        for <linux-serial@vger.kernel.org>; Fri, 08 May 2020 12:14:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=HmDf2i2KESXfyfZqBgVUXuoXosgZ5LwL/gvkhTXF/E0=;
-        b=Z5/sCkA2lUpsmU6DwE23/ZwZRvYhJmLY4VGnuxXnJZawTDmiLvcUxWDdhG/EpvsI7+
-         PwqJ/+ucUsoEc4B/IMoIJmxnSXsDqOhqEhdNlMGOy21HJ/9MVwh8FhSLMH2QPkEbmpZN
-         ftshZB0IQCA9YS7AkxmtbLfyyYu0ZpeQ7k+TI=
+        bh=B766Kq3wwMIZDh21Hnvsv+cWtRtFWNJvMN2IylFQHjI=;
+        b=LjzDUAM/U9Np2yDM7Gd/ghWCHkZnU5fcEJvc0bEeg7q4hhHoLA7UleUGvoE06Em1En
+         ahxEMpiQiF14yRL/UdS8hWULOzgsOlxJEMkaL6NWRHmQ24D//SdIkgbHHGRy0qA5Ml7U
+         cIVSdQ1efavQWrtxD04bOr2MRhrHgPNFrb77g=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=HmDf2i2KESXfyfZqBgVUXuoXosgZ5LwL/gvkhTXF/E0=;
-        b=odj0Z2BEIoEIXlomn50DLc5c21mjv+q1NkeLvAnTmcz4PFKdUhtknlhaIIyObh+gbG
-         B151pE53wtm59SIun23AOA7QEu2MwciCl2vpIrei4vOEYkJJ7F/hwnLzIN0k0dw02T9J
-         a1IfQIyygJNQ/0+ES6OsbYIyH3D1rFgfTWm6eqHvhi7VVcNtnecd3EwpT6Q/WFi9UD2/
-         SP8quzoalGokmC/nQQuLuJTRa0LpXte3Nh8IdssXkJRsL5Ag90F9AGtNcM8Toc358Xpk
-         jPDUwt5VU/T9gGayuCXOKlsha1oZj0UY17o6j1Sjcs2oHlV+5ZVj2B3OMPZYnmf4e4ar
-         dhsg==
-X-Gm-Message-State: AGi0PuYBmTu4HH2FEDMZEb9qF74WL4yagI7lh0wJrmg+4gJyeeDCP4rb
-        7i5boiL1tilNqx0Ko/1uwYo6gQ==
-X-Google-Smtp-Source: APiQypI1Y+6v8efVKW8oF8O0/yGro6rJKbF0OoidUbBbVucSIFNWrHNPt96+oWAD/806sC8HvwUvVQ==
-X-Received: by 2002:a17:90a:ba84:: with SMTP id t4mr6965747pjr.81.1588964583825;
-        Fri, 08 May 2020 12:03:03 -0700 (PDT)
+        bh=B766Kq3wwMIZDh21Hnvsv+cWtRtFWNJvMN2IylFQHjI=;
+        b=si1Xv2tCHy80SVvvCIAGyHcykJPySwMys/Aw96PKSggeFbvUVLwdiyCxtZAmSW8jWL
+         jJOgqnZki2wphe1xitHZGPrFxw2juKm/GpwxxRIoa3JYHOudn8eXU90lyxZakvK8b3YF
+         hEfGYiA+tPTgMrTPIBuNTKVHSsq76GhLpQpcb5Q5wdYWuNjO7cGWPWulPkj2bnhGozI5
+         IjlEubWUVtXRDqC5RNRkx1GezXjyRnFMiaVfIMvL49eAYrYaU/cHaMoIXGIqKntMKoF8
+         +zVEnZmLfG9LBpiDCe/gxXc5wH/EkDK/E8IRHdo9Ix2nE8iINx/JqM58Efl+ZKMqLbIH
+         0KfQ==
+X-Gm-Message-State: AGi0PuYrbFjQxEmmtlNhvdKhTsTEnYgq/waaPlYDoearPCd1UOHPDjn3
+        l/8RGD8KSomuCR3A/VZu2wpV4Q==
+X-Google-Smtp-Source: APiQypLoabMFrHcLg+AaIOSyN1MVOq0lrqEGKCkCFnD47I2CUY1crIKVFHSJx855pUPM6XCezTC8dw==
+X-Received: by 2002:a62:5cc7:: with SMTP id q190mr4241312pfb.98.1588965296322;
+        Fri, 08 May 2020 12:14:56 -0700 (PDT)
 Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
-        by smtp.gmail.com with ESMTPSA id h64sm2631168pfe.42.2020.05.08.12.03.02
+        by smtp.gmail.com with ESMTPSA id g16sm2550307pfq.203.2020.05.08.12.14.54
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 May 2020 12:03:03 -0700 (PDT)
-Date:   Fri, 8 May 2020 12:03:01 -0700
+        Fri, 08 May 2020 12:14:55 -0700 (PDT)
+Date:   Fri, 8 May 2020 12:14:54 -0700
 From:   Matthias Kaehlcke <mka@chromium.org>
 To:     Akash Asthana <akashast@codeaurora.org>
 Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
@@ -67,117 +67,89 @@ Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
         mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
         linux-serial@vger.kernel.org, dianders@chromium.org,
         evgreen@chromium.org, georgi.djakov@linaro.org
-Subject: Re: [PATCH V5 1/7] soc: qcom: geni: Support for ICC voting
-Message-ID: <20200508190301.GG4525@google.com>
+Subject: Re: [PATCH V5 2/7] soc: qcom-geni-se: Add interconnect support to
+ fix earlycon crash
+Message-ID: <20200508191454.GH4525@google.com>
 References: <1588919619-21355-1-git-send-email-akashast@codeaurora.org>
- <1588919619-21355-2-git-send-email-akashast@codeaurora.org>
+ <1588919619-21355-3-git-send-email-akashast@codeaurora.org>
+ <20200508175938.GB4525@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1588919619-21355-2-git-send-email-akashast@codeaurora.org>
+In-Reply-To: <20200508175938.GB4525@google.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, May 08, 2020 at 12:03:33PM +0530, Akash Asthana wrote:
-> Add necessary macros and structure variables to support ICC BW
-> voting from individual SE drivers.
+On Fri, May 08, 2020 at 10:59:38AM -0700, Matthias Kaehlcke wrote:
+> Hi Akash,
 > 
-> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
-> ---
-> Changes in V2:
->  - As per Bjorn's comment dropped enums for ICC paths, given the three
->    paths individual members
+> overall this looks good to me, a few comments inline
 > 
-> Changes in V3:
->  - Add geni_icc_get, geni_icc_vote_on and geni_icc_vote_off as helper API.
->  - Add geni_icc_path structure in common header
-> 
-> Changes in V4:
->  - As per Bjorn's comment print error message in geni_icc_get if return
->    value is not -EPROBE_DEFER.
->  - As per Bjorn's comment remove NULL on path before calling icc_set_bw
->    API.
->  - As per Bjorn's comment drop __func__ print.
->  - As per Matthias's comment, make ICC path a array instead of individual
->    member entry in geni_se struct.
-> 
-> Note: I have ignored below check patch suggestion because it was throwing
->       compilation error as 'icc_ddr' is not compile time comstant.
-> 
-> WARNING: char * array declaration might be better as static const
->  - FILE: drivers/soc/qcom/qcom-geni-se.c:726:
->  - const char *icc_names[] = {"qup-core", "qup-config", icc_ddr};
-> 
-> Changes in V5:
->  - As per Matthias's comment defined enums for ICC paths.
->  - Integrate icc_enable/disable with power on/off call for driver.
->  - As per Matthias's comment added icc_path_names array to print icc path name
->    in failure case.
->  - As per Georgi's suggestion assume peak_bw = avg_bw if not mentioned.
-> 
->  drivers/soc/qcom/qcom-geni-se.c | 92 +++++++++++++++++++++++++++++++++++++++++
->  include/linux/qcom-geni-se.h    | 42 +++++++++++++++++++
->  2 files changed, 134 insertions(+)
-> 
-> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
-> index 7d622ea..63403bf 100644
-> --- a/drivers/soc/qcom/qcom-geni-se.c
-> +++ b/drivers/soc/qcom/qcom-geni-se.c
-> @@ -92,6 +92,9 @@ struct geni_wrapper {
->  	struct clk_bulk_data ahb_clks[NUM_AHB_CLKS];
->  };
->  
-> +static const char * const icc_path_names[] = {"qup-core", "qup-config",
-> +								"qup-memory"};
-> +
->  #define QUP_HW_VER_REG			0x4
->  
->  /* Common SE registers */
-> @@ -720,6 +723,95 @@ void geni_se_rx_dma_unprep(struct geni_se *se, dma_addr_t iova, size_t len)
->  }
->  EXPORT_SYMBOL(geni_se_rx_dma_unprep);
->  
-> +int geni_icc_get(struct geni_se *se, const char *icc_ddr)
-> +{
-> +	int i, icc_err;
-> +	const char *icc_names[] = {"qup-core", "qup-config", icc_ddr};
-> +
-> +	for (i = 0; i < ARRAY_SIZE(se->icc_paths); i++) {
-> +		if (!icc_names[i])
-> +			continue;
-> +
-> +		se->icc_paths[i].path = devm_of_icc_get(se->dev, icc_names[i]);
-> +		if (IS_ERR(se->icc_paths[i].path))
-> +			goto icc_get_failure;
-> +	}
-> +
-> +	return 0;
-> +
-> +icc_get_failure:
-> +	icc_err = PTR_ERR(se->icc_paths[i].path);
-> +	if (icc_err != -EPROBE_DEFER)
-> +		dev_err_ratelimited(se->dev, "Failed to get ICC path:%s, ret:%d\n",
-> +					icc_names[i], icc_err);
-> +	return icc_err;
-> +
-> +}
-> +EXPORT_SYMBOL(geni_icc_get);
-> +
-> +void geni_icc_bw_init(struct geni_icc_path *icc_paths, unsigned int avg_bw,
-> +			unsigned int peak_bw)
+> On Fri, May 08, 2020 at 12:03:34PM +0530, Akash Asthana wrote:
+> > QUP core clock is shared among all the SE drivers present on particular
+> > QUP wrapper, the system will reset(unclocked access) if earlycon used after
+> > QUP core clock is put to 0 from other SE drivers before real console comes
+> > up.
+> > 
+> > As earlycon can't vote for it's QUP core need, to fix this add ICC
+> > support to common/QUP wrapper driver and put vote for QUP core from
+> > probe on behalf of earlycon and remove vote during earlycon exit call.
+> > 
+> > Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+> > Reported-by: Matthias Kaehlcke <mka@chromium.org>
+> > ---
+> > Change in V3:
+> >  - Add geni_remove_earlycon_icc_vote API that will be used by earlycon
+> >    exit function to remove ICC vote for earlyconsole.
+> >  - Remove suspend/resume hook for geni-se driver as we are no longer
+> >    removing earlyconsole ICC vote from system suspend, we are removing
+> >    from earlycon exit.
+> > 
+> > Change in V4:
+> >  - As per Matthias comment make 'earlycon_wrapper' as static structure.
+> > 
+> > Changes in V5:
+> >  - Vote for core path only after checking whether "qcom_geni" earlycon is
+> >    actually present or not by traversing over structure "console_drivers".
+> > 
+> >  drivers/soc/qcom/qcom-geni-se.c       | 63 +++++++++++++++++++++++++++++++++++
+> >  drivers/tty/serial/qcom_geni_serial.c |  7 ++++
+> >  include/linux/qcom-geni-se.h          |  2 ++
+> >  3 files changed, 72 insertions(+)
+> > 
+> > diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
+> > index 63403bf..66fe6f2 100644
+> > --- a/drivers/soc/qcom/qcom-geni-se.c
+> > +++ b/drivers/soc/qcom/qcom-geni-se.c
 
-I noticed that all callers of geni_icc_bw_init() pass 0 as
-'peak_pw' (aka peak == avg). Unless there are plans to use other
-values for the peak bandwidth in the future it is pointless to
-track the bandwidth(s) in two variables. And if the bandwidth is
-tracked in a single variable this function is not needed.
+...
 
-> +{
-> +	if (!peak_bw)
-> +		peak_bw = avg_bw;
-> +	icc_paths->avg_bw = avg_bw;
-> +	icc_paths->peak_bw = peak_bw;
-> +}
-> +EXPORT_SYMBOL(geni_icc_bw_init);
+> > +#ifdef CONFIG_SERIAL_EARLYCON
+> > +	if (console_drivers)
+> 
+> The loop should have curly braces ("use braces when a loop contains more than
+> a single simple statement"), even though the compiler doesn't need them in
+> this case. This is not a loop, but I was told by a maintainer that it equally
+> applies, which makes sense.
+> 
+> You could avoid one level of indentation through:
+> 
+> if (!console_drivers)
+> 	goto exit;
+> 
+> > +		for_each_console(bcon)
+
+Actually the NULL check of 'console_drivers' is not needed:
+
+#define for_each_console(con) \
+        for (con = console_drivers; con != NULL; con = con->next)
+
+see also:
+
+commit caa72c3bc584bc28b557bcf1a47532a7a6f37e6f
+Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Date:   Mon Feb 3 15:31:25 2020 +0200
+
+    console: Drop double check for console_drivers being non-NULL
