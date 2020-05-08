@@ -2,74 +2,94 @@ Return-Path: <SRS0=Pw1G=6W=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD840C38A2A
-	for <linux-serial@archiver.kernel.org>; Fri,  8 May 2020 07:38:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE78EC54E49
+	for <linux-serial@archiver.kernel.org>; Fri,  8 May 2020 10:16:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 965EB208D6
-	for <linux-serial@archiver.kernel.org>; Fri,  8 May 2020 07:38:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 855CF21835
+	for <linux-serial@archiver.kernel.org>; Fri,  8 May 2020 10:16:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1588923483;
-	bh=HgSffkZ3pjQDj7iS38C707e8soAKo3/5HEBzFLGlmGU=;
+	s=default; t=1588932972;
+	bh=YGEI/+0gDSV2c28r0kRxWh7f8OBuz8IatLkeXFJ3ljU=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=ua3SbGpsvmlS+nF7WYnZxj9iZxPBJOovb8xAJehRYUK4bEcTP6yJ+g0XCbFlWcSKy
-	 Jf2wGpk1ZoGnA6FJg7BjbZvxV/TTVMriX71BEAkfULnL4pjvprJHVFg0xXrXW1yXrY
-	 rKMPz69Z6n5mJBBMhS4PXLJ7ZY1EUZ166xjjUcGY=
+	b=SXiiyZskSdnU4TJn4Ppi4uPBFRgbvKpWofduDQo84fwvhaJ2ugQAUS1PyrDAD5eVC
+	 AY8ir1bQlVHBOk6Gw+P++zYHmqErbXZfh2dDdk+Mdg15VaEM58oTWyJTKuiydvKKK0
+	 Uls7bY9uJxJ3sWRL2aCRvgCBBFhzHg1RxKQpkEtE=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726863AbgEHHiD (ORCPT
+        id S1727786AbgEHKQL (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 May 2020 03:38:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45156 "EHLO mail.kernel.org"
+        Fri, 8 May 2020 06:16:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50488 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726036AbgEHHiD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 May 2020 03:38:03 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        id S1727067AbgEHKQK (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 8 May 2020 06:16:10 -0400
+Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 303AD206D5;
-        Fri,  8 May 2020 07:38:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C9444208CA;
+        Fri,  8 May 2020 10:16:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588923482;
-        bh=HgSffkZ3pjQDj7iS38C707e8soAKo3/5HEBzFLGlmGU=;
+        s=default; t=1588932970;
+        bh=YGEI/+0gDSV2c28r0kRxWh7f8OBuz8IatLkeXFJ3ljU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CiYMAXyOOzjj5TJpsGy3geryC12x8gjVFEBMUeV570xP5rrJAfXg8C7lWeo/UXS3n
-         hpGS+w0y5NN/8N2zg/q2WXmSRS1ac9NobH5JQ/DXBiAxlv5QSAN7j6RjgY13sImqS3
-         3p3sBNVDwbtvl4fylYuSRr7o9wvh1CdCOp199cDA=
-Date:   Fri, 8 May 2020 09:38:00 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     bhelgaas@google.com, Jiri Slaby <jslaby@suse.com>,
-        Je Yen Tam <je.yen.tam@ni.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jay Dolan <jay.dolan@accesio.com>,
-        Denis Efremov <efremov@linux.com>,
-        "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>,
-        Chuhong Yuan <hslester96@gmail.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH 1/2] serial: 8250_pci: Move Pericom IDs to pci_ids.h
-Message-ID: <20200508073800.GC3374631@kroah.com>
-References: <20200508065343.32751-1-kai.heng.feng@canonical.com>
+        b=YoAN7qlLIAZ1T+s5CkQBoIfFHSE181OCTvxRlrMGlReNdRkT29WxPWffsFAKqNQol
+         Vo8PyYLWNEnCtxjFgBTrTTS+8hLmFm+mmwmUeIR09d3LBQzj2iwtT4BEz2UChn10i3
+         YvD90hpN0DNg6GCbanfROaaXlRrVpVGIP//r3Jfo=
+Date:   Fri, 8 May 2020 11:16:06 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Akash Asthana <akashast@codeaurora.org>
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de,
+        mark.rutland@arm.com, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, mka@chromium.org,
+        dianders@chromium.org, evgreen@chromium.org,
+        georgi.djakov@linaro.org
+Subject: Re: [PATCH V5 4/7] spi: spi-geni-qcom: Add interconnect support
+Message-ID: <20200508101606.GA4820@sirena.org.uk>
+References: <1588919619-21355-1-git-send-email-akashast@codeaurora.org>
+ <1588919619-21355-5-git-send-email-akashast@codeaurora.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="xHFwDpU9dbj6ez1V"
 Content-Disposition: inline
-In-Reply-To: <20200508065343.32751-1-kai.heng.feng@canonical.com>
+In-Reply-To: <1588919619-21355-5-git-send-email-akashast@codeaurora.org>
+X-Cookie: Give him an evasive answer.
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, May 08, 2020 at 02:53:40PM +0800, Kai-Heng Feng wrote:
-> Move the IDs to pci_ids.h so it can be used by next patch.
-> 
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
->  drivers/tty/serial/8250/8250_pci.c | 6 ------
->  include/linux/pci_ids.h            | 6 ++++++
->  2 files changed, 6 insertions(+), 6 deletions(-)
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+--xHFwDpU9dbj6ez1V
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Fri, May 08, 2020 at 12:03:36PM +0530, Akash Asthana wrote:
+> Get the interconnect paths for SPI based Serial Engine device
+> and vote according to the current bus speed of the driver.
+
+Acked-by: Mark Brown <broonie@kernel.org>
+
+--xHFwDpU9dbj6ez1V
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl61MWYACgkQJNaLcl1U
+h9D2Fwf/YN2kAVjUWmgGjkLy1PIbV8pDp1D4CL5sodjeVkmqqc7ikp/yP0S3pZYd
+yUZRdzOhe8VfN3bQaPbffIzBB7+8YTW0pyTbfZ62siyV/tvd6iccyFU2ky6nMP59
+RHhKCTHRS7/Wg+Yfa5OsUPLYcWbyTSkXJhaDI/6GBVcZZGpDMQFMo4pwuAUvdrLn
+pxWZM0UpOyIyzjA7SrfDgbswMvsqfrP2+UwEH9zS25ikGZPKl3zoMP716OceG1lD
+fE3GmFerys88TpXVKnJT1JGnhJl8/D56MplgIOUHB17Z6GJpRnhX+JeEE/WfDxtb
+lMOCuM5/EJiTbx/2yHm5WMlH46pS/A==
+=LNgz
+-----END PGP SIGNATURE-----
+
+--xHFwDpU9dbj6ez1V--
