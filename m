@@ -2,70 +2,189 @@ Return-Path: <SRS0=Pw1G=6W=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CC0EC4724C
-	for <linux-serial@archiver.kernel.org>; Fri,  8 May 2020 16:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA332C47257
+	for <linux-serial@archiver.kernel.org>; Fri,  8 May 2020 17:14:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EAC5D2173E
-	for <linux-serial@archiver.kernel.org>; Fri,  8 May 2020 16:15:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1588954525;
-	bh=U4uf/LTSUu7dB+Di6WR4IkthF41sHSKz6pcDL2QLpoc=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:List-ID:From;
-	b=IybkalDSS2n5dYl+XS7mvezXNsZQTlhimBRKVXVsR5zHnmjWkwbYMb/N51eU4FcRg
-	 mxuMI22O3Sqyngl/b/qYADDxVeyT1f1g5cYj2ViNuYcsjsuRI7hNCA/tLvKE3UAv2D
-	 3QVClAYOsukbuxWOYHgCjyaUpw/X9iHjl2BMcf2I=
+	by mail.kernel.org (Postfix) with ESMTP id 9B90A218AC
+	for <linux-serial@archiver.kernel.org>; Fri,  8 May 2020 17:14:01 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="KEeH6BFZ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727104AbgEHQPY (ORCPT
+        id S1727970AbgEHROA (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 8 May 2020 12:15:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39004 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727030AbgEHQPF (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 8 May 2020 12:15:05 -0400
-Subject: Re: [GIT PULL] TTY/Serial driver fixes for 5.7-rc5
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588954505;
-        bh=U4uf/LTSUu7dB+Di6WR4IkthF41sHSKz6pcDL2QLpoc=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=WPOEyeLexYDw9cZHzp/NPtH5BELeEX7JNzhYOTBno0979eYutop7brZLsaAb3lco6
-         E5sWQWwERvL6ojeBmu9e2IpX9y3D9AUKqM6WFbWAYt7Yoqds3EU650n+MDWZga0m3+
-         dL9zlaZpQRSGbj9uTbxH3T6qdfnNDD81W+gPAF6k=
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20200508141737.GA350607@kroah.com>
-References: <20200508141737.GA350607@kroah.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20200508141737.GA350607@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.7-rc5
-X-PR-Tracked-Commit-Id: 2ae11c46d5fdc46cb396e35911c713d271056d35
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: cbd0e4821373ab10833c38edc3b858e3fa1a2976
-Message-Id: <158895450527.20886.7050127718088470296.pr-tracker-bot@kernel.org>
-Date:   Fri, 08 May 2020 16:15:05 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        Fri, 8 May 2020 13:14:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45346 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727999AbgEHRNz (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 8 May 2020 13:13:55 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2244DC05BD09
+        for <linux-serial@vger.kernel.org>; Fri,  8 May 2020 10:13:55 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id f6so1164370pgm.1
+        for <linux-serial@vger.kernel.org>; Fri, 08 May 2020 10:13:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Nb47I82/IxA2gle1iw0XqnYNPtNXoYXnaPYNxEi54LA=;
+        b=KEeH6BFZU9eraiCcEwOrrHoh1rqTJnlfgwHucNffiqawEYszvUgBxksGXmTs1Tq8DG
+         pRBC0CkKC9G1MB5LyfkiyVONeMJMKW0LahPEfZm7lB6WftSVKGQ0mZPspkCVtVxzRDHv
+         UbzQ7XGzVWDVB+h7SKnxQU6UxfLrXGdHGIUqQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Nb47I82/IxA2gle1iw0XqnYNPtNXoYXnaPYNxEi54LA=;
+        b=J7+qfDf8sBCdAM7toRDDGzjLME1vLJL21LH/hX/XN9kvV2m5G4d3tzNdkfKLmiXD2N
+         m5MCEyGXzq3pdfWBajLvvwWjCDx2FFXTrXcPePbLZR09tLxGFyFy+u7/81+F5a50XElH
+         ekDVvIqS/yShOOOhy4mYClPkqGZiDFYtYZFv/+dua0faLxFEn4LZozfcsuj9ynxZ0Zec
+         336hDQX1f98XSSho0Jn1Uejm64csE3PzPPvNx2dBz8HvRBIEJpmKhWGWmZduhUqfIBQ1
+         mIzTLV5QKRTXJHagMTGsrleu1iK7h1LaKSiMyKWTyBVlHaeOkEyMJGIUevb73imViNAe
+         V32w==
+X-Gm-Message-State: AGi0PuY83LRDz/WWBKtrQyly+X4EWS4ltQdgnAFMfT1ZU0/GHTMQVvNO
+        xmkrJ+ss4hPS7WLJGFwfqLmQXw==
+X-Google-Smtp-Source: APiQypJqUtILU9Di1LjiTI4FCIAn9705PSxM0Ut708GH64qmbLmlmtgLcjT6tKrSg02YtLlyIOrcKA==
+X-Received: by 2002:aa7:8bc5:: with SMTP id s5mr4040633pfd.19.1588958034462;
+        Fri, 08 May 2020 10:13:54 -0700 (PDT)
+Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
+        by smtp.gmail.com with ESMTPSA id a2sm1709593pgh.57.2020.05.08.10.13.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 May 2020 10:13:53 -0700 (PDT)
+Date:   Fri, 8 May 2020 10:13:52 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Akash Asthana <akashast@codeaurora.org>
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
+        mark.rutland@arm.com, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, dianders@chromium.org,
+        evgreen@chromium.org, georgi.djakov@linaro.org
+Subject: Re: [PATCH V5 1/7] soc: qcom: geni: Support for ICC voting
+Message-ID: <20200508171352.GA4525@google.com>
+References: <1588919619-21355-1-git-send-email-akashast@codeaurora.org>
+ <1588919619-21355-2-git-send-email-akashast@codeaurora.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1588919619-21355-2-git-send-email-akashast@codeaurora.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The pull request you sent on Fri, 8 May 2020 16:17:37 +0200:
+Hi Akash,
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.7-rc5
+note: my comments below are clearly entering bikeshed territory. Please
+take what you agree with and feel free to ignore the rest.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/cbd0e4821373ab10833c38edc3b858e3fa1a2976
+On Fri, May 08, 2020 at 12:03:33PM +0530, Akash Asthana wrote:
+> Add necessary macros and structure variables to support ICC BW
+> voting from individual SE drivers.
+> 
+> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+> ---
+> Changes in V2:
+>  - As per Bjorn's comment dropped enums for ICC paths, given the three
+>    paths individual members
+> 
+> Changes in V3:
+>  - Add geni_icc_get, geni_icc_vote_on and geni_icc_vote_off as helper API.
+>  - Add geni_icc_path structure in common header
+> 
+> Changes in V4:
+>  - As per Bjorn's comment print error message in geni_icc_get if return
+>    value is not -EPROBE_DEFER.
+>  - As per Bjorn's comment remove NULL on path before calling icc_set_bw
+>    API.
+>  - As per Bjorn's comment drop __func__ print.
+>  - As per Matthias's comment, make ICC path a array instead of individual
+>    member entry in geni_se struct.
+> 
+> Note: I have ignored below check patch suggestion because it was throwing
+>       compilation error as 'icc_ddr' is not compile time comstant.
+> 
+> WARNING: char * array declaration might be better as static const
+>  - FILE: drivers/soc/qcom/qcom-geni-se.c:726:
+>  - const char *icc_names[] = {"qup-core", "qup-config", icc_ddr};
+> 
+> Changes in V5:
+>  - As per Matthias's comment defined enums for ICC paths.
+>  - Integrate icc_enable/disable with power on/off call for driver.
+>  - As per Matthias's comment added icc_path_names array to print icc path name
+>    in failure case.
+>  - As per Georgi's suggestion assume peak_bw = avg_bw if not mentioned.
+> 
+>  drivers/soc/qcom/qcom-geni-se.c | 92 +++++++++++++++++++++++++++++++++++++++++
+>  include/linux/qcom-geni-se.h    | 42 +++++++++++++++++++
+>  2 files changed, 134 insertions(+)
+> 
+> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
+> index 7d622ea..63403bf 100644
+> --- a/drivers/soc/qcom/qcom-geni-se.c
+> +++ b/drivers/soc/qcom/qcom-geni-se.c
+> @@ -92,6 +92,9 @@ struct geni_wrapper {
+>  	struct clk_bulk_data ahb_clks[NUM_AHB_CLKS];
+>  };
+>  
+> +static const char * const icc_path_names[] = {"qup-core", "qup-config",
+> +								"qup-memory"};
 
-Thank you!
+nit: the indentation is a bit odd. I would align it either with "qup-core" or
+at a tab stop nearby.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+> +
+>  #define QUP_HW_VER_REG			0x4
+>  
+>  /* Common SE registers */
+> @@ -720,6 +723,95 @@ void geni_se_rx_dma_unprep(struct geni_se *se, dma_addr_t iova, size_t len)
+>  }
+>  EXPORT_SYMBOL(geni_se_rx_dma_unprep);
+>  
+> +int geni_icc_get(struct geni_se *se, const char *icc_ddr)
+> +{
+> +	int i, icc_err;
+
+nit: the 'icc_' prefix doesn't add value here, just 'err' would be less
+'noisy' IMO.
+
+> +	const char *icc_names[] = {"qup-core", "qup-config", icc_ddr};
+
+nit: you could avoid repeating the first to strings by referencing
+icc_path_names[GENI_TO_CORE] and icc_path_names[CPU_TO_GENI]. Not sure
+if it's really better, it avoids the redundant names, but is slightly
+less readable.
+
+> +
+> +	for (i = 0; i < ARRAY_SIZE(se->icc_paths); i++) {
+> +		if (!icc_names[i])
+> +			continue;
+> +
+> +		se->icc_paths[i].path = devm_of_icc_get(se->dev, icc_names[i]);
+> +		if (IS_ERR(se->icc_paths[i].path))
+> +			goto icc_get_failure;
+
+nit: since there is only a single label it isn't really necessary to be so
+precise. 'goto err' is very common in the kernel, 'err_icc_get' would be
+another alternative.
+
+> +	}
+> +
+> +	return 0;
+> +
+> +icc_get_failure:
+> +	icc_err = PTR_ERR(se->icc_paths[i].path);
+> +	if (icc_err != -EPROBE_DEFER)
+> +		dev_err_ratelimited(se->dev, "Failed to get ICC path:%s, ret:%d\n",
+
+All the logs in this patch result in something like "... path:qup-core, ret:42".
+For humans I think it is more intuitive to parse "... path 'qup-core': 42".
+
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
