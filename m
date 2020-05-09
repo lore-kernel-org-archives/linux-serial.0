@@ -2,128 +2,143 @@ Return-Path: <SRS0=wdWf=6X=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEC87C28CBC
-	for <linux-serial@archiver.kernel.org>; Sat,  9 May 2020 12:11:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D11C28CBC
+	for <linux-serial@archiver.kernel.org>; Sat,  9 May 2020 12:42:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7ED7020722
-	for <linux-serial@archiver.kernel.org>; Sat,  9 May 2020 12:11:44 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dKc+TMdV"
+	by mail.kernel.org (Postfix) with ESMTP id 6F672208CA
+	for <linux-serial@archiver.kernel.org>; Sat,  9 May 2020 12:42:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727980AbgEIMLo (ORCPT
+        id S1727051AbgEIMmO (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sat, 9 May 2020 08:11:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52788 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726782AbgEIMLn (ORCPT
+        Sat, 9 May 2020 08:42:14 -0400
+Received: from fieber.vanmierlo.com ([84.243.197.177]:35951 "EHLO
+        kerio9.vanmierlo.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726017AbgEIMmN (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sat, 9 May 2020 08:11:43 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6422DC061A0C;
-        Sat,  9 May 2020 05:11:43 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id h12so6062976pjz.1;
-        Sat, 09 May 2020 05:11:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/wlJFZjwuM81Jh/anwiOMAgeJWfW7ajnVCis2G3dl9k=;
-        b=dKc+TMdVfruQ8XRDND37cvnLytXndIhsz15FSm3KMnB9sjom5WRjcOrEvJU+yPeS5m
-         uLGz8hq/6wUQa1UkJ6D9OOEWccrMgIgPRCSIg41TqPjfkTuKUC0Ehrb+iO1d1/2GLrOm
-         /fKTPoievZIameK2E1CPZF8ocqWO3Z/8TRLiqbEGadpMGPJn0yM6uLIs+CgTu4DUWr7y
-         eICNRW91C5opv2i6zQ/H16dMo5H6yMCP35TW1giskIX62HHVkbyL2rmiTQ+sX9p12pPZ
-         Jah2nAq0kBHiHiaNOja7ue0FFq5bhpEQjX4Ou6kmfYW07JR8EQFVw7saNPEW96vRu0/p
-         8Rcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/wlJFZjwuM81Jh/anwiOMAgeJWfW7ajnVCis2G3dl9k=;
-        b=hBSOicqiMoRvQ1+95fkuDEIgq954Ssij6PrQLa2WsiDEGxpO/m6OCYqr/YLIK0PAhL
-         9Z+ScU431BFPewKX2WzmbLkb0Oy8Dy2JHC22QJlhItxp0tFvEPHkoL44ONNZR2ukhQn8
-         GM78JBbnJ+8uQGl5tOUW+q35ij9PKW2VYWKoOAgGktu7lm3JZDuQSQdoPI8JjTzKsQOa
-         FBQhRkzZAM77Q/+8+m0kNzZi+zpkg01akDdrQXFJXyIVoX5iv9ciBJ1mSBzZpH/vrS7M
-         339HsfyYA72cpUg+C0OlHatXNxC4OPQXHuHmEkPxgu2LslWbPI+sg02baWTVWmYmWje9
-         +Q2w==
-X-Gm-Message-State: AGi0PualsD2RU/X9pST9Rw80C4HX1EAELEXi8gcTxHS47/7haxh8Vlyl
-        M/AnUdY0EHZN4bu4sUBvD5eCH38/8mqpoDE5SxzGgzfq
-X-Google-Smtp-Source: APiQypI4sdcR01RdvjwOkHbMaSexjDF1WdE/GFMDiJPbhE1E1Lit7yy20vvFbGNhhAxdgjUqXNuG191HfxC7kMjnnGw=
-X-Received: by 2002:a17:90b:94a:: with SMTP id dw10mr11427305pjb.228.1589026302658;
- Sat, 09 May 2020 05:11:42 -0700 (PDT)
+        Sat, 9 May 2020 08:42:13 -0400
+X-Footer: dmFubWllcmxvLmNvbQ==
+Received: from roundcube.vanmierlo.com ([192.168.37.37])
+        (authenticated user m.brock@vanmierlo.com)
+        by kerio9.vanmierlo.com (Kerio Connect 9.2.12 patch 1) with ESMTPA;
+        Sat, 9 May 2020 14:41:38 +0200
 MIME-Version: 1.0
-References: <1588919619-21355-1-git-send-email-akashast@codeaurora.org> <1588919619-21355-3-git-send-email-akashast@codeaurora.org>
-In-Reply-To: <1588919619-21355-3-git-send-email-akashast@codeaurora.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sat, 9 May 2020 15:11:31 +0300
-Message-ID: <CAHp75Vdjz7RBbyPwZwvNq5njwb_Jc76U=3pDpswmoFCFaGtNAQ@mail.gmail.com>
-Subject: Re: [PATCH V5 2/7] soc: qcom-geni-se: Add interconnect support to fix
- earlycon crash
-To:     Akash Asthana <akashast@codeaurora.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>, agross@kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Wolfram Sang <wsa@the-dreams.de>,
-        Mark Brown <broonie@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>, mgautam@codeaurora.org,
-        linux-arm-msm@vger.kernel.org,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Evan Green <evgreen@chromium.org>,
-        Georgi Djakov <georgi.djakov@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Sat, 09 May 2020 14:41:38 +0200
+From:   Maarten Brock <m.brock@vanmierlo.com>
+To:     Daniel Mack <daniel@zonque.org>
+Cc:     devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+        gregkh@linuxfoundation.org, robh+dt@kernel.org, jslaby@suse.com,
+        pascal.huerst@gmail.com, linux-serial-owner@vger.kernel.org
+Subject: Re: [PATCH 3/4] sc16is7xx: Always use falling edge IRQ
+In-Reply-To: <20200508143757.2609740-4-daniel@zonque.org>
+References: <20200508143757.2609740-1-daniel@zonque.org>
+ <20200508143757.2609740-4-daniel@zonque.org>
+Message-ID: <d36a13cdeafd5fe35f662644b1c285c0@vanmierlo.com>
+X-Sender: m.brock@vanmierlo.com
+User-Agent: Roundcube Webmail/1.3.3
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, May 8, 2020 at 9:34 AM Akash Asthana <akashast@codeaurora.org> wrote:
->
-> QUP core clock is shared among all the SE drivers present on particular
-> QUP wrapper, the system will reset(unclocked access) if earlycon used after
-> QUP core clock is put to 0 from other SE drivers before real console comes
-> up.
->
-> As earlycon can't vote for it's QUP core need, to fix this add ICC
-> support to common/QUP wrapper driver and put vote for QUP core from
-> probe on behalf of earlycon and remove vote during earlycon exit call.
+On 2020-05-08 16:37, Daniel Mack wrote:
+> The driver currently only uses IRQF_TRIGGER_FALLING if the probing
+> happened without a device-tree setup. The device however will always
+> generate falling edges on its IRQ line, so let's use that flag in
+> all cases.
 
-...
+Would it not be wise to also select IRQF_SHARED?
 
-> +       for_each_child_of_node(parent, child) {
+Which leads me to a more generic question: Is there a general method to 
+tell
+in the device tree that an interrupt line is shared?
 
-> +               if (of_device_is_compatible(child, "qcom,geni-se-qup")) {
+> 
+> Signed-off-by: Daniel Mack <daniel@zonque.org>
+> ---
+>  drivers/tty/serial/sc16is7xx.c | 12 ++++--------
+>  1 file changed, 4 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/sc16is7xx.c 
+> b/drivers/tty/serial/sc16is7xx.c
+> index e4025b8566a4..0997a5cac02a 100644
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+> @@ -1185,7 +1185,7 @@ static int
+> sc16is7xx_gpio_direction_output(struct gpio_chip *chip,
+> 
+>  static int sc16is7xx_probe(struct device *dev,
+>  			   const struct sc16is7xx_devtype *devtype,
+> -			   struct regmap *regmap, int irq, unsigned long flags)
+> +			   struct regmap *regmap, int irq)
+>  {
+>  	struct sched_param sched_param = { .sched_priority = MAX_RT_PRIO / 2 
+> };
+>  	unsigned long freq = 0, *pfreq = dev_get_platdata(dev);
+> @@ -1318,7 +1318,7 @@ static int sc16is7xx_probe(struct device *dev,
+> 
+>  	/* Setup interrupt */
+>  	ret = devm_request_irq(dev, irq, sc16is7xx_irq,
+> -			       flags, dev_name(dev), s);
+> +			       IRQF_TRIGGER_FALLING, dev_name(dev), s);
+>  	if (!ret)
+>  		return 0;
+> 
+> @@ -1392,7 +1392,6 @@ static struct regmap_config regcfg = {
+>  static int sc16is7xx_spi_probe(struct spi_device *spi)
+>  {
+>  	const struct sc16is7xx_devtype *devtype;
+> -	unsigned long flags = 0;
+>  	struct regmap *regmap;
+>  	int ret;
+> 
+> @@ -1413,14 +1412,13 @@ static int sc16is7xx_spi_probe(struct 
+> spi_device *spi)
+>  		const struct spi_device_id *id_entry = spi_get_device_id(spi);
+> 
+>  		devtype = (struct sc16is7xx_devtype *)id_entry->driver_data;
+> -		flags = IRQF_TRIGGER_FALLING;
+>  	}
+> 
+>  	regcfg.max_register = (0xf << SC16IS7XX_REG_SHIFT) |
+>  			      (devtype->nr_uart - 1);
+>  	regmap = devm_regmap_init_spi(spi, &regcfg);
+> 
+> -	return sc16is7xx_probe(&spi->dev, devtype, regmap, spi->irq, flags);
+> +	return sc16is7xx_probe(&spi->dev, devtype, regmap, spi->irq);
+>  }
+> 
+>  static int sc16is7xx_spi_remove(struct spi_device *spi)
+> @@ -1459,7 +1457,6 @@ static int sc16is7xx_i2c_probe(struct i2c_client 
+> *i2c,
+>  			       const struct i2c_device_id *id)
+>  {
+>  	const struct sc16is7xx_devtype *devtype;
+> -	unsigned long flags = 0;
+>  	struct regmap *regmap;
+> 
+>  	if (i2c->dev.of_node) {
+> @@ -1468,14 +1465,13 @@ static int sc16is7xx_i2c_probe(struct 
+> i2c_client *i2c,
+>  			return -ENODEV;
+>  	} else {
+>  		devtype = (struct sc16is7xx_devtype *)id->driver_data;
+> -		flags = IRQF_TRIGGER_FALLING;
+>  	}
+> 
+>  	regcfg.max_register = (0xf << SC16IS7XX_REG_SHIFT) |
+>  			      (devtype->nr_uart - 1);
+>  	regmap = devm_regmap_init_i2c(i2c, &regcfg);
+> 
+> -	return sc16is7xx_probe(&i2c->dev, devtype, regmap, i2c->irq, flags);
+> +	return sc16is7xx_probe(&i2c->dev, devtype, regmap, i2c->irq);
+>  }
+> 
+>  static int sc16is7xx_i2c_remove(struct i2c_client *client)
 
-if (!...)
- continue;
-
-will save you a readability of the loop body.
-
-Or...
-
-> +                       wrapper = platform_get_drvdata(of_find_device_by_node(
-> +                                       child));
-
-...leave this on one line
-
-> +                       icc_put(wrapper->to_core.path);
-> +                       wrapper->to_core.path = NULL;
-> +               }
-
-And here is the question, what do you want to do if you find more
-devices with the same compatible string?
-
-> +       }
-
--- 
-With Best Regards,
-Andy Shevchenko
