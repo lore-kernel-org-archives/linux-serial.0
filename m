@@ -2,161 +2,123 @@ Return-Path: <SRS0=fmRl=6Y=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A887BC54E7E
-	for <linux-serial@archiver.kernel.org>; Sun, 10 May 2020 05:15:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A2FFC54E8B
+	for <linux-serial@archiver.kernel.org>; Sun, 10 May 2020 18:50:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9122620735
-	for <linux-serial@archiver.kernel.org>; Sun, 10 May 2020 05:15:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0DAE22082E
+	for <linux-serial@archiver.kernel.org>; Sun, 10 May 2020 18:50:29 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="MhprYwlX"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728123AbgEJFPc (ORCPT
+        id S1729073AbgEJSu2 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 10 May 2020 01:15:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41678 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728098AbgEJFPc (ORCPT
+        Sun, 10 May 2020 14:50:28 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:47459 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729032AbgEJSu2 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 10 May 2020 01:15:32 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A801C061A0E
-        for <linux-serial@vger.kernel.org>; Sat,  9 May 2020 22:15:32 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jXeJB-0006T9-0V; Sun, 10 May 2020 07:15:25 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jXeJ9-0001cv-Ui; Sun, 10 May 2020 07:15:23 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-serial@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>
-Subject: [PATCH v1] dt-bindings: serial: qca,ar9330-uart: Convert to json-schema
-Date:   Sun, 10 May 2020 07:15:22 +0200
-Message-Id: <20200510051522.6191-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.26.2
+        Sun, 10 May 2020 14:50:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589136627;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Cd3Jfs8EnoOBARqHsab26N+nO44V0jD1QCdQOQFYJ/U=;
+        b=MhprYwlXyowMB9dQALZuQrDwnD4Qp7Z+pFTj9z2i1P5xrmy/eqxCC3mU2kIfnVkcP0G7I9
+        x2T1rrHO9uMfKdCRtsHgkil4IHK3JMEvW3WW7SlcD75Sxs6R5Fkmt/XlBAKo8o5oyvMMbF
+        kDtwIO7M6zRWqQAU7MHu/dLKsqzTAM0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-451-3-_JoBVQOKup1LqNeid8hA-1; Sun, 10 May 2020 14:50:23 -0400
+X-MC-Unique: 3-_JoBVQOKup1LqNeid8hA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BF4EA107ACCD;
+        Sun, 10 May 2020 18:50:21 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (file01.intranet.prod.int.rdu2.redhat.com [10.11.5.7])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 15E405D9D5;
+        Sun, 10 May 2020 18:50:20 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (localhost [127.0.0.1])
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4) with ESMTP id 04AIoKAt015698;
+        Sun, 10 May 2020 14:50:20 -0400
+Received: from localhost (mpatocka@localhost)
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4/Submit) with ESMTP id 04AIoJfx015695;
+        Sun, 10 May 2020 14:50:19 -0400
+X-Authentication-Warning: file01.intranet.prod.int.rdu2.redhat.com: mpatocka owned process doing -bs
+Date:   Sun, 10 May 2020 14:50:19 -0400 (EDT)
+From:   Mikulas Patocka <mpatocka@redhat.com>
+X-X-Sender: mpatocka@file01.intranet.prod.int.rdu2.redhat.com
+To:     "Maciej W. Rozycki" <macro@linux-mips.org>
+cc:     Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
+Subject: Re: [PATCH 1/2 v3] alpha: add a delay to inb_p, inb_w and inb_l
+In-Reply-To: <alpine.LFD.2.21.2005100209340.487915@eddie.linux-mips.org>
+Message-ID: <alpine.LRH.2.02.2005101443290.15420@file01.intranet.prod.int.rdu2.redhat.com>
+References: <alpine.LRH.2.02.2005060713390.25338@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com> <alpine.LRH.2.02.2005061308220.18599@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.02.2005070404420.5006@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com> <alpine.LRH.2.02.2005070931280.1718@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAK8P3a3UdCJL6C07_W7pkipT1Xmr_0G9hOy1S+YXbB4_tKt+gg@mail.gmail.com> <alpine.LFD.2.21.2005100209340.487915@eddie.linux-mips.org>
+User-Agent: Alpine 2.02 (LRH 1266 2009-07-14)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Convert the Qualcomm Atheros AR9330 High-Speed UART
-Device Tree binding documentation to json-schema.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- .../bindings/serial/qca,ar9330-uart.txt       | 31 ------------
- .../bindings/serial/qca,ar9330-uart.yaml      | 50 +++++++++++++++++++
- 2 files changed, 50 insertions(+), 31 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/serial/qca,ar9330-uart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/qca,ar9330-uart.yaml
 
-diff --git a/Documentation/devicetree/bindings/serial/qca,ar9330-uart.txt b/Documentation/devicetree/bindings/serial/qca,ar9330-uart.txt
-deleted file mode 100644
-index 7d65126bd1d77..0000000000000
---- a/Documentation/devicetree/bindings/serial/qca,ar9330-uart.txt
-+++ /dev/null
-@@ -1,31 +0,0 @@
--* Qualcomm Atheros AR9330 High-Speed UART
--
--Required properties:
--
--- compatible: Must be "qca,ar9330-uart"
--
--- reg: Specifies the physical base address of the controller and
--  the length of the memory mapped region.
--
--- interrupts: Specifies the interrupt source of the parent interrupt
--  controller. The format of the interrupt specifier depends on the
--  parent interrupt controller.
--
--Additional requirements:
--
--  Each UART port must have an alias correctly numbered in "aliases"
--  node.
--
--Example:
--
--	aliases {
--		serial0 = &uart0;
--	};
--
--	uart0: uart@18020000 {
--		compatible = "qca,ar9330-uart";
--		reg = <0x18020000 0x14>;
--
--		interrupt-parent = <&intc>;
--		interrupts = <3>;
--	};
-diff --git a/Documentation/devicetree/bindings/serial/qca,ar9330-uart.yaml b/Documentation/devicetree/bindings/serial/qca,ar9330-uart.yaml
-new file mode 100644
-index 0000000000000..a344369285b6a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/qca,ar9330-uart.yaml
-@@ -0,0 +1,50 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/serial/qca,ar9330-uart.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm Atheros AR9330 High-Speed UART
-+
-+maintainers:
-+  - Oleksij Rempel <o.rempel@pengutronix.de>
-+
-+allOf:
-+  - $ref: /schemas/serial.yaml#
-+
-+properties:
-+  compatible:
-+    const: qca,ar9330-uart
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-names:
-+    const: uart
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    serial@18020000 {
-+      compatible = "qca,ar9330-uart";
-+      reg = <0x18020000 0x14>;
-+      clocks = <&ref>;
-+      clock-names = "uart";
-+      interrupt-parent = <&intc>;
-+      interrupts = <3>;
-+    };
-+...
--- 
-2.26.2
+On Sun, 10 May 2020, Maciej W. Rozycki wrote:
+
+> On Thu, 7 May 2020, Arnd Bergmann wrote:
+> 
+> > > Do you think that all the "in[bwl]" and "out[bwl]" macros on alpha should
+> > > be protected by two memory barriers, to emulate the x86 behavior?
+> > 
+> > That's what we do on some other architectures to emulate the non-posted
+> > behavior of out[bwl], as required by PCI. I can't think of any reasons to
+> > have a barrier before in[bwl], or after write[bwl], but we generally want
+> > one after out[bwl]
+> 
+>  Alpha is weakly ordered, also WRT MMIO.  The details are a bit obscure 
+> (and were discussed before in a previous iteration of these patches), but 
+> my understanding is multiple writes can be merged and writes can be 
+> reordered WRT reads, even on UP.  It's generally better for performance to 
+
+We discussed it some times ago, and the conclusion was that reads and 
+writes to the same device are not reordered on Alpha. Reads and writes to 
+different devices or to memory may be reordered.
+
+In these problematic cases, we only access serial port or real time clock 
+using a few ports (and these devices don't have DMA, so there's not any 
+interaction with memory) - so I conclude that it is timing problem and not 
+I/O reordering problem.
+
+> have ordering barriers before MMIO operations rather than afterwards, 
+> unless a completion barrier is also required (e.g. for level-triggered 
+> interrupt acknowledgement).
+> 
+>  Currently we don't fully guarantee that `outX' won't be posted (from 
+> memory-barriers.txt):
+> 
+> " (*) inX(), outX():
+> [...]
+>         Device drivers may expect outX() to emit a non-posted write transaction
+>         that waits for a completion response from the I/O peripheral before
+>         returning. This is not guaranteed by all architectures and is therefore
+>         not part of the portable ordering semantics."
+> 
+>   Maciej
+
+Mikulas
 
