@@ -2,245 +2,160 @@ Return-Path: <SRS0=1VgQ=6Z=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F34BC54E8D
-	for <linux-serial@archiver.kernel.org>; Mon, 11 May 2020 22:47:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41626C54E4A
+	for <linux-serial@archiver.kernel.org>; Mon, 11 May 2020 22:52:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7904B208CA
-	for <linux-serial@archiver.kernel.org>; Mon, 11 May 2020 22:47:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1589237271;
-	bh=ivXRBp6uDqcbizD50Zmm/1bEApdh9GvZpTX2g+RdHFY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=AHPp9Nl8p+bQbwmGIFqaMKx95DR0L0Sp09j7EbH1amCWCPtz9wnEhr2En9fN/2b2q
-	 0iayzsEYA7vUSQWgpzeztavw+LmGcFzV5hIL1EBtl81F0VdDTBU9WD2lc++/+ZdnWn
-	 mTkR7mHgKXgBjLOxh0hi83XLJyG5V8QIuW2FYIu4=
+	by mail.kernel.org (Postfix) with ESMTP id 19B42206F5
+	for <linux-serial@archiver.kernel.org>; Mon, 11 May 2020 22:52:34 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="ABJ9An36"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726077AbgEKWrv (ORCPT
+        id S1725854AbgEKWwd (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 May 2020 18:47:51 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:39031 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725828AbgEKWru (ORCPT
+        Mon, 11 May 2020 18:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33372 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725836AbgEKWwd (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 May 2020 18:47:50 -0400
-Received: by mail-ot1-f68.google.com with SMTP id m13so8978083otf.6;
-        Mon, 11 May 2020 15:47:49 -0700 (PDT)
+        Mon, 11 May 2020 18:52:33 -0400
+Received: from mail-ua1-x942.google.com (mail-ua1-x942.google.com [IPv6:2607:f8b0:4864:20::942])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 211AAC061A0C
+        for <linux-serial@vger.kernel.org>; Mon, 11 May 2020 15:52:33 -0700 (PDT)
+Received: by mail-ua1-x942.google.com with SMTP id k13so3696371uap.13
+        for <linux-serial@vger.kernel.org>; Mon, 11 May 2020 15:52:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6oQAHkHCTjdXQutqjFpnQFKkQXPKWu36loMHxr/U/Bw=;
+        b=ABJ9An36QqvDTKUmlo81w3VPI+NywC5sRr3Udf1h5mkJQruw2r+/d0TK5KCxAvQnkM
+         AnX6dF0ESk/0FMYf94bsuWf7TyAgd59x096hAtrjjgg+oqFcAzxb3dsZhEMl1OgQwajx
+         UeNlEyLzrUVksn8Oh25g81dOCnaTLldN7BPyA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=FBCSWYQOACSW+NmV5Hv5SV07fxhPe1QJYaBtFG5Lk6o=;
-        b=BF0ByYOQju8nWhJ9vLKq5udmMqQCKhsoMm7nKGK8u+ITfSAX1b60zlbef9c1u5iyp/
-         /HiitDEyYXYBYlvqJhtytysfparDVtvQ3TrQfRL1NWyMgm1KqyWUNNy9B5sYVd5+J2ma
-         xTqFtdG101Y2umEuAnOAViTh2PJAsnS6HdkONBdGG86xD2CStPOxQPD30JrmDOTGGua/
-         B3FUBRJriClaxoCJxs4Cn5ni7ng6Lt8XwolLBxE3ysUwSqzEZpdXKAr9BdPEavOPdxoQ
-         ryIn7JeenQAh5tdfeKwFjObcPPDAsnyTLrJy2oYYf4VCfsLxMASukoNqFp2q7MkXmE0B
-         /wDQ==
-X-Gm-Message-State: AGi0PuaV3gbjCRPlRItX6aB9KcxqDANacaJNpM0j1Rsi7kENAhReL8Le
-        7WnNZWcaOyWBpTcb/tGGww==
-X-Google-Smtp-Source: APiQypL4PYdJeBWPhWWPxR3FdrQJgI8lMTdi7bTlT0Jg8FJD1NabXquhyKLcISJV9QlkiKoQlJ6zUQ==
-X-Received: by 2002:a05:6830:1d0:: with SMTP id r16mr15655881ota.4.1589237268644;
-        Mon, 11 May 2020 15:47:48 -0700 (PDT)
-Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id y10sm3170211ooq.2.2020.05.11.15.47.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2020 15:47:48 -0700 (PDT)
-Received: (nullmailer pid 24853 invoked by uid 1000);
-        Mon, 11 May 2020 22:47:47 -0000
-Date:   Mon, 11 May 2020 17:47:47 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     od@zcrc.me, =?utf-8?B?5ZGo55Cw5p2w?= <zhouyanjie@wanyeetech.com>,
-        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-i2c@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: Re: [PATCH 3/8] dt-bindings: pinctrl: Convert ingenic,pinctrl.txt to
- YAML
-Message-ID: <20200511224747.GA19685@bogus>
-References: <20200426185856.38826-1-paul@crapouillou.net>
- <20200426185856.38826-3-paul@crapouillou.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6oQAHkHCTjdXQutqjFpnQFKkQXPKWu36loMHxr/U/Bw=;
+        b=EsIGcUHRFpeLDI5fFVbvfGqFXknjxwObhWl7pVzK/EYBWmEy4VK3RkxnZdL1EWez2T
+         fv0cJkJfjZihlWpKqOvzUoEIzzTnHMPPqWOOp1LOcyvtDATFguTZPeEsfl4gfhTu60Fv
+         pUy7zkfuCBQ7YJnLjIgTDu5zx3nPjjXJeJi+Nmq9plxDluOryemGbf4CHxVTZ7wTN3Ep
+         sD35wAVwYJXXz2B2Ww4R0vMgC8ImEhr4Xg++rK3fEyg9+5uVU7G9h4MxnpASJTsLEU/d
+         Ut3juReIIO5L+ivnLEAcCemoKPaYAHKUdMiCwcJGRTJIBw87jEESLTCp5naPK7+J+DSO
+         jY+w==
+X-Gm-Message-State: AGi0PubRHycAQrxuMYX/pQCSLLXDrqMF0L4HMv44bBD5GrZu6pHGV/xC
+        U9ozcIaapRq6gyvuDGl3G8jimWQHiKs=
+X-Google-Smtp-Source: APiQypLUzRaC4nHD+p8ZTS8F0dMYvUYIrs2VT8UV+0txeRXmNtEIzhAJwumBKLt1/s2FM2vixltUTg==
+X-Received: by 2002:ab0:e17:: with SMTP id g23mr13394163uak.31.1589237551332;
+        Mon, 11 May 2020 15:52:31 -0700 (PDT)
+Received: from mail-vs1-f52.google.com (mail-vs1-f52.google.com. [209.85.217.52])
+        by smtp.gmail.com with ESMTPSA id s3sm9988330uao.0.2020.05.11.15.52.31
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 May 2020 15:52:31 -0700 (PDT)
+Received: by mail-vs1-f52.google.com with SMTP id x136so6711675vsx.2
+        for <linux-serial@vger.kernel.org>; Mon, 11 May 2020 15:52:31 -0700 (PDT)
+X-Received: by 2002:a67:c40c:: with SMTP id c12mr13653102vsk.106.1589237114125;
+ Mon, 11 May 2020 15:45:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200426185856.38826-3-paul@crapouillou.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200428211351.85055-1-dianders@chromium.org> <20200428141218.v3.5.I22067ad43e77ddfd4b64c2d49030628480f9e8d9@changeid>
+ <20200511145908.GA22040@willie-the-truck>
+In-Reply-To: <20200511145908.GA22040@willie-the-truck>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 11 May 2020 15:45:02 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=W1F-B7SUwxebhhH2HS+fN4sYv4RHvvKud5a+00J0T=SA@mail.gmail.com>
+Message-ID: <CAD=FV=W1F-B7SUwxebhhH2HS+fN4sYv4RHvvKud5a+00J0T=SA@mail.gmail.com>
+Subject: Re: [PATCH v3 05/11] arm64: Add call_break_hook() to early_brk64()
+ for early kgdb
+To:     Will Deacon <will@kernel.org>
+Cc:     Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Gross <agross@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        linux-serial@vger.kernel.org, Sumit Garg <sumit.garg@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Frank Rowand <frowand.list@gmail.com>, bp@alien8.de,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        Allison Randal <allison@lohutok.net>,
+        Dave Martin <Dave.Martin@arm.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        James Morse <james.morse@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        jinho lim <jordan.lim@samsung.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, Apr 26, 2020 at 08:58:51PM +0200, Paul Cercueil wrote:
-> Convert the ingenic,pinctrl.txt doc file to ingenic,pinctrl.yaml.
-> 
-> In the process, some compatible strings now require a fallback, as the
-> corresponding SoCs are pin-compatible with their fallback variant.
-> 
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-> ---
->  .../bindings/pinctrl/ingenic,pinctrl.txt      |  81 ----------
->  .../bindings/pinctrl/ingenic,pinctrl.yaml     | 138 ++++++++++++++++++
->  2 files changed, 138 insertions(+), 81 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/pinctrl/ingenic,pinctrl.txt
->  create mode 100644 Documentation/devicetree/bindings/pinctrl/ingenic,pinctrl.yaml
+Hi,
+
+On Mon, May 11, 2020 at 7:59 AM Will Deacon <will@kernel.org> wrote:
+>
+> Hi Doug,
+>
+> On Tue, Apr 28, 2020 at 02:13:45PM -0700, Douglas Anderson wrote:
+> > diff --git a/arch/arm64/kernel/debug-monitors.c b/arch/arm64/kernel/debug-monitors.c
+> > index 48222a4760c2..59c353dfc8e9 100644
+> > --- a/arch/arm64/kernel/debug-monitors.c
+> > +++ b/arch/arm64/kernel/debug-monitors.c
+> > @@ -297,7 +297,7 @@ void unregister_kernel_break_hook(struct break_hook *hook)
+> >       unregister_debug_hook(&hook->node);
+> >  }
+> >
+> > -static int call_break_hook(struct pt_regs *regs, unsigned int esr)
+> > +int call_break_hook(struct pt_regs *regs, unsigned int esr)
+> >  {
+> >       struct break_hook *hook;
+> >       struct list_head *list;
+> > diff --git a/arch/arm64/kernel/traps.c b/arch/arm64/kernel/traps.c
+> > index cf402be5c573..a8173f0c1774 100644
+> > --- a/arch/arm64/kernel/traps.c
+> > +++ b/arch/arm64/kernel/traps.c
+> > @@ -1044,6 +1044,9 @@ int __init early_brk64(unsigned long addr, unsigned int esr,
+> >       if ((comment & ~KASAN_BRK_MASK) == KASAN_BRK_IMM)
+> >               return kasan_handler(regs, esr) != DBG_HOOK_HANDLED;
+> >  #endif
+> > +     if (call_break_hook(regs, esr) == DBG_HOOK_HANDLED)
+> > +             return 0;
+>
+> I think this just means we're not running debug_traps_init() early enough,
+> and actually the KASAN early handler is unnecessary too.
+>
+> If we call debug_traps_init() directly from setup_arch() and drop the
+> arch_initcall(), can we then drop early_brk64 entirely?
+
+It seems to work in my testing.  ...but the worry I have is the
+comment right before trap_init().  It says:
+
+/* This registration must happen early, before debug_traps_init(). */
+
+By moving debug_traps_init() early we're violating that comment.  Do I
+just remove that comment, or was there a good reason for it?  ...or am
+I reading it wrong and I should have read it as if it said:
+
+/* NOTE: this registration happens early, before debug_traps_init(). */
+
+...then removing it is fine.  Maybe that's right?
+
+I coded this up and put it on the Chrome OS gerrit at
+<https://crrev.com/c/2195061>.  I'm happy to post this on the list as
+a loner patch to replace this one or spin the whole series depending
+on what people want.
 
 
-> diff --git a/Documentation/devicetree/bindings/pinctrl/ingenic,pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/ingenic,pinctrl.yaml
-> new file mode 100644
-> index 000000000000..adf462cc2737
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pinctrl/ingenic,pinctrl.yaml
-> @@ -0,0 +1,138 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/pinctrl/ingenic,pinctrl.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Ingenic SoCs pin controller devicetree bindings
-> +
-> +description: >
-> +  Please refer to pinctrl-bindings.txt in this directory for details of the
-> +  common pinctrl bindings used by client devices, including the meaning of the
-> +  phrase "pin configuration node".
-> +
-> +  For the Ingenic SoCs, pin control is tightly bound with GPIO ports. All pins
-> +  may be used as GPIOs, multiplexed device functions are configured within the
-> +  GPIO port configuration registers and it is typical to refer to pins using the
-> +  naming scheme "PxN" where x is a character identifying the GPIO port with
-> +  which the pin is associated and N is an integer from 0 to 31 identifying the
-> +  pin within that GPIO port. For example PA0 is the first pin in GPIO port A,
-> +  and PB31 is the last pin in GPIO port B. The JZ4740, the X1000 and the X1830
-> +  contains 4 GPIO ports, PA to PD, for a total of 128 pins. The JZ4760, the
-> +  JZ4770 and the JZ4780 contains 6 GPIO ports, PA to PF, for a total of 192
-> +  pins.
-> +
-> +maintainers:
-> +  - Paul Cercueil <paul@crapouillou.net>
-> +
-> +properties:
-> +  nodename:
-> +    pattern: "^pin-controller@[0-9a-f]+$"
-
-That would have been more consistent, but 'pinctrl@...' is the standard.
-
-> +
-> +  compatible:
-> +    oneOf:
-> +      - enum:
-> +        - ingenic,jz4740-pinctrl
-> +        - ingenic,jz4725b-pinctrl
-> +        - ingenic,jz4760-pinctrl
-> +        - ingenic,jz4770-pinctrl
-> +        - ingenic,jz4780-pinctrl
-> +        - ingenic,x1000-pinctrl
-> +        - ingenic,x1500-pinctrl
-> +        - ingenic,x1830-pinctrl
-> +      - items:
-> +        - const: ingenic,jz4760b-pinctrl
-> +        - const: ingenic,jz4760-pinctrl
-> +      - items:
-> +        - const: ingenic,x1000e-pinctrl
-> +        - const: ingenic,x1000-pinctrl
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  "#address-cells":
-> +    const: 1
-> +
-> +  "#size-cells":
-> +    const: 0
-> +
-> +patternProperties:
-> +  "^gpio@[0-9]$":
-> +    type: object
-> +    properties:
-> +      compatible:
-> +        enum:
-> +          - ingenic,jz4740-gpio
-> +          - ingenic,jz4725b-gpio
-> +          - ingenic,jz4760-gpio
-> +          - ingenic,jz4770-gpio
-> +          - ingenic,jz4780-gpio
-> +          - ingenic,x1000-gpio
-> +          - ingenic,x1500-gpio
-> +          - ingenic,x1830-gpio
-> +
-> +      reg:
-> +        items:
-> +          - description: The GPIO bank number
-> +
-> +      gpio-controller: true
-> +
-> +      "#gpio-cells":
-> +        const: 2
-> +
-> +      gpio-ranges:
-> +        maxItems: 1
-> +
-> +      interrupt-controller: true
-> +
-> +      "#interrupt-cells":
-> +        const: 2
-> +        description:
-> +          Refer to ../interrupt-controller/interrupts.txt for more details.
-> +
-> +      interrupts:
-> +        maxItems: 1
-> +
-> +    required:
-> +      - compatible
-> +      - reg
-> +      - gpio-controller
-> +      - "#gpio-cells"
-> +      - interrupts
-> +      - interrupt-controller
-> +      - "#interrupt-cells"
-> +
-> +    additionalProperties: false
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - "#address-cells"
-> +  - "#size-cells"
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    pin-controller@10010000 {
-> +      compatible = "ingenic,jz4770-pinctrl";
-> +      reg = <0x10010000 0x600>;
-> +
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +
-> +      gpio@0 {
-> +        compatible = "ingenic,jz4770-gpio";
-> +        reg = <0>;
-> +
-> +        gpio-controller;
-> +        gpio-ranges = <&pinctrl 0 0 32>;
-> +        #gpio-cells = <2>;
-> +
-> +        interrupt-controller;
-> +        #interrupt-cells = <2>;
-> +
-> +        interrupt-parent = <&intc>;
-> +        interrupts = <17>;
-> +      };
-> +    };
-
-What about pinctrl child nodes?
- 
-> -- 
-> 2.26.2
-> 
+-Doug
