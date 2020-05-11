@@ -2,132 +2,162 @@ Return-Path: <SRS0=1VgQ=6Z=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-6.4 required=3.0 tests=FORGED_MUA_MOZILLA,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECAD6C47255
-	for <linux-serial@archiver.kernel.org>; Mon, 11 May 2020 16:02:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDB01C47255
+	for <linux-serial@archiver.kernel.org>; Mon, 11 May 2020 19:40:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BA912206E6
-	for <linux-serial@archiver.kernel.org>; Mon, 11 May 2020 16:02:29 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="uv/YZnkN"
+	by mail.kernel.org (Postfix) with ESMTP id 9E79D20720
+	for <linux-serial@archiver.kernel.org>; Mon, 11 May 2020 19:40:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729853AbgEKQC3 (ORCPT
+        id S1731200AbgEKTkY (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 May 2020 12:02:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54054 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729556AbgEKQC3 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 May 2020 12:02:29 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20D8C061A0C
-        for <linux-serial@vger.kernel.org>; Mon, 11 May 2020 09:02:28 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id m12so13699473wmc.0
-        for <linux-serial@vger.kernel.org>; Mon, 11 May 2020 09:02:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YJxLpJX62Fekaa+AoIWZZCIoU3KlFpvhoNLivrRXfy0=;
-        b=uv/YZnkNB3ieOwzEoD7DCWpFpAn+e/KKj67tegbx5RTEoNCuSd/EAzBjup0e9sx0K8
-         /mY90Bfv1qB2WQ4Yvi98RQtvi7IHohDApmRWP6Dk5I61Qa6Bm/uSvVKg8/JhOyBeXlE8
-         nTATGRzTclMXnN4nzeAazZGf3P4ZP0h2F049N6/eaGWwhE30RlY9o2sM7ZWmFitx9uX/
-         zPAGOX2FnmhjfBGWIIjjiZPeThZM2hYn5g0cnMbFaM0UDtrj17O5kMJkGq/CLQU4dqS7
-         VPrG8ITNOqjV0naX6BbyG5ftg+IT3O1MBbW9rbj4/Apb/9es0DgNxSzA2HAEujAMiv0H
-         kZ/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YJxLpJX62Fekaa+AoIWZZCIoU3KlFpvhoNLivrRXfy0=;
-        b=EEkZaA1p0df8vVZKomdDCfi+4KtqDAMj46CqQbY3T2mNU8dWSlv9r0bpDRlzdVC6b+
-         Lx5h3+r6CjjX93Tzf/QVHqBnxVyg5f3EEkxW9QmVMAWgASuw7ZGL93Gwp8bbpHHLoWrV
-         6U6e7mNWZTsL4gR4YaUTCJ+jEUX1SKk8A8jDKpry+W4fZtqreV2VJHiXVcQ4TU1dmCWk
-         fFMe49E+kJ/DkLa10Hx11hjGt24+y3HhCN8l0axhGKv/g2IyI/etSeQn8fVP5P0EyAMP
-         A/ShLznfK7ABnogzzKwRLvu9Ph508IjQlkasCp43nYEFyD5K6Be+bGc+GUWjn9jv7q9q
-         Y3lQ==
-X-Gm-Message-State: AGi0PuasjcbtLO5daq9TKcEqj1WoxCBIFdhCgbJNk8bAFayR4Z1mg6er
-        eQepqENnzwyiWKqRbpy3uMBS+Q==
-X-Google-Smtp-Source: APiQypJf2L0prcQVNRJ7wp9Af8wHYgkMBEEqatM3HbAZY3RC7lUVWyWWeVTHGg5jc/YsIzU0qNqOgg==
-X-Received: by 2002:a7b:c931:: with SMTP id h17mr34342830wml.105.1589212947333;
-        Mon, 11 May 2020 09:02:27 -0700 (PDT)
-Received: from holly.lan (cpc141214-aztw34-2-0-cust773.18-1.cable.virginm.net. [86.9.19.6])
-        by smtp.gmail.com with ESMTPSA id v124sm27068657wme.45.2020.05.11.09.02.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2020 09:02:26 -0700 (PDT)
-Date:   Mon, 11 May 2020 17:02:24 +0100
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Douglas Anderson <dianders@chromium.org>
-Cc:     jason.wessel@windriver.com, gregkh@linuxfoundation.org,
-        corbet@lwn.net, frowand.list@gmail.com, bjorn.andersson@linaro.org,
-        linux-serial@vger.kernel.org, mingo@redhat.com, hpa@zytor.com,
-        jslaby@suse.com, kgdb-bugreport@lists.sourceforge.net,
-        sumit.garg@linaro.org, will@kernel.org, tglx@linutronix.de,
-        agross@kernel.org, catalin.marinas@arm.com, bp@alien8.de,
+        Mon, 11 May 2020 15:40:24 -0400
+Received: from mail-oln040092010057.outbound.protection.outlook.com ([40.92.10.57]:13943
+        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729453AbgEKTkY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 11 May 2020 15:40:24 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OUDmzzUDI02pF8V3/IOxVAhSxSZEnwsNrbXg7AfZPDTLh8Zjc6FC8DJxb6AXNs+uWirxptpuFepXMBTJXQjbeOx1pu2mLVvLeLtIeyP8IVCh6yh4T9IwUo+QEkgD4edeGpKioSRhzTULNChlQuu2gW+8c8sNDsaj73MXL939HGmHVc03oxM5eVf0W3HrBdSqlxktEkf23rGoheqzW9dDgQdFSkTG2owrnXPawIKncKbdXam7obOE/ui8cPyGq2ZtyOeT/sUd6dU9F+Re4Qy6hpyHtONBPUi39RjBzlXUlCidrfUnDtsrWQWVOY+zSetvS/nYxfgAxnVyqd+X0BDUiA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oPe79cHYrLT7fgnm2xmrMQZ2LOTrgl7ADSAeP23qE8A=;
+ b=nOYUbV4SkLmFsp4h5TBQ2viVkrgc9S1odFbwk0YPOrQdODEd+72FsS3eVh3qF8lrD3pa9/cQ0coB/f+LrJpc/BddKja4groHs7mW6ABkjPwdCGT14ZcSiBUj4340tbG5IUq61Shk40uiX0Pc11iRaAYCrDxsAbOrb9Nq2PKuIA0cVngGD0Tx16j9y9UAMOxhnMvO79crKYk9OJNTFKtBDOD/c+W5ePOEN+rUgYj7By9bull0XJmmOtqoCC7sM6WlQsxSYPaQpwetd6cNhUqXOTgInsScmIK3w5DN3LOh6VdcJy0peQrds+mD2Xp0xodxemGmFrhw8JmZ8umd0iEHtQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=live.ca; dmarc=pass action=none header.from=live.ca; dkim=pass
+ header.d=live.ca; arc=none
+Received: from SN1NAM04FT055.eop-NAM04.prod.protection.outlook.com
+ (10.152.88.54) by SN1NAM04HT120.eop-NAM04.prod.protection.outlook.com
+ (10.152.89.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.27; Mon, 11 May
+ 2020 19:40:21 +0000
+Received: from BN6PR04MB0660.namprd04.prod.outlook.com
+ (2a01:111:e400:7e4c::50) by SN1NAM04FT055.mail.protection.outlook.com
+ (2a01:111:e400:7e4c::276) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.27 via Frontend
+ Transport; Mon, 11 May 2020 19:40:21 +0000
+X-IncomingTopHeaderMarker: OriginalChecksum:72E7EE7FA8188B73B014FD6571BA844966295E2419F5255A20FE51EC8D36D6A4;UpperCasedChecksum:F1D8481A5A4CBA010304E954551F802575924E9DA2F1B2C6E9DA84A6B162EFB1;SizeAsReceived:9121;Count:50
+Received: from BN6PR04MB0660.namprd04.prod.outlook.com
+ ([fe80::ad10:4127:4bc8:76fc]) by BN6PR04MB0660.namprd04.prod.outlook.com
+ ([fe80::ad10:4127:4bc8:76fc%6]) with mapi id 15.20.2979.033; Mon, 11 May 2020
+ 19:40:21 +0000
+Subject: Re: [PATCH] tty: serial: samsung: Correct clock selection logic
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     kgene@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 07/12] kgdboc: Remove useless #ifdef
- CONFIG_KGDB_SERIAL_CONSOLE in kgdboc
-Message-ID: <20200511160224.cvelsmnpxc2ykgzb@holly.lan>
-References: <20200507200850.60646-1-dianders@chromium.org>
- <20200507130644.v4.7.Icb528f03d0026d957e60f537aa711ada6fd219dc@changeid>
+References: <BN6PR04MB06604E63833EA41837EBF77BA3A30@BN6PR04MB0660.namprd04.prod.outlook.com>
+ <20200511100836.GA16828@kozik-lap>
+From:   Jonathan Bakker <xc-racer2@live.ca>
+Message-ID: <BN6PR04MB0660B66569974294E24F2044A3A10@BN6PR04MB0660.namprd04.prod.outlook.com>
+Date:   Mon, 11 May 2020 12:40:18 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
+In-Reply-To: <20200511100836.GA16828@kozik-lap>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: CO2PR04CA0156.namprd04.prod.outlook.com (2603:10b6:104::34)
+ To BN6PR04MB0660.namprd04.prod.outlook.com (2603:10b6:404:d9::21)
+X-Microsoft-Original-Message-ID: <3f94a7d6-65c7-4fa7-f4b2-2ddc9fec10cb@live.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200507130644.v4.7.Icb528f03d0026d957e60f537aa711ada6fd219dc@changeid>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2001:569:fb68:9c00:8067:f823:1e15:7520] (2001:569:fb68:9c00:8067:f823:1e15:7520) by CO2PR04CA0156.namprd04.prod.outlook.com (2603:10b6:104::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.27 via Frontend Transport; Mon, 11 May 2020 19:40:20 +0000
+X-Microsoft-Original-Message-ID: <3f94a7d6-65c7-4fa7-f4b2-2ddc9fec10cb@live.ca>
+X-TMN:  [MtnCR6rpauK6C5JN3dkav6WAQlB48U8Sy0q1NXDY52gErLx89AGZ6RkEzfSXVh5Z]
+X-MS-PublicTrafficType: Email
+X-IncomingHeaderCount: 50
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-Correlation-Id: 47665e5e-5e92-41dc-9ba3-08d7f5e32444
+X-MS-TrafficTypeDiagnostic: SN1NAM04HT120:
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 9PQn66Nm+45+3rLWORJVcsu7zKbS5wgJbrAwd/Uwg1mN8msulqhQqsbTY8XynQWtmaQQfmIIFN6IhazkyGSYG9zVaDLK1gfJldHov3kON1n+UC6Diw20tiO9pkDDOzjJvY+qxpbhnnpd5M7zRJmaifG86Bwfa4uPiG1gDqRubPnSCiQUZ6HLSGn+ozO64Ij5SYG8r3pGoQwXIXwDRI2iTA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:0;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR04MB0660.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:;DIR:OUT;SFP:1901;
+X-MS-Exchange-AntiSpam-MessageData: ys4YbTpP2aQc1OzRWZPI9MGDprNkLvOE9GZAG3IAra7A8SLbCMKZYI9FOHkrdYel5YzErwcMZJNdOD2E/BhCKBY5f548UfsynV3Yn/3AC/NtJhdRT3tSOTgyMCTSzBwzIihLn9sjvsRL4RafvTLULza4C9HoOecSVPIHBIv27RzHkKo3yih5lRkHxoQ+o5vdNRjeWbPnWdjGLICQLcIU8g==
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 47665e5e-5e92-41dc-9ba3-08d7f5e32444
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2020 19:40:21.6769
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN1NAM04HT120
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, May 07, 2020 at 01:08:45PM -0700, Douglas Anderson wrote:
-> This file is only ever compiled if that config is on since the
-> Makefile says:
-> 
->   obj-$(CONFIG_KGDB_SERIAL_CONSOLE) += kgdboc.o
-> 
-> Let's get rid of the useless #ifdef.
-> 
-> Reported-by: Daniel Thompson <daniel.thompson@linaro.org>
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Hi Krzysztof,
 
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+On 2020-05-11 3:08 a.m., Krzysztof Kozlowski wrote:
+> On Fri, May 08, 2020 at 06:34:33PM -0700, Jonathan Bakker wrote:
+>> Some variants of the samsung tty driver can pick which clock
+>> to use for their baud rate generation.  In the DT conversion,
+>> a default clock was selected to be used if a specific one wasn't
+>> assigned and then a comparison of which clock rate worked better
+>> was done.  Unfortunately, the comparison was implemented in such
+>> a way that only the default clock was ever actually compared.
+>> Fix this by iterating through all possible clocks, except when a
+>> specific clock has already been picked via clk_sel (which is
+>> only possible via board files).
+>>
+>> Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
+>> ---
+>>  drivers/tty/serial/samsung_tty.c | 8 ++++----
+>>  1 file changed, 4 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+>> index 73f951d65b93..9d2b4be44209 100644
+>> --- a/drivers/tty/serial/samsung_tty.c
+>> +++ b/drivers/tty/serial/samsung_tty.c
+>> @@ -1281,14 +1281,14 @@ static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
+>>  	struct s3c24xx_uart_info *info = ourport->info;
+>>  	struct clk *clk;
+>>  	unsigned long rate;
+>> -	unsigned int cnt, baud, quot, clk_sel, best_quot = 0;
+>> +	unsigned int cnt, baud, quot, best_quot = 0;
+>>  	char clkname[MAX_CLK_NAME_LENGTH];
+>>  	int calc_deviation, deviation = (1 << 30) - 1;
+>>  
+>> -	clk_sel = (ourport->cfg->clk_sel) ? ourport->cfg->clk_sel :
+>> -			ourport->info->def_clk_sel;
+>>  	for (cnt = 0; cnt < info->num_clks; cnt++) {
+>> -		if (!(clk_sel & (1 << cnt)))
+>> +		/* Keep selected clock if provided */
+> 
+> Makes sense and good catch.
+> 
+> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+> 
+> I wonder about the s3c24xx_serial_enable_baudclk() which has similar
+> pattern - is there
+> testing only def_clk_sel on purpose?
 
+Yeah, I saw this instance too.  5086e0a409a0c ("tty: serial: samsung: Enable
+baud clock during initialisation") introduced it, which was just to make sure
+that some clock was enabled during initialization.  Since it doesn't appear to
+be critical which clock it is, I left it as it was.
 
-> ---
+Thanks,
+Jonathan
+
 > 
-> Changes in v4:
-> - ("kgdboc: Remove useless #ifdef...") new for v4.
+> Best regards,
+> Krzysztof
 > 
-> Changes in v3: None
-> Changes in v2: None
-> 
->  drivers/tty/serial/kgdboc.c | 2 --
->  1 file changed, 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-> index 519d8cfbfbed..2e9158fff976 100644
-> --- a/drivers/tty/serial/kgdboc.c
-> +++ b/drivers/tty/serial/kgdboc.c
-> @@ -380,7 +380,6 @@ static struct kgdb_io kgdboc_io_ops = {
->  	.post_exception		= kgdboc_post_exp_handler,
->  };
->  
-> -#ifdef CONFIG_KGDB_SERIAL_CONSOLE
->  static int kgdboc_option_setup(char *opt)
->  {
->  	if (!opt) {
-> @@ -409,7 +408,6 @@ static int __init kgdboc_early_init(char *opt)
->  }
->  
->  early_param("ekgdboc", kgdboc_early_init);
-> -#endif /* CONFIG_KGDB_SERIAL_CONSOLE */
->  
->  module_init(init_kgdboc);
->  module_exit(exit_kgdboc);
-> -- 
-> 2.26.2.645.ge9eca65c58-goog
-> 
+>> +		if (ourport->cfg->clk_sel &&
+>> +			!(ourport->cfg->clk_sel & (1 << cnt)))
+>>  			continue;
+>>  
+>>  		sprintf(clkname, "clk_uart_baud%d", cnt);
+>> -- 
+>> 2.20.1
+>>
