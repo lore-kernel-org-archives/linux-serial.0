@@ -2,161 +2,125 @@ Return-Path: <SRS0=1VgQ=6Z=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD93C47255
-	for <linux-serial@archiver.kernel.org>; Mon, 11 May 2020 07:34:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FCE4C54E4B
+	for <linux-serial@archiver.kernel.org>; Mon, 11 May 2020 10:08:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 592402080C
-	for <linux-serial@archiver.kernel.org>; Mon, 11 May 2020 07:34:07 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="ds85XVIj"
+	by mail.kernel.org (Postfix) with ESMTP id E05AF208DB
+	for <linux-serial@archiver.kernel.org>; Mon, 11 May 2020 10:08:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1589191722;
+	bh=WtEq/1kpgVLewTDkwfFKbHjTtwrkAeHhRFFbWBnnn6I=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=Bpg+W+uiFF1Ps+yfFBHBtXYlsChD2lv3URtftJwV+TLQ/g0AAvXTRD93yh/DAV2dw
+	 eknr9eAa1J6QwqTZOP+A2casP2SeGLtCRtsXzI8RGwpflGH2LfDFPQVjEhgYMU3F1N
+	 y/g01LeLOYlcT4Q1INW1LcdgrrJD4i/mokqRhYjI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728017AbgEKHeH (ORCPT
+        id S1729220AbgEKKIm (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 May 2020 03:34:07 -0400
-Received: from mail-eopbgr10088.outbound.protection.outlook.com ([40.107.1.88]:12608
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728014AbgEKHeG (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 May 2020 03:34:06 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iL09OQjJs2tKQtNU/G2W4ujalEJRud4BwXDV31itoIXPorTz5l+skCYNl5YTCPYQQSr3S4/bsaN0psxJZdunEVdVnDYFCEVWHU3R+eQmHZ9Ub1swCLhbIN8baHVoxA60yGonRIvuwUqauR6v5Y3fhwrobpJJSxcU36oQFoUinptpQpbeUsj67/rIrg2FBF5vzzzqrUlCmhY/dLl/3wKst5i6Op0KBnjPjzDJMBD6HLqLKQmd3vbdsw9J90TLdSdGTINatsMmD/a9/K3Ly0vcd+gml7BiviPvJFSnhASo5G8EiSRXSvsitKLqPA86n8gh0RmZotmoGi97v4LFPXSKvA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nZW13/KE5S3TLo8vrVXoLCx6ZRgrFZARpawdso5YUzg=;
- b=RPzUQkpvcVmZGImUb34WVumrLqauvPCXpdTcD87+6KlxCZg6exDyP69IyInCM99+qYAt4kIbpMUoFFq7tOCdonF/xoQyFCxaWHZgZTzlYZydjdg1uPo+FitlVLaaI6iYTp13K/dlqYMuZKKFEd+244BxANVSGP4rHzCW7J2PWHdjrO+rtQCy8RCW/o3IaZ9AYni9GQaXCmd0nd4KcSCVS1Tg55pfYMIzKU1X3bC+/60zkQKNhG0aCHGN2E8mJPz1JKObaSjPJ6sGWJchAgPRlIaHfN/sg8sP2JKXjvR5i8Bfxq4xTae/wVUj1txi4GI5vvVePge6gazjW4jcceR+lg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nZW13/KE5S3TLo8vrVXoLCx6ZRgrFZARpawdso5YUzg=;
- b=ds85XVIjRUnv6X6pQhpcjJySzAfLza7TCJMMEAQyfczGIRE8/D+uSIZFEbEiiqRNUZ+sQWXaB+8CFGSb4RGxZ6t6ugZxvOMFJSakXELPOp45La5uCUfZ49PVlkiCGHvK9KIA4mrI4W7vYBGez5aNmfyGSzt59Ch3tPa7mOYENgA=
-Received: from AM6PR0402MB3911.eurprd04.prod.outlook.com
- (2603:10a6:209:1c::10) by AM6PR0402MB3398.eurprd04.prod.outlook.com
- (2603:10a6:209:6::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.34; Mon, 11 May
- 2020 07:34:03 +0000
-Received: from AM6PR0402MB3911.eurprd04.prod.outlook.com
- ([fe80::a5f9:57c:97d3:491f]) by AM6PR0402MB3911.eurprd04.prod.outlook.com
- ([fe80::a5f9:57c:97d3:491f%6]) with mapi id 15.20.2979.033; Mon, 11 May 2020
- 07:34:02 +0000
-From:   Anson Huang <anson.huang@nxp.com>
-To:     =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-CC:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jslaby@suse.com" <jslaby@suse.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: RE: [PATCH] tty: serial: imx: Add return value check for
- platform_get_irq()
-Thread-Topic: [PATCH] tty: serial: imx: Add return value check for
- platform_get_irq()
-Thread-Index: AQHWJ2R9HRDfI6PXFU6oSAD1fVH3jKiifI2AgAAAUcA=
-Date:   Mon, 11 May 2020 07:34:02 +0000
-Message-ID: <AM6PR0402MB39112DC95B39E980E830BE34F5A10@AM6PR0402MB3911.eurprd04.prod.outlook.com>
-References: <1589180996-618-1-git-send-email-Anson.Huang@nxp.com>
- <20200511072747.2vyavydpfa47kbuy@pengutronix.de>
-In-Reply-To: <20200511072747.2vyavydpfa47kbuy@pengutronix.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: pengutronix.de; dkim=none (message not signed)
- header.d=none;pengutronix.de; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [92.121.68.129]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 75986d84-dc84-4676-8571-08d7f57dada2
-x-ms-traffictypediagnostic: AM6PR0402MB3398:|AM6PR0402MB3398:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM6PR0402MB3398DF2E5A8C70C7BDB2D393F5A10@AM6PR0402MB3398.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 04004D94E2
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: WVZCbXhYmZ1ajcppip+tQySq1nuRQqmWziAVAkhs5SOd6/MPD2ITWkU4Hd+/9GAVZMnrPRvQztXRUVzMot8jbYz2Df1lJ23DeC1IreTo1wLo8BsY2+EH5KgxywMOoc+WZlJbvQX9wy+WtDWivg4AOc9GjgNTZA3GpwxFWa6gskfMwXZQaufvAhEI3D0OQSStLVfAlx6Xk9WqK+nMhb0iyU4og9iBCNJ7F4mKvBV0cFnchT4lhbU38xOEFWAU00xsrW5yXDx1e0FDFnqySBdtP4fBtteOKBf8EK+vTK3TsLXxST95NjZF9SQ5FI3wjULtputMXuGcfP5Wo+B7kNpwHHhgl0+CY+GIzExYakM9yW4ip2FQ3vtdrW/+P1ZqfLLTah+sFHkPIaQK6RNd/x+gjWEJC/0sUq/pkaV2D20PCvenR9LS8LFuTCQdOO/9s6dzVMrW92b6o8FCwzxuBY4ZMRoicpMoELD75ZA4qcfHgKgldm5PiFjBOrE3TVjjmeyxBdD9hJxnqJ4ZD0pcrPQJYw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3911.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(366004)(39860400002)(376002)(136003)(396003)(33430700001)(26005)(4326008)(64756008)(66446008)(66476007)(66556008)(66946007)(76116006)(6506007)(9686003)(6916009)(8936002)(7696005)(44832011)(55016002)(33656002)(5660300002)(52536014)(186003)(316002)(8676002)(478600001)(2906002)(7416002)(54906003)(86362001)(33440700001)(71200400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: sccy8CXDNSmgHz0PZfiVegB2qJdHHcCTzwdWYXzwpcTYGEGrOVw4XQPCVHY3MUOzFEhEf5w6b236B8Efp+HgaCxxFZAJ5IubMunXGXyQJb0KWcOKcmu/e7VHCPtr2Fss8dUsrKQ9oMj181Vf0CvKjZ1wrbgWcZUYJAhScDPXfsV4U3ll60aO65OQmyaxu4gzWkwcGXb3gxFvShETEp9P45PS2H1TkuibZ4wbTPlIs03IOsQJEl4bCGrxm59Cv0oieuk3vZhKWMEHi9pjMz6TTktYrRGZoOcXzTi/kSZDzvAT9AXJVir/fBCxPXzSbgCVHLioYOvLKaBvk8lCk5sq4FqbUcrqVuMXYBWCxJbqrqYugOZdSXc+t6dBAfgWUdHrOgsp7RsH5AjoRgjhZ0aspLAxw52RbjkrlPrt8GHTcpfrnANaQlsvT5GZ5kIOTaVXoIqgqzD80ly+l8sJKxVhk4SoYYlb1iSftcVe7zhAMkg=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        Mon, 11 May 2020 06:08:42 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:42311 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725983AbgEKKIm (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 11 May 2020 06:08:42 -0400
+Received: by mail-ed1-f65.google.com with SMTP id s10so7421038edy.9;
+        Mon, 11 May 2020 03:08:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ADM8r+B0dzyP5A/vqyNmonnjvaPcrODBmZPyMqMMxIs=;
+        b=qwcJ/U4lMnxfhStkH1TeBu1nnGL/VamUIPI6uUaTqGgUn0w7hZ4ovPOHFR7Ee0GRqh
+         8aum25vzSOgS6GWJhlNKm7Orn2BdSq7VcGYZJw0xddzStZylWAMXIjLcpa+Rykkf3lJq
+         z378MI3yjLb4rzqfQNtW4GcfjS/8giGCHfFfvtNCW+66oQ3y6ZRx18DR3MVHQBqiqask
+         Y2+c5G3KLnKqmkHlsSzjEl3GCCp6VPSZ1DIv0xSRvch+u5g0vneXHBWYsAxZGxSV1Ig2
+         zNST5BafTWPyc8Poy3r8rmc13QG5JpajmW8QOMz+s1ZVyxarri0pJxLzXL4ofao7mwZa
+         aP+w==
+X-Gm-Message-State: AGi0PuYSNg2M7CI1jFMj9Mwzy3wA7he6JUv1S+XD17eDhY8JNVMshxdO
+        7+D/kh9NsTDziCPzYuhLNUF8aXvK
+X-Google-Smtp-Source: APiQypIIjKKjypDAYbOFH4MiQWndpu/est9zg63nnHoe6ueUE/9p66tdn9yO2ilqbrvMJLoHMfCWHw==
+X-Received: by 2002:a05:6402:28e:: with SMTP id l14mr12321849edv.184.1589191719680;
+        Mon, 11 May 2020 03:08:39 -0700 (PDT)
+Received: from kozik-lap ([194.230.155.237])
+        by smtp.googlemail.com with ESMTPSA id ga1sm1242231ejb.65.2020.05.11.03.08.38
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 11 May 2020 03:08:39 -0700 (PDT)
+Date:   Mon, 11 May 2020 12:08:36 +0200
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Jonathan Bakker <xc-racer2@live.ca>
+Cc:     kgene@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] tty: serial: samsung: Correct clock selection logic
+Message-ID: <20200511100836.GA16828@kozik-lap>
+References: <BN6PR04MB06604E63833EA41837EBF77BA3A30@BN6PR04MB0660.namprd04.prod.outlook.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 75986d84-dc84-4676-8571-08d7f57dada2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 May 2020 07:34:02.7431
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8XBZ7qO2eMLWG030d4BuqI1pZT1t4yVw/nDxW0FpPJZYnIeh8HvxQGq8zVxcNH7O7fb/mAWeqasbphvIIMHPgQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3398
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <BN6PR04MB06604E63833EA41837EBF77BA3A30@BN6PR04MB0660.namprd04.prod.outlook.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi, Uwe
+On Fri, May 08, 2020 at 06:34:33PM -0700, Jonathan Bakker wrote:
+> Some variants of the samsung tty driver can pick which clock
+> to use for their baud rate generation.  In the DT conversion,
+> a default clock was selected to be used if a specific one wasn't
+> assigned and then a comparison of which clock rate worked better
+> was done.  Unfortunately, the comparison was implemented in such
+> a way that only the default clock was ever actually compared.
+> Fix this by iterating through all possible clocks, except when a
+> specific clock has already been picked via clk_sel (which is
+> only possible via board files).
+> 
+> Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
+> ---
+>  drivers/tty/serial/samsung_tty.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+> index 73f951d65b93..9d2b4be44209 100644
+> --- a/drivers/tty/serial/samsung_tty.c
+> +++ b/drivers/tty/serial/samsung_tty.c
+> @@ -1281,14 +1281,14 @@ static unsigned int s3c24xx_serial_getclk(struct s3c24xx_uart_port *ourport,
+>  	struct s3c24xx_uart_info *info = ourport->info;
+>  	struct clk *clk;
+>  	unsigned long rate;
+> -	unsigned int cnt, baud, quot, clk_sel, best_quot = 0;
+> +	unsigned int cnt, baud, quot, best_quot = 0;
+>  	char clkname[MAX_CLK_NAME_LENGTH];
+>  	int calc_deviation, deviation = (1 << 30) - 1;
+>  
+> -	clk_sel = (ourport->cfg->clk_sel) ? ourport->cfg->clk_sel :
+> -			ourport->info->def_clk_sel;
+>  	for (cnt = 0; cnt < info->num_clks; cnt++) {
+> -		if (!(clk_sel & (1 << cnt)))
+> +		/* Keep selected clock if provided */
 
+Makes sense and good catch.
 
-> Subject: Re: [PATCH] tty: serial: imx: Add return value check for
-> platform_get_irq()
->=20
-> Hello Anson,
->=20
-> On Mon, May 11, 2020 at 03:09:56PM +0800, Anson Huang wrote:
-> > RX irq is required, so add return value check for platform_get_irq().
-> >
-> > Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
-> > ---
-> >  drivers/tty/serial/imx.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c index
-> > f4d6810..f4023d9 100644
-> > --- a/drivers/tty/serial/imx.c
-> > +++ b/drivers/tty/serial/imx.c
-> > @@ -2252,6 +2252,8 @@ static int imx_uart_probe(struct platform_device
-> *pdev)
-> >  		return PTR_ERR(base);
-> >
-> >  	rxirq =3D platform_get_irq(pdev, 0);
-> > +	if (rxirq < 0)
-> > +		return rxirq;
-> >  	txirq =3D platform_get_irq_optional(pdev, 1);
-> >  	rtsirq =3D platform_get_irq_optional(pdev, 2);
->=20
-> I'm not sure we need such a check as devm_request_irq fails if the return=
- value
-> of platform_get_irq() is bogus.
->=20
-> But if we decide this construct is good enough, the error reporting needs=
- some
-> love as currently it emits two error messages which is confusing.
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
 
-From the driver, the RX IRQ is always required, if it failed in platform_ge=
-t_irq(), then the
-rest of the code is NOT necessary to be executed, and also I am NOT sure if=
- platform_get_irq()
-failed, the devm_request_irq will always failed?
+I wonder about the s3c24xx_serial_enable_baudclk() which has similar
+pattern - is there
+testing only def_clk_sel on purpose?
 
-Not very understand about your last question, the platform_get_irq() alread=
-y has error message printed
-out, so no additional error message is needed in the check. If looking thro=
-ugh all other drivers, most
-of the platform_get_irq() are having the return value check, if it failed i=
-n platform_get_irq(), driver can
-just return error from .probe().
+Best regards,
+Krzysztof
 
-Anson
+> +		if (ourport->cfg->clk_sel &&
+> +			!(ourport->cfg->clk_sel & (1 << cnt)))
+>  			continue;
+>  
+>  		sprintf(clkname, "clk_uart_baud%d", cnt);
+> -- 
+> 2.20.1
+> 
