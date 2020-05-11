@@ -6,39 +6,39 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 110B7C54E4A
-	for <linux-serial@archiver.kernel.org>; Mon, 11 May 2020 05:57:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B08AC47255
+	for <linux-serial@archiver.kernel.org>; Mon, 11 May 2020 05:57:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E3FA520820
-	for <linux-serial@archiver.kernel.org>; Mon, 11 May 2020 05:57:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8434220820
+	for <linux-serial@archiver.kernel.org>; Mon, 11 May 2020 05:57:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728283AbgEKF5g (ORCPT
+        id S1728420AbgEKF5k (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 11 May 2020 01:57:36 -0400
-Received: from mga14.intel.com ([192.55.52.115]:54277 "EHLO mga14.intel.com"
+        Mon, 11 May 2020 01:57:40 -0400
+Received: from mga12.intel.com ([192.55.52.136]:20492 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725916AbgEKF5f (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 11 May 2020 01:57:35 -0400
-IronPort-SDR: TYhSSYlRCWzHBxB23gZoxAMCsT81ICu1hd1IYQjcPIB9GcoOpHiwzBdtdNShIG/WI8kxyq9Fpt
- Vaa5vHVATZyA==
+        id S1725916AbgEKF5j (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Mon, 11 May 2020 01:57:39 -0400
+IronPort-SDR: x/K4pQ0oqvM2jmSbv2rbe6CbSpRr/B1NOz/gShZV7HFQvyel+H9LVXnnqjoHAqsg/ZldcgvDtZ
+ ENTrmco8Eq3w==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2020 22:57:35 -0700
-IronPort-SDR: vjEWTfL3FYUjWJlIrYuX7W/KkBwmcWqKOnkV58x+Mujzk6KO/ipTLRIAFD2kjBdrqaejJrlnqk
- 0sFAHEPlzpDA==
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2020 22:57:39 -0700
+IronPort-SDR: KT7xHhnA8nltF3WSt3opgqjmdNPBOF4e9WIgcuD9/lmEsFHEHQlKy8sL3DfI9mqoUS1QWZgLtH
+ +WtCtzX0Im+Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,378,1583222400"; 
-   d="scan'208";a="279680285"
+   d="scan'208";a="408805975"
 Received: from sgsxdev001.isng.intel.com (HELO localhost) ([10.226.88.11])
-  by orsmga002.jf.intel.com with ESMTP; 10 May 2020 22:57:33 -0700
+  by orsmga004.jf.intel.com with ESMTP; 10 May 2020 22:57:37 -0700
 From:   Rahul Tanwar <rahul.tanwar@linux.intel.com>
 To:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, andriy.shevchenko@intel.com,
         Rahul Tanwar <rahul.tanwar@linux.intel.com>
-Subject: [PATCH v3 1/2] serial: lantiq: Make UART's use as console selectable
-Date:   Mon, 11 May 2020 13:57:26 +0800
-Message-Id: <35f2d002ba1cb26192fe4d9b8cdab275300705bc.1589176044.git.rahul.tanwar@linux.intel.com>
+Subject: [PATCH v3 2/2] serial: lantiq: Make driver modular
+Date:   Mon, 11 May 2020 13:57:27 +0800
+Message-Id: <ad9422de006c317401bfa5fe61bdd4293dd29b5e.1589176044.git.rahul.tanwar@linux.intel.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <cover.1589176044.git.rahul.tanwar@linux.intel.com>
 References: <cover.1589176044.git.rahul.tanwar@linux.intel.com>
@@ -49,74 +49,105 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Lantiq UART driver can be used for system console. Add changes to
-make this driver's use as console selectable/configurable.
+Add changes so Lantiq serial driver can be compiled as a module.
 
 Signed-off-by: Rahul Tanwar <rahul.tanwar@linux.intel.com>
 ---
- drivers/tty/serial/Kconfig  |  9 ++++++++-
- drivers/tty/serial/lantiq.c | 11 ++++++++++-
- 2 files changed, 18 insertions(+), 2 deletions(-)
+ drivers/tty/serial/Kconfig  |  4 +++-
+ drivers/tty/serial/lantiq.c | 29 +++++++++++++++++++++++++----
+ 2 files changed, 28 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 4b0a7b98f8c7..bb4009a1135f 100644
+index bb4009a1135f..c0681da66653 100644
 --- a/drivers/tty/serial/Kconfig
 +++ b/drivers/tty/serial/Kconfig
-@@ -1037,10 +1037,17 @@ config SERIAL_LANTIQ
- 	bool "Lantiq serial driver"
+@@ -1034,11 +1034,13 @@ config SERIAL_SIFIVE_CONSOLE
+ 	  boot time.)
+ 
+ config SERIAL_LANTIQ
+-	bool "Lantiq serial driver"
++	tristate "Lantiq serial driver"
  	depends on (LANTIQ || X86) || COMPILE_TEST
  	select SERIAL_CORE
-+	help
-+	  Support for UART on Lantiq and Intel SoCs.
-+
-+config SERIAL_LANTIQ_CONSOLE
-+	bool "Console on Lantiq UART"
-+	depends on SERIAL_LANTIQ=y
- 	select SERIAL_CORE_CONSOLE
- 	select SERIAL_EARLYCON
  	help
--	  Support for console and UART on Lantiq SoCs.
-+	  Select this option if you would like to use a Lantiq UART as the
-+	  system console.
+ 	  Support for UART on Lantiq and Intel SoCs.
++	  To compile this driver as a module, select M here. The
++	  module will be called lantiq.
  
- config SERIAL_QE
- 	tristate "Freescale QUICC Engine serial port support"
+ config SERIAL_LANTIQ_CONSOLE
+ 	bool "Console on Lantiq UART"
 diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
-index c5e46ff972e4..d3b62a1be6ad 100644
+index d3b62a1be6ad..62813e421f12 100644
 --- a/drivers/tty/serial/lantiq.c
 +++ b/drivers/tty/serial/lantiq.c
-@@ -597,6 +597,7 @@ static const struct uart_ops lqasc_pops = {
- 	.verify_port =	lqasc_verify_port,
- };
+@@ -15,6 +15,7 @@
+ #include <linux/io.h>
+ #include <linux/ioport.h>
+ #include <linux/lantiq.h>
++#include <linux/module.h>
+ #include <linux/of_address.h>
+ #include <linux/of_irq.h>
+ #include <linux/of_platform.h>
+@@ -823,8 +824,7 @@ static void free_irq_intel(struct uart_port *port)
+ 	free_irq(ltq_port->common_irq, port);
+ }
  
-+#ifdef CONFIG_SERIAL_LANTIQ_CONSOLE
- static void
- lqasc_console_putchar(struct uart_port *port, int ch)
+-static int __init
+-lqasc_probe(struct platform_device *pdev)
++static int lqasc_probe(struct platform_device *pdev)
  {
-@@ -705,6 +706,14 @@ lqasc_serial_early_console_setup(struct earlycon_device *device,
- OF_EARLYCON_DECLARE(lantiq, "lantiq,asc", lqasc_serial_early_console_setup);
- OF_EARLYCON_DECLARE(lantiq, "intel,lgm-asc", lqasc_serial_early_console_setup);
+ 	struct device_node *node = pdev->dev.of_node;
+ 	struct ltq_uart_port *ltq_port;
+@@ -908,6 +908,13 @@ lqasc_probe(struct platform_device *pdev)
+ 	return ret;
+ }
  
-+#define LANTIQ_SERIAL_CONSOLE	(&lqasc_console)
++static int lqasc_remove(struct platform_device *pdev)
++{
++	struct uart_port *port = platform_get_drvdata(pdev);
 +
-+#else
++	return uart_remove_one_port(&lqasc_reg, port);
++}
 +
-+#define LANTIQ_SERIAL_CONSOLE	NULL
-+
-+#endif /* CONFIG_SERIAL_LANTIQ_CONSOLE */
-+
- static struct uart_driver lqasc_reg = {
- 	.owner =	THIS_MODULE,
- 	.driver_name =	DRVNAME,
-@@ -712,7 +721,7 @@ static struct uart_driver lqasc_reg = {
- 	.major =	0,
- 	.minor =	0,
- 	.nr =		MAXPORTS,
--	.cons =		&lqasc_console,
-+	.cons =		LANTIQ_SERIAL_CONSOLE,
+ static const struct ltq_soc_data soc_data_lantiq = {
+ 	.fetch_irq = fetch_irq_lantiq,
+ 	.request_irq = request_irq_lantiq,
+@@ -925,8 +932,11 @@ static const struct of_device_id ltq_asc_match[] = {
+ 	{ .compatible = "intel,lgm-asc", .data = &soc_data_intel },
+ 	{},
  };
++MODULE_DEVICE_TABLE(of, ltq_asc_match);
  
- static int fetch_irq_lantiq(struct device *dev, struct ltq_uart_port *ltq_port)
+ static struct platform_driver lqasc_driver = {
++	.probe		= lqasc_probe,
++	.remove		= lqasc_remove,
+ 	.driver		= {
+ 		.name	= DRVNAME,
+ 		.of_match_table = ltq_asc_match,
+@@ -942,10 +952,21 @@ init_lqasc(void)
+ 	if (ret != 0)
+ 		return ret;
+ 
+-	ret = platform_driver_probe(&lqasc_driver, lqasc_probe);
++	ret = platform_driver_register(&lqasc_driver);
+ 	if (ret != 0)
+ 		uart_unregister_driver(&lqasc_reg);
+ 
+ 	return ret;
+ }
+-device_initcall(init_lqasc);
++
++static void __exit exit_lqasc(void)
++{
++	platform_driver_unregister(&lqasc_driver);
++	uart_unregister_driver(&lqasc_reg);
++}
++
++module_init(init_lqasc);
++module_exit(exit_lqasc);
++
++MODULE_DESCRIPTION("Serial driver for Lantiq & Intel gateway SoCs");
++MODULE_LICENSE("GPL v2");
 -- 
 2.11.0
 
