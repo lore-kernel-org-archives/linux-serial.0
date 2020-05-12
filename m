@@ -2,162 +2,195 @@ Return-Path: <SRS0=eb60=62=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ABF4C54E4A
-	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 14:02:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98BA6C54E8D
+	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 14:05:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0ACE4206CC
-	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 14:02:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 72A2920722
+	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 14:05:04 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="PJpjeV2e"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729519AbgELOCz (ORCPT
+        id S1729893AbgELOFE (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 12 May 2020 10:02:55 -0400
-Received: from mga12.intel.com ([192.55.52.136]:62365 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728085AbgELOCz (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 12 May 2020 10:02:55 -0400
-IronPort-SDR: +6AklzIjm13DuzQdvcQ8xBor2r9qF41QATGN0R8rResG6vQ3X4g8bPAm/nMXqsxVbe48cJzI0d
- af8hje5WKfPA==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2020 07:02:54 -0700
-IronPort-SDR: j1ExeGs2KceIGrXSd6PgKm1EqylmuOIrRBlZ/giVM4KXESM/iUocVMPAvA9Uv8g23zTB640Rii
- /YEUV/3pke4w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,384,1583222400"; 
-   d="scan'208";a="409306729"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga004.jf.intel.com with ESMTP; 12 May 2020 07:02:53 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 86A95101; Tue, 12 May 2020 17:02:52 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1] serial: 8250_exar: Make use of PCI_DEVICE_DATA() macro
-Date:   Tue, 12 May 2020 17:02:52 +0300
-Message-Id: <20200512140252.67631-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.26.2
+        Tue, 12 May 2020 10:05:04 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:17648 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729921AbgELOFE (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 12 May 2020 10:05:04 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1589292303; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=InNQndDpm42OcpQN7tWNfV3b6ZrAOQwNSMr11BkCV6A=; b=PJpjeV2efod+dsJMCg4JQiQFsyV/pdswKaXph7cHs7FFEDcd7DmXE+Tl4Y2UELTyjVaQcy2u
+ WSLgfmtDgP6J24EcqeEziIlEezPCoL/7VZk3GpJz9utpBXSoVRF/QZhtX8AViZXZQZFEUrhX
+ Ixwx6zL9Tv/wO/87ZUYvgpGgVxA=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5ebaacb1.7f7d5de420d8-smtp-out-n01;
+ Tue, 12 May 2020 14:03:29 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 4D8B1C43636; Tue, 12 May 2020 14:03:28 +0000 (UTC)
+Received: from [192.168.1.100] (unknown [27.59.216.88])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id BD951C43637;
+        Tue, 12 May 2020 14:03:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org BD951C43637
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+Subject: Re: [PATCH V5 1/7] soc: qcom: geni: Support for ICC voting
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
+        mark.rutland@arm.com, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, dianders@chromium.org,
+        evgreen@chromium.org, georgi.djakov@linaro.org
+References: <1588919619-21355-1-git-send-email-akashast@codeaurora.org>
+ <1588919619-21355-2-git-send-email-akashast@codeaurora.org>
+ <20200508171352.GA4525@google.com>
+From:   Akash Asthana <akashast@codeaurora.org>
+Message-ID: <88ac8c5c-d3fe-103e-af0a-0e4a96f4c7db@codeaurora.org>
+Date:   Tue, 12 May 2020 19:32:51 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200508171352.GA4525@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Since PCI core provides a generic PCI_DEVICE_DATA() macro,
-replace contents of EXAR_DEVICE() with former one.
 
-No functional change intended.
+On 5/8/2020 10:43 PM, Matthias Kaehlcke wrote:
+> Hi Akash,
+>
+> note: my comments below are clearly entering bikeshed territory. Please
+> take what you agree with and feel free to ignore the rest.
+>
+> On Fri, May 08, 2020 at 12:03:33PM +0530, Akash Asthana wrote:
+>> Add necessary macros and structure variables to support ICC BW
+>> voting from individual SE drivers.
+>>
+>> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+>> ---
+>> Changes in V2:
+>>   - As per Bjorn's comment dropped enums for ICC paths, given the three
+>>     paths individual members
+>>
+>> Changes in V3:
+>>   - Add geni_icc_get, geni_icc_vote_on and geni_icc_vote_off as helper API.
+>>   - Add geni_icc_path structure in common header
+>>
+>> Changes in V4:
+>>   - As per Bjorn's comment print error message in geni_icc_get if return
+>>     value is not -EPROBE_DEFER.
+>>   - As per Bjorn's comment remove NULL on path before calling icc_set_bw
+>>     API.
+>>   - As per Bjorn's comment drop __func__ print.
+>>   - As per Matthias's comment, make ICC path a array instead of individual
+>>     member entry in geni_se struct.
+>>
+>> Note: I have ignored below check patch suggestion because it was throwing
+>>        compilation error as 'icc_ddr' is not compile time comstant.
+>>
+>> WARNING: char * array declaration might be better as static const
+>>   - FILE: drivers/soc/qcom/qcom-geni-se.c:726:
+>>   - const char *icc_names[] = {"qup-core", "qup-config", icc_ddr};
+>>
+>> Changes in V5:
+>>   - As per Matthias's comment defined enums for ICC paths.
+>>   - Integrate icc_enable/disable with power on/off call for driver.
+>>   - As per Matthias's comment added icc_path_names array to print icc path name
+>>     in failure case.
+>>   - As per Georgi's suggestion assume peak_bw = avg_bw if not mentioned.
+>>
+>>   drivers/soc/qcom/qcom-geni-se.c | 92 +++++++++++++++++++++++++++++++++++++++++
+>>   include/linux/qcom-geni-se.h    | 42 +++++++++++++++++++
+>>   2 files changed, 134 insertions(+)
+>>
+>> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
+>> index 7d622ea..63403bf 100644
+>> --- a/drivers/soc/qcom/qcom-geni-se.c
+>> +++ b/drivers/soc/qcom/qcom-geni-se.c
+>> @@ -92,6 +92,9 @@ struct geni_wrapper {
+>>   	struct clk_bulk_data ahb_clks[NUM_AHB_CLKS];
+>>   };
+>>   
+>> +static const char * const icc_path_names[] = {"qup-core", "qup-config",
+>> +								"qup-memory"};
+> nit: the indentation is a bit odd. I would align it either with "qup-core" or
+> at a tab stop nearby.
+ok
+>
+>> +
+>>   #define QUP_HW_VER_REG			0x4
+>>   
+>>   /* Common SE registers */
+>> @@ -720,6 +723,95 @@ void geni_se_rx_dma_unprep(struct geni_se *se, dma_addr_t iova, size_t len)
+>>   }
+>>   EXPORT_SYMBOL(geni_se_rx_dma_unprep);
+>>   
+>> +int geni_icc_get(struct geni_se *se, const char *icc_ddr)
+>> +{
+>> +	int i, icc_err;
+> nit: the 'icc_' prefix doesn't add value here, just 'err' would be less
+> 'noisy' IMO.
+ok
+>
+>> +	const char *icc_names[] = {"qup-core", "qup-config", icc_ddr};
+> nit: you could avoid repeating the first to strings by referencing
+> icc_path_names[GENI_TO_CORE] and icc_path_names[CPU_TO_GENI]. Not sure
+> if it's really better, it avoids the redundant names, but is slightly
+> less readable.
+I thought of that but current implementation looks neater to me.
+>
+>> +
+>> +	for (i = 0; i < ARRAY_SIZE(se->icc_paths); i++) {
+>> +		if (!icc_names[i])
+>> +			continue;
+>> +
+>> +		se->icc_paths[i].path = devm_of_icc_get(se->dev, icc_names[i]);
+>> +		if (IS_ERR(se->icc_paths[i].path))
+>> +			goto icc_get_failure;
+> nit: since there is only a single label it isn't really necessary to be so
+> precise. 'goto err' is very common in the kernel, 'err_icc_get' would be
+> another alternative.
+okay
+>
+>> +	}
+>> +
+>> +	return 0;
+>> +
+>> +icc_get_failure:
+>> +	icc_err = PTR_ERR(se->icc_paths[i].path);
+>> +	if (icc_err != -EPROBE_DEFER)
+>> +		dev_err_ratelimited(se->dev, "Failed to get ICC path:%s, ret:%d\n",
+> All the logs in this patch result in something like "... path:qup-core, ret:42".
+> For humans I think it is more intuitive to parse "... path 'qup-core': 42".
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_exar.c | 65 ++++++++++++++---------------
- 1 file changed, 31 insertions(+), 34 deletions(-)
+ok
 
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index 885c282c3c7979..1774e9b0f44bda 100644
---- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -25,13 +25,13 @@
- 
- #include "8250.h"
- 
--#define PCI_DEVICE_ID_ACCES_COM_2S		0x1052
--#define PCI_DEVICE_ID_ACCES_COM_4S		0x105d
--#define PCI_DEVICE_ID_ACCES_COM_8S		0x106c
--#define PCI_DEVICE_ID_ACCES_COM232_8		0x10a8
--#define PCI_DEVICE_ID_ACCES_COM_2SM		0x10d2
--#define PCI_DEVICE_ID_ACCES_COM_4SM		0x10db
--#define PCI_DEVICE_ID_ACCES_COM_8SM		0x10ea
-+#define PCI_DEVICE_ID_ACCESSIO_COM_2S		0x1052
-+#define PCI_DEVICE_ID_ACCESSIO_COM_4S		0x105d
-+#define PCI_DEVICE_ID_ACCESSIO_COM_8S		0x106c
-+#define PCI_DEVICE_ID_ACCESSIO_COM232_8		0x10a8
-+#define PCI_DEVICE_ID_ACCESSIO_COM_2SM		0x10d2
-+#define PCI_DEVICE_ID_ACCESSIO_COM_4SM		0x10db
-+#define PCI_DEVICE_ID_ACCESSIO_COM_8SM		0x10ea
- 
- #define PCI_DEVICE_ID_COMMTECH_4224PCI335	0x0002
- #define PCI_DEVICE_ID_COMMTECH_4222PCI335	0x0004
-@@ -743,9 +743,7 @@ static const struct exar8250_board pbn_exar_XR17V8358 = {
- 		(kernel_ulong_t)&bd					\
- 	}
- 
--#define EXAR_DEVICE(vend, devid, bd) {					\
--	PCI_VDEVICE(vend, PCI_DEVICE_ID_##devid), (kernel_ulong_t)&bd	\
--	}
-+#define EXAR_DEVICE(vend, devid, bd) { PCI_DEVICE_DATA(vend, devid, &bd) }
- 
- #define IBM_DEVICE(devid, sdevid, bd) {			\
- 	PCI_DEVICE_SUB(					\
-@@ -757,14 +755,13 @@ static const struct exar8250_board pbn_exar_XR17V8358 = {
- 	}
- 
- static const struct pci_device_id exar_pci_tbl[] = {
--	EXAR_DEVICE(ACCESSIO, ACCES_COM_2S, acces_com_2x),
--	EXAR_DEVICE(ACCESSIO, ACCES_COM_4S, acces_com_4x),
--	EXAR_DEVICE(ACCESSIO, ACCES_COM_8S, acces_com_8x),
--	EXAR_DEVICE(ACCESSIO, ACCES_COM232_8, acces_com_8x),
--	EXAR_DEVICE(ACCESSIO, ACCES_COM_2SM, acces_com_2x),
--	EXAR_DEVICE(ACCESSIO, ACCES_COM_4SM, acces_com_4x),
--	EXAR_DEVICE(ACCESSIO, ACCES_COM_8SM, acces_com_8x),
--
-+	EXAR_DEVICE(ACCESSIO, COM_2S, acces_com_2x),
-+	EXAR_DEVICE(ACCESSIO, COM_4S, acces_com_4x),
-+	EXAR_DEVICE(ACCESSIO, COM_8S, acces_com_8x),
-+	EXAR_DEVICE(ACCESSIO, COM232_8, acces_com_8x),
-+	EXAR_DEVICE(ACCESSIO, COM_2SM, acces_com_2x),
-+	EXAR_DEVICE(ACCESSIO, COM_4SM, acces_com_4x),
-+	EXAR_DEVICE(ACCESSIO, COM_8SM, acces_com_8x),
- 
- 	CONNECT_DEVICE(XR17C152, UART_2_232, pbn_connect),
- 	CONNECT_DEVICE(XR17C154, UART_4_232, pbn_connect),
-@@ -782,24 +779,24 @@ static const struct pci_device_id exar_pci_tbl[] = {
- 	IBM_DEVICE(XR17C152, SATURN_SERIAL_ONE_PORT, pbn_exar_ibm_saturn),
- 
- 	/* Exar Corp. XR17C15[248] Dual/Quad/Octal UART */
--	EXAR_DEVICE(EXAR, EXAR_XR17C152, pbn_exar_XR17C15x),
--	EXAR_DEVICE(EXAR, EXAR_XR17C154, pbn_exar_XR17C15x),
--	EXAR_DEVICE(EXAR, EXAR_XR17C158, pbn_exar_XR17C15x),
-+	EXAR_DEVICE(EXAR, XR17C152, pbn_exar_XR17C15x),
-+	EXAR_DEVICE(EXAR, XR17C154, pbn_exar_XR17C15x),
-+	EXAR_DEVICE(EXAR, XR17C158, pbn_exar_XR17C15x),
- 
- 	/* Exar Corp. XR17V[48]35[248] Dual/Quad/Octal/Hexa PCIe UARTs */
--	EXAR_DEVICE(EXAR, EXAR_XR17V352, pbn_exar_XR17V35x),
--	EXAR_DEVICE(EXAR, EXAR_XR17V354, pbn_exar_XR17V35x),
--	EXAR_DEVICE(EXAR, EXAR_XR17V358, pbn_exar_XR17V35x),
--	EXAR_DEVICE(EXAR, EXAR_XR17V4358, pbn_exar_XR17V4358),
--	EXAR_DEVICE(EXAR, EXAR_XR17V8358, pbn_exar_XR17V8358),
--	EXAR_DEVICE(COMMTECH, COMMTECH_4222PCIE, pbn_exar_XR17V35x),
--	EXAR_DEVICE(COMMTECH, COMMTECH_4224PCIE, pbn_exar_XR17V35x),
--	EXAR_DEVICE(COMMTECH, COMMTECH_4228PCIE, pbn_exar_XR17V35x),
--
--	EXAR_DEVICE(COMMTECH, COMMTECH_4222PCI335, pbn_fastcom335_2),
--	EXAR_DEVICE(COMMTECH, COMMTECH_4224PCI335, pbn_fastcom335_4),
--	EXAR_DEVICE(COMMTECH, COMMTECH_2324PCI335, pbn_fastcom335_4),
--	EXAR_DEVICE(COMMTECH, COMMTECH_2328PCI335, pbn_fastcom335_8),
-+	EXAR_DEVICE(EXAR, XR17V352, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(EXAR, XR17V354, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(EXAR, XR17V358, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(EXAR, XR17V4358, pbn_exar_XR17V4358),
-+	EXAR_DEVICE(EXAR, XR17V8358, pbn_exar_XR17V8358),
-+	EXAR_DEVICE(COMMTECH, 4222PCIE, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(COMMTECH, 4224PCIE, pbn_exar_XR17V35x),
-+	EXAR_DEVICE(COMMTECH, 4228PCIE, pbn_exar_XR17V35x),
-+
-+	EXAR_DEVICE(COMMTECH, 4222PCI335, pbn_fastcom335_2),
-+	EXAR_DEVICE(COMMTECH, 4224PCI335, pbn_fastcom335_4),
-+	EXAR_DEVICE(COMMTECH, 2324PCI335, pbn_fastcom335_4),
-+	EXAR_DEVICE(COMMTECH, 2328PCI335, pbn_fastcom335_8),
- 	{ 0, }
- };
- MODULE_DEVICE_TABLE(pci, exar_pci_tbl);
+Thanks for review and feedback
+
+Regards,
+
+Akash
+
+>
+> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+
 -- 
-2.26.2
-
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
