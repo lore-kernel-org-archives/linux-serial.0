@@ -2,191 +2,98 @@ Return-Path: <SRS0=eb60=62=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 383F0C54E8D
-	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 14:26:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 307BEC54E4A
+	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 14:53:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 14A0520746
-	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 14:26:53 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="Tp4Nl/o9"
+	by mail.kernel.org (Postfix) with ESMTP id 1098E206F5
+	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 14:53:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1589295183;
+	bh=X/7LZNJp6medNXXYa1hSvn26jmA2fs1Mwcif42l7Fg4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=A6HnVxBDtUnokNSUQwRrvA4t1Z2GkGOKq98M9ZjLxmTgB81CA9jyHkQAx+VPJp/3v
+	 88H1O2GCAYWy+r44WUkhCewJP4Qn+GKB16klkZTcq18o5iZFGKO6wZR4PkX3+dNNH8
+	 lRGFb0Q8R6HL9LzqWDz5H39ulvaYAHuYlcbxlasY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729461AbgELO0w (ORCPT
+        id S1729756AbgELOxA (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 12 May 2020 10:26:52 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:54617 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726946AbgELO0w (ORCPT
+        Tue, 12 May 2020 10:53:00 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:46636 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725929AbgELOw7 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 12 May 2020 10:26:52 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1589293610; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=17JUrE+s/QDDXy89Jqf85KXy7LcDgoEQ+zmjSMMCUz8=; b=Tp4Nl/o9DPOnHMYydRtfV91KvEVflohiyfSvvq8/v78mGbGGEuROip8VAusGh/zFlymqoFgN
- VFsLrmHpZ33+RrO/KLKYRCsOlKomv9rOBczSFt9Ng92pf449MMhMoGwhVrTMqJV0UsTY21QF
- rMmf+0LuRekgebKmmCUQ6KQMxgY=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5ebab208.7f67daffad88-smtp-out-n04;
- Tue, 12 May 2020 14:26:16 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id B923CC43637; Tue, 12 May 2020 14:26:16 +0000 (UTC)
-Received: from [192.168.1.100] (unknown [27.59.216.88])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 4FCE1C433F2;
-        Tue, 12 May 2020 14:26:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 4FCE1C433F2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-Subject: Re: [PATCH V5 1/7] soc: qcom: geni: Support for ICC voting
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, dianders@chromium.org,
-        evgreen@chromium.org, georgi.djakov@linaro.org
-References: <1588919619-21355-1-git-send-email-akashast@codeaurora.org>
- <1588919619-21355-2-git-send-email-akashast@codeaurora.org>
- <20200508190301.GG4525@google.com>
-From:   Akash Asthana <akashast@codeaurora.org>
-Message-ID: <adacee1f-41b3-140a-d72a-4df3c42dd2fa@codeaurora.org>
-Date:   Tue, 12 May 2020 19:56:05 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        Tue, 12 May 2020 10:52:59 -0400
+Received: by mail-ot1-f68.google.com with SMTP id z25so10672616otq.13;
+        Tue, 12 May 2020 07:52:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=zvQTYh4b4eUlBTZLUxX1hHRbUDU2+a4tZbKUdGnF3aw=;
+        b=SRzmVqAsJaWsfn0lMAMVnb0PLU0RsHTZJy67X/1Au9Mex2B+bRm+KCZAPJeEyDrIbk
+         98HGSWAH12RkOagZUTcS684fWBN6C8G/Yp3x86ZBdPrlIcxj/D4doL7kbW7H1PQ9qVzN
+         LRkNYVQREy+2jFeGaBMtxhu0+3dnDeYNv96lsy63IFB7ubJ1AZO5GJ22XTpII9bP4SGE
+         12zAsIEV8DvyF8PK/C7PPNNjJ0Eqcv5gpwr0lxpFIU8bS1y6tH67HHr9uSCSNs+9CVB1
+         zSwVDO4cKcQWrxitJumej3cnhYSv2As6iZMNDSQdFrNfZtsZMRLvaeFIn9B5i3R0dCkt
+         AIhQ==
+X-Gm-Message-State: AGi0PuYC9YD2cKKokLBTICeHp9YfaZ8aYYanDZ32QxRDhcChenPNE9+i
+        +tjc7nmXNm/1uph8qs2kdA==
+X-Google-Smtp-Source: APiQypIeWKML2Q2yIs+q1ZFta2wuSTpS8VDHIRQT/NP72fQGGMWPfyUkA8nAi41dFXRwTXFKKHTXJw==
+X-Received: by 2002:a9d:7e99:: with SMTP id m25mr4092098otp.45.1589295178802;
+        Tue, 12 May 2020 07:52:58 -0700 (PDT)
+Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id t20sm3475826ott.51.2020.05.12.07.52.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 May 2020 07:52:58 -0700 (PDT)
+Received: (nullmailer pid 25183 invoked by uid 1000);
+        Tue, 12 May 2020 14:52:56 -0000
+Date:   Tue, 12 May 2020 09:52:56 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Vinod Koul <vkoul@kernel.org>,
+        Lad Prabhakar <prabhakar.csengg@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Marc Zyngier <maz@kernel.org>, devicetree@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-serial@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jason Cooper <jason@lakedaemon.net>, dmaengine@vger.kernel.org,
+        linux-gpio@vger.kernel.org
+Subject: Re: [PATCH 17/18] dt-bindings: gpio: rcar: Add r8a7742 (RZ/G1H)
+ support
+Message-ID: <20200512145256.GA25121@bogus>
+References: <1588197415-13747-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1588197415-13747-18-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
-In-Reply-To: <20200508190301.GG4525@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1588197415-13747-18-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Matthias,
+On Wed, 29 Apr 2020 22:56:54 +0100, Lad Prabhakar wrote:
+> Renesas RZ/G1H (R8A7742) SoC GPIO blocks are identical to the R-Car Gen2
+> family. Add support for its GPIO controllers.
+> 
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+> ---
+>  Documentation/devicetree/bindings/gpio/renesas,gpio-rcar.txt | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-On 5/9/2020 12:33 AM, Matthias Kaehlcke wrote:
-> On Fri, May 08, 2020 at 12:03:33PM +0530, Akash Asthana wrote:
->> Add necessary macros and structure variables to support ICC BW
->> voting from individual SE drivers.
->>
->> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
->> ---
->> Changes in V2:
->>   - As per Bjorn's comment dropped enums for ICC paths, given the three
->>     paths individual members
->>
->> Changes in V3:
->>   - Add geni_icc_get, geni_icc_vote_on and geni_icc_vote_off as helper API.
->>   - Add geni_icc_path structure in common header
->>
->> Changes in V4:
->>   - As per Bjorn's comment print error message in geni_icc_get if return
->>     value is not -EPROBE_DEFER.
->>   - As per Bjorn's comment remove NULL on path before calling icc_set_bw
->>     API.
->>   - As per Bjorn's comment drop __func__ print.
->>   - As per Matthias's comment, make ICC path a array instead of individual
->>     member entry in geni_se struct.
->>
->> Note: I have ignored below check patch suggestion because it was throwing
->>        compilation error as 'icc_ddr' is not compile time comstant.
->>
->> WARNING: char * array declaration might be better as static const
->>   - FILE: drivers/soc/qcom/qcom-geni-se.c:726:
->>   - const char *icc_names[] = {"qup-core", "qup-config", icc_ddr};
->>
->> Changes in V5:
->>   - As per Matthias's comment defined enums for ICC paths.
->>   - Integrate icc_enable/disable with power on/off call for driver.
->>   - As per Matthias's comment added icc_path_names array to print icc path name
->>     in failure case.
->>   - As per Georgi's suggestion assume peak_bw = avg_bw if not mentioned.
->>
->>   drivers/soc/qcom/qcom-geni-se.c | 92 +++++++++++++++++++++++++++++++++++++++++
->>   include/linux/qcom-geni-se.h    | 42 +++++++++++++++++++
->>   2 files changed, 134 insertions(+)
->>
->> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
->> index 7d622ea..63403bf 100644
->> --- a/drivers/soc/qcom/qcom-geni-se.c
->> +++ b/drivers/soc/qcom/qcom-geni-se.c
->> @@ -92,6 +92,9 @@ struct geni_wrapper {
->>   	struct clk_bulk_data ahb_clks[NUM_AHB_CLKS];
->>   };
->>   
->> +static const char * const icc_path_names[] = {"qup-core", "qup-config",
->> +								"qup-memory"};
->> +
->>   #define QUP_HW_VER_REG			0x4
->>   
->>   /* Common SE registers */
->> @@ -720,6 +723,95 @@ void geni_se_rx_dma_unprep(struct geni_se *se, dma_addr_t iova, size_t len)
->>   }
->>   EXPORT_SYMBOL(geni_se_rx_dma_unprep);
->>   
->> +int geni_icc_get(struct geni_se *se, const char *icc_ddr)
->> +{
->> +	int i, icc_err;
->> +	const char *icc_names[] = {"qup-core", "qup-config", icc_ddr};
->> +
->> +	for (i = 0; i < ARRAY_SIZE(se->icc_paths); i++) {
->> +		if (!icc_names[i])
->> +			continue;
->> +
->> +		se->icc_paths[i].path = devm_of_icc_get(se->dev, icc_names[i]);
->> +		if (IS_ERR(se->icc_paths[i].path))
->> +			goto icc_get_failure;
->> +	}
->> +
->> +	return 0;
->> +
->> +icc_get_failure:
->> +	icc_err = PTR_ERR(se->icc_paths[i].path);
->> +	if (icc_err != -EPROBE_DEFER)
->> +		dev_err_ratelimited(se->dev, "Failed to get ICC path:%s, ret:%d\n",
->> +					icc_names[i], icc_err);
->> +	return icc_err;
->> +
->> +}
->> +EXPORT_SYMBOL(geni_icc_get);
->> +
->> +void geni_icc_bw_init(struct geni_icc_path *icc_paths, unsigned int avg_bw,
->> +			unsigned int peak_bw)
-> I noticed that all callers of geni_icc_bw_init() pass 0 as
-> 'peak_pw' (aka peak == avg). Unless there are plans to use other
-> values for the peak bandwidth in the future it is pointless to
-> track the bandwidth(s) in two variables. And if the bandwidth is
-> tracked in a single variable this function is not needed.
-
-As of now we are not aware of our peak requirement(avg requirement works 
-good for us) so I am passing (peak = avg) as per Georgi's suggestion.
-
-But I wanted to make this feature more generic and keeping the 
-possibilty open that we might have to use other peak(!=0) value in future.
-
-Regards,
-
-Akash
-
->
->> +{
->> +	if (!peak_bw)
->> +		peak_bw = avg_bw;
->> +	icc_paths->avg_bw = avg_bw;
->> +	icc_paths->peak_bw = peak_bw;
->> +}
->> +EXPORT_SYMBOL(geni_icc_bw_init);
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+Acked-by: Rob Herring <robh@kernel.org>
