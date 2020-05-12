@@ -2,183 +2,117 @@ Return-Path: <SRS0=eb60=62=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.9 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	LONGWORDS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4F3CCA90AF
-	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 16:33:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CD26C47076
+	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 19:35:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 95203206F5
-	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 16:33:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4C02B20747
+	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 19:35:29 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="FCRJx0YG"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726300AbgELQdi (ORCPT
+        id S1730996AbgELTf3 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 12 May 2020 12:33:38 -0400
-Received: from mga03.intel.com ([134.134.136.65]:15945 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725904AbgELQdi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 12 May 2020 12:33:38 -0400
-IronPort-SDR: 88rj1YJt4+F1cP8TRwRf6FtOv3qDNSzgCWaBLpTwEn4RZmqAYS6xNnMHOUl9v2M1cWo3hyJL9w
- tjSBZuGseWuA==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2020 09:33:36 -0700
-IronPort-SDR: tq9cLftHO5QsZT5xRvpknLGREx+ZRJKciQa5UNrQ7NJnDW50D/WyGC9pgP1SyBdcGHZozUJUgs
- s3uhlHLBX6OA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,384,1583222400"; 
-   d="scan'208";a="286713693"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 12 May 2020 09:33:35 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1jYXqY-0007Nd-Rs; Wed, 13 May 2020 00:33:34 +0800
-Date:   Wed, 13 May 2020 00:33:00 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- cf9c94456ebafc6d75a834e58dfdc8ae71a3acbc
-Message-ID: <5ebacfbc.bALI4niPFh7km5Zf%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 12 May 2020 15:35:29 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:53306 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725554AbgELTf2 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 12 May 2020 15:35:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589312127;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=H5pxUSbLWxNQVZt3chJU6aQ+MxFijTrdJFOgatW5PJM=;
+        b=FCRJx0YGfOyJFnV8FqbaYpk2jVd6iwrDVN3dyPl3LIPwYfOWZ7b4Ml9Ai/Oc1OThRoEzKC
+        51GeuI7p1PJNI4U3tvz5F2Ylhm89ybQvDxEbGhxgcjgzDcwNveUxGSwqaCQOk/4tRhWtw7
+        mMDKEdiX5wd8g4zEHoVma0cVms5nFnU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-189-Cs80k05zNKOHzuw-ckzSlg-1; Tue, 12 May 2020 15:35:25 -0400
+X-MC-Unique: Cs80k05zNKOHzuw-ckzSlg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C474F100A623;
+        Tue, 12 May 2020 19:35:23 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (file01.intranet.prod.int.rdu2.redhat.com [10.11.5.7])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3394839D;
+        Tue, 12 May 2020 19:35:22 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (localhost [127.0.0.1])
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4) with ESMTP id 04CJZMnE032376;
+        Tue, 12 May 2020 15:35:22 -0400
+Received: from localhost (mpatocka@localhost)
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4/Submit) with ESMTP id 04CJZLMo032373;
+        Tue, 12 May 2020 15:35:21 -0400
+X-Authentication-Warning: file01.intranet.prod.int.rdu2.redhat.com: mpatocka owned process doing -bs
+Date:   Tue, 12 May 2020 15:35:21 -0400 (EDT)
+From:   Mikulas Patocka <mpatocka@redhat.com>
+X-X-Sender: mpatocka@file01.intranet.prod.int.rdu2.redhat.com
+To:     "Maciej W. Rozycki" <macro@linux-mips.org>
+cc:     Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
+Subject: Re: [PATCH 1/2 v3] alpha: add a delay to inb_p, inb_w and inb_l
+In-Reply-To: <alpine.LFD.2.21.2005111320220.677301@eddie.linux-mips.org>
+Message-ID: <alpine.LRH.2.02.2005121525500.31782@file01.intranet.prod.int.rdu2.redhat.com>
+References: <alpine.LRH.2.02.2005060713390.25338@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com> <alpine.LRH.2.02.2005061308220.18599@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.02.2005070404420.5006@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com> <alpine.LRH.2.02.2005070931280.1718@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAK8P3a3UdCJL6C07_W7pkipT1Xmr_0G9hOy1S+YXbB4_tKt+gg@mail.gmail.com> <alpine.LFD.2.21.2005100209340.487915@eddie.linux-mips.org> <alpine.LRH.2.02.2005101443290.15420@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LFD.2.21.2005111320220.677301@eddie.linux-mips.org>
+User-Agent: Alpine 2.02 (LRH 1266 2009-07-14)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
-branch HEAD: cf9c94456ebafc6d75a834e58dfdc8ae71a3acbc  Revert "tty: hvc: Fix data abort due to race in hvc_open"
 
-elapsed time: 480m
 
-configs tested: 116
-configs skipped: 6
+On Mon, 11 May 2020, Maciej W. Rozycki wrote:
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+>  And if timing is indeed the culprit, then I think it will be best fixed 
+> in the 82378IB southbridge, i.e.[1]:
+> 
+> "The I/O recovery mechanism in the SIO is used to add additional recovery 
+> delay between PCI originated 8-bit and 16-bit I/O cycles to the ISA Bus.  
+> The SIO automatically forces a minimum delay of four SYSCLKs between 
+> back-to-back 8 and 16 bit I/O cycles to the ISA Bus.  The delay is 
+> measured from the rising edge of the I/O command (IOR# or IOW#) to the 
+> falling edge of the next BALE.  If a delay of greater than four SYSCLKs is 
+> required, the ISA I/O Recovery Time Register can be programmed to increase 
+> the delay in increments of SYSCLKs.  Note that no additional delay is 
+> inserted for back-to-back I/O "sub cycles" generated as a result of byte 
+> assembly or disassembly.  This register defaults to 8 and 16-bit recovery 
+> enabled with two clocks added to the standard I/O recovery."
+> 
+> where it won't be causing unnecessary overhead for native PCI devices or 
+> indeed excessive one for ISA devices.  It might be interesting to note 
+> that later SIO versions like the 82378ZB increased the minimum to five 
+> SYSCLKs, so maybe a missing SYSCLK (that can still be inserted by suitably
+> programming the ICRT) is the source of the problem?
+> 
+> References:
+> 
+> [1] "82378IB System I/O (SIO)", April 1993, Intel Corporation, Order 
+>     Number: 290473-002, Section 4.1.17 "ICRT -- ISA Controller Recovery 
+>     Timer Register"
+> 
+>   Maciej
 
-arm                                 defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-arm                               allnoconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm64                            allmodconfig
-arm64                             allnoconfig
-sparc                            allyesconfig
-m68k                             allyesconfig
-m68k                        stmark2_defconfig
-arm                  colibri_pxa300_defconfig
-c6x                        evmc6457_defconfig
-powerpc                     powernv_defconfig
-mips                 decstation_r4k_defconfig
-arm                       aspeed_g4_defconfig
-sh                      rts7751r2d1_defconfig
-powerpc                     ep8248e_defconfig
-openrisc                    or1ksim_defconfig
-h8300                     edosk2674_defconfig
-sh                           se7751_defconfig
-i386                                defconfig
-arm                           tegra_defconfig
-sh                            hp6xx_defconfig
-arm64                            alldefconfig
-arm                        vexpress_defconfig
-m68k                        m5272c3_defconfig
-sh                             sh03_defconfig
-riscv                            allyesconfig
-arm                         lpc32xx_defconfig
-i386                              allnoconfig
-i386                             allyesconfig
-i386                              debian-10.3
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                              allnoconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                              allnoconfig
-m68k                           sun3_defconfig
-m68k                                defconfig
-nios2                               defconfig
-nios2                            allyesconfig
-openrisc                            defconfig
-c6x                              allyesconfig
-c6x                               allnoconfig
-openrisc                         allyesconfig
-nds32                               defconfig
-nds32                             allnoconfig
-csky                             allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-h8300                            allmodconfig
-xtensa                              defconfig
-arc                                 defconfig
-arc                              allyesconfig
-sh                               allmodconfig
-sh                                allnoconfig
-microblaze                        allnoconfig
-mips                             allyesconfig
-mips                              allnoconfig
-mips                             allmodconfig
-parisc                            allnoconfig
-parisc                              defconfig
-parisc                           allyesconfig
-parisc                           allmodconfig
-powerpc                             defconfig
-powerpc                          allyesconfig
-powerpc                          rhel-kconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-i386                 randconfig-a006-20200512
-i386                 randconfig-a005-20200512
-i386                 randconfig-a003-20200512
-i386                 randconfig-a001-20200512
-i386                 randconfig-a004-20200512
-i386                 randconfig-a002-20200512
-x86_64               randconfig-a016-20200512
-x86_64               randconfig-a012-20200512
-x86_64               randconfig-a015-20200512
-x86_64               randconfig-a013-20200512
-x86_64               randconfig-a014-20200512
-x86_64               randconfig-a011-20200512
-i386                 randconfig-a012-20200512
-i386                 randconfig-a014-20200512
-i386                 randconfig-a011-20200512
-i386                 randconfig-a013-20200512
-i386                 randconfig-a015-20200512
-i386                 randconfig-a016-20200512
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                            allmodconfig
-s390                             allyesconfig
-s390                              allnoconfig
-s390                             allmodconfig
-s390                                defconfig
-x86_64                              defconfig
-sparc                               defconfig
-sparc64                             defconfig
-sparc64                           allnoconfig
-sparc64                          allyesconfig
-sparc64                          allmodconfig
-um                               allmodconfig
-um                                allnoconfig
-um                               allyesconfig
-um                                  defconfig
-x86_64                                   rhel
-x86_64                               rhel-7.6
-x86_64                    rhel-7.6-kselftests
-x86_64                         rhel-7.2-clear
-x86_64                                    lkp
-x86_64                              fedora-25
-x86_64                                  kexec
+I tried to modify this register (I wrote 0x44 to it - it should correspond 
+to the maximum delay) and it had no effect on the serial port and rtc 
+lock-ups.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Mikulas
+
