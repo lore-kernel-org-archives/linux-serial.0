@@ -2,103 +2,183 @@ Return-Path: <SRS0=eb60=62=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	LONGWORDS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F4B0C2D0F6
-	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 15:37:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4F3CCA90AF
+	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 16:33:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 116EB206B8
-	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 15:37:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1589297859;
-	bh=59cWjsJmqwrPrpWRr+PyhVPdugsPTOOknpFbnpzC0vE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=Uei99NDPC/7JsoO29nLIsfST4Pc9ni1YCTqt6+84q6a/xaYXH1kUME39QDiz2iN+7
-	 Du3KCdtdgvqTfP9NLpeKIf5usbSm5wVxYMHahymDRz8/dUzVeLFwhpaUyHgbAJQwyK
-	 YVee34d4YQPs8diyurZPmEa2eOvEp+p0uT1L6mOU=
+	by mail.kernel.org (Postfix) with ESMTP id 95203206F5
+	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 16:33:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730797AbgELPhi (ORCPT
+        id S1726300AbgELQdi (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 12 May 2020 11:37:38 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:34017 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727847AbgELPhi (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 12 May 2020 11:37:38 -0400
-Received: by mail-oi1-f194.google.com with SMTP id c12so17589927oic.1;
-        Tue, 12 May 2020 08:37:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=PCyVx6YxchGHNw6iJ+ojabd2z3U8e+KigXbn5+BW+HM=;
-        b=J03VJ5/SPvSQt6f1Fe4ytraUMBwkvGTlYPlMlAa5Ku37lufCQmN6H9RrgpCqvoV4wf
-         R8hK3NienpuGlXrKdRmn3Of/7EY7UaST8nLpdrMDc62u9fT4841pzHzFeVWro+OpG6VP
-         Sj1XDF0V3IFRoSrSsHGr/wUZe7lLfZVHkn4CfUuYKtl4yJoyCPUdsT59nktftw50o8zI
-         K6g1+f2rlsL70j4HUOAJt4uM230h66WTurd6LPbm69hBWtuapq3uH28NwrlD/feNZUHM
-         fO0KXmT6JD7YXl8OlbyY44TjOZQ3qv9A5n5BmIswye6NnCz8mdFbT9xM6K+miQc0Ntvv
-         o8bg==
-X-Gm-Message-State: AGi0PuaRsrfhYd/8KL/c4ezFtEXxS6/muTe+tGilr1MA4Aq+xGn6vDwG
-        vcnPRKpcoKaTn99Ng3kxUA==
-X-Google-Smtp-Source: APiQypKNT+mcx7T9+iUMFNsVArR3hQ4oj99NzmMx2VYonYzt1n3FPZS5ZEefObr7Lq8RTsR/f9TlMA==
-X-Received: by 2002:aca:7504:: with SMTP id q4mr23486434oic.31.1589297856746;
-        Tue, 12 May 2020 08:37:36 -0700 (PDT)
-Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id i81sm424098oif.26.2020.05.12.08.37.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2020 08:37:35 -0700 (PDT)
-Received: (nullmailer pid 24510 invoked by uid 1000);
-        Tue, 12 May 2020 15:37:34 -0000
-Date:   Tue, 12 May 2020 10:37:34 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Pavel Machek <pavel@ucw.cz>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        linux-serial@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        devicetree@vger.kernel.org, linux-omap@vger.kernel.org,
-        Lee Jones <lee.jones@linaro.org>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/6] dt-bindings: serdev: ngsm: Add binding for
- serdev-ngsm
-Message-ID: <20200512153734.GA24449@bogus>
-References: <20200430174615.41185-1-tony@atomide.com>
- <20200430174615.41185-3-tony@atomide.com>
+        Tue, 12 May 2020 12:33:38 -0400
+Received: from mga03.intel.com ([134.134.136.65]:15945 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725904AbgELQdi (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 12 May 2020 12:33:38 -0400
+IronPort-SDR: 88rj1YJt4+F1cP8TRwRf6FtOv3qDNSzgCWaBLpTwEn4RZmqAYS6xNnMHOUl9v2M1cWo3hyJL9w
+ tjSBZuGseWuA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2020 09:33:36 -0700
+IronPort-SDR: tq9cLftHO5QsZT5xRvpknLGREx+ZRJKciQa5UNrQ7NJnDW50D/WyGC9pgP1SyBdcGHZozUJUgs
+ s3uhlHLBX6OA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,384,1583222400"; 
+   d="scan'208";a="286713693"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 12 May 2020 09:33:35 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1jYXqY-0007Nd-Rs; Wed, 13 May 2020 00:33:34 +0800
+Date:   Wed, 13 May 2020 00:33:00 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ cf9c94456ebafc6d75a834e58dfdc8ae71a3acbc
+Message-ID: <5ebacfbc.bALI4niPFh7km5Zf%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200430174615.41185-3-tony@atomide.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, 30 Apr 2020 10:46:11 -0700, Tony Lindgren wrote:
-> Add a binding document for a generic serdev-ngsm driver that can be
-> used to bring up TS 27.010 line discipline with Linux n_gsm support
-> on a serial port.
-> 
-> As the Motorola Mapphone modems require some custom handling, they
-> are handled with a separate compatible.
-> 
-> Let's also add vendor string for ETSI as we're using a ETSI 3GPP
-> TS 27.010 standard.
-> 
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-> ---
->  .../bindings/serdev/serdev-ngsm.yaml          | 64 +++++++++++++++++++
->  .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
->  2 files changed, 66 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serdev/serdev-ngsm.yaml
-> 
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git  tty-testing
+branch HEAD: cf9c94456ebafc6d75a834e58dfdc8ae71a3acbc  Revert "tty: hvc: Fix data abort due to race in hvc_open"
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+elapsed time: 480m
+
+configs tested: 116
+configs skipped: 6
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+arm                                 defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+arm                               allnoconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm64                            allmodconfig
+arm64                             allnoconfig
+sparc                            allyesconfig
+m68k                             allyesconfig
+m68k                        stmark2_defconfig
+arm                  colibri_pxa300_defconfig
+c6x                        evmc6457_defconfig
+powerpc                     powernv_defconfig
+mips                 decstation_r4k_defconfig
+arm                       aspeed_g4_defconfig
+sh                      rts7751r2d1_defconfig
+powerpc                     ep8248e_defconfig
+openrisc                    or1ksim_defconfig
+h8300                     edosk2674_defconfig
+sh                           se7751_defconfig
+i386                                defconfig
+arm                           tegra_defconfig
+sh                            hp6xx_defconfig
+arm64                            alldefconfig
+arm                        vexpress_defconfig
+m68k                        m5272c3_defconfig
+sh                             sh03_defconfig
+riscv                            allyesconfig
+arm                         lpc32xx_defconfig
+i386                              allnoconfig
+i386                             allyesconfig
+i386                              debian-10.3
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                              allnoconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                              allnoconfig
+m68k                           sun3_defconfig
+m68k                                defconfig
+nios2                               defconfig
+nios2                            allyesconfig
+openrisc                            defconfig
+c6x                              allyesconfig
+c6x                               allnoconfig
+openrisc                         allyesconfig
+nds32                               defconfig
+nds32                             allnoconfig
+csky                             allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+h8300                            allmodconfig
+xtensa                              defconfig
+arc                                 defconfig
+arc                              allyesconfig
+sh                               allmodconfig
+sh                                allnoconfig
+microblaze                        allnoconfig
+mips                             allyesconfig
+mips                              allnoconfig
+mips                             allmodconfig
+parisc                            allnoconfig
+parisc                              defconfig
+parisc                           allyesconfig
+parisc                           allmodconfig
+powerpc                             defconfig
+powerpc                          allyesconfig
+powerpc                          rhel-kconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+i386                 randconfig-a006-20200512
+i386                 randconfig-a005-20200512
+i386                 randconfig-a003-20200512
+i386                 randconfig-a001-20200512
+i386                 randconfig-a004-20200512
+i386                 randconfig-a002-20200512
+x86_64               randconfig-a016-20200512
+x86_64               randconfig-a012-20200512
+x86_64               randconfig-a015-20200512
+x86_64               randconfig-a013-20200512
+x86_64               randconfig-a014-20200512
+x86_64               randconfig-a011-20200512
+i386                 randconfig-a012-20200512
+i386                 randconfig-a014-20200512
+i386                 randconfig-a011-20200512
+i386                 randconfig-a013-20200512
+i386                 randconfig-a015-20200512
+i386                 randconfig-a016-20200512
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                            allmodconfig
+s390                             allyesconfig
+s390                              allnoconfig
+s390                             allmodconfig
+s390                                defconfig
+x86_64                              defconfig
+sparc                               defconfig
+sparc64                             defconfig
+sparc64                           allnoconfig
+sparc64                          allyesconfig
+sparc64                          allmodconfig
+um                               allmodconfig
+um                                allnoconfig
+um                               allyesconfig
+um                                  defconfig
+x86_64                                   rhel
+x86_64                               rhel-7.6
+x86_64                    rhel-7.6-kselftests
+x86_64                         rhel-7.2-clear
+x86_64                                    lkp
+x86_64                              fedora-25
+x86_64                                  kexec
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
