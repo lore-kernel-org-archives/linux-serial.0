@@ -2,117 +2,170 @@ Return-Path: <SRS0=eb60=62=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CD26C47076
-	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 19:35:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01BF3C2D0F8
+	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 21:47:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4C02B20747
-	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 19:35:29 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="FCRJx0YG"
+	by mail.kernel.org (Postfix) with ESMTP id D845220747
+	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 21:47:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730996AbgELTf3 (ORCPT
+        id S1731171AbgELVrY (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 12 May 2020 15:35:29 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:53306 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725554AbgELTf2 (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 12 May 2020 15:35:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589312127;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=H5pxUSbLWxNQVZt3chJU6aQ+MxFijTrdJFOgatW5PJM=;
-        b=FCRJx0YGfOyJFnV8FqbaYpk2jVd6iwrDVN3dyPl3LIPwYfOWZ7b4Ml9Ai/Oc1OThRoEzKC
-        51GeuI7p1PJNI4U3tvz5F2Ylhm89ybQvDxEbGhxgcjgzDcwNveUxGSwqaCQOk/4tRhWtw7
-        mMDKEdiX5wd8g4zEHoVma0cVms5nFnU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-189-Cs80k05zNKOHzuw-ckzSlg-1; Tue, 12 May 2020 15:35:25 -0400
-X-MC-Unique: Cs80k05zNKOHzuw-ckzSlg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C474F100A623;
-        Tue, 12 May 2020 19:35:23 +0000 (UTC)
-Received: from file01.intranet.prod.int.rdu2.redhat.com (file01.intranet.prod.int.rdu2.redhat.com [10.11.5.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3394839D;
-        Tue, 12 May 2020 19:35:22 +0000 (UTC)
-Received: from file01.intranet.prod.int.rdu2.redhat.com (localhost [127.0.0.1])
-        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4) with ESMTP id 04CJZMnE032376;
-        Tue, 12 May 2020 15:35:22 -0400
-Received: from localhost (mpatocka@localhost)
-        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4/Submit) with ESMTP id 04CJZLMo032373;
-        Tue, 12 May 2020 15:35:21 -0400
-X-Authentication-Warning: file01.intranet.prod.int.rdu2.redhat.com: mpatocka owned process doing -bs
-Date:   Tue, 12 May 2020 15:35:21 -0400 (EDT)
-From:   Mikulas Patocka <mpatocka@redhat.com>
-X-X-Sender: mpatocka@file01.intranet.prod.int.rdu2.redhat.com
-To:     "Maciej W. Rozycki" <macro@linux-mips.org>
-cc:     Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
-Subject: Re: [PATCH 1/2 v3] alpha: add a delay to inb_p, inb_w and inb_l
-In-Reply-To: <alpine.LFD.2.21.2005111320220.677301@eddie.linux-mips.org>
-Message-ID: <alpine.LRH.2.02.2005121525500.31782@file01.intranet.prod.int.rdu2.redhat.com>
-References: <alpine.LRH.2.02.2005060713390.25338@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com> <alpine.LRH.2.02.2005061308220.18599@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LRH.2.02.2005070404420.5006@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com> <alpine.LRH.2.02.2005070931280.1718@file01.intranet.prod.int.rdu2.redhat.com>
- <CAK8P3a3UdCJL6C07_W7pkipT1Xmr_0G9hOy1S+YXbB4_tKt+gg@mail.gmail.com> <alpine.LFD.2.21.2005100209340.487915@eddie.linux-mips.org> <alpine.LRH.2.02.2005101443290.15420@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LFD.2.21.2005111320220.677301@eddie.linux-mips.org>
-User-Agent: Alpine 2.02 (LRH 1266 2009-07-14)
+        Tue, 12 May 2020 17:47:24 -0400
+Received: from muru.com ([72.249.23.125]:54218 "EHLO muru.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728362AbgELVrY (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 12 May 2020 17:47:24 -0400
+Received: from hillo.muru.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTP id 0C4148047;
+        Tue, 12 May 2020 21:48:09 +0000 (UTC)
+From:   Tony Lindgren <tony@atomide.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Johan Hovold <johan@kernel.org>, Rob Herring <robh@kernel.org>
+Cc:     Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
+        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
+        Merlijn Wajer <merlijn@wizzup.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+Subject: [PATCHv8 0/6] n_gsm serdev support and GNSS driver for droid4
+Date:   Tue, 12 May 2020 14:47:07 -0700
+Message-Id: <20200512214713.40501-1-tony@atomide.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+Hi all,
+
+Here's the updated set of these patches fixed up for Johan's and
+Pavel's earlier comments.
+
+This series does the following:
+
+1. Adds functions to n_gsm.c for serdev-ngsm.c driver to use
+
+2. Adds a generic serdev-ngsm.c driver that brings up the TS 27.010
+   TTY ports configured in devicetree with help of n_gsm.c
+
+3. Allows the use of standard Linux device drivers for dedicated
+   TS 27.010 channels for devices like GNSS and ALSA found on some
+   modems for example
+
+4. Adds a gnss-motmdm consumer driver for the GNSS device found on
+   the Motorola Mapphone MDM6600 modem on devices like droid4
+
+I've placed the serdev-ngsm.c under drivers/tty/serdev as it still
+seems to make most sense with no better places available. It's no
+longer an MFD driver as it really does not need to care what channel
+specific consumer drivers might be configured for the generic driver.
+Now serdev-ngsm just uses of_platform_populate() to probe whatever
+child nodes it might find.
+
+I'm not attached having the driver in drivers/tty/serdev. I just
+don't have any better locations in mind. So using Johan's earlier
+i2c example, the drivers/tty/serdev/serdev-ngsm.c driver is now a
+generic protocol and bus driver, so it's getting closer to the
+the drivers/i2c/busses analogy maybe :) Please do suggest better
+locations other than MFD and misc if you have better ideas.
+
+Now without the chardev support, the /dev/gsmtty* using apps need
+to use "U1234AT+CFUN?" format for the packets. The advantage is
+less kernel code, and we keep the existing /dev/gsmtty* interface.
+
+If we still really need the custom chardev support, that can now
+be added as needed with the channel specific consumer driver(s),
+but looks like this won't be needed based on Pavel's ofono work.
+
+Regards,
+
+Tony
 
 
-On Mon, 11 May 2020, Maciej W. Rozycki wrote:
+Changes since v7 (was accidentally posted as v6 again):
+- Updated gsm_serdev_register_tty_port() and gsd_dlci_data() to use
+  receive_buf() to have the dlci handling follow the same path as
+  for gsm_serdev_register_dlci()
 
->  And if timing is indeed the culprit, then I think it will be best fixed 
-> in the 82378IB southbridge, i.e.[1]:
-> 
-> "The I/O recovery mechanism in the SIO is used to add additional recovery 
-> delay between PCI originated 8-bit and 16-bit I/O cycles to the ISA Bus.  
-> The SIO automatically forces a minimum delay of four SYSCLKs between 
-> back-to-back 8 and 16 bit I/O cycles to the ISA Bus.  The delay is 
-> measured from the rising edge of the I/O command (IOR# or IOW#) to the 
-> falling edge of the next BALE.  If a delay of greater than four SYSCLKs is 
-> required, the ISA I/O Recovery Time Register can be programmed to increase 
-> the delay in increments of SYSCLKs.  Note that no additional delay is 
-> inserted for back-to-back I/O "sub cycles" generated as a result of byte 
-> assembly or disassembly.  This register defaults to 8 and 16-bit recovery 
-> enabled with two clocks added to the standard I/O recovery."
-> 
-> where it won't be causing unnecessary overhead for native PCI devices or 
-> indeed excessive one for ISA devices.  It might be interesting to note 
-> that later SIO versions like the 82378ZB increased the minimum to five 
-> SYSCLKs, so maybe a missing SYSCLK (that can still be inserted by suitably
-> programming the ICRT) is the source of the problem?
-> 
-> References:
-> 
-> [1] "82378IB System I/O (SIO)", April 1993, Intel Corporation, Order 
->     Number: 290473-002, Section 4.1.17 "ICRT -- ISA Controller Recovery 
->     Timer Register"
-> 
->   Maciej
+- Updated for Pavel's comments and acks, did not keep the ack for
+  n_gsm.c as that has changed
 
-I tried to modify this register (I wrote 0x44 to it - it should correspond 
-to the maximum delay) and it had no effect on the serial port and rtc 
-lock-ups.
+- Moved the GNSS driver binding to serdev-ngsm.yaml as suggested
+  by Rob
 
-Mikulas
+- Folded in a a fix from kbuild test robot <lkp@intel.com>
+  to make motmdm_gnss_send_command() static
 
+Changes since v6:
+- Based on comments from Johan, moved back to using the existing
+  TS 27.010 TTYs created by n_gsm.c instaed of adding custom chardev
+  support to deal with the Motorola custom protocol
+
+- Based on comments from Johan, made the serdev-ngsm driver generic
+  with just minimal quirk handling for the Motorola modem
+
+- Dropped the Motorola custom protocol on top of TS 27.010 handling
+  from serdev-ngsm.c as this can now be easily handled by the channel
+  specific drivers as needed
+
+- Added few more helpers to n_gsm.c for serdev-ngsm.c to use
+
+- Added the channel specific GNSS driver for the Motorola modem
+
+Changes since v5:
+- Cosmetic fixes for issues noted by Pavel
+
+Changes since v4:
+- Use drivers/tty/serdev/protocol directory for the driver instead of
+  drivers/mfd as discussed on the lists for v3 set of patches
+- Fix remove to call kfree only after removing device from the list
+
+Changes since v3:
+- Update list of folks in Cc, looks like I sent v3 only to Lee and lkml
+- Init privdata before motmdm_register_dlci calls gsm_serdev_register_dlci
+- Update binding based on Rob's comments for license and "allOf"
+
+Changes since v2:
+- Drop useless send_command indirection, use static motmdm_send_command
+
+Changes since v1:
+
+- Simplified usage and got rid of few pointless inline functions
+- Added consumer MFD driver, devicetree binding, and dts changes
+
+
+Tony Lindgren (6):
+  tty: n_gsm: Add support for serdev drivers
+  dt-bindings: serdev: ngsm: Add binding for serdev-ngsm
+  dt-bindings: serdev: ngsm: Add binding for GNSS child node
+  serdev: ngsm: Add generic serdev-ngsm driver
+  gnss: motmdm: Add support for Motorola Mapphone MDM6600 modem
+  ARM: dts: omap4-droid4: Configure modem for serdev-ngsm
+
+ .../bindings/serdev/serdev-ngsm.yaml          |  73 +++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ .../boot/dts/motorola-mapphone-common.dtsi    |  14 +
+ drivers/gnss/Kconfig                          |   8 +
+ drivers/gnss/Makefile                         |   3 +
+ drivers/gnss/motmdm.c                         | 419 ++++++++++++++++
+ drivers/tty/n_gsm.c                           | 435 +++++++++++++++++
+ drivers/tty/serdev/Kconfig                    |  10 +
+ drivers/tty/serdev/Makefile                   |   1 +
+ drivers/tty/serdev/serdev-ngsm.c              | 449 ++++++++++++++++++
+ include/linux/serdev-gsm.h                    | 165 +++++++
+ 11 files changed, 1579 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serdev/serdev-ngsm.yaml
+ create mode 100644 drivers/gnss/motmdm.c
+ create mode 100644 drivers/tty/serdev/serdev-ngsm.c
+ create mode 100644 include/linux/serdev-gsm.h
+
+-- 
+2.26.2
