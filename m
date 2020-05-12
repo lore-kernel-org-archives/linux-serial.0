@@ -2,171 +2,191 @@ Return-Path: <SRS0=eb60=62=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F817C54E4A
-	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 14:09:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 383F0C54E8D
+	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 14:26:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 52085206F5
-	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 14:09:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 14A0520746
+	for <linux-serial@archiver.kernel.org>; Tue, 12 May 2020 14:26:53 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="Tp4Nl/o9"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730118AbgELOJD (ORCPT
+        id S1729461AbgELO0w (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 12 May 2020 10:09:03 -0400
-Received: from mga09.intel.com ([134.134.136.24]:41344 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727859AbgELOJC (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 12 May 2020 10:09:02 -0400
-IronPort-SDR: Xwksx/rEKETJDmeFMvRF3q36i+BTxgZYdj5Tnqhbti7CK/Y9krrctBYuW5G2oZFwWztkNb8Tvd
- C53kdGQXoFgA==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2020 07:09:02 -0700
-IronPort-SDR: YTAiltqx0cQMeD/JF+mgLuk9Yr9klWVR59iMYXgLhpfi1OUZqMPr5xz0IOVyyiRCBjnsdnBoh1
- l65wW3Gy96hQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,384,1583222400"; 
-   d="scan'208";a="262132988"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga003.jf.intel.com with ESMTP; 12 May 2020 07:08:59 -0700
-Received: from andy by smile with local (Exim 4.93)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1jYVag-006Daj-Nj; Tue, 12 May 2020 17:09:02 +0300
-Date:   Tue, 12 May 2020 17:09:02 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
-        Giulio Benetti <giulio.benetti@micronovasrl.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Christoph Muellner <christoph.muellner@theobroma-systems.com>,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 4/4] serial: 8250: Support rs485 bus termination GPIO
-Message-ID: <20200512140902.GB185537@smile.fi.intel.com>
-References: <cover.1589285873.git.lukas@wunner.de>
- <dafe8ecb9897efdbe530667657377ba96c43b8c7.1589285874.git.lukas@wunner.de>
+        Tue, 12 May 2020 10:26:52 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:54617 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726946AbgELO0w (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 12 May 2020 10:26:52 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1589293610; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=17JUrE+s/QDDXy89Jqf85KXy7LcDgoEQ+zmjSMMCUz8=; b=Tp4Nl/o9DPOnHMYydRtfV91KvEVflohiyfSvvq8/v78mGbGGEuROip8VAusGh/zFlymqoFgN
+ VFsLrmHpZ33+RrO/KLKYRCsOlKomv9rOBczSFt9Ng92pf449MMhMoGwhVrTMqJV0UsTY21QF
+ rMmf+0LuRekgebKmmCUQ6KQMxgY=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5ebab208.7f67daffad88-smtp-out-n04;
+ Tue, 12 May 2020 14:26:16 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id B923CC43637; Tue, 12 May 2020 14:26:16 +0000 (UTC)
+Received: from [192.168.1.100] (unknown [27.59.216.88])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 4FCE1C433F2;
+        Tue, 12 May 2020 14:26:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 4FCE1C433F2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+Subject: Re: [PATCH V5 1/7] soc: qcom: geni: Support for ICC voting
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
+        mark.rutland@arm.com, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, dianders@chromium.org,
+        evgreen@chromium.org, georgi.djakov@linaro.org
+References: <1588919619-21355-1-git-send-email-akashast@codeaurora.org>
+ <1588919619-21355-2-git-send-email-akashast@codeaurora.org>
+ <20200508190301.GG4525@google.com>
+From:   Akash Asthana <akashast@codeaurora.org>
+Message-ID: <adacee1f-41b3-140a-d72a-4df3c42dd2fa@codeaurora.org>
+Date:   Tue, 12 May 2020 19:56:05 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <dafe8ecb9897efdbe530667657377ba96c43b8c7.1589285874.git.lukas@wunner.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20200508190301.GG4525@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Tue, May 12, 2020 at 02:40:04PM +0200, Lukas Wunner wrote:
-> Commit e8759ad17d41 ("serial: uapi: Add support for bus termination")
-> introduced the ability to enable rs485 bus termination from user space.
-> So far the feature is only used by a single driver, 8250_exar.c, using a
-> hardcoded GPIO pin specific to Siemens IOT2040 products.
+Hi Matthias,
 
-Perhaps you need to Cc this to Jan Kiszka.
+On 5/9/2020 12:33 AM, Matthias Kaehlcke wrote:
+> On Fri, May 08, 2020 at 12:03:33PM +0530, Akash Asthana wrote:
+>> Add necessary macros and structure variables to support ICC BW
+>> voting from individual SE drivers.
+>>
+>> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+>> ---
+>> Changes in V2:
+>>   - As per Bjorn's comment dropped enums for ICC paths, given the three
+>>     paths individual members
+>>
+>> Changes in V3:
+>>   - Add geni_icc_get, geni_icc_vote_on and geni_icc_vote_off as helper API.
+>>   - Add geni_icc_path structure in common header
+>>
+>> Changes in V4:
+>>   - As per Bjorn's comment print error message in geni_icc_get if return
+>>     value is not -EPROBE_DEFER.
+>>   - As per Bjorn's comment remove NULL on path before calling icc_set_bw
+>>     API.
+>>   - As per Bjorn's comment drop __func__ print.
+>>   - As per Matthias's comment, make ICC path a array instead of individual
+>>     member entry in geni_se struct.
+>>
+>> Note: I have ignored below check patch suggestion because it was throwing
+>>        compilation error as 'icc_ddr' is not compile time comstant.
+>>
+>> WARNING: char * array declaration might be better as static const
+>>   - FILE: drivers/soc/qcom/qcom-geni-se.c:726:
+>>   - const char *icc_names[] = {"qup-core", "qup-config", icc_ddr};
+>>
+>> Changes in V5:
+>>   - As per Matthias's comment defined enums for ICC paths.
+>>   - Integrate icc_enable/disable with power on/off call for driver.
+>>   - As per Matthias's comment added icc_path_names array to print icc path name
+>>     in failure case.
+>>   - As per Georgi's suggestion assume peak_bw = avg_bw if not mentioned.
+>>
+>>   drivers/soc/qcom/qcom-geni-se.c | 92 +++++++++++++++++++++++++++++++++++++++++
+>>   include/linux/qcom-geni-se.h    | 42 +++++++++++++++++++
+>>   2 files changed, 134 insertions(+)
+>>
+>> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
+>> index 7d622ea..63403bf 100644
+>> --- a/drivers/soc/qcom/qcom-geni-se.c
+>> +++ b/drivers/soc/qcom/qcom-geni-se.c
+>> @@ -92,6 +92,9 @@ struct geni_wrapper {
+>>   	struct clk_bulk_data ahb_clks[NUM_AHB_CLKS];
+>>   };
+>>   
+>> +static const char * const icc_path_names[] = {"qup-core", "qup-config",
+>> +								"qup-memory"};
+>> +
+>>   #define QUP_HW_VER_REG			0x4
+>>   
+>>   /* Common SE registers */
+>> @@ -720,6 +723,95 @@ void geni_se_rx_dma_unprep(struct geni_se *se, dma_addr_t iova, size_t len)
+>>   }
+>>   EXPORT_SYMBOL(geni_se_rx_dma_unprep);
+>>   
+>> +int geni_icc_get(struct geni_se *se, const char *icc_ddr)
+>> +{
+>> +	int i, icc_err;
+>> +	const char *icc_names[] = {"qup-core", "qup-config", icc_ddr};
+>> +
+>> +	for (i = 0; i < ARRAY_SIZE(se->icc_paths); i++) {
+>> +		if (!icc_names[i])
+>> +			continue;
+>> +
+>> +		se->icc_paths[i].path = devm_of_icc_get(se->dev, icc_names[i]);
+>> +		if (IS_ERR(se->icc_paths[i].path))
+>> +			goto icc_get_failure;
+>> +	}
+>> +
+>> +	return 0;
+>> +
+>> +icc_get_failure:
+>> +	icc_err = PTR_ERR(se->icc_paths[i].path);
+>> +	if (icc_err != -EPROBE_DEFER)
+>> +		dev_err_ratelimited(se->dev, "Failed to get ICC path:%s, ret:%d\n",
+>> +					icc_names[i], icc_err);
+>> +	return icc_err;
+>> +
+>> +}
+>> +EXPORT_SYMBOL(geni_icc_get);
+>> +
+>> +void geni_icc_bw_init(struct geni_icc_path *icc_paths, unsigned int avg_bw,
+>> +			unsigned int peak_bw)
+> I noticed that all callers of geni_icc_bw_init() pass 0 as
+> 'peak_pw' (aka peak == avg). Unless there are plans to use other
+> values for the peak bandwidth in the future it is pointless to
+> track the bandwidth(s) in two variables. And if the bandwidth is
+> tracked in a single variable this function is not needed.
 
-> Provide for a more generic solution by allowing specification of an
-> rs485 bus termination GPIO pin in the device tree:  Amend the serial
-> core to retrieve the GPIO from the device tree (or ACPI table) and amend
-> the default ->rs485_config() callback for 8250 drivers to change the
-> GPIO on request from user space.
+As of now we are not aware of our peak requirement(avg requirement works 
+good for us) so I am passing (peak = avg) as per Georgi's suggestion.
 
-Perhaps the followup can be turning 8250_exar to request those GPIOs it
-provides (as hogs or regular ones, I don't know).
+But I wanted to make this feature more generic and keeping the 
+possibilty open that we might have to use other peak(!=0) value in future.
 
-FWIW,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Regards,
 
-> Signed-off-by: Lukas Wunner <lukas@wunner.de>
-> ---
-> Changes v1 -> v2:
-> * Drop unnecessary devm_gpiod_put(). (Andy)
-> * Use GPIOD_OUT_LOW macro for brevity. (Andy)
-> * Document the rationale for disabling termination by default.
-> * Drop nonsensical read of GPIO after setting its direction to out.
-> 
->  drivers/tty/serial/8250/8250_port.c |  4 ++++
->  drivers/tty/serial/serial_core.c    | 16 ++++++++++++++++
->  include/linux/serial_core.h         |  2 ++
->  3 files changed, 22 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index f77bf820b7a3..b5b630d02110 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -681,6 +681,10 @@ int serial8250_em485_config(struct uart_port *port, struct serial_rs485 *rs485)
->  	memset(rs485->padding, 0, sizeof(rs485->padding));
->  	port->rs485 = *rs485;
->  
-> +	if (port->rs485_term_gpio)
-> +		gpiod_set_value(port->rs485_term_gpio,
-> +				rs485->flags & SER_RS485_TERMINATE_BUS);
-> +
->  	/*
->  	 * Both serial8250_em485_init() and serial8250_em485_destroy()
->  	 * are idempotent.
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 43b6682877d5..57840cf90388 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -3317,6 +3317,7 @@ int uart_get_rs485_mode(struct uart_port *port)
->  	 * to get to a defined state with the following properties:
->  	 */
->  	rs485conf->flags &= ~(SER_RS485_RX_DURING_TX | SER_RS485_ENABLED |
-> +			      SER_RS485_TERMINATE_BUS |
->  			      SER_RS485_RTS_AFTER_SEND);
->  	rs485conf->flags |= SER_RS485_RTS_ON_SEND;
->  
-> @@ -3331,6 +3332,21 @@ int uart_get_rs485_mode(struct uart_port *port)
->  		rs485conf->flags |= SER_RS485_RTS_AFTER_SEND;
->  	}
->  
-> +	/*
-> +	 * Disabling termination by default is the safe choice:  Else if many
-> +	 * bus participants enable it, no communication is possible at all.
-> +	 * Works fine for short cables and users may enable for longer cables.
-> +	 */
-> +	port->rs485_term_gpio = devm_gpiod_get_optional(dev, "rs485-term",
-> +							GPIOD_OUT_LOW);
-> +	if (IS_ERR(port->rs485_term_gpio)) {
-> +		ret = PTR_ERR(port->rs485_term_gpio);
-> +		port->rs485_term_gpio = NULL;
-> +		if (ret != -EPROBE_DEFER)
-> +			dev_err(dev, "Cannot get rs485-term-gpios\n");
-> +		return ret;
-> +	}
-> +
->  	return 0;
->  }
->  EXPORT_SYMBOL_GPL(uart_get_rs485_mode);
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index b649a2b894e7..9fd550e7946a 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -10,6 +10,7 @@
->  #include <linux/bitops.h>
->  #include <linux/compiler.h>
->  #include <linux/console.h>
-> +#include <linux/gpio/consumer.h>
->  #include <linux/interrupt.h>
->  #include <linux/circ_buf.h>
->  #include <linux/spinlock.h>
-> @@ -251,6 +252,7 @@ struct uart_port {
->  	struct attribute_group	*attr_group;		/* port specific attributes */
->  	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
->  	struct serial_rs485     rs485;
-> +	struct gpio_desc	*rs485_term_gpio;	/* enable RS485 bus termination */
->  	struct serial_iso7816   iso7816;
->  	void			*private_data;		/* generic platform data pointer */
->  };
-> -- 
-> 2.26.2
-> 
+Akash
+
+>
+>> +{
+>> +	if (!peak_bw)
+>> +		peak_bw = avg_bw;
+>> +	icc_paths->avg_bw = avg_bw;
+>> +	icc_paths->peak_bw = peak_bw;
+>> +}
+>> +EXPORT_SYMBOL(geni_icc_bw_init);
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
