@@ -6,87 +6,177 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77B2BC43469
-	for <linux-serial@archiver.kernel.org>; Wed, 13 May 2020 15:00:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAC66C433E0
+	for <linux-serial@archiver.kernel.org>; Wed, 13 May 2020 15:15:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 73DCA22267
-	for <linux-serial@archiver.kernel.org>; Wed, 13 May 2020 14:59:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1CFE12064E
+	for <linux-serial@archiver.kernel.org>; Wed, 13 May 2020 14:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389110AbgEMO7m (ORCPT
+        id S2388395AbgEMOiB (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 May 2020 10:59:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41232 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728692AbgEMO7l (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 May 2020 10:59:41 -0400
-X-Greylist: delayed 1084 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 May 2020 07:59:41 PDT
-Received: from mail.rc.ru (mail.rc.ru [IPv6:2a01:7e00:e000:1bf::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEECEC061A0C;
-        Wed, 13 May 2020 07:59:41 -0700 (PDT)
-Received: from mail.rc.ru ([2a01:7e00:e000:1bf::1]:52490)
-        by mail.rc.ru with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ink@jurassic.park.msu.ru>)
-        id 1jYsZe-00052a-70; Wed, 13 May 2020 15:41:30 +0100
-Date:   Wed, 13 May 2020 15:41:28 +0100
-From:   Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-To:     "Maciej W. Rozycki" <macro@linux-mips.org>
-Cc:     Mikulas Patocka <mpatocka@redhat.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Richard Henderson <rth@twiddle.net>,
-        Matt Turner <mattst88@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
-Subject: Re: [PATCH 1/2 v3] alpha: add a delay to inb_p, inb_w and inb_l
-Message-ID: <20200513144128.GA16995@mail.rc.ru>
-References: <alpine.LRH.2.02.2005060713390.25338@file01.intranet.prod.int.rdu2.redhat.com>
- <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com>
- <alpine.LRH.2.02.2005061308220.18599@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LRH.2.02.2005070404420.5006@file01.intranet.prod.int.rdu2.redhat.com>
- <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com>
- <alpine.LRH.2.02.2005070931280.1718@file01.intranet.prod.int.rdu2.redhat.com>
- <CAK8P3a3UdCJL6C07_W7pkipT1Xmr_0G9hOy1S+YXbB4_tKt+gg@mail.gmail.com>
- <alpine.LFD.2.21.2005100209340.487915@eddie.linux-mips.org>
- <alpine.LRH.2.02.2005101443290.15420@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LFD.2.21.2005111320220.677301@eddie.linux-mips.org>
+        Wed, 13 May 2020 10:38:01 -0400
+Received: from mx2.suse.de ([195.135.220.15]:56598 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728345AbgEMOiB (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 13 May 2020 10:38:01 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 0F268ADF8;
+        Wed, 13 May 2020 14:38:01 +0000 (UTC)
+Date:   Wed, 13 May 2020 16:37:55 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Alper Nebi Yasak <alpernebiyasak@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        linux-serial@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arvind Sankar <nivedita@alum.mit.edu>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Biggers <ebiggers@google.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Grzegorz Halat <ghalat@redhat.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Sam Ravnborg <sam@ravnborg.org>
+Subject: Re: [RFC PATCH v2 0/3] Prefer working VT console over SPCR and
+ device-tree chosen stdout-path
+Message-ID: <20200513143755.GM17734@linux-b0ei>
+References: <20200430161438.17640-1-alpernebiyasak@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alpine.LFD.2.21.2005111320220.677301@eddie.linux-mips.org>
+In-Reply-To: <20200430161438.17640-1-alpernebiyasak@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Mon, May 11, 2020 at 03:58:24PM +0100, Maciej W. Rozycki wrote:
->  Individual PCI port locations correspond to different MMIO locations, so 
-> yes, accesses to these can be reordered (merging won't happen due to the 
-> use of the sparse address space).
+On Thu 2020-04-30 19:14:34, Alper Nebi Yasak wrote:
+> I recently experienced some trouble with setting up an encrypted-root
+> system, my Chromebook Plus (rk3399-gru-kevin, ARM64) would appear to
+> hang where it should have asked for an encryption passphrase; and I
+> eventually figured out that the kernel preferred the serial port
+> (inaccessible to me) over the built-in working display/keyboard and was
+> probably asking there.
+> 
+> Running plymouth in the initramfs solves that specific problem, but
+> both the documentation and tty-related kconfig descriptions imply that
+> /dev/console should be tty0 if graphics are working, CONFIG_VT_CONSOLE
+> is enabled and no explicit console argument is given in the kernel
+> commandline.
+> 
+> However, I'm seeing different behaviour on systems with SPCR (as in QEMU
+> aarch64 virtual machines) and/or a device-tree chosen stdout-path node
+> (as in most arm/arm64 devices). On these machines, depending on the
+> console argument, the contents of the /proc/consoles file are:
 
-Correct, it's how Alpha write buffers work. According to 21064 hardware
-reference manual, these buffers are flushed when one of the following
-conditions is met:
+I dug many times into the history of the console registration code.
+The following table mostly confirms my expectations.
 
-1) The write buffer contains at least two valid entries.
-2) The write buffer contains one valid entry and at least 256 CPU cycles
-   have elapsed since the execution of the last write buffer-directed
-   instruction.
-3) The write buffer contains an MB, STQ_C or STL_C instruction.
-4) A load miss is pending to an address currently valid in the write
-   buffer that requires the write buffer to be flushed.
 
-I'm certain that in these rtc/serial cases we've got readX arriving
-to device *before* preceeding writeX because of 2). That's why small
-delay (300-1400 ns, apparently depends on CPU frequency) seemingly
-"fixes" the problem. The 4) is not met because loads and stores are
-to different ports, and 3) has been broken by commit 92d7223a74.
+>                     |     "console=tty0"    |    (no console arg)   |
+>   ------------------+-----------------------+-----------------------+
+>   QEMU VM           | tty0     -WU (EC p  ) | ttyAMA0  -W- (EC   a) |
+>   (w/ SPCR)         | ttyAMA0  -W- (E    a) |
+>   |
 
-So I believe that correct fix would be to revert 92d7223a74 and
-add wmb() before [io]writeX macros to meet memory-barriers.txt
-requirement. The "wmb" instruction is cheap enough and won't hurt
-IO performance too much.
+The SPCR handling is inconsistent over architectures, see
+https://lkml.kernel.org/r/20180830123849.26163-1-prarit@redhat.com
 
-Ivan.
+IMHO, arm developers decided that consoles defined by SPCR are always
+enabled when existing.
+
+In 1st column: tty0 is the preferred console because it is defined
+on the commandline.
+
+In 2nd column: tty0 is not enabled at all because another console was
+defined by SPCR. Note that ttySX and ttyX consoles are registered only
+as a fallback when there is no other console defined.
+
+The following code is responsible for the fallback, see register_console()
+
+	/*
+	 *	See if we want to use this console driver. If we
+	 *	didn't select a console we take the first one
+	 *	that registers here.
+	 */
+	if (!has_preferred) {
+		if (newcon->index < 0)
+			newcon->index = 0;
+		if (newcon->setup == NULL ||
+		    newcon->setup(newcon, NULL) == 0) {
+			newcon->flags |= CON_ENABLED;
+			if (newcon->device) {
+				newcon->flags |= CON_CONSDEV;
+				has_preferred = true;
+			}
+		}
+	}
+
+
+>   ------------------+-----------------------+-----------------------+
+>   Chromebook Plus   | tty0     -WU (EC p  ) | ttyS2    -W- (EC p a) |
+>   (w/ stdout-path)  |                       | tty0     -WU (E     ) |
+
+Hmm, of_console_check() explicitly ignores the console defined by
+stdout-path when there is a console on the commandline. This explains
+1st column.
+
+I am not sure about 2nd column. My guess is that ttyX consoles are
+tried first. tty0 is registered as a fallback because there is no
+other console at the moment. ttyS2 is tried later and it is
+registered because it is in stdout-patch and there is no console
+in the command line. It is somehow consistent with  CONFIG_VT_CONSOLE
+description.
+
+Sadly, it is different logic than with SPCR :-(
+
+
+>   ------------------+-----------------------+-----------------------+
+>   Chromebook Plus   | tty0     -WU (EC p  ) | tty0     -WU (EC p  ) |
+>   (w/o either)      |                       |                       |
+>   ------------------+-----------------------+-----------------------+
+
+This variant is easy and everyone would probably expect this.
+
+
+Regarding the description of CONFIG_VT_CONSOLE option. I am afraid
+that it was created and true only before SPCR and device tree support
+was introduced.
+
+
+Now, it is really sad that SPCR and device tree have different
+behavior even across architectures. But I am afraid that we could
+not change it without breaking many setups.
+
+The only common rules are:
+
+   + The last console on the command line should always be the
+     preferred one when defined.
+
+   + Consoles defined by the device (SPCR, device tree) are used
+     when there is no commandline.
+
+   + ttyX or ttySX are used as a fallback when nothing else is defined.
+
+
+My suggestion is:
+
+   + Fix SPCR setting or device tree of your device when the defaults
+     are not as expected.
+
+   + Use command line to force your value when the defaults are not
+     as expected and you could not change them.
+
+
+I am afraid that we could not fix your problem on the kernel side. It
+would broke other setups that depend on the existing behavior.
+
+Best Regards,
+Petr
