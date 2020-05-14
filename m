@@ -6,57 +6,57 @@ X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99103C433DF
-	for <linux-serial@archiver.kernel.org>; Thu, 14 May 2020 13:33:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E90ADC433E0
+	for <linux-serial@archiver.kernel.org>; Thu, 14 May 2020 13:33:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6F1A520728
-	for <linux-serial@archiver.kernel.org>; Thu, 14 May 2020 13:33:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C76D82065D
+	for <linux-serial@archiver.kernel.org>; Thu, 14 May 2020 13:33:33 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="EQu0JqYp"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="xBeG4wZx"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726184AbgENNdH (ORCPT
+        id S1726304AbgENNdd (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 May 2020 09:33:07 -0400
+        Thu, 14 May 2020 09:33:33 -0400
 Received: from mail27.static.mailgun.info ([104.130.122.27]:31338 "EHLO
         mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726037AbgENNdG (ORCPT
+        by vger.kernel.org with ESMTP id S1726056AbgENNdc (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 May 2020 09:33:06 -0400
+        Thu, 14 May 2020 09:33:32 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1589463186; h=Content-Transfer-Encoding: Content-Type:
+ s=smtp; t=1589463212; h=Content-Transfer-Encoding: Content-Type:
  In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=aFjVryK896eVzAcWVmd4eM1/wbF53lfmtGTdogx1Uo4=; b=EQu0JqYpXTQE4kZ/kqkpduovkpxiKpfkCYncst5KWVFOMlj/++njMTP6XbDyA2nMc6vJdFvq
- HW+Ko5eTjaZ0uirnX7X8WEc4G12X8yDcurjvW0RUd8LJYGkLXYPoMm/UFNISbHE5sf9PjpwJ
- syIVadjMQHwQImmpG0eMQnSnfVw=
+ Subject: Sender; bh=TZPgL+XkybaeeYUYsbnJMPveHMNejUHVe64o0zrFwys=; b=xBeG4wZxUSGeSJ4Fqc0kSsGI8sOlTi2Z4CGi6ZLuXjEetnCrhBN9dm2cJda1ehJQR4g4zhAf
+ e/2Pa38spTX2FH9L3+4VCePsxyXbAxkzPIothY3UIU6nUEr0PMJRvghOk2uzU9ufi1FJpNCq
+ kGOUz7IusChxyPguTpcUZ86Or04=
 X-Mailgun-Sending-Ip: 104.130.122.27
 X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5ebd4891.7f708570db20-smtp-out-n01;
- Thu, 14 May 2020 13:33:05 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5ebd48a7.7f82d40b3d18-smtp-out-n05;
+ Thu, 14 May 2020 13:33:27 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 15BF5C43636; Thu, 14 May 2020 13:33:05 +0000 (UTC)
+        id AE280C43636; Thu, 14 May 2020 13:33:27 +0000 (UTC)
 Received: from [192.168.0.4] (unknown [124.123.29.106])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: msavaliy)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7E1B9C433D2;
-        Thu, 14 May 2020 13:33:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7E1B9C433D2
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 88078C432C2;
+        Thu, 14 May 2020 13:33:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 88078C432C2
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=msavaliy@codeaurora.org
 Subject: Re: [PATCH V2] serial: msm_geni_serial_console : Add Earlycon support
-To:     Greg KH <gregkh@linuxfoundation.org>, will@kernel.org
+To:     Greg KH <gregkh@linuxfoundation.org>
 Cc:     akashast@codeaurora.org, linux-serial@vger.kernel.org,
         saravanak@google.com, sspatil@google.com, tkjos@google.com
 References: <20200506113331.32562-1-msavaliy@codeaurora.org>
- <20200506120237.GA3047211@kroah.com>
+ <20200506120532.GB3047211@kroah.com>
 From:   "Mukesh, Savaliya" <msavaliy@codeaurora.org>
-Message-ID: <a66f2bdc-57e6-e155-26ce-5643bbc045ad@codeaurora.org>
-Date:   Thu, 14 May 2020 19:02:49 +0530
+Message-ID: <572765da-6dae-3056-3fc2-188b92291777@codeaurora.org>
+Date:   Thu, 14 May 2020 19:03:18 +0530
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200506120237.GA3047211@kroah.com>
+In-Reply-To: <20200506120532.GB3047211@kroah.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
@@ -66,43 +66,40 @@ List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
 
-On 5/6/2020 5:32 PM, Greg KH wrote:
+On 5/6/2020 5:35 PM, Greg KH wrote:
 > On Wed, May 06, 2020 at 05:03:31PM +0530, Mukesh, Savaliya wrote:
->> +static void msm_geni_serial_wr_char(struct uart_port *uport, int ch)
->> +{
->> +	writel_relaxed(ch, uport->membase+SE_GENI_TX_FIFOn);
->> +	/*
->> +	 * Ensure FIFO write clear goes through before
->> +	 * next iteration.
->> +	 */
->> +	mb();
-> Can't you just write the above two lines as:
-> 	writel(ch, uport->membase+SE_GENI_TX_FIFOn);
-> ?
+>> +		/*
+>> +		 * If the WM bit never set, then the Tx state machine is not
+>> +		 * in a valid state, so break, cancel/abort any existing
+>> +		 * command. Unfortunately the current data being written is
+>> +		 * lost.
+>> +		 */
+>> +		while (!msm_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
+>> +						M_TX_FIFO_WATERMARK_EN, true))
+>> +			break;
+> Am I reading this correctly in that if the bit is set properly, you will
+> just loop for forever?
 >
-> Why put a mb() after a _relaxed() call?
+> That feels wrong, are you sure this is correct?
+
+It seems correct to me. The API returns true if function sees the BIT is 
+set else returns false.
+
+Mostly it's true and returns true, hence it shouldn't loop.
+
 >
-> Will, I know I asked you about this on irc a while ago, is the above
-> really correct?
->
-> This happens other places in the driver.
-Removed mb() calls due to _relaxed() APIs taking care of the same.
->
-> Also, Savaliya, please use checkpatch on your patch, you need some
-> whitespace fixes in this code before I could accept it at the very
-> least.
-
-I ran the script now also on same patch, didn't any warning/error. Do 
-you see the error ? Below is the output:
-
-./scripts/checkpatch.pl 
-0001-serial-msm_geni_serial_console-Add-Earlycon-support.patch
-WARNING: added, moved or deleted file(s), does MAINTAINERS need updating?
-#58:
-new file mode 100644
-
-total: 0 errors, 1 warnings, 511 lines checked
-
+>> +		chars_to_write = min((unsigned int)(count - i),
+>> +							avail_fifo_bytes);
+>> +		if ((chars_to_write << 1) > avail_fifo_bytes)
+>> +			chars_to_write = (avail_fifo_bytes >> 1);
+>> +		uart_console_write(uport, (s + i), chars_to_write,
+>> +					msm_geni_serial_wr_char);
+>> +		writel_relaxed(M_TX_FIFO_WATERMARK_EN,
+>> +			uport->membase+SE_GENI_M_IRQ_CLEAR);
+>> +		/* Ensure this goes through before polling for WM IRQ again.*/
+>> +		mb();
+> Again, writel() on its own should be fine here, and elsewhere.
+Removed mb() from whole file as _relaxed takes care of it.
 >
 > thanks,
 >
