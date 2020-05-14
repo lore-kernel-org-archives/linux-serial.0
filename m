@@ -1,149 +1,259 @@
-Return-Path: <SRS0=7vif=63=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=CP5M=64=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA45EC433DF
-	for <linux-serial@archiver.kernel.org>; Wed, 13 May 2020 23:12:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70E73C433E0
+	for <linux-serial@archiver.kernel.org>; Thu, 14 May 2020 06:46:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D107A2053B
-	for <linux-serial@archiver.kernel.org>; Wed, 13 May 2020 23:12:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 40612205CB
+	for <linux-serial@archiver.kernel.org>; Thu, 14 May 2020 06:46:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="d91N+o6U"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="SVV8FTIf"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732274AbgEMXMh (ORCPT
+        id S1726137AbgENGqN (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 13 May 2020 19:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33732 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728315AbgEMXMZ (ORCPT
+        Thu, 14 May 2020 02:46:13 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:29190 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725970AbgENGqM (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 13 May 2020 19:12:25 -0400
-Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59FB7C061A0C
-        for <linux-serial@vger.kernel.org>; Wed, 13 May 2020 16:12:25 -0700 (PDT)
-Received: by mail-vs1-xe42.google.com with SMTP id z1so839432vsn.11
-        for <linux-serial@vger.kernel.org>; Wed, 13 May 2020 16:12:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NzQVGwBy98yyKuXlmBNvWD4o+eLGqCxtgVxPgKw63Do=;
-        b=d91N+o6UMzxTsz1St1Hu66m8IAaS2jE1/WCro4T3FXi2sc/4AHW4ODcGwfEnvDzHjj
-         /PKKX5txh+2AdFLEuJtnkNNG0IRWzECKUG3SGfFwrIcEdqW19nhO2jFicMOUMvz6T+C1
-         tNR/mldiveHPbJerAbyvqheERVBHSeb8Q1lg0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NzQVGwBy98yyKuXlmBNvWD4o+eLGqCxtgVxPgKw63Do=;
-        b=d49PgJNccyR3LzCl2zVfaLuhmLQqaZCOh0JL1UjmhLicJxcP+ADFtpB41b1pL4t+QN
-         zFM6uDBB7w9/YD13NA3QUeTt8ZXZj0eDCvUmKr9sCssndmzY0SrFDuU1BYj21ky2XMCL
-         s8fSi9oS5bhASvmSjpTL9qK2yiKCTTuWZDua4URXd87CuQSNxzNr0KoE9EtLwij+gE+4
-         TOHxHohRqvgc5BANUXxsaAW9jngfThrRjjNBoCC8ro0HhGmPs4XncpYEBAHYGqDidoGZ
-         FBdo5J661pJtN8lYLcOS1/bANBhRQ8Lc7U49uwYFEf3lWlZxZ22Z52nrv5Zwuvkh+TOR
-         tDiw==
-X-Gm-Message-State: AOAM531TU6taQT3LTVWWjU31iRERHebtn7Q0u/Wovja8HCfh/MbjeG5I
-        b67ftTQtJ/CZG8Teea8CY/lIY8yW1iA=
-X-Google-Smtp-Source: ABdhPJwtyIaLKprJdL7YnzSRowZmmSGDH9qp3YndgmHLg0WvskkNKAmlgJyCJ8V5xiiaStkX4nqd+w==
-X-Received: by 2002:a67:2204:: with SMTP id i4mr1398875vsi.87.1589411544183;
-        Wed, 13 May 2020 16:12:24 -0700 (PDT)
-Received: from mail-vs1-f48.google.com (mail-vs1-f48.google.com. [209.85.217.48])
-        by smtp.gmail.com with ESMTPSA id i199sm270381vke.20.2020.05.13.16.12.22
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 May 2020 16:12:23 -0700 (PDT)
-Received: by mail-vs1-f48.google.com with SMTP id b11so833981vsa.13
-        for <linux-serial@vger.kernel.org>; Wed, 13 May 2020 16:12:22 -0700 (PDT)
-X-Received: by 2002:a67:bd07:: with SMTP id y7mr1357400vsq.109.1589411542393;
- Wed, 13 May 2020 16:12:22 -0700 (PDT)
+        Thu, 14 May 2020 02:46:12 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1589438772; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=cKgghdOXnhc+2aVtVa22OYQ1NH4oXGcYByObqibfJT4=; b=SVV8FTIftVlLvhg0x4tknpNQ+XYO8HByQ21mVyQ8Wa98zEyIvF8d2NOcRoXZR6sxFsi6PUpj
+ G4p12s/59V68ebCOh7aMM1p8RZnBgxtfvXHONCZDkKhhh7uj9MFxxHjYE1CT/q+Fc1pF79Oo
+ gRenDNsc5nIQdtAJheo8WW5pm74=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
+ 5ebce92332b098143c91562a (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 14 May 2020 06:45:54
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 1886DC43636; Thu, 14 May 2020 06:45:54 +0000 (UTC)
+Received: from [10.206.24.246] (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: akashast)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id A0AD8C433D2;
+        Thu, 14 May 2020 06:45:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A0AD8C433D2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
+Subject: Re: [PATCH V5 2/7] soc: qcom-geni-se: Add interconnect support to fix
+ earlycon crash
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
+        mark.rutland@arm.com, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, dianders@chromium.org,
+        evgreen@chromium.org, georgi.djakov@linaro.org
+References: <1588919619-21355-1-git-send-email-akashast@codeaurora.org>
+ <1588919619-21355-3-git-send-email-akashast@codeaurora.org>
+ <20200508175938.GB4525@google.com>
+From:   Akash Asthana <akashast@codeaurora.org>
+Message-ID: <294b33e5-cf5a-8abc-2152-afa01664d962@codeaurora.org>
+Date:   Thu, 14 May 2020 12:15:44 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200507200850.60646-1-dianders@chromium.org> <20200507130644.v4.5.I22067ad43e77ddfd4b64c2d49030628480f9e8d9@changeid>
-In-Reply-To: <20200507130644.v4.5.I22067ad43e77ddfd4b64c2d49030628480f9e8d9@changeid>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 13 May 2020 16:12:11 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=Wq1bnaMnUa09GZzQq5rZeQHUM9WAmxED3foc_Rjdsg2A@mail.gmail.com>
-Message-ID: <CAD=FV=Wq1bnaMnUa09GZzQq5rZeQHUM9WAmxED3foc_Rjdsg2A@mail.gmail.com>
-Subject: Re: [PATCH v4 05/12] arm64: Add call_break_hook() to early_brk64()
- for early kgdb
-To:     Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-serial@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Jiri Slaby <jslaby@suse.com>,
-        kgdb-bugreport@lists.sourceforge.net,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Will Deacon <will@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Gross <agross@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>, bp@alien8.de,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        Allison Randal <allison@lohutok.net>,
-        Dave Martin <Dave.Martin@arm.com>,
-        Enrico Weigelt <info@metux.net>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        James Morse <james.morse@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        jinho lim <jordan.lim@samsung.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200508175938.GB4525@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi,
+Hi Matthias,
 
-On Thu, May 7, 2020 at 1:09 PM Douglas Anderson <dianders@chromium.org> wrote:
+On 5/8/2020 11:29 PM, Matthias Kaehlcke wrote:
+> Hi Akash,
 >
-> In order to make early kgdb work properly we need early_brk64() to be
-> able to call into it.  This is as easy as adding a call into
-> call_break_hook() just like we do later in the normal brk_handler().
+> overall this looks good to me, a few comments inline
 >
-> Once we do this we can let kgdb know that it can break into the
-> debugger a little earlier (specifically when parsing early_param's).
+> On Fri, May 08, 2020 at 12:03:34PM +0530, Akash Asthana wrote:
+>> QUP core clock is shared among all the SE drivers present on particular
+>> QUP wrapper, the system will reset(unclocked access) if earlycon used after
+>> QUP core clock is put to 0 from other SE drivers before real console comes
+>> up.
+>>
+>> As earlycon can't vote for it's QUP core need, to fix this add ICC
+>> support to common/QUP wrapper driver and put vote for QUP core from
+>> probe on behalf of earlycon and remove vote during earlycon exit call.
+>>
+>> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+>> Reported-by: Matthias Kaehlcke <mka@chromium.org>
+>> ---
+>> Change in V3:
+>>   - Add geni_remove_earlycon_icc_vote API that will be used by earlycon
+>>     exit function to remove ICC vote for earlyconsole.
+>>   - Remove suspend/resume hook for geni-se driver as we are no longer
+>>     removing earlyconsole ICC vote from system suspend, we are removing
+>>     from earlycon exit.
+>>
+>> Change in V4:
+>>   - As per Matthias comment make 'earlycon_wrapper' as static structure.
+>>
+>> Changes in V5:
+>>   - Vote for core path only after checking whether "qcom_geni" earlycon is
+>>     actually present or not by traversing over structure "console_drivers".
+>>
+>>   drivers/soc/qcom/qcom-geni-se.c       | 63 +++++++++++++++++++++++++++++++++++
+>>   drivers/tty/serial/qcom_geni_serial.c |  7 ++++
+>>   include/linux/qcom-geni-se.h          |  2 ++
+>>   3 files changed, 72 insertions(+)
+>>
+>> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
+>> index 63403bf..66fe6f2 100644
+>> --- a/drivers/soc/qcom/qcom-geni-se.c
+>> +++ b/drivers/soc/qcom/qcom-geni-se.c
+>> @@ -3,6 +3,7 @@
+>>   
+>>   #include <linux/acpi.h>
+>>   #include <linux/clk.h>
+>> +#include <linux/console.h>
+>>   #include <linux/slab.h>
+>>   #include <linux/dma-mapping.h>
+>>   #include <linux/io.h>
+>> @@ -90,11 +91,14 @@ struct geni_wrapper {
+>>   	struct device *dev;
+>>   	void __iomem *base;
+>>   	struct clk_bulk_data ahb_clks[NUM_AHB_CLKS];
+>> +	struct geni_icc_path to_core;
+>>   };
+>>   
+>>   static const char * const icc_path_names[] = {"qup-core", "qup-config",
+>>   								"qup-memory"};
+>>   
+>> +static struct geni_wrapper *earlycon_wrapper;
+>> +
+>>   #define QUP_HW_VER_REG			0x4
+>>   
+>>   /* Common SE registers */
+>> @@ -812,11 +816,33 @@ int geni_icc_disable(struct geni_se *se)
+>>   }
+>>   EXPORT_SYMBOL(geni_icc_disable);
+>>   
+>> +void geni_remove_earlycon_icc_vote(void)
+>> +{
+>> +	struct geni_wrapper *wrapper = earlycon_wrapper;
+>> +	struct device_node *parent = of_get_next_parent(wrapper->dev->of_node);
+> Do we need to check that earlycon_wrapper != NULL before dereferencing it?
+> In theory this should not happen, but better be safe.
+Ok, I will add NULL check.
 >
-> NOTE: without this patch it turns out that arm64 can't do breakpoints
-> even at dbg_late_init(), so if we decide something about this patch is
-> wrong we might need to move dbg_late_init() a little later.
+>> +	struct device_node *child;
+>> +
+>> +	for_each_child_of_node(parent, child) {
+>> +		if (of_device_is_compatible(child, "qcom,geni-se-qup")) {
+>> +			wrapper = platform_get_drvdata(of_find_device_by_node(
+>> +					child));
+>> +			icc_put(wrapper->to_core.path);
+>> +			wrapper->to_core.path = NULL;
+> nit: setting the path to NULL isn't really needed IIUC.
+icc_put just free the path and don't reinitialize the path to NULL, if 
+the path is used after it is put target will crash. So just for safety I 
+am setting this path to NULL.
 >
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-> ---
+>> +		}
+>> +	}
+>> +	of_node_put(parent);
+>> +
+>> +	earlycon_wrapper = NULL;
+>> +}
+>> +EXPORT_SYMBOL(geni_remove_earlycon_icc_vote);
+>> +
+>>   static int geni_se_probe(struct platform_device *pdev)
+>>   {
+>>   	struct device *dev = &pdev->dev;
+>>   	struct resource *res;
+>>   	struct geni_wrapper *wrapper;
+>> +	struct console *bcon;
+>> +	int earlycon_present = 0;
+> use bool & true/false
 >
-> Changes in v4:
-> - Add "if KGDB" to "select ARCH_HAS_EARLY_DEBUG" in Kconfig.
+> The variable is only used when CONFIG_SERIAL_EARLYCON is set, I think
+> you need to add '__maybe_unused' to avoid a compiler warning then earlycon
+> support is disabled.
 >
-> Changes in v3:
-> - Change boolean weak function to KConfig.
+> bikeshed: 'has_earlycon' would be slightly more concise (feel free to ignore).
+Ok
 >
-> Changes in v2: None
+>>   	int ret;
+>>   
+>>   	wrapper = devm_kzalloc(dev, sizeof(*wrapper), GFP_KERNEL);
+>> @@ -839,6 +865,43 @@ static int geni_se_probe(struct platform_device *pdev)
+>>   		}
+>>   	}
+>>   
+>> +#ifdef CONFIG_SERIAL_EARLYCON
+>> +	if (console_drivers)
+> The loop should have curly braces ("use braces when a loop contains more than
+> a single simple statement"), even though the compiler doesn't need them in
+> this case. This is not a loop, but I was told by a maintainer that it equally
+> applies, which makes sense.
 >
->  arch/arm64/Kconfig                      | 1 +
->  arch/arm64/include/asm/debug-monitors.h | 2 ++
->  arch/arm64/kernel/debug-monitors.c      | 2 +-
->  arch/arm64/kernel/traps.c               | 3 +++
->  4 files changed, 7 insertions(+), 1 deletion(-)
+> You could avoid one level of indentation through:
+Ok
+>
+> if (!console_drivers)
+> 	goto exit;
 
-As discussed in the replies to the v3 version of this patch [1], I
-have posted a replacement patch for this one [2].  After the cut in
-the replacement patch I talk about different ways it could land.
-Hopefully that's not too confusing.  I can also re-spam everyone with
-a v5 of the whole series if that makes it clearer.
+I think I can omit this extra check because "for_each_console" will take 
+care of this.
 
-[1] https://lore.kernel.org/r/20200428141218.v3.5.I22067ad43e77ddfd4b64c2d49030628480f9e8d9@changeid
-[2] https://lore.kernel.org/r/20200513160501.1.I0b5edf030cc6ebef6ab4829f8867cdaea42485d8@changeid
+>
+>> +		for_each_console(bcon)
+> ditto (braces)
+>
+>> +			if (!strcmp(bcon->name, "qcom_geni")) {
+>> +				earlycon_present = 1;
+>> +				break;
+>> +			}
+>> +	if (!earlycon_present)
+>> +		goto exit;
+>> +
+>> +	wrapper->to_core.path = devm_of_icc_get(dev, "qup-core");
+>> +	if (IS_ERR(wrapper->to_core.path))
+>> +		return PTR_ERR(wrapper->to_core.path);
+>> +	/*
+>> +	 * Put minmal BW request on core clocks on behalf of early console.
+>> +	 * The vote will be removed earlycon exit function.
+>> +	 *
+>> +	 * Note: We are putting vote on each QUP wrapper instead only to which
+>> +	 * earlycon is connected because QUP core clock of different wrapper
+>> +	 * share same voltage domain. If core1 is put to 0, then core2 will
+>> +	 * also run at 0, if not voted. Default ICC vote will be removed ASA
+>> +	 * we touch any of the core clock.
+>> +	 * core1 = core2 = max(core1, core2)
+>> +	 */
+>> +	ret = icc_set_bw(wrapper->to_core.path, GENI_DEFAULT_BW,
+>> +							GENI_DEFAULT_BW);
+> nit: the indentation is a bit odd. Align with 'wrapper->to_core.path' or a
+> nearby tab stop?
 
--Doug
+ok
+
+
+Thanks for providing the feedback.
+
+Regards,
+
+Akash
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+
