@@ -4,66 +4,59 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68ABBC433DF
-	for <linux-serial@archiver.kernel.org>; Thu, 14 May 2020 07:37:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99103C433DF
+	for <linux-serial@archiver.kernel.org>; Thu, 14 May 2020 13:33:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4D2EB2073E
-	for <linux-serial@archiver.kernel.org>; Thu, 14 May 2020 07:37:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6F1A520728
+	for <linux-serial@archiver.kernel.org>; Thu, 14 May 2020 13:33:07 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="cL2tVZvR"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="EQu0JqYp"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725935AbgENHhk (ORCPT
+        id S1726184AbgENNdH (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 May 2020 03:37:40 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:49630 "EHLO
+        Thu, 14 May 2020 09:33:07 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:31338 "EHLO
         mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725955AbgENHhk (ORCPT
+        by vger.kernel.org with ESMTP id S1726037AbgENNdG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 May 2020 03:37:40 -0400
+        Thu, 14 May 2020 09:33:06 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1589441859; h=Content-Transfer-Encoding: Content-Type:
+ s=smtp; t=1589463186; h=Content-Transfer-Encoding: Content-Type:
  In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=y4vCCmSr1ZBPDi4lPBD+cRmxDnvjeGEo2YEOpKBr8SQ=; b=cL2tVZvRlOaWTckgtBgj5v8qdpPMZ98KOfpfDT5YhsEKr8jfXMeQclSbMquNqA3xAetmWKQt
- cLcPDOi7lu6Qd2lbjTwiY/192OHm8Om4W9lOlg34xC0C+1BwZPx60atgcTDqs0NqKXvwN4ib
- xWHuRu2FMylZzJfIxMFjeDX5Ccw=
+ Subject: Sender; bh=aFjVryK896eVzAcWVmd4eM1/wbF53lfmtGTdogx1Uo4=; b=EQu0JqYpXTQE4kZ/kqkpduovkpxiKpfkCYncst5KWVFOMlj/++njMTP6XbDyA2nMc6vJdFvq
+ HW+Ko5eTjaZ0uirnX7X8WEc4G12X8yDcurjvW0RUd8LJYGkLXYPoMm/UFNISbHE5sf9PjpwJ
+ syIVadjMQHwQImmpG0eMQnSnfVw=
 X-Mailgun-Sending-Ip: 104.130.122.27
 X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5ebcf543.7f9c849e23b0-smtp-out-n04;
- Thu, 14 May 2020 07:37:39 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5ebd4891.7f708570db20-smtp-out-n01;
+ Thu, 14 May 2020 13:33:05 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id DBB43C432C2; Thu, 14 May 2020 07:37:37 +0000 (UTC)
-Received: from [10.206.24.246] (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
+        id 15BF5C43636; Thu, 14 May 2020 13:33:05 +0000 (UTC)
+Received: from [192.168.0.4] (unknown [124.123.29.106])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3A39FC43636;
-        Thu, 14 May 2020 07:37:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 3A39FC43636
+        (Authenticated sender: msavaliy)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7E1B9C433D2;
+        Thu, 14 May 2020 13:33:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7E1B9C433D2
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-Subject: Re: [PATCH V5 4/7] spi: spi-geni-qcom: Add interconnect support
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, dianders@chromium.org,
-        evgreen@chromium.org, georgi.djakov@linaro.org
-References: <1588919619-21355-1-git-send-email-akashast@codeaurora.org>
- <1588919619-21355-5-git-send-email-akashast@codeaurora.org>
- <20200508182532.GD4525@google.com>
-From:   Akash Asthana <akashast@codeaurora.org>
-Message-ID: <6a7b8129-6542-042f-e418-c4b49303d944@codeaurora.org>
-Date:   Thu, 14 May 2020 13:07:28 +0530
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=msavaliy@codeaurora.org
+Subject: Re: [PATCH V2] serial: msm_geni_serial_console : Add Earlycon support
+To:     Greg KH <gregkh@linuxfoundation.org>, will@kernel.org
+Cc:     akashast@codeaurora.org, linux-serial@vger.kernel.org,
+        saravanak@google.com, sspatil@google.com, tkjos@google.com
+References: <20200506113331.32562-1-msavaliy@codeaurora.org>
+ <20200506120237.GA3047211@kroah.com>
+From:   "Mukesh, Savaliya" <msavaliy@codeaurora.org>
+Message-ID: <a66f2bdc-57e6-e155-26ce-5643bbc045ad@codeaurora.org>
+Date:   Thu, 14 May 2020 19:02:49 +0530
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200508182532.GD4525@google.com>
+In-Reply-To: <20200506120237.GA3047211@kroah.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
@@ -72,32 +65,45 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Matthias,
 
-....
-
-;
->>   
->> +	ret = geni_icc_get(&mas->se, NULL);
->> +	if (ret)
->> +		goto spi_geni_probe_runtime_disable;
->> +	/* Set the bus quota to a reasonable value for register access */
->> +	geni_icc_bw_init(&mas->se.icc_paths[GENI_TO_CORE],
->> +			Bps_to_icc(CORE_2X_50_MHZ), 0);
->> +	geni_icc_bw_init(&mas->se.icc_paths[CPU_TO_GENI], GENI_DEFAULT_BW, 0);
->> +
->> +	/* Set BW for register access */
-> This comment doesn't add any value. Register access is mentioned a few lines
-> above and from the function name it's evident that it sets the ICC bandwidth.
-ok
+On 5/6/2020 5:32 PM, Greg KH wrote:
+> On Wed, May 06, 2020 at 05:03:31PM +0530, Mukesh, Savaliya wrote:
+>> +static void msm_geni_serial_wr_char(struct uart_port *uport, int ch)
+>> +{
+>> +	writel_relaxed(ch, uport->membase+SE_GENI_TX_FIFOn);
+>> +	/*
+>> +	 * Ensure FIFO write clear goes through before
+>> +	 * next iteration.
+>> +	 */
+>> +	mb();
+> Can't you just write the above two lines as:
+> 	writel(ch, uport->membase+SE_GENI_TX_FIFOn);
+> ?
 >
->> +	ret = geni_icc_set_bw(&mas->se);
->>
->> +		return ret;
->>   
->>   	return geni_se_resources_on(&mas->se);
->>   }
-> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+> Why put a mb() after a _relaxed() call?
+>
+> Will, I know I asked you about this on irc a while ago, is the above
+> really correct?
+>
+> This happens other places in the driver.
+Removed mb() calls due to _relaxed() APIs taking care of the same.
+>
+> Also, Savaliya, please use checkpatch on your patch, you need some
+> whitespace fixes in this code before I could accept it at the very
+> least.
 
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+I ran the script now also on same patch, didn't any warning/error. Do 
+you see the error ? Below is the output:
+
+./scripts/checkpatch.pl 
+0001-serial-msm_geni_serial_console-Add-Earlycon-support.patch
+WARNING: added, moved or deleted file(s), does MAINTAINERS need updating?
+#58:
+new file mode 100644
+
+total: 0 errors, 1 warnings, 511 lines checked
+
+>
+> thanks,
+>
+> greg k-h
