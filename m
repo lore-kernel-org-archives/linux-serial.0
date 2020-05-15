@@ -1,104 +1,89 @@
-Return-Path: <SRS0=CP5M=64=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=qiNw=65=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D952AC433DF
-	for <linux-serial@archiver.kernel.org>; Thu, 14 May 2020 18:58:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D5AC433E1
+	for <linux-serial@archiver.kernel.org>; Fri, 15 May 2020 10:03:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A9544207D5
-	for <linux-serial@archiver.kernel.org>; Thu, 14 May 2020 18:58:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1589482707;
-	bh=MMB71/bboUQA0eMOq9FkswODHnEplvYVz7ieABAP+mo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=cquK2OQmHEEjSbrLvsXTqpvDRItQiVBrsDF0tx7Y/SUG73sp5T+SPOLH8TyGiKL+l
-	 JDP4hsjA3OjMOX8NJv4w7BH5U+RGeGsY6L/8eMq6GFI6gVXXwIxeB6fO3C0krbi6rN
-	 2KCDBpgutMeeBhHUKMOksinwupgevb5pbB+FP3+k=
+	by mail.kernel.org (Postfix) with ESMTP id 43F94207C3
+	for <linux-serial@archiver.kernel.org>; Fri, 15 May 2020 10:03:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729887AbgENS6X (ORCPT
+        id S1728110AbgEOKDf (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 14 May 2020 14:58:23 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:36974 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728372AbgENS6P (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 14 May 2020 14:58:15 -0400
-Received: by mail-oi1-f195.google.com with SMTP id r25so25486071oij.4;
-        Thu, 14 May 2020 11:58:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=qPBikM7djpXPphaJtKg/odrCAnbAw6ex2T7aFaxLRN0=;
-        b=NyckrRCn3X4I2YT8HpmYLliUcaoR5iBch1q5PUMq1DnwxFQaphYgqoEjKpSmGF82Rq
-         lLgrlPyE1RXC5Wthzy8aKDa4TpTPl3SDFXUvrYSE8aSysSSdiNN0WfASomZt17XzNWx3
-         LZAR6vHzvVMa7X7yYvnRR2QAurRW5Rl0jibalLHFZTLqZcyuNr6cc2nVkSfpluivr4q7
-         tq8hIpEDR8eDsaFm81LmhOzwQUNGh/2gGVpbRdv3MsCBUUlIx/oxq18f1LDh9WJXayjc
-         GNQTl8aZT45W1sIIIuX72UUPwQae0yPSjhH9mQKpte2dJA68hr/mt2wh9P1UFaTXmUqb
-         MOSg==
-X-Gm-Message-State: AGi0PuaexsnTDtN+eSOZfvLfBhQ7ECSIdYH634s2GdNYMappBYgg76k1
-        5EOYSnK76/qhE4S/wnJUjQ==
-X-Google-Smtp-Source: APiQypKgzCFNgTvNxHAVJQdyYehxQUJtvZ8t/uMvsKmpAPlvgDUJdRAzuuoxKiBxVvr4aVvNg4uJKw==
-X-Received: by 2002:aca:5588:: with SMTP id j130mr30443516oib.144.1589482694847;
-        Thu, 14 May 2020 11:58:14 -0700 (PDT)
-Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id i196sm7095757oib.8.2020.05.14.11.58.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 May 2020 11:58:14 -0700 (PDT)
-Received: (nullmailer pid 30467 invoked by uid 1000);
-        Thu, 14 May 2020 18:58:13 -0000
-Date:   Thu, 14 May 2020 13:58:13 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Marc Zyngier <maz@kernel.org>, linux-mmc@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-renesas-soc@vger.kernel.org,
-        Magnus Damm <magnus.damm@gmail.com>,
-        devicetree@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 6/9] dt-bindings: serial: renesas,hscif: Document
- r8a7742 bindings
-Message-ID: <20200514185813.GA30416@bogus>
-References: <1588794695-27852-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1588794695-27852-7-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Fri, 15 May 2020 06:03:35 -0400
+Received: from sauhun.de ([88.99.104.3]:34080 "EHLO pokefinder.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727927AbgEOKDf (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 15 May 2020 06:03:35 -0400
+Received: from localhost (p5486CC07.dip0.t-ipconnect.de [84.134.204.7])
+        by pokefinder.org (Postfix) with ESMTPSA id 28BC02C1F6B;
+        Fri, 15 May 2020 12:03:33 +0200 (CEST)
+Date:   Fri, 15 May 2020 12:03:32 +0200
+From:   Wolfram Sang <wsa@the-dreams.de>
+To:     Akash Asthana <akashast@codeaurora.org>
+Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, broonie@kernel.org,
+        mark.rutland@arm.com, robh+dt@kernel.org,
+        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, swboyd@chromium.org,
+        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-serial@vger.kernel.org, mka@chromium.org,
+        dianders@chromium.org, evgreen@chromium.org,
+        georgi.djakov@linaro.org
+Subject: Re: [PATCH V5 3/7] i2c: i2c-qcom-geni: Add interconnect support
+Message-ID: <20200515100332.GI2077@ninjato>
+References: <1588919619-21355-1-git-send-email-akashast@codeaurora.org>
+ <1588919619-21355-4-git-send-email-akashast@codeaurora.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="zgY/UHCnsaNnNXRx"
 Content-Disposition: inline
-In-Reply-To: <1588794695-27852-7-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1588919619-21355-4-git-send-email-akashast@codeaurora.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Wed,  6 May 2020 20:51:32 +0100, Lad Prabhakar wrote:
-> RZ/G1H (R8A7742) SoC also has the R-Car gen2 compatible HSCIF ports,
-> so document the SoC specific bindings.
-> 
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
-> v1->v2:
-> * No change
-> ---
-> 
->  Documentation/devicetree/bindings/serial/renesas,hscif.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
 
-Applied, thanks!
+--zgY/UHCnsaNnNXRx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, May 08, 2020 at 12:03:35PM +0530, Akash Asthana wrote:
+> Get the interconnect paths for I2C based Serial Engine device
+> and vote according to the bus speed of the driver.
+>=20
+> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
+
+For I2C:
+
+Acked-by: Wolfram Sang <wsa@kernel.org>
+
+
+--zgY/UHCnsaNnNXRx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAl6+aPQACgkQFA3kzBSg
+KbZ4Ow/9H8DI9BmwLT6wo8CaAXuEc4HPabJpTZa5hSBoaXfHI0PRldtsm5zlNn3s
+abVjwxQCwj4X6ZweLao7wKo+jbmGfBRlevwijLNiZm06Vafv+WP0DplBvt39idjR
+SoNwtPzqEFGo3UFR9mNwEqguBnt2UtsjHSDMimurgZBqXGHHl4/2QnQBXfNf3IAs
+tg1LsQc/Vop7NlL9Q1zpNSJiCaGRmmZH9DnZEbSgQVqXhIRS7mDawGR10Qr+4ShG
+iOvllXjLuEkXJsrLz5/umvNDVtS4jau3TqYUKcxJk4DGz/ZVB/7NMy1/vKoDoCP3
+GDK/pvHpSLHAftlr8A79KPw7MMBb9yc3GcVl1TvEXavm3jl+8f2fzQIok+UHPrlI
+bfqsXTdeKnseBEZug+SRp091KjWgmjebY4g8GWIFGYCavKGUdsC2BfcLW73kbT6J
+a7yWDfQjxVHggzUt7D4cIY7xPKOguXkv8E8xkodSyb/DtooDQ539jRvC39Dy94Wm
+BzZbUpLWGR9Xu4L7c44cZxd4vhmqu7BePwxb+E5wD7lQXyCgrTh6FjzQZNNFV9UX
+Pcstp+fT4Bpm1ixx4tbWUiXXQ2mnFm26J7UuoxITXOJF6jqjbsAGl61NizI29KNe
+BhpKuAnBnMFvi2q38lpmDrB6v2CtZ7d9bPTK6JpzPJyD/RwxmB4=
+=l3+d
+-----END PGP SIGNATURE-----
+
+--zgY/UHCnsaNnNXRx--
