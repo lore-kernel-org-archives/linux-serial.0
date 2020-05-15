@@ -6,39 +6,31 @@ X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51E88C433DF
-	for <linux-serial@archiver.kernel.org>; Fri, 15 May 2020 15:05:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB8FC433E2
+	for <linux-serial@archiver.kernel.org>; Fri, 15 May 2020 15:20:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 37F0C2078C
-	for <linux-serial@archiver.kernel.org>; Fri, 15 May 2020 15:05:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0AA02207C4
+	for <linux-serial@archiver.kernel.org>; Fri, 15 May 2020 15:20:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726240AbgEOPFq (ORCPT
+        id S1726251AbgEOPT7 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 May 2020 11:05:46 -0400
-Received: from mga05.intel.com ([192.55.52.43]:28339 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726140AbgEOPFq (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 May 2020 11:05:46 -0400
-IronPort-SDR: MHM+E/F2RjRegcbJ5yG++1J3qOtHcitfn+3Cs17Ip0MdAmtUHM2T4JlsXFXVbLI3+ZgxpZ3Qvx
- X0fKuLp8sU/w==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2020 08:05:45 -0700
-IronPort-SDR: EX+/kA0HXNH84sqyToqDVeH2rEi9LIuOqiQ6K0oN24pfAe2f1Rat9eUkw4gWcL3iD9ayQ886Np
- VcYqaY6I9WsQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,395,1583222400"; 
-   d="scan'208";a="252057189"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga007.jf.intel.com with ESMTP; 15 May 2020 08:05:40 -0700
-Received: from andy by smile with local (Exim 4.93)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1jZbuA-006tTf-Vz; Fri, 15 May 2020 18:05:42 +0300
-Date:   Fri, 15 May 2020 18:05:42 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Serge Semin <fancer.lancer@gmail.com>,
+        Fri, 15 May 2020 11:19:59 -0400
+Received: from mail.baikalelectronics.com ([87.245.175.226]:37898 "EHLO
+        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726250AbgEOPT6 (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 15 May 2020 11:19:58 -0400
+Received: from localhost (unknown [127.0.0.1])
+        by mail.baikalelectronics.ru (Postfix) with ESMTP id 534A98029EC9;
+        Fri, 15 May 2020 15:19:55 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at baikalelectronics.ru
+Received: from mail.baikalelectronics.ru ([127.0.0.1])
+        by localhost (mail.baikalelectronics.ru [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id pnymTfqmVuML; Fri, 15 May 2020 18:19:51 +0300 (MSK)
+Date:   Fri, 15 May 2020 18:19:48 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+CC:     Serge Semin <fancer.lancer@gmail.com>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
@@ -51,92 +43,88 @@ Cc:     Serge Semin <fancer.lancer@gmail.com>,
         Catalin Marinas <catalin.marinas@arm.com>,
         Will Deacon <will@kernel.org>,
         Russell King <linux@armlinux.org.uk>,
-        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
+        <linux-mips@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
         Heikki Krogerus <heikki.krogerus@linux.intel.com>,
         Kefeng Wang <wangkefeng.wang@huawei.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 3/4] serial: 8250_dw: Simplify the ref clock rate
- setting procedure
-Message-ID: <20200515150542.GN1634618@smile.fi.intel.com>
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 4/4] serial: 8250_dw: Fix common clocks usage race
+ condition
+Message-ID: <20200515151948.264q2uktwv6xjgle@mobilestation>
 References: <20200323024611.16039-1-Sergey.Semin@baikalelectronics.ru>
  <20200506233136.11842-1-Sergey.Semin@baikalelectronics.ru>
- <20200506233136.11842-4-Sergey.Semin@baikalelectronics.ru>
- <20200515140547.GE1634618@smile.fi.intel.com>
- <20200515145007.xjrx5mminxrh374d@mobilestation>
+ <20200506233136.11842-5-Sergey.Semin@baikalelectronics.ru>
+ <20200515141046.GF1634618@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20200515145007.xjrx5mminxrh374d@mobilestation>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20200515141046.GF1634618@smile.fi.intel.com>
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, May 15, 2020 at 05:50:07PM +0300, Serge Semin wrote:
-> On Fri, May 15, 2020 at 05:05:47PM +0300, Andy Shevchenko wrote:
-> > On Thu, May 07, 2020 at 02:31:34AM +0300, Serge Semin wrote:
-> > > Really instead of twice checking the clk_round_rate() return value
-> > > we could do it once, and if it isn't error the clock rate can be changed.
-> > > By doing so we decrease a number of ret-value tests and remove a weird
-> > > goto-based construction implemented in the dw8250_set_termios() method.
-> > 
-> > >  	rate = clk_round_rate(d->clk, baud * 16);
-> > > -	if (rate < 0)
-> > > -		ret = rate;
-> > 
-> > > -	else if (rate == 0)
-> > > -		ret = -ENOENT;
-> > 
-> > This case now handled differently.
-> > I don't think it's good idea to change semantics.
-> > 
-> > So, I don't see how this, after leaving the rate==0 case, would be better than
-> > original one.
+On Fri, May 15, 2020 at 05:10:46PM +0300, Andy Shevchenko wrote:
+> On Thu, May 07, 2020 at 02:31:35AM +0300, Serge Semin wrote:
+> > The race condition may happen if the UART reference clock is shared with
+> > some other device (on Baikal-T1 SoC it's another DW UART port). In this
+> > case if that device changes the clock rate while serial console is using
+> > it the DW 8250 UART port might not only end up with an invalid uartclk
+> > value saved, but may also experience a distorted output data since
+> > baud-clock could have been changed. In order to fix this lets at least
+> > try to adjust the 8250 port setting like UART clock rate in case if the
+> > reference clock rate change is discovered. The driver will call the new
+> > method to update 8250 UART port clock rate settings. It's done by means of
+> > the clock event notifier registered at the port startup and unregistered
+> > in the shutdown callback method.
 > 
-> Semantic doesn't change. The code does exactly the same as before. If it didn't
-> I either would have provided a comment about this or just didn't introduce the
-> change in the first place. I guess you just don't see the whole picture of the
-> method. Take a look in the code. The ret variable's been used to skip the
-> "p->uartclk = rate" assignment. That's it. So the (rate == 0) will still be
-> considered as error condition, which causes the clock rate left unchanged.
-> Here is the code diff so you wouldn't need to dive deep into the driver
-> sources:
+> I'm wondering if clock framework itself can provide such a notifier?
 > 
-> <	clk_disable_unprepare(d->clk);
-> <	rate = clk_round_rate(d->clk, baud * 16);
-> <	if (rate < 0)
-> <		ret = rate;
-> <	else if (rate == 0)
-> <		ret = -ENOENT;
-> <	else
-> <		ret = clk_set_rate(d->clk, rate);
-> <	clk_prepare_enable(d->clk);
-> <
-> <	if (ret)
-> <		goto out;
-> <
-> <	p->uartclk = rate;
-> <
-> <out:
-> ---
-> >       clk_disable_unprepare(d->clk);
-> >       rate = clk_round_rate(d->clk, baud * 16);
-> >       if (rate > 0) {
-> >              ret = clk_set_rate(d->clk, rate);
-> >              if (!ret)
-> >                      p->uartclk = rate;
-> >       }
-> >       clk_prepare_enable(d->clk);
+> > Note 1. In order to avoid deadlocks we had to execute the UART port update
+> > method in a dedicated deferred work. This is due to (in my opinion
+> > redundant) the clock update implemented in the dw8250_set_termios()
+> > method.
+> 
+> So, and how you propose to update the clock when ->set_termios() is called?
 
-Thanks.
-Indeed, in the above it looks clear.
+First of all If you are worried about the current implementation, please don't,
+it still updates the clock in set_termios (please see the set_termios
+code). The method hasn't changed much and does the updating the same way it did
+before.
 
+Secondly, 8250 driver should be using the same reference clock as it is
+pre-defined by the platform with no change. The baud rate updates are supposed to
+be performed by the divider embedded into the 8250 controller, otherwise the
+divisor functionality is left completely unused. If a platform engineer needs to
+speed the uart up, the ref clock rate can be tuned by for instance the
+"assigned-clock-rates" property.
 
+> 
+> > Note 2. Before the ref clock is manually changed by the custom
+> > set_termios() function we swap the port uartclk value with new rate
+> > adjusted to be suitable for the requested baud. It is necessary in
+> > order to effectively disable a functionality of the ref clock events
+> > handler for the current UART port, since uartclk update will be done
+> > a bit further in the generic serial8250_do_set_termios() function.
+> 
+> ...
+> 
+> > +	struct notifier_block	clk_notifier;
+> > +	struct work_struct	clk_work;
+> 
+> Oh, this seems too much.
+> Perhaps, the compatible based quirk with your initial approach is much better for time being.
 
--- 
-With Best Regards,
-Andy Shevchenko
+It's already in 8250_dw, useful not for a single platform and won't hurt any
+other one. So I'll leave it here and wait for the Greg feedback.
 
+-Sergey
 
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
