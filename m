@@ -4,83 +4,102 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 769A1C433DF
-	for <linux-serial@archiver.kernel.org>; Fri, 15 May 2020 13:07:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67C44C433E1
+	for <linux-serial@archiver.kernel.org>; Fri, 15 May 2020 13:17:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4AE4520657
-	for <linux-serial@archiver.kernel.org>; Fri, 15 May 2020 13:07:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 44F7B207C4
+	for <linux-serial@archiver.kernel.org>; Fri, 15 May 2020 13:17:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726141AbgEONHe (ORCPT
+        id S1726242AbgEONRN (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 May 2020 09:07:34 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:45142 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726140AbgEONHd (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 May 2020 09:07:33 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 25BC11A06F9;
-        Fri, 15 May 2020 15:07:32 +0200 (CEST)
-Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id BA7571A06CB;
-        Fri, 15 May 2020 15:07:29 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 31B13402A6;
-        Fri, 15 May 2020 21:07:26 +0800 (SGT)
-From:   Anson Huang <Anson.Huang@nxp.com>
-To:     gregkh@linuxfoundation.org, jslaby@suse.com,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Linux-imx@nxp.com
-Subject: [PATCH] tty: serial: fsl_lpuart: Use __maybe_unused instead of #if CONFIG_PM_SLEEP
-Date:   Fri, 15 May 2020 20:58:01 +0800
-Message-Id: <1589547481-25932-1-git-send-email-Anson.Huang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Fri, 15 May 2020 09:17:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51266 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726668AbgEONRH (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 15 May 2020 09:17:07 -0400
+X-Greylist: delayed 301 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 May 2020 06:17:07 PDT
+Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D26C061A0C
+        for <linux-serial@vger.kernel.org>; Fri, 15 May 2020 06:17:07 -0700 (PDT)
+Received: from ramsan ([IPv6:2a02:1810:ac12:ed60:ad37:48f9:900a:523e])
+        by albert.telenet-ops.be with bizsmtp
+        id f1C32200o1TfvYq061C3mq; Fri, 15 May 2020 15:12:04 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan with esmtp (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1jZa8B-0006QT-JB; Fri, 15 May 2020 15:12:03 +0200
+Received: from geert by rox.of.borg with local (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1jZa8B-0006V8-Gq; Fri, 15 May 2020 15:12:03 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] dt-bindings: serial: renesas,scifa: Remove part numbers from comments
+Date:   Fri, 15 May 2020 15:12:02 +0200
+Message-Id: <20200515131202.24949-1-geert+renesas@glider.be>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Use __maybe_unused for power management related functions to simplify
-the code.
+The conversion to json-schema accidentally retained some SoC part
+numbers in comments for compatible values.  Drop them, as they're part
+of the compatible values anyway.
 
-Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+Fixes: 384d00fae8e51f8f ("dt-bindings: serial: sh-sci: Convert to json-schema")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/tty/serial/fsl_lpuart.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+This depends on:
+"[PATCH v2 03/10] dt-bindings: serial: renesas,scifa: Document r8a7742 bindings"
+https://lore.kernel.org/dmaengine/1588542414-14826-4-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 6a9909e..cca485d 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -2662,8 +2662,7 @@ static int lpuart_remove(struct platform_device *pdev)
- 	return 0;
- }
+Rob: as you have taken:
+
++ 8908a822663f6958 dt-bindings: serial: renesas,scif: Document r8a7742 bindings
++ 3cf1601ab00ce558 dt-bindings: serial: renesas,scifb: Document r8a7742 bindings
++ 65994c09bc66d724 dt-bindings: serial: renesas,hscif: Document r8a7742 bindings
+
+can you please take this one, and its dependency, too?
+
+Thanks!
+
+ .../bindings/serial/renesas,scifa.yaml           | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/serial/renesas,scifa.yaml b/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
+index 97ddd76d700f78ca..78b8e20dd34db322 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
+@@ -24,14 +24,14 @@ properties:
  
--#ifdef CONFIG_PM_SLEEP
--static int lpuart_suspend(struct device *dev)
-+static int __maybe_unused lpuart_suspend(struct device *dev)
- {
- 	struct lpuart_port *sport = dev_get_drvdata(dev);
- 	unsigned long temp;
-@@ -2721,7 +2720,7 @@ static int lpuart_suspend(struct device *dev)
- 	return 0;
- }
- 
--static int lpuart_resume(struct device *dev)
-+static int __maybe_unused lpuart_resume(struct device *dev)
- {
- 	struct lpuart_port *sport = dev_get_drvdata(dev);
- 	bool irq_wake = irqd_is_wakeup_set(irq_get_irq_data(sport->port.irq));
-@@ -2752,7 +2751,6 @@ static int lpuart_resume(struct device *dev)
- 
- 	return 0;
- }
--#endif
- 
- static SIMPLE_DEV_PM_OPS(lpuart_pm_ops, lpuart_suspend, lpuart_resume);
+       - items:
+           - enum:
+-              - renesas,scifa-r8a7742      # R8A7742 RZ/G1H
+-              - renesas,scifa-r8a7743      # R8A7743 RZ/G1M
+-              - renesas,scifa-r8a7744      # R8A7744 RZ/G1N
+-              - renesas,scifa-r8a7745      # R8A7745 RZ/G1E
+-              - renesas,scifa-r8a7790      # R8A7790 R-Car H2
+-              - renesas,scifa-r8a7791      # R8A7791 R-Car M2-W
+-              - renesas,scifa-r8a7793      # R8A7793 R-Car M2-N
+-              - renesas,scifa-r8a7794      # R8A7794 R-Car E2
++              - renesas,scifa-r8a7742      # RZ/G1H
++              - renesas,scifa-r8a7743      # RZ/G1M
++              - renesas,scifa-r8a7744      # RZ/G1N
++              - renesas,scifa-r8a7745      # RZ/G1E
++              - renesas,scifa-r8a7790      # R-Car H2
++              - renesas,scifa-r8a7791      # R-Car M2-W
++              - renesas,scifa-r8a7793      # R-Car M2-N
++              - renesas,scifa-r8a7794      # R-Car E2
+           - const: renesas,rcar-gen2-scifa # R-Car Gen2 and RZ/G1
+           - const: renesas,scifa           # generic SCIFA compatible UART
  
 -- 
-2.7.4
+2.17.1
 
