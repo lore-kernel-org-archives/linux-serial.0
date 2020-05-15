@@ -2,104 +2,157 @@ Return-Path: <SRS0=qiNw=65=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67C44C433E1
-	for <linux-serial@archiver.kernel.org>; Fri, 15 May 2020 13:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53079C433DF
+	for <linux-serial@archiver.kernel.org>; Fri, 15 May 2020 13:48:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 44F7B207C4
-	for <linux-serial@archiver.kernel.org>; Fri, 15 May 2020 13:17:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3C421207BB
+	for <linux-serial@archiver.kernel.org>; Fri, 15 May 2020 13:48:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726242AbgEONRN (ORCPT
+        id S1726213AbgEONsa (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 15 May 2020 09:17:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51266 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726668AbgEONRH (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 15 May 2020 09:17:07 -0400
-X-Greylist: delayed 301 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 May 2020 06:17:07 PDT
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D26C061A0C
-        for <linux-serial@vger.kernel.org>; Fri, 15 May 2020 06:17:07 -0700 (PDT)
-Received: from ramsan ([IPv6:2a02:1810:ac12:ed60:ad37:48f9:900a:523e])
-        by albert.telenet-ops.be with bizsmtp
-        id f1C32200o1TfvYq061C3mq; Fri, 15 May 2020 15:12:04 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan with esmtp (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1jZa8B-0006QT-JB; Fri, 15 May 2020 15:12:03 +0200
-Received: from geert by rox.of.borg with local (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1jZa8B-0006V8-Gq; Fri, 15 May 2020 15:12:03 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] dt-bindings: serial: renesas,scifa: Remove part numbers from comments
-Date:   Fri, 15 May 2020 15:12:02 +0200
-Message-Id: <20200515131202.24949-1-geert+renesas@glider.be>
-X-Mailer: git-send-email 2.17.1
+        Fri, 15 May 2020 09:48:30 -0400
+Received: from mga04.intel.com ([192.55.52.120]:61075 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726206AbgEONsa (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 15 May 2020 09:48:30 -0400
+IronPort-SDR: QvqdDjrPExA6hyq/Vmc5TtRH5vIHRyLrbMLW0aoRkgSxt1mCFAACTAv8+nH3hJG+PxfMYhk7U5
+ UtORkJ+smkIQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2020 06:48:30 -0700
+IronPort-SDR: AgA+QGUcfWXG7JMCt4bkZKGpeJwCLYEmjhD53o86ruEuiXS4tZjJRrdQS4l/MUiU1m+CasJjuD
+ MdhoiHBzHs+A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,395,1583222400"; 
+   d="scan'208";a="298444952"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by fmsmga002.fm.intel.com with ESMTP; 15 May 2020 06:48:25 -0700
+Received: from andy by smile with local (Exim 4.93)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1jZahP-006scn-I7; Fri, 15 May 2020 16:48:27 +0300
+Date:   Fri, 15 May 2020 16:48:27 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Long Cheng <long.cheng@mediatek.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Paul Burton <paulburton@kernel.org>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, Lukas Wunner <lukas@wunner.de>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Stefan Roese <sr@denx.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/4] serial: 8250: Fix max baud limit in generic 8250
+ port
+Message-ID: <20200515134827.GB1634618@smile.fi.intel.com>
+References: <20200323024611.16039-1-Sergey.Semin@baikalelectronics.ru>
+ <20200506233136.11842-1-Sergey.Semin@baikalelectronics.ru>
+ <20200506233136.11842-2-Sergey.Semin@baikalelectronics.ru>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200506233136.11842-2-Sergey.Semin@baikalelectronics.ru>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-The conversion to json-schema accidentally retained some SoC part
-numbers in comments for compatible values.  Drop them, as they're part
-of the compatible values anyway.
+On Thu, May 07, 2020 at 02:31:32AM +0300, Serge Semin wrote:
+> Standard 8250 UART ports are designed in a way so they can communicate
+> with baud rates up to 1/16 of a reference frequency. It's expected from
+> most of the currently supported UART controllers. That's why the former
+> version of serial8250_get_baud_rate() method called uart_get_baud_rate()
+> with min and max baud rates passed as (port->uartclk / 16 / UART_DIV_MAX)
+> and ((port->uartclk + tolerance) / 16) respectively. Doing otherwise, like
+> it was suggested in commit ("serial: 8250_mtk: support big baud rate."),
+> caused acceptance of bauds, which was higher than the normal UART
+> controllers actually supported. As a result if some user-space program
+> requested to set a baud greater than (uartclk / 16) it would have been
+> permitted without truncation, but then serial8250_get_divisor(baud)
+> (which calls uart_get_divisor() to get the reference clock divisor) would
+> have returned a zero divisor. Setting zero divisor will cause an
+> unpredictable effect varying from chip to chip. In case of DW APB UART the
+> communications just stop.
+> 
+> Lets fix this problem by getting back the limitation of (uartclk +
+> tolerance) / 16 maximum baud supported by the generic 8250 port. Mediatek
+> 8250 UART ports driver developer shouldn't have touched it in the first
+> place  notably seeing he already provided a custom version of set_termios()
+> callback in that glue-driver which took into account the extended baud
+> rate values and accordingly updated the standard and vendor-specific
+> divisor latch registers anyway.
 
-Fixes: 384d00fae8e51f8f ("dt-bindings: serial: sh-sci: Convert to json-schema")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
-This depends on:
-"[PATCH v2 03/10] dt-bindings: serial: renesas,scifa: Document r8a7742 bindings"
-https://lore.kernel.org/dmaengine/1588542414-14826-4-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com
+Some of the hardware support PS != 16 (8250_mid), but for now it lies to UART
+core for real UART clock because of its (core) hard cored assumption PS == 16
+here and there.
 
-Rob: as you have taken:
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-+ 8908a822663f6958 dt-bindings: serial: renesas,scif: Document r8a7742 bindings
-+ 3cf1601ab00ce558 dt-bindings: serial: renesas,scifb: Document r8a7742 bindings
-+ 65994c09bc66d724 dt-bindings: serial: renesas,hscif: Document r8a7742 bindings
+> 
+> Fixes: 81bb549fdf14 ("serial: 8250_mtk: support big baud rate.")
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
+> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+> Cc: Paul Burton <paulburton@kernel.org>
+> Cc: Ralf Baechle <ralf@linux-mips.org>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Long Cheng <long.cheng@mediatek.com>
+> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Cc: Maxime Ripard <mripard@kernel.org>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Russell King <linux@armlinux.org.uk>
+> Cc: linux-mips@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-mediatek@lists.infradead.org
+> ---
+>  drivers/tty/serial/8250/8250_port.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index f77bf820b7a3..4d83c85a7389 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -2615,6 +2615,8 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
+>  					     struct ktermios *termios,
+>  					     struct ktermios *old)
+>  {
+> +	unsigned int tolerance = port->uartclk / 100;
+> +
+>  	/*
+>  	 * Ask the core to calculate the divisor for us.
+>  	 * Allow 1% tolerance at the upper limit so uart clks marginally
+> @@ -2623,7 +2625,7 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
+>  	 */
+>  	return uart_get_baud_rate(port, termios, old,
+>  				  port->uartclk / 16 / UART_DIV_MAX,
+> -				  port->uartclk);
+> +				  (port->uartclk + tolerance) / 16);
+>  }
+>  
+>  void
+> -- 
+> 2.25.1
+> 
 
-can you please take this one, and its dependency, too?
-
-Thanks!
-
- .../bindings/serial/renesas,scifa.yaml           | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/serial/renesas,scifa.yaml b/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
-index 97ddd76d700f78ca..78b8e20dd34db322 100644
---- a/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,scifa.yaml
-@@ -24,14 +24,14 @@ properties:
- 
-       - items:
-           - enum:
--              - renesas,scifa-r8a7742      # R8A7742 RZ/G1H
--              - renesas,scifa-r8a7743      # R8A7743 RZ/G1M
--              - renesas,scifa-r8a7744      # R8A7744 RZ/G1N
--              - renesas,scifa-r8a7745      # R8A7745 RZ/G1E
--              - renesas,scifa-r8a7790      # R8A7790 R-Car H2
--              - renesas,scifa-r8a7791      # R8A7791 R-Car M2-W
--              - renesas,scifa-r8a7793      # R8A7793 R-Car M2-N
--              - renesas,scifa-r8a7794      # R8A7794 R-Car E2
-+              - renesas,scifa-r8a7742      # RZ/G1H
-+              - renesas,scifa-r8a7743      # RZ/G1M
-+              - renesas,scifa-r8a7744      # RZ/G1N
-+              - renesas,scifa-r8a7745      # RZ/G1E
-+              - renesas,scifa-r8a7790      # R-Car H2
-+              - renesas,scifa-r8a7791      # R-Car M2-W
-+              - renesas,scifa-r8a7793      # R-Car M2-N
-+              - renesas,scifa-r8a7794      # R-Car E2
-           - const: renesas,rcar-gen2-scifa # R-Car Gen2 and RZ/G1
-           - const: renesas,scifa           # generic SCIFA compatible UART
- 
 -- 
-2.17.1
+With Best Regards,
+Andy Shevchenko
+
 
