@@ -2,179 +2,106 @@ Return-Path: <SRS0=Hdmd=67=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04A46C433E0
-	for <linux-serial@archiver.kernel.org>; Sun, 17 May 2020 19:35:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC2ECC433DF
+	for <linux-serial@archiver.kernel.org>; Sun, 17 May 2020 20:44:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E1E7C206F4
-	for <linux-serial@archiver.kernel.org>; Sun, 17 May 2020 19:35:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9BC6420758
+	for <linux-serial@archiver.kernel.org>; Sun, 17 May 2020 20:44:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726668AbgEQTe5 (ORCPT
+        id S1726426AbgEQUoN (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Sun, 17 May 2020 15:34:57 -0400
-Received: from v6.sk ([167.172.42.174]:57012 "EHLO v6.sk"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726269AbgEQTe5 (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Sun, 17 May 2020 15:34:57 -0400
-Received: from localhost (v6.sk [IPv6:::1])
-        by v6.sk (Postfix) with ESMTP id 82082610A8;
-        Sun, 17 May 2020 19:34:53 +0000 (UTC)
-Date:   Sun, 17 May 2020 21:34:51 +0200
-From:   Lubomir Rintel <lkundrak@v3.sk>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Marc Zyngier <maz@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH 28/28] dt-bindings: usb: Convert ehci-mv to json-schema
-Message-ID: <20200517193451.GG1695525@furthur.local>
-References: <20200317093922.20785-1-lkundrak@v3.sk>
- <20200317093922.20785-29-lkundrak@v3.sk>
- <20200327195520.GA2235@bogus>
+        Sun, 17 May 2020 16:44:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33128 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726269AbgEQUoN (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Sun, 17 May 2020 16:44:13 -0400
+Received: from mail.bugwerft.de (mail.bugwerft.de [IPv6:2a03:6000:1011::59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB764C061A0C;
+        Sun, 17 May 2020 13:44:12 -0700 (PDT)
+Received: from [192.168.178.106] (pD95EFBE7.dip0.t-ipconnect.de [217.94.251.231])
+        by mail.bugwerft.de (Postfix) with ESMTPSA id 70823409EB7;
+        Sun, 17 May 2020 20:41:15 +0000 (UTC)
+Subject: Re: [PATCH 4/4] sc16is7xx: Use threaded IRQ
+To:     Maarten Brock <m.brock@vanmierlo.com>
+Cc:     devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+        gregkh@linuxfoundation.org, robh+dt@kernel.org, jslaby@suse.com,
+        pascal.huerst@gmail.com, linux-serial-owner@vger.kernel.org
+References: <20200508143757.2609740-1-daniel@zonque.org>
+ <20200508143757.2609740-5-daniel@zonque.org>
+ <61fdcf12976c924fd86c5203aba673a7@vanmierlo.com>
+From:   Daniel Mack <daniel@zonque.org>
+Message-ID: <584de876-e675-0172-97ed-0c9534eb9526@zonque.org>
+Date:   Sun, 17 May 2020 22:44:08 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200327195520.GA2235@bogus>
+In-Reply-To: <61fdcf12976c924fd86c5203aba673a7@vanmierlo.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, Mar 27, 2020 at 01:55:20PM -0600, Rob Herring wrote:
-> On Tue, Mar 17, 2020 at 10:39:22AM +0100, Lubomir Rintel wrote:
-> > A straightforward conversion of the ehci-mv binding to DT schema format
-> > using json-schema.
-> > 
-> > Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
-> > ---
-> >  .../devicetree/bindings/usb/ehci-mv.txt       | 23 -------
-> >  .../bindings/usb/marvell,pxau2o-ehci.yaml     | 60 +++++++++++++++++++
-> >  2 files changed, 60 insertions(+), 23 deletions(-)
-> >  delete mode 100644 Documentation/devicetree/bindings/usb/ehci-mv.txt
-> >  create mode 100644 Documentation/devicetree/bindings/usb/marvell,pxau2o-ehci.yaml
-> > 
-> > diff --git a/Documentation/devicetree/bindings/usb/ehci-mv.txt b/Documentation/devicetree/bindings/usb/ehci-mv.txt
-> > deleted file mode 100644
-> > index 335589895763e..0000000000000
-> > --- a/Documentation/devicetree/bindings/usb/ehci-mv.txt
-> > +++ /dev/null
-> > @@ -1,23 +0,0 @@
-> > -* Marvell PXA/MMP EHCI controller.
-> > -
-> > -Required properties:
-> > -
-> > -- compatible: must be "marvell,pxau2o-ehci"
-> > -- reg: physical base addresses of the controller and length of memory mapped region
-> > -- interrupts: one EHCI controller interrupt should be described here
-> > -- clocks: phandle list of usb clocks
-> > -- clock-names: should be "USBCLK"
-> > -- phys: phandle for the PHY device
-> > -- phy-names: should be "usb"
-> > -
-> > -Example:
-> > -
-> > -	ehci0: usb-ehci@d4208000 {
-> > -		compatible = "marvell,pxau2o-ehci";
-> > -		reg = <0xd4208000 0x200>;
-> > -		interrupts = <44>;
-> > -		clocks = <&soc_clocks MMP2_CLK_USB>;
-> > -		clock-names = "USBCLK";
-> > -		phys = <&usb_otg_phy>;
-> > -		phy-names = "usb";
-> > -	};
-> > diff --git a/Documentation/devicetree/bindings/usb/marvell,pxau2o-ehci.yaml b/Documentation/devicetree/bindings/usb/marvell,pxau2o-ehci.yaml
-> > new file mode 100644
-> > index 0000000000000..189025ef1e92e
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/usb/marvell,pxau2o-ehci.yaml
-> > @@ -0,0 +1,60 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
+Hi Maarten,
+
+Thanks for your review!
+
+On 5/9/20 2:55 PM, Maarten Brock wrote:
+> On 2020-05-08 16:37, Daniel Mack wrote:
+>> Use a threaded IRQ handler to get rid of the irq_work kthread.
+>> This also allows for the driver to use interrupts generated by
+>> a threaded controller.
+>>
+>> Signed-off-by: Daniel Mack <daniel@zonque.org>
+>> ---
+>>  drivers/tty/serial/sc16is7xx.c | 18 +++++-------------
+>>  1 file changed, 5 insertions(+), 13 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/sc16is7xx.c
+>> b/drivers/tty/serial/sc16is7xx.c
+
+>> @@ -1317,8 +1308,9 @@ static int sc16is7xx_probe(struct device *dev,
+>>      }
+>>
+>>      /* Setup interrupt */
+>> -    ret = devm_request_irq(dev, irq, sc16is7xx_irq,
+>> -                   IRQF_TRIGGER_FALLING, dev_name(dev), s);
+>> +    ret = devm_request_threaded_irq(dev, irq, NULL, sc16is7xx_irq,
+>> +                    IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+>> +                    dev_name(dev), s);
+>>      if (!ret)
+>>          return 0;
 > 
-> Same license comment.
+> Since UART0 is first handled completely in the for loop before UART1 is
+> handled, a new interrupt may arise on UART0 while UART1 is being handled.
 
-I wrote that binding document and chose that license.
+The code in the interrupt handling function loops forever until there is
+no more interrupt bits pending. So if there is a new IRQ happening for
+UART0 while UART1 is being served, it will be handled in the same loop.
 
-> > +# Copyright 2019,2020 Lubomir Rintel <lkundrak@v3.sk>
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/usb/marvell,pxau2o-ehci.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Marvell PXA/MMP EHCI bindings
-> > +
-> > +maintainers:
-> > +  - Lubomir Rintel <lkundrak@v3.sk>
-> > +
-> > +allOf:
-> > +  - $ref: usb-hcd.yaml#
-> > +
-> > +properties:
-> > +  compatible:
-> > +    const: marvell,pxau2o-ehci
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +
-> > +  clocks:
-> > +    maxItems: 1
-> > +
-> > +  clock-names:
-> > +    const: USBCLK
-> > +
-> > +  phys:
-> > +    maxItems: 1
-> > +
-> > +  phy-names:
-> > +    const: usb
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - interrupts
-> > +  - clocks
-> > +  - clock-names
-> > +  - phys
-> > +  - phy-names
-> > +
-> > +examples:
-> > +  - |
-> > +    #include <dt-bindings/clock/marvell,mmp2.h>
-> > +    usb@d4208000 {
-> > +        compatible = "marvell,pxau2o-ehci";
-> > +        reg = <0xd4208000 0x200>;
-> > +        interrupts = <44>;
-> > +        clocks = <&soc_clocks MMP2_CLK_USB>;
-> > +        clock-names = "USBCLK";
-> > +        phys = <&usb_otg_phy>;
-> > +        phy-names = "usb";
-> > +    };
-> > +
-> > +...
-> > -- 
-> > 2.25.1
-> > 
+And just to be sure I understand correctly: this is unrelated to the
+switch to threaded IRQs, right? Falling edge triggers were always used
+for pdata probed devices.
+
+> The result is a missed interrupt since the IRQ line might not *FALL* again.
+
+It doesn't have to. We only exit the interrupt handler when there is
+nothing left to do, at which point the IRQ line ist back high. So it
+will fall again in case of new events.
+
+> Therefor I suggest to change IRQF_TRIGGER_FALLING to IRQF_TRIGGER_LOW. This
+> way the thread will be retriggered after IRQ_HANDLED is returned.
+
+This doesn't work in my setup unfortunately, as the interrupt controller
+is incapable of handling level IRQs.
+
+
+Thanks,
+Daniel
