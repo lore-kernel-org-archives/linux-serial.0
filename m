@@ -2,114 +2,109 @@ Return-Path: <SRS0=kmSd=7A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56FC9C433DF
-	for <linux-serial@archiver.kernel.org>; Mon, 18 May 2020 16:57:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AE39C433E0
+	for <linux-serial@archiver.kernel.org>; Mon, 18 May 2020 17:05:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 309C6207ED
-	for <linux-serial@archiver.kernel.org>; Mon, 18 May 2020 16:57:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6DF4120709
+	for <linux-serial@archiver.kernel.org>; Mon, 18 May 2020 17:05:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728139AbgERQ5w (ORCPT
+        id S1727020AbgERRFj (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 May 2020 12:57:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52904 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727020AbgERQ5w (ORCPT
+        Mon, 18 May 2020 13:05:39 -0400
+Received: from fieber.vanmierlo.com ([84.243.197.177]:48456 "EHLO
+        kerio9.vanmierlo.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726958AbgERRFi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 May 2020 12:57:52 -0400
-Received: from mail.bugwerft.de (mail.bugwerft.de [IPv6:2a03:6000:1011::59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9635EC061A0C;
-        Mon, 18 May 2020 09:57:52 -0700 (PDT)
-Received: from [192.168.178.106] (pd95ef567.dip0.t-ipconnect.de [217.94.245.103])
-        by mail.bugwerft.de (Postfix) with ESMTPSA id 9B3C340A403;
-        Mon, 18 May 2020 16:54:56 +0000 (UTC)
-Subject: Re: [PATCH 4/4] sc16is7xx: Use threaded IRQ
-To:     Maarten Brock <m.brock@vanmierlo.com>
-Cc:     devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-        gregkh@linuxfoundation.org, robh+dt@kernel.org, jslaby@suse.com,
-        pascal.huerst@gmail.com, linux-serial-owner@vger.kernel.org
-References: <20200508143757.2609740-1-daniel@zonque.org>
- <20200508143757.2609740-5-daniel@zonque.org>
- <61fdcf12976c924fd86c5203aba673a7@vanmierlo.com>
- <584de876-e675-0172-97ed-0c9534eb9526@zonque.org>
- <dfafc770e7e308cb6a2db5a1003cd759@vanmierlo.com>
-From:   Daniel Mack <daniel@zonque.org>
-Message-ID: <22116d56-9240-9bfe-1b6f-a94d57a085cf@zonque.org>
-Date:   Mon, 18 May 2020 18:57:50 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Mon, 18 May 2020 13:05:38 -0400
+X-Footer: dmFubWllcmxvLmNvbQ==
+Received: from roundcube.vanmierlo.com ([192.168.37.37])
+        (authenticated user m.brock@vanmierlo.com)
+        by kerio9.vanmierlo.com (Kerio Connect 9.2.12 patch 1) with ESMTPA;
+        Mon, 18 May 2020 19:05:11 +0200
 MIME-Version: 1.0
-In-Reply-To: <dfafc770e7e308cb6a2db5a1003cd759@vanmierlo.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
+Date:   Mon, 18 May 2020 19:05:11 +0200
+From:   Maarten Brock <m.brock@vanmierlo.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Lukas Wunner <lukas@wunner.de>, Heiko Stuebner <heiko@sntech.de>,
+        gregkh@linuxfoundation.org, jslaby@suse.com,
+        matwey.kornilov@gmail.com, giulio.benetti@micronovasrl.com,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        christoph.muellner@theobroma-systems.com,
+        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>,
+        linux-serial-owner@vger.kernel.org
+Subject: Re: [PATCH v3 3/5] serial: 8250: Support separate rs485 rx-enable
+ GPIO
+In-Reply-To: <20200518163522.GK1634618@smile.fi.intel.com>
+References: <20200517215610.2131618-1-heiko@sntech.de>
+ <20200517215610.2131618-4-heiko@sntech.de>
+ <20200518151241.GG1634618@smile.fi.intel.com>
+ <20200518152247.slenjeiiplps7mcd@wunner.de>
+ <33547f6a596df2ca2ee8e647111e5fa1@vanmierlo.com>
+ <20200518163522.GK1634618@smile.fi.intel.com>
+Message-ID: <f7d408a0ca747086c01999fc0db905da@vanmierlo.com>
+X-Sender: m.brock@vanmierlo.com
+User-Agent: Roundcube Webmail/1.3.3
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Maarten,
-
-On 5/18/20 1:14 PM, Maarten Brock wrote:
-> On 2020-05-17 22:44, Daniel Mack wrote:
-
->>> Therefor I suggest to change IRQF_TRIGGER_FALLING to
->>> IRQF_TRIGGER_LOW. This
->>> way the thread will be retriggered after IRQ_HANDLED is returned.
->>
->> This doesn't work in my setup unfortunately, as the interrupt controller
->> is incapable of handling level IRQs.
+On 2020-05-18 18:35, Andy Shevchenko wrote:
+> On Mon, May 18, 2020 at 06:13:16PM +0200, Maarten Brock wrote:
+>> On 2020-05-18 17:22, Lukas Wunner wrote:
+>> > On Mon, May 18, 2020 at 06:12:41PM +0300, Andy Shevchenko wrote:
+>> > > On Sun, May 17, 2020 at 11:56:08PM +0200, Heiko Stuebner wrote:
+>> > > > From: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
+>> > > >
+>> > > > The RE signal is used to control the duplex mode of transmissions,
+>> > > > aka receiving data while sending in full duplex mode, while stopping
+>> > > > receiving data in half-duplex mode.
+>> > > >
+>> > > > On a number of boards the !RE signal is tied to ground so reception
+>> > > > is always enabled except if the UART allows disabling the receiver.
+>> > > > This can be taken advantage of to implement half-duplex mode - like
+>> > > > done on 8250_bcm2835aux.
+>> > > >
+>> > > > Another solution is to tie !RE to RTS always forcing half-duplex mode.
+>> > > >
+>> > > > And finally there is the option to control the RE signal separately,
+>> > > > like done here by introducing a new rs485-specific gpio that can be
+>> > > > set depending on the RX_DURING_TX setting in the common em485 callbacks.
+>> > >
+>> > > ...
+>> > >
+>> > > > +	port->rs485_re_gpio = devm_gpiod_get_optional(dev, "rs485-rx-enable",
+>> > > > +						      GPIOD_OUT_HIGH);
+>> > >
+>> > > While reviewing some other patch I realized that people are missing
+>> > > the
+>> > > point of these GPIO flags when pin is declared to be output.
+>> > >
+>> > > HIGH here means "asserted" (consider active-high vs. active-low in
+>> > > general). Is that the intention here?
+>> > >
+>> > > Lukas, same question to your patch.
+>> >
+>> > Yes.  "High", i.e. asserted, means "termination enabled" in the case of
+>> > my patch and "receiver enabled" in the case of Heiko's patch.
+>> 
+>> But "High" on a gpio would disable the receiver when connected to !RE.
 > 
-> That sounds like a lousy interrupt controller to me. 
+> No, that's exactly the point of the terminology (asserted means active 
+> whatever
+> polarity it is). You need to define active-low in GPIO description.
 
-While that is true, there are many such controllers around.
+Is there anything wrong with defining GPIOD_OUT_ACTIVE or 
+GPIOD_OUT_ASSERTED
+for this very purpose? May I suggest to deprecate GPIOD_OUT_HIGH and 
+replace it?
 
-> Summerizing:
-> - After switching to a threaded IRQ, the trigger could be switched to
-> IRQF_TRIGGER_LOW and with that interrupt sharing can be enabled for
-> this device with IRQF_SHARED.
+Maarten
 
-Yes, but we don't need that. As discussed, the UART driver can cope with
-edge IRQs just fine.
-
-> - Some (your) interrupt controllers do not support IRQF_TRIGGER_LOW.
-> For those only IRQF_TRIGGER_FALLING can be used for this device and
-> thus IRQF_SHARED cannot be used.
-
-True. Interrupts cannot be shared for this device then. That's a fair
-limitation, and it has always been like that.
-
-> - The driver for your interrupt controller should be improved to support
-> level IRQs.
-
-It's a controller that sits behind another hardware bus itself, so
-polling is expensive. If the controller would need to check for level
-IRQs it would need to poll, and then we could as well just poll the UART
-directly, that's just as good :)
-
-But again - the UART driver works perfectly fine with edge IRQs as long
-as the interrupt is not shared.
-
-> This makes me wonder if it would be better to let the device tree specify
-> the interrupt configuration.
-
-There can be flags in the 2nd cell of the node, but their meaning is
-specific to the controller. Hence the SPI/I2C layers don't pass that
-information up.
-
-What many drivers do is try with one setting, and if that fails because
-the interrupt controller returns an error, they fall back to something
-else. We could do the same here of course, but it'd be another patch on
-top, as it's unrelated to the concrete change the patch we're commenting
-on is bringing in.
-
-So what I can add is logic that first tries with IRQF_LOW|IRQF_SHARED,
-and if that fails, we fall back to IRQF_FALLING and retry. WDYT?
-
-
-
-Thanks,
-Daniel
