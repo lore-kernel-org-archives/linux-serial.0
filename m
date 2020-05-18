@@ -2,237 +2,93 @@ Return-Path: <SRS0=kmSd=7A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5787C433E0
-	for <linux-serial@archiver.kernel.org>; Mon, 18 May 2020 13:11:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 457E5C433DF
+	for <linux-serial@archiver.kernel.org>; Mon, 18 May 2020 14:45:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8B15820671
-	for <linux-serial@archiver.kernel.org>; Mon, 18 May 2020 13:11:05 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="HF1NLobQ"
+	by mail.kernel.org (Postfix) with ESMTP id 24C53207D8
+	for <linux-serial@archiver.kernel.org>; Mon, 18 May 2020 14:45:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727040AbgERNLF (ORCPT
+        id S1728142AbgEROpF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 May 2020 09:11:05 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:52879 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726726AbgERNLF (ORCPT
+        Mon, 18 May 2020 10:45:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60086 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726997AbgEROpF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 May 2020 09:11:05 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1589807463; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=yesEOQOsZepZE5D6yg40ImK6nzOuLsRg9Xtx8I3BpvI=; b=HF1NLobQBhueBO9zoyoa2gc7pyaQ1WPb6VdwlNmNksQS8k+gzUbL+ty5+KXmkffl9UvQq1ff
- Wz4YE6KgpVryglJzBsnA+PvwCyni83fNHf6kt0WbtiOANU1FAlybuKeQh8GZVOYHQFyqHW+l
- eT4NSzwfb9hEnIbYNGA15Pkje+4=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5ec28965.7ff19f3df148-smtp-out-n04;
- Mon, 18 May 2020 13:11:01 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 93227C433F2; Mon, 18 May 2020 13:11:00 +0000 (UTC)
-Received: from [192.168.0.11] (unknown [183.83.138.47])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        Mon, 18 May 2020 10:45:05 -0400
+Received: from mailout3.hostsharing.net (mailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f236:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D2A2C061A0C;
+        Mon, 18 May 2020 07:45:05 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
+        by mailout3.hostsharing.net (Postfix) with ESMTPS id 37BFB101E6B73;
+        Mon, 18 May 2020 16:45:03 +0200 (CEST)
+Received: from localhost (unknown [87.130.102.138])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7EFFFC44BC3;
-        Mon, 18 May 2020 13:10:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7EFFFC44BC3
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
-Subject: Re: [PATCH V5 6/7] spi: spi-qcom-qspi: Add interconnect support
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, dianders@chromium.org,
-        evgreen@chromium.org, georgi.djakov@linaro.org
-References: <1588919619-21355-1-git-send-email-akashast@codeaurora.org>
- <1588919619-21355-7-git-send-email-akashast@codeaurora.org>
- <20200508185310.GF4525@google.com>
-From:   Akash Asthana <akashast@codeaurora.org>
-Message-ID: <679435ec-612e-2ff7-0edc-deac549a93ce@codeaurora.org>
-Date:   Mon, 18 May 2020 18:40:39 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
-MIME-Version: 1.0
-In-Reply-To: <20200508185310.GF4525@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+        by h08.hostsharing.net (Postfix) with ESMTPSA id BBB1D626CE30;
+        Mon, 18 May 2020 16:45:02 +0200 (CEST)
+X-Mailbox-Line: From 94c6c800d1ca9fa04766dd1d43a8272c5ad4bedd Mon Sep 17 00:00:00 2001
+Message-Id: <cover.1589811297.git.lukas@wunner.de>
+From:   Lukas Wunner <lukas@wunner.de>
+Date:   Mon, 18 May 2020 16:45:00 +0200
+Subject: [PATCH v3 0/2] rs485 bus termination GPIO
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, Rob Herring <robh+dt@kernel.org>
+Cc:     "Matwey V. Kornilov" <matwey@sai.msu.ru>,
+        Giulio Benetti <giulio.benetti@micronovasrl.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Christoph Muellner <christoph.muellner@theobroma-systems.com>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Matthias,
+Define a device tree binding for an rs485 bus termination GPIO
+(patch [1/2]), amend the serial core to retrieve the GPIO from
+the device tree and amend the default ->rs485_config() callback
+for 8250 drivers to change the GPIO on request from user space
+(patch [2/2]).
 
-On 5/9/2020 12:23 AM, Matthias Kaehlcke wrote:
-> On Fri, May 08, 2020 at 12:03:38PM +0530, Akash Asthana wrote:
->> Get the interconnect paths for QSPI device and vote according to the
->> current bus speed of the driver.
->>
->> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
->> ---
->> Changes in V2:
->>   - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
->>     path handle
->>   - As per Matthias comment, added error handling for icc_set_bw call
->>
->> Changes in V3:
->>   - No Change.
->>
->> Changes in V4:
->>   - As per Mark's comment move peak_bw guess as twice of avg_bw if
->>     nothing mentioned explicitly to ICC core.
->>
->> Changes in V5:
->>   - Add icc_enable/disable to power on/off call.
->>   - Save some non-zero avg/peak value to ICC core by calling geni_icc_set_bw
->>     from probe so that when resume/icc_enable is called NOC are running at
->>     some non-zero value.
->>
->>   drivers/spi/spi-qcom-qspi.c | 59 ++++++++++++++++++++++++++++++++++++++++++++-
->>   1 file changed, 58 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/spi/spi-qcom-qspi.c b/drivers/spi/spi-qcom-qspi.c
->> index 3c4f83b..6e299f4 100644
->> --- a/drivers/spi/spi-qcom-qspi.c
->> +++ b/drivers/spi/spi-qcom-qspi.c
->> @@ -2,6 +2,7 @@
->>   // Copyright (c) 2017-2018, The Linux foundation. All rights reserved.
->>   
->>   #include <linux/clk.h>
->> +#include <linux/interconnect.h>
->>   #include <linux/interrupt.h>
->>   #include <linux/io.h>
->>   #include <linux/module.h>
->> @@ -139,7 +140,10 @@ struct qcom_qspi {
->>   	struct device *dev;
->>   	struct clk_bulk_data *clks;
->>   	struct qspi_xfer xfer;
->> -	/* Lock to protect xfer and IRQ accessed registers */
->> +	struct icc_path *icc_path_cpu_to_qspi;
->> +	unsigned int avg_bw_cpu;
->> +	unsigned int peak_bw_cpu;
-> There is no point in having two fields, 'peak_bw_cpu' is always assigned
-> to 'avg_bw_cpu' and passed to icc_set_bw(). Just make it a single field
-> 'icc_bw_cpu'.
-Agree that we are not using peak_bw voting as of now but probably we may 
-use it in future, currently we are using only avg_bw for our need but if 
-in future power team shares some data or ask us to reduce our power 
-consumption, then with help of peak_bw we can tune ICC voting where 
-power and performance both can be met as per requirement.
->
->> +	/* Lock to protect data accessed by IRQs */
->>   	spinlock_t lock;
->>   };
->>   
->> @@ -241,6 +245,20 @@ static int qcom_qspi_transfer_one(struct spi_master *master,
->>   		return ret;
->>   	}
->>   
->> +	/*
->> +	 * Set BW quota for CPU as driver supports FIFO mode only.
->> +	 * We don't have explicit peak requirement so keep it equal to avg_bw.
->> +	 */
->> +	ctrl->avg_bw_cpu = Bps_to_icc(speed_hz);
->> +	ctrl->peak_bw_cpu = ctrl->avg_bw_cpu;
->> +	ret = icc_set_bw(ctrl->icc_path_cpu_to_qspi, ctrl->avg_bw_cpu,
->> +		ctrl->peak_bw_cpu);
->> +	if (ret) {
->> +		dev_err(ctrl->dev, "%s: ICC BW voting failed for cpu\n",
->> +			__func__);
-> the logging in this patch is inconsistent. Here the error is not printed,
-> at all, in other cases it's "<error>, ret:-42" or "<error> ret:-42".
-> Please stick to a common format (unless there is no error). My
-> suggestion would be "<error>: -42", in my perception "ret:" just adds
-> noise.
 
-Okay.
+Changes v2 -> v3:
 
-Regards,
+* Patch [2/2]:
+  * Drop unnecessary NULL pointer check preceding gpiod_set_value(). (Heiko)
+  * Amend commit message to suggest moving 8250_exar.c to new binding. (Andy)
+    Add Jan to Cc and Andy's R-b tag.
 
-Akash
+Changes v1 -> v2:
 
->
->> +		return ret;
->> +	}
->> +
->>   	spin_lock_irqsave(&ctrl->lock, flags);
->>   
->>   	/* We are half duplex, so either rx or tx will be set */
->> @@ -458,6 +476,29 @@ static int qcom_qspi_probe(struct platform_device *pdev)
->>   	if (ret)
->>   		goto exit_probe_master_put;
->>   
->> +	ctrl->icc_path_cpu_to_qspi = devm_of_icc_get(dev, "qspi-config");
->> +	if (IS_ERR(ctrl->icc_path_cpu_to_qspi)) {
->> +		ret = PTR_ERR(ctrl->icc_path_cpu_to_qspi);
->> +		if (ret != -EPROBE_DEFER)
->> +			dev_err(dev, "Failed to get cpu path, ret:%d\n", ret);
->> +		goto exit_probe_master_put;
->> +	}
->> +	/* Set BW vote for register access */
->> +	ret = icc_set_bw(ctrl->icc_path_cpu_to_qspi, Bps_to_icc(1000),
->> +				Bps_to_icc(1000));
->> +	if (ret) {
->> +		dev_err(ctrl->dev, "%s: ICC BW voting failed for cpu ret:%d\n",
->> +				__func__, ret);
->> +		goto exit_probe_master_put;
->> +	}
->> +
->> +	ret = icc_disable(ctrl->icc_path_cpu_to_qspi);
->> +	if (ret) {
->> +		dev_err(ctrl->dev, "%s: ICC disable failed for cpu ret:%d\n",
->> +				__func__, ret);
->> +		goto exit_probe_master_put;
->> +	}
->> +
->>   	ret = platform_get_irq(pdev, 0);
->>   	if (ret < 0)
->>   		goto exit_probe_master_put;
->> @@ -511,9 +552,17 @@ static int __maybe_unused qcom_qspi_runtime_suspend(struct device *dev)
->>   {
->>   	struct spi_master *master = dev_get_drvdata(dev);
->>   	struct qcom_qspi *ctrl = spi_master_get_devdata(master);
->> +	int ret;
->>   
->>   	clk_bulk_disable_unprepare(QSPI_NUM_CLKS, ctrl->clks);
->>   
->> +	ret = icc_disable(ctrl->icc_path_cpu_to_qspi);
->> +	if (ret) {
->> +		dev_err_ratelimited(ctrl->dev, "%s: ICC disable failed for cpu ret:%d\n",
->> +			__func__, ret);
->> +		return ret;
->> +	}
->> +
->>   	return 0;
->>   }
->>   
->> @@ -521,6 +570,14 @@ static int __maybe_unused qcom_qspi_runtime_resume(struct device *dev)
->>   {
->>   	struct spi_master *master = dev_get_drvdata(dev);
->>   	struct qcom_qspi *ctrl = spi_master_get_devdata(master);
->> +	int ret;
->> +
->> +	ret = icc_enable(ctrl->icc_path_cpu_to_qspi);
->> +	if (ret) {
->> +		dev_err_ratelimited(ctrl->dev, "%s: ICC enable failed for cpu ret:%d\n",
->> +			__func__, ret);
->> +		return ret;
->> +	}
->>   
->>   	return clk_bulk_prepare_enable(QSPI_NUM_CLKS, ctrl->clks);
->>   }
+* Patch [2/2]:
+  * Drop unnecessary devm_gpiod_put(). (Andy)
+  * Use GPIOD_OUT_LOW macro for brevity. (Andy)
+  * Document the rationale for disabling termination by default.
+  * Drop nonsensical read of GPIO after setting its direction to out.
+
+
+Link to v2:
+https://lore.kernel.org/linux-serial/cover.1589285873.git.lukas@wunner.de
+
+
+Lukas Wunner (2):
+  dt-bindings: serial: Add binding for rs485 bus termination GPIO
+  serial: 8250: Support rs485 bus termination GPIO
+
+ .../devicetree/bindings/serial/rs485.yaml        |  4 ++++
+ drivers/tty/serial/8250/8250_port.c              |  3 +++
+ drivers/tty/serial/serial_core.c                 | 16 ++++++++++++++++
+ include/linux/serial_core.h                      |  2 ++
+ 4 files changed, 25 insertions(+)
 
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
+2.26.2
+
