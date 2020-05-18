@@ -2,113 +2,113 @@ Return-Path: <SRS0=kmSd=7A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C37C433E0
-	for <linux-serial@archiver.kernel.org>; Mon, 18 May 2020 04:50:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FA1DC433E0
+	for <linux-serial@archiver.kernel.org>; Mon, 18 May 2020 07:05:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D5EF3207E8
-	for <linux-serial@archiver.kernel.org>; Mon, 18 May 2020 04:50:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2FD292070A
+	for <linux-serial@archiver.kernel.org>; Mon, 18 May 2020 07:05:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726285AbgEREuJ (ORCPT
+        id S1726828AbgERHFF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 May 2020 00:50:09 -0400
-Received: from bmailout3.hostsharing.net ([176.9.242.62]:49405 "EHLO
-        bmailout3.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726040AbgEREuJ (ORCPT
+        Mon, 18 May 2020 03:05:05 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:35969 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726676AbgERHFF (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 May 2020 00:50:09 -0400
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id ABE22100C0585;
-        Mon, 18 May 2020 06:50:06 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 39BDC31442D; Mon, 18 May 2020 06:50:06 +0200 (CEST)
-Date:   Mon, 18 May 2020 06:50:06 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     gregkh@linuxfoundation.org, jslaby@suse.com,
-        andriy.shevchenko@linux.intel.com, matwey.kornilov@gmail.com,
-        giulio.benetti@micronovasrl.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        christoph.muellner@theobroma-systems.com,
-        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
-Subject: Re: [PATCH v3 3/5] serial: 8250: Support separate rs485 rx-enable
- GPIO
-Message-ID: <20200518045006.s6e5aedgqwreqgd7@wunner.de>
-References: <20200517215610.2131618-1-heiko@sntech.de>
- <20200517215610.2131618-4-heiko@sntech.de>
+        Mon, 18 May 2020 03:05:05 -0400
+Received: by mail-oi1-f193.google.com with SMTP id x23so1575857oic.3;
+        Mon, 18 May 2020 00:05:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mwst2oJ9ZiHpuFTk/EHEIXQxKyuYO4XvyCKHwPLuFvQ=;
+        b=F6Twt1+lKEgrMSMlZD6M2wSFt3wcAAAuYgqpLW2HXf6a7Hw7zBHxR6NaalQhUvdpVC
+         7ntTCGCL4vCf/PKK1SKnaF+jRKwf6W/OxaR7SzFbuAeJJ1K6PSOYIMjydcs03sVbOjmC
+         upzQWs10aDwCrf9TXXbozibdpyXgqhYyXT5/HURKItsUnFO+P46IE63gBPS3Hb9q+qwc
+         syTPYcUjulSZ/ti8vEMVW+r4vATQ+lpPAv1gQc22fhCiDSoyIqXZo3UIFYLZZHLjRLTB
+         mFmXvO0FGyNFOgAcZuZTX3QmS4BE2H0Dgxwg8ulXjz7JE0X7asqHeWIjv4byAqd1+EUU
+         Oatw==
+X-Gm-Message-State: AOAM531ewA8WpCiIVhcsIFahWcLgposEcAI6QMQ4Z6iPOlRBh4uLeP8b
+        wp1w7SetSEGEk7QIJv6KfGpTFJpKVKQR5UA+rbY=
+X-Google-Smtp-Source: ABdhPJy0eVnNyTzrW2/omSLVxGe8kfaMI2pqw3I/+FsC+Cu9/M01gEwxja6I4ke0ixSRPXiGHWR5yNXw9vPFyMYbXzQ=
+X-Received: by 2002:aca:895:: with SMTP id 143mr9591469oii.153.1589785503554;
+ Mon, 18 May 2020 00:05:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200517215610.2131618-4-heiko@sntech.de>
-User-Agent: NeoMutt/20170113 (1.7.2)
+References: <20200420170204.24541-1-mani@kernel.org> <20200420170204.24541-2-mani@kernel.org>
+In-Reply-To: <20200420170204.24541-2-mani@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 18 May 2020 09:04:52 +0200
+Message-ID: <CAMuHMdVGem_2BGQK4dqZQb3sOd0LZk+RS_z4SvSRcNECEJHdwA@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] dt-bindings: serial: Document CTS/RTS gpios in
+ STM32 UART
+To:     mani@kernel.org
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        fabrice.gasnier@st.com, linux-stm32@st-md-mailman.stormreply.com,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Sun, May 17, 2020 at 11:56:08PM +0200, Heiko Stuebner wrote:
-> @@ -1457,6 +1458,7 @@ void serial8250_em485_stop_tx(struct uart_8250_port *p)
->  	 * Enable previously disabled RX interrupts.
->  	 */
->  	if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX)) {
-> +		gpiod_set_value(port->rs485_re_gpio, 1);
->  		serial8250_clear_and_reinit_fifos(p);
->  
->  		p->ier |= UART_IER_RLSI | UART_IER_RDI;
+Hi Mani,
 
-The added line needs to be conditional on if (port->rs485_re_gpio)
-because the gpiod could be NULL and gpiod_set_value() doesn't check
-for that.
+On Mon, Apr 20, 2020 at 7:02 PM <mani@kernel.org> wrote:
+> From: Manivannan Sadhasivam <mani@kernel.org>
+>
+> Document the use of CTS/RTS gpios for flow control in STM32 UART
+> controller. These properties can be used instead of 'st,hw-flow-ctrl'
+> for making use of any gpio pins for flow control instead of dedicated
+> pins. It should be noted that both CTS/RTS and 'st,hw-flow-ctrl'
+> properties cannot co-exist in a design.
+>
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Signed-off-by: Manivannan Sadhasivam <mani@kernel.org>
 
+> --- a/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/st,stm32-uart.yaml
 
-> @@ -1597,9 +1599,12 @@ static inline void __start_tx(struct uart_port *port)
->  void serial8250_em485_start_tx(struct uart_8250_port *up)
->  {
->  	unsigned char mcr = serial8250_in_MCR(up);
-> +	struct uart_port *port = &up->port;
->  
-> -	if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
-> +	if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX)) {
-> +		gpiod_set_value(port->rs485_re_gpio, 0);
->  		serial8250_stop_rx(&up->port);
-> +	}
+> @@ -55,6 +61,14 @@ properties:
+>    linux,rs485-enabled-at-boot-time: true
+>    rs485-rx-during-tx: true
+>
+> +if:
+> +  required:
+> +    - st,hw-flow-ctrl
 
-Same here.
+Perhaps "st,hw-flow-ctrl" should be deprecated, in favor of the standard
+"uart-has-rtscts" property?
+Of course the driver needs to gain support for the latter first.
 
+> +then:
+> +  properties:
+> +    cts-gpios: false
+> +    rts-gpios: false
+> +
+>  required:
+>    - compatible
+>    - reg
 
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -253,6 +253,7 @@ struct uart_port {
->  	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
->  	struct serial_rs485     rs485;
->  	struct gpio_desc	*rs485_term_gpio;	/* enable RS485 bus termination */
-> +	struct gpio_desc	*rs485_re_gpio;		/* gpio RS485 receive enable */
+Gr{oetje,eeting}s,
 
-Nit: I'd probably document this as "enable RS485 receiver" because it's
-already apparent from the variable type and name that it's a gpio,
-making it unnecessary to repeat that in the code comment.  But I guess
-that's a matter of personal preference.
+                        Geert
 
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-There's something else:  You need to amend serial8250_em485_config()
-to toggle the GPIO depending on whether SER_RS485_RX_DURING_TX is
-set.  Right now you enable the receiver by default and then disable
-it when starting to transmit if half-duplex mode is selected and
-likewise re-enable it when stopping to transmit.  But user space
-may write some stuff to the tty while in half-duplex mode, then
-immediately issue a TIOCSRS485 ioctl to switch to full-duplex mode.
-If the ->rs485_config callback is executed while transmitting is
-still ongoing, then you'll not re-enable the receiver when transmitting
-finally stops.  The ->rs485_config callback is invoked under the
-uart port spinlock but the lock may be briefly released and later
-re-acquired by the IRQ handler if the TX FIFO is full.  (Unless
-I'm missing something.)
-
-Thanks,
-
-Lukas
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
