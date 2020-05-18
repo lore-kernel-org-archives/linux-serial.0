@@ -2,146 +2,114 @@ Return-Path: <SRS0=kmSd=7A=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4882DC433E0
-	for <linux-serial@archiver.kernel.org>; Mon, 18 May 2020 14:47:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB27C433E0
+	for <linux-serial@archiver.kernel.org>; Mon, 18 May 2020 14:56:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2EB8E206D4
-	for <linux-serial@archiver.kernel.org>; Mon, 18 May 2020 14:47:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4FD472065F
+	for <linux-serial@archiver.kernel.org>; Mon, 18 May 2020 14:56:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1589813811;
+	bh=GfBGb4u4Ot+veuQyBBREtdC5k8gE7YRJ5o6Fsn0L8Ro=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=V3oIBXhBv8WHdMKM8yIrBUp4NBaE+MxzBuI3dLVQlpdi+LIhXF9pG2esASJk3AETT
+	 Ag3Fpnu8stMYFVqNqvIUs15UFxQvdCJNeBvUcX5A8xC9HU/PJYdcHIUlGrd3IKFcXL
+	 NwJ0/qft/esL6rdSEko74zGq45zOxP9t4+e1DATo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728172AbgEROrM (ORCPT
+        id S1728008AbgERO4v (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 18 May 2020 10:47:12 -0400
-Received: from mailout2.hostsharing.net ([83.223.78.233]:45505 "EHLO
-        mailout2.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727938AbgEROrM (ORCPT
+        Mon, 18 May 2020 10:56:51 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:44307 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726940AbgERO4u (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 18 May 2020 10:47:12 -0400
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
-        by mailout2.hostsharing.net (Postfix) with ESMTPS id DCDE410189B69;
-        Mon, 18 May 2020 16:47:09 +0200 (CEST)
-Received: from localhost (pd95be530.dip0.t-ipconnect.de [217.91.229.48])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by h08.hostsharing.net (Postfix) with ESMTPSA id 9A0F8612B6E6;
-        Mon, 18 May 2020 16:47:09 +0200 (CEST)
-X-Mailbox-Line: From 94c6c800d1ca9fa04766dd1d43a8272c5ad4bedd Mon Sep 17 00:00:00 2001
-Message-Id: <94c6c800d1ca9fa04766dd1d43a8272c5ad4bedd.1589811297.git.lukas@wunner.de>
-In-Reply-To: <cover.1589811297.git.lukas@wunner.de>
-References: <cover.1589811297.git.lukas@wunner.de>
-From:   Lukas Wunner <lukas@wunner.de>
-Date:   Mon, 18 May 2020 16:45:02 +0200
-Subject: [PATCH v3 2/2] serial: 8250: Support rs485 bus termination GPIO
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, Rob Herring <robh+dt@kernel.org>
-Cc:     "Matwey V. Kornilov" <matwey@sai.msu.ru>,
-        Giulio Benetti <giulio.benetti@micronovasrl.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Christoph Muellner <christoph.muellner@theobroma-systems.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+        Mon, 18 May 2020 10:56:50 -0400
+Received: by mail-lf1-f66.google.com with SMTP id w15so973623lfe.11;
+        Mon, 18 May 2020 07:56:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=py+NSpkp68bZvDketQ0LHFlU7cQ4OapcQ54P+6JzKs4=;
+        b=Jt1EFdy4FDlHZ+kJFSldLagl2lBzcbmqj7BEY6t+SPL4XaTDZPnCqGtkoPO1129skF
+         ZS1ZiHlZFzMv9JWCpSd1xQZJe1//CyAEB53R4r6pxT1Tu9dyoOeKf7cafzFPGYXtiu7s
+         wIIcRMX0Ltcw6GICg9yJ/QK0wh4TLSBLHev8YMdELpm4bNvt+PTIfCExy6ByIid6wFUZ
+         uViv+Xu/qBJadYtHoBIRLJoRJVdejQElNiW0Jnrmh4JHiCSGnF5Bq82cXaCIqbEvEyU+
+         Jss1ds7w5u1n7fJrNxughKYR3xerfJDwVbZNd8/sVYFpGDcna1eU1zv1wwqUzd6t9tgH
+         /MUA==
+X-Gm-Message-State: AOAM531jymc7lqdsnNMMHS8YlqNHvk+I4UhM0rv6wZAHqYnQQtzllovj
+        qj5T7d/uWfk7YbuJuq9jXqo=
+X-Google-Smtp-Source: ABdhPJx+XZWZVGWM9nNpq7eb8MJwagwl3MdlS+Oya7jXIfgJ6ix2JYoNLOYvub/lc0afK3SzKDkuUg==
+X-Received: by 2002:ac2:4105:: with SMTP id b5mr12178529lfi.94.1589813807316;
+        Mon, 18 May 2020 07:56:47 -0700 (PDT)
+Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
+        by smtp.gmail.com with ESMTPSA id x10sm3000527ljd.25.2020.05.18.07.56.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 May 2020 07:56:46 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.92.3)
+        (envelope-from <johan@kernel.org>)
+        id 1jahCF-0004MN-Vd; Mon, 18 May 2020 16:56:52 +0200
+Date:   Mon, 18 May 2020 16:56:51 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Claire Chang <tientzu@chromium.org>
+Cc:     robh@kernel.org, gregkh@linuxfoundation.org, jslaby@suse.com,
+        long.cheng@mediatek.com, changqi.hu@mediatek.com,
+        linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] serdev: ttyport: add devt for tty port
+Message-ID: <20200518145651.GL25962@localhost>
+References: <20200506072314.112409-1-tientzu@chromium.org>
+ <20200506072314.112409-2-tientzu@chromium.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200506072314.112409-2-tientzu@chromium.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Commit e8759ad17d41 ("serial: uapi: Add support for bus termination")
-introduced the ability to enable rs485 bus termination from user space.
-So far the feature is only used by a single driver, 8250_exar.c, using a
-hardcoded GPIO pin specific to Siemens IOT2040 products.
+On Wed, May 06, 2020 at 03:23:12PM +0800, Claire Chang wrote:
+> serial_match_port() uses devt to match devices. However, when serdev
+> registers a tty port, devt has never been set. This makes
+> device_find_child() always return NULL.
+> 
+> Assign devt in serdev_tty_port_register() to fix this.
+> 
+> Signed-off-by: Claire Chang <tientzu@chromium.org>
+> ---
+>  drivers/tty/serdev/serdev-ttyport.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+> index d367803e2044f..9238119173a47 100644
+> --- a/drivers/tty/serdev/serdev-ttyport.c
+> +++ b/drivers/tty/serdev/serdev-ttyport.c
+> @@ -267,6 +267,7 @@ struct device *serdev_tty_port_register(struct tty_port *port,
+>  {
+>  	struct serdev_controller *ctrl;
+>  	struct serport *serport;
+> +	dev_t devt = MKDEV(drv->major, drv->minor_start) + idx;
+>  	int ret;
+>  
+>  	if (!port || !drv || !parent)
+> @@ -282,6 +283,7 @@ struct device *serdev_tty_port_register(struct tty_port *port,
+>  	serport->tty_drv = drv;
+>  
+>  	ctrl->ops = &ctrl_ops;
+> +	ctrl->dev.devt = devt;
 
-Provide for a more generic solution by allowing specification of an
-rs485 bus termination GPIO pin in the device tree:  Amend the serial
-core to retrieve the GPIO from the device tree (or ACPI table) and amend
-the default ->rs485_config() callback for 8250 drivers to change the
-GPIO on request from user space.
+This is conceptually wrong. A serdev controller is not a tty class
+device with a corresponding character device.
 
-Perhaps 8250_exar.c can be converted to the generic approach in a
-follow-up patch.
+It seems you need to rethink how serial core should handle the wakeup
+flags with respect to serdev.
 
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
----
- drivers/tty/serial/8250/8250_port.c |  3 +++
- drivers/tty/serial/serial_core.c    | 16 ++++++++++++++++
- include/linux/serial_core.h         |  2 ++
- 3 files changed, 21 insertions(+)
+>  
+>  	port->client_ops = &client_ops;
+>  	port->client_data = ctrl;
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 4d83c85a7389..4f6ff54175ce 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -681,6 +681,9 @@ int serial8250_em485_config(struct uart_port *port, struct serial_rs485 *rs485)
- 	memset(rs485->padding, 0, sizeof(rs485->padding));
- 	port->rs485 = *rs485;
- 
-+	gpiod_set_value(port->rs485_term_gpio,
-+			rs485->flags & SER_RS485_TERMINATE_BUS);
-+
- 	/*
- 	 * Both serial8250_em485_init() and serial8250_em485_destroy()
- 	 * are idempotent.
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 43b6682877d5..57840cf90388 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -3317,6 +3317,7 @@ int uart_get_rs485_mode(struct uart_port *port)
- 	 * to get to a defined state with the following properties:
- 	 */
- 	rs485conf->flags &= ~(SER_RS485_RX_DURING_TX | SER_RS485_ENABLED |
-+			      SER_RS485_TERMINATE_BUS |
- 			      SER_RS485_RTS_AFTER_SEND);
- 	rs485conf->flags |= SER_RS485_RTS_ON_SEND;
- 
-@@ -3331,6 +3332,21 @@ int uart_get_rs485_mode(struct uart_port *port)
- 		rs485conf->flags |= SER_RS485_RTS_AFTER_SEND;
- 	}
- 
-+	/*
-+	 * Disabling termination by default is the safe choice:  Else if many
-+	 * bus participants enable it, no communication is possible at all.
-+	 * Works fine for short cables and users may enable for longer cables.
-+	 */
-+	port->rs485_term_gpio = devm_gpiod_get_optional(dev, "rs485-term",
-+							GPIOD_OUT_LOW);
-+	if (IS_ERR(port->rs485_term_gpio)) {
-+		ret = PTR_ERR(port->rs485_term_gpio);
-+		port->rs485_term_gpio = NULL;
-+		if (ret != -EPROBE_DEFER)
-+			dev_err(dev, "Cannot get rs485-term-gpios\n");
-+		return ret;
-+	}
-+
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(uart_get_rs485_mode);
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index b649a2b894e7..9fd550e7946a 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -10,6 +10,7 @@
- #include <linux/bitops.h>
- #include <linux/compiler.h>
- #include <linux/console.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/interrupt.h>
- #include <linux/circ_buf.h>
- #include <linux/spinlock.h>
-@@ -251,6 +252,7 @@ struct uart_port {
- 	struct attribute_group	*attr_group;		/* port specific attributes */
- 	const struct attribute_group **tty_groups;	/* all attributes (serial core use only) */
- 	struct serial_rs485     rs485;
-+	struct gpio_desc	*rs485_term_gpio;	/* enable RS485 bus termination */
- 	struct serial_iso7816   iso7816;
- 	void			*private_data;		/* generic platform data pointer */
- };
--- 
-2.26.2
-
+Johan
