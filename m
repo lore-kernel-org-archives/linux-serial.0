@@ -4,36 +4,33 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6769C433E5
-	for <linux-serial@archiver.kernel.org>; Tue, 19 May 2020 18:22:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1537CC433E2
+	for <linux-serial@archiver.kernel.org>; Tue, 19 May 2020 18:22:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C05202084C
-	for <linux-serial@archiver.kernel.org>; Tue, 19 May 2020 18:22:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DCED120823
+	for <linux-serial@archiver.kernel.org>; Tue, 19 May 2020 18:22:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726497AbgESSWB (ORCPT
+        id S1729244AbgESSWF (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 May 2020 14:22:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36644 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729244AbgESSWA (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 May 2020 14:22:00 -0400
-Received: from mail.bugwerft.de (mail.bugwerft.de [IPv6:2a03:6000:1011::59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 77369C08C5C1;
-        Tue, 19 May 2020 11:22:00 -0700 (PDT)
+        Tue, 19 May 2020 14:22:05 -0400
+Received: from mail.bugwerft.de ([46.23.86.59]:40474 "EHLO mail.bugwerft.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729508AbgESSWE (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 19 May 2020 14:22:04 -0400
 Received: from zenbar.fritz.box (pd95ef292.dip0.t-ipconnect.de [217.94.242.146])
-        by mail.bugwerft.de (Postfix) with ESMTPSA id 8631340AEC3;
-        Tue, 19 May 2020 18:19:03 +0000 (UTC)
+        by mail.bugwerft.de (Postfix) with ESMTPSA id 643D540AEC5;
+        Tue, 19 May 2020 18:19:04 +0000 (UTC)
 From:   Daniel Mack <daniel@zonque.org>
 To:     devicetree@vger.kernel.org, linux-serial@vger.kernel.org
 Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org, jslaby@suse.com,
         jringle@gridpoint.com, m.brock@vanmierlo.com,
         pascal.huerst@gmail.com, Daniel Mack <daniel@zonque.org>
-Subject: [PATCH v2 5/6] sc16is7xx: Allow sharing the IRQ line
-Date:   Tue, 19 May 2020 20:21:46 +0200
-Message-Id: <20200519182147.218713-6-daniel@zonque.org>
+Subject: [PATCH v2 6/6] sc16is7xx: Read the LSR register for basic device presence check
+Date:   Tue, 19 May 2020 20:21:47 +0200
+Message-Id: <20200519182147.218713-7-daniel@zonque.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200519182147.218713-1-daniel@zonque.org>
 References: <20200519182147.218713-1-daniel@zonque.org>
@@ -44,44 +41,47 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When the interrupt line is shared with other devices, the IRQ must be
-level-triggered, as only one device can trigger a falling edge. To support
-this, try to acquire the IRQ with IRQF_TRIGGER_LOW|IRQF_SHARED first.
+Currently, the driver probes just fine and binds all its resources even
+if the physical device is not present.
 
-Interrupt controllers that lack support for level-triggers will return an
-error, in which case the driver will now retry the acqusition with
-IRQF_TRIGGER_FALLING, which was also the default before.
+As the device lacks an identification register, let's at least read the
+LSR register to check whether a device at the configured address responds
+to the request at all.
 
 Signed-off-by: Daniel Mack <daniel@zonque.org>
 ---
- drivers/tty/serial/sc16is7xx.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ drivers/tty/serial/sc16is7xx.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index cebc0cf9c30e..7e2360f8e393 100644
+index 7e2360f8e393..5e84ed5938af 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1313,7 +1313,19 @@ static int sc16is7xx_probe(struct device *dev,
- 				s->p[u].irda_mode = true;
- 	}
+@@ -1181,6 +1181,7 @@ static int sc16is7xx_probe(struct device *dev,
+ {
+ 	struct sched_param sched_param = { .sched_priority = MAX_RT_PRIO / 2 };
+ 	unsigned long freq = 0, *pfreq = dev_get_platdata(dev);
++	unsigned int val;
+ 	u32 uartclk = 0;
+ 	int i, ret;
+ 	struct sc16is7xx_port *s;
+@@ -1188,6 +1189,16 @@ static int sc16is7xx_probe(struct device *dev,
+ 	if (IS_ERR(regmap))
+ 		return PTR_ERR(regmap);
  
--	/* Setup interrupt */
 +	/*
-+	 * Setup interrupt. We first try to acquire the IRQ line as level IRQ.
-+	 * If that succeeds, we can allow sharing the interrupt as well.
-+	 * In case the interrupt controller doesn't support that, we fall
-+	 * back to a non-shared falling-edge trigger.
++	 * This device does not have an identification register that would
++	 * tell us if we are really connected to the correct device.
++	 * The best we can do is to check if communication is at all possible.
 +	 */
-+	ret = devm_request_threaded_irq(dev, irq, NULL, sc16is7xx_irq,
-+					IRQF_TRIGGER_LOW | IRQF_SHARED |
-+					IRQF_ONESHOT,
-+					dev_name(dev), s);
-+	if (!ret)
-+		return 0;
++	ret = regmap_read(regmap,
++			  SC16IS7XX_LSR_REG << SC16IS7XX_REG_SHIFT, &val);
++	if (ret < 0)
++		return ret;
 +
- 	ret = devm_request_threaded_irq(dev, irq, NULL, sc16is7xx_irq,
- 					IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
- 					dev_name(dev), s);
+ 	/* Alloc port structure */
+ 	s = devm_kzalloc(dev, struct_size(s, p, devtype->nr_uart), GFP_KERNEL);
+ 	if (!s) {
 -- 
 2.26.2
 
