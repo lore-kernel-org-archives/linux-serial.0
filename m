@@ -2,138 +2,103 @@ Return-Path: <SRS0=bJiX=7B=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9FF5C433E0
-	for <linux-serial@archiver.kernel.org>; Tue, 19 May 2020 10:37:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BA53C433E0
+	for <linux-serial@archiver.kernel.org>; Tue, 19 May 2020 12:02:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9BA162065F
-	for <linux-serial@archiver.kernel.org>; Tue, 19 May 2020 10:37:30 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="YMdHV7z6"
+	by mail.kernel.org (Postfix) with ESMTP id E5FF0207C4
+	for <linux-serial@archiver.kernel.org>; Tue, 19 May 2020 12:02:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728618AbgESKha (ORCPT
+        id S1728647AbgESMCI (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 May 2020 06:37:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48696 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726494AbgESKh3 (ORCPT
+        Tue, 19 May 2020 08:02:08 -0400
+Received: from fieber.vanmierlo.com ([84.243.197.177]:56834 "EHLO
+        kerio9.vanmierlo.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726949AbgESMCI (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 May 2020 06:37:29 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCDEC061A0C
-        for <linux-serial@vger.kernel.org>; Tue, 19 May 2020 03:37:29 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id m185so2914326wme.3
-        for <linux-serial@vger.kernel.org>; Tue, 19 May 2020 03:37:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=nJqGHCLYRoZ39Y3LPONsDokd1MQBpWuhJuodhCCoySM=;
-        b=YMdHV7z6BExIROOjIpfvHwSUNwtHyJyHxewUmgQ58pFt2DCJ+Uq3LE6nN5u01qIsPB
-         rTnMHvOJ4foaIZQznr6Ev5x+fowQs8Joohvex2NOX8e3CLiyut/6ZWwYdeVM/Lpn+uJg
-         PuZjzzrw1kE6Klbf6tp/7LgGBpx+RxVYgAqJ89o4oQgPzP3JodvHnPd1rK6Uid0Y1CS1
-         BSRg+2wxS7OWx3hF4QjrYSYrrMdaEWoA68ZfdaWbMNbSyMgwx4PDx1Ism+F2DODBpig5
-         zZiibs5LM8fN32E7W8maiyUmM7xI44L6S6gQCO8h07GklbCW+XXxkrZ7CLC5GYdp0UmA
-         19Eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nJqGHCLYRoZ39Y3LPONsDokd1MQBpWuhJuodhCCoySM=;
-        b=Nx1Jq4nlaHTTJmQvZOzZK3vw7Jsl14BhxXZBrR4xtqcOH5MQwAJh/O6C5ZHbg/Fl73
-         X+xbH9PPNUFbITo58ejjOglGNjjIptSgvqch+AZyqca6u7rGfYn/4mk32Sd5YqFs5urR
-         VqrG199ZH/5Ew59CE2Wb1bv/1uJYoE9Bca/Ql4I0RadMntTvMwyjd55pd+lkFqmHeFzg
-         ZjIGNZuke/Jx1tDbfbZzfA/njHvUksADhyrH95EBiLqG5zw7j7CsIdox/iLzn138cA7v
-         +8qz1hra9DPS0VjANVsXCd8ZNMc72/t/Pm8uZgBSghBgciKbQOVMZK4ua2m3Q/ta2zgS
-         VFxg==
-X-Gm-Message-State: AOAM531L8/VY0fEVIwLhxkyvrxj+9PqRsUDUBz/Axan4w6tKhwwf3coN
-        4duG/CBmv+vzAglCaFmiV8nrhg==
-X-Google-Smtp-Source: ABdhPJxj5fMEywwcRHjfOT2c3qwvdLgOyHayzX2tbuWzyAy4O/+p5lMYXda/U5svbychHMOWNGk9Ww==
-X-Received: by 2002:a05:600c:1403:: with SMTP id g3mr4962732wmi.51.1589884647744;
-        Tue, 19 May 2020 03:37:27 -0700 (PDT)
-Received: from holly.lan (cpc141214-aztw34-2-0-cust773.18-1.cable.virginm.net. [86.9.19.6])
-        by smtp.gmail.com with ESMTPSA id x24sm21634435wrd.51.2020.05.19.03.37.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 May 2020 03:37:27 -0700 (PDT)
-Date:   Tue, 19 May 2020 11:37:24 +0100
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Doug Anderson <dianders@chromium.org>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-serial@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Jiri Slaby <jslaby@suse.com>,
-        kgdb-bugreport@lists.sourceforge.net,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Gross <agross@kernel.org>, bp@alien8.de,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        Allison Randal <allison@lohutok.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dave Martin <Dave.Martin@arm.com>,
-        Enrico Weigelt <info@metux.net>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        James Morse <james.morse@arm.com>,
-        Juergen Gross <jgross@suse.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Russell King <linux@armlinux.org.uk>,
-        jinho lim <jordan.lim@samsung.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-doc@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        x86@kernel.org
-Subject: Re: [PATCH v4 00/12] kgdb: Support late serial drivers; enable early
- debug w/ boot consoles
-Message-ID: <20200519103724.eyabo2n4uzms25bp@holly.lan>
-References: <20200507200850.60646-1-dianders@chromium.org>
- <20200514162109.6qt5drd27hpilijh@holly.lan>
- <CAD=FV=X+t_Wg5KadZBTGHMSEXY3c-t6DZAtdaLXys31QJJpGGA@mail.gmail.com>
- <20200514163633.GA3154055@kroah.com>
+        Tue, 19 May 2020 08:02:08 -0400
+X-Footer: dmFubWllcmxvLmNvbQ==
+Received: from roundcube.vanmierlo.com ([192.168.37.37])
+        (authenticated user m.brock@vanmierlo.com)
+        by kerio9.vanmierlo.com (Kerio Connect 9.2.12 patch 1) with ESMTPA;
+        Tue, 19 May 2020 14:01:32 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200514163633.GA3154055@kroah.com>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 19 May 2020 14:01:32 +0200
+From:   Maarten Brock <m.brock@vanmierlo.com>
+To:     Daniel Mack <daniel@zonque.org>
+Cc:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jslaby@suse.com, pascal.huerst@gmail.com,
+        linux-serial-owner@vger.kernel.org
+Subject: Re: [PATCH 1/4] dt-bindings: sc16is7xx: Add flag to activate IrDA
+ mode
+In-Reply-To: <0494dbe1-81ad-493c-6eb0-a463a5604309@zonque.org>
+References: <20200508143757.2609740-1-daniel@zonque.org>
+ <20200508143757.2609740-2-daniel@zonque.org> <20200518180853.GA18566@bogus>
+ <0494dbe1-81ad-493c-6eb0-a463a5604309@zonque.org>
+Message-ID: <d959a9c97d64f38ea6335ad372ea541d@vanmierlo.com>
+X-Sender: m.brock@vanmierlo.com
+User-Agent: Roundcube Webmail/1.3.3
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, May 14, 2020 at 06:36:33PM +0200, Greg Kroah-Hartman wrote:
-> On Thu, May 14, 2020 at 09:34:26AM -0700, Doug Anderson wrote:
-> > > (though we must keep
-> > > changes to drivers/tty/serial/kgdboc alongside the kgdb changes).
-> > >
-> > > I can hoover them up but I'd need a solid set of acks and
-> > > I don't think we've got that yet.
-> > 
-> > It would be nice for it to be explicit, but "get_maintainer" says that
-> > Greg KH is the maintainer of serial drivers.  Git log confirms that he
-> > also has been the one landing changes to these files.  Early-on he
-> > provided his Reviewed-by for the series as a whole, so he's aware of
-> > it and maybe would be fine w/ the serial changes landing through the
-> > kgdb tree?
-> > 
-> > Greg: is that correct?
-> 
-> I have no objection for all of these to go through any other tree that
-> wants to take them :)
-> 
-> But if you want me to take them in the serial tree, to make it easier
-> for you or any other serial driver issues, I will be glad to do that,
-> just send them my way.  It's your call.
+On 2020-05-18 20:41, Daniel Mack wrote:
+> On 5/18/20 8:08 PM, Rob Herring wrote:
+>> On Fri, May 08, 2020 at 04:37:54PM +0200, Daniel Mack wrote:
+>>> From: Pascal Huerst <pascal.huerst@gmail.com>
+>>> 
+>>> This series of uart controllers is able to work in IrDA mode.
+>>> This adds a flag to the device tree to enable that feature if needed.
+>>> 
+>>> Signed-off-by: Pascal Huerst <pascal.huerst@gmail.com>
+>>> ---
+>>>  Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt | 4 ++++
+>>>  1 file changed, 4 insertions(+)
+>>> 
+>>> diff --git 
+>>> a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt 
+>>> b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+>>> index c1091a923a89..9317c320c82c 100644
+>>> --- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+>>> +++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
+>>> @@ -21,6 +21,8 @@ Optional properties:
+>>>    the second cell is used to specify the GPIO polarity:
+>>>      0 = active high,
+>>>      1 = active low.
+>>> +- linux,irda-mode-port-0: Use IrDA mode on port #0
+>>> +- linux,irda-mode-port-1: Use IrDA mode on port #1 (for dual-port 
+>>> devices only)
+>>> 
+>>>  Example:
+>>>          sc16is750: sc16is750@51 {
+>>> @@ -55,6 +57,8 @@ Optional properties:
+>>>    the second cell is used to specify the GPIO polarity:
+>>>      0 = active high,
+>>>      1 = active low.
+>>> +- linux,irda-mode-port-0: Use IrDA mode on port #0
+>>> +- linux,irda-mode-port-1: Use IrDA mode on port #1 (for dual-port 
+>>> devices only)
+>> 
+>> How about an array of 1 or 2 entries instead?
 
-Thanks. I've taken then via my tree.
+I like this idea.
 
+> Yes, that would be an alternative. We just weren't sure what type the
+> elements of the array would have. Could you point to an existing 
+> example?
 
-Daniel.
+I think you need device_property_read_u8_array(). I can only find
+device_property_read_u32_array() used in the serial drivers tree in 
+serial_core.c,
+but that should be similar.
+
+Maarten
+
