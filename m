@@ -2,162 +2,128 @@ Return-Path: <SRS0=bJiX=7B=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A809C433DF
-	for <linux-serial@archiver.kernel.org>; Tue, 19 May 2020 15:48:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CC75C433DF
+	for <linux-serial@archiver.kernel.org>; Tue, 19 May 2020 16:33:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DE67F207C4
-	for <linux-serial@archiver.kernel.org>; Tue, 19 May 2020 15:48:47 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="P0+mae6a"
+	by mail.kernel.org (Postfix) with ESMTP id 61D1B20709
+	for <linux-serial@archiver.kernel.org>; Tue, 19 May 2020 16:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728633AbgESPsr (ORCPT
+        id S1729099AbgESQdC (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 May 2020 11:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40838 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729020AbgESPsq (ORCPT
+        Tue, 19 May 2020 12:33:02 -0400
+Received: from fieber.vanmierlo.com ([84.243.197.177]:58885 "EHLO
+        kerio9.vanmierlo.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726203AbgESQdB (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 May 2020 11:48:46 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08C9C08C5C2
-        for <linux-serial@vger.kernel.org>; Tue, 19 May 2020 08:48:46 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id q8so87496pfu.5
-        for <linux-serial@vger.kernel.org>; Tue, 19 May 2020 08:48:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=npj6nyuWQ54ZRzukHs7PaMjCvPNDE9Mt94DLOgYmdAM=;
-        b=P0+mae6a84cR5xUqIaEO+Q0bl2fCnvLeySFo+ugO3JyjssDIgkmsmpUbWGMOo30eLp
-         4la4jakE5roQ8jjlKA1FzIi2twmGQr7jNmyR4G/fELC21PiyyV8enb6i9lBDEIrIB2rV
-         AVTHOA5HszSMzkwJ81gPBz5iiLnARXbKwKDDs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=npj6nyuWQ54ZRzukHs7PaMjCvPNDE9Mt94DLOgYmdAM=;
-        b=FF2fUe56TSyq/jTa9sfF9iS8NgHDnpDpf884CU5YlQmACqeLBMEEiZ+BAlS07WRoDf
-         /gVFZsZuZPhfoBh1+lKS1yQULI29GkGy2A7Au1XMAIiLPDQbWY7Ka8CTcuxPvI2JeT+k
-         M4lS/Ft2JZlghgl2uafPdz8qD3q1fVqvPc9iwUIrGQ0I2kk2L+I6YxjnGPPsWlIk43U0
-         EuGYCW4NY8e8cKQETQBhEu+7oikIOidtg0QHFNLjKN5wqyme9sadQMohCvEaRQIKIln7
-         tRoJABX/MYON3e1TuWzlEtp5v2PGEMTFhioospocYoW6Kr34QSZNIHJpL2WHaAQ0CCtX
-         s3IQ==
-X-Gm-Message-State: AOAM530H6JjfCI0pQ6mMG4g3tyJ6QQhau0dgeFB+cBSLcxbQSmc82woM
-        lb47E3u9tmrXHxsbHJBPNdTmqw==
-X-Google-Smtp-Source: ABdhPJz5avKKNTtvKZvm8lzBMm3rjxfvXiD2QxxVE3dZa7xUCBH4RpcsiIOy1AoeYJ/nBEZkwHHoAw==
-X-Received: by 2002:aa7:9aa8:: with SMTP id x8mr11608662pfi.182.1589903326036;
-        Tue, 19 May 2020 08:48:46 -0700 (PDT)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:1:24fa:e766:52c9:e3b2])
-        by smtp.gmail.com with ESMTPSA id c2sm9506pjg.51.2020.05.19.08.48.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 May 2020 08:48:45 -0700 (PDT)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jason Wessel <jason.wessel@windriver.com>
-Cc:     linux-next@vger.kernel.org, sumit.garg@linaro.org,
-        Douglas Anderson <dianders@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH] kgdboc: Disable all the early code when kgdboc is a module
-Date:   Tue, 19 May 2020 08:44:02 -0700
-Message-Id: <20200519084345.1.I91670accc8a5ddabab227eb63bb4ad3e2e9d2b58@changeid>
-X-Mailer: git-send-email 2.26.2.761.g0e0b3e54be-goog
+        Tue, 19 May 2020 12:33:01 -0400
+X-Footer: dmFubWllcmxvLmNvbQ==
+Received: from roundcube.vanmierlo.com ([192.168.37.37])
+        (authenticated user m.brock@vanmierlo.com)
+        by kerio9.vanmierlo.com (Kerio Connect 9.2.12 patch 1) with ESMTPA;
+        Tue, 19 May 2020 18:32:32 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 19 May 2020 18:32:32 +0200
+From:   Maarten Brock <m.brock@vanmierlo.com>
+To:     Daniel Mack <daniel@zonque.org>
+Cc:     devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+        gregkh@linuxfoundation.org, robh+dt@kernel.org, jslaby@suse.com,
+        pascal.huerst@gmail.com, linux-serial-owner@vger.kernel.org
+Subject: Re: [PATCH 4/4] sc16is7xx: Use threaded IRQ
+In-Reply-To: <22116d56-9240-9bfe-1b6f-a94d57a085cf@zonque.org>
+References: <20200508143757.2609740-1-daniel@zonque.org>
+ <20200508143757.2609740-5-daniel@zonque.org>
+ <61fdcf12976c924fd86c5203aba673a7@vanmierlo.com>
+ <584de876-e675-0172-97ed-0c9534eb9526@zonque.org>
+ <dfafc770e7e308cb6a2db5a1003cd759@vanmierlo.com>
+ <22116d56-9240-9bfe-1b6f-a94d57a085cf@zonque.org>
+Message-ID: <b5d56abc8109fb3a7ef057c89a649f06@vanmierlo.com>
+X-Sender: m.brock@vanmierlo.com
+User-Agent: Roundcube Webmail/1.3.3
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-When kgdboc is compiled as a module all of the "ekgdboc" and
-"kgdb_earlycon" code isn't useful and, in fact, breaks compilation.
-This is because early_param() isn't defined for modules and that's how
-this code gets configured.
+On 2020-05-18 18:57, Daniel Mack wrote:
+> Hi Maarten,
+> 
+> On 5/18/20 1:14 PM, Maarten Brock wrote:
+>> On 2020-05-17 22:44, Daniel Mack wrote:
+> 
+>> Summerizing:
+>> - After switching to a threaded IRQ, the trigger could be switched to
+>> IRQF_TRIGGER_LOW and with that interrupt sharing can be enabled for
+>> this device with IRQF_SHARED.
+> 
+> Yes, but we don't need that. As discussed, the UART driver can cope 
+> with
+> edge IRQs just fine.
+> 
+>> - Some (your) interrupt controllers do not support IRQF_TRIGGER_LOW.
+>> For those only IRQF_TRIGGER_FALLING can be used for this device and
+>> thus IRQF_SHARED cannot be used.
+> 
+> True. Interrupts cannot be shared for this device then. That's a fair
+> limitation, and it has always been like that.
 
-It turns out that this was broken by commit eae3e19ca930 ("kgdboc:
-Remove useless #ifdef CONFIG_KGDB_SERIAL_CONSOLE in kgdboc") and then
-made worse by commit 220995622da5 ("kgdboc: Add kgdboc_earlycon to
-support early kgdb using boot consoles").  I guess the #ifdef wasn't
-so useless, even if it wasn't obvious why it was useful.  When kgdboc
-was compiled as a module only "CONFIG_KGDB_SERIAL_CONSOLE_MODULE" was
-defined, not "CONFIG_KGDB_SERIAL_CONSOLE".  That meant that the old
-module.
+It has always been like that for this driver. But that should be no
+reason why the driver might not be improved. I wonder how the 8250
+handles this. PC's have always shared interrupts for COM1/2/3/4 AFAIK.
 
-Let's basically do the same thing that the old code (pre-removal of
-the #ifdef) did but use "IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE)" to
-make it more obvious what the point of the check is.  We'll fix
-kgdboc_earlycon in a similar way.
+>> - The driver for your interrupt controller should be improved to 
+>> support
+>> level IRQs.
+> 
+> It's a controller that sits behind another hardware bus itself, so
+> polling is expensive. If the controller would need to check for level
+> IRQs it would need to poll, and then we could as well just poll the 
+> UART
+> directly, that's just as good :)
 
-Fixes: 220995622da5 ("kgdboc: Add kgdboc_earlycon to support early kgdb using boot consoles")
-Fixes: eae3e19ca930 ("kgdboc: Remove useless #ifdef CONFIG_KGDB_SERIAL_CONSOLE in kgdboc")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
----
+That depends on the IRQ coming out of the interrupt controller. If that 
+is
+a level interrupt itself, then it is easy to see if all interrupts are
+handled. Further polling zooms in on the devices that require attention.
 
- drivers/tty/serial/kgdboc.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+> But again - the UART driver works perfectly fine with edge IRQs as long
+> as the interrupt is not shared.
 
-diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-index 34b5e91dd245..fa6f7a3e73b9 100644
---- a/drivers/tty/serial/kgdboc.c
-+++ b/drivers/tty/serial/kgdboc.c
-@@ -43,9 +43,11 @@ static int			kgdb_tty_line;
- 
- static struct platform_device *kgdboc_pdev;
- 
-+#if IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE)
- static struct kgdb_io		kgdboc_earlycon_io_ops;
- static struct console		*earlycon;
- static int                      (*earlycon_orig_exit)(struct console *con);
-+#endif /* IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE) */
- 
- #ifdef CONFIG_KDB_KEYBOARD
- static int kgdboc_reset_connect(struct input_handler *handler,
-@@ -140,10 +142,19 @@ static void kgdboc_unregister_kbd(void)
- #define kgdboc_restore_input()
- #endif /* ! CONFIG_KDB_KEYBOARD */
- 
--static void cleanup_kgdboc(void)
-+#if IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE)
-+static void cleanup_earlycon(void)
- {
- 	if (earlycon)
- 		kgdb_unregister_io_module(&kgdboc_earlycon_io_ops);
-+}
-+#else /* !IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE) */
-+static inline void cleanup_earlycon(void) { }
-+#endif /* !IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE) */
-+
-+static void cleanup_kgdboc(void)
-+{
-+	cleanup_earlycon();
- 
- 	if (configured != 1)
- 		return;
-@@ -388,6 +399,7 @@ static struct kgdb_io kgdboc_io_ops = {
- 	.post_exception		= kgdboc_post_exp_handler,
- };
- 
-+#if IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE)
- static int kgdboc_option_setup(char *opt)
- {
- 	if (!opt) {
-@@ -544,6 +556,7 @@ static int __init kgdboc_earlycon_init(char *opt)
- }
- 
- early_param("kgdboc_earlycon", kgdboc_earlycon_init);
-+#endif /* IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE) */
- 
- module_init(init_kgdboc);
- module_exit(exit_kgdboc);
--- 
-2.26.2.761.g0e0b3e54be-goog
+If you would require multiple sc16is7xx devices on I2C would you like to
+connect multiple interrupt lines? Or just SCL,SDA and *one* IRQ?
+
+OTOH for SPI you would require multiple CS already.
+
+>> This makes me wonder if it would be better to let the device tree 
+>> specify
+>> the interrupt configuration.
+> 
+> There can be flags in the 2nd cell of the node, but their meaning is
+> specific to the controller. Hence the SPI/I2C layers don't pass that
+> information up.
+> 
+> What many drivers do is try with one setting, and if that fails because
+> the interrupt controller returns an error, they fall back to something
+> else. We could do the same here of course, but it'd be another patch on
+> top, as it's unrelated to the concrete change the patch we're 
+> commenting
+> on is bringing in.
+> 
+> So what I can add is logic that first tries with IRQF_LOW|IRQF_SHARED,
+> and if that fails, we fall back to IRQF_FALLING and retry. WDYT?
+
+That sounds like a decent plan.
+
+> 
+> Thanks,
+> Daniel
+
+Kind regards,
+Maarten
 
