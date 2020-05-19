@@ -2,103 +2,98 @@ Return-Path: <SRS0=bJiX=7B=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BA53C433E0
-	for <linux-serial@archiver.kernel.org>; Tue, 19 May 2020 12:02:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E2B0C433E0
+	for <linux-serial@archiver.kernel.org>; Tue, 19 May 2020 12:07:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E5FF0207C4
-	for <linux-serial@archiver.kernel.org>; Tue, 19 May 2020 12:02:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5BECF20708
+	for <linux-serial@archiver.kernel.org>; Tue, 19 May 2020 12:07:28 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="ttUSYJYc"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728647AbgESMCI (ORCPT
+        id S1728798AbgESMH1 (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 19 May 2020 08:02:08 -0400
-Received: from fieber.vanmierlo.com ([84.243.197.177]:56834 "EHLO
-        kerio9.vanmierlo.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726949AbgESMCI (ORCPT
+        Tue, 19 May 2020 08:07:27 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:46062 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728286AbgESMH1 (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 19 May 2020 08:02:08 -0400
-X-Footer: dmFubWllcmxvLmNvbQ==
-Received: from roundcube.vanmierlo.com ([192.168.37.37])
-        (authenticated user m.brock@vanmierlo.com)
-        by kerio9.vanmierlo.com (Kerio Connect 9.2.12 patch 1) with ESMTPA;
-        Tue, 19 May 2020 14:01:32 +0200
+        Tue, 19 May 2020 08:07:27 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1589890046; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=pKN8CH54HuTiS5l1bLL1hrtunZpKL8bKdZuG1nXfIhI=; b=ttUSYJYcxNT4iNqXsnz2EjIQvMDmbt8HFystdWEWQ881YUz0RwuCde3DU3RGLUUgVugW86kd
+ frER3/1OmmiNFqVV38+Uav1240+dZoLfmaqQakN5+dzcP8yjm3NWxhm3GT27cJdmFGYfCoDx
+ SQsH3qSActEDW9k6UBFD1XZdhtM=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5ec3cbe8.7f3ee220eb20-smtp-out-n03;
+ Tue, 19 May 2020 12:07:04 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 943AAC432C2; Tue, 19 May 2020 12:07:04 +0000 (UTC)
+Received: from [192.168.0.4] (unknown [124.123.29.106])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: msavaliy)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 6AA3EC44788;
+        Tue, 19 May 2020 12:07:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6AA3EC44788
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=msavaliy@codeaurora.org
+Subject: Re: [PATCH V3] serial: msm_geni_serial_console : Add Earlycon support
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     akashast@codeaurora.org, linux-serial@vger.kernel.org,
+        saravanak@google.com, sspatil@google.com, tkjos@google.com
+References: <20200514133429.31245-1-msavaliy@codeaurora.org>
+ <20200514140414.GC2581983@kroah.com>
+From:   "Mukesh, Savaliya" <msavaliy@codeaurora.org>
+Message-ID: <32dd6d57-8856-d861-f2a2-27ab5cde8ad2@codeaurora.org>
+Date:   Tue, 19 May 2020 17:36:51 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+In-Reply-To: <20200514140414.GC2581983@kroah.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Date:   Tue, 19 May 2020 14:01:32 +0200
-From:   Maarten Brock <m.brock@vanmierlo.com>
-To:     Daniel Mack <daniel@zonque.org>
-Cc:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
-        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jslaby@suse.com, pascal.huerst@gmail.com,
-        linux-serial-owner@vger.kernel.org
-Subject: Re: [PATCH 1/4] dt-bindings: sc16is7xx: Add flag to activate IrDA
- mode
-In-Reply-To: <0494dbe1-81ad-493c-6eb0-a463a5604309@zonque.org>
-References: <20200508143757.2609740-1-daniel@zonque.org>
- <20200508143757.2609740-2-daniel@zonque.org> <20200518180853.GA18566@bogus>
- <0494dbe1-81ad-493c-6eb0-a463a5604309@zonque.org>
-Message-ID: <d959a9c97d64f38ea6335ad372ea541d@vanmierlo.com>
-X-Sender: m.brock@vanmierlo.com
-User-Agent: Roundcube Webmail/1.3.3
+Content-Language: en-US
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 2020-05-18 20:41, Daniel Mack wrote:
-> On 5/18/20 8:08 PM, Rob Herring wrote:
->> On Fri, May 08, 2020 at 04:37:54PM +0200, Daniel Mack wrote:
->>> From: Pascal Huerst <pascal.huerst@gmail.com>
->>> 
->>> This series of uart controllers is able to work in IrDA mode.
->>> This adds a flag to the device tree to enable that feature if needed.
->>> 
->>> Signed-off-by: Pascal Huerst <pascal.huerst@gmail.com>
->>> ---
->>>  Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt | 4 ++++
->>>  1 file changed, 4 insertions(+)
->>> 
->>> diff --git 
->>> a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt 
->>> b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
->>> index c1091a923a89..9317c320c82c 100644
->>> --- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
->>> +++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.txt
->>> @@ -21,6 +21,8 @@ Optional properties:
->>>    the second cell is used to specify the GPIO polarity:
->>>      0 = active high,
->>>      1 = active low.
->>> +- linux,irda-mode-port-0: Use IrDA mode on port #0
->>> +- linux,irda-mode-port-1: Use IrDA mode on port #1 (for dual-port 
->>> devices only)
->>> 
->>>  Example:
->>>          sc16is750: sc16is750@51 {
->>> @@ -55,6 +57,8 @@ Optional properties:
->>>    the second cell is used to specify the GPIO polarity:
->>>      0 = active high,
->>>      1 = active low.
->>> +- linux,irda-mode-port-0: Use IrDA mode on port #0
->>> +- linux,irda-mode-port-1: Use IrDA mode on port #1 (for dual-port 
->>> devices only)
->> 
->> How about an array of 1 or 2 entries instead?
 
-I like this idea.
-
-> Yes, that would be an alternative. We just weren't sure what type the
-> elements of the array would have. Could you point to an existing 
-> example?
-
-I think you need device_property_read_u8_array(). I can only find
-device_property_read_u32_array() used in the serial drivers tree in 
-serial_core.c,
-but that should be similar.
-
-Maarten
-
+On 5/14/2020 7:34 PM, Greg KH wrote:
+> On Thu, May 14, 2020 at 07:04:29PM +0530, Mukesh, Savaliya wrote:
+>> From: Mukesh Kumar Savaliya <msavaliy@codeaurora.org>
+>>
+>> This change enables earlyconsole support as static driver for geni
+>> based UART. Kernel space UART console driver will be generic for
+>> console and other usecases of UART.
+>>
+>> Signed-off-by: Mukesh Kumar Savaliya <msavaliy@codeaurora.org>
+>> ---
+>> Removed mb() calls as *_relaxed() should take care.
+> What about what happened from v1?
+>
+> ALways keep the full changelog here, otherwise we don't remember what
+> happened.
+Sure. Added V2,V3,V4 history of changes.
+>
+>> +static void se_io_set_mode_earlycon(void __iomem *base)
+>> +{
+>> +	unsigned int io_mode;
+>> +
+>> +	io_mode = readl_relaxed(base+SE_IRQ_EN);
+> 	io_mode = readl_relaxed(base + SE_IRQ_EN);
+>
+> please.  Use ' ', there is no need to not do so.
+Sure, Done
+>
+> thanks,
+>
+> greg k-h
