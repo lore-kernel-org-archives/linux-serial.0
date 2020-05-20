@@ -2,194 +2,175 @@ Return-Path: <SRS0=iED7=7C=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D474C433E0
-	for <linux-serial@archiver.kernel.org>; Wed, 20 May 2020 09:21:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9B4AC433DF
+	for <linux-serial@archiver.kernel.org>; Wed, 20 May 2020 10:34:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5B1F3207D3
-	for <linux-serial@archiver.kernel.org>; Wed, 20 May 2020 09:21:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9D1D0207FB
+	for <linux-serial@archiver.kernel.org>; Wed, 20 May 2020 10:34:19 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ber4DJ+G"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="dZNC1J5y"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726545AbgETJVa (ORCPT
+        id S1726596AbgETKeT (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 20 May 2020 05:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36194 "EHLO
+        Wed, 20 May 2020 06:34:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726436AbgETJV3 (ORCPT
+        with ESMTP id S1726224AbgETKeS (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 20 May 2020 05:21:29 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92081C061A0E;
-        Wed, 20 May 2020 02:21:28 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id y18so1253616pfl.9;
-        Wed, 20 May 2020 02:21:28 -0700 (PDT)
+        Wed, 20 May 2020 06:34:18 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED73C061A0F
+        for <linux-serial@vger.kernel.org>; Wed, 20 May 2020 03:34:18 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id t8so2719158wmi.0
+        for <linux-serial@vger.kernel.org>; Wed, 20 May 2020 03:34:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=0GUxOU6n74ScYbG5A2YNTz41xrgSWYqjX8LE9GDBbNI=;
-        b=Ber4DJ+GPXtSaFJuFFjMZEDyMm2QaSU0ZfW5dW4JV32/nenJ5xGOVemPR3t9R3KxVr
-         bQGg6jz6noN7X/c0Qn2wtlpRDBQ7UblI54fisaE/KVTXvHd80T9yH3ufv8x463pm1fVB
-         FKd4zsVIomF1qOFnmerre9JEzIFmw1pFJpXFnBLWHfOv9WJYlGT/vIjK5JHXPgpce3/H
-         uAmJOFmZpDScsbpystkt60lSfQ3VT8jeKZbloeJKdgPloe/M87Q6rkspfi05xXTHgh/e
-         m2qhF9aYJfBoPFoJxhj61JEwA/vCJkrbtbrRZbshT6PUIlQ1pVtzVNMTeTdni5Eo5kV8
-         9XgQ==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wHwuK554VhbEDUoapI14azPz8Hgjvi50lBlxsWiVKX8=;
+        b=dZNC1J5ypymn1jU6Byg8EPaBtx0iN/1DIHceCLtkm5ZN62pZaAM6qLFo69H93K051w
+         nEFHjWsNPV4ljKXRdpDRbIC2GxHPUuneGdFOqCabJABeFbEy0qZNxTyUZWuFZXtPhR99
+         wwdZQtudQd/cHlInsliGMRW2QUx7CzktPvTf+BuhU4jurkcIzEs5qbRiHA8AWZAEjp6C
+         tUBhEENQN3hN8Ob/5r+eI+wuJ+/MghjTgXBB8HkB7aqzL8wuv8QiRuRJ3494heAyIw0a
+         WPD4KXjtaKv/JogXTODnC/Ip+MHz5vriC1ArcAq5dOXkzYPPdHABKpYeRBZMRq57iYHR
+         lgIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=0GUxOU6n74ScYbG5A2YNTz41xrgSWYqjX8LE9GDBbNI=;
-        b=RGWxAgwtvH3y8qNDUPy9E5448klrC4l705UeP85s55YEIxCZxh0qjSj4Nknu4LogGK
-         kRXhQ6jI1wwwtpLESJ0uaCnobYGaDAfxy5v0QeBZuMlWiyXzXNtQEzRJJZB2kHuzpDh/
-         vTsozuV+E6B6TSVHww4Zlc/VH8FZdgBJyQ0ZCQSgSs5dPmNdW/CBDgIDXhi2igqp9zFO
-         rvQpkXRcmMHAJYGzlLLjDiae/s30dmR5XKqUYwiLS1HLobOWr1VVglqMs/J9DUlFwWbW
-         lWeTyGbRt7Rjs1/zhan7rlFykzZJ6Y4ZlbcxvZE2b5gGlz6lhPLlHIURXnaNI2HGBR7c
-         4TjA==
-X-Gm-Message-State: AOAM531mLy7lRdiJSwxI285A0NoOPTlDkPr96lfw+DAlBbgp+VNX+3OS
-        PnsKp2Rolm0L9tT9WwvOf6Uby/9hNIlGcmaycYc=
-X-Google-Smtp-Source: ABdhPJzVI45Ld5jKj5FnUvTqtBVrhxsiDnTKbvGn+eyhNnZGD6SGxMj1zN8gaBB1QHDYMnVZOAbiPOHT6K4hIJRXVUI=
-X-Received: by 2002:aa7:9d8c:: with SMTP id f12mr3454814pfq.224.1589966487925;
- Wed, 20 May 2020 02:21:27 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wHwuK554VhbEDUoapI14azPz8Hgjvi50lBlxsWiVKX8=;
+        b=oki421DCvQ4M1U62aJBRR9BzNb32xgKDsQExyufUJ0PwlS5QZRAr7otENrg8bWrcpN
+         VG+NggSPjBmCyq//YEg9yyBjvwLacsns/45u2dBvgxorbYeSCfDcsCDPt6qrNb0EHeQy
+         KDZsFE3O4ayme8SGsA9bV+9P8Vl2jSHC1TDLYXVIAliDkobD+AxCEXP1Pk++T5NzcyZs
+         06pf9RNsWD+A3/Lgml1VP6D6BhBwDCv2t49K4ll+Ehtu1slJwXIH7ziD++gYQWkzKeC2
+         mr6XHs/Z9crJ/dhkyPkBKOYh8AXQlidBe3HmXR+dRrfhtZEeg6x3pMblTdjafVjBNdic
+         bkAw==
+X-Gm-Message-State: AOAM53060hdRJEhxoaNEmIfhA7Qg/8mx1qxh8Xo/hKgQEhH7GyB55CSI
+        HzRma8Ol/H0cIf01NUM/oCfnSg==
+X-Google-Smtp-Source: ABdhPJxo5njsQyNYOEuPCeVVUlNTJmBhexBhhghXeVryIeeckAHJiBoMUenYHQrPUA509KHduFahjg==
+X-Received: by 2002:a7b:ce08:: with SMTP id m8mr3869535wmc.97.1589970856782;
+        Wed, 20 May 2020 03:34:16 -0700 (PDT)
+Received: from holly.lan (cpc141214-aztw34-2-0-cust773.18-1.cable.virginm.net. [86.9.19.6])
+        by smtp.gmail.com with ESMTPSA id f8sm2314536wrm.8.2020.05.20.03.34.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 May 2020 03:34:16 -0700 (PDT)
+Date:   Wed, 20 May 2020 11:34:14 +0100
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     Douglas Anderson <dianders@chromium.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        linux-next@vger.kernel.org, sumit.garg@linaro.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH] kgdboc: Disable all the early code when kgdboc is a
+ module
+Message-ID: <20200520103414.bejflo3s4exrcyzk@holly.lan>
+References: <20200519084345.1.I91670accc8a5ddabab227eb63bb4ad3e2e9d2b58@changeid>
 MIME-Version: 1.0
-References: <20200520083821.9602-1-gengcixi@gmail.com> <20200520085111.GE2837844@kroah.com>
- <CAF12kFsxiBC3sqvHbp1i5HLXxDnvM2ApFSKGpu-hjGW9LBhd0A@mail.gmail.com>
-In-Reply-To: <CAF12kFsxiBC3sqvHbp1i5HLXxDnvM2ApFSKGpu-hjGW9LBhd0A@mail.gmail.com>
-From:   Cixi Geng <gengcixi@gmail.com>
-Date:   Wed, 20 May 2020 17:20:51 +0800
-Message-ID: <CAF12kFtPrsmorzAT2d0e1j0RNx+kdYuY2UTuLx6iH1DP7QcMkQ@mail.gmail.com>
-Subject: Re: [RFC][PATCH V2] GCOV: profile by modules
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     oberpar@linux.ibm.com, linux-serial@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        jslaby@suse.com, Orson Zhai <orsonzhai@gmail.com>,
-        zhang.lyra@gmail.com, Cixi Geng <cixi.geng1@unisoc.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200519084345.1.I91670accc8a5ddabab227eb63bb4ad3e2e9d2b58@changeid>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
->> +config SERIAL_GCOV
->> +       bool "open gcov for serial"
+On Tue, May 19, 2020 at 08:44:02AM -0700, Douglas Anderson wrote:
+> When kgdboc is compiled as a module all of the "ekgdboc" and
+> "kgdb_earlycon" code isn't useful and, in fact, breaks compilation.
+> This is because early_param() isn't defined for modules and that's how
+> this code gets configured.
+> 
+> It turns out that this was broken by commit eae3e19ca930 ("kgdboc:
+> Remove useless #ifdef CONFIG_KGDB_SERIAL_CONSOLE in kgdboc") and then
+> made worse by commit 220995622da5 ("kgdboc: Add kgdboc_earlycon to
+> support early kgdb using boot consoles").  I guess the #ifdef wasn't
+> so useless, even if it wasn't obvious why it was useful.  When kgdboc
+> was compiled as a module only "CONFIG_KGDB_SERIAL_CONSOLE_MODULE" was
+> defined, not "CONFIG_KGDB_SERIAL_CONSOLE".  That meant that the old
+> module.
+> 
+> Let's basically do the same thing that the old code (pre-removal of
+> the #ifdef) did but use "IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE)" to
+> make it more obvious what the point of the check is.  We'll fix
+> kgdboc_earlycon in a similar way.
+> 
+> Fixes: 220995622da5 ("kgdboc: Add kgdboc_earlycon to support early kgdb using boot consoles")
+> Fixes: eae3e19ca930 ("kgdboc: Remove useless #ifdef CONFIG_KGDB_SERIAL_CONSOLE in kgdboc")
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 
->What do you mean by "open"?  And Kconfig entries are usually Upper Case" :=
-)
+Applied, thanks!
 
->> +       depends on GCOV_PROFILE_PREREQS
->> +       help
->> +         Say Y here to enable gcov in serial.
 
->I think we need more text here.
+Daniel.
 
-Maybe I should use "Enable" instead of "open" for express more clearly.
-and I will add more description of SERIAL_GCOV
 
-Cixi Geng <gengcixi@gmail.com> =E4=BA=8E2020=E5=B9=B45=E6=9C=8820=E6=97=A5=
-=E5=91=A8=E4=B8=89 =E4=B8=8B=E5=8D=885:04=E5=86=99=E9=81=93=EF=BC=9A
->
-> Thank you for guidances, I will fix error and upload new patch
->
-> Greg KH <gregkh@linuxfoundation.org> =E4=BA=8E2020=E5=B9=B45=E6=9C=8820=
-=E6=97=A5=E5=91=A8=E4=B8=89 =E4=B8=8B=E5=8D=884:51=E5=86=99=E9=81=93=EF=BC=
-=9A
-> >
-> > On Wed, May 20, 2020 at 04:38:21PM +0800, gengcixi@gmail.com wrote:
-> > > From: Cixi Geng <cixi.geng1@unisoc.com>
-> > >
-> > > ---
-> > > Replace symbol GCOV_PROFILE_MODULES with GCOV_PROFILE_PREREQS
-> > > ---
-> > > The CONFIG_GCOV_PROFILE_ALL will compile kernel by profiling entire
-> > > kernel which will lead to kernel run slower.Use GCOV_PROFILE_PREREQS
-> > > to control part of the kernel modules to open gcov.
-> > >
-> > > Only add SERIAL_GCOV for an example.
-> > >
-> > > Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
-> > > ---
-> > >  drivers/tty/serial/Kconfig  |  6 ++++++
-> > >  drivers/tty/serial/Makefile |  1 +
-> > >  kernel/gcov/Kconfig         | 14 ++++++++++++++
-> > >  3 files changed, 21 insertions(+)
-> > >
-> > > diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-> > > index adf9e80e7dc9..964df1a2989c 100644
-> > > --- a/drivers/tty/serial/Kconfig
-> > > +++ b/drivers/tty/serial/Kconfig
-> > > @@ -1566,3 +1566,9 @@ endmenu
-> > >
-> > >  config SERIAL_MCTRL_GPIO
-> > >       tristate
-> > > +
-> > > +config SERIAL_GCOV
-> > > +       bool "open gcov for serial"
-> >
-> > What do you mean by "open"?  And Kconfig entries are usually Upper Case=
-" :)
-> >
-> > > +       depends on GCOV_PROFILE_PREREQS
-> > > +       help
-> > > +         Say Y here to enable gcov in serial.
-> >
-> > I think we need more text here.
-> >
-> >
-> > > diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefil=
-e
-> > > index d056ee6cca33..7be1202286d2 100644
-> > > --- a/drivers/tty/serial/Makefile
-> > > +++ b/drivers/tty/serial/Makefile
-> > > @@ -2,6 +2,7 @@
-> > >  #
-> > >  # Makefile for the kernel serial device drivers.
-> > >  #
-> > > +GCOV_PROFILE :=3D $(CONFIG_SERIAL_GCOV)
-> > >
-> > >  obj-$(CONFIG_SERIAL_CORE) +=3D serial_core.o
-> > >
-> > > diff --git a/kernel/gcov/Kconfig b/kernel/gcov/Kconfig
-> > > index 3941a9c48f83..91cc8f3c7c43 100644
-> > > --- a/kernel/gcov/Kconfig
-> > > +++ b/kernel/gcov/Kconfig
-> > > @@ -51,6 +51,20 @@ config GCOV_PROFILE_ALL
-> > >       larger and run slower. Also be sure to exclude files from profi=
-ling
-> > >       which are not linked to the kernel image to prevent linker erro=
-rs.
-> > >
-> > > +config GCOV_PROFILE_PREREQS
-> > > +     bool "Profile Kernel subsytem"
-> > > +     depends on !COMPILE_TEST
-> > > +     depends on GCOV_KERNEL
-> > > +     default n
-> >
-> > default is always 'n', no need to list that
-> >
-> > > +     help
-> > > +     This options activates profiling for the specified kernel modul=
-es.
-> > > +
-> > > +     If unsure, say N.
-> > > +
-> > > +     When some modules need Gcov data, enable this config, then conf=
-igure
-> > > +     with gcov on the corresponding modules configs.The directories =
-or files
-> >
-> > '. '?
-> >
-> > > +     of these modules will be added profiling flags after kernel com=
-pile.
-> >
-> > The lines under "help" need to be indented more, right?
-> >
-> > thanks,
-> >
-> > greg k-h
+> ---
+> 
+>  drivers/tty/serial/kgdboc.c | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+> index 34b5e91dd245..fa6f7a3e73b9 100644
+> --- a/drivers/tty/serial/kgdboc.c
+> +++ b/drivers/tty/serial/kgdboc.c
+> @@ -43,9 +43,11 @@ static int			kgdb_tty_line;
+>  
+>  static struct platform_device *kgdboc_pdev;
+>  
+> +#if IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE)
+>  static struct kgdb_io		kgdboc_earlycon_io_ops;
+>  static struct console		*earlycon;
+>  static int                      (*earlycon_orig_exit)(struct console *con);
+> +#endif /* IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE) */
+>  
+>  #ifdef CONFIG_KDB_KEYBOARD
+>  static int kgdboc_reset_connect(struct input_handler *handler,
+> @@ -140,10 +142,19 @@ static void kgdboc_unregister_kbd(void)
+>  #define kgdboc_restore_input()
+>  #endif /* ! CONFIG_KDB_KEYBOARD */
+>  
+> -static void cleanup_kgdboc(void)
+> +#if IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE)
+> +static void cleanup_earlycon(void)
+>  {
+>  	if (earlycon)
+>  		kgdb_unregister_io_module(&kgdboc_earlycon_io_ops);
+> +}
+> +#else /* !IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE) */
+> +static inline void cleanup_earlycon(void) { }
+> +#endif /* !IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE) */
+> +
+> +static void cleanup_kgdboc(void)
+> +{
+> +	cleanup_earlycon();
+>  
+>  	if (configured != 1)
+>  		return;
+> @@ -388,6 +399,7 @@ static struct kgdb_io kgdboc_io_ops = {
+>  	.post_exception		= kgdboc_post_exp_handler,
+>  };
+>  
+> +#if IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE)
+>  static int kgdboc_option_setup(char *opt)
+>  {
+>  	if (!opt) {
+> @@ -544,6 +556,7 @@ static int __init kgdboc_earlycon_init(char *opt)
+>  }
+>  
+>  early_param("kgdboc_earlycon", kgdboc_earlycon_init);
+> +#endif /* IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE) */
+>  
+>  module_init(init_kgdboc);
+>  module_exit(exit_kgdboc);
+> -- 
+> 2.26.2.761.g0e0b3e54be-goog
+> 
