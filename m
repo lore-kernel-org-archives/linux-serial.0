@@ -2,49 +2,51 @@ Return-Path: <SRS0=iED7=7C=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 276CAC433E0
-	for <linux-serial@archiver.kernel.org>; Wed, 20 May 2020 13:40:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F976C433E1
+	for <linux-serial@archiver.kernel.org>; Wed, 20 May 2020 13:40:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E2EE3207D3
-	for <linux-serial@archiver.kernel.org>; Wed, 20 May 2020 13:40:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5DCF9207D3
+	for <linux-serial@archiver.kernel.org>; Wed, 20 May 2020 13:40:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="rwnlnI1G"
+	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="L3lFrasv"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726856AbgETNkH (ORCPT
+        id S1726846AbgETNkH (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
         Wed, 20 May 2020 09:40:07 -0400
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:46787 "EHLO
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:30724 "EHLO
         mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726525AbgETNkG (ORCPT
+        by vger.kernel.org with ESMTP id S1726824AbgETNkG (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
         Wed, 20 May 2020 09:40:06 -0400
 Received: from pps.filterd (m0046037.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04KDZU1M013236;
-        Wed, 20 May 2020 15:39:38 +0200
+        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04KDZUki013233;
+        Wed, 20 May 2020 15:39:42 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=STMicroelectronics;
- bh=ArUV+HFn/C8Z3UZZJNpc9RKgx2vqaUmmaj6fhlTfivg=;
- b=rwnlnI1GXtCJVbfrq5wfodJRg2QzJ/tkJ60vGTW98FkJKUFXPl/Lrm0mWdeW8O9/JP6u
- nO+Jq/QZERPXnmPQMOwxNp6pPzCi6vtnROWzsN5o0xKmAwEEXprf+M1SVscv4jkpEEGw
- KHCb9FWDyHOtdjKQQPdrMnkHM0GGvFTN0/Z547EjsctIhwAayY/dBm4bs7W2JNr8KAKg
- SI1HD/aEADQE7GXk7Grq5DJXZkM3VGfPNGgX4sUfkqxMaT8FTqHSmjriCiNoaxfUrvx/
- ast7T1HhJKpfwOxqDTP0flKL8sgJk2TKhH97dhBx6N7NVmcB6+eFnOunGxxgmhxj4IyP UQ== 
+ : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=STMicroelectronics;
+ bh=Ra6W9fZReLRTQrx+lu7bVII6kYd76LIwYkwWDAY0Cqo=;
+ b=L3lFrasvXkvpYdrWyPK63OLsSj360TP3KX1jqMA1OYkfPfFg5x7bT4/Ad0J+1XuhTBY9
+ 6WvSEt9LMyK06Yt1nEwXV6AOFuk/fTCRZBgSqdRmC03uPiw2ADxAPEYEQ6njiJAv1fhJ
+ V9yBftCK6A1UFE2Pdx5tgFvQTmR9kE0p/nMArswPm2lF6SsF3Bo6/GpffqLXvinxOAfX
+ eKIEpVbyAIlCgV1i7CcJMl3KuODXi0sTIeVlCFMVsjfUK367TvdNmWbjKZXvwp/qWHSM
+ toBRKt6rM74mhhV51wulH22H22wVznKZyjFqIxjPdOiyOyidIvI7mzmfbKGA3/gKTYbQ WA== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 3125xy0jf8-1
+        by mx07-00178001.pphosted.com with ESMTP id 3125xy0jfg-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 20 May 2020 15:39:38 +0200
+        Wed, 20 May 2020 15:39:42 +0200
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 8029210002A;
-        Wed, 20 May 2020 15:39:37 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 72FE310002A;
+        Wed, 20 May 2020 15:39:42 +0200 (CEST)
 Received: from Webmail-eu.st.com (sfhdag3node1.st.com [10.75.127.7])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 667EA2C38A9;
-        Wed, 20 May 2020 15:39:37 +0200 (CEST)
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 5B0B32C38AA;
+        Wed, 20 May 2020 15:39:42 +0200 (CEST)
 Received: from localhost (10.75.127.46) by SFHDAG3NODE1.st.com (10.75.127.7)
- with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 20 May 2020 15:39:36
+ with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 20 May 2020 15:39:41
  +0200
 From:   Erwan Le Ray <erwan.leray@st.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -61,14 +63,16 @@ CC:     <linux-serial@vger.kernel.org>,
         <linaro-mm-sig@lists.linaro.org>,
         Erwan Le Ray <erwan.leray@st.com>,
         Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [PATCH 0/2] add generic DT binding for RTS/CTS
-Date:   Wed, 20 May 2020 15:39:30 +0200
-Message-ID: <20200520133932.30441-1-erwan.leray@st.com>
+Subject: [PATCH 2/2] serial: stm32: Use generic DT binding for announcing RTS/CTS lines
+Date:   Wed, 20 May 2020 15:39:32 +0200
+Message-ID: <20200520133932.30441-3-erwan.leray@st.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200520133932.30441-1-erwan.leray@st.com>
+References: <20200520133932.30441-1-erwan.leray@st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.75.127.46]
-X-ClientProxiedBy: SFHDAG3NODE1.st.com (10.75.127.7) To SFHDAG3NODE1.st.com
+X-ClientProxiedBy: SFHDAG6NODE2.st.com (10.75.127.17) To SFHDAG3NODE1.st.com
  (10.75.127.7)
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
  definitions=2020-05-20_09:2020-05-20,2020-05-20 signatures=0
@@ -81,15 +85,24 @@ Add support of generic DT binding for annoucing RTS/CTS lines. The initial
 binding 'st,hw-flow-control' is not needed anymore since generic binding
 is available, but is kept for backward compatibility.
 
-Erwan Le Ray (2):
-  dt-bindings: serial: add generic DT binding for announcing RTS/CTS
-    lines
-  serial: stm32: Use generic DT binding for announcing RTS/CTS lines
+Signed-off-by: Erwan Le Ray <erwan.leray@st.com>
 
- Documentation/devicetree/bindings/serial/st,stm32-uart.yaml | 4 +++-
- drivers/tty/serial/stm32-usart.c                            | 5 +++--
- 2 files changed, 6 insertions(+), 3 deletions(-)
-
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index 17c2f3276888..9cfcf355567a 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -1033,8 +1033,9 @@ static struct stm32_port *stm32_of_get_stm32_port(struct platform_device *pdev)
+ 	if (WARN_ON(id >= STM32_MAX_PORTS))
+ 		return NULL;
+ 
+-	stm32_ports[id].hw_flow_control = of_property_read_bool(np,
+-							"st,hw-flow-ctrl");
++	stm32_ports[id].hw_flow_control =
++		of_property_read_bool (np, "st,hw-flow-ctrl") /*deprecated*/ ||
++		of_property_read_bool (np, "uart-has-rtscts");
+ 	stm32_ports[id].port.line = id;
+ 	stm32_ports[id].cr1_irq = USART_CR1_RXNEIE;
+ 	stm32_ports[id].cr3_irq = 0;
 -- 
 2.17.1
 
