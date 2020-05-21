@@ -7,42 +7,42 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EB60C433E4
-	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 08:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D053C433E0
+	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 08:30:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6DCA22070A
-	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 08:30:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3367120829
+	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 08:30:39 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="b5Wpv2ut"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="bIzT5Inv"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728646AbgEUIaU (ORCPT
+        id S1728587AbgEUIai (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 May 2020 04:30:20 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:39720 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728643AbgEUIaT (ORCPT
+        Thu, 21 May 2020 04:30:38 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:15860 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728664AbgEUIai (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 May 2020 04:30:19 -0400
+        Thu, 21 May 2020 04:30:38 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1590049818; h=References: In-Reply-To: Message-Id: Date:
+ s=smtp; t=1590049837; h=References: In-Reply-To: Message-Id: Date:
  Subject: Cc: To: From: Sender;
- bh=4u4fXpB+D5CBl7ptMzNhKIg6j98oIlvvUtjkZtTkdZU=; b=b5Wpv2utJStTY6Gy3rt+DHu+gA+oMDRPs+Y/8jYGAOC4SaJe7Ipgkic9sbTfSoJlcg9JVaZP
- 16vpvsudLgwJSFuJWy5KZBxouX92LOJ80t16krY+x5JXTw0gK6Z920ralToYuvuZnr2+GkYp
- QciqtENQqTX9p0NwScNmyoeBSOE=
-X-Mailgun-Sending-Ip: 104.130.122.26
+ bh=aUu0HTuo5RwfXMNTMrDVhEl5UxLkoXaDz2EuM6uwJfI=; b=bIzT5InvIp/PHKN0Zso7+flSPDCmqQnFDLp1flO2oU9GgsSiFAPxXthuY7loqVdWxNdC2/K1
+ fdiJjO0hFpVA5dTEDmgcSYv4ilFbxDiceEf6fzP884W6pITUH3j3Ls6oEAcwWy2NSHSRwIZv
+ dcM1rwS0CdqGPFoy6YPsMHOUTYc=
+X-Mailgun-Sending-Ip: 104.130.122.27
 X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5ec63c0d.7f032dd18d50-smtp-out-n03;
- Thu, 21 May 2020 08:30:05 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5ec63c1f.7f49911ca3b0-smtp-out-n03;
+ Thu, 21 May 2020 08:30:23 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 8C545C433CB; Thu, 21 May 2020 08:30:05 +0000 (UTC)
+        id 66026C433C9; Thu, 21 May 2020 08:30:23 +0000 (UTC)
 Received: from akashast-linux.qualcomm.com (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 12815C433C8;
-        Thu, 21 May 2020 08:29:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 12815C433C8
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 883F1C433C8;
+        Thu, 21 May 2020 08:30:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 883F1C433C8
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
 From:   Akash Asthana <akashast@codeaurora.org>
@@ -55,9 +55,9 @@ Cc:     linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
         linux-serial@vger.kernel.org, mka@chromium.org,
         dianders@chromium.org, msavaliy@codeaurora.org,
         evgreen@chromium.org, Akash Asthana <akashast@codeaurora.org>
-Subject: [PATCH V6 2/7] soc: qcom-geni-se: Add interconnect support to fix earlycon crash
-Date:   Thu, 21 May 2020 13:59:19 +0530
-Message-Id: <1590049764-20912-3-git-send-email-akashast@codeaurora.org>
+Subject: [PATCH V6 5/7] tty: serial: qcom_geni_serial: Add interconnect support
+Date:   Thu, 21 May 2020 13:59:22 +0530
+Message-Id: <1590049764-20912-6-git-send-email-akashast@codeaurora.org>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1590049764-20912-1-git-send-email-akashast@codeaurora.org>
 References: <1590049764-20912-1-git-send-email-akashast@codeaurora.org>
@@ -66,189 +66,107 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-QUP core clock is shared among all the SE drivers present on particular
-QUP wrapper, the system will reset(unclocked access) if earlycon used after
-QUP core clock is put to 0 from other SE drivers before real console comes
-up.
-
-As earlycon can't vote for it's QUP core need, to fix this add ICC
-support to common/QUP wrapper driver and put vote for QUP core from
-probe on behalf of earlycon and remove vote during earlycon exit call.
+Get the interconnect paths for Uart based Serial Engine device
+and vote according to the baud rate requirement of the driver.
 
 Signed-off-by: Akash Asthana <akashast@codeaurora.org>
-Reported-by: Matthias Kaehlcke <mka@chromium.org>
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 ---
-Change in V3:
- - Add geni_remove_earlycon_icc_vote API that will be used by earlycon
-   exit function to remove ICC vote for earlyconsole.
- - Remove suspend/resume hook for geni-se driver as we are no longer
-   removing earlyconsole ICC vote from system suspend, we are removing
-   from earlycon exit.
+Changes in V2:
+ - As per Bjorn's comment, removed se == NULL check from geni_serial_icc_get
+ - As per Bjorn's comment, removed code to set se->icc_path* to NULL in failure
+ - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
+   path handle
+ - As per Matthias comment, added error handling for icc_set_bw call
 
-Change in V4:
- - As per Matthias comment make 'earlycon_wrapper' as static structure.
+Changes in V3:
+ - As per Matthias comment, use common library APIs defined in geni-se
+   driver for ICC functionality.
+
+Changes in V4:
+ - As per Mark's comment move peak_bw guess as twice of avg_bw if
+   nothing mentioned explicitly to ICC core.
+ - As per Matthias's comment select core clock BW based on baud rate.
+   If it's less than 115200 go for GENI_DEFAULT_BW else CORE_2X_50_MHZ
 
 Changes in V5:
- - Vote for core path only after checking whether "qcom_geni" earlycon is
-   actually present or not by traversing over structure "console_drivers".
+ - Add icc_enable/disable to power on/off call.
+ - Save some non-zero avg/peak value to ICC core by calling geni_icc_set_bw
+   from probe so that when resume/icc_enable is called NOC are running at
+   some non-zero value. No need to call icc_disable after BW vote because
+   console devices are expected to be in active state from the probe itself
+   and qcom_geni_serial_pm(STATE_OFF) will be called for non-console ones.
 
 Changes in V6:
- - As per Matthias's comment removed NULL check for console_drivers global
-   struct, added NULL check for earlycon_wrapper in _remove_earlycon_icc_vote
-   API
- - Addressed nitpicks from Andy.
+ - No change
 
- drivers/soc/qcom/qcom-geni-se.c       | 68 +++++++++++++++++++++++++++++++++++
- drivers/tty/serial/qcom_geni_serial.c |  7 ++++
- include/linux/qcom-geni-se.h          |  2 ++
- 3 files changed, 77 insertions(+)
+ drivers/tty/serial/qcom_geni_serial.c | 31 ++++++++++++++++++++++++++++---
+ 1 file changed, 28 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
-index 0b2526d..ac16bb1 100644
---- a/drivers/soc/qcom/qcom-geni-se.c
-+++ b/drivers/soc/qcom/qcom-geni-se.c
-@@ -3,6 +3,7 @@
- 
- #include <linux/acpi.h>
- #include <linux/clk.h>
-+#include <linux/console.h>
- #include <linux/slab.h>
- #include <linux/dma-mapping.h>
- #include <linux/io.h>
-@@ -90,11 +91,14 @@ struct geni_wrapper {
- 	struct device *dev;
- 	void __iomem *base;
- 	struct clk_bulk_data ahb_clks[NUM_AHB_CLKS];
-+	struct geni_icc_path to_core;
- };
- 
- static const char * const icc_path_names[] = {"qup-core", "qup-config",
- 						"qup-memory"};
- 
-+static struct geni_wrapper *earlycon_wrapper;
-+
- #define QUP_HW_VER_REG			0x4
- 
- /* Common SE registers */
-@@ -812,11 +816,38 @@ int geni_icc_disable(struct geni_se *se)
- }
- EXPORT_SYMBOL(geni_icc_disable);
- 
-+void geni_remove_earlycon_icc_vote(void)
-+{
-+	struct geni_wrapper *wrapper;
-+	struct device_node *parent;
-+	struct device_node *child;
-+
-+	if (!earlycon_wrapper)
-+		return;
-+
-+	wrapper = earlycon_wrapper;
-+	parent = of_get_next_parent(wrapper->dev->of_node);
-+	for_each_child_of_node(parent, child) {
-+		if (!of_device_is_compatible(child, "qcom,geni-se-qup"))
-+			continue;
-+		wrapper = platform_get_drvdata(of_find_device_by_node(child));
-+		icc_put(wrapper->to_core.path);
-+		wrapper->to_core.path = NULL;
-+
-+	}
-+	of_node_put(parent);
-+
-+	earlycon_wrapper = NULL;
-+}
-+EXPORT_SYMBOL(geni_remove_earlycon_icc_vote);
-+
- static int geni_se_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
- 	struct resource *res;
- 	struct geni_wrapper *wrapper;
-+	struct console __maybe_unused *bcon;
-+	bool __maybe_unused has_earlycon = false;
- 	int ret;
- 
- 	wrapper = devm_kzalloc(dev, sizeof(*wrapper), GFP_KERNEL);
-@@ -839,6 +870,43 @@ static int geni_se_probe(struct platform_device *pdev)
- 		}
- 	}
- 
-+#ifdef CONFIG_SERIAL_EARLYCON
-+	for_each_console(bcon) {
-+		if (!strcmp(bcon->name, "qcom_geni")) {
-+			has_earlycon = true;
-+			break;
-+		}
-+	}
-+	if (!has_earlycon)
-+		goto exit;
-+
-+	wrapper->to_core.path = devm_of_icc_get(dev, "qup-core");
-+	if (IS_ERR(wrapper->to_core.path))
-+		return PTR_ERR(wrapper->to_core.path);
-+	/*
-+	 * Put minmal BW request on core clocks on behalf of early console.
-+	 * The vote will be removed earlycon exit function.
-+	 *
-+	 * Note: We are putting vote on each QUP wrapper instead only to which
-+	 * earlycon is connected because QUP core clock of different wrapper
-+	 * share same voltage domain. If core1 is put to 0, then core2 will
-+	 * also run at 0, if not voted. Default ICC vote will be removed ASA
-+	 * we touch any of the core clock.
-+	 * core1 = core2 = max(core1, core2)
-+	 */
-+	ret = icc_set_bw(wrapper->to_core.path, GENI_DEFAULT_BW,
-+				GENI_DEFAULT_BW);
-+	if (ret) {
-+		dev_err(&pdev->dev, "%s: ICC BW voting failed for core :%d\n",
-+			__func__, ret);
-+		return ret;
-+	}
-+
-+	if (of_get_compatible_child(pdev->dev.of_node, "qcom,geni-debug-uart"))
-+		earlycon_wrapper = wrapper;
-+	of_node_put(pdev->dev.of_node);
-+#endif
-+exit:
- 	dev_set_drvdata(dev, wrapper);
- 	dev_dbg(dev, "GENI SE Driver probed\n");
- 	return devm_of_platform_populate(dev);
 diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 6119090..8c5d97c 100644
+index 8c5d97c..2a1da36 100644
 --- a/drivers/tty/serial/qcom_geni_serial.c
 +++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1090,6 +1090,12 @@ static void qcom_geni_serial_earlycon_write(struct console *con,
- 	__qcom_geni_serial_console_write(&dev->port, s, n);
+@@ -944,6 +944,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
+ 	unsigned long clk_rate;
+ 	u32 ver, sampling_rate;
++	unsigned int avg_bw_core;
+ 
+ 	qcom_geni_serial_stop_rx(uport);
+ 	/* baud rate */
+@@ -965,6 +966,16 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 	ser_clk_cfg = SER_CLK_EN;
+ 	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
+ 
++	/*
++	 * Bump up BW vote on CPU and CORE path as driver supports FIFO mode
++	 * only.
++	 */
++	avg_bw_core = (baud > 115200) ? Bps_to_icc(CORE_2X_50_MHZ)
++						: GENI_DEFAULT_BW;
++	geni_icc_bw_init(&port->se.icc_paths[GENI_TO_CORE], avg_bw_core, 0);
++	geni_icc_bw_init(&port->se.icc_paths[CPU_TO_GENI], Bps_to_icc(baud), 0);
++	geni_icc_set_bw(&port->se);
++
+ 	/* parity */
+ 	tx_trans_cfg = readl(uport->membase + SE_UART_TX_TRANS_CFG);
+ 	tx_parity_cfg = readl(uport->membase + SE_UART_TX_PARITY_CFG);
+@@ -1202,11 +1213,14 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
+ 	if (old_state == UART_PM_STATE_UNDEFINED)
+ 		old_state = UART_PM_STATE_OFF;
+ 
+-	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
++	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF) {
++		geni_icc_enable(&port->se);
+ 		geni_se_resources_on(&port->se);
+-	else if (new_state == UART_PM_STATE_OFF &&
+-			old_state == UART_PM_STATE_ON)
++	} else if (new_state == UART_PM_STATE_OFF &&
++			old_state == UART_PM_STATE_ON) {
+ 		geni_se_resources_off(&port->se);
++		geni_icc_disable(&port->se);
++	}
  }
  
-+static int qcom_geni_serial_earlycon_exit(struct console *con)
-+{
-+	geni_remove_earlycon_icc_vote();
-+	return 0;
-+}
-+
- static int __init qcom_geni_serial_earlycon_setup(struct earlycon_device *dev,
- 								const char *opt)
- {
-@@ -1135,6 +1141,7 @@ static int __init qcom_geni_serial_earlycon_setup(struct earlycon_device *dev,
- 	writel(stop_bit_len, uport->membase + SE_UART_TX_STOP_BIT_LEN);
+ static const struct uart_ops qcom_geni_console_pops = {
+@@ -1304,6 +1318,17 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+ 			return -ENOMEM;
+ 	}
  
- 	dev->con->write = qcom_geni_serial_earlycon_write;
-+	dev->con->exit = qcom_geni_serial_earlycon_exit;
- 	dev->con->setup = NULL;
- 	return 0;
- }
-diff --git a/include/linux/qcom-geni-se.h b/include/linux/qcom-geni-se.h
-index 7afa08d..51e9e9b 100644
---- a/include/linux/qcom-geni-se.h
-+++ b/include/linux/qcom-geni-se.h
-@@ -458,5 +458,7 @@ void geni_icc_bw_init(struct geni_icc_path *icc_paths, unsigned int avg_bw,
- int geni_icc_enable(struct geni_se *se);
- 
- int geni_icc_disable(struct geni_se *se);
++	ret = geni_icc_get(&port->se, NULL);
++	if (ret)
++		return ret;
++	geni_icc_bw_init(&port->se.icc_paths[GENI_TO_CORE], GENI_DEFAULT_BW, 0);
++	geni_icc_bw_init(&port->se.icc_paths[CPU_TO_GENI], GENI_DEFAULT_BW, 0);
 +
-+void geni_remove_earlycon_icc_vote(void);
- #endif
- #endif
++	/* Set BW for register access */
++	ret = geni_icc_set_bw(&port->se);
++	if (ret)
++		return ret;
++
+ 	port->name = devm_kasprintf(uport->dev, GFP_KERNEL,
+ 			"qcom_geni_serial_%s%d",
+ 			uart_console(uport) ? "console" : "uart", uport->line);
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
