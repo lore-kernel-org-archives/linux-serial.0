@@ -4,102 +4,72 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E47AC433E1
-	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 08:40:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5445C433E0
+	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 08:43:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D2C4820826
-	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 08:40:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A09CF20738
+	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 08:43:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1590050401;
-	bh=zk5OdGcGOSwlO1xBOqMZeDZ1i6Bi0Kg8cXiAy5qbVSQ=;
+	s=default; t=1590050596;
+	bh=FUzPuUkK7yJPPxDEeG7AeR2q5U1ot/3gTtCpIrQAv30=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=Xmsx6dil/03/VE8to4BtowdLIO+N6Xz/0QAy8i0mL7QwaEzfDUYiODnSFaqkt/1BW
-	 oujnRUXIYCU5AG3wCn+zJMhZEMLhXN0D5YPINnpWO4ZlzvjUWTrOIV0hOpC3ReszUC
-	 9RxR9DI+M607ffUoTts6Vr/Bj+OehWhZuUfolmBY=
+	b=tXL0ocUw4V7ZICtYTmrpe8deOwRsQzHS2jrSNcf9F3ZZNFE2Gfg29+hHr1DGz/SgX
+	 i78Y/ay6su7r/0RDkJX+bAsRyB+cU0miu41NCwB0Co5/f0FFrn3dtw20wVwG2eTiLG
+	 j3nm/sIh0L9oehEEXAwbQCHQ2yihihROPddw4iW8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728685AbgEUIkB (ORCPT
+        id S1728685AbgEUInQ (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 May 2020 04:40:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41510 "EHLO mail.kernel.org"
+        Thu, 21 May 2020 04:43:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42074 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728374AbgEUIkA (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 May 2020 04:40:00 -0400
+        id S1728641AbgEUInQ (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 21 May 2020 04:43:16 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C40E920721;
-        Thu, 21 May 2020 08:39:59 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4CB6620721;
+        Thu, 21 May 2020 08:43:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590050400;
-        bh=zk5OdGcGOSwlO1xBOqMZeDZ1i6Bi0Kg8cXiAy5qbVSQ=;
+        s=default; t=1590050595;
+        bh=FUzPuUkK7yJPPxDEeG7AeR2q5U1ot/3gTtCpIrQAv30=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZFIn5xGzV0MFkFcNMpXZ5CpTl0GFLnU6FLCyPhqtTNYH7nnoe4DPgvtUlmgw8xvTE
-         YggEuXz7qtmf2IwrtipWFW1ZfKJItLHFgIwDnyAoI5esYTzfr+Afmp4WtpN290AKBh
-         MG/ilOEHbYgXkuNpBKjrXMuUpLDq5zCCPNlKfdcs=
-Date:   Thu, 21 May 2020 10:39:58 +0200
+        b=ygwCOlZ50OWnr9Uo9EkfcrRvf1xQyXzxyFqvMfQF6XwHKxAM5dRPB5leWSkw45rAP
+         fBrflVvhCBy/vLhaQtR8iuZ6JLusYjJI7YDtXDOVBmmLzhFXqLIL0Blk0PJAMXf4cd
+         MZQ3yQDadDqnu4QtRsmKwdD37hsnh53h7Cp9yFj4=
+Date:   Thu, 21 May 2020 10:43:13 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Akash Asthana <akashast@codeaurora.org>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, wsa@the-dreams.de,
-        broonie@kernel.org, mark.rutland@arm.com, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, mka@chromium.org,
-        dianders@chromium.org, msavaliy@codeaurora.org,
-        evgreen@chromium.org
-Subject: Re: [PATCH V6 5/7] tty: serial: qcom_geni_serial: Add interconnect
- support
-Message-ID: <20200521083958.GA2689021@kroah.com>
-References: <1590049764-20912-1-git-send-email-akashast@codeaurora.org>
- <1590049764-20912-6-git-send-email-akashast@codeaurora.org>
+To:     Daniel Mack <daniel@zonque.org>
+Cc:     devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+        robh+dt@kernel.org, jslaby@suse.com, jringle@gridpoint.com,
+        m.brock@vanmierlo.com, pascal.huerst@gmail.com
+Subject: Re: [PATCH v2 2/6] sc16is7xx: Add flag to activate IrDA mode
+Message-ID: <20200521084313.GA2701989@kroah.com>
+References: <20200519182147.218713-1-daniel@zonque.org>
+ <20200519182147.218713-3-daniel@zonque.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1590049764-20912-6-git-send-email-akashast@codeaurora.org>
+In-Reply-To: <20200519182147.218713-3-daniel@zonque.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Thu, May 21, 2020 at 01:59:22PM +0530, Akash Asthana wrote:
-> Get the interconnect paths for Uart based Serial Engine device
-> and vote according to the baud rate requirement of the driver.
+On Tue, May 19, 2020 at 08:21:43PM +0200, Daniel Mack wrote:
+> From: Pascal Huerst <pascal.huerst@gmail.com>
 > 
-> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
-> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+> This series of uart controllers is able to work in IrDA mode.
+> Add per-port flag to the device-tree to enable that feature if needed.
+> 
+> Signed-off-by: Pascal Huerst <pascal.huerst@gmail.com>
 > ---
-> Changes in V2:
->  - As per Bjorn's comment, removed se == NULL check from geni_serial_icc_get
->  - As per Bjorn's comment, removed code to set se->icc_path* to NULL in failure
->  - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
->    path handle
->  - As per Matthias comment, added error handling for icc_set_bw call
-> 
-> Changes in V3:
->  - As per Matthias comment, use common library APIs defined in geni-se
->    driver for ICC functionality.
-> 
-> Changes in V4:
->  - As per Mark's comment move peak_bw guess as twice of avg_bw if
->    nothing mentioned explicitly to ICC core.
->  - As per Matthias's comment select core clock BW based on baud rate.
->    If it's less than 115200 go for GENI_DEFAULT_BW else CORE_2X_50_MHZ
-> 
-> Changes in V5:
->  - Add icc_enable/disable to power on/off call.
->  - Save some non-zero avg/peak value to ICC core by calling geni_icc_set_bw
->    from probe so that when resume/icc_enable is called NOC are running at
->    some non-zero value. No need to call icc_disable after BW vote because
->    console devices are expected to be in active state from the probe itself
->    and qcom_geni_serial_pm(STATE_OFF) will be called for non-console ones.
-> 
-> Changes in V6:
->  - No change
-> 
->  drivers/tty/serial/qcom_geni_serial.c | 31 ++++++++++++++++++++++++++++---
->  1 file changed, 28 insertions(+), 3 deletions(-)
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+If you send on a patch from someone else, you too need to sign-off on
+it, so that I could take it.  Please fix this up for all of the patches
+that need it in this series and resend.
+
+thanks,
+
+greg k-h
