@@ -7,42 +7,42 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D053C433E0
-	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 08:30:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31419C433E7
+	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 08:30:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3367120829
-	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 08:30:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 12C292070A
+	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 08:30:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="bIzT5Inv"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="iXbxDR0x"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728587AbgEUIai (ORCPT
+        id S1728668AbgEUIal (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 May 2020 04:30:38 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:15860 "EHLO
+        Thu, 21 May 2020 04:30:41 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:63556 "EHLO
         mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728664AbgEUIai (ORCPT
+        by vger.kernel.org with ESMTP id S1728671AbgEUIal (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 May 2020 04:30:38 -0400
+        Thu, 21 May 2020 04:30:41 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1590049837; h=References: In-Reply-To: Message-Id: Date:
+ s=smtp; t=1590049840; h=References: In-Reply-To: Message-Id: Date:
  Subject: Cc: To: From: Sender;
- bh=aUu0HTuo5RwfXMNTMrDVhEl5UxLkoXaDz2EuM6uwJfI=; b=bIzT5InvIp/PHKN0Zso7+flSPDCmqQnFDLp1flO2oU9GgsSiFAPxXthuY7loqVdWxNdC2/K1
- fdiJjO0hFpVA5dTEDmgcSYv4ilFbxDiceEf6fzP884W6pITUH3j3Ls6oEAcwWy2NSHSRwIZv
- dcM1rwS0CdqGPFoy6YPsMHOUTYc=
+ bh=nBasdgm95GcvV4SG9BAhA7HRcljTFajhuwtYn0IaZ4M=; b=iXbxDR0x4p2x3JOeuRbyem5rX+pzi4p14uCrpRT/td0LnfPmg5EY5uA8sua5Sxbeczyd5zuV
+ uOm/VD16ChU0cH1Vz/d6HnyhaNAAOh/BiJa0B5vFkrmVOIGIak05KxisDeMr3Eza0ZJj0717
+ v8Jc0o06MiXstfEBkCrW3St5FNs=
 X-Mailgun-Sending-Ip: 104.130.122.27
 X-Mailgun-Sid: WyIzZmY0MiIsICJsaW51eC1zZXJpYWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5ec63c1f.7f49911ca3b0-smtp-out-n03;
- Thu, 21 May 2020 08:30:23 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5ec63c12.7f82d86081b8-smtp-out-n05;
+ Thu, 21 May 2020 08:30:10 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 66026C433C9; Thu, 21 May 2020 08:30:23 +0000 (UTC)
+        id BA099C433A0; Thu, 21 May 2020 08:30:10 +0000 (UTC)
 Received: from akashast-linux.qualcomm.com (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: akashast)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 883F1C433C8;
-        Thu, 21 May 2020 08:30:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 883F1C433C8
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9E479C4339C;
+        Thu, 21 May 2020 08:30:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 9E479C4339C
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=akashast@codeaurora.org
 From:   Akash Asthana <akashast@codeaurora.org>
@@ -55,9 +55,9 @@ Cc:     linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
         linux-serial@vger.kernel.org, mka@chromium.org,
         dianders@chromium.org, msavaliy@codeaurora.org,
         evgreen@chromium.org, Akash Asthana <akashast@codeaurora.org>
-Subject: [PATCH V6 5/7] tty: serial: qcom_geni_serial: Add interconnect support
-Date:   Thu, 21 May 2020 13:59:22 +0530
-Message-Id: <1590049764-20912-6-git-send-email-akashast@codeaurora.org>
+Subject: [PATCH V6 3/7] i2c: i2c-qcom-geni: Add interconnect support
+Date:   Thu, 21 May 2020 13:59:20 +0530
+Message-Id: <1590049764-20912-4-git-send-email-akashast@codeaurora.org>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1590049764-20912-1-git-send-email-akashast@codeaurora.org>
 References: <1590049764-20912-1-git-send-email-akashast@codeaurora.org>
@@ -66,14 +66,15 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Get the interconnect paths for Uart based Serial Engine device
-and vote according to the baud rate requirement of the driver.
+Get the interconnect paths for I2C based Serial Engine device
+and vote according to the bus speed of the driver.
 
 Signed-off-by: Akash Asthana <akashast@codeaurora.org>
 Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Acked-by: Wolfram Sang <wsa@kernel.org>
 ---
 Changes in V2:
- - As per Bjorn's comment, removed se == NULL check from geni_serial_icc_get
+ - As per Bjorn's comment, removed se == NULL check from geni_i2c_icc_get
  - As per Bjorn's comment, removed code to set se->icc_path* to NULL in failure
  - As per Bjorn's comment, introduced and using devm_of_icc_get API for getting
    path handle
@@ -84,89 +85,78 @@ Changes in V3:
    driver for ICC functionality.
 
 Changes in V4:
- - As per Mark's comment move peak_bw guess as twice of avg_bw if
-   nothing mentioned explicitly to ICC core.
- - As per Matthias's comment select core clock BW based on baud rate.
-   If it's less than 115200 go for GENI_DEFAULT_BW else CORE_2X_50_MHZ
+ - Move peak_bw guess as twice of avg_bw if nothing mentioned explicitly
+   to ICC core.
 
 Changes in V5:
- - Add icc_enable/disable to power on/off call.
- - Save some non-zero avg/peak value to ICC core by calling geni_icc_set_bw
-   from probe so that when resume/icc_enable is called NOC are running at
-   some non-zero value. No need to call icc_disable after BW vote because
-   console devices are expected to be in active state from the probe itself
-   and qcom_geni_serial_pm(STATE_OFF) will be called for non-console ones.
+ - Use icc_enable/disable in power on/off call.
 
 Changes in V6:
- - No change
+ - No changes
 
- drivers/tty/serial/qcom_geni_serial.c | 31 ++++++++++++++++++++++++++++---
- 1 file changed, 28 insertions(+), 3 deletions(-)
+ drivers/i2c/busses/i2c-qcom-geni.c | 29 ++++++++++++++++++++++++++++-
+ 1 file changed, 28 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 8c5d97c..2a1da36 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -944,6 +944,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 	struct qcom_geni_serial_port *port = to_dev_port(uport, uport);
- 	unsigned long clk_rate;
- 	u32 ver, sampling_rate;
-+	unsigned int avg_bw_core;
+diff --git a/drivers/i2c/busses/i2c-qcom-geni.c b/drivers/i2c/busses/i2c-qcom-geni.c
+index 18d1e4f..f2e786d 100644
+--- a/drivers/i2c/busses/i2c-qcom-geni.c
++++ b/drivers/i2c/busses/i2c-qcom-geni.c
+@@ -557,6 +557,25 @@ static int geni_i2c_probe(struct platform_device *pdev)
+ 	gi2c->adap.dev.of_node = dev->of_node;
+ 	strlcpy(gi2c->adap.name, "Geni-I2C", sizeof(gi2c->adap.name));
  
- 	qcom_geni_serial_stop_rx(uport);
- 	/* baud rate */
-@@ -965,6 +966,16 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 	ser_clk_cfg = SER_CLK_EN;
- 	ser_clk_cfg |= clk_div << CLK_DIV_SHFT;
- 
++	ret = geni_icc_get(&gi2c->se, "qup-memory");
++	if (ret)
++		return ret;
 +	/*
-+	 * Bump up BW vote on CPU and CORE path as driver supports FIFO mode
-+	 * only.
++	 * Set the bus quota for core and cpu to a reasonable value for
++	 * register access.
++	 * Set quota for DDR based on bus speed.
 +	 */
-+	avg_bw_core = (baud > 115200) ? Bps_to_icc(CORE_2X_50_MHZ)
-+						: GENI_DEFAULT_BW;
-+	geni_icc_bw_init(&port->se.icc_paths[GENI_TO_CORE], avg_bw_core, 0);
-+	geni_icc_bw_init(&port->se.icc_paths[CPU_TO_GENI], Bps_to_icc(baud), 0);
-+	geni_icc_set_bw(&port->se);
++	geni_icc_bw_init(&gi2c->se.icc_paths[GENI_TO_CORE], GENI_DEFAULT_BW,
++				0);
++	geni_icc_bw_init(&gi2c->se.icc_paths[CPU_TO_GENI], GENI_DEFAULT_BW,
++				0);
++	geni_icc_bw_init(&gi2c->se.icc_paths[GENI_TO_DDR],
++				Bps_to_icc(gi2c->clk_freq_out), 0);
 +
- 	/* parity */
- 	tx_trans_cfg = readl(uport->membase + SE_UART_TX_TRANS_CFG);
- 	tx_parity_cfg = readl(uport->membase + SE_UART_TX_PARITY_CFG);
-@@ -1202,11 +1213,14 @@ static void qcom_geni_serial_pm(struct uart_port *uport,
- 	if (old_state == UART_PM_STATE_UNDEFINED)
- 		old_state = UART_PM_STATE_OFF;
- 
--	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
-+	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF) {
-+		geni_icc_enable(&port->se);
- 		geni_se_resources_on(&port->se);
--	else if (new_state == UART_PM_STATE_OFF &&
--			old_state == UART_PM_STATE_ON)
-+	} else if (new_state == UART_PM_STATE_OFF &&
-+			old_state == UART_PM_STATE_ON) {
- 		geni_se_resources_off(&port->se);
-+		geni_icc_disable(&port->se);
-+	}
- }
- 
- static const struct uart_ops qcom_geni_console_pops = {
-@@ -1304,6 +1318,17 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 			return -ENOMEM;
++	ret = geni_icc_set_bw(&gi2c->se);
++	if (ret)
++		return ret;
++
+ 	ret = geni_se_resources_on(&gi2c->se);
+ 	if (ret) {
+ 		dev_err(dev, "Error turning on resources %d\n", ret);
+@@ -579,6 +598,10 @@ static int geni_i2c_probe(struct platform_device *pdev)
+ 		return ret;
  	}
  
-+	ret = geni_icc_get(&port->se, NULL);
-+	if (ret)
-+		return ret;
-+	geni_icc_bw_init(&port->se.icc_paths[GENI_TO_CORE], GENI_DEFAULT_BW, 0);
-+	geni_icc_bw_init(&port->se.icc_paths[CPU_TO_GENI], GENI_DEFAULT_BW, 0);
-+
-+	/* Set BW for register access */
-+	ret = geni_icc_set_bw(&port->se);
++	ret = geni_icc_disable(&gi2c->se);
 +	if (ret)
 +		return ret;
 +
- 	port->name = devm_kasprintf(uport->dev, GFP_KERNEL,
- 			"qcom_geni_serial_%s%d",
- 			uart_console(uport) ? "console" : "uart", uport->line);
+ 	dev_dbg(dev, "i2c fifo/se-dma mode. fifo depth:%d\n", tx_depth);
+ 
+ 	gi2c->suspended = 1;
+@@ -623,7 +646,7 @@ static int __maybe_unused geni_i2c_runtime_suspend(struct device *dev)
+ 		gi2c->suspended = 1;
+ 	}
+ 
+-	return 0;
++	return geni_icc_disable(&gi2c->se);
+ }
+ 
+ static int __maybe_unused geni_i2c_runtime_resume(struct device *dev)
+@@ -631,6 +654,10 @@ static int __maybe_unused geni_i2c_runtime_resume(struct device *dev)
+ 	int ret;
+ 	struct geni_i2c_dev *gi2c = dev_get_drvdata(dev);
+ 
++	ret = geni_icc_enable(&gi2c->se);
++	if (ret)
++		return ret;
++
+ 	ret = geni_se_resources_on(&gi2c->se);
+ 	if (ret)
+ 		return ret;
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,\na Linux Foundation Collaborative Project
