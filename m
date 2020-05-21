@@ -7,30 +7,30 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADF9FC433E3
-	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 09:12:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B398BC433E5
+	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 09:12:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7E7DC20759
-	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 09:12:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8070220759
+	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 09:12:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728810AbgEUJMD (ORCPT
+        id S1728801AbgEUJME (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 May 2020 05:12:03 -0400
-Received: from mail.bugwerft.de ([46.23.86.59]:59154 "EHLO mail.bugwerft.de"
+        Thu, 21 May 2020 05:12:04 -0400
+Received: from mail.bugwerft.de ([46.23.86.59]:59168 "EHLO mail.bugwerft.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728801AbgEUJMD (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 May 2020 05:12:03 -0400
+        id S1728761AbgEUJME (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Thu, 21 May 2020 05:12:04 -0400
 Received: from zenbar.fritz.box (pd95ef28a.dip0.t-ipconnect.de [217.94.242.138])
-        by mail.bugwerft.de (Postfix) with ESMTPSA id 349F740BCC4;
-        Thu, 21 May 2020 09:09:02 +0000 (UTC)
+        by mail.bugwerft.de (Postfix) with ESMTPSA id 8F4AE40BCC8;
+        Thu, 21 May 2020 09:09:03 +0000 (UTC)
 From:   Daniel Mack <daniel@zonque.org>
 To:     devicetree@vger.kernel.org, linux-serial@vger.kernel.org
 Cc:     gregkh@linuxfoundation.org, robh+dt@kernel.org, jslaby@suse.com,
         jringle@gridpoint.com, m.brock@vanmierlo.com,
         pascal.huerst@gmail.com, Daniel Mack <daniel@zonque.org>
-Subject: [PATCH v3 2/6] sc16is7xx: Add flag to activate IrDA mode
-Date:   Thu, 21 May 2020 11:11:48 +0200
-Message-Id: <20200521091152.404404-3-daniel@zonque.org>
+Subject: [PATCH v3 3/6] sc16is7xx: Always use falling edge IRQ
+Date:   Thu, 21 May 2020 11:11:49 +0200
+Message-Id: <20200521091152.404404-4-daniel@zonque.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200521091152.404404-1-daniel@zonque.org>
 References: <20200521091152.404404-1-daniel@zonque.org>
@@ -41,69 +41,86 @@ Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-From: Pascal Huerst <pascal.huerst@gmail.com>
+The driver currently only uses IRQF_TRIGGER_FALLING if the probing
+happened without a device-tree setup. The device however will always
+generate falling edges on its IRQ line, so let's use that flag in
+all cases.
 
-This series of uart controllers is able to work in IrDA mode.
-Add per-port flag to the device-tree to enable that feature if needed.
-
-Signed-off-by: Pascal Huerst <pascal.huerst@gmail.com>
 Signed-off-by: Daniel Mack <daniel@zonque.org>
 ---
- drivers/tty/serial/sc16is7xx.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ drivers/tty/serial/sc16is7xx.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 7d3ae31cc720..cf9cf59bb04e 100644
+index cf9cf59bb04e..fcb2551a5df2 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -315,6 +315,7 @@ struct sc16is7xx_one {
- 	struct kthread_work		tx_work;
- 	struct kthread_work		reg_work;
- 	struct sc16is7xx_one_config	config;
-+	bool				irda_mode;
- };
+@@ -1185,7 +1185,7 @@ static int sc16is7xx_gpio_direction_output(struct gpio_chip *chip,
  
- struct sc16is7xx_port {
-@@ -994,6 +995,7 @@ static int sc16is7xx_config_rs485(struct uart_port *port,
- 
- static int sc16is7xx_startup(struct uart_port *port)
+ static int sc16is7xx_probe(struct device *dev,
+ 			   const struct sc16is7xx_devtype *devtype,
+-			   struct regmap *regmap, int irq, unsigned long flags)
++			   struct regmap *regmap, int irq)
  {
-+	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
- 	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
- 	unsigned int val;
+ 	struct sched_param sched_param = { .sched_priority = MAX_RT_PRIO / 2 };
+ 	unsigned long freq = 0, *pfreq = dev_get_platdata(dev);
+@@ -1324,7 +1324,7 @@ static int sc16is7xx_probe(struct device *dev,
  
-@@ -1032,6 +1034,13 @@ static int sc16is7xx_startup(struct uart_port *port)
- 	/* Now, initialize the UART */
- 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG, SC16IS7XX_LCR_WORD_LEN_8);
- 
-+	/* Enable IrDA mode if requested in DT */
-+	/* This bit must be written with LCR[7] = 0 */
-+	sc16is7xx_port_update(port, SC16IS7XX_MCR_REG,
-+			      SC16IS7XX_MCR_IRDA_BIT,
-+			      one->irda_mode ?
-+				SC16IS7XX_MCR_IRDA_BIT : 0);
-+
- 	/* Enable the Rx and Tx FIFO */
- 	sc16is7xx_port_update(port, SC16IS7XX_EFCR_REG,
- 			      SC16IS7XX_EFCR_RXDISABLE_BIT |
-@@ -1302,6 +1311,17 @@ static int sc16is7xx_probe(struct device *dev,
- 		sc16is7xx_power(&s->p[i].port, 0);
- 	}
- 
-+	if (dev->of_node) {
-+		struct property *prop;
-+		const __be32 *p;
-+		u32 u;
-+
-+		of_property_for_each_u32(dev->of_node, "linux,irda-mode-ports",
-+					 prop, p, u)
-+			if (u < devtype->nr_uart)
-+				s->p[u].irda_mode = true;
-+	}
-+
  	/* Setup interrupt */
  	ret = devm_request_irq(dev, irq, sc16is7xx_irq,
- 			       flags, dev_name(dev), s);
+-			       flags, dev_name(dev), s);
++			       IRQF_TRIGGER_FALLING, dev_name(dev), s);
+ 	if (!ret)
+ 		return 0;
+ 
+@@ -1398,7 +1398,6 @@ static struct regmap_config regcfg = {
+ static int sc16is7xx_spi_probe(struct spi_device *spi)
+ {
+ 	const struct sc16is7xx_devtype *devtype;
+-	unsigned long flags = 0;
+ 	struct regmap *regmap;
+ 	int ret;
+ 
+@@ -1419,14 +1418,13 @@ static int sc16is7xx_spi_probe(struct spi_device *spi)
+ 		const struct spi_device_id *id_entry = spi_get_device_id(spi);
+ 
+ 		devtype = (struct sc16is7xx_devtype *)id_entry->driver_data;
+-		flags = IRQF_TRIGGER_FALLING;
+ 	}
+ 
+ 	regcfg.max_register = (0xf << SC16IS7XX_REG_SHIFT) |
+ 			      (devtype->nr_uart - 1);
+ 	regmap = devm_regmap_init_spi(spi, &regcfg);
+ 
+-	return sc16is7xx_probe(&spi->dev, devtype, regmap, spi->irq, flags);
++	return sc16is7xx_probe(&spi->dev, devtype, regmap, spi->irq);
+ }
+ 
+ static int sc16is7xx_spi_remove(struct spi_device *spi)
+@@ -1465,7 +1463,6 @@ static int sc16is7xx_i2c_probe(struct i2c_client *i2c,
+ 			       const struct i2c_device_id *id)
+ {
+ 	const struct sc16is7xx_devtype *devtype;
+-	unsigned long flags = 0;
+ 	struct regmap *regmap;
+ 
+ 	if (i2c->dev.of_node) {
+@@ -1474,14 +1471,13 @@ static int sc16is7xx_i2c_probe(struct i2c_client *i2c,
+ 			return -ENODEV;
+ 	} else {
+ 		devtype = (struct sc16is7xx_devtype *)id->driver_data;
+-		flags = IRQF_TRIGGER_FALLING;
+ 	}
+ 
+ 	regcfg.max_register = (0xf << SC16IS7XX_REG_SHIFT) |
+ 			      (devtype->nr_uart - 1);
+ 	regmap = devm_regmap_init_i2c(i2c, &regcfg);
+ 
+-	return sc16is7xx_probe(&i2c->dev, devtype, regmap, i2c->irq, flags);
++	return sc16is7xx_probe(&i2c->dev, devtype, regmap, i2c->irq);
+ }
+ 
+ static int sc16is7xx_i2c_remove(struct i2c_client *client)
 -- 
 2.26.2
 
