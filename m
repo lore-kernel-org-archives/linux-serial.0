@@ -7,56 +7,56 @@ X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DC42C433E2
-	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 15:50:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD3FC433E2
+	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 16:00:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1C041206F6
-	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 15:50:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 60A472072C
+	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 16:00:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="SxHSttAb"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="iyB4ngXR"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726814AbgEUPuQ (ORCPT
+        id S1728117AbgEUQAP (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 May 2020 11:50:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39362 "EHLO
+        Thu, 21 May 2020 12:00:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727911AbgEUPuP (ORCPT
+        with ESMTP id S1728432AbgEUQAP (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 May 2020 11:50:15 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5B9C05BD43
-        for <linux-serial@vger.kernel.org>; Thu, 21 May 2020 08:50:14 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id t11so3364185pgg.2
-        for <linux-serial@vger.kernel.org>; Thu, 21 May 2020 08:50:14 -0700 (PDT)
+        Thu, 21 May 2020 12:00:15 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21321C061A0E
+        for <linux-serial@vger.kernel.org>; Thu, 21 May 2020 09:00:14 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id z26so3500055pfk.12
+        for <linux-serial@vger.kernel.org>; Thu, 21 May 2020 09:00:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=sA0g0lvUpDIAD2lv16TTki6eZ5ObFWThT5hUTpKEaZM=;
-        b=SxHSttAbNR9u1pBK/vE9U0EvP6k3sUDZ9euViRsxBhKQwtZZDJ+9Slcp75EnC7zjV5
-         3QlU+9wjPe1kXPzohm590bPeD+ilHSPRnU3z+uxzqm9U8JGHzSUzIAXM/O6kuQ2PDsOe
-         dD74tuoLkEfq0G1fPZmGd+xbLTMEkayphxpyE=
+        bh=jHirFrfUhrscDiyY19yFy1eojdIlJFYNDT0L5VP6NdE=;
+        b=iyB4ngXROy5qTSwcL5Cvl5LAnn2U16sn3BZvQyGAClC2S6/xy2nQLtKiG2/8kwRklF
+         WNVdSOimsudJuNLU7K5eiIGS5eRF8urxcHf9Ijf9Y2FlUwywDIWA9biynBY3D08eqBC4
+         kFPQ845JNwI3HI41jDcvAJEOoi1G3+mRda/sQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=sA0g0lvUpDIAD2lv16TTki6eZ5ObFWThT5hUTpKEaZM=;
-        b=uN7ijNgFZB4WyCyz9o7u8Y+jBAt1tAjy+qite3eYdNJc2TQEL5VLxEhlcIxJaNiJ64
-         eawyrSFpn+FROEa1EvRYTgr6DYXu7wk1fZW1li+L80dI8Pg5MBm8d7hbvTMScN3chUUk
-         u2x20wWXosMB69ZimoKXi3tx25SKv0TYkLbGpjmVYN27lfqH/0eViJehBjKElZg8ifrt
-         W4tUsgNRsRf3UDHhzw0sN1+uK8kUjLGt2mtAqU8iehID/M3ZnoCNyNrA5AYCJ3PZsE6f
-         jFcA0Th/a0Wh8hQCgugGeSTt07ebwnBpfuI0a9hcv9/XWCm7PWK2Wih6aedUGa2ffT4F
-         jpww==
-X-Gm-Message-State: AOAM531j1a22J3M5uMGsgHWl3gcnMQVxwKfXhZLm1mMc7ckzGmYB38mB
-        Xk7NAf7LMeFVyeEO3iOk+mqs7A==
-X-Google-Smtp-Source: ABdhPJxkbbtArxWaeGThhTrUz55mXsi5ObGXQZbuxg7+tuo7TBShdw6VKuYjcKrRM+3WbVWaoAbFxQ==
-X-Received: by 2002:a62:3642:: with SMTP id d63mr2097232pfa.8.1590076213954;
-        Thu, 21 May 2020 08:50:13 -0700 (PDT)
+        bh=jHirFrfUhrscDiyY19yFy1eojdIlJFYNDT0L5VP6NdE=;
+        b=PDYFflqYq7iNnjBHtkuu9xAv0hd496EaZrIdraP0/MYmIu5AgL8CVEsXRPC85GwpW7
+         ZzSsR61OK3daBC0XabVLkqYX9HKeKPXxzoDkNbVSq1drcqwkUzTEGjox6lf1ggtRBxQ0
+         yJom154maok9VmJTSpsYeod+1I7ye7V3y3h5EeWYLEfO+s/93evp4wydUbg1/iTz/gSI
+         nXTdtZW5bW4wRp6h/D0faca0dAPiCy4Swlai0/9ZShaVMQZls87UaIPwhVSFlDNPxobi
+         Eyqbl6wSDTzLluGuApl08Wk/MDNtsax5LQB52Rr/Ty2v1wNMEsOWfyslaK8H+I2fylZ7
+         +b3w==
+X-Gm-Message-State: AOAM530aSkWedo5614WOcYnSWv5/OhSRcUg+fcI27AZUw1BThDloH6mA
+        VFqXhuFiNMqS108Zr2K80k52aw==
+X-Google-Smtp-Source: ABdhPJyeSnrDAQNZVdUzm0V1yaYpL16GQlLMa/0trXnLiqwcmnp6adE8lFYQRNmL1AUSQvEq0E9O+Q==
+X-Received: by 2002:a62:b402:: with SMTP id h2mr10334883pfn.221.1590076813529;
+        Thu, 21 May 2020 09:00:13 -0700 (PDT)
 Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
-        by smtp.gmail.com with ESMTPSA id s94sm4983713pjb.20.2020.05.21.08.50.11
+        by smtp.gmail.com with ESMTPSA id w12sm3948439pjn.21.2020.05.21.09.00.11
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 May 2020 08:50:12 -0700 (PDT)
-Date:   Thu, 21 May 2020 08:50:09 -0700
+        Thu, 21 May 2020 09:00:12 -0700 (PDT)
+Date:   Thu, 21 May 2020 09:00:10 -0700
 From:   Matthias Kaehlcke <mka@chromium.org>
 To:     Akash Asthana <akashast@codeaurora.org>
 Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
@@ -67,14 +67,15 @@ Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
         mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
         linux-serial@vger.kernel.org, dianders@chromium.org,
         msavaliy@codeaurora.org, evgreen@chromium.org
-Subject: Re: [PATCH V6 1/7] soc: qcom: geni: Support for ICC voting
-Message-ID: <20200521155009.GA4525@google.com>
+Subject: Re: [PATCH V6 2/7] soc: qcom-geni-se: Add interconnect support to
+ fix earlycon crash
+Message-ID: <20200521160010.GB4525@google.com>
 References: <1590049764-20912-1-git-send-email-akashast@codeaurora.org>
- <1590049764-20912-2-git-send-email-akashast@codeaurora.org>
+ <1590049764-20912-3-git-send-email-akashast@codeaurora.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1590049764-20912-2-git-send-email-akashast@codeaurora.org>
+In-Reply-To: <1590049764-20912-3-git-send-email-akashast@codeaurora.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
@@ -82,105 +83,143 @@ X-Mailing-List: linux-serial@vger.kernel.org
 
 Hi Akash,
 
-On Thu, May 21, 2020 at 01:59:18PM +0530, Akash Asthana wrote:
-> Add necessary macros and structure variables to support ICC BW
-> voting from individual SE drivers.
+On Thu, May 21, 2020 at 01:59:19PM +0530, Akash Asthana wrote:
+> QUP core clock is shared among all the SE drivers present on particular
+> QUP wrapper, the system will reset(unclocked access) if earlycon used after
+> QUP core clock is put to 0 from other SE drivers before real console comes
+> up.
+> 
+> As earlycon can't vote for it's QUP core need, to fix this add ICC
+> support to common/QUP wrapper driver and put vote for QUP core from
+> probe on behalf of earlycon and remove vote during earlycon exit call.
 > 
 > Signed-off-by: Akash Asthana <akashast@codeaurora.org>
-> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+> Reported-by: Matthias Kaehlcke <mka@chromium.org>
 > ---
-> Changes in V2:
->  - As per Bjorn's comment dropped enums for ICC paths, given the three
->    paths individual members
+> Change in V3:
+>  - Add geni_remove_earlycon_icc_vote API that will be used by earlycon
+>    exit function to remove ICC vote for earlyconsole.
+>  - Remove suspend/resume hook for geni-se driver as we are no longer
+>    removing earlyconsole ICC vote from system suspend, we are removing
+>    from earlycon exit.
 > 
-> Changes in V3:
->  - Add geni_icc_get, geni_icc_vote_on and geni_icc_vote_off as helper API.
->  - Add geni_icc_path structure in common header
-> 
-> Changes in V4:
->  - As per Bjorn's comment print error message in geni_icc_get if return
->    value is not -EPROBE_DEFER.
->  - As per Bjorn's comment remove NULL on path before calling icc_set_bw
->    API.
->  - As per Bjorn's comment drop __func__ print.
->  - As per Matthias's comment, make ICC path a array instead of individual
->    member entry in geni_se struct.
+> Change in V4:
+>  - As per Matthias comment make 'earlycon_wrapper' as static structure.
 > 
 > Changes in V5:
->  - As per Matthias's comment defined enums for ICC paths.
->  - Integrate icc_enable/disable with power on/off call for driver.
->  - As per Matthias's comment added icc_path_names array to print icc path name
->    in failure case.
->  - As per Georgi's suggestion assume peak_bw = avg_bw if not mentioned.
+>  - Vote for core path only after checking whether "qcom_geni" earlycon is
+>    actually present or not by traversing over structure "console_drivers".
 > 
 > Changes in V6:
->  - Addressed nitpicks from Matthias.
+>  - As per Matthias's comment removed NULL check for console_drivers global
+>    struct, added NULL check for earlycon_wrapper in _remove_earlycon_icc_vote
+>    API
+>  - Addressed nitpicks from Andy.
 > 
-> Note: I have ignored below check patch suggestion because it was throwing
->       compilation error as 'icc_ddr' is not compile time comstant.
-> 
-> WARNING: char * array declaration might be better as static const
->  - FILE: drivers/soc/qcom/qcom-geni-se.c:726:
->  - const char *icc_names[] = {"qup-core", "qup-config", icc_ddr};
-> 
->  drivers/soc/qcom/qcom-geni-se.c | 92 +++++++++++++++++++++++++++++++++++++++++
->  include/linux/qcom-geni-se.h    | 42 +++++++++++++++++++
->  2 files changed, 134 insertions(+)
+>  drivers/soc/qcom/qcom-geni-se.c       | 68 +++++++++++++++++++++++++++++++++++
+>  drivers/tty/serial/qcom_geni_serial.c |  7 ++++
+>  include/linux/qcom-geni-se.h          |  2 ++
+>  3 files changed, 77 insertions(+)
 > 
 > diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
-> index 7d622ea..0b2526d 100644
+> index 0b2526d..ac16bb1 100644
 > --- a/drivers/soc/qcom/qcom-geni-se.c
 > +++ b/drivers/soc/qcom/qcom-geni-se.c
-> @@ -92,6 +92,9 @@ struct geni_wrapper {
+> @@ -3,6 +3,7 @@
+>  
+>  #include <linux/acpi.h>
+>  #include <linux/clk.h>
+> +#include <linux/console.h>
+>  #include <linux/slab.h>
+>  #include <linux/dma-mapping.h>
+>  #include <linux/io.h>
+> @@ -90,11 +91,14 @@ struct geni_wrapper {
+>  	struct device *dev;
+>  	void __iomem *base;
 >  	struct clk_bulk_data ahb_clks[NUM_AHB_CLKS];
+> +	struct geni_icc_path to_core;
 >  };
 >  
-> +static const char * const icc_path_names[] = {"qup-core", "qup-config",
-> +						"qup-memory"};
+>  static const char * const icc_path_names[] = {"qup-core", "qup-config",
+>  						"qup-memory"};
+>  
+> +static struct geni_wrapper *earlycon_wrapper;
 > +
 >  #define QUP_HW_VER_REG			0x4
 >  
 >  /* Common SE registers */
-> @@ -720,6 +723,95 @@ void geni_se_rx_dma_unprep(struct geni_se *se, dma_addr_t iova, size_t len)
+> @@ -812,11 +816,38 @@ int geni_icc_disable(struct geni_se *se)
 >  }
->  EXPORT_SYMBOL(geni_se_rx_dma_unprep);
+>  EXPORT_SYMBOL(geni_icc_disable);
 >  
-> +int geni_icc_get(struct geni_se *se, const char *icc_ddr)
+> +void geni_remove_earlycon_icc_vote(void)
 > +{
-> +	int i, err;
-> +	const char *icc_names[] = {"qup-core", "qup-config", icc_ddr};
+> +	struct geni_wrapper *wrapper;
+> +	struct device_node *parent;
+> +	struct device_node *child;
 > +
-> +	for (i = 0; i < ARRAY_SIZE(se->icc_paths); i++) {
-> +		if (!icc_names[i])
+> +	if (!earlycon_wrapper)
+> +		return;
+> +
+> +	wrapper = earlycon_wrapper;
+> +	parent = of_get_next_parent(wrapper->dev->of_node);
+> +	for_each_child_of_node(parent, child) {
+> +		if (!of_device_is_compatible(child, "qcom,geni-se-qup"))
 > +			continue;
+> +		wrapper = platform_get_drvdata(of_find_device_by_node(child));
+> +		icc_put(wrapper->to_core.path);
+> +		wrapper->to_core.path = NULL;
 > +
-> +		se->icc_paths[i].path = devm_of_icc_get(se->dev, icc_names[i]);
-> +		if (IS_ERR(se->icc_paths[i].path))
-> +			goto err;
 > +	}
+> +	of_node_put(parent);
 > +
-> +	return 0;
+> +	earlycon_wrapper = NULL;
+> +}
+> +EXPORT_SYMBOL(geni_remove_earlycon_icc_vote);
 > +
-> +err:
-> +	err = PTR_ERR(se->icc_paths[i].path);
-> +	if (err != -EPROBE_DEFER)
-> +		dev_err_ratelimited(se->dev, "Failed to get ICC path:%s :%d\n",
+>  static int geni_se_probe(struct platform_device *pdev)
+>  {
+>  	struct device *dev = &pdev->dev;
+>  	struct resource *res;
+>  	struct geni_wrapper *wrapper;
+> +	struct console __maybe_unused *bcon;
+> +	bool __maybe_unused has_earlycon = false;
+>  	int ret;
+>  
+>  	wrapper = devm_kzalloc(dev, sizeof(*wrapper), GFP_KERNEL);
+> @@ -839,6 +870,43 @@ static int geni_se_probe(struct platform_device *pdev)
+>  		}
+>  	}
+>  
+> +#ifdef CONFIG_SERIAL_EARLYCON
+> +	for_each_console(bcon) {
+> +		if (!strcmp(bcon->name, "qcom_geni")) {
+> +			has_earlycon = true;
+> +			break;
+> +		}
+> +	}
+> +	if (!has_earlycon)
+> +		goto exit;
+> +
+> +	wrapper->to_core.path = devm_of_icc_get(dev, "qup-core");
+> +	if (IS_ERR(wrapper->to_core.path))
+> +		return PTR_ERR(wrapper->to_core.path);
+> +	/*
+> +	 * Put minmal BW request on core clocks on behalf of early console.
+> +	 * The vote will be removed earlycon exit function.
+> +	 *
+> +	 * Note: We are putting vote on each QUP wrapper instead only to which
+> +	 * earlycon is connected because QUP core clock of different wrapper
+> +	 * share same voltage domain. If core1 is put to 0, then core2 will
+> +	 * also run at 0, if not voted. Default ICC vote will be removed ASA
+> +	 * we touch any of the core clock.
+> +	 * core1 = core2 = max(core1, core2)
+> +	 */
+> +	ret = icc_set_bw(wrapper->to_core.path, GENI_DEFAULT_BW,
+> +				GENI_DEFAULT_BW);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "%s: ICC BW voting failed for core :%d\n",
 
-That's still an odd format, especially the colon before the error code. My
-suggestion was "... path 'qup-core': 42" i.e. "... path '%s': %d".
-
-I don't want to stall the series on nits though, if there is no need for
-a respin for other reasons this can be also fixed with a patch after this
-has landed.
-
-I'm still not overly convinced about having two bandwidth values for what
-might happen in the future (or not). Typically unused functions or struct
-members that are added just in case tend to be rejected, since they can be
-added when the need actually arises. Anyway, as long as maintainers are
-happy with it I won't object.
+nit: " ... core: %d\n".
 
 Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-
-
-
-
