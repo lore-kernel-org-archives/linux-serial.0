@@ -2,116 +2,142 @@ Return-Path: <SRS0=CVbj=7E=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B770AC433E0
-	for <linux-serial@archiver.kernel.org>; Fri, 22 May 2020 05:57:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C12CC433E0
+	for <linux-serial@archiver.kernel.org>; Fri, 22 May 2020 07:19:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8640F20757
-	for <linux-serial@archiver.kernel.org>; Fri, 22 May 2020 05:57:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E2BF82073B
+	for <linux-serial@archiver.kernel.org>; Fri, 22 May 2020 07:19:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fqfi1mU6"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jnOLgG6O"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727992AbgEVF5t (ORCPT
+        id S1728325AbgEVHTm (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 May 2020 01:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58906 "EHLO
+        Fri, 22 May 2020 03:19:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727924AbgEVF5t (ORCPT
+        with ESMTP id S1728312AbgEVHTm (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 May 2020 01:57:49 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4FA2C061A0E
-        for <linux-serial@vger.kernel.org>; Thu, 21 May 2020 22:57:48 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id p12so7457500qtn.13
-        for <linux-serial@vger.kernel.org>; Thu, 21 May 2020 22:57:48 -0700 (PDT)
+        Fri, 22 May 2020 03:19:42 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 406D0C061A0E;
+        Fri, 22 May 2020 00:19:42 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id u5so4611084pgn.5;
+        Fri, 22 May 2020 00:19:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=YjgtjdzgOt5xSWhbyThffOgIzedODiryOgrfEwykMhU=;
-        b=fqfi1mU6xmdqplej5cXjZ7Xs+bJ0lw0Hx4feUN7TLiNdN3ok+HMlpLqulDVcI1/K98
-         u3xEmb+V70tEvQH1ToWn1MGLzzKQiXAcvA45W2MqTfJpjRyoNNlzkwiBtTqrFRkWHdGA
-         PXkLE1NDzwTTnRqmz9ZuRMCbYIUNJCkGaRdDeEB2a5uRcJiISnHRr1T5CZplReZZsgVS
-         oNqbCXd6dK48G3B9MlPsow+oDPCQZz+/JQN0y4D7nZS5XE5I6mZUZ7o9T3WqP+OHebMN
-         92oS6FhVWe5wD4tEbjc5V+4n7f+Qy5eLZt4HFcepXOviDQp1sh/Yp8d6FZ7xmO9Ec4Fj
-         qeCw==
+        h=from:to:cc:subject:date:message-id;
+        bh=3/liqRuDzwdMo012gdSnRvW2Rvf3VSnwHnOageukUsY=;
+        b=jnOLgG6OKYFi2ob37vBusv9IEsrnYR8tH1fTYJfHI1vnAFWu8fHOX7PxDd4c8PX2i/
+         XveByleCyKjkICjF12OX/qnSEQXbEMIuXKKt50N+SZnNtROY5ce5+ETlKjpFyjqULY9R
+         E+mo0NMu3xuhMxeq2juNhAPfUpYJDbR48/p8+jyO7iTjVcd+DAgqhl/YM7kbdpTyR5SG
+         V6wUEOIRCOdSk5dFw2ZCGL4HRis1/pn38cE/i0jICv5NbQZA+ySwRgw4tYKRC55HDWo8
+         bUoAKwjuithxERYz8taz8ZGUKPM/7FtdhbZxs5++IATy4tdg7RY1Zk9G083Y494urA1C
+         UsNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=YjgtjdzgOt5xSWhbyThffOgIzedODiryOgrfEwykMhU=;
-        b=H2a0+/0opRhlbmHAXgfpLFhS9nU1cJQlQcCn9lII7Y/7RpC97GB4vxF9SOPvsQiwUK
-         Sm856pVet/lPMdn6+bug88LUVWFg8/ehYQiqhfC47foU/6IM0QwFk3lSi3VZOD7slNNx
-         J1p6GSt4UuJ/RYuPYLxPlUE8LKzH118xz6+SUMKSn+I8acAVuyN7AtvSpEvOeESLZlb5
-         jM4ZEq3SF+602NI/z9ONCN3AfULwJx9F21zQcGvMoba92gG758JSOn6T0vY+0dlfvnJt
-         Yd0vaJcQ9iOUgZswRDCPf38OZnGeEq7RX3v3Z4wWJOn2tXlKIOB1G8QtYrhdp+ZBT/Ia
-         AfsA==
-X-Gm-Message-State: AOAM532J0dVk/Bd8pybTwtLDA/+rD+FP1G9YFb5H4jlO4SyhA9uFB83k
-        +vL3x620imNeUa0/lwUVh5azAwcw5q2nLkv/5F9Ne4pWd5c=
-X-Google-Smtp-Source: ABdhPJzlA8Qn5m+PcsarJALelzgoVwciM0f2STYFIpvx5h6AVBWg/IjA703Z98qAKQS00IvhH9Fd7srm7FPm9Z8pFL0=
-X-Received: by 2002:ac8:518f:: with SMTP id c15mr13700133qtn.142.1590127067582;
- Thu, 21 May 2020 22:57:47 -0700 (PDT)
-MIME-Version: 1.0
-From:   Zoran Stojsavljevic <zoran.stojsavljevic@gmail.com>
-Date:   Fri, 22 May 2020 07:57:36 +0200
-Message-ID: <CAGAf8Lw_BBOCsvZok-Fc6SB56XG1OCUbbeT=1N1_OKaiCkp63A@mail.gmail.com>
-Subject: Generic CONFIG_SERIAL_DEV_CTRL_TTYPORT to be disabled to enable BBB
- overlay /dev/ttySC0
-To:     linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=3/liqRuDzwdMo012gdSnRvW2Rvf3VSnwHnOageukUsY=;
+        b=Q6j3ovSnIbqPOQhdpuxIrps8LAQgGxVrAfwUpyNmnfM9RtxGvKvp2WaiKiHBc4biMh
+         THgmb4UDp+6pwDrq6N3L/cYfoWrGRUyVs7v9AW5lDjZbY2WhmyEx/OAbO3/zPyIbvj0p
+         roLKjCiVk2FD/3dxcHq1dQlKi/vW+nNBPUraXmxkXIgOFbNk4rFlRO98/3jmLH+HrA/f
+         poL87J9HCDYLIWI9ppob8RMUVGQi90BxHrW8X0z5QJqXqJT+lzRhFZwi3u2qUyvJLF7D
+         nHTzBkfxPNtJvTMlpnvyrc8FRV4yYMSMfDd5U5Xv0DrJ+/ezkdBtqbRVYg3QsyV6cGY5
+         wjrQ==
+X-Gm-Message-State: AOAM533qlFZ+kysvui4SR8Askl5C/CFp5S02w8xGtzxeE/hCVxySD77t
+        huvALp55e2RF4KuHLS6sFuk=
+X-Google-Smtp-Source: ABdhPJwc7fScpawVIO4N17H/NuHm9wPyyo4CK0L7n2PHBKo99fwyie0Py1E/VacyFPRN/lQQW6UrRA==
+X-Received: by 2002:a65:400d:: with SMTP id f13mr12198963pgp.336.1590131981805;
+        Fri, 22 May 2020 00:19:41 -0700 (PDT)
+Received: from bj616583pcu.spreadtrum.com ([117.18.48.82])
+        by smtp.gmail.com with ESMTPSA id t20sm6017894pjo.13.2020.05.22.00.19.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 May 2020 00:19:41 -0700 (PDT)
+From:   gengcixi@gmail.com
+To:     gregkh@linuxfoundation.org, jslaby@suse.com, oberpar@linux.ibm.com,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        orsonzhai@gmail.com, zhang.lyra@gmail.com
+Cc:     Cixi Geng <cixi.geng1@unisoc.com>
+Subject: [RFC][PATCH V3] GCOV: profile by modules
+Date:   Fri, 22 May 2020 15:19:17 +0800
+Message-Id: <20200522071917.17163-1-gengcixi@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hello list,
+From: Cixi Geng <cixi.geng1@unisoc.com>
 
-I have an interesting problem, which is described here:
-https://www.spinics.net/lists/linux-serial/msg22566.html
+The CONFIG_GCOV_PROFILE_ALL will compile kernel by profiling entire
+kernel which will lead to kernel run slower.Use GCOV_PROFILE_PREREQS
+to control part of the kernel modules to open gcov.
 
-I experienced the same problem on BeagleBone Black platform (armv7 A8:
-am335x silicon), and the overlay is shown here:
-https://github.com/ZoranStojsavljevic/MikroE_BeagleBone-Black_BSP-Integrati=
-on/blob/master/BBB-debian_buster/Master_Example_i2c2_sc16is740.md
+Only add SERIAL_GCOV for an example.
 
-And the overlay written for /dev/ttySC0 is given here:
-https://github.com/ZoranStojsavljevic/MikroE_BeagleBone-Black_BSP-Integrati=
-on/blob/master/BBB-debian_buster/overlay_examples/i2c2_sc16is740/BB-I2C2-SC=
-16IS740-00A0.dts
+Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+---
+ drivers/tty/serial/Kconfig  |  7 +++++++
+ drivers/tty/serial/Makefile |  1 +
+ kernel/gcov/Kconfig         | 13 +++++++++++++
+ 3 files changed, 21 insertions(+)
 
-In order to solve this problem, I disabled the following option in
-kernel .config:
-## CONFIG_SERIAL_DEV_CTRL_TTYPORT is not set
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index adf9e80e7dc9..6df002370f18 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1566,3 +1566,10 @@ endmenu
+ 
+ config SERIAL_MCTRL_GPIO
+ 	tristate
++
++config SERIAL_GCOV
++	bool "Enable profile gcov for serial directory"
++	depends on GCOV_PROFILE_PREREQS
++	help
++	  The SERIAL_GCOV will add Gcov profiling flags when kernel compiles.
++	  Say 'Y' here if you want the gcov data for the serial directory,
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index d056ee6cca33..17272733db95 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -3,6 +3,7 @@
+ # Makefile for the kernel serial device drivers.
+ #
+ 
++GCOV_PROFILE := $(CONFIG_SERIAL_GCOV)
+ obj-$(CONFIG_SERIAL_CORE) += serial_core.o
+ 
+ obj-$(CONFIG_SERIAL_EARLYCON) += earlycon.o
+diff --git a/kernel/gcov/Kconfig b/kernel/gcov/Kconfig
+index 3941a9c48f83..4d75fa158726 100644
+--- a/kernel/gcov/Kconfig
++++ b/kernel/gcov/Kconfig
+@@ -51,6 +51,19 @@ config GCOV_PROFILE_ALL
+ 	larger and run slower. Also be sure to exclude files from profiling
+ 	which are not linked to the kernel image to prevent linker errors.
+ 
++config GCOV_PROFILE_PREREQS
++	bool "Profile Kernel subsytem"
++	depends on !COMPILE_TEST
++	depends on GCOV_KERNEL
++	help
++	  This options activates profiling for the specified kernel modules.
++
++	  When some modules need Gcov data, enable this config, then configure
++	  with gcov on the corresponding modules,The directories or files of
++	  these modules will be added profiling flags after kernel compile.
++
++	  If unsure, say N.
++
+ choice
+ 	prompt "Specify GCOV format"
+ 	depends on GCOV_KERNEL
+-- 
+2.17.1
 
-But I am unsure why keeping enabled generic serial tty bus, and
-disabling the generic serial tty device driver enables /dev/ttySC0 on
-the target BBB platform.
-https://github.com/ZoranStojsavljevic/MikroE_BeagleBone-Black_BSP-Integrati=
-on/blob/master/BBB-debian_buster/overlay_examples/KERNEL.md
-
-Just disabling CONFIG_SERIAL_DEV_CTRL_TTYPORT gives a working /dev/ttySC0 :
-
-      =E2=94=82 Symbol: SERIAL_DEV_CTRL_TTYPORT [=3Dn]
-      =E2=94=82 Type  : bool
-      =E2=94=82 Prompt: Serial device TTY port controller
-      =E2=94=82   Location:
-      =E2=94=82     -> Device Drivers
-      =E2=94=82       -> Character devices
-      =E2=94=82 (1)     -> Serial device bus (SERIAL_DEV_BUS [=3Dy])
-      =E2=94=82   Defined at drivers/tty/serdev/Kconfig:14
-      =E2=94=82   Depends on: TTY [=3Dy] && SERIAL_DEV_BUS [=3Dy]=3Dy
-
-Again, appears that the generic serial tty bus is enabled, but the
-solution of the problem is to disable generic tty driver (not sure
-why)!
-
-I hope somebody already encounter this problem from this list.
-
-Thank you in advance,
-Zoran Stojsavljevic
