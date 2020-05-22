@@ -1,229 +1,117 @@
-Return-Path: <SRS0=lGjV=7D=vger.kernel.org=linux-serial-owner@kernel.org>
+Return-Path: <SRS0=CVbj=7E=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63478C433E3
-	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 18:12:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B770AC433E0
+	for <linux-serial@archiver.kernel.org>; Fri, 22 May 2020 05:57:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2FBC02088E
-	for <linux-serial@archiver.kernel.org>; Thu, 21 May 2020 18:12:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8640F20757
+	for <linux-serial@archiver.kernel.org>; Fri, 22 May 2020 05:57:49 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="OlGZ0rM3"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fqfi1mU6"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729444AbgEUSMK (ORCPT
+        id S1727992AbgEVF5t (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Thu, 21 May 2020 14:12:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33460 "EHLO
+        Fri, 22 May 2020 01:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729034AbgEUSMJ (ORCPT
+        with ESMTP id S1727924AbgEVF5t (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Thu, 21 May 2020 14:12:09 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59741C061A0F
-        for <linux-serial@vger.kernel.org>; Thu, 21 May 2020 11:12:09 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id s10so3565044pgm.0
-        for <linux-serial@vger.kernel.org>; Thu, 21 May 2020 11:12:09 -0700 (PDT)
+        Fri, 22 May 2020 01:57:49 -0400
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4FA2C061A0E
+        for <linux-serial@vger.kernel.org>; Thu, 21 May 2020 22:57:48 -0700 (PDT)
+Received: by mail-qt1-x82a.google.com with SMTP id p12so7457500qtn.13
+        for <linux-serial@vger.kernel.org>; Thu, 21 May 2020 22:57:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2Rh0MulQkkuEGbxFUvnmU8zy8iOZUosVl0yNEP696vA=;
-        b=OlGZ0rM3Y2tsnOceWhRLzPhN/MrJfxnIjkKTCTA1i2RKz2zg10vn8nGStq8JJcsMP6
-         XIs0XypHikWHZtUee5WERCzjkj5jzWvYgophopUWdFdcX+lQ5ws3YLi9a5DhSPLf+iZz
-         m0kpH2X52NoQmgb/A1zP5FFlUjYfbaLd40460=
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=YjgtjdzgOt5xSWhbyThffOgIzedODiryOgrfEwykMhU=;
+        b=fqfi1mU6xmdqplej5cXjZ7Xs+bJ0lw0Hx4feUN7TLiNdN3ok+HMlpLqulDVcI1/K98
+         u3xEmb+V70tEvQH1ToWn1MGLzzKQiXAcvA45W2MqTfJpjRyoNNlzkwiBtTqrFRkWHdGA
+         PXkLE1NDzwTTnRqmz9ZuRMCbYIUNJCkGaRdDeEB2a5uRcJiISnHRr1T5CZplReZZsgVS
+         oNqbCXd6dK48G3B9MlPsow+oDPCQZz+/JQN0y4D7nZS5XE5I6mZUZ7o9T3WqP+OHebMN
+         92oS6FhVWe5wD4tEbjc5V+4n7f+Qy5eLZt4HFcepXOviDQp1sh/Yp8d6FZ7xmO9Ec4Fj
+         qeCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2Rh0MulQkkuEGbxFUvnmU8zy8iOZUosVl0yNEP696vA=;
-        b=LSimdWavpn+zZD0V7rB2pBWOjQMcyLvjA0rcX0TTMMtJ5/46NHwbLfLQDfp/U2bDB1
-         ohxIKiKhJf6gdu1TBn25v5C36v+vOzIZuHNPyoXz8eseZgM7FJQfaLF1FmtIzQu3n/mw
-         gd6qdouPhgGf/xLiwYJqlthVYCWYKCZbv6Lh5i1ZJUiylXiGMyz83xSuRR8O4yIJKwPH
-         6XIsRRO28v6QF7MIdWcp89sGakeTP1c8koVX3Pkw6YS36oX7mb98uqtdM+os9kWJsY5M
-         Y2D1DH6yEZ//etEy8tqzSMRnL+9U3vcDJY2FfEaEDY9Y9pEqkSbHUhloQUMPjUKfohSy
-         3YyQ==
-X-Gm-Message-State: AOAM5321MCWBKsTUvxOhkVYczCCqw2Fy2V5oTuYum0NdTHdUBgp9hoGL
-        0BRl/cCYiiNR3yDUJqngUdG++Q==
-X-Google-Smtp-Source: ABdhPJzWffE87ngZTa0scCppP/KReDxQI2X3ZPxnSPjf4C+oWsO/X0lg0xAf9YConEKttQ6iOKvqPw==
-X-Received: by 2002:a62:760e:: with SMTP id r14mr2630pfc.92.1590084728802;
-        Thu, 21 May 2020 11:12:08 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
-        by smtp.gmail.com with ESMTPSA id l33sm5318087pje.22.2020.05.21.11.12.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 May 2020 11:12:07 -0700 (PDT)
-Date:   Thu, 21 May 2020 11:12:05 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Akash Asthana <akashast@codeaurora.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, wsa@the-dreams.de, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, dianders@chromium.org,
-        msavaliy@codeaurora.org, evgreen@chromium.org
-Subject: Re: [PATCH V6 2/7] soc: qcom-geni-se: Add interconnect support to
- fix earlycon crash
-Message-ID: <20200521181205.GC4525@google.com>
-References: <1590049764-20912-1-git-send-email-akashast@codeaurora.org>
- <1590049764-20912-3-git-send-email-akashast@codeaurora.org>
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=YjgtjdzgOt5xSWhbyThffOgIzedODiryOgrfEwykMhU=;
+        b=H2a0+/0opRhlbmHAXgfpLFhS9nU1cJQlQcCn9lII7Y/7RpC97GB4vxF9SOPvsQiwUK
+         Sm856pVet/lPMdn6+bug88LUVWFg8/ehYQiqhfC47foU/6IM0QwFk3lSi3VZOD7slNNx
+         J1p6GSt4UuJ/RYuPYLxPlUE8LKzH118xz6+SUMKSn+I8acAVuyN7AtvSpEvOeESLZlb5
+         jM4ZEq3SF+602NI/z9ONCN3AfULwJx9F21zQcGvMoba92gG758JSOn6T0vY+0dlfvnJt
+         Yd0vaJcQ9iOUgZswRDCPf38OZnGeEq7RX3v3Z4wWJOn2tXlKIOB1G8QtYrhdp+ZBT/Ia
+         AfsA==
+X-Gm-Message-State: AOAM532J0dVk/Bd8pybTwtLDA/+rD+FP1G9YFb5H4jlO4SyhA9uFB83k
+        +vL3x620imNeUa0/lwUVh5azAwcw5q2nLkv/5F9Ne4pWd5c=
+X-Google-Smtp-Source: ABdhPJzlA8Qn5m+PcsarJALelzgoVwciM0f2STYFIpvx5h6AVBWg/IjA703Z98qAKQS00IvhH9Fd7srm7FPm9Z8pFL0=
+X-Received: by 2002:ac8:518f:: with SMTP id c15mr13700133qtn.142.1590127067582;
+ Thu, 21 May 2020 22:57:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1590049764-20912-3-git-send-email-akashast@codeaurora.org>
+From:   Zoran Stojsavljevic <zoran.stojsavljevic@gmail.com>
+Date:   Fri, 22 May 2020 07:57:36 +0200
+Message-ID: <CAGAf8Lw_BBOCsvZok-Fc6SB56XG1OCUbbeT=1N1_OKaiCkp63A@mail.gmail.com>
+Subject: Generic CONFIG_SERIAL_DEV_CTRL_TTYPORT to be disabled to enable BBB
+ overlay /dev/ttySC0
+To:     linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Hi Akash,
+Hello list,
 
-On Thu, May 21, 2020 at 01:59:19PM +0530, Akash Asthana wrote:
-> QUP core clock is shared among all the SE drivers present on particular
-> QUP wrapper, the system will reset(unclocked access) if earlycon used after
-> QUP core clock is put to 0 from other SE drivers before real console comes
-> up.
-> 
-> As earlycon can't vote for it's QUP core need, to fix this add ICC
-> support to common/QUP wrapper driver and put vote for QUP core from
-> probe on behalf of earlycon and remove vote during earlycon exit call.
-> 
-> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
-> Reported-by: Matthias Kaehlcke <mka@chromium.org>
-> ---
-> Change in V3:
->  - Add geni_remove_earlycon_icc_vote API that will be used by earlycon
->    exit function to remove ICC vote for earlyconsole.
->  - Remove suspend/resume hook for geni-se driver as we are no longer
->    removing earlyconsole ICC vote from system suspend, we are removing
->    from earlycon exit.
-> 
-> Change in V4:
->  - As per Matthias comment make 'earlycon_wrapper' as static structure.
-> 
-> Changes in V5:
->  - Vote for core path only after checking whether "qcom_geni" earlycon is
->    actually present or not by traversing over structure "console_drivers".
-> 
-> Changes in V6:
->  - As per Matthias's comment removed NULL check for console_drivers global
->    struct, added NULL check for earlycon_wrapper in _remove_earlycon_icc_vote
->    API
->  - Addressed nitpicks from Andy.
-> 
->  drivers/soc/qcom/qcom-geni-se.c       | 68 +++++++++++++++++++++++++++++++++++
->  drivers/tty/serial/qcom_geni_serial.c |  7 ++++
->  include/linux/qcom-geni-se.h          |  2 ++
->  3 files changed, 77 insertions(+)
-> 
-> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
-> index 0b2526d..ac16bb1 100644
-> --- a/drivers/soc/qcom/qcom-geni-se.c
-> +++ b/drivers/soc/qcom/qcom-geni-se.c
-> @@ -3,6 +3,7 @@
->  
->  #include <linux/acpi.h>
->  #include <linux/clk.h>
-> +#include <linux/console.h>
->  #include <linux/slab.h>
->  #include <linux/dma-mapping.h>
->  #include <linux/io.h>
-> @@ -90,11 +91,14 @@ struct geni_wrapper {
->  	struct device *dev;
->  	void __iomem *base;
->  	struct clk_bulk_data ahb_clks[NUM_AHB_CLKS];
-> +	struct geni_icc_path to_core;
->  };
->  
->  static const char * const icc_path_names[] = {"qup-core", "qup-config",
->  						"qup-memory"};
->  
-> +static struct geni_wrapper *earlycon_wrapper;
-> +
->  #define QUP_HW_VER_REG			0x4
->  
->  /* Common SE registers */
-> @@ -812,11 +816,38 @@ int geni_icc_disable(struct geni_se *se)
->  }
->  EXPORT_SYMBOL(geni_icc_disable);
->  
-> +void geni_remove_earlycon_icc_vote(void)
-> +{
-> +	struct geni_wrapper *wrapper;
-> +	struct device_node *parent;
-> +	struct device_node *child;
-> +
-> +	if (!earlycon_wrapper)
-> +		return;
-> +
-> +	wrapper = earlycon_wrapper;
-> +	parent = of_get_next_parent(wrapper->dev->of_node);
-> +	for_each_child_of_node(parent, child) {
-> +		if (!of_device_is_compatible(child, "qcom,geni-se-qup"))
-> +			continue;
-> +		wrapper = platform_get_drvdata(of_find_device_by_node(child));
-> +		icc_put(wrapper->to_core.path);
-> +		wrapper->to_core.path = NULL;
-> +
-> +	}
-> +	of_node_put(parent);
-> +
-> +	earlycon_wrapper = NULL;
-> +}
-> +EXPORT_SYMBOL(geni_remove_earlycon_icc_vote);
-> +
->  static int geni_se_probe(struct platform_device *pdev)
->  {
->  	struct device *dev = &pdev->dev;
->  	struct resource *res;
->  	struct geni_wrapper *wrapper;
-> +	struct console __maybe_unused *bcon;
-> +	bool __maybe_unused has_earlycon = false;
->  	int ret;
->  
->  	wrapper = devm_kzalloc(dev, sizeof(*wrapper), GFP_KERNEL);
-> @@ -839,6 +870,43 @@ static int geni_se_probe(struct platform_device *pdev)
->  		}
->  	}
->  
-> +#ifdef CONFIG_SERIAL_EARLYCON
-> +	for_each_console(bcon) {
-> +		if (!strcmp(bcon->name, "qcom_geni")) {
-> +			has_earlycon = true;
-> +			break;
-> +		}
-> +	}
-> +	if (!has_earlycon)
-> +		goto exit;
-> +
-> +	wrapper->to_core.path = devm_of_icc_get(dev, "qup-core");
-> +	if (IS_ERR(wrapper->to_core.path))
-> +		return PTR_ERR(wrapper->to_core.path);
-> +	/*
-> +	 * Put minmal BW request on core clocks on behalf of early console.
-> +	 * The vote will be removed earlycon exit function.
-> +	 *
-> +	 * Note: We are putting vote on each QUP wrapper instead only to which
-> +	 * earlycon is connected because QUP core clock of different wrapper
-> +	 * share same voltage domain. If core1 is put to 0, then core2 will
-> +	 * also run at 0, if not voted. Default ICC vote will be removed ASA
-> +	 * we touch any of the core clock.
-> +	 * core1 = core2 = max(core1, core2)
-> +	 */
-> +	ret = icc_set_bw(wrapper->to_core.path, GENI_DEFAULT_BW,
-> +				GENI_DEFAULT_BW);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "%s: ICC BW voting failed for core :%d\n",
+I have an interesting problem, which is described here:
+https://www.spinics.net/lists/linux-serial/msg22566.html
 
-should be "... core: %d"
+I experienced the same problem on BeagleBone Black platform (armv7 A8:
+am335x silicon), and the overlay is shown here:
+https://github.com/ZoranStojsavljevic/MikroE_BeagleBone-Black_BSP-Integrati=
+on/blob/master/BBB-debian_buster/Master_Example_i2c2_sc16is740.md
 
-same for the other instances. I don't necessarily want to stall the series on
-this, it can also be addressed with a follow up patch. Up to you if you want
-to respin or not.
+And the overlay written for /dev/ttySC0 is given here:
+https://github.com/ZoranStojsavljevic/MikroE_BeagleBone-Black_BSP-Integrati=
+on/blob/master/BBB-debian_buster/overlay_examples/i2c2_sc16is740/BB-I2C2-SC=
+16IS740-00A0.dts
 
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+In order to solve this problem, I disabled the following option in
+kernel .config:
+## CONFIG_SERIAL_DEV_CTRL_TTYPORT is not set
+
+But I am unsure why keeping enabled generic serial tty bus, and
+disabling the generic serial tty device driver enables /dev/ttySC0 on
+the target BBB platform.
+https://github.com/ZoranStojsavljevic/MikroE_BeagleBone-Black_BSP-Integrati=
+on/blob/master/BBB-debian_buster/overlay_examples/KERNEL.md
+
+Just disabling CONFIG_SERIAL_DEV_CTRL_TTYPORT gives a working /dev/ttySC0 :
+
+      =E2=94=82 Symbol: SERIAL_DEV_CTRL_TTYPORT [=3Dn]
+      =E2=94=82 Type  : bool
+      =E2=94=82 Prompt: Serial device TTY port controller
+      =E2=94=82   Location:
+      =E2=94=82     -> Device Drivers
+      =E2=94=82       -> Character devices
+      =E2=94=82 (1)     -> Serial device bus (SERIAL_DEV_BUS [=3Dy])
+      =E2=94=82   Defined at drivers/tty/serdev/Kconfig:14
+      =E2=94=82   Depends on: TTY [=3Dy] && SERIAL_DEV_BUS [=3Dy]=3Dy
+
+Again, appears that the generic serial tty bus is enabled, but the
+solution of the problem is to disable generic tty driver (not sure
+why)!
+
+I hope somebody already encounter this problem from this list.
+
+Thank you in advance,
+Zoran Stojsavljevic
