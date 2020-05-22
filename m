@@ -2,155 +2,115 @@ Return-Path: <SRS0=CVbj=7E=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8147C433E1
-	for <linux-serial@archiver.kernel.org>; Fri, 22 May 2020 13:03:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA105C433E0
+	for <linux-serial@archiver.kernel.org>; Fri, 22 May 2020 13:13:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C490D206D5
-	for <linux-serial@archiver.kernel.org>; Fri, 22 May 2020 13:03:35 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="FiyVV/Ul"
+	by mail.kernel.org (Postfix) with ESMTP id 819CF20723
+	for <linux-serial@archiver.kernel.org>; Fri, 22 May 2020 13:13:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1590153191;
+	bh=/7xPdW1crHgXukpo7wnpD9Ww40kk9wZF1CrxmOqLrvE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=Sh2MZ330kPLhJUY4Gcqxd7dFMTmr/v/qXrF0Irk28+ZvwV4NgQS7B9U6ULHRCqxAv
+	 wDsQGJ4VsurlHAM6JnQVL54TC/s2WTgLTgVsd/KRjyXytqHFez7XWQvZkOfRNbWUzc
+	 oBgIotimdM/n/LC9Lbjz3wXj5xF5cZuYQOul28wc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729855AbgEVNDf (ORCPT
+        id S1729792AbgEVNNL (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Fri, 22 May 2020 09:03:35 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:26396 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729841AbgEVNDe (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Fri, 22 May 2020 09:03:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590152612;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=eLcEITseBFkwtyrC5DNJAB2zEgXQyfg2QvmBccxP5Vg=;
-        b=FiyVV/Ul8vtCAlZv2O5go2/QKdRhD4kfVjXrLG0ViGYRcQiE5m9h5+bb/KQAC2WMY3OXqb
-        OluoBqCKUU6CjmlqjTLmp+0uQnXdqR+HFPvqKmfhdvTqOPSnwz0GoOvgcJ8S78VhjlzB+D
-        F/9D/VVS4C9PCRlXe1xHgu0tjVSE9b8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-302-SB9_dXjLPvm9RseHJhKLTg-1; Fri, 22 May 2020 09:03:31 -0400
-X-MC-Unique: SB9_dXjLPvm9RseHJhKLTg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Fri, 22 May 2020 09:13:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48618 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729763AbgEVNNL (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Fri, 22 May 2020 09:13:11 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4DED2107ACF2;
-        Fri, 22 May 2020 13:03:29 +0000 (UTC)
-Received: from file01.intranet.prod.int.rdu2.redhat.com (file01.intranet.prod.int.rdu2.redhat.com [10.11.5.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9326960E1C;
-        Fri, 22 May 2020 13:03:28 +0000 (UTC)
-Received: from file01.intranet.prod.int.rdu2.redhat.com (localhost [127.0.0.1])
-        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4) with ESMTP id 04MD3St7020168;
-        Fri, 22 May 2020 09:03:28 -0400
-Received: from localhost (mpatocka@localhost)
-        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4/Submit) with ESMTP id 04MD3QWE020164;
-        Fri, 22 May 2020 09:03:26 -0400
-X-Authentication-Warning: file01.intranet.prod.int.rdu2.redhat.com: mpatocka owned process doing -bs
-Date:   Fri, 22 May 2020 09:03:26 -0400 (EDT)
-From:   Mikulas Patocka <mpatocka@redhat.com>
-X-X-Sender: mpatocka@file01.intranet.prod.int.rdu2.redhat.com
-To:     "Maciej W. Rozycki" <macro@wdc.com>
-cc:     Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        "Maciej W. Rozycki" <macro@linux-mips.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Richard Henderson <rth@twiddle.net>,
-        Matt Turner <mattst88@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
-Subject: Re: [PATCH 1/2 v3] alpha: add a delay to inb_p, inb_w and inb_l
-In-Reply-To: <alpine.LFD.2.21.2005131802160.6492@redsun52.ssa.fujisawa.hgst.com>
-Message-ID: <alpine.LRH.2.02.2005201403480.24885@file01.intranet.prod.int.rdu2.redhat.com>
-References: <alpine.LRH.2.02.2005060713390.25338@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com> <alpine.LRH.2.02.2005061308220.18599@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LRH.2.02.2005070404420.5006@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com> <alpine.LRH.2.02.2005070931280.1718@file01.intranet.prod.int.rdu2.redhat.com>
- <CAK8P3a3UdCJL6C07_W7pkipT1Xmr_0G9hOy1S+YXbB4_tKt+gg@mail.gmail.com> <alpine.LFD.2.21.2005100209340.487915@eddie.linux-mips.org> <alpine.LRH.2.02.2005101443290.15420@file01.intranet.prod.int.rdu2.redhat.com> <alpine.LFD.2.21.2005111320220.677301@eddie.linux-mips.org>
- <20200513144128.GA16995@mail.rc.ru> <alpine.LFD.2.21.2005131802160.6492@redsun52.ssa.fujisawa.hgst.com>
-User-Agent: Alpine 2.02 (LRH 1266 2009-07-14)
+        by mail.kernel.org (Postfix) with ESMTPSA id 359B42070A;
+        Fri, 22 May 2020 13:13:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1590153190;
+        bh=/7xPdW1crHgXukpo7wnpD9Ww40kk9wZF1CrxmOqLrvE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=t83hmuVBodGiab31ZGgAg7A+UAMQeVRt0YHPFvugG8Wz9d6EE3rHShbhNjJquYPrJ
+         RUIuU6oEAgU0gToysftDfYikMUMXT6GdVdSaR1WSbd21IfAT4NSTs5IsV+wqJ7Vag4
+         Na0EaWP3k2KGx41A3G1CLI2r9jWVp0WRLLbgY5k4=
+Date:   Fri, 22 May 2020 15:13:08 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Mukesh, Savaliya" <msavaliy@codeaurora.org>
+Cc:     akashast@codeaurora.org, linux-serial@vger.kernel.org,
+        saravanak@google.com, sspatil@google.com, tkjos@google.com
+Subject: Re: [PATCH V5] serial: msm_geni_serial_console : Add Earlycon support
+Message-ID: <20200522131308.GB1629195@kroah.com>
+References: <20200522124306.17859-1-msavaliy@codeaurora.org>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200522124306.17859-1-msavaliy@codeaurora.org>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-
-
-On Wed, 13 May 2020, Maciej W. Rozycki wrote:
-
-> On Wed, 13 May 2020, Ivan Kokshaysky wrote:
+On Fri, May 22, 2020 at 06:13:06PM +0530, Mukesh, Savaliya wrote:
+> From: Mukesh Kumar Savaliya <msavaliy@codeaurora.org>
 > 
-> > >  Individual PCI port locations correspond to different MMIO locations, so 
-> > > yes, accesses to these can be reordered (merging won't happen due to the 
-> > > use of the sparse address space).
-> > 
-> > Correct, it's how Alpha write buffers work. According to 21064 hardware
-> > reference manual, these buffers are flushed when one of the following
-> > conditions is met:
-> > 
-> > 1) The write buffer contains at least two valid entries.
-> > 2) The write buffer contains one valid entry and at least 256 CPU cycles
-> >    have elapsed since the execution of the last write buffer-directed
-> >    instruction.
-> > 3) The write buffer contains an MB, STQ_C or STL_C instruction.
-> > 4) A load miss is pending to an address currently valid in the write
-> >    buffer that requires the write buffer to be flushed.
-> > 
-> > I'm certain that in these rtc/serial cases we've got readX arriving
-> > to device *before* preceeding writeX because of 2). That's why small
-> > delay (300-1400 ns, apparently depends on CPU frequency) seemingly
-> > "fixes" the problem. The 4) is not met because loads and stores are
-> > to different ports, and 3) has been broken by commit 92d7223a74.
-> > 
-> > So I believe that correct fix would be to revert 92d7223a74 and
-> > add wmb() before [io]writeX macros to meet memory-barriers.txt
-> > requirement. The "wmb" instruction is cheap enough and won't hurt
-> > IO performance too much.
+> This change enables earlyconsole support as static driver for geni
+> based UART. Kernel space UART console driver will be generic for
+> console and other usecases of UART.
 > 
->  Hmm, having barriers *afterwards* across all the MMIO accessors, even 
-> ones that do not have such a requirement according to memory-barriers.txt, 
-> does hurt performance unnecessarily however.  What I think has to be done 
-> is adding barriers beforehand, and then only add barriers afterwards where 
-> necessary.  Commit 92d7223a74 did a part of that, but did not consistently 
-> update all the remaining accessors.
+> Signed-off-by: Mukesh Kumar Savaliya <msavaliy@codeaurora.org>
+> ---
+> Changes In V2:
+>  - Fixed Makefile Typo issue.
 > 
->  So I don't think reverting 92d7223a74 permanently is the right way to go, 
-> however it certainly makes sense to do that temporarily to get rid of the 
-> fatal regression, sort all the corner cases and then apply the resulting 
-> replacement fix.
-
-See Documentation/memory-barriers.txt, the section "KERNEL I/O BARRIER 
-EFFECTS"
-
-According to the specification, there must be a barrier before a write to 
-the MMIO space (paragraph 3) and after a read from MMIO space (parahraph 
-4) - if this causes unnecessary slowdown, the driver should use 
-readX_relaxed or writeX_relaxed functions - the *_relaxed functions are 
-ordered with each other (see the paragraph "(*) readX_relaxed(), 
-writeX_relaxed()"), but they are not ordered with respect to memory 
-access.
-
-The commit 92d7223a74 fixes that requirement (although there is no real 
-driver that was fixed by this), so I don't think it should be reverted. 
-The proper fix should be to add delays to the serial port and readltime 
-clock (or perhaps to all IO-port accesses).
-
-> I think ultimately we do want the barriers beforehand, just like the 
-> MIPS port has (and survives) in arch/mips/include/asm/io.h.  Observe 
-
-If the MIPS port doesn't have MMIO barrier after read[bwl], then it is 
-violating the specification. Perhaps there is no existing driver that is 
-hurt by this violation, so this violation survived.
-
-> that unlike the Alpha ISA the MIPS ISA does have nontrivial `rmb' aka 
-> the SYNC_RMB hardware instruction.
+> Changes In V3:
+>  - Removed mb() calls as *_relaxed() should take care.
 > 
->   Maciej
+> Changes In V4:
+>  - Minor change: space between offset and base addition.
+> 
+> Changes In V5:
+>  - Removed unlikely() macro.
+>  - root_freq() array taken as static.
+>  - Removed extra readback of the register having no meaning.
+> 
+>  drivers/tty/serial/Kconfig                   |  15 +
+>  drivers/tty/serial/Makefile                  |   1 +
+>  drivers/tty/serial/msm_geni_serial_console.c | 476 +++++++++++++++++++
+>  3 files changed, 492 insertions(+)
+>  create mode 100644 drivers/tty/serial/msm_geni_serial_console.c
+> 
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index 0aea76cd67ff..ded19d80e696 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -956,6 +956,21 @@ config SERIAL_MSM_CONSOLE
+>  	select SERIAL_CORE_CONSOLE
+>  	select SERIAL_EARLYCON
+>  
+> +config SERIAL_MSM_GENI_HALF_SAMPLING
+> +	bool "Changes clock divider which impacts sampling rate for QUP HW ver greater than 2.5.0"
+> +	help
+> +	  Clock divider value should be doubled for QUP hardware version
+> +	  greater than 2.5.0.
+> +	  As earlycon can't have HW version awareness, decision is taken
+> +	  based on the configuration.
 
-Mikulas
+Can you split this option out into a separate file so we don't have to
+keep arguing about it, preventing the "real" early console code from
+being merged?
 
+I really think someone needs to go yell at some hardware engineers for
+this issue.  How is this going to work for a "generic" arm64 kernel
+image?  Your hardware always has to be self-describing for crazy stuff
+like this.  Or you pass it in from the bootloader.  You can't hard-code
+this thing, it defeats the whole idea of dynamic systems...
+
+thanks,
+
+greg k-h
