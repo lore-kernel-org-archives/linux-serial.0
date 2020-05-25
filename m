@@ -2,128 +2,106 @@ Return-Path: <SRS0=EYjC=7H=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17C19C433E2
-	for <linux-serial@archiver.kernel.org>; Mon, 25 May 2020 07:44:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F00C433DF
+	for <linux-serial@archiver.kernel.org>; Mon, 25 May 2020 08:28:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E9C8D2073B
-	for <linux-serial@archiver.kernel.org>; Mon, 25 May 2020 07:44:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4F0812068D
+	for <linux-serial@archiver.kernel.org>; Mon, 25 May 2020 08:28:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1590392679;
-	bh=k/3pUqyaY8ZZZCGpA3RJjTGKY//Rexfbnp6OChZ7fNM=;
+	s=default; t=1590395281;
+	bh=p+YWUnUppyZcn1hbCF3nbv+9vnNhL3Cj/jwq0koy6Ag=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=JUildkEtEzUkAuXcIYQlYZvuY83O5P/4K/I+WQUL0wrN55hIDXQINVI2jphhtYz+I
-	 8n8mqp0xRVRMwOTO14GqWCGwx78UBi23JiGuxxDMLaE7EPo31VJBqOA3h/ooqkrczy
-	 uJrqzREjbfNTCIuvZIn2/f1aGAa5Zsz8WHqFblgY=
+	b=VFFfM3cE/ZGSZryqSyJM4ggqJV+Hu3srsabzpk2+qTJUFPuP3urg5QNLILkz/Mw3V
+	 jGPtdraGU96iI8Uu9yxdJtApZ0rpyUNUdRfkdX/ZcWtAj5wGlGaLChwTgFR28je/hw
+	 wbc5Lo7BLA6EYOYYjKVjyO1mZeaXrUA+t93brBWk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389154AbgEYHog (ORCPT
+        id S1729469AbgEYI2B (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 25 May 2020 03:44:36 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:39581 "EHLO
+        Mon, 25 May 2020 04:28:01 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:38708 "EHLO
         mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389105AbgEYHof (ORCPT
+        with ESMTP id S1726222AbgEYI2A (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 25 May 2020 03:44:35 -0400
-Received: by mail-lf1-f68.google.com with SMTP id z206so6346748lfc.6;
-        Mon, 25 May 2020 00:44:33 -0700 (PDT)
+        Mon, 25 May 2020 04:28:00 -0400
+Received: by mail-lf1-f68.google.com with SMTP id 202so10062094lfe.5
+        for <linux-serial@vger.kernel.org>; Mon, 25 May 2020 01:27:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=QQh8K/AzxLyGXT7M8yyjCx9x6FADb3eXEm3pp3jyfa4=;
-        b=Zgpw5qphMRCBKWHJFfrmVihs3Yafigyu8r1I6rSThpIn6IoCrkEpHpPQPdOHdILtnc
-         o34ZdzK05O2EsAhcbSDNuL+nKpO+VM9vB4D2hruSUmIelKC21lcFQLYJIITIYr9OXqO2
-         J7Kh8jVQtBwfksKmwcm+xu6RERFPITseVDe/HSusP/+szbISvyBqLliroe980yVj4WyK
-         KqHjWB2nzJIkBZ9GISVRnFUxD0cNkDnXj6VqoVmVJfrZ1nr3vx6BcO6NdH4MhvXv3Py9
-         VgUjhf4dxXNbjcyxXY2tdxkJxR2XWIvKPOn9/mjm36rfj4mWGmPUfycX8OP+Ic84EIiZ
-         lACw==
-X-Gm-Message-State: AOAM532xn4mq4lgKq2+RbU1mnSmcdVKpM0GRSMWV5BLXzrCQjw/gkz8O
-        TKGIm6QLXLRR6cEuSZC7tO4=
-X-Google-Smtp-Source: ABdhPJxKSbwHav/tnGnwZwLeNFOidZRkNGpkdbwTWES4Gq2Rkn73uu1zH4rlqSs7CM5G8CSF/j4pBg==
-X-Received: by 2002:a19:c212:: with SMTP id l18mr6677122lfc.68.1590392673005;
-        Mon, 25 May 2020 00:44:33 -0700 (PDT)
+        bh=TmkrzH+S4A1mzb9IC/D09qd9h09wrz/7A5z02wDs0AU=;
+        b=oAjWGQ6+arsjH/hnRElKMabVP7bXRsTEWWIOyMtKdGBz3cmGIUrlenbLV0TNy3mm69
+         qgFPfi8/rBhRSeJewtoLxVHrUrDnlCO3KYzsVmpZPAs0GJlHFDT7fc0LP//VIwTDdkmM
+         3yxzaIOXc6gf1N2ZGp4ddhDbh/Mdky9ndJO2ppO/ZylqqLrIxvRrZqUS0EmfETW2lJxR
+         UXqLPJKxr73MX/qbd2qSJFm+Xeq9rw/z5dpGWdpZ9L5wRdhXRbuchoaXPpA2XxXp3CZh
+         EcEFw0suK5rocSDHXGuP1hfpGrRdTmCJLoiLAY/E6tphJ7/19q+dLpMfZjQD4pNfZSB1
+         ITyQ==
+X-Gm-Message-State: AOAM532hsazidgVSUJUA+t+eDHOzo0xaFS6sFrSevUtefPofqpr6wetd
+        nHSfyr9Rquq1Ck1QJeDsMcE=
+X-Google-Smtp-Source: ABdhPJx5J/uu8zfeRfc9CGMoESPFWPwi0PO4t8jPviCwTUn84WrwGg9iX0rDTeKykb2z8ZRpcCjIUQ==
+X-Received: by 2002:a19:4206:: with SMTP id p6mr13947048lfa.52.1590395278682;
+        Mon, 25 May 2020 01:27:58 -0700 (PDT)
 Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
-        by smtp.gmail.com with ESMTPSA id l15sm4308390ljc.73.2020.05.25.00.44.31
+        by smtp.gmail.com with ESMTPSA id h8sm3057209ljg.28.2020.05.25.01.27.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 May 2020 00:44:32 -0700 (PDT)
+        Mon, 25 May 2020 01:27:58 -0700 (PDT)
 Received: from johan by xi.terra with local (Exim 4.93.0.4)
         (envelope-from <johan@kernel.org>)
-        id 1jd7ma-0001OJ-DP; Mon, 25 May 2020 09:44:24 +0200
-Date:   Mon, 25 May 2020 09:44:24 +0200
+        id 1jd8Sc-0001fz-ET; Mon, 25 May 2020 10:27:50 +0200
+Date:   Mon, 25 May 2020 10:27:50 +0200
 From:   Johan Hovold <johan@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Tony Lindgren <tony@atomide.com>, Johan Hovold <johan@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
-        Lee Jones <lee.jones@linaro.org>, Jiri Slaby <jslaby@suse.cz>,
-        Merlijn Wajer <merlijn@wizzup.org>,
-        Pavel Machek <pavel@ucw.cz>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
-Subject: Re: [PATCHv8 0/6] n_gsm serdev support and GNSS driver for droid4
-Message-ID: <20200525074424.GA5276@localhost>
-References: <20200512214713.40501-1-tony@atomide.com>
- <20200522091731.GA1203588@kroah.com>
+To:     Denis Ahrens <denis@h3q.com>
+Cc:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
+Subject: Re: [PATCH] 16C950 UART enable Hardware Flow Control
+Message-ID: <20200525082750.GB5276@localhost>
+References: <BACA4F76-3D51-4854-894B-2E69272B5676@h3q.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200522091731.GA1203588@kroah.com>
+In-Reply-To: <BACA4F76-3D51-4854-894B-2E69272B5676@h3q.com>
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On Fri, May 22, 2020 at 11:17:31AM +0200, Greg Kroah-Hartman wrote:
-> On Tue, May 12, 2020 at 02:47:07PM -0700, Tony Lindgren wrote:
-> > Hi all,
-> > 
-> > Here's the updated set of these patches fixed up for Johan's and
-> > Pavel's earlier comments.
-> > 
-> > This series does the following:
-> > 
-> > 1. Adds functions to n_gsm.c for serdev-ngsm.c driver to use
-> > 
-> > 2. Adds a generic serdev-ngsm.c driver that brings up the TS 27.010
-> >    TTY ports configured in devicetree with help of n_gsm.c
-> > 
-> > 3. Allows the use of standard Linux device drivers for dedicated
-> >    TS 27.010 channels for devices like GNSS and ALSA found on some
-> >    modems for example
-> > 
-> > 4. Adds a gnss-motmdm consumer driver for the GNSS device found on
-> >    the Motorola Mapphone MDM6600 modem on devices like droid4
-> > 
-> > I've placed the serdev-ngsm.c under drivers/tty/serdev as it still
-> > seems to make most sense with no better places available. It's no
-> > longer an MFD driver as it really does not need to care what channel
-> > specific consumer drivers might be configured for the generic driver.
-> > Now serdev-ngsm just uses of_platform_populate() to probe whatever
-> > child nodes it might find.
-> > 
-> > I'm not attached having the driver in drivers/tty/serdev. I just
-> > don't have any better locations in mind. So using Johan's earlier
-> > i2c example, the drivers/tty/serdev/serdev-ngsm.c driver is now a
-> > generic protocol and bus driver, so it's getting closer to the
-> > the drivers/i2c/busses analogy maybe :) Please do suggest better
-> > locations other than MFD and misc if you have better ideas.
-> > 
-> > Now without the chardev support, the /dev/gsmtty* using apps need
-> > to use "U1234AT+CFUN?" format for the packets. The advantage is
-> > less kernel code, and we keep the existing /dev/gsmtty* interface.
-> > 
-> > If we still really need the custom chardev support, that can now
-> > be added as needed with the channel specific consumer driver(s),
-> > but looks like this won't be needed based on Pavel's ofono work.
+On Sun, May 24, 2020 at 06:31:44PM +0200, Denis Ahrens wrote:
+> From: Denis Ahrens <denis@h3q.com>
 > 
-> Johan and Rob, any objection/review of this series?
+> Enable Automatic RTS/CTS flow control for the 16C950 UART in Enhanced Mode
+> like described in the Data Sheet Revision 1.2 page 28 and 29.
+> 
+> Without this change normal console output works, but everything putting
+> a little more pressure on the UART simply overruns the FIFO.
+> 
+> Signed-off-by: Denis Ahrens <denis@h3q.com>
+> ---
+> 
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index f77bf820b7a3..024235946f4d 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -2168,7 +2168,9 @@ int serial8250_do_startup(struct uart_port *port)
+>                 serial_port_out(port, UART_LCR, 0);
+>                 serial_icr_write(up, UART_CSR, 0); /* Reset the UART */
+>                 serial_port_out(port, UART_LCR, UART_LCR_CONF_MODE_B);
+> -               serial_port_out(port, UART_EFR, UART_EFR_ECB);
+> +               serial_port_out(port, UART_EFR, UART_EFR_ECB |
+> +                                               UART_EFR_RTS |
+> +                                               UART_EFR_CTS);
+>                 serial_port_out(port, UART_LCR, 0);
+>         }
 
-Yeah, sorry I haven't had time to review this yet. I should be able to
-look at it today.
+This doesn't look right as you're now enabling automatic flow control
+for everyone.
+
+Try adding this to set_termios() instead when enabling flow control.
+
+Also your patch has had all tabs turned into spaces. You may need to fix
+your mail setup. Try sending the patch to yourself first and make sure
+you can apply it (also take a look at git-send-email).
 
 Johan
