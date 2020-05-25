@@ -2,179 +2,150 @@ Return-Path: <SRS0=EYjC=7H=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D7BCC433E0
-	for <linux-serial@archiver.kernel.org>; Mon, 25 May 2020 14:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF855C433DF
+	for <linux-serial@archiver.kernel.org>; Mon, 25 May 2020 14:45:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E22ED2071A
-	for <linux-serial@archiver.kernel.org>; Mon, 25 May 2020 14:39:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CFADB20888
+	for <linux-serial@archiver.kernel.org>; Mon, 25 May 2020 14:45:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ef2J71qV"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=wdc.com header.i=@wdc.com header.b="OYnWLOI/"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728075AbgEYOjC (ORCPT
+        id S2391022AbgEYOpi (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Mon, 25 May 2020 10:39:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47868 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725809AbgEYOjB (ORCPT
+        Mon, 25 May 2020 10:45:38 -0400
+Received: from esa3.hgst.iphmx.com ([216.71.153.141]:43766 "EHLO
+        esa3.hgst.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391020AbgEYOpi (ORCPT
         <rfc822;linux-serial@vger.kernel.org>);
-        Mon, 25 May 2020 10:39:01 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4031C061A0E
-        for <linux-serial@vger.kernel.org>; Mon, 25 May 2020 07:39:01 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id d10so8758137pgn.4
-        for <linux-serial@vger.kernel.org>; Mon, 25 May 2020 07:39:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:subject:to:cc:references:from:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hvp+8bkwiokoE+l94E9xwL9m3HUdjoJf6HD2ZNWHYPw=;
-        b=ef2J71qVelL6W3PQYSsPoiEUuNU06mYcpt1cRflVMFXWIAXAJj0gHV9/TvkDrgjJYH
-         S9MPtt+2OcBWfOUVPBoG/ONcF3yfJk3c+JX2RhYNMoPynSrA9Y57asAHrFokk4QhAOfp
-         qbHU+hGLixYPLBeXgKGFoinGTEBNA6G4ulL0/wNW7YelVw9b5c+KZJ11wKQEfJmy5g33
-         b0BjC0XwmPR8UWQK3VUs+RFbBHhIcg+7IeHbNwLyhpPwm89iULBx4S14k/Xvirg9uCbk
-         N/1ipbbHKh932b+jeg8tBpfoAMjxuta1emUyIpu2nfMpqNpyJwkspO+IcgV2iMoqDv7M
-         p/Wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=hvp+8bkwiokoE+l94E9xwL9m3HUdjoJf6HD2ZNWHYPw=;
-        b=jw5EttbzBP07V5nL3TLlbGvD6DrrRQzyZfS09/+U7IXIWJauh3hmPbLz8X5l3+bjlo
-         xNrTqChRoU9QThijB2BCh/FPlie7ff0puu+gaGrAaH1CkehM1EhtNSMVvSU96QCVVeRB
-         /i7keHBhy237dils3McIabn6ZlWwrPNCIoyR9G9vraKWUJ0hDYmFeGCCpulIfdR9dWWH
-         w+vM4BelYTuTKNz3RhZx0mX+7nz6VEkjEYVFHwF46JcHLKtbivDMgRj8uejUlQ00anrZ
-         eso9L+gnqCcibpzLf0Rf905pHJYLyzAEA89X6LWwW0f8f3k2xFy46ghN6ttiXcc7Pbpo
-         eARQ==
-X-Gm-Message-State: AOAM532OK4/I1tJDPHRoK0VSgt8gLwNf8RotI63o6eaTdYpijRR4Cwb/
-        rGeYEC1FEUgWjhC4zFAQBvU=
-X-Google-Smtp-Source: ABdhPJzhEuJRn+tYvUGNFlpFOC16szwDQSRiRWeJQsDnigEVXpu5Ia0BGTmMuP6GcQp9KOav5QuBUg==
-X-Received: by 2002:a63:482:: with SMTP id 124mr26846781pge.169.1590417541092;
-        Mon, 25 May 2020 07:39:01 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id x132sm13194992pfd.214.2020.05.25.07.38.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 May 2020 07:39:00 -0700 (PDT)
-Subject: Re: [PATCH v1] serial: imx: Initialize lock for non-registered
- console
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-References: <20200525105952.13744-1-andriy.shevchenko@linux.intel.com>
- <c5b1caca-32fc-1482-b4f5-71787b73a814@roeck-us.net>
- <20200525140752.GA910887@kroah.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Autocrypt: addr=linux@roeck-us.net; keydata=
- xsFNBE6H1WcBEACu6jIcw5kZ5dGeJ7E7B2uweQR/4FGxH10/H1O1+ApmcQ9i87XdZQiB9cpN
- RYHA7RCEK2dh6dDccykQk3bC90xXMPg+O3R+C/SkwcnUak1UZaeK/SwQbq/t0tkMzYDRxfJ7
- nyFiKxUehbNF3r9qlJgPqONwX5vJy4/GvDHdddSCxV41P/ejsZ8PykxyJs98UWhF54tGRWFl
- 7i1xvaDB9lN5WTLRKSO7wICuLiSz5WZHXMkyF4d+/O5ll7yz/o/JxK5vO/sduYDIlFTvBZDh
- gzaEtNf5tQjsjG4io8E0Yq0ViobLkS2RTNZT8ICq/Jmvl0SpbHRvYwa2DhNsK0YjHFQBB0FX
- IdhdUEzNefcNcYvqigJpdICoP2e4yJSyflHFO4dr0OrdnGLe1Zi/8Xo/2+M1dSSEt196rXaC
- kwu2KgIgmkRBb3cp2vIBBIIowU8W3qC1+w+RdMUrZxKGWJ3juwcgveJlzMpMZNyM1jobSXZ0
- VHGMNJ3MwXlrEFPXaYJgibcg6brM6wGfX/LBvc/haWw4yO24lT5eitm4UBdIy9pKkKmHHh7s
- jfZJkB5fWKVdoCv/omy6UyH6ykLOPFugl+hVL2Prf8xrXuZe1CMS7ID9Lc8FaL1ROIN/W8Vk
- BIsJMaWOhks//7d92Uf3EArDlDShwR2+D+AMon8NULuLBHiEUQARAQABzTJHdWVudGVyIFJv
- ZWNrIChMaW51eCBhY2NvdW50KSA8bGludXhAcm9lY2stdXMubmV0PsLBgQQTAQIAKwIbAwYL
- CQgHAwIGFQgCCQoLBBYCAwECHgECF4ACGQEFAlVcphcFCRmg06EACgkQyx8mb86fmYFg0RAA
- nzXJzuPkLJaOmSIzPAqqnutACchT/meCOgMEpS5oLf6xn5ySZkl23OxuhpMZTVX+49c9pvBx
- hpvl5bCWFu5qC1jC2eWRYU+aZZE4sxMaAGeWenQJsiG9lP8wkfCJP3ockNu0ZXXAXwIbY1O1
- c+l11zQkZw89zNgWgKobKzrDMBFOYtAh0pAInZ9TSn7oA4Ctejouo5wUugmk8MrDtUVXmEA9
- 7f9fgKYSwl/H7dfKKsS1bDOpyJlqhEAH94BHJdK/b1tzwJCFAXFhMlmlbYEk8kWjcxQgDWMu
- GAthQzSuAyhqyZwFcOlMCNbAcTSQawSo3B9yM9mHJne5RrAbVz4TWLnEaX8gA5xK3uCNCeyI
- sqYuzA4OzcMwnnTASvzsGZoYHTFP3DQwf2nzxD6yBGCfwNGIYfS0i8YN8XcBgEcDFMWpOQhT
- Pu3HeztMnF3HXrc0t7e5rDW9zCh3k2PA6D2NV4fews9KDFhLlTfCVzf0PS1dRVVWM+4jVl6l
- HRIAgWp+2/f8dx5vPc4Ycp4IsZN0l1h9uT7qm1KTwz+sSl1zOqKD/BpfGNZfLRRxrXthvvY8
- BltcuZ4+PGFTcRkMytUbMDFMF9Cjd2W9dXD35PEtvj8wnEyzIos8bbgtLrGTv/SYhmPpahJA
- l8hPhYvmAvpOmusUUyB30StsHIU2LLccUPPOwU0ETofVZwEQALlLbQeBDTDbwQYrj0gbx3bq
- 7kpKABxN2MqeuqGr02DpS9883d/t7ontxasXoEz2GTioevvRmllJlPQERVxM8gQoNg22twF7
- pB/zsrIjxkE9heE4wYfN1AyzT+AxgYN6f8hVQ7Nrc9XgZZe+8IkuW/Nf64KzNJXnSH4u6nJM
- J2+Dt274YoFcXR1nG76Q259mKwzbCukKbd6piL+VsT/qBrLhZe9Ivbjq5WMdkQKnP7gYKCAi
- pNVJC4enWfivZsYupMd9qn7Uv/oCZDYoBTdMSBUblaLMwlcjnPpOYK5rfHvC4opxl+P/Vzyz
- 6WC2TLkPtKvYvXmdsI6rnEI4Uucg0Au/Ulg7aqqKhzGPIbVaL+U0Wk82nz6hz+WP2ggTrY1w
- ZlPlRt8WM9w6WfLf2j+PuGklj37m+KvaOEfLsF1v464dSpy1tQVHhhp8LFTxh/6RWkRIR2uF
- I4v3Xu/k5D0LhaZHpQ4C+xKsQxpTGuYh2tnRaRL14YMW1dlI3HfeB2gj7Yc8XdHh9vkpPyuT
- nY/ZsFbnvBtiw7GchKKri2gDhRb2QNNDyBnQn5mRFw7CyuFclAksOdV/sdpQnYlYcRQWOUGY
- HhQ5eqTRZjm9z+qQe/T0HQpmiPTqQcIaG/edgKVTUjITfA7AJMKLQHgp04Vylb+G6jocnQQX
- JqvvP09whbqrABEBAAHCwWUEGAECAA8CGwwFAlVcpi8FCRmg08MACgkQyx8mb86fmYHNRQ/+
- J0OZsBYP4leJvQF8lx9zif+v4ZY/6C9tTcUv/KNAE5leyrD4IKbnV4PnbrVhjq861it/zRQW
- cFpWQszZyWRwNPWUUz7ejmm9lAwPbr8xWT4qMSA43VKQ7ZCeTQJ4TC8kjqtcbw41SjkjrcTG
- wF52zFO4bOWyovVAPncvV9eGA/vtnd3xEZXQiSt91kBSqK28yjxAqK/c3G6i7IX2rg6pzgqh
- hiH3/1qM2M/LSuqAv0Rwrt/k+pZXE+B4Ud42hwmMr0TfhNxG+X7YKvjKC+SjPjqp0CaztQ0H
- nsDLSLElVROxCd9m8CAUuHplgmR3seYCOrT4jriMFBtKNPtj2EE4DNV4s7k0Zy+6iRQ8G8ng
- QjsSqYJx8iAR8JRB7Gm2rQOMv8lSRdjva++GT0VLXtHULdlzg8VjDnFZ3lfz5PWEOeIMk7Rj
- trjv82EZtrhLuLjHRCaG50OOm0hwPSk1J64R8O3HjSLdertmw7eyAYOo4RuWJguYMg5DRnBk
- WkRwrSuCn7UG+qVWZeKEsFKFOkynOs3pVbcbq1pxbhk3TRWCGRU5JolI4ohy/7JV1TVbjiDI
- HP/aVnm6NC8of26P40Pg8EdAhajZnHHjA7FrJXsy3cyIGqvg9os4rNkUWmrCfLLsZDHD8FnU
- mDW4+i+XlNFUPUYMrIKi9joBhu18ssf5i5Q=
-Message-ID: <4c710584-86a8-d4ba-c1f0-ce79c81c6cea@roeck-us.net>
-Date:   Mon, 25 May 2020 07:38:58 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Mon, 25 May 2020 10:45:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1590417938; x=1621953938;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=heIo5A4IO3cNxiqHtxUzg7NOrGQvQTfWj+kPMVcqALs=;
+  b=OYnWLOI/VIPZOxk5MazGB2RZ60fH2rFVgQskHTn6WsF3RSSJl/FfUv5u
+   76OnxHCvO+hkN15Zafb6EW0w42NDlc0dhJVVIoEr+8gDo6tBfse+zkw5+
+   IrapNO68sBpFjM+Fht1eqX223v8yDybScP17FD9jj9TbdIdgSYg1efMrD
+   C0NMbigVX7akTMJ8TgxjMPmmmlULGQ1lQtTk+W8pA+NprP0oEliwgAjYg
+   Yd4oQU+JTMs3JJ7G0YGRs0BY3W2KRhLATymhkHbGJLfAv0+d4ijyrQjKd
+   2Miqm7WwN+RiXdmFP64BGFxIWtxHvJvCYnmrl2I7gZvWnVVEDc0CtB4kQ
+   w==;
+IronPort-SDR: k0XwUi4OJJ4yDjVJhkHWPhS1tcYI6Gdo6gUnU+WopJkp4W1vvozIK5HZlowy3rwYaJupOpHsFc
+ ZwWci1guiRnC5CSjPOoXm8WWdr4GLoVBMe6dt+fLITmyxRsu7+oyKUxhqXjW3OC/wrQOVbwycC
+ 54owf/A5k40Acl7sYsxxYLhY9Nuj+nbrdEwXU9QWBDcNFA8EO0swcNy1y3kCf6TTlpfHMQJab8
+ FuXcsGG5nUuAkvmBd+BOFBtJTA3K3etsYkd4ZoCPRraKc1QJPGtm0oGQXS02I4pY3fWwVNek4C
+ C6w=
+X-IronPort-AV: E=Sophos;i="5.73,433,1583164800"; 
+   d="scan'208";a="142795417"
+Received: from h199-255-45-14.hgst.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 25 May 2020 22:45:38 +0800
+IronPort-SDR: xcv5c+kV7E+V+42gI+RmnyeKkcJpl1ueNDkzQh+8ZckCGJ/ddF5RYmUjHY3kn9tOZi2q3gqPrH
+ wEuyseazVZOeQbIeo+ptADW8q8v8RDQwA=
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2020 07:35:31 -0700
+IronPort-SDR: 4bXAX6PvF4iTgSZKLDOuSu4huM10K25vzCyCsF1Zy+6CVuLN90j9D/9KwshlFZ7DornsTi39eX
+ bGRZBSGybfQQ==
+WDCIronportException: Internal
+Received: from unknown (HELO redsun52) ([10.149.66.28])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2020 07:45:36 -0700
+Date:   Mon, 25 May 2020 15:45:31 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@wdc.com>
+To:     Mikulas Patocka <mpatocka@redhat.com>
+cc:     Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        "Maciej W. Rozycki" <macro@linux-mips.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Richard Henderson <rth@twiddle.net>,
+        Matt Turner <mattst88@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
+Subject: Re: [PATCH v5] alpha: fix memory barriers so that they conform to
+ the specification
+In-Reply-To: <alpine.LRH.2.02.2005250944210.26265@file01.intranet.prod.int.rdu2.redhat.com>
+Message-ID: <alpine.LFD.2.21.2005251500420.21168@redsun52.ssa.fujisawa.hgst.com>
+References: <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com> <CAK8P3a3UdCJL6C07_W7pkipT1Xmr_0G9hOy1S+YXbB4_tKt+gg@mail.gmail.com> <alpine.LFD.2.21.2005100209340.487915@eddie.linux-mips.org> <alpine.LRH.2.02.2005101443290.15420@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LFD.2.21.2005111320220.677301@eddie.linux-mips.org> <20200513144128.GA16995@mail.rc.ru> <alpine.LRH.2.02.2005220920020.20970@file01.intranet.prod.int.rdu2.redhat.com> <alpine.LRH.2.02.2005221344530.11126@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.02.2005230623410.22664@file01.intranet.prod.int.rdu2.redhat.com> <20200523151027.GA10128@mail.rc.ru> <alpine.LRH.2.02.2005231131480.10727@file01.intranet.prod.int.rdu2.redhat.com> <alpine.LRH.2.02.2005231134590.10727@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LFD.2.21.2005241500230.21168@redsun52.ssa.fujisawa.hgst.com> <alpine.LRH.2.02.2005250944210.26265@file01.intranet.prod.int.rdu2.redhat.com>
+User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <20200525140752.GA910887@kroah.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-On 5/25/20 7:07 AM, Greg Kroah-Hartman wrote:
-> On Mon, May 25, 2020 at 07:01:13AM -0700, Guenter Roeck wrote:
->> On 5/25/20 3:59 AM, Andy Shevchenko wrote:
->>> The commit a3cb39d258ef
->>> ("serial: core: Allow detach and attach serial device for console")
->>> changed a bit logic behind lock initialization since for most of the console
->>> driver it's supposed to have lock already initialized even if console is not
->>> enabled. However, it's not the case for Freescale IMX console.
->>>
->>> Initialize lock explicitly in the ->probe().
->>>
->>> Note, there is still an open question should or shouldn't not this driver
->>> register console properly.
->>>
->>> Fixes: a3cb39d258ef ("serial: core: Allow detach and attach serial device for console")
->>> Reported-by: Guenter Roeck <linux@roeck-us.net>
->>> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->>
->> I really wonder if this is the correct fix, especially since it looks like
->> there are several other drivers which don't call register_console() either
->> but implement a console device.
->>
->> Guenter
->>
->>> ---
->>>  drivers/tty/serial/imx.c | 3 +++
->>>  1 file changed, 3 insertions(+)
->>>
->>> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
->>> index 986d902fb7fe..6b078e395931 100644
->>> --- a/drivers/tty/serial/imx.c
->>> +++ b/drivers/tty/serial/imx.c
->>> @@ -2404,6 +2404,9 @@ static int imx_uart_probe(struct platform_device *pdev)
->>>  		}
->>>  	}
->>>  
->>> +	/* We need to initialize lock even for non-registered console */
->>> +	spin_lock_init(&sport->port.lock);
+On Mon, 25 May 2020, Mikulas Patocka wrote:
+
+> >  Please observe that changing the `*_relaxed' entry points from merely 
+> > aliasing the corresponding `__raw_*' handlers to more elaborate code 
+> > sequences (though indeed slightly only, but still) makes the situation 
+> > analogous to one we have with the ordinary MMIO accessor entry points.  
+> > Those regular entry points have been made `extern inline' and wrapped 
+> > into:
+> > 
+> > #if IO_CONCAT(__IO_PREFIX,trivial_rw_bw) == 1
+> > 
+> > and:
+> > 
+> > #if IO_CONCAT(__IO_PREFIX,trivial_rw_lq) == 1
+> > 
+> > respectively, with corresponding out-of-line entry points available, so 
+> > that there is no extra inline code produced where the call to the relevant 
+> > MMIO accessor is going to end up with an actual function call, as this 
+> > would not help performance in any way and would expand code unnecessarily 
+> > at all call sites.
+> > 
+> >  Therefore I suggest that your new `static inline' functions follow the 
+> > pattern, perhaps by grouping them with the corresponding ordinary accessor 
+> > functions in arch/alpha/include/asm/io.h within the relevant existing 
+> > #ifdef, and then by making them `extern inline' and providing out-of-line 
+> > implementations in arch/alpha/kernel/io.c, with the individual symbols 
+> > exported.  Within arch/alpha/kernel/io.c the compiler will still inline 
+> > code as it sees fit as it already does, e.g. `__raw_readq' might get 
+> > inlined in `readq' if it turns out cheaper than arranging for an actual 
+> > call, including all the stack frame preparation for `ra' preservation; 
+> > it's less likely with say `writeq' which probably always ends with a tail 
+> > call to `__raw_writeq' as no stack frame is required in that case.
+> > 
+> >  That for the read accessors.
 > 
-> Why are we having to do this for all console drivers recently?
-> Shouldn't the original patch that required this gone through and fixed
-> up all drivers?
-> 
+> I think that making the read*_relaxed functions extern inline just causes 
+> source code bloat with no practical gain - if we make them extern inline, 
+> we would need two implementations (one in the include file, the other in 
+> the C file) - and it is not good practice to duplicate code.
 
-Good that I am getting paid for bisecting and reporting issues like this.
+ We do that already with the existing accessors, and while I agree the 
+duplication is a bit unfortunate and could be solved with some macro 
+hackery so that there is a single version in arch/alpha/include/asm/io.h 
+that gets pasted to produce out-of-line copies in arch/alpha/kernel/io.c.  
+That would be good having across all the accessors, but that is not 
+relevant to the regression discussed here and therefore I do not request 
+that you make such a clean-up as a part of this series.
 
-Oh, wait, I am not. Bummer.
+> The functions __raw_read* are already extern inline, so the compiler will 
+> inline/noinline them depending on the macros trivial_io_bw and 
+> trivial_io_lq - so we can just call them from read*_relaxed without 
+> repeating the extern inline pattern.
 
-Guenter
+ The whole point of this peculiar arrangement for cooked accessors is to 
+avoid having barriers inserted inline around out-of-line calls to raw 
+accessors, and therefore I maintain that we need to have the arrangement 
+applied consistently across all the cooked accessors.  Since you're 
+creating new distinct cooked accessors (by making their names no longer 
+alias to existing cooked accessors), they need to follow the pattern.
 
+ NB this arrangement was added back in 2.6.9-rc3, with:
+
+ChangeSet@1.1939.5.8, 2004-09-22 22:40:06-07:00, rth@kanga.twiddle.home
+  [ALPHA] Implement new ioread interface.
+
+I believe.  I don't know if any further details or discussion around that 
+can be chased, but Richard might be able to chime in.
+
+  Maciej
