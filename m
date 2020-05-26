@@ -2,70 +2,180 @@ Return-Path: <SRS0=Q4jN=7I=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 512A3C433DF
-	for <linux-serial@archiver.kernel.org>; Tue, 26 May 2020 16:14:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8274FC433DF
+	for <linux-serial@archiver.kernel.org>; Tue, 26 May 2020 16:57:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 347FE206D5
-	for <linux-serial@archiver.kernel.org>; Tue, 26 May 2020 16:14:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6961820776
+	for <linux-serial@archiver.kernel.org>; Tue, 26 May 2020 16:57:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727968AbgEZQOE (ORCPT
+        id S1728523AbgEZQ5D (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Tue, 26 May 2020 12:14:04 -0400
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:58817 "EHLO
-        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727941AbgEZQOE (ORCPT
-        <rfc822;linux-serial@vger.kernel.org>);
-        Tue, 26 May 2020 12:14:04 -0400
-X-Originating-IP: 50.39.163.217
-Received: from localhost (50-39-163-217.bvtn.or.frontiernet.net [50.39.163.217])
-        (Authenticated sender: josh@joshtriplett.org)
-        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id EBCC2C000D;
-        Tue, 26 May 2020 16:14:00 +0000 (UTC)
-Date:   Tue, 26 May 2020 09:13:57 -0700
-From:   Josh Triplett <josh@joshtriplett.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] serial: 8250: Enable 16550A variants by default on non-x86
-Message-ID: <a20b5fb7dd295cfb48160eecf4bdebd76332d67d.1590509426.git.josh@joshtriplett.org>
+        Tue, 26 May 2020 12:57:03 -0400
+Received: from mga12.intel.com ([192.55.52.136]:58729 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726930AbgEZQ5C (ORCPT <rfc822;linux-serial@vger.kernel.org>);
+        Tue, 26 May 2020 12:57:02 -0400
+IronPort-SDR: oIHRVtthYxI7JBehFK1KuCLOzFT0WArfgLts5cZ+1vAxwaffI70j2ojBuRXsAZbUpiGZYz/GRP
+ R6opfkIno4GA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2020 09:57:02 -0700
+IronPort-SDR: Er2zNXmgAzjRa4OAXcIq2b/xKyApj7yAEdoa4+gewOIBv7hNZ1+ASgdTNPQGRDP2fUT7g6IaUD
+ cmfxEw6lq4OA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,437,1583222400"; 
+   d="scan'208";a="301780640"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by fmsmga002.fm.intel.com with ESMTP; 26 May 2020 09:56:59 -0700
+Received: from andy by smile with local (Exim 4.93)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1jdcsv-0092P9-QH; Tue, 26 May 2020 19:57:01 +0300
+Date:   Tue, 26 May 2020 19:57:01 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Will Deacon <will@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 3/3] serial: 8250_dw: Fix common clocks usage race
+ condition
+Message-ID: <20200526165701.GX1634618@smile.fi.intel.com>
+References: <20200526160316.26136-1-Sergey.Semin@baikalelectronics.ru>
+ <20200526160316.26136-4-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20200526160316.26136-4-Sergey.Semin@baikalelectronics.ru>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
-Some embedded devices still use these serial ports; make sure they're
-still enabled by default on architectures more likely to have them, to
-avoid rendering someone's console unavailable.
+On Tue, May 26, 2020 at 07:03:16PM +0300, Serge Semin wrote:
+> The race condition may happen if the UART reference clock is shared with
+> some other device (on Baikal-T1 SoC it's another DW UART port). In this
+> case if that device changes the clock rate while serial console is using
+> it the DW 8250 UART port might not only end up with an invalid uartclk
+> value saved, but may also experience a distorted output data since
+> baud-clock could have been changed. In order to fix this lets at least
+> try to adjust the 8250 port setting like UART clock rate in case if the
+> reference clock rate change is discovered. The driver will call the new
+> method to update 8250 UART port clock rate settings. It's done by means of
+> the clock event notifier registered at the port startup and unregistered
+> in the shutdown callback method.
+> 
+> Note 1. In order to avoid deadlocks we had to execute the UART port update
+> method in a dedicated deferred work. This is due to (in my opinion
+> redundant) the clock update implemented in the dw8250_set_termios()
+> method.
+> Note 2. Before the ref clock is manually changed by the custom
+> set_termios() function we swap the port uartclk value with new rate
+> adjusted to be suitable for the requested baud. It is necessary in
+> order to effectively disable a functionality of the ref clock events
+> handler for the current UART port, since uartclk update will be done
+> a bit further in the generic serial8250_do_set_termios() function.
 
-Reported-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reported-by: Maxim Kochetkov <fido_max@inbox.ru>
-Fixes: dc56ecb81a0a ("serial: 8250: Support disabling mdelay-filled probes of 16550A variants")
-Signed-off-by: Josh Triplett <josh@joshtriplett.org>
----
+...
 
-v2: Add Reported-by lines.
+> +static void dw8250_clk_work_cb(struct work_struct *work)
+> +{
+> +	struct dw8250_data *d = work_to_dw8250_data(work);
+> +	struct uart_8250_port *up;
+> +	unsigned long rate;
+> +
+> +	rate = clk_get_rate(d->clk);
 
- drivers/tty/serial/8250/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+> +	if (rate) {
 
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index af0688156dd0..8195a31519ea 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -63,6 +63,7 @@ config SERIAL_8250_PNP
- config SERIAL_8250_16550A_VARIANTS
- 	bool "Support for variants of the 16550A serial port"
- 	depends on SERIAL_8250
-+	default !X86
- 	help
- 	  The 8250 driver can probe for many variants of the venerable 16550A
- 	  serial port. Doing so takes additional time at boot.
+	if (rate <= 0)
+		return;
+
+?
+
+> +		up = serial8250_get_port(d->data.line);
+> +
+> +		serial8250_update_uartclk(&up->port, rate);
+> +	}
+> +}
+
+...
+
+> +static int dw8250_startup(struct uart_port *p)
+> +{
+> +	struct dw8250_data *d = to_dw8250_data(p->private_data);
+> +	int ret;
+> +
+> +	/*
+> +	 * Some platforms may provide a reference clock shared between several
+> +	 * devices. In this case before using the serial port first we have to
+> +	 * make sure that any clock state change is known to the UART port at
+> +	 * least post factum.
+> +	 */
+
+> +	if (d->clk) {
+
+Do you need this?
+
+> +		ret = clk_notifier_register(d->clk, &d->clk_notifier);
+
+Okay, seems clk_notifier_register() and its counterpart should be fixed for
+optional clocks.
+
+> +		if (ret)
+> +			dev_warn(p->dev, "Failed to set the clock notifier\n");
+
+So, what does this warning mean on the platforms which does not need notifier
+at all (i.o.w. all but baikal)?
+
+> +		/*
+> +		 * Get current reference clock rate to make sure the UART port
+> +		 * is equipped with an up-to-date value before it's started up.
+> +		 */
+
+Why? We call ->set_termios() for it, no?
+
+> +		p->uartclk = clk_get_rate(d->clk);
+> +		if (!p->uartclk) {
+> +			dev_err(p->dev, "Clock rate not defined\n");
+> +			return -EINVAL;
+> +		}
+> +	}
+> +
+> +	return serial8250_do_startup(p);
+> +}
+> +
+> +static void dw8250_shutdown(struct uart_port *p)
+> +{
+> +	struct dw8250_data *d = to_dw8250_data(p->private_data);
+> +
+> +	serial8250_do_shutdown(p);
+> +
+
+> +	if (d->clk) {
+
+Ditto.
+
+> +		clk_notifier_unregister(d->clk, &d->clk_notifier);
+> +
+> +		flush_work(&d->clk_work);
+> +	}
+> +}
+
 -- 
-2.27.0.rc0
+With Best Regards,
+Andy Shevchenko
+
+
