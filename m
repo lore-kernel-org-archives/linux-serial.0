@@ -2,87 +2,162 @@ Return-Path: <SRS0=pZl0=7J=vger.kernel.org=linux-serial-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2F76C433E3
-	for <linux-serial@archiver.kernel.org>; Wed, 27 May 2020 10:04:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA281C433E1
+	for <linux-serial@archiver.kernel.org>; Wed, 27 May 2020 16:26:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AF28620C56
-	for <linux-serial@archiver.kernel.org>; Wed, 27 May 2020 10:04:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 885722084C
+	for <linux-serial@archiver.kernel.org>; Wed, 27 May 2020 16:26:08 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=antmicro.com header.i=@antmicro.com header.b="kPEQxS0P"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728293AbgE0KEN (ORCPT
+        id S2390961AbgE0Q0F (ORCPT
         <rfc822;linux-serial@archiver.kernel.org>);
-        Wed, 27 May 2020 06:04:13 -0400
-Received: from sauhun.de ([88.99.104.3]:54822 "EHLO pokefinder.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726603AbgE0KEN (ORCPT <rfc822;linux-serial@vger.kernel.org>);
-        Wed, 27 May 2020 06:04:13 -0400
-Received: from localhost (p54b33011.dip0.t-ipconnect.de [84.179.48.17])
-        by pokefinder.org (Postfix) with ESMTPSA id D00ED2C2037;
-        Wed, 27 May 2020 12:04:09 +0200 (CEST)
-Date:   Wed, 27 May 2020 12:04:03 +0200
-From:   Wolfram Sang <wsa@the-dreams.de>
-To:     Akash Asthana <akashast@codeaurora.org>
-Cc:     gregkh@linuxfoundation.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, broonie@kernel.org,
-        mark.rutland@arm.com, robh+dt@kernel.org,
-        linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, swboyd@chromium.org,
-        mgautam@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, mka@chromium.org,
-        dianders@chromium.org, msavaliy@codeaurora.org,
-        evgreen@chromium.org
-Subject: Re: [PATCH V7 3/7] i2c: i2c-qcom-geni: Add interconnect support
-Message-ID: <20200527100403.GA1161@ninjato>
-References: <1590497690-29035-1-git-send-email-akashast@codeaurora.org>
- <1590497690-29035-4-git-send-email-akashast@codeaurora.org>
+        Wed, 27 May 2020 12:26:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34382 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389852AbgE0Q0D (ORCPT
+        <rfc822;linux-serial@vger.kernel.org>);
+        Wed, 27 May 2020 12:26:03 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9E1C05BD1E
+        for <linux-serial@vger.kernel.org>; Wed, 27 May 2020 09:26:02 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id e4so7208700ljn.4
+        for <linux-serial@vger.kernel.org>; Wed, 27 May 2020 09:26:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=antmicro.com; s=google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=g9s8BvA2PQumY+6SHwRlWVAr/CRDLgvzgZHFCjcSWFk=;
+        b=kPEQxS0PW9dRJFegpNyWgrt8yIXYPoMQa4We9uL1uWfxS9FRb5wVnDsGlz1CY1XUDA
+         6S+/oBnySjJoeIkY1F41HfrI3u+McunRtLiBkBE4i/F6YBWmiFDgNjhq2Qk5fzJfmvWQ
+         ZpX96sYW4/1V1rG83f4+L9VnN1LT6HHE+Zaac=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=g9s8BvA2PQumY+6SHwRlWVAr/CRDLgvzgZHFCjcSWFk=;
+        b=QvNNBPC6+fELgRO4MORX+IelaYaQtViQJjgEquZ6dtF06S+2ALsio8IEfAZkFo71vJ
+         BN0rh4OdQRSeCeu5A+Q74l+qBYKVFkagucPa9t/HrUvO/hDWlj9W7dfIIuGFDPHRGCk+
+         qTLfT6F+bpRTUd5KQr1IoPfuXDUC9YS0jGVCkxH8NICSuamAfVzN1cNwm706cC785T8L
+         6RQB0Qk4HLuXckYZ1r9x+Cnb8jYS2TPYIOziLn49mIopyTHq1+YKSgvulwxf7e9dXvyq
+         fPg0LR86cr+uLH64PSO5EAFoyIE5hdvcM5yxt4xxG4XQLCjt3AVOWuVyFiDfBl7M9oVN
+         bCjQ==
+X-Gm-Message-State: AOAM530kZBxLnrNXKL5u6NyDiUFDdFxRbJQ1EDACMa+2cMsUEjCpMrw+
+        DtEFnLSqdZJiJ9hvMIFRBxlhEw==
+X-Google-Smtp-Source: ABdhPJxMdBdNzaQhOcNgRguBOidB8r8tVmkt5HJC4NDaHBBD8klKwTO/LK1I6tOhDGNUcjjIsfgfkA==
+X-Received: by 2002:a2e:9252:: with SMTP id v18mr3452029ljg.337.1590596760509;
+        Wed, 27 May 2020 09:26:00 -0700 (PDT)
+Received: from localhost.localdomain (d79-196.icpnet.pl. [77.65.79.196])
+        by smtp.gmail.com with ESMTPSA id p68sm898784lfa.71.2020.05.27.09.25.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 May 2020 09:25:59 -0700 (PDT)
+Date:   Wed, 27 May 2020 18:25:51 +0200
+From:   Mateusz Holenko <mholenko@antmicro.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Cc:     Stafford Horne <shorne@gmail.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Filip Kokosinski <fkokosinski@antmicro.com>,
+        Pawel Czarnecki <pczarnecki@internships.antmicro.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-kernel@vger.kernel.org, "Gabriel L. Somlo" <gsomlo@gmail.com>
+Subject: [PATCH v6 0/5] LiteX SoC controller and LiteUART serial driver
+Message-ID: <20200527182545.3859622-0-mholenko@antmicro.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="+HP7ph2BbKc20aGI"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1590497690-29035-4-git-send-email-akashast@codeaurora.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-serial-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-serial.vger.kernel.org>
 X-Mailing-List: linux-serial@vger.kernel.org
 
+This patchset introduces support for LiteX SoC Controller
+and LiteUART - serial device from LiteX SoC builder
+(https://github.com/enjoy-digital/litex).
 
---+HP7ph2BbKc20aGI
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In the following patchset I will add
+a new mor1kx-based (OpenRISC) platform that
+uses this device.
 
-On Tue, May 26, 2020 at 06:24:46PM +0530, Akash Asthana wrote:
-> Get the interconnect paths for I2C based Serial Engine device
-> and vote according to the bus speed of the driver.
->=20
-> Signed-off-by: Akash Asthana <akashast@codeaurora.org>
-> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Later I plan to extend this platform by
+adding support for more devices from LiteX suite.
 
-Acked-by: Wolfram Sang <wsa@kernel.org>
+Changes in v6:
+    - changed accessors in SoC Controller's driver
+    - reworked UART driver
 
+Changes in v5:
+    - added Reviewed-by tag
+    - removed custom accessors from SoC Controller's driver
+    - fixed error checking in SoC Controller's driver
 
---+HP7ph2BbKc20aGI
-Content-Type: application/pgp-signature; name="signature.asc"
+Changes in v4:
+    - fixed copyright headers
+    - fixed SoC Controller's yaml 
+    - simplified SoC Controller's driver
 
------BEGIN PGP SIGNATURE-----
+Changes in v3:
+    - added Acked-by and Reviewed-by tags
+    - introduced LiteX SoC Controller driver
+    - removed endianness detection (handled now by LiteX SoC Controller driver)
+    - modified litex.h header
+    - DTS aliases for LiteUART made optional
+    - renamed SERIAL_LITEUART_NR_PORTS to SERIAL_LITEUART_MAX_PORTS
+    - changed PORT_LITEUART from 122 to 123
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAl7OOxAACgkQFA3kzBSg
-KbZevQ/+NcEUgwnmhUa8aEnp2UoVMX6Wlv05FuCrQxi0nZIjygKPEPZk37yJnfyV
-PoMmuHleWfVuj38hY6Uk4MTpqgXGk73gNVBQdl0rMCnVX3lfBZTkITpg/afYnO2w
-/xDD20Au2+yGZlax34Q0Ux1GMGmz5AgZTnz2BwM7T7BmnpEPRUNaibtUApL6gR4f
-2IT7IDmDcuQrt7yl5zjN4PJOQlzYX8k/ltAclkeySaJgs6Txo5qYHY/RK0VxTg/5
-VKyjrdpf6YC5/RoUJqEQaNxBFBSstgzqdTmqhjBkgR1cl0h42bywtcRYgH+2sFPs
-xAldHIfYLHIjJGYE67YLUAhUBpeZ9Q5oIvRd/e7d18OeKoKNOUES2GZIB5SUE3hZ
-p97DyqZPeDns/xwecSDimx6y7QlW82IFYgqprVV8DAE3psOhzjAm2qbe5POKIS70
-jb5sa4LX741rzItM9tW6krBVN3YZk76P5nOYfAb1dX55RwzfKR0nTIUNt/QzwMhh
-6ta1ZxHItJYB2BBNkOxle4KjIKlA2ic2lUBmBzoImL3UdZ7TYk9ggzvtIEN2DUyP
-YAzz9pwwIV7O52gv/WVqM/Lz69qS+Mflog/pGKVi0QrLg2swLvPHohRc4Li+mjWv
-YXd/cuH/u1lIbyEr0/8Al+HCHt8lsTKtUqGk4WZlOkbUxl43jqw=
-=POQo
------END PGP SIGNATURE-----
+Changes in v2:
+    - binding description rewritten to a yaml schema file
+    - added litex.h header with common register access functions
 
---+HP7ph2BbKc20aGI--
+Filip Kokosinski (3):
+  dt-bindings: vendor: add vendor prefix for LiteX
+  dt-bindings: serial: document LiteUART bindings
+  drivers/tty/serial: add LiteUART driver
+
+Pawel Czarnecki (2):
+  dt-bindings: soc: document LiteX SoC Controller bindings
+  drivers/soc/litex: add LiteX SoC Controller driver
+
+ .../bindings/serial/litex,liteuart.yaml       |  38 ++
+ .../soc/litex/litex,soc-controller.yaml       |  39 ++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ MAINTAINERS                                   |   9 +
+ drivers/soc/Kconfig                           |   1 +
+ drivers/soc/Makefile                          |   1 +
+ drivers/soc/litex/Kconfig                     |  15 +
+ drivers/soc/litex/Makefile                    |   3 +
+ drivers/soc/litex/litex_soc_ctrl.c            | 197 +++++++++
+ drivers/tty/serial/Kconfig                    |  31 ++
+ drivers/tty/serial/Makefile                   |   1 +
+ drivers/tty/serial/liteuart.c                 | 399 ++++++++++++++++++
+ include/linux/litex.h                         |  45 ++
+ 13 files changed, 781 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/litex,liteuart.yaml
+ create mode 100644 Documentation/devicetree/bindings/soc/litex/litex,soc-controller.yaml
+ create mode 100644 drivers/soc/litex/Kconfig
+ create mode 100644 drivers/soc/litex/Makefile
+ create mode 100644 drivers/soc/litex/litex_soc_ctrl.c
+ create mode 100644 drivers/tty/serial/liteuart.c
+ create mode 100644 include/linux/litex.h
+
+-- 
+2.25.1
+
